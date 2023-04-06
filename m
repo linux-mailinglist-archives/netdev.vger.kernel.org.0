@@ -2,82 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 864D36D912C
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0C36D9141
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:13:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235799AbjDFIHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 04:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
+        id S234878AbjDFINS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 04:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235156AbjDFIHs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:07:48 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071346592;
-        Thu,  6 Apr 2023 01:07:43 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3366DHAE013854;
-        Thu, 6 Apr 2023 08:07:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=jJZpK+4LUoxPvabfOSLEoyNinN7S5mTg5CwsNL84xjw=;
- b=kjMe/+F1hIyFVsZ4CQ4oUcT4396yvvvQOup5kUw2Fuspq+FctwzusRsKtVLHnHymHIJO
- mPA3TrUFWzxnMVXV+nSNnVw1QQa9B4I49rKmlChHrWG8pqjf/Dr5s1oV1/xHWW0oSIMH
- N0Gpz1K5dcGIMZugzk9FggIXLjgDci5HLOCjbbdhpUPXtx7Ur17wwiLlrDtTUAn73YkC
- S+M4bQ4fYqq9dMLDkfGuUK/bcY/JrOGPCy6zSPF2tn4Xs+O+4cRYJqghvPQ5RSVi0UJL
- FqsdsEnXIk7yCyBqb1C7KW+87K9+nKac+QyFR94xFH++zdW8kHVDBF7MxOVB8P6v/8oN Tg== 
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3psmyx0nmv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Apr 2023 08:07:30 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-        by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 33687TA3003418
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 6 Apr 2023 08:07:29 GMT
-Received: from [10.216.2.94] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.42; Thu, 6 Apr 2023
- 01:07:25 -0700
-Message-ID: <62fb952e-ffb9-763c-4e4b-4601c017ad26@quicinc.com>
-Date:   Thu, 6 Apr 2023 13:37:22 +0530
+        with ESMTP id S233604AbjDFINR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:13:17 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0A659E6
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 01:13:16 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id h198so1570522ybg.12
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 01:13:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1680768795;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=s37AKX46druDkQMukFY2wjOtd4UDmaJrvLEgrvY9bU4=;
+        b=nrSafKY0nVFK23NtqSDbq36ZroC2qJOvKZrGvQr2QkYsGlKAjzqDUxSK5MFpX+pIom
+         zm1tokTzkYyxjOP1ZxjGw6rzdAIxm5xhWmPy0olG7nzGFJm3f3kw20jT7Ew1Asewhkbx
+         TasrqL/9bXj7AGVSol29rvvYUk/37XyVnVWapWliLJJNv6jr5gDjZzwoChW1SAgF9+GC
+         4UYPa37LhaCGR87mi5f1yVaQkjpm1l+5LCfn9IJPDPCKt/esnFUTB8gOdOHuVAaQs0S3
+         Z+ZTHEWJAERRXGMF2nctXeHg5TQJPs343YSTVvNa07CtvJuIS4MxLK7I5ZCOY07ceeZC
+         1Znw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680768795;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=s37AKX46druDkQMukFY2wjOtd4UDmaJrvLEgrvY9bU4=;
+        b=zYu1JjjIlsjwJGZ7Xg/xqH8mi7wa0qfsJdZjwBGAs7I0TxGVCDZBVMXEGnvI6kNpFx
+         gVr1LOe+yLqfQ5t45iB30GCncDDlhzdX4aEAXzVY7P35v0QKZik3WFcFWedpGP0exhSo
+         xASaviRddHC0rhqH1dPN7y7MXKW9qYdDQD54rX8oGbXuZm7PVriWdZ7Yfnx/Vq5GWPPP
+         Oftl8d/JMz3WWwdx/lukIDE79zTfayZBZpDPTRemvXghlqiCIyqsuVt4B1EpW8OhCvHk
+         ctaybNNw8QwnfsQ4BDUA4FqRtZdZNDrXJASt61kYDLyTZpw1fO0hO0Q5UgoI5bmFxaI4
+         DLgg==
+X-Gm-Message-State: AAQBX9eNSgBVdVRGcvdDBKX6ABCFnfqStGfRhrBdWM3hm1U7nN3LWZJ+
+        EfbNezi3l1NcAQkUyPhkghwv0tPRSiuIx3wzU2ZFxg==
+X-Google-Smtp-Source: AKy350Zfk5N0s61DTsl9VnLEj+Ajk4UDuW7STcEJQQgs7kgMhWDYvSKMwIj3WKmJkboudvnSGA7KP7OZSeL2wh7bFyI=
+X-Received: by 2002:a25:da46:0:b0:b09:6f3d:ea1f with SMTP id
+ n67-20020a25da46000000b00b096f3dea1fmr1566211ybf.4.1680768795347; Thu, 06 Apr
+ 2023 01:13:15 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next] net: qrtr: correct types of trace event
- parameters
-Content-Language: en-US
-To:     Simon Horman <horms@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Manivannan Sadhasivam <mani@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-trace-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <20230402-qrtr-trace-types-v1-1-92ad55008dd3@kernel.org>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <20230402-qrtr-trace-types-v1-1-92ad55008dd3@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: h48KRiHCC5-6Cb2kepEKb3Fo2hcERqYP
-X-Proofpoint-ORIG-GUID: h48KRiHCC5-6Cb2kepEKb3Fo2hcERqYP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-06_03,2023-04-05_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 impostorscore=0 adultscore=0 clxscore=1011 mlxlogscore=999
- bulkscore=0 mlxscore=0 lowpriorityscore=0 spamscore=0 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2304060071
-X-Spam-Status: No, score=-2.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+References: <20230406063450.19572-1-yuehaibing@huawei.com>
+In-Reply-To: <20230406063450.19572-1-yuehaibing@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 6 Apr 2023 10:13:04 +0200
+Message-ID: <CANn89iJTKBVcF4agyJfV-TbtH12Uky=vkDJ9eoxKML9N0K7gAw@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: restrict net.ipv4.tcp_app_win
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        corbet@lwn.net, dsahern@kernel.org, kuniyu@amazon.com,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,113 +71,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Apr 6, 2023 at 8:35=E2=80=AFAM YueHaibing <yuehaibing@huawei.com> w=
+rote:
+>
 
-
-On 4/3/2023 9:13 PM, Simon Horman wrote:
-> The arguments passed to the trace events are of type unsigned int,
-> however the signature of the events used __le32 parameters.
-> 
-> I may be missing the point here, but sparse flagged this and it
-> does seem incorrect to me.
-> 
->    net/qrtr/ns.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/qrtr.h):
->    ./include/trace/events/qrtr.h:11:1: warning: cast to restricted __le32
->    ./include/trace/events/qrtr.h:11:1: warning: restricted __le32 degrades to integer
->    ./include/trace/events/qrtr.h:11:1: warning: restricted __le32 degrades to integer
->    ... (a lot more similar warnings)
->    net/qrtr/ns.c:115:47:    expected restricted __le32 [usertype] service
->    net/qrtr/ns.c:115:47:    got unsigned int service
->    net/qrtr/ns.c:115:61: warning: incorrect type in argument 2 (different base types)
->    ... (a lot more similar warnings)
-> 
-> Fixes: dfddb54043f0 ("net: qrtr: Add tracepoint support")
-> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-> Signed-off-by: Simon Horman <horms@kernel.org>
+>
+> 'maxwin' is int, shifting int for 32 or more bits is undefined behaviour.
+>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 > ---
-> v1
-> * Drop RFC designation
-> * Add Fixes and Reviewed-by tags
-> * Target at 'net-next' (not sure if that is correct)
-> 
-> RFC
-> * Link: https://lore.kernel.org/r/20230402-qrtr-trace-types-v1-1-da062d368e74@kernel.org
-> ---
->   include/trace/events/qrtr.h | 33 ++++++++++++++++++---------------
->   1 file changed, 18 insertions(+), 15 deletions(-)
-> 
-> diff --git a/include/trace/events/qrtr.h b/include/trace/events/qrtr.h
-> index b1de14c3bb93..441132c67133 100644
-> --- a/include/trace/events/qrtr.h
-> +++ b/include/trace/events/qrtr.h
-> @@ -10,15 +10,16 @@
->   
->   TRACE_EVENT(qrtr_ns_service_announce_new,
->   
-> -	TP_PROTO(__le32 service, __le32 instance, __le32 node, __le32 port),
-> +	TP_PROTO(unsigned int service, unsigned int instance,
-> +		 unsigned int node, unsigned int port),
->   
->   	TP_ARGS(service, instance, node, port),
->   
->   	TP_STRUCT__entry(
-> -		__field(__le32, service)
-> -		__field(__le32, instance)
-> -		__field(__le32, node)
-> -		__field(__le32, port)
-> +		__field(unsigned int, service)
-> +		__field(unsigned int, instance)
-> +		__field(unsigned int, node)
-> +		__field(unsigned int, port)
->   	),
->   
->   	TP_fast_assign(
-> @@ -36,15 +37,16 @@ TRACE_EVENT(qrtr_ns_service_announce_new,
->   
->   TRACE_EVENT(qrtr_ns_service_announce_del,
->   
-> -	TP_PROTO(__le32 service, __le32 instance, __le32 node, __le32 port),
-> +	TP_PROTO(unsigned int service, unsigned int instance,
-> +		 unsigned int node, unsigned int port),
->   
->   	TP_ARGS(service, instance, node, port),
->   
->   	TP_STRUCT__entry(
-> -		__field(__le32, service)
-> -		__field(__le32, instance)
-> -		__field(__le32, node)
-> -		__field(__le32, port)
-> +		__field(unsigned int, service)
-> +		__field(unsigned int, instance)
-> +		__field(unsigned int, node)
-> +		__field(unsigned int, port)
->   	),
->   
->   	TP_fast_assign(
-> @@ -62,15 +64,16 @@ TRACE_EVENT(qrtr_ns_service_announce_del,
->   
->   TRACE_EVENT(qrtr_ns_server_add,
->   
-> -	TP_PROTO(__le32 service, __le32 instance, __le32 node, __le32 port),
-> +	TP_PROTO(unsigned int service, unsigned int instance,
-> +		 unsigned int node, unsigned int port),
->   
->   	TP_ARGS(service, instance, node, port),
->   
->   	TP_STRUCT__entry(
-> -		__field(__le32, service)
-> -		__field(__le32, instance)
-> -		__field(__le32, node)
-> -		__field(__le32, port)
-> +		__field(unsigned int, service)
-> +		__field(unsigned int, instance)
-> +		__field(unsigned int, node)
-> +		__field(unsigned int, port)
 
-Reviewed-by: Mukesh Ojha <quic_mojha@quicinc.com>
-
--- Mukesh
-
->   	),
->   
->   	TP_fast_assign(
-> 
+SGTM, thanks.
+Reviewed-by: Eric Dumazet <edumazet@google.com>
