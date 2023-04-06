@@ -2,65 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51AF96D9C91
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 17:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A36F6D9C93
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 17:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239792AbjDFPmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 11:42:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46288 "EHLO
+        id S239763AbjDFPpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 11:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbjDFPmV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 11:42:21 -0400
+        with ESMTP id S229617AbjDFPpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 11:45:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CC212E;
-        Thu,  6 Apr 2023 08:42:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1803A8A50
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 08:45:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17E5264969;
-        Thu,  6 Apr 2023 15:42:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4438C433EF;
-        Thu,  6 Apr 2023 15:42:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F25564742
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 15:45:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E98C4339B;
+        Thu,  6 Apr 2023 15:45:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680795739;
-        bh=0rP+btQt9/KN1Mx9paUelvp606aFxYbSoZghoDoq1H4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AnKzCJXZBQ+rUdAxMp1hybL8+phnHiu+OVmBUUCFnjaaFhe3+JBjd9o4VRS+GFJN5
-         0ly1kVhxI2roMjWYQf2+y5dMUvv1Ci2GTB8X6niozwhaxs1fWG7/KuVTMCenbUs5xJ
-         R8hXBtyUSFnoU+CNCYwYm25JwnlAIBSzxJdnDB+2hCq3SOx7fwcXDY8zsCk14N9qoq
-         cO6tIQNLWF5gMXxvCymTVgRxpzqnxdep0YsXGAt8iSW0KNea1/dVI1nKiiV2A6tVBN
-         xZtV/Jig2E6z6EErWTaAiJWQujsjky70lsqYCoWXhW8RYF7/gAmGPfUx9p2iEz7+sS
-         fW0nGSTlmCNtg==
-Date:   Thu, 6 Apr 2023 08:42:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Vernet <void@manifault.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Dave Marchevsky <davemarchevsky@meta.com>,
-        Tejun Heo <tj@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
-        Yonghong Song <yhs@meta.com>, Song Liu <song@kernel.org>
-Subject: Re: [PATCH bpf-next 0/8] bpf: Follow up to RCU enforcement in the
- verifier.
-Message-ID: <20230406084217.44fff254@kernel.org>
-In-Reply-To: <CAADnVQLhLuB2HG4WqQk6T=oOq2dtXkwy0TjQbnxa4cVDLHq7bg@mail.gmail.com>
-References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
-        <20230404145131.GB3896@maniforge>
-        <CAEf4BzYXpHMNDTCrBTjwvj3UU5xhS9mAKLx152NniKO27Rdbeg@mail.gmail.com>
-        <CAADnVQKLe8+zJ0sMEOsh74EHhV+wkg0k7uQqbTkB3THx1CUyqw@mail.gmail.com>
-        <20230404185147.17bf217a@kernel.org>
-        <CAEf4BzY3-pXiM861OkqZ6eciBJnZS8gsBL2Le2rGiSU64GKYcg@mail.gmail.com>
-        <20230405111926.7930dbcc@kernel.org>
-        <CAADnVQLhLuB2HG4WqQk6T=oOq2dtXkwy0TjQbnxa4cVDLHq7bg@mail.gmail.com>
+        s=k20201202; t=1680795911;
+        bh=iHcP0z5sTfNE5J+vMpLJShy5TqU6kNFr78jesExyAH0=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=orgNMW+gb2NDclvi0uHyLvB2Le0wDdj/J0gJqfSXwWX+SCrXQCN80PEj985HWdIyq
+         5Bdc7ePqAeA1ZwouwtexT4gK1edQUNOYkh6TnoDffWLg2ILTTAn+EvqhPmQMzthNXx
+         WsSF70fhvQ2ckvZFjAzD/g+ESez7mL31mFvYWuLrqlxcyfFcoAmuvr4MLBtPcM93Wt
+         HeIEX4A3lGk9yzdVzIZQEvJb72ErqCrP6y93FwMaLrrmswjLkyemfJWblWhTSPS1mm
+         ovNkNSViTVGdrURzENm6jPH9I+SFvfo6+YRS4r+EN8efJDCLmO9sVx61ffr933mdug
+         mlM9YMdhzDfCA==
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id 93D5815404B4; Thu,  6 Apr 2023 08:45:10 -0700 (PDT)
+Date:   Thu, 6 Apr 2023 08:45:10 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
+ lockless queue stop/wake code
+Message-ID: <c3b05efb-e691-4947-84f9-cf524e7d2cd9@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <20230401115854.371a5b4c@kernel.org>
+ <CAKgT0UeDy6B0QJt126tykUfu+cB2VK0YOoMOYcL1JQFmxtgG0A@mail.gmail.com>
+ <20230403085601.44f04cd2@kernel.org>
+ <CAKgT0UcsOwspt0TEashpWZ2_gFDR878NskBhquhEyCaN=uYnDQ@mail.gmail.com>
+ <20230403120345.0c02232c@kernel.org>
+ <CAKgT0Ue-hEycSyYvVJt0L5Z=373MyNPbgPjFZMA5j2v0hWg0zg@mail.gmail.com>
+ <1e9bbdde-df97-4319-a4b7-e426c4351317@paulmck-laptop>
+ <ZC5VbfkTIluwKYDn@gondor.apana.org.au>
+ <dba8aec7-f236-4cb6-b53b-fabefcfa295a@paulmck-laptop>
+ <20230406074648.4c26a795@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230406074648.4c26a795@kernel.org>
 X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -70,81 +67,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 5 Apr 2023 22:13:26 -0700 Alexei Starovoitov wrote:
-> On Wed, Apr 5, 2023 at 11:19=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> =
-wrote:
-> >
-> > On Wed, 5 Apr 2023 10:22:16 -0700 Andrii Nakryiko wrote: =20
-> > > So I'm exclusively using `pw-apply -c <patchworks-url>` to apply
-> > > everything locally. =20
-> >
-> > I think you can throw -M after -c $url? It can only help... :) =20
->=20
-> Yeah. If only...
-> I'm exclusively using -c.
-> -M only works with -s, but I couldn't make -s -M work either.
-> Do you pass the series as a number?
+On Thu, Apr 06, 2023 at 07:46:48AM -0700, Jakub Kicinski wrote:
+> On Thu, 6 Apr 2023 07:17:09 -0700 Paul E. McKenney wrote:
+> > > > Mightn't preemption or interrupts cause further issues?  Or are preemption
+> > > > and/or interrupts disabled across the relevant sections of code?  
+> > > 
+> > > The code in question is supposed to run in softirq context.  So
+> > > both interrupts and preemption should be disabled.  
+> > 
+> > Agreed, preemption will be enabled in softirq, but interrupts can still
+> > happen, correct?
+> 
+> Starting the queue only happens from softirq (I hope) and stopping 
+> can happen from any context. So we're risking false-starts again.
+> I think this puts to bed any hope of making this code safe against
+> false-starts with just barriers :(
 
-Yes, it copy just the numerical ID into the terminal.
+Is it possible to jam all the relevant state into a single variable?
+(I believe that that answer is "no", but just in case asking this question
+inspires someone to come up with a good idea.)
 
-> but then series_json=3D$(curl -s $srv/series/$1/) line
-> doesn't look right, since it's missing "/mbox/" ?
-
-That's loading JSON from the patchwork's REST API.
-
-> User error on my side, I guess.
-> My bash skills were too weak to make -c and -M work,
-> but .git/hooks tip is great!
-> Thank you.
-
-FWIW I think the below may work for using -c instead of -s.
-But it is mixing "Daniel paths" and "Jakub paths" in the script.
-The output is still a bit different than when using -s.
-
-diff --git a/pw-apply b/pw-apply
-index 5fc37a24b027..c9cec94a4a8c 100755
---- a/pw-apply
-+++ b/pw-apply
-@@ -81,17 +81,15 @@ accept_series()
- }
-=20
- cover_from_url()
- {
-   curl -s $1 | gunzip -f -c > tmp.i
--  series_num=3D`grep "href=3D\"/series" tmp.i|cut -d/ -f3|head -1`
-+  series=3D`grep "href=3D\"/series" tmp.i|cut -d/ -f3|head -1`
-   cover_url=3D`grep "href=3D\"/project/netdevbpf/cover" tmp.i|cut -d\" -f2`
-   if [ ! -z "$cover_url" ]; then
--    curl -s https://patchwork.kernel.org${cover_url}mbox/ | gunzip -f -c >=
- cover.i
-     merge=3D"1"
-   fi
--  curl -s https://patchwork.kernel.org/series/$series_num/mbox/ | gunzip -=
-f -c > mbox.i
- }
-=20
- edits=3D""
- am_flags=3D""
- branch=3D"mbox"
-@@ -118,18 +116,20 @@ while true; do
-     -h | --help ) usage; break ;;
-     -- ) shift; break ;;
-     * )  break ;;
-   esac
- done
-+# Load the info from cover first, it may will populate $series and $merge
-+[ ! -z "$cover" ]  && cover_from_url $cover
-+
- [ ! -z "$auto_branch" ] && [ -z "$series" ] && usage
- [ ! -z "$mbox" ]   && [ ! -z "$series" ] && usage
- [   -z "$mbox" ]   && [   -z "$series" ] && [ -z "$cover" ] && usage
- [ ! -z "$accept" ] && [ ! -z "$mbox" ]   && usage
- [ ! -z "$series" ] && mbox_from_series $series
- [ ! -z "$mbox" ]   && mbox_from_url $mbox
- [ ! -z "$accept" ] && accept_series $series
--[ ! -z "$cover" ]  && cover_from_url $cover
-=20
- target=3D$(git branch --show-current)
-=20
- body=3D
- author=3DXYZ
+							Thanx, Paul
