@@ -2,57 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94E1B6D979B
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 15:05:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8F116D979D
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 15:07:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229436AbjDFNFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 09:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
+        id S236863AbjDFNHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 09:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237316AbjDFNFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 09:05:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BFA135
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 06:05:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680786303;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=T3RBUCn26A4VbMxyCeQYEHYQ9h598F47onZ1i/ThaI4=;
-        b=JPiafOUhQ9G6rOrZ5FOYr7nKMQCFm+IcYdysgs5TMVjgqoBqw9ZY27C8brWGHDrYCW8P4n
-        6ipCfxtF0OyJkZwOxt2V/hxmTUJniwc9O1fJA61lMRxIb+IKR4djEPaFd8/kBOgnLUOa3J
-        5MgATktIdgDK7RYAdMXIlAmKEpSPQ0E=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-297-ozL5-iFePSSMhJJaOmsXRA-1; Thu, 06 Apr 2023 09:04:58 -0400
-X-MC-Unique: ozL5-iFePSSMhJJaOmsXRA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D2C008533DD;
-        Thu,  6 Apr 2023 13:04:57 +0000 (UTC)
-Received: from p1.luc.cera.cz.com (unknown [10.45.224.115])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7AD0E40C20FA;
-        Thu,  6 Apr 2023 13:04:56 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     mschmidt@redhat.com, Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] bnxt_en: Allow to set switchdev mode without existing VFs
-Date:   Thu,  6 Apr 2023 15:04:55 +0200
-Message-Id: <20230406130455.1155362-1-ivecera@redhat.com>
+        with ESMTP id S236599AbjDFNHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 09:07:51 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35871123
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 06:07:49 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-54bfa5e698eso71882397b3.13
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 06:07:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680786468; x=1683378468;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FVAuKwn36IMarn0SWRi8zj1ZksaDJch6bideTiqDloc=;
+        b=j6thaytXCnOc2qEKFICJ4GpIHKEqp4P673QTU8M9Vwj4h/6jRaocPmbr4QkyxqfT4D
+         nKXMMGRHNybKmviYPKOFZHVr9NgRpJahLCR8kH63F8gVhuwezUe2yCIdljHHDSPVwVVi
+         +TcV9P6jSXtcx5c7gCnXWGR3V2DZ8iE8fQqIim3/4x2Y1s1MUvXRHCWJfVNNVjHvBmXJ
+         AhtnBsWle7ahOCdzzDVL90S+hYdQoLyl1M8dOulAc6aFaJnn8HN/LELYUK4+A9wwJxHo
+         2t62zQS1zHSTEN3jEMSVCKqzWveXb447g1ad4AmL4N4MbX9+/lf09uUYAfbEo9OCtrao
+         LYxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680786468; x=1683378468;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FVAuKwn36IMarn0SWRi8zj1ZksaDJch6bideTiqDloc=;
+        b=RJ36HbOKWdChRyWgnFi6Q6xozY16DD3nuJ4j2+HV0Z31//2HIAfGAlgxlE/7GWEg5j
+         WcVj0RREr5I/IimxakNiX80qOvBzyxQqjDUSvoOYCFSZnINY8ZVrQFAReiLoaLXnE6Fs
+         MeTBA2REknrGHfuUMmVMqfPZCiaPTEs+/CS5oWxAS1vVS1dbUWXf3b0/VkwIdeMF2zro
+         Deo6yVFZ5jr8XO5GMMBW7beDw363yXQFhBMpY4aID1mYrT+xRTwj2QN696wSZP3df9f7
+         oN+BReipreS9mb4pq6QzM14qvlycFd0mZroYpVl15EMwrtIG/cYLs4seQW8ibL7LE59i
+         gkDg==
+X-Gm-Message-State: AAQBX9e12Rj/tZcJk4nlzzyCZ+UiZ1K3aUcafIJilabZKOEJjEU5HUDA
+        zxTOrWETKQTZ7F5opSQgocc6JnH9Qmf5JA==
+X-Google-Smtp-Source: AKy350awxPG1VmlxGbTSvA/Q4+7QZL4cOfZOCJtrwX7D5CTrOUN6RNRc06pDY+YfDb3S508MCEainQ==
+X-Received: by 2002:a05:7500:2d08:b0:fc:e97b:3758 with SMTP id et8-20020a0575002d0800b000fce97b3758mr422206gab.15.1680786468239;
+        Thu, 06 Apr 2023 06:07:48 -0700 (PDT)
+Received: from [192.168.1.105] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id i4-20020a378604000000b007426e664cdcsm440518qkd.133.2023.04.06.06.07.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Apr 2023 06:07:47 -0700 (PDT)
+Message-ID: <93ae54eb-5287-8d63-5109-973bfacc6b74@gmail.com>
+Date:   Thu, 6 Apr 2023 06:07:45 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH v2 net-next] net: dsa: replace NETDEV_PRE_CHANGE_HWTSTAMP
+ notifier with a stub
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>
+References: <20230406114246.33150-1-vladimir.oltean@nxp.com>
+Content-Language: en-US
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230406114246.33150-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,174 +77,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove an inability of bnxt_en driver to set eswitch to switchdev
-mode without existing VFs by:
 
-1. Allow to set switchdev mode in bnxt_dl_eswitch_mode_set() so
-   representors are created only when num_vfs > 0 otherwise just
-   set bp->eswitch_mode
-2. Do not automatically change bp->eswitch_mode during
-   bnxt_vf_reps_create() and bnxt_vf_reps_destroy() calls so
-   the eswitch mode is managed only by an user by devlink.
-   Just set temporarily bp->eswitch_mode to legacy to avoid
-   re-opening of representors during destroy.
-3. Create representors in bnxt_sriov_enable() if current eswitch
-   mode is switchdev one
 
-Tested by this sequence:
-1. Set PF interface up
-2. Set PF's eswitch mode to switchdev
-3. Created N VFs
-4. Checked that N representors were created
-5. Set eswitch mode to legacy
-6. Checked that representors were deleted
-7. Set eswitch mode back to switchdev
-8. Checked that representros were re-created
-9. Deleted all VFs
-10. Checked that all representors were deleted as well
-11. Checked that current eswitch mode is still switchdev
+On 4/6/2023 4:42 AM, Vladimir Oltean wrote:
+> There was a sort of rush surrounding commit 88c0a6b503b7 ("net: create a
+> netdev notifier for DSA to reject PTP on DSA master"), due to a desire
+> to convert DSA's attempt to deny TX timestamping on a DSA master to
+> something that doesn't block the kernel-wide API conversion from
+> ndo_eth_ioctl() to ndo_hwtstamp_set().
+> 
+> What was required was a mechanism that did not depend on ndo_eth_ioctl(),
+> and what was provided was a mechanism that did not depend on
+> ndo_eth_ioctl(), while at the same time introducing something that
+> wasn't absolutely necessary - a new netdev notifier.
+> 
+> There have been objections from Jakub Kicinski that using notifiers in
+> general when they are not absolutely necessary creates complications to
+> the control flow and difficulties to maintainers who look at the code.
+> So there is a desire to not use notifiers.
 
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   | 16 ++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c | 29 ++++++++++++-------
- drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h |  6 ++++
- 3 files changed, 41 insertions(+), 10 deletions(-)
+Jakub is there a general desire to move away from notifiers? If so, do 
+you have a list of things that may no longer belong there?
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-index 3ed3a2b3b3a9..dde327f2c57e 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-@@ -825,8 +825,24 @@ static int bnxt_sriov_enable(struct bnxt *bp, int *num_vfs)
- 	if (rc)
- 		goto err_out2;
- 
-+	if (bp->eswitch_mode != DEVLINK_ESWITCH_MODE_SWITCHDEV)
-+		return 0;
-+
-+	/* Create representors for VFs in switchdev mode */
-+	devl_lock(bp->dl);
-+	rc = bnxt_vf_reps_create(bp);
-+	devl_unlock(bp->dl);
-+	if (rc) {
-+		netdev_info(bp->dev, "Cannot enable VFS as representors cannot be created\n");
-+		goto err_out3;
-+	}
-+
- 	return 0;
- 
-+err_out3:
-+	/* Disable SR-IOV */
-+	pci_disable_sriov(bp->pdev);
-+
- err_out2:
- 	/* Free the resources reserved for various VF's */
- 	bnxt_hwrm_func_vf_resource_free(bp, *num_vfs);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-index fcc65890820a..2f1a1f2d2157 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-@@ -356,10 +356,15 @@ void bnxt_vf_reps_destroy(struct bnxt *bp)
- 	/* un-publish cfa_code_map so that RX path can't see it anymore */
- 	kfree(bp->cfa_code_map);
- 	bp->cfa_code_map = NULL;
--	bp->eswitch_mode = DEVLINK_ESWITCH_MODE_LEGACY;
- 
--	if (closed)
-+	if (closed) {
-+		/* Temporarily set legacy mode to avoid re-opening
-+		 * representors and restore switchdev mode after that.
-+		 */
-+		bp->eswitch_mode = DEVLINK_ESWITCH_MODE_LEGACY;
- 		bnxt_open_nic(bp, false, false);
-+		bp->eswitch_mode = DEVLINK_ESWITCH_MODE_SWITCHDEV;
-+	}
- 	rtnl_unlock();
- 
- 	/* Need to call vf_reps_destroy() outside of rntl_lock
-@@ -482,7 +487,7 @@ static void bnxt_vf_rep_netdev_init(struct bnxt *bp, struct bnxt_vf_rep *vf_rep,
- 	dev->min_mtu = ETH_ZLEN;
- }
- 
--static int bnxt_vf_reps_create(struct bnxt *bp)
-+int bnxt_vf_reps_create(struct bnxt *bp)
- {
- 	u16 *cfa_code_map = NULL, num_vfs = pci_num_vf(bp->pdev);
- 	struct bnxt_vf_rep *vf_rep;
-@@ -535,7 +540,6 @@ static int bnxt_vf_reps_create(struct bnxt *bp)
- 
- 	/* publish cfa_code_map only after all VF-reps have been initialized */
- 	bp->cfa_code_map = cfa_code_map;
--	bp->eswitch_mode = DEVLINK_ESWITCH_MODE_SWITCHDEV;
- 	netif_keep_dst(bp->dev);
- 	return 0;
- 
-@@ -559,6 +563,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
- 			     struct netlink_ext_ack *extack)
- {
- 	struct bnxt *bp = bnxt_get_bp_from_dl(devlink);
-+	int ret = 0;
- 
- 	if (bp->eswitch_mode == mode) {
- 		netdev_info(bp->dev, "already in %s eswitch mode\n",
-@@ -570,7 +575,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
- 	switch (mode) {
- 	case DEVLINK_ESWITCH_MODE_LEGACY:
- 		bnxt_vf_reps_destroy(bp);
--		return 0;
-+		break;
- 
- 	case DEVLINK_ESWITCH_MODE_SWITCHDEV:
- 		if (bp->hwrm_spec_code < 0x10803) {
-@@ -578,15 +583,19 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
- 			return -ENOTSUPP;
- 		}
- 
--		if (pci_num_vf(bp->pdev) == 0) {
--			netdev_info(bp->dev, "Enable VFs before setting switchdev mode\n");
--			return -EPERM;
--		}
--		return bnxt_vf_reps_create(bp);
-+		/* Create representors for existing VFs */
-+		if (pci_num_vf(bp->pdev) > 0)
-+			ret = bnxt_vf_reps_create(bp);
-+		break;
- 
- 	default:
- 		return -EINVAL;
- 	}
-+
-+	if (!ret)
-+		bp->eswitch_mode = mode;
-+
-+	return ret;
- }
- 
- #endif
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
-index 5637a84884d7..33a965631d0b 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
-@@ -14,6 +14,7 @@
- 
- #define	MAX_CFA_CODE			65536
- 
-+int bnxt_vf_reps_create(struct bnxt *bp);
- void bnxt_vf_reps_destroy(struct bnxt *bp);
- void bnxt_vf_reps_close(struct bnxt *bp);
- void bnxt_vf_reps_open(struct bnxt *bp);
-@@ -37,6 +38,11 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
- 
- #else
- 
-+static inline int bnxt_vf_reps_create(struct bnxt *bp)
-+{
-+	return 0;
-+}
-+
- static inline void bnxt_vf_reps_close(struct bnxt *bp)
- {
- }
+> 
+> In addition to that, the notifier chain gets called even if there is no
+> DSA in the system and no one is interested in applying any restriction.
+> 
+> Take the model of udp_tunnel_nic_ops and introduce a stub mechanism,
+> through which net/core/dev_ioctl.c can call into DSA even when
+> CONFIG_NET_DSA=m.
+> 
+> Compared to the code that existed prior to the notifier conversion, aka
+> what was added in commits:
+> - 4cfab3566710 ("net: dsa: Add wrappers for overloaded ndo_ops")
+> - 3369afba1e46 ("net: Call into DSA netdevice_ops wrappers")
+> 
+> this is different because we are not overloading any struct
+> net_device_ops of the DSA master anymore, but rather, we are exposing a
+> rather specific functionality which is orthogonal to which API is used
+> to enable it - ndo_eth_ioctl() or ndo_hwtstamp_set().
+> 
+> Also, what is similar is that both approaches use function pointers to
+> get from built-in code to DSA.
+> 
+> There is no point in replicating the function pointers towards
+> __dsa_master_hwtstamp_validate() once for every CPU port (dev->dsa_ptr).
+> Instead, it is sufficient to introduce a singleton struct dsa_stubs,
+> built into the kernel, which contains a single function pointer to
+> __dsa_master_hwtstamp_validate().
+> 
+> I find this approach preferable to what we had originally, because
+> dev->dsa_ptr->netdev_ops->ndo_do_ioctl() used to require going through
+> struct dsa_port (dev->dsa_ptr), and so, this was incompatible with any
+> attempts to add any data encapsulation and hide DSA data structures from
+> the outside world.
+> 
+> Link: https://lore.kernel.org/netdev/20230403083019.120b72fd@kernel.org/
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.39.2
-
+Florian
