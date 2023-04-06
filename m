@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A42B6D8E8D
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 06:52:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61ADC6D8E89
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 06:51:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234625AbjDFEvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 00:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
+        id S233998AbjDFEvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 00:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbjDFEvp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 00:51:45 -0400
+        with ESMTP id S229631AbjDFEvm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 00:51:42 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25846EB8;
-        Wed,  5 Apr 2023 21:51:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDB072A3;
+        Wed,  5 Apr 2023 21:51:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680756704; x=1712292704;
+  t=1680756701; x=1712292701;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=WAk4a5YPZyL+Po9HZxq/HOFKVLqFQTC42kxDfeTqoiU=;
-  b=n76neJJe6U/RmbTU05lw9u9MbjUFzZBr3NGFCp/6zvPYF5/FoDCm2lqQ
-   UR7azFBPIU0p2KCG2q9a4FSWwr38lLF489LADeg5p961/M+MMLEF3cEzp
-   PcEJqbwFgda/UO8YhQa+jwSpXTYW91+WY7hQjGRp9pyb+/X1Yi546Ocy0
-   6+RWCae1FEJM7uJeTnRhhcBpcrOwcUcVXAB8ZuARbUftbP/sSh/FYKFnv
-   CUXB2neTOlC2g0eZmtD3LxH5FMnz1kxG4vzGt2NY2KHHk4YuSnLtxno/M
-   3/inh0mfrtKhVSYrk+16zxCbosza7yJ9qGVLFaAmbd7BlYK9llmdHiJeK
+  bh=bqJe+t1QsecNzm1dAwJpBEL7IrTSX/dNoAOZTjiKKhc=;
+  b=m+bUM7zS1PcmHMH747VnF5gpKBPZB2K1YVk8XXBu/SDawPduYOMyG2FT
+   QzbWd+NILjj/I8KcHSRarYs4vVk09TVjjbov5NDjrwE1l+a6fZLzfN/8z
+   KwTpprfJ8JGA/Gb2EzQhecDy33dsjRAyInXz5LhhjlyBXw0YDSBnol8zj
+   UWXIsOOamPVLAy9EU+WK+GniYLluC1BMw+vMYbThm1ykonUShIIdpPxip
+   oN6q0CDjCMydNMuySEbmgUM+65jph+uvYu8cvLJWzkl8dTkqRjVU7m6G/
+   IZbr080SqhEIdWgigM6XyhsDWd/NOLnNDD4hfidA+h10QDS4uUVwrD+mI
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="405421823"
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="405421806"
 X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
-   d="scan'208";a="405421823"
+   d="scan'208";a="405421806"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 21:51:44 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 21:51:40 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="680521713"
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="680521706"
 X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
-   d="scan'208";a="680521713"
+   d="scan'208";a="680521706"
 Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 05 Apr 2023 21:51:42 -0700
+  by orsmga007.jf.intel.com with ESMTP; 05 Apr 2023 21:51:37 -0700
 Received: from kbuild by b613635ddfff with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1pkHay-000R3G-2K;
+        id 1pkHay-000R3C-2A;
         Thu, 06 Apr 2023 04:51:36 +0000
-Date:   Thu, 6 Apr 2023 12:50:53 +0800
+Date:   Thu, 6 Apr 2023 12:50:54 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, netfilter-devel@vger.kernel.org,
-        bpf@vger.kernel.org, dxu@dxuuu.xyz, qde@naccy.de,
-        Florian Westphal <fw@strlen.de>
-Subject: Re: [PATCH bpf-next 1/6] bpf: add bpf_link support for BPF_NETFILTER
- programs
-Message-ID: <202304061228.XRcVvxoL-lkp@intel.com>
-References: <20230405161116.13565-2-fw@strlen.de>
+To:     John Fastabend <john.fastabend@gmail.com>, jakub@cloudflare.com,
+        daniel@iogearbox.net, edumazet@google.com
+Cc:     oe-kbuild-all@lists.linux.dev, john.fastabend@gmail.com,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        andrii@kernel.org, will@isovalent.com
+Subject: Re: [PATCH bpf v5 07/12] bpf: sockmap, incorrectly handling
+ copied_seq
+Message-ID: <202304061211.MxmUvLOR-lkp@intel.com>
+References: <20230406010031.3354-8-john.fastabend@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230405161116.13565-2-fw@strlen.de>
+In-Reply-To: <20230406010031.3354-8-john.fastabend@gmail.com>
 X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
@@ -65,156 +66,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+Hi John,
 
 kernel test robot noticed the following build errors:
 
-[auto build test ERROR on bpf-next/master]
+[auto build test ERROR on bpf/master]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Florian-Westphal/bpf-add-bpf_link-support-for-BPF_NETFILTER-programs/20230406-001447
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-patch link:    https://lore.kernel.org/r/20230405161116.13565-2-fw%40strlen.de
-patch subject: [PATCH bpf-next 1/6] bpf: add bpf_link support for BPF_NETFILTER programs
-config: x86_64-kexec (https://download.01.org/0day-ci/archive/20230406/202304061228.XRcVvxoL-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-8) 11.3.0
+url:    https://github.com/intel-lab-lkp/linux/commits/John-Fastabend/bpf-sockmap-pass-skb-ownership-through-read_skb/20230406-090237
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git master
+patch link:    https://lore.kernel.org/r/20230406010031.3354-8-john.fastabend%40gmail.com
+patch subject: [PATCH bpf v5 07/12] bpf: sockmap, incorrectly handling copied_seq
+config: nios2-randconfig-r024-20230403 (https://download.01.org/0day-ci/archive/20230406/202304061211.MxmUvLOR-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 12.1.0
 reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/f373efb623e6ff708403b172fafb506028de6cb8
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/4fe1333c965d96cc2aee2e018a5219a7c8b2c0c5
         git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Florian-Westphal/bpf-add-bpf_link-support-for-BPF_NETFILTER-programs/20230406-001447
-        git checkout f373efb623e6ff708403b172fafb506028de6cb8
+        git fetch --no-tags linux-review John-Fastabend/bpf-sockmap-pass-skb-ownership-through-read_skb/20230406-090237
+        git checkout 4fe1333c965d96cc2aee2e018a5219a7c8b2c0c5
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 olddefconfig
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=nios2 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag where applicable
 | Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304061228.XRcVvxoL-lkp@intel.com/
+| Link: https://lore.kernel.org/oe-kbuild-all/202304061211.MxmUvLOR-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
-   ld: vmlinux.o: in function `link_create':
->> kernel/bpf/syscall.c:4671: undefined reference to `bpf_nf_link_attach'
+   nios2-linux-ld: net/core/skmsg.o: in function `sk_psock_verdict_apply':
+>> net/core/skmsg.c:1062: undefined reference to `tcp_eat_skb'
+   net/core/skmsg.c:1062:(.text+0x1348): relocation truncated to fit: R_NIOS2_CALL26 against `tcp_eat_skb'
+>> nios2-linux-ld: net/core/skmsg.c:1056: undefined reference to `tcp_eat_skb'
+   net/core/skmsg.c:1056:(.text+0x1470): relocation truncated to fit: R_NIOS2_CALL26 against `tcp_eat_skb'
+   nios2-linux-ld: net/core/skmsg.o: in function `sk_psock_verdict_recv':
+   net/core/skmsg.c:1216: undefined reference to `tcp_eat_skb'
+   net/core/skmsg.c:1216:(.text+0x14c4): relocation truncated to fit: R_NIOS2_CALL26 against `tcp_eat_skb'
 
 
-vim +4671 kernel/bpf/syscall.c
+vim +1062 net/core/skmsg.c
 
-  4578	
-  4579	#define BPF_LINK_CREATE_LAST_FIELD link_create.kprobe_multi.cookies
-  4580	static int link_create(union bpf_attr *attr, bpfptr_t uattr)
-  4581	{
-  4582		enum bpf_prog_type ptype;
-  4583		struct bpf_prog *prog;
-  4584		int ret;
-  4585	
-  4586		if (CHECK_ATTR(BPF_LINK_CREATE))
-  4587			return -EINVAL;
-  4588	
-  4589		if (attr->link_create.attach_type == BPF_STRUCT_OPS)
-  4590			return bpf_struct_ops_link_create(attr);
-  4591	
-  4592		prog = bpf_prog_get(attr->link_create.prog_fd);
-  4593		if (IS_ERR(prog))
-  4594			return PTR_ERR(prog);
-  4595	
-  4596		ret = bpf_prog_attach_check_attach_type(prog,
-  4597							attr->link_create.attach_type);
-  4598		if (ret)
-  4599			goto out;
-  4600	
-  4601		switch (prog->type) {
-  4602		case BPF_PROG_TYPE_EXT:
-  4603		case BPF_PROG_TYPE_NETFILTER:
-  4604			break;
-  4605		case BPF_PROG_TYPE_PERF_EVENT:
-  4606		case BPF_PROG_TYPE_TRACEPOINT:
-  4607			if (attr->link_create.attach_type != BPF_PERF_EVENT) {
-  4608				ret = -EINVAL;
-  4609				goto out;
-  4610			}
-  4611			break;
-  4612		case BPF_PROG_TYPE_KPROBE:
-  4613			if (attr->link_create.attach_type != BPF_PERF_EVENT &&
-  4614			    attr->link_create.attach_type != BPF_TRACE_KPROBE_MULTI) {
-  4615				ret = -EINVAL;
-  4616				goto out;
-  4617			}
-  4618			break;
-  4619		default:
-  4620			ptype = attach_type_to_prog_type(attr->link_create.attach_type);
-  4621			if (ptype == BPF_PROG_TYPE_UNSPEC || ptype != prog->type) {
-  4622				ret = -EINVAL;
-  4623				goto out;
-  4624			}
-  4625			break;
-  4626		}
-  4627	
-  4628		switch (prog->type) {
-  4629		case BPF_PROG_TYPE_CGROUP_SKB:
-  4630		case BPF_PROG_TYPE_CGROUP_SOCK:
-  4631		case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
-  4632		case BPF_PROG_TYPE_SOCK_OPS:
-  4633		case BPF_PROG_TYPE_CGROUP_DEVICE:
-  4634		case BPF_PROG_TYPE_CGROUP_SYSCTL:
-  4635		case BPF_PROG_TYPE_CGROUP_SOCKOPT:
-  4636			ret = cgroup_bpf_link_attach(attr, prog);
-  4637			break;
-  4638		case BPF_PROG_TYPE_EXT:
-  4639			ret = bpf_tracing_prog_attach(prog,
-  4640						      attr->link_create.target_fd,
-  4641						      attr->link_create.target_btf_id,
-  4642						      attr->link_create.tracing.cookie);
-  4643			break;
-  4644		case BPF_PROG_TYPE_LSM:
-  4645		case BPF_PROG_TYPE_TRACING:
-  4646			if (attr->link_create.attach_type != prog->expected_attach_type) {
-  4647				ret = -EINVAL;
-  4648				goto out;
-  4649			}
-  4650			if (prog->expected_attach_type == BPF_TRACE_RAW_TP)
-  4651				ret = bpf_raw_tp_link_attach(prog, NULL);
-  4652			else if (prog->expected_attach_type == BPF_TRACE_ITER)
-  4653				ret = bpf_iter_link_attach(attr, uattr, prog);
-  4654			else if (prog->expected_attach_type == BPF_LSM_CGROUP)
-  4655				ret = cgroup_bpf_link_attach(attr, prog);
-  4656			else
-  4657				ret = bpf_tracing_prog_attach(prog,
-  4658							      attr->link_create.target_fd,
-  4659							      attr->link_create.target_btf_id,
-  4660							      attr->link_create.tracing.cookie);
-  4661			break;
-  4662		case BPF_PROG_TYPE_FLOW_DISSECTOR:
-  4663		case BPF_PROG_TYPE_SK_LOOKUP:
-  4664			ret = netns_bpf_link_create(attr, prog);
-  4665			break;
-  4666	#ifdef CONFIG_NET
-  4667		case BPF_PROG_TYPE_XDP:
-  4668			ret = bpf_xdp_link_attach(attr, prog);
-  4669			break;
-  4670		case BPF_PROG_TYPE_NETFILTER:
-> 4671			ret = bpf_nf_link_attach(attr, prog);
-  4672			break;
-  4673	#endif
-  4674		case BPF_PROG_TYPE_PERF_EVENT:
-  4675		case BPF_PROG_TYPE_TRACEPOINT:
-  4676			ret = bpf_perf_link_attach(attr, prog);
-  4677			break;
-  4678		case BPF_PROG_TYPE_KPROBE:
-  4679			if (attr->link_create.attach_type == BPF_PERF_EVENT)
-  4680				ret = bpf_perf_link_attach(attr, prog);
-  4681			else
-  4682				ret = bpf_kprobe_multi_link_attach(attr, prog);
-  4683			break;
-  4684		default:
-  4685			ret = -EINVAL;
-  4686		}
-  4687	
-  4688	out:
-  4689		if (ret < 0)
-  4690			bpf_prog_put(prog);
-  4691		return ret;
-  4692	}
-  4693	
+   986	
+   987	static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
+   988					  int verdict)
+   989	{
+   990		struct sk_psock_work_state *state;
+   991		struct sock *sk_other;
+   992		int err = 0;
+   993		u32 len, off;
+   994	
+   995		switch (verdict) {
+   996		case __SK_PASS:
+   997			err = -EIO;
+   998			sk_other = psock->sk;
+   999			if (sock_flag(sk_other, SOCK_DEAD) ||
+  1000			    !sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
+  1001				skb_bpf_redirect_clear(skb);
+  1002				goto out_free;
+  1003			}
+  1004	
+  1005			skb_bpf_set_ingress(skb);
+  1006	
+  1007			/* We need to grab mutex here because in-flight skb is in one of
+  1008			 * the following states: either on ingress_skb, in psock->state
+  1009			 * or being processed by backlog and neither in state->skb and
+  1010			 * ingress_skb may be also empty. The troublesome case is when
+  1011			 * the skb has been dequeued from ingress_skb list or taken from
+  1012			 * state->skb because we can not easily test this case. Maybe we
+  1013			 * could be clever with flags and resolve this but being clever
+  1014			 * got us here in the first place and we note this is done under
+  1015			 * sock lock and backlog conditions mean we are already running
+  1016			 * into ENOMEM or other performance hindering cases so lets do
+  1017			 * the obvious thing and grab the mutex.
+  1018			 */
+  1019			mutex_lock(&psock->work_mutex);
+  1020			state = &psock->work_state;
+  1021	
+  1022			/* If the queue is empty then we can submit directly
+  1023			 * into the msg queue. If its not empty we have to
+  1024			 * queue work otherwise we may get OOO data. Otherwise,
+  1025			 * if sk_psock_skb_ingress errors will be handled by
+  1026			 * retrying later from workqueue.
+  1027			 */
+  1028			if (skb_queue_empty(&psock->ingress_skb) && likely(!state->skb)) {
+  1029				len = skb->len;
+  1030				off = 0;
+  1031				if (skb_bpf_strparser(skb)) {
+  1032					struct strp_msg *stm = strp_msg(skb);
+  1033	
+  1034					off = stm->offset;
+  1035					len = stm->full_len;
+  1036				}
+  1037				err = sk_psock_skb_ingress_self(psock, skb, off, len);
+  1038			}
+  1039			if (err < 0) {
+  1040				spin_lock_bh(&psock->ingress_lock);
+  1041				if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
+  1042					skb_queue_tail(&psock->ingress_skb, skb);
+  1043					schedule_delayed_work(&psock->work, 0);
+  1044					err = 0;
+  1045				}
+  1046				spin_unlock_bh(&psock->ingress_lock);
+  1047				if (err < 0) {
+  1048					skb_bpf_redirect_clear(skb);
+  1049					mutex_unlock(&psock->work_mutex);
+  1050					goto out_free;
+  1051				}
+  1052			}
+  1053			mutex_unlock(&psock->work_mutex);
+  1054			break;
+  1055		case __SK_REDIRECT:
+> 1056			tcp_eat_skb(psock->sk, skb);
+  1057			err = sk_psock_skb_redirect(psock, skb);
+  1058			break;
+  1059		case __SK_DROP:
+  1060		default:
+  1061	out_free:
+> 1062			tcp_eat_skb(psock->sk, skb);
+  1063			skb_bpf_redirect_clear(skb);
+  1064			sock_drop(psock->sk, skb);
+  1065		}
+  1066	
+  1067		return err;
+  1068	}
+  1069	
 
 -- 
 0-DAY CI Kernel Test Service
