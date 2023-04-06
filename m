@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE546D9417
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 12:31:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F0076D9429
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 12:32:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237133AbjDFKbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 06:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
+        id S236270AbjDFKcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 06:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236543AbjDFKar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 06:30:47 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 221045FF0;
-        Thu,  6 Apr 2023 03:30:36 -0700 (PDT)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Psd6J6TnVz67nyL;
-        Thu,  6 Apr 2023 18:29:44 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 6 Apr 2023 11:30:33 +0100
-Message-ID: <96ba0f20-682a-be03-e6dd-d6f42f080493@huawei.com>
-Date:   Thu, 6 Apr 2023 13:30:32 +0300
+        with ESMTP id S237208AbjDFKcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 06:32:04 -0400
+Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc08])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9973C0B;
+        Thu,  6 Apr 2023 03:31:58 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Psd8r719JzMqSh2;
+        Thu,  6 Apr 2023 12:31:56 +0200 (CEST)
+Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Psd8r2N41zMsBp8;
+        Thu,  6 Apr 2023 12:31:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1680777116;
+        bh=wZyp7GMTF6WlPpqYqXEU5OYJzyVd29Za86Ai+LpC0Ng=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=sLXVupZnQfkxpkoHZAly5kVpMPt6tXOs7wOv9eXYY3RyiHAXLu1n/mA1rF+scTGWU
+         A4BoqGyn4r/BLoILRTAvC0P9omA0T1kNDWED5D1YnHYu/kpeyWIZZN1xiTMSRVH6Rp
+         L94l+WYTbt4XR0bYszqbnGw0v0oHR3tRfecZg6xM=
+Message-ID: <b91cc429-2772-e96c-7fb1-53f4b8d79abc@digikod.net>
+Date:   Thu, 6 Apr 2023 12:31:55 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
+User-Agent: 
 Subject: Re: [PATCH v10 09/13] landlock: Add network rules and TCP hooks
  support
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
 References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
  <20230323085226.1432550-10-konstantin.meskhidze@huawei.com>
  <468fbb05-6d72-3570-3453-b1f8bfdd5bc2@digikod.net>
  <1f84d88f-9977-13a9-245a-c75cd3444b29@huawei.com>
  <ac4d6244-641b-e1d4-5c34-d9a9bcd10498@digikod.net>
- <39980493-6107-0117-1d32-2af03fa23fa9@huawei.com>
- <0e08c5d4-f5fd-e025-3f14-8e2ada3b7302@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <0e08c5d4-f5fd-e025-3f14-8e2ada3b7302@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+ <f126c31b-f0cf-0746-e517-9f3f19c1915f@digikod.net>
+ <816ac968-daff-20ec-92d3-3f80b53205f5@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <816ac968-daff-20ec-92d3-3f80b53205f5@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,13 +60,12 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-4/6/2023 1:28 PM, Mickaël Salaün пишет:
+On 05/04/2023 21:19, Konstantin Meskhidze (A) wrote:
 > 
-> On 05/04/2023 19:42, Konstantin Meskhidze (A) wrote:
->> 
->> 
->> 4/4/2023 7:42 PM, Mickaël Salaün пишет:
+> 
+> 4/4/2023 8:02 PM, Mickaël Salaün пишет:
+>>
+>> On 04/04/2023 18:42, Mickaël Salaün wrote:
 >>>
 >>> On 04/04/2023 11:31, Konstantin Meskhidze (A) wrote:
 >>>>
@@ -108,14 +108,14 @@ X-Mailing-List: netdev@vger.kernel.org
 >>>>>>
 >>>>>> Changes since v6:
 >>>>>> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
->>>>>>      because it OR values.
+>>>>>>       because it OR values.
 >>>>>> * Makes landlock_add_net_access_mask() more resilient incorrect values.
 >>>>>> * Refactors landlock_get_net_access_mask().
 >>>>>> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
->>>>>>      LANDLOCK_NUM_ACCESS_FS as value.
+>>>>>>       LANDLOCK_NUM_ACCESS_FS as value.
 >>>>>> * Updates access_masks_t to u32 to support network access actions.
 >>>>>> * Refactors landlock internal functions to support network actions with
->>>>>>      landlock_key/key_type/id types.
+>>>>>>       landlock_key/key_type/id types.
 >>>>>>
 >>>>>> Changes since v5:
 >>>>>> * Gets rid of partial revert from landlock_add_rule
@@ -138,131 +138,28 @@ X-Mailing-List: netdev@vger.kernel.org
 >>>>>> * Adds rb_root root_net_port.
 >>>>>>
 >>>>>> ---
->>>>>>     include/uapi/linux/landlock.h                |  49 +++++
->>>>>>     security/landlock/Kconfig                    |   1 +
->>>>>>     security/landlock/Makefile                   |   2 +
->>>>>>     security/landlock/limits.h                   |   6 +-
->>>>>>     security/landlock/net.c                      | 198 +++++++++++++++++++
->>>>>>     security/landlock/net.h                      |  26 +++
->>>>>>     security/landlock/ruleset.c                  |  52 ++++-
->>>>>>     security/landlock/ruleset.h                  |  63 +++++-
->>>>>>     security/landlock/setup.c                    |   2 +
->>>>>>     security/landlock/syscalls.c                 |  72 ++++++-
->>>>>>     tools/testing/selftests/landlock/base_test.c |   2 +-
->>>>>>     11 files changed, 450 insertions(+), 23 deletions(-)
->>>>>>     create mode 100644 security/landlock/net.c
->>>>>>     create mode 100644 security/landlock/net.h
+>>>>>>      include/uapi/linux/landlock.h                |  49 +++++
+>>>>>>      security/landlock/Kconfig                    |   1 +
+>>>>>>      security/landlock/Makefile                   |   2 +
+>>>>>>      security/landlock/limits.h                   |   6 +-
+>>>>>>      security/landlock/net.c                      | 198 +++++++++++++++++++
+>>>>>>      security/landlock/net.h                      |  26 +++
+>>>>>>      security/landlock/ruleset.c                  |  52 ++++-
+>>>>>>      security/landlock/ruleset.h                  |  63 +++++-
+>>>>>>      security/landlock/setup.c                    |   2 +
+>>>>>>      security/landlock/syscalls.c                 |  72 ++++++-
+>>>>>>      tools/testing/selftests/landlock/base_test.c |   2 +-
+>>>>>>      11 files changed, 450 insertions(+), 23 deletions(-)
+>>>>>>      create mode 100644 security/landlock/net.c
+>>>>>>      create mode 100644 security/landlock/net.h
 >>>>>
 >>>>> [...]
 >>>>>
 >>>>>> diff --git a/security/landlock/net.c b/security/landlock/net.c
 >>>>>
 >>>>> [...]
->>>>>
->>>>>> +static int check_addrlen(const struct sockaddr *const address, int addrlen)
->>>>>
->>>>> const int addrlen
->>>>
->>>>      Got it.
->>>>>
->>>>>> +{
->>>>>> +	if (addrlen < offsetofend(struct sockaddr, sa_family))
->>>>>> +		return -EINVAL;
->>>>>> +	switch (address->sa_family) {
->>>>>> +	case AF_UNSPEC:
->>>>>> +	case AF_INET:
->>>>>> +		if (addrlen < sizeof(struct sockaddr_in))
->>>>>> +			return -EINVAL;
->>>>>> +		return 0;
->>>>>> +#if IS_ENABLED(CONFIG_IPV6)
->>>>>> +	case AF_INET6:
->>>>>> +		if (addrlen < SIN6_LEN_RFC2133)
->>>>>> +			return -EINVAL;
->>>>>> +		return 0;
->>>>>> +#endif
->>>>>> +	}
->>>>>> +	WARN_ON_ONCE(1);
->>>>>> +	return 0;
->>>>>> +}
->>>>>> +
->>>>>> +static u16 get_port(const struct sockaddr *const address)
->>>>>> +{
->>>>>> +	/* Gets port value in host byte order. */
->>>>>> +	switch (address->sa_family) {
->>>>>> +	case AF_UNSPEC:
->>>>>> +	case AF_INET: {
->>>>>> +		const struct sockaddr_in *const sockaddr =
->>>>>> +			(struct sockaddr_in *)address;
->>>>>> +		return ntohs(sockaddr->sin_port);
->>>>>
->>>>> Storing ports in big endian (in rulesets) would avoid converting them
->>>>> every time the kernel checks a socket port. The above comment should
->>>>> then be updated too.
->>>>
->>>>      I thought we came to a conclusion to stick to host endianess and
->>>> let kernel do the checks under the hood:
->>>> https://lore.kernel.org/linux-security-module/278ab07f-7583-a4e0-3d37-1bacd091531d@digikod.net/
->>>>
->>>> Did I misunderstand something?
->>>
->>> We indeed stick to the host endianess for the UAPI/syscalls, but
->>> internally the kernel has to do the conversion with as it is currently
->>> done by calling ntohs(). To avoid calling ntohs() every time get_port()
->>> is called, we can instead only call htons() when creating rules (i.e.
->>> one-time htons call instead of multiple ntohs calls).
->>>
->>    Do you mean we need to covert port in  landlock_append_net_rule():
->> 
->>    ...
->> 
->>           int err;
->> 	const struct landlock_id id = {
->> 		.key.data = ntohs(port),
->> 		.type = LANDLOCK_KEY_NET_PORT,
->> 	};
->> 	BUILD_BUG_ON(sizeof(port) > sizeof(id.key.data));
->> ...
->> ????
-> 
-> landlock_append_net_rule() takes a u16 (host endianess, which is the
-> case with this patch series) and should store a big endian 16-bit
-> integer. See my patch:
-> 
->           const struct landlock_id id = {
-> -               .key.data = port,
-> +               .key.data = (__force uintptr_t)htons(port),
->                   .type = LANDLOCK_KEY_NET_PORT,
->           };
-> 
-   Thanks. Already took a look.
-> 
-> 
->>>
->>>>     Do you mean we need to do port converting __be16 -> u16 in
->>>> check_socket_access()???
->>>
->>> Removing the ntohs() call from get_port() enables to return __be16
->>> instead of u16, and check_socket_access() will then need to use the same
->>> type.
->> 
->>     Ok. I got it. Thanks.
->>>
->>>
->>>>>
->>>>>
->>>>>> +	}
->>>>>> +#if IS_ENABLED(CONFIG_IPV6)
->>>>>> +	case AF_INET6: {
->>>>>> +		const struct sockaddr_in6 *const sockaddr_ip6 =
->>>>>> +			(struct sockaddr_in6 *)address;
->>>>>> +		return ntohs(sockaddr_ip6->sin6_port);
->>>>>> +	}
->>>>>> +#endif
->>>>>> +	}
->>>>>> +	WARN_ON_ONCE(1);
->>>>>> +	return 0;
->>>>>> +}
->>>>>> +
+>>
+>>
 >>>>>> +static int check_socket_access(struct socket *sock, struct sockaddr *address, int addrlen, u16 port,
 >>>>>> +			       access_mask_t access_request)
 >>>>>> +{
@@ -321,6 +218,14 @@ X-Mailing-List: netdev@vger.kernel.org
 >>>>>> +#if IS_ENABLED(CONFIG_IPV6)
 >>>>>> +	case AF_INET6:
 >>>>>> +#endif
+>>
+>> Some more fixes:
+>>
+>> You can move the port/id.key.data block from my patch here, where it is
+>> actually used.
+>>
+>     Ok. Thank you. I will apply it.
+>>
 >>>>>> +		rule = landlock_find_rule(domain, id);
 >>>>>> +		handled_access = landlock_init_layer_masks(
 >>>>>> +			domain, access_request, &layer_masks,
@@ -328,32 +233,29 @@ X-Mailing-List: netdev@vger.kernel.org
 >>>>>> +		allowed = landlock_unmask_layers(rule, handled_access,
 >>>>>> +						 &layer_masks,
 >>>>>> +						 ARRAY_SIZE(layer_masks));
+>>
+>> The `return allowed ? 0 : -EACCES;` should be here.
+>>
 >>>>>> +	}
 >>>>>> +	return allowed ? 0 : -EACCES;
->>>>>> +}
->>>>>> +
->>>>>> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
->>>>>> +			    int addrlen)
->>>>>> +{ >>> +	return check_socket_access(sock, address, addrlen, get_port(address),
->>>>>> +				   LANDLOCK_ACCESS_NET_BIND_TCP);
->>>
->>> get_port() is called before check_addrlen(), which is an issue.
->>>
->>> You'll find attached a patch for these fixes, please squash it in this
->>> one for the next version.
->>>
->>> I'll send other reviews by the end of the week.
->>>
->>>
->>>>>> +}
->>>>>> +
->>>>>> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address,
->>>>>> +			       int addrlen)
->>>>>> +{
->>>>>> +	return check_socket_access(sock, address, addrlen, get_port(address),
->>>>>> +				   LANDLOCK_ACCESS_NET_CONNECT_TCP);
->>>>>> +}
->>>>>
->>>>> [...]
->>>>> .
-> .
+>>
+>> We should have `return 0;` here.
+>>
+>     Got it. Thanks
+> 
+>> We need a test for an sa_family different than AF_UNSPEC, AF_INET, and
+>> AF_INET6 to make sure everything else is allowed (e.g. AF_UNIX with
+>> SOCK_STREAM and another test with SOCK_DGRAM). Please make sure this new
+>> test will not pass with SOCK_STREAM and the current patch series, but of
+>> course it should pass with the next one.
+> 
+>     Do you mean AF_UNIX with SOCK_STREAM will not be passed as well as
+>     AF_UNIX with SOCK_DGRAM?
+
+AF_UNIX with SOCK_STREAM would be denied with this patch series, which 
+is a bug. AF_UNIX with SOCK_DGRAM should always be allowed with this 
+patch series, which is correct.
+
+AF_UNIX with SOCK_STREAM or SOCK_DGRAM should always be allowed, and the 
+next patch series should come with a new test to check this two kind of 
+sockets.
