@@ -2,62 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 197036D9908
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 16:07:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF6C76D9932
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 16:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230091AbjDFOH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 10:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
+        id S239121AbjDFOLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 10:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239030AbjDFOG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 10:06:59 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86B1AF13;
-        Thu,  6 Apr 2023 07:06:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=G4nuJcd5AfkMWWoRDvdvNvpxfbVN9zYnFiB5IonV9R4=; b=ZPPa0C0aUl2YsTOMEmCxixeqeA
-        AWpQbKdrF/xvgjzQ+8tx1cMnnTqG2ifwZHpRyiWpp7VcxtHepPNTze3lhfhN2nNp6dhCTdjQn68fV
-        3M8H4pGqYxv77IZ3MolD8ce/ZTdLuzJGQ+kU7x2WE8bNZe8rROnAT9qYVSh3MlDW/13Q=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pkQFg-009dNo-K7; Thu, 06 Apr 2023 16:06:12 +0200
-Date:   Thu, 6 Apr 2023 16:06:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
-        hkallweit1@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        system@metrotek.ru
-Subject: Re: [PATCH net v2 2/2] net: sfp: avoid EEPROM read of absent SFP
- module
-Message-ID: <db9a4f80-2ab1-48ba-84fa-322f9a5da5ec@lunn.ch>
-References: <20230406130833.32160-1-i.bornyakov@metrotek.ru>
- <20230406130833.32160-3-i.bornyakov@metrotek.ru>
+        with ESMTP id S239046AbjDFOKx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 10:10:53 -0400
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81A1B441;
+        Thu,  6 Apr 2023 07:10:20 -0700 (PDT)
+Received: by mail-oi1-f176.google.com with SMTP id w13so17754062oik.2;
+        Thu, 06 Apr 2023 07:10:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680790219;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Nc5XJTaOIWq/+ghJJzs83WOcsawa6agTiIS3abEUxHk=;
+        b=x8sssvE1fguDgTaa359uP6+nb6PL5dA/9tR89We4arWwIxw4PL//zqnK767J+5ckiE
+         VAawNAP1jqBzz1gJJfINoqfz6WD+1phYvGVhdqyAWozBV2hGuXDKExZlLJkb7MQYsb4L
+         iH4ENx0wBn/iOMcJEhzmfRWhjaGAMruy/xP8swITUMBjrmtGlOzJYuxsFhz+6/CEL11R
+         TelINgsXL/wo/2gPN/XkIzC0mhvYoHau8jZfAlM+3sC5pUS424imm9o249J8qCHDJ493
+         +OY70UGOOgbegW48b4gpl2L3Cr9Ony8Cpo0vO3MgsY+1tm61DGuwWYfZHyYrNv0FXEQg
+         fznQ==
+X-Gm-Message-State: AAQBX9dKY0xZp4nnkUUfw49KWRTyNWGn0yoYi5fzQp6a9jgK3VzfevtD
+        UXNTvFYXTiN4Ofybr03MPA==
+X-Google-Smtp-Source: AKy350bprKKRW6e63wfLCr4O11TNLUQS8A8vFXvQ7rnM+SgcwkuVgGwzG9QgCq5uzZdD14u6qXu/Sw==
+X-Received: by 2002:a54:4585:0:b0:387:926e:35d3 with SMTP id z5-20020a544585000000b00387926e35d3mr3309739oib.20.1680790219545;
+        Thu, 06 Apr 2023 07:10:19 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id y9-20020a4a9809000000b005251f71250dsm566500ooi.37.2023.04.06.07.10.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Apr 2023 07:10:19 -0700 (PDT)
+Received: (nullmailer pid 2976308 invoked by uid 1000);
+        Thu, 06 Apr 2023 14:10:18 -0000
+Date:   Thu, 6 Apr 2023 09:10:18 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [net-next PATCH v6 12/16] dt-bindings: net: dsa: qca8k: add LEDs
+ definition example
+Message-ID: <20230406141018.GA2956156-robh@kernel.org>
+References: <20230327141031.11904-1-ansuelsmth@gmail.com>
+ <20230327141031.11904-13-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230406130833.32160-3-i.bornyakov@metrotek.ru>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230327141031.11904-13-ansuelsmth@gmail.com>
+X-Spam-Status: No, score=0.7 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 06, 2023 at 04:08:33PM +0300, Ivan Bornyakov wrote:
-> If SFP module is not present, it is sensible to fail sfp_module_eeprom()
-> and sfp_module_eeprom_by_page() early to avoid excessive I2C transfers
-> which are garanteed to fail.
+On Mon, Mar 27, 2023 at 04:10:27PM +0200, Christian Marangi wrote:
+> Add LEDs definition example for qca8k Switch Family to describe how they
+> should be defined for a correct usage.
 > 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  .../devicetree/bindings/net/dsa/qca8k.yaml    | 24 +++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> index 389892592aac..ad354864187a 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> @@ -18,6 +18,8 @@ description:
+>    PHY it is connected to. In this config, an internal mdio-bus is registered and
+>    the MDIO master is used for communication. Mixed external and internal
+>    mdio-bus configurations are not supported by the hardware.
+> +  Each phy has at most 3 LEDs connected and can be declared
+> +  using the standard LEDs structure.
+>  
+>  properties:
+>    compatible:
+> @@ -117,6 +119,7 @@ unevaluatedProperties: false
+>  examples:
+>    - |
+>      #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/leds/common.h>
+>  
+>      mdio {
+>          #address-cells = <1>;
+> @@ -226,6 +229,27 @@ examples:
+>                      label = "lan1";
+>                      phy-mode = "internal";
+>                      phy-handle = <&internal_phy_port1>;
+> +
+> +                    leds {
+> +                        #address-cells = <1>;
+> +                        #size-cells = <0>;
+> +
+> +                        led@0 {
+> +                            reg = <0>;
+> +                            color = <LED_COLOR_ID_WHITE>;
+> +                            function = LED_FUNCTION_LAN;
+> +                            function-enumerator = <1>;
+> +                            default-state = "keep";
+> +                        };
+> +
+> +                        led@1 {
+> +                            reg = <1>;
+> +                            color = <LED_COLOR_ID_AMBER>;
+> +                            function = LED_FUNCTION_LAN;
+> +                            function-enumerator = <1>;
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Isn't function-enumerator supposed to be unique within a given 
+'function'?
 
-    Andrew
+> +                            default-state = "keep";
+> +                        };
+> +                    };
+>                  };
+>  
+>                  port@2 {
+> -- 
+> 2.39.2
+> 
