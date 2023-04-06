@@ -2,176 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA3AA6D9BAC
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 17:05:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C6E6D9BD1
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 17:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230085AbjDFPFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 11:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53344 "EHLO
+        id S239711AbjDFPH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 11:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239590AbjDFPFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 11:05:15 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F279775
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 08:04:49 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id br6so51182161lfb.11
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 08:04:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680793487;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hOySwNNZhV1oqb8l3S6EWDmcIqB51Dry5oKAXw0evOc=;
-        b=kDr+S5/F2xtYmZ99SVu7Jd73+uivl0RzjEnAnKGT40c/pw54y+Fz2qTbja2HPNw94r
-         FlFbTI0OXLHBYq0w2pFJUD6o+0Uo8LNf1ppjsOSB0ocCuLnZuJ0YuGq4KXSgYUt82ufh
-         CsXSSdRvNAuk+Km1mjwWP2kr8UkSvsVTdVSU+y8DcjKxfwlxganiYsiku+B5Zt5jyORg
-         pth7kjpFNgmoOyt/pY1TyMk4MG8E16q10ZYhozXbEwDpEwR2jbT/ucjw6UQrJEtW4Fi+
-         lp9o8/8RCfadi5lSvLzwEINxL8r2YkEymDEvFaFlC+Ulz4pmmwpTSkttVPV2BMLI2sAb
-         POBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680793487;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hOySwNNZhV1oqb8l3S6EWDmcIqB51Dry5oKAXw0evOc=;
-        b=KbDxnlQwfNwR/KV3wRpKpr8Zt2YwjwsFxXJxrHvnCYZPbmW6oTPV0/TBk6obKG0OW/
-         nx5gVqcTAWiuGcI8WAdrFTYOsULWo8X99vmVnfwY+yaVsfCU5vY1tcMjv3aqP3GQtKhW
-         rlZfNX3xwTxC9n3JYw8fdbtIJxYVe7fCGXHqw73x/MsmyhSiSAr4OoAgYVp8ATV0FK1w
-         s547V5djsvXF0XCjaobUPZa2ZzlfSubzPWPVcF28vTElnxb8jzsczCdWZhjkZX0dhbbq
-         tqckZ8beY5dOKVJvMxDws95Na3E7I1QaBvMOQlvngHrJfQhBAgvEErEu9A6AuTlHRFVf
-         Sl7g==
-X-Gm-Message-State: AAQBX9dLSENW/C7kCUZtuMeeycdWnCAwuWCGwjRvjuYasQCBAA+g1U1+
-        jcaRhgKw2FgCQtipRFwQHybsgWdF5h/FXqwPsPk=
-X-Google-Smtp-Source: AKy350Z9g0zl8uEgeZv2yq9zzoh8L1u1zC8Kxvt+vtd1bvv6P13/Cm4JxR3jyfRC4Mz2HWryfb8KWbHaynfBRmXgiVw=
-X-Received: by 2002:ac2:4153:0:b0:4ea:fc8f:7852 with SMTP id
- c19-20020ac24153000000b004eafc8f7852mr2975327lfi.12.1680793486877; Thu, 06
- Apr 2023 08:04:46 -0700 (PDT)
+        with ESMTP id S239672AbjDFPHs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 11:07:48 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD0CAF07;
+        Thu,  6 Apr 2023 08:07:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680793643; x=1712329643;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ADPck/2PeDP+2syBsARjyhGyalXn2rFhezikXiuOiHM=;
+  b=k5CWzbRYS6fUDemb1OOg8GrWQ6TUr6zD0vLDe0lIJYbFJd8rZlXKJdt1
+   EywakX9IinnfT2bNtKafIMijO/8W4RsYEPq3AvQ0nrj+yD4nu+NBLu9R3
+   ZvjYDYL6HZbQJGjskU4R88lVVbsQZNyHkY3N9qY05VxAKXKuDSeuj7gTJ
+   VGPjS4ambzrUtatWivdv6drdj6K53LfBEy9/j7PUBfFWmE9T1iadr5Rle
+   vWMPNnymBf3VjbER/ITZKwZ9zxMdQaMiQQTbS1SNKjnpgY0lcE4fO7hti
+   4JWeKIWpCxmUQqMB+hlTS8EQjdZkXhoLip7fqKXw66CijVCovBcJdcD1o
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10672"; a="341489150"
+X-IronPort-AV: E=Sophos;i="5.98,323,1673942400"; 
+   d="scan'208";a="341489150"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2023 08:07:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10672"; a="637340299"
+X-IronPort-AV: E=Sophos;i="5.98,323,1673942400"; 
+   d="scan'208";a="637340299"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 06 Apr 2023 08:06:56 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pkRCR-000RSY-2t;
+        Thu, 06 Apr 2023 15:06:55 +0000
+Date:   Thu, 6 Apr 2023 23:06:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Gautam Dawar <gautam.dawar@amd.com>, linux-net-drivers@amd.com,
+        jasowang@redhat.com, Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
+        eperezma@redhat.com, harpreet.anand@amd.com, tanuj.kamde@amd.com,
+        koushik.dutta@amd.com, Gautam Dawar <gautam.dawar@amd.com>
+Subject: Re: [PATCH net-next v3 06/14] sfc: implement vDPA management device
+ operations
+Message-ID: <202304062229.feOqJmLW-lkp@intel.com>
+References: <20230406065706.59664-7-gautam.dawar@amd.com>
 MIME-Version: 1.0
-References: <CAJGXZLhL-LLjiA-ge8O5A5NDoZ5JABqZHqix0y-8ThcJjBSe=A@mail.gmail.com>
- <20230324153407.096d6248@kernel.org>
-In-Reply-To: <20230324153407.096d6248@kernel.org>
-From:   Aleksey Shumnik <ashumnik9@gmail.com>
-Date:   Thu, 6 Apr 2023 18:04:35 +0300
-Message-ID: <CAJGXZLi7LedV_MYr==1RsN6goth73Y4txA=neci_QQcwa5Oqvw@mail.gmail.com>
-Subject: Re: [BUG] gre interface incorrectly generates link-local addresses
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, a@unstable.cc,
-        Thomas.Winter@alliedtelesis.co.nz
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230406065706.59664-7-gautam.dawar@amd.com>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear maintainers,
+Hi Gautam,
 
-I remind you that the problem is still relevant.
-The problem is not only in generating the number of link-local
-addresses in an amount equal to the number of addresses on all
-interfaces defined in /etc/network/interfaces before the gre
-interface.
-Due to the new method of link-local address generation, the same
-link-local address may be formed on several gre interfaces, which may
-lead to errors in the operation of some network services
+kernel test robot noticed the following build errors:
 
-Would you please answer the following questions
-> Which linux distribution did you use when you found an error with the
-> lack of link-local address generation on the gre interface?
-> After fixing the error, only one link-local address is generated?
-Is this a bug or an expected behavior?
+[auto build test ERROR on net-next/main]
 
-On Sat, Mar 25, 2023 at 1:34=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> Adding Thomas as well.
->
-> On Fri, 24 Mar 2023 19:35:06 +0300 Aleksey Shumnik wrote:
-> > Dear Maintainers,
-> >
-> > I found that GRE arbitrarily hangs IP addresses from other interfaces
-> > described in /etc/network/interfaces above itself (from bottom to
-> > top). Moreover, this error occurs on both ip4gre and ip6gre.
-> >
-> > Example of mgre interface:
-> >
-> > 13: mgre1@NONE: <MULTICAST,NOARP,UP,LOWER_UP> mtu 1400 qdisc noqueue
-> > state UNKNOWN group default qlen 1000
-> >     link/gre 0.0.0.0 brd 0.0.0.0
-> >     inet 10.10.10.100/8 brd 10.255.255.255 scope global mgre1
-> >        valid_lft forever preferred_lft forever
-> >     inet6 fe80::a0a:a64/64 scope link
-> >        valid_lft forever preferred_lft forever
-> >     inet6 fe80::7f00:1/64 scope host
-> >        valid_lft forever preferred_lft forever
-> >     inet6 fe80::a0:6842/64 scope host
-> >        valid_lft forever preferred_lft forever
-> >     inet6 fe80::c0a8:1264/64 scope host
-> >        valid_lft forever preferred_lft forever
-> >
-> > It seems that after the corrections in the following commits
-> > https://github.com/torvalds/linux/commit/e5dd729460ca8d2da02028dbf264b6=
-5be8cd4b5f
-> > https://github.com/torvalds/linux/commit/30e2291f61f93f7132c060190f8360=
-df52644ec1
-> > https://github.com/torvalds/linux/commit/23ca0c2c93406bdb1150659e720bda=
-1cec1fad04
-> >
-> > in function add_v4_addrs() instead of stopping after this check:
-> >
-> > if (addr.s6_addr32[3]) {
-> >                 add_addr(idev, &addr, plen, scope, IFAPROT_UNSPEC);
-> >                 addrconf_prefix_route(&addr, plen, 0, idev->dev, 0, pfl=
-ags,
-> >                                                                 GFP_KER=
-NEL);
-> >                  return;
-> > }
-> >
-> > it goes further and in this cycle hangs addresses from all interfaces o=
-n the gre
-> >
-> > for_each_netdev(net, dev) {
-> >       struct in_device *in_dev =3D __in_dev_get_rtnl(dev);
-> >       if (in_dev && (dev->flags & IFF_UP)) {
-> >       struct in_ifaddr *ifa;
-> >       int flag =3D scope;
-> >       in_dev_for_each_ifa_rtnl(ifa, in_dev) {
-> >             addr.s6_addr32[3] =3D ifa->ifa_local;
-> >             if (ifa->ifa_scope =3D=3D RT_SCOPE_LINK)
-> >                      continue;
-> >             if (ifa->ifa_scope >=3D RT_SCOPE_HOST) {
-> >                      if (idev->dev->flags&IFF_POINTOPOINT)
-> >                               continue;
-> >                      flag |=3D IFA_HOST;
-> >             }
-> >             add_addr(idev, &addr, plen, flag,
-> >                                     IFAPROT_UNSPEC);
-> >             addrconf_prefix_route(&addr, plen, 0, idev->dev,
-> >                                      0, pflags, GFP_KERNEL);
-> >             }
-> > }
-> >
-> > Moreover, before switching to Debian 12 kernel version 6.1.15, I used
-> > Debian 11 on 5.10.140, and there was no error described in the commit
-> > https://github.com/torvalds/linux/commit/e5dd729460ca8d2da02028dbf264b6=
-5be8cd4b5f.
-> > One link-local address was always generated on the gre interface,
-> > regardless of whether the destination or the local address of the
-> > tunnel was specified.
-> >
-> > Which linux distribution did you use when you found an error with the
-> > lack of link-local address generation on the gre interface?
-> > After fixing the error, only one link-local address is generated?
-> > I think this is a bug and most likely the problem is in generating
-> > dev->dev_addr, since link-local is formed from it.
-> >
-> > I suggest solving this problem or roll back the code changes made in
-> > the comments above.
->
+url:    https://github.com/intel-lab-lkp/linux/commits/Gautam-Dawar/sfc-add-function-personality-support-for-EF100-devices/20230406-151436
+patch link:    https://lore.kernel.org/r/20230406065706.59664-7-gautam.dawar%40amd.com
+patch subject: [PATCH net-next v3 06/14] sfc: implement vDPA management device operations
+config: openrisc-randconfig-r025-20230403 (https://download.01.org/0day-ci/archive/20230406/202304062229.feOqJmLW-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/0887a40c60d1983214d417491dc9ef46191ab1ac
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Gautam-Dawar/sfc-add-function-personality-support-for-EF100-devices/20230406-151436
+        git checkout 0887a40c60d1983214d417491dc9ef46191ab1ac
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/net/ethernet/sfc/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202304062229.feOqJmLW-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   drivers/net/ethernet/sfc/ef100_nic.c: In function 'efx_ef100_init_datapath_caps':
+   drivers/net/ethernet/sfc/ef100_nic.c:214:25: error: 'struct ef100_nic_data' has no member named 'vdpa_supported'
+     214 |                 nic_data->vdpa_supported = efx->type->is_vf &&
+         |                         ^~
+   drivers/net/ethernet/sfc/ef100_nic.c: In function 'ef100_probe_vf':
+   drivers/net/ethernet/sfc/ef100_nic.c:1300:29: error: 'struct ef100_nic_data' has no member named 'vdpa_supported'
+    1300 |                 if (nic_data->vdpa_supported) {
+         |                             ^~
+>> drivers/net/ethernet/sfc/ef100_nic.c:1301:31: error: implicit declaration of function 'ef100_vdpa_register_mgmtdev' [-Werror=implicit-function-declaration]
+    1301 |                         err = ef100_vdpa_register_mgmtdev(efx);
+         |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/sfc/ef100_nic.c: In function 'ef100_remove':
+   drivers/net/ethernet/sfc/ef100_nic.c:1316:52: error: 'struct ef100_nic_data' has no member named 'vdpa_supported'
+    1316 |         if (IS_ENABLED(CONFIG_SFC_VDPA) && nic_data->vdpa_supported)
+         |                                                    ^~
+>> drivers/net/ethernet/sfc/ef100_nic.c:1317:17: error: implicit declaration of function 'ef100_vdpa_unregister_mgmtdev' [-Werror=implicit-function-declaration]
+    1317 |                 ef100_vdpa_unregister_mgmtdev(efx);
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/ef100_vdpa_register_mgmtdev +1301 drivers/net/ethernet/sfc/ef100_nic.c
+
+  1287	
+  1288	int ef100_probe_vf(struct efx_nic *efx)
+  1289	{
+  1290		struct ef100_nic_data *nic_data __maybe_unused;
+  1291		int err __maybe_unused;
+  1292		int rc;
+  1293	
+  1294		rc = ef100_probe_main(efx);
+  1295		if (rc)
+  1296			return rc;
+  1297	
+  1298		if (IS_ENABLED(CONFIG_SFC_VDPA)) {
+  1299			nic_data = efx->nic_data;
+  1300			if (nic_data->vdpa_supported) {
+> 1301				err = ef100_vdpa_register_mgmtdev(efx);
+  1302				if (err)
+  1303					pci_warn(efx->pci_dev,
+  1304						 "register_mgmtdev failed, rc: %d\n",
+  1305						 err);
+  1306			}
+  1307		}
+  1308	
+  1309		return 0;
+  1310	}
+  1311	
+  1312	void ef100_remove(struct efx_nic *efx)
+  1313	{
+  1314		struct ef100_nic_data *nic_data = efx->nic_data;
+  1315	
+  1316		if (IS_ENABLED(CONFIG_SFC_VDPA) && nic_data->vdpa_supported)
+> 1317			ef100_vdpa_unregister_mgmtdev(efx);
+  1318	
+  1319		if (IS_ENABLED(CONFIG_SFC_SRIOV) && efx->mae) {
+  1320			efx_ef100_fini_reps(efx);
+  1321			efx_fini_mae(efx);
+  1322		}
+  1323	
+  1324		efx_mcdi_detach(efx);
+  1325		efx_mcdi_fini(efx);
+  1326		if (nic_data) {
+  1327			efx_nic_free_buffer(efx, &nic_data->mcdi_buf);
+  1328			mutex_destroy(&nic_data->bar_config_lock);
+  1329		}
+  1330		kfree(nic_data);
+  1331		efx->nic_data = NULL;
+  1332	}
+  1333	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
