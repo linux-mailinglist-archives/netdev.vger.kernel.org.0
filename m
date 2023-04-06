@@ -2,189 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F04FC6D99A4
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 16:29:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 983446D998E
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 16:27:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238767AbjDFO3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 10:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
+        id S238792AbjDFO1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 10:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239092AbjDFO3T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 10:29:19 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD7093C5;
-        Thu,  6 Apr 2023 07:29:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680791357; x=1712327357;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OpYHkeX595afcgkzZpsu41PvdqQrhRD1hTWyXGZwSZQ=;
-  b=VWpy1TuKtAlfR7W9sz2MeM9tK5QqxFZWkb80bySS2HHnxyGQROVKkUMj
-   PaW/DBN5N99HMy0x5GJCZro7pibrYLO8tT0zYel4RSN70mqdzRy2CBmak
-   W38XBeD+hfLiPmverYCsIY/nZz/3qmHKfa+tac4BPqlafMoImsDsIhU21
-   WG8WBxiRerVH7Fhq/5B9CjTv6Go31R2kLMNUL2lV/lKI1gu/vJNiwN+ly
-   HXp2w81f7cwjBbM6yG5h2CpXJi2cGBKPhamK+UsJopLxMsnkT4MfUK2+n
-   +WOv99Mw8ntksk0xPUnUFBIqUgZrskQgDG9zyVQYvgBB3Gyx1pKMJKqCg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10672"; a="342754597"
-X-IronPort-AV: E=Sophos;i="5.98,323,1673942400"; 
-   d="scan'208";a="342754597"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2023 07:29:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10672"; a="751659355"
-X-IronPort-AV: E=Sophos;i="5.98,323,1673942400"; 
-   d="scan'208";a="751659355"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 06 Apr 2023 07:26:00 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pkQYk-000RQq-2Z;
-        Thu, 06 Apr 2023 14:25:54 +0000
-Date:   Thu, 6 Apr 2023 22:25:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Gautam Dawar <gautam.dawar@amd.com>, linux-net-drivers@amd.com,
-        jasowang@redhat.com, Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
+        with ESMTP id S235933AbjDFO1l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 10:27:41 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91278A51;
+        Thu,  6 Apr 2023 07:27:40 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 336ENmVI020995;
+        Thu, 6 Apr 2023 14:27:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=saoNYOqPt6VsUojW/8hu5QJoZP9SkAgaLjDxZIVXA+s=;
+ b=XXaq3+fNlFJuvL0GVb0lcWcV6rghnUHD9X2A3E0kfQa1VwsyDBe7UOHP9bEmcJpn/zyD
+ b6LdzvO6IS8GNtNw+tpkTkphgaV38L+wgResC4AfglHKMd8gErZOL5YGPDdZO25A81L0
+ HQDlF0NkYjZl26SDGW3EDs55w/dKyHyPB/fZnXwnrfHJf7mN/GF4043vvfeYA11zHAXb
+ N30Z0MHJgsjEfH6rW41rJGRHTuj1gW34ue3FVqdHaM/X93711zCeOiUQDQ+wJNgTuJZQ
+ Q18bzACPCVQbQ36eKZxYud0s79XD1c/FZN3/encUGJHQjghA7Aao0+WOExqlabvvWZ2p eA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3psyt4g33g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 06 Apr 2023 14:27:37 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 336EOvcN027398;
+        Thu, 6 Apr 2023 14:27:37 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3psyt4g328-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 06 Apr 2023 14:27:37 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3365Oipk011741;
+        Thu, 6 Apr 2023 14:27:34 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3ppbvg4crk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 06 Apr 2023 14:27:34 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+        by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 336ERUNs46203558
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 6 Apr 2023 14:27:30 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 51BD920043;
+        Thu,  6 Apr 2023 14:27:30 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6E66720040;
+        Thu,  6 Apr 2023 14:27:29 +0000 (GMT)
+Received: from [9.171.94.198] (unknown [9.171.94.198])
+        by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Thu,  6 Apr 2023 14:27:29 +0000 (GMT)
+Message-ID: <5a678df91455e29f296de25ef4aee25cae0e23d6.camel@linux.ibm.com>
+Subject: Re: [RFC PATCH net-next v4 0/9] net/smc: Introduce SMC-D-based OS
+ internal communication acceleration
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Alexandra Winter <wintera@linux.ibm.com>,
+        Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com, jaka@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        netdev@vger.kernel.org, eperezma@redhat.com,
-        harpreet.anand@amd.com, tanuj.kamde@amd.com, koushik.dutta@amd.com,
-        Gautam Dawar <gautam.dawar@amd.com>
-Subject: Re: [PATCH net-next v3 06/14] sfc: implement vDPA management device
- operations
-Message-ID: <202304062258.oIHz9siw-lkp@intel.com>
-References: <20230406065706.59664-7-gautam.dawar@amd.com>
+Date:   Thu, 06 Apr 2023 16:27:29 +0200
+In-Reply-To: <33ab688e-88c9-d950-be66-f0f79774ff6c@linux.ibm.com>
+References: <1679887699-54797-1-git-send-email-guwen@linux.alibaba.com>
+         <6156aaad710bc7350cbae6cb821289c8a37f44bb.camel@linux.ibm.com>
+         <33ab688e-88c9-d950-be66-f0f79774ff6c@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230406065706.59664-7-gautam.dawar@amd.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: RP2eKKtkhRnK8pgor1LkMEOxnoyGgopa
+X-Proofpoint-ORIG-GUID: 8domNh6sBjZaYrrIUoGXlsF_8qSI8bE5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-06_07,2023-04-06_03,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
+ adultscore=0 malwarescore=0 suspectscore=0 mlxlogscore=890 spamscore=0
+ lowpriorityscore=0 impostorscore=0 clxscore=1015 phishscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
+ definitions=main-2304060124
+X-Spam-Status: No, score=-0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Gautam,
+On Thu, 2023-04-06 at 13:14 +0200, Alexandra Winter wrote:
+>=20
+> On 05.04.23 19:04, Niklas Schnelle wrote:
+> > One more question though, what about the SEID why does that have to be
+> > fixed and at least partially match what ISM devices use? I think I'm
+> > missing some SMC protocol/design detail here. I'm guessing this would
+> > require a protocol change?
+> >=20
+> > Thanks,
+> > Niklas
+>=20
+> Niklas,
+> in the initial SMC CLC handshake the client and server exchange the SEID =
+(one per peer system)
+> and up to 8 proposals for SMC-D interfaces.
+> Wen's current proposal assumes that smc-d loopback can be one of these 8 =
+proposed interfaces,
+> iiuc. So on s390 the proposal can contain ISM devices and a smc-d loopbac=
+k device at the same time.
+> If one of the peers is e.g. an older Linux version, it will just ignore t=
+he loopback-device
+> in the list (Don't find a match for CHID 0xFFFF) and use an ISM interface=
+ for SMC-D if possible.
+> Therefor it is important that the SEID is used in the same way as it is t=
+oday in the handshake.
+>=20
+> If we decide for some reason (virtio-ism open issues?) that a protocol ch=
+ange/extension is
+> required/wanted, then it is a new game and we can come up with new identi=
+fiers, but we may
+> lose compatibility to backlevel systems.
+>=20
+> Alexandra
 
-kernel test robot noticed the following build warnings:
+Ok that makes sense to me. I was looking at the code in patch 4 of this
+series and there it looks to me like SMC-D loopback as implemented
+would always use the newly added SMCD_DEFAULT_V2_SEID might have
+misread it though. From your description I think that would be wrong,
+if a SEID is defined as on s390 it should use that SEID in the CLC for
+all SMC variants. Similarly on other architectures it should use the
+same SEID for SMC-D as for SMC-R, right? Also with partially match I
+was actually wrong the SMCD_DEFAULT_V2_SEID.seid_string starts with
+"IBM-DEF-ISMSEID=E2=80=A6" while on s390's existing ISM we use "IBM-SYSZ-
+ISMSEID=E2=80=A6" so if SMC-D loopback correctly uses the shared SEID on s3=
+90
+we can already only get GID.DMB collisions only on the same mainframe.
 
-[auto build test WARNING on net-next/main]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Gautam-Dawar/sfc-add-function-personality-support-for-EF100-devices/20230406-151436
-patch link:    https://lore.kernel.org/r/20230406065706.59664-7-gautam.dawar%40amd.com
-patch subject: [PATCH net-next v3 06/14] sfc: implement vDPA management device operations
-config: x86_64-randconfig-a002-20230403 (https://download.01.org/0day-ci/archive/20230406/202304062258.oIHz9siw-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/0887a40c60d1983214d417491dc9ef46191ab1ac
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Gautam-Dawar/sfc-add-function-personality-support-for-EF100-devices/20230406-151436
-        git checkout 0887a40c60d1983214d417491dc9ef46191ab1ac
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/ethernet/sfc/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304062258.oIHz9siw-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/ethernet/sfc/ef100_vdpa.c:184:12: warning: variable 'efx' is uninitialized when used here [-Wuninitialized]
-                           pci_err(efx->pci_dev, "Invalid MAC address %pM\n",
-                                   ^~~
-   include/linux/pci.h:2548:46: note: expanded from macro 'pci_err'
-   #define pci_err(pdev, fmt, arg...)      dev_err(&(pdev)->dev, fmt, ##arg)
-                                                     ^~~~
-   include/linux/dev_printk.h:144:44: note: expanded from macro 'dev_err'
-           dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                                     ^~~
-   include/linux/dev_printk.h:110:11: note: expanded from macro 'dev_printk_index_wrap'
-                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
-                           ^~~
-   drivers/net/ethernet/sfc/ef100_vdpa.c:179:21: note: initialize the variable 'efx' to silence this warning
-           struct efx_nic *efx;
-                              ^
-                               = NULL
-   1 warning generated.
-
-
-vim +/efx +184 drivers/net/ethernet/sfc/ef100_vdpa.c
-
-   171	
-   172	static int ef100_vdpa_net_dev_add(struct vdpa_mgmt_dev *mgmt_dev,
-   173					  const char *name,
-   174					  const struct vdpa_dev_set_config *config)
-   175	{
-   176		struct ef100_vdpa_nic *vdpa_nic;
-   177		struct ef100_nic_data *nic_data;
-   178		const u8 *mac = NULL;
-   179		struct efx_nic *efx;
-   180		int rc, err;
-   181	
-   182		if (config->mask & BIT_ULL(VDPA_ATTR_DEV_NET_CFG_MACADDR)) {
-   183			if (!is_valid_ether_addr(config->net.mac)) {
- > 184				pci_err(efx->pci_dev, "Invalid MAC address %pM\n",
-   185					config->net.mac);
-   186				return -EINVAL;
-   187			}
-   188			mac = (const u8 *)config->net.mac;
-   189		}
-   190	
-   191		efx = pci_get_drvdata(to_pci_dev(mgmt_dev->device));
-   192		if (efx->vdpa_nic) {
-   193			pci_warn(efx->pci_dev,
-   194				 "vDPA device already exists on this VF\n");
-   195			return -EEXIST;
-   196		}
-   197	
-   198		nic_data = efx->nic_data;
-   199	
-   200		rc = efx_ef100_set_bar_config(efx, EF100_BAR_CONFIG_VDPA);
-   201		if (rc) {
-   202			pci_err(efx->pci_dev,
-   203				"set_bar_config vDPA failed, err: %d\n", rc);
-   204			goto err_set_bar_config;
-   205		}
-   206	
-   207		vdpa_nic = ef100_vdpa_create(efx, name, EF100_VDPA_CLASS_NET, mac);
-   208		if (IS_ERR(vdpa_nic)) {
-   209			pci_err(efx->pci_dev,
-   210				"vDPA device creation failed, vf: %u, err: %ld\n",
-   211				nic_data->vf_index, PTR_ERR(vdpa_nic));
-   212			rc = PTR_ERR(vdpa_nic);
-   213			goto err_set_bar_config;
-   214		} else {
-   215			pci_dbg(efx->pci_dev,
-   216				"vdpa net device created, vf: %u\n",
-   217				nic_data->vf_index);
-   218		}
-   219	
-   220		return 0;
-   221	
-   222	err_set_bar_config:
-   223		err = efx_ef100_set_bar_config(efx, EF100_BAR_CONFIG_EF100);
-   224		if (err)
-   225			pci_err(efx->pci_dev,
-   226				"set_bar_config EF100 failed, err: %d\n", err);
-   227	
-   228		return rc;
-   229	}
-   230	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Thanks,
+Niklas
