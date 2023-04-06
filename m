@@ -2,80 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 804406DA0A5
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:04:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F388A6DA0AD
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:07:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229899AbjDFTEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 15:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34550 "EHLO
+        id S238918AbjDFTHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 15:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbjDFTEr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:04:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DAE19A7;
-        Thu,  6 Apr 2023 12:04:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6BEE60DF8;
-        Thu,  6 Apr 2023 19:04:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFE8C433D2;
-        Thu,  6 Apr 2023 19:04:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680807883;
-        bh=tVz3pfAgRzXmBCfyoMy3hUHT9yhsPNfrkqbnp5q3t1s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VoYtCarYUn4cyi/71H9NmLbViyEmW6a8kZwUzytx/kzfteaQSyeQQHVyxSCw5EPKp
-         ptNPWAQBSvKohjS/N7tdE2PB/FQtMmzmWyeFKUU4SoJqdVrFe6S1R7lZVmhu22b9nS
-         m4DFMbF/NiP3wi6q7H5ZwbHNqI41wbtcDN7go9xwRlSSP1Mt0ooaRhmAKgvfU2dJZ+
-         ibpVC5Z9/R/FJS0zBVPUCOIvoQfVd1T0l7BuFKN4RGjxkhptLWRs/f+5cbhsSWIN2q
-         ivSIGwyikcxHZZTVua2ZEuX+DmUOR9WxHPpCTVAjEiSC9Wzjav7EyRTT2BhLxejsVR
-         3yp++bk/E8ZyA==
-Date:   Thu, 6 Apr 2023 12:04:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Praveen Kaligineedi <pkaligineedi@google.com>,
-        Shailend Chand <shailend@google.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20230406120441.1276ef49@kernel.org>
-In-Reply-To: <20230406104927.45d176f5@canb.auug.org.au>
-References: <20230406104927.45d176f5@canb.auug.org.au>
+        with ESMTP id S230027AbjDFTHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:07:51 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4573B11D
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 12:07:50 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-502739add9dso1562617a12.0
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 12:07:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680808069;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3vUINqOYszvGwT0XKdDs8Gu9wUN5D6gThM9IEXkJj2w=;
+        b=j6pFVDBS2MI/Ihhuw3fRPk/bgetdTJnUSrfSjSuWPWvnCXZ5uVpE0fvtFH1oXeTgC6
+         99ux2icL3Obo4pvFwyTd+/J6EKX+B/17rRLMhSm/g8S7lJXXrW8Ml5glYE1m0fM/cBzw
+         vswDUO1N5t5W2NiKCv3zjCbH+lJActf3RkEEaZDLBEkfXfy5HcquovIQ7NJfDq3NmFAM
+         NoMIY0wle6/pxEbiAS2tjkVQsF7SypnUlz/uIKd13jeY2BR8GbpdFOwoMxzGNK552VXc
+         NN+s0OTeVACT7FXt2ujbb4dJQyuXk5LKdw90H+6K/YjqMJQP8ofWfO5nzFjPeus2zn1d
+         RqVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680808069;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3vUINqOYszvGwT0XKdDs8Gu9wUN5D6gThM9IEXkJj2w=;
+        b=INuaXh1ucYILfrJ18iBemw07/A58365aRiHMm+IwWGky/dU4FCMD5OnTJU51r99skB
+         HjwzfAQu4KFy4qSJrmxyV7OI9vh6Un4t02GPcRgKGsiNhaCg4XPXLfbHBdNKKvqNXb2Y
+         T5tcrCPdfMYJTADU7A9YKdAry12GnyvcTCQm4LU35HHM8QHNk8f05LfPaUuyBApQ+anR
+         zR7HfZODyxpxUZ0+eav9j7/q+C+Bncjw2X6gQCFVH9LWEt8qBVzW/VwbbHw7IyEBU+ur
+         l8aN3JpZAln7Z/lOOpli2aqY85w9/iSTg/Ez/IDw4v3g02LghlPwKO7QEzubdPrK/lbV
+         XnsQ==
+X-Gm-Message-State: AAQBX9dratGK/x3NR/H+7HCTWHhcsRDcLL5aHIx4atiwsqP1PAeRhrWV
+        U6ZeDWcx3gwWHPBsx73QCviR8g==
+X-Google-Smtp-Source: AKy350YwR3t8xnRd20pwg1W8Z/XQGMKGP6GoSbJXEkmmNkumWPAdRpK+bEf2QP7xEZ3diRjVyfh3Lw==
+X-Received: by 2002:aa7:d290:0:b0:502:928d:4c93 with SMTP id w16-20020aa7d290000000b00502928d4c93mr491440edq.14.1680808068721;
+        Thu, 06 Apr 2023 12:07:48 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed? ([2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed])
+        by smtp.gmail.com with ESMTPSA id t10-20020a50c24a000000b004aef147add6sm1060608edf.47.2023.04.06.12.07.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Apr 2023 12:07:48 -0700 (PDT)
+Message-ID: <23c8c4b5-baaa-b72b-4103-b415d970acf2@linaro.org>
+Date:   Thu, 6 Apr 2023 21:07:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 3/7] dt-bindings: net: dsa: mediatek,mt7530: add port
+ bindings for MT7988
+Content-Language: en-US
+To:     arinc9.unal@gmail.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>
+Cc:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20230406080141.22924-1-arinc.unal@arinc9.com>
+ <20230406080141.22924-3-arinc.unal@arinc9.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230406080141.22924-3-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 6 Apr 2023 10:49:27 +1000 Stephen Rothwell wrote:
-> Hi all,
+On 06/04/2023 10:01, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> Today's linux-next merge of the net-next tree got a conflict in:
+> The switch on MT7988 has got only port 6 as a CPU port. The only phy-mode
+> to be used is internal. Add this.
 > 
->   drivers/net/ethernet/google/gve/gve.h
+> Some bindings are incorrect for this switch now, so move them to more
+> specific places.
 > 
-> between commit:
+> Address the incorrect information of which ports can be used as a user
+> port. Any port can be used as a user port.
 > 
->   3ce934558097 ("gve: Secure enough bytes in the first TX desc for all TCP pkts")
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+>  .../bindings/net/dsa/mediatek,mt7530.yaml     | 63 ++++++++++++++-----
+>  1 file changed, 46 insertions(+), 17 deletions(-)
 > 
-> from the net tree and commit:
-> 
->   75eaae158b1b ("gve: Add XDP DROP and TX support for GQI-QPL format")
-> 
-> from the net-next tree.
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index 7045a98d9593..605888ce2bc6 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -160,22 +160,6 @@ patternProperties:
+>        "^(ethernet-)?port@[0-9]+$":
+>          type: object
+>  
+> -        properties:
+> -          reg:
+> -            description:
+> -              Port address described must be 5 or 6 for CPU port and from 0 to 5
+> -              for user ports.
+> -
+> -        allOf:
+> -          - if:
+> -              required: [ ethernet ]
+> -            then:
+> -              properties:
+> -                reg:
+> -                  enum:
+> -                    - 5
+> -                    - 6
+> -
 
-I fixed the conflict in net-next but Praveen, Shailend - one of you
-called the constant MIN and the other one MAX. So which one is it?
-Please send a patch to net-next which removes one of them and uses
-the other consistently, they seem to serve the same purpose.
+I have doubts that the binding is still maintainable/reviewable. First,
+why do you need all above patterns after removal of entire contents?
+
+Second, amount of if-then-if-then located in existing blocks (not
+top-level) is quite big. I counted if-then-using defs, where defs has
+patternProps-patternProps-if-then-if-then-properties.... OMG. :)
+
+Best regards,
+Krzysztof
+
