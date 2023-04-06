@@ -2,117 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 318366DA08C
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 804406DA0A5
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:04:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240443AbjDFTBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 15:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
+        id S229899AbjDFTEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 15:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240385AbjDFTBW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:01:22 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9C64696
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 12:01:03 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-94771f05e20so134596266b.1
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 12:01:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680807662;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=45/7TKpTCK5h6ilh1LUuYviPKiZpP9rCbl++IuI078M=;
-        b=AJvUwHrCIdJ0dugZeaXPR9QOmXg1fGP9y7UZ0f2s8f9oAcsuhPGeYFOo7n2XS2BDP3
-         w1XG9rv95+HdYppKZu+EXeUbWxDEzBgXDc3O87lWERYFnHv9dAxrdzDKTieu914+curg
-         9Y4zxXZ2XbcTQWJxc3SLoHX2fXd2IsQ6dtonVY+aEIfYsnLvfUVjPF+NxSnfWFpG8nfO
-         e/M7RrqCvv4/a3fiTBHYliRDaKNazhAQcLeNRA5hmVuWb+q/X2T49Bd7BuJDwFJncxBm
-         hQNpi7RT32yy2Jp5oEzg9CV3JctwMyx7SG8KG4I7h6ebOEEbZdUBjZ1l76vEX/piYcLl
-         dbNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680807662;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=45/7TKpTCK5h6ilh1LUuYviPKiZpP9rCbl++IuI078M=;
-        b=d27QWgc7IaH6Q1YVOM0/HGSArBezIf+SCnb2l7Q8JfTW/wDPu2pPRgOKZuQOAwZ26H
-         RgAswaF2xWh0SrixWpjOyRyYX8iH6DcoX4D3E8R39stNClBm8OLFfhh65pw4XBpCeeyY
-         tWkqPrZfiGooB/rbNQGeEYsVbsXugXv0ZbuVcYcl0/C/457+ODuVZTnnTiPH6EqgTtg9
-         tuUEMiImWJ/6fyPhadIv6BKgAaOQ7go4kXblShxASWs511FTTBN7ztSSfO78b/w83Don
-         Wk+uaQv798LYWMxkHO5dNqPoq/IUGsKufG1SK03W1ZV0MTedRJDIWO9j50EUrBqeLgMw
-         Qv8w==
-X-Gm-Message-State: AAQBX9deVlCmmQTKdxabmrkXBv6nmggYTbdybOWbi+L/TxAv54Wgb5I6
-        N3r9uMWS671tWuEvphNdCjoDpw==
-X-Google-Smtp-Source: AKy350YprH2WnV7+jiFkLh1Q5wGRZkgpCiVtUPg4XJUg3nVkktNIL9AJ0vmKPH7xXC9eO0PeALpsZw==
-X-Received: by 2002:aa7:d556:0:b0:4fa:ad62:b1a0 with SMTP id u22-20020aa7d556000000b004faad62b1a0mr445160edr.41.1680807662032;
-        Thu, 06 Apr 2023 12:01:02 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed? ([2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed])
-        by smtp.gmail.com with ESMTPSA id d20-20020a50cd54000000b005027dd7c403sm1056008edj.66.2023.04.06.12.01.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Apr 2023 12:01:01 -0700 (PDT)
-Message-ID: <b30f8159-e2b0-8a1a-1feb-507c3a9b37ee@linaro.org>
-Date:   Thu, 6 Apr 2023 21:00:59 +0200
+        with ESMTP id S229753AbjDFTEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:04:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DAE19A7;
+        Thu,  6 Apr 2023 12:04:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6BEE60DF8;
+        Thu,  6 Apr 2023 19:04:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFE8C433D2;
+        Thu,  6 Apr 2023 19:04:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680807883;
+        bh=tVz3pfAgRzXmBCfyoMy3hUHT9yhsPNfrkqbnp5q3t1s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VoYtCarYUn4cyi/71H9NmLbViyEmW6a8kZwUzytx/kzfteaQSyeQQHVyxSCw5EPKp
+         ptNPWAQBSvKohjS/N7tdE2PB/FQtMmzmWyeFKUU4SoJqdVrFe6S1R7lZVmhu22b9nS
+         m4DFMbF/NiP3wi6q7H5ZwbHNqI41wbtcDN7go9xwRlSSP1Mt0ooaRhmAKgvfU2dJZ+
+         ibpVC5Z9/R/FJS0zBVPUCOIvoQfVd1T0l7BuFKN4RGjxkhptLWRs/f+5cbhsSWIN2q
+         ivSIGwyikcxHZZTVua2ZEuX+DmUOR9WxHPpCTVAjEiSC9Wzjav7EyRTT2BhLxejsVR
+         3yp++bk/E8ZyA==
+Date:   Thu, 6 Apr 2023 12:04:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Praveen Kaligineedi <pkaligineedi@google.com>,
+        Shailend Chand <shailend@google.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20230406120441.1276ef49@kernel.org>
+In-Reply-To: <20230406104927.45d176f5@canb.auug.org.au>
+References: <20230406104927.45d176f5@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 2/7] dt-bindings: net: dsa: mediatek,mt7530: improve MCM
- and MT7988 information
-Content-Language: en-US
-To:     arinc9.unal@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>
-Cc:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20230406080141.22924-1-arinc.unal@arinc9.com>
- <20230406080141.22924-2-arinc.unal@arinc9.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230406080141.22924-2-arinc.unal@arinc9.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/04/2023 10:01, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+On Thu, 6 Apr 2023 10:49:27 +1000 Stephen Rothwell wrote:
+> Hi all,
 > 
-> Improve the description of the schema.
+> Today's linux-next merge of the net-next tree got a conflict in:
 > 
-> The MT7620 SoCs described are not part of the multi-chip module but rather
-> built into the SoC. Mention the MT7530 MMIO driver not supporting them.
+>   drivers/net/ethernet/google/gve/gve.h
 > 
-> Move information for the switch on the MT7988 SoC below MT7531, and improve
-> it.
+> between commit:
 > 
-> List maintainers in alphabetical order by first name.
+>   3ce934558097 ("gve: Secure enough bytes in the first TX desc for all TCP pkts")
 > 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
+> from the net tree and commit:
+> 
+>   75eaae158b1b ("gve: Add XDP DROP and TX support for GQI-QPL format")
+> 
+> from the net-next tree.
 
-
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
-
+I fixed the conflict in net-next but Praveen, Shailend - one of you
+called the constant MIN and the other one MAX. So which one is it?
+Please send a patch to net-next which removes one of them and uses
+the other consistently, they seem to serve the same purpose.
