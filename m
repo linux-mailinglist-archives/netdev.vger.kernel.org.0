@@ -2,136 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7EC06D9457
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 12:45:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CC076D945D
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 12:47:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237324AbjDFKpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 06:45:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
+        id S237045AbjDFKrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 06:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237310AbjDFKpb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 06:45:31 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565CB7692
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 03:45:28 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id i7so43111wrc.2
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 03:45:28 -0700 (PDT)
+        with ESMTP id S235352AbjDFKrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 06:47:00 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459DE4ED0
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 03:46:56 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id d7so5242620lfj.3
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 03:46:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1680777927;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=e/X5yNCoJN03FEX0s6l3ITYbIU68MMXGSTEXF+p6Dq0=;
-        b=SIgEfc5jKNaB4oRrbei81KNYV23ULzlmk0FISTdIu/sR851YFNMw6NHHF9UDgBz+Vv
-         WwWloRAsLPMy0T+PFKCewRQ+iK1/V4NL/EJvdxqwsoD2VT+aGnLAWTldg1fnSImIspvy
-         tgKU/nwMHEQnGzxMprA3lA2NPgdJv6CApzP7Gghpcjzve/X6TLrTalmweL2EYEHIgs6O
-         b4SM/MX9UAw17MrIknAKUWfkdTHn327HIFav7Z20QxE4W1+BhwEhpqBbfkJTL1HPGGAK
-         P7mMOaNrDpPwHyY3SHqHPQF0uB2mgAiXkZyKLFdodmAPrICLaWJzhKOZ+1918w/rxfMs
-         IBmg==
+        d=linaro.org; s=google; t=1680778014;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B2BzjQV0Pgg1DKvuOn1ZFphHP1RdJIg2N34YNYw46iY=;
+        b=jzmPdWIsIDnq+MiduuP1tjldTyDoLsHcCykiu247BLfxl70th03c/DDkBBEkDFaN/Q
+         lfGal2GyLX9AUqEMuX90hkOsYTtYrwC6ldAmWjd9KzHK2MX/ORfDUgmJYmQ7DnnYsLjA
+         eySUvTI8d4VfryC8KuP3dBo9rgfYbJddbxk9lt80ZwOIqWaeYC9d3ipHbOW3JSeWNRdC
+         eXCfxNfSmU+dbrhCmHdbT/qTXOjv1E/D2sU0Oe97V0/PpQNYjk+FxYkOHGB93sRbhkIz
+         HkoCHdefmN657El2myvAiZTTC2eNRZcBZJb1f/cqeOMekPDwxIM28kSoGeubKZjIhmaJ
+         XQ9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680777927;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=e/X5yNCoJN03FEX0s6l3ITYbIU68MMXGSTEXF+p6Dq0=;
-        b=NyBlvfjcEwffMaHWFNZrbLFj0tyEoRZ9uPuDEivRN7bZcSavT7j3CKKWDM6tc9vcdG
-         X/iZ5K4s9Ma0MBJV0Bqj9WM4wuemuriYcedYdVmD16/67Z2yqbwnKh828WFQlIoYPiQM
-         qj92PKm6kyGZ4fNcp17m1PYTDe7dmIOosHo1iGz77Ct2UOFWwQSfh5KbKCwEYUH2o1ey
-         XKupWmSaW3zH3/OiEtoVSv+HC9dzVecfoacrZgIiBpbEviTDcmveUvfTPKOg7KGltemJ
-         7nrASIvsrxClbSNOMQ/1sdjoilsLaatlrQDe1AF1zXigO+tnsdYG3xhPEh+3i+FZJyeH
-         LGUA==
-X-Gm-Message-State: AAQBX9etYawzwgC8ZqbbyeKfwJ3ff6bliJS1+EZfks3fxTBxkuffdYF/
-        dKhvhptiCq83Tnwd0qd+yzjPjg==
-X-Google-Smtp-Source: AKy350aTJGjsCyrbFrhZ6rG/1VD6V3MRZN/K493i9Qikh/wyFp+nbHNea8eYHgMH9QrioMT4WeYJMQ==
-X-Received: by 2002:adf:ce0a:0:b0:2c8:9cfe:9e29 with SMTP id p10-20020adfce0a000000b002c89cfe9e29mr5978111wrn.38.1680777926732;
-        Thu, 06 Apr 2023 03:45:26 -0700 (PDT)
-Received: from ?IPV6:2a02:578:8593:1200:f3b0:f2cb:5057:6981? ([2a02:578:8593:1200:f3b0:f2cb:5057:6981])
-        by smtp.gmail.com with ESMTPSA id i7-20020a5d5587000000b002cf8220cc75sm1435672wrv.24.2023.04.06.03.45.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Apr 2023 03:45:26 -0700 (PDT)
-Message-ID: <ca12e402-96f1-b1d2-70ad-30e532f9026c@tessares.net>
-Date:   Thu, 6 Apr 2023 12:45:25 +0200
+        d=1e100.net; s=20210112; t=1680778014;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=B2BzjQV0Pgg1DKvuOn1ZFphHP1RdJIg2N34YNYw46iY=;
+        b=3reqxYwaZOwWEUhVSgRjy80ukgE/nhvnFW2UD4AptozUURr9Zk42I9adRNr1Inq+iC
+         rOgazu9VGcRqGv81ZLxIZsXCcFkiGWxuXkL+xS4qu8cCOdbEGpH7EDhC0QYAzRYm63gi
+         lroQy+3+a6NOwPv+2C2T68C7hG0Ab/FpW+r6/gleLBfJSrcHSzsFQ+nQPHZGE8gacuPV
+         SY27+rytAVBPVDdrhtUXdimCfr6s96vmXJzwzhUxevUOduWwnT+231so/q35m+M4/upc
+         BVbHMNUmeYVGAuCYiOdzwdDpu5K3UQiU3iC/df8iEsHnTOfJSYsZQ8WUKqXrlL18tfdY
+         69Ng==
+X-Gm-Message-State: AAQBX9fRZVuhI0LLZNw59jkGcKIFrMVtR9PXTNGBh2SbzGuA4Ho0kwwV
+        Er96OfuL1fRQdE/+vz4SFfeTFgHRVhLtAAuiwIh015QaDpSvMgOv
+X-Google-Smtp-Source: AKy350bU649T5YluFK0J+R3PU7d20Sh3wi51pNWfpw6aJwdFpGQX1msWyMwuelRmee1ZNIzi6YF4w/kdVW0yHAxS8RE=
+X-Received: by 2002:ac2:4911:0:b0:4eb:f3d:94b3 with SMTP id
+ n17-20020ac24911000000b004eb0f3d94b3mr2907075lfi.6.1680778014493; Thu, 06 Apr
+ 2023 03:46:54 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH net,v2] uapi: linux: restore IPPROTO_MAX to 256 and add
- IPPROTO_UAPI_MAX
-Content-Language: en-GB
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com,
-        mathew.j.martineau@linux.intel.com, mptcp@lists.linux.dev
-References: <20230406092558.459491-1-pablo@netfilter.org>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20230406092558.459491-1-pablo@netfilter.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20230404074733.22869-1-liangchen.linux@gmail.com>
+ <7331d6d3f9044e386e425e89b1fc32d60b046cf3.camel@gmail.com>
+ <20230404182116.5795563c@kernel.org> <CAKhg4tLnSOxB7eeMqna1K3cmOn30cofxH=duOPLRs0h+59j01w@mail.gmail.com>
+ <CAKgT0UfPvkiRSqxOjDUsEVapSbtV++AqSLctZHKKs=_gSxtWfA@mail.gmail.com>
+ <CAKhg4t+omfRPP3pe4Suq65GiJCT2QtpB=6f+T=dWrmu7_SrZZQ@mail.gmail.com> <CANn89iJwMOAD_r+4eUpV65PmhMoSHbr0GOE-WA0APZDh3zpiPQ@mail.gmail.com>
+In-Reply-To: <CANn89iJwMOAD_r+4eUpV65PmhMoSHbr0GOE-WA0APZDh3zpiPQ@mail.gmail.com>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Thu, 6 Apr 2023 13:46:18 +0300
+Message-ID: <CAC_iWjJD-g34ABOhu8f9wMLF0a9YYAZdh_uh2Vq44C-fAU3Nag@mail.gmail.com>
+Subject: Re: [PATCH] skbuff: Fix a race between coalescing and releasing SKBs
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Liang Chen <liangchen.linux@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, hawk@kernel.org,
+        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pablo,
+On Thu, 6 Apr 2023 at 12:56, Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Thu, Apr 6, 2023 at 5:28=E2=80=AFAM Liang Chen <liangchen.linux@gmail.=
+com> wrote:
+> >
+> > On Wed, Apr 5, 2023 at 11:06=E2=80=AFPM Alexander Duyck
+> > <alexander.duyck@gmail.com> wrote:
+> > >
+> > > On Wed, Apr 5, 2023 at 1:19=E2=80=AFAM Liang Chen <liangchen.linux@gm=
+ail.com> wrote:
+> > > >
+> > > > On Wed, Apr 5, 2023 at 9:21=E2=80=AFAM Jakub Kicinski <kuba@kernel.=
+org> wrote:
+> > > > >
+> > > > > On Tue, 04 Apr 2023 08:51:18 -0700 Alexander H Duyck wrote:
+> > > > > > I'm not quite sure I agree with the fix. Couldn't we just modif=
+y the
+> > > > > > check further down that does:
+> > > > > >
+> > > > > >         if (!skb_cloned(from))
+> > > > > >                 from_shinfo->nr_frags =3D 0;
+> > > > > >
+> > > > > > And instead just make that:
+> > > > > >       if (!skb->cloned || (!skb_cloned(from) && !from->pp_recyc=
+le))
+> > > > > >                 from_shinfo->nr_frags =3D 0;
+> > > > > >
+> > > > > > With that we would retain the existing behavior and in the case=
+ of
+> > > > > > cloned from frames we would take the references and let the ori=
+ginal
+> > > > > > from skb freed to take care of pulling the pages from the page =
+pool.
+> > > > >
+> > > > > Sounds like a better fix, indeed. But this sort of code will requ=
+ire
+> > > > > another fat comment above to explain why. This:
+> > > > >
+> > > > >         if (to->pp_recycle =3D=3D from->pp_recycle && !skb_cloned=
+(from))
+> > > > >
+> > > > > is much easier to understand, no?
+> > > > >
+> > > > > We should at least include that in the explanatory comment, I rec=
+kon...
+> > > >
+> > > > Sure, the idea of dealing with the case where @from transitioned in=
+to non cloned
+> > > > skb in the function retains the existing behavior, and gives more
+> > > > opportunities to
+> > > > coalesce skbs. And it seems (!skb_cloned(from) && !from->pp_recycle=
+) is enough
+> > > > here.
+> > > > I will take a closer look at the code path for the fragstolen case
+> > > > before making v2
+> > > > patch  -  If @from transitioned into non cloned skb before "if
+> > > > (skb_head_is_locked(from))"
+> > > >
+> > > > Thanks for the reviews.
+> > >
+> > > Actually I am not sure that works now that I look at it closer. The
+> > > problem with using (!skb_cloned(from) && !from->pp_recycle) is that i=
+t
+> > > breaks the case where both from and to are pp_recycle without being
+> > > cloned.
+> >
+> > Yeah, it would break that case. Thanks!
+> > >
+> > > So it probably needs to be something actually the setup Jakub
+> > > suggested would probably work better:
+> > >   if (to->pp_recycle =3D=3D from->pp_recycle && !skb_cloned(from))
+> > >
+> >
+> > I agree. That's better.
+>
+> Same feeling on my side.
+> I prefer not trying to merge mixed pp_recycle skbs "just because we
+> could" at the expense
+> of adding more code in a fast path.
 
-Thank you for sharing the v2 of this patch taking into account MPTCP!
++1 here.  The intention of recycling was to affect the normal path as
+less as possible.  On top of that, we've some amount of race
+conditions over the years, trying to squeeze more performance with
+similar tricks.  I'd much rather be safe here, since recycling by
+itself is a great performance boost
 
-On 06/04/2023 11:25, Pablo Neira Ayuso wrote:
-> IPPROTO_MAX used to be 256, but with the introduction of IPPROTO_MPTCP
-> definition, IPPROTO_MAX was bumped to 263.
-> 
-> IPPROTO_MPTCP definition is used for the socket interface from
-> userspace (ie. uAPI). It is never used in the layer 4 protocol field of
-> IP headers.
-
-(similar to IPPROTO_RAW which is < IPPROTO_MAX)
-
-> IPPROTO_* definitions are used anywhere in the kernel as well as in
-> userspace to set the layer 4 protocol field in IP headers as well as
-> for uAPI.
-> 
-> At least in Netfilter, there is code in userspace that relies on
-> IPPROTO_MAX (not inclusive) to check for the maximum layer 4 protocol.
-> 
-> This patch restores IPPROTO_MAX to 256 for the maximum protocol number
-> in the IP headers, and it adds a new IPPROTO_UAPI_MAX for the maximum
-> protocol number for uAPI.
-> 
-> Update kernel code to use IPPROTO_UAPI_MAX for inet_diag (mptcp
-> registers one for this) and the inet{4,6}_create() IP socket API.
-
-The modification in the kernel looks good to me. But I don't know how to
-make sure this will not have any impact on MPTCP on the userspace side,
-e.g. somewhere before calling the socket syscall, a check could be done
-to restrict the protocol number to IPPROTO_MAX and then breaking MPTCP
-support.
-
-Is it not safer to expose something new to userspace, something
-dedicated to what can be visible on the wire?
-
-Or recommend userspace programs to limit to lower than IPPROTO_RAW
-because this number is marked as "reserved" by the IANA anyway [1]?
-
-Or define something new linked to UINT8_MAX because the layer 4 protocol
-field in IP headers is limited to 8 bits?
-This limit is not supposed to be directly linked to the one of the enum
-you modified. I think we could even say it works "by accident" because
-"IPPROTO_RAW" is 255. But OK "IPPROTO_RAW" is there from the "beginning"
-[2] :)
-
-WDYT?
-
-Cheers,
-Matt
-
-[1] https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
-[2]
-https://github.com/schwabe/davej-history/blob/9cb9f18b5d26bf176e13edbc0c248d121217c6b3/include/linux/in.h
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+Regards
+/Ilias
