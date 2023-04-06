@@ -2,101 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A77A6D9C13
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 17:20:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 871676D9C0F
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 17:20:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239313AbjDFPUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 11:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48776 "EHLO
+        id S238713AbjDFPUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 11:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238699AbjDFPUj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 11:20:39 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C319747;
-        Thu,  6 Apr 2023 08:20:35 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 55C7918837A6;
-        Thu,  6 Apr 2023 15:20:32 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 1E16725002FD;
-        Thu,  6 Apr 2023 15:20:32 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id F1F5A9B403F4; Thu,  6 Apr 2023 15:20:31 +0000 (UTC)
-X-Screener-Id: e32ae469fa6e394734d05373d3a705875723cf1e
-Received: from fujitsu (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 5442891201E3;
-        Thu,  6 Apr 2023 15:20:31 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?utf-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 2/6] net: dsa: propagate flags down towards
- drivers
-In-Reply-To: <20230330150752.gdquw5kudtrqgzyz@skbuf>
-References: <20230327160009.bdswnalizdv2u77z@skbuf>
- <87pm8tooe1.fsf@kapio-technology.com>
- <20230327225933.plm5raegywbe7g2a@skbuf>
- <87ileljfwo.fsf@kapio-technology.com>
- <20230328114943.4mibmn2icutcio4m@skbuf>
- <87cz4slkx5.fsf@kapio-technology.com>
- <20230330124326.v5mqg7do25tz6izk@skbuf>
- <87wn2yxunb.fsf@kapio-technology.com>
- <20230330130936.hxme34qrqwolvpsh@skbuf>
- <875yaimgro.fsf@kapio-technology.com>
- <20230330150752.gdquw5kudtrqgzyz@skbuf>
-Date:   Thu, 06 Apr 2023 17:17:46 +0200
-Message-ID: <87o7o1ox9h.fsf@kapio-technology.com>
+        with ESMTP id S236921AbjDFPUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 11:20:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB8383D0;
+        Thu,  6 Apr 2023 08:20:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A95EB64943;
+        Thu,  6 Apr 2023 15:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 09F81C4339B;
+        Thu,  6 Apr 2023 15:20:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680794418;
+        bh=+bs09GQCF5hAOkAMz+tvy22Eo6BudBimhC/cySd7K8g=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=HQmmceVBx10JdKaeVzq1b/zZepoaadnmjvytEbXpCpYO7wLztHY6I2yPdASPXNifc
+         dElaVEtrjzESJjng1jtThKMlNDhzvEYamEwoUZCi+VXK3MitdsoMJ5OHsEeyZ8nKUa
+         8LR3ukZ7xuRpygFdjVNqakEpbfp9vSVu3LlEOGzTgrFgahvw9yFG7lzjdhEa+4zjXv
+         mOL2IsgOORuxKmAwAnwgsXWa2LP9mlfNPx63LnVj0DbN3HLuGP79I99OXFi94EK371
+         f31mYR3K21sbzZfdPa+IlA8IaK4/XXh2HOpMP+ENccR4p1SFr6q7TeYZPeJ/5xXFAa
+         Ae98HiVZ+PGog==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E0175E5EA85;
+        Thu,  6 Apr 2023 15:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-0.7 required=5.0 tests=RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [RESEND PATCH net 1/1] net: stmmac: check fwnode for phy device
+ before scanning for phy
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168079441791.8535.15515583518065122316.git-patchwork-notify@kernel.org>
+Date:   Thu, 06 Apr 2023 15:20:17 +0000
+References: <20230406024541.3556305-1-michael.wei.hong.sit@intel.com>
+In-Reply-To: <20230406024541.3556305-1-michael.wei.hong.sit@intel.com>
+To:     Sit@ci.codeaurora.org,
+        Michael Wei Hong <michael.wei.hong.sit@intel.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        boon.leong.ong@intel.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch,
+        martin.blumenstingl@googlemail.com, Shahab.Vahedi@synopsys.com,
+        m.szyprowski@samsung.com, hong.aun.looi@intel.com,
+        weifeng.voon@intel.com, peter.jun.ann.lai@intel.com,
+        muhammad.husaini.zulkifli@intel.com, tee.min.tan@intel.com,
+        hock.leong.kweh@intel.com
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 18:07, Vladimir Oltean <olteanv@gmail.com> wrote:
-> As a bug fix, stop reporting to switchdev those FDB entries with
-> BR_FDB_ADDED_BY_USER && !BR_FDB_STATIC. Then, after "net" is merged into
-> "net-next" next Thursday (the ship has sailed for today), add "bool static"
+Hello:
 
-It is probably too late today (now I have a Debian based VM that can do
-the selftests), but with this bug fix I have 1) not submitted bug fixes
-before and 2) it probably needs an appropriate explanation, where I
-don't know the problem well enough for general switchcores to submit
-with a suitable text.
+This patch was applied to netdev/net.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu,  6 Apr 2023 10:45:41 +0800 you wrote:
+> Some DT devices already have phy device configured in the DT/ACPI.
+> Current implementation scans for a phy unconditionally even though
+> there is a phy listed in the DT/ACPI and already attached.
+> 
+> We should check the fwnode if there is any phy device listed in
+> fwnode and decide whether to scan for a phy to attach to.
+> 
+> [...]
+
+Here is the summary with links:
+  - [RESEND,net,1/1] net: stmmac: check fwnode for phy device before scanning for phy
+    https://git.kernel.org/netdev/net/c/8fbc10b995a5
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
