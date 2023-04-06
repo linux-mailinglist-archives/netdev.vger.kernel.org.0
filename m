@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54F346DA631
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 01:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 151B76DA650
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 01:47:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237326AbjDFXmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 19:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
+        id S238082AbjDFXm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 19:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238247AbjDFXma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 19:42:30 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2086.outbound.protection.outlook.com [40.107.92.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDDA93EB
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 16:42:22 -0700 (PDT)
+        with ESMTP id S238173AbjDFXmc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 19:42:32 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2048.outbound.protection.outlook.com [40.107.93.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24C6AD06
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 16:42:27 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Lj2lnh/DxeXodZLRaMpzlV9iMURQrmgC4WKRF1qnM/Fau0RmPuORDXkk6tvRDaDqF9dl/XUGWGZ9iiwCkQMi3otv4Xmccy3FTDfAOw20bfu5L7VETRKGxn4zL4yX6akEynFm96nKBoqQjF5lFw3uVPFguZq7dh29dDcJi/c+D73iCRqyNlH63l0sHS+8i5rDaNaA/b6nN8IEyqeY87tLxwrfOlUq/r0U5cIUd0SMTMlqWn1jKYfCIQ5jHKjF6NKo+2hBtLRiwCElEH2ctqu1/wNrv5Hwit+H/r8uDmCTPRWY0ppRQEpIg4Exc+kQXyuFybURyS0UlWjoEoUlkKvpug==
+ b=d+VMHbr93Dn1APz59rL3TDKhzGoYsIYmSrvKPrLyfh8tImsrmrwauwE+5j+8Lyfs39xpU0R0Slkx7tfrRy/GHjcxExS/CQass9C1ReQNOHSnr+oiJ47Axi2mPPrWDAfKOjLFyHNRD0Xq5UBwzG2ArJ7tj4cakHoQ/jjzRjH3agX95MG2VLSnvxM0zHOrr/ON2Fwnie9REGatsPqD313JB62sxFLatFo2TsexNjiw0B9VYpAKLLYLAgSK4tmI/m3HLQKOH5FvGCc5Cm0X6fomOpEGS/FOYAuYaYhn5JZxXrfqjhRpr2xuq5djkvgIj7k/tHlUYgv6IwvQ4vBdNNyfyQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iUdKObl1ZgtttARQ5wYq1KyoRAR5A963v64jjJP55nI=;
- b=dHhmqAIUhxdfjRZDVbn8xlC/SIyDUQE3JtUEJ2RUtT3/ckJvyc7EN0P/xGjiNhz8kh9j4WIhRIgBQLhshvG4Fs9mYAwgVql1AESyeHnsk9TSa0mWvzSnMzhe3288D60Da2yB7K6MKvGTexI3dayrRCJVPGyvnd5UcnfdorfVVc1s0ZoL4EyR7GJNwj28IxT1ZvA5Wizhlpmo13LK0Zf/4G3c8fvLsONQsLIG74DRBavbpSeVshsICf1cwp1gN0Iy6o7+9rm8vEltiXd2JyWU+C7nhlQ/FwBIaizr1dZACmm7bKA+v/r7edkctkNt6lO4t4c+gQhAPfWDGOfmQ68gIA==
+ bh=yqiQmXxWJiFH+Pt4k+x07hLChElSSy8aOiuysmwGB3g=;
+ b=b+DhGLbIIgTuDzHfp5t4qmluwHmm5EA+8aNMykPgrM3kf0CSbrY3an3UAAeEex4MkTJslC1RglYJXI4kq246iuDqXl2I2h+SdF2qpypA6jJfnLdy5Q2ySiQPyH1Xis/RrfqReF/chf56N2AdmCCs2c+Vf7lajkvVM/t2NfKfSmy+0M54T7udAgFx1BauvuJsVKxW4Hxw6VQ4WtgIRcrdC9seocl4ge6PVWhX8QoH07ShitBIdGWqdRb2EsL1StwvmI77ZZhW0VUjLpS76Au1AON4UjsB2Xe+lnUV8o+5IuC7auBzLsht+Y9WqVEJilAwLtuE5TIicEpo5ooiBnCPBQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iUdKObl1ZgtttARQ5wYq1KyoRAR5A963v64jjJP55nI=;
- b=Vr2Jos8daS4CCAEagZPdqqDMiuF8/yk1JPasb8BOC2KM+FTqCdFwv3yYR5oPj1BhV3jz70FfYcNAA9ypi0KX1CeQUsAXFVecbYPhhLGtMe0kUODjTp5ZizEQhUVWWwLz72mWRKzKH9wprFX2i1DGbAzkUqOtZJMu+xueVWt1IXA=
-Received: from DM5PR07CA0115.namprd07.prod.outlook.com (2603:10b6:4:ae::44) by
- DM6PR12MB4388.namprd12.prod.outlook.com (2603:10b6:5:2a9::10) with Microsoft
+ bh=yqiQmXxWJiFH+Pt4k+x07hLChElSSy8aOiuysmwGB3g=;
+ b=K6dZbQXA2k1NORCZAmVffXWfiLbJwdlUUjw8a4zKBuxPsmmO4iQon11bv/gOwer6gVnJ9KlgjiTTLaxwbRT6V5gr7WbnWDmkjY8vz8TWVO8hS2AjA/t6QGeN21TYd0hY7cfE/Jlmz+7wNghQIuBuKvTnGO92p0S5QKn+1l5jtYE=
+Received: from DM6PR08CA0015.namprd08.prod.outlook.com (2603:10b6:5:80::28) by
+ CY8PR12MB7658.namprd12.prod.outlook.com (2603:10b6:930:9e::20) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6254.35; Thu, 6 Apr 2023 23:42:18 +0000
-Received: from DM6NAM11FT042.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:ae:cafe::4d) by DM5PR07CA0115.outlook.office365.com
- (2603:10b6:4:ae::44) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.31 via Frontend
- Transport; Thu, 6 Apr 2023 23:42:18 +0000
+ 15.20.6254.35; Thu, 6 Apr 2023 23:42:19 +0000
+Received: from DM6NAM11FT004.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:80:cafe::60) by DM6PR08CA0015.outlook.office365.com
+ (2603:10b6:5:80::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.37 via Frontend
+ Transport; Thu, 6 Apr 2023 23:42:19 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -45,20 +45,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT042.mail.protection.outlook.com (10.13.173.165) with Microsoft SMTP
+ DM6NAM11FT004.mail.protection.outlook.com (10.13.172.217) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6277.31 via Frontend Transport; Thu, 6 Apr 2023 23:42:17 +0000
+ 15.20.6277.14 via Frontend Transport; Thu, 6 Apr 2023 23:42:18 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 6 Apr
- 2023 18:42:16 -0500
+ 2023 18:42:17 -0500
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
         <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>
 CC:     <drivers@pensando.io>, <leon@kernel.org>, <jiri@resnulli.us>
-Subject: [PATCH v9 net-next 01/14] pds_core: initial framework for pds_core PF driver
-Date:   Thu, 6 Apr 2023 16:41:30 -0700
-Message-ID: <20230406234143.11318-2-shannon.nelson@amd.com>
+Subject: [PATCH v9 net-next 02/14] pds_core: add devcmd device interfaces
+Date:   Thu, 6 Apr 2023 16:41:31 -0700
+Message-ID: <20230406234143.11318-3-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230406234143.11318-1-shannon.nelson@amd.com>
 References: <20230406234143.11318-1-shannon.nelson@amd.com>
@@ -69,23 +69,23 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT042:EE_|DM6PR12MB4388:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8aabd3cd-5314-4ccb-08c8-08db36f88edf
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT004:EE_|CY8PR12MB7658:EE_
+X-MS-Office365-Filtering-Correlation-Id: d634fbcb-df6e-4aa6-ff47-08db36f88f68
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HqQ2kZK4gJEQBSN0s2pj6vgwDBgEIdNiU/wa5UGFaseZ/0oVm9El4a2yUF3V+v2SO8fK4DbBj1cJhbA4VAuG1bfQJgh3lHqWv9DEfyak2vH4O0HuGb26eMdGmz8tEZTG4gfa6nFSrj2wfbaIWx1hFxCZFOGAXbKP/l4//mCjjs98QTQmD/aFp/1IJmfHPqIMEqXRMb8pErQnPDcmINq4Z9LvyzqKaVUqGIuSk/6a98eLd8DErgOif45vdXRVeipFribyokpBkBpNlY3/DgYMluPn2ARurhxuD6kiiDe/KHwTBHclnncze7gQGgYr6bSfNG5wIA90LNK3w1M6Z3/U7V0qo2f195IJFojhuMc1LoiRXrs5KIKxV+AV7whdEgl6cuB31PzGHkfo/JKIa1WhRrG5iUYNXBblLzpxiT2k2gMjAqrUeO7lGMjp5DYiIe1hekWwenXvQPTEgFUjWtaFSvzYTVgPvdcr2xIcK7meqUOIn3dnPJuTLxWQ6dUFfHpQw882PMHH8c4J2FQZZrXu+sQSVjsbAOHyzftAyJQA0ysSeCYv6x4Ql/E4ozEMmLpylYpOhId/JRbyIpdmgQxy+3QOYiRSNCvY+q/KcpchV4V3gs6vXqB/nQylqejR9tNVIJ4piMHZJ5nfGnsWm4X7Hw/SQ0at7fbDbHW4OHc7jUQAxY6Zi50NiVxVkwQC6c4Sl5Hzby3skYWbKWaBuDqkaYBgfVUz99skr2TgZhuAOvoKtsBlX4zwxpr3utnxt8lWnle5c5Hu3pe7qPAyDArxcg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(136003)(346002)(396003)(451199021)(40470700004)(46966006)(36840700001)(16526019)(26005)(1076003)(40460700003)(8936002)(186003)(36860700001)(82310400005)(478600001)(82740400003)(70206006)(316002)(86362001)(40480700001)(110136005)(4326008)(8676002)(54906003)(36756003)(70586007)(6666004)(41300700001)(356005)(81166007)(2616005)(2906002)(83380400001)(30864003)(44832011)(47076005)(43170500006)(336012)(426003)(5660300002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Ylu/0mKgc4mgnLWc8hqwJlHvTwvkOrrJYJ+ezNYsfujPj5dHNRhrYeBXijHlXTbmmV4+z39KyZIY6AwHH087NtB4f2gSR4nNibNY7CSuescIXTejwvmDuVHVcQD92B7tRGQN34zopcAdYtWk4fmJdi07fkl4b0wGdq5ZaYWkD2jIB2XhCFGyHGHVIbYNxEDyNK5J6/X088/F1gGwdct3cH3KTir8IlqR5d5nfcYvbOGOHm7nOEyk0X1AKczNCWQrCtPWQYQwCaSf+6D2IlFkXenlooKJWKa1kmQjXE5YbreoFqp561WI82nlHXuerK5hyoYBlMp7x2aYSXpAGkaBQb1+YTjFUZGdHm7JK1fEX+IUkm3YGyVP5kjitg3cI0qKGJwGEk+8Jh8qHQ9/qAjeaFLSEtSgSC903UgODkehTFGBboMdyRh9vBJig2nf1zMr0YLudIL7JYJ76UmQAEymnRE7ziS/ggaDgy9eSS9CsXMkJuYnNyBwNNlnQPFv9odl1EvU0WjV5t1AOxNEJ0Z6nkAqB8buBTsXXFfnBs99VzZuAwGfdfeloxDCp4OQNLC3udecSda/k5qHA3WaA75K5+QHW0vp6qqiEcsTM87JhJ5Cs8wS2fZYlkpyZNowtu33uNdI1fSMe6iRm3fg2ACPvcFFWVl6N2lvTXLwk3X/3zKXVYJmMc/jRZnneYGOC4qRXurwKVNGAmByxaLibaJqIfXXIk2/kh3rZSPtyhnCCRM=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(396003)(39860400002)(376002)(451199021)(36840700001)(46966006)(40470700004)(356005)(1076003)(26005)(16526019)(8676002)(40460700003)(70586007)(70206006)(36756003)(316002)(110136005)(36860700001)(478600001)(82310400005)(5660300002)(30864003)(8936002)(54906003)(81166007)(82740400003)(44832011)(2906002)(86362001)(4326008)(186003)(41300700001)(40480700001)(6666004)(2616005)(336012)(426003)(83380400001)(47076005)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2023 23:42:17.9046
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2023 23:42:18.8088
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8aabd3cd-5314-4ccb-08c8-08db36f88edf
+X-MS-Exchange-CrossTenant-Network-Message-Id: d634fbcb-df6e-4aa6-ff47-08db36f88f68
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT042.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT004.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4388
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7658
 X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=no
@@ -96,1068 +96,903 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the initial PCI driver framework for the new pds_core device
-driver and its family of devices.  This does the very basics of
-registering for the new PF PCI device 1dd8:100c, setting up debugfs
-entries, and registering with devlink.
+The devcmd interface is the basic connection to the device through the
+PCI BAR for low level identification and command services.  This does
+the early device initialization and finds the identity data, and adds
+devcmd routines to be used by later driver bits.
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- .../device_drivers/ethernet/amd/pds_core.rst  |  40 ++
- .../device_drivers/ethernet/index.rst         |   1 +
- drivers/net/ethernet/amd/pds_core/Makefile    |   8 +
- drivers/net/ethernet/amd/pds_core/core.h      |  63 ++
- drivers/net/ethernet/amd/pds_core/debugfs.c   |  34 ++
- drivers/net/ethernet/amd/pds_core/main.c      | 285 +++++++++
- include/linux/pds/pds_common.h                |  14 +
- include/linux/pds/pds_core_if.h               | 540 ++++++++++++++++++
- 8 files changed, 985 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
- create mode 100644 drivers/net/ethernet/amd/pds_core/Makefile
- create mode 100644 drivers/net/ethernet/amd/pds_core/core.h
- create mode 100644 drivers/net/ethernet/amd/pds_core/debugfs.c
- create mode 100644 drivers/net/ethernet/amd/pds_core/main.c
- create mode 100644 include/linux/pds/pds_common.h
- create mode 100644 include/linux/pds/pds_core_if.h
+ drivers/net/ethernet/amd/pds_core/Makefile  |   4 +-
+ drivers/net/ethernet/amd/pds_core/core.c    |  36 ++
+ drivers/net/ethernet/amd/pds_core/core.h    |  52 +++
+ drivers/net/ethernet/amd/pds_core/debugfs.c |  68 ++++
+ drivers/net/ethernet/amd/pds_core/dev.c     | 349 ++++++++++++++++++++
+ drivers/net/ethernet/amd/pds_core/main.c    |  33 +-
+ include/linux/pds/pds_common.h              |  61 ++++
+ include/linux/pds/pds_intr.h                | 163 +++++++++
+ 8 files changed, 763 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ethernet/amd/pds_core/core.c
+ create mode 100644 drivers/net/ethernet/amd/pds_core/dev.c
+ create mode 100644 include/linux/pds/pds_intr.h
 
-diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-new file mode 100644
-index 000000000000..58a28b255d37
---- /dev/null
-+++ b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-@@ -0,0 +1,40 @@
-+.. SPDX-License-Identifier: GPL-2.0+
-+
-+========================================================
-+Linux Driver for the AMD/Pensando(R) DSC adapter family
-+========================================================
-+
-+Copyright(c) 2023 Advanced Micro Devices, Inc
-+
-+Identifying the Adapter
-+=======================
-+
-+To find if one or more AMD/Pensando PCI Core devices are installed on the
-+host, check for the PCI devices::
-+
-+  # lspci -d 1dd8:100c
-+  b5:00.0 Processing accelerators: Pensando Systems Device 100c
-+  b6:00.0 Processing accelerators: Pensando Systems Device 100c
-+
-+If such devices are listed as above, then the pds_core.ko driver should find
-+and configure them for use.  There should be log entries in the kernel
-+messages such as these::
-+
-+  $ dmesg | grep pds_core
-+  pds_core 0000:b5:00.0: 252.048 Gb/s available PCIe bandwidth (16.0 GT/s PCIe x16 link)
-+  pds_core 0000:b5:00.0: FW: 1.60.0-73
-+  pds_core 0000:b6:00.0: 252.048 Gb/s available PCIe bandwidth (16.0 GT/s PCIe x16 link)
-+  pds_core 0000:b6:00.0: FW: 1.60.0-73
-+
-+Support
-+=======
-+
-+For general Linux networking support, please use the netdev mailing
-+list, which is monitored by AMD/Pensando personnel::
-+
-+  netdev@vger.kernel.org
-+
-+For more specific support needs, please use the AMD/Pensando driver support
-+email::
-+
-+  drivers@pensando.io
-diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
-index 6e9e7012d000..417ca514a4d0 100644
---- a/Documentation/networking/device_drivers/ethernet/index.rst
-+++ b/Documentation/networking/device_drivers/ethernet/index.rst
-@@ -14,6 +14,7 @@ Contents:
-    3com/vortex
-    amazon/ena
-    altera/altera_tse
-+   amd/pds_core
-    aquantia/atlantic
-    chelsio/cxgb
-    cirrus/cs89x0
 diff --git a/drivers/net/ethernet/amd/pds_core/Makefile b/drivers/net/ethernet/amd/pds_core/Makefile
-new file mode 100644
-index 000000000000..de3bf1d1886c
---- /dev/null
+index de3bf1d1886c..95a6c31e92d2 100644
+--- a/drivers/net/ethernet/amd/pds_core/Makefile
 +++ b/drivers/net/ethernet/amd/pds_core/Makefile
-@@ -0,0 +1,8 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (c) 2023 Advanced Micro Devices, Inc.
+@@ -3,6 +3,8 @@
+ 
+ obj-$(CONFIG_PDS_CORE) := pds_core.o
+ 
+-pds_core-y := main.o
++pds_core-y := main.o \
++	      dev.o \
++	      core.o
+ 
+ pds_core-$(CONFIG_DEBUG_FS) += debugfs.o
+diff --git a/drivers/net/ethernet/amd/pds_core/core.c b/drivers/net/ethernet/amd/pds_core/core.c
+new file mode 100644
+index 000000000000..80d2ecb045df
+--- /dev/null
++++ b/drivers/net/ethernet/amd/pds_core/core.c
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright(c) 2023 Advanced Micro Devices, Inc */
 +
-+obj-$(CONFIG_PDS_CORE) := pds_core.o
++#include "core.h"
 +
-+pds_core-y := main.o
++int pdsc_setup(struct pdsc *pdsc, bool init)
++{
++	int err = 0;
 +
-+pds_core-$(CONFIG_DEBUG_FS) += debugfs.o
++	if (init)
++		err = pdsc_dev_init(pdsc);
++	else
++		err = pdsc_dev_reinit(pdsc);
++	if (err)
++		return err;
++
++	clear_bit(PDSC_S_FW_DEAD, &pdsc->state);
++	return 0;
++}
++
++void pdsc_teardown(struct pdsc *pdsc, bool removing)
++{
++	pdsc_devcmd_reset(pdsc);
++
++	if (removing) {
++		kfree(pdsc->intr_info);
++		pdsc->intr_info = NULL;
++	}
++
++	if (pdsc->kern_dbpage) {
++		iounmap(pdsc->kern_dbpage);
++		pdsc->kern_dbpage = NULL;
++	}
++
++	set_bit(PDSC_S_FW_DEAD, &pdsc->state);
++}
 diff --git a/drivers/net/ethernet/amd/pds_core/core.h b/drivers/net/ethernet/amd/pds_core/core.h
-new file mode 100644
-index 000000000000..51c77f145bab
---- /dev/null
+index 51c77f145bab..fdf171281c87 100644
+--- a/drivers/net/ethernet/amd/pds_core/core.h
 +++ b/drivers/net/ethernet/amd/pds_core/core.h
-@@ -0,0 +1,63 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-+
-+#ifndef _PDSC_H_
-+#define _PDSC_H_
-+
-+#include <linux/debugfs.h>
-+#include <net/devlink.h>
-+
-+#include <linux/pds/pds_common.h>
-+#include <linux/pds/pds_core_if.h>
-+
-+#define PDSC_DRV_DESCRIPTION	"AMD/Pensando Core Driver"
-+
-+struct pdsc_dev_bar {
-+	void __iomem *vaddr;
-+	phys_addr_t bus_addr;
-+	unsigned long len;
-+	int res_index;
+@@ -9,8 +9,13 @@
+ 
+ #include <linux/pds/pds_common.h>
+ #include <linux/pds/pds_core_if.h>
++#include <linux/pds/pds_intr.h>
+ 
+ #define PDSC_DRV_DESCRIPTION	"AMD/Pensando Core Driver"
++#define PDSC_TEARDOWN_RECOVERY	false
++#define PDSC_TEARDOWN_REMOVING	true
++#define PDSC_SETUP_RECOVERY	false
++#define PDSC_SETUP_INIT		true
+ 
+ struct pdsc_dev_bar {
+ 	void __iomem *vaddr;
+@@ -19,6 +24,22 @@ struct pdsc_dev_bar {
+ 	int res_index;
+ };
+ 
++struct pdsc_devinfo {
++	u8 asic_type;
++	u8 asic_rev;
++	char fw_version[PDS_CORE_DEVINFO_FWVERS_BUFLEN + 1];
++	char serial_num[PDS_CORE_DEVINFO_SERIAL_BUFLEN + 1];
 +};
 +
-+/* No state flags set means we are in a steady running state */
-+enum pdsc_state_flags {
-+	PDSC_S_FW_DEAD,		    /* stopped, wait on startup or recovery */
-+	PDSC_S_INITING_DRIVER,	    /* initial startup from probe */
-+	PDSC_S_STOPPING_DRIVER,	    /* driver remove */
++#define PDSC_INTR_NAME_MAX_SZ		32
 +
-+	/* leave this as last */
-+	PDSC_S_STATE_SIZE
++struct pdsc_intr_info {
++	char name[PDSC_INTR_NAME_MAX_SZ];
++	unsigned int index;
++	unsigned int vector;
++	void *data;
 +};
 +
-+struct pdsc {
-+	struct pci_dev *pdev;
-+	struct dentry *dentry;
-+	struct device *dev;
-+	struct pdsc_dev_bar bars[PDS_CORE_BARS_MAX];
-+	int hw_index;
-+	int uid;
+ /* No state flags set means we are in a steady running state */
+ enum pdsc_state_flags {
+ 	PDSC_S_FW_DEAD,		    /* stopped, wait on startup or recovery */
+@@ -38,7 +59,19 @@ struct pdsc {
+ 	int uid;
+ 
+ 	unsigned long state;
++	u8 fw_status;
++	u8 fw_generation;
++	unsigned long last_fw_time;
++	u32 last_hb;
 +
-+	unsigned long state;
++	struct pdsc_devinfo dev_info;
++	struct pds_core_dev_identity dev_ident;
++	unsigned int nintrs;
++	struct pdsc_intr_info *intr_info;	/* array of nintrs elements */
+ 
++	unsigned int devcmd_timeout;
++	struct mutex devcmd_lock;	/* lock for dev_cmd operations */
++	struct mutex config_lock;	/* lock for configuration operations */
+ 	struct pds_core_dev_info_regs __iomem *info_regs;
+ 	struct pds_core_dev_cmd_regs __iomem *cmd_regs;
+ 	struct pds_core_intr __iomem *intr_ctrl;
+@@ -53,11 +86,30 @@ void pdsc_debugfs_create(void);
+ void pdsc_debugfs_destroy(void);
+ void pdsc_debugfs_add_dev(struct pdsc *pdsc);
+ void pdsc_debugfs_del_dev(struct pdsc *pdsc);
++void pdsc_debugfs_add_ident(struct pdsc *pdsc);
++void pdsc_debugfs_add_irqs(struct pdsc *pdsc);
+ #else
+ static inline void pdsc_debugfs_create(void) { }
+ static inline void pdsc_debugfs_destroy(void) { }
+ static inline void pdsc_debugfs_add_dev(struct pdsc *pdsc) { }
+ static inline void pdsc_debugfs_del_dev(struct pdsc *pdsc) { }
++static inline void pdsc_debugfs_add_ident(struct pdsc *pdsc) { }
++static inline void pdsc_debugfs_add_irqs(struct pdsc *pdsc) { }
+ #endif
+ 
++int pdsc_err_to_errno(enum pds_core_status_code code);
++bool pdsc_is_fw_running(struct pdsc *pdsc);
++bool pdsc_is_fw_good(struct pdsc *pdsc);
++int pdsc_devcmd(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
++		union pds_core_dev_comp *comp, int max_seconds);
++int pdsc_devcmd_locked(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
++		       union pds_core_dev_comp *comp, int max_seconds);
++int pdsc_devcmd_init(struct pdsc *pdsc);
++int pdsc_devcmd_reset(struct pdsc *pdsc);
++int pdsc_dev_reinit(struct pdsc *pdsc);
++int pdsc_dev_init(struct pdsc *pdsc);
 +
-+	struct pds_core_dev_info_regs __iomem *info_regs;
-+	struct pds_core_dev_cmd_regs __iomem *cmd_regs;
-+	struct pds_core_intr __iomem *intr_ctrl;
-+	u64 __iomem *intr_status;
-+	u64 __iomem *db_pages;
-+	dma_addr_t phy_db_pages;
-+	u64 __iomem *kern_dbpage;
-+};
++int pdsc_setup(struct pdsc *pdsc, bool init);
++void pdsc_teardown(struct pdsc *pdsc, bool removing);
 +
-+#ifdef CONFIG_DEBUG_FS
-+void pdsc_debugfs_create(void);
-+void pdsc_debugfs_destroy(void);
-+void pdsc_debugfs_add_dev(struct pdsc *pdsc);
-+void pdsc_debugfs_del_dev(struct pdsc *pdsc);
-+#else
-+static inline void pdsc_debugfs_create(void) { }
-+static inline void pdsc_debugfs_destroy(void) { }
-+static inline void pdsc_debugfs_add_dev(struct pdsc *pdsc) { }
-+static inline void pdsc_debugfs_del_dev(struct pdsc *pdsc) { }
-+#endif
-+
-+#endif /* _PDSC_H_ */
+ #endif /* _PDSC_H_ */
 diff --git a/drivers/net/ethernet/amd/pds_core/debugfs.c b/drivers/net/ethernet/amd/pds_core/debugfs.c
-new file mode 100644
-index 000000000000..9b2385c19c41
---- /dev/null
+index 9b2385c19c41..2869a2f60678 100644
+--- a/drivers/net/ethernet/amd/pds_core/debugfs.c
 +++ b/drivers/net/ethernet/amd/pds_core/debugfs.c
-@@ -0,0 +1,34 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+@@ -31,4 +31,72 @@ void pdsc_debugfs_del_dev(struct pdsc *pdsc)
+ 	debugfs_remove_recursive(pdsc->dentry);
+ 	pdsc->dentry = NULL;
+ }
 +
-+#ifdef CONFIG_DEBUG_FS
-+
-+#include <linux/pci.h>
-+
-+#include "core.h"
-+
-+static struct dentry *pdsc_dir;
-+
-+void pdsc_debugfs_create(void)
++static int identity_show(struct seq_file *seq, void *v)
 +{
-+	pdsc_dir = debugfs_create_dir(PDS_CORE_DRV_NAME, NULL);
-+}
++	struct pdsc *pdsc = seq->private;
++	struct pds_core_dev_identity *ident;
++	int vt;
 +
-+void pdsc_debugfs_destroy(void)
-+{
-+	debugfs_remove_recursive(pdsc_dir);
-+}
++	ident = &pdsc->dev_ident;
 +
-+void pdsc_debugfs_add_dev(struct pdsc *pdsc)
-+{
-+	pdsc->dentry = debugfs_create_dir(pci_name(pdsc->pdev), pdsc_dir);
++	seq_printf(seq, "fw_heartbeat:     0x%x\n",
++		   ioread32(&pdsc->info_regs->fw_heartbeat));
 +
-+	debugfs_create_ulong("state", 0400, pdsc->dentry, &pdsc->state);
-+}
++	seq_printf(seq, "nlifs:            %d\n",
++		   le32_to_cpu(ident->nlifs));
++	seq_printf(seq, "nintrs:           %d\n",
++		   le32_to_cpu(ident->nintrs));
++	seq_printf(seq, "ndbpgs_per_lif:   %d\n",
++		   le32_to_cpu(ident->ndbpgs_per_lif));
++	seq_printf(seq, "intr_coal_mult:   %d\n",
++		   le32_to_cpu(ident->intr_coal_mult));
++	seq_printf(seq, "intr_coal_div:    %d\n",
++		   le32_to_cpu(ident->intr_coal_div));
 +
-+void pdsc_debugfs_del_dev(struct pdsc *pdsc)
-+{
-+	debugfs_remove_recursive(pdsc->dentry);
-+	pdsc->dentry = NULL;
-+}
-+#endif /* CONFIG_DEBUG_FS */
-diff --git a/drivers/net/ethernet/amd/pds_core/main.c b/drivers/net/ethernet/amd/pds_core/main.c
-new file mode 100644
-index 000000000000..1c2f3fbaa27c
---- /dev/null
-+++ b/drivers/net/ethernet/amd/pds_core/main.c
-@@ -0,0 +1,285 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/pci.h>
-+
-+#include <linux/pds/pds_common.h>
-+
-+#include "core.h"
-+
-+MODULE_DESCRIPTION(PDSC_DRV_DESCRIPTION);
-+MODULE_AUTHOR("Advanced Micro Devices, Inc");
-+MODULE_LICENSE("GPL");
-+
-+/* Supported devices */
-+static const struct pci_device_id pdsc_id_table[] = {
-+	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_CORE_PF) },
-+	{ 0, }	/* end of table */
-+};
-+MODULE_DEVICE_TABLE(pci, pdsc_id_table);
-+
-+static void pdsc_unmap_bars(struct pdsc *pdsc)
-+{
-+	struct pdsc_dev_bar *bars = pdsc->bars;
-+	unsigned int i;
-+
-+	for (i = 0; i < PDS_CORE_BARS_MAX; i++) {
-+		if (bars[i].vaddr) {
-+			pci_iounmap(pdsc->pdev, bars[i].vaddr);
-+			bars[i].vaddr = NULL;
-+		}
-+
-+		bars[i].len = 0;
-+		bars[i].bus_addr = 0;
-+		bars[i].res_index = 0;
-+	}
-+}
-+
-+static int pdsc_map_bars(struct pdsc *pdsc)
-+{
-+	struct pdsc_dev_bar *bar = pdsc->bars;
-+	struct pci_dev *pdev = pdsc->pdev;
-+	struct device *dev = pdsc->dev;
-+	struct pdsc_dev_bar *bars;
-+	unsigned int i, j;
-+	int num_bars = 0;
-+	int err;
-+	u32 sig;
-+
-+	bars = pdsc->bars;
-+	num_bars = 0;
-+
-+	/* Since the PCI interface in the hardware is configurable,
-+	 * we need to poke into all the bars to find the set we're
-+	 * expecting.
-+	 */
-+	for (i = 0, j = 0; i < PDS_CORE_BARS_MAX; i++) {
-+		if (!(pci_resource_flags(pdev, i) & IORESOURCE_MEM))
-+			continue;
-+
-+		bars[j].len = pci_resource_len(pdev, i);
-+		bars[j].bus_addr = pci_resource_start(pdev, i);
-+		bars[j].res_index = i;
-+
-+		/* only map the whole bar 0 */
-+		if (j > 0) {
-+			bars[j].vaddr = NULL;
-+		} else {
-+			bars[j].vaddr = pci_iomap(pdev, i, bars[j].len);
-+			if (!bars[j].vaddr) {
-+				dev_err(dev, "Cannot map BAR %d, aborting\n", i);
-+				return -ENODEV;
-+			}
-+		}
-+
-+		j++;
-+	}
-+	num_bars = j;
-+
-+	/* BAR0: dev_cmd and interrupts */
-+	if (num_bars < 1) {
-+		dev_err(dev, "No bars found\n");
-+		err = -EFAULT;
-+		goto err_out;
-+	}
-+
-+	if (bar->len < PDS_CORE_BAR0_SIZE) {
-+		dev_err(dev, "Resource bar size %lu too small\n", bar->len);
-+		err = -EFAULT;
-+		goto err_out;
-+	}
-+
-+	pdsc->info_regs = bar->vaddr + PDS_CORE_BAR0_DEV_INFO_REGS_OFFSET;
-+	pdsc->cmd_regs = bar->vaddr + PDS_CORE_BAR0_DEV_CMD_REGS_OFFSET;
-+	pdsc->intr_status = bar->vaddr + PDS_CORE_BAR0_INTR_STATUS_OFFSET;
-+	pdsc->intr_ctrl = bar->vaddr + PDS_CORE_BAR0_INTR_CTRL_OFFSET;
-+
-+	sig = ioread32(&pdsc->info_regs->signature);
-+	if (sig != PDS_CORE_DEV_INFO_SIGNATURE) {
-+		dev_err(dev, "Incompatible firmware signature %x", sig);
-+		err = -EFAULT;
-+		goto err_out;
-+	}
-+
-+	/* BAR1: doorbells */
-+	bar++;
-+	if (num_bars < 2) {
-+		dev_err(dev, "Doorbell bar missing\n");
-+		err = -EFAULT;
-+		goto err_out;
-+	}
-+
-+	pdsc->db_pages = bar->vaddr;
-+	pdsc->phy_db_pages = bar->bus_addr;
++	seq_puts(seq, "vif_types:        ");
++	for (vt = 0; vt < PDS_DEV_TYPE_MAX; vt++)
++		seq_printf(seq, "%d ",
++			   le16_to_cpu(pdsc->dev_ident.vif_types[vt]));
++	seq_puts(seq, "\n");
 +
 +	return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(identity);
 +
-+err_out:
-+	pdsc_unmap_bars(pdsc);
-+	pdsc->info_regs = NULL;
-+	pdsc->cmd_regs = NULL;
-+	pdsc->intr_status = NULL;
-+	pdsc->intr_ctrl = NULL;
++void pdsc_debugfs_add_ident(struct pdsc *pdsc)
++{
++	debugfs_create_file("identity", 0400, pdsc->dentry,
++			    pdsc, &identity_fops);
++}
++
++static int irqs_show(struct seq_file *seq, void *v)
++{
++	struct pdsc *pdsc = seq->private;
++	struct pdsc_intr_info *intr_info;
++	int i;
++
++	seq_printf(seq, "index  vector  name (nintrs %d)\n", pdsc->nintrs);
++
++	if (!pdsc->intr_info)
++		return 0;
++
++	for (i = 0; i < pdsc->nintrs; i++) {
++		intr_info = &pdsc->intr_info[i];
++		if (!intr_info->vector)
++			continue;
++
++		seq_printf(seq, "% 3d    % 3d     %s\n",
++			   i, intr_info->vector, intr_info->name);
++	}
++
++	return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(irqs);
++
++void pdsc_debugfs_add_irqs(struct pdsc *pdsc)
++{
++	debugfs_create_file("irqs", 0400, pdsc->dentry, pdsc, &irqs_fops);
++}
++
+ #endif /* CONFIG_DEBUG_FS */
+diff --git a/drivers/net/ethernet/amd/pds_core/dev.c b/drivers/net/ethernet/amd/pds_core/dev.c
+new file mode 100644
+index 000000000000..52385a72246d
+--- /dev/null
++++ b/drivers/net/ethernet/amd/pds_core/dev.c
+@@ -0,0 +1,349 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright(c) 2023 Advanced Micro Devices, Inc */
++
++#include <linux/errno.h>
++#include <linux/pci.h>
++#include <linux/utsname.h>
++
++#include "core.h"
++
++int pdsc_err_to_errno(enum pds_core_status_code code)
++{
++	switch (code) {
++	case PDS_RC_SUCCESS:
++		return 0;
++	case PDS_RC_EVERSION:
++	case PDS_RC_EQTYPE:
++	case PDS_RC_EQID:
++	case PDS_RC_EINVAL:
++	case PDS_RC_ENOSUPP:
++		return -EINVAL;
++	case PDS_RC_EPERM:
++		return -EPERM;
++	case PDS_RC_ENOENT:
++		return -ENOENT;
++	case PDS_RC_EAGAIN:
++		return -EAGAIN;
++	case PDS_RC_ENOMEM:
++		return -ENOMEM;
++	case PDS_RC_EFAULT:
++		return -EFAULT;
++	case PDS_RC_EBUSY:
++		return -EBUSY;
++	case PDS_RC_EEXIST:
++		return -EEXIST;
++	case PDS_RC_EVFID:
++		return -ENODEV;
++	case PDS_RC_ECLIENT:
++		return -ECHILD;
++	case PDS_RC_ENOSPC:
++		return -ENOSPC;
++	case PDS_RC_ERANGE:
++		return -ERANGE;
++	case PDS_RC_BAD_ADDR:
++		return -EFAULT;
++	case PDS_RC_EOPCODE:
++	case PDS_RC_EINTR:
++	case PDS_RC_DEV_CMD:
++	case PDS_RC_ERROR:
++	case PDS_RC_ERDMA:
++	case PDS_RC_EIO:
++	default:
++		return -EIO;
++	}
++}
++
++bool pdsc_is_fw_running(struct pdsc *pdsc)
++{
++	pdsc->fw_status = ioread8(&pdsc->info_regs->fw_status);
++	pdsc->last_fw_time = jiffies;
++	pdsc->last_hb = ioread32(&pdsc->info_regs->fw_heartbeat);
++
++	/* Firmware is useful only if the running bit is set and
++	 * fw_status != 0xff (bad PCI read)
++	 */
++	return (pdsc->fw_status != 0xff) &&
++		(pdsc->fw_status & PDS_CORE_FW_STS_F_RUNNING);
++}
++
++bool pdsc_is_fw_good(struct pdsc *pdsc)
++{
++	u8 gen = pdsc->fw_status & PDS_CORE_FW_STS_F_GENERATION;
++
++	return pdsc_is_fw_running(pdsc) && gen == pdsc->fw_generation;
++}
++
++static u8 pdsc_devcmd_status(struct pdsc *pdsc)
++{
++	return ioread8(&pdsc->cmd_regs->comp.status);
++}
++
++static bool pdsc_devcmd_done(struct pdsc *pdsc)
++{
++	return ioread32(&pdsc->cmd_regs->done) & PDS_CORE_DEV_CMD_DONE;
++}
++
++static void pdsc_devcmd_dbell(struct pdsc *pdsc)
++{
++	iowrite32(0, &pdsc->cmd_regs->done);
++	iowrite32(1, &pdsc->cmd_regs->doorbell);
++}
++
++static void pdsc_devcmd_clean(struct pdsc *pdsc)
++{
++	iowrite32(0, &pdsc->cmd_regs->doorbell);
++	memset_io(&pdsc->cmd_regs->cmd, 0, sizeof(pdsc->cmd_regs->cmd));
++}
++
++static const char *pdsc_devcmd_str(int opcode)
++{
++	switch (opcode) {
++	case PDS_CORE_CMD_NOP:
++		return "PDS_CORE_CMD_NOP";
++	case PDS_CORE_CMD_IDENTIFY:
++		return "PDS_CORE_CMD_IDENTIFY";
++	case PDS_CORE_CMD_RESET:
++		return "PDS_CORE_CMD_RESET";
++	case PDS_CORE_CMD_INIT:
++		return "PDS_CORE_CMD_INIT";
++	case PDS_CORE_CMD_FW_DOWNLOAD:
++		return "PDS_CORE_CMD_FW_DOWNLOAD";
++	case PDS_CORE_CMD_FW_CONTROL:
++		return "PDS_CORE_CMD_FW_CONTROL";
++	default:
++		return "PDS_CORE_CMD_UNKNOWN";
++	}
++}
++
++static int pdsc_devcmd_wait(struct pdsc *pdsc, int max_seconds)
++{
++	struct device *dev = pdsc->dev;
++	unsigned long start_time;
++	unsigned long max_wait;
++	unsigned long duration;
++	int timeout = 0;
++	int status = 0;
++	int done = 0;
++	int err = 0;
++	int opcode;
++
++	opcode = ioread8(&pdsc->cmd_regs->cmd.opcode);
++
++	start_time = jiffies;
++	max_wait = start_time + (max_seconds * HZ);
++
++	while (!done && !timeout) {
++		done = pdsc_devcmd_done(pdsc);
++		if (done)
++			break;
++
++		timeout = time_after(jiffies, max_wait);
++		if (timeout)
++			break;
++
++		usleep_range(100, 200);
++	}
++	duration = jiffies - start_time;
++
++	if (done && duration > HZ)
++		dev_dbg(dev, "DEVCMD %d %s after %ld secs\n",
++			opcode, pdsc_devcmd_str(opcode), duration / HZ);
++
++	if (!done || timeout) {
++		dev_err(dev, "DEVCMD %d %s timeout, done %d timeout %d max_seconds=%d\n",
++			opcode, pdsc_devcmd_str(opcode), done, timeout,
++			max_seconds);
++		err = -ETIMEDOUT;
++		pdsc_devcmd_clean(pdsc);
++	}
++
++	status = pdsc_devcmd_status(pdsc);
++	err = pdsc_err_to_errno(status);
++	if (status != PDS_RC_SUCCESS && status != PDS_RC_EAGAIN)
++		dev_err(dev, "DEVCMD %d %s failed, status=%d err %d %pe\n",
++			opcode, pdsc_devcmd_str(opcode), status, err,
++			ERR_PTR(err));
++
 +	return err;
 +}
 +
-+static int pdsc_init_vf(struct pdsc *vf)
++int pdsc_devcmd_locked(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
++		       union pds_core_dev_comp *comp, int max_seconds)
 +{
-+	return -1;
-+}
-+
-+static int pdsc_init_pf(struct pdsc *pdsc)
-+{
-+	struct devlink *dl;
 +	int err;
 +
-+	pcie_print_link_status(pdsc->pdev);
++	memcpy_toio(&pdsc->cmd_regs->cmd, cmd, sizeof(*cmd));
++	pdsc_devcmd_dbell(pdsc);
++	err = pdsc_devcmd_wait(pdsc, max_seconds);
++	memcpy_fromio(comp, &pdsc->cmd_regs->comp, sizeof(*comp));
 +
-+	err = pci_request_regions(pdsc->pdev, PDS_CORE_DRV_NAME);
++	return err;
++}
++
++int pdsc_devcmd(struct pdsc *pdsc, union pds_core_dev_cmd *cmd,
++		union pds_core_dev_comp *comp, int max_seconds)
++{
++	int err;
++
++	mutex_lock(&pdsc->devcmd_lock);
++	err = pdsc_devcmd_locked(pdsc, cmd, comp, max_seconds);
++	mutex_unlock(&pdsc->devcmd_lock);
++
++	return err;
++}
++
++int pdsc_devcmd_init(struct pdsc *pdsc)
++{
++	union pds_core_dev_comp comp = { 0 };
++	union pds_core_dev_cmd cmd = {
++		.opcode = PDS_CORE_CMD_INIT,
++	};
++
++	return pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
++}
++
++int pdsc_devcmd_reset(struct pdsc *pdsc)
++{
++	union pds_core_dev_comp comp = { 0 };
++	union pds_core_dev_cmd cmd = {
++		.reset.opcode = PDS_CORE_CMD_RESET,
++	};
++
++	return pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
++}
++
++static int pdsc_devcmd_identify_locked(struct pdsc *pdsc)
++{
++	union pds_core_dev_comp comp = { 0 };
++	union pds_core_dev_cmd cmd = {
++		.identify.opcode = PDS_CORE_CMD_IDENTIFY,
++		.identify.ver = PDS_CORE_IDENTITY_VERSION_1,
++	};
++
++	return pdsc_devcmd_locked(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
++}
++
++static void pdsc_init_devinfo(struct pdsc *pdsc)
++{
++	pdsc->dev_info.asic_type = ioread8(&pdsc->info_regs->asic_type);
++	pdsc->dev_info.asic_rev = ioread8(&pdsc->info_regs->asic_rev);
++	pdsc->fw_generation = PDS_CORE_FW_STS_F_GENERATION &
++			      ioread8(&pdsc->info_regs->fw_status);
++
++	memcpy_fromio(pdsc->dev_info.fw_version,
++		      pdsc->info_regs->fw_version,
++		      PDS_CORE_DEVINFO_FWVERS_BUFLEN);
++	pdsc->dev_info.fw_version[PDS_CORE_DEVINFO_FWVERS_BUFLEN] = 0;
++
++	memcpy_fromio(pdsc->dev_info.serial_num,
++		      pdsc->info_regs->serial_num,
++		      PDS_CORE_DEVINFO_SERIAL_BUFLEN);
++	pdsc->dev_info.serial_num[PDS_CORE_DEVINFO_SERIAL_BUFLEN] = 0;
++
++	dev_dbg(pdsc->dev, "fw_version %s\n", pdsc->dev_info.fw_version);
++}
++
++static int pdsc_identify(struct pdsc *pdsc)
++{
++	struct pds_core_drv_identity drv = { 0 };
++	size_t sz;
++	int err;
++
++	drv.drv_type = cpu_to_le32(PDS_DRIVER_LINUX);
++	snprintf(drv.driver_ver_str, sizeof(drv.driver_ver_str),
++		 "%s %s", PDS_CORE_DRV_NAME, utsname()->release);
++
++	/* Next let's get some info about the device
++	 * We use the devcmd_lock at this level in order to
++	 * get safe access to the cmd_regs->data before anyone
++	 * else can mess it up
++	 */
++	mutex_lock(&pdsc->devcmd_lock);
++
++	sz = min_t(size_t, sizeof(drv), sizeof(pdsc->cmd_regs->data));
++	memcpy_toio(&pdsc->cmd_regs->data, &drv, sz);
++
++	err = pdsc_devcmd_identify_locked(pdsc);
++	if (!err) {
++		sz = min_t(size_t, sizeof(pdsc->dev_ident),
++			   sizeof(pdsc->cmd_regs->data));
++		memcpy_fromio(&pdsc->dev_ident, &pdsc->cmd_regs->data, sz);
++	}
++	mutex_unlock(&pdsc->devcmd_lock);
++
 +	if (err) {
-+		dev_err(pdsc->dev, "Cannot request PCI regions: %pe\n",
++		dev_err(pdsc->dev, "Cannot identify device: %pe\n",
 +			ERR_PTR(err));
 +		return err;
 +	}
 +
-+	err = pdsc_map_bars(pdsc);
-+	if (err)
-+		goto err_out_release_regions;
-+
-+	dl = priv_to_devlink(pdsc);
-+	devl_lock(dl);
-+	devl_register(dl);
-+	devl_unlock(dl);
++	if (isprint(pdsc->dev_info.fw_version[0]) &&
++	    isascii(pdsc->dev_info.fw_version[0]))
++		dev_info(pdsc->dev, "FW: %.*s\n",
++			 (int)(sizeof(pdsc->dev_info.fw_version) - 1),
++			 pdsc->dev_info.fw_version);
++	else
++		dev_info(pdsc->dev, "FW: (invalid string) 0x%02x 0x%02x 0x%02x 0x%02x ...\n",
++			 (u8)pdsc->dev_info.fw_version[0],
++			 (u8)pdsc->dev_info.fw_version[1],
++			 (u8)pdsc->dev_info.fw_version[2],
++			 (u8)pdsc->dev_info.fw_version[3]);
 +
 +	return 0;
-+
-+err_out_release_regions:
-+	pci_release_regions(pdsc->pdev);
-+
-+	return err;
 +}
 +
-+static const struct devlink_ops pdsc_dl_ops = {
-+};
-+
-+static const struct devlink_ops pdsc_dl_vf_ops = {
-+};
-+
-+static DEFINE_IDA(pdsc_ida);
-+
-+static int pdsc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
++int pdsc_dev_reinit(struct pdsc *pdsc)
 +{
-+	struct device *dev = &pdev->dev;
-+	const struct devlink_ops *ops;
-+	struct devlink *dl;
-+	struct pdsc *pdsc;
-+	bool is_pf;
++	pdsc_init_devinfo(pdsc);
++
++	return pdsc_identify(pdsc);
++}
++
++int pdsc_dev_init(struct pdsc *pdsc)
++{
++	unsigned int nintrs;
 +	int err;
 +
-+	is_pf = !pdev->is_virtfn;
-+	ops = is_pf ? &pdsc_dl_ops : &pdsc_dl_vf_ops;
-+	dl = devlink_alloc(ops, sizeof(struct pdsc), dev);
-+	if (!dl)
-+		return -ENOMEM;
-+	pdsc = devlink_priv(dl);
++	/* Initial init and reset of device */
++	pdsc_init_devinfo(pdsc);
++	pdsc->devcmd_timeout = PDS_CORE_DEVCMD_TIMEOUT;
 +
-+	pdsc->pdev = pdev;
-+	pdsc->dev = &pdev->dev;
-+	set_bit(PDSC_S_INITING_DRIVER, &pdsc->state);
-+	pci_set_drvdata(pdev, pdsc);
-+	pdsc_debugfs_add_dev(pdsc);
++	err = pdsc_devcmd_reset(pdsc);
++	if (err)
++		return err;
 +
-+	err = ida_alloc(&pdsc_ida, GFP_KERNEL);
-+	if (err < 0) {
-+		dev_err(pdsc->dev, "%s: id alloc failed: %pe\n",
-+			__func__, ERR_PTR(err));
-+		goto err_out_free_devlink;
-+	}
-+	pdsc->uid = err;
++	err = pdsc_identify(pdsc);
++	if (err)
++		return err;
 +
-+	/* Query system for DMA addressing limitation for the device. */
-+	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(PDS_CORE_ADDR_LEN));
-+	if (err) {
-+		dev_err(dev, "Unable to obtain 64-bit DMA for consistent allocations, aborting: %pe\n",
-+			ERR_PTR(err));
-+		goto err_out_free_ida;
++	pdsc_debugfs_add_ident(pdsc);
++
++	/* Now we can reserve interrupts */
++	nintrs = le32_to_cpu(pdsc->dev_ident.nintrs);
++	nintrs = min_t(unsigned int, num_online_cpus(), nintrs);
++
++	/* Get intr_info struct array for tracking */
++	pdsc->intr_info = kcalloc(nintrs, sizeof(*pdsc->intr_info), GFP_KERNEL);
++	if (!pdsc->intr_info) {
++		err = -ENOSPC;
++		goto err_out;
 +	}
 +
-+	err = pci_enable_device(pdev);
-+	if (err) {
-+		dev_err(dev, "Cannot enable PCI device: %pe\n", ERR_PTR(err));
-+		goto err_out_free_ida;
++	err = pci_alloc_irq_vectors(pdsc->pdev, nintrs, nintrs, PCI_IRQ_MSIX);
++	if (err != nintrs) {
++		dev_err(pdsc->dev, "Can't get %d intrs from OS: %pe\n",
++			nintrs, ERR_PTR(err));
++		err = -ENOSPC;
++		goto err_out;
 +	}
-+	pci_set_master(pdev);
++	pdsc->nintrs = nintrs;
++	pdsc_debugfs_add_irqs(pdsc);
 +
-+	if (is_pf)
-+		err = pdsc_init_pf(pdsc);
-+	else
-+		err = pdsc_init_vf(pdsc);
-+	if (err) {
-+		dev_err(dev, "Cannot init device: %pe\n", ERR_PTR(err));
-+		goto err_out_clear_master;
-+	}
-+
-+	clear_bit(PDSC_S_INITING_DRIVER, &pdsc->state);
 +	return 0;
 +
-+err_out_clear_master:
-+	pci_clear_master(pdev);
-+	pci_disable_device(pdev);
-+err_out_free_ida:
-+	ida_free(&pdsc_ida, pdsc->uid);
-+err_out_free_devlink:
-+	pdsc_debugfs_del_dev(pdsc);
-+	devlink_free(dl);
++err_out:
++	kfree(pdsc->intr_info);
++	pdsc->intr_info = NULL;
 +
 +	return err;
 +}
+diff --git a/drivers/net/ethernet/amd/pds_core/main.c b/drivers/net/ethernet/amd/pds_core/main.c
+index 1c2f3fbaa27c..a762e9a27850 100644
+--- a/drivers/net/ethernet/amd/pds_core/main.c
++++ b/drivers/net/ethernet/amd/pds_core/main.c
+@@ -148,6 +148,18 @@ static int pdsc_init_pf(struct pdsc *pdsc)
+ 	if (err)
+ 		goto err_out_release_regions;
+ 
++	mutex_init(&pdsc->devcmd_lock);
++	mutex_init(&pdsc->config_lock);
 +
-+static void pdsc_remove(struct pci_dev *pdev)
-+{
-+	struct pdsc *pdsc = pci_get_drvdata(pdev);
-+	struct devlink *dl;
++	mutex_lock(&pdsc->config_lock);
++	set_bit(PDSC_S_FW_DEAD, &pdsc->state);
 +
-+	/* Unhook the registrations first to be sure there
-+	 * are no requests while we're stopping.
-+	 */
-+	dl = priv_to_devlink(pdsc);
-+	devl_lock(dl);
-+	devl_unregister(dl);
-+	devl_unlock(dl);
++	err = pdsc_setup(pdsc, PDSC_SETUP_INIT);
++	if (err)
++		goto err_out_unmap_bars;
 +
++	mutex_unlock(&pdsc->config_lock);
++
+ 	dl = priv_to_devlink(pdsc);
+ 	devl_lock(dl);
+ 	devl_register(dl);
+@@ -155,6 +167,12 @@ static int pdsc_init_pf(struct pdsc *pdsc)
+ 
+ 	return 0;
+ 
++err_out_unmap_bars:
++	mutex_unlock(&pdsc->config_lock);
++	mutex_destroy(&pdsc->config_lock);
++	mutex_destroy(&pdsc->devcmd_lock);
++	pci_free_irq_vectors(pdsc->pdev);
 +	pdsc_unmap_bars(pdsc);
-+	pci_release_regions(pdev);
+ err_out_release_regions:
+ 	pci_release_regions(pdsc->pdev);
+ 
+@@ -251,8 +269,19 @@ static void pdsc_remove(struct pci_dev *pdev)
+ 	devl_unregister(dl);
+ 	devl_unlock(dl);
+ 
+-	pdsc_unmap_bars(pdsc);
+-	pci_release_regions(pdev);
++	if (!pdev->is_virtfn) {
++		mutex_lock(&pdsc->config_lock);
++		set_bit(PDSC_S_STOPPING_DRIVER, &pdsc->state);
 +
-+	pci_clear_master(pdev);
-+	pci_disable_device(pdev);
++		pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
++		mutex_unlock(&pdsc->config_lock);
++		mutex_destroy(&pdsc->config_lock);
++		mutex_destroy(&pdsc->devcmd_lock);
 +
-+	ida_free(&pdsc_ida, pdsc->uid);
-+	pdsc_debugfs_del_dev(pdsc);
-+	devlink_free(dl);
-+}
-+
-+static struct pci_driver pdsc_driver = {
-+	.name = PDS_CORE_DRV_NAME,
-+	.id_table = pdsc_id_table,
-+	.probe = pdsc_probe,
-+	.remove = pdsc_remove,
-+};
-+
-+static int __init pdsc_init_module(void)
-+{
-+	pdsc_debugfs_create();
-+	return pci_register_driver(&pdsc_driver);
-+}
-+
-+static void __exit pdsc_cleanup_module(void)
-+{
-+	pci_unregister_driver(&pdsc_driver);
-+	pdsc_debugfs_destroy();
-+}
-+
-+module_init(pdsc_init_module);
-+module_exit(pdsc_cleanup_module);
++		pci_free_irq_vectors(pdev);
++		pdsc_unmap_bars(pdsc);
++		pci_release_regions(pdev);
++	}
+ 
+ 	pci_clear_master(pdev);
+ 	pci_disable_device(pdev);
 diff --git a/include/linux/pds/pds_common.h b/include/linux/pds/pds_common.h
-new file mode 100644
-index 000000000000..bd041a5170a6
---- /dev/null
+index bd041a5170a6..e45a69178f74 100644
+--- a/include/linux/pds/pds_common.h
 +++ b/include/linux/pds/pds_common.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
-+/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+@@ -11,4 +11,65 @@
+ #define PDS_CORE_ADDR_MASK	(BIT_ULL(PDS_ADDR_LEN) - 1)
+ #define PDS_PAGE_SIZE		4096
+ 
++/*
++ * enum pds_core_status_code - Device command return codes
++ */
++enum pds_core_status_code {
++	PDS_RC_SUCCESS	= 0,	/* Success */
++	PDS_RC_EVERSION	= 1,	/* Incorrect version for request */
++	PDS_RC_EOPCODE	= 2,	/* Invalid cmd opcode */
++	PDS_RC_EIO	= 3,	/* I/O error */
++	PDS_RC_EPERM	= 4,	/* Permission denied */
++	PDS_RC_EQID	= 5,	/* Bad qid */
++	PDS_RC_EQTYPE	= 6,	/* Bad qtype */
++	PDS_RC_ENOENT	= 7,	/* No such element */
++	PDS_RC_EINTR	= 8,	/* operation interrupted */
++	PDS_RC_EAGAIN	= 9,	/* Try again */
++	PDS_RC_ENOMEM	= 10,	/* Out of memory */
++	PDS_RC_EFAULT	= 11,	/* Bad address */
++	PDS_RC_EBUSY	= 12,	/* Device or resource busy */
++	PDS_RC_EEXIST	= 13,	/* object already exists */
++	PDS_RC_EINVAL	= 14,	/* Invalid argument */
++	PDS_RC_ENOSPC	= 15,	/* No space left or alloc failure */
++	PDS_RC_ERANGE	= 16,	/* Parameter out of range */
++	PDS_RC_BAD_ADDR	= 17,	/* Descriptor contains a bad ptr */
++	PDS_RC_DEV_CMD	= 18,	/* Device cmd attempted on AdminQ */
++	PDS_RC_ENOSUPP	= 19,	/* Operation not supported */
++	PDS_RC_ERROR	= 29,	/* Generic error */
++	PDS_RC_ERDMA	= 30,	/* Generic RDMA error */
++	PDS_RC_EVFID	= 31,	/* VF ID does not exist */
++	PDS_RC_BAD_FW	= 32,	/* FW file is invalid or corrupted */
++	PDS_RC_ECLIENT	= 33,   /* No such client id */
++};
 +
-+#ifndef _PDS_COMMON_H_
-+#define _PDS_COMMON_H_
++enum pds_core_driver_type {
++	PDS_DRIVER_LINUX   = 1,
++	PDS_DRIVER_WIN     = 2,
++	PDS_DRIVER_DPDK    = 3,
++	PDS_DRIVER_FREEBSD = 4,
++	PDS_DRIVER_IPXE    = 5,
++	PDS_DRIVER_ESXI    = 6,
++};
 +
-+#define PDS_CORE_DRV_NAME			"pds_core"
++#define PDS_CORE_IFNAMSIZ		16
 +
-+/* the device's internal addressing uses up to 52 bits */
-+#define PDS_CORE_ADDR_LEN	52
-+#define PDS_CORE_ADDR_MASK	(BIT_ULL(PDS_ADDR_LEN) - 1)
-+#define PDS_PAGE_SIZE		4096
++/**
++ * enum pds_core_logical_qtype - Logical Queue Types
++ * @PDS_CORE_QTYPE_ADMINQ:    Administrative Queue
++ * @PDS_CORE_QTYPE_NOTIFYQ:   Notify Queue
++ * @PDS_CORE_QTYPE_RXQ:       Receive Queue
++ * @PDS_CORE_QTYPE_TXQ:       Transmit Queue
++ * @PDS_CORE_QTYPE_EQ:        Event Queue
++ * @PDS_CORE_QTYPE_MAX:       Max queue type supported
++ */
++enum pds_core_logical_qtype {
++	PDS_CORE_QTYPE_ADMINQ  = 0,
++	PDS_CORE_QTYPE_NOTIFYQ = 1,
++	PDS_CORE_QTYPE_RXQ     = 2,
++	PDS_CORE_QTYPE_TXQ     = 3,
++	PDS_CORE_QTYPE_EQ      = 4,
 +
-+#endif /* _PDS_COMMON_H_ */
-diff --git a/include/linux/pds/pds_core_if.h b/include/linux/pds/pds_core_if.h
++	PDS_CORE_QTYPE_MAX     = 16   /* don't change - used in struct size */
++};
++
+ #endif /* _PDS_COMMON_H_ */
+diff --git a/include/linux/pds/pds_intr.h b/include/linux/pds/pds_intr.h
 new file mode 100644
-index 000000000000..eb9f1662c7c7
+index 000000000000..56277c37248c
 --- /dev/null
-+++ b/include/linux/pds/pds_core_if.h
-@@ -0,0 +1,540 @@
++++ b/include/linux/pds/pds_intr.h
+@@ -0,0 +1,163 @@
 +/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
 +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
 +
-+#ifndef _PDS_CORE_IF_H_
-+#define _PDS_CORE_IF_H_
-+
-+#define PCI_VENDOR_ID_PENSANDO			0x1dd8
-+#define PCI_DEVICE_ID_PENSANDO_CORE_PF		0x100c
-+#define PCI_DEVICE_ID_VIRTIO_NET_TRANS		0x1000
-+#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF	0x1003
-+#define PCI_DEVICE_ID_PENSANDO_VDPA_VF		0x100b
-+#define PDS_CORE_BARS_MAX			4
-+#define PDS_CORE_PCI_BAR_DBELL			1
-+
-+/* Bar0 */
-+#define PDS_CORE_DEV_INFO_SIGNATURE		0x44455649 /* 'DEVI' */
-+#define PDS_CORE_BAR0_SIZE			0x8000
-+#define PDS_CORE_BAR0_DEV_INFO_REGS_OFFSET	0x0000
-+#define PDS_CORE_BAR0_DEV_CMD_REGS_OFFSET	0x0800
-+#define PDS_CORE_BAR0_DEV_CMD_DATA_REGS_OFFSET	0x0c00
-+#define PDS_CORE_BAR0_INTR_STATUS_OFFSET	0x1000
-+#define PDS_CORE_BAR0_INTR_CTRL_OFFSET		0x2000
-+#define PDS_CORE_DEV_CMD_DONE			0x00000001
-+
-+#define PDS_CORE_DEVCMD_TIMEOUT			5
-+
-+#define PDS_CORE_CLIENT_ID			0
-+#define PDS_CORE_ASIC_TYPE_CAPRI		0
++#ifndef _PDS_INTR_H_
++#define _PDS_INTR_H_
 +
 +/*
-+ * enum pds_core_cmd_opcode - Device commands
-+ */
-+enum pds_core_cmd_opcode {
-+	/* Core init */
-+	PDS_CORE_CMD_NOP		= 0,
-+	PDS_CORE_CMD_IDENTIFY		= 1,
-+	PDS_CORE_CMD_RESET		= 2,
-+	PDS_CORE_CMD_INIT		= 3,
-+
-+	PDS_CORE_CMD_FW_DOWNLOAD	= 4,
-+	PDS_CORE_CMD_FW_CONTROL		= 5,
-+
-+	/* SR/IOV commands */
-+	PDS_CORE_CMD_VF_GETATTR		= 60,
-+	PDS_CORE_CMD_VF_SETATTR		= 61,
-+	PDS_CORE_CMD_VF_CTRL		= 62,
-+
-+	/* Add commands before this line */
-+	PDS_CORE_CMD_MAX,
-+	PDS_CORE_CMD_COUNT
-+};
-+
-+/**
-+ * struct pds_core_drv_identity - Driver identity information
-+ * @drv_type:         Driver type (enum pds_core_driver_type)
-+ * @os_dist:          OS distribution, numeric format
-+ * @os_dist_str:      OS distribution, string format
-+ * @kernel_ver:       Kernel version, numeric format
-+ * @kernel_ver_str:   Kernel version, string format
-+ * @driver_ver_str:   Driver version, string format
-+ */
-+struct pds_core_drv_identity {
-+	__le32 drv_type;
-+	__le32 os_dist;
-+	char   os_dist_str[128];
-+	__le32 kernel_ver;
-+	char   kernel_ver_str[32];
-+	char   driver_ver_str[32];
-+};
-+
-+#define PDS_DEV_TYPE_MAX	16
-+/**
-+ * struct pds_core_dev_identity - Device identity information
-+ * @version:	      Version of device identify
-+ * @type:	      Identify type (0 for now)
-+ * @state:	      Device state
-+ * @rsvd:	      Word boundary padding
-+ * @nlifs:	      Number of LIFs provisioned
-+ * @nintrs:	      Number of interrupts provisioned
-+ * @ndbpgs_per_lif:   Number of doorbell pages per LIF
-+ * @intr_coal_mult:   Interrupt coalescing multiplication factor
-+ *		      Scale user-supplied interrupt coalescing
-+ *		      value in usecs to device units using:
-+ *		      device units = usecs * mult / div
-+ * @intr_coal_div:    Interrupt coalescing division factor
-+ *		      Scale user-supplied interrupt coalescing
-+ *		      value in usecs to device units using:
-+ *		      device units = usecs * mult / div
-+ * @vif_types:        How many of each VIF device type is supported
-+ */
-+struct pds_core_dev_identity {
-+	u8     version;
-+	u8     type;
-+	u8     state;
-+	u8     rsvd;
-+	__le32 nlifs;
-+	__le32 nintrs;
-+	__le32 ndbpgs_per_lif;
-+	__le32 intr_coal_mult;
-+	__le32 intr_coal_div;
-+	__le16 vif_types[PDS_DEV_TYPE_MAX];
-+};
-+
-+#define PDS_CORE_IDENTITY_VERSION_1	1
-+
-+/**
-+ * struct pds_core_dev_identify_cmd - Driver/device identify command
-+ * @opcode:	Opcode PDS_CORE_CMD_IDENTIFY
-+ * @ver:	Highest version of identify supported by driver
++ * Interrupt control register
++ * @coal_init:        Coalescing timer initial value, in
++ *                    device units.  Use @identity->intr_coal_mult
++ *                    and @identity->intr_coal_div to convert from
++ *                    usecs to device units:
 + *
-+ * Expects to find driver identification info (struct pds_core_drv_identity)
-+ * in cmd_regs->data.  Driver should keep the devcmd interface locked
-+ * while preparing the driver info.
-+ */
-+struct pds_core_dev_identify_cmd {
-+	u8 opcode;
-+	u8 ver;
-+};
-+
-+/**
-+ * struct pds_core_dev_identify_comp - Device identify command completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @ver:	Version of identify returned by device
++ *                      coal_init = coal_usecs * coal_mutl / coal_div
 + *
-+ * Device identification info (struct pds_core_dev_identity) can be found
-+ * in cmd_regs->data.  Driver should keep the devcmd interface locked
-+ * while reading the results.
++ *                    When an interrupt is sent the interrupt
++ *                    coalescing timer current value
++ *                    (@coalescing_curr) is initialized with this
++ *                    value and begins counting down.  No more
++ *                    interrupts are sent until the coalescing
++ *                    timer reaches 0.  When @coalescing_init=0
++ *                    interrupt coalescing is effectively disabled
++ *                    and every interrupt assert results in an
++ *                    interrupt.  Reset value: 0
++ * @mask:             Interrupt mask.  When @mask=1 the interrupt
++ *                    resource will not send an interrupt.  When
++ *                    @mask=0 the interrupt resource will send an
++ *                    interrupt if an interrupt event is pending
++ *                    or on the next interrupt assertion event.
++ *                    Reset value: 1
++ * @credits:          Interrupt credits.  This register indicates
++ *                    how many interrupt events the hardware has
++ *                    sent.  When written by software this
++ *                    register atomically decrements @int_credits
++ *                    by the value written.  When @int_credits
++ *                    becomes 0 then the "pending interrupt" bit
++ *                    in the Interrupt Status register is cleared
++ *                    by the hardware and any pending but unsent
++ *                    interrupts are cleared.
++ *                    !!!IMPORTANT!!! This is a signed register.
++ * @flags:            Interrupt control flags
++ *                       @unmask -- When this bit is written with a 1
++ *                       the interrupt resource will set mask=0.
++ *                       @coal_timer_reset -- When this
++ *                       bit is written with a 1 the
++ *                       @coalescing_curr will be reloaded with
++ *                       @coalescing_init to reset the coalescing
++ *                       timer.
++ * @mask_on_assert:   Automatically mask on assertion.  When
++ *                    @mask_on_assert=1 the interrupt resource
++ *                    will set @mask=1 whenever an interrupt is
++ *                    sent.  When using interrupts in Legacy
++ *                    Interrupt mode the driver must select
++ *                    @mask_on_assert=0 for proper interrupt
++ *                    operation.
++ * @coalescing_curr:  Coalescing timer current value, in
++ *                    microseconds.  When this value reaches 0
++ *                    the interrupt resource is again eligible to
++ *                    send an interrupt.  If an interrupt event
++ *                    is already pending when @coalescing_curr
++ *                    reaches 0 the pending interrupt will be
++ *                    sent, otherwise an interrupt will be sent
++ *                    on the next interrupt assertion event.
 + */
-+struct pds_core_dev_identify_comp {
-+	u8 status;
-+	u8 ver;
++struct pds_core_intr {
++	u32 coal_init;
++	u32 mask;
++	u16 credits;
++	u16 flags;
++#define PDS_CORE_INTR_F_UNMASK		0x0001
++#define PDS_CORE_INTR_F_TIMER_RESET	0x0002
++	u32 mask_on_assert;
++	u32 coalescing_curr;
++	u32 rsvd6[3];
 +};
-+
-+/**
-+ * struct pds_core_dev_reset_cmd - Device reset command
-+ * @opcode:	Opcode PDS_CORE_CMD_RESET
-+ *
-+ * Resets and clears all LIFs, VDevs, and VIFs on the device.
-+ */
-+struct pds_core_dev_reset_cmd {
-+	u8 opcode;
-+};
-+
-+/**
-+ * struct pds_core_dev_reset_comp - Reset command completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ */
-+struct pds_core_dev_reset_comp {
-+	u8 status;
-+};
-+
-+/*
-+ * struct pds_core_dev_init_data - Pointers and info needed for the Core
-+ * initialization PDS_CORE_CMD_INIT command.  The in and out structs are
-+ * overlays on the pds_core_dev_cmd_regs.data space for passing data down
-+ * to the firmware on init, and then returning initialization results.
-+ */
-+struct pds_core_dev_init_data_in {
-+	__le64 adminq_q_base;
-+	__le64 adminq_cq_base;
-+	__le64 notifyq_cq_base;
-+	__le32 flags;
-+	__le16 intr_index;
-+	u8     adminq_ring_size;
-+	u8     notifyq_ring_size;
-+};
-+
-+struct pds_core_dev_init_data_out {
-+	__le32 core_hw_index;
-+	__le32 adminq_hw_index;
-+	__le32 notifyq_hw_index;
-+	u8     adminq_hw_type;
-+	u8     notifyq_hw_type;
-+};
-+
-+/**
-+ * struct pds_core_dev_init_cmd - Core device initialize
-+ * @opcode:          opcode PDS_CORE_CMD_INIT
-+ *
-+ * Initializes the core device and sets up the AdminQ and NotifyQ.
-+ * Expects to find initialization data (struct pds_core_dev_init_data_in)
-+ * in cmd_regs->data.  Driver should keep the devcmd interface locked
-+ * while preparing the driver info.
-+ */
-+struct pds_core_dev_init_cmd {
-+	u8     opcode;
-+};
-+
-+/**
-+ * struct pds_core_dev_init_comp - Core init completion
-+ * @status:     Status of the command (enum pds_core_status_code)
-+ *
-+ * Initialization result data (struct pds_core_dev_init_data_in)
-+ * is found in cmd_regs->data.
-+ */
-+struct pds_core_dev_init_comp {
-+	u8     status;
-+};
-+
-+/**
-+ * struct pds_core_fw_download_cmd - Firmware download command
-+ * @opcode:     opcode
-+ * @rsvd:	Word boundary padding
-+ * @addr:       DMA address of the firmware buffer
-+ * @offset:     offset of the firmware buffer within the full image
-+ * @length:     number of valid bytes in the firmware buffer
-+ */
-+struct pds_core_fw_download_cmd {
-+	u8     opcode;
-+	u8     rsvd[3];
-+	__le32 offset;
-+	__le64 addr;
-+	__le32 length;
-+};
-+
-+/**
-+ * struct pds_core_fw_download_comp - Firmware download completion
-+ * @status:     Status of the command (enum pds_core_status_code)
-+ */
-+struct pds_core_fw_download_comp {
-+	u8     status;
-+};
-+
-+/**
-+ * enum pds_core_fw_control_oper - FW control operations
-+ * @PDS_CORE_FW_INSTALL_ASYNC:     Install firmware asynchronously
-+ * @PDS_CORE_FW_INSTALL_STATUS:    Firmware installation status
-+ * @PDS_CORE_FW_ACTIVATE_ASYNC:    Activate firmware asynchronously
-+ * @PDS_CORE_FW_ACTIVATE_STATUS:   Firmware activate status
-+ * @PDS_CORE_FW_UPDATE_CLEANUP:    Cleanup any firmware update leftovers
-+ * @PDS_CORE_FW_GET_BOOT:          Return current active firmware slot
-+ * @PDS_CORE_FW_SET_BOOT:          Set active firmware slot for next boot
-+ * @PDS_CORE_FW_GET_LIST:          Return list of installed firmware images
-+ */
-+enum pds_core_fw_control_oper {
-+	PDS_CORE_FW_INSTALL_ASYNC          = 0,
-+	PDS_CORE_FW_INSTALL_STATUS         = 1,
-+	PDS_CORE_FW_ACTIVATE_ASYNC         = 2,
-+	PDS_CORE_FW_ACTIVATE_STATUS        = 3,
-+	PDS_CORE_FW_UPDATE_CLEANUP         = 4,
-+	PDS_CORE_FW_GET_BOOT               = 5,
-+	PDS_CORE_FW_SET_BOOT               = 6,
-+	PDS_CORE_FW_GET_LIST               = 7,
-+};
-+
-+enum pds_core_fw_slot {
-+	PDS_CORE_FW_SLOT_INVALID    = 0,
-+	PDS_CORE_FW_SLOT_A	    = 1,
-+	PDS_CORE_FW_SLOT_B          = 2,
-+	PDS_CORE_FW_SLOT_GOLD       = 3,
-+};
-+
-+/**
-+ * struct pds_core_fw_control_cmd - Firmware control command
-+ * @opcode:    opcode
-+ * @rsvd:      Word boundary padding
-+ * @oper:      firmware control operation (enum pds_core_fw_control_oper)
-+ * @slot:      slot to operate on (enum pds_core_fw_slot)
-+ */
-+struct pds_core_fw_control_cmd {
-+	u8  opcode;
-+	u8  rsvd[3];
-+	u8  oper;
-+	u8  slot;
-+};
-+
-+/**
-+ * struct pds_core_fw_control_comp - Firmware control copletion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @rsvd:	Word alignment space
-+ * @slot:	Slot number (enum pds_core_fw_slot)
-+ * @rsvd1:	Struct padding
-+ * @color:	Color bit
-+ */
-+struct pds_core_fw_control_comp {
-+	u8     status;
-+	u8     rsvd[3];
-+	u8     slot;
-+	u8     rsvd1[10];
-+	u8     color;
-+};
-+
-+struct pds_core_fw_name_info {
-+#define PDS_CORE_FWSLOT_BUFLEN		8
-+#define PDS_CORE_FWVERS_BUFLEN		32
-+	char   slotname[PDS_CORE_FWSLOT_BUFLEN];
-+	char   fw_version[PDS_CORE_FWVERS_BUFLEN];
-+};
-+
-+struct pds_core_fw_list_info {
-+#define PDS_CORE_FWVERS_LIST_LEN	16
-+	u8 num_fw_slots;
-+	struct pds_core_fw_name_info fw_names[PDS_CORE_FWVERS_LIST_LEN];
-+} __packed;
-+
-+enum pds_core_vf_attr {
-+	PDS_CORE_VF_ATTR_SPOOFCHK	= 1,
-+	PDS_CORE_VF_ATTR_TRUST		= 2,
-+	PDS_CORE_VF_ATTR_MAC		= 3,
-+	PDS_CORE_VF_ATTR_LINKSTATE	= 4,
-+	PDS_CORE_VF_ATTR_VLAN		= 5,
-+	PDS_CORE_VF_ATTR_RATE		= 6,
-+	PDS_CORE_VF_ATTR_STATSADDR	= 7,
-+};
-+
-+/**
-+ * enum pds_core_vf_link_status - Virtual Function link status
-+ * @PDS_CORE_VF_LINK_STATUS_AUTO:   Use link state of the uplink
-+ * @PDS_CORE_VF_LINK_STATUS_UP:     Link always up
-+ * @PDS_CORE_VF_LINK_STATUS_DOWN:   Link always down
-+ */
-+enum pds_core_vf_link_status {
-+	PDS_CORE_VF_LINK_STATUS_AUTO = 0,
-+	PDS_CORE_VF_LINK_STATUS_UP   = 1,
-+	PDS_CORE_VF_LINK_STATUS_DOWN = 2,
-+};
-+
-+/**
-+ * struct pds_core_vf_setattr_cmd - Set VF attributes on the NIC
-+ * @opcode:     Opcode
-+ * @attr:       Attribute type (enum pds_core_vf_attr)
-+ * @vf_index:   VF index
-+ * @macaddr:	mac address
-+ * @vlanid:	vlan ID
-+ * @maxrate:	max Tx rate in Mbps
-+ * @spoofchk:	enable address spoof checking
-+ * @trust:	enable VF trust
-+ * @linkstate:	set link up or down
-+ * @stats:	stats addr struct
-+ * @stats.pa:	set DMA address for VF stats
-+ * @stats.len:	length of VF stats space
-+ * @pad:	force union to specific size
-+ */
-+struct pds_core_vf_setattr_cmd {
-+	u8     opcode;
-+	u8     attr;
-+	__le16 vf_index;
-+	union {
-+		u8     macaddr[6];
-+		__le16 vlanid;
-+		__le32 maxrate;
-+		u8     spoofchk;
-+		u8     trust;
-+		u8     linkstate;
-+		struct {
-+			__le64 pa;
-+			__le32 len;
-+		} stats;
-+		u8     pad[60];
-+	} __packed;
-+};
-+
-+struct pds_core_vf_setattr_comp {
-+	u8     status;
-+	u8     attr;
-+	__le16 vf_index;
-+	__le16 comp_index;
-+	u8     rsvd[9];
-+	u8     color;
-+};
-+
-+/**
-+ * struct pds_core_vf_getattr_cmd - Get VF attributes from the NIC
-+ * @opcode:     Opcode
-+ * @attr:       Attribute type (enum pds_core_vf_attr)
-+ * @vf_index:   VF index
-+ */
-+struct pds_core_vf_getattr_cmd {
-+	u8     opcode;
-+	u8     attr;
-+	__le16 vf_index;
-+};
-+
-+struct pds_core_vf_getattr_comp {
-+	u8     status;
-+	u8     attr;
-+	__le16 vf_index;
-+	union {
-+		u8     macaddr[6];
-+		__le16 vlanid;
-+		__le32 maxrate;
-+		u8     spoofchk;
-+		u8     trust;
-+		u8     linkstate;
-+		__le64 stats_pa;
-+		u8     pad[11];
-+	} __packed;
-+	u8     color;
-+};
-+
-+enum pds_core_vf_ctrl_opcode {
-+	PDS_CORE_VF_CTRL_START_ALL	= 0,
-+	PDS_CORE_VF_CTRL_START		= 1,
-+};
-+
-+/**
-+ * struct pds_core_vf_ctrl_cmd - VF control command
-+ * @opcode:         Opcode for the command
-+ * @ctrl_opcode:    VF control operation type
-+ * @vf_index:       VF Index. It is unused if op START_ALL is used.
-+ */
-+
-+struct pds_core_vf_ctrl_cmd {
-+	u8	opcode;
-+	u8	ctrl_opcode;
-+	__le16	vf_index;
-+};
-+
-+/**
-+ * struct pds_core_vf_ctrl_comp - VF_CTRL command completion.
-+ * @status:     Status of the command (enum pds_core_status_code)
-+ */
-+struct pds_core_vf_ctrl_comp {
-+	u8	status;
-+};
-+
-+/*
-+ * union pds_core_dev_cmd - Overlay of core device command structures
-+ */
-+union pds_core_dev_cmd {
-+	u8     opcode;
-+	u32    words[16];
-+
-+	struct pds_core_dev_identify_cmd identify;
-+	struct pds_core_dev_init_cmd     init;
-+	struct pds_core_dev_reset_cmd    reset;
-+	struct pds_core_fw_download_cmd  fw_download;
-+	struct pds_core_fw_control_cmd   fw_control;
-+
-+	struct pds_core_vf_setattr_cmd   vf_setattr;
-+	struct pds_core_vf_getattr_cmd   vf_getattr;
-+	struct pds_core_vf_ctrl_cmd      vf_ctrl;
-+};
-+
-+/*
-+ * union pds_core_dev_comp - Overlay of core device completion structures
-+ */
-+union pds_core_dev_comp {
-+	u8                                status;
-+	u8                                bytes[16];
-+
-+	struct pds_core_dev_identify_comp identify;
-+	struct pds_core_dev_reset_comp    reset;
-+	struct pds_core_dev_init_comp     init;
-+	struct pds_core_fw_download_comp  fw_download;
-+	struct pds_core_fw_control_comp   fw_control;
-+
-+	struct pds_core_vf_setattr_comp   vf_setattr;
-+	struct pds_core_vf_getattr_comp   vf_getattr;
-+	struct pds_core_vf_ctrl_comp      vf_ctrl;
-+};
-+
-+/**
-+ * struct pds_core_dev_hwstamp_regs - Hardware current timestamp registers
-+ * @tick_low:        Low 32 bits of hardware timestamp
-+ * @tick_high:       High 32 bits of hardware timestamp
-+ */
-+struct pds_core_dev_hwstamp_regs {
-+	u32    tick_low;
-+	u32    tick_high;
-+};
-+
-+/**
-+ * struct pds_core_dev_info_regs - Device info register format (read-only)
-+ * @signature:       Signature value of 0x44455649 ('DEVI')
-+ * @version:         Current version of info
-+ * @asic_type:       Asic type
-+ * @asic_rev:        Asic revision
-+ * @fw_status:       Firmware status
-+ *			bit 0   - 1 = fw running
-+ *			bit 4-7 - 4 bit generation number, changes on fw restart
-+ * @fw_heartbeat:    Firmware heartbeat counter
-+ * @serial_num:      Serial number
-+ * @fw_version:      Firmware version
-+ * @oprom_regs:      oprom_regs to store oprom debug enable/disable and bmp
-+ * @rsvd_pad1024:    Struct padding
-+ * @hwstamp:         Hardware current timestamp registers
-+ * @rsvd_pad2048:    Struct padding
-+ */
-+struct pds_core_dev_info_regs {
-+#define PDS_CORE_DEVINFO_FWVERS_BUFLEN 32
-+#define PDS_CORE_DEVINFO_SERIAL_BUFLEN 32
-+	u32    signature;
-+	u8     version;
-+	u8     asic_type;
-+	u8     asic_rev;
-+#define PDS_CORE_FW_STS_F_STOPPED	0x00
-+#define PDS_CORE_FW_STS_F_RUNNING	0x01
-+#define PDS_CORE_FW_STS_F_GENERATION	0xF0
-+	u8     fw_status;
-+	__le32 fw_heartbeat;
-+	char   fw_version[PDS_CORE_DEVINFO_FWVERS_BUFLEN];
-+	char   serial_num[PDS_CORE_DEVINFO_SERIAL_BUFLEN];
-+	u8     oprom_regs[32];     /* reserved */
-+	u8     rsvd_pad1024[916];
-+	struct pds_core_dev_hwstamp_regs hwstamp;   /* on 1k boundary */
-+	u8     rsvd_pad2048[1016];
-+} __packed;
-+
-+/**
-+ * struct pds_core_dev_cmd_regs - Device command register format (read-write)
-+ * @doorbell:	Device Cmd Doorbell, write-only
-+ *              Write a 1 to signal device to process cmd
-+ * @done:	Command completed indicator, poll for completion
-+ *              bit 0 == 1 when command is complete
-+ * @cmd:	Opcode-specific command bytes
-+ * @comp:	Opcode-specific response bytes
-+ * @rsvd:	Struct padding
-+ * @data:	Opcode-specific side-data
-+ */
-+struct pds_core_dev_cmd_regs {
-+	u32                     doorbell;
-+	u32                     done;
-+	union pds_core_dev_cmd  cmd;
-+	union pds_core_dev_comp comp;
-+	u8                      rsvd[48];
-+	u32                     data[478];
-+} __packed;
-+
-+/**
-+ * struct pds_core_dev_regs - Device register format for bar 0 page 0
-+ * @info:            Device info registers
-+ * @devcmd:          Device command registers
-+ */
-+struct pds_core_dev_regs {
-+	struct pds_core_dev_info_regs info;
-+	struct pds_core_dev_cmd_regs  devcmd;
-+} __packed;
 +
 +#ifndef __CHECKER__
-+static_assert(sizeof(struct pds_core_drv_identity) <= 1912);
-+static_assert(sizeof(struct pds_core_dev_identity) <= 1912);
-+static_assert(sizeof(union pds_core_dev_cmd) == 64);
-+static_assert(sizeof(union pds_core_dev_comp) == 16);
-+static_assert(sizeof(struct pds_core_dev_info_regs) == 2048);
-+static_assert(sizeof(struct pds_core_dev_cmd_regs) == 2048);
-+static_assert(sizeof(struct pds_core_dev_regs) == 4096);
++static_assert(sizeof(struct pds_core_intr) == 32);
 +#endif /* __CHECKER__ */
 +
-+#endif /* _PDS_CORE_IF_H_ */
++#define PDS_CORE_INTR_CTRL_REGS_MAX		2048
++#define PDS_CORE_INTR_CTRL_COAL_MAX		0x3F
++#define PDS_CORE_INTR_INDEX_NOT_ASSIGNED	-1
++
++struct pds_core_intr_status {
++	u32 status[2];
++};
++
++/**
++ * enum pds_core_intr_mask_vals - valid values for mask and mask_assert.
++ * @PDS_CORE_INTR_MASK_CLEAR:	unmask interrupt.
++ * @PDS_CORE_INTR_MASK_SET:	mask interrupt.
++ */
++enum pds_core_intr_mask_vals {
++	PDS_CORE_INTR_MASK_CLEAR	= 0,
++	PDS_CORE_INTR_MASK_SET		= 1,
++};
++
++/**
++ * enum pds_core_intr_credits_bits - Bitwise composition of credits values.
++ * @PDS_CORE_INTR_CRED_COUNT:	bit mask of credit count, no shift needed.
++ * @PDS_CORE_INTR_CRED_COUNT_SIGNED: bit mask of credit count, including sign bit.
++ * @PDS_CORE_INTR_CRED_UNMASK:	unmask the interrupt.
++ * @PDS_CORE_INTR_CRED_RESET_COALESCE: reset the coalesce timer.
++ * @PDS_CORE_INTR_CRED_REARM:	unmask the and reset the timer.
++ */
++enum pds_core_intr_credits_bits {
++	PDS_CORE_INTR_CRED_COUNT		= 0x7fffu,
++	PDS_CORE_INTR_CRED_COUNT_SIGNED		= 0xffffu,
++	PDS_CORE_INTR_CRED_UNMASK		= 0x10000u,
++	PDS_CORE_INTR_CRED_RESET_COALESCE	= 0x20000u,
++	PDS_CORE_INTR_CRED_REARM		= (PDS_CORE_INTR_CRED_UNMASK |
++					   PDS_CORE_INTR_CRED_RESET_COALESCE),
++};
++
++static inline void
++pds_core_intr_coal_init(struct pds_core_intr __iomem *intr_ctrl, u32 coal)
++{
++	iowrite32(coal, &intr_ctrl->coal_init);
++}
++
++static inline void
++pds_core_intr_mask(struct pds_core_intr __iomem *intr_ctrl, u32 mask)
++{
++	iowrite32(mask, &intr_ctrl->mask);
++}
++
++static inline void
++pds_core_intr_credits(struct pds_core_intr __iomem *intr_ctrl,
++		      u32 cred, u32 flags)
++{
++	if (WARN_ON_ONCE(cred > PDS_CORE_INTR_CRED_COUNT)) {
++		cred = ioread32(&intr_ctrl->credits);
++		cred &= PDS_CORE_INTR_CRED_COUNT_SIGNED;
++	}
++
++	iowrite32(cred | flags, &intr_ctrl->credits);
++}
++
++static inline void
++pds_core_intr_clean_flags(struct pds_core_intr __iomem *intr_ctrl, u32 flags)
++{
++	u32 cred;
++
++	cred = ioread32(&intr_ctrl->credits);
++	cred &= PDS_CORE_INTR_CRED_COUNT_SIGNED;
++	cred |= flags;
++	iowrite32(cred, &intr_ctrl->credits);
++}
++
++static inline void
++pds_core_intr_clean(struct pds_core_intr __iomem *intr_ctrl)
++{
++	pds_core_intr_clean_flags(intr_ctrl, PDS_CORE_INTR_CRED_RESET_COALESCE);
++}
++
++static inline void
++pds_core_intr_mask_assert(struct pds_core_intr __iomem *intr_ctrl, u32 mask)
++{
++	iowrite32(mask, &intr_ctrl->mask_on_assert);
++}
++
++#endif /* _PDS_INTR_H_ */
 -- 
 2.17.1
 
