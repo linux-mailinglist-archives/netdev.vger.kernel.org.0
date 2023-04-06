@@ -2,136 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 807FF6D93E1
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 12:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2BD66D93E8
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 12:25:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237236AbjDFKWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 06:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
+        id S235147AbjDFKZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 06:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237154AbjDFKWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 06:22:36 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13716975C;
-        Thu,  6 Apr 2023 03:21:58 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3365ZVoW018085;
-        Thu, 6 Apr 2023 03:21:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=ettstRGWvS56fnp3bZw7OTRsDyBJuDTMzGdoHrt4m3U=;
- b=AuEUVsob9pI8yLEZmhz0ucR+2nCRPWdAd/X4rd8o637+FwspykV3P9hBhCpkJcw9tETY
- /nb2966Knmg1cCLW0LPzquWUlVe6vPaA0702DUpBvgmhwa5VzgTEYxY0NQS4IUHnLTUQ
- 4cLfguRqXvl7JIO6IR+s708jYJFCMKK3TZGEIlJEP/FdRc9basH0yGOiGz+NCvhl08tz
- SMVw9jw1S63kMAV4uSeZK6U0xdo7s4gAALO3ClvTmWBbSw9C9PfO0bwWemINW2EXQV9L
- OJQdKpzfTGSbZFUHU6jKblKQh4Z9lbrqpWnmMY8AvTT9rjWAl10kkPjuECr4BILoN9EZ 4w== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3psr2e1cnb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 06 Apr 2023 03:21:47 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 6 Apr
- 2023 03:21:45 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Thu, 6 Apr 2023 03:21:45 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 1E8F65B693B;
-        Thu,  6 Apr 2023 03:21:39 -0700 (PDT)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
-        <hkelam@marvell.com>, <naveenm@marvell.com>, <edumazet@google.com>,
-        <pabeni@redhat.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <maxtram95@gmail.com>
-Subject: [net-next Patch v6 6/6] docs: octeontx2: Add Documentation for QOS
-Date:   Thu, 6 Apr 2023 15:51:03 +0530
-Message-ID: <20230406102103.19910-7-hkelam@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230406102103.19910-1-hkelam@marvell.com>
-References: <20230406102103.19910-1-hkelam@marvell.com>
+        with ESMTP id S237010AbjDFKZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 06:25:35 -0400
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F8A55B4;
+        Thu,  6 Apr 2023 03:25:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1680776692; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=Cjs+XBV8Gu0KGOQFrhBmtUdPH6mSx/zabc0UXppUBcomoj8H64sVduwwQBzhN5QIjQV6bg/8iFJkZlzrURFcxDGpuY99MdR4ZTeJX4A6LIX9rf9U3DauKgjFpiDH+WRvhVIvGZNSmX9SCtFFuaFyJnhZjFA9GNiqE+cu9zdYvpY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1680776692; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=aKkAM3NtQAerwJ+wJavlq1ECKj7FR7c0TY3j7Hm+11M=; 
+        b=jH3ESseDVSFPtC7Et2RwsXwcCPqjCkMqq88JY8BdHPEijMeskkGShBZIuO40LMeHnvOCWKlNzm+dbBTrlYfku9dG9LuP7p9Ho7Uy3q4j4AD8LMz4f9YJpf5vkVT2S8DVEXkDL7+9BUYclT6acBRIl3wmMHnx75gDpXeZyTgtPQQ=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1680776692;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:From:From:Subject:Subject:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=aKkAM3NtQAerwJ+wJavlq1ECKj7FR7c0TY3j7Hm+11M=;
+        b=cBhKMOAQ/qPqFfGu9Tir3tuBiWJl7fiTNs47Logi6CaloU7PzCCXbUVoq2ZwbxtD
+        mpN4ngp/yWDywmSXIUPABRocell4f2WPuJzJDnOyDj7u5LRBbyd/oYU8SiksYyCO7FA
+        V0HT1m/fMrUiDwALPniZmemNdHhUld7QDdB10xsw=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1680776691384567.9733051958792; Thu, 6 Apr 2023 03:24:51 -0700 (PDT)
+Message-ID: <79934b31-47ed-f2c7-03b6-fb2c2e95aa2d@arinc9.com>
+Date:   Thu, 6 Apr 2023 13:24:45 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: J3Rm-QNBHcfqAdC6fE_5OFVKWBxcsyVC
-X-Proofpoint-ORIG-GUID: J3Rm-QNBHcfqAdC6fE_5OFVKWBxcsyVC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-06_04,2023-04-06_01,2023-02-09_01
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix port specifications
+ for MT7988
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20230406100445.52915-1-arinc.unal@arinc9.com>
+Content-Language: en-US
+In-Reply-To: <20230406100445.52915-1-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add QOS example configuration along with tc-htb commands
+Port 6 configuration is shared so it's simpler to put a label.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
----
- .../ethernet/marvell/octeontx2.rst            | 39 +++++++++++++++++++
- 1 file changed, 39 insertions(+)
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 6fbbdcb5987f..009f2c0948d6 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2548,7 +2548,7 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
+  	phy_interface_zero(config->supported_interfaces);
+  
+  	switch (port) {
+-	case 0 ... 4: /* Internal phy */
++	case 0 ... 3: /* Internal phy */
+  		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+  			  config->supported_interfaces);
+  		break;
+@@ -2710,37 +2710,50 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+  	struct mt7530_priv *priv = ds->priv;
+  	u32 mcr_cur, mcr_new;
+  
+-	switch (port) {
+-	case 0 ... 4: /* Internal phy */
+-		if (state->interface != PHY_INTERFACE_MODE_GMII &&
+-		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
++	if (priv->id == ID_MT7988) {
++		switch (port) {
++		case 0 ... 3: /* Internal phy */
++			if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
++				goto unsupported;
++			break;
++		case 6: /* Port 6, a CPU port. */
++			goto port6;
++		default:
+  			goto unsupported;
+-		break;
+-	case 5: /* Port 5, a CPU port. */
+-		if (priv->p5_interface == state->interface)
++		}
++	} else {
++		switch (port) {
++		case 0 ... 4: /* Internal phy */
++			if (state->interface != PHY_INTERFACE_MODE_GMII)
++				goto unsupported;
+  			break;
++		case 5: /* Port 5, a CPU port. */
++			if (priv->p5_interface == state->interface)
++				break;
+  
+-		if (mt753x_mac_config(ds, port, mode, state) < 0)
+-			goto unsupported;
++			if (mt753x_mac_config(ds, port, mode, state) < 0)
++				goto unsupported;
+  
+-		if (priv->p5_intf_sel == P5_INTF_SEL_GMAC5 ||
+-		    priv->p5_intf_sel == P5_INTF_SEL_GMAC5_SGMII)
+-			priv->p5_interface = state->interface;
+-		break;
+-	case 6: /* Port 6, a CPU port. */
+-		if (priv->p6_interface == state->interface)
++			if (priv->p5_intf_sel == P5_INTF_SEL_GMAC5 ||
++			priv->p5_intf_sel == P5_INTF_SEL_GMAC5_SGMII)
++				priv->p5_interface = state->interface;
+  			break;
++		case 6: /* Port 6, a CPU port. */
++port6:
++			if (priv->p6_interface == state->interface)
++				break;
+  
+-		if (mt753x_mac_config(ds, port, mode, state) < 0)
+-			goto unsupported;
++			if (mt753x_mac_config(ds, port, mode, state) < 0)
++				goto unsupported;
+  
+-		priv->p6_interface = state->interface;
+-		break;
+-	default:
++			priv->p6_interface = state->interface;
++			break;
++		default:
+  unsupported:
+-		dev_err(ds->dev, "%s: unsupported %s port: %i\n",
+-			__func__, phy_modes(state->interface), port);
+-		return;
++			dev_err(ds->dev, "%s: unsupported %s port: %i\n",
++				__func__, phy_modes(state->interface), port);
++			return;
++		}
+  	}
+  
+  	mcr_cur = mt7530_read(priv, MT7530_PMCR_P(port));
 
-diff --git a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
-index 5ba9015336e2..eca4309964c8 100644
---- a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
-+++ b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
-@@ -13,6 +13,7 @@ Contents
- - `Drivers`_
- - `Basic packet flow`_
- - `Devlink health reporters`_
-+- `Quality of service`_
- 
- Overview
- ========
-@@ -287,3 +288,41 @@ For example::
- 	 NIX_AF_ERR:
- 	        NIX Error Interrupt Reg : 64
- 	        Rx on unmapped PF_FUNC
-+
-+
-+Quality of service
-+==================
-+
-+octeontx2 silicon and CN10K transmit interface consists of five transmit levels starting from SMQ/MDQ, TL4 to TL1.
-+The hardware uses the below algorithms depending on the priority of scheduler queues
-+
-+1. Strict Priority
-+
-+      -  Once packets are submitted to MDQ, hardware picks all active MDQs having different priority
-+         using strict priority.
-+
-+2. Round Robin
-+
-+      - Active MDQs having the same priority level are chosen using round robin.
-+
-+3. Each packet will traverse MDQ, TL4 to TL1 levels. Each level contains an array of queues to support scheduling and
-+   shaping.
-+
-+4. once the user creates tc classes with different priority
-+
-+   -  Driver configures schedulers allocated to the class with specified priority along with rate-limiting configuration.
-+
-+5. Enable HW TC offload on the interface::
-+
-+        # ethtool -K <interface> hw-tc-offload on
-+
-+6. Crate htb root::
-+
-+        # tc qdisc add dev <interface> clsact
-+        # tc qdisc replace dev <interface> root handle 1: htb offload
-+
-+7. Create tc classes with different  priorities::
-+
-+        # tc class add dev <interface> parent 1: classid 1:1 htb rate 10Gbit prio 1
-+
-+        # tc class add dev <interface> parent 1: classid 1:2 htb rate 10Gbit prio 7
--- 
-2.17.1
-
+Arınç
