@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CBC06D9EBC
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 19:30:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C8926D9EBD
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 19:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239900AbjDFRaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 13:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47698 "EHLO
+        id S240019AbjDFRaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 13:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjDFRaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 13:30:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D14986A5
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 10:30:20 -0700 (PDT)
+        with ESMTP id S239814AbjDFRaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 13:30:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE35A9
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 10:30:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E86264A79
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 17:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A998C433D2;
-        Thu,  6 Apr 2023 17:30:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE458649BC
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 17:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 763E8C433EF;
+        Thu,  6 Apr 2023 17:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680802219;
-        bh=ZJKba0+w5vwtN3goyHbArkfj6XhrRd7mEr46lY1n1Ag=;
+        s=k20201202; t=1680802221;
+        bh=uTezeCfzpYKuhuhU2D8QgaY4IY+HPF1/VqkokcAEH/s=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-        b=A/aOGZg8KrdEMzpZI1ZeCrSP4OnuuIbmN7t1goTxUddA3EpT32t4hIgRvxTsJ/jst
-         ZwNNbKdwws39ddAoVRaU1QVsD95W0ubL/CnuF+zr/fpO+t+fQp+cI72uMBpi7lS3Kn
-         NLfYa7tGHwTPUkWdexCqfEznsGxvrzHKvuOmtwPzcpqwJjPerGnHofRBDNTUWt1xgx
-         j7ZFOI45igB4whQCI+izb+bW8ETqlztIK2h57iYMlbEP2eZoXyl7nUVssesLGOj1bW
-         vGgTA16WwcSQYNcakf/rYoZ5F+Dbud8uFg6SWG4dnUkg1DLiw7aldFriFo2r/NnA9m
-         a5qZwJJhOm11g==
+        b=asWJygQgC55dAkjx6udpdZntn9zuHt+kcQ0wgfPkXijrhvumhv4d/EdkWjZEHE7N+
+         yQ9SaMwOJrnlBbTp5gMzf0WuZR6An4wuvhlKq2VTDDN7QWKJ+PFershPATGcWAZqHO
+         5W9BmCuXhTOb73ykf4CFUIIX0dMjlDlXoa9Y7finaHR447+dLH1oGzE4KthCFZNQB4
+         OWacI/iuswF2dqqdr+nS1SlS0t6eDREd4RYsfrZ9UgjrnpVaGChDZqcNkroTRPYeUe
+         P7+WiNdpj3HseW4keCiCN2oq67bx0VL2IAwOaid3tZFAg5Q0KAeMJRz0UhxcaRM9M1
+         A6OsHLO0kcUkA==
 From:   Simon Horman <horms@kernel.org>
-Date:   Thu, 06 Apr 2023 19:30:09 +0200
-Subject: [PATCH net-next 1/2] net: stmmac: dwmac-anarion: Use annotation
- __iomem for register base
+Date:   Thu, 06 Apr 2023 19:30:10 +0200
+Subject: [PATCH net-next 2/2] net: stmmac: dwmac-anarion: Always return
+ struct anarion_gmac * from anarion_config_dt()
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230406-dwmac-anarion-sparse-v1-1-b0c866c8be9d@kernel.org>
+Message-Id: <20230406-dwmac-anarion-sparse-v1-2-b0c866c8be9d@kernel.org>
 References: <20230406-dwmac-anarion-sparse-v1-0-b0c866c8be9d@kernel.org>
 In-Reply-To: <20230406-dwmac-anarion-sparse-v1-0-b0c866c8be9d@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>,
@@ -52,8 +52,8 @@ Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
 X-Mailer: b4 0.12.2
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,62 +61,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use __iomem annotation the register base: the ctl_block field of struct
-anarion_gmac. I believe this is the normal practice for such variables.
+Always return struct anarion_gmac * from anarion_config_dt().
+In the case where ctl_block was an error pointer it was being
+returned directly. Which sparse flags as follows:
 
-By doing so some casting is avoided.
-And sparse no longer reports:
+ .../dwmac-anarion.c:73:24: warning: incorrect type in return expression (different address spaces)
+ .../dwmac-anarion.c:73:24:    expected struct anarion_gmac *
+ .../dwmac-anarion.c:73:24:    got void [noderef] __iomem *[assigned] ctl_block
 
- .../dwmac-anarion.c:29:23: warning: incorrect type in argument 1 (different address spaces)
- .../dwmac-anarion.c:29:23:    expected void const volatile [noderef] __iomem *addr
- .../dwmac-anarion.c:29:23:    got void *
- .../dwmac-anarion.c:34:22: warning: incorrect type in argument 2 (different address spaces)
- .../dwmac-anarion.c:34:22:    expected void volatile [noderef] __iomem *addr
- .../dwmac-anarion.c:34:22:    got void *
+Avoid this by converting the error pointer to an error.
+And then reversing the conversion.
+
+As a side effect, the error can be used for logging purposes,
+subjectively, leading to a minor cleanup.
 
 No functional change intended.
 Compile tested only.
 
 Signed-off-by: Simon Horman <horms@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-anarion.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-anarion.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-anarion.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-anarion.c
-index dfbaea06d108..2357e77434fb 100644
+index 2357e77434fb..9354bf419112 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-anarion.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-anarion.c
-@@ -20,18 +20,18 @@
- #define  GMAC_CONFIG_INTF_RGMII		(0x1 << 0)
+@@ -68,9 +68,9 @@ static struct anarion_gmac *anarion_config_dt(struct platform_device *pdev)
  
- struct anarion_gmac {
--	uintptr_t ctl_block;
-+	void __iomem *ctl_block;
- 	uint32_t phy_intf_sel;
- };
+ 	ctl_block = devm_platform_ioremap_resource(pdev, 1);
+ 	if (IS_ERR(ctl_block)) {
+-		dev_err(&pdev->dev, "Cannot get reset region (%ld)!\n",
+-			PTR_ERR(ctl_block));
+-		return ctl_block;
++		err = PTR_ERR(ctl_block);
++		dev_err(&pdev->dev, "Cannot get reset region (%d)!\n", err);
++		return ERR_PTR(err);
+ 	}
  
- static uint32_t gmac_read_reg(struct anarion_gmac *gmac, uint8_t reg)
- {
--	return readl((void *)(gmac->ctl_block + reg));
-+	return readl(gmac->ctl_block + reg);
- };
- 
- static void gmac_write_reg(struct anarion_gmac *gmac, uint8_t reg, uint32_t val)
- {
--	writel(val, (void *)(gmac->ctl_block + reg));
-+	writel(val, gmac->ctl_block + reg);
- }
- 
- static int anarion_gmac_init(struct platform_device *pdev, void *priv)
-@@ -77,7 +77,7 @@ static struct anarion_gmac *anarion_config_dt(struct platform_device *pdev)
- 	if (!gmac)
- 		return ERR_PTR(-ENOMEM);
- 
--	gmac->ctl_block = (uintptr_t)ctl_block;
-+	gmac->ctl_block = ctl_block;
- 
- 	err = of_get_phy_mode(pdev->dev.of_node, &phy_mode);
- 	if (err)
+ 	gmac = devm_kzalloc(&pdev->dev, sizeof(*gmac), GFP_KERNEL);
 
 -- 
 2.30.2
