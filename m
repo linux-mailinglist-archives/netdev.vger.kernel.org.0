@@ -2,159 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 779CA6D9796
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 15:03:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94E1B6D979B
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 15:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238006AbjDFNCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 09:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58888 "EHLO
+        id S229436AbjDFNFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 09:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237068AbjDFNCq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 09:02:46 -0400
-Received: from mail-wr1-x462.google.com (mail-wr1-x462.google.com [IPv6:2a00:1450:4864:20::462])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCE0902D
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 06:02:39 -0700 (PDT)
-Received: by mail-wr1-x462.google.com with SMTP id r29so39420314wra.13
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 06:02:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1680786158;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OurEHAluO0z0/iX0xySpGmAc9WM9TpIWEufWnTv6GLE=;
-        b=nINqXF48TmWh8tUDIa9jsFNlnAshXBVNu6+nFuoPBC32YqKpMNMC7ls2YFFOmEkaXw
-         akdcSOvhOtuymRuQc30aqFrkB1YVDbPeN1cGn36igFJrYri9D1652SMD15zhKPzJtfl8
-         Vj5+fz1doXqLs4MeJpGtXLSdll14RWHnGYOvw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680786158;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OurEHAluO0z0/iX0xySpGmAc9WM9TpIWEufWnTv6GLE=;
-        b=JIhIIe7sF6JoBTV9jMOMIDKtObfbvCnNmntZVbmNxnreuvdv/+4SiOlWOsmLuHZJuZ
-         gzZAbHA2I3FyYLWSGv/W9Ik/8oQSknuZTlkFr3ohCnLa1SejvhUaMBAc3qlEFOpPFRbd
-         4XkDCb3IzGxU6xmcKvrOCoJ6ZbAIkI8SLoj/fZj5jS1IeEV8Q4XAC7913x5ZxQ6J/Nen
-         N3ghKwxMAJ444vjvKyeL1MnUMyJmlE95+Fg375u/D5sGHA0HmTyPLs7kSM0hvT+NJbBf
-         ucHdMbfarHCzzLwQYNPDfeocNrv6WN21F0hNHGDDGXupwd/U13ydI/fhLtNdKcRmYYQc
-         thUA==
-X-Gm-Message-State: AAQBX9d4QPngsPhhUnqgcm2Vb0ZmPGlxJPgnyn/0VixbKQJ/J/JD5TpZ
-        iOUprgbzTpbppPa3ZOGP0x2K64PZBkBbgPBLgUJc43hd/gYO
-X-Google-Smtp-Source: AKy350amCx/ZHN/ecGGK/EGkFHzUbsahyywUB+wgapgCN80VOuOIxFCr8iRxuHuNXV6z4WWbWZU0PIJfcs6h
-X-Received: by 2002:adf:cd82:0:b0:2d8:908c:8fa0 with SMTP id q2-20020adfcd82000000b002d8908c8fa0mr7080509wrj.9.1680786157994;
-        Thu, 06 Apr 2023 06:02:37 -0700 (PDT)
-Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
-        by smtp-relay.gmail.com with ESMTPS id s3-20020adfeb03000000b002e62dd5b3d6sm65625wrn.3.2023.04.06.06.02.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 06:02:37 -0700 (PDT)
-X-Relaying-Domain: dectris.com
-From:   Kal Conley <kal.conley@dectris.com>
-To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v3 3/3] selftests: xsk: Add tests for 8K and 9K frame sizes
-Date:   Thu,  6 Apr 2023 15:02:05 +0200
-Message-Id: <20230406130205.49996-4-kal.conley@dectris.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230406130205.49996-1-kal.conley@dectris.com>
-References: <20230406130205.49996-1-kal.conley@dectris.com>
+        with ESMTP id S237316AbjDFNFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 09:05:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BFA135
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 06:05:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680786303;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=T3RBUCn26A4VbMxyCeQYEHYQ9h598F47onZ1i/ThaI4=;
+        b=JPiafOUhQ9G6rOrZ5FOYr7nKMQCFm+IcYdysgs5TMVjgqoBqw9ZY27C8brWGHDrYCW8P4n
+        6ipCfxtF0OyJkZwOxt2V/hxmTUJniwc9O1fJA61lMRxIb+IKR4djEPaFd8/kBOgnLUOa3J
+        5MgATktIdgDK7RYAdMXIlAmKEpSPQ0E=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-297-ozL5-iFePSSMhJJaOmsXRA-1; Thu, 06 Apr 2023 09:04:58 -0400
+X-MC-Unique: ozL5-iFePSSMhJJaOmsXRA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D2C008533DD;
+        Thu,  6 Apr 2023 13:04:57 +0000 (UTC)
+Received: from p1.luc.cera.cz.com (unknown [10.45.224.115])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7AD0E40C20FA;
+        Thu,  6 Apr 2023 13:04:56 +0000 (UTC)
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     mschmidt@redhat.com, Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] bnxt_en: Allow to set switchdev mode without existing VFs
+Date:   Thu,  6 Apr 2023 15:04:55 +0200
+Message-Id: <20230406130455.1155362-1-ivecera@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests:
-- RUN_TO_COMPLETION_8K_FRAME_SIZE: frame_size=8192 (aligned)
-- UNALIGNED_9K_FRAME_SIZE: frame_size=9000 (unaligned)
+Remove an inability of bnxt_en driver to set eswitch to switchdev
+mode without existing VFs by:
 
-Signed-off-by: Kal Conley <kal.conley@dectris.com>
+1. Allow to set switchdev mode in bnxt_dl_eswitch_mode_set() so
+   representors are created only when num_vfs > 0 otherwise just
+   set bp->eswitch_mode
+2. Do not automatically change bp->eswitch_mode during
+   bnxt_vf_reps_create() and bnxt_vf_reps_destroy() calls so
+   the eswitch mode is managed only by an user by devlink.
+   Just set temporarily bp->eswitch_mode to legacy to avoid
+   re-opening of representors during destroy.
+3. Create representors in bnxt_sriov_enable() if current eswitch
+   mode is switchdev one
+
+Tested by this sequence:
+1. Set PF interface up
+2. Set PF's eswitch mode to switchdev
+3. Created N VFs
+4. Checked that N representors were created
+5. Set eswitch mode to legacy
+6. Checked that representors were deleted
+7. Set eswitch mode back to switchdev
+8. Checked that representros were re-created
+9. Deleted all VFs
+10. Checked that all representors were deleted as well
+11. Checked that current eswitch mode is still switchdev
+
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
 ---
- tools/testing/selftests/bpf/xskxceiver.c | 25 ++++++++++++++++++++++++
- tools/testing/selftests/bpf/xskxceiver.h |  2 ++
- 2 files changed, 27 insertions(+)
+ .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   | 16 ++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c | 29 ++++++++++++-------
+ drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h |  6 ++++
+ 3 files changed, 41 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-index 7eccf57a0ccc..86797de7fc50 100644
---- a/tools/testing/selftests/bpf/xskxceiver.c
-+++ b/tools/testing/selftests/bpf/xskxceiver.c
-@@ -1841,6 +1841,17 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
- 		pkt_stream_replace(test, DEFAULT_PKT_CNT, PKT_SIZE);
- 		testapp_validate_traffic(test);
- 		break;
-+	case TEST_TYPE_RUN_TO_COMPLETION_8K_FRAME:
-+		if (!hugepages_present(test->ifobj_tx)) {
-+			ksft_test_result_skip("No 2M huge pages present.\n");
-+			return;
-+		}
-+		test_spec_set_name(test, "RUN_TO_COMPLETION_8K_FRAME_SIZE");
-+		test->ifobj_tx->umem->frame_size = 8192;
-+		test->ifobj_rx->umem->frame_size = 8192;
-+		pkt_stream_replace(test, DEFAULT_PKT_CNT, PKT_SIZE);
-+		testapp_validate_traffic(test);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+index 3ed3a2b3b3a9..dde327f2c57e 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+@@ -825,8 +825,24 @@ static int bnxt_sriov_enable(struct bnxt *bp, int *num_vfs)
+ 	if (rc)
+ 		goto err_out2;
+ 
++	if (bp->eswitch_mode != DEVLINK_ESWITCH_MODE_SWITCHDEV)
++		return 0;
++
++	/* Create representors for VFs in switchdev mode */
++	devl_lock(bp->dl);
++	rc = bnxt_vf_reps_create(bp);
++	devl_unlock(bp->dl);
++	if (rc) {
++		netdev_info(bp->dev, "Cannot enable VFS as representors cannot be created\n");
++		goto err_out3;
++	}
++
+ 	return 0;
+ 
++err_out3:
++	/* Disable SR-IOV */
++	pci_disable_sriov(bp->pdev);
++
+ err_out2:
+ 	/* Free the resources reserved for various VF's */
+ 	bnxt_hwrm_func_vf_resource_free(bp, *num_vfs);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+index fcc65890820a..2f1a1f2d2157 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+@@ -356,10 +356,15 @@ void bnxt_vf_reps_destroy(struct bnxt *bp)
+ 	/* un-publish cfa_code_map so that RX path can't see it anymore */
+ 	kfree(bp->cfa_code_map);
+ 	bp->cfa_code_map = NULL;
+-	bp->eswitch_mode = DEVLINK_ESWITCH_MODE_LEGACY;
+ 
+-	if (closed)
++	if (closed) {
++		/* Temporarily set legacy mode to avoid re-opening
++		 * representors and restore switchdev mode after that.
++		 */
++		bp->eswitch_mode = DEVLINK_ESWITCH_MODE_LEGACY;
+ 		bnxt_open_nic(bp, false, false);
++		bp->eswitch_mode = DEVLINK_ESWITCH_MODE_SWITCHDEV;
++	}
+ 	rtnl_unlock();
+ 
+ 	/* Need to call vf_reps_destroy() outside of rntl_lock
+@@ -482,7 +487,7 @@ static void bnxt_vf_rep_netdev_init(struct bnxt *bp, struct bnxt_vf_rep *vf_rep,
+ 	dev->min_mtu = ETH_ZLEN;
+ }
+ 
+-static int bnxt_vf_reps_create(struct bnxt *bp)
++int bnxt_vf_reps_create(struct bnxt *bp)
+ {
+ 	u16 *cfa_code_map = NULL, num_vfs = pci_num_vf(bp->pdev);
+ 	struct bnxt_vf_rep *vf_rep;
+@@ -535,7 +540,6 @@ static int bnxt_vf_reps_create(struct bnxt *bp)
+ 
+ 	/* publish cfa_code_map only after all VF-reps have been initialized */
+ 	bp->cfa_code_map = cfa_code_map;
+-	bp->eswitch_mode = DEVLINK_ESWITCH_MODE_SWITCHDEV;
+ 	netif_keep_dst(bp->dev);
+ 	return 0;
+ 
+@@ -559,6 +563,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 			     struct netlink_ext_ack *extack)
+ {
+ 	struct bnxt *bp = bnxt_get_bp_from_dl(devlink);
++	int ret = 0;
+ 
+ 	if (bp->eswitch_mode == mode) {
+ 		netdev_info(bp->dev, "already in %s eswitch mode\n",
+@@ -570,7 +575,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 	switch (mode) {
+ 	case DEVLINK_ESWITCH_MODE_LEGACY:
+ 		bnxt_vf_reps_destroy(bp);
+-		return 0;
 +		break;
- 	case TEST_TYPE_RX_POLL:
- 		test->ifobj_rx->use_poll = true;
- 		test_spec_set_name(test, "POLL_RX");
-@@ -1904,6 +1915,20 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
- 		if (!testapp_unaligned(test))
- 			return;
- 		break;
-+	case TEST_TYPE_UNALIGNED_9K_FRAME:
-+		if (!hugepages_present(test->ifobj_tx)) {
-+			ksft_test_result_skip("No 2M huge pages present.\n");
-+			return;
-+		}
-+		test_spec_set_name(test, "UNALIGNED_9K_FRAME_SIZE");
-+		test->ifobj_tx->umem->frame_size = 9000;
-+		test->ifobj_rx->umem->frame_size = 9000;
-+		test->ifobj_tx->umem->unaligned_mode = true;
-+		test->ifobj_rx->umem->unaligned_mode = true;
-+		pkt_stream_replace(test, DEFAULT_PKT_CNT, PKT_SIZE);
-+		test->ifobj_rx->pkt_stream->use_addr_for_fill = true;
-+		testapp_validate_traffic(test);
+ 
+ 	case DEVLINK_ESWITCH_MODE_SWITCHDEV:
+ 		if (bp->hwrm_spec_code < 0x10803) {
+@@ -578,15 +583,19 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 			return -ENOTSUPP;
+ 		}
+ 
+-		if (pci_num_vf(bp->pdev) == 0) {
+-			netdev_info(bp->dev, "Enable VFs before setting switchdev mode\n");
+-			return -EPERM;
+-		}
+-		return bnxt_vf_reps_create(bp);
++		/* Create representors for existing VFs */
++		if (pci_num_vf(bp->pdev) > 0)
++			ret = bnxt_vf_reps_create(bp);
 +		break;
- 	case TEST_TYPE_HEADROOM:
- 		testapp_headroom(test);
- 		break;
-diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
-index 919327807a4e..7f52f737f5e9 100644
---- a/tools/testing/selftests/bpf/xskxceiver.h
-+++ b/tools/testing/selftests/bpf/xskxceiver.h
-@@ -69,12 +69,14 @@ enum test_mode {
- enum test_type {
- 	TEST_TYPE_RUN_TO_COMPLETION,
- 	TEST_TYPE_RUN_TO_COMPLETION_2K_FRAME,
-+	TEST_TYPE_RUN_TO_COMPLETION_8K_FRAME,
- 	TEST_TYPE_RUN_TO_COMPLETION_SINGLE_PKT,
- 	TEST_TYPE_RX_POLL,
- 	TEST_TYPE_TX_POLL,
- 	TEST_TYPE_POLL_RXQ_TMOUT,
- 	TEST_TYPE_POLL_TXQ_TMOUT,
- 	TEST_TYPE_UNALIGNED,
-+	TEST_TYPE_UNALIGNED_9K_FRAME,
- 	TEST_TYPE_ALIGNED_INV_DESC,
- 	TEST_TYPE_ALIGNED_INV_DESC_2K_FRAME,
- 	TEST_TYPE_UNALIGNED_INV_DESC,
+ 
+ 	default:
+ 		return -EINVAL;
+ 	}
++
++	if (!ret)
++		bp->eswitch_mode = mode;
++
++	return ret;
+ }
+ 
+ #endif
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
+index 5637a84884d7..33a965631d0b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
+@@ -14,6 +14,7 @@
+ 
+ #define	MAX_CFA_CODE			65536
+ 
++int bnxt_vf_reps_create(struct bnxt *bp);
+ void bnxt_vf_reps_destroy(struct bnxt *bp);
+ void bnxt_vf_reps_close(struct bnxt *bp);
+ void bnxt_vf_reps_open(struct bnxt *bp);
+@@ -37,6 +38,11 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 
+ #else
+ 
++static inline int bnxt_vf_reps_create(struct bnxt *bp)
++{
++	return 0;
++}
++
+ static inline void bnxt_vf_reps_close(struct bnxt *bp)
+ {
+ }
 -- 
 2.39.2
 
