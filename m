@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56CA26DA638
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 01:47:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B94F96DA643
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 01:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbjDFXm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 19:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
+        id S238656AbjDFXnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 19:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238738AbjDFXmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 19:42:32 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2084.outbound.protection.outlook.com [40.107.96.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C226CA271
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 16:42:30 -0700 (PDT)
+        with ESMTP id S238763AbjDFXmd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 19:42:33 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2084.outbound.protection.outlook.com [40.107.220.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F781A5E7
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 16:42:31 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HbhInPR8jH5Fq+7f+eNdA2oP3nU2NLoMf7YVSJPcZ/q9qQ5KZRb6wE6jMjBF/wfHObcWFT1CrOUurzJ1ME6Ia2XxUWy1p+5q9mHAclqGfm5b9msvhPI3f0QUR9gj75UOY/6m9JlxQ2+dIJNxDgG34PbM3FXgJD7GkmM+ESYdCvRYDJUD2FqVzuP0i6dQR4fcG0FJwe0szABi/iT/TtW94XccRCLZ1oQu2iJBvENcf6DAcXFrxpTNZSWYp1FZ7nxlmm8JSlFUjA72ZAqviJ3/Dh+vQ/O8hkqVfnfAJynlVfI8ZjLAYMQVjOM1wTbiSLPI5vlBRAyqq9VDuwt/NEt0zw==
+ b=EDlH0UEwgOjhFFd8QGOJE1O37C9EvsSdnYVOfTezdpI1BcbtP4cP9jCQsKVFit4kwFwqqtcsH1cOCzUvnzKoH572E/N1o5BU1ypjFAzb+hadheyl9cktlYguTfKXZ5XyrgAbA8Pgwu5BhwHBEBr1G8fzUj3xx10fcDrcFmrd6CQdQUlFNlCX2nNpKFMhfgNHJM2XfBgn6UQV/+Qrsp2hthmdty3um9vR54su+kj9xFbibm18PhXIBnhZTOYZJWGmG50bhol6m/WnyJd4YlHQlbTpXtSAUVqc7utg5Ti+JgWEBKWOfRzSnKTiO7B2b6MSnoy/vq8ONPIGIjjK9NoIcA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=861hfToN/R/vjXq6tiUD0B15PItQJrizxBEPWYhqLK8=;
- b=mmUiH5WjaAWGHOjbxpWnpebdJLzTTzGTQgES2hsBlbhlLg76J+LzQUP8LSBMTmzv3vimxUVgUN+E9ojCkrCOewthVCPu6noKs4lbVPcxZwIJNZk85MD7e2XvF/MdXe39zMA4o/vU+YMbnNkk99KMThRlQfmOAs6wpDkkO8LK236X0uHQLSUzuP5KZvC17roDtxhi4jjtnF7L84Mgf97gcrrWD9fMnrZT8BzeX8hLZ4VqjCmeMzpdEkH9+iKc6bVkBTosF61jd0ovVfJAyLvGejG/EbCG4EmMoyxrR9ufyl5zkumxphMME3blVXCDzk3LxR4JghbVcZw0h6wB0T5ukw==
+ bh=JbJyPdorxOu6OOb5JLLCnS9B4yrOdjVCEBaATdKOQyQ=;
+ b=ZyMX1qPmMhWnZKWQQ3CGngnGYg3XXmlVQP6lcb2TsYVzrY7icn9vv2xcontRicgwBjkibu233RtJpcR6q/uC7EveYiWXed4cbfZUD2MY9iGXG0cKo8lgNSO38/iCDe21Q7rmHMfDShwKlqdf8EED3BFrIJDoikwzAEhVSIbHqH35dD7WHCctyU1TAVO7+mW0I66AOfr4Kb8Ytd8CCG6Zf4WNci7c8X4dHiEoVROXEh1TLzlphfyLxGnzrWiPfauC1txaPhMXSP6A8iSKQNcbBMT8RiPhP3wp9dzayltEbRws2nTmtapvGKhuQPWCdpJFJY+pqIpoX3aa/zFsG6j6RA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=861hfToN/R/vjXq6tiUD0B15PItQJrizxBEPWYhqLK8=;
- b=JDgFGe62QSR/GD9tXLUXtBN4g/BzeVGS94t7yb9OQQKEU39Uv6vcAVfFHmHEuy5YTPBxRaNau+Wh69eCiAOZIVq0BMIZLU1OC8LCj6sH1DdqXRf8ixdWqfll7g9e4tK0qP0IvQtb8rUULf9ZkG9QsNKkee9bXF2ayyGda+jjc0A=
-Received: from DM5PR07CA0091.namprd07.prod.outlook.com (2603:10b6:4:ae::20) by
- PH0PR12MB7080.namprd12.prod.outlook.com (2603:10b6:510:21d::20) with
+ bh=JbJyPdorxOu6OOb5JLLCnS9B4yrOdjVCEBaATdKOQyQ=;
+ b=TPc2xNo4qOfmjlY7upk/jA0qeqqDZWMp+i/evdmkgFZuPUb/rHmZAHCp9Y3VsdT61kBXhOwvbrF5Q8BLTY+aXNbxv1RnP7S5C8UpTjFPDZkp3HVKVnQZESfxherdUwpkfoGkD54mP/0CVhWywlTNNDUr3M7DZSlsWMDcq2ZU8Bo=
+Received: from DM5PR07CA0099.namprd07.prod.outlook.com (2603:10b6:4:ae::28) by
+ IA1PR12MB6434.namprd12.prod.outlook.com (2603:10b6:208:3ae::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.26; Thu, 6 Apr
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.30; Thu, 6 Apr
  2023 23:42:28 +0000
 Received: from DM6NAM11FT067.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:ae:cafe::ee) by DM5PR07CA0091.outlook.office365.com
- (2603:10b6:4:ae::20) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:4:ae:cafe::a5) by DM5PR07CA0099.outlook.office365.com
+ (2603:10b6:4:ae::28) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.31 via Frontend
- Transport; Thu, 6 Apr 2023 23:42:27 +0000
+ Transport; Thu, 6 Apr 2023 23:42:28 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,18 +48,18 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  DM6NAM11FT067.mail.protection.outlook.com (10.13.172.76) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6298.19 via Frontend Transport; Thu, 6 Apr 2023 23:42:27 +0000
+ 15.20.6298.19 via Frontend Transport; Thu, 6 Apr 2023 23:42:28 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 6 Apr
- 2023 18:42:26 -0500
+ 2023 18:42:27 -0500
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
         <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>
 CC:     <drivers@pensando.io>, <leon@kernel.org>, <jiri@resnulli.us>
-Subject: [PATCH v9 net-next 12/14] pds_core: add the aux client API
-Date:   Thu, 6 Apr 2023 16:41:41 -0700
-Message-ID: <20230406234143.11318-13-shannon.nelson@amd.com>
+Subject: [PATCH v9 net-next 13/14] pds_core: publish events to the clients
+Date:   Thu, 6 Apr 2023 16:41:42 -0700
+Message-ID: <20230406234143.11318-14-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230406234143.11318-1-shannon.nelson@amd.com>
 References: <20230406234143.11318-1-shannon.nelson@amd.com>
@@ -70,23 +70,23 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT067:EE_|PH0PR12MB7080:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7bee5535-3402-44a7-aa9b-08db36f894b3
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT067:EE_|IA1PR12MB6434:EE_
+X-MS-Office365-Filtering-Correlation-Id: f9f5486f-49c1-4d06-032e-08db36f89551
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: U+1DMUm0ic3YoyK5vW+CApGDhoc98K4Fan1E7fl9lviqvWqSIqXYHp9MCeMB2BEjL+GGlaIxmLWkabi7ZokM4IevHfY0g/HXIvkL3FxPWNH4dWXq9X71lzXt56CGsTXUqZLrTGICLY+oYlgTDWi4xxbWrI+gj3ORYUI4D5umAUdHCa/DVGMqEtA7xa5I3gh+pAm3sDLKfY9e/jDPzIeeza1clKOJQuOLwr5Tubc89JvofcZ2bjOcbO48nWRzzhc0DAzCNvOZ9RfzuKM2z8qlPWpdE83s6DA18IJAIrR3x2pUg9npFx5Rviaxpt5zYMVltYvLWqjt8/qACK7GCSS2+qVhDr3tH1SF4gd7QB8AR7zfG4BPHqfLISNEBKDXnLVRHoUHBc9ydBQAUI9G7kclJuFvU9alPeIQmdamLlSi39NJPQeumIZ613KwxtJqUg1wKIBfGUhFBLb9hgxe5dvwwXaDyajvBHZw71zlYatz9ftOoPc/wWRfU4mhe2wovNx3O/FhZMXiIO5xrGOeHeoy3wh19HeIYQeWqmPiqW7yJEey9vkAUtVlWVo6GHlHpwznT0Jo8PnvDF/zZ6z+H3S8Ou8LLvPpq0d4PjH0CPx9xTJHgiSEOvj2ojZsscfDZFG8UXd4xC2rh2oJKIStT4tRCkH5oiPzurZcQ/jZmfgYJ6VstZP8aehpmGix/PuNCojudB6/DzGzJNF8ty4+ixNNICIW5+ALqOazJOfCSdtemf4=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(136003)(376002)(346002)(451199021)(46966006)(40470700004)(36840700001)(83380400001)(82310400005)(47076005)(6666004)(4326008)(70206006)(70586007)(1076003)(86362001)(8676002)(2906002)(186003)(36860700001)(16526019)(26005)(316002)(478600001)(110136005)(82740400003)(356005)(426003)(336012)(81166007)(41300700001)(40460700003)(54906003)(8936002)(36756003)(44832011)(5660300002)(40480700001)(2616005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: TnuVB6zqGL87qOs0R/hY+c40JhT/Ni0jMyDBGm1+8hKZydyA0VtEP0YPQFQcKYG/bfoZvin8od6iGTnFFVhJfjZJfld9b+jrzO3Bb/I1sLuR8uBojKpTaQoW7I8gluZzYheNNVBb1wEDLcPHfe4cyNP4UgXhmaCkS9lxxSDQWhQpZ11rSefKuk6w3G9w5AqgL2+eFU5IdwaP0Wy7iZtza1PYufmjHYiG130xwPwtD8leJIIrIQ2gB6o3xcGOxwkOWp6XUzWsUljMLOxuZa4noO8X25Vsk7ZDJW7I1dnJoY5/0mFHbi1gx/iR+iYLYXWf94PiXm0ylkadZkqOR3ZQ0PpRhaUksf5YCL3BsIK974zQcD+ZFKWpoYSGQ9UJgo7wg/yhx/NAzzPnvG4LxO+wuwEqVWZsOtK9iF3KXdobH03kiDK95AhTVNhedrOaOiwW/JZh81ZalMcxD9tunvnVV3gCeuk+feBYuDxgupsnPGAQ8UH8+7g6pVQ9NMwYHkq3HXzk718oBR6u9a0xxfCdZPxAOYpWYsh6WCgXDBAIGFi2Iw3SRqHGh/rYLI8zXii6Zgol04cfkAlbWMpdY/yuzThfLYNMsYpWOLVigwuZX+naW9SsLog/rXRdsvlGhJYLQ10d+BC0dzQXU7cu6wG4dgTBkuqi3kglQzFqR2quDckL7eQr6pe1Srbfwc1v/WoklA9pGFuSKJHeBHWLBJtwOvh+ivXWoBVRmNbNjo6ojhg=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(376002)(136003)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(82310400005)(40480700001)(40460700003)(82740400003)(316002)(110136005)(1076003)(36860700001)(81166007)(356005)(8676002)(70586007)(70206006)(26005)(16526019)(4326008)(186003)(6666004)(2616005)(47076005)(426003)(478600001)(336012)(83380400001)(8936002)(41300700001)(54906003)(5660300002)(44832011)(2906002)(36756003)(86362001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2023 23:42:27.6867
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2023 23:42:28.7179
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7bee5535-3402-44a7-aa9b-08db36f894b3
+X-MS-Exchange-CrossTenant-Network-Message-Id: f9f5486f-49c1-4d06-032e-08db36f89551
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT067.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7080
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6434
 X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=no
@@ -97,243 +97,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the client API operations for running adminq commands.
-The core registers the client with the FW, then the client
-has a context for requesting adminq services.  We expect
-to add additional operations for other clients, including
-requesting additional private adminqs and IRQs, but don't have
-the need yet.
+When the Core device gets an event from the device, or notices
+the device FW to be up or down, it needs to send those events
+on to the clients that have an event handler.  Add the code to
+pass along the events to the clients.
+
+The entry points pdsc_register_notify() and pdsc_unregister_notify()
+are EXPORTed for other drivers that want to listen for these events.
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- drivers/net/ethernet/amd/pds_core/auxbus.c | 135 ++++++++++++++++++++-
- include/linux/pds/pds_auxbus.h             |  28 +++++
- 2 files changed, 160 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/amd/pds_core/adminq.c |  2 ++
+ drivers/net/ethernet/amd/pds_core/core.c   | 32 ++++++++++++++++++++++
+ drivers/net/ethernet/amd/pds_core/core.h   |  3 ++
+ include/linux/pds/pds_common.h             |  2 ++
+ 4 files changed, 39 insertions(+)
 
-diff --git a/drivers/net/ethernet/amd/pds_core/auxbus.c b/drivers/net/ethernet/amd/pds_core/auxbus.c
-index 6757a5174eb7..c8c5cc5c9ca6 100644
---- a/drivers/net/ethernet/amd/pds_core/auxbus.c
-+++ b/drivers/net/ethernet/amd/pds_core/auxbus.c
-@@ -6,6 +6,115 @@
+diff --git a/drivers/net/ethernet/amd/pds_core/adminq.c b/drivers/net/ethernet/amd/pds_core/adminq.c
+index 25c7dd0d37e5..bb18ac1aabab 100644
+--- a/drivers/net/ethernet/amd/pds_core/adminq.c
++++ b/drivers/net/ethernet/amd/pds_core/adminq.c
+@@ -27,11 +27,13 @@ static int pdsc_process_notifyq(struct pdsc_qcq *qcq)
+ 		case PDS_EVENT_LINK_CHANGE:
+ 			dev_info(pdsc->dev, "NotifyQ LINK_CHANGE ecode %d eid %lld\n",
+ 				 ecode, eid);
++			pdsc_notify(PDS_EVENT_LINK_CHANGE, comp);
+ 			break;
+ 
+ 		case PDS_EVENT_RESET:
+ 			dev_info(pdsc->dev, "NotifyQ RESET ecode %d eid %lld\n",
+ 				 ecode, eid);
++			pdsc_notify(PDS_EVENT_RESET, comp);
+ 			break;
+ 
+ 		case PDS_EVENT_XCVR:
+diff --git a/drivers/net/ethernet/amd/pds_core/core.c b/drivers/net/ethernet/amd/pds_core/core.c
+index ec088d490d34..b2790be0fc46 100644
+--- a/drivers/net/ethernet/amd/pds_core/core.c
++++ b/drivers/net/ethernet/amd/pds_core/core.c
+@@ -6,6 +6,25 @@
+ 
  #include "core.h"
- #include <linux/pds/pds_auxbus.h>
  
-+static int pds_client_register(struct pdsc *vf, struct pdsc *pf, char *name)
++static BLOCKING_NOTIFIER_HEAD(pds_notify_chain);
++
++int pdsc_register_notify(struct notifier_block *nb)
 +{
-+	union pds_core_adminq_comp comp = { 0 };
-+	union pds_core_adminq_cmd cmd = { 0 };
-+	int err;
-+	u16 ci;
++	return blocking_notifier_chain_register(&pds_notify_chain, nb);
++}
++EXPORT_SYMBOL_GPL(pdsc_register_notify);
 +
-+	if (pf->state)
-+		return -ENXIO;
++void pdsc_unregister_notify(struct notifier_block *nb)
++{
++	blocking_notifier_chain_unregister(&pds_notify_chain, nb);
++}
++EXPORT_SYMBOL_GPL(pdsc_unregister_notify);
 +
-+	cmd.client_reg.opcode = PDS_AQ_CMD_CLIENT_REG;
-+	snprintf(cmd.client_reg.devname, sizeof(cmd.client_reg.devname),
-+		 "%s.%s.%d", PDS_CORE_DRV_NAME, name, vf->uid);
-+
-+	err = pdsc_adminq_post(pf, &cmd, &comp, false);
-+	if (err) {
-+		dev_info(pf->dev, "register dev_name %s with DSC failed, status %d: %pe\n",
-+			 name, comp.status, ERR_PTR(err));
-+		return err;
-+	}
-+
-+	ci = le16_to_cpu(comp.client_reg.client_id);
-+	if (!ci) {
-+		dev_err(pf->dev, "%s: device returned null client_id\n",
-+			__func__);
-+		return -EIO;
-+	}
-+
-+	dev_dbg(pf->dev, "%s: device returned client_id %d for %s\n",
-+		__func__, ci, cmd.client_reg.devname);
-+
-+	return ci;
++void pdsc_notify(unsigned long event, void *data)
++{
++	blocking_notifier_call_chain(&pds_notify_chain, event, data);
 +}
 +
-+static int pds_client_unregister(struct pdsc *pf, u16 client_id)
-+{
-+	union pds_core_adminq_comp comp = { 0 };
-+	union pds_core_adminq_cmd cmd = { 0 };
-+	int err;
-+
-+	if (pf->state)
-+		return -ENXIO;
-+
-+	cmd.client_unreg.opcode = PDS_AQ_CMD_CLIENT_UNREG;
-+	cmd.client_unreg.client_id = cpu_to_le16(client_id);
-+
-+	err = pdsc_adminq_post(pf, &cmd, &comp, false);
-+	if (err)
-+		dev_info(pf->dev, "unregister client_id %d failed, status %d: %pe\n",
-+			 client_id, comp.status, ERR_PTR(err));
-+
-+	return err;
-+}
-+
-+/**
-+ * pds_client_adminq_cmd - Process an adminq request for the client
-+ * @padev:   ptr to the client device
-+ * @req:     ptr to buffer with request
-+ * @req_len: length of actual struct used for request
-+ * @resp:    ptr to buffer where answer is to be copied
-+ * @flags:   optional flags from pds_core_adminq_flags
-+ *
-+ * Return: 0 on success, or
-+ *         negative for error
-+ *
-+ * Client sends pointers to request and response buffers
-+ * Core copies request data into pds_core_client_request_cmd
-+ * Core sets other fields as needed
-+ * Core posts to AdminQ
-+ * Core copies completion data into response buffer
-+ */
-+static int pds_client_adminq_cmd(struct pds_auxiliary_dev *padev,
-+				 union pds_core_adminq_cmd *req,
-+				 size_t req_len,
-+				 union pds_core_adminq_comp *resp,
-+				 u64 flags)
-+{
-+	union pds_core_adminq_cmd cmd = { 0 };
-+	struct pdsc *pf;
-+	size_t cp_len;
-+	int err;
-+
-+	pf = pci_get_drvdata(padev->pf_pdev);
-+
-+	dev_dbg(pf->dev, "%s: %s opcode %d\n",
-+		__func__, dev_name(&padev->aux_dev.dev), req->opcode);
-+
-+	if (pf->state)
-+		return -ENXIO;
-+
-+	/* Wrap the client's request */
-+	cmd.client_request.opcode = PDS_AQ_CMD_CLIENT_CMD;
-+	cmd.client_request.client_id = cpu_to_le16(padev->client_id);
-+	cp_len = min_t(size_t, req_len, sizeof(cmd.client_request.client_cmd));
-+	memcpy(cmd.client_request.client_cmd, req, cp_len);
-+
-+	err = pdsc_adminq_post(pf, &cmd, resp,
-+			       !!(flags & PDS_AQ_FLAG_FASTPOLL));
-+	if (err && err != -EAGAIN)
-+		dev_info(pf->dev, "client admin cmd failed: %pe\n",
-+			 ERR_PTR(err));
-+
-+	return err;
-+}
-+
-+static struct pds_core_ops pds_core_ops = {
-+	.adminq_cmd = pds_client_adminq_cmd,
-+};
-+
- static void pdsc_auxbus_dev_release(struct device *dev)
+ void pdsc_intr_free(struct pdsc *pdsc, int index)
  {
- 	struct pds_auxiliary_dev *padev =
-@@ -16,7 +125,9 @@ static void pdsc_auxbus_dev_release(struct device *dev)
+ 	struct pdsc_intr_info *intr_info;
+@@ -513,12 +532,19 @@ void pdsc_stop(struct pdsc *pdsc)
  
- static struct pds_auxiliary_dev *pdsc_auxbus_dev_register(struct pdsc *vf,
- 							  struct pdsc *pf,
--							  char *name)
-+							  u16 client_id,
-+							  char *name,
-+							  struct pds_core_ops *ops)
+ static void pdsc_fw_down(struct pdsc *pdsc)
  {
- 	struct auxiliary_device *aux_dev;
- 	struct pds_auxiliary_dev *padev;
-@@ -28,6 +139,8 @@ static struct pds_auxiliary_dev *pdsc_auxbus_dev_register(struct pdsc *vf,
- 
- 	padev->vf_pdev = vf->pdev;
- 	padev->pf_pdev = pf->pdev;
-+	padev->ops = ops;
-+	padev->client_id = client_id;
- 
- 	aux_dev = &padev->aux_dev;
- 	aux_dev->name = name;
-@@ -67,8 +180,10 @@ int pdsc_auxbus_dev_del_vf(struct pdsc *vf, struct pdsc *pf)
- 
- 	padev = pf->vfs[vf->vf_id].padev;
- 	if (padev) {
-+		pds_client_unregister(pf, padev->client_id);
- 		auxiliary_device_delete(&padev->aux_dev);
- 		auxiliary_device_uninit(&padev->aux_dev);
-+		padev->client_id = 0;
++	union pds_core_notifyq_comp reset_event = {
++		.reset.ecode = cpu_to_le16(PDS_EVENT_RESET),
++		.reset.state = 0,
++	};
++
+ 	if (test_and_set_bit(PDSC_S_FW_DEAD, &pdsc->state)) {
+ 		dev_err(pdsc->dev, "%s: already happening\n", __func__);
+ 		return;
  	}
- 	pf->vfs[vf->vf_id].padev = NULL;
  
-@@ -80,6 +195,7 @@ int pdsc_auxbus_dev_add_vf(struct pdsc *vf, struct pdsc *pf)
++	/* Notify clients of fw_down */
+ 	devlink_health_report(pdsc->fw_reporter, "FW down reported", pdsc);
++	pdsc_notify(PDS_EVENT_RESET, &reset_event);
+ 
+ 	pdsc_mask_interrupts(pdsc);
+ 	pdsc_teardown(pdsc, PDSC_TEARDOWN_RECOVERY);
+@@ -526,6 +552,10 @@ static void pdsc_fw_down(struct pdsc *pdsc)
+ 
+ static void pdsc_fw_up(struct pdsc *pdsc)
  {
- 	struct pds_auxiliary_dev *padev;
- 	enum pds_core_vif_types vt;
-+	int client_id;
- 	int err = 0;
++	union pds_core_notifyq_comp reset_event = {
++		.reset.ecode = cpu_to_le16(PDS_EVENT_RESET),
++		.reset.state = 1,
++	};
+ 	int err;
  
- 	mutex_lock(&pf->config_lock);
-@@ -94,9 +210,22 @@ int pdsc_auxbus_dev_add_vf(struct pdsc *vf, struct pdsc *pf)
- 		      pf->viftype_status[vt].enabled))
- 			continue;
+ 	if (!test_bit(PDSC_S_FW_DEAD, &pdsc->state)) {
+@@ -541,9 +571,11 @@ static void pdsc_fw_up(struct pdsc *pdsc)
+ 	if (err)
+ 		goto err_out;
  
--		padev = pdsc_auxbus_dev_register(vf, pf,
--						 pf->viftype_status[vt].name);
-+		/* need to register with FW and get the client_id before
-+		 * creating the aux device so that the aux client can run
-+		 * adminq commands as part its probe
-+		 */
-+		client_id = pds_client_register(vf, pf,
-+						pf->viftype_status[vt].name);
-+		if (client_id < 0) {
-+			err = client_id;
-+			goto out_unlock;
-+		}
-+
-+		padev = pdsc_auxbus_dev_register(vf, pf, client_id,
-+						 pf->viftype_status[vt].name,
-+						 &pds_core_ops);
- 		if (IS_ERR(padev)) {
-+			pds_client_unregister(pf, client_id);
- 			err = PTR_ERR(padev);
- 			goto out_unlock;
- 		}
-diff --git a/include/linux/pds/pds_auxbus.h b/include/linux/pds/pds_auxbus.h
-index aa0192af4a29..f98efd578e1c 100644
---- a/include/linux/pds/pds_auxbus.h
-+++ b/include/linux/pds/pds_auxbus.h
-@@ -10,7 +10,35 @@ struct pds_auxiliary_dev {
- 	struct auxiliary_device aux_dev;
- 	struct pci_dev *vf_pdev;
- 	struct pci_dev *pf_pdev;
-+	struct pds_core_ops *ops;
- 	u16 client_id;
- 	void *priv;
++	/* Notify clients of fw_up */
+ 	pdsc->fw_recoveries++;
+ 	devlink_health_reporter_state_update(pdsc->fw_reporter,
+ 					     DEVLINK_HEALTH_REPORTER_STATE_HEALTHY);
++	pdsc_notify(PDS_EVENT_RESET, &reset_event);
+ 
+ 	return;
+ 
+diff --git a/drivers/net/ethernet/amd/pds_core/core.h b/drivers/net/ethernet/amd/pds_core/core.h
+index aab4986007b9..2215e4915e6a 100644
+--- a/drivers/net/ethernet/amd/pds_core/core.h
++++ b/drivers/net/ethernet/amd/pds_core/core.h
+@@ -310,6 +310,9 @@ int pdsc_start(struct pdsc *pdsc);
+ void pdsc_stop(struct pdsc *pdsc);
+ void pdsc_health_thread(struct work_struct *work);
+ 
++int pdsc_register_notify(struct notifier_block *nb);
++void pdsc_unregister_notify(struct notifier_block *nb);
++void pdsc_notify(unsigned long event, void *data);
+ int pdsc_auxbus_dev_add_vf(struct pdsc *vf, struct pdsc *pf);
+ int pdsc_auxbus_dev_del_vf(struct pdsc *vf, struct pdsc *pf);
+ 
+diff --git a/include/linux/pds/pds_common.h b/include/linux/pds/pds_common.h
+index 898f3c7b14b7..17708a142349 100644
+--- a/include/linux/pds/pds_common.h
++++ b/include/linux/pds/pds_common.h
+@@ -91,5 +91,7 @@ enum pds_core_logical_qtype {
+ 	PDS_CORE_QTYPE_MAX     = 16   /* don't change - used in struct size */
  };
-+
-+/*
-+ *   ptrs to functions to be used by the client for core services
-+ */
-+struct pds_core_ops {
-+	/* .adminq_cmd() - process an adminq request for the client
-+	 * padev:  ptr to the client device
-+	 * req:     ptr to buffer with request
-+	 * req_len: length of actual struct used for request
-+	 * resp:    ptr to buffer where answer is to be copied
-+	 * flags:   optional flags defined by enum pds_core_adminq_flags
-+	 *	    and used for more flexible adminq behvior
-+	 *
-+	 * returns 0 on success, or
-+	 *         negative for error
-+	 * Client sends pointers to request and response buffers
-+	 * Core copies request data into pds_core_client_request_cmd
-+	 * Core sets other fields as needed
-+	 * Core posts to AdminQ
-+	 * Core copies completion data into response buffer
-+	 */
-+	int (*adminq_cmd)(struct pds_auxiliary_dev *padev,
-+			  union pds_core_adminq_cmd *req,
-+			  size_t req_len,
-+			  union pds_core_adminq_comp *resp,
-+			  u64 flags);
-+};
- #endif /* _PDSC_AUXBUS_H_ */
+ 
++int pdsc_register_notify(struct notifier_block *nb);
++void pdsc_unregister_notify(struct notifier_block *nb);
+ void *pdsc_get_pf_struct(struct pci_dev *vf_pdev);
+ #endif /* _PDS_COMMON_H_ */
 -- 
 2.17.1
 
