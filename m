@@ -2,123 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61A5B6D94D4
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 13:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 461AD6D94DC
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 13:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236833AbjDFLOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 07:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43268 "EHLO
+        id S237581AbjDFLQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 07:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbjDFLOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 07:14:41 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE91E6;
-        Thu,  6 Apr 2023 04:14:40 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3368qPG8011886;
-        Thu, 6 Apr 2023 11:14:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=WjEAuWLkS9VAxEzf203T1+TPUhyVG+CqnTJOgnevsgM=;
- b=hIfsr24GJBPrrREnaBWIwEALiXZwnLtAkeqY+V3yjr64Z5gA7FDotLDDdFxMlMkYY+db
- X6WVN65GdJf7DaV2YMmSminAVkRGd3lBGD4ZYnWck6UYe24RqsmMnhXo9DT38HygnjMb
- mHE0JgWmKR6/7rPFautu1KUyK+kReZTIp/wgHO2DOIa4Sosv89w2a1qNqOrur8h/sgVC
- qpXXMzV/8XGq/FDbQc3X227ifSUkBbTj21TiTtB0tIeRqv+Ai+OjSxME2MMhStTkdEGd
- rjVG4kY24mh6DPc+llYVXWDTbMTgkHXeBaDdRE9eeVjoa+sxRKbUYT2fyp8wcWfVuiwd yw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3psar79fvj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Apr 2023 11:14:35 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 336B07qr030927;
-        Thu, 6 Apr 2023 11:14:35 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3psar79fut-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Apr 2023 11:14:35 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3364GjDZ027288;
-        Thu, 6 Apr 2023 11:14:33 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-        by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3ppc87c8pw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Apr 2023 11:14:32 +0000
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-        by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 336BETMu61866262
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 6 Apr 2023 11:14:29 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0CBFC2004D;
-        Thu,  6 Apr 2023 11:14:29 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9F8C220043;
-        Thu,  6 Apr 2023 11:14:28 +0000 (GMT)
-Received: from [9.152.224.183] (unknown [9.152.224.183])
-        by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
-        Thu,  6 Apr 2023 11:14:28 +0000 (GMT)
-Message-ID: <33ab688e-88c9-d950-be66-f0f79774ff6c@linux.ibm.com>
-Date:   Thu, 6 Apr 2023 13:14:28 +0200
+        with ESMTP id S237205AbjDFLQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 07:16:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD0240C6
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 04:15:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680779715;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mJIFUKdbCVxH+e/HWZUZILs1Tdh2bp6w12YNbU+lrBE=;
+        b=WngAuUzvCWRSSv+l2PHzkPQvO9HcQWyYTqPMqDIYe5gjEQ94c4hNKIWgw19hnrfrazClxo
+        UP2pJk7k5WsXCEiSrWo0kTREyDKRZulqeUuOUNV0QTV6AsQSuN6ORepkuUXl/MIW/BkEuX
+        qbL8OaXnKKlYKUHjq9Lp80aTJDOEnz4=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-556-Mg_Z0m74OlO_xNPWYsBsfA-1; Thu, 06 Apr 2023 07:15:14 -0400
+X-MC-Unique: Mg_Z0m74OlO_xNPWYsBsfA-1
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-5a3c1e28e73so2813006d6.0
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 04:15:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680779714; x=1683371714;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=mJIFUKdbCVxH+e/HWZUZILs1Tdh2bp6w12YNbU+lrBE=;
+        b=zDQ1AuFNEY6aCPSgefbzBdeFeugEK7CQXs1nyA7mg9sasvRXN6hpu+zwQ6WhLLbsIl
+         db0fLUfWGheMzyn3PLnZ4ccqD5d+1mYMNKOtVvgs9UkLacYlm+F292FTZMhMJcnrbPNf
+         Jf1FsFSTRQ5Qqc278NL3KIXQCUzeIRzdAH+M8SGkp+auotFeEY3pTQfPCevojVvtU2I5
+         Yts0ynFy9yQ7qMvzj6y1QQTnwYfs/qcDYuJKow2TKP8Qkfo6zWeICfBsyMuNhHv3mMTm
+         Y2lkNmRu3PGd0J7kTngg0Q8L1Y6beICAjAK0CObIHyenKXnYiboCSJq1vBD+UBVJ3MW3
+         n1xQ==
+X-Gm-Message-State: AAQBX9c2mcOMl3Hiky1+PLlYoZj/bXh5MKhiWbcuy5BruImNNKqdoDO5
+        Mga1nnUfOPI0lyYT7ZRpC1Nxrn2oAN5advbMqRTXZaZplv/K7PscRs9Uk7V5k7ZIe/iSkl/8hKv
+        H1NzClWRA8C9LdrxL
+X-Received: by 2002:a05:6214:410d:b0:5df:4d41:9560 with SMTP id kc13-20020a056214410d00b005df4d419560mr8365681qvb.0.1680779714109;
+        Thu, 06 Apr 2023 04:15:14 -0700 (PDT)
+X-Google-Smtp-Source: AKy350acgJFhERoKoMnZoLl+AOfUrAe2JLco/YpvIHdVhTrerf8HDLTi5O4DDcW1RvnctM3ICg9VjA==
+X-Received: by 2002:a05:6214:410d:b0:5df:4d41:9560 with SMTP id kc13-20020a056214410d00b005df4d419560mr8365650qvb.0.1680779713836;
+        Thu, 06 Apr 2023 04:15:13 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-227-151.dyn.eolo.it. [146.241.227.151])
+        by smtp.gmail.com with ESMTPSA id fc2-20020ad44f22000000b005dd8b9345c2sm427343qvb.90.2023.04.06.04.15.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Apr 2023 04:15:13 -0700 (PDT)
+Message-ID: <d24bcf952c8ceb3fa97b11cab222945b73723052.camel@redhat.com>
+Subject: Re: [PATCH] r8152: Advertise support for software timestamping
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Matthew Dawson <matthew@mjdsystems.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 06 Apr 2023 13:15:10 +0200
+In-Reply-To: <3218086.lGaqSPkdTl@cwmtaff>
+References: <3218086.lGaqSPkdTl@cwmtaff>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.1
-Subject: Re: [RFC PATCH net-next v4 0/9] net/smc: Introduce SMC-D-based OS
- internal communication acceleration
-To:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com, jaka@linux.ibm.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1679887699-54797-1-git-send-email-guwen@linux.alibaba.com>
- <6156aaad710bc7350cbae6cb821289c8a37f44bb.camel@linux.ibm.com>
-Content-Language: en-US
-From:   Alexandra Winter <wintera@linux.ibm.com>
-In-Reply-To: <6156aaad710bc7350cbae6cb821289c8a37f44bb.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: I5uCFC6L47uNjIs2DB9yjf9t5XvJvDUe
-X-Proofpoint-GUID: n3LH0WtZmqozgv_4YrVMHpESp8mAnFCi
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-06_04,2023-04-05_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 bulkscore=0 phishscore=0 impostorscore=0 adultscore=0
- mlxscore=0 priorityscore=1501 spamscore=0 suspectscore=0 mlxlogscore=999
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2304060096
-X-Spam-Status: No, score=-2.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+On Wed, 2023-04-05 at 01:26 -0400, Matthew Dawson wrote:
+> Since this drivers initial merge, the necessary support for software
+> based timestamping has been available.  Advertise support for this
+> feature enables the linuxptp project to work with it.
+>=20
+> Signed-off-by: Matthew Dawson <matthew@mjdsystems.ca>
+> Tested-by: Mostafa Ayesh <mostafaayesh@outlook.com>
+> ---
+>  drivers/net/usb/r8152.c | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index decb5ba56a259..44f64fd765a7d 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -9132,6 +9132,7 @@ static const struct ethtool_ops ops =3D {
+>  	.set_ringparam =3D rtl8152_set_ringparam,
+>  	.get_pauseparam =3D rtl8152_get_pauseparam,
+>  	.set_pauseparam =3D rtl8152_set_pauseparam,
+> +	.get_ts_info =3D ethtool_op_get_ts_info,
+>  };
+> =20
+>  static int rtl8152_ioctl(struct net_device *netdev, struct ifreq *rq, in=
+t=20
+> cmd)
 
-On 05.04.23 19:04, Niklas Schnelle wrote:
-> One more question though, what about the SEID why does that have to be
-> fixed and at least partially match what ISM devices use? I think I'm
-> missing some SMC protocol/design detail here. I'm guessing this would
-> require a protocol change?
-> 
-> Thanks,
-> Niklas
+Does not apply cleanly to net-next due to last line being wrapped.
 
-Niklas,
-in the initial SMC CLC handshake the client and server exchange the SEID (one per peer system)
-and up to 8 proposals for SMC-D interfaces.
-Wen's current proposal assumes that smc-d loopback can be one of these 8 proposed interfaces,
-iiuc. So on s390 the proposal can contain ISM devices and a smc-d loopback device at the same time.
-If one of the peers is e.g. an older Linux version, it will just ignore the loopback-device
-in the list (Don't find a match for CHID 0xFFFF) and use an ISM interface for SMC-D if possible.
-Therefor it is important that the SEID is used in the same way as it is today in the handshake.
+Please re-spin and specify the target tree into the subj.
 
-If we decide for some reason (virtio-ism open issues?) that a protocol change/extension is
-required/wanted, then it is a new game and we can come up with new identifiers, but we may
-lose compatibility to backlevel systems.
+Thanks!
 
-Alexandra
+Paolo
+
