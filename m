@@ -2,172 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E00326D91C0
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E4ED6D91EA
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235422AbjDFIfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 04:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52538 "EHLO
+        id S235527AbjDFIsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 04:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232896AbjDFIfX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:35:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04DA4C16
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 01:34:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680770065;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qqVopjdhKQtWOeCmmRx7vAPF7hicoY4lylw2wohZFr0=;
-        b=W3r0SIIUXpGvXjFV/HF6aAVukJT/vmt4cNV8V5nMHPs8QZgFVmUmeGMd4jNM1dGzAY7Als
-        4hX0uVlj0Thk+oFjptEMw5YHh1DzXEAI4p6nKVoQM8LipMGqGMG0kA9Ze00ZHP18DXx50+
-        p+zfG8jnE4LkCjYI0DUjs5GLbTSK/g0=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-424-T-WeZz9LMzGHvbcP4tidZg-1; Thu, 06 Apr 2023 04:34:24 -0400
-X-MC-Unique: T-WeZz9LMzGHvbcP4tidZg-1
-Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-5a3c1e28e73so2623746d6.0
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 01:34:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680770064; x=1683362064;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=qqVopjdhKQtWOeCmmRx7vAPF7hicoY4lylw2wohZFr0=;
-        b=YBQu311BFcU0H1KIHzioVStntIj12BTu49SGa4Kd33wyywQ/7KOvIPXC3VTrXsflBJ
-         sahiedMmADHc0e31nL/fNP6eagsBgxcNtLZXht7jNk6PlK773ai1TNbhlGg/akzjHuJW
-         iCwXgoZhJkj+QbImUWzhQQjB5KYRLruV9DWmsLe94AJYpA+iucPT4w7LXnuzvXRPmc2l
-         ful1jzJaVtjI9BKfDqccFx2fV/nxu6wJ+pw9eTXXeElmtrX1/t8/VVLNX50a/kAOzSQ7
-         QG7GpS9LexiGmd1FSTCmqnT3rQAKvoq4VNxXZwWf8JVlzUoiGd3Vd5b+Gxifk8HZSJ4+
-         WJaQ==
-X-Gm-Message-State: AAQBX9en8/FmCd496f30U+hby95S/Q3QGI4nywRUO+vssCsDku2t0I/G
-        SPOp7HGS6RPbrJa2rZ/aEGfkl8cMZ4ShJ4MXteYZlbdt1HHBGn9qPV4VoW3OZ9uKPXK3XODlDAW
-        /XrsNcZ1zr9M9HgIF
-X-Received: by 2002:a05:6214:410d:b0:5df:4d41:9560 with SMTP id kc13-20020a056214410d00b005df4d419560mr7838489qvb.0.1680770064074;
-        Thu, 06 Apr 2023 01:34:24 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aMCsJsp9ULlmzN6dAqsXuZqKm2As0dHJqVx9G8xoMb5tPuxZXHbPD2McyYjO+j32f4HwDl6Q==
-X-Received: by 2002:a05:6214:410d:b0:5df:4d41:9560 with SMTP id kc13-20020a056214410d00b005df4d419560mr7838467qvb.0.1680770063804;
-        Thu, 06 Apr 2023 01:34:23 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-227-151.dyn.eolo.it. [146.241.227.151])
-        by smtp.gmail.com with ESMTPSA id s128-20020a372c86000000b0074688c36facsm312744qkh.56.2023.04.06.01.34.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 01:34:23 -0700 (PDT)
-Message-ID: <656093362eb6a37dff951a424085587a88a357ce.camel@redhat.com>
-Subject: Re: [PATCH net] net: qrtr: Fix an uninit variable access bug in
- qrtr_tx_resume()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        Manivannan Sadhasivam <mani@kernel.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        andersson@kernel.org, luca@z3ntu.xyz,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org
-Date:   Thu, 06 Apr 2023 10:34:20 +0200
-In-Reply-To: <4d485060-6757-c177-bdc6-25952a49c092@huawei.com>
-References: <20230403075417.2244203-1-william.xuanziyang@huawei.com>
-         <20230403150107.GB11346@thinkpad>
-         <4d485060-6757-c177-bdc6-25952a49c092@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        with ESMTP id S233176AbjDFIsQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:48:16 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A054ED2
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 01:48:15 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1pkLH4-0001xA-6k; Thu, 06 Apr 2023 10:47:18 +0200
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1pkLGz-0004Sj-1e; Thu, 06 Apr 2023 10:47:13 +0200
+Date:   Thu, 6 Apr 2023 10:47:13 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        devicetree@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH 06/12] net: phy: add phy_device_atomic_register helper
+Message-ID: <20230406084713.qcnuutobu54pn3ht@pengutronix.de>
+References: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
+ <20230405-net-next-topic-net-phy-reset-v1-6-7e5329f08002@pengutronix.de>
+ <ad0b0d90-04bf-457c-9bdf-a747d66871b5@lunn.ch>
+ <20230405152225.tu3wmbcvchuugs5u@pengutronix.de>
+ <a5a4e735-7b24-4933-b431-f36305689a79@lunn.ch>
+ <20230405194353.pwuk7e6rxnha3uqi@pengutronix.de>
+ <34e22343-fb11-4a85-bade-492fcbcfb436@lunn.ch>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <34e22343-fb11-4a85-bade-492fcbcfb436@lunn.ch>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 23-04-05, Andrew Lunn wrote:
+> > Currently we have one API which creates/allocates the 'struct
+> > phy_device' and intialize the state which is:
+> >    - phy_device_create()
+> > 
+> > This function requests a driver based on the phy_id/c45_ids. The ID have
+> > to come from somewhere if autodection is used. For autodetection case
+> >    - get_phy_device()
+> > 
+> > is called. This function try to access the phy without taken possible
+> > hardware dependencies into account. These dependecies can be reset-lines
+> > (in my case), clocks, supplies, ...
+> > 
+> > For taking fwnode (and possible dependencies) into account fwnode_mdio.c
+> > was written which provides two helpers:
+> >    - fwnode_mdiobus_register_phy()
+> >    - fwnode_mdiobus_phy_device_register().
+> > 
+> > The of_mdio.c and of_mdiobus_register_phy() is just a wrapper around
+> > fwnode_mdiobus_register_phy().
+> 
+> It seems to me that the real problem is that mdio_device_reset() takes
+> an mdio_device. mdiobus_register_gpiod() and mdiobus_register_reset()
+> also take an mdio_device. These are the functions you want to call
+> before calling of_mdiobus_register_phy() in __of_mdiobus_register() to
+> ensure the PHY is out of reset. But you don't have an mdio_device yet.
 
-On Tue, 2023-04-04 at 08:38 +0800, Ziyang Xuan (William) wrote:
-> > On Mon, Apr 03, 2023 at 03:54:17PM +0800, Ziyang Xuan wrote:
-> > > Syzbot reported a bug as following:
-> > >=20
-> > > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> > > BUG: KMSAN: uninit-value in qrtr_tx_resume+0x185/0x1f0
-> > > net/qrtr/af_qrtr.c:230
-> > > =C2=A0qrtr_tx_resume+0x185/0x1f0 net/qrtr/af_qrtr.c:230
-> > > =C2=A0qrtr_endpoint_post+0xf85/0x11b0 net/qrtr/af_qrtr.c:519
-> > > =C2=A0qrtr_tun_write_iter+0x270/0x400 net/qrtr/tun.c:108
-> > > =C2=A0call_write_iter include/linux/fs.h:2189 [inline]
-> > > =C2=A0aio_write+0x63a/0x950 fs/aio.c:1600
-> > > =C2=A0io_submit_one+0x1d1c/0x3bf0 fs/aio.c:2019
-> > > =C2=A0__do_sys_io_submit fs/aio.c:2078 [inline]
-> > > =C2=A0__se_sys_io_submit+0x293/0x770 fs/aio.c:2048
-> > > =C2=A0__x64_sys_io_submit+0x92/0xd0 fs/aio.c:2048
-> > > =C2=A0do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > > =C2=A0do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
-> > > =C2=A0entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > >=20
-> > > Uninit was created at:
-> > > =C2=A0slab_post_alloc_hook mm/slab.h:766 [inline]
-> > > =C2=A0slab_alloc_node mm/slub.c:3452 [inline]
-> > > =C2=A0__kmem_cache_alloc_node+0x71f/0xce0 mm/slub.c:3491
-> > > =C2=A0__do_kmalloc_node mm/slab_common.c:967 [inline]
-> > > =C2=A0__kmalloc_node_track_caller+0x114/0x3b0 mm/slab_common.c:988
-> > > =C2=A0kmalloc_reserve net/core/skbuff.c:492 [inline]
-> > > =C2=A0__alloc_skb+0x3af/0x8f0 net/core/skbuff.c:565
-> > > =C2=A0__netdev_alloc_skb+0x120/0x7d0 net/core/skbuff.c:630
-> > > =C2=A0qrtr_endpoint_post+0xbd/0x11b0 net/qrtr/af_qrtr.c:446
-> > > =C2=A0qrtr_tun_write_iter+0x270/0x400 net/qrtr/tun.c:108
-> > > =C2=A0call_write_iter include/linux/fs.h:2189 [inline]
-> > > =C2=A0aio_write+0x63a/0x950 fs/aio.c:1600
-> > > =C2=A0io_submit_one+0x1d1c/0x3bf0 fs/aio.c:2019
-> > > =C2=A0__do_sys_io_submit fs/aio.c:2078 [inline]
-> > > =C2=A0__se_sys_io_submit+0x293/0x770 fs/aio.c:2048
-> > > =C2=A0__x64_sys_io_submit+0x92/0xd0 fs/aio.c:2048
-> > > =C2=A0do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > > =C2=A0do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
-> > > =C2=A0entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > >=20
-> > > It is because that skb->len requires at least sizeof(struct
-> > > qrtr_ctrl_pkt)
-> > > in qrtr_tx_resume(). And skb->len equals to size in
-> > > qrtr_endpoint_post().
-> > > But size is less than sizeof(struct qrtr_ctrl_pkt) when qrtr_cb-
-> > > >type
-> > > equals to QRTR_TYPE_RESUME_TX in qrtr_endpoint_post() under the
-> > > syzbot
-> > > scenario. This triggers the uninit variable access bug.
-> > >=20
-> >=20
-> > I'm not familiar with syzkaller. Can you please share the data that
-> > was fuzzed
-> > by the bot?
-> >=20
-> > - Mani
-> >=20
-> > > Add size check when qrtr_cb->type equals to QRTR_TYPE_RESUME_TX
-> > > in
-> > > qrtr_endpoint_post() to fix the bug.
-> > >=20
-> > > Fixes: 5fdeb0d372ab ("net: qrtr: Implement outgoing flow
-> > > control")
-> > > Reported-by:
-> > > syzbot+4436c9630a45820fda76@syzkaller.appspotmail.com
-> > > Link:
-> > > https://syzkaller.appspot.com/bug?id=3Dc14607f0963d27d5a3d5f4c8639b50=
-0909e43540
->=20
-> Hello Manivannan Sadhasivam
->=20
-> See the above link, it's syzkaller dashboard link, you can find a C
-> reproducer that will help you.
+Of course, this was the problem as well and therefore I did the split in
+the first two patches, to differentiate between allocation and init.
 
-Hi Mani,
+> So i think a better solution is to refactor this code. Move the
+> resources into a structure of their own, and make that a member of
+> mdio_device.
 
-Are you satisfied with the information above? The patch LGTM and the
-syzkaller report looks quite clear.
+Sorry I can't follow you here, I did the refactoring already to
+differentiate between phy_device_alloc() and phy_device_init(). The
+parse and registration happen in between, like you descriped below. I
+didn't changed/touched the mdio_device and phy_device structs since
+those structs are very open and can be adapted by every driver.
 
-Thanks!
+> You can create a stack version of this resource structure
+> in __of_mdiobus_register(), parse DT to fill it out by calling
+> mdiobus_register_gpiod() and mdiobus_register_reset() taking this new
+> structure, take it out of reset by calling mdio_device_reset(), and
+> then call of_mdiobus_register_phy(). If a PHY is found, copy the
+> values in the resulting mdio_device. If not, release the resources.
 
-Paolo
+It is not just the reset, my approach would be the ground work for
+adding support of other resources to, which are not handled yet. e.g.
+phy-supply, clocks, pwdn-lines, ... With my approach it is far easier of
+adding this 
 
+> Doing it like this means there is no API change.
+
+Why is it that important? All users of the current fwnode API are
+changed and even better, they are replaced in a 2:1 ratio. The new API
+is the repaired version of the fwnode API which is already used by ACPI
+and OF to register a phy_device. For all non-ACPI/OF users the new API
+provides a way to allocate/identify and register a new phy within a
+single call.
+
+Regards,
+  Marco
