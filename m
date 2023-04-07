@@ -2,106 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15B716DA6B5
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 02:54:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3F686DA6B7
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 02:54:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230044AbjDGAyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 20:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
+        id S232836AbjDGAyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 20:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229669AbjDGAyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 20:54:14 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDEB693E4
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 17:54:12 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Pt0CL2Dp1zSqxD;
-        Fri,  7 Apr 2023 08:50:22 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 7 Apr 2023 08:54:10 +0800
-Subject: Re: [PATCH net] ipv4: Fix potential uninit variable access buf in
- __ip_make_skb()
-To:     Eric Dumazet <edumazet@google.com>
-CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <dlstevens@us.ibm.com>
-References: <20230406031136.2814421-1-william.xuanziyang@huawei.com>
- <CANn89iL5HUHTC19nCQLYhAExss_j2sHP4jjmZDJR4+4raaWg8w@mail.gmail.com>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <3e2d1cf6-080c-b766-d143-e505205c6c1c@huawei.com>
-Date:   Fri, 7 Apr 2023 08:54:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S231466AbjDGAyi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 20:54:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39AC93EA;
+        Thu,  6 Apr 2023 17:54:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 625CF64DD2;
+        Fri,  7 Apr 2023 00:54:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C35C433D2;
+        Fri,  7 Apr 2023 00:54:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680828876;
+        bh=uvT44qx5YO7bon6aMmqTeZtryVy3J03QEXu1FpcUChw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gb3r4KSO9gRu1kunqKSKRVILUWmx2/w1729zO1bnmOFwGTjK8Ft7VgeVIqQTRYktv
+         IWoDAI4k/MGasNqIg8yOC4EaHRFW3OexmHky+FTATmWwQPv0fuyPhD9KqpUrJdUZvy
+         04jSqe8Mz+djYDYAxW63CiCRaFAhGWCyS7LpVaX5D/mfbaRIUmoNGKxiZhnx++WVAf
+         0Hlc/LhrSf7+y2+OvyhZRwCWgXuEjgUquY5PkBpHS6jI2oxJ0oTdmh9/bpv7XFAxsC
+         dkHpoI3IwMJoz2Lwc/5kivXju8kVrsuuL0xWPpJK8r4SLNxcjeTU1NMtBFmuDOtKIE
+         XV9HKRzNQ6t1Q==
+Date:   Thu, 6 Apr 2023 17:54:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Howells <dhowells@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Jeroen de Borst <jeroendb@google.com>,
+        Catherine Sullivan <csully@google.com>,
+        Shailend Chand <shailend@google.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-nvme@lists.infradead.org
+Subject: Re: [PATCH net-next v5 03/19] mm: Make the page_frag_cache
+ allocator use multipage folios
+Message-ID: <20230406175434.0d74bbcc@kernel.org>
+In-Reply-To: <20230406094245.3633290-4-dhowells@redhat.com>
+References: <20230406094245.3633290-1-dhowells@redhat.com>
+        <20230406094245.3633290-4-dhowells@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CANn89iL5HUHTC19nCQLYhAExss_j2sHP4jjmZDJR4+4raaWg8w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Thu, Apr 6, 2023 at 5:11 AM Ziyang Xuan
-> <william.xuanziyang@huawei.com> wrote:
->>
->> Like commit ea30388baebc ("ipv6: Fix an uninit variable access bug in
->> __ip6_make_skb()"). icmphdr does not in skb linear region under the
->> scenario of SOCK_RAW socket. Access icmp_hdr(skb)->type directly will
->> trigger the uninit variable access bug.
->>
->> Use a local variable icmp_type to carry the correct value in different
->> scenarios.
->>
->> Fixes: 96793b482540 ("[IPV4]: Add ICMPMsgStats MIB (RFC 4293)")
->> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->> ---
->>  net/ipv4/ip_output.c | 12 +++++++++---
->>  1 file changed, 9 insertions(+), 3 deletions(-)
->>
->> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
->> index 4e4e308c3230..57921b297a8e 100644
->> --- a/net/ipv4/ip_output.c
->> +++ b/net/ipv4/ip_output.c
->> @@ -1570,9 +1570,15 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
->>         cork->dst = NULL;
->>         skb_dst_set(skb, &rt->dst);
->>
->> -       if (iph->protocol == IPPROTO_ICMP)
->> -               icmp_out_count(net, ((struct icmphdr *)
->> -                       skb_transport_header(skb))->type);
->> +       if (iph->protocol == IPPROTO_ICMP) {
->> +               u8 icmp_type;
->> +
->> +               if (sk->sk_socket->type == SOCK_RAW && !inet_sk(sk)->hdrincl)
-> 
-> What is the reason for not using sk->sk_type ?
+On Thu,  6 Apr 2023 10:42:29 +0100 David Howells wrote:
+> Change the page_frag_cache allocator to use multipage folios rather than
+> groups of pages.  This reduces page_frag_free to just a folio_put() or
+> put_page().
 
-sk->sk_type is more concise. Thank you!
+drivers/nvme/host/tcp.c:1315:15: warning: unused variable 'page' [-Wunused-variable]
+        struct page *page;
+                     ^
 
-> 
->> +                       icmp_type = fl4->fl4_icmp_type;
->> +               else
->> +                       icmp_type = icmp_hdr(skb)->type;
->> +               icmp_out_count(net, icmp_type);
->> +       }
-> 
-> 
->>
->>         ip_cork_release(cork);
->>  out:
->> --
->> 2.25.1
->>
-> .
-> 
+drivers/net/ethernet/mediatek/mtk_wed_wo.c:306:15: warning: unused variable 'page' [-Wunused-variable]
+        struct page *page;
+                     ^
