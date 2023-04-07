@@ -2,57 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA226DAADC
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 11:29:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CAA86DAAE3
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 11:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240537AbjDGJ3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 05:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
+        id S240378AbjDGJbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 05:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240569AbjDGJ3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 05:29:13 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A099D7EC9;
-        Fri,  7 Apr 2023 02:29:11 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1pkiOW-0001Oj-0n;
-        Fri, 07 Apr 2023 11:28:32 +0200
-Date:   Fri, 7 Apr 2023 10:28:29 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix port specifications
- for MT7988
-Message-ID: <ZC_iPfl5R-_4zOZg@makrotopia.org>
-References: <20230406100445.52915-1-arinc.unal@arinc9.com>
- <ZC6n1XAGyZFlxyXx@shell.armlinux.org.uk>
- <e413a182-ce93-5831-09f5-19d34d7f7fcf@arinc9.com>
- <ZC9AXyuFqa3bqF3Q@makrotopia.org>
- <0cdb0504-bc1e-c255-a7d2-4dd96bd8e6e3@arinc9.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        with ESMTP id S230261AbjDGJbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 05:31:17 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2109.outbound.protection.outlook.com [40.107.92.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4757EC9;
+        Fri,  7 Apr 2023 02:31:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cjho4gDJnvo5PSRoOgQ1e+rWHoIvNjKaBs4PalXGc7DbpweANvG1XNr55g4Hoa1MCMje6SKtz1KYiT5oJQHFcF1zI2Lh+ESdNVwMvdNCw6NCxt5Nm4RJ/CQMTKOBOumDV0+/kfZRWgB1Gtq6ZDG6SB9SAknuE6fWpegk8bj5KM9ii9w7wrQqrqC2ZAmmyAok+Bn2DInDT39ARLZ22h54K0NvK0T3RW46equq/6APKdUa+AndYMb3w5kF8Loof/qZI3skydR2mcTzkGJJupqiiSW7Is1RTg14xlP/yPQABS4UkhGpQWHo4eoteiP7F1YL0gb+CDShi1ZQOnyP0f4NFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/g1U8Y3AFXRCzY3+Ft2E/3dXoZ//WdRH4eYeGX4CfdA=;
+ b=b4qM5betYa1c+ppPp7cmv3J0HzuN78U2b2jpUT+o6u3FvLUgZxBRzifsfKmY0wke0HFTXZMu1Fbqr7hQAGCcAk6l8KeKMrJeAvjhDmxHT8kuOwLN/XCbdkAC8AgUaacUdsGpxV1QRuHD8hbMVsBPdlrRRJL4IwnqF7f0S9YcXg5/dlZG++7yUFhJeG0EfcOHDLqAMaGzaWlDG84lPsl99shiIATO85C4HyGuPJNKBy1c2C3bmLC2ryIG0xRo7FkpiSSalcGoP/UQCk7piX1EqBrvyistRBrXEeKWOQAm+a6dEbakHQkQhtPtN3T0HSuZn6Kxi8744hgZKi/QvLEkvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/g1U8Y3AFXRCzY3+Ft2E/3dXoZ//WdRH4eYeGX4CfdA=;
+ b=oiMmmDC2DVVVexIK1PdaH2akLKgYSC6w2bl100HEGc/4mMyt1ebYRFzMU2QBHi7L/HUxPEnAUDarljolqzJNq/upGydTk8PzBf6efZzmHVtStai8Jm5VhcYkgQDpRLmGWHNhprqJVqR7fZOJZL6x5l85S2b683jph+rGUfCaUOE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by DM4PR13MB5881.namprd13.prod.outlook.com (2603:10b6:8:4c::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Fri, 7 Apr
+ 2023 09:31:14 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.034; Fri, 7 Apr 2023
+ 09:31:12 +0000
+Date:   Fri, 7 Apr 2023 11:31:06 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Felix Huettner <felix.huettner@mail.schwarz>,
+        netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com,
+        edumazet@google.com, pshelar@ovn.org, davem@davemloft.net,
+        luca.czesla@mail.schwarz
+Subject: Re: [PATCH net v3] net: openvswitch: fix race on port output
+Message-ID: <ZC/i2jZWlhyShGor@corigine.com>
+References: <ZC0pBXBAgh7c76CA@kernel-bug-kernel-bug>
+ <20230406190513.7d783d6d@kernel.org>
+ <ZC/X7Dqv+X2vwLgM@corigine.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0cdb0504-bc1e-c255-a7d2-4dd96bd8e6e3@arinc9.com>
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+In-Reply-To: <ZC/X7Dqv+X2vwLgM@corigine.com>
+X-ClientProxiedBy: AM8P189CA0011.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:218::16) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM4PR13MB5881:EE_
+X-MS-Office365-Filtering-Correlation-Id: 03c77904-933e-420e-43e5-08db374ad3ee
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: esKxcvYCH+eqgC79ZkasjHQCmoA5tS88UOlLRAaaWTaupkMxQg4ZYgSxAoBT0j3alWtL8lrXx8VMV1if6lXK9y+gEuePdI2v9OQL9mnfq0/fp4D5Bv0kOe+Fs3lqFLor/0n7wXFVOmCcxFWNxKB7h2GmfYgJYWD9kAO3aZFqyAhHcc1ek4TTvSPB+xN1x8UR12sTPKnlHA21QnnTVZmdosV77ugvhl9ZiE6wQoewUAYK0y3PeAqYVNpDABr4+0GpH4KoC/ICqxrVZd5ljeZ20NIm7J2QchgCVH0G8TbzpHw+cKPQoUDq96s+h8LDXygoeqvgnOdhO7lVKlvPk0XM2u/B8NTGJENhgLnx4z1LTeaEdNiLGHXxoEZNtudBhVQGzYepcK1l8+zWf6drwtffE7Df0surFg9rO/EIOX/ZguY6ff8JLj7CoFQkh71baODkz5vRvNNajJDB1eWXvFmd6TS+pOZTQ05H1n3Aq3KsN2fy7qg4lDwNadCl5swYtdmxSIRaqa6aeyib3k1+B++Jf3ec+1HpTl+86qZWCX5CKu/pYFcZGQ3r9FkbUlL18xd4EQ/zVUz7rPWR63P/L7dh8SYg6EBmBNpvzutQ5K4LxZ8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(346002)(396003)(136003)(366004)(376002)(451199021)(478600001)(44832011)(66476007)(4326008)(6916009)(8676002)(5660300002)(6506007)(7416002)(8936002)(316002)(66946007)(6486002)(66556008)(38100700002)(2906002)(41300700001)(6512007)(6666004)(2616005)(86362001)(36756003)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?s9Zv9MaYvZeRJhOqJrx/mcY/OkPdzeWeJEqCvD0BEBF1fTNlL7kKNIT7o1/v?=
+ =?us-ascii?Q?EOGlzqIDBrLKsnDdeTMIC3kofWibE13fBW4cunltbHu+hDgaT1beebVNNzb3?=
+ =?us-ascii?Q?3j1iMKB0ynbDZqdsGOLHM4TTKVXyplgIjyWMRE5lToe2yaK3YzO5CEHcf+gE?=
+ =?us-ascii?Q?wG4dbyeVbX3J4Wt0UaYyeGXY/Yom2DzzHLcWFi7qPZ6rY96ZWQS9DM6+dHZf?=
+ =?us-ascii?Q?mg4p4RuFWQK40VfTd5O8lrrYuz6hhQfilhZtjhmVVUUG4ZBPyTkBxcycVQUo?=
+ =?us-ascii?Q?pFQuyrqmfWvFn2kgcxnbwpRdnwSpGlHS7i2Vmv9B+7t/xuF62V+qJbuKMRGT?=
+ =?us-ascii?Q?FuEuxDTNgHTgIe2kWcN5WHUr4qqkPV9Q5GC66YRe8Q/pSXZMIM5MoB+oL/Xe?=
+ =?us-ascii?Q?iK5C2Jtd5e+s5bUkAcGdGYMRx7kUMzN4Wcq3EYXv49QcKOx7n8p11PJzzb3X?=
+ =?us-ascii?Q?IDoiWj/98PjP39t2dyrpMlVjX4mVk8Gx72iQU65EmpHUwp+7PBz42zPeFlJh?=
+ =?us-ascii?Q?3vuZ8ngL1iND/2CH6oSnY5SAz1nJJ0FSVQfizYriUlQa2Je2CSRMu7IBXQeT?=
+ =?us-ascii?Q?w40/J67B6UP/XmWGDgwpIJiU5EDMP0ppyYCG9FzbNdaK1yezM7TByFoXXgeG?=
+ =?us-ascii?Q?PzJG1F8/HM25F/gW1m89Y8Lm0kCf2rrKcEJGneOPTfeMJ1HPblWmKtJsewyH?=
+ =?us-ascii?Q?STSSABIbZuXP9dK7n4/wy58bw6ZNk0hh/wBTBrS2fY8U76Qfx54YxGex8jUU?=
+ =?us-ascii?Q?NfXWDhqpSu0OWgMpLASQZpGXaCWpAs9/RAXPy4Dvhj2KHGcrZ1vu9hnOPdXq?=
+ =?us-ascii?Q?K5/aWzynfnaqqTAOO6RHHMK79rqrZWu7xaLdpBH3Obx9OxhvxDuoajWa8tl2?=
+ =?us-ascii?Q?F96Nq8xoN/ZLCYGlvEfwMjRF+eGBVjBdN9m4h9kx6Pxs/FPdZZnJFawwQWAe?=
+ =?us-ascii?Q?AWFV2APT47XbYUEpYCJBWS7hTCKJbsPbFDwKq6+jp9ggXBtTw/JNtr/ybO5U?=
+ =?us-ascii?Q?NTMC4w8WjfcMwByHpOaHETwu5BemcxEoleFlQwhv/w/m5zSW/AIfmyZuQvKq?=
+ =?us-ascii?Q?mk2Dy9h7fIT98lVLBIopkdjTGcm1MdjxCXtmnx3N69vCpu0PpgdgA/xLHnj8?=
+ =?us-ascii?Q?iDcxR9Tj6OpW/ATaXVTyR4PpykARvmHvR5pyw1LRFWHkNZFO9kSWqPeYaFE5?=
+ =?us-ascii?Q?4ZOdludnk3DUQNomvCf6INdiCDXBRLP8eu+RRQwVi5so+YVWJTgKYs7aNDGe?=
+ =?us-ascii?Q?zeWwxd6ZBfswRT3YzuEJG8Y7vF2ihFnX1FAPqVbDmNb48MB+v5I7PSQctO0I?=
+ =?us-ascii?Q?V9Od1hLXU4u1apx1DzyVziOC70lXSjktSjPjgJ/eBwT0SQRwO+ePlZxlDw4+?=
+ =?us-ascii?Q?QrSmZyFCZHxCIrL+1LdrQr/Vy5rEM3lg+IKtXJ4urpgaJB9tKGpHTotX7t5w?=
+ =?us-ascii?Q?IhgAK87qgpQRGoKdsUKSonOJl8llFa3bz6ecVz4lY9e5XbHRUbj2MMohTVCu?=
+ =?us-ascii?Q?JAwM+6Hz0nX/g8JsfgW5cTSfuTf2Fg9SEZiOg25epG/yFe+ZTZPjS+la5nW6?=
+ =?us-ascii?Q?Bv+qk55Hg0+1c+MYbOX+T10FhsCgIoSNuSDdJzR8Fj8nT02dKigylYNjzSs0?=
+ =?us-ascii?Q?REhwJZogA/Y6Y7QZH3GlY3gWFb0VVdwMI2nblf5ebKlOO0jCpUm8Qa0XFGE9?=
+ =?us-ascii?Q?j3NcUQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 03c77904-933e-420e-43e5-08db374ad3ee
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2023 09:31:12.7315
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HtzL4MJ0/U+LnIu+xtWh87SIWzPhZv1OHltREw/5N2f7slz2g5rt0enaVwYjLm0KnQpL0oiNJnOxykGv6LgGjCVWbdSSz64w1ZaXJzY69YM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR13MB5881
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,149 +118,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 07, 2023 at 11:56:08AM +0300, Arınç ÜNAL wrote:
-> On 7.04.2023 00:57, Daniel Golle wrote:
-> > On Fri, Apr 07, 2023 at 12:43:41AM +0300, Arınç ÜNAL wrote:
-> > > On 6.04.2023 14:07, Russell King (Oracle) wrote:
-> > > > On Thu, Apr 06, 2023 at 01:04:45PM +0300, arinc9.unal@gmail.com wrote:
-> > > > > From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> > > > > 
-> > > > > On the switch on the MT7988 SoC, there are only 4 PHYs. There's only port 6
-> > > > > as the CPU port, there's no port 5. Split the switch statement with a check
-> > > > > to enforce these for the switch on the MT7988 SoC. The internal phy-mode is
-> > > > > specific to MT7988 so put it for MT7988 only.
-> > > > > 
-> > > > > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> > > > > ---
-> > > > > 
-> > > > > Daniel, this is based on the information you provided me about the switch.
-> > > > > I will add this to my current patch series if it looks good to you.
-> > > > > 
-> > > > > Arınç
-> > > > > 
-> > > > > ---
-> > > > >    drivers/net/dsa/mt7530.c | 67 ++++++++++++++++++++++++++--------------
-> > > > >    1 file changed, 43 insertions(+), 24 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> > > > > index 6fbbdcb5987f..f167fa135ef1 100644
-> > > > > --- a/drivers/net/dsa/mt7530.c
-> > > > > +++ b/drivers/net/dsa/mt7530.c
-> > > > > @@ -2548,7 +2548,7 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
-> > > > >    	phy_interface_zero(config->supported_interfaces);
-> > > > >    	switch (port) {
-> > > > > -	case 0 ... 4: /* Internal phy */
-> > > > > +	case 0 ... 3: /* Internal phy */
-> > > > >    		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-> > > > >    			  config->supported_interfaces);
-> > > > >    		break;
-> > > > > @@ -2710,37 +2710,56 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-> > > > >    	struct mt7530_priv *priv = ds->priv;
-> > > > >    	u32 mcr_cur, mcr_new;
-> > > > > -	switch (port) {
-> > > > > -	case 0 ... 4: /* Internal phy */
-> > > > > -		if (state->interface != PHY_INTERFACE_MODE_GMII &&
-> > > > > -		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
-> > > > > -			goto unsupported;
-> > > > > -		break;
-> > > > > -	case 5: /* Port 5, a CPU port. */
-> > > > > -		if (priv->p5_interface == state->interface)
-> > > > > +	if (priv->id == ID_MT7988) {
-> > > > > +		switch (port) {
-> > > > > +		case 0 ... 3: /* Internal phy */
-> > > > > +			if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
-> > > > 
-> > > > How do these end up with PHY_INTERFACE_MODE_INTERNAL ? phylib defaults
-> > > > to GMII mode without something else being specified in DT.
-> > > > 
-> > > > Also note that you should *not* be validating state->interface in the
-> > > > mac_config() method because it's way too late to reject it - if you get
-> > > > an unsupported interface here, then that is down to the get_caps()
-> > > > method being buggy. Only report interfaces in get_caps() that you are
-> > > > prepared to handle in the rest of the system.
-> > > 
-> > > This is already the case for all three get_caps(). The supported interfaces
-> > > for each port are properly defined.
-> > > 
-> > > Though mt7988_mac_port_get_caps() clears the config->supported_interfaces
-> > > bitmap before reporting the supported interfaces. I don't think this is
-> > > needed as all bits in the bitmap should already be initialized to zero when
-> > > the phylink_config structure is allocated.
-> > > 
-> > > I'm not sure if your suggestion is to make sure the supported interfaces are
-> > > properly reported on get_caps(), or validate state->interface somewhere
-> > > else.
+On Fri, Apr 07, 2023 at 10:44:35AM +0200, Simon Horman wrote:
+> On Thu, Apr 06, 2023 at 07:05:13PM -0700, Jakub Kicinski wrote:
+> > On Wed, 5 Apr 2023 07:53:41 +0000 Felix Huettner wrote:
+> > > assume the following setup on a single machine:
+> > > 1. An openvswitch instance with one bridge and default flows
+> > > 2. two network namespaces "server" and "client"
+> > > 3. two ovs interfaces "server" and "client" on the bridge
+> > > 4. for each ovs interface a veth pair with a matching name and 32 rx and
+> > >    tx queues
+> > > 5. move the ends of the veth pairs to the respective network namespaces
+> > > 6. assign ip addresses to each of the veth ends in the namespaces (needs
+> > >    to be the same subnet)
+> > > 7. start some http server on the server network namespace
+> > > 8. test if a client in the client namespace can reach the http server
 > > 
-> > I think what Russell meant is just there is no point in being overly
-> > precise about permitted interface modes in mt753x_phylink_mac_config,
-> > as this function is not meant and called too late to validate the
-> > validity of the selected interface mode.
-> > 
-> > You change to mt7988_mac_port_get_caps looks correct to me and doing
-> > this will already prevent mt753x_phylink_mac_config from ever being
-> > called on MT7988 for port == 4 as well as and port == 5.
+> > Hi Simon, looks good?
 > 
-> Ah, thanks for pointing this out Daniel. I see ds->ops->phylink_get_caps()
-> is run right before phylink_create() on dsa_port_phylink_create(), as it
-> should get the capabilities before creating an instance.
-> 
-> Should I remove phy_interface_zero(config->supported_interfaces);
-> mt7988_mac_port_get_caps()? I'd prefer to do identical operations on each
-> get_caps(), if there's no apparent reason for this to be on
-> mt7988_mac_port_get_caps().
+> Thanks Jakub, will check.
 
-Yes, sounds sane to me, please do so.
+Yes, this does look good to me.
 
-Also we could make .mac_port_config optional, as for MT7988 we actually
-won't need it at all:
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index e4bb5037d3525..5efcb9897eb18 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2653,17 +2653,6 @@ static bool mt753x_is_mac_port(u32 port)
- 	return (port == 5 || port == 6);
- }
- 
--static int
--mt7988_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
--		  phy_interface_t interface)
--{
--	if (dsa_is_cpu_port(ds, port) &&
--	    interface == PHY_INTERFACE_MODE_INTERNAL)
--		return 0;
--
--	return -EINVAL;
--}
--
- static int
- mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		  phy_interface_t interface)
-@@ -2704,6 +2693,9 @@ mt753x_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- {
- 	struct mt7530_priv *priv = ds->priv;
- 
-+	if (!priv->info->mac_port_config)
-+		return 0;
-+
- 	return priv->info->mac_port_config(ds, port, mode, state->interface);
- }
- 
-@@ -3157,7 +3149,6 @@ const struct mt753x_info mt753x_table[] = {
- 		.pad_setup = mt7988_pad_setup,
- 		.cpu_port_config = mt7988_cpu_port_config,
- 		.mac_port_get_caps = mt7988_mac_port_get_caps,
--		.mac_port_config = mt7988_mac_config,
- 	},
- };
- EXPORT_SYMBOL_GPL(mt753x_table);
-@@ -3186,8 +3177,7 @@ mt7530_probe_common(struct mt7530_priv *priv)
- 	 */
- 	if (!priv->info->sw_setup || !priv->info->pad_setup ||
- 	    !priv->info->phy_read_c22 || !priv->info->phy_write_c22 ||
--	    !priv->info->mac_port_get_caps ||
--	    !priv->info->mac_port_config)
-+	    !priv->info->mac_port_get_caps)
- 		return -EINVAL;
- 
- 	priv->id = priv->info->id;
+nit: somewhere in the patch description, 'inifinite' -> 'infinite'
+
