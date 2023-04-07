@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4131E6DAFA4
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 17:25:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D77816DAFA3
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 17:25:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232437AbjDGPZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 11:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
+        id S231812AbjDGPZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 11:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233032AbjDGPZb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 11:25:31 -0400
+        with ESMTP id S232045AbjDGPZ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 11:25:29 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D749EE5
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 08:25:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750B45FEC
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 08:25:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
         Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=WM2tDHH9rXY0X0+Xk8mi6u7u0H/XcHl0OImH+M9gYQ8=; b=5MBVPgq/PW14mhfhOYwQOtxZ1h
-        lsn6IZJGqHhJVkQUMT6A1ngy8MHZzY/SVE/bOU9TUgdlpyOURHkhSeZ+Pc5/nydKevYDlp9HOfcwS
-        ckBCtYtxJFZ7L4Zc6eXTkIW1up+hT7bZ+00fscPXzhYTrrwVbR4WUp2zoqojfsaCMiig=;
+        bh=Z5IQvTFcmGGpdy7wPN1jqAydJBSopgZpKUblUtUCQ9E=; b=FSOZs2sEmv7B2a+cG5aFjs9GaQ
+        Rh8GyZhqQxlJ74Eu3RduuwmHODJToEnbH/9+/ogdbnSzi5yPudLXbWKnyo1jILZKJTTpzYbTpXmXM
+        hIWEgQCpsQEr9vyMzGCNLFh+WQMuXPMhmZ0uZoGTdelVpIQGkw0RU8/zFd+jX8y9CqE0=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1pknxp-009jjb-PB; Fri, 07 Apr 2023 17:25:21 +0200
+        id 1pknxp-009jjf-QB; Fri, 07 Apr 2023 17:25:21 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     shawnguo@kernel.org
 Cc:     s.hauer@pengutronix.de, Russell King <rmk+kernel@armlinux.org.uk>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         arm-soc <arm@kernel.org>, netdev <netdev@vger.kernel.org>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH 1/3] ARM: dts: imx51: ZII: Add missing phy-mode
-Date:   Fri,  7 Apr 2023 17:25:01 +0200
-Message-Id: <20230407152503.2320741-2-andrew@lunn.ch>
+Subject: [PATCH 2/3] ARM: dts: imx6qdl: Add missing phy-mode and fixed links
+Date:   Fri,  7 Apr 2023 17:25:02 +0200
+Message-Id: <20230407152503.2320741-3-andrew@lunn.ch>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230407152503.2320741-1-andrew@lunn.ch>
 References: <20230407152503.2320741-1-andrew@lunn.ch>
@@ -49,58 +49,53 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 The DSA framework has got more picky about always having a phy-mode
-for the CPU port. The imx51 Ethernet supports MII, and RMII. Set the
-switch phy-mode based on how the SoC Ethernet port has been
-configured.
+for the CPU port. Add a phy-mode based on what the SoC ethernet is
+using. For RGMII mode, have the switch add the delays.
 
 Additionally, the cpu label has never actually been used in the
 binding, so remove it.
 
+Lastly add a fixed-link node indicating the expected speed/duplex of
+the link to the SoC.
+
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- arch/arm/boot/dts/imx51-zii-rdu1.dts      | 2 +-
- arch/arm/boot/dts/imx51-zii-scu2-mezz.dts | 2 +-
- arch/arm/boot/dts/imx51-zii-scu3-esb.dts  | 1 -
- 3 files changed, 2 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/imx6qdl-gw5904.dtsi   | 7 ++++++-
+ arch/arm/boot/dts/imx6qdl-zii-rdu2.dtsi | 2 +-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx51-zii-rdu1.dts b/arch/arm/boot/dts/imx51-zii-rdu1.dts
-index e537e06e11d7..8621760af1af 100644
---- a/arch/arm/boot/dts/imx51-zii-rdu1.dts
-+++ b/arch/arm/boot/dts/imx51-zii-rdu1.dts
-@@ -181,7 +181,7 @@ ports {
+diff --git a/arch/arm/boot/dts/imx6qdl-gw5904.dtsi b/arch/arm/boot/dts/imx6qdl-gw5904.dtsi
+index 9fc79af2bc9a..9594bc5745ed 100644
+--- a/arch/arm/boot/dts/imx6qdl-gw5904.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-gw5904.dtsi
+@@ -238,8 +238,13 @@ port@3 {
  
- 				port@0 {
- 					reg = <0>;
+ 				port@5 {
+ 					reg = <5>;
 -					label = "cpu";
-+					phy-mode = "mii";
+ 					ethernet = <&fec>;
++					phy-mode = "rgmii-id";
++
++					fixed-link {
++						speed = <1000>;
++						full-duplex;
++					};
+ 				};
+ 			};
+ 		};
+diff --git a/arch/arm/boot/dts/imx6qdl-zii-rdu2.dtsi b/arch/arm/boot/dts/imx6qdl-zii-rdu2.dtsi
+index 5bb47c79a4da..826a9d6cb4d8 100644
+--- a/arch/arm/boot/dts/imx6qdl-zii-rdu2.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-zii-rdu2.dtsi
+@@ -757,7 +757,7 @@ port@1 {
+ 
+ 				port@2 {
+ 					reg = <2>;
+-					label = "cpu";
++					phy-mode = "rmii";
  					ethernet = <&fec>;
  
  					fixed-link {
-diff --git a/arch/arm/boot/dts/imx51-zii-scu2-mezz.dts b/arch/arm/boot/dts/imx51-zii-scu2-mezz.dts
-index 21dd3f7abd48..883e80d92ef0 100644
---- a/arch/arm/boot/dts/imx51-zii-scu2-mezz.dts
-+++ b/arch/arm/boot/dts/imx51-zii-scu2-mezz.dts
-@@ -82,7 +82,7 @@ port@3 {
- 
- 				port@4 {
- 					reg = <4>;
--					label = "cpu";
-+					phy-mode = "mii";
- 					ethernet = <&fec>;
- 
- 					fixed-link {
-diff --git a/arch/arm/boot/dts/imx51-zii-scu3-esb.dts b/arch/arm/boot/dts/imx51-zii-scu3-esb.dts
-index 9f857eb44bf7..19a3b142c964 100644
---- a/arch/arm/boot/dts/imx51-zii-scu3-esb.dts
-+++ b/arch/arm/boot/dts/imx51-zii-scu3-esb.dts
-@@ -267,7 +267,6 @@ fixed-link {
- 
- 				port@6 {
- 					reg = <6>;
--					label = "cpu";
- 					phy-mode = "mii";
- 					ethernet = <&fec>;
- 
 -- 
 2.40.0
 
