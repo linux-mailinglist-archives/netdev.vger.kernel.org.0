@@ -2,153 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E796A6DA764
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 04:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F4D6DA78D
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 04:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240342AbjDGCFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 22:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50950 "EHLO
+        id S239799AbjDGCMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 22:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240256AbjDGCFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 22:05:32 -0400
-Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B4DD324;
-        Thu,  6 Apr 2023 19:03:51 -0700 (PDT)
-Received: by mail-vs1-xe31.google.com with SMTP id dg15so24295925vsb.13;
-        Thu, 06 Apr 2023 19:03:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680832939; x=1683424939;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QNjYz0mwAEnp5iGFtGlkbjUifhzDTS1lkAnmUE+wQDs=;
-        b=k0Rk6Klrd+NMVlkQ0I4To0EBVYkq06tJRKyF9Q+HTZZ0mjPeotBo3paE++cFPYF74I
-         d7YMh7vQCKZi1N9BOffWx91Z9WKlyoiq8QIJe2HB3hbBC/XT6aa52OB/+8fug6vGCi1D
-         Nia+kmPulIYI1u+DRUOoTPbVkxzFpd10SUkVkW00sps43RMJ/0UWdKnXPLRV/OSqjmi8
-         gZl+aiT8xrAeqf1Vpf+QzMN9k0mRMRhaw+u6oqUurjvtM+n18w2/8gxsC1kd+w7FC2nn
-         ZXYQqe0Qqim7CRV9MMMbxO5dOwfeUjdeIE99mgOFkjWw0tD6DM0lBb2rdCFNnUi4vm/M
-         3HbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680832939; x=1683424939;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=QNjYz0mwAEnp5iGFtGlkbjUifhzDTS1lkAnmUE+wQDs=;
-        b=H9g2dANrHmsqL3PUQcRVszm1lVPbos3LcAiYt23doHI7qvn/L6BORbCk69oxUl+tib
-         w4x7IhUbtve4/dg4bdzQSorQi/QjGKbsgtEACh6zhV+zhbA+xHiqgX5sZuM4hlu0g4+U
-         uv+Jtb8VZuxSTTf8ccDvC15y1fNHLB0wNMi8iaGnj72hQg+YE05IdS5tLdNjKnLUaNBu
-         sndsXD/tic39/ltFo7RXYP4/VN+xDPSnxwyA1D1V5Q6EI44rByfUe3xAj7f9pE8Vsle9
-         XIKXEiS6e4BnjwxrvMUA8sEgNjpTYM8GKqvzXrEvQteeu7UTxp+sV7E1u+czGoJz5SkL
-         gdcg==
-X-Gm-Message-State: AAQBX9dNl0ALa9FBbg5F2tGWFe4+4p7Ec2b3dj1M0xvgo+1wMUwNSGa2
-        ajTtGLgSIq2vL+ZKjTXDHpVJAcp7vUIAzqLvMsI=
-X-Google-Smtp-Source: AKy350bGEsmljBB5v0+qgjtoyZwIZGaewYP8JGjSoxxkH0iyM7Jm0eZvtJ9T10+AG3zRu8TocoTTHS8eeuT3PBMxDmM=
-X-Received: by 2002:a67:c190:0:b0:425:969d:3709 with SMTP id
- h16-20020a67c190000000b00425969d3709mr326145vsj.3.1680832939251; Thu, 06 Apr
- 2023 19:02:19 -0700 (PDT)
+        with ESMTP id S237111AbjDGCMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 22:12:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7421AC;
+        Thu,  6 Apr 2023 19:12:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE08E64E8A;
+        Fri,  7 Apr 2023 02:02:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E06F0C433A7;
+        Fri,  7 Apr 2023 02:02:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680832930;
+        bh=irhquyIMOLv8aFbHLZ/CLVb/o6ZsppXDK0dippASpfg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=L9N4xh16jzWS8SndxFsXU41qyS5Vl1UEfU/z51m2/CKjgnrNuwNFmAYAqG1aikaq2
+         BqppE7yDJ+nz+HpsZzKa+uF6KQp084WJhKjx3VfmU+5YZEJ3+5grvUujhKGJRJW7sl
+         sxD/lG2SbHaT6MHoNNDo/DpCPv9rdivnknbUrUsoq5Y/H4bVHNeJ8XHgA95FYFX9Hp
+         2Sshhuc7aE5hN33wPxYKukPAXOovweSqWHUNXNGQ/jnD+H/T9At4S60itzw1jhaGyj
+         +gG+fp0/0tz4aHWH8AfjyFkJpJ0MOoKb9mRcwBs1ZbEjcLKIjx+3qjAMMPVEBIhmdm
+         v8K62ZqrZyBug==
+Date:   Thu, 6 Apr 2023 19:02:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     linux@armlinux.org.uk
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, netdev@vger.kernel.org,
+        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, system@metrotek.ru,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net] net: sfp: initialize sfp->i2c_block_size at sfp
+ allocation
+Message-ID: <20230406190208.7918c71e@kernel.org>
+In-Reply-To: <20230405153900.747-1-i.bornyakov@metrotek.ru>
+References: <20230405153900.747-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
-References: <20230406094245.3633290-1-dhowells@redhat.com> <20230406094245.3633290-7-dhowells@redhat.com>
-In-Reply-To: <20230406094245.3633290-7-dhowells@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 6 Apr 2023 22:01:42 -0400
-Message-ID: <CAF=yD-LAC4QCfoGVKaW-GzU26=xp-6Wuq3jxAhJK1+KV0M+q2A@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 06/19] tcp: Make sendmsg(MSG_SPLICE_PAGES)
- copy unspliceable data
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 6, 2023 at 5:43=E2=80=AFAM David Howells <dhowells@redhat.com> =
-wrote:
->
-> If sendmsg() with MSG_SPLICE_PAGES encounters a page that shouldn't be
-> spliced - a slab page, for instance, or one with a zero count - make
-> tcp_sendmsg() copy it.
->
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Eric Dumazet <edumazet@google.com>
-> cc: "David S. Miller" <davem@davemloft.net>
-> cc: David Ahern <dsahern@kernel.org>
-> cc: Jakub Kicinski <kuba@kernel.org>
-> cc: Paolo Abeni <pabeni@redhat.com>
-> cc: Jens Axboe <axboe@kernel.dk>
-> cc: Matthew Wilcox <willy@infradead.org>
-> cc: netdev@vger.kernel.org
-> ---
->  net/ipv4/tcp.c | 28 +++++++++++++++++++++++++---
->  1 file changed, 25 insertions(+), 3 deletions(-)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 510bacc7ce7b..238a8ad6527c 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -1418,10 +1418,10 @@ int tcp_sendmsg_locked(struct sock *sk, struct ms=
-ghdr *msg, size_t size)
->                                 goto do_error;
->                         copy =3D err;
->                 } else if (zc =3D=3D 2) {
-> -                       /* Splice in data. */
-> +                       /* Splice in data if we can; copy if we can't. */
->                         struct page *page =3D NULL, **pages =3D &page;
->                         size_t off =3D 0, part;
-> -                       bool can_coalesce;
-> +                       bool can_coalesce, put =3D false;
->                         int i =3D skb_shinfo(skb)->nr_frags;
->
->                         copy =3D iov_iter_extract_pages(&msg->msg_iter, &=
-pages,
-> @@ -1448,12 +1448,34 @@ int tcp_sendmsg_locked(struct sock *sk, struct ms=
-ghdr *msg, size_t size)
->                                 goto wait_for_space;
->                         copy =3D part;
->
-> +                       if (!sendpage_ok(page)) {
-> +                               const void *p =3D kmap_local_page(page);
-> +                               void *q;
-> +
-> +                               q =3D page_frag_memdup(NULL, p + off, cop=
-y,
-> +                                                    sk->sk_allocation, U=
-LONG_MAX);
-> +                               kunmap_local(p);
-> +                               if (!q) {
-> +                                       iov_iter_revert(&msg->msg_iter, c=
-opy);
-> +                                       err =3D copy ?: -ENOMEM;
-> +                                       goto do_error;
-> +                               }
-> +                               page =3D virt_to_page(q);
-> +                               off =3D offset_in_page(q);
-> +                               put =3D true;
-> +                               can_coalesce =3D false;
-> +                       }
-> +
+On Wed,  5 Apr 2023 18:39:00 +0300 Ivan Bornyakov wrote:
+> sfp->i2c_block_size is initialized at SFP module insertion in
+> sfp_sm_mod_probe(). Because of that, if SFP module was not inserted
+> since boot, ethtool -m leads to zero-length I2C read attempt.
+> 
+>   # ethtool -m xge0
+>   i2c i2c-3: adapter quirk: no zero length (addr 0x0050, size 0, read)
+>   Cannot get Module EEPROM data: Operation not supported
+> 
+> If SFP module was plugged then removed at least once,
+> sfp->i2c_block_size will be initialized and ethtool -m will fail with
+> different error
+> 
+>   # ethtool -m xge0
+>   Cannot get Module EEPROM data: Remote I/O error
+> 
+> Fix this by initializing sfp->i2_block_size at struct sfp allocation
+> stage so ethtool -m with SFP module removed will fail the same way, i.e.
+> -EREMOTEIO, in both cases and without errors from I2C adapter.
 
-This is almost identical in the later udp and unix implementations.
-Could this be a wrapper, something like
-
-    page =3D sendpage_copy_if_needed(&page, &off, copy, gfp, &put));
-
-(it seems page is never needed if it would return NULL)
+Hi Russell - yes / no / come back when both patches are ready?
