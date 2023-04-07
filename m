@@ -2,155 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E2D6DAAD7
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 11:25:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CA226DAADC
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 11:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240235AbjDGJZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 05:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
+        id S240537AbjDGJ3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 05:29:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240550AbjDGJZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 05:25:36 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7079A5E1
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 02:25:35 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id cf7so48506995ybb.5
-        for <netdev@vger.kernel.org>; Fri, 07 Apr 2023 02:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680859535;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=I8D8TgtaHgWSOgl8M/AoLVH7Mm8t98a84cfv1H5Koqg=;
-        b=pl07k9cLHi9cTQ+QjsS/8Szos0Y2/CugXVxASEuLObMBYRZsCQ41/bXMLWRZ48Mqkh
-         n1aKXJB+TL4jphB1vIRC+6vfk7I9z/ie1I12yljxrQy+nSnjPdf2qgpNrEiXXJuyTe4K
-         0vxqalZ85FVhfrlr92aZG6yfr6ZEFKBJaWsmYFkkewR4b0wn8qHt+KIg/wPECQmuNF9x
-         TuMUMjj+GZNVSlNQwsjvrH1i1vFFwyOvdsnQ+6VEof62rbM+zvrUIJz0bFmPNgQgK3ma
-         8oSKIYJ98y5sls2izMVUy4c9mM65z3UH4fgpv/iaStITkcnt8T7cyWTlxnHy1NU/dKQu
-         CjHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680859535;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=I8D8TgtaHgWSOgl8M/AoLVH7Mm8t98a84cfv1H5Koqg=;
-        b=jgT3ahkSPS92N/0cfPrSguZjJqcbFQpc/6lZ8Cq+69RCTx0K69JC3vSw9eYehEveO/
-         AbxQ6R9UNu7FtN0WC2dLxDzcQ5npeUI8lXijCJdrE0DjAM7OS8ddQlSw7LzdOOPy//x7
-         Iutu5CiXz2acdqQFOgpjhaHJ0aMD4hW47sAIyaEbai2CqWzJtU8dUYTmtotSvI86rnMq
-         /DJS6DqXEFW19Os/9C7Fy0+gMI/Ie51+/pPkhxYRzQCzynK9tj30pnEJj1eqU7AlcrnT
-         t5EMA5nhii8Kbfc4PjmCzOaPrYyrqhcrVGD7jf/hhK/h+dctpqzOGsdXnfqwiY6DjgOY
-         hnrQ==
-X-Gm-Message-State: AAQBX9fmr1Ut+sMVwZ9AL0equQ3X9NnNuOt92jVjrNoOPRvaJARCl6ir
-        +W7MB6YmxdGq/4otZKop0+++d5kF1aTcJ6hmYOcEmw==
-X-Google-Smtp-Source: AKy350bMTvfE+Km86n4ZECo6ADU8bz+X+rC3y5kYs97CNgX/wPSmUws7SzV5TlXTzixuvzhNepV7SYsY8m4OH09xNGI=
-X-Received: by 2002:a25:740f:0:b0:b09:6f3d:ea1f with SMTP id
- p15-20020a25740f000000b00b096f3dea1fmr1525213ybc.4.1680859534748; Fri, 07 Apr
- 2023 02:25:34 -0700 (PDT)
+        with ESMTP id S240569AbjDGJ3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 05:29:13 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A099D7EC9;
+        Fri,  7 Apr 2023 02:29:11 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pkiOW-0001Oj-0n;
+        Fri, 07 Apr 2023 11:28:32 +0200
+Date:   Fri, 7 Apr 2023 10:28:29 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix port specifications
+ for MT7988
+Message-ID: <ZC_iPfl5R-_4zOZg@makrotopia.org>
+References: <20230406100445.52915-1-arinc.unal@arinc9.com>
+ <ZC6n1XAGyZFlxyXx@shell.armlinux.org.uk>
+ <e413a182-ce93-5831-09f5-19d34d7f7fcf@arinc9.com>
+ <ZC9AXyuFqa3bqF3Q@makrotopia.org>
+ <0cdb0504-bc1e-c255-a7d2-4dd96bd8e6e3@arinc9.com>
 MIME-Version: 1.0
-References: <20230407012536.273382-1-kuba@kernel.org> <20230407012536.273382-7-kuba@kernel.org>
-In-Reply-To: <20230407012536.273382-7-kuba@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 7 Apr 2023 11:25:23 +0200
-Message-ID: <CANn89iJrBGSybMX1FqrhCEMWT3Nnz2=2+aStsbbwpWzKHjk51g@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 6/7] bnxt: use new queue try_stop/try_wake macros
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com,
-        herbert@gondor.apana.org.au, alexander.duyck@gmail.com,
-        hkallweit1@gmail.com, andrew@lunn.ch, willemb@google.com,
-        Michael Chan <michael.chan@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0cdb0504-bc1e-c255-a7d2-4dd96bd8e6e3@arinc9.com>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 7, 2023 at 3:25=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wro=
-te:
->
-> Convert bnxt to use new macros rather than open code the logic.
-> Two differences:
-> (1) bnxt_tx_int() will now only issue a memory barrier if it sees
->     enough space on the ring to wake the queue. This should be fine,
->     the mb() is between the writes to the ring pointers and checking
->     queue state.
-> (2) we'll start the queue instead of waking on race, this should
->     be safe inside the xmit handler.
+On Fri, Apr 07, 2023 at 11:56:08AM +0300, Arınç ÜNAL wrote:
+> On 7.04.2023 00:57, Daniel Golle wrote:
+> > On Fri, Apr 07, 2023 at 12:43:41AM +0300, Arınç ÜNAL wrote:
+> > > On 6.04.2023 14:07, Russell King (Oracle) wrote:
+> > > > On Thu, Apr 06, 2023 at 01:04:45PM +0300, arinc9.unal@gmail.com wrote:
+> > > > > From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > > > 
+> > > > > On the switch on the MT7988 SoC, there are only 4 PHYs. There's only port 6
+> > > > > as the CPU port, there's no port 5. Split the switch statement with a check
+> > > > > to enforce these for the switch on the MT7988 SoC. The internal phy-mode is
+> > > > > specific to MT7988 so put it for MT7988 only.
+> > > > > 
+> > > > > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > > > ---
+> > > > > 
+> > > > > Daniel, this is based on the information you provided me about the switch.
+> > > > > I will add this to my current patch series if it looks good to you.
+> > > > > 
+> > > > > Arınç
+> > > > > 
+> > > > > ---
+> > > > >    drivers/net/dsa/mt7530.c | 67 ++++++++++++++++++++++++++--------------
+> > > > >    1 file changed, 43 insertions(+), 24 deletions(-)
+> > > > > 
+> > > > > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> > > > > index 6fbbdcb5987f..f167fa135ef1 100644
+> > > > > --- a/drivers/net/dsa/mt7530.c
+> > > > > +++ b/drivers/net/dsa/mt7530.c
+> > > > > @@ -2548,7 +2548,7 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
+> > > > >    	phy_interface_zero(config->supported_interfaces);
+> > > > >    	switch (port) {
+> > > > > -	case 0 ... 4: /* Internal phy */
+> > > > > +	case 0 ... 3: /* Internal phy */
+> > > > >    		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+> > > > >    			  config->supported_interfaces);
+> > > > >    		break;
+> > > > > @@ -2710,37 +2710,56 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+> > > > >    	struct mt7530_priv *priv = ds->priv;
+> > > > >    	u32 mcr_cur, mcr_new;
+> > > > > -	switch (port) {
+> > > > > -	case 0 ... 4: /* Internal phy */
+> > > > > -		if (state->interface != PHY_INTERFACE_MODE_GMII &&
+> > > > > -		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
+> > > > > -			goto unsupported;
+> > > > > -		break;
+> > > > > -	case 5: /* Port 5, a CPU port. */
+> > > > > -		if (priv->p5_interface == state->interface)
+> > > > > +	if (priv->id == ID_MT7988) {
+> > > > > +		switch (port) {
+> > > > > +		case 0 ... 3: /* Internal phy */
+> > > > > +			if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
+> > > > 
+> > > > How do these end up with PHY_INTERFACE_MODE_INTERNAL ? phylib defaults
+> > > > to GMII mode without something else being specified in DT.
+> > > > 
+> > > > Also note that you should *not* be validating state->interface in the
+> > > > mac_config() method because it's way too late to reject it - if you get
+> > > > an unsupported interface here, then that is down to the get_caps()
+> > > > method being buggy. Only report interfaces in get_caps() that you are
+> > > > prepared to handle in the rest of the system.
+> > > 
+> > > This is already the case for all three get_caps(). The supported interfaces
+> > > for each port are properly defined.
+> > > 
+> > > Though mt7988_mac_port_get_caps() clears the config->supported_interfaces
+> > > bitmap before reporting the supported interfaces. I don't think this is
+> > > needed as all bits in the bitmap should already be initialized to zero when
+> > > the phylink_config structure is allocated.
+> > > 
+> > > I'm not sure if your suggestion is to make sure the supported interfaces are
+> > > properly reported on get_caps(), or validate state->interface somewhere
+> > > else.
+> > 
+> > I think what Russell meant is just there is no point in being overly
+> > precise about permitted interface modes in mt753x_phylink_mac_config,
+> > as this function is not meant and called too late to validate the
+> > validity of the selected interface mode.
+> > 
+> > You change to mt7988_mac_port_get_caps looks correct to me and doing
+> > this will already prevent mt753x_phylink_mac_config from ever being
+> > called on MT7988 for port == 4 as well as and port == 5.
+> 
+> Ah, thanks for pointing this out Daniel. I see ds->ops->phylink_get_caps()
+> is run right before phylink_create() on dsa_port_phylink_create(), as it
+> should get the capabilities before creating an instance.
+> 
+> Should I remove phy_interface_zero(config->supported_interfaces);
+> mt7988_mac_port_get_caps()? I'd prefer to do identical operations on each
+> get_caps(), if there's no apparent reason for this to be on
+> mt7988_mac_port_get_caps().
 
-...
+Yes, sounds sane to me, please do so.
 
->                                    "bnxt: ring busy w/ flush pending!\n")=
-;
-> -               if (bnxt_txr_netif_try_stop_queue(bp, txr, txq))
-> +               if (!netif_txq_try_stop(txq, bnxt_tx_avail(bp, txr),
-> +                                       bp->tx_wake_thresh))
->                         return NETDEV_TX_BUSY;
->         }
->
+Also we could make .mac_port_config optional, as for MT7988 we actually
+won't need it at all:
 
-BTW, we should make sure the @desc argument of netif_txq_try_stop() is
-correctly implemented.
-I often see drivers with either buggy or not efficient implementation.
-
-For instance, bnxt could perhaps be slightly described more accurately with=
-:
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 18cac98ba58e86c53eb87ed592424ed719b2f892..ec4a2d4dea3c58de08e51c1d65b=
-3d2fd75d71e6a
-100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -2231,13 +2231,12 @@ struct bnxt {
- #define SFF_MODULE_ID_QSFP28                   0x11
- #define BNXT_MAX_PHY_I2C_RESP_SIZE             64
-
--static inline u32 bnxt_tx_avail(struct bnxt *bp, struct bnxt_tx_ring_info =
-*txr)
-+static inline u32 bnxt_tx_avail(const struct bnxt *bp,
-+                               const struct bnxt_tx_ring_info *txr)
- {
--       /* Tell compiler to fetch tx indices from memory. */
--       barrier();
-+       u32 used =3D READ_ONCE(txr->tx_prod) - READ_ONCE(txr->tx_cons);
-
--       return bp->tx_ring_size -
--               ((txr->tx_prod - txr->tx_cons) & bp->tx_ring_mask);
-+       return bp->tx_ring_size - (used & bp->tx_ring_mask);
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index e4bb5037d3525..5efcb9897eb18 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2653,17 +2653,6 @@ static bool mt753x_is_mac_port(u32 port)
+ 	return (port == 5 || port == 6);
  }
-
- static inline void bnxt_writeq(struct bnxt *bp, u64 val,
-
-
-In the same vein, mlx4 would probably need something like:
-
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-index 2f79378fbf6ec106bf78d0fd12e911ff200ba8d7..13557701e254e7aeff057abd26a=
-88d19c3a5cd69
-100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-@@ -226,9 +226,11 @@ void mlx4_en_deactivate_tx_ring(struct mlx4_en_priv *p=
-riv,
-                       MLX4_QP_STATE_RST, NULL, 0, 0, &ring->sp_qp);
- }
-
--static inline bool mlx4_en_is_tx_ring_full(struct mlx4_en_tx_ring *ring)
-+static inline bool mlx4_en_is_tx_ring_full(const struct mlx4_en_tx_ring *r=
-ing)
+ 
+-static int
+-mt7988_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+-		  phy_interface_t interface)
+-{
+-	if (dsa_is_cpu_port(ds, port) &&
+-	    interface == PHY_INTERFACE_MODE_INTERNAL)
+-		return 0;
+-
+-	return -EINVAL;
+-}
+-
+ static int
+ mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 		  phy_interface_t interface)
+@@ -2704,6 +2693,9 @@ mt753x_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
  {
--       return ring->prod - ring->cons > ring->full_size;
-+       u32 used =3D READ_ONCE(ring->prod) - READ_ONCE(ring->cons);
+ 	struct mt7530_priv *priv = ds->priv;
+ 
++	if (!priv->info->mac_port_config)
++		return 0;
 +
-+       return used > ring->full_size;
+ 	return priv->info->mac_port_config(ds, port, mode, state->interface);
  }
-
- static void mlx4_en_stamp_wqe(struct mlx4_en_priv *priv,
+ 
+@@ -3157,7 +3149,6 @@ const struct mt753x_info mt753x_table[] = {
+ 		.pad_setup = mt7988_pad_setup,
+ 		.cpu_port_config = mt7988_cpu_port_config,
+ 		.mac_port_get_caps = mt7988_mac_port_get_caps,
+-		.mac_port_config = mt7988_mac_config,
+ 	},
+ };
+ EXPORT_SYMBOL_GPL(mt753x_table);
+@@ -3186,8 +3177,7 @@ mt7530_probe_common(struct mt7530_priv *priv)
+ 	 */
+ 	if (!priv->info->sw_setup || !priv->info->pad_setup ||
+ 	    !priv->info->phy_read_c22 || !priv->info->phy_write_c22 ||
+-	    !priv->info->mac_port_get_caps ||
+-	    !priv->info->mac_port_config)
++	    !priv->info->mac_port_get_caps)
+ 		return -EINVAL;
+ 
+ 	priv->id = priv->info->id;
