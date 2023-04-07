@@ -2,50 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DA6F6DA9B9
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:06:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A1596DA9C4
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239024AbjDGIGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 04:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
+        id S232253AbjDGIKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 04:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232540AbjDGIGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:06:19 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07CC076AA
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 01:06:16 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Pt9pF51CpznWtT;
-        Fri,  7 Apr 2023 16:02:45 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Fri, 7 Apr
- 2023 16:06:13 +0800
-Subject: Re: [PATCH v2] skbuff: Fix a race between coalescing and releasing
- SKBs
-To:     Alexander H Duyck <alexander.duyck@gmail.com>,
-        Liang Chen <liangchen.linux@gmail.com>, <kuba@kernel.org>,
-        <ilias.apalodimas@linaro.org>, <hawk@kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>
-References: <20230406114825.18597-1-liangchen.linux@gmail.com>
- <ed4b1f1bf72ea1234a283a26d88e00658e9e4311.camel@gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <7e163f24-c469-421c-3f2f-40aec177cee9@huawei.com>
-Date:   Fri, 7 Apr 2023 16:06:13 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S231962AbjDGIKs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:10:48 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2067.outbound.protection.outlook.com [40.107.96.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE231AF0E;
+        Fri,  7 Apr 2023 01:10:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZlRU1kz8bPMgMHlbtK2QI4nBVgUBd37O26OQ0wJ07KXgeFwKU8FBxxgTv5VyDJtB0uX09si++IUGK13Zk3wC7ElWfC7Q6BoSmalT8qYyIRY6S0J6/1nspan+w7s9zbj3KAUbG5ckHSqNEjL6YFLA4p0oF8VXnvzPOknrS5dU0n9Mscnp/QtG76VTxbB2vS1ZiDBKnNhlIucEnfS5l2JePpJD3yPwjj9xYu4GtZ2+hPczuhJS2MRJ/0xZHGrgctkbw1h/B0AvjC3XcODsSOPNA3w/Xuo5Q12fRZdQal3WupEL8BFfM6IDBp9D18aVHnTMTo9Uwu/HCPXcYGfRsYW5cw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7/+TxX/zTnDxxh7H1OuzAc0jX1+SKY+4zQyjl3GvkFs=;
+ b=UjPEKytNzosn26Fqm5KfUha1Sc5wcnXprsR3HN+r2K4yLFCbV2ubVVeDIOXSwgVWEne8Y6tQadciYDZd+JQN/uqMcqd8ou8h21tK3P2fv2Wz0DB/XmDDYcnamIsbdI+omLuyM3UZv7+2TFC5ATIjfo6PKKAd7SGS5sVNfAnBVWnNJjRXcRw14ZnmhWh4tMcBXJsmsBa2+/JxnTZhE/CApa/20JQDrqoYbsdb57zRNA1MOVTNKoMFdILCZeX6UljyI5+yInxfZvnYZQYsuNcuSEY0pZAsldj8lqvBgNSLgohQ9A1x5MdHWG2Oc/0SziFIeLT1QCzooTj89ygi03Zc0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7/+TxX/zTnDxxh7H1OuzAc0jX1+SKY+4zQyjl3GvkFs=;
+ b=4DpKRgLxPsPn4+kfDezmgUwaWv6bgGZnxvqLO1p5tpkFMmdLQgwXJ4nQ+xWn3JMn2Q96vpwt2tmBltQOCBA3hyGPksThcrVgdNXzuFEq0O1Z0KpSvV1My8Fn9qcBjsPPx0KmOmaOm/NuRqzzU6CMopTU14GAWOpnVtc6ccrT64g=
+Received: from MW2PR2101CA0023.namprd21.prod.outlook.com (2603:10b6:302:1::36)
+ by SA1PR12MB6704.namprd12.prod.outlook.com (2603:10b6:806:254::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.31; Fri, 7 Apr
+ 2023 08:10:37 +0000
+Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:302:1:cafe::af) by MW2PR2101CA0023.outlook.office365.com
+ (2603:10b6:302:1::36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.19 via Frontend
+ Transport; Fri, 7 Apr 2023 08:10:36 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6298.20 via Frontend Transport; Fri, 7 Apr 2023 08:10:36 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 7 Apr
+ 2023 03:10:35 -0500
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 7 Apr
+ 2023 03:10:35 -0500
+Received: from xndengvm004102.xilinx.com (10.180.168.240) by
+ SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34
+ via Frontend Transport; Fri, 7 Apr 2023 03:10:31 -0500
+From:   Gautam Dawar <gautam.dawar@amd.com>
+To:     <linux-net-drivers@amd.com>, <jasowang@redhat.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <eperezma@redhat.com>, <harpreet.anand@amd.com>,
+        <tanuj.kamde@amd.com>, <koushik.dutta@amd.com>,
+        Gautam Dawar <gautam.dawar@amd.com>
+Subject: [PATCH net-next v4 00/14] sfc: add vDPA support for EF100 devices
+Date:   Fri, 7 Apr 2023 13:40:01 +0530
+Message-ID: <20230407081021.30952-1-gautam.dawar@amd.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-In-Reply-To: <ed4b1f1bf72ea1234a283a26d88e00658e9e4311.camel@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT005:EE_|SA1PR12MB6704:EE_
+X-MS-Office365-Filtering-Correlation-Id: b63250b1-b526-442f-77aa-08db373f918e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: h+dFJn/41phf50MMQ519UGFn26r3oSjwMF9egmueZ+DVs5yBF5ZotRelzP9OozoIaMF8nGc6ogo6ibVFN7IJjexcWmR8qUct/yr8envZkMzyGFx+HJ/xfpeA1arA2UF/IKLs7mc31TdrHTERIHyDTfipB4jiWytZ1A06Yyx9P1MZGUZLgtUZ4j5iXnKztbJHkO4xXRWSWaX6sOTv+C7kJPcdVTGqbJLw7WnvtMhZ9inORV03QMprpfOZ+aJetwmm9RfpR9t3xngy/ocY6wT4Bw/Y/IIYwP1Jc1WM/ZLonM6PDkDf3BR26RMgp2A+RnNPMcfLu8wbQFGZAJQ4rR50YZUxmHHBTOoxm5zoXYEasZDfFXAxRcHvEP/CqnZOOSFj7evRjxWWKqhYPatnxqgdSfHj5we4aH/0w6UjXq9rV2wf0/aJMugGKsAsNlv6DFbiNd/iBTuTMrMC/E3yq0DPpjo6i/ekJdMafxMBhuenmNtT2HES/857zI9ii6bhxiNz6BK4MTGrUITEs66OFd0RJI7u0XYpdTmA/BbCovOxDznDbsbqrvRmgLn4cxeQaWRS4sCLKc5odHdVAHQAwRKNVsGdHuKElNUVAmvg9f+sr1rhrXrJwxv+01eO9bh7lkJA/zhpxw3+aY5IbB1LARwMVk0UO+MI066ShKS71uV2aWfxGY7jRT3YbI9+Pi4Avmi0X1OKzJ3RudRNVzjk6qk9mrRoqjC2lGmvlap10cTNMvzPOKalUm4dv7X4y5/t1WeGyDTPVHhW8Chu/qVqoFhtDg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(136003)(376002)(346002)(451199021)(36840700001)(40470700004)(46966006)(83380400001)(2616005)(336012)(316002)(40480700001)(70206006)(8676002)(8936002)(86362001)(2906002)(5660300002)(426003)(44832011)(7416002)(70586007)(47076005)(36756003)(921005)(81166007)(356005)(41300700001)(82310400005)(36860700001)(40460700003)(478600001)(82740400003)(26005)(1076003)(6666004)(4326008)(110136005)(54906003)(186003)(21314003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2023 08:10:36.5838
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b63250b1-b526-442f-77aa-08db373f918e
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6704
+X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,130 +109,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/4/6 23:25, Alexander H Duyck wrote:
-> On Thu, 2023-04-06 at 19:48 +0800, Liang Chen wrote:
->> Commit 1effe8ca4e34 ("skbuff: fix coalescing for page_pool fragment
->> recycling") allowed coalescing to proceed with non page pool page and
->> page pool page when @from is cloned, i.e.
->>
->> to->pp_recycle    --> false
->> from->pp_recycle  --> true
->> skb_cloned(from)  --> true
->>
->> However, it actually requires skb_cloned(@from) to hold true until
->> coalescing finishes in this situation. If the other cloned SKB is
->> released while the merging is in process, from_shinfo->nr_frags will be
->> set to 0 towards the end of the function, causing the increment of frag
->> page _refcount to be unexpectedly skipped resulting in inconsistent
->> reference counts. Later when SKB(@to) is released, it frees the page
->> directly even though the page pool page is still in use, leading to
->> use-after-free or double-free errors.
->>
->> So it needs to be specially handled at where the ref count may get lost.
->>
->> The double-free error message below prompted us to investigate:
->> BUG: Bad page state in process swapper/1  pfn:0e0d1
->> page:00000000c6548b28 refcount:-1 mapcount:0 mapping:0000000000000000
->> index:0x2 pfn:0xe0d1
->> flags: 0xfffffc0000000(node=0|zone=1|lastcpupid=0x1fffff)
->> raw: 000fffffc0000000 0000000000000000 ffffffff00000101 0000000000000000
->> raw: 0000000000000002 0000000000000000 ffffffffffffffff 0000000000000000
->> page dumped because: nonzero _refcount
->>
->> CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E      6.2.0+
->> Call Trace:
->>  <IRQ>
->> dump_stack_lvl+0x32/0x50
->> bad_page+0x69/0xf0
->> free_pcp_prepare+0x260/0x2f0
->> free_unref_page+0x20/0x1c0
->> skb_release_data+0x10b/0x1a0
->> napi_consume_skb+0x56/0x150
->> net_rx_action+0xf0/0x350
->> ? __napi_schedule+0x79/0x90
->> __do_softirq+0xc8/0x2b1
->> __irq_exit_rcu+0xb9/0xf0
->> common_interrupt+0x82/0xa0
->> </IRQ>
->> <TASK>
->> asm_common_interrupt+0x22/0x40
->> RIP: 0010:default_idle+0xb/0x20
->>
->> Signed-off-by: Liang Chen <liangchen.linux@gmail.com>
->> ---
->> Changes from v1:
->> - deal with the ref count problem instead of return back to give more opportunities to coalesce skbs.
->> ---
->>  net/core/skbuff.c | 22 ++++++++++++++++++++--
->>  1 file changed, 20 insertions(+), 2 deletions(-)
->>
->> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->> index 050a875d09c5..77da8ce74a1e 100644
->> --- a/net/core/skbuff.c
->> +++ b/net/core/skbuff.c
->> @@ -5643,7 +5643,19 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
->>  
->>  		skb_fill_page_desc(to, to_shinfo->nr_frags,
->>  				   page, offset, skb_headlen(from));
->> -		*fragstolen = true;
->> +
->> +		/* When @from is pp_recycle and @to isn't, coalescing is
->> +		 * allowed to proceed if @from is cloned. However if the
->> +		 * execution reaches this point, @from is already transitioned
->> +		 * into non-cloned because the other cloned skb is released
->> +		 * somewhere else concurrently. In this case, we need to make
->> +		 * sure the ref count is incremented, not directly stealing
->> +		 * from page pool.
->> +		 */
->> +		if (to->pp_recycle != from->pp_recycle)
->> +			get_page(page);
->> +		else
->> +			*fragstolen = true;
->>  	} else {
->>  		if (to_shinfo->nr_frags +
->>  		    from_shinfo->nr_frags > MAX_SKB_FRAGS)
->> @@ -5659,7 +5671,13 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
->>  	       from_shinfo->nr_frags * sizeof(skb_frag_t));
->>  	to_shinfo->nr_frags += from_shinfo->nr_frags;
->>  
->> -	if (!skb_cloned(from))
->> +	/* Same situation as above where head data presents. When @from is
->> +	 * pp_recycle and @to isn't, coalescing is allowed to proceed if @from
->> +	 * is cloned. However @from can be transitioned into non-cloned
->> +	 * concurrently by this point. If it does happen, we need to make sure
->> +	 * the ref count is properly incremented.
->> +	 */
->> +	if (to->pp_recycle == from->pp_recycle && !skb_cloned(from))
->>  		from_shinfo->nr_frags = 0;
->>  
->>  	/* if the skb is not cloned this does nothing
-> 
-> So looking this over I believe this should resolve the issue you
-> pointed out while maintaining current functionality.
-> 
-> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-> 
-> One follow-on that we may want to do with this would be to look at
-> consolidating the 3 spots where we are checking for our combination of
-> pp_recycle comparison and skb_cloned and maybe pass one boolean flag
-> indicating that we have to transfer everything by taking page
-> references.
-> 
-> Also I think we can actually increase the number of cases where we
-> support coalescing if we were to take apart the skb_head_is_locked call
-> and move the skb_cloned check from it into your recycle check in the
-> portion where we are stealing from the header.
-While at it, as we have already add additional checks to handle the below
-case:
- to->pp_recycle    --> false
- from->pp_recycle  --> true
- skb_cloned(from)  --> false
+Hi All,
 
-Does it make sense to relax the checking at the beginning to allow
-the above case to support coalescing from the beginning?
+This series adds the vdpa support for EF100 devices.
+For now, only a network class of vdpa device is supported and
+they can be created only on a VF. Each EF100 VF can have one
+of the three function personalities (EF100, vDPA & None) at
+any time with EF100 being the default. A VF's function personality
+is changed to vDPA while creating the vdpa device using vdpa tool.
 
-Also, dose moving to a per-page marker make sense if we want to
-remove those additional checking?
+A vDPA management device is created per VF to allow selection of
+the desired VF for vDPA device creation. The MAC address for the
+target net device must be set either by specifying at the vdpa
+device creation time via the `mac` parameter of the `vdpa dev add`
+command or should be specified as the hardware address of the virtual
+function using `devlink port function set hw_addr` command before
+creating the vdpa device with the former taking precedence.
 
-> .
-> 
+To use with vhost-vdpa, QEMU version 6.1.0 or later must be used
+as it fixes the incorrect feature negotiation (vhost-vdpa backend)
+without which VIRTIO_F_IN_ORDER feature bit is negotiated but not
+honored when using the guest kernel virtio driver.
+
+Changes since v3:
+
+- Removed the patch v3 13/13 which was included mistakenly in the series
+- Fixed build error and warning on patches 4 and 6, reported by kernel
+  test robot.
+
+Changes since v2:
+
+- Introduced vdpa state EF100_VDPA_STATE_SUSPENDED to avoid updating
+  vdpa device config space after device is suspended during VM LM
+- Removed the masking off of features not supported by SVQ implementation
+  in QEMU for Live Migration. This in-turn imposes the restriction of using
+  QEMU version 6.1.0 and above with vhost-vdpa
+- Used IS_ENABLED(CONFIG_SFC_VDPA) to replace #ifdef CONFIG_SFC_VDPA,
+  wherever possible
+- Updated the values for EF100_VRING_XXX_CONFIGURED macros to use the
+  initial bits (0, 1, 2 and 3)
+- Used  __maybe_unused in ef100_probe_vf() to avoid #ifdef for conditional
+  compilation
+- Fixed possible uninitialized return code from ef100_vdpa_delete_filter()
+- Avoided use of goto and else at a couple of places in filters handling
+- Replaced switch statement with single case with if statement in a couple
+  of functions in mcdi_vdpa.c
+- Updated patch 4 commit description to explain the need of refactoring
+  around efx_ef100_update_tso_features()
+
+Changes since v1:
+
+- To ensure isolation between DMA initiated by userspace (guest OS)
+  and the host MCDI buffer, ummap VF's MCDI DMA buffer and use PF's
+  IOMMU domain instead for executing vDPA VF's MCDI commands.
+- As a result of above change, it is no more necessary to check for
+  MCDI buffer's IOVA range overlap with the guest buffers. Accordingly,
+  the DMA config operations and the rbtree/list implementation to store
+  IOVA mappings have been dropped.
+- Support vDPA only if running Firmware supports CLIENT_CMD_VF_PROXY
+  capability. 
+- Added .suspend config operation and updated get_vq_state/set_vq_state
+  to support Live Migration. Also, features VIRTIO_F_ORDER_PLATFORM and
+  VIRTIO_F_IN_ORDER have been masked off in get_device_features() to
+  allow Live Migration as QEMU SVQ doesn't support them yet.
+- Removed the minimum version (v6.1.0) requirement of QEMU as
+  VIRTIO_F_IN_ORDER is not exposed
+- Fetch the vdpa device MAC address from the underlying VF hw_addr (if
+  set via `devlink port function set hw_addr` command)
+- Removed the mandatory requirement of specifying mac address while
+  creating vdpa device
+- Moved create_vring_ctx() and get_doorbell_offset() in dev_add()
+- Moved IRQ allocation at the time of vring creation
+- Merged vring_created member of struct ef100_vdpa_vring_info as one
+  of the flags in vring_state
+- Simplified .set_status() implementation
+- Removed un-necessary vdpa_state checks against
+  EF100_VDPA_STATE_INITIALIZED
+- Removed userspace triggerable warning in kick_vq()
+- Updated year 2023 in copyright banner of new files
+ 
+Gautam Dawar (14):
+  sfc: add function personality support for EF100 devices
+  sfc: implement MCDI interface for vDPA operations
+  sfc: update MCDI headers for CLIENT_CMD_VF_PROXY capability bit
+  sfc: evaluate vdpa support based on FW capability CLIENT_CMD_VF_PROXY
+  sfc: implement init and fini functions for vDPA personality
+  sfc: implement vDPA management device operations
+  sfc: implement vdpa device config operations
+  sfc: implement vdpa vring config operations
+  sfc: implement device status related vdpa config operations
+  sfc: implement filters for receiving traffic
+  sfc: use PF's IOMMU domain for running VF's MCDI commands
+  sfc: unmap VF's MCDI buffer when switching to vDPA mode
+  sfc: update vdpa device MAC address
+  sfc: register the vDPA device
+
+ drivers/net/ethernet/sfc/Kconfig          |    8 +
+ drivers/net/ethernet/sfc/Makefile         |    1 +
+ drivers/net/ethernet/sfc/ef10.c           |    2 +-
+ drivers/net/ethernet/sfc/ef100.c          |    8 +-
+ drivers/net/ethernet/sfc/ef100_netdev.c   |   26 +-
+ drivers/net/ethernet/sfc/ef100_nic.c      |  186 +-
+ drivers/net/ethernet/sfc/ef100_nic.h      |   29 +-
+ drivers/net/ethernet/sfc/ef100_vdpa.c     |  548 +++
+ drivers/net/ethernet/sfc/ef100_vdpa.h     |  225 ++
+ drivers/net/ethernet/sfc/ef100_vdpa_ops.c |  793 ++++
+ drivers/net/ethernet/sfc/mcdi.c           |  108 +-
+ drivers/net/ethernet/sfc/mcdi.h           |   13 +-
+ drivers/net/ethernet/sfc/mcdi_filters.c   |   51 +-
+ drivers/net/ethernet/sfc/mcdi_functions.c |    9 +-
+ drivers/net/ethernet/sfc/mcdi_functions.h |    3 +-
+ drivers/net/ethernet/sfc/mcdi_pcol.h      | 4391 ++++++++++++++++++++-
+ drivers/net/ethernet/sfc/mcdi_vdpa.c      |  251 ++
+ drivers/net/ethernet/sfc/mcdi_vdpa.h      |   83 +
+ drivers/net/ethernet/sfc/net_driver.h     |   21 +
+ drivers/net/ethernet/sfc/ptp.c            |    4 +-
+ 20 files changed, 6582 insertions(+), 178 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.c
+ create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.h
+ create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa_ops.c
+ create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.c
+ create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.h
+
+-- 
+2.30.1
+
