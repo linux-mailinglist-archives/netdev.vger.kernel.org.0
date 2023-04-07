@@ -2,97 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D0536DAEA3
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 16:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E88CA6DAEA8
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 16:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231349AbjDGOOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 10:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34102 "EHLO
+        id S240428AbjDGOO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 10:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbjDGOOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 10:14:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A396F6E95
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 07:14:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F41664B5C
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 14:14:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 392EBC433D2;
-        Fri,  7 Apr 2023 14:14:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680876843;
-        bh=xggwqxu0u/kDNE/3crGUPys0emGU9M53Y1CBWZTD7YA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lGi3KIJYpAT4lozcRiI958XPqYvAUsGBer2KGTs3HGsavIxk3VgQi0h/1yUxV5gHG
-         n3V5/ZHUQvcswxCWfQqwu0WVi0TEqoUWKf6DzCCQVvRYM/TLjIFwMg/xu+2ae2LkOr
-         AWeB5EmTsS+e1vsp3UK7i807Wj3nC1RYdPXFLSdv8Y/pz1VUdaE7trVQrq0/0Iq1jp
-         zEGHRdoscPf19oTbaZ55AUr1zqa2ZHLEIcKhjkTdTVVFSfjWYHMquGi1YASgGpmu71
-         zyhYckTZu54SVD+vYSh+3QS/OJVbBe8VjqRBYn/RSYInmWN7wFfpOK6qEmwJE3yRt9
-         1XRZ/QXLwdtlQ==
-Date:   Fri, 7 Apr 2023 07:14:02 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>
-Subject: Re: [RFC net-next v2 1/3] net: skb: plumb napi state thru skb
- freeing paths
-Message-ID: <20230407071402.09fa792f@kernel.org>
-In-Reply-To: <2628d71f-ef66-6ea9-61da-6d01c04fbda9@huawei.com>
-References: <20230405232100.103392-1-kuba@kernel.org>
-        <20230405232100.103392-2-kuba@kernel.org>
-        <2628d71f-ef66-6ea9-61da-6d01c04fbda9@huawei.com>
+        with ESMTP id S240100AbjDGOOw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 10:14:52 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1536E95;
+        Fri,  7 Apr 2023 07:14:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=R4TH8iF3XRJ1DlarsE3NhkPLoUGzWdq0m7N8occ5vGM=; b=qfkEn4cpxPYcnc/95fxARsn6kI
+        zpeKmQ0mwVKakCrF1WP0MnojedLNPejElAIifeijWYvYqjdQZTh60gwiU0Xsy2Ap2RGQay0bQcUiy
+        dxMAKj5eXZTpqTBy81xujjnLuNvcS+U+6pm7Q33vb32HQDNLy8D9RKY5TOcInHbQItWE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pkmrM-009jDL-2x; Fri, 07 Apr 2023 16:14:36 +0200
+Date:   Fri, 7 Apr 2023 16:14:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Radu Pirea (OSS)" <radu-nicolae.pirea@oss.nxp.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: nxp-c45-tja11xx: disable port and global
+ interrupts
+Message-ID: <47d0347d-02a1-48a3-8553-d6ab2be731e8@lunn.ch>
+References: <20230406095546.74351-1-radu-nicolae.pirea@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230406095546.74351-1-radu-nicolae.pirea@oss.nxp.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Apr 2023 17:15:15 +0800 Yunsheng Lin wrote:
-> On 2023/4/6 7:20, Jakub Kicinski wrote:
-> > We maintain a NAPI-local cache of skbs which is fed by napi_consume_skb().
-> > Going forward we will also try to cache head and data pages.
-> > Plumb the "are we in a normal NAPI context" information thru
-> > deeper into the freeing path, up to skb_release_data() and
-> > skb_free_head()/skb_pp_recycle().
-> > 
-> > Use "bool in_normal_napi" rather than bare "int budget",
-> > the further we get from NAPI the more confusing the budget
-> > argument may seem (particularly whether 0 or MAX is the
-> > correct value to pass in when not in NAPI).
-
-> > @@ -839,7 +839,7 @@ static void skb_clone_fraglist(struct sk_buff *skb)
-> >  		skb_get(list);
-> >  }
-> >  
-> > -static bool skb_pp_recycle(struct sk_buff *skb, void *data)
-> > +static bool skb_pp_recycle(struct sk_buff *skb, void *data, bool in_normal_napi)  
+On Thu, Apr 06, 2023 at 12:55:46PM +0300, Radu Pirea (OSS) wrote:
+> Disabling only the link event irq is not enough to disable the
+> interrupts. PTP will still be able to generate interrupts.
 > 
-> What does *normal* means in 'in_normal_napi'?
-> can we just use in_napi?
-
-Technically netpoll also calls NAPI, that's why I threw in the
-"normal". If folks prefer in_napi or some other name I'm more 
-than happy to change. Naming is hard.
-
-> > @@ -1226,7 +1228,7 @@ static void napi_skb_cache_put(struct sk_buff *skb)
-> >  
-> >  void __kfree_skb_defer(struct sk_buff *skb)
-> >  {
-> > -	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
-> > +	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED, false);
-> >  	napi_skb_cache_put(skb);  
+> The interrupts are organised in a tree on the C45 TJA11XX PHYs. To
+> completely disable the interrupts, they are disable from the top of the
+> interrupt tree.
 > 
-> Is there any reson not to call skb_release_all() with in_normal_napi
-> being true while napi_skb_cache_put() is called here?
+> Fixes: 514def5dd339 ("phy: nxp-c45-tja11xx: add timestamping support")
+> CC: stable@vger.kernel.org # 5.15+
+> Signed-off-by: Radu Pirea (OSS) <radu-nicolae.pirea@oss.nxp.com>
+> ---
+>  drivers/net/phy/nxp-c45-tja11xx.c | 22 ++++++++++++++++------
+>  1 file changed, 16 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/phy/nxp-c45-tja11xx.c b/drivers/net/phy/nxp-c45-tja11xx.c
+> index 029875a59ff8..ce718a5865a4 100644
+> --- a/drivers/net/phy/nxp-c45-tja11xx.c
+> +++ b/drivers/net/phy/nxp-c45-tja11xx.c
+> @@ -31,6 +31,10 @@
+>  #define DEVICE_CONTROL_CONFIG_GLOBAL_EN	BIT(14)
+>  #define DEVICE_CONTROL_CONFIG_ALL_EN	BIT(13)
+>  
+> +#define VEND1_PORT_IRQ_ENABLES		0x0072
+> +#define PORT1_IRQ			BIT(1)
+> +#define GLOBAL_IRQ			BIT(0)
 
-True, __kfree_skb_defer() needs more work also. I'll set in to true 
-in the PATCH posting and clean up the function in a follow up.
+I find the PORT1 confusing there, it suggests there is a port0? What
+is port0? There is no other reference to numbered ports in the driver.
+
+> -static bool nxp_c45_poll_txts(struct phy_device *phydev)
+> +static bool nxp_c45_poll(struct phy_device *phydev)
+>  {
+>  	return phydev->irq <= 0;
+>  }
+
+Maybe as a new patch, but phy_interrupt_is_valid() can be used here.
+
+Maybe also extend the commit message to include a comment that
+functions names are changed to reflect that all interrupts are now
+disabled, not just _txts interrupts. Otherwise this rename might be
+considered an unrelated change.
+
+> @@ -448,7 +452,7 @@ static void nxp_c45_process_txts(struct nxp_c45_phy *priv,
+>  static long nxp_c45_do_aux_work(struct ptp_clock_info *ptp)
+>  {
+>  	struct nxp_c45_phy *priv = container_of(ptp, struct nxp_c45_phy, caps);
+> -	bool poll_txts = nxp_c45_poll_txts(priv->phydev);
+> +	bool poll_txts = nxp_c45_poll(priv->phydev);
+>  	struct skb_shared_hwtstamps *shhwtstamps_rx;
+>  	struct ptp_clock_event event;
+>  	struct nxp_c45_hwts hwts;
+> @@ -699,7 +703,7 @@ static void nxp_c45_txtstamp(struct mii_timestamper *mii_ts,
+>  		NXP_C45_SKB_CB(skb)->header = ptp_parse_header(skb, type);
+>  		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+>  		skb_queue_tail(&priv->tx_queue, skb);
+> -		if (nxp_c45_poll_txts(priv->phydev))
+> +		if (nxp_c45_poll(priv->phydev))
+>  			ptp_schedule_worker(priv->ptp_clock, 0);
+>  		break;
+>  	case HWTSTAMP_TX_OFF:
+> @@ -772,7 +776,7 @@ static int nxp_c45_hwtstamp(struct mii_timestamper *mii_ts,
+>  				 PORT_PTP_CONTROL_BYPASS);
+>  	}
+>  
+> -	if (nxp_c45_poll_txts(priv->phydev))
+> +	if (nxp_c45_poll(priv->phydev))
+>  		goto nxp_c45_no_ptp_irq;
+>  
+>  	if (priv->hwts_tx)
+> @@ -892,10 +896,12 @@ static int nxp_c45_config_intr(struct phy_device *phydev)
+>  {
+>  	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
+>  		return phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
+> -					VEND1_PHY_IRQ_EN, PHY_IRQ_LINK_EVENT);
+> +					VEND1_PORT_IRQ_ENABLES,
+> +					PORT1_IRQ | GLOBAL_IRQ);
+>  	else
+>  		return phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
+> -					  VEND1_PHY_IRQ_EN, PHY_IRQ_LINK_EVENT);
+> +					  VEND1_PORT_IRQ_ENABLES,
+> +					  PORT1_IRQ | GLOBAL_IRQ);
+>  }
+>  
+>  static irqreturn_t nxp_c45_handle_interrupt(struct phy_device *phydev)
+> @@ -1290,6 +1296,10 @@ static int nxp_c45_config_init(struct phy_device *phydev)
+>  	phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, VEND1_PORT_FUNC_ENABLES,
+>  			 PTP_ENABLE);
+>  
+> +	if (!nxp_c45_poll(phydev))
+> +		phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
+> +				 VEND1_PHY_IRQ_EN, PHY_IRQ_LINK_EVENT);
+> +
+
+It seems odd to be touching interrupt configuration outside of
+nxp_c45_config_intr(). Is there a reason this cannot be part of
+phydev->interrupts == PHY_INTERRUPT_ENABLED ?
+
+	Andrew
