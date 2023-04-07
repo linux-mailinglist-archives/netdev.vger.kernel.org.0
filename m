@@ -2,112 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EABE6DAEF8
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 16:55:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5BA36DAEFB
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 16:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbjDGOzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 10:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58252 "EHLO
+        id S230401AbjDGO4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 10:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbjDGOzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 10:55:45 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A219759;
-        Fri,  7 Apr 2023 07:55:43 -0700 (PDT)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        with ESMTP id S231165AbjDGO4V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 10:56:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2332A5D6
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 07:56:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id E19078611D;
-        Fri,  7 Apr 2023 16:55:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1680879341;
-        bh=LUrHDtYdRr2EkQo65wZH81MV1QaySRUxWq5e8XmnnFw=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=AoLb6GXIIEHsXk4NHukrCGQhcn9jKhdegdbJm5mA/0kLMnBzEY0MK71LFc3kOhdpI
-         8tapKzJizYu2t1maNtflZe99nI8VBL86+Z8T5GogIVnJnO/wPbXiO5hZRGp8FQGeb2
-         1DCYRRhUMDCqQq/AM5lNR45ShhkvEx2+H6D9EiG5NqeRmmPdhv63CuC0uKkf3+T2hk
-         i+oJNEGlM+/K0by4f7ntKz0isc5Wpp1v9y8NoSsQ6uSk/l7hU21POwCs3pb5wQTxDf
-         sdiHfyCwJXIGhwuDLRPi7JxW8F1cCybiPNxqlEBekuoRokMqwU/ZfWP5AQU3eid0Bb
-         PJMyYl/g92WGA==
-Message-ID: <07ef5b7b-0219-f99a-f825-7766451f1e7a@denx.de>
-Date:   Fri, 7 Apr 2023 16:55:39 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AD83611A9
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 14:56:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79A88C433EF;
+        Fri,  7 Apr 2023 14:56:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680879378;
+        bh=eauetmVyDWiUcuxNb78MEKe8CAqDiWII0zsGFNkKSew=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lX84kodTDekTOQhsHeN4IkxDtuZ/dh+Cpo7K8KX91WCBHYhxjjMDbM0L5nGdWqnY7
+         UwdVH8XWTl6CKjfX4l3/a1tFpcrXWJoLrnwAd4nLJGR4oR3TXupl39xyxX685t1Okx
+         2odP3jOd9xoDDYhpvAhsnyh4m3zB9uXx6Qm+J5H4vBZAIyaTbPyPYCgWOPLBOV6zTc
+         NwnzdtEgMVZ/GsWpBqTe9zGAq31RF3z6h4+fmw3C6SodR5W2/y+Yht0mYWOPFywM4N
+         utN2SfpLNascKeG60fRdkgFV6236U6J4tb1KahB3dz+bIzwK4h3Ncrcdrabg7QVXjs
+         HGuj1UGNv4Xaw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        kory.maincent@bootlin.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] tools: ynl: throw a more meaningful exception if family not supported
+Date:   Fri,  7 Apr 2023 07:56:09 -0700
+Message-Id: <20230407145609.297525-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH] wifi: brcmfmac: add Cypress 43439 SDIO ids
-To:     Hans de Goede <hdegoede@redhat.com>, linux-wireless@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Danny van Heumen <danny@dannyvanheumen.nl>,
-        Eric Dumazet <edumazet@google.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        SHA-cyfmac-dev-list@infineon.com,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        brcm80211-dev-list.pdl@broadcom.com, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230407013118.466441-1-marex@denx.de>
- <845521b4-0451-f0c0-7606-0144475e98f7@redhat.com>
-Content-Language: en-US
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <845521b4-0451-f0c0-7606-0144475e98f7@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/7/23 15:15, Hans de Goede wrote:
-> Hi,
+cli.py currently throws a pure KeyError if kernel doesn't support
+a netlink family. Users who did not write ynl (hah) may waste
+their time investigating what's wrong with the Python code.
+Improve the error message:
 
-Hi,
+Traceback (most recent call last):
+  File "/home/kicinski/devel/linux/tools/net/ynl/lib/ynl.py", line 362, in __init__
+    self.family = GenlFamily(self.yaml['name'])
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kicinski/devel/linux/tools/net/ynl/lib/ynl.py", line 331, in __init__
+    self.genl_family = genl_family_name_to_id[family_name]
+                       ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyError: 'netdev'
 
-> On 4/7/23 03:31, Marek Vasut wrote:
->> Add SDIO ids for use with the muRata 1YN (Cypress CYW43439).
->> The odd thing about this is that the previous 1YN populated
->> on M.2 card for evaluation purposes had BRCM SDIO vendor ID,
->> while the chip populated on real hardware has a Cypress one.
->> The device ID also differs between the two devices. But they
->> are both 43439 otherwise, so add the IDs for both.
->>
->> ```
->> /sys/.../mmc_host/mmc2/mmc2:0001 # cat vendor device
->> 0x04b4
->> 0xbd3d
->> ```
->>
->> Fixes: be376df724aa3 ("wifi: brcmfmac: add 43439 SDIO ids and initialization")
->> Signed-off-by: Marek Vasut <marex@denx.de>
-> 
-> Thanks, patch looks good to me:
+During handling of the above exception, another exception occurred:
 
-Thanks. I now assembled the old device and got both IDs, so I will add 
-them to the commit message and send V2. I also noticed that the old 
-device is some ES1.4 chip, while the new one is production silicon:
+Traceback (most recent call last):
+  File "/home/kicinski/devel/linux/./tools/net/ynl/cli.py", line 52, in <module>
+    main()
+  File "/home/kicinski/devel/linux/./tools/net/ynl/cli.py", line 31, in main
+    ynl = YnlFamily(args.spec, args.schema)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kicinski/devel/linux/tools/net/ynl/lib/ynl.py", line 364, in __init__
+    raise Exception(f"Family '{self.yaml['name']}' not supported by the kernel")
+Exception: Family 'netdev' not supported by the kernel
 
-On-device 1YN (43439), the new one, chip label reads "1YN":
-```
-/sys/.../mmc_host/mmc2/mmc2:0001 # cat vendor device
-0x04b4
-0xbd3d
-```
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ tools/net/ynl/lib/ynl.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-EA M.2 evaluation board 1YN (43439), the old one, chip label reads "1YN 
-ES1.4":
-```
-/sys/.../mmc_host/mmc0/mmc0:0001/# cat vendor device
-0x02d0
-0xa9a6
-```
+diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
+index 7690e0b0cb3f..aa77bcae4807 100644
+--- a/tools/net/ynl/lib/ynl.py
++++ b/tools/net/ynl/lib/ynl.py
+@@ -358,7 +358,10 @@ genl_family_name_to_id = None
+             bound_f = functools.partial(self._op, op_name)
+             setattr(self, op.ident_name, bound_f)
+ 
+-        self.family = GenlFamily(self.yaml['name'])
++        try:
++            self.family = GenlFamily(self.yaml['name'])
++        except KeyError:
++            raise Exception(f"Family '{self.yaml['name']}' not supported by the kernel")
+ 
+     def ntf_subscribe(self, mcast_name):
+         if mcast_name not in self.family.genl_family['mcast']:
+-- 
+2.39.2
+
