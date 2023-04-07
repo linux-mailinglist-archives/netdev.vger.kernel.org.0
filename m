@@ -2,240 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B5F6DA71E
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 03:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E25D6DA721
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 03:58:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239478AbjDGB5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 21:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
+        id S239513AbjDGB5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 21:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbjDGB47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 21:56:59 -0400
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F3A5FF9;
-        Thu,  6 Apr 2023 18:56:57 -0700 (PDT)
-Received: by mail-ua1-x933.google.com with SMTP id i22so28967686uat.8;
-        Thu, 06 Apr 2023 18:56:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680832616; x=1683424616;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ePvYWF3LgrcJpSASOA2Qoq+JJD21U5lACk4RrX/7jlk=;
-        b=g2mZYAJJnU1KnfR/yHCsvDwnCfuYElvYtsT/kyxkU0tRQGasWF1Sy+DZHkx1V9Op+d
-         iwlFDMTYW/Nq2m2ZFQzcXOadB4I9ZZn2PGjQcJEp2RvZWcFrvqBprNTgD+Sb0YoW61GT
-         ZYVJFDxzzUW/wRM7T1S4rWLlEhNqthJUPa2nEQAZNC4m50hH3EzQEbOywTZgkmQ1vwHy
-         7MxVJwMokNAymJvD5IZ9lxjaO+tTVCacb5krBZbjWKKveoJAf72XO1bMruMAee4CXols
-         HGDO78FAtsTCsI5SI0xOpIVwj8JShB8es/McNabo22aHe/xjChP3o9rQoo1eFcDxHnsp
-         1vgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680832616; x=1683424616;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ePvYWF3LgrcJpSASOA2Qoq+JJD21U5lACk4RrX/7jlk=;
-        b=FcVIjKyG8cSjbFFUOk5RYzoJm1V0uPbiWKiULmXxKB07MvYIg87uPGadR+7IXSHo2C
-         BgSIKIen+N3qFS0KXZplJPjBe+uT7FidLzlbjUhYeeBplaJBX2kmNwEFMPYY8xmXWIbM
-         LVRjCqhMw1l0+/JCEcmQYaEzVd6r2JGBd5FPY6/fvAtJ4BzMYJk8R3spMhl+GI3UzJ1D
-         sLzV1B18Rq7XdYrnXizchL6c9tM/XjoGTwvf/e1tIkmBzRZp8b5fJNFZQK8w7xQkkVJ8
-         RMJJW2oU1SFW7jp7PpRd7s9cWdeaBBikfRb/TzePSUXiM4wMbRXwjKXLEwp50KJYYSfb
-         290g==
-X-Gm-Message-State: AAQBX9fVdYZf+5ubm1xEweH7H2n7o3wjeHNeqn+JzbFnfO4XQLbE8xYe
-        LeT8jumZXpGVQTPmMPuGOeOJM5nwqnqcXuOoVA8=
-X-Google-Smtp-Source: AKy350aN1EG3BFhPHsmtekMoLwM0M28+ANFkN2MoPqmBdJx+Rgl+3U1I8HzoiHBTu1F37NkXpx33PJMqLfkoDTHUFzk=
-X-Received: by 2002:ab0:539b:0:b0:6cd:2038:4911 with SMTP id
- k27-20020ab0539b000000b006cd20384911mr258188uaa.1.1680832616636; Thu, 06 Apr
- 2023 18:56:56 -0700 (PDT)
+        with ESMTP id S229585AbjDGB5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 21:57:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA6D76A2;
+        Thu,  6 Apr 2023 18:57:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C005064D98;
+        Fri,  7 Apr 2023 01:57:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 640BFC433EF;
+        Fri,  7 Apr 2023 01:57:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680832623;
+        bh=ZzGxI235rjV/nq6p6p1j5KBf5gZ8kyr7gt8ZhVBPgKs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kqRxnSIU0JMFy+2YfxoZJExrwJo2ZsVrump0w+1MbM3vJggg6pG+UscKnGsdgxEEY
+         jO+Jn4JTY1Mxi4snJxNhHHqs0+8ibJljEoAyYSWUGPB+6ZqcVb4CJEVlNfTqu5wQGd
+         5RqFMpg4WtnLxU9kzVR8C5cCmqcIsaBfX7q2L8hc8NPRFptRONiSSVwsiLHLI7pEQi
+         fZlwGkiOqgczuAj2WluJ7qwuH3SJbFMmd4IbEpgVYvN6EXO1tN99fcB6OanXmWfuAH
+         6ts5JMtnV63xMt9GdtQaE8eNo0cDAClu2KRnK9gJZMGRov0Irqzj9BjhGyW+xLLm2p
+         4THzWM82g3LAA==
+Date:   Thu, 6 Apr 2023 18:57:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        David Vernet <void@manifault.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Dave Marchevsky <davemarchevsky@meta.com>,
+        Tejun Heo <tj@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
+        Yonghong Song <yhs@meta.com>, Song Liu <song@kernel.org>
+Subject: Re: [PATCH bpf-next 0/8] bpf: Follow up to RCU enforcement in the
+ verifier.
+Message-ID: <20230406185701.066c9243@kernel.org>
+In-Reply-To: <CAADnVQK8UH3Z8L9YckBXpPeeFTVFj0rn+widaEavfGDOEsiqmg@mail.gmail.com>
+References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
+        <20230404145131.GB3896@maniforge>
+        <CAEf4BzYXpHMNDTCrBTjwvj3UU5xhS9mAKLx152NniKO27Rdbeg@mail.gmail.com>
+        <CAADnVQKLe8+zJ0sMEOsh74EHhV+wkg0k7uQqbTkB3THx1CUyqw@mail.gmail.com>
+        <20230404185147.17bf217a@kernel.org>
+        <CAEf4BzY3-pXiM861OkqZ6eciBJnZS8gsBL2Le2rGiSU64GKYcg@mail.gmail.com>
+        <20230405111926.7930dbcc@kernel.org>
+        <CAADnVQLhLuB2HG4WqQk6T=oOq2dtXkwy0TjQbnxa4cVDLHq7bg@mail.gmail.com>
+        <20230406084217.44fff254@kernel.org>
+        <CAADnVQLOMa=p2m++uTH1i5odXrO5mF9Y++dJZuZyL3gC3MEm0w@mail.gmail.com>
+        <20230406182351.532edf53@kernel.org>
+        <CAADnVQK8UH3Z8L9YckBXpPeeFTVFj0rn+widaEavfGDOEsiqmg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20230406094245.3633290-1-dhowells@redhat.com> <20230406094245.3633290-6-dhowells@redhat.com>
-In-Reply-To: <20230406094245.3633290-6-dhowells@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 6 Apr 2023 21:56:19 -0400
-Message-ID: <CAF=yD-+QCYsjuRvzTOjhn=sKCWwOd5ZWxG6VS-xkYEoxzGkUkA@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 05/19] tcp: Support MSG_SPLICE_PAGES
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 6, 2023 at 5:43=E2=80=AFAM David Howells <dhowells@redhat.com> =
-wrote:
->
-> Make TCP's sendmsg() support MSG_SPLICE_PAGES.  This causes pages to be
-> spliced from the source iterator.
->
-> This allows ->sendpage() to be replaced by something that can handle
-> multiple multipage folios in a single transaction.
->
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Eric Dumazet <edumazet@google.com>
-> cc: "David S. Miller" <davem@davemloft.net>
-> cc: David Ahern <dsahern@kernel.org>
-> cc: Jakub Kicinski <kuba@kernel.org>
-> cc: Paolo Abeni <pabeni@redhat.com>
-> cc: Jens Axboe <axboe@kernel.dk>
-> cc: Matthew Wilcox <willy@infradead.org>
-> cc: netdev@vger.kernel.org
-> ---
->  net/ipv4/tcp.c | 67 ++++++++++++++++++++++++++++++++++++++++++++------
->  1 file changed, 60 insertions(+), 7 deletions(-)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index fd68d49490f2..510bacc7ce7b 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -1221,7 +1221,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msgh=
-dr *msg, size_t size)
->         int flags, err, copied =3D 0;
->         int mss_now =3D 0, size_goal, copied_syn =3D 0;
->         int process_backlog =3D 0;
-> -       bool zc =3D false;
-> +       int zc =3D 0;
->         long timeo;
->
->         flags =3D msg->msg_flags;
-> @@ -1232,17 +1232,22 @@ int tcp_sendmsg_locked(struct sock *sk, struct ms=
-ghdr *msg, size_t size)
->                 if (msg->msg_ubuf) {
->                         uarg =3D msg->msg_ubuf;
->                         net_zcopy_get(uarg);
-> -                       zc =3D sk->sk_route_caps & NETIF_F_SG;
-> +                       if (sk->sk_route_caps & NETIF_F_SG)
-> +                               zc =3D 1;
->                 } else if (sock_flag(sk, SOCK_ZEROCOPY)) {
->                         uarg =3D msg_zerocopy_realloc(sk, size, skb_zcopy=
-(skb));
->                         if (!uarg) {
->                                 err =3D -ENOBUFS;
->                                 goto out_err;
->                         }
-> -                       zc =3D sk->sk_route_caps & NETIF_F_SG;
-> -                       if (!zc)
-> +                       if (sk->sk_route_caps & NETIF_F_SG)
-> +                               zc =3D 1;
-> +                       else
->                                 uarg_to_msgzc(uarg)->zerocopy =3D 0;
->                 }
-> +       } else if (unlikely(msg->msg_flags & MSG_SPLICE_PAGES) && size) {
-> +               if (sk->sk_route_caps & NETIF_F_SG)
-> +                       zc =3D 2;
->         }
->
->         if (unlikely(flags & MSG_FASTOPEN || inet_sk(sk)->defer_connect) =
-&&
-> @@ -1305,7 +1310,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msgh=
-dr *msg, size_t size)
->                 goto do_error;
->
->         while (msg_data_left(msg)) {
-> -               int copy =3D 0;
-> +               ssize_t copy =3D 0;
->
->                 skb =3D tcp_write_queue_tail(sk);
->                 if (skb)
-> @@ -1346,7 +1351,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msgh=
-dr *msg, size_t size)
->                 if (copy > msg_data_left(msg))
->                         copy =3D msg_data_left(msg);
->
-> -               if (!zc) {
-> +               if (zc =3D=3D 0) {
->                         bool merge =3D true;
->                         int i =3D skb_shinfo(skb)->nr_frags;
->                         struct page_frag *pfrag =3D sk_page_frag(sk);
-> @@ -1391,7 +1396,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msgh=
-dr *msg, size_t size)
->                                 page_ref_inc(pfrag->page);
->                         }
->                         pfrag->offset +=3D copy;
-> -               } else {
-> +               } else if (zc =3D=3D 1)  {
+On Thu, 6 Apr 2023 18:32:33 -0700 Alexei Starovoitov wrote:
+> > Check if your git config is right:
+> >
+> > $ git config --get pw.server
+> > https://patchwork.kernel.org/api/1.1/
+> >
+> > that's where $srv comes from  
+> 
+> Ahh. All works now!
+> I like the new output.
+> I'll play with it more.
+> Should -M be a default? Any downside?
 
-Instead of 1 and 2, MSG_ZEROCOPY and MSG_SPLICE_PAGES make the code
-more self-documenting.
+There should be no difference, AFAICT. I'm happy with making it 
+the default.
 
->                         /* First append to a fragless skb builds initial
->                          * pure zerocopy skb
->                          */
-> @@ -1412,6 +1417,54 @@ int tcp_sendmsg_locked(struct sock *sk, struct msg=
-hdr *msg, size_t size)
->                         if (err < 0)
->                                 goto do_error;
->                         copy =3D err;
-> +               } else if (zc =3D=3D 2) {
-> +                       /* Splice in data. */
-> +                       struct page *page =3D NULL, **pages =3D &page;
-> +                       size_t off =3D 0, part;
-> +                       bool can_coalesce;
-> +                       int i =3D skb_shinfo(skb)->nr_frags;
-> +
-> +                       copy =3D iov_iter_extract_pages(&msg->msg_iter, &=
-pages,
-> +                                                     copy, 1, 0, &off);
-> +                       if (copy <=3D 0) {
-> +                               err =3D copy ?: -EIO;
-> +                               goto do_error;
-> +                       }
-> +
-> +                       can_coalesce =3D skb_can_coalesce(skb, i, page, o=
-ff);
-> +                       if (!can_coalesce && i >=3D READ_ONCE(sysctl_max_=
-skb_frags)) {
-> +                               tcp_mark_push(tp, skb);
-> +                               iov_iter_revert(&msg->msg_iter, copy);
-> +                               goto new_segment;
-> +                       }
-> +                       if (tcp_downgrade_zcopy_pure(sk, skb)) {
-> +                               iov_iter_revert(&msg->msg_iter, copy);
-> +                               goto wait_for_space;
-> +                       }
-> +
-> +                       part =3D tcp_wmem_schedule(sk, copy);
-> +                       iov_iter_revert(&msg->msg_iter, copy - part);
-> +                       if (!part)
-> +                               goto wait_for_space;
-> +                       copy =3D part;
-> +
-> +                       if (can_coalesce) {
-> +                               skb_frag_size_add(&skb_shinfo(skb)->frags=
-[i - 1], copy);
-> +                       } else {
-> +                               get_page(page);
-> +                               skb_fill_page_desc_noacc(skb, i, page, of=
-f, copy);
-> +                       }
-> +                       page =3D NULL;
-> +
-> +                       if (!(flags & MSG_NO_SHARED_FRAGS))
-> +                               skb_shinfo(skb)->flags |=3D SKBFL_SHARED_=
-FRAG;
-> +
-> +                       skb->len +=3D copy;
-> +                       skb->data_len +=3D copy;
-> +                       skb->truesize +=3D copy;
-> +                       sk_wmem_queued_add(sk, copy);
-> +                       sk_mem_charge(sk, copy);
-> +
+There's a minor difference in the merge-message formatting between
+-c and -s we could possibly remove if we make -M the default. 
+Daniel uses the subject of the series as a fake branch name on the
+ 
+  Merge branch '$branch_name'
 
-Similar to udp, perhaps in a helper?
+line, while I convert the subject to a format which can be a real
+branch name in git (no spaces, special chars etc) and put the subject
+as the first line of the merge text.
