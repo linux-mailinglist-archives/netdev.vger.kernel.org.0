@@ -2,144 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E54926DAA65
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4FBE6DAA71
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:48:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240374AbjDGIrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 04:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37738 "EHLO
+        id S240471AbjDGIsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 04:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240332AbjDGIrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:47:03 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A36DA256
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 01:47:02 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id 20so359260plk.10
-        for <netdev@vger.kernel.org>; Fri, 07 Apr 2023 01:47:02 -0700 (PDT)
+        with ESMTP id S240457AbjDGIsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:48:33 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC48A5E1
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 01:48:31 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-54bfce685c1so116376337b3.1
+        for <netdev@vger.kernel.org>; Fri, 07 Apr 2023 01:48:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1680857221;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=google.com; s=20210112; t=1680857311;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Vmjzgy6aRksKW2xHyWe1W6xO2vj0DerqrAUjE2I1iOw=;
-        b=R19VL0csBPbWvcgvmXecbzxFCkoToYH65diKdOlEF9KJ/fEYiWe37kKhzwJoq70D/C
-         Oo+Wfsg7HRJ4da903PbxzU++qNf8IHdRLW3w0tJvetNpXiN4ZlLhtK1GnlWwQ4Ws0bCh
-         o0ryF+AcZPFBXUve+oRoD6FFsQUF8t+FVSRFJcF22Y/f52ElJGYZb0U0mrpr2rZ0rKOO
-         viD5AXfUBZ5gyoOGuxMxwOTXcbG/HJEaOBflD7lF5qC+YY9ESVQ/0S3W21LDzN6MfmE+
-         OydadRLL5SvuJ/oglzCl73BXA4sIFWY5w9+LHsbi0Bn7Z5gKnJCROgaIQiFs/cMwN3FP
-         rJoQ==
+        bh=AGThRYH6H6dxTadmeKE2mcrgAteozA7JJr+udI4tFcI=;
+        b=X+SsFQeCNvJZf8a301ffJO7aUt1V0eF+QFcztc3bsy7CQIgHE+b977WsQ8zDChVlyF
+         ySpWUsJqb5vQ3UjM7A4L9ml411W9TrkwJYqQ1zJmVD5ZLVvmE/5GZRIzfHpJM79NulNa
+         YzZ/4XWfx9gGKn5qNhPT7FjUfnHU1bYcfi1F5xwYO0opzwCfQqkgCx92wfU0CV45V0x3
+         dprK1ZBrN9w7MqyWv2AxyBuZiyiligZRy6U3YLe3pkLHzg6a5M/AyrY3XLljYSiBlgXm
+         O7JwoegEnhcUqOhaaWYl6V2fe6eS/coZY25P8pgO2x2x25AH6vgZUKUg9ins9hiNjmFA
+         ZCQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680857221;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20210112; t=1680857311;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Vmjzgy6aRksKW2xHyWe1W6xO2vj0DerqrAUjE2I1iOw=;
-        b=Wv444FV1clPrLcsINxhy90mHg0VAYvp1PLfghSw0UPWSYspfuhUl+909NP31/5Q34d
-         mHZfJLCP1A0DiwMl4KoPvSdm/Vo4V6PSY+TnvgFpKgNJuG6ExMfh4RdmrB5iuODsak72
-         HmrBq8b0b9xgpQ5hMPu36aYYXGkqD9GK0rQE0k0QiO4p/IazUcMtZvEb3o/Xt7FRYY+4
-         hA8CES5SEm+9uWrLBt+vebPsNhFUJ0jbD//orNj0tq7dCloaFDNDJjYE8Kb7pJ+VbP8b
-         SgG6N+K7K5gVjs8Taqako63CPdS+7JOmAvWehBcIq/W9IwbZ/6My+Ou6QiIAXT04iUqX
-         I5RQ==
-X-Gm-Message-State: AAQBX9fnhVGsvV4e8FKPXPchLjCeNso0XuSxTF9in6cB95gmTPxJit5c
-        F17GbtF8xPZuVahkvEpC4E8vJg==
-X-Google-Smtp-Source: AKy350ak8Z2sVLnknesb8rdNJcheWrbfZoigZ/kr+Zq60kGlUKezCUKJy/ma6QUMi7cvv7oDlZUXOg==
-X-Received: by 2002:a17:90b:1bd1:b0:23c:fef0:d441 with SMTP id oa17-20020a17090b1bd100b0023cfef0d441mr1578447pjb.33.1680857221702;
-        Fri, 07 Apr 2023 01:47:01 -0700 (PDT)
-Received: from C02F52LSML85.bytedance.net ([139.177.225.238])
-        by smtp.gmail.com with ESMTPSA id s13-20020a17090a5d0d00b0023b3d80c76csm2333676pji.4.2023.04.07.01.46.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Apr 2023 01:47:01 -0700 (PDT)
-From:   Feng zhou <zhoufeng.zf@bytedance.com>
-To:     martin.lau@linux.dev, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        mykolal@fb.com, shuah@kernel.org
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        yangzhenze@bytedance.com, wangdongdong.6@bytedance.com,
-        zhouchengming@bytedance.com, zhoufeng.zf@bytedance.com
-Subject: [PATCH v2 2/2] selftests/bpf: Add test to access u32 ptr argument in tracing program
-Date:   Fri,  7 Apr 2023 16:46:08 +0800
-Message-Id: <20230407084608.62296-3-zhoufeng.zf@bytedance.com>
-X-Mailer: git-send-email 2.39.2 (Apple Git-143)
-In-Reply-To: <20230407084608.62296-1-zhoufeng.zf@bytedance.com>
-References: <20230407084608.62296-1-zhoufeng.zf@bytedance.com>
+        bh=AGThRYH6H6dxTadmeKE2mcrgAteozA7JJr+udI4tFcI=;
+        b=UDYkcPnPnnFdWTBLGUFUxnKsXCS1vWV1VX6/ZUuN8YADwpUeOJgxoh25BoWyY+31Wj
+         cRyiPjkiM1N0oU1cjNEVA/+HRw1EPqUOQaVfM25yqmvW0sl/EFRy7M9xlqeHu+MWBZDH
+         uejIY7JKu69/wXA8jDvvyL76yGYRAbeBe4m+i4p7ZuwJ7yClSKZpqALrQK+NfuxEvWzm
+         SZiQiJ7NnJqyoBQaZlGHKjNaB69Tg9RP5JDp2UBUvgvwEVjUOdURIa49OvOn7C+ISHvH
+         4gYKHjOEC+KjAIFevKhzM02WIyWsc5he1vRlkdBqtp22/XvpEWft0SxxAojiaHsZCHGD
+         k6FA==
+X-Gm-Message-State: AAQBX9cAzc1rADboeSQrhhWCUeMbhft0jZNw3mGolJ22GWavguuEuCsm
+        Jy3T515ZwicLQy2LXD9MALrbq5ieP/foIAMBXBVrHw==
+X-Google-Smtp-Source: AKy350buomdlTAS7MdSVy7YoDTBvicUiGKlGGDraOV6qjRskJNBC93da5hwrPO4b4+67HTfuYzh8/CTRnMcPDrBUYSw=
+X-Received: by 2002:a81:4004:0:b0:545:1d7f:acbf with SMTP id
+ l4-20020a814004000000b005451d7facbfmr673596ywn.10.1680857309862; Fri, 07 Apr
+ 2023 01:48:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <ZC0pBXBAgh7c76CA@kernel-bug-kernel-bug>
+In-Reply-To: <ZC0pBXBAgh7c76CA@kernel-bug-kernel-bug>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 7 Apr 2023 10:48:18 +0200
+Message-ID: <CANn89i++9qYyhbh30RPqabeTbBbUHdAv+0YP0Z01pbMm1+nt5A@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: openvswitch: fix race on port output
+To:     Felix Huettner <felix.huettner@mail.schwarz>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com, kuba@kernel.org,
+        pshelar@ovn.org, davem@davemloft.net, luca.czesla@mail.schwarz
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Feng Zhou <zhoufeng.zf@bytedance.com>
-
-Adding verifier test for accessing u32 pointer argument in
-tracing programs.
-
-The test program loads 1nd argument of bpf_fentry_test9 function
-which is u32 pointer and checks that verifier allows that.
-
-Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
----
- net/bpf/test_run.c                                  |  8 +++++++-
- .../testing/selftests/bpf/verifier/btf_ctx_access.c | 13 +++++++++++++
- 2 files changed, 20 insertions(+), 1 deletion(-)
-
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index f1652f5fbd2e..68bdfc041a7b 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -541,6 +541,11 @@ int noinline bpf_fentry_test8(struct bpf_fentry_test_t *arg)
- 	return (long)arg->a;
- }
- 
-+__bpf_kfunc u32 bpf_fentry_test9(u32 *a)
-+{
-+	return *a;
-+}
-+
- __bpf_kfunc int bpf_modify_return_test(int a, int *b)
- {
- 	*b += 1;
-@@ -855,7 +860,8 @@ int bpf_prog_test_run_tracing(struct bpf_prog *prog,
- 		    bpf_fentry_test5(11, (void *)12, 13, 14, 15) != 65 ||
- 		    bpf_fentry_test6(16, (void *)17, 18, 19, (void *)20, 21) != 111 ||
- 		    bpf_fentry_test7((struct bpf_fentry_test_t *)0) != 0 ||
--		    bpf_fentry_test8(&arg) != 0)
-+		    bpf_fentry_test8(&arg) != 0 ||
-+		    bpf_fentry_test9(&retval) != 0)
- 			goto out;
- 		break;
- 	case BPF_MODIFY_RETURN:
-diff --git a/tools/testing/selftests/bpf/verifier/btf_ctx_access.c b/tools/testing/selftests/bpf/verifier/btf_ctx_access.c
-index 6340db6b46dc..0484d3de040d 100644
---- a/tools/testing/selftests/bpf/verifier/btf_ctx_access.c
-+++ b/tools/testing/selftests/bpf/verifier/btf_ctx_access.c
-@@ -10,3 +10,16 @@
- 	.expected_attach_type = BPF_TRACE_FENTRY,
- 	.kfunc = "bpf_modify_return_test",
- },
-+
-+{
-+	"btf_ctx_access u32 pointer accept",
-+	.insns = {
-+	BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, 0),	/* load 1nd argument value (u32 pointer) */
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACING,
-+	.expected_attach_type = BPF_TRACE_FENTRY,
-+	.kfunc = "bpf_fentry_test9",
-+},
--- 
-2.20.1
-
+On Wed, Apr 5, 2023 at 9:53=E2=80=AFAM Felix Huettner
+<felix.huettner@mail.schwarz> wrote:
+>
+> assume the following setup on a single machine:
+> 1. An openvswitch instance with one bridge and default flows
+> 2. two network namespaces "server" and "client"
+> 3. two ovs interfaces "server" and "client" on the bridge
+> 4. for each ovs interface a veth pair with a matching name and 32 rx and
+>    tx queues
+> 5. move the ends of the veth pairs to the respective network namespaces
+> 6. assign ip addresses to each of the veth ends in the namespaces (needs
+>    to be the same subnet)
+> 7. start some http server on the server network namespace
+> 8. test if a client in the client namespace can reach the http server
+>
+> when following the actions below the host has a chance of getting a cpu
+> stuck in a infinite loop:
+> 1. send a large amount of parallel requests to the http server (around
+>    3000 curls should work)
+> 2. in parallel delete the network namespace (do not delete interfaces or
+>    stop the server, just kill the namespace)
+>
+> there is a low chance that this will cause the below kernel cpu stuck
+> message. If this does not happen just retry.
+> Below there is also the output of bpftrace for the functions mentioned
+> in the output.
+>
+...
+Reviewed-by: Eric Dumazet <edumazet@google.com>
