@@ -2,129 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12CCE6DA67B
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 02:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11D596DA68E
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 02:18:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232798AbjDGAO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 20:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        id S237421AbjDGAS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 20:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233559AbjDGAOs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 20:14:48 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF329753
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 17:14:47 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id x15so38618645pjk.2
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 17:14:47 -0700 (PDT)
+        with ESMTP id S232409AbjDGAS1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 20:18:27 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64524C3F
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 17:18:25 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-54bf8af4063so59313717b3.7
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 17:18:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1680826487; x=1683418487;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=CUpe4fyEON5BGY/Krg7UBwYk33mDfZbzhByBXKF1Op4=;
-        b=m74H6gd95HlYt1gDFCvGLe/zXtZdmzdmmd0nLY+aZlBOnxkhnNMpUjH5Pp0l2xhk3e
-         b67rp9yxFSMajvi/6fKrDU8mTpsWv0vkDELuKk1qmz/657hdT6n8oByT6zyswNB30tM7
-         5eGJdfoqs9EoSrNZjD3GV/lIEdlwUdKm8IcpE=
+        d=google.com; s=20210112; t=1680826705; x=1683418705;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3z+/NV0dPqokddCY1NlsxXvpM1kRG3zeyORz1bdClYA=;
+        b=Ie+PkEdZ8NlP4tCL2e6yryjW43O3XlBR/u9iiXFJbrMgcpOc3IYxzbK4XarLY/c800
+         EXG+bqUm99QO6vRxqGGm6L0NFj0Pw4CjBYbEzTau0rzhcOGvAgnM9Uo5IfqMZnQS7rm1
+         keHAfSFEnykWagzbkDK1KJhuzdPGEQbG36JE6SsUX1oZF2k7fIXPYJx1wg0LP2dYC+0n
+         qNK1r8WguwjJ3Et1uGsyLEP3V6c6ipuIZlxizPlgqJIKZVmfhCH7l3Xg7bHM+ZptjsfE
+         f+OGQyLSDyReUxbTJGma+JqRqXVN3DAhfOeHehKH+lrI1JZJ1gBCq6eHAK0XqL+3LQw1
+         yLrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680826487; x=1683418487;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CUpe4fyEON5BGY/Krg7UBwYk33mDfZbzhByBXKF1Op4=;
-        b=5Dz6GuejDucdtLBDLMwRUuZ8euKGpYfKxTxR8UjoCOEQdx/+xiDZoQoZFlM3+ChkOu
-         8+MUZLfPLPT8P1lSm4E9lPKzwOJpIHNPBCIO8qdjSfdIHHdw5scbhewh6K7fjmCqxtay
-         O8VvOCLFWNwhuZ0fK9K4vgtU2OZp2uoCBHJ41uhd6JfEHO53ggTXGe7WhySVlkBbX8wD
-         gSNaBunGq2g7Tn++L0fSQONLswEqVEINI+wfKjuuf2s7gvM2GVdbIB4rjd8ahAo3hlX+
-         uQV4sLILAX/jHEwRulJGJuhhiL7TangMPeNyfCrrzfFMu26XvyCc14w0TX0GmZyd6rOm
-         nGgg==
-X-Gm-Message-State: AAQBX9e2VoXYJg5YWcv6G/dj4WcP8IVzhCzgD9Nvz8GZl2vxEv0OlELO
-        Cvi2qd/1+QBSoc4q4Koy8u1WQg==
-X-Google-Smtp-Source: AKy350ab+eYRqbZGGh2TuIO/xigh1TQ8o6ezz/1TWY1fsvV+Ukb/Gh4eTgZgIhkf4WaYuHS6fu0lnA==
-X-Received: by 2002:a05:6a20:dc9f:b0:d9:7424:3430 with SMTP id ky31-20020a056a20dc9f00b000d974243430mr1007563pzb.15.1680826486769;
-        Thu, 06 Apr 2023 17:14:46 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:9d:2:2f1a:b18a:6c4:e53e])
-        by smtp.gmail.com with ESMTPSA id d2-20020a655ac2000000b00513c549e98asm1612495pgt.68.2023.04.06.17.14.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 17:14:45 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        David Ober <dober6023@gmail.com>,
-        Hayes Wang <hayeswang@realtek.com>,
-        Jean-Francois Le Fillatre <jflf_kernel@gmx.com>,
-        Sven van Ashbrook <svenva@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] r8152: Add __GFP_NOWARN to big allocations
-Date:   Thu,  6 Apr 2023 17:14:26 -0700
-Message-Id: <20230406171411.1.I84dbef45786af440fd269b71e9436a96a8e7a152@changeid>
+        d=1e100.net; s=20210112; t=1680826705; x=1683418705;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3z+/NV0dPqokddCY1NlsxXvpM1kRG3zeyORz1bdClYA=;
+        b=e98yi6ZZcGm26sU7RmMyJMFHYpKRaB63IuJVPjvtiaEWLBLSHHMvbW6muhH0q5mAaw
+         QlUjIvKINPce/VKFIkMXmQHgsuO/BINX2JkMk5tQU/45wo2mrk0EZI7O5OGakLX4vGGn
+         6+VtAhyMAoqU+0sswizqfur6zvsBFLNLZuEBQlASNYC90nA235P/ab8esnwhN74K0r0e
+         /XsrVCb1j3wUKjwETJc61+GoeBuVEWQm9GU1lAndQSfR1CE2o6x5q/WbTe1C78PDwCiW
+         wJe8qOlI53FrO+ZgL/7+kaWddzkh65/KzOddnPYOcv1X1yU/LS3pnT+YwZWtcSSwsFpc
+         I8eg==
+X-Gm-Message-State: AAQBX9fGmATbcR7N4j2iqHbujS64zm7au1+F2EuJaJqPnaWc4+lUIXQe
+        ZDgPRLa2IhF/2d+fom4YvHFzN+hw
+X-Google-Smtp-Source: AKy350YirQjSwlcK32mrO8lnWvk2qTJsYhBwSukQ/GdXrsixXKlrQORwIQb2OB7EAa5VenlcolW2BFg+
+X-Received: from gnomeregan.cam.corp.google.com ([2620:15c:93:4:5600:3a73:ddd5:3f6f])
+ (user=brho job=sendgmr) by 2002:a25:7716:0:b0:b6a:2590:6c63 with SMTP id
+ s22-20020a257716000000b00b6a25906c63mr214401ybc.2.1680826704897; Thu, 06 Apr
+ 2023 17:18:24 -0700 (PDT)
+Date:   Thu,  6 Apr 2023 20:18:08 -0400
+In-Reply-To: <20230405225246.1327344-1-brho@google.com>
+Mime-Version: 1.0
+References: <20230405225246.1327344-1-brho@google.com>
 X-Mailer: git-send-email 2.40.0.577.gac1e443424-goog
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+Message-ID: <20230407001808.1622968-1-brho@google.com>
+Subject: [PATCH bpf-next] bpf: ensure all memory is initialized in bpf_get_current_comm
+From:   Barret Rhoden <brho@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When memory is a little tight on my system, it's pretty easy to see
-warnings that look like this.
+BPF helpers that take an ARG_PTR_TO_UNINIT_MEM must ensure that all of
+the memory is set, including beyond the end of the string.
 
-  ksoftirqd/0: page allocation failure: order:3, mode:0x40a20(GFP_ATOMIC|__GFP_COMP), nodemask=(null),cpuset=/,mems_allowed=0
-  ...
-  Call trace:
-   dump_backtrace+0x0/0x1e8
-   show_stack+0x20/0x2c
-   dump_stack_lvl+0x60/0x78
-   dump_stack+0x18/0x38
-   warn_alloc+0x104/0x174
-   __alloc_pages+0x588/0x67c
-   alloc_rx_agg+0xa0/0x190 [r8152 ...]
-   r8152_poll+0x270/0x760 [r8152 ...]
-   __napi_poll+0x44/0x1ec
-   net_rx_action+0x100/0x300
-   __do_softirq+0xec/0x38c
-   run_ksoftirqd+0x38/0xec
-   smpboot_thread_fn+0xb8/0x248
-   kthread+0x134/0x154
-   ret_from_fork+0x10/0x20
-
-On a fragmented system it's normal that order 3 allocations will
-sometimes fail, especially atomic ones. The driver handles these
-failures fine and the WARN just creates spam in the logs for this
-case. The __GFP_NOWARN flag is exactly for this situation, so add it
-to the allocation.
-
-NOTE: my testing is on a 5.15 system, but there should be no reason
-that this would be fundamentally different on a mainline kernel.
-
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Barret Rhoden <brho@google.com>
 ---
-
- drivers/net/usb/r8152.c | 2 +-
+ kernel/bpf/helpers.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index decb5ba56a25..0fc4b959edc1 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -1943,7 +1943,7 @@ static struct rx_agg *alloc_rx_agg(struct r8152 *tp, gfp_t mflags)
- 	if (!rx_agg)
- 		return NULL;
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 6be16db9f188..b6a5cda5bb59 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -258,7 +258,7 @@ BPF_CALL_2(bpf_get_current_comm, char *, buf, u32, size)
+ 		goto err_clear;
  
--	rx_agg->page = alloc_pages(mflags | __GFP_COMP, order);
-+	rx_agg->page = alloc_pages(mflags | __GFP_COMP | __GFP_NOWARN, order);
- 	if (!rx_agg->page)
- 		goto free_rx;
- 
+ 	/* Verifier guarantees that size > 0 */
+-	strscpy(buf, task->comm, size);
++	strscpy_pad(buf, task->comm, size);
+ 	return 0;
+ err_clear:
+ 	memset(buf, 0, size);
 -- 
 2.40.0.577.gac1e443424-goog
 
