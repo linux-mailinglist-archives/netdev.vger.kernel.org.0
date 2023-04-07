@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 573F26DB5D4
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 23:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40A6E6DB5D5
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 23:40:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231266AbjDGVkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 17:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40714 "EHLO
+        id S231178AbjDGVkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 17:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbjDGVkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 17:40:39 -0400
-X-Greylist: delayed 401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 07 Apr 2023 14:40:35 PDT
+        with ESMTP id S231319AbjDGVko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 17:40:44 -0400
 Received: from smtp1.lauterbach.com (smtp1.lauterbach.com [62.154.241.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BE17683
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 14:40:35 -0700 (PDT)
-Received: (qmail 11978 invoked by uid 484); 7 Apr 2023 21:33:51 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E594D305
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 14:40:40 -0700 (PDT)
+Received: (qmail 12002 invoked by uid 484); 7 Apr 2023 21:33:59 -0000
 X-Qmail-Scanner-Diagnostics: from ingpc2.intern.lauterbach.com by smtp1.lauterbach.com (envelope-from <ingo.rohloff@lauterbach.com>, uid 484) with qmail-scanner-2.11 
  (mhr: 1.0. clamdscan: 0.99/21437. spamassassin: 3.4.0.  
  Clear:RC:1(10.2.10.44):. 
- Processed in 0.070717 secs); 07 Apr 2023 21:33:51 -0000
+ Processed in 0.071181 secs); 07 Apr 2023 21:33:59 -0000
 Received: from ingpc2.intern.lauterbach.com (Authenticated_SSL:irohloff@[10.2.10.44])
           (envelope-sender <ingo.rohloff@lauterbach.com>)
           by smtp1.lauterbach.com (qmail-ldap-1.03) with TLS_AES_256_GCM_SHA384 encrypted SMTP
-          for <robert.hancock@calian.com>; 7 Apr 2023 21:33:48 -0000
+          for <robert.hancock@calian.com>; 7 Apr 2023 21:33:57 -0000
 From:   Ingo Rohloff <ingo.rohloff@lauterbach.com>
 To:     robert.hancock@calian.com
 Cc:     Nicolas.Ferre@microchip.com, claudiu.beznea@microchip.com,
         davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         tomas.melin@vaisala.com, Ingo Rohloff <ingo.rohloff@lauterbach.com>
-Subject: [PATCH 0/1] Alternative, restart tx after tx used bit read
-Date:   Fri,  7 Apr 2023 23:33:48 +0200
-Message-Id: <20230407213349.8013-1-ingo.rohloff@lauterbach.com>
+Subject: [PATCH 1/1] net: macb: A different way to restart a stuck TX descriptor ring.
+Date:   Fri,  7 Apr 2023 23:33:49 +0200
+Message-Id: <20230407213349.8013-2-ingo.rohloff@lauterbach.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <244d34f9e9fd2b948d822e1dffd9dc2b0c8b336c.camel@calian.com>
+In-Reply-To: <20230407213349.8013-1-ingo.rohloff@lauterbach.com>
 References: <244d34f9e9fd2b948d822e1dffd9dc2b0c8b336c.camel@calian.com>
+ <20230407213349.8013-1-ingo.rohloff@lauterbach.com>
 X-Spam-Status: No, score=-0.0 required=5.0 tests=SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -43,142 +43,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am sorry; this is a long E-Mail.
+This implements a different approach than Commit 4298388574dae6 ("net:
+macb: restart tx after tx used bit read"):
 
-I am referring to this problem:
+When reaping TX descriptors in macb_tx_complete(), if there are still
+active descriptors pending (queue is not empty) and the controller
+additionally signals that it is not any longer working on the TX ring,
+then something has to be wrong. Reasoning:
+Each time a descriptor is added to the TX ring (via macb_start_xmit()) the
+controller is triggered to start transmitting (via setting the TSTART
+bit).
+At this point in time, there are two cases:
+1) The controller already has read an inactive descriptor
+   (with a set TX_USED bit).
+2) The controller has not yet read an inactive descriptor
+   and is still actively transmitting.
 
-Robert Hancock wrote:
-> On Wed, 2022-03-23 at 08:43 -0700, Jakub Kicinski wrote:
-> > On Wed, 23 Mar 2022 10:08:20 +0200 Tomas Melin wrote:
-> > > > From: Claudiu Beznea <claudiu.beznea@microchip.com>
-> > > > 
-> > > > On some platforms (currently detected only on SAMA5D4) TX might stuck
-> > > > even the pachets are still present in DMA memories and TX start was
-> > > > issued for them.
-> > > > ...
-> > > On Xilinx Zynq the above change can cause infinite interrupt loop
-> > > leading to CPU stall.  Seems timing/load needs to be appropriate for
-> > > this to happen, and currently with 1G ethernet this can be triggered
-> > > normally within minutes when running stress tests on the network
-> > > interface.
-> > > ...
-> > Which kernel version are you using?  Robert has been working on macb +
-> > Zynq recently, adding him to CC.
-> ...
-> I haven't looked at the TX ring descriptor and register setup on this core
-> in that much detail, but the fact the controller gets into this "TX used
-> bit read" state in the first place seems unusual.  I'm wondering if
-> something is being done in the wrong order or if we are missing a memory
-> barrier etc?
+In case 1) setting the TSTART bit, should restart transmission.
+In case 2) the controller should continue transmitting and at some point
+reach the freshly added descriptors and then process them too.
 
-I am developing on a ZynqMP (Ultrascale+) SoC from AMD/Xilinx.
-I have seen the same issue before commit 4298388574dae6168 ("net: macb:
-restart tx after tx used bit read")
+This patch checks in macb_tx_complete() if the TX queue is non-empty and
+additionally if the controller indicates that it is not transmitting any
+longer. If this condition is detected, the TSTART bit is set again to
+restart transmission.
 
-The scenario which sometimes triggers it for me:
-
-I have an application running on the PC.
-The application sends a short command (via TCP) to the ZynqMP.
-The ZynqMP answers with a long stream of bytes via TCP
-(around 230KiB).
-The PC knows the amount of data and waits to receive the data completely.
-The PC gets stuck, because the last TCP segment of the transfer gets
-stuck in the ZynqMP and is not transmitted.
-You can re-trigger the TX Ring by pinging the ZynqMP:
-The Ping answer will re-trigger the TX ring, which in turn will also
-then send the stuck IP/TCP packet.
-
-Unfortunately triggering this problem seems to be hard; at least I am 
-not able to reproduce it easily.
-
-So: If anyone has a more reliable way to trigger the problem, 
-please tell me.
-This is to check if my proposed alternative works under all circumstances.
-
-I have an alternate implementation, which does not require to turn on
-the "TX USED BIT READ" (TUBR) interrupt.
-The reason why I think this alternative might be better is, because I
-believe the TUBR interrupt happens at the wrong time; so I am not sure
-that the current implementation works reliably.
-
-Analysis:
-Commit 404cd086f29e867f ("net: macb: Allocate valid memory for TX and RX BD
-prefetch") mentions:
-
-    GEM version in ZynqMP and most versions greater than r1p07 supports
-    TX and RX BD prefetch. The number of BDs that can be prefetched is a
-    HW configurable parameter. For ZynqMP, this parameter is 4.
-
-I think what happens is this:
-Example Scenario (SW == linux kernel, HW == cadence ethernet IP).
-1) SW has written TX descriptors 0..7
-2) HW is currently transmitting TX descriptor 6.
-   HW has already prefetched TX descriptors 6,7,8,9.
-3) SW writes TX descriptor 8 (clearing TX_USED)
-4) SW writes the TSTART bit.
-   HW ignores this, because it is still transmitting.
-5) HW transmits TX descriptor 7.
-6) HW reaches descriptor 8; because this descriptor
-   has already been prefetched, HW sees a non-active
-   descriptor (TX_USED set) and stops transmitting.
-
-From debugging the code it seems that the TUBR interrupt happens, when
-a descriptor is prefetched, which has a TX_USED bit set, which is before
-it is processed by the rest of the hardware:
-When looking at the end of a transfer it seems I get a TUBR interrupt,
-followed by some more TX COMPLETE interrupts.
-
-Additionally that means at the time the TUBR interrupt happens, it
-is too early to write the TSTART bit again, because the hardware is
-still actively transmitting.
-
-The alternative I implemented is to check in macb_tx_complete() if
-
-1) The TX Queue is non-empty (there are pending TX descriptors)
-2) The hardware indicates that it is not transmitting any more
-
-If this situation is detected, the TSTART bit will be written to
-restart the TX ring.
-
-I know for sure, that I hit the code path, which restarts the 
-transmission in macb_tx_complete(); that's why I believe the
-"Example Scenario" I described above is correct.
-
-I am still not sure if what I implemented is enough:
-macb_tx_complete() should at least see all completed TX descriptors.
-I still believe there is a (very short) time window in which there
-might be a race:
-1) HW completes TX descriptor 7 and sets the TX_USED bit
-   in TX descriptor 7.
-   TX descriptor 8 was prefetched with a set TX_USED bit.
-2) SW sees that TX descriptor 7 is completed
-   (TX_USED bit now is set).
-3) SW sees that there still is a pending TX descriptor 8.
-4) SW checks if the TGO bit is still set, which it is.
-   So the SW does nothing at this point.
-5) HW processes the prefetched,set TX_USED bit in
-   TX descriptor 8 and stops transmission (clearing the TGO bit).
-
-I am not sure if it is guaranteed that 5) cannot happen after 4).  If 5)
-happens after 4) as described above, then the controller still gets stuck.
-The only idea I can come up with, is to re-check the TGO bit
-a second time a little bit later, but I am not sure how to
-implement this.
-
-Is there anyone who has access to hardware documentation, which
-sheds some light onto the way the descriptor prefetching works?
-
-so long
-  Ingo
-
-
-Ingo Rohloff (1):
-  net: macb: A different way to restart a stuck TX descriptor ring.
-
+Signed-off-by: Ingo Rohloff <ingo.rohloff@lauterbach.com>
+---
  drivers/net/ethernet/cadence/macb.h      |  1 -
- drivers/net/ethernet/cadence/macb_main.c | 67 +++++++++---------------
- 2 files changed, 24 insertions(+), 44 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 66 +++++++++---------------
+ 2 files changed, 23 insertions(+), 44 deletions(-)
 
+diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+index 14dfec4db8f9..b749fa2c0342 100644
+--- a/drivers/net/ethernet/cadence/macb.h
++++ b/drivers/net/ethernet/cadence/macb.h
+@@ -1205,7 +1205,6 @@ struct macb_queue {
+ 	struct macb_tx_skb	*tx_skb;
+ 	dma_addr_t		tx_ring_dma;
+ 	struct work_struct	tx_error_task;
+-	bool			txubr_pending;
+ 	struct napi_struct	napi_tx;
+ 
+ 	dma_addr_t		rx_ring_dma;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 66e30561569e..077024ad9ecc 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -70,8 +70,7 @@ struct sifive_fu540_macb_mgmt {
+ #define MACB_TX_ERR_FLAGS	(MACB_BIT(ISR_TUND)			\
+ 					| MACB_BIT(ISR_RLE)		\
+ 					| MACB_BIT(TXERR))
+-#define MACB_TX_INT_FLAGS	(MACB_TX_ERR_FLAGS | MACB_BIT(TCOMP)	\
+-					| MACB_BIT(TXUBR))
++#define MACB_TX_INT_FLAGS	(MACB_TX_ERR_FLAGS | MACB_BIT(TCOMP))
+ 
+ /* Max length of transmit frame must be a multiple of 8 bytes */
+ #define MACB_TX_LEN_ALIGN	8
+@@ -1272,6 +1271,26 @@ static int macb_tx_complete(struct macb_queue *queue, int budget)
+ 	}
+ 
+ 	queue->tx_tail = tail;
++
++	if (tail != head) {
++		unsigned long flags;
++		u32 status;
++
++		spin_lock_irqsave(&bp->lock, flags);
++		status = macb_readl(bp, TSR);
++		if (!(status & MACB_BIT(TGO))) {
++			/* We have frames to be transmitted pending,
++			 * but controller is not transmitting any more.
++			 * Restart transmit engine
++			 */
++			u32 ncr;
++
++			ncr = macb_readl(bp, NCR) | MACB_BIT(TSTART);
++			macb_writel(bp, NCR, ncr);
++		}
++		spin_unlock_irqrestore(&bp->lock, flags);
++	}
++
+ 	if (__netif_subqueue_stopped(bp->dev, queue_index) &&
+ 	    CIRC_CNT(queue->tx_head, queue->tx_tail,
+ 		     bp->tx_ring_size) <= MACB_TX_WAKEUP_THRESH(bp))
+@@ -1688,31 +1707,6 @@ static int macb_rx_poll(struct napi_struct *napi, int budget)
+ 	return work_done;
+ }
+ 
+-static void macb_tx_restart(struct macb_queue *queue)
+-{
+-	struct macb *bp = queue->bp;
+-	unsigned int head_idx, tbqp;
+-
+-	spin_lock(&queue->tx_ptr_lock);
+-
+-	if (queue->tx_head == queue->tx_tail)
+-		goto out_tx_ptr_unlock;
+-
+-	tbqp = queue_readl(queue, TBQP) / macb_dma_desc_get_size(bp);
+-	tbqp = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, tbqp));
+-	head_idx = macb_adj_dma_desc_idx(bp, macb_tx_ring_wrap(bp, queue->tx_head));
+-
+-	if (tbqp == head_idx)
+-		goto out_tx_ptr_unlock;
+-
+-	spin_lock_irq(&bp->lock);
+-	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
+-	spin_unlock_irq(&bp->lock);
+-
+-out_tx_ptr_unlock:
+-	spin_unlock(&queue->tx_ptr_lock);
+-}
+-
+ static bool macb_tx_complete_pending(struct macb_queue *queue)
+ {
+ 	bool retval = false;
+@@ -1737,13 +1731,6 @@ static int macb_tx_poll(struct napi_struct *napi, int budget)
+ 
+ 	work_done = macb_tx_complete(queue, budget);
+ 
+-	rmb(); // ensure txubr_pending is up to date
+-	if (queue->txubr_pending) {
+-		queue->txubr_pending = false;
+-		netdev_vdbg(bp->dev, "poll: tx restart\n");
+-		macb_tx_restart(queue);
+-	}
+-
+ 	netdev_vdbg(bp->dev, "TX poll: queue = %u, work_done = %d, budget = %d\n",
+ 		    (unsigned int)(queue - bp->queues), work_done, budget);
+ 
+@@ -1913,17 +1900,10 @@ static irqreturn_t macb_interrupt(int irq, void *dev_id)
+ 			}
+ 		}
+ 
+-		if (status & (MACB_BIT(TCOMP) |
+-			      MACB_BIT(TXUBR))) {
++		if (status & MACB_BIT(TCOMP)) {
+ 			queue_writel(queue, IDR, MACB_BIT(TCOMP));
+ 			if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+-				queue_writel(queue, ISR, MACB_BIT(TCOMP) |
+-							 MACB_BIT(TXUBR));
+-
+-			if (status & MACB_BIT(TXUBR)) {
+-				queue->txubr_pending = true;
+-				wmb(); // ensure softirq can see update
+-			}
++				queue_writel(queue, ISR, MACB_BIT(TCOMP));
+ 
+ 			if (napi_schedule_prep(&queue->napi_tx)) {
+ 				netdev_vdbg(bp->dev, "scheduling TX softirq\n");
 -- 
 2.17.1
 
