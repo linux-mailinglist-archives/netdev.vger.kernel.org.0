@@ -2,72 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD4236DAFA9
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 17:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B61D66DAFAD
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 17:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233032AbjDGP2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 11:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
+        id S231631AbjDGPaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 11:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbjDGP2V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 11:28:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEED6A5A
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 08:28:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7852D61E14
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 15:28:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82722C433EF;
-        Fri,  7 Apr 2023 15:28:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680881299;
-        bh=LExkG1iuIte8JP7HpdLmhImPG21jrfxw1tnNPMbfg3U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lY6RsyXNxGSMF/lxvBHZii18rO6QyvzIlP15rHpXRz6fkBqZnEbWqPlKGQ6jLhya2
-         +g3eJ6bm4c0CG97fTqCwbwbhLNLy5UZlmDOjkBa5mjVZpcxfAr22fpeCgL+DJvA6G4
-         +SBB7/z71+uGAAOVctSBb4lu0+k/Ccv20j/Drk+RgHMSoZ+LaQC4Je3yvLUAEVeqW3
-         VJzZXFrlH+MslR1EaTayXC3x+iZ3N2pgkfy4opieTmfWrET8zdOAhsQVgr7PIR0kii
-         EfjKOYYdjm/FRN08Z9TmOcXuSgNhsrB0Ljatryk+G0byfJ++gcDcYVgCyLgzeMQdGw
-         7UJletNGhHlHA==
-Date:   Fri, 7 Apr 2023 08:28:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>
-Subject: Re: [RFC net-next v2 1/3] net: skb: plumb napi state thru skb
- freeing paths
-Message-ID: <20230407082818.1aefb90f@kernel.org>
-In-Reply-To: <20230407071402.09fa792f@kernel.org>
-References: <20230405232100.103392-1-kuba@kernel.org>
-        <20230405232100.103392-2-kuba@kernel.org>
-        <2628d71f-ef66-6ea9-61da-6d01c04fbda9@huawei.com>
-        <20230407071402.09fa792f@kernel.org>
+        with ESMTP id S240611AbjDGPaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 11:30:18 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD55213B
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 08:30:17 -0700 (PDT)
+Received: (Authenticated sender: gregory.clement@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7E18E100015;
+        Fri,  7 Apr 2023 15:30:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1680881416;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0RMVMT5ckzzCSx3TeI17ZVRfO4YKG2ryxv7iAsQGvLA=;
+        b=V+d7ZYzQp1FU6nLxUAHUBgafCMOtXTUaSVut8p94caCKwzQx24SP3Y75Q4ymTN/yYIjYlW
+        Nq0nsdbUqI/qAk+ymi5ag/6+/orw65UoAfQBjkcAAETYmX5ru4nCynTDL62aL22pzOcU2Y
+        RRCvYK0gxEQYe/sSFtnaONrcsk2ZMRkGiJe1NoLl3dzoalnOXqRtLQePUWB7WeAox0COPC
+        zo1vRYUKwVMvB4Ez4I8sY6mHPJnTa9ECbKIlgDyPkfC4vnnPIK19Uc2J3prJcflq4wnjbd
+        lyH1KNLFFnyVCM9azr8LEg2WmEE95h1qrHhR/orLlNhS7wWcJ0ZceHOry12QVQ==
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        arm-soc <arm@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH 0/3] Add missing DSA properties for marvell switches
+In-Reply-To: <20230407151722.2320481-1-andrew@lunn.ch>
+References: <20230407151722.2320481-1-andrew@lunn.ch>
+Date:   Fri, 07 Apr 2023 17:30:06 +0200
+Message-ID: <87mt3j3e2p.fsf@BL-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Apr 2023 07:14:02 -0700 Jakub Kicinski wrote:
-> > > -static bool skb_pp_recycle(struct sk_buff *skb, void *data)
-> > > +static bool skb_pp_recycle(struct sk_buff *skb, void *data, bool in_normal_napi)    
-> > 
-> > What does *normal* means in 'in_normal_napi'?
-> > can we just use in_napi?  
-> 
-> Technically netpoll also calls NAPI, that's why I threw in the
-> "normal". If folks prefer in_napi or some other name I'm more 
-> than happy to change. Naming is hard.
+Andrew Lunn <andrew@lunn.ch> writes:
 
-Maybe I should rename it to in_softirq ? Or napi_safe ?
-Because __kfree_skb_defer() gets called from the Tx side.
-And even the Rx deferred free isn't really *in* NAPI.
+> The DSA core has become more picky about DT properties. This patchset
+> add missing properties and removes some unused ones, for Marvell ARM
+> boards.
+>
+> Once all the missing properties are added, it should be possible to
+> simply phylink and the mv88e6xxx driver.
+>
+> Andrew Lunn (3):
+>   ARM: dts: kirkwood: Add missing phy-mode and fixed links
+>   ARM: dts: orion5: Add missing phy-mode and fixed links
+>   ARM: dts: armada: Add missing phy-mode and fixed links
+
+Applied on mvebu/dt
+
+(if there are comments I am still abel to fix the commit in mvebu/dt.=
+
+Thanks,
+
+Gregory
+
+
+>
+>  arch/arm/boot/dts/armada-370-rd.dts               | 2 +-
+>  arch/arm/boot/dts/armada-381-netgear-gs110emx.dts | 2 +-
+>  arch/arm/boot/dts/armada-385-clearfog-gtr-l8.dts  | 7 ++++++-
+>  arch/arm/boot/dts/armada-385-clearfog-gtr-s4.dts  | 7 ++++++-
+>  arch/arm/boot/dts/armada-385-linksys.dtsi         | 2 +-
+>  arch/arm/boot/dts/armada-385-turris-omnia.dts     | 2 --
+>  arch/arm/boot/dts/armada-xp-linksys-mamba.dts     | 2 +-
+>  arch/arm/boot/dts/kirkwood-dir665.dts             | 3 ++-
+>  arch/arm/boot/dts/kirkwood-l-50.dts               | 2 +-
+>  arch/arm/boot/dts/kirkwood-linksys-viper.dts      | 3 ++-
+>  arch/arm/boot/dts/kirkwood-mv88f6281gtw-ge.dts    | 3 ++-
+>  arch/arm/boot/dts/kirkwood-rd88f6281.dtsi         | 2 +-
+>  arch/arm/boot/dts/orion5x-netgear-wnr854t.dts     | 7 ++++++-
+>  13 files changed, 30 insertions(+), 14 deletions(-)
+>
+> -- 
+> 2.40.0
+>
+
+-- 
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
