@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F726DB5B5
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 23:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 727456DB5B6
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 23:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230445AbjDGVKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 17:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
+        id S230150AbjDGVKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 17:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231578AbjDGVJz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 17:09:55 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBA81A8
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 14:09:53 -0700 (PDT)
+        with ESMTP id S229737AbjDGVKn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 17:10:43 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813729EE0
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 14:10:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680901793; x=1712437793;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iwwiZVOa2zxgmX1Y3ex45uMjpJIzi0WlHuGDES5fVSM=;
-  b=k2YW4HiHlD5c55uufyAJLSLAALj5DV6cHR5neDiQ7wQYpvpZgytt/5IR
-   5EEwVBe9MKXiYBO4jsni+xiZB4LOOz8BXMNhrqfjUxYGzDDLSyq5+Jxxx
-   VlnrjnyZaO3A5HTB0uR+5M1rXY3MSiyZdAYjdvEFLlZYFkSKimTsBLXSa
-   wLk/59e2LrO//wwNgvvtrdeqFr7BE0h63XOBjU4SKobJqwEC+uRqK9/gP
-   Fo7W0F/LM6yXNxutZcPgUsgNDmcmZHrMboCFc403iHdJ/FEc90NuH7fTy
-   jZzapzaqSl/qVC04zXvOXMIDD8IlSjhUSjaE7Kvv0L7ONtMK89VNvXJuB
+  t=1680901842; x=1712437842;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TtELeo27OV91tG8a9NONmTG6SYbDJhpPsxD+5l5Ip9E=;
+  b=K1Sv5XCJEZrJ9344frxx5WB+L42aliCemIdaNZ49NQGsqMpULUqVsWTI
+   VtcFBNwm5e7XNXesRNpMTozMCLzwo1sH1yaQoHeiciKMR13IfOfI3OyWp
+   8tO0sICY1P1wA9Wx7hutzm8UQM4fQDaswDz8LGGhVUd1HjhDJTaU5YqDt
+   cW5sE+enEDTKfAtk2xWUYmqfnvR3daJbKx4P3b4NLU+tHSy7l1/IuKN97
+   idzI+I+34osLaI4c5c6Uj8Y0X4/GQGcPtTv9t1mI7yp/TLGsxBQ5ESzz0
+   8bUZ2lFwQu3gzdU5jwD3s3sk3SZozLgIJmZtyy6JcSB+0gpT8dZcEqDRH
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10673"; a="343076220"
+X-IronPort-AV: E=McAfee;i="6600,9927,10673"; a="341819980"
 X-IronPort-AV: E=Sophos;i="5.98,328,1673942400"; 
-   d="scan'208";a="343076220"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2023 14:09:53 -0700
+   d="scan'208";a="341819980"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2023 14:10:40 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10673"; a="811511310"
+X-IronPort-AV: E=McAfee;i="6600,9927,10673"; a="756834434"
 X-IronPort-AV: E=Sophos;i="5.98,328,1673942400"; 
-   d="scan'208";a="811511310"
+   d="scan'208";a="756834434"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by orsmga004.jf.intel.com with ESMTP; 07 Apr 2023 14:09:53 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 07 Apr 2023 14:10:40 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, netdev@vger.kernel.org
 Cc:     Ahmed Zaki <ahmed.zaki@intel.com>, anthony.l.nguyen@intel.com,
-        Rafal Romanowski <rafal.romanowski@intel.com>
-Subject: [PATCH net v2 2/2] iavf: remove active_cvlans and active_svlans bitmaps
-Date:   Fri,  7 Apr 2023 14:07:30 -0700
-Message-Id: <20230407210730.3046149-3-anthony.l.nguyen@intel.com>
+        Arpana Arland <arpanax.arland@intel.com>
+Subject: [PATCH net 1/1] ice: identify aRFS flows using L3/L4 dissector info
+Date:   Fri,  7 Apr 2023 14:08:20 -0700
+Message-Id: <20230407210820.3046220-1-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230407210730.3046149-1-anthony.l.nguyen@intel.com>
-References: <20230407210730.3046149-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
@@ -62,268 +60,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ahmed Zaki <ahmed.zaki@intel.com>
 
-The VLAN filters info is currently being held in a list and 2 bitmaps
-(active_cvlans and active_svlans). We are experiencing some racing where
-data is not in sync in the list and bitmaps. For example, the VLAN is
-initially added to the list but only when the PF replies, it is added to
-the bitmap. If a user adds many V2 VLANS before the PF responds:
+The flow ID passed to ice_rx_flow_steer() is computed like this:
 
-    while [ $((i++)) ]
-        ip l add l eth0 name eth0.$i type vlan id $i
+    flow_id = skb_get_hash(skb) & flow_table->mask;
 
-we might end up with more VLAN list entries than the designated limit.
-Also, The "ip link show" will show more links added than the PF limit.
+With smaller aRFS tables (for example, size 256) and higher number of
+flows, there is a good chance of flow ID collisions where two or more
+different flows are using the same flow ID. This results in the aRFS
+destination queue constantly changing for all flows sharing that ID.
 
-On the other and, the bitmaps are only used to check the number of VLAN
-filters and to re-enable the filters when the interface goes from DOWN to
-UP.
+Use the full L3/L4 flow dissector info to identify the steered flow
+instead of the passed flow ID.
 
-This patch gets rid of the bitmaps and uses the list only. To do that,
-the states of the VLAN filter are modified:
-1 - IAVF_VLAN_REMOVE: the entry needs to be totally removed after informing
-  the PF. This is the "ip link del eth0.$i" path.
-2 - IAVF_VLAN_DISABLE: (new) the netdev went down. The filter needs to be
-  removed from the PF and then marked INACTIVE.
-3 - IAVF_VLAN_INACTIVE: (new) no PF filter exists, but the user did not
-  delete the VLAN.
-
-Fixes: 48ccc43ecf10 ("iavf: Add support VIRTCHNL_VF_OFFLOAD_VLAN_V2 during netdev config")
+Fixes: 28bf26724fdb ("ice: Implement aRFS")
 Signed-off-by: Ahmed Zaki <ahmed.zaki@intel.com>
-Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
+Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf.h        |  7 +--
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 40 +++++++----------
- .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 45 ++++++++++---------
- 3 files changed, 45 insertions(+), 47 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_arfs.c | 44 +++++++++++++++++++++--
+ 1 file changed, 41 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 692d6a642118..746ff76f2fb1 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -59,8 +59,6 @@ enum iavf_vsi_state_t {
- struct iavf_vsi {
- 	struct iavf_adapter *back;
- 	struct net_device *netdev;
--	unsigned long active_cvlans[BITS_TO_LONGS(VLAN_N_VID)];
--	unsigned long active_svlans[BITS_TO_LONGS(VLAN_N_VID)];
- 	u16 seid;
- 	u16 id;
- 	DECLARE_BITMAP(state, __IAVF_VSI_STATE_SIZE__);
-@@ -163,7 +161,9 @@ enum iavf_vlan_state_t {
- 	IAVF_VLAN_ADD,		/* filter needs to be added */
- 	IAVF_VLAN_IS_NEW,	/* filter is new, wait for PF answer */
- 	IAVF_VLAN_ACTIVE,	/* filter is accepted by PF */
--	IAVF_VLAN_REMOVE,	/* filter needs to be removed */
-+	IAVF_VLAN_DISABLE,	/* filter needs to be deleted by PF, then marked INACTIVE */
-+	IAVF_VLAN_INACTIVE,	/* filter is inactive, we are in IFF_DOWN */
-+	IAVF_VLAN_REMOVE,	/* filter needs to be removed from list */
- };
+diff --git a/drivers/net/ethernet/intel/ice/ice_arfs.c b/drivers/net/ethernet/intel/ice/ice_arfs.c
+index fba178e07600..d7ae64d21e01 100644
+--- a/drivers/net/ethernet/intel/ice/ice_arfs.c
++++ b/drivers/net/ethernet/intel/ice/ice_arfs.c
+@@ -345,6 +345,44 @@ ice_arfs_build_entry(struct ice_vsi *vsi, const struct flow_keys *fk,
+ 	return arfs_entry;
+ }
  
- struct iavf_vlan_filter {
-@@ -261,6 +261,7 @@ struct iavf_adapter {
- 	wait_queue_head_t vc_waitqueue;
- 	struct iavf_q_vector *q_vectors;
- 	struct list_head vlan_filter_list;
-+	int num_vlan_filters;
- 	struct list_head mac_filter_list;
- 	struct mutex crit_lock;
- 	struct mutex client_lock;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index fe9798e4b4ac..2de4baff4c20 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -792,6 +792,7 @@ iavf_vlan_filter *iavf_add_vlan(struct iavf_adapter *adapter,
- 
- 		list_add_tail(&f->list, &adapter->vlan_filter_list);
- 		f->state = IAVF_VLAN_ADD;
-+		adapter->num_vlan_filters++;
- 		adapter->aq_required |= IAVF_FLAG_AQ_ADD_VLAN_FILTER;
- 	}
- 
-@@ -828,14 +829,18 @@ static void iavf_del_vlan(struct iavf_adapter *adapter, struct iavf_vlan vlan)
-  **/
- static void iavf_restore_filters(struct iavf_adapter *adapter)
- {
--	u16 vid;
-+	struct iavf_vlan_filter *f;
- 
- 	/* re-add all VLAN filters */
--	for_each_set_bit(vid, adapter->vsi.active_cvlans, VLAN_N_VID)
--		iavf_add_vlan(adapter, IAVF_VLAN(vid, ETH_P_8021Q));
-+	spin_lock_bh(&adapter->mac_vlan_list_lock);
- 
--	for_each_set_bit(vid, adapter->vsi.active_svlans, VLAN_N_VID)
--		iavf_add_vlan(adapter, IAVF_VLAN(vid, ETH_P_8021AD));
-+	list_for_each_entry(f, &adapter->vlan_filter_list, list) {
-+		if (f->state == IAVF_VLAN_INACTIVE)
-+			f->state = IAVF_VLAN_ADD;
-+	}
++/**
++ * ice_arfs_cmp - compare flow to a saved ARFS entry's filter info
++ * @fltr_info: filter info of the saved ARFS entry
++ * @fk: flow dissector keys
++ *
++ * Caller must hold arfs_lock if @fltr_info belongs to arfs_fltr_list
++ */
++static bool
++ice_arfs_cmp(struct ice_fdir_fltr *fltr_info, const struct flow_keys *fk)
++{
++	bool is_ipv4;
 +
-+	spin_unlock_bh(&adapter->mac_vlan_list_lock);
-+	adapter->aq_required |= IAVF_FLAG_AQ_ADD_VLAN_FILTER;
- }
- 
- /**
-@@ -844,8 +849,7 @@ static void iavf_restore_filters(struct iavf_adapter *adapter)
-  */
- u16 iavf_get_num_vlans_added(struct iavf_adapter *adapter)
- {
--	return bitmap_weight(adapter->vsi.active_cvlans, VLAN_N_VID) +
--		bitmap_weight(adapter->vsi.active_svlans, VLAN_N_VID);
-+	return adapter->num_vlan_filters;
- }
- 
- /**
-@@ -928,11 +932,6 @@ static int iavf_vlan_rx_kill_vid(struct net_device *netdev,
- 		return 0;
- 
- 	iavf_del_vlan(adapter, IAVF_VLAN(vid, be16_to_cpu(proto)));
--	if (proto == cpu_to_be16(ETH_P_8021Q))
--		clear_bit(vid, adapter->vsi.active_cvlans);
--	else
--		clear_bit(vid, adapter->vsi.active_svlans);
--
- 	return 0;
- }
- 
-@@ -1293,16 +1292,11 @@ static void iavf_clear_mac_vlan_filters(struct iavf_adapter *adapter)
- 		}
- 	}
- 
--	/* remove all VLAN filters */
-+	/* disable all VLAN filters */
- 	list_for_each_entry_safe(vlf, vlftmp, &adapter->vlan_filter_list,
--				 list) {
--		if (vlf->state == IAVF_VLAN_ADD) {
--			list_del(&vlf->list);
--			kfree(vlf);
--		} else {
--			vlf->state = IAVF_VLAN_REMOVE;
--		}
--	}
-+				 list)
-+		vlf->state = IAVF_VLAN_DISABLE;
++	if (!fltr_info || !fk)
++		return false;
 +
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
- }
++	is_ipv4 = (fltr_info->flow_type == ICE_FLTR_PTYPE_NONF_IPV4_UDP ||
++		fltr_info->flow_type == ICE_FLTR_PTYPE_NONF_IPV4_TCP);
++
++	if (fk->basic.n_proto == htons(ETH_P_IP) && is_ipv4)
++		return (fltr_info->ip.v4.proto == fk->basic.ip_proto &&
++			fltr_info->ip.v4.src_port == fk->ports.src &&
++			fltr_info->ip.v4.dst_port == fk->ports.dst &&
++			fltr_info->ip.v4.src_ip == fk->addrs.v4addrs.src &&
++			fltr_info->ip.v4.dst_ip == fk->addrs.v4addrs.dst);
++	else if (fk->basic.n_proto == htons(ETH_P_IPV6) && !is_ipv4)
++		return (fltr_info->ip.v6.proto == fk->basic.ip_proto &&
++			fltr_info->ip.v6.src_port == fk->ports.src &&
++			fltr_info->ip.v6.dst_port == fk->ports.dst &&
++			!memcmp(&fltr_info->ip.v6.src_ip,
++				&fk->addrs.v6addrs.src,
++				sizeof(struct in6_addr)) &&
++			!memcmp(&fltr_info->ip.v6.dst_ip,
++				&fk->addrs.v6addrs.dst,
++				sizeof(struct in6_addr)));
++
++	return false;
++}
++
+ /**
+  * ice_arfs_is_perfect_flow_set - Check to see if perfect flow is set
+  * @hw: pointer to HW structure
+@@ -436,17 +474,17 @@ ice_rx_flow_steer(struct net_device *netdev, const struct sk_buff *skb,
  
-@@ -2914,6 +2908,7 @@ static void iavf_disable_vf(struct iavf_adapter *adapter)
- 		list_del(&fv->list);
- 		kfree(fv);
- 	}
-+	adapter->num_vlan_filters = 0;
+ 	/* choose the aRFS list bucket based on skb hash */
+ 	idx = skb_get_hash_raw(skb) & ICE_ARFS_LST_MASK;
++
+ 	/* search for entry in the bucket */
+ 	spin_lock_bh(&vsi->arfs_lock);
+ 	hlist_for_each_entry(arfs_entry, &vsi->arfs_fltr_list[idx],
+ 			     list_entry) {
+-		struct ice_fdir_fltr *fltr_info;
++		struct ice_fdir_fltr *fltr_info = &arfs_entry->fltr_info;
  
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
+ 		/* keep searching for the already existing arfs_entry flow */
+-		if (arfs_entry->flow_id != flow_id)
++		if (!ice_arfs_cmp(fltr_info, &fk))
+ 			continue;
  
-@@ -3131,9 +3126,6 @@ static void iavf_reset_task(struct work_struct *work)
- 	adapter->aq_required |= IAVF_FLAG_AQ_ADD_CLOUD_FILTER;
- 	iavf_misc_irq_enable(adapter);
+-		fltr_info = &arfs_entry->fltr_info;
+ 		ret = fltr_info->fltr_id;
  
--	bitmap_clear(adapter->vsi.active_cvlans, 0, VLAN_N_VID);
--	bitmap_clear(adapter->vsi.active_svlans, 0, VLAN_N_VID);
--
- 	mod_delayed_work(adapter->wq, &adapter->watchdog_task, 2);
- 
- 	/* We were running when the reset started, so we need to restore some
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index 5047b4c83718..9afbbdac3590 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -643,15 +643,9 @@ static void iavf_vlan_add_reject(struct iavf_adapter *adapter)
- 	spin_lock_bh(&adapter->mac_vlan_list_lock);
- 	list_for_each_entry_safe(f, ftmp, &adapter->vlan_filter_list, list) {
- 		if (f->state == IAVF_VLAN_IS_NEW) {
--			if (f->vlan.tpid == ETH_P_8021Q)
--				clear_bit(f->vlan.vid,
--					  adapter->vsi.active_cvlans);
--			else
--				clear_bit(f->vlan.vid,
--					  adapter->vsi.active_svlans);
--
- 			list_del(&f->list);
- 			kfree(f);
-+			adapter->num_vlan_filters--;
- 		}
- 	}
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
-@@ -824,7 +818,12 @@ void iavf_del_vlans(struct iavf_adapter *adapter)
- 		    !VLAN_FILTERING_ALLOWED(adapter)) {
- 			list_del(&f->list);
- 			kfree(f);
--		} else if (f->state == IAVF_VLAN_REMOVE) {
-+			adapter->num_vlan_filters--;
-+		} else if (f->state == IAVF_VLAN_DISABLE &&
-+		    !VLAN_FILTERING_ALLOWED(adapter)) {
-+			f->state = IAVF_VLAN_INACTIVE;
-+		} else if (f->state == IAVF_VLAN_REMOVE ||
-+			   f->state == IAVF_VLAN_DISABLE) {
- 			count++;
- 		}
- 	}
-@@ -856,11 +855,18 @@ void iavf_del_vlans(struct iavf_adapter *adapter)
- 		vvfl->vsi_id = adapter->vsi_res->vsi_id;
- 		vvfl->num_elements = count;
- 		list_for_each_entry_safe(f, ftmp, &adapter->vlan_filter_list, list) {
--			if (f->state == IAVF_VLAN_REMOVE) {
-+			if (f->state == IAVF_VLAN_DISABLE) {
- 				vvfl->vlan_id[i] = f->vlan.vid;
-+				f->state = IAVF_VLAN_INACTIVE;
- 				i++;
-+				if (i == count)
-+					break;
-+			} else if (f->state == IAVF_VLAN_REMOVE) {
-+				vvfl->vlan_id[i] = f->vlan.vid;
- 				list_del(&f->list);
- 				kfree(f);
-+				adapter->num_vlan_filters--;
-+				i++;
- 				if (i == count)
- 					break;
- 			}
-@@ -900,7 +906,8 @@ void iavf_del_vlans(struct iavf_adapter *adapter)
- 		vvfl_v2->vport_id = adapter->vsi_res->vsi_id;
- 		vvfl_v2->num_elements = count;
- 		list_for_each_entry_safe(f, ftmp, &adapter->vlan_filter_list, list) {
--			if (f->state == IAVF_VLAN_REMOVE) {
-+			if (f->state == IAVF_VLAN_DISABLE ||
-+			    f->state == IAVF_VLAN_REMOVE) {
- 				struct virtchnl_vlan_supported_caps *filtering_support =
- 					&adapter->vlan_v2_caps.filtering.filtering_support;
- 				struct virtchnl_vlan *vlan;
-@@ -914,8 +921,13 @@ void iavf_del_vlans(struct iavf_adapter *adapter)
- 				vlan->tci = f->vlan.vid;
- 				vlan->tpid = f->vlan.tpid;
- 
--				list_del(&f->list);
--				kfree(f);
-+				if (f->state == IAVF_VLAN_DISABLE) {
-+					f->state = IAVF_VLAN_INACTIVE;
-+				} else {
-+					list_del(&f->list);
-+					kfree(f);
-+					adapter->num_vlan_filters--;
-+				}
- 				i++;
- 				if (i == count)
- 					break;
-@@ -2443,15 +2455,8 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
- 
- 		spin_lock_bh(&adapter->mac_vlan_list_lock);
- 		list_for_each_entry(f, &adapter->vlan_filter_list, list) {
--			if (f->state == IAVF_VLAN_IS_NEW) {
-+			if (f->state == IAVF_VLAN_IS_NEW)
- 				f->state = IAVF_VLAN_ACTIVE;
--				if (f->vlan.tpid == ETH_P_8021Q)
--					set_bit(f->vlan.vid,
--						adapter->vsi.active_cvlans);
--				else
--					set_bit(f->vlan.vid,
--						adapter->vsi.active_svlans);
--			}
- 		}
- 		spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 		}
+ 		if (fltr_info->q_index == rxq_idx ||
 -- 
 2.38.1
 
