@@ -2,144 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4316DAAA2
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 11:08:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDDA96DAAB7
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 11:15:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235839AbjDGJIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 05:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55906 "EHLO
+        id S231700AbjDGJPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 05:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240550AbjDGJHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 05:07:53 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABF3AD3A
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 02:07:50 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id l17so7092701ejp.8
-        for <netdev@vger.kernel.org>; Fri, 07 Apr 2023 02:07:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680858469;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=9gmZaXoh5OynzC86VaTh4Y6BvZrzd/QsKcjbYpPnZc0=;
-        b=Xz8iLJoj3e6atCdL3Uvpx3dUFJKuQsv2GH4wcE8UI1rl0GJXVuGqUZSpj/tONGDCPj
-         u8p85UbDTJ+HLqeJw/YnZ4faLPx8LKpc5WxqDRLvWk4Dm2L4FADqlBBqPrBu1wi3SYbE
-         VWTQxTC/mD01K1EMTJjuUX+c+d9o3V18k4jh9u2v4RPghw4ULoS0s0mnPxMUe79FszTG
-         i/V4jO5WXAVR45hsrXNpPVrlhEDYZgMlwW14UpvVRRneT11I4dIY0LQb5/6mivQg2wCs
-         nSCdNOjcDV+yKsQl2QK9+Glg+KHIL5XRN0dDAlWrj9Arx16pzha2SfsFfWN15bz7gFC1
-         mkpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680858469;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9gmZaXoh5OynzC86VaTh4Y6BvZrzd/QsKcjbYpPnZc0=;
-        b=1RsPb1fB5hYkbl9CfND/37l4BNlCUiRwXlqeUtiRO1/LB1GJmj0TeF9RqmbGIRPBWk
-         i+TVbAKhlQXZFtf2XDx77LLbSlyffN++U68/pvF4M4hp6k1cHCJN5Cs/ExsxBxlaxb2s
-         eei6R8gfSXzlH2r1aGH9vZ6ELLkh2wrkSQvo/KeInP/ll08mMKrHnCf1h1FCLCKhIxAp
-         HwpoJVBxRKxJiA7KMCaNY+TKAOXrNc0f+sE3KtpvwbVQZpxcq+pW6ndQsrxjyJxYoqcW
-         0+DMbKJbLBsQQR5s1ffiRoQ1tD0ZWUbC2BMbRxVuADSfI4csoqFRU9u+pEtcsiv53Xd5
-         SKoQ==
-X-Gm-Message-State: AAQBX9enkA8lMEz+VIGA0o/QM7TR7PyV8DTkEMlcj3+DhXaa9Ft1r5Ar
-        qMGp94SY3HTvIZUzPeEIM1PZWw==
-X-Google-Smtp-Source: AKy350bMxNw13TzLGoIgRzK5ovfvLEWUmmgDUnmQBPIUls264bsoQ74I1vJcA7PJ/i7xcVI2UzdWtQ==
-X-Received: by 2002:a17:906:39d3:b0:8de:502e:2061 with SMTP id i19-20020a17090639d300b008de502e2061mr1172023eje.3.1680858469115;
-        Fri, 07 Apr 2023 02:07:49 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:14a3:366:3172:3c37? ([2a02:810d:15c0:828:14a3:366:3172:3c37])
-        by smtp.gmail.com with ESMTPSA id lf24-20020a170906ae5800b00933d64cd447sm1826425ejb.121.2023.04.07.02.07.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Apr 2023 02:07:48 -0700 (PDT)
-Message-ID: <e716d33d-bd39-3f84-3e2e-18cfaf0439cd@linaro.org>
-Date:   Fri, 7 Apr 2023 11:07:47 +0200
+        with ESMTP id S230265AbjDGJPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 05:15:20 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 816897683
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 02:15:18 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4PtCM14twvzKx3h;
+        Fri,  7 Apr 2023 17:12:45 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Fri, 7 Apr
+ 2023 17:15:16 +0800
+Subject: Re: [RFC net-next v2 1/3] net: skb: plumb napi state thru skb freeing
+ paths
+To:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <hawk@kernel.org>,
+        <ilias.apalodimas@linaro.org>
+References: <20230405232100.103392-1-kuba@kernel.org>
+ <20230405232100.103392-2-kuba@kernel.org>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <2628d71f-ef66-6ea9-61da-6d01c04fbda9@huawei.com>
+Date:   Fri, 7 Apr 2023 17:15:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 5/7] dt-bindings: net: dsa: mediatek,mt7530: disallow
- reset without mediatek,mcm
+In-Reply-To: <20230405232100.103392-2-kuba@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        arinc9.unal@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>
-Cc:     erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20230406080141.22924-1-arinc.unal@arinc9.com>
- <20230406080141.22924-5-arinc.unal@arinc9.com>
- <d5769d8f-29f3-063e-0562-487b1b509d3c@linaro.org>
- <194d3bad-c30a-df07-5fab-3264f739c599@arinc9.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <194d3bad-c30a-df07-5fab-3264f739c599@arinc9.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.3 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/04/2023 21:19, Arınç ÜNAL wrote:
-> On 6.04.2023 22:08, Krzysztof Kozlowski wrote:
->> On 06/04/2023 10:01, arinc9.unal@gmail.com wrote:
->>> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>>
->>> The resets and reset-names properties are used only if mediatek,mcm is
->>> used. Set them to false if mediatek,mcm is not used.
->>>
->>> Remove now unnecessary 'reset-names: false' from MT7988.
->>>
->>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->>> ---
->>>   .../devicetree/bindings/net/dsa/mediatek,mt7530.yaml         | 5 ++++-
->>>   1 file changed, 4 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->>> index 9d99f7303453..3fd953b1453e 100644
->>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->>> @@ -282,6 +282,10 @@ allOf:
->>>         required:
->>>           - resets
->>>           - reset-names
->>> +    else:
->>> +      properties:
->>> +        resets: false
->>> +        reset-names: false
->>>   
->>>     - dependencies:
->>>         interrupt-controller: [ interrupts ]
->>> @@ -324,7 +328,6 @@ allOf:
->>>         properties:
->>>           gpio-controller: false
->>>           mediatek,mcm: false
->>> -        reset-names: false
->>
->> I don't see such hunk in linux-next.
+On 2023/4/6 7:20, Jakub Kicinski wrote:
+> We maintain a NAPI-local cache of skbs which is fed by napi_consume_skb().
+> Going forward we will also try to cache head and data pages.
+> Plumb the "are we in a normal NAPI context" information thru
+> deeper into the freeing path, up to skb_release_data() and
+> skb_free_head()/skb_pp_recycle().
 > 
-> This was added very recently so it's only on net-next at the moment.
+> Use "bool in_normal_napi" rather than bare "int budget",
+> the further we get from NAPI the more confusing the budget
+> argument may seem (particularly whether 0 or MAX is the
+> correct value to pass in when not in NAPI).
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/core/skbuff.c | 38 ++++++++++++++++++++------------------
+>  1 file changed, 20 insertions(+), 18 deletions(-)
+> 
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 050a875d09c5..8d5377b4112f 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -839,7 +839,7 @@ static void skb_clone_fraglist(struct sk_buff *skb)
+>  		skb_get(list);
+>  }
+>  
+> -static bool skb_pp_recycle(struct sk_buff *skb, void *data)
+> +static bool skb_pp_recycle(struct sk_buff *skb, void *data, bool in_normal_napi)
 
-OK, I was checking one few days old.
+What does *normal* means in 'in_normal_napi'?
+can we just use in_napi?
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>  {
+>  	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
+>  		return false;
+> @@ -856,12 +856,12 @@ static void skb_kfree_head(void *head, unsigned int end_offset)
+>  		kfree(head);
+>  }
+>  
+> -static void skb_free_head(struct sk_buff *skb)
+> +static void skb_free_head(struct sk_buff *skb, bool in_normal_napi)
+>  {
+>  	unsigned char *head = skb->head;
+>  
+>  	if (skb->head_frag) {
+> -		if (skb_pp_recycle(skb, head))
+> +		if (skb_pp_recycle(skb, head, in_normal_napi))
+>  			return;
+>  		skb_free_frag(head);
+>  	} else {
+> @@ -869,7 +869,8 @@ static void skb_free_head(struct sk_buff *skb)
+>  	}
+>  }
+>  
+> -static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason)
+> +static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason,
+> +			     bool in_normal_napi)
+>  {
+>  	struct skb_shared_info *shinfo = skb_shinfo(skb);
+>  	int i;
+> @@ -894,7 +895,7 @@ static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason)
+>  	if (shinfo->frag_list)
+>  		kfree_skb_list_reason(shinfo->frag_list, reason);
+>  
+> -	skb_free_head(skb);
+> +	skb_free_head(skb, in_normal_napi);
+>  exit:
+>  	/* When we clone an SKB we copy the reycling bit. The pp_recycle
+>  	 * bit is only set on the head though, so in order to avoid races
+> @@ -955,11 +956,12 @@ void skb_release_head_state(struct sk_buff *skb)
+>  }
+>  
+>  /* Free everything but the sk_buff shell. */
+> -static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason)
+> +static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason,
+> +			    bool in_normal_napi)
+>  {
+>  	skb_release_head_state(skb);
+>  	if (likely(skb->head))
+> -		skb_release_data(skb, reason);
+> +		skb_release_data(skb, reason, in_normal_napi);
+>  }
+>  
+>  /**
+> @@ -973,7 +975,7 @@ static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason)
+>  
+>  void __kfree_skb(struct sk_buff *skb)
+>  {
+> -	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
+> +	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED, false);
+>  	kfree_skbmem(skb);
+>  }
+>  EXPORT_SYMBOL(__kfree_skb);
+> @@ -1027,7 +1029,7 @@ static void kfree_skb_add_bulk(struct sk_buff *skb,
+>  		return;
+>  	}
+>  
+> -	skb_release_all(skb, reason);
+> +	skb_release_all(skb, reason, false);
+>  	sa->skb_array[sa->skb_count++] = skb;
+>  
+>  	if (unlikely(sa->skb_count == KFREE_SKB_BULK_SIZE)) {
+> @@ -1201,7 +1203,7 @@ EXPORT_SYMBOL(consume_skb);
+>  void __consume_stateless_skb(struct sk_buff *skb)
+>  {
+>  	trace_consume_skb(skb, __builtin_return_address(0));
+> -	skb_release_data(skb, SKB_CONSUMED);
+> +	skb_release_data(skb, SKB_CONSUMED, false);
+>  	kfree_skbmem(skb);
+>  }
+>  
+> @@ -1226,7 +1228,7 @@ static void napi_skb_cache_put(struct sk_buff *skb)
+>  
+>  void __kfree_skb_defer(struct sk_buff *skb)
+>  {
+> -	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
+> +	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED, false);
+>  	napi_skb_cache_put(skb);
 
-Best regards,
-Krzysztof
+Is there any reson not to call skb_release_all() with in_normal_napi
+being true while napi_skb_cache_put() is called here?
 
+>  }
+>  
+> @@ -1264,7 +1266,7 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
+>  		return;
+>  	}
+>  
+> -	skb_release_all(skb, SKB_CONSUMED);
+> +	skb_release_all(skb, SKB_CONSUMED, !!budget);
+>  	napi_skb_cache_put(skb);
+>  }
+>  EXPORT_SYMBOL(napi_consume_skb);
+> @@ -1395,7 +1397,7 @@ EXPORT_SYMBOL_GPL(alloc_skb_for_msg);
+>   */
+>  struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src)
+>  {
+> -	skb_release_all(dst, SKB_CONSUMED);
+> +	skb_release_all(dst, SKB_CONSUMED, false);
+>  	return __skb_clone(dst, src);
+>  }
+>  EXPORT_SYMBOL_GPL(skb_morph);
+> @@ -2018,9 +2020,9 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+>  		if (skb_has_frag_list(skb))
+>  			skb_clone_fraglist(skb);
+>  
+> -		skb_release_data(skb, SKB_CONSUMED);
+> +		skb_release_data(skb, SKB_CONSUMED, false);
+>  	} else {
+> -		skb_free_head(skb);
+> +		skb_free_head(skb, false);
+>  	}
+>  	off = (data + nhead) - skb->head;
+>  
+> @@ -6389,12 +6391,12 @@ static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
+>  			skb_frag_ref(skb, i);
+>  		if (skb_has_frag_list(skb))
+>  			skb_clone_fraglist(skb);
+> -		skb_release_data(skb, SKB_CONSUMED);
+> +		skb_release_data(skb, SKB_CONSUMED, false);
+>  	} else {
+>  		/* we can reuse existing recount- all we did was
+>  		 * relocate values
+>  		 */
+> -		skb_free_head(skb);
+> +		skb_free_head(skb, false);
+>  	}
+>  
+>  	skb->head = data;
+> @@ -6529,7 +6531,7 @@ static int pskb_carve_inside_nonlinear(struct sk_buff *skb, const u32 off,
+>  		skb_kfree_head(data, size);
+>  		return -ENOMEM;
+>  	}
+> -	skb_release_data(skb, SKB_CONSUMED);
+> +	skb_release_data(skb, SKB_CONSUMED, false);
+>  
+>  	skb->head = data;
+>  	skb->head_frag = 0;
+> 
