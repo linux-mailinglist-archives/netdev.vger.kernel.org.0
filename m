@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A1596DA9C4
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2DB56DA9C7
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:11:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232253AbjDGIKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 04:10:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
+        id S239432AbjDGILC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 04:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231962AbjDGIKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:10:48 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2067.outbound.protection.outlook.com [40.107.96.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE231AF0E;
-        Fri,  7 Apr 2023 01:10:39 -0700 (PDT)
+        with ESMTP id S239506AbjDGIK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:10:59 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2054.outbound.protection.outlook.com [40.107.220.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103CD9ECE;
+        Fri,  7 Apr 2023 01:10:49 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZlRU1kz8bPMgMHlbtK2QI4nBVgUBd37O26OQ0wJ07KXgeFwKU8FBxxgTv5VyDJtB0uX09si++IUGK13Zk3wC7ElWfC7Q6BoSmalT8qYyIRY6S0J6/1nspan+w7s9zbj3KAUbG5ckHSqNEjL6YFLA4p0oF8VXnvzPOknrS5dU0n9Mscnp/QtG76VTxbB2vS1ZiDBKnNhlIucEnfS5l2JePpJD3yPwjj9xYu4GtZ2+hPczuhJS2MRJ/0xZHGrgctkbw1h/B0AvjC3XcODsSOPNA3w/Xuo5Q12fRZdQal3WupEL8BFfM6IDBp9D18aVHnTMTo9Uwu/HCPXcYGfRsYW5cw==
+ b=GTiY4914HeopjxGxvJnwinI3QKi7A9EemhGAi1QtivI3QbXbcHe8Zm0QveKdH1UXOA7Pak1UfcXej1odKUNbWBIPLorJrXzkGFJzOguM2vBt5B2jZtCW8Rg3q5ZfnQEWnaQeXUTz5HX/dnuKK9VUX50seV3LQVYKALnRTIwNEqUvvG0l5oYpU8QcaPQxCiJzrGKddjujaX53SrleuT3I0ndIY87Oi6qUilct4lX9/LQiQujsTHc+ZfZZyYBb09CH97seKp8rNUXXD3QIvIiIJB9hVfcutIkZhiDcZidAsruhoTAlW5sKYy42JK2TsIuImpXJ6kTlNap2RFKnKi85iQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7/+TxX/zTnDxxh7H1OuzAc0jX1+SKY+4zQyjl3GvkFs=;
- b=UjPEKytNzosn26Fqm5KfUha1Sc5wcnXprsR3HN+r2K4yLFCbV2ubVVeDIOXSwgVWEne8Y6tQadciYDZd+JQN/uqMcqd8ou8h21tK3P2fv2Wz0DB/XmDDYcnamIsbdI+omLuyM3UZv7+2TFC5ATIjfo6PKKAd7SGS5sVNfAnBVWnNJjRXcRw14ZnmhWh4tMcBXJsmsBa2+/JxnTZhE/CApa/20JQDrqoYbsdb57zRNA1MOVTNKoMFdILCZeX6UljyI5+yInxfZvnYZQYsuNcuSEY0pZAsldj8lqvBgNSLgohQ9A1x5MdHWG2Oc/0SziFIeLT1QCzooTj89ygi03Zc0A==
+ bh=kY+VvTYf4HzGzOy2xPxd6cAkf3E5pOrmp5q57lXz1MA=;
+ b=CrYUk4pqKxMAx+919z24oreYYtNcYBAXew8g0UbvclK/EHz7vE0Pe+UboEKoq0M3se7Wzv/AEamN96ByMB+9TwUT960x4YHDUg7yCaIG3oE2vkpBw9Jw/XoFpYUidN7wBdehbSWtSNNWDdsxf9cus+SuoPT7b4JdzthBgs8oIBqvowoRa4+B6i23N4eITUxBxEDKsms65wvK66cNfjJ86VjA+pzMPIORAr+zTHqKKaT4D/rfq2kvrRFUpZrL4iEK1VcY3WI4TBbfIBHuIUMclEav/fSNY6UeGYf38xL01OgKxMFVpsVh9wqo0w0MARNc6WKkKCXhNrxx8f/ru3/Xlw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7/+TxX/zTnDxxh7H1OuzAc0jX1+SKY+4zQyjl3GvkFs=;
- b=4DpKRgLxPsPn4+kfDezmgUwaWv6bgGZnxvqLO1p5tpkFMmdLQgwXJ4nQ+xWn3JMn2Q96vpwt2tmBltQOCBA3hyGPksThcrVgdNXzuFEq0O1Z0KpSvV1My8Fn9qcBjsPPx0KmOmaOm/NuRqzzU6CMopTU14GAWOpnVtc6ccrT64g=
-Received: from MW2PR2101CA0023.namprd21.prod.outlook.com (2603:10b6:302:1::36)
- by SA1PR12MB6704.namprd12.prod.outlook.com (2603:10b6:806:254::6) with
+ bh=kY+VvTYf4HzGzOy2xPxd6cAkf3E5pOrmp5q57lXz1MA=;
+ b=T/kc/bnmslJTgRumF2eU61r6YpBAaKbZ25Gojc5qG+LHkajpVQoW01DSPfzw9ZFbulNa2poS3y2CiNGpW+D+agZ6U2kld2g+iIg5fSxjGxEliPWfPbnV+jClhwjlZxJ5hfHHfkvzaJPhE5T1ZCs/LzyfdiVe2LDAGK5S7wbK1uE=
+Received: from MW4PR03CA0025.namprd03.prod.outlook.com (2603:10b6:303:8f::30)
+ by BL1PR12MB5380.namprd12.prod.outlook.com (2603:10b6:208:314::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.31; Fri, 7 Apr
- 2023 08:10:37 +0000
-Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:302:1:cafe::af) by MW2PR2101CA0023.outlook.office365.com
- (2603:10b6:302:1::36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.19 via Frontend
- Transport; Fri, 7 Apr 2023 08:10:36 +0000
+ 2023 08:10:46 +0000
+Received: from CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8f:cafe::53) by MW4PR03CA0025.outlook.office365.com
+ (2603:10b6:303:8f::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.34 via Frontend
+ Transport; Fri, 7 Apr 2023 08:10:45 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,20 +46,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
 Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
+ CO1NAM11FT017.mail.protection.outlook.com (10.13.175.108) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6298.20 via Frontend Transport; Fri, 7 Apr 2023 08:10:36 +0000
+ 15.20.6298.19 via Frontend Transport; Fri, 7 Apr 2023 08:10:45 +0000
 Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB03.amd.com
  (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 7 Apr
- 2023 03:10:35 -0500
+ 2023 03:10:44 -0500
 Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB06.amd.com
  (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 7 Apr
- 2023 03:10:35 -0500
+ 2023 03:10:44 -0500
 Received: from xndengvm004102.xilinx.com (10.180.168.240) by
  SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34
- via Frontend Transport; Fri, 7 Apr 2023 03:10:31 -0500
+ via Frontend Transport; Fri, 7 Apr 2023 03:10:40 -0500
 From:   Gautam Dawar <gautam.dawar@amd.com>
 To:     <linux-net-drivers@amd.com>, <jasowang@redhat.com>,
         Edward Cree <ecree.xilinx@gmail.com>,
@@ -73,32 +73,34 @@ To:     <linux-net-drivers@amd.com>, <jasowang@redhat.com>,
 CC:     <eperezma@redhat.com>, <harpreet.anand@amd.com>,
         <tanuj.kamde@amd.com>, <koushik.dutta@amd.com>,
         Gautam Dawar <gautam.dawar@amd.com>
-Subject: [PATCH net-next v4 00/14] sfc: add vDPA support for EF100 devices
-Date:   Fri, 7 Apr 2023 13:40:01 +0530
-Message-ID: <20230407081021.30952-1-gautam.dawar@amd.com>
+Subject: [PATCH net-next v4 01/14] sfc: add function personality support for EF100 devices
+Date:   Fri, 7 Apr 2023 13:40:02 +0530
+Message-ID: <20230407081021.30952-2-gautam.dawar@amd.com>
 X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20230407081021.30952-1-gautam.dawar@amd.com>
+References: <20230407081021.30952-1-gautam.dawar@amd.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT005:EE_|SA1PR12MB6704:EE_
-X-MS-Office365-Filtering-Correlation-Id: b63250b1-b526-442f-77aa-08db373f918e
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT017:EE_|BL1PR12MB5380:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7329c515-74ef-4e89-f78b-08db373f96e2
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: h+dFJn/41phf50MMQ519UGFn26r3oSjwMF9egmueZ+DVs5yBF5ZotRelzP9OozoIaMF8nGc6ogo6ibVFN7IJjexcWmR8qUct/yr8envZkMzyGFx+HJ/xfpeA1arA2UF/IKLs7mc31TdrHTERIHyDTfipB4jiWytZ1A06Yyx9P1MZGUZLgtUZ4j5iXnKztbJHkO4xXRWSWaX6sOTv+C7kJPcdVTGqbJLw7WnvtMhZ9inORV03QMprpfOZ+aJetwmm9RfpR9t3xngy/ocY6wT4Bw/Y/IIYwP1Jc1WM/ZLonM6PDkDf3BR26RMgp2A+RnNPMcfLu8wbQFGZAJQ4rR50YZUxmHHBTOoxm5zoXYEasZDfFXAxRcHvEP/CqnZOOSFj7evRjxWWKqhYPatnxqgdSfHj5we4aH/0w6UjXq9rV2wf0/aJMugGKsAsNlv6DFbiNd/iBTuTMrMC/E3yq0DPpjo6i/ekJdMafxMBhuenmNtT2HES/857zI9ii6bhxiNz6BK4MTGrUITEs66OFd0RJI7u0XYpdTmA/BbCovOxDznDbsbqrvRmgLn4cxeQaWRS4sCLKc5odHdVAHQAwRKNVsGdHuKElNUVAmvg9f+sr1rhrXrJwxv+01eO9bh7lkJA/zhpxw3+aY5IbB1LARwMVk0UO+MI066ShKS71uV2aWfxGY7jRT3YbI9+Pi4Avmi0X1OKzJ3RudRNVzjk6qk9mrRoqjC2lGmvlap10cTNMvzPOKalUm4dv7X4y5/t1WeGyDTPVHhW8Chu/qVqoFhtDg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(136003)(376002)(346002)(451199021)(36840700001)(40470700004)(46966006)(83380400001)(2616005)(336012)(316002)(40480700001)(70206006)(8676002)(8936002)(86362001)(2906002)(5660300002)(426003)(44832011)(7416002)(70586007)(47076005)(36756003)(921005)(81166007)(356005)(41300700001)(82310400005)(36860700001)(40460700003)(478600001)(82740400003)(26005)(1076003)(6666004)(4326008)(110136005)(54906003)(186003)(21314003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Y+CwP1rztWdDl2C7msvJ7BO7jIcMMXTMVImGB7a15wA0fZfCXjqSL9xx2xAwMdmVvJKP2Tkbpv/WB3t+rFWYTQPKZJ32jgSlUIna4SRlD9R6AEMK1caK2Di9gGlzDC/M/ir/SiIXRFoaG7KsWd8qa3XYfOaI/jiT9tDH67lJuqhUAlyhDo/zsODEudD2DCAiyThWl9i1E5nDvrfSiN5hcVMTzRInpCoXW8mBLmvXG/oKUqN2BIzSD9AnA0ldprt+C8zAgajdp94xkK6Sh1BEkpLBiMwV4mXg6FpY58inJ2qlWprOjTQBkIo0K/KdWqaRcqpnvth0RrOAwZgToFkUvdGqUTF0Be9IiEMoDC0qmQ68GAIu+6YJWxuLpq0pc0asYUQndwM4miITn6HCEYf/Laq1bYP0jGAtGgV00uROfqJKzey3oOl4TvTQ30wu3s2QFn2XpP4oZkhBpEYrKHnE4ZnHr9XFTMAfoVMxM76YizVgiOf5hZ5NeQT9LpMI2swtyqVVRXNbNdX/HWkz/Jy0m+tpiie99WvTd2alBlbxEg73HexZtI/C7gLKl5jC3E8Nl/3qzVie18TMtMPE0up4fCfNA7MJ372+K73tV0SkCYi/58zb0Q1B2bmyv6lebEfipzGU+g4iqf2y0DfTDUA5IMkhwguPXmJ3QKDl4AKiqG3CY7XXRZsw3y3gzXiytjA58JBHvXJBKkv2d+jtPFSqFdopBbZz8daATPbQW3FkheeDqWnUCKUIz1IjIVdaC87fA6DHXjXaaRhUlR5mG+3DDg==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39860400002)(396003)(376002)(451199021)(46966006)(36840700001)(40470700004)(47076005)(36860700001)(83380400001)(336012)(426003)(2616005)(316002)(478600001)(1076003)(54906003)(110136005)(6666004)(186003)(26005)(2906002)(44832011)(5660300002)(4326008)(7416002)(36756003)(40460700003)(356005)(41300700001)(82740400003)(8676002)(70206006)(40480700001)(86362001)(70586007)(81166007)(921005)(82310400005)(8936002)(2004002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2023 08:10:36.5838
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2023 08:10:45.5575
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b63250b1-b526-442f-77aa-08db373f918e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7329c515-74ef-4e89-f78b-08db373f96e2
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6704
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5380
 X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=no
@@ -109,128 +111,233 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+A function personality defines the location and semantics of
+registers in the BAR. EF100 NICs allow different personalities
+of a PCIe function and changing it at run-time. A total of three
+function personalities are defined as of now: EF100, vDPA and
+None with EF100 being the default.
+For now, vDPA net devices can be created on a EF100 virtual
+function and the VF personality will be changed to vDPA in the
+process.
 
-This series adds the vdpa support for EF100 devices.
-For now, only a network class of vdpa device is supported and
-they can be created only on a VF. Each EF100 VF can have one
-of the three function personalities (EF100, vDPA & None) at
-any time with EF100 being the default. A VF's function personality
-is changed to vDPA while creating the vdpa device using vdpa tool.
+Co-developed-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
+---
+ drivers/net/ethernet/sfc/ef100.c     |  7 ++-
+ drivers/net/ethernet/sfc/ef100_nic.c | 93 +++++++++++++++++++++++++++-
+ drivers/net/ethernet/sfc/ef100_nic.h | 14 ++++-
+ 3 files changed, 109 insertions(+), 5 deletions(-)
 
-A vDPA management device is created per VF to allow selection of
-the desired VF for vDPA device creation. The MAC address for the
-target net device must be set either by specifying at the vdpa
-device creation time via the `mac` parameter of the `vdpa dev add`
-command or should be specified as the hardware address of the virtual
-function using `devlink port function set hw_addr` command before
-creating the vdpa device with the former taking precedence.
-
-To use with vhost-vdpa, QEMU version 6.1.0 or later must be used
-as it fixes the incorrect feature negotiation (vhost-vdpa backend)
-without which VIRTIO_F_IN_ORDER feature bit is negotiated but not
-honored when using the guest kernel virtio driver.
-
-Changes since v3:
-
-- Removed the patch v3 13/13 which was included mistakenly in the series
-- Fixed build error and warning on patches 4 and 6, reported by kernel
-  test robot.
-
-Changes since v2:
-
-- Introduced vdpa state EF100_VDPA_STATE_SUSPENDED to avoid updating
-  vdpa device config space after device is suspended during VM LM
-- Removed the masking off of features not supported by SVQ implementation
-  in QEMU for Live Migration. This in-turn imposes the restriction of using
-  QEMU version 6.1.0 and above with vhost-vdpa
-- Used IS_ENABLED(CONFIG_SFC_VDPA) to replace #ifdef CONFIG_SFC_VDPA,
-  wherever possible
-- Updated the values for EF100_VRING_XXX_CONFIGURED macros to use the
-  initial bits (0, 1, 2 and 3)
-- Used  __maybe_unused in ef100_probe_vf() to avoid #ifdef for conditional
-  compilation
-- Fixed possible uninitialized return code from ef100_vdpa_delete_filter()
-- Avoided use of goto and else at a couple of places in filters handling
-- Replaced switch statement with single case with if statement in a couple
-  of functions in mcdi_vdpa.c
-- Updated patch 4 commit description to explain the need of refactoring
-  around efx_ef100_update_tso_features()
-
-Changes since v1:
-
-- To ensure isolation between DMA initiated by userspace (guest OS)
-  and the host MCDI buffer, ummap VF's MCDI DMA buffer and use PF's
-  IOMMU domain instead for executing vDPA VF's MCDI commands.
-- As a result of above change, it is no more necessary to check for
-  MCDI buffer's IOVA range overlap with the guest buffers. Accordingly,
-  the DMA config operations and the rbtree/list implementation to store
-  IOVA mappings have been dropped.
-- Support vDPA only if running Firmware supports CLIENT_CMD_VF_PROXY
-  capability. 
-- Added .suspend config operation and updated get_vq_state/set_vq_state
-  to support Live Migration. Also, features VIRTIO_F_ORDER_PLATFORM and
-  VIRTIO_F_IN_ORDER have been masked off in get_device_features() to
-  allow Live Migration as QEMU SVQ doesn't support them yet.
-- Removed the minimum version (v6.1.0) requirement of QEMU as
-  VIRTIO_F_IN_ORDER is not exposed
-- Fetch the vdpa device MAC address from the underlying VF hw_addr (if
-  set via `devlink port function set hw_addr` command)
-- Removed the mandatory requirement of specifying mac address while
-  creating vdpa device
-- Moved create_vring_ctx() and get_doorbell_offset() in dev_add()
-- Moved IRQ allocation at the time of vring creation
-- Merged vring_created member of struct ef100_vdpa_vring_info as one
-  of the flags in vring_state
-- Simplified .set_status() implementation
-- Removed un-necessary vdpa_state checks against
-  EF100_VDPA_STATE_INITIALIZED
-- Removed userspace triggerable warning in kick_vq()
-- Updated year 2023 in copyright banner of new files
+diff --git a/drivers/net/ethernet/sfc/ef100.c b/drivers/net/ethernet/sfc/ef100.c
+index 6334992b0af4..35f1b74ba890 100644
+--- a/drivers/net/ethernet/sfc/ef100.c
++++ b/drivers/net/ethernet/sfc/ef100.c
+@@ -3,6 +3,7 @@
+  * Driver for Solarflare network controllers and boards
+  * Copyright 2005-2018 Solarflare Communications Inc.
+  * Copyright 2019-2022 Xilinx Inc.
++ * Copyright (C) 2023, Advanced Micro Devices, Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License version 2 as published
+@@ -428,8 +429,7 @@ static void ef100_pci_remove(struct pci_dev *pci_dev)
+ 	if (!efx)
+ 		return;
  
-Gautam Dawar (14):
-  sfc: add function personality support for EF100 devices
-  sfc: implement MCDI interface for vDPA operations
-  sfc: update MCDI headers for CLIENT_CMD_VF_PROXY capability bit
-  sfc: evaluate vdpa support based on FW capability CLIENT_CMD_VF_PROXY
-  sfc: implement init and fini functions for vDPA personality
-  sfc: implement vDPA management device operations
-  sfc: implement vdpa device config operations
-  sfc: implement vdpa vring config operations
-  sfc: implement device status related vdpa config operations
-  sfc: implement filters for receiving traffic
-  sfc: use PF's IOMMU domain for running VF's MCDI commands
-  sfc: unmap VF's MCDI buffer when switching to vDPA mode
-  sfc: update vdpa device MAC address
-  sfc: register the vDPA device
-
- drivers/net/ethernet/sfc/Kconfig          |    8 +
- drivers/net/ethernet/sfc/Makefile         |    1 +
- drivers/net/ethernet/sfc/ef10.c           |    2 +-
- drivers/net/ethernet/sfc/ef100.c          |    8 +-
- drivers/net/ethernet/sfc/ef100_netdev.c   |   26 +-
- drivers/net/ethernet/sfc/ef100_nic.c      |  186 +-
- drivers/net/ethernet/sfc/ef100_nic.h      |   29 +-
- drivers/net/ethernet/sfc/ef100_vdpa.c     |  548 +++
- drivers/net/ethernet/sfc/ef100_vdpa.h     |  225 ++
- drivers/net/ethernet/sfc/ef100_vdpa_ops.c |  793 ++++
- drivers/net/ethernet/sfc/mcdi.c           |  108 +-
- drivers/net/ethernet/sfc/mcdi.h           |   13 +-
- drivers/net/ethernet/sfc/mcdi_filters.c   |   51 +-
- drivers/net/ethernet/sfc/mcdi_functions.c |    9 +-
- drivers/net/ethernet/sfc/mcdi_functions.h |    3 +-
- drivers/net/ethernet/sfc/mcdi_pcol.h      | 4391 ++++++++++++++++++++-
- drivers/net/ethernet/sfc/mcdi_vdpa.c      |  251 ++
- drivers/net/ethernet/sfc/mcdi_vdpa.h      |   83 +
- drivers/net/ethernet/sfc/net_driver.h     |   21 +
- drivers/net/ethernet/sfc/ptp.c            |    4 +-
- 20 files changed, 6582 insertions(+), 178 deletions(-)
- create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.c
- create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa.h
- create mode 100644 drivers/net/ethernet/sfc/ef100_vdpa_ops.c
- create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.c
- create mode 100644 drivers/net/ethernet/sfc/mcdi_vdpa.h
-
+-	probe_data = container_of(efx, struct efx_probe_data, efx);
+-	ef100_remove_netdev(probe_data);
++	efx_ef100_set_bar_config(efx, EF100_BAR_CONFIG_NONE);
+ #ifdef CONFIG_SFC_SRIOV
+ 	efx_fini_struct_tc(efx);
+ #endif
+@@ -440,6 +440,7 @@ static void ef100_pci_remove(struct pci_dev *pci_dev)
+ 	pci_dbg(pci_dev, "shutdown successful\n");
+ 
+ 	pci_set_drvdata(pci_dev, NULL);
++	probe_data = container_of(efx, struct efx_probe_data, efx);
+ 	efx_fini_struct(efx);
+ 	kfree(probe_data);
+ };
+@@ -505,7 +506,7 @@ static int ef100_pci_probe(struct pci_dev *pci_dev,
+ 		goto fail;
+ 
+ 	efx->state = STATE_PROBED;
+-	rc = ef100_probe_netdev(probe_data);
++	rc = efx_ef100_set_bar_config(efx, EF100_BAR_CONFIG_EF100);
+ 	if (rc)
+ 		goto fail;
+ 
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+index 4dc643b0d2db..54b2ee7a5be6 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.c
++++ b/drivers/net/ethernet/sfc/ef100_nic.c
+@@ -3,6 +3,7 @@
+  * Driver for Solarflare network controllers and boards
+  * Copyright 2018 Solarflare Communications Inc.
+  * Copyright 2019-2022 Xilinx Inc.
++ * Copyright (C) 2023, Advanced Micro Devices, Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License version 2 as published
+@@ -772,6 +773,93 @@ static int efx_ef100_get_base_mport(struct efx_nic *efx)
+ 	return 0;
+ }
+ 
++/* BAR configuration.
++ * To change BAR configuration, tear down the current configuration (which
++ * leaves the hardware in the PROBED state), and then initialise the new
++ * BAR state.
++ */
++struct ef100_bar_config_ops {
++	int (*init)(struct efx_probe_data *probe_data);
++	void (*fini)(struct efx_probe_data *probe_data);
++};
++
++static const struct ef100_bar_config_ops bar_config_ops[] = {
++	[EF100_BAR_CONFIG_EF100] = {
++		.init = ef100_probe_netdev,
++		.fini = ef100_remove_netdev
++	},
++#ifdef CONFIG_SFC_VDPA
++	[EF100_BAR_CONFIG_VDPA] = {
++		.init = NULL,
++		.fini = NULL
++	},
++#endif
++	[EF100_BAR_CONFIG_NONE] = {
++		.init = NULL,
++		.fini = NULL
++	},
++};
++
++/* Keep this in sync with the definition of enum ef100_bar_config. */
++static char *bar_config_name[] = {
++	[EF100_BAR_CONFIG_NONE] = "None",
++	[EF100_BAR_CONFIG_EF100] = "EF100",
++	[EF100_BAR_CONFIG_VDPA] = "vDPA",
++};
++
++int efx_ef100_set_bar_config(struct efx_nic *efx,
++			     enum ef100_bar_config new_config)
++{
++	const struct ef100_bar_config_ops *old_config_ops;
++	const struct ef100_bar_config_ops *new_config_ops;
++	struct ef100_nic_data *nic_data = efx->nic_data;
++	struct efx_probe_data *probe_data;
++	enum ef100_bar_config old_config;
++	int rc;
++
++	if (WARN_ON_ONCE(nic_data->bar_config > EF100_BAR_CONFIG_VDPA))
++		return -EINVAL;
++
++	/* Current EF100 hardware supports vDPA on VFs only */
++	if (IS_ENABLED(CONFIG_SFC_VDPA) &&
++	    new_config == EF100_BAR_CONFIG_VDPA &&
++	    !efx->type->is_vf) {
++		pci_err(efx->pci_dev, "vdpa over PF not supported : %s",
++			efx->name);
++		return -EOPNOTSUPP;
++	}
++
++	mutex_lock(&nic_data->bar_config_lock);
++	old_config = nic_data->bar_config;
++	if (new_config == old_config) {
++		mutex_unlock(&nic_data->bar_config_lock);
++		return 0;
++	}
++
++	old_config_ops = &bar_config_ops[old_config];
++	new_config_ops = &bar_config_ops[new_config];
++
++	probe_data = container_of(efx, struct efx_probe_data, efx);
++	if (old_config_ops->fini)
++		old_config_ops->fini(probe_data);
++	nic_data->bar_config = EF100_BAR_CONFIG_NONE;
++
++	if (new_config_ops->init) {
++		rc = new_config_ops->init(probe_data);
++		if (rc) {
++			mutex_unlock(&nic_data->bar_config_lock);
++			return rc;
++		}
++	}
++
++	nic_data->bar_config = new_config;
++	pci_dbg(efx->pci_dev, "BAR configuration changed to %s\n",
++		bar_config_name[new_config]);
++	mutex_unlock(&nic_data->bar_config_lock);
++
++	return 0;
++}
++
+ static int compare_versions(const char *a, const char *b)
+ {
+ 	int a_major, a_minor, a_point, a_patch;
+@@ -1025,6 +1113,7 @@ static int ef100_probe_main(struct efx_nic *efx)
+ 		return -ENOMEM;
+ 	efx->nic_data = nic_data;
+ 	nic_data->efx = efx;
++	mutex_init(&nic_data->bar_config_lock);
+ 	efx->max_vis = EF100_MAX_VIS;
+ 
+ 	/* Populate design-parameter defaults */
+@@ -1208,8 +1297,10 @@ void ef100_remove(struct efx_nic *efx)
+ 
+ 	efx_mcdi_detach(efx);
+ 	efx_mcdi_fini(efx);
+-	if (nic_data)
++	if (nic_data) {
+ 		efx_nic_free_buffer(efx, &nic_data->mcdi_buf);
++		mutex_destroy(&nic_data->bar_config_lock);
++	}
+ 	kfree(nic_data);
+ 	efx->nic_data = NULL;
+ }
+diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
+index f1ed481c1260..02e5ab4e9f1f 100644
+--- a/drivers/net/ethernet/sfc/ef100_nic.h
++++ b/drivers/net/ethernet/sfc/ef100_nic.h
+@@ -2,7 +2,8 @@
+ /****************************************************************************
+  * Driver for Solarflare network controllers and boards
+  * Copyright 2018 Solarflare Communications Inc.
+- * Copyright 2019-2020 Xilinx Inc.
++ * Copyright 2019-2022 Xilinx Inc.
++ * Copyright (C) 2023, Advanced Micro Devices, Inc.
+  *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License version 2 as published
+@@ -61,6 +62,13 @@ enum {
+ 	EF100_STAT_COUNT
+ };
+ 
++/* Keep this in sync with the contents of bar_config_name. */
++enum ef100_bar_config {
++	EF100_BAR_CONFIG_NONE,
++	EF100_BAR_CONFIG_EF100,
++	EF100_BAR_CONFIG_VDPA,
++};
++
+ struct ef100_nic_data {
+ 	struct efx_nic *efx;
+ 	struct efx_buffer mcdi_buf;
+@@ -71,6 +79,8 @@ struct ef100_nic_data {
+ 	u16 warm_boot_count;
+ 	u8 port_id[ETH_ALEN];
+ 	DECLARE_BITMAP(evq_phases, EFX_MAX_CHANNELS);
++	enum ef100_bar_config bar_config;
++	struct mutex bar_config_lock; /* lock to control access to bar config */
+ 	u64 stats[EF100_STAT_COUNT];
+ 	u32 base_mport;
+ 	bool have_mport; /* base_mport was populated successfully */
+@@ -95,4 +105,6 @@ int ef100_filter_table_probe(struct efx_nic *efx);
+ int ef100_get_mac_address(struct efx_nic *efx, u8 *mac_address,
+ 			  int client_handle, bool empty_ok);
+ int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id);
++int efx_ef100_set_bar_config(struct efx_nic *efx,
++			     enum ef100_bar_config new_config);
+ #endif	/* EFX_EF100_NIC_H */
 -- 
 2.30.1
 
