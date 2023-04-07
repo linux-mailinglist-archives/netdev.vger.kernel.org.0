@@ -2,171 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE956DAA7D
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:57:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 205C66DAA83
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:59:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232757AbjDGI5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 04:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44956 "EHLO
+        id S238501AbjDGI7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 04:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231962AbjDGI44 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:56:56 -0400
-Received: from sender3-op-o19.zoho.com (sender3-op-o19.zoho.com [136.143.184.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E9759C0;
-        Fri,  7 Apr 2023 01:56:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1680857776; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=eD69UV6FPb4trZ36yZvjLrKJ9AWyosoQhjtqjUMLAzzzJAE/QK5kQ7EzeeIxWeg9fymLzRy6fMmzAj6y9EuVzGrurJyA4lWyXN0jgLQ2IWzGCsxYo0a+JEdjGwHdQeeU+Pdsz4Dess8WAnp8D3/Q4k0g4ns8N08ERC1nEj2/qxo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1680857776; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=t/T0BOX3OWxKWtq3g05V2OS56Io+k4y+U0rdJrf/+0I=; 
-        b=Nb47N+jiUNJmWv8kZ0wBDCvxQ9JXeo+Qu4CUHF/m1RAkTrkK/GbmpDgZDaiWDFfQhuzVjCMLGk/xOQFKFXXwiFp9avNSEzqgXxfokqsiOrP1/8iiO6jQCU/gtHa6Dzlu4nVxFwV/bzRHdiiYWBMy/7qcx3IUBb8/luVzssDe4I4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1680857776;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=t/T0BOX3OWxKWtq3g05V2OS56Io+k4y+U0rdJrf/+0I=;
-        b=dChtzAJAi+XsyVA+GqMRyBispyY5jJwjjzm5/HDkNGyZ4k1MhT+P0l/NPqvUienH
-        7+QISm9ra76eeXgpMWVChHTYHv7t1lDgXE83HGfGjWl+GJKDcf0YHWTF1z8urB7JmZX
-        s+2mqPNU3856lAi6dZax96EIjXpeljcHGjktVcaw=
-Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 168085777521561.24779880982169; Fri, 7 Apr 2023 01:56:15 -0700 (PDT)
-Message-ID: <0cdb0504-bc1e-c255-a7d2-4dd96bd8e6e3@arinc9.com>
-Date:   Fri, 7 Apr 2023 11:56:08 +0300
+        with ESMTP id S230173AbjDGI7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:59:04 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3C983F0
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 01:59:02 -0700 (PDT)
+Received: (Authenticated sender: kory.maincent@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5398A1C0008;
+        Fri,  7 Apr 2023 08:58:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1680857941;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=x5GZuDQ8yoGaQNtwIN4Z53AOSe49RQ4ZZhX6Ibwvt44=;
+        b=ZKMQGPQ4kt7cDWUbpuIu/ZInRZgNzFTrVKcLHiScLoGYJ/eCAmI/NT4EMnuMMH3kP4dejy
+        K+NFX+X9Ejg7C+yHfTZT2+4oTc+yJrLqK/PQf+QcToKA1Vj6Tku8+PqpmR1EvAV588l9NY
+        ouB8hBaUoouOTm0V1JmdsYGzwMxDJYV4YTrvxzNSJKccQuzwadPj4lwip/46dINbaCQZkU
+        oO7cFmq1Wa4JuZnwGjFpr2aAJz/3rEfja88RHRpzxnUYYp1TF56ipx3PdlHMoyfmeZG8VR
+        x/8fprzF/oEwDe+ash/vFFC0qgCOJVB3TZoWlget3w+ggoe41yRrF7v6hmdKiA==
+Date:   Fri, 7 Apr 2023 10:58:57 +0200
+From:   =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, glipus@gmail.com,
+        maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com,
+        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
+        gerhard@engleder-embedded.com, thomas.petazzoni@bootlin.com,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        linux@armlinux.org.uk
+Subject: Re: [PATCH net-next RFC v4 2/5] net: Expose available time stamping
+ layers to user space.
+Message-ID: <20230407105857.1b11a000@kmaincent-XPS-13-7390>
+In-Reply-To: <20230406184646.0c7c2ab1@kernel.org>
+References: <20230406173308.401924-1-kory.maincent@bootlin.com>
+        <20230406173308.401924-3-kory.maincent@bootlin.com>
+        <20230406184646.0c7c2ab1@kernel.org>
+Organization: bootlin
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix port specifications
- for MT7988
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20230406100445.52915-1-arinc.unal@arinc9.com>
- <ZC6n1XAGyZFlxyXx@shell.armlinux.org.uk>
- <e413a182-ce93-5831-09f5-19d34d7f7fcf@arinc9.com>
- <ZC9AXyuFqa3bqF3Q@makrotopia.org>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <ZC9AXyuFqa3bqF3Q@makrotopia.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7.04.2023 00:57, Daniel Golle wrote:
-> On Fri, Apr 07, 2023 at 12:43:41AM +0300, Arınç ÜNAL wrote:
->> On 6.04.2023 14:07, Russell King (Oracle) wrote:
->>> On Thu, Apr 06, 2023 at 01:04:45PM +0300, arinc9.unal@gmail.com wrote:
->>>> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>>>
->>>> On the switch on the MT7988 SoC, there are only 4 PHYs. There's only port 6
->>>> as the CPU port, there's no port 5. Split the switch statement with a check
->>>> to enforce these for the switch on the MT7988 SoC. The internal phy-mode is
->>>> specific to MT7988 so put it for MT7988 only.
->>>>
->>>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->>>> ---
->>>>
->>>> Daniel, this is based on the information you provided me about the switch.
->>>> I will add this to my current patch series if it looks good to you.
->>>>
->>>> Arınç
->>>>
->>>> ---
->>>>    drivers/net/dsa/mt7530.c | 67 ++++++++++++++++++++++++++--------------
->>>>    1 file changed, 43 insertions(+), 24 deletions(-)
->>>>
->>>> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
->>>> index 6fbbdcb5987f..f167fa135ef1 100644
->>>> --- a/drivers/net/dsa/mt7530.c
->>>> +++ b/drivers/net/dsa/mt7530.c
->>>> @@ -2548,7 +2548,7 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
->>>>    	phy_interface_zero(config->supported_interfaces);
->>>>    	switch (port) {
->>>> -	case 0 ... 4: /* Internal phy */
->>>> +	case 0 ... 3: /* Internal phy */
->>>>    		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
->>>>    			  config->supported_interfaces);
->>>>    		break;
->>>> @@ -2710,37 +2710,56 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
->>>>    	struct mt7530_priv *priv = ds->priv;
->>>>    	u32 mcr_cur, mcr_new;
->>>> -	switch (port) {
->>>> -	case 0 ... 4: /* Internal phy */
->>>> -		if (state->interface != PHY_INTERFACE_MODE_GMII &&
->>>> -		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
->>>> -			goto unsupported;
->>>> -		break;
->>>> -	case 5: /* Port 5, a CPU port. */
->>>> -		if (priv->p5_interface == state->interface)
->>>> +	if (priv->id == ID_MT7988) {
->>>> +		switch (port) {
->>>> +		case 0 ... 3: /* Internal phy */
->>>> +			if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
->>>
->>> How do these end up with PHY_INTERFACE_MODE_INTERNAL ? phylib defaults
->>> to GMII mode without something else being specified in DT.
->>>
->>> Also note that you should *not* be validating state->interface in the
->>> mac_config() method because it's way too late to reject it - if you get
->>> an unsupported interface here, then that is down to the get_caps()
->>> method being buggy. Only report interfaces in get_caps() that you are
->>> prepared to handle in the rest of the system.
->>
->> This is already the case for all three get_caps(). The supported interfaces
->> for each port are properly defined.
->>
->> Though mt7988_mac_port_get_caps() clears the config->supported_interfaces
->> bitmap before reporting the supported interfaces. I don't think this is
->> needed as all bits in the bitmap should already be initialized to zero when
->> the phylink_config structure is allocated.
->>
->> I'm not sure if your suggestion is to make sure the supported interfaces are
->> properly reported on get_caps(), or validate state->interface somewhere
->> else.
-> 
-> I think what Russell meant is just there is no point in being overly
-> precise about permitted interface modes in mt753x_phylink_mac_config,
-> as this function is not meant and called too late to validate the
-> validity of the selected interface mode.
-> 
-> You change to mt7988_mac_port_get_caps looks correct to me and doing
-> this will already prevent mt753x_phylink_mac_config from ever being
-> called on MT7988 for port == 4 as well as and port == 5.
+Thanks for the review.
 
-Ah, thanks for pointing this out Daniel. I see 
-ds->ops->phylink_get_caps() is run right before phylink_create() on 
-dsa_port_phylink_create(), as it should get the capabilities before 
-creating an instance.
+On Thu, 6 Apr 2023 18:46:46 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
+=20
+> Please put some words in here :) Documentation matters to the users.
 
-Should I remove phy_interface_zero(config->supported_interfaces); 
-mt7988_mac_port_get_caps()? I'd prefer to do identical operations on 
-each get_caps(), if there's no apparent reason for this to be on 
-mt7988_mac_port_get_caps().
+Ok.
 
-Arınç
+>=20
+> Also let me advertise tools/net/ynl/cli.py to you:
+> https://docs.kernel.org/next/userspace-api/netlink/intro-specs.html
+
+Ok I will take look.
+Seems broken on net-next:
+./tools/net/ynl/cli.py --spec Documentation/netlink/specs/ethtool.yaml --do=
+ rings-get --json '{"header":{"dev-index": 18}}'
+Traceback (most recent call last):
+  File "./tools/net/ynl/cli.py", line 52, in <module>
+    main()
+  File "./tools/net/ynl/cli.py", line 31, in main
+    ynl =3D YnlFamily(args.spec, args.schema)
+  File "/home/kmaincent/Documents/linux/tools/net/ynl/lib/ynl.py", line 361=
+, in __init__
+    self.family =3D GenlFamily(self.yaml['name'])
+  File "/home/kmaincent/Documents/linux/tools/net/ynl/lib/ynl.py", line 331=
+, in __init__
+    self.genl_family =3D genl_family_name_to_id[family_name]
+KeyError: 'ethtool'
+
+
+> Please fill in the new commands in the ethtool spec. Feel free to ask
+> if you have any questions, it's still a bit of a rough.. clay?
+>=20
+> > +/* Hardware layer of the SO_TIMESTAMPING provider */
+> > +enum timestamping_layer {
+> > +	SOF_MAC_TIMESTAMPING =3D (1<<0),
+> > +	SOF_PHY_TIMESTAMPING =3D (1<<1), =20
+>=20
+> What does SOF_ stand for? =F0=9F=A4=94=EF=B8=8F
+
+It was to follow the naming reference in
+"Documentation/networking/timestamping.rst" like SOF_TIMESTAMPING_RX_HARDWA=
+RE
+or SOF_TIMESTAMPING_RX_SOFTAWRE but indeed I do not really understand the S=
+OF
+prefix. SocketF?
+
+>=20
+> We need a value for DMA timestamps here.
+
+Alright,
+
+>=20
+> > +/* TSLIST_GET */
+> > +static int tslist_prepare_data(const struct ethnl_req_info *req_base,
+> > +			       struct ethnl_reply_data *reply_base,
+> > +			       struct genl_info *info)
+> > +{
+> > +	struct ts_reply_data *data =3D TS_REPDATA(reply_base);
+> > +	struct net_device *dev =3D reply_base->dev;
+> > +	const struct ethtool_ops *ops =3D dev->ethtool_ops;
+> > +	int ret;
+> > +
+> > +	ret =3D ethnl_ops_begin(dev);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	data->ts =3D 0;
+> > +	if (phy_has_tsinfo(dev->phydev))
+> > +		data->ts =3D SOF_PHY_TIMESTAMPING;
+> > +	if (ops->get_ts_info)
+> > +		data->ts |=3D SOF_MAC_TIMESTAMPING; =20
+>=20
+> We can't make that assumption, that info must come from the driver.
+
+Why can't we list the available time stamp like that, can't we just test if=
+ they
+have time stamp support.=20
+
+> Also don't we need some way to identify the device / phc from which=20
+> the timestamp at the given layer will come?
+
+I don't think so, the PHC will be described by the get_ts_info from each
+ethernet driver. Do I miss something?
+
+K=C3=B6ry
