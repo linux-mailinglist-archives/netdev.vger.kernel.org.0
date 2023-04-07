@@ -2,92 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7D746DAFCB
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 17:40:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B426DAFCC
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 17:41:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbjDGPks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 11:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
+        id S230466AbjDGPld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 11:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbjDGPkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 11:40:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F188A42
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 08:40:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8339A64C2F
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 15:40:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A04CBC433D2;
-        Fri,  7 Apr 2023 15:40:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680882044;
-        bh=pDVQ+DRlcY6qkdN7R1psfAUudI8xkJ3mM66OwQ9S+2I=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=O9h+8q5QbjR0Frck9LOikiFqxPJ8eZlMD0cnX9G+0xjAMSjbym7ODG0omjYj8y+Cx
-         uX4Vp9V8Qlv1bXfpBHsV8Fnh3ldkD7f0WanNPgdqKBCvONBHhkaiCWD7EZGuFR24uj
-         I/xVks/+8bSSk0u6MFAgxiLuRULIBJpCm4/dj/WDvKUoMRBZMWpM8j62XwG+HARR3U
-         sEel7+eNxnhWPrL3NnIu7GoVMColPOH3AOrIPXKr4BBnkn5Md1ByiRRXEWfQWUJJ+M
-         HFdMqs9GK0ZYxyFHZUxjZeIC+ay9KqwdY4oURcJIg/dSojchWuEjlJT37q+w9E7VT9
-         tJwj6JsaeQfFw==
-Message-ID: <cc73004c-9aa8-9cd3-b46e-443c0727c34d@kernel.org>
-Date:   Fri, 7 Apr 2023 09:40:43 -0600
+        with ESMTP id S229469AbjDGPlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 11:41:32 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CBE8A42
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 08:41:31 -0700 (PDT)
+Received: (Authenticated sender: gregory.clement@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 553D310000F;
+        Fri,  7 Apr 2023 15:41:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1680882089;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ctp5ewvvJd4/i0x2qAH99DqCFdX3bl4wosIeyAbx/Mo=;
+        b=G7fpDzrjzbgXMH1RiKh3DjVFPLaKyTy5/xc7esC4yQfSTqlK6d6vlAfso3ns6dM0auuCfl
+        HCeX3F4Jq6nUjSULTJgdbr7194qNDe17/TDmP4YhpUcX6qogzvs2ZKURnzHyNZqNh81BCU
+        2zXh0goyl+MAcyIbX3kitksZ59qy5DCxyWxhyRM8km0ontBdxg090j1h+E/yE+tZ7Vbm77
+        iUsPDDTF9hTPtqzX6x0eScQ3TMh8UTCmsImI9MrORgOGwL46GRswbdoL1sB07mMCGc7I2y
+        3rOe7zhczB+/6WUzZIt0ERjgmfyYdqnt/Y7xW0iLw7WFPhW6/2Fqo7c8wYuYYQ==
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        arm-soc <arm@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH] ARM64: dts: marvell: cn9310: Add missing phy-mode
+In-Reply-To: <20230407151839.2320596-1-andrew@lunn.ch>
+References: <20230407151839.2320596-1-andrew@lunn.ch>
+Date:   Fri, 07 Apr 2023 17:41:14 +0200
+Message-ID: <87bkjz3dk5.fsf@BL-laptop>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.1
-Subject: Re: [PATCH iproute2-next] tc: m_tunnel_key: support code for "nofrag"
- tunnels
-Content-Language: en-US
-To:     Davide Caratti <dcaratti@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ilya Maximets <i.maximets@ovn.org>
-Cc:     netdev@vger.kernel.org, Pedro Tammela <pctammela@mojatatu.com>
-References: <c43213bed30edfa0d6fa1b084e4d48c26417edc9.1680281221.git.dcaratti@redhat.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <c43213bed30edfa0d6fa1b084e4d48c26417edc9.1680281221.git.dcaratti@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/31/23 10:49 AM, Davide Caratti wrote:
-> add control plane for setting TCA_TUNNEL_KEY_NO_FRAG flag on
-> act_tunnel_key actions.
-> 
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+Andrew Lunn <andrew@lunn.ch> writes:
+
+> The DSA framework has got more picky about always having a phy-mode
+> for the CPU port. The SoC Ethernet is being configured to
+> 10gbase-r. Set the switch phy-mode based on this. Additionally, the
+> SoC Ethernet is using in-band signalling to determine the link speed,
+> so add same parameter to the switch.
+>
+> Additionally, the cpu label has never actually been used in the
+> binding, so remove it.
+>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+
+Applied on mvebu/dt64
+
+Thanks,
+
+Gregory
 > ---
->  include/uapi/linux/tc_act/tc_tunnel_key.h |  1 +
->  man/man8/tc-tunnel_key.8                  |  3 ++
->  tc/m_tunnel_key.c                         | 48 +++++++++++++++++------
->  3 files changed, 41 insertions(+), 11 deletions(-)
-> 
-> diff --git a/include/uapi/linux/tc_act/tc_tunnel_key.h b/include/uapi/linux/tc_act/tc_tunnel_key.h
-> index 49ad4033951b..37c6f612f161 100644
-> --- a/include/uapi/linux/tc_act/tc_tunnel_key.h
-> +++ b/include/uapi/linux/tc_act/tc_tunnel_key.h
-> @@ -34,6 +34,7 @@ enum {
->  					 */
->  	TCA_TUNNEL_KEY_ENC_TOS,		/* u8 */
->  	TCA_TUNNEL_KEY_ENC_TTL,		/* u8 */
-> +	TCA_TUNNEL_KEY_NO_FRAG,		/* flag */
->  	__TCA_TUNNEL_KEY_MAX,
->  };
+>  arch/arm64/boot/dts/marvell/cn9130-crb.dtsi | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/arm64/boot/dts/marvell/cn9130-crb.dtsi b/arch/arm64/boot/dts/marvell/cn9130-crb.dtsi
+> index 8e4ec243fb8f..32cfb3e2efc3 100644
+> --- a/arch/arm64/boot/dts/marvell/cn9130-crb.dtsi
+> +++ b/arch/arm64/boot/dts/marvell/cn9130-crb.dtsi
+> @@ -282,8 +282,9 @@ port@9 {
 >  
+>  			port@a {
+>  				reg = <10>;
+> -				label = "cpu";
+>  				ethernet = <&cp0_eth0>;
+> +				phy-mode = "10gbase-r";
+> +				managed = "in-band-status";
+>  			};
+>  
+>  		};
+> -- 
+> 2.40.0
+>
 
-applied to iproute2-next.
-
-In the future, please make uapi changes a separate patch. UAPI headers
-are synched by scripts. Inclusion in a PR is a convenience for others;
-they are always dropped before applying. A separate patch makes that
-process easier.
-
+-- 
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
