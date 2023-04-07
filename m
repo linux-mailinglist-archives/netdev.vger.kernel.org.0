@@ -2,72 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 496B16DAF66
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 17:07:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 486B76DAF7B
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 17:15:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240940AbjDGPHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 11:07:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44762 "EHLO
+        id S232338AbjDGPPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 11:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234274AbjDGPHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 11:07:24 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B33BC154;
-        Fri,  7 Apr 2023 08:06:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=EjvgYygcvsa+UmMq8t7f5AymWcOYA2y3M+AdeTsVTc4=; b=tLwvxgNy+6ErtRYM1q1/V9ArHY
-        Ppg2Q5lqzsZOQxY0ldl4LAGizqryYzfNIG7hbaQI2qpFllb8BTshQ62V0F/Z+e5eBKG/RZAlPCD7+
-        dwEXZBjKCX1vcBpDI8yhAKCm+YpCBmVFg/yutogs0MsAM/VWha47WxwVwpGGquTprZyI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pknej-009jYv-Ff; Fri, 07 Apr 2023 17:05:37 +0200
-Date:   Fri, 7 Apr 2023 17:05:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Xu Liang <lxu@maxlinear.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, oss-drivers@corigine.com,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>, linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH 8/8] net: phy: sfp: constify pointers to
- hwmon_channel_info
-Message-ID: <c9a547ce-6781-433b-8e8e-c9a1b7fc52d6@lunn.ch>
-References: <20230407145911.79642-1-krzysztof.kozlowski@linaro.org>
- <20230407145911.79642-8-krzysztof.kozlowski@linaro.org>
+        with ESMTP id S231732AbjDGPOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 11:14:44 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B914C31;
+        Fri,  7 Apr 2023 08:14:40 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id g18so9055000ejx.7;
+        Fri, 07 Apr 2023 08:14:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680880479; x=1683472479;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=XOp6B3Yrf8/IElRYh7BCFuo52ng4eeD3hfWMY8BurBw=;
+        b=KhP0mxxllubIFX67GhecQYjfyspDjUfp6IGTgoo79QDraja9BpDHQSa4uh7byHUtmt
+         fPOc0hSsv7wxiQV0ClZIm7eRLXBwuZT06gl8DWPT4+Gaytm1HPWNK9fVzPinrQvmCox6
+         6vK7z+Xy42hOj0dp5EBSV9jzh2MCcsr8do92Nx5Yws6dIU7Db+N7/gQiqhw05m26i35w
+         U+XGz4r3kIejOc+BY+2x3pXaWJaYqicTotHJaSiPCdya2j0oqI1knX59uBKNnFAkSumC
+         HhuAhH3Ye7glX/+jacAIrrLjAlEXInSOSnJgnmT4RHs7V60sVeytdJOPF64oEVB3xTM8
+         k2nA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680880479; x=1683472479;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XOp6B3Yrf8/IElRYh7BCFuo52ng4eeD3hfWMY8BurBw=;
+        b=WJSWLdIFr9mqtZ5RsYqkynULv7u3lbe4gnuqgaY2h0uRzZjFRMZCrm/a3iosMRq8jO
+         mVF4Ir9uWDw59FK8pwTedKNxQTNI7SUJ+cRRfRnAR/s+dbSTj/Q0FXfnQ+b0RV2zSwcS
+         G8hjD6T8r2i8as8ydisTJLplNmNzdLff2b0mdpz7rMWDTbJw8TjlTLG/Eoasgc1sIw29
+         +JuVMMW9+ROwYE9osfPEvoHN1bjzNywIvHKf86KSf6oZBH548zzto/fMu82nbDzvwSn4
+         bJj3lQMzOJTs37oA6MeRK63HlPwYJrsmEottBMSFwlfV1mDw9cRCpTQYxI6mH4+jpzmB
+         RScQ==
+X-Gm-Message-State: AAQBX9fRQ15RsuXwgigjpYz+p2NYeMI4nyCVnBTaUohJAA7OlgTfiSBH
+        BLAkEx+hxM0VDpEI6syau3wt0x5uejA=
+X-Google-Smtp-Source: AKy350Zxpfd+mV+JpvOVmcht89hMk1sTTTvhCBkHEhx4IGZ5AZpcPGVlidvuc7lfat2Fgf7K8uwKXA==
+X-Received: by 2002:a17:906:348f:b0:884:3707:bd83 with SMTP id g15-20020a170906348f00b008843707bd83mr2502133ejb.69.1680880479123;
+        Fri, 07 Apr 2023 08:14:39 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id q13-20020a50cc8d000000b004fbdfbb5acesm1989686edi.89.2023.04.07.08.14.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Apr 2023 08:14:38 -0700 (PDT)
+Date:   Fri, 7 Apr 2023 18:14:33 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Peter Lafreniere <peter@n8pjl.ca>
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] ax25: exit linked-list searches earlier
+Message-ID: <5d555fd8-0c9b-4460-9adf-9f8c2076f39a@kili.mountain>
+References: <20230407142042.11901-1-peter@n8pjl.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230407145911.79642-8-krzysztof.kozlowski@linaro.org>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230407142042.11901-1-peter@n8pjl.ca>
+X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 07, 2023 at 04:59:11PM +0200, Krzysztof Kozlowski wrote:
-> Statically allocated array of pointed to hwmon_channel_info can be made
-> const for safety.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On Fri, Apr 07, 2023 at 10:20:42AM -0400, Peter Lafreniere wrote:
+> diff --git a/net/ax25/ax25_route.c b/net/ax25/ax25_route.c
+> index b7c4d656a94b..ed2cab200589 100644
+> --- a/net/ax25/ax25_route.c
+> +++ b/net/ax25/ax25_route.c
+> @@ -364,6 +364,9 @@ ax25_route *ax25_get_route(ax25_address *addr, struct net_device *dev)
+>  			if (ax25cmp(&ax25_rt->callsign, &null_ax25_address) == 0 && ax25_rt->dev == dev)
+>  				ax25_def_rt = ax25_rt;
+>  		}
+> +
+> +		if (ax25_spe_rt != NULL)
+> +			break;
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Better to just return directly.
 
-    Andrew
+diff --git a/net/ax25/ax25_route.c b/net/ax25/ax25_route.c
+index b7c4d656a94b..a8a3ab8c92f6 100644
+--- a/net/ax25/ax25_route.c
++++ b/net/ax25/ax25_route.c
+@@ -364,13 +364,12 @@ ax25_route *ax25_get_route(ax25_address *addr, struct net_device *dev)
+ 			if (ax25cmp(&ax25_rt->callsign, &null_ax25_address) == 0 && ax25_rt->dev == dev)
+ 				ax25_def_rt = ax25_rt;
+ 		}
+-	}
+ 
+-	ax25_rt = ax25_def_rt;
+-	if (ax25_spe_rt != NULL)
+-		ax25_rt = ax25_spe_rt;
++		if (ax25_spe_rt)
++			return ax25_spe_rt;
++	}
+ 
+-	return ax25_rt;
++	return ax25_def_rt;
+ }
+ 
+ /*
