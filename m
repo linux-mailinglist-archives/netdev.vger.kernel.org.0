@@ -2,64 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14F2F6DA9DB
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:13:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5092D6DA9DE
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 10:13:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239978AbjDGIN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 04:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
+        id S240118AbjDGINv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 04:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239975AbjDGIMq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:12:46 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2044.outbound.protection.outlook.com [40.107.243.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC3CBB88;
-        Fri,  7 Apr 2023 01:12:24 -0700 (PDT)
+        with ESMTP id S232757AbjDGINU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 04:13:20 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2075.outbound.protection.outlook.com [40.107.93.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78582A5F8;
+        Fri,  7 Apr 2023 01:12:38 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A/Irwgvu/IAiHCQEDBtqQgxYAnsS5jgr4WeoQN/IqsLVwuPVWNUoubHJLCRvHfehe8sAD7hDHtOJG+w5WlcopWYgM281XxbrrJeOPuEKRTtZnq70hmBmMEtii9Sc0Wm23ciCwZJfBy1sbSTzwSw+SjvVtnOeauHOAsx1kq3SLIhdHguz0FJj/ND0yP23XAfbyMSJ0XxCpuqRWGRYQMBLmRU675r1Gssa96s8Goy4f6KTAkpgWILt5qWNtTu+2KwomeaWy4/V+AQLfx9ml3p65hTCSOnc4b8Cjr6U1aHbM/lRHXWuJAmVreo9k9Eyl5LAN+SEPIf8Tje4GwV187bjVA==
+ b=EtQ3iEQKSXAVWnt6rYrJNc7P2g5GBxwdtwOlhB2UlQ3+AJocr+ihoWTUtviSDi0iC/ehZDvt88y8g6iumzTu8g02VaoSNC8NzCOUI2L5vyhqqmMHn8IjZzCn+gMHHVRdZZJTJWlvuW4k17Z0SsYx1gRrvMZNeoFTh7mB4QZ7yEC5tH4mTfIkzF2vj/nkeeEv/ZQnK0RlKGi7euZyouc5uZwfGs+kbdCpB9JMciHWT7DKzPEYclKhVH6rX1ByskcMO3W4RyigE6p8Nvazf7QbXuo1R0YVA78IFSz7JrWPiweF3L3lT+4QcgLbFpMJbODzOvEct+BaOAJ2F+UuSklBqw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dtXFSlvTAnsHmxkGwZXTi/oy7S0knYTtOqE3PP0M9Z0=;
- b=Cm+qs0sYTjVjLIS1sqylTh7zQjWcGScz2duKzPsO3mdpoVILXi5FlDENumRPYXm6llP0tJS2N+86uqda2lp0XNgZeVw4rV+WReCGOOmwzds7jeofeUfz4UP3GK496L0EnL9mOpuABcupkoPtmOqowrJ2cWdKVxdCX0N8mKjAYmRwACPuyS2CHl60KeJMIQU9IlHb+aZwwwkQ/qnbWUongB0vOxtrGlZYWMspzlj8egHPPZDJOQxqxX/hRcJSfQS4u+/Xybn5GtpBaYQSlYjMPlSlXIFfJsZLZuqCYmcc7DY2XSjI8jBqztDuSqIh4uwEb6YZzLHdsQFrPmlKq7KSwg==
+ bh=tX2kiW6ljKISHw7uiLtbewKe1KzATrH2axjEYSL2zys=;
+ b=dB+8p4bLhFk9u2auv1q+XW2yoRnc8quGgrbaKNYR8+7muskFVJ8e4V1prHCJRWNRrEtx1wa0x4aCC7zv6Y0BhPeOioqluYemcIKrE8tlH5ntEvU0eIGIezTK+2cg3egKG+e1AZn609OjLi71c2U17Ze98lkVBZVerrX9lYBvRenqfHxCIGW496bQfpujqPjiC7F587tci5bAEUz3KvSLJdEglHQ03iNtxOIKov4a3E+x53l6qV2gekziJAEJn9EDbQafcnNeavhPJuzMiPSTCCHCLsbch38xHh0crt13dF6W/MstqjlvzLeICs2QbFqdjXte7eydKiOH4/x8hjzxAQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dtXFSlvTAnsHmxkGwZXTi/oy7S0knYTtOqE3PP0M9Z0=;
- b=g3FLbQmbIDj1r2k2m2NLn/ZmHC1dhUZb/qsx2QgiJi+TuXJqhcqwGAlYdE6u5NN7WExG6yFkL1BBWsD3ci4wT0PoRwxNiksbHBkWfHgMSt+Fpa1990SPiIeasjT2F5JZo0YnrOpbTy+L+OvTo0qhHotwoXvabrLEJsd15aHkMyc=
-Received: from MW4PR03CA0095.namprd03.prod.outlook.com (2603:10b6:303:b7::10)
- by SA1PR12MB7040.namprd12.prod.outlook.com (2603:10b6:806:24f::13) with
+ bh=tX2kiW6ljKISHw7uiLtbewKe1KzATrH2axjEYSL2zys=;
+ b=U10LZMXm/HdEKad2q4tJI6FS7vxE9ACCCPSQ3aFYYJdMPq2WG0Haal4fmffcc0/n5/s2aXnRyhoFuP3jQKylLhDWONgIKLavR1GHYswAQZ54wqHwG1pp/WTYudT6VqdF+MyZatB43py9mmB1WPGr3TSS36j/qbC/ZSAznsyLZzM=
+Received: from BN9PR03CA0307.namprd03.prod.outlook.com (2603:10b6:408:112::12)
+ by SJ2PR12MB7920.namprd12.prod.outlook.com (2603:10b6:a03:4cc::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Fri, 7 Apr
- 2023 08:11:51 +0000
-Received: from CO1NAM11FT096.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b7:cafe::4e) by MW4PR03CA0095.outlook.office365.com
- (2603:10b6:303:b7::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.33 via Frontend
- Transport; Fri, 7 Apr 2023 08:11:51 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.34; Fri, 7 Apr
+ 2023 08:12:00 +0000
+Received: from BN8NAM11FT109.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:112:cafe::d5) by BN9PR03CA0307.outlook.office365.com
+ (2603:10b6:408:112::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.31 via Frontend
+ Transport; Fri, 7 Apr 2023 08:12:00 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CO1NAM11FT096.mail.protection.outlook.com (10.13.175.84) with Microsoft SMTP
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT109.mail.protection.outlook.com (10.13.176.221) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6277.31 via Frontend Transport; Fri, 7 Apr 2023 08:11:51 +0000
-Received: from SATLEXMB07.amd.com (10.181.41.45) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6298.20 via Frontend Transport; Fri, 7 Apr 2023 08:12:00 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 7 Apr
- 2023 03:11:50 -0500
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB07.amd.com
- (10.181.41.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 7 Apr
- 2023 01:11:50 -0700
+ 2023 03:11:59 -0500
 Received: from xndengvm004102.xilinx.com (10.180.168.240) by
  SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34
- via Frontend Transport; Fri, 7 Apr 2023 03:11:46 -0500
+ via Frontend Transport; Fri, 7 Apr 2023 03:11:55 -0500
 From:   Gautam Dawar <gautam.dawar@amd.com>
 To:     <linux-net-drivers@amd.com>, <jasowang@redhat.com>,
         Edward Cree <ecree.xilinx@gmail.com>,
@@ -73,9 +69,9 @@ To:     <linux-net-drivers@amd.com>, <jasowang@redhat.com>,
 CC:     <eperezma@redhat.com>, <harpreet.anand@amd.com>,
         <tanuj.kamde@amd.com>, <koushik.dutta@amd.com>,
         Gautam Dawar <gautam.dawar@amd.com>
-Subject: [PATCH net-next v4 08/14] sfc: implement vdpa vring config operations
-Date:   Fri, 7 Apr 2023 13:40:09 +0530
-Message-ID: <20230407081021.30952-9-gautam.dawar@amd.com>
+Subject: [PATCH net-next v4 09/14] sfc: implement device status related vdpa config operations
+Date:   Fri, 7 Apr 2023 13:40:10 +0530
+Message-ID: <20230407081021.30952-10-gautam.dawar@amd.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20230407081021.30952-1-gautam.dawar@amd.com>
 References: <20230407081021.30952-1-gautam.dawar@amd.com>
@@ -84,23 +80,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT096:EE_|SA1PR12MB7040:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5a713829-6697-456a-35c3-08db373fbe2d
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT109:EE_|SJ2PR12MB7920:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5cd2733b-3e6a-4ab1-0535-08db373fc342
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9QdxKmDi6sD87+vzhXA30EaGNRfVIFCxRiX9QEWu4YU++Mt5CW36sYxPTNnlU7pCTv2qqx7/AmOFTKZde5PR5ANoh8q6pD3N6BoYrGP3EubxjE9b+RqPbb6evBfK6Ka3+P/tm5s1VffW20plRaN0H9rAsfseyu6HudbdWXHoi4K5ltBhtWMNekTm2MF4dwDsShDRe7CdjvvLp7G1laIwKkFA4HAkEbLur7VPbyvVmUSVKdbwe1aD42kqOnjjMX1gN8qOmjvoRvbd830EgdYSTU++wbwRdtc/BTxImbbzAiFt6nM6Kq9NqDh/05PuvKSs3pH8MWVNLGwOyaD5nFI3s3dOIKpVv5gvecsdMfbPoc8gef6XlsuD2ueIkt9T3c0v2o+xf0t5AAuVYur9KUHYurJh8TOLg4IdV3Ngl7Ptc5hu/u9pAnJW6uJb+faL81kQ2JR1bK4zLeAVEXaUA2b0HWL/2w/Wwu+mualV14V1UrdGQIjyAXjo4lj4uAkCGq67UsUFDVyW+1wPE6a+7RFyBneTIZVYlIzDsh7SUbDROVI7daTaQ8z0uWCwYMspoeARvIykfrxmIBPRYO0eiDO/dISvjM61i59TuXjkVBcyRhwVJUbulh0JKzNL3OSxxuiU1A3TdUrEHm/QwYTxDG0Uciw26k7oTptjq+KIqPNg2FdACr8QtKh5JIodJV5tL0FbuQWuWFCF6dI7rPaTeCtdawFInq7oPuDE2fU2ESNUsm4TvkpEeln5wF7yVzJR7E7e
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(376002)(39860400002)(136003)(451199021)(36840700001)(40470700004)(46966006)(82740400003)(40480700001)(82310400005)(186003)(5660300002)(8936002)(36860700001)(86362001)(30864003)(7416002)(426003)(2616005)(44832011)(478600001)(26005)(110136005)(1076003)(2906002)(4326008)(70206006)(70586007)(8676002)(41300700001)(54906003)(336012)(316002)(36756003)(921005)(47076005)(83380400001)(356005)(40460700003)(6666004)(81166007)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Twg7KhPLZ3txqc5mUgQh4kinL///ekIGIf+EJ4FJibzDw+xGif5e2/Be6pGOpsll6LwrSe1K3kSn9vL1TsgikiZSLjKP2JReToSfC9siYyRiCX5eiGZ4aWpTXmULHlrgbxwQD5Ke0EUmHOcS95y98kRyrUPduVhLzg8W51rB6+aY3g+E9FaxXk3lEeQJQz+AdbaXfACuzJ5YLyBrZ0m4EbU7raoCP3hdTMcW9Be8FgS9OyZTKtllW1ApPfpr1PqMyfgEzZkBDYGeIrbiaNB7S86LYm0vSdhh2jI0FIeqhBQ/UDTQofyCUrMsbw64A7uB4DdT+S6wZCl3zu0YK/vM8EtdhFiQpJ8D3+FFXxnuouEJIT8i8s+TeSWDHmOenCjx97p8Lpu/b1ocaoS2OmUwuhp8vJ8bkDrIuBweNxkLfD4Q9TqDV9hvmKMTj4allkbBWYvuN5upNC+a/hO6C93VtjmVuRg2eS9QkwgYXvS72G/lcenCoZrCWsxoYULbsMjfy2Y88TiJX39wdeaCKC4M3PhaX9cxshT9m41DLIhEkTbhGGCBnz4VuzuoGwMAR9sCe6q0Mvy4rPVCQuoaCjUz4dML1IEr4OZKOMnk1j3QssP5OqczENyMHwR/GkzFZfxFusInGNCAHz4dJ2tD19H03T6h59CPL8ij3p/H3XRmJsRzvYH+C4WNGr+J54vlBF6I0YDnrBOk3Ddmo9YNuuVv6R55KPKB14qYWqdbGkwMIVuzeNEiIOjNHxdH3lqSs2cy
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(39860400002)(396003)(346002)(451199021)(46966006)(36840700001)(40470700004)(1076003)(26005)(6666004)(40460700003)(36756003)(86362001)(36860700001)(478600001)(40480700001)(82310400005)(186003)(8676002)(7416002)(70586007)(2906002)(336012)(70206006)(921005)(356005)(426003)(83380400001)(5660300002)(47076005)(82740400003)(30864003)(44832011)(2616005)(81166007)(4326008)(316002)(8936002)(110136005)(41300700001)(54906003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2023 08:11:51.4596
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2023 08:12:00.0939
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a713829-6697-456a-35c3-08db373fbe2d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5cd2733b-3e6a-4ab1-0535-08db373fc342
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT096.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT109.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7040
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7920
 X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=no
@@ -111,366 +107,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch implements the vDPA config operations related to
-virtqueues or vrings. These include setting vring address,
-getting vq state, operations to enable/disable a vq etc.
-The resources required for vring operations eg. VI, interrupts etc.
-are also allocated.
+vDPA config opertions to handle get/set device status and device
+reset have been implemented. Also .suspend config operation is
+implemented to support Live Migration.
 
 Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
 ---
- drivers/net/ethernet/sfc/ef100_vdpa.c     |  46 +++-
- drivers/net/ethernet/sfc/ef100_vdpa.h     |  56 ++++-
- drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 275 ++++++++++++++++++++++
- 3 files changed, 375 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/sfc/ef100_vdpa.c     |  16 +-
+ drivers/net/ethernet/sfc/ef100_vdpa.h     |   3 +
+ drivers/net/ethernet/sfc/ef100_vdpa_ops.c | 367 ++++++++++++++++++++--
+ 3 files changed, 356 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.c b/drivers/net/ethernet/sfc/ef100_vdpa.c
-index 1ba34e4e0a87..fb4d15caa320 100644
+index fb4d15caa320..f4a940961f9d 100644
 --- a/drivers/net/ethernet/sfc/ef100_vdpa.c
 +++ b/drivers/net/ethernet/sfc/ef100_vdpa.c
-@@ -14,6 +14,7 @@
- #include "ef100_vdpa.h"
- #include "mcdi_vdpa.h"
- #include "mcdi_filters.h"
-+#include "mcdi_functions.h"
- #include "ef100_netdev.h"
+@@ -68,9 +68,14 @@ static int vdpa_allocate_vis(struct efx_nic *efx, unsigned int *allocated_vis)
  
- static struct virtio_device_id ef100_vdpa_id_table[] = {
-@@ -47,12 +48,31 @@ int ef100_vdpa_init(struct efx_probe_data *probe_data)
- 	return rc;
- }
- 
-+static int vdpa_allocate_vis(struct efx_nic *efx, unsigned int *allocated_vis)
-+{
-+	/* The first VI is reserved for MCDI
-+	 * 1 VI each for rx + tx ring
-+	 */
-+	unsigned int max_vis = 1 + EF100_VDPA_MAX_QUEUES_PAIRS;
-+	unsigned int min_vis = 1 + 1;
-+	int rc;
-+
-+	rc = efx_mcdi_alloc_vis(efx, min_vis, max_vis,
-+				NULL, allocated_vis);
-+	if (!rc)
-+		return rc;
-+	if (*allocated_vis < min_vis)
-+		return -ENOSPC;
-+	return 0;
-+}
-+
  static void ef100_vdpa_delete(struct efx_nic *efx)
  {
++	struct vdpa_device *vdpa_dev;
++
  	if (efx->vdpa_nic) {
++		vdpa_dev = &efx->vdpa_nic->vdpa_dev;
++		ef100_vdpa_reset(vdpa_dev);
++
  		/* replace with _vdpa_unregister_device later */
- 		put_device(&efx->vdpa_nic->vdpa_dev.dev);
+-		put_device(&efx->vdpa_nic->vdpa_dev.dev);
++		put_device(&vdpa_dev->dev);
  	}
-+	efx_mcdi_free_vis(efx);
+ 	efx_mcdi_free_vis(efx);
  }
+@@ -171,6 +176,15 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
+ 		}
+ 	}
  
- void ef100_vdpa_fini(struct efx_probe_data *probe_data)
-@@ -104,9 +124,19 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
- {
- 	struct ef100_nic_data *nic_data = efx->nic_data;
- 	struct ef100_vdpa_nic *vdpa_nic;
-+	unsigned int allocated_vis;
- 	int rc;
-+	u8 i;
- 
- 	nic_data->vdpa_class = dev_type;
-+	rc = vdpa_allocate_vis(efx, &allocated_vis);
++	rc = devm_add_action_or_reset(&efx->pci_dev->dev,
++				      ef100_vdpa_irq_vectors_free,
++				      efx->pci_dev);
 +	if (rc) {
 +		pci_err(efx->pci_dev,
-+			"%s Alloc VIs failed for vf:%u error:%d\n",
-+			 __func__, nic_data->vf_index, rc);
-+		return ERR_PTR(rc);
-+	}
-+
- 	vdpa_nic = vdpa_alloc_device(struct ef100_vdpa_nic,
- 				     vdpa_dev, &efx->pci_dev->dev,
- 				     &ef100_vdpa_config_ops,
-@@ -117,7 +147,8 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
- 			"vDPA device allocation failed for vf: %u\n",
- 			nic_data->vf_index);
- 		nic_data->vdpa_class = EF100_VDPA_CLASS_NONE;
--		return ERR_PTR(-ENOMEM);
-+		rc = -ENOMEM;
-+		goto err_alloc_vis_free;
- 	}
- 
- 	mutex_init(&vdpa_nic->lock);
-@@ -125,11 +156,21 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
- 	vdpa_nic->vdpa_dev.dma_dev = &efx->pci_dev->dev;
- 	vdpa_nic->vdpa_dev.mdev = efx->mgmt_dev;
- 	vdpa_nic->efx = efx;
-+	vdpa_nic->max_queue_pairs = allocated_vis - 1;
- 	vdpa_nic->pf_index = nic_data->pf_index;
- 	vdpa_nic->vf_index = nic_data->vf_index;
- 	vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
- 	vdpa_nic->mac_address = (u8 *)&vdpa_nic->net_config.mac;
- 
-+	for (i = 0; i < (2 * vdpa_nic->max_queue_pairs); i++) {
-+		rc = ef100_vdpa_init_vring(vdpa_nic, i);
-+		if (rc) {
-+			pci_err(efx->pci_dev,
-+				"vring init idx: %u failed, rc: %d\n", i, rc);
-+			goto err_put_device;
-+		}
++			"Failed adding devres for freeing irq vectors\n");
++		goto err_put_device;
 +	}
 +
  	rc = get_net_config(vdpa_nic);
  	if (rc)
  		goto err_put_device;
-@@ -146,6 +187,9 @@ static struct ef100_vdpa_nic *ef100_vdpa_create(struct efx_nic *efx,
- err_put_device:
- 	/* put_device invokes ef100_vdpa_free */
- 	put_device(&vdpa_nic->vdpa_dev.dev);
-+
-+err_alloc_vis_free:
-+	efx_mcdi_free_vis(efx);
- 	return ERR_PTR(rc);
- }
- 
 diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
-index dcf4a8156415..fbdd108c0e7f 100644
+index fbdd108c0e7f..d2d457692008 100644
 --- a/drivers/net/ethernet/sfc/ef100_vdpa.h
 +++ b/drivers/net/ethernet/sfc/ef100_vdpa.h
-@@ -32,6 +32,21 @@
- /* Alignment requirement of the Virtqueue */
- #define EF100_VDPA_VQ_ALIGN 4096
- 
-+/* Vring configuration definitions */
-+#define EF100_VRING_ADDRESS_CONFIGURED 0x1
-+#define EF100_VRING_SIZE_CONFIGURED 0x2
-+#define EF100_VRING_READY_CONFIGURED 0x4
-+#define EF100_VRING_CONFIGURED (EF100_VRING_ADDRESS_CONFIGURED | \
-+				EF100_VRING_SIZE_CONFIGURED | \
-+				EF100_VRING_READY_CONFIGURED)
-+#define EF100_VRING_CREATED 0x8
-+
-+/* Maximum size of msix name */
-+#define EF100_VDPA_MAX_MSIX_NAME_SIZE 256
-+
-+/* Default high IOVA for MCDI buffer */
-+#define EF100_VDPA_IOVA_BASE_ADDR 0x20000000000
-+
- /**
-  * enum ef100_vdpa_nic_state - possible states for a vDPA NIC
-  *
-@@ -57,11 +72,46 @@ enum ef100_vdpa_vq_type {
- 	EF100_VDPA_VQ_NTYPES
+@@ -59,6 +59,7 @@ enum ef100_vdpa_nic_state {
+ 	EF100_VDPA_STATE_INITIALIZED,
+ 	EF100_VDPA_STATE_NEGOTIATED,
+ 	EF100_VDPA_STATE_STARTED,
++	EF100_VDPA_STATE_SUSPENDED,
+ 	EF100_VDPA_STATE_NSTATES
  };
  
-+/**
-+ * struct ef100_vdpa_vring_info - vDPA vring data structure
-+ *
-+ * @desc: Descriptor area address of the vring
-+ * @avail: Available area address of the vring
-+ * @used: Device area address of the vring
-+ * @size: Number of entries in the vring
-+ * @vring_state: bit map to track vring configuration
-+ * @last_avail_idx: last available index of the vring
-+ * @last_used_idx: last used index of the vring
-+ * @doorbell_offset: doorbell offset
-+ * @doorbell_offset_valid: true if @doorbell_offset is updated
-+ * @vring_type: type of vring created
-+ * @vring_ctx: vring context information
-+ * @msix_name: device name for vring irq handler
-+ * @irq: irq number for vring irq handler
-+ * @cb: callback for vring interrupts
-+ */
-+struct ef100_vdpa_vring_info {
-+	dma_addr_t desc;
-+	dma_addr_t avail;
-+	dma_addr_t used;
-+	u32 size;
-+	u16 vring_state;
-+	u32 last_avail_idx;
-+	u32 last_used_idx;
-+	u32 doorbell_offset;
-+	bool doorbell_offset_valid;
-+	enum ef100_vdpa_vq_type vring_type;
-+	struct efx_vring_ctx *vring_ctx;
-+	char msix_name[EF100_VDPA_MAX_MSIX_NAME_SIZE];
-+	u32 irq;
-+	struct vdpa_callback cb;
-+};
-+
- /**
-  *  struct ef100_vdpa_nic - vDPA NIC data structure
-  *
-  * @vdpa_dev: vdpa_device object which registers on the vDPA bus.
-- * @vdpa_state: NIC state machine governed by ef100_vdpa_nic_state
-+ * @vdpa_state: ensures correct device status transitions via set_status cb
-  * @efx: pointer to the VF's efx_nic object
-  * @lock: Managing access to vdpa config operations
-  * @pf_index: PF index of the vDPA VF
-@@ -70,6 +120,7 @@ enum ef100_vdpa_vq_type {
-  * @features: negotiated feature bits
-  * @max_queue_pairs: maximum number of queue pairs supported
-  * @net_config: virtio_net_config data
-+ * @vring: vring information of the vDPA device.
-  * @mac_address: mac address of interface associated with this vdpa device
-  * @mac_configured: true after MAC address is configured
-  * @cfg_cb: callback for config change
-@@ -86,6 +137,7 @@ struct ef100_vdpa_nic {
- 	u64 features;
- 	u32 max_queue_pairs;
- 	struct virtio_net_config net_config;
-+	struct ef100_vdpa_vring_info vring[EF100_VDPA_MAX_QUEUES_PAIRS * 2];
- 	u8 *mac_address;
- 	bool mac_configured;
- 	struct vdpa_callback cfg_cb;
-@@ -95,6 +147,8 @@ int ef100_vdpa_init(struct efx_probe_data *probe_data);
- void ef100_vdpa_fini(struct efx_probe_data *probe_data);
- int ef100_vdpa_register_mgmtdev(struct efx_nic *efx);
+@@ -149,6 +150,8 @@ int ef100_vdpa_register_mgmtdev(struct efx_nic *efx);
  void ef100_vdpa_unregister_mgmtdev(struct efx_nic *efx);
+ void ef100_vdpa_irq_vectors_free(void *data);
+ int ef100_vdpa_init_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx);
 +void ef100_vdpa_irq_vectors_free(void *data);
-+int ef100_vdpa_init_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx);
++int ef100_vdpa_reset(struct vdpa_device *vdev);
  
  static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
  {
 diff --git a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-index a2364ef9f492..b390d5eee301 100644
+index b390d5eee301..13f657d56578 100644
 --- a/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
 +++ b/drivers/net/ethernet/sfc/ef100_vdpa_ops.c
-@@ -9,13 +9,270 @@
- 
- #include <linux/vdpa.h>
- #include "ef100_vdpa.h"
-+#include "io.h"
- #include "mcdi_vdpa.h"
- 
-+/* Get the queue's function-local index of the associated VI
-+ * virtqueue number queue 0 is reserved for MCDI
-+ */
-+#define EFX_GET_VI_INDEX(vq_num) (((vq_num) / 2) + 1)
-+
- static struct ef100_vdpa_nic *get_vdpa_nic(struct vdpa_device *vdev)
- {
+@@ -22,11 +22,6 @@ static struct ef100_vdpa_nic *get_vdpa_nic(struct vdpa_device *vdev)
  	return container_of(vdev, struct ef100_vdpa_nic, vdpa_dev);
  }
  
+-void ef100_vdpa_irq_vectors_free(void *data)
+-{
+-	pci_free_irq_vectors(data);
+-}
+-
+ static int create_vring_ctx(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+ {
+ 	struct efx_vring_ctx *vring_ctx;
+@@ -52,14 +47,6 @@ static void delete_vring_ctx(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+ 	vdpa_nic->vring[idx].vring_ctx = NULL;
+ }
+ 
+-static void reset_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+-{
+-	vdpa_nic->vring[idx].vring_type = EF100_VDPA_VQ_NTYPES;
+-	vdpa_nic->vring[idx].vring_state = 0;
+-	vdpa_nic->vring[idx].last_avail_idx = 0;
+-	vdpa_nic->vring[idx].last_used_idx = 0;
+-}
+-
+ int ef100_vdpa_init_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
+ {
+ 	u32 offset;
+@@ -103,6 +90,236 @@ static bool is_qid_invalid(struct ef100_vdpa_nic *vdpa_nic, u16 idx,
+ 	return false;
+ }
+ 
++static void irq_vring_fini(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
++{
++	struct ef100_vdpa_vring_info *vring = &vdpa_nic->vring[idx];
++	struct pci_dev *pci_dev = vdpa_nic->efx->pci_dev;
++
++	devm_free_irq(&pci_dev->dev, vring->irq, vring);
++	vring->irq = -EINVAL;
++}
++
++static irqreturn_t vring_intr_handler(int irq, void *arg)
++{
++	struct ef100_vdpa_vring_info *vring = arg;
++
++	if (vring->cb.callback)
++		return vring->cb.callback(vring->cb.private);
++
++	return IRQ_NONE;
++}
++
++static int ef100_vdpa_irq_vectors_alloc(struct pci_dev *pci_dev, u16 nvqs)
++{
++	int rc;
++
++	rc = pci_alloc_irq_vectors(pci_dev, nvqs, nvqs, PCI_IRQ_MSIX);
++	if (rc < 0)
++		pci_err(pci_dev,
++			"Failed to alloc %d IRQ vectors, err:%d\n", nvqs, rc);
++	return rc;
++}
++
 +void ef100_vdpa_irq_vectors_free(void *data)
 +{
 +	pci_free_irq_vectors(data);
 +}
 +
-+static int create_vring_ctx(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
++static int irq_vring_init(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
 +{
-+	struct efx_vring_ctx *vring_ctx;
-+	u32 vi_index;
-+
-+	if (idx % 2) /* Even VQ for RX and odd for TX */
-+		vdpa_nic->vring[idx].vring_type = EF100_VDPA_VQ_TYPE_NET_TXQ;
-+	else
-+		vdpa_nic->vring[idx].vring_type = EF100_VDPA_VQ_TYPE_NET_RXQ;
-+	vi_index = EFX_GET_VI_INDEX(idx);
-+	vring_ctx = efx_vdpa_vring_init(vdpa_nic->efx, vi_index,
-+					vdpa_nic->vring[idx].vring_type);
-+	if (IS_ERR(vring_ctx))
-+		return PTR_ERR(vring_ctx);
-+
-+	vdpa_nic->vring[idx].vring_ctx = vring_ctx;
-+	return 0;
-+}
-+
-+static void delete_vring_ctx(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
-+{
-+	efx_vdpa_vring_fini(vdpa_nic->vring[idx].vring_ctx);
-+	vdpa_nic->vring[idx].vring_ctx = NULL;
-+}
-+
-+static void reset_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
-+{
-+	vdpa_nic->vring[idx].vring_type = EF100_VDPA_VQ_NTYPES;
-+	vdpa_nic->vring[idx].vring_state = 0;
-+	vdpa_nic->vring[idx].last_avail_idx = 0;
-+	vdpa_nic->vring[idx].last_used_idx = 0;
-+}
-+
-+int ef100_vdpa_init_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
-+{
-+	u32 offset;
++	struct ef100_vdpa_vring_info *vring = &vdpa_nic->vring[idx];
++	struct pci_dev *pci_dev = vdpa_nic->efx->pci_dev;
++	int irq;
 +	int rc;
 +
-+	vdpa_nic->vring[idx].irq = -EINVAL;
-+	rc = create_vring_ctx(vdpa_nic, idx);
-+	if (rc) {
-+		dev_err(&vdpa_nic->vdpa_dev.dev,
-+			"%s: create_vring_ctx failed, idx:%u, err:%d\n",
-+			__func__, idx, rc);
-+		return rc;
-+	}
++	snprintf(vring->msix_name, 256, "x_vdpa[%s]-%d\n",
++		 pci_name(pci_dev), idx);
++	irq = pci_irq_vector(pci_dev, idx);
++	rc = devm_request_irq(&pci_dev->dev, irq, vring_intr_handler, 0,
++			      vring->msix_name, vring);
++	if (rc)
++		pci_err(pci_dev,
++			"devm_request_irq failed for vring %d, rc %d\n",
++			idx, rc);
++	else
++		vring->irq = irq;
 +
-+	rc = efx_vdpa_get_doorbell_offset(vdpa_nic->vring[idx].vring_ctx,
-+					  &offset);
-+	if (rc) {
-+		dev_err(&vdpa_nic->vdpa_dev.dev,
-+			"%s: get_doorbell failed idx:%u, err:%d\n",
-+			__func__, idx, rc);
-+		goto err_get_doorbell_offset;
-+	}
-+	vdpa_nic->vring[idx].doorbell_offset = offset;
-+	vdpa_nic->vring[idx].doorbell_offset_valid = true;
-+
-+	return 0;
-+
-+err_get_doorbell_offset:
-+	delete_vring_ctx(vdpa_nic, idx);
 +	return rc;
 +}
 +
-+static bool is_qid_invalid(struct ef100_vdpa_nic *vdpa_nic, u16 idx,
-+			   const char *caller)
++static int delete_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
 +{
-+	if (unlikely(idx >= (vdpa_nic->max_queue_pairs * 2))) {
++	struct efx_vring_dyn_cfg vring_dyn_cfg;
++	int rc;
++
++	if (!(vdpa_nic->vring[idx].vring_state & EF100_VRING_CREATED))
++		return 0;
++
++	rc = efx_vdpa_vring_destroy(vdpa_nic->vring[idx].vring_ctx,
++				    &vring_dyn_cfg);
++	if (rc)
 +		dev_err(&vdpa_nic->vdpa_dev.dev,
-+			"%s: Invalid qid %u\n", caller, idx);
-+		return true;
-+	}
-+	return false;
-+}
++			"%s: delete vring failed index:%u, err:%d\n",
++			__func__, idx, rc);
++	vdpa_nic->vring[idx].last_avail_idx = vring_dyn_cfg.avail_idx;
++	vdpa_nic->vring[idx].last_used_idx = vring_dyn_cfg.used_idx;
++	vdpa_nic->vring[idx].vring_state &= ~EF100_VRING_CREATED;
 +
-+static int ef100_vdpa_set_vq_address(struct vdpa_device *vdev,
-+				     u16 idx, u64 desc_area, u64 driver_area,
-+				     u64 device_area)
-+{
-+	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	irq_vring_fini(vdpa_nic, idx);
 +
-+	if (is_qid_invalid(vdpa_nic, idx, __func__))
-+		return -EINVAL;
-+
-+	mutex_lock(&vdpa_nic->lock);
-+	vdpa_nic->vring[idx].desc = desc_area;
-+	vdpa_nic->vring[idx].avail = driver_area;
-+	vdpa_nic->vring[idx].used = device_area;
-+	vdpa_nic->vring[idx].vring_state |= EF100_VRING_ADDRESS_CONFIGURED;
-+	mutex_unlock(&vdpa_nic->lock);
-+	return 0;
-+}
-+
-+static void ef100_vdpa_set_vq_num(struct vdpa_device *vdev, u16 idx, u32 num)
-+{
-+	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-+
-+	if (is_qid_invalid(vdpa_nic, idx, __func__))
-+		return;
-+
-+	/* SN1022 supports split vq which requires vq size to be power of 2 */
-+	if (!is_power_of_2(num)) {
-+		dev_err(&vdev->dev, "%s: Index:%u size:%u not power of 2\n",
-+			__func__, idx, num);
-+		return;
-+	}
-+	if (num > EF100_VDPA_VQ_NUM_MAX_SIZE) {
-+		dev_err(&vdev->dev, "%s: Index:%u size:%u more than max:%u\n",
-+			__func__, idx, num, EF100_VDPA_VQ_NUM_MAX_SIZE);
-+		return;
-+	}
-+	mutex_lock(&vdpa_nic->lock);
-+	vdpa_nic->vring[idx].size  = num;
-+	vdpa_nic->vring[idx].vring_state |= EF100_VRING_SIZE_CONFIGURED;
-+	mutex_unlock(&vdpa_nic->lock);
++	return rc;
 +}
 +
 +static void ef100_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
@@ -489,161 +306,322 @@ index a2364ef9f492..b390d5eee301 100644
 +		    vdpa_nic->vring[idx].doorbell_offset);
 +}
 +
-+static void ef100_vdpa_set_vq_cb(struct vdpa_device *vdev, u16 idx,
-+				 struct vdpa_callback *cb)
++static bool can_create_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
 +{
-+	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	if (vdpa_nic->vring[idx].vring_state == EF100_VRING_CONFIGURED &&
++	    vdpa_nic->status & VIRTIO_CONFIG_S_DRIVER_OK &&
++	    !(vdpa_nic->vring[idx].vring_state & EF100_VRING_CREATED))
++		return true;
 +
-+	if (is_qid_invalid(vdpa_nic, idx, __func__))
-+		return;
-+
-+	if (cb)
-+		vdpa_nic->vring[idx].cb = *cb;
++	return false;
 +}
 +
-+static void ef100_vdpa_set_vq_ready(struct vdpa_device *vdev, u16 idx,
-+				    bool ready)
++static int create_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
 +{
-+	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	struct efx_vring_dyn_cfg vring_dyn_cfg;
++	struct efx_vring_cfg vring_cfg;
++	int rc;
 +
-+	if (is_qid_invalid(vdpa_nic, idx, __func__))
-+		return;
-+
-+	mutex_lock(&vdpa_nic->lock);
-+	if (ready) {
-+		vdpa_nic->vring[idx].vring_state |=
-+					EF100_VRING_READY_CONFIGURED;
-+	} else {
-+		vdpa_nic->vring[idx].vring_state &=
-+					~EF100_VRING_READY_CONFIGURED;
++	rc = irq_vring_init(vdpa_nic, idx);
++	if (rc) {
++		dev_err(&vdpa_nic->vdpa_dev.dev,
++			"%s: irq_vring_init failed. index:%u, err:%d\n",
++			__func__, idx, rc);
++		return rc;
 +	}
-+	mutex_unlock(&vdpa_nic->lock);
-+}
++	vring_cfg.desc = vdpa_nic->vring[idx].desc;
++	vring_cfg.avail = vdpa_nic->vring[idx].avail;
++	vring_cfg.used = vdpa_nic->vring[idx].used;
++	vring_cfg.size = vdpa_nic->vring[idx].size;
++	vring_cfg.features = vdpa_nic->features;
++	vring_cfg.msix_vector = idx;
++	vring_dyn_cfg.avail_idx = vdpa_nic->vring[idx].last_avail_idx;
++	vring_dyn_cfg.used_idx = vdpa_nic->vring[idx].last_used_idx;
 +
-+static bool ef100_vdpa_get_vq_ready(struct vdpa_device *vdev, u16 idx)
-+{
-+	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-+	bool ready;
++	rc = efx_vdpa_vring_create(vdpa_nic->vring[idx].vring_ctx,
++				   &vring_cfg, &vring_dyn_cfg);
++	if (rc) {
++		dev_err(&vdpa_nic->vdpa_dev.dev,
++			"%s: vring_create failed index:%u, err:%d\n",
++			__func__, idx, rc);
++		goto err_vring_create;
++	}
++	vdpa_nic->vring[idx].vring_state |= EF100_VRING_CREATED;
 +
-+	if (is_qid_invalid(vdpa_nic, idx, __func__))
-+		return false;
-+
-+	mutex_lock(&vdpa_nic->lock);
-+	ready = vdpa_nic->vring[idx].vring_state & EF100_VRING_READY_CONFIGURED;
-+	mutex_unlock(&vdpa_nic->lock);
-+	return ready;
-+}
-+
-+static int ef100_vdpa_set_vq_state(struct vdpa_device *vdev, u16 idx,
-+				   const struct vdpa_vq_state *state)
-+{
-+	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-+
-+	if (is_qid_invalid(vdpa_nic, idx, __func__))
-+		return -EINVAL;
-+
-+	mutex_lock(&vdpa_nic->lock);
-+	vdpa_nic->vring[idx].last_avail_idx = state->split.avail_index;
-+	vdpa_nic->vring[idx].last_used_idx = state->split.avail_index;
-+	mutex_unlock(&vdpa_nic->lock);
-+	return 0;
-+}
-+
-+static int ef100_vdpa_get_vq_state(struct vdpa_device *vdev,
-+				   u16 idx, struct vdpa_vq_state *state)
-+{
-+	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-+
-+	if (is_qid_invalid(vdpa_nic, idx, __func__))
-+		return -EINVAL;
-+
-+	mutex_lock(&vdpa_nic->lock);
-+	state->split.avail_index = (u16)vdpa_nic->vring[idx].last_used_idx;
-+	mutex_unlock(&vdpa_nic->lock);
-+
-+	return 0;
-+}
-+
-+static struct vdpa_notification_area
-+		ef100_vdpa_get_vq_notification(struct vdpa_device *vdev,
-+					       u16 idx)
-+{
-+	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-+	struct vdpa_notification_area notify_area = {0, 0};
-+
-+	if (is_qid_invalid(vdpa_nic, idx, __func__))
-+		return notify_area;
-+
-+	mutex_lock(&vdpa_nic->lock);
-+	notify_area.addr = (uintptr_t)(vdpa_nic->efx->membase_phys +
-+				vdpa_nic->vring[idx].doorbell_offset);
-+	/* VDPA doorbells are at a stride of VI/2
-+	 * One VI stride is shared by both rx & tx doorbells
++	/* A VQ kick allows the device to read the avail_idx, which will be
++	 * required at the destination after live migration.
 +	 */
-+	notify_area.size = vdpa_nic->efx->vi_stride / 2;
-+	mutex_unlock(&vdpa_nic->lock);
++	ef100_vdpa_kick_vq(&vdpa_nic->vdpa_dev, idx);
 +
-+	return notify_area;
++	return 0;
++
++err_vring_create:
++	irq_vring_fini(vdpa_nic, idx);
++	return rc;
 +}
 +
-+static int ef100_get_vq_irq(struct vdpa_device *vdev, u16 idx)
++static void reset_vring(struct ef100_vdpa_nic *vdpa_nic, u16 idx)
++{
++	delete_vring(vdpa_nic, idx);
++	vdpa_nic->vring[idx].vring_type = EF100_VDPA_VQ_NTYPES;
++	vdpa_nic->vring[idx].vring_state = 0;
++	vdpa_nic->vring[idx].last_avail_idx = 0;
++	vdpa_nic->vring[idx].last_used_idx = 0;
++}
++
++static void ef100_reset_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
++{
++	int i;
++
++	WARN_ON(!mutex_is_locked(&vdpa_nic->lock));
++
++	if (!vdpa_nic->status)
++		return;
++
++	vdpa_nic->vdpa_state = EF100_VDPA_STATE_INITIALIZED;
++	vdpa_nic->status = 0;
++	vdpa_nic->features = 0;
++	for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++)
++		reset_vring(vdpa_nic, i);
++	ef100_vdpa_irq_vectors_free(vdpa_nic->efx->pci_dev);
++}
++
++/* May be called under the rtnl lock */
++int ef100_vdpa_reset(struct vdpa_device *vdev)
 +{
 +	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-+	u32 irq;
 +
-+	if (is_qid_invalid(vdpa_nic, idx, __func__))
-+		return -EINVAL;
++	/* vdpa device can be deleted anytime but the bar_config
++	 * could still be vdpa and hence efx->state would be STATE_VDPA.
++	 * Accordingly, ensure vdpa device exists before reset handling
++	 */
++	if (!vdpa_nic)
++		return -ENODEV;
 +
 +	mutex_lock(&vdpa_nic->lock);
-+	irq = vdpa_nic->vring[idx].irq;
++	ef100_reset_vdpa_device(vdpa_nic);
 +	mutex_unlock(&vdpa_nic->lock);
-+
-+	return irq;
++	return 0;
 +}
 +
- static u32 ef100_vdpa_get_vq_align(struct vdpa_device *vdev)
- {
- 	return EF100_VDPA_VQ_ALIGN;
-@@ -80,6 +337,8 @@ static void ef100_vdpa_set_config_cb(struct vdpa_device *vdev,
- 
- 	if (cb)
- 		vdpa_nic->cfg_cb = *cb;
-+	else
-+		memset(&vdpa_nic->cfg_cb, 0, sizeof(vdpa_nic->cfg_cb));
++static int start_vdpa_device(struct ef100_vdpa_nic *vdpa_nic)
++{
++	struct efx_nic *efx = vdpa_nic->efx;
++	struct ef100_nic_data *nic_data;
++	int i, j;
++	int rc;
++
++	nic_data = efx->nic_data;
++	rc = ef100_vdpa_irq_vectors_alloc(efx->pci_dev,
++					  vdpa_nic->max_queue_pairs * 2);
++	if (rc < 0) {
++		dev_err(&vdpa_nic->vdpa_dev.dev,
++			"vDPA IRQ alloc failed for vf: %u err:%d\n",
++			nic_data->vf_index, rc);
++		return rc;
++	}
++
++	for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
++		if (can_create_vring(vdpa_nic, i)) {
++			rc = create_vring(vdpa_nic, i);
++			if (rc)
++				goto clear_vring;
++		}
++	}
++
++	vdpa_nic->vdpa_state = EF100_VDPA_STATE_STARTED;
++	return 0;
++
++clear_vring:
++	for (j = 0; j < i; j++)
++		delete_vring(vdpa_nic, j);
++
++	ef100_vdpa_irq_vectors_free(efx->pci_dev);
++	return rc;
++}
++
+ static int ef100_vdpa_set_vq_address(struct vdpa_device *vdev,
+ 				     u16 idx, u64 desc_area, u64 driver_area,
+ 				     u64 device_area)
+@@ -145,22 +362,6 @@ static void ef100_vdpa_set_vq_num(struct vdpa_device *vdev, u16 idx, u32 num)
+ 	mutex_unlock(&vdpa_nic->lock);
  }
  
- static u16 ef100_vdpa_get_vq_num_max(struct vdpa_device *vdev)
-@@ -137,14 +396,30 @@ static void ef100_vdpa_set_config(struct vdpa_device *vdev, unsigned int offset,
+-static void ef100_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+-{
+-	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+-	u32 idx_val;
+-
+-	if (is_qid_invalid(vdpa_nic, idx, __func__))
+-		return;
+-
+-	if (!(vdpa_nic->vring[idx].vring_state & EF100_VRING_CREATED))
+-		return;
+-
+-	idx_val = idx;
+-	_efx_writed(vdpa_nic->efx, cpu_to_le32(idx_val),
+-		    vdpa_nic->vring[idx].doorbell_offset);
+-}
+-
+ static void ef100_vdpa_set_vq_cb(struct vdpa_device *vdev, u16 idx,
+ 				 struct vdpa_callback *cb)
+ {
+@@ -177,6 +378,7 @@ static void ef100_vdpa_set_vq_ready(struct vdpa_device *vdev, u16 idx,
+ 				    bool ready)
+ {
+ 	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	int rc;
+ 
+ 	if (is_qid_invalid(vdpa_nic, idx, __func__))
+ 		return;
+@@ -185,9 +387,21 @@ static void ef100_vdpa_set_vq_ready(struct vdpa_device *vdev, u16 idx,
+ 	if (ready) {
+ 		vdpa_nic->vring[idx].vring_state |=
+ 					EF100_VRING_READY_CONFIGURED;
++		if (vdpa_nic->vdpa_state == EF100_VDPA_STATE_STARTED &&
++		    can_create_vring(vdpa_nic, idx)) {
++			rc = create_vring(vdpa_nic, idx);
++			if (rc)
++				/* Rollback ready configuration
++				 * So that the above layer driver
++				 * can make another attempt to set ready
++				 */
++				vdpa_nic->vring[idx].vring_state &=
++					~EF100_VRING_READY_CONFIGURED;
++		}
+ 	} else {
+ 		vdpa_nic->vring[idx].vring_state &=
+ 					~EF100_VRING_READY_CONFIGURED;
++		delete_vring(vdpa_nic, idx);
+ 	}
+ 	mutex_unlock(&vdpa_nic->lock);
+ }
+@@ -356,6 +570,76 @@ static u32 ef100_vdpa_get_vendor_id(struct vdpa_device *vdev)
+ 	return EF100_VDPA_VENDOR_ID;
+ }
+ 
++static u8 ef100_vdpa_get_status(struct vdpa_device *vdev)
++{
++	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	u8 status;
++
++	mutex_lock(&vdpa_nic->lock);
++	status = vdpa_nic->status;
++	mutex_unlock(&vdpa_nic->lock);
++	return status;
++}
++
++static void ef100_vdpa_set_status(struct vdpa_device *vdev, u8 status)
++{
++	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	u8 new_status;
++	int rc;
++
++	mutex_lock(&vdpa_nic->lock);
++	if (!status) {
++		dev_dbg(&vdev->dev,
++			"%s: Device reset on receiving status 0\n", __func__);
++		ef100_reset_vdpa_device(vdpa_nic);
++		goto unlock_return;
++	}
++	new_status = status & ~vdpa_nic->status;
++	if (new_status == 0) {
++		dev_dbg(&vdev->dev,
++			"%s: New status same as current status\n", __func__);
++		goto unlock_return;
++	}
++	if (new_status & VIRTIO_CONFIG_S_FAILED) {
++		ef100_reset_vdpa_device(vdpa_nic);
++		goto unlock_return;
++	}
++
++	if (new_status & VIRTIO_CONFIG_S_ACKNOWLEDGE) {
++		vdpa_nic->status |= VIRTIO_CONFIG_S_ACKNOWLEDGE;
++		new_status &= ~VIRTIO_CONFIG_S_ACKNOWLEDGE;
++	}
++	if (new_status & VIRTIO_CONFIG_S_DRIVER) {
++		vdpa_nic->status |= VIRTIO_CONFIG_S_DRIVER;
++		new_status &= ~VIRTIO_CONFIG_S_DRIVER;
++	}
++	if (new_status & VIRTIO_CONFIG_S_FEATURES_OK) {
++		vdpa_nic->status |= VIRTIO_CONFIG_S_FEATURES_OK;
++		vdpa_nic->vdpa_state = EF100_VDPA_STATE_NEGOTIATED;
++		new_status &= ~VIRTIO_CONFIG_S_FEATURES_OK;
++	}
++	if (new_status & VIRTIO_CONFIG_S_DRIVER_OK &&
++	    vdpa_nic->vdpa_state == EF100_VDPA_STATE_NEGOTIATED) {
++		vdpa_nic->status |= VIRTIO_CONFIG_S_DRIVER_OK;
++		rc = start_vdpa_device(vdpa_nic);
++		if (rc) {
++			dev_err(&vdpa_nic->vdpa_dev.dev,
++				"%s: vDPA device failed:%d\n", __func__, rc);
++			vdpa_nic->status &= ~VIRTIO_CONFIG_S_DRIVER_OK;
++			goto unlock_return;
++		}
++		new_status &= ~VIRTIO_CONFIG_S_DRIVER_OK;
++	}
++	if (new_status) {
++		dev_warn(&vdev->dev,
++			 "%s: Mismatch Status: %x & State: %u\n",
++			 __func__, new_status, vdpa_nic->vdpa_state);
++	}
++
++unlock_return:
++	mutex_unlock(&vdpa_nic->lock);
++}
++
+ static size_t ef100_vdpa_get_config_size(struct vdpa_device *vdev)
+ {
+ 	return sizeof(struct virtio_net_config);
+@@ -381,6 +665,12 @@ static void ef100_vdpa_set_config(struct vdpa_device *vdev, unsigned int offset,
+ {
+ 	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
+ 
++	if (vdpa_nic->vdpa_state == EF100_VDPA_STATE_SUSPENDED) {
++		dev_err(&vdev->dev,
++			"config update not allowed in suspended state\n");
++		return;
++	}
++
+ 	/* Avoid the possibility of wrap-up after the sum exceeds U32_MAX */
+ 	if (WARN_ON(((u64)offset + len) > sizeof(vdpa_nic->net_config))) {
+ 		dev_err(&vdev->dev,
+@@ -393,6 +683,21 @@ static void ef100_vdpa_set_config(struct vdpa_device *vdev, unsigned int offset,
+ 		vdpa_nic->mac_configured = true;
+ }
+ 
++static int ef100_vdpa_suspend(struct vdpa_device *vdev)
++{
++	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
++	int i, rc;
++
++	mutex_lock(&vdpa_nic->lock);
++	for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
++		rc = delete_vring(vdpa_nic, i);
++		if (rc)
++			break;
++	}
++	vdpa_nic->vdpa_state = EF100_VDPA_STATE_SUSPENDED;
++	mutex_unlock(&vdpa_nic->lock);
++	return rc;
++}
  static void ef100_vdpa_free(struct vdpa_device *vdev)
  {
  	struct ef100_vdpa_nic *vdpa_nic = get_vdpa_nic(vdev);
-+	int i;
- 
- 	if (vdpa_nic) {
-+		for (i = 0; i < (vdpa_nic->max_queue_pairs * 2); i++) {
-+			reset_vring(vdpa_nic, i);
-+			if (vdpa_nic->vring[i].vring_ctx)
-+				delete_vring_ctx(vdpa_nic, i);
-+		}
- 		mutex_destroy(&vdpa_nic->lock);
- 		vdpa_nic->efx->vdpa_nic = NULL;
- 	}
- }
- 
- const struct vdpa_config_ops ef100_vdpa_config_ops = {
-+	.set_vq_address	     = ef100_vdpa_set_vq_address,
-+	.set_vq_num	     = ef100_vdpa_set_vq_num,
-+	.kick_vq	     = ef100_vdpa_kick_vq,
-+	.set_vq_cb	     = ef100_vdpa_set_vq_cb,
-+	.set_vq_ready	     = ef100_vdpa_set_vq_ready,
-+	.get_vq_ready	     = ef100_vdpa_get_vq_ready,
-+	.set_vq_state	     = ef100_vdpa_set_vq_state,
-+	.get_vq_state	     = ef100_vdpa_get_vq_state,
-+	.get_vq_notification = ef100_vdpa_get_vq_notification,
-+	.get_vq_irq          = ef100_get_vq_irq,
- 	.get_vq_align	     = ef100_vdpa_get_vq_align,
- 	.get_device_features = ef100_vdpa_get_device_features,
- 	.set_driver_features = ef100_vdpa_set_driver_features,
+@@ -428,9 +733,13 @@ const struct vdpa_config_ops ef100_vdpa_config_ops = {
+ 	.get_vq_num_max      = ef100_vdpa_get_vq_num_max,
+ 	.get_device_id	     = ef100_vdpa_get_device_id,
+ 	.get_vendor_id	     = ef100_vdpa_get_vendor_id,
++	.get_status	     = ef100_vdpa_get_status,
++	.set_status	     = ef100_vdpa_set_status,
++	.reset               = ef100_vdpa_reset,
+ 	.get_config_size     = ef100_vdpa_get_config_size,
+ 	.get_config	     = ef100_vdpa_get_config,
+ 	.set_config	     = ef100_vdpa_set_config,
+ 	.get_generation      = NULL,
++	.suspend	     = ef100_vdpa_suspend,
+ 	.free	             = ef100_vdpa_free,
+ };
 -- 
 2.30.1
 
