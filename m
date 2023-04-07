@@ -2,171 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 366BF6DA8C8
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 08:12:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 428AB6DA8E5
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 08:26:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233748AbjDGGMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 02:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
+        id S238089AbjDGG0A convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 7 Apr 2023 02:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233479AbjDGGMo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 02:12:44 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E342976D
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 23:12:40 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id ix20so39322059plb.3
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 23:12:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680847959;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZpJgk8U3UHJCWTgJkiRH7igjtd0+UtUKprsISkm8p+g=;
-        b=nQ73Y1SmVhTWx4B7NM/ggy6VE0EeryVPvJRovEsGF5xmLubwkTOW7Zdy+P6LySRYGq
-         BF3jAigCcc0pta+ZcPm4rq9yu1pqSPgR6HJz1AtfLYU1HOjrUu3xLpLXEtIYClltwwxN
-         Fph0JHOyj3KXd0lplRfca1cqQge9rBdyAiGwk2Ic9WlWIe9EsX5CQrvmHD4PBrCiqWTr
-         oNSb47GePUnJUx8d3iBx/5dJ9jKB+F2leTvYxoIhpxeFH3xlr4gO3LTPiN6cdqvvjSRN
-         Fcd3X1h2SngA+VhDyZ3uii3VwnBVnfSeL3c7lQzK2YH7N491vy9O+nJdp5G0Bz3cD1hz
-         6ezg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680847959;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZpJgk8U3UHJCWTgJkiRH7igjtd0+UtUKprsISkm8p+g=;
-        b=XpZFlJ1N4N+UK7NvFvBtXZ28JDTpgjZI3SYJD9fTpDnuXYmZRoohfsPFpjihlvzVY0
-         Y/m+fZNsp3kvPLnKCHBmKv22MMMHJvCYSHynL6E+HQLJ8kvd61MKpHYshjaGeJDqUNkd
-         KWZw/EpDnj2qGFPyDgBOYxb9WJa4bt5OMYPfP84slxXItZOnFoDwMfQTbI9Dq6D7VtYd
-         5z3tvCLM7fKEv4POS6zRjouqRM2IJZq8ngDUTBiKOC8k1mea/PAlqPSnEIpZnM2sUG6X
-         xfyUWlIwZWY73HBV+HhEEsDQCVLmIIDNZY6DzNHvklnn9Sg1xWBc/4GsIUugMZGCRMWQ
-         xAAQ==
-X-Gm-Message-State: AAQBX9fAc7pouB29MrVBh+f45x8DG2XQZ7Z+S4J8c2CNHhAWVOS0OPws
-        Sd/q1dzdLXs/q3Owvd1PdjqtShcM9ez0AA==
-X-Google-Smtp-Source: AKy350a9RMKAGqWkJgGTlRBXuJDvTGh2f3IHNPdx4TGV95yiSLL9OyA8ZmdaLOQbVyp0p7ZEOfvlJA==
-X-Received: by 2002:a17:90b:1d88:b0:23d:2415:c9a9 with SMTP id pf8-20020a17090b1d8800b0023d2415c9a9mr1294895pjb.34.1680847959277;
-        Thu, 06 Apr 2023 23:12:39 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([2409:8a02:782e:a1c0:2082:5d32:9dce:4c17])
-        by smtp.gmail.com with ESMTPSA id h1-20020a17090a9c0100b00244b13111e6sm645838pjp.38.2023.04.06.23.12.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 23:12:38 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        with ESMTP id S231508AbjDGGZ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 02:25:57 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018405B88;
+        Thu,  6 Apr 2023 23:25:56 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 3376OZFy8005152, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 3376OZFy8005152
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Fri, 7 Apr 2023 14:24:35 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Fri, 7 Apr 2023 14:24:20 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Fri, 7 Apr 2023 14:24:20 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Fri, 7 Apr 2023 14:24:20 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Douglas Anderson <dianders@chromium.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Liang Li <liali@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>
-Subject: [PATCHv2 net-next] bonding: add software tx timestamping support
-Date:   Fri,  7 Apr 2023 14:12:28 +0800
-Message-Id: <20230407061228.1035431-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.38.1
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     =?iso-8859-1?Q?Andr=E9_Apitzsch?= <git@apitzsch.eu>,
+        =?iso-8859-1?Q?Bj=F8rn_Mork?= <bjorn@mork.no>,
+        David Ober <dober6023@gmail.com>,
+        Jean-Francois Le Fillatre <jflf_kernel@gmx.com>,
+        "Sven van Ashbrook" <svenva@chromium.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] r8152: Add __GFP_NOWARN to big allocations
+Thread-Topic: [PATCH] r8152: Add __GFP_NOWARN to big allocations
+Thread-Index: AQHZaOX5MJJBdKWQZ0S+wy/WHuNvFK8fXNhg
+Date:   Fri, 7 Apr 2023 06:24:20 +0000
+Message-ID: <1922af354f7548f0878821b3f0692640@realtek.com>
+References: <20230406171411.1.I84dbef45786af440fd269b71e9436a96a8e7a152@changeid>
+In-Reply-To: <20230406171411.1.I84dbef45786af440fd269b71e9436a96a8e7a152@changeid>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.228.6]
+x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
+x-kse-antispam-interceptor-info: fallback
+x-kse-antivirus-interceptor-info: fallback
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, bonding only obtain the timestamp (ts) information of
-the active slave, which is available only for modes 1, 5, and 6.
-For other modes, bonding only has software rx timestamping support.
+> From: Douglas Anderson <dianders@chromium.org>
+[...]
+> When memory is a little tight on my system, it's pretty easy to see
+> warnings that look like this.
+> 
+>   ksoftirqd/0: page allocation failure: order:3,
+> mode:0x40a20(GFP_ATOMIC|__GFP_COMP),
+> nodemask=(null),cpuset=/,mems_allowed=0
+>   ...
+>   Call trace:
+>    dump_backtrace+0x0/0x1e8
+>    show_stack+0x20/0x2c
+>    dump_stack_lvl+0x60/0x78
+>    dump_stack+0x18/0x38
+>    warn_alloc+0x104/0x174
+>    __alloc_pages+0x588/0x67c
+>    alloc_rx_agg+0xa0/0x190 [r8152 ...]
+>    r8152_poll+0x270/0x760 [r8152 ...]
+>    __napi_poll+0x44/0x1ec
+>    net_rx_action+0x100/0x300
+>    __do_softirq+0xec/0x38c
+>    run_ksoftirqd+0x38/0xec
+>    smpboot_thread_fn+0xb8/0x248
+>    kthread+0x134/0x154
+>    ret_from_fork+0x10/0x20
+> 
+> On a fragmented system it's normal that order 3 allocations will
+> sometimes fail, especially atomic ones. The driver handles these
+> failures fine and the WARN just creates spam in the logs for this
+> case. The __GFP_NOWARN flag is exactly for this situation, so add it
+> to the allocation.
+> 
+> NOTE: my testing is on a 5.15 system, but there should be no reason
+> that this would be fundamentally different on a mainline kernel.
+> 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-However, some users who use modes such as LACP also want tx timestamp
-support. To address this issue, let's check the ts information of each
-slave. If all slaves support tx timestamping, we can enable tx
-timestamping support for the bond.
+Acked-by: Hayes Wang <hayeswang@realtek.com>
 
-Suggested-by: Miroslav Lichvar <mlichvar@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- drivers/net/bonding/bond_main.c | 39 +++++++++++++++++++++++++++++++--
- include/uapi/linux/net_tstamp.h |  3 +++
- 2 files changed, 40 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 00646aa315c3..994efc777a77 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -5686,9 +5686,13 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
- 				    struct ethtool_ts_info *info)
- {
- 	struct bonding *bond = netdev_priv(bond_dev);
-+	struct ethtool_ts_info ts_info;
- 	const struct ethtool_ops *ops;
- 	struct net_device *real_dev;
- 	struct phy_device *phydev;
-+	bool soft_support = false;
-+	struct list_head *iter;
-+	struct slave *slave;
- 	int ret = 0;
- 
- 	rcu_read_lock();
-@@ -5707,10 +5711,41 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
- 			ret = ops->get_ts_info(real_dev, info);
- 			goto out;
- 		}
-+	} else {
-+		/* Check if all slaves support software rx/tx timestamping */
-+		rcu_read_lock();
-+		bond_for_each_slave_rcu(bond, slave, iter) {
-+			ret = -1;
-+			dev_hold(slave->dev);
-+			ops = slave->dev->ethtool_ops;
-+			phydev = slave->dev->phydev;
-+
-+			if (phy_has_tsinfo(phydev))
-+				ret = phy_ts_info(phydev, &ts_info);
-+			else if (ops->get_ts_info)
-+				ret = ops->get_ts_info(slave->dev, &ts_info);
-+
-+			if (!ret && (ts_info.so_timestamping & SOF_TIMESTAMPING_SOFTRXTX) == \
-+				    SOF_TIMESTAMPING_SOFTRXTX) {
-+				dev_put(slave->dev);
-+				soft_support = true;
-+				continue;
-+			}
-+
-+			soft_support = false;
-+			dev_put(slave->dev);
-+			break;
-+		}
-+		rcu_read_unlock();
- 	}
- 
--	info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
--				SOF_TIMESTAMPING_SOFTWARE;
-+	ret = 0;
-+	if (soft_support) {
-+		info->so_timestamping = SOF_TIMESTAMPING_SOFTRXTX;
-+	} else {
-+		info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
-+					SOF_TIMESTAMPING_SOFTWARE;
-+	}
- 	info->phc_index = -1;
- 
- out:
-diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
-index a2c66b3d7f0f..2adaa0008434 100644
---- a/include/uapi/linux/net_tstamp.h
-+++ b/include/uapi/linux/net_tstamp.h
-@@ -48,6 +48,9 @@ enum {
- 					 SOF_TIMESTAMPING_TX_SCHED | \
- 					 SOF_TIMESTAMPING_TX_ACK)
- 
-+#define SOF_TIMESTAMPING_SOFTRXTX (SOF_TIMESTAMPING_TX_SOFTWARE | \
-+				   SOF_TIMESTAMPING_RX_SOFTWARE | \
-+				   SOF_TIMESTAMPING_SOFTWARE)
- /**
-  * struct so_timestamping - SO_TIMESTAMPING parameter
-  *
--- 
-2.38.1
+Best Regards,
+Hayes
 
