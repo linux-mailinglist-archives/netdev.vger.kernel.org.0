@@ -2,213 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80FF46DABF7
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 13:04:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E89166DABFE
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 13:04:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238567AbjDGLEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 07:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
+        id S239970AbjDGLEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 07:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbjDGLEC (ORCPT
+        with ESMTP id S231211AbjDGLEC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 07:04:02 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B33AE53;
-        Fri,  7 Apr 2023 04:04:01 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1pkjsE-00021f-0H;
-        Fri, 07 Apr 2023 13:03:18 +0200
-Date:   Fri, 7 Apr 2023 12:03:10 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B9D55AE;
+        Fri,  7 Apr 2023 04:04:00 -0700 (PDT)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by fd01.gateway.ufhost.com (Postfix) with ESMTP id 7780D24E3BF;
+        Fri,  7 Apr 2023 19:03:58 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 7 Apr
+ 2023 19:03:58 +0800
+Received: from starfive-sdk.starfivetech.com (171.223.208.138) by
+ EXMBX162.cuchost.com (172.16.6.72) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.42; Fri, 7 Apr 2023 19:03:57 +0800
+From:   Samin Guo <samin.guo@starfivetech.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix port specifications
- for MT7988
-Message-ID: <ZC_4bkyiIetYMoJt@makrotopia.org>
-References: <20230406100445.52915-1-arinc.unal@arinc9.com>
- <ZC6n1XAGyZFlxyXx@shell.armlinux.org.uk>
- <e413a182-ce93-5831-09f5-19d34d7f7fcf@arinc9.com>
- <ZC9AXyuFqa3bqF3Q@makrotopia.org>
- <0cdb0504-bc1e-c255-a7d2-4dd96bd8e6e3@arinc9.com>
- <ZC_iPfl5R-_4zOZg@makrotopia.org>
- <574460f4-5e22-3154-809d-42ca7aa53c1b@arinc9.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Pedro Moreira <pmmoreir@synopsys.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Conor Dooley <conor@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>,
+        Samin Guo <samin.guo@starfivetech.com>,
+        Tommaso Merciai <tomm.merciai@gmail.com>
+Subject: [-net-next v11 0/6] Add Ethernet driver for StarFive JH7110 SoC
+Date:   Fri, 7 Apr 2023 19:03:50 +0800
+Message-ID: <20230407110356.8449-1-samin.guo@starfivetech.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <574460f4-5e22-3154-809d-42ca7aa53c1b@arinc9.com>
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX162.cuchost.com
+ (172.16.6.72)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-0.0 required=5.0 tests=RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 07, 2023 at 01:46:20PM +0300, Arınç ÜNAL wrote:
-> On 7.04.2023 12:28, Daniel Golle wrote:
-> > On Fri, Apr 07, 2023 at 11:56:08AM +0300, Arınç ÜNAL wrote:
-> > > On 7.04.2023 00:57, Daniel Golle wrote:
-> > > > On Fri, Apr 07, 2023 at 12:43:41AM +0300, Arınç ÜNAL wrote:
-> > > > > On 6.04.2023 14:07, Russell King (Oracle) wrote:
-> > > > > > On Thu, Apr 06, 2023 at 01:04:45PM +0300, arinc9.unal@gmail.com wrote:
-> > > > > > > From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> > > > > > > 
-> > > > > > > On the switch on the MT7988 SoC, there are only 4 PHYs. There's only port 6
-> > > > > > > as the CPU port, there's no port 5. Split the switch statement with a check
-> > > > > > > to enforce these for the switch on the MT7988 SoC. The internal phy-mode is
-> > > > > > > specific to MT7988 so put it for MT7988 only.
-> > > > > > > 
-> > > > > > > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> > > > > > > ---
-> > > > > > > 
-> > > > > > > Daniel, this is based on the information you provided me about the switch.
-> > > > > > > I will add this to my current patch series if it looks good to you.
-> > > > > > > 
-> > > > > > > Arınç
-> > > > > > > 
-> > > > > > > ---
-> > > > > > >     drivers/net/dsa/mt7530.c | 67 ++++++++++++++++++++++++++--------------
-> > > > > > >     1 file changed, 43 insertions(+), 24 deletions(-)
-> > > > > > > 
-> > > > > > > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> > > > > > > index 6fbbdcb5987f..f167fa135ef1 100644
-> > > > > > > --- a/drivers/net/dsa/mt7530.c
-> > > > > > > +++ b/drivers/net/dsa/mt7530.c
-> > > > > > > @@ -2548,7 +2548,7 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
-> > > > > > >     	phy_interface_zero(config->supported_interfaces);
-> > > > > > >     	switch (port) {
-> > > > > > > -	case 0 ... 4: /* Internal phy */
-> > > > > > > +	case 0 ... 3: /* Internal phy */
-> > > > > > >     		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
-> > > > > > >     			  config->supported_interfaces);
-> > > > > > >     		break;
-> > > > > > > @@ -2710,37 +2710,56 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-> > > > > > >     	struct mt7530_priv *priv = ds->priv;
-> > > > > > >     	u32 mcr_cur, mcr_new;
-> > > > > > > -	switch (port) {
-> > > > > > > -	case 0 ... 4: /* Internal phy */
-> > > > > > > -		if (state->interface != PHY_INTERFACE_MODE_GMII &&
-> > > > > > > -		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
-> > > > > > > -			goto unsupported;
-> > > > > > > -		break;
-> > > > > > > -	case 5: /* Port 5, a CPU port. */
-> > > > > > > -		if (priv->p5_interface == state->interface)
-> > > > > > > +	if (priv->id == ID_MT7988) {
-> > > > > > > +		switch (port) {
-> > > > > > > +		case 0 ... 3: /* Internal phy */
-> > > > > > > +			if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
-> > > > > > 
-> > > > > > How do these end up with PHY_INTERFACE_MODE_INTERNAL ? phylib defaults
-> > > > > > to GMII mode without something else being specified in DT.
-> > > > > > 
-> > > > > > Also note that you should *not* be validating state->interface in the
-> > > > > > mac_config() method because it's way too late to reject it - if you get
-> > > > > > an unsupported interface here, then that is down to the get_caps()
-> > > > > > method being buggy. Only report interfaces in get_caps() that you are
-> > > > > > prepared to handle in the rest of the system.
-> > > > > 
-> > > > > This is already the case for all three get_caps(). The supported interfaces
-> > > > > for each port are properly defined.
-> > > > > 
-> > > > > Though mt7988_mac_port_get_caps() clears the config->supported_interfaces
-> > > > > bitmap before reporting the supported interfaces. I don't think this is
-> > > > > needed as all bits in the bitmap should already be initialized to zero when
-> > > > > the phylink_config structure is allocated.
-> > > > > 
-> > > > > I'm not sure if your suggestion is to make sure the supported interfaces are
-> > > > > properly reported on get_caps(), or validate state->interface somewhere
-> > > > > else.
-> > > > 
-> > > > I think what Russell meant is just there is no point in being overly
-> > > > precise about permitted interface modes in mt753x_phylink_mac_config,
-> > > > as this function is not meant and called too late to validate the
-> > > > validity of the selected interface mode.
-> > > > 
-> > > > You change to mt7988_mac_port_get_caps looks correct to me and doing
-> > > > this will already prevent mt753x_phylink_mac_config from ever being
-> > > > called on MT7988 for port == 4 as well as and port == 5.
-> > > 
-> > > Ah, thanks for pointing this out Daniel. I see ds->ops->phylink_get_caps()
-> > > is run right before phylink_create() on dsa_port_phylink_create(), as it
-> > > should get the capabilities before creating an instance.
-> > > 
-> > > Should I remove phy_interface_zero(config->supported_interfaces);
-> > > mt7988_mac_port_get_caps()? I'd prefer to do identical operations on each
-> > > get_caps(), if there's no apparent reason for this to be on
-> > > mt7988_mac_port_get_caps().
-> > 
-> > Yes, sounds sane to me, please do so.
-> > 
-> > Also we could make .mac_port_config optional, as for MT7988 we actually
-> > won't need it at all:
-> > 
-> > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> > index e4bb5037d3525..5efcb9897eb18 100644
-> > --- a/drivers/net/dsa/mt7530.c
-> > +++ b/drivers/net/dsa/mt7530.c
-> > @@ -2653,17 +2653,6 @@ static bool mt753x_is_mac_port(u32 port)
-> >   	return (port == 5 || port == 6);
-> >   }
-> > -static int
-> > -mt7988_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-> > -		  phy_interface_t interface)
-> > -{
-> > -	if (dsa_is_cpu_port(ds, port) &&
-> > -	    interface == PHY_INTERFACE_MODE_INTERNAL)
-> > -		return 0;
-> > -
-> > -	return -EINVAL;
-> > -}
-> > -
-> >   static int
-> >   mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-> >   		  phy_interface_t interface)
-> > @@ -2704,6 +2693,9 @@ mt753x_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-> >   {
-> >   	struct mt7530_priv *priv = ds->priv;
-> > +	if (!priv->info->mac_port_config)
-> > +		return 0;
-> > +
-> >   	return priv->info->mac_port_config(ds, port, mode, state->interface);
-> >   }
-> > @@ -3157,7 +3149,6 @@ const struct mt753x_info mt753x_table[] = {
-> >   		.pad_setup = mt7988_pad_setup,
-> >   		.cpu_port_config = mt7988_cpu_port_config,
-> >   		.mac_port_get_caps = mt7988_mac_port_get_caps,
-> > -		.mac_port_config = mt7988_mac_config,
-> >   	},
-> >   };
-> >   EXPORT_SYMBOL_GPL(mt753x_table);
-> > @@ -3186,8 +3177,7 @@ mt7530_probe_common(struct mt7530_priv *priv)
-> >   	 */
-> >   	if (!priv->info->sw_setup || !priv->info->pad_setup ||
-> >   	    !priv->info->phy_read_c22 || !priv->info->phy_write_c22 ||
-> > -	    !priv->info->mac_port_get_caps ||
-> > -	    !priv->info->mac_port_config)
-> > +	    !priv->info->mac_port_get_caps)
-> 
-> Why split the sanity check? Isn't just removing mt7988_mac_config() and
-> .mac_port_config = mt7988_mac_config enough?
+This series adds ethernet support for the StarFive JH7110 RISC-V SoC,
+which includes a dwmac-5.20 MAC driver (from Synopsys DesignWare).
+This series has been tested and works fine on VisionFive-2 v1.2A and
+v1.3B SBC boards.
 
-No, because the sanity check currently requires a pointer to a
-mac_port_config function to be non-NULL. If we want to make it optional
-then we'll also have to skip that in the santity check which will
-otherwise fail.
+For more information and support, you can visit RVspace wiki[1].
+You can simply review or test the patches at the link [2].
+This patchset should be applied after the patchset [3] [4].
+
+[1]: https://wiki.rvspace.org/
+[2]: https://github.com/saminGuo/linux/tree/vf2-6.3rc4-gmac-net-next
+[3]: https://patchwork.kernel.org/project/linux-riscv/cover/20230401111934.130844-1-hal.feng@starfivetech.com
+[4]: https://patchwork.kernel.org/project/linux-riscv/cover/20230315055813.94740-1-william.qiu@starfivetech.com
+
+
+Changes since v10:
+Patch 4:
+- Required goes after properties (by Krzysztof Kozlowski)
+Patch 5:
+- Fixed the wrong binding filename (by Conor Dooley)
+
+Changes history:
+
+Changes since v9:
+- Rebased on tag v6.3-rc4.
+Patch 5:
+- Cleaned up all the error handling code by dev_err_probe (by Emil).
+- Fixed the warning that clang uses W=1 because 'rate' may not be initialized (by Jakub Kicinski)
+
+Changes since v8:
+Patch 4:
+- Dropped irrelevant MAINTAINERS context (by Jakub Kicinski)
+Patch 6:
+- Moved error messages to starfive_dwmac_set_mode function to avoid getting error
+  messages twice when syscon_regmap_lookup_by_phandle_args fails. (by Emil)
+- Renamed patch header to "net: stmmac: dwmac-starfive:xxx" (by Emil)
+
+Changes since v7:
+Patch 4:
+- Constrained the reg/interrupts/interrupt-names properties (by Krzysztof Kozlowski)
+
+Changes since v6:
+- Sended network patches[patch 1,2,3,4,5,6] and riscv trees patches[patch 7,8] separately (by Jakub Kicinski)
+
+Changes since v5:
+- Dropped "depends on STMMAC_ETH" and compiled DWMAC_STARFIVE to m by default (by Emil)
+- Removed clk_gtx in struct starfive_dwmac due to this pointer is only set, but never read. (by Emil)
+- Only setting the plat_dat->fix_mac_speed callback when it is needed (by Emil)
+- Moved mdio/phy nodes from SOC .dtsi into board .dtsi (by Andrew)
+- Modified the parameters passed by starfive,syscon (by Andrew && Emil)
+    <syscon, offset, mask>  ==>  <syscon, offset, shift>
+- Optimized the patchs(Fewer patches from 12 to 8)
+    1)merged patch-7 into patch-4 (by Rob)
+    2)merged patch-9 into patch-5
+    2)merged patch-11,12 into patch-10
+    3)Adjusted the patchs order
+- Fixed the unevaluatedProperties property from true to false (by Rob)
+- Replaced contains:enum with items:const for reset-names in snps,dwmac.yaml (by Rob)
+- Tested-by: Tommaso Merciai <tomm.merciai@gmail.com>
+
+Changes since v4:
+- Supported both visionfive 2 v1.2A and visionfive 2 v1.3B.
+- Reworded the maxitems number of resets property in 'snps,dwmac.yaml'.
+- Suggested by Emil, dropped the _PLAT/_plat from the config/function/struct/file names.
+- Suggested by Emil, added MODULE_DEVICE_TABLE().
+- Suggested by Emil, dropped clk_gtxclk and use clk_tx_inv to set the clock frequency.
+- Added phy interface mode configuration function.
+- Rebased on tag v6.2.
+
+Changes since v3:
+- Reworded the maxitems number of resets property in 'snps,dwmac.yaml'
+- Removed the unused code in 'dwmac-starfive-plat.c'.
+- Reworded the return statement in 'starfive_eth_plat_fix_mac_speed' function.
+
+Changes since v2:
+- Renamed the dt-bindings 'starfive,jh71x0-dwmac.yaml' to 'starfive,jh7110-dwmac.yaml'.
+- Reworded the commit messages.
+- Reworded the example context in the dt-binding 'starfive,jh7110-dwmac.yaml'.
+- Removed "starfive,jh7100-dwmac" compatible string and special initialization of jh7100.
+- Removed the parts of YT8531,so dropped patch 5 and 6.
+- Reworded the maxitems number of resets property in 'snps,dwmac.yaml'.
+
+Changes since v1:
+- Recovered the author of the 1st and 3rd patches back to Emil Renner Berthing.
+- Added a new patch to update maxitems number of resets property in 'snps,dwmac.yaml'.
+- Fixed the check errors reported by "make dt_binding_check".
+- Renamed the dt-binding 'starfive,dwmac-plat.yaml' to 'starfive,jh71x0-dwmac.yaml'.
+- Updated the example context in the dt-binding 'starfive,jh71x0-dwmac.yaml'.
+- Added new dt-binding 'motorcomm,yt8531.yaml' to describe details of phy clock
+  delay configuration parameters.
+- Added more comments for PHY driver setting. For more details, see
+  'motorcomm,yt8531.yaml'.
+- Moved mdio device tree node from 'jh7110-starfive-visionfive-v2.dts' to 'jh7110.dtsi'.
+- Re-worded the commit message of several patches.
+- Renamed all the functions with starfive_eth_plat prefix in 'dwmac-starfive-plat.c'.
+- Added "starfive,jh7100-dwmac" compatible string and special init to support JH7100.
+
+Previous versions:
+v1 - https://patchwork.kernel.org/project/linux-riscv/cover/20221201090242.2381-1-yanhong.wang@starfivetech.com/
+v2 - https://patchwork.kernel.org/project/linux-riscv/cover/20221216070632.11444-1-yanhong.wang@starfivetech.com/
+v3 - https://patchwork.kernel.org/project/linux-riscv/cover/20230106030001.1952-1-yanhong.wang@starfivetech.com/
+v4 - https://patchwork.kernel.org/project/linux-riscv/cover/20230118061701.30047-1-yanhong.wang@starfivetech.com/
+v5 - https://patchwork.kernel.org/project/netdevbpf/cover/20230303085928.4535-1-samin.guo@starfivetech.com/
+v6 - https://patchwork.kernel.org/project/netdevbpf/cover/20230313034645.5469-1-samin.guo@starfivetech.com/
+v7 - https://patchwork.kernel.org/project/netdevbpf/cover/20230316043714.24279-1-samin.guo@starfivetech.com/
+v8 - https://patchwork.kernel.org/project/linux-riscv/cover/20230324022819.2324-1-samin.guo@starfivetech.com/
+v9 - https://patchwork.kernel.org/project/linux-riscv/cover/20230328062009.25454-1-samin.guo@starfivetech.com/
+v10 - https://patchwork.kernel.org/project/linux-riscv/cover/20230403065932.7187-1-samin.guo@starfivetech.com/
+
+Emil Renner Berthing (2):
+  dt-bindings: net: snps,dwmac: Add dwmac-5.20 version
+  net: stmmac: platform: Add snps,dwmac-5.20 IP compatible string
+
+Samin Guo (3):
+  dt-bindings: net: snps,dwmac: Add 'ahb' reset/reset-name
+  net: stmmac: Add glue layer for StarFive JH7110 SoC
+  net: stmmac: starfive-dmac: Add phy interface settings
+
+Yanhong Wang (1):
+  dt-bindings: net: Add support StarFive dwmac
+
+ .../devicetree/bindings/net/snps,dwmac.yaml   |  17 +-
+ .../bindings/net/starfive,jh7110-dwmac.yaml   | 144 +++++++++++++++
+ MAINTAINERS                                   |   7 +
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
+ drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+ .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 171 ++++++++++++++++++
+ .../ethernet/stmicro/stmmac/stmmac_platform.c |   3 +-
+ 7 files changed, 350 insertions(+), 5 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+
+
+base-commit: 522c3534e9e1123cd03999016b08ce811058dfe0
+prerequisite-patch-id: 55390537360f25c8b9cbfdc30b73ade004f436f7
+prerequisite-patch-id: bb939c0c7c26b08addfccd890f9d3974b6eaec53
+prerequisite-patch-id: 8a6f135bcabdad4a4bfb21f0c6a0ffd2bb57efe7
+prerequisite-patch-id: c2366f993a9d85e28c06d8d09f064dd5e8b29a61
+prerequisite-patch-id: 50d53a21f91f4087fc80b6f1f72864adfb0002b9
+prerequisite-patch-id: 0df3703af91c30f1ca2c47f5609012f2d7200028
+prerequisite-patch-id: 89f049f951e5acf75aab92541992f816fd0acc0d
+prerequisite-patch-id: 551fae54377090044c3612fca9740a9b359abdd2
+prerequisite-patch-id: c7fdf904f398d478f0ed6d57eb878982bc73329d
+prerequisite-patch-id: 1b2d0982b18da060c82134f05bf3ce16425bac8d
+prerequisite-patch-id: 090ba4b78d47bc19204916e76fdbc70021785388
+prerequisite-patch-id: a5d9e0f7d4f8163f566678894cf693015119f2d9
+prerequisite-patch-id: 4637a8fa2334a45fa6b64351f4e9e28d3e2d60d3
+prerequisite-patch-id: 32647ec60a3b614e1c59ec8e54cb511ae832c22f
+prerequisite-patch-id: aa06658ecf89c92d0dfdd6a4ba6d9e6e67532971
+prerequisite-patch-id: 258ea5f9b8bf41b6981345dcc81795f25865d38f
+prerequisite-patch-id: 8b6f2c9660c0ac0ee4e73e4c21aca8e6b75e81b9
+prerequisite-patch-id: dbb0c0151b8bdf093e6ce79fd2fe3f60791a6e0b
+prerequisite-patch-id: e7773c977a7b37692e9792b21cc4f17fa58f9215
+prerequisite-patch-id: d57e95d31686772abc4c4d5aa1cadc344dc293cd
+prerequisite-patch-id: 9f911969d0a550648493952c99096d26e05d4d83
+prerequisite-patch-id: 41eddeabff082d08a76d8da523f90da4b5218d28
+prerequisite-patch-id: 999c243dca89d56d452aa52ea3e181358b5c1d80
+prerequisite-patch-id: 1be0fb49e0fbe293ca8fa94601e191b13c8c67d9
+--
+2.17.1
+
