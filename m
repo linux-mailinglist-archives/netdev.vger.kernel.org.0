@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EFE26DA6EB
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 03:25:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D83CD6DA6EA
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 03:25:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239116AbjDGBZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 21:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34190 "EHLO
+        id S239063AbjDGBZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 21:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238990AbjDGBZo (ORCPT
+        with ESMTP id S230327AbjDGBZo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 21:25:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DD283C0
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC477EFA
         for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 18:25:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD0C461007
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 01:25:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5BE8C433D2;
-        Fri,  7 Apr 2023 01:25:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FF4F64C4A
+        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 01:25:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D82EC4339C;
+        Fri,  7 Apr 2023 01:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680830742;
-        bh=0upXk3Qdzf/MkoBUjKMO9yOC1r2F/AH8z2oQJ0OgQsA=;
+        s=k20201202; t=1680830743;
+        bh=xAMqO4DeOSUkTNfEaIQZIKFTVRU+4+kT6XxZlpWpcN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qfckg9frH4IXHAGl5PfhXxe7/aEkbrKl3I+a676qx3tXe5lfTfGyUsq2TQ5SMZCc+
-         9qL3/OvENYVImUoiLwTOeWEYxPX8qxioD7xCIpziY4ZVObIuffztlhouv897dqHPrM
-         RDoF6vabzaU8C9x5sAEkS+N0pfBdjzATd/XfVpp/AsWMWzzU4PDMOZ9nIf1U1/aXfD
-         gxc1DpIN7YPiU9beJ4n538LIdruzYSW2LIyHiJT9ARCu8vIaB3U8iDo6OFnsPXnGuk
-         P5Wy/75f0Tj0r59iVHO1TR7AJF2Zi3xzBIqYZYqTmy5pue4beh4XRLWE9VZf3BYMMQ
-         NYFAlDpkppa/A==
+        b=qs3ecxfAlgweFJlPmc7wibz1U56fvGsSf9DgWSKEPSroYHLsGSFC7o6yOEOGzRhfh
+         5J+fgVB5GeRo88bU/2OPCtrQRGoEpqP9qO0JYK+woStKA5JVAB9MTyvoPkzJ/rc20v
+         B8aEFhmEjgDR5lw/zehaR53mDqmwOGuYWbT4jzcd36bQspZX1wpL87/LSy+KrDkgcX
+         6+D60HxhJW5gzYbK/SWNLR5RIYeRBsNYAnCoXuDBuPt8pJAk/7+NVVB5laGG/TED2V
+         1unF7VjcO6wI7jZ4Qt2UAC6txwYkYxPIZnpU6CzN490tObr9cV9Je1HxwxKN4Etyzp
+         z6SQvr7pHx1tQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         herbert@gondor.apana.org.au, alexander.duyck@gmail.com,
         hkallweit1@gmail.com, andrew@lunn.ch, willemb@google.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v4 4/7] net: provide macros for commonly copied lockless queue stop/wake code
-Date:   Thu,  6 Apr 2023 18:25:33 -0700
-Message-Id: <20230407012536.273382-5-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com
+Subject: [PATCH net-next v4 5/7] ixgbe: use new queue try_stop/try_wake macros
+Date:   Thu,  6 Apr 2023 18:25:34 -0700
+Message-Id: <20230407012536.273382-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230407012536.273382-1-kuba@kernel.org>
 References: <20230407012536.273382-1-kuba@kernel.org>
@@ -54,224 +55,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A lot of drivers follow the same scheme to stop / start queues
-without introducing locks between xmit and NAPI tx completions.
-I'm guessing they all copy'n'paste each other's code.
-The original code dates back all the way to e1000 and Linux 2.6.19.
+Convert ixgbe to use the new macros, I think a lot of people
+copy the ixgbe code. The only functional change is that the
+unlikely() in ixgbe_clean_tx_irq() turns into a likely()
+inside the new macro and no longer includes
 
-Smaller drivers shy away from the scheme and introduce a lock
-which may cause deadlocks in netpoll.
+  total_packets && netif_carrier_ok(tx_ring->netdev)
 
-Provide macros which encapsulate the necessary logic.
+which is probably for the best, anyway.
 
-The macros do not prevent false wake ups, the extra barrier
-required to close that race is not worth it. See discussion in:
-https://lore.kernel.org/all/c39312a2-4537-14b4-270c-9fe1fbb91e89@gmail.com/
-
-Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-v4:
- - stopped -> unchanged in kdoc
-v3: https://lore.kernel.org/all/20230405223134.94665-1-kuba@kernel.org/
- - use smp_mb__after_atomic()
- - improve the comments on barriers
- - document the possibility of false wakes
- - rename netif_tx_queue_* -> netif_txq_*
-v2: https://lore.kernel.org/all/20230401051221.3160913-2-kuba@kernel.org/
- - really flip the unlikely into a likely in __netif_tx_queue_maybe_wake()
- - convert if / else into pre-init of _ret
-v1: https://lore.kernel.org/all/20230322233028.269410-1-kuba@kernel.org/
- - perdicate -> predicate
- - on race use start instead of wake and make a note of that
-   in the doc / comment at the start
-rfc: https://lore.kernel.org/all/20230311050130.115138-1-kuba@kernel.org/
----
- Documentation/networking/driver.rst |   6 ++
- include/linux/netdevice.h           |   1 +
- include/net/netdev_queues.h         | 144 ++++++++++++++++++++++++++++
- 3 files changed, 151 insertions(+)
- create mode 100644 include/net/netdev_queues.h
+v3:
+ - call netdev_get_tx_queue() locally, avoid the need for
+   another layer of macros in the core
 
-diff --git a/Documentation/networking/driver.rst b/Documentation/networking/driver.rst
-index 19c363291d04..4071f2c00f8b 100644
---- a/Documentation/networking/driver.rst
-+++ b/Documentation/networking/driver.rst
-@@ -104,6 +104,12 @@ Instead it must maintain the queue properly.  For example,
- 	    TX_BUFFS_AVAIL(dp) > 0)
- 		netif_wake_queue(dp->dev);
+CC: jesse.brandeburg@intel.com
+CC: anthony.l.nguyen@intel.com
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 38 +++++--------------
+ 1 file changed, 10 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 773c35fecace..cbbddee55db1 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -36,6 +36,7 @@
+ #include <net/tc_act/tc_mirred.h>
+ #include <net/vxlan.h>
+ #include <net/mpls.h>
++#include <net/netdev_queues.h>
+ #include <net/xdp_sock_drv.h>
+ #include <net/xfrm.h>
  
-+Lockless queue stop / wake helper macros
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+.. kernel-doc:: include/net/netdev_queues.h
-+   :doc: Lockless queue stopping / waking helpers.
-+
- No exclusive ownership
- ----------------------
+@@ -1119,6 +1120,7 @@ static bool ixgbe_clean_tx_irq(struct ixgbe_q_vector *q_vector,
+ 	unsigned int total_bytes = 0, total_packets = 0, total_ipsec = 0;
+ 	unsigned int budget = q_vector->tx.work_limit;
+ 	unsigned int i = tx_ring->next_to_clean;
++	struct netdev_queue *txq;
  
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index a740be3bb911..18770d325499 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3341,6 +3341,7 @@ static inline void netif_tx_wake_all_queues(struct net_device *dev)
+ 	if (test_bit(__IXGBE_DOWN, &adapter->state))
+ 		return true;
+@@ -1253,20 +1255,12 @@ static bool ixgbe_clean_tx_irq(struct ixgbe_q_vector *q_vector,
+ 				  total_packets, total_bytes);
  
- static __always_inline void netif_tx_stop_queue(struct netdev_queue *dev_queue)
- {
-+	/* Must be an atomic op see netif_txq_try_stop() */
- 	set_bit(__QUEUE_STATE_DRV_XOFF, &dev_queue->state);
+ #define TX_WAKE_THRESHOLD (DESC_NEEDED * 2)
+-	if (unlikely(total_packets && netif_carrier_ok(tx_ring->netdev) &&
+-		     (ixgbe_desc_unused(tx_ring) >= TX_WAKE_THRESHOLD))) {
+-		/* Make sure that anybody stopping the queue after this
+-		 * sees the new next_to_clean.
+-		 */
+-		smp_mb();
+-		if (__netif_subqueue_stopped(tx_ring->netdev,
+-					     tx_ring->queue_index)
+-		    && !test_bit(__IXGBE_DOWN, &adapter->state)) {
+-			netif_wake_subqueue(tx_ring->netdev,
+-					    tx_ring->queue_index);
+-			++tx_ring->tx_stats.restart_queue;
+-		}
+-	}
++	txq = netdev_get_tx_queue(tx_ring->netdev, tx_ring->queue_index);
++	if (total_packets && netif_carrier_ok(tx_ring->netdev) &&
++	    !__netif_txq_maybe_wake(txq, ixgbe_desc_unused(tx_ring),
++				    TX_WAKE_THRESHOLD,
++				    test_bit(__IXGBE_DOWN, &adapter->state)))
++		++tx_ring->tx_stats.restart_queue;
+ 
+ 	return !!budget;
  }
+@@ -8270,22 +8264,10 @@ static void ixgbe_tx_olinfo_status(union ixgbe_adv_tx_desc *tx_desc,
  
-diff --git a/include/net/netdev_queues.h b/include/net/netdev_queues.h
-new file mode 100644
-index 000000000000..5236d78bbdeb
---- /dev/null
-+++ b/include/net/netdev_queues.h
-@@ -0,0 +1,144 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_NET_QUEUES_H
-+#define _LINUX_NET_QUEUES_H
-+
-+#include <linux/netdevice.h>
-+
-+/**
-+ * DOC: Lockless queue stopping / waking helpers.
-+ *
-+ * The netif_txq_maybe_stop() and __netif_txq_completed_wake()
-+ * macros are designed to safely implement stopping
-+ * and waking netdev queues without full lock protection.
-+ *
-+ * We assume that there can be no concurrent stop attempts and no concurrent
-+ * wake attempts. The try-stop should happen from the xmit handler,
-+ * while wake up should be triggered from NAPI poll context.
-+ * The two may run concurrently (single producer, single consumer).
-+ *
-+ * The try-stop side is expected to run from the xmit handler and therefore
-+ * it does not reschedule Tx (netif_tx_start_queue() instead of
-+ * netif_tx_wake_queue()). Uses of the ``stop`` macros outside of the xmit
-+ * handler may lead to xmit queue being enabled but not run.
-+ * The waking side does not have similar context restrictions.
-+ *
-+ * The macros guarantee that rings will not remain stopped if there's
-+ * space available, but they do *not* prevent false wake ups when
-+ * the ring is full! Drivers should check for ring full at the start
-+ * for the xmit handler.
-+ *
-+ * All descriptor ring indexes (and other relevant shared state) must
-+ * be updated before invoking the macros.
-+ */
-+
-+#define netif_txq_try_stop(txq, get_desc, start_thrs)			\
-+	({								\
-+		int _res;						\
-+									\
-+		netif_tx_stop_queue(txq);				\
-+		/* Producer index and stop bit must be visible		\
-+		 * to consumer before we recheck.			\
-+		 * Pairs with a barrier in __netif_txq_maybe_wake().	\
-+		 */							\
-+		smp_mb__after_atomic();					\
-+									\
-+		/* We need to check again in a case another		\
-+		 * CPU has just made room available.			\
-+		 */							\
-+		_res = 0;						\
-+		if (unlikely(get_desc >= start_thrs)) {			\
-+			netif_tx_start_queue(txq);			\
-+			_res = -1;					\
-+		}							\
-+		_res;							\
-+	})								\
-+
-+/**
-+ * netif_txq_maybe_stop() - locklessly stop a Tx queue, if needed
-+ * @txq:	struct netdev_queue to stop/start
-+ * @get_desc:	get current number of free descriptors (see requirements below!)
-+ * @stop_thrs:	minimal number of available descriptors for queue to be left
-+ *		enabled
-+ * @start_thrs:	minimal number of descriptors to re-enable the queue, can be
-+ *		equal to @stop_thrs or higher to avoid frequent waking
-+ *
-+ * All arguments may be evaluated multiple times, beware of side effects.
-+ * @get_desc must be a formula or a function call, it must always
-+ * return up-to-date information when evaluated!
-+ * Expected to be used from ndo_start_xmit, see the comment on top of the file.
-+ *
-+ * Returns:
-+ *	 0 if the queue was stopped
-+ *	 1 if the queue was left enabled
-+ *	-1 if the queue was re-enabled (raced with waking)
-+ */
-+#define netif_txq_maybe_stop(txq, get_desc, stop_thrs, start_thrs)	\
-+	({								\
-+		int _res;						\
-+									\
-+		_res = 1;						\
-+		if (unlikely(get_desc < stop_thrs))			\
-+			_res = netif_txq_try_stop(txq, get_desc, start_thrs); \
-+		_res;							\
-+	})								\
-+
-+
-+/**
-+ * __netif_txq_maybe_wake() - locklessly wake a Tx queue, if needed
-+ * @txq:	struct netdev_queue to stop/start
-+ * @get_desc:	get current number of free descriptors (see requirements below!)
-+ * @start_thrs:	minimal number of descriptors to re-enable the queue
-+ * @down_cond:	down condition, predicate indicating that the queue should
-+ *		not be woken up even if descriptors are available
-+ *
-+ * All arguments may be evaluated multiple times.
-+ * @get_desc must be a formula or a function call, it must always
-+ * return up-to-date information when evaluated!
-+ *
-+ * Returns:
-+ *	 0 if the queue was woken up
-+ *	 1 if the queue was already enabled (or disabled but @down_cond is true)
-+ *	-1 if the queue was left unchanged (@start_thrs not reached)
-+ */
-+#define __netif_txq_maybe_wake(txq, get_desc, start_thrs, down_cond)	\
-+	({								\
-+		int _res;						\
-+									\
-+		_res = -1;						\
-+		if (likely(get_desc > start_thrs)) {			\
-+			/* Make sure that anybody stopping the queue after \
-+			 * this sees the new next_to_clean.		\
-+			 */						\
-+			smp_mb();					\
-+			_res = 1;					\
-+			if (unlikely(netif_tx_queue_stopped(txq)) &&	\
-+			    !(down_cond)) {				\
-+				netif_tx_wake_queue(txq);		\
-+				_res = 0;				\
-+			}						\
-+		}							\
-+		_res;							\
-+	})
-+
-+#define netif_txq_maybe_wake(txq, get_desc, start_thrs)		\
-+	__netif_txq_maybe_wake(txq, get_desc, start_thrs, false)
-+
-+/* subqueue variants follow */
-+
-+#define netif_subqueue_try_stop(dev, idx, get_desc, start_thrs)		\
-+	({								\
-+		struct netdev_queue *txq;				\
-+									\
-+		txq = netdev_get_tx_queue(dev, idx);			\
-+		netif_txq_try_stop(txq, get_desc, start_thrs);		\
-+	})
-+
-+#define netif_subqueue_maybe_stop(dev, idx, get_desc, stop_thrs, start_thrs) \
-+	({								\
-+		struct netdev_queue *txq;				\
-+									\
-+		txq = netdev_get_tx_queue(dev, idx);			\
-+		netif_txq_maybe_stop(txq, get_desc, stop_thrs, start_thrs); \
-+	})
-+
-+#endif
+ static int __ixgbe_maybe_stop_tx(struct ixgbe_ring *tx_ring, u16 size)
+ {
+-	netif_stop_subqueue(tx_ring->netdev, tx_ring->queue_index);
+-
+-	/* Herbert's original patch had:
+-	 *  smp_mb__after_netif_stop_queue();
+-	 * but since that doesn't exist yet, just open code it.
+-	 */
+-	smp_mb();
+-
+-	/* We need to check again in a case another CPU has just
+-	 * made room available.
+-	 */
+-	if (likely(ixgbe_desc_unused(tx_ring) < size))
++	if (!netif_subqueue_try_stop(tx_ring->netdev, tx_ring->queue_index,
++				     ixgbe_desc_unused(tx_ring), size))
+ 		return -EBUSY;
+ 
+-	/* A reprieve! - use start_queue because it doesn't call schedule */
+-	netif_start_subqueue(tx_ring->netdev, tx_ring->queue_index);
+ 	++tx_ring->tx_stats.restart_queue;
+ 	return 0;
+ }
 -- 
 2.39.2
 
