@@ -2,117 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D086DB6A7
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 00:46:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 468896DB6DA
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 01:08:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbjDGWqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 18:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52028 "EHLO
+        id S229688AbjDGXID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 19:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbjDGWqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 18:46:48 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817C15594;
-        Fri,  7 Apr 2023 15:46:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References;
-        bh=01xCP2CTTDste1h5LyPhN95Z2+Nr+MZPOa+ogV6/F7U=; b=Q1cDslzgDOojo0eNo9JxJwb4GK
-        YkpeFjsNcacts5zoqJgEYYR8DRRwoj/O0yX8Nq0yAROfT2q4L9urrwq7NXHV1RiBw2a29Y9n6pGeC
-        //HFB2LOrHPvBQtbUUjTegQ+iZNWhC+hHXz0z9WlDqgRMwYEP3P5tNpKTRSPCwR64pyKlXWrULOtc
-        gDb0+dTt7uZsnHhl+eMDsfm94GRWNcan7DVoQzrI3x4aKNMRnkoKQtyrvBfH3QGwRnAZkBOiJN6tB
-        HSNW2oEI8GT5bh9f/kvo0+Ue1TAY6xDxKPHmZefHKyp3J4AqnpikjwVL/MZbmavimEBQm2KheXw4N
-        6UND1V+A==;
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pkuqw-0007JA-PT; Sat, 08 Apr 2023 00:46:42 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        martin.lau@linux.dev, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2023-04-08
-Date:   Sat,  8 Apr 2023 00:46:42 +0200
-Message-Id: <20230407224642.30906-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        with ESMTP id S229553AbjDGXIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 19:08:01 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F1EE053;
+        Fri,  7 Apr 2023 16:07:44 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id bl22so17977185oib.11;
+        Fri, 07 Apr 2023 16:07:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680908863; x=1683500863;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=1GXeVtN3GoV00vxvLVXGIRrPCAMNFpBRVRalQCm4tNw=;
+        b=m48AEcDCRALLEncVyFqYJM9XMMosAkvrgU0vvopYYk1HGswMb5i1miheOhdhOlnirb
+         suZ/cBNq0NCM1N6MZ34QkI0NiSopT7nnrAhIQYehH+EKh35o7IyCuSX9AxlbfgDbT9Q+
+         xn3lPlhGAzJn1dwJGNWGUuXfuiv+N+dxTfJcMft7eTBr3A64Ipxjwol+mOLSYtkp+/fg
+         UFMea724zVY7sw1F1q4wlj8t1nbqld6xNS6a3qje/9/RAIbDDCL3Jr2+KSuVFQrqMqQd
+         awLb+ob2IRX5S/nkJEaSagGmJjImZviN588sGPcejuJKsCLJDc6oMIkZDRKQ2Eid+7W/
+         G3xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680908863; x=1683500863;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1GXeVtN3GoV00vxvLVXGIRrPCAMNFpBRVRalQCm4tNw=;
+        b=NMVtMWJIasdmNof9myvEHtVHJAgwyr1tPfviKWfGT5ObZfGR+ONC0kDNHH5/nTs800
+         sj9l8bf3/aFA97Fyd5l0VJ/9eVl2OVWwmgcFfOCY7lC5mRfI06Hx5wklu/TGlKdYwGPb
+         suvTCm066v3pSDFk7O/1kXBe2WyzXWoc+CB8veWXJRtvuERtmwO19vuN8SYf015+EQFT
+         /hV3vAnBF8gRiZU1ANIWBBCVSdkPOlO/JxxAdaa+iWbt9GCUgV0HWZrBBwJLzqPXhl01
+         A6e2H+gMVWYmwqxki8o3tLJaz8x8YEQVI/3rVcqZtWENMgeTYFypxpKFzv3KouWFdvR+
+         Xmsw==
+X-Gm-Message-State: AAQBX9fC+3Os+UHxQp1das3VNLLqQR3sRZBJxVZrIwmIqIqvNJ/Hew4c
+        BktTOj81VmTrREit9EK6uQk=
+X-Google-Smtp-Source: AKy350YHr1pybd18G1hzxT7l5kJ9m+cnU4XbxTfRQlQV0TjD+mg7471hZ0ZEEgOnnpYwIOyf1nyJuA==
+X-Received: by 2002:aca:d08:0:b0:389:1601:fc7 with SMTP id 8-20020aca0d08000000b0038916010fc7mr1442427oin.34.1680908863540;
+        Fri, 07 Apr 2023 16:07:43 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id r7-20020acaf307000000b003876369bd0asm2085220oih.19.2023.04.07.16.07.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Apr 2023 16:07:43 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <e6f83397-68f6-f2c6-5594-d3dabac9a192@roeck-us.net>
+Date:   Fri, 7 Apr 2023 16:07:40 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26868/Fri Apr  7 09:23:08 2023)
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 1/8] net: netronome: constify pointers to
+ hwmon_channel_info
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+        Xu Liang <lxu@maxlinear.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, oss-drivers@corigine.com
+Cc:     Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+References: <20230407145911.79642-1-krzysztof.kozlowski@linaro.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20230407145911.79642-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,
+        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub, hi Paolo, hi Eric,
+On 4/7/23 07:59, Krzysztof Kozlowski wrote:
+> Statically allocated array of pointed to hwmon_channel_info can be made
+> const for safety.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> ---
+> 
+> This depends on hwmon core patch:
+> https://lore.kernel.org/all/20230406203103.3011503-2-krzysztof.kozlowski@linaro.org/
+> 
+> Therefore I propose this should also go via hwmon tree.
 
-The following pull-request contains BPF updates for your *net* tree.
+I am not going to apply patches for 10+ subsystems through the hwmon tree.
+This can only result in chaos. The dependent patch is available at
 
-We've added 4 non-merge commits during the last 11 day(s) which contain
-a total of 5 files changed, 39 insertions(+), 6 deletions(-).
+git://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-const
 
-The main changes are:
+or wait until after the next commit window to apply this series.
 
-1) Fix BPF TCP socket iterator to use correct helper for dropping socket's refcount,
-   that is, sock_gen_put instead of sock_put, from Martin KaFai Lau.
+Thanks,
+Guenter
 
-2) Fix a BTI exception splat in BPF trampoline-generated code on arm64, from Xu Kuohai.
+> 
+> Cc: Jean Delvare <jdelvare@suse.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: linux-hwmon@vger.kernel.org
+> ---
+>   drivers/net/ethernet/netronome/nfp/nfp_hwmon.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_hwmon.c b/drivers/net/ethernet/netronome/nfp/nfp_hwmon.c
+> index 5cabb1aa9c0c..0d6c59d6d4ae 100644
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_hwmon.c
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_hwmon.c
+> @@ -115,7 +115,7 @@ static const struct hwmon_channel_info nfp_power = {
+>   	.config = nfp_power_config,
+>   };
+>   
+> -static const struct hwmon_channel_info *nfp_hwmon_info[] = {
+> +static const struct hwmon_channel_info * const nfp_hwmon_info[] = {
+>   	&nfp_chip,
+>   	&nfp_temp,
+>   	&nfp_power,
 
-3) Fix a LongArch JIT error from missing BPF_NOSPEC no-op, from George Guo.
-
-4) Fix dynamic XDP feature detection of veth in xdp_redirect selftest, from Lorenzo Bianconi.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Florent Revest, WANG Xuerui
-
-----------------------------------------------------------------
-
-The following changes since commit 45977e58ce65ed0459edc9a0466d9dfea09463f5:
-
-  net: dsa: b53: mmap: add phy ops (2023-03-27 08:31:34 +0100)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
-
-for you to fetch changes up to 919e659ed12568b5b8ba6c2ffdd82d8d31fc28af:
-
-  selftests/bpf: fix xdp_redirect xdp-features selftest for veth driver (2023-04-06 09:35:09 -0700)
-
-----------------------------------------------------------------
-bpf-for-netdev
-
-----------------------------------------------------------------
-George Guo (1):
-      LoongArch, bpf: Fix jit to skip speculation barrier opcode
-
-Lorenzo Bianconi (1):
-      selftests/bpf: fix xdp_redirect xdp-features selftest for veth driver
-
-Martin KaFai Lau (1):
-      bpf: tcp: Use sock_gen_put instead of sock_put in bpf_iter_tcp
-
-Xu Kuohai (1):
-      bpf, arm64: Fixed a BTI error on returning to patched function
-
- arch/arm64/net/bpf_jit.h                           |  4 +++
- arch/arm64/net/bpf_jit_comp.c                      |  3 ++-
- arch/loongarch/net/bpf_jit.c                       |  4 +++
- net/ipv4/tcp_ipv4.c                                |  4 +--
- .../selftests/bpf/prog_tests/xdp_do_redirect.c     | 30 +++++++++++++++++++---
- 5 files changed, 39 insertions(+), 6 deletions(-)
