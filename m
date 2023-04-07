@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 776B56DB5A1
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 23:01:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94A4A6DB5A8
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 23:02:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbjDGVBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 17:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
+        id S231802AbjDGVCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 17:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231318AbjDGVBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 17:01:39 -0400
-Received: from BN6PR00CU002.outbound.protection.outlook.com (mail-eastus2azon11021024.outbound.protection.outlook.com [52.101.57.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40045FFD;
-        Fri,  7 Apr 2023 14:01:37 -0700 (PDT)
+        with ESMTP id S231483AbjDGVCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 17:02:01 -0400
+Received: from BN6PR00CU002.outbound.protection.outlook.com (mail-eastus2azon11021020.outbound.protection.outlook.com [52.101.57.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C505FFD;
+        Fri,  7 Apr 2023 14:01:50 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DMa2OHpr5/8qyOPt3b1eMIdTDVpME0RUH2dljcu4Pf6oZzkVLY5oJ9bE8+xYJ+c7A/v19lpYgkhvpScL5vGSQaXTi46wlsJzYpcr/ahWow9Gowo6Z7h4cGYgBxhhfWLWgLKC3ksxJRvIj7I7TMwsa2lumQOrbLmnNC/URf8IKbOhF/nO/zvg0F0ZLBnecjsi4YH3pxKyV6f8Gb1zHdmuP8srDNXm2XTPwtNOMfw+wS7CIqrgx/2EgUcVEIILw54e3uplXDWa6/szpCq7rMNtITIWhwfzbUsS/JcHoekL7h1W1YrSw0/VvJy7eg3HQ90m8fUKU7XvqugeyjN0rzttsg==
+ b=JUv35ncAne/oolPPGUZKs5c1OTMWrOCVc5Keko+rT4Cqu0d7h1j1/iv4m9f02qa/km0IWKCzHzJvt9WCDAUjAOfPKGh2QjfKntn+JMaHGPSye5P/WfwD1+sRko31ngS5oe4jLbrd5To5nv2Py2bWpq/5zaE5sKacjQOcHtVUz4IAa0P3LU/+kU/y9ss3X3CeaY7WIvdGYTNw26oREUDL4aMaCMsIhWSxo/efwdxok9MhYXMKtFt5jbL6txCrFAqZ2viDvCmgYwGONv9gvp0GUm91eRcLVB2rMzIV38bvsgMyqGfSo7jqbtM1XdyHIQVWnFRDJtgwbTuXErI4/DqZdg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lRW0/NfEfMTjXDX7T3PoFAblacn6PSZJXI9VGY6MYIA=;
- b=fXaltohfGTizHxTVHs74mcrGsHaVDN51BTcVo2G5eQQHDgMiodh1CrBIbSgC/DTrHQuCR2rT5bT4mWl5YnNKGQZZ7Vi7FfVFEbXyL1B7lmqi7Lcc0TmVxu2wIUGnYJ9ynAwjzY3ERlNmNHdULonf7O6ZM3eb/3jPAOGaZNhqwfHvZuLMxp/GQ4SvezDP4J4ni6hHZxF2rOvVj0NmQaN/ixkLU7dwyWtFMhz8WUdrrTq1ofD7SxVAw5igVAqxLOZdMR1oWAj8s9UrJR1Zq2CY+bDMWylodtgre+ttYiUyaEVJtHemIO1Cywzx6XfNcW1UBMnYnU/VYBuwdK6tB7Es5w==
+ bh=o3m1pqC9rnOkg57acYq/j+VF+lS7p+a4oP88Kw6elqo=;
+ b=PkRhfuJslBjkkglc8cWSfgmVKRxtdIxSXmH8W8UWJC9bEwoBiwICNnrm3AwrVVXoupZLl24HMR3XRs5KZHdByuFmammBAXTL3xthgcLFXIUQmTX5rRZdcD7tfZlajx+x0Rimnfo+XN/gaKDZyFJ/38epiM44BPTzSIxJOAJQMAQ2gnmY54m7faG6zarkScz3OSsdzG3zXgp+D7NsZxvkwxLzatW50gRB47FLxZRks0GJqQYpNykQ+3oBVcrzDjvI8fN8AoqVmheh8Y8wiRdm7IWWEL/EvHkNX2n2R1b2YRdIQYgJIydcB0r+Bsu5amKs547ZebLw2+oIlKxuBWnroA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lRW0/NfEfMTjXDX7T3PoFAblacn6PSZJXI9VGY6MYIA=;
- b=TINDXbVeb+aIYtwZFUcwnYK1LdF9sUujLGL6gzt+q1j7tTzSahMfK44S0hvJmIhZ3pwwRx96n5eTdkSajpiSb2GfsneBu4oKrqwTUfPcLiJIW7awkQWOaB/dCZYL1oeMdX6fWvUYViVtDfPvVLggf5ABx2czE0YOWacFJCEgJHY=
+ bh=o3m1pqC9rnOkg57acYq/j+VF+lS7p+a4oP88Kw6elqo=;
+ b=VkCl5EH05BxQRqvky1w/TDWY4dln/hk4dEV4XofjmZE5UiGbGKyYiPF17VFF2YOsF/oHEMx4quraCQmfmfkdoNLb8xFjMhmLKdTRISp4hrlxLScJrYK1jqRPStFV1Iw+UvAKPfyAcoo0dWfandMaNZ32QY09SvyJZTAsSVZ52qQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 Received: from BY5PR21MB1443.namprd21.prod.outlook.com (2603:10b6:a03:21f::18)
  by PH0PR21MB1895.namprd21.prod.outlook.com (2603:10b6:510:1c::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.20; Fri, 7 Apr
- 2023 21:01:35 +0000
+ 2023 21:01:40 +0000
 Received: from BY5PR21MB1443.namprd21.prod.outlook.com
  ([fe80::3e29:da85:120c:b968]) by BY5PR21MB1443.namprd21.prod.outlook.com
  ([fe80::3e29:da85:120c:b968%6]) with mapi id 15.20.6298.018; Fri, 7 Apr 2023
- 21:01:35 +0000
+ 21:01:40 +0000
 From:   Haiyang Zhang <haiyangz@microsoft.com>
 To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
 Cc:     haiyangz@microsoft.com, decui@microsoft.com, kys@microsoft.com,
@@ -51,9 +51,9 @@ Cc:     haiyangz@microsoft.com, decui@microsoft.com, kys@microsoft.com,
         john.fastabend@gmail.com, bpf@vger.kernel.org, ast@kernel.org,
         sharmaajay@microsoft.com, hawk@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V2,net-next, 2/3] net: mana: Enable RX path to handle various MTU sizes
-Date:   Fri,  7 Apr 2023 13:59:55 -0700
-Message-Id: <1680901196-20643-3-git-send-email-haiyangz@microsoft.com>
+Subject: [PATCH V2,net-next, 3/3] net: mana: Add support for jumbo frame
+Date:   Fri,  7 Apr 2023 13:59:56 -0700
+Message-Id: <1680901196-20643-4-git-send-email-haiyangz@microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1680901196-20643-1-git-send-email-haiyangz@microsoft.com>
 References: <1680901196-20643-1-git-send-email-haiyangz@microsoft.com>
@@ -66,50 +66,50 @@ Sender: LKML haiyangz <lkmlhyz@microsoft.com>
 X-MS-Exchange-MessageSentRepresentingType: 2
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: BY5PR21MB1443:EE_|PH0PR21MB1895:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5e53d0f9-fed0-4af2-af88-08db37ab45b9
+X-MS-Office365-Filtering-Correlation-Id: e5987ddc-e2cd-4e65-f0fd-08db37ab48c9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: m5PGXGU5Ag2LNxin/siNyAAlHFYoiIVZNtVS4VeqlsoA2R4+JDyXkPOOky4N3jcgX7kHJobotcDgIyYkIqrXm/lxwKBZtVQlwZU+8mCLXgM5VmwCG3kq2etUK6IZ0n8a4SY6G2toTIO75bLxml0cb/5zGmRLr6DezDTLOBnd7md02ZBN8fhE4KdMcBIp6gYC6yTpgQnki5vIxnRzbQFgcvTps2Ahygw1WwMrHuq14g9LKwbsDnxmlWDDWXpz2cnPgd1mKLkneQJl1tckqbwTP6B3hA9maAFDr+56EmXUVH756gNHG3tAlSseXlHbyjD7jnSoupQIyqW2L284jJ315qNtY49DZrbW/xESN4GfLldJu1H6CG5czgSSL0Osuaqvy60YW97ja8SmpKzouCle+PHhMajT6JvAtRajC+dHahk0wB+1TYw7feimP1c/GThRziWuQvd+z91Lm9jRXqObxku1FVehHQkhfrdyadA82sa+bBvoCbzz9L+c6B5iXEK53Mxtl4ihb86Aty9JCZ7B10BdNy8M12G2uufHkQplsXkfbDXYq6pZS5Facl0fsDOXcsIepajIw7hQvAfYFX826eJLs1nI6aDMYMymdy+jTIUX/NyRcDkObKADbabK7MVv7N4z1Kg2cjMDndAlx1ngv23NBmYNZG1gdqcgY8Had+k=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR21MB1443.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39860400002)(396003)(136003)(366004)(451199021)(66946007)(6486002)(66476007)(478600001)(8676002)(4326008)(7846003)(66556008)(41300700001)(786003)(316002)(52116002)(36756003)(83380400001)(2616005)(6512007)(26005)(6506007)(6666004)(8936002)(5660300002)(2906002)(7416002)(10290500003)(82960400001)(38350700002)(38100700002)(82950400001)(186003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: jSIWE5VExjKQ73jj3E0QPSIKlX7kmRYJUwygv3yajjHmjypRSQW8PO2Nr+XwLEp3u3yBmuJqQGpd0KWcKFZt+Pg3JV6b7tZ3SRsQ1YTVLDos80HL0uHT5zq0Odp/oevD2w50H1xv+JPYWLTKHhfUXb0VKe2dl1j2eu9bxPNCYTTe2OeVbHha+oi41ymXu+2IB+gc6Xr02FiAaJ+tyvExm90mvVSN05s5In2UoDxqJ0YwS7F/Zeqd4oDhE3mS3MU1b5MCk19g5GFTbtDfD92LSRYdUgIBzp0bo7pPKANbcEYKHPiC7AAc0wrOb4+QlYA7Q9tZneu17ja5f6zlTjzIWYop+HkC/RFaZDftYPEPxBWzjt1vIrXeO2MJAK5vESxLL4jMCYdfQlRn5wYhHLgVYnpQHuwkgC+/R1RSG2n5RR40vYuYHWavTAQQISeq4HLK9wzhV7qzGd1cXr57y6es/NpWG24KVEl70SI7sL7Kzp9uNRMaKb0I5QQzgE99QT1K/Vmq5d+EgvqJodu2gJKAmAPv7A7w9bVwvtnLOz17nxjGeBGbaWaJXgFv+xDAtZs1lfP739MPPZ3a8jrNPw9z33chjZJ9DoFUu50zzTg5XmR+X6rezlj9xWmPxb0bn7v5FMvxf3pXNXDRx3+jzHTupCjoY+sWvaF6bwkCc8TjK5E=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR21MB1443.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39860400002)(396003)(136003)(366004)(451199021)(66899021)(66946007)(6486002)(66476007)(478600001)(8676002)(4326008)(7846003)(66556008)(41300700001)(786003)(316002)(52116002)(36756003)(83380400001)(2616005)(6512007)(26005)(6506007)(6666004)(8936002)(5660300002)(2906002)(7416002)(10290500003)(30864003)(82960400001)(38350700002)(38100700002)(82950400001)(186003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?P4C8REF8g71D2yrhya3MeLVNr5avCjbbRtPGrAsSXgX4I4fiCCndOoKWIOUO?=
- =?us-ascii?Q?6wOGQ7YfLEqmkzkbl4gxlZOciQf/yx1My7ukJUSU9mXzjR8EW/SPOm1dHANL?=
- =?us-ascii?Q?eieRnZp/TuJyfZXiLAnR2StO8LViN/DiviB/jWpojHCtgXwrFMWHhrecnsof?=
- =?us-ascii?Q?rZelM46ehZpl6HA3shjf+IHmopBDjag/OJrgxU0qNcjaPGZB+NJXRC+tVfkG?=
- =?us-ascii?Q?UdZHmlWOzWLHLpIHlXTayG7feDD52ppxy1UvhqR7TqzO+leJKDrTO1vbp/FN?=
- =?us-ascii?Q?KbVgFCwNPx23m4cXWdURL9WAp8tPbtkZW3V8wdodGnjLmPloka5JAeoW7Zr/?=
- =?us-ascii?Q?YpLjOa+FbthE4XByXra2P7ogwKzBwg4o+j1MtnfMklUWIzj/DXMZTD9LdRy9?=
- =?us-ascii?Q?N0p6MzDMfqC33lhhovqhengA16EoJIpdbnXHwd+22f5T4csEfX/bXJdJaWI5?=
- =?us-ascii?Q?+WKJA/etvfWI3cWFm8tdOIit7ypryVvPZe2XGmUm5x7t6To4JFNCeqQSj8L7?=
- =?us-ascii?Q?77+mP2N1s9nJUnPkhE3H/8envM+u3fD/lZi6PIqHlW+kJ6IlmhnaWjcNUMlQ?=
- =?us-ascii?Q?PzR+5qVKPgiDWSNyg2RHz8A4v5UXXQNWWO8E5EK7Ntt2MnWVKNaSlDybETVr?=
- =?us-ascii?Q?Ez/bDWi/MYi4oHazUOEl8EyT6JrejFzw4t29TPefc9DXwgpxAx8jKz+pzqyw?=
- =?us-ascii?Q?VN95vvzUG2pWq6E8G0QZTEc7X2v5fGQA+WXEu4fXWCWuaOhVzzCr+85uIVD8?=
- =?us-ascii?Q?tW87RRLcvJzxqaDhHzjx15Qg12XyKi4DrOTcNip50Vw9IrXBIYskccIELKcn?=
- =?us-ascii?Q?NtgR07OIDGNJjoNzZ1NRZtyEPdcETIduX0wQ/mar476ib+6LnpeCZl7Wg61+?=
- =?us-ascii?Q?SLo4dQbVoi6jz8ynR4NWNsokhQH8VVDoevg9VuEbep2tt8KD1vFe7SPlFWtq?=
- =?us-ascii?Q?CV99KABbXXULQR98VkgPKDRJhpHhxCsVrOyIWSB9ECAGX8Z10sJa8W5XrtNE?=
- =?us-ascii?Q?h93mQb3fEfHhWuKl/D2cVe7X3tW9y5wvx61ird9uHVcGEYNAPvY+wPFAFMk3?=
- =?us-ascii?Q?2kIkdEIBzRhd4US4KRsdja1Tf3VyA6WwKKCecS799PHburLB0/tPypusKu1q?=
- =?us-ascii?Q?Mj4rVrv2+TR5RA/LiSEd4MDzPQyiYtapPs5pZ8ySdAnN87ZhZu5uyNiFA6/2?=
- =?us-ascii?Q?s2xOZ9HXL4WtK0Fypg0R3Qx+JTEv627iMZSKq6z7Er94llyE9DoXaDOKnJc2?=
- =?us-ascii?Q?qFWaCHgJV407SkEgAPwyh1HTbsWaMIRcpKmY0wsKOSXBfVXq/0o6OV+Lptba?=
- =?us-ascii?Q?/hdIHCo4H4+OW7JI2nkcHBTtCYg4VdP3HvxXR+54GYydcoOw9gXZ5oFp+Ba5?=
- =?us-ascii?Q?XgfHRz6fQLjNgR5Ho5Sc7v692YBBGq6VugfixacUUWAgC9FTA3pYw55QrKnz?=
- =?us-ascii?Q?olP4SmiRilyWiCTjW4Zz6YWcN9o1Rwkmr7gZ4ZyrKhh4Xu1LnI9iAskBKsv6?=
- =?us-ascii?Q?6DLxpZw879VvQIja1jS5+VIYvS9cITq09bu/72lKGLTqzNiIJG+poN1jdN8O?=
- =?us-ascii?Q?RgEBxhNFCCBH/5DbT2c/j/TpKsW5dbGSP3XDElk0?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?05bMkiQA+kWltp/E2HbgxxibnWw+zXVq0YQHB1HEhHSZPJgnhV73aHSybKDz?=
+ =?us-ascii?Q?unPL3oUzbtG88gN7XaEx0eKKwxODyilUyUhDVEmisY6XnRZaCWdJ63MLXUBs?=
+ =?us-ascii?Q?CYVCsMV/0otqE4Br/pHcDH2OBtDlSGrPWfFE+yEPamd11wS70T86UsFrxWkn?=
+ =?us-ascii?Q?dq85Tn0MCUTYnIZqpM6unv0pVjI4rtUJ/BZFgST6Da287VcSxROTddNxN9JI?=
+ =?us-ascii?Q?HMJ4dD7w1UPeKE0dRtLsVHEGHck8YAsL/lkQ106Q+PvvR7iUiHRft/Baei3s?=
+ =?us-ascii?Q?36rQfu7J6PyKixr3G8RF/OEYN8fwVcWIlGLCM4SljrFoVwFW8D8/WYHjeDoj?=
+ =?us-ascii?Q?zajRlc3agGRte/G5KdtC2uMBhFhfp9dyshZbJX4zec/yZeglIlyJZ9QYq+Kg?=
+ =?us-ascii?Q?XvLn2KebDrIxTj1PsI8x9lL3Q2ArfSOoPujnSecUsvFsOxDplnw6eJ3od06J?=
+ =?us-ascii?Q?7jhk+ldiYe2024xgrUEZnCa5pWd7VOXN0gORZo3tXsbNBRQFL8QZN3lbRjRZ?=
+ =?us-ascii?Q?dhg4QMeLACqH82h0pJAFDLfDd4An4U7dbtl09ZRF+44v0dFwH9DivNB/F/Fl?=
+ =?us-ascii?Q?BmVFFj3IO4p7xVVP6U6Ob1xRAYlObcbYghBGKWQPgODVupEWNfxnaU/KYu2v?=
+ =?us-ascii?Q?zAm/GOtxf3WelrU398IKFa6ZodCrQ1XfPdLqQwMOVI1xK5hbeDWGci9LFRKL?=
+ =?us-ascii?Q?ubw1JxysNBOKTz9jkMOP6S6ilvOJVbFrpLOghco447N8WpW028UzmCu/oB4T?=
+ =?us-ascii?Q?I9+uULOlBCHklPLjad7sQXyQwH/uc8ehR48wqfdE71TiwBtJiv5aVmZ/+Df/?=
+ =?us-ascii?Q?L1dn/aiuZWUagHHxW+AJregnAemFCr+SOIDRQJBBqPKAqwyg06MmG9ext7eD?=
+ =?us-ascii?Q?m7779d5Rz9MdxIl2rsyQUJW/bGGT9wryzz+qjyGiX7L8P6Inbri4kKd37Upg?=
+ =?us-ascii?Q?uu0ISqJJbabBzlPKWLUiG7BGPpdOqcWfqi6nvNPZy2W1JolZ64jw5ehJWwGN?=
+ =?us-ascii?Q?coRRJlqylpxzVavGkXAga4IPtocnib+x1+L0mEHgR7qwuJxv4Xjgzulhv7tQ?=
+ =?us-ascii?Q?xj2VZPgNaXZ6wuc5yQKS/mPIAoY8U0g3ghjSZLxSnNq9wX6X2rf1/mGOnJ1e?=
+ =?us-ascii?Q?N9zXe4Glg3JM9aynBoSVri+eToqfewwUVAu7aBTexo7N5MgPG7Q+j9Ci3sMf?=
+ =?us-ascii?Q?uFv/QlvsgpEjmxCDM2lYWMKOWJINhzVXqsTxpsidZ1AVnlZvzTDrJDBk3XO+?=
+ =?us-ascii?Q?rLJUnKvFpIk5VOGeSfIsB+9qf81+VJEarZgOcOn/+UEOa7IPZZx/xUzqo9aL?=
+ =?us-ascii?Q?F8+yZ77O6ay4rvjcS+URBoP851YjkLYoFe5jvAVlFyRTEx863omY4CprDKzs?=
+ =?us-ascii?Q?skfuYGxU8vOwXv/SseFbAJFZWEOwLJW0OZl78Mnf8eIZgKdqXWQk/UwYcaRo?=
+ =?us-ascii?Q?2LzSFeO4Qeq8oKuWguR9KypwpDg3frHwNEpkTkjCrzFE/2D+uRiaCbCXvS7L?=
+ =?us-ascii?Q?cfclPRJgNp79Oaue/Vzn6AEd+fA5OSZKe8rgmrmhyVtCEw/DsFr6rqPxPS6U?=
+ =?us-ascii?Q?QMXhg3A1TImr2SgesIGcBScWVgUZu3jtRk9m5ie6?=
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e53d0f9-fed0-4af2-af88-08db37ab45b9
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5987ddc-e2cd-4e65-f0fd-08db37ab48c9
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR21MB1443.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2023 21:01:35.3405
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2023 21:01:40.4750
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /pTeacK9RCZ3UDZbnulqba2F0SJAa+cg3mgXePzuT27ar6MjQ5k+sK3tcnSW4kCBNbapTsZWFYDKNKrhprk2zA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: UupPuuMjazRkghye4wGemDvWEEtetMYxGD25jUtyj5NQyOZDilx536FZiuKxYzCZo9HZXR5ACEp4Oh1bkezO0A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR21MB1895
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -121,372 +121,421 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update RX data path to allocate and use RX queue DMA buffers with
-proper size based on potentially various MTU sizes.
+During probe, get the hardware-allowed max MTU by querying the device
+configuration. Users can select MTU up to the device limit.
+When XDP is in use, limit MTU settings so the buffer size is within
+one page.
+Also, to prevent changing MTU fails, and leaves the NIC in a bad state,
+pre-allocate all buffers before starting the change. So in low memory
+condition, it will return error, without affecting the NIC.
 
 Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
-
 ---
 V2:
 Refectored to multiple patches for readability. Suggested by Yunsheng Lin.
-
+Added pre-allocation of buffers to avoid changing MTU fails in a bad state.
+ Suggested by Leon Romanovsky, Francois Romieu.
 ---
- drivers/net/ethernet/microsoft/mana/mana_en.c | 188 +++++++++++-------
- include/net/mana/mana.h                       |  13 +-
- 2 files changed, 124 insertions(+), 77 deletions(-)
+ .../net/ethernet/microsoft/mana/mana_bpf.c    |  22 +-
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 217 ++++++++++++++++--
+ include/net/mana/gdma.h                       |   4 +
+ include/net/mana/mana.h                       |  14 ++
+ 4 files changed, 233 insertions(+), 24 deletions(-)
 
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_bpf.c b/drivers/net/ethernet/microsoft/mana/mana_bpf.c
+index 3caea631229c..23b1521c0df9 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_bpf.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_bpf.c
+@@ -133,12 +133,6 @@ u32 mana_run_xdp(struct net_device *ndev, struct mana_rxq *rxq,
+ 	return act;
+ }
+ 
+-static unsigned int mana_xdp_fraglen(unsigned int len)
+-{
+-	return SKB_DATA_ALIGN(len) +
+-	       SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+-}
+-
+ struct bpf_prog *mana_xdp_get(struct mana_port_context *apc)
+ {
+ 	ASSERT_RTNL();
+@@ -179,17 +173,18 @@ static int mana_xdp_set(struct net_device *ndev, struct bpf_prog *prog,
+ {
+ 	struct mana_port_context *apc = netdev_priv(ndev);
+ 	struct bpf_prog *old_prog;
+-	int buf_max;
++	struct gdma_context *gc;
++
++	gc = apc->ac->gdma_dev->gdma_context;
+ 
+ 	old_prog = mana_xdp_get(apc);
+ 
+ 	if (!old_prog && !prog)
+ 		return 0;
+ 
+-	buf_max = XDP_PACKET_HEADROOM + mana_xdp_fraglen(ndev->mtu + ETH_HLEN);
+-	if (prog && buf_max > PAGE_SIZE) {
+-		netdev_err(ndev, "XDP: mtu:%u too large, buf_max:%u\n",
+-			   ndev->mtu, buf_max);
++	if (prog && ndev->mtu > MANA_XDP_MTU_MAX) {
++		netdev_err(ndev, "XDP: mtu:%u too large, mtu_max:%lu\n",
++			   ndev->mtu, MANA_XDP_MTU_MAX);
+ 		NL_SET_ERR_MSG_MOD(extack, "XDP: mtu too large");
+ 
+ 		return -EOPNOTSUPP;
+@@ -206,6 +201,11 @@ static int mana_xdp_set(struct net_device *ndev, struct bpf_prog *prog,
+ 	if (apc->port_is_up)
+ 		mana_chn_setxdp(apc, prog);
+ 
++	if (prog)
++		ndev->max_mtu = MANA_XDP_MTU_MAX;
++	else
++		ndev->max_mtu = gc->adapter_mtu - ETH_HLEN;
++
+ 	return 0;
+ }
+ 
 diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index 112c642dc89b..e5d5dea763f2 100644
+index e5d5dea763f2..cabecbfa1102 100644
 --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
 +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -1185,10 +1185,10 @@ static void mana_post_pkt_rxq(struct mana_rxq *rxq)
- 	WARN_ON_ONCE(recv_buf_oob->wqe_inf.wqe_size_in_bu != 1);
+@@ -427,6 +427,192 @@ static u16 mana_select_queue(struct net_device *ndev, struct sk_buff *skb,
+ 	return txq;
  }
  
--static struct sk_buff *mana_build_skb(void *buf_va, uint pkt_len,
--				      struct xdp_buff *xdp)
-+static struct sk_buff *mana_build_skb(struct mana_rxq *rxq, void *buf_va,
-+				      uint pkt_len, struct xdp_buff *xdp)
- {
--	struct sk_buff *skb = napi_build_skb(buf_va, PAGE_SIZE);
-+	struct sk_buff *skb = napi_build_skb(buf_va, rxq->alloc_size);
- 
- 	if (!skb)
- 		return NULL;
-@@ -1196,11 +1196,12 @@ static struct sk_buff *mana_build_skb(void *buf_va, uint pkt_len,
- 	if (xdp->data_hard_start) {
- 		skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 		skb_put(skb, xdp->data_end - xdp->data);
--	} else {
--		skb_reserve(skb, XDP_PACKET_HEADROOM);
--		skb_put(skb, pkt_len);
-+		return skb;
- 	}
- 
-+	skb_reserve(skb, rxq->headroom);
-+	skb_put(skb, pkt_len);
-+
- 	return skb;
- }
- 
-@@ -1233,7 +1234,7 @@ static void mana_rx_skb(void *buf_va, struct mana_rxcomp_oob *cqe,
- 	if (act != XDP_PASS && act != XDP_TX)
- 		goto drop_xdp;
- 
--	skb = mana_build_skb(buf_va, pkt_len, &xdp);
-+	skb = mana_build_skb(rxq, buf_va, pkt_len, &xdp);
- 
- 	if (!skb)
- 		goto drop;
-@@ -1282,14 +1283,72 @@ static void mana_rx_skb(void *buf_va, struct mana_rxcomp_oob *cqe,
- 	u64_stats_update_end(&rx_stats->syncp);
- 
- drop:
--	WARN_ON_ONCE(rxq->xdp_save_page);
--	rxq->xdp_save_page = virt_to_page(buf_va);
-+	WARN_ON_ONCE(rxq->xdp_save_va);
-+	/* Save for reuse */
-+	rxq->xdp_save_va = buf_va;
- 
- 	++ndev->stats.rx_dropped;
- 
- 	return;
- }
- 
-+static void *mana_get_rxfrag(struct mana_rxq *rxq, struct device *dev,
-+			     dma_addr_t *da, bool is_napi)
++/* Release pre-allocated RX buffers */
++static void mana_pre_dealloc_rxbufs(struct mana_port_context *mpc)
 +{
-+	struct page *page;
++	struct device *dev;
++	int i;
++
++	dev = mpc->ac->gdma_dev->gdma_context->dev;
++
++	if (!mpc->rxbufs_pre)
++		goto out1;
++
++	if (!mpc->das_pre)
++		goto out2;
++
++	while (mpc->rxbpre_total) {
++		i = --mpc->rxbpre_total;
++		dma_unmap_single(dev, mpc->das_pre[i], mpc->rxbpre_datasize,
++				 DMA_FROM_DEVICE);
++		put_page(virt_to_head_page(mpc->rxbufs_pre[i]));
++	}
++
++	kfree(mpc->das_pre);
++	mpc->das_pre = NULL;
++
++out2:
++	kfree(mpc->rxbufs_pre);
++	mpc->rxbufs_pre = NULL;
++
++out1:
++	mpc->rxbpre_datasize = 0;
++	mpc->rxbpre_alloc_size = 0;
++	mpc->rxbpre_headroom = 0;
++}
++
++/* Get a buffer from the pre-allocated RX buffers */
++static void *mana_get_rxbuf_pre(struct mana_rxq *rxq, dma_addr_t *da)
++{
++	struct net_device *ndev = rxq->ndev;
++	struct mana_port_context *mpc;
 +	void *va;
 +
-+	/* Reuse XDP dropped page if available */
-+	if (rxq->xdp_save_va) {
-+		va = rxq->xdp_save_va;
-+		rxq->xdp_save_va = NULL;
-+	} else if (rxq->alloc_size > PAGE_SIZE) {
-+		if (is_napi)
-+			va = napi_alloc_frag(rxq->alloc_size);
-+		else
-+			va = netdev_alloc_frag(rxq->alloc_size);
++	mpc = netdev_priv(ndev);
 +
-+		if (!va)
-+			return NULL;
-+	} else {
-+		page = dev_alloc_page();
-+		if (!page)
-+			return NULL;
-+
-+		va = page_to_virt(page);
-+	}
-+
-+	*da = dma_map_single(dev, va + rxq->headroom, rxq->datasize,
-+			     DMA_FROM_DEVICE);
-+
-+	if (dma_mapping_error(dev, *da)) {
-+		put_page(virt_to_head_page(va));
++	if (!mpc->rxbufs_pre || !mpc->das_pre || !mpc->rxbpre_total) {
++		netdev_err(ndev, "No RX pre-allocated bufs\n");
 +		return NULL;
 +	}
++
++	/* Check sizes to catch unexpected coding error */
++	if (mpc->rxbpre_datasize != rxq->datasize) {
++		netdev_err(ndev, "rxbpre_datasize mismatch: %u: %u\n",
++			   mpc->rxbpre_datasize, rxq->datasize);
++		return NULL;
++	}
++
++	if (mpc->rxbpre_alloc_size != rxq->alloc_size) {
++		netdev_err(ndev, "rxbpre_alloc_size mismatch: %u: %u\n",
++			   mpc->rxbpre_alloc_size, rxq->alloc_size);
++		return NULL;
++	}
++
++	if (mpc->rxbpre_headroom != rxq->headroom) {
++		netdev_err(ndev, "rxbpre_headroom mismatch: %u: %u\n",
++			   mpc->rxbpre_headroom, rxq->headroom);
++		return NULL;
++	}
++
++	mpc->rxbpre_total--;
++
++	*da = mpc->das_pre[mpc->rxbpre_total];
++	va = mpc->rxbufs_pre[mpc->rxbpre_total];
++	mpc->rxbufs_pre[mpc->rxbpre_total] = NULL;
++
++	/* Deallocate the array after all buffers are gone */
++	if (!mpc->rxbpre_total)
++		mana_pre_dealloc_rxbufs(mpc);
 +
 +	return va;
 +}
 +
-+/* Allocate frag for rx buffer, and save the old buf */
-+static void mana_refill_rxoob(struct device *dev, struct mana_rxq *rxq,
-+			      struct mana_recv_buf_oob *rxoob, void **old_buf)
++/* Get RX buffer's data size, alloc size, XDP headroom based on MTU */
++static void mana_get_rxbuf_cfg(int mtu, u32 *datasize, u32 *alloc_size,
++			       u32 *headroom)
 +{
-+	dma_addr_t da;
-+	void *va;
++	if (mtu > MANA_XDP_MTU_MAX)
++		*headroom = 0; /* no support for XDP */
++	else
++		*headroom = XDP_PACKET_HEADROOM;
 +
-+	va = mana_get_rxfrag(rxq, dev, &da, true);
++	*alloc_size = mtu + MANA_RXBUF_PAD + *headroom;
 +
-+	if (!va)
-+		return;
-+
-+	dma_unmap_single(dev, rxoob->sgl[0].address, rxq->datasize,
-+			 DMA_FROM_DEVICE);
-+	*old_buf = rxoob->buf_va;
-+
-+	rxoob->buf_va = va;
-+	rxoob->sgl[0].address = da;
++	*datasize = ALIGN(mtu + ETH_HLEN, MANA_RX_DATA_ALIGN);
 +}
 +
- static void mana_process_rx_cqe(struct mana_rxq *rxq, struct mana_cq *cq,
- 				struct gdma_comp *cqe)
- {
-@@ -1299,10 +1358,8 @@ static void mana_process_rx_cqe(struct mana_rxq *rxq, struct mana_cq *cq,
- 	struct mana_recv_buf_oob *rxbuf_oob;
- 	struct mana_port_context *apc;
- 	struct device *dev = gc->dev;
--	void *new_buf, *old_buf;
--	struct page *new_page;
-+	void *old_buf = NULL;
- 	u32 curr, pktlen;
--	dma_addr_t da;
- 
- 	apc = netdev_priv(ndev);
- 
-@@ -1345,40 +1402,11 @@ static void mana_process_rx_cqe(struct mana_rxq *rxq, struct mana_cq *cq,
- 	rxbuf_oob = &rxq->rx_oobs[curr];
- 	WARN_ON_ONCE(rxbuf_oob->wqe_inf.wqe_size_in_bu != 1);
- 
--	/* Reuse XDP dropped page if available */
--	if (rxq->xdp_save_page) {
--		new_page = rxq->xdp_save_page;
--		rxq->xdp_save_page = NULL;
--	} else {
--		new_page = alloc_page(GFP_ATOMIC);
--	}
--
--	if (new_page) {
--		da = dma_map_page(dev, new_page, XDP_PACKET_HEADROOM, rxq->datasize,
--				  DMA_FROM_DEVICE);
--
--		if (dma_mapping_error(dev, da)) {
--			__free_page(new_page);
--			new_page = NULL;
--		}
--	}
--
--	new_buf = new_page ? page_to_virt(new_page) : NULL;
--
--	if (new_buf) {
--		dma_unmap_page(dev, rxbuf_oob->buf_dma_addr, rxq->datasize,
--			       DMA_FROM_DEVICE);
--
--		old_buf = rxbuf_oob->buf_va;
--
--		/* refresh the rxbuf_oob with the new page */
--		rxbuf_oob->buf_va = new_buf;
--		rxbuf_oob->buf_dma_addr = da;
--		rxbuf_oob->sgl[0].address = rxbuf_oob->buf_dma_addr;
--	} else {
--		old_buf = NULL; /* drop the packet if no memory */
--	}
-+	mana_refill_rxoob(dev, rxq, rxbuf_oob, &old_buf);
- 
-+	/* Unsuccessful refill will have old_buf == NULL.
-+	 * In this case, mana_rx_skb() will drop the packet.
-+	 */
- 	mana_rx_skb(old_buf, oob, rxq);
- 
- drop:
-@@ -1659,8 +1687,8 @@ static void mana_destroy_rxq(struct mana_port_context *apc,
- 
- 	mana_deinit_cq(apc, &rxq->rx_cq);
- 
--	if (rxq->xdp_save_page)
--		__free_page(rxq->xdp_save_page);
-+	if (rxq->xdp_save_va)
-+		put_page(virt_to_head_page(rxq->xdp_save_va));
- 
- 	for (i = 0; i < rxq->num_rx_buf; i++) {
- 		rx_oob = &rxq->rx_oobs[i];
-@@ -1668,10 +1696,10 @@ static void mana_destroy_rxq(struct mana_port_context *apc,
- 		if (!rx_oob->buf_va)
- 			continue;
- 
--		dma_unmap_page(dev, rx_oob->buf_dma_addr, rxq->datasize,
--			       DMA_FROM_DEVICE);
-+		dma_unmap_single(dev, rx_oob->sgl[0].address,
-+				 rx_oob->sgl[0].size, DMA_FROM_DEVICE);
- 
--		free_page((unsigned long)rx_oob->buf_va);
-+		put_page(virt_to_head_page(rx_oob->buf_va));
- 		rx_oob->buf_va = NULL;
- 	}
- 
-@@ -1681,6 +1709,26 @@ static void mana_destroy_rxq(struct mana_port_context *apc,
- 	kfree(rxq);
- }
- 
-+static int mana_fill_rx_oob(struct mana_recv_buf_oob *rx_oob, u32 mem_key,
-+			    struct mana_rxq *rxq, struct device *dev)
++static int mana_pre_alloc_rxbufs(struct mana_port_context *mpc, int new_mtu)
 +{
++	struct device *dev;
++	struct page *page;
 +	dma_addr_t da;
++	int num_rxb;
 +	void *va;
++	int i;
 +
-+	va = mana_get_rxfrag(rxq, dev, &da, false);
++	mana_get_rxbuf_cfg(new_mtu, &mpc->rxbpre_datasize,
++			   &mpc->rxbpre_alloc_size, &mpc->rxbpre_headroom);
 +
-+	if (!va)
-+		return -ENOMEM;
++	dev = mpc->ac->gdma_dev->gdma_context->dev;
 +
-+	rx_oob->buf_va = va;
++	num_rxb = mpc->num_queues * RX_BUFFERS_PER_QUEUE;
 +
-+	rx_oob->sgl[0].address = da;
-+	rx_oob->sgl[0].size = rxq->datasize;
-+	rx_oob->sgl[0].mem_key = mem_key;
++	WARN(mpc->rxbufs_pre, "mana rxbufs_pre exists\n");
++	mpc->rxbufs_pre = kmalloc_array(num_rxb, sizeof(void *), GFP_KERNEL);
++	if (!mpc->rxbufs_pre)
++		goto error;
++
++	mpc->das_pre = kmalloc_array(num_rxb, sizeof(dma_addr_t), GFP_KERNEL);
++	if (!mpc->das_pre)
++		goto error;
++
++	mpc->rxbpre_total = 0;
++
++	for (i = 0; i < num_rxb; i++) {
++		if (mpc->rxbpre_alloc_size > PAGE_SIZE) {
++			va = netdev_alloc_frag(mpc->rxbpre_alloc_size);
++			if (!va)
++				goto error;
++		} else {
++			page = dev_alloc_page();
++			if (!page)
++				goto error;
++
++			va = page_to_virt(page);
++		}
++
++		da = dma_map_single(dev, va + mpc->rxbpre_headroom,
++				    mpc->rxbpre_datasize, DMA_FROM_DEVICE);
++
++		if (dma_mapping_error(dev, da)) {
++			put_page(virt_to_head_page(va));
++			goto error;
++		}
++
++		mpc->rxbufs_pre[i] = va;
++		mpc->das_pre[i] = da;
++		mpc->rxbpre_total = i + 1;
++	}
 +
 +	return 0;
++
++error:
++	mana_pre_dealloc_rxbufs(mpc);
++	return -ENOMEM;
 +}
 +
- #define MANA_WQE_HEADER_SIZE 16
- #define MANA_WQE_SGE_SIZE 16
- 
-@@ -1690,11 +1738,10 @@ static int mana_alloc_rx_wqe(struct mana_port_context *apc,
- 	struct gdma_context *gc = apc->ac->gdma_dev->gdma_context;
- 	struct mana_recv_buf_oob *rx_oob;
- 	struct device *dev = gc->dev;
--	struct page *page;
--	dma_addr_t da;
- 	u32 buf_idx;
-+	int ret;
- 
--	WARN_ON(rxq->datasize == 0 || rxq->datasize > PAGE_SIZE);
-+	WARN_ON(rxq->datasize == 0);
- 
- 	*rxq_size = 0;
- 	*cq_size = 0;
-@@ -1703,25 +1750,12 @@ static int mana_alloc_rx_wqe(struct mana_port_context *apc,
- 		rx_oob = &rxq->rx_oobs[buf_idx];
- 		memset(rx_oob, 0, sizeof(*rx_oob));
- 
--		page = alloc_page(GFP_KERNEL);
--		if (!page)
--			return -ENOMEM;
--
--		da = dma_map_page(dev, page, XDP_PACKET_HEADROOM, rxq->datasize,
--				  DMA_FROM_DEVICE);
--
--		if (dma_mapping_error(dev, da)) {
--			__free_page(page);
--			return -ENOMEM;
--		}
--
--		rx_oob->buf_va = page_to_virt(page);
--		rx_oob->buf_dma_addr = da;
--
- 		rx_oob->num_sge = 1;
--		rx_oob->sgl[0].address = rx_oob->buf_dma_addr;
--		rx_oob->sgl[0].size = rxq->datasize;
--		rx_oob->sgl[0].mem_key = apc->ac->gdma_dev->gpa_mkey;
++static int mana_change_mtu(struct net_device *ndev, int new_mtu)
++{
++	struct mana_port_context *mpc = netdev_priv(ndev);
++	unsigned int old_mtu = ndev->mtu;
++	int err;
 +
-+		ret = mana_fill_rx_oob(rx_oob, apc->ac->gdma_dev->gpa_mkey, rxq,
-+				       dev);
-+		if (ret)
-+			return ret;
++	/* Pre-allocate buffers to prevent failure in mana_attach later */
++	err = mana_pre_alloc_rxbufs(mpc, new_mtu);
++	if (err) {
++		netdev_err(ndev, "Insufficient memory for new MTU\n");
++		return err;
++	}
++
++	err = mana_detach(ndev, false);
++	if (err) {
++		netdev_err(ndev, "mana_detach failed: %d\n", err);
++		goto out;
++	}
++
++	ndev->mtu = new_mtu;
++
++	err = mana_attach(ndev);
++	if (err) {
++		netdev_err(ndev, "mana_attach failed: %d\n", err);
++		ndev->mtu = old_mtu;
++	}
++
++out:
++	mana_pre_dealloc_rxbufs(mpc);
++	return err;
++}
++
+ static const struct net_device_ops mana_devops = {
+ 	.ndo_open		= mana_open,
+ 	.ndo_stop		= mana_close,
+@@ -436,6 +622,7 @@ static const struct net_device_ops mana_devops = {
+ 	.ndo_get_stats64	= mana_get_stats64,
+ 	.ndo_bpf		= mana_bpf,
+ 	.ndo_xdp_xmit		= mana_xdp_xmit,
++	.ndo_change_mtu		= mana_change_mtu,
+ };
  
- 		rx_oob->wqe_req.sgl = rx_oob->sgl;
- 		rx_oob->wqe_req.num_sge = rx_oob->num_sge;
-@@ -1764,6 +1798,7 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
+ static void mana_cleanup_port_context(struct mana_port_context *apc)
+@@ -625,6 +812,9 @@ static int mana_query_device_cfg(struct mana_context *ac, u32 proto_major_ver,
+ 
+ 	mana_gd_init_req_hdr(&req.hdr, MANA_QUERY_DEV_CONFIG,
+ 			     sizeof(req), sizeof(resp));
++
++	req.hdr.resp.msg_version = GDMA_MESSAGE_V2;
++
+ 	req.proto_major_ver = proto_major_ver;
+ 	req.proto_minor_ver = proto_minor_ver;
+ 	req.proto_micro_ver = proto_micro_ver;
+@@ -647,6 +837,11 @@ static int mana_query_device_cfg(struct mana_context *ac, u32 proto_major_ver,
+ 
+ 	*max_num_vports = resp.max_num_vports;
+ 
++	if (resp.hdr.response.msg_version == GDMA_MESSAGE_V2)
++		gc->adapter_mtu = resp.adapter_mtu;
++	else
++		gc->adapter_mtu = ETH_FRAME_LEN;
++
+ 	return 0;
+ }
+ 
+@@ -1712,10 +1907,14 @@ static void mana_destroy_rxq(struct mana_port_context *apc,
+ static int mana_fill_rx_oob(struct mana_recv_buf_oob *rx_oob, u32 mem_key,
+ 			    struct mana_rxq *rxq, struct device *dev)
+ {
++	struct mana_port_context *mpc = netdev_priv(rxq->ndev);
+ 	dma_addr_t da;
+ 	void *va;
+ 
+-	va = mana_get_rxfrag(rxq, dev, &da, false);
++	if (mpc->rxbufs_pre)
++		va = mana_get_rxbuf_pre(rxq, &da);
++	else
++		va = mana_get_rxfrag(rxq, dev, &da, false);
+ 
+ 	if (!va)
+ 		return -ENOMEM;
+@@ -1798,7 +1997,6 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
  	struct mana_obj_spec wq_spec;
  	struct mana_obj_spec cq_spec;
  	struct gdma_queue_spec spec;
-+	unsigned int mtu = ndev->mtu;
+-	unsigned int mtu = ndev->mtu;
  	struct mana_cq *cq = NULL;
  	struct gdma_context *gc;
  	u32 cq_size, rq_size;
-@@ -1780,9 +1815,18 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
- 	rxq->ndev = ndev;
- 	rxq->num_rx_buf = RX_BUFFERS_PER_QUEUE;
+@@ -1817,15 +2015,8 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
  	rxq->rxq_idx = rxq_idx;
--	rxq->datasize = ALIGN(MAX_FRAME_SIZE, 64);
  	rxq->rxobj = INVALID_MANA_HANDLE;
  
-+	rxq->datasize = ALIGN(mtu + ETH_HLEN, 64);
-+
-+	if (mtu > MANA_XDP_MTU_MAX) {
-+		rxq->alloc_size = mtu + MANA_RXBUF_PAD;
-+		rxq->headroom = 0;
-+	} else {
-+		rxq->alloc_size = mtu + MANA_RXBUF_PAD + XDP_PACKET_HEADROOM;
-+		rxq->headroom = XDP_PACKET_HEADROOM;
-+	}
-+
+-	rxq->datasize = ALIGN(mtu + ETH_HLEN, 64);
+-
+-	if (mtu > MANA_XDP_MTU_MAX) {
+-		rxq->alloc_size = mtu + MANA_RXBUF_PAD;
+-		rxq->headroom = 0;
+-	} else {
+-		rxq->alloc_size = mtu + MANA_RXBUF_PAD + XDP_PACKET_HEADROOM;
+-		rxq->headroom = XDP_PACKET_HEADROOM;
+-	}
++	mana_get_rxbuf_cfg(ndev->mtu, &rxq->datasize, &rxq->alloc_size,
++			   &rxq->headroom);
+ 
  	err = mana_alloc_rx_wqe(apc, rxq, &rq_size, &cq_size);
  	if (err)
- 		goto out;
+@@ -2238,8 +2429,8 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
+ 	ndev->netdev_ops = &mana_devops;
+ 	ndev->ethtool_ops = &mana_ethtool_ops;
+ 	ndev->mtu = ETH_DATA_LEN;
+-	ndev->max_mtu = ndev->mtu;
+-	ndev->min_mtu = ndev->mtu;
++	ndev->max_mtu = gc->adapter_mtu - ETH_HLEN;
++	ndev->min_mtu = ETH_MIN_MTU;
+ 	ndev->needed_headroom = MANA_HEADROOM;
+ 	ndev->dev_port = port_idx;
+ 	SET_NETDEV_DEV(ndev, gc->dev);
+diff --git a/include/net/mana/gdma.h b/include/net/mana/gdma.h
+index 56189e4252da..96c120160f15 100644
+--- a/include/net/mana/gdma.h
++++ b/include/net/mana/gdma.h
+@@ -145,6 +145,7 @@ struct gdma_general_req {
+ }; /* HW DATA */
+ 
+ #define GDMA_MESSAGE_V1 1
++#define GDMA_MESSAGE_V2 2
+ 
+ struct gdma_general_resp {
+ 	struct gdma_resp_hdr hdr;
+@@ -354,6 +355,9 @@ struct gdma_context {
+ 	struct gdma_resource	msix_resource;
+ 	struct gdma_irq_context	*irq_contexts;
+ 
++	/* L2 MTU */
++	u16 adapter_mtu;
++
+ 	/* This maps a CQ index to the queue structure. */
+ 	unsigned int		max_num_cqs;
+ 	struct gdma_queue	**cq_table;
 diff --git a/include/net/mana/mana.h b/include/net/mana/mana.h
-index bb11a6535d80..fee99d704281 100644
+index fee99d704281..cd386aa7c7cc 100644
 --- a/include/net/mana/mana.h
 +++ b/include/net/mana/mana.h
-@@ -36,9 +36,6 @@ enum TRI_STATE {
- 
+@@ -37,6 +37,7 @@ enum TRI_STATE {
  #define COMP_ENTRY_SIZE 64
  
--#define ADAPTER_MTU_SIZE 1500
--#define MAX_FRAME_SIZE (ADAPTER_MTU_SIZE + 14)
--
  #define RX_BUFFERS_PER_QUEUE 512
++#define MANA_RX_DATA_ALIGN 64
  
  #define MAX_SEND_BUFFERS_PER_QUEUE 256
-@@ -282,7 +279,6 @@ struct mana_recv_buf_oob {
- 	struct gdma_wqe_request wqe_req;
  
- 	void *buf_va;
--	dma_addr_t buf_dma_addr;
+@@ -390,6 +391,14 @@ struct mana_port_context {
+ 	/* This points to an array of num_queues of RQ pointers. */
+ 	struct mana_rxq **rxqs;
  
- 	/* SGL of the buffer going to be sent has part of the work request. */
- 	u32 num_sge;
-@@ -295,6 +291,11 @@ struct mana_recv_buf_oob {
- 	struct gdma_posted_wqe_info wqe_inf;
- };
- 
-+#define MANA_RXBUF_PAD (SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) \
-+			+ ETH_HLEN)
++	/* pre-allocated rx buffer array */
++	void **rxbufs_pre;
++	dma_addr_t *das_pre;
++	int rxbpre_total;
++	u32 rxbpre_datasize;
++	u32 rxbpre_alloc_size;
++	u32 rxbpre_headroom;
 +
-+#define MANA_XDP_MTU_MAX (PAGE_SIZE - MANA_RXBUF_PAD - XDP_PACKET_HEADROOM)
+ 	struct bpf_prog *bpf_prog;
+ 
+ 	/* Create num_queues EQs, SQs, SQ-CQs, RQs and RQ-CQs, respectively. */
+@@ -489,6 +498,11 @@ struct mana_query_device_cfg_resp {
+ 	u16 max_num_vports;
+ 	u16 reserved;
+ 	u32 max_num_eqs;
 +
- struct mana_rxq {
- 	struct gdma_queue *gdma_rq;
- 	/* Cache the gdma receive queue id */
-@@ -304,6 +305,8 @@ struct mana_rxq {
- 	u32 rxq_idx;
++	/* response v2: */
++	u16 adapter_mtu;
++	u16 reserved2;
++	u32 reserved3;
+ }; /* HW DATA */
  
- 	u32 datasize;
-+	u32 alloc_size;
-+	u32 headroom;
- 
- 	mana_handle_t rxobj;
- 
-@@ -322,7 +325,7 @@ struct mana_rxq {
- 
- 	struct bpf_prog __rcu *bpf_prog;
- 	struct xdp_rxq_info xdp_rxq;
--	struct page *xdp_save_page;
-+	void *xdp_save_va; /* for reusing */
- 	bool xdp_flush;
- 	int xdp_rc; /* XDP redirect return code */
- 
+ /* Query vPort Configuration */
 -- 
 2.25.1
 
