@@ -2,60 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E7746DBD3C
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 23:38:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A683E6DBDD9
+	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 00:39:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229483AbjDHViJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Apr 2023 17:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
+        id S229506AbjDHWdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Apr 2023 18:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjDHViI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 17:38:08 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FBF44A9;
-        Sat,  8 Apr 2023 14:38:06 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1plGG3-00013w-US; Sat, 08 Apr 2023 23:38:03 +0200
-Date:   Sat, 8 Apr 2023 23:38:03 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, bpf@vger.kernel.org,
-        dxu@dxuuu.xyz, qde@naccy.de
-Subject: Re: [PATCH bpf-next 6/6] bpf: add test_run support for netfilter
- program type
-Message-ID: <20230408213803.GA9679@breakpoint.cc>
-References: <20230405161116.13565-1-fw@strlen.de>
- <20230405161116.13565-7-fw@strlen.de>
- <20230407013638.iels3lvezufbrenr@dhcp-172-26-102-232.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230407013638.iels3lvezufbrenr@dhcp-172-26-102-232.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229451AbjDHWdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 18:33:46 -0400
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1234::107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B6F7DA9
+        for <netdev@vger.kernel.org>; Sat,  8 Apr 2023 15:33:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Date:To:Subject:From:Message-Id:Sender:
+        Reply-To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=XKQ1wHxgFghimrbfn1xs6cant2ToSvUcp0jlVfegwI0=; b=uVP0UF5QueAXD6MR4XfROaAKHI
+        PUXSheHSZq8ODD+ERxKr/hbIGhR7pvAFKs9qKk6Io36zx97smqyqD66xN4SUtVFkNN7heWNtWSl+H
+        +KPzmLsCATndnCkFvrgvm0KTwhOHDFKO//uLxKN+2cLOCc/bUKLuxgCL36dZvX3GnrF4V9YyOqsz2
+        ZrQQn4MCzq3RkFRSPpZA6R2zu3LlMFr+Am+pIJsiKI5aaWrrl3WuiY16cktfEqfer2PP6qIarD9AW
+        7Pf1pE6Vmn4MGXLGtuWXo1JF7D11Ls24jdseQRWV6TMHtmg/gvlNt6EkIwuwT88uZiDMcIq7FVgC3
+        LIpxDtYA==;
+Received: from geoff by merlin.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1plH7i-00D6sB-AS; Sat, 08 Apr 2023 22:33:30 +0000
+Message-Id: <cover.1680992691.git.geoff@infradead.org>
+From:   Geoff Levand <geoff@infradead.org>
+Patch-Date: Sat, 8 Apr 2023 15:24:51 -0700
+Subject: [PATCH net-next v1 0/2] net/ps3_gelic_net: Driver cleanups
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+v1:     Add gelic_descr structures, use napi routines.
+Date:   Sat, 08 Apr 2023 22:33:30 +0000
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> >  static bool nf_ptr_to_btf_id(struct bpf_insn_access_aux *info, const char *name)
-> > diff --git a/tools/testing/selftests/bpf/verifier/netfilter.c b/tools/testing/selftests/bpf/verifier/netfilter.c
-> > new file mode 100644
-> > index 000000000000..deeb87afdf50
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/verifier/netfilter.c
-> > @@ -0,0 +1,23 @@
-> > +{
-> > +	"netfilter, accept all",
+Geoff Levand (2):
+  net/ps3_gelic_net: Add gelic_descr structures
+  net/ps3_gelic_net: Use napi routines for RX SKB
 
-[..]
+ drivers/net/ethernet/toshiba/ps3_gelic_net.c | 215 ++++++++++---------
+ drivers/net/ethernet/toshiba/ps3_gelic_net.h |  28 ++-
+ 2 files changed, 132 insertions(+), 111 deletions(-)
 
-> We're adding all new asm tests to test_progs now instead of test_verifier. See progs/verifier_*.c.
+-- 
+2.34.1
 
-Thanks for the pointer, I'll have a look at this for v2.
