@@ -2,127 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C51D6DBBBC
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 17:06:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D57D86DBBCA
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 17:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230013AbjDHPGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Apr 2023 11:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44066 "EHLO
+        id S229686AbjDHPVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Apr 2023 11:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbjDHPGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 11:06:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04570CA03
-        for <netdev@vger.kernel.org>; Sat,  8 Apr 2023 08:05:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680966313;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=w9sryqDLxXFtiPfudnwB2Hm3EkTYwVipdp4/U/AgJig=;
-        b=RcOPCeKgx8JjcoOFSF1luYPGl/HTMvhAhhamhjwJ6/EhPfDkniaDRvYA79NUwO8TQ/euo+
-        w5dnoTijSfV1pAlXlXlrddTcrkfsQRHFGdl0NhK3cwZLEo2b/xrADofevtmCcK87qeenY1
-        FXApBzQO/C2ZwMNn0weJCYJgRsnT2/M=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-221-CN-EGN3tNLSwtzStlLhSWw-1; Sat, 08 Apr 2023 11:05:11 -0400
-X-MC-Unique: CN-EGN3tNLSwtzStlLhSWw-1
-Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-50481cdc626so398990a12.3
-        for <netdev@vger.kernel.org>; Sat, 08 Apr 2023 08:05:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680966310;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=w9sryqDLxXFtiPfudnwB2Hm3EkTYwVipdp4/U/AgJig=;
-        b=O7I8Wwu7CPktoMI+/TAeUTwLQRA1cUhLNldPVKwmin+g4qqRkNFXUzWYN5YYOq7MA7
-         EISePEKobzcAJtecWN44zNjZYA7K366MtYlVOiMOf+fEG4kw3PAN0DM3auysmEeqEMvn
-         PcCb5VbY3MJtNZgEGXsDhzwmAqdzCyQTNf+eDfrVkQtzE9pC627VspX1KMHFSSz1v1Qb
-         D6gnVo1zvUd1cD96mJfQ215ULdTp56liABosFZ3H624jMClW/fpekRmYIb9aKDs0SD0g
-         zdDfQ6UI3eanc3AutgtVeJQRF1wL1QAf6o+nCBVeS4ydYccgidAZrfyckEPvQ4YmCdQW
-         557A==
-X-Gm-Message-State: AAQBX9eRCI8mpYUMQwzg3NnfNlVK8tI4Vg733r7Mh8xFOM/AFvHzlM8G
-        Gx7bz2WQDlAqDFJ6yY8x0KPLyYyXFE1Gwv8fyMpLqVuRuui8BJXhfCvMEYZxoMxZTeGNyAESh2v
-        F7qXU8XDAvcz97pgGmETASIUcjKw2PnfQ
-X-Received: by 2002:aa7:d590:0:b0:4fd:2675:3785 with SMTP id r16-20020aa7d590000000b004fd26753785mr1389713edq.22.1680966310623;
-        Sat, 08 Apr 2023 08:05:10 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YEXZM04gfrG0zUHYkHUTtzon3Nz0PuH2lQDJcHf0ICTIe5pJAzOGzTF1m/FMXP9xJ9r7stdvgILRdsVA9Ke24=
-X-Received: by 2002:aa7:d590:0:b0:4fd:2675:3785 with SMTP id
- r16-20020aa7d590000000b004fd26753785mr1389692edq.22.1680966310343; Sat, 08
- Apr 2023 08:05:10 -0700 (PDT)
+        with ESMTP id S229558AbjDHPVd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 11:21:33 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2119.outbound.protection.outlook.com [40.107.220.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAF6EF9C;
+        Sat,  8 Apr 2023 08:21:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bMnG4RjDhprLxzoV+pt/A5NCl17wOEnEqXlbOPlJMRpX/IbzQk9GiElreDx2yjBabJTh/uPBtE6gaMzboShf7Bh9H/4zCbjh0BJwy7dt7WqJR+zoeinRzg1trwG0aJ60d7FI6x6rBikg9qPzw2arki4/q57RBM0zzK1s7HPVlim6fBOt3u4oT8qwnIs4B/rOuSplnRXXRED6zsyVDQP1IFRZMpeQYWkaS80pWHaWlRMjTPKgjwpOGu7U/FMZOX30g5YmdhZ70FaZ2aS7UM1ctGvxCnTKG2GnhQnWkdRFw0J0oP/yoQt1MGEYPbVXi/J056bevWdZEOhsWBjvCVER3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sYLB+YAbmVTZ7iFM7zlBmwzDUYErOzmUGfvNCmr/JSo=;
+ b=WOdce44nfCqfxEsWe8nm8qzJ2hF7wkxID19xG6lt83wILvVN1jrKztGsvuekR5FJXX4lhGb4avw9Im7KMIedW/y3h199TdWa/vbt6OeuvAjgxRt+/SxP16uRkZmHIGLwiMICXKIsrr2KGttnmwJRy2zY+txIbhkFCBGaIzTUBC1JZQB6f+N6iHIhgAi/kCQhlcAH3QHVMddkCStAbehllxhNdD8U/7CIHFDZzEx+C/5LaFqrStml/aFzbQcPuZMtG4p8xxflf8BDEMbttThziThY8hxHUwL4D2EJHJxjdIw0bjIrj5HS2Rha2MeGo8k48E/lTPrX/aHjQ5Q9Z1jxvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sYLB+YAbmVTZ7iFM7zlBmwzDUYErOzmUGfvNCmr/JSo=;
+ b=Sug+1FZqQMv/8oFs2DMNX1a5kqQ7eLk2bPJUO/48L3UQOnvQ5oh3YZ+i0HUL5Wz2eQAot9dgREZq30/xxEH7Tvu59REFvglShFxzGjqF/0CIjpQkhAdzz0BlqDWCFdJt/fWw3t8F6u7AYBWfHHQLJPN2mINqUOd1eSbDPpINrtc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MN2PR13MB3806.namprd13.prod.outlook.com (2603:10b6:208:19e::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.35; Sat, 8 Apr
+ 2023 15:21:28 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.036; Sat, 8 Apr 2023
+ 15:21:28 +0000
+Date:   Sat, 8 Apr 2023 17:21:19 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Sai Krishna <saikrishnag@marvell.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sgoutham@marvell.com,
+        gakula@marvell.com, richardcochran@gmail.com, lcherian@marvell.com,
+        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com,
+        Ratheesh Kannoth <rkannoth@marvell.com>
+Subject: Re: [net PATCH v2 5/7] octeontx2-af: Fix issues with NPC field hash
+ extract
+Message-ID: <ZDGGbyXDjrnoJRcd@corigine.com>
+References: <20230407122344.4059-1-saikrishnag@marvell.com>
+ <20230407122344.4059-6-saikrishnag@marvell.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230407122344.4059-6-saikrishnag@marvell.com>
+X-ClientProxiedBy: AM0PR01CA0176.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:aa::45) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <20230408081934.54002-1-chenaotian2@163.com>
-In-Reply-To: <20230408081934.54002-1-chenaotian2@163.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sat, 8 Apr 2023 11:04:58 -0400
-Message-ID: <CAK-6q+j4aDoA2KG3Qzxg2XMu6nPxUuExuBw=sQ3+VqJuB5cj0A@mail.gmail.com>
-Subject: Re: [PATH wpan v2] ieee802154: hwsim: Fix possible memory leaks
-To:     Chen Aotian <chenaotian2@163.com>
-Cc:     alex.aring@gmail.com, stefan@datenfreihafen.org,
-        miquel.raynal@bootlin.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3806:EE_
+X-MS-Office365-Filtering-Correlation-Id: 23053fa5-6613-4968-da63-08db3844ec88
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: iOj579rOEapKEXa6kcasSuM2cCU7dsTyzZEPLl3J9RhO3jGawaybCN8oGxdUO4OwVtR1L71XPniNufEZ44rzL1uc+zcD7iZh5YpFp4TvoEhvCk2mqz5gOijs7rylwJLFO0ToRlGHFjBpURhIgZEGhHPCTLUQR5lnhj639ggsIRFXnhBev0beDRTGkucuDvjeu0l+l6q7/KIrmMhSaAmJ/H272ZdjWUHqG2uoX0Cmdb8iGvQkpKujyjqx0O6Mq47W72eL708PkgHaljY/Ah0oDVAigi2Mkt3X40qS9HP1Jzf4+WeBCROkfGgVqSTGNk9zvYS9okhfg21FJNQs1l4FivrDgRzoadZ4PDZE4tZf+0U/iyLoCK9XGrlc5cqec+yXvE5xjXYFNKbgrI/Wt0jrh8UHy4FuvennvtnptLflVoa685iSr/SzEVj/5czfJuYpTP4mhfPOGOJBvm1mgcUmEsSM330DuGZlzadDiDpK31qZbtQZ6J8vjNZyAZ0BGtUv1GuwztVOXqTVWeSaQDrC4XZdIoP4fbemPO5FgWvFN9fQWAtpfliNKpn1XAlQkXkB
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(136003)(39840400004)(366004)(346002)(451199021)(478600001)(86362001)(83380400001)(36756003)(38100700002)(2616005)(6666004)(6486002)(4744005)(2906002)(44832011)(316002)(186003)(6512007)(6506007)(7416002)(66476007)(8676002)(6916009)(41300700001)(8936002)(5660300002)(66556008)(4326008)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hgbzEyChY4QTPeDoX2im9R5sL/yvFc1yGJqHrPSQfqivoRvAOsbpSWVYfOe8?=
+ =?us-ascii?Q?trQuRWBHdqQqGUx9/7IXdbTYhI64T/5oMKL9G8pPf7u6fnwsSAcuqEFvHiTs?=
+ =?us-ascii?Q?ekyTgQG/YWwtsftJgORgS+qVTlJRWUu8/yeFnhA4lbIZFLdCBiXl9SoaCgfR?=
+ =?us-ascii?Q?ryx95W8GUIMbG1LWAqUhR/fWWHYMZhAV/L7y4P1bwlUD+L2MqpXqWtX13DAe?=
+ =?us-ascii?Q?1xDIzZ1AEcetRnF2DYTijY9BYbbWgjgTvsnGBG56cVLUgoLU2A3E+Q5BPEaT?=
+ =?us-ascii?Q?3gRLUOzIKieWIJBj0ak62eTKvC5f+f2ivgZJhV2soD4xHda6dpEmR2YRaLJL?=
+ =?us-ascii?Q?IXouc1SlEEgkfzEY+iGCXQ3y7LPaWhDkuSF8WJbQzwb6nEJnVLKhyg+Buex2?=
+ =?us-ascii?Q?Q/wt4GgbcmtQLULmeuQrf5/AqZ4ZPDfv9rCW39z2Sg0kQttp+CVbT8rF1/Df?=
+ =?us-ascii?Q?nYka7NLhqLlR1ZwsHaiSyj5pCRMUAHUubbfPKHEyi5gyNFbBSXqm/MMIS1DI?=
+ =?us-ascii?Q?03zHBkIUA8NQAAHDN+BNCmGv6iqL9Wvq0+micl5muXShcp6rvPjlD8/ElKyJ?=
+ =?us-ascii?Q?wTOwzfuyzuhmIBsrBNaI6NKaW0ZSwKrRDKjJZbQggCLqhhEmhGnMZVrya8Hh?=
+ =?us-ascii?Q?tqYxGXjhcYXcNgo1dTRQ+mh70NlB9AyQX10uMRs1dD6dCN+6nazLUhAWl8So?=
+ =?us-ascii?Q?VEpaTktCmnZFLxPoNVUuezGRSo9OcQxv5/RDmR1375JVAwuByHNwk9YxBEBf?=
+ =?us-ascii?Q?3+6Elq6GsH7metsbI6kBBAn6A+IrcuMYwKb6lMvMEDiB9rgQrV0kurXAiVOB?=
+ =?us-ascii?Q?jv96Yq0iFwwKaq/xQW1ZPvEBJGD1+aVy7eI4HYUqjpQDJWMhnuSCJq/Essk0?=
+ =?us-ascii?Q?NqCvxRKch8LuMr0H0+wvwozvfKnOh/8ccOCvlWKyqB0HbA0xbNHMq1LjR6s6?=
+ =?us-ascii?Q?j7w55AeS8SFLwdwVN2VGE0umAtxyMA68DNGVRxgNohAT3lx266eHycmyr7M1?=
+ =?us-ascii?Q?DDi/vbvWe6fNDIg1+ucnDzxpPmvVlDs9onfTZRF+xXEwjkOfWeBwF+n5FKLq?=
+ =?us-ascii?Q?0XNb2KkX+xNyfbKYeXyh1cVmdJtWH2Md12TSzu8SRoEzWcWVY58w7e5UKX98?=
+ =?us-ascii?Q?SFmv1cPVu1EI0b0zuFLoAkzYY8kP+jLHrVMXgjgHRnbOVT0JCa2tSfS/yv6I?=
+ =?us-ascii?Q?up2zPNC8ukVkd9WtZ80evVOYDnAlFy1+WduS+qcVIk1l0QT1aLlmuDUA1HJU?=
+ =?us-ascii?Q?hXXGECWrwq5XuTHXnfOS+F6tvnKhhpGUXzOJ+ZPgw03XJRsJ+DD8yx3n8rxy?=
+ =?us-ascii?Q?IFXCA6oY5XBKtNHOlkYKMPLqNL0PfW6Q7e1PwzTDMRljXvwZvzrzuAC3MePO?=
+ =?us-ascii?Q?EaG42abDWBXEMYYymICxgawf51W84wDrH4TTVl1SMxkcZIzEDl+iEj1wHjST?=
+ =?us-ascii?Q?csPNT7MuRobIWTjO6fYurK3S9K4rn7hGJ6rhWWWOjF0rh9VlVTky63IzqkBU?=
+ =?us-ascii?Q?IqWSR0M9Vmyu32Q/nUnzdsOJdxNz94t7kUft1vfkms31qajWRoGcvG7YZfnf?=
+ =?us-ascii?Q?hu4pAS5RHE/05Q43DAKTkDpRMIKNuWYlH4k2cSQtmnrl84E9fHjneM6Qk1r1?=
+ =?us-ascii?Q?nhE1XVqfYJOyz7LBt8b6CJofvuWNDWpFptkl4+EN36ZwalD86Y8AS7qn4L4i?=
+ =?us-ascii?Q?V66Lrw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23053fa5-6613-4968-da63-08db3844ec88
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2023 15:21:28.3368
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jpxFGEFoP8YGKqPRenMEHmGvXTg3MI/6whKfha6C4r9ne0ZIUPBBqkmmoP/YE2Gt1oh57VJL/CbukksUvhUOZbYynjJ9GSBhFTo+NhQ64Ns=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3806
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Fri, Apr 07, 2023 at 05:53:42PM +0530, Sai Krishna wrote:
+> From: Ratheesh Kannoth <rkannoth@marvell.com>
+> 
+> 1. As per previous implementation, mask and control parameter to
+> generate the field hash value was not passed to the caller program.
+> Updated the secret key mbox to share that information as well,
+> as a part of the fix.
+> 2. Earlier implementation did not consider hash reduction of both
+> source and destination IPv6 addresses. Only source IPv6 address
+> was considered. This fix solves that and provides option to hash
+> reduce both source and destination IPv6 addresses.
+> 3. Fix endianness issue during hash reduction while storing the IPv6
+>  source/destination address as hash keys.
+> 4. Configure hardware parser based on hash extract feature enable flag
+>        for IPv6.
 
-On Sat, Apr 8, 2023 at 4:22=E2=80=AFAM Chen Aotian <chenaotian2@163.com> wr=
-ote:
->
-> After replacing e->info, it is necessary to free the old einfo.
->
-> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
-> Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> Signed-off-by: Chen Aotian <chenaotian2@163.com>
-> ---
->
-> V1 -> V2:
-> * Using rcu_replace_pointer() is better then rcu_dereference()
->   and rcu_assign_pointer().
->
->  drivers/net/ieee802154/mac802154_hwsim.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee8=
-02154/mac802154_hwsim.c
-> index 8445c2189..6ffcadb9d 100644
-> --- a/drivers/net/ieee802154/mac802154_hwsim.c
-> +++ b/drivers/net/ieee802154/mac802154_hwsim.c
-> @@ -685,7 +685,7 @@ static int hwsim_del_edge_nl(struct sk_buff *msg, str=
-uct genl_info *info)
->  static int hwsim_set_edge_lqi(struct sk_buff *msg, struct genl_info *inf=
-o)
->  {
->         struct nlattr *edge_attrs[MAC802154_HWSIM_EDGE_ATTR_MAX + 1];
-> -       struct hwsim_edge_info *einfo;
-> +       struct hwsim_edge_info *einfo, *einfo_old;
->         struct hwsim_phy *phy_v0;
->         struct hwsim_edge *e;
->         u32 v0, v1;
-> @@ -723,8 +723,10 @@ static int hwsim_set_edge_lqi(struct sk_buff *msg, s=
-truct genl_info *info)
->         list_for_each_entry_rcu(e, &phy_v0->edges, list) {
->                 if (e->endpoint->idx =3D=3D v1) {
->                         einfo->lqi =3D lqi;
-> -                       rcu_assign_pointer(e->info, einfo);
-> +                       einfo_old =3D rcu_replace_pointer(e->info, einfo,
-> +                                                       lock_is_held(&hws=
-im_phys_lock));
+Hi Sai and Ratheesh,
 
-I think lockdep_is_held() should be correct here.
-
-- Alex
-
+there is a lot going on here.
+Could you consider breaking this up into more than one patch?
