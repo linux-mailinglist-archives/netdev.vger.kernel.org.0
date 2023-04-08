@@ -2,74 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB5726DB7E7
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 03:01:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 133ED6DB7ED
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 03:10:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229511AbjDHBBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 21:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
+        id S229513AbjDHBKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 21:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjDHBBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 21:01:52 -0400
+        with ESMTP id S229437AbjDHBKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 21:10:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAF2E1BB;
-        Fri,  7 Apr 2023 18:01:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4A0D53D;
+        Fri,  7 Apr 2023 18:10:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 060A56541E;
-        Sat,  8 Apr 2023 01:01:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F7AFC4339B;
-        Sat,  8 Apr 2023 01:01:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C8616542B;
+        Sat,  8 Apr 2023 01:10:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A65C433EF;
+        Sat,  8 Apr 2023 01:10:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680915710;
-        bh=gcSlr0CIOmJ02VidgdW32DQyhRayuccBI+i0cNpKHis=;
+        s=k20201202; t=1680916239;
+        bh=MgIHaUPbLPIRxFyPud+qDb3JXtJb7NXLs5o6wXSbmpg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gBCPer/ess3XRcujoGPcuezud/xtWezbBNdpdyfAn6mrD2z2blA2PFPhfUgWC3IK+
-         IXPlzbOs3j3Pavor5adn0jSmofxhNCbZB7mlwvmb7Ryu0cixxiD/nJKaVEhC1tONE7
-         zGe3Wx2IhamnpzYVFHJBAE5DXR5Kez2dOYsFBkPgALFW8cXsci2LydKyLvzCvRvyvp
-         HTKe7vzVPpNz/+hEZCzb5CKi5VQI6fihLzQhdH+iC24LYAjCKJfaA5u0ZPUntEuCeB
-         pskv7vxlbOCyyKcSRZB97PZf7cnOrhRVme7ByuBOvnNY7mskaunxMqmGUqm0UxQ7nF
-         WcUBI5Ldpdznw==
-Date:   Fri, 7 Apr 2023 18:01:48 -0700
+        b=XdhV0Z0zwb4vREI9N7dFTXhIzlK1fYM4PPQBcqdGj9weoUJAS+RfIlIuw1pM5Lb+F
+         KOh+/fevkkkcY9LP7oISyP4j+CC+Ned8x8fA+LVDwVDqzfdmq45A9L2jlf5EYlXScT
+         MSTDzeOYUdlkA+4z0yPuF6Hn6P7VciUjmqas/uQctPSf9LTVAwI646BYv4/PkV2i68
+         sUjAy/yRnejbC/nKfxX9uBWdmZT6vFHEzZMjjejZuyaf1TG/nwk0LvylYr5A6Z1GnX
+         tg17iA+cGxtsjFUHhe63EKrTJ7yEDtAIx0U9j6hU0+TyJcSzdzF0dEK/c41YfNnQpF
+         CQ9ryUn3hNRkA==
+Date:   Fri, 7 Apr 2023 18:10:37 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Igor Russkikh <irusskikh@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Pranavi Somisetty <pranavi.somisetty@amd.com>,
-        Harini Katakam <harini.katakam@amd.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        linux-kernel@vger.kernel.org, Ferenc Fejes <fejes@inf.elte.hu>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH v4 net-next 6/9] net/sched: mqprio: allow per-TC user
- input of FP adminStatus
-Message-ID: <20230407180148.281307c3@kernel.org>
-In-Reply-To: <20230407215252.x3lwkhfp4u6vptxl@skbuf>
-References: <20230403103440.2895683-1-vladimir.oltean@nxp.com>
-        <20230403103440.2895683-7-vladimir.oltean@nxp.com>
-        <CAM0EoMn9iwTBUW-OaK2sDtTS-PO2_nGLuvGmrqY5n8HYEdt7XQ@mail.gmail.com>
-        <20230407164103.vstxn2fmswno3ker@skbuf>
-        <CAM0EoM=go4RNohHpt6Z9wFk0AU81gJY3puBTUOC6F0xMocJouQ@mail.gmail.com>
-        <20230407193056.3rklegrgmn2yecuu@skbuf>
-        <CAM0EoM=miaB=xjp1vyPSfxLO3dBmBq4Loo7Mb=RZ5KuxHrwQaA@mail.gmail.com>
-        <20230407215252.x3lwkhfp4u6vptxl@skbuf>
+        Simon Horman <simon.horman@corigine.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Xu Liang <lxu@maxlinear.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, oss-drivers@corigine.com,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH 1/8] net: netronome: constify pointers to
+ hwmon_channel_info
+Message-ID: <20230407181037.4cecfbde@kernel.org>
+In-Reply-To: <3a0391e7-21f6-432a-9872-329e298e1582@roeck-us.net>
+References: <20230407145911.79642-1-krzysztof.kozlowski@linaro.org>
+        <20230407084745.3aebbc9d@kernel.org>
+        <3a0391e7-21f6-432a-9872-329e298e1582@roeck-us.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -82,39 +69,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 8 Apr 2023 00:52:52 +0300 Vladimir Oltean wrote:
-> On Fri, Apr 07, 2023 at 05:40:20PM -0400, Jamal Hadi Salim wrote:
-> > Yes, it is minor (and usually minor things generate the most emails;->).
-> > I may be misunderstanding what you mean by "doesnt justify exporting
-> > something to UAPI"  - those definitions are part of uapi and are
-> > already being exported.  
+On Fri, 7 Apr 2023 11:05:06 -0700 Guenter Roeck wrote:
+> On Fri, Apr 07, 2023 at 08:47:45AM -0700, Jakub Kicinski wrote:
+> > On Fri,  7 Apr 2023 16:59:04 +0200 Krzysztof Kozlowski wrote:  
+> > > This depends on hwmon core patch:
+> > > https://lore.kernel.org/all/20230406203103.3011503-2-krzysztof.kozlowski@linaro.org/  
+> > 
+> > That patch should have been put on a stable branch we can pull
+> > and avoid any conflict risks... Next time?  
 > 
-> In my proposed patch set there isn't any TC_FP_MAX. I'm saying it
-> doesn't help user space, and so, it just pollutes the name space of C
-> programs with no good reason.
-
-+1  we tend to sprinkle MAX and UNSPEC into every enum
-
-> > No, no, it is a matter of taste and opinion. You may have noticed,
-> > trivial stuff like this gets the most comments and reviews normally(we
-> > just spent like 4-5 emails on this?). Poteto/potato: IOW, if i was to
-> > do it i would have used a u16 or u32 because i feel it would be more
-> > readable. I would have used NLA_U8 because i felt it is more fitting
-> > and i would have used a max value because it would save me one line in
-> > a patch in the future. I think weve spent enough electrons on this - I
-> > defer to you.  
+> Yes, and I don't feel comfortable applying all those patches through
+> the hwmon tree since I have zero means to test them.
 > 
-> Ok, I won't change preemptible_tcs from unsigned long to u32.
-> Things like for_each_set_bit() take unsigned long, and so, I got used
-> to using that consistently for small bitfield types.
+> I created a stable branch at
 > 
-> If there's a second opinion stating that I should prefer the smallest
-> netlink attribute type that fits the estimated data, then I'll transition
-> from NLA_U32 to NLA_U8. Otherwise, I won't :) since I would need to
-> change iproute2 too, and I'd have to re-test more thoroughly to make
-> sure I don't introduce stupid bugs.
+> git://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-const
 
-And here also agreed. We should have a patchwork check for new uses of
-NLA_*{8,16} if you ask me :S  NLA_FLAG or NLA_U32, anything in between
-needs a strong justification.  Until Alex L posts the variable size
-ints, then NLA_FLAG or NLA_UINT ;)
+Thanks! Krzysztof, give us a nod and we'll take the series to net-next.
