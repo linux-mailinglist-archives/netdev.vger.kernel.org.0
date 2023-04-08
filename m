@@ -2,53 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E34E56DB7FB
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 03:30:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5366DB801
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 03:33:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229563AbjDHBaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Apr 2023 21:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41252 "EHLO
+        id S229676AbjDHBdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Apr 2023 21:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjDHBaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 21:30:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02393113C3;
-        Fri,  7 Apr 2023 18:30:20 -0700 (PDT)
+        with ESMTP id S229517AbjDHBdO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Apr 2023 21:33:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4968D113CB;
+        Fri,  7 Apr 2023 18:33:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 858DD64F11;
-        Sat,  8 Apr 2023 01:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CDB2DC4339B;
-        Sat,  8 Apr 2023 01:30:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADCE864872;
+        Sat,  8 Apr 2023 01:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5885C433D2;
+        Sat,  8 Apr 2023 01:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680917418;
-        bh=ST49drH5XE8wAGGKdEej2JeiagrxN7qoOaHr8ZCDhFE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=P8nd8wivEaDG7a0Y6pCE0becZHlwy9Ggr5nXPTqVpTIzQkEtCgN6sQ4LVqRv2I307
-         bjKKGfRyYppeFAisp3o3DcGLPPAFjMxNIn5vra3tzUf5XBtA0vm92uQPCrB8kIjK2y
-         EaUq/3myyMCWl39+FvMleZ/qbbQee6APg157E5rOBDMB3kkY+2UnMQuXR3a00AnXUD
-         Xhb0NXaxGNynj9UdCBBs3gTjZMssG0FWoI/CBcqfkDzBX7CgDQe+qXvhPH19UQLpyE
-         yJUgJt+IyFNa+jRCeIrzF2CTTepVPRQAaIyuOc8N7LyRIsZy7PxDpRoG1aAqa6ydsF
-         t80RtBmDClXOg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B1BFAC4167B;
-        Sat,  8 Apr 2023 01:30:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1680917592;
+        bh=Yr29bLblMMqpSP/0qtaO2BQyCduJAqsFlOcCVtbTMWU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lCjwYoZDktIRWhat7yIW44x8WOkGg1Zo6SH635BASi/8IteFMVdBm3OxrJjgBwrtz
+         KGcZbzFnRQ2miF+uJ7vmOO2PnpdcZ0rh0+8+iDZ+nKTzG8h8ZEeAm4a9xO8RUZhNVQ
+         UTzHLYzdi4axmG0ZoRRGwsaY0rgqMuQFt3ms5TSSxQ3YmV47VAR+v/ZqXg72BAqo8b
+         CsZA/Ztx/hq27X+EWztsKvptVf4YgA3eb+HmczDmxjZF9MddLvaGjp9zIiyGcZPFU/
+         LxzZ5wWO2WFCwogWeY/8+hu1/q/MHe0dUVAdMueHrtwCB4bpy4PmOcf8h88Rs0B65Z
+         w+aZgRk5ehaYw==
+Date:   Fri, 7 Apr 2023 18:33:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     davem@davemloft.net, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: pull-request: bluetooth 2023-04-07
+Message-ID: <20230407183310.3bfc4044@kernel.org>
+In-Reply-To: <20230407193201.3430140-1-luiz.dentz@gmail.com>
+References: <20230407193201.3430140-1-luiz.dentz@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bpf 2023-04-08
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168091741872.13847.5359569013775020600.git-patchwork-notify@kernel.org>
-Date:   Sat, 08 Apr 2023 01:30:18 +0000
-References: <20230407224642.30906-1-daniel@iogearbox.net>
-In-Reply-To: <20230407224642.30906-1-daniel@iogearbox.net>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, ast@kernel.org, andrii@kernel.org,
-        martin.lau@linux.dev, netdev@vger.kernel.org, bpf@vger.kernel.org
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,28 +52,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat,  8 Apr 2023 00:46:42 +0200 you wrote:
-> Hi David, hi Jakub, hi Paolo, hi Eric,
+On Fri,  7 Apr 2023 12:32:01 -0700 Luiz Augusto von Dentz wrote:
+> The following changes since commit b9881d9a761a7e078c394ff8e30e1659d74f898f:
 > 
-> The following pull-request contains BPF updates for your *net* tree.
+>   Merge branch 'bonding-ns-validation-fixes' (2023-04-07 08:47:20 +0100)
 > 
-> We've added 4 non-merge commits during the last 11 day(s) which contain
-> a total of 5 files changed, 39 insertions(+), 6 deletions(-).
+> are available in the Git repository at:
 > 
-> [...]
+>   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2023-04-07
+> 
+> for you to fetch changes up to 501455403627300b45e33d41e0730f862618449b:
+> 
+>   Bluetooth: L2CAP: Fix use-after-free in l2cap_disconnect_{req,rsp} (2023-04-07 12:18:09 -0700)
+> 
+> ----------------------------------------------------------------
+> bluetooth pull request for net:
+> 
+>  - Fix not setting Dath Path for broadcast sink
+>  - Fix not cleaning up on LE Connection failure
+>  - SCO: Fix possible circular locking dependency
+>  - L2CAP: Fix use-after-free in l2cap_disconnect_{req,rsp}
+>  - Fix race condition in hidp_session_thread
+>  - btbcm: Fix logic error in forming the board name
+>  - btbcm: Fix use after free in btsdio_remove
 
-Here is the summary with links:
-  - pull-request: bpf 2023-04-08
-    https://git.kernel.org/netdev/net/c/029294d01907
+Looks like we got a Fixes tag issue (Fixes: Fixes: 8e8b92ee60de... )
+and clang is not on-board:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+net/bluetooth/hci_conn.c:1214:7: warning: variable 'params' is uninitialized when used here [-Wuninitialized]
+            (params && params->explicit_connect))
+             ^~~~~~
+net/bluetooth/hci_conn.c:1203:32: note: initialize the variable 'params' to silence this warning
+        struct hci_conn_params *params;
+                                      ^
