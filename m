@@ -2,155 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB1866DBC74
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 20:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A97AD6DBCA3
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 21:25:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229454AbjDHSuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Apr 2023 14:50:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
+        id S229567AbjDHTZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Apr 2023 15:25:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjDHSuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 14:50:10 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D9861AA;
-        Sat,  8 Apr 2023 11:50:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1680979809; x=1712515809;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dpTw7HrsmdgR8I65YONpwLZ5OMz/coIULOGGTT7JEEw=;
-  b=MAJBzAGZqkbWAcDRLLtekwtfGcBD5LvgasqgRKJ4p5HEyBDwCNnDHV7n
-   F0uDJXBkFNuUff0FN1favp7XGA+18f9uJEtSRNzQlzGio6L/tdPgbctSK
-   poecQt9VFd2PU4j+GQsSpf4oXll0o7tO1IEW6OAqAqmI/0nLhVg8Y5wkU
-   k=;
-X-IronPort-AV: E=Sophos;i="5.98,329,1673913600"; 
-   d="scan'208";a="202433039"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-7dc0ecf1.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2023 18:50:05 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-m6i4x-7dc0ecf1.us-east-1.amazon.com (Postfix) with ESMTPS id 873D680D8C;
-        Sat,  8 Apr 2023 18:50:01 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Sat, 8 Apr 2023 18:49:57 +0000
-Received: from 88665a182662.ant.amazon.com (10.187.171.41) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.26;
- Sat, 8 Apr 2023 18:49:54 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Jan Karcher <jaka@linux.ibm.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
-        <syzbot+7e1e1bdb852961150198@syzkaller.appspotmail.com>
-Subject: [PATCH v1 net] smc: Fix use-after-free in tcp_write_timer_handler().
-Date:   Sat, 8 Apr 2023 11:49:43 -0700
-Message-ID: <20230408184943.48136-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229532AbjDHTZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 15:25:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D27B74A
+        for <netdev@vger.kernel.org>; Sat,  8 Apr 2023 12:24:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680981883;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=WHos8LM0VawSvsV7ilkV4J+3kFj+NjV9a1WkRGl+L9k=;
+        b=CJ0ZOJ3aFlqXV34dD3Wlmmnem03FbTuGFNq3bcrgO6weRUcHR4fKXxAT60hUlB9SqoGzjY
+        3mR8h7VGz/Tqq6oXi1CvUDNWtOtVbE1XQL7cZLLPIIPqJDL9UdmTfR4JLzF1VNxOfJkpS+
+        oIoqTiLyumNPtZa9Py76lmqDycmhSl0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-170-eMMT_24CMTGEkuTyNfCu2g-1; Sat, 08 Apr 2023 15:24:39 -0400
+X-MC-Unique: eMMT_24CMTGEkuTyNfCu2g-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C8BE029AA2E7;
+        Sat,  8 Apr 2023 19:24:37 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.45.242.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3E273492C14;
+        Sat,  8 Apr 2023 19:24:37 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 4ED6B307372E8;
+        Sat,  8 Apr 2023 21:24:36 +0200 (CEST)
+Subject: [PATCH bpf V7 0/7] XDP-hints: API change for RX-hash kfunc
+ bpf_xdp_metadata_rx_hash
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>,
+        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
+        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
+        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
+        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
+        davem@davemloft.net, tariqt@nvidia.com, saeedm@nvidia.com,
+        leon@kernel.org, linux-rdma@vger.kernel.org
+Date:   Sat, 08 Apr 2023 21:24:36 +0200
+Message-ID: <168098183268.96582.7852359418481981062.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.187.171.41]
-X-ClientProxiedBy: EX19D045UWC002.ant.amazon.com (10.13.139.230) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SPF_PERMERROR
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With Eric's ref tracker, syzbot finally found a repro for
-use-after-free in tcp_write_timer_handler() by kernel TCP
-sockets. [0]
+Current API for bpf_xdp_metadata_rx_hash() returns the raw RSS hash value,
+but doesn't provide information on the RSS hash type (part of 6.3-rc).
 
-If SMC creates a kernel socket in __smc_create(), the kernel
-socket is supposed to be freed in smc_clcsock_release() by
-calling sock_release() when we close() the parent SMC socket.
+This patchset proposal is to change the function call signature via adding
+a pointer value argument for providing the RSS hash type.
 
-However, at the end of smc_clcsock_release(), the kernel
-socket's sk_state might not be TCP_CLOSE.  This means that
-we have not called inet_csk_destroy_sock() in __tcp_close()
-and have not stopped the TCP timers.
+Patchset also disables all bpf_printk's from xdp_hw_metadata program
+that we expect driver developers to use.
 
-The kernel socket's TCP timers can be fired later, so we
-need to hold a refcnt for net as we do for MPTCP subflows
-in mptcp_subflow_create_socket().
-
-[0]:
-leaked reference.
- sk_alloc (./include/net/net_namespace.h:335 net/core/sock.c:2108)
- inet_create (net/ipv4/af_inet.c:319 net/ipv4/af_inet.c:244)
- __sock_create (net/socket.c:1546)
- smc_create (net/smc/af_smc.c:3269 net/smc/af_smc.c:3284)
- __sock_create (net/socket.c:1546)
- __sys_socket (net/socket.c:1634 net/socket.c:1618 net/socket.c:1661)
- __x64_sys_socket (net/socket.c:1672)
- do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
- entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-==================================================================
-BUG: KASAN: slab-use-after-free in tcp_write_timer_handler (net/ipv4/tcp_timer.c:378 net/ipv4/tcp_timer.c:624 net/ipv4/tcp_timer.c:594)
-Read of size 1 at addr ffff888052b65e0d by task syzrepro/18091
-
-CPU: 0 PID: 18091 Comm: syzrepro Tainted: G        W          6.3.0-rc4-01174-gb5d54eb5899a #7
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.amzn2022.0.1 04/01/2014
-Call Trace:
- <IRQ>
- dump_stack_lvl (lib/dump_stack.c:107)
- print_report (mm/kasan/report.c:320 mm/kasan/report.c:430)
- kasan_report (mm/kasan/report.c:538)
- tcp_write_timer_handler (net/ipv4/tcp_timer.c:378 net/ipv4/tcp_timer.c:624 net/ipv4/tcp_timer.c:594)
- tcp_write_timer (./include/linux/spinlock.h:390 net/ipv4/tcp_timer.c:643)
- call_timer_fn (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:207 ./include/trace/events/timer.h:127 kernel/time/timer.c:1701)
- __run_timers.part.0 (kernel/time/timer.c:1752 kernel/time/timer.c:2022)
- run_timer_softirq (kernel/time/timer.c:2037)
- __do_softirq (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:207 ./include/trace/events/irq.h:142 kernel/softirq.c:572)
- __irq_exit_rcu (kernel/softirq.c:445 kernel/softirq.c:650)
- irq_exit_rcu (kernel/softirq.c:664)
- sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1107 (discriminator 14))
- </IRQ>
-
-Fixes: ac7138746e14 ("smc: establish new socket family")
-Reported-by: syzbot+7e1e1bdb852961150198@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/netdev/000000000000a3f51805f8bcc43a@google.com/
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- net/smc/af_smc.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index c6b4a62276f6..50c38b624f77 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -3270,6 +3270,17 @@ static int __smc_create(struct net *net, struct socket *sock, int protocol,
- 			sk_common_release(sk);
- 			goto out;
- 		}
-+
-+		/* smc_clcsock_release() does not wait smc->clcsock->sk's
-+		 * destruction;  its sk_state might not be TCP_CLOSE after
-+		 * smc->sk is close()d, and TCP timers can be fired later,
-+		 * which need net ref.
-+		 */
-+		sk = smc->clcsock->sk;
-+		__netns_tracker_free(net, &sk->ns_tracker, false);
-+		sk->sk_net_refcnt = 1;
-+		get_net_track(net, &sk->ns_tracker, GFP_KERNEL);
-+		sock_inuse_add(net, 1);
- 	} else {
- 		smc->clcsock = clcsock;
- 	}
--- 
-2.30.2
+Jesper Dangaard Brouer (7):
+      selftests/bpf: xdp_hw_metadata default disable bpf_printk
+      selftests/bpf: Add counters to xdp_hw_metadata
+      xdp: rss hash types representation
+      mlx5: bpf_xdp_metadata_rx_hash add xdp rss hash type
+      veth: bpf_xdp_metadata_rx_hash add xdp rss hash type
+      mlx4: bpf_xdp_metadata_rx_hash add xdp rss hash type
+      selftests/bpf: Adjust bpf_xdp_metadata_rx_hash for new arg
+
+
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    | 22 ++++++-
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |  3 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 63 ++++++++++++++++++-
+ drivers/net/veth.c                            | 10 ++-
+ include/linux/mlx5/device.h                   | 14 ++++-
+ include/linux/netdevice.h                     |  3 +-
+ include/net/xdp.h                             | 47 ++++++++++++++
+ net/core/xdp.c                                | 10 ++-
+ .../selftests/bpf/prog_tests/xdp_metadata.c   |  2 +
+ .../selftests/bpf/progs/xdp_hw_metadata.c     | 42 ++++++++++---
+ .../selftests/bpf/progs/xdp_metadata.c        |  6 +-
+ .../selftests/bpf/progs/xdp_metadata2.c       |  7 ++-
+ tools/testing/selftests/bpf/xdp_hw_metadata.c | 10 ++-
+ tools/testing/selftests/bpf/xdp_metadata.h    |  4 ++
+ 14 files changed, 213 insertions(+), 30 deletions(-)
+
+--
 
