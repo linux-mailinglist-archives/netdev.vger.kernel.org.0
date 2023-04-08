@@ -2,50 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F7986DB999
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 10:20:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67D916DB9A9
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 10:24:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230097AbjDHIUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Apr 2023 04:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
+        id S229812AbjDHIYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Apr 2023 04:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbjDHIUr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 04:20:47 -0400
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.215])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9105ED530;
-        Sat,  8 Apr 2023 01:20:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=q88BU
-        pvmZ6iY8iv/Jnzwzgvp9hI37+33vq+2lKikbco=; b=dAVf0/BULyVNAFIhUE7HC
-        di4oMruLhZzo1nqJ3A+RfsZthCYWrZBSY4GNYRt8iTbEXusMBH0un0/Q3IIrIH4L
-        pJv3uCJPc2v8q6Ucgz7/W5dOJYtId50W0zPdAa0ugRBV7oCDBey81qxEDVQREg+X
-        QoAPTCq57un0Gdq2IM1v90=
-Received: from localhost.localdomain (unknown [106.39.149.90])
-        by zwqz-smtp-mta-g2-4 (Coremail) with SMTP id _____wDHhM2iIzFkqZh8Aw--.62148S2;
-        Sat, 08 Apr 2023 16:19:47 +0800 (CST)
-From:   Chen Aotian <chenaotian2@163.com>
-To:     alex.aring@gmail.com
-Cc:     stefan@datenfreihafen.org, miquel.raynal@bootlin.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Chen Aotian <chenaotian2@163.com>
-Subject: [PATH wpan v2] ieee802154: hwsim: Fix possible memory leaks
-Date:   Sat,  8 Apr 2023 16:19:34 +0800
-Message-Id: <20230408081934.54002-1-chenaotian2@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229504AbjDHIYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 04:24:19 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A80D524;
+        Sat,  8 Apr 2023 01:24:17 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id F3E783200909;
+        Sat,  8 Apr 2023 04:24:14 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Sat, 08 Apr 2023 04:24:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        joshtriplett.org; h=cc:content-type:content-type:date:date:from
+        :from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to; s=fm1; t=1680942254; x=1681028654; bh=2y
+        BXVbSSdNHxtHfP7iplYUCfsDs2K4dPwS9gffca2v0=; b=qnziuNy0ypINMNUC4t
+        LbshO8S4cz6pwpGvCspmYV8wYjIpSuusui+BrXV4fv+dTwsa2Hgws1HVzMI6uMn/
+        Vnlgx7xzz4w5igYnarE5MndhiUDXG/rwyJC3l7QesOVY0/PZw0w9jy8kJwIXS3Jx
+        UykvuJKZi+snphDZ0gRhv7V2uGbg5fNbh+dAQp/PLQUmniuaUYJHnEpbmCK69cVJ
+        f6IXEDN2jtrmMGEOfzSYGaiheZxhF16z3jd+GEJuWFLQ3/+ynjYfVfS04QKhrz/0
+        9pb4LMqeKoHrNyiuze4/LXIqaAqdhP6jcboVdnKRSSlawrQ1Pt3YfDNqTNcYejX0
+        6zrw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1680942254; x=1681028654; bh=2yBXVbSSdNHxtHfP7iplYUCfsDs2K4dPwS9
+        gffca2v0=; b=lOV+UeK7Ut1d7PEJcKYvd7u5/u5xwSNj3qL6ZLo9nr3ibF6KPWN
+        vEttAkDc8R/a2Q+FW32kt+6BGxD4RtcOTWgYpzmVQ4S02EOTcAd6J+7ia2jJxtlX
+        YfFzoQ/cpGWDi66GsGHly9XGa0F1kSBkqnHHOu84yD1zKQmvgSXFcsXKZsCI/g6r
+        350sYwgK6vipF5aS8yVJAlgSnbN4TFzqiWN5H7or/cvkm/4Pw9R+xAIYjf+DyZFl
+        gtMXpKln51uaxBhCFCMiIpqAzZi/q1dPWgCozsDEyQbfN7YBdbWJmnE6TQN7pjpn
+        GuiDj7suuKQundmDfmOiJCaf7dDM3m+TKqg==
+X-ME-Sender: <xms:riQxZFi8pSkoas4z9F1eS0S03eDjD4m9tirqbMu9L8mNzILUopfSrg>
+    <xme:riQxZKBd3ttPf339ZJupeAEuu99A5Ovlv-hH8a3LhFctovtUuCRCNpKVeJlYmf0xW
+    Bvak4W9qlSLF_TdvcM>
+X-ME-Received: <xmr:riQxZFH1q2z7OSmY-nFxVDEwri27FDQ-pi9cjFhppXHajf1fi1d9DchBmVg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdejjedgtdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfggtggusehttdertddttddvnecuhfhrohhmpeflohhshhcuvfhr
+    ihhplhgvthhtuceojhhoshhhsehjohhshhhtrhhiphhlvghtthdrohhrgheqnecuggftrf
+    grthhtvghrnhepudelkeevueetjeegudehgfevheffvdffieelieeggfffgeeuffehteek
+    jefgueevnecuffhomhgrihhnpehshihstghtlhdrnhgvthenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehjohhshhesjhhoshhhthhrihhplhgv
+    thhtrdhorhhg
+X-ME-Proxy: <xmx:riQxZKSlLW3UJ14ICgjjfi-iIWYLXFuyZwgTdcPT_ihlcF0MHzwJfQ>
+    <xmx:riQxZCyjtKbclMqKFN26mgdbesWf6pY2bWrjrxFjZPcht6JIRHMCrg>
+    <xmx:riQxZA6e-VqZYx9_2_HxphS8aEWOYr5Aez9tOQoJP-bycFz8KBVs5A>
+    <xmx:riQxZNyPGu_7yUoEKarrGlmDtFADZzFKpvMeCLAeIfE1vIT-bsv-OQ>
+Feedback-ID: i83e94755:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 8 Apr 2023 04:24:10 -0400 (EDT)
+Date:   Sat, 8 Apr 2023 17:24:07 +0900
+From:   Josh Triplett <josh@joshtriplett.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH] net: ipv6: Add Kconfig option to set default value of
+ accept_dad
+Message-ID: <3072adab06f9c5f45cc72d2068d1aed0100436ff.1680941918.git.josh@joshtriplett.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _____wDHhM2iIzFkqZh8Aw--.62148S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Zw4DAF1UJw4UuF48XF17trb_yoW8Wr1fpF
-        Wj9asIyr48tF1xW3yDCw4kAa4Sqayru348urWfKa9xZ3W2qr409r17GF1Svr45JrZ7C3WS
-        yF4qqrnIvw1DArDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j1eHgUUUUU=
-X-Originating-IP: [106.39.149.90]
-X-CM-SenderInfo: xfkh0tprwlt0qs6rljoofrz/xtbBEQZLwFaENWcJDwAAsa
-X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,45 +87,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After replacing e->info, it is necessary to free the old einfo.
+The kernel already supports disabling Duplicate Address Detection (DAD)
+by setting net.ipv6.conf.$interface.accept_dad to 0. However, for
+interfaces available at boot time, the kernel brings up the interface
+and sets up the link-local address before processing sysctls set on the
+kernel command line; thus, setting
+sysctl.net.ipv6.conf.default.accept_dad=0 on the kernel command line
+does not suffice to affect such interfaces.
 
-Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
-Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Signed-off-by: Chen Aotian <chenaotian2@163.com>
+Add a configuration option to set the default value of accept_dad for
+new interfaces.
+
+Signed-off-by: Josh Triplett <josh@joshtriplett.org>
 ---
 
-V1 -> V2:
-* Using rcu_replace_pointer() is better then rcu_dereference()
-  and rcu_assign_pointer().
+I'm in a virtualized environment, and I'm trying to bring up network
+interfaces (including IPv6) extremely quickly and have them be
+immediately usable. I tried many different approaches to disable DAD on
+the interface, but I didn't find *any* way to successfully disable DAD
+before the kernel brought up the link-local address for eth0 and set it
+as tentative.
 
- drivers/net/ieee802154/mac802154_hwsim.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+I've verified that this option *does* successfully cause the link-local
+address for interfaces to not show up as "tentative".
 
-diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-index 8445c2189..6ffcadb9d 100644
---- a/drivers/net/ieee802154/mac802154_hwsim.c
-+++ b/drivers/net/ieee802154/mac802154_hwsim.c
-@@ -685,7 +685,7 @@ static int hwsim_del_edge_nl(struct sk_buff *msg, struct genl_info *info)
- static int hwsim_set_edge_lqi(struct sk_buff *msg, struct genl_info *info)
- {
- 	struct nlattr *edge_attrs[MAC802154_HWSIM_EDGE_ATTR_MAX + 1];
--	struct hwsim_edge_info *einfo;
-+	struct hwsim_edge_info *einfo, *einfo_old;
- 	struct hwsim_phy *phy_v0;
- 	struct hwsim_edge *e;
- 	u32 v0, v1;
-@@ -723,8 +723,10 @@ static int hwsim_set_edge_lqi(struct sk_buff *msg, struct genl_info *info)
- 	list_for_each_entry_rcu(e, &phy_v0->edges, list) {
- 		if (e->endpoint->idx == v1) {
- 			einfo->lqi = lqi;
--			rcu_assign_pointer(e->info, einfo);
-+			einfo_old = rcu_replace_pointer(e->info, einfo,
-+							lock_is_held(&hwsim_phys_lock));
- 			rcu_read_unlock();
-+			kfree_rcu(einfo_old, rcu);
- 			mutex_unlock(&hwsim_phys_lock);
- 			return 0;
- 		}
+If this approach isn't appealing, or if there's a better way to
+accomplish this, I'd welcome suggestions for alternative approaches.
+
+ Documentation/networking/ip-sysctl.rst |  4 +++-
+ net/ipv6/Kconfig                       | 10 ++++++++++
+ net/ipv6/addrconf.c                    |  4 ++++
+ 3 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 87dd1c5283e6..302f1f208339 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -2496,11 +2496,13 @@ accept_dad - INTEGER
+ 
+ 	 == ==============================================================
+ 	  0  Disable DAD
+-	  1  Enable DAD (default)
++	  1  Enable DAD
+ 	  2  Enable DAD, and disable IPv6 operation if MAC-based duplicate
+ 	     link-local address has been found.
+ 	 == ==============================================================
+ 
++	Default: 1 if CONFIG_IPV6_DAD_DEFAULT_DISABLE is not set, otherwise 0.
++
+ 	DAD operation and mode on a given interface will be selected according
+ 	to the maximum value of conf/{all,interface}/accept_dad.
+ 
+diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
+index 658bfed1df8b..3535e1b6a38f 100644
+--- a/net/ipv6/Kconfig
++++ b/net/ipv6/Kconfig
+@@ -48,6 +48,16 @@ config IPV6_OPTIMISTIC_DAD
+ 
+ 	  If unsure, say N.
+ 
++config IPV6_DAD_DEFAULT_DISABLE
++	bool "IPv6: Disable Duplicate Address Detection by default"
++	help
++	  If enabled, this sets the default value of the
++	  net.ipv6.conf.default.accept_dad sysctl to 0, disabling Duplicate
++	  Address Detection (DAD). This allows the modified default to be
++	  picked up early enough to affect interfaces that exist at boot time.
++
++	  If unsure, say N.
++
+ config INET6_AH
+ 	tristate "IPv6: AH transformation"
+ 	select XFRM_AH
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index faa47f9ea73a..e931c836a5dd 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -274,7 +274,11 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
+ 	.proxy_ndp		= 0,
+ 	.accept_source_route	= 0,	/* we do not accept RH0 by default. */
+ 	.disable_ipv6		= 0,
++#ifdef CONFIG_IPV6_DAD_DEFAULT_DISABLE
++	.accept_dad		= 0,
++#else
+ 	.accept_dad		= 1,
++#endif
+ 	.suppress_frag_ndisc	= 1,
+ 	.accept_ra_mtu		= 1,
+ 	.stable_secret		= {
 -- 
-2.25.1
+2.40.0
 
