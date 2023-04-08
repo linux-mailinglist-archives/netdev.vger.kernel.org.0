@@ -2,249 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E99E56DB9F7
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 11:57:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44F726DBA23
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 12:46:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbjDHJ5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Apr 2023 05:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
+        id S229761AbjDHKqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Apr 2023 06:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjDHJ5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 05:57:49 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA206A67;
-        Sat,  8 Apr 2023 02:57:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680947867; x=1712483867;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yVhRaml7AsllbdxM7IiG7fKmnog0vHKgWdc+YYx0oMQ=;
-  b=L8baVNtdsriqar3klRid+lDbzT6vEcq6lIpyxzo99zH953NV2SARCxo0
-   W7IiZQ9n5cwMFKHR/101Ogk3JpWONTHO+Yp3k+YD4KVk3XklfNC6o8N25
-   Rxnoi7t4shKQjZHF/UDL9yIowNc74DrLZNBK+tmI22obUt74BeJfoziwR
-   lPuKqf4CeSlM8LIYqlG2EgRu2+KI6w8hQKr1VnLxhmD6LMJ1FvbEbBLs0
-   ATalLkmtFrGMIGin37OGvuNFkYi4JRcUU/XckQOJ3n+qk1X9lXM7P+xTD
-   ABWsDF+Hop2biQH+hBSA+LPBEcE1Y5jkikpxtYxsuP/miJYRKK0MPVf5h
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10673"; a="429414071"
-X-IronPort-AV: E=Sophos;i="5.98,329,1673942400"; 
-   d="scan'208";a="429414071"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2023 02:57:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10673"; a="756952505"
-X-IronPort-AV: E=Sophos;i="5.98,329,1673942400"; 
-   d="scan'208";a="756952505"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 08 Apr 2023 02:57:43 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pl5KJ-000Tbr-0L;
-        Sat, 08 Apr 2023 09:57:43 +0000
-Date:   Sat, 8 Apr 2023 17:57:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chen Aotian <chenaotian2@163.com>, alex.aring@gmail.com
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        stefan@datenfreihafen.org, miquel.raynal@bootlin.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Chen Aotian <chenaotian2@163.com>
-Subject: Re: [PATH wpan v2] ieee802154: hwsim: Fix possible memory leaks
-Message-ID: <202304081742.rOfPXJln-lkp@intel.com>
-References: <20230408081934.54002-1-chenaotian2@163.com>
+        with ESMTP id S229456AbjDHKqS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 06:46:18 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBDC1BC8
+        for <netdev@vger.kernel.org>; Sat,  8 Apr 2023 03:45:42 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id gb34so2284516ejc.12
+        for <netdev@vger.kernel.org>; Sat, 08 Apr 2023 03:45:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680950674;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=76NvAwebMnjTqXsYX2BkdeLSiN8cjCcv6+rnae8xzOo=;
+        b=Xa8EsYI1Sdc7bZI2Ys3fTD3ltinEgRkTskSBF0YLMTzzQymWWhNFJLXoKTsDmmxf8g
+         UkMPD4RMPkBlL2Mw4jkw8jEBLVDjnyWezRLrJeSmn+FvoiHSI5PQRyS9a7vBxf0UOzps
+         P1b5z7uFOT4rCBEFoBChlNac7YBGPiWCV0JmaZDOzvYSQWcpLpOwhGEXRznYg0Eo2nfm
+         Myx/e0FI7LRDchrP9m1vEM3bYhvVFE76oD48If5uPlW0bEm5Ai/eNZO7rVMh1NkzBGey
+         /zCrgSwrEqgPJ7iNwmwm1C7f+wMBmHaD8AmGZ3z/zyNbdQ7VpG+UJhsVORsP0/sBYLIW
+         sPQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680950674;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=76NvAwebMnjTqXsYX2BkdeLSiN8cjCcv6+rnae8xzOo=;
+        b=D/23LKvWIITBWI1z3Jnr8vmAhLd8LyozRNSalVcTPq8aSh4PblwWmMcm+rEs/Wnznw
+         0qJ4og/qZ2GyGGFmpGBtrZjnMPZaXtVtBCv1lLeEVTVx/98lL9Tu6yVjjz1cVXSRjzbV
+         kJrofNFnmox5WDUd6gOVtDfn7jxtvLMiH4cV/KCvWnwFT0TSLBsAYeCzjrhTAZoO8fF0
+         Ey0DqfizQgHjN/Wg+nPlOxZmIhruZk4Ee7LNLINJ/hOWtaWDuntZdPSqJuVXmQBDz1Bm
+         n9NojTLoQita313NHxN4F7S0RWAqx2lh75kgQrtLYmjMeRxU810fsQsL5/BZ73aJLV6A
+         l07g==
+X-Gm-Message-State: AAQBX9e9CWXrjOIcT9cVGwZ9kfOK5bPTOk1dAevAcBD3SlHDTSX2j9ZX
+        ubdkoQlUhge1j5EO46QTlJ/9sQ==
+X-Google-Smtp-Source: AKy350YOYqRALSeMqRhgiWj83zSI0pMTS3OCARZHurmOGMcvnDJXRHzYdsge66KEPtjQbhbegyljXg==
+X-Received: by 2002:a17:906:980d:b0:933:3aa7:57a6 with SMTP id lm13-20020a170906980d00b009333aa757a6mr1201145ejb.12.1680950673753;
+        Sat, 08 Apr 2023 03:44:33 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:4c06:aac9:100f:9d7f? ([2a02:810d:15c0:828:4c06:aac9:100f:9d7f])
+        by smtp.gmail.com with ESMTPSA id g19-20020a170906521300b00947499e0e4dsm3062802ejm.146.2023.04.08.03.44.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 08 Apr 2023 03:44:33 -0700 (PDT)
+Message-ID: <5515891b-44f3-8c9b-ca51-0078070404af@linaro.org>
+Date:   Sat, 8 Apr 2023 12:44:31 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230408081934.54002-1-chenaotian2@163.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 1/8] net: netronome: constify pointers to
+ hwmon_channel_info
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+        Xu Liang <lxu@maxlinear.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, oss-drivers@corigine.com,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+References: <20230407145911.79642-1-krzysztof.kozlowski@linaro.org>
+ <20230407084745.3aebbc9d@kernel.org>
+ <3a0391e7-21f6-432a-9872-329e298e1582@roeck-us.net>
+ <20230407181037.4cecfbde@kernel.org>
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230407181037.4cecfbde@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Chen,
+On 08/04/2023 03:10, Jakub Kicinski wrote:
+> On Fri, 7 Apr 2023 11:05:06 -0700 Guenter Roeck wrote:
+>> On Fri, Apr 07, 2023 at 08:47:45AM -0700, Jakub Kicinski wrote:
+>>> On Fri,  7 Apr 2023 16:59:04 +0200 Krzysztof Kozlowski wrote:  
+>>>> This depends on hwmon core patch:
+>>>> https://lore.kernel.org/all/20230406203103.3011503-2-krzysztof.kozlowski@linaro.org/  
+>>>
+>>> That patch should have been put on a stable branch we can pull
+>>> and avoid any conflict risks... Next time?  
+>>
+>> Yes, and I don't feel comfortable applying all those patches through
+>> the hwmon tree since I have zero means to test them.
+>>
+>> I created a stable branch at
+>>
+>> git://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-const
+> 
+> Thanks! Krzysztof, give us a nod and we'll take the series to net-next.
 
-kernel test robot noticed the following build errors:
+Sure, go ahead, that's even better solution.
 
-[auto build test ERROR on net-next/main]
-[also build test ERROR on net/main linus/master v6.3-rc5 next-20230406]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Best regards,
+Krzysztof
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Chen-Aotian/ieee802154-hwsim-Fix-possible-memory-leaks/20230408-162130
-patch link:    https://lore.kernel.org/r/20230408081934.54002-1-chenaotian2%40163.com
-patch subject: [PATH wpan v2] ieee802154: hwsim: Fix possible memory leaks
-config: hexagon-randconfig-r015-20230406 (https://download.01.org/0day-ci/archive/20230408/202304081742.rOfPXJln-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 2c57868e2e877f73c339796c3374ae660bb77f0d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/1a9fcf2d1438f9603039670041da5ed90471a4e5
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Chen-Aotian/ieee802154-hwsim-Fix-possible-memory-leaks/20230408-162130
-        git checkout 1a9fcf2d1438f9603039670041da5ed90471a4e5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/net/ieee802154/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304081742.rOfPXJln-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/net/ieee802154/mac802154_hwsim.c:17:
-   In file included from include/linux/rtnetlink.h:7:
-   In file included from include/linux/netdevice.h:38:
-   In file included from include/net/net_namespace.h:43:
-   In file included from include/linux/skbuff.h:17:
-   In file included from include/linux/bvec.h:10:
-   In file included from include/linux/highmem.h:12:
-   In file included from include/linux/hardirq.h:11:
-   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
-   In file included from include/asm-generic/hardirq.h:17:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
-                                                     ^
-   In file included from drivers/net/ieee802154/mac802154_hwsim.c:17:
-   In file included from include/linux/rtnetlink.h:7:
-   In file included from include/linux/netdevice.h:38:
-   In file included from include/net/net_namespace.h:43:
-   In file included from include/linux/skbuff.h:17:
-   In file included from include/linux/bvec.h:10:
-   In file included from include/linux/highmem.h:12:
-   In file included from include/linux/hardirq.h:11:
-   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
-   In file included from include/asm-generic/hardirq.h:17:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
-                                                     ^
-   In file included from drivers/net/ieee802154/mac802154_hwsim.c:17:
-   In file included from include/linux/rtnetlink.h:7:
-   In file included from include/linux/netdevice.h:38:
-   In file included from include/net/net_namespace.h:43:
-   In file included from include/linux/skbuff.h:17:
-   In file included from include/linux/bvec.h:10:
-   In file included from include/linux/highmem.h:12:
-   In file included from include/linux/hardirq.h:11:
-   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
-   In file included from include/asm-generic/hardirq.h:17:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/hexagon/include/asm/io.h:334:
-   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
->> drivers/net/ieee802154/mac802154_hwsim.c:727:21: error: incompatible pointer types passing 'struct mutex *' to parameter of type 'const struct lockdep_map *' [-Werror,-Wincompatible-pointer-types]
-                                                           lock_is_held(&hwsim_phys_lock));
-                                                                        ^~~~~~~~~~~~~~~~
-   include/linux/rcupdate.h:542:60: note: expanded from macro 'rcu_replace_pointer'
-           typeof(ptr) __tmp = rcu_dereference_protected((rcu_ptr), (c));  \
-                                                                     ^
-   include/linux/rcupdate.h:673:54: note: expanded from macro 'rcu_dereference_protected'
-           __rcu_dereference_protected((p), __UNIQUE_ID(rcu), (c), __rcu)
-                                                               ^
-   include/linux/rcupdate.h:469:21: note: expanded from macro '__rcu_dereference_protected'
-           RCU_LOCKDEP_WARN(!(c), "suspicious rcu_dereference_protected() usage"); \
-                              ^
-   include/linux/rcupdate.h:389:39: note: expanded from macro 'RCU_LOCKDEP_WARN'
-                   if (debug_lockdep_rcu_enabled() && (c) &&               \
-                                                       ^
-   include/linux/lockdep.h:281:58: note: passing argument to parameter 'lock' here
-   static inline int lock_is_held(const struct lockdep_map *lock)
-                                                            ^
-   6 warnings and 1 error generated.
-
-
-vim +727 drivers/net/ieee802154/mac802154_hwsim.c
-
-   684	
-   685	static int hwsim_set_edge_lqi(struct sk_buff *msg, struct genl_info *info)
-   686	{
-   687		struct nlattr *edge_attrs[MAC802154_HWSIM_EDGE_ATTR_MAX + 1];
-   688		struct hwsim_edge_info *einfo, *einfo_old;
-   689		struct hwsim_phy *phy_v0;
-   690		struct hwsim_edge *e;
-   691		u32 v0, v1;
-   692		u8 lqi;
-   693	
-   694		if (!info->attrs[MAC802154_HWSIM_ATTR_RADIO_ID] ||
-   695		    !info->attrs[MAC802154_HWSIM_ATTR_RADIO_EDGE])
-   696			return -EINVAL;
-   697	
-   698		if (nla_parse_nested_deprecated(edge_attrs, MAC802154_HWSIM_EDGE_ATTR_MAX, info->attrs[MAC802154_HWSIM_ATTR_RADIO_EDGE], hwsim_edge_policy, NULL))
-   699			return -EINVAL;
-   700	
-   701		if (!edge_attrs[MAC802154_HWSIM_EDGE_ATTR_ENDPOINT_ID] ||
-   702		    !edge_attrs[MAC802154_HWSIM_EDGE_ATTR_LQI])
-   703			return -EINVAL;
-   704	
-   705		v0 = nla_get_u32(info->attrs[MAC802154_HWSIM_ATTR_RADIO_ID]);
-   706		v1 = nla_get_u32(edge_attrs[MAC802154_HWSIM_EDGE_ATTR_ENDPOINT_ID]);
-   707		lqi = nla_get_u8(edge_attrs[MAC802154_HWSIM_EDGE_ATTR_LQI]);
-   708	
-   709		mutex_lock(&hwsim_phys_lock);
-   710		phy_v0 = hwsim_get_radio_by_id(v0);
-   711		if (!phy_v0) {
-   712			mutex_unlock(&hwsim_phys_lock);
-   713			return -ENOENT;
-   714		}
-   715	
-   716		einfo = kzalloc(sizeof(*einfo), GFP_KERNEL);
-   717		if (!einfo) {
-   718			mutex_unlock(&hwsim_phys_lock);
-   719			return -ENOMEM;
-   720		}
-   721	
-   722		rcu_read_lock();
-   723		list_for_each_entry_rcu(e, &phy_v0->edges, list) {
-   724			if (e->endpoint->idx == v1) {
-   725				einfo->lqi = lqi;
-   726				einfo_old = rcu_replace_pointer(e->info, einfo,
- > 727								lock_is_held(&hwsim_phys_lock));
-   728				rcu_read_unlock();
-   729				kfree_rcu(einfo_old, rcu);
-   730				mutex_unlock(&hwsim_phys_lock);
-   731				return 0;
-   732			}
-   733		}
-   734		rcu_read_unlock();
-   735	
-   736		kfree(einfo);
-   737		mutex_unlock(&hwsim_phys_lock);
-   738	
-   739		return -ENOENT;
-   740	}
-   741	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
