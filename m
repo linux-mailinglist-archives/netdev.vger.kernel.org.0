@@ -2,133 +2,443 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B079A6DB93C
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 08:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 989E46DB95B
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 09:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbjDHG4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Apr 2023 02:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42912 "EHLO
+        id S229875AbjDHHsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Apr 2023 03:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjDHG4o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 02:56:44 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E64D501;
-        Fri,  7 Apr 2023 23:56:42 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3383Waqj004888;
-        Sat, 8 Apr 2023 06:56:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2022-7-12; bh=gBdQ9z3RMrgblYJEU2yJN27X4Pd/JfytWfb4t7Ya1bI=;
- b=0RnLr7l/yqpn5vpncGx9jls5z6Y9P+mjK5NJC7RYfUS++uuGKpHyf5yjWRqOeTDCABfT
- C09+TwoTg+HsHJyWEFyuu+abGeIZJbwUU4MS8Erjmqp/wORWoKAjIMyPHY4FkOWMqiRs
- yhnZlZhfsFMgqrtHgQrw6oeumZ/ImbX5bkUQeTa6zzqA32pV5YJBYmnJu7UcrSBknjjM
- w+5n4gCXfDqUrsNSJ5o/JJyaxdyrSaNqxdlAVnhqxnAHYp4yRPSeUzdH9+BCxIW90/ka
- 8wTC18c0J/eiyO0goRvHXv9SUG1FdsCYJ4vn6IeSddv8w1VOti3p414/7dUVqEebJCpa Og== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pu0eq04b0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 08 Apr 2023 06:56:27 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 3383IZDH038795;
-        Sat, 8 Apr 2023 06:56:26 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3ptxq29n58-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 08 Apr 2023 06:56:26 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 3386uP4w039417;
-        Sat, 8 Apr 2023 06:56:25 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3ptxq29n39-1;
-        Sat, 08 Apr 2023 06:56:25 +0000
-From:   Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-To:     m.chetan.kumar@intel.com, linuxwwan@intel.com,
-        loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
-        johannes@sipsolutions.net
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, error27@gmail.com,
-        simon.horman@corigine.com, kernel-janitors@vger.kernel.org,
-        vegard.nossum@oracle.com,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH net] net: wwan: iosm: Fix error handling path in ipc_pcie_probe()
-Date:   Fri,  7 Apr 2023 23:56:07 -0700
-Message-Id: <20230408065607.1633970-1-harshit.m.mogalapalli@oracle.com>
-X-Mailer: git-send-email 2.40.0
+        with ESMTP id S229689AbjDHHsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 03:48:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04D4C142;
+        Sat,  8 Apr 2023 00:48:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34E0361553;
+        Sat,  8 Apr 2023 07:48:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37C50C433EF;
+        Sat,  8 Apr 2023 07:48:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680940090;
+        bh=nIDE6RX21S3EEOZ0jrHUDGmLR/xP5Tfb5AJsxpdaElQ=;
+        h=From:Date:Subject:To:Cc:From;
+        b=EDtewjBBvsgrjClMxwYeQPkqWuAWxDKBbUhDpyvd2oC08fIFTn0RpRICp4wSovK+f
+         I6mcC/Kk/LqgO9uBSjWzFubZUWtwfPsElgTFTd+rQzwwPdnsl5f2mUq+3k/0cm1gwB
+         fTIUkDGPfiANhHHRcb6fP0IW8VtaPxXUvIKUdgvvG+Zsj6Q4cc+bGB05nBzXP64DWR
+         cYHcWIW3KJrUaLMcUNwa2Qbq6qyY4aNehKg1Zc82XOuIBSrBHOkKmfaV3H44PUXY+R
+         tTsvsczjcBG8uHDBmNnQOrCaDbXTG6ht2uCjhC5LTIeey1qXGTlocXeU9989CIFoFx
+         RuaaeaOCCNoxg==
+From:   Simon Horman <horms@kernel.org>
+Date:   Sat, 08 Apr 2023 09:47:54 +0200
+Subject: [PATCH net-next v2] ksz884x: Remove unused functions
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-08_01,2023-04-06_03,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0 phishscore=0
- suspectscore=0 malwarescore=0 mlxlogscore=999 bulkscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
- definitions=main-2304080061
-X-Proofpoint-GUID: OXpYRl3brXA8dabr4OUKqJvg65clH_IS
-X-Proofpoint-ORIG-GUID: OXpYRl3brXA8dabr4OUKqJvg65clH_IS
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230405-ksz884x-unused-code-v2-1-23eb8f7002c4@kernel.org>
+X-B4-Tracking: v=1; b=H4sIACkcMWQC/32OTQ6CMBCFr2Jm7Zj+QKiuvIdhUegUGshgWiAo4
+ e42HMDl915evrdDohgoweOyQ6Q1pDBxBnW9QNtb7giDywxKKC0KUeKQvsYUGy68JHLYTo7QC1t
+ pJ7yRlYK8bGwibKLlts9bXsYxh+9IPmyn6gVMMzJtM9S56UOap/g5P6zy7P/qVokCrdbF3UjpS
+ vLPgSLTeJtiB/VxHD+Pi4DS1gAAAA==
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+X-Mailer: b4 0.12.2
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Smatch reports:
-	drivers/net/wwan/iosm/iosm_ipc_pcie.c:298 ipc_pcie_probe()
-	warn: missing unwind goto?
+Remove unused functions.
 
-When dma_set_mask fails it directly returns without disabling pci
-device and freeing ipc_pcie. Fix this my calling a correct goto label
+These functions may have some value in documenting the
+hardware. But that information may be accessed via SCM history.
 
-As dma_set_mask returns either 0 or -EIO, we can use a goto label, as
-it finally returns -EIO.
+Flagged by clang-16 with W=1.
+No functional change intended.
+Compile tested only.
 
-Renamed the goto label as name of the label before this patch is not
-relevant after this patch.
-
-Fixes: 035e3befc191 ("net: wwan: iosm: fix driver not working with INTEL_IOMMU disabled")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Simon Horman <horms@kernel.org>
 ---
-This is based on static analysis, only compile tested.
+Changes in v2:
+- Don't remove unused #defines, there was no consensus on the value of
+  doing so.
+- Link to v1: https://lore.kernel.org/r/20230405-ksz884x-unused-code-v1-0-a3349811d5ef@kernel.org
 ---
- drivers/net/wwan/iosm/iosm_ipc_pcie.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/micrel/ksz884x.c | 294 ----------------------------------
+ 1 file changed, 294 deletions(-)
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_pcie.c b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
-index 5bf5a93937c9..a6a6a0df1f7d 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
-@@ -295,7 +295,7 @@ static int ipc_pcie_probe(struct pci_dev *pci,
- 	ret = dma_set_mask(ipc_pcie->dev, DMA_BIT_MASK(64));
- 	if (ret) {
- 		dev_err(ipc_pcie->dev, "Could not set PCI DMA mask: %d", ret);
--		return ret;
-+		goto err_disable_pci;
- 	}
+diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
+index f78e8ead8c36..c5aeeb964c17 100644
+--- a/drivers/net/ethernet/micrel/ksz884x.c
++++ b/drivers/net/ethernet/micrel/ksz884x.c
+@@ -1476,15 +1476,6 @@ static void hw_turn_on_intr(struct ksz_hw *hw, u32 bit)
+ 		hw_set_intr(hw, hw->intr_mask);
+ }
  
- 	ipc_pcie_config_aspm(ipc_pcie);
-@@ -308,7 +308,7 @@ static int ipc_pcie_probe(struct pci_dev *pci,
- 	ipc_pcie->suspend = 0;
+-static inline void hw_ena_intr_bit(struct ksz_hw *hw, uint interrupt)
+-{
+-	u32 read_intr;
+-
+-	read_intr = readl(hw->io + KS884X_INTERRUPTS_ENABLE);
+-	hw->intr_set = read_intr | interrupt;
+-	writel(hw->intr_set, hw->io + KS884X_INTERRUPTS_ENABLE);
+-}
+-
+ static inline void hw_read_intr(struct ksz_hw *hw, uint *status)
+ {
+ 	*status = readl(hw->io + KS884X_INTERRUPTS_STATUS);
+@@ -1853,29 +1844,6 @@ static void port_init_cnt(struct ksz_hw *hw, int port)
+  * Port functions
+  */
  
- 	if (ipc_pcie_resources_request(ipc_pcie))
--		goto resources_req_fail;
-+		goto err_disable_pci;
+-/**
+- * port_chk - check port register bits
+- * @hw: 	The hardware instance.
+- * @port:	The port index.
+- * @offset:	The offset of the port register.
+- * @bits:	The data bits to check.
+- *
+- * This function checks whether the specified bits of the port register are set
+- * or not.
+- *
+- * Return 0 if the bits are not set.
+- */
+-static int port_chk(struct ksz_hw *hw, int port, int offset, u16 bits)
+-{
+-	u32 addr;
+-	u16 data;
+-
+-	PORT_CTRL_ADDR(port, addr);
+-	addr += offset;
+-	data = readw(hw->io + addr);
+-	return (data & bits) == bits;
+-}
+-
+ /**
+  * port_cfg - set port register bits
+  * @hw: 	The hardware instance.
+@@ -1902,53 +1870,6 @@ static void port_cfg(struct ksz_hw *hw, int port, int offset, u16 bits,
+ 	writew(data, hw->io + addr);
+ }
  
- 	/* Establish the link to the imem layer. */
- 	ipc_pcie->imem = ipc_imem_init(ipc_pcie, pci->device,
-@@ -322,7 +322,7 @@ static int ipc_pcie_probe(struct pci_dev *pci,
+-/**
+- * port_chk_shift - check port bit
+- * @hw: 	The hardware instance.
+- * @port:	The port index.
+- * @addr:	The offset of the register.
+- * @shift:	Number of bits to shift.
+- *
+- * This function checks whether the specified port is set in the register or
+- * not.
+- *
+- * Return 0 if the port is not set.
+- */
+-static int port_chk_shift(struct ksz_hw *hw, int port, u32 addr, int shift)
+-{
+-	u16 data;
+-	u16 bit = 1 << port;
+-
+-	data = readw(hw->io + addr);
+-	data >>= shift;
+-	return (data & bit) == bit;
+-}
+-
+-/**
+- * port_cfg_shift - set port bit
+- * @hw: 	The hardware instance.
+- * @port:	The port index.
+- * @addr:	The offset of the register.
+- * @shift:	Number of bits to shift.
+- * @set:	The flag indicating whether the port is to be set or not.
+- *
+- * This routine sets or resets the specified port in the register.
+- */
+-static void port_cfg_shift(struct ksz_hw *hw, int port, u32 addr, int shift,
+-	int set)
+-{
+-	u16 data;
+-	u16 bits = 1 << port;
+-
+-	data = readw(hw->io + addr);
+-	bits <<= shift;
+-	if (set)
+-		data |= bits;
+-	else
+-		data &= ~bits;
+-	writew(data, hw->io + addr);
+-}
+-
+ /**
+  * port_r8 - read byte from port register
+  * @hw: 	The hardware instance.
+@@ -2051,12 +1972,6 @@ static inline void port_cfg_broad_storm(struct ksz_hw *hw, int p, int set)
+ 		KS8842_PORT_CTRL_1_OFFSET, PORT_BROADCAST_STORM, set);
+ }
  
- imem_init_fail:
- 	ipc_pcie_resources_release(ipc_pcie);
--resources_req_fail:
-+err_disable_pci:
- 	pci_disable_device(pci);
- pci_enable_fail:
- 	kfree(ipc_pcie);
--- 
-2.38.1
+-static inline int port_chk_broad_storm(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_BROADCAST_STORM);
+-}
+-
+ /* Driver set switch broadcast storm protection at 10% rate. */
+ #define BROADCAST_STORM_PROTECTION_RATE	10
+ 
+@@ -2209,102 +2124,6 @@ static inline void port_cfg_back_pressure(struct ksz_hw *hw, int p, int set)
+ 		KS8842_PORT_CTRL_2_OFFSET, PORT_BACK_PRESSURE, set);
+ }
+ 
+-static inline void port_cfg_force_flow_ctrl(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_FORCE_FLOW_CTRL, set);
+-}
+-
+-static inline int port_chk_back_pressure(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_BACK_PRESSURE);
+-}
+-
+-static inline int port_chk_force_flow_ctrl(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_FORCE_FLOW_CTRL);
+-}
+-
+-/* Spanning Tree */
+-
+-static inline void port_cfg_rx(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_RX_ENABLE, set);
+-}
+-
+-static inline void port_cfg_tx(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_TX_ENABLE, set);
+-}
+-
+-static inline void sw_cfg_fast_aging(struct ksz_hw *hw, int set)
+-{
+-	sw_cfg(hw, KS8842_SWITCH_CTRL_1_OFFSET, SWITCH_FAST_AGING, set);
+-}
+-
+-static inline void sw_flush_dyn_mac_table(struct ksz_hw *hw)
+-{
+-	if (!(hw->overrides & FAST_AGING)) {
+-		sw_cfg_fast_aging(hw, 1);
+-		mdelay(1);
+-		sw_cfg_fast_aging(hw, 0);
+-	}
+-}
+-
+-/* VLAN */
+-
+-static inline void port_cfg_ins_tag(struct ksz_hw *hw, int p, int insert)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_INSERT_TAG, insert);
+-}
+-
+-static inline void port_cfg_rmv_tag(struct ksz_hw *hw, int p, int remove)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_REMOVE_TAG, remove);
+-}
+-
+-static inline int port_chk_ins_tag(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_INSERT_TAG);
+-}
+-
+-static inline int port_chk_rmv_tag(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_REMOVE_TAG);
+-}
+-
+-static inline void port_cfg_dis_non_vid(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_DISCARD_NON_VID, set);
+-}
+-
+-static inline void port_cfg_in_filter(struct ksz_hw *hw, int p, int set)
+-{
+-	port_cfg(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_INGRESS_VLAN_FILTER, set);
+-}
+-
+-static inline int port_chk_dis_non_vid(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_DISCARD_NON_VID);
+-}
+-
+-static inline int port_chk_in_filter(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_INGRESS_VLAN_FILTER);
+-}
+-
+ /* Mirroring */
+ 
+ static inline void port_cfg_mirror_sniffer(struct ksz_hw *hw, int p, int set)
+@@ -2342,28 +2161,6 @@ static void sw_init_mirror(struct ksz_hw *hw)
+ 	sw_cfg_mirror_rx_tx(hw, 0);
+ }
+ 
+-static inline void sw_cfg_unk_def_deliver(struct ksz_hw *hw, int set)
+-{
+-	sw_cfg(hw, KS8842_SWITCH_CTRL_7_OFFSET,
+-		SWITCH_UNK_DEF_PORT_ENABLE, set);
+-}
+-
+-static inline int sw_cfg_chk_unk_def_deliver(struct ksz_hw *hw)
+-{
+-	return sw_chk(hw, KS8842_SWITCH_CTRL_7_OFFSET,
+-		SWITCH_UNK_DEF_PORT_ENABLE);
+-}
+-
+-static inline void sw_cfg_unk_def_port(struct ksz_hw *hw, int port, int set)
+-{
+-	port_cfg_shift(hw, port, KS8842_SWITCH_CTRL_7_OFFSET, 0, set);
+-}
+-
+-static inline int sw_chk_unk_def_port(struct ksz_hw *hw, int port)
+-{
+-	return port_chk_shift(hw, port, KS8842_SWITCH_CTRL_7_OFFSET, 0);
+-}
+-
+ /* Priority */
+ 
+ static inline void port_cfg_diffserv(struct ksz_hw *hw, int p, int set)
+@@ -2390,30 +2187,6 @@ static inline void port_cfg_prio(struct ksz_hw *hw, int p, int set)
+ 		KS8842_PORT_CTRL_1_OFFSET, PORT_PRIO_QUEUE_ENABLE, set);
+ }
+ 
+-static inline int port_chk_diffserv(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_DIFFSERV_ENABLE);
+-}
+-
+-static inline int port_chk_802_1p(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_802_1P_ENABLE);
+-}
+-
+-static inline int port_chk_replace_vid(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_2_OFFSET, PORT_USER_PRIORITY_CEILING);
+-}
+-
+-static inline int port_chk_prio(struct ksz_hw *hw, int p)
+-{
+-	return port_chk(hw, p,
+-		KS8842_PORT_CTRL_1_OFFSET, PORT_PRIO_QUEUE_ENABLE);
+-}
+-
+ /**
+  * sw_dis_diffserv - disable switch DiffServ priority
+  * @hw: 	The hardware instance.
+@@ -2613,23 +2386,6 @@ static void sw_cfg_port_base_vlan(struct ksz_hw *hw, int port, u8 member)
+ 	hw->ksz_switch->port_cfg[port].member = member;
+ }
+ 
+-/**
+- * sw_get_addr - get the switch MAC address.
+- * @hw: 	The hardware instance.
+- * @mac_addr:	Buffer to store the MAC address.
+- *
+- * This function retrieves the MAC address of the switch.
+- */
+-static inline void sw_get_addr(struct ksz_hw *hw, u8 *mac_addr)
+-{
+-	int i;
+-
+-	for (i = 0; i < 6; i += 2) {
+-		mac_addr[i] = readb(hw->io + KS8842_MAC_ADDR_0_OFFSET + i);
+-		mac_addr[1 + i] = readb(hw->io + KS8842_MAC_ADDR_1_OFFSET + i);
+-	}
+-}
+-
+ /**
+  * sw_set_addr - configure switch MAC address
+  * @hw: 	The hardware instance.
+@@ -2828,56 +2584,6 @@ static inline void hw_w_phy_ctrl(struct ksz_hw *hw, int phy, u16 data)
+ 	writew(data, hw->io + phy + KS884X_PHY_CTRL_OFFSET);
+ }
+ 
+-static inline void hw_r_phy_link_stat(struct ksz_hw *hw, int phy, u16 *data)
+-{
+-	*data = readw(hw->io + phy + KS884X_PHY_STATUS_OFFSET);
+-}
+-
+-static inline void hw_r_phy_auto_neg(struct ksz_hw *hw, int phy, u16 *data)
+-{
+-	*data = readw(hw->io + phy + KS884X_PHY_AUTO_NEG_OFFSET);
+-}
+-
+-static inline void hw_w_phy_auto_neg(struct ksz_hw *hw, int phy, u16 data)
+-{
+-	writew(data, hw->io + phy + KS884X_PHY_AUTO_NEG_OFFSET);
+-}
+-
+-static inline void hw_r_phy_rem_cap(struct ksz_hw *hw, int phy, u16 *data)
+-{
+-	*data = readw(hw->io + phy + KS884X_PHY_REMOTE_CAP_OFFSET);
+-}
+-
+-static inline void hw_r_phy_crossover(struct ksz_hw *hw, int phy, u16 *data)
+-{
+-	*data = readw(hw->io + phy + KS884X_PHY_CTRL_OFFSET);
+-}
+-
+-static inline void hw_w_phy_crossover(struct ksz_hw *hw, int phy, u16 data)
+-{
+-	writew(data, hw->io + phy + KS884X_PHY_CTRL_OFFSET);
+-}
+-
+-static inline void hw_r_phy_polarity(struct ksz_hw *hw, int phy, u16 *data)
+-{
+-	*data = readw(hw->io + phy + KS884X_PHY_PHY_CTRL_OFFSET);
+-}
+-
+-static inline void hw_w_phy_polarity(struct ksz_hw *hw, int phy, u16 data)
+-{
+-	writew(data, hw->io + phy + KS884X_PHY_PHY_CTRL_OFFSET);
+-}
+-
+-static inline void hw_r_phy_link_md(struct ksz_hw *hw, int phy, u16 *data)
+-{
+-	*data = readw(hw->io + phy + KS884X_PHY_LINK_MD_OFFSET);
+-}
+-
+-static inline void hw_w_phy_link_md(struct ksz_hw *hw, int phy, u16 data)
+-{
+-	writew(data, hw->io + phy + KS884X_PHY_LINK_MD_OFFSET);
+-}
+-
+ /**
+  * hw_r_phy - read data from PHY register
+  * @hw: 	The hardware instance.
 
