@@ -2,74 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35B6C6DB912
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 07:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F396DB939
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 08:45:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbjDHFd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Apr 2023 01:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
+        id S229717AbjDHGpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Apr 2023 02:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjDHFd2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 01:33:28 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028FEC66C
-        for <netdev@vger.kernel.org>; Fri,  7 Apr 2023 22:33:27 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id 4fb4d7f45d1cf-50489d1af35so141801a12.3
-        for <netdev@vger.kernel.org>; Fri, 07 Apr 2023 22:33:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680932005;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
-        b=nAw4rh/oZyuh52D/530C8nJELcAdR6kyeWSAqBNNsZznWGMjmoYjYPZP0U2+t2URmR
-         uJDT/Ql7FBesLXniuNUFu/ZPeiTqsGWL595hlfxPiQiEVLq6+fWuC5wlnOZdPuQ5U2Zx
-         JZWYHm0wVHJGagm6WQToJ+yTbBIyC6rn4Q+nBNK0FYlLB4aAZ4LBbDzYnLIpP6sn1x+3
-         3dzrMxz8fOCR/7Ret7RmTgk2xZiCc1qtD55UhWXRJhkzrf2DxM+Alu/XOewuib5hhpRO
-         DrMpQ1xPM+l5fJxWU7ZZnaU0PUA+iW2GTVdrCpko1W9NNnyAUqHvpvr0JfW8exkKm0aw
-         r+CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680932005;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
-        b=kXMaBFI/xstkhWUNTlQdm2Bd6EdlNpx35xtgCZfKc5Kgd+3MMVCjJWIlrvymdP4eQ/
-         MJUUX1SMk2/6MfqoE4Kr3od1PslXzkcm3DamS287HI5whYqwUoh3rSEZdGQh6YZm2Pf3
-         2AKtYlVmrwwl/Jd0p7SZCoe+HBOuD4wc4RpwnvBOO+FYo3o9eQty6xL09FnRFAdrsJuE
-         cztZuNZCHf3/yOZNrxgrlq+jUoJeC6NKQnXwaq+hQcjr0Vm0RTE6nhhHlzokmfIiBtMi
-         qomPAxalRnZZpg/QB7LDa6oCbq2SmcBl7HfCCTWcd6/B6zC4+E7eJQfCOuQip5LSZMQH
-         nZUw==
-X-Gm-Message-State: AAQBX9dt4tueuvg5eQwOCNje49wxhDR3pl3x95vGuyiISTT8/gx6QuCY
-        yFzGFk0zY4FmtOb21StFED8VC7UryNG9oeiN9J4=
-X-Google-Smtp-Source: AKy350beoFER18ukZsOcoxUTcj00QkQGWduouH/jAYSj3QbhcMpnfOIoq3jS9lfhDwvdYFdJCU6+RMxwnVvtThQrs+s=
-X-Received: by 2002:aa7:d701:0:b0:504:631f:abac with SMTP id
- t1-20020aa7d701000000b00504631fabacmr4757833edq.15.1680932005208; Fri, 07 Apr
- 2023 22:33:25 -0700 (PDT)
+        with ESMTP id S229457AbjDHGpq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 02:45:46 -0400
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 564FF9030;
+        Fri,  7 Apr 2023 23:45:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version:
+        Content-Type; bh=D47zQmPvODBH5tr4rjq2FYpqkSG5BmR5CICEGe/y1pM=;
+        b=mG4Bc/orqtPCIe0SajihSHXMh3uUk9IeT4UDL4ZGh1K45oyd+JtN/9fO28HVuL
+        qp20ETAihgEI2qgvmjgCHNW/ViG0Uh3Oetb2E3Xo3EiKZYr4I+E6q/qOFs5ye8mW
+        mzZr3qMDSuriGE2lcr4hyKgw30hmGPgdcXElpJKVyQ6gM=
+Received: from localhost.localdomain (unknown [106.39.149.90])
+        by zwqz-smtp-mta-g5-4 (Coremail) with SMTP id _____wCHarweDTFkTmiQAw--.53636S2;
+        Sat, 08 Apr 2023 14:43:42 +0800 (CST)
+From:   Chen Aotian <chenaotian2@163.com>
+To:     aahringo@redhat.com, miquel.raynal@bootlin.com
+Cc:     alex.aring@gmail.com, chenaotian2@163.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, stable@vger.kernel.org,
+        stefan@datenfreihafen.org
+Subject: Re: [PATCH] ieee802154: hwsim: Fix possible memory leaks
+Date:   Sat,  8 Apr 2023 14:43:31 +0800
+Message-Id: <20230408064331.46176-1-chenaotian2@163.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <CAK-6q+gpRPxquCSCfPB+9Ym+1PTu9Z+qzC+PHj_K94nSGUbTWA@mail.gmail.com>
+References: <CAK-6q+gpRPxquCSCfPB+9Ym+1PTu9Z+qzC+PHj_K94nSGUbTWA@mail.gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a05:7412:8527:b0:b3:c251:b7ae with HTTP; Fri, 7 Apr 2023
- 22:33:23 -0700 (PDT)
-Reply-To: dravasmith27@gmail.com
-From:   Dr Ava Smith <fdee9487@gmail.com>
-Date:   Fri, 7 Apr 2023 22:33:23 -0700
-Message-ID: <CABKnVjU0hkTfAdxB3CRxDXf1M3JdEu+5Xk7LoycL+GLB350rRg@mail.gmail.com>
-Subject: GREETINGS FROM DR AVA SMITH
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.7 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _____wCHarweDTFkTmiQAw--.53636S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7KrWDJryrtFW8Aw43WF1DGFg_yoW8Ar15pF
+        WjvasIkF48tr18WayDXw4rA34Sva1fWry8ur1fK3ZY9F12qrW8uF17G3WSvF4FyrZru3Wf
+        ZF4qqr1avwn8CrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07U489NUUUUU=
+X-Originating-IP: [106.39.149.90]
+X-CM-SenderInfo: xfkh0tprwlt0qs6rljoofrz/xtbCggdLwGD-z8JIegAAsu
+X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,UNDISC_FREEM autolearn=no
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
-X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Hello Dear,
-how are you today?hope you are fine
-My name is Dr Ava Smith ,Am an English and French nationalities.
-I will give you pictures and more details about me as soon as i hear from you
-Thanks
-Ava
+Fri, 7 Apr 2023 18:20:32 -0400 Alexander Aring <aahringo@redhat.com> wrote:
+>
+> On Fri, Apr 7, 2023 at 5:55 AM Chen Aotian <chenaotian2@163.com> wrote:
+> >
+> > After replacing e->info, it is necessary to free the old einfo.
+> >
+> > Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+> > Signed-off-by: Chen Aotian <chenaotian2@163.com>
+> > ---
+> >  drivers/net/ieee802154/mac802154_hwsim.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
+> > index 8445c2189..6e7e10b17 100644
+> > --- a/drivers/net/ieee802154/mac802154_hwsim.c
+> > +++ b/drivers/net/ieee802154/mac802154_hwsim.c
+> > @@ -685,7 +685,7 @@ static int hwsim_del_edge_nl(struct sk_buff *msg, struct genl_info *info)
+> >  static int hwsim_set_edge_lqi(struct sk_buff *msg, struct genl_info *info)
+> >  {
+> >         struct nlattr *edge_attrs[MAC802154_HWSIM_EDGE_ATTR_MAX + 1];
+> > -       struct hwsim_edge_info *einfo;
+> > +       struct hwsim_edge_info *einfo, *einfo_old;
+> >         struct hwsim_phy *phy_v0;
+> >         struct hwsim_edge *e;
+> >         u32 v0, v1;
+> > @@ -723,8 +723,10 @@ static int hwsim_set_edge_lqi(struct sk_buff *msg, struct genl_info *info)
+> >         list_for_each_entry_rcu(e, &phy_v0->edges, list) {
+> >                 if (e->endpoint->idx == v1) {
+> >                         einfo->lqi = lqi;
+> > +                       einfo_old = rcu_dereference(e->info);
+> >                         rcu_assign_pointer(e->info, einfo);
+> 
+> nitpick rcu_replace_pointer() can be used here.*
+
+Thank you for your suggestion, Alex. BTW, thanks for Miquèl's patient 
+guidance too, I just started trying to submit patches to the kernel, 
+I will do batter.
+
+Thanks,
+Chen
+
