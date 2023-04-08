@@ -2,214 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C3E46DBCBB
-	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 21:27:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1013C6DBCC2
+	for <lists+netdev@lfdr.de>; Sat,  8 Apr 2023 21:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229463AbjDHT1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Apr 2023 15:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
+        id S229524AbjDHTal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Apr 2023 15:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229825AbjDHT1C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 15:27:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70AD1C155
-        for <netdev@vger.kernel.org>; Sat,  8 Apr 2023 12:25:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680981920;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ouaMD8z/MFAjWSYuYT96qR6AP4hxetIrFE/7nQo005A=;
-        b=AAIvlc+B+3lr44KC++oRvPd49jOfRZcTZ4cmuwsH2sB0NuuTGQqSNy8fey3zzdWUYl6oJP
-        /uodM8dZkWlCyW1747unnAOt9qS11oUguogKAwNpheSfCYZ8tt1Y2xyi1oVKmopR94FgJm
-        W2uWs24CYHyDFMwjGq6pDf3L4qsPmko=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-39-YibIaZIRPB61XMDHmzJjBA-1; Sat, 08 Apr 2023 15:25:14 -0400
-X-MC-Unique: YibIaZIRPB61XMDHmzJjBA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 38F8329AA2E7;
-        Sat,  8 Apr 2023 19:25:13 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.45.242.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BA015492B00;
-        Sat,  8 Apr 2023 19:25:12 +0000 (UTC)
-Received: from [10.1.1.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id C4D1C307372E8;
-        Sat,  8 Apr 2023 21:25:11 +0200 (CEST)
-Subject: [PATCH bpf V7 7/7] selftests/bpf: Adjust bpf_xdp_metadata_rx_hash for
- new arg
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>,
-        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
-        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
-        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
-        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
-        davem@davemloft.net, tariqt@nvidia.com, saeedm@nvidia.com,
-        leon@kernel.org, linux-rdma@vger.kernel.org
-Date:   Sat, 08 Apr 2023 21:25:11 +0200
-Message-ID: <168098191175.96582.4895974424075558698.stgit@firesoul>
-In-Reply-To: <168098183268.96582.7852359418481981062.stgit@firesoul>
-References: <168098183268.96582.7852359418481981062.stgit@firesoul>
-User-Agent: StGit/1.4
+        with ESMTP id S229452AbjDHTal (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Apr 2023 15:30:41 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2091.outbound.protection.outlook.com [40.107.223.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077C61AC;
+        Sat,  8 Apr 2023 12:30:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OaMtMnYM5RYdAmiM8bTk6NvcH6SFIs8JpF0Q2T9UO8jhs/CPcLj9YEisQfixtR1yDQnIsunuLyPRr0JP7yULG7yShOEUhLLyCwCCfwcuxcTS4Sk2b0OYissRrYfEXyVRJtNrtbTBGYkP64na+uUJndLKIFHSlFAJB4vwdh6afv173tC2ErkA/hVYRlfjLXepdFsJAuUTamDw2ryJpeFFpdvm9EX479hesjl3v8SYXU7fpV8sYBUkssn2X/0lQOq+y8XbNVT2WdbM4UhZLfhVf30sOjk4wdkd556lL+Nf6ng6XPu0jeoe1guQD7ScaMYzXMTZGqgl2GQsjLYJ4Q2THQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SflFUFNbiy3HKi1Oij2MWl2N/GDLASIf+1Jj9zB4YFY=;
+ b=FaKt5cxqBn9Mpcw91Q6ZoG9+1wJuBQlCP34u2gDPXr7m9BDEb1mYrH4BK8HuGdvBHcn+l2NLmimVvwM2E59xEEZMVqvd91xbIWjIQZuQOpnQWNlTBcsOPbM3i/XrI4zy+uHgATi+iG/28OKmCNYZHVIhIDguTYVbbwNamvI8XyxfCKI5BRZmf0R+uhvKflS9+16CUodJe7qj82lNrucWpDoWEYWD3OSKLRSkmaMhWSSJZEwpGxqySbtwJrvLmyH8vN2uXdO8EW64cwb7MLt+maWk57VyaGB/W5wk7pW2Qfl5BwV5SudibHEfsiX7QloNmeD6VN1xHtCQaIkaLjfBGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SflFUFNbiy3HKi1Oij2MWl2N/GDLASIf+1Jj9zB4YFY=;
+ b=uycbIWG2L5+7qpvHyo0ANTwcceElVsaVw16xTDsLVZcavHLgjwtuuOBscX+enIWFwH4kHjYn0ocUQShd0w+hZkuXTQX78WEESQEpMa+e8Xc/p8kjLDqYZL5A0XfAc3B4K+3wkIwjrVnqzgCDCWlmddsWZwYPj7kw7DX0gW3oROg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SJ0PR13MB5500.namprd13.prod.outlook.com (2603:10b6:a03:421::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Sat, 8 Apr
+ 2023 19:30:35 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.036; Sat, 8 Apr 2023
+ 19:30:35 +0000
+Date:   Sat, 8 Apr 2023 21:30:26 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc:     m.chetan.kumar@intel.com, linuxwwan@intel.com,
+        loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
+        johannes@sipsolutions.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        error27@gmail.com, kernel-janitors@vger.kernel.org,
+        vegard.nossum@oracle.com
+Subject: Re: [PATCH net] net: wwan: iosm: Fix error handling path in
+ ipc_pcie_probe()
+Message-ID: <ZDHA0uTelrk1BDb7@corigine.com>
+References: <20230408065607.1633970-1-harshit.m.mogalapalli@oracle.com>
+ <ZDGJI8Q6lWCJdEMR@corigine.com>
+ <8f47aa3a-9b71-6788-6d75-ccd96dcdb419@oracle.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8f47aa3a-9b71-6788-6d75-ccd96dcdb419@oracle.com>
+X-ClientProxiedBy: AM3PR03CA0070.eurprd03.prod.outlook.com
+ (2603:10a6:207:5::28) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5500:EE_
+X-MS-Office365-Filtering-Correlation-Id: 993e27bd-a081-4960-f799-08db3867b97a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MECSO6xkxviAYiwoJs9t003PFR+4Rrlgkt6yo3zWZBHAh2j1T6GoHpkI/4YG+sDbZREUKS/lf60n/oZ6Fu/6RWiSM8C1GJcGQ4UBrrnkB8CK1YukW/vmxhIitmrr4G1JjkSIUf7YdMaysZ5cCC0cawOXpiM2kZ6ZF1Eb0m572ZL5PHNwEZk8aDOgucYeTYuzx/mh+c5asGaeQo/CqyZP3fYuTxmGPE2EcNV5N9V2eD4I8PJOkmwnbHGlMFUCEho0vkLEY0aL8u2UJaBlIi8bqLEskhAeTjb9uNJTbxqnNjOQwS9j3EeuHZeJY5R8vHyzYZMoMZyPNbMBlPJdWcYwKUmztgR12dDHmOaIJmkSX4pm+fuEDRvVzwwdxkaAHqIljMU5KZMYA+/M5CnZ4I65iWg76vR7jMdj+InZlnVBnrSldYr247EgjKN2E7P8ue7Zlr3EWbrkN+bcqAqFd3PyAALjvLL84+1Ahl37NmLKsrdjWO7kQUIqywb7LAxsSufsw3oQTigagKGjTnkTtSZoQQvZ93rM8kkhYyy096/grHQ/sQ5hM4E3Sfq2fTPaTbhUaWuci/SI5zk3jKA7k3XhppS6AOm7CI8dIfS1SRKRSLg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(39840400004)(366004)(376002)(451199021)(478600001)(316002)(83380400001)(2616005)(53546011)(36756003)(6666004)(6506007)(186003)(38100700002)(6512007)(86362001)(6486002)(8936002)(41300700001)(44832011)(2906002)(5660300002)(7416002)(4326008)(6916009)(8676002)(66556008)(66476007)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OY/7WLq3ek+KQNU3gFWayTMdqwxW+58vg5HHdVpeRszz5/WMzCk1RzyYPnk0?=
+ =?us-ascii?Q?rZFtTTy43hMbA4BUvFsLAJj5pye4fSa3nOjnWPmCVhRs8Jz3F9PAN83ypSU2?=
+ =?us-ascii?Q?7VL8Mc8nlFnxG0Uru6NlkaxwufvZViF4JQJw7IX0mo6JguxZgS11C3vZdwwI?=
+ =?us-ascii?Q?RZepoVcnhaEgC97XYsrkRol19VpmciuB6tGvqHxatd/JUzT4kceS0DckVvPY?=
+ =?us-ascii?Q?8QJKES6d/LfdRK09VkSAQVVMsgOSHm7JTEqxJKwUsp9zSjyHkARo00bL0R8r?=
+ =?us-ascii?Q?YwQete/kx92nQSxtn99uDU8VSJnD/CrkPN0ZjunG5EFEt4FrhgcGuAsPMunt?=
+ =?us-ascii?Q?KgiWbzmSoVWek8Unsztu+OPlQCETOORjC3O9nSbd/pEQkIKP63Dtq0ZSeLzM?=
+ =?us-ascii?Q?3fzroVDfukeOfmgnjAN9qpusZuidY9VdsHLGR8C6JIKN0s/vj0JJsKjXiLov?=
+ =?us-ascii?Q?NwvvvxJmAiTNYLBw6Lw5ANqUByQ2/l7XDJy7phoMtg28s/H41BLn3GN9ZwLd?=
+ =?us-ascii?Q?Vq4EWGbAgqe1nXWbSWxg0e/lUuTQ+Jli/mKGxXnddvZLa1pVWx00seTbx/bL?=
+ =?us-ascii?Q?AhhM0q/9aGJRu2ZGzMcaG10GZ5+hS3MeaF+JeW7NhX5mMYNCXQauxQkEixcc?=
+ =?us-ascii?Q?PePCBU9aoYqF7EiCBzbLWT/crXk7MmmqJZ0yyS2f1/F2fJfTOSqSQKltA14T?=
+ =?us-ascii?Q?HpW0zKEqYv8tpyi+ZGyagAv7E8Uy9X5JRKGw4q8o9fFQXaeX2fJTCoq/dkSC?=
+ =?us-ascii?Q?zLTdkXAppZkDW99CHAWM7wX+1ocuCERq1eRzX8r9t9f/R20sm3MV8Y91CT0u?=
+ =?us-ascii?Q?INFD8+6H6hJnUsIHtsqz7mZiGtGGmrlXVh3XXdkat2Eozf9OPVlAvIEu87iD?=
+ =?us-ascii?Q?2/tSwNGEuCdejwjdvMK+RBUwZe81Hj9Xy5ihIMkGdPYjkltwSJ7Z0dPS4FgK?=
+ =?us-ascii?Q?ihysqF43HJBKp87MsPNfXWtWgggbTONz2BodfZvgVFbesCtyX0EZWVSAV9go?=
+ =?us-ascii?Q?F1BptdLs9EcV1pxWto7SEvJns5+/KOVoztF/u+mtZ7MAcu0Sofw39aHCI6pP?=
+ =?us-ascii?Q?01e/EqRGLBXv+CTgP1ZyTLp3rZr9d5R/J6f36NQesvb4SaV5BjA5Pu0IpTje?=
+ =?us-ascii?Q?VapZkZ0vCvrWxfOt9ueoFyek9P/2I3fXXzZjd30iXjzXrpl/MvFPKLIprNR6?=
+ =?us-ascii?Q?pxF+wOjT7EeL43XyU6iLdf14lq7Tqs3abf2/gZRw2y5+rybUntaBXZjzmPWA?=
+ =?us-ascii?Q?uCFIDrTePbrK+FDv+bqJUKyHLFjiBKBZt+sPTb+G+4VmVFU44R3gIb+D55ri?=
+ =?us-ascii?Q?Jt4ZLDxnhO1qcYI0e8d45gT+1OSaOYSbieiHC2wcvhhVblrIFvPifNCM1nfa?=
+ =?us-ascii?Q?7vRBlMNxENZCXvxWtLwUixX8Gppc5mc9cxfye/rEY88NqS+fRldM+4l0978V?=
+ =?us-ascii?Q?CbQFwJzbjE5jxvoTJC8dBGH06KlelV6/zgWxy7DmEIZiHaELuWHzXC7bd8qx?=
+ =?us-ascii?Q?UTyzK/U5mKlnexh5QcdhPEltRtph14S2Fl7A0kEkyTxxvLRWnL8WTdrJF41p?=
+ =?us-ascii?Q?YRaADilwt/KDCU0MqeL0gRQUNAR+0qmhuuSeqHtGoeMMCIuVBaYwLQ4T1J4B?=
+ =?us-ascii?Q?u2F/3BDgVmeyYLPkY7OLXNPz+Gablx4CQ8n4U/+uE1kwY0furnDBHvkuM2YU?=
+ =?us-ascii?Q?mbBqpQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 993e27bd-a081-4960-f799-08db3867b97a
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2023 19:30:35.2475
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ttv88hRRDQKp+qqWBqi00Mr3MFG72FKQ3Q5mnTY2YtrtWc6cKhqR3UECVLwMtfIDSLXCVTOv9sRQQKto1Fk2lEAGcrEqoWjSMdQhHKvtkPo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5500
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update BPF selftests to use the new RSS type argument for kfunc
-bpf_xdp_metadata_rx_hash.
+On Sat, Apr 08, 2023 at 11:12:25PM +0530, Harshit Mogalapalli wrote:
+> Hi Simon,
+> 
+> On 08/04/23 9:02 pm, Simon Horman wrote:
+> > On Fri, Apr 07, 2023 at 11:56:07PM -0700, Harshit Mogalapalli wrote:
+> > > Smatch reports:
+> > > 	drivers/net/wwan/iosm/iosm_ipc_pcie.c:298 ipc_pcie_probe()
+> > > 	warn: missing unwind goto?
+> > > 
+> > > When dma_set_mask fails it directly returns without disabling pci
+> > > device and freeing ipc_pcie. Fix this my calling a correct goto label
+> > > 
+> > > As dma_set_mask returns either 0 or -EIO, we can use a goto label, as
+> > > it finally returns -EIO.
+> > > 
+> > > Renamed the goto label as name of the label before this patch is not
+> > > relevant after this patch.
+> > 
+> > nit: I agree that it's nice to name the labels after what they unwind,
+> > rather than where they are called from. But now both schemes
+> > are used in this function.
+> 
+> Thanks a lot for the review.
+> I agree that the naming of the label is inconsistent, should we do something
+> like below?
+> 
+> diff --git a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> index 5bf5a93937c9..04517bd3325a 100644
+> --- a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> +++ b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> @@ -295,7 +295,7 @@ static int ipc_pcie_probe(struct pci_dev *pci,
+>         ret = dma_set_mask(ipc_pcie->dev, DMA_BIT_MASK(64));
+>         if (ret) {
+>                 dev_err(ipc_pcie->dev, "Could not set PCI DMA mask: %d",
+> ret);
+> -               return ret;
+> +               goto set_mask_fail;
+>         }
+> 
+>         ipc_pcie_config_aspm(ipc_pcie);
+> @@ -323,6 +323,7 @@ static int ipc_pcie_probe(struct pci_dev *pci,
+>  imem_init_fail:
+>         ipc_pcie_resources_release(ipc_pcie);
+>  resources_req_fail:
+> +set_mask_fail:
+>         pci_disable_device(pci);
+>  pci_enable_fail:
+>         kfree(ipc_pcie);
+> 
+> 
+> 
+> -- but resources_req_fail: has nothing in its block particularly.
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Acked-by: Stanislav Fomichev <sdf@google.com>
----
- .../selftests/bpf/prog_tests/xdp_metadata.c        |    2 ++
- .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |   11 +++++------
- tools/testing/selftests/bpf/progs/xdp_metadata.c   |    6 +++---
- tools/testing/selftests/bpf/progs/xdp_metadata2.c  |    7 ++++---
- tools/testing/selftests/bpf/xdp_hw_metadata.c      |    6 +++++-
- tools/testing/selftests/bpf/xdp_metadata.h         |    4 ++++
- 6 files changed, 23 insertions(+), 13 deletions(-)
+I think this situation is common when one names the labels
+after where they come from. So I'd say this is ok.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c b/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
-index aa4beae99f4f..8c5e98da9ae9 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_metadata.c
-@@ -273,6 +273,8 @@ static int verify_xsk_metadata(struct xsk *xsk)
- 	if (!ASSERT_NEQ(meta->rx_hash, 0, "rx_hash"))
- 		return -1;
- 
-+	ASSERT_EQ(meta->rx_hash_type, 0, "rx_hash_type");
-+
- 	xsk_ring_cons__release(&xsk->rx, 1);
- 	refill_rx(xsk, comp_addr);
- 
-diff --git a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-index d11aca50e54d..de63595af5c4 100644
---- a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-+++ b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-@@ -31,8 +31,8 @@ volatile __u64 pkts_redir = 0;
- 
- extern int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx,
- 					 __u64 *timestamp) __ksym;
--extern int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx,
--				    __u32 *hash) __ksym;
-+extern int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, __u32 *hash,
-+				    enum xdp_rss_hash_type *rss_type) __ksym;
- 
- SEC("xdp")
- int rx(struct xdp_md *ctx)
-@@ -96,10 +96,9 @@ int rx(struct xdp_md *ctx)
- 	else
- 		meta->rx_timestamp = 0; /* Used by AF_XDP as not avail signal */
- 
--	if (!bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash))
--		bpf_printk("populated rx_hash with %u", meta->rx_hash);
--	else
--		meta->rx_hash = 0; /* Used by AF_XDP as not avail signal */
-+	ret = bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash, &meta->rx_hash_type);
-+	if (ret < 0)
-+		meta->rx_hash_err = ret; /* Used by AF_XDP as no hash signal */
- 
- 	pkts_redir++;
- 	return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);
-diff --git a/tools/testing/selftests/bpf/progs/xdp_metadata.c b/tools/testing/selftests/bpf/progs/xdp_metadata.c
-index 77678b034389..d151d406a123 100644
---- a/tools/testing/selftests/bpf/progs/xdp_metadata.c
-+++ b/tools/testing/selftests/bpf/progs/xdp_metadata.c
-@@ -21,8 +21,8 @@ struct {
- 
- extern int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx,
- 					 __u64 *timestamp) __ksym;
--extern int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx,
--				    __u32 *hash) __ksym;
-+extern int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, __u32 *hash,
-+				    enum xdp_rss_hash_type *rss_type) __ksym;
- 
- SEC("xdp")
- int rx(struct xdp_md *ctx)
-@@ -56,7 +56,7 @@ int rx(struct xdp_md *ctx)
- 	if (timestamp == 0)
- 		meta->rx_timestamp = 1;
- 
--	bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash);
-+	bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash, &meta->rx_hash_type);
- 
- 	return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);
- }
-diff --git a/tools/testing/selftests/bpf/progs/xdp_metadata2.c b/tools/testing/selftests/bpf/progs/xdp_metadata2.c
-index cf69d05451c3..85f88d9d7a78 100644
---- a/tools/testing/selftests/bpf/progs/xdp_metadata2.c
-+++ b/tools/testing/selftests/bpf/progs/xdp_metadata2.c
-@@ -5,17 +5,18 @@
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_endian.h>
- 
--extern int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx,
--				    __u32 *hash) __ksym;
-+extern int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, __u32 *hash,
-+				    enum xdp_rss_hash_type *rss_type) __ksym;
- 
- int called;
- 
- SEC("freplace/rx")
- int freplace_rx(struct xdp_md *ctx)
- {
-+	enum xdp_rss_hash_type type = 0;
- 	u32 hash = 0;
- 	/* Call _any_ metadata function to make sure we don't crash. */
--	bpf_xdp_metadata_rx_hash(ctx, &hash);
-+	bpf_xdp_metadata_rx_hash(ctx, &hash, &type);
- 	called++;
- 	return XDP_PASS;
- }
-diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-index 3b942ef7297b..987cf0db5ebc 100644
---- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
-+++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-@@ -141,7 +141,11 @@ static void verify_xdp_metadata(void *data)
- 	meta = data - sizeof(*meta);
- 
- 	printf("rx_timestamp: %llu\n", meta->rx_timestamp);
--	printf("rx_hash: %u\n", meta->rx_hash);
-+	if (meta->rx_hash_err < 0)
-+		printf("No rx_hash err=%d\n", meta->rx_hash_err);
-+	else
-+		printf("rx_hash: 0x%X with RSS type:0x%X\n",
-+		       meta->rx_hash, meta->rx_hash_type);
- }
- 
- static void verify_skb_metadata(int fd)
-diff --git a/tools/testing/selftests/bpf/xdp_metadata.h b/tools/testing/selftests/bpf/xdp_metadata.h
-index f6780fbb0a21..0c4624dc6f2f 100644
---- a/tools/testing/selftests/bpf/xdp_metadata.h
-+++ b/tools/testing/selftests/bpf/xdp_metadata.h
-@@ -12,4 +12,8 @@
- struct xdp_meta {
- 	__u64 rx_timestamp;
- 	__u32 rx_hash;
-+	union {
-+		__u32 rx_hash_type;
-+		__s32 rx_hash_err;
-+	};
- };
-
-
+An alternative would be to rename all three of labels after what they
+unwind.
