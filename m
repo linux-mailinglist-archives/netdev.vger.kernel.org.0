@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C606DBF69
-	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 12:11:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60CB76DBF72
+	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 12:33:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbjDIKKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Apr 2023 06:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
+        id S229462AbjDIKds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Apr 2023 06:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjDIKKX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 06:10:23 -0400
+        with ESMTP id S229437AbjDIKdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 06:33:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44772421B
-        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 03:10:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA26744B8
+        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 03:33:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD4F06023E
-        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 10:10:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B44EC433EF;
-        Sun,  9 Apr 2023 10:10:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 743AE60B9B
+        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 10:33:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58C39C433D2;
+        Sun,  9 Apr 2023 10:33:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681035021;
-        bh=Uf+OysgD5k1aqYYWFOANYCfaCp7XVqAiasCHGU4uj8w=;
+        s=k20201202; t=1681036424;
+        bh=xm+3DjVWD9JGNIP9xZXESfsK9loFeRstBnM8TUlsOEY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QIhJ205vVVzmZ9aDi7Gxq15nf8nAVEPFNEEf33K7A5PvnKLdPBUZVty3JQaX7eggq
-         DodTh0nde1Y1EvNovHQhIAPCuKPcRdCXJos+EmW7Htqd30NRWYD/UybCF1kAcvm/xE
-         4FQFuCxxNXbnmVwmcxSAjNjfEhvKl9OpDS41TikVKP5e69yBs1iXBiNxKBq4Rb3kJr
-         BDdpxj5eXKnE0npje2pFmua0xYgJAAxBQZrERt4xJ5/yPZfUB+vC4k3CakWge/Ks1n
-         mUXeKDeIaIIghiwzhlHwQay475OkODRAWPKM0W06xRiuZ532OmWkPpkc1x0n/n91MH
-         KPgIE/9dDKl3w==
-Date:   Sun, 9 Apr 2023 13:10:16 +0300
+        b=nrlPwHRqf1DTXQSlwxJWJM+v0gQ78850OXM8kHfm7aA8e+7Wc2SCWa9PyJfs8dANc
+         fljDuFRxDA9X1kVbTjkBxQs9c26Fc0tCux88p4Wv8CbWOgJvVPxOAun/8VoFuBEs76
+         TpP/iHO91p1Dq20wV7/uJgI6ElS/mpup28dcXQM0xZ5j4fF+J6BkpnmT7yrQ2mDoet
+         C8WOAWBKJTrPeHBE49qeUA6YI4t57RWk7i08ICTv/ZUg9m9g9WHdrYBFklWVLqob0z
+         T05PgzyJVHYRR4prgS2ptBSkXs5YYxMx3v9Ic9xq4SP99UknAF9UvubcGf/a784Olz
+         wrmp6WS6B9LAg==
+Date:   Sun, 9 Apr 2023 13:33:40 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eli Cohen <elic@nvidia.com>, Eric Dumazet <edumazet@google.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>
-Subject: Re: [PATCH net-next] net/mlx5: Include proper PCI headers file to
- fix compilation error
-Message-ID: <20230409101016.GI14869@unreal>
-References: <33205aa15efbafa9330a00f2f6f8651add551f49.1681026343.git.leonro@nvidia.com>
+To:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        wojciech.drewek@intel.com, piotr.raczynski@intel.com,
+        pmenzel@molgen.mpg.de, aleksander.lobakin@intel.com,
+        Simon Horman <simon.horman@corigine.com>
+Subject: Re: [PATCH net-next v4 1/5] ice: define meta data to match in switch
+Message-ID: <20230409103340.GJ14869@unreal>
+References: <20230407165219.2737504-1-michal.swiatkowski@linux.intel.com>
+ <20230407165219.2737504-2-michal.swiatkowski@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <33205aa15efbafa9330a00f2f6f8651add551f49.1681026343.git.leonro@nvidia.com>
+In-Reply-To: <20230407165219.2737504-2-michal.swiatkowski@linux.intel.com>
 X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -56,23 +55,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 09, 2023 at 10:48:43AM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Fri, Apr 07, 2023 at 06:52:15PM +0200, Michal Swiatkowski wrote:
+> Add description for each meta data. Redefine tunnel mask to match only
+> tunneled MAC and tunneled VLAN. It shouldn't try to match other flags
+> (previously it was 0xff, it is redundant).
 > 
-> Fix the following compilation error, which happens due to missing pci.h
-> include.
+> VLAN mask was 0xd000, change it to 0xf000. 4 last bits are flags
+> depending on the same field in packets (VLAN tag). Because of that,
+> It isn't harmful to match also on ITAG.
 > 
->  drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c:148:31: error: implicit declaration of function
-> 'pci_msix_can_alloc_dyn' [-Werror=implicit-function-declaration]
+> Group all MDID and MDID offsets into enums to keep things organized.
 > 
-> Fixes: 3354822cde5a ("net/mlx5: Use dynamic msix vectors allocation")
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
 > ---
->  drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c | 1 +
->  1 file changed, 1 insertion(+)
+>  .../ethernet/intel/ice/ice_protocol_type.h    | 186 +++++++++++++++++-
+>  drivers/net/ethernet/intel/ice/ice_switch.c   |  11 +-
+>  .../net/ethernet/intel/ice/ice_vlan_mode.c    |   2 +-
+>  3 files changed, 183 insertions(+), 16 deletions(-)
+> 
 
-Actually, this patch is not needed.
-The fix is in PCI tree.
-https://lore.kernel.org/all/310ecc4815dae4174031062f525245f0755c70e2.1680119924.git.reinette.chatre@intel.com/
-
-Thanks
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
