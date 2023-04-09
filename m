@@ -2,87 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBABC6DC077
-	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 16:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C57446DC074
+	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 16:49:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229596AbjDIOuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Apr 2023 10:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37748 "EHLO
+        id S229575AbjDIOt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Apr 2023 10:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjDIOuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 10:50:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C51D35AC
-        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 07:50:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1337761545
-        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 14:50:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 688F0C4339B;
-        Sun,  9 Apr 2023 14:50:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681051817;
-        bh=6aBgIJmFvQijWm5/1Nn7TBNsHxnLpUXfq5AKDjmqcaw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ST5njXqy6eUllXlSsGtACFCxHt+uhLDxPIxhzdQYCPRwnplB0pWNjVLxUV7ORi0ry
-         yCT0jjMXRCPyGSoJHCqTyfOI53m5fQIbhwND6ThFnr673vF+IT7CtJLdmXw/thTxfb
-         v9sv4c/+Z4LW4oj6F4/ysDfImZYTgylR2opSuK2sosTsjCa07TPKvrBwAhbCfLMzTK
-         fh4B01wUWUhwHhEvcSrrTdJe1jdWuPhdsASUbHNnJyHyeVQsietXqFyaC4xX8mX192
-         R79ZRGdOn4gM93/Z59DPDjkuIuMSXbgPwscS9TqozZT50umJ1FcIn2Z0ubflbzLCjk
-         8/CMgbNTwGUxg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4FF36E21EEE;
-        Sun,  9 Apr 2023 14:50:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229503AbjDIOt1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 10:49:27 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B94935AE
+        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 07:49:25 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id jw24so18599060ejc.3
+        for <netdev@vger.kernel.org>; Sun, 09 Apr 2023 07:49:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dectris.com; s=google; t=1681051764;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=65LSbWKUrmCArl+LXVPE7dMWtbfbmdZlWVztuN2QWX0=;
+        b=b0gnqKuPzGxBDzcrGs8eDqLRGoQBwJSNtdIQW7jdBZj187QJuJhpCg5slpnkGD2r1g
+         JBtHIXOz0t36TBewgWRcItyvOujSFDwZ4lsvBJxvlDfbjOAzNYSah373BzCo29W5s/mJ
+         zqP+1d9/mJ0YA/jQzKcOVnEmCysltQfFGuw2M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681051764;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=65LSbWKUrmCArl+LXVPE7dMWtbfbmdZlWVztuN2QWX0=;
+        b=0npag308j/zXoE5XWo21YshFh87zSqBvOay9EnOlN5eLRvkIDyujkGYAX5WYZmkdJ7
+         c8hgChd18J/VsXFzRRTe+F2jvi5nPn09v1g1uoYrO2V86X75whnoOsbBysnQh0ZmyBMb
+         fwsIqGMSeBgoKodeFCiGhkBE/+2FHyLCsF8k/M5+L9f9plCHWDWc3C+EF6skvXCpan/S
+         4YQbW1eL7orlJUb3R56+iP8ZWvIJtQgIN3hj7mQDssrlaDK6wNjDpr9C/8j+lqdvh6Tr
+         SUt7PB5XaXghzuYbagu1olsLTfaHtXk1qyHeRsPaZ1DadwxQsmuxNefSWjkAgq/MHmPQ
+         sOPg==
+X-Gm-Message-State: AAQBX9eASEoBJpZBPQuxzDq2fmbsrBzqLNg0WjbJ8XAmfmncuLbFHeRg
+        dNAJyEUeqgrPHfkh4GApBOJkYBTaWg4VTTJNMI3Z9A==
+X-Google-Smtp-Source: AKy350Y//avkrDNCiYLj+3hant+G2KKsf7lq85OXJkIr+RhU38AdQal5f9HWvuw7i/JuxgMRJVbuorj3x81kC4LvY7A=
+X-Received: by 2002:a17:907:a68a:b0:92e:7a67:668a with SMTP id
+ vv10-20020a170907a68a00b0092e7a67668amr2381028ejc.0.1681051763891; Sun, 09
+ Apr 2023 07:49:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] net: dsa: replace NETDEV_PRE_CHANGE_HWTSTAMP
- notifier with a stub
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168105181732.22045.17539374795782779920.git-patchwork-notify@kernel.org>
-Date:   Sun, 09 Apr 2023 14:50:17 +0000
-References: <20230406114246.33150-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20230406114246.33150-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, andrew@lunn.ch,
-        f.fainelli@gmail.com
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230406212136.19716-1-kal.conley@dectris.com>
+In-Reply-To: <20230406212136.19716-1-kal.conley@dectris.com>
+From:   Kal Cutter Conley <kal.conley@dectris.com>
+Date:   Sun, 9 Apr 2023 16:54:05 +0200
+Message-ID: <CAHApi-=CZcRcD+knw6TgFxEnk+16bN4nPJKLVbfmsHHL7crtnQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] xsk: Elide base_addr comparison in xp_unaligned_validate_desc
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> +       addr = xp_unaligned_add_offset_to_addr(desc->addr);
+> +
 
-This patch was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu,  6 Apr 2023 14:42:46 +0300 you wrote:
-> There was a sort of rush surrounding commit 88c0a6b503b7 ("net: create a
-> netdev notifier for DSA to reject PTP on DSA master"), due to a desire
-> to convert DSA's attempt to deny TX timestamping on a DSA master to
-> something that doesn't block the kernel-wide API conversion from
-> ndo_eth_ioctl() to ndo_hwtstamp_set().
-> 
-> What was required was a mechanism that did not depend on ndo_eth_ioctl(),
-> and what was provided was a mechanism that did not depend on
-> ndo_eth_ioctl(), while at the same time introducing something that
-> wasn't absolutely necessary - a new netdev notifier.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2,net-next] net: dsa: replace NETDEV_PRE_CHANGE_HWTSTAMP notifier with a stub
-    https://git.kernel.org/netdev/net-next/c/5a17818682cf
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+I guess this assignment should simply be combined with the variable
+declaration. This will shorten the function by an additional two lines
+of code.
