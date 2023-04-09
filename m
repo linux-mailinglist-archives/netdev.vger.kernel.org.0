@@ -2,142 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9FC56DC07E
-	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 17:02:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60A116DC080
+	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 17:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbjDIPCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Apr 2023 11:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39814 "EHLO
+        id S229513AbjDIPKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Apr 2023 11:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbjDIPCT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 11:02:19 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD1735B0
-        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 08:02:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:
-        Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
-        Content-Disposition:In-Reply-To:References;
-        bh=dO5Niz6f6nVK8qWtJeqaCSLZeFBhXWBcIjpUedKvUJw=; b=EJvVucNwT1+WPABDf+KfXhHDI0
-        3VjXGjOvo6Fz0UkNMrQX6/vSbhhWPr74NrG8mZcZKWVtKlIwzSxas5t700XX4PYpJi7mI0gnLEqlH
-        VZGOCd4pAONl3piPRig5hhcKsZNTq9zKdPzdEys2kqtDdXpr9WsZTpPWJPCy3+Bl2N+c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1plWYV-009qMc-SI; Sun, 09 Apr 2023 17:02:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH] net: ethernet: Add missing depends on MDIO_DEVRES
-Date:   Sun,  9 Apr 2023 17:02:04 +0200
-Message-Id: <20230409150204.2346231-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S229462AbjDIPKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 11:10:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BA13A8B;
+        Sun,  9 Apr 2023 08:10:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D3166129B;
+        Sun,  9 Apr 2023 15:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 78890C4339B;
+        Sun,  9 Apr 2023 15:10:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681053018;
+        bh=Y3XnYkvTvitAUptLkNKbR5RSicvmDHt3b1Jbd032iMs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ru1isXrweGl8BajnnSnFvHm+Uq2cKlAT1leKWTeghi4IGfEuHXyiTm9oYQQrgMx4X
+         gVLKzw3YdFaXseI077WSMO0svv393sf8M9jIWFXPLFxqxKcBjSJJZpcjEzJL1amShH
+         TnHfOMAgrEtRIcAQIQOqXlIRe9X3mT9RQsYSaMrCXrIy9xvmRLlDXHuex7riW4VGQ4
+         44K8zb9JX5k4r7Ru4ua1/9zBSVcIyy/CttmZfAE4MYCSdkfN8UM2KLk8xEyk+7ua9z
+         BOhKdwT+wC5UIX2z3MzeiYiquIQKMMjeTyI82WFtBLXoWEZdZRCRfYBPJl4LPJGAfC
+         PwcRBZ9W8Bl4A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5B0B8C41671;
+        Sun,  9 Apr 2023 15:10:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net v2 0/2] fix EEPROM read of absent SFP module
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168105301836.30484.7699646579185070027.git-patchwork-notify@kernel.org>
+Date:   Sun, 09 Apr 2023 15:10:18 +0000
+References: <20230406130833.32160-1-i.bornyakov@metrotek.ru>
+In-Reply-To: <20230406130833.32160-1-i.bornyakov@metrotek.ru>
+To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk, andrew@lunn.ch,
+        hkallweit1@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        system@metrotek.ru
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A number of MDIO drivers make use of devm_mdiobus_alloc_size(). This
-is only available when CONFIG_MDIO_DEVRES is enabled. Add missing
-depends or selects, depending on if there are circular dependencies or
-not. This avoids linker errors, especially for randconfig builds.
+Hello:
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/ethernet/freescale/Kconfig       | 1 +
- drivers/net/ethernet/freescale/enetc/Kconfig | 1 +
- drivers/net/ethernet/marvell/Kconfig         | 1 +
- drivers/net/ethernet/qualcomm/Kconfig        | 1 +
- drivers/net/mdio/Kconfig                     | 3 +++
- 5 files changed, 7 insertions(+)
+This series was applied to netdev/net.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
-index f1e80d6996ef..1c78f66a89da 100644
---- a/drivers/net/ethernet/freescale/Kconfig
-+++ b/drivers/net/ethernet/freescale/Kconfig
-@@ -71,6 +71,7 @@ config FSL_XGMAC_MDIO
- 	tristate "Freescale XGMAC MDIO"
- 	select PHYLIB
- 	depends on OF
-+	select MDIO_DEVRES
- 	select OF_MDIO
- 	help
- 	  This driver supports the MDIO bus on the Fman 10G Ethernet MACs, and
-diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig b/drivers/net/ethernet/freescale/enetc/Kconfig
-index 9bc099cf3cb1..4d75e6807e92 100644
---- a/drivers/net/ethernet/freescale/enetc/Kconfig
-+++ b/drivers/net/ethernet/freescale/enetc/Kconfig
-@@ -10,6 +10,7 @@ config FSL_ENETC_CORE
- config FSL_ENETC
- 	tristate "ENETC PF driver"
- 	depends on PCI_MSI
-+	select MDIO_DEVRES
- 	select FSL_ENETC_CORE
- 	select FSL_ENETC_IERB
- 	select FSL_ENETC_MDIO
-diff --git a/drivers/net/ethernet/marvell/Kconfig b/drivers/net/ethernet/marvell/Kconfig
-index f58a1c0144ba..884d64114bff 100644
---- a/drivers/net/ethernet/marvell/Kconfig
-+++ b/drivers/net/ethernet/marvell/Kconfig
-@@ -34,6 +34,7 @@ config MV643XX_ETH
- config MVMDIO
- 	tristate "Marvell MDIO interface support"
- 	depends on HAS_IOMEM
-+	select MDIO_DEVRES
- 	select PHYLIB
- 	help
- 	  This driver supports the MDIO interface found in the network
-diff --git a/drivers/net/ethernet/qualcomm/Kconfig b/drivers/net/ethernet/qualcomm/Kconfig
-index a4434eb38950..9210ff360fdc 100644
---- a/drivers/net/ethernet/qualcomm/Kconfig
-+++ b/drivers/net/ethernet/qualcomm/Kconfig
-@@ -52,6 +52,7 @@ config QCOM_EMAC
- 	depends on HAS_DMA && HAS_IOMEM
- 	select CRC32
- 	select PHYLIB
-+	select MDIO_DEVRES
- 	help
- 	  This driver supports the Qualcomm Technologies, Inc. Gigabit
- 	  Ethernet Media Access Controller (EMAC). The controller
-diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-index 90309980686e..9ff2e6f22f3f 100644
---- a/drivers/net/mdio/Kconfig
-+++ b/drivers/net/mdio/Kconfig
-@@ -65,6 +65,7 @@ config MDIO_ASPEED
- 	tristate "ASPEED MDIO bus controller"
- 	depends on ARCH_ASPEED || COMPILE_TEST
- 	depends on OF_MDIO && HAS_IOMEM
-+	depends on MDIO_DEVRES
- 	help
- 	  This module provides a driver for the independent MDIO bus
- 	  controllers found in the ASPEED AST2600 SoC. This is a driver for the
-@@ -170,6 +171,7 @@ config MDIO_IPQ4019
- 	tristate "Qualcomm IPQ4019 MDIO interface support"
- 	depends on HAS_IOMEM && OF_MDIO
- 	depends on COMMON_CLK
-+	depends on MDIO_DEVRES
- 	help
- 	  This driver supports the MDIO interface found in Qualcomm
- 	  IPQ40xx, IPQ60xx, IPQ807x and IPQ50xx series Soc-s.
-@@ -178,6 +180,7 @@ config MDIO_IPQ8064
- 	tristate "Qualcomm IPQ8064 MDIO interface support"
- 	depends on HAS_IOMEM && OF_MDIO
- 	depends on MFD_SYSCON
-+	depends on MDIO_DEVRES
- 	help
- 	  This driver supports the MDIO interface found in the network
- 	  interface units of the IPQ8064 SoC
+On Thu,  6 Apr 2023 16:08:31 +0300 you wrote:
+> The patchset is to improve EEPROM read requests when SFP module is
+> absent.
+> 
+> ChangeLog:
+> v1:
+> https://lore.kernel.org/netdev/20230405153900.747-1-i.bornyakov@metrotek.ru/
+> v2:
+>   * reword commit message of "net: sfp: initialize sfp->i2c_block_size
+>     at sfp allocation"
+>   * add second patch to eliminate excessive I2C transfers in
+>     sfp_module_eeprom() and sfp_module_eeprom_by_page()
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2,1/2] net: sfp: initialize sfp->i2c_block_size at sfp allocation
+    https://git.kernel.org/netdev/net/c/813c2dd78618
+  - [net,v2,2/2] net: sfp: avoid EEPROM read of absent SFP module
+    https://git.kernel.org/netdev/net/c/bef227c1537c
+
+You are awesome, thank you!
 -- 
-2.40.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
