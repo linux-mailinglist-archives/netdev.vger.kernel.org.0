@@ -2,124 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED01C6DC0AC
-	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 18:41:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AABA26DC0C8
+	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 19:07:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229502AbjDIQlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Apr 2023 12:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
+        id S229570AbjDIRHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Apr 2023 13:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjDIQln (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 12:41:43 -0400
-X-Greylist: delayed 1572 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 09 Apr 2023 09:41:42 PDT
-Received: from the.earth.li (the.earth.li [IPv6:2a00:1098:86:4d:c0ff:ee:15:900d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54AD3AA0;
-        Sun,  9 Apr 2023 09:41:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=earth.li;
-        s=the; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=sdepJt36gVqn4e9O8k96DKAcVGbB3Ag8s1S8ozt6leE=; b=wjx+ZV2adD5NJnDN6wA4IAXFzq
-        MjT7yYfOHgjdIbZHbukuMC/U8i2J8Dt2lsBlh0xtX0+c2TM937j17BwY15wBeb4aeYBymI05yVWNj
-        2MDvrL/GPbzuf0EOnJd+0vkbBxhM8zoQC6nchKr7uI+dp8+R+sDeU0DBGEeOjK9npdSo0Lxb6hU5R
-        tJ+B4RNXvqd/whwA5AmcrJvr+2Uz2cxWgVuCrj+hIrGp8cqDAzwBeD5cnBD5FN1siBHmuBlLBUHBy
-        pDRziWgJyHSt+lGg0/XtQv+Ir2uUMm2DsMmi2gQr3u15AI+Lr3awxWuWL3uRgR5hpOIk/iTu7cwjr
-        8y5BOPBA==;
-Received: from noodles by the.earth.li with local (Exim 4.94.2)
-        (envelope-from <noodles@earth.li>)
-        id 1plXh5-009uJS-Ht; Sun, 09 Apr 2023 17:15:07 +0100
-Date:   Sun, 9 Apr 2023 17:15:07 +0100
-From:   Jonathan McDowell <noodles@earth.li>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [net-next PATCH v6 13/16] ARM: dts: qcom: ipq8064-rb3011: Drop
- unevaluated properties in switch nodes
-Message-ID: <ZDLki3CYBxQ+uqUJ@earth.li>
-References: <20230327141031.11904-1-ansuelsmth@gmail.com>
- <20230327141031.11904-14-ansuelsmth@gmail.com>
+        with ESMTP id S229450AbjDIRHd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 13:07:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7A82D42
+        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 10:07:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7D0B60B36
+        for <netdev@vger.kernel.org>; Sun,  9 Apr 2023 17:07:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48FF8C433D2;
+        Sun,  9 Apr 2023 17:07:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681060052;
+        bh=4oreaS771LdfKpiS/15ZaxhcZeQvKXOoAjsLLQ/0SHs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OTQAGcNKeWsyRmBWOKATY/YIzcWc4VrrsrJaEk7qWsPipe69/o0u6B8wvEn6X4R0J
+         jphn7QQzlSDGfbPaxP29AxEap1kpEqaLIum/2stJ8QqR7Qx2BTskPu0iSjqVlAiSz0
+         ExrDJVYB3KQAVPhov4n0Ti9UMaeK0dZfJQRntC+IonIa4Ys6T6O+eAYYXwETbcWLBH
+         1rjkcoYXdx0UgfT73tT4ditB9ciE45PVTnfStMpn4xpzTaUeSsPbJKqpTosC9DiD+2
+         X6WLreHNdgtlauHZktMKh+8ssDMETPtG1bgN+8RUr57e7MJK38kOM5C1JTK8tbJLj7
+         SaFaSaooB1ttg==
+Date:   Sun, 9 Apr 2023 20:07:27 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Shannon Nelson <shannon.nelson@amd.com>
+Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
+        kuba@kernel.org, drivers@pensando.io, jiri@resnulli.us
+Subject: Re: [PATCH v9 net-next 12/14] pds_core: add the aux client API
+Message-ID: <20230409170727.GG182481@unreal>
+References: <20230406234143.11318-1-shannon.nelson@amd.com>
+ <20230406234143.11318-13-shannon.nelson@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230327141031.11904-14-ansuelsmth@gmail.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230406234143.11318-13-shannon.nelson@amd.com>
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 27, 2023 at 04:10:28PM +0200, Christian Marangi wrote:
-> IPQ8064 MikroTik RB3011UiAS-RM DT have currently unevaluted properties
-> in the 2 switch nodes. The bindings #address-cells and #size-cells are
-> redundant and cause warning for 'Unevaluated properties are not
-> allowed'.
+On Thu, Apr 06, 2023 at 04:41:41PM -0700, Shannon Nelson wrote:
+> Add the client API operations for running adminq commands.
+> The core registers the client with the FW, then the client
+> has a context for requesting adminq services.  We expect
+> to add additional operations for other clients, including
+> requesting additional private adminqs and IRQs, but don't have
+> the need yet.
 > 
-> Drop these bindings to mute these warning as they should not be there
-> from the start.
-
-Looks legit (and no particular reason it needs to wait for the rest of
-the series).
-
-Reviewed-By: Jonathan McDowell <noodles@earth.li>
-Tested-By: Jonathan McDowell <noodles@earth.li>
-
-> Cc: Jonathan McDowell <noodles@earth.li>
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 > ---
->  arch/arm/boot/dts/qcom-ipq8064-rb3011.dts | 4 ----
->  1 file changed, 4 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-> index f908889c4f95..47a5d1849c72 100644
-> --- a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-> +++ b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-> @@ -38,8 +38,6 @@ mdio0: mdio-0 {
->  
->  		switch0: switch@10 {
->  			compatible = "qca,qca8337";
-> -			#address-cells = <1>;
-> -			#size-cells = <0>;
->  
->  			dsa,member = <0 0>;
->  
-> @@ -105,8 +103,6 @@ mdio1: mdio-1 {
->  
->  		switch1: switch@14 {
->  			compatible = "qca,qca8337";
-> -			#address-cells = <1>;
-> -			#size-cells = <0>;
->  
->  			dsa,member = <1 0>;
->  
+>  drivers/net/ethernet/amd/pds_core/auxbus.c | 135 ++++++++++++++++++++-
+>  include/linux/pds/pds_auxbus.h             |  28 +++++
+>  2 files changed, 160 insertions(+), 3 deletions(-)
+
+<...>
+
+> +static struct pds_core_ops pds_core_ops = {
+> +	.adminq_cmd = pds_client_adminq_cmd,
+> +};
+> +
+
+<...>
+
+> diff --git a/include/linux/pds/pds_auxbus.h b/include/linux/pds/pds_auxbus.h
+> index aa0192af4a29..f98efd578e1c 100644
+> --- a/include/linux/pds/pds_auxbus.h
+> +++ b/include/linux/pds/pds_auxbus.h
+> @@ -10,7 +10,35 @@ struct pds_auxiliary_dev {
+>  	struct auxiliary_device aux_dev;
+>  	struct pci_dev *vf_pdev;
+>  	struct pci_dev *pf_pdev;
+> +	struct pds_core_ops *ops;
+
+I honestly don't understand why pds_core functionality is espoused
+through ops callbacks on auxdevice. IMHO, they shouldn't be callbacks
+and that functionality shouldn't operate on auxdevice.
+
+Thanks
+
+>  	u16 client_id;
+>  	void *priv;
+>  };
+> +
+> +/*
+> + *   ptrs to functions to be used by the client for core services
+> + */
+> +struct pds_core_ops {
+> +	/* .adminq_cmd() - process an adminq request for the client
+> +	 * padev:  ptr to the client device
+> +	 * req:     ptr to buffer with request
+> +	 * req_len: length of actual struct used for request
+> +	 * resp:    ptr to buffer where answer is to be copied
+> +	 * flags:   optional flags defined by enum pds_core_adminq_flags
+> +	 *	    and used for more flexible adminq behvior
+> +	 *
+> +	 * returns 0 on success, or
+> +	 *         negative for error
+> +	 * Client sends pointers to request and response buffers
+> +	 * Core copies request data into pds_core_client_request_cmd
+> +	 * Core sets other fields as needed
+> +	 * Core posts to AdminQ
+> +	 * Core copies completion data into response buffer
+> +	 */
+> +	int (*adminq_cmd)(struct pds_auxiliary_dev *padev,
+> +			  union pds_core_adminq_cmd *req,
+> +			  size_t req_len,
+> +			  union pds_core_adminq_comp *resp,
+> +			  u64 flags);
+> +};
+>  #endif /* _PDSC_AUXBUS_H_ */
 > -- 
-> 2.39.2
+> 2.17.1
 > 
-
-J.
-
--- 
-Are you happy with your wash?
