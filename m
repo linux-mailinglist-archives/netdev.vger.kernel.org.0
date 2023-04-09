@@ -2,212 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5242A6DBF3A
-	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 10:48:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3277C6DBF40
+	for <lists+netdev@lfdr.de>; Sun,  9 Apr 2023 10:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229454AbjDIIsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Apr 2023 04:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
+        id S229478AbjDIIyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Apr 2023 04:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbjDIIsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 04:48:17 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1CB1FC1;
-        Sun,  9 Apr 2023 01:48:15 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1plQib-00017v-JX; Sun, 09 Apr 2023 10:48:13 +0200
-Message-ID: <1c8a70fc-18cb-3da7-5240-b513bf1affb9@leemhuis.info>
-Date:   Sun, 9 Apr 2023 10:48:11 +0200
+        with ESMTP id S229437AbjDIIyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 04:54:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A925146B3;
+        Sun,  9 Apr 2023 01:54:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50F616118C;
+        Sun,  9 Apr 2023 08:54:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E597DC433D2;
+        Sun,  9 Apr 2023 08:54:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681030469;
+        bh=Oko4BOsX0p2Y6o6EhAvfUlbM6+JFTmdsQOEDiHoM358=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=onzUumLUUOzSBwTMu2NEH3LHQRTNf1rT8aDOAraILt6dgOUsDMeeMz7qsgZdVSiL5
+         hOrJZR8LC4NFuKEtZbl5tfAWla+ASf9Tu4RWpQSrltlVH5p2Nvl9YlzgnM55XMe1nx
+         FXRMKmAgztU3A6XfqvfB4iJNYFOqUOtNaYCJE5A66hZAmfqSGzosHPbiqgQfYr3IoW
+         z28AkEihjDRfNC44CWDfZC7gGjdgrtNLhfQQ46TCIO5glcb5VHj+9kirDUEZOCMBbA
+         AyJ9swfEsnhLgCMkbqV/opKBCBkWydMbNcQQ6E9BlOiYulnloBcTIXcrzWXLCV+448
+         dE8kadILXq5AQ==
+Date:   Sun, 9 Apr 2023 11:54:25 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        Alexander Schmidt <alexs@linux.ibm.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/mlx5: stop waiting for PCI link if reset is required
+Message-ID: <20230409085425.GC14869@unreal>
+References: <a25455eac6a02eeb9710d9204dfe0b91938f61a1.camel@linux.ibm.com>
+ <20230405210613.GA3638573@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: Potential regression/bug in net/mlx5 driver
-Content-Language: en-US, de-DE
-To:     Paul Moore <paul@paul-moore.com>, Saeed Mahameed <saeed@kernel.org>
-Cc:     Shay Drory <shayd@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
-        netdev@vger.kernel.org, regressions@lists.linux.dev,
-        selinux@vger.kernel.org
-References: <CAHC9VhQ7A4+msL38WpbOMYjAqLp0EtOjeLh4Dc6SQtD6OUvCQg@mail.gmail.com>
- <ZCS5oxM/m9LuidL/@x130>
- <CAHC9VhTvQLa=+Ykwmr_Uhgjrc6dfi24ou=NBsACkhwZN7X4EtQ@mail.gmail.com>
-From:   "Linux regression tracking (Thorsten Leemhuis)" 
-        <regressions@leemhuis.info>
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
-In-Reply-To: <CAHC9VhTvQLa=+Ykwmr_Uhgjrc6dfi24ou=NBsACkhwZN7X4EtQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1681030095;ba9ed88e;
-X-HE-SMSGID: 1plQib-00017v-JX
-X-Spam-Status: No, score=-2.9 required=5.0 tests=NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230405210613.GA3638573@bhelgaas>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.03.23 03:27, Paul Moore wrote:
-> On Wed, Mar 29, 2023 at 6:20 PM Saeed Mahameed <saeed@kernel.org> wrote:
->> On 28 Mar 19:08, Paul Moore wrote:
->>>
->>> Starting with the v6.3-rcX kernel releases I noticed that my
->>> InfiniBand devices were no longer present under /sys/class/infiniband,
->>> causing some of my automated testing to fail.  It took me a while to
->>> find the time to bisect the issue, but I eventually identified the
->>> problematic commit:
->>>
->>>  commit fe998a3c77b9f989a30a2a01fb00d3729a6d53a4
->>>  Author: Shay Drory <shayd@nvidia.com>
->>>  Date:   Wed Jun 29 11:38:21 2022 +0300
->>>
->>>   net/mlx5: Enable management PF initialization
->>>
->>>   Enable initialization of DPU Management PF, which is a new loopback PF
->>>   designed for communication with BMC.
->>>   For now Management PF doesn't support nor require most upper layer
->>>   protocols so avoid them.
->>>
->>>   Signed-off-by: Shay Drory <shayd@nvidia.com>
->>>   Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
->>>   Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
->>>   Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
->>>
->>> I'm not a mlx5 driver expert so I can't really offer much in the way
->>> of a fix, but as a quick test I did remove the
->>> 'mlx5_core_is_management_pf(...)' calls in mlx5/core/dev.c and
->>> everything seemed to work okay on my test system (or rather the tests
->>> ran without problem).
->>>
->>> If you need any additional information, or would like me to test a
->>> patch, please let me know.
->>
->> Our team is looking into this, the current theory is that you have an old
->> FW that doesn't have the correct capabilities set.
+On Wed, Apr 05, 2023 at 04:06:13PM -0500, Bjorn Helgaas wrote:
+> On Tue, Apr 04, 2023 at 05:27:35PM +0200, Niklas Schnelle wrote:
+> > On Mon, 2023-04-03 at 21:21 +0300, Leon Romanovsky wrote:
+> > > On Mon, Apr 03, 2023 at 09:56:56AM +0200, Niklas Schnelle wrote:
+> > > > after an error on the PCI link, the driver does not need to wait
+> > > > for the link to become functional again as a reset is required. Stop
+> > > > the wait loop in this case to accelerate the recovery flow.
+> > > > 
+> > > > Co-developed-by: Alexander Schmidt <alexs@linux.ibm.com>
+> > > > Signed-off-by: Alexander Schmidt <alexs@linux.ibm.com>
+> > > > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> > > > ---
+> > > >  drivers/net/ethernet/mellanox/mlx5/core/health.c | 12 ++++++++++--
+> > > >  1 file changed, 10 insertions(+), 2 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> > > > index f9438d4e43ca..81ca44e0705a 100644
+> > > > --- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> > > > @@ -325,6 +325,8 @@ int mlx5_health_wait_pci_up(struct mlx5_core_dev *dev)
+> > > >  	while (sensor_pci_not_working(dev)) {
+> > > 
+> > > According to the comment in sensor_pci_not_working(), this loop is
+> > > supposed to wait till PCI will be ready again. Otherwise, already in
+> > > first iteration, we will bail out with pci_channel_offline() error.
+> > 
+> > Well yes. The problem is that this works for intermittent errors
+> > including when the card resets itself which seems to be the use case in
+> > mlx5_fw_reset_complete_reload() and mlx5_devlink_reload_fw_activate().
+> > If there is a PCI error that requires a link reset though we see some
+> > problems though it does work after running into the timeout.
+> > 
+> > As I understand it and as implemented at least on s390,
+> > pci_channel_io_frozen is only set for fatal errors that require a reset
+> > while non fatal errors will have pci_channel_io_normal (see also
+> > Documentation/PCI/pcieaer-howto.rst)
 > 
-> That's very possible; I installed this card many years ago and haven't
-> updated the FW once.
->
->  I'm happy to update the FW (do you have a
-> pointer/how-to?), but it might be good to identify a fix first as I'm
-> guessing there will be others like me ...
+> Yes, I think that's true, see handle_error_source().
+> 
+> > thus I think pci_channel_offline()
+> > should only be true if a reset is required or there is a permanent
+> > error.
+> 
+> Yes, I think pci_channel_offline() will only be true when a fatal
+> error has been reported via AER or DPC (or a hotplug driver says the
+> device has been removed).  The driver resetting the device should not
+> cause such a fatal error.
 
-Nothing happened here for about ten days afaics (or was there progress
-and I just missed it?). That made me wonder: how sound is Paul's guess
-that there will be others that might run into this? If that's likely it
-afaics would be good to get this regression fixed before the release,
-which is just two or three weeks away.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
-
-#regzbot poke
-
->> Can you please provide the FW version and the ConnectX device you are
->> testing ?
->>
->> $ devlink dev info
-> 
-> % devlink dev info; echo $?
-> 0
-> 
-> No output and no error code.  However, I do see the following in dmesg:
-> 
-> [  255.251124] mlx5_core 0000:00:08.0: mlx5_fw_version_query:823:(pid
-> 959): fw query isn't supported by the FW
-> 
-> ... which appears to support your theory about ancient hardware.
-> 
->> $ lspci -s <pci_dev> -vv
-> 
-> While there is only one physical card, there are two PCI devices (it's
-> a dual port card).  I'm only copying the first device since I'm
-> guessing that's really all you need:
-> 
-> % lspci -s 00:07.0 -vv
-> 00:07.0 Infiniband controller: Mellanox Technologies MT27700 Family [ConnectX-4]
->        Subsystem: Mellanox Technologies Device 0010
->        Physical Slot: 7
->        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
->                 Stepping- SERR+ FastB2B- DisINTx+
->        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-
->                <TAbort- <MAbort- >SERR- <PERR- INTx-
->        Latency: 0, Cache Line Size: 64 bytes
->        Interrupt: pin A routed to IRQ 11
->        Region 0: Memory at fa000000 (64-bit, prefetchable) [size=32M]
->        Expansion ROM at fe900000 [disabled] [size=1M]
->        Capabilities: [60] Express (v2) Endpoint, MSI 00
->                DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s
->                        unlimited, L1 unlimited
->                        ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+
->                        SlotPowerLimit 25W
->                DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
->                        RlxdOrd- ExtTag+ PhantFunc- AuxPwr- NoSnoop+ FLReset-
->                        MaxPayload 256 bytes, MaxReadReq 512 bytes
->                DevSta: CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr-
->                        TransPend-
->                LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM not supported
->                        ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
->                LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
->                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
->                LnkSta: Speed 8GT/s, Width x8
->                        TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
->                DevCap2: Completion Timeout: Range ABCD, TimeoutDis+ NROPrPrP-
->                         LTR- 10BitTagComp+ 10BitTagReq- OBFF Not Supported,
->                         ExtFmt- EETLPPrefix- EmergencyPowerReduction
->                         Not Supported, EmergencyPowerReductionInit-
->                         FRS- TPHComp- ExtTPHComp-
->                AtomicOpsCap: 32bit- 64bit- 128bitCAS-
->                DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR-
->                         10BitTagReq- OBFF Disabled,
->                AtomicOpsCtl: ReqEn-
->                LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete+
->                         EqualizationPhase1+ EqualizationPhase2+
->                         EqualizationPhase3+ LinkEqualizationRequest-
->                         Retimer- 2Retimers- CrosslinkRes: unsupported
->        Capabilities: [48] Vital Product Data
->                Product Name: CX454A - ConnectX-4 QSFP28
->                Read-only fields:
->                        [PN] Part number: MCX454A-FCAT
->                        [EC] Engineering changes: AB
->                        [SN] Serial number: MT1730X05081
->                        [V0] Vendor specific: PCIeGen3 x8
->                        [RV] Reserved: checksum good, 0 byte(s) reserved
->                End
->        Capabilities: [9c] MSI-X: Enable+ Count=64 Masked-
->                Vector table: BAR=0 offset=00002000
->                PBA: BAR=0 offset=00003000
->        Capabilities: [c0] Vendor Specific Information: Len=18 <?>
->        Capabilities: [40] Power Management version 3
->                Flags: PMEClk- DSI- D1- D2- AuxCurrent=375mA
->                       PME(D0-,D1-,D2-,D3hot-,D3cold+)
->                Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
->        Kernel driver in use: mlx5_core
->        Kernel modules: mlx5_core
-> 
->> since boot:
->> $ dmesg
-> 
-> % devlink dev info
-> % dmesg | grep mlx5
-> [    4.739691] mlx5_core 0000:00:07.0: firmware version: 12.18.1000
-> [    4.740134] mlx5_core 0000:00:07.0: 63.008 Gb/s available PCIe
-> bandwidth (8.0GT/s PCIe x8 link)
-> [    7.048567] mlx5_core 0000:00:07.0: Port module event: module 0,
-> Cable plugged
-> [    7.211879] mlx5_core 0000:00:08.0: firmware version: 12.18.1000
-> [    7.212309] mlx5_core 0000:00:08.0: 63.008 Gb/s available PCIe
-> bandwidth (8.0GT/s PCIe x8 link)
-> [    7.897218] mlx5_core 0000:00:08.0: Port module event: module 1,
-> Cable plugged
-> [   10.875388] mlx5_core 0000:00:07.0 ibs7: renamed from ib0
-> [   10.995115] mlx5_core 0000:00:08.0 ibs8: renamed from ib0
-> [  181.471663] mlx5_core 0000:00:07.0: mlx5_fw_version_query:823:(pid
-> 918): fw query isn't supported by the FW
-> [  181.472286] mlx5_core 0000:00:08.0: mlx5_fw_version_query:823:(pid
-> 918): fw query isn't supported by the FW
-> 
+Thank you for an explanation and confirmation.
