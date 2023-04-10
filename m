@@ -2,252 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B896DCDB0
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 00:54:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69E336DCDB7
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 00:59:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbjDJWx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 18:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
+        id S229649AbjDJW7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 18:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbjDJWxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 18:53:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5861FED;
-        Mon, 10 Apr 2023 15:53:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCDA961F27;
-        Mon, 10 Apr 2023 22:53:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3013DC433EF;
-        Mon, 10 Apr 2023 22:53:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681167224;
-        bh=PBq6Pho8K6a+RvufYUks/PO6mSqnNledF7opKlNbT/U=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=Gfo+N7R09DMPn0NoZNP8fZjGZ9jzR/hYhy/qendafaMlbLU4UzE9tIsFpidGp2Jxd
-         3e1T1oTJYNkt4ZWvBKFNA8RHBK8PHtb+S7YoP+BxoFXHsZLWB/Seel0GwMEoDJ7S3E
-         fJctC1ib0kPRDW7xEgutKslxEjraWQw1OspbOt5bxUIY83gF6864llfXcgCVnbJLFj
-         OXARTmDtBnPn+73n/W5JkgC4jY0x9p9dR0hrIxipKK3MFt69WeiL8yETxEwBJVDSCw
-         mQXNqOG+t+iYwvTJ9LxsM9/HSoFMtAaHDom5jlQJIAe7q8s22m1quegL2mkivU3P+e
-         E/ZUI2LhJtTIA==
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id C2C931540478; Mon, 10 Apr 2023 15:53:43 -0700 (PDT)
-Date:   Mon, 10 Apr 2023 15:53:43 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linuxfoundation.org>, x86@kernel.org,
-        Wangyang Guo <wangyang.guo@intel.com>,
-        Arjan van De Ven <arjan@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Qiuxu Zhuo <qiuxu.zhuo@intel.com>
-Subject: Re: [patch V3 0/4] net, refcount: Address dst_entry reference count
- scalability issues
-Message-ID: <bf0816ba-4143-46fe-88b1-46010bc14117@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <20230323102649.764958589@linutronix.de>
+        with ESMTP id S229523AbjDJW7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 18:59:37 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2058.outbound.protection.outlook.com [40.107.243.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976361FC4
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 15:59:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VmCejKPuPTuYAosXFovzbsvLaETA2xsGTFOC4oBjeHymLYWCmU6zsf32qdTGizII4cfULIlRFlaf1OVawoWwcQbsxo5Q6mgQtv+9oTY9HnwxEJ+z5l94929DylvbYXHNoz7s00y6H8O0/BIFg7872rWWqLkY5Gzq+OihvKaiTzaPTVXLuyJx+c22SoaamB9+yqBmueO3ckB/LdgRNqXoAkZ19lS2OMxHQqtmmu7jptzKzh0g/plC8pU+X2taAZugfLrMKYAYqqGvGR7XSU6NclRWTIhsBbjAuWjUvMjjDFwtpRVi2avx9INE+nZzNXI9mBPPiKB4jCAQx4hUgjpadQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=x1SzAlGLck9gmkoF5JV3lAZHy8E7Rk4kEbuMygbWmLg=;
+ b=X89yeRBX1H6hAEaUbt9SFL45l7GwUl80jq7W7Z8tN0S6W0sf6WLe86Y4s+jDvQvWyK+ScidGclimtpz6mxNsZM1Uuq7VFd/+J6xjqDcHXNf5X2ZEe3DR/9QIBhULYCI9KoxQBpCm1JptAn7N9VOj7gZ/Pk14KyIoyPszOePtsb62u7yZ/MJ0jqb0tXdl9pNfswZbjBxHEuIqWI0E38ni/cWdpeeXaaIEGkFeMxHvCV4HRSevNQkVcmRd6fCH6yZBPlzCLk4sCRmDjMo141v5yZ26Ks6qDybBC5s4igRjUcNNTaZzY6Hcpp+uIy2DNf0WOBVt7qaIbz/FiucmKUcY3g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x1SzAlGLck9gmkoF5JV3lAZHy8E7Rk4kEbuMygbWmLg=;
+ b=M4fudrJ5XAajz1Es7y+XuDULMWT4n97xk+aH7X9KUJCn7gKv1s2e9HNXdCKZx/mHRnOKnoQW/sF+lJc3VeymqlV92JiFi1Uk0YLfkrcVAGDb8xcm99qtirBFDQUsaE3iskMbGztIaxJ3iGbiDnCK7cVmm550HyY/554NosZR6k8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
+ SJ1PR12MB6099.namprd12.prod.outlook.com (2603:10b6:a03:45e::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.36; Mon, 10 Apr
+ 2023 22:59:33 +0000
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::e786:9262:56b5:ca86]) by DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::e786:9262:56b5:ca86%6]) with mapi id 15.20.6277.034; Mon, 10 Apr 2023
+ 22:59:33 +0000
+Message-ID: <adc04ee0-4a75-71a5-ef67-a2851265e6e9@amd.com>
+Date:   Mon, 10 Apr 2023 15:59:30 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.9.0
+Subject: Re: [PATCH v9 net-next 07/14] pds_core: add FW update feature to
+ devlink
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
+        kuba@kernel.org, drivers@pensando.io, leon@kernel.org,
+        jiri@resnulli.us
+References: <20230406234143.11318-1-shannon.nelson@amd.com>
+ <20230406234143.11318-8-shannon.nelson@amd.com>
+ <ZDQuxBlfH5foSEFA@corigine.com>
+From:   Shannon Nelson <shannon.nelson@amd.com>
+In-Reply-To: <ZDQuxBlfH5foSEFA@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY5PR17CA0067.namprd17.prod.outlook.com
+ (2603:10b6:a03:167::44) To DS0PR12MB6583.namprd12.prod.outlook.com
+ (2603:10b6:8:d1::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230323102649.764958589@linutronix.de>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|SJ1PR12MB6099:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2da4c52e-c1d4-41c0-fbea-08db3a173fd3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6MXduDEx3fPwNSQLZ2ezxIpkCTnnJb/AZSV27EQGhnh+FJne/ebjwKgk5r2mjqC2Q1Lu7a/GRnuWPigv5uVN2bcwAkT9Q7MzO2IsyD9gN8FQDsGARycH5wSrn91LZeLYBrXA3er98tXFcqcuV5NDMHP6WeFwo6Fub81WBrWzQNLXYhwd2tjZBPY4L3kqWtXrwcgX/H8+lXxiHfLG35YURn2ns7R1P8LAkRyTP+8BMAxAD31xKqhi7rpOVtVzBnWrr34DBfL0KosbIOaFW4HSOBwzxLsnQ1bPJ+dOh4/BKE2WO5jhLnYgxL47ulvoNu+hFV0qo3JU1y8c8xHTG0S9Da3FAvzLcICLh+/bWxNVEtaDoPeW11EqvsoBNYF8NE/jfwN0gY6Rv2qzQn2vzgL7L4hrI4/5sb1aPPwHkPhtImgswuGP/VyJZf2Ueki6pB6o8fIkppSoxv5CRnNrPigEH9+bNz9JMYxcBtsDQ5H0dbMyeEidejtV1sWhyRIywAAAAS2H7244fWsWEp/cuS0dJdQR0XuaT2p6v4b5KA16ijf7/ilvZwZcBiL4dq1IyhA6XMCHGPZ7AAZXfGq0XgTE8Sy7MXWUGuOzZRw/oioeHs/DfxsWVMzvzmp9eFzDTefr
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(376002)(396003)(346002)(136003)(451199021)(316002)(478600001)(83380400001)(2616005)(186003)(36756003)(26005)(6506007)(6512007)(53546011)(38100700002)(31696002)(86362001)(6486002)(966005)(41300700001)(66476007)(66556008)(8676002)(4326008)(6916009)(66946007)(15650500001)(5660300002)(2906002)(31686004)(44832011)(8936002)(66899021)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WEhha0xqb1B3RGFZVlo5aE1pTXZibEVQTlhXd3JuYkxXbm40UGM5a3o0dUxW?=
+ =?utf-8?B?Z3VoTFRJUW9jY3NqWG1JVTE0bG9vTzBudjdIRGJUcm81SDJ3K3VhOSsxY2ZF?=
+ =?utf-8?B?eU9TZDdvb21OeU9XZGZwRXJBZk5yR013cG55VzY5bXpnL3NJRDVTeG1Ic2or?=
+ =?utf-8?B?b3RUaE51aS9rSkpDK2RKZUxZeEFnOXVpTHNXTW9SS053OHhSdXMxaUpkUTUz?=
+ =?utf-8?B?VG5nekRpL0FjYzFGcUNZdFp4SFpWYlZlNHh6a1h3SHdXYXZ5MXlYTEJFQk1J?=
+ =?utf-8?B?ZWh6ZEZOeTl6bkhzL0JxalRDVWJnNmg5RlZzS0Fxc2E5cWFwZ2ovaDJiZS9N?=
+ =?utf-8?B?YWxORDE2UTBGWmZrVHIxczJxdFBGL0NrMitPNXd6TGFENmRJZ0prbmhSYkNS?=
+ =?utf-8?B?SU9qdmtqZ3hYSGlhbGJaRGhzdVdSWVRDbmdrZ0xTSnFjN1ppSG9KamJMaUcy?=
+ =?utf-8?B?dytWQUJFM3drMHpoRXJOL1VybWRtTVhNNUpSYklpZkd6YjFSbWk0RVc2L05a?=
+ =?utf-8?B?VlNqRW8zM2JlMW5MbFZMWENnSDEyajM0OGdIbkpERUd5SnJjSlpWNEdOd25t?=
+ =?utf-8?B?Lzk3VCtxUUxTUlpLUEUwd2hxdXRKVXBWRW9UL2VuN0FtNFd5NVBBU1crZ0tk?=
+ =?utf-8?B?cUtGblNaVVg4eXdiYlJaVENtUVQvMlFiaHovWW96bERWQS8zbzJxeVNuSXM5?=
+ =?utf-8?B?Y3hXTjVKTUJGNXVReUcxRko0Zm90NmZLQU52RGhOdjhzUXRjQzRxSEVydk8r?=
+ =?utf-8?B?ZFM3WjZLckUzbWNBVXo1ZEF2OFJIeE1UbmlZQjVpNFpFT04rcXIxdVg1V1Nv?=
+ =?utf-8?B?MFJhTzV4K3hmOU91RjdMQm5qMGp3MHF4YUZJenk0OGR6ZGRpSkx0YlJuazZX?=
+ =?utf-8?B?RGk2WmtzVU94WE1GKzRwTlMwOUtaNDAwN2MwbjIvbUlJaWFNNFVzcjQ2QVVW?=
+ =?utf-8?B?T3JEVW1FUlQ1VEhyZDVQNGNiVmU2MUlJc1VwMFNiR2RQTHRXU0dwMnFxUmhK?=
+ =?utf-8?B?cHFiVHo5Y1YwRUVyK2d3OFV0S0lsVWdCciticC9SWnpJK1M4TlNyQ290UlQ4?=
+ =?utf-8?B?V2JwRFNLc1M4cUIvM0x1RklYYmd6djdXb1pWSEtYVGQ4clpPQlFRMWN4cElo?=
+ =?utf-8?B?L2RZZ1JleUl6Yi9WQVNPdi9xOStsYjEyMnVjRDd6UXp4MnVZNVVENlRTY0ZJ?=
+ =?utf-8?B?anAvc0hFVTkzLzV3VG9yVGdzL2EyN3BHZ3orSnpaRmRmWUNFRDdTb2VnQWZU?=
+ =?utf-8?B?cWxTR3pXeUZrQnlnakRRNkc4dk5wTnFTQ3lZSHhCMk1sMyt0ODdKZnN1RGx1?=
+ =?utf-8?B?RUwvWUZTZFBtZHJLSytXYUkxdE10WmZoVnRmSXNmSlNpc3hBT1BYK0EyTDVj?=
+ =?utf-8?B?R2tJcC95cUJUbk1ONmRiSUMwU1AvRkdrU3lMTnhCUnFGLzE1Ry9XeG1tMlhC?=
+ =?utf-8?B?eFlxTWNLNTRPelFlUlZFM0tqd0dKZXFkT09ObUh4VGZiMlVvUlNCdnNxV2ps?=
+ =?utf-8?B?WTBrYXVDU0o3YVB3eGRKV0pxTmdrdTJ3RkFZd3lQRTAySWhld3JoRnpuYW13?=
+ =?utf-8?B?R1hUNjJESnQrWU5kT09uRFJFZU5JVXhIZ2h1WVlRS0tJT2tHTXUwN25mYlc4?=
+ =?utf-8?B?UEMzTnlhWXRHRDk2VzRORHdQOUVvN1VBSSs4T3BtdWNXcjV2SXVJS1RYRWhm?=
+ =?utf-8?B?UTJCbXVBMXFid0taSXYwSUN4WWxTVDBzUlFVNVIxZ3ozUDFKY1BQa25DaGNB?=
+ =?utf-8?B?K0xETDNQWnR0SnRXSnFtZ25QUGhUOEFkT0lZRVA1UmdmemZDVit2NFhYczN1?=
+ =?utf-8?B?Y3RBRDd1d21VNjBJc0hXeC9nbUtwclp4WHRZYzdLVUFRaWp0aXVjVmFxWUE5?=
+ =?utf-8?B?YmJPdlRkRDBRT2ZEdnNFci90SmdIa1JvK3JuQkhNcno4NmFNRnA4V3Y0Tlpw?=
+ =?utf-8?B?V283R2lkYmFiOGUrdldUV2ZvM0lsQXp2djN6WXpNWmtFeEFZT05lREV4a2lv?=
+ =?utf-8?B?MFhPcExqNHZ1NW9WNjdQQzRmYkhTVFF1cnFsQ1ZtZGFQYUF0aGd2S2xlN3hK?=
+ =?utf-8?B?TXUzZkJHdmFtcXR1OGFTMnl3KzFxTUNvenBVaXBVbHpPamplOUlmUkMzSDhl?=
+ =?utf-8?Q?h1DOFxtZGFoAmLfyLV9xT243D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2da4c52e-c1d4-41c0-fbea-08db3a173fd3
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 22:59:33.4287
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hbMMIMi+xEDBZCXo64OTVnCM3qbJ02mvcah+ILc2H7GcZ6Mv0tqvLZACqiEVNNt+Vig+52zWOkol/YEMz3T0OQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6099
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 09:55:27PM +0100, Thomas Gleixner wrote:
-> Hi!
+On 4/10/23 8:44 AM, Simon Horman wrote:
 > 
-> This is version 3 of this series. Version 2 can be found here:
+> On Thu, Apr 06, 2023 at 04:41:36PM -0700, Shannon Nelson wrote:
+>> Add in the support for doing firmware updates.  Of the two
+>> main banks available, a and b, this updates the one not in
+>> use and then selects it for the next boot.
+>>
+>> Example:
+>>      devlink dev flash pci/0000:b2:00.0 \
+>>            file pensando/dsc_fw_1.63.0-22.tar
+>>
+>> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 > 
->      https://lore.kernel.org/lkml/20230307125358.772287565@linutronix.de
+> Hi Shannon,
 > 
-> Wangyang and Arjan reported a bottleneck in the networking code related to
-> struct dst_entry::__refcnt. Performance tanks massively when concurrency on
-> a dst_entry increases.
-> 
-> This happens when there are a large amount of connections to or from the
-> same IP address. The memtier benchmark when run on the same host as
-> memcached amplifies this massively. But even over real network connections
-> this issue can be observed at an obviously smaller scale (due to the
-> network bandwith limitations in my setup, i.e. 1Gb). How to reproduce:
-> 
->   Run memcached with -t $N and memtier_benchmark with -t $M and --ratio=1:100
->   on the same machine. localhost connections amplify the problem.
-> 
->   Start with the defaults for $N and $M and increase them. Depending on
->   your machine this will tank at some point. But even in reasonably small
->   $N, $M scenarios the refcount operations and the resulting false sharing
->   fallout becomes visible in perf top. At some point it becomes the
->   dominating issue.
-> 
-> There are two factors which make this reference count a scalability issue:
-> 
->    1) False sharing
-> 
->       dst_entry:__refcnt is located at offset 64 of dst_entry, which puts
->       it into a seperate cacheline vs. the read mostly members located at
->       the beginning of the struct.
-> 
->       That prevents false sharing vs. the struct members in the first 64
->       bytes of the structure, but there is also
-> 
->       	    dst_entry::lwtstate
-> 
->       which is located after the reference count and in the same cache
->       line. This member is read after a reference count has been acquired.
-> 
->       The other problem is struct rtable, which embeds a struct dst_entry
->       at offset 0. struct dst_entry has a size of 112 bytes, which means
->       that the struct members of rtable which follow the dst member share
->       the same cache line as dst_entry::__refcnt. Especially
-> 
->       	  rtable::rt_genid
-> 
->       is also read by the contexts which have a reference count acquired
->       already.
-> 
->       When dst_entry:__refcnt is incremented or decremented via an atomic
->       operation these read accesses stall and contribute to the performance
->       problem.
-> 
->    2) atomic_inc_not_zero()
-> 
->       A reference on dst_entry:__refcnt is acquired via
->       atomic_inc_not_zero() and released via atomic_dec_return().
-> 
->       atomic_inc_not_zero() is implemted via a atomic_try_cmpxchg() loop,
->       which exposes O(N^2) behaviour under contention with N concurrent
->       operations. Contention scalability is degrading with even a small
->       amount of contenders and gets worse from there.
-> 
->       Lightweight instrumentation exposed an average of 8!! retry loops per
->       atomic_inc_not_zero() invocation in a inc()/dec() loop running
->       concurrently on 112 CPUs.
+> some minor feedback from my side.
 
-Huh.  8 is pretty bad, 8! far worse, but 8!!?  3.4e168186???
+Thanks, I'll take care of these.
+sln
 
-(Sorry, couldn't resist...)
 
->       There is nothing which can be done to make atomic_inc_not_zero() more
->       scalable.
 > 
-> The following series addresses these issues:
+> ...
 > 
->     1) Reorder and pad struct dst_entry to prevent the false sharing.
+>> diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
+>> index 265d948a8c02..6faf46390f5f 100644
+>> --- a/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
+>> +++ b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
+>> @@ -73,6 +73,16 @@ The ``pds_core`` driver reports the following versions
+>>        - fixed
+>>        - The revision of the ASIC for this device
+>>
+>> +Firmware Management
+>> +===================
+>> +
+>> +The ``flash`` command can update a the DSC firmware.  The downloaded firmware
+>> +will be saved into either of firmware bank 1 or bank 2, whichever is not
+>> +currrently in use, and that bank will used for the next boot::
 > 
->     2) Implement and use a reference count implementation which avoids the
->        atomic_inc_not_zero() problem.
-> 
->        It is slightly less performant in the case of the final 0 -> -1
->        transition, but the deconstruction of these objects is a low
->        frequency event. get()/put() pairs are in the hotpath and that's
->        what this implementation optimizes for.
-> 
->        The algorithm of this reference count is only suitable for RCU
->        managed objects. Therefore it cannot replace the refcount_t
->        algorithm, which is also based on atomic_inc_not_zero(), due to a
->        subtle race condition related to the 0 -> -1 transition and the final
->        verdict to mark the reference count dead. See details in patch 2/3.
-> 
->        It might be just my lack of imagination which declares this to be
->        impossible and I'd be happy to be proven wrong.
+> nit: s/currrently/currently/
 
-It is possible to make something like rcuref_get that does only a
-READ_ONCE(), WRITE_ONCE() to storage local to the task, smp_mb(),
-READ_ONCE() and compare in the common case.  There would be something
-like rcuref_put() that did an smp_store_release() to the same storage
-local to the task.
 
-Of course, there is always a catch, and here there are several:
 
-1.	Instead of just returning a pointer to a struct dst_entry,
-	sk_dst_get() would need to hand back both that pointer along
-	with a pointer to the aforementioned storage local to the task.
-
-2.	A generally useful implementation would require the counterpart
-	to rcuref_get() to sometimes allocate memory.  Failure to allocate
-	memory would imply failure to gain a reference.
-
-3.	The structure would not need to be RCU-freed, but it still
-	would need to be freed specially.  (All of the non-NULL
-	locations in all the storage local to the tasks needs to be
-	checked, but batching optimizations work well here.)
-
-4.	The smp_mb() compares well to the atomic_add_negative_relaxed(),
-	but getting rid of that smp_mb() either adds more RCU-like delays
-	on the free path on the one hand, or requires IPIs on the free
-	path on the other.
-
-5.	The aforementioned storage local to the task could instead be
-	local to the CPU, but at the expense of some put-side cache
-	misses and possible false sharing in the case where rcuref_get()
-	runs on one CPU and rcuref_put() runs on another.  Of course,
-	the current rcuref_put() gets that already due to the use of
-	atomic_add_negative_release() on shared memory, so perhaps not
-	a big deal.
-
-Not sure it is worth it, but you did ask!
-
-If this does turn out to be an attractive option, please let me know.
-
-							Thanx, Paul
-
->        As a bonus the new rcuref implementation provides underflow/overflow
->        detection and mitigation while being performance wise on par with
->        open coded atomic_inc_not_zero() / atomic_dec_return() pairs even in
->        the non-contended case.
 > 
-> The combination of these two changes results in performance gains in micro
-> benchmarks and also localhost and networked memtier benchmarks talking to
-> memcached. It's hard to quantify the benchmark results as they depend
-> heavily on the micro-architecture and the number of concurrent operations.
+> ...
 > 
-> The overall gain of both changes for localhost memtier ranges from 1.2X to
-> 3.2X and from +2% to %5% range for networked operations on a 1Gb connection.
+>> diff --git a/drivers/net/ethernet/amd/pds_core/fw.c b/drivers/net/ethernet/amd/pds_core/fw.c
 > 
-> A micro benchmark which enforces maximized concurrency shows a gain between
-> 1.2X and 4.7X!!!
+> ...
 > 
-> Obviously this is focussed on a particular problem and therefore needs to
-> be discussed in detail. It also requires wider testing outside of the cases
-> which this is focussed on.
+>> +int pdsc_firmware_update(struct pdsc *pdsc, const struct firmware *fw,
+>> +                      struct netlink_ext_ack *extack)
+>> +{
+>> +     u32 buf_sz, copy_sz, offset;
+>> +     struct devlink *dl;
+>> +     int next_interval;
+>> +     u64 data_addr;
+>> +     int err = 0;
+>> +     u8 fw_slot;
+>> +
+>> +     dev_info(pdsc->dev, "Installing firmware\n");
+>> +
+>> +     dl = priv_to_devlink(pdsc);
+>> +     devlink_flash_update_status_notify(dl, "Preparing to flash",
+>> +                                        NULL, 0, 0);
+>> +
+>> +     buf_sz = sizeof(pdsc->cmd_regs->data);
+>> +
+>> +     dev_dbg(pdsc->dev,
+>> +             "downloading firmware - size %d part_sz %d nparts %lu\n",
+>> +             (int)fw->size, buf_sz, DIV_ROUND_UP(fw->size, buf_sz));
+>> +
+>> +     offset = 0;
+>> +     next_interval = 0;
+>> +     data_addr = offsetof(struct pds_core_dev_cmd_regs, data);
+>> +     while (offset < fw->size) {
+>> +             if (offset >= next_interval) {
+>> +                     devlink_flash_update_status_notify(dl, "Downloading",
+>> +                                                        NULL, offset,
+>> +                                                        fw->size);
+>> +                     next_interval = offset +
+>> +                                     (fw->size / PDSC_FW_INTERVAL_FRACTION);
+>> +             }
+>> +
+>> +             copy_sz = min_t(unsigned int, buf_sz, fw->size - offset);
+>> +             mutex_lock(&pdsc->devcmd_lock);
+>> +             memcpy_toio(&pdsc->cmd_regs->data, fw->data + offset, copy_sz);
+>> +             err = pdsc_devcmd_fw_download_locked(pdsc, data_addr,
+>> +                                                  offset, copy_sz);
+>> +             mutex_unlock(&pdsc->devcmd_lock);
+>> +             if (err) {
+>> +                     dev_err(pdsc->dev,
+>> +                             "download failed offset 0x%x addr 0x%llx len 0x%x: %pe\n",
+>> +                             offset, data_addr, copy_sz, ERR_PTR(err));
+>> +                     NL_SET_ERR_MSG_MOD(extack, "Segment download failed");
+>> +                     goto err_out;
+>> +             }
+>> +             offset += copy_sz;
+>> +     }
+>> +     devlink_flash_update_status_notify(dl, "Downloading", NULL,
+>> +                                        fw->size, fw->size);
+>> +
+>> +     devlink_flash_update_timeout_notify(dl, "Installing", NULL,
+>> +                                         PDSC_FW_INSTALL_TIMEOUT);
+>> +
+>> +     fw_slot = pdsc_devcmd_fw_install(pdsc);
+>> +     if (fw_slot < 0) {
 > 
-> Though the false sharing issue is obvious and should be addressed
-> independent of the more focussed reference count changes.
+> The type of fs_slot is u8.
+> But the return type of pdsc_devcmd_fw_install is int,
+> (I think) it can return negative error values,
+> and that case is checked on the line above.
 > 
-> The series is also available from git:
+> Perhaps the type of fw_slot should be int?
 > 
->   git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git rcuref
+> Flagged by Coccinelle as:
 > 
-> Changes vs. V2:
+> drivers/net/ethernet/amd/pds_core/fw.c:154:5-12: WARNING: Unsigned expression compared with zero: fw_slot < 0
 > 
->   - Rename __refcnt to __rcuref (Linus)
+> And Smatch as:
 > 
->   - Fix comments and changelogs (Mark, Qiuxu)
+> drivers/net/ethernet/amd/pds_core/fw.c:154 pdsc_firmware_update() warn: impossible condition '(fw_slot < 0) => (0-255 < 0)'
 > 
->   - Fixup kernel doc of generated atomic_add_negative() variants
+>> +             err = fw_slot;
+>> +             dev_err(pdsc->dev, "install failed: %pe\n", ERR_PTR(err));
+>> +             NL_SET_ERR_MSG_MOD(extack, "Failed to start firmware install");
+>> +             goto err_out;
+>> +     }
 > 
-> I want to say thanks to Wangyang who analyzed the issue and provided the
-> initial fix for the false sharing problem. Further thanks go to Arjan
-> Peter, Marc, Will and Borislav for valuable input and providing test
-> results on machines which I do not have access to, and to Linus and
-> Eric, Qiuxu and Mark for helpful feedback.
+> ...
 > 
-> Thanks,
-> 
-> 	tglx
-> 
+> --
+> You received this message because you are subscribed to the Google Groups "Pensando Drivers" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to drivers+unsubscribe@pensando.io.
+> To view this discussion on the web visit https://groups.google.com/a/pensando.io/d/msgid/drivers/ZDQuxBlfH5foSEFA%40corigine.com.
