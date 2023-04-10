@@ -2,120 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 922C26DCA95
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 20:16:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E23D06DCAE3
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 20:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbjDJSQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 14:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
+        id S229854AbjDJSla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 14:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbjDJSQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 14:16:12 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2053.outbound.protection.outlook.com [40.107.237.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90481BD6
-        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 11:16:10 -0700 (PDT)
+        with ESMTP id S229645AbjDJSl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 14:41:29 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2079.outbound.protection.outlook.com [40.107.220.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204B2E63
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 11:41:28 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZTABCbFAJ2yA4haljPIVTPWhSTCGGm4DDmW5QfefiB19SrzRAfHCAcuRBw8ifumsAT9n8bdOWV0kTPXRpihpBYMaRvot8nONXrAqUe3i8f237zW8FVRl0oju73r+u+CB2jbupQQKByXdrVXD1nEmEaCgjC/ViU9Y/DpPm9X1orkBkfuIOrQf5sxAFXQX2EQ19pZxNpnri0b/zgClemJQih/wOFNhPElSOSVlv/nmNMtofw46+/g70/ftubh81mItm45CkmoFStG2XCsSLB41fd5B2yR7joMbpfJOePJWbe/ceql5qoo/23oa043hrMh/y8iBmxLly9jITp4fzhsklQ==
+ b=bO8ErRzaXpdNqKY8l6e4FA7d7MQmJPPsM2IKnPVncgkgaZQ7neJ3ccj7JNCMDTlaODkVlJWQFJBMAnxXV1ZhSwcO0hrbMHM/ZN1pOYZD8r74o680JctBuqmsQt+kuOQpVl7N/Jgf4t00ahrrUl02P+UGeQcwsYzLeuEeu6noW32JXdgRnLNy9psdtwqLkcBd1QFn+WJpTSuFRoPuc3LbHcAuw9STznP9D5O9C6H2oAbWi7nNqpe2709iuP3aax4ChMTO6Af4303dPskTTIfrkshFQpH+pJv/W4zn8ZQ0OWN3oKx/xiQcazbm5uAM50F/pdIunkcfbVb7mmIlUU7THA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t7pFBFXN63EYxyJxw9vQLCYd8MKBqsHl8XnMcN2JSvU=;
- b=lg92X7R14nxjWlb+YoPhYXQrPXWZXSwrNb0pN3+w3XdBAxEns6gVZX05DhStDCXb1a1FjTwn8o+RS+f3c5Oc8GPw5R2AYiYecAtNeGa6ACX/hYOJXEYohkFCtUvLQHzQqKPKkSnbCq4N/bL1JyQFjR5wTr9WWmsaq0XgRman7vV107q2F/myN4Ta68ih6uXbJz/N2M5l/XTbICuKWkQLpcmwp9Dfx/8PFBD6ogBG5irNV70ciyMTNwz2MA7gNqVCicPJuXI/ZdOMPu01NdJ1on+kcnR1z6h7coY5rOZjbL5DVP4oS39xsLqtonEH30JpCuEGYBisL2azWJOd5+fJxw==
+ bh=Br2FR0Jj53YZQZfRNOCAus9nqbXg38tPBQMFxJZvybQ=;
+ b=HS0TC1lxFCtl/4Slw02Swf1nCHRyx0rzYFhQ6L2vlMHKGlGAo6WDphp5qNMPmPKRH6Atu/gkx/WiTeGrzHPB/5205WEh9zEhqB9X0C0MAHXMjwk9UEPEeHKhTgZHUQZvckDrnfsLKjb0gecTS4WDz7Wx/lCG5YeQQysclQedn2DJgoftzbdgDsyEZXxvHjC+CM+BR0xwkPPdWd3wMUDir8Cv5aQwe2lPRUMhQrMFi8xeFdnPC7EqP2Kuu3fYW1foEzaM7lY5DHkQMRpwu8NCzqPVyn/hCEqRW+odYdBFRGxxRidBqp20422v3+jRhkABgRWtm4EbU6pUhawFUlrZ0w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t7pFBFXN63EYxyJxw9vQLCYd8MKBqsHl8XnMcN2JSvU=;
- b=uuu5pjf1lJbKfEtjXFV0ywzk0JP9X6fD5Z7I4ukyi9IpACrArXukzjCkzXjfVbKYn4D2W7tTQyvRHTemYv1WS0MdNw+svpbooLsmYGjxQDpEVpVGQeTurbOmc/GrzDJCBnGVacxTatHaPYOLT5vh2WzhmEXSO0DPigYLhjfGmmg=
+ bh=Br2FR0Jj53YZQZfRNOCAus9nqbXg38tPBQMFxJZvybQ=;
+ b=hRfL2lo/yo4irL4yEgE8qC1ExXiR6h3cvzL8eLsaQyWqZWfjUKflr5ZBQ5nmcg3ONQmN0Mj3OwgFXikjEst5TjrPwdpQgdT4k1JpfV7Db4T1h/Gc3ciFeF+zexxJyp6VES53EVwUu/E9bTfkHx35XnbuRtzyaF691GdIvHAoL9c=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH0PR12MB7982.namprd12.prod.outlook.com (2603:10b6:510:28d::5)
- by SA1PR12MB8095.namprd12.prod.outlook.com (2603:10b6:806:33f::19) with
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
+ SN7PR12MB8435.namprd12.prod.outlook.com (2603:10b6:806:2e2::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.31; Mon, 10 Apr
- 2023 18:16:07 +0000
-Received: from PH0PR12MB7982.namprd12.prod.outlook.com
- ([fe80::e19e:fb58:51b2:447f]) by PH0PR12MB7982.namprd12.prod.outlook.com
- ([fe80::e19e:fb58:51b2:447f%6]) with mapi id 15.20.6277.035; Mon, 10 Apr 2023
- 18:16:06 +0000
-Message-ID: <bd48d23b-093c-c6d4-86f1-677c2a0ab03c@amd.com>
-Date:   Mon, 10 Apr 2023 11:16:03 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH net] ionic: Fix allocation of q/cq info structures from
- device local node
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Mon, 10 Apr
+ 2023 18:41:25 +0000
+Received: from DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::e786:9262:56b5:ca86]) by DS0PR12MB6583.namprd12.prod.outlook.com
+ ([fe80::e786:9262:56b5:ca86%6]) with mapi id 15.20.6277.034; Mon, 10 Apr 2023
+ 18:41:25 +0000
+Message-ID: <d2d0b09d-4c16-ccf6-2cc5-00f371db0c58@amd.com>
+Date:   Mon, 10 Apr 2023 11:41:22 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.9.0
+Subject: Re: [PATCH v9 net-next 01/14] pds_core: initial framework for
+ pds_core PF driver
 Content-Language: en-US
-To:     Leon Romanovsky <leon@kernel.org>,
-        Brett Creeley <brett.creeley@amd.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        drivers@pensando.io, shannon.nelson@amd.com, neel.patel@amd.com
-References: <20230407233645.35561-1-brett.creeley@amd.com>
- <20230409105242.GR14869@unreal>
-From:   Brett Creeley <bcreeley@amd.com>
-In-Reply-To: <20230409105242.GR14869@unreal>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
+        kuba@kernel.org, drivers@pensando.io, jiri@resnulli.us
+References: <20230406234143.11318-1-shannon.nelson@amd.com>
+ <20230406234143.11318-2-shannon.nelson@amd.com>
+ <20230409112645.GS14869@unreal>
+From:   Shannon Nelson <shannon.nelson@amd.com>
+In-Reply-To: <20230409112645.GS14869@unreal>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR07CA0055.namprd07.prod.outlook.com
- (2603:10b6:a03:60::32) To PH0PR12MB7982.namprd12.prod.outlook.com
- (2603:10b6:510:28d::5)
+X-ClientProxiedBy: BYAPR07CA0083.namprd07.prod.outlook.com
+ (2603:10b6:a03:12b::24) To DS0PR12MB6583.namprd12.prod.outlook.com
+ (2603:10b6:8:d1::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR12MB7982:EE_|SA1PR12MB8095:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4533188f-16ea-4a23-f223-08db39efa6e8
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|SN7PR12MB8435:EE_
+X-MS-Office365-Filtering-Correlation-Id: e1d6c433-3ab3-4245-1df9-08db39f33053
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Td0fNtcgkvZ9sJSj7EG90BYefr3LfIwUGH3Wy/Pmr3aawOdaeua2ulxfdcYm0uzy6HgH2GgtlLV3LPScR3IGLuGikgcE7UjkWTDc2XkLvY7fsxATwIzHuMTglq4B4MYQN8foOwMDC4rIonN2bfrO3aK1wp+mihbdw8ru5JjxihzNqD+d0tp0moz4qUChQJS20p8kivrchhPB9ek7jPUW3G9KFjisJSaobLlTZ/5nVDtM9kHSboiY+Y3XAUM7FjGMz09RDXRrSL7e5gYqQLvGJEmAlps2B1ty7aZD1TG5AUrV7Ga75Amb/4slV+YfV8BI+eBzgdyh6x9xsSDzztNpVAHOqIdz0rlecnnhkW3vcTCCJShVHQZY3CGPhCsJAONC3FC32gt2x05K4JwdikklPAWeu66NRxxqbuVobzdlJHbVwPc6mpv3gy8Q07kSIahgvIY5HzFvxLiGxM/dncQRJNpirUdSVwrlO1+UpP8hRbcMTEBUkaaTUcWFpxSFqVtNbgxXNiiqcxehBiJx4v2PNkYC+U9LxOs4inEzM7hsrfYitIGwDQ+qsEd9UlAICxuHLJ6pmi2WYdv37dX/4Fee+jop6CsEg+tozrA+wV7WWluBKmizQXUL5EJuNZFcQrVYxnVSrggo05CQr6IDaXJweQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB7982.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(346002)(376002)(136003)(396003)(451199021)(36756003)(31696002)(83380400001)(41300700001)(110136005)(66946007)(316002)(6636002)(4326008)(66476007)(6486002)(8676002)(66556008)(478600001)(5660300002)(2906002)(38100700002)(8936002)(186003)(53546011)(6512007)(6506007)(26005)(2616005)(6666004)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: V8rcLhZAnnl8wmTaijqcUuKix71Ph1LNQmG+XVEHBfuvltuE+BO3TMm0n9rqij7FjcdjP5h7xON3T9lfh5gADGaNI/qKY8eUa6SEV25sCe4adUcW4ypfEn39QhDpt8SavMXY8uuP9hAzT+p67OYTaewCUQPnVgefdnWYXNCLI1ApO3UzLdW0ZFRYJlfkNlJAXUi9r9xt91Gx4bx6omyrmRvi9lRJ3lzbx7jf9KtYzBD+TvjjoRD1XDpg2k661ma8w0HpRbYdrFTTKk2pcm2ULSumPW46oKWVK+y8dLB42ji10+FMGFCImf/n/y1cfxwu8ucdTJ1tmOdmHzTDZzLFw601I1ohSQbdx0sI9+I75mjhWFeRdi7szJEUQYJm2bxnOUxapS9TUbDWYtZN0u938sb4cWpweUbdErozE6yhp+DOIrUtMQNJ5lMTWE5Xs+M8IXtyUxXKWZP118tCaemW4iPfP7ho6bR+oaf1locU8+F+zyDMCS0oeIbiftD9O0vvleXrRoHrqGOGFNXujhcpyroysXMd5yfpzqaPLzhc3ehxfhxtvtL3ZGTq4jeplUOLbkwKZdsX1+lPqiqtE+LN2IlakdIItet2rvneWL5Yq+quVKSamI6So2gul/WpNtxvMuKp2UUV8vKaKqTURj4qBA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(136003)(366004)(376002)(451199021)(2616005)(478600001)(6512007)(26005)(6506007)(6666004)(6486002)(41300700001)(316002)(66476007)(66556008)(4326008)(6916009)(53546011)(186003)(66946007)(31686004)(38100700002)(2906002)(5660300002)(44832011)(36756003)(31696002)(86362001)(8936002)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TC9HKzhyRC9xT3dNa0I0VlhldVF5bmVtTG82bXk2dkpVOE1GbmExSUx2L2Vo?=
- =?utf-8?B?cUJQWVVsTWNjUzYzZTZpWmJOUnB0N0pWR2RTRVBUdWdVbGdYTm1lc0hYbmJr?=
- =?utf-8?B?QkxTUmtXQkYzeXNDOTBYKzRKKzRwYUZoeXZtZmlLVWlLSXB3ajFGTHJlZVJr?=
- =?utf-8?B?ZzZsVE5Uc1B0eEpoQVJPenRROU1YdEtURFNTUkl4VnZEaTZDT1EyUWJXVjdS?=
- =?utf-8?B?WWpHa3dyOUJ2WldiRVNYMStEUjZoSG1oZzhZZ3hMUVhiV3R1Vy85V0M1YVNx?=
- =?utf-8?B?MlJsNDRMMlRzSmx0eVRxelBySnpxYUpCbEtvRU1ZVCt2YUgzZUdOU3hJaXM3?=
- =?utf-8?B?WDdXOE0wN3RpMzhNQ2ZjYUtwYVRXKzgwWUZnL3NZcG1WS3FCRHpoMXFOSU5o?=
- =?utf-8?B?eUFrcEN1QjhhUGpHRWJpczJ1eWVKcU9pUzU5WEZJd09xV29RQjl1akd5Q3RE?=
- =?utf-8?B?cTR4VFI3WCtJVlNQa2swRWFmTW9sa2NEZngxRSs4bUJwNlZwUkkzRDNRdVJR?=
- =?utf-8?B?WXBMcnBZT1VLZGEvcngxUHBaMXdoVXlLUVg0cUtMbnlUZkhKWXd2UERjZzVP?=
- =?utf-8?B?Q3l2TDJNci9mOUlLNzYyMG1UZlg0cnZ6UUtOb3UrNmVBR0s0blFKRjQ2T0NH?=
- =?utf-8?B?MEtoaVZPb0FsbzcvaXhvaXJXQVlRVTl4SnlWMVNwM29td0x2cFRvWmtxT2l3?=
- =?utf-8?B?K0MrM1ZUUVBZMkdsWlJrSG9jTnRYOWZjcEtrcUpJZWxaaUhaT1JUelg2bWZP?=
- =?utf-8?B?dzhDOHYxakU2SFFpWHhGWXlaMkFsQmtNelR4elJIcTYxbzVxZEdoeGhmUFBk?=
- =?utf-8?B?dWxWeFo0V0Y4bFZIT1FWODJPWjZNN014U2g4eko1Rm90cU5nZXR1cEpMUVdX?=
- =?utf-8?B?UEJsbWpvU00ybi9xODBrZHF2aUN0OU1RL25teUJQVU9FaDdTdUFqcDNXdHhG?=
- =?utf-8?B?N2kvaVhZakp5dS8wbUc4UWRmSmFIN2FEbVdqY013L2ZNY1hNV2p6TEVGNUh1?=
- =?utf-8?B?KzdHU053VUg2eWxhMkg3dWo1ZGsxcnZYd29WYnRNVjNlUDU4QVRjeEUxd2hh?=
- =?utf-8?B?OWNESElWT1c0Y0h3ZkZIODFtdjBGT1ZHK0FEUEt5eXJXYlRSMFJ0L3dzK0k2?=
- =?utf-8?B?aDJrV1ExUERvUVJnWjRlNGluTVhFK1poWGpFODRLdk9WRVVxTDNMenQ1a08r?=
- =?utf-8?B?WFNCWW0yU09NTTRMSEcwbVRsZ2NuclgvZUpqTHlkbGNVVmhKdFV3MFpldCtG?=
- =?utf-8?B?YlhIVWlkNjhzeXBtdUdxRDRHNUFXV0orU3pocXhudTl6elA0aDdxUlo3M1dz?=
- =?utf-8?B?ejE3M2R3NVBGQ2VHVmR3Q1NIM3k2cFdmaDdvalhUOHRtWEdWQlBhYzQzdmwr?=
- =?utf-8?B?YzZQT3FQdTB2ZlcxWnQyM1I5UTlGQXBBcFBLZkJVOUkrUDNjd0Vsb0NPN3pY?=
- =?utf-8?B?dUVSNXNDYzJheERrWVVta3VKSDRSK2hONWJDMUNyeWlFZHFIL01nQ3poT3g1?=
- =?utf-8?B?SE0yc2RqcXR2QUQxRytvU25NdkFXWklwZzZ6TWJ1akpCc0xQRklZWkhEUTRD?=
- =?utf-8?B?OXZQK2ZRdzlNblpSRTVjQmVtSzYwQ3laK3JrZDJSOW9FbFZkN2RmZFJRbXpk?=
- =?utf-8?B?VGI5cnJsWTBUV2RaVHhNMW9DZGg4MTFpOFlJaFdOY3ZZNXhHb0VpMjlmWXBC?=
- =?utf-8?B?T2NMUWRROHpjTVBnTlRzRzVXNW1TQUJhSnNsM1dKZHNMRWNiSmVGcllIa2Za?=
- =?utf-8?B?U2k1NFlBV3A3NVZ4VkZGelNUU1pNaFVWVnhXR3Y5cG83bFR5blp6Q3QvR0tX?=
- =?utf-8?B?NHRZdVoveFJvbExYb2FYd2F5b0k0dDFGVTdkWVA2L2N3NEk2MEVHOWxlV0FZ?=
- =?utf-8?B?c3VWQTVqdU5SMlBNaDVtZ2pyeFhLNGFFYU1lOWwzaFB3dE5OdXFkbWV5QVBv?=
- =?utf-8?B?cFJETVpyN1l2U1RKVVorcDc4SVRoMXBDbVJWTjVUUHNPYXYrZ251M0syNlhi?=
- =?utf-8?B?S2piUlJvcVE3L3M5bm5Kc21xcVgyS21iSnRVUzdoazdLQXN6UUhBS2N1VkRT?=
- =?utf-8?B?RkJhbWNXbHd2WUVZUGZrUjRwSUpNWDFSYzF3RWkyZ3pyditSY1NrSjBiLzJV?=
- =?utf-8?Q?Q4sKiVHMksOelEQu6wzJ60bc4?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z1hoZzZZRFR1SUsxcjRaZEJINTB0cnRtYVNUVHZ2UlI3eU9hcEFKbzhCRGd1?=
+ =?utf-8?B?TXRyeGQwYXliamw0akFaR2pXMHloU0hiMEVzY3Juc0R5cE1qTS81bGtOVytw?=
+ =?utf-8?B?Y3Q1NjJDanJLM1J2OHBGbFFWZzNKc3ZudGwwcXN0MnpSbm1Od3hFZFBhVmJJ?=
+ =?utf-8?B?WGx6TVNZVVZwaDFnV0E4Zy9iejVnNUZSQlN2ZUJEaUJxaHNBUWVqSVBCeGRw?=
+ =?utf-8?B?dS8wZTUvS0ZnTTdlNHZvUEpVSkZRZ080a0w2KzM3NjlFSWI3Rk1wak5kdm0z?=
+ =?utf-8?B?eHNCY29FaHkvbVpiRDAwdFJxdDNYem9TZEorVllydFJwNXdRMUh0MmtMN3V1?=
+ =?utf-8?B?UC9XdWVSZHE0ZTR6ak9LVEFZQTVGYVJqTmRrdDhCRENKWXhtZkhJOGlmZzlF?=
+ =?utf-8?B?VGpVcGh0VzUzSm04TWhRcTJFb0FURk5BNW9JTEpLbkVYdHJ0M2Vxd1hZQzh1?=
+ =?utf-8?B?ZUJXdWhxa1k3aXNzQWxaUnBURDhXdjFVNWpEZ0N3bE1RQnRsdXFiQUdqWG1M?=
+ =?utf-8?B?UWFKZUJlVWhLVDlNLzJKRzFzV3lTdmViUjlDbzgzcVVXM09mV1gra3dDMm1m?=
+ =?utf-8?B?VjdTcnBvbldyQzY4Q3Z1L1owanZLb0MvNUJ0ajFmVFJrb09CQXZ3bE95THE5?=
+ =?utf-8?B?RFlwNmQxd0c0a0RhbWY4a0JqYUQ0MUdCekNJazdpZVNIZ2V2TkMwRjFHdDRl?=
+ =?utf-8?B?N2l4WmdiV2hiYW5uRVNBU2VuaFl5bHBFbFBEelFtbU80cG5pNXhWSWZiU2Ix?=
+ =?utf-8?B?R2FaaGdMZE05WE5CV2E5ZkNNRHNuOW5ScDVURmRnVmNtdkxmZmRPNTljeWRW?=
+ =?utf-8?B?aHdUK0tZbXNIcDd6SHFIVStrYkpMaStpNldjeE5Oc29qOXNyd2FmY0Fuc3U1?=
+ =?utf-8?B?K3BreS9wOFB4TjdQUDg1REdPZzQ2SUZnVEN5K2dhYTZUZ2RGbjVpeXA3RGNu?=
+ =?utf-8?B?a0hKZjh6WFhEMEVVSStPaHp4ajIxSkVnVHR0dTBDcHVxVWMrMUliak40Mmdl?=
+ =?utf-8?B?ZU1OTkc1aFVpTjRhdkVmZ29TTVJOMFZSTVVld3pPd1oveXVnb3ArOFpwcVFL?=
+ =?utf-8?B?b1g3aG9TK3FHT0NLejErU2l4NHU4anIzK2tmOHhzeE1xaFA4MHhSZ3RNcmww?=
+ =?utf-8?B?ZWxZd0NwRmpHaTk3UzA4VUZHdmxTdmpMNnh4WWFaQ1ZsQ2crQ29hME1YNUQv?=
+ =?utf-8?B?ek5INzk3M2lNVTBncFRKcWVwSVY4ZFFGUFN6akVoSTlSQ1NpTXFUWm9HUFli?=
+ =?utf-8?B?SHRzUG5ZUThXY2MwcE5rSkdLT3N0ZC9uTDY5WDRyenZUWUJ2WW9ISGJWRWd0?=
+ =?utf-8?B?K3Y5RGhLaThWbmJ2WG8rUStFRlFwT21rTkhWNWlvMHM5R3ZUNXpRNDhkMnU2?=
+ =?utf-8?B?eDhXOUxRS04vMFNSdnJXQzYrR2xwWmFzbGxqT1A4LzN0bzErUGhlMWFxaXYv?=
+ =?utf-8?B?MTRrQnpaUG1NK25peHk0RXcvSVNEckhVWmM2WnlLZ1hMQ0syQ0c5V050clM2?=
+ =?utf-8?B?WDFCalVBSkkvMm9DbTIwMXA4QUY2Y255RlpDY1RoTEQ3a1dtb3FrdzM1QTRz?=
+ =?utf-8?B?RXk3SHJNK2lMQ3U0Sm1JSzcvUWJaQmR3SnZIRXVMSHUvdjgzVEpRUFNxY2pz?=
+ =?utf-8?B?UW5kakxTZDQ2WDQ5ZWpnVzRZK21pVVlXWS9FcTJOa21uVktLaEtUdjVETlVF?=
+ =?utf-8?B?VU9ja1FVNzZmRWwwZDlpU0MvUTdaSEJ5d3B1eVJXVWVuMHhjSjM0SmdaY0VU?=
+ =?utf-8?B?eTdvbHdsbW9CaVpWV0xZaTFZMEgwdnBFQitCZ2xLTnJiZ013K1JQamJodVFQ?=
+ =?utf-8?B?WVlqNjNuTThkZVlkaWFybmRqWVptYS85YmF5cHFlc043YkJnb205UUFOS0JN?=
+ =?utf-8?B?U3hxS2dzK01YVWlJdnBYOVhYckpKNkY0K1ozVmhneTR3QmtlNXBCdk5SZjlz?=
+ =?utf-8?B?bzRiNGdEcjMvVldaRkRFcjkvbnJwU1lXUk9wSGUraSsrMWFRU2pIM3ZXcjVT?=
+ =?utf-8?B?STNyK3laUWI4ZjZHVTJVZ1Ara0tMMXIwNFVudGVackxreWpMb0pUSi9TbGdo?=
+ =?utf-8?B?S1NRejQ1UUZ6VUs0T1dGMEhuRWVBL0lSTmNTOXRHbzdQK3J2ejlQa2ZuWUpQ?=
+ =?utf-8?Q?KFpJRXRcRQyH8fr8lYAUjMeEc?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4533188f-16ea-4a23-f223-08db39efa6e8
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB7982.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1d6c433-3ab3-4245-1df9-08db39f33053
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 18:16:06.4890
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 18:41:25.5789
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: klKtZ6jls71ifVPWO9VI+bIpVQAUwjvFNv5EXEoMMpf3JLYQ9CPt1oaBlFW7C9B6WBFVbOvIdqUuso6I76/ctw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8095
+X-MS-Exchange-CrossTenant-UserPrincipalName: gU5iI0d2jBJ7BVVyy3bXpguvGcGNl1N6DJPn3XDhtOsa+mOU8x+YNCI4teE9ytg6vbS60yowR1LUWkGmlYDkRQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8435
 X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -126,65 +126,204 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/9/2023 3:52 AM, Leon Romanovsky wrote:
-> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
+On 4/9/23 4:26 AM, Leon Romanovsky wrote:
 > 
-> 
-> On Fri, Apr 07, 2023 at 04:36:45PM -0700, Brett Creeley wrote:
->> Commit 116dce0ff047 ("ionic: Use vzalloc for large per-queue related
->> buffers") made a change to relieve memory pressure by making use of
->> vzalloc() due to the structures not requiring DMA mapping. However,
->> it overlooked that these structures are used in the fast path of the
->> driver and allocations on the non-local node could cause performance
->> degredation. Fix this by first attempting to use vzalloc_node()
->> using the device's local node and if that fails try again with
->> vzalloc().
+
+Thanks for the time you put into these review notes, I appreciate it.
+
+> On Thu, Apr 06, 2023 at 04:41:30PM -0700, Shannon Nelson wrote:
+>> This is the initial PCI driver framework for the new pds_core device
+>> driver and its family of devices.  This does the very basics of
+>> registering for the new PF PCI device 1dd8:100c, setting up debugfs
+>> entries, and registering with devlink.
 >>
->> Fixes: 116dce0ff047 ("ionic: Use vzalloc for large per-queue related buffers")
->> Signed-off-by: Neel Patel <neel.patel@amd.com>
->> Signed-off-by: Brett Creeley <brett.creeley@amd.com>
 >> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 >> ---
->>   .../net/ethernet/pensando/ionic/ionic_lif.c   | 24 ++++++++++++-------
->>   1 file changed, 16 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> index 957027e546b3..2c4e226b8cf1 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
->> @@ -560,11 +560,15 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
->>        new->q.dev = dev;
->>        new->flags = flags;
->>
->> -     new->q.info = vzalloc(num_descs * sizeof(*new->q.info));
->> +     new->q.info = vzalloc_node(num_descs * sizeof(*new->q.info),
->> +                                dev_to_node(dev));
->>        if (!new->q.info) {
->> -             netdev_err(lif->netdev, "Cannot allocate queue info\n");
->> -             err = -ENOMEM;
->> -             goto err_out_free_qcq;
->> +             new->q.info = vzalloc(num_descs * sizeof(*new->q.info));
->> +             if (!new->q.info) {
->> +                     netdev_err(lif->netdev, "Cannot allocate queue info\n");
+>>   .../device_drivers/ethernet/amd/pds_core.rst  |  40 ++
+>>   .../device_drivers/ethernet/index.rst         |   1 +
+>>   drivers/net/ethernet/amd/pds_core/Makefile    |   8 +
+>>   drivers/net/ethernet/amd/pds_core/core.h      |  63 ++
+>>   drivers/net/ethernet/amd/pds_core/debugfs.c   |  34 ++
+>>   drivers/net/ethernet/amd/pds_core/main.c      | 285 +++++++++
+>>   include/linux/pds/pds_common.h                |  14 +
+>>   include/linux/pds/pds_core_if.h               | 540 ++++++++++++++++++
+>>   8 files changed, 985 insertions(+)
+>>   create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
+>>   create mode 100644 drivers/net/ethernet/amd/pds_core/Makefile
+>>   create mode 100644 drivers/net/ethernet/amd/pds_core/core.h
+>>   create mode 100644 drivers/net/ethernet/amd/pds_core/debugfs.c
+>>   create mode 100644 drivers/net/ethernet/amd/pds_core/main.c
+>>   create mode 100644 include/linux/pds/pds_common.h
+>>   create mode 100644 include/linux/pds/pds_core_if.h
 > 
-> Kernel memory allocator will try local node first and if memory is
-> depleted it will go to remote nodes. So basically, you open-coded that
-> behaviour but with OOM splash when first call to vzalloc_node fails and
-> with custom error message about memory allocation failure.
+> <...>
+> 
+>> +#ifdef CONFIG_DEBUG_FS
+>> +void pdsc_debugfs_create(void);
+>> +void pdsc_debugfs_destroy(void);
+>> +void pdsc_debugfs_add_dev(struct pdsc *pdsc);
+>> +void pdsc_debugfs_del_dev(struct pdsc *pdsc);
+>> +#else
+>> +static inline void pdsc_debugfs_create(void) { }
+>> +static inline void pdsc_debugfs_destroy(void) { }
+>> +static inline void pdsc_debugfs_add_dev(struct pdsc *pdsc) { }
+>> +static inline void pdsc_debugfs_del_dev(struct pdsc *pdsc) { }
+>> +#endif
+> 
+> I don't think that you need CONFIG_DEBUG_FS guard as debugfs code is
+> built to handle this case, so you can call to internal debugfs_*() calls
+> without completed initialization of debugfs.
+
+Old habits... sure, we can pull that out.
+
+> 
+>> +
+>> +#endif /* _PDSC_H_ */
+>> diff --git a/drivers/net/ethernet/amd/pds_core/debugfs.c b/drivers/net/ethernet/amd/pds_core/debugfs.c
+>> new file mode 100644
+>> index 000000000000..9b2385c19c41
+>> --- /dev/null
+>> +++ b/drivers/net/ethernet/amd/pds_core/debugfs.c
+>> @@ -0,0 +1,34 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+>> +
+>> +#ifdef CONFIG_DEBUG_FS
+>> +
+>> +#include <linux/pci.h>
+>> +
+>> +#include "core.h"
+>> +
+>> +static struct dentry *pdsc_dir;
+>> +
+>> +void pdsc_debugfs_create(void)
+>> +{
+>> +     pdsc_dir = debugfs_create_dir(PDS_CORE_DRV_NAME, NULL);
+>> +}
+>> +
+>> +void pdsc_debugfs_destroy(void)
+>> +{
+>> +     debugfs_remove_recursive(pdsc_dir);
+>> +}
+>> +
+>> +void pdsc_debugfs_add_dev(struct pdsc *pdsc)
+>> +{
+>> +     pdsc->dentry = debugfs_create_dir(pci_name(pdsc->pdev), pdsc_dir);
+>> +
+>> +     debugfs_create_ulong("state", 0400, pdsc->dentry, &pdsc->state);
+>> +}
+>> +
+>> +void pdsc_debugfs_del_dev(struct pdsc *pdsc)
+>> +{
+>> +     debugfs_remove_recursive(pdsc->dentry);
+>> +     pdsc->dentry = NULL;
+>> +}
+>> +#endif /* CONFIG_DEBUG_FS */
+>> diff --git a/drivers/net/ethernet/amd/pds_core/main.c b/drivers/net/ethernet/amd/pds_core/main.c
+>> new file mode 100644
+>> index 000000000000..1c2f3fbaa27c
+>> --- /dev/null
+>> +++ b/drivers/net/ethernet/amd/pds_core/main.c
+>> @@ -0,0 +1,285 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+>> +
+>> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>> +
+>> +#include <linux/pci.h>
+>> +
+>> +#include <linux/pds/pds_common.h>
+>> +
+>> +#include "core.h"
+>> +
+>> +MODULE_DESCRIPTION(PDSC_DRV_DESCRIPTION);
+>> +MODULE_AUTHOR("Advanced Micro Devices, Inc");
+>> +MODULE_LICENSE("GPL");
+>> +
+>> +/* Supported devices */
+>> +static const struct pci_device_id pdsc_id_table[] = {
+>> +     { PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_CORE_PF) },
+>> +     { 0, }  /* end of table */
+>> +};
+>> +MODULE_DEVICE_TABLE(pci, pdsc_id_table);
+>> +
+>> +static void pdsc_unmap_bars(struct pdsc *pdsc)
+>> +{
+>> +     struct pdsc_dev_bar *bars = pdsc->bars;
+>> +     unsigned int i;
+>> +
+>> +     for (i = 0; i < PDS_CORE_BARS_MAX; i++) {
+>> +             if (bars[i].vaddr) {
+>> +                     pci_iounmap(pdsc->pdev, bars[i].vaddr);
+>> +                     bars[i].vaddr = NULL;
+>> +             }
+>> +
+>> +             bars[i].len = 0;
+>> +             bars[i].bus_addr = 0;
+>> +             bars[i].res_index = 0;
+> 
+> Why are you clearing it? You are going to release bars[] anyway.
+> It will be great to remove this zeroing pattern from whole driver
+> as it hides use-after-free bugs.
+
+These are from old habits of cleaning up when done with something.  Some 
+of these kinds of zeroing are useful for checks later to see if 
+something is still valid, but you are right, not all of it is really 
+necessary.
+
+
+> 
+>> +     }
+>> +}
+>> +
+>> +static int pdsc_map_bars(struct pdsc *pdsc)
+>> +{
+>> +     struct pdsc_dev_bar *bar = pdsc->bars;
+>> +     struct pci_dev *pdev = pdsc->pdev;
+>> +     struct device *dev = pdsc->dev;
+>> +     struct pdsc_dev_bar *bars;
+>> +     unsigned int i, j;
+>> +     int num_bars = 0;
+>> +     int err;
+>> +     u32 sig;
+>> +
+>> +     bars = pdsc->bars;
+>> +     num_bars = 0;
+> 
+> You set it to zero 4 lines above.
+
+Will fix
+
+> 
+>> +
+> 
+> <...>
+> 
+>> +module_init(pdsc_init_module);
+>> +module_exit(pdsc_cleanup_module);
+>> diff --git a/include/linux/pds/pds_common.h b/include/linux/pds/pds_common.h
+>> new file mode 100644
+>> index 000000000000..bd041a5170a6
+>> --- /dev/null
+>> +++ b/include/linux/pds/pds_common.h
+>> @@ -0,0 +1,14 @@
+>> +/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
+>> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+>> +
+>> +#ifndef _PDS_COMMON_H_
+>> +#define _PDS_COMMON_H_
+>> +
+>> +#define PDS_CORE_DRV_NAME                    "pds_core"
+> 
+> It is KBUILD_MODNAME.
+
+yep, will fix
+
+> 
+>> +
+>> +/* the device's internal addressing uses up to 52 bits */
+>> +#define PDS_CORE_ADDR_LEN    52
+>> +#define PDS_CORE_ADDR_MASK   (BIT_ULL(PDS_ADDR_LEN) - 1)
+>> +#define PDS_PAGE_SIZE                4096
 > 
 > Thanks
-
-Leon,
-
-We want to allocate memory from the node local to our PCI device, which 
-is not necessarily the same as the node that the thread is running on 
-where vzalloc() first tries to alloc. Since it wasn't clear to us that 
-vzalloc_node() does any fallback, we followed the example in the ena 
-driver to follow up with a more generic vzalloc() request.
-
-Also, the custom message helps us quickly figure out exactly which 
-allocation failed.
-
-Thanks,
-
-Brett
