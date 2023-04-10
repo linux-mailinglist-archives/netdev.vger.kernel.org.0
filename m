@@ -2,176 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E9C76DC2C4
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 04:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54B406DC30C
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 05:58:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229671AbjDJCbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Apr 2023 22:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46750 "EHLO
+        id S229595AbjDJD6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Apr 2023 23:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbjDJCbc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 22:31:32 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981602707;
-        Sun,  9 Apr 2023 19:31:31 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id bp17-20020a17090b0c1100b0023f187954acso3303559pjb.2;
-        Sun, 09 Apr 2023 19:31:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1681093891; x=1683685891;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=mpFF/VqHtE+TuqqNi8LVshwWxgcQnxj8M9eyzVRSZqE=;
-        b=BthMhqjaWBZLUX4mWLRo84bs2FhJ32UPwi1xnOrIrGN8M01cTjAcvXTXxiIEsGJ7z8
-         eUILreRcTW7bU1h53Sxk37zMzk88voSq6t4WwxyWB3AYcOnRGiUYEfrhBMpCOdEHaQo7
-         zQtbhBE/Xgaq/Onxq1VkCbelkaQrzvzwEtxVfQk2tlTF/x6qNj00ICIOulzxE17EfU55
-         KJUM5sYZq52wrxJFqWzPm8XgaIa21oxiZrAWYegb25a4HCCXQK19R5sMvsQVwtePNkDM
-         ikU8ZmMUf4xHoQX/S77S+d1qDbLTZhvzQ6MRJJjVyDHP6IXP+0d1+pyl57sCHCC8G3oN
-         owdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681093891; x=1683685891;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=mpFF/VqHtE+TuqqNi8LVshwWxgcQnxj8M9eyzVRSZqE=;
-        b=JpMeibwd+SXEs2ePi1tnxBSnGTwrlFkAWWyQcMoFru6WoJCuMUAcXmyUFcgfLJORCe
-         iHAM/uYPe7KGCQkMFUxP7ffbgpmsr3lK51CuwD303y0AfnA7L8kNps7U4mL/fibuBUMG
-         7Y0ng0kbOaZ4Tuxb4gI3hKKLEwPA1cVeQBqLh0Q4hMSDKzOE878m/qc4n46rFgOmntJa
-         v0ym7KF2ea86gmbVf+ebwUUrOtjm8hkbHRVqwtx7u+xfihppuGzyO0ud6WrIsmWB/n9l
-         ogqEBpC9wYZ8d1oeOhr+8M/Bjm6rkIsxsP2B4/lgm39+U46CrpZ2wFhqWJMVpWf44SSF
-         i6FA==
-X-Gm-Message-State: AAQBX9dk+BF1I7NNhl/T8heF7VykboKwNeckink4Q18FWt8XGl3S34OO
-        oIVLKKK7Z3yu9097OwHmO8MUD/A/nnw=
-X-Google-Smtp-Source: AKy350bbyWkMazdEexbdwR1o3BAgySsKuJ6U2gzkGLbuNNnfdTsjiK4SYdywQujX99asW2Ly/LVaNw==
-X-Received: by 2002:a17:902:c613:b0:1a2:85f0:e748 with SMTP id r19-20020a170902c61300b001a285f0e748mr8981476plr.20.1681093890908;
-        Sun, 09 Apr 2023 19:31:30 -0700 (PDT)
-Received: from KERNELXING-MB0.tencent.com ([103.7.29.31])
-        by smtp.gmail.com with ESMTPSA id jo18-20020a170903055200b0019a70a85e8fsm6512789plb.220.2023.04.09.19.31.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Apr 2023 19:31:30 -0700 (PDT)
-From:   Jason Xing <kerneljasonxing@gmail.com>
-To:     paulmck@kernel.org, peterz@infradead.org, tglx@linutronix.de,
-        bigeasy@linutronix.de, frederic@kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kerneljasonxing@gmail.com, Jason Xing <kernelxing@tencent.com>
-Subject: [PATCH] softirq: let the userside tune the SOFTIRQ_NOW_MASK with sysctl
-Date:   Mon, 10 Apr 2023 10:30:41 +0800
-Message-Id: <20230410023041.49857-1-kerneljasonxing@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S229475AbjDJD6b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 23:58:31 -0400
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD8726A0;
+        Sun,  9 Apr 2023 20:58:29 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Vff7nHC_1681099105;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Vff7nHC_1681099105)
+          by smtp.aliyun-inc.com;
+          Mon, 10 Apr 2023 11:58:25 +0800
+Date:   Mon, 10 Apr 2023 11:58:24 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Jan Karcher <jaka@linux.ibm.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org,
+        syzbot+7e1e1bdb852961150198@syzkaller.appspotmail.com
+Subject: Re: [PATCH v1 net] smc: Fix use-after-free in
+ tcp_write_timer_handler().
+Message-ID: <ZDOJYGq1wLYipY6X@TONYMAC-ALIBABA.local>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20230408184943.48136-1-kuniyu@amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230408184943.48136-1-kuniyu@amazon.com>
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Xing <kernelxing@tencent.com>
+Thanks for the fix.
 
-Currently we have two exceptions which could avoid ksoftirqd when
-invoking softirqs: HI_SOFTIRQ and TASKLET_SOFTIRQ. They were introduced
-in the commit 3c53776e29f8 ("Mark HI and TASKLET softirq synchronous")
-which says if we don't mask them, it will cause excessive latencies in
-some cases.
+Using net/smc as prefix in subject is preferred.
 
-It also mentioned that we may take time softirq into consideration:
-"We should probably also consider the timer softirqs to be synchronous
-and not be delayed to ksoftirqd."
+On Sat, Apr 08, 2023 at 11:49:43AM -0700, Kuniyuki Iwashima wrote:
+> With Eric's ref tracker, syzbot finally found a repro for
+> use-after-free in tcp_write_timer_handler() by kernel TCP
+> sockets. [0]
+> 
+> If SMC creates a kernel socket in __smc_create(), the kernel
+> socket is supposed to be freed in smc_clcsock_release() by
+> calling sock_release() when we close() the parent SMC socket.
+> 
+> However, at the end of smc_clcsock_release(), the kernel
+> socket's sk_state might not be TCP_CLOSE.  This means that
+> we have not called inet_csk_destroy_sock() in __tcp_close()
+> and have not stopped the TCP timers.
+> 
+> The kernel socket's TCP timers can be fired later, so we
+> need to hold a refcnt for net as we do for MPTCP subflows
+> in mptcp_subflow_create_socket().
 
-The same reason goes here. In production workload, we found that some
-sensitive applications are complaining about the high latency of
-tx/rx path in networking, because some packets have to be delayed in
-ksoftirqd kthread that can be blocked in the runqueue for some while
-(say, 10-70 ms) especially in guestOS. So marking tx/rx softirq
-synchronous, for instance, NET_RX_SOFTIRQ, solves such issue.
+Agreed.
 
-We tested and observed the high latency above 50ms of the rx path in
-the real workload:
-without masking: over 100 times hitting the limit per hour
-with masking: less than 10 times for a whole day
+> 
+> [0]:
+> leaked reference.
+>  sk_alloc (./include/net/net_namespace.h:335 net/core/sock.c:2108)
+>  inet_create (net/ipv4/af_inet.c:319 net/ipv4/af_inet.c:244)
+>  __sock_create (net/socket.c:1546)
+>  smc_create (net/smc/af_smc.c:3269 net/smc/af_smc.c:3284)
+>  __sock_create (net/socket.c:1546)
+>  __sys_socket (net/socket.c:1634 net/socket.c:1618 net/socket.c:1661)
+>  __x64_sys_socket (net/socket.c:1672)
+>  do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+>  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+> ==================================================================
+> BUG: KASAN: slab-use-after-free in tcp_write_timer_handler (net/ipv4/tcp_timer.c:378 net/ipv4/tcp_timer.c:624 net/ipv4/tcp_timer.c:594)
+> Read of size 1 at addr ffff888052b65e0d by task syzrepro/18091
+> 
+> CPU: 0 PID: 18091 Comm: syzrepro Tainted: G        W          6.3.0-rc4-01174-gb5d54eb5899a #7
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.amzn2022.0.1 04/01/2014
+> Call Trace:
+>  <IRQ>
+>  dump_stack_lvl (lib/dump_stack.c:107)
+>  print_report (mm/kasan/report.c:320 mm/kasan/report.c:430)
+>  kasan_report (mm/kasan/report.c:538)
+>  tcp_write_timer_handler (net/ipv4/tcp_timer.c:378 net/ipv4/tcp_timer.c:624 net/ipv4/tcp_timer.c:594)
+>  tcp_write_timer (./include/linux/spinlock.h:390 net/ipv4/tcp_timer.c:643)
+>  call_timer_fn (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:207 ./include/trace/events/timer.h:127 kernel/time/timer.c:1701)
+>  __run_timers.part.0 (kernel/time/timer.c:1752 kernel/time/timer.c:2022)
+>  run_timer_softirq (kernel/time/timer.c:2037)
+>  __do_softirq (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:207 ./include/trace/events/irq.h:142 kernel/softirq.c:572)
+>  __irq_exit_rcu (kernel/softirq.c:445 kernel/softirq.c:650)
+>  irq_exit_rcu (kernel/softirq.c:664)
+>  sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1107 (discriminator 14))
+>  </IRQ>
+> 
+> Fixes: ac7138746e14 ("smc: establish new socket family")
+> Reported-by: syzbot+7e1e1bdb852961150198@syzkaller.appspotmail.com
+> Link: https://lore.kernel.org/netdev/000000000000a3f51805f8bcc43a@google.com/
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-As we all know the default config is not able to satisify everyone's
-requirements. After applied this patch exporting the softirq mask to
-the userside, we can serve different cases by tuning with sysctl.
+LGTM.
 
-Signed-off-by: Jason Xing <kernelxing@tencent.com>
----
- kernel/softirq.c | 29 +++++++++++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
 
-diff --git a/kernel/softirq.c b/kernel/softirq.c
-index c8a6913c067d..aa6e52ca2c55 100644
---- a/kernel/softirq.c
-+++ b/kernel/softirq.c
-@@ -65,6 +65,8 @@ const char * const softirq_to_name[NR_SOFTIRQS] = {
- 	"TASKLET", "SCHED", "HRTIMER", "RCU"
- };
- 
-+unsigned int sysctl_softirq_mask = 1 << HI_SOFTIRQ | 1 << TASKLET_SOFTIRQ;
-+
- /*
-  * we cannot loop indefinitely here to avoid userspace starvation,
-  * but we also don't want to introduce a worst case 1/HZ latency
-@@ -80,17 +82,23 @@ static void wakeup_softirqd(void)
- 		wake_up_process(tsk);
- }
- 
-+static bool softirq_now_mask(unsigned long pending)
-+{
-+	if (pending & sysctl_softirq_mask)
-+		return false;
-+	return true;
-+}
-+
- /*
-  * If ksoftirqd is scheduled, we do not want to process pending softirqs
-  * right now. Let ksoftirqd handle this at its own rate, to get fairness,
-  * unless we're doing some of the synchronous softirqs.
-  */
--#define SOFTIRQ_NOW_MASK ((1 << HI_SOFTIRQ) | (1 << TASKLET_SOFTIRQ))
- static bool ksoftirqd_running(unsigned long pending)
- {
- 	struct task_struct *tsk = __this_cpu_read(ksoftirqd);
- 
--	if (pending & SOFTIRQ_NOW_MASK)
-+	if (softirq_now_mask(pending))
- 		return false;
- 	return tsk && task_is_running(tsk) && !__kthread_should_park(tsk);
- }
-@@ -903,6 +911,22 @@ void tasklet_unlock_wait(struct tasklet_struct *t)
- EXPORT_SYMBOL_GPL(tasklet_unlock_wait);
- #endif
- 
-+static struct ctl_table softirq_sysctls[] = {
-+	{
-+		.procname	= "softirq_mask",
-+		.data		= &sysctl_softirq_mask,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler   = proc_dointvec,
-+	},
-+	{}
-+};
-+
-+static void __init softirq_mask_sysctl_init(void)
-+{
-+	register_sysctl_init("kernel", softirq_sysctls);
-+}
-+
- void __init softirq_init(void)
- {
- 	int cpu;
-@@ -916,6 +940,7 @@ void __init softirq_init(void)
- 
- 	open_softirq(TASKLET_SOFTIRQ, tasklet_action);
- 	open_softirq(HI_SOFTIRQ, tasklet_hi_action);
-+	softirq_mask_sysctl_init();
- }
- 
- static int ksoftirqd_should_run(unsigned int cpu)
--- 
-2.37.3
-
+> ---
+>  net/smc/af_smc.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> index c6b4a62276f6..50c38b624f77 100644
+> --- a/net/smc/af_smc.c
+> +++ b/net/smc/af_smc.c
+> @@ -3270,6 +3270,17 @@ static int __smc_create(struct net *net, struct socket *sock, int protocol,
+>  			sk_common_release(sk);
+>  			goto out;
+>  		}
+> +
+> +		/* smc_clcsock_release() does not wait smc->clcsock->sk's
+> +		 * destruction;  its sk_state might not be TCP_CLOSE after
+> +		 * smc->sk is close()d, and TCP timers can be fired later,
+> +		 * which need net ref.
+> +		 */
+> +		sk = smc->clcsock->sk;
+> +		__netns_tracker_free(net, &sk->ns_tracker, false);
+> +		sk->sk_net_refcnt = 1;
+> +		get_net_track(net, &sk->ns_tracker, GFP_KERNEL);
+> +		sock_inuse_add(net, 1);
+>  	} else {
+>  		smc->clcsock = clcsock;
+>  	}
+> -- 
+> 2.30.2
