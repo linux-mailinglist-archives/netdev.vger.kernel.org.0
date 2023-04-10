@@ -2,146 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B406DC30C
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 05:58:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 217FD6DC32E
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 06:47:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbjDJD6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Apr 2023 23:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
+        id S229571AbjDJEre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 00:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjDJD6b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 23:58:31 -0400
-Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD8726A0;
-        Sun,  9 Apr 2023 20:58:29 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Vff7nHC_1681099105;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Vff7nHC_1681099105)
-          by smtp.aliyun-inc.com;
-          Mon, 10 Apr 2023 11:58:25 +0800
-Date:   Mon, 10 Apr 2023 11:58:24 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Jan Karcher <jaka@linux.ibm.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org,
-        syzbot+7e1e1bdb852961150198@syzkaller.appspotmail.com
-Subject: Re: [PATCH v1 net] smc: Fix use-after-free in
- tcp_write_timer_handler().
-Message-ID: <ZDOJYGq1wLYipY6X@TONYMAC-ALIBABA.local>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20230408184943.48136-1-kuniyu@amazon.com>
+        with ESMTP id S229475AbjDJErc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 00:47:32 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC1E30C6;
+        Sun,  9 Apr 2023 21:47:30 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33A4lBoH101478;
+        Sun, 9 Apr 2023 23:47:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1681102031;
+        bh=Ytx9fQ9Ub8uG529ZrD4BPGXjS5WsbtxTltwVymlI5EY=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=di9uad7g8o6mc+SUeEMjwQE0pHDJHpuClOwJxovDPrJkU0RjNyL39zYmd+1QdurFL
+         fS7jwdU5OjbhyxeObxRDj5eVQ4ORkuQJ5Ww2Y8D40ygmfPnSKtWkO1I6jF1ykeoRKU
+         3PCJPNZLIdG6swmUz59g7BAks0ZhZSBsF9+bgZcQ=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33A4lBhe020480
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 9 Apr 2023 23:47:11 -0500
+Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Sun, 9
+ Apr 2023 23:47:10 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Sun, 9 Apr 2023 23:47:10 -0500
+Received: from [10.24.69.114] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33A4l5pl079918;
+        Sun, 9 Apr 2023 23:47:06 -0500
+Message-ID: <08c07263-f4d4-1264-dd67-b377c3b6a048@ti.com>
+Date:   Mon, 10 Apr 2023 10:17:05 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230408184943.48136-1-kuniyu@amazon.com>
-X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [EXTERNAL] Re: [PATCH v7 0/4] Introduce PRU platform consumer API
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>
+CC:     MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>, <linux-remoteproc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <srk@ti.com>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+References: <20230404115336.599430-1-danishanwar@ti.com>
+ <86ee5333-6d65-d28b-0dd5-40dfe485d48b@ti.com>
+ <CANLsYkyrvAcVa8VNkbsrxyAC-60fyGYoXVS=fqwLcsMverzNcg@mail.gmail.com>
+Content-Language: en-US
+From:   Md Danish Anwar <a0501179@ti.com>
+Organization: Texas Instruments
+In-Reply-To: <CANLsYkyrvAcVa8VNkbsrxyAC-60fyGYoXVS=fqwLcsMverzNcg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-5.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for the fix.
 
-Using net/smc as prefix in subject is preferred.
 
-On Sat, Apr 08, 2023 at 11:49:43AM -0700, Kuniyuki Iwashima wrote:
-> With Eric's ref tracker, syzbot finally found a repro for
-> use-after-free in tcp_write_timer_handler() by kernel TCP
-> sockets. [0]
+On 06/04/23 18:45, Mathieu Poirier wrote:
+> On Thu, 6 Apr 2023 at 00:54, Md Danish Anwar <a0501179@ti.com> wrote:
+>>
+>> On 04/04/23 17:23, MD Danish Anwar wrote:
+>>> Hi All,
+>>> The Programmable Real-Time Unit and Industrial Communication Subsystem (PRU-ICSS
+>>> or simply PRUSS) on various TI SoCs consists of dual 32-bit RISC cores
+>>> (Programmable Real-Time Units, or PRUs) for program execution.
+>>>
+>>> There are 3 foundation components for TI PRUSS subsystem: the PRUSS platform
+>>> driver, the PRUSS INTC driver and the PRUSS remoteproc driver. All of them have
+>>> already been merged and can be found under:
+>>> 1) drivers/soc/ti/pruss.c
+>>>    Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+>>> 2) drivers/irqchip/irq-pruss-intc.c
+>>>    Documentation/devicetree/bindings/interrupt-controller/ti,pruss-intc.yaml
+>>> 3) drivers/remoteproc/pru_rproc.c
+>>>    Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
+>>>
+>>> The programmable nature of the PRUs provide flexibility to implement custom
+>>> peripheral interfaces, fast real-time responses, or specialized data handling.
+>>> Example of a PRU consumer drivers will be:
+>>>   - Software UART over PRUSS
+>>>   - PRU-ICSS Ethernet EMAC
+>>>
+>>> In order to make usage of common PRU resources and allow the consumer drivers
+>>> to configure the PRU hardware for specific usage the PRU API is introduced.
+>>>
+>>> This is the v7 of the old patch series [9].
+>>>
+>>
+>> Hi Mathieu, Can you please review this series. I have addressed comments made
+>> by you in v5. I have also addressed Simon's comment in v6 and removed redundant
+>> macros from pruss.h header file.
+>>
 > 
-> If SMC creates a kernel socket in __smc_create(), the kernel
-> socket is supposed to be freed in smc_clcsock_release() by
-> calling sock_release() when we close() the parent SMC socket.
+> You are pushing me to review your code 19 hours after sending the last
+> revision?  Are you serious?
 > 
-> However, at the end of smc_clcsock_release(), the kernel
-> socket's sk_state might not be TCP_CLOSE.  This means that
-> we have not called inet_csk_destroy_sock() in __tcp_close()
-> and have not stopped the TCP timers.
-> 
-> The kernel socket's TCP timers can be fired later, so we
-> need to hold a refcnt for net as we do for MPTCP subflows
-> in mptcp_subflow_create_socket().
 
-Agreed.
+I am really sorry for this. Thursday was last working day last week (as Friday
+was holiday in India), so I thought I should ping you so that this series would
+be reviewed by Monday. From now on I would try to keep a gap a week (or
+whatever is appropriate) before pinging you for review.
 
-> 
-> [0]:
-> leaked reference.
->  sk_alloc (./include/net/net_namespace.h:335 net/core/sock.c:2108)
->  inet_create (net/ipv4/af_inet.c:319 net/ipv4/af_inet.c:244)
->  __sock_create (net/socket.c:1546)
->  smc_create (net/smc/af_smc.c:3269 net/smc/af_smc.c:3284)
->  __sock_create (net/socket.c:1546)
->  __sys_socket (net/socket.c:1634 net/socket.c:1618 net/socket.c:1661)
->  __x64_sys_socket (net/socket.c:1672)
->  do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
->  entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-> ==================================================================
-> BUG: KASAN: slab-use-after-free in tcp_write_timer_handler (net/ipv4/tcp_timer.c:378 net/ipv4/tcp_timer.c:624 net/ipv4/tcp_timer.c:594)
-> Read of size 1 at addr ffff888052b65e0d by task syzrepro/18091
-> 
-> CPU: 0 PID: 18091 Comm: syzrepro Tainted: G        W          6.3.0-rc4-01174-gb5d54eb5899a #7
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.amzn2022.0.1 04/01/2014
-> Call Trace:
->  <IRQ>
->  dump_stack_lvl (lib/dump_stack.c:107)
->  print_report (mm/kasan/report.c:320 mm/kasan/report.c:430)
->  kasan_report (mm/kasan/report.c:538)
->  tcp_write_timer_handler (net/ipv4/tcp_timer.c:378 net/ipv4/tcp_timer.c:624 net/ipv4/tcp_timer.c:594)
->  tcp_write_timer (./include/linux/spinlock.h:390 net/ipv4/tcp_timer.c:643)
->  call_timer_fn (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:207 ./include/trace/events/timer.h:127 kernel/time/timer.c:1701)
->  __run_timers.part.0 (kernel/time/timer.c:1752 kernel/time/timer.c:2022)
->  run_timer_softirq (kernel/time/timer.c:2037)
->  __do_softirq (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:207 ./include/trace/events/irq.h:142 kernel/softirq.c:572)
->  __irq_exit_rcu (kernel/softirq.c:445 kernel/softirq.c:650)
->  irq_exit_rcu (kernel/softirq.c:664)
->  sysvec_apic_timer_interrupt (arch/x86/kernel/apic/apic.c:1107 (discriminator 14))
->  </IRQ>
-> 
-> Fixes: ac7138746e14 ("smc: establish new socket family")
-> Reported-by: syzbot+7e1e1bdb852961150198@syzkaller.appspotmail.com
-> Link: https://lore.kernel.org/netdev/000000000000a3f51805f8bcc43a@google.com/
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+I am really sorry for this again.
 
-LGTM.
+>>> Changes from v6 [9] to v7:
+>>> *) Addressed Simon's comment on patch 3 of this series and dropped unnecassary
+>>> macros from the patch.
+>>>
+>>> Changes from v5 [1] to v6:
+>>> *) Added Reviewed by tags of Roger and Tony to the patches.
+>>> *) Added Acked by tag of Mathieu to patch 2 of this series.
+>>> *) Added NULL check for @mux in pruss_cfg_get_gpmux() API.
+>>> *) Added comment to the pruss_get() function documentation mentioning it is
+>>> expected the caller will have done a pru_rproc_get() on @rproc.
+>>> *) Fixed compilation warning "warning: ‘pruss_cfg_update’ defined but not used"
+>>> in patch 3 by squashing patch 3 [7] and patch 5 [8] of previous revision
+>>> together. Squashed patch 5 instead of patch 4 with patch 3 because patch 5 uses
+>>> both read() and update() APIs where as patch 4 only uses update() API.
+>>> Previously pruss_cfg_read()/update() APIs were intoroduced in patch 3
+>>> and used in patch 4 and 5. Now these APIs are introduced as well as used in
+>>> patch 3.
+>>>
+>>
+>>
+>> --
+>> Thanks and Regards,
+>> Danish.
 
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-
-> ---
->  net/smc/af_smc.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index c6b4a62276f6..50c38b624f77 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -3270,6 +3270,17 @@ static int __smc_create(struct net *net, struct socket *sock, int protocol,
->  			sk_common_release(sk);
->  			goto out;
->  		}
-> +
-> +		/* smc_clcsock_release() does not wait smc->clcsock->sk's
-> +		 * destruction;  its sk_state might not be TCP_CLOSE after
-> +		 * smc->sk is close()d, and TCP timers can be fired later,
-> +		 * which need net ref.
-> +		 */
-> +		sk = smc->clcsock->sk;
-> +		__netns_tracker_free(net, &sk->ns_tracker, false);
-> +		sk->sk_net_refcnt = 1;
-> +		get_net_track(net, &sk->ns_tracker, GFP_KERNEL);
-> +		sock_inuse_add(net, 1);
->  	} else {
->  		smc->clcsock = clcsock;
->  	}
-> -- 
-> 2.30.2
+-- 
+Thanks and Regards,
+Danish.
