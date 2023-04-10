@@ -2,43 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB846DC2A5
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 04:22:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E9C76DC2C4
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 04:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbjDJCWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Apr 2023 22:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
+        id S229671AbjDJCbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Apr 2023 22:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbjDJCWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 22:22:02 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256FD3C34;
-        Sun,  9 Apr 2023 19:22:01 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Pvt2c5mqQzKxhh;
-        Mon, 10 Apr 2023 10:19:20 +0800 (CST)
-Received: from huawei.com (10.175.104.82) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Mon, 10 Apr
- 2023 10:21:52 +0800
-From:   Lu Wei <luwei32@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <asml.silence@gmail.com>,
-        <imagedong@tencent.com>, <brouer@redhat.com>,
-        <keescook@chromium.org>, <jbenc@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: Add check for csum_start in skb_partial_csum_set()
-Date:   Mon, 10 Apr 2023 10:21:52 +0800
-Message-ID: <20230410022152.4049060-1-luwei32@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229575AbjDJCbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Apr 2023 22:31:32 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981602707;
+        Sun,  9 Apr 2023 19:31:31 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id bp17-20020a17090b0c1100b0023f187954acso3303559pjb.2;
+        Sun, 09 Apr 2023 19:31:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1681093891; x=1683685891;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mpFF/VqHtE+TuqqNi8LVshwWxgcQnxj8M9eyzVRSZqE=;
+        b=BthMhqjaWBZLUX4mWLRo84bs2FhJ32UPwi1xnOrIrGN8M01cTjAcvXTXxiIEsGJ7z8
+         eUILreRcTW7bU1h53Sxk37zMzk88voSq6t4WwxyWB3AYcOnRGiUYEfrhBMpCOdEHaQo7
+         zQtbhBE/Xgaq/Onxq1VkCbelkaQrzvzwEtxVfQk2tlTF/x6qNj00ICIOulzxE17EfU55
+         KJUM5sYZq52wrxJFqWzPm8XgaIa21oxiZrAWYegb25a4HCCXQK19R5sMvsQVwtePNkDM
+         ikU8ZmMUf4xHoQX/S77S+d1qDbLTZhvzQ6MRJJjVyDHP6IXP+0d1+pyl57sCHCC8G3oN
+         owdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681093891; x=1683685891;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mpFF/VqHtE+TuqqNi8LVshwWxgcQnxj8M9eyzVRSZqE=;
+        b=JpMeibwd+SXEs2ePi1tnxBSnGTwrlFkAWWyQcMoFru6WoJCuMUAcXmyUFcgfLJORCe
+         iHAM/uYPe7KGCQkMFUxP7ffbgpmsr3lK51CuwD303y0AfnA7L8kNps7U4mL/fibuBUMG
+         7Y0ng0kbOaZ4Tuxb4gI3hKKLEwPA1cVeQBqLh0Q4hMSDKzOE878m/qc4n46rFgOmntJa
+         v0ym7KF2ea86gmbVf+ebwUUrOtjm8hkbHRVqwtx7u+xfihppuGzyO0ud6WrIsmWB/n9l
+         ogqEBpC9wYZ8d1oeOhr+8M/Bjm6rkIsxsP2B4/lgm39+U46CrpZ2wFhqWJMVpWf44SSF
+         i6FA==
+X-Gm-Message-State: AAQBX9dk+BF1I7NNhl/T8heF7VykboKwNeckink4Q18FWt8XGl3S34OO
+        oIVLKKK7Z3yu9097OwHmO8MUD/A/nnw=
+X-Google-Smtp-Source: AKy350bbyWkMazdEexbdwR1o3BAgySsKuJ6U2gzkGLbuNNnfdTsjiK4SYdywQujX99asW2Ly/LVaNw==
+X-Received: by 2002:a17:902:c613:b0:1a2:85f0:e748 with SMTP id r19-20020a170902c61300b001a285f0e748mr8981476plr.20.1681093890908;
+        Sun, 09 Apr 2023 19:31:30 -0700 (PDT)
+Received: from KERNELXING-MB0.tencent.com ([103.7.29.31])
+        by smtp.gmail.com with ESMTPSA id jo18-20020a170903055200b0019a70a85e8fsm6512789plb.220.2023.04.09.19.31.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 09 Apr 2023 19:31:30 -0700 (PDT)
+From:   Jason Xing <kerneljasonxing@gmail.com>
+To:     paulmck@kernel.org, peterz@infradead.org, tglx@linutronix.de,
+        bigeasy@linutronix.de, frederic@kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kerneljasonxing@gmail.com, Jason Xing <kernelxing@tencent.com>
+Subject: [PATCH] softirq: let the userside tune the SOFTIRQ_NOW_MASK with sysctl
+Date:   Mon, 10 Apr 2023 10:30:41 +0800
+Message-Id: <20230410023041.49857-1-kerneljasonxing@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -47,81 +69,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If an AF_PACKET socket is used to send packets through a L3 mode ipvlan
-and a vnet header is set via setsockopt() with the option name of
-PACKET_VNET_HDR, the value of offset will be nagetive in function
-skb_checksum_help() and trigger the following warning:
+From: Jason Xing <kernelxing@tencent.com>
 
-WARNING: CPU: 3 PID: 2023 at net/core/dev.c:3262
-skb_checksum_help+0x2dc/0x390
-......
-Call Trace:
- <TASK>
- ip_do_fragment+0x63d/0xd00
- ip_fragment.constprop.0+0xd2/0x150
- __ip_finish_output+0x154/0x1e0
- ip_finish_output+0x36/0x1b0
- ip_output+0x134/0x240
- ip_local_out+0xba/0xe0
- ipvlan_process_v4_outbound+0x26d/0x2b0
- ipvlan_xmit_mode_l3+0x44b/0x480
- ipvlan_queue_xmit+0xd6/0x1d0
- ipvlan_start_xmit+0x32/0xa0
- dev_hard_start_xmit+0xdf/0x3f0
- packet_snd+0xa7d/0x1130
- packet_sendmsg+0x7b/0xa0
- sock_sendmsg+0x14f/0x160
- __sys_sendto+0x209/0x2e0
- __x64_sys_sendto+0x7d/0x90
+Currently we have two exceptions which could avoid ksoftirqd when
+invoking softirqs: HI_SOFTIRQ and TASKLET_SOFTIRQ. They were introduced
+in the commit 3c53776e29f8 ("Mark HI and TASKLET softirq synchronous")
+which says if we don't mask them, it will cause excessive latencies in
+some cases.
 
-The root cause is:
-1. skb->csum_start is set in packet_snd() according vnet_hdr:
-   skb->csum_start = skb_headroom(skb) + (u32)start;
+It also mentioned that we may take time softirq into consideration:
+"We should probably also consider the timer softirqs to be synchronous
+and not be delayed to ksoftirqd."
 
-   'start' is the offset from skb->data, and mac header has been
-   set at this moment.
+The same reason goes here. In production workload, we found that some
+sensitive applications are complaining about the high latency of
+tx/rx path in networking, because some packets have to be delayed in
+ksoftirqd kthread that can be blocked in the runqueue for some while
+(say, 10-70 ms) especially in guestOS. So marking tx/rx softirq
+synchronous, for instance, NET_RX_SOFTIRQ, solves such issue.
 
-2. when this skb arrives ipvlan_process_outbound(), the mac header
-   is unset and skb_pull is called to expand the skb headroom.
+We tested and observed the high latency above 50ms of the rx path in
+the real workload:
+without masking: over 100 times hitting the limit per hour
+with masking: less than 10 times for a whole day
 
-3. In function skb_checksum_help(), the variable offset is calculated
-   as:
-      offset = skb->csum_start - skb_headroom(skb);
+As we all know the default config is not able to satisify everyone's
+requirements. After applied this patch exporting the softirq mask to
+the userside, we can serve different cases by tuning with sysctl.
 
-   since skb headroom is expanded in step2, offset is nagetive, and it
-   is converted to an unsigned integer when compared with skb_headlen
-   and trigger the warning.
-
-In fact the data to be checksummed should not contain the mac header
-since the mac header is stripped after a packet leaves L2 layer.
-This patch fixes this by adding a check for csum_start to make it
-start after the mac header.
-
-Fixes: 52b5d6f5dcf0 ("net: make skb_partial_csum_set() more robust against overflows")
-Signed-off-by: Lu Wei <luwei32@huawei.com>
+Signed-off-by: Jason Xing <kernelxing@tencent.com>
 ---
- net/core/skbuff.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ kernel/softirq.c | 29 +++++++++++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 1a31815104d6..5e24096076fa 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5232,9 +5232,11 @@ bool skb_partial_csum_set(struct sk_buff *skb, u16 start, u16 off)
- 	u32 csum_end = (u32)start + (u32)off + sizeof(__sum16);
- 	u32 csum_start = skb_headroom(skb) + (u32)start;
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index c8a6913c067d..aa6e52ca2c55 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -65,6 +65,8 @@ const char * const softirq_to_name[NR_SOFTIRQS] = {
+ 	"TASKLET", "SCHED", "HRTIMER", "RCU"
+ };
  
--	if (unlikely(csum_start > U16_MAX || csum_end > skb_headlen(skb))) {
--		net_warn_ratelimited("bad partial csum: csum=%u/%u headroom=%u headlen=%u\n",
--				     start, off, skb_headroom(skb), skb_headlen(skb));
-+	if (unlikely(csum_start > U16_MAX || csum_end > skb_headlen(skb) ||
-+		     csum_start < skb->network_header)) {
-+		net_warn_ratelimited("bad partial csum: csum=%u/%u headroom=%u headlen=%u network_header=%u\n",
-+				     start, off, skb_headroom(skb),
-+				     skb_headlen(skb), skb->network_header);
++unsigned int sysctl_softirq_mask = 1 << HI_SOFTIRQ | 1 << TASKLET_SOFTIRQ;
++
+ /*
+  * we cannot loop indefinitely here to avoid userspace starvation,
+  * but we also don't want to introduce a worst case 1/HZ latency
+@@ -80,17 +82,23 @@ static void wakeup_softirqd(void)
+ 		wake_up_process(tsk);
+ }
+ 
++static bool softirq_now_mask(unsigned long pending)
++{
++	if (pending & sysctl_softirq_mask)
++		return false;
++	return true;
++}
++
+ /*
+  * If ksoftirqd is scheduled, we do not want to process pending softirqs
+  * right now. Let ksoftirqd handle this at its own rate, to get fairness,
+  * unless we're doing some of the synchronous softirqs.
+  */
+-#define SOFTIRQ_NOW_MASK ((1 << HI_SOFTIRQ) | (1 << TASKLET_SOFTIRQ))
+ static bool ksoftirqd_running(unsigned long pending)
+ {
+ 	struct task_struct *tsk = __this_cpu_read(ksoftirqd);
+ 
+-	if (pending & SOFTIRQ_NOW_MASK)
++	if (softirq_now_mask(pending))
  		return false;
- 	}
- 	skb->ip_summed = CHECKSUM_PARTIAL;
+ 	return tsk && task_is_running(tsk) && !__kthread_should_park(tsk);
+ }
+@@ -903,6 +911,22 @@ void tasklet_unlock_wait(struct tasklet_struct *t)
+ EXPORT_SYMBOL_GPL(tasklet_unlock_wait);
+ #endif
+ 
++static struct ctl_table softirq_sysctls[] = {
++	{
++		.procname	= "softirq_mask",
++		.data		= &sysctl_softirq_mask,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler   = proc_dointvec,
++	},
++	{}
++};
++
++static void __init softirq_mask_sysctl_init(void)
++{
++	register_sysctl_init("kernel", softirq_sysctls);
++}
++
+ void __init softirq_init(void)
+ {
+ 	int cpu;
+@@ -916,6 +940,7 @@ void __init softirq_init(void)
+ 
+ 	open_softirq(TASKLET_SOFTIRQ, tasklet_action);
+ 	open_softirq(HI_SOFTIRQ, tasklet_hi_action);
++	softirq_mask_sysctl_init();
+ }
+ 
+ static int ksoftirqd_should_run(unsigned int cpu)
 -- 
-2.25.1
+2.37.3
 
