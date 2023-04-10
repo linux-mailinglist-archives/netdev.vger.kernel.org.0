@@ -2,76 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A72CF6DC7E2
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 16:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D4EC6DC7E7
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 16:34:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbjDJOb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 10:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35066 "EHLO
+        id S229600AbjDJOes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 10:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229721AbjDJOb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 10:31:56 -0400
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750DF7EF3;
-        Mon, 10 Apr 2023 07:31:32 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VfoZHgQ_1681137088;
-Received: from 30.221.131.183(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VfoZHgQ_1681137088)
-          by smtp.aliyun-inc.com;
-          Mon, 10 Apr 2023 22:31:29 +0800
-Message-ID: <8eb156ce-1c3a-3d1b-a490-309a9403a795@linux.alibaba.com>
-Date:   Mon, 10 Apr 2023 22:31:27 +0800
+        with ESMTP id S229536AbjDJOer (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 10:34:47 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4704ED2;
+        Mon, 10 Apr 2023 07:34:46 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1plsbF-0007aS-0m;
+        Mon, 10 Apr 2023 16:34:29 +0200
+Date:   Mon, 10 Apr 2023 15:34:26 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     arinc9.unal@gmail.com
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [RFC PATCH v2 net-next 08/14] net: dsa: mt7530: remove pad_setup
+ function pointer
+Message-ID: <ZDQecu1NkQDQk-cJ@makrotopia.org>
+References: <20230407134626.47928-1-arinc.unal@arinc9.com>
+ <20230407134626.47928-9-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [RFC PATCH net-next v4 0/9] net/smc: Introduce SMC-D-based OS
- internal communication acceleration
-To:     Wenjia Zhang <wenjia@linux.ibm.com>, kgraul@linux.ibm.com,
-        jaka@linux.ibm.com, wintera@linux.ibm.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1679887699-54797-1-git-send-email-guwen@linux.alibaba.com>
- <709cbd7d-7bc6-d039-a814-cbc8d50b861b@linux.ibm.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <709cbd7d-7bc6-d039-a814-cbc8d50b861b@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-11.2 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230407134626.47928-9-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2023/4/5 22:48, Wenjia Zhang wrote:
-
+On Fri, Apr 07, 2023 at 04:46:20PM +0300, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> Hi Wen,
+> The pad_setup function pointer was introduced with 88bdef8be9f6 ("net: dsa:
+> mt7530: Extend device data ready for adding a new hardware"). It was being
+> used to set up the core clock and port 6 of the MT7530 switch, and pll of
+> the MT7531 switch.
 > 
-> Thank you for the new version. The discussion on the open issue is still on-going in our organisation internally. I 
-> appreciate your patience!
+> All of these were moved to more appropriate locations, and it was never
+> used for the switch on the MT7988 SoC. Therefore, this function pointer
+> hasn't got a use anymore. Remove it.
 > 
-> One thing I need to mention during testing the loopback device on our platform is that we get crash, because 
-> smc_ism-signal_shutdown() is called by smc_1gr_free_work(), which is called indirectly by smc_conn_free(). Please make 
-> sure that it would go to the path of the loopback device cleanly. Any question and consideration is welcome!
+> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+
+Acked-by: Daniel Golle <daniel@makrotopia.org>
+
+> ---
+>  drivers/net/dsa/mt7530.c | 36 ++----------------------------------
+>  drivers/net/dsa/mt7530.h |  3 ---
+>  2 files changed, 2 insertions(+), 37 deletions(-)
 > 
-> Thanks,
-> Wenjia
-
-Thank you! Wenjia. Testing on s390 is really helpful.
-
-Since most of the path in smc_ism_signal_shutdown() is inside the preprocessing
-macro '#if IS_ENABLED(CONFIG_ISM) ... #endif', so they are not executed in my
-test environment, therefore I didn't realized the interface of ops->signal_event
-in loopback device and missed the crash.
-
-I will fix this and check for the other parts wrapped by '#if IS_ENABLED(CONFIG_ISM)
-... #endif' which I ignored before. Then I will send out a new version.
-
-Thanks,
-Wen Gu
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index c636a888d194..0a6d1c0872be 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -473,12 +473,6 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
+>  	return 0;
+>  }
+>  
+> -static int
+> -mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
+> -{
+> -	return 0;
+> -}
+> -
+>  static bool mt7531_dual_sgmii_supported(struct mt7530_priv *priv)
+>  {
+>  	u32 val;
+> @@ -488,12 +482,6 @@ static bool mt7531_dual_sgmii_supported(struct mt7530_priv *priv)
+>  	return (val & PAD_DUAL_SGMII_EN) != 0;
+>  }
+>  
+> -static int
+> -mt7531_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
+> -{
+> -	return 0;
+> -}
+> -
+>  static void
+>  mt7531_pll_setup(struct mt7530_priv *priv)
+>  {
+> @@ -2576,14 +2564,6 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
+>  	}
+>  }
+>  
+> -static int
+> -mt753x_pad_setup(struct dsa_switch *ds, const struct phylink_link_state *state)
+> -{
+> -	struct mt7530_priv *priv = ds->priv;
+> -
+> -	return priv->info->pad_setup(ds, state->interface);
+> -}
+> -
+>  static int
+>  mt7530_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  		  phy_interface_t interface)
+> @@ -2754,8 +2734,6 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  		if (priv->p6_interface == state->interface)
+>  			break;
+>  
+> -		mt753x_pad_setup(ds, state);
+> -
+>  		if (mt753x_mac_config(ds, port, mode, state) < 0)
+>  			goto unsupported;
+>  
+> @@ -3053,11 +3031,6 @@ static int mt753x_set_mac_eee(struct dsa_switch *ds, int port,
+>  	return 0;
+>  }
+>  
+> -static int mt7988_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
+> -{
+> -	return 0;
+> -}
+> -
+>  static int mt7988_setup(struct dsa_switch *ds)
+>  {
+>  	struct mt7530_priv *priv = ds->priv;
+> @@ -3119,7 +3092,6 @@ const struct mt753x_info mt753x_table[] = {
+>  		.phy_write_c22 = mt7530_phy_write_c22,
+>  		.phy_read_c45 = mt7530_phy_read_c45,
+>  		.phy_write_c45 = mt7530_phy_write_c45,
+> -		.pad_setup = mt7530_pad_clk_setup,
+>  		.mac_port_get_caps = mt7530_mac_port_get_caps,
+>  		.mac_port_config = mt7530_mac_config,
+>  	},
+> @@ -3131,7 +3103,6 @@ const struct mt753x_info mt753x_table[] = {
+>  		.phy_write_c22 = mt7530_phy_write_c22,
+>  		.phy_read_c45 = mt7530_phy_read_c45,
+>  		.phy_write_c45 = mt7530_phy_write_c45,
+> -		.pad_setup = mt7530_pad_clk_setup,
+>  		.mac_port_get_caps = mt7530_mac_port_get_caps,
+>  		.mac_port_config = mt7530_mac_config,
+>  	},
+> @@ -3143,7 +3114,6 @@ const struct mt753x_info mt753x_table[] = {
+>  		.phy_write_c22 = mt7531_ind_c22_phy_write,
+>  		.phy_read_c45 = mt7531_ind_c45_phy_read,
+>  		.phy_write_c45 = mt7531_ind_c45_phy_write,
+> -		.pad_setup = mt7531_pad_setup,
+>  		.cpu_port_config = mt7531_cpu_port_config,
+>  		.mac_port_get_caps = mt7531_mac_port_get_caps,
+>  		.mac_port_config = mt7531_mac_config,
+> @@ -3156,7 +3126,6 @@ const struct mt753x_info mt753x_table[] = {
+>  		.phy_write_c22 = mt7531_ind_c22_phy_write,
+>  		.phy_read_c45 = mt7531_ind_c45_phy_read,
+>  		.phy_write_c45 = mt7531_ind_c45_phy_write,
+> -		.pad_setup = mt7988_pad_setup,
+>  		.cpu_port_config = mt7988_cpu_port_config,
+>  		.mac_port_get_caps = mt7988_mac_port_get_caps,
+>  		.mac_port_config = mt7988_mac_config,
+> @@ -3186,9 +3155,8 @@ mt7530_probe_common(struct mt7530_priv *priv)
+>  	/* Sanity check if these required device operations are filled
+>  	 * properly.
+>  	 */
+> -	if (!priv->info->sw_setup || !priv->info->pad_setup ||
+> -	    !priv->info->phy_read_c22 || !priv->info->phy_write_c22 ||
+> -	    !priv->info->mac_port_get_caps ||
+> +	if (!priv->info->sw_setup || !priv->info->phy_read_c22 ||
+> +	    !priv->info->phy_write_c22 || !priv->info->mac_port_get_caps ||
+>  	    !priv->info->mac_port_config)
+>  		return -EINVAL;
+>  
+> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+> index 01db5c9724fa..9e5b99b853ba 100644
+> --- a/drivers/net/dsa/mt7530.h
+> +++ b/drivers/net/dsa/mt7530.h
+> @@ -697,8 +697,6 @@ struct mt753x_pcs {
+>   * @phy_write_c22:	Holding the way writing PHY port using C22
+>   * @phy_read_c45:	Holding the way reading PHY port using C45
+>   * @phy_write_c45:	Holding the way writing PHY port using C45
+> - * @pad_setup:		Holding the way setting up the bus pad for a certain
+> - *			MAC port
+>   * @phy_mode_supported:	Check if the PHY type is being supported on a certain
+>   *			port
+>   * @mac_port_validate:	Holding the way to set addition validate type for a
+> @@ -719,7 +717,6 @@ struct mt753x_info {
+>  			    int regnum);
+>  	int (*phy_write_c45)(struct mt7530_priv *priv, int port, int devad,
+>  			     int regnum, u16 val);
+> -	int (*pad_setup)(struct dsa_switch *ds, phy_interface_t interface);
+>  	int (*cpu_port_config)(struct dsa_switch *ds, int port);
+>  	void (*mac_port_get_caps)(struct dsa_switch *ds, int port,
+>  				  struct phylink_config *config);
+> -- 
+> 2.37.2
+> 
