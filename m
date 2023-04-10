@@ -2,115 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF6E76DC819
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 16:54:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76D4B6DC81A
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 16:56:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbjDJOyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 10:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49530 "EHLO
+        id S229906AbjDJO42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 10:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbjDJOyP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 10:54:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491484ED2;
-        Mon, 10 Apr 2023 07:54:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D08556103F;
-        Mon, 10 Apr 2023 14:54:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B92D9C433EF;
-        Mon, 10 Apr 2023 14:54:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681138454;
-        bh=9+uOJWRfOOVtlTBySmg32nz3qSkxlHDeOSpYS+o/RlE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ssAqJLGeCv4udxLGiYHv6O38FhSmjbqX2wp9b/hgpG2OED4HO/QFSXcN7Z2dUrNq+
-         eI+Ff5vJYt05iDKQToytkFVNzf0IqjYHDz0IXgMTJffGfKbU6mvRuKXcO2RzblWn+k
-         aKcoF4an4eHpQEVNUsdU4fCQo3ubojUDJ5rHL9GBGelkJRW2IJX/pK4u0CWKlfbr8T
-         UIhaxAsOtFMxz7+sip5msZdAf9PMqkKj5SPxuokS1kwM1dOBPILyofwLFpO/LUAjGn
-         oy4oM4CdTOLZ5v5PQV4X+MlN1WDFIp3Dn/aEy4kNRgDcFUX3cWZL/Yd132KaCrWMgr
-         Pc8EIbkmSVvgA==
-Date:   Mon, 10 Apr 2023 16:54:10 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, kuba@kernel.org, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        lorenzo.bianconi@redhat.com, daniel@makrotopia.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 00/10] mtk: wed: move cpuboot, ilm and dlm in
- dedicated dts nodes
-Message-ID: <ZDQjEkTstngxib/0@lore-desk>
-References: <cover.1680268101.git.lorenzo@kernel.org>
- <20230406152511.GA3117403-robh@kernel.org>
+        with ESMTP id S229697AbjDJO41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 10:56:27 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E034496
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 07:56:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=uLBLp4W7bbdJuKSr6muVRYgQ+qA4tqtZQjwqJSs6TTs=; b=oJjP/lI2m3D47a9yzzJKOt5rRT
+        /dEyXH7BpZ7Z51ie+jSHaf+W5BUq+fBnachEJU7t+PvsfVd2enxB82NM0/znSpaWTvVbfftHnenZM
+        LSXZpJWBDIcnls3Fhhj3RWbGoWIwZnbHmEutVliia4X5exo5OOzMgS5/SJsJ+PQIYguw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1plswO-009vGf-RM; Mon, 10 Apr 2023 16:56:20 +0200
+Date:   Mon, 10 Apr 2023 16:56:20 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, arm-soc <arm@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH 1/3] ARM: dts: imx51: ZII: Add missing phy-mode
+Message-ID: <e39dd60e-0514-4eb6-9f6e-ee38a7e25dc6@lunn.ch>
+References: <20230407152503.2320741-1-andrew@lunn.ch>
+ <20230407152503.2320741-2-andrew@lunn.ch>
+ <20230407154159.upribliycphlol5u@skbuf>
+ <b5e96d31-6290-44e5-b829-737e40f0ef35@lunn.ch>
+ <20230410100012.esudvvyik3ck7urr@skbuf>
+ <c4b386af-2a51-4690-b552-e1da074e06d2@lunn.ch>
+ <20230410131157.ye3wuzs2tjsojcim@skbuf>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Mbdi1ZojGS1vdtOH"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230406152511.GA3117403-robh@kernel.org>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230410131157.ye3wuzs2tjsojcim@skbuf>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> hmmm... why does this work?
+> 
+> would you mind adding this small debug print and booting again?
+ 
+mv88e6xxx_translate_cmode: cmode 4, supported: supported=7
 
---Mbdi1ZojGS1vdtOH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+CMODE 4 is 'RMII PHY' or 'RMII to PHY', depending on if it has found a
+PHY or not.
 
-> On Fri, Mar 31, 2023 at 03:12:36PM +0200, Lorenzo Bianconi wrote:
-> > Since cpuboot, ilm and dlm memory region are not part of MT7986 SoC RAM,
->=20
-> That's not really a requirement. Is that the only "problem" here?
+mv88e6085 mdio_mux-0.1:00: phylink_validate: supported_interfaces=1,3,7, interface rev-rmii
+mv88e6085 mdio_mux-0.1:00: phylink_validate: supported_interfaces=1,3,7, interface rev-rmii
+mv88e6085 mdio_mux-0.1:00: configuring for fixed/rev-rmii link mode
 
-I would say this series allows to be closer to a standard binding and at the
-same time helps with uboot compatibility.
+Both calls to phylink_validate() then returning -EINVAL.
 
->=20
-> Certainly going from a standard binding to a custom phandle reference is=
-=20
-> not an improvement.
->=20
-> > move them in dedicated mt7986a syscon dts nodes.
->=20
-> What makes them a syscon? Are they memory or h/w registers? Can't be=20
-> both...
+The first call is from phylink_create(), which does not check the
+return value.
 
->=20
-> Perhaps mmio-sram?
+The second call is from phylink_parse_fixedlink(), which also does not
+check the return code.
 
-ilm and dlm do not have h/w registers afaik, they are chip memory used
-to store firmware information, syscon is just the closest binding I found.
-I did not find mmio-sram, my fault.
+This is a bit fragile, all it would need is for these return values to
+be checked and it would break. So i think cmode 4 should return
+REVRMII and cmode 5 shoud be RMII. I will submit a patch making this
+change.
 
-Regards,
-Lorenzo
-
->=20
-> > At the same time we keep backward-compatibility with older dts version =
-where
-> > cpuboot, ilm and dlm were defined as reserved-memory child nodes.
->=20
-> Doesn't really seem big enough issue to justify carrying this.
->=20
-> Rob
-
---Mbdi1ZojGS1vdtOH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZDQjEgAKCRA6cBh0uS2t
-rNnEAP98v7/BKa/Fd5y1OymB9T4LAXXAgNEIA7/LExkl8VzmzQD+L0fjplWxRgsc
-nyGfpakLxtEGDs0uoT1Qtz4Fd7IzAAI=
-=ri5+
------END PGP SIGNATURE-----
-
---Mbdi1ZojGS1vdtOH--
+	Andrew
