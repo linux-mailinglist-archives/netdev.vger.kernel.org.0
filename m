@@ -2,113 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D91876DCE0B
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 01:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CB2D6DCE29
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 01:35:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbjDJX1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 19:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
+        id S230048AbjDJXfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 19:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbjDJX1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 19:27:35 -0400
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88BAD26AD;
-        Mon, 10 Apr 2023 16:27:25 -0700 (PDT)
-Received: by mail-ot1-f45.google.com with SMTP id 39-20020a9d04aa000000b006a1370e214aso1322768otm.11;
-        Mon, 10 Apr 2023 16:27:25 -0700 (PDT)
+        with ESMTP id S230047AbjDJXfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 19:35:15 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AC326A9
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 16:35:12 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id e13so5762453plc.12
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 16:35:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1681169712; x=1683761712;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=qBNNnBiuoc4JXyCGVr7x6sfUDNe5El4k/2qn6fgM/Jo=;
+        b=7IG/muDu2TkCaBOQGY3gKI48gqRhZas4hNQMD4wJcSHnpq2ZfifZyzfdpQNCXh1NYS
+         32R2Jss5eV2gjGLbysK2KIyBgzDWKs3ctUxyiW2qXulKNJT+oSw5SD7mSN+cf8ExhvCi
+         BH5JDc/VHkKzyiJbpUM9jcFrYzLKG0KrU7CHMoBWY5PbfInLiE3/OJ05l39JbYpW9BtE
+         A1L1kI3MMeHVXdkdiwTCEFIWD3EIX6I3gLx48+YE7tlZuH1pPaVrOrF0VQwfO4JH0vOT
+         tnZtebAboJg410mh8iplBqaRNGyTGzg6/vTCdP6sUqU5PIhF0huT8JN9Mq21J7vX1DrQ
+         dn4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681169245; x=1683761245;
+        d=1e100.net; s=20210112; t=1681169712; x=1683761712;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=tr9LLuBzpOy9ftur5sYz2tVpCadcYN7bj01HXP4dq28=;
-        b=VgmYw3w3hhw53sr+VnHJFeiPcgK+U0XBectwGwkXi6r5LkKDqhn18d4oBVWtX8SKHu
-         tiy5hIxEvgK2EGmWG90MdWzqnhmu3H2MMEwEln2fw66Hr6rYdonwyLZuik+krT3xj6Ld
-         lx2gfmlgG099DC30/qgVohmw+x9TFytzgKkiQ/psJsTOlf7j8Lf2Lnmgz1+Pcd8BgLOf
-         wzb0QHPJ0oVUwpwxZMy5alTrgj8vp1/FACLfkSlzz2YQ6CYn6MLN/7zrmLBPKQSV3rJf
-         JGfyRlUAZdt4UVotMq7sdss84MuPQ39KTNliPkRcz1R8maEUxtWY6qoSdiajrgCsdGw9
-         VaSA==
-X-Gm-Message-State: AAQBX9fHWv4VdNrkNK+3LkEi9lyBnM6x1iDdeWl5xP+o/EggJYJ2r+Kt
-        kBM48g9WH+UOYDe/UMNs+w==
-X-Google-Smtp-Source: AKy350bzWNWCtm3fBi0rN/yd3/bsFmcLjSt1Xup5SQAd2LGIQPyrIjLJ6265a/Hm4ULgPSwmKb5RTA==
-X-Received: by 2002:a9d:7b44:0:b0:6a1:2de7:bfca with SMTP id f4-20020a9d7b44000000b006a12de7bfcamr3561511oto.19.1681169244771;
-        Mon, 10 Apr 2023 16:27:24 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id v16-20020a056830141000b0069f951899e1sm4857162otp.24.2023.04.10.16.27.24
+        bh=qBNNnBiuoc4JXyCGVr7x6sfUDNe5El4k/2qn6fgM/Jo=;
+        b=uXSebAxDx6DS4YJ+H90dCkaXnZ8VgzZ1YOgYSIFgpCLPXpIHGLjsgEASeGrCu+xysf
+         stmEBpEJ9LrMUYwnsNmPtuFuj7OkwhwH4uXPxy0XuBQM2pjx8PxtHi3JPlQCFaJLwo4f
+         Wy13Xg7wd7N7JMizWWAb3EhuxDZaGC4oKMLcS7Fzxe6HXY+qI+rI+v/fAAiqbxcqu0zu
+         /MtrcdKcoD6etpDzOkzapqnFNGZY0VtmLSNLoa6bceQzwZAT8WSPevJxzPns5vX2JPOY
+         Sya7Iqm1rFQcWJY+g7qR6upqTeylolviHVazmufQg1YaTMKmuQj4XSjhPWfLwB8KgXuv
+         2Rkg==
+X-Gm-Message-State: AAQBX9d9DiL7fm+rkGVaEe1I4IL56I1z6XsewG4FTH0J3+vNLnCap0oR
+        rwxf6bT7u12yz7sYUxZF7WNbVDQSxMFPUkCMVmH3IaXn
+X-Google-Smtp-Source: AKy350YLjB7k+gDvS7qFwrtq7BZZf1ufghbMmD6w+vz2KNkUpGcaEmUpu0DYTMl9Sq6BkleWtxe3qQ==
+X-Received: by 2002:a17:902:ea12:b0:19e:7889:f9fb with SMTP id s18-20020a170902ea1200b0019e7889f9fbmr17184018plg.68.1681169711767;
+        Mon, 10 Apr 2023 16:35:11 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id t22-20020a170902b21600b001a20791250esm8346801plr.22.2023.04.10.16.35.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Apr 2023 16:27:24 -0700 (PDT)
-Received: (nullmailer pid 1562062 invoked by uid 1000);
-        Mon, 10 Apr 2023 23:27:23 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ti/cpsw: Add explicit platform_device.h and of_platform.h includes
-Date:   Mon, 10 Apr 2023 18:27:19 -0500
-Message-Id: <20230410232719.1561950-1-robh@kernel.org>
+        Mon, 10 Apr 2023 16:35:11 -0700 (PDT)
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Cc:     bluca@debian.org, dsahern@kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Robin <imer@imer.cc>
+Subject: [PATCH iproute2] iptunnel: detect protocol mismatch on tunnel change
+Date:   Mon, 10 Apr 2023 16:35:09 -0700
+Message-Id: <20230410233509.7616-1-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.8 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TI CPSW uses of_platform_* functions which are declared in of_platform.h.
-of_platform.h gets implicitly included by of_device.h, but that is going
-to be removed soon. Nothing else depends on of_device.h so it can be
-dropped. of_platform.h also implicitly includes platform_device.h, so
-add an explicit include for it, too.
+If attempt is made to change an IPv6 tunnel by using IPv4
+parameters, a stack overflow would happen and garbage request
+would be passed to kernel.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
+Example:
+ip tunnel add gre1 mode ip6gre local 2001:db8::1 remote 2001:db8::2 ttl 255
+ip tunnel change gre1 mode gre local 192.168.0.0 remote 192.168.0.1 ttl 255
+
+The second command should fail because it attempting set IPv4 addresses
+on a GRE tunnel that is IPv6.
+
+Do best effort detection of this mismatch by giving a bigger buffer to get
+tunnel request, and checking that the IP header is IPv4. It is still possible
+but unlikely that byte would match in IPv6 tunnel paramater, but good enough
+to catch the obvious cases.
+
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1032642
+Reported-by: Robin <imer@imer.cc>
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- drivers/net/ethernet/ti/cpsw.c     | 2 +-
- drivers/net/ethernet/ti/cpsw_new.c | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ ip/iptunnel.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 37f0b62ec5d6..f9cd566d1c9b 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -27,7 +27,7 @@
- #include <linux/of.h>
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
--#include <linux/of_device.h>
-+#include <linux/of_platform.h>
- #include <linux/if_vlan.h>
- #include <linux/kmemleak.h>
- #include <linux/sys_soc.h>
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 35128dd45ffc..c61e4e44a78f 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -7,6 +7,7 @@
+diff --git a/ip/iptunnel.c b/ip/iptunnel.c
+index 02c3670b469d..b6da145913d6 100644
+--- a/ip/iptunnel.c
++++ b/ip/iptunnel.c
+@@ -17,6 +17,7 @@
+ #include <net/if_arp.h>
+ #include <linux/ip.h>
+ #include <linux/if_tunnel.h>
++#include <linux/ip6_tunnel.h>
  
- #include <linux/io.h>
- #include <linux/clk.h>
-+#include <linux/platform_device.h>
- #include <linux/timer.h>
- #include <linux/module.h>
- #include <linux/irqreturn.h>
-@@ -23,7 +24,7 @@
- #include <linux/of.h>
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
--#include <linux/of_device.h>
-+#include <linux/of_platform.h>
- #include <linux/if_vlan.h>
- #include <linux/kmemleak.h>
- #include <linux/sys_soc.h>
+ #include "rt_names.h"
+ #include "utils.h"
+@@ -172,11 +173,20 @@ static int parse_args(int argc, char **argv, int cmd, struct ip_tunnel_parm *p)
+ 			if (get_ifname(p->name, *argv))
+ 				invarg("\"name\" not a valid ifname", *argv);
+ 			if (cmd == SIOCCHGTUNNEL && count == 0) {
+-				struct ip_tunnel_parm old_p = {};
++				union {
++					struct ip_tunnel_parm ip_tnl;
++					struct ip6_tnl_parm2 ip6_tnl;
++				} old_p = {};
+ 
+ 				if (tnl_get_ioctl(*argv, &old_p))
+ 					return -1;
+-				*p = old_p;
++
++				if (old_p.ip_tnl.iph.version != 4 ||
++				    old_p.ip_tnl.iph.ihl != 5)
++					invarg("\"name\" is not an ip tunnel",
++					       *argv);
++
++				*p = old_p.ip_tnl;
+ 			}
+ 		}
+ 		count++;
 -- 
 2.39.2
 
