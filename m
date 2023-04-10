@@ -2,44 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F24D6DC8E7
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 18:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A47D6DC93C
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 18:25:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230191AbjDJP7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 11:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38604 "EHLO
+        id S230014AbjDJQZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 12:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229953AbjDJP7E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 11:59:04 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102A62D5A;
-        Mon, 10 Apr 2023 08:58:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681142329; x=1712678329;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7CyX8+iAb3kw4nJuS0qncc4N2aFERAptrvfH4AgZhAg=;
-  b=MDo8sR+TGFjPyXw33RNAlhuj24FtjqmdBI/4Rj+t0Uj0aUvKynmN4Fin
-   ulLDzaIhaVSNZ3Qc7g6aD+AkVUrAvRmQDKkDbfwT+HUIqyt6k+9egcJCS
-   jlLsyB8QuUA7Mtld3o4DRd4WUrUMIR6KKbojB2DbbUzNlQUyBDl2z8TRy
-   OouEJs37EhVhjkjHQndO4w31a5gkwj8DjL01J0o+ZLLRrXR7LvBuQkYa9
-   nkAhquMtvg8T2XcD3JUjXOIgvXM/qrsBMV+4cTvGmoDZaCO+lJCYv/51Z
-   W40cD/EtR5iIjLqG5swIpi2f3RiGIiqijMlZ5AZgfdiB9ijXyvN2dj8kv
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="343391855"
-X-IronPort-AV: E=Sophos;i="5.98,333,1673942400"; 
-   d="scan'208";a="343391855"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2023 08:58:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="777601811"
-X-IronPort-AV: E=Sophos;i="5.98,333,1673942400"; 
-   d="scan'208";a="777601811"
-Received: from p12ill20yoongsia.png.intel.com ([10.88.227.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 10 Apr 2023 08:58:22 -0700
-From:   Song Yoong Siang <yoong.siang.song@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        with ESMTP id S229766AbjDJQZU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 12:25:20 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9061720
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 09:25:17 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-54bfc4e0330so139081787b3.3
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 09:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1681143917;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zJZt4cv250ETxOLYWhNXH5O28WLGu+lq/P9MQwXS1vc=;
+        b=Q38PWrtfrWbIykKvRvvBdbu2xEQ65qR53Fa294q6h9fTzpEgUOChCN6gZzA6J/2Jrr
+         oqqSni32vEWVPYCbg0h6jm4fUOjfjFak24TvaaKhhhzysF17g2T81sIMcNE/NB6iEZfy
+         +JAuyYt2ZIkrpatZUEADvUNtPERwhA5h4EJXJKEds3rQ3lUQshZ+PSpMj9wQN087+Ou9
+         FPqzzKvhqvM3NpQ0KRI+2RbokVotgwcuON+I3/gS46uHJ5RfnNczmlNKsnPDqRFen6K/
+         toC13G+9g8xUr2c5Iins+M2UhJTrM19tEpB1/wsJwf04OBfN3YoQtNyJepOI8VsojJVK
+         Mzyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681143917;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zJZt4cv250ETxOLYWhNXH5O28WLGu+lq/P9MQwXS1vc=;
+        b=QKrTTKiC4npfoApoMQXL6WSC9JSgzLdj3pCSawOQThBzaStfHDscFNY848ekoYrqnk
+         8InP3bVC4cGwKHhM+1lJ8AmcQwG+yHc+V3zKgt3l70bWhuQOUZI4fcAE2kZgpC5GXBTC
+         s8dC5c+6b6zNwW9Lsr+6D3DURSnbJSI7IhgSneC8j/+ks1TLvZXr73JWYFFFEfzjM5co
+         sjzSz9o3PfbTsbXBtEIqGXMXalAfvR9I+s0TGDwn5pRnyanwP4D/dCXEwGuXRMu/IELB
+         xyrY2T4f4mbhG12eP9AkX+Ni1e/B1e0xy6nKrO/WJy83bLz9pAYQd0s8MnVAp3Ux4+HC
+         AU8Q==
+X-Gm-Message-State: AAQBX9eoCqJEJsihASlR/2DrIAHdC9siRi+TskpCOVpw1469GJ9u/il8
+        Eg8sZqBP1ssFbX0Sx1v3kJsursY=
+X-Google-Smtp-Source: AKy350Yza28bnGsHoOQVOcw77cb7JSctAnu5UcsxyRZ6i3OPX41XxJItWn69Z01NRHFpS7EVaLNUCGM=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a25:cb52:0:b0:a02:a3a6:78fa with SMTP id
+ b79-20020a25cb52000000b00a02a3a678famr5422814ybg.12.1681143917218; Mon, 10
+ Apr 2023 09:25:17 -0700 (PDT)
+Date:   Mon, 10 Apr 2023 09:25:15 -0700
+In-Reply-To: <20230410100939.331833-4-yoong.siang.song@intel.com>
+Mime-Version: 1.0
+References: <20230410100939.331833-1-yoong.siang.song@intel.com> <20230410100939.331833-4-yoong.siang.song@intel.com>
+Message-ID: <ZDQ4a9UIVysA6hgd@google.com>
+Subject: Re: [PATCH net-next 3/4] net: stmmac: add Rx HWTS metadata to XDP
+ receive pkt
+From:   Stanislav Fomichev <sdf@google.com>
+To:     Song Yoong Siang <yoong.siang.song@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Jose Abreu <joabreu@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -51,122 +66,127 @@ To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
         Alexander Duyck <alexanderduyck@fb.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, xdp-hints@xdp-project.net,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: [PATCH net-next v2 4/4] net: stmmac: add Rx HWTS metadata to XDP ZC receive pkt
-Date:   Mon, 10 Apr 2023 23:57:22 +0800
-Message-Id: <20230410155722.335908-5-yoong.siang.song@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230410155722.335908-1-yoong.siang.song@intel.com>
-References: <20230410155722.335908-1-yoong.siang.song@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+        bpf@vger.kernel.org, xdp-hints@xdp-project.net
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add receive hardware timestamp metadata support via kfunc to XDP Zero Copy
-receive packets.
+On 04/10, Song Yoong Siang wrote:
+> Add receive hardware timestamp metadata support via kfunc to XDP receive
+> packets.
+> 
+> Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
+>  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 24 +++++++++++++++++--
+>  2 files changed, 23 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> index ac8ccf851708..760445275da8 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> @@ -94,6 +94,7 @@ struct stmmac_rx_buffer {
+>  
+>  struct stmmac_xdp_buff {
+>  	struct xdp_buff xdp;
+> +	ktime_t rx_hwts;
+>  };
+>  
+>  struct stmmac_rx_queue {
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index f7bbdf04d20c..ca183fbfde85 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -5307,6 +5307,8 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+>  			}
+>  		}
+>  
 
-Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 29 +++++++++++++++++--
- 1 file changed, 26 insertions(+), 3 deletions(-)
+[..]
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 7f1c0c36de8c..bcaafeea118b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1611,6 +1611,12 @@ static int stmmac_alloc_rx_buffers_zc(struct stmmac_priv *priv,
- 	struct stmmac_rx_queue *rx_q = &dma_conf->rx_queue[queue];
- 	int i;
- 
-+	/* struct stmmac_xdp_buff is using cb field (maximum size of 24 bytes)
-+	 * in struct xdp_buff_xsk to stash driver specific information. Thus,
-+	 * use this macro to make sure no size violations.
-+	 */
-+	XSK_CHECK_PRIV_TYPE(struct stmmac_xdp_buff);
-+
- 	for (i = 0; i < dma_conf->dma_rx_size; i++) {
- 		struct stmmac_rx_buffer *buf;
- 		dma_addr_t dma_addr;
-@@ -4903,7 +4909,7 @@ static struct sk_buff *stmmac_construct_skb_zc(struct stmmac_channel *ch,
- 
- static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
- 				   struct dma_desc *p, struct dma_desc *np,
--				   struct xdp_buff *xdp)
-+				   struct xdp_buff *xdp, ktime_t rx_hwts)
- {
- 	struct stmmac_channel *ch = &priv->channel[queue];
- 	struct skb_shared_hwtstamps *shhwtstamp = NULL;
-@@ -4921,7 +4927,7 @@ static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
- 
- 	shhwtstamp = skb_hwtstamps(skb);
- 	memset(shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
--	stmmac_get_rx_hwtstamp(priv, p, np, &shhwtstamp->hwtstamp);
-+	shhwtstamp->hwtstamp = rx_hwts;
- 
- 	stmmac_rx_vlan(priv->dev, skb);
- 	skb->protocol = eth_type_trans(skb, priv->dev);
-@@ -4999,6 +5005,16 @@ static bool stmmac_rx_refill_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
- 	return ret;
- }
- 
-+static struct stmmac_xdp_buff *xsk_buff_to_stmmac_ctx(struct xdp_buff *xdp)
-+{
-+	/* In XDP zero copy data path, xdp field in struct xdp_buff_xsk is used
-+	 * to represent incoming packet, whereas cb field in the same structure
-+	 * is used to store driver specific info. Thus, struct stmmac_xdp_buff
-+	 * is laid on top of xdp and cb fields of struct xdp_buff_xsk.
-+	 */
-+	return (struct stmmac_xdp_buff *)xdp;
-+}
-+
- static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- {
- 	struct stmmac_rx_queue *rx_q = &priv->dma_conf.rx_queue[queue];
-@@ -5028,8 +5044,10 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 	}
- 	while (count < limit) {
- 		struct stmmac_rx_buffer *buf;
-+		struct stmmac_xdp_buff *ctx;
- 		unsigned int buf1_len = 0;
- 		struct dma_desc *np, *p;
-+		ktime_t rx_hwts = 0;
- 		int entry;
- 		int res;
- 
-@@ -5113,6 +5131,10 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 			goto read_again;
- 		}
- 
-+		stmmac_get_rx_hwtstamp(priv, p, np, &rx_hwts);
-+		ctx = xsk_buff_to_stmmac_ctx(buf->xdp);
-+		ctx->rx_hwts = rx_hwts;
-+
- 		/* XDP ZC Frame only support primary buffers for now */
- 		buf1_len = stmmac_rx_buf1_len(priv, p, status, len);
- 		len += buf1_len;
-@@ -5132,7 +5154,8 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 
- 		switch (res) {
- 		case STMMAC_XDP_PASS:
--			stmmac_dispatch_skb_zc(priv, queue, p, np, buf->xdp);
-+			stmmac_dispatch_skb_zc(priv, queue, p, np, buf->xdp,
-+					       rx_hwts);
- 			xsk_buff_free(buf->xdp);
- 			break;
- 		case STMMAC_XDP_CONSUMED:
--- 
-2.34.1
+> +		stmmac_get_rx_hwtstamp(priv, p, np, &ctx.rx_hwts);
 
+Do we want to pay this cost for every packet?
+
+The preferred alternative is to store enough state in the
+stmmac_xdp_buff so we can get to this data from stmmac_xdp_rx_timestamp.
+
+I haven't read this code, but tentatively:
+- move priv, p, np into stmmac_xdp_buff, assign them here instead of
+  calling stmmac_get_rx_hwtstamp
+- call stmmac_get_rx_hwtstamp from stmmac_xdp_rx_timestamp with the
+  stored priv, p, np
+
+That would ensure that we won't waste the cycles pulling out the rx
+timestamp for every packet if the higher levels / users don't care.
+
+Would something like this work?
+
+> +
+>  		if (!skb) {
+>  			unsigned int pre_len, sync_len;
+>  
+> @@ -5315,7 +5317,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+>  
+>  			xdp_init_buff(&ctx.xdp, buf_sz, &rx_q->xdp_rxq);
+>  			xdp_prepare_buff(&ctx.xdp, page_address(buf->page),
+> -					 buf->page_offset, buf1_len, false);
+> +					 buf->page_offset, buf1_len, true);
+>  
+>  			pre_len = ctx.xdp.data_end - ctx.xdp.data_hard_start -
+>  				  buf->page_offset;
+> @@ -5411,7 +5413,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+>  
+>  		shhwtstamp = skb_hwtstamps(skb);
+>  		memset(shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
+> -		stmmac_get_rx_hwtstamp(priv, p, np, &shhwtstamp->hwtstamp);
+> +		shhwtstamp->hwtstamp = ctx.rx_hwts;
+>  
+>  		stmmac_rx_vlan(priv->dev, skb);
+>  		skb->protocol = eth_type_trans(skb, priv->dev);
+> @@ -7071,6 +7073,22 @@ void stmmac_fpe_handshake(struct stmmac_priv *priv, bool enable)
+>  	}
+>  }
+>  
+> +static int stmmac_xdp_rx_timestamp(const struct xdp_md *_ctx, u64 *timestamp)
+> +{
+> +	const struct stmmac_xdp_buff *ctx = (void *)_ctx;
+> +
+> +	if (ctx->rx_hwts) {
+> +		*timestamp = ctx->rx_hwts;
+> +		return 0;
+> +	}
+> +
+> +	return -ENODATA;
+> +}
+> +
+> +const struct xdp_metadata_ops stmmac_xdp_metadata_ops = {
+> +	.xmo_rx_timestamp		= stmmac_xdp_rx_timestamp,
+> +};
+> +
+>  /**
+>   * stmmac_dvr_probe
+>   * @device: device pointer
+> @@ -7178,6 +7196,8 @@ int stmmac_dvr_probe(struct device *device,
+>  
+>  	ndev->netdev_ops = &stmmac_netdev_ops;
+>  
+> +	ndev->xdp_metadata_ops = &stmmac_xdp_metadata_ops;
+> +
+>  	ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+>  			    NETIF_F_RXCSUM;
+>  	ndev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+> -- 
+> 2.34.1
+> 
