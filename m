@@ -2,61 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B41466DC9FC
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 19:27:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 450E36DCA03
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 19:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbjDJR1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 13:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51984 "EHLO
+        id S230336AbjDJRal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 13:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbjDJR1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 13:27:22 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01862116;
-        Mon, 10 Apr 2023 10:27:21 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id q8so11413002ilo.1;
-        Mon, 10 Apr 2023 10:27:21 -0700 (PDT)
+        with ESMTP id S230315AbjDJRah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 13:30:37 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1055A2681;
+        Mon, 10 Apr 2023 10:30:36 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id l1so6956982qvv.4;
+        Mon, 10 Apr 2023 10:30:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1681147641;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=XKQ6ReevTt40Ptj72kGc+kL2uvJcKHgSOVWQGBjPVDA=;
-        b=er9Kg2XJhpbind9LQX4e7F89kEQKqPEJG5/8+fDdo4lj8IGzO1jFV3GY8H+jgz+Snz
-         vNSwJG56CNJcffKc/TptuVJ+VmE3lRMTlf599q+PbuvqCi6MUj+cvJx8GXrpJ/O5eCRJ
-         p1CQ/aJgKDZakuPuIXNxjQtdsoe7EFmkFCxPnDQY8lKkH0CHDz7hzc4ve5m896+Mie8w
-         isXc8Y3GX/jjIN5be7/vI05dpAzZOtQBHHC7lnVXG6gnsqe0pGgvRxbKp8gQ/M1SzNDk
-         eJS44cGGymlQT/9L05MzAohiXa0mOyjBh7b/SpNwvvXWvQvh/JHoenmvlad0gL/wBWK4
-         NVMQ==
+        d=gmail.com; s=20210112; t=1681147835; x=1683739835;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mfMMmtPEDLwOl/JKAguDStI8/SqoqRX9kqOTCMn7AGw=;
+        b=d6LAhlAD/HEDF+Wi2ybYcJFdo5uqQjKD+ha83RTcAkYnwlYy8WSeJfOvlZFPAIf3UE
+         KPtg1YNJ7TlBD+GKSKjI4yLiOGlnGtWiyQmbQAcYk/mWXWWnNTQO05v7COcmFDGUzIi6
+         8vLm8er86fjdvyL923sUS2gsfaEByCa3lik6RiqHL04t4DeyitM0XlmFew1GOxmaGh/r
+         yV72FYZY+xa61IkQv2SE/2R1zvp7ktDe3tiVDuOqae9c/WLk2oA3V/fBi7iaosPFDkpT
+         LVacqWc9OW0hy6q8Dh/Us02lNHs2jbpuGDE326h2PEVWDZk+XknOL6JDCCy9RqlvObfr
+         ArkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681147641;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XKQ6ReevTt40Ptj72kGc+kL2uvJcKHgSOVWQGBjPVDA=;
-        b=ixZ+qLWCW4v7ZtLc0AFjPkBIgFuqXaxomdaY+1xP57uTfefMWO8zIfvPmyMeIJ+ZyS
-         Kg1/zEjxu5riFo8OzhF5HjuWawTHZzl8Nb7iHAxKXTr3HLH9VMjBq35GfinmQtfKFec8
-         mGxQQTR4iFbbOMsFlWzDWOEed+10yX1QWaA7wM0RN5k4IyIOBRfp1T1TT98kDS+s3pJx
-         LOjCfZ7tTRQyi9XxtR8MpyzyXb4QO+X3Y9XyLv4xSWG9Y+x6sLQyLqzfsc3Vk47y3pYS
-         wnrhv4bsSQxenD8XPSCZ895qPV5y0dYYeDxp9eBSO6M1NUnMu6uju1F87U4rBVQt0hSW
-         HI2Q==
-X-Gm-Message-State: AAQBX9f4FNP21szEyDVtWHxXEXHRmn1nfk4/iUFjEiv9Ivcb0/WDywWd
-        JAG96cX8SVZTi3D0KxR7N195KltCnw0=
-X-Google-Smtp-Source: AKy350bhwHgi/c8hl3JlwD6f1hYZ2F5l2fuhXlNL5eZ1faNRXRsLhasVRMkfhh7ys/pVnAGPlPEW7A==
-X-Received: by 2002:a92:d409:0:b0:323:1394:a48 with SMTP id q9-20020a92d409000000b0032313940a48mr7735353ilm.5.1681147641170;
-        Mon, 10 Apr 2023 10:27:21 -0700 (PDT)
-Received: from lvondent-mobl4.. (c-71-59-129-171.hsd1.or.comcast.net. [71.59.129.171])
-        by smtp.gmail.com with ESMTPSA id z63-20020a0293c5000000b003e80d0843e4sm3341016jah.78.2023.04.10.10.27.19
+        d=1e100.net; s=20210112; t=1681147835; x=1683739835;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=mfMMmtPEDLwOl/JKAguDStI8/SqoqRX9kqOTCMn7AGw=;
+        b=C19ExgAg+B2v1ugWCrvC2V7Mz761OOoQoThLCg/O3T2eHP3OGs97yGtlLAp2CDFPH0
+         zbbae8zn4B8/MBf/qW5L1Y+Od4pEWFclPSeEtHuRWuVGuaL8aUBhI7Y+8Sz5oTLAQfly
+         Zrhw8UdNvT4jkfyQT6UtYHPAm1n88X9vkEJlDRyjSOkCppvShZhrCxf7JOTC2/QHE0GQ
+         0W+Ut5qaQo0KzhmDOUb1ZHkEd6d7mZTKY9999Z7KoHZsZFtZg7jEEuwra5Fz+/Jidhl9
+         LqYx5WaawQCgeg6PyhOHqvrbclf2QUB1/4HLzBxXUOV5r535C4uZ5YaXmIVh2jfNYH2U
+         JWKA==
+X-Gm-Message-State: AAQBX9cBW43t/ccEar+Ggd3Lp36trulm2FvViBanaJQNNFqXXy1u1WOo
+        lwiJqHNkBOMeZ4Wg5qM7l8VcqWXHY5M=
+X-Google-Smtp-Source: AKy350btNdvQi8RnKbkYq8pj3Vj+PYTvnVtml87+DRqgn0usWQrRdpJIUR64NxGg9qmQZKQy8iX0/Q==
+X-Received: by 2002:ad4:5de8:0:b0:5ed:68ba:ce6b with SMTP id jn8-20020ad45de8000000b005ed68bace6bmr7079818qvb.4.1681147835104;
+        Mon, 10 Apr 2023 10:30:35 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id e15-20020a0cf74f000000b005ead964bfa2sm1257153qvo.127.2023.04.10.10.30.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Apr 2023 10:27:20 -0700 (PDT)
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: pull-request: bluetooth 2023-04-10
-Date:   Mon, 10 Apr 2023 10:27:18 -0700
-Message-Id: <20230410172718.4067798-1-luiz.dentz@gmail.com>
-X-Mailer: git-send-email 2.39.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 10 Apr 2023 10:30:34 -0700 (PDT)
+Date:   Mon, 10 Apr 2023 13:30:34 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>, Lu Wei <luwei32@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        asml.silence@gmail.com, imagedong@tencent.com, brouer@redhat.com,
+        keescook@chromium.org, jbenc@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Message-ID: <643447ba5224a_83e69294b6@willemb.c.googlers.com.notmuch>
+In-Reply-To: <CANn89iKFLREJV_cfHEk6wz6xXVv_jSrZ_UyXAB8VpH7gMXacxQ@mail.gmail.com>
+References: <20230410022152.4049060-1-luwei32@huawei.com>
+ <CANn89iKFLREJV_cfHEk6wz6xXVv_jSrZ_UyXAB8VpH7gMXacxQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: Add check for csum_start in
+ skb_partial_csum_set()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -67,57 +76,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit b9881d9a761a7e078c394ff8e30e1659d74f898f:
+Eric Dumazet wrote:
+> On Mon, Apr 10, 2023 at 4:22=E2=80=AFAM Lu Wei <luwei32@huawei.com> wro=
+te:
+> >
+> > If an AF_PACKET socket is used to send packets through a L3 mode ipvl=
+an
+> > and a vnet header is set via setsockopt() with the option name of
+> > PACKET_VNET_HDR, the value of offset will be nagetive in function
+> > skb_checksum_help() and trigger the following warning:
+> >
+> > WARNING: CPU: 3 PID: 2023 at net/core/dev.c:3262
+> > skb_checksum_help+0x2dc/0x390
+> > ......
+> > Call Trace:
+> >  <TASK>
+> >  ip_do_fragment+0x63d/0xd00
+> >  ip_fragment.constprop.0+0xd2/0x150
+> >  __ip_finish_output+0x154/0x1e0
+> >  ip_finish_output+0x36/0x1b0
+> >  ip_output+0x134/0x240
+> >  ip_local_out+0xba/0xe0
+> >  ipvlan_process_v4_outbound+0x26d/0x2b0
+> >  ipvlan_xmit_mode_l3+0x44b/0x480
+> >  ipvlan_queue_xmit+0xd6/0x1d0
+> >  ipvlan_start_xmit+0x32/0xa0
+> >  dev_hard_start_xmit+0xdf/0x3f0
+> >  packet_snd+0xa7d/0x1130
+> >  packet_sendmsg+0x7b/0xa0
+> >  sock_sendmsg+0x14f/0x160
+> >  __sys_sendto+0x209/0x2e0
+> >  __x64_sys_sendto+0x7d/0x90
+> >
+> > The root cause is:
+> > 1. skb->csum_start is set in packet_snd() according vnet_hdr:
+> >    skb->csum_start =3D skb_headroom(skb) + (u32)start;
+> >
+> >    'start' is the offset from skb->data, and mac header has been
+> >    set at this moment.
+> >
+> > 2. when this skb arrives ipvlan_process_outbound(), the mac header
+> >    is unset and skb_pull is called to expand the skb headroom.
+> >
+> > 3. In function skb_checksum_help(), the variable offset is calculated=
 
-  Merge branch 'bonding-ns-validation-fixes' (2023-04-07 08:47:20 +0100)
+> >    as:
+> >       offset =3D skb->csum_start - skb_headroom(skb);
+> >
+> >    since skb headroom is expanded in step2, offset is nagetive, and i=
+t
+> >    is converted to an unsigned integer when compared with skb_headlen=
 
-are available in the Git repository at:
+> >    and trigger the warning.
+> =
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2023-04-10
+> Not sure why it is negative ? This seems like the real problem...
+> =
 
-for you to fetch changes up to a2a9339e1c9deb7e1e079e12e27a0265aea8421a:
+> csum_start is relative to skb->head, regardless of pull operations.
+> =
 
-  Bluetooth: L2CAP: Fix use-after-free in l2cap_disconnect_{req,rsp} (2023-04-10 10:24:32 -0700)
+> whatever set csum_start to a too small value should be tracked and fixe=
+d.
 
-----------------------------------------------------------------
-bluetooth pull request for net:
+Right. The only way I could see it go negative is if something does
+the equivalent of pskb_expand_head with positive nhead, and without
+calling skb_headers_offset_update.
 
- - Fix not setting Dath Path for broadcast sink
- - Fix not cleaning up on LE Connection failure
- - SCO: Fix possible circular locking dependency
- - L2CAP: Fix use-after-free in l2cap_disconnect_{req,rsp}
- - Fix race condition in hidp_session_thread
- - btbcm: Fix logic error in forming the board name
- - btbcm: Fix use after free in btsdio_remove
-
-----------------------------------------------------------------
-Claudia Draghicescu (1):
-      Bluetooth: Set ISO Data Path on broadcast sink
-
-Luiz Augusto von Dentz (6):
-      Bluetooth: hci_conn: Fix not cleaning up on LE Connection failure
-      Bluetooth: Fix printing errors if LE Connection times out
-      Bluetooth: SCO: Fix possible circular locking dependency on sco_connect_cfm
-      Bluetooth: SCO: Fix possible circular locking dependency sco_sock_getsockopt
-      Bluetooth: hci_conn: Fix possible UAF
-      Bluetooth: L2CAP: Fix use-after-free in l2cap_disconnect_{req,rsp}
-
-Min Li (1):
-      Bluetooth: Fix race condition in hidp_session_thread
-
-Sasha Finkelstein (1):
-      bluetooth: btbcm: Fix logic error in forming the board name.
-
-Zheng Wang (1):
-      Bluetooth: btsdio: fix use after free bug in btsdio_remove due to race condition
-
- drivers/bluetooth/btbcm.c        |  2 +-
- drivers/bluetooth/btsdio.c       |  1 +
- include/net/bluetooth/hci_core.h |  1 +
- net/bluetooth/hci_conn.c         | 89 ++++++++++++++++++++++++----------------
- net/bluetooth/hci_event.c        | 18 ++++----
- net/bluetooth/hci_sync.c         | 13 ++++--
- net/bluetooth/hidp/core.c        |  2 +-
- net/bluetooth/l2cap_core.c       | 24 +++--------
- net/bluetooth/sco.c              | 85 ++++++++++++++++++++++----------------
- 9 files changed, 129 insertions(+), 106 deletions(-)
+Perhaps the cause can be found by instrumenting all the above
+functions in the trace to report skb_headroom and csum_start.
+And also virtio_net_hdr_to_skb.
