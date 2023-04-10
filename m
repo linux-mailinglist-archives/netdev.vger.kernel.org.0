@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F29736DC718
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 15:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69C556DC714
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 15:08:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbjDJNIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 09:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42990 "EHLO
+        id S229804AbjDJNIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 09:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229828AbjDJNIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 09:08:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E879586BF;
-        Mon, 10 Apr 2023 06:08:15 -0700 (PDT)
+        with ESMTP id S229810AbjDJNIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 09:08:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE0C93C8;
+        Mon, 10 Apr 2023 06:08:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77AD960F55;
-        Mon, 10 Apr 2023 13:08:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63147C433EF;
-        Mon, 10 Apr 2023 13:08:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66BCD60D37;
+        Mon, 10 Apr 2023 13:08:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51743C433EF;
+        Mon, 10 Apr 2023 13:08:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681132094;
-        bh=WMRsTNuhJXYmIoY4hiVBFzSXG5imY3zKDMApu1L1yZA=;
+        s=k20201202; t=1681132086;
+        bh=wVQBcleMDZi2qFubbCjY6UzljtovnvgS87AJpJ4tVUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O5kVBltc15hXuNexhhzD3x7R8JfieNEvZAv0JurPVPWCrmDmp1olUvVk2UUALEKEa
-         GI3OsHULJwhQlZEN1cY2Gvy7WW2eCSzPtqCGPh2t2U9uqUbolNvNjxli1gKCAOL+77
-         XIXZUTXcKXW71Axw7f9jMDMbYouGyWVmRAZkZv/fehIRmWlDZUYaHm2iZr0sPYzqw2
-         FSg7sFMoZcGmemBCrDZ97eZU1aFqQAPzdgZ233BvBIf5uyxTJq8CV1G3tBNncYiHor
-         /fnY2IPakHjYL6FiV5bv0SASLwCuk4V771ebllsbMj8D5iFEE7cuTsF62ImzELtNfi
-         Em2OGTXQeH+bQ==
+        b=XL+RXcYt90+1igBHoCB5Mr8BKYdq88Sd+We8yd0PxhdmJ5r11tlBwzl4kYD5L+ebd
+         y9f6At6xULbbQOESN2T5l8JQd2KZjy97vjcIUXYQmEV29/o+19ixx+CURKn0AaVcMo
+         ntVwk+PnJXv2SdyVpRs5w9vJF484OQrFPfwMcYI4ipeehn/ZnxDcAlngTbjuq0UfV6
+         1FVzYSEYHfA0Gd6JtSKFmiylpWo04ax891eOaTmrkWhN1x6s0epmrpmiedG3uXYW1C
+         fWsz5+RQapRKrTGNq97aGRHFZOqwqE9fEkuv68CJhXZlXgOHIoTopB5q+0sEGl7qD9
+         KzTAAZxxaKaBQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Avihai Horon <avihaih@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
         Meir Lichtinger <meirl@mellanox.com>,
@@ -42,16 +41,16 @@ Cc:     Avihai Horon <avihaih@nvidia.com>,
         netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Shay Drory <shayd@nvidia.com>
-Subject: [PATCH rdma-next 2/4] RDMA/mlx5: Check pcie_relaxed_ordering_enabled() in UMR
-Date:   Mon, 10 Apr 2023 16:07:51 +0300
-Message-Id: <8d39eb8317e7bed1a354311a20ae707788fd94ed.1681131553.git.leon@kernel.org>
+Subject: [PATCH mlx5-next 3/4] net/mlx5: Update relaxed ordering read HCA capabilities
+Date:   Mon, 10 Apr 2023 16:07:52 +0300
+Message-Id: <caa0002fd8135086357dfcc368e2f5cc73b08480.1681131553.git.leon@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1681131553.git.leon@kernel.org>
 References: <cover.1681131553.git.leon@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,58 +60,98 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Avihai Horon <avihaih@nvidia.com>
 
-relaxed_ordering_read HCA capability is set if both the device supports
-relaxed ordering (RO) read and RO is set in PCI config space.
+Rename existing HCA capability relaxed_ordering_read to
+relaxed_ordering_read_pci_enabled. This is in accordance with recent PRM
+change to better describe the capability, as it's set only if both the
+device supports relaxed ordering (RO) read and RO is enabled in PCI
+config space.
 
-RO in PCI config space can change during runtime. This will change the
-value of relaxed_ordering_read HCA capability in FW, but the driver will
-not see it since it queries the capabilities only once.
+In addition, add new HCA capability relaxed_ordering_read which is set
+if the device supports RO read, regardless of RO in PCI config space.
+This will be used in the following patch to allow RO in VFs and VMs.
 
-This can lead to the following scenario:
-1. RO in PCI config space is enabled.
-2. User creates MKey without RO.
-3. RO in PCI config space is disabled.
-   As a result, relaxed_ordering_read HCA capability is turned off in FW
-   but remains on in driver copy of the capabilities.
-4. User requests to reconfig the MKey with RO via UMR.
-5. Driver will try to reconfig the MKey with RO read although it
-   shouldn't (as relaxed_ordering_read HCA capability is really off).
-
-To fix this, check pcie_relaxed_ordering_enabled() before setting RO
-read in UMR.
-
-Fixes: 896ec9735336 ("RDMA/mlx5: Set mkey relaxed ordering by UMR with ConnectX-7")
 Signed-off-by: Avihai Horon <avihaih@nvidia.com>
 Reviewed-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/umr.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/infiniband/hw/mlx5/mr.c                     | 5 +++--
+ drivers/infiniband/hw/mlx5/umr.h                    | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_common.c | 2 +-
+ include/linux/mlx5/mlx5_ifc.h                       | 5 +++--
+ 4 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/umr.c b/drivers/infiniband/hw/mlx5/umr.c
-index 55f4e048d947..c9e176e8ced4 100644
---- a/drivers/infiniband/hw/mlx5/umr.c
-+++ b/drivers/infiniband/hw/mlx5/umr.c
-@@ -380,6 +380,9 @@ static void mlx5r_umr_set_access_flags(struct mlx5_ib_dev *dev,
- 				       struct mlx5_mkey_seg *seg,
- 				       unsigned int access_flags)
- {
-+	bool ro_read = (access_flags & IB_ACCESS_RELAXED_ORDERING) &&
-+		       pcie_relaxed_ordering_enabled(dev->mdev->pdev);
-+
- 	MLX5_SET(mkc, seg, a, !!(access_flags & IB_ACCESS_REMOTE_ATOMIC));
- 	MLX5_SET(mkc, seg, rw, !!(access_flags & IB_ACCESS_REMOTE_WRITE));
- 	MLX5_SET(mkc, seg, rr, !!(access_flags & IB_ACCESS_REMOTE_READ));
-@@ -387,8 +390,7 @@ static void mlx5r_umr_set_access_flags(struct mlx5_ib_dev *dev,
- 	MLX5_SET(mkc, seg, lr, 1);
- 	MLX5_SET(mkc, seg, relaxed_ordering_write,
- 		 !!(access_flags & IB_ACCESS_RELAXED_ORDERING));
--	MLX5_SET(mkc, seg, relaxed_ordering_read,
--		 !!(access_flags & IB_ACCESS_RELAXED_ORDERING));
-+	MLX5_SET(mkc, seg, relaxed_ordering_read, ro_read);
- }
+diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
+index bb8f318bd5a5..a7f0119cc959 100644
+--- a/drivers/infiniband/hw/mlx5/mr.c
++++ b/drivers/infiniband/hw/mlx5/mr.c
+@@ -72,7 +72,8 @@ static void set_mkc_access_pd_addr_fields(void *mkc, int acc, u64 start_addr,
+ 	if (acc & IB_ACCESS_RELAXED_ORDERING) {
+ 		if (MLX5_CAP_GEN(dev->mdev, relaxed_ordering_write))
+ 			MLX5_SET(mkc, mkc, relaxed_ordering_write, 1);
+-		if (MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read) &&
++		if (MLX5_CAP_GEN(dev->mdev,
++				 relaxed_ordering_read_pci_enabled) &&
+ 		    pcie_relaxed_ordering_enabled(dev->mdev->pdev))
+ 			MLX5_SET(mkc, mkc, relaxed_ordering_read, 1);
+ 	}
+@@ -793,7 +794,7 @@ static int get_unchangeable_access_flags(struct mlx5_ib_dev *dev,
+ 		ret |= IB_ACCESS_RELAXED_ORDERING;
  
- int mlx5r_umr_rereg_pd_access(struct mlx5_ib_mr *mr, struct ib_pd *pd,
+ 	if ((access_flags & IB_ACCESS_RELAXED_ORDERING) &&
+-	    MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read) &&
++	    MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read_pci_enabled) &&
+ 	    !MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read_umr))
+ 		ret |= IB_ACCESS_RELAXED_ORDERING;
+ 
+diff --git a/drivers/infiniband/hw/mlx5/umr.h b/drivers/infiniband/hw/mlx5/umr.h
+index c9d0021381a2..e12ecd7e079c 100644
+--- a/drivers/infiniband/hw/mlx5/umr.h
++++ b/drivers/infiniband/hw/mlx5/umr.h
+@@ -62,7 +62,7 @@ static inline bool mlx5r_umr_can_reconfig(struct mlx5_ib_dev *dev,
+ 		return false;
+ 
+ 	if ((diffs & IB_ACCESS_RELAXED_ORDERING) &&
+-	    MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read) &&
++	    MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read_pci_enabled) &&
+ 	    !MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read_umr))
+ 		return false;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_common.c b/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
+index 993af4c12d90..3c765a1f91a5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
+@@ -41,7 +41,7 @@ void mlx5e_mkey_set_relaxed_ordering(struct mlx5_core_dev *mdev, void *mkc)
+ {
+ 	bool ro_pci_enable = pcie_relaxed_ordering_enabled(mdev->pdev);
+ 	bool ro_write = MLX5_CAP_GEN(mdev, relaxed_ordering_write);
+-	bool ro_read = MLX5_CAP_GEN(mdev, relaxed_ordering_read);
++	bool ro_read = MLX5_CAP_GEN(mdev, relaxed_ordering_read_pci_enabled);
+ 
+ 	MLX5_SET(mkc, mkc, relaxed_ordering_read, ro_pci_enable && ro_read);
+ 	MLX5_SET(mkc, mkc, relaxed_ordering_write, ro_write);
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index e4306cd87cd7..b54339a1b1c6 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1511,7 +1511,7 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 
+ 	u8         log_max_eq_sz[0x8];
+ 	u8         relaxed_ordering_write[0x1];
+-	u8         relaxed_ordering_read[0x1];
++	u8         relaxed_ordering_read_pci_enabled[0x1];
+ 	u8         log_max_mkey[0x6];
+ 	u8         reserved_at_f0[0x6];
+ 	u8	   terminate_scatter_list_mkey[0x1];
+@@ -1727,7 +1727,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 
+ 	u8         reserved_at_320[0x3];
+ 	u8         log_max_transport_domain[0x5];
+-	u8         reserved_at_328[0x3];
++	u8         reserved_at_328[0x2];
++	u8	   relaxed_ordering_read[0x1];
+ 	u8         log_max_pd[0x5];
+ 	u8         reserved_at_330[0x9];
+ 	u8         q_counter_aggregation[0x1];
 -- 
 2.39.2
 
