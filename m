@@ -2,64 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CA716DC687
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 14:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF2466DC68B
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 14:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229838AbjDJMH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 08:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
+        id S229845AbjDJMIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 08:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbjDJMH6 (ORCPT
+        with ESMTP id S229781AbjDJMH6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 08:07:58 -0400
-Received: from mail-ej1-x662.google.com (mail-ej1-x662.google.com [IPv6:2a00:1450:4864:20::662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C176F59C1
-        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 05:07:55 -0700 (PDT)
-Received: by mail-ej1-x662.google.com with SMTP id gb34so12175212ejc.12
-        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 05:07:55 -0700 (PDT)
+Received: from mail-ej1-x661.google.com (mail-ej1-x661.google.com [IPv6:2a00:1450:4864:20::661])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E9559C8
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 05:07:56 -0700 (PDT)
+Received: by mail-ej1-x661.google.com with SMTP id sg7so23415250ejc.9
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 05:07:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1681128474;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7v43Rq8QtIQVPlLmfhiMAiQGZl0bJiLYuxpdQdVU7Bw=;
-        b=JJ3EQf9KhNA390dNwa7lrAMTXl3bXlDJd5BuVZeFF/lu1wJZeg/d717gHaZICPwW2l
-         Gcl+oN+gkHN3qIOvAop0432cyEvtWglv02ExiF69RsKjdk2LBP+wkEKFGhPU1O4RzD15
-         ELSRBk2Sl6qZlQK+tocc+CJw805Z/QfXpbkBE=
+        d=dectris.com; s=google; t=1681128475;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DOPjxEcfLVsIAdwWOo4TRGdlXCCfnhRjeta1axyXm4Q=;
+        b=DThPq+9oUNJ8egsR9bfIy4/4kIhHduzWkXx9wA78bE7Xs8+sUuVR+b7laqS2pLqGfo
+         Obgs8Cwi8Wlg2gGSiluZkkAdw31JOZ0v5e8TFZg8tHhmbugRldO8Orv9YHv/GRPA1/Yp
+         Pv/MVnV3KTScwJQBIxpdBQG16zoRhcUNThd0w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681128474;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7v43Rq8QtIQVPlLmfhiMAiQGZl0bJiLYuxpdQdVU7Bw=;
-        b=uU9Whucm6Im3ZrVeS/nNvGecEn5TVCReAdKxWc07ZPXPG7Xf2VlHerKXPsaEGD56Oq
-         ZECnxQ9Xu8+BG9j+VPr9z679C3WHulDd8rkuXwAAWHhjXnqCy5Sj5+WcJx//DNEiCpAI
-         ni4Q3lWjDI95ofT8IpGXR5MkPyRCsFmVp4eD+bCCTxkNiFUmZkq4yxx683Wz6adPtJXu
-         A+66QKovhGbFVwvJRK8sfFV2wk+aacHx3Dwq703H8lQcn8HHPA0LNz9TA56o8GrdFV3B
-         mJLu+M1fBK5/Fgh4azwR3472a7fITZuVniLRmCThs/75bH0El0tnzC/g1EPx50FoHEvw
-         m3AA==
-X-Gm-Message-State: AAQBX9fXp3M+kfeFAV5xRNqhCbzXt7jrXwALdoomXS0aK/X6D2Lh4Nax
-        yipX6xkeabKbC7gJHABBI5MOiBE2qw+adsQWzdmaha9q1oqA
-X-Google-Smtp-Source: AKy350aU8co7KQVqsL+B7ABmpTXsAasYQbNi1uG8xMgjlcVqfUW+N7iY/c+WT8w3uzURTvL+O2vVxvekCSMr
-X-Received: by 2002:a17:906:2605:b0:8aa:a9fe:a3fc with SMTP id h5-20020a170906260500b008aaa9fea3fcmr7848556ejc.8.1681128474126;
+        d=1e100.net; s=20210112; t=1681128475;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DOPjxEcfLVsIAdwWOo4TRGdlXCCfnhRjeta1axyXm4Q=;
+        b=Jtq3/aPwyzpA1BgSr9HcqRg7JISqXjdftx/6kjiVF330t9hPagKJX5iKzEsDWLz93r
+         jEPRB7XxlWQ8wXlqETEA6Uj153ZeK0B7NXxxeXt3gCYuan89oDYLxvvRagEjc/scAVRw
+         Oxg0IEER2rc8HrDF2GyjdQOGYHTKo53BriiYgVOF+tXRYJ5uG4PMxO/R94/ndxki9T+z
+         vIQflDJxtAxgUC5Q6MLQp+sAdSGiAa2g5mOu5YT0GE9BYnIAKx1W0Y2nS4s+oQhdNqtL
+         3lb4zxdfMlWAWuZ0fGBLeVpeKAoNSfS4D9JDq0s/s4QEoZqzueXi02fLE4JNGbgrd7Ut
+         3HRQ==
+X-Gm-Message-State: AAQBX9fDuNzUqWSEQc/RGjKDkjC9n78zK6K1hMQY49Q3GBdJ1V+zXCyr
+        3QGceLZTqKwEN/a/ZDgYZOdrSjnIqljOW25EPIL6Jb7VFm9Y
+X-Google-Smtp-Source: AKy350YtSHWD1gr86TVtqITsxWTRI7Ge4dTzrbgBtz2vqBIq5KsAHsDIrtDnBCYnJPb/np+SALaeA5hFltkz
+X-Received: by 2002:a17:906:e5b:b0:94a:845c:3528 with SMTP id q27-20020a1709060e5b00b0094a845c3528mr3056395eji.45.1681128474950;
         Mon, 10 Apr 2023 05:07:54 -0700 (PDT)
 Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
-        by smtp-relay.gmail.com with ESMTPS id nb39-20020a1709071ca700b008b1fc5abd08sm2089769ejc.56.2023.04.10.05.07.53
+        by smtp-relay.gmail.com with ESMTPS id nb39-20020a1709071ca700b008b1fc5abd08sm2089769ejc.56.2023.04.10.05.07.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 10 Apr 2023 05:07:54 -0700 (PDT)
 X-Relaying-Domain: dectris.com
 From:   Kal Conley <kal.conley@dectris.com>
 To:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>
 Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH bpf-next v5 0/4] xsk: Support UMEM chunk_size > PAGE_SIZE
-Date:   Mon, 10 Apr 2023 14:06:25 +0200
-Message-Id: <20230410120629.642955-1-kal.conley@dectris.com>
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next v5 1/4] xsk: Use pool->dma_pages to check for DMA
+Date:   Mon, 10 Apr 2023 14:06:26 +0200
+Message-Id: <20230410120629.642955-2-kal.conley@dectris.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230410120629.642955-1-kal.conley@dectris.com>
+References: <20230410120629.642955-1-kal.conley@dectris.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
@@ -71,63 +79,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The main purpose of this patchset is to add AF_XDP support for UMEM
-chunk sizes > PAGE_SIZE. This is enabled for UMEMs backed by HugeTLB
-pages.
+Read pool->dma_pages instead of pool->dma_pages_cnt to check for an
+active DMA mapping. pool->dma_pages needs to be read anyway to access
+the map so this compiles to more efficient code.
 
-Note, v5 fixes a major bug in previous versions of this patchset.
-In particular, dma_map_page_attrs used to be called once for each
-order-0 page in a hugepage with the assumption that returned I/O
-addresses are contiguous within a hugepage. This assumption is incorrect
-when an IOMMU is enabled. To fix this, v5 does DMA page accounting
-accounting at hugepage granularity.
+Signed-off-by: Kal Conley <kal.conley@dectris.com>
+---
+ include/net/xsk_buff_pool.h | 2 +-
+ net/xdp/xsk_buff_pool.c     | 7 ++++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-Changes since v4:
-  * Use hugepages in DMA map (fixes zero-copy mode with IOMMU).
-  * Use pool->dma_pages to check for DMA. This change is needed to avoid
-    performance regressions).
-  * Update commit message and benchmark table.
-
-Changes since v3:
-  * Fix checkpatch.pl whitespace error.
-
-Changes since v2:
-  * Related fixes/improvements included with v2 have been removed. These
-    changes have all been resubmitted as standalone patchsets.
-  * Minimize uses of #ifdef CONFIG_HUGETLB_PAGE.
-  * Improve AF_XDP documentation.
-  * Update benchmark table in commit message.
-
-Changes since v1:
-  * Add many fixes/improvements to the XSK selftests.
-  * Add check for unaligned descriptors that overrun UMEM.
-  * Fix compile errors when CONFIG_HUGETLB_PAGE is not set.
-  * Fix incorrect use of _Static_assert.
-  * Update AF_XDP documentation.
-  * Rename unaligned 9K frame size test.
-  * Make xp_check_dma_contiguity less conservative.
-  * Add more information to benchmark table.
-
-Thanks to Magnus Karlsson for all his support!
-
-Happy Easter!
-
-Kal Conley (4):
-  xsk: Use pool->dma_pages to check for DMA
-  xsk: Support UMEM chunk_size > PAGE_SIZE
-  selftests: xsk: Use hugepages when umem->frame_size > PAGE_SIZE
-  selftests: xsk: Add tests for 8K and 9K frame sizes
-
- Documentation/networking/af_xdp.rst      | 36 ++++++++++------
- include/net/xdp_sock.h                   |  2 +
- include/net/xdp_sock_drv.h               | 12 ++++++
- include/net/xsk_buff_pool.h              | 12 +++---
- net/xdp/xdp_umem.c                       | 55 +++++++++++++++++++-----
- net/xdp/xsk_buff_pool.c                  | 43 ++++++++++--------
- tools/testing/selftests/bpf/xskxceiver.c | 27 +++++++++++-
- tools/testing/selftests/bpf/xskxceiver.h |  2 +
- 8 files changed, 142 insertions(+), 47 deletions(-)
-
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index d318c769b445..a8d7b8a3688a 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -180,7 +180,7 @@ static inline bool xp_desc_crosses_non_contig_pg(struct xsk_buff_pool *pool,
+ 	if (likely(!cross_pg))
+ 		return false;
+ 
+-	return pool->dma_pages_cnt &&
++	return pool->dma_pages &&
+ 	       !(pool->dma_pages[addr >> PAGE_SHIFT] & XSK_NEXT_PG_CONTIG_MASK);
+ }
+ 
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index b2df1e0f8153..26f6d304451e 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -350,7 +350,7 @@ void xp_dma_unmap(struct xsk_buff_pool *pool, unsigned long attrs)
+ {
+ 	struct xsk_dma_map *dma_map;
+ 
+-	if (pool->dma_pages_cnt == 0)
++	if (!pool->dma_pages)
+ 		return;
+ 
+ 	dma_map = xp_find_dma_map(pool);
+@@ -364,6 +364,7 @@ void xp_dma_unmap(struct xsk_buff_pool *pool, unsigned long attrs)
+ 
+ 	__xp_dma_unmap(dma_map, attrs);
+ 	kvfree(pool->dma_pages);
++	pool->dma_pages = NULL;
+ 	pool->dma_pages_cnt = 0;
+ 	pool->dev = NULL;
+ }
+@@ -503,7 +504,7 @@ static struct xdp_buff_xsk *__xp_alloc(struct xsk_buff_pool *pool)
+ 	if (pool->unaligned) {
+ 		xskb = pool->free_heads[--pool->free_heads_cnt];
+ 		xp_init_xskb_addr(xskb, pool, addr);
+-		if (pool->dma_pages_cnt)
++		if (pool->dma_pages)
+ 			xp_init_xskb_dma(xskb, pool, pool->dma_pages, addr);
+ 	} else {
+ 		xskb = &pool->heads[xp_aligned_extract_idx(pool, addr)];
+@@ -569,7 +570,7 @@ static u32 xp_alloc_new_from_fq(struct xsk_buff_pool *pool, struct xdp_buff **xd
+ 		if (pool->unaligned) {
+ 			xskb = pool->free_heads[--pool->free_heads_cnt];
+ 			xp_init_xskb_addr(xskb, pool, addr);
+-			if (pool->dma_pages_cnt)
++			if (pool->dma_pages)
+ 				xp_init_xskb_dma(xskb, pool, pool->dma_pages, addr);
+ 		} else {
+ 			xskb = &pool->heads[xp_aligned_extract_idx(pool, addr)];
 -- 
 2.39.2
 
