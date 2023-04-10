@@ -2,135 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF2B6DCA8D
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 20:11:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 922C26DCA95
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 20:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbjDJSL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 14:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        id S229618AbjDJSQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 14:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbjDJSLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 14:11:55 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2133.outbound.protection.outlook.com [40.107.244.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0184CF;
-        Mon, 10 Apr 2023 11:11:54 -0700 (PDT)
+        with ESMTP id S229536AbjDJSQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 14:16:12 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2053.outbound.protection.outlook.com [40.107.237.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90481BD6
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 11:16:10 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MPfPJHnMqCpH5Mt7YMKtzbG4XTlhzeIBnV/hNpnNy2dzA3HTkAmYe9Y/IKhwTnxK6LXh6gyG+1N8b0Se2yNF8+bOKUOSbaDwti3wqYJFy9ilp0IsliYTV7cTIUmIsbU3SuJyh2gPlvX26NeCbOZWAX9Dn7HKqqKRAioBdaTK+OVdI/DrlldobLQ8gg6j4HRLrZP3dX1cB8ClIQhqZ31nL+kciEQon18QoOz5Aftq1ogUPKdkWe7cjdZ2z5Wjjn8Xknxj2Ni559fzMn+m5XwaijSHw6D8nUoTokXeOqya/YluuLwhlEXrp02/HZlB7tn0XM5B0aFhebYVTOQ7hli0Vg==
+ b=ZTABCbFAJ2yA4haljPIVTPWhSTCGGm4DDmW5QfefiB19SrzRAfHCAcuRBw8ifumsAT9n8bdOWV0kTPXRpihpBYMaRvot8nONXrAqUe3i8f237zW8FVRl0oju73r+u+CB2jbupQQKByXdrVXD1nEmEaCgjC/ViU9Y/DpPm9X1orkBkfuIOrQf5sxAFXQX2EQ19pZxNpnri0b/zgClemJQih/wOFNhPElSOSVlv/nmNMtofw46+/g70/ftubh81mItm45CkmoFStG2XCsSLB41fd5B2yR7joMbpfJOePJWbe/ceql5qoo/23oa043hrMh/y8iBmxLly9jITp4fzhsklQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jtf2oEJwma+VI/kKwviJh8GilpjhJ6r2XtBRw/xhcaw=;
- b=hwzu2sdGnUaISlhrq/IMZGAZ7HiizXP7cWoPQ1LSOnsQ+Q44m83t7hLIWu3Y84EpKOsnY+Ye5mD4muBmzBfI6q4z/TTGwQSOp/LQEszZMnrjSL3ZXgk4qj4Aa6V5eqmW8M+Xg77vdWcqfqFUFI5P4Si8vWmdYkPgehhQaNxJxitzgvUU3dwNT+X2YXHVsRxsuN0TQFTLV8pJk8TpFILMe0GSQ/Imb1kUiWQ6ZiVfjteTX7Bik/90RF9gd7183Zx9yLZdrN3ElB3HtTo8DuqHPMSVjX5l9RKq/u10ZKpuxIQBRj3BfnUFh9X1UhKzwXtkTNKtWkKL453ucedCgh+0cQ==
+ bh=t7pFBFXN63EYxyJxw9vQLCYd8MKBqsHl8XnMcN2JSvU=;
+ b=lg92X7R14nxjWlb+YoPhYXQrPXWZXSwrNb0pN3+w3XdBAxEns6gVZX05DhStDCXb1a1FjTwn8o+RS+f3c5Oc8GPw5R2AYiYecAtNeGa6ACX/hYOJXEYohkFCtUvLQHzQqKPKkSnbCq4N/bL1JyQFjR5wTr9WWmsaq0XgRman7vV107q2F/myN4Ta68ih6uXbJz/N2M5l/XTbICuKWkQLpcmwp9Dfx/8PFBD6ogBG5irNV70ciyMTNwz2MA7gNqVCicPJuXI/ZdOMPu01NdJ1on+kcnR1z6h7coY5rOZjbL5DVP4oS39xsLqtonEH30JpCuEGYBisL2azWJOd5+fJxw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jtf2oEJwma+VI/kKwviJh8GilpjhJ6r2XtBRw/xhcaw=;
- b=F9noO4f6+Bt0vZVJ57E5bb7PTDqLxjmv27KGLDQ8iatu7qdle+74KwvBeyS97N4n8dQwDxSQhNaboVwoSm4+p5bwSAwK85lXEtT2YJdgRevlBlPKif9MK3R6SeITB2wPW4pcVE3mk+dJXtBkdeHKgGZsArNBWksJ/eP/+/R17Gg=
+ bh=t7pFBFXN63EYxyJxw9vQLCYd8MKBqsHl8XnMcN2JSvU=;
+ b=uuu5pjf1lJbKfEtjXFV0ywzk0JP9X6fD5Z7I4ukyi9IpACrArXukzjCkzXjfVbKYn4D2W7tTQyvRHTemYv1WS0MdNw+svpbooLsmYGjxQDpEVpVGQeTurbOmc/GrzDJCBnGVacxTatHaPYOLT5vh2WzhmEXSO0DPigYLhjfGmmg=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BL3PR13MB5226.namprd13.prod.outlook.com (2603:10b6:208:345::9) with
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH0PR12MB7982.namprd12.prod.outlook.com (2603:10b6:510:28d::5)
+ by SA1PR12MB8095.namprd12.prod.outlook.com (2603:10b6:806:33f::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Mon, 10 Apr
- 2023 18:11:53 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.038; Mon, 10 Apr 2023
- 18:11:53 +0000
-Date:   Mon, 10 Apr 2023 20:11:44 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     "Song, Yoong Siang" <yoong.siang.song@intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "xdp-hints@xdp-project.net" <xdp-hints@xdp-project.net>
-Subject: Re: [PATCH net-next 3/4] net: stmmac: add Rx HWTS metadata to XDP
- receive pkt
-Message-ID: <ZDRRYCoKxEsNIJ75@corigine.com>
-References: <20230410100939.331833-1-yoong.siang.song@intel.com>
- <20230410100939.331833-4-yoong.siang.song@intel.com>
- <ZDQZeSe5OaFlNKso@corigine.com>
- <PH0PR11MB58304A6BD97AB6DEA58067D5D8959@PH0PR11MB5830.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB58304A6BD97AB6DEA58067D5D8959@PH0PR11MB5830.namprd11.prod.outlook.com>
-X-ClientProxiedBy: AM0PR02CA0157.eurprd02.prod.outlook.com
- (2603:10a6:20b:28d::24) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.31; Mon, 10 Apr
+ 2023 18:16:07 +0000
+Received: from PH0PR12MB7982.namprd12.prod.outlook.com
+ ([fe80::e19e:fb58:51b2:447f]) by PH0PR12MB7982.namprd12.prod.outlook.com
+ ([fe80::e19e:fb58:51b2:447f%6]) with mapi id 15.20.6277.035; Mon, 10 Apr 2023
+ 18:16:06 +0000
+Message-ID: <bd48d23b-093c-c6d4-86f1-677c2a0ab03c@amd.com>
+Date:   Mon, 10 Apr 2023 11:16:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH net] ionic: Fix allocation of q/cq info structures from
+ device local node
+Content-Language: en-US
+To:     Leon Romanovsky <leon@kernel.org>,
+        Brett Creeley <brett.creeley@amd.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        drivers@pensando.io, shannon.nelson@amd.com, neel.patel@amd.com
+References: <20230407233645.35561-1-brett.creeley@amd.com>
+ <20230409105242.GR14869@unreal>
+From:   Brett Creeley <bcreeley@amd.com>
+In-Reply-To: <20230409105242.GR14869@unreal>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR07CA0055.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::32) To PH0PR12MB7982.namprd12.prod.outlook.com
+ (2603:10b6:510:28d::5)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL3PR13MB5226:EE_
-X-MS-Office365-Filtering-Correlation-Id: b43dbed3-c695-4020-e3a5-08db39ef0fad
+X-MS-TrafficTypeDiagnostic: PH0PR12MB7982:EE_|SA1PR12MB8095:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4533188f-16ea-4a23-f223-08db39efa6e8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IMB6Q/pjaZH7/BsJlIjqT6bzZ8DMBrq5cBNAC7jdQvPDcCSKYsGHhEYfhmd0785U+BvniNwmsTCl80AFLSM4+PSRi0Epgk5dI3p7Ykf7Y+njsBdnBnJvC/8T66QkAcKvsH9/odJiMH/cKUZLqLVD+0YdaPmACpe+JwwR37JR3emnEltIF0n5nyvL7/vj6I/4M2ZPVC+K6QQFSCu7hKzzsRquPZ9hzNYT3WUW/i10Gjeexi91fkpiM40b7lHdBQk1dcrR/XRPFyUKB2cGKDPWkBRfWM8Wo/n9enfA3BMo8v0GdheXuluaFZvjPu37uinn9qpyaZ9BVpWv5NdikW+soqp+egjjHEYgZn0UsxWRQ0rqXBD7HWAjHJH2Z2REQEG0zLZj2msoXRA/Y4TBI8bd+adDwZpkXQjP0vY8L+1ukdVpE3Ze7NT0OqDgUMb/14WmEVUsrbibsV/mNp6GipJtgw/ZESCN49SLKnZtFOLEOR0YWukk9l+6yQr7EfTCEf527Hii6GdOgbABp/RVaHgUxiMfh0zqNmireGD/GN3Kg0b+kcsc/78kc+nFj6UmEuwJlfH/egQhpUECy06zHTtv7hvN8/OjlEgrJ0jvpCLVQSY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(376002)(396003)(136003)(39840400004)(346002)(451199021)(478600001)(86362001)(83380400001)(36756003)(38100700002)(2616005)(6486002)(6666004)(2906002)(316002)(6512007)(186003)(54906003)(44832011)(6506007)(7416002)(66476007)(8936002)(8676002)(6916009)(41300700001)(66556008)(5660300002)(66946007)(4326008);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: Td0fNtcgkvZ9sJSj7EG90BYefr3LfIwUGH3Wy/Pmr3aawOdaeua2ulxfdcYm0uzy6HgH2GgtlLV3LPScR3IGLuGikgcE7UjkWTDc2XkLvY7fsxATwIzHuMTglq4B4MYQN8foOwMDC4rIonN2bfrO3aK1wp+mihbdw8ru5JjxihzNqD+d0tp0moz4qUChQJS20p8kivrchhPB9ek7jPUW3G9KFjisJSaobLlTZ/5nVDtM9kHSboiY+Y3XAUM7FjGMz09RDXRrSL7e5gYqQLvGJEmAlps2B1ty7aZD1TG5AUrV7Ga75Amb/4slV+YfV8BI+eBzgdyh6x9xsSDzztNpVAHOqIdz0rlecnnhkW3vcTCCJShVHQZY3CGPhCsJAONC3FC32gt2x05K4JwdikklPAWeu66NRxxqbuVobzdlJHbVwPc6mpv3gy8Q07kSIahgvIY5HzFvxLiGxM/dncQRJNpirUdSVwrlO1+UpP8hRbcMTEBUkaaTUcWFpxSFqVtNbgxXNiiqcxehBiJx4v2PNkYC+U9LxOs4inEzM7hsrfYitIGwDQ+qsEd9UlAICxuHLJ6pmi2WYdv37dX/4Fee+jop6CsEg+tozrA+wV7WWluBKmizQXUL5EJuNZFcQrVYxnVSrggo05CQr6IDaXJweQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB7982.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(346002)(376002)(136003)(396003)(451199021)(36756003)(31696002)(83380400001)(41300700001)(110136005)(66946007)(316002)(6636002)(4326008)(66476007)(6486002)(8676002)(66556008)(478600001)(5660300002)(2906002)(38100700002)(8936002)(186003)(53546011)(6512007)(6506007)(26005)(2616005)(6666004)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?E0FmmLFkq6ksuy/2VLyboI5W88xxD3Ms1zQzHtz8vPEkODFhA+21gzYg67x9?=
- =?us-ascii?Q?C2G6TKvocfCgE4It7jbRhRrmTWza5bb+jcj9MTew3IPvvEo9pnAtFeCMM9b2?=
- =?us-ascii?Q?uav6Kg8v9THKEDozaC8JQIfAPR/eGrFEbgae8fv18JwUoCr7aYHblIxp/5ds?=
- =?us-ascii?Q?nAh3T5YK87I57ORpvdPOL4IeWPuZPZFr7FI0DhkNfEVjN3ctYib/ef9nICBz?=
- =?us-ascii?Q?ymfu8wCrqyFEGWr7+Bv2UwqFQdogFyJwvIS9++STWKTMVXzn+eDfXcv3gR3T?=
- =?us-ascii?Q?fzGQK2WdeOq57S7lfvIIfB1tJloIJWCuFDsx59ryjUP/MvrGRax1PEUCSNi9?=
- =?us-ascii?Q?7PhURSR5tFe+ethuFtXw6iLLikiWI941WpDD1IkGM2ID56KrNYPcychVaTsz?=
- =?us-ascii?Q?8SndcNOzwro7m3SHC+OR3usu/fOuPn2rsh1rDFMGHaEBhVVLr6CAQSpZ7wBs?=
- =?us-ascii?Q?EHrOkizrVDzJJWGwMdJMu8fuzTvl8rpuuhzyDSv7cZrbUV3FvGhrFZqEyQKV?=
- =?us-ascii?Q?1eIrl+Z8qVOSUA2iLwybEnislAaYVb1r0OLDXC/WwyqfX5bc9y430MfhFsno?=
- =?us-ascii?Q?pCabxxImb/nvsIRy5amJYHYX/6b1lh+ZILXwNi58kLDtJRaFJQq8uNrLYpBU?=
- =?us-ascii?Q?/UVoLS6jn+qL8LSQpC6e0kU2Rg7OR94LPVcxJlH4cckq26QdJOviNAG8LZuG?=
- =?us-ascii?Q?uDLVI9FrqUSk9Syc+zjshvnaxVM7KUJHxPwQBCK3Ewc2uuf9OMTyLbufJ4JO?=
- =?us-ascii?Q?HyQDDlFuTAbPi8mEDjwP3ImQWDscqrSm5neU10Q2Bm2B+FwFr3k3tb3DSLcs?=
- =?us-ascii?Q?l37xuagFFNoKc5iFQUoR49OdjNR/1XxRmskLzSKPe/pMbH9TrnUZ1w+LMxOQ?=
- =?us-ascii?Q?McgSyUG1i9n3fsjlr2uKMz5gIEgjNpVcMRKXBlgHjk708W4ylmCdL7aggGaN?=
- =?us-ascii?Q?2+YQ6Qb6uj+KYazmI+0MQHoFigjeUOKKMd//FzQPuoaB/a4pSVK14nf+m9Nq?=
- =?us-ascii?Q?uGY+86N9eeHX+QiknsEjbOFsxR4bbG5GSmRoVMzero47mmW3FMkbK9AN1D/4?=
- =?us-ascii?Q?zRl2PqHA04jcn8nlNoflfgIdBynhnBRflVL0feY10ILGMxwMUl8r7FRz3IUJ?=
- =?us-ascii?Q?mTd1p2TD6QJQQ3MmcZf1+9NolVUK0P3jvAAcJ/dwKz/bunh84HYl5GBRV8cR?=
- =?us-ascii?Q?rlRopHYWUXn2SWDoJesnXg1EFCi9U9cCAoUFVYSXi5JXbcZ+icA/8eIoIz/q?=
- =?us-ascii?Q?UqbeHG2CJIiCc+R7pjHmM0WTWgNh96vkGy7m3MjgKtt2jPlETyyDtXOtl7Bf?=
- =?us-ascii?Q?1MVTpPxWU0rE6A7hRAf4jGOn35ynpztWR3xljj/cApJfDP4v0WjIYGoTW51B?=
- =?us-ascii?Q?PMld5jSgbCv7mGbVzusnaPtnGnQMxh9xxEW3GwEtaRDXJEnLzVBHfYEriBb/?=
- =?us-ascii?Q?UeKQrVouOxajqGBSXOLXg1DE0MQy5yUZOPC2eir6TwOKDGvw4hX+UUdH+Y3r?=
- =?us-ascii?Q?/INJFiRYjhYfLe1+0gTKAUdgZrUvFhTCZZj+fPQghZybsk7U1MYSTCKIG6VD?=
- =?us-ascii?Q?NZiUOgRlNCDBzME4S8QSXTZdZvOnq3/YkAuzZ0kMxkfY3DDsX1x2eygreTSk?=
- =?us-ascii?Q?0NKV05B/IXOqjp2ROMfrkzSf4AoKK1kmwK4ZBVkRetMdTeyxQFM/O6zJWOzc?=
- =?us-ascii?Q?yyl3/A=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b43dbed3-c695-4020-e3a5-08db39ef0fad
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TC9HKzhyRC9xT3dNa0I0VlhldVF5bmVtTG82bXk2dkpVOE1GbmExSUx2L2Vo?=
+ =?utf-8?B?cUJQWVVsTWNjUzYzZTZpWmJOUnB0N0pWR2RTRVBUdWdVbGdYTm1lc0hYbmJr?=
+ =?utf-8?B?QkxTUmtXQkYzeXNDOTBYKzRKKzRwYUZoeXZtZmlLVWlLSXB3ajFGTHJlZVJr?=
+ =?utf-8?B?ZzZsVE5Uc1B0eEpoQVJPenRROU1YdEtURFNTUkl4VnZEaTZDT1EyUWJXVjdS?=
+ =?utf-8?B?WWpHa3dyOUJ2WldiRVNYMStEUjZoSG1oZzhZZ3hMUVhiV3R1Vy85V0M1YVNx?=
+ =?utf-8?B?MlJsNDRMMlRzSmx0eVRxelBySnpxYUpCbEtvRU1ZVCt2YUgzZUdOU3hJaXM3?=
+ =?utf-8?B?WDdXOE0wN3RpMzhNQ2ZjYUtwYVRXKzgwWUZnL3NZcG1WS3FCRHpoMXFOSU5o?=
+ =?utf-8?B?eUFrcEN1QjhhUGpHRWJpczJ1eWVKcU9pUzU5WEZJd09xV29RQjl1akd5Q3RE?=
+ =?utf-8?B?cTR4VFI3WCtJVlNQa2swRWFmTW9sa2NEZngxRSs4bUJwNlZwUkkzRDNRdVJR?=
+ =?utf-8?B?WXBMcnBZT1VLZGEvcngxUHBaMXdoVXlLUVg0cUtMbnlUZkhKWXd2UERjZzVP?=
+ =?utf-8?B?Q3l2TDJNci9mOUlLNzYyMG1UZlg0cnZ6UUtOb3UrNmVBR0s0blFKRjQ2T0NH?=
+ =?utf-8?B?MEtoaVZPb0FsbzcvaXhvaXJXQVlRVTl4SnlWMVNwM29td0x2cFRvWmtxT2l3?=
+ =?utf-8?B?K0MrM1ZUUVBZMkdsWlJrSG9jTnRYOWZjcEtrcUpJZWxaaUhaT1JUelg2bWZP?=
+ =?utf-8?B?dzhDOHYxakU2SFFpWHhGWXlaMkFsQmtNelR4elJIcTYxbzVxZEdoeGhmUFBk?=
+ =?utf-8?B?dWxWeFo0V0Y4bFZIT1FWODJPWjZNN014U2g4eko1Rm90cU5nZXR1cEpMUVdX?=
+ =?utf-8?B?UEJsbWpvU00ybi9xODBrZHF2aUN0OU1RL25teUJQVU9FaDdTdUFqcDNXdHhG?=
+ =?utf-8?B?N2kvaVhZakp5dS8wbUc4UWRmSmFIN2FEbVdqY013L2ZNY1hNV2p6TEVGNUh1?=
+ =?utf-8?B?KzdHU053VUg2eWxhMkg3dWo1ZGsxcnZYd29WYnRNVjNlUDU4QVRjeEUxd2hh?=
+ =?utf-8?B?OWNESElWT1c0Y0h3ZkZIODFtdjBGT1ZHK0FEUEt5eXJXYlRSMFJ0L3dzK0k2?=
+ =?utf-8?B?aDJrV1ExUERvUVJnWjRlNGluTVhFK1poWGpFODRLdk9WRVVxTDNMenQ1a08r?=
+ =?utf-8?B?WFNCWW0yU09NTTRMSEcwbVRsZ2NuclgvZUpqTHlkbGNVVmhKdFV3MFpldCtG?=
+ =?utf-8?B?YlhIVWlkNjhzeXBtdUdxRDRHNUFXV0orU3pocXhudTl6elA0aDdxUlo3M1dz?=
+ =?utf-8?B?ejE3M2R3NVBGQ2VHVmR3Q1NIM3k2cFdmaDdvalhUOHRtWEdWQlBhYzQzdmwr?=
+ =?utf-8?B?YzZQT3FQdTB2ZlcxWnQyM1I5UTlGQXBBcFBLZkJVOUkrUDNjd0Vsb0NPN3pY?=
+ =?utf-8?B?dUVSNXNDYzJheERrWVVta3VKSDRSK2hONWJDMUNyeWlFZHFIL01nQ3poT3g1?=
+ =?utf-8?B?SE0yc2RqcXR2QUQxRytvU25NdkFXWklwZzZ6TWJ1akpCc0xQRklZWkhEUTRD?=
+ =?utf-8?B?OXZQK2ZRdzlNblpSRTVjQmVtSzYwQ3laK3JrZDJSOW9FbFZkN2RmZFJRbXpk?=
+ =?utf-8?B?VGI5cnJsWTBUV2RaVHhNMW9DZGg4MTFpOFlJaFdOY3ZZNXhHb0VpMjlmWXBC?=
+ =?utf-8?B?T2NMUWRROHpjTVBnTlRzRzVXNW1TQUJhSnNsM1dKZHNMRWNiSmVGcllIa2Za?=
+ =?utf-8?B?U2k1NFlBV3A3NVZ4VkZGelNUU1pNaFVWVnhXR3Y5cG83bFR5blp6Q3QvR0tX?=
+ =?utf-8?B?NHRZdVoveFJvbExYb2FYd2F5b0k0dDFGVTdkWVA2L2N3NEk2MEVHOWxlV0FZ?=
+ =?utf-8?B?c3VWQTVqdU5SMlBNaDVtZ2pyeFhLNGFFYU1lOWwzaFB3dE5OdXFkbWV5QVBv?=
+ =?utf-8?B?cFJETVpyN1l2U1RKVVorcDc4SVRoMXBDbVJWTjVUUHNPYXYrZ251M0syNlhi?=
+ =?utf-8?B?S2piUlJvcVE3L3M5bm5Kc21xcVgyS21iSnRVUzdoazdLQXN6UUhBS2N1VkRT?=
+ =?utf-8?B?RkJhbWNXbHd2WUVZUGZrUjRwSUpNWDFSYzF3RWkyZ3pyditSY1NrSjBiLzJV?=
+ =?utf-8?Q?Q4sKiVHMksOelEQu6wzJ60bc4?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4533188f-16ea-4a23-f223-08db39efa6e8
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB7982.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 18:11:52.8897
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 18:16:06.4890
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BAjDA69q4PVb0B5vyJqnJ+sKxTgA3Y2x8yttHeDqqMuzZxvX4PEBpmYscDqBjtz8msCr7I/Jz+hA46vPMWQ3CSHa8M4IxfJXNTY16NRXpA0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR13MB5226
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+X-MS-Exchange-CrossTenant-UserPrincipalName: klKtZ6jls71ifVPWO9VI+bIpVQAUwjvFNv5EXEoMMpf3JLYQ9CPt1oaBlFW7C9B6WBFVbOvIdqUuso6I76/ctw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8095
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -138,40 +126,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 10, 2023 at 03:33:48PM +0000, Song, Yoong Siang wrote:
-> >On Mon, Apr 10, 2023 at 06:09:38PM +0800, Song Yoong Siang wrote:
-> >> Add receive hardware timestamp metadata support via kfunc to XDP
-> >> receive packets.
-> >>
-> >> Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
-> >
-> >...
-> >
-> >> @@ -7071,6 +7073,22 @@ void stmmac_fpe_handshake(struct stmmac_priv
-> >*priv, bool enable)
-> >>  	}
-> >>  }
-> >>
-> >> +static int stmmac_xdp_rx_timestamp(const struct xdp_md *_ctx, u64
-> >> +*timestamp) {
-> >> +	const struct stmmac_xdp_buff *ctx = (void *)_ctx;
-> >> +
-> >> +	if (ctx->rx_hwts) {
-> >> +		*timestamp = ctx->rx_hwts;
-> >> +		return 0;
-> >> +	}
-> >> +
-> >> +	return -ENODATA;
-> >> +}
-> >> +
-> >> +const struct xdp_metadata_ops stmmac_xdp_metadata_ops = {
-> >> +	.xmo_rx_timestamp		= stmmac_xdp_rx_timestamp,
-> >> +};
-> >
-> >sparse seems to think this should be static.
-> >
-> >drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:7082:31: warning: symbol
-> >'stmmac_xdp_metadata_ops' was not declared. Should it be static?
-> Yes, you are right. It should be static. I will add correct it in v2. Thank you.
+On 4/9/2023 3:52 AM, Leon Romanovsky wrote:
+> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
+> 
+> 
+> On Fri, Apr 07, 2023 at 04:36:45PM -0700, Brett Creeley wrote:
+>> Commit 116dce0ff047 ("ionic: Use vzalloc for large per-queue related
+>> buffers") made a change to relieve memory pressure by making use of
+>> vzalloc() due to the structures not requiring DMA mapping. However,
+>> it overlooked that these structures are used in the fast path of the
+>> driver and allocations on the non-local node could cause performance
+>> degredation. Fix this by first attempting to use vzalloc_node()
+>> using the device's local node and if that fails try again with
+>> vzalloc().
+>>
+>> Fixes: 116dce0ff047 ("ionic: Use vzalloc for large per-queue related buffers")
+>> Signed-off-by: Neel Patel <neel.patel@amd.com>
+>> Signed-off-by: Brett Creeley <brett.creeley@amd.com>
+>> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+>> ---
+>>   .../net/ethernet/pensando/ionic/ionic_lif.c   | 24 ++++++++++++-------
+>>   1 file changed, 16 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+>> index 957027e546b3..2c4e226b8cf1 100644
+>> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+>> @@ -560,11 +560,15 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
+>>        new->q.dev = dev;
+>>        new->flags = flags;
+>>
+>> -     new->q.info = vzalloc(num_descs * sizeof(*new->q.info));
+>> +     new->q.info = vzalloc_node(num_descs * sizeof(*new->q.info),
+>> +                                dev_to_node(dev));
+>>        if (!new->q.info) {
+>> -             netdev_err(lif->netdev, "Cannot allocate queue info\n");
+>> -             err = -ENOMEM;
+>> -             goto err_out_free_qcq;
+>> +             new->q.info = vzalloc(num_descs * sizeof(*new->q.info));
+>> +             if (!new->q.info) {
+>> +                     netdev_err(lif->netdev, "Cannot allocate queue info\n");
+> 
+> Kernel memory allocator will try local node first and if memory is
+> depleted it will go to remote nodes. So basically, you open-coded that
+> behaviour but with OOM splash when first call to vzalloc_node fails and
+> with custom error message about memory allocation failure.
+> 
+> Thanks
 
-Thanks
+Leon,
+
+We want to allocate memory from the node local to our PCI device, which 
+is not necessarily the same as the node that the thread is running on 
+where vzalloc() first tries to alloc. Since it wasn't clear to us that 
+vzalloc_node() does any fallback, we followed the example in the ena 
+driver to follow up with a more generic vzalloc() request.
+
+Also, the custom message helps us quickly figure out exactly which 
+allocation failed.
+
+Thanks,
+
+Brett
