@@ -2,127 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B78086DC7D8
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 16:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91A046DC7E4
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 16:32:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229698AbjDJOa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 10:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33270 "EHLO
+        id S229845AbjDJOb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 10:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbjDJOay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 10:30:54 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6448D4C3C;
-        Mon, 10 Apr 2023 07:30:50 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R731e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VfoSju._1681137045;
-Received: from 30.221.131.183(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VfoSju._1681137045)
-          by smtp.aliyun-inc.com;
-          Mon, 10 Apr 2023 22:30:46 +0800
-Message-ID: <9f7eeb63-52a0-f83a-2e03-cf97ee419573@linux.alibaba.com>
-Date:   Mon, 10 Apr 2023 22:30:45 +0800
+        with ESMTP id S229839AbjDJOb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 10:31:57 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD5A5264;
+        Mon, 10 Apr 2023 07:31:35 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1plsXl-0007Xe-2p;
+        Mon, 10 Apr 2023 16:30:54 +0200
+Date:   Mon, 10 Apr 2023 15:30:50 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     arinc9.unal@gmail.com
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [RFC PATCH v2 net-next 01/14] net: dsa: mt7530: fix comments
+ regarding port 5 and 6 for both switches
+Message-ID: <ZDQdmih4aHdrUvqr@makrotopia.org>
+References: <20230407134626.47928-1-arinc.unal@arinc9.com>
+ <20230407134626.47928-2-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [RFC PATCH net-next v4 0/9] net/smc: Introduce SMC-D-based OS
- internal communication acceleration
-To:     Niklas Schnelle <schnelle@linux.ibm.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com, jaka@linux.ibm.com, wintera@linux.ibm.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1679887699-54797-1-git-send-email-guwen@linux.alibaba.com>
- <6156aaad710bc7350cbae6cb821289c8a37f44bb.camel@linux.ibm.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <6156aaad710bc7350cbae6cb821289c8a37f44bb.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-11.2 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230407134626.47928-2-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Niklas,
+On Fri, Apr 07, 2023 at 04:46:13PM +0300, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> 
+> There's no logic to numerically order the CPU ports. State the port number
+> and its being a CPU port instead.
 
-On 2023/4/6 01:04, Niklas Schnelle wrote:
+Port 5 is often used as a user port as well, eg. on the BPi-R3 where
+it serves to provide SerDes for the 2nd SFP cage.
+On other boards (e.g. Netgear WAX-206) it is used to connect a 2.5G
+PHY used as WAN port.
+
+Hence just stating that port 5 "a CPU port" could be a bit misleading
+as it is not always used as a CPU port.
 
 > 
-> Let me just spell out some details here to make sure we're all on the
-> same page.
+> Remove the irrelevant PHY muxing information from
+> mt7530_mac_port_get_caps(). Explain the supported MII modes instead.
 > 
-> You're assuming that GIDs are generated randomly at cryptographic
-> quality. In the code I can see that you use get_random_bytes() which as
-> its comment explains supplies the same quality randomness as
-> /dev/urandom so on modern kernels that should provide cryptographic
-> quality randomness and be fine. Might be something to keep in mind for
-> backports though.
+> Remove the out of place PHY muxing information from
+> mt753x_phylink_mac_config(). The function is for both the MT7530 and MT7531
+> switches but there's no phy muxing on MT7531.
 > 
-> The fixed CHID of 0xFFFF makes sure this system identity confusion can
-> only occur between SMC-D loopback (and possibly virtio-ism?) never with
-> ISM based SMC-D or SMC-R as these never use this CHID value. Correct?
-
-Yes, CHID of 0xFFFF used for SMC-D loopback ensures the GID collision
-won't involve ISM based SMC-D or SMC-R.
-
+> These comments were gradually introduced with the commits below.
+> ca366d6c889b ("net: dsa: mt7530: Convert to PHYLINK API")
+> 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
+> 88bdef8be9f6 ("net: dsa: mt7530: Extend device data ready for adding a new
+> hardware")
+> c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
 > 
-> Now for the collision scenario above. As I understand it the
-> probability of the case where fallback does *not* occur is equivalent
-> to a 128 bit hash collision. Basically the random 64 bit GID_A
-> concatenated with the 64 bit DMB Token_A needs to just happen to match
-> the concatenation of the random 64 bit GID_B with DMB Token_B.
-
-Yes, almost like this.
-
-A very little correction: Token_A happens to match a DMB token in B's
-kernel (not necessary Token_B) and Token_B happens to match a DMB token
-in A's kernel (not necessary Token_A).
-
-  With
-> that interpretation we can consult Wikipedia[0] for a nice table of how
-> many random GID+DMB Token choices are needed for a certain collision
-> probability. For 128 bits at least 8.2×10^11 tries would be needed just
-> to reach a 10^-15 collision probability. Considering the collision does
-> not only need to exist between two systems but these also need to try
-> to communicate with each other and happen to use the colliding DMBs for
-> things to get into the broken fallback case I think from a theoretical
-> point of view this sounds like neglible risk to me.
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+>  drivers/net/dsa/mt7530.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 > 
-Thanks for the reference data.
-
-> That said I'm more worried about the fallback to TCP being broken due
-> to a code bug once the GIDs do match which is already extremely
-> unlikely and thus not naturally tested in the wild. Do we have a plan
-> how to keep testing that fallback scenario somehow. Maybe with a
-> selftest or something?
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index e4bb5037d352..31ef70f0cd12 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -2506,7 +2506,7 @@ static void mt7530_mac_port_get_caps(struct dsa_switch *ds, int port,
+>  			  config->supported_interfaces);
+>  		break;
+>  
+> -	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
+> +	case 5: /* Port 5, a CPU port, supports rgmii, mii, and gmii. */
+>  		phy_interface_set_rgmii(config->supported_interfaces);
+>  		__set_bit(PHY_INTERFACE_MODE_MII,
+>  			  config->supported_interfaces);
+> @@ -2514,7 +2514,7 @@ static void mt7530_mac_port_get_caps(struct dsa_switch *ds, int port,
+>  			  config->supported_interfaces);
+>  		break;
+>  
+> -	case 6: /* 1st cpu port */
+> +	case 6: /* Port 6, a CPU port, supports rgmii and trgmii. */
+>  		__set_bit(PHY_INTERFACE_MODE_RGMII,
+>  			  config->supported_interfaces);
+>  		__set_bit(PHY_INTERFACE_MODE_TRGMII,
+> @@ -2539,14 +2539,14 @@ static void mt7531_mac_port_get_caps(struct dsa_switch *ds, int port,
+>  			  config->supported_interfaces);
+>  		break;
+>  
+> -	case 5: /* 2nd cpu port supports either rgmii or sgmii/8023z */
+> +	case 5: /* Port 5, a CPU port, supports rgmii and sgmii/802.3z. */
+>  		if (mt7531_is_rgmii_port(priv, port)) {
+>  			phy_interface_set_rgmii(config->supported_interfaces);
+>  			break;
+>  		}
+>  		fallthrough;
+>  
+> -	case 6: /* 1st cpu port supports sgmii/8023z only */
+> +	case 6: /* Port 6, a CPU port, supports sgmii/802.3z only. */
+>  		__set_bit(PHY_INTERFACE_MODE_SGMII,
+>  			  config->supported_interfaces);
+>  		__set_bit(PHY_INTERFACE_MODE_1000BASEX,
+> @@ -2738,7 +2738,7 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
+>  			goto unsupported;
+>  		break;
+> -	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
+> +	case 5: /* Port 5, a CPU port. */
+>  		if (priv->p5_interface == state->interface)
+>  			break;
+>  
+> @@ -2748,7 +2748,7 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  		if (priv->p5_intf_sel != P5_DISABLED)
+>  			priv->p5_interface = state->interface;
+>  		break;
+> -	case 6: /* 1st cpu port */
+> +	case 6: /* Port 6, a CPU port. */
+>  		if (priv->p6_interface == state->interface)
+>  			break;
+>  
+> -- 
+> 2.37.2
 > 
-
-IIUC, you are worried about the code implementation of fallback when GID
-collides but DMB token check works? If so, I think we can provide a way
-to set loopback device's GID manually, so that we can inject GID collision
-fault to test the code.
-
-> If we can solve the testing part then I'm personally in favor of this
-> approach of going with cryptograhically random GID and DMB token. It's
-> simple and doesn't depend on external factors and doesn't need a
-> protocol extension except for possibly reserving CHID 0xFFFF.
-> 
-> One more question though, what about the SEID why does that have to be
-> fixed and at least partially match what ISM devices use? I think I'm
-> missing some SMC protocol/design detail here. I'm guessing this would
-> require a protocol change?
-
-SEID related topic will be replied in the next e-mail.
-> 
-> Thanks,
-> Niklas
-> 
-> [0] https://en.wikipedia.org/wiki/Birthday_attack
-> 
-
-Thanks!
-Wen Gu
