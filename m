@@ -2,57 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C24BC6DC359
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 07:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6512C6DC35B
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 07:51:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbjDJFqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 01:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58846 "EHLO
+        id S229575AbjDJFvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 01:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjDJFqN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 01:46:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E703AA1;
-        Sun,  9 Apr 2023 22:46:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED95161783;
-        Mon, 10 Apr 2023 05:46:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 849AEC433D2;
-        Mon, 10 Apr 2023 05:46:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681105571;
-        bh=I7ycCihJCH4JEfJlZ78JliEzlaBRQzptj+BNXcPlOP0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dY0+HKiAo1T3X9jWM2850XOuuZuGX8kPGtDqsnrlb/Dx4Qs/YBeUJ3CEzFpDFNZoz
-         Jf6YH+EnSt5iJ9u3LWA69QzEPwHwjQoRWS2JfG8crg5qHPTR1O2c4XtAPE7C8/EVWx
-         8a4+tXhhRS7e0Cfs+EbQjX9/XrKVQQdWSowC5rg5MNCIszDd3fsX5upHA9haRrZZym
-         Z4PU+kKfH1MW7ZiCdJSVqBX13NAMLc1x38RDL0EDJRCSULsbZ/CJ+qQTFMd90dd6e5
-         Y1Q+QFgNSLoZa8GnZHfl0rMYNQYByOWzSWtcS3Wu3WjfsOKHkk3YSb8EtIuJLfd4F8
-         7XN/6YMjxnRBg==
-Date:   Mon, 10 Apr 2023 08:46:05 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Linux regressions mailing list <regressions@lists.linux.dev>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Shay Drory <shayd@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        selinux@vger.kernel.org
-Subject: Re: Potential regression/bug in net/mlx5 driver
-Message-ID: <20230410054605.GL182481@unreal>
-References: <CAHC9VhQ7A4+msL38WpbOMYjAqLp0EtOjeLh4Dc6SQtD6OUvCQg@mail.gmail.com>
- <ZCS5oxM/m9LuidL/@x130>
- <CAHC9VhTvQLa=+Ykwmr_Uhgjrc6dfi24ou=NBsACkhwZN7X4EtQ@mail.gmail.com>
- <1c8a70fc-18cb-3da7-5240-b513bf1affb9@leemhuis.info>
- <CAHC9VhT+=DtJ1K1CJDY4=L_RRJSGqRDvnaOdA6j9n+bF7y+36A@mail.gmail.com>
+        with ESMTP id S229482AbjDJFvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 01:51:53 -0400
+Received: from mail.fintek.com.tw (mail.fintek.com.tw [59.120.186.242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAD23AA1;
+        Sun,  9 Apr 2023 22:51:50 -0700 (PDT)
+Received: from vmMailSRV.fintek.com.tw ([192.168.1.1])
+        by mail.fintek.com.tw with ESMTP id 33A5oVrk078423;
+        Mon, 10 Apr 2023 13:50:31 +0800 (+08)
+        (envelope-from peter_hong@fintek.com.tw)
+Received: from [192.168.1.132] (192.168.1.132) by vmMailSRV.fintek.com.tw
+ (192.168.1.1) with Microsoft SMTP Server id 14.3.498.0; Mon, 10 Apr 2023
+ 13:50:30 +0800
+Message-ID: <7e9c01da-74be-3d8d-bb0c-d90935d82081@fintek.com.tw>
+Date:   Mon, 10 Apr 2023 13:50:30 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH V3] can: usb: f81604: add Fintek F81604 support
+Content-Language: en-US
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+CC:     <wg@grandegger.com>, <mkl@pengutronix.de>,
+        <michal.swiatkowski@linux.intel.com>,
+        <Steen.Hegelund@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <frank.jungclaus@esd.eu>, <linux-kernel@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <hpeter+linux_kernel@gmail.com>
+References: <20230327051048.11589-1-peter_hong@fintek.com.tw>
+ <CAMZ6Rq+ps1tLii1VfYyAqfD4ck_TGWBUo_ouK_vLfhoNEg-BPg@mail.gmail.com>
+ <5bdee736-7868-81c3-e63f-a28787bd0007@fintek.com.tw>
+ <CAMZ6Rq++N9ui5srP2uBYz0FPXttBYd2m982K8X-ESCC=qu1dAQ@mail.gmail.com>
+ <8f43fc07-39b1-4b1b-9dc6-257eb00c3a81@fintek.com.tw>
+ <CAMZ6RqLnWARxkJx0gBsee4NsyQicpg6=bPaysmoFo6KRc-j23g@mail.gmail.com>
+From:   Peter Hong <peter_hong@fintek.com.tw>
+In-Reply-To: <CAMZ6RqLnWARxkJx0gBsee4NsyQicpg6=bPaysmoFo6KRc-j23g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHC9VhT+=DtJ1K1CJDY4=L_RRJSGqRDvnaOdA6j9n+bF7y+36A@mail.gmail.com>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+X-Originating-IP: [192.168.1.132]
+X-TM-AS-Product-Ver: SMEX-12.5.0.2055-9.0.1002-27556.001
+X-TM-AS-Result: No-8.228900-8.000000-10
+X-TMASE-MatchedRID: QW5G6BKkLTr/9O/B1c/Qy3UVR7WQKpLPt3aeg7g/usDkMnUVL5d0E5tX
+        hf4dcLJZOelJXrqHws2rlQnbB6G4N82IoAvAG8Cy30kDaWZBE1R+tO36GYDlsgl4w4lfxz2cSnO
+        y7poAHRrWsfhGDQA5PTAws7fV6qWw7aXkNnpvXLLwlvzzUUaf2fi4nVERfgwd1YzbHoRn9L0raq
+        zVuCoM+DgcW36+ooYMdUeSBnFjAYDGY1kvv3J4DB1kSRHxj+Z5IfZjRfGTydhYfsHHDgAMI5Xwt
+        1rkqwjUWjOVO3UV6ptftuJwrFEhTbew1twePJJB3QfwsVk0UbvqwGfCk7KUsxO22CBRpq1UPBMN
+        rkVVX83sjZNB2Q/Fx0Av24nJL+j9q6WDBSb0v69tep0NvthBTC8Mf4EVVljDypn/B+ELFzmCGFs
+        tHoGsHHzlz/HUVCh2B6+0uCqc8tyLs8R3TAgGUSPYQweeBxKQftwZ3X11IV0=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.228900-8.000000
+X-TMASE-Version: SMEX-12.5.0.2055-9.0.1002-27556.001
+X-TM-SNTS-SMTP: BB6645C25AD8B4BDB3877DC26628263DA85330F7ED6B42D0F785BF6F6B7E23D62000:8
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL: mail.fintek.com.tw 33A5oVrk078423
+X-Spam-Status: No, score=-2.9 required=5.0 tests=NICE_REPLY_A,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,72 +72,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 09, 2023 at 07:50:34PM -0400, Paul Moore wrote:
-> On Sun, Apr 9, 2023 at 4:48 AM Linux regression tracking (Thorsten
-> Leemhuis) <regressions@leemhuis.info> wrote:
-> > On 30.03.23 03:27, Paul Moore wrote:
-> > > On Wed, Mar 29, 2023 at 6:20 PM Saeed Mahameed <saeed@kernel.org> wrote:
-> > >> On 28 Mar 19:08, Paul Moore wrote:
-> > >>>
-> > >>> Starting with the v6.3-rcX kernel releases I noticed that my
-> > >>> InfiniBand devices were no longer present under /sys/class/infiniband,
-> > >>> causing some of my automated testing to fail.  It took me a while to
-> > >>> find the time to bisect the issue, but I eventually identified the
-> > >>> problematic commit:
-> > >>>
-> > >>>  commit fe998a3c77b9f989a30a2a01fb00d3729a6d53a4
-> > >>>  Author: Shay Drory <shayd@nvidia.com>
-> > >>>  Date:   Wed Jun 29 11:38:21 2022 +0300
-> > >>>
-> > >>>   net/mlx5: Enable management PF initialization
-> > >>>
-> > >>>   Enable initialization of DPU Management PF, which is a new loopback PF
-> > >>>   designed for communication with BMC.
-> > >>>   For now Management PF doesn't support nor require most upper layer
-> > >>>   protocols so avoid them.
-> > >>>
-> > >>>   Signed-off-by: Shay Drory <shayd@nvidia.com>
-> > >>>   Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
-> > >>>   Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-> > >>>   Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> > >>>
-> > >>> I'm not a mlx5 driver expert so I can't really offer much in the way
-> > >>> of a fix, but as a quick test I did remove the
-> > >>> 'mlx5_core_is_management_pf(...)' calls in mlx5/core/dev.c and
-> > >>> everything seemed to work okay on my test system (or rather the tests
-> > >>> ran without problem).
-> > >>>
-> > >>> If you need any additional information, or would like me to test a
-> > >>> patch, please let me know.
-> > >>
-> > >> Our team is looking into this, the current theory is that you have an old
-> > >> FW that doesn't have the correct capabilities set.
-> > >
-> > > That's very possible; I installed this card many years ago and haven't
-> > > updated the FW once.
-> > >
-> > >  I'm happy to update the FW (do you have a
-> > > pointer/how-to?), but it might be good to identify a fix first as I'm
-> > > guessing there will be others like me ...
-> >
-> > Nothing happened here for about ten days afaics (or was there progress
-> > and I just missed it?). That made me wonder: how sound is Paul's guess
-> > that there will be others that might run into this? If that's likely it
-> > afaics would be good to get this regression fixed before the release,
-> > which is just two or three weeks away.
-> >
-> > Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-> > --
-> > Everything you wanna know about Linux kernel regression tracking:
-> > https://linux-regtracking.leemhuis.info/about/#tldr
-> > If I did something stupid, please tell me, as explained on that page.
-> >
-> > #regzbot poke
-> 
-> I haven't seen any updates from the mlx5 driver folks, although I may
-> not have been CC'd?
+Hi Vincent,
 
-We are extremely slow these days due to combination of holidays
-(Easter, Passover, Ramadan, spring break e.t.c).
+Vincent MAILHOL 於 2023/3/30 下午 09:11 寫道:
+> Hmm, I am still not a fan of setting a mutex for a single concurrency
+> issue which can only happen during probing.
+>
+> What about this:
+>
+>    static int __f81604_set_termination(struct net_device *netdev, u16 term)
+>    {
+>            struct f81604_port_priv *port_priv = netdev_priv(netdev);
+>            u8 mask, data = 0;
+>
+>            if (netdev->dev_id == 0)
+>                    mask = F81604_CAN0_TERM;
+>            else
+>                    mask = F81604_CAN1_TERM;
+>
+>            if (term == F81604_TERMINATION_ENABLED)
+>                    data = mask;
+>
+>            return f81604_mask_set_register(port_priv->dev, F81604_TERMINATOR_REG,
+>                                            mask, data);
+>    }
+>
+>    static int f81604_set_termination(struct net_device *netdev, u16 term)
+>    {
+>            ASSERT_RTNL();
+>
+>            return __f81604_set_termination(struct net_device *netdev, u16 term);
+>    }
+>
+>    static int f81604_init_termination(struct f81604_priv *priv)
+>    {
+>            int i, ret;
+>
+>            for (i = 0; i < ARRAY_SIZE(f81604_priv->netdev); i++) {
+>                    ret = __f81604_set_termination(f81604_priv->netdev[i],
+>                                                   F81604_TERMINATION_DISABLED);
+>                    if (ret)
+>                            return ret;
+>            }
+>    }
+>
+>    static int f81604_probe(struct usb_interface *intf,
+>                            const struct usb_device_id *id)
+>    {
+>            /* ... */
+>
+>            err = f81604_init_termination(priv);
+>            if (err)
+>                    goto failure_cleanup;
+>
+>            for (i = 0; i < ARRAY_SIZE(f81604_priv->netdev); i++) {
+>                    /* ... */
+>            }
+>
+>            /* ... */
+>    }
+>
+> Initialise all resistors with __f81604_set_termination() in probe()
+> before registering any network device. Use f81604_set_termination()
+> which has the lock assert elsewhere.
+
+The f81604_set_termination() will transform into the following code:
+
+static int f81604_write(struct usb_device *dev, u16 reg, u8 data);
+static int f81604_read(struct usb_device *dev, u16 reg, u8 *data);
+static int f81604_update_bits(struct usb_device *dev, u16 reg, u8 mask,
+                                                u8 data);
+
+static int __f81604_set_termination(struct usb_device *dev, int idx, u16 
+term)
+{
+     u8 mask, data = 0;
+
+     if (idx == 0)
+         mask = F81604_CAN0_TERM;
+     else
+         mask = F81604_CAN1_TERM;
+
+     if (term)
+         data = mask;
+
+     return f81604_update_bits(dev, F81604_TERMINATOR_REG, mask, data);
+}
+
+static int f81604_set_termination(struct net_device *netdev, u16 term)
+{
+     struct f81604_port_priv *port_priv = netdev_priv(netdev);
+     struct f81604_priv *priv;
+
+     ASSERT_RTNL();
+
+     priv = usb_get_intfdata(port_priv->intf);
+
+     return __f81604_set_termination(port_priv->dev, netdev->dev_id, term);
+}
+
+and also due to f81604_write() / f81604_read() / f81604_update_bits() 
+may use
+in f81604_probe() without port private data, so we'll change their first 
+parameter
+from "struct f81604_port_priv *priv" to "struct usb_device *dev". Is it OK ?
+
+
+> Also, looking at your probe() function, in label clean_candev:, if the
+> second can channel fails its initialization, you do not clean the
+> first can channel. I suggest adding a f81604_init_netdev() and
+> handling the netdev issue and cleanup in that function.
+
+When the second can channel failed its initialization, the label 
+"clean_candev" will
+clear second "netdev" object and the first "netdev" will cleanup in
+f81604_disconnect().
+
+Could I remain this section of code ?
 
 Thanks
