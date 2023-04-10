@@ -2,328 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E23D06DCAE3
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 20:41:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63DD06DCB3B
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 20:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbjDJSla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 14:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
+        id S229649AbjDJSyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 14:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbjDJSl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 14:41:29 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2079.outbound.protection.outlook.com [40.107.220.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204B2E63
-        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 11:41:28 -0700 (PDT)
+        with ESMTP id S229720AbjDJSyh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 14:54:37 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFE5E4
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 11:54:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681152876; x=1712688876;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=oDOX5JsEpwzHb6u0W/Ezn8lQhfW59yEzpfVHn73cH/k=;
+  b=jfsHYCHXz7Bpzx0ICgtXoG4uEDzIOMUx9stY0FMt0YnS9ih9LXVwA4Au
+   UnzP0XPwxySOeBg+u2hUfqQeCZKwxhZBU7+e8CSwu/MIrMfKdwGiNpgA/
+   NSDw/+6jN59x+yCJYeheijvUh4rKTspVcaOFL2XMWO/qKS30VQMZRcIP5
+   5s6i5V1F1IVlNcH38cT85XEaT2gXLkfIHKoUYVgXjQ/o0dFezW/YfFvwp
+   E2p9vUPBNHQdkWbNg9C3z4DU6A55T5GkGXgt+3NmUeC5B6zHCCF/2D5ID
+   2L/CuhTFY5H3sAKviEbfRAVl84Zc5CXzHeEP9X0O0WtboBroGHbcxAzLg
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="408568951"
+X-IronPort-AV: E=Sophos;i="5.98,333,1673942400"; 
+   d="scan'208";a="408568951"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2023 11:54:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="681808369"
+X-IronPort-AV: E=Sophos;i="5.98,333,1673942400"; 
+   d="scan'208";a="681808369"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga007.jf.intel.com with ESMTP; 10 Apr 2023 11:54:35 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 10 Apr 2023 11:54:35 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 10 Apr 2023 11:54:34 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Mon, 10 Apr 2023 11:54:34 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.174)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Mon, 10 Apr 2023 11:54:34 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bO8ErRzaXpdNqKY8l6e4FA7d7MQmJPPsM2IKnPVncgkgaZQ7neJ3ccj7JNCMDTlaODkVlJWQFJBMAnxXV1ZhSwcO0hrbMHM/ZN1pOYZD8r74o680JctBuqmsQt+kuOQpVl7N/Jgf4t00ahrrUl02P+UGeQcwsYzLeuEeu6noW32JXdgRnLNy9psdtwqLkcBd1QFn+WJpTSuFRoPuc3LbHcAuw9STznP9D5O9C6H2oAbWi7nNqpe2709iuP3aax4ChMTO6Af4303dPskTTIfrkshFQpH+pJv/W4zn8ZQ0OWN3oKx/xiQcazbm5uAM50F/pdIunkcfbVb7mmIlUU7THA==
+ b=O+VP7kHctAg8IjtNQ9EhKHioK0YbDzeBl6f75kGpNXaWR8HllfCmRlpI5dAAFGNx9ig/vIi4kHs1m7G+gYWtcoECm5xqyIXRUE6i4Cae8IzoLixPMh76eZJSp1a1j1mPxrk5XwvTiG/E2M8m741pcq7FThR/ZcdKvLckuIUh27Yr/PLAUKtBYDBhlMjtV3TSJnNyFGS95D0DNlmkA1ouwN3emDdDspx/PNKK9vWnLW7uQ3+yngEHm4Eo0CZigLlXqI60cPm4YLmnxp8JLNHs74FTmr5p8A74FgaI4nTib9rV4Ptl4mIv/msD5rqp5NnD/KpUkT8+7Lva3zS1+jlqWw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Br2FR0Jj53YZQZfRNOCAus9nqbXg38tPBQMFxJZvybQ=;
- b=HS0TC1lxFCtl/4Slw02Swf1nCHRyx0rzYFhQ6L2vlMHKGlGAo6WDphp5qNMPmPKRH6Atu/gkx/WiTeGrzHPB/5205WEh9zEhqB9X0C0MAHXMjwk9UEPEeHKhTgZHUQZvckDrnfsLKjb0gecTS4WDz7Wx/lCG5YeQQysclQedn2DJgoftzbdgDsyEZXxvHjC+CM+BR0xwkPPdWd3wMUDir8Cv5aQwe2lPRUMhQrMFi8xeFdnPC7EqP2Kuu3fYW1foEzaM7lY5DHkQMRpwu8NCzqPVyn/hCEqRW+odYdBFRGxxRidBqp20422v3+jRhkABgRWtm4EbU6pUhawFUlrZ0w==
+ bh=49X420Ph/S94D/LoBEP/n2tTX9hTeMvPjnyPfKYlOr0=;
+ b=M0AlV++o9DRKGNhlNLdwZPzXbyaT1nRTb1K7o92rQPO/SNbLd/WejXZfo9ctEgvEedQUvk34/altNiwpLAmCuwi+qEP3UUM/O2FmWHLh9YRQxuh+7izQIh0QLcr1web7Z39JnCRFaSkZH+VNFOjrO53Jh2UaOk/1uJ+PfvPcLw4CeBZVbZWfXT1ncaXdkAoK84CRSExWslvRX8oCq55agCMdVe7dlKlgK42lQLZ38GR9kY4KAAeLizDgJAqU8CN0x1ImYWJMZwRnZHRS++xS0yttawhlCMeFzCxDgfKuVeUCzSHbliY1dCcoB9Sr4Nb5S29bXtofzIKG/st5xkH1kg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Br2FR0Jj53YZQZfRNOCAus9nqbXg38tPBQMFxJZvybQ=;
- b=hRfL2lo/yo4irL4yEgE8qC1ExXiR6h3cvzL8eLsaQyWqZWfjUKflr5ZBQ5nmcg3ONQmN0Mj3OwgFXikjEst5TjrPwdpQgdT4k1JpfV7Db4T1h/Gc3ciFeF+zexxJyp6VES53EVwUu/E9bTfkHx35XnbuRtzyaF691GdIvHAoL9c=
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- SN7PR12MB8435.namprd12.prod.outlook.com (2603:10b6:806:2e2::11) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from SN7PR11MB7420.namprd11.prod.outlook.com (2603:10b6:806:328::20)
+ by DM4PR11MB6261.namprd11.prod.outlook.com (2603:10b6:8:a8::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Mon, 10 Apr
- 2023 18:41:25 +0000
-Received: from DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::e786:9262:56b5:ca86]) by DS0PR12MB6583.namprd12.prod.outlook.com
- ([fe80::e786:9262:56b5:ca86%6]) with mapi id 15.20.6277.034; Mon, 10 Apr 2023
- 18:41:25 +0000
-Message-ID: <d2d0b09d-4c16-ccf6-2cc5-00f371db0c58@amd.com>
-Date:   Mon, 10 Apr 2023 11:41:22 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.0
-Subject: Re: [PATCH v9 net-next 01/14] pds_core: initial framework for
- pds_core PF driver
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Mon, 10 Apr
+ 2023 18:54:32 +0000
+Received: from SN7PR11MB7420.namprd11.prod.outlook.com
+ ([fe80::a3e9:b91e:a70b:100b]) by SN7PR11MB7420.namprd11.prod.outlook.com
+ ([fe80::a3e9:b91e:a70b:100b%6]) with mapi id 15.20.6277.038; Mon, 10 Apr 2023
+ 18:54:32 +0000
+Message-ID: <3de9c4a4-4fba-9837-962a-e3e78299ed3b@intel.com>
+Date:   Mon, 10 Apr 2023 12:54:24 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH net 1/1] ice: identify aRFS flows using L3/L4 dissector
+ info
+To:     Leon Romanovsky <leon@kernel.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <netdev@vger.kernel.org>,
+        Arpana Arland <arpanax.arland@intel.com>
+References: <20230407210820.3046220-1-anthony.l.nguyen@intel.com>
+ <20230409104529.GQ14869@unreal>
 Content-Language: en-US
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
-        kuba@kernel.org, drivers@pensando.io, jiri@resnulli.us
-References: <20230406234143.11318-1-shannon.nelson@amd.com>
- <20230406234143.11318-2-shannon.nelson@amd.com>
- <20230409112645.GS14869@unreal>
-From:   Shannon Nelson <shannon.nelson@amd.com>
-In-Reply-To: <20230409112645.GS14869@unreal>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From:   Ahmed Zaki <ahmed.zaki@intel.com>
+In-Reply-To: <20230409104529.GQ14869@unreal>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR07CA0083.namprd07.prod.outlook.com
- (2603:10b6:a03:12b::24) To DS0PR12MB6583.namprd12.prod.outlook.com
- (2603:10b6:8:d1::12)
+X-ClientProxiedBy: FR2P281CA0010.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a::20) To SN7PR11MB7420.namprd11.prod.outlook.com
+ (2603:10b6:806:328::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|SN7PR12MB8435:EE_
-X-MS-Office365-Filtering-Correlation-Id: e1d6c433-3ab3-4245-1df9-08db39f33053
+X-MS-TrafficTypeDiagnostic: SN7PR11MB7420:EE_|DM4PR11MB6261:EE_
+X-MS-Office365-Filtering-Correlation-Id: c0b84e39-6f88-4d16-f16a-08db39f50550
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V8rcLhZAnnl8wmTaijqcUuKix71Ph1LNQmG+XVEHBfuvltuE+BO3TMm0n9rqij7FjcdjP5h7xON3T9lfh5gADGaNI/qKY8eUa6SEV25sCe4adUcW4ypfEn39QhDpt8SavMXY8uuP9hAzT+p67OYTaewCUQPnVgefdnWYXNCLI1ApO3UzLdW0ZFRYJlfkNlJAXUi9r9xt91Gx4bx6omyrmRvi9lRJ3lzbx7jf9KtYzBD+TvjjoRD1XDpg2k661ma8w0HpRbYdrFTTKk2pcm2ULSumPW46oKWVK+y8dLB42ji10+FMGFCImf/n/y1cfxwu8ucdTJ1tmOdmHzTDZzLFw601I1ohSQbdx0sI9+I75mjhWFeRdi7szJEUQYJm2bxnOUxapS9TUbDWYtZN0u938sb4cWpweUbdErozE6yhp+DOIrUtMQNJ5lMTWE5Xs+M8IXtyUxXKWZP118tCaemW4iPfP7ho6bR+oaf1locU8+F+zyDMCS0oeIbiftD9O0vvleXrRoHrqGOGFNXujhcpyroysXMd5yfpzqaPLzhc3ehxfhxtvtL3ZGTq4jeplUOLbkwKZdsX1+lPqiqtE+LN2IlakdIItet2rvneWL5Yq+quVKSamI6So2gul/WpNtxvMuKp2UUV8vKaKqTURj4qBA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(136003)(366004)(376002)(451199021)(2616005)(478600001)(6512007)(26005)(6506007)(6666004)(6486002)(41300700001)(316002)(66476007)(66556008)(4326008)(6916009)(53546011)(186003)(66946007)(31686004)(38100700002)(2906002)(5660300002)(44832011)(36756003)(31696002)(86362001)(8936002)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: KAgnx0ec7JiTXfg/XnZB/10fYL1DcPcZNdX1iV0XAvmBRpTb1RAG+FJbZqPmYkw6fuNyJHwLkFkI9QawYezZ4cdFUP0jO/Si0oOrOit38O8E5IWR0elLIk/ILhrbED9HPJ9+0fdcigTbl2QfKCam9SGckULEht1FLhrPXr/DsB8eRxApPMGUTkxIJCTLsz6WBvP2ojIFjBiGLWp62E0s/e8ycgHDvkOlh71HH2dYPYao1J3oQPX4DWnAlX8oF8Ndqf0hQC2SE5OwZVhU4F0MfWmqFydT27InHCCf6bpbBJIQtcDBmslOtpj5UXVkGlGVu2CCNlHzgDTtdg0Eds9jmIrLK8pRfhSuUOSUy6S1ezJviRgjYM7+xdm6Z094V5B1aZaso/fckx+AVkpKtRFxa82yljmt8rywJi3o78Ya6b0mF2EtL0Act1DZIsD9T39O6D0qgEt8UB49X39Zb4so4hlxqYKFGuuQIPa1Ht1POb6hV4ax22C7rxBvOYqWlAoTs6iwcy98iuh7/PSQj9+twu8tSYzCnf406LApZX8Of5d8wfZU2R0Fx5HNsUNbyFKEdhPgtKc5zm3L15vqslMnp6aQowFLTMp2Idf87RfJs1yChdHRwGfg1GspUktHh6me6VI91wz40azqWbgJrCacMQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN7PR11MB7420.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(136003)(376002)(39860400002)(366004)(396003)(451199021)(38100700002)(86362001)(8936002)(31696002)(6666004)(66476007)(4326008)(66556008)(41300700001)(66946007)(478600001)(6636002)(110136005)(6486002)(316002)(5660300002)(2906002)(44832011)(53546011)(6512007)(8676002)(186003)(82960400001)(6506007)(26005)(2616005)(107886003)(36756003)(83380400001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z1hoZzZZRFR1SUsxcjRaZEJINTB0cnRtYVNUVHZ2UlI3eU9hcEFKbzhCRGd1?=
- =?utf-8?B?TXRyeGQwYXliamw0akFaR2pXMHloU0hiMEVzY3Juc0R5cE1qTS81bGtOVytw?=
- =?utf-8?B?Y3Q1NjJDanJLM1J2OHBGbFFWZzNKc3ZudGwwcXN0MnpSbm1Od3hFZFBhVmJJ?=
- =?utf-8?B?WGx6TVNZVVZwaDFnV0E4Zy9iejVnNUZSQlN2ZUJEaUJxaHNBUWVqSVBCeGRw?=
- =?utf-8?B?dS8wZTUvS0ZnTTdlNHZvUEpVSkZRZ080a0w2KzM3NjlFSWI3Rk1wak5kdm0z?=
- =?utf-8?B?eHNCY29FaHkvbVpiRDAwdFJxdDNYem9TZEorVllydFJwNXdRMUh0MmtMN3V1?=
- =?utf-8?B?UC9XdWVSZHE0ZTR6ak9LVEFZQTVGYVJqTmRrdDhCRENKWXhtZkhJOGlmZzlF?=
- =?utf-8?B?VGpVcGh0VzUzSm04TWhRcTJFb0FURk5BNW9JTEpLbkVYdHJ0M2Vxd1hZQzh1?=
- =?utf-8?B?ZUJXdWhxa1k3aXNzQWxaUnBURDhXdjFVNWpEZ0N3bE1RQnRsdXFiQUdqWG1M?=
- =?utf-8?B?UWFKZUJlVWhLVDlNLzJKRzFzV3lTdmViUjlDbzgzcVVXM09mV1gra3dDMm1m?=
- =?utf-8?B?VjdTcnBvbldyQzY4Q3Z1L1owanZLb0MvNUJ0ajFmVFJrb09CQXZ3bE95THE5?=
- =?utf-8?B?RFlwNmQxd0c0a0RhbWY4a0JqYUQ0MUdCekNJazdpZVNIZ2V2TkMwRjFHdDRl?=
- =?utf-8?B?N2l4WmdiV2hiYW5uRVNBU2VuaFl5bHBFbFBEelFtbU80cG5pNXhWSWZiU2Ix?=
- =?utf-8?B?R2FaaGdMZE05WE5CV2E5ZkNNRHNuOW5ScDVURmRnVmNtdkxmZmRPNTljeWRW?=
- =?utf-8?B?aHdUK0tZbXNIcDd6SHFIVStrYkpMaStpNldjeE5Oc29qOXNyd2FmY0Fuc3U1?=
- =?utf-8?B?K3BreS9wOFB4TjdQUDg1REdPZzQ2SUZnVEN5K2dhYTZUZ2RGbjVpeXA3RGNu?=
- =?utf-8?B?a0hKZjh6WFhEMEVVSStPaHp4ajIxSkVnVHR0dTBDcHVxVWMrMUliak40Mmdl?=
- =?utf-8?B?ZU1OTkc1aFVpTjRhdkVmZ29TTVJOMFZSTVVld3pPd1oveXVnb3ArOFpwcVFL?=
- =?utf-8?B?b1g3aG9TK3FHT0NLejErU2l4NHU4anIzK2tmOHhzeE1xaFA4MHhSZ3RNcmww?=
- =?utf-8?B?ZWxZd0NwRmpHaTk3UzA4VUZHdmxTdmpMNnh4WWFaQ1ZsQ2crQ29hME1YNUQv?=
- =?utf-8?B?ek5INzk3M2lNVTBncFRKcWVwSVY4ZFFGUFN6akVoSTlSQ1NpTXFUWm9HUFli?=
- =?utf-8?B?SHRzUG5ZUThXY2MwcE5rSkdLT3N0ZC9uTDY5WDRyenZUWUJ2WW9ISGJWRWd0?=
- =?utf-8?B?K3Y5RGhLaThWbmJ2WG8rUStFRlFwT21rTkhWNWlvMHM5R3ZUNXpRNDhkMnU2?=
- =?utf-8?B?eDhXOUxRS04vMFNSdnJXQzYrR2xwWmFzbGxqT1A4LzN0bzErUGhlMWFxaXYv?=
- =?utf-8?B?MTRrQnpaUG1NK25peHk0RXcvSVNEckhVWmM2WnlLZ1hMQ0syQ0c5V050clM2?=
- =?utf-8?B?WDFCalVBSkkvMm9DbTIwMXA4QUY2Y255RlpDY1RoTEQ3a1dtb3FrdzM1QTRz?=
- =?utf-8?B?RXk3SHJNK2lMQ3U0Sm1JSzcvUWJaQmR3SnZIRXVMSHUvdjgzVEpRUFNxY2pz?=
- =?utf-8?B?UW5kakxTZDQ2WDQ5ZWpnVzRZK21pVVlXWS9FcTJOa21uVktLaEtUdjVETlVF?=
- =?utf-8?B?VU9ja1FVNzZmRWwwZDlpU0MvUTdaSEJ5d3B1eVJXVWVuMHhjSjM0SmdaY0VU?=
- =?utf-8?B?eTdvbHdsbW9CaVpWV0xZaTFZMEgwdnBFQitCZ2xLTnJiZ013K1JQamJodVFQ?=
- =?utf-8?B?WVlqNjNuTThkZVlkaWFybmRqWVptYS85YmF5cHFlc043YkJnb205UUFOS0JN?=
- =?utf-8?B?U3hxS2dzK01YVWlJdnBYOVhYckpKNkY0K1ozVmhneTR3QmtlNXBCdk5SZjlz?=
- =?utf-8?B?bzRiNGdEcjMvVldaRkRFcjkvbnJwU1lXUk9wSGUraSsrMWFRU2pIM3ZXcjVT?=
- =?utf-8?B?STNyK3laUWI4ZjZHVTJVZ1Ara0tMMXIwNFVudGVackxreWpMb0pUSi9TbGdo?=
- =?utf-8?B?S1NRejQ1UUZ6VUs0T1dGMEhuRWVBL0lSTmNTOXRHbzdQK3J2ejlQa2ZuWUpQ?=
- =?utf-8?Q?KFpJRXRcRQyH8fr8lYAUjMeEc?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e1d6c433-3ab3-4245-1df9-08db39f33053
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SWlnaFNnZTZjeXBEOFJYOUNTOS9EZlZ2aXArOEIycS9RSkptOEtVZmRPWVJN?=
+ =?utf-8?B?RFlMdTlyQlBMcjlwUFQ2YjNhSVB6RDRYanM3OGFxUlFCSFQ1SVl6R1Z3enNX?=
+ =?utf-8?B?Rm45TDlIUUtKSkRZRmJoTGJ1UnNQdGlJVXJObjdvQU9pRkJoWTg4eXROWFlL?=
+ =?utf-8?B?M2QvNHpEUW1leWFjK2pYTFJ2OE9USkZ6L2VFU2NJeFJBSkpaTXd6cEE5bm92?=
+ =?utf-8?B?eENBUU41YWR4MDZYTnhzZkMvSk9hU05zalRnKzdNMG5pUllPY0s4WmlSaHVv?=
+ =?utf-8?B?eGtTZjRqUktSVlhXYWVLTHkzYXd6RDFIenNuQXNwZUI5dGdrMlFyNXJDYnlL?=
+ =?utf-8?B?b0UxVHhZNHNhckJ3MDFWNVR4S0FYQk84aTBqNjZHU0ZDTHBQbXMrN0lTTmtp?=
+ =?utf-8?B?K29xblF0dmZSa0haaG1hTDVsN3NZWmlDUmVmNmFuWXZjSUxSQ1VtOFdvVmJQ?=
+ =?utf-8?B?b1F1MWxDbEtTZTRlUmVndjJMRGVuM0xMeEpvM2pRK3VaRDFpZ3JwNzRqNjRV?=
+ =?utf-8?B?YTBsN0NkK2pkMnBkVEdtM0J0aGxaY2crelVJZnhXYTMwK3FVZlY1L05KdVk3?=
+ =?utf-8?B?UlU5ejRlYzBnSlZqcHFsNmVLamJ0MlZIOHNJcUJnSnJzZHMxamJzTk1VTVpT?=
+ =?utf-8?B?ekdZTW16TEg2VXp0QWZaMzRDakdPTFkxcnNvdlpZdUZSOGN4MVNLMWxPY2Ju?=
+ =?utf-8?B?OTFHa1RISDk3QmhRL0w1MjBHZEJRd1J4UHpjYzZRS3NaY3dqdmF4ZEN2UzJ1?=
+ =?utf-8?B?OGFLR3VRaTg1QkJMdFBWSi9LbXcvNVdyNVpsbFZWWjRHektYNjdDcmRjSzB0?=
+ =?utf-8?B?Mm02QmpYMm1YWVhkOWZuRXQ2Y2VDRlhFTnFXZTJldWE2MFF4am5HajdUQVlt?=
+ =?utf-8?B?ZFBoMzg4Uk94c0t6L3F0VjJkWDg3MC9ieGJaSHpuZEVaMDhVZnJsTXVkK3FW?=
+ =?utf-8?B?cm1JVEpqYTBrd0Raa2V0YmhxRjVOZzRuckZPZUFKUXpYSXRJTytFUmt4eWJt?=
+ =?utf-8?B?UWpGdFRNWXl5eEFWbW50ZWtYLzlmeERvNVZaTzMzNkwrYmcyMDU0VFNHeFRO?=
+ =?utf-8?B?aEplNTZkc2NxU25JTXUrQk5PQUFDQXpXUHI3MWoxTm1hRDhHeVVGWGovUHRy?=
+ =?utf-8?B?Umh3K3VYSHJ1aG5tT0VJMk4rNFJORWpxRWVpZzl6SDNBOVhmdU4zMmV2WHlB?=
+ =?utf-8?B?QVVPdm50WC9MV0swQXZFZ2tHdFlpSUt4a2xiKzZkclh5dmR0WHJHMXFjL3Vx?=
+ =?utf-8?B?WjVENVBDWnBMaHhmS01qcE9Da0g2enIvN0dXWWowSzNOVmk5UTBsNnBpS2V1?=
+ =?utf-8?B?eCtlT1RFK1FKNTB3TkRzaXFpanFGVVFjQmFBUjd2STJVWFhhWDQ2N3Exam01?=
+ =?utf-8?B?TUtYS0NrTHIwWDB4OXhHeS9ZZDZOVzJXSHF6Q3A0MEtGc1oySzE3ZVRpV2ZB?=
+ =?utf-8?B?c0hHTWJDbFVyMUM4WnI2Y0plSGdaOUdhYVVROXhJekNFWks1M1ZyL2cvY3JI?=
+ =?utf-8?B?b3JaY3gzNEZET3dkNHpJRWdXZDZHcVVWUXJZd1hON3VYUjhUV255cWZybWhz?=
+ =?utf-8?B?NkZCMnRTMFJydGxTc1VJeHh1VzBwR0VONVVsajV2WUJ1UVVjMW54VjY1Q1kx?=
+ =?utf-8?B?TlQ1YnhpUmt1M0dBVWNHcGhiazl6Qkc3OW00N1lvY1ppY1Z6WGFBOEFnLzFv?=
+ =?utf-8?B?NlZNb09Ya3BjVG0zM0dLUjZESHhnMnM1Z0E1N0RMS3FUTk5qL1F0V3lnQloz?=
+ =?utf-8?B?SjZnU2FVSi9ZTTRURFFNdEM0ZGpIaXY0TG9tbUliWHBWUjFuckFzYm1INklB?=
+ =?utf-8?B?YWRUM0tUMkR6dnl6VTQ2UjhLcmRPSStTNC9JbENvRHBQeHY3Ynk0cUN2WU8x?=
+ =?utf-8?B?NDkyWGdBMlFSY3U4V20xMUdaYUlkQ0tYRDY0YnU4MDVEVDcwam5lRGphK3Bx?=
+ =?utf-8?B?TmtXNDNhRDBaaUQ0OU1FdndYbjZiNjJWKzI2NE5EOHdsRW5uZFRzMnNPMkw5?=
+ =?utf-8?B?WXh0M2tEdEg2dmxkSStnTUVRdjJTcHliUVY3Nzk1eDRQdFUyWE1LdHNoNnJn?=
+ =?utf-8?B?WGY4R2VhcGIxZWo3dDMzSk5VVFdmaVJ3NHdFRWhwMExhMTNhUEZNbzUxekJ0?=
+ =?utf-8?Q?ONtZ2CB4CrIoRCpezelwFBrs8?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c0b84e39-6f88-4d16-f16a-08db39f50550
+X-MS-Exchange-CrossTenant-AuthSource: SN7PR11MB7420.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 18:41:25.5789
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 18:54:32.4620
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gU5iI0d2jBJ7BVVyy3bXpguvGcGNl1N6DJPn3XDhtOsa+mOU8x+YNCI4teE9ytg6vbS60yowR1LUWkGmlYDkRQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB8435
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0EjJvu5Kyb90Q8jzCVvo9LO7jnhU6LPfmGUa5KLQbMe5T5yDrAG1amwrOZB+4y8WGXw7iZVFlki2G9rX6YhVsw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6261
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-5.7 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/9/23 4:26 AM, Leon Romanovsky wrote:
-> 
 
-Thanks for the time you put into these review notes, I appreciate it.
-
-> On Thu, Apr 06, 2023 at 04:41:30PM -0700, Shannon Nelson wrote:
->> This is the initial PCI driver framework for the new pds_core device
->> driver and its family of devices.  This does the very basics of
->> registering for the new PF PCI device 1dd8:100c, setting up debugfs
->> entries, and registering with devlink.
+On 2023-04-09 04:45, Leon Romanovsky wrote:
+> On Fri, Apr 07, 2023 at 02:08:20PM -0700, Tony Nguyen wrote:
+>> From: Ahmed Zaki <ahmed.zaki@intel.com>
 >>
->> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+>> The flow ID passed to ice_rx_flow_steer() is computed like this:
+>>
+>>      flow_id = skb_get_hash(skb) & flow_table->mask;
+>>
+>> With smaller aRFS tables (for example, size 256) and higher number of
+>> flows, there is a good chance of flow ID collisions where two or more
+>> different flows are using the same flow ID. This results in the aRFS
+>> destination queue constantly changing for all flows sharing that ID.
+>>
+>> Use the full L3/L4 flow dissector info to identify the steered flow
+>> instead of the passed flow ID.
+>>
+>> Fixes: 28bf26724fdb ("ice: Implement aRFS")
+>> Signed-off-by: Ahmed Zaki <ahmed.zaki@intel.com>
+>> Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at Intel)
+>> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 >> ---
->>   .../device_drivers/ethernet/amd/pds_core.rst  |  40 ++
->>   .../device_drivers/ethernet/index.rst         |   1 +
->>   drivers/net/ethernet/amd/pds_core/Makefile    |   8 +
->>   drivers/net/ethernet/amd/pds_core/core.h      |  63 ++
->>   drivers/net/ethernet/amd/pds_core/debugfs.c   |  34 ++
->>   drivers/net/ethernet/amd/pds_core/main.c      | 285 +++++++++
->>   include/linux/pds/pds_common.h                |  14 +
->>   include/linux/pds/pds_core_if.h               | 540 ++++++++++++++++++
->>   8 files changed, 985 insertions(+)
->>   create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
->>   create mode 100644 drivers/net/ethernet/amd/pds_core/Makefile
->>   create mode 100644 drivers/net/ethernet/amd/pds_core/core.h
->>   create mode 100644 drivers/net/ethernet/amd/pds_core/debugfs.c
->>   create mode 100644 drivers/net/ethernet/amd/pds_core/main.c
->>   create mode 100644 include/linux/pds/pds_common.h
->>   create mode 100644 include/linux/pds/pds_core_if.h
-> 
-> <...>
-> 
->> +#ifdef CONFIG_DEBUG_FS
->> +void pdsc_debugfs_create(void);
->> +void pdsc_debugfs_destroy(void);
->> +void pdsc_debugfs_add_dev(struct pdsc *pdsc);
->> +void pdsc_debugfs_del_dev(struct pdsc *pdsc);
->> +#else
->> +static inline void pdsc_debugfs_create(void) { }
->> +static inline void pdsc_debugfs_destroy(void) { }
->> +static inline void pdsc_debugfs_add_dev(struct pdsc *pdsc) { }
->> +static inline void pdsc_debugfs_del_dev(struct pdsc *pdsc) { }
->> +#endif
-> 
-> I don't think that you need CONFIG_DEBUG_FS guard as debugfs code is
-> built to handle this case, so you can call to internal debugfs_*() calls
-> without completed initialization of debugfs.
-
-Old habits... sure, we can pull that out.
-
-> 
->> +
->> +#endif /* _PDSC_H_ */
->> diff --git a/drivers/net/ethernet/amd/pds_core/debugfs.c b/drivers/net/ethernet/amd/pds_core/debugfs.c
->> new file mode 100644
->> index 000000000000..9b2385c19c41
->> --- /dev/null
->> +++ b/drivers/net/ethernet/amd/pds_core/debugfs.c
->> @@ -0,0 +1,34 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
->> +
->> +#ifdef CONFIG_DEBUG_FS
->> +
->> +#include <linux/pci.h>
->> +
->> +#include "core.h"
->> +
->> +static struct dentry *pdsc_dir;
->> +
->> +void pdsc_debugfs_create(void)
+>>   drivers/net/ethernet/intel/ice/ice_arfs.c | 44 +++++++++++++++++++++--
+>>   1 file changed, 41 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/ice/ice_arfs.c b/drivers/net/ethernet/intel/ice/ice_arfs.c
+>> index fba178e07600..d7ae64d21e01 100644
+>> --- a/drivers/net/ethernet/intel/ice/ice_arfs.c
+>> +++ b/drivers/net/ethernet/intel/ice/ice_arfs.c
+>> @@ -345,6 +345,44 @@ ice_arfs_build_entry(struct ice_vsi *vsi, const struct flow_keys *fk,
+>>   	return arfs_entry;
+>>   }
+>>   
+>> +/**
+>> + * ice_arfs_cmp - compare flow to a saved ARFS entry's filter info
+>> + * @fltr_info: filter info of the saved ARFS entry
+>> + * @fk: flow dissector keys
+>> + *
+>> + * Caller must hold arfs_lock if @fltr_info belongs to arfs_fltr_list
+>> + */
+>> +static bool
+>> +ice_arfs_cmp(struct ice_fdir_fltr *fltr_info, const struct flow_keys *fk)
 >> +{
->> +     pdsc_dir = debugfs_create_dir(PDS_CORE_DRV_NAME, NULL);
->> +}
+>> +	bool is_ipv4;
 >> +
->> +void pdsc_debugfs_destroy(void)
->> +{
->> +     debugfs_remove_recursive(pdsc_dir);
->> +}
+>> +	if (!fltr_info || !fk)
+>> +		return false;
 >> +
->> +void pdsc_debugfs_add_dev(struct pdsc *pdsc)
->> +{
->> +     pdsc->dentry = debugfs_create_dir(pci_name(pdsc->pdev), pdsc_dir);
+>> +	is_ipv4 = (fltr_info->flow_type == ICE_FLTR_PTYPE_NONF_IPV4_UDP ||
+>> +		fltr_info->flow_type == ICE_FLTR_PTYPE_NONF_IPV4_TCP);
 >> +
->> +     debugfs_create_ulong("state", 0400, pdsc->dentry, &pdsc->state);
->> +}
->> +
->> +void pdsc_debugfs_del_dev(struct pdsc *pdsc)
->> +{
->> +     debugfs_remove_recursive(pdsc->dentry);
->> +     pdsc->dentry = NULL;
->> +}
->> +#endif /* CONFIG_DEBUG_FS */
->> diff --git a/drivers/net/ethernet/amd/pds_core/main.c b/drivers/net/ethernet/amd/pds_core/main.c
->> new file mode 100644
->> index 000000000000..1c2f3fbaa27c
->> --- /dev/null
->> +++ b/drivers/net/ethernet/amd/pds_core/main.c
->> @@ -0,0 +1,285 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
->> +
->> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
->> +
->> +#include <linux/pci.h>
->> +
->> +#include <linux/pds/pds_common.h>
->> +
->> +#include "core.h"
->> +
->> +MODULE_DESCRIPTION(PDSC_DRV_DESCRIPTION);
->> +MODULE_AUTHOR("Advanced Micro Devices, Inc");
->> +MODULE_LICENSE("GPL");
->> +
->> +/* Supported devices */
->> +static const struct pci_device_id pdsc_id_table[] = {
->> +     { PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_CORE_PF) },
->> +     { 0, }  /* end of table */
->> +};
->> +MODULE_DEVICE_TABLE(pci, pdsc_id_table);
->> +
->> +static void pdsc_unmap_bars(struct pdsc *pdsc)
->> +{
->> +     struct pdsc_dev_bar *bars = pdsc->bars;
->> +     unsigned int i;
->> +
->> +     for (i = 0; i < PDS_CORE_BARS_MAX; i++) {
->> +             if (bars[i].vaddr) {
->> +                     pci_iounmap(pdsc->pdev, bars[i].vaddr);
->> +                     bars[i].vaddr = NULL;
->> +             }
->> +
->> +             bars[i].len = 0;
->> +             bars[i].bus_addr = 0;
->> +             bars[i].res_index = 0;
-> 
-> Why are you clearing it? You are going to release bars[] anyway.
-> It will be great to remove this zeroing pattern from whole driver
-> as it hides use-after-free bugs.
-
-These are from old habits of cleaning up when done with something.  Some 
-of these kinds of zeroing are useful for checks later to see if 
-something is still valid, but you are right, not all of it is really 
-necessary.
-
-
-> 
->> +     }
->> +}
->> +
->> +static int pdsc_map_bars(struct pdsc *pdsc)
->> +{
->> +     struct pdsc_dev_bar *bar = pdsc->bars;
->> +     struct pci_dev *pdev = pdsc->pdev;
->> +     struct device *dev = pdsc->dev;
->> +     struct pdsc_dev_bar *bars;
->> +     unsigned int i, j;
->> +     int num_bars = 0;
->> +     int err;
->> +     u32 sig;
->> +
->> +     bars = pdsc->bars;
->> +     num_bars = 0;
-> 
-> You set it to zero 4 lines above.
-
-Will fix
-
-> 
->> +
-> 
-> <...>
-> 
->> +module_init(pdsc_init_module);
->> +module_exit(pdsc_cleanup_module);
->> diff --git a/include/linux/pds/pds_common.h b/include/linux/pds/pds_common.h
->> new file mode 100644
->> index 000000000000..bd041a5170a6
->> --- /dev/null
->> +++ b/include/linux/pds/pds_common.h
->> @@ -0,0 +1,14 @@
->> +/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
->> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
->> +
->> +#ifndef _PDS_COMMON_H_
->> +#define _PDS_COMMON_H_
->> +
->> +#define PDS_CORE_DRV_NAME                    "pds_core"
-> 
-> It is KBUILD_MODNAME.
-
-yep, will fix
-
-> 
->> +
->> +/* the device's internal addressing uses up to 52 bits */
->> +#define PDS_CORE_ADDR_LEN    52
->> +#define PDS_CORE_ADDR_MASK   (BIT_ULL(PDS_ADDR_LEN) - 1)
->> +#define PDS_PAGE_SIZE                4096
-> 
+>> +	if (fk->basic.n_proto == htons(ETH_P_IP) && is_ipv4)
+>> +		return (fltr_info->ip.v4.proto == fk->basic.ip_proto &&
+>> +			fltr_info->ip.v4.src_port == fk->ports.src &&
+>> +			fltr_info->ip.v4.dst_port == fk->ports.dst &&
+>> +			fltr_info->ip.v4.src_ip == fk->addrs.v4addrs.src &&
+>> +			fltr_info->ip.v4.dst_ip == fk->addrs.v4addrs.dst);
+>> +	else if (fk->basic.n_proto == htons(ETH_P_IPV6) && !is_ipv4)
+>> +		return (fltr_info->ip.v6.proto == fk->basic.ip_proto &&
+>> +			fltr_info->ip.v6.src_port == fk->ports.src &&
+>> +			fltr_info->ip.v6.dst_port == fk->ports.dst &&
+>> +			!memcmp(&fltr_info->ip.v6.src_ip,
+>> +				&fk->addrs.v6addrs.src,
+>> +				sizeof(struct in6_addr)) &&
+>> +			!memcmp(&fltr_info->ip.v6.dst_ip,
+>> +				&fk->addrs.v6addrs.dst,
+>> +				sizeof(struct in6_addr)));
+> I'm confident that you can write this function more clear with
+> comparisons in one "return ..." instruction.
+>
 > Thanks
+
+Do you mean remove the "if condition"? how?
+
+I wrote it this way to match how I'd think:
+
+If (IPv4 and V4 flows), test IPv4 flow keys, else if (IPv6 and V6 
+flows), test IPv6 keys, else false.
+
+I m not sure how can I make it more clearer.
+
+Thanks.
+
