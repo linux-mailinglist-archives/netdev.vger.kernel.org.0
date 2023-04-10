@@ -2,160 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A706E6DC58A
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 12:10:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2669E6DC5B1
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 12:23:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbjDJKKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 06:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
+        id S229574AbjDJKW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 06:22:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229780AbjDJKKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 06:10:06 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2044.outbound.protection.outlook.com [40.107.7.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3C191
-        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 03:10:04 -0700 (PDT)
+        with ESMTP id S229485AbjDJKWy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 06:22:54 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2108.outbound.protection.outlook.com [40.107.92.108])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7763030E7;
+        Mon, 10 Apr 2023 03:22:53 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H5ffeJ28xJxQkvOEk56HHqBR16GMUb120pT/46vDjD4vvZ1/pvhf7xATLyicwt3EmMtpxfN9ct24djTSp1rxD5P23buhV1lD20+wHy1uyFKPdnUpFVqxZCYMGagvKQRedQbUbyLKGOsm8GEsfcM59tygS79OrfEXCMmj8UTPUEh8Y4HYU0u9oj+fxTB0JiuGVN51msz8wSO3ZK92SKd+Ky6yiwAS3reDC6bB/+970yNNXnMQeqcofUyd4X+KUisU0WAwNZ1gZjiO+voa4T/OsbnP4yEbJGeJVsJFIJwaqfOTpnZWNbK8zm8IYel60nOmpjlfV+cIZAw2KlMNxkz3LQ==
+ b=hKTxMisFYuc1Y5WBORFHUJbSMFqV2QD6APt4iOudhs+3J7peJP3LdRvisWBow/ZTuTfBn+tG5fh/bC3xBAM4xvu2xwtHIxFjHzPY2rg9+JB78uJzRtjXZnP7g75fCtEOJ5UhGBTapp3qwZyrc+GDNz/Bu71vmsLWpZEZSlzgnZZePOt7eSg1jrcqp9kv+Klqo2CxjnvknSo8QvPZnqx1/O9Z5LltPlbmlIjLUF4pYljDLKmEeJ2Sp1hdxcgaAM/o4Lu1VJkeGINdrPTSGMkyDIDEGbMlPlxJj1NW9GB2JbR00unpzfVMNnrtWbQK1dOMRna8E1B/QA42YiVwcIPJ4Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yuXUSD0rTrrFYJNjgdUTqwPPutyXQlFhuWcrE8Zn+qI=;
- b=Z6MDNVlS13pc3vAMLV/jUnMw3ncjopBx0bbX2pMG+vh4w/nFB7uZNXV+HxhomYfHouxyWTyj2YAzxb0L8yghkhML3fV74HzsG45uKJ25bFSItfs/+H5qBhrSCNANTn+zZOZbZ8YGKU1V7eK2p9lK6utNNcFX/ZuRDSELUZX/QBNrXJ0I6mDRMOiY60TIHC9ojmo/ZeRlch1ZPUBpHnHxX1xzd/SBLvw/6Fou2b2KEcM58XyRX9UnidZSjdl+Sm9JacjIs40XDUyZAq8iBBFjZvYIdi1Qnjurz51gdmaBN4kgS6QWlKy1y0RYEjAbBE19RhvCYtvue0gFDHwwUfw5VA==
+ bh=+pDKZkvAfcpMhcqQk/6ASFLimjbmq3sXbZzxpO4yRSg=;
+ b=I2udLeHPVHh29rg+LFHg2aac5U6dO0bY7MgGcYmbaLNE6N2ul4Mo9AwBk1V5wvsn4ZmVfeva6Ab4EU9vQWRM2urOKh3G+EniZlico7hkXI2v8Ny7p7GPFusY+cQ0tnOJxEnivAaotQvGuY9AJMV4LZmj5vjmr+bT9hqKKqWxqs4uh8Koa+DpOz2YWnPVFZ5Ida5Lz585gd1UNcnGUTvi0ElsR0NMTRYBAjzCFa5bgtLN4ypnI0tSpu+xWVtqzoRWLG6FlstGyRfaTMNueRrFg57Qd7Gte8e+TSEpcXuSSzzRIwR1tlsuEeRS0pog2j53aY43UpzQmakK2XNk8yS7Tw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yuXUSD0rTrrFYJNjgdUTqwPPutyXQlFhuWcrE8Zn+qI=;
- b=FGsi5+VHQPE4xZQUJbLWmsP5GHIz6cXkFfyF01wOqJflgTTznL3MKzaZ09ORSSwnbScF/rvBcq7h80U9e29yQGDgBrLs6556gvCd3fQkytxqwVv1TYhsxBrvxk5+BkbGVKKNJsqqbHgkyQhbo8I35ywpk+eT90dgNL8bfFw7iuk=
+ bh=+pDKZkvAfcpMhcqQk/6ASFLimjbmq3sXbZzxpO4yRSg=;
+ b=EkapUdYzG/i4ypqlTyco2Od0tr66uBR7B1Z+5ssDLmPJQCzqsexufw7E0SIkBgoK0VEl9a+6wsXVjHzIgm6fhUA3szLt960V9H6QiBWHceS/vH07w7yiRYpxBqkaW96Gv4l0O+rwDqQdWTeZdUaExX44aHTndfcYXnLQCGTek6I=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AM7PR04MB6997.eurprd04.prod.outlook.com (2603:10a6:20b:10d::11) with
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO6PR13MB5369.namprd13.prod.outlook.com (2603:10b6:303:14e::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.36; Mon, 10 Apr
- 2023 10:10:01 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::55b1:d2dd:4327:912b]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::55b1:d2dd:4327:912b%5]) with mapi id 15.20.6277.033; Mon, 10 Apr 2023
- 10:10:01 +0000
-Date:   Mon, 10 Apr 2023 13:09:58 +0300
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.34; Mon, 10 Apr
+ 2023 10:22:49 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.038; Mon, 10 Apr 2023
+ 10:22:49 +0000
+Date:   Mon, 10 Apr 2023 12:22:42 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Gautam Dawar <gautam.dawar@amd.com>
+Cc:     linux-net-drivers@amd.com, jasowang@redhat.com,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [RFC PATCH net] net: ipv4/ipv6 addrconf: call
- igmp{,6}_group_dropped() while dev is still up
-Message-ID: <20230410100958.4o3ub7yy7gxnzzpy@skbuf>
-References: <20230406233058.780721-1-vladimir.oltean@nxp.com>
- <febbbc75-2cf5-1cf9-8ed9-6a42ff295ab9@kernel.org>
- <ZDPA1pv7tqOvKHqe@shredder>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        eperezma@redhat.com, harpreet.anand@amd.com, tanuj.kamde@amd.com,
+        koushik.dutta@amd.com
+Subject: Re: [PATCH net-next v4 06/14] sfc: implement vDPA management device
+ operations
+Message-ID: <ZDPjcpBQBPqmZKh1@corigine.com>
+References: <20230407081021.30952-1-gautam.dawar@amd.com>
+ <20230407081021.30952-7-gautam.dawar@amd.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZDPA1pv7tqOvKHqe@shredder>
-X-ClientProxiedBy: VI1PR0101CA0061.eurprd01.prod.exchangelabs.com
- (2603:10a6:800:1f::29) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+In-Reply-To: <20230407081021.30952-7-gautam.dawar@amd.com>
+X-ClientProxiedBy: AS4P191CA0019.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d9::9) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AM7PR04MB6997:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3c973f7b-1e13-4c1b-9f7f-08db39abbf43
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO6PR13MB5369:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8a5333a6-b756-44f2-2e4c-08db39ad88cc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: adga1ogDTYoCCSGAoT9F4K7rwwnfA/Hu9LLRYBlpfRVjX9OUpMyE04tN22dAEFTMQEQtXkrJZ80BHYaLR26/5WLAEqwwzQDyuf83ivgW+3KEXcyBXl6ffLS+tR0OurEhjexn0pwreaBXJ5PGq2DGbyjgYOGN+0Bp9nnR1p/7JtLkGrV7IT+CQU+3NHUcHM2gxfbbvxbGGdAbJrpDzkk/qR6snKtYjSmEFB96N/2f7xlidpmPmz9js5AmvfdejZFAB8eSW2O7NjpSxdiOMJhPA07j3w7VX9BRrMCGZD0ObyXAosKkF3UZFMB+MdDw83KL4LKX72t829/p9/MYCwAer8QYXrf6nJ8QcE2QomuRwW+C2o+JvSw27npWUPSaiP9A425hkYIFOlGwuLg78hZjA4PI/FrVd8CzUyhEuNG6Pkerjt0inLT9XWAjj+XD/rUWlmgL/cbhwf0e3D/HIKt2AbYatfxjMLpkTyp2tCM1R3QRxiu1470HW1eJoAzH/4k/pi43MSFrxxt0pyWcTHZD+KGwOs984UH7/63CkgacH2YYFr9l03wYQkTI2wasw4Fv
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(136003)(376002)(396003)(346002)(366004)(39860400002)(451199021)(478600001)(316002)(54906003)(9686003)(6512007)(1076003)(6506007)(26005)(44832011)(186003)(6666004)(6486002)(2906002)(5660300002)(33716001)(4326008)(66946007)(41300700001)(8936002)(8676002)(6916009)(66476007)(66556008)(38100700002)(86362001)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ULWUCstPekcY3vyhlcnR75ZV6Kp95+KJnbV5SWPpdaPbFefHzdC7squPE+HvRzuwn3RTCFTUKnh+/Fh9n+BDDZ2ZmdWQYY6ShZ3Dqaw5VAkRaJW0/3y28n6bUDSblHDmsKZ2PWPDb6M0BMtkuRlS/2B+fxcCCW5fJTf8F75a3Po+YcS8p9w1b8ZEruKm2Vxl9u+9KPYPNeil5R3c1TIHltPa99aavSR5hn8KJFPwxSF45rWRJP4x56H6g3CS5Qh+aoTwbqJJRgQTbmgjcqyfXRCNu4b/UEWYlglhqUzJeZFu/Hf/gMgkTYEo+agVToo6pVIdONp33PGxR8lOKgtnHJjRpHRlVeqWv1E93+BFn/rqqlyBOy4M1rBfVLqrtvOGI65SYRquVIMlRc4yBUdpN63UFEt1SEIK+S1HOH9sKjiKyp+umoMdSBJLSjwG6IWChf1YUrKXXvPcjoyaSbbQqHSYHXm5CsJU7+Wbc7d5DBTEoGvgUZDgD7EJPzmyqGhLse7eRZuemEB2ifaZWaBbXnBrhdBz1NEl4hvyP2pHS0UXlnMPsP0ymDgvtCO2LYrRDmERNNxLQAwLk9GCHhlXrGnajgt5WT2BQ00QetsxZQU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(39840400004)(366004)(376002)(451199021)(478600001)(6666004)(38100700002)(8676002)(8936002)(316002)(41300700001)(4326008)(66556008)(66476007)(6916009)(66946007)(54906003)(186003)(36756003)(2906002)(6506007)(6512007)(86362001)(83380400001)(2616005)(5660300002)(7416002)(6486002)(44832011);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MHsF1yDjZsV/pxJFp29XprGZxIAe7mhez8LLIBeDSiCsDnwK0NfN1epvzDUU?=
- =?us-ascii?Q?w9H+g4khi30dSg9P1U5qU2XXINYO/f5qyZXvJrRPnw56KpoDt0gN9SKgVzK7?=
- =?us-ascii?Q?vuxI14KO8k7LZyNhAo3n0p/UWkWsBfuf+qo3O/teCA/8U+jYONFBpXzEZGPz?=
- =?us-ascii?Q?z9hIQ4jB9nnVIzIdA0R6yZuawiy0nDCOoe8FTz6AwgfMQSnveqOaEzgr2q+5?=
- =?us-ascii?Q?+PbUOjJdxX9xtVLWXI3c2HhuTkj38yq8gldhOzBBX8TlDYLz0KiCjWqlIsq3?=
- =?us-ascii?Q?H7ke9+Bz1/Qu18Tar3y0HnbkcOrn/UKJFqWI+HjCR54uTNJo3xEVvEMvKx6v?=
- =?us-ascii?Q?uISI58WcZRrk3mHMAu+Q2o9H+AfvVDpEebolwf3PSSJTXgHHJGEm+VO1jo0t?=
- =?us-ascii?Q?mL+Ge0hb/NdK+fLnDyRSF3+H2AgywcLLF3GE+j1d+EZBpajgL680FQ1ADHr2?=
- =?us-ascii?Q?uhQ5cIGEqpAy2+WFWPosjnXyuwu1zc2z8U1KFsdmUHfHuzXU/R8gXgt2qTRk?=
- =?us-ascii?Q?snzVom0hCSK0HO1LZ8l7RJYhRnt3/juxq2SGDfg/pzUGRYl2eNWBJu3g9I1p?=
- =?us-ascii?Q?U42vswKtjrICMf/TgFI0vEb7B/9H7VaTV6km3ZtmXE6uIKbmN8hQ2jeY5n0Q?=
- =?us-ascii?Q?cE9L2TNLYKsz7xSIChVy7zEJpvTdwOaG80McGGKk4l3VwP3uuAjF4r1OZgRm?=
- =?us-ascii?Q?qGSMyVgChqnDCsXt63j21yUSRgS0O2TU+6/UfkO8FemMnh9YX/MH6Lr5uEJn?=
- =?us-ascii?Q?pdGr/S+rEur3R6KkrQptHXvWnoYXmrqmaIrUABIDZGeN5d7NQeT+UnWSAVd3?=
- =?us-ascii?Q?NBs9NeDBLYtXM302y1WVp+68OuweFk2i9y9x10tj5qgFE1qr60ZyezigNal0?=
- =?us-ascii?Q?2uktUTkcpPxbgfROYCBzZKEQ0JyUzS4/vYbHV7eqyJRumBUQklQfNfwLlJNF?=
- =?us-ascii?Q?NunOk+sp32qdaPUKzzFVb9fYYfsKFbnS/6tsj1byDCTcR6IDtN+AmCO4hebQ?=
- =?us-ascii?Q?Tvjn660zVBRnOUt00jckljPl/0oNLc7CmWCi6fJvTozNTx5JDL0hClt05XMt?=
- =?us-ascii?Q?sv8x8dLoYMFNmnkIrXT8hGIWljyO+Mzrj7fzG5fCNZwfojkQOkpF33+OpJMt?=
- =?us-ascii?Q?HcKUQViPzQQ1NWWatlAXcJhpLYcQky+lR0WrVDS/7Jpe1XPyhu/qjIux3ODT?=
- =?us-ascii?Q?EDpR+fRHcX5C+Wi1gW4dvG7i3R+TF6ygudlGlbUdy2Vp3L592MjMMxxAJByj?=
- =?us-ascii?Q?J/Kr6lyXc9S3i+9z1uVcm50dmHAmljAfcRVjSRWgF/bUXHygUS8PTWyNmsea?=
- =?us-ascii?Q?QbxFIKF5DhsIMueYm1wvgKUBNFAyE6kVi+ivEAWZ3xeSy5S+5INdLebtFOOD?=
- =?us-ascii?Q?GWUjxKDJqyEGzZSnG3j0tcm8ZWcA1mtTGuxuyZeQzlRYE6FOY4qn1bhv0A2I?=
- =?us-ascii?Q?pxVwSTSBcBB+L1fCGElldwoyNpgpudESWrFgD4n/2u2yKCxqNw2F2Q2xT6yH?=
- =?us-ascii?Q?AdV98fjGRD3qEXOi+vH5k60ap1IWUok6bVMMBfaU5bmUxD5h5u9oG6Rn+CeX?=
- =?us-ascii?Q?3MgzK0Zk/NS7frOL3J1yAD3MLfeoMHdWY/XZnfZU8OqfMWLuq3/N+vCsdLvr?=
- =?us-ascii?Q?WA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c973f7b-1e13-4c1b-9f7f-08db39abbf43
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lVr6R1nFD6C3pmA+c7c2bP0cyc7XaA7miYXzc5VZxbFrL0hNGFy1fIkCDt/5?=
+ =?us-ascii?Q?4lbtZXf4qCEFLwNTYTHxnskZGscJsnvBxhNbXj4+IEjV9pMARJ+/4cswQqlr?=
+ =?us-ascii?Q?+yyfTTK6zhpwNZcJ2x4JqMdpdHij71lK6GFC+NyFn9rux3RRvVGiGQ/BDdto?=
+ =?us-ascii?Q?NAVhgmPmsOxQ7tBZROpGlq2EalNwXDOZYfz0cilksr3ckN8BnJhl9wyjiHOV?=
+ =?us-ascii?Q?yGWBmIuWNhaQrBg6H+RxHnvDLJejoKrwnPKmguz63cX9pGFnPUfPPh7ULprR?=
+ =?us-ascii?Q?LFg9PcPlOvmYV2L4vm8ppFUMshZMp9ZCu27YgfrhcRSjEQf2SEkyab/Gd3xW?=
+ =?us-ascii?Q?Uv5Uw24VYAqyL9YKtlptBGzNXPYHuaAPargcpj+UqmaE7QLh1jhxqEo9pQvi?=
+ =?us-ascii?Q?9kyQ6l3i60aB3mO7216xbnS0VkBerBccChoZHFw7C3U64pKuUidhnje+J73f?=
+ =?us-ascii?Q?k3buTVnDLCWgoHMOaBVtntvhHo5iu1qZnlLWvIT2ewHHgyQ8IJdw8sefqIcm?=
+ =?us-ascii?Q?hbMUoXsEH0d5jeAKAfDaBvapfNigFAVJUlQe30swdbAJaIov8c1MDCSpCWbe?=
+ =?us-ascii?Q?oDZFe3OyL1YhH9fZO38L1lWNuJrmCPx44BnRZVnN+GcJwl9ou57r3CRwaZDf?=
+ =?us-ascii?Q?fEx7Spyyp/gQT7+bTPm2s50vysKnsLucgFnxWrz/nGgHtifTO1tYvDmvbxLw?=
+ =?us-ascii?Q?LnKo+Y/JsPu6TJwbhFutLuWQPc+R/Bev40TvkXjxMXlXzSrzZZGa/ASAAWzd?=
+ =?us-ascii?Q?A4H1L/d7TacbhQWUQoBClsWZGSowVlBIuXOBbhcOnf7MUCAMHKw+oDSjMp6W?=
+ =?us-ascii?Q?eMaLDq+hRsYC3e2rjEkqjhjIlzAG5EO9oflR8lwX22B0aKjna3YukMlHdrA1?=
+ =?us-ascii?Q?xer0QuZak/HdI6ulx7YGzG8FF6S/QNpN/O4vAoOXDdBi5pdNi/QvoKCvGlKc?=
+ =?us-ascii?Q?cW1Vfo1R5VQmwa1fn2mTZXE0Hvw2JVhpRVwnhNzNf6faebRW86Hzev7zGIfE?=
+ =?us-ascii?Q?aEPIy22hmSkADKbXCY5aLHCAMsQurpimFshBKNZFzJu/uVJiJt1ETqHk6LD/?=
+ =?us-ascii?Q?mQ7R02TRbDNQkXELBef+0/1tkBu3eMrvnu0eEP3MT2oMZFNy+Tnn5nhBh8U/?=
+ =?us-ascii?Q?drZUyYwHg05ga/iBf7LCdfKjBi6zPJ0OlZEYuqlELZNBkqaSPf8CwA2RF9dl?=
+ =?us-ascii?Q?caj7Cg3rkoSaxDlValvRGzRT49aRs9VwbI0vIH6xmcThGZ5AjsJbNRct29Bx?=
+ =?us-ascii?Q?oCI6fXMHWNX8B5c4mKhPB6Ur4DYZqi4WqnRNapilE9hSnuGka07xmZQipGhK?=
+ =?us-ascii?Q?BeQqTtKJBkpN15Ed+wp7jtJWnIx/f6knXMXM9tsiB2/6lKvl1UorZEbB3j/j?=
+ =?us-ascii?Q?Bh3RhDOQOK4nAUz0BiLTVCMyiaUvYqRFFS7VEJMx4E2XOZi0svHItLXdfyJI?=
+ =?us-ascii?Q?U2kxMGzEXyo7OBIp7CeMYUSL3SVPZ8Uc3K26bHG0xTsAFtQT8lpy/tLepWLe?=
+ =?us-ascii?Q?H5iB7MUl7zKSsZHmcnkUGLL3TBJVHIz5uswgJPx3mtK2Pkaz5LW4IbRF/Mu0?=
+ =?us-ascii?Q?wTauSUu60oDAYVslBzqIDe8U3dUmrAfw4wu6deC40Eut27cVfKG9hmb8a0P1?=
+ =?us-ascii?Q?e233rhwl05Uz8A3WPoSwoSnclugoR58mj1SPhkixTqQucYHxFr2K3EW789kW?=
+ =?us-ascii?Q?1FPL+w=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a5333a6-b756-44f2-2e4c-08db39ad88cc
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 10:10:01.5809
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 10:22:49.2182
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1nUlY299qx/cGZd4fUhcr+W5p1jbDSyoozyLZSlmYCGKrDWNjX9jTl7ynbCBoxfnx1fwClcdltVNez5PUwALKw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6997
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: /DbnkD12bpSGKWo1y/cImXJa3l8XVmnvoMNCReg+U6PmXn081q6Y5IjgDMEIVnEuvi61hc996WGFX99NL49fthj1hvooVrPGXv7vCpFNMcg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR13MB5369
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ido,
-
-On Mon, Apr 10, 2023 at 10:55:02AM +0300, Ido Schimmel wrote:
-> > > The proposal is to respond to that slightly earlier notifier with the
-> > > IGMP address deletion, so that the ndo_set_rx_mode() of the device does
-> > > actually get called. I am not familiar with the details of these layers,
-> > > but it appeared to me that NETDEV_DOWN needed to be replaced everywhere
-> > > with NETDEV_GOING_DOWN, so I blindly did that and it worked.
+On Fri, Apr 07, 2023 at 01:40:07PM +0530, Gautam Dawar wrote:
+> To allow vDPA device creation and deletion, add a vDPA management
+> device per function. Currently, the vDPA devices can be created
+> only on a VF. Also, for now only network class of vDPA devices
+> are supported.
 > 
-> I think there is a confusion here between the netdev notifier and
-> inetaddr notifiers. They all use "NETDEV_DOWN", but in the inetaddr
-> notifiers it means that an address is being deleted. Changing the event
-> to "NETDEV_GOING_DOWN" is going to break a lot of users since none of
-> the inetaddr listeners respond to "NETDEV_GOING_DOWN".
+> Signed-off-by: Gautam Dawar <gautam.dawar@amd.com>
+
+Hi Gautam,
+
+some minor feedback from my side is inline.
+
+> diff --git a/drivers/net/ethernet/sfc/ef100_nic.c b/drivers/net/ethernet/sfc/ef100_nic.c
+
+...
+
+> @@ -1286,13 +1286,35 @@ int ef100_probe_netdev_pf(struct efx_nic *efx)
+>  
+>  int ef100_probe_vf(struct efx_nic *efx)
+>  {
+> -	return ef100_probe_main(efx);
+> +	struct ef100_nic_data *nic_data __maybe_unused;
+> +	int rc;
+> +
+> +	rc = ef100_probe_main(efx);
+> +	if (rc)
+> +		return rc;
+> +
+> +#ifdef CONFIG_SFC_VDPA
+> +	nic_data = efx->nic_data;
+> +	if (nic_data->vdpa_supported) {
+> +		rc = ef100_vdpa_register_mgmtdev(efx);
+> +		if (rc)
+> +			pci_warn(efx->pci_dev,
+> +				 "register_mgmtdev failed, rc: %d\n", rc);
+> +	}
+> +#endif
+
+I think it would be nicer to factor the #ifdef coded out, perhaps into a
+helper like this (completely untested!).
+
+void ef100_probe_vf_vdpa(struct efx_nic *efx)
+{
+#ifdef CONFIG_SFC_VDPA
+	struct ef100_nic_data *nic_data = efx->nic_data;
+
+	nic_data = efx->nic_data;
+	if (nic_data->vdpa_supported) {
+		int rc = ef100_vdpa_register_mgmtdev(efx);
+		if (rc)
+			pci_warn(efx->pci_dev,
+				 "register_mgmtdev failed, rc: %d\n", rc);
+	}
+#endif
+}
+
+Or perhaps an approach similar to the one you have taken,
+but using IS_ENABLED() rather than #ifdef
+
+> +
+> +	return 0;
+>  }
+>  
+>  void ef100_remove(struct efx_nic *efx)
+>  {
+>  	struct ef100_nic_data *nic_data = efx->nic_data;
+>  
+> +#ifdef CONFIG_SFC_VDPA
+> +	if (nic_data->vdpa_supported)
+
+nic_data is dereferenced here.
+But a bit futher down this function there is a check for nic_data being NULL.
+
+Reported by Smatch as:
+
+drivers/net/ethernet/sfc/ef100_nic.c:1325 ef100_remove() warn: variable dereferenced before check 'nic_data' (see line 1314)
+
+> +		ef100_vdpa_unregister_mgmtdev(efx);
+> +#endif
+
+Again, I think it would be nice to factor this #ifdef out somehow.
+
+> +
+>  	if (IS_ENABLED(CONFIG_SFC_SRIOV) && efx->mae) {
+>  		efx_ef100_fini_reps(efx);
+>  		efx_fini_mae(efx);
+> diff --git a/drivers/net/ethernet/sfc/ef100_nic.h b/drivers/net/ethernet/sfc/ef100_nic.h
+> index a01e9d643ccd..e63ea555116c 100644
+> --- a/drivers/net/ethernet/sfc/ef100_nic.h
+> +++ b/drivers/net/ethernet/sfc/ef100_nic.h
+> @@ -69,6 +69,13 @@ enum ef100_bar_config {
+>  	EF100_BAR_CONFIG_VDPA,
+>  };
+>  
+> +#ifdef CONFIG_SFC_VDPA
+> +enum ef100_vdpa_class {
+> +	EF100_VDPA_CLASS_NONE,
+> +	EF100_VDPA_CLASS_NET,
+> +};
+> +#endif
+> +
+
+I don't think there is any need to guard this with an #ifdef
+
+>  struct ef100_nic_data {
+>  	struct efx_nic *efx;
+>  	struct efx_buffer mcdi_buf;
+> @@ -76,9 +83,11 @@ struct ef100_nic_data {
+>  	u32 datapath_caps2;
+>  	u32 datapath_caps3;
+>  	unsigned int pf_index;
+> +	unsigned int vf_index;
+>  	u16 warm_boot_count;
+>  #ifdef CONFIG_SFC_VDPA
+>  	bool vdpa_supported; /* true if vdpa is supported on this PCIe FN */
+> +	enum ef100_vdpa_class vdpa_class;
+>  #endif
+>  	u8 port_id[ETH_ALEN];
+>  	DECLARE_BITMAP(evq_phases, EFX_MAX_CHANNELS);
+
+...
+
+> diff --git a/drivers/net/ethernet/sfc/ef100_vdpa.h b/drivers/net/ethernet/sfc/ef100_vdpa.h
+
+...
+
+> +static inline bool efx_vdpa_is_little_endian(struct ef100_vdpa_nic *vdpa_nic)
+> +{
+> +	return virtio_legacy_is_little_endian() ||
+> +		(vdpa_nic->features & (1ULL << VIRTIO_F_VERSION_1));
+> +}
+
+Using BIT_ULL seems appropriate here.
+
+...
+
+> diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+> index 3dc9eae5a81d..1da71deac71c 100644
+> --- a/drivers/net/ethernet/sfc/net_driver.h
+> +++ b/drivers/net/ethernet/sfc/net_driver.h
+> @@ -1090,6 +1090,12 @@ struct efx_nic {
+>  	int rx_packet_len_offset;
+>  	int rx_packet_ts_offset;
+>  	bool rx_scatter;
+> +#ifdef CONFIG_SFC_VDPA
+> +	/** @mgmt_dev: vDPA Management device */
+> +	struct vdpa_mgmt_dev *mgmt_dev;
+> +	/** @vdpa_nic: vDPA device structure (EF100) */
+> +	struct ef100_vdpa_nic *vdpa_nic;
+> +#endif
+
+I think the commends belong in the kdoc immediately above the structure
+definition. Or is this the way it is done for conditionally present
+fields (I don't know) ?
+
+>  	struct efx_rss_context rss_context;
+>  	struct mutex rss_lock;
+>  	u32 vport_id;
+> -- 
+> 2.30.1
 > 
-> IOW, I believe you only need this change for IPv4 (and similarly for
-> IPv6):
-> 
-> diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-> index 5deac0517ef7..679c9819f25b 100644
-> --- a/net/ipv4/devinet.c
-> +++ b/net/ipv4/devinet.c
-> @@ -1588,7 +1588,7 @@ static int inetdev_event(struct notifier_block *this, unsigned long event,
->  		/* Send gratuitous ARP to notify of link change */
->  		inetdev_send_gratuitous_arp(dev, in_dev);
->  		break;
-> -	case NETDEV_DOWN:
-> +	case NETDEV_GOING_DOWN:
->  		ip_mc_down(in_dev);
->  		break;
->  	case NETDEV_PRE_TYPE_CHANGE:
-
-You are correct, only that portion is needed for IPv4. When I open my
-eyes, I see it too :)
-
-Although it would have been a lot less confusing for someone looking at
-the code for the first time if the inetaddr and inet6addr notifiers did
-not use events from the same NETDEV_ namespace as the netdev notifiers...
-
-So, how do you think I should proceed with this? One patch or two
-(for IPv4 and IPv6)? Is the Fixes: tag ok?
