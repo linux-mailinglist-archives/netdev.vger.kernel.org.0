@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB2F6DC594
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 12:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92EA96DC59A
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 12:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbjDJKKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 06:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        id S229847AbjDJKLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 06:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229806AbjDJKKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 06:10:38 -0400
+        with ESMTP id S229789AbjDJKK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 06:10:57 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51905FC4;
-        Mon, 10 Apr 2023 03:10:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3029259DC;
+        Mon, 10 Apr 2023 03:10:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681121434; x=1712657434;
+  t=1681121445; x=1712657445;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=M9jRW3+HhGvO5QbLOE/WrixZZSlVBopsf2U3mliQfB8=;
-  b=FK/7OlFVAXDJ6dhrwo4xVczezqRsLQ4f9GAEKeEp5kF4rjE4RXWQPP4x
-   g/ck1w7PTKLXGZig2tiUtgUJm5yfWaJ9Nt4+XmxwfKP5UkoqdisL4qTE9
-   KjgSAJFVx3BNGU9QMM51YEHsOBIX9DzErdb0ZXI2vlEmemvrXEya+JR1i
-   PnLFw9EQr3ZljQpoiC76LuLQCGvkKj5Wa7wFfpf2Umm1OTJg63Aie0WAv
-   VcjSSOcGPH5vduIqh7GhVer1Qn9JcPhSZvVbHcmp4nBK2JBrYIjimKMi2
-   SaiDAynMoj95DzBVz7JmTp0DN3HmSGMCTKSSNLBZF835Brg5tWqoTyFnW
+  bh=Cpc+vWCiVUmsOySpGlMg+6/vKyP6bVmouafrvWfaSpU=;
+  b=jFAHBjdHgDOxnW6MAHLk7Q4nT+uoo/vUFZCLmU7Ew2Cb8mDf3g08wTHo
+   nvU/KDwFLq35Pb79ZqpSKVglfz6rLVmKmkWbPywIYLhaUkQ9FzNKeq4Uq
+   CrKoRXcrfpZ65o26IEhMgbWTK6QRBZcYgqxYCIWuvFfqpGdwrhoM7dqke
+   1BUfOvg1q0pZA7UnNMVREnmcx9fx22EyrHHztf+0pm1lwl4RkBBoBhqCy
+   yoN7XvZ6cF3iKuxTWAhUUTSJg6UfXLbvK7qHpKKDiR2Ub6Ve0HgrmaTff
+   75iq+CifsMt8oAdzM0sP+3y+J59fq7Ns4YoIFrBVk3qGI8nQRI1X06lVY
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10675"; a="340815314"
+X-IronPort-AV: E=McAfee;i="6600,9927,10675"; a="340815349"
 X-IronPort-AV: E=Sophos;i="5.98,333,1673942400"; 
-   d="scan'208";a="340815314"
+   d="scan'208";a="340815349"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2023 03:10:33 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2023 03:10:44 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10675"; a="752716095"
+X-IronPort-AV: E=McAfee;i="6600,9927,10675"; a="752716141"
 X-IronPort-AV: E=Sophos;i="5.98,333,1673942400"; 
-   d="scan'208";a="752716095"
+   d="scan'208";a="752716141"
 Received: from p12ill20yoongsia.png.intel.com ([10.88.227.28])
-  by fmsmga008.fm.intel.com with ESMTP; 10 Apr 2023 03:10:28 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 10 Apr 2023 03:10:39 -0700
 From:   Song Yoong Siang <yoong.siang.song@intel.com>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
@@ -58,9 +58,9 @@ Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         bpf@vger.kernel.org, xdp-hints@xdp-project.net,
         Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: [PATCH net-next 1/4] net: stmmac: restructure Rx hardware timestamping function
-Date:   Mon, 10 Apr 2023 18:09:36 +0800
-Message-Id: <20230410100939.331833-2-yoong.siang.song@intel.com>
+Subject: [PATCH net-next 2/4] net: stmmac: introduce wrapper for struct xdp_buff
+Date:   Mon, 10 Apr 2023 18:09:37 +0800
+Message-Id: <20230410100939.331833-3-yoong.siang.song@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230410100939.331833-1-yoong.siang.song@intel.com>
 References: <20230410100939.331833-1-yoong.siang.song@intel.com>
@@ -75,90 +75,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ong Boon Leong <boon.leong.ong@intel.com>
+Introduce struct stmmac_xdp_buff as a preparation to support XDP Rx
+metadata via kfuncs.
 
-Rearrange the function of getting Rx hardware timestamp for skb so
-that it can be reused for XDP later.
-
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 21 ++++++++++++-------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h   |  4 ++++
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c  | 18 +++++++++---------
+ 2 files changed, 13 insertions(+), 9 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+index 3d15e1e92e18..ac8ccf851708 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+@@ -92,6 +92,10 @@ struct stmmac_rx_buffer {
+ 	dma_addr_t sec_addr;
+ };
+ 
++struct stmmac_xdp_buff {
++	struct xdp_buff xdp;
++};
++
+ struct stmmac_rx_queue {
+ 	u32 rx_count_frames;
+ 	u32 queue_index;
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 04fbb7770618..2cc6237a9c28 100644
+index 2cc6237a9c28..f7bbdf04d20c 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -570,15 +570,14 @@ static void stmmac_get_tx_hwtstamp(struct stmmac_priv *priv,
-  * @priv: driver private structure
-  * @p : descriptor pointer
-  * @np : next descriptor pointer
-- * @skb : the socket buffer
-+ * @hwtstamp : hardware timestamp
-  * Description :
-  * This function will read received packet's timestamp from the descriptor
-  * and pass it to stack. It also perform some sanity checks.
-  */
- static void stmmac_get_rx_hwtstamp(struct stmmac_priv *priv, struct dma_desc *p,
--				   struct dma_desc *np, struct sk_buff *skb)
-+				   struct dma_desc *np, ktime_t *hwtstamp)
- {
--	struct skb_shared_hwtstamps *shhwtstamp = NULL;
- 	struct dma_desc *desc = p;
- 	u64 ns = 0;
+@@ -5189,9 +5189,9 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 	int status = 0, coe = priv->hw->rx_csum;
+ 	unsigned int next_entry = rx_q->cur_rx;
+ 	enum dma_data_direction dma_dir;
++	struct stmmac_xdp_buff ctx = {};
+ 	unsigned int desc_size;
+ 	struct sk_buff *skb = NULL;
+-	struct xdp_buff xdp;
+ 	int xdp_status = 0;
+ 	int buf_sz;
  
-@@ -595,9 +594,7 @@ static void stmmac_get_rx_hwtstamp(struct stmmac_priv *priv, struct dma_desc *p,
- 		ns -= priv->plat->cdc_error_adj;
+@@ -5313,17 +5313,17 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 			dma_sync_single_for_cpu(priv->device, buf->addr,
+ 						buf1_len, dma_dir);
  
- 		netdev_dbg(priv->dev, "get valid RX hw timestamp %llu\n", ns);
--		shhwtstamp = skb_hwtstamps(skb);
--		memset(shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
--		shhwtstamp->hwtstamp = ns_to_ktime(ns);
-+		*hwtstamp = ns_to_ktime(ns);
- 	} else  {
- 		netdev_dbg(priv->dev, "cannot get RX hw timestamp\n");
- 	}
-@@ -4909,6 +4906,7 @@ static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
- 				   struct xdp_buff *xdp)
- {
- 	struct stmmac_channel *ch = &priv->channel[queue];
-+	struct skb_shared_hwtstamps *shhwtstamp = NULL;
- 	unsigned int len = xdp->data_end - xdp->data;
- 	enum pkt_hash_types hash_type;
- 	int coe = priv->hw->rx_csum;
-@@ -4921,7 +4919,10 @@ static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
- 		return;
- 	}
+-			xdp_init_buff(&xdp, buf_sz, &rx_q->xdp_rxq);
+-			xdp_prepare_buff(&xdp, page_address(buf->page),
++			xdp_init_buff(&ctx.xdp, buf_sz, &rx_q->xdp_rxq);
++			xdp_prepare_buff(&ctx.xdp, page_address(buf->page),
+ 					 buf->page_offset, buf1_len, false);
  
--	stmmac_get_rx_hwtstamp(priv, p, np, skb);
-+	shhwtstamp = skb_hwtstamps(skb);
-+	memset(shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
-+	stmmac_get_rx_hwtstamp(priv, p, np, &shhwtstamp->hwtstamp);
-+
- 	stmmac_rx_vlan(priv->dev, skb);
- 	skb->protocol = eth_type_trans(skb, priv->dev);
+-			pre_len = xdp.data_end - xdp.data_hard_start -
++			pre_len = ctx.xdp.data_end - ctx.xdp.data_hard_start -
+ 				  buf->page_offset;
+-			skb = stmmac_xdp_run_prog(priv, &xdp);
++			skb = stmmac_xdp_run_prog(priv, &ctx.xdp);
+ 			/* Due xdp_adjust_tail: DMA sync for_device
+ 			 * cover max len CPU touch
+ 			 */
+-			sync_len = xdp.data_end - xdp.data_hard_start -
++			sync_len = ctx.xdp.data_end - ctx.xdp.data_hard_start -
+ 				   buf->page_offset;
+ 			sync_len = max(sync_len, pre_len);
  
-@@ -5213,6 +5214,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 				    rx_q->dma_rx_phy, desc_size);
- 	}
- 	while (count < limit) {
-+		struct skb_shared_hwtstamps *shhwtstamp = NULL;
- 		unsigned int buf1_len = 0, buf2_len = 0;
- 		enum pkt_hash_types hash_type;
- 		struct stmmac_rx_buffer *buf;
-@@ -5407,7 +5409,10 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+@@ -5333,7 +5333,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
  
- 		/* Got entire packet into SKB. Finish it. */
+ 				if (xdp_res & STMMAC_XDP_CONSUMED) {
+ 					page_pool_put_page(rx_q->page_pool,
+-							   virt_to_head_page(xdp.data),
++							   virt_to_head_page(ctx.xdp.data),
+ 							   sync_len, true);
+ 					buf->page = NULL;
+ 					priv->dev->stats.rx_dropped++;
+@@ -5361,7 +5361,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
  
--		stmmac_get_rx_hwtstamp(priv, p, np, skb);
-+		shhwtstamp = skb_hwtstamps(skb);
-+		memset(shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
-+		stmmac_get_rx_hwtstamp(priv, p, np, &shhwtstamp->hwtstamp);
-+
- 		stmmac_rx_vlan(priv->dev, skb);
- 		skb->protocol = eth_type_trans(skb, priv->dev);
+ 		if (!skb) {
+ 			/* XDP program may expand or reduce tail */
+-			buf1_len = xdp.data_end - xdp.data;
++			buf1_len = ctx.xdp.data_end - ctx.xdp.data;
  
+ 			skb = napi_alloc_skb(&ch->rx_napi, buf1_len);
+ 			if (!skb) {
+@@ -5371,7 +5371,7 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
+ 			}
+ 
+ 			/* XDP program may adjust header */
+-			skb_copy_to_linear_data(skb, xdp.data, buf1_len);
++			skb_copy_to_linear_data(skb, ctx.xdp.data, buf1_len);
+ 			skb_put(skb, buf1_len);
+ 
+ 			/* Data payload copied into SKB, page ready for recycle */
 -- 
 2.34.1
 
