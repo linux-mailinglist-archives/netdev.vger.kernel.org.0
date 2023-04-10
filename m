@@ -2,119 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45FF76DCB78
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 21:18:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BD136DCB89
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 21:27:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbjDJTSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 15:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49410 "EHLO
+        id S229664AbjDJT1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 15:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229748AbjDJTSV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 15:18:21 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2065.outbound.protection.outlook.com [40.107.95.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979BF171C
-        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 12:18:20 -0700 (PDT)
+        with ESMTP id S229591AbjDJT1f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 15:27:35 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2052.outbound.protection.outlook.com [40.107.92.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DDD319B3
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 12:27:33 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dzBV4baVmzCI/4+brwPQge7phgMA2O6Oew1gQjm9YIQY/N/P+ZQklLOta7pauQdIAK0nAgk97wae8tCJeZz8gBQSQGlDvWmMD/jBNWblNmaVUMfmJh/2nESrXnzQA+W5+DTcFUmRIRsXsn+jnOxu9/qqRmLR9ivwjcnoEqb+7EojkoxzqnfXr+n9Q69WUBjkQWIYLEwiT+YCSHouMnEUXo4xP/Wjoxcr3hkLHYY4hgh6ehfftjpHMzMn5OPacmVDMUqAEpD8fEPZckneR+n7XjlEs5HmF7hilXILc+o5nOY+OC/eIg/kNvXgdBOvjEBkzGe11Nb1Qa/7r1fIUcknhg==
+ b=bAjKzFYBv1I0MsKINHHsNGLBDWdycAbFuJn23Ok470u3+MHhAvq0v2W+ErSWxU+WRWFK45Fp1IOABJ5WmvdPQM17I8Ass6I3hFU/fgwym/G3nJHbRwGFRNbw0UXHzBLEsA7pRCgURA7FHOHVwwYTtzHBm5BIE0s3wO62E9cLkko3jWBxyYFMDTFabOcJiem7ljK7F3/mLefY6ggrx/NvMt9HgEro/u0t8mbUbRk52FY4286MuHugGuUox5kuVbxHj4lgrw1QKjDmLIWLMkor/Y6VRnc4eZU4FVCd9Ct5Mo97zy6qhcnMBb3KlHGG48wwZvWCJT8xxUm+QMNPnj1gJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L/dwIdsN5Iy01mupH6P76HVKLen+mOiI+Cq05LWA+Tg=;
- b=MK1VFHNe5qLj0QzoTKSukGa9+I3jhNwZiJIehPn+zZmGUYuczxCsR9P0BWIzdUqr444crU+2541peAUogu1cFn5GBJau4hWE3HUgb7kIiAbIgqAGns+8ENFN/PnKXvqH0VOvHMOewahStfGKOy03TJhCiVeAK2KRc4MFH2AmWX7zby5vboC8c5TDuYZtj49PvCF9CUuHwiKAynaaopDYXoXJwWPeKDzaZ1V0Nmuh1d9IoL5dRD22FrYnzBpvXW35blXjGEdxi/0f6+QbEi6yUwnLuQAtV7mv90ri5tEQ9pxXnUG1cm6fYzHAxPdM+fQervGczp4SXE+Pzcr6+qXMZQ==
+ bh=IRKiIQiOvZ5BDznzivM68YvwS3h4g5logiJra0VN3+Q=;
+ b=O2luZHvuFzM0T61zknjlwp3CGyFl+0hkPtFCGmFONOTNnuvT67FrC98HDVHOARMal7ehPyEWXgwJLkUZ289Q2cvPUX1OTA9Zf9aTUMmHZ2icBCT+L7F2f5vFRP9j6r01+Te3f/Q28afBQ8bfykfSv7jpOVhK7q9hM8WcK+ikt5OvMh+JoRMXkJKFPHaEQwglfGrnXoQSHOxzOLvT1C17a/XdUX2yqy/giDMVlidxVVf3W+r1l9twzjg8moYtUYznizS/zGMkC+vicnhD69WyZeX4pbDazAGvFVvOGfJ9bhYumZU3GoMG78eCveZnSDhyAnTFuAGVNNE8c7Klz+Grww==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L/dwIdsN5Iy01mupH6P76HVKLen+mOiI+Cq05LWA+Tg=;
- b=RYWkJshXboXu3Vi7Wa5zu//KXpzXjJxeCAKDKaExXXxi8STQv+kLQj81wLu7+BPpsLKU09F9s4Rdsu6uv2MDhhO6JQKEOQZZkp6GW6CrFy0jlTgxfEJ5NaSHE+Odl46UtXH5G/wtfek7jchgxNH3dQXS/yX6EtjVccycrLlDehw=
+ bh=IRKiIQiOvZ5BDznzivM68YvwS3h4g5logiJra0VN3+Q=;
+ b=BFN6GFhG8D5vUSXa97ESsDDF2KHZtpuNt94bUnQ2AMuS7ACqP/K1XYbT7Cr3ulgcU2Kv6pQzKE9SE8rmPJk8QEb3dFD2O0UrBF2JwVDm6HHRC9z0Wl7xWa/YXQCWj8JOaJbF7Fc2TZgBBkJfFFAdLlwsqlEi81qMuZ5bZtGbB8k=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12) by
- IA1PR12MB6258.namprd12.prod.outlook.com (2603:10b6:208:3e6::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Mon, 10 Apr
- 2023 19:18:17 +0000
+ DM4PR12MB6111.namprd12.prod.outlook.com (2603:10b6:8:ac::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6277.36; Mon, 10 Apr 2023 19:27:31 +0000
 Received: from DS0PR12MB6583.namprd12.prod.outlook.com
  ([fe80::e786:9262:56b5:ca86]) by DS0PR12MB6583.namprd12.prod.outlook.com
  ([fe80::e786:9262:56b5:ca86%6]) with mapi id 15.20.6277.034; Mon, 10 Apr 2023
- 19:18:17 +0000
-Message-ID: <c41dc420-e434-9944-584e-7ac9f915cd4a@amd.com>
-Date:   Mon, 10 Apr 2023 12:18:14 -0700
+ 19:27:31 +0000
+Message-ID: <5635d3b3-0355-f22c-64c3-34036d743ec2@amd.com>
+Date:   Mon, 10 Apr 2023 12:27:28 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
  Gecko/20100101 Thunderbird/102.9.0
-Subject: Re: [PATCH v9 net-next 04/14] pds_core: add devlink health facilities
+Subject: Re: [PATCH v9 net-next 05/14] pds_core: set up device and adminq
 Content-Language: en-US
 To:     Leon Romanovsky <leon@kernel.org>
 Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
         kuba@kernel.org, drivers@pensando.io, jiri@resnulli.us
 References: <20230406234143.11318-1-shannon.nelson@amd.com>
- <20230406234143.11318-5-shannon.nelson@amd.com>
- <20230409115414.GC182481@unreal>
+ <20230406234143.11318-6-shannon.nelson@amd.com>
+ <20230409120320.GD182481@unreal>
 From:   Shannon Nelson <shannon.nelson@amd.com>
-In-Reply-To: <20230409115414.GC182481@unreal>
+In-Reply-To: <20230409120320.GD182481@unreal>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0355.namprd03.prod.outlook.com
- (2603:10b6:a03:39c::30) To DS0PR12MB6583.namprd12.prod.outlook.com
- (2603:10b6:8:d1::12)
+X-ClientProxiedBy: BYAPR01CA0058.prod.exchangelabs.com (2603:10b6:a03:94::35)
+ To DS0PR12MB6583.namprd12.prod.outlook.com (2603:10b6:8:d1::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|IA1PR12MB6258:EE_
-X-MS-Office365-Filtering-Correlation-Id: a6185b86-fa04-4b11-d865-08db39f856e1
+X-MS-TrafficTypeDiagnostic: DS0PR12MB6583:EE_|DM4PR12MB6111:EE_
+X-MS-Office365-Filtering-Correlation-Id: 165cf8fd-b0db-4fde-50ea-08db39f9a09a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: naov/C3X6+agxrCWo98t76ruobCDxO+Sc77VNRyLcK8BN1oO5TdVi3l84eI1mh1Ce31if5FfQNgjhaoDkp0pyTH2eXVYHC15PtpvEqNHiyNTRgWyDQWgQTWiX9Pv7T6pFHwPjk1pPHHXf9um9SMSlUwFuAVPuA8v2O988ePVRlfweZ6qZdx5s5LfH+qTt4fp1ipTJWRChfXgqK0OHzYkYg1aYnvSOO2AqvUg/m4kTUCsX/8Wr8Au2Wbyvi6Y/EbZDKENBIKJBZqrKXFfYvUu1iz4YPyPiZe/HAkIdRqIRX6n2IJZH2nRHalB8Ys13w5DN+zok09fIhTX8ix+QsdNipcL/mTkB3c9RL7j9HPAi4zm1LwouVd/HpeWh8X+MhRO70HebmYNEG3S6yNpgcO9+SrQgXVCJjOp8dzBD+8k2+BP/hS4B3H5sW7cP7IpIkSuAk9+4HbOYmTAe2b1nbSaPL+lvhgMfyWZctZQapbCTDZJm/rL7SuMUvZpz5oTq1g7j5km9+eozoYHGnqcHUbDS2vxST0D+duPZ5Shbmup9enJd/IzJbVgUjAQfcJn5NIkhHOy8OihNI+ZQKS397gXjELkEjipKwjYGRKeM3jcPqQPFa1V5iI/aLEwV1ZVeeMv+oqCTAWDq9Ux8XurZL1hfQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39860400002)(136003)(366004)(396003)(451199021)(478600001)(6666004)(53546011)(316002)(26005)(6506007)(6512007)(186003)(6486002)(2906002)(44832011)(66946007)(66556008)(8936002)(4326008)(41300700001)(6916009)(8676002)(5660300002)(66476007)(38100700002)(86362001)(31696002)(36756003)(83380400001)(2616005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: mhwS1b7Sml1rkqtowOlxCHUN6GpJjTUzKkdlCeAFlzrHEoVX9UF0cfeBf8AuTs6up1y8Yrx60eIEt1huWhCGuPXa2VjTPb43k3D+OqKLdKN7KFxYzAReLhhyoPCBFSI1Kdl5xCl1ZURhdb5XSb2prGvJ0hUqS43R6QPf2pxZBe1PeFduNkRZC1k8LcUaFAiVvfatl4m2XVbK5JB8nNazH/n2vqt4OhCDjVwSKR9ytgdfTcPKJAaV4pt+Nn8LX00EvjRDDaAwo/R02OGGyEAYxHSCd7ST4s58hucr7QPm+cNZCP4OYt0FFehnVFz983EBSaC8lb+WZobbenGjjDEXkooSAvVhKJJnR0VMSdtpOwdyrbsP9K47Juju0t8fGQ2JlhWR2VH8tJrhoWv2Z+2mh9KTB6PZZ2O8c+4qDoM+ZJ8jJUZmP0QVkphAIuSYCv5IF4yHc6B+e/S2s2pEzJEYpeuTUrzZOgUu9rNkFYLu60D9yuU7pd0npSD06/JNzFJYGMcTNs2rTGBv1/wCKgocYbFTFnBYwIFaHAfPs1l/eQvJ7uCSBXnDsNzkkJCLhe1InZsqz6droAxL4tOb3dbvKJYZK1q/9Ct9YWoKG/9OBnGhYZytS8a5PsA+chArkAGKk/4/Jx/992cmWlv/w2en7g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB6583.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(39860400002)(366004)(376002)(136003)(451199021)(2616005)(478600001)(6512007)(26005)(6506007)(83380400001)(6666004)(6486002)(41300700001)(316002)(66476007)(66556008)(4326008)(6916009)(53546011)(186003)(66946007)(31686004)(38100700002)(2906002)(5660300002)(44832011)(36756003)(31696002)(86362001)(8936002)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YlRzbUMxaUcrcUh3MDJoeWx0R1k2b2ZpL3NvQkJ2RjNXTnk3SUpud1BFWENz?=
- =?utf-8?B?Y2tuc3RFZ0haQTJmT1Vza2liUE9udURIMFlhWGRFQUc3Z3VxVFdBMTNmSEd6?=
- =?utf-8?B?ejQ2akczYnBXNU1ORTlhc2pRcTlEUGsvTXZsOUlYV1ZweWxYZllxMHVFTHBt?=
- =?utf-8?B?RGI3Z0hWVjc2SXVHSDYzN0s1S0xsVUxLWHM5ZlcxcjhjQVNOUjcxdGMxY3Jz?=
- =?utf-8?B?aGRuNkZ6elYxZlFHOG1DbE5YRDRKaVpVU0JGL2Jxai9nN1dDRytydnFibmdZ?=
- =?utf-8?B?Uml4K3dsOUdiWVMvMmJlcWtkNWQvS04xQ0h3MGFFcmxaU3JIdGlIOTFvNm9J?=
- =?utf-8?B?dUlKWDVGb0czMCtvdGl6WGlHR05MRElTT3F2OHpDdmFmS0dMaUVNZXNyUWVx?=
- =?utf-8?B?U2FMck1iMms1K25lWnFtT0ZMYUhzVW1VWGNzNFNrNDZEd29MMmRZUFFEa3hv?=
- =?utf-8?B?QkJ2NC9iM3MzWjdvdkQ1NGhraTdodVBkOUI1dlpkalJkMWRLODFOczNKNDc4?=
- =?utf-8?B?VWRoYmRtdVNScnpFaHIvWjdXQzNJS2ZWSEJ6WFlPWUtUaTcyc1FCNld2MEQz?=
- =?utf-8?B?RzloY1dYY3JPbTRQaUt5bnBNa2lBQTlHcHJpbkNXZndVaDg1ZGZDOUs2cnd5?=
- =?utf-8?B?NTNJY3FVcWdjQ2RrcHNzbHR4NytxdnB3V2hET2xydC8wNUdKS3IvNTB0MUt1?=
- =?utf-8?B?b2VueXh1bmwrOUVmcUE4QURYN3o0N2tmVExKdVFLcDljbzdmMmR2L3MzeFA5?=
- =?utf-8?B?dkZzSXpBL3NBTENUYmh3YlBXVXNNOC9ocVFNc0w0S1QyeG1oY201Qm9VRlVj?=
- =?utf-8?B?Zys0Wjk1ak1heWh0N3VQZC9WQTN4cWpOV1dSUlFCR01pNFR4MEo1RGg1b1hj?=
- =?utf-8?B?QkdrbDRKa2lrbnFMbndxaS9KRzhrNFFIK3FIMkhpSEIrOXNCM3BuLzZ0Uk9r?=
- =?utf-8?B?TWVGRHRXaHZXR1ZXdS9TbldYUHFDKzFZdUVwUnlrOGxrQ2JFb1BIRkhiWkFq?=
- =?utf-8?B?N1E2OWRmR1I3bVNIQU5pQmVkbjlWOUt6b05hVWJ1aE5iMUowc1ZpcHRTNEg4?=
- =?utf-8?B?K095MmdjL1JpWHJZSFRSZExGZ0tIZ084TFlNbFFSU29seTVSMXEzOXN0Sm1T?=
- =?utf-8?B?U0FRQVRSUmc1bFdNbzFpOFd2OTNhVUxiRFVkanpMTkxZM05yUWRIWnljRjF3?=
- =?utf-8?B?U1pmOXBncmV1amcvb2lYMUlaazJGcm9NUm1nSEhIcWFZUlFxby9VZWdCKzFH?=
- =?utf-8?B?TnRZU0RvWjRaZDJ1WW1TRE9HSVNwQzJsUDZLbjlWVFY0MVplQXNYdU8weEd1?=
- =?utf-8?B?ZnpFNGFOSGxXeWlsN2JRdUZtZGNZTmFUZkhEcURQRytNTFNWVmlEaTliUGY2?=
- =?utf-8?B?dEtaVVpJTjh6Vk0yYkdvN0s4T213UllTRm5xT01OZ3lmb1I4SSthN2lveUhN?=
- =?utf-8?B?K1gyTndqWkZ5elNFdEFnQzQyMk9FcElxSDFFcnpDQlZoUTRLUm1EUEN1c0Vk?=
- =?utf-8?B?MExJc05jaitKc0huUndsVVZEMTZOMHhYSWl6U3RldDRXUTZpWTZ1OTJCVFNy?=
- =?utf-8?B?NzcrWDJvQW85a3BLZGZVV01FYzBEeDRZbk5pNXk4QVFGMXovc1VxSTFGcElM?=
- =?utf-8?B?MTF1amI2aHd5MkE3bnNUNzlrKzFKWERzWFpwWVVEdm5XU0xqOUVrYXJnREVh?=
- =?utf-8?B?TFZWM2Nwd3E5K2t6eUdNYXdTZUZtamlyZk85Qjc5SVFoL1F0bTVJNmdURDVS?=
- =?utf-8?B?eS8vb1VVZjdhV0U2aTVyblVlTlJqbGx3ckhlKzZ3Z3hmZVRTQWt5U3hzNHVP?=
- =?utf-8?B?NmJld1h1SkNoNldKM2dNTHJaNnBRMU1rbDdNSXpVdVl2bzgvMlpWYThnaWtI?=
- =?utf-8?B?SDdzbjgwWTIzL0ZlWndzdUo1TkdPUjZvbWhQWGJUZmlORzBLMlJQTUdtQkc3?=
- =?utf-8?B?NzJHVzlqcWZINElWbFo1bXNmL2t0VE55blFCUmFFR3E5YVB4dmlxZlVQT1N2?=
- =?utf-8?B?NGkyNGtraTZnS0NBc1Qxb2x1UEUyUnVxTHdCY0hCNndSVzJVa3FBOEFRSTd4?=
- =?utf-8?B?dFI1bjdzOUQ0dkVXbTFwZG9Wa2ZJeGdoWUJMMFBOL05TN0RSNjQ0cVFSLyts?=
- =?utf-8?Q?peezi3YJjWEz6aSkOwRJQIRsY?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SFJSSWpCczF2MFNBaU0zMU1OQ05ZWUlBcG5MbHdqbWczaHd4Vk1yd1orWndi?=
+ =?utf-8?B?aVJZRzFMZCthUkpyWDkwY1ZVNmI4WGFhTytqc1lhUFF0MWdadVRzbDdwRDl4?=
+ =?utf-8?B?NWxCaDhVZnVBYjBwRkJVU3oyZG8yUXliSzRnVEhlRkFnWUVpOCs0d2pML1FV?=
+ =?utf-8?B?M3h0amZHVE9UWUh6WmpjWXZNUXg0aWI1alVlM3YzVkZub1F0OFdna1kzd2VU?=
+ =?utf-8?B?ejdmalBPN3dKc3FIaWkrdFZJdkJoRnh6bFV2MmpXeEJiZ0xaSzE2SFM4QThR?=
+ =?utf-8?B?WlZWb050TWZWUDdwckJvL3VNdmRtRUdxWjR1a1hSaElHcVhUaXJnQWtienVV?=
+ =?utf-8?B?RjV4ZENtUm0xT01ScHloWGZ1dURaSjkwRnRtc3hYaFJaNlBSbUF1UHo4ZWdx?=
+ =?utf-8?B?c3BaVThJc3FZeFg4aU9GZmVCNTRmdFBkVTE0anBadkRhWUhJZ2IyT2VjTkZT?=
+ =?utf-8?B?ZElEdjAwMjFMcmhTUTdvNUVEUndKWkdpVXFTWVNkMVNLRThlRTdiMlQ0VEJC?=
+ =?utf-8?B?ZmlCcjFnT0FCMFc5YUJ5UlkwSEhwdUlVWnU2TGpibmdQSDJXNk41UjNvTlRp?=
+ =?utf-8?B?NmwzbHhoNHRPS3h0UktrZi8yTmZGVW9ITjJSSS8zNEVERktpU2FkUFRFTVV1?=
+ =?utf-8?B?dWdZTWc4cFZjVU9GRk9nbjZ3bDNBbk5ELzBJOUFoOWVnSVZPRVRVRVZDUUdD?=
+ =?utf-8?B?Y3c2TEFKM3pTTDMzSmJjOExXaTlKbkN0YmI3VmRlZEg1c1dHWkZXbFVabnlR?=
+ =?utf-8?B?OFVYT0c4SHpmQjhycm1ZZDZoYkVTb3FuVlpPTHFTakYwOW5vMkg3emM1RTVW?=
+ =?utf-8?B?c3Vub0xaUWlLQUxBL1NWMDBMN2Y2VDBlNEM4MlVCajJoNFM3VXd3eTRydHp5?=
+ =?utf-8?B?SC9mZXJtM2J1ZVk3dlBTRjI2MWZtWEsxbTJ0QWtZc1JqZnlzRnpveHlqYnZK?=
+ =?utf-8?B?ZE5mOXVWdjdkc05vWnoveENRV2J6ODZJajBuelNkdTVDbXZaQi82QkVjaWYr?=
+ =?utf-8?B?cXhFSEVQa1RaL0FsQ0RyaXYya2NkTEg4OTVVQ1VpYUUwd09OM3AyaUhoNWZ3?=
+ =?utf-8?B?V1NJZGNMRVM2MEpTWFZtdk9pbW15WnF2SngxZFRTMFNPaHNTb2x1ZXZzZjV3?=
+ =?utf-8?B?Q1ZsUVB1NGtMb3lLZ0l0RW9GYnR6dGNSV1VNY1pyakY3NjB4VnBRd2I0V1FF?=
+ =?utf-8?B?TjRFT0E1Sm5JeTRmSC82eEhvSGdGR0lLcWNyNnVnSjE1UmhVbW41VDl6b1Vj?=
+ =?utf-8?B?aW9pVE15NWRMVmdUb2lKTStNYVc5cTk3REJ4Tnk4TmxqbHFZcUFEM2RhcHJX?=
+ =?utf-8?B?M3lzNjBwYU0wVXFIUmRMRHVwZEZKUkxLVVFpcnEzcGx4Q2YvUkZmUnFFbFho?=
+ =?utf-8?B?czJFU1lnTGpyQzdxamovU2tsd1FQYlpGMkRIand0UDBwSmwwcnBrbUZXaFNj?=
+ =?utf-8?B?cUIvRVh3UVNRc3haWkdwYVRyVEFzRUpqUVhDclVWamxzRTBjakR6bnlZWGlE?=
+ =?utf-8?B?Z21wWS94MTMxcXM5MVBvZk9NYWNreG16emdyL0pWNGdQZEtxalNJdmpReGFh?=
+ =?utf-8?B?K2dLWHBJMHhnK0hKQVhlRmY0ZmcrazUyRFcwRFQ3L2NLTlYzUU05T283dGsv?=
+ =?utf-8?B?Y00wYXRKbnZzVjY1azBiZmN0dHVsazRPMGd5aVNqdDQyTGNyZkxxbndMQzlI?=
+ =?utf-8?B?Qjh6N3duZWxoeDRoTk8wM1VZdHREQ0dBT0tPbXRQcWpwWXFhcVA4K1o1RGxq?=
+ =?utf-8?B?OE1nNStVTWlrUjRaK1R2NzRPeG03Vlk0YkJWWlF6U0pJK1EvUExDci9FVkdD?=
+ =?utf-8?B?aUxaeTdvNy9UblQxNzlUaFVOSWxramlvNXVoV3N3Q2hmUGtxZzB6eFdkb25I?=
+ =?utf-8?B?VkpVdDU3WFExR2tyN05EMEEyYzFGcm9RTjVteFZWZ05rQit1NnF3aVZKZklX?=
+ =?utf-8?B?TC9melV6VzVPUGRsUFYxNW1nRENGZFdKeEJuaVpFem9XaStGRDl2Q1krVDVj?=
+ =?utf-8?B?bnRLQnRMb1pybWxoTWhBaEZtcElBQnF5eUF0aExpeWl6ZTJ0UE9BY24wVjk4?=
+ =?utf-8?B?WS9wcGhPUXdGeGJIVEtiaFIvWnZIM1FMc2pjRmJwUjJvby8wSUpSSlZDZ2Zy?=
+ =?utf-8?Q?vqX8YnoGVkeR8MjEweDLuvQWD?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a6185b86-fa04-4b11-d865-08db39f856e1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 165cf8fd-b0db-4fde-50ea-08db39f9a09a
 X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB6583.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 19:18:17.7178
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 19:27:30.9124
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ph6uYQm12ydW/xTAySqlJkiIUps7v6IqudPYWVoS9bKOUGfzQcAG55Ea9cJ1za+rT8PxulDzc4LE1WpAGlWK3Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6258
+X-MS-Exchange-CrossTenant-UserPrincipalName: cWBCzg8bu0I48ZLsivCEhCNV5jvtVlSZn83ZtEg3yny8Gq0I3toZpqBkcUXRG2pZeIEWmKUrlK6OFpcewXvZcQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6111
 X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
@@ -125,57 +123,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/9/23 4:54 AM, Leon Romanovsky wrote:
+On 4/9/23 5:03 AM, Leon Romanovsky wrote:
 > 
-> On Thu, Apr 06, 2023 at 04:41:33PM -0700, Shannon Nelson wrote:
->> Add devlink health reporting on top of our fw watchdog.
+> On Thu, Apr 06, 2023 at 04:41:34PM -0700, Shannon Nelson wrote:
+>> Set up the basic adminq and notifyq queue structures.  These are
+>> used mostly by the client drivers for feature configuration.
+>> These are essentially the same adminq and notifyq as in the
+>> ionic driver.
 >>
->> Example:
->>    # devlink health show pci/0000:2b:00.0 reporter fw
->>    pci/0000:2b:00.0:
->>      reporter fw
->>        state healthy error 0 recover 0
->>    # devlink health diagnose pci/0000:2b:00.0 reporter fw
->>     Status: healthy State: 1 Generation: 0 Recoveries: 0
+>> Part of this includes querying for device identity and FW
+>> information, so we can make that available to devlink dev info.
+>>
+>>    $ devlink dev info pci/0000:b5:00.0
+>>    pci/0000:b5:00.0:
+>>      driver pds_core
+>>      serial_number FLM18420073
+>>      versions:
+>>          fixed:
+>>            asic.id 0x0
+>>            asic.rev 0x0
+>>          running:
+>>            fw 1.51.0-73
+>>          stored:
+>>            fw.goldfw 1.15.9-C-22
+>>            fw.mainfwa 1.60.0-73
+>>            fw.mainfwb 1.60.0-57
 >>
 >> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 >> ---
->>   .../device_drivers/ethernet/amd/pds_core.rst  | 12 ++++++
->>   drivers/net/ethernet/amd/pds_core/Makefile    |  1 +
->>   drivers/net/ethernet/amd/pds_core/core.c      |  6 +++
->>   drivers/net/ethernet/amd/pds_core/core.h      |  6 +++
->>   drivers/net/ethernet/amd/pds_core/devlink.c   | 37 +++++++++++++++++++
->>   drivers/net/ethernet/amd/pds_core/main.c      | 22 +++++++++++
->>   6 files changed, 84 insertions(+)
->>   create mode 100644 drivers/net/ethernet/amd/pds_core/devlink.c
+>>   .../device_drivers/ethernet/amd/pds_core.rst  |  47 ++
+>>   drivers/net/ethernet/amd/pds_core/core.c      | 450 ++++++++++++-
+>>   drivers/net/ethernet/amd/pds_core/core.h      | 154 +++++
+>>   drivers/net/ethernet/amd/pds_core/debugfs.c   |  76 +++
+>>   drivers/net/ethernet/amd/pds_core/devlink.c   |  61 ++
+>>   drivers/net/ethernet/amd/pds_core/main.c      |  17 +-
+>>   include/linux/pds/pds_adminq.h                | 637 ++++++++++++++++++
+>>   7 files changed, 1438 insertions(+), 4 deletions(-)
+>>   create mode 100644 include/linux/pds/pds_adminq.h
 > 
 > <...>
 > 
->> +int pdsc_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
->> +                           struct devlink_fmsg *fmsg,
->> +                           struct netlink_ext_ack *extack)
+>> +void pdsc_stop(struct pdsc *pdsc)
 >> +{
->> +     struct pdsc *pdsc = devlink_health_reporter_priv(reporter);
->> +     int err = 0;
+>> +     if (pdsc->wq)
+>> +             flush_workqueue(pdsc->wq);
 >> +
->> +     if (test_bit(PDSC_S_FW_DEAD, &pdsc->state))
+>> +     pdsc_mask_interrupts(pdsc);
+>> +}
+>> +
 > 
-> How is this check protected from race with your health workqueue added
-> in previous patch?
+> <...>
 > 
->> +             err = devlink_fmsg_string_pair_put(fmsg, "Status", "dead");
->> +     else if (!pdsc_is_fw_good(pdsc))
+>>   static const struct devlink_ops pdsc_dl_vf_ops = {
+>> @@ -332,6 +346,7 @@ static void pdsc_remove(struct pci_dev *pdev)
+>>                mutex_lock(&pdsc->config_lock);
+>>                set_bit(PDSC_S_STOPPING_DRIVER, &pdsc->state);
+>>
+>> +             pdsc_stop(pdsc);
 > 
-> Same question.
+> You are calling to flush this workqueue in a couple of line above.
 
-Yes, it would be good to wrap these in the config_lock.
+I guess we really want it flushed...
+I'll look at that to see if we really need the extra flushing.
 
 
 > 
->> +             err = devlink_fmsg_string_pair_put(fmsg, "Status", "unhealthy");
->> +     else
->> +             err = devlink_fmsg_string_pair_put(fmsg, "Status", "healthy");
->> +     if (err)
->> +             return err;
+>>                pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
+>>                mutex_unlock(&pdsc->config_lock);
+>>                mutex_destroy(&pdsc->config_lock);
+>> diff --git a/include/linux/pds/pds_adminq.h b/include/linux/pds/pds_adminq.h
+>> new file mode 100644
+>> index 000000000000..9cd58b7f5fb2
+>> --- /dev/null
+>> +++ b/include/linux/pds/pds_adminq.h
+>> @@ -0,0 +1,637 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+>> +
 > 
-> Thanks
+> <...>
+> 
+>> +/* The color bit is a 'done' bit for the completion descriptors
+>> + * where the meaning alternates between '1' and '0' for alternating
+>> + * passes through the completion descriptor ring.
+>> + */
+>> +static inline u8 pdsc_color_match(u8 color, u8 done_color)
+> 
+> static inline bool?
+
+Sure.
+
+> 
+>> +{
+>> +     return (!!(color & PDS_COMP_COLOR_MASK)) == done_color;
+>> +}
+>> +#endif /* _PDS_CORE_ADMINQ_H_ */
+>> --
+>> 2.17.1
+>>
