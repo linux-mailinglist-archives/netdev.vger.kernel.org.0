@@ -2,171 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 402D46DC5A2
-	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 12:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A706E6DC58A
+	for <lists+netdev@lfdr.de>; Mon, 10 Apr 2023 12:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbjDJKLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 06:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56528 "EHLO
+        id S229781AbjDJKKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 06:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbjDJKLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 06:11:37 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8A659E3;
-        Mon, 10 Apr 2023 03:11:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681121477; x=1712657477;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Bc+nspG2xkjaRPTpa9y3nJcvI9rS5o1YkarF2xS12Dk=;
-  b=IFcOeWPXAPUs9y/KbdCM6kQRjvxEbiYmDylNZnCaMygB7NnqBr7NGEzA
-   oOGzrESufaveYVnJzNUi9g/FESgUrmeqiS9TTkWQnBeMfkjY7/wG5LjXJ
-   4D8+seLZatIV53IXEaSzTQkO3vnonyE5zQkT3ZpC3dE2li3SQeCAnLQtI
-   jeWidoji5f/ZrLVwN4eqT800QaJcU7zZ51dE2EYPJHH0NYrpp4V+Bgjy2
-   Rz0oDPZUDD31pscJ7LtRGHj6B68M87O/GpHeF2NSrLjPASwpnjWCiQrrN
-   6lXeRRpn+vJqLYHyBcFkCzyG2ffgJFCSgX/zUJcAUI2pp/gxRpTlQrqhQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10675"; a="340815413"
-X-IronPort-AV: E=Sophos;i="5.98,333,1673942400"; 
-   d="scan'208";a="340815413"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2023 03:11:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10675"; a="752716209"
-X-IronPort-AV: E=Sophos;i="5.98,333,1673942400"; 
-   d="scan'208";a="752716209"
-Received: from p12ill20yoongsia.png.intel.com ([10.88.227.28])
-  by fmsmga008.fm.intel.com with ESMTP; 10 Apr 2023 03:11:00 -0700
-From:   Song Yoong Siang <yoong.siang.song@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229780AbjDJKKG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 06:10:06 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2044.outbound.protection.outlook.com [40.107.7.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3C191
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 03:10:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H5ffeJ28xJxQkvOEk56HHqBR16GMUb120pT/46vDjD4vvZ1/pvhf7xATLyicwt3EmMtpxfN9ct24djTSp1rxD5P23buhV1lD20+wHy1uyFKPdnUpFVqxZCYMGagvKQRedQbUbyLKGOsm8GEsfcM59tygS79OrfEXCMmj8UTPUEh8Y4HYU0u9oj+fxTB0JiuGVN51msz8wSO3ZK92SKd+Ky6yiwAS3reDC6bB/+970yNNXnMQeqcofUyd4X+KUisU0WAwNZ1gZjiO+voa4T/OsbnP4yEbJGeJVsJFIJwaqfOTpnZWNbK8zm8IYel60nOmpjlfV+cIZAw2KlMNxkz3LQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yuXUSD0rTrrFYJNjgdUTqwPPutyXQlFhuWcrE8Zn+qI=;
+ b=Z6MDNVlS13pc3vAMLV/jUnMw3ncjopBx0bbX2pMG+vh4w/nFB7uZNXV+HxhomYfHouxyWTyj2YAzxb0L8yghkhML3fV74HzsG45uKJ25bFSItfs/+H5qBhrSCNANTn+zZOZbZ8YGKU1V7eK2p9lK6utNNcFX/ZuRDSELUZX/QBNrXJ0I6mDRMOiY60TIHC9ojmo/ZeRlch1ZPUBpHnHxX1xzd/SBLvw/6Fou2b2KEcM58XyRX9UnidZSjdl+Sm9JacjIs40XDUyZAq8iBBFjZvYIdi1Qnjurz51gdmaBN4kgS6QWlKy1y0RYEjAbBE19RhvCYtvue0gFDHwwUfw5VA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yuXUSD0rTrrFYJNjgdUTqwPPutyXQlFhuWcrE8Zn+qI=;
+ b=FGsi5+VHQPE4xZQUJbLWmsP5GHIz6cXkFfyF01wOqJflgTTznL3MKzaZ09ORSSwnbScF/rvBcq7h80U9e29yQGDgBrLs6556gvCd3fQkytxqwVv1TYhsxBrvxk5+BkbGVKKNJsqqbHgkyQhbo8I35ywpk+eT90dgNL8bfFw7iuk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by AM7PR04MB6997.eurprd04.prod.outlook.com (2603:10a6:20b:10d::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.36; Mon, 10 Apr
+ 2023 10:10:01 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::55b1:d2dd:4327:912b]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::55b1:d2dd:4327:912b%5]) with mapi id 15.20.6277.033; Mon, 10 Apr 2023
+ 10:10:01 +0000
+Date:   Mon, 10 Apr 2023 13:09:58 +0300
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, xdp-hints@xdp-project.net,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: [PATCH net-next 4/4] net: stmmac: add Rx HWTS metadata to XDP ZC receive pkt
-Date:   Mon, 10 Apr 2023 18:09:39 +0800
-Message-Id: <20230410100939.331833-5-yoong.siang.song@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230410100939.331833-1-yoong.siang.song@intel.com>
-References: <20230410100939.331833-1-yoong.siang.song@intel.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [RFC PATCH net] net: ipv4/ipv6 addrconf: call
+ igmp{,6}_group_dropped() while dev is still up
+Message-ID: <20230410100958.4o3ub7yy7gxnzzpy@skbuf>
+References: <20230406233058.780721-1-vladimir.oltean@nxp.com>
+ <febbbc75-2cf5-1cf9-8ed9-6a42ff295ab9@kernel.org>
+ <ZDPA1pv7tqOvKHqe@shredder>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZDPA1pv7tqOvKHqe@shredder>
+X-ClientProxiedBy: VI1PR0101CA0061.eurprd01.prod.exchangelabs.com
+ (2603:10a6:800:1f::29) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AM7PR04MB6997:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c973f7b-1e13-4c1b-9f7f-08db39abbf43
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: adga1ogDTYoCCSGAoT9F4K7rwwnfA/Hu9LLRYBlpfRVjX9OUpMyE04tN22dAEFTMQEQtXkrJZ80BHYaLR26/5WLAEqwwzQDyuf83ivgW+3KEXcyBXl6ffLS+tR0OurEhjexn0pwreaBXJ5PGq2DGbyjgYOGN+0Bp9nnR1p/7JtLkGrV7IT+CQU+3NHUcHM2gxfbbvxbGGdAbJrpDzkk/qR6snKtYjSmEFB96N/2f7xlidpmPmz9js5AmvfdejZFAB8eSW2O7NjpSxdiOMJhPA07j3w7VX9BRrMCGZD0ObyXAosKkF3UZFMB+MdDw83KL4LKX72t829/p9/MYCwAer8QYXrf6nJ8QcE2QomuRwW+C2o+JvSw27npWUPSaiP9A425hkYIFOlGwuLg78hZjA4PI/FrVd8CzUyhEuNG6Pkerjt0inLT9XWAjj+XD/rUWlmgL/cbhwf0e3D/HIKt2AbYatfxjMLpkTyp2tCM1R3QRxiu1470HW1eJoAzH/4k/pi43MSFrxxt0pyWcTHZD+KGwOs984UH7/63CkgacH2YYFr9l03wYQkTI2wasw4Fv
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(136003)(376002)(396003)(346002)(366004)(39860400002)(451199021)(478600001)(316002)(54906003)(9686003)(6512007)(1076003)(6506007)(26005)(44832011)(186003)(6666004)(6486002)(2906002)(5660300002)(33716001)(4326008)(66946007)(41300700001)(8936002)(8676002)(6916009)(66476007)(66556008)(38100700002)(86362001)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MHsF1yDjZsV/pxJFp29XprGZxIAe7mhez8LLIBeDSiCsDnwK0NfN1epvzDUU?=
+ =?us-ascii?Q?w9H+g4khi30dSg9P1U5qU2XXINYO/f5qyZXvJrRPnw56KpoDt0gN9SKgVzK7?=
+ =?us-ascii?Q?vuxI14KO8k7LZyNhAo3n0p/UWkWsBfuf+qo3O/teCA/8U+jYONFBpXzEZGPz?=
+ =?us-ascii?Q?z9hIQ4jB9nnVIzIdA0R6yZuawiy0nDCOoe8FTz6AwgfMQSnveqOaEzgr2q+5?=
+ =?us-ascii?Q?+PbUOjJdxX9xtVLWXI3c2HhuTkj38yq8gldhOzBBX8TlDYLz0KiCjWqlIsq3?=
+ =?us-ascii?Q?H7ke9+Bz1/Qu18Tar3y0HnbkcOrn/UKJFqWI+HjCR54uTNJo3xEVvEMvKx6v?=
+ =?us-ascii?Q?uISI58WcZRrk3mHMAu+Q2o9H+AfvVDpEebolwf3PSSJTXgHHJGEm+VO1jo0t?=
+ =?us-ascii?Q?mL+Ge0hb/NdK+fLnDyRSF3+H2AgywcLLF3GE+j1d+EZBpajgL680FQ1ADHr2?=
+ =?us-ascii?Q?uhQ5cIGEqpAy2+WFWPosjnXyuwu1zc2z8U1KFsdmUHfHuzXU/R8gXgt2qTRk?=
+ =?us-ascii?Q?snzVom0hCSK0HO1LZ8l7RJYhRnt3/juxq2SGDfg/pzUGRYl2eNWBJu3g9I1p?=
+ =?us-ascii?Q?U42vswKtjrICMf/TgFI0vEb7B/9H7VaTV6km3ZtmXE6uIKbmN8hQ2jeY5n0Q?=
+ =?us-ascii?Q?cE9L2TNLYKsz7xSIChVy7zEJpvTdwOaG80McGGKk4l3VwP3uuAjF4r1OZgRm?=
+ =?us-ascii?Q?qGSMyVgChqnDCsXt63j21yUSRgS0O2TU+6/UfkO8FemMnh9YX/MH6Lr5uEJn?=
+ =?us-ascii?Q?pdGr/S+rEur3R6KkrQptHXvWnoYXmrqmaIrUABIDZGeN5d7NQeT+UnWSAVd3?=
+ =?us-ascii?Q?NBs9NeDBLYtXM302y1WVp+68OuweFk2i9y9x10tj5qgFE1qr60ZyezigNal0?=
+ =?us-ascii?Q?2uktUTkcpPxbgfROYCBzZKEQ0JyUzS4/vYbHV7eqyJRumBUQklQfNfwLlJNF?=
+ =?us-ascii?Q?NunOk+sp32qdaPUKzzFVb9fYYfsKFbnS/6tsj1byDCTcR6IDtN+AmCO4hebQ?=
+ =?us-ascii?Q?Tvjn660zVBRnOUt00jckljPl/0oNLc7CmWCi6fJvTozNTx5JDL0hClt05XMt?=
+ =?us-ascii?Q?sv8x8dLoYMFNmnkIrXT8hGIWljyO+Mzrj7fzG5fCNZwfojkQOkpF33+OpJMt?=
+ =?us-ascii?Q?HcKUQViPzQQ1NWWatlAXcJhpLYcQky+lR0WrVDS/7Jpe1XPyhu/qjIux3ODT?=
+ =?us-ascii?Q?EDpR+fRHcX5C+Wi1gW4dvG7i3R+TF6ygudlGlbUdy2Vp3L592MjMMxxAJByj?=
+ =?us-ascii?Q?J/Kr6lyXc9S3i+9z1uVcm50dmHAmljAfcRVjSRWgF/bUXHygUS8PTWyNmsea?=
+ =?us-ascii?Q?QbxFIKF5DhsIMueYm1wvgKUBNFAyE6kVi+ivEAWZ3xeSy5S+5INdLebtFOOD?=
+ =?us-ascii?Q?GWUjxKDJqyEGzZSnG3j0tcm8ZWcA1mtTGuxuyZeQzlRYE6FOY4qn1bhv0A2I?=
+ =?us-ascii?Q?pxVwSTSBcBB+L1fCGElldwoyNpgpudESWrFgD4n/2u2yKCxqNw2F2Q2xT6yH?=
+ =?us-ascii?Q?AdV98fjGRD3qEXOi+vH5k60ap1IWUok6bVMMBfaU5bmUxD5h5u9oG6Rn+CeX?=
+ =?us-ascii?Q?3MgzK0Zk/NS7frOL3J1yAD3MLfeoMHdWY/XZnfZU8OqfMWLuq3/N+vCsdLvr?=
+ =?us-ascii?Q?WA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c973f7b-1e13-4c1b-9f7f-08db39abbf43
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2023 10:10:01.5809
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1nUlY299qx/cGZd4fUhcr+W5p1jbDSyoozyLZSlmYCGKrDWNjX9jTl7ynbCBoxfnx1fwClcdltVNez5PUwALKw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6997
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add receive hardware timestamp metadata support via kfunc to XDP Zero Copy
-receive packets.
+Hi Ido,
 
-Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 29 +++++++++++++++++--
- 1 file changed, 26 insertions(+), 3 deletions(-)
+On Mon, Apr 10, 2023 at 10:55:02AM +0300, Ido Schimmel wrote:
+> > > The proposal is to respond to that slightly earlier notifier with the
+> > > IGMP address deletion, so that the ndo_set_rx_mode() of the device does
+> > > actually get called. I am not familiar with the details of these layers,
+> > > but it appeared to me that NETDEV_DOWN needed to be replaced everywhere
+> > > with NETDEV_GOING_DOWN, so I blindly did that and it worked.
+> 
+> I think there is a confusion here between the netdev notifier and
+> inetaddr notifiers. They all use "NETDEV_DOWN", but in the inetaddr
+> notifiers it means that an address is being deleted. Changing the event
+> to "NETDEV_GOING_DOWN" is going to break a lot of users since none of
+> the inetaddr listeners respond to "NETDEV_GOING_DOWN".
+> 
+> IOW, I believe you only need this change for IPv4 (and similarly for
+> IPv6):
+> 
+> diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+> index 5deac0517ef7..679c9819f25b 100644
+> --- a/net/ipv4/devinet.c
+> +++ b/net/ipv4/devinet.c
+> @@ -1588,7 +1588,7 @@ static int inetdev_event(struct notifier_block *this, unsigned long event,
+>  		/* Send gratuitous ARP to notify of link change */
+>  		inetdev_send_gratuitous_arp(dev, in_dev);
+>  		break;
+> -	case NETDEV_DOWN:
+> +	case NETDEV_GOING_DOWN:
+>  		ip_mc_down(in_dev);
+>  		break;
+>  	case NETDEV_PRE_TYPE_CHANGE:
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index ca183fbfde85..a4545e9eb8fd 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1611,6 +1611,12 @@ static int stmmac_alloc_rx_buffers_zc(struct stmmac_priv *priv,
- 	struct stmmac_rx_queue *rx_q = &dma_conf->rx_queue[queue];
- 	int i;
- 
-+	/* struct stmmac_xdp_buff is using cb field (maximum size of 24 bytes)
-+	 * in struct xdp_buff_xsk to stash driver specific information. Thus,
-+	 * use this macro to make sure no size violations.
-+	 */
-+	XSK_CHECK_PRIV_TYPE(struct stmmac_xdp_buff);
-+
- 	for (i = 0; i < dma_conf->dma_rx_size; i++) {
- 		struct stmmac_rx_buffer *buf;
- 		dma_addr_t dma_addr;
-@@ -4903,7 +4909,7 @@ static struct sk_buff *stmmac_construct_skb_zc(struct stmmac_channel *ch,
- 
- static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
- 				   struct dma_desc *p, struct dma_desc *np,
--				   struct xdp_buff *xdp)
-+				   struct xdp_buff *xdp, ktime_t rx_hwts)
- {
- 	struct stmmac_channel *ch = &priv->channel[queue];
- 	struct skb_shared_hwtstamps *shhwtstamp = NULL;
-@@ -4921,7 +4927,7 @@ static void stmmac_dispatch_skb_zc(struct stmmac_priv *priv, u32 queue,
- 
- 	shhwtstamp = skb_hwtstamps(skb);
- 	memset(shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
--	stmmac_get_rx_hwtstamp(priv, p, np, &shhwtstamp->hwtstamp);
-+	shhwtstamp->hwtstamp = rx_hwts;
- 
- 	stmmac_rx_vlan(priv->dev, skb);
- 	skb->protocol = eth_type_trans(skb, priv->dev);
-@@ -4999,6 +5005,16 @@ static bool stmmac_rx_refill_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
- 	return ret;
- }
- 
-+static struct stmmac_xdp_buff *xsk_buff_to_stmmac_ctx(struct xdp_buff *xdp)
-+{
-+	/* In XDP zero copy data path, xdp field in struct xdp_buff_xsk is used
-+	 * to represent incoming packet, whereas cb field in the same structure
-+	 * is used to store driver specific info. Thus, struct stmmac_xdp_buff
-+	 * is laid on top of xdp and cb fields of struct xdp_buff_xsk.
-+	 */
-+	return (struct stmmac_xdp_buff *)xdp;
-+}
-+
- static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- {
- 	struct stmmac_rx_queue *rx_q = &priv->dma_conf.rx_queue[queue];
-@@ -5028,8 +5044,10 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 	}
- 	while (count < limit) {
- 		struct stmmac_rx_buffer *buf;
-+		struct stmmac_xdp_buff *ctx;
- 		unsigned int buf1_len = 0;
- 		struct dma_desc *np, *p;
-+		ktime_t rx_hwts = 0;
- 		int entry;
- 		int res;
- 
-@@ -5113,6 +5131,10 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 			goto read_again;
- 		}
- 
-+		stmmac_get_rx_hwtstamp(priv, p, np, &rx_hwts);
-+		ctx = xsk_buff_to_stmmac_ctx(buf->xdp);
-+		ctx->rx_hwts = rx_hwts;
-+
- 		/* XDP ZC Frame only support primary buffers for now */
- 		buf1_len = stmmac_rx_buf1_len(priv, p, status, len);
- 		len += buf1_len;
-@@ -5132,7 +5154,8 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 
- 		switch (res) {
- 		case STMMAC_XDP_PASS:
--			stmmac_dispatch_skb_zc(priv, queue, p, np, buf->xdp);
-+			stmmac_dispatch_skb_zc(priv, queue, p, np, buf->xdp,
-+					       rx_hwts);
- 			xsk_buff_free(buf->xdp);
- 			break;
- 		case STMMAC_XDP_CONSUMED:
--- 
-2.34.1
+You are correct, only that portion is needed for IPv4. When I open my
+eyes, I see it too :)
 
+Although it would have been a lot less confusing for someone looking at
+the code for the first time if the inetaddr and inet6addr notifiers did
+not use events from the same NETDEV_ namespace as the netdev notifiers...
+
+So, how do you think I should proceed with this? One patch or two
+(for IPv4 and IPv6)? Is the Fixes: tag ok?
