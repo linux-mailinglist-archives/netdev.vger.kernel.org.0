@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E94026DD6A6
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 11:29:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 401396DD6A7
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 11:29:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229765AbjDKJ2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 05:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47680 "EHLO
+        id S229774AbjDKJ2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 05:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbjDKJ2V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 05:28:21 -0400
-Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54EB82683;
-        Tue, 11 Apr 2023 02:28:19 -0700 (PDT)
-X-QQ-mid: bizesmtp91t1681205295t0e3gu1c
+        with ESMTP id S229714AbjDKJ20 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 05:28:26 -0400
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E8E10DA;
+        Tue, 11 Apr 2023 02:28:22 -0700 (PDT)
+X-QQ-mid: bizesmtp91t1681205298tis7zqda
 Received: from wxdbg.localdomain.com ( [183.129.236.74])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 11 Apr 2023 17:28:14 +0800 (CST)
+        id ; Tue, 11 Apr 2023 17:28:17 +0800 (CST)
 X-QQ-SSF: 01400000000000H0Z000000A0000000
-X-QQ-FEAT: iBxuBmNAXy1slOmqKzYjXbxjNpuTE/rrMsWViLgpQVLn9YAuADygLyKRpPhjM
-        BCRnRToI5UoCC0LPynNvn4fNUKMeayYGI9gl0RM2q9SGNWV7dYLDh91al1Eu/am0l1qsftS
-        aZgZwmH3he6QO5QRPvk+MHgDTDCqeJj9pNdr7S1dGglbZoIEarmmgLBm6rgPVwioRnjUWVM
-        v4vs842QgRU9jli8vRKq++9WKEim8VrxgceqBI7fImQmGh0xE+9ODqK+tyRkb9Uvj9yRcGS
-        ybwr7laloRHxdOaAo6RjqemjJ0Yl8+pqcE0gb7CrWqiBKZ4nzl6b6Ays3IJ4Ck7sHwbEd+L
-        mbpCObBaAUZ54Z/RSTZp7uRU3o4AHs0LSApZBslmGoA0hP87lKhiGh4h5FeaL/hSMujnrNd
-        Yn2YQELRRzeA9sVJ4dWhRg==
+X-QQ-FEAT: hoArX50alxESfU2Eg6x3EG/x0IMY3TM6Hp3J6l22/YCF2CY4lPABJ6OIli6lM
+        jFh3UH6DnoDGzADAWVRrqtvxd8koo5ZAdJixlou3dJJQOyl6sCN1wgeBIUsczwlScAGNk9P
+        5qFqJEfqPhPDLQXTbWUhMrnifo8HMCPMwh3gqoBm2v+Rr3R4nXMQxOiNW2tPzLFZUX6+1Jw
+        5+3+AmEVJYL1gc3wfAuJ7L/oAftCkPqw5cjw1UGIyfjoX8Yi+S5xnpyvRkf+D0YAMG64Wh7
+        2kXsoIab3im81cxm1CQefA7WeaZjoCnR1OkVx1rbtaw3oBslaLAiOrk4NfNAo3yMUN8icsf
+        Pe23RnJ3K29Kx2UU/UNIVG6KeaEtdZIk5l+LBDFyk93m7X5Le46xxxM+Tb1ubHyy0b32+O5
+        oVzx9ooRGRE=
 X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 15386639139174796298
+X-BIZMAIL-ID: 15000991781746330880
 From:   Jiawen Wu <jiawenwu@trustnetic.com>
 To:     netdev@vger.kernel.org, linux@armlinux.org.uk
 Cc:     linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
         mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next v2 1/6] net: txgbe: Add software nodes to support phylink
-Date:   Tue, 11 Apr 2023 17:27:20 +0800
-Message-Id: <20230411092725.104992-2-jiawenwu@trustnetic.com>
+Subject: [PATCH net-next v2 2/6] net: txgbe: Implement I2C bus master driver
+Date:   Tue, 11 Apr 2023 17:27:21 +0800
+Message-Id: <20230411092725.104992-3-jiawenwu@trustnetic.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20230411092725.104992-1-jiawenwu@trustnetic.com>
 References: <20230411092725.104992-1-jiawenwu@trustnetic.com>
@@ -51,269 +51,257 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Register software nodes for GPIO, I2C, SFP and PHYLINK. Define the
-device properties.
+Implement I2C bus driver to send and receive I2C messages.
+
+This I2C license the IP of Synopsys Designware, but without interrupt
+support on the hardware design. It seems that polling mode needs to be
+added in Synopsys Designware I2C driver. But currently it can only be
+driven by this I2C bus master driver.
 
 Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
 ---
- drivers/net/ethernet/wangxun/libwx/wx_type.h  |  1 +
- drivers/net/ethernet/wangxun/txgbe/Makefile   |  1 +
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 19 +++-
- .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 86 +++++++++++++++++++
- .../net/ethernet/wangxun/txgbe/txgbe_phy.h    | 10 +++
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   | 42 +++++++++
- 6 files changed, 158 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_phy.h
+ drivers/net/ethernet/wangxun/Kconfig          |   1 +
+ .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 153 ++++++++++++++++++
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  23 +++
+ 3 files changed, 177 insertions(+)
 
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index 32f952d93009..97bce855bc60 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -611,6 +611,7 @@ enum wx_isb_idx {
- 
- struct wx {
- 	u8 __iomem *hw_addr;
-+	void *priv;
- 	struct pci_dev *pdev;
- 	struct net_device *netdev;
- 	struct wx_bus_info bus;
-diff --git a/drivers/net/ethernet/wangxun/txgbe/Makefile b/drivers/net/ethernet/wangxun/txgbe/Makefile
-index 6db14a2cb2d0..7507f762edfe 100644
---- a/drivers/net/ethernet/wangxun/txgbe/Makefile
-+++ b/drivers/net/ethernet/wangxun/txgbe/Makefile
-@@ -8,4 +8,5 @@ obj-$(CONFIG_TXGBE) += txgbe.o
- 
- txgbe-objs := txgbe_main.o \
-               txgbe_hw.o \
-+              txgbe_phy.o \
-               txgbe_ethtool.o
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index 5b8a121fb496..5a5e7620e9f8 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -15,6 +15,7 @@
- #include "../libwx/wx_hw.h"
- #include "txgbe_type.h"
- #include "txgbe_hw.h"
-+#include "txgbe_phy.h"
- #include "txgbe_ethtool.h"
- 
- char txgbe_driver_name[] = "txgbe";
-@@ -513,6 +514,7 @@ static int txgbe_probe(struct pci_dev *pdev,
- 	struct net_device *netdev;
- 	int err, expected_gts;
- 	struct wx *wx = NULL;
-+	struct txgbe *txgbe;
- 
- 	u16 eeprom_verh = 0, eeprom_verl = 0, offset = 0;
- 	u16 eeprom_cfg_blkh = 0, eeprom_cfg_blkl = 0;
-@@ -663,10 +665,21 @@ static int txgbe_probe(struct pci_dev *pdev,
- 			 "0x%08x", etrack_id);
- 	}
- 
--	err = register_netdev(netdev);
-+	txgbe = devm_kzalloc(&pdev->dev, sizeof(*txgbe), GFP_KERNEL);
-+	if (!txgbe)
-+		return -ENOMEM;
-+
-+	txgbe->wx = wx;
-+	wx->priv = txgbe;
-+
-+	err = txgbe_init_phy(txgbe);
- 	if (err)
- 		goto err_release_hw;
- 
-+	err = register_netdev(netdev);
-+	if (err)
-+		goto err_remove_phy;
-+
- 	pci_set_drvdata(pdev, wx);
- 
- 	netif_tx_stop_all_queues(netdev);
-@@ -694,6 +707,8 @@ static int txgbe_probe(struct pci_dev *pdev,
- 
- 	return 0;
- 
-+err_remove_phy:
-+	txgbe_remove_phy(txgbe);
- err_release_hw:
- 	wx_clear_interrupt_scheme(wx);
- 	wx_control_hw(wx, false);
-@@ -724,6 +739,8 @@ static void txgbe_remove(struct pci_dev *pdev)
- 	netdev = wx->netdev;
- 	unregister_netdev(netdev);
- 
-+	txgbe_remove_phy((struct txgbe *)wx->priv);
-+
- 	pci_release_selected_regions(pdev,
- 				     pci_select_bars(pdev, IORESOURCE_MEM));
- 
+diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
+index c9d88673d306..8cbf0dd48a2c 100644
+--- a/drivers/net/ethernet/wangxun/Kconfig
++++ b/drivers/net/ethernet/wangxun/Kconfig
+@@ -41,6 +41,7 @@ config TXGBE
+ 	tristate "Wangxun(R) 10GbE PCI Express adapters support"
+ 	depends on PCI
+ 	select LIBWX
++	select I2C
+ 	help
+ 	  This driver supports Wangxun(R) 10GbE PCI Express family of
+ 	  adapters.
 diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-new file mode 100644
-index 000000000000..86d5e0647d5e
---- /dev/null
+index 86d5e0647d5e..2721da1625e0 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
 +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-@@ -0,0 +1,86 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
-+
-+#include <linux/gpio/property.h>
-+#include <linux/pci.h>
-+
-+#include "../libwx/wx_type.h"
-+#include "txgbe_type.h"
-+#include "txgbe_phy.h"
-+
-+static int txgbe_swnodes_register(struct txgbe *txgbe)
+@@ -2,9 +2,12 @@
+ /* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
+ 
+ #include <linux/gpio/property.h>
++#include <linux/iopoll.h>
++#include <linux/i2c.h>
+ #include <linux/pci.h>
+ 
+ #include "../libwx/wx_type.h"
++#include "../libwx/wx_hw.h"
+ #include "txgbe_type.h"
+ #include "txgbe_phy.h"
+ 
+@@ -67,6 +70,142 @@ static int txgbe_swnodes_register(struct txgbe *txgbe)
+ 	return software_node_register_node_group(nodes->group);
+ }
+ 
++static void txgbe_i2c_start(struct wx *wx, u16 dev_addr)
 +{
-+	struct txgbe_nodes *nodes = &txgbe->nodes;
-+	struct pci_dev *pdev = txgbe->wx->pdev;
-+	struct software_node *swnodes;
-+	u32 id;
++	wr32(wx, TXGBE_I2C_ENABLE, 0);
 +
-+	id = (pdev->bus->number << 8) | pdev->devfn;
++	wr32(wx, TXGBE_I2C_CON,
++	     (TXGBE_I2C_CON_MASTER_MODE |
++	      TXGBE_I2C_CON_SPEED(1) |
++	      TXGBE_I2C_CON_RESTART_EN |
++	      TXGBE_I2C_CON_SLAVE_DISABLE));
++	wr32(wx, TXGBE_I2C_TAR, dev_addr);
++	wr32(wx, TXGBE_I2C_SS_SCL_HCNT, 600);
++	wr32(wx, TXGBE_I2C_SS_SCL_LCNT, 600);
++	wr32(wx, TXGBE_I2C_RX_TL, 0); /* 1byte for rx full signal */
++	wr32(wx, TXGBE_I2C_TX_TL, 4);
++	wr32(wx, TXGBE_I2C_SCL_STUCK_TIMEOUT, 0xFFFFFF);
++	wr32(wx, TXGBE_I2C_SDA_STUCK_TIMEOUT, 0xFFFFFF);
 +
-+	snprintf(nodes->gpio_name, sizeof(nodes->gpio_name), "txgbe_gpio-%x", id);
-+	snprintf(nodes->i2c_name, sizeof(nodes->i2c_name), "txgbe_i2c-%x", id);
-+	snprintf(nodes->sfp_name, sizeof(nodes->sfp_name), "txgbe_sfp-%x", id);
-+	snprintf(nodes->phylink_name, sizeof(nodes->phylink_name), "txgbe_phylink-%x", id);
-+
-+	swnodes = nodes->swnodes;
-+
-+	/* GPIO 0: tx fault
-+	 * GPIO 1: tx disable
-+	 * GPIO 2: sfp module absent
-+	 * GPIO 3: rx signal lost
-+	 * GPIO 4: rate select, 1G(0) 10G(1)
-+	 * GPIO 5: rate select, 1G(0) 10G(1)
-+	 */
-+	nodes->gpio_props[0] = PROPERTY_ENTRY_STRING("pinctrl-names", "default");
-+	swnodes[SWNODE_GPIO] = NODE_PROP(nodes->gpio_name, nodes->gpio_props);
-+	nodes->gpio0_ref[0] = SOFTWARE_NODE_REFERENCE(&swnodes[SWNODE_GPIO], 0, GPIO_ACTIVE_HIGH);
-+	nodes->gpio1_ref[0] = SOFTWARE_NODE_REFERENCE(&swnodes[SWNODE_GPIO], 1, GPIO_ACTIVE_HIGH);
-+	nodes->gpio2_ref[0] = SOFTWARE_NODE_REFERENCE(&swnodes[SWNODE_GPIO], 2, GPIO_ACTIVE_LOW);
-+	nodes->gpio3_ref[0] = SOFTWARE_NODE_REFERENCE(&swnodes[SWNODE_GPIO], 3, GPIO_ACTIVE_HIGH);
-+	nodes->gpio4_ref[0] = SOFTWARE_NODE_REFERENCE(&swnodes[SWNODE_GPIO], 4, GPIO_ACTIVE_HIGH);
-+	nodes->gpio5_ref[0] = SOFTWARE_NODE_REFERENCE(&swnodes[SWNODE_GPIO], 5, GPIO_ACTIVE_HIGH);
-+
-+	nodes->i2c_props[0] = PROPERTY_ENTRY_STRING("pinctrl-names", "default");
-+	swnodes[SWNODE_I2C] = NODE_PROP(nodes->i2c_name, nodes->i2c_props);
-+	nodes->i2c_ref[0] = SOFTWARE_NODE_REFERENCE(&swnodes[SWNODE_I2C]);
-+
-+	nodes->sfp_props[0] = PROPERTY_ENTRY_STRING("compatible", "sff,sfp");
-+	nodes->sfp_props[1] = PROPERTY_ENTRY_REF_ARRAY("i2c-bus", nodes->i2c_ref);
-+	nodes->sfp_props[2] = PROPERTY_ENTRY_REF_ARRAY("tx-fault-gpios", nodes->gpio0_ref);
-+	nodes->sfp_props[3] = PROPERTY_ENTRY_REF_ARRAY("tx-disable-gpios", nodes->gpio1_ref);
-+	nodes->sfp_props[4] = PROPERTY_ENTRY_REF_ARRAY("mod-def0-gpios", nodes->gpio2_ref);
-+	nodes->sfp_props[5] = PROPERTY_ENTRY_REF_ARRAY("los-gpios", nodes->gpio3_ref);
-+	nodes->sfp_props[6] = PROPERTY_ENTRY_REF_ARRAY("rate-select1-gpios", nodes->gpio4_ref);
-+	nodes->sfp_props[7] = PROPERTY_ENTRY_REF_ARRAY("rate-select0-gpios", nodes->gpio5_ref);
-+	swnodes[SWNODE_SFP] = NODE_PROP(nodes->sfp_name, nodes->sfp_props);
-+	nodes->sfp_ref[0] = SOFTWARE_NODE_REFERENCE(&swnodes[SWNODE_SFP]);
-+
-+	nodes->phylink_props[0] = PROPERTY_ENTRY_STRING("managed", "in-band-status");
-+	nodes->phylink_props[1] = PROPERTY_ENTRY_REF_ARRAY("sfp", nodes->sfp_ref);
-+	swnodes[SWNODE_PHYLINK] = NODE_PROP(nodes->phylink_name, nodes->phylink_props);
-+
-+	nodes->group[SWNODE_GPIO] = &swnodes[SWNODE_GPIO];
-+	nodes->group[SWNODE_I2C] = &swnodes[SWNODE_I2C];
-+	nodes->group[SWNODE_SFP] = &swnodes[SWNODE_SFP];
-+	nodes->group[SWNODE_PHYLINK] = &swnodes[SWNODE_PHYLINK];
-+
-+	return software_node_register_node_group(nodes->group);
++	wr32(wx, TXGBE_I2C_INTR_MASK, 0);
++	wr32(wx, TXGBE_I2C_ENABLE, 1);
 +}
 +
-+int txgbe_init_phy(struct txgbe *txgbe)
++static int txgbe_i2c_poll_intr(struct wx *wx, u16 intr)
 +{
-+	int ret;
++	u16 val;
 +
-+	ret = txgbe_swnodes_register(txgbe);
-+	if (ret) {
-+		wx_err(txgbe->wx, "failed to register software nodes\n");
-+		return ret;
++	return read_poll_timeout(rd32, val, (val & intr) == intr,
++				 100, 1000, false, wx,
++				 TXGBE_I2C_RAW_INTR_STAT);
++}
++
++static int txgbe_read_i2c_bytes(struct wx *wx, u8 dev_addr, struct i2c_msg *msg)
++{
++	int err, i;
++
++	txgbe_i2c_start(wx, msg->addr);
++
++	for (i = 0; i < msg->len; i++) {
++		/* wait tx empty */
++		err = txgbe_i2c_poll_intr(wx, TXGBE_I2C_INTR_STAT_TEMP);
++		if (err)
++			return err;
++
++		/* read data */
++		wr32(wx, TXGBE_I2C_DATA_CMD,
++		     (dev_addr + i) | TXGBE_I2C_DATA_CMD_STOP);
++		wr32(wx, TXGBE_I2C_DATA_CMD,
++		     TXGBE_I2C_DATA_CMD_READ | TXGBE_I2C_DATA_CMD_STOP);
++
++		/* wait for read complete */
++		err = txgbe_i2c_poll_intr(wx, TXGBE_I2C_INTR_STAT_RFUL);
++		if (err)
++			return err;
++
++		msg->buf[i] = 0xFF & rd32(wx, TXGBE_I2C_DATA_CMD);
 +	}
 +
 +	return 0;
 +}
 +
-+void txgbe_remove_phy(struct txgbe *txgbe)
++static int txgbe_write_i2c_bytes(struct wx *wx, struct i2c_msg *msg)
 +{
-+	software_node_unregister_node_group(txgbe->nodes.group);
-+}
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.h
-new file mode 100644
-index 000000000000..1ab592124986
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.h
-@@ -0,0 +1,10 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2015 - 2023 Beijing WangXun Technology Co., Ltd. */
++	int err, i;
 +
-+#ifndef _TXGBE_PHY_H_
-+#define _TXGBE_PHY_H_
++	txgbe_i2c_start(wx, msg->addr);
 +
-+int txgbe_init_phy(struct txgbe *txgbe);
-+void txgbe_remove_phy(struct txgbe *txgbe);
++	for (i = 0; i < msg->len; i++) {
++		/* wait tx empty */
++		err = txgbe_i2c_poll_intr(wx, TXGBE_I2C_INTR_STAT_TEMP);
++		if (err)
++			return err;
 +
-+#endif /* _TXGBE_NODE_H_ */
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index 63a1c733718d..d30684378f4e 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -4,6 +4,8 @@
- #ifndef _TXGBE_TYPE_H_
- #define _TXGBE_TYPE_H_
- 
-+#include <linux/property.h>
-+
- /* Device IDs */
- #define TXGBE_DEV_ID_SP1000                     0x1001
- #define TXGBE_DEV_ID_WX1820                     0x2001
-@@ -99,4 +101,44 @@
- 
- extern char txgbe_driver_name[];
- 
-+#define NODE_PROP(_NAME, _PROP)			\
-+	(const struct software_node) {		\
-+		.name = _NAME,			\
-+		.properties = _PROP,		\
++		/* write data */
++		wr32(wx, TXGBE_I2C_DATA_CMD, msg->buf[i]);
++		if (i == (msg->len - 1))
++			wr32(wx, TXGBE_I2C_DATA_CMD, TXGBE_I2C_DATA_CMD_STOP);
 +	}
 +
-+enum txgbe_swnodes {
-+	SWNODE_GPIO = 0,
-+	SWNODE_I2C,
-+	SWNODE_SFP,
-+	SWNODE_PHYLINK,
-+	SWNODE_MAX
++	return 0;
++}
++
++static int txgbe_i2c_xfer(struct i2c_adapter *i2c_adap,
++			  struct i2c_msg *msg, int num_msgs)
++{
++	struct wx *wx = i2c_get_adapdata(i2c_adap);
++	u8 dev_addr = msg[0].buf[0];
++	int i, ret;
++
++	for (i = 0; i < num_msgs; i++) {
++		if (msg[i].flags & I2C_M_RD)
++			ret = txgbe_read_i2c_bytes(wx, dev_addr, &msg[i]);
++		else
++			ret = txgbe_write_i2c_bytes(wx, &msg[i]);
++
++		if (ret)
++			return ret;
++	}
++
++	return num_msgs;
++}
++
++static u32 txgbe_i2c_func(struct i2c_adapter *adap)
++{
++	return I2C_FUNC_I2C;
++}
++
++static const struct i2c_algorithm txgbe_i2c_algo = {
++	.master_xfer = txgbe_i2c_xfer,
++	.functionality = txgbe_i2c_func,
 +};
 +
-+struct txgbe_nodes {
-+	char gpio_name[32];
-+	char i2c_name[32];
-+	char sfp_name[32];
-+	char phylink_name[32];
-+	struct property_entry gpio_props[1];
-+	struct property_entry i2c_props[1];
-+	struct property_entry sfp_props[8];
-+	struct property_entry phylink_props[2];
-+	struct software_node_ref_args i2c_ref[1];
-+	struct software_node_ref_args gpio0_ref[1];
-+	struct software_node_ref_args gpio1_ref[1];
-+	struct software_node_ref_args gpio2_ref[1];
-+	struct software_node_ref_args gpio3_ref[1];
-+	struct software_node_ref_args gpio4_ref[1];
-+	struct software_node_ref_args gpio5_ref[1];
-+	struct software_node_ref_args sfp_ref[1];
-+	struct software_node swnodes[SWNODE_MAX];
-+	const struct software_node *group[SWNODE_MAX + 1];
-+};
++static int txgbe_i2c_adapter_add(struct txgbe *txgbe)
++{
++	struct pci_dev *pdev = txgbe->wx->pdev;
++	struct i2c_adapter *i2c_adap;
++	int ret;
 +
-+struct txgbe {
-+	struct wx *wx;
-+	struct txgbe_nodes nodes;
-+};
++	i2c_adap = devm_kzalloc(&pdev->dev, sizeof(*i2c_adap), GFP_KERNEL);
++	if (!i2c_adap)
++		return -ENOMEM;
 +
++	i2c_adap->owner = THIS_MODULE;
++	i2c_adap->algo = &txgbe_i2c_algo;
++	i2c_adap->dev.parent = &pdev->dev;
++	i2c_adap->dev.fwnode = software_node_fwnode(txgbe->nodes.group[SWNODE_I2C]);
++	strscpy(i2c_adap->name, "txgbe_i2c", sizeof(i2c_adap->name));
++
++	i2c_set_adapdata(i2c_adap, txgbe->wx);
++	ret = i2c_add_adapter(i2c_adap);
++	if (ret)
++		return ret;
++
++	txgbe->i2c_adap = i2c_adap;
++
++	return 0;
++}
++
+ int txgbe_init_phy(struct txgbe *txgbe)
+ {
+ 	int ret;
+@@ -77,10 +216,24 @@ int txgbe_init_phy(struct txgbe *txgbe)
+ 		return ret;
+ 	}
+ 
++	ret = txgbe_i2c_adapter_add(txgbe);
++	if (ret) {
++		wx_err(txgbe->wx, "failed to init i2c interface: %d\n", ret);
++		goto err;
++	}
++
+ 	return 0;
++
++err:
++	txgbe_remove_phy(txgbe);
++
++	return ret;
+ }
+ 
+ void txgbe_remove_phy(struct txgbe *txgbe)
+ {
++	if (txgbe->i2c_adap)
++		i2c_del_adapter(txgbe->i2c_adap);
++
+ 	software_node_unregister_node_group(txgbe->nodes.group);
+ }
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
+index d30684378f4e..6c02af196157 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
+@@ -55,6 +55,28 @@
+ #define TXGBE_TS_CTL                            0x10300
+ #define TXGBE_TS_CTL_EVAL_MD                    BIT(31)
+ 
++/* I2C registers */
++#define TXGBE_I2C_CON                           0x14900 /* I2C Control */
++#define TXGBE_I2C_CON_SLAVE_DISABLE             BIT(6)
++#define TXGBE_I2C_CON_RESTART_EN                BIT(5)
++#define TXGBE_I2C_CON_SPEED(_v)                 FIELD_PREP(GENMASK(2, 1), _v)
++#define TXGBE_I2C_CON_MASTER_MODE               BIT(0)
++#define TXGBE_I2C_TAR                           0x14904 /* I2C Target Address */
++#define TXGBE_I2C_DATA_CMD                      0x14910 /* I2C Rx/Tx Data Buf and Cmd */
++#define TXGBE_I2C_DATA_CMD_STOP                 BIT(9)
++#define TXGBE_I2C_DATA_CMD_READ                 BIT(8)
++#define TXGBE_I2C_SS_SCL_HCNT                   0x14914
++#define TXGBE_I2C_SS_SCL_LCNT                   0x14918
++#define TXGBE_I2C_INTR_MASK                     0x14930 /* I2C Interrupt Mask */
++#define TXGBE_I2C_RAW_INTR_STAT                 0x14934 /* I2C Raw Interrupt Status */
++#define TXGBE_I2C_INTR_STAT_RFUL                BIT(2)
++#define TXGBE_I2C_INTR_STAT_TEMP                BIT(4)
++#define TXGBE_I2C_RX_TL                         0x14938 /* I2C Receive FIFO Threshold */
++#define TXGBE_I2C_TX_TL                         0x1493C /* I2C TX FIFO Threshold */
++#define TXGBE_I2C_ENABLE                        0x1496C /* I2C Enable */
++#define TXGBE_I2C_SCL_STUCK_TIMEOUT             0x149AC
++#define TXGBE_I2C_SDA_STUCK_TIMEOUT             0x149B0
++
+ /* Part Number String Length */
+ #define TXGBE_PBANUM_LENGTH                     32
+ 
+@@ -139,6 +161,7 @@ struct txgbe_nodes {
+ struct txgbe {
+ 	struct wx *wx;
+ 	struct txgbe_nodes nodes;
++	struct i2c_adapter *i2c_adap;
+ };
+ 
  #endif /* _TXGBE_TYPE_H_ */
 -- 
 2.27.0
