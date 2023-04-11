@@ -2,81 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 127B16DCFBF
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 04:35:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C91706DCFFC
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 05:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbjDKCfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 22:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35718 "EHLO
+        id S229981AbjDKDKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Apr 2023 23:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbjDKCfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 22:35:53 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C7426B2
-        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 19:35:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:
-        Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
-        Content-Disposition:In-Reply-To:References;
-        bh=9qY02U4dyO1Werb1gxvpJfmvHJ5mAhpH7CA1yJvqX0g=; b=MhN0BrUYGG11HkB0RTy9k6eF4c
-        uzVlB9T2/e2PLUzF7wWOhnqgMEeY27fGp+w9Rb3pUgnrq275A8tcgap0utHWaRw/aSXfjwoa5P6n9
-        BhQYZTn/4Kozrx9vKmnVKlMfhhlZPq4kcwICYUm2zjnm1oW+X7dU5J3rzpNluvcMl174=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pm3rF-009xE4-FV; Tue, 11 Apr 2023 04:35:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next] net: dsa: mv88e6xxx: Correct cmode to PHY_INTERFACE_
-Date:   Tue, 11 Apr 2023 04:35:41 +0200
-Message-Id: <20230411023541.2372609-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S229985AbjDKDKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 23:10:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED64C19A2
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 20:10:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681182600;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PIRYPPRzMr0WDaISNXv8JTRc994C6mm8nrgRnA2e2II=;
+        b=dhCqtFIZafLnxOxO+mpkKBf+IjKZjEy5+rMcwHo0QYQthPrFULlj8cXnAyoL4T9vgiPZ+9
+        OOQtZqDa1DySDSRrKskIE1ZWthRTxDVInCoqzp9CxMUvmWhBQA5SL1b++NpMfSlx5lU1c1
+        8PF+cdlqLIunmekcCG8coQ6RZuxOsn8=
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
+ [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-216-iM0jTS-kMyqIJMR51KNJKg-1; Mon, 10 Apr 2023 23:09:58 -0400
+X-MC-Unique: iM0jTS-kMyqIJMR51KNJKg-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-1840d4e9758so5485411fac.11
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 20:09:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681182597; x=1683774597;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PIRYPPRzMr0WDaISNXv8JTRc994C6mm8nrgRnA2e2II=;
+        b=JxbZ2ANMdSbfONG6XnMlEpdBHgu2HnDttXDk924HTEH/fkzF86v3HTvd9lRyzXN+o0
+         qnLYWLuconP1FmD10cV3mAb5VhaS/+763VB/MGSLcRuyuUuKZRSwXUgdaT17j7205gdG
+         JTp2Magosg4JF4mP7JbeOD6/OOgk88iu/iA2RyAhNmQ6GHZJ+UL0BYRttUg0fvlQUtuK
+         fiCTc1PFotKjUE7eWRoiWRS2rygjiVs0J27XrWIqMpS02l/ms4+NtT+BvV0aipcLBCDp
+         Wc+3eY7dqKzAS/ku0LEEtVii7r8q2QzqHbnFrgZPEJN2chjG2+w++dpxW5nYYi5QdmlK
+         sqmg==
+X-Gm-Message-State: AAQBX9fD4z6EIsDcIjKGJNxwkLZF6QqFIAvNjnAO/ymtPh3bfC+P/rdf
+        No+4Vlp4SZJwNm8HlqJ48OSUsaMHNPv1eprOU1av7PMxTwXg0l3Gns2ltnHpQuQpV9bYMFXUIU/
+        KQuFeitXtoLqixpxvAgvv7SDajW4zTz1x
+X-Received: by 2002:a54:4108:0:b0:389:86c3:b1fb with SMTP id l8-20020a544108000000b0038986c3b1fbmr1767287oic.9.1681182597578;
+        Mon, 10 Apr 2023 20:09:57 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZeucJf+EbWtNuhPzUoVMqvWrsCF6D+3DIu6eOe4RcryYcADiNhudEFaSmmkr0WQmH0aZjfEc0FYx82LleldDo=
+X-Received: by 2002:a54:4108:0:b0:389:86c3:b1fb with SMTP id
+ l8-20020a544108000000b0038986c3b1fbmr1767284oic.9.1681182597366; Mon, 10 Apr
+ 2023 20:09:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230410150130.837691-1-lulu@redhat.com>
+In-Reply-To: <20230410150130.837691-1-lulu@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 11 Apr 2023 11:09:46 +0800
+Message-ID: <CACGkMEvTdgvqacFmMJZD4u++YJwESgSmLF6CMdAJBBqkxpZKgg@mail.gmail.com>
+Subject: Re: [PATCH] vhost_vdpa: fix unmap process in no-batch mode
+To:     Cindy Lu <lulu@redhat.com>
+Cc:     mst@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The switch can either take the MAC or the PHY role in an MII or RMII
-link. There are distinct PHY_INTERFACE_ macros for these two roles.
-Correct the mapping so that the `REV` version is used for the PHY
-role.
+On Mon, Apr 10, 2023 at 11:01=E2=80=AFPM Cindy Lu <lulu@redhat.com> wrote:
+>
+> While using the no-batch mode, the process will not begin with
+> VHOST_IOTLB_BATCH_BEGIN, so we need to add the
+> VHOST_IOTLB_INVALIDATE to get vhost_vdpa_as, the process is the
+> same as VHOST_IOTLB_UPDATE
+>
+> Signed-off-by: Cindy Lu <lulu@redhat.com>
+> ---
+>  drivers/vhost/vdpa.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 7be9d9d8f01c..32636a02a0ab 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -1074,6 +1074,7 @@ static int vhost_vdpa_process_iotlb_msg(struct vhos=
+t_dev *dev, u32 asid,
+>                 goto unlock;
+>
+>         if (msg->type =3D=3D VHOST_IOTLB_UPDATE ||
+> +           msg->type =3D=3D VHOST_IOTLB_INVALIDATE ||
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
+I'm not sure I get here, invalidation doesn't need to create a new AS.
 
-Since this has not caused any known issues so far, i decided to not
-add a Fixes: tag and submit for net.
+Or maybe you can post the userspace code that can trigger this issue?
 
- drivers/net/dsa/mv88e6xxx/chip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 62a126402983..ffe6a88f94ce 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -611,10 +611,10 @@ static void mv88e6185_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
- }
- 
- static const u8 mv88e6xxx_phy_interface_modes[] = {
--	[MV88E6XXX_PORT_STS_CMODE_MII_PHY]	= PHY_INTERFACE_MODE_MII,
-+	[MV88E6XXX_PORT_STS_CMODE_MII_PHY]	= PHY_INTERFACE_MODE_REVMII,
- 	[MV88E6XXX_PORT_STS_CMODE_MII]		= PHY_INTERFACE_MODE_MII,
- 	[MV88E6XXX_PORT_STS_CMODE_GMII]		= PHY_INTERFACE_MODE_GMII,
--	[MV88E6XXX_PORT_STS_CMODE_RMII_PHY]	= PHY_INTERFACE_MODE_RMII,
-+	[MV88E6XXX_PORT_STS_CMODE_RMII_PHY]	= PHY_INTERFACE_MODE_REVRMII,
- 	[MV88E6XXX_PORT_STS_CMODE_RMII]		= PHY_INTERFACE_MODE_RMII,
- 	[MV88E6XXX_PORT_STS_CMODE_100BASEX]	= PHY_INTERFACE_MODE_100BASEX,
- 	[MV88E6XXX_PORT_STS_CMODE_1000BASEX]	= PHY_INTERFACE_MODE_1000BASEX,
--- 
-2.40.0
+>             msg->type =3D=3D VHOST_IOTLB_BATCH_BEGIN) {
+>                 as =3D vhost_vdpa_find_alloc_as(v, asid);
+>                 if (!as) {
+> --
+> 2.34.3
+>
 
