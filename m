@@ -2,178 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FF656DDA2D
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 14:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 363006DDA32
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 14:00:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbjDKMAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 08:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        id S229549AbjDKMAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 08:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbjDKMAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 08:00:18 -0400
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B712D4E;
-        Tue, 11 Apr 2023 05:00:14 -0700 (PDT)
-Received: by mail-wr1-f50.google.com with SMTP id q29so7133948wrc.3;
-        Tue, 11 Apr 2023 05:00:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681214413; x=1683806413;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eCeJQ8Y5The4MUdS/4f9gKqVtO4sNeOkKJxYqWcKYY0=;
-        b=tMxpxkqvktPoJLkoMz0zK6713TGbgOk5UJMtdshGCvxcyIothDz8TkRfvoz/EedmzD
-         ayHopIOJM2TKH1mgSNh11mcflkat9ueCgPCTNFtm8hk6GpBEHuzj0J8zYo9vKNHrtD/Q
-         QC95OUa+27NqDd9Is6ro55qV2aZ9unSYK6H4HInopTkMqrEg/co8M22J7cSNJ1+L0nLa
-         34h4OBPtkcjAzJ6GlnnJqLFrJfvJsMQa/Cf7X7sPYMe627KKbfvo3QbrQQVPxknJiL5R
-         hsABQvH4cy+W4dGWLs8B3Tgr4BFFeMMxbqODhpPJ0KNo6WHFIugCPS9dtUva5AvK2xos
-         ARSg==
-X-Gm-Message-State: AAQBX9d/VCHeNEoIFxpt483ZsfYk3aXT/vE8LNWZWe32zStLB7Gr15y9
-        a6cYOunZ4F9AJCQldMhvV/w=
-X-Google-Smtp-Source: AKy350YwPnDkYtmsUiWpDHZ3kyfoMSgnHSDhVmxZzEoLgVN4UZtcjS871jnCvl0D+BQ4jZjy1R7vxQ==
-X-Received: by 2002:adf:fd81:0:b0:2ef:1088:1100 with SMTP id d1-20020adffd81000000b002ef10881100mr7411094wrr.52.1681214412737;
-        Tue, 11 Apr 2023 05:00:12 -0700 (PDT)
-Received: from gmail.com (fwdproxy-cln-026.fbsv.net. [2a03:2880:31ff:1a::face:b00c])
-        by smtp.gmail.com with ESMTPSA id c5-20020a5d4cc5000000b002f2794a6ee6sm3706526wrt.112.2023.04.11.05.00.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 05:00:12 -0700 (PDT)
-Date:   Tue, 11 Apr 2023 05:00:10 -0700
-From:   Breno Leitao <leitao@debian.org>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     Willem de Bruijn <willemb@google.com>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, asml.silence@gmail.com,
-        axboe@kernel.dk, leit@fb.com, edumazet@google.com,
-        pabeni@redhat.com, davem@davemloft.net, dccp@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
-        willemdebruijn.kernel@gmail.com, matthieu.baerts@tessares.net,
-        marcelo.leitner@gmail.com
-Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
-Message-ID: <ZDVLyi1PahE0sfci@gmail.com>
-References: <20230406144330.1932798-1-leitao@debian.org>
- <CA+FuTSeKpOJVqcneCoh_4x4OuK1iE0Tr6f3rSNrQiR-OUgjWow@mail.gmail.com>
- <ZC7seVq7St6UnKjl@gmail.com>
- <CA+FuTSf9LEhzjBey_Nm_-vN0ZjvtBSQkcDWS+5uBnLmr8Qh5uA@mail.gmail.com>
- <e576f6fe-d1f3-93cd-cb94-c0ae115299d8@kernel.org>
+        with ESMTP id S229519AbjDKMAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 08:00:53 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE1F30C8
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 05:00:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=gOC6ChiXHuU7FsyERkq8NMPzJW8fRVvn6fROASOvir8=; b=oTLOCafLHeZekDBgr2cPEWyhxj
+        0qA9bWXKDtIA9YFDIIPWDzNjebkCUaUAGUdjL39zVFeYpfUB4GmhWlRAWK+y9OZNR/lavFgKLwKLP
+        /K83bWyL8Vn+vVv8lYd1DYU+g21FRRu3tqhQ1e2i6R4Kw0wCRxp8sF3/u8NdfQu99BtImdSRnVj05
+        mqX/7Q2TWijQQsuLW50f6VfDSQrIxZXeVVH2E7zJdI3z43NX2fFM0JzwZziRc2sqLcrpWArQemEJX
+        oK3Nyh1vwq4hdry+Wg9dNPZUlVvDPeutjlMXxOnpEubRATyRKM95aBjwfDoq6GRDz9ma1Y3FfY0YO
+        29cHjSbg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41474)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pmCg0-0005rl-DM; Tue, 11 Apr 2023 13:00:44 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pmCfz-00045u-3L; Tue, 11 Apr 2023 13:00:43 +0100
+Date:   Tue, 11 Apr 2023 13:00:43 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
+ flow control, speed, and duplex on CPU port configurable
+Message-ID: <ZDVL6we7LN/ApgwG@shell.armlinux.org.uk>
+References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
+ <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
+ <20230411085626.GA19711@pengutronix.de>
+ <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
+ <20230411111609.jhfcvvxbxbkl47ju@skbuf>
+ <20230411113516.ez5cm4262ttec2z7@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e576f6fe-d1f3-93cd-cb94-c0ae115299d8@kernel.org>
-X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230411113516.ez5cm4262ttec2z7@skbuf>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 06, 2023 at 08:46:38PM -0600, David Ahern wrote:
-> On 4/6/23 12:16 PM, Willem de Bruijn wrote:
-> > On Thu, Apr 6, 2023 at 11:59 AM Breno Leitao <leitao@debian.org> wrote:
-> >>
-> >> On Thu, Apr 06, 2023 at 11:34:28AM -0400, Willem de Bruijn wrote:
-> >>> On Thu, Apr 6, 2023 at 10:45 AM Breno Leitao <leitao@debian.org> wrote:
-> >>>>
-> >>>> From: Breno Leitao <leit@fb.com>
-> >>>>
-> >>>> This patchset creates the initial plumbing for a io_uring command for
-> >>>> sockets.
-> >>>>
-> >>>> For now, create two uring commands for sockets, SOCKET_URING_OP_SIOCOUTQ
-> >>>> and SOCKET_URING_OP_SIOCINQ. They are similar to ioctl operations
-> >>>> SIOCOUTQ and SIOCINQ. In fact, the code on the protocol side itself is
-> >>>> heavily based on the ioctl operations.
-> >>>
-> >>> This duplicates all the existing ioctl logic of each protocol.
-> >>>
-> >>> Can this just call the existing proto_ops.ioctl internally and translate from/to
-> >>> io_uring format as needed?
-> >>
-> >> This is doable, and we have two options in this case:
-> >>
-> >> 1) Create a ioctl core function that does not call `put_user()`, and
-> >> call it from both the `udp_ioctl` and `udp_uring_cmd`, doing the proper
-> >> translations. Something as:
-> >>
-> >>         int udp_ioctl_core(struct sock *sk, int cmd, unsigned long arg)
-> >>         {
-> >>                 int amount;
-> >>                 switch (cmd) {
-> >>                 case SIOCOUTQ: {
-> >>                         amount = sk_wmem_alloc_get(sk);
-> >>                         break;
-> >>                 }
-> >>                 case SIOCINQ: {
-> >>                         amount = max_t(int, 0, first_packet_length(sk));
-> >>                         break;
-> >>                 }
-> >>                 default:
-> >>                         return -ENOIOCTLCMD;
-> >>                 }
-> >>                 return amount;
-> >>         }
-> >>
-> >>         int udp_ioctl(struct sock *sk, int cmd, unsigned long arg)
-> >>         {
-> >>                 int amount = udp_ioctl_core(sk, cmd, arg);
-> >>
-> >>                 return put_user(amount, (int __user *)arg);
-> >>         }
-> >>         EXPORT_SYMBOL(udp_ioctl);
-> >>
-> >>
-> >> 2) Create a function for each "case entry". This seems a bit silly for
-> >> UDP, but it makes more sense for other protocols. The code will look
-> >> something like:
-> >>
-> >>          int udp_ioctl(struct sock *sk, int cmd, unsigned long arg)
-> >>          {
-> >>                 switch (cmd) {
-> >>                 case SIOCOUTQ:
-> >>                 {
-> >>                         int amount = udp_ioctl_siocoutq();
-> >>                         return put_user(amount, (int __user *)arg);
-> >>                 }
-> >>                 ...
-> >>           }
-> >>
-> >> What is the best approach?
-> > 
-> > A, the issue is that sock->ops->ioctl directly call put_user.
-> > 
-> > I was thinking just having sock_uring_cmd call sock->ops->ioctl, like
-> > sock_do_ioctl.
-> > 
-> > But that would require those callbacks to return a negative error or
-> > positive integer, rather than calling put_user. And then move the
-> > put_user to sock_do_ioctl. Such a change is at least as much code
-> > change as your series. Though without the ending up with code
-> > duplication. It also works only if all ioctls only put_user of integer
-> > size. That's true for TCP, UDP and RAW, but not sure if true more
-> > broadly.
-> > 
-> > Another approach may be to pass another argument to the ioctl
-> > callbacks, whether to call put_user or return the integer and let the
-> > caller take care of the output to user. This could possibly be
-> > embedded in the a high-order bit of the cmd, so that it fails on ioctl
-> > callbacks that do not support this mode.
-> > 
-> > Of the two approaches you suggest, I find the first preferable.
+On Tue, Apr 11, 2023 at 02:35:16PM +0300, Vladimir Oltean wrote:
+> On Tue, Apr 11, 2023 at 02:16:09PM +0300, Vladimir Oltean wrote:
+> > I may have missed something.
 > 
-> The first approach sounds better to me and it would be good to avoid
-> io_uring details in the networking code (ie., cmd->sqe->cmd_op).
+> Maybe I'm wrong, but my blind intuition says that when autoneg is
+> disabled in the integrated PHYs, flow control _is_ by default forced off
+> per port, unless the "Force Flow Control" bit from Port N Control 2
+> registers is set. So that can be used to still support:
+> - ethtool --pause swp0 autoneg off rx on tx on
+> - ethtool --pause swp0 autoneg off rx off tx off
+> - ethtool --pause swp0 autoneg on # asymmetric RX/TX combinations depend upon autoneg
+> 
+> I may be wrong; I don't have the hardware and the ethtool pause autoneg
+> bit is not 100% clear to me.
 
-I am not sure if avoiding io_uring details in network code is possible.
+Stage 1 (per port, force bit):
+- If zero, the flow control result from aneg is used, and thus depends on
+  what both ends advertise.
+- If one, flow control is force-enabled.
 
-The "struct proto"->uring_cmd callback implementation (tcp_uring_cmd()
-in the TCP case) could be somewhere else, such as in the io_uring/
-directory, but, I think it might be cleaner if these implementations are
-closer to function assignment (in the network subsystem).
+Stage 2 (global):
+Transmit and receive flow control can be masked off.
 
-And this function (tcp_uring_cmd() for instance) is the one that I am
-planning to map io_uring CMDs to ioctls. Such as SOCKET_URING_OP_SIOCINQ
--> SIOCINQ.
+Basically, the best we could do is:
 
-Please let me know if you have any other idea in mind.
+	ethtool --pause ... autoneg on
+
+depends on the negotiation result (correct).
+
+	ethtool --pause ... autoneg off rx off tx off
+
+if we *only* program the local advertisement to 00, but leave the
+force bit as 0, then this can work.
+
+	ethtool --pause ... autoneg off rx on tx on
+
+if we program the force bit to 1, then this can work, and it doesn't
+matter what we do with the advertisement.
+
+Anything else wouldn't give the result the user wants, because there's
+no way to independently force rx and tx flow control per port.
+
+That said, phylink doesn't give enough information to make the above
+possible since the force bit depends on (tx && rx &&!permit_pause_to_mac)
+
+So, because this hardware is that crazy, I suggest that it *doesn't*
+even attempt to support ethtool --pause, and either is programmed
+at setup time to use autonegotiated pause (with the negotiation state
+programmed via ethtool -s) or it's programmed to have pause globally
+disabled. Essentially, I'm saying the hardware is too broken in its
+design to be worth bothering trying to work around its weirdness.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
