@@ -2,76 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2686DDE06
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 16:33:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1F606DDE1B
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 16:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbjDKOdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 10:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
+        id S229990AbjDKOgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 10:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229678AbjDKOdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 10:33:45 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724431721
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:33:44 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id ga37so21269329ejc.0
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:33:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1681223623;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xbThNpV0h2rrot2ClK3m/0dSEYM/5XMR8dXbUMNm3zw=;
-        b=dc4kbSN/I5PG1JuxQZ7lNbcXoaBWd0fgqzfymH2z8veBzxKSu+FNHI/ySvS79nC+SP
-         pNLSOUcg81LcR5C4BrziyqaxyEQiz2Fb/KomD3Id/zL9NXQoAH0LtjpADziWasCaTn4e
-         49glPRyPidBjln6x2V+nsSMjIYpXbOVIAPd86Ro4emjCrsiJzvhmzwudLANvlsN72/8p
-         OcXlKSxmWiSYRakiFVEo17ft+7S2pm2VSthskXTs7+IpMdHX4M8tpteigiKoAcV4Uggb
-         K4eQYMhY2I6XM9MNVUtnjPdQu+z4VPQqqUgq+uBshMieK6cOrP6Spe6SFeEbE7EqNYOs
-         4VTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681223623;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xbThNpV0h2rrot2ClK3m/0dSEYM/5XMR8dXbUMNm3zw=;
-        b=GUJGhBBaIP20d6oEhoKK4LcpptroPOPilvfL71I/gr2xFcrjFbHmw5hTCHaYCcJog9
-         eBz3eVfF6sUg2gpUr+31m3Bzd7v60gowjuq8Hgl89lOz2NnboEjh+39EAY2ME/4mVlRJ
-         P1rV8kcf687Ne4S9Bh4JJvvrsuBJErqLvpA3d5Z5EBYKeZkEL+ARSbw8178EX9rhO2db
-         SBPzt4/fZOGKar90eXQ1d8AIOHzOzT9PxBwi1AStsOMDtkt7AoLLr4jEr2hr1CEajl4L
-         05Blv53f29FZD1AQYaFX0/ZpYMwE7hCY9weztR5rocc3UNOOc/HXGxJ+W3qSgvYkPXBL
-         l19Q==
-X-Gm-Message-State: AAQBX9dVdvKf7nAajKcSFtffccwAqcxuxHIngLB/6FzM9cw5u9UpBt/m
-        GFpFBADucePAjvTd/gRPZRY=
-X-Google-Smtp-Source: AKy350a+qsvG/r+SROAMZPZxIEBQBLvtmSQ7+VG6LVqHbZsMOOf+uJ1wFpYFP5+M1RL/YCCxNLeg2w==
-X-Received: by 2002:a17:907:d689:b0:94a:58fb:2546 with SMTP id wf9-20020a170907d68900b0094a58fb2546mr9044792ejc.71.1681223622692;
-        Tue, 11 Apr 2023 07:33:42 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id v15-20020a17090610cf00b00932ba722482sm6309486ejv.149.2023.04.11.07.33.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 07:33:42 -0700 (PDT)
-Date:   Tue, 11 Apr 2023 17:33:40 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        kernel@pengutronix.de, UNGLinuxDriver@microchip.com,
-        netdev@vger.kernel.org
-Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
- flow control, speed, and duplex on CPU port configurable
-Message-ID: <20230411143340.cguwmjbyi2tyrjh2@skbuf>
-References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
- <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
+        with ESMTP id S229903AbjDKOgx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 10:36:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4544A212F;
+        Tue, 11 Apr 2023 07:36:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D870F6275F;
+        Tue, 11 Apr 2023 14:36:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91048C433D2;
+        Tue, 11 Apr 2023 14:36:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681223812;
+        bh=1ZaELguZrMUDSqBDbQ/nvMKkVutqjjhoMJMSmLlmpsA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=aDIrm0PeTzZNwH3+9XkPMGnN+vFyIBQ749a4wLpDyrbSohvM13uVlyYBuQCYKnZ8I
+         LwefzyfXPov/RWnBEn42BIsbVf84vw7NzHXmgOze6aPFwuTm8PiMmBwnBGl9009o93
+         IWqAyya49c34lkaD8vEkpd7MXndFMPoawLE+w/vO5DRgnSuLJ3aEyOkl5bgIlIev9J
+         egD6kT3fs1v2YFbNX+AfIsAHgwuF5PnluxB2c7dsgXT+kTnItwqWVVzDnJjKuXhgwe
+         4M2fwDBRYBjh+6ZE5N+/7B8+V9zisEiSx3+9dnarB50RECC2/tMuC1TEnvmnffJOPk
+         v7eW/jMo6AMXg==
+Message-ID: <75e3c434-eb8b-66e5-5768-ca0f906979a1@kernel.org>
+Date:   Tue, 11 Apr 2023 08:36:50 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.9.1
+Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Content-Language: en-US
+To:     Breno Leitao <leitao@debian.org>
+Cc:     Willem de Bruijn <willemb@google.com>, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, asml.silence@gmail.com,
+        axboe@kernel.dk, leit@fb.com, edumazet@google.com,
+        pabeni@redhat.com, davem@davemloft.net, dccp@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
+        willemdebruijn.kernel@gmail.com, matthieu.baerts@tessares.net,
+        marcelo.leitner@gmail.com
+References: <20230406144330.1932798-1-leitao@debian.org>
+ <CA+FuTSeKpOJVqcneCoh_4x4OuK1iE0Tr6f3rSNrQiR-OUgjWow@mail.gmail.com>
+ <ZC7seVq7St6UnKjl@gmail.com>
+ <CA+FuTSf9LEhzjBey_Nm_-vN0ZjvtBSQkcDWS+5uBnLmr8Qh5uA@mail.gmail.com>
+ <e576f6fe-d1f3-93cd-cb94-c0ae115299d8@kernel.org>
+ <ZDVLyi1PahE0sfci@gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <ZDVLyi1PahE0sfci@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -80,12 +66,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 07, 2023 at 06:44:20PM +0100, Russell King (Oracle) wrote:
-> Lastly, a more general question for ethtool/network folk - as for half
-> duplex and back pressure, is that a recognised facility for the MAC
-> to control via the ethtool pause parameter API?
+On 4/11/23 6:00 AM, Breno Leitao wrote:
+> I am not sure if avoiding io_uring details in network code is possible.
+> 
+> The "struct proto"->uring_cmd callback implementation (tcp_uring_cmd()
+> in the TCP case) could be somewhere else, such as in the io_uring/
+> directory, but, I think it might be cleaner if these implementations are
+> closer to function assignment (in the network subsystem).
+> 
+> And this function (tcp_uring_cmd() for instance) is the one that I am
+> planning to map io_uring CMDs to ioctls. Such as SOCKET_URING_OP_SIOCINQ
+> -> SIOCINQ.
+> 
+> Please let me know if you have any other idea in mind.
 
-AFAIU, the ethtool pause API is for PAUSE-based flow control (as defined
-in IEEE 802.3-2018 annex 31B), not half duplex collision based flow control.
-That being said, I don't know what facility could be used to enable
-collision based flow control. I'd say it is an abuse of the API.
+I am not convinced that this io_uring_cmd is needed. This is one
+in-kernel subsystem calling into another, and there are APIs for that.
+All of this set is ioctl based and as Willem noted a little refactoring
+separates the get_user/put_user out so that in-kernel can call can be
+made with existing ops.
