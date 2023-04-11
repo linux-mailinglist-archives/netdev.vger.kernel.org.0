@@ -2,134 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ED126DE11F
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 18:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ADD56DE121
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 18:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbjDKQkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 12:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44498 "EHLO
+        id S229603AbjDKQlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 12:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbjDKQkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 12:40:22 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2124.outbound.protection.outlook.com [40.107.237.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3640C49E8
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 09:40:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CKRDw9r0P6Fdw8mMkO7yQijQkupVHh18AZnmKQFs5BVzCLLD5zs9fYbIgwwJ0ePAevmSzPEXvI2Jcx/FJ7If9JBoYxyXSD2eG0aLwmcnHHH/MObKxRkOytOSR+1xmz2uifiYRbJWpeUnwAnLy/ebGnr0lv02F8NoROkVn0jo0ErYng1BjUj+WCGSaHmtHQQdKPcxKJ9W0oJUJ5rOApUF9wwM+roLAYpFE3LScU+NxboRuE2NbJYJGX+GVcPXEx0L/CY5C8fD9dwaOKW5eWpjFXx8DGS+KlJP0m7/EsdDZIuCoKrXAqfywlEX/eID+0u7yRiZU9WPw0vmzV6i3I3Wgg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gtNqAT8beADYjbyfN9Q7gsUf6cAlJehv5+T5oPnRU7c=;
- b=nYnp94rVwQnctLPROEqhQg/WzDtErXJTxGhQqBbACZFQ2vb76g6xSMLiGLphsS6sYNxihRjErMBzd2Z6q5IRufqDO18TjKCgCpsavI6Jb9hLSwBEtMvQp9tyLcldcypFXXUCIsxE9egj9eXCbJboNCmWQzfe7M1h1n8+uu0hzCixPaYyX+OfprRvg43Co99R9OI9keK3Rm0xJ7sTcd2qQ8/MKAmJxRg2q23TwweP0bOkkjjgX+J8zOF5s3T7J89edoGjodOlQNoKY96/OcU9BnVRMZfj1nbkxQDIcIQK77iex4zSdfpswHVneqE9v/IHv+aSmNj3bDCpzyv59ttcxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229535AbjDKQlI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 12:41:08 -0400
+Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2501510E9
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 09:41:07 -0700 (PDT)
+Received: by mail-vs1-xe31.google.com with SMTP id x11so4863660vsq.2
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 09:41:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gtNqAT8beADYjbyfN9Q7gsUf6cAlJehv5+T5oPnRU7c=;
- b=frU+k15ksjKTiXBlypSdUXVQLArZP9Xu2v+4A9WxbCsbIIVRRX+YIvgQyRgjeQ+LJNVXOJ7JyacQq1AAQkJb7T8HqnYSx0Qb5Tfaja+aCM2lTP1DYTtdlmObPHjDR4UW+OIKd2+npxgvozjBXqAbxoQP5zKbKubg34W7NhtUQNI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH7PR13MB6169.namprd13.prod.outlook.com (2603:10b6:510:240::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.35; Tue, 11 Apr
- 2023 16:40:18 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
- 16:40:18 +0000
-Date:   Tue, 11 Apr 2023 18:40:11 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        d=gmail.com; s=20210112; t=1681231266;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3X48ar0qFZm2GWEUPYGGy0mBW0lVj7DLN8iUD9bW15Q=;
+        b=ivABfikQNYrTK3IN3U7P0Y70iOEON5Xm/hUfLwl87VTs2dZsr43JgibvXdeOKxc6tN
+         5Rhjs962rwWa/PhAxvFXT9s3grhoDMpvnJFSovwHXZRKyESvc/cX/jtE6yCAwJDF6OKr
+         6AzIFFPAOg1NhCRtyzi99McUMXjWXHZ9OBMpCPhfLaSfnYVhU62fKW/ijBT12E1w18za
+         Ds/5rYxzgZesdrzrkRrURCd5jze+4X7Y0NYdSlNXtxFEs+N9B85aCSm1AjSGpKDw/G8V
+         x9NpXiRV+MAxMsUNwFLC8R9RVeH9YtdoLqR8YEso/5O2eZnGUVStB/Wo5TAK0JG3afwI
+         3KVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681231266;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3X48ar0qFZm2GWEUPYGGy0mBW0lVj7DLN8iUD9bW15Q=;
+        b=G1OerS4FsIOCBfT1rzQ6PatNIR22aov4MFZ9KcheFops31F4slF8wsxO3ru8DyQr8g
+         5E9ebgMF5KL7Ei8+hxsihWvK2XuQVQSW3mC+uxerzFqcFmpmiR5tizaFZ+76owzavbeu
+         ze9eIkdVAjWO6+woZHGwYYVsnhlnMClT1eHbkM/bQJ0c15ar0OsRJQwEOkNcJwikOPST
+         TQXFIbUutWCBYaSlZPQxFuU6MEBLctqyfYnbOrV6mY6j8GHc9GXi48AXFzvOPI4iETEk
+         V/F2g26JvMcjX/SOOg8hm85psVQRW01OMsiLmpwhkTBTeDcqj0Z1Ji3iEMiFfQ8PIrYU
+         YhZw==
+X-Gm-Message-State: AAQBX9eUXpEeCeFU2nywdu17HGjBzb9lETFJxTv+hJmlBFoV9jDfrlFo
+        4MW2QnRwFaIpaDQWsqEWIjf3C8eiIvZTVxoJhQA=
+X-Google-Smtp-Source: AKy350aPk+Pc9pbq15+uHNJs4Lbl42FERiI5UfTnwE3pJ6Rs8BW4DX5guA8Gm7QSJcxBKP1qJmVtCubmc3MVzTiWCq0=
+X-Received: by 2002:a67:d58c:0:b0:423:e1fd:c6e2 with SMTP id
+ m12-20020a67d58c000000b00423e1fdc6e2mr7649123vsj.2.1681231266126; Tue, 11 Apr
+ 2023 09:41:06 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230411072502.21315-1-martin@strongswan.org> <CAHsH6GtyE8HE2TnU_QUVg2s+Dass0GtGsaWKqo-g+1aUprmSxw@mail.gmail.com>
+In-Reply-To: <CAHsH6GtyE8HE2TnU_QUVg2s+Dass0GtGsaWKqo-g+1aUprmSxw@mail.gmail.com>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Tue, 11 Apr 2023 19:40:55 +0300
+Message-ID: <CAHsH6Gv1Vhr3unAsG-0WiJf5CD85NyrgDitLmMtxdphD4__aSA@mail.gmail.com>
+Subject: Re: [PATCH ipsec] xfrm: Preserve xfrm interface secpath for packets forwarded
+To:     Martin Willi <martin@strongswan.org>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Benedict Wong <benedictwong@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Emeel Hakim <ehakim@nvidia.com>
-Subject: Re: [PATCH net-next 03/10] net/mlx5e: Configure IPsec SA tables to
- support tunnel mode
-Message-ID: <ZDWNaxiakeiT9usn@corigine.com>
-References: <cover.1681106636.git.leonro@nvidia.com>
- <6dd712b0868728fe08c3bce30d82f4dbb12638d5.1681106636.git.leonro@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6dd712b0868728fe08c3bce30d82f4dbb12638d5.1681106636.git.leonro@nvidia.com>
-X-ClientProxiedBy: AM3PR07CA0126.eurprd07.prod.outlook.com
- (2603:10a6:207:8::12) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB6169:EE_
-X-MS-Office365-Filtering-Correlation-Id: bfb7ef5d-1b13-4508-dcff-08db3aab6f3e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kWV2AHb4hEvX0rChtJdWSB8JBnByWcg+ksoeNV0x8Z2XID8vLWXxnUuWFwOyMXUrDXarDvL6Czk4oIpWIE3hn1C9PqImsUCO75N4h7Paa0Vc1coJjDgacqM//zE0yocZkofptp83TjaZkqak7RzcwUgMVhdXCvhKflfvEtismgCJstMdqzDUjAaWeAzKOeyyvxAOZjOeZRQ5w/OvuqHyk3tF+M2oVWF8lAUPvmTk4VkVdfGpwyM6eXZvCi5QL4tdqofN44h3stACGKQYGhQ9m4eXtH2bMrjo0QNbPZDrx5FvHjG0SAl0wpYbFuWbkn9kGwgsMvs4/hPOXZkqTWqAu+wTdFMvUZfjrXw+gO8FhnVmfwnnf6M2zHWCasVRQ2BCU6Xqt6h5MxZpuBB9Zsegvb9acgn/pjgzatCaSeal/avaI6Tpw4f5cB+Frj16GMG2B8SI/fHCcF+C3uxrtD+QzKEM4rPsDxHTnolpXPuhamUjAuoGea+/3yV5MHThLbWluT+5GUUuU2jHW49t53PhFaMOhFOBqIPQvgCNtBLxUQpOIe8F+HSUFE2Q3NHaat1B
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(39850400004)(366004)(136003)(396003)(451199021)(7416002)(6512007)(6506007)(6666004)(4744005)(44832011)(186003)(5660300002)(2906002)(8936002)(2616005)(54906003)(316002)(36756003)(41300700001)(83380400001)(4326008)(8676002)(66556008)(66946007)(86362001)(6916009)(66476007)(6486002)(478600001)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bcuya+IBPgll7YkAqJ62HlmziFXh6dMn43zcYZIB/HeCVJAnu4AtD74CDibl?=
- =?us-ascii?Q?yB4LOCnz/6utbpJoIC4bqAmQSuECwj4ykmXSI7NExWdpySXAQTr8927TF7BH?=
- =?us-ascii?Q?//LJj3AXiEoyGDobXu6o5RWIUIdY/yUUzQsO2khCWzjVt34PPdaaYg++v9gU?=
- =?us-ascii?Q?okhep4bxXKPSwAL1eV1kDFv0gapr8zit/ca+/d6bHiPNZ+mgAg7M17QIu9Ei?=
- =?us-ascii?Q?7za1THvP0yteT4s8pfyd5L5/eWl4cck2Sa91ba44OQHiAER+vefh+slAH920?=
- =?us-ascii?Q?eXAhkmJYZxNVrmmK3yrwsuYzjxXjNwuAs+/KIZ2ZbZjClDh6NTtXQJln2HaR?=
- =?us-ascii?Q?yXey4cxRbIIs7rohmHMx5cUdLY6cjezNmm43/kTns6dKSYobQUGyuMpP/3Sc?=
- =?us-ascii?Q?gqzjDwUuYxTuBSvBc9X0NXiRQf2CizRejZQI8PHS0V1tvfJcFD2UrOof/qfV?=
- =?us-ascii?Q?znnVxch/w3jau8vGs8xSXTIoryINg4C61Q7wMAWaPftJNENDErHmQ6zzX7oM?=
- =?us-ascii?Q?YerpvJqmjD/636MituxSnTW8ZXxyxhufjZFGeHKxdoO0TAWK0HAcwLVhbjXy?=
- =?us-ascii?Q?AGAKaH3vsENkBpXEZYIIXOwD0Ns+NY+P0sOHmOHy07xlnCetTHaBMnFAmNw8?=
- =?us-ascii?Q?oikedw6WwO2NkbOkYSNFpSZ2zalZ14eQeEqGulTj3cemPsQhIWMH/IxYt63/?=
- =?us-ascii?Q?yyvnEmX3rAHhqA5ziOilYZ6lc5rKdfx3fEyTlXVO83YpkySX+DHV+Nt6fbtB?=
- =?us-ascii?Q?py0DEIAGFLd0xlnP61g3Ik8vJpVjF7HXZtM687yG/3RJfGi1lptbudYDEpo+?=
- =?us-ascii?Q?XBqOpALVZaJ1E3O4CxLFpMKSsWlYlR40j2svcd33HE0VIBLoDBZJ+kVve7LV?=
- =?us-ascii?Q?nnaa8FOGtivo/kf3A9Ngm4KJpmRd+lO2PuUM5gTuuwFCio+cZFHSJTICJz4z?=
- =?us-ascii?Q?/GLf9WtfyE24pM/xUQSrjCsoHCWZC1kLKYJ4x5VBIl8w8IGFHEkEIYpS2JKB?=
- =?us-ascii?Q?zn6TN3TY09nZNTvDV2y8TCKl36Gf/Ic2HHGaZPB9YXAuL75z7ooeeXY43D9S?=
- =?us-ascii?Q?mK1vMKgBdqmYn9oA8aM8d+WXNJeaMcMHAs1UxHTzjUM3WplIwKv5cGFCh7ja?=
- =?us-ascii?Q?DqapIP/fiNKbih1Js1TJ9A+URrXpHm9iuLPkcE2yirOXgGjvjXhv7tKuj8Ll?=
- =?us-ascii?Q?D+5Fk+dM0+Pa3PCrAKqo6lWway0oTeXrtG+ZwFSK6eoPHMa4I5zDc6OcAyk2?=
- =?us-ascii?Q?+1hT/OC68CpHbC//ZCF71P1JboHY45TJKumxDWtB2gkxeMYRdhF+HersyUbb?=
- =?us-ascii?Q?2I7LUnHdcGyVPQhSCcC6S6OpnQK0L6gU2Wh4DnbFup+kEj48YFWakn4mpKFy?=
- =?us-ascii?Q?fcu6ApdykzsLhJaqzp1nPvRA/fKWPZzx78C11+sMEVDPQxa1hgdYqiBmHotk?=
- =?us-ascii?Q?AxEklpi96Beu/VNo7hXprhNw0GdKnZ1M7ufNRw0CU8icIH4Eq4ICCvFhnVjC?=
- =?us-ascii?Q?DidpTwAmvw9KDZ9jcauTo/Af/WKONyxY2YRnT3klQzlhQh0MBWP+rJaRcF98?=
- =?us-ascii?Q?OLt9vDgSxG0Qt9/Ken3yE6sEtgcEbuQ1ugczdletqTEA7vntMjMkfkUeZH7i?=
- =?us-ascii?Q?iGbQyDut71B1QQONGe/aAjN5vwu6RbZ+5zjw4ktg2K7MYtc8GKfGODJErq6x?=
- =?us-ascii?Q?ZZZtsg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfb7ef5d-1b13-4508-dcff-08db3aab6f3e
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 16:40:18.5226
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MpKhm19DOVooJLKHadsIs/P8kelDGAPL9jtLrPAMjOATD30TS4VKVBnNWphOsLaXrLG1RG8ODaDs+EEbl9ea9Z7VlkxtND29z5qYN743Fsc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB6169
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 10, 2023 at 09:19:05AM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Create SA flow steering tables both for RX and TX with tunnel reformat
-> property. This allows to add and delete extra headers needed for tunnel
-> mode.
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Hi,
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+On Tue, Apr 11, 2023 at 7:35=E2=80=AFPM Eyal Birger <eyal.birger@gmail.com>=
+ wrote:
+>
+> Hi,
+>
+> On Tue, Apr 11, 2023 at 10:54=E2=80=AFAM Martin Willi <martin@strongswan.=
+org> wrote:
+> >
+> > The commit referenced below clears the secpath on packets received via
+> > xfrm interfaces to support nested IPsec tunnels. This breaks Netfilter
+> > policy matching using xt_policy in the FORWARD chain, as the secpath
+> > is missing during forwarding. INPUT matching is not affected, as it is
+> > done before secpath reset.
+> >
+> > A work-around could use XFRM input interface matching for such rules,
+> > but this does not work if the XFRM interface is part of a VRF; the
+> > Netfilter input interface is replaced by the VRF interface, making a
+> > sufficient match for IPsec-protected packets difficult.
+> >
+> > So instead, limit the secpath reset to packets that are targeting the
+> > local host, in the default or a specific VRF. This should allow nested
+> > tunnels, but keeps the secpath intact on packets that are passed to
+> > Netfilter chains with potential IPsec policy matches.
+> >
+> > Fixes: b0355dbbf13c ("Fix XFRM-I support for nested ESP tunnels")
+> > Signed-off-by: Martin Willi <martin@strongswan.org>
+> > ---
+> >  include/net/xfrm.h     | 10 ++++++++++
+> >  net/xfrm/xfrm_policy.c |  2 +-
+> >  2 files changed, 11 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+> > index 3e1f70e8e424..f16df2f07a83 100644
+> > --- a/include/net/xfrm.h
+> > +++ b/include/net/xfrm.h
+> > @@ -1349,6 +1349,16 @@ void xfrm_flowi_addr_get(const struct flowi *fl,
+> >         }
+> >  }
+> >
+> > +static inline bool xfrm_flowi_is_forwarding(struct net *net,
+> > +                                           const struct flowi *fl)
+> > +{
+> > +       if (fl->flowi_oif =3D=3D LOOPBACK_IFINDEX)
+> > +               return false;
+> > +       if (netif_index_is_l3_master(net, fl->flowi_oif))
+> > +               return false;
+> > +       return true;
+> > +}
+> > +
+> >  static __inline__ int
+> >  __xfrm4_state_addr_check(const struct xfrm_state *x,
+> >                          const xfrm_address_t *daddr, const xfrm_addres=
+s_t *saddr)
+> > diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+> > index 5c61ec04b839..4f49698eb29f 100644
+> > --- a/net/xfrm/xfrm_policy.c
+> > +++ b/net/xfrm/xfrm_policy.c
+> > @@ -3745,7 +3745,7 @@ int __xfrm_policy_check(struct sock *sk, int dir,=
+ struct sk_buff *skb,
+> >                         goto reject;
+> >                 }
+> >
+> > -               if (if_id)
+> > +               if (if_id && !xfrm_flowi_is_forwarding(net, &fl))
+>
+> At first I thought that "dir" would just be "XFRM_POLICY_FWD" from the
+> forwarding path, so you could just do:
+>
+> if (if_id && dir !=3D XFRM_POLICY_FWD)
+> secpath_reset(skb);
+>
+> But I think the problem with this would be when the xfrmi is moved to a
+> different NS in which case the policy check is done using XFRM_POLICY_IN
+> right? if so maybe this can be passed somehow, maybe using a bit in the "=
+dir"
+> outside of XFRM_POLICY_MASK?
+>
+> something like:
+>
+> no_reset_sp =3D dir & XFRM_POLICY_NO_RESET_SP || dir =3D=3D XFRM_POLICY_F=
+WD;
+> dir &=3D XFRM_POLICY_MASK;
+>
+> ...
+> if (if_id && !no_reset_sp)
+> secpath_reset(skb);
+>
+> The benefit I think is in not deducing whether we are in forwarding.
+>
+> Maybe there's some other logic that I'm missing?
 
+After another look the secpath is reset in that case anyway.
+So in that case, which flow is missing when just using:
+
+if (if_id && dir !=3D XFRM_POLICY_FWD)
+    secpath_reset(skb);
+
+Eyal.
