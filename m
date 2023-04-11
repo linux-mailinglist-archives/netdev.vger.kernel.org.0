@@ -2,176 +2,348 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB056DE2B7
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 19:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC976DE2C8
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 19:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229504AbjDKRiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 13:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
+        id S229703AbjDKRkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 13:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjDKRiv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 13:38:51 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2095.outbound.protection.outlook.com [40.107.92.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CD3448E
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 10:38:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QfG8LvgOco1tP3oFxF0PvjQiOzsBkyV695dmKFe27xXsTvenMK+CARU/kT2ejLshR7o8UjCKJ36DDl1FZbDplJnMewoMgwMMnsTXoHzPUjoiWhYIa03Dw3eAFtyEQYn33Zx2ZXbxBLshNal2TkggAxqgsSETdx6XKvIlKsTXwK6Ja/NXtOaNs6JkFLHfmuX87seE1QHdjdk8cQgNoYwYKfQuBCnEmZT2TYWuZuhEtoTO5T5HsLGWx11yIIP94P1oV6r0KTXvd765oEgbJVelCZn46ZLT24EsDryLsiHik2xhZ9cYCOZREzVyiBKvDGYEIlE4zD/uV43bMJU57lZasQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xC7EjY32DGfwnYevijbo3fuJzac7/zYhvOWErHs8I9Q=;
- b=BAehNvX8PhST0wXX+sf5/4o9lU7XEd3UeuL0VVoqU9vqEUfH7zCfjKSM2+IebUtQqU6vkWV+QyzmV+31EUW7Sq6nzslzqOprWyO1+Q2Q4EJ/b46Ac0mfL3oeuBboFG4miQQb8QFowanI+FPUM3O2ImaD3TfCP5YZ3ldUKkYjrb/dc7dtW97ndAmM+1WgcCdHiIY9FzFzLJg/IyReHYfjURW1ILOQo3zxnRCes1OO09g8rF5E8i6N5D7FjSzmzZ2rjeflQpb0GRdmcHHYwoMcHClIdJ8tP9m0VIsLKsGPuqnOn0gJWCRAMkX2q/yLWwoo00WxAxls8E3IesSWtdks6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229452AbjDKRkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 13:40:18 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235945B81
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 10:39:56 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id s2so5123760wra.7
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 10:39:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xC7EjY32DGfwnYevijbo3fuJzac7/zYhvOWErHs8I9Q=;
- b=JZ85TRaa7M5XvJnRGpYcqQTIitbtxu6/IEheREMrq0Ji7+Y0EBht4+GFPQ/4c8ipAz7MTF6qHOkDn4Ha6amrLU8qSslvc66i1Z7qJ9sk+GBsdJget14ppYua00wtnQ9lnaqVjqg2uoF5eYpQpQEoOBxOK7IyqJpN8dqMqmcuiLg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH2PR13MB3669.namprd13.prod.outlook.com (2603:10b6:610:a1::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Tue, 11 Apr
- 2023 17:38:48 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
- 17:38:47 +0000
-Date:   Tue, 11 Apr 2023 19:38:41 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Emeel Hakim <ehakim@nvidia.com>
-Subject: Re: [PATCH net-next 04/10] net/mlx5e: Prepare IPsec packet reformat
- code for tunnel mode
-Message-ID: <ZDWbIWB/W7T99wy+@corigine.com>
-References: <cover.1681106636.git.leonro@nvidia.com>
- <2f80bcfa0f7afdfa65848de9ddcba2c4c09cfe32.1681106636.git.leonro@nvidia.com>
- <ZDWEACmSLgk83pIw@corigine.com>
- <20230411163729.GA182481@unreal>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230411163729.GA182481@unreal>
-X-ClientProxiedBy: AM4P190CA0007.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:200:56::17) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=broadcom.com; s=google; t=1681234787; x=1683826787;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=FRXP6gEiSyETAaXD+1Gbx63ZrXW81FK9nFoXmVUvT4o=;
+        b=Y3m/NoBfBcpZb7C4jA0OeTu0tl4yFrkk2e+IDkAVzOvbu2ujoSFruxAAb74hdXFMap
+         i3IIdv/q+XEsLEkKpWUEDwAtpFRMlrcj6b+AxIc6RsF4Jfoz38di1xywYxxtkKqCPCzN
+         QDVooxFRAX9b4Z6Wv01RNokzDz7N+oMiv5Xno=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681234787; x=1683826787;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FRXP6gEiSyETAaXD+1Gbx63ZrXW81FK9nFoXmVUvT4o=;
+        b=GBuAngDJvkjNbxGPifvxK3XTY587pUKF2x8q7JlrIpbQq1nBTyEfXS9a80rFbU5YgG
+         N9R4ZPyFp0hNYw+hJ5WWdCD53iUdIMqQv/Q+0Psihyc0LsPgfLRXsVsCeHv95A59ojWl
+         ZlRiKBXGxzHf4zyXnnuZpG1liMwsXpHM5fc+d9ymIQuMAMoBtuVVFq6ul32lLK707P8o
+         WdZ/Gy3yQL7C2pHpmfthM/H8Bl+VxS+qUa57T8JWY3puTdaz1zswuJ2tazF/+rzBnStx
+         gSUaEzHj76F13JNfqwPbWcxC98dRSypjfRwZX1S8DzYfqJLkpNNPsBV23HtzpoQ7J+aR
+         t7wA==
+X-Gm-Message-State: AAQBX9cHbkxwAueVRCSXVqkrVYSqhJbnGi49r37AT1q9B0dUKD0AUUI0
+        SWszGCUGQ7vo2Teh9EzviZ5JWTdrXuAV0zRI7meqUpa6GsJtN5h0RqWYA4G10Da6kmQBj+Ok9Lb
+        ywf430za5Vv+pe3tcandmYO8=
+X-Google-Smtp-Source: AKy350ZrJcqlJ6LRYglLjW62+BnBd1qWv4E9asbNWJ0xL8GlDGZdszWtlbtMIKDBsge/NtBHC+4LKnfkZw7xkgF9R1o=
+X-Received: by 2002:a5d:6606:0:b0:2e4:c9ac:c49d with SMTP id
+ n6-20020a5d6606000000b002e4c9acc49dmr1901912wru.8.1681234787148; Tue, 11 Apr
+ 2023 10:39:47 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3669:EE_
-X-MS-Office365-Filtering-Correlation-Id: b8e55d9a-8092-49e9-6b21-08db3ab39aea
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iL2RCjtGzqf5HRreYTleT8DJkkmLBFDXfhBbI1bLqdwVSUPus/W1gARDRC2qf0BM0qLVKWiH9K7jz/MlM5OQwxq+ZkTgQIP8JrubSZSMvi3hzWEvulQqkE4V6rRYQ4jll5FJnTJ79/LEoKkObFrBkpH/UFZVtAfjhWC54ttwsa/I26qFIzgsMkpICH0LuRv++tq2AfCT/xKzcrOekERoaG/QA6IIj28djB5/rJk3LQ6JF5PCMgG5oTwH8ET6iCK3F4mAkzC3FzWWWbaiu7FxAlD8NSscDuOo2uFzhA+AASTNBpPpz9LsdzL7vM1WRNJSZk4qpa3u9wYMpjFeh+9gUxRzTmVnTRdK+emuX1b3g1/pRd2WTecBUWU7BVhumTao6neAHpHRRiCMWzmlsBOL0NvLyE4Y4kJ+fOl0YEpohxWYzW0tKrrQrqMWNq0Ls0Zs7eJXTu/cera+jm2vldP1M6rhEy+IGRh+EU2XGOFlQ3czb1W/V4Y8XPyj+tBp6qOKiO8PkSGjd3vTV5TD/pB37Utz3E86tZFuLHn7HTAsHlYag3BMoC0jOwNU4MDyjBU+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39850400004)(376002)(366004)(136003)(396003)(346002)(451199021)(36756003)(5660300002)(8936002)(7416002)(41300700001)(54906003)(316002)(44832011)(478600001)(6666004)(6486002)(2616005)(66899021)(186003)(66946007)(66556008)(66476007)(86362001)(6916009)(4326008)(2906002)(8676002)(38100700002)(6506007)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Q6lm/JKq8NjWWdnzj2dY9/fqRCgBZtuCU6PW2qyaxF0vaeop5y1kIPAvLlMv?=
- =?us-ascii?Q?UdYwdCQX7eNQwF89O5sytNGuSQHueOR8DsLLvnh1x8xWGEYy8vUZGrJ811Rz?=
- =?us-ascii?Q?xHsxf1WNzNJEQPzqkJH9+YReaj8jGuTmhjNv0bqMQ8hJUlGH87bQJg4N9aTU?=
- =?us-ascii?Q?sg3vkzN3xnPBzzKsxndGs46atDv9aL56tnNpUaFsLsMuV8b1RUuN3PhO2/nA?=
- =?us-ascii?Q?/QMT9tYvSBq4Jdcke4kyD/+rFY7JZVEb8p5L4WZUHv+wSz3zSWAfUb29/f4E?=
- =?us-ascii?Q?pcJ6EwtNEq/cY/phAv534VFwDsCIu6kl4e1wVgVN/eANxc5neEM+misHI4kH?=
- =?us-ascii?Q?0p0zMg90zQJAP5OWdq7J+9WRt7wmycs7MKdhnwuKtxAENfT7g0V3ohw/CfXT?=
- =?us-ascii?Q?/0dbeqfI+3ModFO8wjSrb4lFQve5+j44pP9DcuXPhAOmtU3jgRA7dy4Tlcdg?=
- =?us-ascii?Q?EREjZbLVQONekLYwQVKmzlvFcZEs9Q9jGgwtKbxn0wxyXR3mLOR0CJ3ib35D?=
- =?us-ascii?Q?4N4OWWYlLB5HBa5K8f556HKGJ+d7zO3viKcJN4YwjFQ55ZsWL0Wjk2QGPO2S?=
- =?us-ascii?Q?vIYxNlT4c8uwLWtXICQ39QrhR6eRwwFOJ8y/nKU+Gzkev3owfM1cfqVUqdEL?=
- =?us-ascii?Q?CVQWyBK4A8w8RpZwYwRaDifpNu31dU+p04vxmSeXt5VToetyCemO396MzFku?=
- =?us-ascii?Q?8OgqVRocVKhOnRifPUvOHePohQG3enN6ETmvceXDS3s2dWOPq/8IQZPhg1+H?=
- =?us-ascii?Q?XjH7Qeq64NDmFaM6PwkeQAU6xz0LqNXjOTz1jAVVrCTHVFkageuYAhZTNbll?=
- =?us-ascii?Q?avqE5L5xPVrLtMaP4m9gKRqRznGYQ4JJFa5XNEOUR8JBQIDoRbG9YMxEgfZK?=
- =?us-ascii?Q?oNTWFhs7xbTRJbGMqaUPh0hk0ZsgyKekUwZq7ZJSQK765odlcXzz39pDwdaD?=
- =?us-ascii?Q?6MZvQk/HkfSP3+RKTKs/IoHKwxxeBKra9NhogiLUtMqT1belumy1+frbkVLp?=
- =?us-ascii?Q?qdGT/NeBkPp8f1G0L5u/p0CcLo6Ostwa8YG2/MN2IF3UKNRKpmElQFYyIMcw?=
- =?us-ascii?Q?2GkSHyy5/SFtTgu7jNwrZ4bEmdmb4UPTB2DNB8E7fYbd+42bIWFtrI5bEruA?=
- =?us-ascii?Q?scHgSb2WrzqDVFgcksB/XSL5eG7NuCVDj5sC9hvjORU9RpRMxD+XEX71Xuvg?=
- =?us-ascii?Q?qVejuuBUh1Q09uOO/GzloeGyeBGWnFDDMqCKenozX6wv4l/XQHq5dxiih0jU?=
- =?us-ascii?Q?dmvgo3oFtOzsmH5jILg650pa60Qdg1CyHtRHrHNIpT+UQoMKjdYB63wToAcU?=
- =?us-ascii?Q?wGXQjzufej1AIoXUUaRfWK367nuaCGKzVR49kzvbZ0tCvg7ukQgzqMKSlpD5?=
- =?us-ascii?Q?8IW6CHG+MAgHQ41MN/BHtAHuLFEP7wkagRmNai2pqAqi+Wg3mhbTbBtIg6y5?=
- =?us-ascii?Q?m2ysQigpMUJTw6LWXv8x45B0AV96WuwRo8WBRSJ8l2H8J3hhY8z2dtVSMOnn?=
- =?us-ascii?Q?9g9J/aHxfXzWQJvtIc0gtAlc3ApMq/6tNjGOJ/Mz6ZwMXPkPM7zCzMc0L3ww?=
- =?us-ascii?Q?MBU5C+PfDJbU8O7sY9ARNkfruH07Net98Zv5KMyca83ZDVNxPQkrBOHu8Z4E?=
- =?us-ascii?Q?Co41a8JzJZ/kW8p797Qax+fDfHd2ZCM76zTwdIuC/92pQmuX6mKQVJpQ7sgQ?=
- =?us-ascii?Q?wv5b8w=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8e55d9a-8092-49e9-6b21-08db3ab39aea
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 17:38:47.7980
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: k66chroMt2iIIUoZ6nWQopqAGmYU4d3xEPRf595yDEYdBMReAOktScz9PDVcXx3ZK9FPRKwE8w6CQyY+0cgN5zTuqGe3CkKZdpisMSpPrN0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3669
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230411120443.126055-1-ivecera@redhat.com> <CACKFLimBqwsX3tsnUp9svqSJHx57XEAu3kQ8Hj1Pq0+QS1uGsg@mail.gmail.com>
+In-Reply-To: <CACKFLimBqwsX3tsnUp9svqSJHx57XEAu3kQ8Hj1Pq0+QS1uGsg@mail.gmail.com>
+From:   Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+Date:   Tue, 11 Apr 2023 23:09:34 +0530
+Message-ID: <CADFzAK91_aPG0TS7gKquj6OZ7ArZXMyVZzKHoW-dQnOYPiNJQw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] bnxt_en: Allow to set switchdev mode without
+ existing VFs
+To:     ivecera@redhat.com, netdev@vger.kernel.org
+Cc:     mschmidt@redhat.com, Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000004c1af905f912fa55"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 07:37:29PM +0300, Leon Romanovsky wrote:
-> On Tue, Apr 11, 2023 at 06:00:00PM +0200, Simon Horman wrote:
-> > On Mon, Apr 10, 2023 at 09:19:06AM +0300, Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > 
-> > > Refactor setup_pkt_reformat() function to accommodate future extension
-> > > to support tunnel mode.
-> > > 
-> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > ...
-> > 
-> > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-> > > index 060be020ca64..980583fb1e52 100644
-> > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-> > > @@ -836,40 +836,78 @@ static int setup_modify_header(struct mlx5_core_dev *mdev, u32 val, u8 dir,
-> > >  	return 0;
-> > >  }
-> > >  
-> > > +static int
-> > > +setup_pkt_transport_reformat(struct mlx5_accel_esp_xfrm_attrs *attrs,
-> > > +			     struct mlx5_pkt_reformat_params *reformat_params)
-> > > +{
-> > > +	u8 *reformatbf;
-> > > +	__be32 spi;
-> > > +
-> > > +	switch (attrs->dir) {
-> > > +	case XFRM_DEV_OFFLOAD_IN:
-> > > +		reformat_params->type = MLX5_REFORMAT_TYPE_DEL_ESP_TRANSPORT;
-> > > +		break;
-> > > +	case XFRM_DEV_OFFLOAD_OUT:
-> > > +		if (attrs->family == AF_INET)
-> > > +			reformat_params->type =
-> > > +				MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_OVER_IPV4;
-> > > +		else
-> > > +			reformat_params->type =
-> > > +				MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_OVER_IPV6;
-> > 
-> > Maybe this is nicer? Maybe not.
-> > 
-> > 		reformat_params->type = attrs->family == AF_INET ?
-> 
-> I didn't like it because of the line above, IMHO it is too long and has
-> too many indirection.
+--0000000000004c1af905f912fa55
+Content-Type: text/plain; charset="UTF-8"
 
-Yeah, it's not ideal.
+> Remove an inability of bnxt_en driver to set eswitch to switchdev
+> mode without existing VFs by:
+>
+> 1. Allow to set switchdev mode in bnxt_dl_eswitch_mode_set() so
+>    representors are created only when num_vfs > 0 otherwise just
+>    set bp->eswitch_mode
+> 2. Do not automatically change bp->eswitch_mode during
+>    bnxt_vf_reps_create() and bnxt_vf_reps_destroy() calls so
+>    the eswitch mode is managed only by an user by devlink.
+>    Just set temporarily bp->eswitch_mode to legacy to avoid
+>    re-opening of representors during destroy.
+> 3. Create representors in bnxt_sriov_enable() if current eswitch
+>    mode is switchdev one
+>
+> Tested by this sequence:
+> 1. Set PF interface up
+> 2. Set PF's eswitch mode to switchdev
+> 3. Created N VFs
+> 4. Checked that N representors were created
+> 5. Set eswitch mode to legacy
+> 6. Checked that representors were deleted
+> 7. Set eswitch mode back to switchdev
+> 8. Checked that representors exist again for VFs
+> 9. Deleted all VFs
+> 10. Checked that all representors were deleted as well
+> 11. Checked that current eswitch mode is still switchdev
+>
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> ---
+>  .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   | 16 ++++++++++
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c | 29 ++++++++++++-------
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h |  6 ++++
+>  3 files changed, 41 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+> b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+> index 3ed3a2b3b3a9..dde327f2c57e 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+> @@ -825,8 +825,24 @@ static int bnxt_sriov_enable(struct bnxt *bp, int *num_vfs)
+>         if (rc)
+>                 goto err_out2;
+>
+> +       if (bp->eswitch_mode != DEVLINK_ESWITCH_MODE_SWITCHDEV)
+> +               return 0;
+> +
+> +       /* Create representors for VFs in switchdev mode */
+> +       devl_lock(bp->dl);
+> +       rc = bnxt_vf_reps_create(bp);
+> +       devl_unlock(bp->dl);
+> +       if (rc) {
+> +               netdev_info(bp->dev, "Cannot enable VFS as
+> representors cannot be created\n");
+> +               goto err_out3;
+> +       }
+> +
+>         return 0;
+>
+> +err_out3:
+> +       /* Disable SR-IOV */
+> +       pci_disable_sriov(bp->pdev);
+> +
+>  err_out2:
+>         /* Free the resources reserved for various VF's */
+>         bnxt_hwrm_func_vf_resource_free(bp, *num_vfs);
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+> b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+> index fcc65890820a..2f1a1f2d2157 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+> @@ -356,10 +356,15 @@ void bnxt_vf_reps_destroy(struct bnxt *bp)
+>         /* un-publish cfa_code_map so that RX path can't see it anymore */
+>         kfree(bp->cfa_code_map);
+>         bp->cfa_code_map = NULL;
+> -       bp->eswitch_mode = DEVLINK_ESWITCH_MODE_LEGACY;
+>
+> -       if (closed)
+> +       if (closed) {
+> +               /* Temporarily set legacy mode to avoid re-opening
+> +                * representors and restore switchdev mode after that.
+> +                */
+> +               bp->eswitch_mode = DEVLINK_ESWITCH_MODE_LEGACY;
+>                 bnxt_open_nic(bp, false, false);
+> +               bp->eswitch_mode = DEVLINK_ESWITCH_MODE_SWITCHDEV;
+> +       }
+>         rtnl_unlock();
+>
+>         /* Need to call vf_reps_destroy() outside of rntl_lock
+> @@ -482,7 +487,7 @@ static void bnxt_vf_rep_netdev_init(struct bnxt
+> *bp, struct bnxt_vf_rep *vf_rep,
+>         dev->min_mtu = ETH_ZLEN;
+>  }
+>
+> -static int bnxt_vf_reps_create(struct bnxt *bp)
+> +int bnxt_vf_reps_create(struct bnxt *bp)
+>  {
+>         u16 *cfa_code_map = NULL, num_vfs = pci_num_vf(bp->pdev);
+>         struct bnxt_vf_rep *vf_rep;
+> @@ -535,7 +540,6 @@ static int bnxt_vf_reps_create(struct bnxt *bp)
+>
+>         /* publish cfa_code_map only after all VF-reps have been initialized */
+>         bp->cfa_code_map = cfa_code_map;
+> -       bp->eswitch_mode = DEVLINK_ESWITCH_MODE_SWITCHDEV;
+>         netif_keep_dst(bp->dev);
+>         return 0;
+>
+> @@ -559,6 +563,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink
+> *devlink, u16 mode,
+>                              struct netlink_ext_ack *extack)
+>  {
+>         struct bnxt *bp = bnxt_get_bp_from_dl(devlink);
+> +       int ret = 0;
+>
+>         if (bp->eswitch_mode == mode) {
+>                 netdev_info(bp->dev, "already in %s eswitch mode\n",
+> @@ -570,7 +575,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink
+> *devlink, u16 mode,
+>         switch (mode) {
+>         case DEVLINK_ESWITCH_MODE_LEGACY:
+>                 bnxt_vf_reps_destroy(bp);
+> -               return 0;
+> +               break;
+>
+>         case DEVLINK_ESWITCH_MODE_SWITCHDEV:
+>                 if (bp->hwrm_spec_code < 0x10803) {
+> @@ -578,15 +583,19 @@ int bnxt_dl_eswitch_mode_set(struct devlink
+> *devlink, u16 mode,
+>                         return -ENOTSUPP;
+>                 }
+>
+> -               if (pci_num_vf(bp->pdev) == 0) {
+> -                       netdev_info(bp->dev, "Enable VFs before
+> setting switchdev mode\n");
+> -                       return -EPERM;
+> -               }
+> -               return bnxt_vf_reps_create(bp);
+> +               /* Create representors for existing VFs */
+> +               if (pci_num_vf(bp->pdev) > 0)
+> +                       ret = bnxt_vf_reps_create(bp);
+> +               break;
+>
+>         default:
+>                 return -EINVAL;
+>         }
+> +
+> +       if (!ret)
+> +               bp->eswitch_mode = mode;
+> +
+> +       return ret;
+>  }
+>
+>  #endif
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
+> b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
+> index 5637a84884d7..33a965631d0b 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h
+> @@ -14,6 +14,7 @@
+>
+>  #define        MAX_CFA_CODE                    65536
+>
+> +int bnxt_vf_reps_create(struct bnxt *bp);
+>  void bnxt_vf_reps_destroy(struct bnxt *bp);
+>  void bnxt_vf_reps_close(struct bnxt *bp);
+>  void bnxt_vf_reps_open(struct bnxt *bp);
+> @@ -37,6 +38,11 @@ int bnxt_dl_eswitch_mode_set(struct devlink
+> *devlink, u16 mode,
+>
+>  #else
+>
+> +static inline int bnxt_vf_reps_create(struct bnxt *bp)
+> +{
+> +       return 0;
+> +}
+> +
+>  static inline void bnxt_vf_reps_close(struct bnxt *bp)
+>  {
+>  }
+> --
+> 2.39.2
+ACK
 
-> > 			MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_OVER_IPV4 :
-> > 			MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_OVER_IPV6;
+-- 
+This electronic communication and the information and any files transmitted 
+with it, or attached to it, are confidential and are intended solely for 
+the use of the individual or entity to whom it is addressed and may contain 
+information that is confidential, legally privileged, protected by privacy 
+laws, or otherwise restricted from disclosure to anyone else. If you are 
+not the intended recipient or the person responsible for delivering the 
+e-mail to the intended recipient, you are hereby notified that any use, 
+copying, distributing, dissemination, forwarding, printing, or copying of 
+this e-mail is strictly prohibited. If you received this e-mail in error, 
+please return the e-mail to the sender, delete it from your computer, and 
+destroy any printed copy of it.
 
-...
+--0000000000004c1af905f912fa55
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVwwggREoAMCAQICDCuanYaakePGC/8NWzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAwODE4MTRaFw0yNTA5MTAwODE4MTRaMIGX
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFzAVBgNVBAMTDlZlbmthdCBEdXZ2dXJ1MS8wLQYJKoZIhvcN
+AQkBFiB2ZW5rYXRrdW1hci5kdXZ2dXJ1QGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQAD
+ggEPADCCAQoCggEBAKxQsw3EQE2uM7KS4ZepVKluwbllBYQqIXlkB3XAU4vFiPf5M6vxnpPTEVSQ
+pXMAwABUFyhDGOZhAVRWonASGLmZYRCHPLVwpTEdjfa0lAimqpRXim9bT5fwESDzC09sQD9e12aQ
+0gcj/W45N93AdIDGwS1i+2OrO0dHmhzFjoNZRosPxbMBqk2uK/Y+6MnOmQNhbLC/dkz8ZzMdCXxR
+uyfQbbJtM4W4zD0pHaoWT+pT/ZiABohxZUhvDhUAd2dHJOUiWHbOhj2ScdB+xjKgXS6LVUYNyXtD
+Ec5y29pHY+8si/7leitRmTHIfES74fzXq1E89h3t4+Nic4Y2q500A/cCAwEAAaOCAeEwggHdMA4G
+A1UdDwEB/wQEAwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1
+cmUuZ2xvYmFsc2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBB
+BggrBgEFBQcwAYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2ln
+bjJjYTIwMjAwTQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8v
+d3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDyg
+OoY4aHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5j
+cmwwKwYDVR0RBCQwIoEgdmVua2F0a3VtYXIuZHV2dnVydUBicm9hZGNvbS5jb20wEwYDVR0lBAww
+CgYIKwYBBQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFDs1
+MU4IAUcnU7t14K2BAIiIz8LZMA0GCSqGSIb3DQEBCwUAA4IBAQCQ1rmRUDQIugdVsWi1QejVhL+g
+CL/yMVayz0o0GeCW3Mu1kEK/vBrbzG7FLDqf0/4yZkFpoPqr0e1ZLdgOuSMkKV0L5q0rILiP9iuU
+imekxZsnelVR6/EVFhatVlBpPRsU2EoS+y1o2uoQp2H6j22bywnH14GntFcp7qFvCxKFmd+MnHPs
+Vfo7DgaEsngLM08mbO8+1+GnVwJYhJejFbGsSe5SPfZ2YPErgEvoOGAcLmcfBwD8JwRCGL1S+mv3
+MqhYMCUkzC+bboRk7fA0KC8cmnLknQxFOP4wgn5TXkqjHdfwI7/gF4j6YZ3fPAm/Y6YcTWrR+3bp
+mpJiM3R8PAtwMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2ln
+biBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAy
+MAIMK5qdhpqR48YL/w1bMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCBwG2agwL9H
+sz9cnr8FhiucU6RFbP5uMdIHOAWrBegbLjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
+SIb3DQEJBTEPFw0yMzA0MTExNzM5NDdaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsG
+CWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3
+DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAHiECyMEJOnnXvFgIPwg3RZixMS/p
+zscz9oMqqvuGwIgHExlqkVq/eSuQPMKIUrtvX7LQkCYV5oSgAWCCULf91fPMtDs7GQ6Ps0t4UNa+
+feuzIJk6XgqY1bHRfDJm+VMl+ezu+iUy0smHPEglnHNpAlTLYHS40a6OxzhnqaIYO/QgZzh/w4z9
+qP6ZCDJEvw2mIPlm7fTX0zjktY4gyIt/2lK8sYtglknxahsez9wwRKoUcdyQUQrmRpsTb4LrqsWH
+OW3nCasuwddJGOoQUKruX81AC0GxhgN/QfRaPAy78DeYy+o7CH4aw4DdXarH4EOhaQHHCwqcpI9x
+iMeQU1UFXA==
+--0000000000004c1af905f912fa55--
