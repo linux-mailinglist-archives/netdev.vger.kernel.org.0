@@ -2,132 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C7BD6DD42B
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 09:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 246FD6DD457
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 09:38:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229957AbjDKHaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 03:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
+        id S229957AbjDKHiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 03:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbjDKH3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 03:29:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0E52D5F
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 00:29:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681198143;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L4fqI8bKtaB0NcHDktrPl8MWeP7RL/mWq8oUINt/T54=;
-        b=V/R6ziqW7gXpfwPsXBDPpT8C2aKJQIRkgmgx2lvjOFBYLdIiTBEkjZngkUUa1dqoAoUagG
-        vnWrsqh3eha0BVo107jnoJ23EGXzdFBcMi6vhoZHWUY1slwWpl/NT1EcuhJW9ODPiwVTJw
-        J3DYyUPe9XsHFuMnbnK4lpRBU4yCHWM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-121-2K8HegBlNVepRgveZYsdQA-1; Tue, 11 Apr 2023 03:29:02 -0400
-X-MC-Unique: 2K8HegBlNVepRgveZYsdQA-1
-Received: by mail-wm1-f70.google.com with SMTP id l36-20020a05600c1d2400b003edd119ec9eso2189541wms.0
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 00:29:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681198139; x=1683790139;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=L4fqI8bKtaB0NcHDktrPl8MWeP7RL/mWq8oUINt/T54=;
-        b=y0iZrvbLI/Ts0rG+lSjcBBzSH4Oo/Hyapo03SIhG3QxPOYcu60wP4isBS+SVs5EvX+
-         Svm74IY30o6W29vV8U3YV11O0ENLNSGoPhCqByATtVK214/XjPs1m4H9KA93bzXLWyPX
-         gi2o7ZLf7Prn+rUpwQ7Sc8jQ8FWSq2r171TdBIw6zeS0mxvOeaLtS6Y0+3MNzvK3hZHX
-         mM8s3cKPQQdNfWiz8IopPguXqwvGkgbwh1UbDy2255uOY8G30CiAehrHCvNxaEF7k3j3
-         Ds1Z+WZlwWsn/D/5cY1MTOZSberZ5gJX25YWAE4Zl+645arKex/g/YuF0t7wwkUen3ZD
-         PYOA==
-X-Gm-Message-State: AAQBX9cElnMrJ+p102C4ysB8srYWRQbxwaJAafISfSL8atCEXCcbJoh0
-        Wh1dNyuPfLomydrdx41rnUbZKMLdxl9tnZzZG85zFtnrKSMXrUGs9ZL53bt8qWXaPnhYe8tz0r+
-        c3KrWzNg7tnf7M1+kbMwka6nCW+Bv0xtlDqENRkgcr5EJiQ==
-X-Received: by 2002:a05:600c:3792:b0:3ed:d2ae:9aeb with SMTP id o18-20020a05600c379200b003edd2ae9aebmr2632740wmr.8.1681198139432;
-        Tue, 11 Apr 2023 00:28:59 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YW5IDOn+UtOVz4OnXhruknCN/7VUTSpUco2yUncWsdK7SLQjHRkIf40YFOegmhheb0QRHRYZwy7kM7Amph3GY=
-X-Received: by 2002:a05:600c:3792:b0:3ed:d2ae:9aeb with SMTP id
- o18-20020a05600c379200b003edd2ae9aebmr2632737wmr.8.1681198139119; Tue, 11 Apr
- 2023 00:28:59 -0700 (PDT)
+        with ESMTP id S229741AbjDKHiS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 03:38:18 -0400
+X-Greylist: delayed 440 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 11 Apr 2023 00:38:17 PDT
+Received: from mail.loanfly.pl (mail.loanfly.pl [141.94.250.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CA61709
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 00:38:17 -0700 (PDT)
+Received: by mail.loanfly.pl (Postfix, from userid 1002)
+        id EEE35A26F6; Tue, 11 Apr 2023 07:30:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=loanfly.pl; s=mail;
+        t=1681198254; bh=flSgn4+IJB03yMaHNopPnR0v50wun3P5Hd/CkHJx2Bc=;
+        h=Date:From:To:Subject:From;
+        b=jw72wI7+OaRljwWjUJr5dTiowm7Zbau6kGwXmrYYsOy5VVksaozS6wt9Brd6vurP2
+         mkslVG8bYhXdgwa6JljJrLnRMd3hlwziYnJV4cUjq+e0Qj8S7Y8dGrUQQbFmQm0H4q
+         UBUBveeQDdhinoyyNpSCZ+WmvUu9Ku4JgJWkzDtyvDhVIckHT3Z9/2jVwrzcrfvlgE
+         G6jvVONTYnlwFD9M/73FWq/uzoDeC+S+LkP/yVTuVJ8jhQV9UC+fFQpOvFKidUJRck
+         G4rZXPh90wP4MLN4IWY90FXX5A6jnIcv67iEFactiRacZj2jZr0UtdF5nleIaS302K
+         hktpXMIl+b1jg==
+Received: by mail.loanfly.pl for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:30:52 GMT
+Message-ID: <20230411064500-0.1.9h.12jb8.0.7580m7oocl@loanfly.pl>
+Date:   Tue, 11 Apr 2023 07:30:52 GMT
+From:   "Damian Cichocki" <damian.cichocki@loanfly.pl>
+To:     <netdev@vger.kernel.org>
+Subject: Prezentacja
+X-Mailer: mail.loanfly.pl
 MIME-Version: 1.0
-References: <20230410150130.837691-1-lulu@redhat.com> <CACGkMEvTdgvqacFmMJZD4u++YJwESgSmLF6CMdAJBBqkxpZKgg@mail.gmail.com>
-In-Reply-To: <CACGkMEvTdgvqacFmMJZD4u++YJwESgSmLF6CMdAJBBqkxpZKgg@mail.gmail.com>
-From:   Cindy Lu <lulu@redhat.com>
-Date:   Tue, 11 Apr 2023 15:28:21 +0800
-Message-ID: <CACLfguWKw68=wZNa7Ga+Jm8xTE93A_5za3Dc=S_z7ds9FCkRKg@mail.gmail.com>
-Subject: Re: [PATCH] vhost_vdpa: fix unmap process in no-batch mode
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+X-Spam-Status: Yes, score=7.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS,
+        URIBL_ABUSE_SURBL,URIBL_CSS_A,URIBL_DBL_SPAM autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Report: *  2.5 URIBL_DBL_SPAM Contains a spam URL listed in the Spamhaus DBL
+        *      blocklist
+        *      [URIs: loanfly.pl]
+        *  3.6 RCVD_IN_SBL_CSS RBL: Received via a relay in Spamhaus SBL-CSS
+        *      [141.94.250.68 listed in zen.spamhaus.org]
+        *  0.1 URIBL_CSS_A Contains URL's A record listed in the Spamhaus CSS
+        *      blocklist
+        *      [URIs: loanfly.pl]
+        *  1.9 URIBL_ABUSE_SURBL Contains an URL listed in the ABUSE SURBL
+        *      blocklist
+        *      [URIs: loanfly.pl]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 11:10=E2=80=AFAM Jason Wang <jasowang@redhat.com> w=
-rote:
->
-> On Mon, Apr 10, 2023 at 11:01=E2=80=AFPM Cindy Lu <lulu@redhat.com> wrote=
-:
-> >
-> > While using the no-batch mode, the process will not begin with
-> > VHOST_IOTLB_BATCH_BEGIN, so we need to add the
-> > VHOST_IOTLB_INVALIDATE to get vhost_vdpa_as, the process is the
-> > same as VHOST_IOTLB_UPDATE
-> >
-> > Signed-off-by: Cindy Lu <lulu@redhat.com>
-> > ---
-> >  drivers/vhost/vdpa.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> > index 7be9d9d8f01c..32636a02a0ab 100644
-> > --- a/drivers/vhost/vdpa.c
-> > +++ b/drivers/vhost/vdpa.c
-> > @@ -1074,6 +1074,7 @@ static int vhost_vdpa_process_iotlb_msg(struct vh=
-ost_dev *dev, u32 asid,
-> >                 goto unlock;
-> >
-> >         if (msg->type =3D=3D VHOST_IOTLB_UPDATE ||
-> > +           msg->type =3D=3D VHOST_IOTLB_INVALIDATE ||
->
-> I'm not sure I get here, invalidation doesn't need to create a new AS.
->
-> Or maybe you can post the userspace code that can trigger this issue?
->
-> Thanks
->
-sorry I didn't write it clearly
-For this issue can reproduce in vIOMMU no-batch mode support because
-while the vIOMMU enabled, it will
-flash a large memory to unmap, and this memory are haven't been mapped
-before, so this unmapping will fail
+Dzie=C5=84 dobry!
 
-qemu-system-x86_64: failed to write, fd=3D12, errno=3D14 (Bad address)
-qemu-system-x86_64: vhost_vdpa_dma_unmap(0x7fa26d1dd190, 0x0,
-0x80000000) =3D -5 (Bad address)
-qemu-system-x86_64: failed to write, fd=3D12, errno=3D14 (Bad address)
-....
-in batch mode this operation will begin with VHOST_IOTLB_BATCH_BEGIN,
-so don't have this issue
+Czy m=C3=B3g=C5=82bym przedstawi=C4=87 rozwi=C4=85zanie, kt=C3=B3re umo=C5=
+=BCliwia monitoring ka=C5=BCdego auta w czasie rzeczywistym w tym jego po=
+zycj=C4=99, zu=C5=BCycie paliwa i przebieg?
 
-Thanks
-cindy
-> >             msg->type =3D=3D VHOST_IOTLB_BATCH_BEGIN) {
-> >                 as =3D vhost_vdpa_find_alloc_as(v, asid);
-> >                 if (!as) {
-> > --
-> > 2.34.3
-> >
->
+Dodatkowo nasze narz=C4=99dzie minimalizuje koszty utrzymania samochod=C3=
+=B3w, skraca czas przejazd=C3=B3w, a tak=C5=BCe tworzenie planu tras czy =
+dostaw.
 
+Z naszej wiedzy i do=C5=9Bwiadczenia korzysta ju=C5=BC ponad 49 tys. Klie=
+nt=C3=B3w. Monitorujemy 809 000 pojazd=C3=B3w na ca=C5=82ym =C5=9Bwiecie,=
+ co jest nasz=C4=85 najlepsz=C4=85 wizyt=C3=B3wk=C4=85.
+
+Bardzo prosz=C4=99 o e-maila zwrotnego, je=C5=9Bli mogliby=C5=9Bmy wsp=C3=
+=B3lnie om=C3=B3wi=C4=87 potencja=C5=82 wykorzystania takiego rozwi=C4=85=
+zania w Pa=C5=84stwa firmie.
+
+
+Pozdrawiam,
+Damian Cichocki
