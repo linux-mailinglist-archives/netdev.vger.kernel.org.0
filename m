@@ -2,174 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ACE86DCFF9
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 05:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F1276DD142
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 06:58:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbjDKDK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Apr 2023 23:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
+        id S229839AbjDKE62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 00:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbjDKDKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Apr 2023 23:10:24 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB361BC9;
-        Mon, 10 Apr 2023 20:10:23 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id w11so7152968pjh.5;
-        Mon, 10 Apr 2023 20:10:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1681182623;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Fr5kM0oUviyELrGpTYDxgL++MXitwM85P3aXWZ7MoWM=;
-        b=Ufk3IYxFdJFmrsfN7T4uaEa8NkC/bFZgW5KWvIy13IaIxOA6o14BMsBunnXMZryCi1
-         KHKUs1BkotmfO90GHMndYVcmMC0FJqmI9kBYLiPU3IfbW9Mktc/Sxq8DsN5NKxKj3DZi
-         h2jjntSdDvupNkLrxLoLAmaTJXOzW9wcEwLUB78JQZl6K/bkXefKZ5J98AQHKZaXVYA5
-         KOzVtttX1BgGrbN7H2aL8AAzCAx/7JAyW/YJXsSOUenf9KZ+ONyE7YZxowF2qd0oOLWS
-         bcGlMSRgBK+P8oLWhHMP60SxgkqwOclrfG2pmoUWqXjUCFR6O0ZGRPVg546eBWrduqjm
-         51Yg==
+        with ESMTP id S229697AbjDKE61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 00:58:27 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FCF8E6F
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 21:58:25 -0700 (PDT)
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 1DB1E3F232
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 04:58:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1681189103;
+        bh=KZfBLpN/gahf4Na+DiCMXXdGEJe19xHkIm66KVYL3RU=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=wXVAx+NvdegvvpUD6OOFsuukq4xI5TADWG8uJEnaKwDNs8FqEyDKLD4sMrDLWboGM
+         RZajAd7tAOpmtmqoWM4q3mCbPAg2jME5IuvVTQZhyYuw3/5rfV+Y1mpFLURZQ4XU85
+         xye/sTagXn+seHcTsHXoLMly3xPUbKf+ZvfFeDnBCLGF8xHhNC6ffl5rQRdyEx3c3i
+         UfPgNC08rHsdA54gbnqAWMxMjSPjunjXiuxIEpCcdhV/CPJYJtd8LlRFgzzti2ac7w
+         AFkAvmT6OPAMvJoYMvt43h6CCfb4mOksRgC9lAgkLyX1AAmkzDtHB1Tqx4/Zs1lN+Y
+         mCwEix4Ubka5g==
+Received: by mail-pl1-f200.google.com with SMTP id m13-20020a170902db0d00b001a63c5ce31cso2687406plx.3
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 21:58:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681182623;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Fr5kM0oUviyELrGpTYDxgL++MXitwM85P3aXWZ7MoWM=;
-        b=JWuITNheX3sWY9lWeJJTIw8Ab/9uQ66/4IvJ1Rh3vjyYssK1vhXFE2Og3YNJMQrLZb
-         c/APQSaZghuN+9i0Y0Jmc2SoU5t/JVWKt4w0pw7p8KLPDL3rlXXJ0YhyC84wRi6tCL99
-         p9wvnodrDZWoG8KW8hCM09Jo5BsWQpEeWAWRrlgMOu2bUnfjLdSTQQK+e4M9iuW6WzkP
-         OOuMlgnM6MlxGE4+Yk8CB4uai+stdQK0hAa02o1SwCkR6UG8ZJnR9NVAncMXCAChnXO5
-         mbWBJ8/ZNO3tr43j3+L2UIpArrf8nGAkk2uTtFPTiTP8SzDLA2WNMYJl4/c9moKB0V0z
-         kPdA==
-X-Gm-Message-State: AAQBX9eaeiBX6lSQgSgDOMJYlb4Qm3r2scy4BtXA1BbtBODiTRv66e28
-        Guwp5UVKaeF5Eze0INp+iPA=
-X-Google-Smtp-Source: AKy350ZWCTqsclZTE/XYSMozScZ0L2mMJlp3KscYMFj7KkGxaQuHvcfyYb0oLOGJrooscDSKiR6Ciw==
-X-Received: by 2002:a17:902:f544:b0:1a5:2b9b:67f7 with SMTP id h4-20020a170902f54400b001a52b9b67f7mr11177286plf.46.1681182623255;
-        Mon, 10 Apr 2023 20:10:23 -0700 (PDT)
-Received: from debian.me (subs02-180-214-232-80.three.co.id. [180.214.232.80])
-        by smtp.gmail.com with ESMTPSA id c19-20020a170902849300b001a520f9071dsm5823271plo.7.2023.04.10.20.10.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Apr 2023 20:10:22 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id 5DF14106795; Tue, 11 Apr 2023 10:10:18 +0700 (WIB)
-Date:   Tue, 11 Apr 2023 10:10:17 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Kal Conley <kal.conley@dectris.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v5 2/4] xsk: Support UMEM chunk_size > PAGE_SIZE
-Message-ID: <ZDTPmTj6GqjurcNQ@debian.me>
-References: <20230410120629.642955-1-kal.conley@dectris.com>
- <20230410120629.642955-3-kal.conley@dectris.com>
+        d=1e100.net; s=20210112; t=1681189101; x=1683781101;
+        h=message-id:date:content-id:mime-version:comments:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KZfBLpN/gahf4Na+DiCMXXdGEJe19xHkIm66KVYL3RU=;
+        b=02/zqooY7X3UwIoTfmEWO1au5GEyYWIdgAHPPZe0OtV6j5jg6I2uMfMtVf3gWmtXt9
+         ePyMguwjyCp1Ad7f+6VxROBEgRAFN3+OYGEFvjz/iJxMx/Ctz1jOnSxtuZxZWvC0Us8c
+         uH3sygLSNxSFI1il15MIhSbfrJTPjNTNVqud+xRw/E4gZef0+rQp4JAtf0ubh8Cec5b9
+         I2Y+f5hrhalZdJ/ybswoLWBKzJU0domDdIjG50/PZeR3tHzTeuGR0OQrUUB0K6owBH4p
+         CnObvcGIAoNKhJ2pTkeQq1NDsCna5d84vu2FYXdPZ/cYkshj2ex35PVB8bQssqkksDXV
+         qJnQ==
+X-Gm-Message-State: AAQBX9es3QKw1EA1HmUsYXBaRLnS9udKVZNXRRILGGb29hYfsUxhxP08
+        sJ3n9GDpyE4YmoWENLlnekQ0pDRUj/j34Pwz5KYgKns6rVCLA9foIqRWdfMbIYHwKo/SsrF3aTj
+        KXqyYTtT2FckWveBvARoV8DYLa8BNdbHspQ==
+X-Received: by 2002:a05:6a20:33a8:b0:e3:8710:6848 with SMTP id f40-20020a056a2033a800b000e387106848mr8659162pzd.41.1681189101490;
+        Mon, 10 Apr 2023 21:58:21 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bEqfmn5biyh+6G1LBlXJucwKMd0MRFFYszdQXPYNvTuuWT+6lnsJYqDYeWyAEkzCrOoXsqvQ==
+X-Received: by 2002:a05:6a20:33a8:b0:e3:8710:6848 with SMTP id f40-20020a056a2033a800b000e387106848mr8659142pzd.41.1681189101180;
+        Mon, 10 Apr 2023 21:58:21 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.253])
+        by smtp.gmail.com with ESMTPSA id p25-20020a62ab19000000b00638c9a2ba5csm2351342pff.62.2023.04.10.21.58.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 10 Apr 2023 21:58:20 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 1772F61E6E; Mon, 10 Apr 2023 21:58:20 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 103909FB79;
+        Mon, 10 Apr 2023 21:58:20 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Liang Li <liali@redhat.com>
+cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hangbin Liu <haliu@redhat.com>,
+        "Toppins, Jonathan" <jtoppins@redhat.com>
+Subject: Re: [Question] About bonding offload
+In-reply-to: <CAKVySpzU_23Z6Gu1N=z0DRm+sUQDjyiyUc18r4rJ_YQ+YELuFg@mail.gmail.com>
+References: <CAKVySpzU_23Z6Gu1N=z0DRm+sUQDjyiyUc18r4rJ_YQ+YELuFg@mail.gmail.com>
+Comments: In-reply-to Liang Li <liali@redhat.com>
+   message dated "Tue, 11 Apr 2023 09:47:14 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="9OqzVWC9R5WWCkWY"
-Content-Disposition: inline
-In-Reply-To: <20230410120629.642955-3-kal.conley@dectris.com>
-X-Spam-Status: No, score=1.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <27296.1681189100.1@famine>
+Date:   Mon, 10 Apr 2023 21:58:20 -0700
+Message-ID: <27297.1681189100@famine>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Liang Li <liali@redhat.com> wrote:
 
---9OqzVWC9R5WWCkWY
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>Hi Everyone,
+>
+>I'm a redhat network-qe and am testing bonding offload. e.g. gso,tso,gro,lro.
+>I got two questions during my testing.
+>
+>1. The tcp performance has no difference when bonding GRO is on versus off.
+>When testing with bonding, I always get ~890 Mbits/sec bandwidth no
+>matter whether GRO is on.
+>When testing with a physical NIC instead of bonding on the same
+>machine, with GRO off, I get 464 Mbits/sec bandwidth, with GRO on, I
+>get  897 Mbits/sec bandwidth.
+>So looks like the GRO can't be turned off on bonding?
 
-On Mon, Apr 10, 2023 at 02:06:27PM +0200, Kal Conley wrote:
-> diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networki=
-ng/af_xdp.rst
-> index 247c6c4127e9..ea65cd882af6 100644
-> --- a/Documentation/networking/af_xdp.rst
-> +++ b/Documentation/networking/af_xdp.rst
-> @@ -105,12 +105,13 @@ with AF_XDP". It can be found at https://lwn.net/Ar=
-ticles/750845/.
->  UMEM
->  ----
-> =20
-> -UMEM is a region of virtual contiguous memory, divided into
-> -equal-sized frames. An UMEM is associated to a netdev and a specific
-> -queue id of that netdev. It is created and configured (chunk size,
-> -headroom, start address and size) by using the XDP_UMEM_REG setsockopt
-> -system call. A UMEM is bound to a netdev and queue id, via the bind()
-> -system call.
-> +UMEM is a region of virtual contiguous memory divided into equal-sized
-> +frames. This is the area that contains all the buffers that packets can
-> +reside in. A UMEM is associated with a netdev and a specific queue id of
-> +that netdev. It is created and configured (start address, size,
-> +chunk size, and headroom) by using the XDP_UMEM_REG setsockopt system
-> +call. A UMEM is bound to a netdev and queue id via the bind() system
-> +call.
-> =20
->  An AF_XDP is socket linked to a single UMEM, but one UMEM can have
->  multiple AF_XDP sockets. To share an UMEM created via one socket A,
-> @@ -418,14 +419,21 @@ negatively impact performance.
->  XDP_UMEM_REG setsockopt
->  -----------------------
-> =20
-> -This setsockopt registers a UMEM to a socket. This is the area that
-> -contain all the buffers that packet can reside in. The call takes a
-> -pointer to the beginning of this area and the size of it. Moreover, it
-> -also has parameter called chunk_size that is the size that the UMEM is
-> -divided into. It can only be 2K or 4K at the moment. If you have an
-> -UMEM area that is 128K and a chunk size of 2K, this means that you
-> -will be able to hold a maximum of 128K / 2K =3D 64 packets in your UMEM
-> -area and that your largest packet size can be 2K.
-> +This setsockopt registers a UMEM to a socket. The call takes a pointer
-> +to the beginning of this area and the size of it. Moreover, there is a
-> +parameter called chunk_size that is the size that the UMEM is divided
-> +into. The chunk size limits the maximum packet size that can be sent or
-> +received. For example, if you have a UMEM area that is 128K and a chunk
-> +size of 2K, then you will be able to hold a maximum of 128K / 2K =3D 64
-> +packets in your UMEM. In this case, the maximum packet size will be 2K.
-> +
-> +Valid chunk sizes range from 2K to 64K. However, in aligned mode, the
-> +chunk size must also be a power of two. Additionally, the chunk size
-> +must not exceed the size of a page (usually 4K). This limitation is
-> +relaxed for UMEM areas allocated with HugeTLB pages, in which case
-> +chunk sizes up to 64K are allowed. Note, this only works with hugepages
-> +allocated from the kernel's persistent pool. Using Transparent Huge
-> +Pages (THP) has no effect on the maximum chunk size.
-> =20
->  There is also an option to set the headroom of each single buffer in
->  the UMEM. If you set this to N bytes, it means that the packet will
+	Well, it's probably more correct to say that GRO is
+unimplemented for "stacked on top" interfaces like bonding (or bridge,
+vlan, team, etc).  GRO operates early in the receive processing, when
+the device driver is receiving packets, typically by calling
+napi_gro_receive() from its NAPI poll function.  This is well before
+bonding, bridge, et al, are involved, as these drivers don't do NAPI at
+all.
 
-The doc LGTM, thanks!
+>I used iperf3 to test performance.
+>And I limited iperf3 process cpu usage during my testing to simulate a
+>cpu bottleneck.
+>Otherwise it's difficult to see bandwidth differences when offload is
+>on versus off.
+>
+>I reported a bz for this: https://bugzilla.redhat.com/show_bug.cgi?id=2183434
+>
+>2.  Should bonding propagate offload configuration to slaves?
+>For now, only "ethtool -K bond0 lro off" can be propagated to slaves,
+>others can't be propagated to slaves, e.g.
+>  ethtool -K bond0 tso on/off
+>  ethtool -K bond0 gso on/off
+>  ethtool -K bond0 gro on/off
+>  ethtool -K bond0 lro on
+>All above configurations can't be propagated to bonding slaves.
 
-For the doc part,
+	The LRO case is because it's set in NETIF_F_UPPER_DISABLES, as
+checked in netdev_sync_upper_features() and netdev_sync_lower_features().
 
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+	A subset of features is handled in bond_compute_features().
+Some feature changes, e.g., scatter-gather, do propagate upwards (but
+not downwards), as bonding handles NETDEV_FEAT_CHANGE events for its
+members (but not vice versa).
 
---=20
-An old man doll... just what I always wanted! - Clara
+	TSO, GSO, and GRO aren't handled in either of these situations,
+and so changes don't propagate at all.  Whether they should or not is a
+separate, complicated, question.  E.g., should features propagate
+upwards, or downwards?  How many levels of nesting?
 
---9OqzVWC9R5WWCkWY
-Content-Type: application/pgp-signature; name="signature.asc"
+	-J
 
------BEGIN PGP SIGNATURE-----
+>I reports a bz for this: https://bugzilla.redhat.com/show_bug.cgi?id=2183777
+>
+>I am using the RHEL with kernel 4.18.0-481.el8.x86_64.
+>
+>BR,
+>Liang Li
+>
 
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZDTPkgAKCRD2uYlJVVFO
-o3DuAP4tlywqhtl/QdcE2djG+9hk9ce1dD+2SekZvB5G7BGI9AD/TpH4G3qVXPp2
-nEk8xfF+vZ1spVb5PJEuW78SQSo+0A0=
-=xQi5
------END PGP SIGNATURE-----
-
---9OqzVWC9R5WWCkWY--
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
