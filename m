@@ -2,194 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF4496DD80A
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 12:36:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35FFD6DD815
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 12:43:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbjDKKgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 06:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58704 "EHLO
+        id S229503AbjDKKnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 06:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjDKKgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 06:36:14 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25211E54;
-        Tue, 11 Apr 2023 03:36:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=fds3zanNbJi2ddOhpzEhs3eUw9m+0uIWPzFNMVcijHA=; b=TGUwRQySA2i6e4wh1+0ANby90j
-        MMUOaPRheareiXlOtjYpNFZTT82wfvfDPys5EntoqXHgnDiFmgHIPOoOYncdcEx+ucHvf8hIcIH4N
-        nUBBnwKbKyr+2VZ9XliHqHKTV9MhaMszOdZa+NiDu1tPtIBgZzGyoezzVeYxh10Zn+kedhm6q0bYd
-        AML9lfhvXskYgUyUXIzsHGZ9cRy43C0rrVghyvM24CPcYtruw+nTVZ6OLi8uOkUBpR8NBYTz7HW2I
-        OkOFvxkQIHKRKSM5mi/MgUCqVcD9GngR5G/6LdFM1w90sRi+1FaOKtt2i2zFg67CwkpUcDVo6/tkO
-        Ld3tNL7Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35792)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pmBM7-0005nD-Oz; Tue, 11 Apr 2023 11:36:07 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pmBM5-00041g-QI; Tue, 11 Apr 2023 11:36:05 +0100
-Date:   Tue, 11 Apr 2023 11:36:05 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com
-Subject: Re: [PATCH net-next v2 5/6] net: txgbe: Implement phylink pcs
-Message-ID: <ZDU4Fe6XVw+I0iGx@shell.armlinux.org.uk>
-References: <20230411092725.104992-1-jiawenwu@trustnetic.com>
- <20230411092725.104992-6-jiawenwu@trustnetic.com>
+        with ESMTP id S229510AbjDKKnI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 06:43:08 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60B826B6
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 03:43:05 -0700 (PDT)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E8F933F237
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 10:43:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1681209783;
+        bh=SHHpmRQAFLD3JYlZkK0S3q6drM0jaJeQ3P2lIxFjWkc=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=UyhSds0YC8XsUxsLr35LPjehjSMwayXBfsVT0i900Mig4CmEtQO8400CuhsRR8CBa
+         LP+IhG4GoWCE11PrqVfVBma5PVEXgOqZl64wsA4MfPlgLg8j14FGp67BywGrv/HEcc
+         qWBkzLHy/q8jhSeVOHJoilAro5qFGpyLADrFbFBVPXsC75F/3d1PaYAJtU1PPBsl4t
+         NDh5M89sE4SOVJpg3ZljB9u1bnxOR5Ocf8lXK4T2Zt7O3RdnJg1RLi+5paZ3azaPTC
+         D0eafyurpKSFoODQiVNPMKUyPKvWBAgkcS4Mxy/w/HpThpHnUld5VyY4Ykh8kVFUrN
+         eAUSuimsWmajw==
+Received: by mail-ej1-f72.google.com with SMTP id b3-20020a170906038300b009489cf242c8so4397114eja.4
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 03:43:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681209783;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SHHpmRQAFLD3JYlZkK0S3q6drM0jaJeQ3P2lIxFjWkc=;
+        b=jituRGhqNUzSK+/gwhiCKm3+TfIkrvixNrm7AKd2mH5EimOv66ghtT8AmD+MLLIwVM
+         RGjLs8gqFPs+u2Tq3149R2GcX9p7xrAg6n256bgnMkYXW/zz6SwuBu5iZQv2TJ814TgU
+         FJAUZZ/IISGO47/3KnNyZ2yohOHEZF1Db1a+neUSQlVHlzTW8pzp7u6HbDzSlsDVfZIA
+         zIT/uDI84jGWOBVANYLTn7/4DZsWUNCnpDYDbmOeOwrNTQ+rOQPgcM8L4N9r7DQFVx0f
+         piPmfXgMtcJGgDQjJtjyiUKziWZ98qLJxN4qaRXBHGw5oshx/GeSJa7P4mkGvfkdVX4H
+         QmHg==
+X-Gm-Message-State: AAQBX9e+VgXLFpwPOb/Hu5yZW3wFAgvOE4oxNbDL62EfbiNeBWajsO/2
+        6S07jlN5QYa3lToDp+TXVeuWM/NhhgzfDjH8i+kcOUF3MtiBrjRo1d3RRNQBlRbosyNp+9rwC33
+        su9gIT5+nbGpiw5lHGaATJ12idPUgL/Pytw==
+X-Received: by 2002:a17:906:847b:b0:94a:99a4:58d7 with SMTP id hx27-20020a170906847b00b0094a99a458d7mr5083520ejc.15.1681209783574;
+        Tue, 11 Apr 2023 03:43:03 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ao8jE4fczy80CHKmVcDi4Qopy4LrFlobp/ARlu74f5wgwsE5uw3Sh7bhLrGoRT5Km6+FNFqg==
+X-Received: by 2002:a17:906:847b:b0:94a:99a4:58d7 with SMTP id hx27-20020a170906847b00b0094a99a458d7mr5083501ejc.15.1681209783276;
+        Tue, 11 Apr 2023 03:43:03 -0700 (PDT)
+Received: from amikhalitsyn.. ([95.91.208.118])
+        by smtp.gmail.com with ESMTPSA id ne7-20020a1709077b8700b00948c320fcfdsm5921805ejc.202.2023.04.11.03.43.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Apr 2023 03:43:02 -0700 (PDT)
+From:   Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+To:     davem@davemloft.net
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Luca Boccassi <bluca@debian.org>
+Subject: [PATCH net-next v3 0/4] Add SCM_PIDFD and SO_PEERPIDFD
+Date:   Tue, 11 Apr 2023 12:42:27 +0200
+Message-Id: <20230411104231.160837-1-aleksandr.mikhalitsyn@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230411092725.104992-6-jiawenwu@trustnetic.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 05:27:24PM +0800, Jiawen Wu wrote:
-> +static void txgbe_set_an37_ability(struct txgbe *txgbe)
-> +{
-> +     u16 val;
-> +
-> +     pcs_write(txgbe, MDIO_MMD_PCS, TXGBE_PCS_DIG_CTRL1,
-> +               TXGBE_PCS_DIG_CTRL1_EN_VSMMD1 |
-> +               TXGBE_PCS_DIG_CTRL1_CLS7_BP |
-> +               TXGBE_PCS_DIG_CTRL1_BYP_PWRUP);
-> +     pcs_write(txgbe, MDIO_MMD_VEND2, TXGBE_MII_AN_CTRL,
-> +               TXGBE_MII_AN_CTRL_MII |
-> +               TXGBE_MII_AN_CTRL_TXCFG |
-> +               TXGBE_MII_AN_CTRL_PCS_MODE(0) |
-> +               TXGBE_MII_AN_CTRL_INTR_EN);
-> +     pcs_write(txgbe, MDIO_MMD_VEND2, TXGBE_MII_DIG_CTRL1,
-> +               TXGBE_MII_DIG_CTRL1_MAC_AUTOSW);
-> +     val = pcs_read(txgbe, MDIO_MMD_VEND2, MDIO_CTRL1);
-> +     val |= BMCR_ANRESTART | BMCR_ANENABLE;
+1. Implement SCM_PIDFD, a new type of CMSG type analogical to SCM_CREDENTIALS,
+but it contains pidfd instead of plain pid, which allows programmers not
+to care about PID reuse problem.
 
-	val |= BMCR_ANENABLE;
+2. Add SO_PEERPIDFD which allows to get pidfd of peer socket holder pidfd.
+This thing is direct analog of SO_PEERCRED which allows to get plain PID.
 
-> +     pcs_write(txgbe, MDIO_MMD_VEND2, MDIO_CTRL1, val);
-> +}
+3. Add SCM_PIDFD / SO_PEERPIDFD kselftest
 
-> +static void txgbe_setup_adv(struct txgbe *txgbe, phy_interface_t interface,
-> +			    const unsigned long *advertising)
+Idea comes from UAPI kernel group:
+https://uapi-group.org/kernel-features/
 
-Please return an int.
+Big thanks to Christian Brauner and Lennart Poettering for productive
+discussions about this and Luca Boccassi for testing and reviewing this.
 
-> +{
-> +	int adv;
-> +
-> +	adv = phylink_mii_c22_pcs_encode_advertisement(interface,
-> +						       advertising);
+=== Motivation behind this patchset
 
-	if (adv < 0)
-		return adv;
+Eric Dumazet raised a question:
+> It seems that we already can use pidfd_open() (since linux-5.3), and
+> pass the resulting fd in af_unix SCM_RIGHTS message ?
 
-> +	if (adv > 0)
-> +		mdiodev_c45_modify(txgbe->mdiodev, MDIO_MMD_VEND2, MII_ADVERTISE,
-> +				   0xffff, adv);
+Yes, it's possible, but it means that from the receiver side we need
+to trust the sent pidfd (in SCM_RIGHTS),
+or always use combination of SCM_RIGHTS+SCM_CREDENTIALS, then we can
+extract pidfd from SCM_RIGHTS,
+then acquire plain pid from pidfd and after compare it with the pid
+from SCM_CREDENTIALS.
 
-	return mdiodev_c45_modify_changed(txgbe->mdiodev, MDIO_MMD_VEND2,
-					  MII_ADVERTISE, 0xffff, adv);
+A few comments from other folks regarding this.
 
-> +}
-> +
-> +static int txgbe_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
-> +			    phy_interface_t interface,
-> +			    const unsigned long *advertising,
-> +			    bool permit_pause_to_mac)
-> +{
-> +	struct txgbe *txgbe = container_of(pcs, struct txgbe, pcs);
-> +	struct wx *wx = txgbe->wx;
-> +	int ret, val;
-> +
-> +	if (interface == txgbe->interface)
-> +		goto out;
-> +
-> +	/* Wait xpcs power-up good */
-> +	ret = read_poll_timeout(pcs_read, val,
-> +				(val & TXGBE_PCS_DIG_STS_PSEQ_ST) ==
-> +				TXGBE_PCS_DIG_STS_PSEQ_ST_GOOD,
-> +				10000, 1000000, false,
-> +				txgbe, MDIO_MMD_PCS, TXGBE_PCS_DIG_STS);
-> +	if (ret < 0) {
-> +		wx_err(wx, "xpcs power-up timeout.\n");
-> +		return ret;
-> +	}
-> +
-> +	/* Disable xpcs AN-73 */
-> +	pcs_write(txgbe, MDIO_MMD_AN, MDIO_CTRL1, 0);
-> +
-> +	/* Disable PHY MPLLA for eth mode change(after ECO) */
-> +	txgbe_ephy_write(txgbe, TXGBE_SUP_DIG_MPLLA_OVRD_IN_0, 0x243A);
-> +	WX_WRITE_FLUSH(wx);
-> +	usleep_range(1000, 2000);
-> +
-> +	/* Set the eth change_mode bit first in mis_rst register
-> +	 * for corresponding LAN port
-> +	 */
-> +	wr32(wx, TXGBE_MIS_RST, TXGBE_MIS_RST_LAN_ETH_MODE(wx->bus.func));
-> +
-> +	switch (interface) {
-> +	case PHY_INTERFACE_MODE_10GBASER:
-> +		txgbe_pma_config_10gbaser(txgbe);
-> +		break;
-> +	case PHY_INTERFACE_MODE_1000BASEX:
-> +		txgbe_pma_config_1000basex(txgbe);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	pcs_write(txgbe, MDIO_MMD_PCS, TXGBE_PCS_DIG_CTRL1,
-> +		  TXGBE_PCS_DIG_CTRL1_VR_RST | TXGBE_PCS_DIG_CTRL1_EN_VSMMD1);
-> +	/* wait phy initialization done */
-> +	ret = read_poll_timeout(pcs_read, val,
-> +				!(val & TXGBE_PCS_DIG_CTRL1_VR_RST),
-> +				100000, 10000000, false,
-> +				txgbe, MDIO_MMD_PCS, TXGBE_PCS_DIG_CTRL1);
-> +	if (ret < 0)
-> +		wx_err(wx, "PHY initialization timeout.\n");
-> +
-> +	txgbe->interface = interface;
-> +
-> +out:
-> +	if (interface == PHY_INTERFACE_MODE_1000BASEX) {
-> +		txgbe_setup_adv(txgbe, interface, advertising);
+Christian Brauner wrote:
 
-		ret = txgbe_setup_adv(txgbe, interface, advertising);
-		if (ret < 0)
-			return ret;
+>Let me try and provide some of the missing background.
 
-> +		txgbe_set_an37_ability(txgbe);
-> +	}
-> +
-> +	return ret;
+>There are a range of use-cases where we would like to authenticate a
+>client through sockets without being susceptible to PID recycling
+>attacks. Currently, we can't do this as the race isn't fully fixable.
+>We can only apply mitigations.
 
-... and then this will propagate whether the advertisement has changed,
-which will then cause...
+>What this patchset will allows us to do is to get a pidfd without the
+>client having to send us an fd explicitly via SCM_RIGHTS. As that's
+>already possibly as you correctly point out.
 
-> +static void txgbe_pcs_an_restart(struct phylink_pcs *pcs)
-> +{
-> +	struct txgbe *txgbe = container_of(pcs, struct txgbe, pcs);
-> +
-> +	mdiodev_c45_modify(txgbe->mdiodev, MDIO_MMD_VEND2, MDIO_CTRL1,
-> +			   BMCR_ANRESTART, BMCR_ANRESTART);
-> +}
+>But for protocols like polkit this is quite important. Every message is
+>standalone and we would need to force a complete protocol change where
+>we would need to require that every client allocate and send a pidfd via
+>SCM_RIGHTS. That would also mean patching through all polkit users.
 
-to be called whenever the advertisement changes (which is why you
-then don't need to do it in txgbe_set_an37_ability().)
+>For something like systemd-journald where we provide logging facilities
+>and want to add metadata to the log we would also immensely benefit from
+>being able to get a receiver-side controlled pidfd.
+
+>With the message type we envisioned we don't need to change the sender
+>at all and can be safe against pid recycling.
+
+>Link: https://gitlab.freedesktop.org/polkit/polkit/-/merge_requests/154
+>Link: https://uapi-group.org/kernel-features
+
+Lennart Poettering wrote:
+
+>So yes, this is of course possible, but it would mean the pidfd would
+>have to be transported as part of the user protocol, explicitly sent
+>by the sender. (Moreover, the receiver after receiving the pidfd would
+>then still have to somehow be able to prove that the pidfd it just
+>received actually refers to the peer's process and not some random
+>process. – this part is actually solvable in userspace, but ugly)
+
+>The big thing is simply that we want that the pidfd is associated
+>*implicity* with each AF_UNIX connection, not explicitly. A lot of
+>userspace already relies on this, both in the authentication area
+>(polkit) as well as in the logging area (systemd-journald). Right now
+>using the PID field from SO_PEERCREDS/SCM_CREDENTIALS is racy though
+>and very hard to get right. Making this available as pidfd too, would
+>solve this raciness, without otherwise changing semantics of it all:
+>receivers can still enable the creds stuff as they wish, and the data
+>is then implicitly appended to the connections/datagrams the sender
+>initiates.
+
+>Or to turn this around: things like polkit are typically used to
+>authenticate arbitrary dbus methods calls: some service implements a
+>dbus method call, and when an unprivileged client then issues that
+>call, it will take the client's info, go to polkit and ask it if this
+>is ok. If we wanted to send the pidfd as part of the protocol we
+>basically would have to extend every single method call to contain the
+>client's pidfd along with it as an additional argument, which would be
+>a massive undertaking: it would change the prototypes of basically
+>*all* methods a service defines… And that's just ugly.
+
+>Note that Alex' patch set doesn't expose anything that wasn't exposed
+>before, or attach, propagate what wasn't before. All it does, is make
+>the field already available anyway (the struct ucred .pid field)
+>available also in a better way (as a pidfd), to solve a variety of
+>races, with no effect on the protocol actually spoken within the
+>AF_UNIX transport. It's a seamless improvement of the status quo.
+
+===
+
+This patch series is on top of net-next tree with pidfd.file.api.v6.4
+tag (from git://git.kernel.org/pub/scm/linux/kernel/git/brauner/linux.git) merged in.
+
+Git tree:
+https://github.com/mihalicyn/linux/tree/scm_pidfd
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Christian Brauner <brauner@kernel.org>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc: Lennart Poettering <mzxreary@0pointer.de>
+Cc: Luca Boccassi <bluca@debian.org>
+
+Tested-by: Luca Boccassi <bluca@debian.org>
+
+Alexander Mikhalitsyn (4):
+  scm: add SO_PASSPIDFD and SCM_PIDFD
+  net: socket: add sockopts blacklist for BPF cgroup hook
+  net: core: add getsockopt SO_PEERPIDFD
+  selftests: net: add SCM_PIDFD / SO_PEERPIDFD test
+
+ arch/alpha/include/uapi/asm/socket.h          |   3 +
+ arch/mips/include/uapi/asm/socket.h           |   3 +
+ arch/parisc/include/uapi/asm/socket.h         |   3 +
+ arch/sparc/include/uapi/asm/socket.h          |   3 +
+ include/linux/net.h                           |   1 +
+ include/linux/socket.h                        |   1 +
+ include/net/scm.h                             |  14 +-
+ include/uapi/asm-generic/socket.h             |   3 +
+ net/core/sock.c                               |  44 ++
+ net/mptcp/sockopt.c                           |   1 +
+ net/socket.c                                  |  45 +-
+ net/unix/af_unix.c                            |  18 +-
+ tools/include/uapi/asm-generic/socket.h       |   3 +
+ tools/testing/selftests/net/.gitignore        |   1 +
+ tools/testing/selftests/net/af_unix/Makefile  |   2 +-
+ .../testing/selftests/net/af_unix/scm_pidfd.c | 430 ++++++++++++++++++
+ 16 files changed, 564 insertions(+), 11 deletions(-)
+ create mode 100644 tools/testing/selftests/net/af_unix/scm_pidfd.c
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+2.34.1
+
