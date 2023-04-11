@@ -2,140 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B3D66DDFF2
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 17:50:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 517816DDFF6
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 17:52:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229586AbjDKPu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 11:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
+        id S229635AbjDKPwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 11:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbjDKPuz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 11:50:55 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A7B2723
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 08:50:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:To:From:Date:Reply-To:Cc:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=N5Gz8wSjMgV7qvAbvj5EnI8Afsz2xt/406+Dj04n9Jg=; b=0bYWw2+TVKqv+/NakQQ/RE6Ywt
-        mRkWzYh+EdZELDda/Ib0lZvvTAc0Cb4Ogu381py3aSrslCLEA9R6VAU/YWt6lQ33O45bN3S5w7B66
-        NfvmA8g50PSbTXnmzciyzEA/kjC1/R6PlyP/6f1nyRBjP+2+RJERvfjFqbhGV8ZPnXeEW09ranN3b
-        aB4ZEbRs9GViD4YvcsmGK6i1kHnYNdlcqxxwokvRtnQtDczKHy0gGgK1Td96RZpciqSK76yjg3wxX
-        rT/Py/9o/avVi2uuxH778Lf2cw9cbkXYpdWRWyJyDbcxB1NQv84C2f2TydFMOPKkMcckCzsd5aIOB
-        yh/ZL+jg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:51714)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pmGGf-00066N-1B; Tue, 11 Apr 2023 16:50:49 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pmGGd-0004Ee-7L; Tue, 11 Apr 2023 16:50:47 +0100
-Date:   Tue, 11 Apr 2023 16:50:47 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH RFC net-next 0/6] net: mvneta: reduce size of TSO header
- allocation
-Message-ID: <ZDWB1zRNlxpTN1IK@shell.armlinux.org.uk>
-References: <ZCsbJ4nG+So/n9qY@shell.armlinux.org.uk>
+        with ESMTP id S229477AbjDKPwR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 11:52:17 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940CD2723
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 08:52:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681228336; x=1712764336;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=bmPCFaPoC262AVCdXyM1VbLc216QgL3Ad2NKZi4MZLg=;
+  b=jas7haxATb8M2E/AgyAu5Q9EaamHLBHQrJZj5NL04MoFt2K4c0tYaHQc
+   wpdRrIABcIshz3YNHsWYY1NcGAGQqgmWepuwO1AZBbWsMTCix4Ho6zc0B
+   dOaPqEY0ERMXXgKy/jvMcK60p8/Se+RCjblZWywsuvQsSb5uERfphlcdz
+   xmKve8Q23r6CSwLrLCG/BXQKeGcZyREP/D5vQCS6bRCqPGU8K/VxlofGW
+   FJLhQigwuT2uwULJroMlEUFbPk2339E+3MKw5TZkUzmyrVvEJKIiQmQ6d
+   86JI/DmTHEA6JtVnhlSF40nr8NGIJc2c0U8BH5s1nL4JAolZMqIVx2clU
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10677"; a="408795544"
+X-IronPort-AV: E=Sophos;i="5.98,336,1673942400"; 
+   d="scan'208";a="408795544"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2023 08:52:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10677"; a="799967401"
+X-IronPort-AV: E=Sophos;i="5.98,336,1673942400"; 
+   d="scan'208";a="799967401"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga002.fm.intel.com with ESMTP; 11 Apr 2023 08:52:07 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 11 Apr 2023 08:52:06 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Tue, 11 Apr 2023 08:52:06 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.106)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Tue, 11 Apr 2023 08:52:06 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KyGmNqe56Sx9dt1Fdsegh/A9pMGUaBZONGXHFbmEtPEu4KBi7WJEJJ1fkp6AmtBSqiHBS7ZRtpJoos6BN6aFjvL0HT40aTfkObfpzyo2PbtYg3z0+5ClIG9ace6eeOCnVMmypuZNBfZNKjT5kKSSqNoCneriSp+TnFirL5k0JgNBCKQEmVvs8/24gv7MyqwFo6Oi1wIDaLLaa3mXZm61foUC24z53VAhgOmuEDkSsdWX+SzrIN4i02gJtrXxZ2Gt//RnHVmfkASc1UEli6YkHB/L+5tg46KjU0qMWvdT/2W+nCATKAoqz7ghz1k2ZEW3mTyievmMI4oh91ofnbw6RQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JjqVpVGi5PQIs0SEOzuGHAmj+fCcL0sRB/hbjGle7kg=;
+ b=MS+tFTzA5kscKSOTXENVc/pAIWdglzqq27V0fIGx73Q73wT1EwiWPi6vEo/+OdE90TOfaI/EYvUiSzDSAlJCXCihk68flqu+WT4JbifYQWtQznZgtRz4Xx1gqMEGom6xYew46EUCBcuAFSQSIMixf354z1ujd08rmlc4x00G30mqrNrSLmVevVm7ebH75E4BJb0COVN95EFKaKNhzqcw72/lUOb6+F01aouV1GMFb1aHQM6T+uHChBtXsO8Eaap1AY/07JDF2Li+K88NvKCAicULogNIv4y8HRo0Zpjd3813BK6r/2T5wQE+bVpI5Zufyz8lSfebu9rN2K8FQGuJeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com (2603:10b6:303:90::24)
+ by DS7PR11MB7807.namprd11.prod.outlook.com (2603:10b6:8:e3::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6277.36; Tue, 11 Apr 2023 15:52:05 +0000
+Received: from CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::c7d6:3545:6927:8493]) by CO1PR11MB4914.namprd11.prod.outlook.com
+ ([fe80::c7d6:3545:6927:8493%7]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
+ 15:52:05 +0000
+Message-ID: <0bc0fc8c-a09d-3310-995f-f44e67a9ab54@intel.com>
+Date:   Tue, 11 Apr 2023 08:52:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.9.1
+Subject: Re: [PATCH net-next 1/3] net: docs: update the sample code in
+ driver.rst
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>
+References: <20230411013323.513688-1-kuba@kernel.org>
+ <20230411013323.513688-2-kuba@kernel.org>
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+In-Reply-To: <20230411013323.513688-2-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0162.namprd03.prod.outlook.com
+ (2603:10b6:a03:338::17) To CO1PR11MB4914.namprd11.prod.outlook.com
+ (2603:10b6:303:90::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCsbJ4nG+So/n9qY@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB4914:EE_|DS7PR11MB7807:EE_
+X-MS-Office365-Filtering-Correlation-Id: 141db04f-eb8a-45bf-e797-08db3aa4b294
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7F2LbQe+kLQ8Ky/fGubU6+KDAnd0C8MLSap9ETUsnohPvIluqCDIm2eqFU6m3LqTAL543y1pwcIYslQxd6Ej5yNYkCvYAIOE1AN6GenyaL+wd6G8LmheVy8BiS6cphJjLYHX8DNkqFQ38Mfz3A0K3kvhbR3Fyu8ZzhJGoL1SLXFcswo5lavVhruo5HcSSrtjRmcdjrTlf2EXRxy8fwQHjsfU/+Y0kRUBtMoN3r6ujrID+U30HvEFrf2EM9XH+XWcPi6lHKGvt3UPm71FJSfIEuWMx2p8jH4WEu1P6csC1a+60CXSCXE1gOJXgN08TE2HN0QYGleuKdCNDjAIirRT/Mag5ZTTL5b9rJW2hsUOc/rS0gwva3Mh7IWLaecgMKg2nrVlHCg0yaRhX2MvMcCep2EGIF0Q0Ftz5964fgdMjW8UVk+X6yG5qHeqZCwDqsE2v0kfob8zPdfuHfcFlC4MzqavMLkZIfxbC5kSyu3iZkdBqJ2PAUldJOStNjsSVYIjHvQHf1TFfD2RxF/ZfUq6Rv9x+RtwS9vli4FQApggJwRwkfRSfrdBxBfDv7nn6Jbo6/yYqQWNbvgvFKgRcexofUP40ExkSOY6T3k1ctB7iqHf8GOaPEQUBXsY6D6KUgncuturkyyYffRtAz36lvJXcw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4914.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(39860400002)(376002)(136003)(366004)(396003)(451199021)(478600001)(53546011)(26005)(316002)(6512007)(6506007)(186003)(5660300002)(6486002)(2906002)(4744005)(44832011)(15650500001)(66556008)(66946007)(8676002)(41300700001)(66476007)(8936002)(4326008)(82960400001)(38100700002)(86362001)(31696002)(36756003)(83380400001)(2616005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?b05MM2l5V2wrbzBpRXoya3dtL0VwUFBpcFYwOFZnTml5ZG5GY1MraUJtcWVw?=
+ =?utf-8?B?TlFKM3g2anV2WC9wNjlnTTRtUWlHTlQvNmo0ak84M0UrY3JPanJMbHQ0L3Fh?=
+ =?utf-8?B?Z0lyYW9yVmNNekpQeTY3S083NnZaT0g4OFlhVUNCSi9UYWJaZlBVeUx1UjlU?=
+ =?utf-8?B?UjIzckp6R2lHVnpIMGkyS2xLY29PRWVhOHBJb1NyZkN4Qk8vZUNoOUx2ZjEy?=
+ =?utf-8?B?cjZGVkxFcjBxTW5SSjh4NUhYODdrVFA2ZlgzaFhuYy9ZaWt2cTlLOTZDRVdQ?=
+ =?utf-8?B?RHFnSWFRUUN5NnE4ZXlaTWEybWNtcVUzVXpVb0JiYUdGSFRWLzdPcSt5UVFZ?=
+ =?utf-8?B?VC96WmRZYVcyNnRxZ2RjdG1OS3hMY2FoMU9SamE2dnJYdXp1RE9CdFU3Mmh6?=
+ =?utf-8?B?TjFVNm9qamRxVlpTeTRmcndTT0lVTWJJUVQrVmF0MFdkZHlJMjRybncxM0Nz?=
+ =?utf-8?B?bHo2eldIdEVPZEdyZXVUSGNONkNjWC9iOVFzOVpmaisxelZOREtiOGt1Vk4z?=
+ =?utf-8?B?N2VwN2RqM3lxZXk0bnJnaVFvamVVMmxwdVhWWEZCTXNpMU5jbm9ETHVTMUVv?=
+ =?utf-8?B?d2JqYXpObnk0bll5MDdpaVJ2eDdHcEZlVVZJMTkrRVNMeCtqMG04OElkSFd2?=
+ =?utf-8?B?cXZaWU1TNnBYaklJcjJBUmIybkNhckhyNG1nOGFCcm9rYXJraDl5ODV1b1FT?=
+ =?utf-8?B?UmNTNnhuL1J1eCtjZ3BLcVZpR01DNlVQOWo1L3ppSDN5blMrK1ptZWxTZlBX?=
+ =?utf-8?B?VmxQamlycFZBTlZSMHA0TjRWek5iZnRIM2RXNzBoOUZ2US9aQmpjbDFuWGc5?=
+ =?utf-8?B?bVRJUWk1b09PNERweUE4UXpSeWhiWnhmdEdKRnhKWFBvMm1NM0V2cGdNMGZQ?=
+ =?utf-8?B?TVkreHVKZlhuWUJZRkZUZUhGSlJjU1BoT0dqeXZuQUt2YithTlhla05PZFBL?=
+ =?utf-8?B?MElncE1FV1l0b29OUTQ2THFQTWZKSCtmK3pvUW5TcVBKMkxiM2tCL0tzd0h3?=
+ =?utf-8?B?OTJzeTl1NmNXbG52V2FaS1NZTTdqY0FmWTBJbk5zVzV4ZFdFVjhMTnB1cTky?=
+ =?utf-8?B?R2drci8yTDFmSTlZdnYyZFZZU05NRzQzT2lJNEJiMDZNWXBxZVpLNGVISFpH?=
+ =?utf-8?B?UjJ5dGtqc21oZmxIcCtlVUR4eWVCVm15NXFpRkd6dmw1eDF0d3p3d3pyK2Y5?=
+ =?utf-8?B?SG1Sd3dxRG8ydHBqYkZGVjJjeFR5WjZBM3Z3ekRDMzhFeFlhNVZ5QUYyYUI5?=
+ =?utf-8?B?VGk5OFRObUluaWpZeG9SNVY0UE80R253SlNudnZubjdaRFhQNXNkSENTLzNi?=
+ =?utf-8?B?bm9HdGw1SXhBZEs4WmpFeTJtcEpGcmQzVldXREJzWC83ZG1IZDVER2N5OTV3?=
+ =?utf-8?B?Q2g2dDN0WHFrN25yaEZuYlc3cFFSTmZQY2t5ZDNsL09RWTRsdUVtS2k5MDZI?=
+ =?utf-8?B?QkNyY0F2MDUxS1IxWCtBUXJFSVhZc3hoY0hKc3d5akkyeDI4dFFva3F2UHdJ?=
+ =?utf-8?B?dS9wQkRsUUNNOEJIMkJVekJvejR3ZXlTOHlDMUtYVC9qd0ZKVkVrWDBraDRy?=
+ =?utf-8?B?L2MrSy9NWTc3TkNDd0xKZmlCVmhxSVNFcjN3ems3K1hlY1hSS1EwTjBtaVBR?=
+ =?utf-8?B?akIyQ3ZyWSt4MXBkZ1lmRkJJUFYvaVE5ejEvSWIyOHRpTmVBZHFHZUtyd0xX?=
+ =?utf-8?B?SEVIYVFwUU84UmFDTSswZURZREh0UXRSdndMeVYxcUJyZDlsRUtCeTNXd2pw?=
+ =?utf-8?B?QndVaWQ2bEl0ZkN2R2FCN0lxdlFEUDdwU2JpNlYya3FSdlg4V3ZvNlNpcENO?=
+ =?utf-8?B?aGNON3lvUGtneWJjWWZLTi81aXpZRldkbXR5UGZwaWw4TzY4UTRZVks3TWUr?=
+ =?utf-8?B?a0lZZUVjRXp4NWRsZGdYNEt1R1hzYlR2ZkdqL3V0L09zWGkvM3poY1NRRDNE?=
+ =?utf-8?B?NzhmUVZnZU16N0RxYkhkekJpZ1k5bkRYOXcvcWpVdXIwdnQ5OWxzQmxrNGdo?=
+ =?utf-8?B?eC82NkNwamVnOU92Y3BuK0tOdDQ0dE11U0drNlNnV01LTkxIa2k5QjFPZ1kz?=
+ =?utf-8?B?cTgzcS8rMElvaG5jMExONVhyS3FrWUU2UStoMnRPc2VVSTB3dXJNWEpkSENC?=
+ =?utf-8?B?WHpEOVA1ekVxa1FCcEdOMXdmVmJ0U3NKbERaNjU3RkMxSldWd1ovMkE3LzNG?=
+ =?utf-8?B?WEE9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 141db04f-eb8a-45bf-e797-08db3aa4b294
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4914.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 15:52:05.0857
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dUMmhPjfvWyPWPPpQLuYTfYMQdug1Vu21p9nE2ETcMenIBOzMDwqIcElVPhcjyfV7SNGPlKYOVEGmZxVrXi0tzjscGY3bP9wz+GRVp2ece8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR11MB7807
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.7 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 4/10/2023 6:33 PM, Jakub Kicinski wrote:
+> The sample code talks about single-queue devices and uses locks.
+> Update it to something resembling more modern code.
+> Make sure we mention use of READ_ONCE() / WRITE_ONCE().
+> 
+> Change the comment which talked about consumer on the xmit side.
+> AFAIU xmit is the producer and completions are a consumer.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-I think the Turris folk are waiting for me to get this into the kernel
-and backported to stable before they merge it into their tree and we
-therefore end up with it being tested.
+much better docs, and I'm really happy to see more documentation about
+using (READ|WRITE)_ONCE()
 
-We are now at -rc7, and this series is in danger of missing the
-upcoming merge window.
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-So, I think it's time that I posted a wake-up call here to say that no,
-that's not going to happen until such time that we know whether these
-patches solve the problem that they identified. I'm not bunging patches
-into the kernel for problems people have without those people testing
-the proposed changes.
 
-I think if the Turris folk want to engage with mainline for assistance
-in resolving issues, they need to do their part and find a way to
-provide kernels to test out proposed fixes for their problems.
-
-On Mon, Apr 03, 2023 at 07:29:59PM +0100, Russell King (Oracle) wrote:
-> Hi,
-> 
-> With reference to
-> https://forum.turris.cz/t/random-kernel-exceptions-on-hbl-tos-7-0/18865/
-> 
-> It appears that mvneta attempts an order-6 allocation for the TSO
-> header memory. While this succeeds early on in the system's life time,
-> trying order-6 allocations later can result in failure due to memory
-> fragmentation.
-> 
-> Firstly, the reason it's so large is that we take the number of
-> transmit descriptors, and allocate a TSO header buffer for each, and
-> each TSO header is 256 bytes. The driver uses a simple mechanism to
-> determine the address - it uses the transmit descriptor index as an
-> index into the TSO header memory.
-> 
-> 	(The first obvious question is: do there need to be this
-> 	many? Won't each TSO header always have at least one bit
-> 	of data to go with it? In other words, wouldn't the maximum
-> 	number of TSO headers that a ring could accept be the number
-> 	of ring entries divided by 2?)
-> 
-> There is no real need for this memory to be an order-6 allocation,
-> since nothing in hardware requires this buffer to be contiguous.
-> 
-> Therefore, this series splits this order-6 allocation up into 32
-> order-1 allocations (8k pages on 4k page platforms), each giving
-> 32 TSO headers per page.
-> 
-> In order to do this, these patches:
-> 
-> 1) fix a horrible transmit path error-cleanup bug - the existing
->    code unmaps from the first descriptor that was allocated at
->    interface bringup, not the first descriptor that the packet
->    is using, resulting in the wrong descriptors being unmapped.
-> 
-> 2) since xdp support was added, we now have buf->type which indicates
->    what this transmit buffer contains. Use this to mark TSO header
->    buffers.
-> 
-> 3) get rid of IS_TSO_HEADER(), instead using buf->type to determine
->    whether this transmit buffer needs to be DMA-unmapped.
-> 
-> 4) move tso_build_hdr() into mvneta_tso_put_hdr() to keep all the
->    TSO header building code together.
-> 
-> 5) split the TSO header allocation into chunks of order-1 pages.
-> 
->  drivers/net/ethernet/marvell/mvneta.c | 166 +++++++++++++++++++++++-----------
->  1 file changed, 115 insertions(+), 51 deletions(-)
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
