@@ -2,211 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D926DDAF9
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 14:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A8FA6DDAFB
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 14:37:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229969AbjDKMhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 08:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
+        id S229915AbjDKMh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 08:37:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjDKMg7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 08:36:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3184495
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 05:36:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67C4761F16
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 12:36:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FB47C433EF;
-        Tue, 11 Apr 2023 12:36:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681216617;
-        bh=kTOshIxUAyadmSYZBE7svKb4fyBemcujDHrtTMdUwRI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KuCgkcysanRYLfeqTt3q2Q9dPAHwb1tcpCxuvyjd0gksnY5dTgQxY9IOzEs33/o3B
-         WOgaZF+U+6pYBNj3WUsVgdfSXrbclxvy3cAcFBBP6IuoAMmS2EA5qeT9V4rLqtoDGA
-         Bd6H8iXQT2xIUPql9cGvYZEIQ6f8s2UfDbzvqziyJt7XlOPhz0RU71TqkxaXp/zu7h
-         9BOYVKVfiL6bKH6p6yT7atmb3YKiyP8QylP1IOwdL0HBhxVKNmmMzLY85fe+K9jg+s
-         27q6mMEQ+wS+jAACu4UKX4LItpx0o/5vOkqwaNolIgrr8pZep7D5hV+Ejw4SNFYItX
-         AQ5LqNksuvcVQ==
-Date:   Tue, 11 Apr 2023 15:36:53 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        emil.s.tantilov@intel.com, joshua.a.hay@intel.com,
-        sridhar.samudrala@intel.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, willemb@google.com, decot@google.com,
-        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net, Phani Burra <phani.r.burra@intel.com>,
-        Alan Brady <alan.brady@intel.com>,
-        Madhu Chittim <madhu.chittim@intel.com>,
-        Shailendra Bhatnagar <shailendra.bhatnagar@intel.com>
-Subject: Re: [PATCH net-next v2 02/15] idpf: add module register and probe
- functionality
-Message-ID: <20230411123653.GW182481@unreal>
-References: <20230411011354.2619359-1-pavan.kumar.linga@intel.com>
- <20230411011354.2619359-3-pavan.kumar.linga@intel.com>
+        with ESMTP id S229437AbjDKMh0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 08:37:26 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2068.outbound.protection.outlook.com [40.107.93.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3193C25;
+        Tue, 11 Apr 2023 05:37:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CeXT+tJdKFEvUh3nQmyYTAUZUZTphlXg9kRCI8+bnoKXO2ZabgNC8lFHskeqUfyPtNtvxiE0vLihl/SZxBx9Emm1yRv7xHIWMSomQqWrF3ehH9DgUW5mEt1/4ZaCE4VL8gypWbK1ez0mK7he52AhtkYLQIpQbRVY8Iqud+2Vz5VvrzVGMqgfDPVYLNnNln6alq3h/5yEexDFz4teFVsc9Ng+PLOA6Ua3UNYsjU5Rs9NGJM+gQo+oQsrEvh7WFbuo0jKgCcd0p8enpGKCPa7yJzxUjsu4DHiVkjWDb8xhNDYeAjBm8QsH5t3UobdztYWjR/uZZspa6mlEJfrHa0JM4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HGMWer7zCL9iGjCLGGxnPxTMGXkU03z+Xn7MH7ik/40=;
+ b=CgNxCON/wTpwddi6SDy6kUJEp2nXWmVB6tmAmz6+ijmmar3Imp3g3NRnov9sqZ47mUxdBhnwAwhfDivZdf3XlpNv6FqNyy2wq8Pf9zncc10JMVHh+Q9tbyy6MpjxGAy3nYK49gyXUXRd9+iPvrvT1sFI2mxbGTRr5IfvIzUVprucYrICSSKxoVf2rlZPatGxBIC+0zS1rqGxwx6E+gopiqsnBfLV0lFQpTsrKVPehHSgQt5DUnlsXmLKBOALwmxN9bmjUGhUkQ9VV/Iy5EvZAaG+wGPxuX0yh+WQ8nFUrWPeCEWPmAWPU4KrvxfRcBzYpOB8Orqsc40AcSGhvpXrxw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=microchip.com smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HGMWer7zCL9iGjCLGGxnPxTMGXkU03z+Xn7MH7ik/40=;
+ b=wNrfeSXWpmN3m81Uk2ResGrqKTwy41dzwd4u9LUI/ssQVGOq8Sx5kp0ahNN3dtb95Lmhlsr7b7wLbRQUrLQmK7Rsjfz8BvmkLIug9Un5VqCe+VjeYAP0XWZbc2+WjctgQ7yovKmRUbaU59R611PUfmUVZboT81uJ230ZT/7Hor4=
+Received: from DS7PR06CA0003.namprd06.prod.outlook.com (2603:10b6:8:2a::27) by
+ PH8PR12MB6794.namprd12.prod.outlook.com (2603:10b6:510:1c5::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Tue, 11 Apr
+ 2023 12:37:23 +0000
+Received: from DM6NAM11FT079.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:2a:cafe::40) by DS7PR06CA0003.outlook.office365.com
+ (2603:10b6:8:2a::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.40 via Frontend
+ Transport; Tue, 11 Apr 2023 12:37:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT079.mail.protection.outlook.com (10.13.173.4) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6298.29 via Frontend Transport; Tue, 11 Apr 2023 12:37:22 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 11 Apr
+ 2023 07:37:22 -0500
+Received: from xhdharinik40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
+ Transport; Tue, 11 Apr 2023 07:37:18 -0500
+From:   Harini Katakam <harini.katakam@amd.com>
+To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
+        <richardcochran@gmail.com>, <claudiu.beznea@microchip.com>,
+        <andrei.pistirica@microchip.com>, <kuba@kernel.org>,
+        <edumazet@google.com>, <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <michal.simek@amd.com>, <harinikatakamlinux@gmail.com>,
+        <harini.katakam@amd.com>
+Subject: [PATCH net-next v5 0/3] Macb PTP minor updates
+Date:   Tue, 11 Apr 2023 18:07:09 +0530
+Message-ID: <20230411123712.11459-1-harini.katakam@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230411011354.2619359-3-pavan.kumar.linga@intel.com>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT079:EE_|PH8PR12MB6794:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0d5e2220-a6b0-49fe-a936-08db3a897f94
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2R9ddizqcu14uB/LEVgoWHAfWcAbPbP6WSnfXZbSUDAjets//LzB4IzdwYANxthhVwwj5woHKpYYN6UZTbJbKqTApmzPzUpK8HnSXkiJbwQq94W0hsoAY/K3lB7+TVgALM6BiZmGqokE2Nw+qhuH8WOd4yZR3mUqKKMrF+Itt4Qwt4BVkYDrSETz4/6nM+Q1BjNaAi5RkJQVKabwGj4ySKk/Kccd/bYIs6/PL5/36pxwVipgZ1A2Y7qHluOzB9eWljADj8XlOc7JLpOMWByq7516sDLPfr7dQiPFoB7xrCKWz/LNqn/4TYGXhjM3ZvyK5mgmksBGomr+m3F7dXBIYBT8oqYvE9q3gd8Aws42mh0V3RZIjNdmrWOx2+zYSAxQ/bUf6h2DAulspk1W6cHUCG8D1f1x5wyFUxee8OsONOhohChhT2BbWvWgFo+nkc4e9b/7sTxNQjIVFPbRpET7DwxBQiz4Yz9tw4GjHtkO6guMcU11pI3WEzz+Ic1Fz2mhUn/1ugIHeV6xjfcCErB4vv+zyr91tzpSenqSFzj6m1RCz3YLwZxAH43kUhUm33hpRPMHnEQN9v5vAbLoVscRDC9GOxmMJzV4+1i3xWyxMjVp89hFJUxTRVN79t6ebdE3sgHO+WGZYlkNJBDC+Ow6GgxTjSGdya3u+3AgizWDQnfmOPEnXPTEpet9mPDZVJ4jYTmT1JZGrxishv9NHrv+BaE5Q3E9HHqIJT1wztLF25s=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(39860400002)(136003)(346002)(451199021)(40470700004)(46966006)(36840700001)(8936002)(6666004)(15650500001)(40460700003)(40480700001)(44832011)(4744005)(7416002)(5660300002)(86362001)(4326008)(8676002)(70586007)(70206006)(478600001)(110136005)(316002)(82310400005)(36860700001)(82740400003)(81166007)(356005)(54906003)(83380400001)(2906002)(1076003)(186003)(2616005)(336012)(426003)(47076005)(41300700001)(36756003)(26005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 12:37:22.7655
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d5e2220-a6b0-49fe-a936-08db3a897f94
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT079.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6794
+X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 10, 2023 at 06:13:41PM -0700, Pavan Kumar Linga wrote:
-> From: Phani Burra <phani.r.burra@intel.com>
-> 
-> Add the required support to register IDPF PCI driver, as well as
-> probe and remove call backs. Enable the PCI device and request
-> the kernel to reserve the memory resources that will be used by the
-> driver. Finally map the BAR0 address space.
-> 
-> PCI IDs table is intentionally left blank to prevent the kernel from
-> probing the device with the incomplete driver. It will be added
-> in the last patch of the series.
-> 
-> Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-> Co-developed-by: Alan Brady <alan.brady@intel.com>
-> Signed-off-by: Alan Brady <alan.brady@intel.com>
-> Co-developed-by: Madhu Chittim <madhu.chittim@intel.com>
-> Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
-> Co-developed-by: Shailendra Bhatnagar <shailendra.bhatnagar@intel.com>
-> Signed-off-by: Shailendra Bhatnagar <shailendra.bhatnagar@intel.com>
-> Co-developed-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-> Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-> Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
-> Reviewed-by: Willem de Bruijn <willemb@google.com>
-> ---
->  drivers/net/ethernet/intel/Kconfig            | 11 +++
->  drivers/net/ethernet/intel/Makefile           |  1 +
->  drivers/net/ethernet/intel/idpf/Makefile      | 10 ++
->  drivers/net/ethernet/intel/idpf/idpf.h        | 27 ++++++
->  .../net/ethernet/intel/idpf/idpf_controlq.h   | 14 +++
->  drivers/net/ethernet/intel/idpf/idpf_lib.c    | 96 +++++++++++++++++++
->  drivers/net/ethernet/intel/idpf/idpf_main.c   | 70 ++++++++++++++
->  7 files changed, 229 insertions(+)
->  create mode 100644 drivers/net/ethernet/intel/idpf/Makefile
->  create mode 100644 drivers/net/ethernet/intel/idpf/idpf.h
->  create mode 100644 drivers/net/ethernet/intel/idpf/idpf_controlq.h
->  create mode 100644 drivers/net/ethernet/intel/idpf/idpf_lib.c
->  create mode 100644 drivers/net/ethernet/intel/idpf/idpf_main.c
+- Enable PTP unicast
+- Optimize HW timestamp reading
 
-<...>
+v5:
+Remove unnecessary braces and !! in gem_has_ptp
 
-> +/**
-> + * idpf_remove_common - Device removal routine
-> + * @pdev: PCI device information struct
-> + */
-> +void idpf_remove_common(struct pci_dev *pdev)
-> +{
-> +	struct idpf_adapter *adapter = pci_get_drvdata(pdev);
-> +
-> +	if (!adapter)
+v4:
+Fix kernel test robot error; use static check for
+CONFIG_MACB_USE_HWTSTAMP where necessary
 
-How is it possible to have adapter be NULL here?
+v3:
+Add patch to move CONFIG_MACB_USE_HWTSTAMP check into gem_has_ptp
 
-> +		return;
-> +
-> +	pci_disable_pcie_error_reporting(pdev);
-> +}
-> diff --git a/drivers/net/ethernet/intel/idpf/idpf_main.c b/drivers/net/ethernet/intel/idpf/idpf_main.c
-> new file mode 100644
-> index 000000000000..617df9b924fa
-> --- /dev/null
-> +++ b/drivers/net/ethernet/intel/idpf/idpf_main.c
-> @@ -0,0 +1,70 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (C) 2023 Intel Corporation */
-> +
-> +#include "idpf.h"
-> +
-> +#define DRV_SUMMARY	"Infrastructure Data Path Function Linux Driver"
-> +
-> +MODULE_DESCRIPTION(DRV_SUMMARY);
-> +MODULE_LICENSE("GPL");
-> +
-> +/**
-> + * idpf_remove - Device removal routine
-> + * @pdev: PCI device information struct
-> + */
-> +static void idpf_remove(struct pci_dev *pdev)
-> +{
-> +	struct idpf_adapter *adapter = pci_get_drvdata(pdev);
-> +
-> +	if (!adapter)
+v2:
+- Handle unicast setting with one register R/W operation
+- Update HW timestamp logic to remove sec_rollover variable
+- Removed Richard Cochran's ACK as patch 2/2 changed
 
-Ditto
+Harini Katakam (3):
+  net: macb: Update gem PTP support check
+  net: macb: Enable PTP unicast
+  net: macb: Optimize reading HW timestamp
 
-> +		return;
-> +
-> +	idpf_remove_common(pdev);
-> +	pci_set_drvdata(pdev, NULL);
-> +}
-> +
-> +/**
-> + * idpf_shutdown - PCI callback for shutting down device
-> + * @pdev: PCI device information struct
-> + */
-> +static void idpf_shutdown(struct pci_dev *pdev)
-> +{
-> +	idpf_remove(pdev);
-> +
-> +	if (system_state == SYSTEM_POWER_OFF)
-> +		pci_set_power_state(pdev, PCI_D3hot);
-> +}
-> +
-> +/**
-> + * idpf_probe - Device initialization routine
-> + * @pdev: PCI device information struct
-> + * @ent: entry in idpf_pci_tbl
-> + *
-> + * Returns 0 on success, negative on failure
-> + */
-> +static int idpf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-> +{
-> +	struct idpf_adapter *adapter;
-> +
-> +	adapter = devm_kzalloc(&pdev->dev, sizeof(*adapter), GFP_KERNEL);
+ drivers/net/ethernet/cadence/macb.h      |  6 +++++-
+ drivers/net/ethernet/cadence/macb_main.c | 17 +++++++++++++----
+ drivers/net/ethernet/cadence/macb_ptp.c  |  4 ++--
+ 3 files changed, 20 insertions(+), 7 deletions(-)
 
-Why devm_kzalloc() and not kzalloc?
+-- 
+2.17.1
 
-> +	if (!adapter)
-> +		return -ENOMEM;
-> +
-> +	return idpf_probe_common(pdev, adapter);
-
-There is no need in idpf_probe_common/idpf_remove_common functions and
-they better be embedded here. They called only once and just obfuscate
-the code.
-
-> +}
-> +
-> +/* idpf_pci_tbl - PCI Dev idpf ID Table
-> + */
-> +static const struct pci_device_id idpf_pci_tbl[] = {
-> +	{ /* Sentinel */ }
-
-What does it mean empty pci_device_id table?
-
-> +};
-> +MODULE_DEVICE_TABLE(pci, idpf_pci_tbl);
-> +
-> +static struct pci_driver idpf_driver = {
-> +	.name			= KBUILD_MODNAME,
-> +	.id_table		= idpf_pci_tbl,
-> +	.probe			= idpf_probe,
-> +	.remove			= idpf_remove,
-> +	.shutdown		= idpf_shutdown,
-> +};
-> +module_pci_driver(idpf_driver);
-> -- 
-> 2.37.3
-> 
