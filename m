@@ -2,283 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CCA46DDE31
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 16:38:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C94F86DDE42
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 16:41:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbjDKOiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 10:38:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53582 "EHLO
+        id S229484AbjDKOlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 10:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbjDKOiD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 10:38:03 -0400
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E4F4680;
-        Tue, 11 Apr 2023 07:37:44 -0700 (PDT)
-Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id 7E6A424E263;
-        Tue, 11 Apr 2023 22:37:42 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX166.cuchost.com
- (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 11 Apr
- 2023 22:37:42 +0800
-Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
- (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Tue, 11 Apr
- 2023 22:37:40 +0800
-Message-ID: <8e106170-404f-4a5d-0795-b36c18e5d9fc@starfivetech.com>
-Date:   Tue, 11 Apr 2023 22:37:38 +0800
+        with ESMTP id S229556AbjDKOlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 10:41:19 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 425ABE7C
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:41:18 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id ca18e2360f4ac-760a029ed4fso389539f.0
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:41:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112; t=1681224077; x=1683816077;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=n/FnNe6gGHiYX4mW0URPcwZFPNG4duBkLOZamx4qtC4=;
+        b=xmJtVtjgPQmT1ogKqCCR1Mio/dOc/kXdrdryozEgU+EUOo596wfHrTRTpe58rCU+ck
+         DtONu+tCp87Tm63513IkgyHJTOUSSVTG9146W0SssgEs97XSIhO8MFCwCngI2hkqbGir
+         lGb2G/RpF8PzKUyX4YuF02wDZl4MVDneAb/kmdnib1csj4qo/zegf4p8LklnUubS+/Rt
+         5eD4ijI15YvqAEnkts/9QjdNCM0WK9rs/gwVxblUmqF7QxYdgRU9ngZDCUivprys06TQ
+         jGxhvCbhJ5zieMdk9AmZPqohfZk/MLWJbkEwoHuQoFud0DXFRxog7iZZY7vRNU3Z/F6Q
+         NSVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681224077; x=1683816077;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=n/FnNe6gGHiYX4mW0URPcwZFPNG4duBkLOZamx4qtC4=;
+        b=EkAGickBAsNselAreNdl2IZclB9XqRpkr39Tm7QAuY1DeSdJz9FoVsolg9lqiXgM5h
+         cQ4XEJnfoAUclRr8/2yGG3Y0QqeIZ4fsn+bIad+jM/snNJ19bt59NwpJk3USivy70jn6
+         +JOLnmyw40Op4xpjs/5v3hhNWZsYXrMyIyWXwCx1bF2kNxqwalxOW3bKydv3Fl0Y+UV8
+         epYOm8NXvSji3kQ+jVY11QHI5MKTRfDaLhkU9jE5q6a8xctOHZYvtFdXlHeX0kvkLPWP
+         DmFCmjnt5P1WRsuUmBchsah+WHPMD7n3UD4DiLuKq0h1HT9qnpOWIU0LiHmitWIJRWJE
+         Kguw==
+X-Gm-Message-State: AAQBX9cG5yH95HMnjoBX5144oCHUHKA1hEaTWuiclstszA6HGFySIb2A
+        DBduqobEbStYQVq4Q4Yz1z8teg==
+X-Google-Smtp-Source: AKy350bqIet+jHeVmNP8eeAveySST9WhBTl17M1vbaTgtBupFCT/VKMmZh0+xkyEsvrPTU6+2a+O3w==
+X-Received: by 2002:a05:6602:160f:b0:758:6517:c621 with SMTP id x15-20020a056602160f00b007586517c621mr9503137iow.2.1681224077431;
+        Tue, 11 Apr 2023 07:41:17 -0700 (PDT)
+Received: from [192.168.1.94] ([96.43.243.2])
+        by smtp.gmail.com with ESMTPSA id a63-20020a021642000000b00406356481casm4165714jaa.122.2023.04.11.07.41.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Apr 2023 07:41:17 -0700 (PDT)
+Message-ID: <67831406-8d2f-feff-f56b-d0f002a95d96@kernel.dk>
+Date:   Tue, 11 Apr 2023 08:41:15 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [-net-next v11 5/6] net: stmmac: Add glue layer for StarFive
- JH7110 SoC
+Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
 Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>,
-        Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-        <Arun.Ramadoss@microchip.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Pedro Moreira <pmmoreir@synopsys.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Conor Dooley <conor@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        Tommaso Merciai <tomm.merciai@gmail.com>
-References: <20230407110356.8449-1-samin.guo@starfivetech.com>
- <20230407110356.8449-6-samin.guo@starfivetech.com>
- <CAJM55Z9jCdPASsk+fw_j+9QH3+Kj28tpCA4PgW_nB_ce7qWL8w@mail.gmail.com>
- <b8764e20-f983-177c-63c5-36bb3b57ba9e@starfivetech.com>
- <CAJM55Z8jSPz70ri_sFnKMjZDoNvoA=K-o7VCeAMmXztzOKRxaA@mail.gmail.com>
- <62fc36bc-7e43-0214-85d7-be66748a901b@starfivetech.com>
- <cda1f9a630516ab8d02454cd052cb03b35d1b279.camel@redhat.com>
-From:   Guo Samin <samin.guo@starfivetech.com>
-In-Reply-To: <cda1f9a630516ab8d02454cd052cb03b35d1b279.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+To:     David Ahern <dsahern@kernel.org>, Breno Leitao <leitao@debian.org>
+Cc:     Willem de Bruijn <willemb@google.com>, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, asml.silence@gmail.com,
+        leit@fb.com, edumazet@google.com, pabeni@redhat.com,
+        davem@davemloft.net, dccp@vger.kernel.org, mptcp@lists.linux.dev,
+        linux-kernel@vger.kernel.org, willemdebruijn.kernel@gmail.com,
+        matthieu.baerts@tessares.net, marcelo.leitner@gmail.com
+References: <20230406144330.1932798-1-leitao@debian.org>
+ <CA+FuTSeKpOJVqcneCoh_4x4OuK1iE0Tr6f3rSNrQiR-OUgjWow@mail.gmail.com>
+ <ZC7seVq7St6UnKjl@gmail.com>
+ <CA+FuTSf9LEhzjBey_Nm_-vN0ZjvtBSQkcDWS+5uBnLmr8Qh5uA@mail.gmail.com>
+ <e576f6fe-d1f3-93cd-cb94-c0ae115299d8@kernel.org>
+ <ZDVLyi1PahE0sfci@gmail.com>
+ <75e3c434-eb8b-66e5-5768-ca0f906979a1@kernel.org>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <75e3c434-eb8b-66e5-5768-ca0f906979a1@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX162.cuchost.com
- (172.16.6.72)
-X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=-2.2 required=5.0 tests=NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Re: [-net-next v11 5/6] net: stmmac: Add glue layer for StarFive JH7110 SoC
-From: Paolo Abeni <pabeni@redhat.com>
-to: Guo Samin <samin.guo@starfivetech.com>, Emil Renner Berthing <emil.renner.berthing@canonical.com>, Arun.Ramadoss@microchip.com
-data: 2023/4/11
-
-> On Mon, 2023-04-10 at 16:29 +0800, Guo Samin wrote:
->> Re: [-net-next v11 5/6] net: stmmac: Add glue layer for StarFive JH7110 SoC
->> From: Emil Renner Berthing <emil.renner.berthing@canonical.com>
->> to: Guo Samin <samin.guo@starfivetech.com>
->> data: 2023/4/9
+On 4/11/23 8:36?AM, David Ahern wrote:
+> On 4/11/23 6:00 AM, Breno Leitao wrote:
+>> I am not sure if avoiding io_uring details in network code is possible.
 >>
->>> On Sat, 8 Apr 2023 at 03:16, Guo Samin <samin.guo@starfivetech.com> wrote:
->>>>
->>>>  Re: [-net-next v11 5/6] net: stmmac: Add glue layer for StarFive JH7110 SoC
->>>> From: Emil Renner Berthing <emil.renner.berthing@canonical.com>
->>>> to: Samin Guo <samin.guo@starfivetech.com>
->>>> data: 2023/4/8
->>>>
->>>>> On Fri, 7 Apr 2023 at 13:05, Samin Guo <samin.guo@starfivetech.com> wrote:
->>>>>>
->>>>>> This adds StarFive dwmac driver support on the StarFive JH7110 SoC.
->>>>>>
->>>>>> Tested-by: Tommaso Merciai <tomm.merciai@gmail.com>
->>>>>> Co-developed-by: Emil Renner Berthing <kernel@esmil.dk>
->>>>>> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
->>>>>> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
->>>>>> ---
->>>>>>  MAINTAINERS                                   |   1 +
->>>>>>  drivers/net/ethernet/stmicro/stmmac/Kconfig   |  12 ++
->>>>>>  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
->>>>>>  .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 123 ++++++++++++++++++
->>>>>>  4 files changed, 137 insertions(+)
->>>>>>  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>>>>
->>>>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>>>>> index 6b6b67468b8f..46b366456cee 100644
->>>>>> --- a/MAINTAINERS
->>>>>> +++ b/MAINTAINERS
->>>>>> @@ -19910,6 +19910,7 @@ M:      Emil Renner Berthing <kernel@esmil.dk>
->>>>>>  M:     Samin Guo <samin.guo@starfivetech.com>
->>>>>>  S:     Maintained
->>>>>>  F:     Documentation/devicetree/bindings/net/starfive,jh7110-dwmac.yaml
->>>>>> +F:     drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>>>>
->>>>>>  STARFIVE JH7100 CLOCK DRIVERS
->>>>>>  M:     Emil Renner Berthing <kernel@esmil.dk>
->>>>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
->>>>>> index f77511fe4e87..5f5a997f21f3 100644
->>>>>> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
->>>>>> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
->>>>>> @@ -165,6 +165,18 @@ config DWMAC_SOCFPGA
->>>>>>           for the stmmac device driver. This driver is used for
->>>>>>           arria5 and cyclone5 FPGA SoCs.
->>>>>>
->>>>>> +config DWMAC_STARFIVE
->>>>>> +       tristate "StarFive dwmac support"
->>>>>> +       depends on OF && (ARCH_STARFIVE || COMPILE_TEST)
->>>>>> +       select MFD_SYSCON
->>>>>> +       default m if ARCH_STARFIVE
->>>>>> +       help
->>>>>> +         Support for ethernet controllers on StarFive RISC-V SoCs
->>>>>> +
->>>>>> +         This selects the StarFive platform specific glue layer support for
->>>>>> +         the stmmac device driver. This driver is used for StarFive JH7110
->>>>>> +         ethernet controller.
->>>>>> +
->>>>>>  config DWMAC_STI
->>>>>>         tristate "STi GMAC support"
->>>>>>         default ARCH_STI
->>>>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
->>>>>> index 057e4bab5c08..8738fdbb4b2d 100644
->>>>>> --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
->>>>>> +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
->>>>>> @@ -23,6 +23,7 @@ obj-$(CONFIG_DWMAC_OXNAS)     += dwmac-oxnas.o
->>>>>>  obj-$(CONFIG_DWMAC_QCOM_ETHQOS)        += dwmac-qcom-ethqos.o
->>>>>>  obj-$(CONFIG_DWMAC_ROCKCHIP)   += dwmac-rk.o
->>>>>>  obj-$(CONFIG_DWMAC_SOCFPGA)    += dwmac-altr-socfpga.o
->>>>>> +obj-$(CONFIG_DWMAC_STARFIVE)   += dwmac-starfive.o
->>>>>>  obj-$(CONFIG_DWMAC_STI)                += dwmac-sti.o
->>>>>>  obj-$(CONFIG_DWMAC_STM32)      += dwmac-stm32.o
->>>>>>  obj-$(CONFIG_DWMAC_SUNXI)      += dwmac-sunxi.o
->>>>>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>>>> new file mode 100644
->>>>>> index 000000000000..4963d4008485
->>>>>> --- /dev/null
->>>>>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
->>>>>> @@ -0,0 +1,123 @@
->>>>>> +// SPDX-License-Identifier: GPL-2.0+
->>>>>> +/*
->>>>>> + * StarFive DWMAC platform driver
->>>>>> + *
->>>>>> + * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
->>>>>> + * Copyright (C) 2022 StarFive Technology Co., Ltd.
->>>>>> + *
->>>>>> + */
->>>>>> +
->>>>>> +#include <linux/mfd/syscon.h>
->>>>>> +#include <linux/of_device.h>
->>>>>> +#include <linux/regmap.h>
->>>>>> +
->>>>>> +#include "stmmac_platform.h"
->>>>>> +
->>>>>> +struct starfive_dwmac {
->>>>>> +       struct device *dev;
->>>>>> +       struct clk *clk_tx;
->>>>>> +};
->>>>>> +
->>>>>> +static void starfive_dwmac_fix_mac_speed(void *priv, unsigned int speed)
->>>>>> +{
->>>>>> +       struct starfive_dwmac *dwmac = priv;
->>>>>> +       unsigned long rate;
->>>>>> +       int err;
->>>>>> +
->>>>>> +       rate = clk_get_rate(dwmac->clk_tx);
->>>>>
->>>>> Hi Samin,
->>>>>
->>>>> I'm not sure why you added this line in this revision. If it's just to
->>>>> not call clk_set_rate on the uninitialized rate, I'd much rather you
->>>>> just returned early and don't call clk_set_rate at all in case of
->>>>> errors.
->>>>>
->>>>>> +
->>>>>> +       switch (speed) {
->>>>>> +       case SPEED_1000:
->>>>>> +               rate = 125000000;
->>>>>> +               break;
->>>>>> +       case SPEED_100:
->>>>>> +               rate = 25000000;
->>>>>> +               break;
->>>>>> +       case SPEED_10:
->>>>>> +               rate = 2500000;
->>>>>> +               break;
->>>>>> +       default:
->>>>>> +               dev_err(dwmac->dev, "invalid speed %u\n", speed);
->>>>>> +               break;
->>>>>
->>>>> That is skip the clk_get_rate above and just change this break to a return.
->>>>>
->>>>
->>>> Hi Emil,
->>>>
->>>> We used the solution you mentioned before V3, but Arun Ramadoss doesn't think that's great.
->>>> (https://patchwork.kernel.org/project/linux-riscv/patch/20230106030001.1952-6-yanhong.wang@starfivetech.com)
->>>>
->>>>
->>>>> +static void starfive_eth_plat_fix_mac_speed(void *priv, unsigned int
->>>>> speed)
->>>>> +{
->>>>> +     struct starfive_dwmac *dwmac = priv;
->>>>> +     unsigned long rate;
->>>>> +     int err;
->>>>> +
->>>>> +     switch (speed) {
->>>>> +     case SPEED_1000:
->>>>> +             rate = 125000000;
->>>>> +             break;
->>>>> +     case SPEED_100:
->>>>> +             rate = 25000000;
->>>>> +             break;
->>>>> +     case SPEED_10:
->>>>> +             rate = 2500000;
->>>>> +             break;
->>>>> +     default:
->>>>> +             dev_err(dwmac->dev, "invalid speed %u\n", speed);
->>>>> +             return;
->>>>
->>>> Do we need to return value, since it is invalid speed. But the return
->>>> value of function is void.(Arun Ramadoss)
->>>>
->>>>
->>>> So in v9, after discussing with Jakub Kicinski, the clk_set_rate was used to initialize the rate.
->>>> (It is a reference to Intel's scheme:    dwmac-intel-plat.c: kmb_eth_fix_mac_speed)
->>>> (https://patchwork.kernel.org/project/linux-riscv/patch/20230328062009.25454-6-samin.guo@starfivetech.com)
->>>>
->>>
->>> Yeah, I think this is a misunderstanding and Arun is considering if we
->>> ought to return the error which we can't without changing generic
->>> dwmac code, and Jakub is rightly concerned about using a local
->>> variable uninitialized. I don't think anyone is suggesting that
->>> getting the rate just to set it to the exact same value is better than
->>> just leaving the clock alone.
->>>
->> HI Emil,
+>> The "struct proto"->uring_cmd callback implementation (tcp_uring_cmd()
+>> in the TCP case) could be somewhere else, such as in the io_uring/
+>> directory, but, I think it might be cleaner if these implementations are
+>> closer to function assignment (in the network subsystem).
 >>
->> Yeah, return early saves time and code complexity, and seems like a good solution so Yanhong did the same before v3. (Jakub has suggested it before),
->> I wonder if Arun or other maintainers accept this solution or if there are other solutions?
+>> And this function (tcp_uring_cmd() for instance) is the one that I am
+>> planning to map io_uring CMDs to ioctls. Such as SOCKET_URING_OP_SIOCINQ
+>> -> SIOCINQ.
+>>
+>> Please let me know if you have any other idea in mind.
 > 
-> I think is not a big deal either way.
-> 
-> To avoid too much back and forth I'll stick to the current code.
-> 
-> Please address Emil comment on patch 6/6
-> 
-> Thanks!
-> 
-> Paolo
-> 
-Hi Paolo,
+> I am not convinced that this io_uring_cmd is needed. This is one
+> in-kernel subsystem calling into another, and there are APIs for that.
+> All of this set is ioctl based and as Willem noted a little refactoring
+> separates the get_user/put_user out so that in-kernel can call can be
+> made with existing ops.
 
-Thanks! I'll fix it on patch 6/6 as suggested by Emil.
+How do you want to wire it up then? We can't use fops->unlocked_ioctl()
+obviously, and we already have ->uring_cmd() for this purpose.
 
-Best regards,
-Samin
+I do think the right thing to do is have a common helper that returns
+whatever value you want (or sets it), and split the ioctl parts into a
+wrapper around that that simply copies in/out as needed. Then
+->uring_cmd() could call that, or you could some exported function that
+does supports that.
+
+This works for the basic cases, though I do suspect we'll want to go
+down the ->uring_cmd() at some point for more advanced cases or cases
+that cannot sanely be done in an ioctl fashion.
+
+-- 
+Jens Axboe
+
