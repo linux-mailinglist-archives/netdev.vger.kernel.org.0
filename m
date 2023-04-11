@@ -2,66 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD1326DD1E4
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 07:41:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9F546DD1EA
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 07:41:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbjDKFlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 01:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
+        id S230071AbjDKFl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 01:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229703AbjDKFlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 01:41:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CDAC272B
-        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 22:40:19 -0700 (PDT)
+        with ESMTP id S230053AbjDKFlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 01:41:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B55622D63
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 22:40:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681191618;
+        s=mimecast20190719; t=1681191656;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ciFOiFCvxjc0i9FO+U01KioQUaj++06BDry/0Vmfdz4=;
-        b=O0mfuYQwPw9L8VRHtsc5BFmg9j4RWMfnILVtHiJJPBdeQq7IPnoj2lzsWlSbJxK9R50tso
-        fjzyV8q8AiraO5x3D+EOUt5NvNnQ8Awp45xiE1QjqgNmoIEyQmxnhc8nNEEmwu9vzzm7VJ
-        C2kAQDmqv3J02a3bSwepJQD6mb+p4T4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-21-lXSyDLFbONuMiwUngB5sZA-1; Tue, 11 Apr 2023 01:40:15 -0400
-X-MC-Unique: lXSyDLFbONuMiwUngB5sZA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C0C2E8996E7;
-        Tue, 11 Apr 2023 05:40:14 +0000 (UTC)
-Received: from [10.45.224.115] (unknown [10.45.224.115])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D8E9AC15BA0;
-        Tue, 11 Apr 2023 05:40:12 +0000 (UTC)
-Message-ID: <78dbf8d2-c13d-a921-bd73-a1361753cb66@redhat.com>
-Date:   Tue, 11 Apr 2023 07:40:11 +0200
+        bh=5Lc8+CXiaC7kZLTFmLHcV9MWZzh4/VM+o+UitxvfuTg=;
+        b=Ho9cTTiJB9dVX4TE6Oh+A6ZmlxiitUFsjwBeqI6F61VMP6I0IuHNATZMjyajiqvBj5nYnm
+        sO4V0T18LOj3XNVUKh8iDHEOMoT0rpTNy73SiwnQPSUcq3slZnZlD3yHjCLALwKnmvmVQ1
+        GzyoUbSwJzV2K4TWMsQReT4MkdsHM70=
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com
+ [209.85.160.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-630-7A7YfSujN0edEKQ3OJ-xLg-1; Tue, 11 Apr 2023 01:40:54 -0400
+X-MC-Unique: 7A7YfSujN0edEKQ3OJ-xLg-1
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-18430ae1d46so3982503fac.18
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 22:40:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681191652; x=1683783652;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5Lc8+CXiaC7kZLTFmLHcV9MWZzh4/VM+o+UitxvfuTg=;
+        b=pDyTrqWBdlc41cwl/0MAyXbzrA5E6RTzamSQkD/QK+GvnrUsQOGPYvML3Pz2FmHgN1
+         VlLrCLa0ki6DbUddcWb7Rytz4V30bgAwFB0KEOchqDRFoOA05kLHI6hwWo3rGZoowvlu
+         9v0aLHW0vHp1J9t7uYDCsjYqToyXLOKEVww2BzmWGi6ojo6R4Mhn+hGHwVSElzrxhW/l
+         7usNdocxXqA9ZIDcIw/L7DG+Cst9zxfVKWP28MAXrjnU4+IEUj97nhY73uy9kZky91op
+         W0F6aAr0lgKJ2LMZaEwX3755jrE0nBpEaa5Ww35TsYdAYYpyUxKyW+/TK1JSuY0SYYtS
+         QlWQ==
+X-Gm-Message-State: AAQBX9fLuvO8w/aCBAU0plCB/psY6tdvpmjQ7gNyOLOviP4v458bBeqI
+        AYdyp81ExrsTvzK7/FmkRk390qJ4iZjZEc3lyNd8qJYr2NGMt+1oHQM9JECYu7AONvkqyvgEAPY
+        DOrB4glA8EyF+mNgA8J+vSG15+6Dp4cH5
+X-Received: by 2002:aca:2105:0:b0:37f:ab56:ff42 with SMTP id 5-20020aca2105000000b0037fab56ff42mr382973oiz.9.1681191652468;
+        Mon, 10 Apr 2023 22:40:52 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZDv1ledLRdmNQyCWbksADq4zEavS68uqQs0Gsi3+bqVtEYCjFkNdzhA2mCtntAdKw7yIEaHAyObDume0j4N5E=
+X-Received: by 2002:aca:2105:0:b0:37f:ab56:ff42 with SMTP id
+ 5-20020aca2105000000b0037fab56ff42mr382966oiz.9.1681191652266; Mon, 10 Apr
+ 2023 22:40:52 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next] bnxt_en: Allow to set switchdev mode without
- existing VFs
-Content-Language: en-US
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     netdev@vger.kernel.org, mschmidt@redhat.com,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20230406130455.1155362-1-ivecera@redhat.com>
- <20230409090224.GE14869@unreal>
-From:   Ivan Vecera <ivecera@redhat.com>
-In-Reply-To: <20230409090224.GE14869@unreal>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-3.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+References: <20230404131326.44403-1-sgarzare@redhat.com> <20230404131326.44403-5-sgarzare@redhat.com>
+In-Reply-To: <20230404131326.44403-5-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 11 Apr 2023 13:40:41 +0800
+Message-ID: <CACGkMEvv0L7cFTHgi=4xwJ73ydhkp+Qd+tgPVcwC+b0V_U1ujQ@mail.gmail.com>
+Subject: Re: [PATCH v5 4/9] vringh: define the stride used for translation
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, eperezma@redhat.com,
+        stefanha@redhat.com,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -70,41 +77,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09. 04. 23 11:02, Leon Romanovsky wrote:
-> On Thu, Apr 06, 2023 at 03:04:55PM +0200, Ivan Vecera wrote:
->> Remove an inability of bnxt_en driver to set eswitch to switchdev
->> mode without existing VFs by:
->>
->> 1. Allow to set switchdev mode in bnxt_dl_eswitch_mode_set() so
->>     representors are created only when num_vfs > 0 otherwise just
->>     set bp->eswitch_mode
->> 2. Do not automatically change bp->eswitch_mode during
->>     bnxt_vf_reps_create() and bnxt_vf_reps_destroy() calls so
->>     the eswitch mode is managed only by an user by devlink.
->>     Just set temporarily bp->eswitch_mode to legacy to avoid
->>     re-opening of representors during destroy.
->> 3. Create representors in bnxt_sriov_enable() if current eswitch
->>     mode is switchdev one
->>
->> Tested by this sequence:
->> 1. Set PF interface up
->> 2. Set PF's eswitch mode to switchdev
->> 3. Created N VFs
->> 4. Checked that N representors were created
->> 5. Set eswitch mode to legacy
->> 6. Checked that representors were deleted
->> 7. Set eswitch mode back to switchdev
->> 8. Checked that representros were re-created
-> 
-> Why do you think that this last item is the right behavior?
-> IMHO all configurations which were done after you switched mode
-> should be cleared and not recreated while toggling.
+On Tue, Apr 4, 2023 at 9:14=E2=80=AFPM Stefano Garzarella <sgarzare@redhat.=
+com> wrote:
+>
+> Define a macro to be reused in the different parts of the code.
+>
+> Useful for the next patches where we add more arrays to manage also
+> translations with user VA.
+>
+> Suggested-by: Eugenio Perez Martin <eperezma@redhat.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 
-No, I mean that if I switch back to switchdev mode then representors
-should be created again for existing virtual functions not that
-representors should be restored with their existing state...
-So the point 8 should say:
-"8. Checked that representors exist again for VFs"
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-Ivan
+Thanks
+
+> ---
+>
+> Notes:
+>     v4:
+>     - added this patch with the changes extracted from the next patch [Eu=
+genio]
+>     - used _STRIDE instead of _SIZE [Eugenio]
+>
+>  drivers/vhost/vringh.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> index 0ba3ef809e48..4aee230f7622 100644
+> --- a/drivers/vhost/vringh.c
+> +++ b/drivers/vhost/vringh.c
+> @@ -1141,13 +1141,15 @@ static int iotlb_translate(const struct vringh *v=
+rh,
+>         return ret;
+>  }
+>
+> +#define IOTLB_IOV_STRIDE 16
+> +
+>  static inline int copy_from_iotlb(const struct vringh *vrh, void *dst,
+>                                   void *src, size_t len)
+>  {
+>         u64 total_translated =3D 0;
+>
+>         while (total_translated < len) {
+> -               struct bio_vec iov[16];
+> +               struct bio_vec iov[IOTLB_IOV_STRIDE];
+>                 struct iov_iter iter;
+>                 u64 translated;
+>                 int ret;
+> @@ -1180,7 +1182,7 @@ static inline int copy_to_iotlb(const struct vringh=
+ *vrh, void *dst,
+>         u64 total_translated =3D 0;
+>
+>         while (total_translated < len) {
+> -               struct bio_vec iov[16];
+> +               struct bio_vec iov[IOTLB_IOV_STRIDE];
+>                 struct iov_iter iter;
+>                 u64 translated;
+>                 int ret;
+> --
+> 2.39.2
+>
 
