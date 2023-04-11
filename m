@@ -2,156 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A04F6DD663
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 11:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE8E6DD66D
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 11:18:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbjDKJOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 05:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
+        id S229634AbjDKJSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 05:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbjDKJOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 05:14:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245FB2690
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 02:13:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681204435;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rG8YVr+3IWo4CE+CY2XyHcE+ZCDuW4teuWofuqNtms0=;
-        b=U+7HSel9jMppWWIyNARB03sZZpFm0YdAyDWNFUXCYM8eaUmjByV7zRk/U9axH/l9beXKlL
-        mTQvfD6qT/n8zKKhAbWGSMSWJ6GT0VlO9PdX0TTH1EfLa/5vZ2g8rgVyt7Ej2Ii4OfdGEG
-        PW6Yok4xcWS4Zwltqz0NLrTPoznugHs=
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
- [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-259-ezjFibeOP-iUk2yDgX2CfQ-1; Tue, 11 Apr 2023 05:13:53 -0400
-X-MC-Unique: ezjFibeOP-iUk2yDgX2CfQ-1
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-1845b15bbdaso1744109fac.7
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 02:13:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681204433; x=1683796433;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rG8YVr+3IWo4CE+CY2XyHcE+ZCDuW4teuWofuqNtms0=;
-        b=jtrCbpdDGxKLV5I3fskfsSOusg8qYZ5DIoF/3cL0qOa0KB8e24SNtB85K06cL2xkj1
-         ryaH82ygeZDG5VESEzLf72NDizCZvkg5WtguPQTr2FxPt9cjdw0Q9evH5atCKCO8pUnC
-         lqHS7V6orGsUr6FA0nK0Cts73F5EMzBoLxvbsLpRIhF1tXRnGA1BoGUYIBcmM+1ablT0
-         FZL+lNbVqT56iShJBXswoHk+jj7BgNU8gsH1zploDbwwp9TpUYQcggiBg3gjueU/6eWz
-         HsUDnxBOVLOXM+fbt3Xbhc0s3sadrvClu0I3ZAm9nP0UyhLo84sg0+ROnqpUH8/3LCI/
-         aKkg==
-X-Gm-Message-State: AAQBX9c8a2BqLozivcqfvWATvpcvx21zgmdwkG0fkLGGMqx7DthQ9n1N
-        dczbTCEZ8SggRHP6xDzvD+7NbhQuzjhTeBB3kySwvfA7PpM/VUdX/JcmUI0iVcnz27trOERlclF
-        yqgAOEjF1qcmH2PeZeLaJ5inpg47Qisd5
-X-Received: by 2002:aca:280f:0:b0:387:5a8c:4125 with SMTP id 15-20020aca280f000000b003875a8c4125mr2889711oix.3.1681204432871;
-        Tue, 11 Apr 2023 02:13:52 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YvpDPRV+stgWN71cbwISfDR9tuAtGF5dt0HDFBq3HH+19cK/azHyaoNC8arnfyuDaEmDUHp+71+dODeIH4ho4=
-X-Received: by 2002:aca:280f:0:b0:387:5a8c:4125 with SMTP id
- 15-20020aca280f000000b003875a8c4125mr2889704oix.3.1681204432261; Tue, 11 Apr
- 2023 02:13:52 -0700 (PDT)
+        with ESMTP id S229459AbjDKJR7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 05:17:59 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDB3C6
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 02:17:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=PvU24wAg7X03avgvYAnDnewfP/2QT07BEy8hEg8derY=; b=sR5O56oWGA/ksl5KB5aysBkLSJ
+        xJr6XbYSaovca91kyq2PK1aXkOq2UGcvtp/wjCCBCm0Bs3nA3NolrMb7VO6EoDcZ4vWwGP1QtNh/z
+        JitDMaRFJpqJGCFRaOZlIuetN9GVM5YsNK3uDzL05Sx4iKCNVugznrbQvyogyF6a43X0YppeIXTnr
+        yDlTwPUr37XBqLBrPXeND6/pjnfNbCu1kNaejHBhgjyXuP2g9j4NeDx+eiHJ5eDh6YSvAwTkjTK91
+        +rpCTr2PlaunGLSlanlYiPpd8DNlLmNPHN8IGtNN6lkDkMEQVHxcgqoew+bWqs4jYrOledHA7zMUC
+        DFa8mIkA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54102)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pmA8L-0005i4-TM; Tue, 11 Apr 2023 10:17:49 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pmA8J-0003yY-2K; Tue, 11 Apr 2023 10:17:47 +0100
+Date:   Tue, 11 Apr 2023 10:17:47 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Eric Dumazet <edumazet@google.com>,
+        Vladimir Oltean <olteanv@gmail.com>, kernel@pengutronix.de,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
+ flow control, speed, and duplex on CPU port configurable
+Message-ID: <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
+References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
+ <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
+ <20230411085626.GA19711@pengutronix.de>
 MIME-Version: 1.0
-References: <20230410150130.837691-1-lulu@redhat.com> <CACGkMEvTdgvqacFmMJZD4u++YJwESgSmLF6CMdAJBBqkxpZKgg@mail.gmail.com>
- <CACLfguWKw68=wZNa7Ga+Jm8xTE93A_5za3Dc=S_z7ds9FCkRKg@mail.gmail.com>
-In-Reply-To: <CACLfguWKw68=wZNa7Ga+Jm8xTE93A_5za3Dc=S_z7ds9FCkRKg@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 11 Apr 2023 17:13:41 +0800
-Message-ID: <CACGkMEv3aca0Thx+X3WZxbV2HK7514G3RzR+A0PqRu7k6Deztg@mail.gmail.com>
-Subject: Re: [PATCH] vhost_vdpa: fix unmap process in no-batch mode
-To:     Cindy Lu <lulu@redhat.com>
-Cc:     mst@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230411085626.GA19711@pengutronix.de>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 3:29=E2=80=AFPM Cindy Lu <lulu@redhat.com> wrote:
->
-> On Tue, Apr 11, 2023 at 11:10=E2=80=AFAM Jason Wang <jasowang@redhat.com>=
- wrote:
-> >
-> > On Mon, Apr 10, 2023 at 11:01=E2=80=AFPM Cindy Lu <lulu@redhat.com> wro=
-te:
-> > >
-> > > While using the no-batch mode, the process will not begin with
-> > > VHOST_IOTLB_BATCH_BEGIN, so we need to add the
-> > > VHOST_IOTLB_INVALIDATE to get vhost_vdpa_as, the process is the
-> > > same as VHOST_IOTLB_UPDATE
-> > >
-> > > Signed-off-by: Cindy Lu <lulu@redhat.com>
-> > > ---
-> > >  drivers/vhost/vdpa.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> > > index 7be9d9d8f01c..32636a02a0ab 100644
-> > > --- a/drivers/vhost/vdpa.c
-> > > +++ b/drivers/vhost/vdpa.c
-> > > @@ -1074,6 +1074,7 @@ static int vhost_vdpa_process_iotlb_msg(struct =
-vhost_dev *dev, u32 asid,
-> > >                 goto unlock;
-> > >
-> > >         if (msg->type =3D=3D VHOST_IOTLB_UPDATE ||
-> > > +           msg->type =3D=3D VHOST_IOTLB_INVALIDATE ||
-> >
-> > I'm not sure I get here, invalidation doesn't need to create a new AS.
-> >
-> > Or maybe you can post the userspace code that can trigger this issue?
-> >
-> > Thanks
-> >
-> sorry I didn't write it clearly
-> For this issue can reproduce in vIOMMU no-batch mode support because
-> while the vIOMMU enabled, it will
-> flash a large memory to unmap, and this memory are haven't been mapped
-> before, so this unmapping will fail
->
-> qemu-system-x86_64: failed to write, fd=3D12, errno=3D14 (Bad address)
-> qemu-system-x86_64: vhost_vdpa_dma_unmap(0x7fa26d1dd190, 0x0,
-> 0x80000000) =3D -5 (Bad address)
+On Tue, Apr 11, 2023 at 10:56:26AM +0200, Oleksij Rempel wrote:
+> On Fri, Apr 07, 2023 at 06:44:20PM +0100, Russell King (Oracle) wrote:
+> > On Fri, Apr 07, 2023 at 04:25:57PM +0200, Andrew Lunn wrote:
+> > > > +void ksz8_phylink_mac_link_up(struct ksz_device *dev, int port,
+> > > > +			      unsigned int mode, phy_interface_t interface,
+> > > > +			      struct phy_device *phydev, int speed, int duplex,
+> > > > +			      bool tx_pause, bool rx_pause)
+> > > > +{
+> > > > +	struct dsa_switch *ds = dev->ds;
+> > > > +	struct ksz_port *p;
+> > > > +	u8 ctrl = 0;
+> > > > +
+> > > > +	p = &dev->ports[port];
+> > > > +
+> > > > +	if (dsa_upstream_port(ds, port)) {
+> > > > +		u8 mask = SW_HALF_DUPLEX_FLOW_CTRL | SW_HALF_DUPLEX |
+> > > > +			SW_FLOW_CTRL | SW_10_MBIT;
+> > > > +
+> > > > +		if (duplex) {
+> > > > +			if (tx_pause && rx_pause)
+> > > > +				ctrl |= SW_FLOW_CTRL;
+> > > > +		} else {
+> > > > +			ctrl |= SW_HALF_DUPLEX;
+> > > > +			if (tx_pause && rx_pause)
+> > > > +				ctrl |= SW_HALF_DUPLEX_FLOW_CTRL;
+> > > > +		}
+> > > > +
+> > > > +		if (speed == SPEED_10)
+> > > > +			ctrl |= SW_10_MBIT;
+> > > > +
+> > > > +		ksz_rmw8(dev, REG_SW_CTRL_4, mask, ctrl);
+> > > > +
+> > > > +		p->phydev.speed = speed;
+> > > > +	} else {
+> > > > +		const u16 *regs = dev->info->regs;
+> > > > +
+> > > > +		if (duplex) {
+> > > > +			if (tx_pause && rx_pause)
+> > > > +				ctrl |= PORT_FORCE_FLOW_CTRL;
+> > > > +		} else {
+> > > > +			if (tx_pause && rx_pause)
+> > > > +				ctrl |= PORT_BACK_PRESSURE;
+> > > > +		}
+> > > > +
+> > > > +		ksz_rmw8(dev, regs[P_STP_CTRL], PORT_FORCE_FLOW_CTRL |
+> > > > +			 PORT_BACK_PRESSURE, ctrl);
+> > 
+> > So, I guess the idea here is to enable some form of flow control when
+> > both tx and rx pause are enabled.
+> > 
+> > Here's a bunch of questions I would like answered before I give a tag:
+> > 
+> > 1) It looks like the device only supports symmetric pause?
+> 
+> This part of driver supports two family of switches: ksz88xx and
+> ksz87xx.
+> 
+> According to KSZ8765CLX  datasheet:
+> Per port, we control pause rx and tx with one bit:
+>   Register 18 (0x12): Port 1 Control 2
+>   Bit 4 - Force Flow Control
+>     1 = Enables Rx and Tx flow control on the port, regardless of the AN result.
+>     0 = Flow control is enabled based on the AN result (Default)
 
-So if this is a simple unmap, which error condition had you met in
-vhost_vdpa_process_iotlb_msg()?
+Is this more in the MAC register set than the PCS register set?
+It's weird that it seems there's no way to force flow control
+off.
 
-I think you need to trace to see what happens. For example:
+If it's the PCS register set, then this is partly what the
+permit_pause_to_mac boolean in pcs_config() should be used to
+control - but that assumes that when !permit_pause_to_mac it
+merely stops forwarding the flow control settings to the MAC.
 
-1) can the code pass asid_to_iotlb()
-2) if not, ASID 0 has been deleted since all the mappings have been unmappe=
-d
+If it's in the MAC register set, this should be controlled by
+the MLO_PAUSE_AN bit in state->pause.
 
-if ASID 0 has been completely unmap, any reason we need to unmap it
-again? And do we need to drop the vhost_vdpa_remove_as() from both
+However, when those are false, we expect the tx_pause and
+rx_pause in mac_link_up() to be respected by the hardware.
 
-1) vhost_vdpa_unmap()
-and
-2) vhost_vdpa_process_iotlb_msg()
-?
+> Globally, pause tx and/or rx can be disabled:
+> 
+>   Register 3 (0x03): Global Control 1
+>   Bit 5 - IEEE 802.3x Transmit Flow Control Disable
+>     0 = Enables transmit flow control based on AN result.
+>     1 = Will not enable transmit flow control regardless of the AN result.
+>   Bit 4 - IEEE 802.3x Receive Flow Control Disable
+>     0 = Enables receive flow control based on AN result.
+>     1 = Will not enable receive flow control regardless of the AN result.
+> 
+> So, it is possible to configure the entire switch in SYNC or ASYNC mode
+> only.
 
-Thanks
+Well, that's a very strange setup. So basically we have no software
+control over manually setting the flow control, and we must use
+the hardware to pass the AN result to the MAC to have everything
+configured correctly.
 
-> qemu-system-x86_64: failed to write, fd=3D12, errno=3D14 (Bad address)
-> ....
-> in batch mode this operation will begin with VHOST_IOTLB_BATCH_BEGIN,
-> so don't have this issue
->
-> Thanks
-> cindy
-> > >             msg->type =3D=3D VHOST_IOTLB_BATCH_BEGIN) {
-> > >                 as =3D vhost_vdpa_find_alloc_as(v, asid);
-> > >                 if (!as) {
-> > > --
-> > > 2.34.3
-> > >
-> >
->
+> Still not sure what role plays autoneg in this configuration:
+> 
+>   Register 55 (0x37): Port 3 Control 7 (only for ports 3 and 4)
+>   Bits 5 - 4 - Advertised_Flow_Control _Capability
+>     00 = No pause
+>     01 = Symmetric PAUSE
+>     10 = Asymmetric PAUSE
+>     11 = Both Symmetric PAUSE and Asymmetric
+> 
+> According to this bits, it is possible to announce both Symmetric
+> and Asymmetric PAUSE, but will the switch enable asymmetric mode
+> properly if link partner advertise asymmetric too?
 
+These two bits correspond directly with:
+ETHTOOL_LINK_MODE_Pause_BIT (for bit 4)
+ETHTOOL_LINK_MODE_Asym_Pause_BIT (for bit 5)
+
+IEEE 802.3 has a table in it of the possible resolutions given the
+advertisement from both ends. In the case of advertising both, then
+the resolutions can be:
+- Pause disabled
+- Asymmetric pause towards local device (rx enabled, tx disabled)
+- Symmetric pause (rx and tx enabled)
+
+It is the responsibility of both ends of the link to implement the
+decoding as per 802.3 table 28B-3.
+
+Since we can't manually control the tx and rx pause enables, I think
+the only sensible way forward with this would be to either globally
+disable pause on the device, and not report support for any pause
+modes, or report support for all pause modes, advertise '11' and
+let the hardware control it (which means the ethtool configuration
+for pause would not be functional.)
+
+This needs to be commented in the driver so that in the future we
+remember why this has been done.
+
+Maybe Andrew and/or Vladimir also have an opinion to share about the
+best approach here?
+
+Thanks for the clarification from the register set.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
