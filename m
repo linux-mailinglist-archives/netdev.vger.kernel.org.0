@@ -2,222 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93C1B6DE00D
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 17:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8DFD6DE011
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 17:54:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231202AbjDKPxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 11:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
+        id S230491AbjDKPyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 11:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231211AbjDKPxm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 11:53:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7BB5FDE;
-        Tue, 11 Apr 2023 08:53:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14C2C61F63;
-        Tue, 11 Apr 2023 15:53:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA167C433EF;
-        Tue, 11 Apr 2023 15:53:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681228397;
-        bh=kEGv9Qpwl20xnx3B2UscGqU7o9pj7FAf2kZu43eWHHQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Zr6rNQU3Ih2CGRLfL2hImIWXcbX1eR5t/ji6L3M1ccKZhGWtcfosKlXJCQ6iT4h8Z
-         o4/rxH4ylQdUzorXkwqtiuy2ocyFXmAxEyTRSqahnuTc2jH2O8QcXojJAjCnFNFnS9
-         qyp3BaeWzPF6OjcYbj7dgKEJ+bOX9jTgfNMIiUwAcdTKPCuG/SXRG4Ei0zjFND6ski
-         8Wtkkdr14nsjZ0IXr2bu7Z+fHHkgSFm4cPimV9oM7mMxRnUcg5jX/iqmPaTfjKPRga
-         Y3ZvY948GTgVIZwjm2yPfdfEYZ0QSNwgXaJd7kOGhPsQtMVwqnEL3TrTjnxBVyiUcn
-         jZ9KvVivi/qjg==
-Date:   Tue, 11 Apr 2023 17:53:10 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        linux-arch@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH net-next v3 2/4] net: socket: add sockopts blacklist for
- BPF cgroup hook
-Message-ID: <20230411-nudelsalat-spreu-3038458f25c4@brauner>
-References: <20230411104231.160837-1-aleksandr.mikhalitsyn@canonical.com>
- <20230411104231.160837-3-aleksandr.mikhalitsyn@canonical.com>
+        with ESMTP id S231261AbjDKPyV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 11:54:21 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49E84EF4
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 08:54:04 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id z9so8657266ybs.9
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 08:54:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1681228442;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YmY3XxKBoee5tSNEufHpb+asjhgZIf113BOS8btoaPc=;
+        b=Zh33INvPZp9iyg9CDhs8zUoauAqxXwHtXpFr5TXKaH4f+8y8Gn/6GBcQaoqaCvnimw
+         CCqn9wg6yy9Y3EddvV2geHdQh8n+VuLk12wbtQWc7TrM0KzIU1jLkbktFXrvY3JzMb7x
+         cJ/TlDlI8pnWrfO+7tiol6Px1f1zbUdlx2p8RU27PngGHw4XlPo4UdIahsdIkYsJJk85
+         OaLiuQ92QsYA8nlYwU80VEFtbySJT7hw99ditAo4ZpdOETrVJuMbqRmUS7XVrkf/+NV+
+         gDg19OPcr9QFAj49HIdHjWpwRLrTipkUlIzX78yA2f1EvBAmjKYCdH6or8fYnZrGsflQ
+         BP8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681228442;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YmY3XxKBoee5tSNEufHpb+asjhgZIf113BOS8btoaPc=;
+        b=lYlS08/9zaqxY39Aohf6VKvHzumRfow+wdD19NHpXdUeXPUEeo4dyYMnjR19ecohx7
+         vQZ4SwIEWLaJKI/HVmeXCd4UCl7tfRapmlFY1ML4Hnzlo9M0PS1NTODLeHrlXCobSHPV
+         XUvPhHwK+725M23G6KMqFAhEhxA+9YvGPyc2ompPEoupwFPDMAhq5zp7cmSuMANlBnID
+         7CuN7oOyB4D+/C5JhzpyuJ4EhHzYErkKsOzTzT5zyid5TJ5vINkmNHJrM1nRA4LZUJar
+         ZypmtvEFfSMFCKOCAsxEfxLYNfr425uQG0O5mVb+HL7n48SmejhfUZwrH6ZG5ioDTp5A
+         GUQg==
+X-Gm-Message-State: AAQBX9dAA9wwv/mWRkFLmGtuO8qIT2yNIlz8i/+B1V8DfRkr4wSF4EBW
+        EoqjwO+vxFpW38Qjd3ffV150vTDnNRRwlObaXzTOUg==
+X-Google-Smtp-Source: AKy350YW/wFikWR9+O33jhcnWG/upvdhlWDZoq5gMcq8OnFQ8HvvtnDnkEXuFIbBAWqIXfPYBa7NB262Bj+vSmK9Y9s=
+X-Received: by 2002:a25:cac5:0:b0:b8e:d126:c64 with SMTP id
+ a188-20020a25cac5000000b00b8ed1260c64mr1912334ybg.4.1681228442267; Tue, 11
+ Apr 2023 08:54:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230411104231.160837-3-aleksandr.mikhalitsyn@canonical.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+References: <ZCsbJ4nG+So/n9qY@shell.armlinux.org.uk> <ZDWB1zRNlxpTN1IK@shell.armlinux.org.uk>
+In-Reply-To: <ZDWB1zRNlxpTN1IK@shell.armlinux.org.uk>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 11 Apr 2023 17:53:51 +0200
+Message-ID: <CANn89iL5sktWMfVMyBeUH4Mcef0ye-D7tno+HGvA-KF2md+NDQ@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next 0/6] net: mvneta: reduce size of TSO header allocation
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 12:42:29PM +0200, Alexander Mikhalitsyn wrote:
-> During work on SO_PEERPIDFD, it was discovered (thanks to Christian),
-> that bpf cgroup hook can cause FD leaks when used with sockopts which
-> install FDs into the process fdtable.
-> 
-> After some offlist discussion it was proposed to add a blacklist of
-> socket options those can cause troubles when BPF cgroup hook is enabled.
-> 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Leon Romanovsky <leon@kernel.org>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Christian Brauner <brauner@kernel.org>
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Cc: Lennart Poettering <mzxreary@0pointer.de>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-arch@vger.kernel.org
-> Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
-> Suggested-by: Christian Brauner <brauner@kernel.org>
-> Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-> ---
+On Tue, Apr 11, 2023 at 5:50=E2=80=AFPM Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
+>
+> Hi,
+>
+> I think the Turris folk are waiting for me to get this into the kernel
+> and backported to stable before they merge it into their tree and we
+> therefore end up with it being tested.
+>
+> We are now at -rc7, and this series is in danger of missing the
+> upcoming merge window.
+>
+> So, I think it's time that I posted a wake-up call here to say that no,
+> that's not going to happen until such time that we know whether these
+> patches solve the problem that they identified. I'm not bunging patches
+> into the kernel for problems people have without those people testing
+> the proposed changes.
+>
+> I think if the Turris folk want to engage with mainline for assistance
+> in resolving issues, they need to do their part and find a way to
+> provide kernels to test out proposed fixes for their problems.
+>
 
-Just some background for kicks
+Just make sure to repost the series without the RFC tag :)
 
-A crucial point for SO_PEERPIDFD is the allocation of a pidfd and to
-place it into the optval buffer for userspace to retrieve.
-
-The way we orginally envisioned this working is by splitting this into
-an fd and file allocation phase, then get past the point of failure in
-sockopt processing and then call fd_install(fd, pidfd_file).
-
-While looking at this I realized that there's a generic problem in this
-code:
-
-	if (level == SOL_SOCKET)
-		err = sock_getsockopt(sock, level, optname, optval, optlen);
-	else if (unlikely(!sock->ops->getsockopt))
-	        err = -EOPNOTSUPP;
-	else
-	        err = sock->ops->getsockopt(sock, level, optname, optval, optlen);
-	
-	if (!in_compat_syscall())
-	        err = BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock->sk, level, optname, optval, optlen, max_optlen, err);
-
-That BPF_CGROUP_RUN_PROG_GETSOCKOPT hook can fail after getsockopt
-itself succeeded. So anything that places an fd into optval risks
-leaking an fd into the caller's fdtable if the bpf hook fails.
-
-If we do a pidfd_create() and place the pidfd into the optval buffer the
-the bpf hook could reasonably interact with the fd but if it fails the
-fd would be leaked. It could clean this up calling close_fd() but it
-would be ugly since the fd has already been visible in the caller's
-fdtable. Someone might've snatched it already even.
-
-If we delay installing the fd and file past the bpf hook then the fd is
-meaningless for the bpf hook but we wouldn't risk leaking the fd.
-
-It should also be noted that the hook does a copy_from_user() on the
-optval right after the prior getsockopt did a copy_to_user() into that
-optval. This is not just racy it's also a bit wasteful. Userspace could
-try to retrieve the optval and then copy another value over it so that
-the bpf hook operates on another value than getsockopt originally placed
-into optval. If the bpf hook wants to care about fd resources in the
-future it should probably be passed the allocated struct file.
-
-This should be addressed separately though. The solution here works for
-me,
-
-Acked-by: Christian Brauner <brauner@kernel.org>
-
->  net/socket.c | 38 +++++++++++++++++++++++++++++++++++---
->  1 file changed, 35 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/socket.c b/net/socket.c
-> index 73e493da4589..9c1ef11de23f 100644
-> --- a/net/socket.c
-> +++ b/net/socket.c
-> @@ -108,6 +108,8 @@
->  #include <linux/ptp_clock_kernel.h>
->  #include <trace/events/sock.h>
->  
-> +#include <linux/sctp.h>
-> +
->  #ifdef CONFIG_NET_RX_BUSY_POLL
->  unsigned int sysctl_net_busy_read __read_mostly;
->  unsigned int sysctl_net_busy_poll __read_mostly;
-> @@ -2227,6 +2229,36 @@ static bool sock_use_custom_sol_socket(const struct socket *sock)
->  	return test_bit(SOCK_CUSTOM_SOCKOPT, &sock->flags);
->  }
->  
-> +#ifdef CONFIG_CGROUP_BPF
-> +static bool sockopt_installs_fd(int level, int optname)
-> +{
-> +	/*
-> +	 * These options do fd_install(), and if BPF_CGROUP_RUN_PROG_GETSOCKOPT
-> +	 * hook returns an error after success of the original handler
-> +	 * sctp_getsockopt(...), userspace will receive an error from getsockopt
-> +	 * syscall and will be not aware that fd was successfully installed into fdtable.
-> +	 *
-> +	 * Let's prevent bpf cgroup hook from running on them.
-> +	 */
-> +	if (level == SOL_SCTP) {
-> +		switch (optname) {
-> +		case SCTP_SOCKOPT_PEELOFF:
-> +		case SCTP_SOCKOPT_PEELOFF_FLAGS:
-> +			return true;
-> +		default:
-> +			return false;
-> +		}
-> +	}
-> +
-> +	return false;
-> +}
-> +#else /* CONFIG_CGROUP_BPF */
-> +static inline bool sockopt_installs_fd(int level, int optname)
-> +{
-> +	return false;
-> +}
-> +#endif /* CONFIG_CGROUP_BPF */
-> +
->  /*
->   *	Set a socket option. Because we don't know the option lengths we have
->   *	to pass the user mode parameter for the protocols to sort out.
-> @@ -2250,7 +2282,7 @@ int __sys_setsockopt(int fd, int level, int optname, char __user *user_optval,
->  	if (err)
->  		goto out_put;
->  
-> -	if (!in_compat_syscall())
-> +	if (!in_compat_syscall() && !sockopt_installs_fd(level, optname))
->  		err = BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock->sk, &level, &optname,
->  						     user_optval, &optlen,
->  						     &kernel_optval);
-> @@ -2304,7 +2336,7 @@ int __sys_getsockopt(int fd, int level, int optname, char __user *optval,
->  	if (err)
->  		goto out_put;
->  
-> -	if (!in_compat_syscall())
-> +	if (!in_compat_syscall() && !sockopt_installs_fd(level, optname))
->  		max_optlen = BPF_CGROUP_GETSOCKOPT_MAX_OPTLEN(optlen);
->  
->  	if (level == SOL_SOCKET)
-> @@ -2315,7 +2347,7 @@ int __sys_getsockopt(int fd, int level, int optname, char __user *optval,
->  		err = sock->ops->getsockopt(sock, level, optname, optval,
->  					    optlen);
->  
-> -	if (!in_compat_syscall())
-> +	if (!in_compat_syscall() && !sockopt_installs_fd(level, optname))
->  		err = BPF_CGROUP_RUN_PROG_GETSOCKOPT(sock->sk, level, optname,
->  						     optval, optlen, max_optlen,
->  						     err);
-> -- 
-> 2.34.1
-> 
+Thanks.
