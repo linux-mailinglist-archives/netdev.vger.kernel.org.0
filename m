@@ -2,89 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 246FD6DD457
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 09:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BA106DD48A
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 09:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229957AbjDKHiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 03:38:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
+        id S229972AbjDKHo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 03:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbjDKHiS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 03:38:18 -0400
-X-Greylist: delayed 440 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 11 Apr 2023 00:38:17 PDT
-Received: from mail.loanfly.pl (mail.loanfly.pl [141.94.250.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CA61709
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 00:38:17 -0700 (PDT)
-Received: by mail.loanfly.pl (Postfix, from userid 1002)
-        id EEE35A26F6; Tue, 11 Apr 2023 07:30:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=loanfly.pl; s=mail;
-        t=1681198254; bh=flSgn4+IJB03yMaHNopPnR0v50wun3P5Hd/CkHJx2Bc=;
-        h=Date:From:To:Subject:From;
-        b=jw72wI7+OaRljwWjUJr5dTiowm7Zbau6kGwXmrYYsOy5VVksaozS6wt9Brd6vurP2
-         mkslVG8bYhXdgwa6JljJrLnRMd3hlwziYnJV4cUjq+e0Qj8S7Y8dGrUQQbFmQm0H4q
-         UBUBveeQDdhinoyyNpSCZ+WmvUu9Ku4JgJWkzDtyvDhVIckHT3Z9/2jVwrzcrfvlgE
-         G6jvVONTYnlwFD9M/73FWq/uzoDeC+S+LkP/yVTuVJ8jhQV9UC+fFQpOvFKidUJRck
-         G4rZXPh90wP4MLN4IWY90FXX5A6jnIcv67iEFactiRacZj2jZr0UtdF5nleIaS302K
-         hktpXMIl+b1jg==
-Received: by mail.loanfly.pl for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:30:52 GMT
-Message-ID: <20230411064500-0.1.9h.12jb8.0.7580m7oocl@loanfly.pl>
-Date:   Tue, 11 Apr 2023 07:30:52 GMT
-From:   "Damian Cichocki" <damian.cichocki@loanfly.pl>
-To:     <netdev@vger.kernel.org>
-Subject: Prezentacja
-X-Mailer: mail.loanfly.pl
+        with ESMTP id S230143AbjDKHoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 03:44:12 -0400
+Received: from mail.codelabs.ch (mail.codelabs.ch [109.202.192.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB8449DD
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 00:43:28 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.codelabs.ch (Postfix) with ESMTP id C2A19220003;
+        Tue, 11 Apr 2023 09:43:26 +0200 (CEST)
+Received: from mail.codelabs.ch ([127.0.0.1])
+        by localhost (fenrir.codelabs.ch [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id viRC-bAz_n97; Tue, 11 Apr 2023 09:43:25 +0200 (CEST)
+Received: from think.wlp.is (unknown [185.12.128.225])
+        by mail.codelabs.ch (Postfix) with ESMTPSA id 65BEC220001;
+        Tue, 11 Apr 2023 09:43:25 +0200 (CEST)
+From:   Martin Willi <martin@strongswan.org>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Guillaume Nault <gnault@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: [PATCH net] rtnetlink: Restore RTM_NEW/DELLINK notification behavior
+Date:   Tue, 11 Apr 2023 09:43:19 +0200
+Message-Id: <20230411074319.24133-1-martin@strongswan.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=7.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_PASS,
-        URIBL_ABUSE_SURBL,URIBL_CSS_A,URIBL_DBL_SPAM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: *  2.5 URIBL_DBL_SPAM Contains a spam URL listed in the Spamhaus DBL
-        *      blocklist
-        *      [URIs: loanfly.pl]
-        *  3.6 RCVD_IN_SBL_CSS RBL: Received via a relay in Spamhaus SBL-CSS
-        *      [141.94.250.68 listed in zen.spamhaus.org]
-        *  0.1 URIBL_CSS_A Contains URL's A record listed in the Spamhaus CSS
-        *      blocklist
-        *      [URIs: loanfly.pl]
-        *  1.9 URIBL_ABUSE_SURBL Contains an URL listed in the ABUSE SURBL
-        *      blocklist
-        *      [URIs: loanfly.pl]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-X-Spam-Level: *******
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dzie=C5=84 dobry!
+The commits referenced below allows userspace to use the NLM_F_ECHO flag
+for RTM_NEW/DELLINK operations to receive unicast notifications for the
+affected link. Prior to these changes, applications may have relied on
+multicast notifications to learn the same information without specifying
+the NLM_F_ECHO flag.
 
-Czy m=C3=B3g=C5=82bym przedstawi=C4=87 rozwi=C4=85zanie, kt=C3=B3re umo=C5=
-=BCliwia monitoring ka=C5=BCdego auta w czasie rzeczywistym w tym jego po=
-zycj=C4=99, zu=C5=BCycie paliwa i przebieg?
+For such applications, the mentioned commits changed the behavior for
+requests not using NLM_F_ECHO. Multicast notifications are still received,
+but now use the portid of the requester and the sequence number of the
+request instead of zero values used previously. For the application, this
+message may be unexpected and likely handled as a response to the
+NLM_F_ACKed request, especially if it uses the same socket to handle
+requests and notifications.
 
-Dodatkowo nasze narz=C4=99dzie minimalizuje koszty utrzymania samochod=C3=
-=B3w, skraca czas przejazd=C3=B3w, a tak=C5=BCe tworzenie planu tras czy =
-dostaw.
+To fix existing applications relying on the old notification behavior,
+set the portid and sequence number in the notification only if the
+request included the NLM_F_ECHO flag. This restores the old behavior
+for applications not using it, but allows unicasted notifications for
+others.
 
-Z naszej wiedzy i do=C5=9Bwiadczenia korzysta ju=C5=BC ponad 49 tys. Klie=
-nt=C3=B3w. Monitorujemy 809 000 pojazd=C3=B3w na ca=C5=82ym =C5=9Bwiecie,=
- co jest nasz=C4=85 najlepsz=C4=85 wizyt=C3=B3wk=C4=85.
+Fixes: f3a63cce1b4f ("rtnetlink: Honour NLM_F_ECHO flag in rtnl_delete_link")
+Fixes: d88e136cab37 ("rtnetlink: Honour NLM_F_ECHO flag in rtnl_newlink_create")
+Signed-off-by: Martin Willi <martin@strongswan.org>
+---
+ include/linux/rtnetlink.h |  3 ++-
+ net/core/dev.c            |  2 +-
+ net/core/rtnetlink.c      | 11 +++++++++--
+ 3 files changed, 12 insertions(+), 4 deletions(-)
 
-Bardzo prosz=C4=99 o e-maila zwrotnego, je=C5=9Bli mogliby=C5=9Bmy wsp=C3=
-=B3lnie om=C3=B3wi=C4=87 potencja=C5=82 wykorzystania takiego rozwi=C4=85=
-zania w Pa=C5=84stwa firmie.
+diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
+index 92ad75549e9c..b6e6378dcbbd 100644
+--- a/include/linux/rtnetlink.h
++++ b/include/linux/rtnetlink.h
+@@ -25,7 +25,8 @@ void rtmsg_ifinfo_newnet(int type, struct net_device *dev, unsigned int change,
+ struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
+ 				       unsigned change, u32 event,
+ 				       gfp_t flags, int *new_nsid,
+-				       int new_ifindex, u32 portid, u32 seq);
++				       int new_ifindex, u32 portid,
++				       const struct nlmsghdr *nlh);
+ void rtmsg_ifinfo_send(struct sk_buff *skb, struct net_device *dev,
+ 		       gfp_t flags, u32 portid, const struct nlmsghdr *nlh);
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 48067321c0db..1488f700bf81 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10847,7 +10847,7 @@ void unregister_netdevice_many_notify(struct list_head *head,
+ 		    dev->rtnl_link_state == RTNL_LINK_INITIALIZED)
+ 			skb = rtmsg_ifinfo_build_skb(RTM_DELLINK, dev, ~0U, 0,
+ 						     GFP_KERNEL, NULL, 0,
+-						     portid, nlmsg_seq(nlh));
++						     portid, nlh);
+ 
+ 		/*
+ 		 *	Flush the unicast and multicast chains
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 5d8eb57867a9..6e44e92ebdf5 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -3972,16 +3972,23 @@ static int rtnl_dump_all(struct sk_buff *skb, struct netlink_callback *cb)
+ struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
+ 				       unsigned int change,
+ 				       u32 event, gfp_t flags, int *new_nsid,
+-				       int new_ifindex, u32 portid, u32 seq)
++				       int new_ifindex, u32 portid,
++				       const struct nlmsghdr *nlh)
+ {
+ 	struct net *net = dev_net(dev);
+ 	struct sk_buff *skb;
+ 	int err = -ENOBUFS;
++	u32 seq = 0;
+ 
+ 	skb = nlmsg_new(if_nlmsg_size(dev, 0), flags);
+ 	if (skb == NULL)
+ 		goto errout;
+ 
++	if (nlmsg_report(nlh))
++		seq = nlmsg_seq(nlh);
++	else
++		portid = 0;
++
+ 	err = rtnl_fill_ifinfo(skb, dev, dev_net(dev),
+ 			       type, portid, seq, change, 0, 0, event,
+ 			       new_nsid, new_ifindex, -1, flags);
+@@ -4017,7 +4024,7 @@ static void rtmsg_ifinfo_event(int type, struct net_device *dev,
+ 		return;
+ 
+ 	skb = rtmsg_ifinfo_build_skb(type, dev, change, event, flags, new_nsid,
+-				     new_ifindex, portid, nlmsg_seq(nlh));
++				     new_ifindex, portid, nlh);
+ 	if (skb)
+ 		rtmsg_ifinfo_send(skb, dev, flags, portid, nlh);
+ }
+-- 
+2.34.1
 
-
-Pozdrawiam,
-Damian Cichocki
