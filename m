@@ -2,131 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B77E06DDB85
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 15:01:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B405A6DDBB5
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 15:05:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230233AbjDKNB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 09:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
+        id S230433AbjDKNFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 09:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230251AbjDKNBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 09:01:38 -0400
-Received: from mail-ej1-x661.google.com (mail-ej1-x661.google.com [IPv6:2a00:1450:4864:20::661])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132495274
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 06:01:10 -0700 (PDT)
-Received: by mail-ej1-x661.google.com with SMTP id a640c23a62f3a-94c67e52a65so70283066b.1
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 06:01:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1681218042;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Uro36Q9BxlPEIVH/KwpgPssMY18occbtTX2ic8QxRG4=;
-        b=UutsbkIucpDckiULFPkgVrSIzAcICeJRe1UxOAL+rkNvLGByoI71hUK4yIN4MIcafb
-         QHnKPy8ug7tUQU28mnS0fHazLKG9js/2nB7nt1grd0Qrzt+rzoMOxpB4yMX6GfPgv5ve
-         KRM/6UCRGmx5hmw1WsoboL7v/2OU/FXHNK0I8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681218042;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Uro36Q9BxlPEIVH/KwpgPssMY18occbtTX2ic8QxRG4=;
-        b=7+tVieeCnxTZBrfVC2DNSObdqfbCO4HoOAIpDD2VH5OKG3yZPqW0c0T0YUbazjhOTS
-         QFybdk8DDToB8F8VQGiAPui1FAVfgwfEdUvo6a1JS9HEYFDn9rzAXkUnLo7XIFdjki6f
-         AqyIOHpw8NWIvSrKRn/ihzIjxzsSuGbuBwn7qgU1aU6VqVqBJruEOY1DV9wKZix8iXHC
-         kgqrYW46zyDb1jA4bMgZwAhRXU6DPEyck4RGKq99L8pc/C5lKuqWJxHe9Y5VYjodi7FP
-         RPO2mkS1kw9Uv16maPz7fRiDsws7fycmZf1blCkvuxGnyvhBkbNIlBkw5+DlfSgm8IxL
-         IPLQ==
-X-Gm-Message-State: AAQBX9foB0GkDYWVICa12hcBu1i2to02cvpo2AYF7akQSgjuZ21SQjT+
-        8a/R9JYjJTkUyfW5yeiCYBdiYphR91VpGT/Jf2QTZo4tZvM3
-X-Google-Smtp-Source: AKy350ZncdrI3ZnMCD8zGcpJXYP6eBz0cUcf6rYABJiQtZbbScQg/7m7aQGJ/2rH9+EXIA+BDpC5PXlEPoes
-X-Received: by 2002:aa7:d3da:0:b0:504:b324:9eb6 with SMTP id o26-20020aa7d3da000000b00504b3249eb6mr4004684edr.29.1681218042329;
-        Tue, 11 Apr 2023 06:00:42 -0700 (PDT)
-Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
-        by smtp-relay.gmail.com with ESMTPS id xa10-20020a170906fd8a00b0094c9be3f56esm2457608ejb.166.2023.04.11.06.00.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 06:00:42 -0700 (PDT)
-X-Relaying-Domain: dectris.com
-From:   Kal Conley <kal.conley@dectris.com>
-To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v2] xsk: Elide base_addr comparison in xp_unaligned_validate_desc
-Date:   Tue, 11 Apr 2023 15:00:25 +0200
-Message-Id: <20230411130025.19704-1-kal.conley@dectris.com>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S230325AbjDKNFM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 09:05:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9229D558A
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 06:04:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681218241;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PLHoOhImSgZgv5pnKGV2gG+UHyIYprSCALR+OOXUiGk=;
+        b=YeBCL6LpOFWpbRXeR3O39Rt9pzt1bHxzmqL6MO5nAdNim1LKlDo4f6QqQIBuJXbIVbJpe7
+        uZm9zI3U/8YHebStTNxII27+0M96PraJK1eHxSHZlmPWI2SOOLrd4ffuiyC7xUWuqw92XL
+        /YwDaIq9fn9ojrhvyE+pn45tjJ3XnyE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-488-oymR3Zx9N2S8Xl27GDZghw-1; Tue, 11 Apr 2023 09:00:31 -0400
+X-MC-Unique: oymR3Zx9N2S8Xl27GDZghw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 52B2E3C10EC9;
+        Tue, 11 Apr 2023 13:00:30 +0000 (UTC)
+Received: from calimero.vinschen.de (unknown [10.39.192.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C17EF1121320;
+        Tue, 11 Apr 2023 13:00:29 +0000 (UTC)
+Received: by calimero.vinschen.de (Postfix, from userid 500)
+        id 4216DA80B9B; Tue, 11 Apr 2023 15:00:28 +0200 (CEST)
+From:   Corinna Vinschen <vinschen@redhat.com>
+To:     netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        alexandre.torgue@foss.st.com, Jose Abreu <joabreu@synopsys.com>
+Subject: [PATCH net-next] net: stmmac: propagate feature flags to vlan
+Date:   Tue, 11 Apr 2023 15:00:28 +0200
+Message-Id: <20230411130028.136250-1-vinschen@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove redundant (base_addr >= pool->addrs_cnt) comparison from the
-conditional.
+stmmac_dev_probe doesn't propagate feature flags to VLANs.  So features
+like TX offloading don't correspond with the general features and it's
+not possible to manipulate features via ethtool -K to affect VLANs.
 
-In particular, addr is computed as:
-
-    addr = base_addr + offset
-
-where base_addr and offset are stored as 48-bit and 16-bit unsigned
-integers, respectively. The above sum cannot overflow u64 since
-base_addr has a maximum value of 0x0000ffffffffffff and offset has a
-maximum value of 0xffff (implying a maximum sum of 0x000100000000fffe).
-Since overflow is impossible, it follows that addr >= base_addr.
-
-Now if (base_addr >= pool->addrs_cnt), then clearly:
-
-    addr >= base_addr
-         >= pool->addrs_cnt
-
-Thus, (base_addr >= pool->addrs_cnt) implies (addr >= pool->addrs_cnt).
-Subsequently, the former comparison is unnecessary in the conditional
-since for any boolean expressions A and B, (A || B) && (A -> B) is
-equivalent to B.
-
-Signed-off-by: Kal Conley <kal.conley@dectris.com>
+Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
 ---
- net/xdp/xsk_queue.h | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index 66c6f57c9c44..dea4f378327d 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -153,16 +153,12 @@ static inline bool xp_aligned_validate_desc(struct xsk_buff_pool *pool,
- static inline bool xp_unaligned_validate_desc(struct xsk_buff_pool *pool,
- 					      struct xdp_desc *desc)
- {
--	u64 addr, base_addr;
--
--	base_addr = xp_unaligned_extract_addr(desc->addr);
--	addr = xp_unaligned_add_offset_to_addr(desc->addr);
-+	u64 addr = xp_unaligned_add_offset_to_addr(desc->addr);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index e590b6fc4761..308d4ee12d41 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7216,6 +7216,8 @@ int stmmac_dvr_probe(struct device *device,
+ 	if (priv->dma_cap.rssen && priv->plat->rss_en)
+ 		ndev->features |= NETIF_F_RXHASH;
  
- 	if (desc->len > pool->chunk_size)
- 		return false;
- 
--	if (base_addr >= pool->addrs_cnt || addr >= pool->addrs_cnt ||
--	    addr + desc->len > pool->addrs_cnt ||
-+	if (addr >= pool->addrs_cnt || addr + desc->len > pool->addrs_cnt ||
- 	    xp_desc_crosses_non_contig_pg(pool, addr, desc->len))
- 		return false;
- 
++	ndev->vlan_features |= ndev->features;
++
+ 	/* MTU range: 46 - hw-specific max */
+ 	ndev->min_mtu = ETH_ZLEN - ETH_HLEN;
+ 	if (priv->plat->has_xgmac)
 -- 
-2.39.2
+2.39.1
 
