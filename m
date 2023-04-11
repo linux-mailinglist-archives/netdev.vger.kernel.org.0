@@ -2,195 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 717D66DE3C6
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 20:21:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D45C16DE3D9
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 20:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbjDKSVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 14:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
+        id S229825AbjDKS1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 14:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbjDKSU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 14:20:58 -0400
-Received: from out-37.mta0.migadu.com (out-37.mta0.migadu.com [IPv6:2001:41d0:1004:224b::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E7A49E1
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 11:20:57 -0700 (PDT)
-Date:   Tue, 11 Apr 2023 11:20:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1681237251;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BviVJo8d5Bs8LCKJmkTvRdhI0+Q4kdUJaObznFPhyXA=;
-        b=FVVVZNnLVbmJlqlkSx0T6/NtT+r4Af2Yw6u5egGY161n0pQCozGAYw5ITSHeKzduWrb6jh
-        ao5kHKcukv7gQfqlud1wJIN4nAJFqQbY0dTW+FTQHXKvcwnL99JC2O0geHkdxIbnMARGRD
-        8CPqFCIXgUBN0BWjdT5Dci+IVfq+7Mw=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, Rafal Ozieblo <rafalo@cadence.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH net] net: macb: fix a memory corruption in extended
- buffer descriptor mode
-Message-ID: <ZDWk8vjvk7HO4I7o@P9FQF9L96D.corp.robot.car>
-References: <20230407172402.103168-1-roman.gushchin@linux.dev>
+        with ESMTP id S229692AbjDKS12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 14:27:28 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2051.outbound.protection.outlook.com [40.107.220.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205AB46BB
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 11:27:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DrT7VwYdIZnJrr47IKiEd427HJcLRyCG5iAKztAd1beXANK/0t9lhNlnkM5sHQWszudbgWdyviQXPGmabI0quE++jDwlPeMBLjfQOFUlaJNXdYXcNqCSoY778sEg4VkPNJuXSGIX4pZ0qUF3fgKeGcHpSGP0Gxrkzsw67Vhm/gFjtH5GI6NYSnRXDNf3h8IYiQqOVoJi5qb+LFRj54VmhL7lZG6iwUmGhx8EyGFf2Zr3CNXhzUp1GRnYEkr9JH/CzNBkwEgDxgPqpsX/+irkiBT80XgbA9oKYEkSFm0kYOR67Sh3PswAED+0MOwZlBbSMulfKlYpxsOBhjJbvXPTMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gJ8gJzZy/zBkmHzr5Jlzm7IbNkeuDu53FPBljR+TnnM=;
+ b=S0EYi34mPCcEVZIJ94Rm07wfbXDV/W23/HWfojDIb9jxB3LMlLl3cdcTieNwJPimwWvz0fNgdDhoJjtp7hfBcsnXV02oz7v5UxzioJ+tzhsTsk9vdAgqdC00/dnAXZ4BDG8IeKRxK9/xzW9NTBN933wk6YDoi9DkOpICm7jP7/MlkQ1m8xyukOiL7UylQ6iTU5tZSuT/n3F5K2UwsUYm4L3XqHzlL8RCFZTchkHGZSNatrI1DYZj+qWyqNvalqanKCjcdXh2B1FxjuP8dERapnck2wrQlwJsJRKeXV6Km3XuhfKO8aeEafZNXrlcObSKYocVzzM7t1HOJ1Y2SMZ4Ow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gJ8gJzZy/zBkmHzr5Jlzm7IbNkeuDu53FPBljR+TnnM=;
+ b=wOPG7hqN1xXLeqGRpxt9WVpCn2d1165LS3BHrYI2IUdVde9n2NPk7e/42COSYzyqiQ+1XJKH7B3O3hJfaGIvmiJZCrhT75NvnOGPikfpm85hpnHYak8fI81f9/TOf6WnMDfwf+9sz46DzT3j6twib2e5F1uvvQ0mfKXvcv6QDxk=
+Received: from MW4PR04CA0226.namprd04.prod.outlook.com (2603:10b6:303:87::21)
+ by SN7PR12MB6909.namprd12.prod.outlook.com (2603:10b6:806:263::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Tue, 11 Apr
+ 2023 18:27:22 +0000
+Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:87:cafe::e8) by MW4PR04CA0226.outlook.office365.com
+ (2603:10b6:303:87::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.40 via Frontend
+ Transport; Tue, 11 Apr 2023 18:27:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6298.28 via Frontend Transport; Tue, 11 Apr 2023 18:27:22 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 11 Apr
+ 2023 13:27:21 -0500
+Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34 via Frontend
+ Transport; Tue, 11 Apr 2023 13:27:20 -0500
+From:   <edward.cree@amd.com>
+To:     <linux-net-drivers@amd.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <edumazet@google.com>
+CC:     Edward Cree <ecree.xilinx@gmail.com>, <netdev@vger.kernel.org>,
+        <habetsm.xilinx@gmail.com>, <sudheer.mogilappagari@intel.com>
+Subject: [RFC PATCH v2 net-next 0/7] ethtool: track custom RSS contexts in the core
+Date:   Tue, 11 Apr 2023 19:26:08 +0100
+Message-ID: <cover.1681236653.git.ecree.xilinx@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230407172402.103168-1-roman.gushchin@linux.dev>
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT019:EE_|SN7PR12MB6909:EE_
+X-MS-Office365-Filtering-Correlation-Id: 03811302-c16b-4798-a181-08db3aba6454
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xylFWkMu7Vqc5FcFiuME9R2mnfVfk/nddMrk5ae4lvoVu4IIHJUM46fpuu+8sJ1aNoqDEsCbJFh9ExzCfKIyWV2GFPTPBboy3EqznWGHpS310266DMsSIcb6FWyfhSQp+OrRWFXMCAEifmcpTYLP+OuP5SPhuxYuVDzu5d7UfcdiAxjVZ+xKcS95l3jvRtgCYbz283WBmda6D6iTpoO3DBfIZ1GflOHFgzKHgLAiaW6hm/OiVQ9D6xIBIp+d4DKId163hJBYqibst4GIMcMO17boweeusIzPQUqL5EFMtJISv69VDYSiS9DelFt2Xed9hF86NVyZHTHqe63kDUtPUFfbtOrvFywG2qHnO8cTyYRe9WwIWFEdbvW0MXomZPVox/djZJLTcfU8YgsOacwjyfY807ni3LWXtGUzzJTfVNq9J5oDW6RSwt8dRYESt58FSmlpAwqwh/LJkCIdslzH5fGMiK40FPIYJi4tdt+fVWTAgWhV1Xr/nzzDIMo0TlB3CRycX4INAT0FKS3xBMFuWoNnSwaVVc2nQmLjkixdyrvTyV8Fh6nv3z38ZLfKHu96HRlLwlBMalb4M2pqcjEKri8dvap4pUQQJaeihRgYYSvYlmWJ2nNABnx1G62u76/RLGn3sVYU1efhngVeusEWJb4jIB6jw577ZwiZohxUWnWvPqeTTMX3NE7osGXFkpL2YhsoClMLld1YpzB+fAYUzKaqUazglE3nFDgW1isLPCo=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(39860400002)(396003)(136003)(451199021)(36840700001)(40470700004)(46966006)(55446002)(36756003)(86362001)(41300700001)(110136005)(316002)(8676002)(54906003)(70586007)(4326008)(70206006)(478600001)(82310400005)(5660300002)(40480700001)(36860700001)(2906002)(8936002)(2876002)(356005)(186003)(81166007)(82740400003)(6666004)(26005)(9686003)(426003)(336012)(83380400001)(47076005)(40460700003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 18:27:22.3090
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 03811302-c16b-4798-a181-08db3aba6454
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6909
+X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Friendly ping.
+From: Edward Cree <ecree.xilinx@gmail.com>
 
-Also cc'ing Dave.
+Make the core responsible for tracking the set of custom RSS contexts,
+ their IDs, indirection tables, hash keys, and hash functions; this
+ lets us get rid of duplicative code in drivers, and will allow us to
+ support netlink dumps later.
 
-Thanks!
+This series only moves the sfc EF10 & EF100 driver over to the new API; if
+ the design is approved of, I plan to post a follow-up series to convert the
+ other drivers and remove the legacy API.  (However, I don't have hardware
+ for the drivers besides sfc, so I won't be able to test those myself.)
 
-On Fri, Apr 07, 2023 at 10:24:02AM -0700, Roman Gushchin wrote:
-> For quite some time we were chasing a bug which looked like a sudden
-> permanent failure of networking and mmc on some of our devices.
-> The bug was very sensitive to any software changes and even more to
-> any kernel debug options.
-> 
-> Finally we got a setup where the problem was reproducible with
-> CONFIG_DMA_API_DEBUG=y and it revealed the issue with the rx dma:
-> 
-> [   16.992082] ------------[ cut here ]------------
-> [   16.996779] DMA-API: macb ff0b0000.ethernet: device driver tries to free DMA memory it has not allocated [device address=0x0000000875e3e244] [size=1536 bytes]
-> [   17.011049] WARNING: CPU: 0 PID: 85 at kernel/dma/debug.c:1011 check_unmap+0x6a0/0x900
-> [   17.018977] Modules linked in: xxxxx
-> [   17.038823] CPU: 0 PID: 85 Comm: irq/55-8000f000 Not tainted 5.4.0 #28
-> [   17.045345] Hardware name: xxxxx
-> [   17.049528] pstate: 60000005 (nZCv daif -PAN -UAO)
-> [   17.054322] pc : check_unmap+0x6a0/0x900
-> [   17.058243] lr : check_unmap+0x6a0/0x900
-> [   17.062163] sp : ffffffc010003c40
-> [   17.065470] x29: ffffffc010003c40 x28: 000000004000c03c
-> [   17.070783] x27: ffffffc010da7048 x26: ffffff8878e38800
-> [   17.076095] x25: ffffff8879d22810 x24: ffffffc010003cc8
-> [   17.081407] x23: 0000000000000000 x22: ffffffc010a08750
-> [   17.086719] x21: ffffff8878e3c7c0 x20: ffffffc010acb000
-> [   17.092032] x19: 0000000875e3e244 x18: 0000000000000010
-> [   17.097343] x17: 0000000000000000 x16: 0000000000000000
-> [   17.102647] x15: ffffff8879e4a988 x14: 0720072007200720
-> [   17.107959] x13: 0720072007200720 x12: 0720072007200720
-> [   17.113261] x11: 0720072007200720 x10: 0720072007200720
-> [   17.118565] x9 : 0720072007200720 x8 : 000000000000022d
-> [   17.123869] x7 : 0000000000000015 x6 : 0000000000000098
-> [   17.129173] x5 : 0000000000000000 x4 : 0000000000000000
-> [   17.134475] x3 : 00000000ffffffff x2 : ffffffc010a1d370
-> [   17.139778] x1 : b420c9d75d27bb00 x0 : 0000000000000000
-> [   17.145082] Call trace:
-> [   17.147524]  check_unmap+0x6a0/0x900
-> [   17.151091]  debug_dma_unmap_page+0x88/0x90
-> [   17.155266]  gem_rx+0x114/0x2f0
-> [   17.158396]  macb_poll+0x58/0x100
-> [   17.161705]  net_rx_action+0x118/0x400
-> [   17.165445]  __do_softirq+0x138/0x36c
-> [   17.169100]  irq_exit+0x98/0xc0
-> [   17.172234]  __handle_domain_irq+0x64/0xc0
-> [   17.176320]  gic_handle_irq+0x5c/0xc0
-> [   17.179974]  el1_irq+0xb8/0x140
-> [   17.183109]  xiic_process+0x5c/0xe30
-> [   17.186677]  irq_thread_fn+0x28/0x90
-> [   17.190244]  irq_thread+0x208/0x2a0
-> [   17.193724]  kthread+0x130/0x140
-> [   17.196945]  ret_from_fork+0x10/0x20
-> [   17.200510] ---[ end trace 7240980785f81d6f ]---
-> 
-> [  237.021490] ------------[ cut here ]------------
-> [  237.026129] DMA-API: exceeded 7 overlapping mappings of cacheline 0x0000000021d79e7b
-> [  237.033886] WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:499 add_dma_entry+0x214/0x240
-> [  237.041802] Modules linked in: xxxxx
-> [  237.061637] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W         5.4.0 #28
-> [  237.068941] Hardware name: xxxxx
-> [  237.073116] pstate: 80000085 (Nzcv daIf -PAN -UAO)
-> [  237.077900] pc : add_dma_entry+0x214/0x240
-> [  237.081986] lr : add_dma_entry+0x214/0x240
-> [  237.086072] sp : ffffffc010003c30
-> [  237.089379] x29: ffffffc010003c30 x28: ffffff8878a0be00
-> [  237.094683] x27: 0000000000000180 x26: ffffff8878e387c0
-> [  237.099987] x25: 0000000000000002 x24: 0000000000000000
-> [  237.105290] x23: 000000000000003b x22: ffffffc010a0fa00
-> [  237.110594] x21: 0000000021d79e7b x20: ffffffc010abe600
-> [  237.115897] x19: 00000000ffffffef x18: 0000000000000010
-> [  237.121201] x17: 0000000000000000 x16: 0000000000000000
-> [  237.126504] x15: ffffffc010a0fdc8 x14: 0720072007200720
-> [  237.131807] x13: 0720072007200720 x12: 0720072007200720
-> [  237.137111] x11: 0720072007200720 x10: 0720072007200720
-> [  237.142415] x9 : 0720072007200720 x8 : 0000000000000259
-> [  237.147718] x7 : 0000000000000001 x6 : 0000000000000000
-> [  237.153022] x5 : ffffffc010003a20 x4 : 0000000000000001
-> [  237.158325] x3 : 0000000000000006 x2 : 0000000000000007
-> [  237.163628] x1 : 8ac721b3a7dc1c00 x0 : 0000000000000000
-> [  237.168932] Call trace:
-> [  237.171373]  add_dma_entry+0x214/0x240
-> [  237.175115]  debug_dma_map_page+0xf8/0x120
-> [  237.179203]  gem_rx_refill+0x190/0x280
-> [  237.182942]  gem_rx+0x224/0x2f0
-> [  237.186075]  macb_poll+0x58/0x100
-> [  237.189384]  net_rx_action+0x118/0x400
-> [  237.193125]  __do_softirq+0x138/0x36c
-> [  237.196780]  irq_exit+0x98/0xc0
-> [  237.199914]  __handle_domain_irq+0x64/0xc0
-> [  237.204000]  gic_handle_irq+0x5c/0xc0
-> [  237.207654]  el1_irq+0xb8/0x140
-> [  237.210789]  arch_cpu_idle+0x40/0x200
-> [  237.214444]  default_idle_call+0x18/0x30
-> [  237.218359]  do_idle+0x200/0x280
-> [  237.221578]  cpu_startup_entry+0x20/0x30
-> [  237.225493]  rest_init+0xe4/0xf0
-> [  237.228713]  arch_call_rest_init+0xc/0x14
-> [  237.232714]  start_kernel+0x47c/0x4a8
-> [  237.236367] ---[ end trace 7240980785f81d70 ]---
-> 
-> Lars was fast to find an explanation: according to the datasheet
-> bit 2 of the rx buffer descriptor entry has a different meaning in the
-> extended mode:
->   Address [2] of beginning of buffer, or
->   in extended buffer descriptor mode (DMA configuration register [28] = 1),
->   indicates a valid timestamp in the buffer descriptor entry.
-> 
-> The macb driver didn't mask this bit while getting an address and it
-> eventually caused a memory corruption and a dma failure.
-> 
-> The problem is resolved by extending the MACB_RX_WADDR_SIZE
-> in the extended mode.
-> 
-> Fixes: 7b4296148066 ("net: macb: Add support for PTP timestamps in DMA descriptors")
-> Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
-> Co-developed-by: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/net/ethernet/cadence/macb.h | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-> index c1fc91c97cee..1b330f7cfc09 100644
-> --- a/drivers/net/ethernet/cadence/macb.h
-> +++ b/drivers/net/ethernet/cadence/macb.h
-> @@ -826,8 +826,13 @@ struct macb_dma_desc_ptp {
->  #define MACB_RX_USED_SIZE			1
->  #define MACB_RX_WRAP_OFFSET			1
->  #define MACB_RX_WRAP_SIZE			1
-> +#ifdef MACB_EXT_DESC
-> +#define MACB_RX_WADDR_OFFSET			3
-> +#define MACB_RX_WADDR_SIZE			29
-> +#else
->  #define MACB_RX_WADDR_OFFSET			2
->  #define MACB_RX_WADDR_SIZE			30
-> +#endif
->  
->  #define MACB_RX_FRMLEN_OFFSET			0
->  #define MACB_RX_FRMLEN_SIZE			12
-> -- 
-> 2.40.0
-> 
+Edward Cree (7):
+  net: move ethtool-related netdev state into its own struct
+  net: ethtool: attach an IDR of custom RSS contexts to a netdevice
+  net: ethtool: record custom RSS contexts in the IDR
+  net: ethtool: let the core choose RSS context IDs
+  net: ethtool: add an extack parameter to new rxfh_context APIs
+  net: ethtool: add a mutex protecting RSS contexts
+  sfc: use new rxfh_context API
+
+ drivers/net/ethernet/realtek/r8169_main.c |   4 +-
+ drivers/net/ethernet/sfc/ef10.c           |   2 +-
+ drivers/net/ethernet/sfc/ef100_ethtool.c  |   5 +-
+ drivers/net/ethernet/sfc/efx.c            |   2 +-
+ drivers/net/ethernet/sfc/efx.h            |   2 +-
+ drivers/net/ethernet/sfc/efx_common.c     |  10 +-
+ drivers/net/ethernet/sfc/ethtool.c        |   5 +-
+ drivers/net/ethernet/sfc/ethtool_common.c | 147 +++++++++++++---------
+ drivers/net/ethernet/sfc/ethtool_common.h |  18 ++-
+ drivers/net/ethernet/sfc/mcdi_filters.c   | 133 ++++++++++----------
+ drivers/net/ethernet/sfc/mcdi_filters.h   |   8 +-
+ drivers/net/ethernet/sfc/net_driver.h     |  28 ++---
+ drivers/net/ethernet/sfc/rx_common.c      |  64 ++--------
+ drivers/net/ethernet/sfc/rx_common.h      |   8 +-
+ drivers/net/phy/phy.c                     |   2 +-
+ drivers/net/phy/phy_device.c              |   4 +-
+ drivers/net/phy/phylink.c                 |   2 +-
+ include/linux/ethtool.h                   | 109 +++++++++++++++-
+ include/linux/netdevice.h                 |   7 +-
+ net/core/dev.c                            |  38 ++++++
+ net/ethtool/ioctl.c                       | 124 ++++++++++++++++--
+ net/ethtool/wol.c                         |   2 +-
+ 22 files changed, 484 insertions(+), 240 deletions(-)
+
