@@ -2,99 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 826F76DD398
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 09:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 324B06DD3B0
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 09:10:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbjDKHGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 03:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
+        id S230015AbjDKHKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 03:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbjDKHGy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 03:06:54 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07321FE2
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 00:06:52 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id x31so3423405ljq.10
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 00:06:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1681196811;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=xWLFqLmDWmt0Zth7IUEkc/daA4hIfhoAeCe5gJbvC80=;
-        b=WsUBgGu4I/zQWjsgFlV1/rIESTuxTozRuc0iDqqFbYXEsVsZ+fzENzCBHha4633gWH
-         UpPCyq1MmGflUmoAiLjzAVgyzvj02p0JEtri5RbUSK3u+zpKxmQ8UeQonvqaVJonvdDr
-         ZnXvntLbHuJSfFXDAatIk1C2RLD950ErwtuijM8Q9GbxoxR4ZdMTOT7VOHBQLQytUiD2
-         WLhUzHgA8oGeV/SxTVY/pXrd8GAgbVgF1RP8zZx24XLIVH0FcL+hUHN0/BmDkxyxbo3V
-         nNkgPjFl9dBB2nM8ZjCbzGLaXpPAPKWnAkqrbbiS2unjDP39rPD7i99ENydSZndm8RJJ
-         g2+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681196811;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xWLFqLmDWmt0Zth7IUEkc/daA4hIfhoAeCe5gJbvC80=;
-        b=VhHCzBhdfxNVo7ysufJP91hGqs1/hQ2cZInrM9gHi1vFcptnmBat5wTUXjRneOFxgC
-         gixd4p5aqf1ElmN5V6XVJvD5C0maFNIKu20izeAmPAeXMHt5tZwWqI9jz1KXo0XdeImf
-         1hW+PdUBfE//ZXzSlAoKIOpq8p4WK9uJX9yhltatx16B9Zhltzj/zOv1iXvaBJxgAkxp
-         Ct+io/52p1aCvNOg5jNQnP/U3ZFUh7jesTXts9es4+HOXEwnuG5OUUQq+oCmoTuPJfoD
-         WhZs8kkMxGOJ1s0I3saP6QjUSn/of5SX8iEZWyzcpDyCo8M/+zYOJRhcRt54V+2L+rlb
-         jL0Q==
-X-Gm-Message-State: AAQBX9e2NcZN4/OOLtmDYyfoNxGgkH0HF6su90Kgn8GJclbOcO+T2r0p
-        u3TGjtABIBXvBEQRYQTaHbl8DGWRgJXHr2fIM5m6NQ==
-X-Google-Smtp-Source: AKy350bMi0aQpqyGht3Q9mFF+O4C25IT2795IKMLIZA/67AP3GolkoVcIF43JXlQn2ch0G3xs6YG7KW00BQwwADVExA=
-X-Received: by 2002:a2e:3015:0:b0:2a7:8a4c:4c1d with SMTP id
- w21-20020a2e3015000000b002a78a4c4c1dmr523442ljw.8.1681196810845; Tue, 11 Apr
- 2023 00:06:50 -0700 (PDT)
+        with ESMTP id S229697AbjDKHKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 03:10:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5BA1711;
+        Tue, 11 Apr 2023 00:10:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA1C362235;
+        Tue, 11 Apr 2023 07:10:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA817C433D2;
+        Tue, 11 Apr 2023 07:10:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681197047;
+        bh=dWECYEnu3oSCzd3j0bJdz30hiF397lT4p1HM1cffhk4=;
+        h=From:Subject:Date:To:Cc:From;
+        b=mrLKW7G77IM1tlEKMJKXk5w4goTgr0LSR7dIQ1yCqF9Tqv9/E4InSF5W21Rla74DR
+         7IppkMo6KqOOa+PDjx+sA6BxyODf2QZmzOlIrPaO+LK5Pkg9xdljjeGMe+yKf9Wpw5
+         xHp0ivhjK7fMueiTcxAa15w+/Rhaksp6IRLE/r1XpyP/TrgY0qoIMa6/6bi5cFaYR1
+         G9AN8EOpnRPM47JBqw32QmIH14SQhJOoq8bkba5VnjuTuJoYdv0gzLBxFZEIAz2odo
+         COSE6I1hJeeqr2NcakWE4nr7/wJWjDcP56ijMzSr/3qgMpKHnRKmLLSvMXzTHgwkzI
+         PMxTKawpm9W6w==
+From:   Simon Horman <horms@kernel.org>
+Subject: [PATCH nf-next v2 0/4] ipvs: Cleanups for v6.4
+Date:   Tue, 11 Apr 2023 09:10:38 +0200
+Message-Id: <20230409-ipvs-cleanup-v2-0-204cd17da708@kernel.org>
 MIME-Version: 1.0
-References: <000000000000e8fd1f05ed75bf20@google.com> <000000000000a5727605f7c2f407@google.com>
-In-Reply-To: <000000000000a5727605f7c2f407@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 11 Apr 2023 09:06:38 +0200
-Message-ID: <CACT4Y+YkCX9kmu24NGPV_fZQ6fK9aWSJQMY1SQ8G80zsU+DqnQ@mail.gmail.com>
-Subject: Re: [syzbot] [nfc?] possible deadlock in nci_start_poll
-To:     syzbot <syzbot+f1f36887d202cea1446d@syzkaller.appspotmail.com>
-Cc:     bongsu.jeon@samsung.com, davem@davemloft.net, edumazet@google.com,
-        hdanton@sina.com, krzysztof.kozlowski@linaro.org, kuba@kernel.org,
-        linma@zju.edu.cn, linux-kernel@vger.kernel.org,
-        linux-nfc@lists.01.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAO4HNWQC/22NywqDMBBFf6XMulPiaB921f8oLpI4amgYJdFgE
+ f+9wXWX514OZ4PIwXGE52mDwMlFN0oGOp/ADlp6RtdmBlJUqkrV6KYU0XrWskxobK2vpOle0g2
+ yYnRkNEGLHbIki/d5nAJ3bj0ab5AOhdcZmnwMLs5j+B7tVBz3/0wqUGH9sK2lijo26vXhIOwvY
+ +ih2ff9BzXbgKrHAAAA
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, lvs-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+X-Mailer: b4 0.12.2
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 26 Mar 2023 at 01:46, syzbot
-<syzbot+f1f36887d202cea1446d@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit b2e44aac91b25abbed57d785089c4b7af926a7bd
-> Author: Dmitry Vyukov <dvyukov@google.com>
-> Date:   Tue Nov 15 10:00:17 2022 +0000
->
->     NFC: nci: Allow to create multiple virtual nci devices
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=117e50c1c80000
-> start commit:   0b1dcc2cf55a Merge tag 'mm-hotfixes-stable-2022-11-24' of ..
-> git tree:       upstream
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=436ee340148d5197
-> dashboard link: https://syzkaller.appspot.com/bug?extid=f1f36887d202cea1446d
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=125fa5c5880000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12508d3d880000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: NFC: nci: Allow to create multiple virtual nci devices
->
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Hi Julian,
 
-Looks reasonable:
+this series aims to clean up IPVS in several ways without
+implementing any functional changes, aside from removing
+some debugging output.
 
-#syz fix: NFC: nci: Allow to create multiple virtual nci devices
+Patch 1/4: Update width of source for ip_vs_sync_conn_options
+           The operation is safe, use an annotation to describe it properly.
+
+Patch 2/4: Consistently use array_size() in ip_vs_conn_init()
+           It seems better to use helpers consistently.
+
+Patch 3/4: Remove {Enter,Leave}Function
+           These seem to be well past their use-by date.
+
+Patch 4/4: Correct spelling in comments
+	   I can't spell. But codespell helps me these days.
+
+All changes: compile tested only!
+
+---
+Changes in v2:
+- Patch 1/4: Correct spelling of 'conn' in subject
+
+---
+Simon Horman (4):
+      ipvs: Update width of source for ip_vs_sync_conn_options
+      ipvs: Consistently use array_size() in ip_vs_conn_init()
+      ipvs: Remove {Enter,Leave}Function
+      ipvs: Correct spelling in comments
+
+ include/net/ip_vs.h             | 32 +++++----------------
+ net/netfilter/ipvs/ip_vs_conn.c | 12 ++++----
+ net/netfilter/ipvs/ip_vs_core.c |  8 ------
+ net/netfilter/ipvs/ip_vs_ctl.c  | 26 +----------------
+ net/netfilter/ipvs/ip_vs_sync.c |  7 +----
+ net/netfilter/ipvs/ip_vs_xmit.c | 62 ++++++-----------------------------------
+ 6 files changed, 23 insertions(+), 124 deletions(-)
+
+base-commit: 9bc11460bea751b5c805ac793de35a55629adb9b
+
