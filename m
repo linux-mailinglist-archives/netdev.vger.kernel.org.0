@@ -2,116 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E066DDA10
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 13:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F98D6DDA28
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 13:58:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbjDKLuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 07:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40304 "EHLO
+        id S229892AbjDKL62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 07:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbjDKLul (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 07:50:41 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37560A3
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 04:50:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=OZ8fzCDBpazBx4KekvkPk2PcMMqzCkGuS3ndPi7+gXc=; b=BKv1iNPwZqr4byZp/AQeGh46ew
-        U8hYhbfxbdxkLROxi4dMWMv5kqgP+7mHnQHtHo839Qb9NAQBs8yxtqOOcW46oukRxQIalbjyXZDmn
-        fnwXB0lioB4jMkQz5XjLZ4CEo1PkUuj9M6K03bFwO0px5Mmo56uSGjjtE8LFvpnCcROwbITbel6Lj
-        jvtlmDhr7tZUOgYmfbpRk4ZPdKcj7b1HDbrdXX+vJXkRvTp6aTS2EhHW7jLw1bCflYVkPqS9W2xiO
-        3m0XGHxxqi2vkIm12uZF9MdK3KgKAON8LpHMni3W1iWSEQeyglv5dfUULkmNWzvrNY+ei5oAUl2cy
-        U/L8nsGw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57752)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pmCW7-0005rC-Mq; Tue, 11 Apr 2023 12:50:31 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pmCW4-00045S-Ne; Tue, 11 Apr 2023 12:50:28 +0100
-Date:   Tue, 11 Apr 2023 12:50:28 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
+        with ESMTP id S229635AbjDKL62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 07:58:28 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1981BC8
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 04:58:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681214307; x=1712750307;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vlWzYaEXp+6FT2jS2g8ghy2hsaGVgaqThYJLUECGT64=;
+  b=S1VM9U3tq+6tutO+sxA8TQsXqJC2q71Yek91qkx3b4t++jdIwb1GKJ3U
+   wS7xGlf+0C+OtRZskJmyvEFiVrlnDxjTjo6ONsRlX2i7+TJguc9XtA0FM
+   rlQzQtYWvUpVyvh+VF7/+IqhYZ2XHOv+1V9chfYPXPCLlXGB8hVUsNvFR
+   7wwQkwh7IXolcXE3dwcBcqnfYccli21eNH8VwfORh8+2Jn7I/7mIbb6Hi
+   pBaF8iqya8FuIPBMrL8wHzhtgnJOYNmaVXkm+S/euCX5sgr+QHCBOhYLf
+   k5jTUt79FXpu3XUJqqcKzO0QCbZ36B6h0LPVUU2Y2hFt0vPCTpEHLtx3R
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="332282836"
+X-IronPort-AV: E=Sophos;i="5.98,336,1673942400"; 
+   d="scan'208";a="332282836"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2023 04:58:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10676"; a="799885777"
+X-IronPort-AV: E=Sophos;i="5.98,336,1673942400"; 
+   d="scan'208";a="799885777"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP; 11 Apr 2023 04:58:24 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pmCdi-00FFWd-0L;
+        Tue, 11 Apr 2023 14:58:22 +0300
+Date:   Tue, 11 Apr 2023 14:58:21 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
- flow control, speed, and duplex on CPU port configurable
-Message-ID: <ZDVJhN4vyK9ldurD@shell.armlinux.org.uk>
-References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
- <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
- <20230411085626.GA19711@pengutronix.de>
- <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
- <20230411111609.jhfcvvxbxbkl47ju@skbuf>
+        Michael Jamet <michael.jamet@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] net: thunderbolt: Fix sparse warnings in
+ tbnet_xmit_csum_and_map()
+Message-ID: <ZDVLXQ/8O7YxTHRv@smile.fi.intel.com>
+References: <20230411091049.12998-1-mika.westerberg@linux.intel.com>
+ <20230411091049.12998-3-mika.westerberg@linux.intel.com>
+ <ZDVJeJd3mM0kBdE4@corigine.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230411111609.jhfcvvxbxbkl47ju@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <ZDVJeJd3mM0kBdE4@corigine.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 02:16:09PM +0300, Vladimir Oltean wrote:
-> On Tue, Apr 11, 2023 at 10:17:47AM +0100, Russell King (Oracle) wrote:
-> > Since we can't manually control the tx and rx pause enables, I think
-> > the only sensible way forward with this would be to either globally
-> > disable pause on the device, and not report support for any pause
-> > modes,
-> 
-> This implies restarting autoneg on all the other switch ports when one
-> port's flow control mode is changed?
-
-From my reading of these global register descriptions, no it doesn't,
-and even if we did restart aneg, it would have no overall system effect
-because the advertisements for each port haven't been changed. It's
-mad hardware.
-
-What I was meaning above is that we configure the entire switch to
-either do autonegotiated flow control at setup time, or we configure
-the switch to never do flow control.
-
-> > or report support for all pause modes, advertise '11' and
-> > let the hardware control it (which means the ethtool configuration
-> > for pause would not be functional.)
+On Tue, Apr 11, 2023 at 01:50:16PM +0200, Simon Horman wrote:
+> On Tue, Apr 11, 2023 at 12:10:48PM +0300, Mika Westerberg wrote:
+> > Fixes the following warning when the driver is built with sparse checks
+> > enabled:
 > > 
-> > This needs to be commented in the driver so that in the future we
-> > remember why this has been done.
+> > main.c:993:23: warning: incorrect type in initializer (different base types)
+> > main.c:993:23:    expected restricted __wsum [usertype] wsum
+> > main.c:993:23:    got restricted __be32 [usertype]
 > > 
-> > Maybe Andrew and/or Vladimir also have an opinion to share about the
-> > best approach here?
+> > No functional changes intended.
 > 
-> I don't object to documenting that manually forcing flow control off is
-> broken and leaving it at that (and the way to force it off would be to
-> not advertise any of the 2 bits).
+> This seems nice.
 > 
-> But why advertise only 11 (Asym_Pause | Pause) when the PHYs integrated
-> here have the advertisement configurable (presumably also through the
-> micrel.c PHY driver)? They would advertise in accordance with ethtool, no?
-> 
-> I may have missed something.
+> After you posted v1 I was wondering if, as a follow-up, it would be worth
+> creating a helper for this, say cpu_to_wsum(), as I think this pattern
+> occurs a few times. I'm thinking of a trivial wrapper around cpu_to_be32().
 
-I think you have. I'm only talking about the ability to control flow
-control manually via ethtool -A. Changing it via the advertisement
-(ethtool -s) would still work.
+But it looks like it makes sense to have a standalone series for that matter.
+I.o.w. it doesn't belong to Thunderbolt (only).
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+With Best Regards,
+Andy Shevchenko
+
+
