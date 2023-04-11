@@ -2,303 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EEB46DE05B
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 18:03:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ECB26DE080
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 18:10:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbjDKQDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 12:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54722 "EHLO
+        id S229807AbjDKQKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 12:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbjDKQCx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 12:02:53 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB9A5B86
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 09:02:47 -0700 (PDT)
-Received: from mail-yw1-f197.google.com (mail-yw1-f197.google.com [209.85.128.197])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S229872AbjDKQJ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 12:09:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B88D212E
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 09:09:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681229353;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vRGdhz3m7ACabuyRR5keSdTSASLOPiAnVwOIfnt3Q7w=;
+        b=B6BI7uUQB5IoNbY86Jf4rV9EFU/x2Pfya/EtU/s6RjLuo/u3/treg6/imsCli0rtru5+rv
+        fobreF77Q1cE+wE8E7rNqoMF/X/7TgecfxJx8R18LATX0dCkRHLnweNwyst1pI/SqqOSuA
+        Ws10PTF0fJnUvfGPrpnIAEPD/QmB+mU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-438-acUTLrbHP2ai0xnyujexlg-1; Tue, 11 Apr 2023 12:09:09 -0400
+X-MC-Unique: acUTLrbHP2ai0xnyujexlg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id BAA813F23D
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 16:02:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1681228965;
-        bh=tST28qf9fVm0KVVc5h3Ft+/jB9NLl6vxNB0dblfyAO8=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=vEBf1gg6OtFrt4/smTiJlEDYtAPESzNB6NNFHm51rACYX2r8qg2+jQnKuADInWa0U
-         UgXFG81QmDmbcnttjUya1lEc+r4REwyqaQ28ebXTVKyprrybqIucqIrc7UAfDiEcto
-         2RbdZcPAsMWhlxiDzXc/RVe3croWJMFqZhRAau53rRpPLIvG3BNtDzm2xaV1+2xNQn
-         /wlEoYqkxs+FmLMVGKCdjA7cgWPwobWb8K6pn4DMueF0FyS9KUaNcc4k2tK16aarcg
-         xNfL8eL/6t4EPQgaerk4Hqi+FrrD/qZWGQuGrLfSi/zVXfBbrhL2H5ABg+Sj15JcVj
-         L1aFcL+8yITUw==
-Received: by mail-yw1-f197.google.com with SMTP id 00721157ae682-54c119a5c44so147103687b3.2
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 09:02:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681228963;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tST28qf9fVm0KVVc5h3Ft+/jB9NLl6vxNB0dblfyAO8=;
-        b=M0RTVPK4++0O60HQWDaRht5f1HjJ0/miLae/JCPsGGozcQoPhgKyUxKUFWoIuBKea9
-         Z36AnHpRGxt8MiPY6ruw/njxJLYAoPrpQRmbNYL41RNO5qVi0VhWQEXajyWS2ZGg6pDK
-         hu3IH8iykf2ByQQYSCoD9KUDEuXmLoQpsgJvFyEYvmC9G3kSRvvTEEx+w/mzQFTyyZR4
-         sQ0dbYTNM7bOqRKlsYQBmMROlM6h/d83Cf59irSF8sl6c1EFZvtMhQAMmorDoJI2uRzS
-         FWMX/ScwUFLxeCxnY8eXve25G8vKNi/c235MwvjbZyP1nWFJZTobFIiqb3PXUmRcJGyH
-         KKEQ==
-X-Gm-Message-State: AAQBX9cIHrqzJGucI03qxG77XMYozEFnHj4Tx2zXQ/q5KIvhFDkfSFUc
-        47fcu9X8koD1bJ25YNKILO5EKdoDXNm0c10D1nPn4BMd0n4a3HsY1v0ufpaSEbxQc++r//OZ3MC
-        xXpAoojwgYetXKO7vRrCz3YmQdYR8P7jPO3F8OJxc+wtp7Czidw==
-X-Received: by 2002:a81:af26:0:b0:54f:8170:2977 with SMTP id n38-20020a81af26000000b0054f81702977mr413684ywh.1.1681228963199;
-        Tue, 11 Apr 2023 09:02:43 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aXhhuHzp96TVZTyPA9Nyg8o4Na/+MVd4CEuFbkZGV7WrVzHmQxwT5hXXmn1gopSs5Bm7flly68tooAjB2h02M=
-X-Received: by 2002:a81:af26:0:b0:54f:8170:2977 with SMTP id
- n38-20020a81af26000000b0054f81702977mr413671ywh.1.1681228962975; Tue, 11 Apr
- 2023 09:02:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230411104231.160837-1-aleksandr.mikhalitsyn@canonical.com>
- <20230411104231.160837-4-aleksandr.mikhalitsyn@canonical.com> <20230411-pantoffeln-voreilig-208e37ba62bb@brauner>
-In-Reply-To: <20230411-pantoffeln-voreilig-208e37ba62bb@brauner>
-From:   Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Date:   Tue, 11 Apr 2023 18:02:31 +0200
-Message-ID: <CAEivzxe5KL3+D3zPqBBXzNXcyrNfYDZeEb+1z4aUW559rusVBg@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 3/4] net: core: add getsockopt SO_PEERPIDFD
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9DCD9101A551;
+        Tue, 11 Apr 2023 16:09:07 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4ED7A47CDC;
+        Tue, 11 Apr 2023 16:09:05 +0000 (UTC)
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     David Howells <dhowells@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         David Ahern <dsahern@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Luca Boccassi <bluca@debian.org>, linux-arch@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [PATCH net-next v6 00/18] splice, net: Replace sendpage with sendmsg(MSG_SPLICE_PAGES), part 1
+Date:   Tue, 11 Apr 2023 17:08:44 +0100
+Message-Id: <20230411160902.4134381-1-dhowells@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 5:57=E2=80=AFPM Christian Brauner <brauner@kernel.o=
-rg> wrote:
->
-> On Tue, Apr 11, 2023 at 12:42:30PM +0200, Alexander Mikhalitsyn wrote:
-> > Add SO_PEERPIDFD which allows to get pidfd of peer socket holder pidfd.
-> > This thing is direct analog of SO_PEERCRED which allows to get plain PI=
-D.
-> >
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Paolo Abeni <pabeni@redhat.com>
-> > Cc: Leon Romanovsky <leon@kernel.org>
-> > Cc: David Ahern <dsahern@kernel.org>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Christian Brauner <brauner@kernel.org>
-> > Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > Cc: Lennart Poettering <mzxreary@0pointer.de>
-> > Cc: Luca Boccassi <bluca@debian.org>
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-arch@vger.kernel.org
-> > Tested-by: Luca Boccassi <bluca@debian.org>
-> > Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.c=
-om>
-> > ---
-> > v3:
-> >       - fixed possible fd leak (thanks to Christian Brauner)
-> > v2:
-> >       According to review comments from Kuniyuki Iwashima and Christian=
- Brauner:
-> >       - use pidfd_create(..) retval as a result
-> >       - whitespace change
-> > ---
-> >  arch/alpha/include/uapi/asm/socket.h    |  1 +
-> >  arch/mips/include/uapi/asm/socket.h     |  1 +
-> >  arch/parisc/include/uapi/asm/socket.h   |  1 +
-> >  arch/sparc/include/uapi/asm/socket.h    |  1 +
-> >  include/uapi/asm-generic/socket.h       |  1 +
-> >  net/core/sock.c                         | 33 +++++++++++++++++++++++++
-> >  net/socket.c                            |  7 ++++++
-> >  tools/include/uapi/asm-generic/socket.h |  1 +
-> >  8 files changed, 46 insertions(+)
-> >
-> > diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/=
-uapi/asm/socket.h
-> > index ff310613ae64..e94f621903fe 100644
-> > --- a/arch/alpha/include/uapi/asm/socket.h
-> > +++ b/arch/alpha/include/uapi/asm/socket.h
-> > @@ -138,6 +138,7 @@
-> >  #define SO_RCVMARK           75
-> >
-> >  #define SO_PASSPIDFD         76
-> > +#define SO_PEERPIDFD         77
-> >
-> >  #if !defined(__KERNEL__)
-> >
-> > diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/ua=
-pi/asm/socket.h
-> > index 762dcb80e4ec..60ebaed28a4c 100644
-> > --- a/arch/mips/include/uapi/asm/socket.h
-> > +++ b/arch/mips/include/uapi/asm/socket.h
-> > @@ -149,6 +149,7 @@
-> >  #define SO_RCVMARK           75
-> >
-> >  #define SO_PASSPIDFD         76
-> > +#define SO_PEERPIDFD         77
-> >
-> >  #if !defined(__KERNEL__)
-> >
-> > diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/includ=
-e/uapi/asm/socket.h
-> > index df16a3e16d64..be264c2b1a11 100644
-> > --- a/arch/parisc/include/uapi/asm/socket.h
-> > +++ b/arch/parisc/include/uapi/asm/socket.h
-> > @@ -130,6 +130,7 @@
-> >  #define SO_RCVMARK           0x4049
-> >
-> >  #define SO_PASSPIDFD         0x404A
-> > +#define SO_PEERPIDFD         0x404B
-> >
-> >  #if !defined(__KERNEL__)
-> >
-> > diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/=
-uapi/asm/socket.h
-> > index 6e2847804fea..682da3714686 100644
-> > --- a/arch/sparc/include/uapi/asm/socket.h
-> > +++ b/arch/sparc/include/uapi/asm/socket.h
-> > @@ -131,6 +131,7 @@
-> >  #define SO_RCVMARK               0x0054
-> >
-> >  #define SO_PASSPIDFD             0x0055
-> > +#define SO_PEERPIDFD             0x0056
-> >
-> >  #if !defined(__KERNEL__)
-> >
-> > diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-gener=
-ic/socket.h
-> > index b76169fdb80b..8ce8a39a1e5f 100644
-> > --- a/include/uapi/asm-generic/socket.h
-> > +++ b/include/uapi/asm-generic/socket.h
-> > @@ -133,6 +133,7 @@
-> >  #define SO_RCVMARK           75
-> >
-> >  #define SO_PASSPIDFD         76
-> > +#define SO_PEERPIDFD         77
-> >
-> >  #if !defined(__KERNEL__)
-> >
-> > diff --git a/net/core/sock.c b/net/core/sock.c
-> > index 3f974246ba3e..2b040a69e355 100644
-> > --- a/net/core/sock.c
-> > +++ b/net/core/sock.c
-> > @@ -1763,6 +1763,39 @@ int sk_getsockopt(struct sock *sk, int level, in=
-t optname,
-> >               goto lenout;
-> >       }
-> >
-> > +     case SO_PEERPIDFD:
-> > +     {
-> > +             struct pid *peer_pid;
-> > +             struct file *pidfd_file =3D NULL;
-> > +             int pidfd;
-> > +
-> > +             if (len > sizeof(pidfd))
-> > +                     len =3D sizeof(pidfd);
-> > +
-> > +             spin_lock(&sk->sk_peer_lock);
-> > +             peer_pid =3D get_pid(sk->sk_peer_pid);
-> > +             spin_unlock(&sk->sk_peer_lock);
-> > +
-> > +             pidfd =3D pidfd_prepare(peer_pid, 0, &pidfd_file);
-> > +
-> > +             put_pid(peer_pid);
->
-> Would be a bit nicer if this would be:
->
->         pidfd =3D pidfd_prepare(peer_pid, 0, &pidfd_file);
->         put_pid(peer_pid);
->         if (pidfd < 0)
->                 return pidfd;
->         if (copy_to_sockptr(optval, &pidfd, len) ||
->             copy_to_sockptr(optlen, &len, sizeof(int)))
-{
-                            put_unused_fd(pidfd);
-                            fput(pidfd_file);
+Here's the first tranche of patches towards providing a MSG_SPLICE_PAGES
+internal sendmsg flag that is intended to replace the ->sendpage() op with
+calls to sendmsg().  MSG_SPLICE_PAGES is a hint that tells the protocol
+that it should splice the pages supplied if it can and copy them if not.
 
-are still needed there, right?
+This will allow splice to pass multiple pages in a single call and allow
+certain parts of higher protocols (e.g. sunrpc, iwarp) to pass an entire
+message in one go rather than having to send them piecemeal.  This should
+also make it easier to handle the splicing of multipage folios.
 
->                 return -EFAULT;
-}
+A helper, skb_splice_from_iter() is provided to do the work of splicing or
+copying data from an iterator.  If a page is determined to be unspliceable,
+then the helper will copy it into its own fragment.  This puts the copying
+in a single place rather than in all the layers above TCP/UDP (such as
+sunrpc or siw), allowing them to include data in slab pages in a single
+sendmsg() wrapped around the data pages.
 
->
->         fd_install(pidfd, pidfd_file);
->         return 0;
->
-> Otherwise seems good enough to me.
+Note that this facility is not made available to userspace and does not
+provide any sort of callback.
 
-Will do.
+This set consists of the following parts:
 
->
-> > +
-> > +             if (copy_to_sockptr(optval, &pidfd, len) ||
-> > +                 copy_to_sockptr(optlen, &len, sizeof(int))) {
-> > +                     if (pidfd >=3D 0) {
-> > +                             put_unused_fd(pidfd);
-> > +                             fput(pidfd_file);
-> > +                     }
-> > +
-> > +                     return -EFAULT;
-> > +             }
-> > +
-> > +             if (pidfd_file)
-> > +                     fd_install(pidfd, pidfd_file);
-> > +
-> > +             return 0;
-> > +     }
-> > +
-> >       case SO_PEERGROUPS:
-> >       {
-> >               const struct cred *cred;
-> > diff --git a/net/socket.c b/net/socket.c
-> > index 9c1ef11de23f..505b85489354 100644
-> > --- a/net/socket.c
-> > +++ b/net/socket.c
-> > @@ -2248,6 +2248,13 @@ static bool sockopt_installs_fd(int level, int o=
-ptname)
-> >               default:
-> >                       return false;
-> >               }
-> > +     } else if (level =3D=3D SOL_SOCKET) {
-> > +             switch (optname) {
-> > +             case SO_PEERPIDFD:
-> > +                     return true;
-> > +             default:
-> > +                     return false;
-> > +             }
-> >       }
-> >
-> >       return false;
-> > diff --git a/tools/include/uapi/asm-generic/socket.h b/tools/include/ua=
-pi/asm-generic/socket.h
-> > index fbbc4bf53ee3..54d9c8bf7c55 100644
-> > --- a/tools/include/uapi/asm-generic/socket.h
-> > +++ b/tools/include/uapi/asm-generic/socket.h
-> > @@ -122,6 +122,7 @@
-> >  #define SO_RCVMARK           75
-> >
-> >  #define SO_PASSPIDFD         76
-> > +#define SO_PEERPIDFD         77
-> >
-> >  #if !defined(__KERNEL__)
-> >
-> > --
-> > 2.34.1
-> >
+ (1) Define the MSG_SPLICE_PAGES flag and prevent sys_sendmsg() from being
+     able to set it.
+
+ (2) Overhaul the page_frag_alloc_align() allocator:
+
+     (a) Split it out from mm/page_alloc.c into its own file,
+     mm/page_frag_alloc.c.
+
+     (b) Make it use multipage folios rather than compound pages.
+
+     (c) Give it per-cpu buckets to allocate from so no locking is
+     required.
+
+     (d) The netdev_alloc_cache and the napi fragment cache are then cast
+     in terms of this and some private allocators are removed.
+
+     I'm not sure that the existing allocator is 100% thread safe.
+
+ (3) Add an extra argument to skb_append_pagefrags() so that something
+     other than MAX_SKB_FRAGS can be used (sysctl_max_skb_frags for
+     example).
+
+ (4) Add the skb_splice_from_iter() helper to handle splicing pages into
+     skbuffs for MSG_SPLICE_PAGES that can be shared by TCP, IP/UDP and
+     AF_UNIX.
+
+ (5) Implement MSG_SPLICE_PAGES support in TCP.
+
+ (6) Make do_tcp_sendpages() just wrap sendmsg() and then fold it in to its
+     various callers.
+
+ (7) Implement MSG_SPLICE_PAGES support in IP and make udp_sendpage() just
+     a wrapper around sendmsg().
+
+ (8) Implement MSG_SPLICE_PAGES support in IP6/UDP6.
+
+ (9) Implement MSG_SPLICE_PAGES support in AF_UNIX.
+
+(10) Make AF_UNIX copy unspliceable pages.
+
+I've pushed the patches here also:
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=sendpage-1
+
+The follow-on patches are on branch iov-sendpage on the same tree.
+
+David
+
+Changes
+=======
+ver #6)
+ - Removed a couple of leftover page pointer declarations.
+ - In TCP, set zc to 0/MSG_ZEROCOPY/MSG_SPLICE_PAGES rather than 0/1/2.
+ - Add a max-frags argument to skb_append_pagefrags().
+ - Extract the AF_UNIX helper out into a common helper and use it for
+   IP/UDP and TCP too.
+ - udp_sendpage() shouldn't lock the socket around udp_sendmsg().
+ - udp_sendpage() should only set MSG_MORE if MSG_SENDPAGE_NOTLAST is set.
+ - In siw, don't clear MSG_SPLICE_PAGES on the last page.
+
+ver #5)
+ - Dropped the samples patch as it causes lots of failures in the patchwork
+   32-bit builds due to apparent libc userspace header issues.
+ - Made the pagefrag alloc patches alter the Google gve driver too.
+ - Rearranged the patches to put the support in IP before altering UDP.
+
+ver #4)
+ - Added some sample socket-I/O programs into samples/net/.
+ - Fix a missing page-get in AF_KCM.
+ - Init the sgtable and mark the end in AF_ALG when calling
+   netfs_extract_iter_to_sg().
+ - Add a destructor func for page frag caches prior to generalising it and
+   making it per-cpu.
+
+ver #3)
+ - Dropped the iterator-of-iterators patch.
+ - Only expunge MSG_SPLICE_PAGES in sys_send[m]msg, not sys_recv[m]msg.
+ - Split MSG_SPLICE_PAGES code in __ip_append_data() out into helper
+   functions.
+ - Implement MSG_SPLICE_PAGES support in __ip6_append_data() using the
+   above helper functions.
+ - Rename 'xlength' to 'initial_length'.
+ - Minimise the changes to sunrpc for the moment.
+ - Don't give -EOPNOTSUPP if NETIF_F_SG not available, just copy instead.
+ - Implemented MSG_SPLICE_PAGES support in the TLS, Chelsio-TLS and AF_KCM
+   code.
+
+ver #2)
+ - Overhauled the page_frag_alloc() allocator: large folios and per-cpu.
+   - Got rid of my own zerocopy allocator.
+ - Use iov_iter_extract_pages() rather poking in iter->bvec.
+ - Made page splicing fall back to page copying on a page-by-page basis.
+ - Made splice_to_socket() pass 16 pipe buffers at a time.
+ - Made AF_ALG/hash use finup/digest where possible in sendmsg.
+ - Added an iterator-of-iterators, ITER_ITERLIST.
+ - Made sunrpc use the iterator-of-iterators.
+ - Converted more drivers.
+
+Link: https://lore.kernel.org/r/20230316152618.711970-1-dhowells@redhat.com/ # v1
+Link: https://lore.kernel.org/r/20230329141354.516864-1-dhowells@redhat.com/ # v2
+Link: https://lore.kernel.org/r/20230331160914.1608208-1-dhowells@redhat.com/ # v3
+Link: https://lore.kernel.org/r/20230405165339.3468808-1-dhowells@redhat.com/ # v4
+
+David Howells (18):
+  net: Declare MSG_SPLICE_PAGES internal sendmsg() flag
+  mm: Move the page fragment allocator from page_alloc.c into its own
+    file
+  mm: Make the page_frag_cache allocator use multipage folios
+  mm: Make the page_frag_cache allocator use per-cpu
+  net: Pass max frags into skb_append_pagefrags()
+  net: Add a function to splice pages into an skbuff for
+    MSG_SPLICE_PAGES
+  tcp: Support MSG_SPLICE_PAGES
+  tcp: Convert do_tcp_sendpages() to use MSG_SPLICE_PAGES
+  tcp_bpf: Inline do_tcp_sendpages as it's now a wrapper around
+    tcp_sendmsg
+  espintcp: Inline do_tcp_sendpages()
+  tls: Inline do_tcp_sendpages()
+  siw: Inline do_tcp_sendpages()
+  tcp: Fold do_tcp_sendpages() into tcp_sendpage_locked()
+  ip, udp: Support MSG_SPLICE_PAGES
+  ip6, udp6: Support MSG_SPLICE_PAGES
+  udp: Convert udp_sendpage() to use MSG_SPLICE_PAGES
+  ip: Remove ip_append_page()
+  af_unix: Support MSG_SPLICE_PAGES
+
+ drivers/infiniband/sw/siw/siw_qp_tx.c      |  17 +-
+ drivers/net/ethernet/google/gve/gve.h      |   1 -
+ drivers/net/ethernet/google/gve/gve_main.c |  16 --
+ drivers/net/ethernet/google/gve/gve_rx.c   |   2 +-
+ drivers/net/ethernet/mediatek/mtk_wed_wo.c |  19 +-
+ drivers/net/ethernet/mediatek/mtk_wed_wo.h |   2 -
+ drivers/nvme/host/tcp.c                    |  19 +-
+ drivers/nvme/target/tcp.c                  |  22 +--
+ include/linux/gfp.h                        |  17 +-
+ include/linux/mm_types.h                   |  13 +-
+ include/linux/skbuff.h                     |   5 +-
+ include/linux/socket.h                     |   3 +
+ include/net/ip.h                           |   2 -
+ include/net/tcp.h                          |   2 -
+ include/net/tls.h                          |   2 +-
+ mm/Makefile                                |   2 +-
+ mm/page_alloc.c                            | 126 ------------
+ mm/page_frag_alloc.c                       | 201 +++++++++++++++++++
+ net/core/skbuff.c                          | 146 +++++++++++---
+ net/ipv4/ip_output.c                       | 153 ++-------------
+ net/ipv4/tcp.c                             | 214 +++++----------------
+ net/ipv4/tcp_bpf.c                         |  20 +-
+ net/ipv4/udp.c                             |  51 +----
+ net/ipv6/ip6_output.c                      |  17 ++
+ net/socket.c                               |   2 +
+ net/tls/tls_main.c                         |  24 ++-
+ net/unix/af_unix.c                         |  51 +++--
+ net/xfrm/espintcp.c                        |  10 +-
+ 28 files changed, 534 insertions(+), 625 deletions(-)
+ create mode 100644 mm/page_frag_alloc.c
+
