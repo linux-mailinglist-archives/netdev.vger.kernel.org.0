@@ -2,77 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 357856DE19C
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 18:55:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 711C26DE1CB
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 19:01:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229499AbjDKQzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 12:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37344 "EHLO
+        id S229920AbjDKRBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 13:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjDKQzv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 12:55:51 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2671A99;
-        Tue, 11 Apr 2023 09:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=uHkpIHsDJMVccFbSYcXY2khZL4erb7v3HbneWR1g+cI=; b=hODkppCct9jvuF89XdIFeuy+hj
-        psheHfo47WPiYv79IiaobiP10JLQBdXzLFHHWoxDMfXylhpqdnSuoc3TblR7Yut6JdQBar+ZpKhoB
-        V5POVxqt1qprzAAUf+9XS8V/2SZCly1lPE5OnB4UiQbiKx+YXgdawn8nNDOhdgxVINApjVhkyOort
-        Gg8Vlv0udquk9IMWRng6x3fjBDxdhLKd6E86UIHAaj8fmQl+LJx/TzWWK4CN3qcGS9WiCFc4f12or
-        GraGpYNmdf2tQZaJ4nFvdZy11IR0fapBOvLNRsA0eQTBElCv5Z10BKgoTRwOSJpL//IkkilQnkCie
-        xxo8CtQA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
-        id 1pmHHV-000dKG-2A;
-        Tue, 11 Apr 2023 16:55:45 +0000
-Date:   Tue, 11 Apr 2023 09:55:45 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        Shailend Chand <shailend@google.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-nvme@lists.infradead.org
-Subject: Re: [PATCH net-next v6 04/18] mm: Make the page_frag_cache allocator
- use per-cpu
-Message-ID: <ZDWREY2ATn3VcLDW@infradead.org>
-References: <20230411160902.4134381-1-dhowells@redhat.com>
- <20230411160902.4134381-5-dhowells@redhat.com>
+        with ESMTP id S229917AbjDKRBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 13:01:19 -0400
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDF15FE1
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 10:00:53 -0700 (PDT)
+Received: by mail-vs1-xe30.google.com with SMTP id z13so8147022vss.1
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 10:00:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681232452;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tTnNjr1uayn9DfHicnDiCohK9FF3VkcIZ2I9QDxxN9s=;
+        b=ik88FVzdB/fLlZubiEFP1pinVCx6zFqLOt1NAX/LS7ITfx+fD9hceBtilIDfPFJzPM
+         rMJROSFsu2VAKTSu4yl2nM8mQApcHD5Fi6+BxPRfinbKSFsLKNAupsyi2ISzQguCePxR
+         GWcDOe9D6QOMTQS+wwpMk8Pbk4iYi/VS4BK7rm1u1GJNF0J3Mx3Mtf8MLpxP2nRrxLU9
+         uGVlBvuQvJS3TgjD+vWaege44pnwxBDj4OfzLYLSpVKxazcneKw1UVWgBYVsF7Csig0q
+         q1Pws7U0X3tiQGQTSIn4wWvpSINAgbumFGBeO7zgDw3VdhPVv/nlQtzNaPmNZIAJB+aD
+         0lng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681232452;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tTnNjr1uayn9DfHicnDiCohK9FF3VkcIZ2I9QDxxN9s=;
+        b=NAoWI0ZFUB7VErGn9YdtqQ/95kZeTJh43tMQ+/wTqHQ3Nyr+IslYYLm0ZOdcbeBP/E
+         Nk5dPMIZH68LVgi2aWaJF8/fHW9zmNvzWX/5tubKwu3m0QdxpRD1NUQsOZvOOOHSzHTW
+         9qUnfRThcpqcyOE3AIwXq5zCR9TExM76chsLv4uV+omt+zK+yzGxWhYldu/XNvkuDJI9
+         L7PUbzWi+H8VxmxQlpK+aBAK3IEg1nM+e1jtJj1oZWTm1bCMENoQYFQrREf/Zi9rYVvh
+         bZRgFpfn0ywnBFuUY5c31WEVsTYVmfmDf3ROo7O6FoSAl8sW7BrGJmq93F4yWhujtIav
+         RoIA==
+X-Gm-Message-State: AAQBX9d1Xs8TkXzLjioybHTcAzj0njr8HZ3NAtFN770eCZPjKLctVvQb
+        wkNssdkyfg6ZEpj3bbzrstVRbF2uqSFiyspn/YEHVZxAmV2orai9pxk=
+X-Google-Smtp-Source: AKy350YP5rmR9IrAZnEnf2OiQvArlRdvsAAYeUyys2gI81ewlVtz9CU7z3Z0IN55k5+QIepQBvkZ3WFhBebQoc41Ljw=
+X-Received: by 2002:a05:6102:4747:b0:42c:77e2:37f with SMTP id
+ ej7-20020a056102474700b0042c77e2037fmr3340753vsb.1.1681232451954; Tue, 11 Apr
+ 2023 10:00:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230411160902.4134381-5-dhowells@redhat.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 11 Apr 2023 22:30:40 +0530
+Message-ID: <CA+G9fYuogkamdKf9+uwsvKh67NGTjZru3feRVyHhEQPhpqipVg@mail.gmail.com>
+Subject: selftests: net: sctp_vrf.sh: # sysctl: error: 'net.sctp/l3mdev_accept'
+ is an unknown key
+To:     Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Xin Long <lucien.xin@gmail.com>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,8 +67,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 05:08:48PM +0100, David Howells wrote:
-> Make the NVMe, mediatek and GVE drivers pass in NULL to page_frag_cache()
-> and use the default allocation buckets rather than defining their own.
+The selftests net sctp_vrf.sh test case failed due to following errors.
+Do you see these errors / warnings at your end ?
 
-Why makes these different from the other users?
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+# selftests: net: sctp_vrf.sh
+# modprobe: FATAL: Module sctp not found in directory /lib/modules/6.3.0-rc6
+# modprobe: FATAL: Module sctp_diag not found in directory
+/lib/modules/6.3.0-rc6
+[ 2932.967517] IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+[ 2933.005205] IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+[ 2933.012081] IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+# Testing For SCTP VRF:
+# sysctl: error: 'net.sctp/l3mdev_accept' is an unknown key
+# TEST 01: nobind, connect from client 1, l3mdev_accept=1, Y [
+2933.314163] IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+exec of \"pkill\" failed: No such file or directory
+# [FAIL]
+# exec of \"pkill\" failed: No such file or directory
+not ok 84 selftests: net: sctp_vrf.sh # exit=3
+
+details:
+https://qa-reports.linaro.org/lkft/linux-mainline-master/build/v6.3-rc6-16-g0d3eb744aed4/testrun/16161555/suite/kselftest-net/test/net_sctp_vrf_sh/details/
+https://lkft.validation.linaro.org/scheduler/job/6339612#L8152
+
+
+metadata:
+  git_ref: master
+  git_repo: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline
+  git_sha: 0d3eb744aed40ffce820cded61d7eac515199165
+  git_describe: v6.3-rc6-16-g0d3eb744aed4
+  kernel_version: 6.3.0-rc6
+  kernel-config:
+https://storage.tuxsuite.com/public/linaro/lkft/builds/2OFj2KfCWPidsBVVNqWRhWTxZMD/config
+  build-url: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline/-/pipelines/833052206
+  artifact-location:
+https://storage.tuxsuite.com/public/linaro/lkft/builds/2OFj2KfCWPidsBVVNqWRhWTxZMD/
+  toolchain: gcc-11
+
+
+--
+Linaro LKFT
+https://lkft.linaro.org
