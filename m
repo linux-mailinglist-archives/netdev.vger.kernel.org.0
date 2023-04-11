@@ -2,188 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E2846DD861
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 12:54:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 448776DD8CD
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 13:05:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbjDKKyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 06:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
+        id S229835AbjDKLFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 07:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbjDKKys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 06:54:48 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB68B1982
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 03:54:46 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id c10-20020a17090abf0a00b0023d1bbd9f9eso10532430pjs.0
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 03:54:46 -0700 (PDT)
+        with ESMTP id S229553AbjDKLE7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 07:04:59 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2111.outbound.protection.outlook.com [40.107.220.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA5644B1;
+        Tue, 11 Apr 2023 04:04:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OoOTrUrGQdrXkYdS4hYY70Ca/LdlIcQnRp4KEaoTArahWzrwmVG7tWYSLe5uNSkhaT07UY+ZQDSluImAnpURSAA1fkfP0o3zrqKRJxNcsUIDfeW343rC0qqweR2UTKzPK+EtmF63QgVcg3OyaSAb5YyBE6cve90pdoo3tyQ8zJ73pg3zKCDL9xIfrPs17Q3cT7agXIEenBHSyzxMQoKCbcOt8m5XWIzBsYHuP0Di6Byfp1dTfKLkh2m1y57gdqxw2ejM6+dUFKAhtxMSe+SiPLh3KM0MdQdFYp6yLVuBtKa6esYNbb3qsaH53i9NcIYY64ByT/IFQrIdsFBa0HtMlw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VsNoXHXxDD8XSYx8815trC1Os5H/tWtiYX6uEtSZssQ=;
+ b=MN6QcQLQPMMrT5MYASzcBtgvfGrEPJkKg+JfmMR20N/3nCRA5iuv93x2Oq6IPzz8oNCUWeGLdmoAYTlgOay6QT6Tf6lKPxnF0zTO4vUfM4Q92s1l6uOhGDutZCnxAomA+QYvUmX+Ru99odnkUdhlhLch8br65tN6NtSXywNtInRY/MHqS+lrnVi9MscJw7vB67cTIvr2jsGjU9j4/9WpzAqHoYX2hIQcbCl8rgFh78Rr/0JZLOY9i5uJlg8doGRc9zE8mt6PJWeJVeIJpuLG8u6MxOrlhYwmgF5wFeDCzoo84Eja/7cH98j0qYcIZIyO2kIphcfVVB90gCPhaZ/MAQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1681210486; x=1683802486;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=sgo+agtalM6RbRJj066IZY/1gkBOQCGaVBh4uM/dV04=;
-        b=Foc1J7fHBn42E4S2j4bQKuuJMqS5zcQrhku+BIHyDyu8IWEXoG79ildZD6WwdedvZ9
-         AFi6ZEsfcBWfhBNio5MOwVIGd0Ndq9wQt+fJGNWFsuFH9wqu3cJxRtKT4TGe8kbGEHI5
-         YHQGthwyL43loMzCGnTiFgjh0/w2z594eBz8oPB0/ctnI2FY7HRtiFb7Ckw30FSUWZVE
-         HUTeiCSSa1dhhmrJMuASERIRstwTYu7uzQruhzVi+rySa+LK2s2WOCL16e5rtUQ5NV7M
-         ISsuWf8seRrJTIozzW6IHKEWM4Qx9858wbpgEO00lKn1DnfWWz02USaoaQlw4yojO/G0
-         cL/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681210486; x=1683802486;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sgo+agtalM6RbRJj066IZY/1gkBOQCGaVBh4uM/dV04=;
-        b=UxpLi9EFDPRomhjOEtT49SfHeZ7ExAQQTP7foEpne5yLdrvQ3Iib0qlSgsUcmm5Gd1
-         +Rd48RZTCiWa3z8hX/TeqHM5TmWlkPYPxhsRw1B8pVWHc7Ky/lH5VRb+d3Nh68ixieBz
-         Tp8SBT3ebT7Z/aeIy6Sr+v89bPdkRfIBY8gd0F8LIP7Bde1OmUUef5XgRxjpfdbeWiTm
-         fELuVPVSyDbYz8ZbqEWoRkIMgRSVxsn2pUhVRLi491d4TWforIKdDJP7atCpy45YbudX
-         DQvo1MQ9TkLUvIBRcGgQr97DA8YjAWV9cZj5WcBt6eJw7QUDXbwU/rG4w8TXZMGKbTsc
-         GBQA==
-X-Gm-Message-State: AAQBX9fCad0xyL4YsHzR3gBR1D+yocc1crZGXxgbpzift9/mjWtL+e2K
-        /mIqTki+iCr4Ecy8cVN8MEo=
-X-Google-Smtp-Source: AKy350bYL/nsJFWH+ChQ6jS3YDBh/VX02puIzAb34YZgP4Ghukt4baFxwarnlGmSzQoBFQzpVXkE6g==
-X-Received: by 2002:a17:90b:1d0d:b0:23d:bbcb:c97f with SMTP id on13-20020a17090b1d0d00b0023dbbcbc97fmr16850181pjb.1.1681210486113;
-        Tue, 11 Apr 2023 03:54:46 -0700 (PDT)
-Received: from pr0lnx ([121.133.63.188])
-        by smtp.gmail.com with ESMTPSA id v11-20020a170902b7cb00b0019a7d58e595sm9425698plz.143.2023.04.11.03.54.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 03:54:45 -0700 (PDT)
-Date:   Tue, 11 Apr 2023 19:54:42 +0900
-From:   Gwangun Jung <exsociety@gmail.com>
-To:     jhs@mojatatu.com
-Cc:     netdev@vger.kernel.org, exsociety@gmail.com
-Subject: [PATCH net v2] net: sched: sch_qfq: prevent slab-out-of-bounds in
- qfq_activate_agg
-Message-ID: <ZDU8cmEVHMYZtaSg@pr0lnx>
-MIME-Version: 1.0
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VsNoXHXxDD8XSYx8815trC1Os5H/tWtiYX6uEtSZssQ=;
+ b=TuSunY3C1YmhZpEAHMtSLbnj9N6p2A0yc5tFziMFSZPq6wdD/gJMAUGZ9oe11Gwu65W6n2cZsJFz6CGbouBL6xndCehn4gZ7HlRsdGakNu9NJBeRMJqT4/N3uKFPNEsze6nlG6IEue4noJiFQKZoQz+gW5kgP8lkkoEJms7nUIs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SN7PR13MB6157.namprd13.prod.outlook.com (2603:10b6:806:350::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Tue, 11 Apr
+ 2023 11:03:34 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
+ 11:03:33 +0000
+Date:   Tue, 11 Apr 2023 13:03:27 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next v2 5/6] net: txgbe: Implement phylink pcs
+Message-ID: <ZDU+f7aXvXcmSqnD@corigine.com>
+References: <20230411092725.104992-1-jiawenwu@trustnetic.com>
+ <20230411092725.104992-6-jiawenwu@trustnetic.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230411092725.104992-6-jiawenwu@trustnetic.com>
+X-ClientProxiedBy: AM3PR07CA0074.eurprd07.prod.outlook.com
+ (2603:10a6:207:4::32) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN7PR13MB6157:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7f67cf57-9a72-4a4b-d44a-08db3a7c641e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XZFalJcwA3KlMS8PiI/v9SUM5rWF1Q0u1rtc6ijyscv2etOQbj4GkQLzqpxMd9XVRQ3PQXNdkk/efTq5vrj0C4+li34pzxoTcHm1xa+58+nCqxwt8HVrNjArVhsPo0KgPO+7QtjhYgeKnR/jDqCEgmiSHFd8aUt5yUCORShLv1zS+jRGTicG71tzkEo2tegiWm82bO3k6uaZSrd9dz9mzBn2rPryMJlAczfIEcAis+uDcoS6YOCPuJtt6j+IKwggjNucydAckFcSwrO5kIEUED6ob4SKXEBSt30X9GNicA6Joo/aSaLSnNtg7Y0nPCxcAmHy7gUNnBEkQ/gmtke8u032Tkxvpg/jfhGwE78AmqoFAbPfxtmm/fuGxz11AcnOu9xjYTRkMH81rly2r6JsSGxehp0hyCfdCx6JMqO/eIKY7P3iV4H9gMWq7KqVKNizaVfPj1eDCotXsLmC7UGE/AAKwS5M+SwVJOnS6wBlinM/6hN3qZxvSA3eQU6ioJdzEvRcDwIUNocVMzwfwXVqOBFxY9BR2cXXj7zKkAckmmmrV35Gd66OVenvblYLgLzAaky00T5lnVoeOZkIHih7Tnsj85Pa+utprjKfBI+0xPA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(376002)(366004)(346002)(39850400004)(451199021)(86362001)(2616005)(41300700001)(8676002)(478600001)(316002)(6666004)(2906002)(6506007)(83380400001)(6486002)(6512007)(66476007)(38100700002)(36756003)(8936002)(66946007)(4326008)(5660300002)(6916009)(66556008)(44832011)(186003)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0dRJkBcFOU8mVUbp5gopwiNMs41gejNNCn9Wxvs8xq6d5P2ffALas53MPiEx?=
+ =?us-ascii?Q?MmQxZF3pRai4OLudALlT2tLS8RJNDcNcquyfcyZcP75yjaoDk9oChMpqRxsO?=
+ =?us-ascii?Q?Lx0xa69U/3GmAtM3TOfjQGIPKTjMlrX0eLhilgn8xPyTeUagfol/Tqthwg7N?=
+ =?us-ascii?Q?E+fRxPKLiI/XLmfSH5TwYBUwsZnllKWcOuoA6NCrh6/B4uDqmJAiIx0wfUQp?=
+ =?us-ascii?Q?I/ZrYb9e6W6bf5pn9xrFRd6cBeOEbFH3LWt58bymLaS6kfTMJN9F4efADPVn?=
+ =?us-ascii?Q?oU/f58sUzYVIq1MjwKYdjhefS2JH2zkfo3mhkEMa1/4TIMpJqXx823vnoJiS?=
+ =?us-ascii?Q?NnG235AhouW6oxE9qdNu2qw/Qtu1aYKj3V2BYCf9JTIrtu8fbTfyUukonTT5?=
+ =?us-ascii?Q?HgDYilDgcPszVcF8UyrpzIptDenVW14FagttGb/KtSZGEHA2M2PAqzT21THs?=
+ =?us-ascii?Q?yk1wsIUZhJIniTSdBdyOL4N7GIGelOOR+uSipRDvWRbIXIrz+B/ayiSOOSGE?=
+ =?us-ascii?Q?jTwXiK408OqidpEqHhPuX+lNagvhgU53G74eQkdcz9ED/V0QpQ1CCoRbDGIS?=
+ =?us-ascii?Q?qsehaFekwydm5N0t9a5OzbUK5ORN+ZeA9eSOTZeZIN9AtEGkKoMX/T1TDnhT?=
+ =?us-ascii?Q?Z3Vyucj07u59di1vopiivYhc9D03iXyiLLENz6M8SW/GSaV/6TEkGcK9tnRL?=
+ =?us-ascii?Q?86jfwGw+soDtdLcmaFCUh7mBzKxiIhYtOfhCyMXgGSoTK+Wpz11Tx8+OSwgl?=
+ =?us-ascii?Q?1fJahp+4L3H272XIiS9s5jSsRhY6FbDIEECDaGe40gCaDyJzJnjFqBj2QtxM?=
+ =?us-ascii?Q?Xaghtl0djbexTVVpKyT0dAQQpjVCFDLO6Gcgdh4r6Qpz9rOrZTdZiAg/0Hcc?=
+ =?us-ascii?Q?65TEf+SPJ7550gfYRnfTWaAxARzG8sPJOtHW8kWXfzrk0JqMNLNxQ9//akYH?=
+ =?us-ascii?Q?+fTsXouGLUT1r0q3NIxy8KJuN2TFXfKZMfvqPYu0S/lJANy3WKLL8Ox/K7hw?=
+ =?us-ascii?Q?KFzopk5cWq50J9oe76Phh4E/11DIUpCy4v3055gB++JtlVDH/qkNVL0j29QA?=
+ =?us-ascii?Q?GqeKK1Hr/92l9QnumHFcCebhF0a6xk6UTZ5fvAYCnZKAz76dg8/hKB/kJTJi?=
+ =?us-ascii?Q?CB7KU4c4MVoeNmZNodPNuAT1ixTACoRk/DC/brYaQ05KzZXioQKYPosvQJdI?=
+ =?us-ascii?Q?t50JhzCJAcsTL9yCfxdbL/jjlWfLXCKnzmWJ9XKKcRhSPE5JwVjazy7HjtV4?=
+ =?us-ascii?Q?L9DE9rJKB4BIAphOA5qK7T5agx9k+/AJi9l17xQ29vC/veiUxORWL/hkYoTy?=
+ =?us-ascii?Q?7NDHLn/64+29VmXirni+qZYergIbJ7vKvTXWPzF8lFp2CbutnGRb12R8HW/n?=
+ =?us-ascii?Q?YP/mr/hmCuMr1wtCtiKZlggebY4kkggx87uDuyGFLAvht90PI3xHfYB5lJVh?=
+ =?us-ascii?Q?OkRJxlWKIkOHkxanz1lVp1YgAsR6m2HJfToJJwHfm3eTxJXo7req1VWArzkN?=
+ =?us-ascii?Q?x9j6Zoxg3Rr8cwMKjIjVRq4ktVm2Hw7hCPjmY/KBp0kyeV53vcCN9h8lEiuE?=
+ =?us-ascii?Q?DD5fC8WuLquAlBaSADUPe6++/y0FrjK6pHeUpxpHRQFwhjPTI0DuIXWw412L?=
+ =?us-ascii?Q?6bKj8dciUbf97mjs7h3UdjcAN5THRsQ4TjzWNWMu52D+WL1rJZUCGmQ36gXt?=
+ =?us-ascii?Q?3/Aqyg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f67cf57-9a72-4a4b-d44a-08db3a7c641e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 11:03:33.5503
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7Jjr85j7OkxCr65PMY4B6U0AaVxDTwqq+hn5NBnMQRBi0luBwB6Xeys858Vask/3R/eUh8cBBS9oO7/ic8ctH57D2W+Gkb8r1Mt3bd/Ygas=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR13MB6157
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the TCA_QFQ_LMAX value is not offered through nlattr, lmax is determined by the MTU value of the network device.
-The MTU of the loopback device can be set up to 2^31-1.
-As a result, it is possible to have an lmax value that exceeds QFQ_MIN_LMAX.
+On Tue, Apr 11, 2023 at 05:27:24PM +0800, Jiawen Wu wrote:
+> Register MDIO bus for PCS layer, support 10GBASE-R and 1000BASE-X
+> interfaces to the controller.
 
-Due to the invalid lmax value, an index is generated that exceeds the QFQ_MAX_INDEX(=24) value, causing out-of-bounds read/write errors.
+...
 
-The following reports a oob access:
+> diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
 
-[   84.582666] BUG: KASAN: slab-out-of-bounds in qfq_activate_agg.constprop.0 (net/sched/sch_qfq.c:1027 net/sched/sch_qfq.c:1060 net/sched/sch_qfq.c:1313)
-[   84.583267] Read of size 4 at addr ffff88810f676948 by task ping/301
-[   84.583686]
-[   84.583797] CPU: 3 PID: 301 Comm: ping Not tainted 6.3.0-rc5 #1
-[   84.584164] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-[   84.584644] Call Trace:
-[   84.584787]  <TASK>
-[   84.584906] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1))
-[   84.585108] print_report (mm/kasan/report.c:320 mm/kasan/report.c:430)
-[   84.585570] kasan_report (mm/kasan/report.c:538)
-[   84.585988] qfq_activate_agg.constprop.0 (net/sched/sch_qfq.c:1027 net/sched/sch_qfq.c:1060 net/sched/sch_qfq.c:1313)
-[   84.586599] qfq_enqueue (net/sched/sch_qfq.c:1255)
-[   84.587607] dev_qdisc_enqueue (net/core/dev.c:3776)
-[   84.587749] __dev_queue_xmit (./include/net/sch_generic.h:186 net/core/dev.c:3865 net/core/dev.c:4212)
-[   84.588763] ip_finish_output2 (./include/net/neighbour.h:546 net/ipv4/ip_output.c:228)
-[   84.589460] ip_output (net/ipv4/ip_output.c:430)
-[   84.590132] ip_push_pending_frames (./include/net/dst.h:444 net/ipv4/ip_output.c:126 net/ipv4/ip_output.c:1586 net/ipv4/ip_output.c:1606)
-[   84.590285] raw_sendmsg (net/ipv4/raw.c:649)
-[   84.591960] sock_sendmsg (net/socket.c:724 net/socket.c:747)
-[   84.592084] __sys_sendto (net/socket.c:2142)
-[   84.593306] __x64_sys_sendto (net/socket.c:2150)
-[   84.593779] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-[   84.593902] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-[   84.594070] RIP: 0033:0x7fe568032066
-[   84.594192] Code: 0e 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 41 89 ca 64 8b 04 25 18 00 00 00 85 c09[ 84.594796] RSP: 002b:00007ffce388b4e8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+...
 
-Code starting with the faulting instruction
-===========================================
-[   84.595047] RAX: ffffffffffffffda RBX: 00007ffce388cc70 RCX: 00007fe568032066
-[   84.595281] RDX: 0000000000000040 RSI: 00005605fdad6d10 RDI: 0000000000000003
-[   84.595515] RBP: 00005605fdad6d10 R08: 00007ffce388eeec R09: 0000000000000010
-[   84.595749] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000040
-[   84.595984] R13: 00007ffce388cc30 R14: 00007ffce388b4f0 R15: 0000001d00000001
-[   84.596218]  </TASK>
-[   84.596295]
-[   84.596351] Allocated by task 291:
-[   84.596467] kasan_save_stack (mm/kasan/common.c:46)
-[   84.596597] kasan_set_track (mm/kasan/common.c:52)
-[   84.596725] __kasan_kmalloc (mm/kasan/common.c:384)
-[   84.596852] __kmalloc_node (./include/linux/kasan.h:196 mm/slab_common.c:967 mm/slab_common.c:974)
-[   84.596979] qdisc_alloc (./include/linux/slab.h:610 ./include/linux/slab.h:731 net/sched/sch_generic.c:938)
-[   84.597100] qdisc_create (net/sched/sch_api.c:1244)
-[   84.597222] tc_modify_qdisc (net/sched/sch_api.c:1680)
-[   84.597357] rtnetlink_rcv_msg (net/core/rtnetlink.c:6174)
-[   84.597495] netlink_rcv_skb (net/netlink/af_netlink.c:2574)
-[   84.597627] netlink_unicast (net/netlink/af_netlink.c:1340 net/netlink/af_netlink.c:1365)
-[   84.597759] netlink_sendmsg (net/netlink/af_netlink.c:1942)
-[   84.597891] sock_sendmsg (net/socket.c:724 net/socket.c:747)
-[   84.598016] ____sys_sendmsg (net/socket.c:2501)
-[   84.598147] ___sys_sendmsg (net/socket.c:2557)
-[   84.598275] __sys_sendmsg (./include/linux/file.h:31 net/socket.c:2586)
-[   84.598399] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
-[   84.598520] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
-[   84.598688]
-[   84.598744] The buggy address belongs to the object at ffff88810f674000
-[   84.598744]  which belongs to the cache kmalloc-8k of size 8192
-[   84.599135] The buggy address is located 2664 bytes to the right of
-[   84.599135]  allocated 7904-byte region [ffff88810f674000, ffff88810f675ee0)
-[   84.599544]
-[   84.599598] The buggy address belongs to the physical page:
-[   84.599777] page:00000000e638567f refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x10f670
-[   84.600074] head:00000000e638567f order:3 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-[   84.600330] flags: 0x200000000010200(slab|head|node=0|zone=2)
-[   84.600517] raw: 0200000000010200 ffff888100043180 dead000000000122 0000000000000000
-[   84.600764] raw: 0000000000000000 0000000080020002 00000001ffffffff 0000000000000000
-[   84.601009] page dumped because: kasan: bad access detected
-[   84.601187]
-[   84.601241] Memory state around the buggy address:
-[   84.601396]  ffff88810f676800: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   84.601620]  ffff88810f676880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   84.601845] >ffff88810f676900: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   84.602069]                                               ^
-[   84.602243]  ffff88810f676980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   84.602468]  ffff88810f676a00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   84.602693] ==================================================================
-[   84.602924] Disabling lock debugging due to kernel taint
+> +static int txgbe_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+> +			    phy_interface_t interface,
+> +			    const unsigned long *advertising,
+> +			    bool permit_pause_to_mac)
+> +{
+> +	struct txgbe *txgbe = container_of(pcs, struct txgbe, pcs);
+> +	struct wx *wx = txgbe->wx;
+> +	int ret, val;
+> +
+> +	if (interface == txgbe->interface)
+> +		goto out;
 
-Signed-off-by: Gwangun Jung <exsociety@gmail.com>
----
- net/sched/sch_qfq.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+Hi Jiawen,
 
-diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-index cf5ebe43b3b4..02098a02943e 100644
---- a/net/sched/sch_qfq.c
-+++ b/net/sched/sch_qfq.c
-@@ -421,15 +421,16 @@ static int qfq_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
- 	} else
- 		weight = 1;
- 
--	if (tb[TCA_QFQ_LMAX]) {
-+	if (tb[TCA_QFQ_LMAX])
- 		lmax = nla_get_u32(tb[TCA_QFQ_LMAX]);
--		if (lmax < QFQ_MIN_LMAX || lmax > (1UL << QFQ_MTU_SHIFT)) {
--			pr_notice("qfq: invalid max length %u\n", lmax);
--			return -EINVAL;
--		}
--	} else
-+	else
- 		lmax = psched_mtu(qdisc_dev(sch));
- 
-+	if (lmax < QFQ_MIN_LMAX || lmax > (1UL << QFQ_MTU_SHIFT)) {
-+		pr_notice("qfq: invalid max length %u\n", lmax);
-+		return -EINVAL;
-+	}
-+
- 	inv_w = ONE_FP / weight;
- 	weight = ONE_FP / inv_w;
- 
--- 
-2.34.1
+The out label returns 'ret', but it is not initialised here.
 
+Reported by clang-16 as:
+
+drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c:270:6: error: variable 'ret' is used uninitialized whenever 'if' condition is true [-Werror,-Wsometimes-uninitialized]
+        if (interface == txgbe->interface)
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c:326:9: note: uninitialized use occurs here
+        return ret;
+               ^~~
+drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c:270:2: note: remove the 'if' if its condition is always false
+        if (interface == txgbe->interface)
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c:268:9: note: initialize the variable 'ret' to silence this warning
+        int ret, val;
+               ^
+                = 0
+1 error generated.
+
+...
