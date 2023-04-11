@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C1EC6DE5E5
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 22:42:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2038D6DE5EA
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 22:42:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230037AbjDKUmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 16:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47666 "EHLO
+        id S229696AbjDKUmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 16:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbjDKUmj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 16:42:39 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2E75257
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 13:42:28 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id l26-20020a05600c1d1a00b003edd24054e0so6773740wms.4
+        with ESMTP id S229973AbjDKUmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 16:42:40 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F315581
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 13:42:29 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id he11-20020a05600c540b00b003ef6d684102so3128537wmb.3
         for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 13:42:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1681245746;
+        d=tessares.net; s=google; t=1681245747;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=iJSkDzvHDv+IldvOKYCUeGWLBa1YxITsKTNgz5UKiD4=;
-        b=0yNawdYCXfHfH1a2o5KD4daFIw5hxojs6Vivsduai6u32Icbn0QMEKlF5qVaEZydDS
-         ZTi9tokkuRtihm1pcqaeBvUBvBhvYDEm/l2HgI7DYHn5HZyqah9ur1KYEiAJrVRHsdat
-         qRpEIWdvc3CC2VJ/LyrPBmaKibCPdsCFRYIz7fxF1COXjWcgpaSbP/+1pUZpcdtmCfsI
-         j6Q2FG2UXt77b61OSneGev8C9QKvzefw+IAMTDuoTWa431wBo/XBJuh4VkkpXAd+hjFn
-         +nZAPNILDcvS/6x24zbu+Hc+1/r3wQ78p5c+9llT4dXddUY9oAOq0WtF+cdbZfagIt4v
-         wheg==
+        bh=2Qg0UfDgtzM4SSag2U8RERLst0NUUqYRmB2P1uH49t4=;
+        b=IGWcpTfjatCz3Eqo5P30S165MgQ8L4VYNgUdGlU7f47eKTaqEl/N0R2Bxijvo4pFg9
+         uanbjdbEphIkQDQQEZvaB8ooRWJVv+h7h963uEFJa7dXYDHWqUkAkmm6bTqrjLsz277H
+         UfMjUqNzcQZXhCGgsQ+UXxRYJqbcxdztwMq4/Kb7HKNGlv5gphgCTsS1rVR+qx7kEFxk
+         4jo+TQgpaCUpe07hKrVaVHQwTUPQyulQDEQVgAPyCj9SbQ6jucUN9bCwfQby51IPFwAY
+         ZBAqhQ/EKWaGtG/XvskTPwGou2g8oRoiWi9RLipLyDVoSETAxYgTDlezEF5ORVgAIoJ5
+         bLkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681245746;
+        d=1e100.net; s=20210112; t=1681245747;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=iJSkDzvHDv+IldvOKYCUeGWLBa1YxITsKTNgz5UKiD4=;
-        b=nmsqhR+SF30RQjIyRucRUzcKMx4fLmLhRlmfAKfMkQjpDrC/DBl26b9TWjVKVCBKSh
-         5vPv22N25h35JbjMTdzg2q+azm0pEI3qEflkgSxVr9Fn7ruNxeR+sSNUUPv2wbv4yjt4
-         iDTPHuoY6IJGhqf9UMrVb/Ebs6xO1mi2ftooZoUqW7y1Zs6+i094he7mWbps/kZbtTfj
-         ZsZEpA+koM1xjirlXKccSzI0XKGejz8Eem748ILXviO2OV+oSkd2vAsnQ6vPLz0sMwLK
-         s+/Z5JAFadvvmy83+B4n3C8ixUG/mgoc3t/C5k8riy/LEN4e4+2+GyiElncDjJAEl8Nn
-         jccA==
-X-Gm-Message-State: AAQBX9eZIQz79SQFjHC0iFA7h3c8cOC1CQYEyL8Tq5FtQYiHZ4vXsmVp
-        LT8MplTkPkNHl8RDTeBhHaoMBA==
-X-Google-Smtp-Source: AKy350aIa6jYhKVLXpHR/Nd/AgNCfOHPkHJFHkAnJcVDq7eVZ/9K1b7yxtV82ST3VPC1yLZBlohU/g==
-X-Received: by 2002:a05:600c:1e25:b0:3ed:24f7:2b48 with SMTP id ay37-20020a05600c1e2500b003ed24f72b48mr279773wmb.8.1681245746479;
-        Tue, 11 Apr 2023 13:42:26 -0700 (PDT)
+        bh=2Qg0UfDgtzM4SSag2U8RERLst0NUUqYRmB2P1uH49t4=;
+        b=Vbibjgyha2+NUrnIbPSjsus9KjyyX2CcE9f9om9O9W6S42/JQNKpJ5NK+1PDHXYTkB
+         tVX5O/B2PnwLordjIENZZRW0fnFR0unI3BQpi2iRZhty1BcliPV8M7V7pprTlkt8gPXq
+         UPHwkhAmrFtGLbVeInmumF+R/P/7oxPZwfdw3Ntn5TamXDRbmucPw64fnMUx7mZMreqQ
+         piSiPVEoL105YK7J+8bQSOFjvj2fYQ3S2FUTWEqVDCkYhvHTtlpnUoAa6pzLsvJ22lI9
+         9ReLgiQvUaQZjHtEqUIOCfO+4CL1NZ/R46BFACCvuhhx1uZNkjOYKhazsV0xTBWeUSKb
+         rdNQ==
+X-Gm-Message-State: AAQBX9d42bgkm1wzR9pgU2jj1G3q5VuHxxAkJn0qpIAvxxK4dFq1djMD
+        9oNMwbZOgjTrxF0b806hzHsfew==
+X-Google-Smtp-Source: AKy350YOhcv/3WdKElepCqK9tqJwEaQ5hRFPchVWdToziQmNHv5rNkdb33WZI77d1usKv9fmjcp+nA==
+X-Received: by 2002:a7b:cb51:0:b0:3eb:38e6:f650 with SMTP id v17-20020a7bcb51000000b003eb38e6f650mr9930062wmj.41.1681245747534;
+        Tue, 11 Apr 2023 13:42:27 -0700 (PDT)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id p23-20020a1c7417000000b003f0824e8c92sm86887wmc.7.2023.04.11.13.42.25
+        by smtp.gmail.com with ESMTPSA id p23-20020a1c7417000000b003f0824e8c92sm86887wmc.7.2023.04.11.13.42.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 13:42:26 -0700 (PDT)
+        Tue, 11 Apr 2023 13:42:27 -0700 (PDT)
 From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Date:   Tue, 11 Apr 2023 22:42:11 +0200
-Subject: [PATCH net 3/4] mptcp: fix NULL pointer dereference on fastopen
- early fallback
+Date:   Tue, 11 Apr 2023 22:42:12 +0200
+Subject: [PATCH net 4/4] selftests: mptcp: userspace pm: uniform verify
+ events
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230411-upstream-net-20230411-mptcp-fixes-v1-3-ca540f3ef986@tessares.net>
+Message-Id: <20230411-upstream-net-20230411-mptcp-fixes-v1-4-ca540f3ef986@tessares.net>
 References: <20230411-upstream-net-20230411-mptcp-fixes-v1-0-ca540f3ef986@tessares.net>
 In-Reply-To: <20230411-upstream-net-20230411-mptcp-fixes-v1-0-ca540f3ef986@tessares.net>
 To:     mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
@@ -73,21 +73,21 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
         stable@vger.kernel.org
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1313;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1921;
  i=matthieu.baerts@tessares.net; h=from:subject:message-id;
- bh=M0lbg2vrKXi+X9w75ix6Wwp/oOxfY96lIrVHUJdPEwE=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkNcYuUYRtIKl0zwJ/mKGDzxR9gRBkAHRRLlrq4
- oIYSLoVXneJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZDXGLgAKCRD2t4JPQmmg
- c2/hEACJPabxn8n8GOLIdaDIhZa3hSUPMXr+LVjq3jLWwu2tFeLrppZQpoNO50UqV5Lui8cDLjw
- JH1Y6vIxKp1Bptqd194v+luCJ3HvCC+oshWSCDjfRD1nHSNE41BMe52hiFk+a1RBfiUhxwA6MLb
- QMy/EDQMJYJyJrJnGsH3tOBHN8oQFXlfqj1Oe++zYK3joDZFIgJRJq1UNUIfsrBA/LQsb28KPe3
- UhSL/xflT3pdVZzzAG1R0jhLAIjOf/MpD82d3rmQLaz1AAB/1sCqSQRgjQFEPKjYPHXLrjO4Ud0
- ks7j9FOefboDIUG1zEe6xOJuGPHUV9vHDL1DTXkSHLKzgrBOryPELBNfMauvzlEcAUr5HJJsXEL
- l0IWbret5sg+uWszLZth+6nv8XU5MOkmA1HRaQcbFdg6Ni+KVe7XFuroxMeU9vd+y9H6OqlnEep
- zWi12vS5L+5zvmPZlfkIBwOBH3y13xIqa68AL/3SasDxeG5sncUZLI2tSFu6l2Hgxsh7yj6Kg2z
- vc55pl0aIjoRU9Lv0a1e79/y309ZUK6iHwaUtj6wHNgrI58IP/3PjXvVyIaUvwcTnUJ8osQp+AW
- 07Qdpdn1CQhNnhhAPQeTCfShcCvBISudqowh+fQBf7tInGC0v7sACxSfqxyD6U6V2+au0tFkE3w
- KHw2vyIrQNnmdBg==
+ bh=1MrCCJJ5GEMq7hx3eoZhKgDEbgVWmBJ0bqSM6h+3CbQ=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkNcYubzn7jx0MUsvw+rle5p4XlZD7yypcKbS9P
+ oImjRChXFKJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZDXGLgAKCRD2t4JPQmmg
+ c0o6EAChDN8Dhftr1GID9h82qJ9Na9va86JfYFDLY2V766qElhR28T/K7pa+W3+oDlE92GSkmV5
+ aHUjNUjxBY4iXgRL4LSfUXTF7A1J+lGDCevgl32h+RzgO/G49ZehMU8zw7g+yHDKFNd3GtBDtpC
+ R+LBTS015DkEdUwdzPvOebCKu8Wd6CUINI8GlN3G3Cf37UzMmRFEAaDsjszwx5cCC946OXjpLOW
+ dEsD8yWQUc1g0zTKTYYtc+HGkLoAyYYNpyJWIf6JMubGo4Jwjjx51CNtIH6OXywmy7Pfk8Eheai
+ UCYP7amDN0J930qgXB/SgTqj3x0xZPWu/QDgoMFQTck7lAPjwPTxp2979RJ14OopFnrY9HcI1wb
+ rxqTrDLiIqk9j96BoFSn7KediHPoJANBsCGIxhGxRbsTi21fCINZVWV0IK5538i4G2yanRSUZmC
+ kyOv6gRNIQLz1qvdpbVrUZkwk//osw5vnhQqY304o/hf3qAJcxr2zGWJM++ja6J1LXHNW1dFqU0
+ tdqxoTDaBSwQbdYJ2Hh6qakprbN1mA9OJAUB6ohe4Rpc2qpGGuxqj6yzdigrmhhGp9PVk1GRvvK
+ MruZNp6pcMVP+TPt00b5CD+VdeE3l3UsoEOS8+FVdUSLIPFdN1BH0X2dJ/WDooyMNqIGBa2XEIa
+ H9xLIt5le1z8XlA==
 X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
  fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -100,49 +100,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+Simply adding a "sleep" before checking something is usually not a good
+idea because the time that has been picked can not be enough or too
+much. The best is to wait for events with a timeout.
 
-In case of early fallback to TCP, subflow_syn_recv_sock() deletes
-the subflow context before returning the newly allocated sock to
-the caller.
+In this selftest, 'sleep 0.5' is used more than 40 times. It is always
+used before calling a 'verify_*' function except for this
+verify_listener_events which has been added later.
 
-The fastopen path does not cope with the above unconditionally
-dereferencing the subflow context.
+At the end, using all these 'sleep 0.5' seems to work: the slow CIs
+don't complain so far. Also because it doesn't take too much time, we
+can just add two more 'sleep 0.5' to uniform what is done before calling
+a 'verify_*' function. For the same reasons, we can also delay a bigger
+refactoring to replace all these 'sleep 0.5' by functions waiting for
+events instead of waiting for a fix time and hope for the best.
 
-Fixes: 36b122baf6a8 ("mptcp: add subflow_v(4,6)_send_synack()")
+Fixes: 6c73008aa301 ("selftests: mptcp: listener test for userspace PM")
 Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- net/mptcp/fastopen.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ tools/testing/selftests/net/mptcp/userspace_pm.sh | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/mptcp/fastopen.c b/net/mptcp/fastopen.c
-index d237d142171c..bceaab8dd8e4 100644
---- a/net/mptcp/fastopen.c
-+++ b/net/mptcp/fastopen.c
-@@ -9,11 +9,18 @@
- void mptcp_fastopen_subflow_synack_set_params(struct mptcp_subflow_context *subflow,
- 					      struct request_sock *req)
- {
--	struct sock *ssk = subflow->tcp_sock;
--	struct sock *sk = subflow->conn;
-+	struct sock *sk, *ssk;
- 	struct sk_buff *skb;
- 	struct tcp_sock *tp;
+diff --git a/tools/testing/selftests/net/mptcp/userspace_pm.sh b/tools/testing/selftests/net/mptcp/userspace_pm.sh
+index 48e52f995a98..b1eb7bce599d 100755
+--- a/tools/testing/selftests/net/mptcp/userspace_pm.sh
++++ b/tools/testing/selftests/net/mptcp/userspace_pm.sh
+@@ -913,6 +913,7 @@ test_listener()
+ 		$client4_port > /dev/null 2>&1 &
+ 	local listener_pid=$!
  
-+	/* on early fallback the subflow context is deleted by
-+	 * subflow_syn_recv_sock()
-+	 */
-+	if (!subflow)
-+		return;
-+
-+	ssk = subflow->tcp_sock;
-+	sk = subflow->conn;
- 	tp = tcp_sk(ssk);
++	sleep 0.5
+ 	verify_listener_events $client_evts $LISTENER_CREATED $AF_INET 10.0.2.2 $client4_port
  
- 	subflow->is_mptfo = 1;
+ 	# ADD_ADDR from client to server machine reusing the subflow port
+@@ -928,6 +929,7 @@ test_listener()
+ 	# Delete the listener from the client ns, if one was created
+ 	kill_wait $listener_pid
+ 
++	sleep 0.5
+ 	verify_listener_events $client_evts $LISTENER_CLOSED $AF_INET 10.0.2.2 $client4_port
+ }
+ 
 
 -- 
 2.39.2
