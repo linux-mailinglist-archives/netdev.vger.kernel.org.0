@@ -2,579 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F986DD828
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 12:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E85F26DD836
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 12:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbjDKKof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 06:44:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36042 "EHLO
+        id S229946AbjDKKpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 06:45:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229881AbjDKKoQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 06:44:16 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C76A64495
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 03:43:55 -0700 (PDT)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 3B0593F23C
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 10:43:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1681209833;
-        bh=9OFnG70DkKWiYI7WkrGxo4LXdZLPfs21Ye1s1GRVjTU=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=X9qHTVN9SM+FFmB3lLEm4r1y6fcfgHzs8IoQ6HqT4Gmd4FG9Xoeeoj/Pubd4XNnDg
-         AI4GIyQ4oKFA/YwV+AmQiM1WFrU45AT5Xz80uklcpkeoPXkjZljhS3M/+p1MSjAPin
-         pkujjLtN2a5Vh0G+x5KklFu0C57nt3leXulA8pdDQd8CRQG488PtqfJEvDFG245MVh
-         BSvUIBOvtdBzcOrbE6GDknsXmzfhZzaxg7DzfPsUTNumggJoECaCzHQbcnI5XYgo4G
-         U4cZ10FaB6OrGveRocOxuW+xUQr38qilMuMD1hx7aZNwzTrWJsEjG9Iw8I0ZVLmmCu
-         z7vVcRSEzu62A==
-Received: by mail-ed1-f72.google.com with SMTP id i19-20020a508713000000b004bc2358ac04so4641673edb.21
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 03:43:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681209828;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9OFnG70DkKWiYI7WkrGxo4LXdZLPfs21Ye1s1GRVjTU=;
-        b=1wuHKPR0YhYx/KeNyjgyWm//zOuNOzeU8ElL8BI9oYMUnuNlhlv2THJuME2YAPwNAx
-         iUs93NAaT5ryXop5xy+vwUxflXkOabNQ75O0OAChdwRp4yyT1UsSpUq5Y9X+M1WKbOzu
-         C2hMXXqccowBorI1/hoXN87tMU5F+xbeQbSra9pZ0G8EBnK5VThCF2CxK9LrSgaDhllo
-         zwOINVHFt0mtFlVp56F8e1bGDJoc2e5yvsgRGbD3w9d7g82Hra20aY5k9y2/R/IP9+bO
-         Ss7Vg60Xfi7Bd4ygGcbWZho7CRFMnHu67Ok/n3CYpK6zdIjJOU6FAm/9aasaNInKDYPe
-         u3gg==
-X-Gm-Message-State: AAQBX9ff8E0hrw6T6Yey8nlubjA9UyYEyb+ogDtaFrlFwHqhoHdru6Cp
-        /s02FLOJ1kWXI91GiNubILvD/H+CAozSRZ9eIX2dZpJsuJgv6Q05aq0QYgoP+VaEIV3gkgpY+/n
-        gSnwNXN/zG6wMR5yfpk7IeL1Fb5ZPDwbtKg==
-X-Received: by 2002:a17:906:2556:b0:94a:a887:c29f with SMTP id j22-20020a170906255600b0094aa887c29fmr1899822ejb.68.1681209828471;
-        Tue, 11 Apr 2023 03:43:48 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aPj4l4EguNKVwAy3tUb9yNWl1KWtjghlt/o5OZuyumoMgj4+/OOqc96wryk78ruct1L/77LQ==
-X-Received: by 2002:a17:906:2556:b0:94a:a887:c29f with SMTP id j22-20020a170906255600b0094aa887c29fmr1899802ejb.68.1681209828078;
-        Tue, 11 Apr 2023 03:43:48 -0700 (PDT)
-Received: from amikhalitsyn.. ([95.91.208.118])
-        by smtp.gmail.com with ESMTPSA id ne7-20020a1709077b8700b00948c320fcfdsm5921805ejc.202.2023.04.11.03.43.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 03:43:47 -0700 (PDT)
-From:   Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-To:     davem@davemloft.net
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        linux-arch@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH net-next v3 4/4] selftests: net: add SCM_PIDFD / SO_PEERPIDFD test
-Date:   Tue, 11 Apr 2023 12:42:31 +0200
-Message-Id: <20230411104231.160837-5-aleksandr.mikhalitsyn@canonical.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230411104231.160837-1-aleksandr.mikhalitsyn@canonical.com>
-References: <20230411104231.160837-1-aleksandr.mikhalitsyn@canonical.com>
+        with ESMTP id S229974AbjDKKpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 06:45:05 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8F144BF;
+        Tue, 11 Apr 2023 03:44:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ImctafnwqPsPi7ix8f1fEqK/59TTEsSB6UiwQdAadWY=; b=JQRaw21VTog7foN8U46Ot+c17c
+        jlriJnoIwChH5GwUrhg9Uhii8PYsk/S/yL25zz5MnMOkYyySpkETD/wZt0R1VTpMe80AVXzzHaq+f
+        op27Vb+1xK3VqqZD5953nvHLHrHl0taf3g+BU+nJ70Aoca+occyKt/Ttic/tHQf0pU5cf82lTX4Er
+        BxlC7CqTeDMwW2p/6Msg3KEYgRBBGaAHUb+lM1gsXiWa7mcCRmHh8CxERoO73fXVFu57Bc5HsNknt
+        AN5bxFdz7HkF2D+NcXThofuS0LaMpGDf1ST8l4bXrOj6O7MSK+VKIb3WDnEy2IUbzlW6Eh7cWvk+m
+        w3BPFOLw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46152)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pmBUJ-0005nY-Cs; Tue, 11 Apr 2023 11:44:35 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pmBUI-00042k-OV; Tue, 11 Apr 2023 11:44:34 +0100
+Date:   Tue, 11 Apr 2023 11:44:34 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next v2 6/6] net: txgbe: Support phylink MAC layer
+Message-ID: <ZDU6EtWVL5JqqerL@shell.armlinux.org.uk>
+References: <20230411092725.104992-1-jiawenwu@trustnetic.com>
+ <20230411092725.104992-7-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230411092725.104992-7-jiawenwu@trustnetic.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Basic test to check consistency between:
-- SCM_CREDENTIALS and SCM_PIDFD
-- SO_PEERCRED and SO_PEERPIDFD
+On Tue, Apr 11, 2023 at 05:27:25PM +0800, Jiawen Wu wrote:
+> Add phylink support to Wangxun 10Gb Ethernet controller, for the 10GBASE-R
+> and 1000BASE-X interfaces.
+> 
+> Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
+> ---
+>  .../ethernet/wangxun/txgbe/txgbe_ethtool.c    |  34 ++++++
+>  .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  19 ++-
+>  .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 111 +++++++++++++++++-
+>  .../net/ethernet/wangxun/txgbe/txgbe_type.h   |   5 +
+>  4 files changed, 156 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
+> index d914e9a05404..43ca84c90637 100644
+> --- a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
+> +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
+> @@ -6,11 +6,45 @@
+>  #include <linux/netdevice.h>
+>  
+>  #include "../libwx/wx_ethtool.h"
+> +#include "../libwx/wx_type.h"
+> +#include "txgbe_type.h"
+>  #include "txgbe_ethtool.h"
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc: linux-kernel@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-arch@vger.kernel.org
-Cc: linux-kselftest@vger.kernel.org
-Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
----
-v3:
-	- started using kselftest lib (thanks to Kuniyuki Iwashima for suggestion/review)
-	- now test covers abstract sockets too and SOCK_DGRAM sockets
----
- tools/testing/selftests/net/.gitignore        |   1 +
- tools/testing/selftests/net/af_unix/Makefile  |   2 +-
- .../testing/selftests/net/af_unix/scm_pidfd.c | 430 ++++++++++++++++++
- 3 files changed, 432 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/af_unix/scm_pidfd.c
+I wonder if a small helper would be useful in txgbe_type.h:
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
-index 80f06aa62034..83fd1ebd34ec 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -26,6 +26,7 @@ reuseport_bpf_cpu
- reuseport_bpf_numa
- reuseport_dualstack
- rxtimestamp
-+scm_pidfd
- sk_bind_sendto_listen
- sk_connect_zero_addr
- socket
-diff --git a/tools/testing/selftests/net/af_unix/Makefile b/tools/testing/selftests/net/af_unix/Makefile
-index 1e4b397cece6..f5ca9da8c4d5 100644
---- a/tools/testing/selftests/net/af_unix/Makefile
-+++ b/tools/testing/selftests/net/af_unix/Makefile
-@@ -1,3 +1,3 @@
--TEST_GEN_PROGS := diag_uid test_unix_oob unix_connect
-+TEST_GEN_PROGS := diag_uid test_unix_oob unix_connect scm_pidfd
- 
- include ../../lib.mk
-diff --git a/tools/testing/selftests/net/af_unix/scm_pidfd.c b/tools/testing/selftests/net/af_unix/scm_pidfd.c
-new file mode 100644
-index 000000000000..a86222143d79
---- /dev/null
-+++ b/tools/testing/selftests/net/af_unix/scm_pidfd.c
-@@ -0,0 +1,430 @@
-+// SPDX-License-Identifier: GPL-2.0 OR MIT
-+#define _GNU_SOURCE
-+#include <error.h>
-+#include <limits.h>
-+#include <stddef.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <sys/socket.h>
-+#include <linux/socket.h>
-+#include <unistd.h>
-+#include <string.h>
-+#include <errno.h>
-+#include <sys/un.h>
-+#include <sys/signal.h>
-+#include <sys/types.h>
-+#include <sys/wait.h>
-+
-+#include "../../kselftest_harness.h"
-+
-+#define clean_errno() (errno == 0 ? "None" : strerror(errno))
-+#define log_err(MSG, ...)                                                   \
-+	fprintf(stderr, "(%s:%d: errno: %s) " MSG "\n", __FILE__, __LINE__, \
-+		clean_errno(), ##__VA_ARGS__)
-+
-+#ifndef SCM_PIDFD
-+#define SCM_PIDFD 0x04
-+#endif
-+
-+static void child_die()
-+{
-+	exit(1);
-+}
-+
-+static int safe_int(const char *numstr, int *converted)
-+{
-+	char *err = NULL;
-+	long sli;
-+
-+	errno = 0;
-+	sli = strtol(numstr, &err, 0);
-+	if (errno == ERANGE && (sli == LONG_MAX || sli == LONG_MIN))
-+		return -ERANGE;
-+
-+	if (errno != 0 && sli == 0)
-+		return -EINVAL;
-+
-+	if (err == numstr || *err != '\0')
-+		return -EINVAL;
-+
-+	if (sli > INT_MAX || sli < INT_MIN)
-+		return -ERANGE;
-+
-+	*converted = (int)sli;
-+	return 0;
-+}
-+
-+static int char_left_gc(const char *buffer, size_t len)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < len; i++) {
-+		if (buffer[i] == ' ' || buffer[i] == '\t')
-+			continue;
-+
-+		return i;
-+	}
-+
-+	return 0;
-+}
-+
-+static int char_right_gc(const char *buffer, size_t len)
-+{
-+	int i;
-+
-+	for (i = len - 1; i >= 0; i--) {
-+		if (buffer[i] == ' ' || buffer[i] == '\t' ||
-+		    buffer[i] == '\n' || buffer[i] == '\0')
-+			continue;
-+
-+		return i + 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static char *trim_whitespace_in_place(char *buffer)
-+{
-+	buffer += char_left_gc(buffer, strlen(buffer));
-+	buffer[char_right_gc(buffer, strlen(buffer))] = '\0';
-+	return buffer;
-+}
-+
-+/* borrowed (with all helpers) from pidfd/pidfd_open_test.c */
-+static pid_t get_pid_from_fdinfo_file(int pidfd, const char *key, size_t keylen)
-+{
-+	int ret;
-+	char path[512];
-+	FILE *f;
-+	size_t n = 0;
-+	pid_t result = -1;
-+	char *line = NULL;
-+
-+	snprintf(path, sizeof(path), "/proc/self/fdinfo/%d", pidfd);
-+
-+	f = fopen(path, "re");
-+	if (!f)
-+		return -1;
-+
-+	while (getline(&line, &n, f) != -1) {
-+		char *numstr;
-+
-+		if (strncmp(line, key, keylen))
-+			continue;
-+
-+		numstr = trim_whitespace_in_place(line + 4);
-+		ret = safe_int(numstr, &result);
-+		if (ret < 0)
-+			goto out;
-+
-+		break;
-+	}
-+
-+out:
-+	free(line);
-+	fclose(f);
-+	return result;
-+}
-+
-+static int cmsg_check(int fd)
-+{
-+	struct msghdr msg = { 0 };
-+	struct cmsghdr *cmsg;
-+	struct iovec iov;
-+	struct ucred *ucred = NULL;
-+	int data = 0;
-+	char control[CMSG_SPACE(sizeof(struct ucred)) +
-+		     CMSG_SPACE(sizeof(int))] = { 0 };
-+	int *pidfd = NULL;
-+	pid_t parent_pid;
-+	int err;
-+
-+	iov.iov_base = &data;
-+	iov.iov_len = sizeof(data);
-+
-+	msg.msg_iov = &iov;
-+	msg.msg_iovlen = 1;
-+	msg.msg_control = control;
-+	msg.msg_controllen = sizeof(control);
-+
-+	err = recvmsg(fd, &msg, 0);
-+	if (err < 0) {
-+		log_err("recvmsg");
-+		return 1;
-+	}
-+
-+	if (msg.msg_flags & (MSG_TRUNC | MSG_CTRUNC)) {
-+		log_err("recvmsg: truncated");
-+		return 1;
-+	}
-+
-+	for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL;
-+	     cmsg = CMSG_NXTHDR(&msg, cmsg)) {
-+		if (cmsg->cmsg_level == SOL_SOCKET &&
-+		    cmsg->cmsg_type == SCM_PIDFD) {
-+			if (cmsg->cmsg_len < sizeof(*pidfd)) {
-+				log_err("CMSG parse: SCM_PIDFD wrong len");
-+				return 1;
-+			}
-+
-+			pidfd = (void *)CMSG_DATA(cmsg);
-+		}
-+
-+		if (cmsg->cmsg_level == SOL_SOCKET &&
-+		    cmsg->cmsg_type == SCM_CREDENTIALS) {
-+			if (cmsg->cmsg_len < sizeof(*ucred)) {
-+				log_err("CMSG parse: SCM_CREDENTIALS wrong len");
-+				return 1;
-+			}
-+
-+			ucred = (void *)CMSG_DATA(cmsg);
-+		}
-+	}
-+
-+	/* send(pfd, "x", sizeof(char), 0) */
-+	if (data != 'x') {
-+		log_err("recvmsg: data corruption");
-+		return 1;
-+	}
-+
-+	if (!pidfd) {
-+		log_err("CMSG parse: SCM_PIDFD not found");
-+		return 1;
-+	}
-+
-+	if (!ucred) {
-+		log_err("CMSG parse: SCM_CREDENTIALS not found");
-+		return 1;
-+	}
-+
-+	/* pidfd from SCM_PIDFD should point to the parent process PID */
-+	parent_pid =
-+		get_pid_from_fdinfo_file(*pidfd, "Pid:", sizeof("Pid:") - 1);
-+	if (parent_pid != getppid()) {
-+		log_err("wrong SCM_PIDFD %d != %d", parent_pid, getppid());
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+struct sock_addr {
-+	char sock_name[32];
-+	struct sockaddr_un listen_addr;
-+	socklen_t addrlen;
-+};
-+
-+FIXTURE(scm_pidfd)
-+{
-+	int server;
-+	pid_t client_pid;
-+	int startup_pipe[2];
-+	struct sock_addr server_addr;
-+	struct sock_addr *client_addr;
-+};
-+
-+FIXTURE_VARIANT(scm_pidfd)
-+{
-+	int type;
-+	bool abstract;
-+};
-+
-+FIXTURE_VARIANT_ADD(scm_pidfd, stream_pathname)
-+{
-+	.type = SOCK_STREAM,
-+	.abstract = 0,
-+};
-+
-+FIXTURE_VARIANT_ADD(scm_pidfd, stream_abstract)
-+{
-+	.type = SOCK_STREAM,
-+	.abstract = 1,
-+};
-+
-+FIXTURE_VARIANT_ADD(scm_pidfd, dgram_pathname)
-+{
-+	.type = SOCK_DGRAM,
-+	.abstract = 0,
-+};
-+
-+FIXTURE_VARIANT_ADD(scm_pidfd, dgram_abstract)
-+{
-+	.type = SOCK_DGRAM,
-+	.abstract = 1,
-+};
-+
-+FIXTURE_SETUP(scm_pidfd)
-+{
-+	self->client_addr = mmap(NULL, sizeof(*self->client_addr), PROT_READ | PROT_WRITE,
-+				 MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-+	ASSERT_NE(MAP_FAILED, self->client_addr);
-+}
-+
-+FIXTURE_TEARDOWN(scm_pidfd)
-+{
-+	close(self->server);
-+
-+	kill(self->client_pid, SIGKILL);
-+	waitpid(self->client_pid, NULL, 0);
-+
-+	if (!variant->abstract) {
-+		unlink(self->server_addr.sock_name);
-+		unlink(self->client_addr->sock_name);
-+	}
-+}
-+
-+static void fill_sockaddr(struct sock_addr *addr, bool abstract)
-+{
-+	char *sun_path_buf = (char *)&addr->listen_addr.sun_path;
-+
-+	addr->listen_addr.sun_family = AF_UNIX;
-+	addr->addrlen = offsetof(struct sockaddr_un, sun_path);
-+	snprintf(addr->sock_name, sizeof(addr->sock_name), "scm_pidfd_%d", getpid());
-+	addr->addrlen += strlen(addr->sock_name);
-+	if (abstract) {
-+		*sun_path_buf = '\0';
-+		addr->addrlen++;
-+		sun_path_buf++;
-+	} else {
-+		unlink(addr->sock_name);
-+	}
-+	memcpy(sun_path_buf, addr->sock_name, strlen(addr->sock_name));
-+}
-+
-+static void client(FIXTURE_DATA(scm_pidfd) *self,
-+		   const FIXTURE_VARIANT(scm_pidfd) *variant)
-+{
-+	int err;
-+	int cfd;
-+	socklen_t len;
-+	struct ucred peer_cred;
-+	int peer_pidfd;
-+	pid_t peer_pid;
-+	int on = 0;
-+
-+	cfd = socket(AF_UNIX, variant->type, 0);
-+	if (cfd < 0) {
-+		log_err("socket");
-+		child_die();
-+	}
-+
-+	if (variant->type == SOCK_DGRAM) {
-+		fill_sockaddr(self->client_addr, variant->abstract);
-+
-+		if (bind(cfd, (struct sockaddr *)&self->client_addr->listen_addr, self->client_addr->addrlen)) {
-+			log_err("bind");
-+			child_die();
-+		}
-+	}
-+
-+	if (connect(cfd, (struct sockaddr *)&self->server_addr.listen_addr,
-+		    self->server_addr.addrlen) != 0) {
-+		log_err("connect");
-+		child_die();
-+	}
-+
-+	on = 1;
-+	if (setsockopt(cfd, SOL_SOCKET, SO_PASSCRED, &on, sizeof(on))) {
-+		log_err("Failed to set SO_PASSCRED");
-+		child_die();
-+	}
-+
-+	if (setsockopt(cfd, SOL_SOCKET, SO_PASSPIDFD, &on, sizeof(on))) {
-+		log_err("Failed to set SO_PASSPIDFD");
-+		child_die();
-+	}
-+
-+	close(self->startup_pipe[1]);
-+
-+	if (cmsg_check(cfd)) {
-+		log_err("cmsg_check failed");
-+		child_die();
-+	}
-+
-+	/* skip further for SOCK_DGRAM as it's not applicable */
-+	if (variant->type == SOCK_DGRAM)
-+		return;
-+
-+	len = sizeof(peer_cred);
-+	if (getsockopt(cfd, SOL_SOCKET, SO_PEERCRED, &peer_cred, &len)) {
-+		log_err("Failed to get SO_PEERCRED");
-+		child_die();
-+	}
-+
-+	len = sizeof(peer_pidfd);
-+	if (getsockopt(cfd, SOL_SOCKET, SO_PEERPIDFD, &peer_pidfd, &len)) {
-+		log_err("Failed to get SO_PEERPIDFD");
-+		child_die();
-+	}
-+
-+	/* pid from SO_PEERCRED should point to the parent process PID */
-+	if (peer_cred.pid != getppid()) {
-+		log_err("peer_cred.pid != getppid(): %d != %d", peer_cred.pid, getppid());
-+		child_die();
-+	}
-+
-+	peer_pid = get_pid_from_fdinfo_file(peer_pidfd,
-+					    "Pid:", sizeof("Pid:") - 1);
-+	if (peer_pid != peer_cred.pid) {
-+		log_err("peer_pid != peer_cred.pid: %d != %d", peer_pid, peer_cred.pid);
-+		child_die();
-+	}
-+}
-+
-+TEST_F(scm_pidfd, test)
-+{
-+	int err;
-+	int pfd;
-+	int child_status = 0;
-+
-+	self->server = socket(AF_UNIX, variant->type, 0);
-+	ASSERT_NE(-1, self->server);
-+
-+	fill_sockaddr(&self->server_addr, variant->abstract);
-+
-+	err = bind(self->server, (struct sockaddr *)&self->server_addr.listen_addr, self->server_addr.addrlen);
-+	ASSERT_EQ(0, err);
-+
-+	if (variant->type == SOCK_STREAM) {
-+		err = listen(self->server, 1);
-+		ASSERT_EQ(0, err);
-+	}
-+
-+	err = pipe(self->startup_pipe);
-+	ASSERT_NE(-1, err);
-+
-+	self->client_pid = fork();
-+	ASSERT_NE(-1, self->client_pid);
-+	if (self->client_pid == 0) {
-+		close(self->server);
-+		close(self->startup_pipe[0]);
-+		client(self, variant);
-+		exit(0);
-+	}
-+	close(self->startup_pipe[1]);
-+
-+	if (variant->type == SOCK_STREAM) {
-+		pfd = accept(self->server, NULL, NULL);
-+		ASSERT_NE(-1, pfd);
-+	} else {
-+		pfd = self->server;
-+	}
-+
-+	/* wait until the child arrives at checkpoint */
-+	read(self->startup_pipe[0], &err, sizeof(int));
-+	close(self->startup_pipe[0]);
-+
-+	if (variant->type == SOCK_DGRAM) {
-+		err = sendto(pfd, "x", sizeof(char), 0, (struct sockaddr *)&self->client_addr->listen_addr, self->client_addr->addrlen);
-+		ASSERT_NE(-1, err);
-+	} else {
-+		err = send(pfd, "x", sizeof(char), 0);
-+		ASSERT_NE(-1, err);
-+	}
-+
-+	close(pfd);
-+	waitpid(self->client_pid, &child_status, 0);
-+	ASSERT_EQ(0, WIFEXITED(child_status) ? WEXITSTATUS(child_status) : 1);
-+}
-+
-+TEST_HARNESS_MAIN
+static inline struct txgbe *netdev_to_txgbe(struct net_device *netdev)
+{
+	struct wx *wx = netdev_priv(netdev);
+
+	return wx->priv;
+}
+
+> +static int txgbe_nway_reset(struct net_device *netdev)
+> +{
+> +	struct wx *wx = netdev_priv(netdev);
+> +	struct txgbe *txgbe;
+> +
+> +	txgbe = (struct txgbe *)wx->priv;
+
+Then all of these can be simply:
+
+	struct txgbe *txgbe = netdev_to_txgbe(netdev);
+
+> +	return phylink_ethtool_nway_reset(txgbe->phylink);
+> +}
+> +
+> +static int txgbe_get_link_ksettings(struct net_device *netdev,
+> +				    struct ethtool_link_ksettings *cmd)
+> +{
+> +	struct wx *wx = netdev_priv(netdev);
+> +	struct txgbe *txgbe;
+> +
+> +	txgbe = (struct txgbe *)wx->priv;
+> +	return phylink_ethtool_ksettings_get(txgbe->phylink, cmd);
+> +}
+> +
+> +static int txgbe_set_link_ksettings(struct net_device *netdev,
+> +				    const struct ethtool_link_ksettings *cmd)
+> +{
+> +	struct wx *wx = netdev_priv(netdev);
+> +	struct txgbe *txgbe;
+> +
+> +	txgbe = (struct txgbe *)wx->priv;
+> +	return phylink_ethtool_ksettings_set(txgbe->phylink, cmd);
+> +}
+> +
+>  static const struct ethtool_ops txgbe_ethtool_ops = {
+>  	.get_drvinfo		= wx_get_drvinfo,
+> +	.nway_reset		= txgbe_nway_reset,
+>  	.get_link		= ethtool_op_get_link,
+> +	.get_link_ksettings	= txgbe_get_link_ksettings,
+> +	.set_link_ksettings	= txgbe_set_link_ksettings,
+>  };
+>  
+>  void txgbe_set_ethtool_ops(struct net_device *netdev)
+> diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+> index d8108ab30818..f640ff1a084e 100644
+> --- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+> +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+> @@ -7,6 +7,7 @@
+>  #include <linux/netdevice.h>
+>  #include <linux/string.h>
+>  #include <linux/etherdevice.h>
+> +#include <linux/phylink.h>
+>  #include <net/ip.h>
+>  #include <linux/if_vlan.h>
+>  
+> @@ -204,7 +205,7 @@ static int txgbe_request_irq(struct wx *wx)
+>  
+>  static void txgbe_up_complete(struct wx *wx)
+>  {
+> -	u32 reg;
+> +	struct txgbe *txgbe = (struct txgbe *)wx->priv;
+
+Personal choice I guess, but normally we tend to rely on compilers
+accepting the implicit cast from void * to whatever struct pointer
+in the kernel.
+
+>  
+>  	wx_control_hw(wx, true);
+>  	wx_configure_vectors(wx);
+> @@ -213,24 +214,16 @@ static void txgbe_up_complete(struct wx *wx)
+>  	smp_mb__before_atomic();
+>  	wx_napi_enable_all(wx);
+>  
+> +	phylink_start(txgbe->phylink);
+> +
+>  	/* clear any pending interrupts, may auto mask */
+>  	rd32(wx, WX_PX_IC(0));
+>  	rd32(wx, WX_PX_IC(1));
+>  	rd32(wx, WX_PX_MISC_IC);
+>  	txgbe_irq_enable(wx, true);
+>  
+> -	/* Configure MAC Rx and Tx when link is up */
+> -	reg = rd32(wx, WX_MAC_RX_CFG);
+> -	wr32(wx, WX_MAC_RX_CFG, reg);
+> -	wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
+> -	reg = rd32(wx, WX_MAC_WDG_TIMEOUT);
+> -	wr32(wx, WX_MAC_WDG_TIMEOUT, reg);
+> -	reg = rd32(wx, WX_MAC_TX_CFG);
+> -	wr32(wx, WX_MAC_TX_CFG, (reg & ~WX_MAC_TX_CFG_SPEED_MASK) | WX_MAC_TX_CFG_SPEED_10G);
+> -
+>  	/* enable transmits */
+>  	netif_tx_start_all_queues(wx->netdev);
+> -	netif_carrier_on(wx->netdev);
+>  }
+>  
+>  static void txgbe_reset(struct wx *wx)
+> @@ -264,7 +257,6 @@ static void txgbe_disable_device(struct wx *wx)
+>  		wx_disable_rx_queue(wx, wx->rx_ring[i]);
+>  
+>  	netif_tx_stop_all_queues(netdev);
+> -	netif_carrier_off(netdev);
+>  	netif_tx_disable(netdev);
+>  
+>  	wx_irq_disable(wx);
+> @@ -295,8 +287,11 @@ static void txgbe_disable_device(struct wx *wx)
+>  
+>  static void txgbe_down(struct wx *wx)
+>  {
+> +	struct txgbe *txgbe = (struct txgbe *)wx->priv;
+> +
+>  	txgbe_disable_device(wx);
+>  	txgbe_reset(wx);
+> +	phylink_stop(txgbe->phylink);
+>  
+>  	wx_clean_all_tx_rings(wx);
+>  	wx_clean_all_rx_rings(wx);
+> diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
+> index 123fa7ed9039..84dc3e850036 100644
+> --- a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
+> +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/pci.h>
+>  
+>  #include "../libwx/wx_type.h"
+> +#include "../libwx/wx_lib.h"
+>  #include "../libwx/wx_hw.h"
+>  #include "txgbe_type.h"
+>  #include "txgbe_phy.h"
+> @@ -445,6 +446,98 @@ static int txgbe_mdio_pcs_init(struct txgbe *txgbe)
+>  	return 0;
+>  }
+>  
+> +static struct phylink_pcs *txgbe_phylink_mac_select(struct phylink_config *config,
+> +						    phy_interface_t interface)
+> +{
+> +	struct wx *wx = netdev_priv(to_net_dev(config->dev));
+> +	struct txgbe *txgbe = (struct txgbe *)wx->priv;
+
+	struct txgbr *txgbe = netdev_to_txgbe(to_net_dev(config->dev));
+
+> +
+> +	return &txgbe->pcs;
+> +}
+> +
+
+Thanks!
+
 -- 
-2.34.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
