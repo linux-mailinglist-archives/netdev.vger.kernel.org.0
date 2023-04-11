@@ -2,77 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF8496DE51B
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 21:49:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D27B6DE51C
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 21:49:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229484AbjDKTt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 15:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43708 "EHLO
+        id S229522AbjDKTts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 15:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbjDKTt2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 15:49:28 -0400
-Received: from mail-pl1-x664.google.com (mail-pl1-x664.google.com [IPv6:2607:f8b0:4864:20::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F9C19AD
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 12:49:27 -0700 (PDT)
-Received: by mail-pl1-x664.google.com with SMTP id kh6so7364074plb.0
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 12:49:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681242567;
-        h=in-reply-to:content-disposition:message-id:subject:cc:to:from:date
-         :dkim-signature:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TU8CBLxfk4eZ05khHfJK/g8I5beufxqOFfd4g0qwq6w=;
-        b=vyxR3m/h+0TYvnd7606Pd7XGLMYy5dEyQAQ0gVs0b/3Tnm5ACcfeyvlnjn1AMKfNB8
-         Qq/cKbyzxAffMf8Mgn+bfhJHSa2EFryONM0lhJMr1qqLOnuN7aHryGwyfmw3Z5TqY+/j
-         VeXlSEbG22KHRAuO+Pd8u9UI8heKG1pZbZRQ1hqKD7bAzHaGDdb8xPgeTeRkWww4I2Yz
-         zY7zqHOH4DhfHee7gBt/Q8ouDfSZi+asUmyv4V3MOppqpxxqY4g2UcU6rpAn6brLkUd1
-         xggDfCiTu4J77X1Cly6zGk2XCuK/1qwuBCXeDAAOYfNf0cNQVOHHwMwnl9gkgCBy9OB9
-         Dxig==
-X-Gm-Message-State: AAQBX9fhbYzhy6HwCd80H+70C3jVRNNpJ7MgoLmDPnLCgXzxhW/Zp2n2
-        pi5F6VPZ/VZsrfNhT+ZKlFInJB1ai1qTR3HWhencc8bH3XkY
-X-Google-Smtp-Source: AKy350ZHeTWXt1Nvzjee/07Ht/lSB9fEZf8ty2/zMvX+jtp8G5t2hSnlKw/KTC90uGYUQrOl7Gq2q1IKqt4T
-X-Received: by 2002:a17:902:ecc6:b0:1a0:44e7:59dc with SMTP id a6-20020a170902ecc600b001a044e759dcmr21178642plh.40.1681242566918;
-        Tue, 11 Apr 2023 12:49:26 -0700 (PDT)
-Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [54.193.82.35])
-        by smtp-relay.gmail.com with ESMTPS id a22-20020a170902b59600b001a19438336fsm324732pls.66.2023.04.11.12.49.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Apr 2023 12:49:26 -0700 (PDT)
-X-Relaying-Domain: arista.com
-Received: from chmeee (unknown [10.95.67.91])
-        by smtp.aristanetworks.com (Postfix) with ESMTPS id 25A98301983F;
-        Tue, 11 Apr 2023 12:49:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1681242566;
-        bh=TU8CBLxfk4eZ05khHfJK/g8I5beufxqOFfd4g0qwq6w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=vyqtUuebFC+8Bq8S31wE0Vpp6Mvb6uTvb94YnEQ0p+znhVQt2PeuQIn1zbMaiLBKr
-         H8jMbyQmq9ulhnqVLjNpOWNaVgmDR6SVWp9jjFAxGUW0kWG0zopdjQtnIQNpHST952
-         RzAbZgWKJWKtWnd53qMw88KjDa5T3MpUwGGNFEIoABQy+OajECoFtA+YVVN1NrBaNp
-         oTcs9247eG0TxokjtKhUOfWHk5wOXw82B/1HGTCukVP+eMT240NNsNIsnoK/naSLe2
-         2IZ3JHe9/govQEhY4W6S+MUwjYIb1jAF28ObWywO/u5+xtKtrGUTBm0/gtSuv5meyv
-         /tQdiVFqeIJ5Q==
-Received: from kevmitch by chmeee with local (Exim 4.94.2)
-        (envelope-from <kevmitch@arista.com>)
-        id 1pmJzY-0002o4-Pu; Tue, 11 Apr 2023 12:49:24 -0700
-Date:   Tue, 11 Apr 2023 12:49:19 -0700
-From:   Kevin Mitchell <kevmitch@arista.com>
-To:     aroulin@nvidia.com
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org
-Subject: Re: neighbour netlink notifications delivered in wrong order
-Message-ID: <ZDW5v01wOiVQSsOa@chmeee>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1e6d685a-66c3-3443-3b35-d7b0d0753a20@nvidia.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229452AbjDKTts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 15:49:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607AC19AD
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 12:49:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F05FD62465
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 19:49:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B359C433EF;
+        Tue, 11 Apr 2023 19:49:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681242586;
+        bh=KHwqZhruzUQmMJcAyzNbufatb1HafS1nawYwY2TE5N4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HFhNSFpt8p4cG6jntP6BK9FTa6Xghm6hMXWvH4wnZinzdEsWO39B7ztreJFtiKvy2
+         TJIjxq33eE3Eqn93fUiNaCAvutIQG9/ysS+0xgJPHX2WAoLchkzw+S+6/PHFHBy4bP
+         sfWwdjkQwoQnGYuZq6TYZL/BDl9AOFdJo2F+V4i5T4xJs9J46A3OouG9EaJ3Qw1IVj
+         9mvIyLUqCM7c9VtfLywYK0QRkvUUyadRDmIdSZ6HuFCB+VaCrQP+q+V08P5CNbb/3L
+         BqvbW64Lx/g8Sh0rVkg8zixO/mNqgLJWj0ErHf6LYOhdlvi8hI0CDBD4e2tolZa8Ou
+         B0HIrjykEHUpQ==
+Date:   Tue, 11 Apr 2023 12:49:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Brett Creeley <bcreeley@amd.com>,
+        Brett Creeley <brett.creeley@amd.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, drivers@pensando.io,
+        shannon.nelson@amd.com, neel.patel@amd.com
+Subject: Re: [PATCH net] ionic: Fix allocation of q/cq info structures from
+ device local node
+Message-ID: <20230411124945.527b0ee4@kernel.org>
+In-Reply-To: <20230411124704.GX182481@unreal>
+References: <20230407233645.35561-1-brett.creeley@amd.com>
+        <20230409105242.GR14869@unreal>
+        <bd48d23b-093c-c6d4-86f1-677c2a0ab03c@amd.com>
+        <20230411124704.GX182481@unreal>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--fruggeri@arista.com as he is no longer at the company
+On Tue, 11 Apr 2023 15:47:04 +0300 Leon Romanovsky wrote:
+> > We want to allocate memory from the node local to our PCI device, which is
+> > not necessarily the same as the node that the thread is running on where
+> > vzalloc() first tries to alloc.  
+> 
+> I'm not sure about it as you are running kernel thread which is
+> triggered directly by device and most likely will run on same node as
+> PCI device.
 
-Has there been any progress in getting this patch or some other fix for this
-issue into mainline. It's been working well for us so far in our testing.
+Isn't that true only for bus-side probing?
+If you bind/unbind via sysfs does it still try to move to the right
+node? Same for resources allocated during ifup?
+
+> > Since it wasn't clear to us that vzalloc_node() does any fallback,   
+> 
+> vzalloc_node() doesn't do fallback, but vzalloc will find the right node
+> for you.
+
+Sounds like we may want a vzalloc_node_with_fallback or some GFP flag?
+All the _node() helpers which don't fall back lead to unpleasant code
+in the users.
+
+> > we followed the example in the ena driver to follow up with a more
+> > generic vzalloc() request.  
+> 
+> I don't know about ENA implementation, maybe they have right reasons to
+> do it, but maybe they don't.
+> 
+> > 
+> > Also, the custom message helps us quickly figure out exactly which
+> > allocation failed.  
+> 
+> If OOM is missing some info to help debug allocation failures, let's add
+> it there, but please do not add any custom prints after alloc failures.
+
++1
