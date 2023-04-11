@@ -2,138 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4725A6DD978
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 13:35:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C01E06DD97A
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 13:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbjDKLfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 07:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
+        id S229477AbjDKLfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 07:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjDKLfB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 07:35:01 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925B4E60;
-        Tue, 11 Apr 2023 04:35:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1681212901; x=1712748901;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rCpRx8zrwmywWfUW2YxiAvJ2J1O/eklkQmlDcOmjNXM=;
-  b=fhAKYZ41cHJHfbwdsQOuVm7zIQzmM1Y7NfILam97srLnMnG72a/IPMyU
-   MUOpFIDgdIKKA8C5LdKLc5Ioz366hcEP0y4fCWCEnEd19VKwVPUQf3dtq
-   1Gs933GhUxvw0vargbJM0E8xIeReVkfw3XkqxW/XcSVNBa2F9e7l28xUf
-   GlZxFmxv+JRIe4jKjtMkA9jGPAnZ2dFnxvFDb9H0xfbEWMSXFfHsmgEv/
-   UtKsHU/VGNa8BGi7UCVfTzbYWuLT04FtyBfAACya6KPbcwOfABlqSuJhN
-   PDRTI78UeJKJIpwDGfGIIEGz/qGu4OLEZ0pZKFK+06yAEP5iZHZ9ysP8q
-   w==;
-X-IronPort-AV: E=Sophos;i="5.98,336,1673938800"; 
-   d="scan'208";a="209023260"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2023 04:34:55 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 11 Apr 2023 04:34:51 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Tue, 11 Apr 2023 04:34:50 -0700
-Date:   Tue, 11 Apr 2023 13:34:50 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Simon Horman <horms@kernel.org>
-CC:     Julian Anastasov <ja@ssi.bg>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229459AbjDKLfX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 07:35:23 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10240E7A
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 04:35:21 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id sh8so19435190ejc.10
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 04:35:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1681212919;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=p+w8xJXIlI7Zu0RlE+gH/iZj22rfblX0XI64w4c5cMI=;
+        b=FQJb/b7eADQwglz/tz3FBrhq/YD/45aFWAThUUe5zum3xMtek2kGqcE+funfQB4273
+         tKDp98tOMIkU7jnIPq7OjkiixiUPTbb3afndngVHD1N/Fyp+RhiYZkviXQMz/doEotEo
+         MzyA3U1qXB9bHnRZhsxehaRtrnKghvZbL1+3PeVqFurMFbYx7pabT6rQglhUIGECLdZs
+         gu4V9saCGOXArTxn2gfF275398L8BMmQTK0mDyRmNXM7sseODunn0oBs7PdF7uAlIfQ2
+         ve0Nk0VM8W4KCMwwCgOd5ntulGyvzy2B665124B2qccYp+4t+X6XFH7K7kHQRe9hl7hb
+         aJ4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681212919;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=p+w8xJXIlI7Zu0RlE+gH/iZj22rfblX0XI64w4c5cMI=;
+        b=qkm5lvF9JFutHvo0M/LWADCo/XLYREePJXob42QI0+gempfE6c2RcPX/QqIDgRUVDg
+         mPLzI4tITJ9erogElxhKNJUIZG2WJsoQ//0YNHxP2kx56o8g+KAtL3vaHYD/ADcO/Pd5
+         fTmTRwRsxHbzwv2CGkbSVWtwOG5y/5xsx4Q4phT7NyV38owNyjVVEzLj4t3x7ELqS1Hp
+         ciy5Iee5+akoMdwMMB7egg58+O+PhkNW/NM/U5kWaXFw0AGAbdQnRlaC8glpDJOMdI27
+         JyOzInNy4G+Nlczghgb0KJFhrMCCvfFbhNvD3WwIJ0H13ElEHk55E2U+oHVHJAa+NEi5
+         nreA==
+X-Gm-Message-State: AAQBX9fFA09XudIhVZpBs6/r3nH/lq+uTJ5zGRuMYEmAOJ00/7kzAuqc
+        LaBHbl/Budk20l9bwMp9beQ=
+X-Google-Smtp-Source: AKy350b3hcW9FKWWcYvsE6VxIdhXokuRwBvqcr4a6yil1sj5mNIxQOTl3XUhxL1ZHq2IS+5ntN7F2Q==
+X-Received: by 2002:a17:906:f182:b0:94b:d72:bfa9 with SMTP id gs2-20020a170906f18200b0094b0d72bfa9mr2328208ejb.18.1681212919210;
+        Tue, 11 Apr 2023 04:35:19 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id g19-20020a1709065d1300b00928e0ea53e5sm6015934ejt.84.2023.04.11.04.35.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Apr 2023 04:35:19 -0700 (PDT)
+Date:   Tue, 11 Apr 2023 14:35:16 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <lvs-devel@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
-        <coreteam@netfilter.org>
-Subject: Re: [PATCH nf-next v2 2/4] ipvs: Consistently use array_size() in
- ip_vs_conn_init()
-Message-ID: <20230411113450.ky4jp6jsptvlzrtx@soft-dev3-1>
-References: <20230409-ipvs-cleanup-v2-0-204cd17da708@kernel.org>
- <20230409-ipvs-cleanup-v2-2-204cd17da708@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
+ flow control, speed, and duplex on CPU port configurable
+Message-ID: <20230411113516.ez5cm4262ttec2z7@skbuf>
+References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
+ <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
+ <20230411085626.GA19711@pengutronix.de>
+ <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
+ <20230411111609.jhfcvvxbxbkl47ju@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230409-ipvs-cleanup-v2-2-204cd17da708@kernel.org>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230411111609.jhfcvvxbxbkl47ju@skbuf>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 04/11/2023 09:10, Simon Horman wrote:
-> 
-> Consistently use array_size() to calculate the size of ip_vs_conn_tab
-> in bytes.
-> 
-> Flagged by Coccinelle:
->  WARNING: array_size is already used (line 1498) to compute the same size
-> 
-> No functional change intended.
-> Compile tested only.
+On Tue, Apr 11, 2023 at 02:16:09PM +0300, Vladimir Oltean wrote:
+> I may have missed something.
 
-Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Maybe I'm wrong, but my blind intuition says that when autoneg is
+disabled in the integrated PHYs, flow control _is_ by default forced off
+per port, unless the "Force Flow Control" bit from Port N Control 2
+registers is set. So that can be used to still support:
+- ethtool --pause swp0 autoneg off rx on tx on
+- ethtool --pause swp0 autoneg off rx off tx off
+- ethtool --pause swp0 autoneg on # asymmetric RX/TX combinations depend upon autoneg
 
-> 
-> Signed-off-by: Simon Horman <horms@kernel.org>
-> ---
-> v2
-> * Retain division by 1024, which was lost in v1
-> ---
->  net/netfilter/ipvs/ip_vs_conn.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
-> index 13534e02346c..84d273a84dc8 100644
-> --- a/net/netfilter/ipvs/ip_vs_conn.c
-> +++ b/net/netfilter/ipvs/ip_vs_conn.c
-> @@ -1481,6 +1481,7 @@ void __net_exit ip_vs_conn_net_cleanup(struct netns_ipvs *ipvs)
-> 
->  int __init ip_vs_conn_init(void)
->  {
-> +       size_t tab_array_size;
->         int idx;
-> 
->         /* Compute size and mask */
-> @@ -1494,8 +1495,9 @@ int __init ip_vs_conn_init(void)
->         /*
->          * Allocate the connection hash table and initialize its list heads
->          */
-> -       ip_vs_conn_tab = vmalloc(array_size(ip_vs_conn_tab_size,
-> -                                           sizeof(*ip_vs_conn_tab)));
-> +       tab_array_size = array_size(ip_vs_conn_tab_size,
-> +                                   sizeof(*ip_vs_conn_tab));
-> +       ip_vs_conn_tab = vmalloc(tab_array_size);
->         if (!ip_vs_conn_tab)
->                 return -ENOMEM;
-> 
-> @@ -1508,10 +1510,8 @@ int __init ip_vs_conn_init(void)
->                 return -ENOMEM;
->         }
-> 
-> -       pr_info("Connection hash table configured "
-> -               "(size=%d, memory=%ldKbytes)\n",
-> -               ip_vs_conn_tab_size,
-> -               (long)(ip_vs_conn_tab_size*sizeof(*ip_vs_conn_tab))/1024);
-> +       pr_info("Connection hash table configured (size=%d, memory=%zdKbytes)\n",
-> +               ip_vs_conn_tab_size / 1024, tab_array_size);
->         IP_VS_DBG(0, "Each connection entry needs %zd bytes at least\n",
->                   sizeof(struct ip_vs_conn));
-> 
-> 
-> --
-> 2.30.2
-> 
-
--- 
-/Horatiu
+I may be wrong; I don't have the hardware and the ethtool pause autoneg
+bit is not 100% clear to me.
