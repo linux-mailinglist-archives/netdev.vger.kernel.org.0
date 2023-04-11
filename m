@@ -2,148 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2038D6DE5EA
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 22:42:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAA1F6DE602
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 22:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbjDKUmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 16:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
+        id S229831AbjDKUuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 16:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbjDKUmk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 16:42:40 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F315581
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 13:42:29 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id he11-20020a05600c540b00b003ef6d684102so3128537wmb.3
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 13:42:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1681245747;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2Qg0UfDgtzM4SSag2U8RERLst0NUUqYRmB2P1uH49t4=;
-        b=IGWcpTfjatCz3Eqo5P30S165MgQ8L4VYNgUdGlU7f47eKTaqEl/N0R2Bxijvo4pFg9
-         uanbjdbEphIkQDQQEZvaB8ooRWJVv+h7h963uEFJa7dXYDHWqUkAkmm6bTqrjLsz277H
-         UfMjUqNzcQZXhCGgsQ+UXxRYJqbcxdztwMq4/Kb7HKNGlv5gphgCTsS1rVR+qx7kEFxk
-         4jo+TQgpaCUpe07hKrVaVHQwTUPQyulQDEQVgAPyCj9SbQ6jucUN9bCwfQby51IPFwAY
-         ZBAqhQ/EKWaGtG/XvskTPwGou2g8oRoiWi9RLipLyDVoSETAxYgTDlezEF5ORVgAIoJ5
-         bLkA==
+        with ESMTP id S229765AbjDKUuu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 16:50:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAED3AAA
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 13:50:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681246202;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FnJ89Jr7frkhLpQ5e8FVQom59cKoMcGSZpquVEiks/w=;
+        b=YaXFJ05Wm0K+gIXa2FzYO+x2hCiP+LTGms+SDb7lLsU3ApJFPAsQQ85OBbmLFPCjfW/Rdt
+        T5W8PPUxbr1tEJgcu9FrdknzxjUBCZ6WHipwAEuQqx74X1tseGne6+5yK5Se5eFFa1R3+k
+        5S5Dy7yletVB2TTpolASnzliysPB3qE=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-618-M_0ujHfyNsyGYVMGCoVdpQ-1; Tue, 11 Apr 2023 16:50:01 -0400
+X-MC-Unique: M_0ujHfyNsyGYVMGCoVdpQ-1
+Received: by mail-oi1-f200.google.com with SMTP id y81-20020acae154000000b003877ce3bfb4so2790031oig.3
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 13:50:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681245747;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2Qg0UfDgtzM4SSag2U8RERLst0NUUqYRmB2P1uH49t4=;
-        b=Vbibjgyha2+NUrnIbPSjsus9KjyyX2CcE9f9om9O9W6S42/JQNKpJ5NK+1PDHXYTkB
-         tVX5O/B2PnwLordjIENZZRW0fnFR0unI3BQpi2iRZhty1BcliPV8M7V7pprTlkt8gPXq
-         UPHwkhAmrFtGLbVeInmumF+R/P/7oxPZwfdw3Ntn5TamXDRbmucPw64fnMUx7mZMreqQ
-         piSiPVEoL105YK7J+8bQSOFjvj2fYQ3S2FUTWEqVDCkYhvHTtlpnUoAa6pzLsvJ22lI9
-         9ReLgiQvUaQZjHtEqUIOCfO+4CL1NZ/R46BFACCvuhhx1uZNkjOYKhazsV0xTBWeUSKb
-         rdNQ==
-X-Gm-Message-State: AAQBX9d42bgkm1wzR9pgU2jj1G3q5VuHxxAkJn0qpIAvxxK4dFq1djMD
-        9oNMwbZOgjTrxF0b806hzHsfew==
-X-Google-Smtp-Source: AKy350YOhcv/3WdKElepCqK9tqJwEaQ5hRFPchVWdToziQmNHv5rNkdb33WZI77d1usKv9fmjcp+nA==
-X-Received: by 2002:a7b:cb51:0:b0:3eb:38e6:f650 with SMTP id v17-20020a7bcb51000000b003eb38e6f650mr9930062wmj.41.1681245747534;
-        Tue, 11 Apr 2023 13:42:27 -0700 (PDT)
-Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id p23-20020a1c7417000000b003f0824e8c92sm86887wmc.7.2023.04.11.13.42.26
+        d=1e100.net; s=20210112; t=1681246201;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FnJ89Jr7frkhLpQ5e8FVQom59cKoMcGSZpquVEiks/w=;
+        b=hgUhs6lkchjh/WHsDRpm+Fg+2LAySWtu43LCUCgt+//6gQnzxLci8gSET60HSfkBVH
+         t7n8MlUXZGzi3Tqqe9IKVDPcnF6xeHvpPSm3ko7j+NBwNP9t0gfWoxmw8RgoOWmADf76
+         Hb8s2OBDJN0iATNBaQbrc8LaC7sz1qdtVpJZWSm5AD17+fC4SraskHHQlPz8YijMpG9D
+         +PYbLEdsCa3tw4xUSVlnpfDJxRZxYjLo7rOeMsIkia/KgrR3JDefevckWCzdS53YPk2L
+         +5gKKeFxtMZlX3Aeq/V7JOSsaatp8LdD9lLonlXZmtwq2C/dIyssHPuINicy/qugI7Zf
+         g9uA==
+X-Gm-Message-State: AAQBX9fB5FlWQKWAVBjjeF0MYlUe09h+P/g++aTWP8zD6CEb64LFNsQp
+        tlT9worH+h6vRI7+T5qlT+XJL7czF4uIgHudIeDz+2DlxAStnct1cnQ9uWQEr37h8ELmJrTyp3+
+        lPtWtybvnrT7/peX6
+X-Received: by 2002:a05:6870:32c9:b0:17f:6909:1618 with SMTP id r9-20020a05687032c900b0017f69091618mr8385056oac.5.1681246201168;
+        Tue, 11 Apr 2023 13:50:01 -0700 (PDT)
+X-Google-Smtp-Source: AKy350a/jKcTh3Dg+IN29kMyFBcT98jFq7QbmEt+C4YJeNTF6M0ET6Rq1bJC/j+OEgYr3vcjHqKpaA==
+X-Received: by 2002:a05:6870:32c9:b0:17f:6909:1618 with SMTP id r9-20020a05687032c900b0017f69091618mr8385021oac.5.1681246200922;
+        Tue, 11 Apr 2023 13:50:00 -0700 (PDT)
+Received: from halaney-x13s (104-53-165-62.lightspeed.stlsmo.sbcglobal.net. [104.53.165.62])
+        by smtp.gmail.com with ESMTPSA id s21-20020a056830149500b006a3e377f0d7sm499957otq.4.2023.04.11.13.49.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 13:42:27 -0700 (PDT)
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Date:   Tue, 11 Apr 2023 22:42:12 +0200
-Subject: [PATCH net 4/4] selftests: mptcp: userspace pm: uniform verify
- events
+        Tue, 11 Apr 2023 13:50:00 -0700 (PDT)
+Date:   Tue, 11 Apr 2023 15:49:57 -0500
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        bhupesh.sharma@linaro.org, wens@csie.org, jernej.skrabec@gmail.com,
+        samuel@sholland.org, mturquette@baylibre.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        richardcochran@gmail.com, linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com
+Subject: Re: [PATCH net-next v4 00/12] Add EMAC3 support for sa8540p-ride
+Message-ID: <20230411204957.kt5o4oraoxi7szts@halaney-x13s>
+References: <20230411200409.455355-1-ahalaney@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230411-upstream-net-20230411-mptcp-fixes-v1-4-ca540f3ef986@tessares.net>
-References: <20230411-upstream-net-20230411-mptcp-fixes-v1-0-ca540f3ef986@tessares.net>
-In-Reply-To: <20230411-upstream-net-20230411-mptcp-fixes-v1-0-ca540f3ef986@tessares.net>
-To:     mptcp@lists.linux.dev, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Dmytro Shytyi <dmytro@shytyi.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Mat Martineau <martineau@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        stable@vger.kernel.org
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1921;
- i=matthieu.baerts@tessares.net; h=from:subject:message-id;
- bh=1MrCCJJ5GEMq7hx3eoZhKgDEbgVWmBJ0bqSM6h+3CbQ=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBkNcYubzn7jx0MUsvw+rle5p4XlZD7yypcKbS9P
- oImjRChXFKJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCZDXGLgAKCRD2t4JPQmmg
- c0o6EAChDN8Dhftr1GID9h82qJ9Na9va86JfYFDLY2V766qElhR28T/K7pa+W3+oDlE92GSkmV5
- aHUjNUjxBY4iXgRL4LSfUXTF7A1J+lGDCevgl32h+RzgO/G49ZehMU8zw7g+yHDKFNd3GtBDtpC
- R+LBTS015DkEdUwdzPvOebCKu8Wd6CUINI8GlN3G3Cf37UzMmRFEAaDsjszwx5cCC946OXjpLOW
- dEsD8yWQUc1g0zTKTYYtc+HGkLoAyYYNpyJWIf6JMubGo4Jwjjx51CNtIH6OXywmy7Pfk8Eheai
- UCYP7amDN0J930qgXB/SgTqj3x0xZPWu/QDgoMFQTck7lAPjwPTxp2979RJ14OopFnrY9HcI1wb
- rxqTrDLiIqk9j96BoFSn7KediHPoJANBsCGIxhGxRbsTi21fCINZVWV0IK5538i4G2yanRSUZmC
- kyOv6gRNIQLz1qvdpbVrUZkwk//osw5vnhQqY304o/hf3qAJcxr2zGWJM++ja6J1LXHNW1dFqU0
- tdqxoTDaBSwQbdYJ2Hh6qakprbN1mA9OJAUB6ohe4Rpc2qpGGuxqj6yzdigrmhhGp9PVk1GRvvK
- MruZNp6pcMVP+TPt00b5CD+VdeE3l3UsoEOS8+FVdUSLIPFdN1BH0X2dJ/WDooyMNqIGBa2XEIa
- H9xLIt5le1z8XlA==
-X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp;
- fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230411200409.455355-1-ahalaney@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simply adding a "sleep" before checking something is usually not a good
-idea because the time that has been picked can not be enough or too
-much. The best is to wait for events with a timeout.
+On Tue, Apr 11, 2023 at 03:03:57PM -0500, Andrew Halaney wrote:
+> This is a forward port / upstream refactor of code delivered
+> downstream by Qualcomm over at [0] to enable the DWMAC5 based
+> implementation called EMAC3 on the sa8540p-ride dev board.
+> 
+> From what I can tell with the board schematic in hand,
+> as well as the code delivered, the main changes needed are:
+> 
+>     1. A new address space layout for dwmac5/EMAC3 MTL/DMA regs
+>     2. A new programming sequence required for the EMAC3 based platforms
+> 
+> This series makes the changes above as well as other housekeeping items
+> such as converting dt-bindings to yaml, etc.
+> 
+> As requested[1], it has been split up by compilation deps / maintainer tree.
+> I will post a link to the associated devicetree changes that together
+> with this series get the hardware functioning.
+> 
 
-In this selftest, 'sleep 0.5' is used more than 40 times. It is always
-used before calling a 'verify_*' function except for this
-verify_listener_events which has been added later.
+Link to the devicetree bits: https://lore.kernel.org/netdev/20230411202009.460650-1-ahalaney@redhat.com/T/#t
 
-At the end, using all these 'sleep 0.5' seems to work: the slow CIs
-don't complain so far. Also because it doesn't take too much time, we
-can just add two more 'sleep 0.5' to uniform what is done before calling
-a 'verify_*' function. For the same reasons, we can also delay a bigger
-refactoring to replace all these 'sleep 0.5' by functions waiting for
-events instead of waiting for a fix time and hope for the best.
-
-Fixes: 6c73008aa301 ("selftests: mptcp: listener test for userspace PM")
-Cc: stable@vger.kernel.org
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
----
- tools/testing/selftests/net/mptcp/userspace_pm.sh | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/tools/testing/selftests/net/mptcp/userspace_pm.sh b/tools/testing/selftests/net/mptcp/userspace_pm.sh
-index 48e52f995a98..b1eb7bce599d 100755
---- a/tools/testing/selftests/net/mptcp/userspace_pm.sh
-+++ b/tools/testing/selftests/net/mptcp/userspace_pm.sh
-@@ -913,6 +913,7 @@ test_listener()
- 		$client4_port > /dev/null 2>&1 &
- 	local listener_pid=$!
- 
-+	sleep 0.5
- 	verify_listener_events $client_evts $LISTENER_CREATED $AF_INET 10.0.2.2 $client4_port
- 
- 	# ADD_ADDR from client to server machine reusing the subflow port
-@@ -928,6 +929,7 @@ test_listener()
- 	# Delete the listener from the client ns, if one was created
- 	kill_wait $listener_pid
- 
-+	sleep 0.5
- 	verify_listener_events $client_evts $LISTENER_CLOSED $AF_INET 10.0.2.2 $client4_port
- }
- 
-
--- 
-2.39.2
+Thanks,
+Andrew
 
