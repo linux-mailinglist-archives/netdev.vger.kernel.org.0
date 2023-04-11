@@ -2,55 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D27B6DE51C
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 21:49:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 809DC6DE521
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 21:51:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229522AbjDKTts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 15:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
+        id S229667AbjDKTvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 15:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbjDKTts (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 15:49:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607AC19AD
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 12:49:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F05FD62465
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 19:49:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B359C433EF;
-        Tue, 11 Apr 2023 19:49:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681242586;
-        bh=KHwqZhruzUQmMJcAyzNbufatb1HafS1nawYwY2TE5N4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HFhNSFpt8p4cG6jntP6BK9FTa6Xghm6hMXWvH4wnZinzdEsWO39B7ztreJFtiKvy2
-         TJIjxq33eE3Eqn93fUiNaCAvutIQG9/ysS+0xgJPHX2WAoLchkzw+S+6/PHFHBy4bP
-         sfWwdjkQwoQnGYuZq6TYZL/BDl9AOFdJo2F+V4i5T4xJs9J46A3OouG9EaJ3Qw1IVj
-         9mvIyLUqCM7c9VtfLywYK0QRkvUUyadRDmIdSZ6HuFCB+VaCrQP+q+V08P5CNbb/3L
-         BqvbW64Lx/g8Sh0rVkg8zixO/mNqgLJWj0ErHf6LYOhdlvi8hI0CDBD4e2tolZa8Ou
-         B0HIrjykEHUpQ==
-Date:   Tue, 11 Apr 2023 12:49:45 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Brett Creeley <bcreeley@amd.com>,
-        Brett Creeley <brett.creeley@amd.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, drivers@pensando.io,
-        shannon.nelson@amd.com, neel.patel@amd.com
-Subject: Re: [PATCH net] ionic: Fix allocation of q/cq info structures from
- device local node
-Message-ID: <20230411124945.527b0ee4@kernel.org>
-In-Reply-To: <20230411124704.GX182481@unreal>
-References: <20230407233645.35561-1-brett.creeley@amd.com>
-        <20230409105242.GR14869@unreal>
-        <bd48d23b-093c-c6d4-86f1-677c2a0ab03c@amd.com>
-        <20230411124704.GX182481@unreal>
+        with ESMTP id S229659AbjDKTvA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 15:51:00 -0400
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694802D66;
+        Tue, 11 Apr 2023 12:50:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1681242633; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=JqZQu0/1zwEpuh2JcCHJXbityLwgMsFgMYjOJfZmEYovU2KTCQlA0NW5r1riQe4QVmFC8CFI6KKRoyrbqPwvieb8lY41XgzeMheJrd9ErxwtEzv0dnmYwk/mgu4Xp3zGCt/Pq199BTzRE54UJH6B+g4W3x1uPn+oEl6L1R00M84=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1681242633; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=k0q9m1x0Kzm672Wv2uZ8p+u8ZZVwbvW5fTmdCfljt3s=; 
+        b=QY4VO4boUGLwt9Yxhtaqd5+U4Q7Md6paeVRlr/mvt5jH55NcJIFALF1cACd+KrvIAoPKwaoZMZFVlSZn7IburNSev8q3i6OaXuolV6xCNRc3vK9dQKKBjs+FH9f2sCrO4hMsj5+aWvO4GBSUEACHAiMK+p1U3q45ixwT/5rKwUM=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1681242633;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=k0q9m1x0Kzm672Wv2uZ8p+u8ZZVwbvW5fTmdCfljt3s=;
+        b=EYQu2ZV53EXtJYTbLhEXJrYVkjM91zZ0DjFxMmN/HncbxMX7qlWwjQMnaLG260N8
+        5gfK3+ovIyZ5HgxdAON3hClGH1R3a2wi0AsbSeExfEucOeCK+fkRqnb+HNCYfWJ/1n6
+        fsoEBAAMVkyCc+ZTgzqBM1lpU+c+ubUtWR5Gc/bg=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1681242631921471.7121572372041; Tue, 11 Apr 2023 12:50:31 -0700 (PDT)
+Message-ID: <e5cb12f2-c89e-9cf9-5fbe-cfeeb14512be@arinc9.com>
+Date:   Tue, 11 Apr 2023 22:50:25 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH net-next] net: dsa: mt7530: fix support for MT7531BE
+Content-Language: en-US
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <ZDSlm-0gyyDZXy_k@makrotopia.org>
+ <13aedaa6-6b7b-727e-e932-4a5139c54f39@arinc9.com>
+ <ZDW4Tr4bIGcxwDgs@makrotopia.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <ZDW4Tr4bIGcxwDgs@makrotopia.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,39 +75,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Apr 2023 15:47:04 +0300 Leon Romanovsky wrote:
-> > We want to allocate memory from the node local to our PCI device, which is
-> > not necessarily the same as the node that the thread is running on where
-> > vzalloc() first tries to alloc.  
+On 11.04.2023 22:43, Daniel Golle wrote:
+> On Tue, Apr 11, 2023 at 10:30:06PM +0300, Arınç ÜNAL wrote:
+>> On 11.04.2023 03:11, Daniel Golle wrote:
+>>> There are two variants of the MT7531 switch IC which got different
+>>> features (and pins) regarding port 5:
+>>>    * MT7531AE: SGMII/1000Base-X/2500Base-X SerDes
+>>>    * MT7531BE: RGMII
+>>>
+>>> Moving the creation of the SerDes PCS from mt753x_setup to mt7530_probe
+>>> with commit 6de285229773 ("net: dsa: mt7530: move SGMII PCS creation to
+>>> mt7530_probe function") works fine for MT7531AE which got two instances
+>>> of mtk-pcs-lynxi, however, MT7531BE requires mt7531_pll_setup to setup
+>>> clocks before the single PCS on port 6 (usually used as CPU port)
+>>> starts to work and hence the PCS creation failed on MT7531BE.
+>>>
+>>> Fix this by introducing a pointer to mt7531_create_sgmii function in
+>>> struct mt7530_priv and call it again at the end of mt753x_setup like it
+>>> was before commit 6de285229773 ("net: dsa: mt7530: move SGMII PCS
+>>> creation to mt7530_probe function").
+>>
+>> If I understand correctly, this patch does two things.
+>>
+>> Run mt7531_create_sgmii() from mt753x_setup(), after mt7531_setup() and
+>> mt7531_setup_common() is run so that PCS on MT7531BE works.
 > 
-> I'm not sure about it as you are running kernel thread which is
-> triggered directly by device and most likely will run on same node as
-> PCI device.
-
-Isn't that true only for bus-side probing?
-If you bind/unbind via sysfs does it still try to move to the right
-node? Same for resources allocated during ifup?
-
-> > Since it wasn't clear to us that vzalloc_node() does any fallback,   
+>>
+>> Run the PCS creation code inside the loop only once if
+>> mt7531_dual_sgmii_supported() is false so it doesn't set the nonexistent
+>> port 5 SGMII on MT7531BE.
 > 
-> vzalloc_node() doesn't do fallback, but vzalloc will find the right node
-> for you.
-
-Sounds like we may want a vzalloc_node_with_fallback or some GFP flag?
-All the _node() helpers which don't fall back lead to unpleasant code
-in the users.
-
-> > we followed the example in the ena driver to follow up with a more
-> > generic vzalloc() request.  
+> Yes, both is correct.
 > 
-> I don't know about ENA implementation, maybe they have right reasons to
-> do it, but maybe they don't.
+>>
+>> Regarding the first part:
+>> I was actually in the middle of moving the code until after
+>> mt7530_pll_setup() and mt7531_pll_setup() on mt7530_setup() and
+>> mt7531_setup() to mt7530_probe(). To me it makes more sense to run them on
+>> mt7530_probe() as there's a good amount of duplicate code on mt7530_setup()
+>> and mt7531_setup().
 > 
-> > 
-> > Also, the custom message helps us quickly figure out exactly which
-> > allocation failed.  
+> I thought about doing that as well, however, note that you will have to
+> move all the reset and regulator setup procedure to mt7530_probe() as
+> well then, as PLL setup currently happens after that, and that's
+> probably for a reason.
 > 
-> If OOM is missing some info to help debug allocation failures, let's add
-> it there, but please do not add any custom prints after alloc failures.
+> As the reset and regulator setup works differently on MT7530 and
+> MT7531, and depending on whether it's a standalone IC package or MCM, I
+> believe changes unifying this will have to be tested on a lot of
+> boards...
 
-+1
+Not if we don't change the behaviour at all for both switches, which is 
+what I intend to do.
+
+> 
+>>
+>> This will resolve the problem here, and make my future work regarding the
+>> PHY muxing feature on the MT7530 switch possible to do.
+>>
+>> Regarding the second part:
+>> I'll take your changes to my current RFC patch series while addressing
+>> Jesse's suggestion if this is fine by you.
+> 
+> Yes, I'd appreciate that and I'm ready to test and review once you post
+> your updated series.
+
+Sounds good, cheers.
+
+Arınç
