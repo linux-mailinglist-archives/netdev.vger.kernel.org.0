@@ -2,193 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6BC96DDEEA
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 17:07:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 418926DDEE8
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 17:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230202AbjDKPG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 11:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60522 "EHLO
+        id S230252AbjDKPGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 11:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbjDKPGv (ORCPT
+        with ESMTP id S230228AbjDKPGv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 11:06:51 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DFC5599;
-        Tue, 11 Apr 2023 08:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681225608; x=1712761608;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=vRCaEziC5cya1vTvzX5B3j9HEzXNnJneeFweNnZ3EjQ=;
-  b=Kn1tRThdOOyjsE4znTZWUpl8nEuF2tgSvUIkaIeyDkjMiW5lalrJhSt/
-   momDs+1ChOadOTLQahHcgXpP5Q6vjFi0y8zFRLqRwlT0zsOEYdCAv+KdG
-   CJCFOcHK0TBTs1JkYyDoFKrUH+W2CShyu1MA2iUmNcTAHDjJCQwmlu0JX
-   wEpdrK42MVJzntvtjwmh+CkpYpPANwpnkT/fmJ7K2e1xXjXOlYKANZ1S+
-   ahmzh5rVU1rV9jPnql51x0PxHqVHMh/DC92Aouutfk09SsluzjnlHv6nl
-   tKiGwSPKSH7H8QWjo/yXS1Qs6m0KsFbB8KSIQIla94VBeTTN+wqj7r5nC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10677"; a="342402362"
-X-IronPort-AV: E=Sophos;i="5.98,336,1673942400"; 
-   d="scan'208";a="342402362"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2023 08:06:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10677"; a="812596726"
-X-IronPort-AV: E=Sophos;i="5.98,336,1673942400"; 
-   d="scan'208";a="812596726"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga004.jf.intel.com with ESMTP; 11 Apr 2023 08:06:47 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 11 Apr 2023 08:06:47 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Tue, 11 Apr 2023 08:06:47 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.41) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Tue, 11 Apr 2023 08:06:43 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Aqyp+CW3nPkOTKcJIK44aBNG4hRqDP78/RXSqETP9QIyS4nUpOXQMFlfXGxF6zoOp6nAf5pSlrv92116hT8wdlnsYPOnDmgwdHgtioql82qivZudpUuNAzTvXJQmMcUbpIm5akeLRESNzRQslr3hLRf2nxqvJReM4FrCC5pzfJQ2kFGq/LcEZCDE6Vx/9VMfN51gMZPzX76dlrd8+NRTo+YmxUH+3G4oriMjMn3/bxlLj6xoOZRjdevXCWwZoOW2uA42I1ytlvHzhq5DFqBXCCc11LknRpGxFQoMnDAACzbQ5GfEISjqPYHoRgbTOHeGQsL9WTeGoHLK519iVBbGtQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DXwqJMLpHeEmTB7jC8FBXmw533D1vvHQvhjeAS8hHdI=;
- b=BEes0KDIC2jXk+6UczLUJIhQU+POAMTbZeJNNa+/72kFKurfHtkKcjS9ElVvfJtUWhB0fVtlQJzz9VKcNP0dG3PJnhU+l2IpCNp5+lIMEDP/d8xLsDx77jL91lERmVIYAKTjhs1qqdQWmBvj3gOtZi1p3ela1uNTll9vy+Y9c9hS7BNpNnSpRQSJOu40ql4+Bc9csznRj43PZZXaQSwba7ZAqvTOE2UErf4kHav7w5OoSyR/1/IhTHpKbok4zuXTRP4H+oesckbjT4VgXY6oDoAnYcGBfLVKtWVv/lLXlmNpycr9RDojLAon24CQUQTCg00/owHovrtIiqhLYEzI/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB4914.namprd11.prod.outlook.com (2603:10b6:303:90::24)
- by MW3PR11MB4601.namprd11.prod.outlook.com (2603:10b6:303:59::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Tue, 11 Apr
- 2023 15:06:34 +0000
-Received: from CO1PR11MB4914.namprd11.prod.outlook.com
- ([fe80::c7d6:3545:6927:8493]) by CO1PR11MB4914.namprd11.prod.outlook.com
- ([fe80::c7d6:3545:6927:8493%7]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
- 15:06:34 +0000
-Message-ID: <96ad9a58-00c8-1bb3-06d6-841e7ea41488@intel.com>
-Date:   Tue, 11 Apr 2023 08:06:31 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.9.1
-Subject: Re: [PATCH V2,net-next, 2/3] net: mana: Enable RX path to handle
- various MTU sizes
-Content-Language: en-US
-To:     Haiyang Zhang <haiyangz@microsoft.com>,
-        <linux-hyperv@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <decui@microsoft.com>, <kys@microsoft.com>,
-        <paulros@microsoft.com>, <olaf@aepfle.de>, <vkuznets@redhat.com>,
-        <davem@davemloft.net>, <wei.liu@kernel.org>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <leon@kernel.org>,
-        <longli@microsoft.com>, <ssengar@linux.microsoft.com>,
-        <linux-rdma@vger.kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <bpf@vger.kernel.org>,
-        <ast@kernel.org>, <sharmaajay@microsoft.com>, <hawk@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1680901196-20643-1-git-send-email-haiyangz@microsoft.com>
- <1680901196-20643-3-git-send-email-haiyangz@microsoft.com>
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-In-Reply-To: <1680901196-20643-3-git-send-email-haiyangz@microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR08CA0008.namprd08.prod.outlook.com
- (2603:10b6:a03:100::21) To CO1PR11MB4914.namprd11.prod.outlook.com
- (2603:10b6:303:90::24)
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32C05277
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 08:06:47 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id ca18e2360f4ac-75d1e0ff8ecso9366439f.0
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 08:06:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112; t=1681225607; x=1683817607;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=5OYepsyffP+bRFs4kNPAOND04VK6YGwmZGIYnadMN3s=;
+        b=792+fXLP/FHebQi7o8brLl0/wf6r76sAIguiRhTgOJQQkkTZUSz2HXPDdehnQD2BML
+         MKxNxOGQtl9Ov0M9/6nVS8ciEnwHF8Kwpf1ZxOKQf7IVL5JyVce7xSvCrH8e150s9xJl
+         7aK2TWgnIj2y8ALm5hHYWgCkY+wUH5PYOLMX31BjhIH+BhDYBI5SrMTO13lyBURH+KW1
+         8WQ3E2lE/y4aSrGllZyxOLENQBWX1nDBOtqqDrRvw7Vt7h1J3D9WCoX8K4VXFSsm4Zho
+         tiDfoRsadNE+ikLKwxg4WKf66snOv3Whqzhju56oZJEofZoIOCDF7mtigLMU9gz2aIER
+         7M8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681225607; x=1683817607;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=5OYepsyffP+bRFs4kNPAOND04VK6YGwmZGIYnadMN3s=;
+        b=rdrzhT2DTN3cVXdkjvS54zYc6ov8++e9u4XfSMovCUHecHf7GWox0h5yQaa/pt5s32
+         3BTNQrWAq9ZvJdbmDLtg6MVT9mOSETOqqm0OMXht+ZdfaPGMMfFQu5FJFD0mUF5RnTnu
+         5kIQy0cjDqb6OUJPLpczijcuUS5xEBMnWKuYQWRKtPP1hM6YyqhHy9k/arOcNAtFldlQ
+         BHMQCdoCMBdLXzTPpVgtIQTIbD+zeqO0LgRFaEgKzs/89Dg5eZkFPI5cqnGRvbTW6gSg
+         asnsDlFq3q0Su98v47rY7NQIa6cRlvm8zfyjAEOV4y2w/acK/RGzMdeUmpkD1GlQ2CNu
+         a1zw==
+X-Gm-Message-State: AAQBX9eAuD+V5+RHA9H/ivxtFkk7sXkwbzZkOcPu5flnvGovbQP9eo0b
+        Cgu9Nr1EBz3Uys7ZVaPRQZ6q5w==
+X-Google-Smtp-Source: AKy350ZAFK23oTWxlt6R1NG+aT0+Hmhpij+N+kVIqD6SwGBSCEX384WUI1EZYpyAD9/oH3B0BsXLcw==
+X-Received: by 2002:a05:6602:2d08:b0:758:9dcb:5d1a with SMTP id c8-20020a0566022d0800b007589dcb5d1amr6177264iow.2.1681225607059;
+        Tue, 11 Apr 2023 08:06:47 -0700 (PDT)
+Received: from [192.168.1.94] ([96.43.243.2])
+        by smtp.gmail.com with ESMTPSA id v8-20020a056602014800b007046e9e138esm3847948iot.22.2023.04.11.08.06.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Apr 2023 08:06:46 -0700 (PDT)
+Message-ID: <19c69021-dce3-1a4a-00eb-920d1f404cfc@kernel.dk>
+Date:   Tue, 11 Apr 2023 09:06:45 -0600
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR11MB4914:EE_|MW3PR11MB4601:EE_
-X-MS-Office365-Filtering-Correlation-Id: 57cd4078-e57a-49fc-bb3a-08db3a9e56aa
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1i+BXcJiGkyM9EdBUFDCIgkmzyQPODPmDgNt0lBZMWau0q2tCtvEXYKcnfAhwJ7ZXQOJgXHcyhnVaO67EQ67EIXyIZ3Y/tGlQIOeBZe46JiYzq7nXdqNaEWxAawQxUBoxbvQeDqT70jfFqBCYCXj0TNbrE1AH1ZSZoihunv5anUAeJBsa1Szsh3p7Iph7w/cxr3qc4N1gzS7JptP/cbH6lW4/lCay/qG6/FPIERYF8vOGaDkXE90UKSDfTveop1Isl0b+wbwW2N6OnJc4rsfq+60EAmFTcw70LiG9nyphyAjHl+eljMDH6A9sGBakHIRWlT9OM0BWRGAOKaF5aM/m22EIuT9F1n/bzO2qLBvVh8wgId0okijsrldyXdwlzCpTFIaQoqMnJc2ZVL/NSi7Q0hFvyfgGsl9RAdvDdUFPPA2okYoY8/kkXaz/XziLXfm+s5mFnoWagGMNp9yFInR5urkJF7Aypust6n+P01sjEQiAWB/gx6kSTpgItV1VAbTc4fZTPklB6nF8wkJT9Kr21P8u2nbZ/73+OupyH0md6XQiHJkMu5kuQNFmUUblsGWr97Ita4ENO9gS0CEjpAl1qt6/xAfVBvKjD+hk1KSWg1FhhWcvNujntqw7VatyGwhH4MJw2Ey91wzY29MnAM6mg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4914.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(136003)(346002)(376002)(396003)(366004)(451199021)(31686004)(478600001)(45080400002)(86362001)(83380400001)(31696002)(82960400001)(36756003)(2616005)(38100700002)(6486002)(4744005)(2906002)(53546011)(6512007)(316002)(26005)(6506007)(186003)(44832011)(66476007)(41300700001)(8676002)(6666004)(66556008)(8936002)(7416002)(4326008)(5660300002)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VXJib205QlQ4SmZNVStINExXSFNrdTdTMmd1ZHJiWFFPR0ZYSHlxMWVyMlN0?=
- =?utf-8?B?d0x3dFlSY25ocUM0ZkZMRzQ4bUR6U0pueEVtSUE0STBEL0RKTXRVN01PY3ZB?=
- =?utf-8?B?WHBjNWpLdW1tM2hON0E5OUh1MHliZC9ITStjbGlkbXJVdDVwZnFrVzNmUzl5?=
- =?utf-8?B?ZGRST3AzY3pNNkMxZFhaQTlTd2k1MWR1TUc1OWp4a3FXOWhOaUlXcnlmMCt5?=
- =?utf-8?B?LzJNSUtEbkkyMW1iWFl4Yk9aRTltT1RPRlpXV3l1dGloeW15ZlpIZ0F3Z3dD?=
- =?utf-8?B?cFBobXo5aGhEWTV6bWx2dUxZYjNxVWV4TmMyQU1UQmhraDJrMnBOMy8wOHJ3?=
- =?utf-8?B?WnpFUC91a3FDdS8wSk9Fdk5nWXkwWS9zcUljT2k0akJXWW9SdTFMUVBFb2NL?=
- =?utf-8?B?RXh6c3JSYzFVWm1YdFZwUGdyR1kyclRPYlV5ckFEODJobDFwbGlERnU5QWZn?=
- =?utf-8?B?MEticWxwUWo0NmIxTmNKeXBReUhXMmVTVGJlUzNob05LUFB4ajEreElpVjJG?=
- =?utf-8?B?QUlOQUE1VXlycXFrNjRGTVNFMThRVlovOThTYlo5Z3d0ZU5xMS94SW5CdXZR?=
- =?utf-8?B?TzROT0hpRlliRWZoWTUwNitvczRuVlF3NGpCVUUyZjQxNUpMVVhVUEtvdVlQ?=
- =?utf-8?B?amVQRzI3SjF5cHhMZjgyQi8zWmZJdXhramdzSFdhb0RieTBTdVRSazZBQjBK?=
- =?utf-8?B?UmxkTFpLZTV2NkVxNy9ZZUt6MXNxWmFhbW1xMzdvdll0ejRUZDlKY09CN2xx?=
- =?utf-8?B?RzZWNWJTRHpMbXoyckJQVXpuV2wxd2lPdGd0amhwVGtTcExLVDJieHdJLzdS?=
- =?utf-8?B?MDBSdnhZNVFEd09MVktPSER2WFcwTVc5Yyt0MlJQUU1rL2pQcis5SmFROUVl?=
- =?utf-8?B?Y1RpK2J1UTJSSkoxTnZIT0ZtRi9NV2tMVU1vYnhkWlFRdE5JZUp0T2liWGZj?=
- =?utf-8?B?QXJ0UTVKQmZZVTRhTGdnMW4yUE9TK0xhYWJ2S21vV2JQNml1RmYwblJTT3B6?=
- =?utf-8?B?OUtmdjFnTzcxK2xKMXVWR1B3elUwRG1uMVIwcGR1VnRJU1RIV1UwRjV2eUtC?=
- =?utf-8?B?K1cvNTRVcWRqVkZUT21ZeG5iOHBsbG93ZHNmS1FxMUFEaERnaDhsVWVFM0k3?=
- =?utf-8?B?SEVpMUd0Sk1oMFZETHFNMW9Ma28vY0NxRUZ5Q1QrRTkwdndWbHRnSEQyREFP?=
- =?utf-8?B?YkVmUEtQcVFjbHlYaVlTR2JoR25QcW1Cb1k3Q0dUc0dCeTI4eWUvRk04WmE3?=
- =?utf-8?B?Ly92OVJmbDFqK0lHanRYSUxoN3AwanRvdFZZQ3huUXZ6ZXY3aW42Wk5Pd0V0?=
- =?utf-8?B?ZzYxQ0U4SkQvc1dObXRxd0NMZlhqRlFDOHM5c2V5N2FTZ01pdUZDU1NNbzNP?=
- =?utf-8?B?K1ErQkZuUGUzRHdmS0dIT2hnSEdmNVR5WkRObXpoRlIva2FjdXU3dWxsbDNu?=
- =?utf-8?B?bndML1MzNU1GQWZxTTY4V2oxZmNmUnVVdUxhQWZISW1iZ3ZwNkE5Z3o1cm9B?=
- =?utf-8?B?NVJTWEFDQ3BpZ3NPa1k4dEJyK2dwTFU5UzdPVThDNXJ1akxUZ01jVFpXWXc5?=
- =?utf-8?B?Uk5OaDNONnEzUG5XbTJIc3QzN3NrV0VONzJzTE4xRHB1dExiajlUZXhEL0Jz?=
- =?utf-8?B?VWxGclFEcWs3dFVZZU5HcE1OQUJxVWFUd3lQSlhQSVN1THNWaUpLY3gvMFdZ?=
- =?utf-8?B?OFMyOUhxdDU3eE5ESm9JY2w2VVdsWEU3dlo5eERNNUFEOW8zUENESnpKVnJ6?=
- =?utf-8?B?ZHNhZVZ3SXhIVDBvYi9xWmNXeXo0YngydVVZK0Q5NXdQZGFVU0hSVU5vWmg4?=
- =?utf-8?B?QTNQdUdXMHd5MFRnYThtamFsM05ZRjY5MDBXR0prQ0dqSUg3RUFvNVRyMnVV?=
- =?utf-8?B?TmVYOVpXdXFLUkdoVEppQjdFTnh6WkJOVFl5ekFTdFRyZFYrVm56TGc4TG91?=
- =?utf-8?B?QUErMUF0bE1qYWNEMFVwb2d2NnUzN05QY3JIMlI1YzhkbEdHRFRPTDJQSWdJ?=
- =?utf-8?B?a21ZWTZyMkpEbmxaZ2VVS0dYWlEwSS8rRFcrQjI4bU95R21oWVVYWS92bStz?=
- =?utf-8?B?MFpwNWNuNForalhKU3B4clFqc3g3ODNvZEg0TnhJZG9lOGFpU3lIcjNJeTlL?=
- =?utf-8?B?b0c5WktKWWpVemlmWDNsWEk4Z1NuZ2p3VFRVNVduZG84ZHVvU3ZITjQ5RW1q?=
- =?utf-8?B?QlE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 57cd4078-e57a-49fc-bb3a-08db3a9e56aa
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4914.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 15:06:33.9227
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KtsGKPonyPT1Pc/cxLIxf0DxCHvTl+do+aXZukwHReNyBUwzVeVt4i76JNefHkC99SAHFMKJBzWyqByoctsvN1WzQLhtQ9ev04olluZynOw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4601
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.7 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Content-Language: en-US
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Breno Leitao <leitao@debian.org>
+Cc:     Willem de Bruijn <willemb@google.com>, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, kuba@kernel.org, asml.silence@gmail.com,
+        leit@fb.com, edumazet@google.com, pabeni@redhat.com,
+        davem@davemloft.net, dccp@vger.kernel.org, mptcp@lists.linux.dev,
+        linux-kernel@vger.kernel.org, matthieu.baerts@tessares.net,
+        marcelo.leitner@gmail.com
+References: <20230406144330.1932798-1-leitao@debian.org>
+ <CA+FuTSeKpOJVqcneCoh_4x4OuK1iE0Tr6f3rSNrQiR-OUgjWow@mail.gmail.com>
+ <ZC7seVq7St6UnKjl@gmail.com>
+ <CA+FuTSf9LEhzjBey_Nm_-vN0ZjvtBSQkcDWS+5uBnLmr8Qh5uA@mail.gmail.com>
+ <e576f6fe-d1f3-93cd-cb94-c0ae115299d8@kernel.org>
+ <ZDVLyi1PahE0sfci@gmail.com>
+ <75e3c434-eb8b-66e5-5768-ca0f906979a1@kernel.org>
+ <67831406-8d2f-feff-f56b-d0f002a95d96@kernel.dk>
+ <643573df81e20_11117c2942@willemb.c.googlers.com.notmuch>
+ <036c80e5-4844-5c84-304c-7e553fe17a9b@kernel.dk>
+ <64357608c396d_113ebd294ba@willemb.c.googlers.com.notmuch>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <64357608c396d_113ebd294ba@willemb.c.googlers.com.notmuch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/7/2023 1:59 PM, Haiyang Zhang wrote:
-> Update RX data path to allocate and use RX queue DMA buffers with
-> proper size based on potentially various MTU sizes.
+On 4/11/23 9:00?AM, Willem de Bruijn wrote:
+> Jens Axboe wrote:
+>> On 4/11/23 8:51?AM, Willem de Bruijn wrote:
+>>> Jens Axboe wrote:
+>>>> On 4/11/23 8:36?AM, David Ahern wrote:
+>>>>> On 4/11/23 6:00 AM, Breno Leitao wrote:
+>>>>>> I am not sure if avoiding io_uring details in network code is possible.
+>>>>>>
+>>>>>> The "struct proto"->uring_cmd callback implementation (tcp_uring_cmd()
+>>>>>> in the TCP case) could be somewhere else, such as in the io_uring/
+>>>>>> directory, but, I think it might be cleaner if these implementations are
+>>>>>> closer to function assignment (in the network subsystem).
+>>>>>>
+>>>>>> And this function (tcp_uring_cmd() for instance) is the one that I am
+>>>>>> planning to map io_uring CMDs to ioctls. Such as SOCKET_URING_OP_SIOCINQ
+>>>>>> -> SIOCINQ.
+>>>>>>
+>>>>>> Please let me know if you have any other idea in mind.
+>>>>>
+>>>>> I am not convinced that this io_uring_cmd is needed. This is one
+>>>>> in-kernel subsystem calling into another, and there are APIs for that.
+>>>>> All of this set is ioctl based and as Willem noted a little refactoring
+>>>>> separates the get_user/put_user out so that in-kernel can call can be
+>>>>> made with existing ops.
+>>>>
+>>>> How do you want to wire it up then? We can't use fops->unlocked_ioctl()
+>>>> obviously, and we already have ->uring_cmd() for this purpose.
+>>>
+>>> Does this suggestion not work?
+>>
+>> Not sure I follow, what suggestion?
+>>
 > 
-> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+> This quote from earlier in the thread:
 > 
-> ---
-> V2:
-> Refectored to multiple patches for readability. Suggested by Yunsheng Lin.
+> I was thinking just having sock_uring_cmd call sock->ops->ioctl, like
+> sock_do_ioctl.
 
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+But that doesn't work, because sock->ops->ioctl() assumes the arg is
+memory in userspace. Or do you mean change all of the sock->ops->ioctl()
+to pass in on-stack memory (or similar) and have it work with a kernel
+address?
 
-One tiny nit below, but not worth a respin.
+>>>> I do think the right thing to do is have a common helper that returns
+>>>> whatever value you want (or sets it), and split the ioctl parts into a
+>>>> wrapper around that that simply copies in/out as needed. Then
+>>>> ->uring_cmd() could call that, or you could some exported function that
+>>>> does supports that.
+>>>>
+>>>> This works for the basic cases, though I do suspect we'll want to go
+>>>> down the ->uring_cmd() at some point for more advanced cases or cases
+>>>> that cannot sanely be done in an ioctl fashion.
+>>>
+>>> Right now the two examples are ioctls that return an integer. Do you 
+>>> already have other calls in mind? That would help estimate whether
+>>> ->uring_cmd() indeed will be needed and we might as well do it now.
+>>
+>> Right, it's a proof of concept. But we'd want to support anything that
+>> setsockopt/getsockopt would do. This is necessary so that direct
+>> descriptors (eg ones that describe a struct file that isn't in the
+>> process file table or have a regular fd) can be used for anything that a
+>> regular file can. Beyond that, perhaps various things necessary for
+>> efficient zero copy rx.
+>>
+>> I do think we can make the ->uring_cmd() hookup a bit more palatable in
+>> terms of API. It really should be just a sub-opcode and then arguments
+>> to support that. The grunt of the work is really refactoring the ioctl
+>> and set/getsockopt bits so that they can be called in-kernel rather than
+>> assuming copy in/out is needed. Once that is done, the actual uring_cmd
+>> hookup should be simple and trivial.
+> 
+> That sounds like what I proposed above. That suggestion was only for
+> the narrow case where ioctls return an integer. The general approach
+> has to handle any put_user.
 
-> @@ -1764,6 +1798,7 @@ static struct mana_rxq *mana_create_rxq(struct mana_port_context *apc,
->  	struct mana_obj_spec wq_spec;
->  	struct mana_obj_spec cq_spec;
->  	struct gdma_queue_spec spec;
-> +	unsigned int mtu = ndev->mtu;
+Right
 
-This one isn't quite RCT order. I'd only change it if you have another
-respin for some reason.
+> Though my initial skim of TCP, UDP and RAW did not bring up any other
+> forms.
+> 
+> getsockopt indeed has plenty of examples, such as receive zerocopy.
 
-Ha, I see you remove that line in the next patch, never mind...
+-- 
+Jens Axboe
 
