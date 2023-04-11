@@ -2,79 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FBE66DD14A
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 06:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 812976DD170
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 07:16:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229701AbjDKE7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 00:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
+        id S229939AbjDKFQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 01:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbjDKE7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 00:59:36 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6CEE6F
-        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 21:59:34 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pm66N-0001qd-8r; Tue, 11 Apr 2023 06:59:31 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pm66K-00055m-CO; Tue, 11 Apr 2023 06:59:28 +0200
-Date:   Tue, 11 Apr 2023 06:59:28 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        UNGLinuxDriver@microchip.com, Eric Dumazet <edumazet@google.com>,
-        Vladimir Oltean <olteanv@gmail.com>, kernel@pengutronix.de,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make flow
- control, speed, and duplex on CPU port configurable
-Message-ID: <20230411045928.GA13401@pengutronix.de>
-References: <20230404101225.1382059-1-o.rempel@pengutronix.de>
- <20230406190404.14e38e67@kernel.org>
+        with ESMTP id S229891AbjDKFQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 01:16:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7AA1FC4
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 22:16:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681190163;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hU+qgshibA1QfkJQle3bVOxSYrB+boxQWnfu4An3Eok=;
+        b=IPKi3560QFLoaVXLDCcHLoYQ+CkuN2q3CjT3JKjU8/MOFXtkI/oaExZtR2Aw0Mu3R0v+hs
+        ImT5DyzhWvHpTOZGXK5s/RF4SvKIDAMsJxgxEEpYY8zDI2vmCetSwtL9VEiU/PCLC4Johy
+        sdPiVYn2sxJkHbMye6Q6jqwAE8cKp0M=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-108-08fmdsSeMoKLBeoTRHjwLQ-1; Tue, 11 Apr 2023 01:16:01 -0400
+X-MC-Unique: 08fmdsSeMoKLBeoTRHjwLQ-1
+Received: by mail-ed1-f71.google.com with SMTP id y95-20020a50bb68000000b004fd23c238beso4146187ede.0
+        for <netdev@vger.kernel.org>; Mon, 10 Apr 2023 22:16:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681190160;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hU+qgshibA1QfkJQle3bVOxSYrB+boxQWnfu4An3Eok=;
+        b=UDIyFB284bj3DLisEc4OHEAJhAiw63XQDwQc5dD6WbPCTsb8S/Z1ukhubkOQY6cAgK
+         0iTDf+qFUwsfTMGFmlTMLt7PaCSt7qcbxtn2L2dgBcGx2LsPWA5JtLfI4mNoeMLel15J
+         XTLDZZ9tslkUZ0H1ggsvqkMTrpCQ7GiD+m/HPIXZxeGJhWLgjYjK3evvu0E5IQ6Ov0CA
+         ZdyXq1WGMdqwPJhJBTOCguQxswy24AFogf37BwdaD7FtDTImMXiqCB3xoUzszo0HfJLg
+         ZRZp33cTcYl2erD/7eqMRgmGhwANcOV68GJZQpOnAj+NL/8Nr1kKRhRnCLgAhINwGMTl
+         TDSA==
+X-Gm-Message-State: AAQBX9dgBUT9TZ81PWDBbm51Et3RzW3NbA2aGS+8KMz4JOvYy5qf0aSV
+        mYMCravzMbRtC8nGmpzMqh4T4/jyrX+vtWSZRpfqkxGKD7vP44sJM/kecMz9qoxWGxVVJHeja7N
+        x0cWnGH6dDCTHE/p9uYkBoEZDiJwqadLU
+X-Received: by 2002:a17:906:f744:b0:931:7350:a7b6 with SMTP id jp4-20020a170906f74400b009317350a7b6mr608716ejb.10.1681190160820;
+        Mon, 10 Apr 2023 22:16:00 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZSrOuTKyYCifxH4ItJKR+N8lT2bcDdBJFNQ6hbJX88RtxXv4hqkH9qsfUiOy9DoXNkBgz93DhO8D4e3MMOrZQ=
+X-Received: by 2002:a17:906:f744:b0:931:7350:a7b6 with SMTP id
+ jp4-20020a170906f74400b009317350a7b6mr608708ejb.10.1681190160585; Mon, 10 Apr
+ 2023 22:16:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230406190404.14e38e67@kernel.org>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <CAKVySpzU_23Z6Gu1N=z0DRm+sUQDjyiyUc18r4rJ_YQ+YELuFg@mail.gmail.com>
+ <27297.1681189100@famine>
+In-Reply-To: <27297.1681189100@famine>
+From:   Liang Li <liali@redhat.com>
+Date:   Tue, 11 Apr 2023 13:15:49 +0800
+Message-ID: <CAKVySpwe62hKhavEFuh6tHPWV=w_vAn0hEp0inV5XGTx73wdHQ@mail.gmail.com>
+Subject: Re: [Question] About bonding offload
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hangbin Liu <haliu@redhat.com>,
+        "Toppins, Jonathan" <jtoppins@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 06, 2023 at 07:04:04PM -0700, Jakub Kicinski wrote:
-> On Tue,  4 Apr 2023 12:12:25 +0200 Oleksij Rempel wrote:
-> > Allow flow control, speed, and duplex settings on the CPU port to be
-> > configurable. Previously, the speed and duplex relied on default switch
-> > values, which limited flexibility. Additionally, flow control was
-> > hardcoded and only functional in duplex mode. This update enhances the
-> > configurability of these parameters.
-> 
-> Anyone who knows DSA/phylink willing to venture a review tag? :)
+Thanks everyone! Glad to know this.
 
-For the archive, review is started here:
-https://lore.kernel.org/all/ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk/
+On Tue, Apr 11, 2023 at 12:58=E2=80=AFPM Jay Vosburgh
+<jay.vosburgh@canonical.com> wrote:
+>
+> Liang Li <liali@redhat.com> wrote:
+>
+> >Hi Everyone,
+> >
+> >I'm a redhat network-qe and am testing bonding offload. e.g. gso,tso,gro=
+,lro.
+> >I got two questions during my testing.
+> >
+> >1. The tcp performance has no difference when bonding GRO is on versus o=
+ff.
+> >When testing with bonding, I always get ~890 Mbits/sec bandwidth no
+> >matter whether GRO is on.
+> >When testing with a physical NIC instead of bonding on the same
+> >machine, with GRO off, I get 464 Mbits/sec bandwidth, with GRO on, I
+> >get  897 Mbits/sec bandwidth.
+> >So looks like the GRO can't be turned off on bonding?
+>
+>         Well, it's probably more correct to say that GRO is
+> unimplemented for "stacked on top" interfaces like bonding (or bridge,
+> vlan, team, etc).  GRO operates early in the receive processing, when
+> the device driver is receiving packets, typically by calling
+> napi_gro_receive() from its NAPI poll function.  This is well before
+> bonding, bridge, et al, are involved, as these drivers don't do NAPI at
+> all.
+>
+> >I used iperf3 to test performance.
+> >And I limited iperf3 process cpu usage during my testing to simulate a
+> >cpu bottleneck.
+> >Otherwise it's difficult to see bandwidth differences when offload is
+> >on versus off.
+> >
+> >I reported a bz for this: https://bugzilla.redhat.com/show_bug.cgi?id=3D=
+2183434
+> >
+> >2.  Should bonding propagate offload configuration to slaves?
+> >For now, only "ethtool -K bond0 lro off" can be propagated to slaves,
+> >others can't be propagated to slaves, e.g.
+> >  ethtool -K bond0 tso on/off
+> >  ethtool -K bond0 gso on/off
+> >  ethtool -K bond0 gro on/off
+> >  ethtool -K bond0 lro on
+> >All above configurations can't be propagated to bonding slaves.
+>
+>         The LRO case is because it's set in NETIF_F_UPPER_DISABLES, as
+> checked in netdev_sync_upper_features() and netdev_sync_lower_features().
+>
+>         A subset of features is handled in bond_compute_features().
+> Some feature changes, e.g., scatter-gather, do propagate upwards (but
+> not downwards), as bonding handles NETDEV_FEAT_CHANGE events for its
+> members (but not vice versa).
+>
+>         TSO, GSO, and GRO aren't handled in either of these situations,
+> and so changes don't propagate at all.  Whether they should or not is a
+> separate, complicated, question.  E.g., should features propagate
+> upwards, or downwards?  How many levels of nesting?
+>
+>         -J
+>
+> >I reports a bz for this: https://bugzilla.redhat.com/show_bug.cgi?id=3D2=
+183777
+> >
+> >I am using the RHEL with kernel 4.18.0-481.el8.x86_64.
+> >
+> >BR,
+> >Liang Li
+> >
+>
+> ---
+>         -Jay Vosburgh, jay.vosburgh@canonical.com
+>
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
