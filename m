@@ -2,83 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B81F16DD8F3
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 13:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F035B6DD92F
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 13:16:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229836AbjDKLKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 07:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43906 "EHLO
+        id S229703AbjDKLQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 07:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbjDKLKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 07:10:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B89E58;
-        Tue, 11 Apr 2023 04:10:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CF0B6247A;
-        Tue, 11 Apr 2023 11:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 667C9C4339B;
-        Tue, 11 Apr 2023 11:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681211417;
-        bh=6b5K000Snt32Am8snjMeRagyFkOMtPsMRTWng3IugAk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tMuHRlGx8n0InI+d0CgtEURr7yJ6Zt56HvgIn0TX5f2HGtM1gaUyk8VwBH677aoM3
-         p6OFiWi+JYaUfz3Tchg7tM59Y3HachQUnna+a9M7AwQO16ff5h3a5AlkUd23yjxIIh
-         AFYbJrjBEI/yqILIMxUPktjXFE2QBlaPvr/E1EhQU5Xz2lwhhReWHR9VK2x62qkFzs
-         rK54i3nCFPK6+hVlQP/H8h+iR/pauPUrF6WCywVzu2S92RyPdXruG6YIinRcnG3Dx6
-         UjfGunmuX9HThQAzreo/LUJft9BH0PhhAHbuBGaz5khUct+JxirP0VauaPcG+CXO2i
-         o9o9iUqDB0VuQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4B4F5C395C3;
-        Tue, 11 Apr 2023 11:10:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229490AbjDKLQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 07:16:27 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600FFB4
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 04:16:14 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id jg21so19028332ejc.2
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 04:16:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1681211772;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5bjBPfHLTHiDXy8v4PSlpPXJJ0MA0T/QekU8XqDtEWE=;
+        b=bVOEIeHXx7QysmlitN9puqMz4Fv74jVTVy3os69ATfenF+dgzaDx9XrYdGGAFG6oLV
+         48hNOK+wZJLhkPFw1+eQ72JIUFiTwyUJ0/0yDNDhG4MS2FQfp3FJnBG+w6YAdzmrlr55
+         q4sAJR47T3EKkAjPMMR4d2UmhuhzWxJULI6Fwn9VgHqwTmJ8zUmKMJYfxVVO6YpLoFEb
+         4ZLo8Ns0kOr4WGHgiy7IMjUNl3ugdUPniiubOeyjrdtJ2K+aAbOY9rRTu6n8r80UB0jj
+         6Y3fx3nIj/CwyWiOico/yvhTmieHQt+YeMPcsHVZn3c0NJtiHcb4SgL8u6W8I+/FAaBN
+         knEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681211772;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5bjBPfHLTHiDXy8v4PSlpPXJJ0MA0T/QekU8XqDtEWE=;
+        b=j0vbOlBzJGa24r8ouUF/kIpgzQYT5sKpCSF9Uk7PBwW8e9/0mZFL998AdAvAVzG0i3
+         Kt/xTSWQ1yi185hcr/IgVBT8k5QV8jmuLJ/91TH3MQOdD4JUOcOwYgwzf+CQKzU7bMxi
+         +wNkKt/cMzwzMBcO0Z2wxHLYLDS4oNyqucWNY5CSc1d1nTFRpbMUxtzbCDqA3ARikojn
+         edUguhTuTZfREMH5EfRtqdNgQGueLNCwWhmYG57NQLzH3AvFesH0xOGdIZvJRtAqi7Ui
+         y0PE4+/7KF+K/qijKbiNrSf+KEVa0o4zm9kJ5FSa8hkTRhKkDgjMvDFwa9pg36b7sRVK
+         eVaQ==
+X-Gm-Message-State: AAQBX9c1Kq1AiBKu2rSKjh5Vdm3IhuWFbhfsSb8f90x6I5XIGu/6RYuw
+        q9Um7xSIhGX8M0tL0NOw0Ik=
+X-Google-Smtp-Source: AKy350aVTSyrgX6eWF792rt+PxAH7SoueFJPcVlGOzDRRR/bufK7QqotXuhEXZolIiCBfWR6xPCa2Q==
+X-Received: by 2002:a17:906:3a45:b0:949:ab5c:f10c with SMTP id a5-20020a1709063a4500b00949ab5cf10cmr7977332ejf.63.1681211772442;
+        Tue, 11 Apr 2023 04:16:12 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id hc38-20020a17090716a600b0094a6a7a56c0sm2619701ejc.18.2023.04.11.04.16.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Apr 2023 04:16:12 -0700 (PDT)
+Date:   Tue, 11 Apr 2023 14:16:09 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
+ flow control, speed, and duplex on CPU port configurable
+Message-ID: <20230411111609.jhfcvvxbxbkl47ju@skbuf>
+References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
+ <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
+ <20230411085626.GA19711@pengutronix.de>
+ <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: fddi: skfp: rmt: Clean up some inconsistent indenting
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168121141730.2757.8137118064541132856.git-patchwork-notify@kernel.org>
-Date:   Tue, 11 Apr 2023 11:10:17 +0000
-References: <20230407034157.61276-1-jiapeng.chong@linux.alibaba.com>
-In-Reply-To: <20230407034157.61276-1-jiapeng.chong@linux.alibaba.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, abaci@linux.alibaba.com
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Apr 11, 2023 at 10:17:47AM +0100, Russell King (Oracle) wrote:
+> Since we can't manually control the tx and rx pause enables, I think
+> the only sensible way forward with this would be to either globally
+> disable pause on the device, and not report support for any pause
+> modes,
 
-This patch was applied to netdev/net-next.git (main)
-by Paolo Abeni <pabeni@redhat.com>:
+This implies restarting autoneg on all the other switch ports when one
+port's flow control mode is changed?
 
-On Fri,  7 Apr 2023 11:41:57 +0800 you wrote:
-> No functional modification involved.
+> or report support for all pause modes, advertise '11' and
+> let the hardware control it (which means the ethtool configuration
+> for pause would not be functional.)
 > 
-> drivers/net/fddi/skfp/rmt.c:236 rmt_fsm() warn: if statement not indented.
+> This needs to be commented in the driver so that in the future we
+> remember why this has been done.
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4736
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> 
-> [...]
+> Maybe Andrew and/or Vladimir also have an opinion to share about the
+> best approach here?
 
-Here is the summary with links:
-  - net: fddi: skfp: rmt: Clean up some inconsistent indenting
-    https://git.kernel.org/netdev/net-next/c/89863a3b5f02
+I don't object to documenting that manually forcing flow control off is
+broken and leaving it at that (and the way to force it off would be to
+not advertise any of the 2 bits).
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+But why advertise only 11 (Asym_Pause | Pause) when the PHYs integrated
+here have the advertisement configurable (presumably also through the
+micrel.c PHY driver)? They would advertise in accordance with ethtool, no?
 
-
+I may have missed something.
