@@ -2,111 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09FE26DDC0B
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 15:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDEC6DDC0D
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 15:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbjDKN0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 09:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
+        id S229667AbjDKN1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 09:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbjDKN0X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 09:26:23 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2991BC
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 06:26:21 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-5047074939fso16400728a12.1
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 06:26:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1681219580;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VSqFeVFlYcufPmqoSUF5Y8qqLeSYXqfvCcjRwFMVNis=;
-        b=poExvxPleogrP3SNLR8gUnMLSNC1vNdi6AZSlGYuKELEDMPqgFL09JPdT0yKokhRkb
-         iEXmXC+cI7pDt/+IOppfDfmryt/lUtybqmb+Q6gKCj+HRY1oGZwvzdIcTo8rlZHnUyTp
-         Q//xcP+lrbC9zZLgL8cKb3pfQNXOkSS2fAdFByJUK8EhUy/PC2Ky7+6TvdjwZcIno+9Q
-         dQO1/y11TF4QShEfynVI42A6egoCCHI7XkHPKOqcB6UAmLAZHrDOPip5jusMiNokA7yN
-         G8Hmcv3U/f1LhV3hBcv4LB1qmD5BfF+nF5MeG542CnpIIEA27KxUlN7dGcbhd9MZ/7XN
-         EfOA==
+        with ESMTP id S229469AbjDKN1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 09:27:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DB149D8
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 06:26:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681219613;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=89onHQRburmEGbJaADjmbx60CHjVAnEuuQVlVS5Ox9E=;
+        b=b3imKKIzqCKULvTWeHKCjNOu3pTvhUDrrtndp5VjSdaqdlDnQ58MAjMwgusQIc4B4Xjo6t
+        lRX3x9NQSQA6JkNASyjz+F52qPCyFD5cz/AJBMBuMTWh7c8GNUCmDC2gQTVDz1Ie4lrucl
+        Jv6PK18fFIAVjYwZE71cQAyLQRHm6Ys=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-267-Z3MGat8XM5mdk4hWPB5X1A-1; Tue, 11 Apr 2023 09:26:51 -0400
+X-MC-Unique: Z3MGat8XM5mdk4hWPB5X1A-1
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-5df44ccedcaso12962716d6.1
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 06:26:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681219580;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VSqFeVFlYcufPmqoSUF5Y8qqLeSYXqfvCcjRwFMVNis=;
-        b=JqwDPAxeLAzQnCWIJ+EN8ptLpFzGSOBoy/c75L1opJx+5vaN7shpLyjZSrgtbM0h2L
-         lNjSg6MZA980d7Tr3+1f4Odw7Hg0QCeWElcFJ/Ny54IcZmCoDUBA5hDG1w5dMEBU/0lE
-         UeSHVtBHWcnI6D1srrnU84oFgIzifQFuOCF6D4ScztWT/M4xWgWX4AkEB2j6q2p2HxZs
-         Orkh/2XF8CQ9dbkpt0PPBQC3bXOPWcGGC3HbZwsStPeGM7fekPT4I1qkG3sZSTrSU7uw
-         UJM0r69E8FuDeQxsFO+9gp3PL46vWPMwx21s7IMAoypBIurcS3McRblD1GaMDmXW6Er0
-         wS6Q==
-X-Gm-Message-State: AAQBX9f1uj4MRMp1pUO4q0fqAVxQ1iJcKcVZKx/xUND8M/PEzLtytV7c
-        qXpqUBfAiM5pY1995eLjHiw=
-X-Google-Smtp-Source: AKy350bEyK9AvY+9T7nPHibJJ+VdVzZFq0TEpPZM9r+N7uZltZ86u/eYBJrmOb9DzUP9Mj8Qh602OA==
-X-Received: by 2002:aa7:d692:0:b0:504:b11e:8cfb with SMTP id d18-20020aa7d692000000b00504b11e8cfbmr5268889edr.13.1681219579669;
-        Tue, 11 Apr 2023 06:26:19 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id s10-20020a508d0a000000b00501d5432f2fsm4335784eds.60.2023.04.11.06.26.18
+        d=1e100.net; s=20210112; t=1681219611; x=1683811611;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=89onHQRburmEGbJaADjmbx60CHjVAnEuuQVlVS5Ox9E=;
+        b=3owwtveV7exN9MQW7jR9JcnV6CTMSzB2pfin8vhMTyqA3jvaq74PInJFGBxnHhN409
+         xzIFsQIcsIQRJBz9d+pAHylgSZ7gz7M3tiEtoDicWw9qdf62r0OqkJZhqaTqK7T8zVQU
+         +9phPN1WADlQs+Qn8a4nzhnt3snc0owkZ7Az5EhpX85GnenLBNUCbgECK/oF3chjO7uv
+         YwKcz6b78OsJ5bkn4VbOktBiPyuigrvJr1xSYx7v7IVPKY9GhdohXfjY/Is6W+4sePwF
+         FCIvVqZaoCefrOR6ItftRFA9KPRsD2W+UX6rlPEpOSGwDb0S+7oM7NRZ0JWqlZWsIbnG
+         236g==
+X-Gm-Message-State: AAQBX9dXzlaESKLdwn3yXkrFrIf1+mmoWm3btM6pugKvZRXc96KVWNUv
+        WCbhu5B7+b9No1X5SyqYQa9/WmqihidfIy/luGBo5Po2rABOGhOXGHyFyI54FCPzEOxgBU1FKH5
+        eBX5acXDcOoEbc5r7
+X-Received: by 2002:a05:6214:4110:b0:5ad:cd4b:3765 with SMTP id kc16-20020a056214411000b005adcd4b3765mr18339604qvb.1.1681219611312;
+        Tue, 11 Apr 2023 06:26:51 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZM7vGCOFRWXZoPtgLmuUlHu/2VsPHoLIFm8fZwkbyb81wa0kBwqypmSxCR4GZI/MdiTxHkKQ==
+X-Received: by 2002:a05:6214:4110:b0:5ad:cd4b:3765 with SMTP id kc16-20020a056214411000b005adcd4b3765mr18339583qvb.1.1681219611030;
+        Tue, 11 Apr 2023 06:26:51 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-239-96.dyn.eolo.it. [146.241.239.96])
+        by smtp.gmail.com with ESMTPSA id fb12-20020ad44f0c000000b005dd8b9345dcsm819793qvb.116.2023.04.11.06.26.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Apr 2023 06:26:19 -0700 (PDT)
-Date:   Tue, 11 Apr 2023 16:26:17 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
+        Tue, 11 Apr 2023 06:26:50 -0700 (PDT)
+Message-ID: <5ca60e3606aa710ef3b98b759572fdd7bfd20c74.camel@redhat.com>
+Subject: Re: [PATCH net-next] net: davicom: Make davicom drivers not depends
+ on DM9000
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Wei Yongjun <weiyongjun@huaweicloud.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Joseph CHAMG <josright123@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
- flow control, speed, and duplex on CPU port configurable
-Message-ID: <20230411132617.nonvvtll7xxvadhr@skbuf>
-References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
- <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
- <20230411085626.GA19711@pengutronix.de>
- <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
- <20230411111609.jhfcvvxbxbkl47ju@skbuf>
- <20230411113516.ez5cm4262ttec2z7@skbuf>
- <ZDVL6we7LN/ApgwG@shell.armlinux.org.uk>
+        Simon Horman <simon.horman@corigine.com>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>,
+        Wells Lu <wellslutw@gmail.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org
+Date:   Tue, 11 Apr 2023 15:26:46 +0200
+In-Reply-To: <20230407094930.2633137-1-weiyongjun@huaweicloud.com>
+References: <20230407094930.2633137-1-weiyongjun@huaweicloud.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZDVL6we7LN/ApgwG@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 01:00:43PM +0100, Russell King (Oracle) wrote:
-> 	ethtool --pause ... autoneg on
-> 	ethtool --pause ... autoneg off rx off tx off
-> 	ethtool --pause ... autoneg off rx on tx on
-> 
-> Anything else wouldn't give the result the user wants, because there's
-> no way to independently force rx and tx flow control per port.
+On Fri, 2023-04-07 at 09:49 +0000, Wei Yongjun wrote:
+> From: Wei Yongjun <weiyongjun1@huawei.com>
+>=20
+> All davicom drivers build need CONFIG_DM9000 is set, but this dependence
+> is not correctly since dm9051 can be build as module without dm9000, swit=
+ch
+> to using CONFIG_NET_VENDOR_DAVICOM instead.
+>=20
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
+>  drivers/net/ethernet/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefil=
+e
+> index 0d872d4efcd1..ee640885964e 100644
+> --- a/drivers/net/ethernet/Makefile
+> +++ b/drivers/net/ethernet/Makefile
+> @@ -32,7 +32,7 @@ obj-$(CONFIG_NET_VENDOR_CIRRUS) +=3D cirrus/
+>  obj-$(CONFIG_NET_VENDOR_CISCO) +=3D cisco/
+>  obj-$(CONFIG_NET_VENDOR_CORTINA) +=3D cortina/
+>  obj-$(CONFIG_CX_ECAT) +=3D ec_bhf.o
+> -obj-$(CONFIG_DM9000) +=3D davicom/
+> +obj-$(CONFIG_NET_VENDOR_DAVICOM) +=3D davicom/
+>  obj-$(CONFIG_DNET) +=3D dnet.o
+>  obj-$(CONFIG_NET_VENDOR_DEC) +=3D dec/
+>  obj-$(CONFIG_NET_VENDOR_DLINK) +=3D dlink/
 
-Right.
+Can you repost this for -net, including a suitable Fixes tag, as
+suggested by Simon?
 
-> That said, phylink doesn't give enough information to make the above
-> possible since the force bit depends on (tx && rx &&!permit_pause_to_mac)
+Thanks!
 
-So, since the "permit_pause_to_mac" information is missing here, I guess
-the next logical step based on what you're saying is that it's a matter
-of not using the pcs_config() API, or am I misunderstanding again? :)
+Paolo
 
-> So, because this hardware is that crazy, I suggest that it *doesn't*
-> even attempt to support ethtool --pause, and either is programmed
-> at setup time to use autonegotiated pause (with the negotiation state
-> programmed via ethtool -s) or it's programmed to have pause globally
-> disabled. Essentially, I'm saying the hardware is too broken in its
-> design to be worth bothering trying to work around its weirdness.
-
-Ok. How can this driver reject changes made through ethtool --pause?
