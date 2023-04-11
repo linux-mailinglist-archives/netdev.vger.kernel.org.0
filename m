@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E6906DE592
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 22:18:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 485706DE591
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 22:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbjDKUS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 16:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33906 "EHLO
+        id S229688AbjDKUSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 16:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229642AbjDKUSW (ORCPT
+        with ESMTP id S229609AbjDKUSW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 16:18:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184251700
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD0C1701
         for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 13:18:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A20F062BCF
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 20:18:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7A41C433A4;
-        Tue, 11 Apr 2023 20:18:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10DF062BDA
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 20:18:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EA2C4339E;
+        Tue, 11 Apr 2023 20:18:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1681244300;
-        bh=tThlrWojHd/l86OU2qVxDjcW8MAyyWzNnscvKoM/3/Y=;
+        bh=pWW/3DCMbeVwyTwbpEQ2eoEBgaaogzr81WHm7J7BpaQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kk3WIVkz8j/FMcMMe5iiZ/Tp3W8w3nQIAFBEjwYrZzU3ttR4X1TYF9B5KozSFUcDL
-         TxvojCW3ly3vS0LcBn4D+jWgYWXEkAOVxhRuclZZZdUYI02+y1yhguNbPl1VdLDfAO
-         BZiI52a0fkUfqZPiBGxowm54hLzGkVoBazOYMIlMgV0ifCITcy08+T/dqJtq7CDCwJ
-         6ZZ0kA7Q7KZXxn0/mtx5bPRlyMnPXxt9Wy4zTlMkHjqfUuuemaYjtULE7SykG+shSZ
-         G/r3t5NckfhVM3h/4oGd/qP/wN1n00qH2m2Tda/jVf3+D3+ASTrK8UsmzJjjXWykfH
-         LI9802ywaB9jg==
+        b=PdQmSSSkGV7HVW8JO9+d9BM6iouTWxaz1qgRklkwd2S6bJ7YBe6SMGI4uF/H2C0mT
+         JOJGK0pV46qx7Ge0oOMr2nRjIq+zJo9B642iWamO9wI21u2V3W2yDGfLoLyF7j45Dk
+         5a9hENgH/VFzIJxCe8qvjxpeZgngJTRlsKWqkUFDOdlq2vTXCHiJL+TU5EYCjwYjep
+         jLsIKVrINBqhZkXe3TGPeyPL5o/NCe2LOj2Zpsq725Z3TTyUk7tTJL/LB5yXUG6PU5
+         tsjIZmbR5IzJZG+TYmk3yYDnQ1j6yU7ojAMuPzna6tnnD8xEn1vYiSdhnIYDdLM6EW
+         gPvfMkynVK+lQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         hawk@kernel.org, ilias.apalodimas@linaro.org,
-        linyunsheng@huawei.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 2/3] page_pool: allow caching from safely localized NAPI
-Date:   Tue, 11 Apr 2023 13:17:59 -0700
-Message-Id: <20230411201800.596103-3-kuba@kernel.org>
+        linyunsheng@huawei.com, Jakub Kicinski <kuba@kernel.org>,
+        michael.chan@broadcom.com
+Subject: [PATCH net-next 3/3] bnxt: hook NAPIs to page pools
+Date:   Tue, 11 Apr 2023 13:18:00 -0700
+Message-Id: <20230411201800.596103-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230411201800.596103-1-kuba@kernel.org>
 References: <20230411201800.596103-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,248 +54,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent patches to mlx5 mentioned a regression when moving from
-driver local page pool to only using the generic page pool code.
-Page pool has two recycling paths (1) direct one, which runs in
-safe NAPI context (basically consumer context, so producing
-can be lockless); and (2) via a ptr_ring, which takes a spin
-lock because the freeing can happen from any CPU; producer
-and consumer may run concurrently.
-
-Since the page pool code was added, Eric introduced a revised version
-of deferred skb freeing. TCP skbs are now usually returned to the CPU
-which allocated them, and freed in softirq context. This places the
-freeing (producing of pages back to the pool) enticingly close to
-the allocation (consumer).
-
-If we can prove that we're freeing in the same softirq context in which
-the consumer NAPI will run - lockless use of the cache is perfectly fine,
-no need for the lock.
-
-Let drivers link the page pool to a NAPI instance. If the NAPI instance
-is scheduled on the same CPU on which we're freeing - place the pages
-in the direct cache.
-
-With that and patched bnxt (XDP enabled to engage the page pool, sigh,
-bnxt really needs page pool work :() I see a 2.6% perf boost with
-a TCP stream test (app on a different physical core than softirq).
-
-The CPU use of relevant functions decreases as expected:
-
-  page_pool_refill_alloc_cache   1.17% -> 0%
-  _raw_spin_lock                 2.41% -> 0.98%
-
-Only consider lockless path to be safe when NAPI is scheduled
-- in practice this should cover majority if not all of steady state
-workloads. It's usually the NAPI kicking in that causes the skb flush.
-
-The main case we'll miss out on is when application runs on the same
-CPU as NAPI. In that case we don't use the deferred skb free path.
+bnxt has 1:1 mapping of page pools and NAPIs, so it's safe
+to hoook them up together.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-v1:
- - s/in_napi/napi_safe/
-rfc v2: https://lore.kernel.org/all/20230405232100.103392-1-kuba@kernel.org/
- - plumb thru "are we in NAPI" bool rather than guessing based
-   on softirq && !hardirq
-
-CC: hawk@kernel.org
-CC: ilias.apalodimas@linaro.org
+CC: michael.chan@broadcom.com
 ---
- Documentation/networking/page_pool.rst |  1 +
- include/linux/netdevice.h              |  3 +++
- include/linux/skbuff.h                 | 20 +++++++++++++-------
- include/net/page_pool.h                |  3 ++-
- net/core/dev.c                         |  3 +++
- net/core/page_pool.c                   | 15 +++++++++++++--
- net/core/skbuff.c                      |  4 ++--
- 7 files changed, 37 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
-index 30f1344e7cca..873efd97f822 100644
---- a/Documentation/networking/page_pool.rst
-+++ b/Documentation/networking/page_pool.rst
-@@ -165,6 +165,7 @@ Registration
-     pp_params.pool_size = DESC_NUM;
-     pp_params.nid = NUMA_NO_NODE;
-     pp_params.dev = priv->dev;
-+    pp_params.napi = napi; /* only if locking is tied to NAPI */
-     pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-     page_pool = page_pool_create(&pp_params);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index f7602d8d79e3..b79c6780c752 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -3211,6 +3211,7 @@ static int bnxt_alloc_rx_page_pool(struct bnxt *bp,
  
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index fe355592dfde..a15cbc449630 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -360,8 +360,11 @@ struct napi_struct {
- 	unsigned long		gro_bitmask;
- 	int			(*poll)(struct napi_struct *, int);
- #ifdef CONFIG_NETPOLL
-+	/* CPU actively polling if netpoll is configured */
- 	int			poll_owner;
- #endif
-+	/* CPU on which NAPI has been scheduled for processing */
-+	int			list_owner;
- 	struct net_device	*dev;
- 	struct gro_list		gro_hash[GRO_HASH_BUCKETS];
- 	struct sk_buff		*skb;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 82511b2f61ea..f7628ea94bcb 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3386,6 +3386,18 @@ static inline void skb_frag_ref(struct sk_buff *skb, int f)
- 	__skb_frag_ref(&skb_shinfo(skb)->frags[f]);
- }
+ 	pp.pool_size = bp->rx_ring_size;
+ 	pp.nid = dev_to_node(&bp->pdev->dev);
++	pp.napi = &rxr->bnapi->napi;
+ 	pp.dev = &bp->pdev->dev;
+ 	pp.dma_dir = DMA_BIDIRECTIONAL;
  
-+static inline void
-+napi_frag_unref(skb_frag_t *frag, bool recycle, bool napi_safe)
-+{
-+	struct page *page = skb_frag_page(frag);
-+
-+#ifdef CONFIG_PAGE_POOL
-+	if (recycle && page_pool_return_skb_page(page, napi_safe))
-+		return;
-+#endif
-+	put_page(page);
-+}
-+
- /**
-  * __skb_frag_unref - release a reference on a paged fragment.
-  * @frag: the paged fragment
-@@ -3396,13 +3408,7 @@ static inline void skb_frag_ref(struct sk_buff *skb, int f)
-  */
- static inline void __skb_frag_unref(skb_frag_t *frag, bool recycle)
- {
--	struct page *page = skb_frag_page(frag);
--
--#ifdef CONFIG_PAGE_POOL
--	if (recycle && page_pool_return_skb_page(page))
--		return;
--#endif
--	put_page(page);
-+	napi_frag_unref(frag, recycle, false);
- }
- 
- /**
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index ddfa0b328677..91b808dade82 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -77,6 +77,7 @@ struct page_pool_params {
- 	unsigned int	pool_size;
- 	int		nid;  /* Numa node id to allocate from pages from */
- 	struct device	*dev; /* device, for DMA pre-mapping purposes */
-+	struct napi_struct *napi; /* Sole consumer of pages, otherwise NULL */
- 	enum dma_data_direction dma_dir; /* DMA mapping direction */
- 	unsigned int	max_len; /* max DMA sync memory size */
- 	unsigned int	offset;  /* DMA addr offset */
-@@ -239,7 +240,7 @@ inline enum dma_data_direction page_pool_get_dma_dir(struct page_pool *pool)
- 	return pool->p.dma_dir;
- }
- 
--bool page_pool_return_skb_page(struct page *page);
-+bool page_pool_return_skb_page(struct page *page, bool napi_safe);
- 
- struct page_pool *page_pool_create(const struct page_pool_params *params);
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 480600a075ce..5af075458efb 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4358,6 +4358,7 @@ static inline void ____napi_schedule(struct softnet_data *sd,
- 	}
- 
- 	list_add_tail(&napi->poll_list, &sd->poll_list);
-+	WRITE_ONCE(napi->list_owner, smp_processor_id());
- 	/* If not called from net_rx_action()
- 	 * we have to raise NET_RX_SOFTIRQ.
- 	 */
-@@ -6068,6 +6069,7 @@ bool napi_complete_done(struct napi_struct *n, int work_done)
- 		list_del_init(&n->poll_list);
- 		local_irq_restore(flags);
- 	}
-+	WRITE_ONCE(n->list_owner, -1);
- 
- 	val = READ_ONCE(n->state);
- 	do {
-@@ -6383,6 +6385,7 @@ void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
- #ifdef CONFIG_NETPOLL
- 	napi->poll_owner = -1;
- #endif
-+	napi->list_owner = -1;
- 	set_bit(NAPI_STATE_SCHED, &napi->state);
- 	set_bit(NAPI_STATE_NPSVC, &napi->state);
- 	list_add_rcu(&napi->dev_list, &dev->napi_list);
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 193c18799865..2f6bf422ed30 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -19,6 +19,7 @@
- #include <linux/mm.h> /* for put_page() */
- #include <linux/poison.h>
- #include <linux/ethtool.h>
-+#include <linux/netdevice.h>
- 
- #include <trace/events/page_pool.h>
- 
-@@ -874,9 +875,11 @@ void page_pool_update_nid(struct page_pool *pool, int new_nid)
- }
- EXPORT_SYMBOL(page_pool_update_nid);
- 
--bool page_pool_return_skb_page(struct page *page)
-+bool page_pool_return_skb_page(struct page *page, bool napi_safe)
- {
-+	struct napi_struct *napi;
- 	struct page_pool *pp;
-+	bool allow_direct;
- 
- 	page = compound_head(page);
- 
-@@ -892,12 +895,20 @@ bool page_pool_return_skb_page(struct page *page)
- 
- 	pp = page->pp;
- 
-+	/* Allow direct recycle if we have reasons to believe that we are
-+	 * in the same context as the consumer would run, so there's
-+	 * no possible race.
-+	 */
-+	napi = pp->p.napi;
-+	allow_direct = napi_safe && napi &&
-+		READ_ONCE(napi->list_owner) == smp_processor_id();
-+
- 	/* Driver set this to memory recycling info. Reset it on recycle.
- 	 * This will *not* work for NIC using a split-page memory model.
- 	 * The page will be returned to the pool here regardless of the
- 	 * 'flipped' fragment being in use or not.
- 	 */
--	page_pool_put_full_page(pp, page, false);
-+	page_pool_put_full_page(pp, page, allow_direct);
- 
- 	return true;
- }
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index b2092166f7e2..3bf3c6540f33 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -843,7 +843,7 @@ static bool skb_pp_recycle(struct sk_buff *skb, void *data, bool napi_safe)
- {
- 	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
- 		return false;
--	return page_pool_return_skb_page(virt_to_page(data));
-+	return page_pool_return_skb_page(virt_to_page(data), napi_safe);
- }
- 
- static void skb_kfree_head(void *head, unsigned int end_offset)
-@@ -889,7 +889,7 @@ static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason,
- 	}
- 
- 	for (i = 0; i < shinfo->nr_frags; i++)
--		__skb_frag_unref(&shinfo->frags[i], skb->pp_recycle);
-+		napi_frag_unref(&shinfo->frags[i], skb->pp_recycle, napi_safe);
- 
- free_head:
- 	if (shinfo->frag_list)
 -- 
 2.39.2
 
