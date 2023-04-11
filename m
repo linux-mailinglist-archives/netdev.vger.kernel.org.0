@@ -2,64 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE8E6DD66D
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 11:18:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 946AA6DD672
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 11:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229634AbjDKJSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 05:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
+        id S229634AbjDKJTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 05:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjDKJR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 05:17:59 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DDB3C6
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 02:17:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=PvU24wAg7X03avgvYAnDnewfP/2QT07BEy8hEg8derY=; b=sR5O56oWGA/ksl5KB5aysBkLSJ
-        xJr6XbYSaovca91kyq2PK1aXkOq2UGcvtp/wjCCBCm0Bs3nA3NolrMb7VO6EoDcZ4vWwGP1QtNh/z
-        JitDMaRFJpqJGCFRaOZlIuetN9GVM5YsNK3uDzL05Sx4iKCNVugznrbQvyogyF6a43X0YppeIXTnr
-        yDlTwPUr37XBqLBrPXeND6/pjnfNbCu1kNaejHBhgjyXuP2g9j4NeDx+eiHJ5eDh6YSvAwTkjTK91
-        +rpCTr2PlaunGLSlanlYiPpd8DNlLmNPHN8IGtNN6lkDkMEQVHxcgqoew+bWqs4jYrOledHA7zMUC
-        DFa8mIkA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54102)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pmA8L-0005i4-TM; Tue, 11 Apr 2023 10:17:49 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pmA8J-0003yY-2K; Tue, 11 Apr 2023 10:17:47 +0100
-Date:   Tue, 11 Apr 2023 10:17:47 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>,
-        Vladimir Oltean <olteanv@gmail.com>, kernel@pengutronix.de,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
- flow control, speed, and duplex on CPU port configurable
-Message-ID: <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
-References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
- <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
- <20230411085626.GA19711@pengutronix.de>
-MIME-Version: 1.0
+        with ESMTP id S229541AbjDKJTo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 05:19:44 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2093.outbound.protection.outlook.com [40.107.220.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7761BD5
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 02:19:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JW2HfDVofbD6c79CXcFRtqlV59mEaM5n30tlgDQOoY9YLI7ZTyynfdfqttW+l8VHMWdrC43j3OMwNCpcFTcTF7KAYER0nQ3raQoaMS/nCYpWyDNjFpCSsyLjZ/InJtlqW6nprg6gIOR0C7IPZhNiDEoGOpguW37Ss9t3Hr7+1Flsr2zO/FOb28VGANnVYYfM5y5nmtUvZLPJ4+gyFIdoBs4IuODHuJFqMzoS8uKC4Zu1yW3RGt38ihhF4IkEmtEeusKORq+DD1IAyZP9VzgLRnTmH5EmiWJiXdXoFbrGwrPilY57KgzZ9Im6YzGYsgqKIlhhA+gA3r2/b9FHctv1Ug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qwSSYLGV/O5z/lWDVsFoYZa6y5hPQg1FFb9vkYqBeLw=;
+ b=Dqw+vyc8+PckegEIhgfZNgEjeHZuG9MKd61eTLQWHiSSK0dHa/t/mcoRGlx9WuPa8oTIt4HYPsTyQkZDXfW9q4rZo5cTg+pJleo8bMAUZB7gDPjXAHQWDgctoXW2K1N+Ubh6e/3rRAUrzRy00Ue+CP5eoq2DK3lFXC2xnsGH8/EyzAd22MUKVlGQ8VsPkbzpnNDEU5ouuYuFTI/QkK0Njfc8mcji8x3HVe9YDQacnRYXN9w93boWvG6LL5UXCBRSvG9ARLvoHWaSCVy2rJEBamteLR8FIExH4EVkIzuVKBNAZI0XZSd+seySTjnQC9xWZ5FL+7NuAv0gqE5GQMLxYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qwSSYLGV/O5z/lWDVsFoYZa6y5hPQg1FFb9vkYqBeLw=;
+ b=ILn7G+jlaOpydYpcJat6qdK/2odTDD/Sx9KaAYaLxnJs+GMh6o/iQJ2/XZtDEhYep3J+Hh/sQjvJG64XBImpaNoXHQKwG30KvFXaytEjtgWmqxojDH6FX0GAmdx8CBjIGEdwUB0pdXEsTQMPXLpWVJqDfx09vq9GjaIoXDhKcgg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MN2PR13MB4149.namprd13.prod.outlook.com (2603:10b6:208:24f::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Tue, 11 Apr
+ 2023 09:19:39 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
+ 09:19:39 +0000
+Date:   Tue, 11 Apr 2023 11:19:31 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        emil.s.tantilov@intel.com, joshua.a.hay@intel.com,
+        sridhar.samudrala@intel.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, willemb@google.com, decot@google.com,
+        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+        davem@davemloft.net, Alan Brady <alan.brady@intel.com>,
+        Madhu Chittim <madhu.chittim@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        Shailendra Bhatnagar <shailendra.bhatnagar@intel.com>
+Subject: Re: [PATCH net-next v2 03/15] idpf: add controlq init and reset
+ checks
+Message-ID: <ZDUmI00WofNY2a1G@corigine.com>
+References: <20230411011354.2619359-1-pavan.kumar.linga@intel.com>
+ <20230411011354.2619359-4-pavan.kumar.linga@intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230411085626.GA19711@pengutronix.de>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+In-Reply-To: <20230411011354.2619359-4-pavan.kumar.linga@intel.com>
+X-ClientProxiedBy: AS4PR09CA0022.eurprd09.prod.outlook.com
+ (2603:10a6:20b:5d4::14) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB4149:EE_
+X-MS-Office365-Filtering-Correlation-Id: dc23516d-2f7c-453e-1a1f-08db3a6de02c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 50eeJ7IYEWyBsoDSKHqgP64TCRUfgk38K6mxLZfWZebVWYyAMwY3kyRZlcmM4PFOY0OhRyKaUVjkSh6c4EEUG9JcR0MFGTBd5hTRaVf2efqKHplm0+36lmC++nTkp8qelkbMafVH5pLoYEv24+S8c1VSkcK0XQiDnLKIXqI2S9ouMcVocfaFdb9Y6M280E5uykAbRshC/Ij6iKXeU1qs+oCSpSK/4VxyxOLEZlCLlZiSOSznsiZs8R9TNQceDrA7Hj1urKfRrpmLhFUJk8ncPpAbzZBk8S4dwqaRU4bKJ2YxbcxyKdTPhItj6iC1bXNm46YakSuqQdlqexlpq/DzvJVtYj4tjCMATiDez6n5rzklP8eV9XsWQeBJvfMLe4wwAqjtCKcs/AVfXXNPnnhmXsXkl5g1xzDaqBjObpJ6NpRB1FyKG+mRuN9YYsckOGX8AIeL3kSKDA1SJaY/V+OseqVY0U0MlcRBXseqy9GAOZA8Vpbw99ctnDuz8iiGVHGI8stjet79O7bDLuaXv7iFYtNkl77FRYMeJYD+NOF8uBR/p71QAh3anZZwZDsR1MCTZPkk6uEVn1Hk2QsA2eJTSuCev2KAZdA6rAV+M/t8GEQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(39850400004)(366004)(376002)(136003)(396003)(451199021)(478600001)(6506007)(316002)(54906003)(6512007)(186003)(6666004)(6486002)(2906002)(44832011)(66556008)(66946007)(4326008)(41300700001)(7416002)(5660300002)(8676002)(66476007)(8936002)(6916009)(38100700002)(36756003)(83380400001)(2616005)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nPLWbxb4HlaQ4mYz0jVQIlAtdd9Ub30DZU3J5Ly9rm4RECZUxhJW56tBtbe6?=
+ =?us-ascii?Q?NsloMmIcurE+ZS2CNfdTuNZ68mx0EoFNIhY3x+VJpEsxj1Xp99IUuTbtrv9r?=
+ =?us-ascii?Q?Dwx4LSp9Bb/5n32TC17Gw9db6F2k7JTnQj0G1ui1HmDKyExdXUZfBE8Xvp5J?=
+ =?us-ascii?Q?silQByl+a9zJiJ8b6Tc84xKd8fudKInup/de81M78E5l5XBip11FFzrEuHiT?=
+ =?us-ascii?Q?TWxk3Ul5ci3fho5vvS3hDg7g98C6Yx9xg0o5lwAVw7461hx51nxN2b+YKbRH?=
+ =?us-ascii?Q?dupfk1BPCEnohDrJGuJ3wtijzftoc7H7cW/z7wKIJv2fiNICD7Xv47Clfm0v?=
+ =?us-ascii?Q?N1wmPJCLDXnoCVfKmOzmB9Z44jUBBUupKvneouQF44VM7jdorISZaSO9fMf6?=
+ =?us-ascii?Q?1S0BniFSl2xkB5LoSsYAqOw/q/K7klnm+TCZBojgahjdWRmrJENJGlgtCwmQ?=
+ =?us-ascii?Q?W1Vksvt2AN9TWq0pAvu9BG2crJgoeHElenZsXzr/hxBpPRSVX9TGqub6ZzSp?=
+ =?us-ascii?Q?J/6QSGs7oNGSdOpZ+EyWuZg517WyMx8n+paniQ3ooPHefWi15+PqVdX5Nola?=
+ =?us-ascii?Q?PwBB2Y5mrhAnAS9zGks9Waa9IilXtnKT/Naj7d2iMuNgngJZ/0NF60b2gjgR?=
+ =?us-ascii?Q?lBNyEao+MtvCgceYNQl88jhZ0cww3FvGncDiOEsLVa+7v76d1pTf6/DqK1Jx?=
+ =?us-ascii?Q?KapJW9UZLKrAutQyQIYAxCeBG4zL+7XtWrejMF4AItYjW++LSjAfKcFEmxqW?=
+ =?us-ascii?Q?dacYv2yDWZ8GZyFduP/IOyFJLNz1KjwAaal2wYEq43IiDwIecnGqLaZypCmd?=
+ =?us-ascii?Q?LZx1NXbfZXkXQK4NKe7hMg+y8sI3N2iWx9ITWx2r6CdATKRQfQ9HQVuqO2ax?=
+ =?us-ascii?Q?O6JTgri3yIhT0PAzyv1iLwmSDZ5m4B3QRDxjCKIUY9GT54IGBsvuT+3LRDLM?=
+ =?us-ascii?Q?ayD/ls71Rgon1tYqzKzJ5X3P7qelGhOlVWnf+TGfNDQWFBEQn3uGUk3j3luO?=
+ =?us-ascii?Q?VpcME7CuTPll3gsV1eOJl7HiR7THEJyPQvPTLvu44M2CM9psWvn0ykzpwHFF?=
+ =?us-ascii?Q?fnRxNJ2MlIo+qDSMqKMBaJXYkyEV8YmIRNUw/qcGHr10/vyos5neTxjhPsKd?=
+ =?us-ascii?Q?7GKwaXeHSAcR4byrsO3uTvE4+rd/n1ox3CuD9Rs5s7u+hKG7LfhjPJ8rnoYC?=
+ =?us-ascii?Q?98+dJd7z1eaiN1ro6y4/XxKsVndu8NTzpvbkhNK0ev6sHwXcdQWIwE2GXhSa?=
+ =?us-ascii?Q?UuIycKyRJibdgtc7dQaf+WRGERNY7h/sE4/Nm7EoM/8Ns7HfMh936PRS6ZqY?=
+ =?us-ascii?Q?SuOwFCmbfOykmaZKn9IyYgiB9pBVDgMLNIPJ/LfBetR4S2pTbRDVJSJBr4NK?=
+ =?us-ascii?Q?MQDef48Am4nBMi9N+EgivRT5WXz16WtwbIz1W3V+0h/6WirCCYzr5kmIvNWa?=
+ =?us-ascii?Q?D7oH+O/akPjgZLDo/+ZguVhv0hw2zEPZrkJJzZaFqaHxB5j2CwEcIkpPx/qR?=
+ =?us-ascii?Q?6SMTfSj0V3fdFrdTlQRB/NkODjELf3F43m9sIOGUGm2SU6Yta5h4cMgKtH2q?=
+ =?us-ascii?Q?/3Hh9D0WLBbQKNHEgeQQpKByk107ea9/rt9WQdGbonF+YgeN/DbaHbCQQYGb?=
+ =?us-ascii?Q?X80JZR9avCfzEFVVmdzQAvcgR8NnIC6cuwMLzL2n71iFS9Dh3YNFOsMGtuus?=
+ =?us-ascii?Q?rMHyww=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dc23516d-2f7c-453e-1a1f-08db3a6de02c
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 09:19:39.1623
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Pujn4+U0zajo/SUUE14D8/NABJfgzRq0KerXJ3TanURHcSIVQJbZJ16NeFLcRD9CN/Xz/tfR+d39KDNlFvu938DXFG9hq4lrgCCPiKTuyhU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB4149
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,145 +122,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 10:56:26AM +0200, Oleksij Rempel wrote:
-> On Fri, Apr 07, 2023 at 06:44:20PM +0100, Russell King (Oracle) wrote:
-> > On Fri, Apr 07, 2023 at 04:25:57PM +0200, Andrew Lunn wrote:
-> > > > +void ksz8_phylink_mac_link_up(struct ksz_device *dev, int port,
-> > > > +			      unsigned int mode, phy_interface_t interface,
-> > > > +			      struct phy_device *phydev, int speed, int duplex,
-> > > > +			      bool tx_pause, bool rx_pause)
-> > > > +{
-> > > > +	struct dsa_switch *ds = dev->ds;
-> > > > +	struct ksz_port *p;
-> > > > +	u8 ctrl = 0;
-> > > > +
-> > > > +	p = &dev->ports[port];
-> > > > +
-> > > > +	if (dsa_upstream_port(ds, port)) {
-> > > > +		u8 mask = SW_HALF_DUPLEX_FLOW_CTRL | SW_HALF_DUPLEX |
-> > > > +			SW_FLOW_CTRL | SW_10_MBIT;
-> > > > +
-> > > > +		if (duplex) {
-> > > > +			if (tx_pause && rx_pause)
-> > > > +				ctrl |= SW_FLOW_CTRL;
-> > > > +		} else {
-> > > > +			ctrl |= SW_HALF_DUPLEX;
-> > > > +			if (tx_pause && rx_pause)
-> > > > +				ctrl |= SW_HALF_DUPLEX_FLOW_CTRL;
-> > > > +		}
-> > > > +
-> > > > +		if (speed == SPEED_10)
-> > > > +			ctrl |= SW_10_MBIT;
-> > > > +
-> > > > +		ksz_rmw8(dev, REG_SW_CTRL_4, mask, ctrl);
-> > > > +
-> > > > +		p->phydev.speed = speed;
-> > > > +	} else {
-> > > > +		const u16 *regs = dev->info->regs;
-> > > > +
-> > > > +		if (duplex) {
-> > > > +			if (tx_pause && rx_pause)
-> > > > +				ctrl |= PORT_FORCE_FLOW_CTRL;
-> > > > +		} else {
-> > > > +			if (tx_pause && rx_pause)
-> > > > +				ctrl |= PORT_BACK_PRESSURE;
-> > > > +		}
-> > > > +
-> > > > +		ksz_rmw8(dev, regs[P_STP_CTRL], PORT_FORCE_FLOW_CTRL |
-> > > > +			 PORT_BACK_PRESSURE, ctrl);
-> > 
-> > So, I guess the idea here is to enable some form of flow control when
-> > both tx and rx pause are enabled.
-> > 
-> > Here's a bunch of questions I would like answered before I give a tag:
-> > 
-> > 1) It looks like the device only supports symmetric pause?
+On Mon, Apr 10, 2023 at 06:13:42PM -0700, Pavan Kumar Linga wrote:
+> From: Joshua Hay <joshua.a.hay@intel.com>
 > 
-> This part of driver supports two family of switches: ksz88xx and
-> ksz87xx.
+> At the end of the probe, initialize and schedule the event workqueue.
+> It calls the hard reset function where reset checks are done to find
+> if the device is out of the reset. Control queue initialization and
+> the necessary control queue support is added.
 > 
-> According to KSZ8765CLX  datasheet:
-> Per port, we control pause rx and tx with one bit:
->   Register 18 (0x12): Port 1 Control 2
->   Bit 4 - Force Flow Control
->     1 = Enables Rx and Tx flow control on the port, regardless of the AN result.
->     0 = Flow control is enabled based on the AN result (Default)
+> Introduce function pointers for the register operations which are
+> different between PF and VF devices.
 
-Is this more in the MAC register set than the PCS register set?
-It's weird that it seems there's no way to force flow control
-off.
+...
 
-If it's the PCS register set, then this is partly what the
-permit_pause_to_mac boolean in pcs_config() should be used to
-control - but that assumes that when !permit_pause_to_mac it
-merely stops forwarding the flow control settings to the MAC.
+> +int idpf_ctlq_add(struct idpf_hw *hw,
+> +		  struct idpf_ctlq_create_info *qinfo,
+> +		  struct idpf_ctlq_info **cq_out)
+> +{
+> +	struct idpf_ctlq_info *cq;
+> +	bool is_rxq = false;
+> +	int status = 0;
+> +
+> +	if (!qinfo->len || !qinfo->buf_size ||
+> +	    qinfo->len > IDPF_CTLQ_MAX_RING_SIZE ||
+> +	    qinfo->buf_size > IDPF_CTLQ_MAX_BUF_LEN)
+> +		return -EINVAL;
+> +
+> +	cq = kcalloc(1, sizeof(struct idpf_ctlq_info), GFP_KERNEL);
+> +	if (!cq)
+> +		return -ENOMEM;
 
-If it's in the MAC register set, this should be controlled by
-the MLO_PAUSE_AN bit in state->pause.
+Hi Pavan, Hi Joshua,
 
-However, when those are false, we expect the tx_pause and
-rx_pause in mac_link_up() to be respected by the hardware.
+nit: I notice a number of instances in this patchset where either
+     the first argument passed to kcalloc() is 1, or the second
+     argument is sizeof(u8).
 
-> Globally, pause tx and/or rx can be disabled:
-> 
->   Register 3 (0x03): Global Control 1
->   Bit 5 - IEEE 802.3x Transmit Flow Control Disable
->     0 = Enables transmit flow control based on AN result.
->     1 = Will not enable transmit flow control regardless of the AN result.
->   Bit 4 - IEEE 802.3x Receive Flow Control Disable
->     0 = Enables receive flow control based on AN result.
->     1 = Will not enable receive flow control regardless of the AN result.
-> 
-> So, it is possible to configure the entire switch in SYNC or ASYNC mode
-> only.
-
-Well, that's a very strange setup. So basically we have no software
-control over manually setting the flow control, and we must use
-the hardware to pass the AN result to the MAC to have everything
-configured correctly.
-
-> Still not sure what role plays autoneg in this configuration:
-> 
->   Register 55 (0x37): Port 3 Control 7 (only for ports 3 and 4)
->   Bits 5 - 4 - Advertised_Flow_Control _Capability
->     00 = No pause
->     01 = Symmetric PAUSE
->     10 = Asymmetric PAUSE
->     11 = Both Symmetric PAUSE and Asymmetric
-> 
-> According to this bits, it is possible to announce both Symmetric
-> and Asymmetric PAUSE, but will the switch enable asymmetric mode
-> properly if link partner advertise asymmetric too?
-
-These two bits correspond directly with:
-ETHTOOL_LINK_MODE_Pause_BIT (for bit 4)
-ETHTOOL_LINK_MODE_Asym_Pause_BIT (for bit 5)
-
-IEEE 802.3 has a table in it of the possible resolutions given the
-advertisement from both ends. In the case of advertising both, then
-the resolutions can be:
-- Pause disabled
-- Asymmetric pause towards local device (rx enabled, tx disabled)
-- Symmetric pause (rx and tx enabled)
-
-It is the responsibility of both ends of the link to implement the
-decoding as per 802.3 table 28B-3.
-
-Since we can't manually control the tx and rx pause enables, I think
-the only sensible way forward with this would be to either globally
-disable pause on the device, and not report support for any pause
-modes, or report support for all pause modes, advertise '11' and
-let the hardware control it (which means the ethtool configuration
-for pause would not be functional.)
-
-This needs to be commented in the driver so that in the future we
-remember why this has been done.
-
-Maybe Andrew and/or Vladimir also have an opinion to share about the
-best approach here?
-
-Thanks for the clarification from the register set.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+     I think it would be slightly better to use kmalloc() in such cases.
