@@ -2,126 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 363006DDA32
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 14:00:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C47C6DDA37
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 14:03:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229549AbjDKMAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 08:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49162 "EHLO
+        id S229714AbjDKMDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 08:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbjDKMAx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 08:00:53 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE1F30C8
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 05:00:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=gOC6ChiXHuU7FsyERkq8NMPzJW8fRVvn6fROASOvir8=; b=oTLOCafLHeZekDBgr2cPEWyhxj
-        0qA9bWXKDtIA9YFDIIPWDzNjebkCUaUAGUdjL39zVFeYpfUB4GmhWlRAWK+y9OZNR/lavFgKLwKLP
-        /K83bWyL8Vn+vVv8lYd1DYU+g21FRRu3tqhQ1e2i6R4Kw0wCRxp8sF3/u8NdfQu99BtImdSRnVj05
-        mqX/7Q2TWijQQsuLW50f6VfDSQrIxZXeVVH2E7zJdI3z43NX2fFM0JzwZziRc2sqLcrpWArQemEJX
-        oK3Nyh1vwq4hdry+Wg9dNPZUlVvDPeutjlMXxOnpEubRATyRKM95aBjwfDoq6GRDz9ma1Y3FfY0YO
-        29cHjSbg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41474)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pmCg0-0005rl-DM; Tue, 11 Apr 2023 13:00:44 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pmCfz-00045u-3L; Tue, 11 Apr 2023 13:00:43 +0100
-Date:   Tue, 11 Apr 2023 13:00:43 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
- flow control, speed, and duplex on CPU port configurable
-Message-ID: <ZDVL6we7LN/ApgwG@shell.armlinux.org.uk>
-References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
- <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
- <20230411085626.GA19711@pengutronix.de>
- <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
- <20230411111609.jhfcvvxbxbkl47ju@skbuf>
- <20230411113516.ez5cm4262ttec2z7@skbuf>
+        with ESMTP id S229559AbjDKMDX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 08:03:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA6E30ED
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 05:02:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681214558;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zsl3EqzQpOYH+JVTc+1nS7wHRqvd0DNL4VH3/d/TtBM=;
+        b=Mw+3XIsS1SScVLlDnVEER+Je+Tzu5iscE4aZoHTCnL0VLSziJsdEMsggU7rd2SReRJ/aHi
+        aGeTDL4d6GcEuKrtao6Dt+K11NE+EAhMXU2KsE7uYrcRc6kG1rwZlWC+Us2y/kGETqLyM9
+        r3rOih5Z7gClL2hbcMsJcJp+D3HItO0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-350-qR3hLjzbPhO16mLcvtBGuQ-1; Tue, 11 Apr 2023 08:02:35 -0400
+X-MC-Unique: qR3hLjzbPhO16mLcvtBGuQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E710B101A54F;
+        Tue, 11 Apr 2023 12:02:34 +0000 (UTC)
+Received: from [10.43.2.89] (unknown [10.43.2.89])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D9BC6492C13;
+        Tue, 11 Apr 2023 12:02:33 +0000 (UTC)
+Message-ID: <9541a779-bca8-4843-23ff-aff47709c5af@redhat.com>
+Date:   Tue, 11 Apr 2023 14:02:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230411113516.ez5cm4262ttec2z7@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net-next] bnxt_en: Allow to set switchdev mode without
+ existing VFs
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     mschmidt@redhat.com, Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20230406130455.1155362-1-ivecera@redhat.com>
+ <258624e7ffa7bfc3960e727c451cdabe4e7f3efe.camel@redhat.com>
+Content-Language: en-US
+From:   Ivan Vecera <ivecera@redhat.com>
+In-Reply-To: <258624e7ffa7bfc3960e727c451cdabe4e7f3efe.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 02:35:16PM +0300, Vladimir Oltean wrote:
-> On Tue, Apr 11, 2023 at 02:16:09PM +0300, Vladimir Oltean wrote:
-> > I may have missed something.
+On 11. 04. 23 12:22, Paolo Abeni wrote:
+> On Thu, 2023-04-06 at 15:04 +0200, Ivan Vecera wrote:
+>> Remove an inability of bnxt_en driver to set eswitch to switchdev
+>> mode without existing VFs by:
+>>
+>> 1. Allow to set switchdev mode in bnxt_dl_eswitch_mode_set() so
+>>     representors are created only when num_vfs > 0 otherwise just
+>>     set bp->eswitch_mode
+>> 2. Do not automatically change bp->eswitch_mode during
+>>     bnxt_vf_reps_create() and bnxt_vf_reps_destroy() calls so
+>>     the eswitch mode is managed only by an user by devlink.
+>>     Just set temporarily bp->eswitch_mode to legacy to avoid
+>>     re-opening of representors during destroy.
+>> 3. Create representors in bnxt_sriov_enable() if current eswitch
+>>     mode is switchdev one
+>>
+>> Tested by this sequence:
+>> 1. Set PF interface up
+>> 2. Set PF's eswitch mode to switchdev
+>> 3. Created N VFs
+>> 4. Checked that N representors were created
+>> 5. Set eswitch mode to legacy
+>> 6. Checked that representors were deleted
+>> 7. Set eswitch mode back to switchdev
+>> 8. Checked that representros were re-created
 > 
-> Maybe I'm wrong, but my blind intuition says that when autoneg is
-> disabled in the integrated PHYs, flow control _is_ by default forced off
-> per port, unless the "Force Flow Control" bit from Port N Control 2
-> registers is set. So that can be used to still support:
-> - ethtool --pause swp0 autoneg off rx on tx on
-> - ethtool --pause swp0 autoneg off rx off tx off
-> - ethtool --pause swp0 autoneg on # asymmetric RX/TX combinations depend upon autoneg
+> Could you please update the commit message and re-post?
 > 
-> I may be wrong; I don't have the hardware and the ethtool pause autoneg
-> bit is not 100% clear to me.
+> Thanks!
 
-Stage 1 (per port, force bit):
-- If zero, the flow control result from aneg is used, and thus depends on
-  what both ends advertise.
-- If one, flow control is force-enabled.
+of course..
 
-Stage 2 (global):
-Transmit and receive flow control can be masked off.
+I.
 
-Basically, the best we could do is:
-
-	ethtool --pause ... autoneg on
-
-depends on the negotiation result (correct).
-
-	ethtool --pause ... autoneg off rx off tx off
-
-if we *only* program the local advertisement to 00, but leave the
-force bit as 0, then this can work.
-
-	ethtool --pause ... autoneg off rx on tx on
-
-if we program the force bit to 1, then this can work, and it doesn't
-matter what we do with the advertisement.
-
-Anything else wouldn't give the result the user wants, because there's
-no way to independently force rx and tx flow control per port.
-
-That said, phylink doesn't give enough information to make the above
-possible since the force bit depends on (tx && rx &&!permit_pause_to_mac)
-
-So, because this hardware is that crazy, I suggest that it *doesn't*
-even attempt to support ethtool --pause, and either is programmed
-at setup time to use autonegotiated pause (with the negotiation state
-programmed via ethtool -s) or it's programmed to have pause globally
-disabled. Essentially, I'm saying the hardware is too broken in its
-design to be worth bothering trying to work around its weirdness.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
