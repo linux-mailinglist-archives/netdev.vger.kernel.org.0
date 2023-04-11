@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA71D6DD970
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 13:33:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4725A6DD978
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 13:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbjDKLdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 07:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41828 "EHLO
+        id S229659AbjDKLfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 07:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbjDKLdK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 07:33:10 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24A135A6;
-        Tue, 11 Apr 2023 04:33:09 -0700 (PDT)
+        with ESMTP id S229451AbjDKLfB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 07:35:01 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925B4E60;
+        Tue, 11 Apr 2023 04:35:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1681212789; x=1712748789;
+  t=1681212901; x=1712748901;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Z8s5H2R2JPvyJImDdoa6/+E68sq74qjYjSO+8uO7l7Y=;
-  b=YHUe8TwtEhgAOqJn0U62TEfHWQVnjNmbtybwc5i6CWmfOzdPqfLaropK
-   ZRD1TpZkGACOQXv3H3P+pcEYxZr4k04Y2ZAPFjqc9VrnvQ/znZYrJ6ZDs
-   EBSbmKCi2fXu+EDrJFFw07FfuYRT6Q/TwjFCZhd6TmZ6FTPnG0R5uGezW
-   WmYunKE3XxckWArF6XZvsFKJXdq4JTy/NWhsBHYBunQJ1wcayzj4bcHOw
-   GBiW79M1bMRXzbHxbYNxkv/WW0TlDZt393DqU8NN2oqub3oV5blFm2w3T
-   37OHZBfEYZ//WtoY428ounOmlCS2Q8gGus0lMBO8hG0mQpzLrggwGsXwQ
-   Q==;
+  bh=rCpRx8zrwmywWfUW2YxiAvJ2J1O/eklkQmlDcOmjNXM=;
+  b=fhAKYZ41cHJHfbwdsQOuVm7zIQzmM1Y7NfILam97srLnMnG72a/IPMyU
+   MUOpFIDgdIKKA8C5LdKLc5Ioz366hcEP0y4fCWCEnEd19VKwVPUQf3dtq
+   1Gs933GhUxvw0vargbJM0E8xIeReVkfw3XkqxW/XcSVNBa2F9e7l28xUf
+   GlZxFmxv+JRIe4jKjtMkA9jGPAnZ2dFnxvFDb9H0xfbEWMSXFfHsmgEv/
+   UtKsHU/VGNa8BGi7UCVfTzbYWuLT04FtyBfAACya6KPbcwOfABlqSuJhN
+   PDRTI78UeJKJIpwDGfGIIEGz/qGu4OLEZ0pZKFK+06yAEP5iZHZ9ysP8q
+   w==;
 X-IronPort-AV: E=Sophos;i="5.98,336,1673938800"; 
-   d="scan'208";a="209823278"
+   d="scan'208";a="209023260"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2023 04:33:08 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2023 04:34:55 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 11 Apr 2023 04:33:07 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Tue, 11 Apr 2023 04:33:06 -0700
-Date:   Tue, 11 Apr 2023 13:33:06 +0200
+ 15.1.2507.21; Tue, 11 Apr 2023 04:34:51 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Tue, 11 Apr 2023 04:34:50 -0700
+Date:   Tue, 11 Apr 2023 13:34:50 +0200
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     Simon Horman <horms@kernel.org>
 CC:     Julian Anastasov <ja@ssi.bg>,
@@ -52,14 +52,15 @@ CC:     Julian Anastasov <ja@ssi.bg>,
         Paolo Abeni <pabeni@redhat.com>, <lvs-devel@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
         <coreteam@netfilter.org>
-Subject: Re: [PATCH nf-next v2 4/4] ipvs: Correct spelling in comments
-Message-ID: <20230411113306.ydzhynl243o6mncz@soft-dev3-1>
+Subject: Re: [PATCH nf-next v2 2/4] ipvs: Consistently use array_size() in
+ ip_vs_conn_init()
+Message-ID: <20230411113450.ky4jp6jsptvlzrtx@soft-dev3-1>
 References: <20230409-ipvs-cleanup-v2-0-204cd17da708@kernel.org>
- <20230409-ipvs-cleanup-v2-4-204cd17da708@kernel.org>
+ <20230409-ipvs-cleanup-v2-2-204cd17da708@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20230409-ipvs-cleanup-v2-4-204cd17da708@kernel.org>
+In-Reply-To: <20230409-ipvs-cleanup-v2-2-204cd17da708@kernel.org>
 X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
@@ -72,47 +73,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 The 04/11/2023 09:10, Simon Horman wrote:
 > 
-> Correct some spelling errors flagged by codespell and found by inspection.
+> Consistently use array_size() to calculate the size of ip_vs_conn_tab
+> in bytes.
+> 
+> Flagged by Coccinelle:
+>  WARNING: array_size is already used (line 1498) to compute the same size
+> 
+> No functional change intended.
+> Compile tested only.
 
 Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
 > 
 > Signed-off-by: Simon Horman <horms@kernel.org>
 > ---
->  include/net/ip_vs.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> v2
+> * Retain division by 1024, which was lost in v1
+> ---
+>  net/netfilter/ipvs/ip_vs_conn.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 > 
-> diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
-> index a3adc246ee31..ff406ef4fd4a 100644
-> --- a/include/net/ip_vs.h
-> +++ b/include/net/ip_vs.h
-> @@ -584,7 +584,7 @@ struct ip_vs_conn {
->         spinlock_t              lock;           /* lock for state transition */
->         volatile __u16          state;          /* state info */
->         volatile __u16          old_state;      /* old state, to be used for
-> -                                                * state transition triggerd
-> +                                                * state transition triggered
->                                                  * synchronization
->                                                  */
->         __u32                   fwmark;         /* Fire wall mark from skb */
-> @@ -635,7 +635,7 @@ struct ip_vs_service_user_kern {
->         u16                     protocol;
->         union nf_inet_addr      addr;           /* virtual ip address */
->         __be16                  port;
-> -       u32                     fwmark;         /* firwall mark of service */
-> +       u32                     fwmark;         /* firewall mark of service */
+> diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+> index 13534e02346c..84d273a84dc8 100644
+> --- a/net/netfilter/ipvs/ip_vs_conn.c
+> +++ b/net/netfilter/ipvs/ip_vs_conn.c
+> @@ -1481,6 +1481,7 @@ void __net_exit ip_vs_conn_net_cleanup(struct netns_ipvs *ipvs)
 > 
->         /* virtual service options */
->         char                    *sched_name;
-> @@ -1036,7 +1036,7 @@ struct netns_ipvs {
->         struct ipvs_sync_daemon_cfg     bcfg;   /* Backup Configuration */
->         /* net name space ptr */
->         struct net              *net;            /* Needed by timer routines */
-> -       /* Number of heterogeneous destinations, needed becaus heterogeneous
-> +       /* Number of heterogeneous destinations, needed because heterogeneous
->          * are not supported when synchronization is enabled.
+>  int __init ip_vs_conn_init(void)
+>  {
+> +       size_t tab_array_size;
+>         int idx;
+> 
+>         /* Compute size and mask */
+> @@ -1494,8 +1495,9 @@ int __init ip_vs_conn_init(void)
+>         /*
+>          * Allocate the connection hash table and initialize its list heads
 >          */
->         unsigned int            mixed_address_family_dests;
+> -       ip_vs_conn_tab = vmalloc(array_size(ip_vs_conn_tab_size,
+> -                                           sizeof(*ip_vs_conn_tab)));
+> +       tab_array_size = array_size(ip_vs_conn_tab_size,
+> +                                   sizeof(*ip_vs_conn_tab));
+> +       ip_vs_conn_tab = vmalloc(tab_array_size);
+>         if (!ip_vs_conn_tab)
+>                 return -ENOMEM;
+> 
+> @@ -1508,10 +1510,8 @@ int __init ip_vs_conn_init(void)
+>                 return -ENOMEM;
+>         }
+> 
+> -       pr_info("Connection hash table configured "
+> -               "(size=%d, memory=%ldKbytes)\n",
+> -               ip_vs_conn_tab_size,
+> -               (long)(ip_vs_conn_tab_size*sizeof(*ip_vs_conn_tab))/1024);
+> +       pr_info("Connection hash table configured (size=%d, memory=%zdKbytes)\n",
+> +               ip_vs_conn_tab_size / 1024, tab_array_size);
+>         IP_VS_DBG(0, "Each connection entry needs %zd bytes at least\n",
+>                   sizeof(struct ip_vs_conn));
+> 
 > 
 > --
 > 2.30.2
