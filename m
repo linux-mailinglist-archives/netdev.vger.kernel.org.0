@@ -2,53 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E4416DDB22
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 14:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E8DE6DDB23
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 14:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbjDKMrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 08:47:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39796 "EHLO
+        id S229847AbjDKMrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 08:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbjDKMrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 08:47:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78EC426BE
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 05:47:09 -0700 (PDT)
+        with ESMTP id S229838AbjDKMrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 08:47:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C046F2D63
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 05:47:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 130C761E7A
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 12:47:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B49F5C433EF;
-        Tue, 11 Apr 2023 12:47:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A42761CEA
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 12:47:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40391C433EF;
+        Tue, 11 Apr 2023 12:47:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681217228;
-        bh=NOVkgwwnP1xahHAfcsJty72kyo9GnktJkyts7RtER3M=;
+        s=k20201202; t=1681217255;
+        bh=DxcezAwFe3nKSveHy+rOWYFpKqezwqAU05kit3IxdFI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eJXRDNB4ojUBQPHoawNEn7jU6PA3rrQL1b0+bvIOYvrT1/xvdL00aoDIuVCbGeaPt
-         ygRYjModYuF7AuZaK0AcSfcjM0gjoBfG0BG4/hlTcrn2hFydusge4I+pXi5CiV8PrX
-         BfTj9FLF0rMOBRKtC4vNTOSI1VKFmNRKNUBBFAXOWSgvaZZmaZCQqiZ1CBEkxvJj+d
-         L2IRXgFiP51rtl9ad07b6bzbIWruVq/KaDbMp/CtF5jVHCbbAaRVYenTxMPWDuJfKp
-         sKCXwYKysgH+kKZyDMAmXmVkYzra3WxYra1bB8FX6r/Dxm192T5V9AXwF0+PPZR0HL
-         /0P89imJnVFkg==
-Date:   Tue, 11 Apr 2023 15:47:04 +0300
+        b=N/XTf+v0Ej2zfTskH6kLXpSV+i3GX9JftEAegTayTBVPXfjtZuFuEWrcFiUDZXQ+p
+         HnCBOoffZB2mtF/Y6QdmqkW3xjbgAC7SzMJMMA0V/N5JpArDUt6JrchnI8bV5qDRTH
+         x+Ac4PVGbIqsLq0jtsvl/hMUFSWIdhOunmS2frnLFoLMZmQ5HoNowqxuXxbX2+X3jK
+         6jhOkxV7+9pl+HSiYJHza9MMbUSp3KVR1YPGCpRuF3+3Bn6+pNujW39ZtkIRAINuME
+         0se2LJFYzwMZst18/Oa1dc9LOqu9yn5KH/G43Kx53Q7HfNgp9laJFEYNvQyssTN7MI
+         WUPel38p2FMhg==
+Date:   Tue, 11 Apr 2023 15:47:31 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Brett Creeley <bcreeley@amd.com>
-Cc:     Brett Creeley <brett.creeley@amd.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, drivers@pensando.io,
-        shannon.nelson@amd.com, neel.patel@amd.com
-Subject: Re: [PATCH net] ionic: Fix allocation of q/cq info structures from
- device local node
-Message-ID: <20230411124704.GX182481@unreal>
-References: <20230407233645.35561-1-brett.creeley@amd.com>
- <20230409105242.GR14869@unreal>
- <bd48d23b-093c-c6d4-86f1-677c2a0ab03c@amd.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Raed Salem <raeds@nvidia.com>, Emeel Hakim <ehakim@nvidia.com>
+Subject: Re: [PATCH net-next 09/10] net/mlx5e: Create IPsec table with tunnel
+ support only when encap is disabled
+Message-ID: <20230411124731.GY182481@unreal>
+References: <cover.1681106636.git.leonro@nvidia.com>
+ <ee971aa614d3264c9fe88eb77a6f61687a3ff363.1681106636.git.leonro@nvidia.com>
+ <ZDQdNV+SRG6EVYlJ@corigine.com>
+ <20230410164920.GU182481@unreal>
+ <ZDRRBiT6umIH0rcR@corigine.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bd48d23b-093c-c6d4-86f1-677c2a0ab03c@amd.com>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+In-Reply-To: <ZDRRBiT6umIH0rcR@corigine.com>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,86 +63,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 10, 2023 at 11:16:03AM -0700, Brett Creeley wrote:
-> On 4/9/2023 3:52 AM, Leon Romanovsky wrote:
-> > Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
-> > 
-> > 
-> > On Fri, Apr 07, 2023 at 04:36:45PM -0700, Brett Creeley wrote:
-> > > Commit 116dce0ff047 ("ionic: Use vzalloc for large per-queue related
-> > > buffers") made a change to relieve memory pressure by making use of
-> > > vzalloc() due to the structures not requiring DMA mapping. However,
-> > > it overlooked that these structures are used in the fast path of the
-> > > driver and allocations on the non-local node could cause performance
-> > > degredation. Fix this by first attempting to use vzalloc_node()
-> > > using the device's local node and if that fails try again with
-> > > vzalloc().
+On Mon, Apr 10, 2023 at 08:10:14PM +0200, Simon Horman wrote:
+> On Mon, Apr 10, 2023 at 07:49:20PM +0300, Leon Romanovsky wrote:
+> > On Mon, Apr 10, 2023 at 04:29:09PM +0200, Simon Horman wrote:
+> > > On Mon, Apr 10, 2023 at 09:19:11AM +0300, Leon Romanovsky wrote:
+> > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > 
+> > > > Current hardware doesn't support double encapsulation which is
+> > > > happening when IPsec packet offload tunnel mode is configured
+> > > > together with eswitch encap option.
+> > > > 
+> > > > Any user attempt to add new SA/policy after he/she sets encap mode, will
+> > > > generate the following FW syndrome:
+> > > > 
+> > > >  mlx5_core 0000:08:00.0: mlx5_cmd_out_err:803:(pid 1904): CREATE_FLOW_TABLE(0x930) op_mod(0x0) failed,
+> > > >  status bad parameter(0x3), syndrome (0xa43321), err(-22)
+> > > > 
+> > > > Make sure that we block encap changes before creating flow steering tables.
+> > > > This is applicable only for packet offload in tunnel mode, while packet
+> > > > offload in transport mode and crypto offload, don't have such limitation
+> > > > as they don't perform encapsulation.
+> > > > 
+> > > > Reviewed-by: Raed Salem <raeds@nvidia.com>
+> > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 > > > 
-> > > Fixes: 116dce0ff047 ("ionic: Use vzalloc for large per-queue related buffers")
-> > > Signed-off-by: Neel Patel <neel.patel@amd.com>
-> > > Signed-off-by: Brett Creeley <brett.creeley@amd.com>
-> > > Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-> > > ---
-> > >   .../net/ethernet/pensando/ionic/ionic_lif.c   | 24 ++++++++++++-------
-> > >   1 file changed, 16 insertions(+), 8 deletions(-)
+> > > Hi Raed and Leon,
 > > > 
-> > > diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> > > index 957027e546b3..2c4e226b8cf1 100644
-> > > --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> > > +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> > > @@ -560,11 +560,15 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
-> > >        new->q.dev = dev;
-> > >        new->flags = flags;
+> > > some minor feedback from me below.
 > > > 
-> > > -     new->q.info = vzalloc(num_descs * sizeof(*new->q.info));
-> > > +     new->q.info = vzalloc_node(num_descs * sizeof(*new->q.info),
-> > > +                                dev_to_node(dev));
-> > >        if (!new->q.info) {
-> > > -             netdev_err(lif->netdev, "Cannot allocate queue info\n");
-> > > -             err = -ENOMEM;
-> > > -             goto err_out_free_qcq;
-> > > +             new->q.info = vzalloc(num_descs * sizeof(*new->q.info));
-> > > +             if (!new->q.info) {
-> > > +                     netdev_err(lif->netdev, "Cannot allocate queue info\n");
+> > > > ---
+> > > >  .../mellanox/mlx5/core/en_accel/ipsec.c       |  7 ++++
+> > > >  .../mellanox/mlx5/core/en_accel/ipsec.h       |  1 +
+> > > >  .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 33 +++++++++++++++++--
+> > > >  3 files changed, 38 insertions(+), 3 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+> > > > index b64281fd4142..e95004ac7a20 100644
+> > > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+> > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+> > > > @@ -668,6 +668,13 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
+> > > >  	if (err)
+> > > >  		goto err_hw_ctx;
+> > > >  
+> > > > +	if (x->props.mode == XFRM_MODE_TUNNEL &&
+> > > > +	    x->xso.type == XFRM_DEV_OFFLOAD_PACKET &&
+> > > > +	    !mlx5e_ipsec_fs_tunnel_enabled(sa_entry)) {
+> > > > +		NL_SET_ERR_MSG_MOD(extack, "Packet offload tunnel mode is disabled due to encap settings");
+> > > > +		goto err_add_rule;
+> > > 
+> > > The err_add_rule will return err.
+> > > But err is zero here.
+> > > Perhaps it should be set to an negative error code?
 > > 
-> > Kernel memory allocator will try local node first and if memory is
-> > depleted it will go to remote nodes. So basically, you open-coded that
-> > behaviour but with OOM splash when first call to vzalloc_node fails and
-> > with custom error message about memory allocation failure.
+> > Thanks, I overlooked it.
 > > 
-> > Thanks
+> > > 
+> > > Flagged by Smatch as:
+> > > 
+> > > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c:753 mlx5e_xfrm_free_state() error: we previously assumed 'sa_entry->work' could be null (see line 744)
+> > 
+> > I don't get such warnings from my CI, will try to understand why.
+> > 
+> > What are the command line arguments you use to run smatch?
 > 
-> Leon,
+> Hi Leon,
 > 
-> We want to allocate memory from the node local to our PCI device, which is
-> not necessarily the same as the node that the thread is running on where
-> vzalloc() first tries to alloc.
-
-I'm not sure about it as you are running kernel thread which is
-triggered directly by device and most likely will run on same node as
-PCI device.
-
-> Since it wasn't clear to us that vzalloc_node() does any fallback, 
-
-vzalloc_node() doesn't do fallback, but vzalloc will find the right node
-for you.
-
-> we followed the example in the ena driver to follow up with a more
-> generic vzalloc() request.
-
-I don't know about ENA implementation, maybe they have right reasons to
-do it, but maybe they don't.
-
+> I run Smatch like this:
 > 
-> Also, the custom message helps us quickly figure out exactly which
-> allocation failed.
-
-If OOM is missing some info to help debug allocation failures, let's add
-it there, but please do not add any custom prints after alloc failures.
-
-Thanks
-
+> .../smatch/smatch_scripts/kchecker \
+> 	drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.o
 > 
-> Thanks,
+> > What is the version of smatch?
 > 
-> Brett
+> I see this with Smatch 1.73.
+> 
+> 
+> In writing this email, I noticed that Smatch seems to flag
+> a problem in net-next. Which seems to be a valid concern.
+> 
+> drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c:753 mlx5e_xfrm_free_state() error: we previously assumed 'sa_entry->work' could be null (see line 744)
+
+Thanks, I'll take a look when will return to the office.
