@@ -2,94 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6D056DE414
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 20:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DFFE6DE450
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 20:52:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbjDKSkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 14:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59694 "EHLO
+        id S229603AbjDKSwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 14:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjDKSkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 14:40:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A063955BB;
-        Tue, 11 Apr 2023 11:40:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C93162AE1;
-        Tue, 11 Apr 2023 18:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 63474C4339B;
-        Tue, 11 Apr 2023 18:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681238418;
-        bh=EjKgf2PTCczgYBkSi2vxGlcp9usrVW2XMZByy441xuc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AMnVIsM36I8/GWgy1z6Qr2j2pErNx/CpftijK2ABaEbrA/YLacoA1zqUtKhZuMPuU
-         M/j1jEa0ggQtWtONh0B1KSzbbeG5cCQ/xJyQI8PJDq+SjwDXXSwWYWyAyg1E1++dBt
-         13Y22U5BUsN0bV2H9S9BJycgu5gcGmspgSP/7rJW0KMYG3Ac5lxSwtAfn1RsaccOrj
-         mDHU+0yGwn6C6x6xu/jlMCzdw/h56TUZDWf2wBoVexvw2Za5HhapBic5aIc/EWJMA4
-         9ORK0LhP5FG7NddahxYFRhc0rh8BaGTraI80WWdVDCkXEqOoHxQFBqy9NqAwyeloyR
-         KBCYnQVt5angQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3F0BBC395C3;
-        Tue, 11 Apr 2023 18:40:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229481AbjDKSwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 14:52:11 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B516ED
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 11:52:10 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id o2so8767738plg.4
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 11:52:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1681239130; x=1683831130;
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=n4pN0D9VuThWZUSG0wK1df2D171dEbvuMFuz0NllzvM=;
+        b=Vs7ENtiSFilGoHj4/8ZDRf442TEIeezBAvS4PRB/+Nzh78kfMyJDavBHIF+LWO0vDs
+         zDKjxmVn//oEyYZk0c3WQm8tOAHI94qOXjgBn6BhpU1wYfjJ+D/tYhJ79B+tygDDur8K
+         GDFJfJvd7nS9NU7F7B5TxWSTEX8u0CH+EH7BIzaGWiUz8d0K9uSrgS9BzeieWRvEuXFk
+         KOzWkTPvtjrme9ufnqwdhh0Z8f07zlmy40X7SiOETNixVaEnu6ZxmOwbXz0pjQcelybO
+         E/ZIFNQjIvsuWm2zZBh2pzBFnTYRGbgfVMLPZXEVRexWOgw2zvP0NYot6VNuen34sdIH
+         TcbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681239130; x=1683831130;
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=n4pN0D9VuThWZUSG0wK1df2D171dEbvuMFuz0NllzvM=;
+        b=u8AUd2f30ntQehhR4vwXsQyQ+qbHd2FSn5j4iuwcSid0AOyngTAGc0LYbi4jOJVKjs
+         TvVD3RuRWUxfzlHsgpmZcK5TJi1QKJrtfwrfbqIWGIx3uD1SKt1Yc/1nm+JlMZFMr4K8
+         RKk4/INbPvxSVe2LF/ZAW8nHXOgnhbyiJTzq3JpzYaowQdZlDPAkjVmas4bjggX7aWUS
+         ggEgMvC3fAkt6wT7RV33CQEzNcSrnMBy5llPh7TISlc9tHE/1oJn8cjuRmRJ5LtUjEc9
+         cs2goPTdsKpKsFPZw5t35A9Cc0zRxeaSXTkH3ADPKKwVHT2dLRx13RLM0iMjVFNBpqMw
+         yKHQ==
+X-Gm-Message-State: AAQBX9cnnbqOIBmNqHW7HDWycSgxSvb14y0dOChV7IuJJZa82xnGedAc
+        /udnchQdrKycoZEoZnwJjhOx2hfM2HO30w/bvaY=
+X-Google-Smtp-Source: AKy350YUXvfWiLO8Tx8f/tkZ8h/wlIIdMelsMdpBUsP53nrFavTY+AUnRUqZaKp3GJI9Q2nNiTRhMQwIV8+1PHw2f2I=
+X-Received: by 2002:a17:902:f80f:b0:1a0:7630:8eed with SMTP id
+ ix15-20020a170902f80f00b001a076308eedmr5322826plb.11.1681239130011; Tue, 11
+ Apr 2023 11:52:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 0/2] Fix failure to access u32* argument of tracked
- function
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168123841824.29369.17941066959560460270.git-patchwork-notify@kernel.org>
-Date:   Tue, 11 Apr 2023 18:40:18 +0000
-References: <20230410085908.98493-1-zhoufeng.zf@bytedance.com>
-In-Reply-To: <20230410085908.98493-1-zhoufeng.zf@bytedance.com>
-To:     Feng zhou <zhoufeng.zf@bytedance.com>
-Cc:     martin.lau@linux.dev, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        mykolal@fb.com, shuah@kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, yangzhenze@bytedance.com,
-        wangdongdong.6@bytedance.com, zhouchengming@bytedance.com
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Sender: patriciajohnvan@gmail.com
+Received: by 2002:a05:7300:6c15:b0:b2:1f8c:a98a with HTTP; Tue, 11 Apr 2023
+ 11:52:09 -0700 (PDT)
+From:   Dina Mckenna <dinamckenna9@gmail.com>
+Date:   Tue, 11 Apr 2023 18:52:09 +0000
+X-Google-Sender-Auth: MsV19ReuEN3XaNWxxKV7WdtUc3Y
+Message-ID: <CAHqodhRLEmeVcw=UnOYB+cnyE0+4PpD9Zz4vigTH_OAp04-pSA@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=5.9 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        LOTS_OF_MONEY,MONEY_FRAUD_8,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:643 listed in]
+        [list.dnswl.org]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [patriciajohnvan[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
+        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
+        *  3.1 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hello my dear.,
 
-This series was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+ I sent this mail praying it will get to you in a good condition of
+health, since I myself are in a very critical health condition in
+which I sleep every night without knowing if I may be alive to see the
+next day. I bring peace and love to you. It is by the grace of God, I
+had no choice than to do what is lawful and right in the sight of God
+for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
+y
+and glory upon my life. I am Mrs. Dina. mckenna. howley, a widow. I am
+suffering from a long time brain tumor, It has defiled all forms of
+medical treatment, and right now I have about a few months to leave,
+according to medical experts. The situation has gotten complicated
+recently with my inability to hear proper, am communicating with you
+with the help of the chief nurse herein the hospital, from all
+indication my conditions is really deteriorating and it is quite
+obvious that, according to my doctors they have advised me that I may
+not live too long, Because this illness has gotten to a very bad
+stage. I plead that you will not expose or betray this trust and
+confidence that I am about to repose on you for the mutual benefit of
+the orphans and the less privilege. I have some funds I inherited from
+my late husband, the sum of ( $11,000,000.00, Eleven Million Dollars
+).  Having known my condition, I decided to donate this fund to you
+believing that you will utilize it the way i am going to instruct
+herein. I need you to assist me and reclaim this money and use it for
+Charity works therein your country for orphanages and gives justice
+and help to the poor, needy and widows says The Lord." Jeremiah
+22:15-16.=E2=80=9C and also build schools for less privilege that will be
+named after my late husband if possible and to promote the word of God
+and the effort that the house of God is maintained. I do not want a
+situation where this money will be used in an ungodly manner. That's
+why I'm taking this decision. I'm not afraid of death, so I know where
+I'm going. I accept this decision because I do not have any child who
+will inherit this money after I die. Please I want your sincerely and
+urgent answer to know if you will be able to execute this project for
+the glory of God, and I will give you more information on how the fund
+will be transferred to your bank account. May the grace, peace, love
+and the truth in the Word of God be with you and all those that you
+love and care for..
+ .
+I'm waiting for your immediate reply..
 
-On Mon, 10 Apr 2023 16:59:06 +0800 you wrote:
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
-> 
-> When access traced function arguments with type is u32*, bpf verifier failed.
-> Because u32 have typedef, needs to skip modifier. Add btf_type_is_modifier in
-> is_int_ptr. Add a selftest to check it.
-> 
-> Feng Zhou (2):
->   bpf/btf: Fix is_int_ptr()
->   selftests/bpf: Add test to access u32 ptr argument in tracing program
-> 
-> [...]
-
-Here is the summary with links:
-  - [v3,1/2] bpf/btf: Fix is_int_ptr()
-    https://git.kernel.org/bpf/bpf-next/c/91f2dc6838c1
-  - [v3,2/2] selftests/bpf: Add test to access u32 ptr argument in tracing program
-    https://git.kernel.org/bpf/bpf-next/c/75dcef8d3609
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+May God Bless you,
+Mrs. Dina. Mckenna Howley.
