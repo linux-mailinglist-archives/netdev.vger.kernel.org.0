@@ -2,231 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 417626DD741
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 11:55:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F476DD744
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 11:55:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229532AbjDKJzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 05:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
+        id S229530AbjDKJz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 05:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbjDKJz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 05:55:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2328D1717
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 02:55:27 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pmAii-0001nQ-TA; Tue, 11 Apr 2023 11:55:24 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pmAii-0007YV-3t; Tue, 11 Apr 2023 11:55:24 +0200
-Date:   Tue, 11 Apr 2023 11:55:24 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: FWD: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8: Make
- flow control, speed, and duplex on CPU port configurable
-Message-ID: <20230411095524.GB19711@pengutronix.de>
-References: <7055f8c2-3dba-49cd-b639-b4b507bc1249@lunn.ch>
- <ZDBWdFGN7zmF2A3N@shell.armlinux.org.uk>
- <20230411085626.GA19711@pengutronix.de>
- <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        with ESMTP id S229454AbjDKJzz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 05:55:55 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2129.outbound.protection.outlook.com [40.107.223.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CB01984
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 02:55:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aacxUOjseiJSZ1XgdrRZc5NgSbes4sXaJuYrPvcGZ8/qBtwgD+sFoa8sZYtkAi0RXzLRRaZVbxLnXzCWUBr1Rc5J8E8+dTSBk8xJYKUXb9lUmzA6BKOcglUZ4xO8YsVSNVMaC813rdHIRkvhObi8DnRUvjrC2sr42L0w8pNARKdqwY0XMtgH0HBSx4rRDIWnSBEiqfA/WLXg4hL4fxXoLNnyKUy9fh2nuVDJ1Bgk6lMGYx0X4OpSNxf3CwbkDXJ5Bz3dQg+GC/+ZlJonta3C2gF6rr3lL2fmsM6GYYbe+uHCMHCXpSo6FQkmG7VK5zH0Pg0qOIiZ3IwlwC9SXbHCvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JFpuXEXnh+FZb1Bz7wfBIMPOfu3m3RmfT6+jSezLSfA=;
+ b=f6uSkefKyqTGDZbIuJZ5A4AEkpo8XpZSr3XVA5GTo4IDowJCtwHLuIrNtsIAPvGXsFZ5OkfV1zqK4asKHuV0P/8qjf3jTxkPZiQphz7pU12ef+71jLRyTgcTv6pPqSAGQAxaVTCEeY6Fki9I7G54ncW7Zb9xaiMqsY/ftQGjBlZYuC1a1jGNo3tnD3hnGqGIFfSSBVnMglvouvh4JkBSmjf+7JH+bN7zFhD03h9Lnv4kIaEnEwOgVHnKQencxpycICbfOEldsDqoKGPAVOCfGTbt8XFDHMFEx+dTeLyOzwPaYvlIucE7gx4CxSzZ31AilhCwh1cog+U4zKC4MJAWuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JFpuXEXnh+FZb1Bz7wfBIMPOfu3m3RmfT6+jSezLSfA=;
+ b=Pcp/MFzk5goBRxtsNYHmfFruUa35csBeMmv54WQq82betQoBFbpbmial+Cg4CYR2uVpOVyzIytjenVS19VsEK9U2pLHvarTonbhNGfqtN/ifxQnI7NxbvBTy8S//kjAj8/1wduXkWPq/GBHQQSkoz110rq4w2lIXZVWqAx/8PfM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by DS0PR13MB6174.namprd13.prod.outlook.com (2603:10b6:8:123::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.35; Tue, 11 Apr
+ 2023 09:55:49 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6277.038; Tue, 11 Apr 2023
+ 09:55:49 +0000
+Date:   Tue, 11 Apr 2023 11:55:42 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        emil.s.tantilov@intel.com, joshua.a.hay@intel.com,
+        sridhar.samudrala@intel.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, willemb@google.com, decot@google.com,
+        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+        davem@davemloft.net, Alan Brady <alan.brady@intel.com>,
+        Alice Michael <alice.michael@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>
+Subject: Re: [PATCH net-next v2 14/15] idpf: add ethtool callbacks
+Message-ID: <ZDUunmuPmM0E3Rx3@corigine.com>
+References: <20230411011354.2619359-1-pavan.kumar.linga@intel.com>
+ <20230411011354.2619359-15-pavan.kumar.linga@intel.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZDUlu4JEQaNhKJDA@shell.armlinux.org.uk>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230411011354.2619359-15-pavan.kumar.linga@intel.com>
+X-ClientProxiedBy: AM0PR04CA0122.eurprd04.prod.outlook.com
+ (2603:10a6:208:55::27) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DS0PR13MB6174:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8b7c3277-48d7-4186-cb77-08db3a72edea
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jv5zL1JsKEPyyuPlc8YELJP81u527rzYj0Z1RfF495577jef58uB/cw7SXWpNrnZSFLQyGezuSWdGsrs5ePwR0NnBFbHgKzU7fLu+csFBP/AC3hF5RHr/A8RWk+Ps5Y64V3Cr+lp3B5P8XaoHxH6EUiy1wQr1+ZWohTkpSJM8tYHHgxvS29nbKcn3VWBP0Z1+wUzILOj1+JYZ5MDCt3ctQbHU5qS2kw+h/jkENRp1hSpmAVMhNvm5JB0L731/pdoe3/7oi+8Lht9tGZ7skcCb5l2MW70na06ud8tH3ozv7Jn81LqtNco5kYyNw6qYn8nbW27Sic/4x0JubyzzBQvmbPjC/to1DrM7Yc9SHVRHIi1e5aWJQR0MNi1vVfRJtyWp0XiqtgHzlin6To1cnCAe/iOvB6qJG8bJbvPE1LG90E+QRCO/+7gelQSQlGEkLAqtocE2kmVC5x+pqVxt8Dku3s269cehK5h5KEPmr+z6IexsE9/bLp2JRtVxtsnT8q+gz/TxB7r6Hn3aDkU7aM5DwJOzyGS6SUcqJeoK6Ankm45UASy7SxF0wCMb1n8Yr1+pT0otwgzfbQg2xzx0JftOOnL8SLY9I+kKkVqHXu6LBI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39850400004)(366004)(136003)(396003)(346002)(451199021)(36756003)(44832011)(7416002)(2906002)(38100700002)(5660300002)(8936002)(8676002)(86362001)(6512007)(6486002)(6666004)(6506007)(54906003)(478600001)(2616005)(186003)(66946007)(41300700001)(66476007)(6916009)(4326008)(316002)(66556008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?J6X2mMqCwbzUjf9MEA+PN46+0LuwmC8OEgYpwpEorahe4enKABbEDTbVXkaD?=
+ =?us-ascii?Q?ZZYt5/AiIWuVhWZwZmo02j6W81rVJuWOdYBxgOfyZiIwfs/fkKNwg9gmXqoh?=
+ =?us-ascii?Q?Hh2V/XVvaJojp42neZi30uioq306mvO+pR8HJ20VD5f3D8B/yNvU3+Zdy3ER?=
+ =?us-ascii?Q?bG0GCtxstqYIJDQpuaJcB8oZb6gN7esgcXFdnOzWGE2Kiepq8DDMeZq/6VOp?=
+ =?us-ascii?Q?RyJfmtx+jq87GJ9quomewUmLeDmJF/p69ZiIQUMUA399CyEjg70O1x26+zo7?=
+ =?us-ascii?Q?gXXYtT4LBEqP4F2PuEXGyQvSm7RTNA+q6/K2okGqOS98l8SlamATXmgL6vSE?=
+ =?us-ascii?Q?Mjgl8wppjv7PGLNa/wFE+D9gFzekYPVRRj1DMZsu3Sadtue92GlwbeEqCT2r?=
+ =?us-ascii?Q?vFfvQpeu/b1R+RiwBF0nQYODC4+P1UYZXfDBHfDaEgQoPM6sf2Eqx2F3N4vz?=
+ =?us-ascii?Q?AKoEavTsDwONqsYDu2E52P/D1rBWOnHFJBsbYXOk+o7FdvVbYxulQssH4+by?=
+ =?us-ascii?Q?h6FYYvs1hPkIlOEhOiy9qnAJhd+q++HtiLOiImoPtbH+jZdWBMBRh42tVAaQ?=
+ =?us-ascii?Q?rPwSI0+6AQUHjtFALh6zDW+wVdXT9ejEsaBzKAUN9DDGE3BJQGKxMmtlQVzf?=
+ =?us-ascii?Q?Cc8+mVH8G1l7L5suxQvGEHB5E+meC+LxTIbCZnU+FRyirLOMtMhRU4YUKyTw?=
+ =?us-ascii?Q?nxYg5xAfDFb2ESW1KFODlgJqNdccjs0/YOFi53G+VDRnMQEFxUauOKZP+ugV?=
+ =?us-ascii?Q?JFyjTqRITdFoIYZww5gbR6WJzsPTspCCyQFEMbk11BaEUqjrj+eo/fyqVQ6i?=
+ =?us-ascii?Q?dgUe7VcbvTpoKyHGkXbZN2hPUYpC9eDL/HFfNRg4FyvLdqKl2p/Ab8xgru6e?=
+ =?us-ascii?Q?tidRLPJGsmy+VnElbUhmXyzpgc5Dngz5F+hBXDe3cKdjS+lM+gh8Q3O6X/XB?=
+ =?us-ascii?Q?MB76VKBgEWJzD2UE8UeK55Jtehuv7Lke2kATd4T4eTSdyB3Zln6/mjqapI2N?=
+ =?us-ascii?Q?lYRIr/T6i5T1jXgy5Wa7nekH16WBEUFJt79zjdXOvBFs4rmehu/lCw0nI6N9?=
+ =?us-ascii?Q?+kIn8SWrTmgcPGHXTHC4rf6PXN8G24s+7lPASMIRKpciOQT3kRyiSqWOGuYW?=
+ =?us-ascii?Q?LYfjBFTxLm4R8CccM3l4+NT8BPC3uOCyPZ4CMUI0ORrQLNL57gAODauAtI00?=
+ =?us-ascii?Q?9dnt+93oci4VAkTsPYRRtregfiJ0j9FoEiwM4uGUB85ecCtXCEeif2wlRinz?=
+ =?us-ascii?Q?dc7ClyYpdHayHu/uWn0dez1ZprjktpSJJgOLw5tnJ19HbM3MAiEcZxV+pnqF?=
+ =?us-ascii?Q?YrdCklFZKOemE+pdZU6dNS3u+MyX02tQ7F62wqiFuaaLCCeD+UrlC+UgPw4q?=
+ =?us-ascii?Q?/QbD4R31IJej04Gy9NvChxl1ebHReUa8ZsInH4LjpKhAhSXdgwiYdctcbjqH?=
+ =?us-ascii?Q?RRwcy7apQZWDwILYFbHC+y6dbygGnQKoh6RNxDl3JgpRZ0IUo1keqee08Nv/?=
+ =?us-ascii?Q?E6IDPQ2MpDkmxiyQfX93IIurCHYYjSmEXOK3FkgxCe/RGXonsm8oRekgAG3w?=
+ =?us-ascii?Q?h72jPWYzMg2oWunBJvyOwLGsOnYuSdPqJKDwUxvXj51r4MXbQoOE9XBq0S3O?=
+ =?us-ascii?Q?1i5X5heyEpl29Yft2M3Tx68k3xfNnlcczPzkAQTeUyvwk5IQeMJzVnA/hK38?=
+ =?us-ascii?Q?cqIXVQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b7c3277-48d7-4186-cb77-08db3a72edea
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2023 09:55:49.7255
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GyPwEaLC2SlvAlaWYL5sTnDAOREIeA+em5dGS2slmG+GrLCJlU8YUtOxGgkb72OWU9XLhEDqkvzUI6mxt/ecdUPLvflwWSt1BqoD+5mH1/E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR13MB6174
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 10:17:47AM +0100, Russell King (Oracle) wrote:
-> On Tue, Apr 11, 2023 at 10:56:26AM +0200, Oleksij Rempel wrote:
-> > On Fri, Apr 07, 2023 at 06:44:20PM +0100, Russell King (Oracle) wrote:
-> > > On Fri, Apr 07, 2023 at 04:25:57PM +0200, Andrew Lunn wrote:
-> > > > > +void ksz8_phylink_mac_link_up(struct ksz_device *dev, int port,
-> > > > > +			      unsigned int mode, phy_interface_t interface,
-> > > > > +			      struct phy_device *phydev, int speed, int duplex,
-> > > > > +			      bool tx_pause, bool rx_pause)
-> > > > > +{
-> > > > > +	struct dsa_switch *ds = dev->ds;
-> > > > > +	struct ksz_port *p;
-> > > > > +	u8 ctrl = 0;
-> > > > > +
-> > > > > +	p = &dev->ports[port];
-> > > > > +
-> > > > > +	if (dsa_upstream_port(ds, port)) {
-> > > > > +		u8 mask = SW_HALF_DUPLEX_FLOW_CTRL | SW_HALF_DUPLEX |
-> > > > > +			SW_FLOW_CTRL | SW_10_MBIT;
-> > > > > +
-> > > > > +		if (duplex) {
-> > > > > +			if (tx_pause && rx_pause)
-> > > > > +				ctrl |= SW_FLOW_CTRL;
-> > > > > +		} else {
-> > > > > +			ctrl |= SW_HALF_DUPLEX;
-> > > > > +			if (tx_pause && rx_pause)
-> > > > > +				ctrl |= SW_HALF_DUPLEX_FLOW_CTRL;
-> > > > > +		}
-> > > > > +
-> > > > > +		if (speed == SPEED_10)
-> > > > > +			ctrl |= SW_10_MBIT;
-> > > > > +
-> > > > > +		ksz_rmw8(dev, REG_SW_CTRL_4, mask, ctrl);
-> > > > > +
-> > > > > +		p->phydev.speed = speed;
-> > > > > +	} else {
-> > > > > +		const u16 *regs = dev->info->regs;
-> > > > > +
-> > > > > +		if (duplex) {
-> > > > > +			if (tx_pause && rx_pause)
-> > > > > +				ctrl |= PORT_FORCE_FLOW_CTRL;
-> > > > > +		} else {
-> > > > > +			if (tx_pause && rx_pause)
-> > > > > +				ctrl |= PORT_BACK_PRESSURE;
-> > > > > +		}
-> > > > > +
-> > > > > +		ksz_rmw8(dev, regs[P_STP_CTRL], PORT_FORCE_FLOW_CTRL |
-> > > > > +			 PORT_BACK_PRESSURE, ctrl);
-> > > 
-> > > So, I guess the idea here is to enable some form of flow control when
-> > > both tx and rx pause are enabled.
-> > > 
-> > > Here's a bunch of questions I would like answered before I give a tag:
-> > > 
-> > > 1) It looks like the device only supports symmetric pause?
-> > 
-> > This part of driver supports two family of switches: ksz88xx and
-> > ksz87xx.
-> > 
-> > According to KSZ8765CLX  datasheet:
-> > Per port, we control pause rx and tx with one bit:
-> >   Register 18 (0x12): Port 1 Control 2
-> >   Bit 4 - Force Flow Control
-> >     1 = Enables Rx and Tx flow control on the port, regardless of the AN result.
-> >     0 = Flow control is enabled based on the AN result (Default)
-> 
-> Is this more in the MAC register set than the PCS register set?
+On Mon, Apr 10, 2023 at 06:13:53PM -0700, Pavan Kumar Linga wrote:
+> From: Alan Brady <alan.brady@intel.com>
 
-I assume, it is MAC register, since it contains following bits:
-- Learning Disable
-- Receive Enable
-- Transmit Enable
-- Ingress VLAN Filtering
-- Enable 2 Queue Split of Tx Queue
+...
 
-> It's weird that it seems there's no way to force flow control
-> off.
+> diff --git a/drivers/net/ethernet/intel/idpf/idpf_ethtool.c b/drivers/net/ethernet/intel/idpf/idpf_ethtool.c
 
-In case autoneg is disabled, then it is kind of force off.
+...
 
-> If it's the PCS register set, then this is partly what the
-> permit_pause_to_mac boolean in pcs_config() should be used to
-> control - but that assumes that when !permit_pause_to_mac it
-> merely stops forwarding the flow control settings to the MAC.
-> 
-> If it's in the MAC register set, this should be controlled by
-> the MLO_PAUSE_AN bit in state->pause.
-> 
-> However, when those are false, we expect the tx_pause and
-> rx_pause in mac_link_up() to be respected by the hardware.
+> +/**
+> + * idpf_add_qstat_strings - Copy queue stat strings into ethtool buffer
+> + * @p: ethtool supplied buffer
+> + * @stats: stat definitions array
+> + * @type: stat type
+> + * @idx: stat idx
+> + *
+> + * Format and copy the strings described by the const static stats value into
+> + * the buffer pointed at by p.
+> + *
+> + * The parameter @stats is evaluated twice, so parameters with side effects
+> + * should be avoided. Additionally, stats must be an array such that
+> + * ARRAY_SIZE can be called on it.
+> + */
+> +#define idpf_add_qstat_strings(p, stats, type, idx) \
+> +	__idpf_add_qstat_strings(p, stats, ARRAY_SIZE(stats), type, idx)
 
-In case advertisement is synced with tx_pause/rx_pause, it will be
-accidentally in sync. In case autoneg is disabled, then it is respected.
-Some of KSZ8765CLX ports are 100baseFX ports - in this case Aneg seems
-to be not used and Force Flow Control bit is really forcing on and off
-states.
+Hi Pavan, Hi Alan,
 
-> > Globally, pause tx and/or rx can be disabled:
-> > 
-> >   Register 3 (0x03): Global Control 1
-> >   Bit 5 - IEEE 802.3x Transmit Flow Control Disable
-> >     0 = Enables transmit flow control based on AN result.
-> >     1 = Will not enable transmit flow control regardless of the AN result.
-> >   Bit 4 - IEEE 802.3x Receive Flow Control Disable
-> >     0 = Enables receive flow control based on AN result.
-> >     1 = Will not enable receive flow control regardless of the AN result.
-> > 
-> > So, it is possible to configure the entire switch in SYNC or ASYNC mode
-> > only.
-> 
-> Well, that's a very strange setup. So basically we have no software
-> control over manually setting the flow control, and we must use
-> the hardware to pass the AN result to the MAC to have everything
-> configured correctly.
+FWIIW, I think __idpf_add_qstat_strings() could be a function.
+It would give some type checking. And avoid possible aliasing of inputs.
+Basically, I think functions should be used unless there is a reason not to.
 
-Not sure if HW will advertise proper configuration if one of this global
-bits is set to 0. Probably it will need SW assistance to set it right.
-
-> > Still not sure what role plays autoneg in this configuration:
-> > 
-> >   Register 55 (0x37): Port 3 Control 7 (only for ports 3 and 4)
-> >   Bits 5 - 4 - Advertised_Flow_Control _Capability
-> >     00 = No pause
-> >     01 = Symmetric PAUSE
-> >     10 = Asymmetric PAUSE
-> >     11 = Both Symmetric PAUSE and Asymmetric
-> > 
-> > According to this bits, it is possible to announce both Symmetric
-> > and Asymmetric PAUSE, but will the switch enable asymmetric mode
-> > properly if link partner advertise asymmetric too?
-> 
-> These two bits correspond directly with:
-> ETHTOOL_LINK_MODE_Pause_BIT (for bit 4)
-> ETHTOOL_LINK_MODE_Asym_Pause_BIT (for bit 5)
-> 
-> IEEE 802.3 has a table in it of the possible resolutions given the
-> advertisement from both ends. In the case of advertising both, then
-> the resolutions can be:
-> - Pause disabled
-> - Asymmetric pause towards local device (rx enabled, tx disabled)
-> - Symmetric pause (rx and tx enabled)
-> 
-> It is the responsibility of both ends of the link to implement the
-> decoding as per 802.3 table 28B-3.
-> 
-> Since we can't manually control the tx and rx pause enables, I think
-> the only sensible way forward with this would be to either globally
-> disable pause on the device, and not report support for any pause
-> modes, or report support for all pause modes, advertise '11' and
-> let the hardware control it (which means the ethtool configuration
-> for pause would not be functional.)
-
-Do it make sense to make it conditional, depending on global switch
-configuration and PHY integrated in the port - 100BaseT vs 100BaseFX?
-
-> This needs to be commented in the driver so that in the future we
-> remember why this has been done.
-> 
-> Maybe Andrew and/or Vladimir also have an opinion to share about the
-> best approach here?
-
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+...
