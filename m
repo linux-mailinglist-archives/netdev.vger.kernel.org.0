@@ -2,121 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C94F86DDE42
-	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 16:41:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85D326DDE6C
+	for <lists+netdev@lfdr.de>; Tue, 11 Apr 2023 16:47:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229484AbjDKOlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 10:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
+        id S230101AbjDKOrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 10:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbjDKOlT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 10:41:19 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 425ABE7C
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:41:18 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id ca18e2360f4ac-760a029ed4fso389539f.0
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:41:18 -0700 (PDT)
+        with ESMTP id S230088AbjDKOrv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 10:47:51 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A3B6122
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:47:47 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id t14so10614797lft.7
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 07:47:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112; t=1681224077; x=1683816077;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=n/FnNe6gGHiYX4mW0URPcwZFPNG4duBkLOZamx4qtC4=;
-        b=xmJtVtjgPQmT1ogKqCCR1Mio/dOc/kXdrdryozEgU+EUOo596wfHrTRTpe58rCU+ck
-         DtONu+tCp87Tm63513IkgyHJTOUSSVTG9146W0SssgEs97XSIhO8MFCwCngI2hkqbGir
-         lGb2G/RpF8PzKUyX4YuF02wDZl4MVDneAb/kmdnib1csj4qo/zegf4p8LklnUubS+/Rt
-         5eD4ijI15YvqAEnkts/9QjdNCM0WK9rs/gwVxblUmqF7QxYdgRU9ngZDCUivprys06TQ
-         jGxhvCbhJ5zieMdk9AmZPqohfZk/MLWJbkEwoHuQoFud0DXFRxog7iZZY7vRNU3Z/F6Q
-         NSVw==
+        d=gmail.com; s=20210112; t=1681224465;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=TtALlpw22r66XpgLquDohdDaRxrp/OIiA1vy5tXnrrA=;
+        b=dxdftokd38in2cfZz8838QQ48JyiLDHlJNJq5otIuBieLnnQfL1tn6/WiGFgCfu23G
+         WEH8X+c1GnI3vD7l+WuxzieHiMdm4JrJPeLYdewAK/nbOWGDgZD3jALrOVjW7zRxWu8W
+         dPsGbrO9iVbZyDwUVJjSCDpaOKJa7qULFUNpzdIWnqzQJSheUqL17wF/+OvweoamWCo9
+         IeDYIOcn8buTwQf1WwkN86UvghU8gDU1wGkv224A2fecvNnMlY/GlIGwR4B6P+Obr3d6
+         h6NC8QKFmrHYCY3FbuqpU5NGaATkGzOw6UWF5/TEyXGaJLkUMNCD4DWHPgg5qz/sdBEg
+         0DgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681224077; x=1683816077;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=n/FnNe6gGHiYX4mW0URPcwZFPNG4duBkLOZamx4qtC4=;
-        b=EkAGickBAsNselAreNdl2IZclB9XqRpkr39Tm7QAuY1DeSdJz9FoVsolg9lqiXgM5h
-         cQ4XEJnfoAUclRr8/2yGG3Y0QqeIZ4fsn+bIad+jM/snNJ19bt59NwpJk3USivy70jn6
-         +JOLnmyw40Op4xpjs/5v3hhNWZsYXrMyIyWXwCx1bF2kNxqwalxOW3bKydv3Fl0Y+UV8
-         epYOm8NXvSji3kQ+jVY11QHI5MKTRfDaLhkU9jE5q6a8xctOHZYvtFdXlHeX0kvkLPWP
-         DmFCmjnt5P1WRsuUmBchsah+WHPMD7n3UD4DiLuKq0h1HT9qnpOWIU0LiHmitWIJRWJE
-         Kguw==
-X-Gm-Message-State: AAQBX9cG5yH95HMnjoBX5144oCHUHKA1hEaTWuiclstszA6HGFySIb2A
-        DBduqobEbStYQVq4Q4Yz1z8teg==
-X-Google-Smtp-Source: AKy350bqIet+jHeVmNP8eeAveySST9WhBTl17M1vbaTgtBupFCT/VKMmZh0+xkyEsvrPTU6+2a+O3w==
-X-Received: by 2002:a05:6602:160f:b0:758:6517:c621 with SMTP id x15-20020a056602160f00b007586517c621mr9503137iow.2.1681224077431;
-        Tue, 11 Apr 2023 07:41:17 -0700 (PDT)
-Received: from [192.168.1.94] ([96.43.243.2])
-        by smtp.gmail.com with ESMTPSA id a63-20020a021642000000b00406356481casm4165714jaa.122.2023.04.11.07.41.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Apr 2023 07:41:17 -0700 (PDT)
-Message-ID: <67831406-8d2f-feff-f56b-d0f002a95d96@kernel.dk>
-Date:   Tue, 11 Apr 2023 08:41:15 -0600
+        d=1e100.net; s=20210112; t=1681224465;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TtALlpw22r66XpgLquDohdDaRxrp/OIiA1vy5tXnrrA=;
+        b=VPoNDZh9sV8AJ8W0ButcRW/zrjH9KFlE7WTIG692YqpJ/s3RtGXs8GZqUGPcsAzdCj
+         oCxDPMLAUevj4xutEx1Eaqgjnj1jjIFXr0C4q5VNGTpgBi+4/vLn7cPs6JlwuMU3LVQ2
+         cqtiIlUZgCP3QTJD6EUMV/2rB3vHtMGzSAYPtTqaTOXEVXk0v8rTFAoeyWulKVq0KrmO
+         zpevWwcWzVL1Ae3z0gjH8UdR4fqXrH8PFko2JkS6OTIxPvxCtdBMr0aPGpPoNghoZd9e
+         q0sQslZIWvVjyrTqqUh6w+OGtv/Ma6uqLzS6f5rgwWTeQjSAi0Osj5ChUEMtFntBYD+3
+         WEvg==
+X-Gm-Message-State: AAQBX9cSZgN/7V/QWQj1Y5O4pN4R9WuCby4fkGOdrk/WH59Why8ZU9ct
+        SdBhNQMI3ydrfPeIQp3VoU1vqN53XlKJKuSP/hcGzB5d/lbOig==
+X-Google-Smtp-Source: AKy350YeN/FyK/YDnXHk0gwgN+LNDwpm5ynPCnKOcyZ7fXM0SK9XYSRvXiYA6PQxr+J5AoeL3oYGi8zvHDtZHZ2Ra4s=
+X-Received: by 2002:a19:ac07:0:b0:4ec:8aff:847f with SMTP id
+ g7-20020a19ac07000000b004ec8aff847fmr1888891lfc.12.1681224465282; Tue, 11 Apr
+ 2023 07:47:45 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
-Content-Language: en-US
-To:     David Ahern <dsahern@kernel.org>, Breno Leitao <leitao@debian.org>
-Cc:     Willem de Bruijn <willemb@google.com>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, kuba@kernel.org, asml.silence@gmail.com,
-        leit@fb.com, edumazet@google.com, pabeni@redhat.com,
-        davem@davemloft.net, dccp@vger.kernel.org, mptcp@lists.linux.dev,
-        linux-kernel@vger.kernel.org, willemdebruijn.kernel@gmail.com,
-        matthieu.baerts@tessares.net, marcelo.leitner@gmail.com
-References: <20230406144330.1932798-1-leitao@debian.org>
- <CA+FuTSeKpOJVqcneCoh_4x4OuK1iE0Tr6f3rSNrQiR-OUgjWow@mail.gmail.com>
- <ZC7seVq7St6UnKjl@gmail.com>
- <CA+FuTSf9LEhzjBey_Nm_-vN0ZjvtBSQkcDWS+5uBnLmr8Qh5uA@mail.gmail.com>
- <e576f6fe-d1f3-93cd-cb94-c0ae115299d8@kernel.org>
- <ZDVLyi1PahE0sfci@gmail.com>
- <75e3c434-eb8b-66e5-5768-ca0f906979a1@kernel.org>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <75e3c434-eb8b-66e5-5768-ca0f906979a1@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+From:   Aleksey Shumnik <ashumnik9@gmail.com>
+Date:   Tue, 11 Apr 2023 17:47:34 +0300
+Message-ID: <CAJGXZLgcH6bjmj7YR-hAWpEQW1CPjEcOdMN01hqsVk18E4ScZQ@mail.gmail.com>
+Subject: [BUG] In af_packet.c::dev_parse_header() skb.network_header does not
+ point to the network header
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, waltje@uwalt.nl.mugnet.org,
+        gw4pts@gw4pts.ampr.org, xeb@mail.ru, kuznet@ms2.inr.ac.ru,
+        rzsfl@rz.uni-sb.de
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/11/23 8:36?AM, David Ahern wrote:
-> On 4/11/23 6:00 AM, Breno Leitao wrote:
->> I am not sure if avoiding io_uring details in network code is possible.
->>
->> The "struct proto"->uring_cmd callback implementation (tcp_uring_cmd()
->> in the TCP case) could be somewhere else, such as in the io_uring/
->> directory, but, I think it might be cleaner if these implementations are
->> closer to function assignment (in the network subsystem).
->>
->> And this function (tcp_uring_cmd() for instance) is the one that I am
->> planning to map io_uring CMDs to ioctls. Such as SOCKET_URING_OP_SIOCINQ
->> -> SIOCINQ.
->>
->> Please let me know if you have any other idea in mind.
-> 
-> I am not convinced that this io_uring_cmd is needed. This is one
-> in-kernel subsystem calling into another, and there are APIs for that.
-> All of this set is ioctl based and as Willem noted a little refactoring
-> separates the get_user/put_user out so that in-kernel can call can be
-> made with existing ops.
+Dear maintainers,
 
-How do you want to wire it up then? We can't use fops->unlocked_ioctl()
-obviously, and we already have ->uring_cmd() for this purpose.
+I wrote the ip6gre_header_parser() function in ip6_gre.c, the
+implementation is similar to ipgre_header_parser() in ip_gre.c. (By
+the way, it is strange that this function is not implemented in
+ip6_gre.c)
+The implementation of the function is presented below.
+It should parse the ip6 header and take the source address and its
+length from there. To get a pointer to the ip header, it is logical to
+use skb_network_header(), but it does not work correctly and returns a
+pointer to payload (skb.data).
+Also in ip_gre.c::ipgre_header_parser() skb_mac_header() returns a
+pointer to the ip header and everything works correctly (although it
+seems that this is also an error, because the pointer to the mac
+header should have been returned, and logically the
+skb_network_header() function should be applied), but in ip6_gre.c all
+skb_mac_header(), skb_network_header(), skb_tranport_header() returns
+a pointer to payload (skb.data).
+This function is called when receiving a packet and parsing it in
+af_packet.c::packet_rcv() in dev_parse_header().
+The problem is that there is no way to accurately determine the
+beginning of the ip header.
 
-I do think the right thing to do is have a common helper that returns
-whatever value you want (or sets it), and split the ioctl parts into a
-wrapper around that that simply copies in/out as needed. Then
-->uring_cmd() could call that, or you could some exported function that
-does supports that.
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index 90565b8..0d0c37b 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -1404,8 +1404,16 @@ static int ip6gre_header(struct sk_buff *skb,
+struct net_device *dev,
+  return -t->hlen;
+ }
 
-This works for the basic cases, though I do suspect we'll want to go
-down the ->uring_cmd() at some point for more advanced cases or cases
-that cannot sanely be done in an ioctl fashion.
++static int ip6gre_header_parse(const struct sk_buff *skb, unsigned char *haddr)
++{
++ const struct ipv6hdr *ipv6h = (const struct ipv6hdr *) skb_mac_header(skb);
++ memcpy(haddr, &ipv6h->saddr, 16);
++ return 16;
++}
++
+ static const struct header_ops ip6gre_header_ops = {
+  .create = ip6gre_header,
++ .parse = ip6gre_header_parse,
+ };
 
--- 
-Jens Axboe
+ static const struct net_device_ops ip6gre_netdev_ops = {
 
+Would you answer whether this behavior is an error and why the
+behavior in ip_gre.c and ip6_gre.c differs?
+
+Regards,
+Aleksey
