@@ -2,68 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABCBC6DF683
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:09:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B770B6DF6AA
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:13:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229609AbjDLNJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 09:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60028 "EHLO
+        id S231459AbjDLNNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 09:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbjDLNJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:09:06 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0284558B
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:09:03 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id e9e14a558f8ab-329577952c5so19105ab.1
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:09:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681304943; x=1683896943;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cSKuOzO6pwUFqNBvJhzVjAAY5o2mptpHeIvx7F4mxZo=;
-        b=iIcuqvQOSxN1lJfcn+w5lc8uF0VCNBeUFSdPMoiI13aDm8VRf6SelE1vPNJSbEtXSn
-         NhEbQaWCZX55AfVp5/tZJeWoF1pI9fE8xapJbJsSNu0hzZq1FbqhsscDmlH9hUibFZgK
-         8xHbqjodFQvQ0VBUE5zdRAj8Fk6z4kGzJGf4Zcd7INFc1aNah6axCR4GUaVE06aDzYG7
-         7FnvqdWHS5QqMw2Eq2MTgmN+E+A/a4WoqA2cE2IshAHVg5l0m0i8PeDu9hUOx8xK57cM
-         XwBcU3+aiVTH2sJWgJ07Z3FcFxnesDudA0bSBoHRv3sW9BF2hvvgrTYEJ7ljhcM4mZa8
-         D8PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681304943; x=1683896943;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cSKuOzO6pwUFqNBvJhzVjAAY5o2mptpHeIvx7F4mxZo=;
-        b=k9V8vtj+d9V9X4Lxasn2cw49b+iYFY9ro+8gddBEuUqhMY9PNJniHQaV1CTkoH4Kso
-         BVBVC6Px6hKMOjxHucSrZZjJICtY792+WtKNspdmaUUgMRLLax/ow852joQDqAMzM6A5
-         dyfAlPSSEaY/MN3VGgnL4QUhO92ebWsqORao6aPlcjuCzcYk3IvoAPOF4oqgUXt0dMxj
-         FREN+ZrGI1x7Nhw/dvxK9CL5gIGgnm6iVBpLWMkSSd3B6/bb3FDev8a8CS4klOtMRGpQ
-         d685k1vYh2NwQ+2hXsp94TxyJVqlUvmlnZBif3rEWt2M+Ou14A9vFhndSapltVFQLzyj
-         HMmw==
-X-Gm-Message-State: AAQBX9d4aJxa7dHFR8DdZqDW5MHnYj3jrnytsps4J9CpsjMq0uVpxweh
-        Y3ery3oHTqknLjLfKoJcDf7YkP0BBXor8gv2pV5fmzPMLOIPXbV5RwbDrQ==
-X-Google-Smtp-Source: AKy350bhm1l1vyBnu/ZvrQWbtaGaWcZaj30INhq9Z7z2EWYrwdiJjtAPxi3w6fqJ+7LZAtiP9kDyaot99BWWjIP+F/I=
-X-Received: by 2002:a05:6e02:184c:b0:329:3f69:539e with SMTP id
- b12-20020a056e02184c00b003293f69539emr202804ilv.2.1681304942943; Wed, 12 Apr
- 2023 06:09:02 -0700 (PDT)
+        with ESMTP id S230187AbjDLNM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:12:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571E27D9C
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:11:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681305112;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1D46JFxA1D4wfFupMcnYoarGsIZHFjfP9t+uj+x7BJI=;
+        b=JBbqP9W1EOQi8qk70fcAAK9RX7cuIAdGYRRsndJKEJqvgDP3bP3Vxb6+BcPHvPsXUMatek
+        hnLhOjKkylVXsoT5TDcKBUVpWOl0yBYKAc6sb9eHtoZkVC9AA1GirB4D/GCU6JxKPJGkFl
+        o5HdYxAME6q1zREWwjv0n4hRQzNZ6Ak=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-387-ZX23SFyfND67XerYwxVyWQ-1; Wed, 12 Apr 2023 09:11:46 -0400
+X-MC-Unique: ZX23SFyfND67XerYwxVyWQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 875253C0F66C;
+        Wed, 12 Apr 2023 13:11:46 +0000 (UTC)
+Received: from calimero.vinschen.de (unknown [10.39.192.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E38C52166B29;
+        Wed, 12 Apr 2023 13:11:45 +0000 (UTC)
+Received: by calimero.vinschen.de (Postfix, from userid 500)
+        id B20E9A80BFF; Wed, 12 Apr 2023 15:11:44 +0200 (CEST)
+Date:   Wed, 12 Apr 2023 15:11:44 +0200
+From:   Corinna Vinschen <vinschen@redhat.com>
+To:     netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        alexandre.torgue@foss.st.com, Jose Abreu <joabreu@synopsys.com>
+Subject: Re: [PATCH net-next] net: stmmac: propagate feature flags to vlan
+Message-ID: <ZDauEGjbcT6uPfCp@calimero.vinschen.de>
+Mail-Followup-To: netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        alexandre.torgue@foss.st.com, Jose Abreu <joabreu@synopsys.com>
+References: <20230411130028.136250-1-vinschen@redhat.com>
 MIME-Version: 1.0
-References: <20230412130308.1202254-1-edumazet@google.com>
-In-Reply-To: <20230412130308.1202254-1-edumazet@google.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Wed, 12 Apr 2023 15:08:51 +0200
-Message-ID: <CANP3RGd8TgBeTpiMPWOGTNOfR6JoUqpgTejQhfpZCH9guS0_Gg@mail.gmail.com>
-Subject: Re: [PATCH net] udp6: fix potential access to stale information
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, lena wang <lena.wang@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230411130028.136250-1-vinschen@redhat.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,64 +64,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 3:03=E2=80=AFPM Eric Dumazet <edumazet@google.com> =
-wrote:
->
-> lena wang reported an issue caused by udpv6_sendmsg()
-> mangling msg->msg_name and msg->msg_namelen, which
-> are later read from ____sys_sendmsg() :
->
->         /*
->          * If this is sendmmsg() and sending to current destination addre=
-ss was
->          * successful, remember it.
->          */
->         if (used_address && err >=3D 0) {
->                 used_address->name_len =3D msg_sys->msg_namelen;
->                 if (msg_sys->msg_name)
->                         memcpy(&used_address->name, msg_sys->msg_name,
->                                used_address->name_len);
->         }
->
-> udpv6_sendmsg() wants to pretend the remote address family
-> is AF_INET in order to call udp_sendmsg().
->
-> A fix would be to modify the address in-place, instead
-> of using a local variable, but this could have other side effects.
->
-> Instead, restore initial values before we return from udpv6_sendmsg().
->
-> Fixes: c71d8ebe7a44 ("net: Fix security_socket_sendmsg() bypass problem."=
-)
-> Reported-by: lena wang <lena.wang@mediatek.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Maciej =C5=BBenczykowski <maze@google.com>
-> ---
->  net/ipv6/udp.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
->
-> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> index 9fb2f33ee3a76a09bbe15a9aaf1371a804f91ee2..a675acfb901d102ce56563b1d=
-50ae827d9e04859 100644
-> --- a/net/ipv6/udp.c
-> +++ b/net/ipv6/udp.c
-> @@ -1395,9 +1395,11 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *=
-msg, size_t len)
->                         msg->msg_name =3D &sin;
->                         msg->msg_namelen =3D sizeof(sin);
->  do_udp_sendmsg:
-> -                       if (ipv6_only_sock(sk))
-> -                               return -ENETUNREACH;
-> -                       return udp_sendmsg(sk, msg, len);
-> +                       err =3D ipv6_only_sock(sk) ?
-> +                               -ENETUNREACH : udp_sendmsg(sk, msg, len);
-> +                       msg->msg_name =3D sin6;
-> +                       msg->msg_namelen =3D addr_len;
-> +                       return err;
->                 }
->         }
->
-> --
-> 2.40.0.577.gac1e443424-goog
+On Apr 11 15:00, Corinna Vinschen wrote:
+> stmmac_dev_probe doesn't propagate feature flags to VLANs.  So features
+> like TX offloading don't correspond with the general features and it's
+> not possible to manipulate features via ethtool -K to affect VLANs.
 
-Reviewed-by: Maciej =C5=BBenczykowski <maze@google.com>
+On second thought, I wonder if this shouldn't go into net, rather then
+net-next?  Does that make sense? And, do I have to re-submit, if so?
+
+
+Thanks,
+Corinna
+
