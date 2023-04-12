@@ -2,76 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D8BC6DF897
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 16:34:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 527216DF87F
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 16:30:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231348AbjDLOeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 10:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
+        id S230148AbjDLOau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 10:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231621AbjDLOeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 10:34:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD1176A6;
-        Wed, 12 Apr 2023 07:34:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A36D62D62;
-        Wed, 12 Apr 2023 14:34:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86329C433D2;
-        Wed, 12 Apr 2023 14:34:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681310047;
-        bh=S65Xlm1hN6CYrLBcE2DMKmo6xG37aMTKFhLPmZYoUd4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=J8C8cu4w5m8bhYIFV3aa2elYLWYyGgFJDRyP89gDm9u83ydwJiSecHPWNsBe1IRTm
-         3SE14NZF6WvM4lydHt0chYJOygyWE1/vPlfRU2/cZsaEajZaJdqGvauqyHweGFXMEU
-         9SI5xRQf8XlE7VHEe1s4GyPGJnBijw/Y9926zaj/7rPz5OtfHGZfboXyn+eGs1g4KE
-         iucofs4HLo/9+14DPItgvfcxITqhhIIFpiMH4LD/5QAW6htMT4qtAOd3Tl5HP6vDjj
-         KG5e/yD7NlanyRYYVq/cDur6Ru+yFCHQwVDEeQzZrB+/5yvjJSppJeHjnht9i0RGff
-         MuNGjN+eTGQAA==
-Date:   Wed, 12 Apr 2023 07:34:06 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Cc:     ivecera@redhat.com, netdev@vger.kernel.org, mschmidt@redhat.com,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        pabeni@redhat.com, open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] bnxt_en: Allow to set switchdev mode
- without existing VFs
-Message-ID: <20230412073406.73b60a9c@kernel.org>
-In-Reply-To: <CADFzAK-ym-LH_suYgHn+wZvh2NGHmiGvRrRxNSa8CbXP=edS9g@mail.gmail.com>
-References: <20230411120443.126055-1-ivecera@redhat.com>
-        <CACKFLimBqwsX3tsnUp9svqSJHx57XEAu3kQ8Hj1Pq0+QS1uGsg@mail.gmail.com>
-        <CADFzAK-ym-LH_suYgHn+wZvh2NGHmiGvRrRxNSa8CbXP=edS9g@mail.gmail.com>
+        with ESMTP id S229635AbjDLOas (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 10:30:48 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CA6170A
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 07:30:45 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id gb34so29532009ejc.12
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 07:30:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dectris.com; s=google; t=1681309844; x=1683901844;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hV5Ne4/31d5bZz3cd3WidbbAZPsQ2K5R5VgJmtESd3c=;
+        b=Ef3ZNyIwfn2tgIn5VYdodtKoHofTHBF48vSKjvDgvzzyd7icYtwHpA8gR9eWcXBzE4
+         uMsgHSi7oGwf2Z5CYEWmvPh2f1WFFVM2zu98iJObrG71TI0vefPpJXtdZ4g0+8pizmJa
+         7kEP6uY+ScqoziGvRMQWQQ2rjDj/GaJnHz3qA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681309844; x=1683901844;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hV5Ne4/31d5bZz3cd3WidbbAZPsQ2K5R5VgJmtESd3c=;
+        b=sPcUyjKGfcgbt72olhotK9fdszwBCMmcIEIQg4LtZ2ZtXpt1qx4GAKKcxSU3HouZsV
+         aeAWBEMbgqvC11Pz+nVbQpSVdF8YycOKVXGeuyRkU5fxy0+XHcUwqbmCHF4VqJNF6xrG
+         b9tFK8drZRJE4xaWhnjKYlleidnNCdQaJjg01WZbrQsJK5tZhEWfkIT3IHsYJ9OiD3ye
+         Tih788h8BS5G//NNdh3Qd6R4hltivxToz53YpszlxIoereBWmMm7hLKSHrgtzj8TGfPB
+         xitRW/G+FgMQMS6jNKfqVz87/uFlQl4N29UtD9eawa5mnS6FaJgxzcz5WkckTKCMnU/P
+         aIdQ==
+X-Gm-Message-State: AAQBX9e8Orz3u4d5XCsFIm23RP94BT0HQnAeRw9vTjMp+fbQRnI3/ept
+        eYTxuTkdnpSRH4DAN47tSWT0KS+a2jOOztkKKF0CVw==
+X-Google-Smtp-Source: AKy350Yt4SeQfT6MmpPED1unBq6lSFhE49tsPdIDsDUP8eL1G0arDIPgCt7yuQGlyQRpwnW9Oj6ijxAmPvq0B8EgHvI=
+X-Received: by 2002:a17:907:d310:b0:931:6f5b:d27d with SMTP id
+ vg16-20020a170907d31000b009316f5bd27dmr1417968ejc.0.1681309843846; Wed, 12
+ Apr 2023 07:30:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230410120629.642955-1-kal.conley@dectris.com>
+ <20230410120629.642955-3-kal.conley@dectris.com> <CAJ8uoz0NczOxbs7xqwC4B9YDP5fN1oECBi53yHoaZbvTxcm_fg@mail.gmail.com>
+In-Reply-To: <CAJ8uoz0NczOxbs7xqwC4B9YDP5fN1oECBi53yHoaZbvTxcm_fg@mail.gmail.com>
+From:   Kal Cutter Conley <kal.conley@dectris.com>
+Date:   Wed, 12 Apr 2023 16:35:27 +0200
+Message-ID: <CAHApi-kp5FVfHm4tVObbOz7yu6o7PjaFLw8XgLB0OFY=pSuaKg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 2/4] xsk: Support UMEM chunk_size > PAGE_SIZE
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Apr 2023 23:17:55 +0530 Venkat Duvvuru wrote:
-> Acked-by: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+> > -       pool->unaligned = unaligned;
+> >         pool->frame_len = umem->chunk_size - umem->headroom -
+> >                 XDP_PACKET_HEADROOM;
+> > +       pool->unaligned = unaligned;
+>
+> nit: This change is not necessary.
 
-Michael, does this mean Broadcom is okay with the patch?
+Do you mind if we keep it? It makes the assignments better match the
+order in the struct declaration.
 
-> This electronic communication and the information and any files transmitted 
-> with it, or attached to it, are confidential and are intended solely for 
-> the use of the individual or entity to whom it is addressed and may contain 
-> information that is confidential, legally privileged, protected by privacy 
-> laws, or otherwise restricted from disclosure to anyone else. If you are 
-> not the intended recipient or the person responsible for delivering the 
-> e-mail to the intended recipient, you are hereby notified that any use, 
-> copying, distributing, dissemination, forwarding, printing, or copying of 
-> this e-mail is strictly prohibited. If you received this e-mail in error, 
-> please return the e-mail to the sender, delete it from your computer, and 
-> destroy any printed copy of it.
+> > -static void xp_check_dma_contiguity(struct xsk_dma_map *dma_map)
+> > +static void xp_check_dma_contiguity(struct xsk_dma_map *dma_map, u32 page_size)
+> >  {
+> >         u32 i;
+> >
+> > -       for (i = 0; i < dma_map->dma_pages_cnt - 1; i++) {
+> > -               if (dma_map->dma_pages[i] + PAGE_SIZE == dma_map->dma_pages[i + 1])
+> > +       for (i = 0; i + 1 < dma_map->dma_pages_cnt; i++) {
+>
+> I think the previous version is clearer than this new one.
 
-You must remove this footer.
+I like using `i + 1` since it matches the subscript usage. I'm used to
+writing it like this for SIMD code where subtraction may wrap if the
+length is unsigned, that doesn't matter in this case though. I can
+restore the old way if you want.
