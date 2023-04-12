@@ -2,249 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F6D66DE887
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 02:38:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89A726DE88D
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 02:41:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbjDLAiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 20:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
+        id S229693AbjDLAlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 20:41:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjDLAiC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 20:38:02 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8AD52134
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:
-        Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
-        Content-Disposition:In-Reply-To:References;
-        bh=2E8v5Hf8ehg+o5T3PX9YfzM4fwVvcJud+5jTfxBINVc=; b=FoDfbQijnp4W9CuKi7yoK5Coij
-        T1iYYyP23CIjJ2LsHRRGxEVVmu4n9wN34iBW5caCpEdtVvsZVotwXtgK4iOXNCDSYKcTwkncX+G4E
-        y6cmNpvSt3+L6dE9ILvloP1BCzwU8eW4BBem9BIn7CpVopapD+jZKW9dZgazFj6G/jEc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pmOUk-00A2PM-H9; Wed, 12 Apr 2023 02:37:54 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     shawnguo@kernel.org
-Cc:     s.hauer@pengutronix.de, Russell King <rmk+kernel@armlinux.org.uk>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        arm-soc <arm@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH] ARM: dts: vf610: ZII: Add missing phy-mode and fixed links
-Date:   Wed, 12 Apr 2023 02:37:46 +0200
-Message-Id: <20230412003746.2392518-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S229493AbjDLAlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 20:41:35 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3D6269F
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:41:34 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id o2-20020a17090a0a0200b00246da660bd2so2913312pjo.0
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:41:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1681260093; x=1683852093;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pkqCicjx+smQyHGqjeONsCB7LILWCSvWQoUWdPfQHok=;
+        b=xQ8LQU6kMNLscom96aiQD1J2xzd6Z71lGdShn954buKhBLeTmsl42i4kvOuncF/irr
+         xq+SBVKT3kQWCyU85FgXF7styHJ+fLtKfO5PRQTHOyrGIJcrUFuWQrLMY5njy8aMsKXz
+         GrrPJoZK85IKeVSQf1/5PoCaDbJRY3wELTgAx5o8q5Wad/xdf9hlpQe0wK5r+96BOPpH
+         mUQgasZh/TMUJle8qhhukcUH3DlBB+1lbZiz0LmPuCcqXlkIWtoxSPJmp04ag5mnbHxh
+         FdDQ8/votLWaHWnBc9Qh2tH5U1cLmZazZZYn8gsJuetkz7ZtwLZYAxwCCEsxJAtLA76X
+         p4wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681260093; x=1683852093;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=pkqCicjx+smQyHGqjeONsCB7LILWCSvWQoUWdPfQHok=;
+        b=PmFyl5ZhpvMPPxPGAdHZuhdInm3BNipqvUPWgLfoZdN05hi45D50FoIvt+oMhIn0RK
+         VVX7xjDuGnd7PGhkyYsLQHh3/JY1QGxf8P73kgfDwepJB3AH4rNXJYN1B/jpbek7JrLY
+         2wzIMjXAX5oB0Nq9ayAYpIKLLLVXYjYk5kIGHtY7/oPVl/DwwoFcnvu+aqq4sLEgxfcg
+         EldJPDNKBwjFL91AS5OioB41OFeZPHBE2WsdMkLXEHRVlK3sCswUGsr74fesPnRQQcol
+         DOZz0u/Jdbi4r+sEIjaEMGF5d/jzAQQJ49UIWyY2Fg6zNFGYdefnPKiEqHAMrEzGw6UB
+         pFQQ==
+X-Gm-Message-State: AAQBX9ctM3CwJUNlreqnEopLRBWbu8wTv1pMVVNp0wkR/v/hjiAt3gZX
+        M+XvxeJQ3GAT+Gi62JxVJcCZ0g==
+X-Google-Smtp-Source: AKy350bIL2yfrlVq2FOEL9kyVSkMELIKC/zeO80Jb3FFy1+wncCpDU/aSU9hqKlj0VlKAeIFlKbAPA==
+X-Received: by 2002:a17:902:f394:b0:1a5:2da5:b1f9 with SMTP id f20-20020a170902f39400b001a52da5b1f9mr891046ple.26.1681260093492;
+        Tue, 11 Apr 2023 17:41:33 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id iw22-20020a170903045600b001a1add0d616sm7550889plb.161.2023.04.11.17.41.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Apr 2023 17:41:33 -0700 (PDT)
+Date:   Tue, 11 Apr 2023 17:41:31 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Andy Roulin <aroulin@nvidia.com>
+Cc:     Francesco Ruggeri <fruggeri@arista.com>, netdev@vger.kernel.org
+Subject: Re: neighbour netlink notifications delivered in wrong order
+Message-ID: <20230411174131.634e35d3@hermes.local>
+In-Reply-To: <78825e0b-d157-5b26-4263-8fd367d2fb2c@nvidia.com>
+References: <20220606230107.D70B55EC0B30@us226.sjc.aristanetworks.com>
+        <ed6768c1-80b8-aee2-e545-b51661d49336@nvidia.com>
+        <20220606201910.2da95056@hermes.local>
+        <CA+HUmGidY4BwEJ0_ArRRUKY7BkERsKomYnOwjPEayNUaS8wv=w@mail.gmail.com>
+        <20220607103218.532ff62c@hermes.local>
+        <CA+HUmGjmq4bMOEg50nQYHN_R49aEJSofxUhpLbY+LG7vK2fUdw@mail.gmail.com>
+        <78825e0b-d157-5b26-4263-8fd367d2fb2c@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DSA framework has got more picky about always having a phy-mode
-for the CPU port. The Vybrid FEC is a Fast Ethrnet using RMII.
+On Tue, 7 Jun 2022 20:49:40 -0700
+Andy Roulin <aroulin@nvidia.com> wrote:
 
-Additionally, the cpu label has never actually been used in the
-binding, so remove it.
+> On 6/7/22 1:03 PM, Francesco Ruggeri wrote:
+> > On Tue, Jun 7, 2022 at 10:32 AM Stephen Hemminger
+> > <stephen@networkplumber.org> wrote:  
+> >>
+> >> On Tue, 7 Jun 2022 09:29:45 -0700
+> >> Francesco Ruggeri <fruggeri@arista.com> wrote:
+> >>  
+> >>> On Mon, Jun 6, 2022 at 8:19 PM Stephen Hemminger
+> >>> <stephen@networkplumber.org> wrote:  
+> >>>>
+> >>>> On Mon, 6 Jun 2022 19:07:04 -0700
+> >>>> Andy Roulin <aroulin@nvidia.com> wrote:
+> >>>>  
+> >>>>> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> >>>>> index 54625287ee5b..a91dfcbfc01c 100644
+> >>>>> --- a/net/core/neighbour.c
+> >>>>> +++ b/net/core/neighbour.c
+> >>>>> @@ -2531,23 +2531,19 @@ static int neigh_fill_info(struct sk_buff *skb,
+> >>>>> struct neighbour *neigh,
+> >>>>>        if (nla_put(skb, NDA_DST, neigh->tbl->key_len, neigh->primary_key))
+> >>>>>                goto nla_put_failure;
+> >>>>>
+> >>>>> -     read_lock_bh(&neigh->lock);
+> >>>>>        ndm->ndm_state   = neigh->nud_state;  
+> >>>>
+> >>>> Accessing neighbor state outside of lock is not safe.
+> >>>>
+> >>>> But you should be able to use RCU here??  
+> >>>
+> >>> I think the patch removes the lock from neigh_fill_info but it then uses it
+> >>> to protect all calls to neigh_fill_info, so the access should still be safe.
+> >>> In case of __neigh_notify the lock also extends to protect rtnl_notify,
+> >>> guaranteeing that the state cannot be changed while the notification
+> >>> is in progress (I assume all state changes are protected by the same lock).
+> >>> Andy, is that the idea?  
+> 
+> Yes correct.
+> 
+> >>
+> >> Neigh info is already protected by RCU, is per neighbour reader/writer lock
+> >> still needed at all?  
+> > 
+> > The goal of the patch seems to be to make changing a neighbour's state and
+> > delivering the corresponding notification atomic, in order to prevent
+> > reordering of notifications. It uses the existing lock to do so.
+> > Can reordering be prevented if the lock is replaced with rcu?  
+> 
+> Yes that's the goal of the patch. I'd have to look in more details if 
+> there's a better solution with RCU.
 
-Lastly, for DSA links between switches, add a fixed-link node
-indicating the expected speed/duplex of the link.
-
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- arch/arm/boot/dts/vf610-zii-cfu1.dts      |  2 +-
- arch/arm/boot/dts/vf610-zii-dev-rev-b.dts |  2 +-
- arch/arm/boot/dts/vf610-zii-dev-rev-c.dts | 10 ++++++++-
- arch/arm/boot/dts/vf610-zii-scu4-aib.dts  | 26 ++++++++++++++++++++++-
- arch/arm/boot/dts/vf610-zii-spb4.dts      |  2 +-
- arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts  |  2 +-
- arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts |  2 +-
- 7 files changed, 39 insertions(+), 7 deletions(-)
-
-diff --git a/arch/arm/boot/dts/vf610-zii-cfu1.dts b/arch/arm/boot/dts/vf610-zii-cfu1.dts
-index 96495d965163..b7bb2d6b3721 100644
---- a/arch/arm/boot/dts/vf610-zii-cfu1.dts
-+++ b/arch/arm/boot/dts/vf610-zii-cfu1.dts
-@@ -202,7 +202,7 @@ port@5 {
- 
- 				port@6 {
- 					reg = <6>;
--					label = "cpu";
-+					phy-mode = "rev-rmii";
- 					ethernet = <&fec1>;
- 
- 					fixed-link {
-diff --git a/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts b/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts
-index 6280c5e86a12..3f1bc7fc8526 100644
---- a/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts
-+++ b/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts
-@@ -75,7 +75,7 @@ fixed-link {
- 
- 					port@6 {
- 						reg = <6>;
--						label = "cpu";
-+						phy-mode = "rev-rmii";
- 						ethernet = <&fec1>;
- 
- 						fixed-link {
-diff --git a/arch/arm/boot/dts/vf610-zii-dev-rev-c.dts b/arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
-index c00d39562a10..811745077d2b 100644
---- a/arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
-+++ b/arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
-@@ -44,7 +44,7 @@ ports {
- 
- 					port@0 {
- 						reg = <0>;
--						label = "cpu";
-+						phy-mode = "rev-rmii";
- 						ethernet = <&fec1>;
- 
- 						fixed-link {
-@@ -82,6 +82,10 @@ switch0port10: port@10 {
- 						label = "dsa";
- 						phy-mode = "xaui";
- 						link = <&switch1port10>;
-+						fixed-link {
-+							speed = <10000>;
-+							full-duplex;
-+						};
- 					};
- 				};
- 
-@@ -174,6 +178,10 @@ switch1port10: port@10 {
- 						label = "dsa";
- 						phy-mode = "xaui";
- 						link = <&switch0port10>;
-+						fixed-link {
-+							speed = <10000>;
-+							full-duplex;
-+						};
- 					};
- 				};
- 				mdio {
-diff --git a/arch/arm/boot/dts/vf610-zii-scu4-aib.dts b/arch/arm/boot/dts/vf610-zii-scu4-aib.dts
-index 7b3276cd470f..7959307f7d13 100644
---- a/arch/arm/boot/dts/vf610-zii-scu4-aib.dts
-+++ b/arch/arm/boot/dts/vf610-zii-scu4-aib.dts
-@@ -59,7 +59,7 @@ ports {
- 
- 					port@0 {
- 						reg = <0>;
--						label = "cpu";
-+						phy-mode = "rev-rmii";
- 						ethernet = <&fec1>;
- 
- 						fixed-link {
-@@ -115,6 +115,10 @@ switch0port10: port@10 {
- 						link = <&switch1port10
- 							&switch3port10
- 							&switch2port10>;
-+						fixed-link {
-+							speed = <10000>;
-+							full-duplex;
-+						};
- 					};
- 				};
- 			};
-@@ -156,6 +160,10 @@ switch1port9: port@9 {
- 						phy-mode = "xgmii";
- 						link = <&switch3port10
- 							&switch2port10>;
-+						fixed-link {
-+							speed = <10000>;
-+							full-duplex;
-+						};
- 					};
- 
- 					switch1port10: port@10 {
-@@ -163,6 +171,10 @@ switch1port10: port@10 {
- 						label = "dsa";
- 						phy-mode = "xgmii";
- 						link = <&switch0port10>;
-+						fixed-link {
-+							speed = <10000>;
-+							full-duplex;
-+						};
- 					};
- 				};
- 			};
-@@ -246,6 +258,10 @@ switch2port10: port@10 {
- 						link = <&switch3port9
- 							&switch1port9
- 							&switch0port10>;
-+						fixed-link {
-+							speed = <2500>;
-+							full-duplex;
-+						};
- 					};
- 				};
- 			};
-@@ -295,6 +311,10 @@ switch3port9: port@9 {
- 						label = "dsa";
- 						phy-mode = "2500base-x";
- 						link = <&switch2port10>;
-+						fixed-link {
-+							speed = <2500>;
-+							full-duplex;
-+						};
- 					};
- 
- 					switch3port10: port@10 {
-@@ -303,6 +323,10 @@ switch3port10: port@10 {
- 						phy-mode = "xgmii";
- 						link = <&switch1port9
- 							&switch0port10>;
-+						fixed-link {
-+							speed = <10000>;
-+							full-duplex;
-+						};
- 					};
- 				};
- 			};
-diff --git a/arch/arm/boot/dts/vf610-zii-spb4.dts b/arch/arm/boot/dts/vf610-zii-spb4.dts
-index 180acb0795b9..3f9687953f57 100644
---- a/arch/arm/boot/dts/vf610-zii-spb4.dts
-+++ b/arch/arm/boot/dts/vf610-zii-spb4.dts
-@@ -140,7 +140,7 @@ ports {
- 
- 				port@0 {
- 					reg = <0>;
--					label = "cpu";
-+					phy-mode = "rev-rmii";
- 					ethernet = <&fec1>;
- 
- 					fixed-link {
-diff --git a/arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts b/arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts
-index 73fdace4cb42..d06a074bfe21 100644
---- a/arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts
-+++ b/arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts
-@@ -129,7 +129,7 @@ ports {
- 
- 				port@0 {
- 					reg = <0>;
--					label = "cpu";
-+					phy-mode = "rev-rmii";
- 					ethernet = <&fec1>;
- 
- 					fixed-link {
-diff --git a/arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts b/arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts
-index 20beaa8433b6..c60639beda40 100644
---- a/arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts
-+++ b/arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts
-@@ -154,7 +154,7 @@ ports {
- 
- 				port@0 {
- 					reg = <0>;
--					label = "cpu";
-+					phy-mode = "rev-rmii";
- 					ethernet = <&fec1>;
- 
- 					fixed-link {
--- 
-2.40.0
-
+But the patch would update ndm->ndm_state based on neigh, but there
+is nothing ensuring that neigh is not going to be deleted or modified.
