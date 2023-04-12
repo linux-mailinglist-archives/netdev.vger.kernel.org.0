@@ -2,147 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D93B6DF754
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D944C6DF771
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbjDLNgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 09:36:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
+        id S229667AbjDLNkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 09:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbjDLNgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:36:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C878A53
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:35:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681306480;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=avnUO+n0BtEa4d40ZQG2oXgOaFPN9DVhnjMogjSitH8=;
-        b=Ra7YmniaS0mHj2qPYLc/8QekN3k8yHoza5uax387Tq+dcO/2PU34A93yeRqgGNou6GHO/+
-        gZoFl0SSLQG8t2YJ0pitnQU6fbYht4gK9O227/J2H+CUNTHhCqBr0ueUL3QY8/yC4IW+oN
-        HQGGeAlCHkYprrbVw2STTyHYokq3V6M=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-472-ycYNkNUNP7yc2rCVgtViqg-1; Wed, 12 Apr 2023 09:34:39 -0400
-X-MC-Unique: ycYNkNUNP7yc2rCVgtViqg-1
-Received: by mail-ej1-f71.google.com with SMTP id vx12-20020a170907a78c00b0094a9009d99bso3687124ejc.21
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:34:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681306478;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=avnUO+n0BtEa4d40ZQG2oXgOaFPN9DVhnjMogjSitH8=;
-        b=6isa1rBR/oOdQ6NK+A+rB1KHVdP95GcwNAu78RhqR2URBEapQw6DrSB6iyJr9m/mdx
-         uqsoEfgKlVoWjhleER6ds5S4dSmPzkSNkG4TAvsvSHK4mDpLNhXmjRi9rNb8joPsfzZ2
-         v+yYKEeHBX7kkwNbRkenmqIYnQQt8mn7tz8g6axMKhRWQeUE2E4gyG9btLtoQHG3Lfks
-         hSNBeTNO4e9Z8W5RTyZjN+fgP8gS2pmIu43tNCimHuIWYMTAKiJ1wphzeYJk7yM59WxU
-         o/DnBRHSlNRFAs2q5Z92YLY40W25gf9rpwGmBuRogzbveaWj0uC8PgrKxGV7rd7CwE9L
-         YCgw==
-X-Gm-Message-State: AAQBX9f2BQXvMeYWuMXTHkae/HMdYl77IEPvEN3xHdbmyaSHyoZPELcR
-        9zyAD//8/97y9IFZDqpgMtRaeItieisgIRA7lkYivE+mj6J2sdXoKvnVB/1j76Hzz45sT3LcsIW
-        Gl/BHIt+5/CbjQ15z
-X-Received: by 2002:a17:906:99c8:b0:8e6:bcb6:469e with SMTP id s8-20020a17090699c800b008e6bcb6469emr2343003ejn.0.1681306476781;
-        Wed, 12 Apr 2023 06:34:36 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YgapZMeMC4Rm/QdXzs4rXyxXgFabYvm7ZL0sTQJ3wSeNGkMdybuNwlZL/acPVv3QhRoQAsuw==
-X-Received: by 2002:a17:906:99c8:b0:8e6:bcb6:469e with SMTP id s8-20020a17090699c800b008e6bcb6469emr2342948ejn.0.1681306475958;
-        Wed, 12 Apr 2023 06:34:35 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 22-20020a170906319600b00930525d89e2sm7264423ejy.89.2023.04.12.06.34.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 06:34:35 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 00D35AA78D2; Wed, 12 Apr 2023 15:34:34 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kal Cutter Conley <kal.conley@dectris.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 1/3] xsk: Support UMEM chunk_size > PAGE_SIZE
-In-Reply-To: <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
-References: <20230406130205.49996-1-kal.conley@dectris.com>
- <20230406130205.49996-2-kal.conley@dectris.com> <87sfdckgaa.fsf@toke.dk>
- <ZDBEng1KEEG5lOA6@boxer>
- <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 12 Apr 2023 15:34:34 +0200
-Message-ID: <875ya12phx.fsf@toke.dk>
+        with ESMTP id S229565AbjDLNkV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:40:21 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6029005;
+        Wed, 12 Apr 2023 06:39:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681306796; x=1712842796;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4GCFBR6AvRzdkg82R+k92xqDhMfr7gxMVkai6zQEA5c=;
+  b=nA3QXfUIg45/qb6gt/NXWQyG7fhozk1cfjwFrMD9wFj61Jlcf0l80S2s
+   +TmHeHlUK09hal93ZTd9tjk+kmib6znejLXmgLW7LDA8efLBE8VpPF/m/
+   INeLaMIaL/D/yrtLt6naB5pLi5fbvAMhYlZjDVU+K2mrOyWOwyF5CranF
+   e5R1fnvvd4Fx95BgZ/bPXJOSfEHrXQpfW7y2Y1p0Y1/nuzQ9sMVyobTn7
+   VxXxMw6BbcF4up4V1tkVQ7o7mgVZwDp2HE6gEaC0p8xjumTMEjuYjYHOD
+   AgKahtzXSReYXsZRZI+lx6EIZ7jYU1eOelOTpSKkX36Pseq6JAf7bOgmF
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="341390508"
+X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
+   d="scan'208";a="341390508"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 06:39:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="639232458"
+X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
+   d="scan'208";a="639232458"
+Received: from amlin-018-114.igk.intel.com ([10.102.18.114])
+  by orsmga003.jf.intel.com with ESMTP; 12 Apr 2023 06:39:52 -0700
+From:   Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+To:     jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, corbet@lwn.net,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        richardcochran@gmail.com, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org
+Cc:     Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+Subject: [RFC PATCH v1] ice: add CGU info to devlink info callback
+Date:   Wed, 12 Apr 2023 15:38:11 +0200
+Message-Id: <20230412133811.2518336-1-arkadiusz.kubalewski@intel.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kal Cutter Conley <kal.conley@dectris.com> writes:
+If Clock Generation Unit and dplls are present on NIC board user shall
+know its details.
+Provide the devlink info callback with a new:
+- fixed type object `cgu.id` - hardware variant of onboard CGU
+- running type object `fw.cgu` - CGU firmware version
+- running type object `fw.cgu.build` - CGU configuration build version
 
->> > > Add core AF_XDP support for chunk sizes larger than PAGE_SIZE. This
->> > > enables sending/receiving jumbo ethernet frames up to the theoretical
->> > > maxiumum of 64 KiB. For chunk sizes > PAGE_SIZE, the UMEM is required
->> > > to consist of HugeTLB VMAs (and be hugepage aligned). Initially, only
->> > > SKB mode is usable pending future driver work.
->> >
->> > Hmm, interesting. So how does this interact with XDP multibuf?
->>
->> To me it currently does not interact with mbuf in any way as it is enabled
->> only for skb mode which linearizes the skb from what i see.
->>
->> I'd like to hear more about Kal's use case - Kal do you use AF_XDP in SKB
->> mode on your side?
->
-> Our use-case is to receive jumbo Ethernet frames up to 9000 bytes with
-> AF_XDP in zero-copy mode. This patchset is a step in this direction.
-> At the very least, it lets you test out the feature in SKB mode
-> pending future driver support. Currently, XDP multi-buffer does not
-> support AF_XDP at all. It could support it in theory, but I think it
-> would need some UAPI design work and a bit of implementation work.
->
-> Also, I think that the approach taken in this patchset has some
-> advantages over XDP multi-buffer:
->     (1) It should be possible to achieve higher performance
->         (a) because the packet data is kept together
->         (b) because you need to acquire and validate less descriptors
-> and touch the queue pointers less often.
->     (2) It is a nicer user-space API.
->         (a) Since the packet data is all available in one linear
-> buffer. This may even be a requirement to avoid an extra copy if the
-> data must be handed off contiguously to other code.
->
-> The disadvantage of this patchset is requiring the user to allocate
-> HugeTLB pages which is an extra complication.
->
-> I am not sure if this patchset would need to interact with XDP
-> multi-buffer at all directly. Does anyone have anything to add here?
+These information shall be known for debugging purposes.
 
-Well, I'm mostly concerned with having two different operation and
-configuration modes for the same thing. We'll probably need to support
-multibuf for AF_XDP anyway for the non-ZC path, which means we'll need
-to create a UAPI for that in any case. And having two APIs is just going
-to be more complexity to handle at both the documentation and
-maintenance level.
+Test (on NIC board with CGU)
+$ devlink dev info <bus_name>/<dev_name> | grep cgu
+        cgu.id 8032
+        fw.cgu 6021
+        fw.cgu.build 0x1030001
 
-It *might* be worth it to do this if the performance benefit is really
-compelling, but, well, you'd need to implement both and compare directly
-to know that for sure :)
+Test (on NIC board without CGU)
+$ devlink dev info <bus_name>/<dev_name> | grep cgu -c
+0
 
--Toke
+Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+---
+ Documentation/networking/devlink/ice.rst     | 14 +++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.c | 30 ++++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_main.c    |  5 +++-
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c  | 12 ++++----
+ drivers/net/ethernet/intel/ice/ice_type.h    |  9 +++++-
+ 5 files changed, 62 insertions(+), 8 deletions(-)
+
+diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
+index 10f282c2117c..3a54421c503d 100644
+--- a/Documentation/networking/devlink/ice.rst
++++ b/Documentation/networking/devlink/ice.rst
+@@ -23,6 +23,11 @@ The ``ice`` driver reports the following versions
+       - fixed
+       - K65390-000
+       - The Product Board Assembly (PBA) identifier of the board.
++    * - ``cgu.id``
++      - fixed
++      - 8032
++      - The Clock Generation Unit (CGU) hardware version identifier on the
++        board.
+     * - ``fw.mgmt``
+       - running
+       - 2.1.7
+@@ -89,6 +94,15 @@ The ``ice`` driver reports the following versions
+       - running
+       - 0xee16ced7
+       - The first 4 bytes of the hash of the netlist module contents.
++    * - ``fw.cgu``
++      - running
++      - 6021
++      - Version of Clock Generation Unit (CGU) firmware.
++    * - ``fw.cgu.build``
++      - running
++      - 0x1030001
++      - Version of Clock Generation Unit (CGU) firmware configuration build.
++
+ 
+ Flash Update
+ ============
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index bc44cc220818..06fe895739af 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -193,6 +193,33 @@ ice_info_pending_netlist_build(struct ice_pf __always_unused *pf,
+ 		snprintf(ctx->buf, sizeof(ctx->buf), "0x%08x", netlist->hash);
+ }
+ 
++static void ice_info_cgu_id(struct ice_pf *pf, struct ice_info_ctx *ctx)
++{
++	if (ice_is_feature_supported(pf, ICE_F_CGU)) {
++		struct ice_hw *hw = &pf->hw;
++
++		snprintf(ctx->buf, sizeof(ctx->buf), "%u", hw->cgu.id);
++	}
++}
++
++static void ice_info_cgu_fw_version(struct ice_pf *pf, struct ice_info_ctx *ctx)
++{
++	if (ice_is_feature_supported(pf, ICE_F_CGU)) {
++		struct ice_hw *hw = &pf->hw;
++
++		snprintf(ctx->buf, sizeof(ctx->buf), "%u", hw->cgu.fw_ver);
++	}
++}
++
++static void ice_info_cgu_fw_build(struct ice_pf *pf, struct ice_info_ctx *ctx)
++{
++	if (ice_is_feature_supported(pf, ICE_F_CGU)) {
++		struct ice_hw *hw = &pf->hw;
++
++		snprintf(ctx->buf, sizeof(ctx->buf), "0x%x", hw->cgu.cfg_ver);
++	}
++}
++
+ #define fixed(key, getter) { ICE_VERSION_FIXED, key, getter, NULL }
+ #define running(key, getter) { ICE_VERSION_RUNNING, key, getter, NULL }
+ #define stored(key, getter, fallback) { ICE_VERSION_STORED, key, getter, fallback }
+@@ -224,6 +251,7 @@ static const struct ice_devlink_version {
+ 	void (*fallback)(struct ice_pf *pf, struct ice_info_ctx *ctx);
+ } ice_devlink_versions[] = {
+ 	fixed(DEVLINK_INFO_VERSION_GENERIC_BOARD_ID, ice_info_pba),
++	fixed("cgu.id", ice_info_cgu_id),
+ 	running(DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, ice_info_fw_mgmt),
+ 	running("fw.mgmt.api", ice_info_fw_api),
+ 	running("fw.mgmt.build", ice_info_fw_build),
+@@ -235,6 +263,8 @@ static const struct ice_devlink_version {
+ 	running("fw.app.bundle_id", ice_info_ddp_pkg_bundle_id),
+ 	combined("fw.netlist", ice_info_netlist_ver, ice_info_pending_netlist_ver),
+ 	combined("fw.netlist.build", ice_info_netlist_build, ice_info_pending_netlist_build),
++	running("fw.cgu", ice_info_cgu_fw_version),
++	running("fw.cgu.build", ice_info_cgu_fw_build),
+ };
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 6b28b95a7254..a3adc03bdd0a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4822,8 +4822,11 @@ static void ice_init_features(struct ice_pf *pf)
+ 		ice_gnss_init(pf);
+ 
+ 	if (ice_is_feature_supported(pf, ICE_F_CGU) ||
+-	    ice_is_feature_supported(pf, ICE_F_PHY_RCLK))
++	    ice_is_feature_supported(pf, ICE_F_PHY_RCLK)) {
++		ice_aq_get_cgu_info(&pf->hw, &pf->hw.cgu.id,
++				    &pf->hw.cgu.cfg_ver, &pf->hw.cgu.fw_ver);
+ 		ice_dpll_init(pf);
++	}
+ 
+ 	/* Note: Flow director init failure is non-fatal to load */
+ 	if (ice_init_fdir(pf))
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+index 39b692945f73..90c1cc1e4401 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+@@ -3481,13 +3481,13 @@ bool ice_is_cgu_present(struct ice_hw *hw)
+ 	if (!ice_find_netlist_node(hw, ICE_AQC_LINK_TOPO_NODE_TYPE_CLK_CTRL,
+ 				   ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032,
+ 				   NULL)) {
+-		hw->cgu_part_number = ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032;
++		hw->cgu.part_number = ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032;
+ 		return true;
+ 	} else if (!ice_find_netlist_node(hw,
+ 					  ICE_AQC_LINK_TOPO_NODE_TYPE_CLK_CTRL,
+ 					  ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384,
+ 					  NULL)) {
+-		hw->cgu_part_number = ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384;
++		hw->cgu.part_number = ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384;
+ 		return true;
+ 	}
+ 
+@@ -3507,7 +3507,7 @@ ice_cgu_get_pin_desc_e823(struct ice_hw *hw, bool input, int *size)
+ {
+ 	static const struct ice_cgu_pin_desc *t;
+ 
+-	if (hw->cgu_part_number ==
++	if (hw->cgu.part_number ==
+ 	    ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032) {
+ 		if (input) {
+ 			t = ice_e823_zl_cgu_inputs;
+@@ -3516,7 +3516,7 @@ ice_cgu_get_pin_desc_e823(struct ice_hw *hw, bool input, int *size)
+ 			t = ice_e823_zl_cgu_outputs;
+ 			*size = ARRAY_SIZE(ice_e823_zl_cgu_outputs);
+ 		}
+-	} else if (hw->cgu_part_number ==
++	} else if (hw->cgu.part_number ==
+ 		   ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384) {
+ 		if (input) {
+ 			t = ice_e823_si_cgu_inputs;
+@@ -3778,10 +3778,10 @@ int ice_get_cgu_rclk_pin_info(struct ice_hw *hw, u8 *base_idx, u8 *pin_num)
+ 	case ICE_DEV_ID_E823C_SGMII:
+ 		*pin_num = ICE_E822_RCLK_PINS_NUM;
+ 		ret = 0;
+-		if (hw->cgu_part_number ==
++		if (hw->cgu.part_number ==
+ 		    ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032)
+ 			*base_idx = ZL_REF1P;
+-		else if (hw->cgu_part_number ==
++		else if (hw->cgu.part_number ==
+ 			 ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384)
+ 			*base_idx = SI_REF1P;
+ 		else
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index 128bc4d326f9..814166d959ee 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -820,6 +820,13 @@ struct ice_mbx_data {
+ 	u16 async_watermark_val;
+ };
+ 
++struct ice_cgu_info {
++	u32 id;
++	u32 cfg_ver;
++	u32 fw_ver;
++	u8 part_number;
++};
++
+ /* Port hardware description */
+ struct ice_hw {
+ 	u8 __iomem *hw_addr;
+@@ -963,7 +970,7 @@ struct ice_hw {
+ 	DECLARE_BITMAP(hw_ptype, ICE_FLOW_PTYPE_MAX);
+ 	u8 dvm_ena;
+ 	u16 io_expander_handle;
+-	u8 cgu_part_number;
++	struct ice_cgu_info cgu;
+ };
+ 
+ /* Statistics collected by each port, VSI, VEB, and S-channel */
+-- 
+2.31.1
 
