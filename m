@@ -2,67 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81A006DF1EC
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 12:28:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CF376DF206
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 12:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230155AbjDLK2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 06:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
+        id S229814AbjDLKai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 06:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229786AbjDLK2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 06:28:13 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C22910EF
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 03:28:12 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id xi5so27534198ejb.13
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 03:28:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1681295291;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=rj9fvcibMW48MaloVAPMPFjLFvW3M+fUPLz4gOoA3Ik=;
-        b=ee+lQfruVja98WkllDE+Uw4cGzCpW/8AsOBtsPDfeNh8ekKqBXplLBtZW4Kwb4PW2m
-         DdzXPx28rDHyEroyeDSSHv0Ndxr7/Dt4D7Hzrh1opeIODm73hc/0ANboiAjmIqHo4nKE
-         ugrF9GvBXASJD1AlBbgifMkzLwu7lOuxPtqH8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681295291;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rj9fvcibMW48MaloVAPMPFjLFvW3M+fUPLz4gOoA3Ik=;
-        b=Loa3whYjqqXAMNPfjum6Dzhol9zWSluqd4DBfJPow8T2rwTcj+OIDlb49mu7FpiqyX
-         i2CTitYztDbNjDEOA4NgbqcVahQaUNGb8mgEncCyT6dPS0PC2Jp/dBliFQ9qW1VguD0Y
-         6N/8h67n9yPo6eCKIDBq7na7tT+USh95MZkeUOTx8lZA3sAHF09Ggvb+Ebmp8Snk1Mjx
-         0xScMYE1LDIhgJvJ4KrhIcsJ2Iyv8NkivdWPMRIAOSGXOKhWW4Nt4QGswdpspuOqGJy0
-         3j+qNgXUMglthnwBlLDx85SZSh6Ye2LF/iYaDpcrjm/6LKO8rvScPwSNV2zS2imbjElH
-         hifA==
-X-Gm-Message-State: AAQBX9fFAoCW6jfT8wEm0Y2wN2BPNmJGeEt8WbLR/YowqUjZCWtLktS7
-        60yaRXpQJ0ttuyhgkzTPn37h9A==
-X-Google-Smtp-Source: AKy350b/KwvBgywfJF1XiTTRvbAnBijFvZlR3HJKqcKy/p11ynNkG51ywF0PTInFnPbePV18GFZerg==
-X-Received: by 2002:a17:906:4c48:b0:94a:86dc:3a13 with SMTP id d8-20020a1709064c4800b0094a86dc3a13mr10499450ejw.75.1681295290916;
-        Wed, 12 Apr 2023 03:28:10 -0700 (PDT)
-Received: from cloudflare.com (79.191.181.173.ipv4.supernova.orange.pl. [79.191.181.173])
-        by smtp.gmail.com with ESMTPSA id s7-20020a170906a18700b00929fc8d264dsm7197146ejy.17.2023.04.12.03.28.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 03:28:10 -0700 (PDT)
-References: <20230407171654.107311-1-john.fastabend@gmail.com>
- <20230407171654.107311-6-john.fastabend@gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     daniel@iogearbox.net, lmb@isovalent.com, edumazet@google.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        andrii@kernel.org, will@isovalent.com
-Subject: Re: [PATCH bpf v6 05/12] bpf: sockmap, TCP data stall on recv
- before accept
-Date:   Wed, 12 Apr 2023 12:26:04 +0200
-In-reply-to: <20230407171654.107311-6-john.fastabend@gmail.com>
-Message-ID: <87h6tlgzt3.fsf@cloudflare.com>
+        with ESMTP id S229784AbjDLKa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 06:30:29 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118776E80;
+        Wed, 12 Apr 2023 03:30:25 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33CAUFws046650;
+        Wed, 12 Apr 2023 05:30:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1681295415;
+        bh=0FzCz5eeJRH2yU9foXR8AIy2YrmkIhw88/pWp8ZrEDI=;
+        h=From:To:CC:Subject:Date;
+        b=nFRjoRiXkWRL1ujv2zYSW6eCJCNFujrW/ipxJw2otZ5dd+XXKjgOBx0ahesbK9+qb
+         LiCCWuAMOFrSIPkslnF5/T4nSkTHc7jm6M3lyKvc4bGFqfaJXg9REC0ojcmssPabYE
+         Ut9tze+oLxuSr0dwgqiotOhbgJhxXKMgdwTo4T9w=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33CAUF5Q008413
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 12 Apr 2023 05:30:15 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 12
+ Apr 2023 05:30:14 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Wed, 12 Apr 2023 05:30:15 -0500
+Received: from fllv0122.itg.ti.com (fllv0122.itg.ti.com [10.247.120.72])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33CAUEgs089881;
+        Wed, 12 Apr 2023 05:30:14 -0500
+Received: from localhost (uda0501179.dhcp.ti.com [10.24.69.114])
+        by fllv0122.itg.ti.com (8.14.7/8.14.7) with ESMTP id 33CAUDJv028919;
+        Wed, 12 Apr 2023 05:30:14 -0500
+From:   MD Danish Anwar <danishanwar@ti.com>
+To:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        MD Danish Anwar <danishanwar@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+CC:     <linux-remoteproc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <srk@ti.com>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v8 0/4] Introduce PRU platform consumer API
+Date:   Wed, 12 Apr 2023 16:00:08 +0530
+Message-ID: <20230412103012.1754161-1-danishanwar@ti.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,92 +75,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 07, 2023 at 10:16 AM -07, John Fastabend wrote:
-> A common mechanism to put a TCP socket into the sockmap is to hook the
-> BPF_SOCK_OPS_{ACTIVE_PASSIVE}_ESTABLISHED_CB event with a BPF program
-> that can map the socket info to the correct BPF verdict parser. When
-> the user adds the socket to the map the psock is created and the new
-> ops are assigned to ensure the verdict program will 'see' the sk_buffs
-> as they arrive.
->
-> Part of this process hooks the sk_data_ready op with a BPF specific
-> handler to wake up the BPF verdict program when data is ready to read.
-> The logic is simple enough (posted here for easy reading)
->
->  static void sk_psock_verdict_data_ready(struct sock *sk)
->  {
-> 	struct socket *sock = sk->sk_socket;
->
-> 	if (unlikely(!sock || !sock->ops || !sock->ops->read_skb))
-> 		return;
-> 	sock->ops->read_skb(sk, sk_psock_verdict_recv);
->  }
->
-> The oversight here is sk->sk_socket is not assigned until the application
-> accepts() the new socket. However, its entirely ok for the peer application
-> to do a connect() followed immediately by sends. The socket on the receiver
-> is sitting on the backlog queue of the listening socket until its accepted
-> and the data is queued up. If the peer never accepts the socket or is slow
-> it will eventually hit data limits and rate limit the session. But,
-> important for BPF sockmap hooks when this data is received TCP stack does
-> the sk_data_ready() call but the read_skb() for this data is never called
-> because sk_socket is missing. The data sits on the sk_receive_queue.
->
-> Then once the socket is accepted if we never receive more data from the
-> peer there will be no further sk_data_ready calls and all the data
-> is still on the sk_receive_queue(). Then user calls recvmsg after accept()
-> and for TCP sockets in sockmap we use the tcp_bpf_recvmsg_parser() handler.
-> The handler checks for data in the sk_msg ingress queue expecting that
-> the BPF program has already run from the sk_data_ready hook and enqueued
-> the data as needed. So we are stuck.
->
-> To fix do an unlikely check in recvmsg handler for data on the
-> sk_receive_queue and if it exists wake up data_ready. We have the sock
-> locked in both read_skb and recvmsg so should avoid having multiple
-> runners.
->
-> Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
->  net/ipv4/tcp_bpf.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
->
-> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-> index 804bd0c247d0..ae6c7130551c 100644
-> --- a/net/ipv4/tcp_bpf.c
-> +++ b/net/ipv4/tcp_bpf.c
-> @@ -212,6 +212,26 @@ static int tcp_bpf_recvmsg_parser(struct sock *sk,
->  		return tcp_recvmsg(sk, msg, len, flags, addr_len);
->  
->  	lock_sock(sk);
-> +
-> +	/* We may have received data on the sk_receive_queue pre-accept and
-> +	 * then we can not use read_skb in this context because we haven't
-> +	 * assigned a sk_socket yet so have no link to the ops. The work-around
-> +	 * is to check the sk_receive_queue and in these cases read skbs off
-> +	 * queue again. The read_skb hook is not running at this point because
-> +	 * of lock_sock so we avoid having multiple runners in read_skb.
-> +	 */
-> +	if (unlikely(!skb_queue_empty(&sk->sk_receive_queue))) {
-> +		tcp_data_ready(sk);
-> +		/* This handles the ENOMEM errors if we both receive data
-> +		 * pre accept and are already under memory pressure. At least
-> +		 * let user no to retry.
+Hi All,
+The Programmable Real-Time Unit and Industrial Communication Subsystem (PRU-ICSS
+or simply PRUSS) on various TI SoCs consists of dual 32-bit RISC cores
+(Programmable Real-Time Units, or PRUs) for program execution.
 
-Nit: s/no/know/
+There are 3 foundation components for TI PRUSS subsystem: the PRUSS platform
+driver, the PRUSS INTC driver and the PRUSS remoteproc driver. All of them have
+already been merged and can be found under:
+1) drivers/soc/ti/pruss.c
+   Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+2) drivers/irqchip/irq-pruss-intc.c
+   Documentation/devicetree/bindings/interrupt-controller/ti,pruss-intc.yaml
+3) drivers/remoteproc/pru_rproc.c
+   Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
 
-> +		 */
-> +		if (unlikely(!skb_queue_empty(&sk->sk_receive_queue))) {
-> +			copied = -EAGAIN;
-> +			goto out;
-> +		}
-> +	}
-> +
->  msg_bytes_ready:
->  	copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
->  	/* The typical case for EFAULT is the socket was gracefully
+The programmable nature of the PRUs provide flexibility to implement custom
+peripheral interfaces, fast real-time responses, or specialized data handling.
+Example of a PRU consumer drivers will be: 
+  - Software UART over PRUSS
+  - PRU-ICSS Ethernet EMAC
 
-Similar to patch 04/12, we will need this corner case fix in
-tcp_bpf_recvmsg as well.
+In order to make usage of common PRU resources and allow the consumer drivers 
+to configure the PRU hardware for specific usage the PRU API is introduced.
 
-Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+This is the v8 of the old patch series [10].
+
+Changes from v7 [10] to v8:
+*) Addressed Mathieu's comments and moved pruss related API definitions to
+linux/pruss_driver.h
+*) Moved enum pruss_mem, pruss_gp_mux_sel, pruss_gpi_mode, pru_type and struct
+pruss_mem_region from remoteproc/pruss.h to linux/pruss_driver.h as asked by
+Mathieu.
+
+Changes from v6 [9] to v7:
+*) Addressed Simon's comment on patch 3 of this series and dropped unnecassary
+macros from the patch.
+
+Changes from v5 [1] to v6:
+*) Added Reviewed by tags of Roger and Tony to the patches.
+*) Added Acked by tag of Mathieu to patch 2 of this series.
+*) Added NULL check for @mux in pruss_cfg_get_gpmux() API.
+*) Added comment to the pruss_get() function documentation mentioning it is
+expected the caller will have done a pru_rproc_get() on @rproc.
+*) Fixed compilation warning "warning: ‘pruss_cfg_update’ defined but not used"
+in patch 3 by squashing patch 3 [7] and patch 5 [8] of previous revision
+together. Squashed patch 5 instead of patch 4 with patch 3 because patch 5 uses
+both read() and update() APIs where as patch 4 only uses update() API.
+Previously pruss_cfg_read()/update() APIs were intoroduced in patch 3
+and used in patch 4 and 5. Now these APIs are introduced as well as used in 
+patch 3.
+
+Changes from v4 [2] to v5:
+*) Addressed Roger's comment to change function argument in API 
+pruss_cfg_xfr_enable(). Instead of asking user to calcualte mask, now user
+will just provide the pru_type and mask will be calcualted inside the API.
+*) Moved enum pru_type from pru_rproc.c to include/linux/remoteproc/pruss.h
+in patch 4 / 5.
+*) Moved enum pruss_gpi_mode from patch 3/5 to patch 4/5 to introduce this
+enum in same patch as the API using it.
+*) Moved enum pruss_gp_mux_sel from patch 3/5 to patch 5/5 to introduce this
+enum in same patch as the API using it.
+*) Created new headefile drivers/soc/ti/pruss.h, private to PRUSS as asked by
+Roger. Moved all private definitions and pruss_cfg_read () / update ()
+APIs to this newly added headerfile.
+*) Renamed include/linux/pruss_driver.h to include/linux/pruss_internal.h as
+suggested by Andrew and Roger.
+
+Changes from v3 [3] to v4:
+*) Added my SoB tags in all patches as earlier SoB tags were missing in few
+patches.
+*) Added Roger's RB tags in 3 patches.
+*) Addressed Roger's comment in patch 4/5 of this series. Added check for 
+   invalid GPI mode in pruss_cfg_gpimode() API.
+*) Removed patch [4] from this series as that patch is no longer required.
+*) Made pruss_cfg_read() and pruss_cfg_update() APIs internal to pruss.c by
+   removing EXPORT_SYMBOL_GPL and making them static. Now these APIs are 
+   internal to pruss.c and PRUSS CFG space is not exposed.
+*) Moved APIs pruss_cfg_gpimode(), pruss_cfg_miirt_enable(), 
+   pruss_cfg_xfr_enable(), pruss_cfg_get_gpmux(), pruss_cfg_set_gpmux() to
+   pruss.c file as they are using APIs pruss_cfg_read / update. 
+   Defined these APIs in pruss.h file as other drivers use these APIs to 
+   perform respective operations.
+
+Changes from v2 to v3:
+*) No functional changes, the old series has been rebased on linux-next (tag:
+next-20230306).
+
+This series depends on another series which is already merged in the remoteproc
+tree [5] and is part of v6.3-rc1. This series and the remoteproc series form 
+the PRUSS consumer API which can be used by consumer drivers to utilize the 
+PRUs.
+
+One example of the consumer driver is the PRU-ICSSG ethernet driver [6],which 
+depends on this series and the remoteproc series [5].
+
+[1] https://lore.kernel.org/all/20230323062451.2925996-1-danishanwar@ti.com/
+[2] https://lore.kernel.org/all/20230313111127.1229187-1-danishanwar@ti.com/
+[3] https://lore.kernel.org/all/20230306110934.2736465-1-danishanwar@ti.com/
+[4] https://lore.kernel.org/all/20230306110934.2736465-6-danishanwar@ti.com/
+[5] https://lore.kernel.org/all/20230106121046.886863-1-danishanwar@ti.com/#t
+[6] https://lore.kernel.org/all/20230210114957.2667963-1-danishanwar@ti.com/
+[7] https://lore.kernel.org/all/20230323062451.2925996-4-danishanwar@ti.com/
+[8] https://lore.kernel.org/all/20230323062451.2925996-6-danishanwar@ti.com/
+[9] https://lore.kernel.org/all/20230331112941.823410-1-danishanwar@ti.com/
+[10] https://lore.kernel.org/all/20230404115336.599430-1-danishanwar@ti.com/
+
+Thanks and Regards,
+Md Danish Anwar
+
+Andrew F. Davis (1):
+  soc: ti: pruss: Add pruss_{request,release}_mem_region() API
+
+Suman Anna (2):
+  soc: ti: pruss: Add pruss_cfg_read()/update(),
+    pruss_cfg_get_gpmux()/set_gpmux() APIs
+  soc: ti: pruss: Add helper functions to set GPI mode, MII_RT_event and
+    XFR
+
+Tero Kristo (1):
+  soc: ti: pruss: Add pruss_get()/put() API
+
+ drivers/remoteproc/pru_rproc.c |  15 --
+ drivers/soc/ti/pruss.c         | 258 +++++++++++++++++++++++++++++++++
+ drivers/soc/ti/pruss.h         |  88 +++++++++++
+ include/linux/pruss_driver.h   | 123 ++++++++++++++++
+ 4 files changed, 469 insertions(+), 15 deletions(-)
+ create mode 100644 drivers/soc/ti/pruss.h
+
+-- 
+2.34.1
+
