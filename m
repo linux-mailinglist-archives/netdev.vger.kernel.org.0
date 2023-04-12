@@ -2,91 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6E586DE893
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 02:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0A0C6DE89D
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 03:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229520AbjDLAsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 20:48:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
+        id S229631AbjDLBAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 21:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjDLAsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 20:48:40 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934C530FD
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:48:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=kHQim5c/4/xC2azJUvVTgYntji52qxcNbd+g4lp621g=; b=zQoljsfyaLdQG0F6DyiTz1QtrL
-        4q87NSYgx8rhxGjiHqmIBV9vUKk5qVHBXL4eY5eSmXHCU7Yo6weZWfwEPe4Nzn1B2Ndz3ke82ilmh
-        YGejo9khN/Yk3Js5cuEp0BbbukAhfEhs30vq8CFhppjEe3yY7W2nPCvCGdcZM7xe2GAs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pmOf5-00A2Sh-FP; Wed, 12 Apr 2023 02:48:35 +0200
-Date:   Wed, 12 Apr 2023 02:48:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next 0/2] DSA trace events
-Message-ID: <d1e4a839-6365-44ef-b9ca-157a4c2d2180@lunn.ch>
-References: <20230407141451.133048-1-vladimir.oltean@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230407141451.133048-1-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229459AbjDLBAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 21:00:22 -0400
+X-Greylist: delayed 570 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 11 Apr 2023 18:00:20 PDT
+Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1BFE73;
+        Tue, 11 Apr 2023 18:00:20 -0700 (PDT)
+Received: from localhost.localdomain (unknown [IPV6:240e:3b7:3273:10b0:7023:7419:46f0:9cf3])
+        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id 4D92E280392;
+        Wed, 12 Apr 2023 08:50:45 +0800 (CST)
+From:   Ding Hui <dinghui@sangfor.com.cn>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn,
+        Ding Hui <dinghui@sangfor.com.cn>
+Subject: [RFC PATCH net] sfc: Fix use-after-free due to selftest_work
+Date:   Wed, 12 Apr 2023 08:50:13 +0800
+Message-Id: <20230412005013.30456-1-dinghui@sangfor.com.cn>
+X-Mailer: git-send-email 2.17.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkZSB9OVkJIQkxDT05IGU1KSVUTARMWGhIXJBQOD1
+        lXWRgSC1lBWUlPSx5BSBlMQUhJTEhBSksZS0FMS0lIQUxPSkJBT00dS0FCGB1IWVdZFhoPEhUdFF
+        lBWU9LSFVKSktISkNVSktLVUtZBg++
+X-HM-Tid: 0a8772f18d0d2eb1kusn4d92e280392
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NCo6FDo5KT0VOCgNNhkNSSoT
+        Lw4aFAhVSlVKTUNKSU1LTU9NSklIVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+        QVlJT0seQUgZTEFISUxIQUpLGUtBTEtJSEFMT0pCQU9NHUtBQhgdSFlXWQgBWUFIQkNINwY+
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 07, 2023 at 05:14:49PM +0300, Vladimir Oltean wrote:
-> This series introduces the "dsa" trace event class, with the following
-> events:
-> 
-> $ trace-cmd list | grep dsa
-> dsa
-> dsa:dsa_fdb_add_hw
-> dsa:dsa_mdb_add_hw
-> dsa:dsa_fdb_del_hw
-> dsa:dsa_mdb_del_hw
-> dsa:dsa_fdb_add_bump
-> dsa:dsa_mdb_add_bump
-> dsa:dsa_fdb_del_drop
-> dsa:dsa_mdb_del_drop
-> dsa:dsa_fdb_del_not_found
-> dsa:dsa_mdb_del_not_found
-> dsa:dsa_lag_fdb_add_hw
-> dsa:dsa_lag_fdb_add_bump
-> dsa:dsa_lag_fdb_del_hw
-> dsa:dsa_lag_fdb_del_drop
-> dsa:dsa_lag_fdb_del_not_found
-> dsa:dsa_vlan_add_hw
-> dsa:dsa_vlan_del_hw
-> dsa:dsa_vlan_add_bump
-> dsa:dsa_vlan_del_drop
-> dsa:dsa_vlan_del_not_found
-> 
-> These are useful to debug refcounting issues on CPU and DSA ports, where
-> entries may remain lingering, or may be removed too soon, depending on
-> bugs in higher layers of the network stack.
+There is a use-after-free scenario that is:
 
-Hi Vladimir
+When netif_running() is false, user set mac address or vlan tag to VF,
+the xxx_set_vf_mac() or xxx_set_vf_vlan() will invoke efx_net_stop()
+and efx_net_open(), since netif_running() is false, the port will not
+start and keep port_enabled false, but selftest_worker is scheduled
+in efx_net_open().
 
-I don't know anything about trace points. Should you Cc: 
+If we remove the device before selftest_worker run, the efx is freed,
+then we will get a UAF in run_timer_softirq() like this:
 
-Steven Rostedt <rostedt@goodmis.org> (maintainer:TRACING)
-Masami Hiramatsu <mhiramat@kernel.org> (maintainer:TRACING)
+[ 1178.907941] ==================================================================
+[ 1178.907948] BUG: KASAN: use-after-free in run_timer_softirq+0xdea/0xe90
+[ 1178.907950] Write of size 8 at addr ff11001f449cdc80 by task swapper/47/0
+[ 1178.907950]
+[ 1178.907953] CPU: 47 PID: 0 Comm: swapper/47 Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
+[ 1178.907954] Hardware name: SANGFOR X620G40/WI2HG-208T1061A, BIOS SPYH051032-U01 04/01/2022
+[ 1178.907955] Call Trace:
+[ 1178.907956]  <IRQ>
+[ 1178.907960]  dump_stack+0x71/0xab
+[ 1178.907963]  print_address_description+0x6b/0x290
+[ 1178.907965]  ? run_timer_softirq+0xdea/0xe90
+[ 1178.907967]  kasan_report+0x14a/0x2b0
+[ 1178.907968]  run_timer_softirq+0xdea/0xe90
+[ 1178.907971]  ? init_timer_key+0x170/0x170
+[ 1178.907973]  ? hrtimer_cancel+0x20/0x20
+[ 1178.907976]  ? sched_clock+0x5/0x10
+[ 1178.907978]  ? sched_clock_cpu+0x18/0x170
+[ 1178.907981]  __do_softirq+0x1c8/0x5fa
+[ 1178.907985]  irq_exit+0x213/0x240
+[ 1178.907987]  smp_apic_timer_interrupt+0xd0/0x330
+[ 1178.907989]  apic_timer_interrupt+0xf/0x20
+[ 1178.907990]  </IRQ>
+[ 1178.907991] RIP: 0010:mwait_idle+0xae/0x370
 
-to get some feedback from people who do?
+I am thinking about several ways to fix the issue:
 
-   Andrew
+[1] In this RFC, I cancel the selftest_worker unconditionally in
+efx_pci_remove().
+
+[2] Add a test condition, only invoke efx_selftest_async_start() when
+efx->port_enabled is true in efx_net_open().
+
+[3] Move invoking efx_selftest_async_start() from efx_net_open() to
+efx_start_all() or efx_start_port(), that matching cancel action in
+efx_stop_port().
+
+[4] However, I also notice that in efx_ef10_set_mac_address(), the
+efx_net_open() depends on original port_enabled, but others are not,
+if we change all efx_net_open() depends on old state like
+efx_ef10_set_mac_address() does, the UAF can also be fixed in theory.
+
+But I'm not sure which is better, is there any suggestions? Thanks.
+
+Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+---
+ drivers/net/ethernet/sfc/efx.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index 884d8d168862..dd0b2363eed1 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -876,6 +876,8 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
+ 	efx->state = STATE_UNINIT;
+ 	rtnl_unlock();
+ 
++	efx_selftest_async_cancel(efx);
++
+ 	if (efx->type->sriov_fini)
+ 		efx->type->sriov_fini(efx);
+ 
+-- 
+2.17.1
+
