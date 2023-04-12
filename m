@@ -2,107 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A95E6DFD30
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 20:02:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4131A6DFD6E
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 20:25:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbjDLSCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 14:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
+        id S229583AbjDLSZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 14:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbjDLSBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 14:01:48 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F07B72A9;
-        Wed, 12 Apr 2023 11:01:42 -0700 (PDT)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id E899E859AB;
-        Wed, 12 Apr 2023 20:01:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1681322500;
-        bh=1vvuWQtFH6Zro9A8GibwHmsUcF3+pDJyQ6oddJOWzBE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=fvR/4YE5uBA9UPg7xISf11o8nZEDC03Ql252wm9er6TD0hytatWm9V8KdUP1bKBON
-         oh4oT9dd0XMJj0ioyT2mvvpwLhCOTFix5wUFzMoXTWuQhO8hoHJvtvgrjW+OK3oWDN
-         dKWvgMMa0dhMgZPAXnWsySUkGi6vQEENsX2e/1DEsy2Kd4lfBHRI6nGmx0p889kIZL
-         ZwVvzdCuLJelykpSZAQ8yGgH454w+lErIlFQSIHOn1WPwmonPuWYt4kq0vsiDhXG2q
-         +aVMSbfE35MC4DYVhbn2Gk8Fa2Beunk7FPHdhAQ8LpzoJZjin6U9LXCk8p1gAh6/Zk
-         PRFUCpMM2zb3g==
-Message-ID: <c46491fc-6853-7033-e913-c9da94d1e6a4@denx.de>
-Date:   Wed, 12 Apr 2023 20:01:36 +0200
+        with ESMTP id S229736AbjDLSZE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 14:25:04 -0400
+Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691ED40D7;
+        Wed, 12 Apr 2023 11:25:02 -0700 (PDT)
+Received: by a3.inai.de (Postfix, from userid 25121)
+        id 010ED587752ED; Wed, 12 Apr 2023 20:24:59 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by a3.inai.de (Postfix) with ESMTP id F34D560C0978F;
+        Wed, 12 Apr 2023 20:24:59 +0200 (CEST)
+Date:   Wed, 12 Apr 2023 20:24:59 +0200 (CEST)
+From:   Jan Engelhardt <jengelh@inai.de>
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+cc:     Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
+        mathew.j.martineau@linux.intel.com, mptcp@lists.linux.dev
+Subject: Re: [PATCH net,v2] uapi: linux: restore IPPROTO_MAX to 256 and add
+ IPPROTO_UAPI_MAX
+In-Reply-To: <4fa60957-2718-cac2-4b01-12aaf48b76b4@tessares.net>
+Message-ID: <4r3sqop-o651-6o1q-578-o4p519668073@vanv.qr>
+References: <20230406092558.459491-1-pablo@netfilter.org> <ca12e402-96f1-b1d2-70ad-30e532f9026c@tessares.net> <20230412072104.61910016@kernel.org> <405a8fa2-4a71-71c8-7715-10d3d2301dac@tessares.net> <689os02o-r5o8-so9-rq11-p62223p87ns3@vanv.qr>
+ <4fa60957-2718-cac2-4b01-12aaf48b76b4@tessares.net>
+User-Agent: Alpine 2.25 (LSU 592 2021-09-18)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v2] wifi: brcmfmac: add Cypress 43439 SDIO ids
-Content-Language: en-US
-To:     Kalle Valo <kvalo@kernel.org>,
-        Simon Horman <simon.horman@corigine.com>
-Cc:     linux-wireless@vger.kernel.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Danny van Heumen <danny@dannyvanheumen.nl>,
-        Eric Dumazet <edumazet@google.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        SHA-cyfmac-dev-list@infineon.com,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        brcm80211-dev-list.pdl@broadcom.com, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230407203752.128539-1-marex@denx.de>
- <ZDGHF0dKwIjB1Mrj@corigine.com>
- <509e4308-9164-4131-4b93-75c42568d1e4@denx.de>
- <ZDHEI7tbjLJiRcBr@corigine.com> <87v8i18rpz.fsf@kernel.org>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <87v8i18rpz.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/12/23 09:50, Kalle Valo wrote:
-> Simon Horman <simon.horman@corigine.com> writes:
-> 
->> On Sat, Apr 08, 2023 at 06:44:40PM +0200, Marek Vasut wrote:
->>
->>> On 4/8/23 17:24, Simon Horman wrote:
->>>> On Fri, Apr 07, 2023 at 10:37:52PM +0200, Marek Vasut wrote:
->>>>
->>>>> NOTE: Please drop the Fixes tag if this is considered unjustified
->>>>
->>>> <2c>
->>>> Feels more like enablement than a fix to me.
->>>> </2c>
->>>
->>> I added it because
->>>
->>> Documentation/process/stable-kernel-rules.rst
->>>
->>> L24  - New device IDs and quirks are also accepted.
->>
->> Thanks. If I was aware of that, I had forgotten.
->>
->>> So, really, up to the maintainer whether they are fine with it being
->>> backported to stable releases or not. I don't really mind either way.
->>
->> Yes, I completely agree.
-> 
-> IIUC you are here mixing Fixes and Cc tags, if you want to get a commit
-> to stable releases there should be "Cc: stable@...". So I'll remove the
-> Fixes tag and add the Cc tag, ok?
 
-Yes please, thank you!
+On Wednesday 2023-04-12 18:44, Matthieu Baerts wrote:
+>
+>> Makes me wonder why MPTCP got 262 instead of just 257.
+>
+>Just in case a uint8 is used somewhere, we fallback to TCP (6):
+>
+>  IPPROTO_MPTCP & 0xff = IPPROTO_TCP
+>
+>Instead of IPPROTO_ICMP (1).
+>
+>We did that to be on the safe side, not knowing all the different
+>userspace implementations :)
+
+Silent failure? That's terrible.
+
+	int IPPROTO_MPTCP = 257;
+	socket(AF_INET, SOCK_STREAM, (uint8_t)IPPROTO_MPTCP);
+
+on the other hand would immediately fail with EPROTONOSUPP
+and make hidden uint8 truncation readily visible.
