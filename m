@@ -2,205 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F0D76DE874
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 02:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D0726DE877
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 02:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229499AbjDLAUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 20:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52364 "EHLO
+        id S229498AbjDLAWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 20:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbjDLAUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 20:20:00 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFC22D50
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:19:58 -0700 (PDT)
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id EF7FC3F23C
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 00:19:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1681258796;
-        bh=nP8Flv97DA1Z4/7xjXXvC93Zd4pHVn/tz5sTuSk1w0Y=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=JMcD2WLTvwgODRmPGGavi5EAdbngLJ20J4KyZ2AVFOKWyLLCYwd0eBcu072fw+h63
-         auk2CiuVCNPXY8Qq5THZm9NGncyozk3rohPF8wJgMExCmkFnC/dkpjoIek3EsJKgm2
-         If3xXN/HoYtvqTIwtQLo9AB51f7VhV+ldVHQ35TgW66dJSO8fZ6cguETmA6yGuszIZ
-         AiaaoFWaTltppW52XvM/KkfiuETI7wxLYqqF439ivRsMLpA/nNFvbxzaAtl79UpvCy
-         2Jo62OcsO3SrOiIqEN8nCCjFFARPLzDsuV6HubC48Hi7mlCeWQi0h9LQDs1CUG6YBR
-         24KbX3JUftJCA==
-Received: by mail-pl1-f199.google.com with SMTP id d1-20020a170902cec100b001a639418d05so4318271plg.10
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:19:56 -0700 (PDT)
+        with ESMTP id S229458AbjDLAWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 20:22:55 -0400
+Received: from mail-il1-f205.google.com (mail-il1-f205.google.com [209.85.166.205])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E33A199D
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:22:54 -0700 (PDT)
+Received: by mail-il1-f205.google.com with SMTP id u6-20020a926006000000b003232594207dso7047029ilb.8
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:22:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681258795; x=1683850795;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nP8Flv97DA1Z4/7xjXXvC93Zd4pHVn/tz5sTuSk1w0Y=;
-        b=OdfXqrXwfMxGpPbDSOqz5IgBNTaxpJuG2KCXsTuUVDRev6fa4oUaJ2WfBOzC6X+x57
-         Cmy3oISd25tFyYl9OSsLle5gZFR2gB1r+Lu3ecK/XTNG/CYeu9T1rRXvnF846HwsBhp2
-         x7Jgsr9QhFNJf/9mcXszY0vkxzkXt6t1Ew5D9dFgkm8fdiOqkL+LY6QYSot0i40AdUcM
-         RH1qvtV/cG/3/f2BWrrqNqaBSWWYwN7Is/clvj3tMYBU83/vcl6EFp5ix8W30XFBkwqn
-         on4Gd3pH9MjJrmZvI4TThKj66YfCNkKcurtwddWZ0rkrN3wdLn1MrGZghD6K77pEjfrF
-         /pcQ==
-X-Gm-Message-State: AAQBX9fJiU9mNuHLcBHXr3gAb6pJKpeDRwKm2lYSFmreUSV077rzIALP
-        3wU+zDDgqDVlt0a729UOvsK56+GCTNSuxULLliTMNx8Q9SjFWUNlhV/VFoB3A91YnAZ22DNqGH5
-        8QTA8iB3taUJhi4REJYXDnPQBQOhed+ZdlQ==
-X-Received: by 2002:a17:90b:1e44:b0:246:88d1:aed4 with SMTP id pi4-20020a17090b1e4400b0024688d1aed4mr6265819pjb.45.1681258795441;
-        Tue, 11 Apr 2023 17:19:55 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bYqZdEjyQFtnF6e2od9e2qEYjctFijt5v7Jc5pxHmtzQ1AWmpsnHMfB22G1jHO32jJ39Dekg==
-X-Received: by 2002:a17:90b:1e44:b0:246:88d1:aed4 with SMTP id pi4-20020a17090b1e4400b0024688d1aed4mr6265795pjb.45.1681258795101;
-        Tue, 11 Apr 2023 17:19:55 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id co16-20020a17090afe9000b00246be20e216sm161844pjb.34.2023.04.11.17.19.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 11 Apr 2023 17:19:54 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 2056661E6E; Tue, 11 Apr 2023 17:19:54 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 18EB49FB79;
-        Tue, 11 Apr 2023 17:19:54 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Liang Li <liali@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>
-Subject: Re: [PATCHv3 net-next] bonding: add software tx timestamping support
-In-reply-to: <20230410082351.1176466-1-liuhangbin@gmail.com>
-References: <20230410082351.1176466-1-liuhangbin@gmail.com>
-Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
-   message dated "Mon, 10 Apr 2023 16:23:51 +0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        d=1e100.net; s=20210112; t=1681258973; x=1683850973;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vDeAciAGUu2Os6CWnaMgil2ftdLPgpp4On5AN0OJS54=;
+        b=HofPxhOETFmaG4aRnocGk8MxU5FVwy5wflOLun5iUGeEnq5gSEVH+KV2+rMDRqFpur
+         uA340UxXdp6MIK7+RTgKvQbKu9FgUKAeDGlunxNaFsf6bEaNvNIjQulR+6HcKOh+lr5z
+         toP8BidD41LP1qOmuASAL3zQkmVWNXGYUEzwqZoZKSWUtpjEu3mM/eX5jgTwwHRpAEcW
+         HpNFDvHNuy47kAQWDit56d+R9SuKtyQw1O2KpMsfGYAjMHPmtX2tiWO3YrfZhm62PTkm
+         OFH1RClLtG2C4WLYCEHJwF8gkgcj3I47qejc+Cnvj9vojLjL06pJO/yGNuGCat77mNRF
+         GSfQ==
+X-Gm-Message-State: AAQBX9eOmLVOKuDFOG3kx+h/ACY8Es0/dLvjMj8xtAfsEBFsk6zhmJMb
+        1nH4Nh16fXwLRK/JjvUWiGTBPDd85dxHeS+W9ztlPHtFTHBq
+X-Google-Smtp-Source: AKy350YgxTXf6utG/kdS74PL6xy/zu7P/KDgHxM+D3LuJXG9FwV7icfcPsCi6s29J2jEglm/WwQI4j5lFw4/y/pQloQzBLonRuOi
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <9322.1681258794.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Tue, 11 Apr 2023 17:19:54 -0700
-Message-ID: <9323.1681258794@famine>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:1090:b0:328:49a2:216 with SMTP id
+ r16-20020a056e02109000b0032849a20216mr539989ilj.4.1681258973361; Tue, 11 Apr
+ 2023 17:22:53 -0700 (PDT)
+Date:   Tue, 11 Apr 2023 17:22:53 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e1fc7905f9189b86@google.com>
+Subject: [syzbot] [net?] WARNING in xfrm_policy_fini (2)
+From:   syzbot <syzbot+b3346cca0c23c839e787@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com,
+        herbert@gondor.apana.org.au, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, steffen.klassert@secunet.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> wrote:
+Hello,
 
->Currently, bonding only obtain the timestamp (ts) information of
->the active slave, which is available only for modes 1, 5, and 6.
->For other modes, bonding only has software rx timestamping support.
->
->However, some users who use modes such as LACP also want tx timestamp
->support. To address this issue, let's check the ts information of each
->slave. If all slaves support tx timestamping, we can enable tx
->timestamping support for the bond.
->
->Suggested-by: Miroslav Lichvar <mlichvar@redhat.com>
->Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+syzbot found the following issue on:
 
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+HEAD commit:    e28531143b25 net: ethernet: mtk_eth_soc: mtk_ppe: prefer n..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=163c0ac5c80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a3bc1f699d6e9cb0
+dashboard link: https://syzkaller.appspot.com/bug?extid=b3346cca0c23c839e787
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
->---
->v3: remove dev_hold/dev_put. remove the '\' for line continuation.
->v2: check each slave's ts info to make sure bond support sw tx
->    timestamping
->---
-> drivers/net/bonding/bond_main.c | 36 +++++++++++++++++++++++++++++++--
-> include/uapi/linux/net_tstamp.h |  3 +++
-> 2 files changed, 37 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
->index 00646aa315c3..3b643739bbe7 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -5686,9 +5686,13 @@ static int bond_ethtool_get_ts_info(struct net_dev=
-ice *bond_dev,
-> 				    struct ethtool_ts_info *info)
-> {
-> 	struct bonding *bond =3D netdev_priv(bond_dev);
->+	struct ethtool_ts_info ts_info;
-> 	const struct ethtool_ops *ops;
-> 	struct net_device *real_dev;
-> 	struct phy_device *phydev;
->+	bool soft_support =3D false;
->+	struct list_head *iter;
->+	struct slave *slave;
-> 	int ret =3D 0;
-> =
+Unfortunately, I don't have any reproducer for this issue yet.
 
-> 	rcu_read_lock();
->@@ -5707,10 +5711,38 @@ static int bond_ethtool_get_ts_info(struct net_de=
-vice *bond_dev,
-> 			ret =3D ops->get_ts_info(real_dev, info);
-> 			goto out;
-> 		}
->+	} else {
->+		/* Check if all slaves support software rx/tx timestamping */
->+		rcu_read_lock();
->+		bond_for_each_slave_rcu(bond, slave, iter) {
->+			ret =3D -1;
->+			ops =3D slave->dev->ethtool_ops;
->+			phydev =3D slave->dev->phydev;
->+
->+			if (phy_has_tsinfo(phydev))
->+				ret =3D phy_ts_info(phydev, &ts_info);
->+			else if (ops->get_ts_info)
->+				ret =3D ops->get_ts_info(slave->dev, &ts_info);
->+
->+			if (!ret && (ts_info.so_timestamping & SOF_TIMESTAMPING_SOFTRXTX) =3D=
-=3D
->+				    SOF_TIMESTAMPING_SOFTRXTX) {
->+				soft_support =3D true;
->+				continue;
->+			}
->+
->+			soft_support =3D false;
->+			break;
->+		}
->+		rcu_read_unlock();
-> 	}
-> =
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/6ff439efecb6/disk-e2853114.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/280d508d228c/vmlinux-e2853114.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/af98eb5ab0e4/bzImage-e2853114.xz
 
->-	info->so_timestamping =3D SOF_TIMESTAMPING_RX_SOFTWARE |
->-				SOF_TIMESTAMPING_SOFTWARE;
->+	ret =3D 0;
->+	if (soft_support) {
->+		info->so_timestamping =3D SOF_TIMESTAMPING_SOFTRXTX;
->+	} else {
->+		info->so_timestamping =3D SOF_TIMESTAMPING_RX_SOFTWARE |
->+					SOF_TIMESTAMPING_SOFTWARE;
->+	}
-> 	info->phc_index =3D -1;
-> =
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b3346cca0c23c839e787@syzkaller.appspotmail.com
 
-> out:
->diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tst=
-amp.h
->index a2c66b3d7f0f..2adaa0008434 100644
->--- a/include/uapi/linux/net_tstamp.h
->+++ b/include/uapi/linux/net_tstamp.h
->@@ -48,6 +48,9 @@ enum {
-> 					 SOF_TIMESTAMPING_TX_SCHED | \
-> 					 SOF_TIMESTAMPING_TX_ACK)
-> =
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 41 at net/xfrm/xfrm_policy.c:4176 xfrm_policy_fini+0x2f2/0x3c0 net/xfrm/xfrm_policy.c:4176
+Modules linked in:
+CPU: 0 PID: 41 Comm: kworker/u4:2 Not tainted 6.3.0-rc5-syzkaller-01242-ge28531143b25 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
+Workqueue: netns cleanup_net
+RIP: 0010:xfrm_policy_fini+0x2f2/0x3c0 net/xfrm/xfrm_policy.c:4176
+Code: cd f8 0f 0b 8b 74 24 04 e9 56 fe ff ff e8 a6 a1 cd f8 0f 0b e9 e1 fd ff ff e8 9a a1 cd f8 0f 0b e9 02 ff ff ff e8 8e a1 cd f8 <0f> 0b e9 76 fd ff ff e8 d2 ea 1e f9 e9 8d fe ff ff 48 89 ef e8 e5
+RSP: 0018:ffffc90000b27bd8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff88807945b980 RCX: 0000000000000000
+RDX: ffff8880177b57c0 RSI: ffffffff88b53632 RDI: 0000000000000000
+RBP: ffff88807945cd00 R08: 0000000000000001 R09: ffffffff914e0b8f
+R10: 0000000000000001 R11: 0000000000000000 R12: ffffffff8e28cb40
+R13: ffffc90000b27ca0 R14: dffffc0000000000 R15: fffffbfff1c5196c
+FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f60f8cb7378 CR3: 000000000c571000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ xfrm_net_exit+0x1d/0x60 net/xfrm/xfrm_policy.c:4240
+ ops_exit_list+0xb0/0x170 net/core/net_namespace.c:169
+ cleanup_net+0x4ee/0xb10 net/core/net_namespace.c:613
+ process_one_work+0x991/0x15c0 kernel/workqueue.c:2390
+ worker_thread+0x669/0x1090 kernel/workqueue.c:2537
+ kthread+0x2e8/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+ </TASK>
 
->+#define SOF_TIMESTAMPING_SOFTRXTX (SOF_TIMESTAMPING_TX_SOFTWARE | \
->+				   SOF_TIMESTAMPING_RX_SOFTWARE | \
->+				   SOF_TIMESTAMPING_SOFTWARE)
-> /**
->  * struct so_timestamping - SO_TIMESTAMPING parameter
->  *
->-- =
 
->2.38.1
->
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
