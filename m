@@ -2,176 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 948E76DFB43
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 18:24:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 735D46DFB73
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 18:35:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbjDLQY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 12:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56052 "EHLO
+        id S229722AbjDLQfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 12:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbjDLQY1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 12:24:27 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2071.outbound.protection.outlook.com [40.107.6.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D9572A1;
-        Wed, 12 Apr 2023 09:24:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X0GMCWUYzu3g5bxMMCxhz8z/ENxu5t8CbEdU3jF97tx16DlcynHqdrwnCJjKSj2hnVZhHg+gMLVgbovU5fTpt7fHFEOl3lpzgFGLkxw/cp9eQRAW/kU7LrVLV80Rb/8ej0YBERHmHQJtd2PWyFfMClB9VtNeWnArJq6onuJLo5Wl8edV+ZEqR60PC63kyqDDfImDDOKAiRj7WOkp+r+rxAaCtcM02h6PkcrYFTymVkC0kuvHhcKYTNrrv1rKGMe/ZW3a58y7Z13nOLK/L502y2Zi8LIJiaATThIMZiUqKR6qGHZJK+8/cgbJvocTAnIp12tcxZoLZ1nEK6gwzyDORA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=e4U6qoEfxleUCxl/RZqErz7yrOeHCXjEJoAV2m75F6g=;
- b=KceqdpBfdtzbKNSCXg7fmZhyKAFKdvey8WA+iTqg4HW6JWnlBDS45+rNVkcqRwbjV12OqqTu+D0Z8AjgGfmO1hCH6WPh8PXGbx15SQUc/PhaSaLWJHI6UNR31yJ+79cVpy18NtJcDr9tAfkaASE7brAt7i/k/Q7/pqX2Kx++7JY3gFGDyAh5jbJUyxlOIMrEli1GaFiztFLtVWZvTYnLB6o1aIji+HwpI6vUy23In1eOMlzTsnxbsLAK2KpxPLzGaJJfEDxTTd8LrNCNFxLaY2xAio0J1kVJ8CSRVm8Kxmvu9yB2jIeuNT2zzMC/q3eCo6NYPsrhtO6pBRBG2co+Gg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e4U6qoEfxleUCxl/RZqErz7yrOeHCXjEJoAV2m75F6g=;
- b=MZvMy8DiBNbBRZDOKv++EempcPvp3DnDXG9oFhodc/b1acyTx2V1+qOl7LXAl4NtAk3DOzjWU8enFFNOHX4sDf0taAWdXLyLcTZeDTg/Etrs5dfY2oo4HEjCjoI2T3N5hjsOFF4yE40Y24aDP0xO//80hnIko1Lfg2nAw2zMI84=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by DB8PR04MB7147.eurprd04.prod.outlook.com (2603:10a6:10:126::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Wed, 12 Apr
- 2023 16:24:11 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::55b1:d2dd:4327:912b]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::55b1:d2dd:4327:912b%5]) with mapi id 15.20.6298.028; Wed, 12 Apr 2023
- 16:24:11 +0000
-Date:   Wed, 12 Apr 2023 19:24:07 +0300
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Hans J. Schultz" <netdev@kapio-technology.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Arkadi Sharshevsky <arkadis@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: bridge: switchdev: don't notify FDB entries
- with "master dynamic"
-Message-ID: <20230412162407.xk3okeiedylv6sqp@skbuf>
-References: <20230410204951.1359485-1-vladimir.oltean@nxp.com>
- <ZDa856x2rhzNrrXa@shredder>
- <20230412142733.6jhxt7kjf3nwqzsy@skbuf>
- <ZDbVgqV9JT7Ru96j@shredder>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZDbVgqV9JT7Ru96j@shredder>
-X-ClientProxiedBy: FR3P281CA0052.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:4a::23) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+        with ESMTP id S229486AbjDLQfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 12:35:46 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F30391BD9
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 09:35:43 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id he11-20020a05600c540b00b003ef6d684102so4799436wmb.3
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 09:35:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google; t=1681317342;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=H1UERlLb0IEE7WBn0kYzdjfH5tmfRGpcO4CVjo1qns8=;
+        b=srJyMIcA9wYhLFxrOJumnj/lWyLknS7vptC3tXSODOgkF+NH2HXLV2E3NLus/Fz/QC
+         3NZ6NR2wlzxpneu0qsj13dQRxy3lWv10K7lzKP3+QcRHnn00H3mbQVn4RzImQUcJoGEw
+         2TiJmwkVHKiYOJ4BmYhwHNOT/fpdaNmqdKbrhANg0M2+EGmUGcCnlCVXQ4WgnTF/ExVv
+         qlnav663mlJM4X5MPzPLYw7bTtVWsiOHKZZc9YlH4ToN0Byr9M4NwflNtwW3121RtXt0
+         uLA2C8XWMlu8RNKcEJRKmuabudSCQAfe0gBBEYOVz0SZ+gJfEjIzQ0tiJ/8kPXM5wM62
+         sBcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681317342;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=H1UERlLb0IEE7WBn0kYzdjfH5tmfRGpcO4CVjo1qns8=;
+        b=mIAoTH7kixjmOf9V0noIR7C2ZqXBRnnelKeQWxaaovBG9OwgzT1oDf7SPw77npOhN4
+         d+W+UNVmp5lL2ucKqqJyrGFnkBouGOqeP5wIh+pd/EkM+r303l+rJOX1DjUjRlUG99dy
+         SfwmHuBSVO1ok4NQFlsSTAH2AQfOpkDx0LNo+CvldEnrlS3xZ9TDCZfBGGO50SvdV/wh
+         lcINnx1YVHqDyKPo0aXQ8+wRveOESQDcn3GMqTxxgeOoiO9OHzPKsk+StGXkSOsdkUu6
+         ByGl89lXqA0EcnxNllFubB2e/AgHPY2c+TINa/z0ftBlFXjhExdK9VJLEuhM/yg7D8tn
+         rLxQ==
+X-Gm-Message-State: AAQBX9cYFgmMAUmScZcRrbAiCxuVueR890JfXYDNrJJ9EsiGm8xWPPs8
+        FOKBGkcMR/sLNrp1VU/KEk3Xbw==
+X-Google-Smtp-Source: AKy350a3cFwPBXW4EEIcV5d3YNiKWX3quvpKi2I4dTOhbKHelQVHInOX1SqWs7kCp6euXqjgbzhYPw==
+X-Received: by 2002:a05:600c:da:b0:3ee:1acd:b039 with SMTP id u26-20020a05600c00da00b003ee1acdb039mr2460893wmm.34.1681317342401;
+        Wed, 12 Apr 2023 09:35:42 -0700 (PDT)
+Received: from ?IPV6:2a02:578:8593:1200:4382:4a00:b3c9:ac57? ([2a02:578:8593:1200:4382:4a00:b3c9:ac57])
+        by smtp.gmail.com with ESMTPSA id t15-20020a05600c198f00b003f0a007b802sm1936412wmq.12.2023.04.12.09.35.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Apr 2023 09:35:41 -0700 (PDT)
+Message-ID: <7405c14e-1fbe-c820-c470-36b0a50b4cae@tessares.net>
+Date:   Wed, 12 Apr 2023 18:35:40 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|DB8PR04MB7147:EE_
-X-MS-Office365-Filtering-Correlation-Id: bfc43276-0e5d-4dc5-fecd-08db3b725959
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Evrm/ZqjQltqhneYnbvlpeSyzKn2dA6wkjUT9Jfoa4PVSXm+Zi3FG2j4yebC1nj47Q6r67MKsNksDmnFfZ+G2PTNknt1rKlWHXRYQSRU84T5A1siIHINA/QNXTxKN77L9MANsdP6M1IMPgNuYA8qmKwLForCoLffpvGFMXCC68ZfArC7QGLpe7OCqDyw2C5J0qSYkF3lDTAgXGBNON/vWafTcQxAP7eD7w8sO+ETz4zgGP1lib4xuO/vquCU3OkcUgY+Q/vG73Z4yt7HzlEt5aaqtJBM4jqFF+ESIeHjzDcVBA/7OeuXCQehUqOCQBu6JAJgWBFLwWwq7zubc59FU3psiAMOZtg/eONeuzyYPZ8Cu+Y9VCxxa59itKLBgS9XW0noDqchuMth5w6cYhD9sjG4gxghuGFN+CzUkhFuHj31hbhtrckg+4p55b9tNW1a0OLrA5gWHW6AN8Y2qVE3TsJGR6jcPtJBq4ZHIoPmfOtO4IkQb/vJmUlUynXTxz7xpwop+7bsfmZRZaW7FzMvLXsrecAOeyeFJmFV1xvjVLOPMSADod04bgBq9NLnNeR6
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(376002)(396003)(346002)(366004)(39860400002)(136003)(451199021)(478600001)(26005)(6506007)(9686003)(44832011)(186003)(5660300002)(54906003)(1076003)(316002)(2906002)(33716001)(66946007)(4326008)(6666004)(6916009)(6486002)(66476007)(8676002)(7416002)(66556008)(8936002)(41300700001)(83380400001)(6512007)(38100700002)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MZe5W+/SCjUu5wpzJOswxkj7pcb9sNVAzuwZKgjNszBtM86Px+hx1tffjmfa?=
- =?us-ascii?Q?O6vLWXXCPfXH20jWexfFAkB+12UQaUxJsrp02Jbl7Mr4zKl2fgjsARoE1TtX?=
- =?us-ascii?Q?eMPHuvbbsFmYS8YFS3rvDeLYH9NeIl8BRSAbt9I4ID+Q46RJkKra3ZDw3Uu5?=
- =?us-ascii?Q?kHrgvKkswiEcBQna3nmeL7DP/EgrBEZKCjgxeSvlQNCOajzo8VrCZiAjceI+?=
- =?us-ascii?Q?jvllT0T1NaV5c4WTDXDGA8GM9lMnByvYdbSzY5CDCOgzrhwsXk8m3peq/Ksc?=
- =?us-ascii?Q?iL09lamgLPaJK62F9BdLMfu+5wDiDOWH7DPjnvnOqtpvVLuIG5kz6ijpshY/?=
- =?us-ascii?Q?gMrUsntLE3roymSYYP27fPNbzD19eD63MG1wJJGw8EOucDICcelgOtDr9DDM?=
- =?us-ascii?Q?gPV8ZuPuydtKBNIqMGPYDRO1zCydj9fa7+tTAy4IhYojTC9+87K2KpQAYkTk?=
- =?us-ascii?Q?qHXztwioz3ZP+mw2tlGzmc4kIYY1JRw/+AGBtPAWQMDA71l6WLHPixUYFUpp?=
- =?us-ascii?Q?5azgyxZ7x9E0EW/zKfh0flbjtyzdtzz23U8G25KZnfs6owxu56raCHQfTyzh?=
- =?us-ascii?Q?7Zkxlu4disYKxKggkJDWXAZWkueHhb4F2B3HeXJGlRRdoZYeWyze/ZmtpZvA?=
- =?us-ascii?Q?UR9cH8U211ikT3mMiHtDPtEzKzIJGA2Wuzwvmw1zIyTH5QbGDyXOIjkXqLBG?=
- =?us-ascii?Q?lb0w6lPkR6+damBsamSoPptlXX5TJ1B6QpS17CK48fkRIUSeho70DtClKiRH?=
- =?us-ascii?Q?i+dcSUK6cUWJrrvpidrRDBPOhUDUkAuPUlSQ/hp4+GbN1W+Xvu/ACTfaS14n?=
- =?us-ascii?Q?u7tv/f3ACKKwtTZDZim0oJOvaufvijaiS2Z4kMLK4X7NbTSYRtPwU/OZSFJP?=
- =?us-ascii?Q?2+ZlocgHVFGus/v9mtLbw/2AyBXKoSBFZZCPFZbvXxjeO3BUGxF2w9jd7TSZ?=
- =?us-ascii?Q?RZHkOIcNgAMIfO58mDPXIbXggwmrMDJkg54DyYS/msmJ5+b71CwayQO7O93U?=
- =?us-ascii?Q?KCtCNxvHX+O8qtThiKW18RmfxVjxbE7wzw5LuL+TUjXjNTukrmJP00X8h9/k?=
- =?us-ascii?Q?h4P1RUA+ifHjQMKTSqshNU17yizuOrRewgXSKu7bhYTcTmmGSzpWRbqWLcNL?=
- =?us-ascii?Q?nGPLiIqHNWtdA5OO2eQgTRL8mkNRwJkMGRe4e1Slfdxwqkb+o6WOptVOM5k2?=
- =?us-ascii?Q?ISk+Zx2rH5s2XfEOoy7qicDkWZYRJ1gWYNIVfbakUCb5PSVZM5a7cVgxi5Lr?=
- =?us-ascii?Q?9YnWt5HiV9Zd7yqWgPqw3UDpsfy/ojf773D76G0CV+FZAwphYKrL0+k0GEvF?=
- =?us-ascii?Q?PXJ0jSdlj8dLPJKq/b7qVHN7HrenOaee8VX52+lqHv/YodS1969S+CK+T4kh?=
- =?us-ascii?Q?icr1CumC4zSkLPlG2gsiJ238PeJd2o6ctrD9W/ptdyn1zJloT5ZZF+4sVBuG?=
- =?us-ascii?Q?CA2ymDA242mRr6/0ITUhxVssNfHJSG6fkWqc40xdSwyegas3nYrS3pOG096L?=
- =?us-ascii?Q?+yfC/Dzmy+C0P0sXtW3b7OYUV3WJ1aSkYQ2mcOIY25VTu1a9LtInbT8wXMaP?=
- =?us-ascii?Q?NuGqX1hRlYkiCZXrrvo1pK2KLzgh+0reIVcHOlf5+2LeQgJwrN7ubiKyPvi9?=
- =?us-ascii?Q?CA=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfc43276-0e5d-4dc5-fecd-08db3b725959
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2023 16:24:11.6013
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rexKwyRL+8/L1D+X6IR2YWLP8Euk5hi1L+murmLDFXw97QzAH0hf1E5Ogv2gZbvGkoKHEg9J931lgkKbqh7T6Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7147
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net,v2] uapi: linux: restore IPPROTO_MAX to 256 and add
+ IPPROTO_UAPI_MAX
+Content-Language: en-GB
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netfilter-devel@vger.kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com,
+        edumazet@google.com, mathew.j.martineau@linux.intel.com,
+        mptcp@lists.linux.dev
+References: <20230406092558.459491-1-pablo@netfilter.org>
+ <ca12e402-96f1-b1d2-70ad-30e532f9026c@tessares.net>
+ <20230412072104.61910016@kernel.org>
+ <405a8fa2-4a71-71c8-7715-10d3d2301dac@tessares.net>
+ <ZDbWi4dgysRbf+vb@calendula>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <ZDbWi4dgysRbf+vb@calendula>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 07:00:02PM +0300, Ido Schimmel wrote:
-> On Wed, Apr 12, 2023 at 05:27:33PM +0300, Vladimir Oltean wrote:
-> > How are extern_learn FDB entries processed by spectrum's
-> > SWITCHDEV_FDB_ADD_TO_DEVICE handler?
+Hi Pablo,
+
+On 12/04/2023 18:04, Pablo Neira Ayuso wrote:
+> On Wed, Apr 12, 2023 at 05:22:36PM +0200, Matthieu Baerts wrote:
+>> On 12/04/2023 16:21, Jakub Kicinski wrote:
+>>> On Thu, 6 Apr 2023 12:45:25 +0200 Matthieu Baerts wrote:
+
+(...)
+
+>>>> Is it not safer to expose something new to userspace, something
+>>>> dedicated to what can be visible on the wire?
+>>>>
+>>>> Or recommend userspace programs to limit to lower than IPPROTO_RAW
+>>>> because this number is marked as "reserved" by the IANA anyway [1]?
+>>>>
+>>>> Or define something new linked to UINT8_MAX because the layer 4 protocol
+>>>> field in IP headers is limited to 8 bits?
+>>>> This limit is not supposed to be directly linked to the one of the enum
+>>>> you modified. I think we could even say it works "by accident" because
+>>>> "IPPROTO_RAW" is 255. But OK "IPPROTO_RAW" is there from the "beginning"
+>>>> [2] :)
+>>>
+>>> I'm not an expert but Pablo's patch seems reasonable to me TBH.
+>>> Maybe I'm missing some extra MPTCP specific context?
+>>
+>> I was imagining userspace programs doing something like:
+>>
+>>     if (protocol < 0 || protocol >= IPPROTO_MAX)
+>>         die();
+>>
+>>     syscall(...);
 > 
-> No different than "BR_FDB_STATIC", which is a bug I'm aware of and
-> intend to fix in net-next when I get the time (together with all the
-> other combinations enabled by the bridge). Entry has ageing disabled,
-> but can roam in which case it becomes age-able.
+> Is this theoretical, or you think any library might be doing this
+> already? I lack of sufficient knowledge of the MPTCP ecosystem to
+> evaluate myself.
+
+This is theoretical.
+
+But using it with socket's protocol parameter is the only good usage of
+IPPROTO_MAX for me :-D
+
+More seriously, I don't see such things when looking at:
+
+
+https://codesearch.debian.net/search?q=%5CbIPPROTO_MAX%5Cb&literal=0&perpkg=1
+
+IPPROTO_MAX is (re)defined in different libs but not used in many
+programs, mainly in Netfilter related programs in fact.
+
+
+Even if it is linked to MPTCP, I cannot judge if it can be an issue or
+not because it depends on how the different libC or other libs/apps are
+interpreting this IPPROTO_MAX and if they are using it before creating a
+socket.
+
+
+>> With Pablo's modification and such userspace code, this will break MPTCP
+>> support.
+>>
+>> I'm maybe/probably worry for nothing, I don't know any specific lib
+>> doing that and to be honest, I don't know what is usually done in libc
+>> and libs implemented on top of that. On the other hand, it is hard to
+>> guess how it is used everywhere.
+>>
+>> So yes, maybe it is fine?
 > 
-> TBH, I think most devices don't handle "BR_FDB_STATIC" correctly. In the
-> Linux bridge, "BR_FDB_STATIC" only means ageing disabled. The entry can
-> still roam, but remains "static". I believe that in most devices out
-> there "static" means no roaming and no ageing which is equivalent to
-> "BR_FDB_STATIC | BR_FDB_STICKY". Mentioned in your commit message as
-> well: "As for the hardware FDB entry, that's static, it doesn't move
-> when the station roams."
+> It has been 3 years since the update, I think this is the existing
+> scenario looks like this:
 > 
-> As it stands, the situation is far from perfect, but the patch doesn't
-> solve a regression (always broken) and will introduce one. My suggestion
-> allows you to move forward and solve the "dynamic" case, so let's
-> proceed with that unless there's a better alternative.
+> 1) Some userspace programs that rely on IPPROTO_MAX broke in some way
+>    and people fixed it by using IPPROTO_RAW (as you mentioned Matthieu)
+> 
+> 2) Some userspace programs rely on the IPPROTO_MAX value in some way and
+>    they are broken (yet they need to be fixed).
+> 
+> If IPPROTO_MAX is restore, both two type of software described in the
+> scenarios above will be fine.
+> 
+> If Matthieu consider that likeliness that MPTCP breaks is low, then I
+> would go for applying the patch.
 
-I'm not trying to accuse anybody, I just wanted to make sure I'm not
-missing something (and surprise, I was).
+Even if I continue to think that IPPROTO_MAX should not be used when
+looking at protocol field visible on the wire, I guess it doesn't make
+sense for a lib to restrict the socket syscall to < IPPROTO_MAX as well
+just in case this soft limit is modified later like we did 3 years ago.
+We didn't have any bug reports saying that it was not possible to create
+an MPTCP socket because of a lib restricting the protocol field to max 256.
 
-The comment regarding BR_FDB_STATIC vs BR_FDB_STATIC | BR_FDB_STICKY
-is interesting. This whole "hey, did you know you were never using the
-bridge fdb flags correctly?" is starting to become a bit of a meme.
+In other words, indeed, it looks like the likeliness that MPTCP breaks
+is low.
 
-I'll send v2 with BR_FDB_ADDED_BY_EXT_LEARN not prevented from being
-notified from switchdev.
+> Yet another reason: Probably it is also good to restore it to
+> IPPROTO_MAX so Linux gets aligned again with other unix-like systems
+> which provide this definition? Some folks might care of portability in
+> userspace.
 
-Unless you have any objection, I won't send v2 like this:
+Good point, I guess we should not have modified IPPROTO_MAX 3 years ago.
+It looks then OK to apply such patch (with the small fix asked by Jakub).
 
-	if (test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags) &&
-	    !test_bit(BR_FDB_STATIC, &fdb->flags) &&
-	    !test_bit(BR_FDB_ADDED_BY_EXT_LEARN, &fdb->flags))
-		return;
+It is just a shame we only see this issue now. Maybe because IPPROTO_MAX
+is used in such context mainly by Netfilter? :-)
 
-but like this:
-
-	/* Entries with just the BR_FDB_ADDED_BY_USER flag set were created
-	 * using 'bridge fdb add ... master dynamic'
-	 */
-	if (fdb->flags == BIT(BR_FDB_ADDED_BY_USER))
-		return;
-
-Thanks for the review and for pointing out the regression early.
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
