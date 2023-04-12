@@ -2,76 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E95E6DF9CF
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 17:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 654CC6DF9E8
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 17:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231559AbjDLPXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 11:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        id S230129AbjDLP0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 11:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230414AbjDLPXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 11:23:05 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D839038
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 08:22:41 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id w24so1693658wra.10
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 08:22:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1681312958;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ssyy5ye3KgUlVexJG4pO7NIkqaEMEWr4ggHaOrUyEtY=;
-        b=hdH8DHrc2I8icKu3rHxgEnj3AbBEqdpX6AnOBc1+dqGqoiywpAgOIT38bZVZsMldYU
-         eea18iC3+Fo6WFLhbCEjiSTHY/GW5zoTLMPEEZpG0pxOL9OWyw97WFS2Mz+pLwpN8V65
-         M8pPI/5K8nv7EnI3KLTPVU7ypP5CQRnRuEKaiFDtNrg2an8HITejEBgY46E3c/nn5WZS
-         xt6mF7U8ncRCD2sw3nZx+QoxS5sQpM/+VuOIB36J97sEXQK6VssbdKRXVlzbJgr8mf5I
-         Natsw7OQe2UotepwTA/3OvjlZjl98W/+fWX4O9jAr6I4Llb1rf5f9LtPlrxQKybg+56l
-         f/kA==
+        with ESMTP id S229927AbjDLP0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 11:26:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F62BE4F
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 08:25:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681313126;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Pl6/W8hCGdRrPSVdraI8ut0BaCLlf4yrRN6pHHW/94A=;
+        b=G4p7/dcAFcXkv6IWQDOnib3ASSRzydA8qB52wx0QqaCBUs8uh23li2+6ATltTqoOCy9zO1
+        DfrHcQzY6pJcmG5eHQG8G/rUh9RDZ88U1pyCfVYiZKforGYM39HzUEM/f1caIZILHQp3PS
+        psftdtXe/jLUUS6KRD6Ff4dkTZj4Hck=
+Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
+ [209.85.219.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-488-2UMq0wMyNrax5TJmS4JH6w-1; Wed, 12 Apr 2023 11:25:24 -0400
+X-MC-Unique: 2UMq0wMyNrax5TJmS4JH6w-1
+Received: by mail-yb1-f198.google.com with SMTP id 186-20020a2510c3000000b00b880000325bso28983049ybq.3
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 08:25:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681312958;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ssyy5ye3KgUlVexJG4pO7NIkqaEMEWr4ggHaOrUyEtY=;
-        b=arE2OSjMoRLneodHSFA0nBtDXS+6oqFlLWIvi8zStu2JGpMSmG0I34p8a/UKeC6B3s
-         hJlBISPG+pnb51kzFn90DfW1RoxuYHnOe+aPl6JIn69m0EUgKoGGKdhQbl6VLLmpGSUN
-         s2VdlaVeih4jfEP3203X6FJiD0+56N4I8/fWXLrMYYNmbJQ9/R0L+XEF47XFg71Qiqwi
-         CL6jFiUEZr7O9gf3DFwRvYvxciDpADZ4ed/5YLYpBZ671XpBnv+l180wtlDH4Y+Q7nF4
-         7M3ctik1wfpJkwdJCTyN0K3kV+2YuyutShTIbTg4T5ZnmmI9IW1x4KhapAb1luhIwG/l
-         n54g==
-X-Gm-Message-State: AAQBX9eNIwwKCTWs51r28ADbko8WpBevvAhl23SqW0iVfmsLJUlhKYJQ
-        Mjpu5PDENUV97IM+uRA9PBbh91iMa/iOn1L24D1i7JC9
-X-Google-Smtp-Source: AKy350bM7n5TLTMn54FLWkt3p4ihKamEuJ8GvIbFBjsLMzX56SfAGnriSh3KNir9JtYsMq/Oy0IY/Q==
-X-Received: by 2002:adf:e441:0:b0:2f1:d17f:cf95 with SMTP id t1-20020adfe441000000b002f1d17fcf95mr7800994wrm.12.1681312958078;
-        Wed, 12 Apr 2023 08:22:38 -0700 (PDT)
-Received: from ?IPV6:2a02:578:8593:1200:4382:4a00:b3c9:ac57? ([2a02:578:8593:1200:4382:4a00:b3c9:ac57])
-        by smtp.gmail.com with ESMTPSA id d7-20020adfef87000000b002daeb108304sm17474744wro.33.2023.04.12.08.22.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Apr 2023 08:22:37 -0700 (PDT)
-Message-ID: <405a8fa2-4a71-71c8-7715-10d3d2301dac@tessares.net>
-Date:   Wed, 12 Apr 2023 17:22:36 +0200
+        d=1e100.net; s=20210112; t=1681313123;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Pl6/W8hCGdRrPSVdraI8ut0BaCLlf4yrRN6pHHW/94A=;
+        b=fmM316u7LkdHbfiiuUWCI8sst0aysrexR6sp7jV3m6ZOLVX87kzV7fwxViSvnz6Q1U
+         P0NOXIzHkDn+Dqu4MwvP2sV3pySDPF6YRhIVIy94K8yDIQuLlg51UQC0Q96k0Iuy0WLm
+         RrCFqeZB7ohW9i48cyYKhW+CkkZTTzsy8Jta8GqhkPpUH2j9qi40rqxUwvAGciwa+kFh
+         a3AVEFLEHcEfwMOy0IU8B3sTUuN1JniqBLlXpV1Y5ZGTZYseBUIqeZTQeTTCpoukbgoT
+         1y66PI1tjVpjJO1mNBUlQtDQLcq4jrHInstpnCLlEPm/YJuQGFN5EXY09vWPZdpAqNwq
+         3rYA==
+X-Gm-Message-State: AAQBX9cdG3xZ/Z1wDAkbKlIMRQFQHeoMrpj6y6dRTPTT3v7asiRd4hnT
+        JGxks/MgMpBLJWz7/QX8yq4IyB2P54n0eS0qttBnYXLSB1LM2ViQGaQfAHqDQD2xE97Sl/6PfXo
+        4Cc8nKtNT++u6GzWL
+X-Received: by 2002:a25:ad94:0:b0:b62:d9a1:a606 with SMTP id z20-20020a25ad94000000b00b62d9a1a606mr14571425ybi.62.1681313123352;
+        Wed, 12 Apr 2023 08:25:23 -0700 (PDT)
+X-Google-Smtp-Source: AKy350adNn8pbkwJ2Kq0277gghgwLXefMb+eA4EygwfbHqcH5RZ9YG9iTFp0U4fQIhM3iOy8sYtlRg==
+X-Received: by 2002:a25:ad94:0:b0:b62:d9a1:a606 with SMTP id z20-20020a25ad94000000b00b62d9a1a606mr14571401ybi.62.1681313123021;
+        Wed, 12 Apr 2023 08:25:23 -0700 (PDT)
+Received: from x1 (c-73-214-169-22.hsd1.pa.comcast.net. [73.214.169.22])
+        by smtp.gmail.com with ESMTPSA id e140-20020a811e92000000b0054f8a3f6281sm686495ywe.3.2023.04.12.08.25.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Apr 2023 08:25:22 -0700 (PDT)
+Date:   Wed, 12 Apr 2023 11:25:18 -0400
+From:   Brian Masney <bmasney@redhat.com>
+To:     Andrew Halaney <ahalaney@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, agross@kernel.org,
+        andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        bhupesh.sharma@linaro.org, wens@csie.org, jernej.skrabec@gmail.com,
+        samuel@sholland.org, mturquette@baylibre.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        richardcochran@gmail.com, linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com
+Subject: Re: [PATCH net-next v4 00/12] Add EMAC3 support for sa8540p-ride
+Message-ID: <ZDbNXvHiyGuF2A49@x1>
+References: <20230411200409.455355-1-ahalaney@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net,v2] uapi: linux: restore IPPROTO_MAX to 256 and add
- IPPROTO_UAPI_MAX
-Content-Language: en-GB
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
-        mathew.j.martineau@linux.intel.com, mptcp@lists.linux.dev
-References: <20230406092558.459491-1-pablo@netfilter.org>
- <ca12e402-96f1-b1d2-70ad-30e532f9026c@tessares.net>
- <20230412072104.61910016@kernel.org>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20230412072104.61910016@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230411200409.455355-1-ahalaney@redhat.com>
+User-Agent: Mutt/2.2.7 (2022-08-07)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,62 +92,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-On 12/04/2023 16:21, Jakub Kicinski wrote:
-> On Thu, 6 Apr 2023 12:45:25 +0200 Matthieu Baerts wrote:
->> The modification in the kernel looks good to me. But I don't know how to
->> make sure this will not have any impact on MPTCP on the userspace side,
->> e.g. somewhere before calling the socket syscall, a check could be done
->> to restrict the protocol number to IPPROTO_MAX and then breaking MPTCP
->> support.
+On Tue, Apr 11, 2023 at 03:03:57PM -0500, Andrew Halaney wrote:
+> This is a forward port / upstream refactor of code delivered
+> downstream by Qualcomm over at [0] to enable the DWMAC5 based
+> implementation called EMAC3 on the sa8540p-ride dev board.
 > 
-> Then again any code which stores the ipproto in an unsigned char will 
-> be broken. A perfect solution is unlikely to exist.
-
-I wonder if the root cause is not the fact we mix the usage of the
-protocol parameter from the socket syscall (int/s32) and the protocol
-field from the IP header (u8).
-
-To me, the enum is linked to the socket syscall, not the IP header. In
-this case, it would make sense to have a dedicated "MAX" macro for the
-IP header, no?
-
->> Is it not safer to expose something new to userspace, something
->> dedicated to what can be visible on the wire?
->>
->> Or recommend userspace programs to limit to lower than IPPROTO_RAW
->> because this number is marked as "reserved" by the IANA anyway [1]?
->>
->> Or define something new linked to UINT8_MAX because the layer 4 protocol
->> field in IP headers is limited to 8 bits?
->> This limit is not supposed to be directly linked to the one of the enum
->> you modified. I think we could even say it works "by accident" because
->> "IPPROTO_RAW" is 255. But OK "IPPROTO_RAW" is there from the "beginning"
->> [2] :)
+> From what I can tell with the board schematic in hand,
+> as well as the code delivered, the main changes needed are:
 > 
-> I'm not an expert but Pablo's patch seems reasonable to me TBH.
-> Maybe I'm missing some extra MPTCP specific context?
+>     1. A new address space layout for dwmac5/EMAC3 MTL/DMA regs
+>     2. A new programming sequence required for the EMAC3 based platforms
+> 
+> This series makes the changes above as well as other housekeeping items
+> such as converting dt-bindings to yaml, etc.
+> 
+> As requested[1], it has been split up by compilation deps / maintainer tree.
+> I will post a link to the associated devicetree changes that together
+> with this series get the hardware functioning.
+> 
+> Patches 1-3 are clean ups of the currently supported dt-bindings and
+> IMO could be picked up as is independent of the rest of the series to
+> improve the current codebase. They've all been reviewed in prior
+> versions of the series.
+> 
+> Patches 5-7 are also clean ups of the driver and are worth picking up
+> independently as well. They don't all have explicit reviews but should
+> be good to go (trivial changes on non-reviewed bits).
+> 
+> The rest of the patches have new changes, lack review, or are specificly
+> being made to support the new hardware, so they should wait until the
+> series as a whole is deemed ready to go by the community.
 
-I was imagining userspace programs doing something like:
+Looks good to me!
 
-    if (protocol < 0 || protocol >= IPPROTO_MAX)
-        die();
+Tested-by: Brian Masney <bmasney@redhat.com>
 
-    syscall(...);
-
-With Pablo's modification and such userspace code, this will break MPTCP
-support.
-
-I'm maybe/probably worry for nothing, I don't know any specific lib
-doing that and to be honest, I don't know what is usually done in libc
-and libs implemented on top of that. On the other hand, it is hard to
-guess how it is used everywhere.
-
-So yes, maybe it is fine?
-
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
