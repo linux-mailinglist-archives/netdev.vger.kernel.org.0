@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACAFA6DFC64
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 19:13:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6357D6DFC74
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 19:15:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbjDLRNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 13:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51282 "EHLO
+        id S231379AbjDLRPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 13:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbjDLRNd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 13:13:33 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468F63C31
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:13:23 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id g3so13472326pja.2
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:13:23 -0700 (PDT)
+        with ESMTP id S231232AbjDLRPM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 13:15:12 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A97B76BF
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:14:53 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id ke16so12022482plb.6
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:14:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681319603;
+        d=linaro.org; s=google; t=1681319677;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qa7vbSbDt/Y53bvYnOJVV8xd5sd6KIE54ET/WRFnZro=;
-        b=kg0TWR1YX9X8s1FKB5JBeTdXQdCFt/+w8CKPczEyNPnKAM5+8C/4MLPFuKINiovq3i
-         SNEKmGMvTwF2oeGGoPVTWd+7Gn4RIUU0dPSf67RDJIuqXCYruhec0zAig8qzA4dQ4xxh
-         cuNXNG5Z8l+W5UI3d5rMihFt3fZFAe8u4dgNkwMR9kgwpLt1KedwwCU2m+gcA/wx08ux
-         FtByYXan/73k8ox3I2lcEN4hDECNSzelBAqLt05VJa4Hzn0MFQ24YKYjYbdtukpjHVA9
-         xU+iT5F68pKtrf8/sDYJOEvlV2tZFRTAA6DeEFkfPKVlvKPf6xJZlcJ56YqbJdexbXv4
-         KqdA==
+        bh=O5AV7vfK/2nwKp0eVshwydhumuKVDn6U4uxG7E7tKMo=;
+        b=onAFA2dtpR1yA26nKlvTU+cGm5CAmVoVKOg2j5MyJBdEBXEbn5T6EsN78Mt7rK1aVR
+         qPEfbnFNUGoOFd3ljdpnEH+u3Krsy4M7vbcK0XZtM84O6YquQ8yhavldrwuRDLdaH2la
+         GrmW1SW9hWp9pI7F0s8Nh+vDR4sSJBO4a7EPQrX9re67No2HD2DcddCUioILebe6S9JW
+         //bB6cNcb9f9wiHH1mh1uFcYUUNFWWQsfR6xpLyxGouGYo4UAn7pKcch8afXDwQQBeX3
+         0BQojcWxFsJcQ8JHAKsIf0BUvHvbVFlDUbMmf/Pd8PXICOhf2F9oVRFmY9c3awZWzFqn
+         DB8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681319603;
+        d=1e100.net; s=20221208; t=1681319677;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qa7vbSbDt/Y53bvYnOJVV8xd5sd6KIE54ET/WRFnZro=;
-        b=llXBbJ6Katf6WZWSaE7l4rr8u925LaaO4T5/s1S8k3uh+bUGSQHunIj2zuhsjqeIpt
-         jmksetoAYnL8WNbjkhnx+GqzFQugRlEdKqJ3yljkBDz56CqW8VgVqEf6pQQnnM+QPqgM
-         6cUMSUViz0YWXiUgx9Wy8mbBPg/UZF+EsVQruzh5fUOHdQZfiV41OHvcUPHplK00ys6F
-         euZ3IAXXsH1ukvcyA/FoRM3C0JMtbp3GFJMgxtBl78W7iNHJVPzy51XDeeuATifTbw4c
-         LUB3THGXWb5MnopOwzSiLagXBNcvA8iZyik0iXZ50jYiJkQCYqJ2aNddtHZBQfEE9r1T
-         C2jg==
-X-Gm-Message-State: AAQBX9c+Ps/6qFs/N+o1SLlKEEx4lldwSvFco+03bJoFxZp0+CVGInn9
-        U+5wCiTUI6huWUkOkJCyPNBlzw==
-X-Google-Smtp-Source: AKy350Ym3EbNIP/6NLrt2kc4p9UDhtX0kcA9uoQ/0MmuCPambyehODK4OFzEgBsCVDCQyGOftuRaqw==
-X-Received: by 2002:a17:902:d2d0:b0:1a6:7632:2b1a with SMTP id n16-20020a170902d2d000b001a676322b1amr2338095plc.64.1681319602618;
-        Wed, 12 Apr 2023 10:13:22 -0700 (PDT)
+        bh=O5AV7vfK/2nwKp0eVshwydhumuKVDn6U4uxG7E7tKMo=;
+        b=CR2BsK4QdXK98fiklFXg4Sil1VQxPTtGlB7+6pBDO+D4dcgwh6gdINXjfrK5AvjwNh
+         FeyzDZfr/+VLRrIyKmsFCrrZOJGGCIv/NHvHVUjMnXsdI30p65yaP1J7NU8PcXgfmhMC
+         aPtZVu5IB/gKDVXDM+FzbpgFVTJOSqzR9oPM6oR1vOk55UEF5L/6JcIy7cg0p/FvY6Pi
+         xf07VFPblY6bHyddqpoh85rri8hOGVDMyuDfqs39XWQCMZicElYuNJNDKudat3WGd3C9
+         3BU5CJI8cctGYBQtBSYbci5hi8ey3/fL8ySplUW+V1XjjKNEupe9il5KL6h1Km4cMG35
+         2GkQ==
+X-Gm-Message-State: AAQBX9fVFhrzufDCzwGPnmapqTqkQcBR9GuZ6kNCPWVbY7lS0aer6oeZ
+        yNqQgMXNTs4IFUtAO7C0SsXHWg==
+X-Google-Smtp-Source: AKy350Y6z/wOIUG6uyTQ/FSrzhRtpYxYONNMgWFGAY9qjQkaKe/SkIXQ5Q16F4XUaZal8QsKuVGbEQ==
+X-Received: by 2002:a17:902:ced1:b0:19c:be03:d1ba with SMTP id d17-20020a170902ced100b0019cbe03d1bamr25995343plg.6.1681319677069;
+        Wed, 12 Apr 2023 10:14:37 -0700 (PDT)
 Received: from p14s ([2604:3d09:148c:c800:1cd7:1135:5e45:5f77])
-        by smtp.gmail.com with ESMTPSA id s16-20020a170902b19000b001a4edbabad3sm1816273plr.230.2023.04.12.10.13.21
+        by smtp.gmail.com with ESMTPSA id jk2-20020a170903330200b001a63a1aed29sm6561362plb.303.2023.04.12.10.14.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 10:13:22 -0700 (PDT)
-Date:   Wed, 12 Apr 2023 11:13:19 -0600
+        Wed, 12 Apr 2023 10:14:36 -0700 (PDT)
+Date:   Wed, 12 Apr 2023 11:14:34 -0600
 From:   Mathieu Poirier <mathieu.poirier@linaro.org>
 To:     MD Danish Anwar <danishanwar@ti.com>
 Cc:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
@@ -61,15 +61,16 @@ Cc:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [PATCH v8 4/4] soc: ti: pruss: Add helper functions to set GPI
- mode, MII_RT_event and XFR
-Message-ID: <20230412171319.GD86761@p14s>
+Subject: Re: [PATCH v8 3/4] soc: ti: pruss: Add pruss_cfg_read()/update(),
+ pruss_cfg_get_gpmux()/set_gpmux() APIs
+Message-ID: <20230412171434.GE86761@p14s>
 References: <20230412103012.1754161-1-danishanwar@ti.com>
- <20230412103012.1754161-5-danishanwar@ti.com>
+ <20230412103012.1754161-4-danishanwar@ti.com>
+ <20230412170654.GC86761@p14s>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230412103012.1754161-5-danishanwar@ti.com>
+In-Reply-To: <20230412170654.GC86761@p14s>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
@@ -80,231 +81,267 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 04:00:12PM +0530, MD Danish Anwar wrote:
-> From: Suman Anna <s-anna@ti.com>
+On Wed, Apr 12, 2023 at 11:06:54AM -0600, Mathieu Poirier wrote:
+> On Wed, Apr 12, 2023 at 04:00:11PM +0530, MD Danish Anwar wrote:
+> > From: Suman Anna <s-anna@ti.com>
+> > 
+> > Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
+> > the PRUSS platform driver to read and program respectively a register
+> > within the PRUSS CFG sub-module represented by a syscon driver. These
+> > APIs are internal to PRUSS driver.
+> > 
+> > Add two new helper functions pruss_cfg_get_gpmux() & pruss_cfg_set_gpmux()
+> > to get and set the GP MUX mode for programming the PRUSS internal wrapper
+> > mux functionality as needed by usecases.
+> > 
+> > Various useful registers and macros for certain register bit-fields and
+> > their values have also been added.
+> > 
+> > Signed-off-by: Suman Anna <s-anna@ti.com>
+> > Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> > Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> > Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> > Reviewed-by: Roger Quadros <rogerq@kernel.org>
+> > Reviewed-by: Tony Lindgren <tony@atomide.com>
+> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> > Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
+> > ---
+> >  drivers/soc/ti/pruss.c       | 45 ++++++++++++++++++
+> >  drivers/soc/ti/pruss.h       | 88 ++++++++++++++++++++++++++++++++++++
+> >  include/linux/pruss_driver.h | 32 +++++++++++++
+> >  3 files changed, 165 insertions(+)
+> >  create mode 100644 drivers/soc/ti/pruss.h
+> > 
+> > diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
+> > index 8ada3758b31a..34d513816a9d 100644
+> > --- a/drivers/soc/ti/pruss.c
+> > +++ b/drivers/soc/ti/pruss.c
+> > @@ -21,6 +21,7 @@
+> >  #include <linux/regmap.h>
+> >  #include <linux/remoteproc.h>
+> >  #include <linux/slab.h>
+> > +#include "pruss.h"
+> >  
+> >  /**
+> >   * struct pruss_private_data - PRUSS driver private data
+> > @@ -168,6 +169,50 @@ int pruss_release_mem_region(struct pruss *pruss,
+> >  }
+> >  EXPORT_SYMBOL_GPL(pruss_release_mem_region);
+> >  
+> > +/**
+> > + * pruss_cfg_get_gpmux() - get the current GPMUX value for a PRU device
+> > + * @pruss: pruss instance
+> > + * @pru_id: PRU identifier (0-1)
+> > + * @mux: pointer to store the current mux value into
+> > + *
+> > + * Return: 0 on success, or an error code otherwise
+> > + */
+> > +int pruss_cfg_get_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 *mux)
+> > +{
+> > +	int ret = 0;
 > 
-> The PRUSS CFG module is represented as a syscon node and is currently
-> managed by the PRUSS platform driver. Add easy accessor functions to set
-> GPI mode, MII_RT event enable/disable and XFR (XIN XOUT) enable/disable
-> to enable the PRUSS Ethernet usecase. These functions reuse the generic
-> pruss_cfg_update() API function.
+> Variable initialization is not needed.
 > 
-> Signed-off-by: Suman Anna <s-anna@ti.com>
-> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
-> Reviewed-by: Roger Quadros <rogerq@kernel.org>
-> Reviewed-by: Tony Lindgren <tony@atomide.com>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
-> ---
->  drivers/remoteproc/pru_rproc.c | 15 -------
->  drivers/soc/ti/pruss.c         | 74 ++++++++++++++++++++++++++++++++++
->  include/linux/pruss_driver.h   | 51 +++++++++++++++++++++++
->  3 files changed, 125 insertions(+), 15 deletions(-)
+> > +	u32 val;
+> > +
+> > +	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS || !mux)
 > 
-> diff --git a/drivers/remoteproc/pru_rproc.c b/drivers/remoteproc/pru_rproc.c
-> index 095f66130f48..54f5ce302e7a 100644
-> --- a/drivers/remoteproc/pru_rproc.c
-> +++ b/drivers/remoteproc/pru_rproc.c
-> @@ -81,21 +81,6 @@ enum pru_iomem {
->  	PRU_IOMEM_MAX,
->  };
->  
-> -/**
-> - * enum pru_type - PRU core type identifier
-> - *
-> - * @PRU_TYPE_PRU: Programmable Real-time Unit
-> - * @PRU_TYPE_RTU: Auxiliary Programmable Real-Time Unit
-> - * @PRU_TYPE_TX_PRU: Transmit Programmable Real-Time Unit
-> - * @PRU_TYPE_MAX: just keep this one at the end
-> - */
-> -enum pru_type {
-> -	PRU_TYPE_PRU = 0,
-> -	PRU_TYPE_RTU,
-> -	PRU_TYPE_TX_PRU,
-> -	PRU_TYPE_MAX,
-> -};
-> -
->  /**
->   * struct pru_private_data - device data for a PRU core
->   * @type: type of the PRU core (PRU, RTU, Tx_PRU)
-> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-> index 34d513816a9d..90a625ab9cfc 100644
-> --- a/drivers/soc/ti/pruss.c
-> +++ b/drivers/soc/ti/pruss.c
-> @@ -213,6 +213,80 @@ int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux)
->  }
->  EXPORT_SYMBOL_GPL(pruss_cfg_set_gpmux);
->  
-> +/**
-> + * pruss_cfg_gpimode() - set the GPI mode of the PRU
-> + * @pruss: the pruss instance handle
-> + * @pru_id: id of the PRU core within the PRUSS
-> + * @mode: GPI mode to set
-> + *
-> + * Sets the GPI mode for a given PRU by programming the
-> + * corresponding PRUSS_CFG_GPCFGx register
-> + *
-> + * Return: 0 on success, or an error code otherwise
-> + */
-> +int pruss_cfg_gpimode(struct pruss *pruss, enum pruss_pru_id pru_id,
-> +		      enum pruss_gpi_mode mode)
-> +{
-> +	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
-> +		return -EINVAL;
-> +
-
-Same
-
-> +	if (mode < 0 || mode > PRUSS_GPI_MODE_MAX)
-> +		return -EINVAL;
-> +
-
-Same
-
-> +	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
-> +				PRUSS_GPCFG_PRU_GPI_MODE_MASK,
-> +				mode << PRUSS_GPCFG_PRU_GPI_MODE_SHIFT);
-> +}
-> +EXPORT_SYMBOL_GPL(pruss_cfg_gpimode);
-> +
-> +/**
-> + * pruss_cfg_miirt_enable() - Enable/disable MII RT Events
-> + * @pruss: the pruss instance
-> + * @enable: enable/disable
-> + *
-> + * Enable/disable the MII RT Events for the PRUSS.
-> + *
-> + * Return: 0 on success, or an error code otherwise
-> + */
-> +int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
-> +{
-> +	u32 set = enable ? PRUSS_MII_RT_EVENT_EN : 0;
-> +
-> +	return pruss_cfg_update(pruss, PRUSS_CFG_MII_RT,
-> +				PRUSS_MII_RT_EVENT_EN, set);
-> +}
-> +EXPORT_SYMBOL_GPL(pruss_cfg_miirt_enable);
-> +
-> +/**
-> + * pruss_cfg_xfr_enable() - Enable/disable XIN XOUT shift functionality
-> + * @pruss: the pruss instance
-> + * @pru_type: PRU core type identifier
-> + * @enable: enable/disable
-> + *
-> + * Return: 0 on success, or an error code otherwise
-> + */
-> +int pruss_cfg_xfr_enable(struct pruss *pruss, enum pru_type pru_type,
-> +			 bool enable)
-> +{
-> +	u32 mask, set;
-> +
-> +	switch (pru_type) {
-> +	case PRU_TYPE_PRU:
-> +		mask = PRUSS_SPP_XFER_SHIFT_EN;
-> +		break;
-> +	case PRU_TYPE_RTU:
-> +		mask = PRUSS_SPP_RTU_XFR_SHIFT_EN;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	set = enable ? mask : 0;
-> +
-> +	return pruss_cfg_update(pruss, PRUSS_CFG_SPP, mask, set);
-> +}
-> +EXPORT_SYMBOL_GPL(pruss_cfg_xfr_enable);
-> +
->  static void pruss_of_free_clk_provider(void *data)
->  {
->  	struct device_node *clk_mux_np = data;
-> diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
-> index c70e08c90165..2a139bfda452 100644
-> --- a/include/linux/pruss_driver.h
-> +++ b/include/linux/pruss_driver.h
-> @@ -32,6 +32,33 @@ enum pruss_gp_mux_sel {
->  	PRUSS_GP_MUX_SEL_MAX,
->  };
->  
-> +/*
-> + * enum pruss_gpi_mode - PRUSS GPI configuration modes, used
-> + *			 to program the PRUSS_GPCFG0/1 registers
-> + */
-> +enum pruss_gpi_mode {
-> +	PRUSS_GPI_MODE_DIRECT = 0,
-
-Not needed
-
-> +	PRUSS_GPI_MODE_PARALLEL,
-> +	PRUSS_GPI_MODE_28BIT_SHIFT,
-> +	PRUSS_GPI_MODE_MII,
-> +	PRUSS_GPI_MODE_MAX,
-> +};
-> +
-> +/**
-> + * enum pru_type - PRU core type identifier
-> + *
-> + * @PRU_TYPE_PRU: Programmable Real-time Unit
-> + * @PRU_TYPE_RTU: Auxiliary Programmable Real-Time Unit
-> + * @PRU_TYPE_TX_PRU: Transmit Programmable Real-Time Unit
-> + * @PRU_TYPE_MAX: just keep this one at the end
-> + */
-> +enum pru_type {
-> +	PRU_TYPE_PRU = 0,
-
-Same
+> If @pru_id is an enum, how can it be smaller than 0?
+> 
+> > +		return -EINVAL;
+> > +
+> > +	ret = pruss_cfg_read(pruss, PRUSS_CFG_GPCFG(pru_id), &val);
+> > +	if (!ret)
+> > +		*mux = (u8)((val & PRUSS_GPCFG_PRU_MUX_SEL_MASK) >>
+> > +			    PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(pruss_cfg_get_gpmux);
+> > +
+> > +/**
+> > + * pruss_cfg_set_gpmux() - set the GPMUX value for a PRU device
+> > + * @pruss: pruss instance
+> > + * @pru_id: PRU identifier (0-1)
+> > + * @mux: new mux value for PRU
+> > + *
+> > + * Return: 0 on success, or an error code otherwise
+> > + */
+> > +int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux)
+> > +{
+> > +	if (mux >= PRUSS_GP_MUX_SEL_MAX ||
+> > +	    pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
+> 
+> Same
+> 
+> > +		return -EINVAL;
+> > +
+> > +	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
+> > +				PRUSS_GPCFG_PRU_MUX_SEL_MASK,
+> > +				(u32)mux << PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
+> > +}
+> > +EXPORT_SYMBOL_GPL(pruss_cfg_set_gpmux);
+> > +
+> >  static void pruss_of_free_clk_provider(void *data)
+> >  {
+> >  	struct device_node *clk_mux_np = data;
+> > diff --git a/drivers/soc/ti/pruss.h b/drivers/soc/ti/pruss.h
+> > new file mode 100644
+> > index 000000000000..6c55987e0e55
+> > --- /dev/null
+> > +++ b/drivers/soc/ti/pruss.h
+> > @@ -0,0 +1,88 @@
+> > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > +/*
+> > + * PRU-ICSS Subsystem user interfaces
+> > + *
+> > + * Copyright (C) 2015-2023 Texas Instruments Incorporated - http://www.ti.com
+> > + *	MD Danish Anwar <danishanwar@ti.com>
+> > + */
+> > +
+> > +#ifndef _SOC_TI_PRUSS_H_
+> > +#define _SOC_TI_PRUSS_H_
+> > +
+> > +#include <linux/bits.h>
+> > +#include <linux/regmap.h>
+> > +
+> > +/*
+> > + * PRU_ICSS_CFG registers
+> > + * SYSCFG, ISRP, ISP, IESP, IECP, SCRP applicable on AMxxxx devices only
+> > + */
+> > +#define PRUSS_CFG_REVID         0x00
+> > +#define PRUSS_CFG_SYSCFG        0x04
+> > +#define PRUSS_CFG_GPCFG(x)      (0x08 + (x) * 4)
+> > +#define PRUSS_CFG_CGR           0x10
+> > +#define PRUSS_CFG_ISRP          0x14
+> > +#define PRUSS_CFG_ISP           0x18
+> > +#define PRUSS_CFG_IESP          0x1C
+> > +#define PRUSS_CFG_IECP          0x20
+> > +#define PRUSS_CFG_SCRP          0x24
+> > +#define PRUSS_CFG_PMAO          0x28
+> > +#define PRUSS_CFG_MII_RT        0x2C
+> > +#define PRUSS_CFG_IEPCLK        0x30
+> > +#define PRUSS_CFG_SPP           0x34
+> > +#define PRUSS_CFG_PIN_MX        0x40
+> > +
+> > +/* PRUSS_GPCFG register bits */
+> > +#define PRUSS_GPCFG_PRU_GPI_MODE_MASK           GENMASK(1, 0)
+> > +#define PRUSS_GPCFG_PRU_GPI_MODE_SHIFT          0
+> > +
+> > +#define PRUSS_GPCFG_PRU_MUX_SEL_SHIFT           26
+> > +#define PRUSS_GPCFG_PRU_MUX_SEL_MASK            GENMASK(29, 26)
+> > +
+> > +/* PRUSS_MII_RT register bits */
+> > +#define PRUSS_MII_RT_EVENT_EN                   BIT(0)
+> > +
+> > +/* PRUSS_SPP register bits */
+> > +#define PRUSS_SPP_XFER_SHIFT_EN                 BIT(1)
+> > +#define PRUSS_SPP_PRU1_PAD_HP_EN                BIT(0)
+> > +#define PRUSS_SPP_RTU_XFR_SHIFT_EN              BIT(3)
+> > +
+> > +/**
+> > + * pruss_cfg_read() - read a PRUSS CFG sub-module register
+> > + * @pruss: the pruss instance handle
+> > + * @reg: register offset within the CFG sub-module
+> > + * @val: pointer to return the value in
+> > + *
+> > + * Reads a given register within the PRUSS CFG sub-module and
+> > + * returns it through the passed-in @val pointer
+> > + *
+> > + * Return: 0 on success, or an error code otherwise
+> > + */
+> > +static int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val)
+> > +{
+> > +	if (IS_ERR_OR_NULL(pruss))
+> > +		return -EINVAL;
+> > +
+> > +	return regmap_read(pruss->cfg_regmap, reg, val);
+> > +}
+> > +
+> > +/**
+> > + * pruss_cfg_update() - configure a PRUSS CFG sub-module register
+> > + * @pruss: the pruss instance handle
+> > + * @reg: register offset within the CFG sub-module
+> > + * @mask: bit mask to use for programming the @val
+> > + * @val: value to write
+> > + *
+> > + * Programs a given register within the PRUSS CFG sub-module
+> > + *
+> > + * Return: 0 on success, or an error code otherwise
+> > + */
+> > +static int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
+> > +			    unsigned int mask, unsigned int val)
+> > +{
+> > +	if (IS_ERR_OR_NULL(pruss))
+> > +		return -EINVAL;
+> > +
+> > +	return regmap_update_bits(pruss->cfg_regmap, reg, mask, val);
+> > +}
+> > +
+> > +#endif  /* _SOC_TI_PRUSS_H_ */
+> > diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
+> > index c8f2e53b911b..c70e08c90165 100644
+> > --- a/include/linux/pruss_driver.h
+> > +++ b/include/linux/pruss_driver.h
+> > @@ -14,6 +14,24 @@
+> >  #include <linux/types.h>
+> >  #include <linux/err.h>
+> >  
+> > +/*
+> > + * enum pruss_gp_mux_sel - PRUSS GPI/O Mux modes for the
+> > + * PRUSS_GPCFG0/1 registers
+> > + *
+> > + * NOTE: The below defines are the most common values, but there
+> > + * are some exceptions like on 66AK2G, where the RESERVED and MII2
+> > + * values are interchanged. Also, this bit-field does not exist on
+> > + * AM335x SoCs
+> > + */
+> > +enum pruss_gp_mux_sel {
+> > +	PRUSS_GP_MUX_SEL_GP = 0,
+> 
+> Initialization not needed
+>
 
 With the above:
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Acked-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 
-> +	PRU_TYPE_RTU,
-> +	PRU_TYPE_TX_PRU,
-> +	PRU_TYPE_MAX,
-> +};
-> +
->  /*
->   * enum pruss_mem - PRUSS memory range identifiers
->   */
-> @@ -86,6 +113,11 @@ int pruss_release_mem_region(struct pruss *pruss,
->  			     struct pruss_mem_region *region);
->  int pruss_cfg_get_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 *mux);
->  int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux);
-> +int pruss_cfg_gpimode(struct pruss *pruss, enum pruss_pru_id pru_id,
-> +		      enum pruss_gpi_mode mode);
-> +int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable);
-> +int pruss_cfg_xfr_enable(struct pruss *pruss, enum pru_type pru_type,
-> +			 bool enable);
->  
->  #else
->  
-> @@ -121,6 +153,25 @@ static inline int pruss_cfg_set_gpmux(struct pruss *pruss,
->  	return ERR_PTR(-EOPNOTSUPP);
->  }
->  
-> +static inline int pruss_cfg_gpimode(struct pruss *pruss,
-> +				    enum pruss_pru_id pru_id,
-> +				    enum pruss_gpi_mode mode)
-> +{
-> +	return ERR_PTR(-EOPNOTSUPP);
-> +}
-> +
-> +static inline int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
-> +{
-> +	return ERR_PTR(-EOPNOTSUPP);
-> +}
-> +
-> +static inline int pruss_cfg_xfr_enable(struct pruss *pruss,
-> +				       enum pru_type pru_type,
-> +				       bool enable);
-> +{
-> +	return ERR_PTR(-EOPNOTSUPP);
-> +}
-> +
->  #endif /* CONFIG_TI_PRUSS */
->  
->  #endif	/* _PRUSS_DRIVER_H_ */
-> -- 
-> 2.34.1
-> 
+> > +	PRUSS_GP_MUX_SEL_ENDAT,
+> > +	PRUSS_GP_MUX_SEL_RESERVED,
+> > +	PRUSS_GP_MUX_SEL_SD,
+> > +	PRUSS_GP_MUX_SEL_MII2,
+> > +	PRUSS_GP_MUX_SEL_MAX,
+> > +};
+> > +
+> >  /*
+> >   * enum pruss_mem - PRUSS memory range identifiers
+> >   */
+> > @@ -66,6 +84,8 @@ int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
+> >  			     struct pruss_mem_region *region);
+> >  int pruss_release_mem_region(struct pruss *pruss,
+> >  			     struct pruss_mem_region *region);
+> > +int pruss_cfg_get_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 *mux);
+> > +int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux);
+> >  
+> >  #else
+> >  
+> > @@ -89,6 +109,18 @@ static inline int pruss_release_mem_region(struct pruss *pruss,
+> >  	return -EOPNOTSUPP;
+> >  }
+> >  
+> > +static inline int pruss_cfg_get_gpmux(struct pruss *pruss,
+> > +				      enum pruss_pru_id pru_id, u8 *mux)
+> > +{
+> > +	return ERR_PTR(-EOPNOTSUPP);
+> > +}
+> > +
+> > +static inline int pruss_cfg_set_gpmux(struct pruss *pruss,
+> > +				      enum pruss_pru_id pru_id, u8 mux)
+> > +{
+> > +	return ERR_PTR(-EOPNOTSUPP);
+> > +}
+> > +
+> >  #endif /* CONFIG_TI_PRUSS */
+> >  
+> >  #endif	/* _PRUSS_DRIVER_H_ */
+> > -- 
+> > 2.34.1
+> > 
