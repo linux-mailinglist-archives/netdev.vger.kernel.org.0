@@ -2,82 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E68B46DFF55
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 22:01:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBBE96DFF75
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 22:11:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbjDLUBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 16:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
+        id S229521AbjDLULt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 16:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbjDLUA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 16:00:59 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B13BD3;
-        Wed, 12 Apr 2023 13:00:58 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id y4so12979964ljq.9;
-        Wed, 12 Apr 2023 13:00:58 -0700 (PDT)
+        with ESMTP id S229548AbjDLULs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 16:11:48 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E75659C
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 13:11:46 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id c3so13771664pjg.1
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 13:11:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681329657;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=mistywest-com.20221208.gappssmtp.com; s=20221208; t=1681330306; x=1683922306;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SV12FO2b4kT0IrF91lFzuk9597ZEnM0XOQm9xOUoWhg=;
-        b=FRubNzWLXGSns4USosxtOjJbEEy9u6VqM7bheSYfY1uYTDl/z3pzUnp5POVdw9RZEx
-         4walJXnsyPnuM90+x6cLapou86kSnjmEISEwn0I3gY/E2tIFGroZmABZyFGBBrPrIiNo
-         kRDTxiAiPT3WjjGCNJfGeyYQv54zCNbQ6TiHYPz7jpWwd3gGTSDgT+xgLwIj3kjBUiMZ
-         9j11giUY9AMUAdOMvQhvASKdIXHNlTNDMaZS/ssCzV0lmsuHXSGV7GsO0scWAPm0k8k0
-         7NR+T/C4G8/0kNFecWmKs6Y2tGTU1x85VjkFjX6odHUqnvI+1xK1kHwE241khWR9nPrY
-         9/Aw==
+        bh=A5Pok9xdKAe+IxVTyn72c81IrSUtFk9gECcYU1++fc4=;
+        b=vM1C9AL8SiVOeQx3TGsN4nfDTULtrbQhnE0j/LW3nFi9CraAkZhYmQ8OThS0ULxM/b
+         UN4foGYmiy3SQzbzVQdlu/dj3uN8+yYhOwtrv1qJbFPu+D43z/KEEPQHAPW4SHUN/HFI
+         k/d4QsdieopTX6nUssqsaQ7l3fOmsTS41y4IFcb7IJA32BLB0SJpG7x8fBFtARcmGWTJ
+         iNA71jhGaHGCxZ0Ehh++w943tlina8xuEs5wytdYhaOQqir/NbCm74lnqLsxM8rx7tX0
+         J8vi712gjUZkDpE7WiAJvnLtyhhYEcPk2Rv6w/dp61IkNMV3ENlm2u9qRSi5SR2h8IeU
+         +IVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681329657;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SV12FO2b4kT0IrF91lFzuk9597ZEnM0XOQm9xOUoWhg=;
-        b=XwzKc0QmjEWncbQePp3QoeFG9TDGDir1zhJ+hR864vwXgkSi+3KAIVg3ytPDLKcdtY
-         trcJYCKPNZa0/53RYXN73cfMFxSeyeVvQfSTPpwCyElsex/2WnlRms2i5GxKLXZKw+s5
-         R7ai8LOHYWLO+Vx3/hibCkNSUqFN7SOmpRM/2U9bcsA+nLXERAgJA6RNMT61vIv7O3kn
-         +wa+aVpLTeV3YnibII31ibmLhiKk2ZKQIC3SDYBiRC9WfeBeP6UI4rUiRhsXJRgphJh5
-         1bpgi8+L7nXsqVUHiI2h5njC3vV3E0eRUfLeYB99j5URa2GQ5h2HCBs6xXGMVSJMun3B
-         eFjQ==
-X-Gm-Message-State: AAQBX9ccMAwG1TH9o6bBSbed1lHmfSPR78joe9pRPs7M4o70vGj/UI4D
-        qwgfxF/1G1L15kxc+jaGddtbPY9YW9TCE2qF7lo=
-X-Google-Smtp-Source: AKy350bucxC4IK3WvOK+UzT+bI0MfALmLc9++97Iaj6iW3vVQ/fWqaczVGW32KFQ6Z3ddGlZeNanoOPtEbfHxF7YEew=
-X-Received: by 2002:a2e:9c9a:0:b0:298:6ffd:e856 with SMTP id
- x26-20020a2e9c9a000000b002986ffde856mr1116156lji.8.1681329656693; Wed, 12 Apr
- 2023 13:00:56 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681330306; x=1683922306;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=A5Pok9xdKAe+IxVTyn72c81IrSUtFk9gECcYU1++fc4=;
+        b=I55Tpz/EpUytJACh0nwb7KJCLKy78q5t3U+PGXyIu6N5ZAGlNtgp7+WzDQIFapEJ4o
+         WjQcAHwH1pe4c39SWwaVcpvl/XwIqugfh+/d20UCPG/xQmR3SEc/GCgn7nVsPcbaEBMW
+         wWy+VmcSdb10kndcZrLIu8zIdRiqXU3uTiIKkjBcnl9jSjjUyFw+coD7OLFi7BCNE7En
+         Z24yt5RsiDuhQt0H3tuCooSPOU45h+PV0Pt8I6IrgTWCUJvDTuyCI0GTVuZqTSL73i8Z
+         pWrG99c2Melqz1Xbj3Q8e5jPJkrE62Jal57OaQ7XVKPGrjLzLmJfKRaRMp821Ys6L4i0
+         p5WQ==
+X-Gm-Message-State: AAQBX9ch0q2bfHJkia9h3JbVHp98kww3/LZnOLRS2ZJQl+yxU7gcDSLP
+        GTPOj9FhmpdPzlsQlZCdyiGNsKnd33BoH9c1lW9YlA==
+X-Google-Smtp-Source: AKy350aGrnighth/9Tpc+FpP3G3WVHmxHIzpm649upSy580Qk97CJQh8t+uXXho2U3/xc+r15J8L9g==
+X-Received: by 2002:a05:6a20:9324:b0:d9:9e33:7218 with SMTP id r36-20020a056a20932400b000d99e337218mr7509678pzh.1.1681330306083;
+        Wed, 12 Apr 2023 13:11:46 -0700 (PDT)
+Received: from [192.168.100.190] ([209.52.149.8])
+        by smtp.gmail.com with ESMTPSA id i26-20020a63221a000000b0051a3c744256sm5150535pgi.93.2023.04.12.13.11.45
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Apr 2023 13:11:45 -0700 (PDT)
+Message-ID: <5eb810d7-6765-4de5-4eb0-ad0972bf640d@mistywest.com>
+Date:   Wed, 12 Apr 2023 13:11:45 -0700
 MIME-Version: 1.0
-References: <20230326233812.28058-1-steev@kali.org> <20230326233812.28058-3-steev@kali.org>
- <ZCVgMuSdyMQhf/Ko@hovoldconsulting.com> <CAKXuJqjJjd6SY1g3JW8w53rEVCqgDkJXQ=1iA3qXcF+C9qv1SQ@mail.gmail.com>
-In-Reply-To: <CAKXuJqjJjd6SY1g3JW8w53rEVCqgDkJXQ=1iA3qXcF+C9qv1SQ@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Wed, 12 Apr 2023 13:00:44 -0700
-Message-ID: <CABBYNZKX9bixyy8GZ0VDFaeNeY0_MSVDDNvcTqiAXEx8zFXfbA@mail.gmail.com>
-Subject: Re: [PATCH v8 2/4] Bluetooth: hci_qca: Add support for QTI Bluetooth
- chip wcn6855
-To:     Steev Klimaszewski <steev@kali.org>
-Cc:     Johan Hovold <johan@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Mark Pearson <markpearson@lenovo.com>,
-        Tim Jiang <quic_tjiang@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Content-Language: en-US
+To:     netdev@vger.kernel.org
+From:   Ron Eggler <ron.eggler@mistywest.com>
+Subject: issues to bring up two VSC8531 PHYs
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,50 +70,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Steev,
+Hi,
+I am trying to bring up a pair of VSC9531 PHYs on an embedded system. I'm using a Yocto build and have altered the device tree with the following patch:
+https://github.com/MistySOM/meta-mistysom/blob/phy-enable/recipes-kernel/linux/smarc-rzg2l/0001-add-vsc8531-userspace-dts.patch
+I installed mdio-tools and can see the interfaces like:
+# mdio
+11c20000.ethernet-ffffffff
+11c30000.ethernet-ffffffff
 
-On Thu, Mar 30, 2023 at 9:35=E2=80=AFAM Steev Klimaszewski <steev@kali.org>=
- wrote:
->
-> Hi Johan,
->
-> On Thu, Mar 30, 2023 at 5:10=E2=80=AFAM Johan Hovold <johan@kernel.org> w=
-rote:
-> >
-> > On Sun, Mar 26, 2023 at 06:38:10PM -0500, Steev Klimaszewski wrote:
-> > > Add regulators, GPIOs and changes required to power on/off wcn6855.
-> > > Add support for firmware download for wcn6855 which is in the
-> > > linux-firmware repository as hpbtfw21.tlv and hpnv21.bin.
-> > >
-> > > Based on the assumption that this is similar to the wcn6750
-> > >
-> > > Tested-on: BTFW.HSP.2.1.0-00538-VER_PATCHZ-1
-> > >
-> > > Signed-off-by: Steev Klimaszewski <steev@kali.org>
-> > > Reviewed-by: Bjorn Andersson <andersson@kernel.org>
-> > > Tested-by: Bjorn Andersson <andersson@kernel.org>
-> > > ---
-> > > Changes since v7:
-> > >  * None
-> >
-> > Only noticed now when Luiz applied the patches, but why did you drop my
-> > reviewed-by and tested-by tags from this patch when submitting v8?
-> >
-> > For the record:
-> >
-> > Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
-> > Tested-by: Johan Hovold <johan+linaro@kernel.org>
-> >
-> Oops, that wasn't intentional! I only meant to drop it on the dts bits
-> as that part I wanted to make sure I got right based on your comments,
-> my apologies!
-> --steev
+Also, I hooked up a logic analyzer to the mdio lines and can see communications happening at boot time. Also, it appears that it's able to read the link status correctly (when a cable is plugged):
+# mdio 11c20000.ethernet-ffffffff
+  DEV      PHY-ID  LINK
+0x00  0x00070572  up
 
-This one seems to be causing a new warning:
+Yet, ifconfig doesn't show the interfaces and I get:
+# ifconfig eth0 up
+[  140.542939] ravb 11c20000.ethernet eth0: failed to connect PHY
+SIOCSIFFLAGS: No such file or directory
+When I try to bring it up
 
-drivers/bluetooth/hci_qca.c:18
-94:37: warning: unused variable 'qca_soc_data_wcn6855' [-Wunused-const-vari=
-able]
+# ip l displays the interfaces as:
+4: eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+     link/ether 9a:ab:83:16:65:36 brd ff:ff:ff:ff:ff:ff
+5: eth1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+     link/ether 2a:9d:bf:09:8d:c3 brd ff:ff:ff:ff:ff:ff
 
---=20
-Luiz Augusto von Dentz
+Where am I going from here? I have experimented with drilling down into bitwise analysis of the MDIO communications. I'm uncertain though if this is my best bet, does someone here have any insight and can provide me with some guidance?
+
+Thanks a lot!
+-- 
+Ron
+
