@@ -2,284 +2,569 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8BFE6DEC2D
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 08:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F15376DEC3B
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 09:07:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbjDLG7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 02:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
+        id S229836AbjDLHHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 03:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbjDLG7f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 02:59:35 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F1105B82;
-        Tue, 11 Apr 2023 23:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681282770; x=1712818770;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Vx2zykhVdwWojTU7iqdTJmR23GpiZW2JE/nX9SCH4QE=;
-  b=NWLz5HxwqpRWVRaK8cgARK6ZmQtpb83Tcc+Z6Sq+I5+lZBPzpGkykNrl
-   pbP6z9nVJmAo+F46UxliK64wuUm17FiTO5VIGQGw12YTh0osPgunwWtTP
-   u68VGszpOxexA5Q1x0tYpAxJhB/lLEvO3yIO/SE/SYMqEyk9jb5w9FaFb
-   k+IE6uJuVnGbCfKVuFMjk4kQaPTw4Z9AeWJx+Dh5icH2t6vuXYXiW/gwd
-   SjKxjVgpoqKP2XYhZp3PF4NDz3jiaRyNRFKBshdPfKJ7wgu2lAMEQXS63
-   xBH0BXqkaRpmY3mZ1Oprrp4MosHaHwE0QCEPuCQGI9kfkjIFUC3LgBc/2
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10677"; a="341310903"
-X-IronPort-AV: E=Sophos;i="5.98,338,1673942400"; 
-   d="scan'208";a="341310903"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2023 23:58:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10677"; a="778207510"
-X-IronPort-AV: E=Sophos;i="5.98,338,1673942400"; 
-   d="scan'208";a="778207510"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by FMSMGA003.fm.intel.com with ESMTP; 11 Apr 2023 23:58:20 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 11 Apr 2023 23:58:19 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 11 Apr 2023 23:58:19 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Tue, 11 Apr 2023 23:58:19 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Tue, 11 Apr 2023 23:58:19 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n/Dbp9jramlnEbL/9JqVLErnNOb+esB0ASOFiEKE/r7kjqZfbkjo3QMakm7LAvdnPs2/bVyuWAVkyMERRH8n1dtGbXVKDpB7nKBQwFE2OXznuqXo9/DaPmYT9HGgWXd+VPBRmZrUPE+TgqwFIuMRVfLlCQ6XY1qyD2LRfcEuQx0tmxh9wPzlKGvcNN4bz82lorY2RtlPe1g/xrCz3TCmTvaBZ32ZVSOLCoCXbvWUW2/oXwtJeY4x1YTjsLJ9aSY99meag9AlqFimwHtpCYPALyc2BeWhZIoRBrDXshFnOkYpt8IkzTM/+Ai+QOj3gD7zcqz173F/Jf2BC9HpFTeW2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LmmOoSRxhuBf3GeBJLZPhG1mT/jbhJtk2doUp+AYZFE=;
- b=a07Jugex4hZeq9psLsttD2F5n3durRXSPjHdFrereBMp7L69nG10y3/EA0+APyVxDi34k91kQE3QMOrkJ0OqJ+CyLse8zmZu38AeX+OsiICQr5EvwP84LE0QPUzOKsgOe/wkmLhC0u7GoZF4wW9NH6+0ymscXfg+V98578NulAy379r/3iFmrUD+Mg5KRy0ac0WlhnxNKOQZF6bACEYEULwzGtrxSLrurxU/sSFhfIGzVcnSXjLxIo+1mCDtyi5+pSStoWxXL9BGcJ23BoW6R4QIbUModQR0hDKfTq83TtBeUNEtzVw5R9c3wHKfIr2+j56SKWl//pMv10UuUhIwzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH0PR11MB7587.namprd11.prod.outlook.com (2603:10b6:510:26d::17)
- by SJ2PR11MB8299.namprd11.prod.outlook.com (2603:10b6:a03:53f::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.35; Wed, 12 Apr
- 2023 06:58:17 +0000
-Received: from PH0PR11MB7587.namprd11.prod.outlook.com
- ([fe80::7237:e32c:559e:55e2]) by PH0PR11MB7587.namprd11.prod.outlook.com
- ([fe80::7237:e32c:559e:55e2%4]) with mapi id 15.20.6298.030; Wed, 12 Apr 2023
- 06:58:16 +0000
-From:   "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "Looi, Hong Aun" <hong.aun.looi@intel.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "Lai, Peter Jun Ann" <peter.jun.ann.lai@intel.com>,
-        "alexis.lothore@bootlin.com" <alexis.lothore@bootlin.com>
-Subject: RE: [PATCH net v5 1/3] net: phylink: add phylink_expects_phy() method
-Thread-Topic: [PATCH net v5 1/3] net: phylink: add phylink_expects_phy()
- method
-Thread-Index: AQHZbQm97fiPNDxqkEOZqI8+LbFDRq8nPHmg
-Date:   Wed, 12 Apr 2023 06:58:15 +0000
-Message-ID: <PH0PR11MB758766370DD16A5107B1FAB69D9B9@PH0PR11MB7587.namprd11.prod.outlook.com>
-References: <20230330091404.3293431-1-michael.wei.hong.sit@intel.com>
-        <20230330091404.3293431-2-michael.wei.hong.sit@intel.com>
- <20230412103812.45e52ab5@pc-288.home>
-In-Reply-To: <20230412103812.45e52ab5@pc-288.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR11MB7587:EE_|SJ2PR11MB8299:EE_
-x-ms-office365-filtering-correlation-id: b5b9bbd5-60e4-4fb1-c490-08db3b234a4b
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2MUSaE7EC5zEMPCjZY1jWhjExfFet5bIiDmxvfFfFJ3PsIpfawTfkl/V2WjbnuyB5hmH9B9odxf9y/O600BsZD0RlbhgmxfI+XhOwxN7AvOu7kGE9ZQuDFKaNAgvTNgKtDoHK3ThfHK/3Z++POvrJ+SqTYHOZ/7j+1gGXFf8HvdPdjB19xTPMOT5VttUuhsX3YP9U+X+ukw8p8r1Bn1/QD1BoEZrhMh6XOwjm4V3idlAPKrDcKDQxYRYDox9rtH1/Mp373kvYtwKKuxUyaN10uPe0z2m4na2iUHWLfIDohd8nXDg8750+zS558u94WRn0PTjg6ph7kPFh6U0VDXtF7vrfelQCq9KB4MynPQyldAD4JsIx5ivwzk3PA/cWNYBWRQr6oY6wNTZ4DZeL1CQCwPrd23JxwZBUnPcttdhdAv+9Sa7DmtqamaZYqVGZLwPAzby38xzB8v9n86zS7E5m1XzzB4k9nlsi3JJMuQWZzwf2GG4XHD4+YnQkemRZjRq/d9s8u5N/vks/zNJHkzkQbALsJKsRE88HcooKvQStFwJoJs7iGzxhOn7YDZb17+CgoO9qweXoGSLMS095NflqF2arUqzLwdlozA6UtC8jDc=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB7587.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(136003)(376002)(346002)(366004)(396003)(451199021)(71200400001)(478600001)(7696005)(86362001)(83380400001)(33656002)(55016003)(82960400001)(122000001)(38070700005)(38100700002)(966005)(2906002)(26005)(316002)(53546011)(6506007)(54906003)(9686003)(186003)(5660300002)(64756008)(7416002)(66476007)(6916009)(66556008)(8936002)(52536014)(41300700001)(8676002)(4326008)(66446008)(66946007)(76116006);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?eWeUsCyLJNhRudN8vE0HxJBqFttfbgbcp0lyPCqqy2XtA/ikfa6gKPHzWS66?=
- =?us-ascii?Q?6RqPiFq64e95nzpXPhurEE+T6b3b/4SauzgXXzqko5k6M9A8i0Ty/nXn7YB1?=
- =?us-ascii?Q?SoEeAiZD/NF9NkcfRPwu2IKxdlaE/jLTMzc4tkEL4BoqBsor+/0vIiJgVQCq?=
- =?us-ascii?Q?frjMzXygwHBlfHdcIkbFz3OrcrUTkszg36X1/g6VuPYJB9WxdlsnvEKF7JdS?=
- =?us-ascii?Q?IEt3SrMIDDU2aNrdkfk68MHOOxE1u0yAR1RRsqMMfshPcWtvEn3cXQb/8zBP?=
- =?us-ascii?Q?RgmTJk84UF5N+T9HzIyF6/INFcv96B01nZ6wMBmKAjeW/+SkPEq1YHCBYPKL?=
- =?us-ascii?Q?uJdAXfW28Em3nobQAeP049trpffQF001V0CgLHOCZKqUuSoPozBrNe9OGi79?=
- =?us-ascii?Q?iG/7J5w7xudcKiDXzRkvu3RX8d9/AxTiYSqzzbdeQZo8KUeQeNKXQ2goxniz?=
- =?us-ascii?Q?oJv4jkCxF9bmjDVBh9AaIgpTLHCGShKu2bIUx9jjhufRa8+HA3ZNCAAW1jlc?=
- =?us-ascii?Q?42w0YeZvP0/o8m5yDzGqq1IP75Hdzoc3MuFYW+EZDAl/f3DshWX4hm0yJH0A?=
- =?us-ascii?Q?7sF+0NcpEwqEJI+qNKXirVPhr0LflHawQr3Fv9onYZCuJskw+nXQaR4YBp59?=
- =?us-ascii?Q?KyJWSV71rzG4ZGQPWm8viJZszdZFaRzryo1OFfdCef0SxMV7BVlM6CLXK0rP?=
- =?us-ascii?Q?ocmKwmdMBNJBJ+/M9Pc5Tc0eHuMeD3/UtmKUZ0J/iBCxf4Lnh4U0K4P2NHM1?=
- =?us-ascii?Q?Ph5ZzVppDhLKMq50PX4tikNPArYpAP91OKx04oTPyjYUnTvtR8DTNxyLlGJi?=
- =?us-ascii?Q?KXwlqEDRVPP0+1RJIk6NWrxAbH4tBTOjai884z4O/9xUov+I99DlVCuFbX8m?=
- =?us-ascii?Q?znzlD2Zrkzc4aYwXeAHAHn1O3/2f9aOaZ1CCnowwiqmVKlrRFVKOye2zp8cX?=
- =?us-ascii?Q?uD5D5F4wMSCSMVaZBMNiO5RciAn3oJqvGj80dr4cymeaU3D3s06lLlvUl67i?=
- =?us-ascii?Q?hyaVkfyRGXcNFHss3GA/+xFkYpjrdLQfQxyB3dscc8otJ/5CvU7FOTBRruPg?=
- =?us-ascii?Q?nIr7zu6NTSUdiJ8lPJCvz9zyDb80KeBSoAExxZu3t7KrvWcTnFDPdbJ5p0Gy?=
- =?us-ascii?Q?K3au7hglVMduObPed3GzHTk8LQHZkx+mT0M4t7ku09M6ffFNN8wcA78R94t0?=
- =?us-ascii?Q?mi2PUkDGfvVc1yEYiagA2jfoMBBquhxV9L4JBISe+u0cREZKsuYbZ/3C3fAd?=
- =?us-ascii?Q?j6fL81edGoSRLlYN1t4rR7PaIh/K0Hq4cJyjXeAq2KaEcDgHcHt9RtX60jDp?=
- =?us-ascii?Q?JvAjvhho/wnZ5sc3WW6IndI+N8ZXQiPnpP/LqlNuV4cMUEJN+Yb3y4BMzDuz?=
- =?us-ascii?Q?LGDy3F6KgIzBwSOBqFv2wzoqAnZfOg2rYwkMVJdaS/xzVe6WbBKNawE9XhmK?=
- =?us-ascii?Q?5qEj+xLkP5u8PDRPCLtg7oeUQ8WCM/npN/vBNMwdLr1uws3PqKu7azB5e01W?=
- =?us-ascii?Q?285w7pz/76CBAlA06ox6rN3G6BqcYOZCild+G94PF1eOk2TRTVVppKILQ1NJ?=
- =?us-ascii?Q?f8S/KbCHbL/yiya7YrHTXqA/SYUirojHr2EEoglx79hJYEMYS6ZsLFQGFEom?=
- =?us-ascii?Q?UQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229481AbjDLHH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 03:07:29 -0400
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA03B59D2;
+        Wed, 12 Apr 2023 00:07:25 -0700 (PDT)
+X-UUID: 9c07a252f40a45edbac5d689247f7a10-20230412
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.22,REQID:77c8eac9-0ea6-4ef8-91fc-facbe15ee1d3,IP:-32
+        768,URL:-32768,TC:-32768,Content:-32768,EDM:-32768,RT:-32768,SF:-32768,FIL
+        E:-32768,BULK:-32768,RULE:Release_Ham,ACTION:release,TS:0
+X-CID-INFO: VERSION:1.1.22,REQID:77c8eac9-0ea6-4ef8-91fc-facbe15ee1d3,IP:-3276
+        8,URL:-32768,TC:-32768,Content:-32768,EDM:-32768,RT:-32768,SF:-32768,FILE:
+        -32768,BULK:-32768,RULE:Release_Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:120426c,CLOUDID:nil,BulkID:nil,BulkQuantity:0,Recheck:
+        0,SF:nil,TC:nil,Content:nil,EDM:nil,IP:nil,URL:nil,File:nil,Bulk:nil,QS:ni
+        l,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-UUID: 9c07a252f40a45edbac5d689247f7a10-20230412
+X-User: sujing@kylinos.cn
+Received: from [172.30.110.63] [(210.12.40.82)] by mailgw
+        (envelope-from <sujing@kylinos.cn>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
+        with ESMTP id 517824854; Wed, 12 Apr 2023 15:06:51 +0800
+Message-ID: <73bd2572-5c82-0d19-89eb-c74fa5a8ee64@kylinos.cn>
+Date:   Wed, 12 Apr 2023 15:06:50 +0800
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB7587.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b5b9bbd5-60e4-4fb1-c490-08db3b234a4b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2023 06:58:15.8953
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JLs6iPxInlSZCSTl1eBOJPnTkGhWYggEddjkt8n3fIlpiB9nVTbHpHzM6Gvna3bNaV1Sj8ZIAcyIRLlzFawA0+DI3qnX5v8UuoEldirzYE0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR11MB8299
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH] net: bonding: avoid use-after-free with
+ tx_hashtbl/rx_hashtbl
+Content-Language: en-US
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, andy@greyhouse.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230328034037.2076930-1-sujing@kylinos.cn>
+ <23772.1679978284@famine>
+From:   sujing <sujing@kylinos.cn>
+In-Reply-To: <23772.1679978284@famine>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thank you so much for your reply!
+
+  I see there are mainly 5 questions about my patch.
+  Before answering your questions, let me provide more detailed
+information about this issue.
+
+In bonding mode 6, I encounter 3 crashes on ft2000+/64(arm64) server
+with kernel 4.19.90 (the issue still exists in the latest version).
+Crashes only occur when closing process preempts the lock before TX/RX,
+the call traces are as follow:
+
+Call trace 1 : TX vs. close
+[21406.614627] tlb_choose_channel+0x5c/0x188 [bonding]
+[21406.620009] bond_alb_xmit+0x1fc/0x5b8 [bonding]
+[21406.625043] bond_start_xmit+0xf8/0x4c0 [bonding]
+[21406.630162] dev_hard_start_xmit+0xac/0x258
+[21406.634759] __dev_queue_xmit+0x754/0x940
+[21406.639182] dev_queue_xmit+0x24/0x30
+[21406.643261] ip_finish_output2+0x23c/0x3e8
+[21406.647771] ip_finish_output+0x1c8/0x2a8
+[21406.652194] ip_output+0x9c/0x100
+[21406.655924] ip_local_out+0x58/0x68
+[21406.659829] __ip_queue_xmit+0x12c/0x368
+[21406.664167] ip_queue_xmit+0x10/0x18
+[21406.668158] __tcp_transmit_skb+0x4f8/0xab8
+[21406.672754] tcp_write_xmit+0x23c/0xf78
+
+Timeline 1:
+tlb_deinitialize ------------------ bond_start_xmit
+spin_lock_bh ---------------------- bond_alb_xmit
+tx_hashtbl = NULL ----------------- tlb_choose_channel
+spin_unlock_bh -------------------- //wait
+----------------------------------- spin_lock_bh
+----------------------------------- __tlb_choose_channel
+----------------------------------- tx_hashtbl[hash_index].tx_slave
+----------------------------------- spin_unlock_bh
+
+  Call trace 2 : RX vs. close
+[ 76.809874] Call trace:
+[ 76.810317] rlb_arp_recv+0x218/0x2f0 [bonding]
+[ 76.811070] bond_handle_frame+0x58/0x270 [bonding]
+[ 76.811905] __netif_receive_skb_core+0x2d4/0xd90
+[ 76.812683] __netif_receive_skb_one_core+0x38/0x68
+[ 76.813477] __netif_receive_skb+0x28/0x80
+[ 76.814156] netif_receive_skb_internal+0x3c/0xa8
+[ 76.814929] napi_gro_receive+0xf8/0x170
+[ 76.815594] receive_buf+0xec/0xa08 [virtio_net]
+[ 76.816353] virtnet_poll+0x144/0x310 [virtio_net]
+[ 76.817134] net_rx_action+0x158/0x3a0
+
+Timeline 2:
+rlb_deinitialize ------------------ bond_handle_frame
+spin_lock_bh ---------------------- rlb_arp_recv
+rx_hashtbl = NULL ----------------- rlb_update_entry_from_arp
+spin_unlock_bh -------------------- //wait
+----------------------------------- spin_lock_bh
+----------------------------------- rx_hashtbl[hash_index].assigned
+----------------------------------- spin_unlock_bh
+
+  Call trace 3 : TX vs. close
+[ 144.146818] Call trace:
+[ 144.147256] rlb_choose_channel+0x84/0x2e8 [bonding]
+[ 144.148067] bond_alb_xmit+0x2d0/0x5b8 [bonding]
+[ 144.148820] bond_start_xmit+0x4e8/0x4f0 [bonding]
+[ 144.149649] dev_hard_start_xmit+0xac/0x258
+[ 144.150335] __dev_queue_xmit+0x754/0x940
+[ 144.150994] dev_queue_xmit+0x24/0x30
+[ 144.151616] arp_xmit+0x24/0x90
+[ 144.152148] arp_send_dst.part.3+0xb4/0xf0
+[ 144.152820] arp_solicit+0x1ac/0x260
+[ 144.153416] neigh_probe+0x64/0x88
+[ 144.153986] __neigh_event_send+0x124/0x340
+[ 144.154671] neigh_resolve_output+0x124/0x200
+[ 144.155383] ip_finish_output2+0x138/0x3e8
+[ 144.156055] ip_finish_output+0x1c8/0x2a8
+[ 144.156720] ip_output+0x9c/0x100
+[ 144.157276] ip_local_out+0x58/0x68
+[ 144.157860] ip_send_skb+0x2c/0x80
+
+Timeline 3:
+tlb_deinitialize ------------------ bond_start_xmit
+spin_lock_bh ---------------------- bond_alb_xmit
+tx_hashtbl = NULL ----------------- rlb_arp_xmit
+spin_unlock_bh -------------------- rlb_choose_channel
+----------------------------------- spin_lock_bh
+----------------------------------- rx_hashtbl[hash_index].assigned
+----------------------------------- spin_unlock_bh
+
+To solve the crashes above, the initial idea is to check whether
+tx_hashtbl/rx_hashtbl is NULL before operating it ,
+and then add some exception handling process.
+
+In bonding driver, there is only one tx_hashtbl operation (in
+'__tlb_choose_channel()'), TLB is easy to solve.
+But there are so many rx_hashtbl operations that also aren't
+checked whether the pointer is NULL.
+It may cause other use-after-free while closing.
+
+I am worried that the initial idea can't solve crash issues under other
+uncertain race conditions, and it maybe affecting the normal process.
+
+Besides, I think it is unnecessary to free and reallocate
+TLB / RLB hash table every-time the bond device is down/up.
+Therefore it should be allocated and freed once in
+'bond_init()/bond_uninit()'.
+
+Since we can't control whether upper level sends packets or not,
+I think the best idea is to make sure tx_hashtbl/rx_hashtbl pointer will
+not be set to NULL during the closing process.
+
+Therefore, move 'bond_alb_deinitialize()' from 'bond_close()' to
+'bond_uninit()', move 'bond_alb_initialize()' from 'bond_open()'
+to 'bond_init()'.
+
+So it becomes as below:
+                                     enter(insmod)
+bond_init------------------bond_init------------
+bond_open------------------bond_alb_initialize--
+bond_alb_initialize---==>--tlb_initialize-------
+tlb_initialize-------------rlb_initialize-------
+rlb_initialize-------------bond_open------------
+                                     exit(rmmod)
+bond_close-----------------bond_close-----------
+bond_alb_deinitialize------bond_uninit----------
+tlb_deinitialize------==>--bond_alb_deinitialize
+rlb_deinitialize-----------tlb_deinitialize-----
+bond_uninit----------------rlb_deinitialize-----
+
+The original initialization is:
+if (bond_is_lb(bond))
+      bond_alb_initialize(bond, (BOND_MODE(bond) == BOND_MODE_ALB));
+         -> tlb_initialize(bond);
+         -> if (rlb_enabled)
+                   rlb_initialize(bond);
+bond_is_lb()
+      -> return BOND_MODE(bond) == BOND_MODE_TLB ||
+                        BOND_MODE(bond) == BOND_MODE_ALB;
+rlb_enabled == (BOND_MODE(bond) == BOND_MODE_ALB);
+
+The original de-initialization is:
+if (bond_is_lb(bond))
+      bond_alb_deinitialize(bond);
+         -> tlb_deinitialize(bond);
+         -> if (bond_info->rlb_enabled)
+                    rlb_deinitialize(bond);
+
+However, 'BOND_MODE(bond)' is set only after 'bond_init()', meaning that
+there's no way to judge the bond device's mode in 'bond_init()'.
+I haven't come up with any better idea, so I decide to set up / tear down
+the TLB / RLB hash table even when they won't be used.
+
+So the initialization changes to:
+bond_alb_initialize(bond);
+            -> tlb_initialize(bond);
+            -> rlb_initialize(bond);
+
+As well as the de initialization:
+bond_alb_deinitialize(bond);
+            -> tlb_deinitialize(bond);
+            -> rlb_deinitialize(bond);
+
+  Since the main points is the movement of applying and releasing
+hash-table memory, the rest in 'bond_close() bond_open()' are keep in
+original places.
+
+  In order to make sure each time the status is clean, 'bond_open()'
+should clear the TLB / RLB hash table before used.
+
+The answers to your questions in the previous email are below.
+
+On 2023/3/28 12:38, Jay Vosburgh wrote:
+> sujing <sujing@kylinos.cn> wrote:
+>
+>> In bonding mode 6 (Balance-alb),
+>> there are some potential race conditions between the 'bond_close' process
+>> and the tx/rx processes that use tx_hashtbl/rx_hashtbl,
+>> which may lead to use-after-free.
+>>
+>> For instance, when the bond6 device is in the 'bond_close' process
+>> while some backlogged packets from upper level are transmitted
+>> to 'bond_start_xmit', there is a spinlock contention between
+>> 'tlb_deinitialize' and 'tlb_choose_channel'.
+>>
+>> If 'tlb_deinitialize' preempts the lock before 'tlb_choose_channel',
+>> a NULL pointer kernel panic will be triggered.
+>>
+>> Here's the timeline:
+>>
+>> bond_close  ------------------  bond_start_xmit
+>> bond_alb_deinitialize  -------  __bond_start_xmit
+>> tlb_deinitialize  ------------  bond_alb_xmit
+>> spin_lock_bh  ----------------  bond_xmit_alb_slave_get
+>> tx_hashtbl = NULL  -----------  tlb_choose_channel
+>> spin_unlock_bh  --------------  //wait for spin_lock_bh
+>> ------------------------------  spin_lock_bh
+>> ------------------------------  __tlb_choose_channel
+>> causing kernel panic ========>  tx_hashtbl[hash_index].tx_slave
+>> ------------------------------  spin_unlock_bh
+> 	I'm still thinking on the race here, but have some questions
+> below about the implementation in the meantime.
+>
+>> Signed-off-by: sujing <sujing@kylinos.cn>
+>> ---
+>> drivers/net/bonding/bond_alb.c  | 32 +++++++++------------------
+>> drivers/net/bonding/bond_main.c | 39 +++++++++++++++++++++++++++------
+>> include/net/bond_alb.h          |  5 ++++-
+>> 3 files changed, 46 insertions(+), 30 deletions(-)
+>>
+>> diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+>> index b9dbad3a8af8..f6ff5ea835c4 100644
+>> --- a/drivers/net/bonding/bond_alb.c
+>> +++ b/drivers/net/bonding/bond_alb.c
+>> @@ -71,7 +71,7 @@ static inline u8 _simple_hash(const u8 *hash_start, int hash_size)
+>>
+>> /*********************** tlb specific functions ***************************/
+>>
+>> -static inline void tlb_init_table_entry(struct tlb_client_info *entry, int save_load)
+>> +void tlb_init_table_entry(struct tlb_client_info *entry, int save_load)
+>> {
+>> 	if (save_load) {
+>> 		entry->load_history = 1 + entry->tx_bytes /
+>> @@ -269,8 +269,8 @@ static void rlb_update_entry_from_arp(struct bonding *bond, struct arp_pkt *arp)
+>> 	spin_unlock_bh(&bond->mode_lock);
+>> }
+>>
+>> -static int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond,
+>> -			struct slave *slave)
+>> +int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond,
+>> +		 struct slave *slave)
+>> {
+>> 	struct arp_pkt *arp, _arp;
+>>
+>> @@ -756,7 +756,7 @@ static void rlb_init_table_entry_src(struct rlb_client_info *entry)
+>> 	entry->src_next = RLB_NULL_INDEX;
+>> }
+>>
+>> -static void rlb_init_table_entry(struct rlb_client_info *entry)
+>> +void rlb_init_table_entry(struct rlb_client_info *entry)
+>> {
+>> 	memset(entry, 0, sizeof(struct rlb_client_info));
+>> 	rlb_init_table_entry_dst(entry);
+>> @@ -874,9 +874,6 @@ static int rlb_initialize(struct bonding *bond)
+>>
+>> 	spin_unlock_bh(&bond->mode_lock);
+>>
+>> -	/* register to receive ARPs */
+>> -	bond->recv_probe = rlb_arp_recv;
+>> -
+>> 	return 0;
+>> }
+>>
+>> @@ -888,7 +885,6 @@ static void rlb_deinitialize(struct bonding *bond)
+>>
+>> 	kfree(bond_info->rx_hashtbl);
+>> 	bond_info->rx_hashtbl = NULL;
+>> -	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
+> 	Why remove this line?
+
+The idea is moving 'rlb_deinitialize()' from 'bond_close()' process to
+'bond_uninit()' process, so there's no need to reset rx_hashtbl_used_head's
+value while exiting the driver.
+
+>> 	spin_unlock_bh(&bond->mode_lock);
+>> }
+>> @@ -1303,7 +1299,7 @@ static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
+>>
+>> /************************ exported alb functions ************************/
+>>
+>> -int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+>> +int bond_alb_initialize(struct bonding *bond)
+>> {
+>> 	int res;
+>>
+>> @@ -1311,15 +1307,10 @@ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+>> 	if (res)
+>> 		return res;
+>>
+>> -	if (rlb_enabled) {
+>> -		res = rlb_initialize(bond);
+>> -		if (res) {
+>> -			tlb_deinitialize(bond);
+>> -			return res;
+>> -		}
+>> -		bond->alb_info.rlb_enabled = 1;
+>> -	} else {
+>> -		bond->alb_info.rlb_enabled = 0;
+>> +	res = rlb_initialize(bond);
+>> +	if (res) {
+>> +		tlb_deinitialize(bond);
+>> +		return res;
+>> 	}
+>>
+>> 	return 0;
+>> @@ -1327,12 +1318,9 @@ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+>>
+>> void bond_alb_deinitialize(struct bonding *bond)
+>> {
+>> -	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+>> -
+>> 	tlb_deinitialize(bond);
+>>
+>> -	if (bond_info->rlb_enabled)
+>> -		rlb_deinitialize(bond);
+>> +	rlb_deinitialize(bond);
+> 	Why is rlb_deinitialize() now unconditionally called here and in
+> bond_alb_initialize()?  if rlb_enabled is false, why set up / tear down
+> the RLB hash table that won't be used?
+>
+
+There may be some misunderstanding. 'rlb_deinitialize()' and
+'tlb_deinitialize()'  are now called in 'bond_alb_deinitialize()'.
+
+As for the next question, I explain it in the beginning, there's no way to
+judge the bond device's mode in 'bond_init()'.
+I haven't come up with a better way.
+
+>> }
+>>
+>> static netdev_tx_t bond_do_alb_xmit(struct sk_buff *skb, struct bonding *bond,
+>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>> index 236e5219c811..8fcb5d3ac0a2 100644
+>> --- a/drivers/net/bonding/bond_main.c
+>> +++ b/drivers/net/bonding/bond_main.c
+>> @@ -4217,6 +4217,7 @@ static int bond_open(struct net_device *bond_dev)
+>> 	struct bonding *bond = netdev_priv(bond_dev);
+>> 	struct list_head *iter;
+>> 	struct slave *slave;
+>> +	int i;
+>>
+>> 	if (BOND_MODE(bond) == BOND_MODE_ROUNDROBIN && !bond->rr_tx_counter) {
+>> 		bond->rr_tx_counter = alloc_percpu(u32);
+>> @@ -4239,11 +4240,29 @@ static int bond_open(struct net_device *bond_dev)
+>> 	}
+>>
+>> 	if (bond_is_lb(bond)) {
+>> -		/* bond_alb_initialize must be called before the timer
+>> -		 * is started.
+>> -		 */
+>> -		if (bond_alb_initialize(bond, (BOND_MODE(bond) == BOND_MODE_ALB)))
+>> -			return -ENOMEM;
+>> +		struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+>> +
+>> +		spin_lock_bh(&bond->mode_lock);
+>> +
+>> +		for (i = 0; i < TLB_HASH_TABLE_SIZE; i++)
+>> +			tlb_init_table_entry(&bond_info->tx_hashtbl[i], 0);
+>> +
+>> +		spin_unlock_bh(&bond->mode_lock);
+>> +
+>> +		if (BOND_MODE(bond) == BOND_MODE_ALB) {
+>> +			bond->alb_info.rlb_enabled = 1;
+>> +			spin_lock_bh(&bond->mode_lock);
+>> +
+>> +			bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
+>> +			for (i = 0; i < RLB_HASH_TABLE_SIZE; i++)
+>> +				rlb_init_table_entry(bond_info->rx_hashtbl + i);
+>> +
+>> +			spin_unlock_bh(&bond->mode_lock);
+>> +			bond->recv_probe = rlb_arp_recv;
+>> +		} else {
+>> +			bond->alb_info.rlb_enabled = 0;
+>> +		}
+>> +
+> 	Why is all of the above done directly in bond_open() and not in
+> bond_alb.c somewhere?  That would reduce some churn (changing some
+> functions away from static).
+>
+> 	Also, I see that bond_alb_initialize() is now called from
+> bond_init() instead of bond_open(), and it only calls rlb_initialize().
+> However, this now duplicates most of the functionality of
+> rlb_initialize() and tlb_initialize() here.  Why?
+>
+> 	In general, the described race is TX vs. close processing, so
+> why is there so much change to the open processing?
+>
+> 	-J
+
+For the record, 'bond_alb_initialize()' now calls both 'rlb_initialize()'
+and 'tlb_initialize()'.
+
+You're right. There are two points that need to be improved.
+
+point 1: create 2 new functions 'rlb_hash_initialize()' and
+'tlb_hash_initialize()' in bond_alb.c, make them do all of the above.
+The plan is as follow:
+***************************************
+bond_open() in bond_main.c:
+if (bond_is_lb(bond)) {
+      tlb_hash_initialize(bond);
+      if (BOND_MODE(bond) == BOND_MODE_ALB) {
+           bond->alb_info.rlb_enabled = 1;
+           rlb_hash_initialize(bond);
+           bond->recv_probe = rlb_arp_recv;
+      } else
+           bond->alb_info.rlb_enabled = 0;
+}
+
+tlb_hash_initialize() in bond_alb.c:
+spin_lock_bh();
+for (i)
+      tlb_init_table_entry();
+spin_unlock_bh();
+
+rlb_hash_initialize() in bond_alb.c:
+spin_lock_bh();
+rx_hashtbl_used_head = RLB_NULL_INDEX;
+for (i)
+      rlb_init_table_entry();
+spin_unlock_bh();
+
+***************************************
+
+point 2: delete the 'rlb_init_table_entry()' in 'rlb_initialize()' and
+'tlb_init_table_entry()' in 'tlb_initialize()', there shouldn't double
+the operations.
+
+The key-point is avoiding TLB/RLB hash table is set to NULL while closing.
+As for the last question, I think this issue due to timeline between
+close processing and TLB / RLB operating.
+
+If all these resetting operations are in 'bond_close()' instead of
+'bond_open()', there still exist the same race conditions.
+
+For example:
+bond_close------------bond_start_xmit
+spin_lock_bh----------bond_alb_xmit
+tlb_init_table_entry--tlb_choose_channel
+spin_unlock_bh--------//wait for lock
+----------------------spin_lock_bh
+----------------------tx_hashtbl[hash_index].tx_slave
+----------------------spin_unlock_bh
+
+If 'bond_close()' preempts the lock before TX, it won't be able to choose
+the correct tx_slave in 'tlb_choose_channel()'.
+
+However, if all these are in 'bond_open()', when the same race conditions
+happen, TX can still work normally.
 
 
-> -----Original Message-----
-> From: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> Sent: Wednesday, April 12, 2023 4:38 PM
-> To: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>
-> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>; Alexandre
-> Torgue <alexandre.torgue@foss.st.com>; Jose Abreu
-> <joabreu@synopsys.com>; David S . Miller <davem@davemloft.net>;
-> Eric Dumazet <edumazet@google.com>; Jakub Kicinski
-> <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; Maxime
-> Coquelin <mcoquelin.stm32@gmail.com>; Ong, Boon Leong
-> <boon.leong.ong@intel.com>; netdev@vger.kernel.org; linux-
-> stm32@st-md-mailman.stormreply.com; linux-arm-
-> kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> linux@armlinux.org.uk; hkallweit1@gmail.com; andrew@lunn.ch;
-> Looi, Hong Aun <hong.aun.looi@intel.com>; Voon, Weifeng
-> <weifeng.voon@intel.com>; Lai, Peter Jun Ann
-> <peter.jun.ann.lai@intel.com>; alexis.lothore@bootlin.com
-> Subject: Re: [PATCH net v5 1/3] net: phylink: add
-> phylink_expects_phy() method
->=20
-> Hello everyone,
->=20
-> On Thu, 30 Mar 2023 17:14:02 +0800
-> Michael Sit Wei Hong <michael.wei.hong.sit@intel.com> wrote:
->=20
-> > Provide phylink_expects_phy() to allow MAC drivers to check if it is
-> > expecting a PHY to attach to. Since fixed-linked setups do not need
-> to
-> > attach to a PHY.
-> >
-> > Provides a boolean value as to if the MAC should expect a PHY.
-> > Returns true if a PHY is expected.
->=20
-> I'm currently working on the TSE rework for dwmac_socfpga, and I
-> noticed one regression since this patch, when using an SFP, see
-> details below :
->=20
-> > Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > Signed-off-by: Michael Sit Wei Hong
-> <michael.wei.hong.sit@intel.com>
-> > ---
-> >  drivers/net/phy/phylink.c | 19 +++++++++++++++++++
-> >  include/linux/phylink.h   |  1 +
-> >  2 files changed, 20 insertions(+)
-> >
-> > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> > index 1a2f074685fa..30c166b33468 100644
-> > --- a/drivers/net/phy/phylink.c
-> > +++ b/drivers/net/phy/phylink.c
-> > @@ -1586,6 +1586,25 @@ void phylink_destroy(struct phylink
-> *pl)  }
-> > EXPORT_SYMBOL_GPL(phylink_destroy);
-> >
-> > +/**
-> > + * phylink_expects_phy() - Determine if phylink expects a phy to
-> be
-> > attached
-> > + * @pl: a pointer to a &struct phylink returned from
-> phylink_create()
-> > + *
-> > + * When using fixed-link mode, or in-band mode with 1000base-X
-> or
-> > 2500base-X,
-> > + * no PHY is needed.
-> > + *
-> > + * Returns true if phylink will be expecting a PHY.
-> > + */
-> > +bool phylink_expects_phy(struct phylink *pl) {
-> > +	if (pl->cfg_link_an_mode =3D=3D MLO_AN_FIXED ||
-> > +	    (pl->cfg_link_an_mode =3D=3D MLO_AN_INBAND &&
-> > +	     phy_interface_mode_is_8023z(pl->link_config.interface)))
->=20
-> From the discussion, at one point Russell mentionned [1] :
-> "If there's a sfp bus, then we don't expect a PHY from the MAC
-> driver (as there can only be one PHY attached), and as
-> phylink_expects_phy() is for the MAC driver to use, we should be
-> returning false if
-> pl->sfp_bus !=3D NULL."
->=20
-> This makes sense and indeed adding the relevant check solves the
-> issue.
->=20
-> Am I correct in assuming this was an unintentional omission from
-> this patch, or was the pl->sfp_bus check dropped on purpose ?
->=20
-> > +		return false;
-> > +	return true;
-> > +}
-> > +EXPORT_SYMBOL_GPL(phylink_expects_phy);
->=20
-> Thanks,
->=20
-> Maxime
->=20
+  Looking forward to your opinion on my reply!
 
-Russell also did mention:
-" The reason for the extra "&& !pl->sfp_bus" in phylink_attach_phy()
-is to allow SFPs to connect to the MAC using inband mode with
-1000base-X and 2500base-X interface modes. These are not for the
-MAC-side of things though."
+-sujing
 
-So I thought that the check can be dropped. I do not have any SFP hardware
-to test, if adding the check make sense, you can send us a patch so we can
-test it out.
-> [1] :
-> https://lore.kernel.org/netdev/ZCQJWcdfmualIjvX@shell.armlinux.o
-> rg.uk/
+
+>> 		if (bond->params.tlb_dynamic_lb || BOND_MODE(bond) == BOND_MODE_ALB)
+>> 			queue_delayed_work(bond->wq, &bond->alb_work, 0);
+>> 	}
+>> @@ -4279,8 +4298,6 @@ static int bond_close(struct net_device *bond_dev)
+>>
+>> 	bond_work_cancel_all(bond);
+>> 	bond->send_peer_notif = 0;
+>> -	if (bond_is_lb(bond))
+>> -		bond_alb_deinitialize(bond);
+>> 	bond->recv_probe = NULL;
+>>
+>> 	if (bond_uses_primary(bond)) {
+>> @@ -5854,6 +5871,8 @@ static void bond_uninit(struct net_device *bond_dev)
+>> 	struct list_head *iter;
+>> 	struct slave *slave;
+>>
+>> +	bond_alb_deinitialize(bond);
+>> +
+>> 	bond_netpoll_cleanup(bond_dev);
+>>
+>> 	/* Release the bonded slaves */
+>> @@ -6295,6 +6314,12 @@ static int bond_init(struct net_device *bond_dev)
+>> 	    bond_dev->addr_assign_type == NET_ADDR_PERM)
+>> 		eth_hw_addr_random(bond_dev);
+>>
+>> +	/* bond_alb_initialize must be called before the timer
+>> +	 * is started.
+>> +	 */
+>> +	if (bond_alb_initialize(bond))
+>> +		return -ENOMEM;
+>> +
+>> 	return 0;
+>> }
+>>
+>> diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
+>> index 9dc082b2d543..9fd16e20ef82 100644
+>> --- a/include/net/bond_alb.h
+>> +++ b/include/net/bond_alb.h
+>> @@ -150,7 +150,7 @@ struct alb_bond_info {
+>> 						 */
+>> };
+>>
+>> -int bond_alb_initialize(struct bonding *bond, int rlb_enabled);
+>> +int bond_alb_initialize(struct bonding *bond);
+>> void bond_alb_deinitialize(struct bonding *bond);
+>> int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
+>> void bond_alb_deinit_slave(struct bonding *bond, struct slave *slave);
+>> @@ -165,5 +165,8 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+>> void bond_alb_monitor(struct work_struct *);
+>> int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr);
+>> void bond_alb_clear_vlan(struct bonding *bond, unsigned short vlan_id);
+>> +int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond, struct slave *slave);
+>> +void tlb_init_table_entry(struct tlb_client_info *entry, int save_load);
+>> +void rlb_init_table_entry(struct rlb_client_info *entry);
+>> #endif /* _NET_BOND_ALB_H */
+>>
+>> -- 
+>> 2.27.0
+>>
+> ---
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+
+-- 
+sujing <sujing@kylinos.cn>
+
