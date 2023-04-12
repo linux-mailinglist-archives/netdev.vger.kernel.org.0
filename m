@@ -2,80 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 884B86E0260
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 01:14:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 038366E0263
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 01:16:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbjDLXOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 19:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33690 "EHLO
+        id S229870AbjDLXQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 19:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbjDLXOf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 19:14:35 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D70AF7EF9;
-        Wed, 12 Apr 2023 16:14:31 -0700 (PDT)
+        with ESMTP id S229498AbjDLXQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 19:16:24 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB688E;
+        Wed, 12 Apr 2023 16:16:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681341271; x=1712877271;
+  t=1681341383; x=1712877383;
   h=message-id:date:subject:to:cc:references:from:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=eA756U+D+rB+uZXcGaZqlHULGINAWhvEFoSUnIM5m5U=;
-  b=b16IUqytAit2zCR/A1dyny4QosUlEmtHjnnhaPkwNQDfrhXqMEfx6Bbk
-   k4jj7uYuHeHox2pWwl5xojL1HP5IsRcrEKGNVZJ1K0a0cqNm+41SNbCKU
-   +GcVJKeAWBJmrzGEgJX9S1l2NUcj/YZkV2iKZjpf3IruMfFy2b8lNHKqM
-   2IP2AsAQdb5bHIyNgMgymi3rVe1ojmXVK6V3YBC3vYji56ZdqcljiWnIm
-   ElfamuJT64O03F60xKKk8ek2hXuTSN7/EyNpCOa0OFWoo+E28LRLdbAT7
-   CWwah8Ieu9lYKtaPjngMGl8GnybvmaWXKIU3Q/bAb3+8WQ/zvld11mbhk
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="406877845"
+  bh=hOSptsDpQUD5mhUCW8WM7lOJabykK7zsL2br19w7/Gs=;
+  b=YTRQ222K/qWV/AJmb9AlHmVyrHqKNZoGuUr8jObI+tXFa5u5IojG//nt
+   3Pt3ffk/M3mwYZ3Zmj6zvQaGirzpUvsHUb3udlQvoz53F+Sol3/f2KmWV
+   2dc97jMElKATjM6Xmo25GIxWJQLdkvO/u04WuLDUj5jtDFd1nAL3+9nBc
+   vftwAwEa6I+aMCNVwk9VT4YRh1NTq2Sa4FdYPYRCIz2KE1/AExLnp107d
+   ++m+3AsDTFMUlNk6/MY8v95vM/uge/kvKn5jiwc5DY8H3v4oZUnOqOJ8Z
+   nceAeadnMTGcEj4z/FBkLH8RvIScQiUu/VfiZOWbRho/hh7GmazAirCZN
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="344043290"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="406877845"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 16:14:31 -0700
+   d="scan'208";a="344043290"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 16:16:23 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="832846155"
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="721765427"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="832846155"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga001.fm.intel.com with ESMTP; 12 Apr 2023 16:14:30 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+   d="scan'208";a="721765427"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga001.jf.intel.com with ESMTP; 12 Apr 2023 16:16:22 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 12 Apr 2023 16:14:30 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ 15.1.2507.23; Wed, 12 Apr 2023 16:16:22 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 12 Apr 2023 16:14:30 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.169)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ 15.1.2507.23; Wed, 12 Apr 2023 16:16:21 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Wed, 12 Apr 2023 16:16:21 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.102)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 12 Apr 2023 16:14:29 -0700
+ 15.1.2507.23; Wed, 12 Apr 2023 16:16:21 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xo8ZZTIL+nK92wRi0wJuD+iUQxOOgSJJknga5KnDnmvFDyYNS118vo8jRQvEYQWdP9lFLuyEfcKy7mm3gIp3ONyhWOujSPKTFtrJuNn0TfTvlR/jfThlAlEFJnA92Sk4W++VoJBSCmCCTNV0s6QkTL8z/30dnSkvLuvGkbII9xUV/SOchWxGI+iX2C7Xc6gBSAVFUAFCiz8+OpdJaDY17QhFdeCHBMLlIYuiTGAe401PpABPHLoEJLhL9A6BJM0tqNomwCoRShsFBZ8clpTH0gFtU1NReLKJsFctYmcWWmGnePyCgbIcEsHjRmrYqslEX3+C9atrRDuFNWSPANEHIw==
+ b=PBQXJ+DTeV+98mmEmBIFvWBKH8DB6D+/jvP9N92hQLN3xBmp/vj7GeY9JjODMj75Y6ku7UPKn8lMpryWgPV20RFv0pfjyOHIqOwkodWFBi+PrI5Jsnb/VHgHsGjr+fQp5kY5/6jEsyr0ha7IjJkMxxgyhSQAr1154OnzodU8B/SqaZnPL8yAs2UJNLlOXn+8aH7O31hu0OMDzPkd3RqkYM1PIKRYTI2jrdniGFLPS7ioX50mcW9cJwxdAJ3L1j+cGxTy/mWupauy22zeN9M2xMoSntFMY0Qlm2XZfNbPZTHhuZ2TlN3qDsBpQrVVr2fq+7OCtXydZRQBl12tunH0fg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HpHEpkVpWmxcOE5SYXU/fL9wsNO0yFc6d84KFhHlMig=;
- b=lPcVOAQwXtmgGRdVtzXuMtYYHbyQzNp3WToO7e0TYSAl5kWH3MDLmy/UxCN7s/Zdpn2F0WWy519rhdaHaUvqrbjvv61+1cCeFwPrxNXUceeUdT4VN/8BUVj5hEGBEMuJZNvpYZlmRiqpN3Bzo3Yy7CaM/hMo7PAj6UF7/GyfdkJl8X+7U8VAWvjGrf5orJ1neKWah29gk8DU180Sr0enDtmP7Ls203u54HroUtO/r66UeeibkzYPxKCldJrTN2uWVXBtC/YQcpVDTeK9DO4KVtM1x7AHuTHBhkK7iUmwljFD7jCGbTicUsT+m2P1gE3mnIkrKTnpR5dV4sTr7uyMAw==
+ bh=lamxFQQ6yD4IJrGiBkVHPF+zM4SezZK2qQQcS3PsCcU=;
+ b=jEHc36qw1+kGYZrineHgKmGt7vf00G5atFgzAzOdRIUlxD7ax+Ywy1Oc0jxKH4q2bwzWCXMqU8MCFDY3DCbspSFeFarboI3+blvZitNfNFMqvaQeVRnZElvTINSyEoMEwNThrUQF5lpbC4FnCknU+RSSUFfvRk53W2pe2S1X8sj++QgeP7N30zmOWRhtFYa3uhr4z28rX7rWN0GZvdHl97SZJlstAJSQKp+ZhP3RJxXe+UL3PVnwH5NXk8HoJ/jrLU+PYOp0xGiIBu8oPczOrwA30Eex2SOHpynXOxbB+6x4+qGPsbkk2UOxbNAVB9jnV8y4NAhYqS1t0scjL25ROg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by BL1PR11MB5239.namprd11.prod.outlook.com (2603:10b6:208:31a::8) with
+ by DS7PR11MB6064.namprd11.prod.outlook.com (2603:10b6:8:77::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Wed, 12 Apr
- 2023 23:14:16 +0000
+ 2023 23:16:11 +0000
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::6222:859a:41a7:e55b]) by CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::6222:859a:41a7:e55b%2]) with mapi id 15.20.6298.030; Wed, 12 Apr 2023
- 23:14:16 +0000
-Message-ID: <a303351e-8b0f-f7ad-180f-cc2108c15b76@intel.com>
-Date:   Wed, 12 Apr 2023 16:14:21 -0700
+ 23:16:11 +0000
+Message-ID: <ce194914-f4be-5aee-90f1-7a652c7fa8b0@intel.com>
+Date:   Wed, 12 Apr 2023 16:16:15 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [net-next Patch v7 5/6] octeontx2-pf: Add support for HTB offload
+Subject: Re: [net-next Patch v7 6/6] docs: octeontx2: Add Documentation for
+ QOS
 Content-Language: en-US
 To:     Hariprasad Kelam <hkelam@marvell.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -87,72 +92,72 @@ CC:     <kuba@kernel.org>, <davem@davemloft.net>,
         <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
         <maxtram95@gmail.com>, <corbet@lwn.net>
 References: <20230410072910.5632-1-hkelam@marvell.com>
- <20230410072910.5632-6-hkelam@marvell.com>
+ <20230410072910.5632-7-hkelam@marvell.com>
 From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <20230410072910.5632-6-hkelam@marvell.com>
+In-Reply-To: <20230410072910.5632-7-hkelam@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR05CA0167.namprd05.prod.outlook.com
- (2603:10b6:a03:339::22) To CO1PR11MB5089.namprd11.prod.outlook.com
+X-ClientProxiedBy: BYAPR07CA0072.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::49) To CO1PR11MB5089.namprd11.prod.outlook.com
  (2603:10b6:303:9b::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|BL1PR11MB5239:EE_
-X-MS-Office365-Filtering-Correlation-Id: f01bd0d6-e92d-435f-d88b-08db3baba2fe
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|DS7PR11MB6064:EE_
+X-MS-Office365-Filtering-Correlation-Id: 88f4bd24-d213-4083-dd25-08db3babe76c
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qHEsVsCGxpMa5PjpgzlkhCme7emSVsJWOXdBHiEW8yfytDlvmbDqD/kVnnZ6mbkN4PoqlxDf7E7mHwXZy/FgAJUUurctQ+7jDs2j7zBVxlzhgVCzWJ1Ld1IGccDIFkAvWDi13Ylee+ywCLu1Hb874qWIroKqlX/c+XOXptu88j9YTV3Zm66E94/V+AfFjBKVMV/CueIWfgUQC17uRBjvewMRaK7+P/IjP1xpsEqRA6VsMpsJMMD64vUSU+5hWFYBZybZRnB8xNNPpXpw8YHETjDB1oGB04mbp+JIh8QJBUQQs76JkAD6wSV+OADrreokXptYQ25hXzYV+XHmHUxfyLzvyUsimSkxtqqtR6SZ2fJeWfs9l/PxnhTbBJfoMF/ILbGSm6+24mfa2sb30KzvJsmsqA/W8YMS73X7smhZ8TvIFIBsQJwsSxYv4bXTZMrQMdmJvtj7hH1zp60HyMN7E//fmR+Gh7Qzvp/y3zXnt9P6fzHGRwEdGGaI1i3OHir45lZykkXAG7AUfbTUq/0TVcgH1byvuhhfL3ps05DnHjIjDVuHRgU+VBmI8zbM+hz+I5PEgIErVmdVWfe3RSS3yglmjNmQyEnvTHhsT4N5nzmFrsG0UBseb6RnLCXCmnhp3vferT/J5bCP7PpGY4inCA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(346002)(366004)(376002)(136003)(39860400002)(451199021)(2906002)(7416002)(31686004)(8676002)(8936002)(5660300002)(478600001)(41300700001)(316002)(66946007)(66556008)(83380400001)(66476007)(82960400001)(36756003)(4326008)(31696002)(26005)(86362001)(6666004)(38100700002)(186003)(6486002)(53546011)(6506007)(6512007)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 3CGiUsuPVs6marZP8gBU0FkTIZ99kzLcAU7miInuNjg4Y+O2dvu/I7ijXBuEW4agDEONeOjHNntu8vUgmjhPQK3dmjKPwOAZFnzmceMxWfNcFHzYpJ9yG5V+r6pLPSvy0yGYYIQmjScLtfQYHEOCwI9GVbIDRs3uTTc2qNM+HiP4AEVd0L27jag2qturHJe2WIecXUxNbRYoJp5uFX3ze3KyTguR6QzYM4TXJ5qSKPL+Plfh/JVYPfFIOBSS2PKMuTpArmWA4Ppjq2Dd7C/6/5vLG66BGSoXFfvcwnUt3lLjbeywHJAodHiRI5MIJSTN+GjxC1M/lHQSMGgcuOi6w4QJ2h8Yy+hMQTfMRPMPogFFnAHQ6H6eEuLFYMCKa7CWfTgZ8UZ81H4HwgZYE4ZXxw7hwWabSqz0bTIhbURRzmWnYvihNyQTucXFTHkvpnY7AmEjWJ25IVns/tTZQVwznbBy8e0/q22vgSNXZaWVDOrJnmy9NIyYULIQ1HkYXZr6OIteCLfI8DtWtx8sEl6MSU5ArG1eHZflp7FxJD24nZaFVrgCddnKqnIZELiUAEgf/29/4zHiP7G8Rf+ZkMbIlTe305YhL+XlRgw2O6jC0ZelNY2KKj+iJhJ4fNu1F2bmxbXQcdpeES7q2c8rTHN2MA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(346002)(39860400002)(136003)(376002)(366004)(451199021)(26005)(31686004)(66556008)(66476007)(53546011)(6506007)(36756003)(6512007)(31696002)(2906002)(83380400001)(6486002)(2616005)(186003)(66946007)(4326008)(7416002)(86362001)(5660300002)(8676002)(8936002)(38100700002)(478600001)(41300700001)(316002)(82960400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VlJ0WmZwdFhmWU1oZXVpYVM4MU5XRGQ1dGtQT1pWMTluU3EwYWtqb2pJbnI4?=
- =?utf-8?B?czh4RGFVQjlrbDJxdFdXdjhTZkJVeXc5aStCejNyWjhyYWVLSVlpRUpFeURI?=
- =?utf-8?B?UExkVlJka1d4SWhOMXgxUUt1eXpoalZ6Q2FoUDdBVFVjaHN0Z205SkYvTWE2?=
- =?utf-8?B?RmRIczFEallHbWFRSXZqcGNsdXNvcUszQXlxclJpenA1enBSeWJuMHJpUVA2?=
- =?utf-8?B?eWRtOGJZN2NKUktrVmhCMTA2NDNpK3cvVnBHMHp3RUozZXZvckZiZUlndStZ?=
- =?utf-8?B?ZkNwV1lMYmRYWFFxeEM0bE5mODhLbXFtaUNjM00zV0luN1F3ZmZsSEdHQkpv?=
- =?utf-8?B?dUtRMkxxcjMwd0tEZFVMUkFUYVNjVzJpWmRzTXEyYm5NZXEvQmdUQWZ1VkhF?=
- =?utf-8?B?SFNvaDFlbjcrWmFRZFlqOHU1RlhVQUppajFBWUxnTFFRdDBBUWNWbHhlUk56?=
- =?utf-8?B?L0YzZjUxS2RiUHFnK1RLZ1RmRkZPK0J0eG1mbzdNVTBXTi8zTzlaN3NGdXFi?=
- =?utf-8?B?bWVGczhjQThpVkNQNU9rQk8xRnNwd1pyVGpNWXVvYVVYb1ZPR2RJOGdNcDRX?=
- =?utf-8?B?MkVFZllrN0Ivd2NzT2JkTkxxcXpuOU43YUFkQVdldGFpbFNaRlBHeTdrRytj?=
- =?utf-8?B?SlVDQXFFYVlUcGhGSFlNT0NOQ3RIenBHTVZ3NkxhT21ocHV2ZFpSWncvVVEw?=
- =?utf-8?B?UC9qY2FsM2FVWkRHNWtmeUtwdFBnSjJNVUlVM2R4aUV5Nll6cENHNGJ5enVk?=
- =?utf-8?B?TndaR2pLOGJ2ZWdQTWlqMUZSQ3NqRGtFeUdiNm9HbWpydzUyMXduYW1OSWIy?=
- =?utf-8?B?TkVHNkkzaEdRL2RXK1Iwa0hPTzcyaHB0L3NYUkxEQnVkd2I4RGZlbWZFVUVK?=
- =?utf-8?B?NkJ6RklsaUJFSjgrM2ExTW1wK0gzaXozTTlqb05OWW9tTm55bU1rajhVbVE4?=
- =?utf-8?B?ZmRYcU9iVDMwT2FFWVk5ZzFWUjNKUzZhWjRUN3NNSUpYcFpPWEt6YmM5ZDdo?=
- =?utf-8?B?Kzh3U2FKVnRsVVRaYXd2WlpZbXRZRHRlMW1ldEcxZUlBZis2ME43Nkk0Tmlq?=
- =?utf-8?B?MHBETmFmZVVsQUNZVEZ2b1hFVGRRcCtaeGRHM0tIUmZHN2EzYU5mak02UmNV?=
- =?utf-8?B?Smx1ZS9DcWwxcXl0L2F0YStnSDVCQ3d4aXVJVk1sL3VwOEF5dVNBa29teHBC?=
- =?utf-8?B?VktrZWpKcnBWUVZHaUROdjFITFJOTmo1Vi9kYk9VUHNuVDBqdjF5MWZvUkZq?=
- =?utf-8?B?MVVXMXZnNnBNeHJOQ3QrQ1N2OVo2aStLTitzVmh1STlUSWk3bTQra0czeGZ6?=
- =?utf-8?B?OEsyMDQ1UlhIVU04YkxISVNoZVFxSzdDNXBzRGJTV0QvK2IzVHkwOHNpN3FG?=
- =?utf-8?B?MGJhVTZTMjFVKy95VEs2aTBpZmt3STFJaUhHZm5mb1cybDFmck9Lc01nYTd1?=
- =?utf-8?B?M2lsTEtORURIWTcra1FrSU05d3ZOdkk0Q0tDa3A0U2R2c3Vhc2JaRWZCdzhU?=
- =?utf-8?B?dzdzQzNpMDBUTmhPMVhOTk90UXQ2azJXblUxbUdaUHl0OHFXcDhVa1lPeTNY?=
- =?utf-8?B?aEVMd1crQldjdG5LcFMyQURUQUJOOXIvWXJDVStLSXg1NmpjeEFCUG5iNEJ0?=
- =?utf-8?B?cEpWajJ4bnlsNEpzZmVFbjh5ck5nSWtFamdMKzB4NytJL2J1b0s3Zm11SmdP?=
- =?utf-8?B?TkJVWVFwQ1NxWE9tSWlWOVNISHhqWU43bmUzc3BaUytJU25kc3RINW5pa0Qy?=
- =?utf-8?B?Qi9WSEpoTGNJbXdjMWZnaUhKL09ZOWdKY3lJbXUzWExKTUN3ZlFmMUhySXBz?=
- =?utf-8?B?eHR4b1NINlpUK05jZEFnYnR3WnF6bXJyQXFvUEJUWnpSUEgwV1drYUxDcTBP?=
- =?utf-8?B?YXk5RUJ6eDNxWElMVlJldFBhVnJWQU8raks2V1h1RGRmZDc3SDltZUI1ci9U?=
- =?utf-8?B?TWZtaVI5RmFDU3pHdkZ3VnE1dTNNUmhPZnRLdXY3V25FalRnTXp3MEcrVDhB?=
- =?utf-8?B?ZmZTWk0xeEJpV2ZXUFd5UGQwLy85RVcvd0VqQ0wyb3hjWEFseXNxMlBISWU3?=
- =?utf-8?B?WGVEVUl0NElKMWFiZzNWVXVlN1NWQXVzYVlJcTBWRW5tbWxDenRtN2ZLZTVz?=
- =?utf-8?B?Y0lJV0FEL2RwZDNjTllxZ09MemtVYXE5c3pndUdZeExpZzVaZllJankwMEpm?=
- =?utf-8?B?ZUE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f01bd0d6-e92d-435f-d88b-08db3baba2fe
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R2EwQ3FNUnc2eU95amlsT0U2bnU5WjJpVVVRc29rTFlwak9pUWZhMjhzYkhh?=
+ =?utf-8?B?MkplVFhiRDVIMFlpcGxSaHpzbVZucm9XYlM2eHFoQkZhZUpUM3FHaTRzcU1Y?=
+ =?utf-8?B?T3NTcElOTUQ1c3Y4cnNMV29Kc1lKcE5nbUFybE5reG5qM3pLQ1FxZG0wbFpS?=
+ =?utf-8?B?NEI5VmNBTlQrajRsdlBRSldNUnlTUC9VSUZQbVp1RnRFK1lHYlJ1ZjFkWEFY?=
+ =?utf-8?B?L21ES3FUTUp4eFB3aExoa055ZnAwd3haOHp0eWZhUVV0Sm1tQzRoMjF1QXc5?=
+ =?utf-8?B?MlNCMlRYRzRHeW43YjVPdWo0ck5NTFUrM0VnNDNjSVFIRkxSRkgrQ2hSSXVa?=
+ =?utf-8?B?YmkyTUd1a2djM1pWeW9TMHJYSjRIb1NGbUpTSTZ4MXpKa2FBNndEUWU3dTNj?=
+ =?utf-8?B?SjFFRzNkNzJkMVI4dzQvUXJnUG50MnZjSkhPN3lyQnNpU2pHYVpJdTI3bVYw?=
+ =?utf-8?B?ZVVNWFBhNVFPRUJ0OEl2WW84YUNSanVUTzIyRTc2VitPbS9LKzFGOThhNytJ?=
+ =?utf-8?B?emVRZnVrM043bmxMUUhrYVhTekN1WjR1RHBmalp2MzJ2RTFYa2hRcjRrNWtI?=
+ =?utf-8?B?bmNoUzgzdHhZaXJmNmlZcmg1T0NnN2NZSWRiSXVLSndjelhWN2tmL2ppMGZl?=
+ =?utf-8?B?bWJPWGQ5RGIvZjJ1TjY5L0VaNHZyeS9kMkVYUjFvVjMrUVJmb2FNRTFiN0NL?=
+ =?utf-8?B?Z2R6cExrMVMwQndJbUgrWWpKQllNWFdZaDJhQVJFK2hhT0ExQmQ1OExqRTRZ?=
+ =?utf-8?B?TktWdGRrQVBWdjBKbHVmMzdZRGw1MnI2V1RuS3RXTHhNTGorWkhxTW1BbHlP?=
+ =?utf-8?B?clJ0alJCY2E0MldtNURUWmZERGlZZmEzWVkzL1dhUjJoTk4rRzhDejUyb1BX?=
+ =?utf-8?B?citidWhvOFY4RWppRUQvZkt1OXk4aFZabGxvNVN2T2gxREJSR0tndlRKd2Jv?=
+ =?utf-8?B?LzBYTkN6MEZVRVlnZWJBVzRyZ3lxMkIvcWFEN0p6WU9VTGUwNDVaRTZQRUwz?=
+ =?utf-8?B?VjFWS0RqcFdvUllkWlN6Uk8rTWw2bUtmRlNTTG56THE2RG9hN055SjZHa21s?=
+ =?utf-8?B?U05COGtKNDJNVEo2OG5TcHVuS3FTcDlmWkhwbE4wcm9ld2tRUXBhc01nekhM?=
+ =?utf-8?B?QVFjOGJDS2hzYk5nSUc1c2lOT21KS3czNndUYys5U2xTNkZXdVZMY1ZwdEVS?=
+ =?utf-8?B?KzVvRWhCUWZtaFFFVllxcnRXLytzaGc1ekNqT0RtWUZsZGV0dnBXanBuUnhz?=
+ =?utf-8?B?cEVWTFNpRDlSM2xZMzB0enQwVnJVYitvczlpSmY3VnN2UXFwUS9Pemx4YnVH?=
+ =?utf-8?B?RENUYWRMcWU5bmNCSC85d2l6TTV3Z0lRaVd6SlZMa0VpK2RLdG5HckdaT01L?=
+ =?utf-8?B?MTl3SFhJY0kvWHFPdElwYmpJS0RST0w5cUt3eWZZYlZxakw0cmtxd1pPTWRu?=
+ =?utf-8?B?Mlc0eDhBemtjTjVmTjllamYzclNKYVFmU2cxQW5UMHhNSWNNWlBQL2puNURP?=
+ =?utf-8?B?RXk2UFloanBiNUFvbVZvbWpPUERZV3ZYLzVIMS9vcXZ6V09JSmR4UHVvU2FX?=
+ =?utf-8?B?T3pRK0o0ZjRiVUJ1MW1sOUowRjk2bUdUeXJzZ09wSDBSQlRZZnk2QWZqY2xj?=
+ =?utf-8?B?dm5NeGVIS2Frd2pvZVpNSnF1WDBaRnZoQmphSlFBc1ZGV2JwY3NUS0x6TDNI?=
+ =?utf-8?B?dlZ1QStPNlFrbHBNVDFvY0pCTG1WUksvMGVSSjZyV2l2cmlHSW5ES2NWdzUx?=
+ =?utf-8?B?VGt0WWUrSFVCME81SUxSUzdIZTJlTXVqSElXL0Y0aW53a3FuNy9zWktJSnR3?=
+ =?utf-8?B?ejJVajM0QXZ3S1UwQm1yL3d0N2F1UVJOVmovUjNVY2dkemhvRmhRQVc4Rnlj?=
+ =?utf-8?B?MzdtaW95SzVUcGZ0b1ZUaXlxd2pCWnZnQXNQY3drcXRBTU9BN3FXWmJlUGUy?=
+ =?utf-8?B?b0w5VkovT0ZjY3BRTHhtYnJGNlkzdVpnaU1xaldZR3VhV2RyZ1d1UG4rN25L?=
+ =?utf-8?B?aEtJbjVtcHNDTHk2M1lwNjQ4TVdrL0hpOUdRM1pEMmdlcWkwM3I2bWo1Z2Fx?=
+ =?utf-8?B?VjVXQWtHNE5pTXBKZ3lUdGtDK2drK1hNYmJuZXh4eXVBNDZrZlJKQ2o4c1M4?=
+ =?utf-8?B?OVgwelhtMlZTT3FsR3VtRzF2S2NxcGw1ZExkWlFla0MzSWt6ZGc0S2l1UlpN?=
+ =?utf-8?B?WGc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88f4bd24-d213-4083-dd25-08db3babe76c
 X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2023 23:14:16.5198
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2023 23:16:11.3363
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DykWf+XYOSVLSvVSLyZ1fHSinTTMHqzlVoqfePhKzkGkrgMokggl5JsHphgywzl9J23TrqT9jyNEhlb8i8eLmBNpXPdhqNPOO8z1wKnwUxk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5239
+X-MS-Exchange-CrossTenant-UserPrincipalName: bUCILDqsNGivhc5bVGLk2Lfm+jO2UZxsblPUFppQohC1bT2CBhJxE2+UMUN1o3zQ5479JJukUMC1+fY2HC07wevs6m/fZ+yCcNtWJcUyKQA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR11MB6064
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
@@ -167,225 +172,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/10/2023 12:29 AM, Hariprasad Kelam wrote:
-> +static void __otx2_qos_txschq_cfg(struct otx2_nic *pfvf,
-> +				  struct otx2_qos_node *node,
-> +				  struct nix_txschq_config *cfg)
-> +{
-> +	struct otx2_hw *hw = &pfvf->hw;
-> +	int num_regs = 0;
-> +	u64 maxrate;
-> +	u8 level;
+> Add QOS example configuration along with tc-htb commands
+> 
+> Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> ---
+>  .../ethernet/marvell/octeontx2.rst            | 39 +++++++++++++++++++
+>  1 file changed, 39 insertions(+)
+> 
+> diff --git a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+> index 5ba9015336e2..eca4309964c8 100644
+> --- a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+> @@ -13,6 +13,7 @@ Contents
+>  - `Drivers`_
+>  - `Basic packet flow`_
+>  - `Devlink health reporters`_
+> +- `Quality of service`_
+>  
+>  Overview
+>  ========
+> @@ -287,3 +288,41 @@ For example::
+>  	 NIX_AF_ERR:
+>  	        NIX Error Interrupt Reg : 64
+>  	        Rx on unmapped PF_FUNC
 > +
-> +	level = node->level;
 > +
-> +	/* program txschq registers */
-> +	if (level == NIX_TXSCH_LVL_SMQ) {
-> +		cfg->reg[num_regs] = NIX_AF_SMQX_CFG(node->schq);
-> +		cfg->regval[num_regs] = ((u64)pfvf->tx_max_pktlen << 8) |
-> +					OTX2_MIN_MTU;
-> +		cfg->regval[num_regs] |= (0x20ULL << 51) | (0x80ULL << 39) |
-> +					 (0x2ULL << 36);
-> +		num_regs++;
+> +Quality of service
+> +==================
 > +
-> +		/* configure parent txschq */
-> +		cfg->reg[num_regs] = NIX_AF_MDQX_PARENT(node->schq);
-> +		cfg->regval[num_regs] = node->parent->schq << 16;
-> +		num_regs++;
+> +octeontx2 silicon and CN10K transmit interface consists of five transmit levels starting from SMQ/MDQ, TL4 to TL1.
+> +The hardware uses the below algorithms depending on the priority of scheduler queues
 > +
-> +		/* configure prio/quantum */
-> +		if (node->qid == OTX2_QOS_QID_NONE) {
-> +			cfg->reg[num_regs] = NIX_AF_MDQX_SCHEDULE(node->schq);
-> +			cfg->regval[num_regs] =  node->prio << 24 |
-> +						 mtu_to_dwrr_weight(pfvf,
-> +								    pfvf->tx_max_pktlen);
-> +			num_regs++;
-> +			goto txschq_cfg_out;
-> +		}
+> +1. Strict Priority
 > +
-> +		/* configure prio */
-> +		cfg->reg[num_regs] = NIX_AF_MDQX_SCHEDULE(node->schq);
-> +		cfg->regval[num_regs] = (node->schq -
-> +					 node->parent->prio_anchor) << 24;
-> +		num_regs++;
+> +      -  Once packets are submitted to MDQ, hardware picks all active MDQs having different priority
+> +         using strict priority.
 > +
-> +		/* configure PIR */
-> +		maxrate = (node->rate > node->ceil) ? node->rate : node->ceil;
+> +2. Round Robin
 > +
-> +		cfg->reg[num_regs] = NIX_AF_MDQX_PIR(node->schq);
-> +		cfg->regval[num_regs] =
-> +			otx2_get_txschq_rate_regval(pfvf, maxrate, 65536);
-> +		num_regs++;
+> +      - Active MDQs having the same priority level are chosen using round robin.
 > +
-> +		/* configure CIR */
-> +		if (!test_bit(QOS_CIR_PIR_SUPPORT, &pfvf->hw.cap_flag)) {
-> +			/* Don't configure CIR when both CIR+PIR not supported
-> +			 * On 96xx, CIR + PIR + RED_ALGO=STALL causes deadlock
-> +			 */
-> +			goto txschq_cfg_out;
-> +		}
+> +3. Each packet will traverse MDQ, TL4 to TL1 levels. Each level contains an array of queues to support scheduling and
+> +   shaping.
 > +
-> +		cfg->reg[num_regs] = NIX_AF_MDQX_CIR(node->schq);
-> +		cfg->regval[num_regs] =
-> +			otx2_get_txschq_rate_regval(pfvf, node->rate, 65536);
-> +		num_regs++;
-> +	} else if (level == NIX_TXSCH_LVL_TL4) {
-> +		/* configure parent txschq */
-> +		cfg->reg[num_regs] = NIX_AF_TL4X_PARENT(node->schq);
-> +		cfg->regval[num_regs] = node->parent->schq << 16;
-> +		num_regs++;
+> +4. once the user creates tc classes with different priority
 > +
-> +		/* return if not htb node */
-> +		if (node->qid == OTX2_QOS_QID_NONE) {
-> +			cfg->reg[num_regs] = NIX_AF_TL4X_SCHEDULE(node->schq);
-> +			cfg->regval[num_regs] =  node->prio << 24 |
-> +						 mtu_to_dwrr_weight(pfvf,
-> +								    pfvf->tx_max_pktlen);
-> +			num_regs++;
-> +			goto txschq_cfg_out;
-> +		}
+> +   -  Driver configures schedulers allocated to the class with specified priority along with rate-limiting configuration.
 > +
-> +		/* configure priority */
-> +		cfg->reg[num_regs] = NIX_AF_TL4X_SCHEDULE(node->schq);
-> +		cfg->regval[num_regs] = (node->schq -
-> +					 node->parent->prio_anchor) << 24;
-> +		num_regs++;
+> +5. Enable HW TC offload on the interface::
 > +
-> +		/* configure PIR */
-> +		maxrate = (node->rate > node->ceil) ? node->rate : node->ceil;
-> +		cfg->reg[num_regs] = NIX_AF_TL4X_PIR(node->schq);
-> +		cfg->regval[num_regs] =
-> +			otx2_get_txschq_rate_regval(pfvf, maxrate, 65536);
-> +		num_regs++;
+> +        # ethtool -K <interface> hw-tc-offload on
 > +
-> +		/* configure CIR */
-> +		if (!test_bit(QOS_CIR_PIR_SUPPORT, &pfvf->hw.cap_flag)) {
-> +			/* Don't configure CIR when both CIR+PIR not supported
-> +			 * On 96xx, CIR + PIR + RED_ALGO=STALL causes deadlock
-> +			 */
-> +			goto txschq_cfg_out;
-> +		}
+> +6. Crate htb root::
 > +
-> +		cfg->reg[num_regs] = NIX_AF_TL4X_CIR(node->schq);
-> +		cfg->regval[num_regs] =
-> +			otx2_get_txschq_rate_regval(pfvf, node->rate, 65536);
-> +		num_regs++;
-> +	} else if (level == NIX_TXSCH_LVL_TL3) {
-> +		/* configure parent txschq */
-> +		cfg->reg[num_regs] = NIX_AF_TL3X_PARENT(node->schq);
-> +		cfg->regval[num_regs] = node->parent->schq << 16;
-> +		num_regs++;
+> +        # tc qdisc add dev <interface> clsact
+> +        # tc qdisc replace dev <interface> root handle 1: htb offload
 > +
-> +		/* configure link cfg */
-> +		if (level == pfvf->qos.link_cfg_lvl) {
-> +			cfg->reg[num_regs] = NIX_AF_TL3_TL2X_LINKX_CFG(node->schq, hw->tx_link);
-> +			cfg->regval[num_regs] = BIT_ULL(13) | BIT_ULL(12);
-> +			num_regs++;
-> +		}
+> +7. Create tc classes with different  priorities::
 > +
-> +		/* return if not htb node */
-> +		if (node->qid == OTX2_QOS_QID_NONE) {
-> +			cfg->reg[num_regs] = NIX_AF_TL3X_SCHEDULE(node->schq);
-> +			cfg->regval[num_regs] =  node->prio << 24 |
-> +						 mtu_to_dwrr_weight(pfvf,
-> +								    pfvf->tx_max_pktlen);
-> +			num_regs++;
-> +			goto txschq_cfg_out;
-> +		}
+> +        # tc class add dev <interface> parent 1: classid 1:1 htb rate 10Gbit prio 1
 > +
-> +		/* configure priority */
-> +		cfg->reg[num_regs] = NIX_AF_TL3X_SCHEDULE(node->schq);
-> +		cfg->regval[num_regs] = (node->schq -
-> +					 node->parent->prio_anchor) << 24;
-> +		num_regs++;
-> +
-> +		/* configure PIR */
-> +		maxrate = (node->rate > node->ceil) ? node->rate : node->ceil;
-> +		cfg->reg[num_regs] = NIX_AF_TL3X_PIR(node->schq);
-> +		cfg->regval[num_regs] =
-> +			otx2_get_txschq_rate_regval(pfvf, maxrate, 65536);
-> +		num_regs++;
-> +
-> +		/* configure CIR */
-> +		if (!test_bit(QOS_CIR_PIR_SUPPORT, &pfvf->hw.cap_flag)) {
-> +			/* Don't configure CIR when both CIR+PIR not supported
-> +			 * On 96xx, CIR + PIR + RED_ALGO=STALL causes deadlock
-> +			 */
-> +			goto txschq_cfg_out;
-> +		}
-> +
-> +		cfg->reg[num_regs] = NIX_AF_TL3X_CIR(node->schq);
-> +		cfg->regval[num_regs] =
-> +			otx2_get_txschq_rate_regval(pfvf, node->rate, 65536);
-> +		num_regs++;
-> +	} else if (level == NIX_TXSCH_LVL_TL2) {
-> +		/* configure parent txschq */
-> +		cfg->reg[num_regs] = NIX_AF_TL2X_PARENT(node->schq);
-> +		cfg->regval[num_regs] = hw->tx_link << 16;
-> +		num_regs++;
-> +
-> +		/* configure link cfg */
-> +		if (level == pfvf->qos.link_cfg_lvl) {
-> +			cfg->reg[num_regs] = NIX_AF_TL3_TL2X_LINKX_CFG(node->schq, hw->tx_link);
-> +			cfg->regval[num_regs] = BIT_ULL(13) | BIT_ULL(12);
-> +			num_regs++;
-> +		}
-> +
-> +		/* return if not htb node */
-> +		if (node->qid == OTX2_QOS_QID_NONE) {
-> +			cfg->reg[num_regs] = NIX_AF_TL2X_SCHEDULE(node->schq);
-> +			cfg->regval[num_regs] =  node->prio << 24 |
-> +						 mtu_to_dwrr_weight(pfvf,
-> +								    pfvf->tx_max_pktlen);
-> +			num_regs++;
-> +			goto txschq_cfg_out;
-> +		}
-> +
-> +		/* check if node is root */
-> +		if (node->qid == OTX2_QOS_QID_INNER && !node->parent) {
-> +			cfg->reg[num_regs] = NIX_AF_TL2X_SCHEDULE(node->schq);
-> +			cfg->regval[num_regs] =  TXSCH_TL1_DFLT_RR_PRIO << 24 |
-> +						 mtu_to_dwrr_weight(pfvf,
-> +								    pfvf->tx_max_pktlen);
-> +			num_regs++;
-> +			goto txschq_cfg_out;
-> +		}
-> +
-> +		/* configure priority/quantum */
-> +		cfg->reg[num_regs] = NIX_AF_TL2X_SCHEDULE(node->schq);
-> +		cfg->regval[num_regs] = (node->schq -
-> +					 node->parent->prio_anchor) << 24;
-> +		num_regs++;
-> +
-> +		/* configure PIR */
-> +		maxrate = (node->rate > node->ceil) ? node->rate : node->ceil;
-> +		cfg->reg[num_regs] = NIX_AF_TL2X_PIR(node->schq);
-> +		cfg->regval[num_regs] =
-> +			otx2_get_txschq_rate_regval(pfvf, maxrate, 65536);
-> +		num_regs++;
-> +
-> +		/* configure CIR */
-> +		if (!test_bit(QOS_CIR_PIR_SUPPORT, &pfvf->hw.cap_flag)) {
-> +			/* Don't configure CIR when both CIR+PIR not supported
-> +			 * On 96xx, CIR + PIR + RED_ALGO=STALL causes deadlock
-> +			 */
-> +			goto txschq_cfg_out;
-> +		}
-> +
-> +		cfg->reg[num_regs] = NIX_AF_TL2X_CIR(node->schq);
-> +		cfg->regval[num_regs] =
-> +			otx2_get_txschq_rate_regval(pfvf, node->rate, 65536);
-> +		num_regs++;
-> +	}
-> +
-> +txschq_cfg_out:
-> +	cfg->num_regs = num_regs;
-> +}
-> +
+> +        # tc class add dev <interface> parent 1: classid 1:2 htb rate 10Gbit prio 7
 
 
-That is a lot of code for one function.. Any chance it could be split
-into some helpers?
-
-This patch itself is also much larger than I was expecting. I guess most
-of it is in the new file implementing the new HTB offload, but its hard
-to digest in a single patch.
+This part of the doc is confusing. It starts by reading like a list of
+algorithms, then transitions into a list of instructions. I think those
+should be separated into two pieces, one with the explanation and one
+with some example how to set it up.
