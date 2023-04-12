@@ -2,77 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E2B36E01C2
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 00:20:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 130876E01C6
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 00:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbjDLWU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 18:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60712 "EHLO
+        id S229506AbjDLWWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 18:22:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbjDLWUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 18:20:45 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1668683F7
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 15:20:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=VBKUsK5PWu/o8/3+bclgIEKW6XxFEzMPUWzq5XqxaDg=; b=vy
-        TWUoJ5wAS8USZo8xtXW8NkHzE+F+W4O9e4Z0hDpGVlxdyobY3aq470gpiMgXgIXdSXCwTRQHqunCh
-        ZMQS8uuwu0QGawA77j1VPSv61tNAaWLj22azalPoFdXZxssmaBnjV7sWEf/UulnWHLuuCLeKDDifG
-        Ls/24R3j2bj2wv8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pmipO-00A8U0-4i; Thu, 13 Apr 2023 00:20:34 +0200
-Date:   Thu, 13 Apr 2023 00:20:34 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Ron Eggler <ron.eggler@mistywest.com>, netdev@vger.kernel.org,
-        Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: issues to bring up two VSC8531 PHYs
-Message-ID: <46e4d167-5c96-41a0-8823-a6a97a9fa45f@lunn.ch>
-References: <5eb810d7-6765-4de5-4eb0-ad0972bf640d@mistywest.com>
- <bb62e044-034e-771e-e3a9-a4b274e3dec9@gmail.com>
+        with ESMTP id S229499AbjDLWWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 18:22:32 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DD4447EEF;
+        Wed, 12 Apr 2023 15:22:18 -0700 (PDT)
+Date:   Thu, 13 Apr 2023 00:22:12 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
+        mathew.j.martineau@linux.intel.com, mptcp@lists.linux.dev
+Subject: Re: [PATCH net,v2] uapi: linux: restore IPPROTO_MAX to 256 and add
+ IPPROTO_UAPI_MAX
+Message-ID: <ZDcvFKLZJwdz0Qse@calendula>
+References: <20230406092558.459491-1-pablo@netfilter.org>
+ <ca12e402-96f1-b1d2-70ad-30e532f9026c@tessares.net>
+ <20230412072104.61910016@kernel.org>
+ <405a8fa2-4a71-71c8-7715-10d3d2301dac@tessares.net>
+ <ZDbWi4dgysRbf+vb@calendula>
+ <7405c14e-1fbe-c820-c470-36b0a50b4cae@tessares.net>
+ <20230412123718.7e6c0b55@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <bb62e044-034e-771e-e3a9-a4b274e3dec9@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230412123718.7e6c0b55@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Also, I hooked up a logic analyzer to the mdio lines and can see communications happening at boot time. Also, it appears that it's able to read the link status correctly (when a cable is plugged):
-> > # mdio 11c20000.ethernet-ffffffff
-> >  DEV      PHY-ID  LINK
-> > 0x00  0x00070572  up
+On Wed, Apr 12, 2023 at 12:37:18PM -0700, Jakub Kicinski wrote:
+> On Wed, 12 Apr 2023 18:35:40 +0200 Matthieu Baerts wrote:
+> > > Is this theoretical, or you think any library might be doing this
+> > > already? I lack of sufficient knowledge of the MPTCP ecosystem to
+> > > evaluate myself.  
 > > 
-> AFAICS there's no PHY driver yet for this model. The generic driver may or may not work.
-> Best add a PHY driver.
+> > This is theoretical.
+> > 
+> > But using it with socket's protocol parameter is the only good usage of
+> > IPPROTO_MAX for me :-D
+> 
+> Perhaps. No strong preference from me. That said I think I can come up
+> with a good name for the SO use: SO_IPPROTO_MAX (which IMHO it's better
+> than IPPROTO_UAPI_MAX if Pablo doesn't mind sed'ing?)
 
-Hi Heiner
+SO_ is usually reserved for socket options.
 
-mscc.h:#define PHY_ID_VSC8531			  0x00070570
-
-mscc_main.c:
-        .phy_id         = PHY_ID_VSC8531,
-        .name           = "Microsemi VSC8531",
-        .phy_id_mask    = 0xfffffff0,
-        /* PHY_GBIT_FEATURES */
- 
-> Any specific reason why you set the compatible to
-> ethernet-phy-ieee802.3-c45 for a c22 PHY?
-
-Ah, i missed that! The driver only uses phy_read/phy_write, not
-phy_write_mmd() and phy_read_mmd().
-
-Remove the compatible string. It is not needed for C22 PHYs.
-
-       Andrew
+> The name for a max in proto sense... I'm not sure what that would be.
+> IPPROTO_MAX_IPPROTO ? IP_IPROTO_MAX ? IP_PROTO_MAX ? Dunno..
