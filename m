@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF4AF6DEA29
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 06:08:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE9F6DEA2B
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 06:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbjDLEI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 00:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
+        id S229751AbjDLEIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 00:08:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbjDLEIS (ORCPT
+        with ESMTP id S229706AbjDLEIS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 00:08:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86EA4EDC
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 21:08:07 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E481BE4
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 21:08:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37F1162DAD
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 04:08:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 893EAC433D2;
-        Wed, 12 Apr 2023 04:08:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2580262DA3
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 04:08:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EF26C433D2;
+        Wed, 12 Apr 2023 04:08:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681272486;
-        bh=rLauej4VmkThQvY5uBCF9fPgh5uiblN6C+aPyiwStb8=;
+        s=k20201202; t=1681272487;
+        bh=QqHuyNmvVMmBBY2OtpT6NOKG9cON+wAQmLEOW5Gck3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJpiqR9DplgbEbG2nEZl2Yr5wKTpKgViZPe3Lw/i1p2gsMaXZ7Rw6XcOthjFHL/l6
-         ISjvYATwRvqkCAEBtUz5LFstRm3umz8tv5HTo6q5UEygo+MKMVHOA8cXxye6UBmZrl
-         1b/K1jKg8IhGW1Fjour4QrPbIIjApqrAUyW20JiVRM1Gp+tGXKUgJvkAcVuXxrdLhA
-         CHnMvqBsbV//8cYjEVkiztv5dq4dSvuQh5gSt/1Ks8XKu7mjwsy7ZHQhjEGBzSLvw4
-         0QlVZd2CTFCMLyOR3EhwJFzCmg7/Eze+tzygHFKquEgUW8Bv7CiJdkJBXVhUbD4E2u
-         wGJ1KFa0e6abQ==
+        b=t0HeAmbr5dXGV8Cig3A4aBl6eQwqGpYJa6gV3RCgg5HVCJZLEi9PjKtrSiz2eBY+o
+         LUnGD/keYkpXgIGypPGD83q7SAf/8gs9B286mvQQxv9/uN8G6ofM3k0LZ/qv+EEG2O
+         mtrD6A8VasHRDIr1Kf8t61k6RHCOgQ2kBHcveY9Nmt0r1+mIh1PAEO4jadg4idS3aV
+         dHFIz4ln98LCXhNfOjD24ZvjjYXRKjZOJoE+w4fWP2vpcU+qQYEL8NUtDQ9TWVBInw
+         J5bwTlaokrY6DHr4E2CM6w0jC2A8kr3shVTNK6fdS2YQa0qMcfM0UMFXM2LSjoyzhR
+         GtQKhdMkEitcA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -40,16 +40,16 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Vlad Buslov <vladbu@nvidia.com>,
         Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [net-next 07/15] net/mlx5: Bridge, support multicast VLAN pop
-Date:   Tue, 11 Apr 2023 21:07:44 -0700
-Message-Id: <20230412040752.14220-8-saeed@kernel.org>
+Subject: [net-next 08/15] net/mlx5: Bridge, implement mdb offload
+Date:   Tue, 11 Apr 2023 21:07:45 -0700
+Message-Id: <20230412040752.14220-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230412040752.14220-1-saeed@kernel.org>
 References: <20230412040752.14220-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,436 +59,670 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vlad Buslov <vladbu@nvidia.com>
 
-When VLAN with 'untagged' flag is created on port also provision the
-per-port multicast table rule to pop the VLAN during packet replication.
-This functionality must be in per-port table because some subset of ports
-that are member of multicast group can require just a match on VLAN (trunk
-mode) while other subset can be configured to remove the VLAN tag from
-packets received on the ports (access mode).
+Implement support for add/del SWITCHDEV_OBJ_ID_PORT_MDB events. For mdb
+destination addresses configure egress table rules to replicate to per-port
+multicast tables of all ports that are member of the multicast group as
+illustrated by 'MDB1' rule in the following diagram:
+
+                                                                                                                            +--------+--+
+                                                                                    +---------------------------------------> Port 1 |  |
+                                                                                    |                                       +-^------+--+
+                                                                                    |                                         |
+                                                                                    |                                         |
+                                       +-----------------------------------------+  |     +---------------------------+       |
+                                       | EGRESS table                            |  |  +--> PORT 1 multicast table    |       |
++----------------------------------+   +-----------------------------------------+  |  |  +---------------------------+       |
+| INGRESS table                    |   |                                         |  |  |  |                           |       |
++----------------------------------+   | dst_mac=P1,vlan=X -> pop vlan, goto P1  +--+  |  | FG0:                      |       |
+|                                  |   | dst_mac=P1,vlan=Y -> pop vlan, goto P1  |     |  | src_port=dst_port -> drop |       |
+| src_mac=M1,vlan=X -> goto egress +---> dst_mac=P2,vlan=X -> pop vlan, goto P2  +--+  |  | FG1:                      |       |
+| ...                              |   | dst_mac=P2,vlan=Y -> goto P2            |  |  |  | VLAN X -> pop, goto port  |       |
+|                                  |   | dst_mac=MDB1,vlan=Y -> goto mcast P1,P2 +-----+  | ...                       |       |
++----------------------------------+   |                                         |  |  |  | VLAN Y -> pop, goto port  +-------+
+                                       +-----------------------------------------+  |  |  | FG3:                      |
+                                                                                    |  |  | matchall -> goto port     |
+                                                                                    |  |  |                           |
+                                                                                    |  |  +---------------------------+
+                                                                                    |  |
+                                                                                    |  |
+                                                                                    |  |                                    +--------+--+
+                                                                                    +---------------------------------------> Port 2 |  |
+                                                                                       |                                    +-^------+--+
+                                                                                       |                                      |
+                                                                                       |                                      |
+                                                                                       |  +---------------------------+       |
+                                                                                       +--> PORT 2 multicast table    |       |
+                                                                                          +---------------------------+       |
+                                                                                          |                           |       |
+                                                                                          | FG0:                      |       |
+                                                                                          | src_port=dst_port -> drop |       |
+                                                                                          | FG1:                      |       |
+                                                                                          | VLAN X -> pop, goto port  |       |
+                                                                                          | ...                       |       |
+                                                                                          |                           |       |
+                                                                                          | FG3:                      |       |
+                                                                                          | matchall -> goto port     +-------+
+                                                                                          |                           |
+                                                                                          +---------------------------+
+
+MDB is managed by extending mlx5 bridge to store an entry in
+mlx5_esw_bridge->mdb_list linked list (used to iterate over all offloaded
+MDBs) and mlx5_esw_bridge->mdb_ht hash table (used to lookup existing MDB
+by MAC+VLAN). Every MDB entry can be attached to arbitrary amount of bridge
+ports that are stored in mlx5_esw_bridge_mdb_entry->ports xarray in order
+to allow both efficient lookup of the port and also iteration over all
+ports that the entry is attached to. Every time MDB is attached/detached
+to/from a port, the hardware rule is recreated with list of destinations
+corresponding to all attached ports. When the entry is detached from the
+last port it is removed from mdb and destroyed which means that the ports
+xarray also acts as implicit reference counting mechanism.
 
 Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 Reviewed-by: Maor Dickman <maord@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/esw/bridge.c  |  33 ++-
- .../mellanox/mlx5/core/esw/bridge_mcast.c     | 190 +++++++++++++++++-
- .../mellanox/mlx5/core/esw/bridge_priv.h      |  22 +-
- 3 files changed, 236 insertions(+), 9 deletions(-)
+ .../mellanox/mlx5/core/en/rep/bridge.c        |  12 +
+ .../ethernet/mellanox/mlx5/core/esw/bridge.c  |  75 ++++-
+ .../ethernet/mellanox/mlx5/core/esw/bridge.h  |   6 +
+ .../mellanox/mlx5/core/esw/bridge_mcast.c     | 295 ++++++++++++++++++
+ .../mellanox/mlx5/core/esw/bridge_priv.h      |  29 ++
+ 5 files changed, 413 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+index 9701eb3c5f1b..dd0dd3f028a3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/bridge.c
+@@ -220,6 +220,7 @@ mlx5_esw_bridge_port_obj_add(struct net_device *dev,
+ 	struct netlink_ext_ack *extack = switchdev_notifier_info_to_extack(&port_obj_info->info);
+ 	const struct switchdev_obj *obj = port_obj_info->obj;
+ 	const struct switchdev_obj_port_vlan *vlan;
++	const struct switchdev_obj_port_mdb *mdb;
+ 	u16 vport_num, esw_owner_vhca_id;
+ 	int err;
+ 
+@@ -235,6 +236,11 @@ mlx5_esw_bridge_port_obj_add(struct net_device *dev,
+ 		err = mlx5_esw_bridge_port_vlan_add(vport_num, esw_owner_vhca_id, vlan->vid,
+ 						    vlan->flags, br_offloads, extack);
+ 		break;
++	case SWITCHDEV_OBJ_ID_PORT_MDB:
++		mdb = SWITCHDEV_OBJ_PORT_MDB(obj);
++		err = mlx5_esw_bridge_port_mdb_add(vport_num, esw_owner_vhca_id, mdb->addr,
++						   mdb->vid, br_offloads, extack);
++		break;
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -248,6 +254,7 @@ mlx5_esw_bridge_port_obj_del(struct net_device *dev,
+ {
+ 	const struct switchdev_obj *obj = port_obj_info->obj;
+ 	const struct switchdev_obj_port_vlan *vlan;
++	const struct switchdev_obj_port_mdb *mdb;
+ 	u16 vport_num, esw_owner_vhca_id;
+ 
+ 	if (!mlx5_esw_bridge_rep_vport_num_vhca_id_get(dev, br_offloads->esw, &vport_num,
+@@ -261,6 +268,11 @@ mlx5_esw_bridge_port_obj_del(struct net_device *dev,
+ 		vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
+ 		mlx5_esw_bridge_port_vlan_del(vport_num, esw_owner_vhca_id, vlan->vid, br_offloads);
+ 		break;
++	case SWITCHDEV_OBJ_ID_PORT_MDB:
++		mdb = SWITCHDEV_OBJ_PORT_MDB(obj);
++		mlx5_esw_bridge_port_mdb_del(vport_num, esw_owner_vhca_id, mdb->addr, mdb->vid,
++					     br_offloads);
++		break;
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-index 4bc8c6fc394b..52c976135397 100644
+index 52c976135397..be4787539c6c 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.c
-@@ -1095,8 +1095,21 @@ mlx5_esw_bridge_vlan_push_mark_cleanup(struct mlx5_esw_bridge_vlan *vlan, struct
+@@ -840,6 +840,10 @@ static struct mlx5_esw_bridge *mlx5_esw_bridge_create(int ifindex,
+ 	if (err)
+ 		goto err_fdb_ht;
+ 
++	err = mlx5_esw_bridge_mdb_init(bridge);
++	if (err)
++		goto err_mdb_ht;
++
+ 	INIT_LIST_HEAD(&bridge->fdb_list);
+ 	bridge->ifindex = ifindex;
+ 	bridge->refcnt = 1;
+@@ -849,6 +853,8 @@ static struct mlx5_esw_bridge *mlx5_esw_bridge_create(int ifindex,
+ 
+ 	return bridge;
+ 
++err_mdb_ht:
++	rhashtable_destroy(&bridge->fdb_ht);
+ err_fdb_ht:
+ 	mlx5_esw_bridge_egress_table_cleanup(bridge);
+ err_egress_tbl:
+@@ -870,6 +876,7 @@ static void mlx5_esw_bridge_put(struct mlx5_esw_bridge_offloads *br_offloads,
+ 	mlx5_esw_bridge_egress_table_cleanup(bridge);
+ 	mlx5_esw_bridge_mcast_disable(bridge);
+ 	list_del(&bridge->list);
++	mlx5_esw_bridge_mdb_cleanup(bridge);
+ 	rhashtable_destroy(&bridge->fdb_ht);
+ 	kvfree(bridge);
+ 
+@@ -909,7 +916,7 @@ static unsigned long mlx5_esw_bridge_port_key_from_data(u16 vport_num, u16 esw_o
+ 	return vport_num | (unsigned long)esw_owner_vhca_id << sizeof(vport_num) * BITS_PER_BYTE;
  }
  
- static int
--mlx5_esw_bridge_vlan_push_pop_create(u16 vlan_proto, u16 flags, struct mlx5_esw_bridge_vlan *vlan,
--				     struct mlx5_eswitch *esw)
-+mlx5_esw_bridge_vlan_push_pop_fhs_create(u16 vlan_proto, struct mlx5_esw_bridge_port *port,
-+					 struct mlx5_esw_bridge_vlan *vlan)
-+{
-+	return mlx5_esw_bridge_vlan_mcast_init(vlan_proto, port, vlan);
-+}
-+
-+static void
-+mlx5_esw_bridge_vlan_push_pop_fhs_cleanup(struct mlx5_esw_bridge_vlan *vlan)
-+{
-+	mlx5_esw_bridge_vlan_mcast_cleanup(vlan);
-+}
-+
-+static int
-+mlx5_esw_bridge_vlan_push_pop_create(u16 vlan_proto, u16 flags, struct mlx5_esw_bridge_port *port,
-+				     struct mlx5_esw_bridge_vlan *vlan, struct mlx5_eswitch *esw)
+-static unsigned long mlx5_esw_bridge_port_key(struct mlx5_esw_bridge_port *port)
++unsigned long mlx5_esw_bridge_port_key(struct mlx5_esw_bridge_port *port)
  {
- 	int err;
+ 	return mlx5_esw_bridge_port_key_from_data(port->vport_num, port->esw_owner_vhca_id);
+ }
+@@ -1192,7 +1199,8 @@ static void mlx5_esw_bridge_vlan_erase(struct mlx5_esw_bridge_port *port,
+ 	xa_erase(&port->vlans, vlan->vid);
+ }
  
-@@ -1114,10 +1127,16 @@ mlx5_esw_bridge_vlan_push_pop_create(u16 vlan_proto, u16 flags, struct mlx5_esw_
- 		err = mlx5_esw_bridge_vlan_pop_create(vlan, esw);
- 		if (err)
- 			goto err_vlan_pop;
-+
-+		err = mlx5_esw_bridge_vlan_push_pop_fhs_create(vlan_proto, port, vlan);
-+		if (err)
-+			goto err_vlan_pop_fhs;
- 	}
+-static void mlx5_esw_bridge_vlan_flush(struct mlx5_esw_bridge_vlan *vlan,
++static void mlx5_esw_bridge_vlan_flush(struct mlx5_esw_bridge_port *port,
++				       struct mlx5_esw_bridge_vlan *vlan,
+ 				       struct mlx5_esw_bridge *bridge)
+ {
+ 	struct mlx5_eswitch *esw = bridge->br_offloads->esw;
+@@ -1200,6 +1208,7 @@ static void mlx5_esw_bridge_vlan_flush(struct mlx5_esw_bridge_vlan *vlan,
  
- 	return 0;
- 
-+err_vlan_pop_fhs:
-+	mlx5_esw_bridge_vlan_pop_cleanup(vlan, esw);
- err_vlan_pop:
- 	if (vlan->pkt_mod_hdr_push_mark)
- 		mlx5_esw_bridge_vlan_push_mark_cleanup(vlan, esw);
-@@ -1142,7 +1161,7 @@ mlx5_esw_bridge_vlan_create(u16 vlan_proto, u16 vid, u16 flags, struct mlx5_esw_
- 	vlan->flags = flags;
- 	INIT_LIST_HEAD(&vlan->fdb_list);
- 
--	err = mlx5_esw_bridge_vlan_push_pop_create(vlan_proto, flags, vlan, esw);
-+	err = mlx5_esw_bridge_vlan_push_pop_create(vlan_proto, flags, port, vlan, esw);
- 	if (err)
- 		goto err_vlan_push_pop;
- 
-@@ -1154,6 +1173,8 @@ mlx5_esw_bridge_vlan_create(u16 vlan_proto, u16 vid, u16 flags, struct mlx5_esw_
- 	return vlan;
- 
- err_xa_insert:
-+	if (vlan->mcast_handle)
-+		mlx5_esw_bridge_vlan_push_pop_fhs_cleanup(vlan);
- 	if (vlan->pkt_reformat_pop)
- 		mlx5_esw_bridge_vlan_pop_cleanup(vlan, esw);
- 	if (vlan->pkt_mod_hdr_push_mark)
-@@ -1180,6 +1201,8 @@ static void mlx5_esw_bridge_vlan_flush(struct mlx5_esw_bridge_vlan *vlan,
  	list_for_each_entry_safe(entry, tmp, &vlan->fdb_list, vlan_list)
  		mlx5_esw_bridge_fdb_entry_notify_and_cleanup(entry, bridge);
++	mlx5_esw_bridge_port_mdb_vlan_flush(port, vlan);
  
-+	if (vlan->mcast_handle)
-+		mlx5_esw_bridge_vlan_push_pop_fhs_cleanup(vlan);
- 	if (vlan->pkt_reformat_pop)
- 		mlx5_esw_bridge_vlan_pop_cleanup(vlan, esw);
- 	if (vlan->pkt_mod_hdr_push_mark)
-@@ -1218,8 +1241,8 @@ static int mlx5_esw_bridge_port_vlans_recreate(struct mlx5_esw_bridge_port *port
- 
- 	xa_for_each(&port->vlans, i, vlan) {
- 		mlx5_esw_bridge_vlan_flush(vlan, bridge);
--		err = mlx5_esw_bridge_vlan_push_pop_create(bridge->vlan_proto, vlan->flags, vlan,
--							   br_offloads->esw);
-+		err = mlx5_esw_bridge_vlan_push_pop_create(bridge->vlan_proto, vlan->flags, port,
-+							   vlan, br_offloads->esw);
- 		if (err) {
- 			esw_warn(br_offloads->esw->dev,
- 				 "Failed to create VLAN=%u(proto=%x) push/pop actions (vport=%u,err=%d)\n",
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_mcast.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_mcast.c
-index 4f54cb41ed19..99e2f9fc11a2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_mcast.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_mcast.c
-@@ -62,6 +62,60 @@ mlx5_esw_bridge_mcast_filter_fg_create(struct mlx5_eswitch *esw,
- 	return fg;
- }
- 
-+static struct mlx5_flow_group *
-+mlx5_esw_bridge_mcast_vlan_proto_fg_create(unsigned int from, unsigned int to, u16 vlan_proto,
-+					   struct mlx5_eswitch *esw,
-+					   struct mlx5_flow_table *mcast_ft)
-+{
-+	int inlen = MLX5_ST_SZ_BYTES(create_flow_group_in);
-+	struct mlx5_flow_group *fg;
-+	u32 *in, *match;
-+
-+	in = kvzalloc(inlen, GFP_KERNEL);
-+	if (!in)
-+		return ERR_PTR(-ENOMEM);
-+
-+	MLX5_SET(create_flow_group_in, in, match_criteria_enable, MLX5_MATCH_OUTER_HEADERS);
-+	match = MLX5_ADDR_OF(create_flow_group_in, in, match_criteria);
-+
-+	if (vlan_proto == ETH_P_8021Q)
-+		MLX5_SET_TO_ONES(fte_match_param, match, outer_headers.cvlan_tag);
-+	else if (vlan_proto == ETH_P_8021AD)
-+		MLX5_SET_TO_ONES(fte_match_param, match, outer_headers.svlan_tag);
-+	MLX5_SET_TO_ONES(fte_match_param, match, outer_headers.first_vid);
-+
-+	MLX5_SET(create_flow_group_in, in, start_flow_index, from);
-+	MLX5_SET(create_flow_group_in, in, end_flow_index, to);
-+
-+	fg = mlx5_create_flow_group(mcast_ft, in);
-+	kvfree(in);
-+	if (IS_ERR(fg))
-+		esw_warn(esw->dev,
-+			 "Failed to create VLAN(proto=%x) flow group for bridge mcast table (err=%pe)\n",
-+			 vlan_proto, fg);
-+
-+	return fg;
-+}
-+
-+static struct mlx5_flow_group *
-+mlx5_esw_bridge_mcast_vlan_fg_create(struct mlx5_eswitch *esw, struct mlx5_flow_table *mcast_ft)
-+{
-+	unsigned int from = MLX5_ESW_BRIDGE_MCAST_TABLE_VLAN_GRP_IDX_FROM;
-+	unsigned int to = MLX5_ESW_BRIDGE_MCAST_TABLE_VLAN_GRP_IDX_TO;
-+
-+	return mlx5_esw_bridge_mcast_vlan_proto_fg_create(from, to, ETH_P_8021Q, esw, mcast_ft);
-+}
-+
-+static struct mlx5_flow_group *
-+mlx5_esw_bridge_mcast_qinq_fg_create(struct mlx5_eswitch *esw,
-+				     struct mlx5_flow_table *mcast_ft)
-+{
-+	unsigned int from = MLX5_ESW_BRIDGE_MCAST_TABLE_QINQ_GRP_IDX_FROM;
-+	unsigned int to = MLX5_ESW_BRIDGE_MCAST_TABLE_QINQ_GRP_IDX_TO;
-+
-+	return mlx5_esw_bridge_mcast_vlan_proto_fg_create(from, to, ETH_P_8021AD, esw, mcast_ft);
-+}
-+
- static struct mlx5_flow_group *
- mlx5_esw_bridge_mcast_fwd_fg_create(struct mlx5_eswitch *esw,
- 				    struct mlx5_flow_table *mcast_ft)
-@@ -91,15 +145,27 @@ mlx5_esw_bridge_mcast_fwd_fg_create(struct mlx5_eswitch *esw,
- 
- static int mlx5_esw_bridge_port_mcast_fgs_init(struct mlx5_esw_bridge_port *port)
+ 	if (vlan->mcast_handle)
+ 		mlx5_esw_bridge_vlan_push_pop_fhs_cleanup(vlan);
+@@ -1216,7 +1225,7 @@ static void mlx5_esw_bridge_vlan_cleanup(struct mlx5_esw_bridge_port *port,
+ 					 struct mlx5_esw_bridge *bridge)
  {
-+	struct mlx5_flow_group *fwd_fg, *qinq_fg, *vlan_fg, *filter_fg;
- 	struct mlx5_eswitch *esw = port->bridge->br_offloads->esw;
- 	struct mlx5_flow_table *mcast_ft = port->mcast.ft;
--	struct mlx5_flow_group *fwd_fg, *filter_fg;
+ 	trace_mlx5_esw_bridge_vlan_cleanup(vlan);
+-	mlx5_esw_bridge_vlan_flush(vlan, bridge);
++	mlx5_esw_bridge_vlan_flush(port, vlan, bridge);
+ 	mlx5_esw_bridge_vlan_erase(port, vlan);
+ 	kvfree(vlan);
+ }
+@@ -1240,7 +1249,7 @@ static int mlx5_esw_bridge_port_vlans_recreate(struct mlx5_esw_bridge_port *port
  	int err;
  
- 	filter_fg = mlx5_esw_bridge_mcast_filter_fg_create(esw, mcast_ft);
- 	if (IS_ERR(filter_fg))
- 		return PTR_ERR(filter_fg);
+ 	xa_for_each(&port->vlans, i, vlan) {
+-		mlx5_esw_bridge_vlan_flush(vlan, bridge);
++		mlx5_esw_bridge_vlan_flush(port, vlan, bridge);
+ 		err = mlx5_esw_bridge_vlan_push_pop_create(bridge->vlan_proto, vlan->flags, port,
+ 							   vlan, br_offloads->esw);
+ 		if (err) {
+@@ -1450,6 +1459,7 @@ int mlx5_esw_bridge_vlan_filtering_set(u16 vport_num, u16 esw_owner_vhca_id, boo
+ 		return 0;
  
-+	vlan_fg = mlx5_esw_bridge_mcast_vlan_fg_create(esw, mcast_ft);
-+	if (IS_ERR(vlan_fg)) {
-+		err = PTR_ERR(vlan_fg);
-+		goto err_vlan_fg;
-+	}
-+
-+	qinq_fg = mlx5_esw_bridge_mcast_qinq_fg_create(esw, mcast_ft);
-+	if (IS_ERR(qinq_fg)) {
-+		err = PTR_ERR(qinq_fg);
-+		goto err_qinq_fg;
-+	}
-+
- 	fwd_fg = mlx5_esw_bridge_mcast_fwd_fg_create(esw, mcast_ft);
- 	if (IS_ERR(fwd_fg)) {
- 		err = PTR_ERR(fwd_fg);
-@@ -107,11 +173,17 @@ static int mlx5_esw_bridge_port_mcast_fgs_init(struct mlx5_esw_bridge_port *port
+ 	mlx5_esw_bridge_fdb_flush(bridge);
++	mlx5_esw_bridge_mdb_flush(bridge);
+ 	if (enable)
+ 		bridge->flags |= MLX5_ESW_BRIDGE_VLAN_FILTERING_FLAG;
+ 	else
+@@ -1476,6 +1486,7 @@ int mlx5_esw_bridge_vlan_proto_set(u16 vport_num, u16 esw_owner_vhca_id, u16 pro
  	}
  
- 	port->mcast.filter_fg = filter_fg;
-+	port->mcast.vlan_fg = vlan_fg;
-+	port->mcast.qinq_fg = qinq_fg;
- 	port->mcast.fwd_fg = fwd_fg;
+ 	mlx5_esw_bridge_fdb_flush(bridge);
++	mlx5_esw_bridge_mdb_flush(bridge);
+ 	bridge->vlan_proto = proto;
+ 	mlx5_esw_bridge_vlans_recreate(bridge);
  
- 	return 0;
- 
- err_fwd_fg:
-+	mlx5_destroy_flow_group(qinq_fg);
-+err_qinq_fg:
-+	mlx5_destroy_flow_group(vlan_fg);
-+err_vlan_fg:
- 	mlx5_destroy_flow_group(filter_fg);
- 	return err;
- }
-@@ -121,6 +193,12 @@ static void mlx5_esw_bridge_port_mcast_fgs_cleanup(struct mlx5_esw_bridge_port *
- 	if (port->mcast.fwd_fg)
- 		mlx5_destroy_flow_group(port->mcast.fwd_fg);
- 	port->mcast.fwd_fg = NULL;
-+	if (port->mcast.qinq_fg)
-+		mlx5_destroy_flow_group(port->mcast.qinq_fg);
-+	port->mcast.qinq_fg = NULL;
-+	if (port->mcast.vlan_fg)
-+		mlx5_destroy_flow_group(port->mcast.vlan_fg);
-+	port->mcast.vlan_fg = NULL;
- 	if (port->mcast.filter_fg)
- 		mlx5_destroy_flow_group(port->mcast.filter_fg);
- 	port->mcast.filter_fg = NULL;
-@@ -177,6 +255,82 @@ mlx5_esw_bridge_mcast_filter_flow_peer_create(struct mlx5_esw_bridge_port *port)
- 	return handle;
+@@ -1792,6 +1803,62 @@ void mlx5_esw_bridge_update(struct mlx5_esw_bridge_offloads *br_offloads)
+ 	}
  }
  
++int mlx5_esw_bridge_port_mdb_add(u16 vport_num, u16 esw_owner_vhca_id, const unsigned char *addr,
++				 u16 vid, struct mlx5_esw_bridge_offloads *br_offloads,
++				 struct netlink_ext_ack *extack)
++{
++	struct mlx5_esw_bridge_vlan *vlan;
++	struct mlx5_esw_bridge_port *port;
++	struct mlx5_esw_bridge *bridge;
++	int err;
++
++	port = mlx5_esw_bridge_port_lookup(vport_num, esw_owner_vhca_id, br_offloads);
++	if (!port) {
++		esw_warn(br_offloads->esw->dev,
++			 "Failed to lookup bridge port to add MDB (MAC=%pM,vport=%u)\n",
++			 addr, vport_num);
++		NL_SET_ERR_MSG_FMT_MOD(extack,
++				       "Failed to lookup bridge port to add MDB (MAC=%pM,vport=%u)\n",
++				       addr, vport_num);
++		return -EINVAL;
++	}
++
++	bridge = port->bridge;
++	if (bridge->flags & MLX5_ESW_BRIDGE_VLAN_FILTERING_FLAG && vid) {
++		vlan = mlx5_esw_bridge_vlan_lookup(vid, port);
++		if (!vlan) {
++			esw_warn(br_offloads->esw->dev,
++				 "Failed to lookup bridge port vlan metadata to create MDB (MAC=%pM,vid=%u,vport=%u)\n",
++				 addr, vid, vport_num);
++			NL_SET_ERR_MSG_FMT_MOD(extack,
++					       "Failed to lookup bridge port vlan metadata to create MDB (MAC=%pM,vid=%u,vport=%u)\n",
++					       addr, vid, vport_num);
++			return -EINVAL;
++		}
++	}
++
++	err = mlx5_esw_bridge_port_mdb_attach(port, addr, vid);
++	if (err) {
++		NL_SET_ERR_MSG_FMT_MOD(extack, "Failed to add MDB (MAC=%pM,vid=%u,vport=%u)\n",
++				       addr, vid, vport_num);
++		return err;
++	}
++
++	return 0;
++}
++
++void mlx5_esw_bridge_port_mdb_del(u16 vport_num, u16 esw_owner_vhca_id, const unsigned char *addr,
++				  u16 vid, struct mlx5_esw_bridge_offloads *br_offloads)
++{
++	struct mlx5_esw_bridge_port *port;
++
++	port = mlx5_esw_bridge_port_lookup(vport_num, esw_owner_vhca_id, br_offloads);
++	if (!port)
++		return;
++
++	mlx5_esw_bridge_port_mdb_detach(port, addr, vid);
++}
++
+ static void mlx5_esw_bridge_flush(struct mlx5_esw_bridge_offloads *br_offloads)
+ {
+ 	struct mlx5_esw_bridge_port *port;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.h
+index b18f137173d9..9cab66467289 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge.h
+@@ -79,4 +79,10 @@ int mlx5_esw_bridge_port_vlan_add(u16 vport_num, u16 esw_owner_vhca_id, u16 vid,
+ void mlx5_esw_bridge_port_vlan_del(u16 vport_num, u16 esw_owner_vhca_id, u16 vid,
+ 				   struct mlx5_esw_bridge_offloads *br_offloads);
+ 
++int mlx5_esw_bridge_port_mdb_add(u16 vport_num, u16 esw_owner_vhca_id, const unsigned char *addr,
++				 u16 vid, struct mlx5_esw_bridge_offloads *br_offloads,
++				 struct netlink_ext_ack *extack);
++void mlx5_esw_bridge_port_mdb_del(u16 vport_num, u16 esw_owner_vhca_id, const unsigned char *addr,
++				  u16 vid, struct mlx5_esw_bridge_offloads *br_offloads);
++
+ #endif /* __MLX5_ESW_BRIDGE_H__ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_mcast.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_mcast.c
+index 99e2f9fc11a2..d17fe6d374b5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_mcast.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_mcast.c
+@@ -6,6 +6,300 @@
+ #include "eswitch.h"
+ #include "bridge_priv.h"
+ 
++static const struct rhashtable_params mdb_ht_params = {
++	.key_offset = offsetof(struct mlx5_esw_bridge_mdb_entry, key),
++	.key_len = sizeof(struct mlx5_esw_bridge_mdb_key),
++	.head_offset = offsetof(struct mlx5_esw_bridge_mdb_entry, ht_node),
++	.automatic_shrinking = true,
++};
++
++int mlx5_esw_bridge_mdb_init(struct mlx5_esw_bridge *bridge)
++{
++	INIT_LIST_HEAD(&bridge->mdb_list);
++	return rhashtable_init(&bridge->mdb_ht, &mdb_ht_params);
++}
++
++void mlx5_esw_bridge_mdb_cleanup(struct mlx5_esw_bridge *bridge)
++{
++	rhashtable_destroy(&bridge->mdb_ht);
++}
++
++static struct mlx5_esw_bridge_port *
++mlx5_esw_bridge_mdb_port_lookup(struct mlx5_esw_bridge_port *port,
++				struct mlx5_esw_bridge_mdb_entry *entry)
++{
++	return xa_load(&entry->ports, mlx5_esw_bridge_port_key(port));
++}
++
++static int mlx5_esw_bridge_mdb_port_insert(struct mlx5_esw_bridge_port *port,
++					   struct mlx5_esw_bridge_mdb_entry *entry)
++{
++	int err = xa_insert(&entry->ports, mlx5_esw_bridge_port_key(port), port, GFP_KERNEL);
++
++	if (!err)
++		entry->num_ports++;
++	return err;
++}
++
++static void mlx5_esw_bridge_mdb_port_remove(struct mlx5_esw_bridge_port *port,
++					    struct mlx5_esw_bridge_mdb_entry *entry)
++{
++	xa_erase(&entry->ports, mlx5_esw_bridge_port_key(port));
++	entry->num_ports--;
++}
++
 +static struct mlx5_flow_handle *
-+mlx5_esw_bridge_mcast_vlan_flow_create(u16 vlan_proto, struct mlx5_esw_bridge_port *port,
-+				       struct mlx5_esw_bridge_vlan *vlan)
++mlx5_esw_bridge_mdb_flow_create(u16 esw_owner_vhca_id, struct mlx5_esw_bridge_mdb_entry *entry,
++				struct mlx5_esw_bridge *bridge)
 +{
 +	struct mlx5_flow_act flow_act = {
 +		.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST,
-+		.flags = FLOW_ACT_NO_APPEND,
++		.flags = FLOW_ACT_NO_APPEND | FLOW_ACT_IGNORE_FLOW_LEVEL,
 +	};
-+	struct mlx5_flow_destination dest = {
-+		.type = MLX5_FLOW_DESTINATION_TYPE_VPORT,
-+		.vport.num = port->vport_num,
-+	};
-+	struct mlx5_esw_bridge *bridge = port->bridge;
++	int num_dests = entry->num_ports, i = 0;
++	struct mlx5_flow_destination *dests;
++	struct mlx5_esw_bridge_port *port;
 +	struct mlx5_flow_spec *rule_spec;
 +	struct mlx5_flow_handle *handle;
++	u8 *dmac_v, *dmac_c;
++	unsigned long idx;
 +
 +	rule_spec = kvzalloc(sizeof(*rule_spec), GFP_KERNEL);
 +	if (!rule_spec)
 +		return ERR_PTR(-ENOMEM);
 +
-+	if (MLX5_CAP_ESW_FLOWTABLE(bridge->br_offloads->esw->dev, flow_source) &&
-+	    port->vport_num == MLX5_VPORT_UPLINK)
-+		rule_spec->flow_context.flow_source =
-+			MLX5_FLOW_CONTEXT_FLOW_SOURCE_LOCAL_VPORT;
++	dests = kvcalloc(num_dests, sizeof(*dests), GFP_KERNEL);
++	if (!dests) {
++		kvfree(rule_spec);
++		return ERR_PTR(-ENOMEM);
++	}
++
++	xa_for_each(&entry->ports, idx, port) {
++		dests[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
++		dests[i].ft = port->mcast.ft;
++		i++;
++	}
++
 +	rule_spec->match_criteria_enable = MLX5_MATCH_OUTER_HEADERS;
++	dmac_v = MLX5_ADDR_OF(fte_match_param, rule_spec->match_value, outer_headers.dmac_47_16);
++	ether_addr_copy(dmac_v, entry->key.addr);
++	dmac_c = MLX5_ADDR_OF(fte_match_param, rule_spec->match_criteria, outer_headers.dmac_47_16);
++	eth_broadcast_addr(dmac_c);
 +
-+	flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
-+	flow_act.pkt_reformat = vlan->pkt_reformat_pop;
-+
-+	if (vlan_proto == ETH_P_8021Q) {
++	if (entry->key.vid) {
++		if (bridge->vlan_proto == ETH_P_8021Q) {
++			MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_criteria,
++					 outer_headers.cvlan_tag);
++			MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_value,
++					 outer_headers.cvlan_tag);
++		} else if (bridge->vlan_proto == ETH_P_8021AD) {
++			MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_criteria,
++					 outer_headers.svlan_tag);
++			MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_value,
++					 outer_headers.svlan_tag);
++		}
 +		MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_criteria,
-+				 outer_headers.cvlan_tag);
-+		MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_value,
-+				 outer_headers.cvlan_tag);
-+	} else if (vlan_proto == ETH_P_8021AD) {
-+		MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_criteria,
-+				 outer_headers.svlan_tag);
-+		MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_value,
-+				 outer_headers.svlan_tag);
++				 outer_headers.first_vid);
++		MLX5_SET(fte_match_param, rule_spec->match_value, outer_headers.first_vid,
++			 entry->key.vid);
 +	}
-+	MLX5_SET_TO_ONES(fte_match_param, rule_spec->match_criteria, outer_headers.first_vid);
-+	MLX5_SET(fte_match_param, rule_spec->match_value, outer_headers.first_vid, vlan->vid);
 +
-+	if (MLX5_CAP_ESW(bridge->br_offloads->esw->dev, merged_eswitch)) {
-+		dest.vport.flags = MLX5_FLOW_DEST_VPORT_VHCA_ID;
-+		dest.vport.vhca_id = port->esw_owner_vhca_id;
-+	}
-+	handle = mlx5_add_flow_rules(port->mcast.ft, rule_spec, &flow_act, &dest, 1);
++	handle = mlx5_add_flow_rules(bridge->egress_ft, rule_spec, &flow_act, dests, num_dests);
 +
++	kvfree(dests);
 +	kvfree(rule_spec);
 +	return handle;
 +}
 +
-+int mlx5_esw_bridge_vlan_mcast_init(u16 vlan_proto, struct mlx5_esw_bridge_port *port,
-+				    struct mlx5_esw_bridge_vlan *vlan)
++static int
++mlx5_esw_bridge_port_mdb_offload(struct mlx5_esw_bridge_port *port,
++				 struct mlx5_esw_bridge_mdb_entry *entry)
 +{
 +	struct mlx5_flow_handle *handle;
 +
-+	if (!(port->bridge->flags & MLX5_ESW_BRIDGE_MCAST_FLAG))
-+		return 0;
-+
-+	handle = mlx5_esw_bridge_mcast_vlan_flow_create(vlan_proto, port, vlan);
++	handle = mlx5_esw_bridge_mdb_flow_create(port->esw_owner_vhca_id, entry, port->bridge);
++	if (entry->egress_handle) {
++		mlx5_del_flow_rules(entry->egress_handle);
++		entry->egress_handle = NULL;
++	}
 +	if (IS_ERR(handle))
 +		return PTR_ERR(handle);
 +
-+	vlan->mcast_handle = handle;
++	entry->egress_handle = handle;
 +	return 0;
 +}
 +
-+void mlx5_esw_bridge_vlan_mcast_cleanup(struct mlx5_esw_bridge_vlan *vlan)
++static struct mlx5_esw_bridge_mdb_entry *
++mlx5_esw_bridge_mdb_lookup(struct mlx5_esw_bridge *bridge,
++			   const unsigned char *addr, u16 vid)
 +{
-+	if (vlan->mcast_handle)
-+		mlx5_del_flow_rules(vlan->mcast_handle);
-+	vlan->mcast_handle = NULL;
++	struct mlx5_esw_bridge_mdb_key key = {};
++
++	ether_addr_copy(key.addr, addr);
++	key.vid = vid;
++	return rhashtable_lookup_fast(&bridge->mdb_ht, &key, mdb_ht_params);
 +}
 +
- static struct mlx5_flow_handle *
- mlx5_esw_bridge_mcast_fwd_flow_create(struct mlx5_esw_bridge_port *port)
- {
-@@ -214,6 +368,10 @@ mlx5_esw_bridge_mcast_fwd_flow_create(struct mlx5_esw_bridge_port *port)
- static int mlx5_esw_bridge_port_mcast_fhs_init(struct mlx5_esw_bridge_port *port)
- {
- 	struct mlx5_flow_handle *filter_handle, *fwd_handle;
-+	struct mlx5_esw_bridge_vlan *vlan, *failed;
-+	unsigned long index;
++static struct mlx5_esw_bridge_mdb_entry *
++mlx5_esw_bridge_port_mdb_entry_init(struct mlx5_esw_bridge_port *port,
++				    const unsigned char *addr, u16 vid)
++{
++	struct mlx5_esw_bridge *bridge = port->bridge;
++	struct mlx5_esw_bridge_mdb_entry *entry;
 +	int err;
 +
- 
- 	filter_handle = (port->flags & MLX5_ESW_BRIDGE_PORT_FLAG_PEER) ?
- 		mlx5_esw_bridge_mcast_filter_flow_peer_create(port) :
-@@ -223,18 +381,44 @@ static int mlx5_esw_bridge_port_mcast_fhs_init(struct mlx5_esw_bridge_port *port
- 
- 	fwd_handle = mlx5_esw_bridge_mcast_fwd_flow_create(port);
- 	if (IS_ERR(fwd_handle)) {
--		mlx5_del_flow_rules(filter_handle);
--		return PTR_ERR(fwd_handle);
-+		err = PTR_ERR(fwd_handle);
-+		goto err_fwd;
-+	}
++	entry = kvzalloc(sizeof(*entry), GFP_KERNEL);
++	if (!entry)
++		return ERR_PTR(-ENOMEM);
 +
-+	xa_for_each(&port->vlans, index, vlan) {
-+		err = mlx5_esw_bridge_vlan_mcast_init(port->bridge->vlan_proto, port, vlan);
-+		if (err) {
-+			failed = vlan;
-+			goto err_vlan;
++	ether_addr_copy(entry->key.addr, addr);
++	entry->key.vid = vid;
++	xa_init(&entry->ports);
++	err = rhashtable_insert_fast(&bridge->mdb_ht, &entry->ht_node, mdb_ht_params);
++	if (err)
++		goto err_ht_insert;
++
++	list_add(&entry->list, &bridge->mdb_list);
++
++	return entry;
++
++err_ht_insert:
++	xa_destroy(&entry->ports);
++	kvfree(entry);
++	return ERR_PTR(err);
++}
++
++static void mlx5_esw_bridge_port_mdb_entry_cleanup(struct mlx5_esw_bridge *bridge,
++						   struct mlx5_esw_bridge_mdb_entry *entry)
++{
++	if (entry->egress_handle)
++		mlx5_del_flow_rules(entry->egress_handle);
++	list_del(&entry->list);
++	rhashtable_remove_fast(&bridge->mdb_ht, &entry->ht_node, mdb_ht_params);
++	xa_destroy(&entry->ports);
++	kvfree(entry);
++}
++
++int mlx5_esw_bridge_port_mdb_attach(struct mlx5_esw_bridge_port *port, const unsigned char *addr,
++				    u16 vid)
++{
++	struct mlx5_esw_bridge *bridge = port->bridge;
++	struct mlx5_esw_bridge_mdb_entry *entry;
++	int err;
++
++	if (!(bridge->flags & MLX5_ESW_BRIDGE_MCAST_FLAG))
++		return -EOPNOTSUPP;
++
++	entry = mlx5_esw_bridge_mdb_lookup(bridge, addr, vid);
++	if (entry) {
++		if (mlx5_esw_bridge_mdb_port_lookup(port, entry)) {
++			esw_warn(bridge->br_offloads->esw->dev, "MDB attach entry is already attached to port (MAC=%pM,vid=%u,vport=%u)\n",
++				 addr, vid, port->vport_num);
++			return 0;
 +		}
- 	}
- 
- 	port->mcast.filter_handle = filter_handle;
- 	port->mcast.fwd_handle = fwd_handle;
- 
- 	return 0;
-+
-+err_vlan:
-+	xa_for_each(&port->vlans, index, vlan) {
-+		if (vlan == failed)
-+			break;
-+
-+		mlx5_esw_bridge_vlan_mcast_cleanup(vlan);
++	} else {
++		entry = mlx5_esw_bridge_port_mdb_entry_init(port, addr, vid);
++		if (IS_ERR(entry)) {
++			err = PTR_ERR(entry);
++			esw_warn(bridge->br_offloads->esw->dev, "MDB attach failed to init entry (MAC=%pM,vid=%u,vport=%u,err=%d)\n",
++				 addr, vid, port->vport_num, err);
++			return err;
++		}
 +	}
-+	mlx5_del_flow_rules(fwd_handle);
-+err_fwd:
-+	mlx5_del_flow_rules(filter_handle);
-+	return err;
- }
- 
- static void mlx5_esw_bridge_port_mcast_fhs_cleanup(struct mlx5_esw_bridge_port *port)
++
++	err = mlx5_esw_bridge_mdb_port_insert(port, entry);
++	if (err) {
++		if (!entry->num_ports)
++			mlx5_esw_bridge_port_mdb_entry_cleanup(bridge, entry); /* new mdb entry */
++		esw_warn(bridge->br_offloads->esw->dev,
++			 "MDB attach failed to insert port (MAC=%pM,vid=%u,vport=%u,err=%d)\n",
++			 addr, vid, port->vport_num, err);
++		return err;
++	}
++
++	err = mlx5_esw_bridge_port_mdb_offload(port, entry);
++	if (err)
++		/* Single mdb can be used by multiple ports, so just log the
++		 * error and continue.
++		 */
++		esw_warn(bridge->br_offloads->esw->dev, "MDB attach failed to offload (MAC=%pM,vid=%u,vport=%u,err=%d)\n",
++			 addr, vid, port->vport_num, err);
++	return 0;
++}
++
++static void mlx5_esw_bridge_port_mdb_entry_detach(struct mlx5_esw_bridge_port *port,
++						  struct mlx5_esw_bridge_mdb_entry *entry)
++{
++	struct mlx5_esw_bridge *bridge = port->bridge;
++	int err;
++
++	mlx5_esw_bridge_mdb_port_remove(port, entry);
++	if (!entry->num_ports) {
++		mlx5_esw_bridge_port_mdb_entry_cleanup(bridge, entry);
++		return;
++	}
++
++	err = mlx5_esw_bridge_port_mdb_offload(port, entry);
++	if (err)
++		/* Single mdb can be used by multiple ports, so just log the
++		 * error and continue.
++		 */
++		esw_warn(bridge->br_offloads->esw->dev, "MDB detach failed to offload (MAC=%pM,vid=%u,vport=%u)\n",
++			 entry->key.addr, entry->key.vid, port->vport_num);
++}
++
++void mlx5_esw_bridge_port_mdb_detach(struct mlx5_esw_bridge_port *port, const unsigned char *addr,
++				     u16 vid)
++{
++	struct mlx5_esw_bridge *bridge = port->bridge;
++	struct mlx5_esw_bridge_mdb_entry *entry;
++
++	entry = mlx5_esw_bridge_mdb_lookup(bridge, addr, vid);
++	if (!entry) {
++		esw_debug(bridge->br_offloads->esw->dev,
++			  "MDB detach entry not found (MAC=%pM,vid=%u,vport=%u)\n",
++			  addr, vid, port->vport_num);
++		return;
++	}
++
++	if (!mlx5_esw_bridge_mdb_port_lookup(port, entry)) {
++		esw_debug(bridge->br_offloads->esw->dev,
++			  "MDB detach entry not attached to the port (MAC=%pM,vid=%u,vport=%u)\n",
++			  addr, vid, port->vport_num);
++		return;
++	}
++
++	mlx5_esw_bridge_port_mdb_entry_detach(port, entry);
++}
++
++void mlx5_esw_bridge_port_mdb_vlan_flush(struct mlx5_esw_bridge_port *port,
++					 struct mlx5_esw_bridge_vlan *vlan)
++{
++	struct mlx5_esw_bridge *bridge = port->bridge;
++	struct mlx5_esw_bridge_mdb_entry *entry, *tmp;
++
++	list_for_each_entry_safe(entry, tmp, &bridge->mdb_list, list)
++		if (entry->key.vid == vlan->vid && mlx5_esw_bridge_mdb_port_lookup(port, entry))
++			mlx5_esw_bridge_port_mdb_entry_detach(port, entry);
++}
++
++static void mlx5_esw_bridge_port_mdb_flush(struct mlx5_esw_bridge_port *port)
++{
++	struct mlx5_esw_bridge *bridge = port->bridge;
++	struct mlx5_esw_bridge_mdb_entry *entry, *tmp;
++
++	list_for_each_entry_safe(entry, tmp, &bridge->mdb_list, list)
++		if (mlx5_esw_bridge_mdb_port_lookup(port, entry))
++			mlx5_esw_bridge_port_mdb_entry_detach(port, entry);
++}
++
++void mlx5_esw_bridge_mdb_flush(struct mlx5_esw_bridge *bridge)
++{
++	struct mlx5_esw_bridge_mdb_entry *entry, *tmp;
++
++	list_for_each_entry_safe(entry, tmp, &bridge->mdb_list, list)
++		mlx5_esw_bridge_port_mdb_entry_cleanup(bridge, entry);
++}
+ static int mlx5_esw_bridge_port_mcast_fts_init(struct mlx5_esw_bridge_port *port,
+ 					       struct mlx5_esw_bridge *bridge)
  {
-+	struct mlx5_esw_bridge_vlan *vlan;
-+	unsigned long index;
-+
-+	xa_for_each(&port->vlans, index, vlan)
-+		mlx5_esw_bridge_vlan_mcast_cleanup(vlan);
-+
- 	if (port->mcast.fwd_handle)
- 		mlx5_del_flow_rules(port->mcast.fwd_handle);
- 	port->mcast.fwd_handle = NULL;
+@@ -457,6 +751,7 @@ int mlx5_esw_bridge_port_mcast_init(struct mlx5_esw_bridge_port *port)
+ 
+ void mlx5_esw_bridge_port_mcast_cleanup(struct mlx5_esw_bridge_port *port)
+ {
++	mlx5_esw_bridge_port_mdb_flush(port);
+ 	mlx5_esw_bridge_port_mcast_fhs_cleanup(port);
+ 	mlx5_esw_bridge_port_mcast_fgs_cleanup(port);
+ 	mlx5_esw_bridge_port_mcast_fts_cleanup(port);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
-index 7fdd719f363c..36ff32001ce8 100644
+index 36ff32001ce8..849028f94be2 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/bridge_priv.h
-@@ -83,17 +83,31 @@ static_assert(MLX5_ESW_BRIDGE_EGRESS_TABLE_SIZE == 524288);
- 
- #define MLX5_ESW_BRIDGE_MCAST_TABLE_FILTER_GRP_SIZE 1
- #define MLX5_ESW_BRIDGE_MCAST_TABLE_FWD_GRP_SIZE 1
-+#define MLX5_ESW_BRIDGE_MCAST_TABLE_VLAN_GRP_SIZE 4095
-+#define MLX5_ESW_BRIDGE_MCAST_TABLE_QINQ_GRP_SIZE MLX5_ESW_BRIDGE_MCAST_TABLE_VLAN_GRP_SIZE
- #define MLX5_ESW_BRIDGE_MCAST_TABLE_FILTER_GRP_IDX_FROM 0
- #define MLX5_ESW_BRIDGE_MCAST_TABLE_FILTER_GRP_IDX_TO		\
- 	(MLX5_ESW_BRIDGE_MCAST_TABLE_FILTER_GRP_SIZE - 1)
--#define MLX5_ESW_BRIDGE_MCAST_TABLE_FWD_GRP_IDX_FROM		\
-+#define MLX5_ESW_BRIDGE_MCAST_TABLE_VLAN_GRP_IDX_FROM		\
- 	(MLX5_ESW_BRIDGE_MCAST_TABLE_FILTER_GRP_IDX_TO + 1)
-+#define MLX5_ESW_BRIDGE_MCAST_TABLE_VLAN_GRP_IDX_TO			\
-+	(MLX5_ESW_BRIDGE_MCAST_TABLE_VLAN_GRP_IDX_FROM +		\
-+	 MLX5_ESW_BRIDGE_MCAST_TABLE_VLAN_GRP_SIZE - 1)
-+#define MLX5_ESW_BRIDGE_MCAST_TABLE_QINQ_GRP_IDX_FROM		\
-+	(MLX5_ESW_BRIDGE_MCAST_TABLE_VLAN_GRP_IDX_TO + 1)
-+#define MLX5_ESW_BRIDGE_MCAST_TABLE_QINQ_GRP_IDX_TO			\
-+	(MLX5_ESW_BRIDGE_MCAST_TABLE_QINQ_GRP_IDX_FROM +		\
-+	 MLX5_ESW_BRIDGE_MCAST_TABLE_QINQ_GRP_SIZE - 1)
-+#define MLX5_ESW_BRIDGE_MCAST_TABLE_FWD_GRP_IDX_FROM		\
-+	(MLX5_ESW_BRIDGE_MCAST_TABLE_QINQ_GRP_IDX_TO + 1)
- #define MLX5_ESW_BRIDGE_MCAST_TABLE_FWD_GRP_IDX_TO			\
- 	(MLX5_ESW_BRIDGE_MCAST_TABLE_FWD_GRP_IDX_FROM +			\
- 	 MLX5_ESW_BRIDGE_MCAST_TABLE_FWD_GRP_SIZE - 1)
- 
- #define MLX5_ESW_BRIDGE_MCAST_TABLE_SIZE			\
- 	(MLX5_ESW_BRIDGE_MCAST_TABLE_FWD_GRP_IDX_TO + 1)
-+static_assert(MLX5_ESW_BRIDGE_MCAST_TABLE_SIZE == 8192);
-+
- enum {
- 	MLX5_ESW_BRIDGE_LEVEL_INGRESS_TABLE,
- 	MLX5_ESW_BRIDGE_LEVEL_EGRESS_TABLE,
-@@ -144,6 +158,7 @@ struct mlx5_esw_bridge_vlan {
- 	struct mlx5_pkt_reformat *pkt_reformat_push;
- 	struct mlx5_pkt_reformat *pkt_reformat_pop;
- 	struct mlx5_modify_hdr *pkt_mod_hdr_push_mark;
-+	struct mlx5_flow_handle *mcast_handle;
+@@ -125,6 +125,11 @@ struct mlx5_esw_bridge_fdb_key {
+ 	u16 vid;
  };
  
- struct mlx5_esw_bridge_port {
-@@ -155,6 +170,8 @@ struct mlx5_esw_bridge_port {
- 	struct {
- 		struct mlx5_flow_table *ft;
- 		struct mlx5_flow_group *filter_fg;
-+		struct mlx5_flow_group *vlan_fg;
-+		struct mlx5_flow_group *qinq_fg;
- 		struct mlx5_flow_group *fwd_fg;
++struct mlx5_esw_bridge_mdb_key {
++	unsigned char addr[ETH_ALEN];
++	u16 vid;
++};
++
+ enum {
+ 	MLX5_ESW_BRIDGE_FLAG_ADDED_BY_USER = BIT(0),
+ 	MLX5_ESW_BRIDGE_FLAG_PEER = BIT(1),
+@@ -151,6 +156,16 @@ struct mlx5_esw_bridge_fdb_entry {
+ 	struct mlx5_flow_handle *filter_handle;
+ };
  
- 		struct mlx5_flow_handle *filter_handle;
-@@ -188,6 +205,9 @@ struct mlx5_flow_table *mlx5_esw_bridge_table_create(int max_fte, u32 level,
++struct mlx5_esw_bridge_mdb_entry {
++	struct mlx5_esw_bridge_mdb_key key;
++	struct rhash_head ht_node;
++	struct list_head list;
++	struct xarray ports;
++	int num_ports;
++
++	struct mlx5_flow_handle *egress_handle;
++};
++
+ struct mlx5_esw_bridge_vlan {
+ 	u16 vid;
+ 	u16 flags;
+@@ -188,6 +203,9 @@ struct mlx5_esw_bridge {
+ 	struct list_head fdb_list;
+ 	struct rhashtable fdb_ht;
+ 
++	struct list_head mdb_list;
++	struct rhashtable mdb_ht;
++
+ 	struct mlx5_flow_table *egress_ft;
+ 	struct mlx5_flow_group *egress_vlan_fg;
+ 	struct mlx5_flow_group *egress_qinq_fg;
+@@ -202,6 +220,7 @@ struct mlx5_esw_bridge {
+ 
+ struct mlx5_flow_table *mlx5_esw_bridge_table_create(int max_fte, u32 level,
+ 						     struct mlx5_eswitch *esw);
++unsigned long mlx5_esw_bridge_port_key(struct mlx5_esw_bridge_port *port);
  
  int mlx5_esw_bridge_port_mcast_init(struct mlx5_esw_bridge_port *port);
  void mlx5_esw_bridge_port_mcast_cleanup(struct mlx5_esw_bridge_port *port);
-+int mlx5_esw_bridge_vlan_mcast_init(u16 vlan_proto, struct mlx5_esw_bridge_port *port,
-+				    struct mlx5_esw_bridge_vlan *vlan);
-+void mlx5_esw_bridge_vlan_mcast_cleanup(struct mlx5_esw_bridge_vlan *vlan);
- 
+@@ -212,4 +231,14 @@ void mlx5_esw_bridge_vlan_mcast_cleanup(struct mlx5_esw_bridge_vlan *vlan);
  int mlx5_esw_bridge_mcast_enable(struct mlx5_esw_bridge *bridge);
  void mlx5_esw_bridge_mcast_disable(struct mlx5_esw_bridge *bridge);
+ 
++int mlx5_esw_bridge_mdb_init(struct mlx5_esw_bridge *bridge);
++void mlx5_esw_bridge_mdb_cleanup(struct mlx5_esw_bridge *bridge);
++int mlx5_esw_bridge_port_mdb_attach(struct mlx5_esw_bridge_port *port, const unsigned char *addr,
++				    u16 vid);
++void mlx5_esw_bridge_port_mdb_detach(struct mlx5_esw_bridge_port *port, const unsigned char *addr,
++				     u16 vid);
++void mlx5_esw_bridge_port_mdb_vlan_flush(struct mlx5_esw_bridge_port *port,
++					 struct mlx5_esw_bridge_vlan *vlan);
++void mlx5_esw_bridge_mdb_flush(struct mlx5_esw_bridge *bridge);
++
+ #endif /* _MLX5_ESW_BRIDGE_PRIVATE_ */
 -- 
 2.39.2
 
