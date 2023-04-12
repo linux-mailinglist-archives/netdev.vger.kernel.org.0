@@ -2,131 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12AE56DF6EE
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:22:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21B2E6DF74E
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbjDLNWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 09:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49148 "EHLO
+        id S229893AbjDLNek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 09:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbjDLNWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:22:18 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086009EFD;
-        Wed, 12 Apr 2023 06:21:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681305718; x=1712841718;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=OPaJB6Rawo57Mhn6OmatsXFomMBlxxHp8ieaH0gHRmY=;
-  b=VtKrLYLj8uGU7d3BG0JEPsoqP4EVhKXdkmhRoUqJwgf6tHqVWdnsDdmH
-   LWzxxlfDhiGywy8/JcMDqILowYza/TG7BgJRrH+fwB/8Fstp9rqG1pSOR
-   tOPn2Rho8ZadCxrcztZUdJcc7rdzhSs7CO1k8El2x+fzip9+ndpSdCBxA
-   z3jLGETF7tR6DeQ/BRC3NlNdzSk6oepxvhSlxbuq4zzwnxKUxAs/ipN/B
-   HcEDpw+WYArhsVP3S83wDwyN7CKUTHkEVg0FzmHQgRnNv5ti7gIxDvW/L
-   EC9Sf4AAg6BjXdoOOH3nJw7nh6NmV4lyNWu+kzc5+c1JFVnboP+HUaxeF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="345683541"
-X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="345683541"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 06:20:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="719373457"
-X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="719373457"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga008.jf.intel.com with ESMTP; 12 Apr 2023 06:20:36 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pmaOo-00Fx3H-0Q;
-        Wed, 12 Apr 2023 16:20:34 +0300
-Date:   Wed, 12 Apr 2023 16:20:33 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Donald Hunter <donald.hunter@gmail.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>, netdev@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: Re: [BUG] net, pci: 6.3-rc1-4 hangs during boot on PowerEdge R620
- with igb
-Message-ID: <ZDawIXBd7gcA8DCk@smile.fi.intel.com>
-References: <20230410213754.GA4064490@bhelgaas>
- <m27cuih96y.fsf@gmail.com>
- <CAL_Jsq+nLP6rh3pdK3-5a8-mjR=dF48i-Z8d8u7N=fuYoCk92A@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        with ESMTP id S229782AbjDLNei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:34:38 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE5F83D0
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:34:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DV9S7AIepC1/Lsa/XCXuHUUSfR1Ge7RRhtjGeRjLy3ca0OWvvWgn21aDek4jqtjpG9g3YFI9OjOceHYsJdGKNwGKaT/DYEgbnnOo1enmGRdfcHAA2UqOU2g2SwuIbB8rX2mQHgxp1ZQIkF0ztZXgabcKv6uGkcf02MsmArmcPnMOByPdA3g0rRJSSyw2/MxwkCeGVgE4OuXgui6mDi9hSNVKmO7bmuTtSszPLC4Zzp/eRJb6mxfVKBip0AYvJncnwIValEzE0GGWYOUFkqYGFmtQ8By51FU5/wwe2bXoThdwLoiyD/Mz+t9ygnoyb3HL/OID03FnS7YnSY2F9Hs/BQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8YR7YSfMnZRwvmfkEbtn6VTMJVoBUGY34SJBgBIpHGw=;
+ b=DEcQBzCWWQQphBnH5FgNbxFUVzMwqHND3DW7pxsPcvcHQC8p6VXslIQTXiZfekYbHTW6oa+9620aKPzzF4AU8PKYbha+xtbAQl0DmKIMpxetGcSiwEoAV6jvR+xMgjp7pzDbe8/T1Jc/bP81lGUQJ5mgrDXTFiQj7HrZdht3x8X3HQaiRnoEdXFTlV11Wnj3YXvV4weQfar1nEKjuhIIcLyVRlnxbCfOiTSjTYhzS+cjrXG5pA2H9O6X1nGmwHNVyaXPpenC9Rc9Sd8i+g4aBTq+NmQLV90Jb7TgJHTRDD0kCvRUVUT9/Fj16+Z3K0jQiBs2/Ee/eYD4sh9Iv2q9Kw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8YR7YSfMnZRwvmfkEbtn6VTMJVoBUGY34SJBgBIpHGw=;
+ b=DOrtWMGU2JkuzaeR6AQ0/Uy8ZIFOyzwk1+J9dOrKl/P1mVuzbXZlw+nzhf2lSZx84depfSNfMJISvEVpOvgl4ttAvqJmFB4aRRIuvBSzzOH0XmYvdrwTjPBaNJ7vYiENtLMFPUeuzgWrC638CDIlcXXiKioCfdAjazf2XYKi6XnVRr3ByDiBSxCrOyyFgRZby1cy56NU5SS66HVx6DFxzfvwIXGihYxzmPlG09Wx5yWXHYqalz2RdOvvp/M7LGpmGE+xfatGIaOK4lzbEw9y9nG3H1M5RGXlLXBtTxPOrjCFpYGVy2CtZy+wna2d7ZnuICKGdZFENMDIJsFd32DKIQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by PH8PR12MB7253.namprd12.prod.outlook.com (2603:10b6:510:226::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.35; Wed, 12 Apr
+ 2023 13:34:06 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::d228:dfe5:a8a8:28b3]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::d228:dfe5:a8a8:28b3%5]) with mapi id 15.20.6277.036; Wed, 12 Apr 2023
+ 13:34:06 +0000
+Date:   Wed, 12 Apr 2023 16:34:00 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCH v3 net] net: ipv4/ipv6 addrconf: call
+ igmp{,6}_group_dropped() while dev is still up
+Message-ID: <ZDazSM5UsPPjQuKr@shredder>
+References: <20230411144955.1604591-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAL_Jsq+nLP6rh3pdK3-5a8-mjR=dF48i-Z8d8u7N=fuYoCk92A@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230411144955.1604591-1-vladimir.oltean@nxp.com>
+X-ClientProxiedBy: VI1PR03CA0046.eurprd03.prod.outlook.com
+ (2603:10a6:803:50::17) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|PH8PR12MB7253:EE_
+X-MS-Office365-Filtering-Correlation-Id: c08046a3-1a74-45d4-a24c-08db3b5a968c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mRspDup4JAc6WfE1svZIL+n8J0P043Gx15FWcku9edspgJoqcxennvE9WdKWlVP9srVwedMW0iB23/wrrTCM6AjxR15v6l/j84wizyLgSjYdZ7gtTfPDcRisDKvqnOkrVdi8kB/jRAR5AGJersraDJZaekClb1o6H0J+bnBP9mbU9G0OX43/HX6rG3mvUcLx5EZPvXk2mR1LHlOB5U1FQdwhGqADO8SI0TdshmnTUJ4vajf/YRHPVZoKeGCbnCSo99r1WDoBWfLAK+AJMYRdcP9yGrqDoRvhQ1DJjBjXw9F//9xGs/nI4xwPjNuKbw6TiSP3Oj4STysg9PUPghvXxo8RiwCg31RD7hAIRsrg94U7YMpAvc4iKiMmyZ+bRG3Az6w0/qnX2f6GYHmcyEvrzqDHBJ9qNK0E/H2KfhejsX077BA0qp93HThsphGNM+5HVYt1hQpgV+OTl8fmCvvdou5S6dzyr1HGH0/Tz4zsmOG6gRT6j1RhhyyFU13eDMSHuVvhhn9tSgg77sBivyeM1Mgxddin67Nu1Kgu5KeWf/PEXD0cU7zBIBOAJOeECuU4i+eKMOmjXZBcfmCOqj6ytgnsnI5EZNFLV0xjNB/QhJo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(366004)(39860400002)(346002)(396003)(136003)(376002)(451199021)(9686003)(6666004)(83380400001)(54906003)(966005)(478600001)(186003)(6486002)(26005)(6506007)(6512007)(316002)(33716001)(2906002)(5660300002)(38100700002)(4326008)(41300700001)(66476007)(66556008)(66946007)(8936002)(6916009)(86362001)(8676002)(66899021);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?65FashIW1PrOXry7CUX+UUk72E8zVf4gKJDHZNi9IPVw6F9QqxyLYDVtcgOo?=
+ =?us-ascii?Q?VxruS99RfOANNba3zPKT9CoyKV7uM+XCHjaGmVgkNQC8AasmN+4OzQjOTJ8l?=
+ =?us-ascii?Q?24NSIIKkKIFfi6Tc+M6VVSG0trBcXtRDVqbUAQXGlmEnwJj2/7lAG61W4Cxw?=
+ =?us-ascii?Q?pTk951tN/K6PHGY9rf8eVK6easBLinDiWVrLULLmdL9pZI1jtUy+Z8HG9wQr?=
+ =?us-ascii?Q?m9MHR1HR/vmi+lKzANSqHEnKr2gIntZKo2tSvqKNBMTS2xATyltLTl6G0V7O?=
+ =?us-ascii?Q?zBoCGOUgtcKhZGDNZqr+yuUOTbSZob7QnAaFSgIOkXpeU/DR1H7DeexSi6x2?=
+ =?us-ascii?Q?c1PnDNhL+v/XFSa59ashaEllA0tV6HW+GNSDj1DHUxEi3DMmP2uNqkQ+kHEU?=
+ =?us-ascii?Q?oAEu/SrGYGRPXIUTFtMt7eKg2Pyi7sUhy7sr2eW9VY01Wti+PthOnglqzyCq?=
+ =?us-ascii?Q?aAx4Mou+BKf0k0VRs8nAvNpTjDxNi3rF/UiYgQCkY4CjpEJ78Uu6fxbTNSOk?=
+ =?us-ascii?Q?MFB74UweV4Uz5R3Gh77lRx6bC5+6FLOMLb55oPGnvzJJfPip+wGmVmZjmKU4?=
+ =?us-ascii?Q?/K6al9f4FY/m06m9nhWFEropvSQXsMe5zbr0u+iXrUOoQ9NTk3pRsYU8TdoC?=
+ =?us-ascii?Q?yDY3G2eVVNFZP4rbSW93KPtEAk29KGnOrrNx/a+O7tEwdBdmXWKk0nlQyEQK?=
+ =?us-ascii?Q?dKMYaCSHhvxrTwGVJ0X7wX4yO7zZ6uofMU8OFNEKsZMajEURjdLvpsdVPRSQ?=
+ =?us-ascii?Q?3Fehyaf+htfXumjG9zT4S5IyhursXHof04ktGNWrhAmXQhu/Xd4b8myaaCGT?=
+ =?us-ascii?Q?Ombd5IVPXghnhqy80y4v+Uf4moo9iaJlR2V5lu2RhZVcbMQbTcUpMlzyG+m8?=
+ =?us-ascii?Q?7Y4B/+yHk3gLp05duAr3nD+I1otbKGdJGx7iCjmWD65/c8+OlZPk8Gx+m/eB?=
+ =?us-ascii?Q?HMbu62NidGvlHnzy9Tv+EuLhKjr+QIgCtacUwmQ2CgfFU/l5muRiX1Yd66F6?=
+ =?us-ascii?Q?rns/U7Yxz5j2BJYC5RpWTNF8hny7TE2sVEkvshz6OEHNFknJniN4UmYd/VAy?=
+ =?us-ascii?Q?mVhOV6cF9Czg/4rye4unOvNZ1eZnv8TJkUSPGErwUg9h18MRE86kENfQtg2y?=
+ =?us-ascii?Q?sJucNhgGLOHd1miVDF2/VlliFefxhk+Eq1kpG2yP4GTB3wPmCqCM1LNqA9D+?=
+ =?us-ascii?Q?l0eSIJDnyv5TG3MiHTOmgSIXdwUoxu2J+XG+n6ZTNnwclSWBFGUDG4CI8Mfp?=
+ =?us-ascii?Q?hFMpeUx2khawuEldpIKD1ukgjHKXXvSDTLu8IWaAOgyFLR+Ee+eXRvhhMf4Y?=
+ =?us-ascii?Q?t7aJANQNm79OD4XsdP7vDx1JwNIOZfV3neQEaAeJAHbPqpEIoLI4fy8rd8MC?=
+ =?us-ascii?Q?IrPZznBqhYAwYKieNeBfox6xyZfHCuHMXn22Pdj2yVFgKG4zFJduKIBags40?=
+ =?us-ascii?Q?LdQ9QmGKkwysF9quVEzNvMWc8VPxD1ZHGGGK/MZ4KAWRrWZBqNi9j5jsHUYf?=
+ =?us-ascii?Q?1JggC7i5nisz5jjauJjjTa3M3KP01InOXpbWzWWU0zXCgpGd2ev6WkzhiWzU?=
+ =?us-ascii?Q?SmhLYMZtG0JfijaLOdgJfWCFwcC1fRwEFKIA0OLc?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c08046a3-1a74-45d4-a24c-08db3b5a968c
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2023 13:34:06.5652
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: L50Cqh1+er3d/Utnxs34FRrq9ATuKtvJajmLpbq13gfxO4alXKXeNSqauwFYuzIdtnop8JznoQ8ud0SP9tR6qA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7253
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 02:02:03PM -0500, Rob Herring wrote:
-> On Tue, Apr 11, 2023 at 7:53 AM Donald Hunter <donald.hunter@gmail.com> wrote:
-> > Bjorn Helgaas <helgaas@kernel.org> writes:
-> > > On Mon, Apr 10, 2023 at 04:10:54PM +0100, Donald Hunter wrote:
-> > >> On Sun, 2 Apr 2023 at 23:55, Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > >> > On Sat, Apr 01, 2023 at 01:52:25PM +0100, Donald Hunter wrote:
-> > >> > > On Fri, 31 Mar 2023 at 20:42, Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > >> > > >
-> > >> > > > I assume this igb NIC (07:00.0) must be built-in (not a plug-in card)
-> > >> > > > because it apparently has an ACPI firmware node, and there's something
-> > >> > > > we don't expect about its status?
-> > >> > >
-> > >> > > Yes they are built-in, to my knowledge.
-> > >> > >
-> > >> > > > Hopefully Rob will look at this.  If I were looking, I would be
-> > >> > > > interested in acpidump to see what's in the DSDT.
-> > >> > >
-> > >> > > I can get an acpidump. Is there a preferred way to share the files, or just
-> > >> > > an email attachment?
-> > >> >
-> > >> > I think by default acpidump produces ASCII that can be directly
-> > >> > included in email.  http://vger.kernel.org/majordomo-info.html says
-> > >> > 100K is the limit for vger mailing lists.  Or you could open a report
-> > >> > at https://bugzilla.kernel.org and attach it there, maybe along with a
-> > >> > complete dmesg log and "sudo lspci -vv" output.
-> > >>
-> > >> Apologies for the delay, I was unable to access the machine while travelling.
-> > >>
-> > >> https://bugzilla.kernel.org/show_bug.cgi?id=217317
-> > >
-> > > Thanks for that!  Can you boot a kernel with 6fffbc7ae137 reverted
-> > > with this in the kernel parameters:
-> > >
-> > >   dyndbg="file drivers/acpi/* +p"
-> > >
-> > > and collect the entire dmesg log?
-> >
-> > Added to the bugzilla report.
+On Tue, Apr 11, 2023 at 05:49:55PM +0300, Vladimir Oltean wrote:
+> ipv4 devinet calls ip_mc_down(), and ipv6 calls addrconf_ifdown(), and
+> both of these eventually result in calls to dev_mc_del(), either through
+> igmp_group_dropped() or igmp6_group_dropped().
 > 
-> Rafael, Andy, Any ideas why fwnode_device_is_available() would return
-> false for a built-in PCI device with a ACPI device entry? The only
-> thing I see in the log is it looks like the parent PCI bridge/bus
-> doesn't have ACPI device entry (based on "[    0.913389] pci_bus
-> 0000:07: No ACPI support"). For DT, if the parent doesn't have a node,
-> then the child can't. Not sure on ACPI.
+> The problem is that dev_mc_del() does call __dev_set_rx_mode(), but this
+> will not propagate all the way to the ndo_set_rx_mode() of the device,
+> because of this check:
+> 
+>         /* dev_open will call this function so the list will stay sane. */
+>         if (!(dev->flags&IFF_UP))
+>                 return;
+> 
+> and the NETDEV_DOWN notifier is emitted while the interface is already
+> down. OTOH we have NETDEV_GOING_DOWN which is emitted a bit earlier -
+> see:
+> 
+> dev_close_many()
+> -> __dev_close_many()
+>    -> call_netdevice_notifiers(NETDEV_GOING_DOWN, dev);
+>    -> dev->flags &= ~IFF_UP;
+> -> call_netdevice_notifiers(NETDEV_DOWN, dev);
+> 
+> Normally this oversight is easy to miss, because the addresses aren't
+> lost, just not synced to the device until the next up event.
+> 
+> DSA does some processing in its dsa_slave_set_rx_mode(), and assumes
+> that all addresses that were synced are also unsynced by the time the
+> device is unregistered. Due to that assumption not being satisfied,
+> the WARN_ON(!list_empty(&dp->mdbs)); from dsa_switch_release_ports()
+> triggers, and we leak memory corresponding to the multicast addresses
+> that were never synced.
+> 
+> Minimal reproducer:
+> ip link set swp0 up
+> ip link set swp0 down
+> echo 0000:00:00.5 > /sys/bus/pci/drivers/mscc_felix/unbind
 
-Thanks for the Cc'ing. I haven't checked anything yet, but from the above it
-sounds like a BIOS issue. If PCI has no ACPI companion tree, then why the heck
-one of the devices has the entry? I'm not even sure this is allowed by ACPI
-specification, but as I said, I just solely used the above mail.
+Even with the proposed fix, wouldn't you get the same leak with the
+following reproducer?
 
--- 
-With Best Regards,
-Andy Shevchenko
+ip link set dev swp0 up
+bridge fdb add 01:02:03:04:05:06 dev swp0 self local
+ip link set dev swp0 down
+echo 0000:00:00.5 > /sys/bus/pci/drivers/mscc_felix/unbind
 
+If so, I wonder how other drivers that allocate memory in their
+ndo_set_rx_mode() deal with this problem. I would imagine that they
+flush the addresses in their ndo_stop() or as part of device dismantle.
 
+> 
+> The proposal is to respond to that slightly earlier notifier with the
+> IGMP address deletion, so that the ndo_set_rx_mode() of the device does
+> actually get called.
+> 
+> Fixes: 5e8a1e03aa4d ("net: dsa: install secondary unicast and multicast addresses as host FDB/MDB")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+> v2->v3:
+> Returned to the original strategy, with Ido's modification applied
+> (to only touch the netdev notifier values, not the inetaddr notifier
+> values).
+> 
+> v2 at:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20230410195220.1335670-1-vladimir.oltean@nxp.com/
+> 
+>  net/ipv4/devinet.c  | 2 +-
+>  net/ipv6/addrconf.c | 6 +++---
+>  2 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+> index 5deac0517ef7..679c9819f25b 100644
+> --- a/net/ipv4/devinet.c
+> +++ b/net/ipv4/devinet.c
+> @@ -1588,7 +1588,7 @@ static int inetdev_event(struct notifier_block *this, unsigned long event,
+>  		/* Send gratuitous ARP to notify of link change */
+>  		inetdev_send_gratuitous_arp(dev, in_dev);
+>  		break;
+> -	case NETDEV_DOWN:
+> +	case NETDEV_GOING_DOWN:
+>  		ip_mc_down(in_dev);
+>  		break;
+>  	case NETDEV_PRE_TYPE_CHANGE:
+> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> index 3797917237d0..f4a3b2693d6a 100644
+> --- a/net/ipv6/addrconf.c
+> +++ b/net/ipv6/addrconf.c
+> @@ -3670,12 +3670,12 @@ static int addrconf_notify(struct notifier_block *this, unsigned long event,
+>  		}
+>  		break;
+>  
+> -	case NETDEV_DOWN:
+> +	case NETDEV_GOING_DOWN:
+>  	case NETDEV_UNREGISTER:
+>  		/*
+>  		 *	Remove all addresses from this interface.
+>  		 */
+> -		addrconf_ifdown(dev, event != NETDEV_DOWN);
+> +		addrconf_ifdown(dev, event != NETDEV_GOING_DOWN);
+>  		break;
+>  
+>  	case NETDEV_CHANGENAME:
+> @@ -6252,7 +6252,7 @@ static void dev_disable_change(struct inet6_dev *idev)
+>  
+>  	netdev_notifier_info_init(&info, idev->dev);
+>  	if (idev->cnf.disable_ipv6)
+> -		addrconf_notify(NULL, NETDEV_DOWN, &info);
+> +		addrconf_notify(NULL, NETDEV_GOING_DOWN, &info);
+>  	else
+>  		addrconf_notify(NULL, NETDEV_UP, &info);
+>  }
+> -- 
+> 2.34.1
+> 
