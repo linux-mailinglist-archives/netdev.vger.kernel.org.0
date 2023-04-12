@@ -2,160 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 697866E01D5
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 00:30:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 120936E01D8
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 00:34:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbjDLWao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 18:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37960 "EHLO
+        id S229560AbjDLWex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 18:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbjDLWam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 18:30:42 -0400
+        with ESMTP id S229441AbjDLWew (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 18:34:52 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4E36A40
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 15:30:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0714040D3;
+        Wed, 12 Apr 2023 15:34:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681338641; x=1712874641;
+  t=1681338891; x=1712874891;
   h=message-id:date:subject:to:cc:references:from:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=n5DRbV+cTZ6cwlclGQwqyPNoCbzVMnRKGNZc6Myi1I0=;
-  b=IWp0CkwSiCv83mieWXwctxDXTcIQItZEPMN7Oxzchzrwq+jY29ExBlyX
-   KeYMXcdsYELNYscpzNZQKvrkFmmpNNbicMF+e9hrcakvQIeefJ9mykxup
-   asIlG7MqFKT6rMfE9oC/fYBzHfwwwjuJqQZHYgN/ootLglumnUZMNzA7a
-   4ZvYg3FCQYU/aJeFyFatCsnKbbCpp3MFhjJ83ZI5x4PtaYKeORVr5WMKo
-   N08k+0mTqwhIgtnPC4ZwvB5Qh9gJVVYwe3M1FBrbKFmnFitzP/otxKJpP
-   ofEUxMnWJQpFeqH70+KW8QMMsuzUhPgI09S7xqd1Szt3YiFyGqIsTjAZ/
+  bh=8u/WZDXHc55ee3U7FnxGNYQY975fSiTcxF2E94sZU/o=;
+  b=bAXABtCcTGVPafg2mWMgK1GGYO2vgzR6oeh33l8W8qBqdeTUS+1xz+VQ
+   WnMjrtPzqU25uYOJqArsQwog5RzBX+QzKV+ptI4Q+1Jip3mfPaRHPBvRX
+   fWtwBNDJ0opUjFlXEAwdjRwei3923lamo0TXpR6iVmPWPJTe9w19RWse5
+   G1XDnDxWgPNknjYwP5LukjDBWWU/epzyW/p+IVff3C7m4MWReSimQJCGD
+   HPOrxD1nwje5yvwuHkRL4+NEifANw1P7I6ft7rz4mbYdEhiNeaZnehs+M
+   73gpWSm3L8wmdd3gFQ1S2jf3YASuGGeii/qIYJmcLrJ+GyNdiM7MNLx7D
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="409180911"
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="409181921"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="409180911"
+   d="scan'208";a="409181921"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 15:30:41 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2023 15:34:50 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="1018896747"
+X-IronPort-AV: E=McAfee;i="6600,9927,10678"; a="1018898843"
 X-IronPort-AV: E=Sophos;i="5.98,339,1673942400"; 
-   d="scan'208";a="1018896747"
+   d="scan'208";a="1018898843"
 Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga005.fm.intel.com with ESMTP; 12 Apr 2023 15:30:40 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+  by fmsmga005.fm.intel.com with ESMTP; 12 Apr 2023 15:34:50 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
  ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 12 Apr 2023 15:30:40 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ 15.1.2507.23; Wed, 12 Apr 2023 15:34:49 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 12 Apr 2023 15:30:40 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Wed, 12 Apr 2023 15:30:40 -0700
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.49) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2507.23 via Frontend Transport; Wed, 12 Apr 2023 15:34:49 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Wed, 12 Apr 2023 15:30:39 -0700
+ 15.1.2507.23; Wed, 12 Apr 2023 15:34:49 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HkEKZ8+AVJPAIbthCaxzlBJeLvdcBp9eVXY+dxmkogESLHIRTdMYc3T7FT7KjEDcR6Rm+BtDOIOkvAphXzJRLQDm0OQZ9RmqSVOfav3b5aBUpRruVwJoyxLzssgaZCs4xxfmIdITPKcsg9hZOQ9dJPPeQThlMlnU9/0/IPYP+P3nPHSKzLqS5eUjIS3sIPOeOpQfohNsQlB5WuCKRwb+GB6W5vr+mYw9dDTWWNYSHM7uJwPhjfjJVmGdcyrMRMbsfROgBMwhXrPc+fAkvZ7CreDiclGsXDePd5ZgtqvR7q71ROY7vl3fGX7sVNiJVNFVa6KsuDumY67OlkPcYMbRAg==
+ b=kJHX1GmA7ElAvj+iXiiCnaKPFxVA7Ie5IYOXBgU+5/Y2GWN+9SQkWS4kWBCSEriD8p9Ct7D1aq85RfwDQMRAIbJUdCq5y4GW2AzVxIYmtLUXvu7W7RirWoGTOZ1b340/aKowHszaVZsKzCHgigJVqeiEyLJVezfcr+crM1dMxs7okDJV342nhWgv5j0RKp2prtqDO9NTTVH5z4v7PtGNVMBld6erdBaf6hHWN5WmzNVF5Eq/SisosSmexO6MLHos4GNaKG91TpiRBP8jHLwyNk13PkWAJrX5k+JE+VT3JanLDU4UebinShqAmBxRUwchSPU1MZ+Ed5DdzQBg9KaPHg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EYE9lBAa3LvMawjtgV2zJf19XIXq/E6dPqToBhg0wXA=;
- b=D37SFRACMEIQIyzNtKvvMm6Ios4wtm4TzxsJBVPnWVcWb05oM776za/6ZRoGHqbikRRmrDUQHLpTtscUZh+Yw+G6k0+Q2lyE52DfBdDNlU/7pfZ8CqWfzWbpm2QrmlxgI0FEYq9taYCISRvIU0Yin3nB1YiLCntU8VUYoGbA60dU4pukOkwevBlQpypOpLGmGWXBodVcem3CzeRRLu49TbD50tj+vb27NB6JQrnlDwo4R7EE7hWsBXIokwPHNiV+jTDS14Ga4pNb8yttTi/TReTUvsAsGKXJf2H4XxyacVnpoxWenvf3qO0LZzL943TyEOtCO65yfIIXy0xMenEhaw==
+ bh=HBsDuWJknIYTtF6fGzLwgLL6icbcgJ2ndQ32poVj9C0=;
+ b=BritURRDJSq9/CNecrJGuUp6Yc5aEVEVSz/tDUt7dWKNjdMJ3mb+Bv4VYAv/EFy+pI/uBnDzrX+eteRSOt1SWOv4kaDrIxCBKSFgZfFWtQ2KjYZ9cHt4Qe7jhlz0uoK8bCpCHuIo0UWZz0s2eVdi11/d16bp3MyslnfuX365r3N6vBQFXx7G+jZosnQALFlUR8wfg36T4kXi8YflSH2nt/i+adENxSQQ5MfNeokCGKM7Wc3QdHedUR7drOtN0kkaI+mvPFFW3WSoxnPT2IRB2w2m558nzGgn6t8AzSRAbZYShmY0v3WHiY2fBw6TqEl5oCrwz3zHaoyXW4XVtg9/hA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by PH8PR11MB6755.namprd11.prod.outlook.com (2603:10b6:510:1ca::6) with
+ by SJ0PR11MB4816.namprd11.prod.outlook.com (2603:10b6:a03:2ad::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.36; Wed, 12 Apr
- 2023 22:30:33 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Wed, 12 Apr
+ 2023 22:34:47 +0000
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::6222:859a:41a7:e55b]) by CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::6222:859a:41a7:e55b%2]) with mapi id 15.20.6298.030; Wed, 12 Apr 2023
- 22:30:33 +0000
-Message-ID: <1809a34d-dcf4-4b54-089a-a7be3f4c23e1@intel.com>
-Date:   Wed, 12 Apr 2023 15:30:38 -0700
+ 22:34:47 +0000
+Message-ID: <30e4bf50-7950-0b3c-67b5-6028b7114da2@intel.com>
+Date:   Wed, 12 Apr 2023 15:34:51 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [PATCH net-next] igc: Avoid transmit queue timeout for XDP
+Subject: Re: [RFC PATCH net] sfc: Fix use-after-free due to selftest_work
 Content-Language: en-US
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        "Ong Boon Leong" <boon.leong.ong@intel.com>,
-        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>
-References: <20230412073611.62942-1-kurt@linutronix.de>
+To:     Ding Hui <dinghui@sangfor.com.cn>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <ecree.xilinx@gmail.com>, <habetsm.xilinx@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <pengdonglin@sangfor.com.cn>, <huangcun@sangfor.com.cn>
+References: <20230412005013.30456-1-dinghui@sangfor.com.cn>
 From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <20230412073611.62942-1-kurt@linutronix.de>
+In-Reply-To: <20230412005013.30456-1-dinghui@sangfor.com.cn>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY3PR10CA0002.namprd10.prod.outlook.com
- (2603:10b6:a03:255::7) To CO1PR11MB5089.namprd11.prod.outlook.com
+X-ClientProxiedBy: BYAPR11CA0105.namprd11.prod.outlook.com
+ (2603:10b6:a03:f4::46) To CO1PR11MB5089.namprd11.prod.outlook.com
  (2603:10b6:303:9b::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|PH8PR11MB6755:EE_
-X-MS-Office365-Filtering-Correlation-Id: 95967a8c-dea2-4b11-af8e-08db3ba58738
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|SJ0PR11MB4816:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6eb684cd-844c-468e-fca2-08db3ba61e98
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: b5YZo1x3DcNqLHsTRmj0zcFn6yjVjTRDBSVK/b3wx+pHDGJZV037VtBoJ5OgQNwpEeOiw37RMpRrjkw4qpwtg1e94hfaxD2Albb/IP3f8tkIR3u+PTHJpGUZ/0vi1Z5ceUaOCk39/fS+6l7rgNoWHUIxoimuS0azUTUEGu0d8jtpOXU59TYsEAn3wNNg3dmRElowG6ZbbAatP7tjEB7jSRI59IBYrAXiLf7ywIStrPBvP/5g/qrZKEhKpLx4cEuzYfLlj9Za59/dKyUJRGyiq4DNiGt6yQaQsmcVgvxvy8wQ3RrGu8UNbjCCNzuUG7aMp+lsm7YKM9vTwsupSWEU/YjBbGlqhkCpLLiNzmg03V3iVxr03TbZQ3ZrappXVOwgy240OteZ0WYt+VqsA1KfwVC4ykqWyT4esI2m7O92g+iPR/783KT/Vyu8vl021yTOk59I4RO1ps6jtWQatqiP59HEBP0UFfN9z/pUIv8ZIuGLsR7R23KsTwRaVpXYJJj7UM0aZM9E35Ttk8Nyl7Z/oziDOphE8TWjH96DSKk0EB6+Vlnrrmd/LdOoOAmJOwIurejdblqUHIl95f+IapEHuglDgooHWSZtDbhByIgN91IsIi9/05W1G8DQo8NzrflcZG77kQHFuu9EC3vlVUpNWQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(376002)(366004)(136003)(346002)(39860400002)(396003)(451199021)(36756003)(2906002)(5660300002)(8936002)(8676002)(86362001)(31696002)(110136005)(6512007)(6486002)(6506007)(26005)(83380400001)(6636002)(38100700002)(54906003)(478600001)(2616005)(186003)(31686004)(66946007)(53546011)(41300700001)(82960400001)(4326008)(66476007)(66556008)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: kgu7BUpM4Pc2ipemQTGH1upAtxO8nLSUOmXvy9/QASMBL2V+cPZK17GStodJEqb0LF5JnlW2ZCcHO3dTO47kdRouyeNa14NhO7SKJ2BHce7SonnGK4nvsUeN6GAeejEPV2brIZjExfxA1Z+Xv0TZZGA8wJmdOpL445BJ6ZKnz6R2o77x226Xu/QBo6fWnGBkzuq8XVfviNIWspgdRXZ/LdfmSQMEXGtXS7i9gvDC+egoBceWD5FMbVV7+Hf8n4R488XbuNCu04ruCtmCHOz+Rg0HHzWtjDewyc0Md5WVbD50719NUQbYeDpNt7h7iWfiwjlSTgLvwdVWFqO+iUIzXauBzIWgbt50mBRJ7y0iTLd/K4NiZwExhgJ3cPQ/Hgj165k/7AW6ozk+xIwj5b3Cp8IstnzHKikviauK44boYi8jYmPiBHvTuED5mmgO6n80soJ3RubMKjWAKVko+Etc0IsdaaxWBCQk9yco4GHtaJw1of4u8I1WfIebYRBaPIOhsqY2v4L31UE6CTxTaMdAIoXkky224d7iuoJq7NLeGJ08qrZzIg6f3chlvvQ4SB5zW5zCPI+pTU7yhJVMNtzyD+gBwviJjrxfK8aNRtR/UYkd1PxtmX4eBPPJz/UmhUE6JhW0JkgyaBHxH1XyVuuyJTKZzY/eE1o43AQF7NQKx08=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(396003)(346002)(136003)(39860400002)(376002)(451199021)(2616005)(2906002)(36756003)(82960400001)(86362001)(31696002)(38100700002)(83380400001)(6666004)(41300700001)(66946007)(66556008)(6486002)(66476007)(316002)(4326008)(8676002)(7416002)(8936002)(5660300002)(478600001)(31686004)(26005)(6512007)(53546011)(186003)(6506007)(21314003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dFpVaFB1Qmsvd3dRM25pMThHcmFMV2pTa2pUdzRWS1BzQ2ozenlIbUtIZ0JI?=
- =?utf-8?B?ZmJuQnNoQVFvV1NhRE1ISVFsY3RqejFpUXN3eWZaYnFjb3BGUngyZnVHc1ll?=
- =?utf-8?B?dElsbjhldmZNY0tTVzJPQlpWRTMzU1FUVmhONlRESnU1VkM1SFE1STBrTTMw?=
- =?utf-8?B?VjluODBjNnhWSVhzQnYxOEs1T1FRSDY4eEcvREZCaUhrWDBoR1JLY0JBTERJ?=
- =?utf-8?B?Sko4Y2hOVmFKSUw3dW5TTVdWODNLRWNGbThGRWdTd3BMZVRYS3FkQVp4RlIr?=
- =?utf-8?B?NzQ5WmhXdERtbVlPVGVqSkZHOTZobEFnY0Y1SmVvRlFVWVJoelEwVSt1eDVM?=
- =?utf-8?B?SncwTFNCUUEzbmE5OWtuU25TMU1QT3ZiQXhHTjJrVFpzY0Z1OFNIUkJRWkpO?=
- =?utf-8?B?bm55eTJiMjBBVnB4Nk8xVDk5WnZVMW1XaE55VkN5L2Z3SlYwL2NOcnk4Misy?=
- =?utf-8?B?NXpZUjk5SXE1SE53SXZQUU9HbVl5VEJYN2Z1SnAvSU8xT3ZkTldvczY1REZC?=
- =?utf-8?B?L1FEMVRIZWpJYmJSNWlmME9PaDZDU3pITzNwN3B2YjRuNWoveVpXUWJBb3hl?=
- =?utf-8?B?dVYweVdTMjZnS2N2WGo3MnhFRlJZbExsVUhuUTQ0WnF2bDRVajBuSXhEY2tz?=
- =?utf-8?B?ZW9Wa2E1REJESFhiY29pcnFHbWFKTFdhLy96RWpYeVhOSHFMcW5MTm95cUlV?=
- =?utf-8?B?dVBWbWlacVhreEUyVnhaNzNKYktwY3F6UlFBOUJxVy91dEhKVUI0VGg5OElr?=
- =?utf-8?B?dm1IbmFLTFVNQlZXNDFMbU90Wm1KaGE3aGNGVkJVQ2x5c2JabkJDMnhMZngr?=
- =?utf-8?B?enZCUjFIVmZ5SkZhdGxqYVM4R0IzWkhCVHM0ZFQ2VFl0QWJ6SFluWkhiVFJK?=
- =?utf-8?B?VXRldHREMzNBMTllU0N5azlCKzBIK3BmQzlKSlZHQk1iemFTbkdMK1pjcExL?=
- =?utf-8?B?VEgrM24rWURNQk5QNEEvWkc0VE5jaE9hN3JLaFk4QlhWbzdFMXVzcDFTWFor?=
- =?utf-8?B?QUttbFloS1BZeEZaL3JSUjNPVUZuMVQxRk9LcE9CQ3RqQTFSbVY1UytJakh4?=
- =?utf-8?B?RlprbEhnekFIK010V1FZeE5mclRaakJhZ2dPcVZYT1BCOHo1VTFKSU9JZGU3?=
- =?utf-8?B?ejNWKzRQeWliZmxEYWhlVXhIWE5JZVVJWjVIVzJIcXBhNVBKcHU5bzJnY0Vj?=
- =?utf-8?B?RXdCWWNwcmEvdUhQaFVNSWZocng5SU5IYVpxOWpIMWVhN3kyMXQwU3Jnb0ta?=
- =?utf-8?B?N3d6NTMwYjNobjk5Q0l5cDVjUU1EMmp1cjJBb2ltODA0WWpIaVJMSUpCcUlv?=
- =?utf-8?B?L3ZtZEpyUGFnWFNadUpGWFhtcWpGNXUxaWx1NUZPT2RjV2xFL3dxU3RKNTdV?=
- =?utf-8?B?L0J0Q1pEbk9YQmU5RzA0Q3FyeWpDTzFsZmhwbjZLZ3N5WGtkbEU3aEVoOXJH?=
- =?utf-8?B?S0JndWtKNE9YUTRIRFRPbVo3QjZsOWdrNHo1SVRwdHpLaG5DR0xDTWNzSlI1?=
- =?utf-8?B?U0hZUEpZdERQN3hPd1lrSjErK2w3cENQOVZmU3pUYnBodjV0dVhKYmVOTTdF?=
- =?utf-8?B?cjlpa1FIaHRWR3dDZEZzYmZteTlKczBieC9SU0EwUTBwaHVLU1hLOUJHNGJ6?=
- =?utf-8?B?NzBYVm1PNW5KU3YrVi9XQXU3V3pCVjVKOU5tK2hkZ3pyMG5ZZFV4aWVYcWZT?=
- =?utf-8?B?TjdkclRIbE5HRk5ldVRKdjhQS2hMb1B0VjI3R3krY08rQktyRUZ0OWQ5cndY?=
- =?utf-8?B?SnZ5WW1la0NHbkVKRkN0NjQ1Skp2SE9KNHRnc3BVcHdiRG9CZHhrWjhmUXVQ?=
- =?utf-8?B?RW5DU2ZQS29iOWpSa1BUOTFkZEE3b3NBcWg5MDd0M3ZjaGR4WVNYRmU2L01y?=
- =?utf-8?B?MVhWbWo4S3BpZXZqQU0zdnl1TVdNOS9EcWhsZUxUWVZneDBybmN4V1RmN2hP?=
- =?utf-8?B?cERQWVhpbVI5bXlzZGJ4YXI3M1A4Y1pkWS9FbU5UMVZYQVB5RWpVUnBDMlVn?=
- =?utf-8?B?M3p4MTdyVTBIRG1wMm12dUhEL0hvM3B2Ym9mang2TVUvODhXVStIdnJmNit6?=
- =?utf-8?B?RUdlRTVNYzd3b0pybFlwV2h3OWZiUkNkVkVkK04xS0p6SnU3WGM5SEtwcmFZ?=
- =?utf-8?B?U1BLbUdDZWVTTTZ4a3ZHSy9qYzdzbzVKQkZ4QkxRMDEyUzBtbGZaOGFSM2R4?=
- =?utf-8?B?bkE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95967a8c-dea2-4b11-af8e-08db3ba58738
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L0FDT2hpa2lyTVcrQzFiQmI5UG9rTDY5M0NSTnl6ZUxiMjY4NmhtWEg3WCsz?=
+ =?utf-8?B?c0xCTzhTQXYxVUtKNG1mOThXMHRkMnFVYnNxNG9sRVJwV1dGYnQwQ1hWTUdl?=
+ =?utf-8?B?ejRHOWhHQ3l3ZzhabDR1VVR6NXdMOUJyTGhvUWs3eldyeTdHdDFKT0dZR0hp?=
+ =?utf-8?B?TlErd0o0VTV0M1ZNL0xRaEQ0UTgyUm9CUm1FMUQwcGdTMVdrWjM2azVYZDRs?=
+ =?utf-8?B?Q0NQaXcyb2JyUkVKSnNvaHhEK2FnaGhiTTVLUk5FZ3NnQk1CTFJlZTM3UjlJ?=
+ =?utf-8?B?MkY5NnVVc2wrbnc4WGYxUTR0a2czdnFVK2N0cHpKYms3MmI4Si9uU0VIS2xt?=
+ =?utf-8?B?MDJkcUhtWjF5TzJJeXJYdklJcGNuUUNXS2lLdi84cHZiOWJHLy9JMU5RcHhw?=
+ =?utf-8?B?YTU0U3NQaG0zSU1qRFppSjBJUU1ETTdLYnJneUZ5ZDgxMmxSR0NxN3FTK0VT?=
+ =?utf-8?B?QTZ1Rkk0UVFDOGc2dElWbmNvc1dHWWZaRS9KdlBZU1JRRmJFcThhOWpxdy85?=
+ =?utf-8?B?MDFKOHFHZ1pHYXkveklFc1ZDNnFtY2VUUVFYeDU0SVhaR0Z3NmpLWGJiY2Zy?=
+ =?utf-8?B?WkpHQnlCemRqUDh3U3pWWmd2dkpLeFRUdTR1OGpScUwrZnVnQjNyRXE0Rk50?=
+ =?utf-8?B?R1ZLdnJXejIxN1RXYWpibS9uL1ZZbWZqdEFQcGNVVElMRTZ2Vjd3ZU9FdWdM?=
+ =?utf-8?B?UENma2I4bTRLaWgzMzJ3MjFobGJZWnhlY3lVUjluQVA0bHJEVmlzbG9ZOU5L?=
+ =?utf-8?B?MXBEdExBVGdqeUw3Zk9qL0JVTUpyNkxpdVZrT2hzMFNkcmhMWDI2aERCVnYy?=
+ =?utf-8?B?am9UdGVpVzRLUzc3VUMrYUpFM3JvRjkwanVJZGpDYXdlelJMWU5vUHpsNjFn?=
+ =?utf-8?B?L2RPWEtvUTZEcmNxTER2NUJsZndobXduT1cvV2VWenBHL1B2NUN6eTBRdGcw?=
+ =?utf-8?B?eXFNWUoySmlHaU1nbVczZWF6TWZ6cmV6VGV6WVRRNk9OaHcyZ2NYZndNNDZ6?=
+ =?utf-8?B?NzNieHYycFcwdXpERWM2c3FzQm5HUmljeXdUaFpQL1dMVjZVZEZKdFZYUjJ2?=
+ =?utf-8?B?Qmoyaks1V0E3Q01pajBQcE9LbUgyVVlWQzFrZDBVM1Zod2RtSi9QTko4Nzlh?=
+ =?utf-8?B?WW9VQkhJaXVIS2VVaXNEa3BtZmZTdzVDSlloWWZ3UDNzeWF3cUs0SHA3Vk5h?=
+ =?utf-8?B?djVRc2RoSE5lb2IvVHpJMlA3NUx6UlpyWlR1c3hLcElSL2Y1WXkvMmpGc2pk?=
+ =?utf-8?B?eHZVeXNNL05iWUk4enRkOG9PL05DbGR6N0ZrWERQOC94YmlTM0d0a0lZbWl3?=
+ =?utf-8?B?ZCtWdU5xRG0wbDFCcHd2UHZvL1MvNEg5Y1V1czc0SER5a0RBMzg4bmFRSVE1?=
+ =?utf-8?B?N29lajg4Q2lOd0ViZmprRGxEWEIvb25rejUvUGZKMjl1WjZJNDFrWlF4ZG51?=
+ =?utf-8?B?eGRNS3pZOGlDbzV4TFY0Ykc1MXlQQ2pRZ0RTckhCdzc0M2xZNHJDVCs5U213?=
+ =?utf-8?B?bXNwNHBaM3Y3ZjNZbE96bGZBWmFkMnNwWk9OWVJyRU00dmxwRGJqRnB2UUlF?=
+ =?utf-8?B?OFFJV2w1S1dGZi9aanpMdlpWemlFeUdRNHRFdzlDTm1xY3I5RFZ0M2F3QUtK?=
+ =?utf-8?B?SU8xT3ZIU3l0L2tEcUFxK2hEaXBBd2tlc0JNbEhidXpnNS9GT2x4VUErdGtU?=
+ =?utf-8?B?ejhWMm9uWUxWZHF0aTI5dlRmMDh6SFdDVTVXeVpPYXVLQ2prVGp1dXdCamhF?=
+ =?utf-8?B?RkhDc2JhM1hUM3djUThHQ2FQMTEranBaQ2hoM3hHMHM1eG9UUUM0ZnloL25L?=
+ =?utf-8?B?M2J0aWNxOUZuNUk0bXJPUHAvZ21ZM2FYTzhLeStqOXJYNnFJWHdFUUQwNnQ0?=
+ =?utf-8?B?WCt3NXl4WWlIamh1b003TmNqMVp5YlhJeE1HRFlRcDM3dGU2Tmg4OElhUjZa?=
+ =?utf-8?B?SUQyTEFGNlhuUDVDYWxwa0dNalFtVE1yU3pndmFEV2ZOZlJpbGNVOGlFMi9L?=
+ =?utf-8?B?Y3BuMit4a3dWTjRIbytyNmlSTVVRaUx1NS9Ra2l1WWc5RDliQm56NDVBS2ht?=
+ =?utf-8?B?cEdTVGtsTmR6b0RhS0RQbW5DL1lNUTdNK3B3NmlPZ2ZBN1FOdG9ZWWxCa0dW?=
+ =?utf-8?B?cE5oYmhXcmlOMG9Xc3pabnozTk5SWWZwdkFxWkl4WEFjd3JDejhsUGZMeFh2?=
+ =?utf-8?B?S0E9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6eb684cd-844c-468e-fca2-08db3ba61e98
 X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2023 22:30:32.9746
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2023 22:34:46.9037
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HFd+4zWQ9oVXqr7Jd179z3fTh7ycy4iXAFFlbHPU39axkTaI9iFugwuOEgXkHUWceL+evIL3ORjk0Bm94kZddt5r3ihvTsN/MFnf04lF7NI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6755
+X-MS-Exchange-CrossTenant-UserPrincipalName: MsugZ5T3JRAmhC2xXegQm0xDdlOXc5sO/suL64uqQg4lIgzqNQEAPn+dLo+zYZNezIcXmWBiRLCAaJO3qfaVdPokAU9ehsgo2VWx0WiYWCs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4816
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
@@ -169,93 +161,83 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/12/2023 12:36 AM, Kurt Kanzenbach wrote:
-> High XDP load triggers the netdev watchdog:
+On 4/11/2023 5:50 PM, Ding Hui wrote:
+> There is a use-after-free scenario that is:
 > 
-> |NETDEV WATCHDOG: enp3s0 (igc): transmit queue 2 timed out
+> When netif_running() is false, user set mac address or vlan tag to VF,
+> the xxx_set_vf_mac() or xxx_set_vf_vlan() will invoke efx_net_stop()
+> and efx_net_open(), since netif_running() is false, the port will not
+> start and keep port_enabled false, but selftest_worker is scheduled
+> in efx_net_open().
 > 
-> The reason is the Tx queue transmission start (txq->trans_start) is not updated
-> in XDP code path. Therefore, add it for all XDP transmission functions.
+> If we remove the device before selftest_worker run, the efx is freed,
+> then we will get a UAF in run_timer_softirq() like this:
 > 
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> [ 1178.907941] ==================================================================
+> [ 1178.907948] BUG: KASAN: use-after-free in run_timer_softirq+0xdea/0xe90
+> [ 1178.907950] Write of size 8 at addr ff11001f449cdc80 by task swapper/47/0
+> [ 1178.907950]
+> [ 1178.907953] CPU: 47 PID: 0 Comm: swapper/47 Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
+> [ 1178.907954] Hardware name: SANGFOR X620G40/WI2HG-208T1061A, BIOS SPYH051032-U01 04/01/2022
+> [ 1178.907955] Call Trace:
+> [ 1178.907956]  <IRQ>
+> [ 1178.907960]  dump_stack+0x71/0xab
+> [ 1178.907963]  print_address_description+0x6b/0x290
+> [ 1178.907965]  ? run_timer_softirq+0xdea/0xe90
+> [ 1178.907967]  kasan_report+0x14a/0x2b0
+> [ 1178.907968]  run_timer_softirq+0xdea/0xe90
+> [ 1178.907971]  ? init_timer_key+0x170/0x170
+> [ 1178.907973]  ? hrtimer_cancel+0x20/0x20
+> [ 1178.907976]  ? sched_clock+0x5/0x10
+> [ 1178.907978]  ? sched_clock_cpu+0x18/0x170
+> [ 1178.907981]  __do_softirq+0x1c8/0x5fa
+> [ 1178.907985]  irq_exit+0x213/0x240
+> [ 1178.907987]  smp_apic_timer_interrupt+0xd0/0x330
+> [ 1178.907989]  apic_timer_interrupt+0xf/0x20
+> [ 1178.907990]  </IRQ>
+> [ 1178.907991] RIP: 0010:mwait_idle+0xae/0x370
+> 
+> I am thinking about several ways to fix the issue:
+> 
+> [1] In this RFC, I cancel the selftest_worker unconditionally in
+> efx_pci_remove().
+> 
+> [2] Add a test condition, only invoke efx_selftest_async_start() when
+> efx->port_enabled is true in efx_net_open().
+> 
+> [3] Move invoking efx_selftest_async_start() from efx_net_open() to
+> efx_start_all() or efx_start_port(), that matching cancel action in
+> efx_stop_port().
+> 
+> [4] However, I also notice that in efx_ef10_set_mac_address(), the
+> efx_net_open() depends on original port_enabled, but others are not,
+> if we change all efx_net_open() depends on old state like
+> efx_ef10_set_mac_address() does, the UAF can also be fixed in theory.
+> 
+> But I'm not sure which is better, is there any suggestions? Thanks.
+> 
 
-For Intel, I only see this being done in igb, as 5337824f4dc4 ("net:
-annotate accesses to queue->trans_start"). I see a few other drivers
-also calling this.
+I think this fix makes the most sense to me.
 
-Is this a gap that other XDP implementations also need to fix?
-
-grepping for txq_trans_cond_update I see:
-
-> apm/xgene/xgene_enet_main.c
-> 874:            txq_trans_cond_update(txq);
-> 
-> engleder/tsnep_main.c
-> 623:            txq_trans_cond_update(tx_nq);
-> 1660:           txq_trans_cond_update(nq);
-> 
-> freescale/dpaa/dpaa_eth.c
-> 2347:   txq_trans_cond_update(txq);
-> 2553:   txq_trans_cond_update(txq);
-> 
-> ibm/ibmvnic.c
-> 2485:   txq_trans_cond_update(txq);
-> 
-> intel/igb/igb_main.c
-> 2980:   txq_trans_cond_update(nq);
-> 3014:   txq_trans_cond_update(nq);
-> 
-> stmicro/stmmac/stmmac_main.c
-> 2428:   txq_trans_cond_update(nq);
-> 4808:   txq_trans_cond_update(nq);
-> 6436:   txq_trans_cond_update(nq);
-> 
-
-Is most driver's XDP implementation broken? There's also
-netif_trans_update but this is called out as a legacy only function. Far
-more drivers call this but I don't see either call or a direct update to
-trans_start in many XDP implementations...
-
-Am I missing something or are a bunch of other XDP implementations also
-wrong?
-
-The patch seems ok to me, assuming this is the correct way to fix things
-and not something in the XDP path.
-
+> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
 > ---
->  drivers/net/ethernet/intel/igc/igc_main.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+
+net patches need a Fixes tag indicating what commit this fixes. This
+being RFC is likely why that was left off?
+
+>  drivers/net/ethernet/sfc/efx.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-> index ba49728be919..e71e85e3bcc2 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_main.c
-> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-> @@ -2384,6 +2384,8 @@ static int igc_xdp_xmit_back(struct igc_adapter *adapter, struct xdp_buff *xdp)
->  	nq = txring_txq(ring);
+> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+> index 884d8d168862..dd0b2363eed1 100644
+> --- a/drivers/net/ethernet/sfc/efx.c
+> +++ b/drivers/net/ethernet/sfc/efx.c
+> @@ -876,6 +876,8 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
+>  	efx->state = STATE_UNINIT;
+>  	rtnl_unlock();
 >  
->  	__netif_tx_lock(nq, cpu);
-> +	/* Avoid transmit queue timeout since we share it with the slow path */
-> +	txq_trans_cond_update(nq);
->  	res = igc_xdp_init_tx_descriptor(ring, xdpf);
->  	__netif_tx_unlock(nq);
->  	return res;
-> @@ -2786,6 +2788,9 @@ static void igc_xdp_xmit_zc(struct igc_ring *ring)
->  
->  	__netif_tx_lock(nq, cpu);
->  
-> +	/* Avoid transmit queue timeout since we share it with the slow path */
-> +	txq_trans_cond_update(nq);
+> +	efx_selftest_async_cancel(efx);
 > +
->  	budget = igc_desc_unused(ring);
+>  	if (efx->type->sriov_fini)
+>  		efx->type->sriov_fini(efx);
 >  
->  	while (xsk_tx_peek_desc(pool, &xdp_desc) && budget--) {
-> @@ -6311,6 +6316,9 @@ static int igc_xdp_xmit(struct net_device *dev, int num_frames,
->  
->  	__netif_tx_lock(nq, cpu);
->  
-> +	/* Avoid transmit queue timeout since we share it with the slow path */
-> +	txq_trans_cond_update(nq);
-> +
->  	drops = 0;
->  	for (i = 0; i < num_frames; i++) {
->  		int err;
