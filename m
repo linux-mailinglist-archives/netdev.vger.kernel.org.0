@@ -2,99 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EE5A6DF7F2
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 16:05:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB2876DF817
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 16:12:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbjDLOFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 10:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36962 "EHLO
+        id S231429AbjDLOM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 10:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbjDLOFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 10:05:13 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E7610EB
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 07:05:11 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id q5so14638160ybk.7
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 07:05:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681308311;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cFjCio1SMkjC3GGn+rz/NhJQfbUxSjSUHscFzuxXyMI=;
-        b=gnes7f+P2h0U2KW2LIq5aq5lt8OOzRzVYh5yVool/oSq1/rqkzj8HrQOGWVmjydIZA
-         SUqfWjxd1PIO9mLn5Ed5MDLomWssJyBVHIRezYSNQBvdmnAHda86ZX06KPaRR+LN5SzU
-         V7y8BzBHphPUQcE1csurOKwduELnCJ57xLsRxQ6OO9ITaOS8blITvJRh59UU6XIPDW7t
-         FTxmUljChXNO7AHUixguqPTdGckolLB6AQHr3e9f5dZQ5Ss+UOS+oWHGeIyq5Gf3VIZr
-         +0kLLyZpzFLW7qDCPwa3MPFk3bhQZnp+1Mn53M+J2AKiZrhudSdZd1vGB13eragDMiSy
-         aeVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681308311;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cFjCio1SMkjC3GGn+rz/NhJQfbUxSjSUHscFzuxXyMI=;
-        b=q8GTsJSo2gv5Nhi9pyhM+KVA9DeVHAx+8C/un+IX+++l0Ofkj/rL2nGNN50QrNAAJa
-         li+zAQCrfayh+fk8wwNZQq7D4/el3MuI6X0romK4Mv15Xtr5Z4m798cD/BJIND6WLfWG
-         9jRWttYVzodrf+Lm9hEIdezg5Jipm8qQrx99FCr3R9rZLBM8TBd9Wm6yjMsWTDGu4OmY
-         0LCGFCb8JN6veie32KPvTwUWwwWW4fxDaf5bQN090lnfZrhzkj8YyJcWEqCqqT127f0c
-         EdGhMY64ufVcK9maeLTMrDMZlNXFaViaBnKhk/JU2k4Gv0C5WDdpdZSqlgippXLX6Ft0
-         bSxw==
-X-Gm-Message-State: AAQBX9cd3eXRKp7NmOCACgXAd6OxyjIyaCUmDTbQdTYJ3+Gpj+WOaqLT
-        VyudTue/vdRu+38ejaqVPyW5+gv9y7MBAX7BpoLTdw==
-X-Google-Smtp-Source: AKy350a4Mig5tyYnPu+tLPpb6khDV7oFSg2EjCWnKvNSZCZfmuEt/i7W893cD10h29qqiIxcKjOx7l4uxElbLCAsZjc=
-X-Received: by 2002:a25:76c7:0:b0:b75:8ac3:d5d2 with SMTP id
- r190-20020a2576c7000000b00b758ac3d5d2mr1757778ybc.4.1681308310683; Wed, 12
- Apr 2023 07:05:10 -0700 (PDT)
+        with ESMTP id S231317AbjDLOM1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 10:12:27 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E1D976E;
+        Wed, 12 Apr 2023 07:12:10 -0700 (PDT)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id D560F85EEF;
+        Wed, 12 Apr 2023 16:12:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1681308728;
+        bh=oJe+dhBRFjbufxdOE+fpKBwo+IsZBAXvxmYTN94z54E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=azIWLXEYxA366b12+jzw4lBOmUn+liadHdaTh/CEnzqSUIjbS/ZTG4QQHMNF63T+6
+         5KOHFDLEB3kE7UCYi03T1LfHD5Sg7n+rkk7+WY0rdw0HNCTc4SZ1lCFkRDphWihN9O
+         NWh5wTzUQ4P5bh7ES/28ufbljWUIrv66OdZK2ixfuyk4hy2q0i9eK4u2wvhiVUSOuQ
+         xl1uxDT5RjRXZvxkU38vngEYC3s8/6wecYwOB1TMBnOZNvJBw6vdK7ZsuLANnt+cVp
+         keCs8OiHJBJ+T/W2tdrcxy9+AOmuUbknwzC9Guqm0lb7BB+CGv9N7cyKU9Jx0wB8KI
+         jv3bITN5KJlMA==
+Date:   Wed, 12 Apr 2023 16:12:00 +0200
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] phy: smsc: Implement .aneg_done callback for LAN8720Ai
+Message-ID: <20230412161200.329798fb@wsk>
+In-Reply-To: <7330ff6d-665f-4c79-975d-6e023c781237@lunn.ch>
+References: <20230406131127.383006-1-lukma@denx.de>
+        <ZC7Nu5Qzs8DyOfQY@corigine.com>
+        <aa6415be-e99b-46df-bb3b-d2c732a33f31@lunn.ch>
+        <20230412132540.5a45564d@wsk>
+        <7330ff6d-665f-4c79-975d-6e023c781237@lunn.ch>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20230411022640.8453-1-liangchen.linux@gmail.com>
-In-Reply-To: <20230411022640.8453-1-liangchen.linux@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 12 Apr 2023 16:04:59 +0200
-Message-ID: <CANn89iLeVKPz05daEPCH+Z5WkPGhJAafFu8z-dSsKW725LtEUA@mail.gmail.com>
-Subject: Re: [PATCH v3] skbuff: Fix a race between coalescing and releasing SKBs
-To:     Liang Chen <liangchen.linux@gmail.com>
-Cc:     kuba@kernel.org, ilias.apalodimas@linaro.org, hawk@kernel.org,
-        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org,
-        alexander.duyck@gmail.com, linyunsheng@huawei.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/D=c1gj4OhYTF2rGw87ZDJ9S";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 4:27=E2=80=AFAM Liang Chen <liangchen.linux@gmail.c=
-om> wrote:
->
-> Commit 1effe8ca4e34 ("skbuff: fix coalescing for page_pool fragment
-> recycling") allowed coalescing to proceed with non page pool page and pag=
-e
-> pool page when @from is cloned, i.e.
->
-> to->pp_recycle    --> false
-> from->pp_recycle  --> true
-> skb_cloned(from)  --> true
->
-> However, it actually requires skb_cloned(@from) to hold true until
-> coalescing finishes in this situation. If the other cloned SKB is
-> released while the merging is in process, from_shinfo->nr_frags will be
-> set to 0 toward the end of the function, causing the increment of frag
-> page _refcount to be unexpectedly skipped resulting in inconsistent
-> reference counts. Later when SKB(@to) is released, it frees the page
-> directly even though the page pool page is still in use, leading to
-> use-after-free or double-free errors. So it should be prohibited.
->
-> Signed-off-by: Liang Chen <liangchen.linux@gmail.com>
-> ---
-> Changes from v2:
-> - switch back to the way v1 works and fix some style issues.
->
+--Sig_/D=c1gj4OhYTF2rGw87ZDJ9S
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Hi Andrew,
+
+> > > This actually seems like a fix. So it should probably be based on
+> > > net, and have a Fixes: tag. =20
+> >=20
+> > I've rebased it on the newest vanila kernel. =20
+>=20
+> Please see the netdev FAQ. It talks about the two git trees used for
+> networking.
+
+Thanks for the information.
+
+>=20
+> > It turned out that this IC has a dedicated bit (in vendor specific
+> > register) to show explicitly if auto neg is done.
+> >  =20
+> > >=20
+> > > Lukasz, how does this bit differ to the one in BMSR?  =20
+> >=20
+> > In the BMSR - bit 5 (Auto Negotiate Complete) - shows the same kind
+> > of information.
+> >=20
+> > The only difference is that this bit is described as "Auto
+> > Negotiate Complete" and the bit in this patch indicates "Auto
+> > Negotiation Done".
+> >  =20
+> > > Is the BMSR bit
+> > > broken?  =20
+> >=20
+> > This bit works as expected. =20
+>=20
+> I would avoid the vendor bit, if it has no benefit. A lot of
+> developers understand the BMSR bit, where as very few know this vendor
+> bit. BMSR can probably be handled with generic code, where as the
+> vendor bit requires vendor specific code etc.
+
+Ok. Then, this patch shall be dropped. Thanks for the clarification :)
+
+>=20
+>     Andrew
+
+
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Erika Unter
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/D=c1gj4OhYTF2rGw87ZDJ9S
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmQ2vDAACgkQAR8vZIA0
+zr2RXwgApqTxnLuMfw3h9YrdZSwgZ3fvI68WOFSnK9LiOPoQCVdzyH4+AB+Issja
+dkY8fJ0CGWtQyNUMzgBUA8XgQzc1E1jTVtxb4tMGleioL03KWUsBVF2QWClRd8Na
+iCjqy1oxioWgvrzCWWlQhRhzeyLXQ7U9w6gnfe07E5h5yLMs60RE9sv0eiW9UIYA
+x8KyKTHpdikBH/swELEaJXHLVZZ7wXHrhdb0dCG8esEvLhJ5TTVDf+mAnPS36P/9
+x1DQHFKcJmGsgtdMEi5OxRDlX/hCqThExSVnCMGm6sZBthi+6q7PT2HS2xYLAWk9
+9kVHWBrB/KF5OWCQeeqT/gUV9kx5RA==
+=Qcaf
+-----END PGP SIGNATURE-----
+
+--Sig_/D=c1gj4OhYTF2rGw87ZDJ9S--
