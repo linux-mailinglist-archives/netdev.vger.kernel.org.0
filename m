@@ -2,90 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 022756DEE61
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:41:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 227016DEFE8
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:56:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbjDLIlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 04:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46460 "EHLO
+        id S231465AbjDLI4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 04:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbjDLIlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:41:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB3D7A98;
-        Wed, 12 Apr 2023 01:40:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S231387AbjDLI4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:56:04 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC82A5CA
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:55:46 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 3B25D207CA;
+        Wed, 12 Apr 2023 10:55:27 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id rfSR8ACPCgFM; Wed, 12 Apr 2023 10:55:26 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C926A62FFC;
-        Wed, 12 Apr 2023 08:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 34CCEC4339C;
-        Wed, 12 Apr 2023 08:40:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681288819;
-        bh=qOkIca4/8jj3nQqDneNarsb/U3LETLQotVRPGZMN/BI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Vn6IR9vvGjKkaKAAM3BErP9Uizxv+DEY79u0XOjy5mvhlfYkrSkquI+wgw6tLSCBQ
-         2NVpMqZj/D2IaWmZho5hwLDA0XpUnccIE/kcAZh5EV8TeOV5oUMsPhR0RSmT9hp/A+
-         vy7mW7FkOVfftrrF+oQFO2mIn96ssHj9uNCHY0aQVZosDzTpfj80qiiKJrj9ghkGDz
-         0y6GjVO3U2P3WNpz6gGZ7YPCjHkqYPQGUY1Dpr9AvOZeIFirbiaQNCR5XnNW/nF2Di
-         dou0AlP/LIVS+MqucNGAFgB7JlAgtNgfBJEhkkYPAOIgqK5cCPW3rEBTWDWbOJaCfi
-         FlWKtQXaTev+Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 18ED1E5244E;
-        Wed, 12 Apr 2023 08:40:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by a.mx.secunet.com (Postfix) with ESMTPS id C9298207AC;
+        Wed, 12 Apr 2023 10:55:26 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id C418280004A;
+        Wed, 12 Apr 2023 10:55:26 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Wed, 12 Apr 2023 10:55:26 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 12 Apr
+ 2023 10:55:26 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id E13273180C1D; Wed, 12 Apr 2023 10:55:25 +0200 (CEST)
+Date:   Wed, 12 Apr 2023 10:55:25 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+CC:     <netdev@vger.kernel.org>,
+        Christian Langrock <christian.langrock@secunet.com>,
+        Antony Antony <antony.antony@secunet.com>
+Subject: Re: [PATCH ipsec] xfrm: don't check the default policy if the policy
+ allows the packet
+Message-ID: <ZDZx/Up5cbm1L07s@gauss3.secunet.de>
+References: <0cafbebeba54747b04a72d0fc06aa2ad569f3739.1680613644.git.sd@queasysnail.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv3 0/2] Fix RK3588 error prints
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168128881909.3903.13367548922290396185.git-patchwork-notify@kernel.org>
-Date:   Wed, 12 Apr 2023 08:40:19 +0000
-References: <20230407161129.70601-1-sebastian.reichel@collabora.com>
-In-Reply-To: <20230407161129.70601-1-sebastian.reichel@collabora.com>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <0cafbebeba54747b04a72d0fc06aa2ad569f3739.1680613644.git.sd@queasysnail.net>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri,  7 Apr 2023 18:11:27 +0200 you wrote:
-> Hi,
+On Tue, Apr 04, 2023 at 03:12:16PM +0200, Sabrina Dubroca wrote:
+> The current code doesn't let a simple "allow" policy counteract a
+> default policy blocking all incoming packets:
 > 
-> This fixes a couple of false positive error messages printed by stmmac on
-> RK3588. I added Fixes tags, but I expect them to go via net-next, since
-> the patches are more or less cleanups :)
+>     ip x p setdefault in block
+>     ip x p a src 192.168.2.1/32 dst 192.168.2.2/32 dir in action allow
 > 
-> Changes since PATCHv2:
->  * https://lore.kernel.org/all/20230405161043.46190-1-sebastian.reichel@collabora.com/
->  * Remove regulator NULL check
->  * Switch to devm_clk_bulk_get_optional as suggested by Andrew Lunn
+> At this stage, we have an allow policy (with or without transforms)
+> for this packet. It doesn't matter what the default policy says, since
+> the policy we looked up lets the packet through. The case of a
+> blocking policy is already handled separately, so we can remove this
+> check.
 > 
-> [...]
+> Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
+> Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 
-Here is the summary with links:
-  - [PATCHv3,1/2] net: ethernet: stmmac: dwmac-rk: rework optional clock handling
-    https://git.kernel.org/netdev/net-next/c/ea449f7fa0bf
-  - [PATCHv3,2/2] net: ethernet: stmmac: dwmac-rk: fix optional phy regulator handling
-    https://git.kernel.org/netdev/net-next/c/db21973263f8
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Applied, thanks a lot Sabrina!
