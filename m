@@ -2,346 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6357D6DFC74
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 19:15:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F816DFC7A
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 19:15:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231379AbjDLRPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 13:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
+        id S231425AbjDLRPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 13:15:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231232AbjDLRPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 13:15:12 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A97B76BF
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:14:53 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id ke16so12022482plb.6
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:14:53 -0700 (PDT)
+        with ESMTP id S231409AbjDLRP0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 13:15:26 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945A27DA1
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:15:04 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id sg7so42057610ejc.9
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:15:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681319677;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=O5AV7vfK/2nwKp0eVshwydhumuKVDn6U4uxG7E7tKMo=;
-        b=onAFA2dtpR1yA26nKlvTU+cGm5CAmVoVKOg2j5MyJBdEBXEbn5T6EsN78Mt7rK1aVR
-         qPEfbnFNUGoOFd3ljdpnEH+u3Krsy4M7vbcK0XZtM84O6YquQ8yhavldrwuRDLdaH2la
-         GrmW1SW9hWp9pI7F0s8Nh+vDR4sSJBO4a7EPQrX9re67No2HD2DcddCUioILebe6S9JW
-         //bB6cNcb9f9wiHH1mh1uFcYUUNFWWQsfR6xpLyxGouGYo4UAn7pKcch8afXDwQQBeX3
-         0BQojcWxFsJcQ8JHAKsIf0BUvHvbVFlDUbMmf/Pd8PXICOhf2F9oVRFmY9c3awZWzFqn
-         DB8A==
+        d=broadcom.com; s=google; t=1681319702; x=1683911702;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=yE3guz5srVELE+FSvdXNLCNS0lbBEAAksiaD6Nth06k=;
+        b=dMPZDljZKsHSKModDVrQnmCKqVrRnMabZ7d6UBHtX5UE6pWRsX6XNYHK3NDOiLCk14
+         Zm1qn3ziHxEAkWhaXpYcgAp5eYcOzITP3QuLADbxo2yHS/vLffi5IvFd7n38zP8Y7b6M
+         eawHw6fTvm+cdRLsKN61knXa5oVTh36HqLPsg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681319677;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=O5AV7vfK/2nwKp0eVshwydhumuKVDn6U4uxG7E7tKMo=;
-        b=CR2BsK4QdXK98fiklFXg4Sil1VQxPTtGlB7+6pBDO+D4dcgwh6gdINXjfrK5AvjwNh
-         FeyzDZfr/+VLRrIyKmsFCrrZOJGGCIv/NHvHVUjMnXsdI30p65yaP1J7NU8PcXgfmhMC
-         aPtZVu5IB/gKDVXDM+FzbpgFVTJOSqzR9oPM6oR1vOk55UEF5L/6JcIy7cg0p/FvY6Pi
-         xf07VFPblY6bHyddqpoh85rri8hOGVDMyuDfqs39XWQCMZicElYuNJNDKudat3WGd3C9
-         3BU5CJI8cctGYBQtBSYbci5hi8ey3/fL8ySplUW+V1XjjKNEupe9il5KL6h1Km4cMG35
-         2GkQ==
-X-Gm-Message-State: AAQBX9fVFhrzufDCzwGPnmapqTqkQcBR9GuZ6kNCPWVbY7lS0aer6oeZ
-        yNqQgMXNTs4IFUtAO7C0SsXHWg==
-X-Google-Smtp-Source: AKy350Y6z/wOIUG6uyTQ/FSrzhRtpYxYONNMgWFGAY9qjQkaKe/SkIXQ5Q16F4XUaZal8QsKuVGbEQ==
-X-Received: by 2002:a17:902:ced1:b0:19c:be03:d1ba with SMTP id d17-20020a170902ced100b0019cbe03d1bamr25995343plg.6.1681319677069;
-        Wed, 12 Apr 2023 10:14:37 -0700 (PDT)
-Received: from p14s ([2604:3d09:148c:c800:1cd7:1135:5e45:5f77])
-        by smtp.gmail.com with ESMTPSA id jk2-20020a170903330200b001a63a1aed29sm6561362plb.303.2023.04.12.10.14.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 10:14:36 -0700 (PDT)
-Date:   Wed, 12 Apr 2023 11:14:34 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     MD Danish Anwar <danishanwar@ti.com>
-Cc:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>, linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v8 3/4] soc: ti: pruss: Add pruss_cfg_read()/update(),
- pruss_cfg_get_gpmux()/set_gpmux() APIs
-Message-ID: <20230412171434.GE86761@p14s>
-References: <20230412103012.1754161-1-danishanwar@ti.com>
- <20230412103012.1754161-4-danishanwar@ti.com>
- <20230412170654.GC86761@p14s>
+        d=1e100.net; s=20221208; t=1681319702; x=1683911702;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yE3guz5srVELE+FSvdXNLCNS0lbBEAAksiaD6Nth06k=;
+        b=bwbvUPaG9Ps7YAn9WmkK33YqgdFUYF9LrGAfuJZEk4yifh4VPw6r9dQD96vTm5LTRv
+         G6KGiNZ09E5F6QX+4/ZZMn07alFKVy/41ifKSf2TEqV49HJmnTeyqaNOb15YR9CoKO02
+         WGz8VHsUVeaYN7jRQqTuNy/SkMB8sBF1idx8K5hsxYfsNypjHBvRCzGKikc+8bh7vO4A
+         zcxIQ/BkWeUbIH/eEjG5vFPgVn67i0hCHnqLqTkQKDcE5dYbxj/G7txzK+8zEkHSoSEO
+         BYkhxCgWJikbQsnPFF8h4SA1Sq4WjXRLU76oNTEStSnFBdU4DTnyG1+dAkE4Oe/f5QFk
+         Ik0g==
+X-Gm-Message-State: AAQBX9eR2W/oS/3rZT+8HtjYkJ6JOBt5tCjSwCWUjSaLwgqmJrovfzII
+        Hwi/DGSUvgZGLp3d0D9/BSP7+4l8MHjxVgbn4QDFsL9t70SYBcMS
+X-Google-Smtp-Source: AKy350ZTHSAjBUaMy1NdKdXvhD1yQvK0CN3Lq7AHWGWIBwaszwukv2hD5Ng3R7Uqb66NPchISMTnG0u1IkbsxibMCtY=
+X-Received: by 2002:a17:906:5250:b0:92b:7e6a:bca5 with SMTP id
+ y16-20020a170906525000b0092b7e6abca5mr3680187ejm.12.1681319702269; Wed, 12
+ Apr 2023 10:15:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230412170654.GC86761@p14s>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <20230411120443.126055-1-ivecera@redhat.com> <CACKFLimBqwsX3tsnUp9svqSJHx57XEAu3kQ8Hj1Pq0+QS1uGsg@mail.gmail.com>
+ <CADFzAK-ym-LH_suYgHn+wZvh2NGHmiGvRrRxNSa8CbXP=edS9g@mail.gmail.com> <20230412073406.73b60a9c@kernel.org>
+In-Reply-To: <20230412073406.73b60a9c@kernel.org>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Wed, 12 Apr 2023 10:14:50 -0700
+Message-ID: <CACKFLiku3vNGo=9j92kyYOEGkdVdRsPS6sbQH9RkCBzt_Hsm9Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] bnxt_en: Allow to set switchdev mode without
+ existing VFs
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>,
+        ivecera@redhat.com, netdev@vger.kernel.org, mschmidt@redhat.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        pabeni@redhat.com, open list <linux-kernel@vger.kernel.org>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000a4f53905f926bfbd"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 11:06:54AM -0600, Mathieu Poirier wrote:
-> On Wed, Apr 12, 2023 at 04:00:11PM +0530, MD Danish Anwar wrote:
-> > From: Suman Anna <s-anna@ti.com>
-> > 
-> > Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
-> > the PRUSS platform driver to read and program respectively a register
-> > within the PRUSS CFG sub-module represented by a syscon driver. These
-> > APIs are internal to PRUSS driver.
-> > 
-> > Add two new helper functions pruss_cfg_get_gpmux() & pruss_cfg_set_gpmux()
-> > to get and set the GP MUX mode for programming the PRUSS internal wrapper
-> > mux functionality as needed by usecases.
-> > 
-> > Various useful registers and macros for certain register bit-fields and
-> > their values have also been added.
-> > 
-> > Signed-off-by: Suman Anna <s-anna@ti.com>
-> > Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-> > Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-> > Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
-> > Reviewed-by: Roger Quadros <rogerq@kernel.org>
-> > Reviewed-by: Tony Lindgren <tony@atomide.com>
-> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> > Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
-> > ---
-> >  drivers/soc/ti/pruss.c       | 45 ++++++++++++++++++
-> >  drivers/soc/ti/pruss.h       | 88 ++++++++++++++++++++++++++++++++++++
-> >  include/linux/pruss_driver.h | 32 +++++++++++++
-> >  3 files changed, 165 insertions(+)
-> >  create mode 100644 drivers/soc/ti/pruss.h
-> > 
-> > diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-> > index 8ada3758b31a..34d513816a9d 100644
-> > --- a/drivers/soc/ti/pruss.c
-> > +++ b/drivers/soc/ti/pruss.c
-> > @@ -21,6 +21,7 @@
-> >  #include <linux/regmap.h>
-> >  #include <linux/remoteproc.h>
-> >  #include <linux/slab.h>
-> > +#include "pruss.h"
-> >  
-> >  /**
-> >   * struct pruss_private_data - PRUSS driver private data
-> > @@ -168,6 +169,50 @@ int pruss_release_mem_region(struct pruss *pruss,
-> >  }
-> >  EXPORT_SYMBOL_GPL(pruss_release_mem_region);
-> >  
-> > +/**
-> > + * pruss_cfg_get_gpmux() - get the current GPMUX value for a PRU device
-> > + * @pruss: pruss instance
-> > + * @pru_id: PRU identifier (0-1)
-> > + * @mux: pointer to store the current mux value into
-> > + *
-> > + * Return: 0 on success, or an error code otherwise
-> > + */
-> > +int pruss_cfg_get_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 *mux)
-> > +{
-> > +	int ret = 0;
-> 
-> Variable initialization is not needed.
-> 
-> > +	u32 val;
-> > +
-> > +	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS || !mux)
-> 
-> If @pru_id is an enum, how can it be smaller than 0?
-> 
-> > +		return -EINVAL;
-> > +
-> > +	ret = pruss_cfg_read(pruss, PRUSS_CFG_GPCFG(pru_id), &val);
-> > +	if (!ret)
-> > +		*mux = (u8)((val & PRUSS_GPCFG_PRU_MUX_SEL_MASK) >>
-> > +			    PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(pruss_cfg_get_gpmux);
-> > +
-> > +/**
-> > + * pruss_cfg_set_gpmux() - set the GPMUX value for a PRU device
-> > + * @pruss: pruss instance
-> > + * @pru_id: PRU identifier (0-1)
-> > + * @mux: new mux value for PRU
-> > + *
-> > + * Return: 0 on success, or an error code otherwise
-> > + */
-> > +int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux)
-> > +{
-> > +	if (mux >= PRUSS_GP_MUX_SEL_MAX ||
-> > +	    pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
-> 
-> Same
-> 
-> > +		return -EINVAL;
-> > +
-> > +	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
-> > +				PRUSS_GPCFG_PRU_MUX_SEL_MASK,
-> > +				(u32)mux << PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
-> > +}
-> > +EXPORT_SYMBOL_GPL(pruss_cfg_set_gpmux);
-> > +
-> >  static void pruss_of_free_clk_provider(void *data)
-> >  {
-> >  	struct device_node *clk_mux_np = data;
-> > diff --git a/drivers/soc/ti/pruss.h b/drivers/soc/ti/pruss.h
-> > new file mode 100644
-> > index 000000000000..6c55987e0e55
-> > --- /dev/null
-> > +++ b/drivers/soc/ti/pruss.h
-> > @@ -0,0 +1,88 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-only */
-> > +/*
-> > + * PRU-ICSS Subsystem user interfaces
-> > + *
-> > + * Copyright (C) 2015-2023 Texas Instruments Incorporated - http://www.ti.com
-> > + *	MD Danish Anwar <danishanwar@ti.com>
-> > + */
-> > +
-> > +#ifndef _SOC_TI_PRUSS_H_
-> > +#define _SOC_TI_PRUSS_H_
-> > +
-> > +#include <linux/bits.h>
-> > +#include <linux/regmap.h>
-> > +
-> > +/*
-> > + * PRU_ICSS_CFG registers
-> > + * SYSCFG, ISRP, ISP, IESP, IECP, SCRP applicable on AMxxxx devices only
-> > + */
-> > +#define PRUSS_CFG_REVID         0x00
-> > +#define PRUSS_CFG_SYSCFG        0x04
-> > +#define PRUSS_CFG_GPCFG(x)      (0x08 + (x) * 4)
-> > +#define PRUSS_CFG_CGR           0x10
-> > +#define PRUSS_CFG_ISRP          0x14
-> > +#define PRUSS_CFG_ISP           0x18
-> > +#define PRUSS_CFG_IESP          0x1C
-> > +#define PRUSS_CFG_IECP          0x20
-> > +#define PRUSS_CFG_SCRP          0x24
-> > +#define PRUSS_CFG_PMAO          0x28
-> > +#define PRUSS_CFG_MII_RT        0x2C
-> > +#define PRUSS_CFG_IEPCLK        0x30
-> > +#define PRUSS_CFG_SPP           0x34
-> > +#define PRUSS_CFG_PIN_MX        0x40
-> > +
-> > +/* PRUSS_GPCFG register bits */
-> > +#define PRUSS_GPCFG_PRU_GPI_MODE_MASK           GENMASK(1, 0)
-> > +#define PRUSS_GPCFG_PRU_GPI_MODE_SHIFT          0
-> > +
-> > +#define PRUSS_GPCFG_PRU_MUX_SEL_SHIFT           26
-> > +#define PRUSS_GPCFG_PRU_MUX_SEL_MASK            GENMASK(29, 26)
-> > +
-> > +/* PRUSS_MII_RT register bits */
-> > +#define PRUSS_MII_RT_EVENT_EN                   BIT(0)
-> > +
-> > +/* PRUSS_SPP register bits */
-> > +#define PRUSS_SPP_XFER_SHIFT_EN                 BIT(1)
-> > +#define PRUSS_SPP_PRU1_PAD_HP_EN                BIT(0)
-> > +#define PRUSS_SPP_RTU_XFR_SHIFT_EN              BIT(3)
-> > +
-> > +/**
-> > + * pruss_cfg_read() - read a PRUSS CFG sub-module register
-> > + * @pruss: the pruss instance handle
-> > + * @reg: register offset within the CFG sub-module
-> > + * @val: pointer to return the value in
-> > + *
-> > + * Reads a given register within the PRUSS CFG sub-module and
-> > + * returns it through the passed-in @val pointer
-> > + *
-> > + * Return: 0 on success, or an error code otherwise
-> > + */
-> > +static int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val)
-> > +{
-> > +	if (IS_ERR_OR_NULL(pruss))
-> > +		return -EINVAL;
-> > +
-> > +	return regmap_read(pruss->cfg_regmap, reg, val);
-> > +}
-> > +
-> > +/**
-> > + * pruss_cfg_update() - configure a PRUSS CFG sub-module register
-> > + * @pruss: the pruss instance handle
-> > + * @reg: register offset within the CFG sub-module
-> > + * @mask: bit mask to use for programming the @val
-> > + * @val: value to write
-> > + *
-> > + * Programs a given register within the PRUSS CFG sub-module
-> > + *
-> > + * Return: 0 on success, or an error code otherwise
-> > + */
-> > +static int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
-> > +			    unsigned int mask, unsigned int val)
-> > +{
-> > +	if (IS_ERR_OR_NULL(pruss))
-> > +		return -EINVAL;
-> > +
-> > +	return regmap_update_bits(pruss->cfg_regmap, reg, mask, val);
-> > +}
-> > +
-> > +#endif  /* _SOC_TI_PRUSS_H_ */
-> > diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
-> > index c8f2e53b911b..c70e08c90165 100644
-> > --- a/include/linux/pruss_driver.h
-> > +++ b/include/linux/pruss_driver.h
-> > @@ -14,6 +14,24 @@
-> >  #include <linux/types.h>
-> >  #include <linux/err.h>
-> >  
-> > +/*
-> > + * enum pruss_gp_mux_sel - PRUSS GPI/O Mux modes for the
-> > + * PRUSS_GPCFG0/1 registers
-> > + *
-> > + * NOTE: The below defines are the most common values, but there
-> > + * are some exceptions like on 66AK2G, where the RESERVED and MII2
-> > + * values are interchanged. Also, this bit-field does not exist on
-> > + * AM335x SoCs
-> > + */
-> > +enum pruss_gp_mux_sel {
-> > +	PRUSS_GP_MUX_SEL_GP = 0,
-> 
-> Initialization not needed
+--000000000000a4f53905f926bfbd
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Apr 12, 2023 at 7:34=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
+ote:
+>
+> On Tue, 11 Apr 2023 23:17:55 +0530 Venkat Duvvuru wrote:
+> > Acked-by: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+>
+> Michael, does this mean Broadcom is okay with the patch?
 >
 
-With the above:
-Acked-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Yes, I've asked Venkat to review this and he has given his okay.  Thanks.
 
-> > +	PRUSS_GP_MUX_SEL_ENDAT,
-> > +	PRUSS_GP_MUX_SEL_RESERVED,
-> > +	PRUSS_GP_MUX_SEL_SD,
-> > +	PRUSS_GP_MUX_SEL_MII2,
-> > +	PRUSS_GP_MUX_SEL_MAX,
-> > +};
-> > +
-> >  /*
-> >   * enum pruss_mem - PRUSS memory range identifiers
-> >   */
-> > @@ -66,6 +84,8 @@ int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
-> >  			     struct pruss_mem_region *region);
-> >  int pruss_release_mem_region(struct pruss *pruss,
-> >  			     struct pruss_mem_region *region);
-> > +int pruss_cfg_get_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 *mux);
-> > +int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux);
-> >  
-> >  #else
-> >  
-> > @@ -89,6 +109,18 @@ static inline int pruss_release_mem_region(struct pruss *pruss,
-> >  	return -EOPNOTSUPP;
-> >  }
-> >  
-> > +static inline int pruss_cfg_get_gpmux(struct pruss *pruss,
-> > +				      enum pruss_pru_id pru_id, u8 *mux)
-> > +{
-> > +	return ERR_PTR(-EOPNOTSUPP);
-> > +}
-> > +
-> > +static inline int pruss_cfg_set_gpmux(struct pruss *pruss,
-> > +				      enum pruss_pru_id pru_id, u8 mux)
-> > +{
-> > +	return ERR_PTR(-EOPNOTSUPP);
-> > +}
-> > +
-> >  #endif /* CONFIG_TI_PRUSS */
-> >  
-> >  #endif	/* _PRUSS_DRIVER_H_ */
-> > -- 
-> > 2.34.1
-> > 
+--000000000000a4f53905f926bfbd
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+OnaLEot1MoQO7BIe5S9H4AcCEXXcrJJiAtMCl47ARpyHmvQFQFFTrHgUYEd9V+9bOzY7MBIGSV1N
+/JfsT1sZw6HT0lJkSQefhPGpBniAob62DJP3qr11tu8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU31rAyTdZweIF0tJTFYwfOv2w
+L4QwDQYJKoZIhvcNAQELBQADggEBACcuyaGmk0NSZ7Kio7O7WSZ0j0f9xXcBnLbJvQXFYM7JI5uS
+kw5ozATEN5gfmNIe0AHzqwoYjAf3x8Dv2w7HgyrxWdpjTKQFv5jojxa3A5LVuM8mhPGZfR/L5jSk
+5xc3llsKqrWI4ov4JyW79p0E99gfPA6Waixoavxvv1CZBQ4Stu7N660kTu9sJrACf20E+hdKLoiU
+hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
+E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIL1l8KJxVetqczyCzTRyWq68TNLjsyyg
+Df9WcHRE3QElMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDQx
+MjE3MTUwMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQAEtEnp62E491mkwNsX5s59biZg7Rzt7WG+Z/aZkki/gkDnzdU1
+8zuCp6XEhqg6gkyMv/hx1Q0C/7jAsMJI1IXo30lcm5ilkAbVejI9Fjo1hznIuBpFZYKQfPTeTmbZ
+3ZysQN6Am9eC9OwYSFKRt+nd5VxnnJVPo2FYeIBU+CPOicEOxs5A7AGm3arJ3MZkIEtuU9ma/277
+0X5JMu5vtkFcXYTSXQRToEVVDp+dDZiUCGvMiOzF6G5Zlwz+QFrBRyllW7Y08fxqa7Gqvixa0H+1
+8a2PZLt8TwBNYp19FZVmwe37f0Y96SPyCnkgMPSQ5v7liKXqQozSEk3L7/K4JTPR
+--000000000000a4f53905f926bfbd--
