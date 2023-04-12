@@ -2,113 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E38A36E0119
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 23:43:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4996A6E011D
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 23:45:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbjDLVnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 17:43:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41262 "EHLO
+        id S229913AbjDLVp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 17:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjDLVnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 17:43:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5BD1993
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 14:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681335743;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UUfDZnIWOthneXGTaILvqN+i7MqHfilowJVWxFfgEBY=;
-        b=ZehJzCDu6aTMj/P5BjnhLvg43ASlX/Byxgvt2Vw8sISnLHQxwDLdPVzewK3MNHvtpVf01Z
-        IdiKU3ALlPYIEsqUAe0/dBugCLUIm2rMoEJWzvkwyyU5uYXFWZbgvR+Edli+mneJHapf7z
-        6PZbnrdiW8SXHegfb81yxvU93/gzjLs=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-518--LoepB1tP2OM4bYrWJQ5vQ-1; Wed, 12 Apr 2023 17:42:19 -0400
-X-MC-Unique: -LoepB1tP2OM4bYrWJQ5vQ-1
-Received: by mail-qk1-f199.google.com with SMTP id p63-20020a374242000000b007468eaf866aso16940563qka.17
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 14:42:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681335739; x=1683927739;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        with ESMTP id S229482AbjDLVpy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 17:45:54 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AEF6A72
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 14:45:45 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id 98e67ed59e1d1-2467761dfabso467519a91.3
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 14:45:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1681335945;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=UUfDZnIWOthneXGTaILvqN+i7MqHfilowJVWxFfgEBY=;
-        b=MK5mdZPpHdvOZMfeuNJOOJlc1Qf1OZPC2JtA2Uv3tDmlTGIXJ79Dwn/9Iu6qH4BZpS
-         YDtTyNirWKnxHKFsorJ1p5XhwaY207Masd1mUXLtzJ2IoD+vYasWsV3QrPeyal8Qrot3
-         5+DVhzF9ahdstQ1NVjGfHDIeqMm/mXcZM/I7ZXej7V/xAy6DdiC5fh+HdA2VSQkdajcK
-         n0ESbN/y+OnFIRAG6XIOStMCSZ/U3wtdL5xWGhwfV5JqBB6osXSfDK76taNoJO4E5kB2
-         s7usu/GjGLDQD4VxY4C+j4eX7I83vZn85OMA3+zyOSDfODz0EgwYgmYLB2CwGSJlTffB
-         vj7g==
-X-Gm-Message-State: AAQBX9eM/fJCAj5nnYBtvCswfq4ajtbISHJvQCHQ/92sv4qqP+VwR/0+
-        E/dKVuzKP0Z2VW/UaaCY4ycIW5eJEaq+R2k/aoYY7IvPkHcXdO+Z/JmjdAM928QxrSQOzC5l2M0
-        LkZGW8Da/SgXZ1sgq
-X-Received: by 2002:a05:6214:19ca:b0:5ef:4c5e:fbd6 with SMTP id j10-20020a05621419ca00b005ef4c5efbd6mr17718qvc.44.1681335738825;
-        Wed, 12 Apr 2023 14:42:18 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aedoJE2OhbKEiERyNNZb3nilwXG9zAv/ua6apRg188tSD4ottZKmCfa7svkYQqj2mRhyiVQA==
-X-Received: by 2002:a05:6214:19ca:b0:5ef:4c5e:fbd6 with SMTP id j10-20020a05621419ca00b005ef4c5efbd6mr17694qvc.44.1681335738587;
-        Wed, 12 Apr 2023 14:42:18 -0700 (PDT)
-Received: from debian ([2001:4649:fcb8:0:eefe:db50:3cfa:deab])
-        by smtp.gmail.com with ESMTPSA id u5-20020a0cee85000000b005dd8b9345bdsm5165491qvr.85.2023.04.12.14.42.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 14:42:18 -0700 (PDT)
-Date:   Wed, 12 Apr 2023 23:42:14 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Martin Willi <martin@strongswan.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] rtnetlink: Restore RTM_NEW/DELLINK notification
- behavior
-Message-ID: <ZDcltmGmTr6XOlsN@debian>
-References: <20230411074319.24133-1-martin@strongswan.org>
- <ZDUtwwNBLfDuo9dq@Laptop-X1>
- <ec3a6209cdb2bc42e3af457fcee92de92eae9e6d.camel@strongswan.org>
- <ZDavJCLutKC/+oHZ@Laptop-X1>
+        bh=crYbUvMM+qq+UublWGJRe3AoZOF0jnjMgrzBIUloc5g=;
+        b=FZVlIxDNVsZwWF/x8+9ck8AoUV65kkPC7hntmEUT/3gG4c1Hh4S5+D9+VJDE0A2pyZ
+         jyEiBgaU4tE3TOFAQ0yJfZydDVj2SaJtAcSSgmvs5c187MwaugrZnCsknQwLuh+eI6iR
+         jHhicBe7jcyvpbl3t5ILAmyYfCCYrGdTKYoGMAn5KpsPFqFaF8l4hj8tBRPED8kces2M
+         jnkP5yRG/Fjxq7JAm/nougsXhYUODDqFACmN6o1cxSRN6F4sgK/chMqzKShWJMxsuYtY
+         lRkb/AoINLm0GEHDImKvIdJCo2IdYhZ12OJBzYFcMhd7rjsRYo+Cb0OO6KyQPr51YrGE
+         lnVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681335945;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=crYbUvMM+qq+UublWGJRe3AoZOF0jnjMgrzBIUloc5g=;
+        b=O56d0gf+ACZoIrDtjHGKJPXrlEcM7FB+7WHczZTp9FnQ61t0br3Ouj/RC7HuyvTgFS
+         Xqei2E07i707EBN5Uu0l8O2PNPdDwKZUOE64mYFaAY0lwFn+Lj+yVh0xjF27DGAl6vAP
+         4uH/X5FR0T0Ea4vXwZ/vUB4ivuUUaigHfRS/EQY1teZmWZpBQzAGjR0K16iEbmdKa0Ga
+         +3JAms/Yc4wj1R4KycfLhiIWmgsIZZJH0lcmVwmbiEU9ub4ZnceQ9fNK7fwRsRjpNkRP
+         O6IrYiXrHN6dPjNC1OI2FD/03VVZ1apvSkIXkLp26ZAXUwWo8MTeXs2NG3ixuf9goA2J
+         LMpw==
+X-Gm-Message-State: AAQBX9eI2AsgsHrxvEGb0jkwbd1562HogTb5jnvhCMciR2w22pqLNxu1
+        xpO7PvtMZWmK0Y/gM/Z8CiQND4Y1p9TIy2LgRs24Sw==
+X-Google-Smtp-Source: AKy350Y4/CZ4xHgg7rgydXEnmBND7Bc9oWAWjxox1vGjOiW+xJf6D2ah+ReO9z41JoyXkvPUW37w48iqNd537EdYth0=
+X-Received: by 2002:aa7:88d4:0:b0:639:fed3:c57 with SMTP id
+ k20-20020aa788d4000000b00639fed30c57mr168839pff.5.1681335945114; Wed, 12 Apr
+ 2023 14:45:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZDavJCLutKC/+oHZ@Laptop-X1>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230412094235.589089-1-yoong.siang.song@intel.com>
+ <20230412094235.589089-4-yoong.siang.song@intel.com> <ZDbjkwGS5L9wdS5h@google.com>
+ <677ed6c5-51fc-4b8b-d9a4-42e4cfe9006c@intel.com>
+In-Reply-To: <677ed6c5-51fc-4b8b-d9a4-42e4cfe9006c@intel.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 12 Apr 2023 14:45:33 -0700
+Message-ID: <CAKH8qBtXTAZr5r1VC9ynSvGv5jWMD54d=-2qmBc9Zr3ui9HnEg@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 3/4] net: stmmac: add Rx HWTS metadata to XDP
+ receive pkt
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Song Yoong Siang <yoong.siang.song@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, xdp-hints@xdp-project.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 09:16:20PM +0800, Hangbin Liu wrote:
-> On Wed, Apr 12, 2023 at 11:21:33AM +0200, Martin Willi wrote:
-> > Hi,
-> > 
-> > > > Fixes: f3a63cce1b4f ("rtnetlink: Honour NLM_F_ECHO flag in rtnl_delete_link")
-> > > > Fixes: d88e136cab37 ("rtnetlink: Honour NLM_F_ECHO flag in rtnl_newlink_create")
-> > > > Signed-off-by: Martin Willi <martin@strongswan.org>
-> > > 
-> > > Not sure if the Fixes tag should be
-> > > 1d997f101307 ("rtnetlink: pass netlink message header and portid to rtnl_configure_link()")
-> > 
-> > While this one adds the infrastructure, the discussed issue manifests
-> 
-> Yes
-> 
-> > only with the two commits above. Anyway, I'm fine with either, let me
-> > know if I shall change it.
-> 
-> In my understanding the above 2 commits only pass netlink header to
-> rtnl_configure_link. The question code in 1d997f101307 didn't check if
-> NLM_F_ECHO is honoured, as your commit pointed.
+On Wed, Apr 12, 2023 at 1:56=E2=80=AFPM Jacob Keller <jacob.e.keller@intel.=
+com> wrote:
+>
+>
+>
+> On 4/12/2023 10:00 AM, Stanislav Fomichev wrote:
+> > On 04/12, Song Yoong Siang wrote:
+> >> Add receive hardware timestamp metadata support via kfunc to XDP recei=
+ve
+> >> packets.
+> >>
+> >> Suggested-by: Stanislav Fomichev <sdf@google.com>
+> >> Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+> >> ---
+> >>  drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  3 +++
+> >>  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 26 ++++++++++++++++++=
+-
+> >>  2 files changed, 28 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/ne=
+t/ethernet/stmicro/stmmac/stmmac.h
+> >> index ac8ccf851708..826ac0ec88c6 100644
+> >> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> >> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+> >> @@ -94,6 +94,9 @@ struct stmmac_rx_buffer {
+> >>
+> >>  struct stmmac_xdp_buff {
+> >>      struct xdp_buff xdp;
+> >> +    struct stmmac_priv *priv;
+> >> +    struct dma_desc *p;
+> >> +    struct dma_desc *np;
+> >>  };
+> >>
+> >>  struct stmmac_rx_queue {
+> >> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drive=
+rs/net/ethernet/stmicro/stmmac/stmmac_main.c
+> >> index f7bbdf04d20c..ed660927b628 100644
+> >> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> >> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> >> @@ -5315,10 +5315,15 @@ static int stmmac_rx(struct stmmac_priv *priv,=
+ int limit, u32 queue)
+> >>
+> >>                      xdp_init_buff(&ctx.xdp, buf_sz, &rx_q->xdp_rxq);
+> >>                      xdp_prepare_buff(&ctx.xdp, page_address(buf->page=
+),
+> >> -                                     buf->page_offset, buf1_len, fals=
+e);
+> >> +                                     buf->page_offset, buf1_len, true=
+);
+> >>
+> >>                      pre_len =3D ctx.xdp.data_end - ctx.xdp.data_hard_=
+start -
+> >>                                buf->page_offset;
+> >> +
+> >> +                    ctx.priv =3D priv;
+> >> +                    ctx.p =3D p;
+> >> +                    ctx.np =3D np;
+> >> +
+> >>                      skb =3D stmmac_xdp_run_prog(priv, &ctx.xdp);
+> >>                      /* Due xdp_adjust_tail: DMA sync for_device
+> >>                       * cover max len CPU touch
+> >> @@ -7071,6 +7076,23 @@ void stmmac_fpe_handshake(struct stmmac_priv *p=
+riv, bool enable)
+> >>      }
+> >>  }
+> >>
+> >> +static int stmmac_xdp_rx_timestamp(const struct xdp_md *_ctx, u64 *ti=
+mestamp)
+> >> +{
+> >> +    const struct stmmac_xdp_buff *ctx =3D (void *)_ctx;
+> >> +
+> >> +    *timestamp =3D 0;
+> >> +    stmmac_get_rx_hwtstamp(ctx->priv, ctx->p, ctx->np, timestamp);
+> >> +
+> >
+> > [..]
+> >
+> >> +    if (*timestamp)
+> >
+> > Nit: does it make sense to change stmmac_get_rx_hwtstamp to return bool
+> > to indicate success/failure? Then you can do:
+> >
+> > if (!stmmac_get_rx_hwtstamp())
+> >       reutrn -ENODATA;
+>
+> I would make it return the -ENODATA directly since typically bool
+> true/false functions have names like "stmmac_has_rx_hwtstamp" or similar
+> name that infers you're answering a true/false question.
+>
+> That might also let you avoid zeroing the timestamp value first?
 
-That's right, but personally I find it clearer to cite the commits that
-brought the actual behaviour change.
+SGTM!
 
-> Thanks
-> Hangbin
-> 
-
+> Thanks,
+> Jake
