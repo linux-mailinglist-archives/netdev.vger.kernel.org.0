@@ -2,116 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D0726DE877
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 02:22:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F6D66DE887
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 02:38:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbjDLAWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Apr 2023 20:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53164 "EHLO
+        id S229611AbjDLAiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Apr 2023 20:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbjDLAWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 20:22:55 -0400
-Received: from mail-il1-f205.google.com (mail-il1-f205.google.com [209.85.166.205])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E33A199D
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:22:54 -0700 (PDT)
-Received: by mail-il1-f205.google.com with SMTP id u6-20020a926006000000b003232594207dso7047029ilb.8
-        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:22:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681258973; x=1683850973;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vDeAciAGUu2Os6CWnaMgil2ftdLPgpp4On5AN0OJS54=;
-        b=HofPxhOETFmaG4aRnocGk8MxU5FVwy5wflOLun5iUGeEnq5gSEVH+KV2+rMDRqFpur
-         uA340UxXdp6MIK7+RTgKvQbKu9FgUKAeDGlunxNaFsf6bEaNvNIjQulR+6HcKOh+lr5z
-         toP8BidD41LP1qOmuASAL3zQkmVWNXGYUEzwqZoZKSWUtpjEu3mM/eX5jgTwwHRpAEcW
-         HpNFDvHNuy47kAQWDit56d+R9SuKtyQw1O2KpMsfGYAjMHPmtX2tiWO3YrfZhm62PTkm
-         OFH1RClLtG2C4WLYCEHJwF8gkgcj3I47qejc+Cnvj9vojLjL06pJO/yGNuGCat77mNRF
-         GSfQ==
-X-Gm-Message-State: AAQBX9eOmLVOKuDFOG3kx+h/ACY8Es0/dLvjMj8xtAfsEBFsk6zhmJMb
-        1nH4Nh16fXwLRK/JjvUWiGTBPDd85dxHeS+W9ztlPHtFTHBq
-X-Google-Smtp-Source: AKy350YgxTXf6utG/kdS74PL6xy/zu7P/KDgHxM+D3LuJXG9FwV7icfcPsCi6s29J2jEglm/WwQI4j5lFw4/y/pQloQzBLonRuOi
+        with ESMTP id S229493AbjDLAiC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Apr 2023 20:38:02 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8AD52134
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 17:38:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:
+        Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
+        Content-Disposition:In-Reply-To:References;
+        bh=2E8v5Hf8ehg+o5T3PX9YfzM4fwVvcJud+5jTfxBINVc=; b=FoDfbQijnp4W9CuKi7yoK5Coij
+        T1iYYyP23CIjJ2LsHRRGxEVVmu4n9wN34iBW5caCpEdtVvsZVotwXtgK4iOXNCDSYKcTwkncX+G4E
+        y6cmNpvSt3+L6dE9ILvloP1BCzwU8eW4BBem9BIn7CpVopapD+jZKW9dZgazFj6G/jEc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pmOUk-00A2PM-H9; Wed, 12 Apr 2023 02:37:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     shawnguo@kernel.org
+Cc:     s.hauer@pengutronix.de, Russell King <rmk+kernel@armlinux.org.uk>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        arm-soc <arm@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH] ARM: dts: vf610: ZII: Add missing phy-mode and fixed links
+Date:   Wed, 12 Apr 2023 02:37:46 +0200
+Message-Id: <20230412003746.2392518-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1090:b0:328:49a2:216 with SMTP id
- r16-20020a056e02109000b0032849a20216mr539989ilj.4.1681258973361; Tue, 11 Apr
- 2023 17:22:53 -0700 (PDT)
-Date:   Tue, 11 Apr 2023 17:22:53 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e1fc7905f9189b86@google.com>
-Subject: [syzbot] [net?] WARNING in xfrm_policy_fini (2)
-From:   syzbot <syzbot+b3346cca0c23c839e787@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        herbert@gondor.apana.org.au, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, steffen.klassert@secunet.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The DSA framework has got more picky about always having a phy-mode
+for the CPU port. The Vybrid FEC is a Fast Ethrnet using RMII.
 
-syzbot found the following issue on:
+Additionally, the cpu label has never actually been used in the
+binding, so remove it.
 
-HEAD commit:    e28531143b25 net: ethernet: mtk_eth_soc: mtk_ppe: prefer n..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=163c0ac5c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a3bc1f699d6e9cb0
-dashboard link: https://syzkaller.appspot.com/bug?extid=b3346cca0c23c839e787
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Lastly, for DSA links between switches, add a fixed-link node
+indicating the expected speed/duplex of the link.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/6ff439efecb6/disk-e2853114.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/280d508d228c/vmlinux-e2853114.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/af98eb5ab0e4/bzImage-e2853114.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b3346cca0c23c839e787@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 41 at net/xfrm/xfrm_policy.c:4176 xfrm_policy_fini+0x2f2/0x3c0 net/xfrm/xfrm_policy.c:4176
-Modules linked in:
-CPU: 0 PID: 41 Comm: kworker/u4:2 Not tainted 6.3.0-rc5-syzkaller-01242-ge28531143b25 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
-Workqueue: netns cleanup_net
-RIP: 0010:xfrm_policy_fini+0x2f2/0x3c0 net/xfrm/xfrm_policy.c:4176
-Code: cd f8 0f 0b 8b 74 24 04 e9 56 fe ff ff e8 a6 a1 cd f8 0f 0b e9 e1 fd ff ff e8 9a a1 cd f8 0f 0b e9 02 ff ff ff e8 8e a1 cd f8 <0f> 0b e9 76 fd ff ff e8 d2 ea 1e f9 e9 8d fe ff ff 48 89 ef e8 e5
-RSP: 0018:ffffc90000b27bd8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff88807945b980 RCX: 0000000000000000
-RDX: ffff8880177b57c0 RSI: ffffffff88b53632 RDI: 0000000000000000
-RBP: ffff88807945cd00 R08: 0000000000000001 R09: ffffffff914e0b8f
-R10: 0000000000000001 R11: 0000000000000000 R12: ffffffff8e28cb40
-R13: ffffc90000b27ca0 R14: dffffc0000000000 R15: fffffbfff1c5196c
-FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f60f8cb7378 CR3: 000000000c571000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- xfrm_net_exit+0x1d/0x60 net/xfrm/xfrm_policy.c:4240
- ops_exit_list+0xb0/0x170 net/core/net_namespace.c:169
- cleanup_net+0x4ee/0xb10 net/core/net_namespace.c:613
- process_one_work+0x991/0x15c0 kernel/workqueue.c:2390
- worker_thread+0x669/0x1090 kernel/workqueue.c:2537
- kthread+0x2e8/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
- </TASK>
-
-
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ arch/arm/boot/dts/vf610-zii-cfu1.dts      |  2 +-
+ arch/arm/boot/dts/vf610-zii-dev-rev-b.dts |  2 +-
+ arch/arm/boot/dts/vf610-zii-dev-rev-c.dts | 10 ++++++++-
+ arch/arm/boot/dts/vf610-zii-scu4-aib.dts  | 26 ++++++++++++++++++++++-
+ arch/arm/boot/dts/vf610-zii-spb4.dts      |  2 +-
+ arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts  |  2 +-
+ arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts |  2 +-
+ 7 files changed, 39 insertions(+), 7 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/arch/arm/boot/dts/vf610-zii-cfu1.dts b/arch/arm/boot/dts/vf610-zii-cfu1.dts
+index 96495d965163..b7bb2d6b3721 100644
+--- a/arch/arm/boot/dts/vf610-zii-cfu1.dts
++++ b/arch/arm/boot/dts/vf610-zii-cfu1.dts
+@@ -202,7 +202,7 @@ port@5 {
+ 
+ 				port@6 {
+ 					reg = <6>;
+-					label = "cpu";
++					phy-mode = "rev-rmii";
+ 					ethernet = <&fec1>;
+ 
+ 					fixed-link {
+diff --git a/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts b/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts
+index 6280c5e86a12..3f1bc7fc8526 100644
+--- a/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts
++++ b/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts
+@@ -75,7 +75,7 @@ fixed-link {
+ 
+ 					port@6 {
+ 						reg = <6>;
+-						label = "cpu";
++						phy-mode = "rev-rmii";
+ 						ethernet = <&fec1>;
+ 
+ 						fixed-link {
+diff --git a/arch/arm/boot/dts/vf610-zii-dev-rev-c.dts b/arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
+index c00d39562a10..811745077d2b 100644
+--- a/arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
++++ b/arch/arm/boot/dts/vf610-zii-dev-rev-c.dts
+@@ -44,7 +44,7 @@ ports {
+ 
+ 					port@0 {
+ 						reg = <0>;
+-						label = "cpu";
++						phy-mode = "rev-rmii";
+ 						ethernet = <&fec1>;
+ 
+ 						fixed-link {
+@@ -82,6 +82,10 @@ switch0port10: port@10 {
+ 						label = "dsa";
+ 						phy-mode = "xaui";
+ 						link = <&switch1port10>;
++						fixed-link {
++							speed = <10000>;
++							full-duplex;
++						};
+ 					};
+ 				};
+ 
+@@ -174,6 +178,10 @@ switch1port10: port@10 {
+ 						label = "dsa";
+ 						phy-mode = "xaui";
+ 						link = <&switch0port10>;
++						fixed-link {
++							speed = <10000>;
++							full-duplex;
++						};
+ 					};
+ 				};
+ 				mdio {
+diff --git a/arch/arm/boot/dts/vf610-zii-scu4-aib.dts b/arch/arm/boot/dts/vf610-zii-scu4-aib.dts
+index 7b3276cd470f..7959307f7d13 100644
+--- a/arch/arm/boot/dts/vf610-zii-scu4-aib.dts
++++ b/arch/arm/boot/dts/vf610-zii-scu4-aib.dts
+@@ -59,7 +59,7 @@ ports {
+ 
+ 					port@0 {
+ 						reg = <0>;
+-						label = "cpu";
++						phy-mode = "rev-rmii";
+ 						ethernet = <&fec1>;
+ 
+ 						fixed-link {
+@@ -115,6 +115,10 @@ switch0port10: port@10 {
+ 						link = <&switch1port10
+ 							&switch3port10
+ 							&switch2port10>;
++						fixed-link {
++							speed = <10000>;
++							full-duplex;
++						};
+ 					};
+ 				};
+ 			};
+@@ -156,6 +160,10 @@ switch1port9: port@9 {
+ 						phy-mode = "xgmii";
+ 						link = <&switch3port10
+ 							&switch2port10>;
++						fixed-link {
++							speed = <10000>;
++							full-duplex;
++						};
+ 					};
+ 
+ 					switch1port10: port@10 {
+@@ -163,6 +171,10 @@ switch1port10: port@10 {
+ 						label = "dsa";
+ 						phy-mode = "xgmii";
+ 						link = <&switch0port10>;
++						fixed-link {
++							speed = <10000>;
++							full-duplex;
++						};
+ 					};
+ 				};
+ 			};
+@@ -246,6 +258,10 @@ switch2port10: port@10 {
+ 						link = <&switch3port9
+ 							&switch1port9
+ 							&switch0port10>;
++						fixed-link {
++							speed = <2500>;
++							full-duplex;
++						};
+ 					};
+ 				};
+ 			};
+@@ -295,6 +311,10 @@ switch3port9: port@9 {
+ 						label = "dsa";
+ 						phy-mode = "2500base-x";
+ 						link = <&switch2port10>;
++						fixed-link {
++							speed = <2500>;
++							full-duplex;
++						};
+ 					};
+ 
+ 					switch3port10: port@10 {
+@@ -303,6 +323,10 @@ switch3port10: port@10 {
+ 						phy-mode = "xgmii";
+ 						link = <&switch1port9
+ 							&switch0port10>;
++						fixed-link {
++							speed = <10000>;
++							full-duplex;
++						};
+ 					};
+ 				};
+ 			};
+diff --git a/arch/arm/boot/dts/vf610-zii-spb4.dts b/arch/arm/boot/dts/vf610-zii-spb4.dts
+index 180acb0795b9..3f9687953f57 100644
+--- a/arch/arm/boot/dts/vf610-zii-spb4.dts
++++ b/arch/arm/boot/dts/vf610-zii-spb4.dts
+@@ -140,7 +140,7 @@ ports {
+ 
+ 				port@0 {
+ 					reg = <0>;
+-					label = "cpu";
++					phy-mode = "rev-rmii";
+ 					ethernet = <&fec1>;
+ 
+ 					fixed-link {
+diff --git a/arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts b/arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts
+index 73fdace4cb42..d06a074bfe21 100644
+--- a/arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts
++++ b/arch/arm/boot/dts/vf610-zii-ssmb-dtu.dts
+@@ -129,7 +129,7 @@ ports {
+ 
+ 				port@0 {
+ 					reg = <0>;
+-					label = "cpu";
++					phy-mode = "rev-rmii";
+ 					ethernet = <&fec1>;
+ 
+ 					fixed-link {
+diff --git a/arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts b/arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts
+index 20beaa8433b6..c60639beda40 100644
+--- a/arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts
++++ b/arch/arm/boot/dts/vf610-zii-ssmb-spu3.dts
+@@ -154,7 +154,7 @@ ports {
+ 
+ 				port@0 {
+ 					reg = <0>;
+-					label = "cpu";
++					phy-mode = "rev-rmii";
+ 					ethernet = <&fec1>;
+ 
+ 					fixed-link {
+-- 
+2.40.0
+
