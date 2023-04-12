@@ -2,96 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 129D46DEDE5
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:36:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91DE56DEDEC
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:38:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230297AbjDLIgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 04:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45396 "EHLO
+        id S230325AbjDLIh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 04:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230216AbjDLIg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:36:29 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC147AA9
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:34:55 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id ud9so26612764ejc.7
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:34:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112; t=1681288407;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BbszsCLhH7dSat1uaHWblB5wKFKCQ+YgLYmMZO1y5Eo=;
-        b=HEtYkx9DreBQFNDWzOxkydeEgdY/SyaJQpZaaNGmF0gE6yzD6B4LgnLh1d76f4boJu
-         l8/Dlv8xsU+WGCQCJFjXunvBnLcpi9ihFPiDu/o239c75s9+PrtinaTnuaV50NVpovk2
-         vuljXjd5KfHj47hcH1kQhKcIBKtmulYnjPrap4CIv/ewJAPlbVWCEf0V2FK1lmDziELT
-         TNDql4LpmLkHrmP+aBXxO//aQldgw/xsCZzBLDxAj2YtYAMfap3GSrhN2q6DKPiWDRSZ
-         ZIlpZhl/fFHsrpY5hnPLpUyP3LaCFsAHa8ppxQbl+wK3O44pGXKEKAhdh9EaFLiV/gE2
-         2pjg==
+        with ESMTP id S230248AbjDLIhd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:37:33 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F78D8689
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:36:10 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id a3-20020a92c543000000b0032651795968so21843383ilj.19
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:36:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681288407;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BbszsCLhH7dSat1uaHWblB5wKFKCQ+YgLYmMZO1y5Eo=;
-        b=HDawLSkXYqpzITAt5AAIIgTiCbGKJgHL9SAHdBf2zhrv/lkoZPZjcR7CHVNldIiZtI
-         cP+nf3oC2Cfc1xsfnsMzwltL+PUU/7eiNSUqaxOmj5WEv/oAzfCTqbapNJUGboPXa3/A
-         ofK5CzTir5k8NVRfMe6h06Z7UVEDsbpxS2L8GCNf879MMMApu2JD/wke3FEiisbNhC6/
-         R2amJRKiWMW2uJ37ei03fNcf4R+g3qv+yQK0Z1JsTQcoDLE5+hxAq7NRJ2mvkh6HaHF1
-         A0UXS0PSzwtlP4qrUmyu1fJagR6xceJ+8lQxjYqD0x76iPmZXwHELF5hVTu4/2G7Jb8b
-         NksA==
-X-Gm-Message-State: AAQBX9e4D7jIMytteOp15Etdz7qcCRm4dDq1yZr4NwjzmuYw/qqc+p+F
-        r7OeTgQGybyCtmqBVe9ys0LUtw==
-X-Google-Smtp-Source: AKy350bh/ykZfhUBvfjxuhwpZnfQZoxwrFvY5TQmVDFochTB98sNor8ERoBzAQ8JrrX4gfTcRMDpEg==
-X-Received: by 2002:a17:907:75fa:b0:94b:d57e:9d4e with SMTP id jz26-20020a17090775fa00b0094bd57e9d4emr7529315ejc.3.1681288407095;
-        Wed, 12 Apr 2023 01:33:27 -0700 (PDT)
-Received: from blmsp ([2001:4090:a244:813c:8d8e:4cbf:6b2c:84d4])
-        by smtp.gmail.com with ESMTPSA id m10-20020a50d7ca000000b00504af12df9fsm2397165edj.31.2023.04.12.01.33.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 01:33:26 -0700 (PDT)
-Date:   Wed, 12 Apr 2023 10:33:25 +0200
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        Simon Horman <simon.horman@corigine.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 00/16] can: m_can: Optimizations for m_can/tcan part 2
-Message-ID: <20230412083325.fpgix3jaag6e5m65@blmsp>
-References: <20230315110546.2518305-1-msp@baylibre.com>
- <20230324183257.qpis4cip5cp4gebu@pengutronix.de>
+        d=1e100.net; s=20210112; t=1681288501; x=1683880501;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rN5LL/mhX9dYZOvabcHjv0kZZdZ2NjEFEF7pBMtQmz8=;
+        b=eayYQqyRQijvMS6a4BFADHcey8eW0N1SoRocYE9HmrnLYY/hzEBcaFdW9I3yMZYjQI
+         4xTWvB8gCjlDnz8+6iZp3xc7h7g2cSYSUiTahspXKwKoSn1iVxqPcUx4sXHauLYByY7w
+         CPn3gcfgxnbAJg0lBe0ssL//me108OREFSfkuRCtzIKkEV6mBj3iIrFFZ5H6HsylRpwt
+         5DZUEaBWPODyfWBJsI+bP58wl7o/3gxeMxgDjmOUVBJRVUJU5kcOCBvelxSjvoC6zpBa
+         UhjX7FV80HUAk2E5jFMDSU0QbbiMO5Dj7Xd0tymqDbYNOW0L9D8dJkBot6js9QOZDtFJ
+         QN+w==
+X-Gm-Message-State: AAQBX9dNcgoaYnO4sENIfXDuzVa7LFWmSB2qQ6LpqsseqjUbCntF+TyM
+        nBP3iN/6a0tl9R0FG0A4f7fFoOJShxImqRJfQYBeQdg+sne1
+X-Google-Smtp-Source: AKy350YIfhBATaCsSAx1MTdSfIX493BB+ipp0VwIn2GkJGJJZn/6Ktn8mynki0Lzd0xhwYT/J/q/eSEp+/FhJzcRfVgCuVDxwG5x
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20230324183257.qpis4cip5cp4gebu@pengutronix.de>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a02:85ea:0:b0:3c5:1971:1b7f with SMTP id
+ d97-20020a0285ea000000b003c519711b7fmr5306205jai.6.1681288500882; Wed, 12 Apr
+ 2023 01:35:00 -0700 (PDT)
+Date:   Wed, 12 Apr 2023 01:35:00 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000dc33db05f91f7b42@google.com>
+Subject: [syzbot] Monthly dccp report
+From:   syzbot <syzbot+listd740d6f828e66494271a@syzkaller.appspotmail.com>
+To:     dccp@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc and Simon,
+Hello dccp maintainers/developers,
 
-On Fri, Mar 24, 2023 at 07:32:57PM +0100, Marc Kleine-Budde wrote:
-> On 15.03.2023 12:05:30, Markus Schneider-Pargmann wrote:
-> > Hi Marc and everyone,
-> > 
-> > third version part 2, functionally I had to move from spin_lock to
-> > spin_lock_irqsave because of an interrupt that was calling start_xmit,
-> > see attached stack. This is tested on tcan455x but I don't have the
-> > integrated hardware myself so any testing is appreciated.
-> > 
-> > The series implements many small and bigger throughput improvements and
-> > adds rx/tx coalescing at the end.
-> 
-> I've applied patches 1...5 to can-next.
+This is a 30-day syzbot report for the dccp subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/dccp
 
-Thank you both for your feedback, I appreciate it. I am a progressing a
-bit slower on this project right now but I will address your feedback.
+During the period, 0 new issues were detected and 0 were fixed.
+In total, 6 issues are still open and 4 have been fixed so far.
 
-Thanks,
-Markus
+Some of the still happening issues:
+
+Crashes Repro Title
+101     Yes   KASAN: use-after-free Read in ccid2_hc_tx_packet_recv
+              https://syzkaller.appspot.com/bug?extid=554ccde221001ab5479a
+43      Yes   BUG: "hc->tx_t_ipi == NUM" holds (exception!) at net/dccp/ccids/ccid3.c:LINE/ccid3_update_send_interval()
+              https://syzkaller.appspot.com/bug?extid=94641ba6c1d768b1e35e
+4       Yes   BUG: stored value of X_recv is zero at net/dccp/ccids/ccid3.c:LINE/ccid3_first_li() (3)
+              https://syzkaller.appspot.com/bug?extid=2ad8ef335371014d4dc7
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
