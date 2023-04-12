@@ -2,104 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53ADB6DECEF
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 09:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFE076DECF7
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 09:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbjDLHuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 03:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39546 "EHLO
+        id S229908AbjDLHvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 03:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229981AbjDLHuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 03:50:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0759161AC;
-        Wed, 12 Apr 2023 00:50:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EC7262EED;
-        Wed, 12 Apr 2023 07:50:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 554C5C433D2;
-        Wed, 12 Apr 2023 07:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681285808;
-        bh=ri3rmltlry7sXZG0HWrFLS7srDjoutKJ+DI1dim4Th0=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=q9qFJBdAz4QXEK7MMlz4lShRdVYWzuAofvFum771baqoXW51TsUm49abk5dmdUcbl
-         mcub7ByZnR32hyMDp5aHTwpX/6BKup3pedj11K83aXMGsLI5G+EwAguqbuvng03aPt
-         BtgZacw97cfnTiVwaEFyrn8gSKARplPeKmsbVqjv7Gf0hF22j3+1ym++iIQk8yI59E
-         TCuFmxZ0ovWdymGbSBOyH5VFDsr0S6sY+JT9vS1evqTLy3b/TK3dxIfQoSWsv/A0Hn
-         er4QHnD7sDeE/dRIVerlRKmzNy7ZOIE2gu6TCc92EWJJZtS/boDO6OZQVMomXrM5vP
-         xguIrc8iu4tCw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Marek Vasut <marex@denx.de>, linux-wireless@vger.kernel.org,
-        Hans de Goede <hdegoede@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Danny van Heumen <danny@dannyvanheumen.nl>,
-        Eric Dumazet <edumazet@google.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
+        with ESMTP id S229692AbjDLHvl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 03:51:41 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EED59FF;
+        Wed, 12 Apr 2023 00:51:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=WDasEsbrZhq6Y6NIih1XXwyVWPjBSJhq2DHjFCLMKyU=; b=fFqzuowZKwSTde6gG9QCNF4AeM
+        wFNcTZtQuE/+ZJKEE1xmzTEG3bJCxaTw2LqZKs9ElseEkHen+IU6tU7YdSeOo1YWgc7QTqj0N1d+t
+        7deQ2ITZBv+gbdo5Uv5xrYSSGDNiBzUaI1OKVu5a1gmxeZXLuLhI7ML2VEqXQsSf5BW1+g91fFmil
+        9tVV+nxo69zsc4OoJ3zFxKQ34kU9hNDaXyoty9P/7PwGB6zLk2HdnCGAvwpm1J2Y+c2jk7ghylFOO
+        gzAOm1mVq6vXnfsiSLvPH1R4oae1MHK+++Vp2SoZZAUrpKdiXWsDEJ69RZ3u139Bqw+vwoY5KQAMv
+        Zps9iteg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48782)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pmVGJ-0007f7-CV; Wed, 12 Apr 2023 08:51:27 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pmVGD-0004wd-Rw; Wed, 12 Apr 2023 08:51:21 +0100
+Date:   Wed, 12 Apr 2023 08:51:21 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net,
+        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "linux-stm32 @ st-md-mailman . stormreply . com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "alexis . lothore @ bootlin . com" <alexis.lothore@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        SHA-cyfmac-dev-list@infineon.com,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        brcm80211-dev-list.pdl@broadcom.com, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2] wifi: brcmfmac: add Cypress 43439 SDIO ids
-References: <20230407203752.128539-1-marex@denx.de>
-        <ZDGHF0dKwIjB1Mrj@corigine.com>
-        <509e4308-9164-4131-4b93-75c42568d1e4@denx.de>
-        <ZDHEI7tbjLJiRcBr@corigine.com>
-Date:   Wed, 12 Apr 2023 10:50:00 +0300
-In-Reply-To: <ZDHEI7tbjLJiRcBr@corigine.com> (Simon Horman's message of "Sat,
-        8 Apr 2023 21:44:35 +0200")
-Message-ID: <87v8i18rpz.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net] net: phylink: check for SFP bus presence in
+ phylink_expects_phy
+Message-ID: <ZDZi+fs13A8JJFOs@shell.armlinux.org.uk>
+References: <20230412074850.41260-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230412074850.41260-1-maxime.chevallier@bootlin.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simon Horman <simon.horman@corigine.com> writes:
+On Wed, Apr 12, 2023 at 09:48:50AM +0200, Maxime Chevallier wrote:
+> When an SFP bus is present, we don't expect a PHY to be attached
+> directly from the MAC driver, it will be handled by phylink at SFP
+> attach time.
 
-> On Sat, Apr 08, 2023 at 06:44:40PM +0200, Marek Vasut wrote:
->
->> On 4/8/23 17:24, Simon Horman wrote:
->> > On Fri, Apr 07, 2023 at 10:37:52PM +0200, Marek Vasut wrote:
->> >
->> > > NOTE: Please drop the Fixes tag if this is considered unjustified
->> > 
->> > <2c>
->> > Feels more like enablement than a fix to me.
->> > </2c>
->> 
->> I added it because
->> 
->> Documentation/process/stable-kernel-rules.rst
->> 
->> L24  - New device IDs and quirks are also accepted.
->
-> Thanks. If I was aware of that, I had forgotten.
->
->> So, really, up to the maintainer whether they are fine with it being
->> backported to stable releases or not. I don't really mind either way.
->
-> Yes, I completely agree.
-
-IIUC you are here mixing Fixes and Cc tags, if you want to get a commit
-to stable releases there should be "Cc: stable@...". So I'll remove the
-Fixes tag and add the Cc tag, ok?
+If we have a SFP, then phylink should be configured for in-band mode.
+Maybe fix the firmware description instead?
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
