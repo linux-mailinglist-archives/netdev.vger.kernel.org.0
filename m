@@ -2,75 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC2E56DF93E
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 17:02:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB526DF972
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 17:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230009AbjDLPC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 11:02:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60150 "EHLO
+        id S231409AbjDLPNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 11:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbjDLPC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 11:02:27 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13383DC;
-        Wed, 12 Apr 2023 08:02:26 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id h198so18553520ybg.12;
-        Wed, 12 Apr 2023 08:02:26 -0700 (PDT)
+        with ESMTP id S231431AbjDLPNN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 11:13:13 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AF57EC2;
+        Wed, 12 Apr 2023 08:13:09 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id cm23so3004868qtb.3;
+        Wed, 12 Apr 2023 08:13:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681311745; x=1683903745;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Fb/hrMpWmod5eDn2r5u9iuaYuz4x9DdXJpN5xVKf0r8=;
-        b=gJO060poeQQaI+xxCB54ch1IabTjPkvIUQ72oUiKp+EV+ZbQu/ZjDo/G8Lt2sH5fEC
-         j8nBayJGT/IEoU6by+litK4n4SAF/birLQ1Fp8x4kIT6Qmr81QkG8D+qWsLpcjmNu5tc
-         iFrsqckG5XVKDaRTnO1XWd9BzYcw+NVbjx/txj8ReQQVj2PiyRzmh6jiBM2/thm10c/y
-         t+sJpPKD1PYOd3pJOLulGcXLfgMH3fbYaeoecXbVzWR9k6DqAPp3TZjVKEgY/ftG/SYQ
-         muXyfCvf+I3n7fXFIf20TdLekMgtcHd0yobUhgb7Bwe1UNuFakAMDfyJ64of4cZHrCOu
-         yoEg==
+        d=gmail.com; s=20221208; t=1681312388; x=1683904388;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=TRUU9F5E5yr8FveGS45SPrpQKyvNo/NCB1VPtXZgXDM=;
+        b=W+dbEwEmMsoRZqA9pAub/lmBj/pmn/F9jleTu9mjRkEj2Zawak8nEXZOaxnTQZw7Qo
+         3d6tJ+tayY8s7dhqQIyYH7RxjIsluDB1uEMDI1bSSgYd2UoJkReEqySKu1XyX6aSmcPx
+         INCRgT22HtGPKnbowHvKf4HmI7mpWAlJAA2KD4cc5X1edgHrcOTPOeoNAFsGky3dK1To
+         bKITPRCdY7QyW/6e6MyAZ1kUc8ai7GDI15g6xRlAjZoYrfkz+V+NL3fttNAtqCfhTiJY
+         rrhVYOY3gLIaGO0mQRyUrBCUy1RjaEYR098QvinH4AgevnxVqMVgTejZjq5BrmF0AdgJ
+         ntlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681311745; x=1683903745;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20210112; t=1681312388; x=1683904388;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Fb/hrMpWmod5eDn2r5u9iuaYuz4x9DdXJpN5xVKf0r8=;
-        b=NWe50wa/yc2xS6PwEBFZFKP2+4GIewIFNs7GmICFPNkJaGAj5f/UTHcHqNdmpfMCW/
-         tFiJ+t+WVdjIGADv8pN3XnTmYSqu57MYBvFuQKoKVe7ogF5AyEofidqjEHQ/UXLfTJmx
-         iwxKB84lUri+msrVrwv+AqTArY00v5DoRS2r/GgGEtSoFSFgZLQPEG1K92Vaxs7fw9aS
-         OLLYiubEBT7exvTxW1WuV4ovZr2uEYGrK9RzSNAa1o9zLRThcvsArBYYt2halv3Zp8Mk
-         ZeuPDgRfvzk2yWIKrbsTuYtVMdjQD+I/zSXt+vuHkQeO+gZ8CzYV5kIlvqkQs+q6MQSG
-         QQsw==
-X-Gm-Message-State: AAQBX9f1+IA6pccbiiUC/jJvD3oTE1KpzMQhvlquwuyCj1Xt4l2wLXIX
-        IOAsGX/SE8+I4HR0K6RF/k8l4PCH5r+8i6gPVzw=
-X-Google-Smtp-Source: AKy350bskx3m/N8JdTwSvkMUCyNbEWVYO6Gy/bnZZH/M1tM7Yx+EJ8SZHDl+NisCN99VMVzHM7tCkUGgS03zI5U1Ix0=
-X-Received: by 2002:a25:d657:0:b0:b76:ae61:b68b with SMTP id
- n84-20020a25d657000000b00b76ae61b68bmr9219687ybg.5.1681311745171; Wed, 12 Apr
- 2023 08:02:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230410120629.642955-1-kal.conley@dectris.com>
- <20230410120629.642955-3-kal.conley@dectris.com> <CAJ8uoz0NczOxbs7xqwC4B9YDP5fN1oECBi53yHoaZbvTxcm_fg@mail.gmail.com>
- <CAHApi-kp5FVfHm4tVObbOz7yu6o7PjaFLw8XgLB0OFY=pSuaKg@mail.gmail.com>
-In-Reply-To: <CAHApi-kp5FVfHm4tVObbOz7yu6o7PjaFLw8XgLB0OFY=pSuaKg@mail.gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 12 Apr 2023 17:02:14 +0200
-Message-ID: <CAJ8uoz3=hPW7sTzq=aroZkrOdQSNfjZjEQHQRe0uZmKSHnDkNA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 2/4] xsk: Support UMEM chunk_size > PAGE_SIZE
-To:     Kal Cutter Conley <kal.conley@dectris.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        bh=TRUU9F5E5yr8FveGS45SPrpQKyvNo/NCB1VPtXZgXDM=;
+        b=6TV/EEXLEUkoJqlW3NK0WgEIDhaeejC6R3248bdUFE9hsn4nY3A1ZjSmQftfTfGfVb
+         EtXWqPS5NH5bq7PS9tjzx4sQAHI5fw2cIUUWQlqD0Ix4Cm0mD9Wgz54JgBU7SDA5g5X+
+         V/lTfPPFickPyTBiHSqvFPCTca4UM1oZl7PpiO0saBB6pHztR+OxXzqciNXN6Akds2ub
+         3ZbWHTQ2OuNsrFLdAjfpEauldKZbxoIHi6V8EQ6KiaHJKIN5024KprLu5mZszkjCChML
+         wexeW/pzbEK74tXvqXreuJcHbDlw9rGxxn6qcdb97Ux/Zx9NAwk8ZSzBiyIDlhuG5V0M
+         6o2Q==
+X-Gm-Message-State: AAQBX9e93xGJJxl0smZfiK2JyrEb7U0Hk8QJJFOpUT1EqgbOWlugpo/s
+        JEC0XC8PEPusRv05l10HZIMN3UwWQlE=
+X-Google-Smtp-Source: AKy350YdpYxaJavVaEQVnqRet1CC7bbr/8oy89tk+yRw8QVGtcs2t4jbSwu2PdchCKD4dblcytcMxg==
+X-Received: by 2002:a05:622a:143:b0:3e8:d461:fae3 with SMTP id v3-20020a05622a014300b003e8d461fae3mr2304639qtw.55.1681312387910;
+        Wed, 12 Apr 2023 08:13:07 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id bn8-20020a05620a2ac800b0073b8745fd39sm4722016qkb.110.2023.04.12.08.13.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Apr 2023 08:13:07 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Subject: [PATCH net] selftests: add the missing CONFIG_IP_SCTP in net config
+Date:   Wed, 12 Apr 2023 11:13:06 -0400
+Message-Id: <61dddebc4d2dd98fe7fb145e24d4b2430e42b572.1681312386.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.39.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -81,34 +71,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Apr 2023 at 16:30, Kal Cutter Conley <kal.conley@dectris.com> wrote:
->
-> > > -       pool->unaligned = unaligned;
-> > >         pool->frame_len = umem->chunk_size - umem->headroom -
-> > >                 XDP_PACKET_HEADROOM;
-> > > +       pool->unaligned = unaligned;
-> >
-> > nit: This change is not necessary.
->
-> Do you mind if we keep it? It makes the assignments better match the
-> order in the struct declaration.
+The selftest sctp_vrf needs CONFIG_IP_SCTP set in config
+when building the kernel, so add it.
 
-Do not mind.
+Fixes: a61bd7b9fef3 ("selftests: add a selftest for sctp vrf")
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ tools/testing/selftests/net/config | 1 +
+ 1 file changed, 1 insertion(+)
 
-> > > -static void xp_check_dma_contiguity(struct xsk_dma_map *dma_map)
-> > > +static void xp_check_dma_contiguity(struct xsk_dma_map *dma_map, u32 page_size)
-> > >  {
-> > >         u32 i;
-> > >
-> > > -       for (i = 0; i < dma_map->dma_pages_cnt - 1; i++) {
-> > > -               if (dma_map->dma_pages[i] + PAGE_SIZE == dma_map->dma_pages[i + 1])
-> > > +       for (i = 0; i + 1 < dma_map->dma_pages_cnt; i++) {
-> >
-> > I think the previous version is clearer than this new one.
->
-> I like using `i + 1` since it matches the subscript usage. I'm used to
-> writing it like this for SIMD code where subtraction may wrap if the
-> length is unsigned, that doesn't matter in this case though. I can
-> restore the old way if you want.
+diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
+index cc9fd55ab869..2529226ce87c 100644
+--- a/tools/testing/selftests/net/config
++++ b/tools/testing/selftests/net/config
+@@ -48,3 +48,4 @@ CONFIG_BAREUDP=m
+ CONFIG_IPV6_IOAM6_LWTUNNEL=y
+ CONFIG_CRYPTO_SM4_GENERIC=y
+ CONFIG_AMT=m
++CONFIG_IP_SCTP=m
+-- 
+2.39.1
 
-Please restore it in that case. I am not used to SIMD code :-).
