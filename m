@@ -2,72 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3B966DF769
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E166DF78A
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:43:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230088AbjDLNja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 09:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
+        id S230368AbjDLNnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 09:43:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbjDLNj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:39:28 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E136F4222;
-        Wed, 12 Apr 2023 06:39:25 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id h198so18229377ybg.12;
-        Wed, 12 Apr 2023 06:39:25 -0700 (PDT)
+        with ESMTP id S230372AbjDLNnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:43:45 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC2C1705;
+        Wed, 12 Apr 2023 06:43:43 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-54f21cdfadbso168802597b3.7;
+        Wed, 12 Apr 2023 06:43:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681306765; x=1683898765;
+        d=gmail.com; s=20221208; t=1681307022; x=1683899022;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=jqbGas6JxmPIzEqfCVaJAgFfxuanGPJ5ZjASAY95QiQ=;
-        b=gIaQy6uxDBbwroknQdyMG6hhV38ToME58EEWlekETghrPj+xjdE3LZs+OUshUChm1T
-         uRVZAJSjzzYv4uaT8cj3YsH0eHv9+6my7HimKC4p/Mk0THN8qSP3X2i7bGDC9hqa2A17
-         uIFvD+N6Ft2UfII+ISRqX4lG1ZziRSDeIN6qXRZv3T0p5UoMjeC/6/id+AoThVtH/3BA
-         ircS0VsAv6IDoOygVS9V4wF6Vlo64Hm3eWrTbmqK6mahhJKuLq27RK5AVdVWrEDrpYh9
-         xLnvi9V066seD6QYZG6cMZpKcw4VEee65beDfHF1SIQUPIHgBL+vGy5oEDxTlr9ZgApQ
-         lHNQ==
+        bh=TzxfLnJ6ym9jFbneOVl4Zhho/DPSUKhosX5v7vCwnaA=;
+        b=TdpjEqrR0NpixLlPAW0RsgYNPCQMUBGt2mX1/C3BRxpSWMHd2SLCmUN/mGSEy3DCZa
+         y/qDaIKj4+isxzF3AmPBwHMx9hyI8866gyUkyRyYFoPBlMXeVga7kJBLzvKyx2dc8olh
+         3iWLECLQnJkdi88kVEKljYXMdWs60do9PtZNdgxgWIABslsbn0C06VtIYqzENxtwchFv
+         6yH44t+4l5QvzbahpjdKHL7ht/zYIYgrEFv60xd5uodAYBh/DOjjIlhgicNydf4YsOKe
+         RjhwpHcrpj7bRBfGdpy0C4irvHP2U6ROBPT7sF9DTnaw6s9IcJjeDLr7uWxF8oBsibSA
+         mk1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681306765; x=1683898765;
+        d=1e100.net; s=20210112; t=1681307022; x=1683899022;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=jqbGas6JxmPIzEqfCVaJAgFfxuanGPJ5ZjASAY95QiQ=;
-        b=QHa2HdWnZVdmjbxVAKXveQXVgjdhGpr17bOQ/vOAgtB/kLy0AdAG1zHRq4/D+bTYVp
-         TihGx7fkYpa/6jFRgBI7Q9IbQGUU9nRgigM5FeREuBkeA8CK5Y/7p+kCxUI+u/h2spmI
-         S/dXapwdHzRVHLutzHyYei0tuUS1tEAkCFP6Ex0yTJ/BdFG0moY6Bnhsr65ikzaqyqJH
-         y6h08jXmf+A5jvrR2len6KHTtFSeJ89d4Q1QMSZLtDrlt4nxdgGxWAoc/vM4l+BY2d6h
-         cSPp0M6SvlBtEACuxzxGyXs9TKFdxDUx4MR7KEvyZb4bZXrURBOE0cMs89XVMGM0avxM
-         G3AQ==
-X-Gm-Message-State: AAQBX9eRGoLtdN94UnY74YbwpHSq56ZDWY5sm6W+6jjYKy7jR8NGodsF
-        J6k2n+MDlYodXUGZj7YDM/udA+3SFuJPReTDjwA=
-X-Google-Smtp-Source: AKy350bjCBRTf/bWiskHsb/X5u1eW67KWec6UUx4EKCRz6bpp+G6CVbHB85687Y7/uGZEtxzLS5zVFOEXPj3Qwg+17s=
-X-Received: by 2002:a25:6cc6:0:b0:b8c:607:7669 with SMTP id
- h189-20020a256cc6000000b00b8c06077669mr11956550ybc.5.1681306764804; Wed, 12
- Apr 2023 06:39:24 -0700 (PDT)
+        bh=TzxfLnJ6ym9jFbneOVl4Zhho/DPSUKhosX5v7vCwnaA=;
+        b=S6j0E9YCTzMVxH+oRdw4dJsc817hWNm4npgpqWV735B4D2qKaPaqCICtLbolas20aS
+         Mm6JCQwoa+KzRy5sQbopw33INSy94uLx0z6KsJ0JVWa4pWXuNBKndB2IkcHBUjC4Z9H7
+         vE/YP3xXWu5mQd+gkaUOaf0sqGgamK1R+de6+bmlUxg1tqbvWA4o3xNEUoy/5gRkcYjo
+         LsgM1AgkBoSd3e1TXu3D6fmkwI5sn/5VcaI7nxLd3I2aS/gorT8mROAjMwhJ4KctwxGA
+         5a0mrR/eOs/jsFBwD1bEbGc1vXhYkB2y9FbgJRYpOFP0HNCnlMXAH1/khfM8UMp94D6Y
+         JaYA==
+X-Gm-Message-State: AAQBX9fjJz4P6n/McCduj8lABsAATI6KUCiKlhrLwZdjkza9+OMeGg2H
+        e8eHDUKyI2+xE5cyzXCV58SjuNqZMifhAVEUkTU=
+X-Google-Smtp-Source: AKy350azWW7f0ZmfXpl9pAAyl+Im1D2Z4dViMNgFyz3rq82QFwX5mtlvNv0rh92pQZJc9jf+49iY2n7IDBPViyCBfo8=
+X-Received: by 2002:a81:a948:0:b0:543:bbdb:8c2b with SMTP id
+ g69-20020a81a948000000b00543bbdb8c2bmr10753315ywh.10.1681307022595; Wed, 12
+ Apr 2023 06:43:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230410120629.642955-1-kal.conley@dectris.com> <20230410120629.642955-3-kal.conley@dectris.com>
-In-Reply-To: <20230410120629.642955-3-kal.conley@dectris.com>
+References: <20230410120629.642955-1-kal.conley@dectris.com>
+In-Reply-To: <20230410120629.642955-1-kal.conley@dectris.com>
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 12 Apr 2023 15:39:13 +0200
-Message-ID: <CAJ8uoz0NczOxbs7xqwC4B9YDP5fN1oECBi53yHoaZbvTxcm_fg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 2/4] xsk: Support UMEM chunk_size > PAGE_SIZE
+Date:   Wed, 12 Apr 2023 15:43:31 +0200
+Message-ID: <CAJ8uoz1CmRNMdTu3on7VL2Jrvo9z3WvdmFE_hSEiZDLiO-xtFw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 0/4] xsk: Support UMEM chunk_size > PAGE_SIZE
 To:     Kal Conley <kal.conley@dectris.com>
 Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -81,414 +74,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, 10 Apr 2023 at 14:08, Kal Conley <kal.conley@dectris.com> wrote:
 >
-> Add core AF_XDP support for chunk sizes larger than PAGE_SIZE. This
-> enables sending/receiving jumbo ethernet frames up to the theoretical
-> maximum of 64 KiB. For chunk sizes > PAGE_SIZE, the UMEM is required
-> to consist of HugeTLB VMAs (and be hugepage aligned). Initially, only
-> SKB mode is usable pending future driver work.
+> The main purpose of this patchset is to add AF_XDP support for UMEM
+> chunk sizes > PAGE_SIZE. This is enabled for UMEMs backed by HugeTLB
+> pages.
 >
-> For consistency, check for HugeTLB pages during UMEM registration. This
-> implies that hugepages are required for XDP_COPY mode despite DMA not
-> being used. This restriction is desirable since it ensures user software
-> can take advantage of future driver support.
->
-> Despite this change, always store order-0 pages in the umem->pgs array
-> since this is what is returned by pin_user_pages(). Conversely, XSK
-> pools bound to HugeTLB UMEMs do DMA page accounting at hugepage
-> granularity (HPAGE_SIZE).
->
-> No significant change in RX/TX performance was observed with this patch.
-> A few data points are reproduced below:
->
-> Machine : Dell PowerEdge R940
-> CPU     : Intel(R) Xeon(R) Platinum 8168 CPU @ 2.70GHz
-> NIC     : MT27700 Family [ConnectX-4]
->
-> +-----+------+------+-------+--------+--------+--------+
-> |     |      |      | chunk | packet | rxdrop | rxdrop |
-> |     | mode |  mtu |  size |   size | (Mpps) | (Gbps) |
-> +-----+------+------+-------+--------+--------+--------+
-> | old |   -z | 3498 |  4000 |    320 |   15.9 |   40.8 |
-> | new |   -z | 3498 |  4000 |    320 |   15.9 |   40.8 |
-> +-----+------+------+-------+--------+--------+--------+
-> | old |   -z | 3498 |  4096 |    320 |   16.5 |   42.2 |
-> | new |   -z | 3498 |  4096 |    320 |   16.5 |   42.3 |
-> +-----+------+------+-------+--------+--------+--------+
-> | new |   -c | 3498 | 10240 |    320 |    6.1 |   15.7 |
-> +-----+------+------+-------+--------+--------+--------+
-> | new |   -S | 9000 | 10240 |   9000 |   0.37 |   26.4 |
-> +-----+------+------+-------+--------+--------+--------+
->
-> Signed-off-by: Kal Conley <kal.conley@dectris.com>
-> ---
->  Documentation/networking/af_xdp.rst | 36 +++++++++++--------
->  include/net/xdp_sock.h              |  2 ++
->  include/net/xdp_sock_drv.h          | 12 +++++++
->  include/net/xsk_buff_pool.h         | 10 +++---
->  net/xdp/xdp_umem.c                  | 55 +++++++++++++++++++++++------
->  net/xdp/xsk_buff_pool.c             | 36 +++++++++++--------
->  6 files changed, 109 insertions(+), 42 deletions(-)
->
-> diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networking/af_xdp.rst
-> index 247c6c4127e9..ea65cd882af6 100644
-> --- a/Documentation/networking/af_xdp.rst
-> +++ b/Documentation/networking/af_xdp.rst
-> @@ -105,12 +105,13 @@ with AF_XDP". It can be found at https://lwn.net/Articles/750845/.
->  UMEM
->  ----
->
-> -UMEM is a region of virtual contiguous memory, divided into
-> -equal-sized frames. An UMEM is associated to a netdev and a specific
-> -queue id of that netdev. It is created and configured (chunk size,
-> -headroom, start address and size) by using the XDP_UMEM_REG setsockopt
-> -system call. A UMEM is bound to a netdev and queue id, via the bind()
-> -system call.
-> +UMEM is a region of virtual contiguous memory divided into equal-sized
-> +frames. This is the area that contains all the buffers that packets can
-> +reside in. A UMEM is associated with a netdev and a specific queue id of
-> +that netdev. It is created and configured (start address, size,
-> +chunk size, and headroom) by using the XDP_UMEM_REG setsockopt system
-> +call. A UMEM is bound to a netdev and queue id via the bind() system
-> +call.
->
->  An AF_XDP is socket linked to a single UMEM, but one UMEM can have
->  multiple AF_XDP sockets. To share an UMEM created via one socket A,
-> @@ -418,14 +419,21 @@ negatively impact performance.
->  XDP_UMEM_REG setsockopt
->  -----------------------
->
-> -This setsockopt registers a UMEM to a socket. This is the area that
-> -contain all the buffers that packet can reside in. The call takes a
-> -pointer to the beginning of this area and the size of it. Moreover, it
-> -also has parameter called chunk_size that is the size that the UMEM is
-> -divided into. It can only be 2K or 4K at the moment. If you have an
-> -UMEM area that is 128K and a chunk size of 2K, this means that you
-> -will be able to hold a maximum of 128K / 2K = 64 packets in your UMEM
-> -area and that your largest packet size can be 2K.
-> +This setsockopt registers a UMEM to a socket. The call takes a pointer
-> +to the beginning of this area and the size of it. Moreover, there is a
-> +parameter called chunk_size that is the size that the UMEM is divided
-> +into. The chunk size limits the maximum packet size that can be sent or
-> +received. For example, if you have a UMEM area that is 128K and a chunk
-> +size of 2K, then you will be able to hold a maximum of 128K / 2K = 64
-> +packets in your UMEM. In this case, the maximum packet size will be 2K.
-> +
-> +Valid chunk sizes range from 2K to 64K. However, in aligned mode, the
-> +chunk size must also be a power of two. Additionally, the chunk size
-> +must not exceed the size of a page (usually 4K). This limitation is
-> +relaxed for UMEM areas allocated with HugeTLB pages, in which case
-> +chunk sizes up to 64K are allowed. Note, this only works with hugepages
-> +allocated from the kernel's persistent pool. Using Transparent Huge
-> +Pages (THP) has no effect on the maximum chunk size.
->
->  There is also an option to set the headroom of each single buffer in
->  the UMEM. If you set this to N bytes, it means that the packet will
-> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-> index e96a1151ec75..a71589539c38 100644
-> --- a/include/net/xdp_sock.h
-> +++ b/include/net/xdp_sock.h
-> @@ -25,6 +25,8 @@ struct xdp_umem {
->         u32 chunk_size;
->         u32 chunks;
->         u32 npgs;
-> +       u32 page_shift;
-> +       u32 page_size;
->         struct user_struct *user;
->         refcount_t users;
->         u8 flags;
-> diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
-> index 9c0d860609ba..83fba3060c9a 100644
-> --- a/include/net/xdp_sock_drv.h
-> +++ b/include/net/xdp_sock_drv.h
-> @@ -12,6 +12,18 @@
->  #define XDP_UMEM_MIN_CHUNK_SHIFT 11
->  #define XDP_UMEM_MIN_CHUNK_SIZE (1 << XDP_UMEM_MIN_CHUNK_SHIFT)
->
-> +static_assert(XDP_UMEM_MIN_CHUNK_SIZE <= PAGE_SIZE);
-> +
-> +/* Allow chunk sizes up to the maximum size of an ethernet frame (64 KiB).
-> + * Larger chunks are not guaranteed to fit in a single SKB.
-> + */
-> +#ifdef CONFIG_HUGETLB_PAGE
-> +#define XDP_UMEM_MAX_CHUNK_SHIFT min(16, HPAGE_SHIFT)
-> +#else
-> +#define XDP_UMEM_MAX_CHUNK_SHIFT min(16, PAGE_SHIFT)
-> +#endif
-> +#define XDP_UMEM_MAX_CHUNK_SIZE (1 << XDP_UMEM_MAX_CHUNK_SHIFT)
-> +
->  #ifdef CONFIG_XDP_SOCKETS
->
->  void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries);
-> diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
-> index a8d7b8a3688a..af822b322d89 100644
-> --- a/include/net/xsk_buff_pool.h
-> +++ b/include/net/xsk_buff_pool.h
-> @@ -68,6 +68,8 @@ struct xsk_buff_pool {
->         struct xdp_desc *tx_descs;
->         u64 chunk_mask;
->         u64 addrs_cnt;
-> +       u32 page_shift;
-> +       u32 page_size;
->         u32 free_list_cnt;
->         u32 dma_pages_cnt;
->         u32 free_heads_cnt;
-> @@ -123,8 +125,8 @@ static inline void xp_init_xskb_addr(struct xdp_buff_xsk *xskb, struct xsk_buff_
->  static inline void xp_init_xskb_dma(struct xdp_buff_xsk *xskb, struct xsk_buff_pool *pool,
->                                     dma_addr_t *dma_pages, u64 addr)
->  {
-> -       xskb->frame_dma = (dma_pages[addr >> PAGE_SHIFT] & ~XSK_NEXT_PG_CONTIG_MASK) +
-> -               (addr & ~PAGE_MASK);
-> +       xskb->frame_dma = (dma_pages[addr >> pool->page_shift] & ~XSK_NEXT_PG_CONTIG_MASK) +
-> +                         (addr & (pool->page_size - 1));
->         xskb->dma = xskb->frame_dma + pool->headroom + XDP_PACKET_HEADROOM;
->  }
->
-> @@ -175,13 +177,13 @@ static inline void xp_dma_sync_for_device(struct xsk_buff_pool *pool,
->  static inline bool xp_desc_crosses_non_contig_pg(struct xsk_buff_pool *pool,
->                                                  u64 addr, u32 len)
->  {
-> -       bool cross_pg = (addr & (PAGE_SIZE - 1)) + len > PAGE_SIZE;
-> +       bool cross_pg = (addr & (pool->page_size - 1)) + len > pool->page_size;
->
->         if (likely(!cross_pg))
->                 return false;
->
->         return pool->dma_pages &&
-> -              !(pool->dma_pages[addr >> PAGE_SHIFT] & XSK_NEXT_PG_CONTIG_MASK);
-> +              !(pool->dma_pages[addr >> pool->page_shift] & XSK_NEXT_PG_CONTIG_MASK);
->  }
->
->  static inline u64 xp_aligned_extract_addr(struct xsk_buff_pool *pool, u64 addr)
-> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-> index 4681e8e8ad94..6fb984be8f40 100644
-> --- a/net/xdp/xdp_umem.c
-> +++ b/net/xdp/xdp_umem.c
-> @@ -10,6 +10,8 @@
->  #include <linux/uaccess.h>
->  #include <linux/slab.h>
->  #include <linux/bpf.h>
-> +#include <linux/hugetlb.h>
-> +#include <linux/hugetlb_inline.h>
->  #include <linux/mm.h>
->  #include <linux/netdevice.h>
->  #include <linux/rtnetlink.h>
-> @@ -91,9 +93,39 @@ void xdp_put_umem(struct xdp_umem *umem, bool defer_cleanup)
->         }
->  }
->
-> +/* NOTE: The mmap_lock must be held by the caller. */
-> +static void xdp_umem_init_page_size(struct xdp_umem *umem, unsigned long address)
-> +{
-> +#ifdef CONFIG_HUGETLB_PAGE
-> +       struct vm_area_struct *vma;
-> +       struct vma_iterator vmi;
-> +       unsigned long end;
-> +
-> +       if (!IS_ALIGNED(address, HPAGE_SIZE))
-> +               goto no_hugetlb;
-> +
-> +       vma_iter_init(&vmi, current->mm, address);
-> +       end = address + umem->size;
-> +
-> +       for_each_vma_range(vmi, vma, end) {
-> +               if (!is_vm_hugetlb_page(vma))
-> +                       goto no_hugetlb;
-> +               /* Hugepage sizes smaller than the default are not supported. */
-> +               if (huge_page_size(hstate_vma(vma)) < HPAGE_SIZE)
-> +                       goto no_hugetlb;
-> +       }
-> +
-> +       umem->page_shift = HPAGE_SHIFT;
-> +       umem->page_size = HPAGE_SIZE;
-> +       return;
-> +no_hugetlb:
-> +#endif
-> +       umem->page_shift = PAGE_SHIFT;
-> +       umem->page_size = PAGE_SIZE;
-> +}
-> +
->  static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
->  {
-> -       unsigned int gup_flags = FOLL_WRITE;
->         long npgs;
->         int err;
->
-> @@ -102,8 +134,18 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
->                 return -ENOMEM;
->
->         mmap_read_lock(current->mm);
-> +
-> +       xdp_umem_init_page_size(umem, address);
-> +
-> +       if (umem->chunk_size > umem->page_size) {
-> +               mmap_read_unlock(current->mm);
-> +               err = -EINVAL;
-> +               goto out_pgs;
-> +       }
-> +
->         npgs = pin_user_pages(address, umem->npgs,
-> -                             gup_flags | FOLL_LONGTERM, &umem->pgs[0], NULL);
-> +                             FOLL_WRITE | FOLL_LONGTERM, &umem->pgs[0], NULL);
-> +
->         mmap_read_unlock(current->mm);
->
->         if (npgs != umem->npgs) {
-> @@ -156,15 +198,8 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct xdp_umem_reg *mr)
->         unsigned int chunks, chunks_rem;
->         int err;
->
-> -       if (chunk_size < XDP_UMEM_MIN_CHUNK_SIZE || chunk_size > PAGE_SIZE) {
-> -               /* Strictly speaking we could support this, if:
-> -                * - huge pages, or*
-> -                * - using an IOMMU, or
-> -                * - making sure the memory area is consecutive
-> -                * but for now, we simply say "computer says no".
-> -                */
-> +       if (chunk_size < XDP_UMEM_MIN_CHUNK_SIZE || chunk_size > XDP_UMEM_MAX_CHUNK_SIZE)
->                 return -EINVAL;
-> -       }
->
->         if (mr->flags & ~XDP_UMEM_UNALIGNED_CHUNK_FLAG)
->                 return -EINVAL;
-> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-> index 26f6d304451e..85b36c31b505 100644
-> --- a/net/xdp/xsk_buff_pool.c
-> +++ b/net/xdp/xsk_buff_pool.c
-> @@ -75,14 +75,16 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
->
->         pool->chunk_mask = ~((u64)umem->chunk_size - 1);
->         pool->addrs_cnt = umem->size;
-> +       pool->page_shift = umem->page_shift;
-> +       pool->page_size = umem->page_size;
->         pool->heads_cnt = umem->chunks;
->         pool->free_heads_cnt = umem->chunks;
->         pool->headroom = umem->headroom;
->         pool->chunk_size = umem->chunk_size;
->         pool->chunk_shift = ffs(umem->chunk_size) - 1;
-> -       pool->unaligned = unaligned;
->         pool->frame_len = umem->chunk_size - umem->headroom -
->                 XDP_PACKET_HEADROOM;
-> +       pool->unaligned = unaligned;
+> Note, v5 fixes a major bug in previous versions of this patchset.
+> In particular, dma_map_page_attrs used to be called once for each
+> order-0 page in a hugepage with the assumption that returned I/O
+> addresses are contiguous within a hugepage. This assumption is incorrect
+> when an IOMMU is enabled. To fix this, v5 does DMA page accounting
+> accounting at hugepage granularity.
 
-nit: This change is not necessary.
+Thank you so much Kal for implementing this feature. After you have
+fixed the three small things I had for patch #2, you have my ack for
+the whole set below. Please add it.
 
->         pool->umem = umem;
->         pool->addrs = umem->addrs;
->         INIT_LIST_HEAD(&pool->free_list);
-> @@ -328,7 +330,8 @@ static void xp_destroy_dma_map(struct xsk_dma_map *dma_map)
->         kfree(dma_map);
->  }
->
-> -static void __xp_dma_unmap(struct xsk_dma_map *dma_map, unsigned long attrs)
-> +static void __xp_dma_unmap(struct xsk_buff_pool *pool, struct xsk_dma_map *dma_map,
-> +                          unsigned long attrs)
+For the whole set:
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Instead of sending down the whole buffer pool, it would be better to
-pass down the page_size here. __xp_dma_unmap(*dma_map, attrs,
-page_size)
+It would be great if you have the time and desire to also take this to
+zero-copy mode. I have had multiple AF_XDP users mailing me privately
+that such a feature would be very useful for them. For some of them it
+was even a requirement to be able to get down to the latencies they
+were aiming for.
 
-Also makes it consistent with the check_dma_contiguity below.
-
->  {
->         dma_addr_t *dma;
->         u32 i;
-> @@ -337,7 +340,7 @@ static void __xp_dma_unmap(struct xsk_dma_map *dma_map, unsigned long attrs)
->                 dma = &dma_map->dma_pages[i];
->                 if (*dma) {
->                         *dma &= ~XSK_NEXT_PG_CONTIG_MASK;
-> -                       dma_unmap_page_attrs(dma_map->dev, *dma, PAGE_SIZE,
-> +                       dma_unmap_page_attrs(dma_map->dev, *dma, pool->page_size,
->                                              DMA_BIDIRECTIONAL, attrs);
->                         *dma = 0;
->                 }
-> @@ -362,7 +365,7 @@ void xp_dma_unmap(struct xsk_buff_pool *pool, unsigned long attrs)
->         if (!refcount_dec_and_test(&dma_map->users))
->                 return;
+> Changes since v4:
+>   * Use hugepages in DMA map (fixes zero-copy mode with IOMMU).
+>   * Use pool->dma_pages to check for DMA. This change is needed to avoid
+>     performance regressions).
+>   * Update commit message and benchmark table.
 >
-> -       __xp_dma_unmap(dma_map, attrs);
-> +       __xp_dma_unmap(pool, dma_map, attrs);
->         kvfree(pool->dma_pages);
->         pool->dma_pages = NULL;
->         pool->dma_pages_cnt = 0;
-> @@ -370,16 +373,17 @@ void xp_dma_unmap(struct xsk_buff_pool *pool, unsigned long attrs)
->  }
->  EXPORT_SYMBOL(xp_dma_unmap);
+> Changes since v3:
+>   * Fix checkpatch.pl whitespace error.
 >
-> -static void xp_check_dma_contiguity(struct xsk_dma_map *dma_map)
-> +static void xp_check_dma_contiguity(struct xsk_dma_map *dma_map, u32 page_size)
->  {
->         u32 i;
+> Changes since v2:
+>   * Related fixes/improvements included with v2 have been removed. These
+>     changes have all been resubmitted as standalone patchsets.
+>   * Minimize uses of #ifdef CONFIG_HUGETLB_PAGE.
+>   * Improve AF_XDP documentation.
+>   * Update benchmark table in commit message.
 >
-> -       for (i = 0; i < dma_map->dma_pages_cnt - 1; i++) {
-> -               if (dma_map->dma_pages[i] + PAGE_SIZE == dma_map->dma_pages[i + 1])
-> +       for (i = 0; i + 1 < dma_map->dma_pages_cnt; i++) {
-
-I think the previous version is clearer than this new one.
-
-> +               if (dma_map->dma_pages[i] + page_size == dma_map->dma_pages[i + 1])
->                         dma_map->dma_pages[i] |= XSK_NEXT_PG_CONTIG_MASK;
->                 else
->                         dma_map->dma_pages[i] &= ~XSK_NEXT_PG_CONTIG_MASK;
->         }
-> +       dma_map->dma_pages[i] &= ~XSK_NEXT_PG_CONTIG_MASK;
->  }
+> Changes since v1:
+>   * Add many fixes/improvements to the XSK selftests.
+>   * Add check for unaligned descriptors that overrun UMEM.
+>   * Fix compile errors when CONFIG_HUGETLB_PAGE is not set.
+>   * Fix incorrect use of _Static_assert.
+>   * Update AF_XDP documentation.
+>   * Rename unaligned 9K frame size test.
+>   * Make xp_check_dma_contiguity less conservative.
+>   * Add more information to benchmark table.
 >
->  static int xp_init_dma_info(struct xsk_buff_pool *pool, struct xsk_dma_map *dma_map)
-> @@ -412,6 +416,7 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
->  {
->         struct xsk_dma_map *dma_map;
->         dma_addr_t dma;
-> +       u32 stride;
->         int err;
->         u32 i;
+> Thanks to Magnus Karlsson for all his support!
 >
-> @@ -425,15 +430,19 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
->                 return 0;
->         }
+> Happy Easter!
 >
-> +       /* dma_pages use pool->page_size whereas `pages` are always order-0. */
-> +       stride = pool->page_size >> PAGE_SHIFT; /* in order-0 pages */
-> +       nr_pages = (nr_pages + stride - 1) >> (pool->page_shift - PAGE_SHIFT);
-> +
->         dma_map = xp_create_dma_map(dev, pool->netdev, nr_pages, pool->umem);
->         if (!dma_map)
->                 return -ENOMEM;
+> Kal Conley (4):
+>   xsk: Use pool->dma_pages to check for DMA
+>   xsk: Support UMEM chunk_size > PAGE_SIZE
+>   selftests: xsk: Use hugepages when umem->frame_size > PAGE_SIZE
+>   selftests: xsk: Add tests for 8K and 9K frame sizes
 >
->         for (i = 0; i < dma_map->dma_pages_cnt; i++) {
-> -               dma = dma_map_page_attrs(dev, pages[i], 0, PAGE_SIZE,
-> +               dma = dma_map_page_attrs(dev, pages[i * stride], 0, pool->page_size,
->                                          DMA_BIDIRECTIONAL, attrs);
->                 if (dma_mapping_error(dev, dma)) {
-> -                       __xp_dma_unmap(dma_map, attrs);
-> +                       __xp_dma_unmap(pool, dma_map, attrs);
->                         return -ENOMEM;
->                 }
->                 if (dma_need_sync(dev, dma))
-> @@ -442,11 +451,11 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
->         }
->
->         if (pool->unaligned)
-> -               xp_check_dma_contiguity(dma_map);
-> +               xp_check_dma_contiguity(dma_map, pool->page_size);
->
->         err = xp_init_dma_info(pool, dma_map);
->         if (err) {
-> -               __xp_dma_unmap(dma_map, attrs);
-> +               __xp_dma_unmap(pool, dma_map, attrs);
->                 return err;
->         }
->
-> @@ -663,9 +672,8 @@ EXPORT_SYMBOL(xp_raw_get_data);
->  dma_addr_t xp_raw_get_dma(struct xsk_buff_pool *pool, u64 addr)
->  {
->         addr = pool->unaligned ? xp_unaligned_add_offset_to_addr(addr) : addr;
-> -       return (pool->dma_pages[addr >> PAGE_SHIFT] &
-> -               ~XSK_NEXT_PG_CONTIG_MASK) +
-> -               (addr & ~PAGE_MASK);
-> +       return (pool->dma_pages[addr >> pool->page_shift] & ~XSK_NEXT_PG_CONTIG_MASK) +
-> +              (addr & (pool->page_size - 1));
->  }
->  EXPORT_SYMBOL(xp_raw_get_dma);
+>  Documentation/networking/af_xdp.rst      | 36 ++++++++++------
+>  include/net/xdp_sock.h                   |  2 +
+>  include/net/xdp_sock_drv.h               | 12 ++++++
+>  include/net/xsk_buff_pool.h              | 12 +++---
+>  net/xdp/xdp_umem.c                       | 55 +++++++++++++++++++-----
+>  net/xdp/xsk_buff_pool.c                  | 43 ++++++++++--------
+>  tools/testing/selftests/bpf/xskxceiver.c | 27 +++++++++++-
+>  tools/testing/selftests/bpf/xskxceiver.h |  2 +
+>  8 files changed, 142 insertions(+), 47 deletions(-)
 >
 > --
 > 2.39.2
