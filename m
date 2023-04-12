@@ -2,190 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 374916E0269
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 01:22:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 672E06E0291
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 01:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229736AbjDLXW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 19:22:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36120 "EHLO
+        id S229526AbjDLXaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 19:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbjDLXW2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 19:22:28 -0400
-Received: from out-32.mta0.migadu.com (out-32.mta0.migadu.com [IPv6:2001:41d0:1004:224b::20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2E94EC5
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 16:22:26 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1681341744;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ash0rC8Buu4gkiLlAq8MxDEdJ92MQI6+z71zxIkVBiY=;
-        b=sJrF7XdNJhWlFXHgNI2ZMyegT3rlbMT1XXa2zvgrn9n0W8gdRS7mLYmp+Vtn9BWQ5kCjm7
-        N6pu16RASFNuPVADhBwckIcmFZe4cIydQWc2SsPx0Qg+RSReGDsOuB2hzKBSKRFSJv1rED
-        8oFHcec1CgqQ/ilQPCruih6hgJ33BRk=
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     netdev@vger.kernel.org
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rafal Ozieblo <rafalo@cadence.com>,
-        Harini Katakam <harini.katakam@xilinx.com>,
-        linux-kernel@vger.kernel.org,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH net v2] net: macb: fix a memory corruption in extended buffer descriptor mode
-Date:   Wed, 12 Apr 2023 16:21:44 -0700
-Message-Id: <20230412232144.770336-1-roman.gushchin@linux.dev>
+        with ESMTP id S229484AbjDLXaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 19:30:11 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144544490
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 16:30:10 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-54c12009c30so356921817b3.9
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 16:30:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681342209; x=1683934209;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dIliBBbuDjDtY2jBrQxfWgWxrKW0lVsS0G4Zt1WCvPc=;
+        b=irWUc0FM+eEdV+2UosDLuaprwm9JdRgmCAaNpKEa1rlbCG/OPHdmLlFF1rn9St08tt
+         s9XsPZYggeXpGrw25EnOdf4QgrOSXxkD5o046Kyg6TivP3yJZYCPOfHAM57Da+FLxuAE
+         fV8TXGom9Yuv3C1CQmahnpdi4CSspjalw5zqdEOLGHYvpM8p/eT9pAQ0wDK2Z4vrf7A7
+         nyMkqq/gods+STUoA9SVZhAFbwvty648AlPBlzWNgOePCv4OVn6QS0rmgC2pdHQNXc5D
+         eD3tGTvk9KbTWGSs1OmNZiwzUgGCP5uCq+UO9Yr9l7iMDqyKeGPy1DcdhQSsFhSLPrGq
+         j0BQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681342209; x=1683934209;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dIliBBbuDjDtY2jBrQxfWgWxrKW0lVsS0G4Zt1WCvPc=;
+        b=QqJMqWYJlOKKcjC8iFUJQxAvAjSYbo6wAceYXa6NwA6rSb+s8v4onalpuqX6R4koZw
+         zd6z4vTeBIjQEzCMEPRHhy9xJI9OkrG+prYidfqOLzQmeXcAiHohTa8BJKlOITuUtgXP
+         CnUq/0w1TayMqfNPwzmG0qx4/MXtEz613yCCPGnL/v18DM2NYzgiGR09yt38KEljmcL8
+         MJ3qUO/3EUrSStGkXrVgkOqb89JPPsDDOZQ0Kzfv1xwQ5xTpMAkeuuPyTj0ZaYOWq2nt
+         iy4gvqFcOl6Ff1oSMBgAfkHnezhdwoKuvBiZMfeFqIqFNnQt1p6WZfO+ykr2XWkYD1me
+         eSpA==
+X-Gm-Message-State: AAQBX9ez82phVbMEjJtvbKEMeXZQLLB19qUB81k30f5YaotQsBuQkn/Q
+        qm3tdFaz7Dr9VtWFw51XGflOqTrcKty+7nvYbV0=
+X-Google-Smtp-Source: AKy350bVpkZBR5HmtWoKcLSweLy3fDzH6t5m0nUBRL8Y943+Qlgil6FHNblnP7Xg+AX3qIfjkM9aFrfkmcU7YcyyuqA=
+X-Received: by 2002:a81:ad0e:0:b0:544:cd0e:2f80 with SMTP id
+ l14-20020a81ad0e000000b00544cd0e2f80mr143490ywh.8.1681342209154; Wed, 12 Apr
+ 2023 16:30:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230325172828.24923-1-witu@nvidia.com> <1ef142e0-43dc-8f18-e67b-2020af37fd17@intel.com>
+In-Reply-To: <1ef142e0-43dc-8f18-e67b-2020af37fd17@intel.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Wed, 12 Apr 2023 16:29:32 -0700
+Message-ID: <CALDO+Sac1_QnZgBo6SoyCrEY5-VG-rGXuutVY5GJrgxXRSsHkA@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next v19] vmxnet3: Add XDP support.
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     netdev@vger.kernel.org, jsankararama@vmware.com, gyang@vmware.com,
+        doshir@vmware.com, alexander.duyck@gmail.com,
+        alexandr.lobakin@intel.com, bang@vmware.com,
+        maciej.fijalkowski@intel.com, witu@nvidia.com,
+        horatiu.vultur@microchip.com, error27@gmail.com,
+        Alexander Duyck <alexanderduyck@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For quite some time we were chasing a bug which looked like a sudden
-permanent failure of networking and mmc on some of our devices.
-The bug was very sensitive to any software changes and even more to
-any kernel debug options.
+Hi Alexander,
 
-Finally we got a setup where the problem was reproducible with
-CONFIG_DMA_API_DEBUG=y and it revealed the issue with the rx dma:
+Sorry for my late reply and thanks for taking another round of review!
 
-[   16.992082] ------------[ cut here ]------------
-[   16.996779] DMA-API: macb ff0b0000.ethernet: device driver tries to free DMA memory it has not allocated [device address=0x0000000875e3e244] [size=1536 bytes]
-[   17.011049] WARNING: CPU: 0 PID: 85 at kernel/dma/debug.c:1011 check_unmap+0x6a0/0x900
-[   17.018977] Modules linked in: xxxxx
-[   17.038823] CPU: 0 PID: 85 Comm: irq/55-8000f000 Not tainted 5.4.0 #28
-[   17.045345] Hardware name: xxxxx
-[   17.049528] pstate: 60000005 (nZCv daif -PAN -UAO)
-[   17.054322] pc : check_unmap+0x6a0/0x900
-[   17.058243] lr : check_unmap+0x6a0/0x900
-[   17.062163] sp : ffffffc010003c40
-[   17.065470] x29: ffffffc010003c40 x28: 000000004000c03c
-[   17.070783] x27: ffffffc010da7048 x26: ffffff8878e38800
-[   17.076095] x25: ffffff8879d22810 x24: ffffffc010003cc8
-[   17.081407] x23: 0000000000000000 x22: ffffffc010a08750
-[   17.086719] x21: ffffff8878e3c7c0 x20: ffffffc010acb000
-[   17.092032] x19: 0000000875e3e244 x18: 0000000000000010
-[   17.097343] x17: 0000000000000000 x16: 0000000000000000
-[   17.102647] x15: ffffff8879e4a988 x14: 0720072007200720
-[   17.107959] x13: 0720072007200720 x12: 0720072007200720
-[   17.113261] x11: 0720072007200720 x10: 0720072007200720
-[   17.118565] x9 : 0720072007200720 x8 : 000000000000022d
-[   17.123869] x7 : 0000000000000015 x6 : 0000000000000098
-[   17.129173] x5 : 0000000000000000 x4 : 0000000000000000
-[   17.134475] x3 : 00000000ffffffff x2 : ffffffc010a1d370
-[   17.139778] x1 : b420c9d75d27bb00 x0 : 0000000000000000
-[   17.145082] Call trace:
-[   17.147524]  check_unmap+0x6a0/0x900
-[   17.151091]  debug_dma_unmap_page+0x88/0x90
-[   17.155266]  gem_rx+0x114/0x2f0
-[   17.158396]  macb_poll+0x58/0x100
-[   17.161705]  net_rx_action+0x118/0x400
-[   17.165445]  __do_softirq+0x138/0x36c
-[   17.169100]  irq_exit+0x98/0xc0
-[   17.172234]  __handle_domain_irq+0x64/0xc0
-[   17.176320]  gic_handle_irq+0x5c/0xc0
-[   17.179974]  el1_irq+0xb8/0x140
-[   17.183109]  xiic_process+0x5c/0xe30
-[   17.186677]  irq_thread_fn+0x28/0x90
-[   17.190244]  irq_thread+0x208/0x2a0
-[   17.193724]  kthread+0x130/0x140
-[   17.196945]  ret_from_fork+0x10/0x20
-[   17.200510] ---[ end trace 7240980785f81d6f ]---
+On Fri, Mar 31, 2023 at 8:43=E2=80=AFAM Alexander Lobakin
+<aleksander.lobakin@intel.com> wrote:
+>
+> From: William Tu <u9012063@gmail.com>
+> Date: Sat, 25 Mar 2023 10:28:28 -0700
+>
+> Sorry for the late reply, I've been busy :s
+>
+> > From: William Tu <u9012063@gmail.com>
+> >
+> > The patch adds native-mode XDP support: XDP DROP, PASS, TX, and REDIREC=
+T.
+> >
+> > Background:
+>
+> [...]
+>
+> > +static int
+> > +vmxnet3_run_xdp(struct vmxnet3_rx_queue *rq, struct xdp_buff *xdp,
+> > +             struct bpf_prog *prog)
+> > +{
+> > +     struct xdp_frame *xdpf;
+> > +     struct page *page;
+> > +     int err;
+> > +     u32 act;
+> > +
+> > +     act =3D bpf_prog_run_xdp(prog, xdp);
+> > +     rq->stats.xdp_packets++;
+>
+> I think you can increment it *before* running the program, so that
+> there'll be as tiny time gap as possible.
 
-[  237.021490] ------------[ cut here ]------------
-[  237.026129] DMA-API: exceeded 7 overlapping mappings of cacheline 0x0000000021d79e7b
-[  237.033886] WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:499 add_dma_entry+0x214/0x240
-[  237.041802] Modules linked in: xxxxx
-[  237.061637] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W         5.4.0 #28
-[  237.068941] Hardware name: xxxxx
-[  237.073116] pstate: 80000085 (Nzcv daIf -PAN -UAO)
-[  237.077900] pc : add_dma_entry+0x214/0x240
-[  237.081986] lr : add_dma_entry+0x214/0x240
-[  237.086072] sp : ffffffc010003c30
-[  237.089379] x29: ffffffc010003c30 x28: ffffff8878a0be00
-[  237.094683] x27: 0000000000000180 x26: ffffff8878e387c0
-[  237.099987] x25: 0000000000000002 x24: 0000000000000000
-[  237.105290] x23: 000000000000003b x22: ffffffc010a0fa00
-[  237.110594] x21: 0000000021d79e7b x20: ffffffc010abe600
-[  237.115897] x19: 00000000ffffffef x18: 0000000000000010
-[  237.121201] x17: 0000000000000000 x16: 0000000000000000
-[  237.126504] x15: ffffffc010a0fdc8 x14: 0720072007200720
-[  237.131807] x13: 0720072007200720 x12: 0720072007200720
-[  237.137111] x11: 0720072007200720 x10: 0720072007200720
-[  237.142415] x9 : 0720072007200720 x8 : 0000000000000259
-[  237.147718] x7 : 0000000000000001 x6 : 0000000000000000
-[  237.153022] x5 : ffffffc010003a20 x4 : 0000000000000001
-[  237.158325] x3 : 0000000000000006 x2 : 0000000000000007
-[  237.163628] x1 : 8ac721b3a7dc1c00 x0 : 0000000000000000
-[  237.168932] Call trace:
-[  237.171373]  add_dma_entry+0x214/0x240
-[  237.175115]  debug_dma_map_page+0xf8/0x120
-[  237.179203]  gem_rx_refill+0x190/0x280
-[  237.182942]  gem_rx+0x224/0x2f0
-[  237.186075]  macb_poll+0x58/0x100
-[  237.189384]  net_rx_action+0x118/0x400
-[  237.193125]  __do_softirq+0x138/0x36c
-[  237.196780]  irq_exit+0x98/0xc0
-[  237.199914]  __handle_domain_irq+0x64/0xc0
-[  237.204000]  gic_handle_irq+0x5c/0xc0
-[  237.207654]  el1_irq+0xb8/0x140
-[  237.210789]  arch_cpu_idle+0x40/0x200
-[  237.214444]  default_idle_call+0x18/0x30
-[  237.218359]  do_idle+0x200/0x280
-[  237.221578]  cpu_startup_entry+0x20/0x30
-[  237.225493]  rest_init+0xe4/0xf0
-[  237.228713]  arch_call_rest_init+0xc/0x14
-[  237.232714]  start_kernel+0x47c/0x4a8
-[  237.236367] ---[ end trace 7240980785f81d70 ]---
+Good idea, will do it.
 
-Lars was fast to find an explanation: according to the datasheet
-bit 2 of the rx buffer descriptor entry has a different meaning in the
-extended mode:
-  Address [2] of beginning of buffer, or
-  in extended buffer descriptor mode (DMA configuration register [28] = 1),
-  indicates a valid timestamp in the buffer descriptor entry.
+>
+> > +     page =3D virt_to_page(xdp->data_hard_start);
+>
+> You don't need it for PASS and REDIRECT.
+>
+> > +
+> > +     switch (act) {
+> > +     case XDP_PASS:
+> > +             return act;
+> > +     case XDP_REDIRECT:
+> > +             err =3D xdp_do_redirect(rq->adapter->netdev, xdp, prog);
+> > +             if (!err)
+> > +                     rq->stats.xdp_redirects++;
+> > +             else
+> > +                     rq->stats.xdp_drops++;
+>
+> BTW, if you get @err here, shouldn't you recycle the page, just like in
+> TX case?
 
-The macb driver didn't mask this bit while getting an address and it
-eventually caused a memory corruption and a dma failure.
+Yes, will fix it.
 
-The problem is resolved by explicitly clearing the problematic bit
-if hw timestamping is used.
+>
+> > +             return act;
+> > +     case XDP_TX:
+> > +             xdpf =3D xdp_convert_buff_to_frame(xdp);
+> > +             if (unlikely(!xdpf ||
+> > +                          vmxnet3_xdp_xmit_back(rq->adapter, xdpf))) {
+> > +                     rq->stats.xdp_drops++;
+> > +                     page_pool_recycle_direct(rq->page_pool, page);
+> > +             } else {
+> > +                     rq->stats.xdp_tx++;
+> > +             }
+> > +             return act;
+> > +     default:
+> > +             bpf_warn_invalid_xdp_action(rq->adapter->netdev, prog, ac=
+t);
+> > +             fallthrough;
+> > +     case XDP_ABORTED:
+> > +             trace_xdp_exception(rq->adapter->netdev, prog, act);
+> > +             rq->stats.xdp_aborted++;
+> > +             break;
+> > +     case XDP_DROP:
+> > +             rq->stats.xdp_drops++;
+> > +             break;
+> > +     }
+> > +
+> > +     page_pool_recycle_direct(rq->page_pool, page);
+> > +
+> > +     return act;
+> > +}
+>
+> [...]
+>
+> > +     xdp_init_buff(&xdp, PAGE_SIZE, &rq->xdp_rxq);
+> > +     xdp_prepare_buff(&xdp, page_address(page), rq->page_pool->p.offse=
+t,
+> > +                      len, false);
+> > +     xdp_buff_clear_frags_flag(&xdp);
+> > +
+> > +     /* Must copy the data because it's at dataring. */
+> > +     memcpy(xdp.data, data, len);
+> > +
+> > +     rcu_read_lock();
+>
+> Where's the corresponding unlock?
+I should remove this rcu_read_lock. A mistake in v16
+    - remove using rcu_read_lock,unlock around XDP invocation
+      https://lore.kernel.org/bpf/20210624160609.292325-1-toke@redhat.com/
+>
+> > +     xdp_prog =3D rcu_dereference(rq->adapter->xdp_bpf_prog);
+> > +     if (!xdp_prog) {
+> > +             act =3D XDP_PASS;
+> > +             goto out_skb;
+> > +     }
+> > +     act =3D vmxnet3_run_xdp(rq, &xdp, xdp_prog);
+> > +
+> > +     if (act =3D=3D XDP_PASS) {
+> > +out_skb:
+> > +             *skb_xdp_pass =3D vmxnet3_build_skb(rq, page, &xdp);
+> > +             if (!*skb_xdp_pass)
+> > +                     return XDP_DROP;
+> > +     }
+> > +
+> > +     /* No need to refill. */
+> > +     return act;
+>
+> Maybe
+>
+>         act =3D vmxnet3_run_xdp(rq, &xdp, xdp_prog);
+>         if (act !=3D XDP_PASS)
+>                 return act;
+>
+> out_skb:
+>         *skb_xdp_pass =3D vmxnet3_build_skb(rq, page, &xdp);
+>
+>         return likely(*skb_xdp_pass) ? act : XDP_DROP;
 
-Fixes: 7b4296148066 ("net: macb: Add support for PTP timestamps in DMA descriptors")
-Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
-Co-developed-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+it does look simpler, will use this.
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index f77bd1223c8f..541e4dda7950 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1063,6 +1063,10 @@ static dma_addr_t macb_get_addr(struct macb *bp, struct macb_dma_desc *desc)
- 	}
- #endif
- 	addr |= MACB_BF(RX_WADDR, MACB_BFEXT(RX_WADDR, desc->addr));
-+#ifdef CONFIG_MACB_USE_HWSTAMP
-+	if (bp->hw_dma_cap & HW_DMA_CAP_PTP)
-+		addr &= ~GEM_BIT(DMA_RXVALID);
-+#endif
- 	return addr;
- }
- 
--- 
-2.40.0
-
+thanks
+William
