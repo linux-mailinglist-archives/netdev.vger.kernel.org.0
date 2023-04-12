@@ -2,66 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4131A6DFD6E
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 20:25:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD24E6DFD71
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 20:25:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229583AbjDLSZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 14:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40214 "EHLO
+        id S229902AbjDLSZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 14:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbjDLSZE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 14:25:04 -0400
-Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691ED40D7;
-        Wed, 12 Apr 2023 11:25:02 -0700 (PDT)
-Received: by a3.inai.de (Postfix, from userid 25121)
-        id 010ED587752ED; Wed, 12 Apr 2023 20:24:59 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by a3.inai.de (Postfix) with ESMTP id F34D560C0978F;
-        Wed, 12 Apr 2023 20:24:59 +0200 (CEST)
-Date:   Wed, 12 Apr 2023 20:24:59 +0200 (CEST)
-From:   Jan Engelhardt <jengelh@inai.de>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-cc:     Jakub Kicinski <kuba@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
-        mathew.j.martineau@linux.intel.com, mptcp@lists.linux.dev
-Subject: Re: [PATCH net,v2] uapi: linux: restore IPPROTO_MAX to 256 and add
- IPPROTO_UAPI_MAX
-In-Reply-To: <4fa60957-2718-cac2-4b01-12aaf48b76b4@tessares.net>
-Message-ID: <4r3sqop-o651-6o1q-578-o4p519668073@vanv.qr>
-References: <20230406092558.459491-1-pablo@netfilter.org> <ca12e402-96f1-b1d2-70ad-30e532f9026c@tessares.net> <20230412072104.61910016@kernel.org> <405a8fa2-4a71-71c8-7715-10d3d2301dac@tessares.net> <689os02o-r5o8-so9-rq11-p62223p87ns3@vanv.qr>
- <4fa60957-2718-cac2-4b01-12aaf48b76b4@tessares.net>
-User-Agent: Alpine 2.25 (LSU 592 2021-09-18)
+        with ESMTP id S229901AbjDLSZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 14:25:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AAF572A9
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 11:25:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2A5563329
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 18:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1511BC433D2;
+        Wed, 12 Apr 2023 18:25:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681323950;
+        bh=UEarsG8+t9h8x0NcSx6SKLQ286Rdbp1kW501IH/u5Pg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Rw4r1bjxez4sjgEz2qfJ95KECPAbSZMIMUDps6w/OLDVxTk97Jbt8JZLR+Ri2SKju
+         CcGaAkOI5FiwRA5saOEyQrYL7e0WlUGxUgwcML4TtSzTtzDGqYOUm6XgG+v6vFuIum
+         PCr3asMuYdcTivtfnSnLXyYCIr2Xbp6b0uEGOQyUaZT0fuJ8vkQyZ6fv07z2S1L22+
+         BORMVhWeEGkF24zCaXvdDoYRxzNlmaxy5Bl09+U/JT0yTdTPGiONWSgvAclAZ2GryA
+         IWk5uZJWJzVlRlxhl9bB4vGWKe5rTejFh1HwY1MbX6IJZzWEk5D8QxL0XCpMZsIjk/
+         +hxcpgMfoVfoA==
+Date:   Wed, 12 Apr 2023 14:25:48 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Pavan Kumar Linga <pavan.kumar.linga@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, willemb@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        jesse.brandeburg@intel.com, edumazet@google.com,
+        anthony.l.nguyen@intel.com, kuba@kernel.org, decot@google.com,
+        davem@davemloft.net
+Subject: Re: [Intel-wired-lan] [PATCH net-next v2 00/15] Introduce Intel IDPF
+ driver
+Message-ID: <ZDb3rBo8iOlTzKRd@sashalap>
+References: <20230411011354.2619359-1-pavan.kumar.linga@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20230411011354.2619359-1-pavan.kumar.linga@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Apr 10, 2023 at 06:13:39PM -0700, Pavan Kumar Linga wrote:
+>v1 --> v2: link [1]
+> * removed the OASIS reference in the commit message to make it clear
+>   that this is an Intel vendor specific driver
 
-On Wednesday 2023-04-12 18:44, Matthieu Baerts wrote:
->
->> Makes me wonder why MPTCP got 262 instead of just 257.
->
->Just in case a uint8 is used somewhere, we fallback to TCP (6):
->
->  IPPROTO_MPTCP & 0xff = IPPROTO_TCP
->
->Instead of IPPROTO_ICMP (1).
->
->We did that to be on the safe side, not knowing all the different
->userspace implementations :)
+How will this work when the OASIS driver is ready down the road?
 
-Silent failure? That's terrible.
+We'll end up with two "idpf" drivers, where one will work with hardware
+that is not fully spec compliant using this Intel driver, and everything
+else will use the OASIS driver?
 
-	int IPPROTO_MPTCP = 257;
-	socket(AF_INET, SOCK_STREAM, (uint8_t)IPPROTO_MPTCP);
+Does Intel plan to remove this driver when the OASIS one lands?
 
-on the other hand would immediately fail with EPROTONOSUPP
-and make hidden uint8 truncation readily visible.
+At the very least, having two "idpf" drivers will be very confusing.
+
+-- 
+Thanks,
+Sasha
