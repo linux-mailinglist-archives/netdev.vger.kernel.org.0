@@ -2,75 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD24E6DFD71
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 20:25:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C87866DFD9E
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 20:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbjDLSZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 14:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
+        id S229821AbjDLSgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 14:36:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229901AbjDLSZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 14:25:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AAF572A9
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 11:25:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229603AbjDLSgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 14:36:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8A7A2
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 11:35:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681324516;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nASbvUSnsaeFCXOfTkcdVrQuPHnFeQGcQeYLYHUVI1w=;
+        b=HYILJoKI9khOd25IZAwnNCVQFM79l4PkFBQE7/vPSOELOy5++1s3hz4osuCGCDnfV9NkAi
+        3yyB7XyshOYPBKpikufguwjhEYU1DR/GbPDRWHUAIgPeRo48cugHjM8j/K6Dd2IyY/RIEB
+        +Y4UCaXbTKdCaIGwhVUz+f3SIs+dlM4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-444-IOXeVZDPPWOzW5WkMenixQ-1; Wed, 12 Apr 2023 14:35:15 -0400
+X-MC-Unique: IOXeVZDPPWOzW5WkMenixQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2A5563329
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 18:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1511BC433D2;
-        Wed, 12 Apr 2023 18:25:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681323950;
-        bh=UEarsG8+t9h8x0NcSx6SKLQ286Rdbp1kW501IH/u5Pg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Rw4r1bjxez4sjgEz2qfJ95KECPAbSZMIMUDps6w/OLDVxTk97Jbt8JZLR+Ri2SKju
-         CcGaAkOI5FiwRA5saOEyQrYL7e0WlUGxUgwcML4TtSzTtzDGqYOUm6XgG+v6vFuIum
-         PCr3asMuYdcTivtfnSnLXyYCIr2Xbp6b0uEGOQyUaZT0fuJ8vkQyZ6fv07z2S1L22+
-         BORMVhWeEGkF24zCaXvdDoYRxzNlmaxy5Bl09+U/JT0yTdTPGiONWSgvAclAZ2GryA
-         IWk5uZJWJzVlRlxhl9bB4vGWKe5rTejFh1HwY1MbX6IJZzWEk5D8QxL0XCpMZsIjk/
-         +hxcpgMfoVfoA==
-Date:   Wed, 12 Apr 2023 14:25:48 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-Cc:     intel-wired-lan@lists.osuosl.org, willemb@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        jesse.brandeburg@intel.com, edumazet@google.com,
-        anthony.l.nguyen@intel.com, kuba@kernel.org, decot@google.com,
-        davem@davemloft.net
-Subject: Re: [Intel-wired-lan] [PATCH net-next v2 00/15] Introduce Intel IDPF
- driver
-Message-ID: <ZDb3rBo8iOlTzKRd@sashalap>
-References: <20230411011354.2619359-1-pavan.kumar.linga@intel.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9D9F029AA3AC;
+        Wed, 12 Apr 2023 18:35:13 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.45.242.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B43F2166B26;
+        Wed, 12 Apr 2023 18:35:13 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 0CE2D307372E8;
+        Wed, 12 Apr 2023 20:35:12 +0200 (CEST)
+Subject: [PATCH bpf V9 0/6] XDP-hints: API change for RX-hash kfunc
+ bpf_xdp_metadata_rx_hash
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>,
+        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
+        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
+        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
+        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
+        davem@davemloft.net, tariqt@nvidia.com, saeedm@nvidia.com,
+        leon@kernel.org, linux-rdma@vger.kernel.org
+Date:   Wed, 12 Apr 2023 20:35:11 +0200
+Message-ID: <168132448251.317773.2526885806604122764.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20230411011354.2619359-1-pavan.kumar.linga@intel.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 10, 2023 at 06:13:39PM -0700, Pavan Kumar Linga wrote:
->v1 --> v2: link [1]
-> * removed the OASIS reference in the commit message to make it clear
->   that this is an Intel vendor specific driver
+Current API for bpf_xdp_metadata_rx_hash() returns the raw RSS hash value,
+but doesn't provide information on the RSS hash type (part of 6.3-rc).
 
-How will this work when the OASIS driver is ready down the road?
+This patchset proposal is to change the function call signature via adding
+a pointer value argument for providing the RSS hash type.
 
-We'll end up with two "idpf" drivers, where one will work with hardware
-that is not fully spec compliant using this Intel driver, and everything
-else will use the OASIS driver?
+Patchset also removes all bpf_printk's from xdp_hw_metadata program
+that we expect driver developers to use. Instead counters are introduced
+for relaying e.g. skip and fail info.
 
-Does Intel plan to remove this driver when the OASIS one lands?
+---
 
-At the very least, having two "idpf" drivers will be very confusing.
+Jesper Dangaard Brouer (6):
+      selftests/bpf: xdp_hw_metadata remove bpf_printk and add counters
+      xdp: rss hash types representation
+      mlx5: bpf_xdp_metadata_rx_hash add xdp rss hash type
+      veth: bpf_xdp_metadata_rx_hash add xdp rss hash type
+      mlx4: bpf_xdp_metadata_rx_hash add xdp rss hash type
+      selftests/bpf: Adjust bpf_xdp_metadata_rx_hash for new arg
 
--- 
-Thanks,
-Sasha
+
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    | 22 ++++++-
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |  3 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 63 ++++++++++++++++++-
+ drivers/net/veth.c                            | 10 ++-
+ include/linux/mlx5/device.h                   | 14 ++++-
+ include/linux/netdevice.h                     |  3 +-
+ include/net/xdp.h                             | 47 ++++++++++++++
+ net/core/xdp.c                                | 10 ++-
+ .../selftests/bpf/prog_tests/xdp_metadata.c   |  2 +
+ .../selftests/bpf/progs/xdp_hw_metadata.c     | 42 +++++++------
+ .../selftests/bpf/progs/xdp_metadata.c        |  6 +-
+ .../selftests/bpf/progs/xdp_metadata2.c       |  7 ++-
+ tools/testing/selftests/bpf/xdp_hw_metadata.c | 10 ++-
+ tools/testing/selftests/bpf/xdp_metadata.h    |  4 ++
+ 14 files changed, 205 insertions(+), 38 deletions(-)
+
+--
+
