@@ -2,69 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25E166DF78A
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC27E6DF790
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:44:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbjDLNnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 09:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
+        id S230445AbjDLNod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 09:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbjDLNnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:43:45 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC2C1705;
-        Wed, 12 Apr 2023 06:43:43 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-54f21cdfadbso168802597b3.7;
-        Wed, 12 Apr 2023 06:43:43 -0700 (PDT)
+        with ESMTP id S230378AbjDLNo3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:44:29 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231DC448E;
+        Wed, 12 Apr 2023 06:44:28 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id bl15so9799091qtb.10;
+        Wed, 12 Apr 2023 06:44:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681307022; x=1683899022;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TzxfLnJ6ym9jFbneOVl4Zhho/DPSUKhosX5v7vCwnaA=;
-        b=TdpjEqrR0NpixLlPAW0RsgYNPCQMUBGt2mX1/C3BRxpSWMHd2SLCmUN/mGSEy3DCZa
-         y/qDaIKj4+isxzF3AmPBwHMx9hyI8866gyUkyRyYFoPBlMXeVga7kJBLzvKyx2dc8olh
-         3iWLECLQnJkdi88kVEKljYXMdWs60do9PtZNdgxgWIABslsbn0C06VtIYqzENxtwchFv
-         6yH44t+4l5QvzbahpjdKHL7ht/zYIYgrEFv60xd5uodAYBh/DOjjIlhgicNydf4YsOKe
-         RjhwpHcrpj7bRBfGdpy0C4irvHP2U6ROBPT7sF9DTnaw6s9IcJjeDLr7uWxF8oBsibSA
-         mk1g==
+        d=gmail.com; s=20221208; t=1681307067; x=1683899067;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QqLOoYuvJJRPIcZm3TZ6Y4nV3VYZ7jXaulXKmOxSn9k=;
+        b=ANvgwCCz62nQ/08Mw3shAPAJdUPaG0u16mdpguShxt8MQLTLv8vZPpc0pTRdKTvOqd
+         6Ivd/1YD3Ylk7MDdpY5VMWNw46WRjZKKG1JJE0b9muI+tesC35hql0zpChQ8w4zj4SLd
+         X4F/d3rK29ZhxgYhqD5e6v+kiVN1YJ/T38txEj/srN4y3paI/I0Ag73zhsz8VC6Ba+cP
+         1auvevIgpuDyKTlOVeNq+kk9YUg8nfHlMj4EC2f+Njlj7iNkQmKq3gWe4jfcNzcufzwk
+         8pbmF311OrGNvc2SGeLyq0ERyIIy02BOhDagJ1eNebC21AryAEmiLLuaLWbLYFvsv6NA
+         pJRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681307022; x=1683899022;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TzxfLnJ6ym9jFbneOVl4Zhho/DPSUKhosX5v7vCwnaA=;
-        b=S6j0E9YCTzMVxH+oRdw4dJsc817hWNm4npgpqWV735B4D2qKaPaqCICtLbolas20aS
-         Mm6JCQwoa+KzRy5sQbopw33INSy94uLx0z6KsJ0JVWa4pWXuNBKndB2IkcHBUjC4Z9H7
-         vE/YP3xXWu5mQd+gkaUOaf0sqGgamK1R+de6+bmlUxg1tqbvWA4o3xNEUoy/5gRkcYjo
-         LsgM1AgkBoSd3e1TXu3D6fmkwI5sn/5VcaI7nxLd3I2aS/gorT8mROAjMwhJ4KctwxGA
-         5a0mrR/eOs/jsFBwD1bEbGc1vXhYkB2y9FbgJRYpOFP0HNCnlMXAH1/khfM8UMp94D6Y
-         JaYA==
-X-Gm-Message-State: AAQBX9fjJz4P6n/McCduj8lABsAATI6KUCiKlhrLwZdjkza9+OMeGg2H
-        e8eHDUKyI2+xE5cyzXCV58SjuNqZMifhAVEUkTU=
-X-Google-Smtp-Source: AKy350azWW7f0ZmfXpl9pAAyl+Im1D2Z4dViMNgFyz3rq82QFwX5mtlvNv0rh92pQZJc9jf+49iY2n7IDBPViyCBfo8=
-X-Received: by 2002:a81:a948:0:b0:543:bbdb:8c2b with SMTP id
- g69-20020a81a948000000b00543bbdb8c2bmr10753315ywh.10.1681307022595; Wed, 12
- Apr 2023 06:43:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230410120629.642955-1-kal.conley@dectris.com>
-In-Reply-To: <20230410120629.642955-1-kal.conley@dectris.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 12 Apr 2023 15:43:31 +0200
-Message-ID: <CAJ8uoz1CmRNMdTu3on7VL2Jrvo9z3WvdmFE_hSEiZDLiO-xtFw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 0/4] xsk: Support UMEM chunk_size > PAGE_SIZE
-To:     Kal Conley <kal.conley@dectris.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        d=1e100.net; s=20210112; t=1681307067; x=1683899067;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=QqLOoYuvJJRPIcZm3TZ6Y4nV3VYZ7jXaulXKmOxSn9k=;
+        b=EZR19cM3bq6/WXYXa4P9JkarV8hPkz5/euMkDnTKh+r4Rw8SGI1QVhYgmp5L+1Qwev
+         2YVAGWVr1S29z7k24RCNCP/sNWjPin+NnydJV4aaz5Ez8J6kKIfxYQAmNpMng/nQKYzN
+         DEObPceCHgv82dnWbWacca4XUV+TbK6zXCJYkGLEjimab+1wTnMP24CIfe2P8MMWfi+2
+         fe/FlVI+I/sxsoV0FJfQtZvrrLkuOG+rOZwGkRJOaOW4VUsmfDpxnGeFA2wQ0GcM0v1l
+         aYX+9TZ7BNeTHDgvLQBnSYhsIlqVJcmMfMHYxsdy/AGEsKfBl5iRQSLqJkdjpHBD6nrT
+         P3aQ==
+X-Gm-Message-State: AAQBX9ejdEYUarmj0FzKdlMO1J/BOoD2XOF9UwZNUUn7POLAKbL7lGC1
+        EbhRO0qeYeGz+OEh1nOBSqc=
+X-Google-Smtp-Source: AKy350YbHdOz/3OZgKhx+v5bbxoyF4knB2oy71velQXUl0AZyVh44iGNNDBDSfOtNK3f+eCz2ioEqQ==
+X-Received: by 2002:a05:622a:1a9d:b0:3e4:bfb2:1f64 with SMTP id s29-20020a05622a1a9d00b003e4bfb21f64mr21467660qtc.20.1681307067222;
+        Wed, 12 Apr 2023 06:44:27 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id h2-20020ac87442000000b003e3914c6839sm4276917qtr.43.2023.04.12.06.44.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Apr 2023 06:44:26 -0700 (PDT)
+Date:   Wed, 12 Apr 2023 09:44:26 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     "luwei (O)" <luwei32@huawei.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        asml.silence@gmail.com, imagedong@tencent.com, brouer@redhat.com,
+        keescook@chromium.org, jbenc@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Message-ID: <6436b5ba5c005_41e2294dd@willemb.c.googlers.com.notmuch>
+In-Reply-To: <c90abe8c-ffa0-f986-11eb-bde65c84d18b@huawei.com>
+References: <20230410022152.4049060-1-luwei32@huawei.com>
+ <CANn89iKFLREJV_cfHEk6wz6xXVv_jSrZ_UyXAB8VpH7gMXacxQ@mail.gmail.com>
+ <643447ba5224a_83e69294b6@willemb.c.googlers.com.notmuch>
+ <450994d7-4a77-99df-6317-b535ea73e01d@huawei.com>
+ <CANn89iLOcvDRMi9kVr86xNp5=h4JWpx9yYWicVxCwSMgAJGf_g@mail.gmail.com>
+ <c90abe8c-ffa0-f986-11eb-bde65c84d18b@huawei.com>
+Subject: Re: [PATCH net] net: Add check for csum_start in
+ skb_partial_csum_set()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,78 +82,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 Apr 2023 at 14:08, Kal Conley <kal.conley@dectris.com> wrote:
->
-> The main purpose of this patchset is to add AF_XDP support for UMEM
-> chunk sizes > PAGE_SIZE. This is enabled for UMEMs backed by HugeTLB
-> pages.
->
-> Note, v5 fixes a major bug in previous versions of this patchset.
-> In particular, dma_map_page_attrs used to be called once for each
-> order-0 page in a hugepage with the assumption that returned I/O
-> addresses are contiguous within a hugepage. This assumption is incorrect
-> when an IOMMU is enabled. To fix this, v5 does DMA page accounting
-> accounting at hugepage granularity.
+luwei (O) wrote:
+> =
 
-Thank you so much Kal for implementing this feature. After you have
-fixed the three small things I had for patch #2, you have my ack for
-the whole set below. Please add it.
+> =E5=9C=A8 2023/4/11 4:13 PM, Eric Dumazet =E5=86=99=E9=81=93:
+> > On Tue, Apr 11, 2023 at 4:33=E2=80=AFAM luwei (O) <luwei32@huawei.com=
+> wrote:
+> >>
+> >> =E5=9C=A8 2023/4/11 1:30 AM, Willem de Bruijn =E5=86=99=E9=81=93:
+> >>
+> >> Eric Dumazet wrote:
+> >>
+> >> On Mon, Apr 10, 2023 at 4:22=E2=80=AFAM Lu Wei <luwei32@huawei.com> =
+wrote:
+> >>
+> >> If an AF_PACKET socket is used to send packets through a L3 mode ipv=
+lan
+> >> and a vnet header is set via setsockopt() with the option name of
+> >> PACKET_VNET_HDR, the value of offset will be nagetive in function
+> >> skb_checksum_help() and trigger the following warning:
+> >>
+> >> WARNING: CPU: 3 PID: 2023 at net/core/dev.c:3262
+> >> skb_checksum_help+0x2dc/0x390
+> >> ......
+> >> Call Trace:
+> >>   <TASK>
+> >>   ip_do_fragment+0x63d/0xd00
+> >>   ip_fragment.constprop.0+0xd2/0x150
+> >>   __ip_finish_output+0x154/0x1e0
+> >>   ip_finish_output+0x36/0x1b0
+> >>   ip_output+0x134/0x240
+> >>   ip_local_out+0xba/0xe0
+> >>   ipvlan_process_v4_outbound+0x26d/0x2b0
+> >>   ipvlan_xmit_mode_l3+0x44b/0x480
+> >>   ipvlan_queue_xmit+0xd6/0x1d0
+> >>   ipvlan_start_xmit+0x32/0xa0
+> >>   dev_hard_start_xmit+0xdf/0x3f0
+> >>   packet_snd+0xa7d/0x1130
+> >>   packet_sendmsg+0x7b/0xa0
+> >>   sock_sendmsg+0x14f/0x160
+> >>   __sys_sendto+0x209/0x2e0
+> >>   __x64_sys_sendto+0x7d/0x90
+> >>
+> >> The root cause is:
+> >> 1. skb->csum_start is set in packet_snd() according vnet_hdr:
+> >>     skb->csum_start =3D skb_headroom(skb) + (u32)start;
+> >>
+> >>     'start' is the offset from skb->data, and mac header has been
+> >>     set at this moment.
+> >>
+> >> 2. when this skb arrives ipvlan_process_outbound(), the mac header
+> >>     is unset and skb_pull is called to expand the skb headroom.
+> >>
+> >> 3. In function skb_checksum_help(), the variable offset is calculate=
+d
+> >>     as:
+> >>        offset =3D skb->csum_start - skb_headroom(skb);
+> >>
+> >>     since skb headroom is expanded in step2, offset is nagetive, and=
+ it
+> >>     is converted to an unsigned integer when compared with skb_headl=
+en
+> >>     and trigger the warning.
+> >>
+> >> Not sure why it is negative ? This seems like the real problem...
+> >>
+> >> csum_start is relative to skb->head, regardless of pull operations.
+> >>
+> >> whatever set csum_start to a too small value should be tracked and f=
+ixed.
+> >>
+> >> Right. The only way I could see it go negative is if something does
+> >> the equivalent of pskb_expand_head with positive nhead, and without
+> >> calling skb_headers_offset_update.
+> >>
+> >> Perhaps the cause can be found by instrumenting all the above
+> >> functions in the trace to report skb_headroom and csum_start.
+> >> And also virtio_net_hdr_to_skb.
+> >> .
+> >>
+> >> Hi, Eric  and Willem,  sorry for not describing this issue clearly e=
+nough. Here is the detailed data path:
+> >>
+> >> 1.  Users call sendmsg() to send message with a AF_PACKET domain and=
+ SOCK_RAW type socket. Since vnet_hdr
+> >>
+> >> is set,  csum_start is calculated as:
+> >>
+> >>                        skb->csum_start =3D skb_headroom(skb) + (u32)=
+start;     // see the following code.
+> >>
+> >> the varible "start" it passed from user data, in my case it is 5 and=
+ skb_headroom is 2, so skb->csum_start is 7.
+> >>
+> > I think you are rephrasing, but you did not address my feedback.
+> >
+> > Namely, "csum_start < skb->network_header" does not look sensical to =
+me.
+> >
+> > csum_start should be related to the transport header, not network hea=
+der.
+> =
 
-For the whole set:
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+>  =C2=A0=C2=A0=C2=A0 csum_start is calculated in pakcet_snd() as:
+> =
 
-It would be great if you have the time and desire to also take this to
-zero-copy mode. I have had multiple AF_XDP users mailing me privately
-that such a feature would be very useful for them. For some of them it
-was even a requirement to be able to get down to the latencies they
-were aiming for.
+>  =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 =C2=A0 =C2=A0 skb->csum_start=
+ =3D skb_headroom(skb) + (u32)start;
+> =
 
-> Changes since v4:
->   * Use hugepages in DMA map (fixes zero-copy mode with IOMMU).
->   * Use pool->dma_pages to check for DMA. This change is needed to avoid
->     performance regressions).
->   * Update commit message and benchmark table.
->
-> Changes since v3:
->   * Fix checkpatch.pl whitespace error.
->
-> Changes since v2:
->   * Related fixes/improvements included with v2 have been removed. These
->     changes have all been resubmitted as standalone patchsets.
->   * Minimize uses of #ifdef CONFIG_HUGETLB_PAGE.
->   * Improve AF_XDP documentation.
->   * Update benchmark table in commit message.
->
-> Changes since v1:
->   * Add many fixes/improvements to the XSK selftests.
->   * Add check for unaligned descriptors that overrun UMEM.
->   * Fix compile errors when CONFIG_HUGETLB_PAGE is not set.
->   * Fix incorrect use of _Static_assert.
->   * Update AF_XDP documentation.
->   * Rename unaligned 9K frame size test.
->   * Make xp_check_dma_contiguity less conservative.
->   * Add more information to benchmark table.
->
-> Thanks to Magnus Karlsson for all his support!
->
-> Happy Easter!
->
-> Kal Conley (4):
->   xsk: Use pool->dma_pages to check for DMA
->   xsk: Support UMEM chunk_size > PAGE_SIZE
->   selftests: xsk: Use hugepages when umem->frame_size > PAGE_SIZE
->   selftests: xsk: Add tests for 8K and 9K frame sizes
->
->  Documentation/networking/af_xdp.rst      | 36 ++++++++++------
->  include/net/xdp_sock.h                   |  2 +
->  include/net/xdp_sock_drv.h               | 12 ++++++
->  include/net/xsk_buff_pool.h              | 12 +++---
->  net/xdp/xdp_umem.c                       | 55 +++++++++++++++++++-----
->  net/xdp/xsk_buff_pool.c                  | 43 ++++++++++--------
->  tools/testing/selftests/bpf/xskxceiver.c | 27 +++++++++++-
->  tools/testing/selftests/bpf/xskxceiver.h |  2 +
->  8 files changed, 142 insertions(+), 47 deletions(-)
->
-> --
-> 2.39.2
->
+>     the varible "start" it passed from user data via vnet_hdr as follow=
+s:
+> =
+
+>      packet_snd()
+>      ...	=
+
+> 	if (po->has_vnet_hdr) {
+> 		err =3D packet_snd_vnet_parse(msg, &len, &vnet_hdr);   // get vnet_hd=
+r which includes start
+> 		if (err)
+> 		    goto out_unlock;
+> 		has_vnet_hdr =3D true;
+> 	}
+>      ...
+> =
+
+>    csum_start should be at the transport header but users may pass an i=
+ncorrect value.
+
+Thanks for the clarification.
+
+So this is another bogus packet socket packet, with csum_start set
+somewhere in the L2 header, and that gets popped by ipvlan, correct?
+
+Do you have the exact packet and the virtio_net_hdr that caused this,
+perhaps?
+
+skb_partial_csum_set in virtio_net_hdr_to_skb has some basic bounds
+tests for csum_start, csum_off and csum_end. But that does not
+preclude an offset in the L2 header, from what I can tell.
+
+Conceivably this can be added, though it is a bit complex for
+devices with variable length link layer headers. And it would have
+to happen not only for packet sockets, but all users of
+virtio_net_hdr.
