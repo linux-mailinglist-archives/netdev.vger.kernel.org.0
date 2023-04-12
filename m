@@ -2,67 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E338F6DED38
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:06:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C2D96DED54
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:15:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229947AbjDLIGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 04:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
+        id S230015AbjDLIP3 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 12 Apr 2023 04:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbjDLIGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:06:37 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024E95BB5;
-        Wed, 12 Apr 2023 01:06:34 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id F28BBFF812;
-        Wed, 12 Apr 2023 08:06:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1681286793;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6sMvKzPXUQPaUNOAoXoB+ksyWApeu4V++9ieBbSNplg=;
-        b=AIVwknBRq8FtcBddorKYDhaPsak6w1IVgxAE9xHvkAPQVErV8RYUDd6KxSE5Er7tT0vBOu
-        Dr/zOZLwchd2skzKssKhhMzHtlpL5oBblK2V12mCHU6oe9I1HtLDHGB4/vBMJcOfGauOna
-        /7B10RZPn3M+Nv+lOMkBQenM38zYKP5VBOJbbXyfvi5jYNYCDg8fX026aIiocQYbGAn6AX
-        W+pGpnyr7cl1G6D2ikFwuDuOKEEbDerKgYAsUJma5XImsB7RJSV06/wDsp9Te9xu7VxRnf
-        PwnvgufuGi3mvEukHNtihQcLj7fNZdeUqMZFl3gCWlhgmzNt+LDl5THknAdB0A==
-Date:   Wed, 12 Apr 2023 10:06:27 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     davem@davemloft.net,
-        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "linux-stm32 @ st-md-mailman . stormreply . com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "alexis . lothore @ bootlin . com" <alexis.lothore@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net] net: phylink: check for SFP bus presence in
- phylink_expects_phy
-Message-ID: <20230412100627.1daab691@pc-288.home>
-In-Reply-To: <ZDZi+fs13A8JJFOs@shell.armlinux.org.uk>
-References: <20230412074850.41260-1-maxime.chevallier@bootlin.com>
-        <ZDZi+fs13A8JJFOs@shell.armlinux.org.uk>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-redhat-linux-gnu)
+        with ESMTP id S230014AbjDLIPX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:15:23 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CCF65BC
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:15:20 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-92-gNKhnxOCMImhoK_m4SdLMg-1; Wed, 12 Apr 2023 09:15:17 +0100
+X-MC-Unique: gNKhnxOCMImhoK_m4SdLMg-1
+Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
+ (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 12 Apr
+ 2023 09:15:15 +0100
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.048; Wed, 12 Apr 2023 09:15:15 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jakub Kicinski' <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "Jesse Brandeburg" <jesse.brandeburg@intel.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
+Subject: RE: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
+ indexes
+Thread-Topic: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
+ indexes
+Thread-Index: AQHZbOE4lpy9n4P2zECDFY6wjA/SEa8nUYsg
+Date:   Wed, 12 Apr 2023 08:15:15 +0000
+Message-ID: <f6c134852244441a88eef8c1774bb67f@AcuMS.aculab.com>
+References: <20230412015038.674023-1-kuba@kernel.org>
+ <20230412015038.674023-3-kuba@kernel.org>
+In-Reply-To: <20230412015038.674023-3-kuba@kernel.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,43 +62,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Russell,
-
-On Wed, 12 Apr 2023 08:51:21 +0100
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
-
-> On Wed, Apr 12, 2023 at 09:48:50AM +0200, Maxime Chevallier wrote:
-> > When an SFP bus is present, we don't expect a PHY to be attached
-> > directly from the MAC driver, it will be handled by phylink at SFP
-> > attach time.  
+From: Jakub Kicinski
+> Sent: 12 April 2023 02:51
 > 
-> If we have a SFP, then phylink should be configured for in-band mode.
-> Maybe fix the firmware description instead?
+> Eric points out that we should make sure that ring index updates
+> are wrapped in the appropriate READ_ONCE/WRITE_ONCE macros.
 > 
+...
+> -static inline u32 bnxt_tx_avail(struct bnxt *bp, struct bnxt_tx_ring_info *txr)
+> +static inline u32 bnxt_tx_avail(struct bnxt *bp,
+> +				const struct bnxt_tx_ring_info *txr)
+>  {
+> -	/* Tell compiler to fetch tx indices from memory. */
+> -	barrier();
+> +	u32 used = READ_ONCE(txr->tx_prod) - READ_ONCE(txr->tx_cons);
+> 
+> -	return bp->tx_ring_size -
+> -		((txr->tx_prod - txr->tx_cons) & bp->tx_ring_mask);
+> +	return bp->tx_ring_size - (used & bp->tx_ring_mask);
+>  }
 
-The DT used on that platform has the following configuration :
+Doesn't that function only make sense if only one of
+the ring index can be changing?
+In this case I think this is being used in the transmit path
+so that 'tx_prod' is constant and is either already read
+or need not be read again.
 
-[...]
-&gmac1 {
-  status = "okay";
-  phy-mode = "sgmii";
-  managed = "in-band-status";
-  sfp = <&sfp>;
-[...]
-}
+Having written a lot of 'ring access' functions over the years
+if the ring size is a power of 2 I'd mask the 'tx_prod' value
+when it is being used rather than on the increment.
+(So the value just wraps modulo 2**32.)
+This tends to make the code safer - especially since the
+'ring full' and 'ring empty' conditions are different.
 
-Here phylink_expects_phy() returns true because although we use
-in-band management, the link mode is set to sgmii, and
-phylink_expects_phy() checks if we are in in-band mode AND 802.3z.
+Also that code is masking with bp->tx_ring_mask, but the
+increments (in hunks I've chopped) use NEXT_TX(prod).
+If that is masking with bp->tx_ring_mask then 'bp' should
+be a parameter.
 
-As we have an SFP and the link mode will be changed according to the
-module we plug-in, there should be no problem switching phy-mode to
-"1000BaseX", so I'm perfectly fine with this solution.
+	David
 
-However, is it semantically correct to use sgmii here ? If so, it may be
-a bit counter-intuitive to have to set the mode to 1000BaseX just so
-that the phylink_expects_phy() check passes ?
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-Thanks for the quick reply,
-
-Maxime
