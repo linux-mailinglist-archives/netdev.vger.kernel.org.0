@@ -2,88 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 230EC6DF74F
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:35:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D93B6DF754
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:36:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230211AbjDLNfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 09:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
+        id S229694AbjDLNgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 09:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbjDLNfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:35:34 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3550B83E8;
-        Wed, 12 Apr 2023 06:35:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=95c8hqCUy1osdLkjPROBeoXrOcZ+996LAq0uwKDBgcY=; b=J0beavLQOXA6yYaoa144vCrYYN
-        WuiZH7ZcdY74NmFrQCNwZ1UkCa9KV+DTmh7wXXUeCcsiCU7Jh+AlooZeWYdEm3SymxlYLs2vIsq1z
-        Jj0Q4OFfsa0yv7dc9cUQgeDDCRrX9V5pRM5jFxqsMPZrHSrpWwHhm3ioLk2g6tMz+xbo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pmacL-00A5zh-4Z; Wed, 12 Apr 2023 15:34:33 +0200
-Date:   Wed, 12 Apr 2023 15:34:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229660AbjDLNgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:36:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C878A53
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:35:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681306480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=avnUO+n0BtEa4d40ZQG2oXgOaFPN9DVhnjMogjSitH8=;
+        b=Ra7YmniaS0mHj2qPYLc/8QekN3k8yHoza5uax387Tq+dcO/2PU34A93yeRqgGNou6GHO/+
+        gZoFl0SSLQG8t2YJ0pitnQU6fbYht4gK9O227/J2H+CUNTHhCqBr0ueUL3QY8/yC4IW+oN
+        HQGGeAlCHkYprrbVw2STTyHYokq3V6M=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-472-ycYNkNUNP7yc2rCVgtViqg-1; Wed, 12 Apr 2023 09:34:39 -0400
+X-MC-Unique: ycYNkNUNP7yc2rCVgtViqg-1
+Received: by mail-ej1-f71.google.com with SMTP id vx12-20020a170907a78c00b0094a9009d99bso3687124ejc.21
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:34:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681306478;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=avnUO+n0BtEa4d40ZQG2oXgOaFPN9DVhnjMogjSitH8=;
+        b=6isa1rBR/oOdQ6NK+A+rB1KHVdP95GcwNAu78RhqR2URBEapQw6DrSB6iyJr9m/mdx
+         uqsoEfgKlVoWjhleER6ds5S4dSmPzkSNkG4TAvsvSHK4mDpLNhXmjRi9rNb8joPsfzZ2
+         v+yYKEeHBX7kkwNbRkenmqIYnQQt8mn7tz8g6axMKhRWQeUE2E4gyG9btLtoQHG3Lfks
+         hSNBeTNO4e9Z8W5RTyZjN+fgP8gS2pmIu43tNCimHuIWYMTAKiJ1wphzeYJk7yM59WxU
+         o/DnBRHSlNRFAs2q5Z92YLY40W25gf9rpwGmBuRogzbveaWj0uC8PgrKxGV7rd7CwE9L
+         YCgw==
+X-Gm-Message-State: AAQBX9f2BQXvMeYWuMXTHkae/HMdYl77IEPvEN3xHdbmyaSHyoZPELcR
+        9zyAD//8/97y9IFZDqpgMtRaeItieisgIRA7lkYivE+mj6J2sdXoKvnVB/1j76Hzz45sT3LcsIW
+        Gl/BHIt+5/CbjQ15z
+X-Received: by 2002:a17:906:99c8:b0:8e6:bcb6:469e with SMTP id s8-20020a17090699c800b008e6bcb6469emr2343003ejn.0.1681306476781;
+        Wed, 12 Apr 2023 06:34:36 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YgapZMeMC4Rm/QdXzs4rXyxXgFabYvm7ZL0sTQJ3wSeNGkMdybuNwlZL/acPVv3QhRoQAsuw==
+X-Received: by 2002:a17:906:99c8:b0:8e6:bcb6:469e with SMTP id s8-20020a17090699c800b008e6bcb6469emr2342948ejn.0.1681306475958;
+        Wed, 12 Apr 2023 06:34:35 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id 22-20020a170906319600b00930525d89e2sm7264423ejy.89.2023.04.12.06.34.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Apr 2023 06:34:35 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 00D35AA78D2; Wed, 12 Apr 2023 15:34:34 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Kal Cutter Conley <kal.conley@dectris.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] phy: smsc: Implement .aneg_done callback for LAN8720Ai
-Message-ID: <7330ff6d-665f-4c79-975d-6e023c781237@lunn.ch>
-References: <20230406131127.383006-1-lukma@denx.de>
- <ZC7Nu5Qzs8DyOfQY@corigine.com>
- <aa6415be-e99b-46df-bb3b-d2c732a33f31@lunn.ch>
- <20230412132540.5a45564d@wsk>
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 1/3] xsk: Support UMEM chunk_size > PAGE_SIZE
+In-Reply-To: <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
+References: <20230406130205.49996-1-kal.conley@dectris.com>
+ <20230406130205.49996-2-kal.conley@dectris.com> <87sfdckgaa.fsf@toke.dk>
+ <ZDBEng1KEEG5lOA6@boxer>
+ <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 12 Apr 2023 15:34:34 +0200
+Message-ID: <875ya12phx.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230412132540.5a45564d@wsk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > This actually seems like a fix. So it should probably be based on net,
-> > and have a Fixes: tag.
-> 
-> I've rebased it on the newest vanila kernel.
+Kal Cutter Conley <kal.conley@dectris.com> writes:
 
-Please see the netdev FAQ. It talks about the two git trees used for
-networking.
+>> > > Add core AF_XDP support for chunk sizes larger than PAGE_SIZE. This
+>> > > enables sending/receiving jumbo ethernet frames up to the theoretical
+>> > > maxiumum of 64 KiB. For chunk sizes > PAGE_SIZE, the UMEM is required
+>> > > to consist of HugeTLB VMAs (and be hugepage aligned). Initially, only
+>> > > SKB mode is usable pending future driver work.
+>> >
+>> > Hmm, interesting. So how does this interact with XDP multibuf?
+>>
+>> To me it currently does not interact with mbuf in any way as it is enabled
+>> only for skb mode which linearizes the skb from what i see.
+>>
+>> I'd like to hear more about Kal's use case - Kal do you use AF_XDP in SKB
+>> mode on your side?
+>
+> Our use-case is to receive jumbo Ethernet frames up to 9000 bytes with
+> AF_XDP in zero-copy mode. This patchset is a step in this direction.
+> At the very least, it lets you test out the feature in SKB mode
+> pending future driver support. Currently, XDP multi-buffer does not
+> support AF_XDP at all. It could support it in theory, but I think it
+> would need some UAPI design work and a bit of implementation work.
+>
+> Also, I think that the approach taken in this patchset has some
+> advantages over XDP multi-buffer:
+>     (1) It should be possible to achieve higher performance
+>         (a) because the packet data is kept together
+>         (b) because you need to acquire and validate less descriptors
+> and touch the queue pointers less often.
+>     (2) It is a nicer user-space API.
+>         (a) Since the packet data is all available in one linear
+> buffer. This may even be a requirement to avoid an extra copy if the
+> data must be handed off contiguously to other code.
+>
+> The disadvantage of this patchset is requiring the user to allocate
+> HugeTLB pages which is an extra complication.
+>
+> I am not sure if this patchset would need to interact with XDP
+> multi-buffer at all directly. Does anyone have anything to add here?
 
-> It turned out that this IC has a dedicated bit (in vendor specific
-> register) to show explicitly if auto neg is done.
-> 
-> > 
-> > Lukasz, how does this bit differ to the one in BMSR? 
-> 
-> In the BMSR - bit 5 (Auto Negotiate Complete) - shows the same kind of
-> information.
-> 
-> The only difference is that this bit is described as "Auto
-> Negotiate Complete" and the bit in this patch indicates "Auto
-> Negotiation Done".
-> 
-> > Is the BMSR bit
-> > broken? 
-> 
-> This bit works as expected.
+Well, I'm mostly concerned with having two different operation and
+configuration modes for the same thing. We'll probably need to support
+multibuf for AF_XDP anyway for the non-ZC path, which means we'll need
+to create a UAPI for that in any case. And having two APIs is just going
+to be more complexity to handle at both the documentation and
+maintenance level.
 
-I would avoid the vendor bit, if it has no benefit. A lot of
-developers understand the BMSR bit, where as very few know this vendor
-bit. BMSR can probably be handled with generic code, where as the
-vendor bit requires vendor specific code etc.
+It *might* be worth it to do this if the performance benefit is really
+compelling, but, well, you'd need to implement both and compare directly
+to know that for sure :)
 
-    Andrew
+-Toke
+
