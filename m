@@ -2,137 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 433596DEBCF
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 08:31:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CD4F6DEBD5
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 08:33:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbjDLGby (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 02:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47544 "EHLO
+        id S229620AbjDLGdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 02:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbjDLGbx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 02:31:53 -0400
-Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376DA4C24;
-        Tue, 11 Apr 2023 23:31:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1681281038; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=My2rJCFnTpnH+GL2v3ym4Pph4sOl8sHD+zJObog45cYOdAxD5Sau/XzTzcrpabz6dQtUIharubH4HHZ2Atptzkv2/cdV4aSNHQjNDznON6oz8X7ems+BcT07CCqbLgvn71/oqqpxIclfQ6iNffA2c10DRXx0MFagSfdue0Swyfc=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1681281038; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=o2miyoGfbCcRLimBj3L70ONV9oorgx56a71K9dJ05CE=; 
-        b=KITY1A4RVRs0t0PEQZD0UQWplgGdZPwsssWdrAnvK6b+miJYKiAph5ie0giCCpX5H4/JdeTCnZt24mVlVLhW/8kKHJDkPsg19lN5NuJLXTPVh0eY42ZbkSftqYVKaiRdGrSPrB9BUV/BidZGTJIO+7NB8fpIi9Xi1mBZm5Z9vvI=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1681281038;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=o2miyoGfbCcRLimBj3L70ONV9oorgx56a71K9dJ05CE=;
-        b=EdPisSJMMOUIbAUtQCFrnkidicWtGQqL8APAdPZQ5y2iEfkSSi6cyjdggiNjBI2E
-        LoL6qwYcMfqP5rP99X00KQ0e5M6wyL+XhaB5MVWJxIiJc2KfFHNCsiQQrApLVYyKBrN
-        OrIjXPWOlgcU/TiiGqFXwMhGT+AWr1TFaggrmL3Q=
-Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 1681281035406493.8289945315429; Tue, 11 Apr 2023 23:30:35 -0700 (PDT)
-Message-ID: <8cdf8c13-0c6a-9e9a-871a-cb738a181b3f@arinc9.com>
-Date:   Wed, 12 Apr 2023 09:30:28 +0300
+        with ESMTP id S229458AbjDLGdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 02:33:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13BD64ECD
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 23:32:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681281140;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iYkU2h5uuqeCAix2xVoQ4YssyuBrvdvQQLmL8KGrxsM=;
+        b=UUCwMGadrki5JWKlGDd5YjsjNgtVCTlnEpCZt6j+HLOJjofGhPeyd2f4mk6t3iGow0CjMe
+        ctdATfOLqFNk3wIFeRSF2Amgv5hpoMJsQx+LQ8Renv/oCF00vf8nWjF5RAtZpg/1fhBbrQ
+        qKxHSLFai7Q4MAeJVMnbPDj+25CDEJY=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-408--RiG1QrtNoWvQjrm1-Rsxw-1; Wed, 12 Apr 2023 02:32:18 -0400
+X-MC-Unique: -RiG1QrtNoWvQjrm1-Rsxw-1
+Received: by mail-wr1-f70.google.com with SMTP id j15-20020adfb30f000000b002d34203df59so1475840wrd.9
+        for <netdev@vger.kernel.org>; Tue, 11 Apr 2023 23:32:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681281137; x=1683873137;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=iYkU2h5uuqeCAix2xVoQ4YssyuBrvdvQQLmL8KGrxsM=;
+        b=kQpHg2HfN+U8iKP0uQpN4QqKb7SZ0ZpcK6vO2AnrUIENuu9uBi8FfnIGdzYMlds6b6
+         tGrlXCC7hhN0Ue6N/nHRc2Zf68mgHND8bJGjSaMMMFFAbv6/WJ6swW6DCMlb6JQIgvvo
+         Ma2uKTivIBVHEMKOsQ/w5icVrFb7mAwDB2qYoXS6i/J6vj8HwCSDbrR53rIShcsSs4jx
+         XJpR9q4k8Gi8WdvFwhWYeeAuAW61vmOaCNChvvtANGurMtHhYdsRqc13QCIr2h3Y2hva
+         qR5J6sVIJCPGaQexM4MVSHAV942Ljk35P7Ue3RNfxVFk1oZJ7fA2AC9oaVNUksNhCfaj
+         KNDg==
+X-Gm-Message-State: AAQBX9dQ9xvZGoqamY5lP9/dfiPYViqs/zPdMInDY6lVLeT+TkyxvVse
+        y9JrKiCs9POBNF16JFAE6AsaqizmzuvVStqWiMdy1NXzOTZf0b13z0KWzbBdzqNzBffYDNsExWy
+        OJiHMoedb/NPoT6Au6zwPcxq8jBIa80FO
+X-Received: by 2002:a5d:4f0e:0:b0:2ef:b5e1:f6f9 with SMTP id c14-20020a5d4f0e000000b002efb5e1f6f9mr1138576wru.8.1681281137428;
+        Tue, 11 Apr 2023 23:32:17 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bq+8zhP15Uz7cAyV/Z2wcK+XlbYPBXQnmfbUh0oOiNvYPBIB4YmU5DtGfzZWjmjnceIOMDqjcTSn3ph7ZNmlE=
+X-Received: by 2002:a5d:4f0e:0:b0:2ef:b5e1:f6f9 with SMTP id
+ c14-20020a5d4f0e000000b002efb5e1f6f9mr1138568wru.8.1681281137152; Tue, 11 Apr
+ 2023 23:32:17 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [RFC PATCH v2 net-next 02/14] net: dsa: mt7530: fix phylink for
- port 5 and fix port 5 modes
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20230407134626.47928-1-arinc.unal@arinc9.com>
- <20230407134626.47928-3-arinc.unal@arinc9.com>
- <20230411150056.2uhtoy6iqnt2qopr@skbuf>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230411150056.2uhtoy6iqnt2qopr@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20230410150130.837691-1-lulu@redhat.com> <CACGkMEvTdgvqacFmMJZD4u++YJwESgSmLF6CMdAJBBqkxpZKgg@mail.gmail.com>
+ <CACLfguWKw68=wZNa7Ga+Jm8xTE93A_5za3Dc=S_z7ds9FCkRKg@mail.gmail.com> <CACGkMEv3aca0Thx+X3WZxbV2HK7514G3RzR+A0PqRu7k6Deztg@mail.gmail.com>
+In-Reply-To: <CACGkMEv3aca0Thx+X3WZxbV2HK7514G3RzR+A0PqRu7k6Deztg@mail.gmail.com>
+From:   Cindy Lu <lulu@redhat.com>
+Date:   Wed, 12 Apr 2023 14:31:38 +0800
+Message-ID: <CACLfguXBeodQ=b-RAQ4JsaSnjS_ZNutr2nbunmdv1S8Gxz8gfg@mail.gmail.com>
+Subject: Re: [PATCH] vhost_vdpa: fix unmap process in no-batch mode
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11.04.2023 18:00, Vladimir Oltean wrote:
-> On Fri, Apr 07, 2023 at 04:46:14PM +0300, arinc9.unal@gmail.com wrote:
->> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>
->> There're two code paths for setting up port 5:
->>
->> mt7530_setup()
->> -> mt7530_setup_port5()
->>
->> mt753x_phylink_mac_config()
->> -> mt753x_mac_config()
->>     -> mt7530_mac_config()
->>        -> mt7530_setup_port5()
->>
->> The first code path is supposed to run when PHY muxing is being used. In
->> this case, port 5 is somewhat of a hidden port. It won't be defined on the
->> devicetree so phylink can't be used to manage the port.
->>
->> The second code path used to call mt7530_setup_port5() directly under case
->> 5 on mt7530_phylink_mac_config() before it was moved to mt7530_mac_config()
->> with 88bdef8be9f6 ("net: dsa: mt7530: Extend device data ready for adding a
->> new hardware"). mt7530_setup_port5() will never run through this code path
->> because the current code on mt7530_setup() bypasses phylink for all cases
->> of port 5.
->>
->> Fix this by leaving it to phylink if port 5 is used as a CPU, DSA, or user
->> port. For the cases of PHY muxing or the port being disabled, call
->> mt7530_setup_port5() directly from mt7530_setup() without involving
->> phylink.
->>
->> Move setting the interface and P5_DISABLED mode to a more specific
->> location. They're supposed to be overwritten if PHY muxing is detected.
->>
->> Add comments which explain the process.
->>
->> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> ---
-> 
-> We have a natural language processing engine (AUTOSEL) which
-> automatically picks up as candidates for "stable" those patches which
-> weren't explicitly submitted through the proper process for that (and
-> they contain words like "fix", "bug", "crash", "leak" etc).
-> 
-> Your chosen wording, both in the commit title and message, would most
-> likely trigger that bot, and then you'd have to explain why you chose
-> this language and not something else more descriptive of your change.
-> It would be nice if you could rewrite the commit messages for your
-> entire series to be a bit more succint as to what is the purpose of the
-> change you are making, and don't use the word "fix" when there is no
-> problem to be observed.
+On Tue, Apr 11, 2023 at 5:14=E2=80=AFPM Jason Wang <jasowang@redhat.com> wr=
+ote:
+>
+> On Tue, Apr 11, 2023 at 3:29=E2=80=AFPM Cindy Lu <lulu@redhat.com> wrote:
+> >
+> > On Tue, Apr 11, 2023 at 11:10=E2=80=AFAM Jason Wang <jasowang@redhat.co=
+m> wrote:
+> > >
+> > > On Mon, Apr 10, 2023 at 11:01=E2=80=AFPM Cindy Lu <lulu@redhat.com> w=
+rote:
+> > > >
+> > > > While using the no-batch mode, the process will not begin with
+> > > > VHOST_IOTLB_BATCH_BEGIN, so we need to add the
+> > > > VHOST_IOTLB_INVALIDATE to get vhost_vdpa_as, the process is the
+> > > > same as VHOST_IOTLB_UPDATE
+> > > >
+> > > > Signed-off-by: Cindy Lu <lulu@redhat.com>
+> > > > ---
+> > > >  drivers/vhost/vdpa.c | 1 +
+> > > >  1 file changed, 1 insertion(+)
+> > > >
+> > > > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > > > index 7be9d9d8f01c..32636a02a0ab 100644
+> > > > --- a/drivers/vhost/vdpa.c
+> > > > +++ b/drivers/vhost/vdpa.c
+> > > > @@ -1074,6 +1074,7 @@ static int vhost_vdpa_process_iotlb_msg(struc=
+t vhost_dev *dev, u32 asid,
+> > > >                 goto unlock;
+> > > >
+> > > >         if (msg->type =3D=3D VHOST_IOTLB_UPDATE ||
+> > > > +           msg->type =3D=3D VHOST_IOTLB_INVALIDATE ||
+> > >
+> > > I'm not sure I get here, invalidation doesn't need to create a new AS=
+.
+> > >
+> > > Or maybe you can post the userspace code that can trigger this issue?
+> > >
+> > > Thanks
+> > >
+> > sorry I didn't write it clearly
+> > For this issue can reproduce in vIOMMU no-batch mode support because
+> > while the vIOMMU enabled, it will
+> > flash a large memory to unmap, and this memory are haven't been mapped
+> > before, so this unmapping will fail
+> >
+> > qemu-system-x86_64: failed to write, fd=3D12, errno=3D14 (Bad address)
+> > qemu-system-x86_64: vhost_vdpa_dma_unmap(0x7fa26d1dd190, 0x0,
+> > 0x80000000) =3D -5 (Bad address)
+>
+> So if this is a simple unmap, which error condition had you met in
+> vhost_vdpa_process_iotlb_msg()?
+>
+> I think you need to trace to see what happens. For example:
+>
+this happens when vIOMMU enable and vdpa binds to vfio-pci run testpmd
+the qemu will unmapped whole memory that was used and then mapped the
+iommu MR section
+This memory much larger than the memory mapped to vdpa(this is what
+actually mapped to
+vdpa device in no-iommu MR)
 
-Will do, thanks.
+> 1) can the code pass asid_to_iotlb()
+> 2) if not, ASID 0 has been deleted since all the mappings have been unmap=
+ped
+>
+> if ASID 0 has been completely unmap, any reason we need to unmap it
+> again? And do we need to drop the vhost_vdpa_remove_as() from both
+>
 
-Arınç
+> 1) vhost_vdpa_unmap()
+> and
+> 2) vhost_vdpa_process_iotlb_msg()
+> ?
+>
+> Thanks
+>
+the code passed the asid_to_iotlb(), The iotlb is NULL at this situation
+and the vhost_vdpa_process_iotlb_msg will return fail. this will cause
+the mapping
+ in qemu fail
+
+thanks
+cindy
+
+> > qemu-system-x86_64: failed to write, fd=3D12, errno=3D14 (Bad address)
+> > ....
+> > in batch mode this operation will begin with VHOST_IOTLB_BATCH_BEGIN,
+> > so don't have this issue
+> >
+> > Thanks
+> > cindy
+> > > >             msg->type =3D=3D VHOST_IOTLB_BATCH_BEGIN) {
+> > > >                 as =3D vhost_vdpa_find_alloc_as(v, asid);
+> > > >                 if (!as) {
+> > > > --
+> > > > 2.34.3
+> > > >
+> > >
+> >
+>
+
