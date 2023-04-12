@@ -2,121 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8EC6DF869
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 16:27:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 446406DF873
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 16:28:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbjDLO1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 10:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
+        id S231578AbjDLO2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 10:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbjDLO1k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 10:27:40 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2050.outbound.protection.outlook.com [40.107.20.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D955E10C0;
-        Wed, 12 Apr 2023 07:27:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Krg5VPx/z1+Y+ihxrCtGjMUx7eNhJ85FSJwg1OLaiW40lszJ4WGnQdEKAA6r6DSW3p+dL08OrKmOMdl7P1bDZ5lhianN+hbql8e8XoBQ/zm37smtVO0HEMvwCFoWgPMKx0l8qUNRwIT1LH9yKsT1FgdbrJ3ZglSeFXwdQH1MV9THZsCniO71iqk8pmS8dRuc2Aj1CpVpTomaPQm3x9EbAEet5ZCta2J3bPo+/VhmArc2ikX5Lh2wrO3s5o1PY/VVW6z0lAuh9MhgbtyrzCCYpEUVq9PbuCUmpJMgScuNB3h+KCNtyCQ+oeAbI+y3h6S6oMDMAfLPEiVQnRnwrXxahQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tmTQCkNjgjvKNMAok8QbskQl2zPgwu/kwkIaeW4J8xE=;
- b=lTFVQlfU38euYLgTZC4SQhble0vlYfdaCLS+9FDLAzAKWSwzQimWZGGCh4b3WSeZ/KQXHSW8zHl5ulOllPDbHGWXMIFBfE/BOHbVBFGTYk50DIoRHWPVVp4pQSjsjFek5ppjHjgdOIGGpOOcspmbitWeMn6hXZ/+wNh80zbWTxWEAwOCG2tkKBkt89N8uo3872AsBO4gK0LqvU8jyx5minTz1TBdQWtYXMHQFj6iNxFWlc805sNEnOxR4BuLZlsjuZ4o22nO6aqKMe4zeILq3oGakhZC8aPJ31Omu3lLlbfLRflAK6sateqM22ZLSejRbvX3z8n7w1WGVGaKZDUuGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tmTQCkNjgjvKNMAok8QbskQl2zPgwu/kwkIaeW4J8xE=;
- b=jeLDIukDI96l8gmpBQE41kYFt68AySq+l+gSYTxVhKylbPJdqfe4rCH0IA5+zRUI9REm2MsL9b9LWY9k5KKwhwAzd3NkE4mgj7Yv/mLtnfAawNcjwA45mb3MpOGWR9RE8RFyDI3OIoG99ZzcVMlvV0JQv8FqlvCzfKpJ2EpzCGw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AS1PR04MB9240.eurprd04.prod.outlook.com (2603:10a6:20b:4c4::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.35; Wed, 12 Apr
- 2023 14:27:37 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::55b1:d2dd:4327:912b]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::55b1:d2dd:4327:912b%5]) with mapi id 15.20.6298.028; Wed, 12 Apr 2023
- 14:27:36 +0000
-Date:   Wed, 12 Apr 2023 17:27:33 +0300
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Hans J. Schultz" <netdev@kapio-technology.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Arkadi Sharshevsky <arkadis@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: bridge: switchdev: don't notify FDB entries
- with "master dynamic"
-Message-ID: <20230412142733.6jhxt7kjf3nwqzsy@skbuf>
-References: <20230410204951.1359485-1-vladimir.oltean@nxp.com>
- <ZDa856x2rhzNrrXa@shredder>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZDa856x2rhzNrrXa@shredder>
-X-ClientProxiedBy: VI1PR0901CA0101.eurprd09.prod.outlook.com
- (2603:10a6:800:7e::27) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS1PR04MB9240:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7a236b2b-df91-4247-9ca8-08db3b62102e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qLwCPGrj2bm2PbJCxrZHsDvmHa3WpMK7fVk2f1s0rucKdPr7Ykobgh0Shy1wysrlDBW7Gr9thFz4Xn5mPKGWGgNnKnfccQSSgM/6N5VIVU5bMPwF7276lBw9z+dF1SGNqOyYAcHYLSr4+8GiB9TD047mgLCqUjML9ZcYHLcegmOuspTNGq8WMHkIToK8Ydd/fRaV95cGOxgCY+I2bag2xn8h8C1eXxPbhcDEusZt4KF2uQSxoLWDc738kr+9CDL+Q119VEtlaY11uY20j9VaFj4dIaWcnkpQhVjiqfuUh+UupBMqtDQes744Np/GxAO5OSKEk9JA5idpwD/JBs2BGloNWkxHkt816M6Rc7Q1aRWBl8JMKXGYUg4bc69oF/T8/uQqMn5dWXdZv5E/Sd70SDQ5v8cALCb8ZudAiZYtHhQ664PRwP58mr+uhk/jx2V6vNQAhk1H7TBTm6VVsrWRX3xO6/Eio1so5Ao+e9JOT2Lms4Imf2e+GQuyiHAgugZo/2KgqNTURl0CDsmj8ekbq0KyONQlfClsEoswtvmYn466Wx+2sPqQsGlSRomNJ1XB
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(376002)(396003)(366004)(136003)(39860400002)(346002)(451199021)(86362001)(6486002)(83380400001)(41300700001)(316002)(478600001)(66556008)(54906003)(66476007)(8676002)(4326008)(66946007)(6916009)(33716001)(7416002)(44832011)(2906002)(4744005)(38100700002)(5660300002)(186003)(8936002)(6512007)(9686003)(6506007)(1076003)(6666004)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XV8Q48Xu3Jsfkq08jp2BsJPy8tZywIi6gG7P4hTFCKXFwrKnWmftQe7FoUBL?=
- =?us-ascii?Q?aQTZvwPG7JXVx7yfTralIYgC+wFMT61xNwdFK/PCc5lix43A0skfkuCFvfqR?=
- =?us-ascii?Q?HdC3EANdiqlBybj2LB1CEfOG+gADh41J5yHyma/j5F/GScVQROu2HFt2oA8h?=
- =?us-ascii?Q?KydzV//AisufPgPw2OPP/QgN2VbysYJpfyukNpabcEN3tORCSPiEzsMzLpT4?=
- =?us-ascii?Q?sAELfzQ0qklYEiHU7HbfFfrvSCyJ4EaJNQ9ms7m8wDdpwcz9H19Jk/2JigoC?=
- =?us-ascii?Q?peb2ZaGIVAParOakISHNZ4lmz8/YqTKt7jte8qY32W6HdKOb/xM2Hh+XCVOc?=
- =?us-ascii?Q?vo0m+abqLhRZXAMoLu5y3gd0rrzMnHUAm+p2e80F5n8zbpMQGu0P7tz4O87Y?=
- =?us-ascii?Q?fWy/QHP3lRK6EM9KSfAgl66ZAQ021IuNIODM6+UVJV5Unki4rUFCi168iB/S?=
- =?us-ascii?Q?mvtPJ3IYRsIA02WctxF2aclAhhGz2G9sU0tGTV/8/omz3ESP1glkQmNrzHF9?=
- =?us-ascii?Q?J03u0UrmDi+ZnIK2dcAPsNe5B7B1rOJy1cux1JZGl52oCid59gzoBdF02E1o?=
- =?us-ascii?Q?wSQoyHoFMqQclq2QM+cdWeAgpc4Aa18fLr6pGn9h8saKLq0PfP7UufASMqWe?=
- =?us-ascii?Q?u96TP4vQ6NCei3LuzyOZf/zbLjbYDvydhiYG3gEV9L9Sfo2iVy+opm7Ysd/V?=
- =?us-ascii?Q?rU/70WeGWsvWBGvLqfMdpBjIGxPATvQaC3sND1b9x3liZyO4moXQt0d8rhHH?=
- =?us-ascii?Q?nFKnNRwLFF7vItaGMjQrIMJqdACRYqRV20p6SYey0wBTucv3NgN0wQS8uQ0d?=
- =?us-ascii?Q?JK8jPXFxPT+aoiS0VGLj7Pp65henbhlYG8RIgN8oMG2/yVokq6H9z+jbNPng?=
- =?us-ascii?Q?YyLmHsFBv6AQY2RzTY+FwJTlyhNkzCzRk3eF3ymWsUMQ8z8/igaiMdHfpBSG?=
- =?us-ascii?Q?oXtQSOm4C2AzWKqyazjY73mw/7JfVn9U/RID3L4sjDHJfTNrQ91iaRnz1ByZ?=
- =?us-ascii?Q?2BhD4NIPdDQ4yEgzGqzcZKAorlWtStP7gUG8Hf/dY92xSkibMLbQCMxvzL/R?=
- =?us-ascii?Q?vUT14gsQORTFmLcNuYPo8m44bG2ic6QJ2qAKBTxlJc9sFqx4QoxNGVWoUsgI?=
- =?us-ascii?Q?xsVpIqOSIZKhvVd1N6cUG1OMuYMRreMaHzM5R4wms9vbEyqCWQNOZ1Mc6yg2?=
- =?us-ascii?Q?NaPPYmf6Blh6e3Uc8tkQd/XuqTeK0vT6d/J2u3X9zxzDGMEnq0/LLIlap6++?=
- =?us-ascii?Q?Awaixd4d7nNrTCQAMH7wu9cOI61POnUpXMr6hykeHjf1D256OWDMQCYZ8naJ?=
- =?us-ascii?Q?G7xF6wG/5wxQvr8BECVEuaZwNhmIHqAbNtuWQdW2SE3CZmgoMEat9pxbwNkn?=
- =?us-ascii?Q?6VZGOynKm+exDqRV2Tt4pxS5XGOxuFGt1lk4g1Whztu1zpQKfVWDsaa9lVLF?=
- =?us-ascii?Q?c13JdG/fVO9TUcC/2/DYyuF2Jpv3FITDwTQTB/CWeGRsuuOpAdykNfJz/Vfh?=
- =?us-ascii?Q?gpkMhHtqP0dKkXrk32IVSKfhMo5SwrekDX4Lbylck24KQyT3q5fVBBhSDCCe?=
- =?us-ascii?Q?5b/BFhT4czLKd//anSli6cmjdSSZRvQDmH4jq723ghZsu/Yv7tLlvSC+pbWg?=
- =?us-ascii?Q?PQ=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a236b2b-df91-4247-9ca8-08db3b62102e
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2023 14:27:36.9015
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wyRd5Gk6bC067NsXwmWXDuZS8KmNJ7WbSuYBBkj3QrK1FipCh5n078kVzEEEhvNsI3JHiyiHiH1VA25Q1CIhKw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9240
+        with ESMTP id S230257AbjDLO2v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 10:28:51 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45470192;
+        Wed, 12 Apr 2023 07:28:43 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id y26so9980006qtv.9;
+        Wed, 12 Apr 2023 07:28:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681309722; x=1683901722;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=g3csUU+MZIL4psk3MHBw1EHOXxochpb77aPV46ZLfuc=;
+        b=aI6Q+2c2WaaTUQarPujC9vC4U+H06kMJ1qHxGql7eaQVoNPr4VI6/vTF20Gq0LrCOd
+         JUDyMJIC+/nGqr4gtxOQDYTlG2rqjsjPSXCJYVDyNnU7/visH6dzicAcsw917ORO/PW+
+         B+kYVJaEtQZ45dAnLsOgIl9PZq6Zz8f7E5ziG10GSCSsba7CEp8sJDNhd9m92KhZoJMd
+         +CEN2d4h/EVQRnzpA5ZyXzrN/4q9QwRHGNJXRrCpW0MUpzEmo2oEht0vdZE92tU7+cew
+         0TtCqPXhwtAvPD1w+obFG/+LpXEfiMk9/oSZ3bZaBHgysbET3Mze4e+lQ9YDtaTuv2Bo
+         Kt8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681309722; x=1683901722;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=g3csUU+MZIL4psk3MHBw1EHOXxochpb77aPV46ZLfuc=;
+        b=DiKMVrzcMCsauSyS/R4BARQbmdEvArJFT5jQqMHSC1NHcz+iFb/Mu4gbCEnrRnSp4u
+         rOWRfNA3/Uv0I4sifQ5dGpaktwjRlQOqzHbcjOOTEeQh0gDxTUr3EcheVCiXlEyG0ohc
+         MCh6BYUR80A2+Ezjr5/LHAq7pekF4x5402eaFBuygsqFtOOg+muHasvtm2CObjQt46fl
+         5SUfLAp6s2r1X38m8lOwnNwCBYtzvV7kdU0gD8uWxD8FdAmfhIFfiEAqcoe5yNFw7DX1
+         8ZHU4hWQbtSu3u5wtC/QtCE5oG3d4inatbpqaAvXd0WDteLCHlldQIZFTJEA7gjbaA19
+         EVuw==
+X-Gm-Message-State: AAQBX9c9JNhkxfXV3ew46T0qtj5I3OV2EPxBHeI5z/eU/mwVifqXAWAZ
+        FArkv8cqe7ewDT+/l6KTrV0=
+X-Google-Smtp-Source: AKy350Y9tE06l148YDTVFtOEKyW0JshhF+aM8qF7BkYMcr6VkzIdVIBtB5Ltrqx2TDstNnLe4jBZWQ==
+X-Received: by 2002:a05:622a:14e:b0:3e3:3941:d167 with SMTP id v14-20020a05622a014e00b003e33941d167mr29755868qtw.34.1681309722274;
+        Wed, 12 Apr 2023 07:28:42 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id t12-20020a37aa0c000000b007468b183a65sm257126qke.30.2023.04.12.07.28.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Apr 2023 07:28:41 -0700 (PDT)
+Date:   Wed, 12 Apr 2023 10:28:41 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Breno Leitao <leitao@debian.org>, Jens Axboe <axboe@kernel.dk>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        io-uring@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        asml.silence@gmail.com, leit@fb.com, edumazet@google.com,
+        pabeni@redhat.com, davem@davemloft.net, dccp@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
+        matthieu.baerts@tessares.net, marcelo.leitner@gmail.com
+Message-ID: <6436c01979c9b_163b6294b4@willemb.c.googlers.com.notmuch>
+In-Reply-To: <ZDa32u9RNI4NQ7Ko@gmail.com>
+References: <e576f6fe-d1f3-93cd-cb94-c0ae115299d8@kernel.org>
+ <ZDVLyi1PahE0sfci@gmail.com>
+ <75e3c434-eb8b-66e5-5768-ca0f906979a1@kernel.org>
+ <67831406-8d2f-feff-f56b-d0f002a95d96@kernel.dk>
+ <643573df81e20_11117c2942@willemb.c.googlers.com.notmuch>
+ <036c80e5-4844-5c84-304c-7e553fe17a9b@kernel.dk>
+ <64357608c396d_113ebd294ba@willemb.c.googlers.com.notmuch>
+ <19c69021-dce3-1a4a-00eb-920d1f404cfc@kernel.dk>
+ <64357bb97fb19_114b22294c4@willemb.c.googlers.com.notmuch>
+ <20cb4641-c765-e5ef-41cb-252be7721ce5@kernel.dk>
+ <ZDa32u9RNI4NQ7Ko@gmail.com>
+Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -124,17 +88,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 05:15:03PM +0300, Ido Schimmel wrote:
-> > Looking at tools/testing/selftests/net/forwarding/, there is no valid
-> > use of the "bridge fdb add ... master dynamic" command there, so I am
-> > fairly confident that no one used to rely on this behavior.
+Breno Leitao wrote:
+> On Tue, Apr 11, 2023 at 09:28:29AM -0600, Jens Axboe wrote:
+> > On 4/11/23 9:24?AM, Willem de Bruijn wrote:
+> > > Jens Axboe wrote:
+> > >> On 4/11/23 9:00?AM, Willem de Bruijn wrote:
+> > >> But that doesn't work, because sock->ops->ioctl() assumes the arg is
+> > >> memory in userspace. Or do you mean change all of the sock->ops->ioctl()
+> > >> to pass in on-stack memory (or similar) and have it work with a kernel
+> > >> address?
+> > > 
+> > > That was what I suggested indeed.
+> > > 
+> > > It's about as much code change as this patch series. But it avoids
+> > > the code duplication.
+> > 
+> > Breno, want to tackle that as a prep patch first? Should make the
+> > functional changes afterwards much more straightforward, and will allow
+> > support for anything really.
 > 
-> Yes, but there are tests that use "extern_learn". If you post a v2 that
-> takes "BR_FDB_ADDED_BY_EXT_LEARN" into account, then I can ask Petr to
-> run it through our regression and report back (not sure we will make it
-> to this week's PR though).
+> Absolutely. I just want to make sure that I got the proper approach that
+> we agreed here.
 > 
-> Thanks
+> Let me explain what I understood taking TCP as an example:
+> 
+> 1) Rename tcp_ioctl() to something as _tcp_ioctl() where the 'arg'
+> argument is now just a kernel memory (located in the stack frame from the
+> callee).
+> 
+> 2) Recreate "tcp_ioctl()" that will basically allocate a 'arg' in the
+> stack and call _tcp_ioctl() passing that 'arg' argument. At the bottom of
+> this (tcp_ioctl() function) function, call `put_user(in_kernel_arg, userspace_arg)
+> 
+> 3) Repeat it for the 20 protocols that implement ioctl:
+> 
+> 	ag  "struct proto .* = {" -A 20 net/ | grep \.ioctl
+> 	net/dccp/ipv6.c 	.ioctl	= dccp_ioctl,
+> 	net/dccp/ipv4.c		.ioctl	= dccp_ioctl,
+> 	net/ieee802154/socket.c .ioctl	= dgram_ioctl,
+> 	net/ipv4/udplite.c	.ioctl	= udp_ioctl,
+> 	net/ipv4/raw.c 		.ioctl	= raw_ioctl,
+> 	net/ipv4/udp.c		.ioctl	= udp_ioctl,
+> 	net/ipv4/tcp_ipv4.c 	.ioctl	= tcp_ioctl,
+> 	net/ipv6/raw.c		.ioctl	= rawv6_ioctl,
+> 	net/ipv6/tcp_ipv6.c	.ioctl	= tcp_ioctl,
+> 	net/ipv6/udp.c	 	.ioctl	= udp_ioctl,
+> 	net/ipv6/udplite.c	.ioctl	= udp_ioctl,
+> 	net/l2tp/l2tp_ip6.c	.ioctl	= l2tp_ioctl,
+> 	net/l2tp/l2tp_ip.c	.ioctl	= l2tp_ioctl,
+> 	net/phonet/datagram.:	.ioctl	= pn_ioctl,
+> 	net/phonet/pep.c	.ioctl	= pep_ioctl,
+> 	net/rds/af_rds.c	.ioctl	=	rds_ioctl,
+> 	net/sctp/socket.c	.ioctl  =	sctp_ioctl,
+> 	net/sctp/socket.c	.ioctl	= sctp_ioctl,
+> 	net/xdp/xsk.c		.ioctl	= sock_no_ioctl,
+> 	net/mptcp/protocol.c	.ioctl	= mptcp_ioctl,
+> 
+> Am I missing something?
 
-How are extern_learn FDB entries processed by spectrum's
-SWITCHDEV_FDB_ADD_TO_DEVICE handler?
+The suggestion is to convert all to take kernel memory and do the
+put_cmsg in the caller of .ioctl. Rather than create a wrapper for
+each individual instance and add a separate .iouring_cmd for each.
+
+"change all of the sock->ops->ioctl() to pass in on-stack memory
+(or similar) and have it work with a kernel address"
