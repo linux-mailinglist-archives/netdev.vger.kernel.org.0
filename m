@@ -2,112 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07DEF6DF641
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 14:56:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADA596DF65C
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 15:03:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231535AbjDLM4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 08:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46440 "EHLO
+        id S229799AbjDLNDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 09:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231782AbjDLMyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 08:54:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D99C83DF;
-        Wed, 12 Apr 2023 05:54:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65CFC62A83;
-        Wed, 12 Apr 2023 12:52:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 811C9C4339B;
-        Wed, 12 Apr 2023 12:52:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681303969;
-        bh=KqiFgwTO3r1Wlix+jWVSPiLu5zTr8hWhvqhJcS0xuuM=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=o0TtL8BXTV3zJ8AUcBYTFqIPf7VGjraRARSJLvU/ryUGByvx8TsJN7lpWK7RI1Mcg
-         KLpWRl8PFzJ3Sexk8rQ4/FK6bCW41Y+xurWiO5rXE/ur7kX4e419WcPJjmi5qchV1M
-         PjRs+PCZqj6GtPgENJ4V+t4ae7NCKAJo4zCV4hgPRYw2+8U+ea0PX0KtOaoYucRr1/
-         scwmHY3D2vhTkDAQfd3Gq2j8dqVkpxKR3g8l4emSKcQYpC6QbGviGZZIk0QjCZIou8
-         4ZidJuoSeb7u0AVtgj/TUNvQAZF2O77Or6gtNhityGGv/nzQ4k4i71ju7PSbOT8oOI
-         dukdZhKCnAVhA==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v5 1/9] wifi: rtw88: Clear RTW_FLAG_POWERON early in
- rtw_mac_power_switch()
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230405200729.632435-2-martin.blumenstingl@googlemail.com>
-References: <20230405200729.632435-2-martin.blumenstingl@googlemail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-wireless@vger.kernel.org,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mmc@vger.kernel.org, Chris Morgan <macromorgan@hotmail.com>,
-        Nitin Gupta <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        =?utf-8?q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <168130396220.26381.3962423931177985292.kvalo@kernel.org>
-Date:   Wed, 12 Apr 2023 12:52:46 +0000 (UTC)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229753AbjDLNDP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 09:03:15 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E51A4EDD
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:03:10 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 85-20020a250b58000000b00b8f071f5062so8019595ybl.20
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 06:03:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1681304589;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=taes8BYJjZPc9U0iN1DeNr6Fcbi/Nev444CdlhzzD5A=;
+        b=bbBs0KKHVSQpukby4h7ktqUAZSymmnCFv9wXpBmz0pY/8FveI1HOvXzmjiGtwto37N
+         WyyPNOLOzmCoeAD25VX3h56D/UwcH8Fjr/2KZOHGStY7o8mVARpo6Mg9brmeG5nybTAf
+         4T6ToLWotyjmRxf0sjIWyQJ9FB41H/RXbmtK1uZqdfSUo7NiVm8yXN+YRVin2rp2xH+x
+         GShh0ImNG6vQuvGWwwyC1jbK/5iPaBjSebMzOW44XsuO7ihw3fDpADyG8N/iU9HUvWga
+         H5ZtYP3p7ScyIKjMvDd4pzAcZiThG2THt8O28HBFqBuWcD0wOuJrOb0tgv427CDEWAS8
+         FRJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681304589;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=taes8BYJjZPc9U0iN1DeNr6Fcbi/Nev444CdlhzzD5A=;
+        b=HWReFEHlRIium+b8QG0CmsHjeXT8lcweie7RxQamq068cysv7sUlWHKSgGgaCK1+8i
+         qa/5OYEuj75lnLKjxMY29flnSZ2nqmXofPV1yisb7rqFCTv4lDiKL2eCsHb7lYqkVhnC
+         sC3kP0msMrQgWL1DutRc7hm/XSYf5GWzhn4ZaxEzbAR6I5tGEIVSqdkA6bXrgH2iW1oj
+         zzvvAAomndZqwDn0FOSTEHRZ+I2jNjeYzxiGmDS80z2nI/eL8B2Qz+1eofbvMPTESl4I
+         LaxmiONYK6Hz7KEQI88tUhrkTNpSsXoBs0NzXwvXJRnVeUM30tSNSEt/QRXyF35vv48x
+         NcbQ==
+X-Gm-Message-State: AAQBX9djVMx7WDTJlXgCTcUJ6zvowLI5I5GzwrT7NJyVpF7cGK8Lo2Uw
+        ZQuhyANfJuq24/1IT5KLNFcJi4avjhBiVg==
+X-Google-Smtp-Source: AKy350aSmDGYsdck73mVZLNRh+K/a9PSx9jVqKOhJq9+lwdKCQ1CBnEM6jL2IFHzfB/kdgBcYTZIJ4Qp9KGTmA==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a25:d705:0:b0:b6b:6a39:949c with SMTP id
+ o5-20020a25d705000000b00b6b6a39949cmr6963293ybg.6.1681304589355; Wed, 12 Apr
+ 2023 06:03:09 -0700 (PDT)
+Date:   Wed, 12 Apr 2023 13:03:08 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.40.0.577.gac1e443424-goog
+Message-ID: <20230412130308.1202254-1-edumazet@google.com>
+Subject: [PATCH net] udp6: fix potential access to stale information
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        lena wang <lena.wang@mediatek.com>,
+        "=?UTF-8?q?Maciej=20=C5=BBenczykowski?=" <maze@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
+lena wang reported an issue caused by udpv6_sendmsg()
+mangling msg->msg_name and msg->msg_namelen, which
+are later read from ____sys_sendmsg() :
 
-> The SDIO HCI implementation needs to know when the MAC is powered on.
-> This is needed because 32-bit register access has to be split into 4x
-> 8-bit register access when the MAC is not fully powered on or while
-> powering off. When the MAC is powered on 32-bit register access can be
-> used to reduce the number of transfers but splitting into 4x 8-bit
-> register access still works in that case.
-> 
-> During the power on sequence is how RTW_FLAG_POWERON is only set when
-> the power on sequence has completed successfully. During power off
-> however RTW_FLAG_POWERON is set. This means that the upcoming SDIO HCI
-> implementation does not know that it has to use 4x 8-bit register
-> accessors. Clear the RTW_FLAG_POWERON flag early when powering off the
-> MAC so the whole power off sequence is processed with RTW_FLAG_POWERON
-> unset. This will make it possible to use the RTW_FLAG_POWERON flag in
-> the upcoming SDIO HCI implementation.
-> 
-> Note that a failure in rtw_pwr_seq_parser() while applying
-> chip->pwr_off_seq can theoretically result in the RTW_FLAG_POWERON
-> flag being cleared while the chip is still powered on. However,
-> depending on when the failure occurs in the power off sequence the
-> chip may be on or off. Even the original approach of clearing
-> RTW_FLAG_POWERON only when the power off sequence has been applied
-> successfully could end up in some corner case where the chip is
-> powered off but RTW_FLAG_POWERON was not cleared.
-> 
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+	/*
+	 * If this is sendmmsg() and sending to current destination address was
+	 * successful, remember it.
+	 */
+	if (used_address && err >=3D 0) {
+		used_address->name_len =3D msg_sys->msg_namelen;
+		if (msg_sys->msg_name)
+			memcpy(&used_address->name, msg_sys->msg_name,
+			       used_address->name_len);
+	}
 
-9 patches applied to wireless-next.git, thanks.
+udpv6_sendmsg() wants to pretend the remote address family
+is AF_INET in order to call udp_sendmsg().
 
-6a92566088b1 wifi: rtw88: Clear RTW_FLAG_POWERON early in rtw_mac_power_switch()
-65371a3f14e7 wifi: rtw88: sdio: Add HCI implementation for SDIO based chipsets
-b722e5b130bc wifi: rtw88: mac: Support SDIO specific bits in the power on sequence
-a5d25f9ff918 wifi: rtw88: main: Add the {cpwm,rpwm}_addr for SDIO based chipsets
-02461d9368c5 wifi: rtw88: main: Reserve 8 bytes of extra TX headroom for SDIO cards
-7d6d2dd326a8 mmc: sdio: add Realtek SDIO vendor ID and various wifi device IDs
-095e62dd7427 wifi: rtw88: Add support for the SDIO based RTL8822BS chipset
-6fdacb78f799 wifi: rtw88: Add support for the SDIO based RTL8822CS chipset
-b2a777d68434 wifi: rtw88: Add support for the SDIO based RTL8821CS chipset
+A fix would be to modify the address in-place, instead
+of using a local variable, but this could have other side effects.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230405200729.632435-2-martin.blumenstingl@googlemail.com/
+Instead, restore initial values before we return from udpv6_sendmsg().
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Fixes: c71d8ebe7a44 ("net: Fix security_socket_sendmsg() bypass problem.")
+Reported-by: lena wang <lena.wang@mediatek.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Maciej =C5=BBenczykowski <maze@google.com>
+---
+ net/ipv6/udp.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 9fb2f33ee3a76a09bbe15a9aaf1371a804f91ee2..a675acfb901d102ce56563b1d50=
+ae827d9e04859 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1395,9 +1395,11 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *ms=
+g, size_t len)
+ 			msg->msg_name =3D &sin;
+ 			msg->msg_namelen =3D sizeof(sin);
+ do_udp_sendmsg:
+-			if (ipv6_only_sock(sk))
+-				return -ENETUNREACH;
+-			return udp_sendmsg(sk, msg, len);
++			err =3D ipv6_only_sock(sk) ?
++				-ENETUNREACH : udp_sendmsg(sk, msg, len);
++			msg->msg_name =3D sin6;
++			msg->msg_namelen =3D addr_len;
++			return err;
+ 		}
+ 	}
+=20
+--=20
+2.40.0.577.gac1e443424-goog
 
