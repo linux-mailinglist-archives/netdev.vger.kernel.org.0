@@ -2,150 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 930596DFC16
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 19:00:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CD486DFC1B
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 19:00:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230407AbjDLRAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 13:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36776 "EHLO
+        id S229848AbjDLRAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 13:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbjDLRAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 13:00:39 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7F38A60
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:00:11 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id m20-20020a170902c45400b001a641823abdso4946846plm.18
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:00:11 -0700 (PDT)
+        with ESMTP id S230054AbjDLRAl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 13:00:41 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA0D7EEC
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:00:12 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id p17so882335pla.3
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 10:00:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681318805;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kpKB7SqPD1WEJcm5mP/ZS9AV7kRHrr2cruyzGPdJnmY=;
-        b=0dJ9X7z1jh25oYOHdd+ljdJXvOW0dD6zhgL9qARYaY8+1ZTVplJLk+y5Aqe0axj3f7
-         rVda5IIvH/u9Mqx1YM4d0qjJrdRXlxwNLJlT3miGS7NcBeAWuFzmKipOZKiFXsHiIL6T
-         CaKVTz/SjKtNGnp7avxMqpahnjuoTUT2P5T8gW/+RyXl9cT27GQpQ51fkvGdzeQQl5cD
-         +fQ5My91JFTUE3tWCvY92nPuUsiGOO+mEOjRSnKlR/K+ZOhQwo6p0Yt8Zeb3AIof9tx9
-         0Pt0VWQRjjZjTU1US/MsJ9d5y5H4C3VMfArkbKJhdzLnma7r7K7IN7gX3VGgvRhe2V/N
-         q8OQ==
+        d=linaro.org; s=google; t=1681318808;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+oanG2L1no3cfGxUr2f5jC5PPLghnpHBRMM+yz7rcqg=;
+        b=ETda2EF8CeXNpRP+t6JDEdQjQy9SuS5w1CFty3glJHeryif4TOjMLgsh61/0aNSX3l
+         WY1ZA7XUoVt89GbEf1jgCheNGw9MaytQLgyFBlcuxrJ+BaaNq6YZC3nyYAPwracjWBIX
+         AP7RHR/Gh4cWRg0sf645I9NV8n3Mjoxl6J3uaTWZzNxymh/wVr5dZ+jXvjqqYLj0x6/O
+         sJI4IlQoXsviOEiFA0c0IoPYmF1Yu5VmihBQsL/2pIJqwIIKXT1R6D+9wgANE3BD+Bku
+         nt9FbMEFzgJRnu08QofJrkWn+NBu7u5GbQ14Tqu+fUahxwRLIEX/5KBfYqjrytmtvEOB
+         MpAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681318805;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kpKB7SqPD1WEJcm5mP/ZS9AV7kRHrr2cruyzGPdJnmY=;
-        b=PfY6dIUlPCcqqY2NgeWIjf2ZlH6T+BAo2+XRSa0BPGAnpxLRzUHAqjO7J6PmiFq/8w
-         /nhQFZ7CAQXhM9Duc0r/MB2WZhCt/2JSNE3bjA/5+1ZIIeTMDWzFdLIYMYGxnPb+Imya
-         YuZoRREiipxoNi5aNG2KwUliIOau0Sasq5uPOg78OZQ6znE6/fXRQMKZwL+WBtPXSDSf
-         2WmWdf/sYBMHQC1+3sbAv0GR+pC9qumduXRYaf6YMHES5ZRyI4Zhl9vOMdplzzIBUS5j
-         gVY90VO1pWlTPZFL1oXzq3PMdfdlYqDHmxAa6ogTfvglklkPah6YtMyC8wu+f9bUXpP0
-         V/bg==
-X-Gm-Message-State: AAQBX9cE+RpOOycaYIGkpodTJp8f/Lpt2YUdq1rEo1cWH6syyu61RkME
-        hMsGl2j9VzWROA0oWfi6r45/Fzw=
-X-Google-Smtp-Source: AKy350bqCRuf2+nw6G4Xo/+RMWx8JZZGxbP78hg7vN5q2J6hphsLxNUKDMeaTSlnL3vx8TUht7eSaik=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a65:60c2:0:b0:51a:52b1:1b70 with SMTP id
- r2-20020a6560c2000000b0051a52b11b70mr775383pgv.10.1681318805239; Wed, 12 Apr
- 2023 10:00:05 -0700 (PDT)
-Date:   Wed, 12 Apr 2023 10:00:03 -0700
-In-Reply-To: <20230412094235.589089-4-yoong.siang.song@intel.com>
-Mime-Version: 1.0
-References: <20230412094235.589089-1-yoong.siang.song@intel.com> <20230412094235.589089-4-yoong.siang.song@intel.com>
-Message-ID: <ZDbjkwGS5L9wdS5h@google.com>
-Subject: Re: [PATCH net-next v3 3/4] net: stmmac: add Rx HWTS metadata to XDP
- receive pkt
-From:   Stanislav Fomichev <sdf@google.com>
-To:     Song Yoong Siang <yoong.siang.song@intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        d=1e100.net; s=20221208; t=1681318808;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+oanG2L1no3cfGxUr2f5jC5PPLghnpHBRMM+yz7rcqg=;
+        b=atsEbGmfiVTs3Y454IpCiaZ/JghnEJLve/RdkssOhA1RbalEQOU8uWDEXJi3cjqVt2
+         M8Z1aNlmfgGjjtKvvg27J8C04YLdogtwIbiLza/Gk12/Uw4jD9waC94561rTDTUFW0P8
+         v1XveY90WEms3ITo4L77YI6sPF8aQ/5s3YVPhupcAfRlyYenn8V2TpFVxyOskcHNpyUt
+         VdOXWJlPetlmKofIHP6b0UNWdnbsvE8rk0Ke88XCldaJuO6sI29jUeZ2HI0qP/8PBIuH
+         zCImM87HZ8TycBMVBlKlk9J9UYfw6IWJN1CqCz49p1NfSCGXeuFDZgZJP7Hny97OeCHU
+         ngcw==
+X-Gm-Message-State: AAQBX9ez9pbkKUmOX1VJrmcIqU+dsypGz+htcgGG/MLHmPqDn/CfiL8/
+        a3bBvkA+iMpT2NVgIj7NAZoSVQ==
+X-Google-Smtp-Source: AKy350ZyGAHpWAWIglbbCQpXeWBI+mmZnj2uqsJASDPZg4pKPfpA1jxJzKxrtxsUWwfHCkGWCv9/MA==
+X-Received: by 2002:a17:90a:b294:b0:246:fdad:28ca with SMTP id c20-20020a17090ab29400b00246fdad28camr2727902pjr.38.1681318807683;
+        Wed, 12 Apr 2023 10:00:07 -0700 (PDT)
+Received: from p14s ([2604:3d09:148c:c800:1cd7:1135:5e45:5f77])
+        by smtp.gmail.com with ESMTPSA id l17-20020a170902eb1100b001a52dd51ff6sm7800419plb.269.2023.04.12.10.00.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Apr 2023 10:00:07 -0700 (PDT)
+Date:   Wed, 12 Apr 2023 11:00:04 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     MD Danish Anwar <danishanwar@ti.com>
+Cc:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>, linux-remoteproc@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, xdp-hints@xdp-project.net
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        linux-omap@vger.kernel.org, srk@ti.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v8 1/4] soc: ti: pruss: Add pruss_get()/put() API
+Message-ID: <20230412170004.GA86761@p14s>
+References: <20230412103012.1754161-1-danishanwar@ti.com>
+ <20230412103012.1754161-2-danishanwar@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230412103012.1754161-2-danishanwar@ti.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/12, Song Yoong Siang wrote:
-> Add receive hardware timestamp metadata support via kfunc to XDP receive
-> packets.
+On Wed, Apr 12, 2023 at 04:00:09PM +0530, MD Danish Anwar wrote:
+> From: Tero Kristo <t-kristo@ti.com>
 > 
-> Suggested-by: Stanislav Fomichev <sdf@google.com>
-> Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+> Add two new get and put API, pruss_get() and pruss_put() to the
+> PRUSS platform driver to allow client drivers to request a handle
+> to a PRUSS device. This handle will be used by client drivers to
+> request various operations of the PRUSS platform driver through
+> additional API that will be added in the following patches.
+> 
+> The pruss_get() function returns the pruss handle corresponding
+> to a PRUSS device referenced by a PRU remoteproc instance. The
+> pruss_put() is the complimentary function to pruss_get().
+> 
+> Co-developed-by: Suman Anna <s-anna@ti.com>
+> Signed-off-by: Suman Anna <s-anna@ti.com>
+> Signed-off-by: Tero Kristo <t-kristo@ti.com>
+> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> Reviewed-by: Roger Quadros <rogerq@kernel.org>
+> Reviewed-by: Tony Lindgren <tony@atomide.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
 > ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  3 +++
->  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 26 ++++++++++++++++++-
->  2 files changed, 28 insertions(+), 1 deletion(-)
+>  drivers/soc/ti/pruss.c       | 62 ++++++++++++++++++++++++++++++++++++
+>  include/linux/pruss_driver.h | 18 +++++++++++
+>  2 files changed, 80 insertions(+)
 > 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-> index ac8ccf851708..826ac0ec88c6 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-> @@ -94,6 +94,9 @@ struct stmmac_rx_buffer {
+
+Acked-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+
+> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
+> index 6882c86b3ce5..3fac92df8790 100644
+> --- a/drivers/soc/ti/pruss.c
+> +++ b/drivers/soc/ti/pruss.c
+> @@ -6,6 +6,7 @@
+>   * Author(s):
+>   *	Suman Anna <s-anna@ti.com>
+>   *	Andrew F. Davis <afd@ti.com>
+> + *	Tero Kristo <t-kristo@ti.com>
+>   */
 >  
->  struct stmmac_xdp_buff {
->  	struct xdp_buff xdp;
-> +	struct stmmac_priv *priv;
-> +	struct dma_desc *p;
-> +	struct dma_desc *np;
+>  #include <linux/clk-provider.h>
+> @@ -18,6 +19,7 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/pruss_driver.h>
+>  #include <linux/regmap.h>
+> +#include <linux/remoteproc.h>
+>  #include <linux/slab.h>
+>  
+>  /**
+> @@ -30,6 +32,66 @@ struct pruss_private_data {
+>  	bool has_core_mux_clock;
 >  };
 >  
->  struct stmmac_rx_queue {
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index f7bbdf04d20c..ed660927b628 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -5315,10 +5315,15 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
->  
->  			xdp_init_buff(&ctx.xdp, buf_sz, &rx_q->xdp_rxq);
->  			xdp_prepare_buff(&ctx.xdp, page_address(buf->page),
-> -					 buf->page_offset, buf1_len, false);
-> +					 buf->page_offset, buf1_len, true);
->  
->  			pre_len = ctx.xdp.data_end - ctx.xdp.data_hard_start -
->  				  buf->page_offset;
-> +
-> +			ctx.priv = priv;
-> +			ctx.p = p;
-> +			ctx.np = np;
-> +
->  			skb = stmmac_xdp_run_prog(priv, &ctx.xdp);
->  			/* Due xdp_adjust_tail: DMA sync for_device
->  			 * cover max len CPU touch
-> @@ -7071,6 +7076,23 @@ void stmmac_fpe_handshake(struct stmmac_priv *priv, bool enable)
->  	}
->  }
->  
-> +static int stmmac_xdp_rx_timestamp(const struct xdp_md *_ctx, u64 *timestamp)
+> +/**
+> + * pruss_get() - get the pruss for a given PRU remoteproc
+> + * @rproc: remoteproc handle of a PRU instance
+> + *
+> + * Finds the parent pruss device for a PRU given the @rproc handle of the
+> + * PRU remote processor. This function increments the pruss device's refcount,
+> + * so always use pruss_put() to decrement it back once pruss isn't needed
+> + * anymore.
+> + *
+> + * This API doesn't check if @rproc is valid or not. It is expected the caller
+> + * will have done a pru_rproc_get() on @rproc, before calling this API to make
+> + * sure that @rproc is valid.
+> + *
+> + * Return: pruss handle on success, and an ERR_PTR on failure using one
+> + * of the following error values
+> + *    -EINVAL if invalid parameter
+> + *    -ENODEV if PRU device or PRUSS device is not found
+> + */
+> +struct pruss *pruss_get(struct rproc *rproc)
 > +{
-> +	const struct stmmac_xdp_buff *ctx = (void *)_ctx;
+> +	struct pruss *pruss;
+> +	struct device *dev;
+> +	struct platform_device *ppdev;
 > +
-> +	*timestamp = 0;
-> +	stmmac_get_rx_hwtstamp(ctx->priv, ctx->p, ctx->np, timestamp);
+> +	if (IS_ERR_OR_NULL(rproc))
+> +		return ERR_PTR(-EINVAL);
 > +
-
-[..]
-
-> +	if (*timestamp)
-
-Nit: does it make sense to change stmmac_get_rx_hwtstamp to return bool
-to indicate success/failure? Then you can do:
-
-if (!stmmac_get_rx_hwtstamp())
-	reutrn -ENODATA;
+> +	dev = &rproc->dev;
+> +
+> +	/* make sure it is PRU rproc */
+> +	if (!dev->parent || !is_pru_rproc(dev->parent))
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	ppdev = to_platform_device(dev->parent->parent);
+> +	pruss = platform_get_drvdata(ppdev);
+> +	if (!pruss)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	get_device(pruss->dev);
+> +
+> +	return pruss;
+> +}
+> +EXPORT_SYMBOL_GPL(pruss_get);
+> +
+> +/**
+> + * pruss_put() - decrement pruss device's usecount
+> + * @pruss: pruss handle
+> + *
+> + * Complimentary function for pruss_get(). Needs to be called
+> + * after the PRUSS is used, and only if the pruss_get() succeeds.
+> + */
+> +void pruss_put(struct pruss *pruss)
+> +{
+> +	if (IS_ERR_OR_NULL(pruss))
+> +		return;
+> +
+> +	put_device(pruss->dev);
+> +}
+> +EXPORT_SYMBOL_GPL(pruss_put);
+> +
+>  static void pruss_of_free_clk_provider(void *data)
+>  {
+>  	struct device_node *clk_mux_np = data;
+> diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
+> index ecfded30ed05..cb40c2b31045 100644
+> --- a/include/linux/pruss_driver.h
+> +++ b/include/linux/pruss_driver.h
+> @@ -9,7 +9,9 @@
+>  #ifndef _PRUSS_DRIVER_H_
+>  #define _PRUSS_DRIVER_H_
+>  
+> +#include <linux/remoteproc/pruss.h>
+>  #include <linux/types.h>
+> +#include <linux/err.h>
+>  
+>  /*
+>   * enum pruss_mem - PRUSS memory range identifiers
+> @@ -51,4 +53,20 @@ struct pruss {
+>  	struct clk *iep_clk_mux;
+>  };
+>  
+> +#if IS_ENABLED(CONFIG_TI_PRUSS)
+> +
+> +struct pruss *pruss_get(struct rproc *rproc);
+> +void pruss_put(struct pruss *pruss);
+> +
+> +#else
+> +
+> +static inline struct pruss *pruss_get(struct rproc *rproc)
+> +{
+> +	return ERR_PTR(-EOPNOTSUPP);
+> +}
+> +
+> +static inline void pruss_put(struct pruss *pruss) { }
+> +
+> +#endif /* CONFIG_TI_PRUSS */
+> +
+>  #endif	/* _PRUSS_DRIVER_H_ */
+> -- 
+> 2.34.1
+> 
