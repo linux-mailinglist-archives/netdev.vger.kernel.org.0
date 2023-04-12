@@ -2,82 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 227016DEFE8
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:56:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F03B16DEFED
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231465AbjDLI4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 04:56:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
+        id S229804AbjDLI5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 04:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231387AbjDLI4E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:56:04 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC82A5CA
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:55:46 -0700 (PDT)
+        with ESMTP id S229903AbjDLI5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:57:36 -0400
+Received: from mail.codelabs.ch (mail.codelabs.ch [109.202.192.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6359D7283
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:57:12 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 3B25D207CA;
-        Wed, 12 Apr 2023 10:55:27 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id rfSR8ACPCgFM; Wed, 12 Apr 2023 10:55:26 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id C9298207AC;
-        Wed, 12 Apr 2023 10:55:26 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id C418280004A;
-        Wed, 12 Apr 2023 10:55:26 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Wed, 12 Apr 2023 10:55:26 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 12 Apr
- 2023 10:55:26 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id E13273180C1D; Wed, 12 Apr 2023 10:55:25 +0200 (CEST)
-Date:   Wed, 12 Apr 2023 10:55:25 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-CC:     <netdev@vger.kernel.org>,
-        Christian Langrock <christian.langrock@secunet.com>,
-        Antony Antony <antony.antony@secunet.com>
-Subject: Re: [PATCH ipsec] xfrm: don't check the default policy if the policy
- allows the packet
-Message-ID: <ZDZx/Up5cbm1L07s@gauss3.secunet.de>
-References: <0cafbebeba54747b04a72d0fc06aa2ad569f3739.1680613644.git.sd@queasysnail.net>
+        by mail.codelabs.ch (Postfix) with ESMTP id 1957C220006;
+        Wed, 12 Apr 2023 10:56:23 +0200 (CEST)
+Received: from mail.codelabs.ch ([127.0.0.1])
+        by localhost (fenrir.codelabs.ch [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Eo_yVfNIg0ne; Wed, 12 Apr 2023 10:56:21 +0200 (CEST)
+Received: from think.home (147.249.6.85.dynamic.wline.res.cust.swisscom.ch [85.6.249.147])
+        by mail.codelabs.ch (Postfix) with ESMTPSA id B742D220005;
+        Wed, 12 Apr 2023 10:56:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=strongswan.org;
+        s=default; t=1681289781;
+        bh=nVFrFB1zsPC2EDhsLaEVwORFouJe7j2sM7VUsoAV79o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=vFa0Ha9R6nbuaaQIz+tYcu/ewM0WUvbWIFG74ckQYLVERtNlQLwD7znieDwX+Lbct
+         G3ghmLfO+uCeIbASUIPzdjJdLrLu9CnUidaEYxrA7mta+EOciduKfNHxGV/sHvqXsp
+         9oDsw6er8lQ2ZVkEeNwnl5Q0YcU3ZGe7cgMJLcwKsmtIw2Uj1eqS+X9DkjJ3018BPa
+         e3QCtG5LQgalpXL3w0wPJ2Mkd02JDDNpgxEcz1Z5fhYLn8kEzluUynDSGVIPJ6V6b0
+         8ao2rnnSxv4t8xDfxIWNeJAcck2FPGVitsM/TOtkdHond18Mvqadrs5r5Z8dEY4t+x
+         n7EFWYUzdMU+A==
+From:   Martin Willi <martin@strongswan.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Benedict Wong <benedictwong@google.com>,
+        Eyal Birger <eyal.birger@gmail.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: [PATCH ipsec v2] xfrm: Preserve xfrm interface secpath for packets forwarded
+Date:   Wed, 12 Apr 2023 10:56:15 +0200
+Message-Id: <20230412085615.124791-1-martin@strongswan.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <0cafbebeba54747b04a72d0fc06aa2ad569f3739.1680613644.git.sd@queasysnail.net>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 04, 2023 at 03:12:16PM +0200, Sabrina Dubroca wrote:
-> The current code doesn't let a simple "allow" policy counteract a
-> default policy blocking all incoming packets:
-> 
->     ip x p setdefault in block
->     ip x p a src 192.168.2.1/32 dst 192.168.2.2/32 dir in action allow
-> 
-> At this stage, we have an allow policy (with or without transforms)
-> for this packet. It doesn't matter what the default policy says, since
-> the policy we looked up lets the packet through. The case of a
-> blocking policy is already handled separately, so we can remove this
-> check.
-> 
-> Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
-> Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+The commit referenced below clears the secpath on packets received via
+xfrm interfaces to support nested IPsec tunnels. This breaks Netfilter
+policy matching using xt_policy in the FORWARD chain, as the secpath
+is missing during forwarding. INPUT matching is not affected, as it is
+done before secpath reset.
 
-Applied, thanks a lot Sabrina!
+A work-around could use XFRM input interface matching for such rules,
+but this does not work if the XFRM interface is part of a VRF; the
+Netfilter input interface is replaced by the VRF interface, making a
+sufficient match for IPsec-protected packets difficult.
+
+So instead, limit the secpath reset to packets that are not using a
+XFRM forward policy. This should allow nested tunnels, but keeps the
+secpath intact on packets that are passed to Netfilter chains with
+potential IPsec policy matches.
+
+Fixes: b0355dbbf13c ("Fix XFRM-I support for nested ESP tunnels")
+Suggested-by: Eyal Birger <eyal.birger@gmail.com>
+Signed-off-by: Martin Willi <martin@strongswan.org>
+---
+v1 -> v2: Use policy dir instead of flowi outif to check for forwarding
+
+ net/xfrm/xfrm_policy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 5c61ec04b839..669c3c0880a6 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3745,7 +3745,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 			goto reject;
+ 		}
+ 
+-		if (if_id)
++		if (if_id && dir != XFRM_POLICY_FWD)
+ 			secpath_reset(skb);
+ 
+ 		xfrm_pols_put(pols, npols);
+-- 
+2.34.1
+
