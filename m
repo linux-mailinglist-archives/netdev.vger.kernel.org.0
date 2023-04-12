@@ -2,84 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF08F6DF4E0
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 14:19:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 994666DF50B
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 14:24:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230250AbjDLMTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 08:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58054 "EHLO
+        id S231359AbjDLMX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 08:23:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230328AbjDLMTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 08:19:16 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3238746A9
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 05:19:14 -0700 (PDT)
-Received: (Authenticated sender: kory.maincent@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B241FC0009;
-        Wed, 12 Apr 2023 12:19:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1681301953;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LfuvFFV2KXn6eGBArel/84lm38GeWqGtwNLUUb74zJc=;
-        b=pLmyAI56xBAjTlJ4ivEjBAolUi+S+pvhzfPejis4zvXGJtxknJABpwj5pU3wUjmFfTIprM
-        MJD4QvbUTpkyeigPuhHficVanKjxOHsbpJ48eqboEGEPBTE6KB2kTmprtOKXNrnf7O8P6w
-        2Dq4L2Z9n/QGfjWhqdq25ghhcw/aaRglPJkvWc664royCL+stzVMNcHuPZM8kKo1qE6mXj
-        HL2/2+mwfDVwz63IvZZ5ofDnOMsu7kzUUpUsz/xhU6xJm9SA+ixT0uEIgkCm2NGXPybbU6
-        pgli7LSrxdMpykCvHvHsnUT9HqozoN3bXmcrTTuk3RSPuar1bJx17l1CtOaSYA==
-Date:   Wed, 12 Apr 2023 14:19:10 +0200
-From:   =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Michael Walle <michael@walle.cc>, kuba@kernel.org,
-        gerhard@engleder-embedded.com, glipus@gmail.com,
-        krzysztof.kozlowski+dt@linaro.org, linux@armlinux.org.uk,
-        maxime.chevallier@bootlin.com, netdev@vger.kernel.org,
-        richardcochran@gmail.com, robh+dt@kernel.org,
-        thomas.petazzoni@bootlin.com, vadim.fedorenko@linux.dev
-Subject: Re: [PATCH net-next RFC v4 2/5] net: Expose available time stamping
- layers to user space.
-Message-ID: <20230412141910.23d11026@kmaincent-XPS-13-7390>
-In-Reply-To: <20230412110840.vmuudkuh5zb3u426@skbuf>
-References: <20230406184646.0c7c2ab1@kernel.org>
-        <20230412105034.178936-1-michael@walle.cc>
-        <20230412110840.vmuudkuh5zb3u426@skbuf>
-Organization: bootlin
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S229604AbjDLMX5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 08:23:57 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822B772AB;
+        Wed, 12 Apr 2023 05:23:46 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id c2so790408ybo.9;
+        Wed, 12 Apr 2023 05:23:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681302225; x=1683894225;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=LUWRNNE/JZ+baYmjcl+NKkyo+ch4BXrt9V/cFSfdS9E=;
+        b=e0roAdorSyZN8o45fnTNqHMlgok99sbVKgKWJBZYlxRxKoxRZ3/kteLoTHcQNkwdrc
+         L88YfpsHnhkxrpvXkWURXN/JnM1QDt9E+Soo9qy6uNfwaZevtf95xZ65xOh0LsmXV7o9
+         eQHcQarWEzYc1bzgbtB8zeHSlpmMEgxAKlYFizNJ0wc5DHY3kNyP7uV42coWsrClDeSN
+         2VVXp6ltyACbJTretkzPOefjhg/59ys6FBts4E+n4giyZYzU+s5hxvguSWhCBW7IdOHd
+         keU4ASVDfU4GyM0hO2+vkGYGdCaU49XGUxOgSlEgiL/cixRNx1lnTn0C7W4EKDeTkQX7
+         NweA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1681302225; x=1683894225;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LUWRNNE/JZ+baYmjcl+NKkyo+ch4BXrt9V/cFSfdS9E=;
+        b=QJelOKWqyAlinAqFlSeROPzfySfye93P1lKJavyggb53HaGBQO9F9ZcIvifBzSkc5T
+         9z+lAaOIZnal1V0sCT42OsSahCv3zU3lEfkfkpW5R+BDtZM+2ngJqSKUmv6NG/GgsXRX
+         oRzzUDko6TB0Esr625AHYZY7l8Mv2YDjt1SK5XYzbR2JD54wTrTlOJ9UdbA2wo6XMUFF
+         MLqFy4LDv446jCDgHbYmmSrjoyYUZXCvYSoGWoGM4GSjoh5gbsPQVd4Dh3oj6K3TMqD6
+         80yB/B113Yx7N4S8U5Iv3EgVlueGAszh6w0FDSzZWTPXLdcAWmpDb7n3hnOIzKKWvV5L
+         vAVA==
+X-Gm-Message-State: AAQBX9e00V77xMwJByQ1wCcFQwEdfDLTX/gb9QcfUrM/qNl0ziwtouvR
+        ZbJX1tmKBV/AHPzwKAkRbis0luV2/otEs5pV2q4=
+X-Google-Smtp-Source: AKy350aW016MALydyt2LULMdwEE2qV9c2+4XVUlAcq1uW0K+sBQ2z1MZI4K5fCy6upaLfUFVbwD7YXbpZEMFUVffRkU=
+X-Received: by 2002:a25:744e:0:b0:b8b:f61e:65ff with SMTP id
+ p75-20020a25744e000000b00b8bf61e65ffmr3908986ybc.5.1681302225713; Wed, 12 Apr
+ 2023 05:23:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230410121841.643254-1-kal.conley@dectris.com>
+In-Reply-To: <20230410121841.643254-1-kal.conley@dectris.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 12 Apr 2023 14:23:34 +0200
+Message-ID: <CAJ8uoz11tOSUK0+45K=L9q-yj3gyMCDJVPsOjawE+Wjbe2FSTQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] xsk: Simplify xp_aligned_validate_desc implementation
+To:     Kal Conley <kal.conley@dectris.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Apr 2023 14:08:40 +0300
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Mon, 10 Apr 2023 at 14:24, Kal Conley <kal.conley@dectris.com> wrote:
+>
+> Perform the chunk boundary check like the page boundary check in
+> xp_desc_crosses_non_contig_pg(). This simplifies the implementation and
+> reduces the number of branches.
 
-> On Wed, Apr 12, 2023 at 12:50:34PM +0200, Michael Walle wrote:
-> > >> +/* Hardware layer of the SO_TIMESTAMPING provider */
-> > >> +enum timestamping_layer {
-> > >> +	SOF_MAC_TIMESTAMPING =3D (1<<0),
-> > >> +	SOF_PHY_TIMESTAMPING =3D (1<<1),  
-> > >
-> > > What does SOF_ stand for?  
-> > 
-> > I'd guess start of frame. The timestamp will be taken at the
-> > beginning of the frame.  
-> 
-> I would suggest (with all due respect) that it was an inapt adaptation
-> of the Socket Option Flags that can be seen in
-> Documentation/networking/timestamping.rst.
-> 
-> These are not socket option flags (because these settings are not per
-> socket), so the namespace/prefix is not really correctly used here.
+Thanks for this simplification Kal. Just to check, does your change
+pass the xsk selftests, especially the INV_DESC test? If so, then you
+have my ack below.
 
-As Jakub said, who knows maybe one day it will be per socket information,
-but indeed for now it is not the case.
-I will stick to whatever name the community prefer.
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+
+> Signed-off-by: Kal Conley <kal.conley@dectris.com>
+> ---
+>  net/xdp/xsk_queue.h | 12 ++++--------
+>  1 file changed, 4 insertions(+), 8 deletions(-)
+>
+> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> index dea4f378327d..6d40a77fccbe 100644
+> --- a/net/xdp/xsk_queue.h
+> +++ b/net/xdp/xsk_queue.h
+> @@ -133,16 +133,12 @@ static inline bool xskq_cons_read_addr_unchecked(struct xsk_queue *q, u64 *addr)
+>  static inline bool xp_aligned_validate_desc(struct xsk_buff_pool *pool,
+>                                             struct xdp_desc *desc)
+>  {
+> -       u64 chunk, chunk_end;
+> +       u64 offset = desc->addr & (pool->chunk_size - 1);
+>
+> -       chunk = xp_aligned_extract_addr(pool, desc->addr);
+> -       if (likely(desc->len)) {
+> -               chunk_end = xp_aligned_extract_addr(pool, desc->addr + desc->len - 1);
+> -               if (chunk != chunk_end)
+> -                       return false;
+> -       }
+> +       if (offset + desc->len > pool->chunk_size)
+> +               return false;
+>
+> -       if (chunk >= pool->addrs_cnt)
+> +       if (desc->addr >= pool->addrs_cnt)
+>                 return false;
+>
+>         if (desc->options)
+> --
+> 2.39.2
+>
