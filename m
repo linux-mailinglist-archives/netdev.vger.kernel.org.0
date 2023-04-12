@@ -2,117 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA79E6DF30C
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 13:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A878D6DF331
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 13:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbjDLLTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 07:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45740 "EHLO
+        id S230114AbjDLL0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 07:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230142AbjDLLTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 07:19:14 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE8A7AB3;
-        Wed, 12 Apr 2023 04:18:51 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id dm2so27961687ejc.8;
-        Wed, 12 Apr 2023 04:18:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681298276; x=1683890276;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=j1rD/EKlAM2QobKZRdWuKD2WYCE7Wayo1AHNpbxop9Q=;
-        b=dMf/tdeLCWYDPxppNVuuvxlsNmLdxbynLHseAz+jPQ9hRu88zbH0VHMT4G2Y9L5f4k
-         r49IUdwpKbmbArnFI+pygbpECgPVl2cGxKqM8xyz9o/irOScR22HLmKtVzVHVNAXJ/Op
-         kQiOo6/ZJKT0mk+6TUaNNxQ9lEy71nQz9ZjefheFOxunFpl+yckNHDFVMLgSmfy/FhZZ
-         33nvruMK4NjUs9V6D2Cy3UMxoVAk2yakBlITCDXCRFGE7jbebHTrNXwgyJA3G2w3RM84
-         DK7mt1yD0998x4d8ITlLmMaq3PzyZf0NRRx3vam3V70Q+ePz8qSWDMrn/btSqa+96AJ+
-         yULA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681298276; x=1683890276;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j1rD/EKlAM2QobKZRdWuKD2WYCE7Wayo1AHNpbxop9Q=;
-        b=oGLuExw+qf5fFMnZQlt7tYhcJr2U1CAlLZCuIDrbfCACHmJc6n6HE5sZht16FoouOG
-         x0cWE+ppi79leb+pUBHueRb3fpSN4qhuB/57ayjW5t2V8xu8unNP8CIOcSC7LMPh+WLf
-         rbMuwQHIZODXz0CnyWuR78IuWmtSc2kJlv+d0DNMWBsNkdzCChYia7vQbyfMS13ry3+Y
-         g2tVMf3KUbvDZWuzp1/NEJHAQIffGb7KEevNbCurXmC1OThFiy/UFQIFDOvz9mipVJ4a
-         ajtkAtpc6UZGWNTXEQ9PcoxGv4dHLYMVq3n8+GjKdUd7+r/DHsBBIWCW6N4/4zebwo5y
-         KlQQ==
-X-Gm-Message-State: AAQBX9fEguni/m6x5HXtY0Xu/T8OYAQ2K7vhX2rV1vZQoZSTqDRdFp9K
-        G5bVE+DHxnXdq1/U67b54dI=
-X-Google-Smtp-Source: AKy350akEW91z/suHsYQnndS0oJ6188mIM2+Z3A9u5zo+96wZsMsdFHW7LKgsB8rrSM375M9B73lLg==
-X-Received: by 2002:a17:906:7309:b0:94d:a68a:139c with SMTP id di9-20020a170906730900b0094da68a139cmr7493624ejc.51.1681298275560;
-        Wed, 12 Apr 2023 04:17:55 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id n19-20020a1709067b5300b008f89953b761sm7094185ejo.3.2023.04.12.04.17.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 04:17:55 -0700 (PDT)
-Date:   Wed, 12 Apr 2023 14:17:52 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230060AbjDLL0O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 07:26:14 -0400
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898257AB3;
+        Wed, 12 Apr 2023 04:25:51 -0700 (PDT)
+Received: from wsk (85-222-111-42.dynamic.chello.pl [85.222.111.42])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: lukma@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 4D13E85F89;
+        Wed, 12 Apr 2023 13:25:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1681298748;
+        bh=mZoSxFyu5gl5lRzjVx2+uD113sQVwsFUxkB7gL0MZ5Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jEZ8Uxngl1L2CR4xLBR0Oh9uFOgpr0AHfVQ2l4F5c1ceAxYQVtgXZxL98S/4Rqias
+         pRZZPi87UXbQSS5WUGYbwBVY+WNqM97PEFSxXgd8Ac/99qg899eXeQZgk8nyUD2Ki5
+         AFRKrkOJT4bB53jKMhkOw0bouDm4OrfmMzATIPOed+OmFNhfnS0laIAHqCw2CE8043
+         R3jjBdgt1FkKtOAPnx5/HSmHWJ3A8L/sIqEy+3DGHnc4faISbYJlyrBwVW2hafpgFH
+         4I7U0uYaQ8Mwd8SLXL/sQWLvvPxvkKi9mrYkPzluWjX1Zky2pl/bye3+40wCAeq4MX
+         KIlUJIhGq7c0Q==
+Date:   Wed, 12 Apr 2023 13:25:40 +0200
+From:   Lukasz Majewski <lukma@denx.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2 1/7] dt-bindings: net: dsa: mediatek,mt7530: correct
- brand name
-Message-ID: <20230412111752.bl2ekd7pirbyvnue@skbuf>
-References: <20230407125008.42474-1-arinc.unal@arinc9.com>
- <20230411235749.xbghzt7w77swvhnz@skbuf>
- <80d4a841-db7c-fa2b-e50d-84317ee54a40@arinc9.com>
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] phy: smsc: Implement .aneg_done callback for LAN8720Ai
+Message-ID: <20230412132540.5a45564d@wsk>
+In-Reply-To: <aa6415be-e99b-46df-bb3b-d2c732a33f31@lunn.ch>
+References: <20230406131127.383006-1-lukma@denx.de>
+        <ZC7Nu5Qzs8DyOfQY@corigine.com>
+        <aa6415be-e99b-46df-bb3b-d2c732a33f31@lunn.ch>
+Organization: denx.de
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <80d4a841-db7c-fa2b-e50d-84317ee54a40@arinc9.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/w5rnG5uqlwlpH28QrNL1yn3";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 09:36:32AM +0300, Arınç ÜNAL wrote:
-> On 12.04.2023 02:57, Vladimir Oltean wrote:
-> > Hi Arınç,
-> > 
-> > On Fri, Apr 07, 2023 at 03:50:03PM +0300, arinc9.unal@gmail.com wrote:
-> > > From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> > > 
-> > > The brand name is MediaTek, change it to that.
-> > > 
-> > > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> > > Acked-by: Daniel Golle <daniel@makrotopia.org>
-> > > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> > > ---
-> > 
-> > It is good practice for series larger than 2 patches to create a cover
-> > letter, which gives the overview for the changes. Its contents gets used
-> > as the merge commit description when the series is accepted.
-> 
-> Ok, will do on the next version. I'll also split the schema while at it.
+--Sig_/w5rnG5uqlwlpH28QrNL1yn3
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Ok. I wasn't sure if you and Krzysztof were in agreement about that, so
-this is why I didn't mention it. FWIW, it's also pretty unreviewable to
-me too.
+Hi Andrew,
+
+> On Thu, Apr 06, 2023 at 03:48:43PM +0200, Simon Horman wrote:
+> > On Thu, Apr 06, 2023 at 03:11:27PM +0200, Lukasz Majewski wrote: =20
+> > > The LAN8720Ai has special bit (12) in the PHY SPECIAL
+> > > CONTROL/STATUS REGISTER (dec 31) to indicate if the
+> > > AutoNeg is finished.
+> > >=20
+> > > Signed-off-by: Lukasz Majewski <lukma@denx.de> =20
+> >=20
+> > Hi Lukasz,
+> >=20
+> > I think you need to rebase this on net-next.
+> >=20
+> > If you repost please also include 'net-next' in the subject:
+> > [PATCH net-next v2].
+> >=20
+> > And a note about the changes between v1 and v2. =20
+>=20
+> This actually seems like a fix. So it should probably be based on net,
+> and have a Fixes: tag.
+
+I've rebased it on the newest vanila kernel.
+
+And this patch come from the work on LAN8720Ai based system (speed up
+of the boot time).
+
+It turned out that this IC has a dedicated bit (in vendor specific
+register) to show explicitly if auto neg is done.
+
+>=20
+> Lukasz, how does this bit differ to the one in BMSR?=20
+
+In the BMSR - bit 5 (Auto Negotiate Complete) - shows the same kind of
+information.
+
+The only difference is that this bit is described as "Auto
+Negotiate Complete" and the bit in this patch indicates "Auto
+Negotiation Done".
+
+> Is the BMSR bit
+> broken?=20
+
+This bit works as expected.
+
+> Is there an errata for this?
+
+No, errata doesn't mention it.
+
+I just was wondering if shall we do use the "vendor specific"
+indication bit or the "standard one" from BMSR register.
+
+I try to figure out why SMSC put bit from this patch in the SoC...
+
+> It would be good to describe the
+> problem you see which this patch fixes.
+>=20
+> 	Andrew
+
+
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Erika Unter
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
+
+--Sig_/w5rnG5uqlwlpH28QrNL1yn3
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAmQ2lTQACgkQAR8vZIA0
+zr3hLgf9EDUAgbaDC5yqeC2tiAF3z+aY96QRTrH5NnZsn5b991BlLNlyPcQCLWLC
+XXwtEHibnpgbAbUc2WsO79KIczV/2ElNR3PJw14N2P/c3LEzkpDGghLzrydKp709
+UqRjPo8kyYQNMtEVx/j0JNe9Xq/in4XfKeUpLkY0lyaAfTKiC5I7UJdsXapfpWxY
+biHeFmZ0ztfBU3Zq4ilbKDkQkQfCRf8xrcwS6YRzmy348CKDU9rjbvoDyM6o/9Nl
+0nkIy9x0tzHqKKWiQNhe+ca++OQ0u2rNtYgjLex6amKXgqnxRt4CG+htV3MX65l/
+X+bZAuCQ0JuNpz7RemsePKeODl5T2A==
+=9UhU
+-----END PGP SIGNATURE-----
+
+--Sig_/w5rnG5uqlwlpH28QrNL1yn3--
