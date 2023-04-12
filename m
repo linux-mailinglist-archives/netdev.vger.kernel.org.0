@@ -2,69 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2414E6DFDE6
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 20:47:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 362A56DFE29
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 20:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbjDLSri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 14:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58384 "EHLO
+        id S230315AbjDLS5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 14:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbjDLSri (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 14:47:38 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0765372BE
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 11:47:17 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id os24so1640175ejb.12
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 11:47:16 -0700 (PDT)
+        with ESMTP id S230016AbjDLS5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 14:57:33 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98A66E81
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 11:57:05 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id q191so14009214pgq.7
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 11:57:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1681325235; x=1683917235;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=s0hLAh9mU9VHOxUov5Uf9frqImRP9AP6WLF+5Rn0Y0o=;
-        b=X24RC2mzqT0l9+1gYsl75cdRL18yXdDNES7bawysBwNrjksIt3RpbZ8zwDNSmSrMwg
-         uvpBHJmjdQDyIFrST0aIskoYvNJYPjfO4TmMdfW1v4ldiEv0wBYBrj+R1ucWLHL/Km0Y
-         ElvRnzfonbWRbE3EzT7SCHrsBM2EQtLg3GNew=
+        d=google.com; s=20221208; t=1681325821;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sHYXkYaef6xMNFmaZnkKzH+IKK7bhNbi9t2F6EAC6M8=;
+        b=TuoQ6JVKp2k/cFPXNyeuO/F/TOiztKMjN9sXg8H64JYl6kg3bdh2aWRaJL6RRsNcKW
+         DJOzoEtWM9RiDETkmdPHNEJQUN+f4QvXeR28ACr0ns+ASVmBQTaFxSYOJguvjPSXOf/L
+         1A4RSQ6Q16cm87R23Tqns/d9AfqB7Tb41aTuaFulG/wxXXKGEK8DcriRQVZne1xIxoIa
+         wrOUXDRrrYKApE4p6AVzkwq942bKDane/X3ICADPACDDMki5/AEJkV0+9eHSOdLC/1ni
+         j8Y+H2FjR7EyDfl1hNal8++dP0IIQNIgQHybab0EHhxH23u5mcmzQakJzPmfMb5rsN4f
+         FtUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681325235; x=1683917235;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=s0hLAh9mU9VHOxUov5Uf9frqImRP9AP6WLF+5Rn0Y0o=;
-        b=YxyQjCXZIx+rXmwuk32nARnUMwSyvAc7U+54s989mVb3dy4VksbOc3AjVN+cPbALc0
-         tdpeJ/j+8jxM5+I4nVwGh6v1OhFBOb3KMNgoVhe9ovUw1x7VimF+Yf4hfnYYCWkOSK1A
-         UhzzYTRtwlf9+d9vIwTWqcpTo7xvPR6a8vyyoPWDSicDGd+SHm/jM6J0HkL9e9nRvCFa
-         JZ4RzOMuuiGDUJcxLYjrBPhPlxoxbcV4edCY3ZnCT2SW4j9yoFlHHPpMe8KJISbL4UeS
-         SjXdabUUb2E6cjYyoXqYcTgNSs2wNnAiRke9gCBGueDJKLuY6Kx602crXQ9IVl7e1oxp
-         v7gw==
-X-Gm-Message-State: AAQBX9fIcRtGg6P6FkPnOXdpk+V/87A6y5Lvfak01e8rDDlwIrPmM8xW
-        QU3wTcuaeh7Uuiy/ccp2mcgjyscpNUsCrL5KNYeKUg==
-X-Google-Smtp-Source: AKy350YgLwZMkVknp5hjWbeGYCBbl9EWrKYOiRo2+TDz0R/zGynE3Ljhr7SKrSRwL4xEEPlZYVnng9wrTT3CRoMb0gY=
-X-Received: by 2002:a17:907:a44:b0:8b8:aef3:f2a9 with SMTP id
- be4-20020a1709070a4400b008b8aef3f2a9mr7140785ejc.0.1681325235509; Wed, 12 Apr
- 2023 11:47:15 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681325821;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sHYXkYaef6xMNFmaZnkKzH+IKK7bhNbi9t2F6EAC6M8=;
+        b=cY4lnBcYxue4jksQojKlEVwyZY668HaIwJ5fd8OOLGwq3I0jbQKecMEZWaJbhX/1dh
+         36FA843VzNTRdvvowOyt0/+gH3HvwTO4O6xI2ovewEalwYdSqR92PLPWJEoljnKNKChP
+         fiH4vbZRJXAgK9gBFye0fXr09DNF8U1q750Ati0KNnY88Rpycrkrz8IgFJuQssXHyi/K
+         8orTy/BC8TImlL28sdfKUvKzVuLa6/w5uacj/Pmwc4VG08pWptxuNZSEze18hJVzGObG
+         3iB8V7jGR8PPy2EIDAUB8bnswO9F3WHY+EUKHfQw6auvX6BxqF3TCP2XIbm6mW4ub0dV
+         8UJg==
+X-Gm-Message-State: AAQBX9emuVrBFsY5en2oxrgGrewSXpgnZrXs3qrOosJij6RuCpbkdLyO
+        2bqgGWjJf/fv1heb+GCRmHI+4LxUZb6QxoHOkwSHfQ==
+X-Google-Smtp-Source: AKy350asSOWvzYYWk3xZPCNn85M1GUh5aXVd/UqL2CaLUxUIrW5LUiHM1WCh8gu/XhXgKmAXccrklI07joG66CYJ6E4=
+X-Received: by 2002:a65:4681:0:b0:513:6b94:8907 with SMTP id
+ h1-20020a654681000000b005136b948907mr880151pgr.1.1681325820765; Wed, 12 Apr
+ 2023 11:57:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230410120629.642955-1-kal.conley@dectris.com> <CAJ8uoz1CmRNMdTu3on7VL2Jrvo9z3WvdmFE_hSEiZDLiO-xtFw@mail.gmail.com>
-In-Reply-To: <CAJ8uoz1CmRNMdTu3on7VL2Jrvo9z3WvdmFE_hSEiZDLiO-xtFw@mail.gmail.com>
-From:   Kal Cutter Conley <kal.conley@dectris.com>
-Date:   Wed, 12 Apr 2023 20:51:59 +0200
-Message-ID: <CAHApi-=UJz04Acq+4O+v7ZprkoBH=aRB01Ug1i5Y1PLz58DbAA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 0/4] xsk: Support UMEM chunk_size > PAGE_SIZE
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        bpf@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
+References: <168132448251.317773.2526885806604122764.stgit@firesoul> <168132451707.317773.15960209122204110352.stgit@firesoul>
+In-Reply-To: <168132451707.317773.15960209122204110352.stgit@firesoul>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 12 Apr 2023 11:56:49 -0700
+Message-ID: <CAKH8qBu0B1tQBKtGp0-n8eet+4rQRTPE3rrCr5Ve0CG6uYR7Kg@mail.gmail.com>
+Subject: Re: [PATCH bpf V9 1/6] selftests/bpf: xdp_hw_metadata remove
+ bpf_printk and add counters
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        alexandr.lobakin@intel.com, larysa.zaremba@intel.com,
+        xdp-hints@xdp-project.net, anthony.l.nguyen@intel.com,
+        yoong.siang.song@intel.com, boon.leong.ong@intel.com,
+        intel-wired-lan@lists.osuosl.org, pabeni@redhat.com,
+        jesse.brandeburg@intel.com, kuba@kernel.org, edumazet@google.com,
+        john.fastabend@gmail.com, hawk@kernel.org, davem@davemloft.net,
+        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
+        linux-rdma@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,21 +80,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Thank you so much Kal for implementing this feature. After you have
-> fixed the three small things I had for patch #2, you have my ack for
-> the whole set below. Please add it.
+On Wed, Apr 12, 2023 at 11:35=E2=80=AFAM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
 >
-> For the whole set:
-> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> The tool xdp_hw_metadata can be used by driver developers
+> implementing XDP-hints metadata kfuncs.
 >
-> It would be great if you have the time and desire to also take this to
-> zero-copy mode. I have had multiple AF_XDP users mailing me privately
-> that such a feature would be very useful for them. For some of them it
-> was even a requirement to be able to get down to the latencies they
-> were aiming for.
+> Remove all bpf_printk calls, as the tool already transfers all the
+> XDP-hints related information via metadata area to AF_XDP
+> userspace process.
+>
+> Add counters for providing remaining information about failure and
+> skipped packet events.
+>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-Yes. We need this to work with zero-copy so next I will look into
-implementing this for the mlx5 driver since it has to work for us on
-Mellanox adapters.
+Acked-by: Stanislav Fomichev <sdf@google.com>
 
-Roping in the Mellanox engineers in case they want to add something :-)
+nit: maybe those ++ should be __sync_add_and_fetch instead? Then you
+should be able to drop volatile..
+
+> ---
+>  .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |   36 ++++++++++++--=
+------
+>  tools/testing/selftests/bpf/xdp_hw_metadata.c      |    4 ++
+>  2 files changed, 24 insertions(+), 16 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c b/tools/=
+testing/selftests/bpf/progs/xdp_hw_metadata.c
+> index 4c55b4d79d3d..8a042343cb0c 100644
+> --- a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
+> +++ b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
+> @@ -12,6 +12,10 @@ struct {
+>         __type(value, __u32);
+>  } xsk SEC(".maps");
+>
+> +volatile __u64 pkts_skip =3D 0;
+> +volatile __u64 pkts_fail =3D 0;
+> +volatile __u64 pkts_redir =3D 0;
+> +
+>  extern int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx,
+>                                          __u64 *timestamp) __ksym;
+>  extern int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx,
+> @@ -26,7 +30,7 @@ int rx(struct xdp_md *ctx)
+>         struct udphdr *udp =3D NULL;
+>         struct iphdr *iph =3D NULL;
+>         struct xdp_meta *meta;
+> -       int ret;
+> +       int err;
+>
+>         data =3D (void *)(long)ctx->data;
+>         data_end =3D (void *)(long)ctx->data_end;
+> @@ -46,17 +50,20 @@ int rx(struct xdp_md *ctx)
+>                         udp =3D NULL;
+>         }
+>
+> -       if (!udp)
+> +       if (!udp) {
+> +               pkts_skip++;
+>                 return XDP_PASS;
+> +       }
+>
+> -       if (udp->dest !=3D bpf_htons(9091))
+> +       /* Forwarding UDP:9091 to AF_XDP */
+> +       if (udp->dest !=3D bpf_htons(9091)) {
+> +               pkts_skip++;
+>                 return XDP_PASS;
+> +       }
+>
+> -       bpf_printk("forwarding UDP:9091 to AF_XDP");
+> -
+> -       ret =3D bpf_xdp_adjust_meta(ctx, -(int)sizeof(struct xdp_meta));
+> -       if (ret !=3D 0) {
+> -               bpf_printk("bpf_xdp_adjust_meta returned %d", ret);
+> +       err =3D bpf_xdp_adjust_meta(ctx, -(int)sizeof(struct xdp_meta));
+> +       if (err) {
+> +               pkts_fail++;
+>                 return XDP_PASS;
+>         }
+>
+> @@ -65,20 +72,19 @@ int rx(struct xdp_md *ctx)
+>         meta =3D data_meta;
+>
+>         if (meta + 1 > data) {
+> -               bpf_printk("bpf_xdp_adjust_meta doesn't appear to work");
+> +               pkts_fail++;
+>                 return XDP_PASS;
+>         }
+>
+> -       if (!bpf_xdp_metadata_rx_timestamp(ctx, &meta->rx_timestamp))
+> -               bpf_printk("populated rx_timestamp with %llu", meta->rx_t=
+imestamp);
+> -       else
+> +       err =3D bpf_xdp_metadata_rx_timestamp(ctx, &meta->rx_timestamp);
+> +       if (err)
+>                 meta->rx_timestamp =3D 0; /* Used by AF_XDP as not avail =
+signal */
+>
+> -       if (!bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash))
+> -               bpf_printk("populated rx_hash with %u", meta->rx_hash);
+> -       else
+> +       err =3D bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash);
+> +       if (err)
+>                 meta->rx_hash =3D 0; /* Used by AF_XDP as not avail signa=
+l */
+>
+> +       pkts_redir++;
+>         return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);
+>  }
+>
+> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c b/tools/testin=
+g/selftests/bpf/xdp_hw_metadata.c
+> index 1c8acb68b977..3b942ef7297b 100644
+> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> @@ -212,7 +212,9 @@ static int verify_metadata(struct xsk *rx_xsk, int rx=
+q, int server_fd)
+>         while (true) {
+>                 errno =3D 0;
+>                 ret =3D poll(fds, rxq + 1, 1000);
+> -               printf("poll: %d (%d)\n", ret, errno);
+> +               printf("poll: %d (%d) skip=3D%llu fail=3D%llu redir=3D%ll=
+u\n",
+> +                      ret, errno, bpf_obj->bss->pkts_skip,
+> +                      bpf_obj->bss->pkts_fail, bpf_obj->bss->pkts_redir)=
+;
+>                 if (ret < 0)
+>                         break;
+>                 if (ret =3D=3D 0)
+>
+>
