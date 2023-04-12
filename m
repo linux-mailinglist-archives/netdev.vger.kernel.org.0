@@ -2,160 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ECED6DF30A
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 13:18:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA79E6DF30C
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 13:19:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230158AbjDLLSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 07:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
+        id S230143AbjDLLTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 07:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbjDLLSr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 07:18:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD45D900A
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 04:17:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681298218;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ehvr1d/jbxZ+YWSEUG0+v0Njo7GXylIVh8YAQAeYlBM=;
-        b=ZyH+vfuEBKNDVTkfcNXC1RtWrcRUVC8vyeguvIK5MWOkHSljBRugVND90FlNkYzAvh5RP7
-        KuqVGFV5HK/xefIkcyaCzcyGwl7D6Sy2mJYxcoCRFS+MBQde/HQckbHNWN8UHkNFsg8C6R
-        OwKkuhovVIK1cg8+7NJ85oaMlh7RiUQ=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-222-z6zfURcAOve4eRJ_uCeMWQ-1; Wed, 12 Apr 2023 07:16:56 -0400
-X-MC-Unique: z6zfURcAOve4eRJ_uCeMWQ-1
-Received: by mail-ed1-f72.google.com with SMTP id m20-20020a50d7d4000000b00501dfd867a4so6353702edj.20
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 04:16:56 -0700 (PDT)
+        with ESMTP id S230142AbjDLLTO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 07:19:14 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE8A7AB3;
+        Wed, 12 Apr 2023 04:18:51 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id dm2so27961687ejc.8;
+        Wed, 12 Apr 2023 04:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681298276; x=1683890276;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=j1rD/EKlAM2QobKZRdWuKD2WYCE7Wayo1AHNpbxop9Q=;
+        b=dMf/tdeLCWYDPxppNVuuvxlsNmLdxbynLHseAz+jPQ9hRu88zbH0VHMT4G2Y9L5f4k
+         r49IUdwpKbmbArnFI+pygbpECgPVl2cGxKqM8xyz9o/irOScR22HLmKtVzVHVNAXJ/Op
+         kQiOo6/ZJKT0mk+6TUaNNxQ9lEy71nQz9ZjefheFOxunFpl+yckNHDFVMLgSmfy/FhZZ
+         33nvruMK4NjUs9V6D2Cy3UMxoVAk2yakBlITCDXCRFGE7jbebHTrNXwgyJA3G2w3RM84
+         DK7mt1yD0998x4d8ITlLmMaq3PzyZf0NRRx3vam3V70Q+ePz8qSWDMrn/btSqa+96AJ+
+         yULA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1681298215; x=1683890215;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ehvr1d/jbxZ+YWSEUG0+v0Njo7GXylIVh8YAQAeYlBM=;
-        b=77zqPGWAyPdw2YPUbRbHA8Q5n3QJhIIRGMJry+v33DGBeTgOoDuCF8FYS7V3WoKs5J
-         YnHQFmoNvTyrDxfZAskRVSDfzKTl9qLn3l/GOP08kmjJCf1GBGEW543frZj+Dh0YQVHf
-         OwtI74D9vx9ZZrL8zpXsplVz6O5ti1wK1ZHyYlHkxQADxbKQB+qqdSfaOmMOnkXvQXXf
-         9iSXcxZGiFD812Yrpq5CeT8TaZ72iEKZV4ME7o6M49wUqpIakQTfHg3u2OAaqzth5dMB
-         6WKxoslPBkC3yFj4FCJ/PmstQFZlhoIsbBanIQhDuJx3P8Eb9g+fXBEopDMuTZyHrLLQ
-         fQKQ==
-X-Gm-Message-State: AAQBX9dl5njtwcdBLiwoGkclzd6NX1wgTKe1016mtGkbLSZS73GyNpzx
-        Zu4zgQtfMA/0xGAgMYuiXa/hQ22nCUPturRdgVF7+emc2jHZfQrDA4j4S5/E88z907pZqM4qq5F
-        xPFrbfsAONcOPdWmi
-X-Received: by 2002:a17:906:fae0:b0:931:624b:680c with SMTP id lu32-20020a170906fae000b00931624b680cmr5523412ejb.29.1681298215781;
-        Wed, 12 Apr 2023 04:16:55 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aU/WJ/sIwojTfk8adw2TCi9w7hbQ5lTxFZjvt+7P+pwVRe6sbMuWkO8uddJ/I5SF7pwr+ocA==
-X-Received: by 2002:a17:906:fae0:b0:931:624b:680c with SMTP id lu32-20020a170906fae000b00931624b680cmr5523398ejb.29.1681298215440;
-        Wed, 12 Apr 2023 04:16:55 -0700 (PDT)
-Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id hz16-20020a1709072cf000b0094e09ceafc9sm1978330ejc.44.2023.04.12.04.16.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Apr 2023 04:16:54 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <474201b2-d98c-f3ab-aed9-b008bb188d0b@redhat.com>
-Date:   Wed, 12 Apr 2023 13:16:53 +0200
+        d=1e100.net; s=20210112; t=1681298276; x=1683890276;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=j1rD/EKlAM2QobKZRdWuKD2WYCE7Wayo1AHNpbxop9Q=;
+        b=oGLuExw+qf5fFMnZQlt7tYhcJr2U1CAlLZCuIDrbfCACHmJc6n6HE5sZht16FoouOG
+         x0cWE+ppi79leb+pUBHueRb3fpSN4qhuB/57ayjW5t2V8xu8unNP8CIOcSC7LMPh+WLf
+         rbMuwQHIZODXz0CnyWuR78IuWmtSc2kJlv+d0DNMWBsNkdzCChYia7vQbyfMS13ry3+Y
+         g2tVMf3KUbvDZWuzp1/NEJHAQIffGb7KEevNbCurXmC1OThFiy/UFQIFDOvz9mipVJ4a
+         ajtkAtpc6UZGWNTXEQ9PcoxGv4dHLYMVq3n8+GjKdUd7+r/DHsBBIWCW6N4/4zebwo5y
+         KlQQ==
+X-Gm-Message-State: AAQBX9fEguni/m6x5HXtY0Xu/T8OYAQ2K7vhX2rV1vZQoZSTqDRdFp9K
+        G5bVE+DHxnXdq1/U67b54dI=
+X-Google-Smtp-Source: AKy350akEW91z/suHsYQnndS0oJ6188mIM2+Z3A9u5zo+96wZsMsdFHW7LKgsB8rrSM375M9B73lLg==
+X-Received: by 2002:a17:906:7309:b0:94d:a68a:139c with SMTP id di9-20020a170906730900b0094da68a139cmr7493624ejc.51.1681298275560;
+        Wed, 12 Apr 2023 04:17:55 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id n19-20020a1709067b5300b008f89953b761sm7094185ejo.3.2023.04.12.04.17.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Apr 2023 04:17:55 -0700 (PDT)
+Date:   Wed, 12 Apr 2023 14:17:52 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v2 1/7] dt-bindings: net: dsa: mediatek,mt7530: correct
+ brand name
+Message-ID: <20230412111752.bl2ekd7pirbyvnue@skbuf>
+References: <20230407125008.42474-1-arinc.unal@arinc9.com>
+ <20230411235749.xbghzt7w77swvhnz@skbuf>
+ <80d4a841-db7c-fa2b-e50d-84317ee54a40@arinc9.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com, bpf@vger.kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
-        <toke@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
-        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
-        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
-        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
-        davem@davemloft.net, tariqt@nvidia.com, saeedm@nvidia.com,
-        leon@kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH bpf V7 3/7] xdp: rss hash types representation
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>
-References: <168098183268.96582.7852359418481981062.stgit@firesoul>
- <168098189148.96582.2939096178283411428.stgit@firesoul>
- <ZDQlYqwmyG4Y73Vb@corigine.com>
-In-Reply-To: <ZDQlYqwmyG4Y73Vb@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <80d4a841-db7c-fa2b-e50d-84317ee54a40@arinc9.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/04/2023 17.04, Simon Horman wrote:
-> On Sat, Apr 08, 2023 at 09:24:51PM +0200, Jesper Dangaard Brouer wrote:
->> The RSS hash type specifies what portion of packet data NIC hardware used
->> when calculating RSS hash value. The RSS types are focused on Internet
->> traffic protocols at OSI layers L3 and L4. L2 (e.g. ARP) often get hash
->> value zero and no RSS type. For L3 focused on IPv4 vs. IPv6, and L4
->> primarily TCP vs UDP, but some hardware supports SCTP.
->>
->> Hardware RSS types are differently encoded for each hardware NIC. Most
->> hardware represent RSS hash type as a number. Determining L3 vs L4 often
->> requires a mapping table as there often isn't a pattern or sorting
->> according to ISO layer.
->>
->> The patch introduce a XDP RSS hash type (enum xdp_rss_hash_type) that
->> contain combinations to be used by drivers, which gets build up with bits
->> from enum xdp_rss_type_bits. Both enum xdp_rss_type_bits and
->> xdp_rss_hash_type get exposed to BPF via BTF, and it is up to the
->> BPF-programmer to match using these defines.
->>
->> This proposal change the kfunc API bpf_xdp_metadata_rx_hash() adding
->> a pointer value argument for provide the RSS hash type.
->>
->> Change function signature for all xmo_rx_hash calls in drivers to make it
->> compile. The RSS type implementations for each driver comes as separate
->> patches.
->>
->> Fixes: 3d76a4d3d4e5 ("bpf: XDP metadata RX kfuncs")
->> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->> Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> Acked-by: Stanislav Fomichev <sdf@google.com>
->> ---
->>   drivers/net/ethernet/mellanox/mlx4/en_rx.c       |    3 +
->>   drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c |    3 +
->>   drivers/net/veth.c                               |    3 +
->>   include/linux/netdevice.h                        |    3 +
->>   include/net/xdp.h                                |   45 ++++++++++++++++++++++
->>   net/core/xdp.c                                   |   10 ++++-
->>   6 files changed, 62 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
->> index 4b5e459b6d49..73d10aa4c503 100644
->> --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
->> +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
->> @@ -681,7 +681,8 @@ int mlx4_en_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
->>   	return 0;
->>   }
->>   
->> -int mlx4_en_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
->> +int mlx4_en_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash,
->> +			enum xdp_rss_hash_type *rss_type)
->>   {
->>   	struct mlx4_en_xdp_buff *_ctx = (void *)ctx;
->>   
+On Wed, Apr 12, 2023 at 09:36:32AM +0300, Arınç ÜNAL wrote:
+> On 12.04.2023 02:57, Vladimir Oltean wrote:
+> > Hi Arınç,
+> > 
+> > On Fri, Apr 07, 2023 at 03:50:03PM +0300, arinc9.unal@gmail.com wrote:
+> > > From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > 
+> > > The brand name is MediaTek, change it to that.
+> > > 
+> > > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > Acked-by: Daniel Golle <daniel@makrotopia.org>
+> > > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > > ---
+> > 
+> > It is good practice for series larger than 2 patches to create a cover
+> > letter, which gives the overview for the changes. Its contents gets used
+> > as the merge commit description when the series is accepted.
 > 
-> Hi Jesper,
-> 
-> I think you also need to update the declaration of mlx4_en_xdp_rx_hash()
-> in mlx4_en.h.
-> 
+> Ok, will do on the next version. I'll also split the schema while at it.
 
-Thanks a lot for spotting this. fixed in V8.
---Jesper
-
+Ok. I wasn't sure if you and Krzysztof were in agreement about that, so
+this is why I didn't mention it. FWIW, it's also pretty unreviewable to
+me too.
