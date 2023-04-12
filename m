@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C2D96DED54
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:15:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CD5F6DED73
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 10:20:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbjDLIP3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 12 Apr 2023 04:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
+        id S229551AbjDLIUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 04:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbjDLIPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:15:23 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CCF65BC
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:15:20 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-92-gNKhnxOCMImhoK_m4SdLMg-1; Wed, 12 Apr 2023 09:15:17 +0100
-X-MC-Unique: gNKhnxOCMImhoK_m4SdLMg-1
-Received: from AcuMS.Aculab.com (10.202.163.6) by AcuMS.aculab.com
- (10.202.163.6) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 12 Apr
- 2023 09:15:15 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Wed, 12 Apr 2023 09:15:15 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jakub Kicinski' <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "Jesse Brandeburg" <jesse.brandeburg@intel.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: RE: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
- indexes
-Thread-Topic: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
- indexes
-Thread-Index: AQHZbOE4lpy9n4P2zECDFY6wjA/SEa8nUYsg
-Date:   Wed, 12 Apr 2023 08:15:15 +0000
-Message-ID: <f6c134852244441a88eef8c1774bb67f@AcuMS.aculab.com>
-References: <20230412015038.674023-1-kuba@kernel.org>
- <20230412015038.674023-3-kuba@kernel.org>
-In-Reply-To: <20230412015038.674023-3-kuba@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S229555AbjDLIUq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 04:20:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C445B6A41
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 01:19:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681287591;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oJ0AvAxU8YiIt1rkYJGTfQA8ueLL73KkTt4yrMJFcSA=;
+        b=K+9K1oHwqndA+DxrTi5ChcP1i2xbCJRgsoQLToMwnT10pbNgu3AWr5VRewZrabFV1xUBje
+        x7KgUwY5+MdJ+CI+i5jN2qgiDSz5amP4/JbOc3b++m+G4RzKht7qcaIIu8AwWckpFbdxrY
+        YDWqnJNIpKrVo3MKodqELZ2Bx2DW5oo=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-9-vikeAygTOGiBbHvyVpg8RA-1; Wed, 12 Apr 2023 04:19:48 -0400
+X-MC-Unique: vikeAygTOGiBbHvyVpg8RA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EE6843C0F187;
+        Wed, 12 Apr 2023 08:19:47 +0000 (UTC)
+Received: from toolbox.infra.bos2.lab (ovpn-192-9.brq.redhat.com [10.40.192.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F2C441415117;
+        Wed, 12 Apr 2023 08:19:45 +0000 (UTC)
+From:   Michal Schmidt <mschmidt@redhat.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Karol Kolacinski <karol.kolacinski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Michal Michalik <michal.michalik@intel.com>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Petr Oros <poros@redhat.com>, Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next v2 0/6] ice: lower CPU usage with GNSS
+Date:   Wed, 12 Apr 2023 10:19:23 +0200
+Message-Id: <20230412081929.173220-1-mschmidt@redhat.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,PDS_BAD_THREAD_QP_64,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,47 +63,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski
-> Sent: 12 April 2023 02:51
-> 
-> Eric points out that we should make sure that ring index updates
-> are wrapped in the appropriate READ_ONCE/WRITE_ONCE macros.
-> 
-...
-> -static inline u32 bnxt_tx_avail(struct bnxt *bp, struct bnxt_tx_ring_info *txr)
-> +static inline u32 bnxt_tx_avail(struct bnxt *bp,
-> +				const struct bnxt_tx_ring_info *txr)
->  {
-> -	/* Tell compiler to fetch tx indices from memory. */
-> -	barrier();
-> +	u32 used = READ_ONCE(txr->tx_prod) - READ_ONCE(txr->tx_cons);
-> 
-> -	return bp->tx_ring_size -
-> -		((txr->tx_prod - txr->tx_cons) & bp->tx_ring_mask);
-> +	return bp->tx_ring_size - (used & bp->tx_ring_mask);
->  }
+This series lowers the CPU usage of the ice driver when using its
+provided /dev/gnss*.
 
-Doesn't that function only make sense if only one of
-the ring index can be changing?
-In this case I think this is being used in the transmit path
-so that 'tx_prod' is constant and is either already read
-or need not be read again.
+v2:
+ - Changed subject of patch 1. Requested by Andrew Lunn.
+ - Added patch 2 to change the polling interval as recommended by Intel.
+ - Added patch 3 to remove sq_cmd_timeout as suggested by Simon Horman.
 
-Having written a lot of 'ring access' functions over the years
-if the ring size is a power of 2 I'd mask the 'tx_prod' value
-when it is being used rather than on the increment.
-(So the value just wraps modulo 2**32.)
-This tends to make the code safer - especially since the
-'ring full' and 'ring empty' conditions are different.
+Michal Schmidt (6):
+  ice: do not busy-wait to read GNSS data
+  ice: increase the GNSS data polling interval to 20 ms
+  ice: remove ice_ctl_q_info::sq_cmd_timeout
+  ice: sleep, don't busy-wait, for ICE_CTL_Q_SQ_CMD_TIMEOUT
+  ice: remove unused buffer copy code in ice_sq_send_cmd_retry()
+  ice: sleep, don't busy-wait, in the SQ send retry loop
 
-Also that code is masking with bp->tx_ring_mask, but the
-increments (in hunks I've chopped) use NEXT_TX(prod).
-If that is masking with bp->tx_ring_mask then 'bp' should
-be a parameter.
+ drivers/net/ethernet/intel/ice/ice_common.c   | 29 +++++--------
+ drivers/net/ethernet/intel/ice/ice_controlq.c | 12 +++---
+ drivers/net/ethernet/intel/ice/ice_controlq.h |  3 +-
+ drivers/net/ethernet/intel/ice/ice_gnss.c     | 42 +++++++++----------
+ drivers/net/ethernet/intel/ice/ice_gnss.h     |  3 +-
+ 5 files changed, 36 insertions(+), 53 deletions(-)
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+-- 
+2.39.2
 
