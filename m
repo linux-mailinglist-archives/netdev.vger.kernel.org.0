@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 061746E0568
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 05:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA976E057B
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 05:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229596AbjDMDoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 23:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54536 "EHLO
+        id S229647AbjDMDuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 23:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjDMDoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 23:44:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2146126B3;
-        Wed, 12 Apr 2023 20:44:17 -0700 (PDT)
+        with ESMTP id S229633AbjDMDuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 23:50:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B59610EB
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 20:50:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1749618A8;
-        Thu, 13 Apr 2023 03:44:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF756C433EF;
-        Thu, 13 Apr 2023 03:44:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 051BD638EB
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 03:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 57371C433EF;
+        Thu, 13 Apr 2023 03:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681357456;
-        bh=1PPvIHWJLWZaXeNwvxpCYgYBMdUgCOq4oAMZ+tDARSA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YC81KQbSbeIOZfW6h1vmXukqtShmRR80MyHthILoel5t8xoWmf3bzgUZlv3/FMQRJ
-         34vEK6xEQJgzScb7rjYU4HUEc1k0JVsWYmh4/musAxPl+s000Voke0qAST4xdBSowd
-         y+V507Af9Cv6g2L5fBBlnuorLfsZskrlYZ5j0mqPpP/7Usat6krJeVv/rf+VI1/TvG
-         sWWemgBGufShxUtWDHJ73MxJXSGc1s2sXirMEceQwA/THEOT6bISjfRvITgb46UXuz
-         GFGjWg1IlFSosY2VqrZ77PCz3mJnfQidg9oK9rUXMo5RQ3jMS1zPe+6d0FNclebm9G
-         vm3WqAiI4R78w==
-Date:   Wed, 12 Apr 2023 20:44:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Radu Pirea (OSS)" <radu-nicolae.pirea@oss.nxp.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH net] net: phy: nxp-c45-tja11xx: fix the PTP interrupt
- enabling/disabling
-Message-ID: <20230412204414.72e89e5b@kernel.org>
-In-Reply-To: <20230410124856.287753-1-radu-nicolae.pirea@oss.nxp.com>
-References: <20230410124856.287753-1-radu-nicolae.pirea@oss.nxp.com>
+        s=k20201202; t=1681357818;
+        bh=7v5o9rM/ouA/vFabAN6rImvjgHh0Yk4lQMZ98Q+OjK4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KzCi/dwf0FgROhRRgNB3TqfTAypoB8eq5UH/ULi9d2H0PJSGNcXpiAir2FPzNnDlR
+         JylRS13be+eghwaqK+mf6WRYCQamugcBBe3oPeLga16aG5SRkdOQ+934G+5M7iT5LN
+         2/FkGT+N7Iv+LCo2NTSqt4i1MwrnfrS1NEY9W4P24BghidMLHDt7Hs4eccURooFliA
+         XxI74MNycsdhtIRn3Wid5i5mK4oc0FCmbBmsBPe4JVEB0Rt7jf1csvFYeQaPNDNBVT
+         eZ6cISHxjvhNeETPgOEIOm1/eQCGr+2cMggmDXu9RH/foJgXYa/QafVW/Q7mG6KPIL
+         NFXnvlkuRk03Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3D036E5244E;
+        Thu, 13 Apr 2023 03:50:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: ethernet: Add missing depends on MDIO_DEVRES
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168135781824.31465.13259436947870186840.git-patchwork-notify@kernel.org>
+Date:   Thu, 13 Apr 2023 03:50:18 +0000
+References: <20230409150204.2346231-1-andrew@lunn.ch>
+In-Reply-To: <20230409150204.2346231-1-andrew@lunn.ch>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
+        rmk+kernel@armlinux.org.uk
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,21 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 Apr 2023 15:48:56 +0300 Radu Pirea (OSS) wrote:
-> -	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-> +		phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, PTP_IRQS, PTP_IRQS);
+Hello:
 
-Isn't the third argument supposed to be the address?
-Am I missing something or this patch was no tested properly?
+This patch was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Also why ignore the return value?
+On Sun,  9 Apr 2023 17:02:04 +0200 you wrote:
+> A number of MDIO drivers make use of devm_mdiobus_alloc_size(). This
+> is only available when CONFIG_MDIO_DEVRES is enabled. Add missing
+> depends or selects, depending on if there are circular dependencies or
+> not. This avoids linker errors, especially for randconfig builds.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> 
+> [...]
 
->  		return phy_set_bits_mmd(phydev, MDIO_MMD_VEND1,
->  					VEND1_PHY_IRQ_EN, PHY_IRQ_LINK_EVENT);
-> -	else
-> +	} else {
-> +		phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1, PTP_IRQS, PTP_IRQS);
->  		return phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1,
->  					  VEND1_PHY_IRQ_EN, PHY_IRQ_LINK_EVENT);
-> +	}
+Here is the summary with links:
+  - net: ethernet: Add missing depends on MDIO_DEVRES
+    https://git.kernel.org/netdev/net-next/c/37f9b2a6c086
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
