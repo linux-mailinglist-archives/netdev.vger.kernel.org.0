@@ -2,115 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 105BA6E0904
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 10:36:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E206E0906
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 10:36:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbjDMIf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 04:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
+        id S229492AbjDMIgR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Apr 2023 04:36:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbjDMIf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 04:35:57 -0400
-Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BB793F8;
-        Thu, 13 Apr 2023 01:35:32 -0700 (PDT)
-Received: from [0.0.0.0] (unknown [172.96.223.238])
-        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id 4535B280E07;
-        Thu, 13 Apr 2023 16:35:24 +0800 (CST)
-Message-ID: <7a1de6be-8956-b1d5-6351-c7c2fb3bf9f4@sangfor.com.cn>
-Date:   Thu, 13 Apr 2023 16:35:08 +0800
+        with ESMTP id S229930AbjDMIgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 04:36:12 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26BC903B
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 01:35:54 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-586-lbg6TSa1PXWZr420N-2IhA-1; Thu, 13 Apr 2023 04:35:50 -0400
+X-MC-Unique: lbg6TSa1PXWZr420N-2IhA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E1FD43C025C0;
+        Thu, 13 Apr 2023 08:35:49 +0000 (UTC)
+Received: from hog (unknown [10.45.226.130])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B85FE18EC7;
+        Thu, 13 Apr 2023 08:35:48 +0000 (UTC)
+Date:   Thu, 13 Apr 2023 10:35:47 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Emeel Hakim <ehakim@nvidia.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>
+Subject: Re: [PATCH net-next v4 5/5] macsec: Add MACsec rx_handler change
+ support
+Message-ID: <ZDe7RPlkemjOBB7e@hog>
+References: <20230408105735.22935-1-ehakim@nvidia.com>
+ <20230408105735.22935-6-ehakim@nvidia.com>
+ <ZDbHI/VLKkGib3kQ@hog>
+ <IA1PR12MB6353A4C01FE89E6256C89E94AB989@IA1PR12MB6353.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [RFC PATCH net] sfc: Fix use-after-free due to selftest_work
-Content-Language: en-US
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ecree.xilinx@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pengdonglin@sangfor.com.cn,
-        huangcun@sangfor.com.cn
-References: <20230412005013.30456-1-dinghui@sangfor.com.cn>
- <ZDew+TqjrcK+zSgW@gmail.com>
-From:   Ding Hui <dinghui@sangfor.com.cn>
-In-Reply-To: <ZDew+TqjrcK+zSgW@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkaSk5DVh9OQ01PHUodSEoeTlUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktPSEhVSktLVUtZBg++
-X-HM-Tid: 0a8779c161762eb1kusn4535b280e07
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OE06Ojo4KD0OEiw8DxlDAw4y
-        DzkaCjJVSlVKTUNKSExPQkhLSEhKVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-        QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFPSktINwY+
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <IA1PR12MB6353A4C01FE89E6256C89E94AB989@IA1PR12MB6353.namprd12.prod.outlook.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/4/13 15:37, Martin Habets wrote:
-> On Wed, Apr 12, 2023 at 08:50:13AM +0800, Ding Hui wrote:
->> There is a use-after-free scenario that is:
->>
->> When netif_running() is false, user set mac address or vlan tag to VF,
->> the xxx_set_vf_mac() or xxx_set_vf_vlan() will invoke efx_net_stop()
->> and efx_net_open(), since netif_running() is false, the port will not
->> start and keep port_enabled false, but selftest_worker is scheduled
->> in efx_net_open().
->>
->> If we remove the device before selftest_worker run, the efx is freed,
->> then we will get a UAF in run_timer_softirq() like this:
->>
->> [ 1178.907941] ==================================================================
->> [ 1178.907948] BUG: KASAN: use-after-free in run_timer_softirq+0xdea/0xe90
->> [ 1178.907950] Write of size 8 at addr ff11001f449cdc80 by task swapper/47/0
->> [ 1178.907950]
->> [ 1178.907953] CPU: 47 PID: 0 Comm: swapper/47 Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
->> [ 1178.907954] Hardware name: SANGFOR X620G40/WI2HG-208T1061A, BIOS SPYH051032-U01 04/01/2022
->> [ 1178.907955] Call Trace:
->> [ 1178.907956]  <IRQ>
->> [ 1178.907960]  dump_stack+0x71/0xab
->> [ 1178.907963]  print_address_description+0x6b/0x290
->> [ 1178.907965]  ? run_timer_softirq+0xdea/0xe90
->> [ 1178.907967]  kasan_report+0x14a/0x2b0
->> [ 1178.907968]  run_timer_softirq+0xdea/0xe90
->> [ 1178.907971]  ? init_timer_key+0x170/0x170
->> [ 1178.907973]  ? hrtimer_cancel+0x20/0x20
->> [ 1178.907976]  ? sched_clock+0x5/0x10
->> [ 1178.907978]  ? sched_clock_cpu+0x18/0x170
->> [ 1178.907981]  __do_softirq+0x1c8/0x5fa
->> [ 1178.907985]  irq_exit+0x213/0x240
->> [ 1178.907987]  smp_apic_timer_interrupt+0xd0/0x330
->> [ 1178.907989]  apic_timer_interrupt+0xf/0x20
->> [ 1178.907990]  </IRQ>
->> [ 1178.907991] RIP: 0010:mwait_idle+0xae/0x370
->>
->> I am thinking about several ways to fix the issue:
->>
->> [1] In this RFC, I cancel the selftest_worker unconditionally in
->> efx_pci_remove().
->>
->> [2] Add a test condition, only invoke efx_selftest_async_start() when
->> efx->port_enabled is true in efx_net_open().
->>
->> [3] Move invoking efx_selftest_async_start() from efx_net_open() to
->> efx_start_all() or efx_start_port(), that matching cancel action in
->> efx_stop_port().
+2023-04-13, 06:38:12 +0000, Emeel Hakim wrote:
 > 
-> I think moving this to efx_start_port() is best, as you say to match
-> the cancel in efx_stop_port().
 > 
+> > -----Original Message-----
+> > From: Sabrina Dubroca <sd@queasysnail.net>
+> > Sent: Wednesday, 12 April 2023 17:59
+> > To: Emeel Hakim <ehakim@nvidia.com>
+> > Cc: davem@davemloft.net; kuba@kernel.org; pabeni@redhat.com;
+> > edumazet@google.com; netdev@vger.kernel.org; leon@kernel.org
+> > Subject: Re: [PATCH net-next v4 5/5] macsec: Add MACsec rx_handler change
+> > support
+> > 
+> > External email: Use caution opening links or attachments
+> > 
+> > 
+> > 2023-04-08, 13:57:35 +0300, Emeel Hakim wrote:
+> > > Offloading device drivers will mark offloaded MACsec SKBs with the
+> > > corresponding SCI in the skb_metadata_dst so the macsec rx handler
+> > > will know to which interface to divert those skbs, in case of a marked
+> > > skb and a mismatch on the dst MAC address, divert the skb to the
+> > > macsec net_device where the macsec rx_handler will be called.
+> > 
+> > Quoting my reply to v2:
+> > 
+> > ========
+> > 
+> > Sorry, I don't understand what you're trying to say here and in the subject line.
+> > 
+> > To me, "Add MACsec rx_handler change support" sounds like you're changing
+> > what function is used as ->rx_handler, which is not what this patch is doing.
+> > 
+> > ========
+> 
+> Sorry that I missed it.
+> what do you think of "Don't rely solely on the dst MAC address for skb diversion upon MACsec rx_handler change"
+> is it good enough?
 
-If moving to efx_start_port(), should we worry about that IRQ_TIMEOUT
-is still enough?
+But there's no "change of rx_handler". You're just receiving the
+packet on the macsec device. I don't understand what you're trying to
+say with "change of rx_handler", but to me that's not describing this
+patch at all. "change of rx_handler" would describe a patch that
+modifies dev->rx_handler.
 
-I'm not sure if there is a long time waiting from starting of schedule
-selftest_work to the ending of efx_net_open().
+"Don't rely solely on the dst MAC address to identify destination
+MACsec device" looks ok, and should be followed by an explanation:
+ - why the dst MAC address may not be enough
+ - why it's not needed when we have metadata
+
+> > > @@ -1048,6 +1052,14 @@ static enum rx_handler_result
+> > > handle_not_macsec(struct sk_buff *skb)
+> > >
+> > >                               __netif_rx(nskb);
+> > >                       }
+> > > +
+> > > +                     if (md_dst && md_dst->type == METADATA_MACSEC &&
+> > rx_sc_found) {
+
+BTW, why did you choose to separate that from the previous if/else if?
+
+> > > +                             skb->dev = ndev;
+> > > +                             skb->pkt_type = PACKET_HOST;
+> > > +                             ret = RX_HANDLER_ANOTHER;
+> > > +                             goto out;
+> > > +                     }
+> > > +
+> > >                       continue;
+> > >               }
 
 -- 
-Thanks,
-- Ding Hui
+Sabrina
 
