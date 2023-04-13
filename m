@@ -2,239 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E6266E08F8
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 10:33:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 649056E08FD
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 10:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229753AbjDMIdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 04:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
+        id S229870AbjDMIfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 04:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbjDMIdb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 04:33:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463E59031
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 01:33:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C927960FB4
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 08:33:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9070C4339B;
-        Thu, 13 Apr 2023 08:33:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681374809;
-        bh=OfwPkh4WmuledLaS1eY+ng2MkkKfc8aO2mFrV5eJ5cE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BQ/+jC2dubRHy58jIx9pKG5cycX6GfkaVffcYmrrDQ9MOL3sTqDez78MylU03VTV2
-         c6GnhJsz9qxVLN82MrBd6QCNzWht3qwd+IjjrGauvxrIKzLuz8mFjDiuQRPrl95Cp4
-         7UxjusoZ3xFodgv8p0sSpkOW2suZ8IYcu05mGZ2h4LAGpXnagHVJd9dhj1TfBJ15Jn
-         UZhlAaCJWLJAe1EVecrM+G1DvHFLLyS4VG/Bn314ofTTpw8h0nEDZ2TP/LOsDRfwoU
-         BmdzrzGkBSd/IxHjRu//0d7Hr7b/aRweDQkXXU2YlNXTPfU9lxtdR9CdrfU5ElP37/
-         sHYUMV88HMsQA==
-Date:   Thu, 13 Apr 2023 11:33:25 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Shannon Nelson <shannon.nelson@amd.com>
-Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
-        kuba@kernel.org, drivers@pensando.io, jiri@resnulli.us
-Subject: Re: [PATCH v9 net-next 02/14] pds_core: add devcmd device interfaces
-Message-ID: <20230413083325.GD17993@unreal>
-References: <20230406234143.11318-1-shannon.nelson@amd.com>
- <20230406234143.11318-3-shannon.nelson@amd.com>
- <20230409114608.GA182481@unreal>
- <5394cb12-05fd-dcb9-eea1-6b64ff0232d6@amd.com>
+        with ESMTP id S229803AbjDMIfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 04:35:07 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2089.outbound.protection.outlook.com [40.107.7.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE167692;
+        Thu, 13 Apr 2023 01:35:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fk8cv9N5uNlyFdkxTJSV9DPN8FlhZqQrgRMk2ZsPnE8=;
+ b=S+P8NiuIDn8fUND0ax+325ZIZym6YlQi+YTvoPG6XVw+05aHP+Q/lv/u4SgEihaejPcX93KdExjZhJuesj69lugCFSIGG5wa39MfoNoGVd7yw+C86EKMYH5iwQWpPfuoQLKuEKvabQGSvPIl9SpWRyu5J20O4kU30bBct7LHpvw=
+Received: from AS9PR06CA0778.eurprd06.prod.outlook.com (2603:10a6:20b:484::32)
+ by VE1PR08MB5631.eurprd08.prod.outlook.com (2603:10a6:800:1ab::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Thu, 13 Apr
+ 2023 08:35:00 +0000
+Received: from AM7EUR03FT063.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:20b:484:cafe::89) by AS9PR06CA0778.outlook.office365.com
+ (2603:10a6:20b:484::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.31 via Frontend
+ Transport; Thu, 13 Apr 2023 08:35:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
+ smtp.mailfrom=arm.com; dkim=pass (signature was verified)
+ header.d=armh.onmicrosoft.com;dmarc=pass action=none header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
+ client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
+ pr=C
+Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
+ AM7EUR03FT063.mail.protection.outlook.com (100.127.140.221) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6298.32 via Frontend Transport; Thu, 13 Apr 2023 08:35:00 +0000
+Received: ("Tessian outbound 3a01b65b5aad:v136"); Thu, 13 Apr 2023 08:34:59 +0000
+X-CheckRecipientChecked: true
+X-CR-MTA-CID: d5e04a2226e6bcf0
+X-CR-MTA-TID: 64aa7808
+Received: from 12cf4ac8d256.1
+        by 64aa7808-outbound-1.mta.getcheckrecipient.com id 07C34EA8-FD17-4FB1-AC41-CC9CCC89F3AC.1;
+        Thu, 13 Apr 2023 08:34:52 +0000
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id 12cf4ac8d256.1
+    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
+    Thu, 13 Apr 2023 08:34:52 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E9yHoKuB0ATi0+e+3W8Hsn6olmY6IJNYNv2FSN0Rh05dGkdDwxE4RVf3Cg/H22OOh344DqpLRGd94tGIvv3msbxux3497+OYwdQw/BDP0iCUX13tbYDJIrDlLn/B8hJ8TOw5+RLfH35aApLUiOnBGLwXH+jKKOP1US5m7YPDZl1OE9ESEbZ4itwdM+cYJ2YjjCq0sWYUDHYOX3s8twu7XhIsVx39u5KacvSpHZwKarZZJ+0+lIjXnqnXf8aj6u9X8j313pPnO2aZdeX3YsipirBF4m8G/sfS/Slp7PWc3X28vooVA3yxSo7V2RqnH5toZujqs9pqc/0vnhJZ94i1UA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fk8cv9N5uNlyFdkxTJSV9DPN8FlhZqQrgRMk2ZsPnE8=;
+ b=cOKGRPHbz8l5sMrpRwLPdwPWuWbof+TPOQsAYjP2vPFLQKDfMTeCUpP3Hvg6r1RMc6wdekgNjnCtaQPqE/J/1m3wM+dH1QlT+icBhaElo9oNZ2UrNFmGKDrc/pqEb7rfE0N48kxnOt8KyqDcwK+weFZrGfIoZY0r7l2dQClG/qWNFBLLWZ9K/ezPGrIvAH3K/bfBOLzLHy2uqa5xvVG67uxqbaPIF5GpEvjmhf5+VJs3uCiFrpU8isqqL1h0pi7lmfNx1xwzzF0n2gLw79lF3p3vbK0mVfvsKG7WOFF7/xhARxKW5LBLLdCkVRSiGQtjlBD2ACDeWLyLPyimkHavPg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fk8cv9N5uNlyFdkxTJSV9DPN8FlhZqQrgRMk2ZsPnE8=;
+ b=S+P8NiuIDn8fUND0ax+325ZIZym6YlQi+YTvoPG6XVw+05aHP+Q/lv/u4SgEihaejPcX93KdExjZhJuesj69lugCFSIGG5wa39MfoNoGVd7yw+C86EKMYH5iwQWpPfuoQLKuEKvabQGSvPIl9SpWRyu5J20O4kU30bBct7LHpvw=
+Authentication-Results-Original: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arm.com;
+Received: from DB9PR08MB6570.eurprd08.prod.outlook.com (2603:10a6:10:251::14)
+ by AS8PR08MB10269.eurprd08.prod.outlook.com (2603:10a6:20b:63c::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Thu, 13 Apr
+ 2023 08:34:50 +0000
+Received: from DB9PR08MB6570.eurprd08.prod.outlook.com
+ ([fe80::6ca0:c6b0:2e2:3ef3]) by DB9PR08MB6570.eurprd08.prod.outlook.com
+ ([fe80::6ca0:c6b0:2e2:3ef3%7]) with mapi id 15.20.6298.030; Thu, 13 Apr 2023
+ 08:34:50 +0000
+Message-ID: <710ed5a2-1c3a-3fb1-c015-55ded320db30@arm.com>
+Date:   Thu, 13 Apr 2023 10:34:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH] net: Finish up ->msg_control{,_user} split
+Content-Language: en-GB
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20230411122625.3902339-1-kevin.brodsky@arm.com>
+ <20230412152548.GA26786@lst.de>
+From:   Kevin Brodsky <kevin.brodsky@arm.com>
+In-Reply-To: <20230412152548.GA26786@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: LO4P123CA0218.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1a6::7) To DB9PR08MB6570.eurprd08.prod.outlook.com
+ (2603:10a6:10:251::14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5394cb12-05fd-dcb9-eea1-6b64ff0232d6@amd.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-TrafficTypeDiagnostic: DB9PR08MB6570:EE_|AS8PR08MB10269:EE_|AM7EUR03FT063:EE_|VE1PR08MB5631:EE_
+X-MS-Office365-Filtering-Correlation-Id: 99439678-d711-481c-84ac-08db3bf9f864
+x-checkrecipientrouted: true
+NoDisclaimer: true
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: 32TINHaNuzqah4vb+gRp1NQB1aOusdYf86+7gmEq3q5JHEa8Xk+3aY6fhTr8F3VubjyOlB/oVAMeyypxNbNCbVtc+oEnnFqR5jZBlYS61Sxvd8mNHceDpddVcKVHhGVJGA85cz/2Pd6QV2osTCoq8Z8GSZ6aL0nNwAXWvVp/CLS5WBRpxe165+tjecz6ktdzJSFKxr45Qf0KrrDxmLO2TVXAYjw+H84qyr5Lpp2rBxf2muquauaZ1uWsCxCmckFGAegww6pXZs6i7E1f04FYB3f2LiKljTxmzJv5gxRQRQZa1ULM0tkFiB3GzgjP+HG4fKQA+8gGIgrW5HJUD+KfPM1VtjM4D3JpKSJ0GcKcXZyCxjiLvFS/muUqeYo8Zqbv4u+BlZg1vYVoS5PTiR00WBLL9dm/JoWQmFdUxSPWY9HXxdfMSa0JciTrud1sAeLrQ53EqVSujXM6pCRrET3GPM6opUTMDXg/4tmffKjes9ZYzTY+J9vAe4lV03yOakpkjQDi7vpjM+gy5OibiJv1FS9vdAKm6DBR191Y4hLXLXZhMxRoyJX0E51FCgxV94INdhcWJaFh9RgEQ5huajfcHMJbsJ51Ve7BGLwOQyX1r7sZRrWctlsw4wqSqNz2+GwPi0pjqHH0WyVtL3a4+ZWGsQ==
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR08MB6570.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(396003)(376002)(39860400002)(346002)(451199021)(316002)(38100700002)(6916009)(4326008)(66556008)(66946007)(66476007)(2616005)(5660300002)(41300700001)(44832011)(31686004)(36756003)(86362001)(6486002)(31696002)(54906003)(6512007)(6506007)(26005)(186003)(53546011)(2906002)(83380400001)(8676002)(8936002)(478600001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR08MB10269
+Original-Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=arm.com;
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: AM7EUR03FT063.eop-EUR03.prod.protection.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 705b33a1-ed18-4126-3c68-08db3bf9f278
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PrKSuQlhM/t5EF+CXTpe7NRB0qWmjqNlSa/Xme/wlgmUkj5ObP1vmEWfzRKF6r0tLIA9lmLTnpSgwmIQMVEqskrbK+u5BflhGv3rqPM2Qn7b392yyD3KxHMnKUHZOr2mTMDbg3c2dEJE+kQY9e5D3R4O9dMpDzkejv77XEqsT6j3IqTyvtI97hPp2ocgoATJcoNqj+z51AcGfuLSr+DRgrbi1lPcM0nxY2DKNvPtjoxLSTflQuuy3hxvMz5CAEgtl6Jk/KlkJQKTsUWwv9jt3P9i9KrapEmv2xzxb3PGS7XB55G4UHLfZIcxxGPoFF3n8xx+cQ15J395xm4LKVKWuyFQwAtS6MW810F/dhSFgIc12zvDIdmVbIol+itwEE5GUgufhxSGYU/g0uP0zwCNGe+iNkSdQTb6f5LkZRMLg7Y+MtLc3I5nXnBqph7SI+ebUW6Jh176sWuvWS72Q6VD9+/m9sUgltlUv/VVs0zFpP514FESX1DTOsdnoKvdEoin1T37JlZBS0tpEvzPdSbHgU2LXGKxVoE9CI8s81R4XVKRxPzrYQx39Me9jPVka8J8oqqKL0rB02ScFtb4joahEUi/SJGxsx6wUavfkn57rRiDaimbTS1W8o/ATkOshz8+EFmAY6IpQXGQjdmgUxWGDUAEd3OS5H9i0gYbfdL+8ZNtBNp5oEt3Um2pJpUMtOQwkfBSPBjv6eESE+tPa5VUf16Ipr+9MwVWFA4XvcdxVKA=
+X-Forefront-Antispam-Report: CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(136003)(39860400002)(346002)(396003)(451199021)(46966006)(40470700004)(36840700001)(2616005)(47076005)(40480700001)(53546011)(6512007)(6506007)(26005)(31686004)(186003)(336012)(40460700003)(36860700001)(8936002)(5660300002)(6862004)(8676002)(2906002)(83380400001)(450100002)(4326008)(70586007)(86362001)(54906003)(70206006)(41300700001)(316002)(31696002)(82740400003)(478600001)(356005)(44832011)(81166007)(6486002)(36756003)(82310400005)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 08:35:00.2508
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99439678-d711-481c-84ac-08db3bf9f864
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
+X-MS-Exchange-CrossTenant-AuthSource: AM7EUR03FT063.eop-EUR03.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR08MB5631
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,FORGED_SPF_HELO,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 10, 2023 at 12:05:20PM -0700, Shannon Nelson wrote:
-> On 4/9/23 4:46 AM, Leon Romanovsky wrote:
-> > 
-> > On Thu, Apr 06, 2023 at 04:41:31PM -0700, Shannon Nelson wrote:
-> > > The devcmd interface is the basic connection to the device through the
-> > > PCI BAR for low level identification and command services.  This does
-> > > the early device initialization and finds the identity data, and adds
-> > > devcmd routines to be used by later driver bits.
-> > > 
-> > > Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-> > > ---
-> > >   drivers/net/ethernet/amd/pds_core/Makefile  |   4 +-
-> > >   drivers/net/ethernet/amd/pds_core/core.c    |  36 ++
-> > >   drivers/net/ethernet/amd/pds_core/core.h    |  52 +++
-> > >   drivers/net/ethernet/amd/pds_core/debugfs.c |  68 ++++
-> > >   drivers/net/ethernet/amd/pds_core/dev.c     | 349 ++++++++++++++++++++
-> > >   drivers/net/ethernet/amd/pds_core/main.c    |  33 +-
-> > >   include/linux/pds/pds_common.h              |  61 ++++
-> > >   include/linux/pds/pds_intr.h                | 163 +++++++++
-> > >   8 files changed, 763 insertions(+), 3 deletions(-)
-> > >   create mode 100644 drivers/net/ethernet/amd/pds_core/core.c
-> > >   create mode 100644 drivers/net/ethernet/amd/pds_core/dev.c
-> > >   create mode 100644 include/linux/pds/pds_intr.h
-> > 
-> > <...>
+On 12/04/2023 17:25, Christoph Hellwig wrote:
+> On Tue, Apr 11, 2023 at 01:26:25PM +0100, Kevin Brodsky wrote:
+>> This patch is attempting to complete the split. Most issues are about
+>> msg_control being used when in fact a user pointer is stored in the
+>> union; msg_control_user is now used instead. An exception is made
+>> for null checks, as it should be safe to use msg_control
+>> unconditionally for that purpose.
+> So all of the fixes looks good to me.
+>
+>> Additionally, a special situation in
+>> cmsghdr_from_user_compat_to_kern() is addressed. There the input
+>> struct msghdr holds a user pointer (msg_control_user), but a kernel
+>> pointer is stored in msg_control when returning. msg_control_is_user
+>> is now updated accordingly.
+> But this is a small isolated real bugfix.  So I'd suggest to split
+> this into a simple and easily backportable patch, and do the rest
+> in another.
+>
+>> diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+>> index 2917dd8d198c..ae818ff46224 100644
+>> --- a/net/ipv6/ipv6_sockglue.c
+>> +++ b/net/ipv6/ipv6_sockglue.c
+>> @@ -716,6 +716,7 @@ int do_ipv6_setsockopt(struct sock *sk, int level, i=
+nt optname,
+>>                      goto done;
+>>
+>>              msg.msg_controllen =3D optlen;
+>> +            msg.msg_control_is_user =3D false;
+> And this is another one that has a real effect.
 
-<...>
+Thank you, both good points! Will split that up into a series of three
+patches.
 
-> > >   #endif /* CONFIG_DEBUG_FS */
-> > > diff --git a/drivers/net/ethernet/amd/pds_core/dev.c b/drivers/net/ethernet/amd/pds_core/dev.c
-> > > new file mode 100644
-> > > index 000000000000..52385a72246d
-> > > --- /dev/null
-> > > +++ b/drivers/net/ethernet/amd/pds_core/dev.c
-> > > @@ -0,0 +1,349 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-> > > +
-> > > +#include <linux/errno.h>
-> > > +#include <linux/pci.h>
-> > > +#include <linux/utsname.h>
-> > > +
-> > > +#include "core.h"
-> > > +
-> > > +int pdsc_err_to_errno(enum pds_core_status_code code)
-> > 
-> > All users of this function, call to pdsc_devcmd_status() first. Probably
-> > they need to be combined.
-> 
-> This is also called from pdsc_adminq_post() which doesn't use
-> pdsc_devcmd_status().
-
-I probably missed that.
-
-> 
-> > 
-> > > +{
-> > > +     switch (code) {
-> > > +     case PDS_RC_SUCCESS:
-> > > +             return 0;
-> > > +     case PDS_RC_EVERSION:
-> > > +     case PDS_RC_EQTYPE:
-> > > +     case PDS_RC_EQID:
-> > > +     case PDS_RC_EINVAL:
-> > > +     case PDS_RC_ENOSUPP:
-> > > +             return -EINVAL;
-> > > +     case PDS_RC_EPERM:
-> > > +             return -EPERM;
-> > > +     case PDS_RC_ENOENT:
-> > > +             return -ENOENT;
-> > > +     case PDS_RC_EAGAIN:
-> > > +             return -EAGAIN;
-> > > +     case PDS_RC_ENOMEM:
-> > > +             return -ENOMEM;
-> > > +     case PDS_RC_EFAULT:
-> > > +             return -EFAULT;
-> > > +     case PDS_RC_EBUSY:
-> > > +             return -EBUSY;
-> > > +     case PDS_RC_EEXIST:
-> > > +             return -EEXIST;
-> > > +     case PDS_RC_EVFID:
-> > > +             return -ENODEV;
-> > > +     case PDS_RC_ECLIENT:
-> > > +             return -ECHILD;
-> > > +     case PDS_RC_ENOSPC:
-> > > +             return -ENOSPC;
-> > > +     case PDS_RC_ERANGE:
-> > > +             return -ERANGE;
-> > > +     case PDS_RC_BAD_ADDR:
-> > > +             return -EFAULT;
-> > > +     case PDS_RC_EOPCODE:
-> > > +     case PDS_RC_EINTR:
-> > > +     case PDS_RC_DEV_CMD:
-> > > +     case PDS_RC_ERROR:
-> > > +     case PDS_RC_ERDMA:
-> > > +     case PDS_RC_EIO:
-> > > +     default:
-> > > +             return -EIO;
-> > > +     }
-> > > +}
-> > 
-
-<...>
-
-> > > +/*
-> > > + * enum pds_core_status_code - Device command return codes
-> > > + */
-> > > +enum pds_core_status_code {
-> > > +     PDS_RC_SUCCESS  = 0,    /* Success */
-> > > +     PDS_RC_EVERSION = 1,    /* Incorrect version for request */
-> > > +     PDS_RC_EOPCODE  = 2,    /* Invalid cmd opcode */
-> > > +     PDS_RC_EIO      = 3,    /* I/O error */
-> > > +     PDS_RC_EPERM    = 4,    /* Permission denied */
-> > > +     PDS_RC_EQID     = 5,    /* Bad qid */
-> > > +     PDS_RC_EQTYPE   = 6,    /* Bad qtype */
-> > > +     PDS_RC_ENOENT   = 7,    /* No such element */
-> > > +     PDS_RC_EINTR    = 8,    /* operation interrupted */
-> > > +     PDS_RC_EAGAIN   = 9,    /* Try again */
-> > > +     PDS_RC_ENOMEM   = 10,   /* Out of memory */
-> > > +     PDS_RC_EFAULT   = 11,   /* Bad address */
-> > > +     PDS_RC_EBUSY    = 12,   /* Device or resource busy */
-> > > +     PDS_RC_EEXIST   = 13,   /* object already exists */
-> > > +     PDS_RC_EINVAL   = 14,   /* Invalid argument */
-> > > +     PDS_RC_ENOSPC   = 15,   /* No space left or alloc failure */
-> > > +     PDS_RC_ERANGE   = 16,   /* Parameter out of range */
-> > > +     PDS_RC_BAD_ADDR = 17,   /* Descriptor contains a bad ptr */
-> > > +     PDS_RC_DEV_CMD  = 18,   /* Device cmd attempted on AdminQ */
-> > > +     PDS_RC_ENOSUPP  = 19,   /* Operation not supported */
-> > > +     PDS_RC_ERROR    = 29,   /* Generic error */
-> > > +     PDS_RC_ERDMA    = 30,   /* Generic RDMA error */
-> > > +     PDS_RC_EVFID    = 31,   /* VF ID does not exist */
-> > > +     PDS_RC_BAD_FW   = 32,   /* FW file is invalid or corrupted */
-> > > +     PDS_RC_ECLIENT  = 33,   /* No such client id */
-> > > +};
-> > 
-> > We asked from Intel to remove custom error codes and we would like to
-> > ask it here too. Please use standard in-kernel errors.
-> 
-> These are part of the device interface defined by the device firmware and
-> include some that aren't in the errno set.  This is why we use
-> pdsc_err_to_errno() in pdsc_devcmd_wait() and pdsc_adminq_post(), so that we
-> can change these status codes that we get from the device into standard
-> kernel error codes.  We try to report both in error messages, but only
-> return the kernel errno.
-
-You don't really need to create separate enum for that and place
-it in include/linux/pds/pds_common.h like you did.
-
-You FW returns u8 status, which you can feed to pdsc_err_to_errno().
-In the latter function, you will declare this translation enum.
-Such core reorg will esnure that you still have meaningful FW statuses
-while keeping them in limited code namespace.
-
-> 
-> However, I see in one place in pdsc_devcmd_wait() we're using the status
-> codes where we could use the errno, so I'll fix that up.
-> 
-> 
-> > 
-> > > +
-> > > +enum pds_core_driver_type {
-> > > +     PDS_DRIVER_LINUX   = 1,
-> > 
-> > This is only relevant here, everything else is not applicable.
-> > 
-> > > +     PDS_DRIVER_WIN     = 2,
-> > > +     PDS_DRIVER_DPDK    = 3,
-> > > +     PDS_DRIVER_FREEBSD = 4,
-> > > +     PDS_DRIVER_IPXE    = 5,
-> > > +     PDS_DRIVER_ESXI    = 6,
-> > > +};
-> 
-> Yes, they are rather pointless for the Linux kernel, but it is part of
-> documenting the device interface.
-
-It is not used in upstream kernel.
-
-Thanks
-
-> 
-> > > +
-> > 
-> > Thanks
+Kevin
+IMPORTANT NOTICE: The contents of this email and any attachments are confid=
+ential and may also be privileged. If you are not the intended recipient, p=
+lease notify the sender immediately and do not disclose the contents to any=
+ other person, use it for any purpose, or store or copy the information in =
+any medium. Thank you.
