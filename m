@@ -2,127 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2448B6E0DB2
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 14:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C39AE6E0E01
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 15:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbjDMMth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 08:49:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
+        id S229516AbjDMNGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 09:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbjDMMtg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 08:49:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822D79741;
-        Thu, 13 Apr 2023 05:49:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19AF76152E;
-        Thu, 13 Apr 2023 12:49:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D59C433EF;
-        Thu, 13 Apr 2023 12:49:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681390173;
-        bh=hl2z3VQRd2gHDfpU3684uq8PUQrhWsZX8vPo+MGJYmw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Qgz2dn/NnxJFjaA8hJhGDw5y3Qvg2LkpVx/BTL78zd1lYhH0XU/xKW4unpwHdeAhD
-         eBnKAueNAFNCswdjd0k+ox2m7RVOIgFrnEEtdl8w9YTP2DFqJjBDFlJYY1pHTUn7pY
-         se9Auk2WbgunltG/BzpyckiusXOFDmlFo9wJw+OaypC/4KnwiUua8WZmao7j+txjkp
-         Upo1x4Iv2JY6xvk7f5AZfhndIhD7cBLemsOqPLlZgrEGq1b5L1Zew1fWQrDgUcwJGu
-         aqmfIG/MbsVrdPoHXho4hkUQr8ppCMwyZBO5ZvTSGgSEkDS+PvWBnQGhoIY6j3rzp2
-         J7wBzn5/amvYA==
-Date:   Thu, 13 Apr 2023 15:49:29 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Avihai Horon <avihaih@nvidia.com>, Aya Levin <ayal@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Meir Lichtinger <meirl@mellanox.com>,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>
-Subject: Re: [PATCH rdma-next 0/4] Allow relaxed ordering read in VFs and VMs
-Message-ID: <20230413124929.GN17993@unreal>
-References: <cover.1681131553.git.leon@kernel.org>
- <ZDVoH0W27xo6mAbW@nvidia.com>
- <7c5eb785-0fe7-e0e5-8232-403e1d3538ac@intel.com>
+        with ESMTP id S229782AbjDMNGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 09:06:36 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A52F9ECB
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 06:06:28 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id q23so27774733ejz.3
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 06:06:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google; t=1681391187; x=1683983187;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
+        bh=pbA132ZTxFMmd4gH7ayJTiUjuR7bW8K5R/39kGlGoyo=;
+        b=rpd0J7+KyBTs/v1P6ImEUVYk9NzcZqW1JbwpSJniT0VY92fjxDAEJmVFJ0MYkqsz4m
+         v4LiETVmaOHLPW3BQdlLGcXZliO/HNFA5c/72DDeDJIXoe1Wtk0q4dnlGeC8GOZahpBv
+         VrLNjBQmj3CaSJYK4uVL7/pDww6VyBCqINNlE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681391187; x=1683983187;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pbA132ZTxFMmd4gH7ayJTiUjuR7bW8K5R/39kGlGoyo=;
+        b=JAYviYJQ8DQttlrfXFoy6sCe9XfXt8PHhDYKTT8PUsduewH4vMoQykpGaoI91whH/n
+         ErC8wyeRqY0kNEZVjZCTN1vorj60xOAWjEIAHeDpqytByVpAQ1qn8ajssBeVT9aPHNjl
+         2ZFIf9vf2xt2tDst6GYsypgE3q5psIoqXkM72Suw0d/AZAwL1rObAQgLWauepbsYAQIv
+         xAAj9DAjXQCKgCmne1zehfvC5RohIurWZWasxFiI4LFEGWPaewgDNkbsUo+w5fv1nytI
+         zY9aSdwP0r2H9igu0pBfCjoWI5g2gebIcIT8kqheOl0rMJylanYZG7nWGyRE0eEt/MBr
+         J/DQ==
+X-Gm-Message-State: AAQBX9cnB+3Ch4bem8474DoDvA5xbhx3OUfPK3Cj4ngx63nvdWDXUNwG
+        ORR26MX2WvlojaGZH+qpwR81zQ==
+X-Google-Smtp-Source: AKy350bO3OaeaNPjrERyKBdVQIOQXoe+axGQ4BhweLBG9WYBfWNyp4PyjG9dnbIqj00J9jxL5iUvgw==
+X-Received: by 2002:a17:907:238d:b0:94e:83d3:1b51 with SMTP id vf13-20020a170907238d00b0094e83d31b51mr1702389ejb.23.1681391186878;
+        Thu, 13 Apr 2023 06:06:26 -0700 (PDT)
+Received: from cloudflare.com (79.191.181.173.ipv4.supernova.orange.pl. [79.191.181.173])
+        by smtp.gmail.com with ESMTPSA id vf18-20020a170907239200b0094be906a155sm958911ejb.130.2023.04.13.06.06.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Apr 2023 06:06:26 -0700 (PDT)
+References: <20230407171654.107311-1-john.fastabend@gmail.com>
+ <20230407171654.107311-7-john.fastabend@gmail.com>
+User-agent: mu4e 1.6.10; emacs 28.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     daniel@iogearbox.net, lmb@isovalent.com, edumazet@google.com,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        andrii@kernel.org, will@isovalent.com
+Subject: Re: [PATCH bpf v6 06/12] bpf: sockmap, wake up polling after data copy
+Date:   Thu, 13 Apr 2023 15:00:02 +0200
+In-reply-to: <20230407171654.107311-7-john.fastabend@gmail.com>
+Message-ID: <87cz48gcdq.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7c5eb785-0fe7-e0e5-8232-403e1d3538ac@intel.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 04:21:09PM -0700, Jacob Keller wrote:
-> 
-> 
-> On 4/11/2023 7:01 AM, Jason Gunthorpe wrote:
-> > On Mon, Apr 10, 2023 at 04:07:49PM +0300, Leon Romanovsky wrote:
-> >> From: Leon Romanovsky <leonro@nvidia.com>
-> >>
-> >> From Avihai,
-> >>
-> >> Currently, Relaxed Ordering (RO) can't be used in VFs directly and in
-> >> VFs assigned to QEMU, even if the PF supports RO. This is due to issues
-> >> in reporting/emulation of PCI config space RO bit and due to current
-> >> HCA capability behavior.
-> >>
-> >> This series fixes it by using a new HCA capability and by relying on FW
-> >> to do the "right thing" according to the PF's PCI config space RO value.
-> >>
-> >> Allowing RO in VFs and VMs is valuable since it can greatly improve
-> >> performance on some setups. For example, testing throughput of a VF on
-> >> an AMD EPYC 7763 and ConnectX-6 Dx setup showed roughly 60% performance
-> >> improvement.
-> >>
-> >> Thanks
-> >>
-> >> Avihai Horon (4):
-> >>   RDMA/mlx5: Remove pcie_relaxed_ordering_enabled() check for RO write
-> >>   RDMA/mlx5: Check pcie_relaxed_ordering_enabled() in UMR
-> >>   net/mlx5: Update relaxed ordering read HCA capabilities
-> >>   RDMA/mlx5: Allow relaxed ordering read in VFs and VMs
-> > 
-> > This looks OK, but the patch structure is pretty confusing.
-> > 
-> > It seems to me there are really only two patches here, the first is to
-> > add some static inline
-> > 
-> > 'mlx5 supports read ro'
-> > 
-> > which supports both the cap bits described in
-> > the PRM, with a little comment to explain that old devices only set
-> > the old cap.
-> > 
-> > And a second patch to call it in all the places we need to check before
-> > setting the mkc ro read bit.
-> > 
-> > Maybe a final third patch to sort out that mistake in the write side.
-> > 
-> > But this really doesn't have anything to do with VFs and VMs, this is
-> > adjusting the code to follow the current PRM because the old one was
-> > mis-desgined.
-> > 
-> > Jason
-> 
-> FWIW I think Jason's outline here makes sense too and might be slightly
-> better. However, reading through the series I was reasonably able to
-> understand things enough that I think its fine as-is.
-> 
-> In some sense its not about VF or VM, but fixing this has the result
-> that it fixes a setup with VF and VM, so I think thats an ok thing to
-> call out as the goal.
+On Fri, Apr 07, 2023 at 10:16 AM -07, John Fastabend wrote:
+> When TCP stack has data ready to read sk_data_ready() is called. Sockmap
+> overwrites this with its own handler to call into BPF verdict program.
+> But, the original TCP socket had sock_def_readable that would additionally
+> wake up any user space waiters with sk_wake_async().
+>
+> Sockmap saved the callback when the socket was created so call the saved
+> data ready callback and then we can wake up any epoll() logic waiting
+> on the read.
+>
+> Note we call on 'copied >= 0' to account for returning 0 when a FIN is
+> received because we need to wake up user for this as well so they
+> can do the recvmsg() -> 0 and detect the shutdown.
+>
+> Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
 
-VF or VM came from user perspective of where this behavior is not
-correct. Avihai saw this in QEMU, so he described it in terms which
-are more clear to the end user.
+One observation. On the happy path, we will be hitting the recently
+introduced sk_data_ready tracepoint [1] twice. However, we have the
+caller IP there, so we can differentiate.
 
-Thanks
+[1] 40e0b0908142 ("net/sock: Introduce trace_sk_data_ready()")
+
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
