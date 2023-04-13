@@ -2,100 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B246E105A
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:48:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EC456E106C
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbjDMOso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 10:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45018 "EHLO
+        id S230106AbjDMOy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 10:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbjDMOsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:48:38 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803A4A253;
-        Thu, 13 Apr 2023 07:48:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=I1L0Qp2sckfsIBhqUGSZAv87RBu9UChWVeSXNNEVCCg=; b=qjqaLyGI7RXtv0daQN4+J6UUp6
-        vjFwp9dg0vL6T9I+80Ockz/HfJhyoSXUn3hPGg1ig8MOC178Gpj0MrxrcBxzf/+2bovLIfMl/Ja2R
-        FyRQk/E4CFAp1EXQjDYFAzqvTSuP+2dDLG7ccH23GOZ+bOCsGA0q4XO6rgCQjMYcbWXQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pmyFJ-00ACLu-AF; Thu, 13 Apr 2023 16:48:21 +0200
-Date:   Thu, 13 Apr 2023 16:48:21 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [net-next PATCH v6 06/16] net: phy: phy_device: Call into the
- PHY driver to set LED brightness
-Message-ID: <9603636f-3296-4c6a-96ca-c522e91c1c4c@lunn.ch>
-References: <20230327141031.11904-1-ansuelsmth@gmail.com>
- <20230327141031.11904-7-ansuelsmth@gmail.com>
- <202ae4b9-8995-474a-1282-876078e15e47@gmail.com>
+        with ESMTP id S229564AbjDMOyZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:54:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C4D44B9;
+        Thu, 13 Apr 2023 07:54:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D96316153B;
+        Thu, 13 Apr 2023 14:54:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E83F6C433D2;
+        Thu, 13 Apr 2023 14:54:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681397663;
+        bh=1K6whjALxumgxRYYK0wH4JcChq+2mh8I/hWM/ZKSTx0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Jh1XJJ5iy1FUDFpLxlvGUY5LeubD6UBVT8j//2eWNW1nmnj80VGWFTgdtYnpbf3eN
+         8bEDfxOOLF4jO4cgdbeWRqD84P1fn7B7oslrTPcQce6Yt0by4HZiSATLY+dkacuOSC
+         quzUPZUv3V75PENHZavZowcbHyuOyMvzXMl1CvebNi8dOvk8RiD0p58vEfA+LZc+hq
+         4Au+tOfydhmrBM/yXv0u1fFD0KVHxwXEtsj5w+5rJ0XUh6D/wDv7CFkxoFGGuo0PGj
+         SisKtwy7VmSjYqlQrBZxeZRMadm45np91hj1rz4v2ohjVmkpQU5riKsJkOo3cqsAtg
+         4oOIBhSq4gWKQ==
+Date:   Thu, 13 Apr 2023 07:54:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Linux regressions mailing list <regressions@lists.linux.dev>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Shay Drory <shayd@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        selinux@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: Potential regression/bug in net/mlx5 driver
+Message-ID: <20230413075421.044d7046@kernel.org>
+In-Reply-To: <20230410054605.GL182481@unreal>
+References: <CAHC9VhQ7A4+msL38WpbOMYjAqLp0EtOjeLh4Dc6SQtD6OUvCQg@mail.gmail.com>
+        <ZCS5oxM/m9LuidL/@x130>
+        <CAHC9VhTvQLa=+Ykwmr_Uhgjrc6dfi24ou=NBsACkhwZN7X4EtQ@mail.gmail.com>
+        <1c8a70fc-18cb-3da7-5240-b513bf1affb9@leemhuis.info>
+        <CAHC9VhT+=DtJ1K1CJDY4=L_RRJSGqRDvnaOdA6j9n+bF7y+36A@mail.gmail.com>
+        <20230410054605.GL182481@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202ae4b9-8995-474a-1282-876078e15e47@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 06:57:51AM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 3/27/2023 7:10 AM, Christian Marangi wrote:
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > 
-> > Linux LEDs can be software controlled via the brightness file in /sys.
-> > LED drivers need to implement a brightness_set function which the core
-> > will call. Implement an intermediary in phy_device, which will call
-> > into the phy driver if it implements the necessary function.
-> > 
-> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> 
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> > +	int (*led_brightness_set)(struct phy_device *dev,
-> > +				  u32 index, enum led_brightness value);
-> 
-> I think I would have made this an u8, 4 billion LEDs, man, that's a lot!
+On Mon, 10 Apr 2023 08:46:05 +0300 Leon Romanovsky wrote:
+> > I haven't seen any updates from the mlx5 driver folks, although I may
+> > not have been CC'd? =20
+>=20
+> We are extremely slow these days due to combination of holidays
+> (Easter, Passover, Ramadan, spring break e.t.c).
 
-That can be done. We need to change:
+Let's get this fixed ASAP, please. I understand that there are
+holidays, but it's been over 2 weeks, and addressing regressions
+should be highest priority for any maintainer! :(
 
-        err = of_property_read_u32(led, "reg", &phyled->index);
-        if (err)
-                return err;
-
-to a u8, to avoid overflow problems in other places. It looks like
-of_property_read_u8() does the correct thing if somebody tried to use
-4 billion - 1.
-
-  Andrew
+=46rom what I gather all we need here is to throw in an extra condition
+for "FW is hella old" into mlx5_core_is_management_pf(), no?
