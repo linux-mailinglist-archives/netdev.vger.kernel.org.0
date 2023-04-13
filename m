@@ -2,60 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 019A46E13DA
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 20:03:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F2AB6E13DB
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 20:04:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbjDMSDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 14:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41734 "EHLO
+        id S229630AbjDMSEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 14:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbjDMSDv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 14:03:51 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA8B1735
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 11:03:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1681409029; x=1712945029;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VDnZuK6d+P6mlT1oz55prNIjH45Qyb7LqpLmmqViqDI=;
-  b=sLHinv6TDzmoIo8/C7C533qwjwnvyBRKCKToukyb7lO/0kCIsskL3iMl
-   CruimgOURXqLpsV2rZUfyJi2wcHN/WwvF7ZHSpXn5zvI0V+ir/JSwhtN9
-   ckqLLRauam1UWbDWk/ZYf8CVeANPO6zqJ49qnjTfaH7ShGNC0XGZLqt4N
-   uRnevBYOE6Z3GUJ3h2Bme5vENv4FraWWFFsMl6walS1F3X/IrwRjHl1Jm
-   ihR298Np4ztKmiNWaY2gZlkZ1sIpbeaxbqdH3uG0lEPdXlLnfiZlhrWBX
-   HVf7JQ4iS707s44tC6PrfWE1UjZvnaPf51FGt12w25ZcNHp1NM0qRv1Zw
-   A==;
-X-IronPort-AV: E=Sophos;i="5.99,194,1677567600"; 
-   d="scan'208";a="210327677"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Apr 2023 11:03:45 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 13 Apr 2023 11:03:44 -0700
-Received: from daire-X570.emdalo.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Thu, 13 Apr 2023 11:03:42 -0700
-From:   <daire.mcnamara@microchip.com>
-To:     <nicholas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <conor.dooley@microchip.com>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>
-Subject: [PATCH v1 1/1] net: macb: Shorten max_tx_len to 4KiB - 56 on mpfs
-Date:   Thu, 13 Apr 2023 19:03:37 +0100
-Message-ID: <20230413180337.1399614-2-daire.mcnamara@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230413180337.1399614-1-daire.mcnamara@microchip.com>
-References: <20230413180337.1399614-1-daire.mcnamara@microchip.com>
+        with ESMTP id S229575AbjDMSEX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 14:04:23 -0400
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547C21735
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 11:04:22 -0700 (PDT)
+Received: by mail-ua1-x934.google.com with SMTP id y21so1619335ual.3
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 11:04:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1681409061; x=1684001061;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TQjodhHiRz4RRveqYRmbcis+dyut9awKbSg8GzGBTmg=;
+        b=oBfEeQkryk9F68rZfWFPshHCbYtZGdXM8zE3YKhg4fObfldChE+WmS6Ry6EYN3Xupf
+         +FoNS/EqYKB0NXB/tWa02oJee5FsNoakWNotrZnRU9bAfzsxiNBaxEXNrKzihoMevcEe
+         Ev/9s7xBf4+6kOnPdZojbn+H7Qy2ts8Umqn9B64JxmKrrBGUUucMGrWcc7mdScXhPslP
+         iL5OP8mJSzqWHvHZrIRts9pq+AENvuKKGCO82MThJ00wup9BI5Se/2DKhmURXUCi0oib
+         B8xzU0ToKZuFVKjuydOHt/4s0/b4Rp0g+JvoIMWURu9V1+8UBW6rz+3IiKV/uqgMXYlz
+         kQcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681409061; x=1684001061;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=TQjodhHiRz4RRveqYRmbcis+dyut9awKbSg8GzGBTmg=;
+        b=P82D1WKeNs/ecPj6LXFuRO3XI6LmI1xr//8DqlM/ED0X16CezpeSRnNi9d3/ziyimp
+         gEVRaBWLPVeqC99+oZnCKL+Kzwk4HrdcMg1Xke9KVjgGzJAsXIaCSiYGfRWV3WCz/O1E
+         0FcJY8awHdA1dOh5qloU9lU3dS9y4qTdi5rBsuNGmdWy//lotuA+5qCIaeTVkByKT44q
+         iofLtaGOSrT10EOJgrrg7XjOP6bXYJ8jnkUowt0nHcMWV2f4Yt7sJumVJ6DxjOsUFr4V
+         W1ojTF5/ubgvRxvrYUMTu6fKqyiTFyDhggAbkXI00AOZ8g73nsgKrCdOiZyZv5n9WSKJ
+         WJiA==
+X-Gm-Message-State: AAQBX9f+++WXWz8FWbbC9VGX/xTE41x9C6PalK+BjlO9x/Od++L9d5pQ
+        72QBqTEMAXBVXdk3zj+KquMPojHl3aM9w2nBR41jKg==
+X-Google-Smtp-Source: AKy350aprpWf7I7J413khN2cILqsBBIWZiL732amzSUm84HQvkLn0fNe34rgR3lmvv4sVM64pJVfttvFsySbp6bZ9y0=
+X-Received: by 2002:a1f:2941:0:b0:43b:af47:ba56 with SMTP id
+ p62-20020a1f2941000000b0043baf47ba56mr1553889vkp.2.1681409061222; Thu, 13 Apr
+ 2023 11:04:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+References: <20230412085615.124791-1-martin@strongswan.org>
+In-Reply-To: <20230412085615.124791-1-martin@strongswan.org>
+From:   Benedict Wong <benedictwong@google.com>
+Date:   Thu, 13 Apr 2023 11:04:05 -0700
+Message-ID: <CANrj0bb6nGzsQMH3eOHHD_fukynFb0NVS6=+xqGrWmAZ+gco1g@mail.gmail.com>
+Subject: Re: [PATCH ipsec v2] xfrm: Preserve xfrm interface secpath for
+ packets forwarded
+To:     Martin Willi <martin@strongswan.org>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,82 +75,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daire McNamara <daire.mcnamara@microchip.com>
+Not directly related to this change, but in testing these on a broader
+swath of Android tests, we've found that my original change also
+happens to break Transport-in-Tunnel mode (which attempts to match the
+outer tunnel mode policy twice.). I wonder if it's worth just
+reverting first, and going back to a previous iteration of the nested
+policy checks that allows multiple lookups of the same
+template/secpath pair.
 
-On mpfs, with SRAM configured for 4 queues, setting max_tx_len
-to GEM_TX_MAX_LEN=0x3f0 results multiple AMBA errors.
-Setting max_tx_len to (4KiB - 56) removes those errors.
 
-The details are described in erratum 1686 by Cadence
-
-The max jumbo frame size is also reduced for mpfs to (4KiB - 56).
-
-Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
----
- drivers/net/ethernet/cadence/macb.h      |  1 +
- drivers/net/ethernet/cadence/macb_main.c | 16 ++++++++++++----
- 2 files changed, 13 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-index 14dfec4db8f9..989e7c5db9b9 100644
---- a/drivers/net/ethernet/cadence/macb.h
-+++ b/drivers/net/ethernet/cadence/macb.h
-@@ -1175,6 +1175,7 @@ struct macb_config {
- 			    struct clk **hclk, struct clk **tx_clk,
- 			    struct clk **rx_clk, struct clk **tsu_clk);
- 	int	(*init)(struct platform_device *pdev);
-+	unsigned int		max_tx_length;
- 	int	jumbo_max_len;
- 	const struct macb_usrio_config *usrio;
- };
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 66e30561569e..1f362bbc360f 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4095,14 +4095,12 @@ static int macb_init(struct platform_device *pdev)
- 
- 	/* setup appropriated routines according to adapter type */
- 	if (macb_is_gem(bp)) {
--		bp->max_tx_length = GEM_MAX_TX_LEN;
- 		bp->macbgem_ops.mog_alloc_rx_buffers = gem_alloc_rx_buffers;
- 		bp->macbgem_ops.mog_free_rx_buffers = gem_free_rx_buffers;
- 		bp->macbgem_ops.mog_init_rings = gem_init_rings;
- 		bp->macbgem_ops.mog_rx = gem_rx;
- 		dev->ethtool_ops = &gem_ethtool_ops;
- 	} else {
--		bp->max_tx_length = MACB_MAX_TX_LEN;
- 		bp->macbgem_ops.mog_alloc_rx_buffers = macb_alloc_rx_buffers;
- 		bp->macbgem_ops.mog_free_rx_buffers = macb_free_rx_buffers;
- 		bp->macbgem_ops.mog_init_rings = macb_init_rings;
-@@ -4839,7 +4837,8 @@ static const struct macb_config mpfs_config = {
- 	.clk_init = macb_clk_init,
- 	.init = init_reset_optional,
- 	.usrio = &macb_default_usrio,
--	.jumbo_max_len = 10240,
-+	.max_tx_length = 4040, /* Cadence Erratum 1686 */
-+	.jumbo_max_len = 4040,
- };
- 
- static const struct macb_config sama7g5_gem_config = {
-@@ -4986,8 +4985,17 @@ static int macb_probe(struct platform_device *pdev)
- 	bp->tx_clk = tx_clk;
- 	bp->rx_clk = rx_clk;
- 	bp->tsu_clk = tsu_clk;
--	if (macb_config)
-+	if (macb_config) {
-+		if (macb_is_gem(bp)) {
-+			if (macb_config->max_tx_length)
-+				bp->max_tx_length = macb_config->max_tx_length;
-+			else
-+				bp->max_tx_length = GEM_MAX_TX_LEN;
-+		} else {
-+			bp->max_tx_length = MACB_MAX_TX_LEN;
-+		}
- 		bp->jumbo_max_len = macb_config->jumbo_max_len;
-+	}
- 
- 	bp->wol = 0;
- 	if (of_property_read_bool(np, "magic-packet"))
--- 
-2.25.1
-
+On Wed, Apr 12, 2023 at 1:56=E2=80=AFAM Martin Willi <martin@strongswan.org=
+> wrote:
+>
+> The commit referenced below clears the secpath on packets received via
+> xfrm interfaces to support nested IPsec tunnels. This breaks Netfilter
+> policy matching using xt_policy in the FORWARD chain, as the secpath
+> is missing during forwarding. INPUT matching is not affected, as it is
+> done before secpath reset.
+>
+> A work-around could use XFRM input interface matching for such rules,
+> but this does not work if the XFRM interface is part of a VRF; the
+> Netfilter input interface is replaced by the VRF interface, making a
+> sufficient match for IPsec-protected packets difficult.
+>
+> So instead, limit the secpath reset to packets that are not using a
+> XFRM forward policy. This should allow nested tunnels, but keeps the
+> secpath intact on packets that are passed to Netfilter chains with
+> potential IPsec policy matches.
+>
+> Fixes: b0355dbbf13c ("Fix XFRM-I support for nested ESP tunnels")
+> Suggested-by: Eyal Birger <eyal.birger@gmail.com>
+> Signed-off-by: Martin Willi <martin@strongswan.org>
+> ---
+> v1 -> v2: Use policy dir instead of flowi outif to check for forwarding
+>
+>  net/xfrm/xfrm_policy.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+> index 5c61ec04b839..669c3c0880a6 100644
+> --- a/net/xfrm/xfrm_policy.c
+> +++ b/net/xfrm/xfrm_policy.c
+> @@ -3745,7 +3745,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, s=
+truct sk_buff *skb,
+>                         goto reject;
+>                 }
+>
+> -               if (if_id)
+> +               if (if_id && dir !=3D XFRM_POLICY_FWD)
+>                         secpath_reset(skb);
+>
+>                 xfrm_pols_put(pols, npols);
+> --
+> 2.34.1
+>
