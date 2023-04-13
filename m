@@ -2,107 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55C0F6E11E5
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:12:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0886A6E11EE
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:13:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229599AbjDMQMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 12:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
+        id S230092AbjDMQNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 12:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbjDMQMf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:12:35 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1D2A5F4;
-        Thu, 13 Apr 2023 09:12:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=FVYOgyseeRwqSgD/hQ55YdrmTythSIKHwgSAnZeA3F4=; b=1yo/qQX2G+yy8iamSXWUStlQTN
-        rpTKb921ieMfljkLrBjS9JUuKkbLROmWK5Yyr8AtzmMBlFR4wzTC1zB+3pxKs39Zw4KiGHPRD/F8T
-        xoIbvR3HqfU7AzdeEC2u7XyRU+DkCOicZIrzG1DeBijHN8ytg1LOJ9/vCzvMRID8NnyE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pmzYi-00ACn8-Jc; Thu, 13 Apr 2023 18:12:28 +0200
-Date:   Thu, 13 Apr 2023 18:12:28 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ladislav Michl <oss-lists@triops.cz>
-Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: Re: [PATCH 2/3] staging: octeon: avoid needless device allocation
-Message-ID: <543bfbb6-af60-4b5d-abf8-0274ab0b713f@lunn.ch>
-References: <ZDgNexVTEfyGo77d@lenoch>
- <ZDgOLHw1IkmWVU79@lenoch>
+        with ESMTP id S230088AbjDMQNQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:13:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45A77CF;
+        Thu, 13 Apr 2023 09:13:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFD5863E84;
+        Thu, 13 Apr 2023 16:13:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01E4FC433D2;
+        Thu, 13 Apr 2023 16:13:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681402391;
+        bh=WFL8bYhH3x0BIzgVY6RGVd6JNmx2NXv89vVV8SM0+cc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ThGUbHOH8fqQ+2zNkNTFew5Daiu/16iKwtGhCiJa3mdSq9GK1jjfl3i26AEGxN1xl
+         stauklDJV00CGpkYFObty05OakcsWF7SeYW2d2C+zslEYIw8HlIP2cf8LaAs6hO+rx
+         LHyAK76qlfW640Tqg1JgQMhIeYu8J2Py8/AaCxz6k01NN0tQj7U2lmpCJyC0wOfLuD
+         7reyfktCTyVCS3uIAmJGhPV+cyKqywoldTdf8YDPPMCbjM8/aXlckX8GeH9AGj1CeN
+         +BrRwsDu9pnCDjuvk33IaQnhuSsXwYHnxEzn8aOxuyf5FzLPlo2WneMvM0ZDrDMymT
+         FbcU4tgE6RN/w==
+From:   broonie@kernel.org
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Christian Ehrig <cehrig@cloudflare.com>,
+        Gavin Li <gavinl@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the bpf-next tree with the net-next tree
+Date:   Thu, 13 Apr 2023 17:12:35 +0100
+Message-Id: <20230413161235.4093777-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZDgOLHw1IkmWVU79@lenoch>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  	num_interfaces = cvmx_helper_get_number_of_interfaces();
->  	for (interface = 0; interface < num_interfaces; interface++) {
-> +		int num_ports, port_index;
-> +		const struct net_device_ops *ops;
-> +		const char *name;
-> +		phy_interface_t phy_mode = PHY_INTERFACE_MODE_NA;
->  		cvmx_helper_interface_mode_t imode =
-> -		    cvmx_helper_interface_get_mode(interface);
-> -		int num_ports = cvmx_helper_ports_on_interface(interface);
-> -		int port_index;
-> +			cvmx_helper_interface_get_mode(interface);
-> +
-> +		switch (imode) {
-> +		case CVMX_HELPER_INTERFACE_MODE_NPI:
-> +			ops = &cvm_oct_npi_netdev_ops;
-> +			name = "npi%d";
+Hi all,
 
-In general, the kernel does not give the interface names other than
-ethX. userspace can rename them, e.g. systemd with its persistent
-names. So as part of getting this driver out of staging, i would throw
-this naming code away.
+Today's linux-next merge of the bpf-next tree got a conflict in:
 
-> +		num_ports = cvmx_helper_ports_on_interface(interface);
->  		for (port_index = 0,
->  		     port = cvmx_helper_get_ipd_port(interface, 0);
->  		     port < cvmx_helper_get_ipd_port(interface, num_ports);
->  		     port_index++, port++) {
->  			struct octeon_ethernet *priv;
->  			struct net_device *dev =
-> -			    alloc_etherdev(sizeof(struct octeon_ethernet));
-> +				alloc_etherdev(sizeof(struct octeon_ethernet));
+  include/net/ip_tunnels.h
 
-Please try to avoid white space changed. Put such white space changes
-into a patch of their own, with a commit message saying it just
-contains whitespace cleanup.
+between commit:
 
+  bc9d003dc48c3 ("ip_tunnel: Preserve pointer const in ip_tunnel_info_opts")
 
->  			if (!dev) {
->  				pr_err("Failed to allocate ethernet device for port %d\n",
->  				       port);
-> @@ -830,7 +875,12 @@ static int cvm_oct_probe(struct platform_device *pdev)
->  			priv->port = port;
->  			priv->queue = cvmx_pko_get_base_queue(priv->port);
->  			priv->fau = fau - cvmx_pko_get_num_queues(port) * 4;
-> -			priv->phy_mode = PHY_INTERFACE_MODE_NA;
-> +			priv->phy_mode = phy_mode;
+from the net-next tree and commit:
 
-You should be getting phy_mode from DT.
+  ac931d4cdec3d ("ipip,ip_tunnel,sit: Add FOU support for externally controlled ipip devices")
 
-Ideally, you want lots of small patches which are obviously
-correct. So i would try to break this up into smaller changes.
+from the bpf-next tree.
 
-I also wounder if you are addresses issues in the correct order. This
-driver is in staging for a reason. It needs a lot of work. You might
-be better off first cleaning it up. And then consider moving it to
-phylink.
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
 
-	 Andrew
+diff --cc include/net/ip_tunnels.h
+index 255b32a90850a,7912f53caae0b..0000000000000
+--- a/include/net/ip_tunnels.h
++++ b/include/net/ip_tunnels.h
+@@@ -66,15 -73,9 +73,16 @@@ struct ip_tunnel_encap 
+  #define IP_TUNNEL_OPTS_MAX					\
+  	GENMASK((sizeof_field(struct ip_tunnel_info,		\
+  			      options_len) * BITS_PER_BYTE) - 1, 0)
+ +
+ +#define ip_tunnel_info_opts(info)				\
+ +	_Generic(info,						\
+ +		 const struct ip_tunnel_info * : ((const void *)((info) + 1)),\
+ +		 struct ip_tunnel_info * : ((void *)((info) + 1))\
+ +	)
+ +
+  struct ip_tunnel_info {
+  	struct ip_tunnel_key	key;
++ 	struct ip_tunnel_encap	encap;
+  #ifdef CONFIG_DST_CACHE
+  	struct dst_cache	dst_cache;
+  #endif
