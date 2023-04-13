@@ -2,82 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EED7D6E0CCE
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 13:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D5B66E0CDA
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 13:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230404AbjDMLiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 07:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
+        id S229535AbjDMLmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 07:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbjDMLiv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 07:38:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9E12136
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:38:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681385893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tFynjbvQBmoKGMXvOtx49zJOr/TclRQ15smVVahNzyg=;
-        b=KO6gdDm7VQrz+N7we5JsLw/ZETbaI/Cz6ggWnOpFocMb6u4jodWzvIuuJRM0vfQ8Ii5bvT
-        IpQQbhOfGudWfuWHkskbJoGMsP22htnt6cr3mdgwc3AHY5cbrEF5ujEkY+oD8hIjJgRWQ6
-        jis3I+zNzqG/U6AwmgCn2Kg1gfOyMX4=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-577-ueK6UuehMqK4QZcyVyG_oQ-1; Thu, 13 Apr 2023 07:38:12 -0400
-X-MC-Unique: ueK6UuehMqK4QZcyVyG_oQ-1
-Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-3e947d81d7dso2119581cf.1
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:38:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681385892; x=1683977892;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tFynjbvQBmoKGMXvOtx49zJOr/TclRQ15smVVahNzyg=;
-        b=NkygMFdTqk9xYZ1NrHt4/sU8twZGWOcWe8C1zatsCZklSHCSr/3rXLfpHN8YKUbUk/
-         vrIJM/J/2/gu7+6Z69g4Qcb9A6IoXMf+sJd5IJ1M9v0ZqMLw3bosiR5IkG1vIdjOOHWB
-         gVJxEnNwsvdpIkaiwLCXkag0h/7vku8t14wglyMOcmP6vAisU8Mw9Xw1n417Gs1WRPP6
-         BSoP4KikxHaNgHqy1k6Vf5GnbkxrdAahkkgY2276pNHJdqM820HOb03J/uE9TjqKmH22
-         wWjFuLSmxfRE7C+G0kePxDy93GtsLaB2WzvetNb+FDSapwju+G56yGx7KuRVmQTWH/0D
-         PQFQ==
-X-Gm-Message-State: AAQBX9e8/3fbOjNSyyY2yYUNswOximzrC/y8eEp4dDzAUDD5KiT3dNyP
-        b60/PmAc8cwfgREPGPtMZ4GQPHm8WofRCYAVlnJuupYPH68zVDuS9cLJaYptAxy0GE59CiJWU2E
-        Ffro+yCJMP79a6z8z
-X-Received: by 2002:ac8:58d0:0:b0:3e6:707e:d3c2 with SMTP id u16-20020ac858d0000000b003e6707ed3c2mr2618406qta.0.1681385892091;
-        Thu, 13 Apr 2023 04:38:12 -0700 (PDT)
-X-Google-Smtp-Source: AKy350a4ck3kHlLWdeQKe1CDThZ2MUc4egBZ5LsrQb90FvkTkDplW5rVedR3160hmOcv/WAm5KcP6Q==
-X-Received: by 2002:ac8:58d0:0:b0:3e6:707e:d3c2 with SMTP id u16-20020ac858d0000000b003e6707ed3c2mr2618385qta.0.1681385891769;
-        Thu, 13 Apr 2023 04:38:11 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-232-183.dyn.eolo.it. [146.241.232.183])
-        by smtp.gmail.com with ESMTPSA id y4-20020ac85244000000b003e6a1bf26a4sm419599qtn.64.2023.04.13.04.38.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Apr 2023 04:38:11 -0700 (PDT)
-Message-ID: <78cea5774de414fa3bcbd6ef02e436ae6b5706c1.camel@redhat.com>
-Subject: Re: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
- indexes
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        'Jakub Kicinski' <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Date:   Thu, 13 Apr 2023 13:38:08 +0200
-In-Reply-To: <f6c134852244441a88eef8c1774bb67f@AcuMS.aculab.com>
-References: <20230412015038.674023-1-kuba@kernel.org>
-         <20230412015038.674023-3-kuba@kernel.org>
-         <f6c134852244441a88eef8c1774bb67f@AcuMS.aculab.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        with ESMTP id S229713AbjDMLmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 07:42:25 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677156183
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:42:23 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4PxyJG2LlHzSrKs;
+        Thu, 13 Apr 2023 19:38:22 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Thu, 13 Apr
+ 2023 19:42:20 +0800
+Subject: Re: [PATCH v5] skbuff: Fix a race between coalescing and releasing
+ SKBs
+To:     Liang Chen <liangchen.linux@gmail.com>, <kuba@kernel.org>,
+        <ilias.apalodimas@linaro.org>, <edumazet@google.com>,
+        <hawk@kernel.org>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <pabeni@redhat.com>, <alexander.duyck@gmail.com>
+References: <20230413090353.14448-1-liangchen.linux@gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <d7cd5acd-141f-32c4-6d7b-3563d67318e9@huawei.com>
+Date:   Thu, 13 Apr 2023 19:42:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+In-Reply-To: <20230413090353.14448-1-liangchen.linux@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,54 +52,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-04-12 at 08:15 +0000, David Laight wrote:
-> From: Jakub Kicinski
-> > Sent: 12 April 2023 02:51
-> >=20
-> > Eric points out that we should make sure that ring index updates
-> > are wrapped in the appropriate READ_ONCE/WRITE_ONCE macros.
-> >=20
-> ...
-> > -static inline u32 bnxt_tx_avail(struct bnxt *bp, struct bnxt_tx_ring_i=
-nfo *txr)
-> > +static inline u32 bnxt_tx_avail(struct bnxt *bp,
-> > +				const struct bnxt_tx_ring_info *txr)
-> >  {
-> > -	/* Tell compiler to fetch tx indices from memory. */
-> > -	barrier();
-> > +	u32 used =3D READ_ONCE(txr->tx_prod) - READ_ONCE(txr->tx_cons);
-> >=20
-> > -	return bp->tx_ring_size -
-> > -		((txr->tx_prod - txr->tx_cons) & bp->tx_ring_mask);
-> > +	return bp->tx_ring_size - (used & bp->tx_ring_mask);
-> >  }
->=20
-> Doesn't that function only make sense if only one of
-> the ring index can be changing?
-> In this case I think this is being used in the transmit path
-> so that 'tx_prod' is constant and is either already read
-> or need not be read again.
->=20
-> Having written a lot of 'ring access' functions over the years
-> if the ring size is a power of 2 I'd mask the 'tx_prod' value
-> when it is being used rather than on the increment.
-> (So the value just wraps modulo 2**32.)
-> This tends to make the code safer - especially since the
-> 'ring full' and 'ring empty' conditions are different.
->=20
-> Also that code is masking with bp->tx_ring_mask, but the
-> increments (in hunks I've chopped) use NEXT_TX(prod).
-> If that is masking with bp->tx_ring_mask then 'bp' should
-> be a parameter.
+On 2023/4/13 17:03, Liang Chen wrote:
+> Commit 1effe8ca4e34 ("skbuff: fix coalescing for page_pool fragment
+> recycling") allowed coalescing to proceed with non page pool page and page
+> pool page when @from is cloned, i.e.
+> 
+> to->pp_recycle    --> false
+> from->pp_recycle  --> true
+> skb_cloned(from)  --> true
+> 
+> However, it actually requires skb_cloned(@from) to hold true until
+> coalescing finishes in this situation. If the other cloned SKB is
+> released while the merging is in process, from_shinfo->nr_frags will be
+> set to 0 toward the end of the function, causing the increment of frag
+> page _refcount to be unexpectedly skipped resulting in inconsistent
+> reference counts. Later when SKB(@to) is released, it frees the page
+> directly even though the page pool page is still in use, leading to
+> use-after-free or double-free errors. So it should be prohibited.
+> 
+> The double-free error message below prompted us to investigate:
+> BUG: Bad page state in process swapper/1  pfn:0e0d1
+> page:00000000c6548b28 refcount:-1 mapcount:0 mapping:0000000000000000
+> index:0x2 pfn:0xe0d1
+> flags: 0xfffffc0000000(node=0|zone=1|lastcpupid=0x1fffff)
+> raw: 000fffffc0000000 0000000000000000 ffffffff00000101 0000000000000000
+> raw: 0000000000000002 0000000000000000 ffffffffffffffff 0000000000000000
+> page dumped because: nonzero _refcount
+> 
+> CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E      6.2.0+
+> Call Trace:
+>  <IRQ>
+> dump_stack_lvl+0x32/0x50
+> bad_page+0x69/0xf0
+> free_pcp_prepare+0x260/0x2f0
+> free_unref_page+0x20/0x1c0
+> skb_release_data+0x10b/0x1a0
+> napi_consume_skb+0x56/0x150
+> net_rx_action+0xf0/0x350
+> ? __napi_schedule+0x79/0x90
+> __do_softirq+0xc8/0x2b1
+> __irq_exit_rcu+0xb9/0xf0
+> common_interrupt+0x82/0xa0
+> </IRQ>
+> <TASK>
+> asm_common_interrupt+0x22/0x40
+> RIP: 0010:default_idle+0xb/0x20
+> 
+> Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in page pool")
 
-AFAICS bnxt_tx_avail() is also used in TX interrupt, outside tx path/tx
-lock.
-
-I think all the above consideration are more suited for a driver
-refactor, while the current patch specifically address potential data
-race issues.
-
-Cheers,
-
-Paolo
-
+I am not quite sure the above is right Fixes tag.
+As 1effe8ca4e34 ("skbuff: fix coalescing for page_pool fragment recycling") has tried
+to fix it, and it missed the case this patch is fixing, so we need another fix here.
