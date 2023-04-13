@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C66F56E05EB
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 06:20:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACDD36E05ED
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 06:21:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229516AbjDMEUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 00:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49170 "EHLO
+        id S229593AbjDMEVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 00:21:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbjDMEUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 00:20:33 -0400
+        with ESMTP id S229596AbjDMEVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 00:21:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DEC7EF8
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 21:20:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E311A4
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 21:21:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C74D63B55
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8AF26C4339B;
-        Thu, 13 Apr 2023 04:20:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E947561372
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:21:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8C18C433D2;
+        Thu, 13 Apr 2023 04:21:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681359618;
-        bh=01nwy8WVlV+jGfkot4Ztjv9f4a8jvTIYB1vxdQNFCQA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=r79RGQK5emBUQuWZsuKbpHbs6SXR7m3xLJVdSSjAJk/FzUszr9ukd6Gzeen4QqVA5
-         qhEH6fbzEhpPQbztMmAIgwva3QW2akqgHWyT8L9cLLP5fEZphuM6XZ7xEhSalbxTfB
-         ymAqnbOabzNOm7GR3FlA6pFCbRPrchtQ4Y3PkM15ulUrsn1XlAN599F8IFGH2Q4AZZ
-         /+8rO8EdK5YMA0l4Y6cVvAOT9lkhYRAmg1PVoNYzg6PePLNR1MhDh+FfL6VXo+FGna
-         /mA3p0wCpk0QkJD5AYP2HmMTcb4pICljfCaKEwpy14Z4z4pNUoK2xwuQ39/UUQs3Ms
-         6zedgT+Voe5EA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7108BE52443;
-        Thu, 13 Apr 2023 04:20:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1681359661;
+        bh=a7iyMSprvQAiuxOJ0H/Q7m2rxNH4MwLwSCb2Ss9FZSE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bE3DBXOVajXdhk8bYKx+4nrdxCGajailSiPWESEDHwj6KpCGVUcsNZ2oj0ktd/Yjg
+         mLmN94u6y0jrc8Wf6Juviqqxh8VxSPIBO4cVpqTLoeDyLo8hVdb7tm/PMqRlplMatT
+         BRkFH4wjj0wQ5EIqCELr0ja+RvWa6vZXblVKTZyqfyMo1gYP/5/DhPOtkXJr700cS7
+         WA2shVBWEZwyq9z2KIa2QdFfqHH5XkmN3rDjJbmTDHU27Z+HgtEDQJWwySfDljpEMp
+         rXeeHaCy2hh9RBNmlxqiIQVe6Z0Zlk/NW4napLN4FQCHiUyJnPSAPAlWew+6PA4F5p
+         x1XOa6OQ4zvkQ==
+Date:   Wed, 12 Apr 2023 21:20:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     davem@davemloft.net, brouer@redhat.com, netdev@vger.kernel.org,
+        edumazet@google.com, pabeni@redhat.com, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, linyunsheng@huawei.com,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH net-next 1/3] net: skb: plumb napi state thru skb
+ freeing paths
+Message-ID: <20230412212059.1b7a3364@kernel.org>
+In-Reply-To: <9ecc38df-a185-fc1f-e94e-cf0c1fef865f@redhat.com>
+References: <20230411201800.596103-1-kuba@kernel.org>
+        <20230411201800.596103-2-kuba@kernel.org>
+        <9ecc38df-a185-fc1f-e94e-cf0c1fef865f@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 0/3] net: thunderbolt: Fix for sparse warnings and typos
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168135961845.12762.9753450047878314840.git-patchwork-notify@kernel.org>
-Date:   Thu, 13 Apr 2023 04:20:18 +0000
-References: <20230411091049.12998-1-mika.westerberg@linux.intel.com>
-In-Reply-To: <20230411091049.12998-1-mika.westerberg@linux.intel.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, michael.jamet@intel.com, YehezkelShB@gmail.com,
-        andriy.shevchenko@linux.intel.com, simon.horman@corigine.com,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,32 +57,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 11 Apr 2023 12:10:46 +0300 you wrote:
-> Hi all,
+On Wed, 12 Apr 2023 11:29:08 +0200 Jesper Dangaard Brouer wrote:
+> On 11/04/2023 22.17, Jakub Kicinski wrote:
+> > We maintain a NAPI-local cache of skbs which is fed by napi_consume_skb().
+> > Going forward we will also try to cache head and data pages.
+> > Plumb the "are we in a normal NAPI context" information thru
+> > deeper into the freeing path, up to skb_release_data() and
+> > skb_free_head()/skb_pp_recycle().
+> > 
+> > Use "bool in_normal_napi" rather than bare "int budget",  
 > 
-> This series tries to fix the rest of the sparse warnings generated
-> against the driver. While there fix the two typos in comments as well.
+> The code was changed to "napi_safe", the desc should reflect this ;-)
+
+Ah, sed would have been a better idea after all :)
+
+> > the further we get from NAPI the more confusing the budget
+> > argument may seem (particularly whether 0 or MAX is the
+> > correct value to pass in when not in NAPI).  
 > 
-> The previous version of the series can be found here:
+> I do like the code cleanup.
+> It is worth explaining/mentioning that where budget==0 comes from?
 > 
-> [...]
+> (Cc. Alex, please correct me.)
+> My understanding is that this is caused by netconsole/netpoll (see
+> net/core/netpoll.c func poll_one_napi()), which is a kernel (net)console
+> debugging facility sending UDP packets via using only TX side of
+> napi_poll.  Thus, we are really trying to protect against doing these
+> recycle tricks for when netpoll/netconcole is running (which I guess
+> makes sense as we are likely printing/sending an OOPS msg over UDP).
 
-Here is the summary with links:
-  - [v2,1/3] net: thunderbolt: Fix sparse warnings in tbnet_check_frame() and tbnet_poll()
-    https://git.kernel.org/netdev/net-next/c/185367221503
-  - [v2,2/3] net: thunderbolt: Fix sparse warnings in tbnet_xmit_csum_and_map()
-    https://git.kernel.org/netdev/net-next/c/5bbec0adfa03
-  - [v2,3/3] net: thunderbolt: Fix typos in comments
-    https://git.kernel.org/netdev/net-next/c/9c60f2a4446c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Yup, that's correct. I'll add a sentence or two to that effect.
 
