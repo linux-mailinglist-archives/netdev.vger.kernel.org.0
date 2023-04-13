@@ -2,138 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A9B66E1296
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:43:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 213C26E129B
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:44:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbjDMQnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 12:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        id S229877AbjDMQom (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 12:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbjDMQnt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:43:49 -0400
-Received: from h1.cmg2.smtp.forpsi.com (h1.cmg2.smtp.forpsi.com [81.2.195.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241849026
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 09:43:44 -0700 (PDT)
-Received: from lenoch ([91.218.190.200])
-        by cmgsmtp with ESMTPSA
-        id n02wpkHNBv5uIn02xp3ccv; Thu, 13 Apr 2023 18:43:43 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=triops.cz; s=f2019;
-        t=1681404223; bh=tZSnvJh6UjNKzMdhLUO1i7a3iBlxGKgZAfwCnUgid7I=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=Y5AkgfBC+UhDNgXkIhdJ4QocN5rzeUMk1Epc0BRSD9HJP4BBvQeTLfPm/q9FWRY11
-         kyNyQyE4BCEn7uqZRSXY2qhH9AirgGAxxc2rQpBVv5dXWJx0gxwyXsRWrJdv4JgG1y
-         u8Ot3HFqpDmRueAzCXJqI5sIl4vRNRi2hsaeLvewcgTJ9GPglY8IiwQBtKlKDlEkoh
-         bt3lhkkHI2b578sBaglNlVOOWKQjaGgywdkKxgeNIgbq5SousfTpIjiuD6dhYcJghs
-         ddpmMJTcljPEw3hbafL5hqb30fq+oBYsbPgfcNJ0NhD4ksRK83yzYpgb7J6U5laBL9
-         JcIF7iJAr80AA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=triops.cz; s=f2019;
-        t=1681404223; bh=tZSnvJh6UjNKzMdhLUO1i7a3iBlxGKgZAfwCnUgid7I=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=Y5AkgfBC+UhDNgXkIhdJ4QocN5rzeUMk1Epc0BRSD9HJP4BBvQeTLfPm/q9FWRY11
-         kyNyQyE4BCEn7uqZRSXY2qhH9AirgGAxxc2rQpBVv5dXWJx0gxwyXsRWrJdv4JgG1y
-         u8Ot3HFqpDmRueAzCXJqI5sIl4vRNRi2hsaeLvewcgTJ9GPglY8IiwQBtKlKDlEkoh
-         bt3lhkkHI2b578sBaglNlVOOWKQjaGgywdkKxgeNIgbq5SousfTpIjiuD6dhYcJghs
-         ddpmMJTcljPEw3hbafL5hqb30fq+oBYsbPgfcNJ0NhD4ksRK83yzYpgb7J6U5laBL9
-         JcIF7iJAr80AA==
-Date:   Thu, 13 Apr 2023 18:43:41 +0200
-From:   Ladislav Michl <oss-lists@triops.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: Re: [PATCH 2/3] staging: octeon: avoid needless device allocation
-Message-ID: <ZDgxPet9RIDC9Oz1@lenoch>
-References: <ZDgNexVTEfyGo77d@lenoch>
- <ZDgOLHw1IkmWVU79@lenoch>
- <543bfbb6-af60-4b5d-abf8-0274ab0b713f@lunn.ch>
+        with ESMTP id S229659AbjDMQol (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:44:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE3DB9019
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 09:44:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A41063FF8
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 16:44:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C18C9C433D2;
+        Thu, 13 Apr 2023 16:44:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681404279;
+        bh=qFdcDHvpvGhtecq/isOAVGpp1qUk4AjeLTlHwWTtzAc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dyCB22RXGizRh9wjMvw3MBKWmHf86AIJ6Dh7e/nbX3zux7jecwFidcDPztk8s0b0h
+         6WchFok3srxsAKzn1x695oofNVE28M/0qEVC8rvVuZXOt/gdo6DlwIr5jPHzM3JE68
+         fGym2cPS289KZkLxKNPNWzn7+xhR7tflUGnImydDLETiJ5Cslm9EfLcZ/IHHjA6jjw
+         qhWqtBolVVTrpRICtZpYtY3jNDvR+9JMzAUqPJ+yTpH/rbALLECRsGHTSAWpMHOYCc
+         /6ZsHMRivWFGrYCu8kIpH4R2wlUH9GJdETtzaYF8rjOwzJV5ijbI1gSjXTKZGeebed
+         W4ZhKdljoF/Dw==
+Date:   Thu, 13 Apr 2023 19:44:34 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Shannon Nelson <shannon.nelson@amd.com>, brett.creeley@amd.com,
+        davem@davemloft.net, netdev@vger.kernel.org, drivers@pensando.io,
+        jiri@resnulli.us
+Subject: Re: [PATCH v9 net-next 13/14] pds_core: publish events to the clients
+Message-ID: <20230413164434.GT17993@unreal>
+References: <20230406234143.11318-1-shannon.nelson@amd.com>
+ <20230406234143.11318-14-shannon.nelson@amd.com>
+ <20230409171143.GH182481@unreal>
+ <f5fbc5c7-2329-93e6-044d-7b70d96530be@amd.com>
+ <20230413085501.GH17993@unreal>
+ <20230413081410.2cbaf2a2@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <543bfbb6-af60-4b5d-abf8-0274ab0b713f@lunn.ch>
-X-CMAE-Envelope: MS4wfGCrf+xpqrJHgtQHug1TOA3Rs9sHBGIWIj67s2C9fIRcghXOyg2DceaaW6MxxZJ8tKiS/mLSGG3klMI9iHNPzaTAUVFNsu6dA+HqYSaY5+lRfUaBiaKV
- egWv7xhWaPkR7B3fW83pGRypUqcz0oIPk4J/xgWRCBs31l78VhxX5Vkkt+eyrM3hnZv2deCeZFAMiNsLilxWK0fizUIY8FLfxkoXf7/ZK562rr8GGXIm5TmT
- f3s8f7z1nV3q6J/q9Ptvn8NXW0qshhh5EcvG7vk8x39zGbz+Is5yxERao65DEhYZGTwq1YmlBbi+ySAoxoO0Fg==
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230413081410.2cbaf2a2@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Thu, Apr 13, 2023 at 06:12:28PM +0200, Andrew Lunn wrote:
-> >  	num_interfaces = cvmx_helper_get_number_of_interfaces();
-> >  	for (interface = 0; interface < num_interfaces; interface++) {
-> > +		int num_ports, port_index;
-> > +		const struct net_device_ops *ops;
-> > +		const char *name;
-> > +		phy_interface_t phy_mode = PHY_INTERFACE_MODE_NA;
-> >  		cvmx_helper_interface_mode_t imode =
-> > -		    cvmx_helper_interface_get_mode(interface);
-> > -		int num_ports = cvmx_helper_ports_on_interface(interface);
-> > -		int port_index;
-> > +			cvmx_helper_interface_get_mode(interface);
-> > +
-> > +		switch (imode) {
-> > +		case CVMX_HELPER_INTERFACE_MODE_NPI:
-> > +			ops = &cvm_oct_npi_netdev_ops;
-> > +			name = "npi%d";
+On Thu, Apr 13, 2023 at 08:14:10AM -0700, Jakub Kicinski wrote:
+> On Thu, 13 Apr 2023 11:55:01 +0300 Leon Romanovsky wrote:
+> > > > > diff --git a/drivers/net/ethernet/amd/pds_core/adminq.c b/drivers/net/ethernet/amd/pds_core/adminq.c
+> > > > > index 25c7dd0d37e5..bb18ac1aabab 100644
+> > > > > --- a/drivers/net/ethernet/amd/pds_core/adminq.c
+> > > > > +++ b/drivers/net/ethernet/amd/pds_core/adminq.c
+> > > > > @@ -27,11 +27,13 @@ static int pdsc_process_notifyq(struct pdsc_qcq *qcq)
+> > > > >                case PDS_EVENT_LINK_CHANGE:
+> > > > >                        dev_info(pdsc->dev, "NotifyQ LINK_CHANGE ecode %d eid %lld\n",
+> > > > >                                 ecode, eid);
+> > > > > +                     pdsc_notify(PDS_EVENT_LINK_CHANGE, comp);  
+> > > > 
+> > > > Aren't you "resending" standard netdev event?
+> > > > It will be better to send only custom, specific to pds_core events,
+> > > > while leaving general ones to netdev.  
+> > > 
+> > > We have no netdev in pds_core, so we have to publish this to clients that
+> > > might have a netdev or some other need to know.  
+> > 
+> > I don't know netdev well enough if it is ok or not and maybe netdev will
+> > sent this LINK_CHANGE by itself anyway.
+> > 
+> > Jakub???
 > 
-> In general, the kernel does not give the interface names other than
-> ethX. userspace can rename them, e.g. systemd with its persistent
-> names. So as part of getting this driver out of staging, i would throw
-> this naming code away.
+> I actually prefer for the driver to distribute the event via its own
+> means than some random borderline proprietary stuff outside of netdev
+> using netdev events.
 
-That would break all userspace (which is often running vendor's kernel).
-But since driver is in staging and noone cares about vendor's kernel
-I guess it is okay...
+ok
 
-> > +		num_ports = cvmx_helper_ports_on_interface(interface);
-> >  		for (port_index = 0,
-> >  		     port = cvmx_helper_get_ipd_port(interface, 0);
-> >  		     port < cvmx_helper_get_ipd_port(interface, num_ports);
-> >  		     port_index++, port++) {
-> >  			struct octeon_ethernet *priv;
-> >  			struct net_device *dev =
-> > -			    alloc_etherdev(sizeof(struct octeon_ethernet));
-> > +				alloc_etherdev(sizeof(struct octeon_ethernet));
 > 
-> Please try to avoid white space changed. Put such white space changes
-> into a patch of their own, with a commit message saying it just
-> contains whitespace cleanup.
-
-Sorry, I overlooked this.
-
-> >  			if (!dev) {
-> >  				pr_err("Failed to allocate ethernet device for port %d\n",
-> >  				       port);
-> > @@ -830,7 +875,12 @@ static int cvm_oct_probe(struct platform_device *pdev)
-> >  			priv->port = port;
-> >  			priv->queue = cvmx_pko_get_base_queue(priv->port);
-> >  			priv->fau = fau - cvmx_pko_get_num_queues(port) * 4;
-> > -			priv->phy_mode = PHY_INTERFACE_MODE_NA;
-> > +			priv->phy_mode = phy_mode;
+> > > > We can argue if clients should get this event. Once reset is detected,
+> > > > the pds_core should close devices by deleting aux drivers.  
+> > > 
+> > > We can get a reset signal from the device when it has done a crash recovery
+> > > or when it is preparing to do an update, and this allows clients to quiesce
+> > > their operations when reset.state==0 and restart when they see
+> > > reset.state==1  
+> > 
+> > I don't think that it is safe behaviour from user POV. If FW resets
+> > itself under the hood, how can client be sure that nothing changes
+> > in its operation? Once FW reset occurs, it is much safer for the clients
+> > to reconfigure everything.
 > 
-> You should be getting phy_mode from DT.
-> 
-> Ideally, you want lots of small patches which are obviously
-> correct. So i would try to break this up into smaller changes.
-> 
-> I also wounder if you are addresses issues in the correct order. This
-> driver is in staging for a reason. It needs a lot of work. You might
-> be better off first cleaning it up. And then consider moving it to
-> phylink.
+> What's the argument exactly? We do have async resets including in mlx5,
+> grep for enable_remote_dev_reset
 
-I was asking this question myself and then came to this:
-Converting driver to phylink makes separating different macs easier as
-this driver is splitted between staging and arch/mips/cavium-octeon/executive/
-However I'll provide changes spotted previously as separate preparational
-patches. Would that work for you?
+I think that it is different. I'm complaining that during FW reset,
+auxiliary devices are not recreated and continue to be connected to
+physical device with a hope that everything will continue to work from
+kernel and FW perspective.
 
-> 	 Andrew
+It is different from enable_remote_dev_reset, where someone externally
+resets device which will trigger mlx5_device_rescan() routine through
+mlx5_unload_one->mlx5_load_one sequence.
 
-Thank you,
-	ladis
+Thanks
