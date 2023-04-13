@@ -2,246 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 417606E0835
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 09:49:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C1C6E083B
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 09:50:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbjDMHtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 03:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
+        id S230146AbjDMHup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 03:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230255AbjDMHtr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 03:49:47 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDF593DE
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 00:49:18 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Pxs8n3mTNzKy4l;
-        Thu, 13 Apr 2023 15:46:33 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Thu, 13 Apr
- 2023 15:49:09 +0800
-Subject: Re: [PATCH net-next v2 1/3] net: skb: plumb napi state thru skb
- freeing paths
-To:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <edumazet@google.com>,
-        <pabeni@redhat.com>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>, <alexander.duyck@gmail.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-References: <20230413042605.895677-1-kuba@kernel.org>
- <20230413042605.895677-2-kuba@kernel.org>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <4447f0d2-dd78-573a-6d89-aa1e478ea46b@huawei.com>
-Date:   Thu, 13 Apr 2023 15:49:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
-MIME-Version: 1.0
-In-Reply-To: <20230413042605.895677-2-kuba@kernel.org>
+        with ESMTP id S230016AbjDMHun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 03:50:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9B093F1;
+        Thu, 13 Apr 2023 00:50:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C0AF63C2D;
+        Thu, 13 Apr 2023 07:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C61F1C4339B;
+        Thu, 13 Apr 2023 07:50:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681372217;
+        bh=JAjWavrA+ZgB3agBM3DMPabBKzWaDvz6pU3/S9q4AvU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=d1QGG74Cl7IIFfZFPuf9qGcllPP88cjKSVjsnJ3ZgBF7Mg+uAAoqiEAosE4iI3PIo
+         aC+Q35xdLko7SpFXrkLxvS/oi1Les9TD3YlUKp+kQ/tUGpBz0JXBBvraAPTx5K28aJ
+         NQ8HBYelltV0kzDULWRHv8AVDkiC08onfAqq1szBOQOYWwMqDjKTIE0paCGYRkMr9j
+         GdIIU7lmRIQwrmntOv5VfbECcZp7KYmGvxmS786jxcn0EHyMtOZ1hcRGPJeCIxf5S6
+         09ip1xu+AnuLlWK8H+oLp39TJycTSJVCuWqyS8pJtYSe+aQD6yvaYx578unLk0Gf6Y
+         KTt7KMsOdomxA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A62A2C395C5;
+        Thu, 13 Apr 2023 07:50:17 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] net: qrtr: Fix an uninit variable access bug in
+ qrtr_tx_resume()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168137221767.12270.4741360777654214045.git-patchwork-notify@kernel.org>
+Date:   Thu, 13 Apr 2023 07:50:17 +0000
+References: <20230410012352.3997823-1-william.xuanziyang@huawei.com>
+In-Reply-To: <20230410012352.3997823-1-william.xuanziyang@huawei.com>
+To:     Ziyang Xuan (William) <william.xuanziyang@huawei.com>
+Cc:     mani@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/4/13 12:26, Jakub Kicinski wrote:
-> We maintain a NAPI-local cache of skbs which is fed by napi_consume_skb().
-> Going forward we will also try to cache head and data pages.
-> Plumb the "are we in a normal NAPI context" information thru
-> deeper into the freeing path, up to skb_release_data() and
-> skb_free_head()/skb_pp_recycle(). The "not normal NAPI context"
-> comes from netpoll which passes budget of 0 to try to reap
-> the Tx completions but not perform any Rx.
+Hello:
 
-Maybe I missed something obvious about netpoll here.
-Does that mean the "normal NAPI context" and "not normal NAPI context"
-will call napi->poll() concurrently with different budget? Doesn't
-that mean two different contexts may do the tx completion concurrently?
-Does it break the single-producer single-consumer assumption of tx queue?
+This patch was applied to netdev/net.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
 
+On Mon, 10 Apr 2023 09:23:52 +0800 you wrote:
+> Syzbot reported a bug as following:
 > 
-> Use "bool napi_safe" rather than bare "int budget",
-> the further we get from NAPI the more confusing the budget
-> argument may seem (particularly whether 0 or MAX is the
-> correct value to pass in when not in NAPI).
+> =====================================================
+> BUG: KMSAN: uninit-value in qrtr_tx_resume+0x185/0x1f0 net/qrtr/af_qrtr.c:230
+>  qrtr_tx_resume+0x185/0x1f0 net/qrtr/af_qrtr.c:230
+>  qrtr_endpoint_post+0xf85/0x11b0 net/qrtr/af_qrtr.c:519
+>  qrtr_tun_write_iter+0x270/0x400 net/qrtr/tun.c:108
+>  call_write_iter include/linux/fs.h:2189 [inline]
+>  aio_write+0x63a/0x950 fs/aio.c:1600
+>  io_submit_one+0x1d1c/0x3bf0 fs/aio.c:2019
+>  __do_sys_io_submit fs/aio.c:2078 [inline]
+>  __se_sys_io_submit+0x293/0x770 fs/aio.c:2048
+>  __x64_sys_io_submit+0x92/0xd0 fs/aio.c:2048
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
 > 
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> v2:
->  - clarify the budget 0 and fix the name of the argument in
->    the commit message
-> v1:
->  - feed the cache in __kfree_skb_defer(), it's in NAPI
->  - s/in_normal_napi/napi_safe/
-> ---
->  net/core/skbuff.c | 38 ++++++++++++++++++++------------------
->  1 file changed, 20 insertions(+), 18 deletions(-)
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 050a875d09c5..b2092166f7e2 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -839,7 +839,7 @@ static void skb_clone_fraglist(struct sk_buff *skb)
->  		skb_get(list);
->  }
->  
-> -static bool skb_pp_recycle(struct sk_buff *skb, void *data)
-> +static bool skb_pp_recycle(struct sk_buff *skb, void *data, bool napi_safe)
->  {
->  	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
->  		return false;
-> @@ -856,12 +856,12 @@ static void skb_kfree_head(void *head, unsigned int end_offset)
->  		kfree(head);
->  }
->  
-> -static void skb_free_head(struct sk_buff *skb)
-> +static void skb_free_head(struct sk_buff *skb, bool napi_safe)
->  {
->  	unsigned char *head = skb->head;
->  
->  	if (skb->head_frag) {
-> -		if (skb_pp_recycle(skb, head))
-> +		if (skb_pp_recycle(skb, head, napi_safe))
->  			return;
->  		skb_free_frag(head);
->  	} else {
-> @@ -869,7 +869,8 @@ static void skb_free_head(struct sk_buff *skb)
->  	}
->  }
->  
-> -static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason)
-> +static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason,
-> +			     bool napi_safe)
->  {
->  	struct skb_shared_info *shinfo = skb_shinfo(skb);
->  	int i;
-> @@ -894,7 +895,7 @@ static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason)
->  	if (shinfo->frag_list)
->  		kfree_skb_list_reason(shinfo->frag_list, reason);
->  
-> -	skb_free_head(skb);
-> +	skb_free_head(skb, napi_safe);
->  exit:
->  	/* When we clone an SKB we copy the reycling bit. The pp_recycle
->  	 * bit is only set on the head though, so in order to avoid races
-> @@ -955,11 +956,12 @@ void skb_release_head_state(struct sk_buff *skb)
->  }
->  
->  /* Free everything but the sk_buff shell. */
-> -static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason)
-> +static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason,
-> +			    bool napi_safe)
->  {
->  	skb_release_head_state(skb);
->  	if (likely(skb->head))
-> -		skb_release_data(skb, reason);
-> +		skb_release_data(skb, reason, napi_safe);
->  }
->  
->  /**
-> @@ -973,7 +975,7 @@ static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason)
->  
->  void __kfree_skb(struct sk_buff *skb)
->  {
-> -	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
-> +	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED, false);
->  	kfree_skbmem(skb);
->  }
->  EXPORT_SYMBOL(__kfree_skb);
-> @@ -1027,7 +1029,7 @@ static void kfree_skb_add_bulk(struct sk_buff *skb,
->  		return;
->  	}
->  
-> -	skb_release_all(skb, reason);
-> +	skb_release_all(skb, reason, false);
->  	sa->skb_array[sa->skb_count++] = skb;
->  
->  	if (unlikely(sa->skb_count == KFREE_SKB_BULK_SIZE)) {
-> @@ -1201,7 +1203,7 @@ EXPORT_SYMBOL(consume_skb);
->  void __consume_stateless_skb(struct sk_buff *skb)
->  {
->  	trace_consume_skb(skb, __builtin_return_address(0));
-> -	skb_release_data(skb, SKB_CONSUMED);
-> +	skb_release_data(skb, SKB_CONSUMED, false);
->  	kfree_skbmem(skb);
->  }
->  
-> @@ -1226,7 +1228,7 @@ static void napi_skb_cache_put(struct sk_buff *skb)
->  
->  void __kfree_skb_defer(struct sk_buff *skb)
->  {
-> -	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
-> +	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED, true);
->  	napi_skb_cache_put(skb);
->  }
->  
-> @@ -1264,7 +1266,7 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
->  		return;
->  	}
->  
-> -	skb_release_all(skb, SKB_CONSUMED);
-> +	skb_release_all(skb, SKB_CONSUMED, !!budget);
+> [...]
 
-If it is not normal NAPI context, dev_consume_skb_any() is called and
-return at the begin, we may just call skb_release_all() with napi_safe
-being true here.
+Here is the summary with links:
+  - [net,v2] net: qrtr: Fix an uninit variable access bug in qrtr_tx_resume()
+    https://git.kernel.org/netdev/net/c/6417070918de
 
->  	napi_skb_cache_put(skb);
->  }
->  EXPORT_SYMBOL(napi_consume_skb);
-> @@ -1395,7 +1397,7 @@ EXPORT_SYMBOL_GPL(alloc_skb_for_msg);
->   */
->  struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src)
->  {
-> -	skb_release_all(dst, SKB_CONSUMED);
-> +	skb_release_all(dst, SKB_CONSUMED, false);
->  	return __skb_clone(dst, src);
->  }
->  EXPORT_SYMBOL_GPL(skb_morph);
-> @@ -2018,9 +2020,9 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
->  		if (skb_has_frag_list(skb))
->  			skb_clone_fraglist(skb);
->  
-> -		skb_release_data(skb, SKB_CONSUMED);
-> +		skb_release_data(skb, SKB_CONSUMED, false);
->  	} else {
-> -		skb_free_head(skb);
-> +		skb_free_head(skb, false);
->  	}
->  	off = (data + nhead) - skb->head;
->  
-> @@ -6389,12 +6391,12 @@ static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
->  			skb_frag_ref(skb, i);
->  		if (skb_has_frag_list(skb))
->  			skb_clone_fraglist(skb);
-> -		skb_release_data(skb, SKB_CONSUMED);
-> +		skb_release_data(skb, SKB_CONSUMED, false);
->  	} else {
->  		/* we can reuse existing recount- all we did was
->  		 * relocate values
->  		 */
-> -		skb_free_head(skb);
-> +		skb_free_head(skb, false);
->  	}
->  
->  	skb->head = data;
-> @@ -6529,7 +6531,7 @@ static int pskb_carve_inside_nonlinear(struct sk_buff *skb, const u32 off,
->  		skb_kfree_head(data, size);
->  		return -ENOMEM;
->  	}
-> -	skb_release_data(skb, SKB_CONSUMED);
-> +	skb_release_data(skb, SKB_CONSUMED, false);
->  
->  	skb->head = data;
->  	skb->head_frag = 0;
-> 
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
