@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A5C66E0F91
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39CF46E0F96
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:05:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231768AbjDMOFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 10:05:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
+        id S231770AbjDMOF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 10:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbjDMOFG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:05:06 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39DB19B7;
-        Thu, 13 Apr 2023 07:04:51 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id gb12so13363263qtb.6;
-        Thu, 13 Apr 2023 07:04:51 -0700 (PDT)
+        with ESMTP id S231779AbjDMOFX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:05:23 -0400
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A03DA24C;
+        Thu, 13 Apr 2023 07:05:18 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id oo30so907921qvb.12;
+        Thu, 13 Apr 2023 07:05:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681394691; x=1683986691;
+        d=gmail.com; s=20221208; t=1681394717; x=1683986717;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=NawhwqeTpbHH9NZVueC607f+P3eR2lIHqHXJApMeoUE=;
-        b=E31Mscy3zzm+DMmohqB3G633x/K1cYFdPBNlXFMZSL8BF4rbjEl9heOImx+L8132Gk
-         2t4M0+8oUmgmqMyjlR8B5ekq6sLOF5A782LTcE7Pff9bYFJmKZKz+i8uhkA2Ld40DnfO
-         7SHYovtdDJ+G5aiQlEtaz7bVuyaXSuoLWFScrIgsVlUpunifiLAVzYYit2Qozuai5KWW
-         0Ii1dkeEPJdhIz9sAwN6DSeK2gZ1ral3fXf8V2ACr/zWVhGyIBlpHnYKna6esyR8Q0LN
-         xqJ7OMikXxXPCb3wpqpypYOWqWa468Xy504dGsNPCeHpk4hS7XA5sgzpkVtotHPcChN8
-         n5gg==
+        bh=XjXD7jKfxfBFVoHv590K6/GxKkoQhn0BjJydiG8ipz0=;
+        b=M7+Rbv5gZM/O5DqGCIEA58p0l/j8KurlADiTKrq/6cN9ZHEfeFqA0Cvu8BtDon1SYf
+         /C0K3KyuRBIwL7fWsugHuRLrY8S+zLQetsATik8PyVr/XqUdA/NSCkWKBlInBEYforQY
+         0dHckHJ9QWP+Wi4qcYbM5SapI0KyM7kTiM1th4epGy4vB2LV4YThoPKIsTTzqIvHucRl
+         S02VUGTECzbA2K8hsvZ0UZigWLFYRt8JT3HddnrfRpsL4b1ac3zZN1ly8HXQ+7Xadlbt
+         aoFFEhSOjDwN9aEZx5GppJHyoH1MJD1V5iAlBTCzbHE315CWMZffTs9RMbMDExG0ccvT
+         gZbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681394691; x=1683986691;
+        d=1e100.net; s=20221208; t=1681394717; x=1683986717;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NawhwqeTpbHH9NZVueC607f+P3eR2lIHqHXJApMeoUE=;
-        b=A78g7b7hDcu97Wac130R3w3hhoRqdwEYklEbNCeOwkC8kx4RyYMcivEgpdHaDVERt1
-         eNMIzfklsXEUb9luNepPvKVtLN7FUdgfCfDP34H0npfbq1dbgmtjbhNV0VjCMpxFC8D0
-         apisRVdI0ABzUcP0yFL+xvIbR1KWzTsPYkN5QaQnP5CMYlF/bZ2GbCoTfC/0k2POMJYK
-         PuIBBwXzLMfTGhSkd2skl/nhjMAelNwBahhTAPOkGzfBLhvAfioHBIksJMUrjp1My41A
-         jcxspW/d7JgkGj32qMSzvJhgzzTgBfiemiuzUQIlkhDJ4OiMCsFniRDvDi5+a3KXN/vz
-         DlIg==
-X-Gm-Message-State: AAQBX9fevqkZaa2VAtuOp65TjB8zwU1QLctboV4gSldn47ktKzXtNeCP
-        TEtxXfCNKROyCwmhPRRvsZTyQmm6Yv8f1w==
-X-Google-Smtp-Source: AKy350arbkApYkL1K/TFNHHma7RYJY4EiMcNJOjiKfGB43WxSYDcmb48Ung3kqgX+Ba2+AKfHBgLeQ==
-X-Received: by 2002:a05:622a:1a18:b0:3e1:7bb5:f0c5 with SMTP id f24-20020a05622a1a1800b003e17bb5f0c5mr3164054qtb.58.1681394690852;
-        Thu, 13 Apr 2023 07:04:50 -0700 (PDT)
+        bh=XjXD7jKfxfBFVoHv590K6/GxKkoQhn0BjJydiG8ipz0=;
+        b=dNAkjOguxV/LQls+b+sKwi5iDf+xEDgMu0tQJd92LidnX1UqxZmwbmY84duK36loT4
+         v4XLNgfql6jFCGHH381OAovit9PY6Osc81WQmNUGb6qmXfy48WEoJXE8Tq2Y0y8E1zLV
+         0gy7YM87NZjUXyeYxTGZ/Rrc2opOF+3kmcQH338msnixNQ4YHsKNNxdrbnwuIiHfevMi
+         4Korq2wHXGpOnA34vgH1rdtKTmriQ9s2S9P3UuuhQdrAY+eK8ErgzqAGZSxy6onYihQ2
+         YkAc6XqQKxFr/ueyfWWwBmfyjALLLLXltJPvcxt6LsjHqUjkXvM+qQMAKrKndUmPuRzC
+         U4rA==
+X-Gm-Message-State: AAQBX9f16QClj8UxE0kUPGa4+whVaqqpCrLcRWUFnyevKQxVS9vj4Mn/
+        K9w1UVRe8PFfbfAzcYkM80Q=
+X-Google-Smtp-Source: AKy350bHrMYYHo1g9iMLRMb5ClL8AJsPvPCZohrHR75YxaWeKRpHRdgj1YdCONhBwwRbKjwG2fWUXA==
+X-Received: by 2002:a05:6214:4110:b0:56e:afe2:ebca with SMTP id kc16-20020a056214411000b0056eafe2ebcamr3014532qvb.30.1681394717229;
+        Thu, 13 Apr 2023 07:05:17 -0700 (PDT)
 Received: from [192.168.1.105] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id d7-20020ac800c7000000b003e29583cf22sm500347qtg.91.2023.04.13.07.04.47
+        by smtp.gmail.com with ESMTPSA id ei18-20020ad45a12000000b005eac706d223sm444470qvb.124.2023.04.13.07.05.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Apr 2023 07:04:50 -0700 (PDT)
-Message-ID: <7ea465d9-95eb-d158-632a-a2aa892fd2bf@gmail.com>
-Date:   Thu, 13 Apr 2023 07:04:46 -0700
+        Thu, 13 Apr 2023 07:05:16 -0700 (PDT)
+Message-ID: <427df98f-071e-8c18-3e99-45d9da944902@gmail.com>
+Date:   Thu, 13 Apr 2023 07:05:12 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [net-next PATCH v6 06/16] net: phy: phy_device: Call into the PHY
- driver to set LED brightness
+Subject: Re: [net-next PATCH v6 01/16] net: dsa: qca8k: move
+ qca8k_port_to_phy() to header
 Content-Language: en-US
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+To:     Christian Marangi <ansuelsmth@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -78,12 +78,11 @@ Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org
+Cc:     Michal Kubiak <michal.kubiak@intel.com>
 References: <20230327141031.11904-1-ansuelsmth@gmail.com>
- <20230327141031.11904-7-ansuelsmth@gmail.com>
- <202ae4b9-8995-474a-1282-876078e15e47@gmail.com>
- <64380b46.7b0a0220.978a.1eb4@mx.google.com>
+ <20230327141031.11904-2-ansuelsmth@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <64380b46.7b0a0220.978a.1eb4@mx.google.com>
+In-Reply-To: <20230327141031.11904-2-ansuelsmth@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -98,34 +97,16 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/12/2023 4:11 PM, Christian Marangi wrote:
-> On Thu, Apr 13, 2023 at 06:57:51AM -0700, Florian Fainelli wrote:
->>
->>
->> On 3/27/2023 7:10 AM, Christian Marangi wrote:
->>> From: Andrew Lunn <andrew@lunn.ch>
->>>
->>> Linux LEDs can be software controlled via the brightness file in /sys.
->>> LED drivers need to implement a brightness_set function which the core
->>> will call. Implement an intermediary in phy_device, which will call
->>> into the phy driver if it implements the necessary function.
->>>
->>> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
->>> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
->>
->> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
->>
->>> +	int (*led_brightness_set)(struct phy_device *dev,
->>> +				  u32 index, enum led_brightness value);
->>
->> I think I would have made this an u8, 4 billion LEDs, man, that's a lot!
+On 3/27/2023 7:10 AM, Christian Marangi wrote:
+> Move qca8k_port_to_phy() to qca8k header as it's useful for future
+> reference in Switch LEDs module since the same logic is applied to get
+> the right index of the switch port.
+> Make it inline as it's simple function that just decrease the port.
 > 
-> If andrew is ok we can still consider to reduce it. (but just to joke
-> about it... A MAN CAN DREAM OF A FULL HD SCREEN ON THEIR OWN SPECIAL
-> PORT)
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
 
-Humm just thought of something else, is it OK for led_brightness_set and 
-led_blink_set to call into functions that might require sleeping (MDIO, 
-I2C, SPI, etc.)?
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
