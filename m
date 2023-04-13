@@ -2,138 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 855436E03A6
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 03:24:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B697D6E03AA
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 03:28:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229527AbjDMBX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 21:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33390 "EHLO
+        id S229630AbjDMB2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 21:28:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbjDMBX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 21:23:58 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C81C1712;
-        Wed, 12 Apr 2023 18:23:54 -0700 (PDT)
-Received: (Authenticated sender: schoen@loyalty.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8D9D240002;
-        Thu, 13 Apr 2023 01:23:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=loyalty.org; s=gm1;
-        t=1681349033;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=cV2qhPqki74Px+vTRxaDMKbdo3dSKb5l5S7PACpgtjo=;
-        b=SGB9B5mDqf0gn3rrCAGCmvgKWS9dMlL65Ok77cYT06MilK7BKPN5PQbWchV4FU++Q0G16Y
-        zbM64Ykaj3SupQFAtulVIED3zjyJYeJGlgKo2Ub/HyDrJ6uPsLus1E4MdlZjj04CcsjvdX
-        pxdrEzXy8Ebl6vbC7DZOkNSeUHdVr2M98FjdgD4X8En9bxLm6p+TGTsjW0lRTlPxpED9iA
-        8dDSotyNwir30abxPibKsne3kbXTXmFHNg99g5wSyyL1+yU3LYarboz9mN/7KNIpAleZdQ
-        3fpeqj6Zyvjq7kqBCyCAPiDDXrHWFvUB4yvYA+11YcHGA6NFT55aFCzc2bLijA==
-Date:   Wed, 12 Apr 2023 18:23:48 -0700
-From:   Seth David Schoen <schoen@loyalty.org>
-To:     linux-man@vger.kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH v4 resend] ip.7: Add Special and Reserved IP Addresses section
-Message-ID: <20230413012348.GA2492327@demorgan>
+        with ESMTP id S229637AbjDMB2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 21:28:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F6B1712;
+        Wed, 12 Apr 2023 18:27:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 049FC6199F;
+        Thu, 13 Apr 2023 01:27:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 962FEC4339B;
+        Thu, 13 Apr 2023 01:27:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681349278;
+        bh=/+lLsznPD4Tfw4KoH3ooUloROTizyNl4PVM3b6gcHWw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Peu8FDv+CWd5+eeGRnvpONwDk0gcBnaoXcxWnUhHKSK80WY1iuHKQDCfA9QLeIlwY
+         9N+p47H2j2vpi4IZYjrvE7mxTWGfFQyoScTHmh1S/Pae3Ej6+686x/jEzN3gV0Ys+5
+         0ZOuqdH7MIuGxR4xS3xt1pPYsZyMl/drB5r4H8Zz0rzONO47GFVTNFuN0XlkyQQxYX
+         QDv5iIL+DfEfCNZgh/Ln9I81tL/UcI9g4HCXT1fEhU2VTFMBoH/XPzwY76snGOkyyc
+         4hjnsMQmBntdO1ojJo7fi/5gc9SmaBaZnKGyuA34pFeZ5ATyPUkXZ/DKoody/NLwWI
+         Odo3bv5peHCOA==
+Date:   Wed, 12 Apr 2023 18:27:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hariprasad Kelam <hkelam@marvell.com>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <willemdebruijn.kernel@gmail.com>,
+        <andrew@lunn.ch>, <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
+        <naveenm@marvell.com>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <maxtram95@gmail.com>, <corbet@lwn.net>
+Subject: Re: [net-next Patch v9 0/6] octeontx2-pf: HTB offload support
+Message-ID: <20230412182756.6b1d28c6@kernel.org>
+In-Reply-To: <20230411090359.5134-1-hkelam@marvell.com>
+References: <20230411090359.5134-1-hkelam@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Break out the discussion of special and reserved IPv4 addresses
-into a subsection, and briefly describe three cases in which
-Linux no longer treats addresses specially, where other systems
-do or did.
+On Tue, 11 Apr 2023 14:33:53 +0530 Hariprasad Kelam wrote:
+> octeontx2 silicon and CN10K transmit interface consists of five
+> transmit levels starting from MDQ, TL4 to TL1. Once packets are
+> submitted to MDQ, hardware picks all active MDQs using strict
+> priority, and MDQs having the same priority level are chosen using
+> round robin. Each packet will traverse MDQ, TL4 to TL1 levels.
+> Each level contains an array of queues to support scheduling and
+> shaping.
 
-The divergences in Linux's behavior mentioned in this patch were
-introduced at
 
-unicast 240/4 (since 2.6.25):
-  commit 1e637c74b0f84eaca02b914c0b8c6f67276e9697
-  Author: Jan Engelhardt <jengelh@computergmbh.de>
-  Date:   Mon Jan 21 03:18:08 2008 -0800
+Looks like Jake's comments from v7 apply.
 
-unicast 0/8 (since 5.3):
-  commit 96125bf9985a75db00496dd2bc9249b777d2b19b
-  Author: Dave Taht <dave.taht@gmail.com>
-  Date:   Sat Jun 22 10:07:34 2019 -0700
-
-unicast subnet lowest address (since 5.14):
-  commit 58fee5fc83658aaacf60246aeab738946a9ba516
-  Merge: 77091933e453 6101ca0384e3
-  Author: David S. Miller <davem@davemloft.net>
-  Date:   Mon May 17 13:47:58 2021 -0700
-
-Signed-off-by: Seth David Schoen <schoen@loyalty.org>
-Suggested-by: John Gilmore <gnu@toad.com>
----
- man7/ip.7 | 38 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 35 insertions(+), 3 deletions(-)
-
-diff --git a/man7/ip.7 b/man7/ip.7
-index f69af1b32..94de21979 100644
---- a/man7/ip.7
-+++ b/man7/ip.7
-@@ -237,6 +237,7 @@ In particular, this means that you need to call
- on the number that is assigned to a port.
- All address/port manipulation
- functions in the standard library work in network byte order.
-+.SS Special and reserved addresses
- .PP
- There are several special addresses:
- .B INADDR_LOOPBACK
-@@ -244,12 +245,43 @@ There are several special addresses:
- always refers to the local host via the loopback device;
- .B INADDR_ANY
- (0.0.0.0)
--means any address for binding;
-+means any address for socket binding;
- .B INADDR_BROADCAST
- (255.255.255.255)
--means any host and has the same effect on bind as
-+has the same effect on socket binding as
- .B INADDR_ANY
--for historical reasons.
-+for historical reasons. A packet addressed to
-+.B INADDR_BROADCAST
-+through a socket which has
-+.B SO_BROADCAST
-+set will be broadcast to all hosts on the local network segment, as
-+long as the link is broadcast-capable.
-+.PP
-+On any locally-attached IP subnet with a link type that supports
-+broadcasts, the highest-numbered address (e.g., the .255 address on a
-+subnet with netmask 255.255.255.0) is designated as a broadcast address.
-+This "broadcast address" cannot usefully be assigned to an interface, and
-+can only be addressed with a socket on which the
-+.B SO_BROADCAST
-+option has been set.
-+Internet standards have historically also reserved the lowest-numbered
-+address (e.g., the .0 address on a subnet with netmask 255.255.255.0)
-+for broadcast, though they call it "obsolete" for this purpose.  Since
-+Linux 5.14, it is treated as an ordinary unicast address.
-+.PP
-+Internet standards have also traditionally reserved various addresses
-+for particular uses, though Linux no longer treats some of these
-+specially. Addresses in the ranges 0.0.0.1 through 0.255.255.255 and
-+240.0.0.0 through 255.255.255.254 (0/8 and 240/4) are reserved globally.
-+Since Linux 5.3 and Linux 2.6.245, respectively, the 0/8 and 240/4
-+addresses are treated as ordinary unicast addresses. Systems that follow
-+the traditional behaviors may not interoperate with these historically
-+reserved addresses.
-+.PP
-+All addresses from 127.0.0.1 through 127.255.255.254
-+are treated as loopback addresses akin to the standardized
-+local loopback address 127.0.0.1, while addresses in 224.0.0.0 through
-+239.255.255.255 (224/4) are dedicated to multicast use.
- .SS Socket options
- IP supports some protocol-specific socket options that can be set with
- .BR setsockopt (2)
--- 
-2.25.1
+Jake, sorry for not cleaning up patchwork the bad series name has
+fooled the bot.
