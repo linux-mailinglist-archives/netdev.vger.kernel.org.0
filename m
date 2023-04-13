@@ -2,101 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ECEB6E0377
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 03:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C40056E0387
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 03:13:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229722AbjDMBFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 21:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52942 "EHLO
+        id S229760AbjDMBNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 21:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbjDMBFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 21:05:31 -0400
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3334C2E;
-        Wed, 12 Apr 2023 18:05:30 -0700 (PDT)
-Received: by mail-wm1-f48.google.com with SMTP id j16so143455wms.0;
-        Wed, 12 Apr 2023 18:05:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681347929; x=1683939929;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7UkmFhtjxWacnMCiO0oQv3pNqPctVfrO7QeMfZUAp/o=;
-        b=WXfUXfu106fH1coxexnbiajCnnD+MntT0bTDc9g/xygvsVK+fe2CfPs9wSradk9jgA
-         a5opeeGQL5MOGDvDVfi8pg7qZjrfo/nQZmlT8wXy0RDAVN+BiiZQhJY/T6Pxt4gCbvTT
-         85EVAtLdjCOlls9TsGTwUTt3KLdwzsbqkaQOGWAec2JTi+xZIkN33+Ldt+l+poSWu5gC
-         pJ+lTIWDnQGwnf0R1+vPOYigWHJy+A6RP5Q/nAauh5LhpmYAynkaNuRGIlozvtqyJu0o
-         RaxF7zhlf0PDVg86+m1sl1PQ1H4tqTooNUn3ZG0oLKvy1W1s/KqS5Am3sdQpHRG3SpBR
-         kSMQ==
-X-Gm-Message-State: AAQBX9deoecpwRnzQyXDvDovKudAbl1z8Dtx4nqC/IjR77o35CS0L81Q
-        etip6SCeShsmqsT0oOQIZ0Q=
-X-Google-Smtp-Source: AKy350bDDKhpd8MexEw/4tmaBStYzgn6bVDTaN7FSwiN/JqKxJOEBlxdeUeD/HykCmrarjBMVB1+fw==
-X-Received: by 2002:a1c:7701:0:b0:3f0:80cf:f2d5 with SMTP id t1-20020a1c7701000000b003f080cff2d5mr48283wmi.11.1681347929308;
-        Wed, 12 Apr 2023 18:05:29 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id p8-20020a05600c468800b003f09563445asm4128817wmo.0.2023.04.12.18.05.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 18:05:28 -0700 (PDT)
-Date:   Thu, 13 Apr 2023 01:05:24 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
-        peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org,
-        robh@kernel.org, kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
-        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-        isaku.yamahata@intel.com, dan.j.williams@intel.com,
-        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-        iommu@lists.linux.dev
-Subject: Re: [PATCH v7 00/12] Add PCI pass-thru support to Hyper-V
- Confidential VMs
-Message-ID: <ZDdVVJ2P+sJaUgtV@liuwe-devbox-debian-v2>
-References: <1679838727-87310-1-git-send-email-mikelley@microsoft.com>
+        with ESMTP id S229722AbjDMBNN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 21:13:13 -0400
+Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525A6469E;
+        Wed, 12 Apr 2023 18:13:11 -0700 (PDT)
+Received: from [0.0.0.0] (unknown [172.96.223.238])
+        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id EE365280297;
+        Thu, 13 Apr 2023 09:13:00 +0800 (CST)
+Message-ID: <60e87b7e-7b82-0d21-408f-157d22822e72@sangfor.com.cn>
+Date:   Thu, 13 Apr 2023 09:12:45 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1679838727-87310-1-git-send-email-mikelley@microsoft.com>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [RFC PATCH net] sfc: Fix use-after-free due to selftest_work
+Content-Language: en-US
+To:     Jacob Keller <jacob.e.keller@intel.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
+References: <20230412005013.30456-1-dinghui@sangfor.com.cn>
+ <30e4bf50-7950-0b3c-67b5-6028b7114da2@intel.com>
+From:   Ding Hui <dinghui@sangfor.com.cn>
+In-Reply-To: <30e4bf50-7950-0b3c-67b5-6028b7114da2@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCHk8fVkJIGENMHx1MT0NLTlUTARMWGhIXJBQOD1
+        lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVSktLVUtZBg++
+X-HM-Tid: 0a87782c5c262eb1kusnee365280297
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MjY6CCo*AT0JPC0NIx09KzAR
+        F0tPCklVSlVKTUNKSE9DSENNQkxKVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+        QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFOTE9NNwY+
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 06:51:55AM -0700, Michael Kelley wrote:
-[...]
+On 2023/4/13 6:34, Jacob Keller wrote:
 > 
-> Michael Kelley (12):
->   x86/ioremap: Add hypervisor callback for private MMIO mapping in coco VM
->   x86/hyperv: Reorder code to facilitate future work
->   Drivers: hv: Explicitly request decrypted in vmap_pfn() calls
->   x86/mm: Handle decryption/re-encryption of bss_decrypted consistently
->   init: Call mem_encrypt_init() after Hyper-V hypercall init is done
->   x86/hyperv: Change vTOM handling to use standard coco mechanisms
->   swiotlb: Remove bounce buffer remapping for Hyper-V
->   Drivers: hv: vmbus: Remove second mapping of VMBus monitor pages
->   Drivers: hv: vmbus: Remove second way of mapping ring buffers
->   hv_netvsc: Remove second mapping of send and recv buffers
->   Drivers: hv: Don't remap addresses that are above shared_gpa_boundary
->   PCI: hv: Enable PCI pass-thru devices in Confidential VMs
+> 
+> On 4/11/2023 5:50 PM, Ding Hui wrote:
+>> There is a use-after-free scenario that is:
+>>
+>> When netif_running() is false, user set mac address or vlan tag to VF,
+>> the xxx_set_vf_mac() or xxx_set_vf_vlan() will invoke efx_net_stop()
+>> and efx_net_open(), since netif_running() is false, the port will not
+>> start and keep port_enabled false, but selftest_worker is scheduled
+>> in efx_net_open().
+>>
+>> If we remove the device before selftest_worker run, the efx is freed,
+>> then we will get a UAF in run_timer_softirq() like this:
+>>
+>> [ 1178.907941] ==================================================================
+>> [ 1178.907948] BUG: KASAN: use-after-free in run_timer_softirq+0xdea/0xe90
+>> [ 1178.907950] Write of size 8 at addr ff11001f449cdc80 by task swapper/47/0
+>> [ 1178.907950]
+>> [ 1178.907953] CPU: 47 PID: 0 Comm: swapper/47 Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
+>> [ 1178.907954] Hardware name: SANGFOR X620G40/WI2HG-208T1061A, BIOS SPYH051032-U01 04/01/2022
+>> [ 1178.907955] Call Trace:
+>> [ 1178.907956]  <IRQ>
+>> [ 1178.907960]  dump_stack+0x71/0xab
+>> [ 1178.907963]  print_address_description+0x6b/0x290
+>> [ 1178.907965]  ? run_timer_softirq+0xdea/0xe90
+>> [ 1178.907967]  kasan_report+0x14a/0x2b0
+>> [ 1178.907968]  run_timer_softirq+0xdea/0xe90
+>> [ 1178.907971]  ? init_timer_key+0x170/0x170
+>> [ 1178.907973]  ? hrtimer_cancel+0x20/0x20
+>> [ 1178.907976]  ? sched_clock+0x5/0x10
+>> [ 1178.907978]  ? sched_clock_cpu+0x18/0x170
+>> [ 1178.907981]  __do_softirq+0x1c8/0x5fa
+>> [ 1178.907985]  irq_exit+0x213/0x240
+>> [ 1178.907987]  smp_apic_timer_interrupt+0xd0/0x330
+>> [ 1178.907989]  apic_timer_interrupt+0xf/0x20
+>> [ 1178.907990]  </IRQ>
+>> [ 1178.907991] RIP: 0010:mwait_idle+0xae/0x370
+>>
+>> I am thinking about several ways to fix the issue:
+>>
+>> [1] In this RFC, I cancel the selftest_worker unconditionally in
+>> efx_pci_remove().
+>>
+>> [2] Add a test condition, only invoke efx_selftest_async_start() when
+>> efx->port_enabled is true in efx_net_open().
+>>
+>> [3] Move invoking efx_selftest_async_start() from efx_net_open() to
+>> efx_start_all() or efx_start_port(), that matching cancel action in
+>> efx_stop_port().
+>>
+>> [4] However, I also notice that in efx_ef10_set_mac_address(), the
+>> efx_net_open() depends on original port_enabled, but others are not,
+>> if we change all efx_net_open() depends on old state like
+>> efx_ef10_set_mac_address() does, the UAF can also be fixed in theory.
+>>
+>> But I'm not sure which is better, is there any suggestions? Thanks.
+>>
+> 
+> I think this fix makes the most sense to me.
+> 
+>> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+>> ---
+> 
+> net patches need a Fixes tag indicating what commit this fixes. This
+> being RFC is likely why that was left off?
+> 
 
-I merged the first 6 from tip/x86/sev and then the rest directly to
-hyperv-next.
+Thanks.
 
-The hv_netvsc patch did not apply cleanly, but that was easy to fix.
+The commit dd40781e3a4e ("sfc: Run event/IRQ self-test asynchronously 
+when interface is brought up") add efx_selftest_async_start() into
+efx_net_open(), it was okay then since efx_net_open() was only invoked
+by the callback. Base on the original purpose of this commit, the
+way [2][3] makes sense.
 
-Please check hyperv-next is what you expected.
+The commit e340be923012 ("sfc: add ndo_set_vf_mac() function for EF10")
+first add efx_ef10_sriov_set_vf_mac(), it invoke efx_net_open(), then
+this UAF scenario started.
 
+I'll remove RFC and add Fixes in v2.
+
+Fixes: e340be923012 ("sfc: add ndo_set_vf_mac() function for EF10")
+
+>>   drivers/net/ethernet/sfc/efx.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+>> index 884d8d168862..dd0b2363eed1 100644
+>> --- a/drivers/net/ethernet/sfc/efx.c
+>> +++ b/drivers/net/ethernet/sfc/efx.c
+>> @@ -876,6 +876,8 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
+>>   	efx->state = STATE_UNINIT;
+>>   	rtnl_unlock();
+>>   
+>> +	efx_selftest_async_cancel(efx);
+>> +
+>>   	if (efx->type->sriov_fini)
+>>   		efx->type->sriov_fini(efx);
+>>   
+> 
+
+-- 
 Thanks,
-Wei.
+- Ding Hui
+
