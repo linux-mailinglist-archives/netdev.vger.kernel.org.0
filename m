@@ -2,100 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 297C16E0A4C
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 11:32:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46D206E0BE8
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 12:57:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbjDMJcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 05:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
+        id S231218AbjDMK5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 06:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbjDMJco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 05:32:44 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DDD4C3C
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 02:32:43 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pmtJq-0004ip-4c; Thu, 13 Apr 2023 11:32:42 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id BAC4E1ACB50;
-        Thu, 13 Apr 2023 09:31:25 +0000 (UTC)
-Date:   Thu, 13 Apr 2023 11:31:24 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool v1 1/1] add support for Ethernet PSE and PD
- devices
-Message-ID: <20230413-valium-retreat-c5e7f29ebab6-mkl@pengutronix.de>
-References: <20230317093024.1051999-1-o.rempel@pengutronix.de>
+        with ESMTP id S231246AbjDMK5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 06:57:01 -0400
+X-Greylist: delayed 2853 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 13 Apr 2023 03:56:56 PDT
+Received: from mail.posteburundi.bi (mail.posteburundi.bi [196.2.15.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CDA4217
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 03:56:56 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.posteburundi.bi (Postfix) with ESMTP id 2AC9F21C8628;
+        Thu, 13 Apr 2023 11:51:02 +0200 (CAT)
+Received: from mail.posteburundi.bi ([127.0.0.1])
+        by localhost (mail.posteburundi.bi [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id OdRd9ew9HknF; Thu, 13 Apr 2023 11:51:02 +0200 (CAT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.posteburundi.bi (Postfix) with ESMTP id 84D2F21C6696;
+        Thu, 13 Apr 2023 11:51:01 +0200 (CAT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.posteburundi.bi 84D2F21C6696
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteburundi.bi;
+        s=49734F3E-B0A3-11EC-9971-1E25BC38DE0A; t=1681379461;
+        bh=dfzNWNrtmGnDzpFfAqoHDukvC9bBVQxHlsvV6ZwOE+8=;
+        h=MIME-Version:To:From:Date:Message-Id;
+        b=Ve2U9qqm1dOmTZEd7g1BeQ2UIqGPJQ1eEyoypp+KQED6AL6riy21ILI8yekYzbFsr
+         E9TreqqjBp7GCuMoe/SkX8E5BENoQk5PsWQmEt3NyYopWRMRJ0CMN27B3RAoGpfj72
+         gutYWDxh8i+0X/7a4T9RXSJiv9df01DrORaAQKsO4ZotWW7itTwIYtVL2HbDlKtKke
+         362J94h+bK4C1NHvYJ7++M8sESbwQFyNTNrCKIVjd158Luo9YTvrFGT61WtnUwEgBd
+         g9oQY/opq+aOS3TBCRSa+2zUE5K3hpHv0R3CRvT0UKfR8LZ7LSfb1sauhBXAQtiiLF
+         +8FWV/1yblivg==
+X-Virus-Scanned: amavisd-new at posteburundi.bi
+Received: from mail.posteburundi.bi ([127.0.0.1])
+        by localhost (mail.posteburundi.bi [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 2QqBbxe7WHQV; Thu, 13 Apr 2023 11:51:01 +0200 (CAT)
+Received: from [192.168.8.101] (unknown [41.85.163.66])
+        by mail.posteburundi.bi (Postfix) with ESMTPSA id AD2DE21C6A02;
+        Thu, 13 Apr 2023 11:50:51 +0200 (CAT)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="iapqsxlwlp3swzfr"
-Content-Disposition: inline
-In-Reply-To: <20230317093024.1051999-1-o.rempel@pengutronix.de>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Representative Needed
+To:     Recipients <info@posteburundi.bi>
+From:   Global Trader Company Ltd UK <info@posteburundi.bi>
+Date:   Thu, 13 Apr 2023 10:50:30 +0100
+Reply-To: potterroger68@gmail.com
+Message-Id: <20230413095051.AD2DE21C6A02@mail.posteburundi.bi>
+X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FORGED_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
         version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+My name is , Mrs Rita Potter Rogers we need a Company Representative in you=
+r city location, you can work online or at home and get good payment, conta=
+ct us if interested on this Email: potterroger68@gmail.com
 
---iapqsxlwlp3swzfr
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 17.03.2023 10:30:24, Oleksij Rempel wrote:
-> This implementation aims to provide compatibility for Ethernet PSE
-> (Power Sourcing Equipment) and PDs (Powered Devices).
->=20
-> In its present state, this patch offers generic PSE support for PoDL
-> (Power over Data Lines 802.3bu) specifications while also reserving
-> namespace for PD devices.
->=20
-> The infrastructure can be expanded to include 802.3af and 802.3at "Power
-> via the Media Dependent Interface" (or PoE/Power over Ethernet).
->=20
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-
-Soft Ping. Can anyone take a look at this?
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---iapqsxlwlp3swzfr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQ3y+kACgkQvlAcSiqK
-BOjbHgf/VI5DlVcYA1p8Yw4U/yVtEFM8lgdiXYGwgw/w7xIROiEv0dnIc+wSy8LQ
-k0cBsFwzAi59qaporTWAE4E3KvXjLyQI54JL8InaFS2n+v8otKU6Lk6UnTKAlXxs
-z87n6Wlon8FA1FWGVm0UA2J2GYUbs98mWR4utW5Jm8powUipBwsdY6sA91S+F/S+
-wB+Lolok2+N3U7PChN8n9ZZTWJY+WFzvTSN41R7PuKm9mYQtOcj3u2eQs/6kAD0z
-ge9tAk8D5UZQZiKfj2dmiq40fSziAOI1dPO4CI07Uw1/HHFF9uzN12vedpdPrI0J
-R8PWA5rzAO8hwT+D1Fx0x2iRk54snw==
-=Jo3p
------END PGP SIGNATURE-----
-
---iapqsxlwlp3swzfr--
