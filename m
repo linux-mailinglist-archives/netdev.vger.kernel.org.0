@@ -2,157 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A746E0BEC
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 12:57:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68C006E0BFE
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 13:02:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231319AbjDMK5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 06:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36952 "EHLO
+        id S230320AbjDMLCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 07:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbjDMK5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 06:57:04 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2046.outbound.protection.outlook.com [40.107.101.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89374468D
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 03:57:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ylwi6w+MVfV27/SRSCcqKYDIjpxMHzLdizAg70wCP/0CSpgd3aNuTg83wcZCKphi5VimVsqiaStCDH1o1ZZhlwoDK8UAoljqFveMc/DOhfP4XIKzjQGEo/EtG99jHO8Uxj4tGJBRlh90ZOh8rqIoAfdD35C/PFQ8f2RDL0pD6nOrC1DxZ9xLtJifSGcpDixveHrbd2HxGxCcmoAj2H7JZ8cePnJsqoVfBp5SA54XunUYdKtvYnkNJWinI8bQeACnxTPwEcr0HizRCYnqJ9w718D8Dp2ckEKszJSi5sl80lIsHd8inB+iV31YMTlw9hcbPlzjKPRrguYSvrIMnn2Oqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QYIH9EvyFenr29BOT9hBK6yJP7n54zgozpcl8qXyhsA=;
- b=hBn4ukrbeQU6c55Fk5LFt2QDxMKEqNv5Xw1pHhDRsxYOEeLKPxWRWmxb4sgepubUaq+O0+k7/Nkh0SRXk7TyalaLz2WL5p2PNx77WSSrm0sBMzk4roftJm+F35JqVQR5sgb1UXipmJXG6NMX7h5JuVvueiA4HPbIMeR2JXRYoCgqdLy2ZxgCwVyj1z06spacez6/CsT6Nbilqnh2X6x6Ct8V205x/OF16rQqAmV+HMexhdLWZQD1jL1sSDd7sgHevqfGBLz4KaYCehVJKgBeJ9RUpRJ4ODuOv1Hv3nKwOuxHuayyzuNEFl2lazjSYgkgwGIMHBKSBxAW5E43suUV5Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QYIH9EvyFenr29BOT9hBK6yJP7n54zgozpcl8qXyhsA=;
- b=l273YRWk/8z/GkH4pIjTbCqqGHnroiClmWNF3pHuRB7aMEs2GjuMzs7FTKPrnFBv1yhgfb5LY1hXXFsFiMhUXyd3lIrjbKfFFQow4vsd8ECt+OkuAUCJaNRvDoumdq9Xcg2F0wMemH9wEN/eajOmolAld9TIqt8sYhhz3DMtjIEEjMOJBzeRVxHFKdn9C31Lkon5rIEkQmwNOtdXy8B4fJCbxgUPu69mKPvqpoLo6wxxRpn4ckHF1OCQV5mBes57lCC/MSXv4gKhZcPJxaxoMEcWNnrbGfRlCZw009Bjo7R3Ei2vepHvxaf1RqksMAOybIFnpNr755ycvJRtAAoIqQ==
-Received: from DM6PR08CA0042.namprd08.prod.outlook.com (2603:10b6:5:1e0::16)
- by MW4PR12MB7032.namprd12.prod.outlook.com (2603:10b6:303:20a::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Thu, 13 Apr
- 2023 10:56:59 +0000
-Received: from DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1e0:cafe::37) by DM6PR08CA0042.outlook.office365.com
- (2603:10b6:5:1e0::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.32 via Frontend
- Transport; Thu, 13 Apr 2023 10:56:59 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT064.mail.protection.outlook.com (10.13.172.234) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6298.31 via Frontend Transport; Thu, 13 Apr 2023 10:56:59 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 13 Apr 2023
- 03:56:48 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 13 Apr
- 2023 03:56:48 -0700
-Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server id 15.2.986.37 via Frontend Transport; Thu, 13 Apr
- 2023 03:56:46 -0700
-From:   Emeel Hakim <ehakim@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <sd@queasysnail.net>
-CC:     <netdev@vger.kernel.org>, <leon@kernel.org>,
-        Emeel Hakim <ehakim@nvidia.com>
-Subject: [PATCH net-next v5 5/5] macsec: Don't rely solely on the dst MAC address to identify destination MACsec device
-Date:   Thu, 13 Apr 2023 13:56:22 +0300
-Message-ID: <20230413105622.32697-6-ehakim@nvidia.com>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <20230413105622.32697-1-ehakim@nvidia.com>
-References: <20230413105622.32697-1-ehakim@nvidia.com>
+        with ESMTP id S229876AbjDMLCe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 07:02:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D24C270D
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:02:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 176CB63D90
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 11:02:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F353AC433EF;
+        Thu, 13 Apr 2023 11:02:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681383752;
+        bh=zHZeY9MBFstoey01DGFfpeYxgl+CEVbgfYTuew27hCU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cWHSK1G6OFfmf0aSj2MG0vwBW2nmedxZFfTs7yMUTN4lq5xbWMZnnmzYTMRkHCiiT
+         mQ08enZ1reY0i+3ygNdkz0QL1DF6s/8ZmRuxOCkwG013wXuwlCmgC0G++sNb6E8Lux
+         qHM3gji2Du/729UFD1T6Vw0MuG5n2aE79UllzaZW0QeI1ytgnGWLTphEGlXuE8l3bS
+         GeTQxJDWDvJyakefl8djhlhqskrYfwGUcNjSTDvFVZUt//l25SEwbuh2duOa/axrmq
+         Rv1OWPBaUnHFnzbUi5lPKRt9pwzTydnkz2tw/1zvfCLjEFUtsz54nOVs3vcYivNAaq
+         EUOJ9ZydZATQQ==
+Date:   Thu, 13 Apr 2023 14:02:28 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        "alexander.sschmidt" <alexander.sschmidt@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        netdev@vger.kernel.org, rrameshbabu@nvidia.com, gal@nvidia.com,
+        moshe@nvidia.com, shayd@nvidia.com
+Subject: Re: Kernel crash after FLR reset of a ConnectX-5 PF in switchdev mode
+Message-ID: <20230413110228.GJ17993@unreal>
+References: <90e1efad457f40c1f9f7b8cb56852072d8ea00fd.camel@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT064:EE_|MW4PR12MB7032:EE_
-X-MS-Office365-Filtering-Correlation-Id: daa83c81-d9b0-4924-45cd-08db3c0dce5c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c7dsKEZ23DDizSeniVO6N5E4BLMpVlrZuVpPV7AS7w29mBSPaL9RNguSdJgBPvF+Z4dT0vwUjkXKYPGjFpuz0i6uTXdMMEzhFuwKDazF2IvWXdHj1BSWPp8ipAwHUwrEnaZm23DdJYQA1F2gXvBKUIaKIGbC8Yvmo8IjKCY2GYllX4vU1KMfkjDtBoHmhbZq2SUyYfRBovzJyC2kvre32l1uEc9zqF3OluoqoO/UXSBl2tGVl696g0/5jSRTUD8eDC518KPUsg5aa+kEENQpALFQ0GXICujJ5mqAe14Y1zJ71rPudfBOB5h0K60eORj6jpg664nL8dB0CMbjJD/dgjr+nxd1q60/BSDpPnvmZ9m4ejArHSmpeKzi7H37qRACFiLNv4tEcHESaSIT7mKYVda6xqa7YX1Dxmtyz4M2slbny/7BWCKFv3Eb5FdlXwAtAHsBmdikKG2dw/Mx73Knte8Eb4acJCpphx6Jvax4nCsIDzK56icUHrZ9us2PTpBbqOvt33QazXrk1pKZi1VylMYYEgQwRY6BZO0h9Lb5kDD5rebB5pjGecFu1zUW4BlkTsOxZN8d+TX1kSLjhEbrkXT0bUOiz0/ZKLqZX6OZI8BJWaNoMlQbtoRhr/GH7lyP2vAi+RTVCAxCMkUE/8ctLO/3LEt7hfoHIfRTIbfDXg/RAzA3k9y9ljH4JkeAK03n1nXCZn947gmX6ZALIKz4RzktrBGDmHzwV6dT3dJ3LVzMB23jRMuyWwqAjHFl3HBdVnPViLSgH71nmeSTsPUYkgJe8kCweyHDAoYqWyw41k8=
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(346002)(136003)(396003)(451199021)(36840700001)(40470700004)(46966006)(8676002)(36860700001)(34020700004)(83380400001)(47076005)(336012)(426003)(2616005)(7696005)(478600001)(107886003)(6666004)(40460700003)(26005)(54906003)(110136005)(1076003)(186003)(2906002)(5660300002)(36756003)(316002)(7636003)(4326008)(356005)(82310400005)(70586007)(70206006)(41300700001)(82740400003)(8936002)(40480700001)(86362001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 10:56:59.6046
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: daa83c81-d9b0-4924-45cd-08db3c0dce5c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7032
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <90e1efad457f40c1f9f7b8cb56852072d8ea00fd.camel@linux.ibm.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Offloading device drivers will mark offloaded MACsec SKBs with the
-corresponding SCI in the skb_metadata_dst so the macsec rx handler will
-know to which interface to divert those skbs, in case of a marked skb
-and a mismatch on the dst MAC address, divert the skb to the macsec
-net_device where the macsec rx_handler will be called to consider cases
-where relying solely on the dst MAC address is insufficient.
+On Tue, Apr 11, 2023 at 05:11:11PM +0200, Niklas Schnelle wrote:
+> Hi Saeed, Hi Leon,
+> 
+> While testing PCI recovery with a ConnectX-5 card (MT28800, fw
+> 16.35.1012) and vanilla 6.3-rc4/5/6 on s390 I've run into a kernel
+> crash (stacktrace attached) when the card is in switchdev mode. No
+> crash occurs and the recovery succeeds in legacy mode (with VFs). I
+> found that the same crash occurs also with a simple Function Level
+> Reset instead of the s390 specific PCI recovery, see instructions
+> below. From the looks of it I think this could affect non-s390 too but
+> I don't have a proper x86 test system with a ConnectX card to test
+> with.
+> 
+> Anyway, I tried to analyze further but got stuck after figuring out
+> that in mlx5e_remove() deep down from mlx5_fw_fatal_reporter_err_work()
+> (see trace) the mlx5e_dev->priv pointer is valid but the pointed to
+> struct only contains zeros as it was previously zeroed by
+> mlx5_mdev_uninit() which then leads to a NULL pointer access.
+> 
+> The crash itself can be prevented by the following debug patch though
+> clearly this is not a proper fix:
+> 
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -6012,6 +6012,10 @@ static void mlx5e_remove(struct auxiliary_device
+> *adev)
+>         struct mlx5e_priv *priv = mlx5e_dev->priv;
+>         pm_message_t state = {};
+> 
+> +       if (!priv->mdev) {
+> +               pr_err("%s with zeroed mlx5e_dev->priv\n", __func__);
+> +               return;
+> +       }
+>         mlx5_core_uplink_netdev_set(priv->mdev, NULL);
+>         mlx5e_dcbnl_delete_app(priv);
+>         unregister_netdev(priv->netdev);
+> 
+> With that I then tried to track down why mlx5_mdev_uninit() is called
+> and this might actually be s390 specific in that this happens during
+> the removal of the VF which on s390 causes extra hot unplug events for
+> the VFs (our virtualized PCI hotplug is per-PCI function) resulting in
+> the following call trace:
+> 
+> ...
+> zpci_bus_remove_device()
+>    zpci_iov_remove_virtfn()
+>       pci_iov_remove_virtfn()
+>          pci_stop_and_remove_bus_device()
+>             pci_stop_bus_device()
+>                device_release_driver_internal()
+>                   pci_device_remove()
+>                      remove_one()
+>                         mlx5_mdev_uninit()
+> 
+> Then again I would expect that on other architectures VFs become at
+> leastunresponsive during a FLR of the PF not sure if that also lead to
+> calls to remove_one() though.
+> 
+> As another data point I tried the same on the default Ubuntu 22.04
+> generic 5.15 kernel and there no crash occurs so this might be a newer
+> issue.
+> 
+> Also, I did test with and without the patch I sent recently for
+> skipping the wait in mlx5_health_wait_pci_up() but that made no
+> difference.
+> 
+> Any hints on how to debug this further and could you try to see if this
+> occurs on other architectures as well?
 
-One such instance is when using MACsec with a VLAN as an inner
-header, where the packet structure is ETHERNET | SECTAG | VLAN.
-In such a scenario, the dst MAC address in the ethernet header
-will correspond to the VLAN MAC address, resulting in a mismatch.
+My guess that the splash, which complains about missing mutex_init(), is an outcome of these failures:
+[ 1375.771395] mlx5_core 0004:00:00.0 eth0 (unregistering): vport 1 error -67 reading stats
+[ 1376.151345] mlx5_core 0004:00:00.0: mlx5e_init_nic_tx:5376:(pid 1505): create tises failed, -67
+[ 1376.238808] mlx5_core 0004:00:00.0 ens8832f0np0: mlx5e_netdev_change_profile: new profile init failed, -67
+[ 1376.243746] mlx5_core 0004:00:00.0: mlx5e_init_rep_tx:1101:(pid 1505): create tises failed, -67
+[ 1376.328623] mlx5_core 0004:00:00.0 ens8832f0np0: mlx5e_netdev_change_profile: failed to rollback to orig profile,
 
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
----
- drivers/net/macsec.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+-67 is -ENOLINK from mlx5_internal_err_ret_value().
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 25616247d7a5..c19a45dc6977 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1021,8 +1021,11 @@ static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
- 		 * the SecTAG, so we have to deduce which port to deliver to.
- 		 */
- 		if (macsec_is_offloaded(macsec) && netif_running(ndev)) {
--			if (md_dst && md_dst->type == METADATA_MACSEC &&
--			    (!find_rx_sc(&macsec->secy, md_dst->u.macsec_info.sci)))
-+			struct macsec_rx_sc *rx_sc = (md_dst && md_dst->type == METADATA_MACSEC) ?
-+						     find_rx_sc(&macsec->secy,
-+								md_dst->u.macsec_info.sci) : NULL;
-+
-+			if (md_dst && md_dst->type == METADATA_MACSEC && !rx_sc)
- 				continue;
- 
- 			if (ether_addr_equal_64bits(hdr->h_dest,
-@@ -1047,7 +1050,13 @@ static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
- 					nskb->pkt_type = PACKET_MULTICAST;
- 
- 				__netif_rx(nskb);
-+			} else if (rx_sc) {
-+				skb->dev = ndev;
-+				skb->pkt_type = PACKET_HOST;
-+				ret = RX_HANDLER_ANOTHER;
-+				goto out;
- 			}
-+
- 			continue;
- 		}
- 
--- 
-2.21.3
-
+Thanks
