@@ -2,113 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A7D86E11FA
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 464DF6E1210
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230224AbjDMQO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 12:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53718 "EHLO
+        id S230213AbjDMQRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 12:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbjDMQOT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:14:19 -0400
-Received: from h1.cmg2.smtp.forpsi.com (h1.cmg2.smtp.forpsi.com [81.2.195.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7947EAD15
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 09:14:13 -0700 (PDT)
+        with ESMTP id S230220AbjDMQRg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:17:36 -0400
+Received: from h2.cmg1.smtp.forpsi.com (h2.cmg1.smtp.forpsi.com [81.2.195.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B999EFF
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 09:17:32 -0700 (PDT)
 Received: from lenoch ([91.218.190.200])
         by cmgsmtp with ESMTPSA
-        id mzaKpk51av5uImzaMp3ZUA; Thu, 13 Apr 2023 18:14:12 +0200
+        id mzdZpFW1YPm6CmzdapKsBV; Thu, 13 Apr 2023 18:17:30 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=triops.cz; s=f2019;
-        t=1681402452; bh=iOLUp2nAXZGQFF1l6CVjSOuv0QybhfNM0n4zwmq2vW0=;
+        t=1681402650; bh=2KiT7NBU6r25sO3GW3qL8zvFELXNNyDdgupz/OiuxSU=;
         h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=C1TlYo8uBNGOWvQipy5vhvPeAjODyY9xwblgMT3XrsSghX41hFFdKQ9+IJ0zTwHpD
-         BwfWrRsK3ByGrh3qKdRvYch6TmYet1ROrMGx0l33IYsibGLJnsyBhjf7Pk7TJtXflZ
-         W+C+rlW+O3IyWoNva/DD5UdtCJExH0WlPW6+xc7+Yu5RinOqMBCoHhLQHAZ6ofwgBB
-         bbc+gHzWAraKvKjxhgyYBz837lBHwpJSI5x8OPhWbIT2a0Eux7FFLrtov6kM4Taiik
-         ARf/4YPB1pp/xnmMTlprJMoLASts60f9tEMXpb0zv7iiu0hMpPdzvTFMLpef78PILu
-         PMQAMv+heOqWw==
+        b=3EKZbqbIcHhVMDvyv9AWRz0vQt9QO/9/jqAvEq3ARb/16ZOhHzHs+kRd+h2LSa8PZ
+         zqK7v0c1sK81nerMUzdiH8aOzrIHtWwOJIwEtOOqCo/xdLbmW1oXS8OkiOKIf3vchT
+         3nroU/5tmrHoRj0GQ2flbaZYZCl9RVylkHyUcBqnaKxBwepzfzx+VrBTAXO76YTwsP
+         bv5kL4VXMs3lH5apUSbWMmZTB//3zQ0nJm2D2ojOl5sgbgNhFkpUIQv9dSmO5M7qWY
+         WNpbPwfAQtdv0qTxX98lvhc5PLQJhVziz13LTHzyF4jTh5QOKmogF8L+dIWB2ZyBwK
+         HeGhTuVwzK8Qw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=triops.cz; s=f2019;
-        t=1681402452; bh=iOLUp2nAXZGQFF1l6CVjSOuv0QybhfNM0n4zwmq2vW0=;
+        t=1681402650; bh=2KiT7NBU6r25sO3GW3qL8zvFELXNNyDdgupz/OiuxSU=;
         h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=C1TlYo8uBNGOWvQipy5vhvPeAjODyY9xwblgMT3XrsSghX41hFFdKQ9+IJ0zTwHpD
-         BwfWrRsK3ByGrh3qKdRvYch6TmYet1ROrMGx0l33IYsibGLJnsyBhjf7Pk7TJtXflZ
-         W+C+rlW+O3IyWoNva/DD5UdtCJExH0WlPW6+xc7+Yu5RinOqMBCoHhLQHAZ6ofwgBB
-         bbc+gHzWAraKvKjxhgyYBz837lBHwpJSI5x8OPhWbIT2a0Eux7FFLrtov6kM4Taiik
-         ARf/4YPB1pp/xnmMTlprJMoLASts60f9tEMXpb0zv7iiu0hMpPdzvTFMLpef78PILu
-         PMQAMv+heOqWw==
-Date:   Thu, 13 Apr 2023 18:14:08 +0200
+        b=3EKZbqbIcHhVMDvyv9AWRz0vQt9QO/9/jqAvEq3ARb/16ZOhHzHs+kRd+h2LSa8PZ
+         zqK7v0c1sK81nerMUzdiH8aOzrIHtWwOJIwEtOOqCo/xdLbmW1oXS8OkiOKIf3vchT
+         3nroU/5tmrHoRj0GQ2flbaZYZCl9RVylkHyUcBqnaKxBwepzfzx+VrBTAXO76YTwsP
+         bv5kL4VXMs3lH5apUSbWMmZTB//3zQ0nJm2D2ojOl5sgbgNhFkpUIQv9dSmO5M7qWY
+         WNpbPwfAQtdv0qTxX98lvhc5PLQJhVziz13LTHzyF4jTh5QOKmogF8L+dIWB2ZyBwK
+         HeGhTuVwzK8Qw==
+Date:   Thu, 13 Apr 2023 18:17:29 +0200
 From:   Ladislav Michl <oss-lists@triops.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
+To:     Dan Carpenter <error27@gmail.com>
 Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
         linux-mips@vger.kernel.org,
         Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: Re: [PATCH 1/3] staging: octeon: don't panic
-Message-ID: <ZDgqUP0yWYHE7McL@lenoch>
+Subject: Re: [RFC 3/3] staging: octeon: convert to use phylink
+Message-ID: <ZDgrGRImf0O0bP4r@lenoch>
 References: <ZDgNexVTEfyGo77d@lenoch>
- <ZDgN8/IcFc3ZXkeC@lenoch>
- <c69572ba-5ecf-477e-9dbe-8b6bd5dd98e8@lunn.ch>
+ <ZDgOZZb2LrlFEEbv@lenoch>
+ <0af60abb-d599-4fdd-9bf6-ccf14524fe44@kili.mountain>
+ <ZDgoH0KQ/Q0ydxn3@lenoch>
+ <4ba4bab4-c9ab-468f-ac35-510612529b89@kili.mountain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c69572ba-5ecf-477e-9dbe-8b6bd5dd98e8@lunn.ch>
-X-CMAE-Envelope: MS4wfFD9KN3px8S4W/xQvZBV6DCYM57l78jFMSBlwSuRsQOZHCLIpD3QpFNobWpX+4ZhZVAp9k/7yCPJkuZg3PvuTaBtOy1r5Hpna0Ai5CAwzZ2HK7mepGD/
- M6X0I5Ubbz9cBzJKR8pSJVGvCFNqLJrrN86wy4CSMTO0VuFk6+1CEx+0rUZj1NlHypfq9sd54w/Olr+eWoBXJTGMKjRxueUdj+OXC8nQFffF9dhy25d9up8v
- 5/oFzre1UGV/rpZZ+18xhSZ2wBCGn5nSzKTaiR8YSBtJA+ezAgs2FEkGBN8pqW8uguaJfxBqdvFcx264glxcQA==
+In-Reply-To: <4ba4bab4-c9ab-468f-ac35-510612529b89@kili.mountain>
+X-CMAE-Envelope: MS4wfJuXSkbX1lAp5B3Tui4Q55n+c+ZFrNyO5J+bFbo+sEAMaQ1ZlLF/sZ8QP03CkFd+z22mmdx8uXTzbSKtgmCieoMC6I1f2p1XBqL7pCUcwwFF8UQvZIfn
+ XNBJPGHI0nA6tVqqRHzwLVGwQLvrSroIwQomurtoh/C1soKj3BRsUVxJetP93W2UNteUIUeCFALZRju4S2UcP3RL/6//ntlNrVNvcVdTbQS6Mf4JdzH2dF2q
+ uFTlcCk+g7We/JpGqy1xV7WawAR4jcBG2Jil/lLkgz7y+pAid6XsQ3VOpEd8QucjUrKV6S4PJ6fd5oRgDO8rObqxq7TygfH+ZhhFvEW3oNM=
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Andrew,
-
-On Thu, Apr 13, 2023 at 05:57:00PM +0200, Andrew Lunn wrote:
-> > -void cvm_oct_rx_initialize(void)
-> > +int cvm_oct_rx_initialize(void)
-> >  {
-> >  	int i;
-> >  	struct net_device *dev_for_napi = NULL;
-> > @@ -460,8 +460,11 @@ void cvm_oct_rx_initialize(void)
-> >  		}
-> >  	}
-> >  
-> > -	if (!dev_for_napi)
-> > -		panic("No net_devices were allocated.");
-> > +	if (!dev_for_napi) {
-> > +		pr_err("No net_devices were allocated.");
+On Thu, Apr 13, 2023 at 07:10:47PM +0300, Dan Carpenter wrote:
+> On Thu, Apr 13, 2023 at 06:04:47PM +0200, Ladislav Michl wrote:
+> > > > diff --git a/drivers/staging/octeon/ethernet-rgmii.c b/drivers/staging/octeon/ethernet-rgmii.c
+> > > > index 0c4fac31540a..8c6eb0b87254 100644
+> > > > --- a/drivers/staging/octeon/ethernet-rgmii.c
+> > > > +++ b/drivers/staging/octeon/ethernet-rgmii.c
+> > > > @@ -115,17 +115,8 @@ static void cvm_oct_rgmii_poll(struct net_device *dev)
+> > > >  
+> > > >  	cvm_oct_check_preamble_errors(dev);
+> > > >  
+> > > > -	if (likely(!status_change))
+> > >                    ^
+> > > Negated.
+> > 
+> > On purpose.
+> > 
+> > > > -		return;
+> > > > -
+> > > > -	/* Tell core. */
+> > > > -	if (link_info.s.link_up) {
+> > > > -		if (!netif_carrier_ok(dev))
+> > > > -			netif_carrier_on(dev);
+> > > > -	} else if (netif_carrier_ok(dev)) {
+> > > > -		netif_carrier_off(dev);
+> > > > -	}
+> > > > -	cvm_oct_note_carrier(priv, link_info);
+> > > > +	if (likely(status_change))
+> > > 
+> > > Originally a status_change was unlikely but now it is likely.
+> > 
+> > Yes, but originally it returned after condition and now it executes
+> > phylink_mac_change. This is just to emulate current bahaviour.
+> > Later mac interrupts should be used to drive link change.
 > 
-> It is good practice to use dev_per(dev, ... You then know which device
-> has problem finding its net_devices.
+> I don't think you have seen the (minor) issue.  Originally it was
+> likely that status_change was NOT set.  But now it is likely that is
+> *IS* set.
 
-Well, it would then need few more preparation commits to use proper
-logging.
-
-> checkpatch is probably warning you about this.
-> 
-> Once you have a registered netdev, you should then use netdev_err(),
-> netdev_dbg() etc.
-
-Problem with this code is that it registers netdevices in for loop,
-so the only device available here is parent device to all that
-netdevices (which weren't registered).
-
-Perhaps use per netdev probe function first?
-
-> However, cvm_oct_probe() in 6.3-rc6 seems to be FUBAR. As soon as you
-> call register_netdev(dev), the kernel can start using it, even before
-> that call returns. So the register_netdev(dev) should be the last
-> thing _probe does, once everything is set up. You can call
-> netdev_err() before it is registered, but the name is less
-> informative, something like "(unregistered)".
-
-On the side note, this (panic) cannot happen in current code as
-it is using DT as a guidance only, but interfaces are hardcoded.
-Later on, when DT is used to provide links, it can fail and then
-kernel would panic.
-
->       Andrew
-
-Thank you,
+Ahh, will fix that. Thank you,
 	ladis
