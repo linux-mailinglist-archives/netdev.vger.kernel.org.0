@@ -2,95 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6ED16E1601
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 22:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C5826E160F
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 22:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229578AbjDMUkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 16:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36264 "EHLO
+        id S229704AbjDMUrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 16:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjDMUkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 16:40:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244187EE4
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 13:39:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681418373;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Quj1iiD9LgkSGI0NKmJzsno1BF3Rj6KCB6GiyGlg2P0=;
-        b=d5S895mS0A0Gvjey/xAMxeGIKX1sDhiBQufWBja1lkQTPuV7V5ShIm+iN9T9Kqvvxx7GhZ
-        ZcmsJrdz/akQr9/rYyUker9WIxIr+YH/OoE8aO2dZzwhFIi19cAM5jPl1HydwRaZHpLMdE
-        3qG2aVU2nwW/ObI38FJEFRhHWv7It4o=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-192-U6VXJyF_P7SHq6_28nlFzw-1; Thu, 13 Apr 2023 16:39:27 -0400
-X-MC-Unique: U6VXJyF_P7SHq6_28nlFzw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229493AbjDMUrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 16:47:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C0983EA;
+        Thu, 13 Apr 2023 13:47:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BA11C2814255;
-        Thu, 13 Apr 2023 20:39:25 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.177])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6CA6340C6E70;
-        Thu, 13 Apr 2023 20:39:23 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20230413042917.GA3390869@ZenIV>
-References: <20230413042917.GA3390869@ZenIV> <20230411160902.4134381-1-dhowells@redhat.com> <20230411160902.4134381-2-dhowells@redhat.com> <20230413005129.GZ3390869@ZenIV>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net-next v6 01/18] net: Declare MSG_SPLICE_PAGES internal sendmsg() flag
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 365AE6154E;
+        Thu, 13 Apr 2023 20:47:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E52BC433EF;
+        Thu, 13 Apr 2023 20:47:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681418841;
+        bh=eNkJ7JXtUjbJ08nvkPN/451rZa7srlocFwkzzV23g40=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=EiYBlnUmkCU3fJzbH5GQaw3HV0PHs2jhP28bx0b7zcHWSyGzudZYiPdiwwmhwru+n
+         Y2QzEGvgHZ35cRqmiDg0pFPpz2RYXcDGkOgk4EBdh5N6Vcw7xIipTV3Xyp7wdBor1x
+         VGAqO3EYsCcaz7smLDkv1bQ3KZEpMeW8f00I+iHiCRlC2F31G0SA48eKgn4Al5Uz+7
+         eAJ36kvRNY9E6BaKtzL5UANXigDVSYQLsyXBtu4h1t/Vz6LJCtwzgMdRG7Q3z5AAIA
+         neYOAOcEcYmQii3l9HA3CrQXHIuJ1Lo7wCVBH+fGL43GXU+VLEVaTCWDXPOSld2sEz
+         rL3fAZgPm0fng==
+Message-ID: <a295939f0058373d1caf956749820c0d.sboyd@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1147765.1681418362.1@warthog.procyon.org.uk>
 Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 13 Apr 2023 21:39:22 +0100
-Message-ID: <1147766.1681418362@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230413191541.1073027-4-ahalaney@redhat.com>
+References: <20230413191541.1073027-1-ahalaney@redhat.com> <20230413191541.1073027-4-ahalaney@redhat.com>
+Subject: Re: [PATCH v5 3/3] arm64: dts: qcom: sa8540p-ride: Add ethernet nodes
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, richardcochran@gmail.com,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, netdev@vger.kernel.org,
+        bmasney@redhat.com, echanude@redhat.com, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com,
+        Andrew Halaney <ahalaney@redhat.com>
+To:     Andrew Halaney <ahalaney@redhat.com>, linux-kernel@vger.kernel.org
+Date:   Thu, 13 Apr 2023 13:47:19 -0700
+User-Agent: alot/0.10
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Al Viro <viro@zeniv.linux.org.uk> wrote:
+Quoting Andrew Halaney (2023-04-13 12:15:41)
+>  arch/arm64/boot/dts/qcom/sa8540p-ride.dts | 179 ++++++++++++++++++++++
+>  1 file changed, 179 insertions(+)
+>=20
+> diff --git a/arch/arm64/boot/dts/qcom/sa8540p-ride.dts b/arch/arm64/boot/=
+dts/qcom/sa8540p-ride.dts
+> index 40db5aa0803c..650cd54f418e 100644
+> --- a/arch/arm64/boot/dts/qcom/sa8540p-ride.dts
+> +++ b/arch/arm64/boot/dts/qcom/sa8540p-ride.dts
+> @@ -28,6 +28,65 @@ aliases {
+>         chosen {
+>                 stdout-path =3D "serial0:115200n8";
+>         };
+> +
+> +       mtl_rx_setup: rx-queues-config {
 
-> Note that io_sendmsg_prep() handles both IORING_OP_SENDMSG and IORING_OP=
-_SEND,
-> so this pair of functions can hit the same request.  And sqe->msg_flags =
-is
-> not sanitized at all - it comes straight from user buffer.
+Is there a reason why this isn't a child of an ethernet node?
 
-Assuming ____sys_sendmsg() is fixed, I think it should be sufficient to ma=
-ke
-io_send() and io_send_zc().  io_sendmsg() and io_sendmsg_zc() will go thro=
-ugh
-____sys_sendmsg().
-
-David
-
+> +               snps,rx-queues-to-use =3D <1>;
+> +               snps,rx-sched-sp;
+> +
