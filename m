@@ -2,134 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF366E0730
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 08:43:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C745A6E073B
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 08:54:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229541AbjDMGnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 02:43:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52054 "EHLO
+        id S229656AbjDMGyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 02:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbjDMGnU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 02:43:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094B119A
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 23:43:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 971E56358A
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 06:43:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BA89C433D2;
-        Thu, 13 Apr 2023 06:43:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681368198;
-        bh=ghxWfIIoU8cIacTmWcO58F3LNc1m0Px68kb7VjDnVhY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Lm5k6RW32QM45WqiJPl5mGEKtlu6mbwCVrQoAybf0zAz8n98Y180WIQtugeNHy7tc
-         cswO0HrOsJvcWUTJ3jOCMha7JvNxImhVne82yT1FHgSukFVraz/sCA51jCQbiwUCVZ
-         AIQuW8cpv1B25xuNmKcSzmprxYv2fE+zkj/xmDWmh/EtijUjDi8FohvQ3G+4LbRe+E
-         uat7LJSTQ8YLV//0dItZ52VVkk45p+9URc0ntWI+hhs8ekoo3Wv7rljYJywYYHXLcT
-         Xl2u61PPFHU6PwQtXkzG8iGDUd0GJHQrkPQlt/iBKD8FITovIoFwGvvrP7Lh+sVGfT
-         YFdpVwaA3SCtQ==
-Date:   Thu, 13 Apr 2023 09:43:13 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Brett Creeley <bcreeley@amd.com>,
-        Brett Creeley <brett.creeley@amd.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, drivers@pensando.io,
-        shannon.nelson@amd.com, neel.patel@amd.com
-Subject: Re: [PATCH net] ionic: Fix allocation of q/cq info structures from
- device local node
-Message-ID: <20230413064313.GD182481@unreal>
-References: <20230407233645.35561-1-brett.creeley@amd.com>
- <20230409105242.GR14869@unreal>
- <bd48d23b-093c-c6d4-86f1-677c2a0ab03c@amd.com>
- <20230411124704.GX182481@unreal>
- <20230411124945.527b0ee4@kernel.org>
- <20230412165816.GB182481@unreal>
- <20230412124409.7c2d73cc@kernel.org>
+        with ESMTP id S229582AbjDMGyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 02:54:43 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935AD83D9
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 23:54:40 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-5491fa028adso588274227b3.10
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 23:54:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681368880; x=1683960880;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=nc4lL7JxaxGf+XYCkFM159Jes+f3X5bXuBPCU38sK1A=;
+        b=x2EEYKNwns2Pbb+ucqgKdqZDtnOo6wufbG6wB0BNrEeumCTEuZUHPvnqh3lVB8O3Ey
+         mTULQ6o6izzJFtYG/CmIBv5nYiEKgr2DyZDnldRzaZh7eVaIWvpgL4Ay6F47ov6oirTX
+         AW1qSljM7dA9NwrfrCwhxK/hEgkFIQpwoAhzof9Rf0skU2RkGAAvOJCelN6C/IRrqQMa
+         +2zdkUsfddnMir10WHagqmm85rqs9dZYuaKpSJPFW1z0OIkZF6kGUvawuKLRTmrR4c9F
+         JnIvdJ8ZZ2tosOjJBCEQdb0d5hu0C+9eJS7hrK3n1bafevOABiyteWNqEmflKeY8hjOO
+         ++uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681368880; x=1683960880;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nc4lL7JxaxGf+XYCkFM159Jes+f3X5bXuBPCU38sK1A=;
+        b=jOKgIYMFj/dWRpmnf8Dd6AuQYsyuJy+b8O9wuDg8QKHhIXtxGBzK/FHxJLie5NL/UG
+         8fT5vYg4Qc38xgR02zfJhtzgbXySHHhwwvCKmLiHCOMgif6HrATX6yHnIl5kBZICBMXw
+         yAEMBEbW1iAkBv59veoTHcwSpX0PP8df7QKHhKuHXqJ9eaCcNm5UPfZFCRsHtiBTsUME
+         yFdQ7/ctCE0f7c8PjzKEJJDTraQaZVhcZ7jHJbnrC/49MUKqhSo5wBJWWkdNBmsZqTjZ
+         x2zOkMi2Z8LE6be0Cp0RedxbQbMq19m9Y8vClA9AUP1A69U1jaglHd9Yz7jUwsV2CCMC
+         hkog==
+X-Gm-Message-State: AAQBX9d3cnCduGL9pixpx6fp3hvs3WCwlUE/w3tDUyhkaeh3FeAEWFJP
+        6p5EuywAD19J+lOIf2B1es6cNc0hLP1vF6ThXOf80Q==
+X-Google-Smtp-Source: AKy350ZbBKjG6fi9EeOO5NV/GOSg+h3W9R10VGi1N1iYeqzIYEjsf1O8fdUlo8BjVvNdE8zxrMdbrPdWIcFQ3gf2lg0=
+X-Received: by 2002:a81:4307:0:b0:545:f7cc:f30 with SMTP id
+ q7-20020a814307000000b00545f7cc0f30mr755616ywa.0.1681368879779; Wed, 12 Apr
+ 2023 23:54:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230412124409.7c2d73cc@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230407013118.466441-1-marex@denx.de>
+In-Reply-To: <20230407013118.466441-1-marex@denx.de>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 13 Apr 2023 08:54:03 +0200
+Message-ID: <CAPDyKFqMcNxUtJCtP09_APYX2Fefeqzs9-CmsSNVdzN=vPyChQ@mail.gmail.com>
+Subject: Re: [PATCH] wifi: brcmfmac: add Cypress 43439 SDIO ids
+To:     Marek Vasut <marex@denx.de>
+Cc:     linux-wireless@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Danny van Heumen <danny@dannyvanheumen.nl>,
+        Eric Dumazet <edumazet@google.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        SHA-cyfmac-dev-list@infineon.com,
+        brcm80211-dev-list.pdl@broadcom.com, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 12:44:09PM -0700, Jakub Kicinski wrote:
-> On Wed, 12 Apr 2023 19:58:16 +0300 Leon Romanovsky wrote:
-> > > > I'm not sure about it as you are running kernel thread which is
-> > > > triggered directly by device and most likely will run on same node as
-> > > > PCI device.  
-> > > 
-> > > Isn't that true only for bus-side probing?
-> > > If you bind/unbind via sysfs does it still try to move to the right
-> > > node? Same for resources allocated during ifup?  
-> > 
-> > Kernel threads are more interesting case, as they are not controlled
-> > through mempolicy (maybe it is not true in 2023, I'm not sure).
-> > 
-> > User triggered threads are subjected to mempolicy and all allocations
-> > are expected to follow it. So users, who wants specific memory behaviour
-> > should use it.
-> > 
-> > https://docs.kernel.org/6.1/admin-guide/mm/numa_memory_policy.html
-> > 
-> > There is a huge chance that fallback mechanisms proposed here in ionic
-> > and implemented in ENA are "break" this interface.
-> 
-> Ack, that's what I would have answered while working for a vendor
-> myself, 5 years ago. Now, after seeing how NICs get configured in
-> practice, and all the random tools which may decide to tweak some
-> random param and forget to pin themselves - I'm not as sure.
+On Fri, 7 Apr 2023 at 03:31, Marek Vasut <marex@denx.de> wrote:
+>
+> Add SDIO ids for use with the muRata 1YN (Cypress CYW43439).
+> The odd thing about this is that the previous 1YN populated
+> on M.2 card for evaluation purposes had BRCM SDIO vendor ID,
+> while the chip populated on real hardware has a Cypress one.
+> The device ID also differs between the two devices. But they
+> are both 43439 otherwise, so add the IDs for both.
+>
+> ```
+> /sys/.../mmc_host/mmc2/mmc2:0001 # cat vendor device
+> 0x04b4
+> 0xbd3d
+> ```
+>
+> Fixes: be376df724aa3 ("wifi: brcmfmac: add 43439 SDIO ids and initialization")
+> Signed-off-by: Marek Vasut <marex@denx.de>
 
-I would like to separate between tweaks to driver internals and general
-kernel core functionality. Everything that fails under latter category
-should be avoided in drivers and in-some extent in subsystems too.
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-NUMA, IRQ, e.t.c are one of such general features.
+Kind regards
+Uffe
 
-> 
-> Having a policy configured per netdev and maybe netdev helpers for
-> memory allocation could be an option. We already link netdev to 
-> the struct device.
-
-I don't think that it is really needed, I personally never saw real data
-which supports claim that system default policy doesn't work for NICs.
-I saw a lot of synthetic testing results where allocations were forced
-to be taken from far node, but even in this case the performance
-difference wasn't huge.
-
-From reading the NUMA Locality docs, I can imagine that NICs already get
-right NUMA node from the beginning.
-https://docs.kernel.org/6.1/admin-guide/mm/numaperf.html
-
-> 
-> > > > vzalloc_node() doesn't do fallback, but vzalloc will find the right node
-> > > > for you.  
-> > > 
-> > > Sounds like we may want a vzalloc_node_with_fallback or some GFP flag?
-> > > All the _node() helpers which don't fall back lead to unpleasant code
-> > > in the users.  
-> > 
-> > I would challenge the whole idea of having *_node() allocations in
-> > driver code at the first place. Even in RDMA, where we super focused
-> > on performance and allocation of memory in right place is super
-> > critical, we rely on general kzalloc().
-> > 
-> > There is one exception in RDMA world (hfi1), but it is more because of
-> > legacy implementation and not because of specific need, at least Intel
-> > folks didn't success to convince me with real data.
-> 
-> Yes, but RDMA is much more heavy on the application side, much more
-> tightly integrated in general.
-
-Yes and no, we have vast number of in-kernel RDMA users (NVMe, RDS, NFS,
-e.t.c) who care about performance.
-
-Thanks
+> ---
+> NOTE: Please drop the Fixes tag if this is considered unjustified
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Arend van Spriel <aspriel@gmail.com>
+> Cc: Danny van Heumen <danny@dannyvanheumen.nl>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Franky Lin <franky.lin@broadcom.com>
+> Cc: Hans de Goede <hdegoede@redhat.com>
+> Cc: Hante Meuleman <hante.meuleman@broadcom.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Paul Cercueil <paul@crapouillou.net>
+> Cc: SHA-cyfmac-dev-list@infineon.com
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: brcm80211-dev-list.pdl@broadcom.com
+> Cc: linux-mmc@vger.kernel.org
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> ---
+>  .../net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c    | 9 ++++++++-
+>  include/linux/mmc/sdio_ids.h                             | 5 ++++-
+>  2 files changed, 12 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> index 65d4799a56584..ff710b0b5071a 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+> @@ -965,6 +965,12 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
+>                 .driver_data = BRCMF_FWVENDOR_ ## fw_vend \
+>         }
+>
+> +#define CYW_SDIO_DEVICE(dev_id, fw_vend) \
+> +       { \
+> +               SDIO_DEVICE(SDIO_VENDOR_ID_CYPRESS, dev_id), \
+> +               .driver_data = BRCMF_FWVENDOR_ ## fw_vend \
+> +       }
+> +
+>  /* devices we support, null terminated */
+>  static const struct sdio_device_id brcmf_sdmmc_ids[] = {
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_43143, WCC),
+> @@ -979,6 +985,7 @@ static const struct sdio_device_id brcmf_sdmmc_ids[] = {
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_4335_4339, WCC),
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_4339, WCC),
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_43430, WCC),
+> +       BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_43439, WCC),
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_4345, WCC),
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_43455, WCC),
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_4354, WCC),
+> @@ -986,9 +993,9 @@ static const struct sdio_device_id brcmf_sdmmc_ids[] = {
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_4359, WCC),
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_4373, CYW),
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_43012, CYW),
+> -       BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_43439, CYW),
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_43752, CYW),
+>         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_89359, CYW),
+> +       CYW_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_CYPRESS_43439, CYW),
+>         { /* end: all zeroes */ }
+>  };
+>  MODULE_DEVICE_TABLE(sdio, brcmf_sdmmc_ids);
+> diff --git a/include/linux/mmc/sdio_ids.h b/include/linux/mmc/sdio_ids.h
+> index 0e4ef9c5127ad..bf3c95d8eb8af 100644
+> --- a/include/linux/mmc/sdio_ids.h
+> +++ b/include/linux/mmc/sdio_ids.h
+> @@ -74,10 +74,13 @@
+>  #define SDIO_DEVICE_ID_BROADCOM_43362          0xa962
+>  #define SDIO_DEVICE_ID_BROADCOM_43364          0xa9a4
+>  #define SDIO_DEVICE_ID_BROADCOM_43430          0xa9a6
+> -#define SDIO_DEVICE_ID_BROADCOM_CYPRESS_43439  0xa9af
+> +#define SDIO_DEVICE_ID_BROADCOM_43439          0xa9af
+>  #define SDIO_DEVICE_ID_BROADCOM_43455          0xa9bf
+>  #define SDIO_DEVICE_ID_BROADCOM_CYPRESS_43752  0xaae8
+>
+> +#define SDIO_VENDOR_ID_CYPRESS                 0x04b4
+> +#define SDIO_DEVICE_ID_BROADCOM_CYPRESS_43439  0xbd3d
+> +
+>  #define SDIO_VENDOR_ID_MARVELL                 0x02df
+>  #define SDIO_DEVICE_ID_MARVELL_LIBERTAS                0x9103
+>  #define SDIO_DEVICE_ID_MARVELL_8688_WLAN       0x9104
+> --
+> 2.39.2
+>
