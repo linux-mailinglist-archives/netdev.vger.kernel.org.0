@@ -2,119 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA4806E0756
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 09:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7300D6E076C
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 09:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbjDMHIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 03:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59436 "EHLO
+        id S229742AbjDMHOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 03:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjDMHIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 03:08:00 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BA01BD
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 00:07:58 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id bm45so3676147oib.4
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 00:07:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681369678; x=1683961678;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=pMNjTon4yKZUaNx1tiPdNGd7Z6N+uzozCYugn5Cr1m0=;
-        b=fBPV2EoAs48OGDIo6A0RB5oxx6S/+v9ZwtkMQfiMhI7yM6Ca495u6H7uYdJG5NHoqL
-         K4OUB4aECHx0I8RR1Ib2kyrwfmJo0XZYLeCSa6zoZLVH2pLY97pSuSqTpzsRAs1ymqCk
-         22Cm+8EYeBH3hKgHKJ1XKOgzb7POclT3lEXZXFJDAu/k3NA2spC17rN6OQC6GovhUh2Y
-         ju2Im7x9RkTmR5pJOdSWOsMHInD0fEtZswBABMYJ1xzK35zaMJy+TAcdmZjEnVsbp2UH
-         V7BbAR+Lmt8IsvCOj6Ploh4hc2gPUK9gM/3ykld0P+CHtTPA5HxogngxvOrYTfRtsKMR
-         pEyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681369678; x=1683961678;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pMNjTon4yKZUaNx1tiPdNGd7Z6N+uzozCYugn5Cr1m0=;
-        b=O3WLw5X9DWrlC7F+hNxkfxmog6uBTw4s1/ZxqmT6+wfLKFrcyXhJMqBrldrpWkpCDc
-         EJpuqZU9d8EYMbHSOO6YTiQJF0zMswxpdZ9uRklPAexx3UkSMq/yYhFLLDIkfc6EDy2v
-         NeHsTB3aQJVonPns7GbzEfvHa8RWsvclQwztFVdu0ErrkntAfSH/TtlscwPEkDS9vhyA
-         GeyxYOzjJ3Rufw6K4pvTu5kDALSNJv9voRorbNWULo4dyr5FNyF8ajH1sYJLzsdalmHB
-         2cZ3ZnqxajuTDi8yThuqy5uEzEVCCV59i2d3E+MEV68a0I5zL+3ss62KFtw3zPzGXqyX
-         abqQ==
-X-Gm-Message-State: AAQBX9elhPQKYvldUwH+myaA/ELnBdr+6Ojgf5msQxO/SAbVPaVdU3sL
-        i1SEvggNaVLeOxi43+lo2kVgy/jY91tPOljz8tyDgQ==
-X-Google-Smtp-Source: AKy350az771X7gz/iHKHBXVCzAAutT++JEvaZWQV+W7QwSpJ35EYGAmp6Fn8f3ziqt1w+9npJ/oYLp8mlzkMQBU9TTM=
-X-Received: by 2002:a54:451a:0:b0:386:b6a7:c093 with SMTP id
- l26-20020a54451a000000b00386b6a7c093mr270735oil.6.1681369677707; Thu, 13 Apr
- 2023 00:07:57 -0700 (PDT)
+        with ESMTP id S229579AbjDMHOp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 03:14:45 -0400
+Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.214])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 206F14C19;
+        Thu, 13 Apr 2023 00:14:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=J68ms
+        hiUh+tWg8G3Lc53Yvgg2fGvMvWtMKcuYE3nO5I=; b=HYlqsnyLgt0bx1UIy1aiM
+        wH6Co+vP7KviGJW3OVaGOAMb5Jz78biTlarSH91awvBVN6DOoOQTErvQA23S11SS
+        KYe8XTHds+cg+cZQHqth+V1JTQG3q7n67l2ltf26CyrxGbZF+o3LiTd4RzORTSAi
+        YRIlr/WWIq4+sQh2XrhQQU=
+Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
+        by zwqz-smtp-mta-g4-1 (Coremail) with SMTP id _____wDXGOy7qzdkZEIsBQ--.1078S2;
+        Thu, 13 Apr 2023 15:14:03 +0800 (CST)
+From:   Zheng Wang <zyytlz.wz@163.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
+        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
+Subject: [PATCH net v2] net: ethernet: fix use after free bug in ns83820_remove_one due to race condition
+Date:   Thu, 13 Apr 2023 15:14:01 +0800
+Message-Id: <20230413071401.210599-1-zyytlz.wz@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20230412114402.1119956-1-slark_xiao@163.com>
-In-Reply-To: <20230412114402.1119956-1-slark_xiao@163.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Thu, 13 Apr 2023 09:07:21 +0200
-Message-ID: <CAMZdPi9gHzPaKcwoRR8-gQtiSxQupL=QickXqNE2owVs-nOrxg@mail.gmail.com>
-Subject: Re: [PATCH net] wwan: core: add print for wwan port attach/disconnect
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _____wDXGOy7qzdkZEIsBQ--.1078S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7AFykCw1xJr1UWw47Zr1DZFb_yoW8Xw1rp3
+        90kFyfuF1ktw4UWw1UJr40qry5XFs8t3yYgayIyw4avas5Zr4vgF4UKFWUZr18GrWqvr4f
+        Aw45Zw43uas8ZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziFAprUUUUU=
+X-Originating-IP: [111.206.145.21]
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiGg1QU1aEE4gpSgAEs6
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Apr 2023 at 13:45, Slark Xiao <slark_xiao@163.com> wrote:
->
-> Refer to USB serial device or net device, there is notice to
-> let end user know the status of device, like attached or
-> disconnected. Add attach/disconnect print for wwan device as
-> well. This change works for MHI device and USB device.
+In ns83820_init_one, dev->tq_refill was bound with queue_refill.
 
-This change works for wwan port devices, whatever the bus is.
+If irq happens, it will call ns83820_irq->ns83820_do_isr.
+Then it invokes tasklet_schedule(&dev->rx_tasklet) to start
+rx_action function. And rx_action will call ns83820_rx_kick
+and finally start queue_refill function.
 
->
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
-> ---
->  drivers/net/wwan/wwan_core.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
-> index 2e1c01cf00a9..d3ac6c5b0b26 100644
-> --- a/drivers/net/wwan/wwan_core.c
-> +++ b/drivers/net/wwan/wwan_core.c
-> @@ -492,6 +492,8 @@ struct wwan_port *wwan_create_port(struct device *parent,
->         if (err)
->                 goto error_put_device;
->
-> +       dev_info(&wwandev->dev, "%s converter now attached to %s\n",
-> +                wwan_port_dev_type.name, port->dev.kobj.name);
+If we remove the driver without finishing the work, there
+may be a race condition between ndev, which may cause UAF
+bug.
 
-You should use `dev_name()` instead of direct reference to kobj.
+CPU0                  CPU1
 
-Why 'converter' ? If you really want to print, it should be something like:
-wwan0: wwan0at1 port attached
+                     |queue_refill
+ns83820_remove_one   |
+free_netdev	 		 |
+put_device			 |
+free ndev			 |
+                     |rx_refill
+                     |//use ndev
 
->         return port;
->
->  error_put_device:
-> @@ -517,6 +519,9 @@ void wwan_remove_port(struct wwan_port *port)
->
->         skb_queue_purge(&port->rxq);
->         dev_set_drvdata(&port->dev, NULL);
-> +
-> +       dev_info(&wwandev->dev, "%s converter now disconnected from %s\n",
-> +                wwan_port_dev_type.name, port->dev.kobj.name);
->         device_unregister(&port->dev);
->
->         /* Release related wwan device */
-> --
-> 2.34.1
->
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+---
+v2:
+- cancel the work after unregister_netdev to make sure there 
+is no more request suggested by Jakub Kicinski
+---
+ drivers/net/ethernet/natsemi/ns83820.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Regards,
-Loic
+diff --git a/drivers/net/ethernet/natsemi/ns83820.c b/drivers/net/ethernet/natsemi/ns83820.c
+index 998586872599..2e84b9fcd8e9 100644
+--- a/drivers/net/ethernet/natsemi/ns83820.c
++++ b/drivers/net/ethernet/natsemi/ns83820.c
+@@ -2208,8 +2208,13 @@ static void ns83820_remove_one(struct pci_dev *pci_dev)
+ 
+ 	ns83820_disable_interrupts(dev); /* paranoia */
+ 
++	netif_carrier_off(ndev);
++	netif_tx_disable(ndev);
++
+ 	unregister_netdev(ndev);
+ 	free_irq(dev->pci_dev->irq, ndev);
++	cancel_work_sync(&dev->tq_refill);
++
+ 	iounmap(dev->base);
+ 	dma_free_coherent(&dev->pci_dev->dev, 4 * DESC_SIZE * NR_TX_DESC,
+ 			  dev->tx_descs, dev->tx_phy_descs);
+-- 
+2.25.1
+
