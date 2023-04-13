@@ -2,62 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7266E0D3C
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 14:10:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D3716E0D2F
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 14:01:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbjDMMKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 08:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
+        id S229724AbjDMMBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 08:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjDMMKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 08:10:02 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A672149EA;
-        Thu, 13 Apr 2023 05:09:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=YOBMAKejPX+OUgvMPZLufLnvOCS92uPlIFdCR6OWoLw=; b=T5X6Rx8kaWNvIVsbXet+mazslG
-        cUMmKQKwhxpKYmTzVNKZ05lPc6r1bz9rjFGRT4mI5IO4+2Nt8sYcRNrcj5LRTuDqsqm8Q+CqLfJNC
-        YAAkgWLyfRWxTtdwYgmJIsep4lObGr/gm5S28YcLNqgVLQUS/4BBDGkhsK/DNQMgOqGADYZN4F/hJ
-        gHMJImST2BJPnkTZqc6mOPDKhwBtnIcyMSDqD1qaG90/DSOAK6bhzHgf7oTEOB8+9IcPECOTlgKL0
-        FsAmjSyAboq9AthHCt7/yVv/mGA5rsDet7sKip0kYUF0zeVEk6AsAFqchSuAVxHkpSfNjgy+sA94g
-        dp1EFu4g==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pmvQN-000Cib-Uw; Thu, 13 Apr 2023 13:47:36 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pmvQN-0003GH-AA; Thu, 13 Apr 2023 13:47:35 +0200
-Subject: Re: [PATCH net-next] bpf, net: Support redirecting to ifb with bpf
-To:     Yafang Shao <laoar.shao@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, hawk@kernel.org, john.fastabend@gmail.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>, martin.lau@linux.dev,
-        toke@redhat.com
-References: <20230413025350.79809-1-laoar.shao@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <968ea56a-301a-45c5-3946-497401eb95b5@iogearbox.net>
-Date:   Thu, 13 Apr 2023 13:47:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S229480AbjDMMBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 08:01:35 -0400
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A98E0;
+        Thu, 13 Apr 2023 05:01:33 -0700 (PDT)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.bb.i.ssi.bg (Proxmox) with ESMTP id 15BDAD636;
+        Thu, 13 Apr 2023 14:49:22 +0300 (EEST)
+Received: from ink.ssi.bg (ink.ssi.bg [193.238.174.40])
+        by mg.bb.i.ssi.bg (Proxmox) with ESMTPS id F37ABD632;
+        Thu, 13 Apr 2023 14:49:21 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 8D15F3C0322;
+        Thu, 13 Apr 2023 14:49:14 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 33DBnCGp027072;
+        Thu, 13 Apr 2023 14:49:13 +0300
+Date:   Thu, 13 Apr 2023 14:49:12 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Abhijeet Rastogi <abhijeet.1989@gmail.com>
+cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ipvs: change ip_vs_conn_tab_bits range to [8,31]
+In-Reply-To: <20230412-increase_ipvs_conn_tab_bits-v1-1-60a4f9f4c8f2@gmail.com>
+Message-ID: <d2519ce3-e49b-a544-b79d-42905f4a2a9a@ssi.bg>
+References: <20230412-increase_ipvs_conn_tab_bits-v1-1-60a4f9f4c8f2@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20230413025350.79809-1-laoar.shao@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26874/Thu Apr 13 09:30:39 2023)
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,47 +53,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/13/23 4:53 AM, Yafang Shao wrote:
-> In our container environment, we are using EDT-bpf to limit the egress
-> bandwidth. EDT-bpf can be used to limit egress only, but can't be used
-> to limit ingress. Some of our users also want to limit the ingress
-> bandwidth. But after applying EDT-bpf, which is based on clsact qdisc,
-> it is impossible to limit the ingress bandwidth currently, due to some
-> reasons,
-> 1). We can't add ingress qdisc
-> The ingress qdisc can't coexist with clsact qdisc as clsact has both
-> ingress and egress handler. So our traditional method to limit ingress
-> bandwidth can't work any more.
 
-I'm not following, the latter is a super set of the former, why do you
-need it to co-exist?
+	Hello,
 
-> 2). We can't redirect ingress packet to ifb with bpf
-> By trying to analyze if it is possible to redirect the ingress packet to
-> ifb with a bpf program, we find that the ifb device is not supported by
-> bpf redirect yet.
+On Wed, 12 Apr 2023, Abhijeet Rastogi via B4 Relay wrote:
 
-You actually can: Just let BPF program return TC_ACT_UNSPEC for this
-case and then add a matchall with higher prio (so it runs after bpf)
-that contains an action with mirred egress redirect that pushes to ifb
-dev - there is no change needed.
-
-> This patch tries to resolve it by supporting redirecting to ifb with bpf
-> program.
+> From: Abhijeet Rastogi <abhijeet.1989@gmail.com>
 > 
-> Ingress bandwidth limit is useful in some scenarios, for example, for the
-> TCP-based service, there may be lots of clients connecting it, so it is
-> not wise to limit the clients' egress. After limiting the server-side's
-> ingress, it will lower the send rate of the client by lowering the TCP
-> cwnd if the ingress bandwidth limit is reached. If we don't limit it,
-> the clients will continue sending requests at a high rate.
+> Current range [8, 20] is set purely due to historical reasons
+> because at the time, ~1M (2^20) was considered sufficient.
+> 
+> Previous change regarding this limit is here.
+> 
+> Link: https://lore.kernel.org/all/86eabeb9dd62aebf1e2533926fdd13fed48bab1f.1631289960.git.aclaudi@redhat.com/T/#u
+> 
+> Signed-off-by: Abhijeet Rastogi <abhijeet.1989@gmail.com>
+> ---
+> The conversation for this started at: 
+> 
+> https://www.spinics.net/lists/netfilter/msg60995.html
+> 
+> The upper limit for algo is any bit size less than 32, so this
+> change will allow us to set bit size > 20. Today, it is common to have
+> RAM available to handle greater than 2^20 connections per-host.
 
-Adding artificial queueing for the inbound traffic, aren't you worried
-about DoS'ing your node? If you need to tell the sender to slow down,
-have you looked at hbm (https://lpc.events/event/4/contributions/486/,
-samples/bpf/hbm_out_kern.c) which uses ECN CE marking to tell the TCP
-sender to slow down? (Fwiw, for UDP https://github.com/cloudflare/rakelimit
-would be an option.)
+	This is not a limit of number of connections. I prefer
+not to allow value above 24 without adding checks for the
+available memory, this more concern for 32-bit. Blindly
+allocating 2^20 (1048576 pointers which is 8MB) should not
+cause OOM but selecting large value and then using this
+kernel on boxes with less memory is dangerous.
 
-Thanks,
-Daniel
+> Distros like RHEL already have higher limits set.
+> ---
+>  net/netfilter/ipvs/Kconfig      | 4 ++--
+>  net/netfilter/ipvs/ip_vs_conn.c | 4 ++--
+>  2 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
+> index 271da8447b29..3e3371f8c0f9 100644
+> --- a/net/netfilter/ipvs/Kconfig
+> +++ b/net/netfilter/ipvs/Kconfig
+> @@ -44,7 +44,7 @@ config	IP_VS_DEBUG
+>  
+>  config	IP_VS_TAB_BITS
+>  	int "IPVS connection table size (the Nth power of 2)"
+> -	range 8 20
+> +	range 8 31
+>  	default 12
+>  	help
+>  	  The IPVS connection hash table uses the chaining scheme to handle
+> @@ -54,7 +54,7 @@ config	IP_VS_TAB_BITS
+>  
+>  	  Note the table size must be power of 2. The table size will be the
+>  	  value of 2 to the your input number power. The number to choose is
+> -	  from 8 to 20, the default number is 12, which means the table size
+> +	  from 8 to 31, the default number is 12, which means the table size
+>  	  is 4096. Don't input the number too small, otherwise you will lose
+>  	  performance on it. You can adapt the table size yourself, according
+>  	  to your virtual server application. It is good to set the table size
+> diff --git a/net/netfilter/ipvs/ip_vs_conn.c b/net/netfilter/ipvs/ip_vs_conn.c
+> index 13534e02346c..bc0fe1a698d4 100644
+> --- a/net/netfilter/ipvs/ip_vs_conn.c
+> +++ b/net/netfilter/ipvs/ip_vs_conn.c
+> @@ -1484,8 +1484,8 @@ int __init ip_vs_conn_init(void)
+>  	int idx;
+>  
+>  	/* Compute size and mask */
+> -	if (ip_vs_conn_tab_bits < 8 || ip_vs_conn_tab_bits > 20) {
+> -		pr_info("conn_tab_bits not in [8, 20]. Using default value\n");
+> +	if (ip_vs_conn_tab_bits < 8 || ip_vs_conn_tab_bits > 31) {
+> +		pr_info("conn_tab_bits not in [8, 31]. Using default value\n");
+>  		ip_vs_conn_tab_bits = CONFIG_IP_VS_TAB_BITS;
+>  	}
+>  	ip_vs_conn_tab_size = 1 << ip_vs_conn_tab_bits;
+> 
+> ---
+> base-commit: 09a9639e56c01c7a00d6c0ca63f4c7c41abe075d
+> change-id: 20230412-increase_ipvs_conn_tab_bits-4322c90da216
+> 
+> Best regards,
+> -- 
+> Abhijeet Rastogi <abhijeet.1989@gmail.com>
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
+
