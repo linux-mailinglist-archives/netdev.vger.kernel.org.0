@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8F96E00D4
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 23:29:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43AED6E00D6
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 23:29:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbjDLV3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 17:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57926 "EHLO
+        id S229755AbjDLV3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 17:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbjDLV3T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 17:29:19 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C5665B3;
-        Wed, 12 Apr 2023 14:29:17 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id h12so11534109lfj.8;
-        Wed, 12 Apr 2023 14:29:17 -0700 (PDT)
+        with ESMTP id S229736AbjDLV3X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 17:29:23 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DFA7D9E;
+        Wed, 12 Apr 2023 14:29:18 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id z26so12892087ljq.3;
+        Wed, 12 Apr 2023 14:29:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681334956;
+        d=gmail.com; s=20221208; t=1681334957;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Hk7xrlNRg2LjZhR5nnd2KHymPvx3zfiMgU5M+lLV6HU=;
-        b=V/xeUYZxj1igJ0+uiSoZIThxos0Sd6GZlIIVkJz4YN5x1DicEctqTz+qWmxpPzfU0H
-         NVt6SkFV70FUOxLccgZKXxavU8ENzRuJEbfUcvN774ef2sN3nv5mQx6vDBrB3WEBUj8b
-         NqxbasXTDaFJ4UbgNpIYwmBLvUBhYqr0+aVySBcwmUFbiT6jANbYfqSGllOIzJT1rDvJ
-         y3q96lE+DE8SNQ6YftOGBq08Y4pRitxCfqhGSvUQ3tQSuOwCFoWHNxMsuLvRlyeJieRP
-         dGgOuYCnd4VkWLf+pTT56YeqjQgvnkvayNMm1mgDCv+HQLpnEKI/3VX9VxXjhBznjgnn
-         8cTg==
+        bh=456QAvvtFsJz9MlnBR4BMWWfSHxyYmN8x4WUjQvR230=;
+        b=ZEfLFAkeRU2gIWo8oNm4F2yRm3hBbNC/T914gFb4O09VoZ8GEaSwZ3KHPdWKgRGxfS
+         6Xo2BbxEmF7YME+NVOP8MLjOvJK1uc+sRg5jlrZqvpA5TEqEy016BBKD1WgB4R4odsso
+         TTY6mP7+SuTuNvxww/CMw47g1cfpEsaFZC/xYJGD/Pks1bCVDx4BmT1I/cspN7YxA3xl
+         WqEj22ugjF5jCq6fKepkWWyvKpDtVwdvLhbBLsC23lUQNQQrb2Csj3GmmKr1ZVlS3u+Z
+         7oAgi3fTGcVvQ97cYaivN3KXgKgc1+3Rd2DzCPUQhYKGtbJPlFU+mz0GgzSgfzgHFM/Q
+         bqVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681334956;
+        d=1e100.net; s=20221208; t=1681334957;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Hk7xrlNRg2LjZhR5nnd2KHymPvx3zfiMgU5M+lLV6HU=;
-        b=AGun8RJ4Pahfalhi74fvKU0bTCKEdS2E/Y9qD8E+zMmseV0+GtvymnlwCZwPbUjNjR
-         IviQ1MU1eV7MEp9F0ojbviJ6bNKTctmYKkqKQ56TgeX2sW/UTUVjM8mXWdjFIXWpBNRa
-         XjEP8oIIgSZBA3bSQDHcSwFG+QQdnzNPlgZodp2NIidgAeZaiZpGQodaHy3St9POO/+m
-         10GmZ2dP1p/HHvMV5Ll/yOT/E0SWZPCgrjjD8aVZYRJUvcaITHIN8xoRLJq9aWjxbCdl
-         h60k69lc8zOJWsq6c4EIPZI6Q1vCDuFWiuu92U4p2/IdxHb2r0i7n7S5wfaodz8Ffsmi
-         eTMA==
-X-Gm-Message-State: AAQBX9ceLMISlmubv92NgpJyHBxpghUieOMtl//B9JDgPwCM9ewWgWm3
-        R24qowYNUme4Rb07IKd+C8U=
-X-Google-Smtp-Source: AKy350Ye1GA676YQ4BN6dYLkL9CQQn88C/Cbl2rh/iPRc7tBj4iZYzuChU7PL/iQBKOFJguk8wSagA==
-X-Received: by 2002:a05:6512:38cc:b0:4eb:53f7:a569 with SMTP id p12-20020a05651238cc00b004eb53f7a569mr60214lft.63.1681334956325;
-        Wed, 12 Apr 2023 14:29:16 -0700 (PDT)
+        bh=456QAvvtFsJz9MlnBR4BMWWfSHxyYmN8x4WUjQvR230=;
+        b=EtFkwL7gApJXoRJ6ZHfGp6mxTSS8SpzHPXc+0tu5N+6Vgx49W9v8AyuJTLVksLJ4IG
+         N32jx7lvQEHPKZ087a54DoZ4Lgb6cDv+vucIB6y/OOtbFn+BOigkN06bUKNTVWZXag4P
+         DdabHap6GXQp+EdR913XZ/PdlgQRqwOzKH9bXECb8DPcmVHuBLvhJSmJaD95HNl6fS2n
+         YSzuNqSaNDUD8GYSOwYLnWCgQzOu4VBr4+hE+sj9U+bel82kw6WNM/Z6GqRxFjCIdXfS
+         UFYgavMFz7XXftzVjjtuDZ0sv3Pko2lyue+Ew838PHVY8w0ogdN53gEtteq5imWoQmtf
+         QSHw==
+X-Gm-Message-State: AAQBX9cYS7IKlJxTopdW+1yG4NHkPG06LIHWcp20x6nSbueXSLsnAsub
+        Q8ngGJ/N66VKGWI6JLHllLM=
+X-Google-Smtp-Source: AKy350Z/K5A6wvUUtoxhM9asteWT3QdOauvOoPj7FRaYuOul6Xh7e5It0qADBdsDxG0E+/CS74OGOQ==
+X-Received: by 2002:a2e:9a83:0:b0:2a7:84b5:f360 with SMTP id p3-20020a2e9a83000000b002a784b5f360mr23112lji.39.1681334957269;
+        Wed, 12 Apr 2023 14:29:17 -0700 (PDT)
 Received: from localhost.localdomain (93-80-67-75.broadband.corbina.ru. [93.80.67.75])
-        by smtp.googlemail.com with ESMTPSA id p14-20020a2e804e000000b002a7758b13c9sm1882481ljg.52.2023.04.12.14.29.15
+        by smtp.googlemail.com with ESMTPSA id p14-20020a2e804e000000b002a7758b13c9sm1882481ljg.52.2023.04.12.14.29.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 14:29:15 -0700 (PDT)
+        Wed, 12 Apr 2023 14:29:16 -0700 (PDT)
 From:   Ivan Mikhaylov <fr0st61te@gmail.com>
 To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -60,9 +60,9 @@ To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, Ivan Mikhaylov <fr0st61te@gmail.com>,
         Paul Fertser <fercerpav@gmail.com>
-Subject: [PATCH 2/4] net/ncsi: change from ndo_set_mac_address to dev_set_mac_address
-Date:   Thu, 13 Apr 2023 00:29:03 +0000
-Message-Id: <20230413002905.5513-3-fr0st61te@gmail.com>
+Subject: [PATCH 3/4] net/ftgmac100: add mac-address-increment option for GMA command from NC-SI
+Date:   Thu, 13 Apr 2023 00:29:04 +0000
+Message-Id: <20230413002905.5513-4-fr0st61te@gmail.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230413002905.5513-1-fr0st61te@gmail.com>
 References: <20230413002905.5513-1-fr0st61te@gmail.com>
@@ -78,44 +78,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change ndo_set_mac_address to dev_set_mac_address because
-dev_set_mac_address provides a way to notify network layer about MAC
-change. In other case, services may not aware about MAC change and keep
-using old one which set from network adapter driver.
-
-As example, DHCP client from systemd do not update MAC address without
-notification from net subsystem which leads to the problem with acquiring
-the right address from DHCP server.
+Add s32 mac-address-increment option for Get MAC Address command from
+NC-SI.
 
 Signed-off-by: Paul Fertser <fercerpav@gmail.com>
 Signed-off-by: Ivan Mikhaylov <fr0st61te@gmail.com>
 ---
- net/ncsi/ncsi-rsp.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/net/ftgmac100.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
-index 91c42253a711..069c2659074b 100644
---- a/net/ncsi/ncsi-rsp.c
-+++ b/net/ncsi/ncsi-rsp.c
-@@ -616,7 +616,6 @@ static int ncsi_rsp_handler_oem_gma(struct ncsi_request *nr, int mfr_id)
- {
- 	struct ncsi_dev_priv *ndp = nr->ndp;
- 	struct net_device *ndev = ndp->ndev.dev;
--	const struct net_device_ops *ops = ndev->netdev_ops;
- 	struct ncsi_rsp_oem_pkt *rsp;
- 	struct sockaddr saddr;
- 	u32 mac_addr_off = 0;
-@@ -643,7 +642,9 @@ static int ncsi_rsp_handler_oem_gma(struct ncsi_request *nr, int mfr_id)
- 	/* Set the flag for GMA command which should only be called once */
- 	ndp->gma_flag = 1;
- 
--	ret = ops->ndo_set_mac_address(ndev, &saddr);
-+	rtnl_lock();
-+	ret = dev_set_mac_address(ndev, &saddr, NULL);
-+	rtnl_unlock();
- 	if (ret < 0)
- 		netdev_warn(ndev, "NCSI: 'Writing mac address to device failed\n");
- 
+diff --git a/Documentation/devicetree/bindings/net/ftgmac100.txt b/Documentation/devicetree/bindings/net/ftgmac100.txt
+index 29234021f601..7ef5329d888d 100644
+--- a/Documentation/devicetree/bindings/net/ftgmac100.txt
++++ b/Documentation/devicetree/bindings/net/ftgmac100.txt
+@@ -22,6 +22,10 @@ Optional properties:
+ - use-ncsi: Use the NC-SI stack instead of an MDIO PHY. Currently assumes
+   rmii (100bT) but kept as a separate property in case NC-SI grows support
+   for a gigabit link.
++- mac-address-increment: Increment the MAC address taken by GMA command via
++  NC-SI. Specifies a signed number to be added to the host MAC address as
++  obtained by the OEM GMA command. If not specified, 1 is used by default
++  for Broadcom and Intel network cards, 0 otherwise.
+ - no-hw-checksum: Used to disable HW checksum support. Here for backward
+   compatibility as the driver now should have correct defaults based on
+   the SoC.
 -- 
 2.40.0
 
