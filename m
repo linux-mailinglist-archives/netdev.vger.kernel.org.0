@@ -2,75 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 946646E07E6
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 09:38:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 417606E0835
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 09:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbjDMHiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 03:38:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50316 "EHLO
+        id S230029AbjDMHtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 03:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbjDMHiD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 03:38:03 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2CF10D;
-        Thu, 13 Apr 2023 00:37:58 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id g5so16617144wrb.5;
-        Thu, 13 Apr 2023 00:37:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681371477; x=1683963477;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=weMstURnZ+CRZpfHFCUoK09JGYPLKjnaOtkI6A1e1jQ=;
-        b=RNa/NeqQMAH9k3vkdiea2D1T9lQmtItCuv2/awcH4D4S/dgEcFunUyH80usDMi0XQQ
-         dSt4QOEK1n3bw4Nmpu830u27OmsM8uEkEfjBht+O7SpsVZRIp/GtUGuCNMsS3Ngj4l1E
-         QeFdwaSV1yBuWcqiKPrpfAqxx+g9xlavEBrQ0D/T8vEZ7pbyeRC1hM41myCXPO3S0707
-         otcMZQwYcgaaVD/oCtYkXSSIvGPfKiV0TUUJi3SSSdr1tGVca18041FGdTBGWuBSJhyQ
-         ISqm3vPRzpaqWVxAMqbz9Q7aJmNwYoczVZoEBWM7LadnbSpn/4SV8OA4Hnhy1486y5XK
-         vpMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681371477; x=1683963477;
-        h=in-reply-to:content-disposition:mime-version:references
-         :mail-followup-to:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=weMstURnZ+CRZpfHFCUoK09JGYPLKjnaOtkI6A1e1jQ=;
-        b=BFBfQdoteIesYijePnfEwY1oBstT+VNJtQ4bT13pvEirfiYdrceblTiHRLKwLbzG/g
-         gKIeov5JR1jayFBBW4+ATQUkIwQ0IKS74jOzNj4U2n6PGm0k8PcNYfVGG+I07NW+D72L
-         5ofrBqpd7UcAK87oyy/B5RCL9Rw3MYv1eyXXKQGIuhbG3u9NRBSrbfiZSM2QaaOsBZwJ
-         tV+SJ7bNvpFJUqdo/SUowRGDVRaJ0Skci+juLB36mjQi0CH6LQBanAS2FLYs9vsDoA5T
-         lou/md7dOE9HXA7JNXMd7ykACna4brmyldXZZvbppDUsjOEp2hPX2OF+HYQkeD71+X7f
-         71Fg==
-X-Gm-Message-State: AAQBX9fZT60O05HYWumYrVuOj2waLTS4XyMfL0PbPaRBjXLsZ02jBHHJ
-        3BPSHOVMGxEEp4ibdaCbNK4JF5xec2E=
-X-Google-Smtp-Source: AKy350aYuKRBOhCm4sxDUk7xcMK0GoMci1UhvBcPKWvCkLo80i0AUGkzb++FtHRBnGZhgD8NbFtMbQ==
-X-Received: by 2002:a5d:4150:0:b0:2ef:2df2:63ea with SMTP id c16-20020a5d4150000000b002ef2df263eamr655013wrq.67.1681371476584;
-        Thu, 13 Apr 2023 00:37:56 -0700 (PDT)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id e2-20020a5d65c2000000b002ceacff44c7sm638327wrw.83.2023.04.13.00.37.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Apr 2023 00:37:56 -0700 (PDT)
-Date:   Thu, 13 Apr 2023 08:37:54 +0100
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Ding Hui <dinghui@sangfor.com.cn>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ecree.xilinx@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pengdonglin@sangfor.com.cn,
-        huangcun@sangfor.com.cn
-Subject: Re: [RFC PATCH net] sfc: Fix use-after-free due to selftest_work
-Message-ID: <ZDew+TqjrcK+zSgW@gmail.com>
-Mail-Followup-To: Ding Hui <dinghui@sangfor.com.cn>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ecree.xilinx@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pengdonglin@sangfor.com.cn,
-        huangcun@sangfor.com.cn
-References: <20230412005013.30456-1-dinghui@sangfor.com.cn>
+        with ESMTP id S230255AbjDMHtr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 03:49:47 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDF593DE
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 00:49:18 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Pxs8n3mTNzKy4l;
+        Thu, 13 Apr 2023 15:46:33 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Thu, 13 Apr
+ 2023 15:49:09 +0800
+Subject: Re: [PATCH net-next v2 1/3] net: skb: plumb napi state thru skb
+ freeing paths
+To:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <hawk@kernel.org>,
+        <ilias.apalodimas@linaro.org>, <alexander.duyck@gmail.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+References: <20230413042605.895677-1-kuba@kernel.org>
+ <20230413042605.895677-2-kuba@kernel.org>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <4447f0d2-dd78-573a-6d89-aa1e478ea46b@huawei.com>
+Date:   Thu, 13 Apr 2023 15:49:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230412005013.30456-1-dinghui@sangfor.com.cn>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+In-Reply-To: <20230413042605.895677-2-kuba@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,85 +53,195 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 08:50:13AM +0800, Ding Hui wrote:
-> There is a use-after-free scenario that is:
-> 
-> When netif_running() is false, user set mac address or vlan tag to VF,
-> the xxx_set_vf_mac() or xxx_set_vf_vlan() will invoke efx_net_stop()
-> and efx_net_open(), since netif_running() is false, the port will not
-> start and keep port_enabled false, but selftest_worker is scheduled
-> in efx_net_open().
-> 
-> If we remove the device before selftest_worker run, the efx is freed,
-> then we will get a UAF in run_timer_softirq() like this:
-> 
-> [ 1178.907941] ==================================================================
-> [ 1178.907948] BUG: KASAN: use-after-free in run_timer_softirq+0xdea/0xe90
-> [ 1178.907950] Write of size 8 at addr ff11001f449cdc80 by task swapper/47/0
-> [ 1178.907950]
-> [ 1178.907953] CPU: 47 PID: 0 Comm: swapper/47 Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
-> [ 1178.907954] Hardware name: SANGFOR X620G40/WI2HG-208T1061A, BIOS SPYH051032-U01 04/01/2022
-> [ 1178.907955] Call Trace:
-> [ 1178.907956]  <IRQ>
-> [ 1178.907960]  dump_stack+0x71/0xab
-> [ 1178.907963]  print_address_description+0x6b/0x290
-> [ 1178.907965]  ? run_timer_softirq+0xdea/0xe90
-> [ 1178.907967]  kasan_report+0x14a/0x2b0
-> [ 1178.907968]  run_timer_softirq+0xdea/0xe90
-> [ 1178.907971]  ? init_timer_key+0x170/0x170
-> [ 1178.907973]  ? hrtimer_cancel+0x20/0x20
-> [ 1178.907976]  ? sched_clock+0x5/0x10
-> [ 1178.907978]  ? sched_clock_cpu+0x18/0x170
-> [ 1178.907981]  __do_softirq+0x1c8/0x5fa
-> [ 1178.907985]  irq_exit+0x213/0x240
-> [ 1178.907987]  smp_apic_timer_interrupt+0xd0/0x330
-> [ 1178.907989]  apic_timer_interrupt+0xf/0x20
-> [ 1178.907990]  </IRQ>
-> [ 1178.907991] RIP: 0010:mwait_idle+0xae/0x370
-> 
-> I am thinking about several ways to fix the issue:
-> 
-> [1] In this RFC, I cancel the selftest_worker unconditionally in
-> efx_pci_remove().
-> 
-> [2] Add a test condition, only invoke efx_selftest_async_start() when
-> efx->port_enabled is true in efx_net_open().
-> 
-> [3] Move invoking efx_selftest_async_start() from efx_net_open() to
-> efx_start_all() or efx_start_port(), that matching cancel action in
-> efx_stop_port().
+On 2023/4/13 12:26, Jakub Kicinski wrote:
+> We maintain a NAPI-local cache of skbs which is fed by napi_consume_skb().
+> Going forward we will also try to cache head and data pages.
+> Plumb the "are we in a normal NAPI context" information thru
+> deeper into the freeing path, up to skb_release_data() and
+> skb_free_head()/skb_pp_recycle(). The "not normal NAPI context"
+> comes from netpoll which passes budget of 0 to try to reap
+> the Tx completions but not perform any Rx.
 
-I think moving this to efx_start_port() is best, as you say to match
-the cancel in efx_stop_port().
-
-Thanks,
-Martin
+Maybe I missed something obvious about netpoll here.
+Does that mean the "normal NAPI context" and "not normal NAPI context"
+will call napi->poll() concurrently with different budget? Doesn't
+that mean two different contexts may do the tx completion concurrently?
+Does it break the single-producer single-consumer assumption of tx queue?
 
 > 
-> [4] However, I also notice that in efx_ef10_set_mac_address(), the
-> efx_net_open() depends on original port_enabled, but others are not,
-> if we change all efx_net_open() depends on old state like
-> efx_ef10_set_mac_address() does, the UAF can also be fixed in theory.
+> Use "bool napi_safe" rather than bare "int budget",
+> the further we get from NAPI the more confusing the budget
+> argument may seem (particularly whether 0 or MAX is the
+> correct value to pass in when not in NAPI).
 > 
-> But I'm not sure which is better, is there any suggestions? Thanks.
-> 
-> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > ---
->  drivers/net/ethernet/sfc/efx.c | 2 ++
->  1 file changed, 2 insertions(+)
+> v2:
+>  - clarify the budget 0 and fix the name of the argument in
+>    the commit message
+> v1:
+>  - feed the cache in __kfree_skb_defer(), it's in NAPI
+>  - s/in_normal_napi/napi_safe/
+> ---
+>  net/core/skbuff.c | 38 ++++++++++++++++++++------------------
+>  1 file changed, 20 insertions(+), 18 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-> index 884d8d168862..dd0b2363eed1 100644
-> --- a/drivers/net/ethernet/sfc/efx.c
-> +++ b/drivers/net/ethernet/sfc/efx.c
-> @@ -876,6 +876,8 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
->  	efx->state = STATE_UNINIT;
->  	rtnl_unlock();
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 050a875d09c5..b2092166f7e2 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -839,7 +839,7 @@ static void skb_clone_fraglist(struct sk_buff *skb)
+>  		skb_get(list);
+>  }
 >  
-> +	efx_selftest_async_cancel(efx);
-> +
->  	if (efx->type->sriov_fini)
->  		efx->type->sriov_fini(efx);
+> -static bool skb_pp_recycle(struct sk_buff *skb, void *data)
+> +static bool skb_pp_recycle(struct sk_buff *skb, void *data, bool napi_safe)
+>  {
+>  	if (!IS_ENABLED(CONFIG_PAGE_POOL) || !skb->pp_recycle)
+>  		return false;
+> @@ -856,12 +856,12 @@ static void skb_kfree_head(void *head, unsigned int end_offset)
+>  		kfree(head);
+>  }
 >  
-> -- 
-> 2.17.1
+> -static void skb_free_head(struct sk_buff *skb)
+> +static void skb_free_head(struct sk_buff *skb, bool napi_safe)
+>  {
+>  	unsigned char *head = skb->head;
+>  
+>  	if (skb->head_frag) {
+> -		if (skb_pp_recycle(skb, head))
+> +		if (skb_pp_recycle(skb, head, napi_safe))
+>  			return;
+>  		skb_free_frag(head);
+>  	} else {
+> @@ -869,7 +869,8 @@ static void skb_free_head(struct sk_buff *skb)
+>  	}
+>  }
+>  
+> -static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason)
+> +static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason,
+> +			     bool napi_safe)
+>  {
+>  	struct skb_shared_info *shinfo = skb_shinfo(skb);
+>  	int i;
+> @@ -894,7 +895,7 @@ static void skb_release_data(struct sk_buff *skb, enum skb_drop_reason reason)
+>  	if (shinfo->frag_list)
+>  		kfree_skb_list_reason(shinfo->frag_list, reason);
+>  
+> -	skb_free_head(skb);
+> +	skb_free_head(skb, napi_safe);
+>  exit:
+>  	/* When we clone an SKB we copy the reycling bit. The pp_recycle
+>  	 * bit is only set on the head though, so in order to avoid races
+> @@ -955,11 +956,12 @@ void skb_release_head_state(struct sk_buff *skb)
+>  }
+>  
+>  /* Free everything but the sk_buff shell. */
+> -static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason)
+> +static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason,
+> +			    bool napi_safe)
+>  {
+>  	skb_release_head_state(skb);
+>  	if (likely(skb->head))
+> -		skb_release_data(skb, reason);
+> +		skb_release_data(skb, reason, napi_safe);
+>  }
+>  
+>  /**
+> @@ -973,7 +975,7 @@ static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason)
+>  
+>  void __kfree_skb(struct sk_buff *skb)
+>  {
+> -	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
+> +	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED, false);
+>  	kfree_skbmem(skb);
+>  }
+>  EXPORT_SYMBOL(__kfree_skb);
+> @@ -1027,7 +1029,7 @@ static void kfree_skb_add_bulk(struct sk_buff *skb,
+>  		return;
+>  	}
+>  
+> -	skb_release_all(skb, reason);
+> +	skb_release_all(skb, reason, false);
+>  	sa->skb_array[sa->skb_count++] = skb;
+>  
+>  	if (unlikely(sa->skb_count == KFREE_SKB_BULK_SIZE)) {
+> @@ -1201,7 +1203,7 @@ EXPORT_SYMBOL(consume_skb);
+>  void __consume_stateless_skb(struct sk_buff *skb)
+>  {
+>  	trace_consume_skb(skb, __builtin_return_address(0));
+> -	skb_release_data(skb, SKB_CONSUMED);
+> +	skb_release_data(skb, SKB_CONSUMED, false);
+>  	kfree_skbmem(skb);
+>  }
+>  
+> @@ -1226,7 +1228,7 @@ static void napi_skb_cache_put(struct sk_buff *skb)
+>  
+>  void __kfree_skb_defer(struct sk_buff *skb)
+>  {
+> -	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED);
+> +	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED, true);
+>  	napi_skb_cache_put(skb);
+>  }
+>  
+> @@ -1264,7 +1266,7 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
+>  		return;
+>  	}
+>  
+> -	skb_release_all(skb, SKB_CONSUMED);
+> +	skb_release_all(skb, SKB_CONSUMED, !!budget);
+
+If it is not normal NAPI context, dev_consume_skb_any() is called and
+return at the begin, we may just call skb_release_all() with napi_safe
+being true here.
+
+>  	napi_skb_cache_put(skb);
+>  }
+>  EXPORT_SYMBOL(napi_consume_skb);
+> @@ -1395,7 +1397,7 @@ EXPORT_SYMBOL_GPL(alloc_skb_for_msg);
+>   */
+>  struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src)
+>  {
+> -	skb_release_all(dst, SKB_CONSUMED);
+> +	skb_release_all(dst, SKB_CONSUMED, false);
+>  	return __skb_clone(dst, src);
+>  }
+>  EXPORT_SYMBOL_GPL(skb_morph);
+> @@ -2018,9 +2020,9 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+>  		if (skb_has_frag_list(skb))
+>  			skb_clone_fraglist(skb);
+>  
+> -		skb_release_data(skb, SKB_CONSUMED);
+> +		skb_release_data(skb, SKB_CONSUMED, false);
+>  	} else {
+> -		skb_free_head(skb);
+> +		skb_free_head(skb, false);
+>  	}
+>  	off = (data + nhead) - skb->head;
+>  
+> @@ -6389,12 +6391,12 @@ static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
+>  			skb_frag_ref(skb, i);
+>  		if (skb_has_frag_list(skb))
+>  			skb_clone_fraglist(skb);
+> -		skb_release_data(skb, SKB_CONSUMED);
+> +		skb_release_data(skb, SKB_CONSUMED, false);
+>  	} else {
+>  		/* we can reuse existing recount- all we did was
+>  		 * relocate values
+>  		 */
+> -		skb_free_head(skb);
+> +		skb_free_head(skb, false);
+>  	}
+>  
+>  	skb->head = data;
+> @@ -6529,7 +6531,7 @@ static int pskb_carve_inside_nonlinear(struct sk_buff *skb, const u32 off,
+>  		skb_kfree_head(data, size);
+>  		return -ENOMEM;
+>  	}
+> -	skb_release_data(skb, SKB_CONSUMED);
+> +	skb_release_data(skb, SKB_CONSUMED, false);
+>  
+>  	skb->head = data;
+>  	skb->head_frag = 0;
+> 
