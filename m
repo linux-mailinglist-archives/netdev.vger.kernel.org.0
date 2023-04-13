@@ -2,130 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A876E08AA
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 10:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41B716E08BF
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 10:18:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbjDMIME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 04:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52452 "EHLO
+        id S230323AbjDMISt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 04:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjDMIMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 04:12:02 -0400
-Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141C05FC6;
-        Thu, 13 Apr 2023 01:11:55 -0700 (PDT)
-Received: from [0.0.0.0] (unknown [172.96.223.238])
-        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id 2212A280D4D;
-        Thu, 13 Apr 2023 16:11:46 +0800 (CST)
-Message-ID: <3921e44e-3cb4-4016-5e6b-1dd52656b7a6@sangfor.com.cn>
-Date:   Thu, 13 Apr 2023 16:11:30 +0800
+        with ESMTP id S229650AbjDMISr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 04:18:47 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9C898
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 01:18:46 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id q2so19114300pll.7
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 01:18:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681373926; x=1683965926;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=kAmMBdrEG6Lj7SHMBv3orC2G+DezqK0/RHG5IK0uzHQ=;
+        b=FX3oRqSSAmDtgoA0va9ZYqU2v7a5/1mDJgF/q2wRc1+/qRo2zejghAi9kccm2ddvO1
+         lEy8ngYmvrZDDv4twlH0URtrkO6dyA8sNJl3CelW1PFPowImU6tb2bZ4/MZ4qoe5vNuY
+         3vzqoZZKzt988ac/+mPGZ0TlKzTI+7chusyfyq80hnvlbm0lknBGkAi2HNRu0+g5xLR7
+         1v4t8okSxMA6BV2PUR4XZ24G3eDcSM8JnIfouNN57guk1Bsk1m3UrNZQ45cE+3wjteYi
+         zvDNjrRU11KpEeVrAdbNrBtLyPuxSlTML1AhrDKmM2NMKVnuF6NWv9qWML+NibOn7C22
+         wJsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681373926; x=1683965926;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kAmMBdrEG6Lj7SHMBv3orC2G+DezqK0/RHG5IK0uzHQ=;
+        b=LmZaqa+cXfHLF7SuepjMvNQWABqGtTw/CuFhxoydXbqeRPftjKUGbd6Y9aKH6gWb4I
+         Er71MPuih5Bi45zjC3UkhaUX00UIFYTy4aCN7sXN6K4GeZkgHM77yfE/hlYbBrSsqm52
+         OCKpoAHo3jdxocMr8LhXM51goC/Pfw/MVMRCQwwLHfCX0hN5QvmNzHawxJo28N16gj19
+         hUf25+Na1Y5K3rQEIsLNFlsZrYjWmQLscIfadk7R8jNSyJlsemekAM1GSPq1XZV96Qc/
+         WJoqXlYz4SFaHzNnxhs5yyT/nXmMPZ1/ZNKhJw/FHlk4ktpKN+1yaBv8UFCQLIOuPo3Q
+         U4OQ==
+X-Gm-Message-State: AAQBX9ctM2FGRH3KZG2W/FF5pQPTZuo96s0WPFkX5lZ4HGcVjaQvWVRK
+        gehuoE9qTjr04GddsVU2f9k=
+X-Google-Smtp-Source: AKy350avyyecS0c/imlGffEziV8LfOkCRk5DQs3Wa4CPnF8ZzhjtSUk0FweHZrTwoSGARpW3UJ44LA==
+X-Received: by 2002:a17:902:e80d:b0:1a5:167e:f482 with SMTP id u13-20020a170902e80d00b001a5167ef482mr1834984plg.20.1681373925829;
+        Thu, 13 Apr 2023 01:18:45 -0700 (PDT)
+Received: from localhost.localdomain ([23.238.128.118])
+        by smtp.googlemail.com with ESMTPSA id w14-20020a1709029a8e00b001a68d613ad9sm410595plp.132.2023.04.13.01.18.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Apr 2023 01:18:44 -0700 (PDT)
+From:   Liang Chen <liangchen.linux@gmail.com>
+To:     kuba@kernel.org, ilias.apalodimas@linaro.org, edumazet@google.com,
+        hawk@kernel.org
+Cc:     davem@davemloft.net, pabeni@redhat.com, alexander.duyck@gmail.com,
+        linyunsheng@huawei.com, netdev@vger.kernel.org,
+        liangchen.linux@gmail.com
+Subject: [PATCH v4] skbuff: Fix a race between coalescing and releasing SKBs
+Date:   Thu, 13 Apr 2023 16:18:12 +0800
+Message-Id: <20230413081812.11768-1-liangchen.linux@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [RFC PATCH net] sfc: Fix use-after-free due to selftest_work
-Content-Language: en-US
-To:     Jacob Keller <jacob.e.keller@intel.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ecree.xilinx@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pengdonglin@sangfor.com.cn,
-        huangcun@sangfor.com.cn
-References: <20230412005013.30456-1-dinghui@sangfor.com.cn>
- <30e4bf50-7950-0b3c-67b5-6028b7114da2@intel.com> <ZDe02xqrX/pP0vEN@gmail.com>
-From:   Ding Hui <dinghui@sangfor.com.cn>
-In-Reply-To: <ZDe02xqrX/pP0vEN@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCHR9CVkoeSxgeSkpKGRhIHlUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktPSEhVSktLVUtZBg++
-X-HM-Tid: 0a8779abbf712eb1kusn2212a280d4d
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nkk6ISo*UT0QLCw1TTgwEhNW
-        Ey8KFCFVSlVKTUNKSExITkpJT0lLVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-        QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFPQ01MNwY+
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/4/13 15:52, Martin Habets wrote:
-> On Wed, Apr 12, 2023 at 03:34:51PM -0700, Jacob Keller wrote:
->>
->>
->> On 4/11/2023 5:50 PM, Ding Hui wrote:
->>> There is a use-after-free scenario that is:
->>>
->>> When netif_running() is false, user set mac address or vlan tag to VF,
->>> the xxx_set_vf_mac() or xxx_set_vf_vlan() will invoke efx_net_stop()
->>> and efx_net_open(), since netif_running() is false, the port will not
->>> start and keep port_enabled false, but selftest_worker is scheduled
->>> in efx_net_open().
->>>
->>> If we remove the device before selftest_worker run, the efx is freed,
->>> then we will get a UAF in run_timer_softirq() like this:
->>>
->>> [ 1178.907941] ==================================================================
->>> [ 1178.907948] BUG: KASAN: use-after-free in run_timer_softirq+0xdea/0xe90
->>> [ 1178.907950] Write of size 8 at addr ff11001f449cdc80 by task swapper/47/0
->>> [ 1178.907950]
->>> [ 1178.907953] CPU: 47 PID: 0 Comm: swapper/47 Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
->>> [ 1178.907954] Hardware name: SANGFOR X620G40/WI2HG-208T1061A, BIOS SPYH051032-U01 04/01/2022
->>> [ 1178.907955] Call Trace:
->>> [ 1178.907956]  <IRQ>
->>> [ 1178.907960]  dump_stack+0x71/0xab
->>> [ 1178.907963]  print_address_description+0x6b/0x290
->>> [ 1178.907965]  ? run_timer_softirq+0xdea/0xe90
->>> [ 1178.907967]  kasan_report+0x14a/0x2b0
->>> [ 1178.907968]  run_timer_softirq+0xdea/0xe90
->>> [ 1178.907971]  ? init_timer_key+0x170/0x170
->>> [ 1178.907973]  ? hrtimer_cancel+0x20/0x20
->>> [ 1178.907976]  ? sched_clock+0x5/0x10
->>> [ 1178.907978]  ? sched_clock_cpu+0x18/0x170
->>> [ 1178.907981]  __do_softirq+0x1c8/0x5fa
->>> [ 1178.907985]  irq_exit+0x213/0x240
->>> [ 1178.907987]  smp_apic_timer_interrupt+0xd0/0x330
->>> [ 1178.907989]  apic_timer_interrupt+0xf/0x20
->>> [ 1178.907990]  </IRQ>
->>> [ 1178.907991] RIP: 0010:mwait_idle+0xae/0x370
->>>
->>> I am thinking about several ways to fix the issue:
->>>
->>> [1] In this RFC, I cancel the selftest_worker unconditionally in
->>> efx_pci_remove().
->>>
->>> [2] Add a test condition, only invoke efx_selftest_async_start() when
->>> efx->port_enabled is true in efx_net_open().
->>>
->>> [3] Move invoking efx_selftest_async_start() from efx_net_open() to
->>> efx_start_all() or efx_start_port(), that matching cancel action in
->>> efx_stop_port().
->>>
->>> [4] However, I also notice that in efx_ef10_set_mac_address(), the
->>> efx_net_open() depends on original port_enabled, but others are not,
->>> if we change all efx_net_open() depends on old state like
->>> efx_ef10_set_mac_address() does, the UAF can also be fixed in theory.
->>>
->>> But I'm not sure which is better, is there any suggestions? Thanks.
->>>
->>
->> I think this fix makes the most sense to me.
-> 
-> For me this is too late. It leaves a gap where the selftest timer is still running
-> but the NIC has already stopped sending events. So we could still get a
-> failure "channel %d timed out waiting for event queue" from the selftest.
-> 
+Commit 1effe8ca4e34 ("skbuff: fix coalescing for page_pool fragment
+recycling") allowed coalescing to proceed with non page pool page and page
+pool page when @from is cloned, i.e.
 
-Yes, assuming not consider removing, scheduled selftest_work if NIC not
-brought up actually, we will also get this failure log.
+to->pp_recycle    --> false
+from->pp_recycle  --> true
+skb_cloned(from)  --> true
 
+However, it actually requires skb_cloned(@from) to hold true until
+coalescing finishes in this situation. If the other cloned SKB is
+released while the merging is in process, from_shinfo->nr_frags will be
+set to 0 toward the end of the function, causing the increment of frag
+page _refcount to be unexpectedly skipped resulting in inconsistent
+reference counts. Later when SKB(@to) is released, it frees the page
+directly even though the page pool page is still in use, leading to
+use-after-free or double-free errors. So it should be prohibited.
+
+The double-free error message below prompted us to investigate:
+BUG: Bad page state in process swapper/1  pfn:0e0d1
+page:00000000c6548b28 refcount:-1 mapcount:0 mapping:0000000000000000
+index:0x2 pfn:0xe0d1
+flags: 0xfffffc0000000(node=0|zone=1|lastcpupid=0x1fffff)
+raw: 000fffffc0000000 0000000000000000 ffffffff00000101 0000000000000000
+raw: 0000000000000002 0000000000000000 ffffffffffffffff 0000000000000000
+page dumped because: nonzero _refcount
+
+CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E      6.2.0+
+Call Trace:
+ <IRQ>
+dump_stack_lvl+0x32/0x50
+bad_page+0x69/0xf0
+free_pcp_prepare+0x260/0x2f0
+free_unref_page+0x20/0x1c0
+skb_release_data+0x10b/0x1a0
+napi_consume_skb+0x56/0x150
+net_rx_action+0xf0/0x350
+? __napi_schedule+0x79/0x90
+__do_softirq+0xc8/0x2b1
+__irq_exit_rcu+0xb9/0xf0
+common_interrupt+0x82/0xa0
+</IRQ>
+<TASK>
+asm_common_interrupt+0x22/0x40
+RIP: 0010:default_idle+0xb/0x20
+
+Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in page pool")
+
+Signed-off-by: Liang Chen <liangchen.linux@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+---
+Changes from v3:
+- make the comment more precise and add fixes and reviewed-by tags
+---
+ net/core/skbuff.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 050a875d09c5..91bac9a6d693 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5597,18 +5597,18 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
+ 	if (skb_cloned(to))
+ 		return false;
+ 
+-	/* In general, avoid mixing slab allocated and page_pool allocated
+-	 * pages within the same SKB. However when @to is not pp_recycle and
+-	 * @from is cloned, we can transition frag pages from page_pool to
+-	 * reference counted.
+-	 *
+-	 * On the other hand, don't allow coalescing two pp_recycle SKBs if
+-	 * @from is cloned, in case the SKB is using page_pool fragment
++	/* In general, avoid mixing page_pool and non-page_pool allocated
++	 * pages within the same SKB. Additionally avoid dealing with clones
++	 * containing page_pool pages, in case the SKB is using page_pool fragment
+ 	 * references (PP_FLAG_PAGE_FRAG). Since we only take full page
+ 	 * references for cloned SKBs at the moment that would result in
+ 	 * inconsistent reference counts.
++	 * In theory we could take full references if from is cloned and
++	 * !@to->pp_recycle but its tricky (due to potential race with the clone
++	 * disappearing) and rare, so not worth dealing with.
+ 	 */
+-	if (to->pp_recycle != (from->pp_recycle && !skb_cloned(from)))
++	if (to->pp_recycle != from->pp_recycle ||
++	    (from->pp_recycle && skb_cloned(from)))
+ 		return false;
+ 
+ 	if (len <= skb_tailroom(to)) {
 -- 
-Thanks,
-- Ding Hui
-
-
-
+2.18.2
 
