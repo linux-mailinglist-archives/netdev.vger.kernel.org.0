@@ -2,52 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACDD36E05ED
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 06:21:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 141D06E05F7
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 06:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229593AbjDMEVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 00:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
+        id S229737AbjDME0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 00:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbjDMEVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 00:21:04 -0400
+        with ESMTP id S229679AbjDME0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 00:26:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E311A4
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 21:21:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA851715
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 21:26:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E947561372
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:21:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8C18C433D2;
-        Thu, 13 Apr 2023 04:21:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76A2A63712
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:26:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7010DC433D2;
+        Thu, 13 Apr 2023 04:26:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681359661;
-        bh=a7iyMSprvQAiuxOJ0H/Q7m2rxNH4MwLwSCb2Ss9FZSE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bE3DBXOVajXdhk8bYKx+4nrdxCGajailSiPWESEDHwj6KpCGVUcsNZ2oj0ktd/Yjg
-         mLmN94u6y0jrc8Wf6Juviqqxh8VxSPIBO4cVpqTLoeDyLo8hVdb7tm/PMqRlplMatT
-         BRkFH4wjj0wQ5EIqCELr0ja+RvWa6vZXblVKTZyqfyMo1gYP/5/DhPOtkXJr700cS7
-         WA2shVBWEZwyq9z2KIa2QdFfqHH5XkmN3rDjJbmTDHU27Z+HgtEDQJWwySfDljpEMp
-         rXeeHaCy2hh9RBNmlxqiIQVe6Z0Zlk/NW4napLN4FQCHiUyJnPSAPAlWew+6PA4F5p
-         x1XOa6OQ4zvkQ==
-Date:   Wed, 12 Apr 2023 21:20:59 -0700
+        s=k20201202; t=1681359976;
+        bh=HPQ5Hfp32JVARejB9zNsR8sEIhNPcA57ns95gjhndPI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=q53GqHtFjq+XycNOCci0dCtDeLNFSqyWzI52NJCKBoG4bZBzKLaHH5jHXOqNQVgr9
+         X3OK7+Azjf0VK374sDTIIVTCVmr/WFkFTPXovJuahFnugkCr/J53jtF5IDx7ouDaQF
+         rY+VSE8TyMcAcc5OECSV7TPdWaqlz2jmA8gy1CMc+woiR/dle8RQP22YQTu8P9KsE1
+         ijKWe2mni6n1rxhwdflEo9JzTA4S45IOeyIVjEbtpGzZqERH7iq9GD2hiMe3jNvifa
+         p4YYW+PwDrk6CBSpGdU4UbQbAEdqhU2/WmlwbmObF7Ewm1hxOE6Kvvlhu41J3TeW0y
+         zaYXDoyoZ0cNQ==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     davem@davemloft.net, brouer@redhat.com, netdev@vger.kernel.org,
-        edumazet@google.com, pabeni@redhat.com, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, linyunsheng@huawei.com,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: skb: plumb napi state thru skb
- freeing paths
-Message-ID: <20230412212059.1b7a3364@kernel.org>
-In-Reply-To: <9ecc38df-a185-fc1f-e94e-cf0c1fef865f@redhat.com>
-References: <20230411201800.596103-1-kuba@kernel.org>
-        <20230411201800.596103-2-kuba@kernel.org>
-        <9ecc38df-a185-fc1f-e94e-cf0c1fef865f@redhat.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        hawk@kernel.org, ilias.apalodimas@linaro.org,
+        linyunsheng@huawei.com, alexander.duyck@gmail.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 0/3] page_pool: allow caching from safely localized NAPI
+Date:   Wed, 12 Apr 2023 21:26:02 -0700
+Message-Id: <20230413042605.895677-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,34 +52,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Apr 2023 11:29:08 +0200 Jesper Dangaard Brouer wrote:
-> On 11/04/2023 22.17, Jakub Kicinski wrote:
-> > We maintain a NAPI-local cache of skbs which is fed by napi_consume_skb().
-> > Going forward we will also try to cache head and data pages.
-> > Plumb the "are we in a normal NAPI context" information thru
-> > deeper into the freeing path, up to skb_release_data() and
-> > skb_free_head()/skb_pp_recycle().
-> > 
-> > Use "bool in_normal_napi" rather than bare "int budget",  
-> 
-> The code was changed to "napi_safe", the desc should reflect this ;-)
+I went back to the explicit "are we in NAPI method", mostly
+because I don't like having both around :( (even tho I maintain
+that in_softirq() && !in_hardirq() is as safe, as softirqs do
+not nest).
 
-Ah, sed would have been a better idea after all :)
+Still returning the skbs to a CPU, tho, not to the NAPI instance.
+I reckon we could create a small refcounted struct per NAPI instance
+which would allow sockets and other users so hold a persisent
+and safe reference. But that's a bigger change, and I get 90+%
+recycling thru the cache with just these patches (for RR and
+streaming tests with 100% CPU use it's almost 100%).
 
-> > the further we get from NAPI the more confusing the budget
-> > argument may seem (particularly whether 0 or MAX is the
-> > correct value to pass in when not in NAPI).  
-> 
-> I do like the code cleanup.
-> It is worth explaining/mentioning that where budget==0 comes from?
-> 
-> (Cc. Alex, please correct me.)
-> My understanding is that this is caused by netconsole/netpoll (see
-> net/core/netpoll.c func poll_one_napi()), which is a kernel (net)console
-> debugging facility sending UDP packets via using only TX side of
-> napi_poll.  Thus, we are really trying to protect against doing these
-> recycle tricks for when netpoll/netconcole is running (which I guess
-> makes sense as we are likely printing/sending an OOPS msg over UDP).
+Some numbers for streaming test with 100% CPU use (from previous version,
+but really they perform the same):
 
-Yup, that's correct. I'll add a sentence or two to that effect.
+		HW-GRO				page=page
+		before		after		before		after
+recycle:
+cached:			0	138669686		0	150197505
+cache_full:		0	   223391		0	    74582
+ring:		138551933         9997191	149299454		0
+ring_full: 		0             488	     3154	   127590
+released_refcnt:	0		0		0		0
+
+alloc:
+fast:		136491361	148615710	146969587	150322859
+slow:		     1772	     1799	      144	      105
+slow_high_order:	0		0		0		0
+empty:		     1772	     1799	      144	      105
+refill:		  2165245	   156302	  2332880	     2128
+waive:			0		0		0		0
+
+v2:
+ - minor commit message fixes (patch 1)
+v1: https://lore.kernel.org/all/20230411201800.596103-1-kuba@kernel.org/
+ - rename the arg in_normal_napi -> napi_safe
+ - also allow recycling in __kfree_skb_defer()
+rfcv2: https://lore.kernel.org/all/20230405232100.103392-1-kuba@kernel.org/
+
+Jakub Kicinski (3):
+  net: skb: plumb napi state thru skb freeing paths
+  page_pool: allow caching from safely localized NAPI
+  bnxt: hook NAPIs to page pools
+
+ Documentation/networking/page_pool.rst    |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c |  1 +
+ include/linux/netdevice.h                 |  3 ++
+ include/linux/skbuff.h                    | 20 +++++++----
+ include/net/page_pool.h                   |  3 +-
+ net/core/dev.c                            |  3 ++
+ net/core/page_pool.c                      | 15 ++++++--
+ net/core/skbuff.c                         | 42 ++++++++++++-----------
+ 8 files changed, 58 insertions(+), 30 deletions(-)
+
+-- 
+2.39.2
 
