@@ -2,57 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECEAD6E12DD
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5666E12F6
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbjDMQzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 12:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
+        id S229989AbjDMQ7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 12:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbjDMQzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:55:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E49AF05
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 09:55:12 -0700 (PDT)
+        with ESMTP id S229604AbjDMQ7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:59:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0DDD59F9;
+        Thu, 13 Apr 2023 09:59:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1C806402D
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 16:55:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 969DDC433D2;
-        Thu, 13 Apr 2023 16:55:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69BC864035;
+        Thu, 13 Apr 2023 16:59:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4F3DC433D2;
+        Thu, 13 Apr 2023 16:59:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681404910;
-        bh=uQ20Q0istZfsKkpC4DDK2CNRL4QD/NsOy9NvZLeS+T4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mnzMTJOzNHz1HIgNr0bNv99bWRuIfIrYoUUYcT7vZ6wjwk+99d9o4/hbIYO0w0KGI
-         zmG17TxPuEjVJ/bKB6cYzEmmqOEsJGkMNv+uk5FULvK1+iYuqEioG3gRFxnnw1Lf9R
-         HHdnLOH+cqx6xrH6uNhsS8W6dv752uFPQFbetyQX9rsiXmKxoZrj9H+BqLiRRrqXUd
-         OhHpSrfY1ZkX8zp0tFe3/rvQsqxMgiRpIeHBK9ldLS7eLV0CZPijZQFAcn9MXhAG/z
-         HY+LmlUvYwCZDHd/bd7QGZYrwFNL5CdL9Ch9Z9C5rqGaPxwKJYRBo1xnyHr+oHAp2x
-         EAUPn1JzsZPOA==
-Date:   Thu, 13 Apr 2023 09:55:09 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Shannon Nelson <shannon.nelson@amd.com>, brett.creeley@amd.com,
-        davem@davemloft.net, netdev@vger.kernel.org, drivers@pensando.io,
-        jiri@resnulli.us
-Subject: Re: [PATCH v9 net-next 13/14] pds_core: publish events to the
- clients
-Message-ID: <20230413095509.7f15e22c@kernel.org>
-In-Reply-To: <20230413164434.GT17993@unreal>
-References: <20230406234143.11318-1-shannon.nelson@amd.com>
-        <20230406234143.11318-14-shannon.nelson@amd.com>
-        <20230409171143.GH182481@unreal>
-        <f5fbc5c7-2329-93e6-044d-7b70d96530be@amd.com>
-        <20230413085501.GH17993@unreal>
-        <20230413081410.2cbaf2a2@kernel.org>
-        <20230413164434.GT17993@unreal>
+        s=k20201202; t=1681405173;
+        bh=bSkSu7wJY6E12OzsXzraNJfB/SMGar8eC+xZrs3OlPI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KqbhC+LEKt2Ua+orMMdfXcL18ruziKNhKLS3lM8nbujW159cmI7wEgKp2Ca04iFDX
+         1ZVKuI616uAVTOPTl1lgZxNvbuZ8l9x07alJP4D/tPdb9glEFip1eV/MzNiLNHBVJa
+         IkFJeukK81mc4BdKwm0BvE550kHSFAcpbUgGHJlJNsdN6LdbbTxxIdq6yp3FAE4Ws3
+         Mb04+184eVcJU3PWtr+nqlDhBvVmwoKLSDLAn1HHAcelheRJGjzraSCO+xFbXDMVzz
+         FLQKbMn6KToVDBDUDEkiXkGJUl3MxZMiqTuJmY8U3AHkUlpHmpbc2jvODu8lsiFkG3
+         MkKqkkoRSSYag==
+Date:   Thu, 13 Apr 2023 19:59:29 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Haiyang Zhang <haiyangz@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Paul Rosswurm <paulros@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        Long Li <longli@microsoft.com>,
+        "ssengar@linux.microsoft.com" <ssengar@linux.microsoft.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        Ajay Sharma <sharmaajay@microsoft.com>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V3,net-next, 2/4] net: mana: Refactor RX buffer
+ allocation code to prepare for various MTU
+Message-ID: <20230413165929.GU17993@unreal>
+References: <1681334163-31084-1-git-send-email-haiyangz@microsoft.com>
+ <1681334163-31084-3-git-send-email-haiyangz@microsoft.com>
+ <20230413130428.GO17993@unreal>
+ <PH7PR21MB3116194E8F7D56EB434B56A6CA989@PH7PR21MB3116.namprd21.prod.outlook.com>
+ <20230413163059.GS17993@unreal>
+ <20230413094003.3fa4cd8c@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230413094003.3fa4cd8c@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,28 +78,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Apr 2023 19:44:34 +0300 Leon Romanovsky wrote:
-> > > I don't think that it is safe behaviour from user POV. If FW resets
-> > > itself under the hood, how can client be sure that nothing changes
-> > > in its operation? Once FW reset occurs, it is much safer for the clients
-> > > to reconfigure everything.  
+On Thu, Apr 13, 2023 at 09:40:03AM -0700, Jakub Kicinski wrote:
+> On Thu, 13 Apr 2023 19:30:59 +0300 Leon Romanovsky wrote:
+> > > So the page pool is optimized for the XDP, and that sentence is applicable to drivers
+> > > that have set up page pool for XDP optimization.  
 > > 
-> > What's the argument exactly? We do have async resets including in mlx5,
-> > grep for enable_remote_dev_reset  
+> > "but it can fallback on the regular page allocator APIs."
 > 
-> I think that it is different. I'm complaining that during FW reset,
-> auxiliary devices are not recreated and continue to be connected to
-> physical device with a hope that everything will continue to work from
-> kernel and FW perspective.
-> 
-> It is different from enable_remote_dev_reset, where someone externally
-> resets device which will trigger mlx5_device_rescan() routine through
-> mlx5_unload_one->mlx5_load_one sequence.
+> The XDP thing is historic AFAIU, page_pool has been expanded to cover
+> all uses cases, and is "just better" (tm) than using page allocator
+> directly. Maybe we should update the doc.
 
-Hm, my memory may be incorrect and I didn't look at the code but 
-I thought that knob came from the "hit-less upgrade" effort.
-And for "hit-less upgrade" not respawning the devices was the whole
-point.
-
-Which is not to disagree with you. What I'm trying to get at is that
-there are different types of reset which deserve different treatment.
+The last sentence is always true :)
