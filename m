@@ -2,99 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FAB76E0FD8
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:21:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E236E0FDB
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbjDMOU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 10:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
+        id S230522AbjDMOWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 10:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230347AbjDMOU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:20:57 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CA0359D
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:20:55 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-168-L1A8pdJON22gPzDGKhDKwg-1; Thu, 13 Apr 2023 15:20:53 +0100
-X-MC-Unique: L1A8pdJON22gPzDGKhDKwg-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 13 Apr
- 2023 15:20:51 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Thu, 13 Apr 2023 15:20:51 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Paolo Abeni' <pabeni@redhat.com>,
-        'Jakub Kicinski' <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: RE: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
- indexes
-Thread-Topic: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
- indexes
-Thread-Index: AQHZbOE4lpy9n4P2zECDFY6wjA/SEa8nUYsggAG8xQCAADw1wA==
-Date:   Thu, 13 Apr 2023 14:20:51 +0000
-Message-ID: <3d2a7abe17554ed69f599b733062a003@AcuMS.aculab.com>
-References: <20230412015038.674023-1-kuba@kernel.org>
-         <20230412015038.674023-3-kuba@kernel.org>
-         <f6c134852244441a88eef8c1774bb67f@AcuMS.aculab.com>
- <78cea5774de414fa3bcbd6ef02e436ae6b5706c1.camel@redhat.com>
-In-Reply-To: <78cea5774de414fa3bcbd6ef02e436ae6b5706c1.camel@redhat.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S230347AbjDMOWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:22:01 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFC7359D
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:21:59 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-54fb615ac3dso71923847b3.2
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:21:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1681395719; x=1683987719;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8VkXx3MwA5LRGwzJIwL5RFqYfkVgM3VjyEag+q2YqrU=;
+        b=p/rPO5OT9jf0z5yXRSmrTLDoSIUepPZb11UDvDwuXp0EPGmz+QZuALKz8izmoVHVYS
+         /rMDYmIJLs4IQHTnFkUSyK0v6X7bIr5NPle7P8+EDsN/RNdVSRNzVDDaVUkJ9S3lf6YD
+         kTqa9QCLHGwTI9/fiDcuUmY99CapyntFhF4wgEOid05HBPSs6KmXYyYrOsA6x7fxXQND
+         adyVYw/VeCPd8L8P29K+AEk9c82liGqfoLWi7l3fRH/yQtCNVduKPYRb6fgqig1bRLbc
+         hNLGBr3hJUQbrR6cHpeqyuBlzBXXK+cVNxpFEIlcj+wY1NJbxum3s0lTm+Q3HxbBZRQo
+         fyAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681395719; x=1683987719;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8VkXx3MwA5LRGwzJIwL5RFqYfkVgM3VjyEag+q2YqrU=;
+        b=IsDvSqEa1kzzrjBOskSH1Ks2BJll66FvWaYRr5WC2uz2unji+VjXp26IBD2QRBFv8M
+         btnFJFBoEAKZxW9IK102ID2KsM0a7xuFgcq7sZgo1tNY6RtaC9rXTIYqalL8JMa8zkOq
+         fD6IHK64eJHgGaTemrZIO6mPqTyb3YWJ4WXTgm3EXF2c2FHU4oPgVzLSqru6A85B4ezV
+         T//kNa/j5oMtLr02juE9Ww0T77uy2LqhkOO8nxxLUwpHGtrQmpEmyITdmSKVzRi1CTf4
+         Ubai/GGMbSjoK/sgIvOvBY10XLLxQC3z2RDOFa8nVYdQOr06s8hgvwSC3T16788dNzba
+         MELA==
+X-Gm-Message-State: AAQBX9cpNvLRkWWlNqbuFifNLmPvnXrrPslt0mcSLPWRDEJuc1NYxXdy
+        HU28etTQ621fj1MURz+S/+jps+c27VPgwzIs5KnIuQ==
+X-Google-Smtp-Source: AKy350aWLdSfLFnbU2dOD+LgGjl5FiO8H6fvc5f3Kk0Ef5grktsOqGaj+SF5L1Q0CPDWiWqjjTDuDi6S0gJr9BpqgO4=
+X-Received: by 2002:a81:4323:0:b0:549:1e80:41f9 with SMTP id
+ q35-20020a814323000000b005491e8041f9mr1492277ywa.10.1681395718858; Thu, 13
+ Apr 2023 07:21:58 -0700 (PDT)
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230413133355.350571-1-aleksandr.mikhalitsyn@canonical.com> <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com>
+In-Reply-To: <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 13 Apr 2023 16:21:47 +0200
+Message-ID: <CANn89iLuLkUvX-dDC=rJhtFcxjnVmfn_-crOevbQe+EjaEDGbg@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 2/4] net: socket: add sockopts blacklist for
+ BPF cgroup hook
+To:     Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, daniel@iogearbox.net,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogUGFvbG8gQWJlbmkNCj4gU2VudDogMTMgQXByaWwgMjAyMyAxMjozOA0KPiANCj4gT24g
-V2VkLCAyMDIzLTA0LTEyIGF0IDA4OjE1ICswMDAwLCBEYXZpZCBMYWlnaHQgd3JvdGU6DQo+ID4g
-RnJvbTogSmFrdWIgS2ljaW5za2kNCj4gPiA+IFNlbnQ6IDEyIEFwcmlsIDIwMjMgMDI6NTENCj4g
-PiA+DQo+ID4gPiBFcmljIHBvaW50cyBvdXQgdGhhdCB3ZSBzaG91bGQgbWFrZSBzdXJlIHRoYXQg
-cmluZyBpbmRleCB1cGRhdGVzDQo+ID4gPiBhcmUgd3JhcHBlZCBpbiB0aGUgYXBwcm9wcmlhdGUg
-UkVBRF9PTkNFL1dSSVRFX09OQ0UgbWFjcm9zLg0KPiA+ID4NCj4gPiAuLi4NCj4gPiA+IC1zdGF0
-aWMgaW5saW5lIHUzMiBibnh0X3R4X2F2YWlsKHN0cnVjdCBibnh0ICpicCwgc3RydWN0IGJueHRf
-dHhfcmluZ19pbmZvICp0eHIpDQo+ID4gPiArc3RhdGljIGlubGluZSB1MzIgYm54dF90eF9hdmFp
-bChzdHJ1Y3QgYm54dCAqYnAsDQo+ID4gPiArCQkJCWNvbnN0IHN0cnVjdCBibnh0X3R4X3Jpbmdf
-aW5mbyAqdHhyKQ0KPiA+ID4gIHsNCj4gPiA+IC0JLyogVGVsbCBjb21waWxlciB0byBmZXRjaCB0
-eCBpbmRpY2VzIGZyb20gbWVtb3J5LiAqLw0KPiA+ID4gLQliYXJyaWVyKCk7DQo+ID4gPiArCXUz
-MiB1c2VkID0gUkVBRF9PTkNFKHR4ci0+dHhfcHJvZCkgLSBSRUFEX09OQ0UodHhyLT50eF9jb25z
-KTsNCj4gPiA+DQo+ID4gPiAtCXJldHVybiBicC0+dHhfcmluZ19zaXplIC0NCj4gPiA+IC0JCSgo
-dHhyLT50eF9wcm9kIC0gdHhyLT50eF9jb25zKSAmIGJwLT50eF9yaW5nX21hc2spOw0KPiA+ID4g
-KwlyZXR1cm4gYnAtPnR4X3Jpbmdfc2l6ZSAtICh1c2VkICYgYnAtPnR4X3JpbmdfbWFzayk7DQo+
-ID4gPiAgfQ0KPiA+DQo+ID4gRG9lc24ndCB0aGF0IGZ1bmN0aW9uIG9ubHkgbWFrZSBzZW5zZSBp
-ZiBvbmx5IG9uZSBvZg0KPiA+IHRoZSByaW5nIGluZGV4IGNhbiBiZSBjaGFuZ2luZz8NCj4gPiBJ
-biB0aGlzIGNhc2UgSSB0aGluayB0aGlzIGlzIGJlaW5nIHVzZWQgaW4gdGhlIHRyYW5zbWl0IHBh
-dGgNCj4gPiBzbyB0aGF0ICd0eF9wcm9kJyBpcyBjb25zdGFudCBhbmQgaXMgZWl0aGVyIGFscmVh
-ZHkgcmVhZA0KPiA+IG9yIG5lZWQgbm90IGJlIHJlYWQgYWdhaW4uDQo+ID4NCi4uLg0KPiANCj4g
-QUZBSUNTIGJueHRfdHhfYXZhaWwoKSBpcyBhbHNvIHVzZWQgaW4gVFggaW50ZXJydXB0LCBvdXRz
-aWRlIHR4IHBhdGgvdHgNCj4gbG9jay4NCg0KSW4gd2hpY2ggY2FzZSBib3RoIHR4X3Byb2QgYW5k
-IHR4X2NvbnMgYXJlIHN1YmplY3QgdG8gcG9zc2libGUgdXBkYXRlcy4NCkl0IGlzIGV2ZW4gcG9z
-c2libGUgdGhhdCB0aGUgdHdvIHZhbHVlcyBoYXZlIGFic29sdXRlbHkgbm8gcmVsYXRpb24NCnRv
-IGVhY2ggb3RoZXIsIGl0IHJlcXVpcmVzIHNvbWUgdW51c3VhbCBjaXJjdW1zdGFuY2VzLCBidXQg
-aXNuJ3QgaW1wb3NzaWJsZS4NCi0gQSBoaWdoIHByaW9yaXR5IGludGVycnVwdCAoZWcgeDg2IFNN
-TSBtb2RlKSBjb3VsZCBzZXBhcmF0ZSB0aGUgUkVBRF9PTkNFKCkuDQotIFRyYW5zbWl0IHNldHVw
-IHdpbGwgaW5jcmVhc2UgdHhfcHJvZC4NCi0gRW5kIG9mIHRyYW5zbWl0ICdyZWFwJyBvZnRlbiBk
-b25lIGJ5IG90aGVyIGNvZGUgcGF0aHMgKGxpa2UgcnggcHJvY2Vzc2luZw0KICBvciB0eCBzZXR1
-cCkgY2FuIGNoYW5nZSB0eF9jb25zLg0KU28gbm90IG9ubHkgaXMgdGhlIHZhbHVlIGltbWVkaWF0
-ZWx5IHN0YWxlLCBpdCBjYW4gYmUganVzdCBwbGFpbiB3cm9uZy4NCg0KCURhdmlkDQoNCi0NClJl
-Z2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0
-b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykN
-Cg==
+On Thu, Apr 13, 2023 at 3:35=E2=80=AFPM Alexander Mikhalitsyn
+<aleksandr.mikhalitsyn@canonical.com> wrote:
+>
+> During work on SO_PEERPIDFD, it was discovered (thanks to Christian),
+> that bpf cgroup hook can cause FD leaks when used with sockopts which
+> install FDs into the process fdtable.
+>
+> After some offlist discussion it was proposed to add a blacklist of
 
+We try to replace this word by either denylist or blocklist, even in change=
+logs.
+
+> socket options those can cause troubles when BPF cgroup hook is enabled.
+>
+
+Can we find the appropriate Fixes: tag to help stable teams ?
+
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Christian Brauner <brauner@kernel.org>
+> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+> Cc: Lennart Poettering <mzxreary@0pointer.de>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-arch@vger.kernel.org
+> Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+> Suggested-by: Christian Brauner <brauner@kernel.org>
+> Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com=
+>
+
+Thanks.
