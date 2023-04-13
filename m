@@ -2,125 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 595236E0602
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 06:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3FB86E0603
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 06:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbjDME3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 00:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53854 "EHLO
+        id S229742AbjDMEaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 00:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbjDME3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 00:29:51 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414543AAB
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 21:29:49 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pmoaY-0005Ck-8l; Thu, 13 Apr 2023 06:29:38 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1pmoaW-0000UJ-95; Thu, 13 Apr 2023 06:29:36 +0200
-Date:   Thu, 13 Apr 2023 06:29:36 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v1 2/2] net: dsa: microchip: Add partial ACL
- support for ksz9477 switches
-Message-ID: <20230413042936.GA12562@pengutronix.de>
-References: <20230411172456.3003003-1-o.rempel@pengutronix.de>
- <20230411172456.3003003-3-o.rempel@pengutronix.de>
+        with ESMTP id S229638AbjDMEaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 00:30:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7003A19AD
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 21:30:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B6BB63B65
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 672F0C4339B;
+        Thu, 13 Apr 2023 04:30:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681360218;
+        bh=8Zo3C51+Y9rBEE9dfs9mhpIbexWMbWjBOO4/nD4uiD0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Pl6J6ksGFhdepcVLNVi01C97TPn0FGxE39zi1UfEH2a14q7HrxzKI8p5vYTJ435jw
+         XDksIj787MGZgxc+rRo9gkEFcGZBNFG5SVny8J9HBDDihEWapS97TCmMU4rugh8JZ1
+         cXrdvA4nsAPKBMHaTuydySUhCIhHPtswggo83ks+oab1Bme0OGABLXEQhWkkUD37c/
+         Y6WfIY5o6D3NeXZxmOYEegqmQxR73V11ShlC1+hgAEe00tyXB2oftRl0mXKPWXMqcX
+         adeu5hVKhRc7nNK9BBlVOUx6/fp25r/8YpB7owiey4B1PDsfBIyMLhyp2G4jCucyTo
+         0Az6A4qe2J56g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4C138E5244C;
+        Thu, 13 Apr 2023 04:30:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230411172456.3003003-3-o.rempel@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net] rtnetlink: Restore RTM_NEW/DELLINK notification behavior
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168136021829.16838.13251103753658514690.git-patchwork-notify@kernel.org>
+Date:   Thu, 13 Apr 2023 04:30:18 +0000
+References: <20230411074319.24133-1-martin@strongswan.org>
+In-Reply-To: <20230411074319.24133-1-martin@strongswan.org>
+To:     Martin Willi <martin@strongswan.org>
+Cc:     kuba@kernel.org, liuhangbin@gmail.com, gnault@redhat.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 07:24:55PM +0200, Oleksij Rempel wrote:
+Hello:
 
-...
+This patch was applied to netdev/net.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
->  drivers/net/dsa/microchip/ksz9477_acl.c | 950 ++++++++++++++++++++++++
+On Tue, 11 Apr 2023 09:43:19 +0200 you wrote:
+> The commits referenced below allows userspace to use the NLM_F_ECHO flag
+> for RTM_NEW/DELLINK operations to receive unicast notifications for the
+> affected link. Prior to these changes, applications may have relied on
+> multicast notifications to learn the same information without specifying
+> the NLM_F_ECHO flag.
+> 
+> For such applications, the mentioned commits changed the behavior for
+> requests not using NLM_F_ECHO. Multicast notifications are still received,
+> but now use the portid of the requester and the sequence number of the
+> request instead of zero values used previously. For the application, this
+> message may be unexpected and likely handled as a response to the
+> NLM_F_ACKed request, especially if it uses the same socket to handle
+> requests and notifications.
+> 
+> [...]
 
-I'll better split tc-flower code and ACL code to separate files. This
-chips support other engines which can be used for priority remaping. For
-example DiffServ/DSCP
+Here is the summary with links:
+  - [net] rtnetlink: Restore RTM_NEW/DELLINK notification behavior
+    https://git.kernel.org/netdev/net/c/59d3efd27c11
 
->  drivers/net/dsa/microchip/ksz_common.c  |  40 +
->  drivers/net/dsa/microchip/ksz_common.h  |   1 +
-...
-
-> +/**
-> + * ksz9477_acl_port_enable - Enables ACL functionality on a given port.
-> + * @dev: The ksz_device instance.
-> + * @port: The port number on which to enable ACL functionality.
-> + *
-> + * This function enables ACL functionality on the specified port by configuring
-> + * the appropriate control registers. It returns 0 if the operation is
-> + * successful, or a negative error code if an error occurs.
-> + */
-> +static int ksz9477_acl_port_enable(struct ksz_device *dev, int port)
-> +{
-> +	int ret;
-> +
-> +	ret = ksz_prmw8(dev, port, P_PRIO_CTRL, 0, PORT_ACL_PRIO_ENABLE |
-> +			PORT_OR_PRIO);
-
-According to KSZ9477S 5.2.8.2 Port Priority Control Register
-"To achieve the desired functionality, do not set more than one bit at a
-time in this register.
-...
-Bit 6 - OR’ed Priority
-...
-Bit 2 - 802.1p Priority Classification
-Bit 1 - Diffserv Priority Classification
-Bit 0 - ACL Priority Classification
-"
-@Arun  what will happen if multiple engines are used for packet
-prioritization? For example ACL || Diffserv || 802.1p... ?
-If I see it correctly, it is possible but not recommended. Should I
-prevent usage of multiple prio sources? 
-
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ksz_pwrite8(dev, port, REG_PORT_MRI_AUTHEN_CTRL,
-> +			   PORT_ACL_ENABLE |
-> +			   FIELD_PREP(PORT_AUTHEN_MODE, PORT_AUTHEN_PASS));
-> +}
-
-Regards,
-Oleksij
+You are awesome, thank you!
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
