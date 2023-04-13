@@ -2,297 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D1966E1680
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 23:30:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AD296E1681
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 23:32:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbjDMVat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 17:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        id S229893AbjDMVcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 17:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjDMVaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 17:30:46 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A2912A
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 14:30:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
-        s=s31663417; t=1681421418; i=frank-w@public-files.de;
-        bh=O1i7qtwQ5roEuoma3ymgAEKruJqtBh0msvW4KikFQPE=;
-        h=X-UI-Sender-Class:Date:From:To:CC:Subject:Reply-to:In-Reply-To:
-         References;
-        b=qILzoiRJ4fKbFkFgbAKlFX/jksd5V62yO0ha+YFQ0dQaxlwkiheeJXh+mHZYPSQGh
-         UBfNtw0lfj5cp9iBDM3jAePNPeP6ljWgBr+1jqc92qp129vW3if37DpILFhMVNW0jS
-         GxmSn9JIJzHZuAgMqT9Z55005ROfO0j12FS3TlV1ciugqYt7a04CKtfEewGW7/BC61
-         w68rnwBxJd56+XQDNdVQMfsgldWsnRwyDH+0tovmnFtwxqzMYKWXycmbWa7rMvmY8Z
-         M6ToYSI55oLbTReL0KQNZnE3ZgLb2n9KnIKmp+fW5ZN7fO7ivYeGn+x8Nljul8wn1M
-         0t7jo4x6O+pVw==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [127.0.0.1] ([80.245.77.65]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MeU0q-1qNVGf3T8u-00aWut; Thu, 13
- Apr 2023 23:30:17 +0200
-Date:   Thu, 13 Apr 2023 23:30:14 +0200
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Felix Fietkau <nbd@nbd.name>, netdev <netdev@vger.kernel.org>,
-        erkin.bozoglu@xeront.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: Choose a default DSA CPU port
-User-Agent: K-9 Mail for Android
-Reply-to: frank-w@public-files.de
-In-Reply-To: <trinity-ab593227-766b-4e77-a8ee-6d93323b9613-1681409392321@3c-app-gmx-bs48>
-References: <trinity-5a3fbd85-79ce-4021-957f-aea9617bb320-1677333013552@3c-app-gmx-bap06> <f9fcf74b-7e30-9b51-776b-6a3537236bf6@arinc9.com> <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com> <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15> <20230228115846.4r2wuyhsccmrpdfh@skbuf> <CB415113-7581-475E-9BB9-48F6A8707C15@public-files.de> <20230228225622.yc42xlkrphx4gbdy@skbuf> <0842D2D2-E71C-4DEF-BBCD-2D0C0869046E@public-files.de> <20230301123743.qifnk34pqwuyhf7u@skbuf> <trinity-a6b4447d-52b8-42a6-a4ce-b06543872534-1678126825554@3c-app-gmx-bs54> <20230307174323.sbzhb7gy6blgj2jf@skbuf> <trinity-ab593227-766b-4e77-a8ee-6d93323b9613-1681409392321@3c-app-gmx-bs48>
-Message-ID: <0F1324C1-5E17-42AF-B8EC-C999B1537F59@public-files.de>
+        with ESMTP id S229561AbjDMVcV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 17:32:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E37AA;
+        Thu, 13 Apr 2023 14:32:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 166F960B33;
+        Thu, 13 Apr 2023 21:32:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22776C433EF;
+        Thu, 13 Apr 2023 21:32:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681421538;
+        bh=JH02kp/JlRAvsOQvqVWjT2LTMuLyWCZapLkYg5zS0Rw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=KQpL2Y5/LK6Wg/EoYyslu8ttdQMr66uUgRuawIA6Y+9Y5RfOMcNw/Ag241aJcAyja
+         cr46YMxgfZ+IeECbiDm5UltUxOwEle+KwdkwgIMSC3QFc/4LU5F8Au+JpXKFgaGhL9
+         oHFNtB5yw+285FE+ShfMY4T0P5r5Focl03ll9RDVFr8bAguHWpuAEcpzL5FEtmeUcw
+         DBzQ5vIWEC8cVr1jhbz4BBfBeXkezeMAQQGP5KD/xKhcUHHpWMqFqyxQgiQbjLwIZm
+         v76Xg+I1FDBvufzNony7/xSnmyxEMSCZlOcDEAJ/GWJOzyY1Avv4DuDBV73PASrhoO
+         jYXlZ6kqCXvtQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com
+Subject: [GIT PULL] Networking for v6.3-rc7
+Date:   Thu, 13 Apr 2023 14:32:17 -0700
+Message-Id: <20230413213217.822550-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:cPJWiOM/S31brDvVbYWWo12vk/2iFLJfnChtGK6l6fRrtXzfDQw
- WX27BJWDlGY/1ngbvO3lHlcEskDiBuUG47NS/NmxjR0B6iaFegfliWL393Qe++uczi9EeIX
- PNX7T6nOf4+lQWSMS66QdvDdOQ0DS2j6C/SkqJLfHWceDigc4kzZRe6dpdvs6CzmcLl10tT
- 2OiSAEibnwTqTS7CORPBQ==
-UI-OutboundReport: notjunk:1;M01:P0:I3MiwlzF6Vk=;6tDvOmJ7xVKi9mtdAx0UNsml4vi
- ogwpr82NYiYnCjcAQwh7xDKzFqKgtLwQyO1mrTzfxUlGUrYDpT++sGe1uoVfjbi/mFeYesR3a
- B/DnPCnfHppaHXqefekgHDXybrzjc+sB8+PZ3wH6gYA5gUWq3A7Td7EGkCCL88u9gL88Puoj+
- HV9U7cU5pz2nBJtR/4tAf7UloqWFT2t5R04CKXeFMPU3pXHaaZKLzQJ76XreDh6uppZzEYOjL
- AR48sEXfmh/gPGLu8EgFvGwOWq7Gwu09hvIINiM4quONcsex6tRqJbWQ8mPGrnWjZKwS+m3YB
- fbo6/aM2SSiygonRLw6Co8aE2wvsHr8FioTK3VunipehNDPDELVJuO9gwuBOxiQjpPVoyIe6g
- /Kj4DkhVJCvqIa7FCeSSx9bKAgS5C54rDFjrL5GVeAOrxaGKEedwYcsJ5w1M7z9ud9cYvE13L
- gHt8BQTa84mf0EGhFLdg3F0fheCTWaZfT+xeFhRp7EldcQVos5nzG13Sbd9N3RPr8XOddc0In
- hESHKtHNbpXRpoU7Iq7+llN+hEnTHgKsIC/kTmIn0Lil6N+knuRNHw9uRf2IIi6BCl10stG1b
- wAfrg8Ag7Mp+LfmpkDJTkzFrArFxckA/sDKaVgzVDnUGscJ9y/XHKX+uB2yRmQDDPE6AksL8D
- Y1VT+Z88Pi3H0Gll4pANATf1VBM1LTGaNT04JpfC9qza9pxcT0fvhKlXGvuyd3q/grKb3TpK5
- AsR6cYJHocFbeTwJlw1dbDGOySPzVy1oN/KZBMLmeEqYm42c+szZKUal1GscyC8n8bUJA7NwY
- LDB87CC5mO1VSyeD+4yb+ssjD+xptEHdbx8jhES+Tvp5YE061m3fPfQ2aR2ePvbT+dXKsz9Oe
- AQojll3x/bh5fETQSOpQFdXqGVMCkSGSfTr6FDFsNLfTxEgtVPZBFYFJUkTu46/xYiZFXYbOc
- rbQXw7PuYdKXkJVJbPozHR3EAb4=
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 13=2E April 2023 20:09:52 MESZ schrieb Frank Wunderlich <frank-w@public-=
-files=2Ede>:
->Hi
->> Gesendet: Dienstag, 07=2E M=C3=A4rz 2023 um 19:43 Uhr
->> Von: "Vladimir Oltean" <olteanv@gmail=2Ecom>
->> Betreff: Re: Choose a default DSA CPU port
->>
->> On Mon, Mar 06, 2023 at 07:20:25PM +0100, Frank Wunderlich wrote:
->> > is it possible to map this function only to mt7530, not mt7531?
->> >=20
->> > as one way i would add a check for the chip
->> >=20
->> > if (priv->id !=3D ID_MT7530) { return NULL; }
->> > //existing content for mt7531
->>=20
->> yeah, returning "NULL" to ds->ops->preferred_default_local_cpu_port()
->> would mean "don't know, don't care" and DSA would choose by itself=2E
->>=20
->> although I feel we're not at the stage where we should discuss about
->> that just yet=2E
->>=20
->> > where did you find the comment about multicast?
->>=20
->> well, I didn't find "link-local multicast", but "BPDU to CPU port" and
->> may have ran a little bit too far with that info=2E
->>=20
->> If you search for the "Bridge Group Address" keyword in IEEE 802=2E1Q o=
-r
->> IEEE 802=2E1D (older) documents, you'll see that STP BPDUs are sent to =
-a
->> reserved multicast MAC DA of 01-80-C2-00-00-00, which is link-local,
->> meaning that switches don't forward it but trap it=2E Since I knew that=
-,
->> I just assumed that "BPDU to CPU port" means "trapping of any frames
->> with that MAC DA to the CPU port", since if I were a hardware designer,
->> that's what I would do=2E It's possible to identify STP BPDUs (to trap
->> just those) by examining the LLC header, but I wouldn't bother since th=
-e
->> MAC DA is reserved for this kind of stuff and I'd be locking myself out
->> of being compatible with possible protocol changes in the future=2E
->>=20
->> > https://elixir=2Ebootlin=2Ecom/linux/v6=2E3-rc1/source/drivers/net/ds=
-a/mt7530=2Ec has
->> > "multicast" only in the packet-counters (mib_desc)
->> >=20
->> > > The next most obvious thing would be L2 PTP (ptp4l -2), but since m=
-t7530
->> > > doesn't support hw timestamping, you'd need to try software timesta=
-mping
->> > > instead ("ptp4l -i swpX -2 -P -S -m", plus the equivalent command o=
-n a
->> > > link partner)=2E
->> >=20
->> > have not done anything with l2 p2p yet, and no server running=2E=2E=
-=2Ei'm not sure
->> > i can check this the right way=2E
->>=20
->> Anyway, it doesn't have to be PTP, it can be literally any application
->> using a PF_PACKET socket to send sequence-numbered packets towards a
->> mt7530 port with the 01:80:c2:00:00:00 MAC DA, and using 2 tcpdump
->> instances on the 2 GMACs to check whether packets are received once or
->> twice=2E
->>=20
->> If this is still too complicated, just send 5 actual BPDUs and see if
->> you receive them on both CPU ports:
->>=20
->> mausezahn eth0 -b 01:80:c2:00:00:00 -c 5 -t bpdu
->
->
->hi i tried last approach on bananapi r64 as it is the one and only board =
-i have with mt7531 which has both gmacs connected to the switch=2E
->
->base is my 6=2E3-rc tree (modified r64 dts for having second gmac):
->
->https://github=2Ecom/frank-w/BPI-Router-Linux/commits/6=2E3-rc
->
->root@bpi-r64:~# ip a s eth0                                              =
-                                           =20
->2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1504 qdisc mq state UP gro=
-up default qlen 1000                       =20
->    link/ether 66:ea:04:18:30:6f brd ff:ff:ff:ff:ff:ff                   =
-                                           =20
->root@bpi-r64:~# ip a s eth1                                              =
-                                           =20
->3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP gro=
-up default qlen 1000                       =20
->    link/ether 86:97:05:8f:80:63 brd ff:ff:ff:ff:ff:ff                   =
-                                           =20
->    inet6 fe80::8497:5ff:fe8f:8063/64 scope link                         =
-                                           =20
->       valid_lft forever preferred_lft forever=20
->
->root@bpi-r64:~# tcpdump -i eth0 > eth0=2Elog &                           =
-                                             =20
->[1] 3774                                                                 =
-                                           =20
->                                                                         =
-                                           e
->listening on eth0, link-type NULL (BSD loopback), snapshot length 262144 =
-bytes                                      =20
->root@bpi-r64:~# tcpdump -i eth1 > eth1=2Elog &                           =
-                                             =20
->[2] 3779                                                                 =
-                                           =20
->                                                                         =
-                                           e
->tcpdump: verbose output suppressed, use -v[v]=2E=2E=2E for full protocol =
-decode                                           =20
->listening on eth1, link-type EN10MB (Ethernet), snapshot length 262144 by=
-tes                                        =20
->root@bpi-r64:~# mausezahn eth0 -b 01:80:c2:00:00:00 -c 5 -t bpdu         =
-                                           =20
->0=2E00 seconds (30864 packets per second)                                =
-                                             =20
->root@bpi-r64:~# killall tcpdump                                          =
-                                           =20
->5 packets captur[ 2981=2E315951] mtk_soc_eth 1b100000=2Eethernet eth1: le=
-ft promiscuous mode                            =20
->ed                                                                       =
-                                           =20
->5 packets received by filter                                             =
-                                           =20
->0 packets dropped by kernel                                              =
-                                           =20
->0 packets captured                                                       =
-                                           =20
->0 packets received by filter                                             =
-                                           =20
->0 packets dropped by kernel                                              =
-                                           =20
->[1]-  Done                    tcpdump -i eth0 > eth0=2Elog               =
-                                             =20
->[2]+  Done                    tcpdump -i eth1 > eth1=2Elog
->
->root@bpi-r64:~# cat eth0=2Elog                                           =
-                                             =20
->20:04:47=2E124519 AF Unknown (25215488), length 60:                      =
-                                             =20
->        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=
-=2E0o=2E&BB=2E=2E=2E=2E                                          =20
->        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=
-=2E=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
->        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
->        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
->20:04:47=2E124555 AF Unknown (25215488), length 60:                      =
-                                             =20
->        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=
-=2E0o=2E&BB=2E=2E=2E=2E                                          =20
->        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=
-=2E=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
->        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
->        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
->20:04:47=2E124568 AF Unknown (25215488), length 60:                      =
-                                             =20
->        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=
-=2E0o=2E&BB=2E=2E=2E=2E                                          =20
->        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=
-=2E=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
->        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
->        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
->20:04:47=2E124580 AF Unknown (25215488), length 60:                      =
-                                             =20
->        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=
-=2E0o=2E&BB=2E=2E=2E=2E                                          =20
->        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=
-=2E=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
->        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
->        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
->20:04:47=2E124592 AF Unknown (25215488), length 60:                      =
-                                             =20
->        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=
-=2E0o=2E&BB=2E=2E=2E=2E                                          =20
->        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=
-=2E=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
->        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
->        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
->                                                                         =
-                                           =20
->root@bpi-r64:~# cat eth1=2Elog                                           =
-                                             =20
->                                                                         =
-                                           =20
->root@bpi-r64:~#=20
->
->so it looks like packets are not duplicated
->
->regards Frank
+Hi Linus!
 
-tried from my laptop wirh additional usb2eth adapter and see no bpdu
+The following changes since commit f2afccfefe7be1f7346564fe619277110d341f9b:
 
-$ sudo mausezahn enx00e04c6c1dd3 -b 01:80:c2:00:00:00 -c 5 -t bpdu
-0=2E00 seconds (22727 packets per second)
+  Merge tag 'net-6.3-rc6-2' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2023-04-06 11:39:07 -0700)
 
-connected lan0 (eth0) to my laptop and wan to my switch (changed this to e=
-th1)
+are available in the Git repository at:
 
-eth0 is empty, eth1 contains some packets (but this is not where i sent th=
-e bpdu)
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git net-6.3-rc7
 
-seems dsa-user-port does not accept packets to this mac=2E=2E=2Edo not see=
- them on lan0 interface too
+for you to fetch changes up to d0f89c4c1d4e7614581d4fe7caebb3ce6bceafe6:
 
-regards Frank
+  Merge tag 'for-netdev' of https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2023-04-13 13:04:44 -0700)
+
+----------------------------------------------------------------
+Including fixes from bpf, and bluetooth.
+
+Not all that quiet given spring celebrations, but "current" fixes
+are thinning out, which is encouraging. One outstanding regression
+in the mlx5 driver when using old FW, not blocking but we're pushing
+for a fix.
+
+Current release - new code bugs:
+
+ - eth: enetc: workaround for unresponsive pMAC after receiving
+   express traffic
+
+Previous releases - regressions:
+
+ - rtnetlink: restore RTM_NEW/DELLINK notification behavior,
+   keep the pid/seq fields 0 for backward compatibility
+
+Previous releases - always broken:
+
+ - sctp: fix a potential overflow in sctp_ifwdtsn_skip
+
+ - mptcp:
+   - use mptcp_schedule_work instead of open-coding it and make
+     the worker check stricter, to avoid scheduling work on closed
+     sockets
+   - fix NULL pointer dereference on fastopen early fallback
+
+ - skbuff: fix memory corruption due to a race between skb coalescing
+   and releasing clones confusing page_pool reference counting
+
+ - bonding: fix neighbor solicitation validation on backup slaves
+
+ - bpf: tcp: use sock_gen_put instead of sock_put in bpf_iter_tcp
+
+ - bpf: arm64: fixed a BTI error on returning to patched function
+
+ - openvswitch: fix race on port output leading to inf loop
+
+ - sfp: initialize sfp->i2c_block_size at sfp allocation to avoid
+   returning a different errno than expected
+
+ - phy: nxp-c45-tja11xx: unregister PTP, purge queues on remove
+
+ - Bluetooth: fix printing errors if LE Connection times out
+
+ - Bluetooth: assorted UaF, deadlock and data race fixes
+
+ - eth: macb: fix memory corruption in extended buffer descriptor mode
+
+Misc:
+
+ - adjust the XDP Rx flow hash API to also include the protocol layers
+   over which the hash was computed
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+----------------------------------------------------------------
+Aaron Conole (1):
+      selftests: openvswitch: adjust datapath NL message declaration
+
+Ahmed Zaki (2):
+      iavf: refactor VLAN filter states
+      iavf: remove active_cvlans and active_svlans bitmaps
+
+Alexei Starovoitov (1):
+      Merge branch 'XDP-hints: change RX-hash kfunc bpf_xdp_metadata_rx_hash'
+
+Claudia Draghicescu (1):
+      Bluetooth: Set ISO Data Path on broadcast sink
+
+David S. Miller (2):
+      Merge branch 'bonding-ns-validation-fixes'
+      Merge branch 'sfp-eeprom'
+
+Denis Plotnikov (1):
+      qlcnic: check pci_reset_function result
+
+Douglas Anderson (1):
+      r8152: Add __GFP_NOWARN to big allocations
+
+Eric Dumazet (1):
+      udp6: fix potential access to stale information
+
+Felix Huettner (1):
+      net: openvswitch: fix race on port output
+
+George Guo (1):
+      LoongArch, bpf: Fix jit to skip speculation barrier opcode
+
+Hangbin Liu (3):
+      bonding: fix ns validation on backup slaves
+      selftests: bonding: re-format bond option tests
+      selftests: bonding: add arp validate test
+
+Harshit Mogalapalli (2):
+      niu: Fix missing unwind goto in niu_alloc_channels()
+      net: wwan: iosm: Fix error handling path in ipc_pcie_probe()
+
+Ivan Bornyakov (2):
+      net: sfp: initialize sfp->i2c_block_size at sfp allocation
+      net: sfp: avoid EEPROM read of absent SFP module
+
+Jakub Kicinski (5):
+      Merge tag 'for-netdev' of https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
+      Merge tag 'for-net-2023-04-10' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth
+      Merge branch '40GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
+      Merge branch 'mptcp-more-fixes-for-6-3'
+      Merge tag 'for-netdev' of https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
+
+Jesper Dangaard Brouer (6):
+      selftests/bpf: xdp_hw_metadata remove bpf_printk and add counters
+      xdp: rss hash types representation
+      mlx5: bpf_xdp_metadata_rx_hash add xdp rss hash type
+      veth: bpf_xdp_metadata_rx_hash add xdp rss hash type
+      mlx4: bpf_xdp_metadata_rx_hash add xdp rss hash type
+      selftests/bpf: Adjust bpf_xdp_metadata_rx_hash for new arg
+
+Kuniyuki Iwashima (1):
+      smc: Fix use-after-free in tcp_write_timer_handler().
+
+Liang Chen (1):
+      skbuff: Fix a race between coalescing and releasing SKBs
+
+Lorenzo Bianconi (1):
+      selftests/bpf: fix xdp_redirect xdp-features selftest for veth driver
+
+Luiz Augusto von Dentz (6):
+      Bluetooth: hci_conn: Fix not cleaning up on LE Connection failure
+      Bluetooth: Fix printing errors if LE Connection times out
+      Bluetooth: SCO: Fix possible circular locking dependency on sco_connect_cfm
+      Bluetooth: SCO: Fix possible circular locking dependency sco_sock_getsockopt
+      Bluetooth: hci_conn: Fix possible UAF
+      Bluetooth: L2CAP: Fix use-after-free in l2cap_disconnect_{req,rsp}
+
+Martin KaFai Lau (1):
+      bpf: tcp: Use sock_gen_put instead of sock_put in bpf_iter_tcp
+
+Martin Willi (1):
+      rtnetlink: Restore RTM_NEW/DELLINK notification behavior
+
+Matthieu Baerts (1):
+      selftests: mptcp: userspace pm: uniform verify events
+
+Min Li (1):
+      Bluetooth: Fix race condition in hidp_session_thread
+
+Paolo Abeni (3):
+      mptcp: use mptcp_schedule_work instead of open-coding it
+      mptcp: stricter state check in mptcp_worker
+      mptcp: fix NULL pointer dereference on fastopen early fallback
+
+Radu Pirea (OSS) (2):
+      net: phy: nxp-c45-tja11xx: fix unsigned long multiplication overflow
+      net: phy: nxp-c45-tja11xx: add remove callback
+
+Rob Herring (1):
+      net: ti/cpsw: Add explicit platform_device.h and of_platform.h includes
+
+Roman Gushchin (1):
+      net: macb: fix a memory corruption in extended buffer descriptor mode
+
+Sasha Finkelstein (1):
+      bluetooth: btbcm: Fix logic error in forming the board name.
+
+Vladimir Oltean (1):
+      net: enetc: workaround for unresponsive pMAC after receiving express traffic
+
+Xin Long (2):
+      sctp: fix a potential overflow in sctp_ifwdtsn_skip
+      selftests: add the missing CONFIG_IP_SCTP in net config
+
+Xu Kuohai (1):
+      bpf, arm64: Fixed a BTI error on returning to patched function
+
+YueHaibing (1):
+      tcp: restrict net.ipv4.tcp_app_win
+
+Zheng Wang (1):
+      Bluetooth: btsdio: fix use after free bug in btsdio_remove due to race condition
+
+Ziyang Xuan (1):
+      net: qrtr: Fix an uninit variable access bug in qrtr_tx_resume()
+
+ Documentation/networking/ip-sysctl.rst             |   2 +
+ arch/arm64/net/bpf_jit.h                           |   4 +
+ arch/arm64/net/bpf_jit_comp.c                      |   3 +-
+ arch/loongarch/net/bpf_jit.c                       |   4 +
+ drivers/bluetooth/btbcm.c                          |   2 +-
+ drivers/bluetooth/btsdio.c                         |   1 +
+ drivers/net/bonding/bond_main.c                    |   5 +-
+ drivers/net/ethernet/cadence/macb_main.c           |   4 +
+ .../net/ethernet/freescale/enetc/enetc_ethtool.c   |  16 ++
+ drivers/net/ethernet/intel/iavf/iavf.h             |  20 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c        |  44 ++--
+ drivers/net/ethernet/intel/iavf/iavf_virtchnl.c    |  68 +++---
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c         |  22 +-
+ drivers/net/ethernet/mellanox/mlx4/mlx4_en.h       |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |  63 ++++-
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c    |   8 +-
+ drivers/net/ethernet/sun/niu.c                     |   2 +-
+ drivers/net/ethernet/ti/cpsw.c                     |   2 +-
+ drivers/net/ethernet/ti/cpsw_new.c                 |   3 +-
+ drivers/net/phy/nxp-c45-tja11xx.c                  |  14 +-
+ drivers/net/phy/sfp.c                              |  19 +-
+ drivers/net/usb/r8152.c                            |   2 +-
+ drivers/net/veth.c                                 |  10 +-
+ drivers/net/wwan/iosm/iosm_ipc_pcie.c              |   3 +-
+ include/linux/mlx5/device.h                        |  14 +-
+ include/linux/netdevice.h                          |   3 +-
+ include/linux/rtnetlink.h                          |   3 +-
+ include/net/bluetooth/hci_core.h                   |   1 +
+ include/net/bonding.h                              |   8 +-
+ include/net/xdp.h                                  |  47 ++++
+ net/bluetooth/hci_conn.c                           |  89 ++++---
+ net/bluetooth/hci_event.c                          |  18 +-
+ net/bluetooth/hci_sync.c                           |  13 +-
+ net/bluetooth/hidp/core.c                          |   2 +-
+ net/bluetooth/l2cap_core.c                         |  24 +-
+ net/bluetooth/sco.c                                |  85 ++++---
+ net/core/dev.c                                     |   3 +-
+ net/core/rtnetlink.c                               |  11 +-
+ net/core/skbuff.c                                  |  16 +-
+ net/core/xdp.c                                     |  10 +-
+ net/ipv4/sysctl_net_ipv4.c                         |   3 +
+ net/ipv4/tcp_ipv4.c                                |   4 +-
+ net/ipv6/udp.c                                     |   8 +-
+ net/mptcp/fastopen.c                               |  11 +-
+ net/mptcp/options.c                                |   5 +-
+ net/mptcp/protocol.c                               |   2 +-
+ net/mptcp/subflow.c                                |  18 +-
+ net/openvswitch/actions.c                          |   2 +-
+ net/qrtr/af_qrtr.c                                 |   8 +-
+ net/sctp/stream_interleave.c                       |   3 +-
+ net/smc/af_smc.c                                   |  11 +
+ .../selftests/bpf/prog_tests/xdp_do_redirect.c     |  30 ++-
+ .../selftests/bpf/prog_tests/xdp_metadata.c        |   2 +
+ .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |  42 ++--
+ tools/testing/selftests/bpf/progs/xdp_metadata.c   |   6 +-
+ tools/testing/selftests/bpf/progs/xdp_metadata2.c  |   7 +-
+ tools/testing/selftests/bpf/xdp_hw_metadata.c      |  10 +-
+ tools/testing/selftests/bpf/xdp_metadata.h         |   4 +
+ .../testing/selftests/drivers/net/bonding/Makefile |   3 +-
+ .../selftests/drivers/net/bonding/bond_options.sh  | 264 +++++++++++++++++++++
+ .../drivers/net/bonding/bond_topo_3d1c.sh          | 143 +++++++++++
+ .../selftests/drivers/net/bonding/option_prio.sh   | 245 -------------------
+ tools/testing/selftests/net/config                 |   1 +
+ tools/testing/selftests/net/mptcp/userspace_pm.sh  |   2 +
+ .../testing/selftests/net/openvswitch/ovs-dpctl.py |   2 +-
+ 65 files changed, 990 insertions(+), 517 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/bonding/bond_options.sh
+ create mode 100644 tools/testing/selftests/drivers/net/bonding/bond_topo_3d1c.sh
+ delete mode 100755 tools/testing/selftests/drivers/net/bonding/option_prio.sh
