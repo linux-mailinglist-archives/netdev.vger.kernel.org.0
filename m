@@ -2,151 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C57B86E0C5C
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 13:22:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EED7D6E0CCE
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 13:38:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbjDMLWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 07:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
+        id S230404AbjDMLiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 07:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229922AbjDMLWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 07:22:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FEF183E5
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:21:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E04AF63DAE
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 11:21:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE145C433EF;
-        Thu, 13 Apr 2023 11:21:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681384918;
-        bh=Sap8cDalcJVSL0auW9Bh0STpOlSgjhemvl4VUNqQCqo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h1yRceE6X9Y/IhCzF1SBCaIsACxz/NsFccRdmGNP47RaDjcuwCEentLZymnS/CE0k
-         IYCaHiYaZaBBnIpQsWd2W6WVEPH69zG+Uxiq64VtJc2tk2YSj2o9l7JyRof61ErK8N
-         VZPGvzQ+KCZBoYPXyIa7GBGeNOHNgpPySlzLNM8epuHVZCEl7OoxCwD9u5UoZGXDpG
-         hICW+VXtPvaxlWRDOV4RAVI9sCRnSMd1iHBel04WUBkQqVCpo61+MEAh8IC0E4VPcl
-         PVxv4E/AV196b3pv91/JIAKE4/+5w+dm1r9Zm99HsrlDtXDkHKET/8KsmNLBhBM+Kn
-         zs6GTXVs+1AlA==
-Date:   Thu, 13 Apr 2023 14:21:53 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Emeel Hakim <ehakim@nvidia.com>
-Subject: Re: [PATCH net-next 09/10] net/mlx5e: Create IPsec table with tunnel
- support only when encap is disabled
-Message-ID: <20230413112153.GK17993@unreal>
-References: <cover.1681106636.git.leonro@nvidia.com>
- <ee971aa614d3264c9fe88eb77a6f61687a3ff363.1681106636.git.leonro@nvidia.com>
- <ZDQdNV+SRG6EVYlJ@corigine.com>
- <20230410164920.GU182481@unreal>
- <ZDRRBiT6umIH0rcR@corigine.com>
- <20230411124731.GY182481@unreal>
+        with ESMTP id S229951AbjDMLiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 07:38:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9E12136
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:38:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681385893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tFynjbvQBmoKGMXvOtx49zJOr/TclRQ15smVVahNzyg=;
+        b=KO6gdDm7VQrz+N7we5JsLw/ZETbaI/Cz6ggWnOpFocMb6u4jodWzvIuuJRM0vfQ8Ii5bvT
+        IpQQbhOfGudWfuWHkskbJoGMsP22htnt6cr3mdgwc3AHY5cbrEF5ujEkY+oD8hIjJgRWQ6
+        jis3I+zNzqG/U6AwmgCn2Kg1gfOyMX4=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-577-ueK6UuehMqK4QZcyVyG_oQ-1; Thu, 13 Apr 2023 07:38:12 -0400
+X-MC-Unique: ueK6UuehMqK4QZcyVyG_oQ-1
+Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-3e947d81d7dso2119581cf.1
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:38:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681385892; x=1683977892;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tFynjbvQBmoKGMXvOtx49zJOr/TclRQ15smVVahNzyg=;
+        b=NkygMFdTqk9xYZ1NrHt4/sU8twZGWOcWe8C1zatsCZklSHCSr/3rXLfpHN8YKUbUk/
+         vrIJM/J/2/gu7+6Z69g4Qcb9A6IoXMf+sJd5IJ1M9v0ZqMLw3bosiR5IkG1vIdjOOHWB
+         gVJxEnNwsvdpIkaiwLCXkag0h/7vku8t14wglyMOcmP6vAisU8Mw9Xw1n417Gs1WRPP6
+         BSoP4KikxHaNgHqy1k6Vf5GnbkxrdAahkkgY2276pNHJdqM820HOb03J/uE9TjqKmH22
+         wWjFuLSmxfRE7C+G0kePxDy93GtsLaB2WzvetNb+FDSapwju+G56yGx7KuRVmQTWH/0D
+         PQFQ==
+X-Gm-Message-State: AAQBX9e8/3fbOjNSyyY2yYUNswOximzrC/y8eEp4dDzAUDD5KiT3dNyP
+        b60/PmAc8cwfgREPGPtMZ4GQPHm8WofRCYAVlnJuupYPH68zVDuS9cLJaYptAxy0GE59CiJWU2E
+        Ffro+yCJMP79a6z8z
+X-Received: by 2002:ac8:58d0:0:b0:3e6:707e:d3c2 with SMTP id u16-20020ac858d0000000b003e6707ed3c2mr2618406qta.0.1681385892091;
+        Thu, 13 Apr 2023 04:38:12 -0700 (PDT)
+X-Google-Smtp-Source: AKy350a4ck3kHlLWdeQKe1CDThZ2MUc4egBZ5LsrQb90FvkTkDplW5rVedR3160hmOcv/WAm5KcP6Q==
+X-Received: by 2002:ac8:58d0:0:b0:3e6:707e:d3c2 with SMTP id u16-20020ac858d0000000b003e6707ed3c2mr2618385qta.0.1681385891769;
+        Thu, 13 Apr 2023 04:38:11 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-232-183.dyn.eolo.it. [146.241.232.183])
+        by smtp.gmail.com with ESMTPSA id y4-20020ac85244000000b003e6a1bf26a4sm419599qtn.64.2023.04.13.04.38.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Apr 2023 04:38:11 -0700 (PDT)
+Message-ID: <78cea5774de414fa3bcbd6ef02e436ae6b5706c1.camel@redhat.com>
+Subject: Re: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
+ indexes
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        'Jakub Kicinski' <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
+Date:   Thu, 13 Apr 2023 13:38:08 +0200
+In-Reply-To: <f6c134852244441a88eef8c1774bb67f@AcuMS.aculab.com>
+References: <20230412015038.674023-1-kuba@kernel.org>
+         <20230412015038.674023-3-kuba@kernel.org>
+         <f6c134852244441a88eef8c1774bb67f@AcuMS.aculab.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230411124731.GY182481@unreal>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 03:47:31PM +0300, Leon Romanovsky wrote:
-> On Mon, Apr 10, 2023 at 08:10:14PM +0200, Simon Horman wrote:
-> > On Mon, Apr 10, 2023 at 07:49:20PM +0300, Leon Romanovsky wrote:
-> > > On Mon, Apr 10, 2023 at 04:29:09PM +0200, Simon Horman wrote:
-> > > > On Mon, Apr 10, 2023 at 09:19:11AM +0300, Leon Romanovsky wrote:
-> > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > 
-> > > > > Current hardware doesn't support double encapsulation which is
-> > > > > happening when IPsec packet offload tunnel mode is configured
-> > > > > together with eswitch encap option.
-> > > > > 
-> > > > > Any user attempt to add new SA/policy after he/she sets encap mode, will
-> > > > > generate the following FW syndrome:
-> > > > > 
-> > > > >  mlx5_core 0000:08:00.0: mlx5_cmd_out_err:803:(pid 1904): CREATE_FLOW_TABLE(0x930) op_mod(0x0) failed,
-> > > > >  status bad parameter(0x3), syndrome (0xa43321), err(-22)
-> > > > > 
-> > > > > Make sure that we block encap changes before creating flow steering tables.
-> > > > > This is applicable only for packet offload in tunnel mode, while packet
-> > > > > offload in transport mode and crypto offload, don't have such limitation
-> > > > > as they don't perform encapsulation.
-> > > > > 
-> > > > > Reviewed-by: Raed Salem <raeds@nvidia.com>
-> > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > 
-> > > > Hi Raed and Leon,
-> > > > 
-> > > > some minor feedback from me below.
-> > > > 
-> > > > > ---
-> > > > >  .../mellanox/mlx5/core/en_accel/ipsec.c       |  7 ++++
-> > > > >  .../mellanox/mlx5/core/en_accel/ipsec.h       |  1 +
-> > > > >  .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 33 +++++++++++++++++--
-> > > > >  3 files changed, 38 insertions(+), 3 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-> > > > > index b64281fd4142..e95004ac7a20 100644
-> > > > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-> > > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-> > > > > @@ -668,6 +668,13 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
-> > > > >  	if (err)
-> > > > >  		goto err_hw_ctx;
-> > > > >  
-> > > > > +	if (x->props.mode == XFRM_MODE_TUNNEL &&
-> > > > > +	    x->xso.type == XFRM_DEV_OFFLOAD_PACKET &&
-> > > > > +	    !mlx5e_ipsec_fs_tunnel_enabled(sa_entry)) {
-> > > > > +		NL_SET_ERR_MSG_MOD(extack, "Packet offload tunnel mode is disabled due to encap settings");
-> > > > > +		goto err_add_rule;
-> > > > 
-> > > > The err_add_rule will return err.
-> > > > But err is zero here.
-> > > > Perhaps it should be set to an negative error code?
-> > > 
-> > > Thanks, I overlooked it.
-> > > 
-> > > > 
-> > > > Flagged by Smatch as:
-> > > > 
-> > > > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c:753 mlx5e_xfrm_free_state() error: we previously assumed 'sa_entry->work' could be null (see line 744)
-> > > 
-> > > I don't get such warnings from my CI, will try to understand why.
-> > > 
-> > > What are the command line arguments you use to run smatch?
-> > 
-> > Hi Leon,
-> > 
-> > I run Smatch like this:
-> > 
-> > .../smatch/smatch_scripts/kchecker \
-> > 	drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.o
-> > 
-> > > What is the version of smatch?
-> > 
-> > I see this with Smatch 1.73.
-> > 
-> > 
-> > In writing this email, I noticed that Smatch seems to flag
-> > a problem in net-next. Which seems to be a valid concern.
-> > 
-> > drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c:753 mlx5e_xfrm_free_state() error: we previously assumed 'sa_entry->work' could be null (see line 744)
-> 
-> Thanks, I'll take a look when will return to the office.
+On Wed, 2023-04-12 at 08:15 +0000, David Laight wrote:
+> From: Jakub Kicinski
+> > Sent: 12 April 2023 02:51
+> >=20
+> > Eric points out that we should make sure that ring index updates
+> > are wrapped in the appropriate READ_ONCE/WRITE_ONCE macros.
+> >=20
+> ...
+> > -static inline u32 bnxt_tx_avail(struct bnxt *bp, struct bnxt_tx_ring_i=
+nfo *txr)
+> > +static inline u32 bnxt_tx_avail(struct bnxt *bp,
+> > +				const struct bnxt_tx_ring_info *txr)
+> >  {
+> > -	/* Tell compiler to fetch tx indices from memory. */
+> > -	barrier();
+> > +	u32 used =3D READ_ONCE(txr->tx_prod) - READ_ONCE(txr->tx_cons);
+> >=20
+> > -	return bp->tx_ring_size -
+> > -		((txr->tx_prod - txr->tx_cons) & bp->tx_ring_mask);
+> > +	return bp->tx_ring_size - (used & bp->tx_ring_mask);
+> >  }
+>=20
+> Doesn't that function only make sense if only one of
+> the ring index can be changing?
+> In this case I think this is being used in the transmit path
+> so that 'tx_prod' is constant and is either already read
+> or need not be read again.
+>=20
+> Having written a lot of 'ring access' functions over the years
+> if the ring size is a power of 2 I'd mask the 'tx_prod' value
+> when it is being used rather than on the increment.
+> (So the value just wraps modulo 2**32.)
+> This tends to make the code safer - especially since the
+> 'ring full' and 'ring empty' conditions are different.
+>=20
+> Also that code is masking with bp->tx_ring_mask, but the
+> increments (in hunks I've chopped) use NEXT_TX(prod).
+> If that is masking with bp->tx_ring_mask then 'bp' should
+> be a parameter.
 
-I tried it now and still don't get this warning.
+AFAICS bnxt_tx_avail() is also used in TX interrupt, outside tx path/tx
+lock.
 
-Thanks
+I think all the above consideration are more suited for a driver
+refactor, while the current patch specifically address potential data
+race issues.
+
+Cheers,
+
+Paolo
+
