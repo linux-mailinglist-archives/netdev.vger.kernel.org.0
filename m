@@ -2,59 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A8EE6E1243
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:28:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 441A76E1246
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:28:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229996AbjDMQ20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 12:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        id S229797AbjDMQ2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 12:28:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229766AbjDMQ2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:28:25 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C004200;
-        Thu, 13 Apr 2023 09:28:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=mQvf+gRN7NYGHjf5csoi4SeW125LupLTIXxqIoYrrgs=; b=zwe2YuJgrTHFZEI4liZQtIK7xT
-        4mTne0+SJQi1/5OIRNgMEx5flvZQ+nKgKy8KH9osXXCL1MQGo2u1ycpws0FX8NIbCsdQ29R26mchN
-        yATjVScszopc0hAG8LiKTlnDzjBm1s4zgxXR9wRBbejZqKZWhxaUndUk4DlJ4Jz5NlUc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pmzo3-00ACuj-4M; Thu, 13 Apr 2023 18:28:19 +0200
-Date:   Thu, 13 Apr 2023 18:28:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ladislav Michl <oss-lists@triops.cz>
-Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: Re: [PATCH 1/3] staging: octeon: don't panic
-Message-ID: <fdbe6034-0c03-40ff-a0dc-e36a3b44d00b@lunn.ch>
-References: <ZDgNexVTEfyGo77d@lenoch>
- <ZDgN8/IcFc3ZXkeC@lenoch>
- <c69572ba-5ecf-477e-9dbe-8b6bd5dd98e8@lunn.ch>
- <ZDgqUP0yWYHE7McL@lenoch>
+        with ESMTP id S229959AbjDMQ2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:28:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963A193CA;
+        Thu, 13 Apr 2023 09:28:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32446611B8;
+        Thu, 13 Apr 2023 16:28:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2110DC433EF;
+        Thu, 13 Apr 2023 16:28:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681403316;
+        bh=vA2rZqb3GSus8sF2oE1urSUYmfiV7TnsgeUY7yqFW1U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Wvo4TB313FF7e/8W9ivt2fumQnT2x5NF+qMIQntPpWpmukDIFJGOlPX7N/aY/KgQF
+         UzwHti7beKLjmE33QFZdCBtrgLA9nW4Npb58P/zYHH7vikfkMC6J4pE8aDEWYbs7kO
+         3tFNf9T19QepQlVLZ+QT7RD4N1lBsQGzsSC6Pe06aTBfO/4JAg8brX52A0vDBe++u1
+         2JuFr9YuVOCBO5FzNyhVd4VR05g73ajDn/66y9YyC0qCOQK/sho5GZvsSqbTtp20Gc
+         C0eXDbfHnutTyOMSUgwp1TZ7ABfTiM6E7+vdPgrVALgfhdrGTdUZwsDBgk/tCeTZyP
+         xMRy/tJlpYZMw==
+Date:   Thu, 13 Apr 2023 18:28:31 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Cc:     Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
+        linux@armlinux.org.uk, linux-i2c@vger.kernel.org,
+        linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next v2 2/6] net: txgbe: Implement I2C bus master
+ driver
+Message-ID: <ZDgtryRooJdVHCzH@sai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
+        linux@armlinux.org.uk, linux-i2c@vger.kernel.org,
+        linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com
+References: <20230411092725.104992-1-jiawenwu@trustnetic.com>
+ <20230411092725.104992-3-jiawenwu@trustnetic.com>
+ <00cf01d96c58$8d3e9130$a7bbb390$@trustnetic.com>
+ <09dc3146-a1c6-e1a3-c8bd-e9fe547f9b99@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gJ62P6exb1TR2UkD"
 Content-Disposition: inline
-In-Reply-To: <ZDgqUP0yWYHE7McL@lenoch>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <09dc3146-a1c6-e1a3-c8bd-e9fe547f9b99@linux.intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Problem with this code is that it registers netdevices in for loop,
-> so the only device available here is parent device to all that
-> netdevices (which weren't registered).
 
-You always have pdev->dev, which you can use until you have a
-registered netdev. That is a common pattern.
+--gJ62P6exb1TR2UkD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-	   Andrew
+
+> > > Implement I2C bus driver to send and receive I2C messages.
+> > >=20
+> > > This I2C license the IP of Synopsys Designware, but without interrupt
+> > > support on the hardware design. It seems that polling mode needs to be
+> > > added in Synopsys Designware I2C driver. But currently it can only be
+> > > driven by this I2C bus master driver.
+> > >=20
+> > > Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
+> > > ---
+> > >   drivers/net/ethernet/wangxun/Kconfig          |   1 +
+> > >   .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 153
+> > > ++++++++++++++++++
+> > >   .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  23 +++
+> > >   3 files changed, 177 insertions(+)
+> > >=20
+> Looks like your use case has similarities with the commit 17631e8ca2d3
+> ("i2c: designware: Add driver support for AMD NAVI GPU").
+
+Yes, can you please check if you can't use the current i2c designware
+driver?
+
+
+--gJ62P6exb1TR2UkD
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmQ4LawACgkQFA3kzBSg
+Kbb13A//YPHiYvwN8Wo09sYS3KY1NiB4EUW3xYRdhDI3BAfuGUyTgzYeNnEOqGGM
+rmbe/TydPie+579ihWsiNO151jzFbYkRX2rjqXmp5PZCCo4hzUyT0qSLtxzLIl2e
+9tsSx4mg90DO5Zz3AkEt4uYmTLE2ClICPaZgbjCRDoKtuz2SqWhbu2X859AX4YAJ
+POt2Yft7Gt0SedIUexnfsLvbdlbAbk0YxQwq3ybAwiljKPZxuzoLTFc+1x6jFpnk
+EqdmzoGklm1omUYL1PLz36dFLMBcWIhYVfJIS9WAfKwVbsBTJP7YNKE5PJ6+MGMu
+r4Vi8s2Cj/CcNW/HaoDbeojBI54By8W/bSO20udNx89CvpOvsxt79me/J3E/4Hq4
+iWAcxCsAcN+kcd5OS1kE3fNSQIah4wQuttV7gay+wWU+7wKKaw6pj1Xs+nKlpJZG
+fUhoQJNsH7zrX9IPxhGQJQwxHFo6JMdDyQ9jolfvyD1KCOo1L88TO24uiDOROBpS
+qcuKKpndLR9XPAO249gUN2k63nlKx8AKwspJ3UuSI3KwY2g6t9/ppgMx2qNgD853
+w0FiMKVpRmCDlEY49aOANceF60nLX/MbeL9t5lnpm6nhb8h0+jiOfUxT0xCBvpV1
+ik+5o431LxgousoN7ssylXZz/QwPm7TRLjo6M4VgBqWlve1u7jU=
+=iVCY
+-----END PGP SIGNATURE-----
+
+--gJ62P6exb1TR2UkD--
