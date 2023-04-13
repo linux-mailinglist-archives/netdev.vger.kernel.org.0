@@ -2,283 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42E946E13E5
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 20:10:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B12B96E13F9
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 20:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbjDMSKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 14:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
+        id S229994AbjDMSTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 14:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbjDMSKO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 14:10:14 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDF030DA
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 11:10:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
-        s=s31663417; t=1681409392; i=frank-w@public-files.de;
-        bh=mXi7HQ11IRChC1Ym3INjDEdnfYtDVgtIdp9XB741UrI=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=W3+MXurReN2UBPCVMz16iPhhpT8NWCPb1sB5b7ipGTY3YvBBK3OBqsl+VqV4kiPhj
-         CiudlwlRs7QbfJpLTFo/LUvKVR0MGtEO7IYaPwQ8R+hkji1AJtzbQysk9TMC3b8lBQ
-         UNSXvtn437nCtxE7dfaPwk4nI37yNarmvZ9bD8u8Z8CTRJZksrA08o/QlLuQepMoaf
-         7517nEOmk63SASlhPmpk4PCiccPY5socFAP/UsC9ofQD8xbktTR/0kIHZOujh2Jibk
-         pMiX0M9VmLSGMMG6dl9mFKjHoyR7TuKNzYRkqpdXXrdyO04OHCnP6C7KG+QJOGRlfP
-         JEqIQYpDtLliA==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [80.245.77.65] ([80.245.77.65]) by web-mail.gmx.net
- (3c-app-gmx-bs48.server.lan [172.19.170.101]) (via HTTP); Thu, 13 Apr 2023
- 20:09:52 +0200
+        with ESMTP id S229933AbjDMSTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 14:19:49 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3B4E6F;
+        Thu, 13 Apr 2023 11:19:48 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 857315C00DF;
+        Thu, 13 Apr 2023 14:19:47 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 13 Apr 2023 14:19:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1681409987; x=1681496387; bh=Kh4f8LOv/N05w
+        e0ingeowtI9oIpu6/dYXCFm4olQziw=; b=GtkijS530SN0bfZi1gNOnrfH3GICi
+        NQJ3rNhhFMefopocSkog5wqCHL9fOc4MIVdYAxi9Zb6SFBcZKRpqNSS1M3x9EI2m
+        xe7iEXn80cY7TzfrpayDmRVc51E3wQdjasJ46kW9D0iYNOvxpJK7R8KXu8e83Nty
+        +AsMNIg3locCcAOHZa6WE5Unkuq5c0THjPXpJpgw1qJYNo+iOddRaum0Xez7aBxp
+        11rKFyEnpS4c3JB8p5zMw1CNJs8DjX//mbEIrqrIJFMemYwbNR9z0lJq/gqqCqBn
+        WZDqiA54yynqyEvn+MpDXZM5flNEUDiE4fPL0u+RwXEFhfURTxy6ajgzg==
+X-ME-Sender: <xms:wkc4ZPiYE6uPOml8mrvjMZWki9SNq1cbmq-YGm2zEHbXOiOvC_9dRQ>
+    <xme:wkc4ZMANXc91d213JjWYnYL1WgP33sQ501YdHzjrv0M6v95GblpLbJDlNabRhbsP9
+    zy9SDaEVH4TZ-8>
+X-ME-Received: <xmr:wkc4ZPGyWQkxYuYBAq-d_Fp4w9YMzwz0K-tDWEPrMvBPHGpfDYj2H4U828Zx1fycFVZ-0AUfrqcFZwpWOPpioDyi3GM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdekkedguddvhecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpeevieevgfeuleejgfeghefhuddviefhgeejhfehgeekgeevfefggefgudef
+    hfelgfenucffohhmrghinhepihhpvhegrdhpihhnghenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:wkc4ZMQiBcst42AZLOfVV6OE_SNPj9OAMsKmQYFSS1uufjgycRS1sg>
+    <xmx:wkc4ZMypX0-Ryq4nZKKLQaUtrZBARAvK8KBkkX05VlbmjgrujwfBww>
+    <xmx:wkc4ZC4wP69ORHXfRFEhsD2LRhAkRkcc3if8ViWSfZqqmatZzy8k8g>
+    <xmx:w0c4ZAlCdU3UHHFCZquoxV7TCjtNKBaqG6-G6fG63MnLWbEmCjETLg>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 13 Apr 2023 14:19:45 -0400 (EDT)
+Date:   Thu, 13 Apr 2023 21:19:41 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Petr Machata <petrm@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+        Xin Long <lucien.xin@gmail.com>, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [BUG] [FIXED: TESTED] kmemleak in rtnetlink_rcv() triggered by
+ selftests/drivers/net/team in build cdc9718d5e59
+Message-ID: <ZDhHvUrkua8gLMfZ@shredder>
+References: <78a8a03b-6070-3e6b-5042-f848dab16fb8@alu.unizg.hr>
+ <ZDLyZX545Cw+aLhE@shredder>
+ <67b3fa90-ad29-29f1-e6f3-fb674d255a1e@alu.unizg.hr>
+ <7650b2eb-0aee-a2b0-2e64-c9bc63210f67@alu.unizg.hr>
 MIME-Version: 1.0
-Message-ID: <trinity-ab593227-766b-4e77-a8ee-6d93323b9613-1681409392321@3c-app-gmx-bs48>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Felix Fietkau <nbd@nbd.name>, netdev <netdev@vger.kernel.org>,
-        erkin.bozoglu@xeront.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Aw: Re: Choose a default DSA CPU port
-Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 13 Apr 2023 20:09:52 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20230307174323.sbzhb7gy6blgj2jf@skbuf>
-References: <trinity-5a3fbd85-79ce-4021-957f-aea9617bb320-1677333013552@3c-app-gmx-bap06>
- <f9fcf74b-7e30-9b51-776b-6a3537236bf6@arinc9.com>
- <6383a98a-1b00-913d-0db1-fe33685a8410@arinc9.com>
- <trinity-6ad483d2-5c50-4f38-b386-f4941c85c1fd-1677413524438@3c-app-gmx-bs15>
- <20230228115846.4r2wuyhsccmrpdfh@skbuf>
- <CB415113-7581-475E-9BB9-48F6A8707C15@public-files.de>
- <20230228225622.yc42xlkrphx4gbdy@skbuf>
- <0842D2D2-E71C-4DEF-BBCD-2D0C0869046E@public-files.de>
- <20230301123743.qifnk34pqwuyhf7u@skbuf>
- <trinity-a6b4447d-52b8-42a6-a4ce-b06543872534-1678126825554@3c-app-gmx-bs54>
- <20230307174323.sbzhb7gy6blgj2jf@skbuf>
-Content-Transfer-Encoding: quoted-printable
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:TZNRHrIzwZUO7vRBh5wU9oBkZuQ7ApWbS6Kj1XRAuDgbLhPfhW+j4hkGS2DFTH+yCxl2i
- U8xdwGqo4afnPL/+hziNHqwOefQPh0yMZtT0z/ehpIec/XZFfMkksoAmaLRhCVRZEpKlui6I5TwT
- /ttqnvvC511KzFAidg3U3ihuKZMFPQ+KCVlo5WKKRpZMAbJhyH/W4JjMB8elCk8MBjG50b1Dquw4
- PMI5Qvh0mrMOdBjf30QDlmMzjVdxdqLOzfy86Rib+W9gEeENm6pnVo5DXd7L77s4TycPTWwQp+0w
- oQ=
-UI-OutboundReport: notjunk:1;M01:P0:jHAN5cJBkck=;1jF5RPl0C0bt19IrolCJKY8B9xE
- IUnrjAc/tQo84WsgoR00CgU6gmnBjAvsW9gW7u2xUqtNBCwXTbngdseP4wluCFHd1wNYY9uns
- niC+qGm+iAcAEl0szcKzqoqBqIKPMEa+fXK5sz9CL4Sb85S7SC1m32h10Xrn/xtlmoJrd2rZK
- YTAszk+X1xy4WDohYXz/a9gfpKqrSOENHmTlJmR2dJD0rqFh2QyXuTTxrx8thhPu8eQ6xqief
- nqO0AkNk0lakVGKqiDSAt4Jj3pwPlTGj0SBcwK5fHb26JlFPkt/AaFRz7R+NjwD5xNHof3a1k
- B885jDGtzSdOubeNzMdi51OdXxuas7DH61Qou5qXSBVFrh25S2fX6/b0CnUucFv1ieeUZwjcR
- 3JKUY0m2oCJBt/meyzahP6tretGypINJRhKiPvg7r7s7Y7OKvggd/BI0rtO0tPfnuhWq0aqZl
- x0A3Hbk+Pdqef8/txqZmN5UQ99EQ8YG7EItAdMisOx/mv7uz5x2DHJ9iBD/w4bcnuC/Eca7KQ
- 7PXKLtFGNQhYyEVMoQeufXWonS6g0X2/ujUbUqde+j/6C0rB2FuWIRY3/ab8D7SCIgHMXrnjm
- 4nJM2BQpeoP3AVjOv3s4BEQrrApeM/6i0AUyWsbedJBkZUlgI4LC7w8D3pQ4JSs89EEe93lxJ
- AHAFxSpOx6JuooGgvK/ano90HKlEBpyN95prKZoLzFzFgURy96qRGCp3e0nzjfjCccow9rIlD
- 4hrFRQTrRuslo/JPZGGQCUCpqG1XN95xIN6krxpNBinv5BG5oS2+Q2SCEICdAOYNB+hT9sxZx
- uN3QyFSMAIyFvyE7UmhyximA==
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7650b2eb-0aee-a2b0-2e64-c9bc63210f67@alu.unizg.hr>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
-> Gesendet: Dienstag, 07=2E M=C3=A4rz 2023 um 19:43 Uhr
-> Von: "Vladimir Oltean" <olteanv@gmail=2Ecom>
-> Betreff: Re: Choose a default DSA CPU port
->
-> On Mon, Mar 06, 2023 at 07:20:25PM +0100, Frank Wunderlich wrote:
-> > is it possible to map this function only to mt7530, not mt7531?
-> >=20
-> > as one way i would add a check for the chip
-> >=20
-> > if (priv->id !=3D ID_MT7530) { return NULL; }
-> > //existing content for mt7531
->=20
-> yeah, returning "NULL" to ds->ops->preferred_default_local_cpu_port()
-> would mean "don't know, don't care" and DSA would choose by itself=2E
->=20
-> although I feel we're not at the stage where we should discuss about
-> that just yet=2E
->=20
-> > where did you find the comment about multicast?
->=20
-> well, I didn't find "link-local multicast", but "BPDU to CPU port" and
-> may have ran a little bit too far with that info=2E
->=20
-> If you search for the "Bridge Group Address" keyword in IEEE 802=2E1Q or
-> IEEE 802=2E1D (older) documents, you'll see that STP BPDUs are sent to a
-> reserved multicast MAC DA of 01-80-C2-00-00-00, which is link-local,
-> meaning that switches don't forward it but trap it=2E Since I knew that,
-> I just assumed that "BPDU to CPU port" means "trapping of any frames
-> with that MAC DA to the CPU port", since if I were a hardware designer,
-> that's what I would do=2E It's possible to identify STP BPDUs (to trap
-> just those) by examining the LLC header, but I wouldn't bother since the
-> MAC DA is reserved for this kind of stuff and I'd be locking myself out
-> of being compatible with possible protocol changes in the future=2E
->=20
-> > https://elixir=2Ebootlin=2Ecom/linux/v6=2E3-rc1/source/drivers/net/dsa=
-/mt7530=2Ec has
-> > "multicast" only in the packet-counters (mib_desc)
-> >=20
-> > > The next most obvious thing would be L2 PTP (ptp4l -2), but since mt=
-7530
-> > > doesn't support hw timestamping, you'd need to try software timestam=
-ping
-> > > instead ("ptp4l -i swpX -2 -P -S -m", plus the equivalent command on=
- a
-> > > link partner)=2E
-> >=20
-> > have not done anything with l2 p2p yet, and no server running=2E=2E=2E=
-i'm not sure
-> > i can check this the right way=2E
->=20
-> Anyway, it doesn't have to be PTP, it can be literally any application
-> using a PF_PACKET socket to send sequence-numbered packets towards a
-> mt7530 port with the 01:80:c2:00:00:00 MAC DA, and using 2 tcpdump
-> instances on the 2 GMACs to check whether packets are received once or
-> twice=2E
->=20
-> If this is still too complicated, just send 5 actual BPDUs and see if
-> you receive them on both CPU ports:
->=20
-> mausezahn eth0 -b 01:80:c2:00:00:00 -c 5 -t bpdu
+On Mon, Apr 10, 2023 at 07:34:09PM +0200, Mirsad Goran Todorovac wrote:
+> I've ran "make kselftest" with vanilla torvalds tree 6.3-rc5 + your patch.
+> 
+> It failed two lines after "enslaved device client - ns-A IP" which passed OK.
+> 
+> Is this hang for 5 hours in selftests: net: fcnal-test.sh test, at the line
+> (please see to the end):
 
+It's not clear to me if the test failed for you or just got stuck. The
+output below is all "[ OK ]".
 
-hi i tried last approach on bananapi r64 as it is the one and only board i=
- have with mt7531 which has both gmacs connected to the switch=2E
+I ran the test with my patch and got:
 
-base is my 6=2E3-rc tree (modified r64 dts for having second gmac):
+Tests passed: 875
+Tests failed:   5
 
-https://github=2Ecom/frank-w/BPI-Router-Linux/commits/6=2E3-rc
+I don't believe the failures are related to my patch given the test
+doesn't use bonding.
 
-root@bpi-r64:~# ip a s eth0                                               =
-                                          =20
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1504 qdisc mq state UP grou=
-p default qlen 1000                       =20
-    link/ether 66:ea:04:18:30:6f brd ff:ff:ff:ff:ff:ff                    =
-                                          =20
-root@bpi-r64:~# ip a s eth1                                               =
-                                          =20
-3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP grou=
-p default qlen 1000                       =20
-    link/ether 86:97:05:8f:80:63 brd ff:ff:ff:ff:ff:ff                    =
-                                          =20
-    inet6 fe80::8497:5ff:fe8f:8063/64 scope link                          =
-                                          =20
-       valid_lft forever preferred_lft forever=20
+See more below.
 
-root@bpi-r64:~# tcpdump -i eth0 > eth0=2Elog &                            =
-                                            =20
-[1] 3774                                                                  =
-                                          =20
-                                                                          =
-                                          e
-listening on eth0, link-type NULL (BSD loopback), snapshot length 262144 b=
-ytes                                      =20
-root@bpi-r64:~# tcpdump -i eth1 > eth1=2Elog &                            =
-                                            =20
-[2] 3779                                                                  =
-                                          =20
-                                                                          =
-                                          e
-tcpdump: verbose output suppressed, use -v[v]=2E=2E=2E for full protocol d=
-ecode                                           =20
-listening on eth1, link-type EN10MB (Ethernet), snapshot length 262144 byt=
-es                                        =20
-root@bpi-r64:~# mausezahn eth0 -b 01:80:c2:00:00:00 -c 5 -t bpdu          =
-                                          =20
-0=2E00 seconds (30864 packets per second)                                 =
-                                            =20
-root@bpi-r64:~# killall tcpdump                                           =
-                                          =20
-5 packets captur[ 2981=2E315951] mtk_soc_eth 1b100000=2Eethernet eth1: lef=
-t promiscuous mode                            =20
-ed                                                                        =
-                                          =20
-5 packets received by filter                                              =
-                                          =20
-0 packets dropped by kernel                                               =
-                                          =20
-0 packets captured                                                        =
-                                          =20
-0 packets received by filter                                              =
-                                          =20
-0 packets dropped by kernel                                               =
-                                          =20
-[1]-  Done                    tcpdump -i eth0 > eth0=2Elog                =
-                                            =20
-[2]+  Done                    tcpdump -i eth1 > eth1=2Elog
+> 
+> # ###########################################################################
+> # IPv4 address binds
+> # ###########################################################################
+> # 
+> # 
+> # #################################################################
+> # No VRF
+> # 
+> # SYSCTL: net.ipv4.ping_group_range=0 2147483647
+> # 
+> # TEST: Raw socket bind to local address - ns-A IP                              [ OK ]
+> # TEST: Raw socket bind to local address after device bind - ns-A IP            [ OK ]
+> # TEST: Raw socket bind to local address - ns-A loopback IP                     [ OK ]
+> # TEST: Raw socket bind to local address after device bind - ns-A loopback IP   [ OK ]
+> # TEST: Raw socket bind to nonlocal address - nonlocal IP                       [ OK ]
+> # TEST: TCP socket bind to nonlocal address - nonlocal IP                       [ OK ]
+> # TEST: ICMP socket bind to nonlocal address - nonlocal IP                      [ OK ]
+> # TEST: ICMP socket bind to broadcast address - broadcast                       [ OK ]
+> # TEST: ICMP socket bind to multicast address - multicast                       [ OK ]
+> # TEST: TCP socket bind to local address - ns-A IP                              [ OK ]
+> # TEST: TCP socket bind to local address after device bind - ns-A IP            [ OK ]
+> # 
+> # #################################################################
+> # With VRF
+> # 
+> # SYSCTL: net.ipv4.ping_group_range=0 2147483647
+> # 
+> # TEST: Raw socket bind to local address - ns-A IP                              [ OK ]
+> # TEST: Raw socket bind to local address after device bind - ns-A IP            [ OK ]
+> # TEST: Raw socket bind to local address after VRF bind - ns-A IP               [ OK ]
+> # TEST: Raw socket bind to local address - VRF IP                               [ OK ]
+> # TEST: Raw socket bind to local address after device bind - VRF IP             [ OK ]
+> # TEST: Raw socket bind to local address after VRF bind - VRF IP                [ OK ]
+> # TEST: Raw socket bind to out of scope address after VRF bind - ns-A loopback IP  [ OK ]
+> # TEST: Raw socket bind to nonlocal address after VRF bind - nonlocal IP        [ OK ]
+> # TEST: TCP socket bind to nonlocal address after VRF bind - nonlocal IP        [ OK ]
+> # TEST: ICMP socket bind to nonlocal address after VRF bind - nonlocal IP       [ OK ]
+> # TEST: ICMP socket bind to broadcast address after VRF bind - broadcast        [ OK ]
+> # TEST: ICMP socket bind to multicast address after VRF bind - multicast        [ OK ]
+> # TEST: TCP socket bind to local address - ns-A IP                              [ OK ]
+> # TEST: TCP socket bind to local address after device bind - ns-A IP            [ OK ]
+> # TEST: TCP socket bind to local address - VRF IP                               [ OK ]
+> # TEST: TCP socket bind to local address after device bind - VRF IP             [ OK ]
+> # TEST: TCP socket bind to invalid local address for VRF - ns-A loopback IP     [ OK ]
+> # TEST: TCP socket bind to invalid local address for device bind - ns-A loopback IP  [ OK ]
+> # 
+> # ###########################################################################
+> # Run time tests - ipv4
+> # ###########################################################################
+> # 
+> # TEST: Device delete with active traffic - ping in - ns-A IP                   [ OK ]
+> # TEST: Device delete with active traffic - ping in - VRF IP                    [ OK ]
+> # TEST: Device delete with active traffic - ping out - ns-B IP                  [ OK ]
+> # TEST: TCP active socket, global server - ns-A IP                              [ OK ]
+> # TEST: TCP active socket, global server - VRF IP                               [ OK ]
+> # TEST: TCP active socket, VRF server - ns-A IP                                 [ OK ]
+> # TEST: TCP active socket, VRF server - VRF IP                                  [ OK ]
+> # TEST: TCP active socket, enslaved device server - ns-A IP                     [ OK ]
+> # TEST: TCP active socket, VRF client - ns-A IP                                 [ OK ]
+> # TEST: TCP active socket, enslaved device client - ns-A IP                     [ OK ]
+> # TEST: TCP active socket, global server, VRF client, local - ns-A IP           [ OK ]
+> # TEST: TCP active socket, global server, VRF client, local - VRF IP            [ OK ]
+> # TEST: TCP active socket, VRF server and client, local - ns-A IP               [ OK ]
+> # TEST: TCP active socket, VRF server and client, local - VRF IP                [ OK ]
+> # TEST: TCP active socket, global server, enslaved device client, local - ns-A IP  [ OK ]
+> # TEST: TCP active socket, VRF server, enslaved device client, local - ns-A IP  [ OK ]
+> # TEST: TCP active socket, enslaved device server and client, local - ns-A IP   [ OK ]
+> # TEST: TCP passive socket, global server - ns-A IP                             [ OK ]
+> # TEST: TCP passive socket, global server - VRF IP                              [ OK ]
+> # TEST: TCP passive socket, VRF server - ns-A IP                                [ OK ]
+> # TEST: TCP passive socket, VRF server - VRF IP                                 [ OK ]
+> # TEST: TCP passive socket, enslaved device server - ns-A IP                    [ OK ]
+> # TEST: TCP passive socket, VRF client - ns-A IP                                [ OK ]
+> # TEST: TCP passive socket, enslaved device client - ns-A IP                    [ OK ]
+> # TEST: TCP passive socket, global server, VRF client, local - ns-A IP          [ OK ]
+> 
+> Hope this helps.
+> 
+> I also have a iwlwifi DEADLOCK and I don't know if these should be reported independently.
+> (I don't think it is related to the patch.)
 
-root@bpi-r64:~# cat eth0=2Elog                                            =
-                                            =20
-20:04:47=2E124519 AF Unknown (25215488), length 60:                       =
-                                            =20
-        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=2E=
-0o=2E&BB=2E=2E=2E=2E                                          =20
-        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=2E=
-=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
-        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
-        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
-20:04:47=2E124555 AF Unknown (25215488), length 60:                       =
-                                            =20
-        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=2E=
-0o=2E&BB=2E=2E=2E=2E                                          =20
-        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=2E=
-=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
-        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
-        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
-20:04:47=2E124568 AF Unknown (25215488), length 60:                       =
-                                            =20
-        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=2E=
-0o=2E&BB=2E=2E=2E=2E                                          =20
-        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=2E=
-=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
-        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
-        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
-20:04:47=2E124580 AF Unknown (25215488), length 60:                       =
-                                            =20
-        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=2E=
-0o=2E&BB=2E=2E=2E=2E                                          =20
-        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=2E=
-=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
-        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
-        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
-20:04:47=2E124592 AF Unknown (25215488), length 60:                       =
-                                            =20
-        0x0000:  0000 66ea 0418 306f 0026 4242 0300 0000  =2E=2Ef=2E=2E=2E=
-0o=2E&BB=2E=2E=2E=2E                                          =20
-        0x0010:  0000 0000 66ea 0418 306f 0000 0000 0000  =2E=2E=2E=2Ef=2E=
-=2E=2E0o=2E=2E=2E=2E=2E=2E                                          =20
-        0x0020:  66ea 0418 306f 0000 0000 1400 0200 0f00  f=2E=2E=2E0o=2E=
-=2E=2E=2E=2E=2E=2E=2E=2E=2E                                          =20
-        0x0030:  0000 0000 0000 0000                      =2E=2E=2E=2E=2E=
-=2E=2E=2E                                                  =20
-                                                                          =
-                                          =20
-root@bpi-r64:~# cat eth1=2Elog                                            =
-                                            =20
-                                                                          =
-                                          =20
-root@bpi-r64:~#=20
+If the test got stuck, then it might be related to the deadlock in
+iwlwifi. Try running the test without iwlwifi and see if it helps. If
+not, I suggest starting a different thread about this issue.
 
-so it looks like packets are not duplicated
+Will submit the bonding patch over the weekend.
 
-regards Frank
+Thanks for testing
