@@ -2,70 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5C076E0952
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 10:52:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94C8F6E096B
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 10:54:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbjDMIv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 04:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
+        id S230286AbjDMIyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 04:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbjDMIv5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 04:51:57 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2E883C1
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 01:51:55 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id n203so2767469ybg.6
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 01:51:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681375915; x=1683967915;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WmQVzBedG9oryNVNnTmY98xDvO4146v3UKMId61ZBT0=;
-        b=hpCpQtqziG96sdwykuolRq/fQ/t6xqhP044LynIWYUHBRZUdeIaItVai/bS97jqTdp
-         kjUKt5yiSx5AWHwf7wjNDyQ1NfVKPlhQty7iKqdPn3EAMSHz0xDjPrAqJjstBsmfEMa5
-         AawG4nEB0Y1mEgrxIIgy5dhn03qggkxySSyJDTHUz3jAeF0yD95usW9Z+q/cscath6A8
-         SbFpIJqFhQ4do1RGlV9YKwO6xgiqxggC8kH2goMRoaMrjIRVM11HmGYVGM83VzyD7qyG
-         qnxhL7WcPZXNUWuB1hJ3YLgXg2d9C9F/WgrEf8uFzigY2XoakY4XwjC16tIUCFgV/jev
-         jZtw==
+        with ESMTP id S230301AbjDMIyJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 04:54:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C08100
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 01:53:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681376007;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=c/ayCgB4BHYU53MBuC5QPpg8jAmYuyUSUdqQ4gE9310=;
+        b=KzXAIoD1JCci8OpQ3Ye/CBwJqw9DCfK5ew8uyx/t7Qj6ed8NSn0P+a44eqURROHX+IEu6i
+        M0PeKgLFEA10YLSpLZSDwoaEKgpvtz+pXaYbMNMWPdTG78JcEZObQGAZgrTV78KNeo821V
+        EW7214acpXvE7jwGdiFrOWNu1CJECCI=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-488-YiT6tueQO4u14I3-V0WfPg-1; Thu, 13 Apr 2023 04:53:25 -0400
+X-MC-Unique: YiT6tueQO4u14I3-V0WfPg-1
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-74a904f38f3so94682985a.1
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 01:53:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681375915; x=1683967915;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=WmQVzBedG9oryNVNnTmY98xDvO4146v3UKMId61ZBT0=;
-        b=RYa7t3jLiwvo4oMLNN5m/thE4OakmO+PDd7QzCJvwkNw1JpMTRfzHim13emICZQTV/
-         Z1UDxYLBuY2OUo0L/Msm9+H1KNmC8MZBIKXBQWrYiooRGoGiyvewxqS3ZXTUZDT9v3Ad
-         qk+ZC9xKu4q3mN0lHRxOoh4LmVQoCsHA5vy02MXiP/HR9/s9zIHN01Ivulr9qkAy0UoG
-         sfsylBzc6w1sr7hZB2S2WsOTVTtwx+V+6uiUSEdPTAmLMkICeewycVhayMW6/q48urCs
-         KnK+2QuNHTJ0r7exuj+nBLNkxnUUVRpBO1ixgRkklb7YYDk7vcpFPqF74Wp/grQdOkIJ
-         YrWg==
-X-Gm-Message-State: AAQBX9fJN8dPaQL8zvqnr/xA4mO+/RD268YeInoupWL/3U7GyemBW4/n
-        ghGZvU2WGwIsIdNExzhWSnPg8EAvhyYTwgNlRvwwtw==
-X-Google-Smtp-Source: AKy350bK/E9k9nCepQZcV45AWNvKvZtfUhkZXWYXu5lY4XrY2sHFTLBGrxxpizmVofRTIuiHD9V1ZSqwsfsX8u9jXb4=
-X-Received: by 2002:a25:cfce:0:b0:b75:8ac3:d5da with SMTP id
- f197-20020a25cfce000000b00b758ac3d5damr782892ybg.4.1681375914883; Thu, 13 Apr
- 2023 01:51:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230413042605.895677-1-kuba@kernel.org> <20230413042605.895677-2-kuba@kernel.org>
- <4447f0d2-dd78-573a-6d89-aa1e478ea46b@huawei.com>
-In-Reply-To: <4447f0d2-dd78-573a-6d89-aa1e478ea46b@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 13 Apr 2023 10:51:43 +0200
-Message-ID: <CANn89iJkg=B0D23q_evwqjRVvm0kcNA=xvSRHVxjgeR00HgEjA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/3] net: skb: plumb napi state thru skb
- freeing paths
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, pabeni@redhat.com, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, alexander.duyck@gmail.com,
-        Tariq Toukan <tariqt@nvidia.com>
+        d=1e100.net; s=20221208; t=1681376005; x=1683968005;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=c/ayCgB4BHYU53MBuC5QPpg8jAmYuyUSUdqQ4gE9310=;
+        b=eV/5AyVQxAzdIaLTkAb0Eue6O9OzDMiuIXJEsrdN6fxs1dURVGsIogPzMSIiSznwgH
+         7xA1VKsReuSVSVn+woXTOsSjikfbA6WKYwTxw+m4nsnuPFIigs94XA1yF/eqkVRKgmCf
+         ewRXudLRcBB0TutVcorJtXBWlvsxyivkRWA6e638hJF5wJSxgJW9nlo45rjeqOjl+n2/
+         qvqAqbpBJn0eFqW84BkxfYLCcFOcat+iVs6ownjdmUeGG6h5cBOxINQxYv17zvNRWBUT
+         2dNqjjwAbOX9R9DyzsZhkPzr80AfrPT70qc0PQjashMJNQDwyxHqSwdCxG5h7mWp2yVZ
+         1rHA==
+X-Gm-Message-State: AAQBX9fU+1cROjDASdQLOXZSw0hGmrGCKDckVcvry4p9s1l+F0nox9DS
+        FNCeT5cHhu8WEvmcFT9UfV2vl+WERRppQAjLiTKxjthMWuVH8MFyckSD3LUGiHDLETrrM0N/N7d
+        LBiGaYKyaF06RpQn2
+X-Received: by 2002:a05:6214:529b:b0:5ef:4436:b96f with SMTP id kj27-20020a056214529b00b005ef4436b96fmr1909088qvb.5.1681376004938;
+        Thu, 13 Apr 2023 01:53:24 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bIf8zkZ3pMxXqMlJegZ1MjfzBxJ1bTiipmj3lFDsmkwp8f+S7BMxMGzVhmg+UPdwJAGffBQg==
+X-Received: by 2002:a05:6214:529b:b0:5ef:4436:b96f with SMTP id kj27-20020a056214529b00b005ef4436b96fmr1909070qvb.5.1681376004697;
+        Thu, 13 Apr 2023 01:53:24 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-232-183.dyn.eolo.it. [146.241.232.183])
+        by smtp.gmail.com with ESMTPSA id lb6-20020a056214318600b005e16003edc9sm280517qvb.104.2023.04.13.01.53.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Apr 2023 01:53:24 -0700 (PDT)
+Message-ID: <9a56509f598e4c65584ceb8b331b784d6ccdafda.camel@redhat.com>
+Subject: Re: [net-next Patch v9 0/6] octeontx2-pf: HTB offload support
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, willemdebruijn.kernel@gmail.com,
+        andrew@lunn.ch, sgoutham@marvell.com, lcherian@marvell.com,
+        gakula@marvell.com, jerinj@marvell.com, sbhatta@marvell.com,
+        naveenm@marvell.com, edumazet@google.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, maxtram95@gmail.com,
+        corbet@lwn.net
+Date:   Thu, 13 Apr 2023 10:53:20 +0200
+In-Reply-To: <20230412182756.6b1d28c6@kernel.org>
+References: <20230411090359.5134-1-hkelam@marvell.com>
+         <20230412182756.6b1d28c6@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,17 +86,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 9:49=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei.co=
-m> wrote:
->
-> Maybe I missed something obvious about netpoll here.
-> Does that mean the "normal NAPI context" and "not normal NAPI context"
-> will call napi->poll() concurrently with different budget? Doesn't
-> that mean two different contexts may do the tx completion concurrently?
+On Wed, 2023-04-12 at 18:27 -0700, Jakub Kicinski wrote:
+> On Tue, 11 Apr 2023 14:33:53 +0530 Hariprasad Kelam wrote:
+> > octeontx2 silicon and CN10K transmit interface consists of five
+> > transmit levels starting from MDQ, TL4 to TL1. Once packets are
+> > submitted to MDQ, hardware picks all active MDQs using strict
+> > priority, and MDQs having the same priority level are chosen using
+> > round robin. Each packet will traverse MDQ, TL4 to TL1 levels.
+> > Each level contains an array of queues to support scheduling and
+> > shaping.
+>=20
+>=20
+> Looks like Jake's comments from v7 apply.
 
-Please take a look at netpoll code:
-netpoll_poll_lock, poll_napi() and poll_one_napi()
+Just to be more verbose, the above means clarifying the commit message
+for patch 4/6 and try factor into separate helpers some code of
+function __otx2_qos_txschq_cfg() in patch 6/6.
 
-> Does it break the single-producer single-consumer assumption of tx queue?
+Thanks,
 
-We do not think so.
+Paolo
+
