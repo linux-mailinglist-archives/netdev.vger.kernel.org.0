@@ -2,58 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B12B96E13F9
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 20:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5524D6E146F
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 20:43:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229994AbjDMSTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 14:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
+        id S230182AbjDMSne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 14:43:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229933AbjDMSTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 14:19:49 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3B4E6F;
-        Thu, 13 Apr 2023 11:19:48 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 857315C00DF;
-        Thu, 13 Apr 2023 14:19:47 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Thu, 13 Apr 2023 14:19:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1681409987; x=1681496387; bh=Kh4f8LOv/N05w
-        e0ingeowtI9oIpu6/dYXCFm4olQziw=; b=GtkijS530SN0bfZi1gNOnrfH3GICi
-        NQJ3rNhhFMefopocSkog5wqCHL9fOc4MIVdYAxi9Zb6SFBcZKRpqNSS1M3x9EI2m
-        xe7iEXn80cY7TzfrpayDmRVc51E3wQdjasJ46kW9D0iYNOvxpJK7R8KXu8e83Nty
-        +AsMNIg3locCcAOHZa6WE5Unkuq5c0THjPXpJpgw1qJYNo+iOddRaum0Xez7aBxp
-        11rKFyEnpS4c3JB8p5zMw1CNJs8DjX//mbEIrqrIJFMemYwbNR9z0lJq/gqqCqBn
-        WZDqiA54yynqyEvn+MpDXZM5flNEUDiE4fPL0u+RwXEFhfURTxy6ajgzg==
-X-ME-Sender: <xms:wkc4ZPiYE6uPOml8mrvjMZWki9SNq1cbmq-YGm2zEHbXOiOvC_9dRQ>
-    <xme:wkc4ZMANXc91d213JjWYnYL1WgP33sQ501YdHzjrv0M6v95GblpLbJDlNabRhbsP9
-    zy9SDaEVH4TZ-8>
-X-ME-Received: <xmr:wkc4ZPGyWQkxYuYBAq-d_Fp4w9YMzwz0K-tDWEPrMvBPHGpfDYj2H4U828Zx1fycFVZ-0AUfrqcFZwpWOPpioDyi3GM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdekkedguddvhecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeevieevgfeuleejgfeghefhuddviefhgeejhfehgeekgeevfefggefgudef
-    hfelgfenucffohhmrghinhepihhpvhegrdhpihhnghenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:wkc4ZMQiBcst42AZLOfVV6OE_SNPj9OAMsKmQYFSS1uufjgycRS1sg>
-    <xmx:wkc4ZMypX0-Ryq4nZKKLQaUtrZBARAvK8KBkkX05VlbmjgrujwfBww>
-    <xmx:wkc4ZC4wP69ORHXfRFEhsD2LRhAkRkcc3if8ViWSfZqqmatZzy8k8g>
-    <xmx:w0c4ZAlCdU3UHHFCZquoxV7TCjtNKBaqG6-G6fG63MnLWbEmCjETLg>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 13 Apr 2023 14:19:45 -0400 (EDT)
-Date:   Thu, 13 Apr 2023 21:19:41 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230209AbjDMSn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 14:43:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E2397AB7
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 11:42:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681411341;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jFCzXhj5hVtVaLfINs11NiVB1lGjSKJOD4vnQMSSjnY=;
+        b=AX2iIZQXSOPAR+x0qrZFWut/mxIyWKFG3OFwozxG1MBT71D29wEDt9X8L5RfoUs3zU/W0Z
+        71YB2edpUONnyay4jskZ9WcsyT+ac1wprlCmVwvQZw/xQ7aC0yS/LqmHenq1zZR4l/K24V
+        2lvEoLqDpxF/jPuQJZgWebgzJrahTtk=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-604-hwFv3mmLOpaI1nHNzZ6hiQ-1; Thu, 13 Apr 2023 14:42:20 -0400
+X-MC-Unique: hwFv3mmLOpaI1nHNzZ6hiQ-1
+Received: by mail-ed1-f70.google.com with SMTP id 4fb4d7f45d1cf-5048993669bso2123129a12.0
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 11:42:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681411338; x=1684003338;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jFCzXhj5hVtVaLfINs11NiVB1lGjSKJOD4vnQMSSjnY=;
+        b=JAmUsRBeiFLDhOi5WqlFL1MaKWRvV/7TK8t5mQNCsexxqJ8vrdvHsh0ZzU7Lp3wbsL
+         IZKw6IvhOl5N3UBLD5v0lymE+geLgvNjGRQFa41sK6rmpSlP1EzJDLUCqTyjCtp5Lf9m
+         oqP34mVAOPHOKY+8f7yCLJBW9nKO6dN8UBDFG1obPlwJst2yc1jzvnKK1S27B+hqeYQM
+         d+tXiWbTj6xJLbaS2/iHFljyKbelWwQa9DboTMZ+kIPCu9U+Zw2dydOTKb6KzBKVaa3B
+         s1H4hZ78m4SkHHpr+IryObl+61TDrjYaCI1/kg6Hh+GH4v5YY8kwUNnoYV+D0xRW+Bue
+         1zSA==
+X-Gm-Message-State: AAQBX9fXy0YU1jJtDB+XLKY6pBqiTJkORnO/H/pP/zbxHKbG1aRyue5L
+        W1JefVg03N3jROqwhB1MTN4k6Vrn5XlJfm3plBgzn3R0SAlPrzdXtFzGoTF47+jRradtMiAdhkk
+        j9GdpaVYMdTgIqOQ8
+X-Received: by 2002:aa7:ce06:0:b0:501:d917:d52 with SMTP id d6-20020aa7ce06000000b00501d9170d52mr3760445edv.8.1681411338589;
+        Thu, 13 Apr 2023 11:42:18 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YYifWUgndL9IzmM9sB+EmC6luF5yXBi1Z7Pu0T2Ye4b4wgDVquW2ymvsXbk5mm7Z5uz0Se4A==
+X-Received: by 2002:aa7:ce06:0:b0:501:d917:d52 with SMTP id d6-20020aa7ce06000000b00501d9170d52mr3760426edv.8.1681411338239;
+        Thu, 13 Apr 2023 11:42:18 -0700 (PDT)
+Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
+        by smtp.gmail.com with ESMTPSA id d12-20020a50fe8c000000b00504c33675cesm1178071edt.35.2023.04.13.11.42.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Apr 2023 11:42:17 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <07a88087-bee8-e549-c069-63d52268aef1@redhat.com>
+Date:   Thu, 13 Apr 2023 20:42:16 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Cc:     brouer@redhat.com, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, xdp-hints@xdp-project.net,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net 1/1] igc: read before write to SRRCTL register
+Content-Language: en-US
+To:     Song Yoong Siang <yoong.siang.song@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
@@ -61,141 +79,110 @@ Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Petr Machata <petrm@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        Xin Long <lucien.xin@gmail.com>, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [BUG] [FIXED: TESTED] kmemleak in rtnetlink_rcv() triggered by
- selftests/drivers/net/team in build cdc9718d5e59
-Message-ID: <ZDhHvUrkua8gLMfZ@shredder>
-References: <78a8a03b-6070-3e6b-5042-f848dab16fb8@alu.unizg.hr>
- <ZDLyZX545Cw+aLhE@shredder>
- <67b3fa90-ad29-29f1-e6f3-fb674d255a1e@alu.unizg.hr>
- <7650b2eb-0aee-a2b0-2e64-c9bc63210f67@alu.unizg.hr>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7650b2eb-0aee-a2b0-2e64-c9bc63210f67@alu.unizg.hr>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Vedang Patel <vedang.patel@intel.com>,
+        Jithu Joseph <jithu.joseph@intel.com>,
+        Andre Guedes <andre.guedes@intel.com>,
+        Stanislav Fomichev <sdf@google.com>
+References: <20230413151222.1864307-1-yoong.siang.song@intel.com>
+In-Reply-To: <20230413151222.1864307-1-yoong.siang.song@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 10, 2023 at 07:34:09PM +0200, Mirsad Goran Todorovac wrote:
-> I've ran "make kselftest" with vanilla torvalds tree 6.3-rc5 + your patch.
+
+
+On 13/04/2023 17.12, Song Yoong Siang wrote:
+> igc_configure_rx_ring() function will be called as part of XDP program
+> setup. If Rx hardware timestamp is enabled prio to XDP program setup,
+> this timestamp enablement will be overwritten when buffer size is
+> written into SRRCTL register.
 > 
-> It failed two lines after "enslaved device client - ns-A IP" which passed OK.
+
+Ah, I believe I have hit this bug with my igc patches.
+Thanks for fixing.
+
+> Thus, this commit read the register value before write to SRRCTL
+> register. This commit is tested by using xdp_hw_metadata bpf selftest
+> tool. The tool enables Rx hardware timestamp and then attach XDP program
+> to igc driver. It will display hardware timestamp of UDP packet with
+> port number 9092. Below are detail of test steps and results.
+>
+> Command on DUT:
+>    sudo ./xdp_hw_metadata <interface name>
+>
+
+Why port 9092 ?
+The ./xdp_hw_metadata prog will redirect port 9091
+
+
+> Command on Link Partner:
+>    echo -n skb | nc -u -q1 <destination IPv4 addr> 9092
 > 
-> Is this hang for 5 hours in selftests: net: fcnal-test.sh test, at the line
-> (please see to the end):
 
-It's not clear to me if the test failed for you or just got stuck. The
-output below is all "[ OK ]".
+Again port 9092 ?
 
-I ran the test with my patch and got:
+> Result before this patch:
+>    skb hwtstamp is not found!
+> 
+> Result after this patch:
+>    found skb hwtstamp = 1677762212.590696226
 
-Tests passed: 875
-Tests failed:   5
+I usually use this cmd to see if number is sane:
 
-I don't believe the failures are related to my patch given the test
-doesn't use bonding.
+$ date -d @1677762212
+2023-03-02T14:03:32 CET
 
-See more below.
 
 > 
-> # ###########################################################################
-> # IPv4 address binds
-> # ###########################################################################
-> # 
-> # 
-> # #################################################################
-> # No VRF
-> # 
-> # SYSCTL: net.ipv4.ping_group_range=0 2147483647
-> # 
-> # TEST: Raw socket bind to local address - ns-A IP                              [ OK ]
-> # TEST: Raw socket bind to local address after device bind - ns-A IP            [ OK ]
-> # TEST: Raw socket bind to local address - ns-A loopback IP                     [ OK ]
-> # TEST: Raw socket bind to local address after device bind - ns-A loopback IP   [ OK ]
-> # TEST: Raw socket bind to nonlocal address - nonlocal IP                       [ OK ]
-> # TEST: TCP socket bind to nonlocal address - nonlocal IP                       [ OK ]
-> # TEST: ICMP socket bind to nonlocal address - nonlocal IP                      [ OK ]
-> # TEST: ICMP socket bind to broadcast address - broadcast                       [ OK ]
-> # TEST: ICMP socket bind to multicast address - multicast                       [ OK ]
-> # TEST: TCP socket bind to local address - ns-A IP                              [ OK ]
-> # TEST: TCP socket bind to local address after device bind - ns-A IP            [ OK ]
-> # 
-> # #################################################################
-> # With VRF
-> # 
-> # SYSCTL: net.ipv4.ping_group_range=0 2147483647
-> # 
-> # TEST: Raw socket bind to local address - ns-A IP                              [ OK ]
-> # TEST: Raw socket bind to local address after device bind - ns-A IP            [ OK ]
-> # TEST: Raw socket bind to local address after VRF bind - ns-A IP               [ OK ]
-> # TEST: Raw socket bind to local address - VRF IP                               [ OK ]
-> # TEST: Raw socket bind to local address after device bind - VRF IP             [ OK ]
-> # TEST: Raw socket bind to local address after VRF bind - VRF IP                [ OK ]
-> # TEST: Raw socket bind to out of scope address after VRF bind - ns-A loopback IP  [ OK ]
-> # TEST: Raw socket bind to nonlocal address after VRF bind - nonlocal IP        [ OK ]
-> # TEST: TCP socket bind to nonlocal address after VRF bind - nonlocal IP        [ OK ]
-> # TEST: ICMP socket bind to nonlocal address after VRF bind - nonlocal IP       [ OK ]
-> # TEST: ICMP socket bind to broadcast address after VRF bind - broadcast        [ OK ]
-> # TEST: ICMP socket bind to multicast address after VRF bind - multicast        [ OK ]
-> # TEST: TCP socket bind to local address - ns-A IP                              [ OK ]
-> # TEST: TCP socket bind to local address after device bind - ns-A IP            [ OK ]
-> # TEST: TCP socket bind to local address - VRF IP                               [ OK ]
-> # TEST: TCP socket bind to local address after device bind - VRF IP             [ OK ]
-> # TEST: TCP socket bind to invalid local address for VRF - ns-A loopback IP     [ OK ]
-> # TEST: TCP socket bind to invalid local address for device bind - ns-A loopback IP  [ OK ]
-> # 
-> # ###########################################################################
-> # Run time tests - ipv4
-> # ###########################################################################
-> # 
-> # TEST: Device delete with active traffic - ping in - ns-A IP                   [ OK ]
-> # TEST: Device delete with active traffic - ping in - VRF IP                    [ OK ]
-> # TEST: Device delete with active traffic - ping out - ns-B IP                  [ OK ]
-> # TEST: TCP active socket, global server - ns-A IP                              [ OK ]
-> # TEST: TCP active socket, global server - VRF IP                               [ OK ]
-> # TEST: TCP active socket, VRF server - ns-A IP                                 [ OK ]
-> # TEST: TCP active socket, VRF server - VRF IP                                  [ OK ]
-> # TEST: TCP active socket, enslaved device server - ns-A IP                     [ OK ]
-> # TEST: TCP active socket, VRF client - ns-A IP                                 [ OK ]
-> # TEST: TCP active socket, enslaved device client - ns-A IP                     [ OK ]
-> # TEST: TCP active socket, global server, VRF client, local - ns-A IP           [ OK ]
-> # TEST: TCP active socket, global server, VRF client, local - VRF IP            [ OK ]
-> # TEST: TCP active socket, VRF server and client, local - ns-A IP               [ OK ]
-> # TEST: TCP active socket, VRF server and client, local - VRF IP                [ OK ]
-> # TEST: TCP active socket, global server, enslaved device client, local - ns-A IP  [ OK ]
-> # TEST: TCP active socket, VRF server, enslaved device client, local - ns-A IP  [ OK ]
-> # TEST: TCP active socket, enslaved device server and client, local - ns-A IP   [ OK ]
-> # TEST: TCP passive socket, global server - ns-A IP                             [ OK ]
-> # TEST: TCP passive socket, global server - VRF IP                              [ OK ]
-> # TEST: TCP passive socket, VRF server - ns-A IP                                [ OK ]
-> # TEST: TCP passive socket, VRF server - VRF IP                                 [ OK ]
-> # TEST: TCP passive socket, enslaved device server - ns-A IP                    [ OK ]
-> # TEST: TCP passive socket, VRF client - ns-A IP                                [ OK ]
-> # TEST: TCP passive socket, enslaved device client - ns-A IP                    [ OK ]
-> # TEST: TCP passive socket, global server, VRF client, local - ns-A IP          [ OK ]
+> Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
+> Cc: <stable@vger.kernel.org> # 5.14+
+> Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+> ---
+>   drivers/net/ethernet/intel/igc/igc_base.h | 7 +++++--
+>   drivers/net/ethernet/intel/igc/igc_main.c | 5 ++++-
+>   2 files changed, 9 insertions(+), 3 deletions(-)
 > 
-> Hope this helps.
-> 
-> I also have a iwlwifi DEADLOCK and I don't know if these should be reported independently.
-> (I don't think it is related to the patch.)
+> diff --git a/drivers/net/ethernet/intel/igc/igc_base.h b/drivers/net/ethernet/intel/igc/igc_base.h
+> index 7a992befca24..b95007d51d13 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_base.h
+> +++ b/drivers/net/ethernet/intel/igc/igc_base.h
+> @@ -87,8 +87,11 @@ union igc_adv_rx_desc {
+>   #define IGC_RXDCTL_SWFLUSH		0x04000000 /* Receive Software Flush */
+>   
+>   /* SRRCTL bit definitions */
+> -#define IGC_SRRCTL_BSIZEPKT_SHIFT		10 /* Shift _right_ */
+> -#define IGC_SRRCTL_BSIZEHDRSIZE_SHIFT		2  /* Shift _left_ */
+> +#define IGC_SRRCTL_BSIZEPKT_MASK	GENMASK(6, 0)
+> +#define IGC_SRRCTL_BSIZEPKT_SHIFT	10 /* Shift _right_ */
+> +#define IGC_SRRCTL_BSIZEHDRSIZE_MASK	GENMASK(13, 8)
+> +#define IGC_SRRCTL_BSIZEHDRSIZE_SHIFT	2  /* Shift _left_ */
+> +#define IGC_SRRCTL_DESCTYPE_MASK	GENMASK(27, 25)
+>   #define IGC_SRRCTL_DESCTYPE_ADV_ONEBUF	0x02000000
+>   
+>   #endif /* _IGC_BASE_H */
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index 25fc6c65209b..de7b21c2ccd6 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -641,7 +641,10 @@ static void igc_configure_rx_ring(struct igc_adapter *adapter,
+>   	else
+>   		buf_size = IGC_RXBUFFER_2048;
+>   
+> -	srrctl = IGC_RX_HDR_LEN << IGC_SRRCTL_BSIZEHDRSIZE_SHIFT;
+> +	srrctl = rd32(IGC_SRRCTL(reg_idx));
+> +	srrctl &= ~(IGC_SRRCTL_BSIZEPKT_MASK | IGC_SRRCTL_BSIZEHDRSIZE_MASK |
+> +		  IGC_SRRCTL_DESCTYPE_MASK);
+> +	srrctl |= IGC_RX_HDR_LEN << IGC_SRRCTL_BSIZEHDRSIZE_SHIFT;
+>   	srrctl |= buf_size >> IGC_SRRCTL_BSIZEPKT_SHIFT;
+>   	srrctl |= IGC_SRRCTL_DESCTYPE_ADV_ONEBUF;
+>   
 
-If the test got stuck, then it might be related to the deadlock in
-iwlwifi. Try running the test without iwlwifi and see if it helps. If
-not, I suggest starting a different thread about this issue.
-
-Will submit the bonding patch over the weekend.
-
-Thanks for testing
