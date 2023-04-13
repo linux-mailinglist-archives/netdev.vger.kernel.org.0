@@ -2,204 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D08566E1265
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:35:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCE776E1270
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 18:37:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbjDMQfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 12:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
+        id S229881AbjDMQhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 12:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjDMQf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:35:28 -0400
-Received: from h2.cmg1.smtp.forpsi.com (h2.cmg1.smtp.forpsi.com [81.2.195.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D56212C
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 09:35:26 -0700 (PDT)
-Received: from lenoch ([91.218.190.200])
-        by cmgsmtp with ESMTPSA
-        id mzuspFe6lPm6CmzuupKtzp; Thu, 13 Apr 2023 18:35:25 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=triops.cz; s=f2019;
-        t=1681403725; bh=gHenQshbY0u2f0pxY6xksdItPVfGpGXcJjifEKf5Dzw=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=hdZuTF737iqibSDphsTKK3QTE0ZIiHvw/ueRmlQNoj/Vs7esWLI1ArFMxcQA4DCXY
-         tKMS0I1HvEubMlRv5f+EZoLKtV69P4LIYyW2sRAc869I+CV2uBZdO5Gb7/RxY/ykCX
-         lqKnWPzjM18abuhxt1TMeixaCyQFQqJVhhGqqUHkLjjSTek7yN24JAtAtYGowKAl4r
-         b1JiKvhRur0JPAbmtOCDdkHKa8f8IKngp3YnLfWdbz6gcix9muBXmRQKnXmiDNpOJs
-         FfRR3IlDFxpYWIQ7jh0MP/2oDIqmC8jkw+wspvxITje2AF8CQcdfEc6zofKZyM6RaN
-         A09rrQiU2VkyA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=triops.cz; s=f2019;
-        t=1681403725; bh=gHenQshbY0u2f0pxY6xksdItPVfGpGXcJjifEKf5Dzw=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=hdZuTF737iqibSDphsTKK3QTE0ZIiHvw/ueRmlQNoj/Vs7esWLI1ArFMxcQA4DCXY
-         tKMS0I1HvEubMlRv5f+EZoLKtV69P4LIYyW2sRAc869I+CV2uBZdO5Gb7/RxY/ykCX
-         lqKnWPzjM18abuhxt1TMeixaCyQFQqJVhhGqqUHkLjjSTek7yN24JAtAtYGowKAl4r
-         b1JiKvhRur0JPAbmtOCDdkHKa8f8IKngp3YnLfWdbz6gcix9muBXmRQKnXmiDNpOJs
-         FfRR3IlDFxpYWIQ7jh0MP/2oDIqmC8jkw+wspvxITje2AF8CQcdfEc6zofKZyM6RaN
-         A09rrQiU2VkyA==
-Date:   Thu, 13 Apr 2023 18:35:22 +0200
-From:   Ladislav Michl <oss-lists@triops.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: Re: [PATCH 0/3] staging: octeon: Convert to use phylink
-Message-ID: <ZDgvSoT/vdJeI0FS@lenoch>
-References: <ZDgNexVTEfyGo77d@lenoch>
- <b70d9361-c689-4837-bc9d-8e800cda380c@lunn.ch>
+        with ESMTP id S229611AbjDMQhX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 12:37:23 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CA47D81
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 09:37:21 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id h24-20020a17090a9c1800b002404be7920aso15811664pjp.5
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 09:37:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1681403841; x=1683995841;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6CA8xH6xpzGSTaAfB+7bPIElYhjC21sBnWRkmsqdd9Y=;
+        b=dBm+oZhfqAnUccrZfkosPyJnN/qdA3MUvkXrUieofb/LvXfMtMtS6IVplgPDmvPatm
+         s8BNUY4XKCnJVsDRsR8WgjUs+mnI6nMpM2vTNxFSFoIktE+WZGEJzYhGepK9VZwx89Z2
+         rQOQ64NJgSLV4JYPWWm9Kqeza4sAjwCh38oHRKpgY/vwygh3KTEZ9JjzmymnTQd5xBvL
+         l1UyEtRhXd+N7cnLTobfakrRu6ZAhI5szGVEntiVOLihqTZjTyivFJuhPibP5a7rpg0p
+         Xmv+T6bcuc/Kl/gNWz0I++y5Nrkxeqb5i4HM4bDieEQUBJGv6iYlq+MlkIJ4EymTplrF
+         1ewg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681403841; x=1683995841;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6CA8xH6xpzGSTaAfB+7bPIElYhjC21sBnWRkmsqdd9Y=;
+        b=NNEKPrjEiYcwtIlxq+VDxk+ejaT2yLioimCeUb95pe+zsuos8JJ0p9S8ELBLvFLC7H
+         r6Cvxreuk3kxnUn64jEtW/opvcPxFraDJUaTbuOt19n5/WSUCjG/4aRyjHO6nW3L52YP
+         qTxG6Dw3ShCho5qq3ehnhdHGzWbxvJDmvYqW+56uscTmCDGbs4PoeDQ2XGkxDXoIi9vo
+         GSClRosUUs6bJxh2+LGWmpfCH8CF88oLv9CMxwbDKNXjXOxysZf5fAuBFKUWBbeD+u/Q
+         AcRFS3hsP7J+blu8Ku/5kmeCCYV/hHZZA1B1GVUvoZLARGxHSbPlDZlVTNs5Sx1piS2z
+         7HDw==
+X-Gm-Message-State: AAQBX9dTWLRqbiq894hm+wzlKKNcNT75saP4eSYA2EK+5aE6N/Beyf3p
+        rduHwTV6JTkRUhA68N8HYhpJnsj8bBAobNrmT3SxbA==
+X-Google-Smtp-Source: AKy350ZbTcGWihbsBVI92ZrnU8vczpkwpChkP34j3DXn6CSEnqLGjswcFPVAGFEm+BT0tvAQpP1VH4EKqIGHsFBDY0A=
+X-Received: by 2002:a17:90a:55cb:b0:246:6065:d2b5 with SMTP id
+ o11-20020a17090a55cb00b002466065d2b5mr722784pjm.9.1681403840901; Thu, 13 Apr
+ 2023 09:37:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <b70d9361-c689-4837-bc9d-8e800cda380c@lunn.ch>
-X-CMAE-Envelope: MS4wfHsZGoDGjiBpBIGamKWRNqQtisNQIy98z7M13vI/Jv43QfqnQ4evFOvl0Uo7XuvXGVrCqRJPdLL3S+nRri9Sbyi5rcOkmZTGmAYXvS++pmLo89vSE0Yp
- bjBQUFs7NB078hP7EYaWCwwRGmXWifeyirvkFLCD0Iiro6MS0fFT0BBMFgIzRaVX8pyDvvjioCvYb6G6uGL6cX5KOqHAyqHSqxhaotOVq7e34SO9mE+j+cm5
- UVDkXlblL0skvOTedmJ95yEia5mRJXDhziIJvaUE0kfVEsuXU5ufyssIrBC8p7AWpAO2R1/2SPdyPduBgvKp/A==
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230413133355.350571-1-aleksandr.mikhalitsyn@canonical.com>
+ <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com>
+ <CANn89iLuLkUvX-dDC=rJhtFcxjnVmfn_-crOevbQe+EjaEDGbg@mail.gmail.com> <CAEivzxcEhfLttf0VK=NmHdQxF7CRYXNm6NwUVx6jx=-u2k-T6w@mail.gmail.com>
+In-Reply-To: <CAEivzxcEhfLttf0VK=NmHdQxF7CRYXNm6NwUVx6jx=-u2k-T6w@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Thu, 13 Apr 2023 09:37:09 -0700
+Message-ID: <CAKH8qBt+xPygUVPMUuzbi1HCJuxc4gYOdU6JkrFmSouRQgoG6g@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 2/4] net: socket: add sockopts blacklist for
+ BPF cgroup hook
+To:     Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Cc:     Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Thu, Apr 13, 2023 at 7:38=E2=80=AFAM Aleksandr Mikhalitsyn
+<aleksandr.mikhalitsyn@canonical.com> wrote:
+>
+> On Thu, Apr 13, 2023 at 4:22=E2=80=AFPM Eric Dumazet <edumazet@google.com=
+> wrote:
+> >
+> > On Thu, Apr 13, 2023 at 3:35=E2=80=AFPM Alexander Mikhalitsyn
+> > <aleksandr.mikhalitsyn@canonical.com> wrote:
+> > >
+> > > During work on SO_PEERPIDFD, it was discovered (thanks to Christian),
+> > > that bpf cgroup hook can cause FD leaks when used with sockopts which
+> > > install FDs into the process fdtable.
+> > >
+> > > After some offlist discussion it was proposed to add a blacklist of
+> >
+> > We try to replace this word by either denylist or blocklist, even in ch=
+angelogs.
+>
+> Hi Eric,
+>
+> Oh, I'm sorry about that. :( Sure.
+>
+> >
+> > > socket options those can cause troubles when BPF cgroup hook is enabl=
+ed.
+> > >
+> >
+> > Can we find the appropriate Fixes: tag to help stable teams ?
+>
+> Sure, I will add next time.
+>
+> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+>
+> I think it's better to add Stanislav Fomichev to CC.
 
-On Thu, Apr 13, 2023 at 05:45:13PM +0200, Andrew Lunn wrote:
-> Hi Ladislav
-> 
-> For phylink questions, it is a good idea to Cc: the phylink
-> Maintainer. And for general PHY problems, Cc: the phy Maintainers.
-> 
-> On Thu, Apr 13, 2023 at 04:11:07PM +0200, Ladislav Michl wrote:
-> > The purpose of this patches is to provide support for SFP cage to
-> > Octeon ethernet driver. This is tested with following DT snippet:
-> > 
-> > 	smi0: mdio@1180000001800 {
-> > 		compatible = "cavium,octeon-3860-mdio";
-> > 		#address-cells = <1>;
-> > 		#size-cells = <0>;
-> > 		reg = <0x11800 0x00001800 0x0 0x40>;
-> > 
-> > 		/* QSGMII PHY */
-> > 		phy0: ethernet-phy@0 {
-> > 			compatible = "marvell,88e154", "ethernet-phy-ieee802.3-c22";
-> 
-> Please don't use a compatible for the specific PHY. In fact,
-> compatibles are only used for things which are not PHYs, like Ethernet
-> switches. phylib reads the ID registers of the PHY and uses them to
-> load the correct PHY driver.
-> 
-> Also, C22 is the default, so you don't need that either.
+Can we use 'struct proto' bpf_bypass_getsockopt instead? We already
+use it for tcp zerocopy, I'm assuming it should work in this case as
+well?
 
-Thanks, it works equally well with compatible removed.
-
-> > 			reg = <0>;
-> > 			interrupt-parent = <&gpio>;
-> > 			interrupts = <6 IRQ_TYPE_LEVEL_LOW>;
-> > 			marvell,reg-init =
-> > 			  <0xff 24 0 0x2800>, <0xff 23 0 0x2001>, /* errata 3.1.1 - PHY Initialization #1 */
-> > 			  <0 29 0 3>, <0 30 0 2>, <0 29 0 0>,	  /* errata 3.1.2 - PHY Initialization #2 */
-> 
-> Please add C code to deal with these erratas in the marvell PHY
-> driver.
-
-I need to dig into 4.9 ventor (and custom) tree for them. Will do later.
-
-> > 			  <4 26 0 0x2>, 			  /* prekrizeni RX a TX QSGMII sbernice */
-> > 			  <4 0 0x1000 0x1000>, 			  /* Q_ANEG workaround: P4R0B12 = 1 */
-> > 			  <3 16 0 0x1117>;			  /* nastavení LED: G=link+act, Y=1Gbit */
-> > 		};
-> 
-> Comments are normally in English. The last one seems to be setting the
-> LED. This is tolerated, but not ideal. It is not clear to me what the
-> other two do.
-
-I'm sorry for that. I took DT from local tree. It is not meant for upstream.
-
-> > 	pip: pip@11800a0000000 {
-> > 		compatible = "cavium,octeon-3860-pip";
-> > 		#address-cells = <1>;
-> > 		#size-cells = <0>;
-> > 		reg = <0x11800 0xa0000000 0x0 0x2000>;
-> > 
-> > 		/* Interface 0 goes to SFP */
-> > 		interface@0 {
-> > 			compatible = "cavium,octeon-3860-pip-interface";
-> > 			#address-cells = <1>;
-> > 			#size-cells = <0>;
-> > 			reg = <0>; /* interface */
-> > 
-> > 			ethernet@0 {
-> > 				compatible = "cavium,octeon-3860-pip-port";
-> > 				reg = <0>; /* Port */
-> > 				local-mac-address = [ 00 00 00 00 00 00 ];
-> > 				managed = "in-band-status";
-> > 				phy-connection-type = "1000base-x";
-> > 				sfp = <&sfp>;
-> > 			};
-> > 		};
-> 
-> > 		/* Interface 1 goes to eth1-eth4 and is QSGMII */
-> > 		interface@1 {
-> > 			compatible = "cavium,octeon-3860-pip-interface";
-> > 			#address-cells = <1>;
-> > 			#size-cells = <0>;
-> > 			reg = <1>; /* interface */
-> > 
-> > 			ethernet@0 {
-> > 				compatible = "cavium,octeon-3860-pip-port";
-> > 				reg = <0>; /* Port */
-> > 				local-mac-address = [ 00 00 00 00 00 00 ];
-> > 				phy-handle = <&phy0>;
-> 
-> If this is a QSGMII link, don't you need phy-mode property?
-
-I would normally need that, but the way how this driver works makes it
-optional.
-
-Interfaces and their types are hardwired as well as various register address.
-In the ideal world they should come from DT instead of from various
-OCTEON_IS_MODEL(OCTEON_CNXXXX) ifdefery.
-
-> > However testing revealed some glitches:
-> > 1. driver previously returned -EPROBE_DEFER when no phy was attached.
-> > Phylink stack does not seem to do so, which end up with:
-> > 
-> > Marvell PHY driver as a module:
-> > octeon_ethernet 11800a0000000.pip eth0: configuring for inband/1000base-x link mode
-> > octeon_ethernet 11800a0000000.pip eth1: PHY [8001180000001800:00] driver [Generic PHY] (irq=POLL)
-> > octeon_ethernet 11800a0000000.pip eth1: configuring for phy/sgmii link mode
-> > octeon_ethernet 11800a0000000.pip eth2: PHY [8001180000001800:01] driver [Generic PHY] (irq=POLL)
-> > octeon_ethernet 11800a0000000.pip eth2: configuring for phy/sgmii link mode
-> > octeon_ethernet 11800a0000000.pip eth0: switched to inband/sgmii link mode
-> > octeon_ethernet 11800a0000000.pip eth0: PHY [i2c:sfp:16] driver [Marvell 88E1111] (irq=POLL)
-> > octeon_ethernet 11800a0000000.pip eth3: PHY [8001180000001800:02] driver [Marvell 88E1340S] (irq=25)
-> > octeon_ethernet 11800a0000000.pip eth3: configuring for phy/sgmii link mode
-> > octeon_ethernet 11800a0000000.pip eth4: PHY [8001180000001800:03] driver [Marvell 88E1340S] (irq=25)
-> > octeon_ethernet 11800a0000000.pip eth4: configuring for phy/sgmii link mode
-> > octeon_ethernet 11800a0000000.pip eth1: Link is Up - 100Mbps/Full - flow control off
-> > 
-> > Marvell PHY driver built-in:
-> > octeon_ethernet 11800a0000000.pip eth0: configuring for inband/1000base-x link mode
-> > octeon_ethernet 11800a0000000.pip eth1: PHY [8001180000001800:00] driver [Marvell 88E1340S] (irq=25)
-> > octeon_ethernet 11800a0000000.pip eth1: configuring for phy/sgmii link mode
-> > Error: Driver 'Marvell 88E1101' is already registered, aborting...
-> > libphy: Marvell 88E1101: Error -16 in registering driver
-> > Error: Driver 'Marvell 88E1101' is already registered, aborting...
-> > libphy: Marvell 88E1101: Error -16 in registering driver
-> 
-> This is very odd. But it could be a side effect of the
-> compatible. Please try with it removed.
-
-That does not make any difference.
-
-> > 2. It is not possible to call phylink_create from ndo_init callcack as
-> > it evetually calls sfp_bus_add_upstream which calls rtnl_lock().
-> > As this lock is already taken, it just deadlocks. Is this an unsupported
-> > scenario?
-> 
-> You normally call phylink_create() in _probe().
-
-Ok, thank you.
-
->     Andrew
+> Kind regards,
+> Alex
+>
+> >
+> > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > Cc: Eric Dumazet <edumazet@google.com>
+> > > Cc: Jakub Kicinski <kuba@kernel.org>
+> > > Cc: Paolo Abeni <pabeni@redhat.com>
+> > > Cc: Leon Romanovsky <leon@kernel.org>
+> > > Cc: David Ahern <dsahern@kernel.org>
+> > > Cc: Arnd Bergmann <arnd@arndb.de>
+> > > Cc: Kees Cook <keescook@chromium.org>
+> > > Cc: Christian Brauner <brauner@kernel.org>
+> > > Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > Cc: Lennart Poettering <mzxreary@0pointer.de>
+> > > Cc: linux-kernel@vger.kernel.org
+> > > Cc: netdev@vger.kernel.org
+> > > Cc: linux-arch@vger.kernel.org
+> > > Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+> > > Suggested-by: Christian Brauner <brauner@kernel.org>
+> > > Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical=
+.com>
+> >
+> > Thanks.
