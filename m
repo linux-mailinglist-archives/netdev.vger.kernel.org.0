@@ -2,180 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B096E1659
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 23:13:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FA8A6E165C
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 23:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229997AbjDMVM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 17:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47882 "EHLO
+        id S230020AbjDMVOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 17:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbjDMVM5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 17:12:57 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2063.outbound.protection.outlook.com [40.107.243.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2B76EB2;
-        Thu, 13 Apr 2023 14:12:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=djCtVoZl51q+a811Jfsqujx5gXOvRbh88SmbQCRNJrsqaIernnFYaCKNnltF11lBqYic/5V+M96YFXZDwiuoWT9xtLMLffjpwDxE5fVKR9vLUfwvdxy/+kOV2O4TgKV2SY5KdKsVffIdgU3kRdmLub0oW45AsQgkubtDgl9TPvVolvVtNKmml6XCLjxlSst1hVBsLHgOdwnC0gjfMorf1h6O/SmQgAMNRduxyeHOvlxKVUGQvGCktr9lVU1AFBBV/EdLnWCOs1eLXtOk5sSD2k93bKEcDmHHvLEcuTBsPdnfECnDHwURdLwPYOXEgazPtlpLOlPMDmP8jyeuMFVgmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D0kweVoK4Ysj+ETrcGaglQS6MUC0Ax1niCfQ7R7faWM=;
- b=FlRhoARHuvC5//pm4UG97l51kH9TAO4LD4ZCA7GVhTNWoxD8d+dCtRgnfh1FIoEN11UGgkGWl4ZZ3TsvpkWciZdxTkZimhNL9xpacZsGjjiJbYJkjQRiNlW2sdTR9e23q8Owxr9owPFP0cLOtjetyljExnpoj8lrsVyprWoGQCeTi33bUrajXo3sUtcttVRd2ApDz2EruMaWx4BY1IsQD+g/b5Pkw5Y2f4cp4uReGRL/9asgfB5kjDviyWmhHk/68pUoijtIrCiHqmRKTPmu845HKqwkf+YliKNF1CvOSgvILJNnQ3b5qOk8en80knP44jUcwMQLhJK1J2VuL4Q3kQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D0kweVoK4Ysj+ETrcGaglQS6MUC0Ax1niCfQ7R7faWM=;
- b=GG5gTP55y1KY591Yxpd9yJpIZXlH7SK8wi10dzzZaCFHM1NiBP9eEpdesKF01T9Lmoczy7O1fdTtQ09D8QOZpr3Co0R+q8q1zFDRpNJeHasqQRJsIdU+s9EndotG2Ke1gzwVRv/PE5ByQXxTIezGHpM6Vw+S0kUBTHYhJlYtxtJ3vyAq56X58bXpyHLOe9uHnNlp2mA22qWopAU5hAr6JeCeOQTp8ue2/DATSP2P7Fa26+5dmj5ln/VWKC80cs728ydBGRlETboftttLR45JPJqk3jnCWf9zyrmTy23IZ25B47ZdSQP5OEm6Xc2KgdyKOSu69U5S+Pt+RMXK9fHs7g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM5PR12MB1340.namprd12.prod.outlook.com (2603:10b6:3:76::15) by
- DM6PR12MB4284.namprd12.prod.outlook.com (2603:10b6:5:21a::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6298.30; Thu, 13 Apr 2023 21:12:52 +0000
-Received: from DM5PR12MB1340.namprd12.prod.outlook.com
- ([fe80::7634:337:4a71:2b78]) by DM5PR12MB1340.namprd12.prod.outlook.com
- ([fe80::7634:337:4a71:2b78%8]) with mapi id 15.20.6298.030; Thu, 13 Apr 2023
- 21:12:52 +0000
-Date:   Thu, 13 Apr 2023 14:12:49 -0700
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Linux regressions mailing list <regressions@lists.linux.dev>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Shay Drory <shayd@nvidia.com>, netdev@vger.kernel.org,
-        selinux@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: Potential regression/bug in net/mlx5 driver
-Message-ID: <ZDhwUYpMFvCRf1EC@x130>
-References: <CAHC9VhQ7A4+msL38WpbOMYjAqLp0EtOjeLh4Dc6SQtD6OUvCQg@mail.gmail.com>
- <ZCS5oxM/m9LuidL/@x130>
- <CAHC9VhTvQLa=+Ykwmr_Uhgjrc6dfi24ou=NBsACkhwZN7X4EtQ@mail.gmail.com>
- <1c8a70fc-18cb-3da7-5240-b513bf1affb9@leemhuis.info>
- <CAHC9VhT+=DtJ1K1CJDY4=L_RRJSGqRDvnaOdA6j9n+bF7y+36A@mail.gmail.com>
- <20230410054605.GL182481@unreal>
- <20230413075421.044d7046@kernel.org>
- <CAHC9VhRKBLHfGHvFAsmcBQQEmbOxZ=M9TE4-pV70E+Y6G=uXWA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHC9VhRKBLHfGHvFAsmcBQQEmbOxZ=M9TE4-pV70E+Y6G=uXWA@mail.gmail.com>
-X-ClientProxiedBy: SJ0PR03CA0207.namprd03.prod.outlook.com
- (2603:10b6:a03:2ef::32) To DM5PR12MB1340.namprd12.prod.outlook.com
- (2603:10b6:3:76::15)
+        with ESMTP id S229625AbjDMVOQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 17:14:16 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B937A8A41
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 14:14:15 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-50489b16e6aso3784409a12.1
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 14:14:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent.com; s=google; t=1681420454; x=1684012454;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Iw9rlpg8ozshQQ9GL1xtg2Yqf9pvDF0Kqb2ww8Y5MjU=;
+        b=LSdIrSmUvrxApHW7CEhBgi/WqK60CVNyh/D3Ay9cG51sVnKkbeOxvrJr55iF8aqmWX
+         WFVB7g9UU0Osim/aWPNBhegknN0BeFRhs0BRhnSk9Pt02Lx6i+KmLsi3lAttzws1LNhB
+         DXQqiY/n2KqcN15qqxGYtddnD5M94VO68CNGt3EdJ8cFt7wm9JmySTXLx5pAnN4w2NHc
+         hDSkzHkVuf1EC3gFMv0iFG8tqNCmcwLUH7QTwCcYtjxcn7kstrPO+wdFkxo2OTKfjcrC
+         LMBf/zznusZES28EaQj0gNcopi5bjwg7Xj7AxULrbpbBZ4nS9oVOU/lsZRkJn3Mqc1Dr
+         5//A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681420454; x=1684012454;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Iw9rlpg8ozshQQ9GL1xtg2Yqf9pvDF0Kqb2ww8Y5MjU=;
+        b=IU9iqi6oPv9Z86Wu9wOoSEyITAxR2RbObiRWzz+a5UO86RzIRlDLCb2qbtrMBm50/A
+         i8Ewjn+ZQRqWN1ix5O50sKrneP9uBKVy2GLTIMipcB2UHDrMTqEQYnm7BWlhsB8GDwP2
+         PpxenoBs0LcVJJoh2Raxc8jv1J3Bn58crBZU1Z3UnbYEM9GgK3Sr2YFcbmJqkXFiRPDo
+         B4BjHyO7UFs6OG2YVqU3LvTbFqHcMyeNo7YErDD1pLbMBo9bXkFIejfrPy0/6arDp8sz
+         MvirRDpo5KhHV2C/AMiD7MaVXQoHYeX+ZLwXo6c9nQsLbvIwnztr8TL5SFN8lr79KQ0H
+         KLLA==
+X-Gm-Message-State: AAQBX9dBalFoV1v6w5KkkWYOk6g0x6cbFTcbUIccn382sGZVFQw7d0Gp
+        3aYKLyqEWORAPvzNqbJscTLxlus7etUb4B+qPNc7O4yVL1v8P9OAGiO/cRER
+X-Google-Smtp-Source: AKy350b8WcrGf580mAFJ58BQiyNxUgjDL0y9ljpqarouqS6LOdRNth0G4IdY3nFrcWw6LS/UlDmayM6ZpL1sAifoCHU=
+X-Received: by 2002:a50:9ee9:0:b0:504:ed04:5d3d with SMTP id
+ a96-20020a509ee9000000b00504ed045d3dmr1957703edf.7.1681420454183; Thu, 13 Apr
+ 2023 14:14:14 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1340:EE_|DM6PR12MB4284:EE_
-X-MS-Office365-Filtering-Correlation-Id: 29703983-7c83-4398-8e04-08db3c63d766
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8h+wb1Kbw3oT1fZZ4S92n7gIJpA7Mn6TpbLg9YZgZWrqdrdftQRcgMo3G+W/OEGb7g56I/cs3uOqO5mDjAFdXcs3ETcI7vewKpMbPQbGV+zkiVbc01ZLGmnOu56IjKAuXoO/Jgl/ZTJRf0XkluQw7jVQT2RDM8LALtsYOIMw5+Xkr1eSVKlNvVn3teppIyeLSZY0dHEWUY25wAjLmCBEdMnt5rq6uHnDr/DrgZnwR6i6r8DGPvY3zbE0okVFZWHVhkdp7imR7KSAwgHgdxZUZjydPe5NtmOZxMVGwqlePLOlQ9z4BGMdzlgZQ5AJquf9FnQS+gxsnBNhjpkRa/Ig1DwC5vYnog2FpOxNTdvTPJxdTSav4N6qUspwwx2Uy63OHAMEF0AN7Q9uhfKE70d/9oyJQNiwMV4lNbZ5x1Tbx/2ph3nwN5pGMeTbBXKo/rJ7qI8iPpd4jObKe1Od1rziw05VIe4RUxfEqUqsVs/6f+k+BEophEcw/Z2yieK+oTC3KyyDAFzykPviq/mFpSjBildhIp7tfByGxZ8sVd3VCmud2BrCZONbqtaep8dv+UL1wEtYzrZQHD9KHVGgyLnDxyphwJs8Grqq3LFYzSgA1ik=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1340.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(39860400002)(346002)(366004)(136003)(376002)(396003)(451199021)(33716001)(66899021)(83380400001)(26005)(107886003)(186003)(38100700002)(6666004)(66556008)(6916009)(316002)(966005)(66476007)(6486002)(4326008)(54906003)(86362001)(478600001)(66946007)(41300700001)(6512007)(9686003)(6506007)(8936002)(8676002)(5660300002)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eW1NU2hZVktXeittampuenNQMDRnNVV2bVp3cVlkaEd3U3RsbHIxR2dveXBD?=
- =?utf-8?B?dGJQQnFmRTRzV2dkbTNJMU1McDg4NXUwMnRnQms0US9VRDcxZ2xkMkxwUVh2?=
- =?utf-8?B?SE1WRmwva3lJRTltVVRRMmZEU1JzM1Z1RmYrUkNoM3hGM080MTlPMVFzUXdG?=
- =?utf-8?B?ODZydzhhWmtENVpCN3I0ZXFRaVorVFZRN05oZU1hWkZ1Nkxma2ZmSGFtUlpD?=
- =?utf-8?B?UGE0UTQ2VUZHTk5VMGFtSWp5WlY2WmMvRCt5K0gyZFFmS2daVzNVRTM2Q29h?=
- =?utf-8?B?RlZ1Z3JaODVUSjQ5ZFpLbGw4SVNpL2FNUkhKcytjMi9qMUluSkV3ZHM5VGpl?=
- =?utf-8?B?b3BZb3M2VUg2TmU1c0M3d085RHFrMGIvSmMza1VRQWgzdkhhMEhKVDVYSUNG?=
- =?utf-8?B?aWhOY0ZzcU5ERHcwZkdGMFRZdkVRSU1tYWMycnpRM3h0QzFBSjkvUnk4YlFt?=
- =?utf-8?B?ZzJ5Q2pPZ2pIblhyektES3BNb2Jkd2laUEllbERFSmY1V2YxUG0xcytOVkk5?=
- =?utf-8?B?K3hlMzJ2RVRXYm9Uc1lubEFnOVMrelN2MVQ3bUlPNVFCTXZoNzdpQk50dmox?=
- =?utf-8?B?UFdqS25lSEtIRTFNWEd4d1VJdDNWYnorbFFtS29abElCZkcyYkRzYy96TU9C?=
- =?utf-8?B?RVJKYnROdjRscU1oZXdkMm9jN1I3OUFFL2syckZhRGVybGdhY09lOXFhdWJS?=
- =?utf-8?B?OUh0M1d6cHFTQmk5NWtaakpNRTJ3dXhSVEFxNjM5RGo4bDNVNmxHUEZLS3kv?=
- =?utf-8?B?MW0zOVZzY3NTUHRFOGxtdXlzbzdSanBJdlZsTndHSTNZUDd1Vk43cHFtR1dv?=
- =?utf-8?B?WUFXMlNlV0c2RkQzY2ExU1NqTkRPNHBMVWZMeDlSSitYZ0ZQL0laY25IUXJm?=
- =?utf-8?B?T1hIYldTU2M0d3lRS0RzS0xaNzFlWE14T3YybURjY1BFcjV2Zno0eVZnaVFy?=
- =?utf-8?B?Y0Y0Ynhaa0NoaDRJTXdzdVI2RjcvRzNhc1BmajFLa2lFamFQM3cvZXU3SG1B?=
- =?utf-8?B?TDVqdkp3WkpnVG9LUlZBeEdGeFlDTkVPa1VSc2xZOUk3UlIzdDFlaHVhRUVy?=
- =?utf-8?B?SEJqeU1tdUZmSFA4aDBISzMzTk9IUzZ2R29Vek1uVEpKOWdVcDhaK2FyMnNy?=
- =?utf-8?B?SllaVnNjbDVRYUpHTzdJUGU1cnpuKzQvRWtqdEdOL1dxVXJRTEc5ZTNBSm5E?=
- =?utf-8?B?UTVna3BjQ3VNVWpjS25UZ1J6bXI1R3d2UWpNUmN5M3FDNFBzUElTVWNROWpC?=
- =?utf-8?B?S2JBaXA3VGJzaUJ4Y1FBTG1GcStLOG9hUk5SdHF5NmFBbCt3N1JHRDhuSEpZ?=
- =?utf-8?B?N0t2L0Z1TG0vVlY1VlZRN1hYbTcvQW5KR2krWU4xYjZ3aHZUbWt6RzNmdkZi?=
- =?utf-8?B?OUdLRzdJdGp1UWJVczhXa1gydDhnWkZnOWNoUXpnSDMweEtQRjdjVGdvRy9G?=
- =?utf-8?B?RGVGemV1bWlVL2IzcW1Gak9WbkJVbzNBaExnL1VvcUxZOFlqdDY3Q2pNSHp5?=
- =?utf-8?B?c3ZTSEEvdDRTRmRGUkkyMTBzRW83aVFCN3A1RjVSNWNabHZ5VFJWZXhLdEw2?=
- =?utf-8?B?M0JxL2MxVUQ2RE5uNVRZdmZ4amt0a2xsdm1JRGQySHoycjRscTJJUS96UG9L?=
- =?utf-8?B?UHZzMklPN1dxVHhKM2ZXM1BMNW9HbXUzTTBVWldvdVdYeGZZbFEyb3FDV2ZV?=
- =?utf-8?B?UFRwS2RiUEh6OHNKTXVsUm9iT0dIS3NEQ2h6UUd5TGVhZVpXMUpTcDRPOGNk?=
- =?utf-8?B?V2F6TjBnenN6Q1BGRmR3c3JSVWVmSFNob1VLQ3FYUCtaSWprRGRmRU5OVWJW?=
- =?utf-8?B?cVkvRGwrZ2JHS0pRVGFLbnlJbzViQnd3b3ZRQnFYSmJqZ2dWZHJPa2tTdGJi?=
- =?utf-8?B?OVdJcDF6V0t5VXExN2t1RzFWRU94VGwzVDVmdzg0OGVtcmo5N2FtQVcvUldY?=
- =?utf-8?B?TWpjdG5ZSFZrWWNDdlhJNWlEaXU5V1BiTlpHNHBoRDdrVVRlQmw2UnJ3dlZN?=
- =?utf-8?B?YzJBaGs0L1VyTWIyUWV1d2R2MitCaGIzNCtoTWQ1L1RGTUFNanVkS1A3aUVu?=
- =?utf-8?B?cENIdGdGTS8xTDZpclUyQ3NEeTdHTmUxWnlWY0RwZDRhcWtzL0VwMm5zUzk5?=
- =?utf-8?Q?hiDZl0Ijt6t5fKei4YJkG8f4/?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29703983-7c83-4398-8e04-08db3c63d766
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1340.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 21:12:51.8535
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JFCAmV4gIkFwgewOgi+oIOY0MbmhnpyeuNdf/OEoQI0R7FJdvk+bbvTS6C7odXCzvXdaWB9VLwLvky6Uwu/m0w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4284
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+References: <20230413133228.20790-1-fw@strlen.de> <20230413133228.20790-6-fw@strlen.de>
+In-Reply-To: <20230413133228.20790-6-fw@strlen.de>
+From:   Quentin Monnet <quentin@isovalent.com>
+Date:   Thu, 13 Apr 2023 22:14:03 +0100
+Message-ID: <CACdoK4LRjNsDY6m2fvUGY_C9gMvUdX9QpEetr9RtGuR8xb8pmg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 5/6] tools: bpftool: print netfilter link info
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        bpf@vger.kernel.org, dxu@dxuuu.xyz, qde@naccy.de
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13 Apr 11:19, Paul Moore wrote:
->On Thu, Apr 13, 2023 at 10:54 AM Jakub Kicinski <kuba@kernel.org> wrote:
->> On Mon, 10 Apr 2023 08:46:05 +0300 Leon Romanovsky wrote:
->> > > I haven't seen any updates from the mlx5 driver folks, although I may
->> > > not have been CC'd?
->> >
->> > We are extremely slow these days due to combination of holidays
->> > (Easter, Passover, Ramadan, spring break e.t.c).
->>
->> Let's get this fixed ASAP, please. I understand that there are
->> holidays, but it's been over 2 weeks, and addressing regressions
->> should be highest priority for any maintainer! :(
->>
->> From what I gather all we need here is to throw in an extra condition
->> for "FW is hella old" into mlx5_core_is_management_pf(), no?
+Hi Florian,
+
+On Thu, 13 Apr 2023 at 14:36, Florian Westphal <fw@strlen.de> wrote:
 >
+> Dump protocol family, hook and priority value:
+> $ bpftool link
+> 2: type 10  prog 20
 
-Hi, Jakub and Paul
-This is a high priority and we are working on this, unfortunately for mlx5
-we don't check FW versions since we support more than 6 different devices
-already, with different FW production lines. 
+Could you please update link_type_name in libbpf (libbpf.c) so that we
+display "netfilter" here instead of "type 10"?
 
-So we believe that this bug is very hard to solve without breaking backward
-compatibility with the currently supported working FWs, the issue exists only
-on very old firmwares and we will recommend a firmware upgrade to resolve this
-issue.
-
->That's my gut feeling too, at least for a quick solution.  I'd offer
->to cobble together a fix, but my kernel expertise ends well before I
->get to the mlx5 driver :)
+>         pf: 2, hook 1, prio -128
 >
->I have been running for a while now with that small patch reverted on
->my test machines (so I can keep my tests running) and everything seems
->to be okay, but there may be other issues caused by the revert that
->I'm not seeing.
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+> ---
+>  tools/bpf/bpftool/link.c       | 24 ++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h | 15 +++++++++++++++
+>  tools/lib/bpf/libbpf.c         |  1 +
+>  3 files changed, 40 insertions(+)
 >
+> diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
+> index f985b79cca27..a2ea85d1ebbf 100644
+> --- a/tools/bpf/bpftool/link.c
+> +++ b/tools/bpf/bpftool/link.c
+> @@ -135,6 +135,18 @@ static void show_iter_json(struct bpf_link_info *info, json_writer_t *wtr)
+>         }
+>  }
+>
+> +static void show_netfilter_json(const struct bpf_link_info *info, json_writer_t *wtr)
+> +{
+> +       jsonw_uint_field(json_wtr, "pf",
+> +                        info->netfilter.pf);
+> +       jsonw_uint_field(json_wtr, "hook",
+> +                        info->netfilter.hooknum);
+> +       jsonw_int_field(json_wtr, "prio",
+> +                        info->netfilter.priority);
+> +       jsonw_uint_field(json_wtr, "flags",
+> +                        info->netfilter.flags);
+> +}
+> +
+>  static int get_prog_info(int prog_id, struct bpf_prog_info *info)
+>  {
+>         __u32 len = sizeof(*info);
+> @@ -195,6 +207,10 @@ static int show_link_close_json(int fd, struct bpf_link_info *info)
+>                                  info->netns.netns_ino);
+>                 show_link_attach_type_json(info->netns.attach_type, json_wtr);
+>                 break;
+> +       case BPF_LINK_TYPE_NETFILTER:
+> +               show_netfilter_json(info, json_wtr);
+> +               break;
+> +
+>         default:
+>                 break;
+>         }
+> @@ -301,6 +317,14 @@ static int show_link_close_plain(int fd, struct bpf_link_info *info)
+>                 printf("\n\tnetns_ino %u  ", info->netns.netns_ino);
+>                 show_link_attach_type_plain(info->netns.attach_type);
+>                 break;
+> +       case BPF_LINK_TYPE_NETFILTER:
+> +               printf("\n\tpf: %d, hook %u, prio %d",
+> +                      info->netfilter.pf,
+> +                      info->netfilter.hooknum,
+> +                      info->netfilter.priority);
+> +               if (info->netfilter.flags)
+> +                       printf(" flags 0x%x", info->netfilter.flags);
+> +               break;
+>         default:
+>                 break;
+>         }
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index 3823100b7934..c93febc4c75f 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -986,6 +986,7 @@ enum bpf_prog_type {
+>         BPF_PROG_TYPE_LSM,
+>         BPF_PROG_TYPE_SK_LOOKUP,
+>         BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
+> +       BPF_PROG_TYPE_NETFILTER,
 
-Paul is it possible to upgrade your device's FW ? your current FW is 6 years
-old and we officially don't support FWs this old.
+If netfilter programs could be loaded with bpftool, we'd need to
+update bpftool's docs. But I don't think this is the case, right? We
+don't currently have a way to pass the pf, hooknum, priority and flags
+necessary to load the program with "bpftool prog load" so it would
+fail?
 
-here's a link to start your upgrade.
-https://network.nvidia.com/support/firmware/connectx4ib/
+Have you considered listing netfilter programs in the output of
+"bpftool net" as well? Given that they're related to networking, it
+would maybe make sense to have them listed alongside XDP, TC, and flow
+dissector programs?
 
-Let me know if you need any further assistance.
+The patch looks good to me otherwise.
 
->-- 
->paul-moore.com
+Thanks,
+Quentin
