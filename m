@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5C1B6E0D73
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 14:30:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7592A6E0D70
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 14:29:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbjDMMaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 08:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42664 "EHLO
+        id S229853AbjDMM3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 08:29:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbjDMM35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 08:29:57 -0400
+        with ESMTP id S229895AbjDMM3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 08:29:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CE093D6
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 05:29:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8A686BA
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 05:29:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D7A463CA0
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 12:29:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10E6FC433A0;
-        Thu, 13 Apr 2023 12:29:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0738E63DDD
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 12:29:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB159C433D2;
+        Thu, 13 Apr 2023 12:29:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681388994;
-        bh=hSg5IXhXxTiwB9P+xvI/7K/RWm7Dlvspk+t0Edzgr+0=;
+        s=k20201202; t=1681388986;
+        bh=nLNihOvVOx9USP6d+rJd+a1ohE3QG/eg7efw0024Tp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t4f9GWffee73d+Ux2X5xdYKgVMJgOz/AxztoXyB3bksISDwAFG7nLp49Wf23x4yaz
-         PfDwnmvRosQ5+hZOxvLEEzRLNQ9Ul/mVvb2wHMi1HEblfun4JeiIXOgWN4RpL1bxcp
-         8HzFMOqShrM6gwCcPy8srWUbwyqfrnqfDhvpjvJBbV6sRkYSvEaegAZIiCJnd4CdoF
-         Jr76qVrVFxSSLmYwA3p5dcgWXX7IxBbdOOhNLMejViCkZujMswFF5tWFlhKF+3rHAk
-         4B3bnTmjKI71Hq9v7y/9VB/almAVrgs7NTkLL0qhxa3aYDwc0xJaAPXhw/lExAd2Tm
-         zong8qQkaK78w==
+        b=Id4i5sMU66bCJTICNlsRRX3QApl9cCTkkqo0iXEEcLnwuPh7iIEl6+40nmC8rBlG9
+         AtNfO2z3zFESMH0rvH4e9HkfSgZ0lSVg1Kvd6RIKn88IbXNruIQsYHHC5iX2uHrkDR
+         o73ZBDtA9ooey47VINcd+yod4ojGHurLyWNi0cCWoXtUuXadXSx2OidlYkxcK2Db1E
+         jWCd0ZsSywtVSLp9ypL97qJvL8xBnE9pTEoG9oucPkw7SOG8FaIIuryU2ZDIL+FX5q
+         HjcQ1vafwudPMny+5K/QFTNBl1/PIApAfU/NnscDdUqbURtY6rl0XYbpDQi3wckj0o
+         +k887m6PyEa7g==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -42,9 +42,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
         Raed Salem <raeds@nvidia.com>, Emeel Hakim <ehakim@nvidia.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v1 02/10] net/mlx5e: Check IPsec packet offload tunnel capabilities
-Date:   Thu, 13 Apr 2023 15:29:20 +0300
-Message-Id: <9bc295c93c47710ba69a030c31cce861464164ef.1681388425.git.leonro@nvidia.com>
+Subject: [PATCH net-next v1 03/10] net/mlx5e: Configure IPsec SA tables to support tunnel mode
+Date:   Thu, 13 Apr 2023 15:29:21 +0300
+Message-Id: <8301a5e5ccb2f8070c971005836d343c6546e027.1681388425.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1681388425.git.leonro@nvidia.com>
 References: <cover.1681388425.git.leonro@nvidia.com>
@@ -61,44 +61,108 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Validate tunnel mode support for IPsec packet offload.
+Create SA flow steering tables both for RX and TX with tunnel reformat
+property. This allows to add and delete extra headers needed for tunnel
+mode.
 
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h    | 1 +
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c    | 6 ++++++
- 2 files changed, 7 insertions(+)
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 23 ++++++++++++-------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index 52890d7dce6b..bb89e18b17b4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -107,6 +107,7 @@ enum mlx5_ipsec_cap {
- 	MLX5_IPSEC_CAP_PACKET_OFFLOAD	= 1 << 2,
- 	MLX5_IPSEC_CAP_ROCE             = 1 << 3,
- 	MLX5_IPSEC_CAP_PRIO             = 1 << 4,
-+	MLX5_IPSEC_CAP_TUNNEL           = 1 << 5,
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+index b47794d4146e..060be020ca64 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+@@ -118,7 +118,7 @@ static void ipsec_chains_put_table(struct mlx5_fs_chains *chains, u32 prio)
  
- struct mlx5e_priv;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index 5fddb86bb35e..df90e19066bc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -48,6 +48,12 @@ u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev)
- 		if (MLX5_CAP_FLOWTABLE_NIC_TX(mdev, ignore_flow_level) &&
- 		    MLX5_CAP_FLOWTABLE_NIC_RX(mdev, ignore_flow_level))
- 			caps |= MLX5_IPSEC_CAP_PRIO;
-+
-+		if (MLX5_CAP_FLOWTABLE_NIC_TX(mdev,
-+					      reformat_l2_to_l3_esp_tunnel) &&
-+		    MLX5_CAP_FLOWTABLE_NIC_RX(mdev,
-+					      reformat_l3_esp_tunnel_to_l2))
-+			caps |= MLX5_IPSEC_CAP_TUNNEL;
+ static struct mlx5_flow_table *ipsec_ft_create(struct mlx5_flow_namespace *ns,
+ 					       int level, int prio,
+-					       int max_num_groups)
++					       int max_num_groups, u32 flags)
+ {
+ 	struct mlx5_flow_table_attr ft_attr = {};
+ 
+@@ -127,6 +127,7 @@ static struct mlx5_flow_table *ipsec_ft_create(struct mlx5_flow_namespace *ns,
+ 	ft_attr.max_fte = NUM_IPSEC_FTE;
+ 	ft_attr.level = level;
+ 	ft_attr.prio = prio;
++	ft_attr.flags = flags;
+ 
+ 	return mlx5_create_auto_grouped_flow_table(ns, &ft_attr);
+ }
+@@ -267,6 +268,7 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
+ 	struct mlx5_flow_destination default_dest;
+ 	struct mlx5_flow_destination dest[2];
+ 	struct mlx5_flow_table *ft;
++	u32 flags = 0;
+ 	int err;
+ 
+ 	default_dest = mlx5_ttc_get_default_dest(ttc, family2tt(family));
+@@ -277,7 +279,7 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
+ 		return err;
+ 
+ 	ft = ipsec_ft_create(ns, MLX5E_ACCEL_FS_ESP_FT_ERR_LEVEL,
+-			     MLX5E_NIC_PRIO, 1);
++			     MLX5E_NIC_PRIO, 1, 0);
+ 	if (IS_ERR(ft)) {
+ 		err = PTR_ERR(ft);
+ 		goto err_fs_ft_status;
+@@ -300,8 +302,10 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
+ 		goto err_add;
+ 
+ 	/* Create FT */
+-	ft = ipsec_ft_create(ns, MLX5E_ACCEL_FS_ESP_FT_LEVEL, MLX5E_NIC_PRIO,
+-			     2);
++	if (mlx5_ipsec_device_caps(mdev) & MLX5_IPSEC_CAP_TUNNEL)
++		flags = MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT;
++	ft = ipsec_ft_create(ns, MLX5E_ACCEL_FS_ESP_FT_LEVEL, MLX5E_NIC_PRIO, 2,
++			     flags);
+ 	if (IS_ERR(ft)) {
+ 		err = PTR_ERR(ft);
+ 		goto err_fs_ft;
+@@ -327,7 +331,7 @@ static int rx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec *ipsec,
  	}
  
- 	if (mlx5_get_roce_state(mdev) &&
+ 	ft = ipsec_ft_create(ns, MLX5E_ACCEL_FS_POL_FT_LEVEL, MLX5E_NIC_PRIO,
+-			     2);
++			     2, 0);
+ 	if (IS_ERR(ft)) {
+ 		err = PTR_ERR(ft);
+ 		goto err_pol_ft;
+@@ -511,9 +515,10 @@ static int tx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec_tx *tx,
+ {
+ 	struct mlx5_flow_destination dest = {};
+ 	struct mlx5_flow_table *ft;
++	u32 flags = 0;
+ 	int err;
+ 
+-	ft = ipsec_ft_create(tx->ns, 2, 0, 1);
++	ft = ipsec_ft_create(tx->ns, 2, 0, 1, 0);
+ 	if (IS_ERR(ft))
+ 		return PTR_ERR(ft);
+ 	tx->ft.status = ft;
+@@ -522,7 +527,9 @@ static int tx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec_tx *tx,
+ 	if (err)
+ 		goto err_status_rule;
+ 
+-	ft = ipsec_ft_create(tx->ns, 1, 0, 4);
++	if (mlx5_ipsec_device_caps(mdev) & MLX5_IPSEC_CAP_TUNNEL)
++		flags = MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT;
++	ft = ipsec_ft_create(tx->ns, 1, 0, 4, flags);
+ 	if (IS_ERR(ft)) {
+ 		err = PTR_ERR(ft);
+ 		goto err_sa_ft;
+@@ -541,7 +548,7 @@ static int tx_create(struct mlx5_core_dev *mdev, struct mlx5e_ipsec_tx *tx,
+ 		goto connect_roce;
+ 	}
+ 
+-	ft = ipsec_ft_create(tx->ns, 0, 0, 2);
++	ft = ipsec_ft_create(tx->ns, 0, 0, 2, 0);
+ 	if (IS_ERR(ft)) {
+ 		err = PTR_ERR(ft);
+ 		goto err_pol_ft;
 -- 
 2.39.2
 
