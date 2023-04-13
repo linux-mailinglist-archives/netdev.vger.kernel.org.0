@@ -2,91 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4401E6E0D8A
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 14:38:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EBAF6E0DA8
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 14:48:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbjDMMix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 08:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
+        id S229864AbjDMMso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 08:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbjDMMiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 08:38:52 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C8B93D8
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 05:38:50 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id q23so27573628ejz.3
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 05:38:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1681389528; x=1683981528;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=80XOupwEydImNFImNi9YzwZQAYrfVPalPz/6koNH+OQ=;
-        b=WbVa8mtEKFuN8Fzn/sc1Ag//M4u6Tv5kyOLYzxXpgsNB3kQOvmss8fAbTSfgYAqrXz
-         Nz2gdQrelH8JdEkKyk5V5QhlHd6mtgGgZfhNjAaLYa7ccyQIzf/kcqgdvMsMWuqpmwbm
-         3U3PuUG+M0Cm9IQC/KXg12OKTeqLLiws1BHfM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681389528; x=1683981528;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=80XOupwEydImNFImNi9YzwZQAYrfVPalPz/6koNH+OQ=;
-        b=kpJ4YQ3WtGb/D10qzz3vHbfhYl5CI60M+YROnhLM9yN2VtFcD4zK7zKHUg/fVVSWFf
-         WxPfzPxR2Az5Tsnmzp7BW2kAtKwoCcZqbYOuZGQCNuHLipwvCnEN9CJYpEwYgSHdgt1q
-         ocqINE77/SMbW+RN8Y1dDbGeF+jZP/v7Y2ddslvdbra3Ky5QzbHVkXi0KNG1HeGokkJ6
-         rUG/9vM24kZVmUwz8ZbEVQN4zs0W27i8aNThA9K4iiaRMU66Ir070t0RHElzEMzCa/I7
-         f13Fof8vE+2++ImbIfo/qy2rBVZuJtI3dJn2ck1EomaK9yV4Yvv8olmvZsc3TkW/YUg4
-         Gzrg==
-X-Gm-Message-State: AAQBX9fIGCumyS9fbmLkaajV7/4GLfkejsHOf63PIU9NlQqzRVgk0rNv
-        zqqERmVhdEGmzaPFumLg8lYcXdHbIYfR2MsXpBYYZw==
-X-Google-Smtp-Source: AKy350Y86kypZ6iuf2r0dmwP5DoiggvZU1uQ7oDQ8/09NxbbY91pFRClYxEJzsMHwUVBAs0KUgj6mQs5p9MZGnzV/BI=
-X-Received: by 2002:a17:906:d298:b0:932:1bdf:be3e with SMTP id
- ay24-20020a170906d29800b009321bdfbe3emr1232299ejb.0.1681389528500; Thu, 13
- Apr 2023 05:38:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230406130205.49996-1-kal.conley@dectris.com>
- <20230406130205.49996-2-kal.conley@dectris.com> <87sfdckgaa.fsf@toke.dk>
- <ZDBEng1KEEG5lOA6@boxer> <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
- <875ya12phx.fsf@toke.dk> <CAHApi-=rMHt7uR8Sw1Vw+MHDrtkyt=jSvTvwz8XKV7SEb01CmQ@mail.gmail.com>
- <87ile011kz.fsf@toke.dk>
-In-Reply-To: <87ile011kz.fsf@toke.dk>
-From:   Kal Cutter Conley <kal.conley@dectris.com>
-Date:   Thu, 13 Apr 2023 14:43:32 +0200
-Message-ID: <CAHApi-m4gu8SX_1rBtUwrw+1-Q3ERFEX-HPMcwcCK1OceirwuA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/3] xsk: Support UMEM chunk_size > PAGE_SIZE
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229663AbjDMMsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 08:48:43 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E4C2115;
+        Thu, 13 Apr 2023 05:48:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=FtBdndZ3097mSvwg5FOFaiH+eLsMC9IFLTN0uxY11Hk=; b=b0F4Mwt0Njh9nMh7X/DOfo3jPT
+        uG1loN7ecupHSyBznqMc3ZsMIGSgYdywFIue78i4BY7R0ThXcrkOXtZKy+jN2eQ4obVkbNR0wT3ty
+        BVAIU+RTRicvetF9arvDQotBgmDSaqqIeUGu3lufoBbQEXHKfqHeeJTxQHirNSyO+y0E=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pmwNK-00ABVl-W0; Thu, 13 Apr 2023 14:48:30 +0200
+Date:   Thu, 13 Apr 2023 14:48:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Herve Codina <herve.codina@bootlin.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Paolo Abeni <pabeni@redhat.com>, Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-phy@lists.infradead.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [RFC PATCH 0/4] Add support for QMC HDLC and PHY
+Message-ID: <885e4f20-614a-4b8e-827e-eb978480af87@lunn.ch>
+References: <20230323103154.264546-1-herve.codina@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230323103154.264546-1-herve.codina@bootlin.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Well, you mentioned yourself that:
->
-> > The disadvantage of this patchset is requiring the user to allocate
-> > HugeTLB pages which is an extra complication.
+On Thu, Mar 23, 2023 at 11:31:50AM +0100, Herve Codina wrote:
+> Hi,
+> 
+> I have a system where I need to handle an HDLC interface.
+> 
+> The HDLC data are transferred using a TDM bus on which a PEF2256 is
+> present. The PEF2256 transfers data from/to the TDM bus to/from E1 line.
+> This PEF2256 is also connected to a PowerQUICC SoC for the control path
+> and the TDM is connected to the SoC (QMC component) for the data path.
+> 
+> From the HDLC driver, I need to handle data using the QMC and carrier
+> detection using the PEF2256 (E1 line carrier).
+> 
+> The HDLC driver consider the PEF2256 as a generic PHY.
+> So, the design is the following:
+> 
+> +----------+          +-------------+              +---------+
+> | HDLC drv | <-data-> | QMC channel | <-- TDM -->  | PEF2256 |
+> +----------+          +-------------+              |         | <--> E1
+>    ^   +---------+     +---------+                 |         |
+>    +-> | Gen PHY | <-> | PEF2256 | <- local bus -> |         |
+>        +---------+     | PHY drv |                 +---------+
+>                        +---------+
 
-It's a small extra complication *for the user*. However, users that
-need this feature are willing to allocate hugepages. We are one such
-user. For us, having to deal with packets split into disjoint buffers
-(from the XDP multi-buffer paradigm) is a significantly more annoying
-complication than allocating hugepages (particularly on the RX side).
+Hi Herver
+
+Sorry, i'm late to the conversation. I'm looking at this from two
+different perspectives. I help maintain Ethernet PHYs. And i have
+hacked on the IDT 82P2288 E1/T1/J1 framer.
+
+I think there is a block missing from this diagram. There appears to
+be an MFD driver for the PEF2256? At least, i see an include for
+linux/mfd/pef2256.h.
+
+When i look at the 'phy' driver, i don't see anything a typical PHY
+driver used for networking would have. A networking PHY driver often
+has the ability to change between modes, like SGMII, QSGMII, 10GBASER.
+The equivalent here would be changing between E1, T1 and J1. It has
+the ability to change the speed, 1G, 2.5G, 10G etc. This could be
+implied via the mode, E1 is 2.048Mbps, T1 1.544Mbps, and i forget what
+J1 is. The PEF2256 also seems to support E1/T1/J1. How is its modes
+configured?
+
+In fact, this PHY driver does not seem to do any configuration of any
+sort on the framer. All it seems to be doing is take notification from
+one chain and send them out another chain!
+
+I also wounder if this get_status() call is sufficient. Don't you also
+want Red, Yellow and Blue alarms? It is not just the carrier is down,
+but why it is down.
+
+Overall, i don't see why you want a PHY. What value does it add?
+
+	 Andrew
