@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A3F6E06DD
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 08:24:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08FB96E06DF
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 08:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbjDMGYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 02:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41416 "EHLO
+        id S229685AbjDMGYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 02:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbjDMGYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 02:24:51 -0400
+        with ESMTP id S229618AbjDMGYw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 02:24:52 -0400
 Received: from 167-179-156-38.a7b39c.syd.nbn.aussiebb.net (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A78A61A1;
-        Wed, 12 Apr 2023 23:24:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B466583;
+        Wed, 12 Apr 2023 23:24:51 -0700 (PDT)
 Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
         by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1pmqNT-00FNV9-CK; Thu, 13 Apr 2023 14:24:16 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Thu, 13 Apr 2023 14:24:15 +0800
+        id 1pmqNV-00FNVI-Fs; Thu, 13 Apr 2023 14:24:18 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Thu, 13 Apr 2023 14:24:17 +0800
 From:   "Herbert Xu" <herbert@gondor.apana.org.au>
-Date:   Thu, 13 Apr 2023 14:24:15 +0800
-Subject: [PATCH 1/6] crypto: api - Add crypto_tfm_get
+Date:   Thu, 13 Apr 2023 14:24:17 +0800
+Subject: [PATCH 2/6] crypto: api - Add crypto_clone_tfm
 References: <ZDefxOq6Ax0JeTRH@gondor.apana.org.au>
 To:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
         David Ahern <dsahern@kernel.org>,
@@ -43,7 +43,7 @@ To:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
         Leonard Crestez <cdleonard@gmail.com>,
         Salam Noureddine <noureddine@arista.com>,
         netdev@vger.kernel.org
-Message-Id: <E1pmqNT-00FNV9-CK@formenos.hmeau.com>
+Message-Id: <E1pmqNV-00FNVI-Fs@formenos.hmeau.com>
 X-Spam-Status: No, score=2.7 required=5.0 tests=BAYES_00,HELO_DYNAMIC_IPADDR2,
         RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS,TVD_RCVD_IP autolearn=no
         autolearn_force=no version=3.4.6
@@ -54,81 +54,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a crypto_tfm_get interface to allow tfm objects to be shared.
-They can still be freed in the usual way.
+This patch adds the helper crypto_clone_tfm.  The purpose is to
+allocate a tfm object with GFP_ATOMIC.  As we cannot sleep, the
+object has to be cloned from an existing tfm object.
 
-This should only be done with tfm objects with no keys.  You must
-also not modify the tfm flags in any way once it becomes shared.
+This allows code paths that cannot otherwise allocate a crypto_tfm
+object to do so.  Once a new tfm has been obtained its key could
+then be changed without impacting other users.
 
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 ---
 
- crypto/api.c           |    4 ++++
- crypto/internal.h      |    6 ++++++
- include/linux/crypto.h |    1 +
- 3 files changed, 11 insertions(+)
+ crypto/api.c      |   59 +++++++++++++++++++++++++++++++++++++++++++++---------
+ crypto/internal.h |    2 +
+ 2 files changed, 52 insertions(+), 9 deletions(-)
 
 diff --git a/crypto/api.c b/crypto/api.c
-index e67cc63368ed..f509d73fa682 100644
+index f509d73fa682..d375e8cd770d 100644
 --- a/crypto/api.c
 +++ b/crypto/api.c
-@@ -408,6 +408,7 @@ struct crypto_tfm *__crypto_alloc_tfm(struct crypto_alg *alg, u32 type,
- 		goto out_err;
+@@ -488,28 +488,44 @@ struct crypto_tfm *crypto_alloc_base(const char *alg_name, u32 type, u32 mask)
+ }
+ EXPORT_SYMBOL_GPL(crypto_alloc_base);
  
- 	tfm->__crt_alg = alg;
-+	refcount_set(&tfm->refcnt, 1);
+-void *crypto_create_tfm_node(struct crypto_alg *alg,
+-			const struct crypto_type *frontend,
+-			int node)
++static void *crypto_alloc_tfmmem(struct crypto_alg *alg,
++				 const struct crypto_type *frontend, int node,
++				 gfp_t gfp)
+ {
+-	char *mem;
+-	struct crypto_tfm *tfm = NULL;
++	struct crypto_tfm *tfm;
+ 	unsigned int tfmsize;
+ 	unsigned int total;
+-	int err = -ENOMEM;
++	char *mem;
  
- 	err = crypto_init_ops(tfm, type, mask);
- 	if (err)
-@@ -507,6 +508,7 @@ void *crypto_create_tfm_node(struct crypto_alg *alg,
+ 	tfmsize = frontend->tfmsize;
+ 	total = tfmsize + sizeof(*tfm) + frontend->extsize(alg);
+ 
+-	mem = kzalloc_node(total, GFP_KERNEL, node);
++	mem = kzalloc_node(total, gfp, node);
+ 	if (mem == NULL)
+-		goto out_err;
++		return ERR_PTR(-ENOMEM);
+ 
  	tfm = (struct crypto_tfm *)(mem + tfmsize);
  	tfm->__crt_alg = alg;
  	tfm->node = node;
-+	refcount_set(&tfm->refcnt, 1);
+ 	refcount_set(&tfm->refcnt, 1);
  
- 	err = frontend->init_tfm(tfm);
- 	if (err)
-@@ -619,6 +621,8 @@ void crypto_destroy_tfm(void *mem, struct crypto_tfm *tfm)
- 	if (IS_ERR_OR_NULL(mem))
- 		return;
- 
-+	if (!refcount_dec_and_test(&tfm->refcnt))
-+		return;
- 	alg = tfm->__crt_alg;
- 
- 	if (!tfm->exit && alg->cra_exit)
-diff --git a/crypto/internal.h b/crypto/internal.h
-index f84dfe6491e5..5eee009ee494 100644
---- a/crypto/internal.h
-+++ b/crypto/internal.h
-@@ -10,6 +10,7 @@
- 
- #include <crypto/algapi.h>
- #include <linux/completion.h>
-+#include <linux/err.h>
- #include <linux/jump_label.h>
- #include <linux/list.h>
- #include <linux/module.h>
-@@ -186,5 +187,10 @@ static inline int crypto_is_test_larval(struct crypto_larval *larval)
- 	return larval->alg.cra_driver_name[0];
- }
- 
-+static inline struct crypto_tfm *crypto_tfm_get(struct crypto_tfm *tfm)
-+{
-+	return refcount_inc_not_zero(&tfm->refcnt) ? tfm : ERR_PTR(-EOVERFLOW);
++	return mem;
 +}
 +
- #endif	/* _CRYPTO_INTERNAL_H */
++void *crypto_create_tfm_node(struct crypto_alg *alg,
++			     const struct crypto_type *frontend,
++			     int node)
++{
++	struct crypto_tfm *tfm;
++	char *mem;
++	int err;
++
++	mem = crypto_alloc_tfmmem(alg, frontend, node, GFP_KERNEL);
++	if (IS_ERR(mem))
++		goto out;
++
++	tfm = (struct crypto_tfm *)(mem + frontend->tfmsize);
++
+ 	err = frontend->init_tfm(tfm);
+ 	if (err)
+ 		goto out_free_tfm;
+@@ -525,13 +541,38 @@ void *crypto_create_tfm_node(struct crypto_alg *alg,
+ 	if (err == -EAGAIN)
+ 		crypto_shoot_alg(alg);
+ 	kfree(mem);
+-out_err:
+ 	mem = ERR_PTR(err);
+ out:
+ 	return mem;
+ }
+ EXPORT_SYMBOL_GPL(crypto_create_tfm_node);
  
-diff --git a/include/linux/crypto.h b/include/linux/crypto.h
-index fdfa3e8eda43..fa310ac1db59 100644
---- a/include/linux/crypto.h
-+++ b/include/linux/crypto.h
-@@ -419,6 +419,7 @@ int crypto_has_alg(const char *name, u32 type, u32 mask);
-  */
++void *crypto_clone_tfm(const struct crypto_type *frontend,
++		       struct crypto_tfm *otfm)
++{
++	struct crypto_alg *alg = otfm->__crt_alg;
++	struct crypto_tfm *tfm;
++	char *mem;
++
++	mem = ERR_PTR(-ESTALE);
++	if (unlikely(!crypto_mod_get(alg)))
++		goto out;
++
++	mem = crypto_alloc_tfmmem(alg, frontend, otfm->node, GFP_ATOMIC);
++	if (IS_ERR(mem)) {
++		crypto_mod_put(alg);
++		goto out;
++	}
++
++	tfm = (struct crypto_tfm *)(mem + frontend->tfmsize);
++	tfm->crt_flags = otfm->crt_flags;
++	tfm->exit = otfm->exit;
++
++out:
++	return mem;
++}
++EXPORT_SYMBOL_GPL(crypto_clone_tfm);
++
+ struct crypto_alg *crypto_find_alg(const char *alg_name,
+ 				   const struct crypto_type *frontend,
+ 				   u32 type, u32 mask)
+diff --git a/crypto/internal.h b/crypto/internal.h
+index 5eee009ee494..8dd746b1130b 100644
+--- a/crypto/internal.h
++++ b/crypto/internal.h
+@@ -106,6 +106,8 @@ struct crypto_tfm *__crypto_alloc_tfm(struct crypto_alg *alg, u32 type,
+ 				      u32 mask);
+ void *crypto_create_tfm_node(struct crypto_alg *alg,
+ 			const struct crypto_type *frontend, int node);
++void *crypto_clone_tfm(const struct crypto_type *frontend,
++		       struct crypto_tfm *otfm);
  
- struct crypto_tfm {
-+	refcount_t refcnt;
- 
- 	u32 crt_flags;
- 
+ static inline void *crypto_create_tfm(struct crypto_alg *alg,
+ 			const struct crypto_type *frontend)
