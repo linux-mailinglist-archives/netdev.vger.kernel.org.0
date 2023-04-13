@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43AED6E00D6
-	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 23:29:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E976E00D9
+	for <lists+netdev@lfdr.de>; Wed, 12 Apr 2023 23:29:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbjDLV3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 17:29:25 -0400
+        id S230044AbjDLV33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 17:29:29 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbjDLV3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 17:29:23 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DFA7D9E;
-        Wed, 12 Apr 2023 14:29:18 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id z26so12892087ljq.3;
-        Wed, 12 Apr 2023 14:29:18 -0700 (PDT)
+        with ESMTP id S229930AbjDLV3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 17:29:24 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9297EC1;
+        Wed, 12 Apr 2023 14:29:19 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id by8so13157137ljb.13;
+        Wed, 12 Apr 2023 14:29:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681334957;
+        d=gmail.com; s=20221208; t=1681334958;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=456QAvvtFsJz9MlnBR4BMWWfSHxyYmN8x4WUjQvR230=;
-        b=ZEfLFAkeRU2gIWo8oNm4F2yRm3hBbNC/T914gFb4O09VoZ8GEaSwZ3KHPdWKgRGxfS
-         6Xo2BbxEmF7YME+NVOP8MLjOvJK1uc+sRg5jlrZqvpA5TEqEy016BBKD1WgB4R4odsso
-         TTY6mP7+SuTuNvxww/CMw47g1cfpEsaFZC/xYJGD/Pks1bCVDx4BmT1I/cspN7YxA3xl
-         WqEj22ugjF5jCq6fKepkWWyvKpDtVwdvLhbBLsC23lUQNQQrb2Csj3GmmKr1ZVlS3u+Z
-         7oAgi3fTGcVvQ97cYaivN3KXgKgc1+3Rd2DzCPUQhYKGtbJPlFU+mz0GgzSgfzgHFM/Q
-         bqVQ==
+        bh=Qp6LyIaTjuBGZ4eQdu84T77cz5sFNOTq+6H0iaPWSIo=;
+        b=U+rLnvmAKOQNiK3Ab8LtIRiH+ieLN/gC1CsMYe3pl996C9JvK1LbXg2npsOx7mZTds
+         OgftBb1HigpM71CRbeyBo6L9B/v58rp6GQhQvSfBma8O69e8K7nXhaKhfd6MrKK6USdb
+         Na0pTQi4GqDuNCwxFjWQqcHAmdVVfQbDLNZnMR1IxXmJifqiU9UqDaOpzqYlcSPETrMS
+         51b/tT/389zSyIos+o7mt0NAFTHlkprcf/7EpbTU3RVKvJOUgucS/5aQADUTjldWoZFJ
+         5E6wco7U95XgEQCeh+lF6qBwwOlkM6a7ZOVeyTO8fUmVTQ+PKcnohH7zlsHly9TQR4/X
+         dm/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681334957;
+        d=1e100.net; s=20221208; t=1681334958;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=456QAvvtFsJz9MlnBR4BMWWfSHxyYmN8x4WUjQvR230=;
-        b=EtFkwL7gApJXoRJ6ZHfGp6mxTSS8SpzHPXc+0tu5N+6Vgx49W9v8AyuJTLVksLJ4IG
-         N32jx7lvQEHPKZ087a54DoZ4Lgb6cDv+vucIB6y/OOtbFn+BOigkN06bUKNTVWZXag4P
-         DdabHap6GXQp+EdR913XZ/PdlgQRqwOzKH9bXECb8DPcmVHuBLvhJSmJaD95HNl6fS2n
-         YSzuNqSaNDUD8GYSOwYLnWCgQzOu4VBr4+hE+sj9U+bel82kw6WNM/Z6GqRxFjCIdXfS
-         UFYgavMFz7XXftzVjjtuDZ0sv3Pko2lyue+Ew838PHVY8w0ogdN53gEtteq5imWoQmtf
-         QSHw==
-X-Gm-Message-State: AAQBX9cYS7IKlJxTopdW+1yG4NHkPG06LIHWcp20x6nSbueXSLsnAsub
-        Q8ngGJ/N66VKGWI6JLHllLM=
-X-Google-Smtp-Source: AKy350Z/K5A6wvUUtoxhM9asteWT3QdOauvOoPj7FRaYuOul6Xh7e5It0qADBdsDxG0E+/CS74OGOQ==
-X-Received: by 2002:a2e:9a83:0:b0:2a7:84b5:f360 with SMTP id p3-20020a2e9a83000000b002a784b5f360mr23112lji.39.1681334957269;
-        Wed, 12 Apr 2023 14:29:17 -0700 (PDT)
+        bh=Qp6LyIaTjuBGZ4eQdu84T77cz5sFNOTq+6H0iaPWSIo=;
+        b=lP4tr5vKW2blERy9tL5fdmXK6x4OyBBV82JRAh5lZe/Sj6ZmYoGJh+n+Pjb8lF65D5
+         MK6EquGJA8cwkmX+sUx1fXSFVpd4QkaXFoomtE9zzinP6oOU7vqb3aWZEkvXJ7PPhcah
+         FASXHjB1NONqvaUn2YkzXvN4lEEtOViozTOs5TA83dVCNXXfLmEEIajId7f02GRBDtft
+         wy5ndFN82p0HEq4YbEDC/X69PBo1vLHw5tevFREVRLZY3qVJ1fnaD9e3prFgKY/uL++/
+         BosqNqlTwqvndjXVweNTIn76M5xHQSuaH2Og2QRcFjwjP1cfEnIAUqwWpUUqWtAVE/Y6
+         Mxfw==
+X-Gm-Message-State: AAQBX9cfuw7Cbj9utzgK0RLNVqlsdaW836I/o10nooSEHiXYXhrRg2vf
+        KG1wwe2F3LpUhPf6wK6XJGQ=
+X-Google-Smtp-Source: AKy350aldqAfGI10vxdfzvcAzNPZ/ZfmZHdfrVy8JYZwKIOZ/iF1zeFrRzQz63bmJUIMS2oN0qw/Qg==
+X-Received: by 2002:a2e:7006:0:b0:2a7:6f97:51bb with SMTP id l6-20020a2e7006000000b002a76f9751bbmr24003ljc.31.1681334958253;
+        Wed, 12 Apr 2023 14:29:18 -0700 (PDT)
 Received: from localhost.localdomain (93-80-67-75.broadband.corbina.ru. [93.80.67.75])
-        by smtp.googlemail.com with ESMTPSA id p14-20020a2e804e000000b002a7758b13c9sm1882481ljg.52.2023.04.12.14.29.16
+        by smtp.googlemail.com with ESMTPSA id p14-20020a2e804e000000b002a7758b13c9sm1882481ljg.52.2023.04.12.14.29.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Apr 2023 14:29:16 -0700 (PDT)
+        Wed, 12 Apr 2023 14:29:17 -0700 (PDT)
 From:   Ivan Mikhaylov <fr0st61te@gmail.com>
 To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -58,11 +58,10 @@ To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ivan Mikhaylov <fr0st61te@gmail.com>,
-        Paul Fertser <fercerpav@gmail.com>
-Subject: [PATCH 3/4] net/ftgmac100: add mac-address-increment option for GMA command from NC-SI
-Date:   Thu, 13 Apr 2023 00:29:04 +0000
-Message-Id: <20230413002905.5513-4-fr0st61te@gmail.com>
+        linux-kernel@vger.kernel.org, Ivan Mikhaylov <fr0st61te@gmail.com>
+Subject: [PATCH 4/4] net/ncsi: add shift MAC address property
+Date:   Thu, 13 Apr 2023 00:29:05 +0000
+Message-Id: <20230413002905.5513-5-fr0st61te@gmail.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230413002905.5513-1-fr0st61te@gmail.com>
 References: <20230413002905.5513-1-fr0st61te@gmail.com>
@@ -78,30 +77,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add s32 mac-address-increment option for Get MAC Address command from
-NC-SI.
+Add the shift MAC address property for GMA command which provides which
+shift should be used but keep old one values for backward compatibility.
 
-Signed-off-by: Paul Fertser <fercerpav@gmail.com>
 Signed-off-by: Ivan Mikhaylov <fr0st61te@gmail.com>
 ---
- Documentation/devicetree/bindings/net/ftgmac100.txt | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/ncsi/ncsi-rsp.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/ftgmac100.txt b/Documentation/devicetree/bindings/net/ftgmac100.txt
-index 29234021f601..7ef5329d888d 100644
---- a/Documentation/devicetree/bindings/net/ftgmac100.txt
-+++ b/Documentation/devicetree/bindings/net/ftgmac100.txt
-@@ -22,6 +22,10 @@ Optional properties:
- - use-ncsi: Use the NC-SI stack instead of an MDIO PHY. Currently assumes
-   rmii (100bT) but kept as a separate property in case NC-SI grows support
-   for a gigabit link.
-+- mac-address-increment: Increment the MAC address taken by GMA command via
-+  NC-SI. Specifies a signed number to be added to the host MAC address as
-+  obtained by the OEM GMA command. If not specified, 1 is used by default
-+  for Broadcom and Intel network cards, 0 otherwise.
- - no-hw-checksum: Used to disable HW checksum support. Here for backward
-   compatibility as the driver now should have correct defaults based on
-   the SoC.
+diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
+index 069c2659074b..1f108db34d85 100644
+--- a/net/ncsi/ncsi-rsp.c
++++ b/net/ncsi/ncsi-rsp.c
+@@ -9,6 +9,8 @@
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+ #include <linux/skbuff.h>
++#include <linux/platform_device.h>
++#include <linux/of.h>
+ 
+ #include <net/ncsi.h>
+ #include <net/net_namespace.h>
+@@ -616,9 +618,12 @@ static int ncsi_rsp_handler_oem_gma(struct ncsi_request *nr, int mfr_id)
+ {
+ 	struct ncsi_dev_priv *ndp = nr->ndp;
+ 	struct net_device *ndev = ndp->ndev.dev;
++	struct platform_device *pdev;
+ 	struct ncsi_rsp_oem_pkt *rsp;
+ 	struct sockaddr saddr;
+ 	u32 mac_addr_off = 0;
++	s32 shift_mac_addr = 0;
++	u64 mac_addr;
+ 	int ret = 0;
+ 
+ 	/* Get the response header */
+@@ -635,7 +640,17 @@ static int ncsi_rsp_handler_oem_gma(struct ncsi_request *nr, int mfr_id)
+ 
+ 	memcpy(saddr.sa_data, &rsp->data[mac_addr_off], ETH_ALEN);
+ 	if (mfr_id == NCSI_OEM_MFR_BCM_ID || mfr_id == NCSI_OEM_MFR_INTEL_ID)
+-		eth_addr_inc((u8 *)saddr.sa_data);
++		shift_mac_addr = 1;
++
++	pdev = to_platform_device(ndev->dev.parent);
++	if (pdev)
++		of_property_read_s32(pdev->dev.of_node,
++				     "mac-address-increment", &shift_mac_addr);
++
++	/* Increase mac address by shift value for BMC's address */
++	mac_addr = ether_addr_to_u64((u8 *)saddr.sa_data);
++	mac_addr += shift_mac_addr;
++	u64_to_ether_addr(mac_addr, (u8 *)saddr.sa_data);
+ 	if (!is_valid_ether_addr((const u8 *)saddr.sa_data))
+ 		return -ENXIO;
+ 
 -- 
 2.40.0
 
