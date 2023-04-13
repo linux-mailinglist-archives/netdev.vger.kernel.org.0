@@ -2,128 +2,603 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 880246E1132
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 17:33:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82CE46E1142
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 17:36:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231389AbjDMPdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 11:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52122 "EHLO
+        id S231467AbjDMPgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 11:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231354AbjDMPdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 11:33:43 -0400
-Received: from mail-io1-f77.google.com (mail-io1-f77.google.com [209.85.166.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1A0359D
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 08:33:41 -0700 (PDT)
-Received: by mail-io1-f77.google.com with SMTP id g1-20020a056602242100b00760ba42ef80so361980iob.16
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 08:33:41 -0700 (PDT)
+        with ESMTP id S231181AbjDMPgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 11:36:08 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E6FB45A;
+        Thu, 13 Apr 2023 08:36:01 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id gw13so8820752wmb.3;
+        Thu, 13 Apr 2023 08:36:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681400160; x=1683992160;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=r6I2G6BkP+bNNZVfkmIhLe91i4VfsEWmmDNeAoNhNEI=;
+        b=Ehru/xIlXIEJpYxPqbLviYrViaTVbkbA1dyTiW2JnizwpU4IqbMWB7VoEnke5BsXTh
+         pAbB8aF0qJeUfxoOk/bZIRbMM569dov8jKGDCKpxG3bIIEVbclwZeKdvyPsn6W3DZ5i5
+         Adk493lPuAiNf6Tnjpu6AG4oEta3qjU4jEkUtalazmfakd+uLtR6MlARCYHsRblH+aIq
+         snWw75q762whWWCGtGb1Cv+kHrbubsWa3ASY72v3IzVdVVYlkvUnActQWs/eYhx1FsYx
+         SnQ/io84EL7rIij1niKqMVLDHjPRjEXFpnt7pnRSJFXURE8rs5cqiHCk31I/4TtnqvdZ
+         crBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681400020; x=1683992020;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CH/wnFKEHw/ZuUNinYZbwxexwZCPvWpvfmRYHTUngNI=;
-        b=O8RPRAqmsn6oEW8Be07Ykm/iAezkBgGrzb4FdugTkPMNXmTzoBoqjkS8aXyd6UYaem
-         UkjXQj9lezAOf+3cAQBEpNusy9fhfyzAVxkhzfI0D2TkxgtAUm+lBQxXwMa7XL1xsrsl
-         ZDUk4+iZSfUlbOxIdyjWFceDU5uCkgKy3EhwddX/UrT9bPnHbN18s1AfrPeDUWCedIPT
-         BIHQGpHxiR2XOBt03TjoaH5uvOFg8GJ/+v3BuR1+jJAMqoQ14/GHmtyadoUznidIcYZ4
-         S247pZsAnViJQSzOkUBe4uk36dxchbL3xGnjFnysrdwDM1oLgJsZKUPmUtULg48twrs5
-         eiBQ==
-X-Gm-Message-State: AAQBX9cYDJraF8KpcxkZ81rAdTvcH6hjtiMAONqwIcXNJXcqjNrkiT1M
-        l/eHC10kT5aD8+TVEN8jFWw8lfPEsFpKDjgsKUBMd9jxoo+q
-X-Google-Smtp-Source: AKy350a3x3f7fQO9a3dq+ppYo28D+FGUOcXxPn1gj+dUywbekZ0BiR2BfdVO3s1CGK1hpLHwcx9y6soegnGf2R8EFT4KerjA14Lx
+        d=1e100.net; s=20221208; t=1681400160; x=1683992160;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=r6I2G6BkP+bNNZVfkmIhLe91i4VfsEWmmDNeAoNhNEI=;
+        b=iAxvN6cJm0W7klc8lg83ucJa00wVzU6O18y02ox8Xkz0NRGj4IHDQjmfqm6WrErho2
+         KHUOxi/M9nbBKnyilZXKNiAq29bw/gpBACNhIC1w3DOsPxRdXB7ji0hdGRcvv3vdQP6B
+         m221Z73Ox0JppLhkHU2flXay0RWENXiO/9vLuVzm1SCKDTFtClg7H+qROPg8IrYGmHv4
+         jcn0d9nU7ccJfhPS+6CioDgLpWKbiN3fRZ9QKJ5AlcsZ3xcE7VoYADfGIUjaQrPS2esg
+         fwPoiwvgCUK5sIj9iaryTYvr8x49ZWJp1Fb/5mNyLASPMW+nuELXDByYAu/zAOY/JGdm
+         ix2A==
+X-Gm-Message-State: AAQBX9epuwTmXSedLYHcuMbiGJlH7SYUGwgDuRIuARv061FIBZlTldh3
+        1L/PA9reXEH14OIdKyshrAo=
+X-Google-Smtp-Source: AKy350YoLsyin4t111fcr0f1FnNC8cGvjNnrOymbTwNfHPjUsySFXoJjUar5/nzzdD/aN0kPHXp11w==
+X-Received: by 2002:a7b:c3cc:0:b0:3f0:310c:165 with SMTP id t12-20020a7bc3cc000000b003f0310c0165mr2121102wmj.28.1681400159600;
+        Thu, 13 Apr 2023 08:35:59 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id m9-20020a7bcb89000000b003edc11c2ecbsm2118935wmi.4.2023.04.13.08.35.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Apr 2023 08:35:59 -0700 (PDT)
+Date:   Thu, 13 Apr 2023 18:35:55 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Ladislav Michl <oss-lists@triops.cz>
+Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
+        linux-mips@vger.kernel.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: Re: [RFC 3/3] staging: octeon: convert to use phylink
+Message-ID: <0af60abb-d599-4fdd-9bf6-ccf14524fe44@kili.mountain>
+References: <ZDgNexVTEfyGo77d@lenoch>
+ <ZDgOZZb2LrlFEEbv@lenoch>
 MIME-Version: 1.0
-X-Received: by 2002:a02:850e:0:b0:40b:d54d:e5d6 with SMTP id
- g14-20020a02850e000000b0040bd54de5d6mr849776jai.5.1681400020453; Thu, 13 Apr
- 2023 08:33:40 -0700 (PDT)
-Date:   Thu, 13 Apr 2023 08:33:40 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f1db9605f939720e@google.com>
-Subject: [syzbot] [bpf?] [net?] WARNING in sock_map_del_link
-From:   syzbot <syzbot+49f6cef45247ff249498@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        jakub@cloudflare.com, john.fastabend@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZDgOZZb2LrlFEEbv@lenoch>
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Apr 13, 2023 at 04:15:01PM +0200, Ladislav Michl wrote:
+> From: Ladislav Michl <ladis@linux-mips.org>
+> 
+> Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
 
-syzbot found the following issue on:
+We always insist that every commit needs a commit message.
 
-HEAD commit:    d319f344561d mm: Fix copy_from_user_nofault().
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=15930c9dc80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=78c9d875f0a80d33
-dashboard link: https://syzkaller.appspot.com/bug?extid=49f6cef45247ff249498
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Why are you doing this?  Does this have any effect for the user?
+Imagine you are a power user and something stops working and they are
+reviewing the git log to see if it's intentional or not.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+> ---
+>  drivers/staging/octeon/Kconfig           |   2 +-
+>  drivers/staging/octeon/ethernet-mdio.c   | 171 ++++++++++++++---------
+>  drivers/staging/octeon/ethernet-rgmii.c  |  13 +-
+>  drivers/staging/octeon/ethernet.c        |  64 +++------
+>  drivers/staging/octeon/octeon-ethernet.h |   8 +-
+>  5 files changed, 136 insertions(+), 122 deletions(-)
+> 
+> diff --git a/drivers/staging/octeon/Kconfig b/drivers/staging/octeon/Kconfig
+> index 5319909eb2f6..fda90025710d 100644
+> --- a/drivers/staging/octeon/Kconfig
+> +++ b/drivers/staging/octeon/Kconfig
+> @@ -3,7 +3,7 @@ config OCTEON_ETHERNET
+>  	tristate "Cavium Networks Octeon Ethernet support"
+>  	depends on CAVIUM_OCTEON_SOC || COMPILE_TEST
+>  	depends on NETDEVICES
+> -	select PHYLIB
+> +	select PHYLINK
+>  	select MDIO_OCTEON
+>  	help
+>  	  This driver supports the builtin ethernet ports on Cavium
+> diff --git a/drivers/staging/octeon/ethernet-mdio.c b/drivers/staging/octeon/ethernet-mdio.c
+> index b3049108edc4..a14fb4dbb2fd 100644
+> --- a/drivers/staging/octeon/ethernet-mdio.c
+> +++ b/drivers/staging/octeon/ethernet-mdio.c
+> @@ -9,7 +9,7 @@
+>  #include <linux/ethtool.h>
+>  #include <linux/phy.h>
+>  #include <linux/ratelimit.h>
+> -#include <linux/of_mdio.h>
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/229f3623b7df/disk-d319f344.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/6da0db75c9aa/vmlinux-d319f344.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/01f022fb9a13/bzImage-d319f344.xz
+Removing this include seems unrelated?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+49f6cef45247ff249498@syzkaller.appspotmail.com
+> +#include <linux/of_net.h>
+>  #include <generated/utsrelease.h>
+>  #include <net/dst.h>
+>  
+> @@ -26,23 +26,27 @@ static void cvm_oct_get_drvinfo(struct net_device *dev,
+>  	strscpy(info->bus_info, "Builtin", sizeof(info->bus_info));
+>  }
+>  
+> -static int cvm_oct_nway_reset(struct net_device *dev)
+> +static int cvm_oct_get_link_ksettings(struct net_device *dev,
+> +				      struct ethtool_link_ksettings *cmd)
+>  {
+> -	if (!capable(CAP_NET_ADMIN))
+> -		return -EPERM;
+> +	struct octeon_ethernet *priv = netdev_priv(dev);
+> +
+> +	return phylink_ethtool_ksettings_get(priv->phylink, cmd);
+> +}
+>  
+> -	if (dev->phydev)
+> -		return phy_start_aneg(dev->phydev);
+> +static int cvm_oct_set_link_ksettings(struct net_device *dev,
+> +				      const struct ethtool_link_ksettings *cmd)
+> +{
+> +	struct octeon_ethernet *priv = netdev_priv(dev);
+>  
+> -	return -EINVAL;
+> +	return phylink_ethtool_ksettings_set(priv->phylink, cmd);
+>  }
+>  
+>  const struct ethtool_ops cvm_oct_ethtool_ops = {
+>  	.get_drvinfo = cvm_oct_get_drvinfo,
+> -	.nway_reset = cvm_oct_nway_reset,
+>  	.get_link = ethtool_op_get_link,
+> -	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+> -	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+> +	.get_link_ksettings = cvm_oct_get_link_ksettings,
+> +	.set_link_ksettings = cvm_oct_set_link_ksettings,
+>  };
+>  
+>  /**
+> @@ -55,53 +59,80 @@ const struct ethtool_ops cvm_oct_ethtool_ops = {
+>   */
+>  int cvm_oct_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+>  {
+> -	if (!netif_running(dev))
+> -		return -EINVAL;
+> +	struct octeon_ethernet *priv = netdev_priv(dev);
+>  
+> -	if (!dev->phydev)
+> -		return -EINVAL;
+> +	return phylink_mii_ioctl(priv->phylink, rq, cmd);
+> +}
+>  
+> -	return phy_mii_ioctl(dev->phydev, rq, cmd);
+> +static void cvm_oct_mac_get_state(struct phylink_config *config,
+> +				  struct phylink_link_state *state)
+> +{
+> +	union cvmx_helper_link_info link_info;
+> +	struct net_device *dev = to_net_dev(config->dev);
+> +	struct octeon_ethernet *priv = netdev_priv(dev);
+> +
+> +	link_info = cvmx_helper_link_get(priv->port);
+> +	state->link = link_info.s.link_up;
+> +	state->duplex = link_info.s.full_duplex ? DUPLEX_FULL : DUPLEX_HALF;
+> +	state->speed = link_info.s.speed;
+>  }
+>  
+> -void cvm_oct_note_carrier(struct octeon_ethernet *priv,
+> -			  union cvmx_helper_link_info li)
+> +static void cvm_oct_mac_config(struct phylink_config *config,
+> +			       unsigned int mode,
+> +			       const struct phylink_link_state *state)
+>  {
+> -	if (li.s.link_up) {
+> -		pr_notice_ratelimited("%s: %u Mbps %s duplex, port %d, queue %d\n",
+> -				      netdev_name(priv->netdev), li.s.speed,
+> -				      (li.s.full_duplex) ? "Full" : "Half",
+> -				      priv->port, priv->queue);
+> -	} else {
+> -		pr_notice_ratelimited("%s: Link down\n",
+> -				      netdev_name(priv->netdev));
+> -	}
+>  }
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 7921 at kernel/softirq.c:376 __local_bh_enable_ip+0xbe/0x130 kernel/softirq.c:376
-Modules linked in:
-CPU: 1 PID: 7921 Comm: syz-executor.4 Not tainted 6.2.0-syzkaller-13249-gd319f344561d #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
-RIP: 0010:__local_bh_enable_ip+0xbe/0x130 kernel/softirq.c:376
-Code: 45 bf 01 00 00 00 e8 b1 44 0a 00 e8 9c 41 3d 00 fb 65 8b 05 2c 61 b5 7e 85 c0 74 58 5b 5d c3 65 8b 05 12 2f b4 7e 85 c0 75 a2 <0f> 0b eb 9e e8 e9 41 3d 00 eb 9f 48 89 ef e8 ff 30 18 00 eb a8 0f
-RSP: 0018:ffffc90007bffbe8 EFLAGS: 00010046
-RAX: 0000000000000000 RBX: 0000000000000201 RCX: 1ffffffff1cf0736
-RDX: 0000000000000000 RSI: 0000000000000201 RDI: ffffffff882bf40a
-RBP: ffffffff882bf40a R08: 0000000000000000 R09: ffff88801cc6327b
-R10: ffffed100398c64f R11: 1ffffffff21917f0 R12: ffff88801cc63268
-R13: ffff88801cc63268 R14: ffff8880188ef500 R15: 0000000000000000
-FS:  00007f378f724700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fbbc57831b8 CR3: 00000000210ad000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- spin_unlock_bh include/linux/spinlock.h:395 [inline]
- sock_map_del_link+0x2ea/0x510 net/core/sock_map.c:165
- sock_map_unref+0xb0/0x1d0 net/core/sock_map.c:184
- sock_hash_delete_elem+0x1ec/0x2a0 net/core/sock_map.c:945
- map_delete_elem kernel/bpf/syscall.c:1536 [inline]
- __sys_bpf+0x2edc/0x53e0 kernel/bpf/syscall.c:5053
- __do_sys_bpf kernel/bpf/syscall.c:5166 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:5164 [inline]
- __x64_sys_bpf+0x79/0xc0 kernel/bpf/syscall.c:5164
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f378ea8c169
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f378f724168 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 00007f378ebabf80 RCX: 00007f378ea8c169
-RDX: 0000000000000020 RSI: 0000000020000140 RDI: 0000000000000003
-RBP: 00007f378eae7ca1 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffe9737aebf R14: 00007f378f724300 R15: 0000000000022000
- </TASK>
+Delete this dummy function.
+
+>  
+> -void cvm_oct_adjust_link(struct net_device *dev)
+> +static void cvm_oct_mac_link_down(struct phylink_config *config,
+> +				  unsigned int mode, phy_interface_t interface)
+>  {
+> +	union cvmx_helper_link_info link_info;
+> +	struct net_device *dev = to_net_dev(config->dev);
+>  	struct octeon_ethernet *priv = netdev_priv(dev);
+> +
+> +	link_info.u64		= 0;
+> +	link_info.s.link_up	= 0;
+> +	link_info.s.full_duplex = 0;
+> +	link_info.s.speed	= 0;
+
+Just do this in the initializer:
+
+	union cvmx_helper_link_info link_info = {};
+
+> +	priv->link_info		= link_info.u64;
+
+Best to not align anything in a .c file.  Stuff in .c files changes a
+lot and then when you change it you have to re-indent everything.  And
+it's like, *ugh*, is re-indenting supposed to be done in a follow on
+patch?
+
+The "link_info.u64" also zeroes everything so the rest was already
+duplicative...
+
+> +
+> +	cvmx_helper_link_set(priv->port, link_info);
+> +
+> +	priv->poll_used = false;
+> +}
+> +
+> +static void cvm_oct_mac_link_up(struct phylink_config *config,
+> +				struct phy_device *phy,
+> +				unsigned int mode, phy_interface_t interface,
+> +				int speed, int duplex,
+> +				bool tx_pause, bool rx_pause)
+> +{
+>  	union cvmx_helper_link_info link_info;
+> +	struct net_device *dev = to_net_dev(config->dev);
+> +	struct octeon_ethernet *priv = netdev_priv(dev);
+>  
+>  	link_info.u64		= 0;
+> -	link_info.s.link_up	= dev->phydev->link ? 1 : 0;
+> -	link_info.s.full_duplex = dev->phydev->duplex ? 1 : 0;
+> -	link_info.s.speed	= dev->phydev->speed;
+> +	link_info.s.link_up	= 1;
+> +	link_info.s.full_duplex = duplex == DUPLEX_FULL ? 1 : 0;
+> +	link_info.s.speed	= speed;
+>  	priv->link_info		= link_info.u64;
+>  
+> -	/*
+> -	 * The polling task need to know about link status changes.
+> -	 */
+> -	if (priv->poll)
+> -		priv->poll(dev);
+> +	cvmx_helper_link_set(priv->port, link_info);
+>  
+> -	if (priv->last_link != dev->phydev->link) {
+> -		priv->last_link = dev->phydev->link;
+> -		cvmx_helper_link_set(priv->port, link_info);
+> -		cvm_oct_note_carrier(priv, link_info);
+> +	if (!phy && priv->poll) {
+> +		priv->poll_used = true;
+> +		priv->poll(dev);
+>  	}
+>  }
+>  
+> +static const struct phylink_mac_ops cvm_oct_phylink_ops = {
+> +	.validate = phylink_generic_validate,
+> +	.mac_pcs_get_state = cvm_oct_mac_get_state,
+> +	.mac_config = cvm_oct_mac_config,
+> +	.mac_link_down = cvm_oct_mac_link_down,
+> +	.mac_link_up = cvm_oct_mac_link_up,
+> +};
+> +
+>  int cvm_oct_common_stop(struct net_device *dev)
+>  {
+>  	struct octeon_ethernet *priv = netdev_priv(dev);
+> @@ -116,15 +147,14 @@ int cvm_oct_common_stop(struct net_device *dev)
+>  
+>  	priv->poll = NULL;
+>  
+> -	if (dev->phydev)
+> -		phy_disconnect(dev->phydev);
+> +	phylink_stop(priv->phylink);
+> +	phylink_disconnect_phy(priv->phylink);
+>  
+>  	if (priv->last_link) {
+>  		link_info.u64 = 0;
+>  		priv->last_link = 0;
+>  
+>  		cvmx_helper_link_set(priv->port, link_info);
+> -		cvm_oct_note_carrier(priv, link_info);
+>  	}
+>  	return 0;
+>  }
+> @@ -138,34 +168,45 @@ int cvm_oct_common_stop(struct net_device *dev)
+>   */
+>  int cvm_oct_phy_setup_device(struct net_device *dev)
+>  {
+> +	phy_interface_t phy_mode;
+> +	struct phylink *phylink;
+>  	struct octeon_ethernet *priv = netdev_priv(dev);
+> -	struct device_node *phy_node;
+> -	struct phy_device *phydev = NULL;
+>  
+> -	if (!priv->of_node)
+> -		goto no_phy;
+> -
+> -	phy_node = of_parse_phandle(priv->of_node, "phy-handle", 0);
+> -	if (!phy_node && of_phy_is_fixed_link(priv->of_node))
+> -		phy_node = of_node_get(priv->of_node);
+> -	if (!phy_node)
+> -		goto no_phy;
+> +	priv->phylink_config.dev = &dev->dev;
+> +	priv->phylink_config.type = PHYLINK_NETDEV;
+> +	priv->phylink_config.mac_capabilities = MAC_ASYM_PAUSE |
+> +						MAC_10 | MAC_100 | MAC_1000;
+> +	__set_bit(PHY_INTERFACE_MODE_MII,
+> +		  priv->phylink_config.supported_interfaces);
+> +	__set_bit(PHY_INTERFACE_MODE_RMII,
+> +		  priv->phylink_config.supported_interfaces);
+> +
+> +	switch (priv->imode) {
+> +	case CVMX_HELPER_INTERFACE_MODE_RGMII:
+> +		phy_interface_set_rgmii(priv->phylink_config.supported_interfaces);
+> +		break;
+> +	case CVMX_HELPER_INTERFACE_MODE_SGMII:
+> +		__set_bit(PHY_INTERFACE_MODE_1000BASEX,
+> +			  priv->phylink_config.supported_interfaces);
+> +		__set_bit(PHY_INTERFACE_MODE_SGMII,
+> +			  priv->phylink_config.supported_interfaces);
+> +		__set_bit(PHY_INTERFACE_MODE_QSGMII,
+> +			  priv->phylink_config.supported_interfaces);
+> +		break;
+> +	default:
+> +		break;
+> +	}
+>  
+> -	phydev = of_phy_connect(dev, phy_node, cvm_oct_adjust_link, 0,
+> -				priv->phy_mode);
+> -	of_node_put(phy_node);
+> +	if (of_get_phy_mode(priv->of_node, &phy_mode) == 0)
+> +		priv->phy_mode = phy_mode;
+>  
+> -	if (!phydev)
+> -		return -EPROBE_DEFER;
+> +	phylink = phylink_create(&priv->phylink_config,
+> +				 of_fwnode_handle(priv->of_node),
+> +				 priv->phy_mode, &cvm_oct_phylink_ops);
+> +	if (IS_ERR(phylink))
+> +		return PTR_ERR(phylink);
+>  
+> -	priv->last_link = 0;
+> -	phy_start(phydev);
+> +	priv->phylink = phylink;
+>  
+> -	return 0;
+> -no_phy:
+> -	/* If there is no phy, assume a direct MAC connection and that
+> -	 * the link is up.
+> -	 */
+> -	netif_carrier_on(dev);
+>  	return 0;
+>  }
+> diff --git a/drivers/staging/octeon/ethernet-rgmii.c b/drivers/staging/octeon/ethernet-rgmii.c
+> index 0c4fac31540a..8c6eb0b87254 100644
+> --- a/drivers/staging/octeon/ethernet-rgmii.c
+> +++ b/drivers/staging/octeon/ethernet-rgmii.c
+> @@ -115,17 +115,8 @@ static void cvm_oct_rgmii_poll(struct net_device *dev)
+>  
+>  	cvm_oct_check_preamble_errors(dev);
+>  
+> -	if (likely(!status_change))
+                   ^
+Negated.
+
+> -		return;
+> -
+> -	/* Tell core. */
+> -	if (link_info.s.link_up) {
+> -		if (!netif_carrier_ok(dev))
+> -			netif_carrier_on(dev);
+> -	} else if (netif_carrier_ok(dev)) {
+> -		netif_carrier_off(dev);
+> -	}
+> -	cvm_oct_note_carrier(priv, link_info);
+> +	if (likely(status_change))
+
+Originally a status_change was unlikely but now it is likely.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> +		phylink_mac_change(priv->phylink, link_info.s.link_up);
+>  }
+>  
+>  int cvm_oct_rgmii_open(struct net_device *dev)
+> diff --git a/drivers/staging/octeon/ethernet.c b/drivers/staging/octeon/ethernet.c
+> index 466d43a71d34..21892f805245 100644
+> --- a/drivers/staging/octeon/ethernet.c
+> +++ b/drivers/staging/octeon/ethernet.c
+> @@ -10,7 +10,7 @@
+>  #include <linux/module.h>
+>  #include <linux/netdevice.h>
+>  #include <linux/etherdevice.h>
+> -#include <linux/phy.h>
+> +#include <linux/phylink.h>
+>  #include <linux/slab.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/of_mdio.h>
+> @@ -128,7 +128,7 @@ static void cvm_oct_periodic_worker(struct work_struct *work)
+>  						    struct octeon_ethernet,
+>  						    port_periodic_work.work);
+>  
+> -	if (priv->poll)
+> +	if (priv->poll_used && priv->poll)
+>  		priv->poll(cvm_oct_device[priv->port]);
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+The name poll_used was really confusing to me.  We set it before we've
+done any polling so the tense is wrong.  I think it means that we should
+not bother polling if the link is down...  Could we change the name to
+->link_up?  Or maybe add a comment?
+
+>  
+>  	cvm_oct_device[priv->port]->netdev_ops->ndo_get_stats
+> @@ -446,23 +446,20 @@ int cvm_oct_common_init(struct net_device *dev)
+>  
+>  void cvm_oct_common_uninit(struct net_device *dev)
+>  {
+> -	if (dev->phydev)
+> -		phy_disconnect(dev->phydev);
+> +	struct octeon_ethernet *priv = netdev_priv(dev);
+> +
+> +	cancel_delayed_work_sync(&priv->port_periodic_work);
+> +	phylink_destroy(priv->phylink);
+>  }
+>  
+>  int cvm_oct_common_open(struct net_device *dev,
+>  			void (*link_poll)(struct net_device *))
+>  {
+> +	int err;
+
+This is networking code so declarations need to be in reverse Christmas
+tree order.
+
+	long long_variable_name;
+	medium variable_name;
+	short name;
+
+>  	union cvmx_gmxx_prtx_cfg gmx_cfg;
+>  	struct octeon_ethernet *priv = netdev_priv(dev);
+>  	int interface = INTERFACE(priv->port);
+>  	int index = INDEX(priv->port);
+> -	union cvmx_helper_link_info link_info;
+> -	int rv;
+> -
+> -	rv = cvm_oct_phy_setup_device(dev);
+> -	if (rv)
+> -		return rv;
+>  
+>  	gmx_cfg.u64 = cvmx_read_csr(CVMX_GMXX_PRTX_CFG(index, interface));
+>  	gmx_cfg.s.en = 1;
+> @@ -473,20 +470,17 @@ int cvm_oct_common_open(struct net_device *dev,
+>  	if (octeon_is_simulation())
+>  		return 0;
+>  
+> -	if (dev->phydev) {
+> -		int r = phy_read_status(dev->phydev);
+> -
+> -		if (r == 0 && dev->phydev->link == 0)
+> -			netif_carrier_off(dev);
+> -		cvm_oct_adjust_link(dev);
+> -	} else {
+> -		link_info = cvmx_helper_link_get(priv->port);
+> -		if (!link_info.s.link_up)
+> -			netif_carrier_off(dev);
+> -		priv->poll = link_poll;
+> -		link_poll(dev);
+> +	err = phylink_of_phy_connect(priv->phylink, priv->of_node, 0);
+> +	if (err) {
+> +		netdev_err(dev, "Could not attach PHY (%d)\n", err);
+> +		return err;
+>  	}
+>  
+> +	priv->poll_used = false;
+> +	priv->poll = link_poll;
+> +
+> +	phylink_start(priv->phylink);
+> +
+>  	return 0;
+>  }
+>  
+> @@ -504,13 +498,7 @@ void cvm_oct_link_poll(struct net_device *dev)
+>  	else
+>  		priv->link_info = link_info.u64;
+>  
+> -	if (link_info.s.link_up) {
+> -		if (!netif_carrier_ok(dev))
+> -			netif_carrier_on(dev);
+> -	} else if (netif_carrier_ok(dev)) {
+> -		netif_carrier_off(dev);
+> -	}
+> -	cvm_oct_note_carrier(priv, link_info);
+> +	phylink_mac_change(priv->phylink, link_info.s.link_up);
+>  }
+>  
+>  static int cvm_oct_xaui_open(struct net_device *dev)
+> @@ -797,7 +785,6 @@ static int cvm_oct_probe(struct platform_device *pdev)
+>  		}
+>  	}
+>  
+> -	num_interfaces = cvmx_helper_get_number_of_interfaces();
+
+This change is correct, but I wish it were in a different commit.  It
+is unrelated.
+
+>  	for (interface = 0; interface < num_interfaces; interface++) {
+>  		int num_ports, port_index;
+>  		const struct net_device_ops *ops;
+> @@ -889,18 +876,15 @@ static int cvm_oct_probe(struct platform_device *pdev)
+>  			dev->min_mtu = VLAN_ETH_ZLEN - mtu_overhead;
+>  			dev->max_mtu = OCTEON_MAX_MTU - mtu_overhead;
+>  
+> -			if (priv->of_node && of_phy_is_fixed_link(priv->of_node)) {
+> -				if (of_phy_register_fixed_link(priv->of_node)) {
+> -					netdev_err(dev, "Failed to register fixed link for interface %d, port %d\n",
+> -						   interface, priv->port);
+> -					free_netdev(dev);
+> -					continue;
+> -				}
+> +			if (cvm_oct_phy_setup_device(dev)) {
+> +				free_netdev(dev);
+> +				continue;
+
+This was in the original code, but I don't think this is correct.  If
+there is an error then we should return instead of continuing.  This
+is especially true because cvm_oct_phy_setup_device() returns
+-EPROBE_DEFER so in theory errors are a matter of course and we have a
+way to recover from them.
+
+>  			}
+>  
+>  			if (register_netdev(dev) < 0) {
+>  				pr_err("Failed to register ethernet device for interface %d, port %d\n",
+>  				       interface, priv->port);
+> +				phylink_destroy(priv->phylink);
+
+Could you create a wrapper around this so that it's more clear that
+this matches cvm_oct_phy_setup_device()?
+
+void cvm_oct_phy_free_device(struct net_device *dev)
+{
+	struct octeon_ethernet *priv = netdev_priv(dev);
+
+	phylink_destroy(priv->phylink);
+}
+
+>  				free_netdev(dev);
+>  			} else {
+>  				cvm_oct_device[priv->port] = dev;
+> @@ -938,8 +922,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
+>  			struct net_device *dev = cvm_oct_device[port];
+>  			struct octeon_ethernet *priv = netdev_priv(dev);
+>  
+> -			cancel_delayed_work_sync(&priv->port_periodic_work);
+> -
+> +			phylink_destroy(priv->phylink);
+
+I don't understand how this works.  This call to:
+
+	cancel_delayed_work_sync(&priv->port_periodic_work);
+
+moved to cvm_oct_common_uninit().  But then why are we adding a
+phylink_destroy(priv->phylink); when the phylink_destroy() is also done
+in cvm_oct_common_uninit().
+
+>  			unregister_netdev(dev);
+>  			free_netdev(dev);
+>  			cvm_oct_device[port] = NULL;
+> @@ -969,9 +952,8 @@ static int cvm_oct_remove(struct platform_device *pdev)
+>  			struct net_device *dev = cvm_oct_device[port];
+>  			struct octeon_ethernet *priv = netdev_priv(dev);
+>  
+> -			cancel_delayed_work_sync(&priv->port_periodic_work);
+> -
+>  			cvm_oct_tx_shutdown_dev(dev);
+> +			phylink_destroy(priv->phylink);
+
+Same.
+
+>  			unregister_netdev(dev);
+>  			free_netdev(dev);
+>  			cvm_oct_device[port] = NULL;
+
+regards,
+dan carpenter
+
