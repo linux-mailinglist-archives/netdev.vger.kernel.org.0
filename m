@@ -2,85 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 426966E1022
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:38:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 913316E103A
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229457AbjDMOiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 10:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
+        id S230459AbjDMOoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 10:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbjDMOix (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:38:53 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3696D5241
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:38:51 -0700 (PDT)
-Received: from mail-yw1-f198.google.com (mail-yw1-f198.google.com [209.85.128.198])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 891CE3F457
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 14:38:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1681396728;
-        bh=X4kAT0rL5ThCmBYSbgh/zubXsP0GX7YEMqUvRhK1pXI=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=N8d2HsdqC7Fh3QkKUf9IJlXnOeMoRTLPBYjSvm2dKD4mItC5wpewrF64Q2p87b/E+
-         QBFjlgq985i3YzFL2OsUp/PfHtEJmq0E0vVVmzss0Z/WblAH3Z95yS8V5JmmQRAZ/a
-         QGv6dw6KQZxc31Y9g0dVPFzL9kO4RK8hxx9QELIh9ZNJ+OlZKEwf1dJJECI2WnhMgf
-         Of3I4GI/+RUP9mLQ5/2eQwCcIgJ3hubdoijYS+Sfxs4CsZX+AFcoCMNxWS3IF75Bnu
-         jtX/vFAP2krkGVmeFkSsXEGUR88StLylwhY1K2bggqzjZ63c9FgW6gL7x2uulZKq8i
-         vXNM0ZxyHP3Rw==
-Received: by mail-yw1-f198.google.com with SMTP id 00721157ae682-54f97aac3d0so51706177b3.15
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:38:48 -0700 (PDT)
+        with ESMTP id S229945AbjDMOoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:44:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A071119B7
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:43:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681396994;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4AHxBsSprZmHnjqJ7yFpvkrSr9FZKh55hACs17k4xbc=;
+        b=SegS49KBsRuA9GQ8D9KrJgytu8Z5NyqfVdNbNmJfDsg7uvU6nMgJRYh6znYDHuOW9dGcSz
+        ZEI1k+f2OB5Bs2K6TmFVWBEvLK5WEdy3LNJKubvChwFM4vS7nF70ejuBhVPKTIGfOvIHLs
+        hep4mWZho4sgrZ37fpfMfr+oJ/351no=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-530-dl0kZ-EqOSiAFK06-oG9jA-1; Thu, 13 Apr 2023 10:43:13 -0400
+X-MC-Unique: dl0kZ-EqOSiAFK06-oG9jA-1
+Received: by mail-ej1-f70.google.com with SMTP id f2-20020a170906084200b0094e971d803bso976115ejd.7
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:43:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681396727; x=1683988727;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=X4kAT0rL5ThCmBYSbgh/zubXsP0GX7YEMqUvRhK1pXI=;
-        b=QxiwnNmZQ9mOOICDMbYnduFcAV0Vn6MLSjEf01cbouVi8uPxtUaw2VHj6UZlBL9spI
-         G5Os+48wO+k82vcO2Uo4kuH/+j3MUi/ojOTmdxAw4dZ1AQvLjxKuR6+sIPwJtBRu9Y7N
-         rVY1JrEAwN0d+0w8uYsplQKNgsTAn1MCieqOPde9ZbRG5IEcrcPnzsHTTE6Mv8S0MI4O
-         VCZwoYK34PA51qoS7GZrqT2Nt5qQHaSXWgAK1XHLbkWRMqiYAqxEdjFVNwubY+8RJhRQ
-         4qUniCp8QCGpjURzuw99FQgrsZwvdFxEJ6cmppFCS980vDSnkLPTQ0OU9LOCORp/vRTv
-         52/g==
-X-Gm-Message-State: AAQBX9caK+raBK45PYM52r+vcH6CL5CaTV4lU8ME/G46po6rUl2yBktY
-        tzCOKWAcY2nY+UMjMpdy0RLfSvQsv2UNDa6aUJkbQBhTd8OYmLF2OXgaQwptTnuSw03si6FJTGe
-        dnBzfFyTn/kc1pQhpkuCu+i0wkGt+zowKbMr4HZ1ox8Uv9BR79A==
-X-Received: by 2002:a81:4415:0:b0:54f:9e1b:971c with SMTP id r21-20020a814415000000b0054f9e1b971cmr1543618ywa.1.1681396727127;
-        Thu, 13 Apr 2023 07:38:47 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bUW5jFJ5LMk7+hETV10BLMcQ5bG69GeMAW8TnltznTEQ5Fc6ojtahmmyRWFbfX1EZ5DEW0r8L6cu9w4KKmRl0=
-X-Received: by 2002:a81:4415:0:b0:54f:9e1b:971c with SMTP id
- r21-20020a814415000000b0054f9e1b971cmr1543599ywa.1.1681396726922; Thu, 13 Apr
- 2023 07:38:46 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681396992; x=1683988992;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4AHxBsSprZmHnjqJ7yFpvkrSr9FZKh55hACs17k4xbc=;
+        b=FSZLWVbgAnU8hd9pMrqSOZZzSBtKfpag2N2I43hpZmlP/K18q1BzQBemaZlb1/25bW
+         lTBXfPUi3tmB+oyU+EHMvrULhmnH4Zclo1iWS7Ohmwuotxps5uouSWgZ5CLYepO+DNFT
+         5SJ3dJptuA0ep0TSFWuEYB31ihrxKOVLRoqe3UYcz/QnSvj9n6D7eDAYmIpIj+QvkDQ3
+         0xX/djp/Eriy0eqlr6n8MPIHd+lx7t7qAiRFdXWuZxLEyIsNPLMIBHoL0//4xtlzP/Cz
+         jMR123d7SgajrS9MdJGn0rH0fNu5j47Xfhi4+fNwk/9nqlwrWyCq9ZoHHosuSPepTy/H
+         LfKQ==
+X-Gm-Message-State: AAQBX9e/7qrQzxVhM78+tx835rGcQb+x2wuqCjZAJ4DigCezdiWxcKuc
+        Uk1EzG/3TfHOi55f2YwOGa8nIcSbzTILRownG6AW6Ep9/fWLmMBeoOs40HpWoI7yAUesC1Rgdki
+        STF346VyVE8Xncn9n
+X-Received: by 2002:a17:906:2559:b0:94a:e89a:4fc9 with SMTP id j25-20020a170906255900b0094ae89a4fc9mr2839212ejb.73.1681396991586;
+        Thu, 13 Apr 2023 07:43:11 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YK2Rx/74f9cfSeHxFgTwYsET7Q9ppWRh9RgrRWvGYX6r8Sckh3iEVCMCl2u1De0h+WIngw9g==
+X-Received: by 2002:a17:906:2559:b0:94a:e89a:4fc9 with SMTP id j25-20020a170906255900b0094ae89a4fc9mr2839170ejb.73.1681396990829;
+        Thu, 13 Apr 2023 07:43:10 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id d25-20020a05640208d900b004fa99a22c3bsm907510edz.61.2023.04.13.07.43.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Apr 2023 07:43:10 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C79B1AA7B30; Thu, 13 Apr 2023 16:43:09 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Yafang Shao <laoar.shao@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        ast@kernel.org, hawk@kernel.org, john.fastabend@gmail.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>, martin.lau@linux.dev
+Subject: Re: [PATCH net-next] bpf, net: Support redirecting to ifb with bpf
+In-Reply-To: <968ea56a-301a-45c5-3946-497401eb95b5@iogearbox.net>
+References: <20230413025350.79809-1-laoar.shao@gmail.com>
+ <968ea56a-301a-45c5-3946-497401eb95b5@iogearbox.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 13 Apr 2023 16:43:09 +0200
+Message-ID: <874jpj2682.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20230413133355.350571-1-aleksandr.mikhalitsyn@canonical.com>
- <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com> <CANn89iLuLkUvX-dDC=rJhtFcxjnVmfn_-crOevbQe+EjaEDGbg@mail.gmail.com>
-In-Reply-To: <CANn89iLuLkUvX-dDC=rJhtFcxjnVmfn_-crOevbQe+EjaEDGbg@mail.gmail.com>
-From:   Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Date:   Thu, 13 Apr 2023 16:38:35 +0200
-Message-ID: <CAEivzxcEhfLttf0VK=NmHdQxF7CRYXNm6NwUVx6jx=-u2k-T6w@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/4] net: socket: add sockopts blacklist for
- BPF cgroup hook
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        linux-arch@vger.kernel.org, sdf@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,59 +82,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 4:22=E2=80=AFPM Eric Dumazet <edumazet@google.com> =
-wrote:
+Daniel Borkmann <daniel@iogearbox.net> writes:
+
+>> 2). We can't redirect ingress packet to ifb with bpf
+>> By trying to analyze if it is possible to redirect the ingress packet to
+>> ifb with a bpf program, we find that the ifb device is not supported by
+>> bpf redirect yet.
 >
-> On Thu, Apr 13, 2023 at 3:35=E2=80=AFPM Alexander Mikhalitsyn
-> <aleksandr.mikhalitsyn@canonical.com> wrote:
-> >
-> > During work on SO_PEERPIDFD, it was discovered (thanks to Christian),
-> > that bpf cgroup hook can cause FD leaks when used with sockopts which
-> > install FDs into the process fdtable.
-> >
-> > After some offlist discussion it was proposed to add a blacklist of
+> You actually can: Just let BPF program return TC_ACT_UNSPEC for this
+> case and then add a matchall with higher prio (so it runs after bpf)
+> that contains an action with mirred egress redirect that pushes to ifb
+> dev - there is no change needed.
+
+I wasn't aware that BPF couldn't redirect directly to an IFB; any reason
+why we shouldn't merge this patch in any case?
+
+>> This patch tries to resolve it by supporting redirecting to ifb with bpf
+>> program.
+>> 
+>> Ingress bandwidth limit is useful in some scenarios, for example, for the
+>> TCP-based service, there may be lots of clients connecting it, so it is
+>> not wise to limit the clients' egress. After limiting the server-side's
+>> ingress, it will lower the send rate of the client by lowering the TCP
+>> cwnd if the ingress bandwidth limit is reached. If we don't limit it,
+>> the clients will continue sending requests at a high rate.
 >
-> We try to replace this word by either denylist or blocklist, even in chan=
-gelogs.
+> Adding artificial queueing for the inbound traffic, aren't you worried
+> about DoS'ing your node?
 
-Hi Eric,
+Just as an aside, the ingress filter -> ifb -> qdisc on the ifb
+interface does work surprisingly well, and we've been using that over in
+OpenWrt land for years[0]. It does have some overhead associated with it,
+but I wouldn't expect it to be a source of self-DoS in itself (assuming
+well-behaved TCP traffic).
 
-Oh, I'm sorry about that. :( Sure.
+-Toke
 
->
-> > socket options those can cause troubles when BPF cgroup hook is enabled=
-.
-> >
->
-> Can we find the appropriate Fixes: tag to help stable teams ?
+[0] https://openwrt.org/docs/guide-user/network/traffic-shaping/sqm
 
-Sure, I will add next time.
-
-Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
-
-I think it's better to add Stanislav Fomichev to CC.
-
-Kind regards,
-Alex
-
->
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Paolo Abeni <pabeni@redhat.com>
-> > Cc: Leon Romanovsky <leon@kernel.org>
-> > Cc: David Ahern <dsahern@kernel.org>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Christian Brauner <brauner@kernel.org>
-> > Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > Cc: Lennart Poettering <mzxreary@0pointer.de>
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-arch@vger.kernel.org
-> > Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
-> > Suggested-by: Christian Brauner <brauner@kernel.org>
-> > Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.c=
-om>
->
-> Thanks.
