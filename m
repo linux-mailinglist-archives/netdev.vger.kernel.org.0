@@ -2,122 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD8806E0E5C
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 15:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A1156E0EAC
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 15:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231211AbjDMNRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 09:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
+        id S231431AbjDMNbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 09:31:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231148AbjDMNRn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 09:17:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F241A266;
-        Thu, 13 Apr 2023 06:17:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC2CC63E39;
-        Thu, 13 Apr 2023 13:17:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6812C433D2;
-        Thu, 13 Apr 2023 13:17:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681391850;
-        bh=7uIdzByMCPIBnJwGBw9YRimVbN0v8WEcqNv51/alYJU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=REpMDWaIBoLA+IPnRO57KORI9zHTj2xncqoTk5RkrSSPU6NQ7dPvhfKkz2aSHQ5qq
-         1jv2sNAXAJfapTbAJFjM8/4kpyvTe3Erv6AfIwWTeJ94CKu4jzS8olCfG9arOtjH2x
-         Ua97KXyVwxbpgkZdfhIE3CtVckFUPBiUraFqB3qaQpjb/FdsXAF5HG8ic31ry+Yn/I
-         ig4XygzltSNgmZAg8aoA6eRDNsTFjzGkK8IgTFAUdkE+zfC4fbJH7Zi67sNgh+dhNE
-         1DGQtGlhqBicsBrg0ewL8HMW15yHQSkz+/waHqeiJ6rNRjFUfAHv+urJLP/r1YYkOR
-         rU9ihvvN8gbzQ==
-Date:   Thu, 13 Apr 2023 16:17:26 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Cc:     jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, corbet@lwn.net,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        richardcochran@gmail.com, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
-Subject: Re: [RFC PATCH v1] ice: add CGU info to devlink info callback
-Message-ID: <20230413131726.GQ17993@unreal>
-References: <20230412133811.2518336-1-arkadiusz.kubalewski@intel.com>
+        with ESMTP id S231430AbjDMNav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 09:30:51 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67954B456;
+        Thu, 13 Apr 2023 06:30:43 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id v27so5055128wra.13;
+        Thu, 13 Apr 2023 06:30:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681392642; x=1683984642;
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KaQK7iRVCZ+tGOMD5UBKDQNPYAFG6irJphSnlz1XYBw=;
+        b=TPjS5y9UZ2hxCMCh9+/obcWBxBNchwkNkR2+5Hxj1z6twN9B+YQviF21Fh32MmkP6l
+         Gey735gbZMvKqM17FyPhZwLAlhMc0BaMLHZpgS3jBU15IOUeJHmNAQPx1/IWbZ70IYAz
+         fRQGR8z4QJcX9Bub3XXje4MvKC/uFqpMos7wBeRxH/R07jrz1hGrK4a5m4SX+HhAEDa7
+         cK3CgSI7a7vAgbnfCLbo/0d98/9ps5BcewJIp/d7SuXcryzNQc7QCgPqTFJqv2WDbJSF
+         KukZP3s5C5zCnGNuDvAg38jUYSW4WulydwMzBxMqTbOH/AAAE65ofd9e37mMqd4tjQcK
+         j1Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681392642; x=1683984642;
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=KaQK7iRVCZ+tGOMD5UBKDQNPYAFG6irJphSnlz1XYBw=;
+        b=T1VxzpqN28RfNTPzh4rG/5gFiM1IFF4jq6Jt9dboSvynj+7PR9cZtWcBtjFOXySnr6
+         PTh38JNrQFHTvxFCLjRVviRWKGZ4ttGDPgSJrhoYIHkzVuGK5PiHYT01LsGDXjqEXsm6
+         qiuZTcAgJPQY2jCjvsFgFy9aSj92JbE39Kvp/6DkmZoMkopRAY0UN1yy6IBluAMKDVPv
+         Yu7RFP+pDGHzl2CjoW5AVbkCC6hHBipk6peIvyfro/0JD5/q2V/GcIPQjzVFUqsHkld1
+         e6bdECefXnKzwLqIL7S692tvrDpvwf3hpUbDdt6m74gMEDGeyb5kYj0Hkh/W6aUn+tqw
+         OMFw==
+X-Gm-Message-State: AAQBX9e45EYJt9/umqO1lDkn80bp7QDFPI+o0Kk5s3UJ+mL+uGbrPzKh
+        26ExgOXjRHctWObDmgHvTgXi/AarPAQ=
+X-Google-Smtp-Source: AKy350bVM7Z+i+WXuHDw73K3etpPAQ49rP5bnEMELhFz/G6QANG9X+8NR7mVMHhDNPQePFigMOtm+g==
+X-Received: by 2002:a05:6000:1a42:b0:2f6:208d:2239 with SMTP id t2-20020a0560001a4200b002f6208d2239mr1343465wry.11.1681392641452;
+        Thu, 13 Apr 2023 06:30:41 -0700 (PDT)
+Received: from [192.168.0.160] ([170.253.51.134])
+        by smtp.gmail.com with ESMTPSA id z18-20020adfd0d2000000b002da75c5e143sm1317371wrh.29.2023.04.13.06.30.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Apr 2023 06:30:40 -0700 (PDT)
+Message-ID: <41f3331f-24d9-ae44-1609-1e9a610a6170@gmail.com>
+Date:   Thu, 13 Apr 2023 15:30:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230412133811.2518336-1-arkadiusz.kubalewski@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH v4 resend] ip.7: Add Special and Reserved IP Addresses
+ section
+Content-Language: en-US
+To:     Seth David Schoen <schoen@loyalty.org>, linux-man@vger.kernel.org
+Cc:     netdev@vger.kernel.org
+References: <20230413012348.GA2492327@demorgan>
+From:   Alejandro Colomar <alx.manpages@gmail.com>
+In-Reply-To: <20230413012348.GA2492327@demorgan>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------lpGbLPkzDqlAdiGmhUly0BE5"
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 12, 2023 at 03:38:11PM +0200, Arkadiusz Kubalewski wrote:
-> If Clock Generation Unit and dplls are present on NIC board user shall
-> know its details.
-> Provide the devlink info callback with a new:
-> - fixed type object `cgu.id` - hardware variant of onboard CGU
-> - running type object `fw.cgu` - CGU firmware version
-> - running type object `fw.cgu.build` - CGU configuration build version
-> 
-> These information shall be known for debugging purposes.
-> 
-> Test (on NIC board with CGU)
-> $ devlink dev info <bus_name>/<dev_name> | grep cgu
->         cgu.id 8032
->         fw.cgu 6021
->         fw.cgu.build 0x1030001
-> 
-> Test (on NIC board without CGU)
-> $ devlink dev info <bus_name>/<dev_name> | grep cgu -c
-> 0
-> 
-> Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------lpGbLPkzDqlAdiGmhUly0BE5
+Content-Type: multipart/mixed; boundary="------------ZbDUAOr3Nnooxg74Ca40Xhcq";
+ protected-headers="v1"
+From: Alejandro Colomar <alx.manpages@gmail.com>
+To: Seth David Schoen <schoen@loyalty.org>, linux-man@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Message-ID: <41f3331f-24d9-ae44-1609-1e9a610a6170@gmail.com>
+Subject: Re: [PATCH v4 resend] ip.7: Add Special and Reserved IP Addresses
+ section
+References: <20230413012348.GA2492327@demorgan>
+In-Reply-To: <20230413012348.GA2492327@demorgan>
+
+--------------ZbDUAOr3Nnooxg74Ca40Xhcq
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Hi Seth,
+
+On 4/13/23 03:23, Seth David Schoen wrote:
+> Break out the discussion of special and reserved IPv4 addresses
+> into a subsection, and briefly describe three cases in which
+> Linux no longer treats addresses specially, where other systems
+> do or did.
+>=20
+> The divergences in Linux's behavior mentioned in this patch were
+> introduced at
+>=20
+> unicast 240/4 (since 2.6.25):
+>   commit 1e637c74b0f84eaca02b914c0b8c6f67276e9697
+>   Author: Jan Engelhardt <jengelh@computergmbh.de>
+>   Date:   Mon Jan 21 03:18:08 2008 -0800
+>=20
+> unicast 0/8 (since 5.3):
+>   commit 96125bf9985a75db00496dd2bc9249b777d2b19b
+>   Author: Dave Taht <dave.taht@gmail.com>
+>   Date:   Sat Jun 22 10:07:34 2019 -0700
+>=20
+> unicast subnet lowest address (since 5.14):
+>   commit 58fee5fc83658aaacf60246aeab738946a9ba516
+>   Merge: 77091933e453 6101ca0384e3
+>   Author: David S. Miller <davem@davemloft.net>
+>   Date:   Mon May 17 13:47:58 2021 -0700
+>=20
+> Signed-off-by: Seth David Schoen <schoen@loyalty.org>
+> Suggested-by: John Gilmore <gnu@toad.com>
 > ---
->  Documentation/networking/devlink/ice.rst     | 14 +++++++++
->  drivers/net/ethernet/intel/ice/ice_devlink.c | 30 ++++++++++++++++++++
->  drivers/net/ethernet/intel/ice/ice_main.c    |  5 +++-
->  drivers/net/ethernet/intel/ice/ice_ptp_hw.c  | 12 ++++----
->  drivers/net/ethernet/intel/ice/ice_type.h    |  9 +++++-
->  5 files changed, 62 insertions(+), 8 deletions(-)
+>  man7/ip.7 | 38 +++++++++++++++++++++++++++++++++++---
+>  1 file changed, 35 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/man7/ip.7 b/man7/ip.7
+> index f69af1b32..94de21979 100644
+> --- a/man7/ip.7
+> +++ b/man7/ip.7
+> @@ -237,6 +237,7 @@ In particular, this means that you need to call
+>  on the number that is assigned to a port.
+>  All address/port manipulation
+>  functions in the standard library work in network byte order.
+> +.SS Special and reserved addresses
+>  .PP
+>  There are several special addresses:
+>  .B INADDR_LOOPBACK
+> @@ -244,12 +245,43 @@ There are several special addresses:
+>  always refers to the local host via the loopback device;
+>  .B INADDR_ANY
+>  (0.0.0.0)
+> -means any address for binding;
+> +means any address for socket binding;
+>  .B INADDR_BROADCAST
+>  (255.255.255.255)
+> -means any host and has the same effect on bind as
+> +has the same effect on socket binding as
+>  .B INADDR_ANY
+> -for historical reasons.
+> +for historical reasons. A packet addressed to
 
-<...>
+Please use semantic newlines.  See man-pages(7):
 
->  Flash Update
->  ============
-> diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-> index bc44cc220818..06fe895739af 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-> @@ -193,6 +193,33 @@ ice_info_pending_netlist_build(struct ice_pf __always_unused *pf,
->  		snprintf(ctx->buf, sizeof(ctx->buf), "0x%08x", netlist->hash);
->  }
->  
-> +static void ice_info_cgu_id(struct ice_pf *pf, struct ice_info_ctx *ctx)
-> +{
-> +	if (ice_is_feature_supported(pf, ICE_F_CGU)) {
-> +		struct ice_hw *hw = &pf->hw;
-> +
-> +		snprintf(ctx->buf, sizeof(ctx->buf), "%u", hw->cgu.id);
-> +	}
+   Use semantic newlines
+       In the source of a manual page, new sentences should be started
+       on  new  lines,  long  sentences  should be split into lines at
+       clause breaks (commas, semicolons, colons, and so on), and long
+       clauses should be split at phrase boundaries.  This convention,
+       sometimes known as "semantic newlines", makes it easier to  see
+       the  effect of patches, which often operate at the level of in=E2=80=
+=90
+       dividual sentences, clauses, or phrases.
 
-Please use kernel coding style - success oriented flow
+> +.B INADDR_BROADCAST
+> +through a socket which has
+> +.B SO_BROADCAST
+> +set will be broadcast to all hosts on the local network segment, as
+> +long as the link is broadcast-capable.
+> +.PP
+> +On any locally-attached IP subnet with a link type that supports
+> +broadcasts, the highest-numbered address (e.g., the .255 address on a
+> +subnet with netmask 255.255.255.0) is designated as a broadcast addres=
+s.
+> +This "broadcast address" cannot usefully be assigned to an interface, =
+and
+> +can only be addressed with a socket on which the
+> +.B SO_BROADCAST
+> +option has been set.
+> +Internet standards have historically also reserved the lowest-numbered=
 
-struct ice_hw *hw = &pf->hw;
+> +address (e.g., the .0 address on a subnet with netmask 255.255.255.0)
+> +for broadcast, though they call it "obsolete" for this purpose.  Since=
 
-if (!ice_is_feature_supported(pf, ICE_F_CGU))
-  return;
+> +Linux 5.14, it is treated as an ordinary unicast address.
+> +.PP
+> +Internet standards have also traditionally reserved various addresses
+> +for particular uses, though Linux no longer treats some of these
+> +specially. Addresses in the ranges 0.0.0.1 through 0.255.255.255 and
+> +240.0.0.0 through 255.255.255.254 (0/8 and 240/4) are reserved globall=
+y.
+> +Since Linux 5.3 and Linux 2.6.245, respectively, the 0/8 and 240/4
+> +addresses are treated as ordinary unicast addresses. Systems that foll=
+ow
+> +the traditional behaviors may not interoperate with these historically=
 
-snprintf(ctx->buf, sizeof(ctx->buf), "%u", hw->cgu.id);
+> +reserved addresses.
+> +.PP
+> +All addresses from 127.0.0.1 through 127.255.255.254
+> +are treated as loopback addresses akin to the standardized
+> +local loopback address 127.0.0.1, while addresses in 224.0.0.0 through=
+
+> +239.255.255.255 (224/4) are dedicated to multicast use.
+
+Maybe it would be interesting to use tagged paragraphs (.TP), so that
+it's reasy to see at a first glance the reserved values?  Something like:=
 
 
-However, it will be nice to have these callbacks only if CGU is
-supported, in such way you won't need any of ice_is_feature_supported()
-checks.
+   Special and reserved addresses
+       INADDR_LOOPBACK
+       127.0.0.1
+                INADDR_LOOPBACK (127.0.0.1) always refers to the
+                local host via the loopback device;
 
-Thanks
+       INADDR_ANY
+       0.0.0.0
+               INADDR_ANY (0.0.0.0) means any address for socket
+               binding;
+
+       INADDR_BROADCAST
+       255.255.255.255
+               INADDR_BROADCAST (255.255.255.255) has the same
+               effect on socket binding as INADDR_ANY for
+               historical reasons.  A packet addressed to
+               INADDR_BROADCAST through a socket which has
+               SO_BROADCAST set will be broadcast to all hosts
+               on the local network segment, as long as the link
+               is broadcast=E2=80=90capable.
+
+       Highest-numbered address
+       Lowest-numbered address
+              On any locally=E2=80=90attached IP subnet with a link  type=
+  that
+              supports  broadcasts, the highest=E2=80=90numbered address =
+(e.g.,
+              the .255 address on a subnet with netmask  255.255.255.0)
+              is  designated  as  a broadcast address.  This "broadcast
+              address" cannot usefully be assigned to an interface, and
+              can  only  be  addressed  with  a  socket  on  which  the
+              SO_BROADCAST  option  has  been  set.  Internet standards
+              have historically also reserved the  lowest=E2=80=90numbere=
+d  ad=E2=80=90
+              dress  (e.g.,  the  .0  address  on a subnet with netmask
+              255.255.255.0) for broadcast, though they call it  "obso=E2=
+=80=90
+              lete"  for this purpose.  Since Linux 5.14, it is treated
+              as an ordinary unicast address.
+
+       Internet standards have also traditionally reserved vari=E2=80=90
+       ous addresses for particular uses, though Linux no longer
+       treats some of these specially.
+
+       [0.0.0.1, 0.255.255.255]
+       [240.0.0.0, 255.255.255.254]
+              Addresses in these ranges (0/8 and 240/4) are
+              reserved globally.  Since  Linux 5.3 and Linux
+              2.6.245, respectively, the 0/8 and 240/4 addresses
+              are treated as ordinary unicast addresses.  Systems
+              that follow the traditional behaviors may not
+              interoperate with these historically reserved
+              addresses.
+
+       [127.0.0.1, 127.255.255.254]
+              Addresses in this range are treated as loopback
+              addresses akin to the standardized local loopback
+              address 127.0.0.1.
+
+       [224.0.0.0, 239.255.255.255]
+              Addresses in this range (224/4) are dedicated
+              to multicast use.
+
+Cheers,
+Alex
+
+
+>  .SS Socket options
+>  IP supports some protocol-specific socket options that can be set with=
+
+>  .BR setsockopt (2)
+
+--=20
+<http://www.alejandro-colomar.es/>
+GPG key fingerprint: A9348594CE31283A826FBDD8D57633D441E25BB5
+
+--------------ZbDUAOr3Nnooxg74Ca40Xhcq--
+
+--------------lpGbLPkzDqlAdiGmhUly0BE5
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEE6jqH8KTroDDkXfJAnowa+77/2zIFAmQ4A/kACgkQnowa+77/
+2zKbog//c0BHLMCtDQNLp0fl/2Cs7qeFsTC8LOn21auQP3tBH+d2AAxhr7L7NVIU
+cc5uosIe+ekSCVh0yuMlEex/QYZjChwP5SQ/Bp7ZuJeTNKMVwIYBJJkJHnyhNCCs
+uI7D7hHIsBo8J6Pn27GKswb0t6rqOieUr2f3JD/oY3ifUIwryFlJP4MzZEGOEJT6
+7detZ2GQpVzTbA8cal129qAdYBn5BGBhBupYoJe0LTTpsqrjj16Kve8Mvt1syvTb
+Q9urfgJM67ScM5VRshIrfIK/YmL/t0cuCz54bhsDzzCs2h06XYoBOtLJdzjxtdXr
+6E6c8hkBJ2RBb+j+Sk1FK/UTsEcY/RkNmuGUozV/UnqQqlHLIDFvACyZjwFcIq3Q
+86bMCINr/Td7vvJM05Kn74bewFJ9Hv4XiUwNoKudT9ljNXXSfd7Wcq2PT3F/3/M6
+HsCTwUySf29eUxkawyTMf6ZV4asXDSItS8PN8f7kJij5/Z5gZSEl4WM4XyD2b3HK
+lvMtW0wVLf7MwmWH3pdO6IcEfrAVA7qzc0pmtFY6CpAYCw02+NOdyAnrvDu7c/WZ
+j81DblG68RO1+usGUcwoFm4puA15sq+YY6/WoOdJjG+75IkofC9I3X+o1Vvpn/EY
+VxrAq+BuZ1kZkbGN0m1wCbRcyvDCk4T25imKo6WTPl5i9vSeb2U=
+=TWrU
+-----END PGP SIGNATURE-----
+
+--------------lpGbLPkzDqlAdiGmhUly0BE5--
