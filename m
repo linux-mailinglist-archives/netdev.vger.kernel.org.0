@@ -2,142 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D4B6E0C14
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 13:09:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00CC46E0C23
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 13:10:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbjDMLJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 07:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43226 "EHLO
+        id S229951AbjDMLKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 07:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbjDMLJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 07:09:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F0DD5BB1
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:08:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681384128;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ons+PEhg040VlXg4ZxDtxYCBN3ktVKjiFeoBkktxpTo=;
-        b=PLvsX63EtfHdh6Uo0rQIaDMwV2Gd70q/9/nu7PKmHRRIZCPa4Ngyz+CRNw65jQJ1vvlciE
-        0A7WBuIY7tAckkexyixR7i+nL7fmM3w+miCDjNi+CP3OFKwsMjyxKJAtkJkx61nemEmYEc
-        wg+RXZ1lwTMEaN7u1YZLNO69a1fEnIM=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-616-HDSyUmVxONy3Fd2vxyRP_Q-1; Thu, 13 Apr 2023 07:08:47 -0400
-X-MC-Unique: HDSyUmVxONy3Fd2vxyRP_Q-1
-Received: by mail-ej1-f72.google.com with SMTP id tq24-20020a170907c51800b0093138c6f2f8so5363008ejc.22
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 04:08:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681384126; x=1683976126;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ons+PEhg040VlXg4ZxDtxYCBN3ktVKjiFeoBkktxpTo=;
-        b=GlVUu7QXCEwGeKuSF/ZJu7FcLTiit2XbhWb8Jtz/RYPPnnXkJykJBXlDArkOaoSBxX
-         zO3yJ4xPgNuMS6SGQvrKMZ+jFnBe5sl0riOnQYJbCiV82AfBp0dfSQUzbvIN/vsw+HNF
-         Whz7GSBSACEcIbSi7TYKI+h0QLuL2dXagB9n8a5l1GspptzoYOZxJuL4pR6KRceZgyzA
-         yhabHt87C+rNHzqj+J5Xu+IGJspHQMP498t6/5UQxpn6alyvci/etoEGx/L1fbXaD9kt
-         ik5mazMSM8c3M4baWzmwAhRvYEjLZb62cyHT/szV9gzRXKZMK96O4X6JJEhZXoqXqCOk
-         Jxog==
-X-Gm-Message-State: AAQBX9ebzho0J52a+M0Uhra1BpfUH3VZW+9b95VLdW5MaDoMW918EQ+k
-        v1ly93//WLZcvtxSmXOS0gvEzPHLX4FbgAftDLSI2UJtYYQdR3Lvlw+qXGemRzzbPX0QybDXaOq
-        SlQyTgEqEsu41U3gB
-X-Received: by 2002:a17:906:3888:b0:94a:8a82:9cab with SMTP id q8-20020a170906388800b0094a8a829cabmr2301559ejd.42.1681384126118;
-        Thu, 13 Apr 2023 04:08:46 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YRUH859V0juwSOoolH8r33NhgxjjZn9BxXeqS19QTUiJdr16jkspnL6tc/NvqKxhfjEPQfuw==
-X-Received: by 2002:a17:906:3888:b0:94a:8a82:9cab with SMTP id q8-20020a170906388800b0094a8a829cabmr2301525ejd.42.1681384125710;
-        Thu, 13 Apr 2023 04:08:45 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id m5-20020a1709062ac500b0094a84462e5fsm827249eje.37.2023.04.13.04.08.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Apr 2023 04:08:45 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 95816AA7AF0; Thu, 13 Apr 2023 13:08:44 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kal Cutter Conley <kal.conley@dectris.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?utf-8?B?QmrDtnJu?= =?utf-8?B?IFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 1/3] xsk: Support UMEM chunk_size > PAGE_SIZE
-In-Reply-To: <CAHApi-=rMHt7uR8Sw1Vw+MHDrtkyt=jSvTvwz8XKV7SEb01CmQ@mail.gmail.com>
-References: <20230406130205.49996-1-kal.conley@dectris.com>
- <20230406130205.49996-2-kal.conley@dectris.com> <87sfdckgaa.fsf@toke.dk>
- <ZDBEng1KEEG5lOA6@boxer>
- <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
- <875ya12phx.fsf@toke.dk>
- <CAHApi-=rMHt7uR8Sw1Vw+MHDrtkyt=jSvTvwz8XKV7SEb01CmQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 13 Apr 2023 13:08:44 +0200
-Message-ID: <87ile011kz.fsf@toke.dk>
+        with ESMTP id S229913AbjDMLKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 07:10:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683465FD4;
+        Thu, 13 Apr 2023 04:10:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01C2060FDC;
+        Thu, 13 Apr 2023 11:10:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 441A6C433EF;
+        Thu, 13 Apr 2023 11:10:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681384221;
+        bh=047FHGu9Eh8p6igVsqOs4jlOjs1RHZPTczyCtqb9f/4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YXVm+OHaLTnqBfgcKFP4knXEdr5JTsUgTwsBhgF7TOKENOpQCuekM2c0EA/h+WIO+
+         YYGrz9UHaKjWR7pe5/O/f96cTWNM4/jIgCSJe6AqzAhHC2+3WjxmUtAMendPPL1PfL
+         ve/zg2SM8urW4HmGiHtPRvG3fv+fVB5FC1ieep42EfYzMrRnl0Yvi4I2jGws4XRNqi
+         MxfNbnB0tK0lkuJxFAQhgUdQj/m7ceHdXldw/uNJtR7fL6AUlvUyR1uloPdcBGmsNa
+         W2EtSA541g5l3/e6j5d9kV9KsKtz6mixNhqv+GtKD0dNCL3yXlxupt1uysCy8iyp6a
+         FndSwIFFyplDg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1C284E52443;
+        Thu, 13 Apr 2023 11:10:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 00/12] Add EMAC3 support for sa8540p-ride
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168138422111.3376.5659809856940118374.git-patchwork-notify@kernel.org>
+Date:   Thu, 13 Apr 2023 11:10:21 +0000
+References: <20230411200409.455355-1-ahalaney@redhat.com>
+In-Reply-To: <20230411200409.455355-1-ahalaney@redhat.com>
+To:     Andrew Halaney <ahalaney@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, agross@kernel.org,
+        andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        bhupesh.sharma@linaro.org, wens@csie.org, jernej.skrabec@gmail.com,
+        samuel@sholland.org, mturquette@baylibre.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        richardcochran@gmail.com, linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kal Cutter Conley <kal.conley@dectris.com> writes:
+Hello:
 
->>
->> Well, I'm mostly concerned with having two different operation and
->> configuration modes for the same thing. We'll probably need to support
->> multibuf for AF_XDP anyway for the non-ZC path, which means we'll need
->> to create a UAPI for that in any case. And having two APIs is just going
->> to be more complexity to handle at both the documentation and
->> maintenance level.
->
-> I don't know if I would call this another "API". This patchset doesn't
-> change the semantics of anything. It only lifts the chunk size
-> restriction when hugepages are used. Furthermore, the changes here are
-> quite small and easy to understand. The four sentences added to the
-> documentation shouldn't be too concerning either. :-)
+This series was applied to netdev/net-next.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Well, you mentioned yourself that:
+On Tue, 11 Apr 2023 15:03:57 -0500 you wrote:
+> This is a forward port / upstream refactor of code delivered
+> downstream by Qualcomm over at [0] to enable the DWMAC5 based
+> implementation called EMAC3 on the sa8540p-ride dev board.
+> 
+> From what I can tell with the board schematic in hand,
+> as well as the code delivered, the main changes needed are:
+> 
+> [...]
 
-> The disadvantage of this patchset is requiring the user to allocate
-> HugeTLB pages which is an extra complication.
+Here is the summary with links:
+  - [net-next,v4,01/12] dt-bindings: net: snps,dwmac: Update interrupt-names
+    https://git.kernel.org/netdev/net-next/c/d554ba0ea03c
+  - [net-next,v4,02/12] dt-bindings: net: snps,dwmac: Add Qualcomm Ethernet ETHQOS compatibles
+    https://git.kernel.org/netdev/net-next/c/d70c215bdd17
+  - [net-next,v4,03/12] dt-bindings: net: qcom,ethqos: Convert bindings to yaml
+    https://git.kernel.org/netdev/net-next/c/02e98ce3db14
+  - [net-next,v4,04/12] dt-bindings: net: qcom,ethqos: Add Qualcomm sc8280xp compatibles
+    https://git.kernel.org/netdev/net-next/c/25926a703ec1
+  - [net-next,v4,05/12] net: stmmac: Remove unnecessary if statement brackets
+    https://git.kernel.org/netdev/net-next/c/7c6b942b81ca
+  - [net-next,v4,06/12] net: stmmac: Fix DMA typo
+    https://git.kernel.org/netdev/net-next/c/d638dcb52b09
+  - [net-next,v4,07/12] net: stmmac: Remove some unnecessary void pointers
+    https://git.kernel.org/netdev/net-next/c/0c3f3c4f4b15
+  - [net-next,v4,08/12] net: stmmac: Pass stmmac_priv in some callbacks
+    https://git.kernel.org/netdev/net-next/c/1d84b487bc2d
+  - [net-next,v4,09/12] net: stmmac: dwmac4: Allow platforms to specify some DMA/MTL offsets
+    https://git.kernel.org/netdev/net-next/c/33719b57f52e
+  - [net-next,v4,10/12] net: stmmac: dwmac-qcom-ethqos: Respect phy-mode and TX delay
+    https://git.kernel.org/netdev/net-next/c/164a9ebe9742
+  - [net-next,v4,11/12] net: stmmac: dwmac-qcom-ethqos: Use loopback_en for all speeds
+    https://git.kernel.org/netdev/net-next/c/030f1d5972aa
+  - [net-next,v4,12/12] net: stmmac: dwmac-qcom-ethqos: Add EMAC3 support
+    https://git.kernel.org/netdev/net-next/c/b68376191c69
 
-In addition, presumably when using this mode, the other XDP actions
-(XDP_PASS, XDP_REDIRECT to other targets) would stop working unless we
-add special handling for that in the kernel? We'll definitely need to
-handle that somehow...
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> In 30 years when everyone finally migrates to page sizes >= 64K the
-> maintenance burden will drop to zero. Knock wood. :-)
-
-Haha, right, but let's make sure we have something that is consistent in
-the intervening decades, shall we? ;)
-
->> It *might* be worth it to do this if the performance benefit is really
->> compelling, but, well, you'd need to implement both and compare directly
->> to know that for sure :)
->
-> What about use-cases that require incoming packet data to be
-> contiguous? Without larger chunk sizes, the user is forced to allocate
-> extra space per packet and copy the data. This defeats the purpose of
-> ZC.
-
-What use cases would that be, exactly? Presumably this is also a
-performance issue? Which goes back to me asking for benchmarks :)
-
--Toke
 
