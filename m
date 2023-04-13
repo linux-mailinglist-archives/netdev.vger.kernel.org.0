@@ -2,108 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37FE06E0ADD
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 11:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B26D96E0AE0
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 11:59:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbjDMJ7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 05:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48798 "EHLO
+        id S230031AbjDMJ70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 05:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbjDMJ7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 05:59:14 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2040.outbound.protection.outlook.com [40.107.96.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296B49027
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 02:59:13 -0700 (PDT)
+        with ESMTP id S229977AbjDMJ7Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 05:59:25 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94708A6A
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 02:59:20 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L6Wee0VHtm8pUx5mVhb9kVGGY3iJFqbTNMBpaIyDI98Oed61TBQc1/MF8K8ZLgK4fr/yNvL8m2FXPEGvtKqWsyxOciobxzZw2t5hrYe2Gb3aiCQ1CJl9l7a3KRDmWgaQ4y7rbyNiQDs9ctMAh41FKvz/WSdO3ZvHVJwBpht3IoXJXxs4V9aE45jZlW8hh1u1jeuKXwB1Q2NnRFLxRGqYj2vbCK3r1KlIdQDxDjtMmFDbc7Q0OnIHARGKbBmOj0N8eHYGxSRVyXkb1mXRDM+AH0rXYv1NjJmJFMGi1Ur5tBBk17fFe+CFN9IzwttuMU/ZkhaQgXIwSaAMW5dNY9x96Q==
+ b=l9gqerH4lJIqHXe4zJWkjssCpsQHrSZzVRV7HejFaj1lY2PDI+e0PIK9itCF4EY5gwoBgG5Qg2VkZrMNm4NiF/Gdb9nF/9BytC2SZ5yNqIeyQXIWmaVKU0w6k0idmMcfVFfkFvgzG3cRpBez5A6r/DOVUU+FoXYTqTjFFFUm67HKrn7fvClV2Yvo6ZraZHzKU+me0zq47JFt4Q+nN0xuvKA9+8fhljRzaUENnWtY/mPiWowkRDxMCdSTSg+oLtvzFCojuJjvG8LtrBuLWPFiBfkyYquJUgLQeK9RsuBkmJQddgPyP1aNbt/mR7M8MUDb6jhQJ/NA6fYTYGuTTk99og==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=skXPRlKWkSk3ULoRmhja+VCV6ct38IRkmTkeVzeQtt8=;
- b=caYeC0bgbcD4sZ1UbdiJgB5SxYutlZBFjdRKmlLyp6nH2UeX6gZsY360xF3Yf0mcnbkeuH08kKHIP77EMOKG57P/d6hya3s8KSecRq8RoI8oHYTC0c3LQtio/PR7hrAw94BcFRLQuIFEQTNLozq+d1Fnv/QWS6wXWeRPIpQfOxKb1l+W6cXq1aAyR8nCm3zIktas4k5CQwoNP3kvh+Yj1VOcSu/dSkVAeg07RJqIP2jcRHWf0zkFYsU+gk43jQWEHUAK/ZxNTRgFbNCVqCpBvP4W3C2uFKNCaLE/Zvk26jLU5uDONze+SK7HivTFa2nSV8wM3Uld5YQchdraS1b2nQ==
+ bh=BvfuZz2RtcNsOMIxkmeqAAvj9pMe3FQETaJUeG4BNv4=;
+ b=dxa7iXuM6Td/R1ktJfsJi7jL+tZkYOvsaYZad/7mq9c9Yxe10JwwN3pweO8tFIQarLoVC7VA0UZWFkEy9V2zKuHpSmVqpkRWlTcstzhAZGxYAVyvoHB8yoA5dwgUZtNJP5G2Lg91jT5j68329uH8dxrCASuG873jAbhkMI1K38VJ8jNo2T3j3o864AqKR027lTR1VyIAdcBkwTh1cpQe1znOLMc+8bEoT6/BJ89hdRFtYWW1tN//PyJ/pDYX/DmkAbkE33x6mZW6twOe2AuGhKWKxqsfzUWwmuORiudvilSOVYmRFSMveLkYn9vamWyIG9C3wiTrHxZIcEhaEzjekw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=skXPRlKWkSk3ULoRmhja+VCV6ct38IRkmTkeVzeQtt8=;
- b=R0yXcpkjnEReFt1dYor1NUAtw9ZLCs2ZgjoLqjAhpIPRCPoNje30yqY8MHLVdODnFJhjy6D+fhc+mQF70ZiH9sNFgi4LI2nK+X8ulfYEVU9soITkvLf7p8cqAq1C41ZdngPV6tOBILiC26VVPxBjXsBqcAoLfG8OJePcFxd/LaGB1ygVCyfamXXYBegy22/pjegjTrA+/acZYukX0KZMTtyf5nHyvRQtMogCxJ6q895NXEn56BTUir28OieZPxAKnTpFTQHDJCuaYC2tJK7HckjKemU8A22JjsR+MbLGnRDecWPJ2R02maYUuYgxw1Ol19eY4aAXMezisvXfd16+BA==
+ bh=BvfuZz2RtcNsOMIxkmeqAAvj9pMe3FQETaJUeG4BNv4=;
+ b=TJPdct3OCrsuuE0aHPNa2+Zbo3xj0IGgxqTP+XnNTpKjz8XoEHoOq4IaiWDRxRguSN34pk2xHstoG0+2GBRRAiC84qcfcWhcLA+ZWkdLYtO3AEhH6hhkDEwqwz/vq3ftbOug15hYaMtix4nRLfWpTqC567nvxnXvIX8q0bM/xaFS6x9hAFtOqfAdMxE/3/qLidQhGvFV0zol2RdGY2YqgFn1N+KLCfrG/NDoLk7t7649ddNczF5iLa0T4zG77cIJqywV83hNyFGzNCham1ZjI6yxdSRVW9QM1ofPZk1/zNH+b377lhdwgWf+dy8fTg33Xyt/iBvLMn7yQ3OdtAnrgw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by MW6PR12MB7070.namprd12.prod.outlook.com (2603:10b6:303:238::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Thu, 13 Apr
- 2023 09:59:11 +0000
+ 2023 09:59:18 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::d228:dfe5:a8a8:28b3]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::d228:dfe5:a8a8:28b3%5]) with mapi id 15.20.6277.036; Thu, 13 Apr 2023
- 09:59:11 +0000
+ 09:59:18 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, razor@blackwall.org, roopa@nvidia.com,
         petrm@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 1/9] bridge: Reorder neighbor suppression check when flooding
-Date:   Thu, 13 Apr 2023 12:58:22 +0300
-Message-Id: <20230413095830.2182382-2-idosch@nvidia.com>
+Subject: [RFC PATCH net-next 2/9] bridge: Pass VLAN ID to br_flood()
+Date:   Thu, 13 Apr 2023 12:58:23 +0300
+Message-Id: <20230413095830.2182382-3-idosch@nvidia.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20230413095830.2182382-1-idosch@nvidia.com>
 References: <20230413095830.2182382-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MR2P264CA0109.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:33::25) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+X-ClientProxiedBy: MR2P264CA0170.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501::9)
+ To CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|MW6PR12MB7070:EE_
-X-MS-Office365-Filtering-Correlation-Id: d0439141-3f3b-4c40-946b-08db3c05bacd
+X-MS-Office365-Filtering-Correlation-Id: badd7c99-5be0-4b15-4838-08db3c05bf4b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gSj/wS5RE6lvz8AgQ5uiddfCCT5+Ry+ljNVJwFyeX/1Kcqk7o9ezMP47Rj4vENQSJ6g3gyRrhQMhXC9LC7segO5d1Lxba67m0JX8mLP71E6VulZAiCi45m+1fv5hAkKdnHr+n9QlpyWMqLxGn6nJiw+9mLMOidOU428bKf2IowBRnbKF/XBvye1U7s9tEhkNNXDffPkU9Ykl09OeViZJi1FjzxqA/SYOiZGl/PHxBq4S7+8gyA0TFdCB2HUYOmWl6XOxVHbOSTxkcsWg3JQJv4LsW7dS/jlxJTqpnh3wN8zFNM5E42Q94LrvZH7x5UEeTNPf4msvsdTecQv12SqGGTHYytcVtH2UQ4IJhPQcMe8TzWdl9c0LvS/W7pUOSpp6Uss6e0D7oM5oMy3Y7c1avhHp4Dnvuungvj+q6gR4Q5VvH2Nr2a6zO8797V26Hk/1eNsTosI9jkThjs8A1l7WVm4q+gRFFZFjN/OBM3mX+Pc5/3a3GPrm9YwW4/WymYKcO12EqW8sZHVSmfXmnIjbPPwQUVHYReGFcLUbU1W3RZtgdfwI+Omu1k32n1r8Co4N
+X-Microsoft-Antispam-Message-Info: lGczfbI4r4AOC+tcwVXKmp/6aUe5mCnK8IfR+tnrm9sllkLHj3897chXwisL1vJi41KhP//0me4flDQtLviF0P8H0n+Hta16yb+MS50WV3p1B4nI/VjieR3tVUzwsDhed0KfLZQdopsb8OUw+Y/ZrNdbEbXn7etOG9WK2CCGGK9MMu6+q1N6yp0xnXGCSNFsplCrwq1qrYlCILYq0Oti1SsaoRpUmKxX7Fi/JcC71cecPgPwwvoNy6a1Tpf7jC1kMHDZmjI4XJMKRU+QzMy746iiBRWlpKaHmPUGWME0+ZzMQeqhbRZyzMpyPYDgbNYoUHs6v9geftz6DJ4RcXpAtl4qQ7CxQhp/F4LtinodIbF+Uvbge9EtY+bwlQPaGRegaVW2a95f8TcFy/ag11mq8K0Fk1QHNlJEH7D2BfOfsd9d4XtfTRv8VgiipgXNW+GuJpe3+qxVRhhUd8aVwsn+Oabpa5RxLPAJ3Sg60rdxi63wLzjsZ/C2TwZIIF7dvhE7RRSTQR8n7BzeqS60n7dXGiB5JIJ87jZJXQ7ubyExqUgJfkLzrHEifvOBUb0MPcOX
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(346002)(376002)(136003)(396003)(451199021)(36756003)(2906002)(26005)(478600001)(8936002)(38100700002)(2616005)(6486002)(1076003)(6512007)(6506007)(83380400001)(186003)(5660300002)(86362001)(66476007)(4326008)(66946007)(8676002)(66556008)(316002)(107886003)(6666004)(41300700001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/ztmXzd65vfFQ1A5QmXx3/+PFpyJCTSHU+dT8YPzB8xwOfs0PwxeuXSqwEtG?=
- =?us-ascii?Q?wUfWUQi4krLsYwEbIcX2BJ8eKQ0UPnquDSQoow1R75HY/F4HOvmgVWGPZ7kY?=
- =?us-ascii?Q?TFux0BmafmnvKtEKhmFn1DzmBck3htnWgYQ4LWqOsJ67NHxAHLGBHeuxzL9O?=
- =?us-ascii?Q?PJS3XmRh9hbo+HmKkIKzIjWgOqp2rRqmx9sVg13YR//yjlfkmC+qwOzN6d+F?=
- =?us-ascii?Q?1mgTMwXNXghWG3cL89HWEeAceQsxU0WlbulzREZ4a8z78Ftoc4J7NoyVunCH?=
- =?us-ascii?Q?vjBkbjVz39D9+heJjvZa+0LWr+GI3Qolylpj6X/vJ98PWBgR3c2uhYAiceQ+?=
- =?us-ascii?Q?4tjWAy52WjhOsyGm9hsIw6tB/X++D9FEcPUqNkOv9uaRKuuoMmTUbHKy80zx?=
- =?us-ascii?Q?W2TzayK+uJHuPAUU69AZJ8xP6E7eZUhKRuSQLmZNpNjP+S2GS3pXfX3I4H8c?=
- =?us-ascii?Q?Vrcfv0gs+SPV1Csx5MbnvvhPnDTUflY0JGmRgAWPKPQO8x2a9JQFCbUXyRyD?=
- =?us-ascii?Q?nVqtdSKxyAFQpSKBYbfV6jf77iH8MUOB4IupnNzVv/9NX0y07v/Lptmpm5z2?=
- =?us-ascii?Q?Uk/q9hLNyk3ycwdvlvZ1dCq8Y3eAcbuuRfQamYM1huyNeD2xJREM1NAbTVpv?=
- =?us-ascii?Q?66/VDvNiNyHVs07AG1L2lWQG9ctGu6+DkZdz2NwUgRKmw6KhwZV1Ug4j9xEo?=
- =?us-ascii?Q?uFfPy5zxeZ6C+6stLyjo228wEjtp5LAtvci/883JnF7iHvtRCc6K53P/g8ya?=
- =?us-ascii?Q?8uWfcVE1DokooPV02hLRvDtlqqsYOORPdidvG5pvcrOg6FaueIiL8TBVA4B8?=
- =?us-ascii?Q?2VhG4Zhg8tPTDvARTAolAY00zckcEqo07DtZ4iUR4aexkJIilj04GGUxA9nR?=
- =?us-ascii?Q?AYtlZVT+WAwrSiXh8lQfHwpxZp0hn6aXGEoVF4hO5Fp2ktynMKrVU+bX5tiC?=
- =?us-ascii?Q?tzVwH3+0kRU3Y618rW+XsRMFnvTtybJNHc4Mzp9numAPlkGV3YFxECaPGAv2?=
- =?us-ascii?Q?dQJhTlkXQob1CU7WiqDfqEpcNROG/kFIpUzufdBFpHA/Qg0JGO3fQb3N1mwZ?=
- =?us-ascii?Q?eWpYj9NvfxVVbQSIzBTaWiIKH6dnFXupXBWNwl2hv001jmGZGgl7REw2rchW?=
- =?us-ascii?Q?jXm+Fnj18UepM5TPiyMdfu5RMPoMr/Ie9NkYyL0AqPye0knmnsLJWZBBftby?=
- =?us-ascii?Q?b3pvIHCHKHg1k7+btFER2rrPMTR4mr9b93mbGPf89GxCF+OJZcCQckSkHby+?=
- =?us-ascii?Q?EufBd8zULyqzg4M7lUc/WgBwJx/RcnTjjnBajVaUU0mOfDE+Pcfipz0Qv0jB?=
- =?us-ascii?Q?CH2vplyLUvZuREvd5Hn5yYlb/cOgRMiOr155WJmUwLWoTRh8d0fd8CK3kHPy?=
- =?us-ascii?Q?StuPFU9TEa1Fvd/3n9MD8AyM9n1mBYGJxbp3vqu2b3MGxnFeDUhNslfwCtUd?=
- =?us-ascii?Q?t4lbKyfP0yLVOY16vpPlaOi9YXelQieLuHksFcxZ8kqgCcztL91zjF4TSWfk?=
- =?us-ascii?Q?VwfMOoAaYtWBZXi+twnJjANyw5pvRSRNWKnHilXdMICBIiXH9m9N/bB75Yh/?=
- =?us-ascii?Q?N9H5n15luHTOofkduYIxwhwL4AdSkm2h/x2HY+rD?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R59AqoyKWHfoMu9XH5OMwpBCmuXWPXwfztPxAhnFHUEkaUfSyZt/J4kuSNHc?=
+ =?us-ascii?Q?SylhD++k5OxBqUpTObdXeBDmA8x9PT5tQnk2u/8UWpgkvlSg6FoIHgYxg5Vq?=
+ =?us-ascii?Q?g5hu67LIGDB3cSb8LsQsLeswQ7CMd5xsNEkyCdHTQxqi/puPJuQAaO4oR4Af?=
+ =?us-ascii?Q?yAgHmSzgcWFoXYpyWxcJx9pWpcBJqempHB9RJBZm8C2m4OAe9M10IbhJ8BDm?=
+ =?us-ascii?Q?EqNEqMa1JJbhKYnvkvGGrxL/ImC1FBtiCFQYI4FB8Cdmk9SamwKZZGkBS2vm?=
+ =?us-ascii?Q?/EejQsn0QMMn3UFc+Mgm77H1lbVB1Zifc4LFP/B8K2ZVDi/4k4tE7ofXHDGf?=
+ =?us-ascii?Q?tsVcpUgl2DlVG4umripQyAj5TRFum6D7fdC3QmR4kxdROfnHlj4RCb+UVlVI?=
+ =?us-ascii?Q?8Hu7nQdlPuRtqYyzgV1yqgpt5JfjC0Ffgi61ZX3CwLm3wquO/5nj7qlGw32i?=
+ =?us-ascii?Q?xD2KcJEkNstXWKPehSw4Ye0sKPrxjBdjDIimTrL+/TrfWhd35Nmjpr+7QmHt?=
+ =?us-ascii?Q?HdTPkE3WySHco/m0Yizkp7npSPe6Szb2GHFzP0ZwNQRzKRpGiQxj4J2w9jLF?=
+ =?us-ascii?Q?Rz9WWzppwRbfjquW+iwetFU2DQv91uK4/ypKd5n+a3Bx+Av8I9Zd0a8Uc+ni?=
+ =?us-ascii?Q?2w9WuKu5PSqqlJh32KrcTjDyy2BhZnL2M8dFNvHKS85rty/uF5IwUJWEXMXs?=
+ =?us-ascii?Q?Pky7rIIMJY1TSh1PpqI4cuCGdbVfQuQwprvDqes2rG4UwOTnHAassg9Dlmuq?=
+ =?us-ascii?Q?zrEJ9Xbt1JztYgXma319+x2TKEBM94+vyKvYiuv4TEQmZUC6vC/fhdRVw/29?=
+ =?us-ascii?Q?19fR8W1aJ99luXQWYaroXPXmOUCZ7/zNREgV3GnJTtAAmhsjHqrgz/ISHurv?=
+ =?us-ascii?Q?IFtJpFrHJjPhB84OWmYL7fLIkEbTPHrFERn2LN4FiHqEdTIbTA8YZnMiKxPe?=
+ =?us-ascii?Q?4mdoNfCF7yRiKRBJKCiXpl8uNWbW6n66GUt5KUQ3cuetHqyc3PgHZ5+TD4HU?=
+ =?us-ascii?Q?pVyFYhj58WnlASckop1DKJxeVxA2e0cTdbeylH5Y4cgdxT3+0F3NkkKUtnU6?=
+ =?us-ascii?Q?cZVgJDrzXePk/K203KaDUJBSurXDz2rEVsUzH178VVofxoo4sxC27nXGlXA+?=
+ =?us-ascii?Q?REiM2aAWX8FFETBTKOC7aXDE3Oba59JFzlNwVtfOMJ/DP16fSmpuQqfw9Ibx?=
+ =?us-ascii?Q?1BpqcEnSHly2UAI09pO69jPYsMuFfZuJj4ECSnuyWKQEUPfmhrUYxuyy3XpY?=
+ =?us-ascii?Q?1uatzDyvhRyFVSFw4L3CoQ9In6OyBhBnuJPCzUg5mwsHO50/CnU7gZ5+JIyb?=
+ =?us-ascii?Q?POSB6OpQZvEUVLmzJIMtDbIPL93AX/QbefvyYJEbziH2xNQ7oUa4+SmBAIw4?=
+ =?us-ascii?Q?xfug3TeSowwjM1iizd3CXMjWisGaN1A/NswSGLSXhpmE+Ma/TyqKZv+MlE8Q?=
+ =?us-ascii?Q?xjl0DdRhfFE3UQaKhiY6HB2yxjHN8qmJ6nr7VvEO/Qqk8L7F2gRC7JnOqe8D?=
+ =?us-ascii?Q?vXo31h0YFPM90kZtt6QN1GsulYXp6Bicl7ffyJoVhDP4EfQXY6APklySmjQ5?=
+ =?us-ascii?Q?2xIZBhnwhgfCJpGQrodjex2HO2lHUPE4IACGlCU4?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0439141-3f3b-4c40-946b-08db3c05bacd
+X-MS-Exchange-CrossTenant-Network-Message-Id: badd7c99-5be0-4b15-4838-08db3c05bf4b
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 09:59:11.0764
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 09:59:18.7337
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +RsemPi9qeZSBlEyFa3HSXGh6snYQPAbUZn/HtsTuxZ6XquyJ0uHyrlLCYaeZ/Gw7xFA2Rx+qRBMn1jQhIPdcw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: UU49rsAP/HIDuvy0YUp6LFUgLbq74qkgMvAFZo2soPW1rU/Znvsb/GJl26/B9gOIqdJ6Yeyj5+P2/ZV+Rxj8oQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB7070
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -115,36 +114,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bridge does not flood ARP / NS packets for which a reply was sent to
-bridge ports that have neighbor suppression enabled.
-
 Subsequent patches are going to add per-{Port, VLAN} neighbor
-suppression, which is going to make it more expensive to check whether
-neighbor suppression is enabled since a VLAN lookup will be required.
+suppression, which will require br_flood() to potentially suppress ARP /
+NS packets on a per-{Port, VLAN} basis.
 
-Therefore, instead of unnecessarily performing this lookup for every
-packet, only perform it for ARP / NS packets for which a reply was sent.
+As a preparation, pass the VLAN ID of the packet as another argument to
+br_flood().
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- net/bridge/br_forward.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/bridge/br_device.c  | 8 ++++----
+ net/bridge/br_forward.c | 3 ++-
+ net/bridge/br_input.c   | 2 +-
+ net/bridge/br_private.h | 3 ++-
+ 4 files changed, 9 insertions(+), 7 deletions(-)
 
+diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+index df47c876230e..8eca8a5c80c6 100644
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -80,10 +80,10 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	dest = eth_hdr(skb)->h_dest;
+ 	if (is_broadcast_ether_addr(dest)) {
+-		br_flood(br, skb, BR_PKT_BROADCAST, false, true);
++		br_flood(br, skb, BR_PKT_BROADCAST, false, true, vid);
+ 	} else if (is_multicast_ether_addr(dest)) {
+ 		if (unlikely(netpoll_tx_running(dev))) {
+-			br_flood(br, skb, BR_PKT_MULTICAST, false, true);
++			br_flood(br, skb, BR_PKT_MULTICAST, false, true, vid);
+ 			goto out;
+ 		}
+ 		if (br_multicast_rcv(&brmctx, &pmctx_null, vlan, skb, vid)) {
+@@ -96,11 +96,11 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		    br_multicast_querier_exists(brmctx, eth_hdr(skb), mdst))
+ 			br_multicast_flood(mdst, skb, brmctx, false, true);
+ 		else
+-			br_flood(br, skb, BR_PKT_MULTICAST, false, true);
++			br_flood(br, skb, BR_PKT_MULTICAST, false, true, vid);
+ 	} else if ((dst = br_fdb_find_rcu(br, dest, vid)) != NULL) {
+ 		br_forward(dst->dst, skb, false, true);
+ 	} else {
+-		br_flood(br, skb, BR_PKT_UNICAST, false, true);
++		br_flood(br, skb, BR_PKT_UNICAST, false, true, vid);
+ 	}
+ out:
+ 	rcu_read_unlock();
 diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
-index 02bb620d3b8d..0fe133fa214c 100644
+index 0fe133fa214c..94a8d757ae4e 100644
 --- a/net/bridge/br_forward.c
 +++ b/net/bridge/br_forward.c
-@@ -224,8 +224,8 @@ void br_flood(struct net_bridge *br, struct sk_buff *skb,
- 		/* Do not flood to ports that enable proxy ARP */
- 		if (p->flags & BR_PROXYARP)
- 			continue;
--		if ((p->flags & (BR_PROXYARP_WIFI | BR_NEIGH_SUPPRESS)) &&
--		    BR_INPUT_SKB_CB(skb)->proxyarp_replied)
-+		if (BR_INPUT_SKB_CB(skb)->proxyarp_replied &&
-+		    (p->flags & (BR_PROXYARP_WIFI | BR_NEIGH_SUPPRESS)))
- 			continue;
+@@ -197,7 +197,8 @@ static struct net_bridge_port *maybe_deliver(
  
- 		prev = maybe_deliver(prev, p, skb, local_orig);
+ /* called under rcu_read_lock */
+ void br_flood(struct net_bridge *br, struct sk_buff *skb,
+-	      enum br_pkt_type pkt_type, bool local_rcv, bool local_orig)
++	      enum br_pkt_type pkt_type, bool local_rcv, bool local_orig,
++	      u16 vid)
+ {
+ 	struct net_bridge_port *prev = NULL;
+ 	struct net_bridge_port *p;
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 3027e8f6be15..fc17b9fd93e6 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -207,7 +207,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 		br_forward(dst->dst, skb, local_rcv, false);
+ 	} else {
+ 		if (!mcast_hit)
+-			br_flood(br, skb, pkt_type, local_rcv, false);
++			br_flood(br, skb, pkt_type, local_rcv, false, vid);
+ 		else
+ 			br_multicast_flood(mdst, skb, brmctx, local_rcv, false);
+ 	}
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 7264fd40f82f..1ff4d64ab584 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -849,7 +849,8 @@ void br_forward(const struct net_bridge_port *to, struct sk_buff *skb,
+ 		bool local_rcv, bool local_orig);
+ int br_forward_finish(struct net *net, struct sock *sk, struct sk_buff *skb);
+ void br_flood(struct net_bridge *br, struct sk_buff *skb,
+-	      enum br_pkt_type pkt_type, bool local_rcv, bool local_orig);
++	      enum br_pkt_type pkt_type, bool local_rcv, bool local_orig,
++	      u16 vid);
+ 
+ /* return true if both source port and dest port are isolated */
+ static inline bool br_skb_isolated(const struct net_bridge_port *to,
 -- 
 2.37.3
 
