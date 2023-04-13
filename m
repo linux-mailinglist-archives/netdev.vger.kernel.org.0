@@ -2,140 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6840D6E0FD7
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FAB76E0FD8
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:21:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230281AbjDMOUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 10:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
+        id S230473AbjDMOU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 10:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbjDMOUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:20:43 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3DF8692;
-        Thu, 13 Apr 2023 07:20:41 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id bj35so5619709qkb.7;
-        Thu, 13 Apr 2023 07:20:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681395639; x=1683987639;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lW/y2Ol3OhLPBNr9rvyH1eAaIrNNLPHhWID9/UTdLng=;
-        b=nyXR7x3K8TxAWFT6syas/3zTXJU4LKQFrH0Nmvqrk7lRvxC7e0k9H2Rfo1l/tp9i/E
-         c6vXpPiaQFpxBTKs2XIhUerytsm/ue9nWI9AbZ7UYcSpQMD+ixI+bd/AtADpYHLf/5lS
-         ynzLFisT/QExB9sqbW/xf96GCyluSfEvBp41D1Bk4yyJIqWIA2NaOtYNt0Q/Kan3AtED
-         RsKOFsAsBxFK3YSCHTmWTvCgunddJxdSliwGHQx8A+t/9MpZI0O55JL65mwH7/N4iLpT
-         kOONNa0ZXhjDsB8ydTo0kkB2pN85330tFSXFXawhED2Y0kj7YzfIqfBgwwMm+Usr2v3f
-         7giw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681395639; x=1683987639;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lW/y2Ol3OhLPBNr9rvyH1eAaIrNNLPHhWID9/UTdLng=;
-        b=KQQ4RpyI/086o/L/vprHMXRRTlcXThuznCh9HqepctVbifOrA3AOysUkCga04aTT1C
-         Jxr3BUf5lFxrfSjsYV7JwkGOtWqO7byv2uaOkTqGs/Rb1j0CYg8fHzsP44s7F7ocfsCx
-         jsDEr0yfwZCSif5n8A2/r4DGJtPPEdbcJw4eSL6cGIrlZ1k0D/w0t6E/n1G/3OHOry8Z
-         iHDUpxMQF0+z1/ys48emFbsAH1AzXhRPpYTW1lvfvmkjyDTgOCdnff6bdn6GqyXea9e+
-         owi7VHaoZAH9PLmaM+Ck5zc4uJViJR4tT2gyt1NFrZSpUXe93ClW19hmo2Y90WmqwYP+
-         R2hA==
-X-Gm-Message-State: AAQBX9dSJRt1NgMzpByU0OLJ2Q2Uvy7sYpZn/Vvk8pFP0YeIwqWnlv69
-        nzUyl92AozxZbJTO6lwQe1Pplg5BktYgFn8v1qI=
-X-Google-Smtp-Source: AKy350ZwVn8Ny+/4FCQhbVC+XVjtZXQVi80HOpVOXoQuvDEd3ErTse5FvQAAMyC3uNX4eFqGoix/G194NaGnuiR7Ru8=
-X-Received: by 2002:a05:620a:318d:b0:746:75f7:c8a2 with SMTP id
- bi13-20020a05620a318d00b0074675f7c8a2mr1637361qkb.4.1681395639645; Thu, 13
- Apr 2023 07:20:39 -0700 (PDT)
+        with ESMTP id S230347AbjDMOU5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:20:57 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CA0359D
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:20:55 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-168-L1A8pdJON22gPzDGKhDKwg-1; Thu, 13 Apr 2023 15:20:53 +0100
+X-MC-Unique: L1A8pdJON22gPzDGKhDKwg-1
+Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
+ (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Thu, 13 Apr
+ 2023 15:20:51 +0100
+Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
+ id 15.00.1497.048; Thu, 13 Apr 2023 15:20:51 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Paolo Abeni' <pabeni@redhat.com>,
+        'Jakub Kicinski' <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
+Subject: RE: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
+ indexes
+Thread-Topic: [PATCH net-next v2 2/3] bnxt: use READ_ONCE/WRITE_ONCE for ring
+ indexes
+Thread-Index: AQHZbOE4lpy9n4P2zECDFY6wjA/SEa8nUYsggAG8xQCAADw1wA==
+Date:   Thu, 13 Apr 2023 14:20:51 +0000
+Message-ID: <3d2a7abe17554ed69f599b733062a003@AcuMS.aculab.com>
+References: <20230412015038.674023-1-kuba@kernel.org>
+         <20230412015038.674023-3-kuba@kernel.org>
+         <f6c134852244441a88eef8c1774bb67f@AcuMS.aculab.com>
+ <78cea5774de414fa3bcbd6ef02e436ae6b5706c1.camel@redhat.com>
+In-Reply-To: <78cea5774de414fa3bcbd6ef02e436ae6b5706c1.camel@redhat.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <20230413025350.79809-1-laoar.shao@gmail.com> <968ea56a-301a-45c5-3946-497401eb95b5@iogearbox.net>
-In-Reply-To: <968ea56a-301a-45c5-3946-497401eb95b5@iogearbox.net>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Thu, 13 Apr 2023 22:20:03 +0800
-Message-ID: <CALOAHbDRAV-wgewv8YU1L4z4-3xHZTtD+O7BDD+vCV7=d-hNvQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] bpf, net: Support redirecting to ifb with bpf
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ast@kernel.org, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>, martin.lau@linux.dev,
-        toke@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 7:47=E2=80=AFPM Daniel Borkmann <daniel@iogearbox.n=
-et> wrote:
->
-> On 4/13/23 4:53 AM, Yafang Shao wrote:
-> > In our container environment, we are using EDT-bpf to limit the egress
-> > bandwidth. EDT-bpf can be used to limit egress only, but can't be used
-> > to limit ingress. Some of our users also want to limit the ingress
-> > bandwidth. But after applying EDT-bpf, which is based on clsact qdisc,
-> > it is impossible to limit the ingress bandwidth currently, due to some
-> > reasons,
-> > 1). We can't add ingress qdisc
-> > The ingress qdisc can't coexist with clsact qdisc as clsact has both
-> > ingress and egress handler. So our traditional method to limit ingress
-> > bandwidth can't work any more.
->
-> I'm not following, the latter is a super set of the former, why do you
-> need it to co-exist?
->
+RnJvbTogUGFvbG8gQWJlbmkNCj4gU2VudDogMTMgQXByaWwgMjAyMyAxMjozOA0KPiANCj4gT24g
+V2VkLCAyMDIzLTA0LTEyIGF0IDA4OjE1ICswMDAwLCBEYXZpZCBMYWlnaHQgd3JvdGU6DQo+ID4g
+RnJvbTogSmFrdWIgS2ljaW5za2kNCj4gPiA+IFNlbnQ6IDEyIEFwcmlsIDIwMjMgMDI6NTENCj4g
+PiA+DQo+ID4gPiBFcmljIHBvaW50cyBvdXQgdGhhdCB3ZSBzaG91bGQgbWFrZSBzdXJlIHRoYXQg
+cmluZyBpbmRleCB1cGRhdGVzDQo+ID4gPiBhcmUgd3JhcHBlZCBpbiB0aGUgYXBwcm9wcmlhdGUg
+UkVBRF9PTkNFL1dSSVRFX09OQ0UgbWFjcm9zLg0KPiA+ID4NCj4gPiAuLi4NCj4gPiA+IC1zdGF0
+aWMgaW5saW5lIHUzMiBibnh0X3R4X2F2YWlsKHN0cnVjdCBibnh0ICpicCwgc3RydWN0IGJueHRf
+dHhfcmluZ19pbmZvICp0eHIpDQo+ID4gPiArc3RhdGljIGlubGluZSB1MzIgYm54dF90eF9hdmFp
+bChzdHJ1Y3QgYm54dCAqYnAsDQo+ID4gPiArCQkJCWNvbnN0IHN0cnVjdCBibnh0X3R4X3Jpbmdf
+aW5mbyAqdHhyKQ0KPiA+ID4gIHsNCj4gPiA+IC0JLyogVGVsbCBjb21waWxlciB0byBmZXRjaCB0
+eCBpbmRpY2VzIGZyb20gbWVtb3J5LiAqLw0KPiA+ID4gLQliYXJyaWVyKCk7DQo+ID4gPiArCXUz
+MiB1c2VkID0gUkVBRF9PTkNFKHR4ci0+dHhfcHJvZCkgLSBSRUFEX09OQ0UodHhyLT50eF9jb25z
+KTsNCj4gPiA+DQo+ID4gPiAtCXJldHVybiBicC0+dHhfcmluZ19zaXplIC0NCj4gPiA+IC0JCSgo
+dHhyLT50eF9wcm9kIC0gdHhyLT50eF9jb25zKSAmIGJwLT50eF9yaW5nX21hc2spOw0KPiA+ID4g
+KwlyZXR1cm4gYnAtPnR4X3Jpbmdfc2l6ZSAtICh1c2VkICYgYnAtPnR4X3JpbmdfbWFzayk7DQo+
+ID4gPiAgfQ0KPiA+DQo+ID4gRG9lc24ndCB0aGF0IGZ1bmN0aW9uIG9ubHkgbWFrZSBzZW5zZSBp
+ZiBvbmx5IG9uZSBvZg0KPiA+IHRoZSByaW5nIGluZGV4IGNhbiBiZSBjaGFuZ2luZz8NCj4gPiBJ
+biB0aGlzIGNhc2UgSSB0aGluayB0aGlzIGlzIGJlaW5nIHVzZWQgaW4gdGhlIHRyYW5zbWl0IHBh
+dGgNCj4gPiBzbyB0aGF0ICd0eF9wcm9kJyBpcyBjb25zdGFudCBhbmQgaXMgZWl0aGVyIGFscmVh
+ZHkgcmVhZA0KPiA+IG9yIG5lZWQgbm90IGJlIHJlYWQgYWdhaW4uDQo+ID4NCi4uLg0KPiANCj4g
+QUZBSUNTIGJueHRfdHhfYXZhaWwoKSBpcyBhbHNvIHVzZWQgaW4gVFggaW50ZXJydXB0LCBvdXRz
+aWRlIHR4IHBhdGgvdHgNCj4gbG9jay4NCg0KSW4gd2hpY2ggY2FzZSBib3RoIHR4X3Byb2QgYW5k
+IHR4X2NvbnMgYXJlIHN1YmplY3QgdG8gcG9zc2libGUgdXBkYXRlcy4NCkl0IGlzIGV2ZW4gcG9z
+c2libGUgdGhhdCB0aGUgdHdvIHZhbHVlcyBoYXZlIGFic29sdXRlbHkgbm8gcmVsYXRpb24NCnRv
+IGVhY2ggb3RoZXIsIGl0IHJlcXVpcmVzIHNvbWUgdW51c3VhbCBjaXJjdW1zdGFuY2VzLCBidXQg
+aXNuJ3QgaW1wb3NzaWJsZS4NCi0gQSBoaWdoIHByaW9yaXR5IGludGVycnVwdCAoZWcgeDg2IFNN
+TSBtb2RlKSBjb3VsZCBzZXBhcmF0ZSB0aGUgUkVBRF9PTkNFKCkuDQotIFRyYW5zbWl0IHNldHVw
+IHdpbGwgaW5jcmVhc2UgdHhfcHJvZC4NCi0gRW5kIG9mIHRyYW5zbWl0ICdyZWFwJyBvZnRlbiBk
+b25lIGJ5IG90aGVyIGNvZGUgcGF0aHMgKGxpa2UgcnggcHJvY2Vzc2luZw0KICBvciB0eCBzZXR1
+cCkgY2FuIGNoYW5nZSB0eF9jb25zLg0KU28gbm90IG9ubHkgaXMgdGhlIHZhbHVlIGltbWVkaWF0
+ZWx5IHN0YWxlLCBpdCBjYW4gYmUganVzdCBwbGFpbiB3cm9uZy4NCg0KCURhdmlkDQoNCi0NClJl
+Z2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0
+b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykN
+Cg==
 
-It seems that I have a misunderstanding.
-
-> > 2). We can't redirect ingress packet to ifb with bpf
-> > By trying to analyze if it is possible to redirect the ingress packet t=
-o
-> > ifb with a bpf program, we find that the ifb device is not supported by
-> > bpf redirect yet.
->
-> You actually can: Just let BPF program return TC_ACT_UNSPEC for this
-> case and then add a matchall with higher prio (so it runs after bpf)
-> that contains an action with mirred egress redirect that pushes to ifb
-> dev - there is no change needed.
->
-
-Ah, indeed, it works.
-Many thanks for your help.
-
-> > This patch tries to resolve it by supporting redirecting to ifb with bp=
-f
-> > program.
-> >
-> > Ingress bandwidth limit is useful in some scenarios, for example, for t=
-he
-> > TCP-based service, there may be lots of clients connecting it, so it is
-> > not wise to limit the clients' egress. After limiting the server-side's
-> > ingress, it will lower the send rate of the client by lowering the TCP
-> > cwnd if the ingress bandwidth limit is reached. If we don't limit it,
-> > the clients will continue sending requests at a high rate.
->
-> Adding artificial queueing for the inbound traffic, aren't you worried
-> about DoS'ing your node?
-
-Yes, we worried about it, but we haven't observed it in our data center.
-
-> If you need to tell the sender to slow down,
-> have you looked at hbm (https://lpc.events/event/4/contributions/486/,
-> samples/bpf/hbm_out_kern.c) which uses ECN CE marking to tell the TCP
-> sender to slow down? (Fwiw, for UDP https://github.com/cloudflare/rakelim=
-it
-> would be an option.)
->
-
-We're considering using ECN. Thanks for your information, I will analyze it=
-.
-
---=20
-Regards
-Yafang
