@@ -2,48 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7300D6E076C
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 09:14:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E28E6E0772
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 09:15:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbjDMHOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 03:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S229826AbjDMHPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 03:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbjDMHOp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 03:14:45 -0400
-Received: from m12.mail.163.com (m12.mail.163.com [220.181.12.214])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 206F14C19;
-        Thu, 13 Apr 2023 00:14:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=J68ms
-        hiUh+tWg8G3Lc53Yvgg2fGvMvWtMKcuYE3nO5I=; b=HYlqsnyLgt0bx1UIy1aiM
-        wH6Co+vP7KviGJW3OVaGOAMb5Jz78biTlarSH91awvBVN6DOoOQTErvQA23S11SS
-        KYe8XTHds+cg+cZQHqth+V1JTQG3q7n67l2ltf26CyrxGbZF+o3LiTd4RzORTSAi
-        YRIlr/WWIq4+sQh2XrhQQU=
-Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
-        by zwqz-smtp-mta-g4-1 (Coremail) with SMTP id _____wDXGOy7qzdkZEIsBQ--.1078S2;
-        Thu, 13 Apr 2023 15:14:03 +0800 (CST)
-From:   Zheng Wang <zyytlz.wz@163.com>
-To:     davem@davemloft.net
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hackerzheng666@gmail.com, 1395428693sheep@gmail.com,
-        alex000young@gmail.com, Zheng Wang <zyytlz.wz@163.com>
-Subject: [PATCH net v2] net: ethernet: fix use after free bug in ns83820_remove_one due to race condition
-Date:   Thu, 13 Apr 2023 15:14:01 +0800
-Message-Id: <20230413071401.210599-1-zyytlz.wz@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229828AbjDMHPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 03:15:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C17083F0
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 00:15:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A8363BCB
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:15:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4E2DC433EF;
+        Thu, 13 Apr 2023 07:15:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681370134;
+        bh=62nqpbftTHPVHp6Tb1GAyNozDF2hZC9FLijQL9QkXRo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LEMpdxxEtuX4S4qK8HNpc1f1ydmWmIipnDOFQ5JwZP1gJfL6MinxO0wOX6VEhYMOS
+         JSjGPY454pEtXKRpktbvfgSdXI9aoWf+zyBkulOVHI1pqj2cm2aROy6hp/72XvxBOo
+         loA/4yrVc8czwJhWi/0aGRVMyvAru2ko+gxWu9vq3B/CMJa3tZ/vwPZS5n8K60C9Ij
+         AlsRYwIMlh8zaDkoUTMmuwOXLgQr+PrQ9lZYaxvm8GGnBV5W3ftgA8y6ZoYuQKIyjh
+         ZqWo7GiC8AmQtI7ZTCZo/eD3Tj9cXlrcdqoHYu+5x0NGltzcs2ItCG9RlSOIWAWWid
+         EpopElnPGB16A==
+Date:   Thu, 13 Apr 2023 10:15:29 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
+        willemb@google.com, decot@google.com, netdev@vger.kernel.org,
+        jesse.brandeburg@intel.com, edumazet@google.com,
+        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        pabeni@redhat.com, davem@davemloft.net
+Subject: Re: [Intel-wired-lan] [PATCH net-next v2 00/15] Introduce Intel IDPF
+ driver
+Message-ID: <20230413071529.GE182481@unreal>
+References: <20230411011354.2619359-1-pavan.kumar.linga@intel.com>
+ <ZDb3rBo8iOlTzKRd@sashalap>
+ <643703892094_69bfb294a3@willemb.c.googlers.com.notmuch>
+ <d2585839-fcec-4a68-cc7a-d147ce7deb04@intel.com>
+ <20230412192434.53d55c20@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _____wDXGOy7qzdkZEIsBQ--.1078S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7AFykCw1xJr1UWw47Zr1DZFb_yoW8Xw1rp3
-        90kFyfuF1ktw4UWw1UJr40qry5XFs8t3yYgayIyw4avas5Zr4vgF4UKFWUZr18GrWqvr4f
-        Aw45Zw43uas8ZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziFAprUUUUU=
-X-Originating-IP: [111.206.145.21]
-X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/1tbiGg1QU1aEE4gpSgAEs6
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_MSPIKE_H2,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230412192434.53d55c20@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,55 +63,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ns83820_init_one, dev->tq_refill was bound with queue_refill.
+On Wed, Apr 12, 2023 at 07:24:34PM -0700, Jakub Kicinski wrote:
+> On Wed, 12 Apr 2023 19:03:22 -0500 Samudrala, Sridhar wrote:
+> > On 4/12/2023 2:16 PM, Willem de Bruijn wrote:
+> > > Sasha Levin wrote:  
+> > >> On Mon, Apr 10, 2023 at 06:13:39PM -0700, Pavan Kumar Linga wrote:  
+> > >> How will this work when the OASIS driver is ready down the road?
+> > >>
+> > >> We'll end up with two "idpf" drivers, where one will work with hardware
+> > >> that is not fully spec compliant using this Intel driver, and everything
+> > >> else will use the OASIS driver?
+> > >>
+> > >> Does Intel plan to remove this driver when the OASIS one lands?
+> > >>
+> > >> At the very least, having two "idpf" drivers will be very confusing.  
+> > > 
+> > > One approach is that when the OASIS v1 spec is published, this driver
+> > > is updated to match that and moved out of the intel directory.  
+> > 
+> > Yes. We don't want to have 2 idpf drivers in the upstream kernel.
+> > It will be an Intel vendor driver until it becomes a standard.
+> > Hope it will be OK to move the driver out of the intel directory when 
+> > that happens.
+> 
+> As I said previously in [0] until there is a compatible, widely
+> available implementation from a second vendor - this is an Intel
+> driver and nothing more. It's not moving anywhere.
 
-If irq happens, it will call ns83820_irq->ns83820_do_isr.
-Then it invokes tasklet_schedule(&dev->rx_tasklet) to start
-rx_action function. And rx_action will call ns83820_rx_kick
-and finally start queue_refill function.
+Even if second implementation arrives, it is unlikely that this
+idpf driver will be moved. Mainly because of different level of
+review between vendor driver vs. standard one, and expected pushback
+to any incompatible changes in existing driver as it is already deployed.
 
-If we remove the driver without finishing the work, there
-may be a race condition between ndev, which may cause UAF
-bug.
+Thanks
 
-CPU0                  CPU1
-
-                     |queue_refill
-ns83820_remove_one   |
-free_netdev	 		 |
-put_device			 |
-free ndev			 |
-                     |rx_refill
-                     |//use ndev
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
----
-v2:
-- cancel the work after unregister_netdev to make sure there 
-is no more request suggested by Jakub Kicinski
----
- drivers/net/ethernet/natsemi/ns83820.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/ethernet/natsemi/ns83820.c b/drivers/net/ethernet/natsemi/ns83820.c
-index 998586872599..2e84b9fcd8e9 100644
---- a/drivers/net/ethernet/natsemi/ns83820.c
-+++ b/drivers/net/ethernet/natsemi/ns83820.c
-@@ -2208,8 +2208,13 @@ static void ns83820_remove_one(struct pci_dev *pci_dev)
- 
- 	ns83820_disable_interrupts(dev); /* paranoia */
- 
-+	netif_carrier_off(ndev);
-+	netif_tx_disable(ndev);
-+
- 	unregister_netdev(ndev);
- 	free_irq(dev->pci_dev->irq, ndev);
-+	cancel_work_sync(&dev->tq_refill);
-+
- 	iounmap(dev->base);
- 	dma_free_coherent(&dev->pci_dev->dev, 4 * DESC_SIZE * NR_TX_DESC,
- 			  dev->tx_descs, dev->tx_phy_descs);
--- 
-2.25.1
-
+> 
+> I think that's a reasonable position which should allow Intel to ship
+> your code and me to remain professional.
+> 
+> [0] https://lore.kernel.org/all/20230403163025.5f40a87c@kernel.org/
