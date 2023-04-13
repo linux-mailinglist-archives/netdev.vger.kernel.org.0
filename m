@@ -2,273 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12F6B6E0F2D
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 15:49:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63B436E0F19
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 15:45:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231304AbjDMNte (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 09:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51700 "EHLO
+        id S231310AbjDMNps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 09:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230383AbjDMNta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 09:49:30 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2D03584
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 06:49:29 -0700 (PDT)
-Received: from mail-yw1-f197.google.com (mail-yw1-f197.google.com [209.85.128.197])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A39CB3F443
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 13:40:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1681393201;
-        bh=Fwm2zA4Lu+pnk2wfvmdsIMzskA4Hu3SYjIKwChZpmug=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=AWQY2V1XaMZhW8MzHMHoQ2wL1+urxuW4IcripYmhfVi+9HleXuaSpmjnD7zoxUhy3
-         iyzP/W5gCwxLS3sP3JnxfAS2Ytw+Lp0fMNv5H31L7VSn2tg3oxS0Y+jMYjYjywkp+C
-         0BDZ2Uvk3E6R7LbYOREocWWvIXsslaTJjcRnSCWA/jfo/vODqywKDJMqjYu2zq8OIp
-         Wp54ZzOafPN/B07V8Ut2JPvO+JCj4zoKX2PziLc8aTWn3et/u1emPYjjbi8pEZnaf0
-         KL2OrcqUpM7iWJniBKOMYGDLT6EDb4srr/gaq3Ofl/OTD8SGbGz/C93Gff/SUZMPkU
-         x/YTgGuZomnfA==
-Received: by mail-yw1-f197.google.com with SMTP id 00721157ae682-54fd5d0ad7cso8016407b3.1
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 06:40:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681393200; x=1683985200;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Fwm2zA4Lu+pnk2wfvmdsIMzskA4Hu3SYjIKwChZpmug=;
-        b=H02pO5bbkgOodQrz34Msx0OW2wJrtqNXxj1DO0BlQt1vRKiXHsULhQhH9PhxWez4h+
-         bgMYJ90AefNc7fLl9QifvJEAQexXsKVmkkqW61tclDYBF7zEmWbTTaxiMlz/URc1IQqF
-         R1/MhDRjx6VIK+VbEPFaBb71ns+koRLktzQlZo3K249QrHCwr2+0GvabMAjlDcBtzFuC
-         3NWgysSCkhc4zUnEIYPaLMoIO5kGfKVSp6oBYJ6S1Gg4W9f/EyK7Cp8vcxWSo8+r+4DL
-         hAHkylBnnvvGRg8wO3+FQbC0rZ9MQOfqwcOJqJK6lEO3lNgPZAJ8gPTcvg+VROstHS/j
-         lK+g==
-X-Gm-Message-State: AAQBX9eblU2g8oX1rV9q09r/5Hws6VHWZqfV62c63sZDWlHNwXHeEAER
-        L3Y25y7LDKovd3xV7MxYqai0TD2M87Cy2AgXZedCKcrpF+s53A+KPqCVfcgiE4uW3xUIEu+Togl
-        Aq5zQl8bsBH6CleiJ8FuvgKWGK96wCQ6lt1x7GTQotSOEOfCnlA==
-X-Received: by 2002:a81:ae0b:0:b0:54f:8f2e:a03 with SMTP id m11-20020a81ae0b000000b0054f8f2e0a03mr1459789ywh.1.1681393200538;
-        Thu, 13 Apr 2023 06:40:00 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bWBZ+Oe+dqnl0WOzPCmKCiFgGY9gArAk6IN/SlCoHxVcrE5UC1Wg715sEPuLSw04N9G3npVyH3kp0ZgILmuV4=
-X-Received: by 2002:a81:ae0b:0:b0:54f:8f2e:a03 with SMTP id
- m11-20020a81ae0b000000b0054f8f2e0a03mr1459771ywh.1.1681393200269; Thu, 13 Apr
- 2023 06:40:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230411104231.160837-1-aleksandr.mikhalitsyn@canonical.com>
- <20230411104231.160837-2-aleksandr.mikhalitsyn@canonical.com> <20230411-umarmen-mulden-c34abb9b2511@brauner>
-In-Reply-To: <20230411-umarmen-mulden-c34abb9b2511@brauner>
-From:   Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Date:   Thu, 13 Apr 2023 15:39:49 +0200
-Message-ID: <CAEivzxfHjSPGu9HJP0jKa0i34vUVbaMqkGks+=0FzT7Wq_so8A@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 1/4] scm: add SO_PASSPIDFD and SCM_PIDFD
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Luca Boccassi <bluca@debian.org>, linux-arch@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S231211AbjDMNpc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 09:45:32 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC334B44A;
+        Thu, 13 Apr 2023 06:44:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681393493; x=1712929493;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=KxxEPlU2/GpXQN7ePcEQZMNuqId2Sz13OwtZrosQQSU=;
+  b=KyDZ+FRwAOaGID4mb9Bdwk0xD9m1nBe6MkqarKTFmCyvu46ehQJMMpm0
+   BLQV4jNUoalJt43I3yu1lP3Q5i9HuqIUtHHZvazxIDoi+6gRVWn35e7fe
+   I+Gk9fcrZQOcMyQPuRhHOBajN6o6heUE3aMxQthw2AC5ZSZijNHhuMWQX
+   ZduLU7U6yZOBYHCN0vSMCGvpf39rKcg/ApeKSPXBY6rTJP6CyYP7UpFnf
+   9C8uI831A01XpdL5lpfYCdRW8STrNF4wjtT6lgrsWlu9qpJeuePvxHyin
+   mpoe4PQMKGXVdNWj6hFwZfIEz99BjB21UiGugO8YzANnPeJIgHUFTOCyl
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="430471558"
+X-IronPort-AV: E=Sophos;i="5.99,193,1677571200"; 
+   d="scan'208";a="430471558"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2023 06:43:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="639669963"
+X-IronPort-AV: E=Sophos;i="5.99,193,1677571200"; 
+   d="scan'208";a="639669963"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga003.jf.intel.com with ESMTP; 13 Apr 2023 06:43:55 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 13 Apr 2023 06:43:55 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 13 Apr 2023 06:43:55 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Thu, 13 Apr 2023 06:43:55 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.40) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Thu, 13 Apr 2023 06:43:54 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MrenhII4w3Q6VrvpdDJxCH18x4jnitvHfq2uNyOVWFWYCIIb5Nn+MLHlcXmL5zeJreFdklmtnpH/S75SkiwwGVk2mUYVGqDfcbLKVi5nKewG3aqRp8sOeXD4jZNt4eGKwwx6bk3uEHvg1EfHeBUbUQUmu7iSeXo1WOti5e1CTZ9XpFYWeakLG9FD3Ao5j/LMVr16ajYiV5Z4dY+rwTH9zMJyYyvRhJU3evKh/h1N85300TpmuMxJZoN4AsrVE1/Rkfa4YfZgsCzDkVAWUQC3VVSXTsriT7T/hEnoavUHt8xe9161JZvGASYveWsVD/ZGoYFSQP0LSPAqCTOwUKFrYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZfYzvBHpQaWDLvRi9YMzOzDmcgA5CjJFA6/hUOGIAnk=;
+ b=TnedY5+x4MTKBYeDIcyd0DEcogw3Ffi6XtAIzseuJ0uQ6LnL4mqFdbfeOI8qFFiI4jZSABBry2l6WkRqY2f+3zO6fi+6mrED8K2wFUfUILVg/fcAi4PMsCKCv3gxkA1d1BQb3LKsIoWjZcWK/A4KY6HwKfPDNwMWqc9P89UVUfte3ZieM+GU8IFxMMi2tLx+022A1gW5Qqp/QLnhROawqDUKS6PJokmM5M12bYTP95eYIc/vEesr0of1CA0sYgglqtRUfe8GFuekPXonPEjhmeLHXjAatVr/0Ml64g8EeBd82+/TR7ThKLAXnZGdK1B//sQm2vKSiL42OWmxERWv5Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
+ SA3PR11MB8118.namprd11.prod.outlook.com (2603:10b6:806:2f1::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Thu, 13 Apr
+ 2023 13:43:53 +0000
+Received: from DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::f829:c44d:af33:e2c8]) by DM6PR11MB4657.namprd11.prod.outlook.com
+ ([fe80::f829:c44d:af33:e2c8%4]) with mapi id 15.20.6298.030; Thu, 13 Apr 2023
+ 13:43:52 +0000
+From:   "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "jiri@resnulli.us" <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [RFC PATCH v1] ice: add CGU info to devlink info callback
+Thread-Topic: [RFC PATCH v1] ice: add CGU info to devlink info callback
+Thread-Index: AQHZbURL//7N1kf7H06LoNzMTKXBn68ol1EAgACoMpA=
+Date:   Thu, 13 Apr 2023 13:43:52 +0000
+Message-ID: <DM6PR11MB46577E14FE17ADA6D1E74E789B989@DM6PR11MB4657.namprd11.prod.outlook.com>
+References: <20230412133811.2518336-1-arkadiusz.kubalewski@intel.com>
+ <20230412203500.36fb7c36@kernel.org>
+In-Reply-To: <20230412203500.36fb7c36@kernel.org>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR11MB4657:EE_|SA3PR11MB8118:EE_
+x-ms-office365-filtering-correlation-id: 4e724ec1-0654-4d66-5744-08db3c251e7c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tMzxMQvCHdaRzaF12tUpylcE4bmC/A3iODEtX/UyDSaGMV6F69rotxJx38Ww+F/E1dkB6Az8ax32nszXEbgHvQRjoEUYElGr5FfQZXcLqEP6XMF6g1JS13wLdxqHHXXSv0qrIjoN41dNKbq8ksuzaXY/Jl+2+W0Tom0tnlxDM24F+7GTT+nwFiu71VcxvlGpiOx8kcZSmolVxWi9laLOSgX8+22XT5nvxumaM/N/7t89CNJ+PDQyIgY2CV3Z7JERtuBTwlrWzEMqxmfbqdc1sc+9+yKw1eHvr/TvmbAUL8+C4NcPXoQFnE2RcGw71RLS0t5Ziar7KMxJurDiB9QnZacz6B5yMFZjyPdVIpcWqvR/QBMBvNY9jpH3EsWYTS+hBrsk+GTRBJmZQe02g4wlIZOkOl/ANrpgV83dI4xLwJUSVj4ZCxkMYLnJ2ppXCss0bJe0OHWNVpAFsBhL/MFmY+ukRqLcRU+M6gEkMj0+dMG64JDn2/IRbw0jTDjcdVrC96oQ+KCc6sjTCd02BS5AfDFnXyNnV6WrxMF5D1AzY1uRaeal1LhyXhngUFH+cyR/XIcYV6izClw1TF3jDWnEBuQ2WxP+YY+pTr8ZM/+qQAUArmkF8jFviM26cat+29t3
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(376002)(346002)(396003)(39860400002)(366004)(451199021)(478600001)(33656002)(54906003)(38070700005)(7416002)(82960400001)(52536014)(5660300002)(8936002)(8676002)(64756008)(66446008)(76116006)(4326008)(66476007)(66946007)(6916009)(66556008)(122000001)(316002)(2906002)(38100700002)(55016003)(7696005)(41300700001)(6506007)(9686003)(26005)(83380400001)(186003)(86362001)(71200400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uBUQZ+OGATfGJVfHOVIgCMWlToDB1Cawo5F10j7gykg2CG8tz1SpWkYOBW6Q?=
+ =?us-ascii?Q?uMlqyPV2PisGTxw8T7PoRiIzliaP5I9CX3QFXhdMpb+j6qldBhV38Jb/z7C3?=
+ =?us-ascii?Q?PX0hECER6SrQ/ID9ZwTdXvyzGnlGWd2817vtSQZyaxSZ8p7LtkTj/I7fHDW7?=
+ =?us-ascii?Q?OYgmoUjN5i6fyusdmkIVTWqDPUGBI7/CaO5ow09OKTD6l4sD2pM2tBcb1FwK?=
+ =?us-ascii?Q?XcR3ROReXyfudQsOngALA/tH1lKff7U5z+WFW0efZeiE1QK9cIpIZwHmOkj2?=
+ =?us-ascii?Q?v9tVbkMC8O34sb2YwDmsnNAFW05vW0xCQYQ77yhZx++MEhm/MGoWqunSRpoG?=
+ =?us-ascii?Q?FrKD9CW4R1VadMpD4SK6joGq0mDfyhC2l0GhqHxpawFEN9F+E1ytd27R9MYo?=
+ =?us-ascii?Q?zxyuxIeR8Mtz1TyAknDPjZgiNvMful8r+/TH33kisuwr5R7ZgksX6xWdmyhb?=
+ =?us-ascii?Q?eZfvQ1BokHslxETcdrRnoBh7wnWZhtrmg7hK+SdatYB88JWY34UTC8XKR/zB?=
+ =?us-ascii?Q?bG2OZEAz3MOFyMTiZoRXgr3C7ykHjysmiCrTFNtc6AZ6sm5J015iouN8q97v?=
+ =?us-ascii?Q?BacNDQZicdR05EzNYCvrH+3JwY8bRO456x2t/jSg/naixlvMk6fluyl8S6yW?=
+ =?us-ascii?Q?Ewwmb/CSJPzy+3DXkVlXzAl5m7k21H6iOsNi64yUfYO8JXne8SdSc7mQmNDg?=
+ =?us-ascii?Q?v0hftvOVtq6dLj6V9HNJQIdlr47QjDwcULVirmWOcs/7WK3qITFj+3/T8ghO?=
+ =?us-ascii?Q?5cw2JMsQJ/xR8+WgDmNqBrwUdzQ8P1IQJkfZlwlDnfSCqsj5A4WDyI2N/P/u?=
+ =?us-ascii?Q?sRaLd7mUWtjdLVHX3bPYHpiE31Ge/sFMlnlL7nYJaePfoZ8Vj/iFHuz8TsJ5?=
+ =?us-ascii?Q?SlbrjI2ApZm4FXDlbmQXV0qBVn+LJUXE45gw9B7PPCLhdu7gXEU/KuWpLkZd?=
+ =?us-ascii?Q?cPoGVMXEbR7QtizBv7Mhob5D+O3PC5SeQkevOhmI7LcraJ/FgGWmys/E6X7i?=
+ =?us-ascii?Q?PD5M/doowmK5u4iTYOaByO4RMA9KF8T7ngIPXvl/MJPXhcqGtgHsj0G6UHRF?=
+ =?us-ascii?Q?c4jrcq9jPAgrPtn6bRSTRycMPxlJjT5JM97iasdFwWSdzgROdtGt0geKHwkT?=
+ =?us-ascii?Q?9KZYS/U1baAPSYfJZl8LZvnDVEK9ZeRBkIQBHrWePrayZg6u0GH7/jxeYnNX?=
+ =?us-ascii?Q?fn78jL2NOGIderjHhys5yzb9HzSec4y6omh0xWZhj0K3G4VAtiY2Xawacbwj?=
+ =?us-ascii?Q?TYXwDx7xhlnbC0xbJ0qTyUqjXViuDZCXtYz6etANc5xVCmLBObf/ZX7c3x5f?=
+ =?us-ascii?Q?0MpuGZKaZNdi8SrhXrMy0qc9lr9+zVARSd5U56oJAhJ01GHUdSEmDuxVnls0?=
+ =?us-ascii?Q?ouu2njPmD3/7I4jCT2s8Pyg0yx0xos4mNtMvdwIBJjPQLKg3nc8bgL7GzMqz?=
+ =?us-ascii?Q?jDbUlgYX3ZKL/HDOmWUk/9RXQMxKEhC9gyX1FAmpwWKan1heDR9ZbY2VNqbt?=
+ =?us-ascii?Q?blFUxlvlh83fH/lir/ym5h0+vu+IK2IEgqhs5sMV1kiH6ij0BRJR8yR7wIGY?=
+ =?us-ascii?Q?5wkOyYlrvl0It2my3yY3YaXt0sr6blaufP83K4H0sOYle3dZUr2+32uUI1Jd?=
+ =?us-ascii?Q?/Q=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e724ec1-0654-4d66-5744-08db3c251e7c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2023 13:43:52.5901
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UVsSGCjZKUgJXoByPHEH6+QZ+TI8Ur88Ck78xLToOpTT8BY4PB7s5dPtnKyF+s/bMbJx254dhsja3NgYNOvZ8UCo/28Cy7Kf/g1koK4N6s0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR11MB8118
+X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixed in -v4
-
-https://lore.kernel.org/netdev/20230413133355.350571-2-aleksandr.mikhalitsy=
-n@canonical.com/T/#u
-
-Kind regards,
-Alex
-
-
-On Tue, Apr 11, 2023 at 5:37=E2=80=AFPM Christian Brauner <brauner@kernel.o=
-rg> wrote:
+>From: Jakub Kicinski <kuba@kernel.org>
+>Sent: Thursday, April 13, 2023 5:35 AM
 >
-> On Tue, Apr 11, 2023 at 12:42:28PM +0200, Alexander Mikhalitsyn wrote:
-> > Implement SCM_PIDFD, a new type of CMSG type analogical to SCM_CREDENTI=
-ALS,
-> > but it contains pidfd instead of plain pid, which allows programmers no=
-t
-> > to care about PID reuse problem.
-> >
-> > Idea comes from UAPI kernel group:
-> > https://uapi-group.org/kernel-features/
-> >
-> > Big thanks to Christian Brauner and Lennart Poettering for productive
-> > discussions about this.
-> >
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Paolo Abeni <pabeni@redhat.com>
-> > Cc: Leon Romanovsky <leon@kernel.org>
-> > Cc: David Ahern <dsahern@kernel.org>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Cc: Christian Brauner <brauner@kernel.org>
-> > Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > Cc: Lennart Poettering <mzxreary@0pointer.de>
-> > Cc: Luca Boccassi <bluca@debian.org>
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-arch@vger.kernel.org
-> > Tested-by: Luca Boccassi <bluca@debian.org>
-> > Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.c=
-om>
-> > ---
-> > v2:
-> >       According to review comments from Kuniyuki Iwashima and Christian=
- Brauner:
-> >       - use pidfd_create(..) retval as a result
-> >       - whitespace change
-> > ---
-> >  arch/alpha/include/uapi/asm/socket.h    |  2 ++
-> >  arch/mips/include/uapi/asm/socket.h     |  2 ++
-> >  arch/parisc/include/uapi/asm/socket.h   |  2 ++
-> >  arch/sparc/include/uapi/asm/socket.h    |  2 ++
-> >  include/linux/net.h                     |  1 +
-> >  include/linux/socket.h                  |  1 +
-> >  include/net/scm.h                       | 14 ++++++++++++--
-> >  include/uapi/asm-generic/socket.h       |  2 ++
-> >  net/core/sock.c                         | 11 +++++++++++
-> >  net/mptcp/sockopt.c                     |  1 +
-> >  net/unix/af_unix.c                      | 18 +++++++++++++-----
-> >  tools/include/uapi/asm-generic/socket.h |  2 ++
-> >  12 files changed, 51 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/=
-uapi/asm/socket.h
-> > index 739891b94136..ff310613ae64 100644
-> > --- a/arch/alpha/include/uapi/asm/socket.h
-> > +++ b/arch/alpha/include/uapi/asm/socket.h
-> > @@ -137,6 +137,8 @@
-> >
-> >  #define SO_RCVMARK           75
-> >
-> > +#define SO_PASSPIDFD         76
-> > +
-> >  #if !defined(__KERNEL__)
-> >
-> >  #if __BITS_PER_LONG =3D=3D 64
-> > diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/ua=
-pi/asm/socket.h
-> > index 18f3d95ecfec..762dcb80e4ec 100644
-> > --- a/arch/mips/include/uapi/asm/socket.h
-> > +++ b/arch/mips/include/uapi/asm/socket.h
-> > @@ -148,6 +148,8 @@
-> >
-> >  #define SO_RCVMARK           75
-> >
-> > +#define SO_PASSPIDFD         76
-> > +
-> >  #if !defined(__KERNEL__)
-> >
-> >  #if __BITS_PER_LONG =3D=3D 64
-> > diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/includ=
-e/uapi/asm/socket.h
-> > index f486d3dfb6bb..df16a3e16d64 100644
-> > --- a/arch/parisc/include/uapi/asm/socket.h
-> > +++ b/arch/parisc/include/uapi/asm/socket.h
-> > @@ -129,6 +129,8 @@
-> >
-> >  #define SO_RCVMARK           0x4049
-> >
-> > +#define SO_PASSPIDFD         0x404A
-> > +
-> >  #if !defined(__KERNEL__)
-> >
-> >  #if __BITS_PER_LONG =3D=3D 64
-> > diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/=
-uapi/asm/socket.h
-> > index 2fda57a3ea86..6e2847804fea 100644
-> > --- a/arch/sparc/include/uapi/asm/socket.h
-> > +++ b/arch/sparc/include/uapi/asm/socket.h
-> > @@ -130,6 +130,8 @@
-> >
-> >  #define SO_RCVMARK               0x0054
-> >
-> > +#define SO_PASSPIDFD             0x0055
-> > +
-> >  #if !defined(__KERNEL__)
-> >
-> >
-> > diff --git a/include/linux/net.h b/include/linux/net.h
-> > index b73ad8e3c212..c234dfbe7a30 100644
-> > --- a/include/linux/net.h
-> > +++ b/include/linux/net.h
-> > @@ -43,6 +43,7 @@ struct net;
-> >  #define SOCK_PASSSEC         4
-> >  #define SOCK_SUPPORT_ZC              5
-> >  #define SOCK_CUSTOM_SOCKOPT  6
-> > +#define SOCK_PASSPIDFD               7
-> >
-> >  #ifndef ARCH_HAS_SOCKET_TYPES
-> >  /**
-> > diff --git a/include/linux/socket.h b/include/linux/socket.h
-> > index 13c3a237b9c9..6bf90f251910 100644
-> > --- a/include/linux/socket.h
-> > +++ b/include/linux/socket.h
-> > @@ -177,6 +177,7 @@ static inline size_t msg_data_left(struct msghdr *m=
-sg)
-> >  #define      SCM_RIGHTS      0x01            /* rw: access rights (arr=
-ay of int) */
-> >  #define SCM_CREDENTIALS 0x02         /* rw: struct ucred             *=
-/
-> >  #define SCM_SECURITY 0x03            /* rw: security label           *=
-/
-> > +#define SCM_PIDFD    0x04            /* ro: pidfd (int)              *=
-/
-> >
-> >  struct ucred {
-> >       __u32   pid;
-> > diff --git a/include/net/scm.h b/include/net/scm.h
-> > index 585adc1346bd..0c717ae9c8db 100644
-> > --- a/include/net/scm.h
-> > +++ b/include/net/scm.h
-> > @@ -124,8 +124,9 @@ static __inline__ void scm_recv(struct socket *sock=
-, struct msghdr *msg,
-> >                               struct scm_cookie *scm, int flags)
-> >  {
-> >       if (!msg->msg_control) {
-> > -             if (test_bit(SOCK_PASSCRED, &sock->flags) || scm->fp ||
-> > -                 scm_has_secdata(sock))
-> > +             if (test_bit(SOCK_PASSCRED, &sock->flags) ||
-> > +                 test_bit(SOCK_PASSPIDFD, &sock->flags) ||
-> > +                 scm->fp || scm_has_secdata(sock))
-> >                       msg->msg_flags |=3D MSG_CTRUNC;
-> >               scm_destroy(scm);
-> >               return;
-> > @@ -141,6 +142,15 @@ static __inline__ void scm_recv(struct socket *soc=
-k, struct msghdr *msg,
-> >               put_cmsg(msg, SOL_SOCKET, SCM_CREDENTIALS, sizeof(ucreds)=
-, &ucreds);
-> >       }
-> >
-> > +     if (test_bit(SOCK_PASSPIDFD, &sock->flags)) {
-> > +             int pidfd;
-> > +
-> > +             WARN_ON_ONCE(!scm->pid);
-> > +             pidfd =3D pidfd_create(scm->pid, 0);
-> > +
-> > +             put_cmsg(msg, SOL_SOCKET, SCM_PIDFD, sizeof(int), &pidfd)=
-;
+>On Wed, 12 Apr 2023 15:38:11 +0200 Arkadiusz Kubalewski wrote:
+>> If Clock Generation Unit and dplls are present on NIC board user shall
+>> know its details.
+>> Provide the devlink info callback with a new:
+>> - fixed type object `cgu.id` - hardware variant of onboard CGU
+>> - running type object `fw.cgu` - CGU firmware version
+>> - running type object `fw.cgu.build` - CGU configuration build version
+>>
+>> These information shall be known for debugging purposes.
+>>
+>> Test (on NIC board with CGU)
+>> $ devlink dev info <bus_name>/<dev_name> | grep cgu
+>>         cgu.id 8032
+>>         fw.cgu 6021
+>>         fw.cgu.build 0x1030001
+>>
+>> Test (on NIC board without CGU)
+>> $ devlink dev info <bus_name>/<dev_name> | grep cgu -c
+>> 0
+>>
+>> Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 >
-> I know you already mentioned that you accidently missed to change this
-> to not leak an fd. But just so we keep track of it see the comment to v2
-> https://lore.kernel.org/netdev/20230322154817.c6qasnixow452e6x@wittgenste=
-in/#t
+>Is it flashed together with the rest of the FW components of the NIC?
+>Or the update method is different?
+
+Right now there is no mechanics for CGU firmware update at all, this is why=
+ I
+mention that this is for now mostly for debugging purposes.
+There are already some works ongoing to have CGU FW update possible, first =
+with
+Intel's nvmupdate packages and tools. But, for Linux we probably also gonna
+need to support update through devlink, at least this seems right thing to =
+do,
+as there is already possibility to update NIC firmware with devlink.
+
+Thank you!
+Arkadiusz
