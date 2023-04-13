@@ -2,77 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26E236E0FDB
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F24D6E0FE4
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:24:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbjDMOWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 10:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52776 "EHLO
+        id S231217AbjDMOYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 10:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230347AbjDMOWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:22:01 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFC7359D
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:21:59 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-54fb615ac3dso71923847b3.2
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 07:21:59 -0700 (PDT)
+        with ESMTP id S229887AbjDMOYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:24:34 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B379EE3;
+        Thu, 13 Apr 2023 07:24:33 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id fv6so2910073qtb.9;
+        Thu, 13 Apr 2023 07:24:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681395719; x=1683987719;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1681395873; x=1683987873;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8VkXx3MwA5LRGwzJIwL5RFqYfkVgM3VjyEag+q2YqrU=;
-        b=p/rPO5OT9jf0z5yXRSmrTLDoSIUepPZb11UDvDwuXp0EPGmz+QZuALKz8izmoVHVYS
-         /rMDYmIJLs4IQHTnFkUSyK0v6X7bIr5NPle7P8+EDsN/RNdVSRNzVDDaVUkJ9S3lf6YD
-         kTqa9QCLHGwTI9/fiDcuUmY99CapyntFhF4wgEOid05HBPSs6KmXYyYrOsA6x7fxXQND
-         adyVYw/VeCPd8L8P29K+AEk9c82liGqfoLWi7l3fRH/yQtCNVduKPYRb6fgqig1bRLbc
-         hNLGBr3hJUQbrR6cHpeqyuBlzBXXK+cVNxpFEIlcj+wY1NJbxum3s0lTm+Q3HxbBZRQo
-         fyAg==
+        bh=/TrAOS0R5wy2ok/bqex9Gh2UkGvuG1Z9xkGn7BQOOkQ=;
+        b=b/ViUDzfSWs5SNJEDqJz6GRAGG5jpNDZbGdhDRdKGT0RWMPR7qgzc15mS4W/ggmnyg
+         p8S3AXLq6hpuKneYCVqCJb63LoikUs9JgZ2iSg/q/p+8p/hQ8uZ0MZ1t63JBR1mhS+Ow
+         s/P8ZpN8nQd+pRg75ZFN36HUBc7+9wcxuprDugkLijOVVbbkLBQ/Ll4yg2BdwQ63q5bP
+         hRnEb/+7AtAOHAHhgMHlkQ4TCel7v3t+rnFtKqqyX3EZ9PLYZUEjvbqrRo2ng3R1QwXq
+         ItyMUESW1xzSCkDQuXSupBgujX4h35O3Bo+fmkAExiiXU7whjjyuYuk/tfT8FzljppKh
+         Dftg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681395719; x=1683987719;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8VkXx3MwA5LRGwzJIwL5RFqYfkVgM3VjyEag+q2YqrU=;
-        b=IsDvSqEa1kzzrjBOskSH1Ks2BJll66FvWaYRr5WC2uz2unji+VjXp26IBD2QRBFv8M
-         btnFJFBoEAKZxW9IK102ID2KsM0a7xuFgcq7sZgo1tNY6RtaC9rXTIYqalL8JMa8zkOq
-         fD6IHK64eJHgGaTemrZIO6mPqTyb3YWJ4WXTgm3EXF2c2FHU4oPgVzLSqru6A85B4ezV
-         T//kNa/j5oMtLr02juE9Ww0T77uy2LqhkOO8nxxLUwpHGtrQmpEmyITdmSKVzRi1CTf4
-         Ubai/GGMbSjoK/sgIvOvBY10XLLxQC3z2RDOFa8nVYdQOr06s8hgvwSC3T16788dNzba
-         MELA==
-X-Gm-Message-State: AAQBX9cpNvLRkWWlNqbuFifNLmPvnXrrPslt0mcSLPWRDEJuc1NYxXdy
-        HU28etTQ621fj1MURz+S/+jps+c27VPgwzIs5KnIuQ==
-X-Google-Smtp-Source: AKy350aWLdSfLFnbU2dOD+LgGjl5FiO8H6fvc5f3Kk0Ef5grktsOqGaj+SF5L1Q0CPDWiWqjjTDuDi6S0gJr9BpqgO4=
-X-Received: by 2002:a81:4323:0:b0:549:1e80:41f9 with SMTP id
- q35-20020a814323000000b005491e8041f9mr1492277ywa.10.1681395718858; Thu, 13
- Apr 2023 07:21:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230413133355.350571-1-aleksandr.mikhalitsyn@canonical.com> <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com>
-In-Reply-To: <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 13 Apr 2023 16:21:47 +0200
-Message-ID: <CANn89iLuLkUvX-dDC=rJhtFcxjnVmfn_-crOevbQe+EjaEDGbg@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/4] net: socket: add sockopts blacklist for
- BPF cgroup hook
-To:     Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        linux-arch@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
+        d=1e100.net; s=20221208; t=1681395873; x=1683987873;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=/TrAOS0R5wy2ok/bqex9Gh2UkGvuG1Z9xkGn7BQOOkQ=;
+        b=e0VQi+nY7CIc8Xw2mZDcBP5dGdqqoitVQbYwMn2P6y+kPPF0FuzokLZgu3zsVLnfMc
+         Hr5oYORILa7TpOa7UkP4fAG08n7HzXBmcsutx9d01BcG7neWi85lAclFi42So5Vdfs26
+         CRjyI2P1na4DxrdwQOCtc18MJLhgoqze2N786WsyIFZGR6AoZvbgWlaeCuIxplQBuJCf
+         YSPDBGtoirYCxxutQtBLky++GGJdG9ILDIzL30x/zO09doHzE11WjlW9fWbuv1kyQxHP
+         fW9O/XMipK3dYP7kTLogPyhYrJ5zUNVb0ThzJHDvsIZBjeCFs4UE9FiXJQ/Utw+j7pss
+         x5Yg==
+X-Gm-Message-State: AAQBX9eYMbwou0BOsVdngM3VTg/SmiWfQmOd8lws/PTI6wwey6p6uzz9
+        RUD4EJGNcOVNqmtEk5jKQJQ=
+X-Google-Smtp-Source: AKy350ZRTDu+Bd0TWjR0pjk1viq+nedbiyuO15GH/Y/6TJSTI8W79X1HEf7NRwtm3vKsuOfmgLCIWw==
+X-Received: by 2002:a05:622a:5:b0:3bf:b70b:7804 with SMTP id x5-20020a05622a000500b003bfb70b7804mr3244755qtw.25.1681395872712;
+        Thu, 13 Apr 2023 07:24:32 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id t17-20020a05622a181100b003e3982a6f2bsm524147qtc.18.2023.04.13.07.24.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Apr 2023 07:24:32 -0700 (PDT)
+Date:   Thu, 13 Apr 2023 10:24:31 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Breno Leitao <leitao@debian.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        io-uring@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        asml.silence@gmail.com, leit@fb.com, edumazet@google.com,
+        pabeni@redhat.com, davem@davemloft.net, dccp@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
+        matthieu.baerts@tessares.net, marcelo.leitner@gmail.com
+Message-ID: <6438109fe8733_13361929472@willemb.c.googlers.com.notmuch>
+In-Reply-To: <ZDdGl/JGDoRDL8ja@gmail.com>
+References: <75e3c434-eb8b-66e5-5768-ca0f906979a1@kernel.org>
+ <67831406-8d2f-feff-f56b-d0f002a95d96@kernel.dk>
+ <643573df81e20_11117c2942@willemb.c.googlers.com.notmuch>
+ <036c80e5-4844-5c84-304c-7e553fe17a9b@kernel.dk>
+ <64357608c396d_113ebd294ba@willemb.c.googlers.com.notmuch>
+ <19c69021-dce3-1a4a-00eb-920d1f404cfc@kernel.dk>
+ <64357bb97fb19_114b22294c4@willemb.c.googlers.com.notmuch>
+ <20cb4641-c765-e5ef-41cb-252be7721ce5@kernel.dk>
+ <ZDa32u9RNI4NQ7Ko@gmail.com>
+ <6436c01979c9b_163b6294b4@willemb.c.googlers.com.notmuch>
+ <ZDdGl/JGDoRDL8ja@gmail.com>
+Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,40 +88,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 3:35=E2=80=AFPM Alexander Mikhalitsyn
-<aleksandr.mikhalitsyn@canonical.com> wrote:
->
-> During work on SO_PEERPIDFD, it was discovered (thanks to Christian),
-> that bpf cgroup hook can cause FD leaks when used with sockopts which
-> install FDs into the process fdtable.
->
-> After some offlist discussion it was proposed to add a blacklist of
+Breno Leitao wrote:
+> On Wed, Apr 12, 2023 at 10:28:41AM -0400, Willem de Bruijn wrote:
+> > Breno Leitao wrote:
+> > > On Tue, Apr 11, 2023 at 09:28:29AM -0600, Jens Axboe wrote:
+> > > > On 4/11/23 9:24?AM, Willem de Bruijn wrote:
+> > > > > Jens Axboe wrote:
+> > > > >> On 4/11/23 9:00?AM, Willem de Bruijn wrote:
+> > > > >> But that doesn't work, because sock->ops->ioctl() assumes the arg is
+> > > > >> memory in userspace. Or do you mean change all of the sock->ops->ioctl()
+> > > > >> to pass in on-stack memory (or similar) and have it work with a kernel
+> > > > >> address?
+> > > > > 
+> > > > > That was what I suggested indeed.
+> > > > > 
+> > > > > It's about as much code change as this patch series. But it avoids
+> > > > > the code duplication.
+> > > > 
+> > > > Breno, want to tackle that as a prep patch first? Should make the
+> > > > functional changes afterwards much more straightforward, and will allow
+> > > > support for anything really.
+> > > 
+> > > Absolutely. I just want to make sure that I got the proper approach that
+> > > we agreed here.
+> > > 
+> > > Let me explain what I understood taking TCP as an example:
+> > > 
+> > > 1) Rename tcp_ioctl() to something as _tcp_ioctl() where the 'arg'
+> > > argument is now just a kernel memory (located in the stack frame from the
+> > > callee).
+> > > 
+> > > 2) Recreate "tcp_ioctl()" that will basically allocate a 'arg' in the
+> > > stack and call _tcp_ioctl() passing that 'arg' argument. At the bottom of
+> > > this (tcp_ioctl() function) function, call `put_user(in_kernel_arg, userspace_arg)
+> > > 
+> > > 3) Repeat it for the 20 protocols that implement ioctl:
+> > > 
+> > > 	ag  "struct proto .* = {" -A 20 net/ | grep \.ioctl
+> > > 	net/dccp/ipv6.c 	.ioctl	= dccp_ioctl,
+> > > 	net/dccp/ipv4.c		.ioctl	= dccp_ioctl,
+> > > 	net/ieee802154/socket.c .ioctl	= dgram_ioctl,
+> > > 	net/ipv4/udplite.c	.ioctl	= udp_ioctl,
+> > > 	net/ipv4/raw.c 		.ioctl	= raw_ioctl,
+> > > 	net/ipv4/udp.c		.ioctl	= udp_ioctl,
+> > > 	net/ipv4/tcp_ipv4.c 	.ioctl	= tcp_ioctl,
+> > > 	net/ipv6/raw.c		.ioctl	= rawv6_ioctl,
+> > > 	net/ipv6/tcp_ipv6.c	.ioctl	= tcp_ioctl,
+> > > 	net/ipv6/udp.c	 	.ioctl	= udp_ioctl,
+> > > 	net/ipv6/udplite.c	.ioctl	= udp_ioctl,
+> > > 	net/l2tp/l2tp_ip6.c	.ioctl	= l2tp_ioctl,
+> > > 	net/l2tp/l2tp_ip.c	.ioctl	= l2tp_ioctl,
+> > > 	net/phonet/datagram.:	.ioctl	= pn_ioctl,
+> > > 	net/phonet/pep.c	.ioctl	= pep_ioctl,
+> > > 	net/rds/af_rds.c	.ioctl	=	rds_ioctl,
+> > > 	net/sctp/socket.c	.ioctl  =	sctp_ioctl,
+> > > 	net/sctp/socket.c	.ioctl	= sctp_ioctl,
+> > > 	net/xdp/xsk.c		.ioctl	= sock_no_ioctl,
+> > > 	net/mptcp/protocol.c	.ioctl	= mptcp_ioctl,
+> > > 
+> > > Am I missing something?
+> > 
+> > The suggestion is to convert all to take kernel memory and do the
+> > put_cmsg in the caller of .ioctl. Rather than create a wrapper for
+> > each individual instance and add a separate .iouring_cmd for each.
+> > 
+> > "change all of the sock->ops->ioctl() to pass in on-stack memory
+> > (or similar) and have it work with a kernel address"
+> 
+> is it possible to do it for cases where we don't know what is the size
+> of the buffer?
+> 
+> For instance the raw_ioctl()/rawv6_ioctl() case. The "arg" argument is
+> used in different ways (one for input and one for output):
+> 
+>   1) If cmd == SIOCOUTQ or SIOCINQ, then the return value will be
+>   returned to userspace:
+>   	put_user(amount, (int __user *)arg)
+> 
+>   2) For default cmd, ipmr_ioctl() is called, which reads from the `arg`
+>   parameter:
+> 	copy_from_user(&vr, arg, sizeof(vr)
+> 
+> How to handle these contradictory behaviour ahead of time (at callee
+> time, where the buffers will be prepared)?
+> 
+> Thank you!
 
-We try to replace this word by either denylist or blocklist, even in change=
-logs.
+Ah you found a counter-example to the simple pattern of put_user.
 
-> socket options those can cause troubles when BPF cgroup hook is enabled.
->
+The answer perhaps depends on how many such counter-examples you
+encounter in the list you gave. If this is the only one, exceptions
+in the wrapper are reasonable. Not if there are many.
 
-Can we find the appropriate Fixes: tag to help stable teams ?
+Is the intent for io_uring to support all cases eventually? The
+current patch series only targeted more common fast path operations.
 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Leon Romanovsky <leon@kernel.org>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Christian Brauner <brauner@kernel.org>
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Cc: Lennart Poettering <mzxreary@0pointer.de>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-arch@vger.kernel.org
-> Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
-> Suggested-by: Christian Brauner <brauner@kernel.org>
-> Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com=
->
-
-Thanks.
+Probably also relevant is whether/how the approach can be extended
+to [gs]etsockopt, as that was another example given, with the same
+challenge.
