@@ -2,84 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 958E56E1358
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 19:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 133F56E135C
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 19:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbjDMRTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 13:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48414 "EHLO
+        id S229791AbjDMRUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 13:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbjDMRTY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 13:19:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285447EE8;
-        Thu, 13 Apr 2023 10:19:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B09936402D;
-        Thu, 13 Apr 2023 17:19:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62A75C433D2;
-        Thu, 13 Apr 2023 17:19:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681406362;
-        bh=U5y8jkuTC9pbMLEtkYnUsX2gGuJmmSy8xSN2gPE42SQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZzBXD3y9Qo1Q/YyFC1NNvLiLVn3oern6WGp3U6ozHt964k8fyrDJWX0UAg+qXHfS0
-         n0eoL7jiGIK9IYDIqJGzETBm0ncRRysPY9mxMXrERGm1cM5cPDoEvzDbUcSNy4bZ/m
-         vDyNHe+NGzSJUFFT68ACPjABb49HkD7s0L7XmvUEdGJhPcI0tN7ge7G+fkFCA8LpWh
-         nnzlHLASRCI67UkslxQDIn6GQLeBCFWf89NF83OEYji6g0pe+jlBHgXo73T6aVLZJt
-         dX8L9MhFZfOfusd6M7GxPc3AThk94M3ijpjDTOnfEuVJidMl0t/fzYyG5XI9CpUFZ5
-         68eV0WW2ArqhA==
-Date:   Thu, 13 Apr 2023 20:19:18 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yixin Shen <bobankhshen@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, rdunlap@infradead.org,
-        akpm@linux-foundation.org, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, ncardwell@google.com
-Subject: Re: [PATCH net-next] lib/win_minmax: export symbol of
- minmax_running_min
-Message-ID: <20230413171918.GX17993@unreal>
-References: <20230413164726.59019-1-bobankhshen@gmail.com>
+        with ESMTP id S229582AbjDMRUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 13:20:13 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899A726A6;
+        Thu, 13 Apr 2023 10:20:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=fNOeiHpE9GuUd/CgeBnmqsgNJaFNj045OFJkweHv/lI=; b=AHZOT0sVyYYUIArFlnDLgxcsfk
+        XudFvfVO3XnBIamADUvocCTBqjqZHcLwQK3zYPMZg4Iapi8ekvqZCP6Fl3XujHpDztUV2ExCVEQvF
+        8R0hnr2ny5wR7mwiR+dcxy7H6y/Y9tllYfABG5lepEgugV5mGCfDhZTk4R0FbNo8hy3c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pn0cC-00ADL9-3L; Thu, 13 Apr 2023 19:20:08 +0200
+Date:   Thu, 13 Apr 2023 19:20:08 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ladislav Michl <oss-lists@triops.cz>
+Cc:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
+        linux-mips@vger.kernel.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: Re: [PATCH 2/3] staging: octeon: avoid needless device allocation
+Message-ID: <e2f5462d-5573-483c-9428-5f2b052cf939@lunn.ch>
+References: <ZDgNexVTEfyGo77d@lenoch>
+ <ZDgOLHw1IkmWVU79@lenoch>
+ <543bfbb6-af60-4b5d-abf8-0274ab0b713f@lunn.ch>
+ <ZDgxPet9RIDC9Oz1@lenoch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230413164726.59019-1-bobankhshen@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <ZDgxPet9RIDC9Oz1@lenoch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 04:47:26PM +0000, Yixin Shen wrote:
-> This commit export the symbol of the function minmax_running_min
-> to make it accessible to dynamically loaded modules. It can make
-> this library more general, especially for those congestion
-> control algorithm modules who wants to implement a windowed min
-> filter.
-> 
-> Signed-off-by: Yixin Shen <bobankhshen@gmail.com>
-> ---
->  lib/win_minmax.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/lib/win_minmax.c b/lib/win_minmax.c
-> index ec10506834b6..1682e614309c 100644
-> --- a/lib/win_minmax.c
-> +++ b/lib/win_minmax.c
-> @@ -97,3 +97,4 @@ u32 minmax_running_min(struct minmax *m, u32 win, u32 t, u32 meas)
->  
->  	return minmax_subwin_update(m, win, &val);
->  }
-> +EXPORT_SYMBOL(minmax_running_min);
+> I was asking this question myself and then came to this:
+> Converting driver to phylink makes separating different macs easier as
+> this driver is splitted between staging and arch/mips/cavium-octeon/executive/
+> However I'll provide changes spotted previously as separate preparational
+> patches. Would that work for you?
 
-Please provide in-tree kernel user for that EXPORT_SYMBOL.
+Is you end goal to get this out of staging? phylib vs phylink is not a
+reason to keep it in staging.
 
-Thanks
+It just seems odd to be adding new features to a staging driver. As a
+bit of a "carrot and stick" maybe we should say you cannot add new
+features until it is ready to move out of staging?
 
-> -- 
-> 2.25.1
-> 
+But staging is not my usual domain.
+
+	 Andrew
