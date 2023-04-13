@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22BE06E03A1
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 03:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FD516E03A2
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 03:23:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbjDMBXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Apr 2023 21:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60708 "EHLO
+        id S229605AbjDMBXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Apr 2023 21:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbjDMBXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 21:23:05 -0400
+        with ESMTP id S229583AbjDMBXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Apr 2023 21:23:06 -0400
 Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2062.outbound.protection.outlook.com [40.107.94.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D514E5A
-        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 18:23:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597A1CF
+        for <netdev@vger.kernel.org>; Wed, 12 Apr 2023 18:23:05 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UM4o/JvM1SUwHlIEfLJprvnrnVYdK1lgcgI/yfYgPVHW0NO93FqBayMLNkh3XFkRJO9RUTs1cAfNZJNrN5QRBrjU6ZKgfTIiVoc/q17/TspaMrrYNziDJCh+HByjdnpDmDQTlJfzAqDH9VhOpDNxKyDKkjjS+w6N75cOU6eWvWnXqyUoumcYarn4R5hAjBYqS1guX3KxWm0kpbZYjPAKpUgmzjYl8UkKZ3fdmOzEEZeo7FJKRg7VsK3fxASMSZQQiG2So+irWLz0qK1Gg2z1YbkZvvdaBkpPT0UeTn1BKzwbzNc6MMh9d9NAeesGdDCuCDfPBqkO1LM2NIhuP2rdSg==
+ b=COBy8jUYUl6V1sATSBBVDIj7XYAkQNlSmkijZm/TCAKV8rJ2TV5kYYFU3X7OhtJr+g0+EgnK8tqmLbHfch3IOxQaKCgIr4qN6A7L6dtnp221fzlQdYciSH8es6jh8d0v9kFOacRO19Vw9jUMzN+AoojWFx5CEZ/ICgykmzdWKJDAFVYOUMYc9uZucVXUqHPVxdz2B/r2RKbsmBegXbxR+GKC3wAuAvUh1SXQkSW6CAPc+B/kZgmOtONfJAkW4+n0DzRUfn5bWZwGWZ2SFZJnsfluu8B1IIgLs1HBPVf+aYUbGpT4ZU6O3ryjziDZyZkikdGpx8gGcYBnfAuCUSo2yA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gloabLsSSs4Hq+luZzNnDgMd0uPPUoDv5pC4Rd9lFC0=;
- b=ip8Ll4mncARCsUCXqCrK8NQyTfM6YL2U/+DYaFW8llbxEfaoQayaj1ggKn5zCKk2oy38wovqr0sXKKAxkctchPOyALo/ZrBC2qmYeTjKmmu2MxBv/dZCGNDI+8LP7hEeiTgYEYo+/Cgau4LY75f99Yd78KwIlQUr6lkKwiy+CXCkS+rKjlTq69JHNwHguCPvUkVYvh/mvxKwkIAHlHgZusRW6mYeHS2QpF6NCL7mGbB4BHehskVL+IFAU7eiscr8lVPcaAvvGfUxghZxbE98uJPJ0y5/iVm3ErSI6jVMx1fkEtu4yh8JEMTBCJUcPn7SQbQEMRhUSj5nYsM1BheEYA==
+ bh=t1J2WclUR0aaBu8CqqV9XFKq1LEqPBWoal5yUp6xkR0=;
+ b=buA5/UO2MHxAqehL48JNJ8C8fi0Cf4g5FRkOdB4AV5w5749ck8VVgh/nG2pS1NGcMeHU3qo9Z7p721kMcyPHb5zzDWqo0SfykCqsvGWJWaPLMBM4qJ8wjIoix+g8sgT9x+ToECzAS6LOgyi1IY56XJfJQ/+//YXpzhN6h/iQX/I6ISy9PBtIJ8S+YBLf4BOsKwayfbckaXjosp16Bxq6rE/xZrlkvxXT0oM1TMRPKrDciSq1qmsL2zdJtO6/DDNSyXnPzDIyiSXnCt/naONEZIqxFOEqzkqD1BrCosvzypvh31ZYxo4x5JXIQb2FJr0gc1s9NiVHAXl7pVraRViNbA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gloabLsSSs4Hq+luZzNnDgMd0uPPUoDv5pC4Rd9lFC0=;
- b=c+sCLUKBbEW65X28xl9SED53+5VfAWkgl2QzSNkwQ/DupEKOMAAYiWpdChIdYcvvpMN7ctDpJjr/yMEFs61yWW+ksxsbA6T2kgmL/oPTjJKuDIGhnuzXSG1YMbUY6hJiDuG4+pcJWuTXpnzzdDBKOKQG41saBLaMcqkd7zUJPbjYuZOIUqyOO6f1+JtJ70+WFe0+PeOofwsrDFKRUrK8ORUhoBbph0wpod7x2wcsEBTjQxSy+FRSRYpkeyuzAoz1jIous3IuU/Hy15xpMOZYft0vWIxt4ZzcX2G2kmGBLu5feOc5CewlwAN/EhmZyvAbdXE5cCjTRBbSWAivL8Q2zw==
+ bh=t1J2WclUR0aaBu8CqqV9XFKq1LEqPBWoal5yUp6xkR0=;
+ b=SEmPiYs9eeEZaev5fuA+aa5tdQru+I5CTYxrlREbKS+tJUZ6eDqhMn4YhO+sz+UT1/qVuQBeojGv8pncr1IcPXuYZ3SkgJWrpLM1wFHBOjc+ONnFGGY+Dk8wc89yjmYLQ7n3ihP50wj94AZEpvH42pdjKitZ9TI2Ky0dy2KaeuBvIZnLi3FrVgeX4EHRz6vZEF4KcgOLoN2gu7vMQr4UKnORuenMeHE9oIWUC2tvLE0K+d3g4ZNDAi1T1spJTkKC0/WzpkuzJtiQJK03DS1MMRJw0A9YmfEocmMzzEyLTLGBMlY37YYy9OvLdeiG5NIOJTIU4+mOlNy8zMbcD79nKA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BYAPR12MB2743.namprd12.prod.outlook.com (2603:10b6:a03:61::28)
  by MN2PR12MB4335.namprd12.prod.outlook.com (2603:10b6:208:1d4::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.28; Thu, 13 Apr
- 2023 01:22:59 +0000
+ 2023 01:23:00 +0000
 Received: from BYAPR12MB2743.namprd12.prod.outlook.com
  ([fe80::f6e3:c3af:67f9:91e9]) by BYAPR12MB2743.namprd12.prod.outlook.com
  ([fe80::f6e3:c3af:67f9:91e9%6]) with mapi id 15.20.6277.036; Thu, 13 Apr 2023
- 01:22:58 +0000
+ 01:23:00 +0000
 From:   Rahul Rameshbabu <rrameshbabu@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     Saeed Mahameed <saeed@kernel.org>,
@@ -48,63 +48,65 @@ Cc:     Saeed Mahameed <saeed@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Stanislav Fomichev <sdf@google.com>,
         Rahul Rameshbabu <rrameshbabu@nvidia.com>
-Subject: [PATCH net-next 1/2] tools: ynl: Remove absolute paths to yaml files from ethtool testing tool
-Date:   Wed, 12 Apr 2023 18:22:51 -0700
-Message-Id: <20230413012252.184434-1-rrameshbabu@nvidia.com>
+Subject: [PATCH net-next 2/2] tools: ynl: Rename ethtool to ethtool.py
+Date:   Wed, 12 Apr 2023 18:22:52 -0700
+Message-Id: <20230413012252.184434-2-rrameshbabu@nvidia.com>
 X-Mailer: git-send-email 2.38.4
+In-Reply-To: <20230413012252.184434-1-rrameshbabu@nvidia.com>
+References: <20230413012252.184434-1-rrameshbabu@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BYAPR21CA0016.namprd21.prod.outlook.com
- (2603:10b6:a03:114::26) To BYAPR12MB2743.namprd12.prod.outlook.com
+X-ClientProxiedBy: BYAPR05CA0030.namprd05.prod.outlook.com
+ (2603:10b6:a03:c0::43) To BYAPR12MB2743.namprd12.prod.outlook.com
  (2603:10b6:a03:61::28)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: BYAPR12MB2743:EE_|MN2PR12MB4335:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8ac64842-2643-4cb8-efb3-08db3bbd9dd4
+X-MS-Office365-Filtering-Correlation-Id: e6cf487e-c8db-4494-5472-08db3bbd9ee2
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: N5neT9lazse+9rgLRbDv6iHm1vj5esssaSwlS6i3/5V6DNVKNoNJEAvaLgnFStN8sZhr2Q+DqBhCJrr8YRbaSf2RMweVTi1FUQ3gE3FTUnxyA5qW1UePQzBs1A0MfEPfEhid3Cs3OtoVi3n1e2aIzriSm/kML+OQ9gY3/LXQfNPJyDCj1rHPli1V6+KM4OXMdnv/xBqTILcCkhfGEyI/3cCOrvp3T/TqEfxwosk0krOu5Gt79Jd3TqWaGrF9YdUcXItHViaayMaj0t5B1yNA559LCOxGaPOfxZAq+SbwoOPVfoV8sZ6TSb1mZlU66IzL9ZD/TqvJ6mTM3YaNeJ4aC7dEScVo0Q/HK0cNA+cJKtW2oWEiH99AF+MC+fMVdxQf0yaVdBwRIHs4sYOPfW4rG1Y+sgYy10B2YvRqTlH41pXFD5IFLbCz7KbMnhKLfCffj96alDTqvqp7kHcZ8sc/b6xRqAPFOOPZvnY9yC4Mrz5KC4+5AVXs47/uR1UU8+lgru1JwTLDRGimk12zBaO+rrzyTq+DYz/COD3AZ1QFlYF8kYv5hvzjXPfN4E9Ie3L+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(136003)(39860400002)(396003)(346002)(451199021)(478600001)(36756003)(38100700002)(5660300002)(2906002)(316002)(8936002)(8676002)(86362001)(66556008)(41300700001)(66946007)(6916009)(4326008)(66476007)(83380400001)(107886003)(54906003)(26005)(186003)(6512007)(1076003)(6666004)(6506007)(2616005)(6486002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: GBqLsul0/d6NPAhk9d0hiYxcjuCOSSKLsGCMpBVWveNQrbCVbYUujNAIaUDXWUM8hmF+JYiTcBEPidcf2gSCVCvmBl9iBnL8tsEpbdt+ED/J0DkPUgAfoZ+rkhEzU80eOVesP+EdPFtCKi3mGJn6ofa45sg+2mnRp0kxFic9lC9823z65WxmKCPnjGrQvsMPDba5ncSyDCqbLU80XvpcnipL2kuvyaJ7mIkURmRM2BnjBCfEwFgC++zMabpfE3c4H3b6A7l0PT6pXFwjBMBTsx5dCtrHZmTAlvJx+B9Wi0+UchNPMqfKgx4+yMehriwrcljN8SW05w7+3GV7Qtguh4bFgLEXwwC8ftRoGMdCIsgzn1seNUIQKl0hPf4awPS3oObs6yP2Fi7nzgP6AY4reTimsv3cxclhYc374UmyPnJGmE6xHbGaXl0ANVqkSqnsJj5yU77CHzjrYaoXBWEIFUcGlmK+T0qy7qH1q3Sa29izZONyOEe4Ngy1CqsXndgSzkQia2UGX3b+8PHIa5qW5TbJVPRq2+U6GzItZ4+fFBq5QuQzYMNOH4yh1lR1XRA1
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2743.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(366004)(136003)(39860400002)(396003)(346002)(451199021)(478600001)(36756003)(38100700002)(5660300002)(4744005)(2906002)(316002)(8936002)(8676002)(86362001)(66556008)(41300700001)(66946007)(6916009)(4326008)(66476007)(83380400001)(107886003)(54906003)(26005)(186003)(6512007)(1076003)(6666004)(6506007)(2616005)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fqWuRG65nJmw/dgVrUha8XuMo2RO9iyM92SYgMi17d++sjC0Dv/nozOgBWDz?=
- =?us-ascii?Q?A6Ct1DhuzPhXIVrmuJwEPdNojFz5xwwieHsgbCj1f5RpftrOHG19UepJlS6n?=
- =?us-ascii?Q?2eN/APC0Gqenfx5tRo6o3kVk1XTBqiN+uWGXk8VgDXwVnPp/WPMCjmhnuvbM?=
- =?us-ascii?Q?sEI7gRH6HPm8q5kryErT+uIwcPu8Ze6U+JTUXcFS47VdsR5d/xf763zoDk9p?=
- =?us-ascii?Q?eCjtBtK7gLA+0mVt2qW6YvPfPscxFYskfJvJnkdoGaGCn49Yq1VNYml4nJzo?=
- =?us-ascii?Q?Hq7sPZllL9HTQCecAd1DzbP/3x8vytBMZkT1z9FsqHPmprOgi1ZhRaQz37mp?=
- =?us-ascii?Q?eOPv6U5iP+TJb/LgXhjhIKex8NhDL9LpQy5pElF8jFY+Otpn1Lt9SLYyWaTP?=
- =?us-ascii?Q?a4m8yulINdkeMu/cxcLFOwgUmpO/W0EHvyx/O7WScwLzmOd7Z1QSvGrM9Ip7?=
- =?us-ascii?Q?OT3n8kmeccskVEGHdFGSSXZh4wKUORYEQCuZbhEhlcVcxKoPqj/pHPIOKbnI?=
- =?us-ascii?Q?lW654TCqSn77EKJxf39N2N34hPzQCCv3xH1AMCBWETPpYPd0CvwcOhmA/oCm?=
- =?us-ascii?Q?KmSORxqiYjKZ5Hxmcwv5QviL4SlIv0vypRp3PEKFXTqk7hx1szjj+LWujWPK?=
- =?us-ascii?Q?UJru/9RTdq7nNYDZYhoXoiTqgqSjbRTWs61O40R1i6hvJl+ZGVzcidnQY6Uq?=
- =?us-ascii?Q?+cjzljGrlmDxPI+S48bEiFqeON1NGuSx/sdI4KGC6PG9nkZ/d19w0uZNUm7E?=
- =?us-ascii?Q?me03EsC7a7X/bn9DEHcrZBjoZGuCp3MmIGspl7HDBeUutjI2M8vHWODHgpqT?=
- =?us-ascii?Q?TO3MeuQ7Hj7elK86RjO0+QQE6wa3Ngw5uSVKizZcevLSntJPrtxPQaE2vDKY?=
- =?us-ascii?Q?eyoz3ziCjYcIi8CaNGtj8SdrW9HrdxihCsByA38Uk7G3YU81qck/HpTD0luZ?=
- =?us-ascii?Q?j2UsZjsYXrlFBSqSzFRUaVDkIMc3UeJXzDtC/7XzknjCias8GSRZ53j0cLxk?=
- =?us-ascii?Q?HC5vqqHQc7TQ8PuQm5CQGBJlFT1wUp7nXTPHF1xdkZbzRfE5flTmzQQNsSqO?=
- =?us-ascii?Q?VV5yizdixJ5XGtVazFHp0yo5pEnpKtGRxPZZV99JhiiC3ayIOA8sKR4cl1B4?=
- =?us-ascii?Q?DYmtFQFxhrWEkbOw+P1E2hNuLZve+qee7tmRRz6DHtXgyi6GWMPj9RNozcdD?=
- =?us-ascii?Q?dHJMAcbRlNUw77GvPcaXEAO98dsZYE9j4tBJdTxHmcOzbD/rxurnkNylDCyD?=
- =?us-ascii?Q?J/ouRv/Z8E1IuQIJdcYeEziCsyLwwt9ikktrTyavOtxiuf5OZNblEjzw1mbx?=
- =?us-ascii?Q?VxRdRflU1eZfP1iwQInTxuusqKvKXNWaqHJb7DQtkO3SRMSqdDpAaNpR71pP?=
- =?us-ascii?Q?/2ACJMg2sFkRBt+QqXOBGNVFxMwdSoKpxppXNXMArQYwRa2OurgXfJhUAX17?=
- =?us-ascii?Q?129KK7QwyH8Mmk46/OaxgN4WpSP6XujyexCZ/dutvBqeAU6W9xW1vodu5mts?=
- =?us-ascii?Q?Jeu8s9EDyWbrIdEvLHSR1j6cDJSGJdChDsjtMB8JEUsZ1cg/taqVLjcLYGHu?=
- =?us-ascii?Q?miAnnemzkMr4M7Em4uqMSafVaCITiaFl50nQqBH9EB51C1VnL3ywwLw3JK0Q?=
- =?us-ascii?Q?3g=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NcCaipuaYSIvPO4A96zDFn6zE4jC9FF6qCiCpoDa+42N0ITpO3ohwa1Cy/jz?=
+ =?us-ascii?Q?D4LtLpU3NE4DOXz/cJNfp1wB+p+WF52zftX1Iadr2VsAQphEcabV8TDO2hbi?=
+ =?us-ascii?Q?eGWUw0Ou0TwGeVrpgh2PuOwBv0fUBF5HgbOCZahjuAaq+3CDhe1gg0IQOoX7?=
+ =?us-ascii?Q?rSegYBSD1N1nBe1anvCNDmwfEuwPwSRnI9jPEavdkKViLEyQVjkxSFatIcrJ?=
+ =?us-ascii?Q?Yi28xiw9mvCE3JlVJqqvZhY9oR/4pFlKkvTO62LdDTRALvQM8Pt8EpTUhoNh?=
+ =?us-ascii?Q?ZdWqSeszCnYYw0SaHQ+PL0/tRTl/Z+QHYbRe1LwhaE0rdw8G2koIkYnG5ira?=
+ =?us-ascii?Q?0qmodE0aW1X14YSyWXkbi/mu3hRdAIufRioHM6ngjeQnFnrjlz93pcjeyrxs?=
+ =?us-ascii?Q?YFBkLKItlT4tkpbcJRl+idAa1eFrq5mftm5atHxY7s9svGOgtUcQeRwO/jVk?=
+ =?us-ascii?Q?U6jE7q8Pc26EnyHCeNrLb+G3jgVwKukchCkXsFzThcTdaxSwiQ32mlWM3ibF?=
+ =?us-ascii?Q?7ff4b926teffj8fvnsWubF2oXVsFMPVFxUWtIZwx08ZYELIPVdovS2maf1GL?=
+ =?us-ascii?Q?HTBP+OQjtOagNQvIueEnag/j5htGR9FZRmGDr+0tUqSApl4wmkphdCA9N5oD?=
+ =?us-ascii?Q?sRDd8NOweit182VYNer05LVR1U6HSIP0tWqUd43BOeupMOqVb1fgu8OW2qVv?=
+ =?us-ascii?Q?KCf57j1hhyZxyxw2CVG33bJC1hIEoJK1NSOz8Pm4u6rVGTvT1CGNHzbRVQaQ?=
+ =?us-ascii?Q?DbD9APCKjvXOeSZu4MfID05t5Pp3iCVUluAC56Nnnk7m6SfFUf0YFlJ+pZd1?=
+ =?us-ascii?Q?fJp5jGU8/80DJu8FZqJ0L3/z3iG9bL4rMTZaEZRjQ5zGeLooxkXhuBCXnvki?=
+ =?us-ascii?Q?jhAX9IBK7dYz3IvaFCcoKqtxYoWoLHNwkgecCVV+Nr4QMLCvZzyJciQ2rQTS?=
+ =?us-ascii?Q?2PPR5T/Rrp6D9/uwsv4wktyrTEgpNx9SvUczig0xXKdTrDMlZV/6hVgdOlsm?=
+ =?us-ascii?Q?e8OdiEb3gJ1BcqTLFXKMQMabW4fodmil2OkrKK8HG0f5zPxcUvllyBz2ileN?=
+ =?us-ascii?Q?vPczNMQvCvZOjvvuE9sK7LeQQbgWn9mgpvjHOnyY3GNUAbtLn8Orzu0n1AiN?=
+ =?us-ascii?Q?uQtjVlx7D9X5eiKS8nW0mmaHL5FbE928BZgnbmN97fNx4JqPhD7aSHGtlAuu?=
+ =?us-ascii?Q?Zy31MZJcsVOy1rgtXJKqZ2QikJ5mRuRsqcinUc7feyJtzN9x0aU6gg3mxk1+?=
+ =?us-ascii?Q?GUJ2q7i7vqVhG4+GQaKYjGCOsfjAysiDpcx4kjdDr4pYPSYdljUYrUUO2p9Y?=
+ =?us-ascii?Q?3g4bDeislVVNBy/974jhFW/VHEfqNxIq+0pnW3VHEUh5hCe/kF6hu4LYkzSn?=
+ =?us-ascii?Q?d5zopvuBXT545sOzVZvD1Li4eFQSe/sfgbIuSrQsAIh6dJpl082gJ71IJA4V?=
+ =?us-ascii?Q?36gwNSuD9ACY8RVEx4D7aTg7h5+g4vHneesfaLEvOpugCvbAdyCU+vO1sbjp?=
+ =?us-ascii?Q?IvCZcvMiaBQAyPMeQt2t6xzImB1BLyf9tEzinLtprCLYfhSUXEDXbdkYHQ4/?=
+ =?us-ascii?Q?z+Kz+D3T9nJmSwVB/6aQk9f2kosiqJyQyZyvTlEykmeGjTTnYMrWGFxo7+8Y?=
+ =?us-ascii?Q?jg=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ac64842-2643-4cb8-efb3-08db3bbd9dd4
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6cf487e-c8db-4494-5472-08db3bbd9ee2
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2743.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 01:22:58.7311
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 01:23:00.4706
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1Dmz6BgyMrRNlR/7J2GuYjyGhnPAiivLQyxtw7x8L3oxue2xhoC6r5cZwGVzJhQuBsS6YErHLZv0Bt7h/ijODg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: ORp+vrhHyfXBtCQDvpAnZD/zxuX6kaEK3H9lPH7c9B3ifnWC0slIlyFZRjfx9/mhwB2oVHakMKWXHKvm0wi22Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4335
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -116,44 +118,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Absolute paths for the spec and schema files make the ethtool testing tool
-unusable with freshly checked-out source trees. Replace absolute paths with
-relative paths for both files in the Documentation/ directory.
+Make it explicit that this tool is not a drop-in replacement for ethtool.
+This tool is intended for testing ethtool functionality implemented in the
+kernel and should use a name that differentiates it from the ethtool
+utility.
 
-Issue seen before the change
-
-  Traceback (most recent call last):
-    File "/home/binary-eater/Documents/mlx/linux/tools/net/ynl/./ethtool", line 424, in <module>
-      main()
-    File "/home/binary-eater/Documents/mlx/linux/tools/net/ynl/./ethtool", line 158, in main
-      ynl = YnlFamily(spec, schema)
-    File "/home/binary-eater/Documents/mlx/linux/tools/net/ynl/lib/ynl.py", line 342, in __init__
-      super().__init__(def_path, schema)
-    File "/home/binary-eater/Documents/mlx/linux/tools/net/ynl/lib/nlspec.py", line 333, in __init__
-      with open(spec_path, "r") as stream:
-  FileNotFoundError: [Errno 2] No such file or directory: '/usr/local/google/home/sdf/src/linux/Documentation/netlink/specs/ethtool.yaml'
-
-Fixes: f3d07b02b2b8 ("tools: ynl: ethtool testing tool")
 Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
 ---
- tools/net/ynl/ethtool | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/net/ynl/{ethtool => ethtool.py} | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename tools/net/ynl/{ethtool => ethtool.py} (100%)
 
-diff --git a/tools/net/ynl/ethtool b/tools/net/ynl/ethtool
-index 5fb1d670693a..6c9f7e31250c 100755
---- a/tools/net/ynl/ethtool
-+++ b/tools/net/ynl/ethtool
-@@ -152,8 +152,8 @@ def main():
-     global args
-     args = parser.parse_args()
- 
--    spec = '/usr/local/google/home/sdf/src/linux/Documentation/netlink/specs/ethtool.yaml'
--    schema = '/usr/local/google/home/sdf/src/linux/Documentation/netlink/genetlink-legacy.yaml'
-+    spec = '../../../Documentation/netlink/specs/ethtool.yaml'
-+    schema = '../../../Documentation/netlink/genetlink-legacy.yaml'
- 
-     ynl = YnlFamily(spec, schema)
- 
+diff --git a/tools/net/ynl/ethtool b/tools/net/ynl/ethtool.py
+similarity index 100%
+rename from tools/net/ynl/ethtool
+rename to tools/net/ynl/ethtool.py
 -- 
 2.38.4
 
