@@ -2,81 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 244236E1037
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:44:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E34456E104B
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 16:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230395AbjDMOn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 10:43:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38538 "EHLO
+        id S230352AbjDMOqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 10:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbjDMOnu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:43:50 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DBFB76E;
-        Thu, 13 Apr 2023 07:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=J5w0b8Fobg2W9RujUD13uGJH7vRMN8dHc0B4sOAwikM=; b=5TjbN28trjt5HISvTlm95p0A9G
-        D9M1FUwIBttbFB3gbsuaO9mbk3vXv4+yRqyZZ19apAILewifcs3qVozNt1PG9U/NozW0WFJ5NF4Mn
-        26Hx/eLWptWB7cbOupRNhwJelVtjvJ+RY33Xa4ZQEc6x6adDxZx3Gjac/K9aKr2J/KXA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pmyAb-00ACJL-AV; Thu, 13 Apr 2023 16:43:29 +0200
-Date:   Thu, 13 Apr 2023 16:43:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [net-next PATCH v6 06/16] net: phy: phy_device: Call into the
- PHY driver to set LED brightness
-Message-ID: <60d5bad7-e7c1-4ffe-be6c-5d92e482b1ba@lunn.ch>
-References: <20230327141031.11904-1-ansuelsmth@gmail.com>
- <20230327141031.11904-7-ansuelsmth@gmail.com>
- <202ae4b9-8995-474a-1282-876078e15e47@gmail.com>
- <64380b46.7b0a0220.978a.1eb4@mx.google.com>
- <7ea465d9-95eb-d158-632a-a2aa892fd2bf@gmail.com>
+        with ESMTP id S230235AbjDMOqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 10:46:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC80DB765;
+        Thu, 13 Apr 2023 07:45:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99C7C62EA3;
+        Thu, 13 Apr 2023 14:45:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B4F5C433D2;
+        Thu, 13 Apr 2023 14:45:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681397116;
+        bh=sX0ILxKB40aVIHVtanZ71F6ffVCczqDh1NoDUTg9TcU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oOI3GROGSv+NZ9aIpTgQ5QONb+xK3/SN9ZkKPY55I8keVqio62umJtoqKXdlCzHIm
+         MumhHzUphie1wGydfLT4ePGgiprxHfJxMZYuaOGsANhT58IjSP4ksMWSkyTuGZMhL2
+         XYjrZ7vF1h6uXjIkJdkiGRUbSgRmkwyglwKf0Xs4FjLOTrO8vTm5et4Suyq9AUAf5t
+         MA4Crm9Sh78uJ5Y8xx7sVxXFk4wg+MQ20l8/0J3bAz8DcpaZ06XXUnYHN0T8UbZ2Wx
+         HRXqFysIJ2Fkl9Zk7V6XCFF+giS9tmMvLKS9ilttzgC11ddB3zJKu43urhBJNJ2tva
+         jewCP/Q3+bZPg==
+Date:   Thu, 13 Apr 2023 07:45:14 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Breno Leitao <leitao@debian.org>, Jens Axboe <axboe@kernel.dk>,
+        David Ahern <dsahern@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        asml.silence@gmail.com, leit@fb.com, edumazet@google.com,
+        pabeni@redhat.com, davem@davemloft.net, dccp@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
+        matthieu.baerts@tessares.net, marcelo.leitner@gmail.com
+Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Message-ID: <20230413074514.79cc036e@kernel.org>
+In-Reply-To: <6438109fe8733_13361929472@willemb.c.googlers.com.notmuch>
+References: <75e3c434-eb8b-66e5-5768-ca0f906979a1@kernel.org>
+        <67831406-8d2f-feff-f56b-d0f002a95d96@kernel.dk>
+        <643573df81e20_11117c2942@willemb.c.googlers.com.notmuch>
+        <036c80e5-4844-5c84-304c-7e553fe17a9b@kernel.dk>
+        <64357608c396d_113ebd294ba@willemb.c.googlers.com.notmuch>
+        <19c69021-dce3-1a4a-00eb-920d1f404cfc@kernel.dk>
+        <64357bb97fb19_114b22294c4@willemb.c.googlers.com.notmuch>
+        <20cb4641-c765-e5ef-41cb-252be7721ce5@kernel.dk>
+        <ZDa32u9RNI4NQ7Ko@gmail.com>
+        <6436c01979c9b_163b6294b4@willemb.c.googlers.com.notmuch>
+        <ZDdGl/JGDoRDL8ja@gmail.com>
+        <6438109fe8733_13361929472@willemb.c.googlers.com.notmuch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7ea465d9-95eb-d158-632a-a2aa892fd2bf@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Humm just thought of something else, is it OK for led_brightness_set and
-> led_blink_set to call into functions that might require sleeping (MDIO, I2C,
-> SPI, etc.)?
+On Thu, 13 Apr 2023 10:24:31 -0400 Willem de Bruijn wrote:
+> Probably also relevant is whether/how the approach can be extended
+> to [gs]etsockopt, as that was another example given, with the same
+> challenge.
 
-Hi Florian
-
-That is fine. The LED class is similar to GPIOs. There is a can sleep
-version, and an atomic version. For phylib we are using the can sleep
-version. The LED core then hides the differences from the users.
-
-    Andrew
+I had the same thought, given BPF filtering/integration with *etsockopt
+is repeatedly giving us grief.
+The only lesson from that I can think of is that we should perhaps
+suffer thru the one-by-one conversions for a while. Pulling the cases
+we inspected out into common code, rather than hope we can cover
+everything in one fell swoop.
