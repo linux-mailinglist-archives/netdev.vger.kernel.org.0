@@ -2,235 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 910CE6E0EFF
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 15:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E67E86E0F07
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 15:42:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230097AbjDMNk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 09:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37408 "EHLO
+        id S231684AbjDMNmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 09:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231730AbjDMNjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 09:39:55 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CCECC39
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 06:37:16 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id u13so15465157ybu.5
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 06:37:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681392991; x=1683984991;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=H15P0TrhKruU9mg7/GZWeh+u70X4p/YOp70eA1qaQxI=;
-        b=3POn3EMWccVmnVynl/mp44nRqATNw7iAPfaVxyMGoSKqc2Sr6zlplvRIG6g4vnCFzU
-         W2gDDDe23hsw+Ct9obcRWN0ZyzSQA72TQuEUugxJ6y0Im1sOQdsJhFlLirVeLFx74Lxg
-         CNXtQS3jxH0EYnvAjtpJNy6lDzC6GFSIZELwM15eLVez8vO7bN+OrUBOBhXsBYsWL6zI
-         QWeqC3AyJaNENGVjAnJOfunoudoRljfwIw2aRDZwJ5IgvwhT/MprjOHEEH+TrZ1j7apX
-         7N+GWck33YM+NwxfKleAaqQJaWnUqJThNxlJDCXSN2ND7W6Nx95JZTmBBqQn6GbJWY9o
-         xOQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681392991; x=1683984991;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=H15P0TrhKruU9mg7/GZWeh+u70X4p/YOp70eA1qaQxI=;
-        b=YD8GtWmXDoLiVX30pK1KQLcP555n4AUcg1pb4mnzVob4Grbl9tLj+tBSXcJhD80tks
-         r8HtSrh2LMplBFpZ7XJX6fq/mt8+6K1fEfEP902rm5W+I8dT7RNHM576HM6ubI6Uvl+x
-         bN1b78KRYFQZtOlcjyE/EgzsGBX/FeR65UKL4hlaZ1vUZwZa73gn+2ZSpzYa+wVKXt/8
-         gEROm8s9EzX/E3Yz3/78Hr+GUYLMqJyGtbB0rMR2IWXaUQHYNOVbe1Zsf4YQL7GKzMMD
-         Tsc9NxMAdxCn9BCtDr8B6bflK0t/C/gShOh8y3lAHbIoAaAexOcbXpxOzZxztVjYKq/X
-         1/Sw==
-X-Gm-Message-State: AAQBX9fgTddtK0eVkIRwe6JfLUiNUTRxrAQwnPtwWGI1g8fc4fVw0SSs
-        fwVSgR3mQ7EVKRrwUpVhJYJsI3U7S077mkV9nHLzZw==
-X-Google-Smtp-Source: AKy350ZTpbMwdEfIkwoJxIFYhSXI/YMROpcfCRkH+N7YSRatn2POhzv1F36p9PlcAgAD0k+x6Z3wus9ah83BVonB7wU=
-X-Received: by 2002:a25:d7ce:0:b0:b8f:52bd:54cb with SMTP id
- o197-20020a25d7ce000000b00b8f52bd54cbmr1149207ybg.2.1681392991565; Thu, 13
- Apr 2023 06:36:31 -0700 (PDT)
+        with ESMTP id S229835AbjDMNls (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 09:41:48 -0400
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01olkn2081d.outbound.protection.outlook.com [IPv6:2a01:111:f403:704b::81d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5DBAD17;
+        Thu, 13 Apr 2023 06:39:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=g9xrADIMYJrEhvYmgnulJUAskHYAcS8tJ6UScpyRNlTS7SRwbunfBhXFsUZFKZo2tHLKZTDSHfqdWQAZ4PkEON0cTzsnFiD5Q083VWWyMvAUoMG9kBKSidV2eRbdaAEF87LDujAknmC2POdts2KD123wKfbpP/IUtOs93njmbZFNeUuzDxLGC+umEg8xrpi4EGZcVhWzC1gvx2QJPFbFYf9LCQEqYR7TM3pX//u1lelHwoc3UYfw+zDt4/HTG0KQxzkV9bytHHXFDeZwjfwdyucljSM7GQxXhU5/EiZQ5L8gjHxqlLo0VmBzRjkmuC8yMjD7B085EVL9Q5FeCKDnfw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mm54x0ZpfEPUTyp717dSMXaBikmpwNkOoQc7/DEi4Rs=;
+ b=f8rxgxlaDbVbwK3HoL+FjrgVdF7OrCgwbap7MJV8FO6YkBzilDenBjVNFT7Op/o4I/Jn4yoeXMhaJXnX+//2TTIRAYyh7Uk4KBP4D71YycuxuM2SiZQ7fPjvNupyfboxc5Lp/RMwRqVngBO1xqyLn9mAoHfjt1F7b5ZYYcDCrIInDzgjHWN//p51q+M30crY3hRp0oZCGuQT9Q4bD7ANbqaH1p0WUgSxqushGZOyLYftSq9ml5jh4OMmTPvzsQImWIqHbjIyqL26KcS8duKopSPzwjN4VGxzVCoxy38vtPa2HpA0XHQDDj2u1jk30sA9fgMnPiF2rYTpstsBqiKBfw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mm54x0ZpfEPUTyp717dSMXaBikmpwNkOoQc7/DEi4Rs=;
+ b=Sl+A1NvhqYsnMRTg2SL7sD8WVJTQqoNNStf+KvqKJnPalM7MeC/b6RlJsJhnz4mZnzekVDAvgMzsLHCGs8yDlUdXPRcXLhwdyFGD+9QNC9LUZjp/KIRtzcWGWYHDsR4CqMsE4CSxQIPOh296MWy5jSiG8gHb6wNcy9LfEqhGn5XiIZ6D0VaZOaRum37VXrUEwmUfbXdRX58+tOU0uowtRpAq4C2zLzgodGa2FbMuA+s6tKHI62k5tSADv0Wbh1/wsjZ6NGIlVwxIabUYg+dOK6YDf4UrJ7tkwZyKtyGX254nXGxyd6IKW5A7Y4FRp9Aww73DxeF1C+klEr8Afzhqrg==
+Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:9a::12) by TY0PR01MB5412.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:279::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.4; Thu, 13 Apr
+ 2023 13:38:57 +0000
+Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ ([fe80::5bff:fd7e:ec7c:e9d3]) by KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ ([fe80::5bff:fd7e:ec7c:e9d3%7]) with mapi id 15.20.6298.030; Thu, 13 Apr 2023
+ 13:38:57 +0000
+From:   Yan Wang <rk.code@outlook.com>
+To:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        kuba@kernel.org, mcoquelin.stm32@gmail.com
+Cc:     Yan Wang <rk.code@outlook.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        netdev@vger.kernel.org (open list:STMMAC ETHERNET DRIVER),
+        linux-stm32@st-md-mailman.stormreply.com (moderated list:ARM/STM32
+        ARCHITECTURE),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/STM32
+        ARCHITECTURE), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] net: stmmac:fix system hang when setting up tag_8021q VLAN  for DSA ports
+Date:   Thu, 13 Apr 2023 21:38:32 +0800
+Message-ID: <KL1PR01MB5448020DE191340AE64530B0E6989@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-TMN:  [FBE36qCL9osDQYswg1W5k2d0z5bBysbfamTzsZgSih8=]
+X-ClientProxiedBy: SG2PR02CA0012.apcprd02.prod.outlook.com
+ (2603:1096:3:17::24) To KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:9a::12)
+X-Microsoft-Original-Message-ID: <20230413133832.7838-1-rk.code@outlook.com>
 MIME-Version: 1.0
-References: <ZDfbCsDa6oLKzsed@pr0lnx>
-In-Reply-To: <ZDfbCsDa6oLKzsed@pr0lnx>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Thu, 13 Apr 2023 09:36:20 -0400
-Message-ID: <CAM0EoMnTMqEHvB0UXakMf6iBwb45prb+W5xKKVRwaX3q=awBVw@mail.gmail.com>
-Subject: Re: [PATCH net v3] net: sched: sch_qfq: prevent slab-out-of-bounds in qfq_activate_agg
-To:     Gwangun Jung <exsociety@gmail.com>
-Cc:     pabeni@redhat.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: KL1PR01MB5448:EE_|TY0PR01MB5412:EE_
+X-MS-Office365-Filtering-Correlation-Id: eec0b1c0-148c-4afb-327a-08db3c246e63
+X-MS-Exchange-SLBlob-MailProps: EgT5Wr3QDKx/5wRYKwbtF7hqq2E99L18DXqaHAPjZVBBA9B1MIywpG4LTy0MxrqpW+U88FnyYC79tmKNQR7a8GxOvPldwlTMKqBrU2bn+EX8lEHDTh7UXI2TZkoxz4EFTRdfOY14tKDG7IiqfJ0E1p9Nrnul31xvP1xDhiAaY1N59lP75OVSeuAGQYnNHvG9ti7F8S2NBtB78mkmAC5IYWL0gmSvNOw3+Ey70NFRNbrvwJ291SJiLNo6hz4EPuTgFlC7nVYX0CwyMoARwnnJZXXb56j0gBXZwJEZAMG4zQGiYpRSfa0zcB3y8ONVwhbVbH5QOAP3dlkH4eqndtUqhd3P2R+hdMAP/gXspbsUgQL9lF1xaRQvp58Yqeu8sxeoNaW/VRCYgzTDNK+TUvj2S/8R9LeK5XCu9uxKD5vlfpOkwAx7y2I5TmTW3Pe2r6WVjL9xpv83WOKT4iqfwOcrDMe1yX26GHVpPpH4nEG1s/gwZlqRdWX2kd4/Oj19QaIe5nEkhnUmMbH1DvpxMgJueOhXYNXT9oHqxzk7z6ZJA7ple24XDr0aJgS0VEiudnuWH3+wSRRHZoZfjP5z2C+zxcgNs5YduKg07ssFcH0qyxaL9fgmS80Rj+CFr1Nfr4yww1+tdmu+0OoC3pXU7kPKwFWxCDmRKCGJYvzo095LYpY4+7Q8OlnJXhGGwt9Ir2BUbV8NYOB1Qa83kiKNQcd/jvugEESjEaV2GywQ6NSRdtA=
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8MtZXCkJIx9gEEtKNhLEVrqIBGNSQH6ZsuUepAK1q7Rg0n7OCoqGTr0mxVF0D9gRwz3tyFnb4T+d3K6LoEVVvZVNTTkAcUquRt+6H4PdW3r4WnPiFceLp+oK1AGSIbb+SlTU7Z2NTHL5Bnetb9fJVBHf8g+xq2fwipYEb2wQuXboe3BNEUXaqqIvnL3Uijj37tzGrg6jAU6A7U3QKpogDtZ8la2KqfY8o4pYyX9BmyUVmnnQqigp61LpNqz39AFsJzL4N+r2ohvp41vhQevpdGu+sbIek8UW8kuKuXnuOcYO8MBjoixObjjH5fhjCIIMGbcdNfKb/fPExnc0lZO5q710klO4Aj5UhhIC/JEj0vbg7A5sz5szLBsWXAp+X0I/ZbqStOK5hzLtY4ie1Cb/yPMBDFpi7I3j7zeunF3WIqgCUI6d8YxMJRCGxsKbIrZWfpAuEdTeU50thCutjUZwGAtuLxgcb+IM86761OBqoPtbHm2mVXiB1lAcbBwHRlY7Yy1P2MaDKUTYSJHZQtg+7qP0vL3oFfvny3PLrMLZ33jqY6I6fAvOe8bYb7b9r9FwtyyUyTAqJzj2j/koUc3krKkpUN11NwQcnHYAIUCKisMmEEAXiz1eWE8/88ZmfFWP
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qwbjwu/zFmItuqYCEJTUiHGDXjYsNFBjKbtuWGXYCAVnFiJ+B8oCOhm0wboa?=
+ =?us-ascii?Q?b6vzRWVlvVLZG5yqzK0DWr6vT8c5cSLoIkeKq8YJoUfPtgp/LDv7pA+ZS6T0?=
+ =?us-ascii?Q?sOn65OleDyvSo2o0FjJdoRDOb5J3YbD9fwwLh06boP0UY19+jqLyZCHsSkJ/?=
+ =?us-ascii?Q?kCemgJWLe2RXa1orQGPAE9jEGUzGWowhDCE4HIo1gPnwdR6lRjkAoZx+tJFz?=
+ =?us-ascii?Q?5UGCrAZbLGWmbOfebv7lZ4kTJogpdZjdqI1/3MJYdSie94GpcCzwAmPBD7Bz?=
+ =?us-ascii?Q?A+IjkcZFFthv+7GgpXVdVWp7INUygt7kaytVQcRh0u8fAfEpqg8HXOC8Lo7k?=
+ =?us-ascii?Q?82LgqX5wiI6SF5HV1H/SyaEVp+NL5/aEDqLNgnvHoOwGaf8zWe1rO4j6lyoF?=
+ =?us-ascii?Q?ybDw5j8tzf7xfgxeE7uYjise9GaCkmNqS2dZh1+UoS/5AW+ffZQ8VmbSIgXf?=
+ =?us-ascii?Q?Vy/l7VgDZwG3eZmcJl/OcOGpUXu2RSS6Lhzhrsw3UFZL1aF46PYNrKuRe4N8?=
+ =?us-ascii?Q?4QhQwnJcH3gJLgoYJNPd4YdvQ2BzF/0QXEGMJwxNkMEMGUCxdDODc2zj7OdD?=
+ =?us-ascii?Q?y7dktzVNs4H2aviHCt1GIcTGI9DUUNWiRT19pBLykQRfUBrxuESPAYHOwIHT?=
+ =?us-ascii?Q?dNL0CIYZgc3NBNk+9YltIhIhgoKf9qwYf2b778amDTuq9qWxpcQU1QHX2EBQ?=
+ =?us-ascii?Q?cYLAxmQkWhrXol9W75XG5cnDJx4Ls0n6Z3cK6cYIubv4JkBqEEaXcI5CaqI1?=
+ =?us-ascii?Q?hiHS2b9jdPKd9bjTILQ7pZ6EuFr+cb/GUMwM/IhYw1As9ScOj8Blr7cHaEEB?=
+ =?us-ascii?Q?aCZY3OwIThTgoyCseuE1PkntvedKs22M/6t1r57HTf7HbYFfDgNYTjE3qvZK?=
+ =?us-ascii?Q?3qUW8cahp5B+KZb1KQSqsc6wWJnCpjZOeV5ZVdZVqTJ3/9juKIYL/NSElb7U?=
+ =?us-ascii?Q?fcmKIg8yrXFPgDzi1Ajf6MEpzjKshagi4bgg9EMV41eQzg3zkC2dKC4YCZR6?=
+ =?us-ascii?Q?NX4cY+nAFuuudUxO0q+zMP+eCPbb6pibit9zD4Z1VP5M29+txokaZCmOAD4v?=
+ =?us-ascii?Q?dW05E2iUivXGixp0SXBssLZZRC5P+9gnblpY2t1ebVD4QrOCu3vkdmKGu3+5?=
+ =?us-ascii?Q?3u7dPlEgADMUByb609YHHkyYKUkHlHvAmIhn2V6e9aRb8Y/dZUVK/+oYfAKG?=
+ =?us-ascii?Q?VDWJg/+d1I28bWoSc25a2VEKlpQbY+sZvc02hw=3D=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eec0b1c0-148c-4afb-327a-08db3c246e63
+X-MS-Exchange-CrossTenant-AuthSource: KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Apr 2023 13:38:57.3416
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY0PR01MB5412
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 6:35=E2=80=AFAM Gwangun Jung <exsociety@gmail.com> =
-wrote:
->
-> If the TCA_QFQ_LMAX value is not offered through nlattr, lmax is determin=
-ed by the MTU value of the network device.
-> The MTU of the loopback device can be set up to 2^31-1.
-> As a result, it is possible to have an lmax value that exceeds QFQ_MIN_LM=
-AX.
->
-> Due to the invalid lmax value, an index is generated that exceeds the QFQ=
-_MAX_INDEX(=3D24) value, causing out-of-bounds read/write errors.
->
-> The following reports a oob access:
->
-> [   84.582666] BUG: KASAN: slab-out-of-bounds in qfq_activate_agg.constpr=
-op.0 (net/sched/sch_qfq.c:1027 net/sched/sch_qfq.c:1060 net/sched/sch_qfq.c=
-:1313)
-> [   84.583267] Read of size 4 at addr ffff88810f676948 by task ping/301
-> [   84.583686]
-> [   84.583797] CPU: 3 PID: 301 Comm: ping Not tainted 6.3.0-rc5 #1
-> [   84.584164] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
-S 1.15.0-1 04/01/2014
-> [   84.584644] Call Trace:
-> [   84.584787]  <TASK>
-> [   84.584906] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1))
-> [   84.585108] print_report (mm/kasan/report.c:320 mm/kasan/report.c:430)
-> [   84.585570] kasan_report (mm/kasan/report.c:538)
-> [   84.585988] qfq_activate_agg.constprop.0 (net/sched/sch_qfq.c:1027 net=
-/sched/sch_qfq.c:1060 net/sched/sch_qfq.c:1313)
-> [   84.586599] qfq_enqueue (net/sched/sch_qfq.c:1255)
-> [   84.587607] dev_qdisc_enqueue (net/core/dev.c:3776)
-> [   84.587749] __dev_queue_xmit (./include/net/sch_generic.h:186 net/core=
-/dev.c:3865 net/core/dev.c:4212)
-> [   84.588763] ip_finish_output2 (./include/net/neighbour.h:546 net/ipv4/=
-ip_output.c:228)
-> [   84.589460] ip_output (net/ipv4/ip_output.c:430)
-> [   84.590132] ip_push_pending_frames (./include/net/dst.h:444 net/ipv4/i=
-p_output.c:126 net/ipv4/ip_output.c:1586 net/ipv4/ip_output.c:1606)
-> [   84.590285] raw_sendmsg (net/ipv4/raw.c:649)
-> [   84.591960] sock_sendmsg (net/socket.c:724 net/socket.c:747)
-> [   84.592084] __sys_sendto (net/socket.c:2142)
-> [   84.593306] __x64_sys_sendto (net/socket.c:2150)
-> [   84.593779] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/c=
-ommon.c:80)
-> [   84.593902] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:=
-120)
-> [   84.594070] RIP: 0033:0x7fe568032066
-> [   84.594192] Code: 0e 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0=
-f 1f 00 41 89 ca 64 8b 04 25 18 00 00 00 85 c09[ 84.594796] RSP: 002b:00007=
-ffce388b4e8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
->
-> Code starting with the faulting instruction
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [   84.595047] RAX: ffffffffffffffda RBX: 00007ffce388cc70 RCX: 00007fe56=
-8032066
-> [   84.595281] RDX: 0000000000000040 RSI: 00005605fdad6d10 RDI: 000000000=
-0000003
-> [   84.595515] RBP: 00005605fdad6d10 R08: 00007ffce388eeec R09: 000000000=
-0000010
-> [   84.595749] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000=
-0000040
-> [   84.595984] R13: 00007ffce388cc30 R14: 00007ffce388b4f0 R15: 0000001d0=
-0000001
-> [   84.596218]  </TASK>
-> [   84.596295]
-> [   84.596351] Allocated by task 291:
-> [   84.596467] kasan_save_stack (mm/kasan/common.c:46)
-> [   84.596597] kasan_set_track (mm/kasan/common.c:52)
-> [   84.596725] __kasan_kmalloc (mm/kasan/common.c:384)
-> [   84.596852] __kmalloc_node (./include/linux/kasan.h:196 mm/slab_common=
-.c:967 mm/slab_common.c:974)
-> [   84.596979] qdisc_alloc (./include/linux/slab.h:610 ./include/linux/sl=
-ab.h:731 net/sched/sch_generic.c:938)
-> [   84.597100] qdisc_create (net/sched/sch_api.c:1244)
-> [   84.597222] tc_modify_qdisc (net/sched/sch_api.c:1680)
-> [   84.597357] rtnetlink_rcv_msg (net/core/rtnetlink.c:6174)
-> [   84.597495] netlink_rcv_skb (net/netlink/af_netlink.c:2574)
-> [   84.597627] netlink_unicast (net/netlink/af_netlink.c:1340 net/netlink=
-/af_netlink.c:1365)
-> [   84.597759] netlink_sendmsg (net/netlink/af_netlink.c:1942)
-> [   84.597891] sock_sendmsg (net/socket.c:724 net/socket.c:747)
-> [   84.598016] ____sys_sendmsg (net/socket.c:2501)
-> [   84.598147] ___sys_sendmsg (net/socket.c:2557)
-> [   84.598275] __sys_sendmsg (./include/linux/file.h:31 net/socket.c:2586=
-)
-> [   84.598399] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/c=
-ommon.c:80)
-> [   84.598520] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:=
-120)
-> [   84.598688]
-> [   84.598744] The buggy address belongs to the object at ffff88810f67400=
-0
-> [   84.598744]  which belongs to the cache kmalloc-8k of size 8192
-> [   84.599135] The buggy address is located 2664 bytes to the right of
-> [   84.599135]  allocated 7904-byte region [ffff88810f674000, ffff88810f6=
-75ee0)
-> [   84.599544]
-> [   84.599598] The buggy address belongs to the physical page:
-> [   84.599777] page:00000000e638567f refcount:1 mapcount:0 mapping:000000=
-0000000000 index:0x0 pfn:0x10f670
-> [   84.600074] head:00000000e638567f order:3 entire_mapcount:0 nr_pages_m=
-apped:0 pincount:0
-> [   84.600330] flags: 0x200000000010200(slab|head|node=3D0|zone=3D2)
-> [   84.600517] raw: 0200000000010200 ffff888100043180 dead000000000122 00=
-00000000000000
-> [   84.600764] raw: 0000000000000000 0000000080020002 00000001ffffffff 00=
-00000000000000
-> [   84.601009] page dumped because: kasan: bad access detected
-> [   84.601187]
-> [   84.601241] Memory state around the buggy address:
-> [   84.601396]  ffff88810f676800: fc fc fc fc fc fc fc fc fc fc fc fc fc =
-fc fc fc
-> [   84.601620]  ffff88810f676880: fc fc fc fc fc fc fc fc fc fc fc fc fc =
-fc fc fc
-> [   84.601845] >ffff88810f676900: fc fc fc fc fc fc fc fc fc fc fc fc fc =
-fc fc fc
-> [   84.602069]                                               ^
-> [   84.602243]  ffff88810f676980: fc fc fc fc fc fc fc fc fc fc fc fc fc =
-fc fc fc
-> [   84.602468]  ffff88810f676a00: fc fc fc fc fc fc fc fc fc fc fc fc fc =
-fc fc fc
-> [   84.602693] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [   84.602924] Disabling lock debugging due to kernel taint
->
-> Fixes: 3015f3d2a3cd ("pkt_sched: enable QFQ to support TSO/GSO")
-> Reported-by: Gwangun Jung <exsociety@gmail.com>
-> Signed-off-by: Gwangun Jung <exsociety@gmail.com>
-> ---
->  net/sched/sch_qfq.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
->
-> diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-> index cf5ebe43b3b4..02098a02943e 100644
-> --- a/net/sched/sch_qfq.c
-> +++ b/net/sched/sch_qfq.c
-> @@ -421,15 +421,16 @@ static int qfq_change_class(struct Qdisc *sch, u32 =
-classid, u32 parentid,
->         } else
->                 weight =3D 1;
->
-> -       if (tb[TCA_QFQ_LMAX]) {
-> +       if (tb[TCA_QFQ_LMAX])
->                 lmax =3D nla_get_u32(tb[TCA_QFQ_LMAX]);
-> -               if (lmax < QFQ_MIN_LMAX || lmax > (1UL << QFQ_MTU_SHIFT))=
- {
-> -                       pr_notice("qfq: invalid max length %u\n", lmax);
-> -                       return -EINVAL;
-> -               }
-> -       } else
-> +       else
->                 lmax =3D psched_mtu(qdisc_dev(sch));
->
-> +       if (lmax < QFQ_MIN_LMAX || lmax > (1UL << QFQ_MTU_SHIFT)) {
-> +               pr_notice("qfq: invalid max length %u\n", lmax);
-> +               return -EINVAL;
-> +       }
-> +
->         inv_w =3D ONE_FP / weight;
->         weight =3D ONE_FP / inv_w;
->
+The system hang because of dsa_tag_8021q_port_setup()->
+				stmmac_vlan_rx_add_vid().
 
-Acked-by: Jamal Hadi Salim<jhs@mojatatu.com>
+I found in stmmac_drv_probe() that cailing pm_runtime_put()
+disabled the clock.
 
-cheers,
-jamal
+First, when the kernel is compiled with CONFIG_PM=y,The stmmac's
+resume/suspend is active.
+
+Secondly,stmmac as DSA master,the dsa_tag_8021q_port_setup() function
+will callback stmmac_vlan_rx_add_vid when DSA dirver starts. However,
+The system is hanged for the stmmac_vlan_rx_add_vid() accesses its
+registers after stmmac's clock is closed.
+
+I would suggest adding the pm_runtime_resume_and_get() to the
+stmmac_vlan_rx_add_vid().This guarantees that resuming clock output
+while in use.
+
+Signed-off-by: Yan Wang <rk.code@outlook.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d7fcab057032..f9cd063f1fe3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -6350,6 +6350,10 @@ static int stmmac_vlan_rx_add_vid(struct net_device *ndev, __be16 proto, u16 vid
+ 	bool is_double = false;
+ 	int ret;
+ 
++	ret = pm_runtime_resume_and_get(priv->device);
++	if (ret < 0)
++		return ret;
++
+ 	if (be16_to_cpu(proto) == ETH_P_8021AD)
+ 		is_double = true;
+ 
+@@ -6357,16 +6361,18 @@ static int stmmac_vlan_rx_add_vid(struct net_device *ndev, __be16 proto, u16 vid
+ 	ret = stmmac_vlan_update(priv, is_double);
+ 	if (ret) {
+ 		clear_bit(vid, priv->active_vlans);
+-		return ret;
++		goto err_pm_put;
+ 	}
+ 
+ 	if (priv->hw->num_vlan) {
+ 		ret = stmmac_add_hw_vlan_rx_fltr(priv, ndev, priv->hw, proto, vid);
+ 		if (ret)
+-			return ret;
++			goto err_pm_put;
+ 	}
++err_pm_put:
++	pm_runtime_put(priv->device);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int stmmac_vlan_rx_kill_vid(struct net_device *ndev, __be16 proto, u16 vid)
+-- 
+2.17.1
+
