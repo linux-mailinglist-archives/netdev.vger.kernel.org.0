@@ -2,108 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EBAF6E0DA8
-	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 14:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2448B6E0DB2
+	for <lists+netdev@lfdr.de>; Thu, 13 Apr 2023 14:49:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbjDMMso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 08:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52846 "EHLO
+        id S229959AbjDMMth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 08:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbjDMMsn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 08:48:43 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E4C2115;
-        Thu, 13 Apr 2023 05:48:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=FtBdndZ3097mSvwg5FOFaiH+eLsMC9IFLTN0uxY11Hk=; b=b0F4Mwt0Njh9nMh7X/DOfo3jPT
-        uG1loN7ecupHSyBznqMc3ZsMIGSgYdywFIue78i4BY7R0ThXcrkOXtZKy+jN2eQ4obVkbNR0wT3ty
-        BVAIU+RTRicvetF9arvDQotBgmDSaqqIeUGu3lufoBbQEXHKfqHeeJTxQHirNSyO+y0E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pmwNK-00ABVl-W0; Thu, 13 Apr 2023 14:48:30 +0200
-Date:   Thu, 13 Apr 2023 14:48:30 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229917AbjDMMtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 08:49:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822D79741;
+        Thu, 13 Apr 2023 05:49:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19AF76152E;
+        Thu, 13 Apr 2023 12:49:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D59C433EF;
+        Thu, 13 Apr 2023 12:49:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681390173;
+        bh=hl2z3VQRd2gHDfpU3684uq8PUQrhWsZX8vPo+MGJYmw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Qgz2dn/NnxJFjaA8hJhGDw5y3Qvg2LkpVx/BTL78zd1lYhH0XU/xKW4unpwHdeAhD
+         eBnKAueNAFNCswdjd0k+ox2m7RVOIgFrnEEtdl8w9YTP2DFqJjBDFlJYY1pHTUn7pY
+         se9Auk2WbgunltG/BzpyckiusXOFDmlFo9wJw+OaypC/4KnwiUua8WZmao7j+txjkp
+         Upo1x4Iv2JY6xvk7f5AZfhndIhD7cBLemsOqPLlZgrEGq1b5L1Zew1fWQrDgUcwJGu
+         aqmfIG/MbsVrdPoHXho4hkUQr8ppCMwyZBO5ZvTSGgSEkDS+PvWBnQGhoIY6j3rzp2
+         J7wBzn5/amvYA==
+Date:   Thu, 13 Apr 2023 15:49:29 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Avihai Horon <avihaih@nvidia.com>, Aya Levin <ayal@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-phy@lists.infradead.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [RFC PATCH 0/4] Add support for QMC HDLC and PHY
-Message-ID: <885e4f20-614a-4b8e-827e-eb978480af87@lunn.ch>
-References: <20230323103154.264546-1-herve.codina@bootlin.com>
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Meir Lichtinger <meirl@mellanox.com>,
+        Michael Guralnik <michaelgur@mellanox.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>
+Subject: Re: [PATCH rdma-next 0/4] Allow relaxed ordering read in VFs and VMs
+Message-ID: <20230413124929.GN17993@unreal>
+References: <cover.1681131553.git.leon@kernel.org>
+ <ZDVoH0W27xo6mAbW@nvidia.com>
+ <7c5eb785-0fe7-e0e5-8232-403e1d3538ac@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230323103154.264546-1-herve.codina@bootlin.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <7c5eb785-0fe7-e0e5-8232-403e1d3538ac@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 11:31:50AM +0100, Herve Codina wrote:
-> Hi,
+On Tue, Apr 11, 2023 at 04:21:09PM -0700, Jacob Keller wrote:
 > 
-> I have a system where I need to handle an HDLC interface.
 > 
-> The HDLC data are transferred using a TDM bus on which a PEF2256 is
-> present. The PEF2256 transfers data from/to the TDM bus to/from E1 line.
-> This PEF2256 is also connected to a PowerQUICC SoC for the control path
-> and the TDM is connected to the SoC (QMC component) for the data path.
+> On 4/11/2023 7:01 AM, Jason Gunthorpe wrote:
+> > On Mon, Apr 10, 2023 at 04:07:49PM +0300, Leon Romanovsky wrote:
+> >> From: Leon Romanovsky <leonro@nvidia.com>
+> >>
+> >> From Avihai,
+> >>
+> >> Currently, Relaxed Ordering (RO) can't be used in VFs directly and in
+> >> VFs assigned to QEMU, even if the PF supports RO. This is due to issues
+> >> in reporting/emulation of PCI config space RO bit and due to current
+> >> HCA capability behavior.
+> >>
+> >> This series fixes it by using a new HCA capability and by relying on FW
+> >> to do the "right thing" according to the PF's PCI config space RO value.
+> >>
+> >> Allowing RO in VFs and VMs is valuable since it can greatly improve
+> >> performance on some setups. For example, testing throughput of a VF on
+> >> an AMD EPYC 7763 and ConnectX-6 Dx setup showed roughly 60% performance
+> >> improvement.
+> >>
+> >> Thanks
+> >>
+> >> Avihai Horon (4):
+> >>   RDMA/mlx5: Remove pcie_relaxed_ordering_enabled() check for RO write
+> >>   RDMA/mlx5: Check pcie_relaxed_ordering_enabled() in UMR
+> >>   net/mlx5: Update relaxed ordering read HCA capabilities
+> >>   RDMA/mlx5: Allow relaxed ordering read in VFs and VMs
+> > 
+> > This looks OK, but the patch structure is pretty confusing.
+> > 
+> > It seems to me there are really only two patches here, the first is to
+> > add some static inline
+> > 
+> > 'mlx5 supports read ro'
+> > 
+> > which supports both the cap bits described in
+> > the PRM, with a little comment to explain that old devices only set
+> > the old cap.
+> > 
+> > And a second patch to call it in all the places we need to check before
+> > setting the mkc ro read bit.
+> > 
+> > Maybe a final third patch to sort out that mistake in the write side.
+> > 
+> > But this really doesn't have anything to do with VFs and VMs, this is
+> > adjusting the code to follow the current PRM because the old one was
+> > mis-desgined.
+> > 
+> > Jason
 > 
-> From the HDLC driver, I need to handle data using the QMC and carrier
-> detection using the PEF2256 (E1 line carrier).
+> FWIW I think Jason's outline here makes sense too and might be slightly
+> better. However, reading through the series I was reasonably able to
+> understand things enough that I think its fine as-is.
 > 
-> The HDLC driver consider the PEF2256 as a generic PHY.
-> So, the design is the following:
-> 
-> +----------+          +-------------+              +---------+
-> | HDLC drv | <-data-> | QMC channel | <-- TDM -->  | PEF2256 |
-> +----------+          +-------------+              |         | <--> E1
->    ^   +---------+     +---------+                 |         |
->    +-> | Gen PHY | <-> | PEF2256 | <- local bus -> |         |
->        +---------+     | PHY drv |                 +---------+
->                        +---------+
+> In some sense its not about VF or VM, but fixing this has the result
+> that it fixes a setup with VF and VM, so I think thats an ok thing to
+> call out as the goal.
 
-Hi Herver
+VF or VM came from user perspective of where this behavior is not
+correct. Avihai saw this in QEMU, so he described it in terms which
+are more clear to the end user.
 
-Sorry, i'm late to the conversation. I'm looking at this from two
-different perspectives. I help maintain Ethernet PHYs. And i have
-hacked on the IDT 82P2288 E1/T1/J1 framer.
-
-I think there is a block missing from this diagram. There appears to
-be an MFD driver for the PEF2256? At least, i see an include for
-linux/mfd/pef2256.h.
-
-When i look at the 'phy' driver, i don't see anything a typical PHY
-driver used for networking would have. A networking PHY driver often
-has the ability to change between modes, like SGMII, QSGMII, 10GBASER.
-The equivalent here would be changing between E1, T1 and J1. It has
-the ability to change the speed, 1G, 2.5G, 10G etc. This could be
-implied via the mode, E1 is 2.048Mbps, T1 1.544Mbps, and i forget what
-J1 is. The PEF2256 also seems to support E1/T1/J1. How is its modes
-configured?
-
-In fact, this PHY driver does not seem to do any configuration of any
-sort on the framer. All it seems to be doing is take notification from
-one chain and send them out another chain!
-
-I also wounder if this get_status() call is sufficient. Don't you also
-want Red, Yellow and Blue alarms? It is not just the carrier is down,
-but why it is down.
-
-Overall, i don't see why you want a PHY. What value does it add?
-
-	 Andrew
+Thanks
