@@ -2,118 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 867366E2BD2
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 23:45:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F0C56E2BFD
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 00:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229830AbjDNVpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 17:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41962 "EHLO
+        id S229908AbjDNWAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 18:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjDNVpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 17:45:04 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA00212E
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 14:45:03 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-183f4efa98aso29690672fac.2
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 14:45:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681508703; x=1684100703;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=TV9fvev/jFW3W7mARdEbFkpSKXoMDibx4RgaJ5BFzRw=;
-        b=ZvfRupAUYCEzUBD1mv57h5wcNosHVGHI8IYqp60eb4qYU2rR3bSTe5QuByyUO0EBLM
-         83deD0ExwIJo325iUkRVBzRX/01jiJZQMyMK/frM9nPDqkMSWCzEO0Z07wM9d4Pkx0SW
-         zzfMEFufBnHjWKD4YKgnp3nGNhG9sasl27wE2dHgaPZ3W9atbrnd+C72RTA5J7ThbXMk
-         0kA8LuwUi/08hdWHoSbCLJ7cBy62a3q99w300L+txBfs40qwk/RkYYSmgSFbwTSZ8YPD
-         sxQYdh/Q1rC7v1CI33WhXNnA8GR7NTSJXs0mkR3/jPVfoQgcDozBOvv/nCd6Eu4keAqI
-         Jl0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681508703; x=1684100703;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TV9fvev/jFW3W7mARdEbFkpSKXoMDibx4RgaJ5BFzRw=;
-        b=IlI3ouRWxl9g8dlIx/JfJWilLjzWBrMQs2/2hSuqgK4S5jgyvVPsLnblF1Ppiu8cXE
-         tbpirnTU0T+va4pYRLmTKZMh57ig/IotDw+YtLtwMdU74mag21fi8kjY0bN+an7HDsAf
-         z4sQO5ulNLBGBWqrfuBTthQ87WZtUySMyiF+R83EdD1qEWqa4Cd7Piye2gk5ikpCO+ZA
-         GMzs7ueiq3sV59XSUsqQeOVtT38v0zSZxbcnukp7vujtt+Ad9bykjy5HBSKi0u69Jvf7
-         /EkCMYSbyHDZMk41d6g7H1wog6YQRzdFzj5PJDKafe9g7yfRpa3lThe92e1MbBOEud4Y
-         HHfQ==
-X-Gm-Message-State: AAQBX9dZo789BShyIuq21lTzobws6nz6AN12DqdfwCRcrv4ma4jEZ+NE
-        iZNA5dbG9MWdt0vSMkuNrQewI+ekO9+YTrqgBRU=
-X-Google-Smtp-Source: AKy350bj6trqaloav73BMHW1aC8VKeEY01pOXPQyQLOf7eaaoLv8JmUasKN+7smC6tYYsCkfhzWAxg==
-X-Received: by 2002:a05:6870:c687:b0:187:85b1:1258 with SMTP id cv7-20020a056870c68700b0018785b11258mr4253338oab.23.1681508702901;
-        Fri, 14 Apr 2023 14:45:02 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:bb6:61a2:bf8b:4710? ([2804:14d:5c5e:44fb:bb6:61a2:bf8b:4710])
-        by smtp.gmail.com with ESMTPSA id 3-20020a4a0003000000b0053b543b027bsm2077815ooh.42.2023.04.14.14.44.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Apr 2023 14:45:02 -0700 (PDT)
-Message-ID: <54d9bd03-66b7-649f-ce72-84d08b833d50@mojatatu.com>
-Date:   Fri, 14 Apr 2023 18:44:58 -0300
+        with ESMTP id S229774AbjDNWAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 18:00:09 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99337423C;
+        Fri, 14 Apr 2023 15:00:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=6vEBUNhEZchpnXN5KnFTDEh5GGle3ueKXF8PZpuXJnE=; b=kN2fVE4cW9L1hHEcvdBr0MkUis
+        zXS60VqWFcqGIQPlsnvbmrLfsrIPVbdIB89Wrm9czJzee9TZnSyyXz+Th7WOWx2jgFRgWPkZ+6p03
+        0eKld6TDmsl+ddsgFRo2+QpC+1stFEJtbLmj0sEh99fIzIUGULXBkbOQDy9BjdTgTOfcrI/U9zAsT
+        p9V3wKiXeFs+Cl5JrNRXV27ImeYOYmIf3ksYZxefocmX2Tl+i5GJ7snLTxIvyH0JzjHVKiFwRcBpQ
+        5HMElcawviAkRHvTxZTNrj6cyCzQ6pskUNoTGKASFDUlmEZoXlhZiDF+enMjH1N0tVYJ0E6wpfTJP
+        P5ZPVpnQ==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1pnRSX-000F3X-Qg; Fri, 14 Apr 2023 23:59:57 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1pnRSX-0001NR-Go; Fri, 14 Apr 2023 23:59:57 +0200
+Subject: Re: [PATCH bpf] selftests/bpf: fix xdp_redirect xdp-features for
+ xdp_bonding selftest
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
+        joamaki@gmail.com
+References: <73f0028461c4f3fa577e24d8d797ddd76f1d17c6.1681507058.git.lorenzo@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <dc994c7b-c8fe-df8e-7203-0d6dae8dee9f@iogearbox.net>
+Date:   Fri, 14 Apr 2023 23:59:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next] net/sched: clear actions pointer in miss cookie
- init fail
+In-Reply-To: <73f0028461c4f3fa577e24d8d797ddd76f1d17c6.1681507058.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, marcelo.leitner@gmail.com, paulb@nvidia.com,
-        simon.horman@corigine.com, Palash Oswal <oswalpalash@gmail.com>
-References: <20230414214317.227128-1-pctammela@mojatatu.com>
-From:   Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <20230414214317.227128-1-pctammela@mojatatu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.8/26875/Fri Apr 14 09:23:27 2023)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/04/2023 18:43, Pedro Tammela wrote:
-> Palash reports a UAF when using a modified version of syzkaller[1].
+On 4/14/23 11:21 PM, Lorenzo Bianconi wrote:
+> NETDEV_XDP_ACT_NDO_XMIT is not enabled by default for veth driver but it
+> depends on the device configuration. Fix XDP_REDIRECT xdp-features in
+> xdp_bonding selftest loading a dummy XDP program on veth2_2 device.
 > 
-> When 'tcf_exts_miss_cookie_base_alloc()' fails in 'tcf_exts_init_ex()'
-> a call to 'tcf_exts_destroy()' is made to free up the tcf_exts
-> resources.
-> In flower, a call to '__fl_put()' when 'tcf_exts_init_ex()' fails is made;
-> Then calling 'tcf_exts_destroy()', which triggers an UAF since the
-> already freed tcf_exts action pointer is lingering in the struct.
-> 
-> Before the offending patch, this was not an issue since there was no
-> case where the tcf_exts action pointer could linger. Therefore, restore
-> the old semantic by clearing the action pointer in case of a failure to
-> initialize the miss_cookie.
-> 
-> [1] https://github.com/cmu-pasta/linux-kernel-enriched-corpus
-> 
-> Cc: paulb@nvidia.com
-> Fixes: 80cd22c35c90 ("net/sched: cls_api: Support hardware miss to tc action")
-> Reported-by: Palash Oswal <oswalpalash@gmail.com>
-> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+> Fixes: fccca038f300 ("veth: take into account device reconfiguration for xdp_features flag")
+
+Hm, does that mean we're changing^breaking existing user behavior iff after
+fccca038f300 you can only make it work by loading dummy prog?
+
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > ---
->   net/sched/cls_api.c | 1 +
->   1 file changed, 1 insertion(+)
+>   tools/testing/selftests/bpf/prog_tests/xdp_bonding.c | 11 +++++++++++
+>   1 file changed, 11 insertions(+)
 > 
-> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> index 2a6b6be0811b..84bad268e328 100644
-> --- a/net/sched/cls_api.c
-> +++ b/net/sched/cls_api.c
-> @@ -3235,6 +3235,7 @@ int tcf_exts_init_ex(struct tcf_exts *exts, struct net *net, int action,
+> diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+> index 5e3a26b15ec6..dcbe30c81291 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+> @@ -168,6 +168,17 @@ static int bonding_setup(struct skeletons *skeletons, int mode, int xmit_policy,
 >   
->   err_miss_alloc:
->   	tcf_exts_destroy(exts);
-> +	exts->actions = NULL;
->   	return err;
->   }
->   EXPORT_SYMBOL(tcf_exts_init_ex);
+>   		if (xdp_attach(skeletons, skeletons->xdp_dummy->progs.xdp_dummy_prog, "veth1_2"))
+>   			return -1;
+> +
+> +		if (!ASSERT_OK(setns_by_name("ns_dst"), "set netns to ns_dst"))
+> +			return -1;
+> +
+> +		/* Load a dummy XDP program on veth2_2 in order to enable
+> +		 * NETDEV_XDP_ACT_NDO_XMIT feature
+> +		 */
+> +		if (xdp_attach(skeletons, skeletons->xdp_dummy->progs.xdp_dummy_prog, "veth2_2"))
+> +			return -1;
+> +
+> +		restore_root_netns();
+>   	}
+>   
+>   	SYS("ip -netns ns_dst link set veth2_1 master bond2");
+> 
 
-
-My bad, this should target 'net' instead of 'net-next'.
