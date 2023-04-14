@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6C76E268A
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 17:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27B136E268B
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 17:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbjDNPMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 11:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33312 "EHLO
+        id S230387AbjDNPMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 11:12:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjDNPMk (ORCPT
+        with ESMTP id S230156AbjDNPMk (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 11:12:40 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB20E10F2
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 08:12:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3FE1998
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 08:12:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=LvOTIEor0LEMraDfqDiHKXrqZwVI3gf+gpLNlMbwKns=;
-        t=1681485157; x=1682694757; b=R6td7PilLc9gGtF/S/KTaaxjm0525P2bzPDhSxpxdjGQyXK
-        B4g+sy1cRYgVdJ9KKuRhxUdkL2GHVEPeiOYt+0sVvkW+dztOxRmCOTEdtZYsq3ehA2g+c0wl02WRJ
-        XGt1zfF/A1YJUbZIBjv9mINR5Jg6O4furK4BV7Zu/ruyj83g3rsEylMb02DyuTdgCTQLtq02phKKO
-        LaEZcU/zBGhIcNXCk6JWVlgTJ+tBk9F+rWbBZ0Oiu9vM6MYVbzvLY+BLyFdSuXxjWc40AUsE344Su
-        76tyTVo39NvW3VFXyhCG8bYI+X2GNoFaUO2M9bqsqMsJ9NEWXyD1Ve0K+z7qsJZA==;
+        Resent-Cc:Resent-Message-ID; bh=12p7kwl0Y0zYaEnZcTGFuCvlvSTEZ+DirDXKrzdPc88=;
+        t=1681485158; x=1682694758; b=v1laEhWJpbizqr/hrtZZy2HDpAM2hrH/J2ekU1Hmyx3cuPp
+        Q7I4xSwroVZNbo50xcWbiRvu58QB8dXQlEyV+0HaJ6efLVBxM7LU/HM8FP6GyWIndv5PtR9bRY0pK
+        /VN5tcPnDnZjzzliIM4Xlh5DcfXwHrF1FnG0W2s8UtOVI/5p8/YxQbP8T23VEe5XjMIB+shKmiEYE
+        JRovx9Fa/+zZsGkw8CXbiw9rONRmUC8ZcafRfKtpBvnsBwUAYNfIlOP2bhpJVB0Z2cG0k5KRi4MkM
+        bNIm+u9c85oBTjMeb8Xny8tMVNMV5Imd+M7O1aXbSI2Dm+pyqNSh+7SzZxNBV97A==;
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.96)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1pnL6K-00Fdii-0k;
+        id 1pnL6K-00Fdii-1e;
         Fri, 14 Apr 2023 17:12:36 +0200
 From:   Johannes Berg <johannes@sipsolutions.net>
 To:     netdev@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH next-next v3 2/3] net: extend drop reasons for multiple subsystems
-Date:   Fri, 14 Apr 2023 17:12:26 +0200
-Message-Id: <20230414151227.348725-2-johannes@sipsolutions.net>
+Subject: [PATCH next-next v3 3/3] mac80211: use the new drop reasons infrastructure
+Date:   Fri, 14 Apr 2023 17:12:27 +0200
+Message-Id: <20230414171112.3ffd6066f251.Iea29d70af97ce2ed590a00dbebee2ab4d013dfd5@changeid>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230414151227.348725-1-johannes@sipsolutions.net>
 References: <20230414151227.348725-1-johannes@sipsolutions.net>
@@ -51,290 +51,417 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-Extend drop reasons to make them usable by subsystems
-other than core by reserving the high 16 bits for a
-new subsystem ID, of which 0 of course is used for the
-existing reasons immediately.
+It can be really hard to analyse or debug why packets are
+going missing in mac80211, so add the needed infrastructure
+to use use the new per-subsystem drop reasons.
 
-To still be able to have string reasons, restructure
-that code a bit to make the loopup under RCU, the only
-user of this (right now) is drop_monitor.
+We actually use two drop reason subsystems here because of
+the different handling of frames that are dropped but still
+go to monitor for old versions of hostapd, and those that
+are just completely unusable (e.g. crypto failed.)
 
-Link: https://lore.kernel.org/netdev/00659771ed54353f92027702c5bbb84702da62ce.camel@sipsolutions.net
+Annotate a few reasons here just to illustrate this, we'll
+need to go through and annotate more of them later.
+
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 ---
-v3:
- - new dropreason.h now that core codes are in dropreason-core.h
- - annotate RCU pointer init for sparse
----
- include/net/dropreason-core.h | 15 ++++++---
- include/net/dropreason.h      | 31 ++++++++++++++++++
- net/core/drop_monitor.c       | 33 ++++++++++++++------
- net/core/skbuff.c             | 59 +++++++++++++++++++++++++++++++++--
- 4 files changed, 121 insertions(+), 17 deletions(-)
- create mode 100644 include/net/dropreason.h
+ include/net/dropreason.h   | 10 +++++++
+ net/mac80211/drop.h        | 56 ++++++++++++++++++++++++++++++++++
+ net/mac80211/ieee80211_i.h |  8 +----
+ net/mac80211/main.c        | 31 +++++++++++++++++++
+ net/mac80211/rx.c          | 61 ++++++++++++++++++--------------------
+ net/mac80211/wpa.c         | 24 +++++++--------
+ 6 files changed, 139 insertions(+), 51 deletions(-)
+ create mode 100644 net/mac80211/drop.h
 
-diff --git a/include/net/dropreason-core.h b/include/net/dropreason-core.h
-index e775f9f7d384..a55d85ff5153 100644
---- a/include/net/dropreason-core.h
-+++ b/include/net/dropreason-core.h
-@@ -339,12 +339,19 @@ enum skb_drop_reason {
- 	 */
- 	SKB_DROP_REASON_IPV6_NDISC_NS_OTHERHOST,
- 	/**
--	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
--	 * used as a real 'reason'
--	 */
-+	 * @SKB_DROP_REASON_MAX: the maximum of core drop reasons, which
-+	 * shouldn't be used as a real 'reason' - only for tracing code gen
-+         */
- 	SKB_DROP_REASON_MAX,
-+
-+	/** @SKB_DROP_REASON_SUBSYS_MASK: subsystem mask in drop reasons,
-+	 * see &enum skb_drop_reason_subsys
-+	 */
-+	SKB_DROP_REASON_SUBSYS_MASK = 0xffff0000,
- };
- 
-+#define SKB_DROP_REASON_SUBSYS_SHIFT	16
-+
- #define SKB_DR_INIT(name, reason)				\
- 	enum skb_drop_reason name = SKB_DROP_REASON_##reason
- #define SKB_DR(name)						\
-@@ -358,6 +365,4 @@ enum skb_drop_reason {
- 			SKB_DR_SET(name, reason);		\
- 	} while (0)
- 
--extern const char * const drop_reasons[];
--
- #endif
 diff --git a/include/net/dropreason.h b/include/net/dropreason.h
-new file mode 100644
-index 000000000000..f0f2378dbed0
---- /dev/null
+index f0f2378dbed0..56901ece28ff 100644
+--- a/include/net/dropreason.h
 +++ b/include/net/dropreason.h
-@@ -0,0 +1,31 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
+@@ -11,6 +11,16 @@ enum skb_drop_reason_subsys {
+ 	/** @SKB_DROP_REASON_SUBSYS_CORE: core drop reasons defined above */
+ 	SKB_DROP_REASON_SUBSYS_CORE,
+ 
++	/** @SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE: mac80211 drop reasons
++	 * for unusable frames, see net/mac80211/drop.h
++	 */
++	SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE,
 +
-+#ifndef _LINUX_DROPREASON_H
-+#define _LINUX_DROPREASON_H
-+#include <net/dropreason-core.h>
++	/** @SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR: mac80211 drop reasons
++	 * for frames still going to monitor, see net/mac80211/drop.h
++	 */
++	SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR,
 +
-+/**
-+ * enum skb_drop_reason_subsys - subsystem tag for (extended) drop reasons
-+ */
-+enum skb_drop_reason_subsys {
-+	/** @SKB_DROP_REASON_SUBSYS_CORE: core drop reasons defined above */
-+	SKB_DROP_REASON_SUBSYS_CORE,
-+
-+	/** @SKB_DROP_REASON_SUBSYS_NUM: number of subsystems defined */
-+	SKB_DROP_REASON_SUBSYS_NUM
-+};
-+
-+struct drop_reason_list {
-+	const char * const *reasons;
-+	size_t n_reasons;
-+};
-+
-+/* Note: due to dynamic registrations, access must be under RCU */
-+extern const struct drop_reason_list __rcu *
-+drop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_NUM];
-+
-+void drop_reasons_register_subsys(enum skb_drop_reason_subsys subsys,
-+				  const struct drop_reason_list *list);
-+void drop_reasons_unregister_subsys(enum skb_drop_reason_subsys subsys);
-+
-+#endif
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 5a782d1d8fd3..aff31cd944c2 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -21,6 +21,7 @@
- #include <linux/workqueue.h>
- #include <linux/netlink.h>
- #include <linux/net_dropmon.h>
-+#include <linux/bitfield.h>
- #include <linux/percpu.h>
- #include <linux/timer.h>
- #include <linux/bitops.h>
-@@ -29,6 +30,7 @@
- #include <net/genetlink.h>
- #include <net/netevent.h>
- #include <net/flow_offload.h>
-+#include <net/dropreason.h>
- #include <net/devlink.h>
- 
- #include <trace/events/skb.h>
-@@ -504,8 +506,6 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
- 	if (!nskb)
- 		return;
- 
--	if (unlikely(reason >= SKB_DROP_REASON_MAX || reason <= 0))
--		reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	cb = NET_DM_SKB_CB(nskb);
- 	cb->reason = reason;
- 	cb->pc = location;
-@@ -552,9 +552,9 @@ static size_t net_dm_in_port_size(void)
- }
- 
- #define NET_DM_MAX_SYMBOL_LEN 40
-+#define NET_DM_MAX_REASON_LEN 50
- 
--static size_t net_dm_packet_report_size(size_t payload_len,
--					enum skb_drop_reason reason)
-+static size_t net_dm_packet_report_size(size_t payload_len)
- {
- 	size_t size;
- 
-@@ -576,7 +576,7 @@ static size_t net_dm_packet_report_size(size_t payload_len,
- 	       /* NET_DM_ATTR_PROTO */
- 	       nla_total_size(sizeof(u16)) +
- 	       /* NET_DM_ATTR_REASON */
--	       nla_total_size(strlen(drop_reasons[reason]) + 1) +
-+	       nla_total_size(NET_DM_MAX_REASON_LEN + 1) +
- 	       /* NET_DM_ATTR_PAYLOAD */
- 	       nla_total_size(payload_len);
- }
-@@ -610,6 +610,8 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
- 				     size_t payload_len)
- {
- 	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
-+	const struct drop_reason_list *list = NULL;
-+	unsigned int subsys, subsys_reason;
- 	char buf[NET_DM_MAX_SYMBOL_LEN];
- 	struct nlattr *attr;
- 	void *hdr;
-@@ -627,9 +629,24 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
- 			      NET_DM_ATTR_PAD))
- 		goto nla_put_failure;
- 
-+	rcu_read_lock();
-+	subsys = u32_get_bits(cb->reason, SKB_DROP_REASON_SUBSYS_MASK);
-+	if (subsys < SKB_DROP_REASON_SUBSYS_NUM)
-+		list = rcu_dereference(drop_reasons_by_subsys[subsys]);
-+	subsys_reason = cb->reason & ~SKB_DROP_REASON_SUBSYS_MASK;
-+	if (!list ||
-+	    subsys_reason >= list->n_reasons ||
-+	    !list->reasons[subsys_reason] ||
-+	    strlen(list->reasons[subsys_reason]) > NET_DM_MAX_REASON_LEN) {
-+		list = rcu_dereference(drop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_CORE]);
-+		subsys_reason = SKB_DROP_REASON_NOT_SPECIFIED;
-+	}
- 	if (nla_put_string(msg, NET_DM_ATTR_REASON,
--			   drop_reasons[cb->reason]))
-+			   list->reasons[subsys_reason])) {
-+		rcu_read_unlock();
- 		goto nla_put_failure;
-+	}
-+	rcu_read_unlock();
- 
- 	snprintf(buf, sizeof(buf), "%pS", cb->pc);
- 	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
-@@ -687,9 +704,7 @@ static void net_dm_packet_report(struct sk_buff *skb)
- 	if (net_dm_trunc_len)
- 		payload_len = min_t(size_t, net_dm_trunc_len, payload_len);
- 
--	msg = nlmsg_new(net_dm_packet_report_size(payload_len,
--						  NET_DM_SKB_CB(skb)->reason),
--			GFP_KERNEL);
-+	msg = nlmsg_new(net_dm_packet_report_size(payload_len), GFP_KERNEL);
- 	if (!msg)
- 		goto out;
- 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 050a875d09c5..cf3b6b5d0b50 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -58,6 +58,7 @@
- #include <linux/scatterlist.h>
- #include <linux/errqueue.h>
- #include <linux/prefetch.h>
-+#include <linux/bitfield.h>
- #include <linux/if_vlan.h>
- #include <linux/mpls.h>
- #include <linux/kcov.h>
-@@ -72,6 +73,7 @@
- #include <net/mptcp.h>
- #include <net/mctp.h>
- #include <net/page_pool.h>
-+#include <net/dropreason.h>
- 
- #include <linux/uaccess.h>
- #include <trace/events/skb.h>
-@@ -122,11 +124,59 @@ EXPORT_SYMBOL(sysctl_max_skb_frags);
- 
- #undef FN
- #define FN(reason) [SKB_DROP_REASON_##reason] = #reason,
--const char * const drop_reasons[] = {
-+static const char * const drop_reasons[] = {
- 	[SKB_CONSUMED] = "CONSUMED",
- 	DEFINE_DROP_REASON(FN, FN)
+ 	/** @SKB_DROP_REASON_SUBSYS_NUM: number of subsystems defined */
+ 	SKB_DROP_REASON_SUBSYS_NUM
  };
--EXPORT_SYMBOL(drop_reasons);
-+
-+static const struct drop_reason_list drop_reasons_core = {
-+	.reasons = drop_reasons,
-+	.n_reasons = ARRAY_SIZE(drop_reasons),
-+};
-+
-+const struct drop_reason_list __rcu *
-+drop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_NUM] = {
-+	[SKB_DROP_REASON_SUBSYS_CORE] = RCU_INITIALIZER(&drop_reasons_core),
-+};
-+EXPORT_SYMBOL(drop_reasons_by_subsys);
-+
-+/**
-+ * drop_reasons_register_subsys - register another drop reason subsystem
-+ * @subsys: the subsystem to register, must not be the core
-+ * @list: the list of drop reasons within the subsystem, must point to
-+ *	a statically initialized list
-+ */
-+void drop_reasons_register_subsys(enum skb_drop_reason_subsys subsys,
-+				  const struct drop_reason_list *list)
-+{
-+	if (WARN(subsys <= SKB_DROP_REASON_SUBSYS_CORE ||
-+		 subsys >= ARRAY_SIZE(drop_reasons_by_subsys),
-+		 "invalid subsystem %d\n", subsys))
-+		return;
-+
-+	/* must point to statically allocated memory, so INIT is OK */
-+	RCU_INIT_POINTER(drop_reasons_by_subsys[subsys], list);
-+}
-+EXPORT_SYMBOL_GPL(drop_reasons_register_subsys);
-+
-+/**
-+ * drop_reasons_unregister_subsys - unregister a drop reason subsystem
-+ * @subsys: the subsystem to remove, must not be the core
+diff --git a/net/mac80211/drop.h b/net/mac80211/drop.h
+new file mode 100644
+index 000000000000..49dc809cab29
+--- /dev/null
++++ b/net/mac80211/drop.h
+@@ -0,0 +1,56 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * mac80211 drop reason list
 + *
-+ * Note: This will synchronize_rcu() to ensure no users when it returns.
++ * Copyright (C) 2023 Intel Corporation
 + */
-+void drop_reasons_unregister_subsys(enum skb_drop_reason_subsys subsys)
-+{
-+	if (WARN(subsys <= SKB_DROP_REASON_SUBSYS_CORE ||
-+		 subsys >= ARRAY_SIZE(drop_reasons_by_subsys),
-+		 "invalid subsystem %d\n", subsys))
-+		return;
 +
-+	RCU_INIT_POINTER(drop_reasons_by_subsys[subsys], NULL);
++#ifndef MAC80211_DROP_H
++#define MAC80211_DROP_H
++#include <net/dropreason.h>
 +
-+	synchronize_rcu();
-+}
-+EXPORT_SYMBOL_GPL(drop_reasons_unregister_subsys);
++typedef unsigned int __bitwise ieee80211_rx_result;
++
++#define MAC80211_DROP_REASONS_MONITOR(R)	\
++	R(RX_DROP_M_UNEXPECTED_4ADDR_FRAME)	\
++	R(RX_DROP_M_BAD_BCN_KEYIDX)		\
++	R(RX_DROP_M_BAD_MGMT_KEYIDX)		\
++/* this line for the trailing \ - add before this */
++
++#define MAC80211_DROP_REASONS_UNUSABLE(R)	\
++	R(RX_DROP_U_MIC_FAIL)			\
++	R(RX_DROP_U_REPLAY)			\
++	R(RX_DROP_U_BAD_MMIE)			\
++/* this line for the trailing \ - add before this */
++
++/* having two enums allows for checking ieee80211_rx_result use with sparse */
++enum ___mac80211_drop_reason {
++/* if we get to the end of handlers with RX_CONTINUE this will be the reason */
++	___RX_CONTINUE	= SKB_CONSUMED,
++
++/* this never gets used as an argument to kfree_skb_reason() */
++	___RX_QUEUED	= SKB_NOT_DROPPED_YET,
++
++#define ENUM(x) ___ ## x,
++	___RX_DROP_MONITOR = SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR <<
++		SKB_DROP_REASON_SUBSYS_SHIFT,
++	MAC80211_DROP_REASONS_MONITOR(ENUM)
++
++	___RX_DROP_UNUSABLE = SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE <<
++		SKB_DROP_REASON_SUBSYS_SHIFT,
++	MAC80211_DROP_REASONS_UNUSABLE(ENUM)
++#undef ENUM
++};
++
++enum mac80211_drop_reason {
++	RX_CONTINUE	 = (__force ieee80211_rx_result)___RX_CONTINUE,
++	RX_QUEUED	 = (__force ieee80211_rx_result)___RX_QUEUED,
++	RX_DROP_MONITOR	 = (__force ieee80211_rx_result)___RX_DROP_MONITOR,
++	RX_DROP_UNUSABLE = (__force ieee80211_rx_result)___RX_DROP_UNUSABLE,
++#define DEF(x) x = (__force ieee80211_rx_result)___ ## x,
++	MAC80211_DROP_REASONS_MONITOR(DEF)
++	MAC80211_DROP_REASONS_UNUSABLE(DEF)
++#undef DEF
++};
++
++#endif /* MAC80211_DROP_H */
+diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
+index 9b7e184430b8..a0a7839cb961 100644
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -33,6 +33,7 @@
+ #include "key.h"
+ #include "sta_info.h"
+ #include "debug.h"
++#include "drop.h"
  
+ extern const struct cfg80211_ops mac80211_config_ops;
+ 
+@@ -170,13 +171,6 @@ struct ieee80211_tx_data {
+ 	unsigned int flags;
+ };
+ 
+-
+-typedef unsigned __bitwise ieee80211_rx_result;
+-#define RX_CONTINUE		((__force ieee80211_rx_result) 0u)
+-#define RX_DROP_UNUSABLE	((__force ieee80211_rx_result) 1u)
+-#define RX_DROP_MONITOR		((__force ieee80211_rx_result) 2u)
+-#define RX_QUEUED		((__force ieee80211_rx_result) 3u)
+-
  /**
-  *	skb_panic - private function for out-of-line support
-@@ -984,7 +1034,10 @@ bool __kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
- 	if (unlikely(!skb_unref(skb)))
- 		return false;
+  * enum ieee80211_packet_rx_flags - packet RX flags
+  * @IEEE80211_RX_AMSDU: a-MSDU packet
+diff --git a/net/mac80211/main.c b/net/mac80211/main.c
+index ddf2b7811c55..55cdfaef0f5d 100644
+--- a/net/mac80211/main.c
++++ b/net/mac80211/main.c
+@@ -22,6 +22,7 @@
+ #include <linux/bitmap.h>
+ #include <linux/inetdevice.h>
+ #include <net/net_namespace.h>
++#include <net/dropreason.h>
+ #include <net/cfg80211.h>
+ #include <net/addrconf.h>
  
--	DEBUG_NET_WARN_ON_ONCE(reason <= 0 || reason >= SKB_DROP_REASON_MAX);
-+	DEBUG_NET_WARN_ON_ONCE(reason == SKB_NOT_DROPPED_YET ||
-+			       u32_get_bits(reason,
-+					    SKB_DROP_REASON_SUBSYS_MASK) >=
-+				SKB_DROP_REASON_SUBSYS_NUM);
+@@ -1542,6 +1543,28 @@ void ieee80211_free_hw(struct ieee80211_hw *hw)
+ }
+ EXPORT_SYMBOL(ieee80211_free_hw);
  
- 	if (reason == SKB_CONSUMED)
- 		trace_consume_skb(skb, __builtin_return_address(0));
++static const char * const drop_reasons_monitor[] = {
++#define V(x)	#x,
++	[0] = "RX_DROP_MONITOR",
++	MAC80211_DROP_REASONS_MONITOR(V)
++};
++
++static struct drop_reason_list drop_reason_list_monitor = {
++	.reasons = drop_reasons_monitor,
++	.n_reasons = ARRAY_SIZE(drop_reasons_monitor),
++};
++
++static const char * const drop_reasons_unusable[] = {
++	[0] = "RX_DROP_UNUSABLE",
++	MAC80211_DROP_REASONS_UNUSABLE(V)
++#undef V
++};
++
++static struct drop_reason_list drop_reason_list_unusable = {
++	.reasons = drop_reasons_unusable,
++	.n_reasons = ARRAY_SIZE(drop_reasons_unusable),
++};
++
+ static int __init ieee80211_init(void)
+ {
+ 	struct sk_buff *skb;
+@@ -1559,6 +1582,11 @@ static int __init ieee80211_init(void)
+ 	if (ret)
+ 		goto err_netdev;
+ 
++	drop_reasons_register_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR,
++				     &drop_reason_list_monitor);
++	drop_reasons_register_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE,
++				     &drop_reason_list_unusable);
++
+ 	return 0;
+  err_netdev:
+ 	rc80211_minstrel_exit();
+@@ -1574,6 +1602,9 @@ static void __exit ieee80211_exit(void)
+ 
+ 	ieee80211_iface_exit();
+ 
++	drop_reasons_unregister_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR);
++	drop_reasons_unregister_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE);
++
+ 	rcu_barrier();
+ }
+ 
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index db3451f5f2fb..58222c077898 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -1826,7 +1826,7 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
+ 				cfg80211_rx_unexpected_4addr_frame(
+ 					rx->sdata->dev, sta->sta.addr,
+ 					GFP_ATOMIC);
+-			return RX_DROP_MONITOR;
++			return RX_DROP_M_UNEXPECTED_4ADDR_FRAME;
+ 		}
+ 		/*
+ 		 * Update counter and free packet here to avoid
+@@ -1961,7 +1961,7 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
+ 				cfg80211_rx_unprot_mlme_mgmt(rx->sdata->dev,
+ 							     skb->data,
+ 							     skb->len);
+-			return RX_DROP_MONITOR; /* unexpected BIP keyidx */
++			return RX_DROP_M_BAD_BCN_KEYIDX;
+ 		}
+ 
+ 		rx->key = ieee80211_rx_get_bigtk(rx, mmie_keyidx);
+@@ -1975,7 +1975,7 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
+ 
+ 		if (mmie_keyidx < NUM_DEFAULT_KEYS ||
+ 		    mmie_keyidx >= NUM_DEFAULT_KEYS + NUM_DEFAULT_MGMT_KEYS)
+-			return RX_DROP_MONITOR; /* unexpected BIP keyidx */
++			return RX_DROP_M_BAD_MGMT_KEYIDX; /* unexpected BIP keyidx */
+ 		if (rx->link_sta) {
+ 			if (ieee80211_is_group_privacy_action(skb) &&
+ 			    test_sta_flag(rx->sta, WLAN_STA_MFP))
+@@ -3960,7 +3960,8 @@ ieee80211_rx_h_mgmt(struct ieee80211_rx_data *rx)
+ }
+ 
+ static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
+-					struct ieee80211_rate *rate)
++					struct ieee80211_rate *rate,
++					ieee80211_rx_result reason)
+ {
+ 	struct ieee80211_sub_if_data *sdata;
+ 	struct ieee80211_local *local = rx->local;
+@@ -4024,42 +4025,38 @@ static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
+ 	}
+ 
+  out_free_skb:
+-	dev_kfree_skb(skb);
++	kfree_skb_reason(skb, (__force u32)reason);
+ }
+ 
+ static void ieee80211_rx_handlers_result(struct ieee80211_rx_data *rx,
+ 					 ieee80211_rx_result res)
+ {
+-	switch (res) {
+-	case RX_DROP_MONITOR:
+-		I802_DEBUG_INC(rx->sdata->local->rx_handlers_drop);
+-		if (rx->sta)
+-			rx->link_sta->rx_stats.dropped++;
+-		fallthrough;
+-	case RX_CONTINUE: {
+-		struct ieee80211_rate *rate = NULL;
+-		struct ieee80211_supported_band *sband;
+-		struct ieee80211_rx_status *status;
++	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(rx->skb);
++	struct ieee80211_supported_band *sband;
++	struct ieee80211_rate *rate = NULL;
+ 
+-		status = IEEE80211_SKB_RXCB((rx->skb));
+-
+-		sband = rx->local->hw.wiphy->bands[status->band];
+-		if (status->encoding == RX_ENC_LEGACY)
+-			rate = &sband->bitrates[status->rate_idx];
+-
+-		ieee80211_rx_cooked_monitor(rx, rate);
+-		break;
+-		}
+-	case RX_DROP_UNUSABLE:
+-		I802_DEBUG_INC(rx->sdata->local->rx_handlers_drop);
+-		if (rx->sta)
+-			rx->link_sta->rx_stats.dropped++;
+-		dev_kfree_skb(rx->skb);
+-		break;
+-	case RX_QUEUED:
++	if (res == RX_QUEUED) {
+ 		I802_DEBUG_INC(rx->sdata->local->rx_handlers_queued);
+-		break;
++		return;
+ 	}
++
++	if (res != RX_CONTINUE) {
++		I802_DEBUG_INC(rx->sdata->local->rx_handlers_drop);
++		if (rx->sta)
++			rx->link_sta->rx_stats.dropped++;
++	}
++
++	if (u32_get_bits((__force u32)res, SKB_DROP_REASON_SUBSYS_MASK) ==
++			SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE) {
++		kfree_skb_reason(rx->skb, (__force u32)res);
++		return;
++	}
++
++	sband = rx->local->hw.wiphy->bands[status->band];
++	if (status->encoding == RX_ENC_LEGACY)
++		rate = &sband->bitrates[status->rate_idx];
++
++	ieee80211_rx_cooked_monitor(rx, rate, res);
+ }
+ 
+ static void ieee80211_rx_handlers(struct ieee80211_rx_data *rx,
+diff --git a/net/mac80211/wpa.c b/net/mac80211/wpa.c
+index 20f742b5503b..4133496da378 100644
+--- a/net/mac80211/wpa.c
++++ b/net/mac80211/wpa.c
+@@ -550,7 +550,7 @@ ieee80211_crypto_ccmp_decrypt(struct ieee80211_rx_data *rx,
+ 		if (res < 0 ||
+ 		    (!res && !(status->flag & RX_FLAG_ALLOW_SAME_PN))) {
+ 			key->u.ccmp.replays++;
+-			return RX_DROP_UNUSABLE;
++			return RX_DROP_U_REPLAY;
+ 		}
+ 
+ 		if (!(status->flag & RX_FLAG_DECRYPTED)) {
+@@ -564,7 +564,7 @@ ieee80211_crypto_ccmp_decrypt(struct ieee80211_rx_data *rx,
+ 				    skb->data + hdrlen + IEEE80211_CCMP_HDR_LEN,
+ 				    data_len,
+ 				    skb->data + skb->len - mic_len))
+-				return RX_DROP_UNUSABLE;
++				return RX_DROP_U_MIC_FAIL;
+ 		}
+ 
+ 		memcpy(key->u.ccmp.rx_pn[queue], pn, IEEE80211_CCMP_PN_LEN);
+@@ -746,7 +746,7 @@ ieee80211_crypto_gcmp_decrypt(struct ieee80211_rx_data *rx)
+ 		if (res < 0 ||
+ 		    (!res && !(status->flag & RX_FLAG_ALLOW_SAME_PN))) {
+ 			key->u.gcmp.replays++;
+-			return RX_DROP_UNUSABLE;
++			return RX_DROP_U_REPLAY;
+ 		}
+ 
+ 		if (!(status->flag & RX_FLAG_DECRYPTED)) {
+@@ -761,7 +761,7 @@ ieee80211_crypto_gcmp_decrypt(struct ieee80211_rx_data *rx)
+ 				    data_len,
+ 				    skb->data + skb->len -
+ 				    IEEE80211_GCMP_MIC_LEN))
+-				return RX_DROP_UNUSABLE;
++				return RX_DROP_U_MIC_FAIL;
+ 		}
+ 
+ 		memcpy(key->u.gcmp.rx_pn[queue], pn, IEEE80211_GCMP_PN_LEN);
+@@ -930,13 +930,13 @@ ieee80211_crypto_aes_cmac_decrypt(struct ieee80211_rx_data *rx)
+ 		(skb->data + skb->len - sizeof(*mmie));
+ 	if (mmie->element_id != WLAN_EID_MMIE ||
+ 	    mmie->length != sizeof(*mmie) - 2)
+-		return RX_DROP_UNUSABLE; /* Invalid MMIE */
++		return RX_DROP_U_BAD_MMIE; /* Invalid MMIE */
+ 
+ 	bip_ipn_swap(ipn, mmie->sequence_number);
+ 
+ 	if (memcmp(ipn, key->u.aes_cmac.rx_pn, 6) <= 0) {
+ 		key->u.aes_cmac.replays++;
+-		return RX_DROP_UNUSABLE;
++		return RX_DROP_U_REPLAY;
+ 	}
+ 
+ 	if (!(status->flag & RX_FLAG_DECRYPTED)) {
+@@ -946,7 +946,7 @@ ieee80211_crypto_aes_cmac_decrypt(struct ieee80211_rx_data *rx)
+ 				   skb->data + 24, skb->len - 24, mic);
+ 		if (crypto_memneq(mic, mmie->mic, sizeof(mmie->mic))) {
+ 			key->u.aes_cmac.icverrors++;
+-			return RX_DROP_UNUSABLE;
++			return RX_DROP_U_MIC_FAIL;
+ 		}
+ 	}
+ 
+@@ -986,7 +986,7 @@ ieee80211_crypto_aes_cmac_256_decrypt(struct ieee80211_rx_data *rx)
+ 
+ 	if (memcmp(ipn, key->u.aes_cmac.rx_pn, 6) <= 0) {
+ 		key->u.aes_cmac.replays++;
+-		return RX_DROP_UNUSABLE;
++		return RX_DROP_U_REPLAY;
+ 	}
+ 
+ 	if (!(status->flag & RX_FLAG_DECRYPTED)) {
+@@ -996,7 +996,7 @@ ieee80211_crypto_aes_cmac_256_decrypt(struct ieee80211_rx_data *rx)
+ 				       skb->data + 24, skb->len - 24, mic);
+ 		if (crypto_memneq(mic, mmie->mic, sizeof(mmie->mic))) {
+ 			key->u.aes_cmac.icverrors++;
+-			return RX_DROP_UNUSABLE;
++			return RX_DROP_U_MIC_FAIL;
+ 		}
+ 	}
+ 
+@@ -1079,13 +1079,13 @@ ieee80211_crypto_aes_gmac_decrypt(struct ieee80211_rx_data *rx)
+ 		(skb->data + skb->len - sizeof(*mmie));
+ 	if (mmie->element_id != WLAN_EID_MMIE ||
+ 	    mmie->length != sizeof(*mmie) - 2)
+-		return RX_DROP_UNUSABLE; /* Invalid MMIE */
++		return RX_DROP_U_BAD_MMIE; /* Invalid MMIE */
+ 
+ 	bip_ipn_swap(ipn, mmie->sequence_number);
+ 
+ 	if (memcmp(ipn, key->u.aes_gmac.rx_pn, 6) <= 0) {
+ 		key->u.aes_gmac.replays++;
+-		return RX_DROP_UNUSABLE;
++		return RX_DROP_U_REPLAY;
+ 	}
+ 
+ 	if (!(status->flag & RX_FLAG_DECRYPTED)) {
+@@ -1104,7 +1104,7 @@ ieee80211_crypto_aes_gmac_decrypt(struct ieee80211_rx_data *rx)
+ 		    crypto_memneq(mic, mmie->mic, sizeof(mmie->mic))) {
+ 			key->u.aes_gmac.icverrors++;
+ 			kfree(mic);
+-			return RX_DROP_UNUSABLE;
++			return RX_DROP_U_MIC_FAIL;
+ 		}
+ 		kfree(mic);
+ 	}
 -- 
 2.39.2
 
