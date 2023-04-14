@@ -2,51 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99A426E2AF0
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 22:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C2B46E2AF4
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 22:10:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbjDNUKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 16:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
+        id S229996AbjDNUKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 16:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjDNUKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 16:10:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BF919AA
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 13:10:19 -0700 (PDT)
+        with ESMTP id S229964AbjDNUKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 16:10:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6283265BC;
+        Fri, 14 Apr 2023 13:10:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 843F564A1C
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 20:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DD892C433D2;
-        Fri, 14 Apr 2023 20:10:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E71AC64A27;
+        Fri, 14 Apr 2023 20:10:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 469E3C4339C;
+        Fri, 14 Apr 2023 20:10:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681503018;
-        bh=xmUu2JqZMFOlLcPA/JQMjykepcPG7LP85FIyve52L64=;
+        s=k20201202; t=1681503020;
+        bh=hQdeyryshxMX3gP79v9URObTlnSUTWPJeXG4jKAbYqE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EeA4FQkEfWfq/MprYVnlNc+hmoRBpifqVVUpOKOhsZZQLQxglnkkr4Fkh/tvHEpza
-         vlMBRMvJF03j163/mJ2OqqLZqZF03zqb3YpHC2IjLj835paNC5T97L0p+ttn9l4wAh
-         Cct8H1kYf1GzgjiUjrOD6+ck+LKOvBT9roOZ12tA2O1p1AX1VO0nmhq0mZBJRYfmIo
-         Q0MbBcYKCp4o+oj2kjnQ1DFIeMAm54tYf9lDr3OAfUcrdBArXLu00EcdU9drUlO/u9
-         j3YC+Ls7gFPD6MzvUw6SiA6H81wKXfVOBWLqIu6qGTGEwVjYrWE+AeNcPDYGVEDwjH
-         5E1RNNh2iRuIQ==
+        b=Z6fH6CjrD61alup84nqkH5aYjDwi3VMTJd6ouBb2yTgVJJVe+k9l5bG72kYrXYYMt
+         8k6WI/KI2o31vJYydp9DXrLAGdVFv0s0ms8kf+LeJ40wBWudrOXfzXjIBeelsI1dSC
+         73umoMTIh85o2ZsVlBLE7jtLUqmBN5sXeUC9/oyWgqivDEYBUQXo5ghReRBGXtp/AY
+         JZUOVbMXP1DBNLjP3iM8PTDMhlFHSW0hSaJBkebYewxIemC+xjAKFjA16/hIjoS5oN
+         nZq52oVFqSm2nczRtg1LLauYXWLC3GNZGqyzjrISOe+O+pyrTnN8jQ6UV2rqSou6o3
+         BykntO7df/+cA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C1B03E52446;
-        Fri, 14 Apr 2023 20:10:18 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 32B68E52441;
+        Fri, 14 Apr 2023 20:10:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] iproute_lwtunnel: fix JSON output
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168150301879.15322.7106905942925387097.git-patchwork-notify@kernel.org>
-Date:   Fri, 14 Apr 2023 20:10:18 +0000
-References: <20230414194841.31030-1-stephen@networkplumber.org>
-In-Reply-To: <20230414194841.31030-1-stephen@networkplumber.org>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, uablrek@gmail.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Subject: Re: [PATCH] Bluetooth: fix inconsistent indenting
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <168150302020.15322.4989643441506620146.git-patchwork-notify@kernel.org>
+Date:   Fri, 14 Apr 2023 20:10:20 +0000
+References: <20230409130229.2670-1-u202212060@hust.edu.cn>
+In-Reply-To: <20230409130229.2670-1-u202212060@hust.edu.cn>
+To:     Lanzhe Li <u202212060@hust.edu.cn>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -57,34 +60,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to iproute2/iproute2.git (main)
-by Stephen Hemminger <stephen@networkplumber.org>:
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
 
-On Fri, 14 Apr 2023 12:48:41 -0700 you wrote:
-> The same tag "dst" was being used for both the route destination
-> and the encap destination. This made it hard for JSON parsers.
-> Change to put the per-encap information under a nested JSON
-> object (similar to ip link type info).
+On Sun,  9 Apr 2023 21:02:29 +0800 you wrote:
+> Fixed a wrong indentation before "return".This line uses a 7 space
+> indent instead of a tab.
 > 
-> Original output
-> [ {
->         "dst": "192.168.11.0/24",
->         "encap": "ip6",
->         "id": 0,
->         "src": "::",
->         "dst": "fd00::c0a8:2dd",
->         "hoplimit": 0,
->         "tc": 0,
->         "protocol": "5",
->         "scope": "link",
->         "flags": [ ]
->     } ]
-> 
-> [...]
+> Signed-off-by: Lanzhe Li <u202212060@hust.edu.cn>
+> ---
+>  net/bluetooth/hci_debugfs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Here is the summary with links:
-  - iproute_lwtunnel: fix JSON output
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=0f32ef97babc
+  - Bluetooth: fix inconsistent indenting
+    https://git.kernel.org/bluetooth/bluetooth-next/c/2df7d630ef53
 
 You are awesome, thank you!
 -- 
