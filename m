@@ -2,77 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 232886E1B6C
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 07:05:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7341F6E1B7E
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 07:11:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbjDNFFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 01:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40458 "EHLO
+        id S229636AbjDNFLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 01:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjDNFFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 01:05:18 -0400
+        with ESMTP id S229765AbjDNFL0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 01:11:26 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F76A468D
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 22:04:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D604A49C7
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 22:10:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681448670;
+        s=mimecast20190719; t=1681449013;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uHWPakCwtQbCSxN4Uhgdu7WtDkUbvFkqv6/4+sfNM+E=;
-        b=V/LIxw7a/UQkxig3cToiPTXa9REItfu4pJ9+/ba7gFpqAUJoLPNhmzXPkF/gE5qW5LYefr
-        tY7PF2G3zLSFeA/QewSHEsBtfuFi8fgiANtNFR/VAG1FBrFW/gTDhAWTfUUWSnX+5oJdJi
-        dz8KetMA+i+IP7cDyGAFdTipyJ8JM8Y=
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
- [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=MnDvwf1R/OovgMAVg9WiYCMbtU1kpmzHDOYZjnYe0Qg=;
+        b=Z9KeZOQJ4lkXYIrgGJVrUbWvTDyB10zMJoJkhQdOqdkf4tlQms74skaLPjUefAdc8wiiPa
+        KdclIOIMWTGtu/4x8YnAAESS2525WEUxkqTt7nks0RSiWSjsDQjHYImp3Rs7nMQT/CVcHh
+        kXxUk3+4ru5xSho74AVaE8+m0RDCuug=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-90-pFk3qaHlPdGo05Wb5Xl9Qg-1; Fri, 14 Apr 2023 01:04:28 -0400
-X-MC-Unique: pFk3qaHlPdGo05Wb5Xl9Qg-1
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-185df6e76cbso3903460fac.2
-        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 22:04:27 -0700 (PDT)
+ us-mta-634-q9Y-yl8lNpmS1TmLwfpmNA-1; Fri, 14 Apr 2023 01:10:11 -0400
+X-MC-Unique: q9Y-yl8lNpmS1TmLwfpmNA-1
+Received: by mail-oo1-f71.google.com with SMTP id q186-20020a4a33c3000000b0053b61757527so5382230ooq.9
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 22:10:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681448667; x=1684040667;
+        d=1e100.net; s=20221208; t=1681449011; x=1684041011;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=uHWPakCwtQbCSxN4Uhgdu7WtDkUbvFkqv6/4+sfNM+E=;
-        b=axyS+lWm054UXjVpMQAByW6ebjpzy8BbGBBVGKaqvTIGvz9E2hP3mdRFva50fI6u1I
-         eo3TffhrnkA+vwFR/YH5581EWEVnu7Bw7CM0Wpan4HH18Uam0WHafspHJQ3zLDyxBtlx
-         qxeG/U+qtHAuELJIqjEOUno1BpudQep7Hz+PuPTinaNepG8W0azjOTq/CXZZ8v+VcgXP
-         6uGDlAID3HHLUaNsm9DqKe8Tntuteq8UKCs3T/tfz+IwEUa/g95620evORd3MTMXjLXs
-         pRED+W5x9yVRH0QjyHwjbh8Mc39VzdgeFv9H8VKw96foe+Uw+ScqNSF4jQhsd7djM53r
-         3nRQ==
-X-Gm-Message-State: AAQBX9ehKx6uc2JSZ9sw3vY9RMc5/6HFMwFiCg53lxuzDEnrJTK8Cm7Z
-        KokOGX81RO+8jl10zitYLdBh5qjiiXYwtqAntfV4t29SM0iz69klrdI6wjPPosSiCcRsUHVml+s
-        iPKIOCSxEDbCjXAn1u/XPo6PSemrosGIya1b7ed21hnwcVg==
-X-Received: by 2002:a05:6820:553:b0:542:4b21:c4c4 with SMTP id n19-20020a056820055300b005424b21c4c4mr226283ooj.0.1681448667162;
-        Thu, 13 Apr 2023 22:04:27 -0700 (PDT)
-X-Google-Smtp-Source: AKy350b90rhPrgS3V4nSNw84IR2oNDusEQYO62xcFQrxm0BTmvVJUupkO3iHFt/2ZB+8v8wsr1RsafeYkA3acgG7LUs=
-X-Received: by 2002:a05:6820:553:b0:542:4b21:c4c4 with SMTP id
- n19-20020a056820055300b005424b21c4c4mr226278ooj.0.1681448666861; Thu, 13 Apr
- 2023 22:04:26 -0700 (PDT)
+        bh=MnDvwf1R/OovgMAVg9WiYCMbtU1kpmzHDOYZjnYe0Qg=;
+        b=Du2d58ualJjqWvgWPZUTTz1fJcMPL3zkFTmO7ZJmQq9y4R0l2SMtLGPe2Ah7v7I6Oj
+         9vnjJUIdNcSt3E4aPf32awa0+kFd3cJyX8A5ExeBObP3zEiAGvEyN9ETDnKAecY1Doi9
+         Bwz6ro3ZLaYNFSf2GU0UCYGpJ7IEbHUVj3rRuskfYNmjALtN6Ng6Q4545/X+gudLdhJL
+         TCyAaKn23iWI+AdEYRCRT3hFdwsa2Sv2dlgeY7YSZjjHZlqEAIKupLzvWdVp8FpGOxQ5
+         5nJNWlMcb4Tqnv7wsGvCelx7cVYnw7Wp9m1wHx0bhq9s4CyIR9rGqR60Dor17ATL8DCn
+         tHOg==
+X-Gm-Message-State: AAQBX9faHgs75fprFdg07bioBbNWULUIg/+2Fs7Dk/kfaIl5/p/wxN6g
+        00AAV81VhlbuQH/YbhchT4J/rxYD+EWhCCAW9NPe/+D05hvLulCR69ratoE3qLUU79LTMM3Bl7y
+        lL67inTt+5w6Ux1KbhCGDGf4FkRlGdgNW
+X-Received: by 2002:a05:6870:2495:b0:177:b9c0:bcba with SMTP id s21-20020a056870249500b00177b9c0bcbamr3833506oaq.3.1681449011197;
+        Thu, 13 Apr 2023 22:10:11 -0700 (PDT)
+X-Google-Smtp-Source: AKy350aAWQ/zE3JzE+BJztmF9q8RTKt9Is6pPgO3saF+6nNCza+95hIGVBIaLglcjHvYzkHy1o1BpD43DUoFBOps7+M=
+X-Received: by 2002:a05:6870:2495:b0:177:b9c0:bcba with SMTP id
+ s21-20020a056870249500b00177b9c0bcbamr3833491oaq.3.1681449010955; Thu, 13 Apr
+ 2023 22:10:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230413064027.13267-1-jasowang@redhat.com> <20230413064027.13267-2-jasowang@redhat.com>
- <20230413121525-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230413121525-mutt-send-email-mst@kernel.org>
+References: <20230413064027.13267-1-jasowang@redhat.com> <20230413064027.13267-3-jasowang@redhat.com>
+ <1681370820.0675354-2-xuanzhuo@linux.alibaba.com> <CACGkMEuJuZKGMhVwFmD0ZMa7V7TdGu6qaXF24Gg67TzMbs8ANA@mail.gmail.com>
+In-Reply-To: <CACGkMEuJuZKGMhVwFmD0ZMa7V7TdGu6qaXF24Gg67TzMbs8ANA@mail.gmail.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 14 Apr 2023 13:04:15 +0800
-Message-ID: <CACGkMEunn1Z3n8yjVaWLqdV502yjaCBSAb_LO4KsB0nuxXmV8A@mail.gmail.com>
-Subject: Re: [PATCH net-next V2 1/2] virtio-net: convert rx mode setting to
- use workqueue
-To:     "Michael S. Tsirkin" <mst@redhat.com>
+Date:   Fri, 14 Apr 2023 13:10:00 +0800
+Message-ID: <CACGkMEvuFoc=8S666npEnTXuZZLMJVA8tzNAspfrTzR4L7NdgQ@mail.gmail.com>
+Subject: Re: [PATCH net-next V2 2/2] virtio-net: sleep instead of busy waiting
+ for cvq command
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, virtualization@lists.linux-foundation.org,
         linux-kernel@vger.kernel.org, maxime.coquelin@redhat.com,
         alvaro.karsz@solid-run.com, eperezma@redhat.com,
-        xuanzhuo@linux.alibaba.com, david.marchand@redhat.com,
+        david.marchand@redhat.com, mst@redhat.com,
         netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,229 +80,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Forget to cc netdev, adding.
+Adding netdev.
 
-On Fri, Apr 14, 2023 at 12:25=E2=80=AFAM Michael S. Tsirkin <mst@redhat.com=
-> wrote:
+On Fri, Apr 14, 2023 at 1:09=E2=80=AFPM Jason Wang <jasowang@redhat.com> wr=
+ote:
 >
-> On Thu, Apr 13, 2023 at 02:40:26PM +0800, Jason Wang wrote:
-> > This patch convert rx mode setting to be done in a workqueue, this is
-> > a must for allow to sleep when waiting for the cvq command to
-> > response since current code is executed under addr spin lock.
+> On Thu, Apr 13, 2023 at 3:31=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.alibaba=
+.com> wrote:
 > >
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > On Thu, 13 Apr 2023 14:40:27 +0800, Jason Wang <jasowang@redhat.com> wr=
+ote:
+> > > We used to busy waiting on the cvq command this tends to be
+> > > problematic since there no way for to schedule another process which
+> > > may serve for the control virtqueue. This might be the case when the
+> > > control virtqueue is emulated by software. This patch switches to use
+> > > completion to allow the CPU to sleep instead of busy waiting for the
+> > > cvq command.
+> > >
+> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > ---
+> > > Changes since V1:
+> > > - use completion for simplicity
+> > > - don't try to harden the CVQ command which requires more thought
+> > > Changes since RFC:
+> > > - break the device when timeout
+> > > - get buffer manually since the virtio core check more_used() instead
+> > > ---
+> > >  drivers/net/virtio_net.c | 21 ++++++++++++++-------
+> > >  1 file changed, 14 insertions(+), 7 deletions(-)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index 2e56bbf86894..d3eb8fd6c9dc 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -19,6 +19,7 @@
+> > >  #include <linux/average.h>
+> > >  #include <linux/filter.h>
+> > >  #include <linux/kernel.h>
+> > > +#include <linux/completion.h>
+> > >  #include <net/route.h>
+> > >  #include <net/xdp.h>
+> > >  #include <net/net_failover.h>
+> > > @@ -295,6 +296,8 @@ struct virtnet_info {
+> > >
+> > >       /* failover when STANDBY feature enabled */
+> > >       struct failover *failover;
+> > > +
+> > > +     struct completion completion;
+> > >  };
+> > >
+> > >  struct padded_vnet_hdr {
+> > > @@ -1709,6 +1712,13 @@ static bool try_fill_recv(struct virtnet_info =
+*vi, struct receive_queue *rq,
+> > >       return !oom;
+> > >  }
+> > >
+> > > +static void virtnet_cvq_done(struct virtqueue *cvq)
+> > > +{
+> > > +     struct virtnet_info *vi =3D cvq->vdev->priv;
+> > > +
+> > > +     complete(&vi->completion);
+> > > +}
+> > > +
+> > >  static void skb_recv_done(struct virtqueue *rvq)
+> > >  {
+> > >       struct virtnet_info *vi =3D rvq->vdev->priv;
+> > > @@ -2169,12 +2179,8 @@ static bool virtnet_send_command(struct virtne=
+t_info *vi, u8 class, u8 cmd,
+> > >       if (unlikely(!virtqueue_kick(vi->cvq)))
+> > >               return vi->ctrl->status =3D=3D VIRTIO_NET_OK;
+> > >
+> > > -     /* Spin for a response, the kick causes an ioport write, trappi=
+ng
+> > > -      * into the hypervisor, so the request should be handled immedi=
+ately.
+> > > -      */
+> > > -     while (!virtqueue_get_buf(vi->cvq, &tmp) &&
+> > > -            !virtqueue_is_broken(vi->cvq))
+> > > -             cpu_relax();
+> > > +     wait_for_completion(&vi->completion);
+> > > +     virtqueue_get_buf(vi->cvq, &tmp);
+> > >
+> > >       return vi->ctrl->status =3D=3D VIRTIO_NET_OK;
+> > >  }
+> > > @@ -3672,7 +3678,7 @@ static int virtnet_find_vqs(struct virtnet_info=
+ *vi)
+> > >
+> > >       /* Parameters for control virtqueue, if any */
+> > >       if (vi->has_cvq) {
+> > > -             callbacks[total_vqs - 1] =3D NULL;
+> > > +             callbacks[total_vqs - 1] =3D virtnet_cvq_done;
+> >
+> > This depends the interrupt, right?
 >
-> I don't like this frankly. This means that setting RX mode which would
-> previously be reliable, now becomes unreliable.
-
-It is "unreliable" by design:
-
-      void                    (*ndo_set_rx_mode)(struct net_device *dev);
-
-> - first of all configuration is no longer immediate
-
-Is immediate a hard requirement? I can see a workqueue is used at least:
-
-mlx5e, ipoib, efx, ...
-
->   and there is no way for driver to find out when
->   it actually took effect
-
-But we know rx mode is best effort e.g it doesn't support vhost and we
-survive from this for years.
-
-> - second, if device fails command, this is also not
->   propagated to driver, again no way for driver to find out
+> Not necessarily, we have ISR for at last PCI:
 >
-> VDUSE needs to be fixed to do tricks to fix this
-> without breaking normal drivers.
-
-It's not specific to VDUSE. For example, when using virtio-net in the
-UP environment with any software cvq (like mlx5 via vDPA or cma
-transport).
-
-Thanks
-
+> static irqreturn_t vp_interrupt(int irq, void *opaque)
+> {
+>         struct virtio_pci_device *vp_dev =3D opaque;
+>         u8 isr;
 >
+>         /* reading the ISR has the effect of also clearing it so it's ver=
+y
+>          * important to save off the value. */
+>         isr =3D ioread8(vp_dev->isr);
+> ...
+> }
 >
-> > ---
-> > Changes since V1:
-> > - use RTNL to synchronize rx mode worker
-> > ---
-> >  drivers/net/virtio_net.c | 55 +++++++++++++++++++++++++++++++++++++---
-> >  1 file changed, 52 insertions(+), 3 deletions(-)
 > >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index e2560b6f7980..2e56bbf86894 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -265,6 +265,12 @@ struct virtnet_info {
-> >       /* Work struct for config space updates */
-> >       struct work_struct config_work;
-> >
-> > +     /* Work struct for config rx mode */
-> > +     struct work_struct rx_mode_work;
-> > +
-> > +     /* Is rx mode work enabled? */
-> > +     bool rx_mode_work_enabled;
-> > +
-> >       /* Does the affinity hint is set for virtqueues? */
-> >       bool affinity_hint_set;
-> >
-> > @@ -388,6 +394,20 @@ static void disable_delayed_refill(struct virtnet_=
-info *vi)
-> >       spin_unlock_bh(&vi->refill_lock);
-> >  }
-> >
-> > +static void enable_rx_mode_work(struct virtnet_info *vi)
-> > +{
-> > +     rtnl_lock();
-> > +     vi->rx_mode_work_enabled =3D true;
-> > +     rtnl_unlock();
-> > +}
-> > +
-> > +static void disable_rx_mode_work(struct virtnet_info *vi)
-> > +{
-> > +     rtnl_lock();
-> > +     vi->rx_mode_work_enabled =3D false;
-> > +     rtnl_unlock();
-> > +}
-> > +
-> >  static void virtqueue_napi_schedule(struct napi_struct *napi,
-> >                                   struct virtqueue *vq)
-> >  {
-> > @@ -2310,9 +2330,11 @@ static int virtnet_close(struct net_device *dev)
-> >       return 0;
-> >  }
-> >
-> > -static void virtnet_set_rx_mode(struct net_device *dev)
-> > +static void virtnet_rx_mode_work(struct work_struct *work)
-> >  {
-> > -     struct virtnet_info *vi =3D netdev_priv(dev);
-> > +     struct virtnet_info *vi =3D
-> > +             container_of(work, struct virtnet_info, rx_mode_work);
-> > +     struct net_device *dev =3D vi->dev;
-> >       struct scatterlist sg[2];
-> >       struct virtio_net_ctrl_mac *mac_data;
-> >       struct netdev_hw_addr *ha;
-> > @@ -2325,6 +2347,8 @@ static void virtnet_set_rx_mode(struct net_device=
- *dev)
-> >       if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_RX))
-> >               return;
-> >
-> > +     rtnl_lock();
-> > +
-> >       vi->ctrl->promisc =3D ((dev->flags & IFF_PROMISC) !=3D 0);
-> >       vi->ctrl->allmulti =3D ((dev->flags & IFF_ALLMULTI) !=3D 0);
-> >
-> > @@ -2342,14 +2366,19 @@ static void virtnet_set_rx_mode(struct net_devi=
-ce *dev)
-> >               dev_warn(&dev->dev, "Failed to %sable allmulti mode.\n",
-> >                        vi->ctrl->allmulti ? "en" : "dis");
-> >
-> > +     netif_addr_lock_bh(dev);
-> > +
-> >       uc_count =3D netdev_uc_count(dev);
-> >       mc_count =3D netdev_mc_count(dev);
-> >       /* MAC filter - use one buffer for both lists */
-> >       buf =3D kzalloc(((uc_count + mc_count) * ETH_ALEN) +
-> >                     (2 * sizeof(mac_data->entries)), GFP_ATOMIC);
-> >       mac_data =3D buf;
-> > -     if (!buf)
-> > +     if (!buf) {
-> > +             netif_addr_unlock_bh(dev);
-> > +             rtnl_unlock();
-> >               return;
-> > +     }
-> >
-> >       sg_init_table(sg, 2);
-> >
-> > @@ -2370,6 +2399,8 @@ static void virtnet_set_rx_mode(struct net_device=
- *dev)
-> >       netdev_for_each_mc_addr(ha, dev)
-> >               memcpy(&mac_data->macs[i++][0], ha->addr, ETH_ALEN);
-> >
-> > +     netif_addr_unlock_bh(dev);
-> > +
-> >       sg_set_buf(&sg[1], mac_data,
-> >                  sizeof(mac_data->entries) + (mc_count * ETH_ALEN));
-> >
-> > @@ -2377,9 +2408,19 @@ static void virtnet_set_rx_mode(struct net_devic=
-e *dev)
-> >                                 VIRTIO_NET_CTRL_MAC_TABLE_SET, sg))
-> >               dev_warn(&dev->dev, "Failed to set MAC filter table.\n");
-> >
-> > +     rtnl_unlock();
-> > +
-> >       kfree(buf);
-> >  }
-> >
-> > +static void virtnet_set_rx_mode(struct net_device *dev)
-> > +{
-> > +     struct virtnet_info *vi =3D netdev_priv(dev);
-> > +
-> > +     if (vi->rx_mode_work_enabled)
-> > +             schedule_work(&vi->rx_mode_work);
-> > +}
-> > +
-> >  static int virtnet_vlan_rx_add_vid(struct net_device *dev,
-> >                                  __be16 proto, u16 vid)
-> >  {
-> > @@ -3150,6 +3191,8 @@ static void virtnet_freeze_down(struct virtio_dev=
-ice *vdev)
-> >
-> >       /* Make sure no work handler is accessing the device */
-> >       flush_work(&vi->config_work);
-> > +     disable_rx_mode_work(vi);
-> > +     flush_work(&vi->rx_mode_work);
-> >
-> >       netif_tx_lock_bh(vi->dev);
-> >       netif_device_detach(vi->dev);
+> > I worry that there may be some devices that may not support interruptio=
+n on cvq.
 >
-> So now configuration is not propagated to device.
-> Won't device later wake up in wrong state?
+> Is the device using INTX or MSI-X?
 >
+> > Although this may not be in line with SPEC, it may cause problem on the=
+ devices
+> > that can work normally at present.
 >
-> > @@ -3172,6 +3215,7 @@ static int virtnet_restore_up(struct virtio_devic=
-e *vdev)
-> >       virtio_device_ready(vdev);
+> Then the implementation is buggy, it might not work for drivers other
+> than Linux. Working around such buggy implementation is suboptimal.
+>
+> Thanks
+>
 > >
-> >       enable_delayed_refill(vi);
-> > +     enable_rx_mode_work(vi);
+> > Thanks.
 > >
-> >       if (netif_running(vi->dev)) {
-> >               err =3D virtnet_open(vi->dev);
-> > @@ -3969,6 +4013,7 @@ static int virtnet_probe(struct virtio_device *vd=
-ev)
-> >       vdev->priv =3D vi;
 > >
-> >       INIT_WORK(&vi->config_work, virtnet_config_changed_work);
-> > +     INIT_WORK(&vi->rx_mode_work, virtnet_rx_mode_work);
-> >       spin_lock_init(&vi->refill_lock);
-> >
-> >       if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF)) {
-> > @@ -4077,6 +4122,8 @@ static int virtnet_probe(struct virtio_device *vd=
-ev)
-> >       if (vi->has_rss || vi->has_rss_hash_report)
-> >               virtnet_init_default_rss(vi);
-> >
-> > +     enable_rx_mode_work(vi);
-> > +
-> >       /* serialize netdev register + virtio_device_ready() with ndo_ope=
-n() */
-> >       rtnl_lock();
-> >
-> > @@ -4174,6 +4221,8 @@ static void virtnet_remove(struct virtio_device *=
+> > >               names[total_vqs - 1] =3D "control";
+> > >       }
+> > >
+> > > @@ -4122,6 +4128,7 @@ static int virtnet_probe(struct virtio_device *=
 vdev)
+> > >       if (vi->has_rss || vi->has_rss_hash_report)
+> > >               virtnet_init_default_rss(vi);
+> > >
+> > > +     init_completion(&vi->completion);
+> > >       enable_rx_mode_work(vi);
+> > >
+> > >       /* serialize netdev register + virtio_device_ready() with ndo_o=
+pen() */
+> > > --
+> > > 2.25.1
+> > >
 > >
-> >       /* Make sure no work handler is accessing the device. */
-> >       flush_work(&vi->config_work);
-> > +     disable_rx_mode_work(vi);
-> > +     flush_work(&vi->rx_mode_work);
-> >
-> >       unregister_netdev(vi->dev);
-> >
-> > --
-> > 2.25.1
->
 
