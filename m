@@ -2,59 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA8BB6E1EC7
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:51:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D4BD6E1ED0
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:54:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbjDNIvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 04:51:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
+        id S230046AbjDNIyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 04:54:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjDNIvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:51:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3E5ED
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:51:30 -0700 (PDT)
+        with ESMTP id S229547AbjDNIyM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:54:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2315B98
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:54:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 754C1615AF
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 08:51:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0B0C433EF;
-        Fri, 14 Apr 2023 08:51:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A358C64579
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 08:54:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EBA9C4339B;
+        Fri, 14 Apr 2023 08:54:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681462289;
-        bh=CUcWreOPpnrS0ErusrVd2gMFL5BYqlnIIkRcXfFDY9A=;
+        s=k20201202; t=1681462449;
+        bh=Tnd57Pz7lgA5d+hcNhuN0ZFtEg3bLfSKhpwO81xJzIY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hUeFACfG1gHrzDF+Om4eQ3a2f8mlq9ghW9yejWf039NQBv1kO5TdpHN+/uT9ntDBj
-         5OQjkvOxVjwU+wgIw+ZaqdAgmxywGk6V3b4WszW1RVHq5WAeT6e/gqNzGZLAlsv4DG
-         8KyYyKcvyCJ6oJ1vr1JkWqYK9g6GRUedOeWcKvrskUuS/R0GUxj20Re8Der8Hflhge
-         QsOcokt/X1InVuc+tIhG2MJKrnKXDhtTwV0eCTEY/4iUMlsiflTGKCQzql/MHtOmhC
-         2CMLEPfgrPiva3D9kX6R4vBLx88Zg2GqidOM9nBl4iFv9bM6Ojoxq01S0rIyGtoGSz
-         eiK9xloXOYOog==
-Date:   Fri, 14 Apr 2023 11:51:25 +0300
+        b=ty0l68kWhm7jwOJA+hmL2p2sgzmj+ZRBVGws0avkT/5YlAtsY4zp2fl8BF4MF3aEi
+         aYEZTzsrnhDv0bmru7yuTd+1YgfBp75Kkb7Bu/leckHT71TYWWKERqefLQCxXw1iIY
+         Aq9EL6LsfUWI89/tzyOla6jTQxdFLSiAR9n2aPNm22pLRZPDUgbshlisaBU9Q0kX1Q
+         wb6sl6LylpXmdSSuMA4MHaeMq5T9EokO+amkozTug5b2IETPuuTO378jTTInL52cTU
+         M2yIFfBEDluspAwwoVeM0YQ4vaQ/DzgOsi5rdDeDoOH4CqCmlridmdLv7dHFkvE2pE
+         Z2UPz75vtz0GA==
+Date:   Fri, 14 Apr 2023 11:54:05 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Shannon Nelson <shannon.nelson@amd.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, brett.creeley@amd.com,
-        davem@davemloft.net, netdev@vger.kernel.org, drivers@pensando.io,
-        jiri@resnulli.us
-Subject: Re: [PATCH v9 net-next 13/14] pds_core: publish events to the clients
-Message-ID: <20230414085125.GY17993@unreal>
-References: <20230406234143.11318-14-shannon.nelson@amd.com>
- <20230409171143.GH182481@unreal>
- <f5fbc5c7-2329-93e6-044d-7b70d96530be@amd.com>
- <20230413085501.GH17993@unreal>
- <20230413081410.2cbaf2a2@kernel.org>
- <20230413164434.GT17993@unreal>
- <20230413095509.7f15e22c@kernel.org>
- <20230413170704.GV17993@unreal>
- <20230413101015.0427a6c8@kernel.org>
- <d6a65f08-4494-8d54-7799-a819f6f2e566@amd.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Ahmed Zaki <ahmed.zaki@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        netdev@vger.kernel.org, Arpana Arland <arpanax.arland@intel.com>
+Subject: Re: [PATCH net 1/1] ice: identify aRFS flows using L3/L4 dissector
+ info
+Message-ID: <20230414085405.GZ17993@unreal>
+References: <20230407210820.3046220-1-anthony.l.nguyen@intel.com>
+ <20230409104529.GQ14869@unreal>
+ <3de9c4a4-4fba-9837-962a-e3e78299ed3b@intel.com>
+ <09ec7b55-5ec9-2abc-dbb8-cdb7e0b0c6a8@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d6a65f08-4494-8d54-7799-a819f6f2e566@amd.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+In-Reply-To: <09ec7b55-5ec9-2abc-dbb8-cdb7e0b0c6a8@intel.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -63,53 +59,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 04:42:08PM -0700, Shannon Nelson wrote:
-> On 4/13/23 10:10 AM, Jakub Kicinski wrote:
-> > 
-> > On Thu, 13 Apr 2023 20:07:04 +0300 Leon Romanovsky wrote:
-> > > > Hm, my memory may be incorrect and I didn't look at the code but
-> > > > I thought that knob came from the "hit-less upgrade" effort.
-> > > > And for "hit-less upgrade" not respawning the devices was the whole
-> > > > point.
-> > > > 
-> > > > Which is not to disagree with you. What I'm trying to get at is that
-> > > > there are different types of reset which deserve different treatment.
-> > > 
-> > > I don't disagree with you either, just have a feeling that proposed
-> > > behaviour is wrong.
-> > 
-> > Shannon, can you elaborate on what the impact of the reset is?
-> > What loss of state and/or configuration is possible?
+On Thu, Apr 13, 2023 at 10:27:56AM -0700, Jacob Keller wrote:
 > 
-> The device has a couple different cases that might generate the RESET
-> message:
->  - crashed and recovered, no state saved
->  - FW restarted, some or all state saved
-> There are some variations on this, but these are the two general cases.
 > 
-> We can see in the existing ionic driver there already is some handling of
-> this where the driver sees the FW come back and is able to replay the Rx
-> filters and Rx mode configurations.  If and when we are able to add an Eth
-> client through pds_core it will want this message so that it can replay
-> configuration in the same way.  This case will also want the Link Down event
-> so that it can do the right thing with the netdev.
+> On 4/10/2023 11:54 AM, Ahmed Zaki wrote:
+> > 
+> > On 2023-04-09 04:45, Leon Romanovsky wrote:
+> >> On Fri, Apr 07, 2023 at 02:08:20PM -0700, Tony Nguyen wrote:
+> >>> From: Ahmed Zaki <ahmed.zaki@intel.com>
+> >>>
+> >>> The flow ID passed to ice_rx_flow_steer() is computed like this:
+> >>>
+> >>>      flow_id = skb_get_hash(skb) & flow_table->mask;
+> >>>
+> >>> With smaller aRFS tables (for example, size 256) and higher number of
+> >>> flows, there is a good chance of flow ID collisions where two or more
+> >>> different flows are using the same flow ID. This results in the aRFS
+> >>> destination queue constantly changing for all flows sharing that ID.
+> >>>
+> >>> Use the full L3/L4 flow dissector info to identify the steered flow
+> >>> instead of the passed flow ID.
+> >>>
+> >>> Fixes: 28bf26724fdb ("ice: Implement aRFS")
+> >>> Signed-off-by: Ahmed Zaki <ahmed.zaki@intel.com>
+> >>> Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at Intel)
+> >>> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> >>> ---
+> >>>   drivers/net/ethernet/intel/ice/ice_arfs.c | 44 +++++++++++++++++++++--
+> >>>   1 file changed, 41 insertions(+), 3 deletions(-)
+> >>>
+> >>> diff --git a/drivers/net/ethernet/intel/ice/ice_arfs.c b/drivers/net/ethernet/intel/ice/ice_arfs.c
+> >>> index fba178e07600..d7ae64d21e01 100644
+> >>> --- a/drivers/net/ethernet/intel/ice/ice_arfs.c
+> >>> +++ b/drivers/net/ethernet/intel/ice/ice_arfs.c
+> >>> @@ -345,6 +345,44 @@ ice_arfs_build_entry(struct ice_vsi *vsi, const struct flow_keys *fk,
+> >>>   	return arfs_entry;
+> >>>   }
+> >>>   
+> >>> +/**
+> >>> + * ice_arfs_cmp - compare flow to a saved ARFS entry's filter info
+> >>> + * @fltr_info: filter info of the saved ARFS entry
+> >>> + * @fk: flow dissector keys
+> >>> + *
+> >>> + * Caller must hold arfs_lock if @fltr_info belongs to arfs_fltr_list
+> >>> + */
+> >>> +static bool
+> >>> +ice_arfs_cmp(struct ice_fdir_fltr *fltr_info, const struct flow_keys *fk)
+> >>> +{
+> >>> +	bool is_ipv4;
+> >>> +
+> >>> +	if (!fltr_info || !fk)
+> >>> +		return false;
+> >>> +
+> >>> +	is_ipv4 = (fltr_info->flow_type == ICE_FLTR_PTYPE_NONF_IPV4_UDP ||
+> >>> +		fltr_info->flow_type == ICE_FLTR_PTYPE_NONF_IPV4_TCP);
+> >>> +
+> >>> +	if (fk->basic.n_proto == htons(ETH_P_IP) && is_ipv4)
+> >>> +		return (fltr_info->ip.v4.proto == fk->basic.ip_proto &&
+> >>> +			fltr_info->ip.v4.src_port == fk->ports.src &&
+> >>> +			fltr_info->ip.v4.dst_port == fk->ports.dst &&
+> >>> +			fltr_info->ip.v4.src_ip == fk->addrs.v4addrs.src &&
+> >>> +			fltr_info->ip.v4.dst_ip == fk->addrs.v4addrs.dst);
+> >>> +	else if (fk->basic.n_proto == htons(ETH_P_IPV6) && !is_ipv4)
+> >>> +		return (fltr_info->ip.v6.proto == fk->basic.ip_proto &&
+> >>> +			fltr_info->ip.v6.src_port == fk->ports.src &&
+> >>> +			fltr_info->ip.v6.dst_port == fk->ports.dst &&
+> >>> +			!memcmp(&fltr_info->ip.v6.src_ip,
+> >>> +				&fk->addrs.v6addrs.src,
+> >>> +				sizeof(struct in6_addr)) &&
+> >>> +			!memcmp(&fltr_info->ip.v6.dst_ip,
+> >>> +				&fk->addrs.v6addrs.dst,
+> >>> +				sizeof(struct in6_addr)));
+> >> I'm confident that you can write this function more clear with
+> >> comparisons in one "return ..." instruction.
+> >>>> Thanks
+> > 
+> > Do you mean remove the "if condition"? how?
+> > 
+> > I wrote it this way to match how I'd think:
+> > 
+> > If (IPv4 and V4 flows), test IPv4 flow keys, else if (IPv6 and V6 
+> > flows), test IPv6 keys, else false.
+> > 
+> 
+> You can use a || chain, something like:
+> 
+> return (is_ipv4 && (<check ipv4 fields)) || (!is_ipv4 && (<check ip6
+> fields>)
+> 
+> There might be other ways to simplify the conditional. You could
+> possibly combine the n_proto check with the is_ipv4 check above as well.
 
-I don't see how you can replay ALL (ethtool, devlink, ip, e.t.c) states
-without net core involvement. The real fun will be with many offloaded
-features, where you must preserve everything while keeping upper layer
-in-sync with HW.
+Another possible option is to use variable to store intermediate result.
 
 Thanks
 
 > 
-> For the VFio/Migration support (pds_vfio) the RESET message is essentially a
-> no-op if nothing is happening.  But if the system is in the middle of a
-> migration it offers the ability to "cleanly" fail the migration and let the
-> system get ready to try again.
-
 > 
-> For the vDPA case (pds_vdpa) we can trigger the config_cb callback to get
-> the attention of the stack above us to suggest it look at current status and
-> respond as needed, whether that is a Link Change or a Reset.
-> 
-> sln
+> > I m not sure how can I make it more clearer.
+> > 
+> > Thanks.
+> > 
