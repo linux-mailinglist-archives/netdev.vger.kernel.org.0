@@ -2,136 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BFEE6E2161
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 12:58:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 551AD6E21A6
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 13:06:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbjDNK6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 06:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        id S230321AbjDNLF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 07:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbjDNK6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 06:58:00 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE84F49E7
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 03:57:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1681469879; x=1713005879;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1kJG0gDmccz3x2qof6bhigAd7wr9RkAVa1UqTH29BXo=;
-  b=h4xnBv9zJ51I8jdyUlOpk4KqGqv3mooufHyY5xzklF4WFEclMjFQBv2/
-   XSehbgghQV+UdXEV2tj4hIBl79atNlNK1Re2DJ/fNOU52EdMwmqFtOLQX
-   VOTmmgND+sE/39Hqs9VODvMFpaUgUEzxgjqHdWJ8sNHoRkT1EpScPXYHY
-   ufkUE1FABhUS3HrAwF0hVekACM4eGqYSUhCxxsmSuqE4BCJGbwLG28JJ/
-   iaU4dRN2efwUKvRnAQvQHhB18ZA9OWLLQ1638iP+hSzNsYdczVl2Rf70X
-   eptGckEe06As80E3EyiRdjsx1pNmxqdiSh+kIqiCs6QWjOxI3QR6uF5Oh
-   A==;
-X-IronPort-AV: E=Sophos;i="5.99,195,1677567600"; 
-   d="asc'?scan'208";a="209532775"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Apr 2023 03:57:59 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 14 Apr 2023 03:57:57 -0700
-Received: from wendy (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
- Transport; Fri, 14 Apr 2023 03:57:56 -0700
-Date:   Fri, 14 Apr 2023 11:57:40 +0100
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     <daire.mcnamara@microchip.com>
-CC:     <nicholas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v1 1/1] net: macb: Shorten max_tx_len to 4KiB - 56 on mpfs
-Message-ID: <20230414-rumble-posing-74b2796e309f@wendy>
-References: <20230413180337.1399614-1-daire.mcnamara@microchip.com>
- <20230413180337.1399614-2-daire.mcnamara@microchip.com>
+        with ESMTP id S230299AbjDNLFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 07:05:54 -0400
+Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B3F526F;
+        Fri, 14 Apr 2023 04:05:36 -0700 (PDT)
+Received: from [0.0.0.0] (unknown [172.96.223.238])
+        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id C45BC280AB2;
+        Fri, 14 Apr 2023 19:04:02 +0800 (CST)
+Message-ID: <a7cb0d9e-7519-f90c-bd58-eab9ee82b3dc@sangfor.com.cn>
+Date:   Fri, 14 Apr 2023 19:03:41 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="zy33J9p2LYBt6trI"
-Content-Disposition: inline
-In-Reply-To: <20230413180337.1399614-2-daire.mcnamara@microchip.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [RFC PATCH net] sfc: Fix use-after-free due to selftest_work
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ecree.xilinx@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pengdonglin@sangfor.com.cn,
+        huangcun@sangfor.com.cn
+References: <20230412005013.30456-1-dinghui@sangfor.com.cn>
+ <ZDew+TqjrcK+zSgW@gmail.com>
+ <7a1de6be-8956-b1d5-6351-c7c2fb3bf9f4@sangfor.com.cn>
+ <ZDkgm/Ub/zXIU7+p@gmail.com>
+Content-Language: en-US
+From:   Ding Hui <dinghui@sangfor.com.cn>
+In-Reply-To: <ZDkgm/Ub/zXIU7+p@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCSEodVk4dSxlJSUJKShpKQ1UTARMWGhIXJBQOD1
+        lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVSktLVUtZBg++
+X-HM-Tid: 0a877f6fd0462eb1kusnc45bc280ab2
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OBQ6USo5Lz0VMBo4SipWNhhP
+        AVFPCzZVSlVKTUNKT0xLSU9MQ01MVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+        QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFOSE5PNwY+
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---zy33J9p2LYBt6trI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 2023/4/14 17:44, Martin Habets wrote:
+> On Thu, Apr 13, 2023 at 04:35:08PM +0800, Ding Hui wrote:
+>> On 2023/4/13 15:37, Martin Habets wrote:
+>>> On Wed, Apr 12, 2023 at 08:50:13AM +0800, Ding Hui wrote:
+>>>> There is a use-after-free scenario that is:
+>>>>
+>>>> When netif_running() is false, user set mac address or vlan tag to VF,
+>>>> the xxx_set_vf_mac() or xxx_set_vf_vlan() will invoke efx_net_stop()
+>>>> and efx_net_open(), since netif_running() is false, the port will not
+>>>> start and keep port_enabled false, but selftest_worker is scheduled
+>>>> in efx_net_open().
+>>>>
+>>>> If we remove the device before selftest_worker run, the efx is freed,
+>>>> then we will get a UAF in run_timer_softirq() like this:
+>>>>
+>>>> [ 1178.907941] ==================================================================
+>>>> [ 1178.907948] BUG: KASAN: use-after-free in run_timer_softirq+0xdea/0xe90
+>>>> [ 1178.907950] Write of size 8 at addr ff11001f449cdc80 by task swapper/47/0
+>>>> [ 1178.907950]
+>>>> [ 1178.907953] CPU: 47 PID: 0 Comm: swapper/47 Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
+>>>> [ 1178.907954] Hardware name: SANGFOR X620G40/WI2HG-208T1061A, BIOS SPYH051032-U01 04/01/2022
+>>>> [ 1178.907955] Call Trace:
+>>>> [ 1178.907956]  <IRQ>
+>>>> [ 1178.907960]  dump_stack+0x71/0xab
+>>>> [ 1178.907963]  print_address_description+0x6b/0x290
+>>>> [ 1178.907965]  ? run_timer_softirq+0xdea/0xe90
+>>>> [ 1178.907967]  kasan_report+0x14a/0x2b0
+>>>> [ 1178.907968]  run_timer_softirq+0xdea/0xe90
+>>>> [ 1178.907971]  ? init_timer_key+0x170/0x170
+>>>> [ 1178.907973]  ? hrtimer_cancel+0x20/0x20
+>>>> [ 1178.907976]  ? sched_clock+0x5/0x10
+>>>> [ 1178.907978]  ? sched_clock_cpu+0x18/0x170
+>>>> [ 1178.907981]  __do_softirq+0x1c8/0x5fa
+>>>> [ 1178.907985]  irq_exit+0x213/0x240
+>>>> [ 1178.907987]  smp_apic_timer_interrupt+0xd0/0x330
+>>>> [ 1178.907989]  apic_timer_interrupt+0xf/0x20
+>>>> [ 1178.907990]  </IRQ>
+>>>> [ 1178.907991] RIP: 0010:mwait_idle+0xae/0x370
+>>>>
+>>>> I am thinking about several ways to fix the issue:
+>>>>
+>>>> [1] In this RFC, I cancel the selftest_worker unconditionally in
+>>>> efx_pci_remove().
+>>>>
+>>>> [2] Add a test condition, only invoke efx_selftest_async_start() when
+>>>> efx->port_enabled is true in efx_net_open().
+>>>>
+>>>> [3] Move invoking efx_selftest_async_start() from efx_net_open() to
+>>>> efx_start_all() or efx_start_port(), that matching cancel action in
+>>>> efx_stop_port().
+>>>
+>>> I think moving this to efx_start_port() is best, as you say to match
+>>> the cancel in efx_stop_port().
+>>>
+>>
+>> If moving to efx_start_port(), should we worry about that IRQ_TIMEOUT
+>> is still enough?
+> 
+> 1 second is a long time for a machine running code, so it does not worry me.
+> 
+>> I'm not sure if there is a long time waiting from starting of schedule
+>> selftest_work to the ending of efx_net_open().
+> 
+> I see your point. Looking at efx_start_all() there is the call to
+> efx_start_datapath() after the call to efx_net_open(), which takes a
+                                          ^^^^^^^^^^^^
+Do you mean efx_start_port()?
 
-On Thu, Apr 13, 2023 at 07:03:37PM +0100, daire.mcnamara@microchip.com wrot=
-e:
-> From: Daire McNamara <daire.mcnamara@microchip.com>
->=20
-> On mpfs, with SRAM configured for 4 queues, setting max_tx_len
-> to GEM_TX_MAX_LEN=3D0x3f0 results multiple AMBA errors.
-> Setting max_tx_len to (4KiB - 56) removes those errors.
->=20
-> The details are described in erratum 1686 by Cadence
->=20
-> The max jumbo frame size is also reduced for mpfs to (4KiB - 56).
->=20
-> Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
+> relatively long time (well under 200ms though).
+> Logically it would be better to move efx_selftest_async_start() after this
+> call. What do you think?
 
-I guess this also needs to be given a CC: stable, but I am not really
-sure what to pick as a fix commit for this. It should go back as far as
-the mpfs compatible existed (it was introduced in 6.0), but the commit
-adding the compatible didn't introduce the problem.
-The default GEM limit, which we used before I added reset support, is
-also too large for us.
+Agree with you.
 
->  static const struct macb_config sama7g5_gem_config =3D {
-> @@ -4986,8 +4985,17 @@ static int macb_probe(struct platform_device *pdev)
->  	bp->tx_clk =3D tx_clk;
->  	bp->rx_clk =3D rx_clk;
->  	bp->tsu_clk =3D tsu_clk;
-> -	if (macb_config)
-> +	if (macb_config) {
-> +		if (macb_is_gem(bp)) {
+> The point here is that efx_start_all() calls efx_start_port() early, and
+> efx_stop_all() also calls efx_stop_port() early. The calling sequence is
+> correct but they are not the strict inverse of each other.
+> 
 
-I don't think this here is correct. This is being done before we have
-configured the caps, so macb_is_gem() is always going to return false.
+Yeah, that is what I noticed monitor_work does.
+Then I'll move efx_selftest_async_start() into efx_start_all(), follows
+the monitor_work.
 
-AFAICT, this should instead use hw_is_gem(bp->regs, bp->native_io).
+-- 
+Thanks,
+- Ding Hui
 
-Cheers,
-Conor.
-
-> +			if (macb_config->max_tx_length)
-> +				bp->max_tx_length =3D macb_config->max_tx_length;
-> +			else
-> +				bp->max_tx_length =3D GEM_MAX_TX_LEN;
-> +		} else {
-> +			bp->max_tx_length =3D MACB_MAX_TX_LEN;
-> +		}
->  		bp->jumbo_max_len =3D macb_config->jumbo_max_len;
-> +	}
-> =20
->  	bp->wol =3D 0;
->  	if (of_property_read_bool(np, "magic-packet"))
-> --=20
-> 2.25.1
->=20
-
---zy33J9p2LYBt6trI
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZDkxpAAKCRB4tDGHoIJi
-0gHQAQCP78zydWdmnfPYrF7Nw5BenfNdzRYjVYhEkkUVxE5q5wEAmU5qQ61ZlsMy
-IAUPTmePjjyXflDjyWRoHgZklUhJ5gw=
-=QB6S
------END PGP SIGNATURE-----
-
---zy33J9p2LYBt6trI--
