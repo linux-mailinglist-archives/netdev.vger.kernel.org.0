@@ -2,167 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B3986E2C86
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 00:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 424746E2C87
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 00:41:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbjDNWkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 18:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
+        id S229546AbjDNWl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 18:41:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbjDNWkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 18:40:52 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1094A49E1
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 15:40:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681512051; x=1713048051;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Gs2GaGzYslQKCqXnwVxeiQA20yTgOF3D3GEhU2sSzEI=;
-  b=j3ge99C0Z+3HweBOw8p3AVaGZDL5Dr3+ftFFKnx/P8Qotv5rHQ61dIhW
-   qp3j2M1ghvkJ2iEpDPcJDaVNmceLYPfYoe7Ti3t3/n8/ARAQoroiwf++T
-   JpJpIGB01Og0pSmLBITFJnX7bmjwK81QwdNUXdscp4YIhNuCWsMq9uTr3
-   0N9QNqvV+FWsO88hC9NE59pk3lajvCKh3svU3kuPDeRl+uhdr+llKCNm9
-   V7LCRA1MxEYsZcdM9gnzaAZ79D7dcR6eEYSfvt6JIRx4e0uInShrBJYRS
-   z2oEfnHxvQg5vXFAA/Y4QjoEyLTVBTvK3XL9FBLhqmFaIzSmGjW2dMmyc
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="342078556"
-X-IronPort-AV: E=Sophos;i="5.99,198,1677571200"; 
-   d="scan'208";a="342078556"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2023 15:40:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="689979753"
-X-IronPort-AV: E=Sophos;i="5.99,198,1677571200"; 
-   d="scan'208";a="689979753"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga002.jf.intel.com with ESMTP; 14 Apr 2023 15:40:49 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 14 Apr 2023 15:40:49 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 14 Apr 2023 15:40:49 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Fri, 14 Apr 2023 15:40:49 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.103)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Fri, 14 Apr 2023 15:40:48 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TZAaEK0EujtAbtl5kY6wo2nikhlZlB2ntYPqW1V/RdwC0IYw476nGmf+ftcVPswolYKjgexs6AORdJMTchtNmKgTVouz/Z8nE1JlW0eTikh53E65leYtWExkB8GEYPo2hh9W/GpoosJ2OdxKr1Y1A4beYksDRGpUZmYrSKvhh1pwVO/UsxxVZCIHOX8nbbhv3xLk5hvYMfcN359E6RgrHzMxu1PeTDlK39zT225k9/AHprC7nkdJLwtjfnoNT5+sekz78VD7cJvx7ff+4O5dVqjkITsDh3JIVnz5v2k62FGCaQP2PgXf7ESOXll9o9b6b3KjTC2OyC5dnSMj6lu0uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+wgfXpBTIQMU8BJQDIoHEVezEDYLxPVIRSdQCooSq6Q=;
- b=YuTNsb/B9lT6fe5pMS5xywR4FA6uuEqPznYSF2Av/+x3kEYq6MCx7uapttmaWz7U/gmrwGkEkNRivyBbraZvgUe4CjaXC1b5IC8CZin36UbvJRzRDcNYvKGQVH92g7bng36oQ8eUXFDv3tvjzmxmjHc0ca9RzLd1zZwHhkc+L93WwQ7MqvPgYOZ8hz7OK9BWjrHI93OD9QZL3wLXgiW4/W9Tx+1gwdJrdSo6cLoKDdXmyvGQ26YgHdIByEHf+WyrPkZIsOE9TNmSD0d4N11Jm06iP5oDDB/VJD/0LzUdGz+XBf0aleGm9ybGy/lxSNMhZ2mKtE5gC8mi56WYgmkpPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com (2603:10b6:510:33::22)
- by DM4PR11MB6019.namprd11.prod.outlook.com (2603:10b6:8:60::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6298.30; Fri, 14 Apr 2023 22:40:44 +0000
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::922:4817:b4f2:c7b3]) by PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::922:4817:b4f2:c7b3%5]) with mapi id 15.20.6298.030; Fri, 14 Apr 2023
- 22:40:44 +0000
-Message-ID: <7815a749-f10a-ff5b-6050-6ca766a263b4@intel.com>
-Date:   Fri, 14 Apr 2023 17:40:40 -0500
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next v1 04/10] net/mlx5e: Prepare IPsec packet
- reformat code for tunnel mode
-Content-Language: en-US
-To:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Leon Romanovsky <leonro@nvidia.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Emeel Hakim <ehakim@nvidia.com>,
-        Simon Horman <simon.horman@corigine.com>
-References: <cover.1681388425.git.leonro@nvidia.com>
- <f9e31cf8ff6a60ea4eb714c93e5fad7fbd56b860.1681388425.git.leonro@nvidia.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-In-Reply-To: <f9e31cf8ff6a60ea4eb714c93e5fad7fbd56b860.1681388425.git.leonro@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0367.namprd03.prod.outlook.com
- (2603:10b6:a03:3a1::12) To PH0PR11MB4886.namprd11.prod.outlook.com
- (2603:10b6:510:33::22)
+        with ESMTP id S229450AbjDNWl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 18:41:27 -0400
+Received: from sender3-op-o17.zoho.com (sender3-op-o17.zoho.com [136.143.184.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B105581
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 15:41:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1681512073; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=cuE1dGfCEyeOpthhVq5VKzysVybYkhuGXBBmQYuGRdVO62Ntlu3NIHDQ4g1R1MJND1N22Cf343eM4/XmsY7xlYtxtuqBuQysx1UawjmM01WQ30dm4qAINSi5e+BJ678lZZbQLeh9F8KL0slDin3L2fC92W19a3jxd7ROWeVhGLw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1681512073; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=bc4Psn76lUY3Qp8/XMHf7UqHbkujH+xjUzpuoihgaOs=; 
+        b=Es+xaiKfbvaubcHfNFWRZGN6ofKb5U3oZgeQMcA5bRJkh9l340cJObCHkow2YqWcbJb+2FDMt5tkBAye7bztwXKigvFLtaZygdrF27FTFboPkhgFPfrk4o6AVdOWrba4EYRL1oc2YqFrQpCIHaFfT61V+M/HqC1NDMsjocgrzU4=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1681512073;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:From:From:To:To:Cc:Cc:Subject:Subject:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=bc4Psn76lUY3Qp8/XMHf7UqHbkujH+xjUzpuoihgaOs=;
+        b=FpgK/PE68vjnBFbj/SioVCwgLHgjbpHSdzO/U07QDdRSSAH2941dzHKGveDL0Zts
+        cWoufjt99DCpY7S6+GCWlD4+KgpFUzNMdnfBi7XCpSkZthsJIpU3mitbED34hAGuhLg
+        fUGE4L8QgYLSMTBPrNL98/WF+yBWV74Wex78KTWI=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1681512071320609.2696103643955; Fri, 14 Apr 2023 15:41:11 -0700 (PDT)
+Message-ID: <896514df-af33-6408-8b33-d8fd06e671ef@arinc9.com>
+Date:   Sat, 15 Apr 2023 01:41:07 +0300
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB4886:EE_|DM4PR11MB6019:EE_
-X-MS-Office365-Filtering-Correlation-Id: 98ecbbc2-051e-47ef-bf2e-08db3d394848
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZCe1Jy4Y+HKUtq4VgjTX1il2k8ea50w13/74Ggkc+C3sH73jQlH2Yc3znP4f/IW1V/2ZAoHQsxolAimzVHOFDErW7Ch3ogEr4w/MWXN2DI/2R9Z3Pl+2bShd8MX8ePzMYiHaGpKqwpw1xkYtYQ7x/bdasDMAylKxnD7LgqMfNHyC1zbBHpY1lDTglEwb9mVBz5iGG6nGqxbCUNFa9SFEFT87WJEQF7qLzf9pMFycyF3kNB15NDGR/iyyynw692cQ9bnpvvGgMDMtcJlj6D6lrZsB5aAda4G2j2/xrmfj15XFhwV+OlOXht5Yos1D04xr9vRGPnD73IzrAMnzykcyJztnF197W9vS1jb6H82f1n48m6hK6TfJJjvGaKOwpsGFitcgRU4AyiB293XBayQKrQ99O9LSK9tyFsT2v8loNRuia0XOAbXIrHGCfpYKZxU3taK9ItAzx5lxHQxomi/PmH1dpqagO0A7xfBk69b510cEuyJLQYAnE35/Kh4SUKXUQnbR+WvLGSNOusscUSH5JYHuMiXSnZIwJWw0u7W5h3q/vXP6HLPRQM6+HDvIxXgn71B96NwCLI4p4f2Inrr/mmqALIDEKBTMPNb9yPNwpQFE2pj8jPbu4GDdPs7M9yll42YOiSrLHwFVZZgKc38zIA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4886.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(346002)(376002)(136003)(39860400002)(366004)(451199021)(31686004)(5660300002)(36756003)(7416002)(2906002)(38100700002)(316002)(8676002)(31696002)(86362001)(8936002)(41300700001)(66946007)(66556008)(82960400001)(66476007)(83380400001)(54906003)(2616005)(6506007)(110136005)(6512007)(26005)(478600001)(53546011)(186003)(6666004)(6486002)(4326008)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eVBjMlhjZWZ5QUpzTkdXaHlqOHk0R1dlWElRYzcvZ3MzOXdtdkY2VDlpVjVU?=
- =?utf-8?B?NFRvTVAwZ2d6MjBqd1BaQy9HSzA2OXhHRkhqajNlY3I2emZIK2lZMWFreEN3?=
- =?utf-8?B?NSt2T0lWcmpZR0QySlAyZG1jVmdsSmZKU1BsQXY0ZFJKU2g3NHZpRzQ4ZC9N?=
- =?utf-8?B?NXovbVlteHNmNVhSL0Qrb0QybzRBYnh0R05yK05VcGlQMXlVU3dUQTI2SmFG?=
- =?utf-8?B?ZnFya0ZFamthRW41RENndGwvWC91aGtPeDYyWFdkdmthVmxLaHdKTUlPT2VC?=
- =?utf-8?B?OFpXdVJkdDZ2eGhIbk5aTC9uSFR1czN4Ty8vemZ0amFQblN1NU1zNkFvYlhL?=
- =?utf-8?B?MmNjeXpmSlMzanpGRFplZ05pbXE2dXpXQk1QTGxLWDlTenpyT3U5K3FGakdq?=
- =?utf-8?B?Y3FBTjRIaTR3c2JnVld5OGhNRkIvbjM5OXNSYjk5M01xdnJOK3Rxa0NPdXh5?=
- =?utf-8?B?WmhYdXhRLzNYS20yT3VuNC94MC83VFZENk5kUlk4dUNkSXNQcWdYcVVIY0Q1?=
- =?utf-8?B?VlNFRmhWRzk4ejhaTkVCUCsrRjlURFdISjFMdVRNSE9NNjcydHdoRTlxSlVo?=
- =?utf-8?B?ZjgxV0IyVkdRRGdkY3VLQjhpbEhZQWhSNzVBNVhJcG5LWm5lMkhHckRyaGhQ?=
- =?utf-8?B?SkZzaUJ0SmNQbFJyaHRGc083NnZRVEExUnRFM2hqYlhGeW5KQ0lMSHJ4MlBX?=
- =?utf-8?B?M2FnSGM2YnVFYzZmdjNNdUFYS01IUjVQSXpEbWZEY2xJdzV3VU5MMWJNT2o1?=
- =?utf-8?B?SGg1T1lKWFhpTmFGZFc5UisvZW5MbmZKckV5M2lPdUxmUjZldnBIWElQZGxw?=
- =?utf-8?B?ckhKN0owSHJrS3RiL0JpVTFPb1dIN25pcjBWUmozcWFPaDlBb2ZPOGRPK3E2?=
- =?utf-8?B?dWlFK0pyVkhzejBWUkZTZ3cvSUFaZFEvRklCV1grTkNiOTZHRXpLVzU5dlY1?=
- =?utf-8?B?UXo0N3RJRTREN2hveGZnUFJGeXQxdEJyZHBwRXFrVS9RSGZNSjFIdTRBVURz?=
- =?utf-8?B?MTVtYlNRTlNmbERjYnZZMkNJNXhFbm1mZC93R2ZBQ3ZxQ2h0a0I3bzF6eXM2?=
- =?utf-8?B?WmY5eE1QRVB1bHh6RTJuQXpBYUZyVTJFRmJBYkFJTUtXZ3NUcm4xQUFSRzda?=
- =?utf-8?B?UnRkNXlXVlEyUUJDOEgwa3p1d3hCNEpQME9yQnN3RTZzd3dJNjlxakMvdXQ1?=
- =?utf-8?B?dkNUdzFPOUlTY1JWWnRiL3hEWU1TR0NKZlMrQjFJdnRxcEZ6RWJjc2VSUFl5?=
- =?utf-8?B?Wit0bzdhQXZERnpXQzBaR01vNW50VmlmOTlFR0QzbWlaeTlSNElTb0V6TEZH?=
- =?utf-8?B?ZHBTSVl3R1l6dk5MTGJRRFN5aHBTUHN6dmNiNENWZFMvUVdiQ2MySEhBejBt?=
- =?utf-8?B?anc1Qlk2bXR3OXY4cmVIZEtpdVNjeFRIUTFvOVRqSFdBTUFDQjljSDBLb1lD?=
- =?utf-8?B?WlBZT1pZVnVYSzhDWFBpUFJvRUx4M0YzN0NodzlIT09EMW1qOGJ1UG9mUU41?=
- =?utf-8?B?NTVrZUVxTzFaenJYOVBQdkRDa2RoQTQ2TDNaN1ZiRHZDUC85SldyY2hGWUVC?=
- =?utf-8?B?ek9PazMvaHhvNE5nUlo4YnNFdDlYODZWeTUrQjdvbXRYWnpmbTh1Y3BlbGhh?=
- =?utf-8?B?MjVDV1B0b05CRllFYjFJNlArTDZON1lWS2NsaWplS1ZJeVdYVWl0WjRVejVK?=
- =?utf-8?B?T1IyS0wrd29YUGgwWjZ4SXdJS1JCaUoxWGFDbDZHZlplbUViODhrS3RNRDho?=
- =?utf-8?B?OW9wdnU0YkVaM2JzalVXTjYwRTF3QlBQVjFRcE90R0ZvNEVoRXpFUUUvc3RU?=
- =?utf-8?B?VTF0eUpXdDFUdDZHS1RsWDlrd3d0SWo0djFtbFIzNkxYWWxhc1ZaL0V0R3Nq?=
- =?utf-8?B?akJMS09VaThjTlhaMVdSdmo0YWlRamg1ME9rYU9KdkR0Nms2cElZQ21XV3R4?=
- =?utf-8?B?MFl0cG1VKzZHbkd5azZVWkpxNUNJWnVKTGpUYXBKK2lrc01TbUZGaVpSYncy?=
- =?utf-8?B?Sm1QR2ZuZ3dqM0ZtaDJXN2JSQVdwTEsycDE3NEhkK2N6VXp5UGttVkttM04v?=
- =?utf-8?B?a041RjR3WDVzV3F2TTVwNzIvbWVGSXVaMWJnOGtVMmRUNHR4eDNCalBTWXla?=
- =?utf-8?B?M2RCQ01mSnhIa3M3SnVzbE15bFJPY2lXamppKzhKT294TjVEcWlEKy8xV3FP?=
- =?utf-8?B?T2c9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98ecbbc2-051e-47ef-bf2e-08db3d394848
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4886.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2023 22:40:44.0560
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 43F0V+9uNCL2ZvTxWFf+LtroWbQFyUU9WOmk13edPR+tUX0pYbWnjq7XrH4b/sq+iYKk/OhTklwbdD/BRi9JBt0gClx0E6izEsGIduxDvC0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6019
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Frank Wunderlich <frank-w@public-files.de>
+Cc:     netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com
+Content-Language: en-US
+Subject: mt7530: dsa_switch_parse_of() fails, causes probe code to run twice
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -170,165 +59,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hey there,
 
+I've been working on the MT7530 DSA subdriver. While doing some tests, I
+realised mt7530_probe() runs twice. I moved enabling the regulators from
+mt7530_setup() to mt7530_probe(). Enabling the regulators there ends up
+with exception warnings on the first time. It works fine when
+mt7530_probe() is run again.
 
-On 4/13/2023 7:29 AM, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Refactor setup_pkt_reformat() function to accommodate future extension
-> to support tunnel mode.
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->   .../mellanox/mlx5/core/en_accel/ipsec.c       |  1 +
->   .../mellanox/mlx5/core/en_accel/ipsec.h       |  2 +-
->   .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 81 ++++++++++++++-----
->   3 files changed, 63 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-> index def01bfde610..359da277c03a 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-> @@ -297,6 +297,7 @@ void mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
->   	attrs->upspec.sport = ntohs(x->sel.sport);
->   	attrs->upspec.sport_mask = ntohs(x->sel.sport_mask);
->   	attrs->upspec.proto = x->sel.proto;
-> +	attrs->mode = x->props.mode;
->   
->   	mlx5e_ipsec_init_limits(sa_entry, attrs);
->   }
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-> index bb89e18b17b4..ae525420a492 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-> @@ -77,7 +77,7 @@ struct mlx5_replay_esn {
->   
->   struct mlx5_accel_esp_xfrm_attrs {
->   	u32   spi;
-> -	u32   flags;
-> +	u32   mode;
->   	struct aes_gcm_keymat aes_gcm;
->   
->   	union {
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-> index 060be020ca64..6a1ed4114054 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-> @@ -10,6 +10,7 @@
->   #include "lib/fs_chains.h"
->   
->   #define NUM_IPSEC_FTE BIT(15)
-> +#define MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_SIZE 16
->   
->   struct mlx5e_ipsec_fc {
->   	struct mlx5_fc *cnt;
-> @@ -836,40 +837,80 @@ static int setup_modify_header(struct mlx5_core_dev *mdev, u32 val, u8 dir,
->   	return 0;
->   }
->   
-> +static int
-> +setup_pkt_transport_reformat(struct mlx5_accel_esp_xfrm_attrs *attrs,
-> +			     struct mlx5_pkt_reformat_params *reformat_params)
-> +{
-> +	u8 *reformatbf;
-> +	__be32 spi;
-> +
-> +	switch (attrs->dir) {
-> +	case XFRM_DEV_OFFLOAD_IN:
-> +		reformat_params->type = MLX5_REFORMAT_TYPE_DEL_ESP_TRANSPORT;
-> +		break;
-> +	case XFRM_DEV_OFFLOAD_OUT:
-> +		if (attrs->family == AF_INET)
-> +			reformat_params->type =
-> +				MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_OVER_IPV4;
-> +		else
-> +			reformat_params->type =
-> +				MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_OVER_IPV6;
+This should not be an expected behaviour, right? Any ideas how we can make
+it work the first time?
 
-Is it guaranteed that attrs->family will be either AF_INET or AF_INET6?
-Later patches seem to indicate that this may not be true as they use
-switch statement and includes default case
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 02410ac439b7..57b262099791 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -3248,6 +3248,8 @@ mt7530_probe(struct mdio_device *mdiodev)
+  	struct mt7530_priv *priv;
+  	struct device_node *dn;
+  
++	dev_info(&mdiodev->dev, "mt7530_probe() is running\n");
++
+  	dn = mdiodev->dev.of_node;
+  
+  	priv = devm_kzalloc(&mdiodev->dev, sizeof(*priv), GFP_KERNEL);
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index e5f156940c67..738ca4420e85 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -1488,9 +1488,12 @@ static int dsa_switch_probe(struct dsa_switch *ds)
+  		return -EINVAL;
+  
+  	if (np) {
++		dev_info(ds->dev, "np is true\n");
+  		err = dsa_switch_parse_of(ds, np);
+-		if (err)
++		if (err) {
++			dev_info(ds->dev, "np dts parse failed\n");
+  			dsa_switch_release_ports(ds);
++		}
+  	} else if (pdata) {
+  		err = dsa_switch_parse(ds, pdata);
+  		if (err)
+@@ -1502,6 +1505,8 @@ static int dsa_switch_probe(struct dsa_switch *ds)
+  	if (err)
+  		return err;
+  
++	dev_info(ds->dev, "np is successful\n");
++
+  	dst = ds->dst;
+  	dsa_tree_get(dst);
+  	err = dsa_tree_setup(dst);
 
+[    3.150567] mt7530 mdio-bus:1f: mt7530_probe() is running
+[    3.156403] mt7530 mdio-bus:1f: np is true
+[    3.160608] mt7530 mdio-bus:1f: np dts parse failed
+[    3.167094] mtk_soc_eth 1b100000.ethernet: generated random MAC address 96:70:de:9e:c0:88
+[    3.176535] mtk_soc_eth 1b100000.ethernet eth0: mediatek frame engine at 0xf09e0000, irq 213
+[...]
+[    4.121791] mt7530 mdio-bus:1f: mt7530_probe() is running
+[    4.127678] mt7530 mdio-bus:1f: np is true
+[    4.138242] mt7530 mdio-bus:1f: np is successful
+[    4.154957] mt7530 mdio-bus:1f: no interrupt support
+[    4.189915] mt7530 mdio-bus:1f: configuring for fixed/trgmii link mode
+[    4.198619] mt7530 mdio-bus:1f: Link is Up - 1Gbps/Full - flow control rx/tx
+[    4.206437] mt7530 mdio-bus:1f wan (uninitialized): PHY [mt7530-0:00] driver [MediaTek MT7530 PHY] (irq=POLL)
+[    4.218450] mt7530 mdio-bus:1f lan0 (uninitialized): PHY [mt7530-0:01] driver [MediaTek MT7530 PHY] (irq=POLL)
+[    4.230201] mt7530 mdio-bus:1f lan1 (uninitialized): PHY [mt7530-0:02] driver [MediaTek MT7530 PHY] (irq=POLL)
+[    4.242000] mt7530 mdio-bus:1f lan2 (uninitialized): PHY [mt7530-0:03] driver [MediaTek MT7530 PHY] (irq=POLL)
+[    4.253755] mt7530 mdio-bus:1f lan3 (uninitialized): PHY [mt7530-0:04] driver [MediaTek MT7530 PHY] (irq=POLL)
+[    4.265271] mtk_soc_eth 1b100000.ethernet eth0: entered promiscuous mode
+[    4.272101] DSA: tree 0 setup
 
-> +
-> +		reformatbf = kzalloc(MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_SIZE,
-> +				     GFP_KERNEL);
-> +		if (!reformatbf)
-> +			return -ENOMEM;
-> +
-> +		/* convert to network format */
-> +		spi = htonl(attrs->spi);
-> +		memcpy(reformatbf, &spi, sizeof(spi));
-> +
-> +		reformat_params->param_0 = attrs->authsize;
-> +		reformat_params->size =
-> +			MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_SIZE;
-> +		reformat_params->data = reformatbf;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->   static int setup_pkt_reformat(struct mlx5_core_dev *mdev,
->   			      struct mlx5_accel_esp_xfrm_attrs *attrs,
->   			      struct mlx5_flow_act *flow_act)
->   {
-> -	enum mlx5_flow_namespace_type ns_type = MLX5_FLOW_NAMESPACE_EGRESS;
->   	struct mlx5_pkt_reformat_params reformat_params = {};
->   	struct mlx5_pkt_reformat *pkt_reformat;
-> -	u8 reformatbf[16] = {};
-> -	__be32 spi;
-> +	enum mlx5_flow_namespace_type ns_type;
-> +	int ret;
->   
-> -	if (attrs->dir == XFRM_DEV_OFFLOAD_IN) {
-> -		reformat_params.type = MLX5_REFORMAT_TYPE_DEL_ESP_TRANSPORT;
-> +	switch (attrs->dir) {
-> +	case XFRM_DEV_OFFLOAD_IN:
->   		ns_type = MLX5_FLOW_NAMESPACE_KERNEL;
-> -		goto cmd;
-> +		break;
-> +	case XFRM_DEV_OFFLOAD_OUT:
-> +		ns_type = MLX5_FLOW_NAMESPACE_EGRESS;
-> +		break;
-> +	default:
-> +		return -EINVAL;
->   	}
->   
-> -	if (attrs->family == AF_INET)
-> -		reformat_params.type =
-> -			MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_OVER_IPV4;
-> -	else
-> -		reformat_params.type =
-> -			MLX5_REFORMAT_TYPE_ADD_ESP_TRANSPORT_OVER_IPV6;
+The exceptions:
 
-same here
+[    8.160099] ------------[ cut here ]------------
+[    8.164753] WARNING: CPU: 3 PID: 1 at drivers/regulator/core.c:2405 _regulator_put+0x170/0x178
+[    8.173450] Modules linked in:
+[    8.176519] CPU: 3 PID: 1 Comm: swapper/0 Not tainted 6.3.0-rc6-next-20230413+ #17
+[    8.184105] Hardware name: Mediatek Cortex-A7 (Device Tree)
+[    8.189693]  unwind_backtrace from show_stack+0x18/0x1c
+[    8.194947]  show_stack from dump_stack_lvl+0x40/0x4c
+[    8.200022]  dump_stack_lvl from __warn+0x80/0x12c
+[    8.204839]  __warn from warn_slowpath_fmt+0xc0/0x184
+[    8.209916]  warn_slowpath_fmt from _regulator_put+0x170/0x178
+[    8.215775]  _regulator_put from regulator_put+0x24/0x34
+[    8.221109]  regulator_put from release_nodes+0x50/0xc4
+[    8.226356]  release_nodes from devres_release_all+0x84/0xd0
+[    8.232034]  devres_release_all from device_unbind_cleanup+0x14/0x68
+[    8.238411]  device_unbind_cleanup from really_probe+0x268/0x400
+[    8.244441]  really_probe from __driver_probe_device+0xa4/0x208
+[    8.250384]  __driver_probe_device from driver_probe_device+0x38/0xc8
+[    8.256847]  driver_probe_device from __device_attach_driver+0xb0/0x128
+[    8.263484]  __device_attach_driver from bus_for_each_drv+0x98/0xec
+[    8.269773]  bus_for_each_drv from __device_attach+0xb0/0x1dc
+[    8.275540]  __device_attach from bus_probe_device+0x90/0x94
+[    8.281221]  bus_probe_device from device_add+0x4d4/0x6c4
+[    8.286639]  device_add from mdio_device_register+0x44/0x88
+[    8.292230]  mdio_device_register from __of_mdiobus_register+0x1d8/0x3cc
+[    8.298949]  __of_mdiobus_register from mtk_mdio_init+0x1c4/0x23c
+[    8.305065]  mtk_mdio_init from mtk_probe+0x7cc/0x8ac
+[    8.310140]  mtk_probe from platform_probe+0x64/0xb8
+[    8.315123]  platform_probe from really_probe+0xe8/0x400
+[    8.320453]  really_probe from __driver_probe_device+0xa4/0x208
+[    8.326396]  __driver_probe_device from driver_probe_device+0x38/0xc8
+[    8.332859]  driver_probe_device from __driver_attach+0x124/0x1d4
+[    8.338975]  __driver_attach from bus_for_each_dev+0x84/0xd4
+[    8.344656]  bus_for_each_dev from bus_add_driver+0xe8/0x208
+[    8.350335]  bus_add_driver from driver_register+0x84/0x11c
+[    8.355930]  driver_register from do_one_initcall+0x60/0x210
+[    8.361612]  do_one_initcall from kernel_init_freeable+0x214/0x270
+[    8.367817]  kernel_init_freeable from kernel_init+0x20/0x138
+[    8.373588]  kernel_init from ret_from_fork+0x14/0x2c
+[    8.378658] Exception stack(0xf0825fb0 to 0xf0825ff8)
+[    8.383720] 5fa0:                                     00000000 00000000 00000000 00000000
+[    8.391910] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[    8.400099] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[    8.406761] ---[ end trace 0000000000000000 ]---
+[    8.411588] ------------[ cut here ]------------
+[    8.416221] WARNING: CPU: 3 PID: 1 at drivers/regulator/core.c:2405 _regulator_put+0x170/0x178
+[    8.424906] Modules linked in:
+[    8.428001] CPU: 3 PID: 1 Comm: swapper/0 Tainted: G        W          6.3.0-rc6-next-20230413+ #17
+[    8.437064] Hardware name: Mediatek Cortex-A7 (Device Tree)
+[    8.442646]  unwind_backtrace from show_stack+0x18/0x1c
+[    8.447898]  show_stack from dump_stack_lvl+0x40/0x4c
+[    8.452970]  dump_stack_lvl from __warn+0x80/0x12c
+[    8.457787]  __warn from warn_slowpath_fmt+0xc0/0x184
+[    8.462864]  warn_slowpath_fmt from _regulator_put+0x170/0x178
+[    8.468722]  _regulator_put from regulator_put+0x24/0x34
+[    8.474056]  regulator_put from release_nodes+0x50/0xc4
+[    8.479302]  release_nodes from devres_release_all+0x84/0xd0
+[    8.484980]  devres_release_all from device_unbind_cleanup+0x14/0x68
+[    8.491355]  device_unbind_cleanup from really_probe+0x268/0x400
+[    8.497385]  really_probe from __driver_probe_device+0xa4/0x208
+[    8.503327]  __driver_probe_device from driver_probe_device+0x38/0xc8
+[    8.509790]  driver_probe_device from __device_attach_driver+0xb0/0x128
+[    8.516427]  __device_attach_driver from bus_for_each_drv+0x98/0xec
+[    8.522716]  bus_for_each_drv from __device_attach+0xb0/0x1dc
+[    8.528484]  __device_attach from bus_probe_device+0x90/0x94
+[    8.534165]  bus_probe_device from device_add+0x4d4/0x6c4
+[    8.539582]  device_add from mdio_device_register+0x44/0x88
+[    8.545172]  mdio_device_register from __of_mdiobus_register+0x1d8/0x3cc
+[    8.551889]  __of_mdiobus_register from mtk_mdio_init+0x1c4/0x23c
+[    8.558004]  mtk_mdio_init from mtk_probe+0x7cc/0x8ac
+[    8.563079]  mtk_probe from platform_probe+0x64/0xb8
+[    8.568062]  platform_probe from really_probe+0xe8/0x400
+[    8.573392]  really_probe from __driver_probe_device+0xa4/0x208
+[    8.579335]  __driver_probe_device from driver_probe_device+0x38/0xc8
+[    8.585799]  driver_probe_device from __driver_attach+0x124/0x1d4
+[    8.591914]  __driver_attach from bus_for_each_dev+0x84/0xd4
+[    8.597594]  bus_for_each_dev from bus_add_driver+0xe8/0x208
+[    8.603274]  bus_add_driver from driver_register+0x84/0x11c
+[    8.608868]  driver_register from do_one_initcall+0x60/0x210
+[    8.614549]  do_one_initcall from kernel_init_freeable+0x214/0x270
+[    8.620753]  kernel_init_freeable from kernel_init+0x20/0x138
+[    8.626523]  kernel_init from ret_from_fork+0x14/0x2c
+[    8.631594] Exception stack(0xf0825fb0 to 0xf0825ff8)
+[    8.636654] 5fa0:                                     00000000 00000000 00000000 00000000
+[    8.644844] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[    8.653033] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[    8.659681] ---[ end trace 0000000000000000 ]---
 
-> -
-> -	/* convert to network format */
-> -	spi = htonl(attrs->spi);
-> -	memcpy(reformatbf, &spi, 4);
-> +	switch (attrs->mode) {
-> +	case XFRM_MODE_TRANSPORT:
-> +		ret = setup_pkt_transport_reformat(attrs, &reformat_params);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
->   
-> -	reformat_params.param_0 = attrs->authsize;
-> -	reformat_params.size = sizeof(reformatbf);
-> -	reformat_params.data = &reformatbf;
-> +	if (ret)
-> +		return ret;
->   
-> -cmd:
->   	pkt_reformat =
->   		mlx5_packet_reformat_alloc(mdev, &reformat_params, ns_type);
-> +	kfree(reformat_params.data);
->   	if (IS_ERR(pkt_reformat))
->   		return PTR_ERR(pkt_reformat);
->   
+Arınç
