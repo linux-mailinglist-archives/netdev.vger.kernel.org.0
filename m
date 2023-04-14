@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C18766E1DF9
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:21:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3348B6E1E38
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbjDNIVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 04:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
+        id S230230AbjDNI15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 04:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbjDNIVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:21:01 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F3830C4;
-        Fri, 14 Apr 2023 01:20:56 -0700 (PDT)
+        with ESMTP id S230213AbjDNI1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:27:32 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB262900C;
+        Fri, 14 Apr 2023 01:27:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1681460457; x=1712996457;
+  t=1681460829; x=1712996829;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=rtLuS5HdkkGf6K1pvoN/8HXKoYmlRrjzY3AWTl9DpU8=;
-  b=vZxv27T7W4bK5nlitQzwDF5X6zK27TwiWKgxlWMNOLsG/qLXZTwxnEWl
-   wXJI79CKFFCRfHTyYxqvwVMoOGMwnyhoGoXYdJPLu5fEG+cKW3k+6z1t9
-   RVx2ao1QDSOimY105W7iYKPhSsTCu1FIq5Rg686/KPMPVPh3fseJzPrHB
-   Ey2nkShEbben+2y0tRDqBVFboH+AgEcz0MaUBrIjrvHkXMWRQ3rBvh4Nl
-   wC/sI14BnJ4ILhPLRQN6RKSNofGhq9Fnvfl66HApgmByfkDGwRN0ugELD
-   rrm06xzF65n0MUgsSQGGJXTniw3eBbqKa2V2pMYdsPxnEklz22He6YT9D
-   w==;
+  bh=w2+6B68URgmKUVKHyS0K12IEVdDx3OVx3qeOmOW7/u8=;
+  b=QOHxlzrQUM2Nz4j8qTFJmw/aWGEObVGFfH7W2bAbUx9RQG91N8z1o1gN
+   1pe1Y2kEq///IFZrqElbxrdUwzbfmxuRNCjeNPxFIdE2zJ8HJj3X6DIiD
+   E4/MdFbK81zaJW+jpuXm5jaisRqTaMPa3LdpZOt4l9fZhX/T2u7N7Fo8S
+   8joCUc1nJt8SPOHDCe0hwzroKjZmjtx9U4xw6v/n6KTSzpFLz3jvuWWTQ
+   vXBv3bsssVqfXSJzH6ifjS0aGk968D3HH1q4LivqJLT/+O3ZvgVfEzQ00
+   H/AXDLNyeAd4FL93/RoY+EmGTofxoLOoJar0LwogjVXkBrvWGL7/Sq1cg
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.99,195,1677567600"; 
-   d="scan'208,223";a="210429983"
+   d="scan'208";a="220867924"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Apr 2023 01:20:55 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Apr 2023 01:27:04 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 14 Apr 2023 01:20:52 -0700
+ 15.1.2507.21; Fri, 14 Apr 2023 01:27:03 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Fri, 14 Apr 2023 01:20:51 -0700
+ 15.1.2507.21 via Frontend Transport; Fri, 14 Apr 2023 01:27:02 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next] net: lan966x: Fix lan966x_ifh_get
-Date:   Fri, 14 Apr 2023 10:20:47 +0200
-Message-ID: <20230414082047.1320947-1-horatiu.vultur@microchip.com>
+CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next] net: phy: micrel: Fix PTP_PF_PEROUT for lan8841
+Date:   Fri, 14 Apr 2023 10:26:59 +0200
+Message-ID: <20230414082659.1321686-1-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -60,38 +60,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From time to time, it was observed that the nanosecond part of the
-received timestamp, which is extracted from the IFH, it was actually
-bigger than 1 second. So then when actually calculating the full
-received timestamp, based on the nanosecond part from IFH and the second
-part which is read from HW, it was actually wrong.
+If the 1PPS output was enabled and then lan8841 was configured to be a
+follower, then target clock which is used to generate the 1PPS was not
+configure correctly. The problem was that for each adjustments of the
+time, also the nanosecond part of the target clock was changed.
+Therefore the initial nanosecond part of the target clock was changed.
+The issue can be observed if both the leader and the follower are
+generating 1PPS and see that their PPS are not aligned even if the time
+is allined.
+The fix consists of not modifying the nanosecond part of the target
+clock when adjusting the time. In this way the 1PPS get also aligned.
 
-The issue seems to be inside the function lan966x_ifh_get, which
-extracts information from an IFH(which is an byte array) and returns the
-value in a u64. When extracting the timestamp value from the IFH, which
-starts at bit 192 and have the size of 32 bits, then if the most
-significant bit was set in the timestamp, then this bit was extended
-then the return value became 0xffffffff... . To fix this, make sure to
-clear all the other bits before returning the value.
-
-Fixes: fd7627833ddf ("net: lan966x: Stop using packing library")
+Fixes: e4ed8ba08e3f ("net: phy: micrel: Add support for PTP_PF_PEROUT for lan8841")
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/micrel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 80e2ea7e6ce8a..508e494dcc342 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -608,6 +608,7 @@ static u64 lan966x_ifh_get(u8 *ifh, size_t pos, size_t length)
- 			val |= (1 << i);
- 	}
- 
-+	val &= GENMASK(length, 0);
- 	return val;
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 3fee682603ef5..382144a6306f0 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -4025,7 +4025,7 @@ static int lan8841_ptp_update_target(struct kszphy_ptp_priv *ptp_priv,
+ 				     const struct timespec64 *ts)
+ {
+ 	return lan8841_ptp_set_target(ptp_priv, LAN8841_EVENT_A,
+-				      ts->tv_sec + LAN8841_BUFFER_TIME, ts->tv_nsec);
++				      ts->tv_sec + LAN8841_BUFFER_TIME, 0);
  }
  
+ #define LAN8841_PTP_LTC_TARGET_RELOAD_SEC_HI(event)	((event) == LAN8841_EVENT_A ? 282 : 292)
 -- 
 2.38.0
 
