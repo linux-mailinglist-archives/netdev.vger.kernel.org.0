@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A448D6E2C47
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 00:09:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 597396E2C49
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 00:09:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229997AbjDNWJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 18:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49182 "EHLO
+        id S230019AbjDNWJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 18:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbjDNWJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 18:09:46 -0400
+        with ESMTP id S230003AbjDNWJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 18:09:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34FC40FD
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 15:09:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891DA3C3B
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 15:09:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F84764A97
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 22:09:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE49EC433EF;
-        Fri, 14 Apr 2023 22:09:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14ED664A8E
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 22:09:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71C13C433D2;
+        Fri, 14 Apr 2023 22:09:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681510183;
-        bh=cvIAbB0drJYOcOCZ4cXPXyjoUnGjRXHJx9KY/qO/9qU=;
+        s=k20201202; t=1681510184;
+        bh=i9DL9s3BoL/wYqCIUJowI6b2kRc4KAzj5kqKFok0P8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ABNN8hu8tY/24SKUC1Gke9+b0p0/Mjzh7sODtyAvdNlVSiFxW7+YM7RBs7C9VDZ2J
-         zqaZkV53+QcK+TfRVBJM5FxsRidJ1HO20TXo8bpj5uSmzOZoqW3S0KWodqfD2HCrkz
-         f84BX27xEwoFSOuLwGDy9A6+7Ifvk3Kp4u4g3ucB3XOte6Ysnmatr8vt2zC4HDNpX0
-         GpO2BwKxk+I9ASlgkn0zhuq7riuMBcLJhCk99QI1s/P9zReNJvt1bxBBiICSb7L3V+
-         zP5cQitw4TaRHXy+RHQakkPKpTjGWlRF7QNiSW4T9SvR5I558Oqq/19HjjG+oEB4UP
-         lvnrwivauVEgA==
+        b=ftyw5ryhhJy8hbdmGx8r032KuxKge8xVl2H2OMbbv/a55+lJNcnOBn0O9Hi1ZlIfn
+         AKr3nPhRPSa6iZGCVsRmI/9rVRoOg/xJwSXfiFdLfWndZa0Q97DQa77rbAPLRq1z61
+         x/ljJ9EiGcpo7U0ONddj07NOSK8xz0DjOxigMKMn4pd48C1lpVx89qoadEIpeoPYCG
+         5iwfnYyzr5CHCCgvVYR6i7R+N1QUCvUPv+y/33YjgRkOY4/pTQWVxB+dMdvRuRd5fR
+         MvayMfE+u+FsPUj0ZztHTIe4HqA04KBe3QrykBeZD9DreyhJxottotjrTVd5Wq20a/
+         PoXyYqvJ4SGoQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,10 +39,11 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Muhammad Sammar <muhammads@nvidia.com>,
         Alex Vesker <valex@nvidia.com>
-Subject: [net-next 02/15] net/mlx5: DR, Add cache for modify header pattern
-Date:   Fri, 14 Apr 2023 15:09:26 -0700
-Message-Id: <20230414220939.136865-3-saeed@kernel.org>
+Subject: [net-next 03/15] net/mlx5: DR, Split chunk allocation to HW-dependent ways
+Date:   Fri, 14 Apr 2023 15:09:27 -0700
+Message-Id: <20230414220939.136865-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230414220939.136865-1-saeed@kernel.org>
 References: <20230414220939.136865-1-saeed@kernel.org>
@@ -60,332 +61,257 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Starting with ConnectX-6 Dx, we use new design of modify_header FW object.
-The current modify_header object allows for having only limited number
-of FW objects, so the new design of pattern and argument allows pattern
-reuse, saving memory, and having a large number of modify_header objects.
+This way we are able to allocate chunk for modify_headers from 2 types:
+STEv0 that is allocated from the action area, and STEv1 that is allocating
+the chunks from the special area for patterns.
 
+Signed-off-by: Muhammad Sammar <muhammads@nvidia.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Reviewed-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_ptrn.c     | 198 ++++++++++++++++++
- .../mellanox/mlx5/core/steering/dr_send.c     |  20 ++
- .../mellanox/mlx5/core/steering/dr_types.h    |  18 ++
- 3 files changed, 236 insertions(+)
+ .../mellanox/mlx5/core/steering/dr_action.c   | 22 ++-----
+ .../mellanox/mlx5/core/steering/dr_ste.c      | 57 +++++++++++++++++++
+ .../mellanox/mlx5/core/steering/dr_ste.h      |  2 +
+ .../mellanox/mlx5/core/steering/dr_ste_v1.c   | 29 ++++++++++
+ .../mellanox/mlx5/core/steering/dr_ste_v1.h   |  2 +
+ .../mellanox/mlx5/core/steering/dr_ste_v2.c   |  2 +
+ .../mellanox/mlx5/core/steering/dr_types.h    |  2 +
+ 7 files changed, 98 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ptrn.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ptrn.c
-index 698e79d278bf..13e06a6a6b22 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ptrn.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ptrn.c
-@@ -2,12 +2,198 @@
- // Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+index 724e4d9e70ac..732a4002eab5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+@@ -1961,7 +1961,6 @@ static int dr_action_create_modify_action(struct mlx5dr_domain *dmn,
+ 					  __be64 actions[],
+ 					  struct mlx5dr_action *action)
+ {
+-	struct mlx5dr_icm_chunk *chunk;
+ 	u32 max_hw_actions;
+ 	u32 num_hw_actions;
+ 	u32 num_sw_actions;
+@@ -1978,15 +1977,9 @@ static int dr_action_create_modify_action(struct mlx5dr_domain *dmn,
+ 		return -EINVAL;
+ 	}
  
- #include "dr_types.h"
-+#include "mlx5_ifc_dr_ste_v1.h"
-+
-+enum dr_ptrn_modify_hdr_action_id {
-+	DR_PTRN_MODIFY_HDR_ACTION_ID_NOP = 0x00,
-+	DR_PTRN_MODIFY_HDR_ACTION_ID_COPY = 0x05,
-+	DR_PTRN_MODIFY_HDR_ACTION_ID_SET = 0x06,
-+	DR_PTRN_MODIFY_HDR_ACTION_ID_ADD = 0x07,
-+	DR_PTRN_MODIFY_HDR_ACTION_ID_INSERT_INLINE = 0x0a,
-+};
+-	chunk = mlx5dr_icm_alloc_chunk(dmn->action_icm_pool, DR_CHUNK_SIZE_16);
+-	if (!chunk)
+-		return -ENOMEM;
+-
+ 	hw_actions = kcalloc(1, max_hw_actions * DR_MODIFY_ACTION_SIZE, GFP_KERNEL);
+-	if (!hw_actions) {
+-		ret = -ENOMEM;
+-		goto free_chunk;
+-	}
++	if (!hw_actions)
++		return -ENOMEM;
  
- struct mlx5dr_ptrn_mgr {
- 	struct mlx5dr_domain *dmn;
- 	struct mlx5dr_icm_pool *ptrn_icm_pool;
-+	/* cache for modify_header ptrn */
-+	struct list_head ptrn_list;
-+	struct mutex modify_hdr_mutex; /* protect the pattern cache */
- };
+ 	ret = dr_actions_convert_modify_header(action,
+ 					       max_hw_actions,
+@@ -1998,15 +1991,11 @@ static int dr_action_create_modify_action(struct mlx5dr_domain *dmn,
+ 	if (ret)
+ 		goto free_hw_actions;
  
-+/* Cache structure and functions */
-+static bool dr_ptrn_compare_modify_hdr(size_t cur_num_of_actions,
-+				       __be64 cur_hw_actions[],
-+				       size_t num_of_actions,
-+				       __be64 hw_actions[])
+-	action->rewrite->chunk = chunk;
+ 	action->rewrite->modify_ttl = modify_ttl;
+ 	action->rewrite->data = (u8 *)hw_actions;
+ 	action->rewrite->num_of_actions = num_hw_actions;
+-	action->rewrite->index = (mlx5dr_icm_pool_get_chunk_icm_addr(chunk) -
+-				  dmn->info.caps.hdr_modify_icm_addr) /
+-				  DR_ACTION_CACHE_LINE_SIZE;
+ 
+-	ret = mlx5dr_send_postsend_action(dmn, action);
++	ret = mlx5dr_ste_alloc_modify_hdr(action);
+ 	if (ret)
+ 		goto free_hw_actions;
+ 
+@@ -2014,8 +2003,6 @@ static int dr_action_create_modify_action(struct mlx5dr_domain *dmn,
+ 
+ free_hw_actions:
+ 	kfree(hw_actions);
+-free_chunk:
+-	mlx5dr_icm_free_chunk(chunk);
+ 	return ret;
+ }
+ 
+@@ -2171,8 +2158,7 @@ int mlx5dr_action_destroy(struct mlx5dr_action *action)
+ 		refcount_dec(&action->reformat->dmn->refcount);
+ 		break;
+ 	case DR_ACTION_TYP_MODIFY_HDR:
+-		mlx5dr_icm_free_chunk(action->rewrite->chunk);
+-		kfree(action->rewrite->data);
++		mlx5dr_ste_free_modify_hdr(action);
+ 		refcount_dec(&action->rewrite->dmn->refcount);
+ 		break;
+ 	case DR_ACTION_TYP_SAMPLER:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+index 1e15f605df6e..9413aaf51251 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+@@ -633,6 +633,63 @@ int mlx5dr_ste_set_action_decap_l3_list(struct mlx5dr_ste_ctx *ste_ctx,
+ 						 used_hw_action_num);
+ }
+ 
++static int
++dr_ste_alloc_modify_hdr_chunk(struct mlx5dr_action *action)
 +{
-+	int i;
-+
-+	if (cur_num_of_actions != num_of_actions)
-+		return false;
-+
-+	for (i = 0; i < num_of_actions; i++) {
-+		u8 action_id =
-+			MLX5_GET(ste_double_action_set_v1, &hw_actions[i], action_id);
-+
-+		if (action_id == DR_PTRN_MODIFY_HDR_ACTION_ID_COPY) {
-+			if (hw_actions[i] != cur_hw_actions[i])
-+				return false;
-+		} else {
-+			if ((__force __be32)hw_actions[i] !=
-+			    (__force __be32)cur_hw_actions[i])
-+				return false;
-+		}
-+	}
-+
-+	return true;
-+}
-+
-+static struct mlx5dr_ptrn_obj *
-+dr_ptrn_find_cached_pattern(struct mlx5dr_ptrn_mgr *mgr,
-+			    size_t num_of_actions,
-+			    __be64 hw_actions[])
-+{
-+	struct mlx5dr_ptrn_obj *cached_pattern;
-+	struct mlx5dr_ptrn_obj *tmp;
-+
-+	list_for_each_entry_safe(cached_pattern, tmp, &mgr->ptrn_list, list) {
-+		if (dr_ptrn_compare_modify_hdr(cached_pattern->num_of_actions,
-+					       (__be64 *)cached_pattern->data,
-+					       num_of_actions,
-+					       hw_actions)) {
-+			/* Put this pattern in the head of the list,
-+			 * as we will probably use it more.
-+			 */
-+			list_del_init(&cached_pattern->list);
-+			list_add(&cached_pattern->list, &mgr->ptrn_list);
-+			return cached_pattern;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+static struct mlx5dr_ptrn_obj *
-+dr_ptrn_alloc_pattern(struct mlx5dr_ptrn_mgr *mgr,
-+		      u16 num_of_actions, u8 *data)
-+{
-+	struct mlx5dr_ptrn_obj *pattern;
-+	struct mlx5dr_icm_chunk *chunk;
++	struct mlx5dr_domain *dmn = action->rewrite->dmn;
 +	u32 chunk_size;
-+	u32 index;
++	int ret;
 +
-+	chunk_size = ilog2(num_of_actions);
++	chunk_size = ilog2(roundup_pow_of_two(action->rewrite->num_of_actions));
++
 +	/* HW modify action index granularity is at least 64B */
 +	chunk_size = max_t(u32, chunk_size, DR_CHUNK_SIZE_8);
 +
-+	chunk = mlx5dr_icm_alloc_chunk(mgr->ptrn_icm_pool, chunk_size);
-+	if (!chunk)
-+		return NULL;
++	action->rewrite->chunk = mlx5dr_icm_alloc_chunk(dmn->action_icm_pool,
++							chunk_size);
++	if (!action->rewrite->chunk)
++		return -ENOMEM;
 +
-+	index = (mlx5dr_icm_pool_get_chunk_icm_addr(chunk) -
-+		 mgr->dmn->info.caps.hdr_modify_pattern_icm_addr) /
-+		DR_ACTION_CACHE_LINE_SIZE;
++	action->rewrite->index = (mlx5dr_icm_pool_get_chunk_icm_addr(action->rewrite->chunk) -
++				  dmn->info.caps.hdr_modify_icm_addr) /
++				 DR_ACTION_CACHE_LINE_SIZE;
 +
-+	pattern = kzalloc(sizeof(*pattern), GFP_KERNEL);
-+	if (!pattern)
++	ret = mlx5dr_send_postsend_action(action->rewrite->dmn, action);
++	if (ret)
 +		goto free_chunk;
 +
-+	pattern->data = kzalloc(num_of_actions * DR_MODIFY_ACTION_SIZE *
-+				sizeof(*pattern->data), GFP_KERNEL);
-+	if (!pattern->data)
-+		goto free_pattern;
++	return 0;
 +
-+	memcpy(pattern->data, data, num_of_actions * DR_MODIFY_ACTION_SIZE);
-+	pattern->chunk = chunk;
-+	pattern->index = index;
-+	pattern->num_of_actions = num_of_actions;
-+
-+	list_add(&pattern->list, &mgr->ptrn_list);
-+	refcount_set(&pattern->refcount, 1);
-+
-+	return pattern;
-+
-+free_pattern:
-+	kfree(pattern);
 +free_chunk:
-+	mlx5dr_icm_free_chunk(chunk);
-+	return NULL;
++	mlx5dr_icm_free_chunk(action->rewrite->chunk);
++	return -ENOMEM;
 +}
 +
-+static void
-+dr_ptrn_free_pattern(struct mlx5dr_ptrn_obj *pattern)
++static void dr_ste_free_modify_hdr_chunk(struct mlx5dr_action *action)
 +{
-+	list_del(&pattern->list);
-+	mlx5dr_icm_free_chunk(pattern->chunk);
-+	kfree(pattern->data);
-+	kfree(pattern);
++	mlx5dr_icm_free_chunk(action->rewrite->chunk);
 +}
 +
-+struct mlx5dr_ptrn_obj *
-+mlx5dr_ptrn_cache_get_pattern(struct mlx5dr_ptrn_mgr *mgr,
-+			      u16 num_of_actions,
-+			      u8 *data)
++int mlx5dr_ste_alloc_modify_hdr(struct mlx5dr_action *action)
 +{
-+	struct mlx5dr_ptrn_obj *pattern;
-+	u64 *hw_actions;
-+	u8 action_id;
-+	int i;
++	struct mlx5dr_domain *dmn = action->rewrite->dmn;
 +
-+	mutex_lock(&mgr->modify_hdr_mutex);
-+	pattern = dr_ptrn_find_cached_pattern(mgr,
-+					      num_of_actions,
-+					      (__be64 *)data);
-+	if (!pattern) {
-+		/* Alloc and add new pattern to cache */
-+		pattern = dr_ptrn_alloc_pattern(mgr, num_of_actions, data);
-+		if (!pattern)
-+			goto out_unlock;
++	if (mlx5dr_domain_is_support_ptrn_arg(dmn))
++		return dmn->ste_ctx->alloc_modify_hdr_chunk(action);
 +
-+		hw_actions = (u64 *)pattern->data;
-+		/* Here we mask the pattern data to create a valid pattern
-+		 * since we do an OR operation between the arg and pattern
-+		 */
-+		for (i = 0; i < num_of_actions; i++) {
-+			action_id = MLX5_GET(ste_double_action_set_v1, &hw_actions[i], action_id);
-+
-+			if (action_id == DR_PTRN_MODIFY_HDR_ACTION_ID_SET ||
-+			    action_id == DR_PTRN_MODIFY_HDR_ACTION_ID_ADD ||
-+			    action_id == DR_PTRN_MODIFY_HDR_ACTION_ID_INSERT_INLINE)
-+				MLX5_SET(ste_double_action_set_v1, &hw_actions[i], inline_data, 0);
-+		}
-+
-+		if (mlx5dr_send_postsend_pattern(mgr->dmn, pattern->chunk,
-+						 num_of_actions, pattern->data)) {
-+			refcount_dec(&pattern->refcount);
-+			goto free_pattern;
-+		}
-+	} else {
-+		refcount_inc(&pattern->refcount);
-+	}
-+
-+	mutex_unlock(&mgr->modify_hdr_mutex);
-+
-+	return pattern;
-+
-+free_pattern:
-+	dr_ptrn_free_pattern(pattern);
-+out_unlock:
-+	mutex_unlock(&mgr->modify_hdr_mutex);
-+	return NULL;
++	return dr_ste_alloc_modify_hdr_chunk(action);
 +}
 +
-+void
-+mlx5dr_ptrn_cache_put_pattern(struct mlx5dr_ptrn_mgr *mgr,
-+			      struct mlx5dr_ptrn_obj *pattern)
++void mlx5dr_ste_free_modify_hdr(struct mlx5dr_action *action)
 +{
-+	mutex_lock(&mgr->modify_hdr_mutex);
++	struct mlx5dr_domain *dmn = action->rewrite->dmn;
 +
-+	if (refcount_dec_and_test(&pattern->refcount))
-+		dr_ptrn_free_pattern(pattern);
++	if (mlx5dr_domain_is_support_ptrn_arg(dmn))
++		return dmn->ste_ctx->dealloc_modify_hdr_chunk(action);
 +
-+	mutex_unlock(&mgr->modify_hdr_mutex);
++	return dr_ste_free_modify_hdr_chunk(action);
 +}
 +
- struct mlx5dr_ptrn_mgr *mlx5dr_ptrn_mgr_create(struct mlx5dr_domain *dmn)
+ static int dr_ste_build_pre_check_spec(struct mlx5dr_domain *dmn,
+ 				       struct mlx5dr_match_spec *spec)
  {
- 	struct mlx5dr_ptrn_mgr *mgr;
-@@ -26,6 +212,7 @@ struct mlx5dr_ptrn_mgr *mlx5dr_ptrn_mgr_create(struct mlx5dr_domain *dmn)
- 		goto free_mgr;
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.h
+index 7075142bcfb6..54a6619c3ecb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.h
+@@ -195,6 +195,8 @@ struct mlx5dr_ste_ctx {
+ 					u8 *hw_action,
+ 					u32 hw_action_sz,
+ 					u16 *used_hw_action_num);
++	int (*alloc_modify_hdr_chunk)(struct mlx5dr_action *action);
++	void (*dealloc_modify_hdr_chunk)(struct mlx5dr_action *action);
  
-+	INIT_LIST_HEAD(&mgr->ptrn_list);
- 	return mgr;
- 
- free_mgr:
-@@ -35,9 +222,20 @@ struct mlx5dr_ptrn_mgr *mlx5dr_ptrn_mgr_create(struct mlx5dr_domain *dmn)
- 
- void mlx5dr_ptrn_mgr_destroy(struct mlx5dr_ptrn_mgr *mgr)
- {
-+	struct mlx5dr_ptrn_obj *pattern;
-+	struct mlx5dr_ptrn_obj *tmp;
-+
- 	if (!mgr)
- 		return;
- 
-+	WARN_ON(!list_empty(&mgr->ptrn_list));
-+
-+	list_for_each_entry_safe(pattern, tmp, &mgr->ptrn_list, list) {
-+		list_del(&pattern->list);
-+		kfree(pattern->data);
-+		kfree(pattern);
-+	}
-+
- 	mlx5dr_icm_pool_destroy(mgr->ptrn_icm_pool);
- 	kfree(mgr);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-index 00bb65613300..78756840d263 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -754,6 +754,26 @@ int mlx5dr_send_postsend_action(struct mlx5dr_domain *dmn,
- 	return dr_postsend_icm_data(dmn, &send_info);
+ 	/* Send */
+ 	void (*prepare_for_postsend)(u8 *hw_ste_p, u32 ste_size);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
+index 27cc6931bbde..cf8508139f55 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.c
+@@ -2176,6 +2176,32 @@ dr_ste_v1_build_tnl_gtpu_flex_parser_1_init(struct mlx5dr_ste_build *sb,
+ 	sb->ste_build_tag_func = &dr_ste_v1_build_tnl_gtpu_flex_parser_1_tag;
  }
  
-+int mlx5dr_send_postsend_pattern(struct mlx5dr_domain *dmn,
-+				 struct mlx5dr_icm_chunk *chunk,
-+				 u16 num_of_actions,
-+				 u8 *data)
++int dr_ste_v1_alloc_modify_hdr_ptrn_arg(struct mlx5dr_action *action)
 +{
-+	struct postsend_info send_info = {};
-+	int ret;
++	struct mlx5dr_ptrn_mgr *ptrn_mgr;
 +
-+	send_info.write.addr = (uintptr_t)data;
-+	send_info.write.length = num_of_actions * DR_MODIFY_ACTION_SIZE;
-+	send_info.remote_addr = mlx5dr_icm_pool_get_chunk_mr_addr(chunk);
-+	send_info.rkey = mlx5dr_icm_pool_get_chunk_rkey(chunk);
++	ptrn_mgr = action->rewrite->dmn->ptrn_mgr;
++	if (!ptrn_mgr)
++		return -EOPNOTSUPP;
 +
-+	ret = dr_postsend_icm_data(dmn, &send_info);
-+	if (ret)
-+		return ret;
++	action->rewrite->ptrn =
++		mlx5dr_ptrn_cache_get_pattern(ptrn_mgr,
++					      action->rewrite->num_of_actions,
++					      action->rewrite->data);
++	if (!action->rewrite->ptrn) {
++		mlx5dr_err(action->rewrite->dmn, "Failed to get pattern\n");
++		return -EAGAIN;
++	}
 +
 +	return 0;
 +}
 +
- static int dr_modify_qp_rst2init(struct mlx5_core_dev *mdev,
- 				 struct mlx5dr_qp *dr_qp,
- 				 int port)
++void dr_ste_v1_free_modify_hdr_ptrn_arg(struct mlx5dr_action *action)
++{
++	mlx5dr_ptrn_cache_put_pattern(action->rewrite->dmn->ptrn_mgr,
++				      action->rewrite->ptrn);
++}
++
+ static struct mlx5dr_ste_ctx ste_ctx_v1 = {
+ 	/* Builders */
+ 	.build_eth_l2_src_dst_init	= &dr_ste_v1_build_eth_l2_src_dst_init,
+@@ -2232,6 +2258,9 @@ static struct mlx5dr_ste_ctx ste_ctx_v1 = {
+ 	.set_action_add			= &dr_ste_v1_set_action_add,
+ 	.set_action_copy		= &dr_ste_v1_set_action_copy,
+ 	.set_action_decap_l3_list	= &dr_ste_v1_set_action_decap_l3_list,
++	.alloc_modify_hdr_chunk		= &dr_ste_v1_alloc_modify_hdr_ptrn_arg,
++	.dealloc_modify_hdr_chunk	= &dr_ste_v1_free_modify_hdr_ptrn_arg,
++
+ 	/* Send */
+ 	.prepare_for_postsend		= &dr_ste_v1_prepare_for_postsend,
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.h
+index b5c0f0f8392f..e2fc69867088 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v1.h
+@@ -31,6 +31,8 @@ void dr_ste_v1_set_action_copy(u8 *d_action, u8 dst_hw_field, u8 dst_shifter,
+ 			       u8 dst_len, u8 src_hw_field, u8 src_shifter);
+ int dr_ste_v1_set_action_decap_l3_list(void *data, u32 data_sz, u8 *hw_action,
+ 				       u32 hw_action_sz, u16 *used_hw_action_num);
++int dr_ste_v1_alloc_modify_hdr_ptrn_arg(struct mlx5dr_action *action);
++void dr_ste_v1_free_modify_hdr_ptrn_arg(struct mlx5dr_action *action);
+ void dr_ste_v1_build_eth_l2_src_dst_init(struct mlx5dr_ste_build *sb,
+ 					 struct mlx5dr_match_param *mask);
+ void dr_ste_v1_build_eth_l3_ipv6_dst_init(struct mlx5dr_ste_build *sb,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v2.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v2.c
+index cf1a3c9a1cf4..808b013cf48c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v2.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste_v2.c
+@@ -221,6 +221,8 @@ static struct mlx5dr_ste_ctx ste_ctx_v2 = {
+ 	.set_action_add			= &dr_ste_v1_set_action_add,
+ 	.set_action_copy		= &dr_ste_v1_set_action_copy,
+ 	.set_action_decap_l3_list	= &dr_ste_v1_set_action_decap_l3_list,
++	.alloc_modify_hdr_chunk		= &dr_ste_v1_alloc_modify_hdr_ptrn_arg,
++	.dealloc_modify_hdr_chunk	= &dr_ste_v1_free_modify_hdr_ptrn_arg,
+ 
+ 	/* Send */
+ 	.prepare_for_postsend		= &dr_ste_v1_prepare_for_postsend,
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 7453fc6df494..097f1f389b76 100644
+index 097f1f389b76..a1c549fed9ca 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -1002,6 +1002,15 @@ struct mlx5dr_ste_action_modify_field {
- 	u8 l4_type;
- };
+@@ -335,6 +335,8 @@ int mlx5dr_ste_set_action_decap_l3_list(struct mlx5dr_ste_ctx *ste_ctx,
+ 					u8 *hw_action,
+ 					u32 hw_action_sz,
+ 					u16 *used_hw_action_num);
++int mlx5dr_ste_alloc_modify_hdr(struct mlx5dr_action *action);
++void mlx5dr_ste_free_modify_hdr(struct mlx5dr_action *action);
  
-+struct mlx5dr_ptrn_obj {
-+	struct mlx5dr_icm_chunk *chunk;
-+	u8 *data;
-+	u16 num_of_actions;
-+	u32 index;
-+	refcount_t refcount;
-+	struct list_head list;
-+};
-+
- struct mlx5dr_action_rewrite {
- 	struct mlx5dr_domain *dmn;
- 	struct mlx5dr_icm_chunk *chunk;
-@@ -1011,6 +1020,7 @@ struct mlx5dr_action_rewrite {
- 	u8 allow_rx:1;
- 	u8 allow_tx:1;
- 	u8 modify_ttl:1;
-+	struct mlx5dr_ptrn_obj *ptrn;
- };
- 
- struct mlx5dr_action_reformat {
-@@ -1448,6 +1458,10 @@ int mlx5dr_send_postsend_formatted_htbl(struct mlx5dr_domain *dmn,
- 					bool update_hw_ste);
- int mlx5dr_send_postsend_action(struct mlx5dr_domain *dmn,
- 				struct mlx5dr_action *action);
-+int mlx5dr_send_postsend_pattern(struct mlx5dr_domain *dmn,
-+				 struct mlx5dr_icm_chunk *chunk,
-+				 u16 num_of_actions,
-+				 u8 *data);
- 
- int mlx5dr_send_info_pool_create(struct mlx5dr_domain *dmn);
- void mlx5dr_send_info_pool_destroy(struct mlx5dr_domain *dmn);
-@@ -1537,5 +1551,9 @@ static inline bool mlx5dr_supp_match_ranges(struct mlx5_core_dev *dev)
- bool mlx5dr_domain_is_support_ptrn_arg(struct mlx5dr_domain *dmn);
- struct mlx5dr_ptrn_mgr *mlx5dr_ptrn_mgr_create(struct mlx5dr_domain *dmn);
- void mlx5dr_ptrn_mgr_destroy(struct mlx5dr_ptrn_mgr *mgr);
-+struct mlx5dr_ptrn_obj *mlx5dr_ptrn_cache_get_pattern(struct mlx5dr_ptrn_mgr *mgr,
-+						      u16 num_of_actions, u8 *data);
-+void mlx5dr_ptrn_cache_put_pattern(struct mlx5dr_ptrn_mgr *mgr,
-+				   struct mlx5dr_ptrn_obj *pattern);
- 
- #endif  /* _DR_TYPES_H_ */
+ const struct mlx5dr_ste_action_modify_field *
+ mlx5dr_ste_conv_modify_hdr_sw_field(struct mlx5dr_ste_ctx *ste_ctx, u16 sw_field);
 -- 
 2.39.2
 
