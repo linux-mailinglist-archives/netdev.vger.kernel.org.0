@@ -2,129 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 017E96E2828
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 18:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E3916E2841
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 18:26:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbjDNQPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 12:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
+        id S229845AbjDNQ0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 12:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbjDNQPq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 12:15:46 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616C0188;
-        Fri, 14 Apr 2023 09:15:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=y77Vn1iQ2Yr8r94PJbu25E6c2t/sA9gRbZHB/9bHBWk=; b=sgynuWJ1+GOxbplFPJ2IKiq5oX
-        /0JSnWlKYR9E1aamdcGDR2pOlNQXbnqQdu1Z5TcAiXan78/lTWDYRcvX/2vTAk6OIrn9E5UjMFrD8
-        TaREFVUstQ4tCbiJYRTBJajZo4WrOzgEmroxCtNOFm1bon6dQdCmFT19UH/RGKTm5TwE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pnM5C-00AIdW-9F; Fri, 14 Apr 2023 18:15:30 +0200
-Date:   Fri, 14 Apr 2023 18:15:30 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Herve Codina <herve.codina@bootlin.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-phy@lists.infradead.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [RFC PATCH 0/4] Add support for QMC HDLC and PHY
-Message-ID: <c99a99c5-139d-41c5-89a4-0722e0627aea@lunn.ch>
-References: <20230323103154.264546-1-herve.codina@bootlin.com>
- <885e4f20-614a-4b8e-827e-eb978480af87@lunn.ch>
- <20230414165504.7da4116f@bootlin.com>
+        with ESMTP id S229651AbjDNQ0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 12:26:08 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231CA26A6
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 09:26:06 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id u12so6389734lfu.5
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 09:26:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681489564; x=1684081564;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=cmnRNEYCLIJ7M4GcMMXsK4qvUaXrsYePBaOvZ/Hf4J8=;
+        b=VP894qxw55hAiuE3tVmhkZEtJd3Co2Inwou1jXUSQ7BDmin3lj9Lxt4iiDItvufcW+
+         2TVUSHwlluXBxBczo1sarTV8cnnxrU4cXI4zJ6sW0VZQ7nIRdqhYFbbeU23EJGXrjpqe
+         BVghYOAA7I80kF+mng70sOPrjCQ1Wz3KEOUL6mneNAdvFzW1UMDn3WgKuIB+eGI2WZr3
+         X4P2H0Vb/0dqnAJ1AOwqW/urUnzlxtQY9Ft/FcxVF+QH8EzNMM6nuY3sKqRZDGAqz6pp
+         0y6GcF6UOdJ3pz2FdgC+GclcuK97+CH/05lk1OS/l/6AQZH+nVwTMNKP9tcR7RNMgizR
+         IJTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681489564; x=1684081564;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cmnRNEYCLIJ7M4GcMMXsK4qvUaXrsYePBaOvZ/Hf4J8=;
+        b=WzLoOzvtMlWvNkTZDbjyLmbtKuF7gvkFE/3Bal7H/dVcI2e5qiizUDno+YmYborr4h
+         z1Ow+S62U6CFAYSMdp6fqyg85Wkk12qga8LgNglJO9gfeiAcVK8MAcuLiiVolQPkSDgA
+         cQERImRvLvlxxUGDj9rc2oOQKSg0OP19BPPYVQ1PoGlijJrnYiqPPCTm4OcDueKtp4Uu
+         LKyfSn2WeSpNCQdFCZQ0ix5fEbRCoN30XuntnqXeOlP6C7QdTPgTBoF96pXM5C7oALun
+         0yqXyV9EspYp9b/5rR9uU2LF94uP95F2JFNSmw+aSAnZ0G2S7hiRx+aVdamy/xEqtFQG
+         2L9g==
+X-Gm-Message-State: AAQBX9fq4aAdhIURSz5ZoSPFUott1sc1g+pYjf5Evc1bSbIS6FyfX8i7
+        ZnylZbxBYvgTYg4dqu/EX5+/MFevxvqKig==
+X-Google-Smtp-Source: AKy350bsKaVsosBQgAbbee0hhpWknEODhDUsgbzJzm/gsoqx/Q5cuaywsJb5+dBG837cvnDTQXRhPA==
+X-Received: by 2002:a05:6512:90c:b0:4ec:83ac:675e with SMTP id e12-20020a056512090c00b004ec83ac675emr1789215lft.68.1681489564345;
+        Fri, 14 Apr 2023 09:26:04 -0700 (PDT)
+Received: from [192.168.10.208] (c-9b3c524e.03-153-73746f67.bbcust.telenor.se. [78.82.60.155])
+        by smtp.gmail.com with ESMTPSA id w2-20020ac254a2000000b004dc4bb914c7sm860854lfk.201.2023.04.14.09.26.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Apr 2023 09:26:03 -0700 (PDT)
+Message-ID: <65b59170-28c2-2e3b-f435-2bdcc6d7b10c@gmail.com>
+Date:   Fri, 14 Apr 2023 18:26:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230414165504.7da4116f@bootlin.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: iproute2 bug in json output for encap
+From:   Lars Ekman <uablrek@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+References: <e3bfc8e6-5522-4e65-373e-976388533765@gmail.com>
+ <20230414082103.1b7c0d82@hermes.local>
+ <cf099564-2b3c-e525-82cd-2d8065ba7fb3@gmail.com>
+Content-Language: en-US
+In-Reply-To: <cf099564-2b3c-e525-82cd-2d8065ba7fb3@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > When i look at the 'phy' driver, i don't see anything a typical PHY
-> > driver used for networking would have. A networking PHY driver often
-> > has the ability to change between modes, like SGMII, QSGMII, 10GBASER.
-> > The equivalent here would be changing between E1, T1 and J1. It has
-> > the ability to change the speed, 1G, 2.5G, 10G etc. This could be
-> > implied via the mode, E1 is 2.048Mbps, T1 1.544Mbps, and i forget what
-> > J1 is. The PEF2256 also seems to support E1/T1/J1. How is its modes
-> > configured?
-> 
-> All of these are set by the MFD driver during its probe().
-> The expected setting come from several properties present in the pef2256
-> DT node. The binding can be found here:
->   https://lore.kernel.org/all/20230328092645.634375-2-herve.codina@bootlin.com/
+Hi again,
 
-I'm surprised to see so much in the binding. I assume you are familiar
-with DAHDI. It allows nearly everything to be configured at
-runtime. The systems i've used allow you to select the clock
-configuration, line build out, user side vs networks side signalling
-CRC4 enables or not, etc.
+Digging a little deeper I see that the double "dst" items will cause
+problems with most (all?) json parsers. I intend to use "go" and json
+parsing will be parsed to a "map" (hash-table) so duplicate keys will
+not work.
 
-> Further more, the QMC HDLC is not the only PEF2256 consumer.
-> The PEF2256 is also used for audio path (ie audio over E1) and so the
-> configuration is shared between network and audio. The setting cannot be
-> handle by the network part as the PEF2256 must be available and correctly
-> configured even if the network part is not present.
+https://stackoverflow.com/questions/21832701/does-json-syntax-allow-duplicate-keys-in-an-object
 
-But there is no reason why the MFD could not provide a generic PHY to
-actually configure the 'PHY'. The HDLC driver can then also use the
-generic PHY. It would make your generic PHY less 'pointless'. I'm not
-saying it has to be this way, but it is an option.
- 
-> > In fact, this PHY driver does not seem to do any configuration of any
-> > sort on the framer. All it seems to be doing is take notification from
-> > one chain and send them out another chain!
-> 
-> Configuration is done by the parent MFD driver.
-> The PHY driver has nothing more to do.
-> 
-> > 
-> > I also wounder if this get_status() call is sufficient. Don't you also
-> > want Red, Yellow and Blue alarms? It is not just the carrier is down,
-> > but why it is down.
-> 
-> I don't need them in my use case but if needed can't they be added later?
-> Also, from the HDLC device point of view what can be done with these alarms?
+IMHO it would be better to use a structured "encap" item. Something like;
 
-https://elixir.bootlin.com/linux/latest/source/Documentation/networking/ethtool-netlink.rst#L472
+[ {
+    "dst": "192.168.11.0/24",
+    "encap": {
+        "protocol": "ip6",
+        "id": 0,
+        "src": "::",
+        "dst": "fd00::c0a8:2dd",
+        "hoplimit": 0,
+        "tc": 0
+    },
+    "scope": "link",
+    "flags": [ ]
+} ]
 
-> Requests link state information. Link up/down flag (as provided by
-> ``ETHTOOL_GLINK`` ioctl command) is provided. Optionally, extended
-> state might be provided as well. In general, extended state
-> describes reasons for why a port is down, or why it operates in some
-> non-obvious mode.
+Best Regards,
 
-The colour of the Alarm gives you an idea which end of the system has
-the problem.
+Lars Ekman
 
-> > Overall, i don't see why you want a PHY. What value does it add?
-> 
-> I need to detect carrier on/off according to the E1 link state.
 
-Why not just use the MFD notifier? What is the value of a PHY driver
-translating one notifier into another?
 
-And why is the notifier specific to the PEF2256? What would happen if
-i used a analog devices DS2155, DS21Q55, and DS2156, or the IDT
-82P2281? Would each have its own notifier? And hence each would need
-its own PHY which translates one notifier into another?
-
-There are enough E1/T1/J1 framers we should have a generic API between
-the framer and the HDLC device.
-
-    Andrew
+On 2023-04-14 18:12, Lars Ekman wrote:
+> Hi,
+>
+> Thanks for the reply. You are right, it is jq that eats one ot the
+> double "dst" items.
+>
+> vm-002 ~ # ip -j -p route show proto 5
+> [ {
+>         "dst": "192.168.11.0/24",
+>         "encap": "ip6",
+>         "id": 0,
+>         "src": "::",
+>         "dst": "fd00::c0a8:2dd",
+>         "hoplimit": 0,
+>         "tc": 0,
+>         "dev": "dummy0",
+>         "scope": "link",
+>         "flags": [ ]
+>     } ]
+> vm-002 ~ # ip -j -p route show proto 5 | jq
+> [
+>   {
+>     "dst": "fd00::c0a8:2dd",
+>     "encap": "ip6",
+>     "id": 0,
+>     "src": "::",
+>     "hoplimit": 0,
+>     "tc": 0,
+>     "dev": "dummy0",
+>     "scope": "link",
+>     "flags": []
+>   }
+> ]
+>
+> Sorry for the fuss.
+>
+> Best Regards,
+>
+> Lars Ekman
+>
+>
+> And btw I did upgrade *before* posting :-)
+>
+> vm-002 ~ # ip -V
+> ip utility, iproute2-6.2.0, libbpf 1.1.0
+> vm-002 ~ # uname -r
+> 6.2.7
+>
+>
+>
+> On 2023-04-14 17:21, Stephen Hemminger wrote:
+>> On Fri, 14 Apr 2023 10:29:15 +0200
+>> Lars Ekman <uablrek@gmail.com> wrote:
+>>
+>>> The destination is lost in json printout and replaced by the encap 
+>>> destination. The destination can even be ipv6 for an ipv4 route.
+>>>
+>>> Example:
+>>>
+>>> vm-002 ~ # ip route add 10.0.0.0/24 proto 5 dev ip6tnl6 encap ip6 dst 
+>>> fd00::192.168.2.221
+>>> vm-002 ~ # ip route show proto 5
+>>> 10.0.0.0/24  encap ip6 id 0 src :: dst fd00::c0a8:2dd hoplimit 0 tc 0 
+>>> dev ip6tnl6 scope link
+>>> vm-002 ~ # ip -j route show proto 5 | jq
+>>> [
+>>>    {
+>>>      "dst": "fd00::c0a8:2dd",
+>>>      "encap": "ip6",
+>>>      "id": 0,
+>>>      "src": "::",
+>>>      "hoplimit": 0,
+>>>      "tc": 0,
+>>>      "dev": "ip6tnl6",
+>>>      "scope": "link",
+>>>      "flags": []
+>>>    }
+>>> ]
+>>>
+>> Both JSON and regular output show the same address which is coming from
+>> the kernel.  I.e not a JSON problem. Also, you don't need to use jq
+>> ip has -p flag to pretty print.
+>>
+>> I can not reproduce this with current kernel and iproute2.
+>> # ip route add 192.168.11.0/24 proto 5 dev dummy0 encap ip6 dst fd00::192.168.2.221
+>>
+>> # ip route show proto 5
+>> 192.168.11.0/24  encap ip6 id 0 src :: dst fd00::c0a8:2dd hoplimit 0 tc 0 dev dummy0 scope link 
+>>
+>> # ip -j -p route show proto 5
+>> [ {
+>>         "dst": "192.168.11.0/24",
+>>         "encap": "ip6",
+>>         "id": 0,
+>>         "src": "::",
+>>         "dst": "fd00::c0a8:2dd",
+>>         "hoplimit": 0,
+>>         "tc": 0,
+>>         "dev": "dummy0",
+>>         "scope": "link",
+>>         "flags": [ ]
+>>     } ]
+>>
+>>
+>> # ip -V
+>> ip utility, iproute2-6.1.0, libbpf 1.1.0
+>> # uname -r
+>> 6.1.0-7-amd64
+>>
+>>
