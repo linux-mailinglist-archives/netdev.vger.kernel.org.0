@@ -2,232 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B53F6E2483
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 15:44:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AD426E24EF
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 16:00:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbjDNNog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 09:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35988 "EHLO
+        id S229782AbjDNN77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 09:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbjDNNof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 09:44:35 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37FF3E4
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 06:44:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681479874; x=1713015874;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rY1i2jCNOFyhxxStFDTJ1f292hh8THV7Or9esFomxwE=;
-  b=iAFTSOa66eiJp3kvxtQdKca+Shde9ZM2E5unWN0ULP6khNf55FcdVp3R
-   oXlPH28GygFENpIS9il8fXMsK9qVepom5bidl0ap2RGyvSIF51KK9ttfA
-   Nf76A9askhWvOmNxEnFWFOxXThUtqDndMDKWXhv6jkEWx30fL3ELjEH2R
-   0xo2GiA+wWure86dH4rEb7jJqMLU1YNxSusFRGsG7RopFNIRX2rK39xT+
-   lTQzbQRSTeeBQ5kXCITIq7mkvvm6lwYc1DiZAowkxlsTE4FlilG4Rh5r4
-   gKHSj+/bQ/LKYaj4ICZ4/SFavIPVTjTQm5Zbrialq2vtjrRWRVVUe+BBP
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="407339147"
-X-IronPort-AV: E=Sophos;i="5.99,195,1677571200"; 
-   d="scan'208";a="407339147"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2023 06:44:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="936014654"
-X-IronPort-AV: E=Sophos;i="5.99,195,1677571200"; 
-   d="scan'208";a="936014654"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 14 Apr 2023 06:44:32 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pnJj5-000Za9-20;
-        Fri, 14 Apr 2023 13:44:31 +0000
-Date:   Fri, 14 Apr 2023 21:43:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mengyuan Lou <mengyuanlou@net-swift.com>, netdev@vger.kernel.org
-Cc:     oe-kbuild-all@lists.linux.dev, jiawenwu@trustnetic.com,
-        mengyuanlou <mengyuanlou@net-swift.com>
-Subject: Re: [PATCH net-next 1/5] net: wangxun: libwx add tx offload functions
-Message-ID: <202304142124.tgNMARJh-lkp@intel.com>
-References: <20230414104833.42989-2-mengyuanlou@net-swift.com>
+        with ESMTP id S229534AbjDNN76 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 09:59:58 -0400
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF48DF;
+        Fri, 14 Apr 2023 06:59:56 -0700 (PDT)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.bb.i.ssi.bg (Proxmox) with ESMTP id 97B6F13867;
+        Fri, 14 Apr 2023 16:59:53 +0300 (EEST)
+Received: from ink.ssi.bg (ink.ssi.bg [193.238.174.40])
+        by mg.bb.i.ssi.bg (Proxmox) with ESMTPS id 7FDEE13863;
+        Fri, 14 Apr 2023 16:59:53 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id F11643C0323;
+        Fri, 14 Apr 2023 16:59:47 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 33EDxgWB047230;
+        Fri, 14 Apr 2023 16:59:44 +0300
+Date:   Fri, 14 Apr 2023 16:59:42 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Abhijeet Rastogi <abhijeet.1989@gmail.com>
+cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ipvs: change ip_vs_conn_tab_bits range to [8,31]
+In-Reply-To: <CACXxYfxLU0jWmq0W7YxX=44XFCGvgMX2HwTFUUHCUMjO28g5BA@mail.gmail.com>
+Message-ID: <2bc64d6d-6aa7-1477-0cd-8a41e68fcc5@ssi.bg>
+References: <20230412-increase_ipvs_conn_tab_bits-v1-1-60a4f9f4c8f2@gmail.com> <d2519ce3-e49b-a544-b79d-42905f4a2a9a@ssi.bg> <CACXxYfxLU0jWmq0W7YxX=44XFCGvgMX2HwTFUUHCUMjO28g5BA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230414104833.42989-2-mengyuanlou@net-swift.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mengyuan,
 
-kernel test robot noticed the following build errors:
+	Hello,
 
-[auto build test ERROR on net-next/main]
+On Thu, 13 Apr 2023, Abhijeet Rastogi wrote:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mengyuan-Lou/net-wangxun-libwx-add-tx-offload-functions/20230414-185326
-patch link:    https://lore.kernel.org/r/20230414104833.42989-2-mengyuanlou%40net-swift.com
-patch subject: [PATCH net-next 1/5] net: wangxun: libwx add tx offload functions
-config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20230414/202304142124.tgNMARJh-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/ca12bb428f738ec21104d37ed1a3944dc33e1121
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Mengyuan-Lou/net-wangxun-libwx-add-tx-offload-functions/20230414-185326
-        git checkout ca12bb428f738ec21104d37ed1a3944dc33e1121
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/net/ethernet/wangxun/libwx/
+> Hi Simon, Andrea and Julian,
+> 
+> I really appreciate you taking the time to respond to my patch. Some follow up
+> questions that I'll appreciate a response for.
+> 
+> @Simon Horman
+> >In any case, I think this patch is an improvement on the current situation.
+> 
+> +1 to this. I wanted to add that, we're not changing the defaults
+> here, the default still stays at 2^12. If a kernel user changes the
+> default, they probably already know what the limitations are, so I
+> personally don't think it is a big concern.
+> 
+> @Andrea Claudi
+> >for the record, RHEL ships with CONFIG_IP_VS_TAB_BITS set to 12 as
+> default.
+> 
+> Sorry, I should have been clearer. RHEL ships with the same default,
+> yes, but it doesn't have the range check, at least, on the version I'm
+> using right now (3.10.0-1160.62.1.el7.x86_64).
+> 
+> On this version, I'm able to load with bit size 30, 31 gives me error
+> regarding allocating memory (64GB host) and anything beyond 31 is
+> mysteriously switched to a lower number. The following dmesg on my
+> host confirms that the bitsize 30 worked, which is not possible
+> without a patch on the current kernel version.
+> 
+> "[Fri Apr 14 01:14:51 2023] IPVS: Connection hash table configured (size=1073741
+> 824, memory=16777216Kbytes)"
+> 
+> @Julian Anastasov,
+> >This is not a limit of number of connections. I prefer
+> not to allow value above 24 without adding checks for the
+> available memory,
+> 
+> Interesting that you brought up that number 24, that is exactly what
+> we use in production today. One IPVS node is able to handle spikes of
+> 10M active connections without issues. This patch idea originated as
+> my company is migrating from the ancient RHEL version to a somewhat
+> newer CentOS (5.* kernel) and noticed that we were unable to load the
+> ip_vs kernel module with anything greater than 20 bits. Another
+> motivation for kernel upgrade is utilizing maglev to reduce table size
+> but that's out of context in this discussion.
+> 
+> My request is, can we increase the range from 20 to something larger?
+> If 31 seems a bit excessive, maybe, we can settle for something like
+> [8,30] or even lower. With conn_tab_bits=30, it allocates 16GB at
+> initialization time, it is not entirely absurd by today's standards.
+> 
+> I can revise my patch to a lower range as you guys see fit.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304142124.tgNMARJh-lkp@intel.com/
+	Some 32-bit platforms have a 120MB limit for
+vmalloc. 24-bit table on 32-bit box will allocate 64MB.
 
-All errors (new ones prefixed by >>):
+	One way to solve the problem is to use in Kconfig:
 
-   drivers/net/ethernet/wangxun/libwx/wx_lib.c: In function 'wx_tso':
->> drivers/net/ethernet/wangxun/libwx/wx_lib.c:1118:22: error: implicit declaration of function 'csum_ipv6_magic'; did you mean 'csum_tcpudp_magic'? [-Werror=implicit-function-declaration]
-    1118 |                     ~csum_ipv6_magic(&ipv6h->saddr,
-         |                      ^~~~~~~~~~~~~~~
-         |                      csum_tcpudp_magic
-   cc1: some warnings being treated as errors
+range 8 20 if !64BIT
+range 8 27 if 64BIT
 
+	Why 30 and above do not work? Because we store the
+size, mask in 'int' which is 32 bits. But also some places do not
+allow allocations above INT_MAX, for example, kvmalloc_node().
+So, even 28 may not work for 8-byte array items on 64-bit.
 
-vim +1118 drivers/net/ethernet/wangxun/libwx/wx_lib.c
+	It would be good to check if the provided
+value does not exceed some real limits. Here is an example
+that assumes IPVS will allocate up to 1/8 of the memory,
+8 conns average in a hash row. Such checks should not
+exceed the small vmalloc area for 32-bit boxes and also
+kvmalloc allows vmalloc with huge pages. This idea is
+entirely untested/compiled. These checks apply some
+sane thresholds. If you need something above, you are
+probably allocating more than needed.
 
-  1074	
-  1075	static int wx_tso(struct wx_ring *tx_ring, struct wx_tx_buffer *first,
-  1076			  u8 *hdr_len, wx_dptype dptype)
-  1077	{
-  1078		u32 vlan_macip_lens, type_tucmd, mss_l4len_idx;
-  1079		struct net_device *netdev = tx_ring->netdev;
-  1080		struct sk_buff *skb = first->skb;
-  1081		u32 l4len, tunhdr_eiplen_tunlen;
-  1082		bool enc = skb->encapsulation;
-  1083		struct ipv6hdr *ipv6h;
-  1084		struct tcphdr *tcph;
-  1085		struct iphdr *iph;
-  1086		u8 tun_prot = 0;
-  1087		int err;
-  1088	
-  1089		if (skb->ip_summed != CHECKSUM_PARTIAL)
-  1090			return 0;
-  1091	
-  1092		if (!skb_is_gso(skb))
-  1093			return 0;
-  1094	
-  1095		err = skb_cow_head(skb, 0);
-  1096		if (err < 0)
-  1097			return err;
-  1098	
-  1099		/* indicates the inner headers in the skbuff are valid. */
-  1100		iph = enc ? inner_ip_hdr(skb) : ip_hdr(skb);
-  1101		if (iph->version == 4) {
-  1102			tcph = enc ? inner_tcp_hdr(skb) : tcp_hdr(skb);
-  1103			iph->tot_len = 0;
-  1104			iph->check = 0;
-  1105			tcph->check = ~csum_tcpudp_magic(iph->saddr,
-  1106							iph->daddr, 0,
-  1107							IPPROTO_TCP,
-  1108							0);
-  1109			first->tx_flags |= WX_TX_FLAGS_TSO |
-  1110					   WX_TX_FLAGS_CSUM |
-  1111					   WX_TX_FLAGS_IPV4 |
-  1112					   WX_TX_FLAGS_CC;
-  1113		} else if (iph->version == 6 && skb_is_gso_v6(skb)) {
-  1114			ipv6h = enc ? inner_ipv6_hdr(skb) : ipv6_hdr(skb);
-  1115			tcph = enc ? inner_tcp_hdr(skb) : tcp_hdr(skb);
-  1116			ipv6h->payload_len = 0;
-  1117			tcph->check =
-> 1118			    ~csum_ipv6_magic(&ipv6h->saddr,
-  1119					     &ipv6h->daddr,
-  1120					     0, IPPROTO_TCP, 0);
-  1121			first->tx_flags |= WX_TX_FLAGS_TSO |
-  1122					   WX_TX_FLAGS_CSUM |
-  1123					   WX_TX_FLAGS_CC;
-  1124		}
-  1125	
-  1126		/* compute header lengths */
-  1127		l4len = enc ? inner_tcp_hdrlen(skb) : tcp_hdrlen(skb);
-  1128		*hdr_len = enc ? (skb_inner_transport_header(skb) - skb->data)
-  1129			       : skb_transport_offset(skb);
-  1130		*hdr_len += l4len;
-  1131	
-  1132		/* update gso size and bytecount with header size */
-  1133		first->gso_segs = skb_shinfo(skb)->gso_segs;
-  1134		first->bytecount += (first->gso_segs - 1) * *hdr_len;
-  1135	
-  1136		/* mss_l4len_id: use 0 as index for TSO */
-  1137		mss_l4len_idx = l4len << WX_TXD_L4LEN_SHIFT;
-  1138		mss_l4len_idx |= skb_shinfo(skb)->gso_size << WX_TXD_MSS_SHIFT;
-  1139	
-  1140		/* vlan_macip_lens: HEADLEN, MACLEN, VLAN tag */
-  1141		if (enc) {
-  1142			switch (first->protocol) {
-  1143			case htons(ETH_P_IP):
-  1144				tun_prot = ip_hdr(skb)->protocol;
-  1145				first->tx_flags |= WX_TX_FLAGS_OUTER_IPV4;
-  1146				break;
-  1147			case htons(ETH_P_IPV6):
-  1148				tun_prot = ipv6_hdr(skb)->nexthdr;
-  1149				break;
-  1150			default:
-  1151				break;
-  1152			}
-  1153			switch (tun_prot) {
-  1154			case IPPROTO_UDP:
-  1155				tunhdr_eiplen_tunlen = WX_TXD_TUNNEL_UDP;
-  1156				tunhdr_eiplen_tunlen |= ((skb_network_header_len(skb) >> 2) <<
-  1157							 WX_TXD_OUTER_IPLEN_SHIFT) |
-  1158							(((skb_inner_mac_header(skb) -
-  1159							skb_transport_header(skb)) >> 1) <<
-  1160							WX_TXD_TUNNEL_LEN_SHIFT);
-  1161				break;
-  1162			case IPPROTO_GRE:
-  1163				tunhdr_eiplen_tunlen = WX_TXD_TUNNEL_GRE;
-  1164				tunhdr_eiplen_tunlen |= ((skb_network_header_len(skb) >> 2) <<
-  1165							 WX_TXD_OUTER_IPLEN_SHIFT) |
-  1166							(((skb_inner_mac_header(skb) -
-  1167							skb_transport_header(skb)) >> 1) <<
-  1168							WX_TXD_TUNNEL_LEN_SHIFT);
-  1169				break;
-  1170			case IPPROTO_IPIP:
-  1171				tunhdr_eiplen_tunlen = (((char *)inner_ip_hdr(skb) -
-  1172							(char *)ip_hdr(skb)) >> 2) <<
-  1173							WX_TXD_OUTER_IPLEN_SHIFT;
-  1174				break;
-  1175			default:
-  1176				break;
-  1177			}
-  1178			vlan_macip_lens = skb_inner_network_header_len(skb) >> 1;
-  1179		} else {
-  1180			vlan_macip_lens = skb_network_header_len(skb) >> 1;
-  1181		}
-  1182	
-  1183		vlan_macip_lens |= skb_network_offset(skb) << WX_TXD_MACLEN_SHIFT;
-  1184		vlan_macip_lens |= first->tx_flags & WX_TX_FLAGS_VLAN_MASK;
-  1185	
-  1186		type_tucmd = dptype.ptype << 24;
-  1187		if (skb->vlan_proto == htons(ETH_P_8021AD) &&
-  1188		    netdev->features & NETIF_F_HW_VLAN_STAG_TX)
-  1189			type_tucmd |= WX_SET_FLAG(first->tx_flags,
-  1190						  WX_TX_FLAGS_HW_VLAN,
-  1191						  0x1 << WX_TXD_TAG_TPID_SEL_SHIFT);
-  1192		wx_tx_ctxtdesc(tx_ring, vlan_macip_lens, tunhdr_eiplen_tunlen,
-  1193			       type_tucmd, mss_l4len_idx);
-  1194	
-  1195		return 1;
-  1196	}
-  1197	
+/* This will match the Kconfig range: */
+int min = 8;
+#if __BITS_PER_LONG > 32
+int max = 27;
+#else
+int max = 20;
+#endif
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+	We can safely use 27 in Kconfig even for 32-bit
+due to the below checks, they will clamp it to lower value.
+
+	/* Order of the available memory */
+	int max_avail = order_base_2(totalram_pages()) + PAGE_SHIFT;
+
+	We can remove this 'if' check:
+	if (ip_vs_conn_tab_bits < 8 || ip_vs_conn_tab_bits > 20) {
+		pr_info("conn_tab_bits not in [8, 20]. Using default value\n");
+		ip_vs_conn_tab_bits = CONFIG_IP_VS_TAB_BITS;
+	}
+
+	max_avail -= 3;				/* ~8 in hash row */
+	max_avail -= 3;				/* IPVS up to 1/8 of mem */
+	/* The hash table links allocated memory for IPVS conns */
+	max_avail -= order_base_2(sizeof(struct ip_vs_conn));
+	/* Range should not exceed the available memory */
+	max = clamp(max, min, max_avail);
+	/* Clamp configured value silently */
+	ip_vs_conn_tab_bits = clamp_val(ip_vs_conn_tab_bits, min, max);
+	ip_vs_conn_tab_size = 1 << ip_vs_conn_tab_bits;
+	ip_vs_conn_tab_mask = ip_vs_conn_tab_size - 1;
+
+	/* Switch to kvmalloc */
+	ip_vs_conn_tab = kvmalloc_array(ip_vs_conn_tab_size,
+					sizeof(*ip_vs_conn_tab), GFP_KERNEL);
+
+	and use everywhere kvfree(ip_vs_conn_tab);
+
+	For 64GB box the calcs should be:
+
+max_avail = 36 - 3 - 3 - 9 => ip_vs_conn_tab_bits = 21
+Allocated hash table: (2^21)*8=16MB
+Allocated for IPVS conns (8 cols per row): (2^21)*8*(400..512)=6..8GB
+which is ~1/8 of 64GB. All memory will be allocated with
+~64 conns per row. May be the above calcs can be changed
+to ~4 cols and 1/2 mem to use 128MB (24 bits instead of 21)
+for our example: 36 - 2 - 1 - 9 => 24.
+
+	Possible problems if using large table that is
+not loaded with enough conns:
+
+- walking the table will cost more cycles, for example,
+ip_vs_random_dropentry() wants to walk part of the table
+every second. Even normal netns cleanup has to walk it.
+
+- cat /proc/net/ip_vs_conn will be slower
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
+
