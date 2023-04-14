@@ -2,93 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4ACF6E1EC6
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA8BB6E1EC7
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbjDNIus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 04:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
+        id S229805AbjDNIvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 04:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbjDNIur (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:50:47 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5050511D
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:50:46 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id a10so1443714ljr.5
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:50:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681462244; x=1684054244;
-        h=content-transfer-encoding:to:subject:message-id:date:from:sender
-         :reply-to:mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=g+qogZnp1I22hcXYz3JRA4JybLZ4Qwc2k+voYfwxlYg=;
-        b=V025k3UnMSIpnRrmq7f3byoPJhVs4C1137BSk2rWCrFGFiRiQlgFwUH9W+yEMvHlS9
-         EjE/i75v08BG6grO0OkYv9cOlglIOAYiYpyYJpJTSLDpSgwkLyvo0bXC9q4XPrDzFKg7
-         d6nJD9oQWzTB6cmow21oXFffgNwoC492NUoUpmK5HAZKUuv/DcZf91uXq1BdXHsqILF0
-         f+3jAf5E8C57wQ4n21B38AA97MaU+WRpCo1W1BmSRWDaqfJ2A7/+xMfhns/+znKRFwUa
-         rdWO6L+24Yd50bUc8nWBxRDdRQjjKXby0oFr30j2GynkQf9iyYCTQJ71x4Ws/lNnv7TW
-         XjvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681462244; x=1684054244;
-        h=content-transfer-encoding:to:subject:message-id:date:from:sender
-         :reply-to:mime-version:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=g+qogZnp1I22hcXYz3JRA4JybLZ4Qwc2k+voYfwxlYg=;
-        b=U7ToUzjR/wBXurrak8MP6MgT8lWENXcrUa9Xvk6GPihGZqIh23ZFI8vcSDTjmdHDtF
-         z4uStTWrU1aqxz7FIHKJ/w2dI8GW8Sl5MTygZQrOUcEuQ1/Rn3MDKfR+TbNpdPsrOSfQ
-         jzFEEZ6YwWbCZmqmJa6M26BelI9yQNT8V4MIrHsrWACA0UMOTEa2kfQoxtnZczdNB0A7
-         dqiMW0k0gZSYwX8kPv+vbvGHEkng/Z3lj9a/v8/RVZneOK3hTbeCce0xJMcGLsfMs9Tw
-         Ct2AfN7O1ZArI6EVf4B0xXaSsZ7dQlfriXON0H0zZ+8hSFhkQFSgKGVwuITKtqJMNnc5
-         bizQ==
-X-Gm-Message-State: AAQBX9dBA/jxAr8/tJGSCDmcW2XdzuHxSuwDBgCivsTTiV5tNsAm5csi
-        VRORHK0ORIJFy4iRVrNhLgDZxu/LSdOTUcWzAA4=
-X-Google-Smtp-Source: AKy350Y8m82dNPz5509K1DQPOOT9tOEz6NC3ZuTyinbV7z8v/n97hv1+750JTuqCAiIWA4t6AUFlagGBsJTkBus5+Ys=
-X-Received: by 2002:a2e:9811:0:b0:2a7:653d:1676 with SMTP id
- a17-20020a2e9811000000b002a7653d1676mr1698177ljj.2.1681462244140; Fri, 14 Apr
- 2023 01:50:44 -0700 (PDT)
+        with ESMTP id S229547AbjDNIvb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:51:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3E5ED
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:51:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 754C1615AF
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 08:51:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0B0C433EF;
+        Fri, 14 Apr 2023 08:51:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681462289;
+        bh=CUcWreOPpnrS0ErusrVd2gMFL5BYqlnIIkRcXfFDY9A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hUeFACfG1gHrzDF+Om4eQ3a2f8mlq9ghW9yejWf039NQBv1kO5TdpHN+/uT9ntDBj
+         5OQjkvOxVjwU+wgIw+ZaqdAgmxywGk6V3b4WszW1RVHq5WAeT6e/gqNzGZLAlsv4DG
+         8KyYyKcvyCJ6oJ1vr1JkWqYK9g6GRUedOeWcKvrskUuS/R0GUxj20Re8Der8Hflhge
+         QsOcokt/X1InVuc+tIhG2MJKrnKXDhtTwV0eCTEY/4iUMlsiflTGKCQzql/MHtOmhC
+         2CMLEPfgrPiva3D9kX6R4vBLx88Zg2GqidOM9nBl4iFv9bM6Ojoxq01S0rIyGtoGSz
+         eiK9xloXOYOog==
+Date:   Fri, 14 Apr 2023 11:51:25 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Shannon Nelson <shannon.nelson@amd.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, brett.creeley@amd.com,
+        davem@davemloft.net, netdev@vger.kernel.org, drivers@pensando.io,
+        jiri@resnulli.us
+Subject: Re: [PATCH v9 net-next 13/14] pds_core: publish events to the clients
+Message-ID: <20230414085125.GY17993@unreal>
+References: <20230406234143.11318-14-shannon.nelson@amd.com>
+ <20230409171143.GH182481@unreal>
+ <f5fbc5c7-2329-93e6-044d-7b70d96530be@amd.com>
+ <20230413085501.GH17993@unreal>
+ <20230413081410.2cbaf2a2@kernel.org>
+ <20230413164434.GT17993@unreal>
+ <20230413095509.7f15e22c@kernel.org>
+ <20230413170704.GV17993@unreal>
+ <20230413101015.0427a6c8@kernel.org>
+ <d6a65f08-4494-8d54-7799-a819f6f2e566@amd.com>
 MIME-Version: 1.0
-Reply-To: mrs.chensusan@yahoo.com
-Sender: daviddwoodd1@gmail.com
-Received: by 2002:ab2:d43:0:b0:1b6:8560:681c with HTTP; Fri, 14 Apr 2023
- 01:50:43 -0700 (PDT)
-From:   Maxwell Kojo <inmaxwellkojo@gmail.com>
-Date:   Fri, 14 Apr 2023 08:50:43 +0000
-X-Google-Sender-Auth: 8B2k2JLQ8_5oKpfGse4SbB-FYbE
-Message-ID: <CAPhALxeKA0CY0_i9hQUjWDg+bG6d=E4K8HHVyN+Qa7XavMUXxQ@mail.gmail.com>
-Subject: Estimado amigo,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d6a65f08-4494-8d54-7799-a819f6f2e566@amd.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Estimado amigo,
+On Thu, Apr 13, 2023 at 04:42:08PM -0700, Shannon Nelson wrote:
+> On 4/13/23 10:10 AM, Jakub Kicinski wrote:
+> > 
+> > On Thu, 13 Apr 2023 20:07:04 +0300 Leon Romanovsky wrote:
+> > > > Hm, my memory may be incorrect and I didn't look at the code but
+> > > > I thought that knob came from the "hit-less upgrade" effort.
+> > > > And for "hit-less upgrade" not respawning the devices was the whole
+> > > > point.
+> > > > 
+> > > > Which is not to disagree with you. What I'm trying to get at is that
+> > > > there are different types of reset which deserve different treatment.
+> > > 
+> > > I don't disagree with you either, just have a feeling that proposed
+> > > behaviour is wrong.
+> > 
+> > Shannon, can you elaborate on what the impact of the reset is?
+> > What loss of state and/or configuration is possible?
+> 
+> The device has a couple different cases that might generate the RESET
+> message:
+>  - crashed and recovered, no state saved
+>  - FW restarted, some or all state saved
+> There are some variations on this, but these are the two general cases.
+> 
+> We can see in the existing ionic driver there already is some handling of
+> this where the driver sees the FW come back and is able to replay the Rx
+> filters and Rx mode configurations.  If and when we are able to add an Eth
+> client through pds_core it will want this message so that it can replay
+> configuration in the same way.  This case will also want the Link Down event
+> so that it can do the right thing with the netdev.
 
-Soy Maxwell Kojo, trabajo en un banco en Burkina Faso. Tengo una
-propuesta para usted con respecto a la transferencia de fondos. =C2=BFPuede
-ayudarme a repatriar algunos fondos a su cuenta en el extranjero seg=C3=BAn
-el porcentaje?
+I don't see how you can replay ALL (ethtool, devlink, ip, e.t.c) states
+without net core involvement. The real fun will be with many offloaded
+features, where you must preserve everything while keeping upper layer
+in-sync with HW.
 
-Si est=C3=A1 realmente seguro de su integridad, confianza y
-confidencialidad para recibir el fondo, cont=C3=A1cteme con urgencia para
-obtener m=C3=A1s detalles, comun=C3=ADquese con mi direcci=C3=B3n de correo
-electr=C3=B3nico privada (inmaxwellkojo@yahoo.com).
+Thanks
 
-Por favor env=C3=ADeme lo siguiente
+> 
+> For the VFio/Migration support (pds_vfio) the RESET message is essentially a
+> no-op if nothing is happening.  But if the system is in the middle of a
+> migration it offers the ability to "cleanly" fail the migration and let the
+> system get ready to try again.
 
-Nombres completos
-DIRECCI=C3=93N
-Ocupaci=C3=B3n
-L=C3=ADneas Directas de Tel=C3=A9fono M=C3=B3vil
-Nacionalidad
-
-Saludos,
-Maxwell Kojo.
+> 
+> For the vDPA case (pds_vdpa) we can trigger the config_cb callback to get
+> the attention of the stack above us to suggest it look at current status and
+> respond as needed, whether that is a Link Change or a Reset.
+> 
+> sln
