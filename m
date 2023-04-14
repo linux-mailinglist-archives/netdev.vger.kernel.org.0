@@ -2,139 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DAB26E1D61
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 09:39:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EB536E1DB5
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:01:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbjDNHje (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 03:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33572 "EHLO
+        id S229935AbjDNIBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 04:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjDNHjd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 03:39:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E37310E
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 00:38:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681457926;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lMIqjynha0lnhe23OoFWtNYm7T0bO0fGReoRZ9IdJV8=;
-        b=dYFTMh2D4vUohX36JRWJWQV5sS8UfrDxr5I90LB9s1h0JE+oyMi5doYFAa/GYcFXL7YB20
-        7PuY2AlBPBVIC665Am6hQee9OCQCI2rIA4qv3INfNd2P86MvYCxjHAySjHZglLnQCJ8YUY
-        numijLxpDIANPJ9Jyo/8St6QPZUSeFY=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-519-aXgoYOFnOkCQpG1RKBsKJw-1; Fri, 14 Apr 2023 03:38:42 -0400
-X-MC-Unique: aXgoYOFnOkCQpG1RKBsKJw-1
-Received: by mail-wm1-f69.google.com with SMTP id q19-20020a05600c46d300b003ef69894934so7126406wmo.6
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 00:38:42 -0700 (PDT)
+        with ESMTP id S229797AbjDNIBD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:01:03 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A906740F1
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:01:01 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id z9so16549507ejx.11
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:01:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681459260; x=1684051260;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uj24E0utItoUj+eQLTC83uT9r1QSYEGR8TG8+GQ0L+o=;
+        b=GcPL057XYpipwF4+iBqYzZ1J5xhLB+5K+M+EuKVsxXtSi59foLRiM+JtVNK+nt1Feh
+         b3AttSE8tWSI5gizSo07QQu2UDGjiXZc+sxlfeoSOc05YSgnxdxbHeO0M7d5hNWVQ05t
+         5/ckfvwNXR5C6kbrkP1PgN3sz5Ach5Y8vOQggId/xrlyFxc5oY/atvWKAmYqUdaAc8FR
+         53gVoNfNQvUUI/HloYdr09F83g+fOw5V1rGAAaJ7QluHyGF8F20GkUNFePVIJmS0v0dU
+         pRMAov2UBVimTOcmlx5nky8B1VWzoQgK111fPPQGb/4EqdUChxy4CRhOgtHcxotXmeYH
+         c+6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681457921; x=1684049921;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lMIqjynha0lnhe23OoFWtNYm7T0bO0fGReoRZ9IdJV8=;
-        b=gcshA1jxTMxM6AqTG5sVFcwA4ktI1x2LVCcPlJc118o6XU4keV+WKfNVbDKB2MP3da
-         QXWZyEPROe+i2Lejv7DNhBi/uaI1YTn7a02wYLn3G7rRkQEmpdtWetKSXPG4Yx4NvRoI
-         ui29tLzoRS/YSpJVViPlIEI4XdPbKn5aSqH1k3Vkpv1Gt0CrYgrWrS8ccCD/2tYGgRcI
-         Of7P8VLQwaGwYhXSbb6x5WJJuFEuaFYev505xdPQs9l8isET9JuRXV0ddCDSj/lcBfiG
-         86atk/VK+BQcx0ttW9Ws/BxW8iyLypVnBen02rTp11LNv0WzD1RD6/X5VHq1e2cNcM9J
-         cmMw==
-X-Gm-Message-State: AAQBX9c8LVDyUZiB2ibawXKtPSi1JQvuzngHqqPC8oizrRNnQnHaCPCG
-        WF8fm5DdHS8Uuxu+qJ5fkibCXLx2kOGqe2ZtGj90dh0Z4Wo85RFEUX+09WsmShxTFcjsAqKkosk
-        4ZhTlikTsc0rXzYXsfLVCzVdY
-X-Received: by 2002:a5d:688b:0:b0:2ef:ba74:663 with SMTP id h11-20020a5d688b000000b002efba740663mr3600345wru.27.1681457921244;
-        Fri, 14 Apr 2023 00:38:41 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bKnQLs9BRa6pmx717Y3ZbnYozswFnfUPMxvV8w2vmX/ki/yiZdrxC+QHPU+hLN+NERHNjBdQ==
-X-Received: by 2002:a5d:688b:0:b0:2ef:ba74:663 with SMTP id h11-20020a5d688b000000b002efba740663mr3600321wru.27.1681457920950;
-        Fri, 14 Apr 2023 00:38:40 -0700 (PDT)
-Received: from redhat.com ([2a06:c701:742d:fd00:c847:221d:9254:f7ce])
-        by smtp.gmail.com with ESMTPSA id h4-20020a1ccc04000000b003f071466229sm3600005wmb.17.2023.04.14.00.38.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Apr 2023 00:38:40 -0700 (PDT)
-Date:   Fri, 14 Apr 2023 03:38:37 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net v1] virtio_net: bugfix overflow inside
- xdp_linearize_page()
-Message-ID: <20230414033826-mutt-send-email-mst@kernel.org>
-References: <20230414060835.74975-1-xuanzhuo@linux.alibaba.com>
+        d=1e100.net; s=20221208; t=1681459260; x=1684051260;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=uj24E0utItoUj+eQLTC83uT9r1QSYEGR8TG8+GQ0L+o=;
+        b=UlLHhbZaS4Jkw0jZBYr0I5EZYGGRNOpsqZ9TDyDHCyXFwrPwD9AR70/dl5tHmfIXwu
+         zg2Gb4eazeHoTkizyf+iolSlBbjg2LpqWloyebdd//GmYVKKnUNn28jFJftAcr6QT7ZH
+         9T0XIfKPTUzeScvAhKgEQNL4KiR7siR2lVT+pKeFKh4blG9X3yl/KefzRkqIHfSpspVE
+         I3SzZ9+94G60lspYlaFxoFYhbcAaMnf4PuouEoUSIVtM8XHSVCstw6z9PJpHN0wJzbcA
+         3Xt7q4vorpARjlzdzwQn2dnN3390c05uBt6a3W0aPAsUSe1zIzPro3Gfe4H2SA8Fz4es
+         Cilw==
+X-Gm-Message-State: AAQBX9eIc7doeFtUtv4vQZuAXtq1L/dYdy5eWA5Tlwqp7sKP3W4T1WzR
+        3Jh1n3jdjPU7nP+L5A834EqGIQ==
+X-Google-Smtp-Source: AKy350bCXmdaTRCL/M+/LO6/ppWZKpBcQqXzDRpPqeaDbdg5FRk8xkQKylplO4qaCD4qcxjYDUetPw==
+X-Received: by 2002:a17:906:37c2:b0:8b2:c2fc:178e with SMTP id o2-20020a17090637c200b008b2c2fc178emr4972329ejc.74.1681459260184;
+        Fri, 14 Apr 2023 01:01:00 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:8a60:6b0f:105a:eefb? ([2a02:810d:15c0:828:8a60:6b0f:105a:eefb])
+        by smtp.gmail.com with ESMTPSA id q13-20020a1709066acd00b0094e44445f30sm2049063ejs.215.2023.04.14.01.00.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Apr 2023 01:00:59 -0700 (PDT)
+Message-ID: <083e67e6-3e9f-27fe-64c9-431541c943e8@linaro.org>
+Date:   Fri, 14 Apr 2023 10:00:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230414060835.74975-1-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [RFC PATCH 3/5] dt-binding: can: m_can: Remove required interrupt
+ attributes
+Content-Language: en-US
+To:     Judith Mendez <jm@ti.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>
+Cc:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
+        Andrew Davis <afd@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Schuyler Patton <spatton@ti.com>
+References: <20230413223051.24455-1-jm@ti.com>
+ <20230413223051.24455-4-jm@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230413223051.24455-4-jm@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 14, 2023 at 02:08:35PM +0800, Xuan Zhuo wrote:
-> Here we copy the data from the original buf to the new page. But we
-> not check that it may be overflow.
-> 
-> As long as the size received(including vnethdr) is greater than 3840
-> (PAGE_SIZE -VIRTIO_XDP_HEADROOM). Then the memcpy will overflow.
-> 
-> And this is completely possible, as long as the MTU is large, such
-> as 4096. In our test environment, this will cause crash. Since crash is
-> caused by the written memory, it is meaningless, so I do not include it.
-> 
-> Fixes: 72979a6c3590 ("virtio_net: xdp, add slowpath case for non contiguous buffers")
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Acked-by: Jason Wang <jasowang@redhat.com>
+On 14/04/2023 00:30, Judith Mendez wrote:
+> Remove required attributes for interrupt and interrupt names
+> since some MCANs may not have hardware interrupt routed to A53
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Like which? Can you give specific model names?
 
+> Linux.
+> 
+
+Use subject prefixes matching the subsystem (which you can get for
+example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
+your patch is touching).
+
+It's dt-bindings:
+
+
+> Signed-off-by: Judith Mendez <jm@ti.com>
 > ---
-> v1:  add Fixes tag
+>  Documentation/devicetree/bindings/net/can/bosch,m_can.yaml | 2 --
+>  1 file changed, 2 deletions(-)
 > 
->  drivers/net/virtio_net.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 2396c28c0122..ea1bd4bb326d 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -814,8 +814,13 @@ static struct page *xdp_linearize_page(struct receive_queue *rq,
->  				       int page_off,
->  				       unsigned int *len)
->  {
-> -	struct page *page = alloc_page(GFP_ATOMIC);
-> +	int tailroom = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> +	struct page *page;
-> +
-> +	if (page_off + *len + tailroom > PAGE_SIZE)
-> +		return NULL;
-> 
-> +	page = alloc_page(GFP_ATOMIC);
->  	if (!page)
->  		return NULL;
-> 
-> @@ -823,7 +828,6 @@ static struct page *xdp_linearize_page(struct receive_queue *rq,
->  	page_off += *len;
-> 
->  	while (--*num_buf) {
-> -		int tailroom = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->  		unsigned int buflen;
->  		void *buf;
->  		int off;
-> --
-> 2.32.0.3.g01195cf9f
+> diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+> index 67879aab623b..43f1aa9addc0 100644
+> --- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+> +++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+> @@ -122,8 +122,6 @@ required:
+>    - compatible
+>    - reg
+>    - reg-names
+> -  - interrupts
+> -  - interrupt-names
+>    - clocks
+>    - clock-names
+>    - bosch,mram-cfg
+
+Best regards,
+Krzysztof
 
