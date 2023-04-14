@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB87C6E25C5
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 16:32:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA4776E25D3
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 16:34:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbjDNOcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 10:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56196 "EHLO
+        id S230418AbjDNOeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 10:34:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbjDNOb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 10:31:58 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D2E196;
-        Fri, 14 Apr 2023 07:31:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1681482711; x=1713018711;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=xPULitwJp6+DmysWFbEIuihcneSUosBP3Pul4LIysT8=;
-  b=mQ73Ke7olemveOcUU5hIiMwEOYzCqPmh4uiAEAERJIvovsSLNYSTx4MJ
-   JbLXIE/vGu/8Z5Bt/0SD0XfG6NHTGVF/1a1wNfrveiokjplBkRbidxzLP
-   eT9LsDBETqa78eiyWO3Afz0WpD2n0vRZdzOgRRIO7wlytlyKR5TyNse5+
-   NvnPcsLMcP6QZ8ihZzJ/vuYMJtFjex10+tSioV6GmLiQSJnqk2tcP3xMq
-   wqFY7d3ftyS2014YQC4bpVvezst4yqh2pOAZ4bDEZJozQa4JPBfS9pvw4
-   C5Bf76DNwI2vUuC0XbmcaNv8Ri0ZeBpfILsDpGnYtYg92F8nWgXrUSi+0
-   w==;
-X-IronPort-AV: E=Sophos;i="5.99,197,1677567600"; 
-   d="scan'208";a="209115974"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Apr 2023 07:31:50 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 14 Apr 2023 07:31:44 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Fri, 14 Apr 2023 07:31:44 -0700
-Date:   Fri, 14 Apr 2023 16:31:44 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Zheng Hacker <hackerzheng666@gmail.com>
-CC:     Zheng Wang <zyytlz.wz@163.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <1395428693sheep@gmail.com>, <alex000young@gmail.com>
-Subject: Re: [PATCH net v2] net: ethernet: fix use after free bug in
- ns83820_remove_one due to race condition
-Message-ID: <20230414143144.2e5hf6iokcbcrf5a@soft-dev3-1>
-References: <20230413071401.210599-1-zyytlz.wz@163.com>
- <20230413100128.bcnqvdpu6hgilws4@soft-dev3-1>
- <CAJedcCyLXuqMEWt6f+_HFEzAdgEcq5oQc-hRtt0k=rd_vrz6ew@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJedcCyLXuqMEWt6f+_HFEzAdgEcq5oQc-hRtt0k=rd_vrz6ew@mail.gmail.com>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR autolearn=ham autolearn_force=no
+        with ESMTP id S230420AbjDNOeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 10:34:06 -0400
+Received: from aib29gb127.yyz1.oracleemaildelivery.com (aib29gb127.yyz1.oracleemaildelivery.com [192.29.72.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA4E4ED5
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 07:34:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=oci-2023;
+ d=n8pjl.ca;
+ h=Date:To:From:Subject:Message-Id:MIME-Version:Sender;
+ bh=eLMR8c+rUCn0e6s6vuSNWWr8ZkEgeN7CWTblMl8MyOA=;
+ b=ooBfR03zCOKGJLuZfxkgeiYpv7RAvUijX1giAlvMOhR5ZM0Ra3zHS89fuXEe5cAinmFjYkSpuZuT
+   56hNvk3hfIdcs3g6RjXh3Ch2DITpMdHyYB2CmlST3YsHCevV3GuF1A6HM3bUWxHKwJxN44KUKWti
+   M7rkMh6927p5vD2E1wQXQZXpVLBP2tyxyYaUTBpOZtPELZSQTkFXEdkEZbHSquXNPAT7eOgzJsCi
+   DOzelwm9fx2eK+svGMjuMtplffNd7aBDZtWXKSGwigYjR9x6Yxy99bnQYrE7S+cs0LlgwT8GBSx9
+   BsPo8ODKXZ4zGSAwefmDwYDvFBTD+xnU0r7vNg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=prod-yyz-20200204;
+ d=yyz1.rp.oracleemaildelivery.com;
+ h=Date:To:From:Subject:Message-Id:MIME-Version:Sender;
+ bh=eLMR8c+rUCn0e6s6vuSNWWr8ZkEgeN7CWTblMl8MyOA=;
+ b=BQLlT4fzvOBPeO0VpWXBl3FRX2kwoc9f2WwIK7ypY9NPgjP5SLNeIrWIzLe8fZ0EnZMUp5xva48l
+   AjpcaoYJRMP36qaz4S6V0jPXVypKXJ69MXFbI6vVr+Ac19wHww+hOEEIjkf+jzXRy0jTzmGfbVt2
+   t07xYxIcOpzYVqmGOmg+WIyJWnd7+LJZejYaYonVQNE7ZCOVfaSWFnsqyGHe/nNRKFGK+r+lksNJ
+   jx85XqfLsm5FSIF3L9ln1p5mjloeWpY2t16adTrTd05/fkBKYzToRO8tiFjpmwmsfq7Wy7s1xzNk
+   j5ZahltfB956FRjrJExnAPi7ltEqxIGs++Q/zw==
+Received: by omta-ad1-fd3-102-ca-toronto-1.omtaad1.vcndpyyz.oraclevcn.com
+ (Oracle Communications Messaging Server 8.1.0.1.20230331 64bit (built Mar 31
+ 2023))
+ with ESMTPS id <0RT400OAA0GOYA40@omta-ad1-fd3-102-ca-toronto-1.omtaad1.vcndpyyz.oraclevcn.com> for
+ netdev@vger.kernel.org; Fri, 14 Apr 2023 14:34:00 +0000 (GMT)
+From:   Peter Lafreniere <peter@n8pjl.ca>
+To:     linux-hams@vger.kernel.org
+Cc:     Peter Lafreniere <peter@n8pjl.ca>, netdev@vger.kernel.org,
+        error27@gmail.com
+Subject: [PATCH v2 net-next] ax25: exit linked-list searches earlier
+Date:   Fri, 14 Apr 2023 10:33:57 -0400
+Message-id: <20230414143357.5523-1-peter@n8pjl.ca>
+X-Mailer: git-send-email 2.40.0
+In-reply-to: <20230407142042.11901-1-peter@n8pjl.ca>
+References: <20230407142042.11901-1-peter@n8pjl.ca>
+MIME-version: 1.0
+Content-transfer-encoding: 8bit
+Reporting-Meta: AAFsDe+8ofwQ1Zn0uVsMZtkvVcwd4rpKucZbLzClchaK8gPCxQHrEcBRB8nN/85a
+ Mta31AXmviIoCnY2WSJUnfc13cj/z1MKdux/1vDFxCHEKJHi2Sx2T3xFkeAkopDk
+ RsvwoJe7YK0mddSdNmS7I7RK9FLh8/4TNLzsL3CTWYaobS8HYIKbYhKKswrtRQyo
+ EdqFqmos6ewJthvS9tsnk92y4gLmtFu/OSLS8bWyIMWPwy7woa01KjorsZZqlNuB
+ yCm9O8RDQClV3k+QWy6b98u1xbHHBuVq+hqt7Ysko9XZTnQ96n4duYsKVuvsy6mZ
+ Zih+yeFSU3o9vQ1qsPR+RnGHd9/uYFPqG3P1xEMX1zGj3qK7Caj4MTxENJJ+c7zv
+ Bzv7d/5POdfH6+BIaSno3PeqVH5ZrYab7/SKzlm4lrqAkVnK/eOPnF+Py08=
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,101 +66,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 04/13/2023 18:49, Zheng Hacker wrote:
+There's no need to loop until the end of the list if we have a result.
 
-Hi Zheng,
+Device callsigns are unique, so there can only be one dev returned from
+ax25_addr_ax25dev(). If not, there would be inconsistencies based on
+order of insertion, and refcount leaks.
 
-> 
-> Horatiu Vultur <horatiu.vultur@microchip.com> 于2023年4月13日周四 18:01写道：
-> >
-> > The 04/13/2023 15:14, Zheng Wang wrote:
-> >
-> > Hi Zheng,
-> >
-> > >
-> > > In ns83820_init_one, dev->tq_refill was bound with queue_refill.
-> > >
-> > > If irq happens, it will call ns83820_irq->ns83820_do_isr.
-> > > Then it invokes tasklet_schedule(&dev->rx_tasklet) to start
-> > > rx_action function. And rx_action will call ns83820_rx_kick
-> > > and finally start queue_refill function.
-> > >
-> > > If we remove the driver without finishing the work, there
-> > > may be a race condition between ndev, which may cause UAF
-> > > bug.
-> > >
-> > > CPU0                  CPU1
-> > >
-> > >                      |queue_refill
-> > > ns83820_remove_one   |
-> > > free_netdev                      |
-> > > put_device                       |
-> > > free ndev                        |
-> > >                      |rx_refill
-> > >                      |//use ndev
-> >
-> > Will you not have the same issue if you remove the driver after you
-> > schedule rx_tasklet? Because rx_action will use also ndev.
-> >
-> 
-> Hello Horatiu,
-> 
-> Thanks for your reply. In ns83820_remove_one, there is an invoking:
-> 
-> free_irq(dev->pci_dev->irq, ndev);
-> 
-> This will prevent the driver from handling more irq, But it couldn't prevent
-> the rx_tasklet from being scheduled. So I think we should add the
-> following code:
-> 
-> tasklet_kill(&dev->rx_tasklet);
-> 
-> after free_irq invoking. Is there anything wrong about my analysis?
+We follow the same reasoning in ax25_get_route(), and additionally
+reorder conditions to skip calling ax25cmp() whenever possible. 
 
-I think you are right, I don't see a problem.
+Signed-off-by: Peter Lafreniere <peter@n8pjl.ca>
+---
+v1 -> v2
+ - Make ax25_get_route() return directly
+ - Reorder calls to ax25cmp() in ax25_get_route()
+ - Skip searching for default route once found in ax25_get_route()
 
-> 
-> Thanks again for pointing the mistake out.
-> 
-> Best regards,
-> Zheng
-> 
-> 
-> > >
-> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > > Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
-> > > ---
-> > > v2:
-> > > - cancel the work after unregister_netdev to make sure there
-> > > is no more request suggested by Jakub Kicinski
-> > > ---
-> > >  drivers/net/ethernet/natsemi/ns83820.c | 5 +++++
-> > >  1 file changed, 5 insertions(+)
-> > >
-> > > diff --git a/drivers/net/ethernet/natsemi/ns83820.c b/drivers/net/ethernet/natsemi/ns83820.c
-> > > index 998586872599..2e84b9fcd8e9 100644
-> > > --- a/drivers/net/ethernet/natsemi/ns83820.c
-> > > +++ b/drivers/net/ethernet/natsemi/ns83820.c
-> > > @@ -2208,8 +2208,13 @@ static void ns83820_remove_one(struct pci_dev *pci_dev)
-> > >
-> > >         ns83820_disable_interrupts(dev); /* paranoia */
-> > >
-> > > +       netif_carrier_off(ndev);
-> > > +       netif_tx_disable(ndev);
-> > > +
-> > >         unregister_netdev(ndev);
-> > >         free_irq(dev->pci_dev->irq, ndev);
-> > > +       cancel_work_sync(&dev->tq_refill);
-> > > +
-> > >         iounmap(dev->base);
-> > >         dma_free_coherent(&dev->pci_dev->dev, 4 * DESC_SIZE * NR_TX_DESC,
-> > >                           dev->tx_descs, dev->tx_phy_descs);
-> > > --
-> > > 2.25.1
-> > >
-> >
-> > --
-> > /Horatiu
+ net/ax25/ax25_dev.c   |  4 +++-
+ net/ax25/ax25_route.c | 25 +++++++++++++------------
+ 2 files changed, 16 insertions(+), 13 deletions(-)
 
+diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
+index c5462486dbca..8186faea6b0d 100644
+--- a/net/ax25/ax25_dev.c
++++ b/net/ax25/ax25_dev.c
+@@ -34,11 +34,13 @@ ax25_dev *ax25_addr_ax25dev(ax25_address *addr)
+ 	ax25_dev *ax25_dev, *res = NULL;
+ 
+ 	spin_lock_bh(&ax25_dev_lock);
+-	for (ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next)
++	for (ax25_dev = ax25_dev_list; ax25_dev != NULL; ax25_dev = ax25_dev->next) {
+ 		if (ax25cmp(addr, (const ax25_address *)ax25_dev->dev->dev_addr) == 0) {
+ 			res = ax25_dev;
+ 			ax25_dev_hold(ax25_dev);
++			break;
+ 		}
++	}
+ 	spin_unlock_bh(&ax25_dev_lock);
+ 
+ 	return res;
+diff --git a/net/ax25/ax25_route.c b/net/ax25/ax25_route.c
+index b7c4d656a94b..ebef46c38e80 100644
+--- a/net/ax25/ax25_route.c
++++ b/net/ax25/ax25_route.c
+@@ -344,7 +344,6 @@ const struct seq_operations ax25_rt_seqops = {
+  */
+ ax25_route *ax25_get_route(ax25_address *addr, struct net_device *dev)
+ {
+-	ax25_route *ax25_spe_rt = NULL;
+ 	ax25_route *ax25_def_rt = NULL;
+ 	ax25_route *ax25_rt;
+ 
+@@ -354,23 +353,25 @@ ax25_route *ax25_get_route(ax25_address *addr, struct net_device *dev)
+ 	 */
+ 	for (ax25_rt = ax25_route_list; ax25_rt != NULL; ax25_rt = ax25_rt->next) {
+ 		if (dev == NULL) {
+-			if (ax25cmp(&ax25_rt->callsign, addr) == 0 && ax25_rt->dev != NULL)
+-				ax25_spe_rt = ax25_rt;
+-			if (ax25cmp(&ax25_rt->callsign, &null_ax25_address) == 0 && ax25_rt->dev != NULL)
++			if (ax25_rt->dev != NULL && ax25cmp(&ax25_rt->callsign, addr) == 0)
++				return ax25_rt;
++
++			if (ax25_def_rt != NULL &&
++			    ax25_rt->dev != NULL &&
++			    ax25cmp(&ax25_rt->callsign, &null_ax25_address) == 0)
+ 				ax25_def_rt = ax25_rt;
+ 		} else {
+-			if (ax25cmp(&ax25_rt->callsign, addr) == 0 && ax25_rt->dev == dev)
+-				ax25_spe_rt = ax25_rt;
+-			if (ax25cmp(&ax25_rt->callsign, &null_ax25_address) == 0 && ax25_rt->dev == dev)
++			if (ax25_rt->dev == dev && ax25cmp(&ax25_rt->callsign, addr) == 0)
++				return ax25_rt;
++
++			if (ax25_def_rt != NULL &&
++			    ax25_rt->dev == dev &&
++			    ax25cmp(&ax25_rt->callsign, &null_ax25_address) == 0)
+ 				ax25_def_rt = ax25_rt;
+ 		}
+ 	}
+ 
+-	ax25_rt = ax25_def_rt;
+-	if (ax25_spe_rt != NULL)
+-		ax25_rt = ax25_spe_rt;
+-
+-	return ax25_rt;
++	return ax25_def_rt;
+ }
+ 
+ /*
 -- 
-/Horatiu
+2.40.0
+
