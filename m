@@ -2,213 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42B0D6E1A64
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 04:41:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 669E86E1A83
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 04:45:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbjDNCll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 22:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
+        id S229705AbjDNCpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 22:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbjDNClk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 22:41:40 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E72F12E;
-        Thu, 13 Apr 2023 19:41:39 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-54f21cdfadbso269304357b3.7;
-        Thu, 13 Apr 2023 19:41:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681440098; x=1684032098;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=uCQMt8cMs8DxFEFNrCKpJ5Bu3JvDPxBtqOh+eBAPKFQ=;
-        b=QI/Y4ISS3uL12Lfe9mvKnWg0LCFpPXN5t1PCWKENs5OOcdYD1s7ztFAIghlNqV9jf5
-         y5Rcyzy9Fe8p5WWc42w6R6XHx745pDyRxx5ziw0nSbZu+3jfzeEU4fSPQEsDwy5BQXde
-         GFqFZ11B+3vo87nXnyrNvlKECHjGSU3j9FZFZ8aTb6r1yBmcaMSDFkJHF24LM/7r6JXV
-         t4aDPurg/3/gNRo5/TFYD87+8HM6Lr9OZjRwS0+MhObanuHyZ2RQdIy0JJ0WjU7jfqEl
-         63+X7Q9h+89xOZFnwq6IqTuwQPC3zo6IF3MPm8Yi2szgocXi8rfj61O+I9TjOKKujwV2
-         eXxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681440098; x=1684032098;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=uCQMt8cMs8DxFEFNrCKpJ5Bu3JvDPxBtqOh+eBAPKFQ=;
-        b=T94es5pTCI8nMAr5ftdaEqBjPWFwQ2nw+Jn0bpJ+FAt6iXkOTD3PG0XtrZn8YnlQzH
-         sRDafwWtvIV7XPUTTilUP6dnh5rXbiSmzPDhpziBbpUOap5IupLn8l+qBnp6Na8hDNOX
-         k8TDJNThOaZ1AHaN3PgJ7Exh5sOSXh6Q0Az3LZnQtLai1fUy82viFoO7u2vFOcZpsaro
-         +LshWirfUtHOHyY/6FQvgObKNH9P2fMvQOVKvl3bxcO8LAZJpDoIwrYQ/jQ4vPF4dx3J
-         pnMZxjuOPF06qGR/6FInlY8cZ5QGYl4R2nwWVIY1PacBYfHrodHAgZVeaGfxFi3SKbeL
-         JbfQ==
-X-Gm-Message-State: AAQBX9cufgNfUk7JVc7ht4O1mfjeEmScLrK0kIyETKyMCtDt7P/fUJLD
-        yRlT59wylpQlVGaDRjcIZoRzwYe5XjCx6wLmYnQ=
-X-Google-Smtp-Source: AKy350aTOEC3Y8J6cuTRQ+mv2DZ6j2Fb0A0LFbjHkw4guNAugI1FTviKUArZtv+PftMeAZ0sUf3BEWOnDXOWSYehW1Q=
-X-Received: by 2002:a81:af1e:0:b0:54e:edf3:b48f with SMTP id
- n30-20020a81af1e000000b0054eedf3b48fmr2629038ywh.5.1681440098174; Thu, 13 Apr
- 2023 19:41:38 -0700 (PDT)
+        with ESMTP id S229615AbjDNCpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 22:45:12 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7774C01;
+        Thu, 13 Apr 2023 19:44:45 -0700 (PDT)
+Received: from dggpeml500010.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4PyLJs14ZwzSrrx;
+        Fri, 14 Apr 2023 10:40:13 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500010.china.huawei.com
+ (7.185.36.155) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Fri, 14 Apr
+ 2023 10:44:11 +0800
+From:   Xin Liu <liuxin350@huawei.com>
+To:     <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <bpf@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <hsinweih@uci.edu>,
+        <jakub@cloudflare.com>, <john.fastabend@gmail.com>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <liuxin350@huawei.com>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>,
+        <syzbot+49f6cef45247ff249498@syzkaller.appspotmail.com>,
+        <syzkaller-bugs@googlegroups.com>, <yanan@huawei.com>,
+        <wuchangye@huawei.com>, <xiesongyang@huawei.com>,
+        <kongweibin2@huawei.com>, <zhangmingyi5@huawei.com>
+Subject: Re: [syzbot] [bpf?] [net?] WARNING in sock_map_del_link
+Date:   Fri, 14 Apr 2023 10:44:01 +0800
+Message-ID: <20230414024401.121885-1-liuxin350@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <67f98e03-79ae-a290-b97a-2f6e11ab1251@iogearbox.net>
+References: <67f98e03-79ae-a290-b97a-2f6e11ab1251@iogearbox.net>
 MIME-Version: 1.0
-From:   Palash Oswal <oswalpalash@gmail.com>
-Date:   Thu, 13 Apr 2023 19:41:26 -0700
-Message-ID: <CAGyP=7djcPOF6JHvVV6Zmpvtb_nHsDM7865C3e4A5F06kF8FsQ@mail.gmail.com>
-Subject: KASAN: slab-use-after-free Read in tcf_action_destroy
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500010.china.huawei.com (7.185.36.155)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-I found the following issue using syzkaller with enriched corpus on:
-HEAD commit : 0bcc4025550403ae28d2984bddacafbca0a2f112
-git tree: linux
+On 4/14/23 2:42 AM, Daniel Borkmann wrote:
+> On 4/13/23 5:33 PM, syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    d319f344561d mm: Fix copy_from_user_nofault().
+> > git tree:       bpf-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=15930c9dc80000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=78c9d875f0a80d33
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=49f6cef45247ff249498
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > 
+> > Unfortunately, I don't have any reproducer for this issue yet.
+> > 
+> > Downloadable assets:
+> > disk image: https://storage.googleapis.com/syzbot-assets/229f3623b7df/disk-d319f344.raw.xz
+> > vmlinux: https://storage.googleapis.com/syzbot-assets/6da0db75c9aa/vmlinux-d319f344.xz
+> > kernel image: https://storage.googleapis.com/syzbot-assets/01f022fb9a13/bzImage-d319f344.xz
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+49f6cef45247ff249498@syzkaller.appspotmail.com
+> 
+> Xin, fyi, given we're currently prepping bpf-next pr we unfortunately had to revert commit
+> ed17aa92dc56 ("bpf, sockmap: fix deadlocks in the sockhash and sockmap") which is causing
+> this new syzkaller splat. There's another one in the syzkaller queue we've been made
+> aware of which bisected to earlier mentioned commit.
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=8c5c2a4898e3d6bad86e29d471e023c8a19ba799
+> 
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 1 PID: 7921 at kernel/softirq.c:376 __local_bh_enable_ip+0xbe/0x130 kernel/softirq.c:376
+> > Modules linked in:
+> > CPU: 1 PID: 7921 Comm: syz-executor.4 Not tainted 6.2.0-syzkaller-13249-gd319f344561d #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
+> > RIP: 0010:__local_bh_enable_ip+0xbe/0x130 kernel/softirq.c:376
+> > Code: 45 bf 01 00 00 00 e8 b1 44 0a 00 e8 9c 41 3d 00 fb 65 8b 05 2c 61 b5 7e 85 c0 74 58 5b 5d c3 65 8b 05 12 2f b4 7e 85 c0 75 a2 <0f> 0b eb 9e e8 e9 41 3d 00 eb 9f 48 89 ef e8 ff 30 18 00 eb a8 0f
+> > RSP: 0018:ffffc90007bffbe8 EFLAGS: 00010046
+> > RAX: 0000000000000000 RBX: 0000000000000201 RCX: 1ffffffff1cf0736
+> > RDX: 0000000000000000 RSI: 0000000000000201 RDI: ffffffff882bf40a
+> > RBP: ffffffff882bf40a R08: 0000000000000000 R09: ffff88801cc6327b
+> > R10: ffffed100398c64f R11: 1ffffffff21917f0 R12: ffff88801cc63268
+> > R13: ffff88801cc63268 R14: ffff8880188ef500 R15: 0000000000000000
+> > FS:  00007f378f724700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 00007fbbc57831b8 CR3: 00000000210ad000 CR4: 00000000003506e0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >   <TASK>
+> >   spin_unlock_bh include/linux/spinlock.h:395 [inline]
+> >   sock_map_del_link+0x2ea/0x510 net/core/sock_map.c:165
+> >   sock_map_unref+0xb0/0x1d0 net/core/sock_map.c:184
+> >   sock_hash_delete_elem+0x1ec/0x2a0 net/core/sock_map.c:945
+> >   map_delete_elem kernel/bpf/syscall.c:1536 [inline]
+> >   __sys_bpf+0x2edc/0x53e0 kernel/bpf/syscall.c:5053
+> >   __do_sys_bpf kernel/bpf/syscall.c:5166 [inline]
+> >   __se_sys_bpf kernel/bpf/syscall.c:5164 [inline]
+> >   __x64_sys_bpf+0x79/0xc0 kernel/bpf/syscall.c:5164
+> >   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >   do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+> >   entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > RIP: 0033:0x7f378ea8c169
+> > Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> > RSP: 002b:00007f378f724168 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+> > RAX: ffffffffffffffda RBX: 00007f378ebabf80 RCX: 00007f378ea8c169
+> > RDX: 0000000000000020 RSI: 0000000020000140 RDI: 0000000000000003
+> > RBP: 00007f378eae7ca1 R08: 0000000000000000 R09: 0000000000000000
+> > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> > R13: 00007ffe9737aebf R14: 00007f378f724300 R15: 0000000000022000
+> >   </TASK>
+> > 
+> > 
+> > ---
+> > This report is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > 
+> > syzbot will keep track of this issue. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > 
 
-C Reproducer : https://gist.github.com/oswalpalash/278b6fb713f37fa8d4625d6be703550d
-Kernel .config :
-https://gist.github.com/oswalpalash/d9580b0bfce202b37445fa5fd426e41f
-
-syz-repro :
-r0 = socket$nl_route(0x10, 0x3, 0x0)
-r1 = socket(0x10, 0x3, 0x0)
-r2 = socket(0x10, 0x3, 0x0)
-sendmsg$nl_route_sched(r2, &(0x7f0000000180)={0x0, 0x0,
-&(0x7f0000000140)={0x0, 0x140}}, 0x0)
-getsockname$packet(r2, &(0x7f0000000080)={0x11, 0x0, <r3=>0x0, 0x1,
-0x0, 0x6, @broadcast}, &(0x7f0000000100)=0xab)
-sendmsg$nl_route_sched(r1, &(0x7f0000005840)={0x0, 0x0,
-&(0x7f0000000780)={&(0x7f0000000240)=ANY=[@ANYBLOB="4800000024000b0e00"/20,
-@ANYRES32=r3, @ANYBLOB="00000000ffffffff0000000008000100687462001c0002001800020003"],
-0x48}}, 0x0)
-sendmsg$nl_route_sched(r0, &(0x7f00000000c0)={0x0, 0x0,
-&(0x7f0000000180)={&(0x7f00000007c0)=@newtfilter={0x40, 0x2c, 0xd27,
-0x0, 0x0, {0x0, 0x0, 0x0, r3, {}, {}, {0xfff3}},
-[@filter_kind_options=@f_flower={{0xb}, {0x10, 0x2,
-[@TCA_FLOWER_KEY_ETH_DST={0xa, 0x4, @local}]}}]}, 0x40}}, 0x0)
-(fail_nth: 19)
-
-
-Console log :
-
-==================================================================
-BUG: KASAN: slab-use-after-free in tcf_action_destroy+0x17f/0x1b0
-Read of size 8 at addr ffff88811024d800 by task kworker/u4:1/11
-
-CPU: 1 PID: 11 Comm: kworker/u4:1 Not tainted
-6.3.0-rc6-pasta-00035-g0bcc40255504 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.13.0-1ubuntu1.1 04/01/2014
-Workqueue: tc_filter_workqueue fl_destroy_filter_work
-Call Trace:
- <TASK>
- dump_stack_lvl+0xd9/0x150
- print_address_description.constprop.0+0x2c/0x3c0
- kasan_report+0x11c/0x130
- tcf_action_destroy+0x17f/0x1b0
- tcf_exts_destroy+0xc5/0x160
- __fl_destroy_filter+0x1a/0x100
- process_one_work+0x991/0x15c0
- worker_thread+0x669/0x1090
- kthread+0x2e8/0x3a0
- ret_from_fork+0x1f/0x30
- </TASK>
-
-Allocated by task 9570:
- kasan_save_stack+0x22/0x40
- kasan_set_track+0x25/0x30
- __kasan_kmalloc+0xa3/0xb0
- tcf_exts_init_ex+0xe4/0x5a0
- fl_change+0x56f/0x4a20
- tc_new_tfilter+0x995/0x22a0
- rtnetlink_rcv_msg+0x996/0xd50
- netlink_rcv_skb+0x165/0x440
- netlink_unicast+0x547/0x7f0
- netlink_sendmsg+0x926/0xe30
- sock_sendmsg+0xde/0x190
- ____sys_sendmsg+0x71c/0x900
- ___sys_sendmsg+0x110/0x1b0
- __sys_sendmsg+0xf7/0x1c0
- do_syscall_64+0x39/0xb0
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Freed by task 9570:
- kasan_save_stack+0x22/0x40
- kasan_set_track+0x25/0x30
- kasan_save_free_info+0x2b/0x40
- ____kasan_slab_free+0x13b/0x1a0
- __kmem_cache_free+0xcd/0x2c0
- tcf_exts_destroy+0xe5/0x160
- tcf_exts_init_ex+0x484/0x5a0
- fl_change+0x56f/0x4a20
- tc_new_tfilter+0x995/0x22a0
- rtnetlink_rcv_msg+0x996/0xd50
- netlink_rcv_skb+0x165/0x440
- netlink_unicast+0x547/0x7f0
- netlink_sendmsg+0x926/0xe30
- sock_sendmsg+0xde/0x190
- ____sys_sendmsg+0x71c/0x900
- ___sys_sendmsg+0x110/0x1b0
- __sys_sendmsg+0xf7/0x1c0
- do_syscall_64+0x39/0xb0
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-The buggy address belongs to the object at ffff88811024d800
- which belongs to the cache kmalloc-256 of size 256
-The buggy address is located 0 bytes inside of
- freed 256-byte region [ffff88811024d800, ffff88811024d900)
-
-The buggy address belongs to the physical page:
-page:ffffea0004409340 refcount:1 mapcount:0 mapping:0000000000000000
-index:0x0 pfn:0x11024d
-flags: 0x57ff00000000200(slab|node=1|zone=2|lastcpupid=0x7ff)
-raw: 057ff00000000200 ffff888012440500 ffffea000436ea10 ffffea00041aec10
-raw: 0000000000000000 ffff88811024d000 0000000100000008 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask
-0x2420c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_COMP|__GFP_THISNODE),
-pid 8017, tgid 8017 (syz-executor.0), ts 60719725774, free_ts
-60718847244
- get_page_from_freelist+0x1190/0x2e20
- __alloc_pages+0x1cb/0x4a0
- cache_grow_begin+0x9b/0x3b0
- cache_alloc_refill+0x27f/0x380
- __kmem_cache_alloc_node+0x360/0x3f0
- __kmalloc+0x4e/0x190
- security_sb_alloc+0x105/0x240
- alloc_super+0x236/0xb60
- sget_fc+0x142/0x7c0
- vfs_get_super+0x2d/0x280
- vfs_get_tree+0x8d/0x350
- path_mount+0x1342/0x1e40
- __x64_sys_mount+0x283/0x300
- do_syscall_64+0x39/0xb0
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-page last free stack trace:
- free_pcp_prepare+0x5d5/0xa50
- free_unref_page+0x1d/0x490
- vfree+0x180/0x7e0
- delayed_vfree_work+0x57/0x70
- process_one_work+0x991/0x15c0
- worker_thread+0x669/0x1090
- kthread+0x2e8/0x3a0
- ret_from_fork+0x1f/0x30
-
-Memory state around the buggy address:
- ffff88811024d700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88811024d780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88811024d800: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff88811024d880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88811024d900: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
+I did miss some bh lock processing when deleting links, and I'll be
+combing the use of sockhash locks recently.
+Thanks.
