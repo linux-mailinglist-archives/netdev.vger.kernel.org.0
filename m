@@ -2,132 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC616E25B8
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 16:28:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE64F6E256C
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 16:17:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbjDNO2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 10:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
+        id S229947AbjDNORz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 10:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231217AbjDNO2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 10:28:42 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BF6CC32
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 07:28:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1681481704; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=D0YEDiedR6keyvtyUfnGXXu/HY1VBup7X/a6Tslu9ZbXRL1xPighBqeBJ2zAMmVH+B
-    +wrK4+ZMChlBHZ6ud5+5ISbpP+CPG/CZu0OmF31aGKTUZkPd47rj3fwObXA5ZPCJIkOp
-    pbgk8VOnF4DUGdFAPovQazz/CvJyDG4NdZFL8Re3MlIqjjHmTjegQ1Jlc2mcgbmE87rA
-    xSPwT1plnWXYYjOf98rQIRDUaupvZCFgynJdmM3fNuqgcu4n1+ByU2OCGu12d2lqNtZi
-    UXTwP0yfL8Fc52nn5QyV8hc5HFflF1pYNZiuN1Nr4lJHcjZPWzCxS2kaLcvLDAK1HBwj
-    iiBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1681481704;
-    s=strato-dkim-0002; d=strato.com;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=U37axNZ2rkIrocKOnrqWmPEcas0XgRB0vLSxvdTbGXQ=;
-    b=KWpdo25+B3ALheiRJBN2Jy2VA4zK/wmqUtBHyb22TFOzvZzFeSOGHdBBW2KC3LVVQB
-    Lf5CXwJ2lEVv866RxxraxGJ1gaev5LA2cJ+xxpgVWHuYfYtYoEDgZYN5zxlkRuNAaz5M
-    60fg6AZZKJ2lvOzhIXTlvemfHEtqbJswEvuS0S/xxm89zerQfwf9bI/ezU+HFlQeWsLt
-    CQanUBE542wVlxuCOSXJZ2q/2Uk53VXgMcXTHL2CgbOzpArx/6dfVC+tQ8a3a57gHAQB
-    HWhTVEMvrRVqZC2nWcYKlHJC3VK+HBVxkx9VAR6i46LzIL17nEL8w5UT0pRdj4WSJ/zS
-    3Vhg==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo01
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1681481704;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=U37axNZ2rkIrocKOnrqWmPEcas0XgRB0vLSxvdTbGXQ=;
-    b=RkfB2eOelQQeFe/CnoZwFgv50RinoHYl3uN/suMfh9iZGXOnlrec5Y6evDdwCcb+qu
-    Cwgz/0zKf/uVRBzAkG6plPpUAPGu2We7U0q2vweofTVJnpZl0gnkrv53oTqvZxu7QIg8
-    sKRu5GflwHc8VUmYrO4aQVbKUAVrcd5v9NmdnnBA5qOqJg5oHhaazt2OAzYlXx8o8zMW
-    EkMZmkp51T6SVaqK9x6Dvascj5bmcOGU7kOs4AD5SnRm8UXQqO7loprYkGm4emBEFZRd
-    +5zqjfw11CrAnwo3YzsYgVK6Dm6Jf+EURd8FffFapT8bn8De21Xh+liVudKKpkdVqxqx
-    yKaA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1681481704;
-    s=strato-dkim-0003; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=U37axNZ2rkIrocKOnrqWmPEcas0XgRB0vLSxvdTbGXQ=;
-    b=df5qnkOYSbLPjU10RVfdWvQRdOHeATwa2EWyA63cVEMr67/TSM2RGXnHogWdENYFAQ
-    iDPE59pMpYlLBKXVw8AA==
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u261EJF5OxJD4paA8p+F1A=="
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 49.4.0 DYNA|AUTH)
-    with ESMTPSA id j6420az3EEF4X8l
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 14 Apr 2023 16:15:04 +0200 (CEST)
-Date:   Fri, 14 Apr 2023 16:14:56 +0200
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     jbreva@nayarsystems.com
-Cc:     Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: wwan: Expose secondary AT port on DATA1
-Message-ID: <ZDlf4Kutl511lIQ_@gerhold.net>
-References: <20230414-rpmsg-wwan-secondary-at-port-v1-1-6d7307527911@nayarsystems.com>
+        with ESMTP id S229703AbjDNORy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 10:17:54 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A5EC1
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 07:17:53 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-5491fa028adso670476247b3.10
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 07:17:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1681481872; x=1684073872;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HqCYABRUHXP49kVUIqWSLxFZcuUvKNMUVvMTRcIbVhI=;
+        b=L1fri7xLRASJUiwlkiFrLMXseYhq8ueQrhMk6usnBChZJP7Miv+H/1T6+ontoEtR+v
+         JbfoRg1lX5W6lhheRin2wnGAx3TkASOaxlbytL7P5mCIAWqx/vnEb6G3GK3F8F0XkG8B
+         J/3+d65lDD7HT5T2VQwkRkNz4Kg4+YiKJZtCZBHAW6FJW0pW8XZzhYmQG8PHbf1xPsWF
+         fNHbXoAMukz6UyAkVFQ+HSz7jNFEExpvEU1gv1lAUQVsNPuCDSAU0rUc+eYPt4q0/L+B
+         o7J3xGgm/HB1U/DExEK8Cwi9sWI7wsJ8T8zNue0QN/Q1bXkMrqfRgGxTJ7OUmbEv3Tml
+         IHlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681481872; x=1684073872;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HqCYABRUHXP49kVUIqWSLxFZcuUvKNMUVvMTRcIbVhI=;
+        b=h2GGCZE/ZJFrXMRSk/N32748lQ0dIoSoM1GmndoRFVamh5P1Cz1J3Z7xNBowWEwNic
+         47Owgl5FvgJXmLbY4t8KSFBETIIl3igKiR79bvhU+DqFZ2JlxfmXRyZ072PJVUMOZIQ2
+         1dErXqdzYmYigOb0mIgwKD7E/0/Rr7zw88LjwpTr2JzV3PNW4fuMSGbN0aqMUaZAvG/d
+         5XDAIu1R+NYO5OvVWahInGo5dLEl3sRudYoEBojJ93JpPWC4/XeekyDFj/3I0mXkCld0
+         luP79rjykaJE8ZDqczGneEyHvYk7pYndLCF0KOXPc8WP66RqJDlxriXJzZlFzntfM9Nl
+         8qYA==
+X-Gm-Message-State: AAQBX9c3EmcFbMifHBedKdsdmXTehWO1O85jhzCsk8BFArB7Ls+gdxb7
+        DpsFPdkVi0vKQPRgV/D6JdBZQ2p777NTUot8nlg0Yg==
+X-Google-Smtp-Source: AKy350ZIUgwB9SgTWJiyybQ6NIriSMeE1EvERD7MPWyroMLKlXPtGwQ6p+5KOetV0qr8AnChNdx3J9biOdgBUVTCUGo=
+X-Received: by 2002:a81:e549:0:b0:545:1d7f:acbf with SMTP id
+ c9-20020a81e549000000b005451d7facbfmr3530526ywm.10.1681481872332; Fri, 14 Apr
+ 2023 07:17:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230414-rpmsg-wwan-secondary-at-port-v1-1-6d7307527911@nayarsystems.com>
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <20230413171918.GX17993@unreal> <20230414022736.63374-1-bobankhshen@gmail.com>
+In-Reply-To: <20230414022736.63374-1-bobankhshen@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 14 Apr 2023 16:17:40 +0200
+Message-ID: <CANn89i+k9Qn_8bpJb+Cgh_b4VYYVNArSGG3LmR+d3sxjxdxxbw@mail.gmail.com>
+Subject: Re: [PATCH net-next] lib/win_minmax: export symbol of minmax_running_min
+To:     Yixin Shen <bobankhshen@gmail.com>
+Cc:     leon@kernel.org, akpm@linux-foundation.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, ncardwell@google.com,
+        netdev@vger.kernel.org, rdunlap@infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 14, 2023 at 01:07:40PM +0200, Jaime Breva via B4 Relay wrote:
-> From: Jaime Breva <jbreva@nayarsystems.com>
-> 
-> Our use-case needs two AT ports available:
-> One for running a ppp daemon, and another one for management
-> 
-> This patch enables a second AT port on DATA1
-> 
-> Signed-off-by: Jaime Breva <jbreva@nayarsystems.com>
+On Fri, Apr 14, 2023 at 4:27=E2=80=AFAM Yixin Shen <bobankhshen@gmail.com> =
+wrote:
+>
+> > Please provide in-tree kernel user for that EXPORT_SYMBOL.
+>
+> It is hard to provide such an in-tree kernel user. We are trying to
+> implement newer congestion control algorithms as dynamically loaded modul=
+es.
+> For example, Copa(NSDI'18) which is adopted by Facebook needs to maintain
+> such windowed min filters. Althought it is true that we can just
+> copy-and-paste the code inside lib/win_minmax, it it more convenient to
+> give the same status of minmax_running_min as minmax_running_max.
+> It is confusing that only minmax_running_max is exported.
 
-Acked-by: Stephan Gerhold <stephan@gerhold.net>
+This is needed by net/ipv4/tcp_bbr.c , which can be a module.
 
-Thanks,
-Stephan
+> If this patch is rejected because the changes are too significant,
 
-> ---
->  drivers/net/wwan/rpmsg_wwan_ctrl.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/wwan/rpmsg_wwan_ctrl.c b/drivers/net/wwan/rpmsg_wwan_ctrl.c
-> index 31c24420ab2e..e964bdeea2b3 100644
-> --- a/drivers/net/wwan/rpmsg_wwan_ctrl.c
-> +++ b/drivers/net/wwan/rpmsg_wwan_ctrl.c
-> @@ -149,6 +149,7 @@ static const struct rpmsg_device_id rpmsg_wwan_ctrl_id_table[] = {
->  	/* RPMSG channels for Qualcomm SoCs with integrated modem */
->  	{ .name = "DATA5_CNTL", .driver_data = WWAN_PORT_QMI },
->  	{ .name = "DATA4", .driver_data = WWAN_PORT_AT },
-> +	{ .name = "DATA1", .driver_data = WWAN_PORT_AT },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(rpmsg, rpmsg_wwan_ctrl_id_table);
-> 
-> ---
-> base-commit: c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-> change-id: 20230414-rpmsg-wwan-secondary-at-port-db72a66ce74a
-> 
-> Best regards,
-> -- 
-> Jaime Breva <jbreva@nayarsystems.com>
-> 
+Well, this path would soon be reverted by people using bots/tools to
+detect unused functions,
+or unused EXPORT symbols.
+
+So there is no point accepting it, before you submit the CC in the
+official linux tree.
