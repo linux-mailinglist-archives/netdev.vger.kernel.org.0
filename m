@@ -2,174 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A8AA6E19D9
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 03:51:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC68B6E19E6
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 03:58:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229625AbjDNBtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 21:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60942 "EHLO
+        id S229724AbjDNB6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 21:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbjDNBtX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 21:49:23 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9882A2D5F;
-        Thu, 13 Apr 2023 18:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=E2G2QvD8LSN6zsKrK4x10klW74FtFwbyAIvDGNKBlgI=; b=mKoGtUTFW1RJGS3hAqeCxHJJ5A
-        zG4T1dYaG40Nfu1CCGZib5u3IkjqmcT+jBShPe9xtQQfghWSW/OHaOAHOWJsQTOy9l4J9eBKHOsCw
-        HPW9qZFTv1e7UxRIblVwHXOAAhULUz3eydk7O7toklv4Zq3xiEsVo6Oc0k9Gd8bUdDpo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pn8Ym-00AF4Q-5H; Fri, 14 Apr 2023 03:49:08 +0200
-Date:   Fri, 14 Apr 2023 03:49:08 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S229593AbjDNB6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 21:58:46 -0400
+Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E6E3C15;
+        Thu, 13 Apr 2023 18:58:44 -0700 (PDT)
+Received: by mail-vs1-xe33.google.com with SMTP id bs12so4110372vsb.1;
+        Thu, 13 Apr 2023 18:58:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681437523; x=1684029523;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Dl2518gfS/Q1UTQTLUFTF13BLaNUhIq99/jZxFoVTE8=;
+        b=dbFOmnvXWendtqHNWAnIIVQIAq5jJpuLDcEXgMFqI9KaQWq7P5E/IYMfFyG4lMrryj
+         GWiDAIG7yiXx2GbkQLiJcfm4WP7f+TG/jGVIdYV4/kv7atqDhOZwQiQEEhLBFxEJyNNJ
+         Uf0nPRy0nNqI7zzcmYYtMATxZgrJhhcrCAWm0USCkRQvkzupQVv5xNqjv00vGBGzSE2Q
+         zU2QSSe4VhBo9fed9Z8lkZpM4K/6vsxBRt2jyGtFITzTK1Z3nvQ0gj/IY2wt7L4ugiog
+         xaGZQ+lkOAvAYeCxylJ7eET8v7HZVcFKyXIbKBsD9gkpBaDNBRcLaAtdYGlp12okckka
+         JRkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681437523; x=1684029523;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Dl2518gfS/Q1UTQTLUFTF13BLaNUhIq99/jZxFoVTE8=;
+        b=M9/Aqie5qRcpA8PFnzrnOe7NxNCodM+qwdu8qK5gYyVq2Hq/FJwjc6Ps5w7uh5cLbZ
+         Y/OFx1e2bkuRIeLD05/V8SZNakFx5yLWy2Mt6pfyau1mjSwfiaHz3zIk/yMQtxO9xRNO
+         Rfxk9bQXg9HkAh124kW7NMjqdBmjRArnBDowF4gqBbj9CKBrgiWxTW/jm1Nwkqgaei3l
+         60P8TnSHFVXg6Qz0Zwf+JxizaNGeTdQInM/VR/Y+ykmKL/cSD2KE9JutOeg39Lf3YcBV
+         KoD3UOTD38CXS1scCYJ+DU47J6e+w1/9bHImYGqHUaHLOTZKNJi1BT9ryXuaest/9Qtk
+         xMtA==
+X-Gm-Message-State: AAQBX9dWqLf9nlajDB5Of7HzDSKu5zd74PnkwptHgaNlKiIHruI9m6qP
+        4jAiEPt7fnDED6wBKZ0sTaihH5UcRpA4PJDIV0M=
+X-Google-Smtp-Source: AKy350aH2AiuehJLLHPE1eL6DWbiGgRPxKkogH1PjK+GLiQpdjGXhs2/nf2wZfpm5URgPMnp+kW/pzZBtynhNAxrCSM=
+X-Received: by 2002:a67:d496:0:b0:42e:3c2e:10bd with SMTP id
+ g22-20020a67d496000000b0042e3c2e10bdmr590487vsj.1.1681437523577; Thu, 13 Apr
+ 2023 18:58:43 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230412-increase_ipvs_conn_tab_bits-v1-1-60a4f9f4c8f2@gmail.com> <d2519ce3-e49b-a544-b79d-42905f4a2a9a@ssi.bg>
+In-Reply-To: <d2519ce3-e49b-a544-b79d-42905f4a2a9a@ssi.bg>
+From:   Abhijeet Rastogi <abhijeet.1989@gmail.com>
+Date:   Thu, 13 Apr 2023 18:58:06 -0700
+Message-ID: <CACXxYfxLU0jWmq0W7YxX=44XFCGvgMX2HwTFUUHCUMjO28g5BA@mail.gmail.com>
+Subject: Re: [PATCH] ipvs: change ip_vs_conn_tab_bits range to [8,31]
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Qingfang Deng <dqfext@gmail.com>,
-        SkyLake Huang <SkyLake.Huang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        John Crispin <john@phrozen.org>
-Subject: Re: [PATCH net-next] net: phy: add driver for MediaTek SoC built-in
- GE PHYs
-Message-ID: <1295d8aa-35e8-4396-b347-efc8d7557c79@lunn.ch>
-References: <ZDihjfnzaZ1yh9cT@makrotopia.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZDihjfnzaZ1yh9cT@makrotopia.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +/* Registers on MDIO_MMD_VEND1 */
-> +#define MTK_PHY_MIDDLE_LEVEL_SHAPPER_0TO1	0
-> +#define MTK_PHY_1st_OVERSHOOT_LEVEL_0TO1	1
-> +#define MTK_PHY_2nd_OVERSHOOT_LEVEL_0TO1	2
-> +#define MTK_PHY_1st_OVERSHOOT_LEVEL_1TO0	4
-> +#define MTK_PHY_2nd_OVERSHOOT_LEVEL_1TO0	5 /* N means negative */
-> +#define MTK_PHY_1st_OVERSHOOT_LEVEL_0TON1	7
-> +#define MTK_PHY_2nd_OVERSHOOT_LEVEL_0TON1	8
-> +#define MTK_PHY_1st_OVERSHOOT_LEVEL_N1TO0	10
-> +#define MTK_PHY_2nd_OVERSHOOT_LEVEL_N1TO0	11
+Hi Simon, Andrea and Julian,
 
-Mixed case like this is very unusual.
+I really appreciate you taking the time to respond to my patch. Some follow up
+questions that I'll appreciate a response for.
 
-> +static int tx_amp_fill_result(struct phy_device *phydev, u16 *buf)
-> +{
-> +	int i;
-> +	int bias[16] = {0};
-> +	const int vals_9461[16] = { 7, 1, 4, 7,
-> +				    7, 1, 4, 7,
-> +				    7, 1, 4, 7,
-> +				    7, 1, 4, 7 };
-> +	const int vals_9481[16] = { 10, 6, 6, 10,
-> +				    10, 6, 6, 10,
-> +				    10, 6, 6, 10,
-> +				    10, 6, 6, 10 };
-> +
-> +	switch (phydev->drv->phy_id) {
-> +	case MTK_GPHY_ID_MT7981:
-> +		/* We add some calibration to efuse values
-> +		 * due to board level influence.
-> +		 * GBE: +7, TBT: +1, HBT: +4, TST: +7
-> +		 */
-> +		memcpy(bias, (const void *)vals_9461, sizeof(bias));
-> +		for (i = 0; i <= 12; i += 4) {
-> +			if (likely(buf[i >> 2] + bias[i] >= 32)) {
-> +				bias[i] -= 13;
-> +			} else {
-> +				phy_modify_mmd(phydev, MDIO_MMD_VEND1,
-> +					       0x5c, 0x7 << i, bias[i] << i);
-> +				bias[i + 1] += 13;
-> +				bias[i + 2] += 13;
-> +				bias[i + 3] += 13;
+@Simon Horman
+>In any case, I think this patch is an improvement on the current situation.
 
-How does 13 map to GBE: +7, TBT: +1, HBT: +4, TST: +7 ?
++1 to this. I wanted to add that, we're not changing the defaults
+here, the default still stays at 2^12. If a kernel user changes the
+default, they probably already know what the limitations are, so I
+personally don't think it is a big concern.
 
-> +static inline void mt798x_phy_common_finetune(struct phy_device *phydev)
+@Andrea Claudi
+>for the record, RHEL ships with CONFIG_IP_VS_TAB_BITS set to 12 as
+default.
 
-No inline functions in .c files. Let the compiler decide. There
-appears to be a number of these. And they are big function, too big to
-make sense to inline.
+Sorry, I should have been clearer. RHEL ships with the same default,
+yes, but it doesn't have the range check, at least, on the version I'm
+using right now (3.10.0-1160.62.1.el7.x86_64).
 
->  static struct phy_driver mtk_gephy_driver[] = {
->  	{
-> -		PHY_ID_MATCH_EXACT(0x03a29412),
-> +		PHY_ID_MATCH_EXACT(MTK_GPHY_ID_MT7530),
->  		.name		= "MediaTek MT7530 PHY",
->  		.config_init	= mt7530_phy_config_init,
->  		/* Interrupts are handled by the switch, not the PHY
-> @@ -84,7 +1205,7 @@ static struct phy_driver mtk_gephy_driver[] = {
->  		.write_page	= mtk_gephy_write_page,
->  	},
->  	{
-> -		PHY_ID_MATCH_EXACT(0x03a29441),
-> +		PHY_ID_MATCH_EXACT(MTK_GPHY_ID_MT7531),
->  		.name		= "MediaTek MT7531 PHY",
->  		.config_init	= mt7531_phy_config_init,
->  		/* Interrupts are handled by the switch, not the PHY
+On this version, I'm able to load with bit size 30, 31 gives me error
+regarding allocating memory (64GB host) and anything beyond 31 is
+mysteriously switched to a lower number. The following dmesg on my
+host confirms that the bitsize 30 worked, which is not possible
+without a patch on the current kernel version.
 
-Useful changes, but please put them in a separate patch.
+"[Fri Apr 14 01:14:51 2023] IPVS: Connection hash table configured (size=1073741
+824, memory=16777216Kbytes)"
 
-> @@ -97,16 +1218,42 @@ static struct phy_driver mtk_gephy_driver[] = {
->  		.read_page	= mtk_gephy_read_page,
->  		.write_page	= mtk_gephy_write_page,
->  	},
-> +#if IS_ENABLED(CONFIG_MEDIATEK_GE_PHY_SOC)
-> +	{
-> +		PHY_ID_MATCH_EXACT(MTK_GPHY_ID_MT7981),
-> +		.name		= "MediaTek MT7981 PHY",
-> +		.probe		= mt7981_phy_probe,
-> +		.config_intr	= genphy_no_config_intr,
-> +		.handle_interrupt = genphy_handle_interrupt_no_ack,
-> +		.suspend	= genphy_suspend,
-> +		.resume		= genphy_resume,
-> +		.read_page	= mtk_gephy_read_page,
-> +		.write_page	= mtk_gephy_write_page,
-> +	},
-> +	{
-> +		PHY_ID_MATCH_EXACT(MTK_GPHY_ID_MT7988),
-> +		.name		= "MediaTek MT7988 PHY",
-> +		.probe		= mt7988_phy_probe,
-> +		.config_intr	= genphy_no_config_intr,
-> +		.handle_interrupt = genphy_handle_interrupt_no_ack,
-> +		.suspend	= genphy_suspend,
-> +		.resume		= genphy_resume,
-> +		.read_page	= mtk_gephy_read_page,
-> +		.write_page	= mtk_gephy_write_page,
+@Julian Anastasov,
+>This is not a limit of number of connections. I prefer
+not to allow value above 24 without adding checks for the
+available memory,
 
-So the only thing these two new PHYs share with the other two PHYs is
-mtk_gephy_read_page and mtk_gephy_write_page?
+Interesting that you brought up that number 24, that is exactly what
+we use in production today. One IPVS node is able to handle spikes of
+10M active connections without issues. This patch idea originated as
+my company is migrating from the ancient RHEL version to a somewhat
+newer CentOS (5.* kernel) and noticed that we were unable to load the
+ip_vs kernel module with anything greater than 20 bits. Another
+motivation for kernel upgrade is utilizing maglev to reduce table size
+but that's out of context in this discussion.
 
-static int mtk_gephy_read_page(struct phy_device *phydev)
-{
-        return __phy_read(phydev, MTK_EXT_PAGE_ACCESS);
-}
+My request is, can we increase the range from 20 to something larger?
+If 31 seems a bit excessive, maybe, we can settle for something like
+[8,30] or even lower. With conn_tab_bits=30, it allocates 16GB at
+initialization time, it is not entirely absurd by today's standards.
 
-static int mtk_gephy_write_page(struct phy_device *phydev, int page)
-{
-        return __phy_write(phydev, MTK_EXT_PAGE_ACCESS, page);
-}
+I can revise my patch to a lower range as you guys see fit.
 
-Given the size of the new code, maybe consider adding
-mediatek-ge-soc.c and make a copy these two functions?
-
-	Andrew
+--
+Cheers,
+Abhijeet (https://abhi.host)
