@@ -2,45 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82E626E21AB
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 13:06:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C946E21CB
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 13:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230362AbjDNLGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 07:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40566 "EHLO
+        id S230463AbjDNLKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 07:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230327AbjDNLFy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 07:05:54 -0400
-Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BB21BEA;
-        Fri, 14 Apr 2023 04:05:37 -0700 (PDT)
-X-QQ-mid: Yeas43t1681470298t808t23419
-Received: from 7082A6556EBF4E69829842272A565F7C (jiawenwu@trustnetic.com [183.129.236.74])
-X-QQ-SSF: 00400000000000F0FL9000000000000
-From:   =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
-X-BIZMAIL-ID: 8627864248020985095
-To:     "'Wolfram Sang'" <wsa@kernel.org>,
-        "'Jarkko Nikula'" <jarkko.nikula@linux.intel.com>
-Cc:     <netdev@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <linux-i2c@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <mengyuanlou@net-swift.com>
-References: <20230411092725.104992-1-jiawenwu@trustnetic.com> <20230411092725.104992-3-jiawenwu@trustnetic.com> <00cf01d96c58$8d3e9130$a7bbb390$@trustnetic.com> <09dc3146-a1c6-e1a3-c8bd-e9fe547f9b99@linux.intel.com> <ZDgtryRooJdVHCzH@sai>
-In-Reply-To: <ZDgtryRooJdVHCzH@sai>
-Subject: RE: [PATCH net-next v2 2/6] net: txgbe: Implement I2C bus master driver
-Date:   Fri, 14 Apr 2023 19:04:56 +0800
-Message-ID: <01ec01d96ec0$f2e10670$d8a31350$@trustnetic.com>
+        with ESMTP id S230377AbjDNLKJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 07:10:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDC49EFA;
+        Fri, 14 Apr 2023 04:09:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6BD3646CF;
+        Fri, 14 Apr 2023 11:09:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 469B9C433D2;
+        Fri, 14 Apr 2023 11:09:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681470587;
+        bh=dCWQvGEBkXfONfpK8qRsz+qQGvbMNYwp8pY9BT7oHlM=;
+        h=From:Date:Subject:To:Cc:Reply-To:From;
+        b=gojfUNusRFaxsw+K+iU6qmS0wnoIF3H+MO6I41GnkfBqHWvCdBR8gtOlREW9d08Bx
+         219Bjq8YmQzuP8eQvxqU6FOasO0WYXmWh8xK58ggcf366u+7RloteUDHW2jZ3isl7Z
+         cGMv1M+KR6319Lidsor26t5p/XHa8wp2Z49xM4KXrPt3rOpIMMcsK7ctfaHAKMNxWd
+         VDqfhpuQuGid39lmj/wiznEHqQ4GsBUdiyJzVduzhK8JaovNxazIkftMTKEroIUqFD
+         28LXg/OiDpO43srB7ejb0EItsRGniB5L5jqUQD1Ku8PkazXE7OEQiIQ8US2niVbqrD
+         2l+CdknqWPfMA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.lore.kernel.org (Postfix) with ESMTP id 28B3FC77B72;
+        Fri, 14 Apr 2023 11:09:47 +0000 (UTC)
+From:   Jaime Breva via B4 Relay 
+        <devnull+jbreva.nayarsystems.com@kernel.org>
+Date:   Fri, 14 Apr 2023 13:07:40 +0200
+Subject: [PATCH] net: wwan: Expose secondary AT port on DATA1
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: zh-cn
-Thread-Index: AQJXy8bYFbRwx/PFgpvJPX7PgyT97wJCMZrbAk6D9c4BtpNb5AI7nLSFremgdRA=
-X-QQ-SENDSIZE: 520
-Feedback-ID: Yeas:trustnetic.com:qybglogicsvr:qybglogicsvr5
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+Message-Id: <20230414-rpmsg-wwan-secondary-at-port-v1-1-6d7307527911@nayarsystems.com>
+X-B4-Tracking: v=1; b=H4sIAPwzOWQC/x2NQQqDMBAAvyJ77oKmQaFfKT1skq3mYBJ2Q7WIf
+ 2/scRiYOUBZIis8ugOEP1FjTg2GWwd+oTQzxtAYTG/uvR0sSll1xm2jhMo+p0DyRapYslQMbjI
+ 0jp4nS9ASjpTRCSW/XJGVtLJcogi/4/7/Pl/n+QMph2lPhwAAAA==
+To:     Stephan Gerhold <stephan@gerhold.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jaime Breva <jbreva@nayarsystems.com>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1681470586; l=1075;
+ i=jbreva@nayarsystems.com; s=20230414; h=from:subject:message-id;
+ bh=cSR4ZQap91Ye+xWxHZdF++TRRzXHB58d7aORnQDEYqM=;
+ b=UtqPg4Ls/omSuTtTSlV0VkJABHHRNDsCfzzMZBGbx0UTm78zIV39iYILVj5p0bOVV8LWiNvRi
+ 1InMJSqRsISARwe/xrdCFAgj+PEDNk4JRU+vdLJAYeKPJMiP3rqDHnJ
+X-Developer-Key: i=jbreva@nayarsystems.com; a=ed25519;
+ pk=zDC7l1kB518eXlRUJzDUyrUOKe2m/yx+62R/yqmd/kM=
+X-Endpoint-Received: by B4 Relay for jbreva@nayarsystems.com/20230414 with auth_id=42
+X-Original-From: Jaime Breva <jbreva@nayarsystems.com>
+Reply-To: <jbreva@nayarsystems.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,38 +76,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday, April 14, 2023 12:29 AM, Wolfram Sang wrote:
-> > > > Implement I2C bus driver to send and receive I2C messages.
-> > > >
-> > > > This I2C license the IP of Synopsys Designware, but without interrupt
-> > > > support on the hardware design. It seems that polling mode needs to be
-> > > > added in Synopsys Designware I2C driver. But currently it can only be
-> > > > driven by this I2C bus master driver.
-> > > >
-> > > > Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
-> > > > ---
-> > > >   drivers/net/ethernet/wangxun/Kconfig          |   1 +
-> > > >   .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 153
-> > > > ++++++++++++++++++
-> > > >   .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  23 +++
-> > > >   3 files changed, 177 insertions(+)
-> > > >
-> > Looks like your use case has similarities with the commit 17631e8ca2d3
-> > ("i2c: designware: Add driver support for AMD NAVI GPU").
-> 
-> Yes, can you please check if you can't use the current i2c designware
-> driver?
+From: Jaime Breva <jbreva@nayarsystems.com>
 
-Hi Jarkko & Wolfram,
+Our use-case needs two AT ports available:
+One for running a ppp daemon, and another one for management
 
-I read the i2c designware driver code, and found that 'dev->ss_hcnt' can
-only be obtained by i2c_dw_acpi_configure() or calculated by clock rate.
+This patch enables a second AT port on DATA1
 
-I don't quite understand how to get the clock rate. I tried to add a software
-node of clock with property ("clock-frequency", 100000) and referenced by
-I2C node. But it didn't work.
+Signed-off-by: Jaime Breva <jbreva@nayarsystems.com>
+---
+ drivers/net/wwan/rpmsg_wwan_ctrl.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Can I deliver 'dev->ss_hcnt' via platform data? Or how should I fill in the
-software node?
+diff --git a/drivers/net/wwan/rpmsg_wwan_ctrl.c b/drivers/net/wwan/rpmsg_wwan_ctrl.c
+index 31c24420ab2e..e964bdeea2b3 100644
+--- a/drivers/net/wwan/rpmsg_wwan_ctrl.c
++++ b/drivers/net/wwan/rpmsg_wwan_ctrl.c
+@@ -149,6 +149,7 @@ static const struct rpmsg_device_id rpmsg_wwan_ctrl_id_table[] = {
+ 	/* RPMSG channels for Qualcomm SoCs with integrated modem */
+ 	{ .name = "DATA5_CNTL", .driver_data = WWAN_PORT_QMI },
+ 	{ .name = "DATA4", .driver_data = WWAN_PORT_AT },
++	{ .name = "DATA1", .driver_data = WWAN_PORT_AT },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(rpmsg, rpmsg_wwan_ctrl_id_table);
 
+---
+base-commit: c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
+change-id: 20230414-rpmsg-wwan-secondary-at-port-db72a66ce74a
+
+Best regards,
+-- 
+Jaime Breva <jbreva@nayarsystems.com>
 
