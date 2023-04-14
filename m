@@ -2,173 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCF266E2A3E
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 20:46:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5EA46E2A44
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 20:54:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbjDNSqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 14:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
+        id S229705AbjDNSyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 14:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbjDNSqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 14:46:07 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFE48A74;
-        Fri, 14 Apr 2023 11:46:05 -0700 (PDT)
-Received: (Authenticated sender: schoen@loyalty.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 216B3100003;
-        Fri, 14 Apr 2023 18:46:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=loyalty.org; s=gm1;
-        t=1681497963;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZfHI2ppxgpSbAtsQuFeP+Eg99YV33h4ZAZynEWW94vo=;
-        b=ABrLt+Ea42REHSz6VieLAOy/OzgCSJXXWRKuOXxmJ9XH9qdo0m6G8Q9RGPw1NfSf/Bn0P7
-        BLjYalJaVjKfLIizmWRZHyQWgXgyq1E8J5fYVdAlLgNneVxyuaP8EASRJ+NvtBebGrwjZt
-        yCATeScGSI39Pk4t65sjdPHeM1nyx04QyYoVfhipNmWdeFdax9ORzGq38z1pl8VeWBigM3
-        cSdj7/Yvh7GXd6zcyCgwy36epmeviUdhMMy/+IRieQIyql8QZjWQbckHq2/xS4e+yd0mYD
-        pCr236aT1iLytU2zXwrSlqGETzqzW/Jqb7t7/cxG3DrK1k40wHKrmN6sM3RRcQ==
-Date:   Fri, 14 Apr 2023 11:45:58 -0700
-From:   Seth David Schoen <schoen@loyalty.org>
-To:     Alejandro Colomar <alx.manpages@gmail.com>
-Cc:     linux-man@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v6] ip.7: Add "special and reserved addresses" section
-Message-ID: <20230414184558.GB2557040@demorgan>
-References: <20230414184433.GA2557040@demorgan>
+        with ESMTP id S229704AbjDNSyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 14:54:01 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D6A9022
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 11:54:00 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-183f4efa98aso29156648fac.2
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 11:54:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681498439; x=1684090439;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=vzqj96vYGLMocPv/JejZYXZcCxCFycWEjQy0HzkJ6mg=;
+        b=SfJHY5JcXjKbtfD2/4UBDQRFIDe9/DBA1OKQRnIOsxxnOhar7eTqVDqeTJMJsKrQnm
+         gN0PCq+Olki2sr/7LY4704V4oJ7UzgRVHJo93J2RrHKQDJS7MpuhhlFUzjwE6LWsjEDQ
+         VFoRSlhRJ8Xioc5Wtr6RfAcjWRvGLuQxiaVpiGaP9e8gEwkvSU+jecIhnl/RcoNle2qx
+         sLgaCxIdjhGw0Xg+/FjWn9mYVnDWnE2syBrWicC//Jpmph7sClqjk9TFA4fg/rVSQDWj
+         9RZtNXuQQ0qpEP6Fe9HagJlmxFXOr2RZazRJtSP+K+lz/m1nUvVJWavZL9i0Va/hw/8B
+         4i6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681498439; x=1684090439;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vzqj96vYGLMocPv/JejZYXZcCxCFycWEjQy0HzkJ6mg=;
+        b=IntUvnSBD8R4RwwsBtnxkc19zwSKGLLAnsLX3Ba0aQwzuZVaxW2BKNKAIxUYKsYKZN
+         zDmyw4aHm9/5iRrNSFeS3FVQNTMhUkb118amA05nDBzoekomlzHk6+sDOaqNHHmYH48J
+         dCI6UUEDVJGg3yfrlFPg84zGwrZBJj50CnEQv7JhDzHE/f92ZgHTK4uFHq5D3/G5Wx4e
+         U1u4opZfu25Nb4NpyyHh2rHgn37oP4pEAN+4x7iqwg40w1W94p/uwyWw5ztKYm/KFpcK
+         ZNubT2ei1kQwbpySVrG1EcMsTR713A15+GJtAOZ7INKfMrJVngdrqeYGmUiya7BsA2nh
+         NnuA==
+X-Gm-Message-State: AAQBX9e9koqOv62et+nZoCgXTRfJnKtBUvr/KiCTz/TV0JVzOOI6H7rx
+        MiG70q67RIvIgcx0P7b9lv4H7v52F0o9PIuTIRo=
+X-Google-Smtp-Source: AKy350Zld03WzUZBeRfAC810Ym2n/f+MlTqTHrnwrOK+xEDMtbiMBrLT/JiyCVjIJ//qJECCuwl1VA==
+X-Received: by 2002:a05:6870:a44c:b0:184:ad6:761b with SMTP id n12-20020a056870a44c00b001840ad6761bmr5575287oal.26.1681498439243;
+        Fri, 14 Apr 2023 11:53:59 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14d:5c5e:44fb:bb6:61a2:bf8b:4710])
+        by smtp.gmail.com with ESMTPSA id z21-20020a056870515500b0017f647294f5sm2096061oak.16.2023.04.14.11.53.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Apr 2023 11:53:58 -0700 (PDT)
+From:   Pedro Tammela <pctammela@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>
+Subject: [PATCH net-next 0/2] net/sched: cleanup parsing prints in htb and qfq
+Date:   Fri, 14 Apr 2023 15:53:08 -0300
+Message-Id: <20230414185309.220286-1-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230414184433.GA2557040@demorgan>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Break out the discussion of special and reserved IPv4 addresses into
-a subsection, formatted as a pair of definition lists, and briefly
-describing three cases in which Linux no longer treats addresses
-specially, where other systems do or did.
+These two qdiscs are still using prints on dmesg to report parsing
+errors. Since the parsing code has access to extack, convert these error
+messages to extack.
 
-Also add a specific example to the NOTES paragraph that discourages
-the use of IP broadcasting, so people can more easily understand
-what they are supposed to do instead.
+Pedro Tammela (2):
+  net/sched: sch_htb: use extack on errors messages
+  net/sched: sch_qfq: use extack on errors messages
 
-Signed-off-by: Seth David Schoen <schoen@loyalty.org>
-Suggested-by: John Gilmore <gnu@toad.com>
----
- man7/ip.7 | 83 +++++++++++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 75 insertions(+), 8 deletions(-)
+ net/sched/sch_htb.c | 19 +++++++++++--------
+ net/sched/sch_qfq.c | 15 +++++++++------
+ 2 files changed, 20 insertions(+), 14 deletions(-)
 
-diff --git a/man7/ip.7 b/man7/ip.7
-index 6c50d0281..6f1ee4dbe 100644
---- a/man7/ip.7
-+++ b/man7/ip.7
-@@ -237,19 +237,82 @@ In particular, this means that you need to call
- on the number that is assigned to a port.
- All address/port manipulation
- functions in the standard library work in network byte order.
--.PP
-+.SS Special and reserved addresses
- There are several special addresses:
--.B INADDR_LOOPBACK
--(127.0.0.1)
-+.TP
-+.BR INADDR_LOOPBACK " (127.0.0.1)"
- always refers to the local host via the loopback device;
-+.TP
-+.BR INADDR_ANY " (0.0.0.0)"
-+means any address for socket binding;
-+.TP
-+.BR INADDR_BROADCAST " (255.255.255.255)"
-+has the same effect on
-+.BR bind (2)
-+as
- .B INADDR_ANY
--(0.0.0.0)
--means any address for binding;
-+for historical reasons.
-+A packet addressed to
- .B INADDR_BROADCAST
--(255.255.255.255)
--means any host and has the same effect on bind as
-+through a socket which has
-+.B SO_BROADCAST
-+set will be broadcast to all hosts on the local network segment,
-+as long as the link is broadcast-capable.
-+
-+.TP
-+Highest-numbered address
-+.TQ
-+Lowest-numbered address
-+On any locally-attached non-point-to-point IP subnet
-+with a link type that supports broadcasts,
-+the highest-numbered address
-+(e.g., the .255 address on a subnet with netmask 255.255.255.0)
-+is designated as a broadcast address.
-+It cannot usefully be assigned to an individual interface,
-+and can only be addressed with a socket on which the
-+.B SO_BROADCAST
-+option has been set.
-+Internet standards have historically
-+also reserved the lowest-numbered address
-+(e.g., the .0 address on a subnet with netmask 255.255.255.0)
-+for broadcast, though they call it "obsolete" for this purpose.
-+(Some sources also refer to this as the "network address.")
-+Since Linux 5.14,
-+.\" commit 58fee5fc83658aaacf60246aeab738946a9ba516
-+it is treated as an ordinary unicast address
-+and can be assigned to an interface.
-+
-+.PP
-+Internet standards have traditionally also reserved various addresses
-+for particular uses, though Linux no longer treats
-+some of these specially.
-+
-+.TP
-+[0.0.0.1, 0.255.255.255]
-+.TQ
-+[240.0.0.0, 255.255.255.254]
-+Addresses in these ranges (0/8 and 240/4) are reserved globally.
-+Since Linux 5.3
-+.\" commit 96125bf9985a75db00496dd2bc9249b777d2b19b
-+and Linux 2.6.25,
-+.\" commit 1e637c74b0f84eaca02b914c0b8c6f67276e9697
-+respectively,
-+the 0/8 and 240/4 addresses, other than
- .B INADDR_ANY
--for historical reasons.
-+and
-+.BR INADDR_BROADCAST ,
-+are treated as ordinary unicast addresses.
-+Systems that follow the traditional behaviors may not
-+interoperate with these historically reserved addresses.
-+.TP
-+[127.0.0.1, 127.255.255.254]
-+Addresses in this range (127/8) are treated as loopback addresses
-+akin to the standardized local loopback address
-+.B INADDR_LOOPBACK
-+(127.0.0.1);
-+.TP
-+[224.0.0.0, 239.255.255.255]
-+Addresses in this range (224/4) are dedicated to multicast use.
- .SS Socket options
- IP supports some protocol-specific socket options that can be set with
- .BR setsockopt (2)
-@@ -1343,6 +1406,10 @@ with careless broadcasts.
- For new application protocols
- it is better to use a multicast group instead of broadcasting.
- Broadcasting is discouraged.
-+See RFC 6762 for an example of a protocol (mDNS)
-+using the more modern multicast approach
-+to communicating with an open-ended
-+group of hosts on the local network.
- .PP
- Some other BSD sockets implementations provide
- .B IP_RCVDSTADDR
 -- 
-2.25.1
+2.34.1
+
