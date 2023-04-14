@@ -2,287 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A766E1B59
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 06:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92EC76E1B65
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 07:00:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229989AbjDNE5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 00:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35858 "EHLO
+        id S229746AbjDNFAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 01:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbjDNE5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 00:57:00 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87939527A;
-        Thu, 13 Apr 2023 21:56:33 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33E4uI2x100671;
-        Thu, 13 Apr 2023 23:56:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1681448178;
-        bh=hoWA2L0DiFjF9ICr12i1jgCeny6tBJODLrVjOjGwAT0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=OcIEdDoKyGiAfmzZ/iENM0Kmg4Tz8oeD3tiRuzW0HoO1B0pfT31vrT0RbRFyiDJBp
-         muTqlH7W3YRIvQpGokweohZR6kXHNRtUzywabk4mjBldxVgUHrcxXaCKubZPVOpLkQ
-         Z57xtNv3PbsZZxIfFwEobvjN71DQrc4uywT2vZvw=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33E4uIcW028615
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 13 Apr 2023 23:56:18 -0500
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Thu, 13
- Apr 2023 23:56:18 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Thu, 13 Apr 2023 23:56:17 -0500
-Received: from lelv0854.itg.ti.com (lelv0854.itg.ti.com [10.181.64.140])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33E4uI7S022505;
-        Thu, 13 Apr 2023 23:56:18 -0500
-Received: from localhost (uda0501179.dhcp.ti.com [10.24.69.114])
-        by lelv0854.itg.ti.com (8.14.7/8.14.7) with ESMTP id 33E4uGmf018025;
-        Thu, 13 Apr 2023 23:56:17 -0500
-From:   MD Danish Anwar <danishanwar@ti.com>
-To:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        MD Danish Anwar <danishanwar@ti.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>
-CC:     <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <srk@ti.com>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v9 4/4] soc: ti: pruss: Add helper functions to set GPI mode, MII_RT_event and XFR
-Date:   Fri, 14 Apr 2023 10:25:42 +0530
-Message-ID: <20230414045542.3249939-5-danishanwar@ti.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230414045542.3249939-1-danishanwar@ti.com>
-References: <20230414045542.3249939-1-danishanwar@ti.com>
+        with ESMTP id S229597AbjDNFAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 01:00:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5DA10EC;
+        Thu, 13 Apr 2023 22:00:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA0306439C;
+        Fri, 14 Apr 2023 05:00:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2B95C433D2;
+        Fri, 14 Apr 2023 05:00:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681448448;
+        bh=CXO10PjY2/zG6b2bRTZgyHaMtJBiQFKnOvBLnoXwp3E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OtxFy53iprI5S3FaCLu1j1YLT0nHaMG8mq5nDd6a6av6Sq5yXeJBsgN9vYA7zZuaS
+         yz6zr5CmXoNY59Km5LDmkHHECjVlUacCK6Dgj3qa6JRFVdxfxE5VxO2wXTa2DeNlH7
+         Kwwb9OQbNnLbyZCZWmLKQWtxGT9dpnk7C6zJRIFDvNPjsz1jLBj8bnOSyU2oHprzWj
+         eCNTwFxRbqkUoT+zuIiCKFvBwbeOXI5p8cmM5ZR5jMD3rzKM7FCcw36Em1r2/uGoMX
+         gGkEpypLzQaO0I4uAcgiNtuT7dqAKj1TxFOoJSMH6TZvIqwpXqTIm3a/vXCe3sUH5X
+         ANM9oT9ucXZQA==
+Date:   Thu, 13 Apr 2023 22:00:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yan Wang <rk.code@outlook.com>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        mcoquelin.stm32@gmail.com,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        netdev@vger.kernel.org (open list:STMMAC ETHERNET DRIVER),
+        linux-stm32@st-md-mailman.stormreply.com (moderated list:ARM/STM32
+        ARCHITECTURE),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/STM32
+        ARCHITECTURE), linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH net-next v3] net: stmmac:fix system hang when setting up
+ tag_8021q VLAN for DSA ports
+Message-ID: <20230413220046.267fdc31@kernel.org>
+In-Reply-To: <KL1PR01MB544872920F00149E3BDDC7ECE6999@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
+References: <KL1PR01MB544872920F00149E3BDDC7ECE6999@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Suman Anna <s-anna@ti.com>
+On Fri, 14 Apr 2023 11:07:10 +0800 Yan Wang wrote:
+> The system hang because of dsa_tag_8021q_port_setup()->
+> 				stmmac_vlan_rx_add_vid().
+> 
+> I found in stmmac_drv_probe() that cailing pm_runtime_put()
+> disabled the clock.
+> 
+> First, when the kernel is compiled with CONFIG_PM=y,The stmmac's
+> resume/suspend is active.
+> 
+> Secondly,stmmac as DSA master,the dsa_tag_8021q_port_setup() function
+> will callback stmmac_vlan_rx_add_vid when DSA dirver starts. However,
+> The system is hanged for the stmmac_vlan_rx_add_vid() accesses its
+> registers after stmmac's clock is closed.
+> 
+> I would suggest adding the pm_runtime_resume_and_get() to the
+> stmmac_vlan_rx_add_vid().This guarantees that resuming clock output
+> while in use.
+> 
+> Fixes: b3dcb3127786 ("net: stmmac: correct clocks enabled in stmmac_vlan_rx_kill_vid()")
+> Signed-off-by: Yan Wang <rk.code@outlook.com>
 
-The PRUSS CFG module is represented as a syscon node and is currently
-managed by the PRUSS platform driver. Add easy accessor functions to set
-GPI mode, MII_RT event enable/disable and XFR (XIN XOUT) enable/disable
-to enable the PRUSS Ethernet usecase. These functions reuse the generic
-pruss_cfg_update() API function.
+Happy to see you managed to work around the email server problems!
 
-Signed-off-by: Suman Anna <s-anna@ti.com>
-Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
-Reviewed-by: Roger Quadros <rogerq@kernel.org>
-Reviewed-by: Tony Lindgren <tony@atomide.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
----
- drivers/remoteproc/pru_rproc.c | 15 -------
- drivers/soc/ti/pruss.c         | 71 ++++++++++++++++++++++++++++++++++
- include/linux/pruss_driver.h   | 51 ++++++++++++++++++++++++
- 3 files changed, 122 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/remoteproc/pru_rproc.c b/drivers/remoteproc/pru_rproc.c
-index 095f66130f48..54f5ce302e7a 100644
---- a/drivers/remoteproc/pru_rproc.c
-+++ b/drivers/remoteproc/pru_rproc.c
-@@ -81,21 +81,6 @@ enum pru_iomem {
- 	PRU_IOMEM_MAX,
- };
- 
--/**
-- * enum pru_type - PRU core type identifier
-- *
-- * @PRU_TYPE_PRU: Programmable Real-time Unit
-- * @PRU_TYPE_RTU: Auxiliary Programmable Real-Time Unit
-- * @PRU_TYPE_TX_PRU: Transmit Programmable Real-Time Unit
-- * @PRU_TYPE_MAX: just keep this one at the end
-- */
--enum pru_type {
--	PRU_TYPE_PRU = 0,
--	PRU_TYPE_RTU,
--	PRU_TYPE_TX_PRU,
--	PRU_TYPE_MAX,
--};
--
- /**
-  * struct pru_private_data - device data for a PRU core
-  * @type: type of the PRU core (PRU, RTU, Tx_PRU)
-diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-index 4ad6ccb039c8..f002fd9e79c6 100644
---- a/drivers/soc/ti/pruss.c
-+++ b/drivers/soc/ti/pruss.c
-@@ -213,6 +213,77 @@ int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux)
- }
- EXPORT_SYMBOL_GPL(pruss_cfg_set_gpmux);
- 
-+/**
-+ * pruss_cfg_gpimode() - set the GPI mode of the PRU
-+ * @pruss: the pruss instance handle
-+ * @pru_id: id of the PRU core within the PRUSS
-+ * @mode: GPI mode to set
-+ *
-+ * Sets the GPI mode for a given PRU by programming the
-+ * corresponding PRUSS_CFG_GPCFGx register
-+ *
-+ * Return: 0 on success, or an error code otherwise
-+ */
-+int pruss_cfg_gpimode(struct pruss *pruss, enum pruss_pru_id pru_id,
-+		      enum pruss_gpi_mode mode)
-+{
-+	if (pru_id >= PRUSS_NUM_PRUS || mode >= PRUSS_GPI_MODE_MAX)
-+		return -EINVAL;
-+
-+	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
-+				PRUSS_GPCFG_PRU_GPI_MODE_MASK,
-+				mode << PRUSS_GPCFG_PRU_GPI_MODE_SHIFT);
-+}
-+EXPORT_SYMBOL_GPL(pruss_cfg_gpimode);
-+
-+/**
-+ * pruss_cfg_miirt_enable() - Enable/disable MII RT Events
-+ * @pruss: the pruss instance
-+ * @enable: enable/disable
-+ *
-+ * Enable/disable the MII RT Events for the PRUSS.
-+ *
-+ * Return: 0 on success, or an error code otherwise
-+ */
-+int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
-+{
-+	u32 set = enable ? PRUSS_MII_RT_EVENT_EN : 0;
-+
-+	return pruss_cfg_update(pruss, PRUSS_CFG_MII_RT,
-+				PRUSS_MII_RT_EVENT_EN, set);
-+}
-+EXPORT_SYMBOL_GPL(pruss_cfg_miirt_enable);
-+
-+/**
-+ * pruss_cfg_xfr_enable() - Enable/disable XIN XOUT shift functionality
-+ * @pruss: the pruss instance
-+ * @pru_type: PRU core type identifier
-+ * @enable: enable/disable
-+ *
-+ * Return: 0 on success, or an error code otherwise
-+ */
-+int pruss_cfg_xfr_enable(struct pruss *pruss, enum pru_type pru_type,
-+			 bool enable)
-+{
-+	u32 mask, set;
-+
-+	switch (pru_type) {
-+	case PRU_TYPE_PRU:
-+		mask = PRUSS_SPP_XFER_SHIFT_EN;
-+		break;
-+	case PRU_TYPE_RTU:
-+		mask = PRUSS_SPP_RTU_XFR_SHIFT_EN;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	set = enable ? mask : 0;
-+
-+	return pruss_cfg_update(pruss, PRUSS_CFG_SPP, mask, set);
-+}
-+EXPORT_SYMBOL_GPL(pruss_cfg_xfr_enable);
-+
- static void pruss_of_free_clk_provider(void *data)
- {
- 	struct device_node *clk_mux_np = data;
-diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
-index 5bb8897724a9..c9a31c567e85 100644
---- a/include/linux/pruss_driver.h
-+++ b/include/linux/pruss_driver.h
-@@ -32,6 +32,33 @@ enum pruss_gp_mux_sel {
- 	PRUSS_GP_MUX_SEL_MAX,
- };
- 
-+/*
-+ * enum pruss_gpi_mode - PRUSS GPI configuration modes, used
-+ *			 to program the PRUSS_GPCFG0/1 registers
-+ */
-+enum pruss_gpi_mode {
-+	PRUSS_GPI_MODE_DIRECT,
-+	PRUSS_GPI_MODE_PARALLEL,
-+	PRUSS_GPI_MODE_28BIT_SHIFT,
-+	PRUSS_GPI_MODE_MII,
-+	PRUSS_GPI_MODE_MAX,
-+};
-+
-+/**
-+ * enum pru_type - PRU core type identifier
-+ *
-+ * @PRU_TYPE_PRU: Programmable Real-time Unit
-+ * @PRU_TYPE_RTU: Auxiliary Programmable Real-Time Unit
-+ * @PRU_TYPE_TX_PRU: Transmit Programmable Real-Time Unit
-+ * @PRU_TYPE_MAX: just keep this one at the end
-+ */
-+enum pru_type {
-+	PRU_TYPE_PRU,
-+	PRU_TYPE_RTU,
-+	PRU_TYPE_TX_PRU,
-+	PRU_TYPE_MAX,
-+};
-+
- /*
-  * enum pruss_mem - PRUSS memory range identifiers
-  */
-@@ -86,6 +113,11 @@ int pruss_release_mem_region(struct pruss *pruss,
- 			     struct pruss_mem_region *region);
- int pruss_cfg_get_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 *mux);
- int pruss_cfg_set_gpmux(struct pruss *pruss, enum pruss_pru_id pru_id, u8 mux);
-+int pruss_cfg_gpimode(struct pruss *pruss, enum pruss_pru_id pru_id,
-+		      enum pruss_gpi_mode mode);
-+int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable);
-+int pruss_cfg_xfr_enable(struct pruss *pruss, enum pru_type pru_type,
-+			 bool enable);
- 
- #else
- 
-@@ -121,6 +153,25 @@ static inline int pruss_cfg_set_gpmux(struct pruss *pruss,
- 	return ERR_PTR(-EOPNOTSUPP);
- }
- 
-+static inline int pruss_cfg_gpimode(struct pruss *pruss,
-+				    enum pruss_pru_id pru_id,
-+				    enum pruss_gpi_mode mode)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+
-+static inline int pruss_cfg_miirt_enable(struct pruss *pruss, bool enable)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+
-+static inline int pruss_cfg_xfr_enable(struct pruss *pruss,
-+				       enum pru_type pru_type,
-+				       bool enable);
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+
- #endif /* CONFIG_TI_PRUSS */
- 
- #endif	/* _PRUSS_DRIVER_H_ */
--- 
-2.34.1
-
+Please make sure to read this doc before posting the next version:
+https://www.kernel.org/doc/html/next/process/maintainer-netdev.html
