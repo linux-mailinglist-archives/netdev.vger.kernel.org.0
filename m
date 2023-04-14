@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5114E6E2143
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 12:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8A366E2142
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 12:49:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229773AbjDNKw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 06:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
+        id S230324AbjDNKtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 06:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbjDNKw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 06:52:27 -0400
-Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46D32719
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 03:52:23 -0700 (PDT)
-X-QQ-mid: bizesmtp74t1681469332t9c45llw
+        with ESMTP id S230184AbjDNKtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 06:49:33 -0400
+Received: from smtpbg153.qq.com (smtpbg153.qq.com [13.245.218.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E547B5FD0
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 03:49:13 -0700 (PDT)
+X-QQ-mid: bizesmtp74t1681469335tgxq2yfg
 Received: from localhost.localdomain ( [183.129.236.74])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Fri, 14 Apr 2023 18:48:50 +0800 (CST)
+        id ; Fri, 14 Apr 2023 18:48:54 +0800 (CST)
 X-QQ-SSF: 01400000000000N0R000000A0000000
-X-QQ-FEAT: lJ9dImo9GpfF1WU/zyEdH+0rpqZ16ax+2IvjtUVuML6s59wJ1ti7ZIYftoVS3
-        ID5BYvov/5z1lIGm31jKVNilzYJZgCrWP1h4h3tczh+38lOlF4eQk1CMzrbiatYDijwtnm2
-        uQcbyCXNYQKNh1BcOZIg9hcHVdvtg2OFrWNFBJ2U5Ncxv5HZVYh/sxtr+Jj45tD0n8MPYTH
-        Z3DTY+xlH8MBCrJSKHEGjA/o7qrJPFnbNugBuf65YKaEm9atra5V01TCfwuezxvPvsWCco2
-        zwmNjUSZwd7PxjwOXxFVgA6VnMHEdiPGDsRgGinC9fQVNPVQ04q+++NY/SzWgRQMyjICJ/t
-        PlqeKxWzekFeFjv5RhPMiJNiuwqwgczd/J4VmZ6qEO8SfhkNWzeAs33TDsmy0vEUoRwHklz
-        YZSfWaMdRGm7NYGo1ynuGgW0sRaPel9T
+X-QQ-FEAT: zT6n3Y95oi2qCuYmq5D+5eUL+b8SJbyDd6hp7yJrpLnW99WwrhmLwwGPceC5D
+        cQnIjpH0TNo+4ru3UWLjmDTWdTQKkIC/TZZsVUY9QYENqY6AmiRiO7Nj99HcX4+Q0ey+MDk
+        pbRqsvnQ9upSw++i8TzaHPvVU7KDKIVv8H+TVH9cqx5aMw16NtLV9Cv59SAqrGHGz0kcFIw
+        TvsP1CH3G4ChAhIV1KMvt9eFRVOyaXlNPb/QuE6cRVvf/zEw20kqrn+dBMQYjz2DhOUF4LZ
+        GfsmzhudT9I1GSD6uvCEM+e2kmA/DufkIZ4oUwdi3WrRx1lxEiMBuSB3ki7NP6VjA/vXXb/
+        jebPRPOpFVDwXB0R8dYowKGdOdfIFmFb4p2fskHT2WAggcvwGYVOFN2xXlfhqvTA15SeuSr
+        rzu0qa086i4=
 X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 5596115537480803509
+X-BIZMAIL-ID: 1266940075290208731
 From:   Mengyuan Lou <mengyuanlou@net-swift.com>
 To:     netdev@vger.kernel.org
 Cc:     jiawenwu@trustnetic.com, Mengyuan Lou <mengyuanlou@net-swift.com>
-Subject: [PATCH net-next 2/5] net: wangxun: libwx add rx offload functions
-Date:   Fri, 14 Apr 2023 18:48:30 +0800
-Message-Id: <20230414104833.42989-3-mengyuanlou@net-swift.com>
+Subject: [PATCH net-next 3/5] net: wangxun: Implement vlan add and kill functions
+Date:   Fri, 14 Apr 2023 18:48:31 +0800
+Message-Id: <20230414104833.42989-4-mengyuanlou@net-swift.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230414104833.42989-1-mengyuanlou@net-swift.com>
 References: <20230414104833.42989-1-mengyuanlou@net-swift.com>
@@ -50,526 +50,448 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add rx offload functions for wx_clean_rx_irq
-which supports ngbe and txgbe to implement
-rx offload function.
+Implement vlan add/kill functions which add and remove
+vlan id in hardware.
 
 Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
 ---
- drivers/net/ethernet/wangxun/libwx/wx_lib.c  | 441 ++++++++++++++++++-
- drivers/net/ethernet/wangxun/libwx/wx_type.h |  31 ++
- 2 files changed, 469 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c   | 279 ++++++++++++++++++-
+ drivers/net/ethernet/wangxun/libwx/wx_hw.h   |   3 +
+ drivers/net/ethernet/wangxun/libwx/wx_lib.c  |  18 ++
+ drivers/net/ethernet/wangxun/libwx/wx_type.h |  16 ++
+ 4 files changed, 315 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.c b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-index 711673d5bcd1..d139f7c4c7d7 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-@@ -423,6 +423,441 @@ static bool wx_cleanup_headers(struct wx_ring *rx_ring,
- 	return false;
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.c b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
+index ca409b4054d0..e07e5e245595 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_hw.c
++++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
+@@ -1182,12 +1182,30 @@ static void wx_enable_sec_rx_path(struct wx *wx)
+ 	WX_WRITE_FLUSH(wx);
  }
  
-+static void wx_set_rsc_gso_size(struct wx_ring __maybe_unused *ring,
-+				struct sk_buff *skb)
++static void wx_vlan_strip_control(struct wx *wx, bool enable)
 +{
-+	u16 hdr_len = eth_get_headlen(skb->dev, skb->data, skb_headlen(skb));
++	int i, j;
 +
-+	/* set gso_size to avoid messing up TCP MSS */
-+	skb_shinfo(skb)->gso_size = DIV_ROUND_UP((skb->len - hdr_len),
-+						 WX_CB(skb)->append_cnt);
-+	skb_shinfo(skb)->gso_type = SKB_GSO_TCPV4;
-+}
++	for (i = 0; i < wx->num_rx_queues; i++) {
++		struct wx_ring *ring = wx->rx_ring[i];
 +
-+static void wx_update_rsc_stats(struct wx_ring *rx_ring,
-+				struct sk_buff *skb)
-+{
-+	/* if append_cnt is 0 then frame is not RSC */
-+	if (!WX_CB(skb)->append_cnt)
-+		return;
-+
-+	rx_ring->rx_stats.rsc_count += WX_CB(skb)->append_cnt;
-+	rx_ring->rx_stats.rsc_flush++;
-+
-+	wx_set_rsc_gso_size(rx_ring, skb);
-+	/* gso_size is computed using append_cnt so always clear it last */
-+	WX_CB(skb)->append_cnt = 0;
-+}
-+
-+static inline void wx_rx_hash(struct wx_ring *ring,
-+			      union wx_rx_desc *rx_desc,
-+			      struct sk_buff *skb)
-+{
-+	u16 rss_type;
-+
-+	if (!(ring->netdev->features & NETIF_F_RXHASH))
-+		return;
-+
-+	rss_type = le16_to_cpu(rx_desc->wb.lower.lo_dword.hs_rss.pkt_info) &
-+			       WX_RXD_RSSTYPE_MASK;
-+
-+	if (!rss_type)
-+		return;
-+
-+	skb_set_hash(skb, le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
-+		     (WX_RSS_L4_TYPES_MASK & (1ul << rss_type)) ?
-+		     PKT_HASH_TYPE_L4 : PKT_HASH_TYPE_L3);
-+}
-+
-+/**
-+ * wx_rx_checksum - indicate in skb if hw indicated a good cksum
-+ * @ring: structure containing ring specific data
-+ * @rx_desc: current Rx descriptor being processed
-+ * @skb: skb currently being received and modified
-+ **/
-+static inline void wx_rx_checksum(struct wx_ring *ring,
-+				  union wx_rx_desc *rx_desc,
-+				  struct sk_buff *skb)
-+{
-+	wx_dptype dptype = wx_decode_ptype(WX_RXD_PKTTYPE(rx_desc));
-+
-+	skb->ip_summed = CHECKSUM_NONE;
-+	skb_checksum_none_assert(skb);
-+	/* Rx csum disabled */
-+	if (!(ring->netdev->features & NETIF_F_RXCSUM))
-+		return;
-+
-+	/* if IPv4 header checksum error */
-+	if ((wx_test_staterr(rx_desc, WX_RXD_STAT_IPCS) &&
-+	     wx_test_staterr(rx_desc, WX_RXD_ERR_IPE)) ||
-+	    (wx_test_staterr(rx_desc, WX_RXD_STAT_OUTERIPCS) &&
-+	     wx_test_staterr(rx_desc, WX_RXD_ERR_OUTERIPER))) {
-+		ring->rx_stats.csum_err++;
-+		return;
-+	}
-+
-+	/* L4 checksum offload flag must set for the below code to work */
-+	if (!wx_test_staterr(rx_desc, WX_RXD_STAT_L4CS))
-+		return;
-+
-+	/*likely incorrect csum if IPv6 Dest Header found */
-+	if (dptype.prot != WX_DEC_PTYPE_PROT_SCTP && WX_RXD_IPV6EX(rx_desc))
-+		return;
-+
-+	/* if L4 checksum error */
-+	if (wx_test_staterr(rx_desc, WX_RXD_ERR_TCPE)) {
-+		ring->rx_stats.csum_err++;
-+		return;
-+	}
-+
-+	/* If there is an outer header present that might contain a checksum
-+	 * we need to bump the checksum level by 1 to reflect the fact that
-+	 * we are indicating we validated the inner checksum.
-+	 */
-+	if (dptype.etype >= WX_DEC_PTYPE_ETYPE_IG) {
-+		skb->csum_level = 1;
-+		skb->encapsulation = 1;
-+	}
-+
-+	/* It must be a TCP or UDP or SCTP packet with a valid checksum */
-+	skb->ip_summed = CHECKSUM_UNNECESSARY;
-+	ring->rx_stats.csum_good_cnt++;
-+}
-+
-+/**
-+ * wx_process_skb_fields - Populate skb header fields from Rx descriptor
-+ * @rx_ring: rx descriptor ring packet is being transacted on
-+ * @rx_desc: pointer to the EOP Rx descriptor
-+ * @skb: pointer to current skb being populated
-+ *
-+ * This function checks the ring, descriptor, and packet information in
-+ * order to populate the hash, checksum, VLAN, timestamp, protocol, and
-+ * other fields within the skb.
-+ **/
-+static void wx_process_skb_fields(struct wx_ring *rx_ring,
-+				  union wx_rx_desc *rx_desc,
-+				  struct sk_buff *skb)
-+{
-+	wx_update_rsc_stats(rx_ring, skb);
-+	wx_rx_hash(rx_ring, rx_desc, skb);
-+	wx_rx_checksum(rx_ring, rx_desc, skb);
-+	skb_record_rx_queue(skb, rx_ring->queue_index);
-+	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
-+}
-+
-+/**
-+ * wx_can_lro - returns true if packet is TCP/IPV4 and LRO is enabled
-+ * @rx_ring: structure containing ring specific data
-+ * @rx_desc: pointer to the rx descriptor
-+ * @skb: pointer to the skb to be merged
-+ *
-+ **/
-+static inline bool wx_can_lro(struct wx_ring *rx_ring,
-+			      union wx_rx_desc *rx_desc,
-+			      struct sk_buff *skb)
-+{
-+	struct iphdr *iph = (struct iphdr *)skb->data;
-+	wx_dptype dec_ptype;
-+
-+	dec_ptype = wx_decode_ptype(WX_RXD_PKTTYPE(rx_desc));
-+	/* verify hardware indicates this is IPv4/TCP */
-+	if (!dec_ptype.known ||
-+	    dec_ptype.etype != WX_DEC_PTYPE_ETYPE_NONE ||
-+	    dec_ptype.ip != WX_DEC_PTYPE_IP_IPV4 ||
-+	    dec_ptype.prot != WX_DEC_PTYPE_PROT_TCP)
-+		return false;
-+
-+	/* .. and LRO is enabled */
-+	if (!(rx_ring->netdev->features & NETIF_F_LRO))
-+		return false;
-+
-+	/* .. and we are not in promiscuous mode */
-+	if (rx_ring->netdev->flags & IFF_PROMISC)
-+		return false;
-+
-+	/* .. and the header is large enough for us to read IP/TCP fields */
-+	if (!pskb_may_pull(skb, sizeof(struct wx_lrohdr)))
-+		return false;
-+
-+	/* .. and there are no VLANs on packet */
-+	if (skb->protocol != htons(ETH_P_IP))
-+		return false;
-+
-+	/* .. and we are version 4 with no options */
-+	if (*(u8 *)iph != 0x45)
-+		return false;
-+
-+	/* .. and the packet is not fragmented */
-+	if (ip_is_fragment(ip_hdr(skb)))
-+		return false;
-+
-+	/* .. and that next header is TCP */
-+	if (iph->protocol != IPPROTO_TCP)
-+		return false;
-+
-+	return true;
-+}
-+
-+static void wx_lro_flush(struct wx_q_vector *q_vector,
-+			 struct sk_buff *skb)
-+{
-+	struct wx_lro_list *lrolist = &q_vector->lrolist;
-+
-+	__skb_unlink(skb, &lrolist->active);
-+
-+	if (WX_CB(skb)->append_cnt) {
-+		struct wx_lrohdr *lroh = wx_lro_hdr(skb);
-+
-+		/* incorporate ip header and re-calculate checksum */
-+		lroh->iph.tot_len = (__force __be16)ntohs((__force __be16)skb->len);
-+		lroh->iph.check = 0;
-+
-+		/* header length is 5 since we know no options exist */
-+		lroh->iph.check = ip_fast_csum((u8 *)lroh, 5);
-+
-+		/* clear TCP checksum to indicate we are an LRO frame */
-+		lroh->th.check = 0;
-+
-+		/* incorporate latest timestamp into the tcp header */
-+		if (WX_CB(skb)->tsecr) {
-+			lroh->ts[2] = WX_CB(skb)->tsecr;
-+			lroh->ts[1] = htonl(WX_CB(skb)->tsval);
-+		}
-+#ifdef NAPI_GRO_CB
-+		NAPI_GRO_CB(skb)->data_offset = 0;
-+#endif
-+		skb_shinfo(skb)->gso_size = WX_CB(skb)->mss;
-+		skb_shinfo(skb)->gso_type = SKB_GSO_TCPV4;
-+	}
-+
-+	napi_gro_receive(&q_vector->napi, skb);
-+	lrolist->stats.flushed++;
-+}
-+
-+static void wx_lro_header_ok(struct sk_buff *skb)
-+{
-+	struct wx_lrohdr *lroh = wx_lro_hdr(skb);
-+	u16 opt_bytes, data_len;
-+
-+	WX_CB(skb)->tsecr = 0;
-+	WX_CB(skb)->append_cnt = 0;
-+	WX_CB(skb)->mss = 0;
-+
-+	/* ensure that the checksum is valid */
-+	if (skb->ip_summed != CHECKSUM_UNNECESSARY)
-+		return;
-+
-+	/* If we see CE codepoint in IP header, packet is not mergeable */
-+	if (INET_ECN_is_ce(ipv4_get_dsfield(&lroh->iph)))
-+		return;
-+
-+	/* ensure no bits set besides ack or psh */
-+	if (lroh->th.fin || lroh->th.syn || lroh->th.rst ||
-+	    lroh->th.urg || lroh->th.ece || lroh->th.cwr ||
-+	    !lroh->th.ack)
-+		return;
-+
-+	/* store the total packet length */
-+	data_len = ntohs(lroh->iph.tot_len);
-+
-+	/* remove any padding from the end of the skb */
-+	__pskb_trim(skb, data_len);
-+
-+	/* remove header length from data length */
-+	data_len -= sizeof(struct wx_lrohdr);
-+
-+	/* check for timestamps. Since the only option we handle are timestamps,
-+	 * we only have to handle the simple case of aligned timestamps
-+	 */
-+	opt_bytes = (lroh->th.doff << 2) - sizeof(struct tcphdr);
-+	if (opt_bytes != 0) {
-+		if (opt_bytes != TCPOLEN_TSTAMP_ALIGNED ||
-+		    !pskb_may_pull(skb, sizeof(struct wx_lrohdr) +
-+				   TCPOLEN_TSTAMP_ALIGNED) ||
-+		    lroh->ts[0] != htonl((TCPOPT_NOP << 24) |
-+					 (TCPOPT_NOP << 16) |
-+					 (TCPOPT_TIMESTAMP << 8) |
-+					 TCPOLEN_TIMESTAMP) ||
-+		    lroh->ts[2] == 0)
-+			return;
-+
-+		WX_CB(skb)->tsval = ntohl(lroh->ts[1]);
-+		WX_CB(skb)->tsecr = lroh->ts[2];
-+
-+		data_len -= TCPOLEN_TSTAMP_ALIGNED;
-+	}
-+
-+	/* record data_len as mss for the packet */
-+	WX_CB(skb)->mss = data_len;
-+	WX_CB(skb)->next_seq = ntohl(lroh->th.seq);
-+}
-+
-+static void wx_merge_frags(struct sk_buff *lro_skb, struct sk_buff *new_skb)
-+{
-+	struct skb_shared_info *sh_info, *new_skb_info;
-+	unsigned int data_len;
-+
-+	sh_info = skb_shinfo(lro_skb);
-+	new_skb_info = skb_shinfo(new_skb);
-+
-+	/* copy frags into the last skb */
-+	memcpy(sh_info->frags + sh_info->nr_frags,
-+	       new_skb_info->frags,
-+	       new_skb_info->nr_frags * sizeof(skb_frag_t));
-+
-+	/* copy size data over */
-+	sh_info->nr_frags += new_skb_info->nr_frags;
-+	data_len = WX_CB(new_skb)->mss;
-+	lro_skb->len += data_len;
-+	lro_skb->data_len += data_len;
-+	lro_skb->truesize += data_len;
-+
-+	/* wipe record of data from new_skb and free it */
-+	new_skb_info->nr_frags = 0;
-+	new_skb->len = 0;
-+	new_skb->data_len = 0;
-+	dev_kfree_skb_any(new_skb);
-+}
-+
-+/**
-+ * wx_lro_receive - if able, queue skb into lro chain
-+ * @q_vector: structure containing interrupt and ring information
-+ * @new_skb: pointer to current skb being checked
-+ *
-+ * Checks whether the skb given is eligible for LRO and if that's
-+ * fine chains it to the existing lro_skb based on flowid. If an LRO for
-+ * the flow doesn't exist create one.
-+ **/
-+static void wx_lro_receive(struct wx_q_vector *q_vector,
-+			   struct sk_buff *new_skb)
-+{
-+	struct wx_lro_list *lrolist = &q_vector->lrolist;
-+	struct wx_lrohdr *lroh = wx_lro_hdr(new_skb);
-+	__be32 tcp_ports = *(__be32 *)&lroh->th;
-+	__be32 saddr = lroh->iph.saddr;
-+	__be32 daddr = lroh->iph.daddr;
-+	u16 vid = new_skb->vlan_tci;
-+	struct sk_buff *lro_skb;
-+
-+	wx_lro_header_ok(new_skb);
-+
-+	/* we have a packet that might be eligible for LRO,
-+	 * so see if it matches anything we might expect
-+	 */
-+	skb_queue_walk(&lrolist->active, lro_skb) {
-+		u16 data_len;
-+
-+		if (*(__be32 *)&wx_lro_hdr(lro_skb)->th != tcp_ports ||
-+		    wx_lro_hdr(lro_skb)->iph.saddr != saddr ||
-+		    wx_lro_hdr(lro_skb)->iph.daddr != daddr)
++		if (ring->accel)
 +			continue;
-+		if (lro_skb->vlan_tci != vid)
-+			continue;
-+
-+		/* out of order packet */
-+		if (WX_CB(lro_skb)->next_seq !=
-+		    WX_CB(new_skb)->next_seq) {
-+			wx_lro_flush(q_vector, lro_skb);
-+			WX_CB(new_skb)->mss = 0;
-+			break;
-+		}
-+
-+		/* TCP timestamp options have changed */
-+		if (!WX_CB(lro_skb)->tsecr != !WX_CB(new_skb)->tsecr) {
-+			wx_lro_flush(q_vector, lro_skb);
-+			break;
-+		}
-+
-+		/* make sure timestamp values are increasing */
-+		if (WX_CB(lro_skb)->tsecr &&
-+		    WX_CB(lro_skb)->tsval > WX_CB(new_skb)->tsval) {
-+			wx_lro_flush(q_vector, lro_skb);
-+			WX_CB(new_skb)->mss = 0;
-+			break;
-+		}
-+
-+		data_len = WX_CB(new_skb)->mss;
-+
-+		/* Check for all of the above below
-+		 *   malformed header
-+		 *   no tcp data
-+		 *   resultant packet would be too large
-+		 *   new skb is larger than our current mss
-+		 *   data would remain in header
-+		 *   we would consume more frags then the sk_buff contains
-+		 *   ack sequence numbers changed
-+		 *   window size has changed
-+		 */
-+		if (data_len == 0 ||
-+		    data_len > WX_CB(lro_skb)->mss ||
-+		    data_len > WX_CB(lro_skb)->free ||
-+		    data_len != new_skb->data_len ||
-+		    skb_shinfo(new_skb)->nr_frags >=
-+		    (MAX_SKB_FRAGS - skb_shinfo(lro_skb)->nr_frags) ||
-+		    wx_lro_hdr(lro_skb)->th.ack_seq != lroh->th.ack_seq ||
-+		    wx_lro_hdr(lro_skb)->th.window != lroh->th.window) {
-+			wx_lro_flush(q_vector, lro_skb);
-+			break;
-+		}
-+
-+		/* Remove IP and TCP header */
-+		skb_pull(new_skb, new_skb->len - data_len);
-+
-+		/* update timestamp and timestamp echo response */
-+		WX_CB(lro_skb)->tsval = WX_CB(new_skb)->tsval;
-+		WX_CB(lro_skb)->tsecr = WX_CB(new_skb)->tsecr;
-+
-+		/* update sequence and free space */
-+		WX_CB(lro_skb)->next_seq += data_len;
-+		WX_CB(lro_skb)->free -= data_len;
-+
-+		/* update append_cnt */
-+		WX_CB(lro_skb)->append_cnt++;
-+
-+		/* if header is empty pull pages into current skb */
-+		wx_merge_frags(lro_skb, new_skb);
-+		if ((data_len < WX_CB(lro_skb)->mss) || lroh->th.psh ||
-+		    skb_shinfo(lro_skb)->nr_frags == MAX_SKB_FRAGS) {
-+			wx_lro_hdr(lro_skb)->th.psh |= lroh->th.psh;
-+			wx_lro_flush(q_vector, lro_skb);
-+		}
-+
-+		lrolist->stats.coal++;
-+		return;
++		j = ring->reg_idx;
++		wr32m(wx, WX_PX_RR_CFG(j), WX_PX_RR_CFG_VLAN,
++		      enable ? WX_PX_RR_CFG_VLAN : 0);
 +	}
-+
-+	if (WX_CB(new_skb)->mss && !lroh->th.psh) {
-+		/* if we are at capacity flush the tail */
-+		if (skb_queue_len(&lrolist->active) >= WX_LRO_MAX) {
-+			lro_skb = skb_peek_tail(&lrolist->active);
-+			if (lro_skb)
-+				wx_lro_flush(q_vector, lro_skb);
-+		}
-+
-+		/* update sequence and free space */
-+		WX_CB(new_skb)->next_seq += WX_CB(new_skb)->mss;
-+		WX_CB(new_skb)->free = 65521 - new_skb->len;
-+
-+		/* .. and insert at the front of the active list */
-+		__skb_queue_head(&lrolist->active, new_skb);
-+
-+		lrolist->stats.coal++;
-+		return;
-+	}
-+
-+	/* packet not handled by any of the above, pass it to the stack */
-+	napi_gro_receive(&q_vector->napi, new_skb);
 +}
 +
-+static void wx_rx_skb(struct wx_q_vector *q_vector, struct wx_ring *rx_ring,
-+		      union wx_rx_desc *rx_desc, struct sk_buff *skb)
-+{
-+	if (wx_can_lro(rx_ring, rx_desc, skb))
-+		wx_lro_receive(q_vector, skb);
+ void wx_set_rx_mode(struct net_device *netdev)
+ {
+ 	struct wx *wx = netdev_priv(netdev);
++	netdev_features_t features;
+ 	u32 fctrl, vmolr, vlnctrl;
+ 	int count;
+ 
++	features = netdev->features;
++
+ 	/* Check for Promiscuous and All Multicast modes */
+ 	fctrl = rd32(wx, WX_PSR_CTL);
+ 	fctrl &= ~(WX_PSR_CTL_UPE | WX_PSR_CTL_MPE);
+@@ -1254,6 +1272,13 @@ void wx_set_rx_mode(struct net_device *netdev)
+ 	wr32(wx, WX_PSR_VLAN_CTL, vlnctrl);
+ 	wr32(wx, WX_PSR_CTL, fctrl);
+ 	wr32(wx, WX_PSR_VM_L2CTL(0), vmolr);
++
++	if ((features & NETIF_F_HW_VLAN_CTAG_RX) &&
++	    (features & NETIF_F_HW_VLAN_STAG_RX))
++		wx_vlan_strip_control(wx, true);
 +	else
-+		napi_gro_receive(&q_vector->napi, skb);
++		wx_vlan_strip_control(wx, false);
++
+ }
+ EXPORT_SYMBOL(wx_set_rx_mode);
+ 
+@@ -1462,6 +1487,16 @@ static void wx_configure_tx(struct wx *wx)
+ 	      WX_MAC_TX_CFG_TE, WX_MAC_TX_CFG_TE);
+ }
+ 
++static void wx_restore_vlan(struct wx *wx)
++{
++	u16 vid = 1;
++
++	wx_vlan_rx_add_vid(wx->netdev, htons(ETH_P_8021Q), 0);
++
++	for_each_set_bit_from(vid, wx->active_vlans, VLAN_N_VID)
++		wx_vlan_rx_add_vid(wx->netdev, htons(ETH_P_8021Q), vid);
 +}
 +
  /**
-  * wx_clean_rx_irq - Clean completed descriptors from Rx ring - bounce buf
-  * @q_vector: structure containing interrupt and ring information
-@@ -490,9 +925,9 @@ static int wx_clean_rx_irq(struct wx_q_vector *q_vector,
- 		/* probably a little skewed due to removing CRC */
- 		total_rx_bytes += skb->len;
+  * wx_configure_rx - Configure Receive Unit after Reset
+  * @wx: pointer to private structure
+@@ -1527,7 +1562,7 @@ void wx_configure(struct wx *wx)
+ 	wx_configure_port(wx);
  
--		skb_record_rx_queue(skb, rx_ring->queue_index);
--		skb->protocol = eth_type_trans(skb, rx_ring->netdev);
--		napi_gro_receive(&q_vector->napi, skb);
-+		/* populate checksum, timestamp, VLAN, and protocol */
-+		wx_process_skb_fields(rx_ring, rx_desc, skb);
-+		wx_rx_skb(q_vector, rx_ring, rx_desc, skb);
+ 	wx_set_rx_mode(wx->netdev);
+-
++	wx_restore_vlan(wx);
+ 	wx_enable_sec_rx_path(wx);
  
- 		/* update budget accounting */
- 		total_rx_packets++;
+ 	wx_configure_tx(wx);
+@@ -1727,4 +1762,246 @@ int wx_sw_init(struct wx *wx)
+ }
+ EXPORT_SYMBOL(wx_sw_init);
+ 
++/**
++ *  wx_find_vlvf_slot - find the vlanid or the first empty slot
++ *  @wx: pointer to hardware structure
++ *  @vlan: VLAN id to write to VLAN filter
++ *
++ *  return the VLVF index where this VLAN id should be placed
++ *
++ **/
++static int wx_find_vlvf_slot(struct wx *wx, u32 vlan)
++{
++	u32 bits = 0, first_empty_slot = 0;
++	int regindex;
++
++	/* short cut the special case */
++	if (vlan == 0)
++		return 0;
++
++	/* Search for the vlan id in the VLVF entries. Save off the first empty
++	 * slot found along the way
++	 */
++	for (regindex = 1; regindex < WX_PSR_VLAN_SWC_ENTRIES; regindex++) {
++		wr32(wx, WX_PSR_VLAN_SWC_IDX, regindex);
++		bits = rd32(wx, WX_PSR_VLAN_SWC);
++		if (!bits && !(first_empty_slot))
++			first_empty_slot = regindex;
++		else if ((bits & 0x0FFF) == vlan)
++			break;
++	}
++
++	/* If regindex is less than TXGBE_VLVF_ENTRIES, then we found the vlan
++	 * in the VLVF. Else use the first empty VLVF register for this
++	 * vlan id.
++	 */
++	if (regindex >= WX_PSR_VLAN_SWC_ENTRIES) {
++		if (first_empty_slot)
++			regindex = first_empty_slot;
++		else
++			regindex = -ENOMEM;
++	}
++
++	return regindex;
++}
++
++/**
++ *  wx_set_vlvf - Set VLAN Pool Filter
++ *  @wx: pointer to hardware structure
++ *  @vlan: VLAN id to write to VLAN filter
++ *  @vind: VMDq output index that maps queue to VLAN id in VFVFB
++ *  @vlan_on: boolean flag to turn on/off VLAN in VFVF
++ *  @vfta_changed: pointer to boolean flag which indicates whether VFTA
++ *                 should be changed
++ *
++ *  Turn on/off specified bit in VLVF table.
++ **/
++static int wx_set_vlvf(struct wx *wx, u32 vlan, u32 vind, bool vlan_on,
++		       bool *vfta_changed)
++{
++	u32 vt;
++
++	/* If VT Mode is set
++	 *   Either vlan_on
++	 *     make sure the vlan is in VLVF
++	 *     set the vind bit in the matching VLVFB
++	 *   Or !vlan_on
++	 *     clear the pool bit and possibly the vind
++	 */
++	vt = rd32(wx, WX_CFG_PORT_CTL);
++	if (vt & WX_CFG_PORT_CTL_NUM_VT_MASK) {
++		s32 vlvf_index;
++		u32 bits;
++
++		vlvf_index = wx_find_vlvf_slot(wx, vlan);
++		if (vlvf_index < 0)
++			return vlvf_index;
++
++		wr32(wx, WX_PSR_VLAN_SWC_IDX, vlvf_index);
++		if (vlan_on) {
++			/* set the pool bit */
++			if (vind < 32) {
++				bits = rd32(wx, WX_PSR_VLAN_SWC_VM_L);
++				bits |= (1 << vind);
++				wr32(wx, WX_PSR_VLAN_SWC_VM_L, bits);
++			} else {
++				bits = rd32(wx, WX_PSR_VLAN_SWC_VM_H);
++				bits |= (1 << (vind - 32));
++				wr32(wx, WX_PSR_VLAN_SWC_VM_H, bits);
++			}
++		} else {
++			/* clear the pool bit */
++			if (vind < 32) {
++				bits = rd32(wx, WX_PSR_VLAN_SWC_VM_L);
++				bits &= ~(1 << vind);
++				wr32(wx, WX_PSR_VLAN_SWC_VM_L, bits);
++				bits |= rd32(wx, WX_PSR_VLAN_SWC_VM_H);
++			} else {
++				bits = rd32(wx, WX_PSR_VLAN_SWC_VM_H);
++				bits &= ~(1 << (vind - 32));
++				wr32(wx, WX_PSR_VLAN_SWC_VM_H, bits);
++				bits |= rd32(wx, WX_PSR_VLAN_SWC_VM_L);
++			}
++		}
++
++		if (bits) {
++			wr32(wx, WX_PSR_VLAN_SWC, (WX_PSR_VLAN_SWC_VIEN | vlan));
++			if (!vlan_on && vfta_changed)
++				*vfta_changed = false;
++		} else {
++			wr32(wx, WX_PSR_VLAN_SWC, 0);
++		}
++	}
++
++	return 0;
++}
++
++/**
++ *  wx_set_vfta - Set VLAN filter table
++ *  @wx: pointer to hardware structure
++ *  @vlan: VLAN id to write to VLAN filter
++ *  @vind: VMDq output index that maps queue to VLAN id in VFVFB
++ *  @vlan_on: boolean flag to turn on/off VLAN in VFVF
++ *
++ *  Turn on/off specified VLAN in the VLAN filter table.
++ **/
++static int wx_set_vfta(struct wx *wx, u32 vlan, u32 vind, bool vlan_on)
++{
++	u32 bitindex, vfta, targetbit;
++	bool vfta_changed = false;
++	int regindex, ret;
++
++	/* this is a 2 part operation - first the VFTA, then the
++	 * VLVF and VLVFB if VT Mode is set
++	 * We don't write the VFTA until we know the VLVF part succeeded.
++	 */
++
++	/* Part 1
++	 * The VFTA is a bitstring made up of 128 32-bit registers
++	 * that enable the particular VLAN id, much like the MTA:
++	 *    bits[11-5]: which register
++	 *    bits[4-0]:  which bit in the register
++	 */
++	regindex = (vlan >> 5) & 0x7F;
++	bitindex = vlan & 0x1F;
++	targetbit = (1 << bitindex);
++	/* errata 5 */
++	vfta = wx->mac.vft_shadow[regindex];
++	if (vlan_on) {
++		if (!(vfta & targetbit)) {
++			vfta |= targetbit;
++			vfta_changed = true;
++		}
++	} else {
++		if ((vfta & targetbit)) {
++			vfta &= ~targetbit;
++			vfta_changed = true;
++		}
++	}
++	/* Part 2
++	 * Call wx_set_vlvf to set VLVFB and VLVF
++	 */
++	ret = wx_set_vlvf(wx, vlan, vind, vlan_on, &vfta_changed);
++	if (ret != 0)
++		return ret;
++
++	if (vfta_changed)
++		wr32(wx, WX_PSR_VLAN_TBL(regindex), vfta);
++	wx->mac.vft_shadow[regindex] = vfta;
++
++	return 0;
++}
++
++/**
++ *  wx_clear_vfta - Clear VLAN filter table
++ *  @wx: pointer to hardware structure
++ *
++ *  Clears the VLAN filer table, and the VMDq index associated with the filter
++ **/
++static void wx_clear_vfta(struct wx *wx)
++{
++	u32 offset;
++
++	for (offset = 0; offset < wx->mac.vft_size; offset++) {
++		wr32(wx, WX_PSR_VLAN_TBL(offset), 0);
++		wx->mac.vft_shadow[offset] = 0;
++	}
++
++	for (offset = 0; offset < WX_PSR_VLAN_SWC_ENTRIES; offset++) {
++		wr32(wx, WX_PSR_VLAN_SWC_IDX, offset);
++		wr32(wx, WX_PSR_VLAN_SWC, 0);
++		wr32(wx, WX_PSR_VLAN_SWC_VM_L, 0);
++		wr32(wx, WX_PSR_VLAN_SWC_VM_H, 0);
++	}
++}
++
++int wx_vlan_rx_add_vid(struct net_device *netdev,
++		       __be16 proto, u16 vid)
++{
++	struct wx *wx = netdev_priv(netdev);
++
++	/* add VID to filter table */
++	wx_set_vfta(wx, vid, VMDQ_P(0), true);
++	set_bit(vid, wx->active_vlans);
++
++	return 0;
++}
++EXPORT_SYMBOL(wx_vlan_rx_add_vid);
++
++int wx_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid)
++{
++	struct wx *wx = netdev_priv(netdev);
++
++	/* remove VID from filter table */
++	if (vid)
++		wx_set_vfta(wx, vid, VMDQ_P(0), false);
++	clear_bit(vid, wx->active_vlans);
++
++	return 0;
++}
++EXPORT_SYMBOL(wx_vlan_rx_kill_vid);
++
++/**
++ *  wx_start_hw - Prepare hardware for Tx/Rx
++ *  @wx: pointer to hardware structure
++ *
++ *  Starts the hardware using the generic start_hw function
++ *  and the generation start_hw function.
++ *  Then performs revision-specific operations, if any.
++ **/
++void wx_start_hw(struct wx *wx)
++{
++	int i;
++
++	/* Clear the VLAN filter table */
++	wx_clear_vfta(wx);
++	WX_WRITE_FLUSH(wx);
++	/* Clear the rate limiters */
++	for (i = 0; i < wx->mac.max_tx_queues; i++) {
++		wr32(wx, WX_TDM_RP_IDX, i);
++		wr32(wx, WX_TDM_RP_RATE, 0);
++	}
++}
++EXPORT_SYMBOL(wx_start_hw);
++
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.h b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
+index c173c56f0ab5..1f93ca32c921 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_hw.h
++++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
+@@ -26,10 +26,13 @@ void wx_set_rx_mode(struct net_device *netdev);
+ int wx_change_mtu(struct net_device *netdev, int new_mtu);
+ void wx_disable_rx_queue(struct wx *wx, struct wx_ring *ring);
+ void wx_configure(struct wx *wx);
++void wx_start_hw(struct wx *wx);
+ int wx_disable_pcie_master(struct wx *wx);
+ int wx_stop_adapter(struct wx *wx);
+ void wx_reset_misc(struct wx *wx);
+ int wx_get_pcie_msix_counts(struct wx *wx, u16 *msix_count, u16 max_msix_count);
+ int wx_sw_init(struct wx *wx);
++int wx_vlan_rx_add_vid(struct net_device *netdev, __be16 proto, u16 vid);
++int wx_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid);
+ 
+ #endif /* _WX_HW_H_ */
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.c b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
+index d139f7c4c7d7..6782216363c4 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_lib.c
++++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
+@@ -524,6 +524,23 @@ static inline void wx_rx_checksum(struct wx_ring *ring,
+ 	ring->rx_stats.csum_good_cnt++;
+ }
+ 
++static void wx_rx_vlan(struct wx_ring *ring, union wx_rx_desc *rx_desc,
++		       struct sk_buff *skb)
++{
++	u16 ethertype;
++	u8 idx = 0;
++
++	if ((ring->netdev->features &
++	     (NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_STAG_RX)) &&
++	    wx_test_staterr(rx_desc, WX_RXD_STAT_VP)) {
++		idx = (le16_to_cpu(rx_desc->wb.lower.lo_dword.hs_rss.pkt_info) &
++		       0x1c0) >> 6;
++		ethertype = ring->q_vector->wx->tpid[idx];
++		__vlan_hwaccel_put_tag(skb, htons(ethertype),
++				       le16_to_cpu(rx_desc->wb.upper.vlan));
++	}
++}
++
+ /**
+  * wx_process_skb_fields - Populate skb header fields from Rx descriptor
+  * @rx_ring: rx descriptor ring packet is being transacted on
+@@ -541,6 +558,7 @@ static void wx_process_skb_fields(struct wx_ring *rx_ring,
+ 	wx_update_rsc_stats(rx_ring, skb);
+ 	wx_rx_hash(rx_ring, rx_desc, skb);
+ 	wx_rx_checksum(rx_ring, rx_desc, skb);
++	wx_rx_vlan(rx_ring, rx_desc, skb);
+ 	skb_record_rx_queue(skb, rx_ring->queue_index);
+ 	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
+ }
 diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index e227268a9518..cd1fb1f7b1a0 100644
+index cd1fb1f7b1a0..9d2e1ab37fec 100644
 --- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
 +++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -330,8 +330,34 @@
- /******************* Receive Descriptor bit definitions **********************/
- #define WX_RXD_STAT_DD               BIT(0) /* Done */
- #define WX_RXD_STAT_EOP              BIT(1) /* End of Packet */
-+#define WX_RXD_STAT_VP               BIT(5) /* IEEE VLAN Pkt */
-+#define WX_RXD_STAT_L4CS             BIT(7) /* L4 xsum calculated */
-+#define WX_RXD_STAT_IPCS             BIT(8) /* IP xsum calculated */
-+#define WX_RXD_STAT_OUTERIPCS        BIT(10) /* Cloud IP xsum calculated*/
+@@ -156,6 +156,9 @@
+ #define WX_PSR_LAN_FLEX_DW_H(_i)     (0x15C04 + ((_i) * 16))
+ #define WX_PSR_LAN_FLEX_MSK(_i)      (0x15C08 + ((_i) * 16))
  
-+#define WX_RXD_ERR_OUTERIPER         BIT(26) /* CRC IP Header error */
- #define WX_RXD_ERR_RXE               BIT(29) /* Any MAC Error */
-+#define WX_RXD_ERR_TCPE              BIT(30) /* TCP/UDP Checksum Error */
-+#define WX_RXD_ERR_IPE               BIT(31) /* IP Checksum Error */
++/* vlan tbl */
++#define WX_PSR_VLAN_TBL(_i)          (0x16000 + ((_i) * 4))
 +
-+/* RSS Hash results */
-+#define WX_RXD_RSSTYPE_MASK          GENMASK(3, 0)
-+#define WX_RXD_RSSTYPE_IPV4_TCP      0x00000001U
-+#define WX_RXD_RSSTYPE_IPV4          0x00000002U
-+#define WX_RXD_RSSTYPE_IPV6_TCP      0x00000003U
-+#define WX_RXD_RSSTYPE_IPV4_SCTP     0x00000004U
-+#define WX_RXD_RSSTYPE_IPV6          0x00000005U
-+#define WX_RXD_RSSTYPE_IPV6_SCTP     0x00000006U
-+#define WX_RXD_RSSTYPE_IPV4_UDP      0x00000007U
-+#define WX_RXD_RSSTYPE_IPV6_UDP      0x00000008U
-+
-+#define WX_RSS_L4_TYPES_MASK \
-+	((1ul << WX_RXD_RSSTYPE_IPV4_TCP) | \
-+	 (1ul << WX_RXD_RSSTYPE_IPV4_UDP) | \
-+	 (1ul << WX_RXD_RSSTYPE_IPV4_SCTP) | \
-+	 (1ul << WX_RXD_RSSTYPE_IPV6_TCP) | \
-+	 (1ul << WX_RXD_RSSTYPE_IPV6_UDP) | \
-+	 (1ul << WX_RXD_RSSTYPE_IPV6_SCTP))
+ /* mac switcher */
+ #define WX_PSR_MAC_SWC_AD_L          0x16200
+ #define WX_PSR_MAC_SWC_AD_H          0x16204
+@@ -167,6 +170,15 @@
+ #define WX_PSR_MAC_SWC_IDX           0x16210
+ #define WX_CLEAR_VMDQ_ALL            0xFFFFFFFFU
  
- /**
-  * receive packet type
-@@ -430,6 +456,11 @@ enum wx_l2_ptypes {
- 	WX_PTYPE_L2_TUN6_MAC = (WX_PTYPE_TUN_IPV6 | WX_PTYPE_PKT_IGM),
++/* vlan switch */
++#define WX_PSR_VLAN_SWC              0x16220
++#define WX_PSR_VLAN_SWC_VM_L         0x16224
++#define WX_PSR_VLAN_SWC_VM_H         0x16228
++#define WX_PSR_VLAN_SWC_IDX          0x16230         /* 64 vlan entries */
++/* VLAN pool filtering masks */
++#define WX_PSR_VLAN_SWC_VIEN         BIT(31)  /* filter is valid */
++#define WX_PSR_VLAN_SWC_ENTRIES      64
++
+ /********************************* RSEC **************************************/
+ /* general rsec */
+ #define WX_RSC_CTL                   0x17000
+@@ -261,6 +273,7 @@
+ #define WX_PX_RR_RP(_i)              (0x0100C + ((_i) * 0x40))
+ #define WX_PX_RR_CFG(_i)             (0x01010 + ((_i) * 0x40))
+ /* PX_RR_CFG bit definitions */
++#define WX_PX_RR_CFG_VLAN            BIT(31)
+ #define WX_PX_RR_CFG_SPLIT_MODE      BIT(26)
+ #define WX_PX_RR_CFG_RR_THER_SHIFT   16
+ #define WX_PX_RR_CFG_RR_HDR_SZ       GENMASK(15, 12)
+@@ -1216,6 +1229,7 @@ struct wx_ring_container {
  };
  
-+#define WX_RXD_PKTTYPE(_rxd) \
-+	((le32_to_cpu((_rxd)->wb.lower.lo_dword.data) >> 9) & 0xFF)
-+#define WX_RXD_IPV6EX(_rxd) \
-+	((le32_to_cpu((_rxd)->wb.lower.lo_dword.data) >> 6) & 0x1)
+ struct wx_fwd_adapter {
++	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
+ 	struct net_device *vdev;
+ 	struct wx *wx;
+ 	unsigned int tx_base_queue;
+@@ -1289,6 +1303,8 @@ enum wx_isb_idx {
+ };
+ 
+ struct wx {
++	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
 +
- /* Ether Types */
- #define WX_ETH_P_LLDP			0x88CC
- #define WX_ETH_P_CNM			0x22E7
+ 	u8 __iomem *hw_addr;
+ 	struct pci_dev *pdev;
+ 	struct net_device *netdev;
 -- 
 2.40.0
 
