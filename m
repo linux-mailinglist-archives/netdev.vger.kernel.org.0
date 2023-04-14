@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD41B6E2A3A
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 20:44:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCF266E2A3E
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 20:46:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbjDNSon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 14:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36224 "EHLO
+        id S229793AbjDNSqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 14:46:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbjDNSon (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 14:44:43 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A758A74;
-        Fri, 14 Apr 2023 11:44:40 -0700 (PDT)
+        with ESMTP id S229650AbjDNSqH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 14:46:07 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFE48A74;
+        Fri, 14 Apr 2023 11:46:05 -0700 (PDT)
 Received: (Authenticated sender: schoen@loyalty.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 5955E20002;
-        Fri, 14 Apr 2023 18:44:36 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 216B3100003;
+        Fri, 14 Apr 2023 18:46:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=loyalty.org; s=gm1;
-        t=1681497878;
+        t=1681497963;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=M9WuceGIl0kFJ/Y3VNNDGUEMqL1G49eJadzVZotDG9U=;
-        b=iOaOZeMR75XH4f8kVKLvD9WqEq9INBtOtjwhpFkGydF4o0odegI7JST0vZw2l6jCFs2J07
-        DNPQyb448uH1kMPFpU4ChEH4+wfZsBk5P5GeF/tBdl/0i/w5tJk+w+MnAJIiLbcrCnTr26
-        z2hz2no9V+1Ipq64zb6kfMLHtfsDwwXhahtbMGtXBZHYdqnzLCo8/acg/aus1EQK8Bu5xF
-        PSy4eh7pUHFc9Wtj6LuF0Yk2ozBp5SfHCc3Ro+rPHqqePCxQBa4yEKz2Xn9VsYQ+Bbr/DP
-        fKE2DZJmu2hCQAwp6DjHQ5AohWG4/GQW+WNSArYR8ykuAmqtzZBytyjZN+k0Mw==
-Date:   Fri, 14 Apr 2023 11:44:33 -0700
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZfHI2ppxgpSbAtsQuFeP+Eg99YV33h4ZAZynEWW94vo=;
+        b=ABrLt+Ea42REHSz6VieLAOy/OzgCSJXXWRKuOXxmJ9XH9qdo0m6G8Q9RGPw1NfSf/Bn0P7
+        BLjYalJaVjKfLIizmWRZHyQWgXgyq1E8J5fYVdAlLgNneVxyuaP8EASRJ+NvtBebGrwjZt
+        yCATeScGSI39Pk4t65sjdPHeM1nyx04QyYoVfhipNmWdeFdax9ORzGq38z1pl8VeWBigM3
+        cSdj7/Yvh7GXd6zcyCgwy36epmeviUdhMMy/+IRieQIyql8QZjWQbckHq2/xS4e+yd0mYD
+        pCr236aT1iLytU2zXwrSlqGETzqzW/Jqb7t7/cxG3DrK1k40wHKrmN6sM3RRcQ==
+Date:   Fri, 14 Apr 2023 11:45:58 -0700
 From:   Seth David Schoen <schoen@loyalty.org>
 To:     Alejandro Colomar <alx.manpages@gmail.com>
 Cc:     linux-man@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v5] ip.7: Add "special and reserved addresses" section
-Message-ID: <20230414184433.GA2557040@demorgan>
+Subject: [PATCH v6] ip.7: Add "special and reserved addresses" section
+Message-ID: <20230414184558.GB2557040@demorgan>
+References: <20230414184433.GA2557040@demorgan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20230414184433.GA2557040@demorgan>
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -54,6 +57,9 @@ specially, where other systems do or did.
 Also add a specific example to the NOTES paragraph that discourages
 the use of IP broadcasting, so people can more easily understand
 what they are supposed to do instead.
+
+Signed-off-by: Seth David Schoen <schoen@loyalty.org>
+Suggested-by: John Gilmore <gnu@toad.com>
 ---
  man7/ip.7 | 83 +++++++++++++++++++++++++++++++++++++++++++++++++------
  1 file changed, 75 insertions(+), 8 deletions(-)
