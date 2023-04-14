@@ -2,466 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27B136E268B
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 17:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF35A6E26B8
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 17:19:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230387AbjDNPMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 11:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
+        id S231176AbjDNPTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 11:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbjDNPMk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 11:12:40 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3FE1998
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 08:12:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=12p7kwl0Y0zYaEnZcTGFuCvlvSTEZ+DirDXKrzdPc88=;
-        t=1681485158; x=1682694758; b=v1laEhWJpbizqr/hrtZZy2HDpAM2hrH/J2ekU1Hmyx3cuPp
-        Q7I4xSwroVZNbo50xcWbiRvu58QB8dXQlEyV+0HaJ6efLVBxM7LU/HM8FP6GyWIndv5PtR9bRY0pK
-        /VN5tcPnDnZjzzliIM4Xlh5DcfXwHrF1FnG0W2s8UtOVI/5p8/YxQbP8T23VEe5XjMIB+shKmiEYE
-        JRovx9Fa/+zZsGkw8CXbiw9rONRmUC8ZcafRfKtpBvnsBwUAYNfIlOP2bhpJVB0Z2cG0k5KRi4MkM
-        bNIm+u9c85oBTjMeb8Xny8tMVNMV5Imd+M7O1aXbSI2Dm+pyqNSh+7SzZxNBV97A==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1pnL6K-00Fdii-1e;
-        Fri, 14 Apr 2023 17:12:36 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH next-next v3 3/3] mac80211: use the new drop reasons infrastructure
-Date:   Fri, 14 Apr 2023 17:12:27 +0200
-Message-Id: <20230414171112.3ffd6066f251.Iea29d70af97ce2ed590a00dbebee2ab4d013dfd5@changeid>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230414151227.348725-1-johannes@sipsolutions.net>
-References: <20230414151227.348725-1-johannes@sipsolutions.net>
-MIME-Version: 1.0
+        with ESMTP id S229826AbjDNPTL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 11:19:11 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE20CC657;
+        Fri, 14 Apr 2023 08:18:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681485534; x=1713021534;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=c1wYvE7WJJbfkdhbtLKh0OuQLw00ZEhmHL80iT5z8LE=;
+  b=BX52d6P0jcphWBHNK7FUzsFxshQ+ZfHzqhGA27j3fz16Dh6PMh4dKdoc
+   CRP4svPE6vCpHEXx2oiFZUD5hNC5h3BvtDtZ6Vz/q6lNKpbMS1Jy+NicJ
+   97I0q7WK1Wy7kjnruw0+F0YwAFKS2b2FEEvkdYRl95WdaBKoP7u0nQfq/
+   fUT/puUNnVnPw+GYrftTocFQNlyjllIPhG4pKYly+o96+sMOePl6GZYOQ
+   6wJECcRMbJhySA4lfbut4KT0uMP3uEtbg5E00Rs6P5tXLa/238kGZrQ7o
+   nxX/obqNJVEeUJimjBBgGZSIQwD70tllUJJJx8ZP5GtApie+dmNeFl1Nj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="333261932"
+X-IronPort-AV: E=Sophos;i="5.99,197,1677571200"; 
+   d="scan'208";a="333261932"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2023 08:18:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="864238330"
+X-IronPort-AV: E=Sophos;i="5.99,197,1677571200"; 
+   d="scan'208";a="864238330"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga005.jf.intel.com with ESMTP; 14 Apr 2023 08:18:53 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Fri, 14 Apr 2023 08:18:53 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Fri, 14 Apr 2023 08:18:53 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Fri, 14 Apr 2023 08:18:52 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Gnf7wg1kolaoybRqwIQ4NLYoFxwSgvbHYGGoOoPzUW6/m19TogDqmM7SJGJW2lfpTxdpKpoUk/WspsECOMNf7dZkJqQRvx673M7hZFXgnUFi+dkBb9SnKNjwyqASMGGm48mtAho4+fs2VBnVDiO6j3EaxJ5ljUlcToGHgjITo3OsBE+9ndZAKdBhWHS6AtTqfOkqrGtMdb4vYCIo3mD1oYGl4zvckcuXzwvYJ1NuD5/m9Md7OH2cRERtTjF+3KdRMJ7EgKGeDoT1oyHc2AL7MHOa5WWUCl2rIhC08WpGUS4m3otgu7pDfd0HbV1wrwCi9WS3TRzQYsALJg23n1BHag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QrhGm+o6PhUViIDzX7QO1aoBxUyuVGFDIymMQ41+kzw=;
+ b=IewSUjgDD2eSp9OiZn2xZ1KuNDlwn74ARt7b8kNyei3k4+GDzrSuyw1cMDwCbgiT0CflMBTB+ACDKNZ1tO7SbwWDT5GwSfD1MEGy4LMqYE/9uPTsevz70tffzy+ehmKy94MeIdEmiSMe7yQi5v9bfuV837sh+qozdzvsZGLZ48PabUROP9Pf+xv6Wbojjk9kONnTt9OSwPrBS1byRYP5LiZbbFeAB4pgkeSUrKp5CeoGMaKLLvB29XSQ3TmSj3EbBtc2ChgZe+K5wt9dKo/GhWJGntsnMBG8+Plxk8jTe+6Br89VqbGnqaFD/raAvhoEkPl8CJsiiGJdr+tLsxQo+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
+ by BL1PR11MB5288.namprd11.prod.outlook.com (2603:10b6:208:316::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Fri, 14 Apr
+ 2023 15:18:50 +0000
+Received: from DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::7911:de29:ded:224]) by DM6PR11MB3625.namprd11.prod.outlook.com
+ ([fe80::7911:de29:ded:224%5]) with mapi id 15.20.6298.030; Fri, 14 Apr 2023
+ 15:18:50 +0000
+Message-ID: <9952dc32-f464-c85a-d812-946d6b0ac734@intel.com>
+Date:   Fri, 14 Apr 2023 17:18:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH v2 bpf 02/11] bpftool: define a local bpf_perf_link to fix
+ accessing its fields
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Such=c3=a1nek?= <msuchanek@suse.de>
+CC:     Alexander Lobakin <alobakin@mailbox.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Maciej Fijalkowski" <maciej.fijalkowski@intel.com>,
+        Song Liu <songliubraving@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220421003152.339542-1-alobakin@pm.me>
+ <20220421003152.339542-3-alobakin@pm.me>
+ <20230414095457.GG63923@kunlun.suse.cz>
+From:   Alexander Lobakin <aleksander.lobakin@intel.com>
+In-Reply-To: <20230414095457.GG63923@kunlun.suse.cz>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-ClientProxiedBy: FR2P281CA0035.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:14::22) To DM6PR11MB3625.namprd11.prod.outlook.com
+ (2603:10b6:5:13a::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|BL1PR11MB5288:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4913d34b-8749-47a9-6788-08db3cfb8cb8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: H15MwBHiRy59/jHVf0taIR3vgIr9P6h48+W0BdMdc8kHMJnIlgiMjoP5yvf2Bw8rMos/vIbkoIFXccWJlbslOB6yA/rLoUilOdrH1xm0CH/jyDazta/AkAlxr+T+cfxDH5m/+hysTZedQaDNmQTML2IyVZJLSDwQwAg4y2U6lfmDXQ9GxH+1pN4W5hYDxEUGTml4SEJnEros/lNTfjx8St/wVmb3NQYyJP8zQWnRXnOgpZ6VfIife//f6qNlqVB+wohTqbaC4kwesaxtYZubIMKHYstomhzlEM8EzFvz+nmqgLi833AX/b89fYs+YQgJc+7Lijr0kLu77fW3Dq2qhlOj0Mhb9vsT3EZhtdAPQz+mAPo/0EW0UAgFUx+PeoUEwViVySYf4WqMA1xWPGDmpmYLPRpLkhX9xATceHEtu+UHQffqcs1yKwwt+PLbO/S7e9Bs4RVPNu0nZfSX8Gx6TYGFFhm0hVI3fX70S+VbarpyNPystrLJ88WMxPi5MjENa595PV6eW/hIjIqjdS2sOSW8FRjBRhs1hpFK+mLi7UgCnNUNVjezAN96w7TTdH4Wya4Yhrujm5lBzELmeDg/tl+SFt0jaid3nnCNCbochR/L3P+XcWGJ0oa+6D8f7OkXLckxuP7Q6vik8DZ7tNMfYA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(136003)(376002)(346002)(39860400002)(396003)(451199021)(316002)(4326008)(38100700002)(6916009)(82960400001)(66556008)(66946007)(66476007)(66574015)(5660300002)(41300700001)(2616005)(6666004)(31686004)(36756003)(86362001)(31696002)(6486002)(54906003)(26005)(186003)(6512007)(6506007)(2906002)(83380400001)(7416002)(8676002)(8936002)(478600001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OHRTa0J4NktDV0VaRlh6bHFKSU9HKzVYdjhWWldZbTJ1a21XaDlNQ2NHNC9o?=
+ =?utf-8?B?TE15WW05dGtBZmxVMTVxekZkSW9uVWNrMUdXRVRSRVB1Mjg5aU1pN21ocUtO?=
+ =?utf-8?B?SThKRUVUYVk0SzBsZ3pURjJnamY0cWd2eU1wZDRsZjVjUUdVRUc1bS84REZP?=
+ =?utf-8?B?NkVyY2JtVW9rbDRLYmUzbkFBUnE2aTNaQzJ6NmorT1k5N2trTS9MNWFNVjEy?=
+ =?utf-8?B?cGEybk13Vkk5TG54QTg0dUhDYVo3Z1o2QTE1OHc0bGJSUXFING5pL0pQdzB6?=
+ =?utf-8?B?TVRpUE00Q0twbHNNRUF6NTJVZHUyOEpsOStpOUtWK0ZiRFhDNkZZS0duc1JD?=
+ =?utf-8?B?cWV6WEExZWFId2dGdjNiK3IzdUV1QXVyKzlaVSt6aGI0cldIQmJjU1piazha?=
+ =?utf-8?B?UmgvcTJZSUVqSkVVTjdBRXAzQjI3c25xUzBpUmt4WHJlSmNiODVjamR2VDZm?=
+ =?utf-8?B?VXhZdTJ0aVBYUXBqOStJeXg5TEo3RjhMSVhFWmp5YmRVYTR2Ui82aXNtQm1Z?=
+ =?utf-8?B?dEZpaElWVVNiQkxSeVZGUCt3TFpUQ1NQQk15YXFaZDNZdklzS0dRS2tRT0to?=
+ =?utf-8?B?RkRhamx2bnlvMk5uS2kyMFQxOWFiSkdWTExrcEF6c2hjVjFBVGVIRWphbE1V?=
+ =?utf-8?B?MGFsdUVxcGpDWlU5c2ZjNUpFbVlKdUU0dEhiZ3FlbEhGdlRMQUx6dUowMDk4?=
+ =?utf-8?B?K3ltVitHL1Iwd1c0STZ1dHF4QkVUeitFMDkvb1JoVlBTSWtvd0tHTFBObXFV?=
+ =?utf-8?B?SVppcDFWWG9xUEZVcW45SzNCS2xieWo2Mkc3ejEvUUZrNEIrbVZ3NkpGRmx2?=
+ =?utf-8?B?a3J1M1NDY01lRnhpK2VVVU55cFFrdXRnek10T3hRNWp1MGRqOGl4SlZwdmgw?=
+ =?utf-8?B?L2Y3ZmNXTWZEYXl0WTBJa3h0NC9TZ3ZLdXFWSnFrcFZLaVNDZ0IzU3hLWHEr?=
+ =?utf-8?B?R016enorUndNdVRBb1BhTzhiUDlQSVNmdWZKMzhNbFJNN2QxZnZoazh1Z0I3?=
+ =?utf-8?B?YTFnOFdldlg4U1I3bU0xZitGdCszaElZWnFab3ZWUlZkWHEvRE9UTHJDSkV2?=
+ =?utf-8?B?alZvWDlrVmE1TVRDNXJSUEFKbVVkMkF6U2g4dU9KM3ZjaWtkK1p2TFBBOHh5?=
+ =?utf-8?B?Y0VpbE9BaVVRc1RRaEcyalJlS0c1NVNzUG9wZERhcEVrNkVTWkFvNEk0b1Zk?=
+ =?utf-8?B?OUNEejlVSkRJYmxoTnQxSW5CeW8vZm9oS0lyWkZCajdRZ00zb1hVTnB6SUht?=
+ =?utf-8?B?b1o4bWh2Y0Vlb0ZiWXA0TWZUL1dHT3RzV0dDSzllUHc3NEV4RGR0NGtjMllB?=
+ =?utf-8?B?WjVzempqRDE5a21PVHU4Zk1ZcUJqaE1TZnFQRkUwb0lBKys3MWRjSWo2TEsy?=
+ =?utf-8?B?SXNKdG5DakVwYTVYdzdnLzIzOXZHUFdzV3VYV1hNOCtqMDRGanJWMFIyY0g1?=
+ =?utf-8?B?RlZTeTQxUHJ3aWZWZVloa2F4YU9wOXcvdG9qaDd1NUdsdXVDMThjWjR5ZUNm?=
+ =?utf-8?B?cnhZRUIrSkV3SlozeHFhYnNVdTVLbk9NVEJVa2FQeGRQNmp2b1R4UXAxblUv?=
+ =?utf-8?B?bkNyTHZzTnZSNHU0cTJxWldwUjJRTFNuZEtRTWxFZ2NZZFVrNit6dTNUUUY0?=
+ =?utf-8?B?U2NDa0k3WmVvVndrRWJYSm1oSVJhS2twQTg1b2IxclpkZzdyTTd3VUIyMlQz?=
+ =?utf-8?B?MU5heGxmMm0zSHFtWGovNDhSTGJxTjgzdWhRNGswTHpHb0VKMG92eUo2RUwx?=
+ =?utf-8?B?VzJ3TU0rMU9UNGV5dWFLZlowRUJadDRBUkthbVlobFBicGcyVzVsenphQlN1?=
+ =?utf-8?B?L2JUdURUYnh6TDRoTVpINmIycUhUU2RDYWRsUHM4RlJHbHAxRDRxalNHdmx1?=
+ =?utf-8?B?T1ZCelBKaVByNEFldkh1TFdIUElTa2JtMS92cExqcVNzekd5L3ZEVm1ZSUZr?=
+ =?utf-8?B?a0NkeGhEWUw5dTBVZDRObnpORys0alhzaEUwSWlXSmQ5bCtsdDBTblRIZ1Iz?=
+ =?utf-8?B?Q2oybUhXMENTNFJLTTQ2N2lnS2c0dDAzV0EyQUVnSzkySTM1Uk5ReUpybGd0?=
+ =?utf-8?B?bklvVnFGenp1QnozNWs1a3ZqMVV0dThKcnRhYlMzOUxsOHRsU2VCUFBrRVk0?=
+ =?utf-8?B?aEMrNFM4T2Mxd3FxcEV5dGdZNnBlU3NQWkpOVUpvbWlIancrNDNodjMxUkJF?=
+ =?utf-8?B?TGc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4913d34b-8749-47a9-6788-08db3cfb8cb8
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2023 15:18:50.1086
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yXlHJ7yRbFnrxZ/ALYETRyrMluwWPyZun0zlxPmrlwshSwSWcXyCUAd+/d9+dCFfl4L7+pjsCPw6XaawJjfTz5u/VJBsl7y6GYGrhN2ZmBs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5288
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Michal Suchánek <msuchanek@suse.de>
+Date: Fri, 14 Apr 2023 11:54:57 +0200
 
-It can be really hard to analyse or debug why packets are
-going missing in mac80211, so add the needed infrastructure
-to use use the new per-subsystem drop reasons.
+> Hello,
 
-We actually use two drop reason subsystems here because of
-the different handling of frames that are dropped but still
-go to monitor for old versions of hostapd, and those that
-are just completely unusable (e.g. crypto failed.)
+Hey-hey,
 
-Annotate a few reasons here just to illustrate this, we'll
-need to go through and annotate more of them later.
+> 
+> On Thu, Apr 21, 2022 at 12:38:58AM +0000, Alexander Lobakin wrote:
+>> When building bpftool with !CONFIG_PERF_EVENTS:
+>>
+>> skeleton/pid_iter.bpf.c:47:14: error: incomplete definition of type 'struct bpf_perf_link'
+>>         perf_link = container_of(link, struct bpf_perf_link, link);
+>>                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:74:22: note: expanded from macro 'container_of'
+>>                 ((type *)(__mptr - offsetof(type, member)));    \
+>>                                    ^~~~~~~~~~~~~~~~~~~~~~
+>> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:68:60: note: expanded from macro 'offsetof'
+>>  #define offsetof(TYPE, MEMBER)  ((unsigned long)&((TYPE *)0)->MEMBER)
+>>                                                   ~~~~~~~~~~~^
+>> skeleton/pid_iter.bpf.c:44:9: note: forward declaration of 'struct bpf_perf_link'
+>>         struct bpf_perf_link *perf_link;
+>>                ^
+>>
+>> &bpf_perf_link is being defined and used only under the ifdef.
+>> Define struct bpf_perf_link___local with the `preserve_access_index`
+>> attribute inside the pid_iter BPF prog to allow compiling on any
+>> configs. CO-RE will substitute it with the real struct bpf_perf_link
+>> accesses later on.
+>> container_of() is not CO-REd, but it is a noop for
+>> bpf_perf_link <-> bpf_link and the local copy is a full mirror of
+>> the original structure.
+>>
+>> Fixes: cbdaf71f7e65 ("bpftool: Add bpf_cookie to link output")
+> 
+> This does not solve the problem completely. Kernels that don't have
+> CONFIG_PERF_EVENTS in the first place are also missing the enum value
+> BPF_LINK_TYPE_PERF_EVENT which is used as the condition for handling the
+> cookie.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
----
- include/net/dropreason.h   | 10 +++++++
- net/mac80211/drop.h        | 56 ++++++++++++++++++++++++++++++++++
- net/mac80211/ieee80211_i.h |  8 +----
- net/mac80211/main.c        | 31 +++++++++++++++++++
- net/mac80211/rx.c          | 61 ++++++++++++++++++--------------------
- net/mac80211/wpa.c         | 24 +++++++--------
- 6 files changed, 139 insertions(+), 51 deletions(-)
- create mode 100644 net/mac80211/drop.h
+Sorry, I haven't been working with my home/private stuff for more than a
+year already. I may get back to it some day when I'm tired of Lua (curse
+words, sorry :D), but for now the series is "a bit" abandoned.
+I think there was alternative solution proposed there, which promised to
+be more flexible. But IIRC it also doesn't touch the enum (was it added
+recently? Because it was building just fine a year ago on config without
+perf events).
 
-diff --git a/include/net/dropreason.h b/include/net/dropreason.h
-index f0f2378dbed0..56901ece28ff 100644
---- a/include/net/dropreason.h
-+++ b/include/net/dropreason.h
-@@ -11,6 +11,16 @@ enum skb_drop_reason_subsys {
- 	/** @SKB_DROP_REASON_SUBSYS_CORE: core drop reasons defined above */
- 	SKB_DROP_REASON_SUBSYS_CORE,
- 
-+	/** @SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE: mac80211 drop reasons
-+	 * for unusable frames, see net/mac80211/drop.h
-+	 */
-+	SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE,
-+
-+	/** @SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR: mac80211 drop reasons
-+	 * for frames still going to monitor, see net/mac80211/drop.h
-+	 */
-+	SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR,
-+
- 	/** @SKB_DROP_REASON_SUBSYS_NUM: number of subsystems defined */
- 	SKB_DROP_REASON_SUBSYS_NUM
- };
-diff --git a/net/mac80211/drop.h b/net/mac80211/drop.h
-new file mode 100644
-index 000000000000..49dc809cab29
---- /dev/null
-+++ b/net/mac80211/drop.h
-@@ -0,0 +1,56 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * mac80211 drop reason list
-+ *
-+ * Copyright (C) 2023 Intel Corporation
-+ */
-+
-+#ifndef MAC80211_DROP_H
-+#define MAC80211_DROP_H
-+#include <net/dropreason.h>
-+
-+typedef unsigned int __bitwise ieee80211_rx_result;
-+
-+#define MAC80211_DROP_REASONS_MONITOR(R)	\
-+	R(RX_DROP_M_UNEXPECTED_4ADDR_FRAME)	\
-+	R(RX_DROP_M_BAD_BCN_KEYIDX)		\
-+	R(RX_DROP_M_BAD_MGMT_KEYIDX)		\
-+/* this line for the trailing \ - add before this */
-+
-+#define MAC80211_DROP_REASONS_UNUSABLE(R)	\
-+	R(RX_DROP_U_MIC_FAIL)			\
-+	R(RX_DROP_U_REPLAY)			\
-+	R(RX_DROP_U_BAD_MMIE)			\
-+/* this line for the trailing \ - add before this */
-+
-+/* having two enums allows for checking ieee80211_rx_result use with sparse */
-+enum ___mac80211_drop_reason {
-+/* if we get to the end of handlers with RX_CONTINUE this will be the reason */
-+	___RX_CONTINUE	= SKB_CONSUMED,
-+
-+/* this never gets used as an argument to kfree_skb_reason() */
-+	___RX_QUEUED	= SKB_NOT_DROPPED_YET,
-+
-+#define ENUM(x) ___ ## x,
-+	___RX_DROP_MONITOR = SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR <<
-+		SKB_DROP_REASON_SUBSYS_SHIFT,
-+	MAC80211_DROP_REASONS_MONITOR(ENUM)
-+
-+	___RX_DROP_UNUSABLE = SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE <<
-+		SKB_DROP_REASON_SUBSYS_SHIFT,
-+	MAC80211_DROP_REASONS_UNUSABLE(ENUM)
-+#undef ENUM
-+};
-+
-+enum mac80211_drop_reason {
-+	RX_CONTINUE	 = (__force ieee80211_rx_result)___RX_CONTINUE,
-+	RX_QUEUED	 = (__force ieee80211_rx_result)___RX_QUEUED,
-+	RX_DROP_MONITOR	 = (__force ieee80211_rx_result)___RX_DROP_MONITOR,
-+	RX_DROP_UNUSABLE = (__force ieee80211_rx_result)___RX_DROP_UNUSABLE,
-+#define DEF(x) x = (__force ieee80211_rx_result)___ ## x,
-+	MAC80211_DROP_REASONS_MONITOR(DEF)
-+	MAC80211_DROP_REASONS_UNUSABLE(DEF)
-+#undef DEF
-+};
-+
-+#endif /* MAC80211_DROP_H */
-diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-index 9b7e184430b8..a0a7839cb961 100644
---- a/net/mac80211/ieee80211_i.h
-+++ b/net/mac80211/ieee80211_i.h
-@@ -33,6 +33,7 @@
- #include "key.h"
- #include "sta_info.h"
- #include "debug.h"
-+#include "drop.h"
- 
- extern const struct cfg80211_ops mac80211_config_ops;
- 
-@@ -170,13 +171,6 @@ struct ieee80211_tx_data {
- 	unsigned int flags;
- };
- 
--
--typedef unsigned __bitwise ieee80211_rx_result;
--#define RX_CONTINUE		((__force ieee80211_rx_result) 0u)
--#define RX_DROP_UNUSABLE	((__force ieee80211_rx_result) 1u)
--#define RX_DROP_MONITOR		((__force ieee80211_rx_result) 2u)
--#define RX_QUEUED		((__force ieee80211_rx_result) 3u)
--
- /**
-  * enum ieee80211_packet_rx_flags - packet RX flags
-  * @IEEE80211_RX_AMSDU: a-MSDU packet
-diff --git a/net/mac80211/main.c b/net/mac80211/main.c
-index ddf2b7811c55..55cdfaef0f5d 100644
---- a/net/mac80211/main.c
-+++ b/net/mac80211/main.c
-@@ -22,6 +22,7 @@
- #include <linux/bitmap.h>
- #include <linux/inetdevice.h>
- #include <net/net_namespace.h>
-+#include <net/dropreason.h>
- #include <net/cfg80211.h>
- #include <net/addrconf.h>
- 
-@@ -1542,6 +1543,28 @@ void ieee80211_free_hw(struct ieee80211_hw *hw)
- }
- EXPORT_SYMBOL(ieee80211_free_hw);
- 
-+static const char * const drop_reasons_monitor[] = {
-+#define V(x)	#x,
-+	[0] = "RX_DROP_MONITOR",
-+	MAC80211_DROP_REASONS_MONITOR(V)
-+};
-+
-+static struct drop_reason_list drop_reason_list_monitor = {
-+	.reasons = drop_reasons_monitor,
-+	.n_reasons = ARRAY_SIZE(drop_reasons_monitor),
-+};
-+
-+static const char * const drop_reasons_unusable[] = {
-+	[0] = "RX_DROP_UNUSABLE",
-+	MAC80211_DROP_REASONS_UNUSABLE(V)
-+#undef V
-+};
-+
-+static struct drop_reason_list drop_reason_list_unusable = {
-+	.reasons = drop_reasons_unusable,
-+	.n_reasons = ARRAY_SIZE(drop_reasons_unusable),
-+};
-+
- static int __init ieee80211_init(void)
- {
- 	struct sk_buff *skb;
-@@ -1559,6 +1582,11 @@ static int __init ieee80211_init(void)
- 	if (ret)
- 		goto err_netdev;
- 
-+	drop_reasons_register_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR,
-+				     &drop_reason_list_monitor);
-+	drop_reasons_register_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE,
-+				     &drop_reason_list_unusable);
-+
- 	return 0;
-  err_netdev:
- 	rc80211_minstrel_exit();
-@@ -1574,6 +1602,9 @@ static void __exit ieee80211_exit(void)
- 
- 	ieee80211_iface_exit();
- 
-+	drop_reasons_unregister_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR);
-+	drop_reasons_unregister_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE);
-+
- 	rcu_barrier();
- }
- 
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index db3451f5f2fb..58222c077898 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -1826,7 +1826,7 @@ ieee80211_rx_h_sta_process(struct ieee80211_rx_data *rx)
- 				cfg80211_rx_unexpected_4addr_frame(
- 					rx->sdata->dev, sta->sta.addr,
- 					GFP_ATOMIC);
--			return RX_DROP_MONITOR;
-+			return RX_DROP_M_UNEXPECTED_4ADDR_FRAME;
- 		}
- 		/*
- 		 * Update counter and free packet here to avoid
-@@ -1961,7 +1961,7 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
- 				cfg80211_rx_unprot_mlme_mgmt(rx->sdata->dev,
- 							     skb->data,
- 							     skb->len);
--			return RX_DROP_MONITOR; /* unexpected BIP keyidx */
-+			return RX_DROP_M_BAD_BCN_KEYIDX;
- 		}
- 
- 		rx->key = ieee80211_rx_get_bigtk(rx, mmie_keyidx);
-@@ -1975,7 +1975,7 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
- 
- 		if (mmie_keyidx < NUM_DEFAULT_KEYS ||
- 		    mmie_keyidx >= NUM_DEFAULT_KEYS + NUM_DEFAULT_MGMT_KEYS)
--			return RX_DROP_MONITOR; /* unexpected BIP keyidx */
-+			return RX_DROP_M_BAD_MGMT_KEYIDX; /* unexpected BIP keyidx */
- 		if (rx->link_sta) {
- 			if (ieee80211_is_group_privacy_action(skb) &&
- 			    test_sta_flag(rx->sta, WLAN_STA_MFP))
-@@ -3960,7 +3960,8 @@ ieee80211_rx_h_mgmt(struct ieee80211_rx_data *rx)
- }
- 
- static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
--					struct ieee80211_rate *rate)
-+					struct ieee80211_rate *rate,
-+					ieee80211_rx_result reason)
- {
- 	struct ieee80211_sub_if_data *sdata;
- 	struct ieee80211_local *local = rx->local;
-@@ -4024,42 +4025,38 @@ static void ieee80211_rx_cooked_monitor(struct ieee80211_rx_data *rx,
- 	}
- 
-  out_free_skb:
--	dev_kfree_skb(skb);
-+	kfree_skb_reason(skb, (__force u32)reason);
- }
- 
- static void ieee80211_rx_handlers_result(struct ieee80211_rx_data *rx,
- 					 ieee80211_rx_result res)
- {
--	switch (res) {
--	case RX_DROP_MONITOR:
--		I802_DEBUG_INC(rx->sdata->local->rx_handlers_drop);
--		if (rx->sta)
--			rx->link_sta->rx_stats.dropped++;
--		fallthrough;
--	case RX_CONTINUE: {
--		struct ieee80211_rate *rate = NULL;
--		struct ieee80211_supported_band *sband;
--		struct ieee80211_rx_status *status;
-+	struct ieee80211_rx_status *status = IEEE80211_SKB_RXCB(rx->skb);
-+	struct ieee80211_supported_band *sband;
-+	struct ieee80211_rate *rate = NULL;
- 
--		status = IEEE80211_SKB_RXCB((rx->skb));
--
--		sband = rx->local->hw.wiphy->bands[status->band];
--		if (status->encoding == RX_ENC_LEGACY)
--			rate = &sband->bitrates[status->rate_idx];
--
--		ieee80211_rx_cooked_monitor(rx, rate);
--		break;
--		}
--	case RX_DROP_UNUSABLE:
--		I802_DEBUG_INC(rx->sdata->local->rx_handlers_drop);
--		if (rx->sta)
--			rx->link_sta->rx_stats.dropped++;
--		dev_kfree_skb(rx->skb);
--		break;
--	case RX_QUEUED:
-+	if (res == RX_QUEUED) {
- 		I802_DEBUG_INC(rx->sdata->local->rx_handlers_queued);
--		break;
-+		return;
- 	}
-+
-+	if (res != RX_CONTINUE) {
-+		I802_DEBUG_INC(rx->sdata->local->rx_handlers_drop);
-+		if (rx->sta)
-+			rx->link_sta->rx_stats.dropped++;
-+	}
-+
-+	if (u32_get_bits((__force u32)res, SKB_DROP_REASON_SUBSYS_MASK) ==
-+			SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE) {
-+		kfree_skb_reason(rx->skb, (__force u32)res);
-+		return;
-+	}
-+
-+	sband = rx->local->hw.wiphy->bands[status->band];
-+	if (status->encoding == RX_ENC_LEGACY)
-+		rate = &sband->bitrates[status->rate_idx];
-+
-+	ieee80211_rx_cooked_monitor(rx, rate, res);
- }
- 
- static void ieee80211_rx_handlers(struct ieee80211_rx_data *rx,
-diff --git a/net/mac80211/wpa.c b/net/mac80211/wpa.c
-index 20f742b5503b..4133496da378 100644
---- a/net/mac80211/wpa.c
-+++ b/net/mac80211/wpa.c
-@@ -550,7 +550,7 @@ ieee80211_crypto_ccmp_decrypt(struct ieee80211_rx_data *rx,
- 		if (res < 0 ||
- 		    (!res && !(status->flag & RX_FLAG_ALLOW_SAME_PN))) {
- 			key->u.ccmp.replays++;
--			return RX_DROP_UNUSABLE;
-+			return RX_DROP_U_REPLAY;
- 		}
- 
- 		if (!(status->flag & RX_FLAG_DECRYPTED)) {
-@@ -564,7 +564,7 @@ ieee80211_crypto_ccmp_decrypt(struct ieee80211_rx_data *rx,
- 				    skb->data + hdrlen + IEEE80211_CCMP_HDR_LEN,
- 				    data_len,
- 				    skb->data + skb->len - mic_len))
--				return RX_DROP_UNUSABLE;
-+				return RX_DROP_U_MIC_FAIL;
- 		}
- 
- 		memcpy(key->u.ccmp.rx_pn[queue], pn, IEEE80211_CCMP_PN_LEN);
-@@ -746,7 +746,7 @@ ieee80211_crypto_gcmp_decrypt(struct ieee80211_rx_data *rx)
- 		if (res < 0 ||
- 		    (!res && !(status->flag & RX_FLAG_ALLOW_SAME_PN))) {
- 			key->u.gcmp.replays++;
--			return RX_DROP_UNUSABLE;
-+			return RX_DROP_U_REPLAY;
- 		}
- 
- 		if (!(status->flag & RX_FLAG_DECRYPTED)) {
-@@ -761,7 +761,7 @@ ieee80211_crypto_gcmp_decrypt(struct ieee80211_rx_data *rx)
- 				    data_len,
- 				    skb->data + skb->len -
- 				    IEEE80211_GCMP_MIC_LEN))
--				return RX_DROP_UNUSABLE;
-+				return RX_DROP_U_MIC_FAIL;
- 		}
- 
- 		memcpy(key->u.gcmp.rx_pn[queue], pn, IEEE80211_GCMP_PN_LEN);
-@@ -930,13 +930,13 @@ ieee80211_crypto_aes_cmac_decrypt(struct ieee80211_rx_data *rx)
- 		(skb->data + skb->len - sizeof(*mmie));
- 	if (mmie->element_id != WLAN_EID_MMIE ||
- 	    mmie->length != sizeof(*mmie) - 2)
--		return RX_DROP_UNUSABLE; /* Invalid MMIE */
-+		return RX_DROP_U_BAD_MMIE; /* Invalid MMIE */
- 
- 	bip_ipn_swap(ipn, mmie->sequence_number);
- 
- 	if (memcmp(ipn, key->u.aes_cmac.rx_pn, 6) <= 0) {
- 		key->u.aes_cmac.replays++;
--		return RX_DROP_UNUSABLE;
-+		return RX_DROP_U_REPLAY;
- 	}
- 
- 	if (!(status->flag & RX_FLAG_DECRYPTED)) {
-@@ -946,7 +946,7 @@ ieee80211_crypto_aes_cmac_decrypt(struct ieee80211_rx_data *rx)
- 				   skb->data + 24, skb->len - 24, mic);
- 		if (crypto_memneq(mic, mmie->mic, sizeof(mmie->mic))) {
- 			key->u.aes_cmac.icverrors++;
--			return RX_DROP_UNUSABLE;
-+			return RX_DROP_U_MIC_FAIL;
- 		}
- 	}
- 
-@@ -986,7 +986,7 @@ ieee80211_crypto_aes_cmac_256_decrypt(struct ieee80211_rx_data *rx)
- 
- 	if (memcmp(ipn, key->u.aes_cmac.rx_pn, 6) <= 0) {
- 		key->u.aes_cmac.replays++;
--		return RX_DROP_UNUSABLE;
-+		return RX_DROP_U_REPLAY;
- 	}
- 
- 	if (!(status->flag & RX_FLAG_DECRYPTED)) {
-@@ -996,7 +996,7 @@ ieee80211_crypto_aes_cmac_256_decrypt(struct ieee80211_rx_data *rx)
- 				       skb->data + 24, skb->len - 24, mic);
- 		if (crypto_memneq(mic, mmie->mic, sizeof(mmie->mic))) {
- 			key->u.aes_cmac.icverrors++;
--			return RX_DROP_UNUSABLE;
-+			return RX_DROP_U_MIC_FAIL;
- 		}
- 	}
- 
-@@ -1079,13 +1079,13 @@ ieee80211_crypto_aes_gmac_decrypt(struct ieee80211_rx_data *rx)
- 		(skb->data + skb->len - sizeof(*mmie));
- 	if (mmie->element_id != WLAN_EID_MMIE ||
- 	    mmie->length != sizeof(*mmie) - 2)
--		return RX_DROP_UNUSABLE; /* Invalid MMIE */
-+		return RX_DROP_U_BAD_MMIE; /* Invalid MMIE */
- 
- 	bip_ipn_swap(ipn, mmie->sequence_number);
- 
- 	if (memcmp(ipn, key->u.aes_gmac.rx_pn, 6) <= 0) {
- 		key->u.aes_gmac.replays++;
--		return RX_DROP_UNUSABLE;
-+		return RX_DROP_U_REPLAY;
- 	}
- 
- 	if (!(status->flag & RX_FLAG_DECRYPTED)) {
-@@ -1104,7 +1104,7 @@ ieee80211_crypto_aes_gmac_decrypt(struct ieee80211_rx_data *rx)
- 		    crypto_memneq(mic, mmie->mic, sizeof(mmie->mic))) {
- 			key->u.aes_gmac.icverrors++;
- 			kfree(mic);
--			return RX_DROP_UNUSABLE;
-+			return RX_DROP_U_MIC_FAIL;
- 		}
- 		kfree(mic);
- 	}
--- 
-2.39.2
-
+> 
+> Thanks
+> 
+> Michal
+> 
+Thanks,
+Olek
