@@ -2,144 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 215226E1BB3
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 07:28:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC15B6E1BC0
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 07:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbjDNF2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 01:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
+        id S229830AbjDNFan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 01:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbjDNF2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 01:28:10 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A1DE4F;
-        Thu, 13 Apr 2023 22:27:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681450078; x=1712986078;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iHZ3pySy0Mry1kT1bLKTKmQEXlQGTOhTLuIriclyu7A=;
-  b=QQtxZ9nSlABzSOWVEG7fSMwQS7l7F58iiCykOFCxk2V3YPZE/DS54B8P
-   D9ZMlHf0dFIW7wTa9Krk+TJmSfyLIzmVA+vCyOmKXU9iKFXiDwiUxWO/E
-   qXx7MLxeZ6+Q2eFHRI+ii163ZzLKo9VZt6PiYV/D5bPhePofrHz7VAfST
-   m0AcbGkGE9aT00PyduKc/BmTe0V9TleB8B6sHNoE2Ncdn1Ggaf9+2w/yi
-   HjsFZWimwT0FC76M8VfGMWyzxOk4dLAXnbvliwHFIfCOkvxYF2fqHqPu1
-   fYqkvQNoJ4SUc4fHgU28xX9rjgnk0DzgFijHRYL7lMreJklW+moLwPKsL
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="333152747"
-X-IronPort-AV: E=Sophos;i="5.99,195,1677571200"; 
-   d="scan'208";a="333152747"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2023 22:27:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="692234171"
-X-IronPort-AV: E=Sophos;i="5.99,195,1677571200"; 
-   d="scan'208";a="692234171"
-Received: from p12ill20yoongsia.png.intel.com ([10.88.227.28])
-  by fmsmga007.fm.intel.com with ESMTP; 13 Apr 2023 22:27:52 -0700
-From:   Song Yoong Siang <yoong.siang.song@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, xdp-hints@xdp-project.net,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: [PATCH net-next v5 3/3] net: stmmac: add Rx HWTS metadata to XDP ZC receive pkt
-Date:   Fri, 14 Apr 2023 13:26:51 +0800
-Message-Id: <20230414052651.1871424-4-yoong.siang.song@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230414052651.1871424-1-yoong.siang.song@intel.com>
-References: <20230414052651.1871424-1-yoong.siang.song@intel.com>
+        with ESMTP id S229881AbjDNFaj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 01:30:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AB659C5;
+        Thu, 13 Apr 2023 22:30:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E8E764428;
+        Fri, 14 Apr 2023 05:30:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 816B4C4339C;
+        Fri, 14 Apr 2023 05:30:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681450222;
+        bh=amiEszvsisGwIWBvP31HENcYzKgXoVYVT4ZU1EWAtSo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=qHffbMfqtunWiB8VXBDSEQoxr/GCTU4NifX8zXJ1Zf/95NTYg1eWMwCpGr8scDLQy
+         y9zeMUZdWTDRdGIf3o+InXOBechNl8192B5QSe78uRQHvXJrEnqhLilX8tjLWwvMzj
+         sNRW6t+Ssd+/jwwnRro8LtFUIIk1TrLrw1wIrkXcYem5tFcLGba31YU5A1sgjlXQ4y
+         VbQQNUhnU7b1nrRoPAZk2o54XPh548p29aURJ8u8IyAjiwzWBi08rXrzi0HQ0z+pNA
+         JgC37J04vtz0cqgLOBMK8x0sogtwtj7nfrJC1Jyt387/OjAJd94lf8gSeKzCmIYxKo
+         2eADINQ5C2L8g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 678F2E52446;
+        Fri, 14 Apr 2023 05:30:22 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 net-next 0/9] Add kernel tc-mqprio and tc-taprio support
+ for preemptible traffic classes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168145022242.29714.235263981866322641.git-patchwork-notify@kernel.org>
+Date:   Fri, 14 Apr 2023 05:30:22 +0000
+References: <20230411180157.1850527-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230411180157.1850527-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        vinicius.gomes@intel.com, kurt@linutronix.de,
+        gerhard@engleder-embedded.com, amritha.nambiar@intel.com,
+        ferenc.fejes@ericsson.com, xiaoliang.yang_1@nxp.com,
+        rogerq@kernel.org, pranavi.somisetty@amd.com,
+        harini.katakam@amd.com, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, michael.wei.hong.sit@intel.com,
+        mohammad.athari.ismail@intel.com, linux@rempel-privat.de,
+        jacob.e.keller@intel.com, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add receive hardware timestamp metadata support via kfunc to XDP Zero Copy
-receive packets.
+Hello:
 
-Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 22 +++++++++++++++++++
- 1 file changed, 22 insertions(+)
+This series was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 74f78e5537a3..f3b8eae0846e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1614,6 +1614,12 @@ static int stmmac_alloc_rx_buffers_zc(struct stmmac_priv *priv,
- 	struct stmmac_rx_queue *rx_q = &dma_conf->rx_queue[queue];
- 	int i;
- 
-+	/* struct stmmac_xdp_buff is using cb field (maximum size of 24 bytes)
-+	 * in struct xdp_buff_xsk to stash driver specific information. Thus,
-+	 * use this macro to make sure no size violations.
-+	 */
-+	XSK_CHECK_PRIV_TYPE(struct stmmac_xdp_buff);
-+
- 	for (i = 0; i < dma_conf->dma_rx_size; i++) {
- 		struct stmmac_rx_buffer *buf;
- 		dma_addr_t dma_addr;
-@@ -4998,6 +5004,16 @@ static bool stmmac_rx_refill_zc(struct stmmac_priv *priv, u32 queue, u32 budget)
- 	return ret;
- }
- 
-+static struct stmmac_xdp_buff *xsk_buff_to_stmmac_ctx(struct xdp_buff *xdp)
-+{
-+	/* In XDP zero copy data path, xdp field in struct xdp_buff_xsk is used
-+	 * to represent incoming packet, whereas cb field in the same structure
-+	 * is used to store driver specific info. Thus, struct stmmac_xdp_buff
-+	 * is laid on top of xdp and cb fields of struct xdp_buff_xsk.
-+	 */
-+	return (struct stmmac_xdp_buff *)xdp;
-+}
-+
- static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- {
- 	struct stmmac_rx_queue *rx_q = &priv->dma_conf.rx_queue[queue];
-@@ -5027,6 +5043,7 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 	}
- 	while (count < limit) {
- 		struct stmmac_rx_buffer *buf;
-+		struct stmmac_xdp_buff *ctx;
- 		unsigned int buf1_len = 0;
- 		struct dma_desc *np, *p;
- 		int entry;
-@@ -5112,6 +5129,11 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, int limit, u32 queue)
- 			goto read_again;
- 		}
- 
-+		ctx = xsk_buff_to_stmmac_ctx(buf->xdp);
-+		ctx->priv = priv;
-+		ctx->p = p;
-+		ctx->np = np;
-+
- 		/* XDP ZC Frame only support primary buffers for now */
- 		buf1_len = stmmac_rx_buf1_len(priv, p, status, len);
- 		len += buf1_len;
+On Tue, 11 Apr 2023 21:01:48 +0300 you wrote:
+> The last RFC in August 2022 contained a proposal for the UAPI of both
+> TSN standards which together form Frame Preemption (802.1Q and 802.3):
+> https://lore.kernel.org/netdev/20220816222920.1952936-1-vladimir.oltean@nxp.com/
+> 
+> It wasn't clear at the time whether the 802.1Q portion of Frame Preemption
+> should be exposed via the tc qdisc (mqprio, taprio) or via some other
+> layer (perhaps also ethtool like the 802.3 portion, or dcbnl), even
+> though the options were discussed extensively, with pros and cons:
+> https://lore.kernel.org/netdev/20220816222920.1952936-3-vladimir.oltean@nxp.com/
+> 
+> [...]
+
+Here is the summary with links:
+  - [v5,net-next,1/9] net: ethtool: create and export ethtool_dev_mm_supported()
+    https://git.kernel.org/netdev/net-next/c/d54151aa0f4b
+  - [v5,net-next,2/9] net/sched: mqprio: simplify handling of nlattr portion of TCA_OPTIONS
+    https://git.kernel.org/netdev/net-next/c/3dd0c16ec93e
+  - [v5,net-next,3/9] net/sched: mqprio: add extack to mqprio_parse_nlattr()
+    https://git.kernel.org/netdev/net-next/c/57f21bf85400
+  - [v5,net-next,4/9] net/sched: mqprio: add an extack message to mqprio_parse_opt()
+    https://git.kernel.org/netdev/net-next/c/ab277d2084ba
+  - [v5,net-next,5/9] net/sched: pass netlink extack to mqprio and taprio offload
+    https://git.kernel.org/netdev/net-next/c/c54876cd5961
+  - [v5,net-next,6/9] net/sched: mqprio: allow per-TC user input of FP adminStatus
+    https://git.kernel.org/netdev/net-next/c/f62af20bed2d
+  - [v5,net-next,7/9] net/sched: taprio: allow per-TC user input of FP adminStatus
+    https://git.kernel.org/netdev/net-next/c/a721c3e54b80
+  - [v5,net-next,8/9] net: enetc: rename "mqprio" to "qopt"
+    https://git.kernel.org/netdev/net-next/c/50764da37cbe
+  - [v5,net-next,9/9] net: enetc: add support for preemptible traffic classes
+    https://git.kernel.org/netdev/net-next/c/01e23b2b3bad
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
