@@ -2,75 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9D996E25E2
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 16:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EC0C6E2600
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 16:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbjDNOhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 10:37:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32800 "EHLO
+        id S230219AbjDNOmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 10:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjDNOhU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 10:37:20 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788BA4ED5
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 07:37:19 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-54fbee98814so99800927b3.8
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 07:37:19 -0700 (PDT)
+        with ESMTP id S229493AbjDNOmm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 10:42:42 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E1972BE
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 07:42:31 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-54fc337a650so96859637b3.4
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 07:42:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore.com; s=google; t=1681483038; x=1684075038;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7iE4lpdJlf0o5v1x8VmZQicpOdZNGALIdQ6MIl+iaUc=;
-        b=JcPMQsr2Js157cPMkV8RegkhnjQx3p/HP6BhpqrpzvK5mijZqI7dkWLSOQMzMqX7GM
-         GQP4gImq3jD6B3YD8pz4Bgb/OEocICIAfbyvav9/7JphjKjd7CqvSKFzoJJnYog4y1ku
-         I9jyT+yi88uW+15uh1jqT6zjs83D9eV3Ai+xcluUGKi28Qlcs1maSV/hZObA7RkCzd3f
-         S2/grhhoKJhBE+KttJyBoQbPW+EjH1wC2UGwxR9DrXtiqRsCYnRvF74kGXLSxxagtOyJ
-         llvlrooN8y/rA8gWfV8t8+gLutDoS9g+WyA2SBw7JxvGca7f7vclqKCN7sYAxaJHO/zt
-         Mmuw==
+        d=dneg.com; s=google; t=1681483350; x=1684075350;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=MyWqJg+TEEMkoUyXIV4qRUXghOyIcc1b77Z/puaO8vo=;
+        b=gwacbKk8ZhAw/+4XWDKbLBigHaYvNUIUpTATkPqb5TsgWk47p0IlMhF4habn6ly3q+
+         EdOhisafu607FxcK5j2P0BL2S3WpgHAnunYhQ9TrdVySAU3dfKWPIdodlP5wIoBps+63
+         M5XRXeJyDChxoxs0c08zhUhL/pvQ1jSyM/zKVZuXaz0M0d+udQofR3M9RNbHfFfXM/38
+         QcgOmDq0hgYAomtXXd+kxVXsJ98oSqM8IJs7kZmovc1mw6nh6GF6Lw9H5eg1uxtSQCVq
+         N1Qio8FeCOrT0UrnDo3JrjCNf/pgm9l7tSjCgTVG5sysEzOTNi4SJUGx4a9fL/bZ6aln
+         Sp9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681483038; x=1684075038;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7iE4lpdJlf0o5v1x8VmZQicpOdZNGALIdQ6MIl+iaUc=;
-        b=CWU3S2I69+6jjVeiOoS+f+oaRgnrcimFdlKASALK3hSFFKmU7lbzlkvqebpJXK0Zx3
-         a1JOb0ZEUe/p6juqNiWjxyC5S5ZKaUgzOC4lhZsgqBoLirhDKjpSSPua6Ie1oBEoi1di
-         INqdYgO8A3j8ZdFbtFRxT38R1+oAhD1XRvt4brk/hn4EmFdb4qYQpc9MsFOyiQpC6vHw
-         EiB1ErmpVrOaZriFaVimf4DY8HMKRVVc31VmR9IKqCbcydSWc58Vkdky0RvJSu+WGrJO
-         o4a8EX6FslYk59y7tO9LUBqlX8CnfhNgk2wXmJaBqIgkV5S+eTjTPg1hskXxUUktg5oF
-         oESg==
-X-Gm-Message-State: AAQBX9e2Hbv3LqNz2eRAJ3qd0quXOXIlQLKW8knSsZ8RqXS78HQ0b+vf
-        QmF2L3zKxGKl5dgRO5fF6Qz2XLXYfyNCpCigTzAC
-X-Google-Smtp-Source: AKy350bAkOQQy6ClP5S+UPzobrBsRMJW7wvcE7e6V3gIgYt9xEga0aIAkaCermENOZKL/A3UNo+2qkZxBTpnkNmSyHs=
-X-Received: by 2002:a81:ad0e:0:b0:545:6106:5334 with SMTP id
- l14-20020a81ad0e000000b0054561065334mr3811521ywh.8.1681483038647; Fri, 14 Apr
- 2023 07:37:18 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681483350; x=1684075350;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=MyWqJg+TEEMkoUyXIV4qRUXghOyIcc1b77Z/puaO8vo=;
+        b=MtYGZEHUWTXC48PmmYAyKwWNNXGhx5K/ZU9Pmv1gQs29GM1Xo7fsinlv+FnsPNhqsJ
+         WL9jHe1z3Ii3c5O6q/bT1VL9/AZRSTO/977UB2rRaWVYt2Hs/TVfcJa0IlFj+WZNrQdW
+         oNTgVLYZFUn9Gv0+mLlrQy0zsLX0E16ulR3bwOeA5YSvyJ459cU0C3SAMeoyiqxk7nW1
+         eU4yGZNCIgPdAD0ujtX47BiehX4WrKzKPHkJ1k6Q31M/4RyNx67laMbQaUKEIK7AFIi8
+         /K0LkjsMAIc6+2ihCgtIORa4bZ6hiUIFStzOp1Th/yqKkVhnp3eoQP3hYO6tM0GSBloG
+         OV7Q==
+X-Gm-Message-State: AAQBX9eQMpglvc+gEj+AICtueuTmtkHlKYUxUeZRRIOyg9xpa80UjHKI
+        2PPNEn2M9nT6Spzf709q8Z/2o4eHx42oIyq9wy7wjg==
+X-Google-Smtp-Source: AKy350ZSIgWGAXJ/jDcFVW6ZtIlOPzVRFSQW/9QwuupeF38JoI4hw3A4zo92XzTsE4M00u8OgP/Ymg6nq18qvR4uLY8=
+X-Received: by 2002:a81:ae12:0:b0:545:8202:bbcf with SMTP id
+ m18-20020a81ae12000000b005458202bbcfmr3804319ywh.9.1681483350245; Fri, 14 Apr
+ 2023 07:42:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAHC9VhTvQLa=+Ykwmr_Uhgjrc6dfi24ou=NBsACkhwZN7X4EtQ@mail.gmail.com>
- <1c8a70fc-18cb-3da7-5240-b513bf1affb9@leemhuis.info> <CAHC9VhT+=DtJ1K1CJDY4=L_RRJSGqRDvnaOdA6j9n+bF7y+36A@mail.gmail.com>
- <20230410054605.GL182481@unreal> <20230413075421.044d7046@kernel.org>
- <CAHC9VhRKBLHfGHvFAsmcBQQEmbOxZ=M9TE4-pV70E+Y6G=uXWA@mail.gmail.com>
- <ZDhwUYpMFvCRf1EC@x130> <20230413152150.4b54d6f4@kernel.org>
- <ZDiDbQL5ksMwaMeB@x130> <20230413155139.22d3b2f4@kernel.org>
- <ZDjCdpWcchQGNBs1@x130> <20230413202631.7e3bd713@kernel.org>
-In-Reply-To: <20230413202631.7e3bd713@kernel.org>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 14 Apr 2023 10:37:07 -0400
-Message-ID: <CAHC9VhQrDSc65njFBQ8sJ_zr2AcP-qQEU-BcAk5h69XhC=H=dA@mail.gmail.com>
-Subject: Re: Potential regression/bug in net/mlx5 driver
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Linux regressions mailing list <regressions@lists.linux.dev>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Shay Drory <shayd@nvidia.com>, netdev@vger.kernel.org,
-        selinux@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>
+References: <3A132FA8-A764-416E-9753-08E368D6877A@oracle.com>
+ <812034.1680181285@warthog.procyon.org.uk> <6F2985FF-2474-4F36-BD94-5F8E97E46AC2@oracle.com>
+ <20230329141354.516864-1-dhowells@redhat.com> <20230329141354.516864-41-dhowells@redhat.com>
+ <812755.1680182190@warthog.procyon.org.uk> <822317.1680186419@warthog.procyon.org.uk>
+ <A03755D2-3EEB-4A21-9302-6F03316F2709@oracle.com>
+In-Reply-To: <A03755D2-3EEB-4A21-9302-6F03316F2709@oracle.com>
+From:   Daire Byrne <daire@dneg.com>
+Date:   Fri, 14 Apr 2023 15:41:53 +0100
+Message-ID: <CAPt2mGOR6y+m1PNKLSjnaiDGBrDypvSb2ciChn+PMY7+it7-2w@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 40/48] sunrpc: Use sendmsg(MSG_SPLICE_PAGES) rather
+ then sendpage
+To:     Chuck Lever III <chuck.lever@oracle.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,52 +87,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 11:26=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> w=
-rote:
-> On Thu, 13 Apr 2023 20:03:18 -0700 Saeed Mahameed wrote:
-> > On 13 Apr 15:51, Jakub Kicinski wrote:
-> > >On Thu, 13 Apr 2023 15:34:21 -0700 Saeed Mahameed wrote:
+I gave this a spin because I had noticed a previous regression around
+the 5.7 time frame in sendpage/sendmsg code changes:
 
-...
+https://bugzilla.kernel.org/show_bug.cgi?id=209439
 
-> > >The question is who's supposed to be paying the price of mlx5 being
-> > >used for old and new parts? What is fair to expect from the user
-> > >when the FW Paul has presumably works just fine for him?
-> > >
-> > Upgrade FW when possible, it is always easier than upgrading the kernel=
-.
-> > Anyways this was a very rare FW/Arch bug, We should've exposed an
-> > explicit cap for this new type of PF when we had the chance, now it's t=
-oo
-> > late since a proper fix will require FW and Driver upgrades and breakin=
-g
-> > the current solution we have over other OSes as well.
+In that case there was a noticeable regression in performance for high
+performance servers (100gbit).
+
+I see no such performance problems with David's iov-sendpage branch
+and it all looks good to me with simple benchmarks (100gbit server,
+100 x 1gbit clients reading data).
+
+Tested-by: Daire Byrne <daire@dneg.com>
+
+Cheers,
+
+Daire
+
+On Thu, 30 Mar 2023 at 17:37, Chuck Lever III <chuck.lever@oracle.com> wrote:
+>
+>
+>
+> > On Mar 30, 2023, at 10:26 AM, David Howells <dhowells@redhat.com> wrote:
 > >
-> > Yes I can craft an if condition to explicitly check for chip id and FW
-> > version for this corner case, which has no precedence in mlx5, but I pr=
-efer
-> > to ask to upgrade FW first, and if that's an acceptable solution, I wou=
-ld
-> > like to keep the mlx5 clean and device agnostic as much as possible.
+> > Chuck Lever III <chuck.lever@oracle.com> wrote:
+> >
+> >> Don't. Just change svc_tcp_send_kvec() to use sock_sendmsg, and
+> >> leave the marker alone for now, please.
+> >
+> > If you insist.  See attached.
 >
-> IMO you either need a fully fleshed out FW update story, with advanced
-> warnings for a few releases, distributing the FW via linux-firmware or
-> fwupdmgr or such.  Or deal with the corner cases in the driver :(
+> Very good, thank you for accommodating my regression paranoia.
 >
-> We can get Paul to update, sure, but if he noticed so quickly the
-> question remains how many people out in the wild will get affected
-> and not know what the cause is?
-
-I think it is that last bit which is the real issue, at least from a
-regression standpoint.  I didn't see anything on the console or in the
-logs to indicate that ancient/buggy FW was the issue, even once I
-bisected the kernel (which your average user isn't going to do) it
-wasn't clear that it was a FW problem.  Perhaps the mlx5 driver should
-perform a simple FW version check on initialization and
-pr_warn()/pr_err() if the loaded FW is below a support threshold?
-Seeing a "mlx5: hey idiot, your FW is ancient, you need to upgrade!"
-line on my console/dmesg would have sent me in the right direction and
-likely avoided all of this ...
-
---=20
-paul-moore.com
+> Acked-by: Chuck Lever <chuck.lever@oracle.com>
+>
+>
+> >
+> > David
+> > ---
+> > sunrpc: Use sendmsg(MSG_SPLICE_PAGES) rather then sendpage
+> >
+> > When transmitting data, call down into TCP using sendmsg with
+> > MSG_SPLICE_PAGES to indicate that content should be spliced rather than
+> > performing sendpage calls to transmit header, data pages and trailer.
+> >
+> > Signed-off-by: David Howells <dhowells@redhat.com>
+> > cc: Trond Myklebust <trond.myklebust@hammerspace.com>
+> > cc: Anna Schumaker <anna@kernel.org>
+> > cc: Chuck Lever <chuck.lever@oracle.com>
+> > cc: Jeff Layton <jlayton@kernel.org>
+> > cc: "David S. Miller" <davem@davemloft.net>
+> > cc: Eric Dumazet <edumazet@google.com>
+> > cc: Jakub Kicinski <kuba@kernel.org>
+> > cc: Paolo Abeni <pabeni@redhat.com>
+> > cc: Jens Axboe <axboe@kernel.dk>
+> > cc: Matthew Wilcox <willy@infradead.org>
+> > cc: linux-nfs@vger.kernel.org
+> > cc: netdev@vger.kernel.org
+> > ---
+> > include/linux/sunrpc/svc.h |   11 +++++------
+> > net/sunrpc/svcsock.c       |   40 +++++++++++++---------------------------
+> > 2 files changed, 18 insertions(+), 33 deletions(-)
+> >
+> > diff --git a/include/linux/sunrpc/svc.h b/include/linux/sunrpc/svc.h
+> > index 877891536c2f..456ae554aa11 100644
+> > --- a/include/linux/sunrpc/svc.h
+> > +++ b/include/linux/sunrpc/svc.h
+> > @@ -161,16 +161,15 @@ static inline bool svc_put_not_last(struct svc_serv *serv)
+> > extern u32 svc_max_payload(const struct svc_rqst *rqstp);
+> >
+> > /*
+> > - * RPC Requsts and replies are stored in one or more pages.
+> > + * RPC Requests and replies are stored in one or more pages.
+> >  * We maintain an array of pages for each server thread.
+> >  * Requests are copied into these pages as they arrive.  Remaining
+> >  * pages are available to write the reply into.
+> >  *
+> > - * Pages are sent using ->sendpage so each server thread needs to
+> > - * allocate more to replace those used in sending.  To help keep track
+> > - * of these pages we have a receive list where all pages initialy live,
+> > - * and a send list where pages are moved to when there are to be part
+> > - * of a reply.
+> > + * Pages are sent using ->sendmsg with MSG_SPLICE_PAGES so each server thread
+> > + * needs to allocate more to replace those used in sending.  To help keep track
+> > + * of these pages we have a receive list where all pages initialy live, and a
+> > + * send list where pages are moved to when there are to be part of a reply.
+> >  *
+> >  * We use xdr_buf for holding responses as it fits well with NFS
+> >  * read responses (that have a header, and some data pages, and possibly
+> > diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
+> > index 03a4f5615086..af146e053dfc 100644
+> > --- a/net/sunrpc/svcsock.c
+> > +++ b/net/sunrpc/svcsock.c
+> > @@ -1059,17 +1059,18 @@ static int svc_tcp_recvfrom(struct svc_rqst *rqstp)
+> >       svc_xprt_received(rqstp->rq_xprt);
+> >       return 0;       /* record not complete */
+> > }
+> > -
+> > +
+> > static int svc_tcp_send_kvec(struct socket *sock, const struct kvec *vec,
+> >                             int flags)
+> > {
+> > -     return kernel_sendpage(sock, virt_to_page(vec->iov_base),
+> > -                            offset_in_page(vec->iov_base),
+> > -                            vec->iov_len, flags);
+> > +     struct msghdr msg = { .msg_flags = MSG_SPLICE_PAGES | flags, };
+> > +
+> > +     iov_iter_kvec(&msg.msg_iter, ITER_SOURCE, vec, 1, vec->iov_len);
+> > +     return sock_sendmsg(sock, &msg);
+> > }
+> >
+> > /*
+> > - * kernel_sendpage() is used exclusively to reduce the number of
+> > + * MSG_SPLICE_PAGES is used exclusively to reduce the number of
+> >  * copy operations in this path. Therefore the caller must ensure
+> >  * that the pages backing @xdr are unchanging.
+> >  *
+> > @@ -1109,28 +1110,13 @@ static int svc_tcp_sendmsg(struct socket *sock, struct xdr_buf *xdr,
+> >       if (ret != head->iov_len)
+> >               goto out;
+> >
+> > -     if (xdr->page_len) {
+> > -             unsigned int offset, len, remaining;
+> > -             struct bio_vec *bvec;
+> > -
+> > -             bvec = xdr->bvec + (xdr->page_base >> PAGE_SHIFT);
+> > -             offset = offset_in_page(xdr->page_base);
+> > -             remaining = xdr->page_len;
+> > -             while (remaining > 0) {
+> > -                     len = min(remaining, bvec->bv_len - offset);
+> > -                     ret = kernel_sendpage(sock, bvec->bv_page,
+> > -                                           bvec->bv_offset + offset,
+> > -                                           len, 0);
+> > -                     if (ret < 0)
+> > -                             return ret;
+> > -                     *sentp += ret;
+> > -                     if (ret != len)
+> > -                             goto out;
+> > -                     remaining -= len;
+> > -                     offset = 0;
+> > -                     bvec++;
+> > -             }
+> > -     }
+> > +     msg.msg_flags = MSG_SPLICE_PAGES;
+> > +     iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, xdr->bvec,
+> > +                   xdr_buf_pagecount(xdr), xdr->page_len);
+> > +     ret = sock_sendmsg(sock, &msg);
+> > +     if (ret < 0)
+> > +             return ret;
+> > +     *sentp += ret;
+> >
+> >       if (tail->iov_len) {
+> >               ret = svc_tcp_send_kvec(sock, tail, 0);
+> >
+>
+> --
+> Chuck Lever
+>
+>
