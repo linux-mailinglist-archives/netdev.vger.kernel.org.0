@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7877C6E2688
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 17:12:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F6C76E268A
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 17:12:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230133AbjDNPMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 11:12:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33302 "EHLO
+        id S230287AbjDNPMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 11:12:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjDNPMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 11:12:38 -0400
+        with ESMTP id S229491AbjDNPMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 11:12:40 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA625E4
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB20E10F2
         for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 08:12:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=AjtXr2NQkSTCw/YswGj2vPPDSPRxp09Jw7I3LBJxTS0=;
-        t=1681485157; x=1682694757; b=Sq/UBOttVMVypJum7KFByesjxajleQP/jTcanIaQmlidgPj
-        qmwO2QopXyMywHVAOwuBt1ZgXxF7cFEzApsuRrAu9nW/Rdxudbb/JTkffNwcPUcc7cz3K6V4WWx2f
-        vzYZY5ZTD4V7GVYlh+CgGuIJ8fYEx3l4UBqevMhJqnYOvT8owPRRij0Ku69GiF4SL74QS00fDWhsX
-        ApFmKHKygVdipFYN0ts9m7CwZ7I75NOE9/D19jvdvsY9BebWKblIy2qqlIsD9HooIdVHr6l+ivpsf
-        n3O7rLVjvjYWWWhtx78f7j0RPSufm3aRy8toTGjDuJ5tiru1rHCl5oWApg4Hql6w==;
+        Resent-Cc:Resent-Message-ID; bh=LvOTIEor0LEMraDfqDiHKXrqZwVI3gf+gpLNlMbwKns=;
+        t=1681485157; x=1682694757; b=R6td7PilLc9gGtF/S/KTaaxjm0525P2bzPDhSxpxdjGQyXK
+        B4g+sy1cRYgVdJ9KKuRhxUdkL2GHVEPeiOYt+0sVvkW+dztOxRmCOTEdtZYsq3ehA2g+c0wl02WRJ
+        XGt1zfF/A1YJUbZIBjv9mINR5Jg6O4furK4BV7Zu/ruyj83g3rsEylMb02DyuTdgCTQLtq02phKKO
+        LaEZcU/zBGhIcNXCk6JWVlgTJ+tBk9F+rWbBZ0Oiu9vM6MYVbzvLY+BLyFdSuXxjWc40AUsE344Su
+        76tyTVo39NvW3VFXyhCG8bYI+X2GNoFaUO2M9bqsqMsJ9NEWXyD1Ve0K+z7qsJZA==;
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.96)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1pnL6J-00Fdii-37;
+        id 1pnL6K-00Fdii-0k;
         Fri, 14 Apr 2023 17:12:36 +0200
 From:   Johannes Berg <johannes@sipsolutions.net>
 To:     netdev@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH next-next v3 1/3] net: move dropreason.h to dropreason-core.h
-Date:   Fri, 14 Apr 2023 17:12:25 +0200
-Message-Id: <20230414171112.a848bf0a89f0.I14d12f483727910cddb776e5a84f75ed4e1d8b3e@changeid>
+Subject: [PATCH next-next v3 2/3] net: extend drop reasons for multiple subsystems
+Date:   Fri, 14 Apr 2023 17:12:26 +0200
+Message-Id: <20230414151227.348725-2-johannes@sipsolutions.net>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230414151227.348725-1-johannes@sipsolutions.net>
 References: <20230414151227.348725-1-johannes@sipsolutions.net>
@@ -51,76 +51,290 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-This will, after the next patch, hold only the core
-drop reasons and minimal infrastructure.
+Extend drop reasons to make them usable by subsystems
+other than core by reserving the high 16 bits for a
+new subsystem ID, of which 0 of course is used for the
+existing reasons immediately.
 
+To still be able to have string reasons, restructure
+that code a bit to make the loopup under RCU, the only
+user of this (right now) is drop_monitor.
+
+Link: https://lore.kernel.org/netdev/00659771ed54353f92027702c5bbb84702da62ce.camel@sipsolutions.net
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 ---
-v3: new patch
+v3:
+ - new dropreason.h now that core codes are in dropreason-core.h
+ - annotate RCU pointer init for sparse
 ---
- include/linux/netdevice.h                       | 2 +-
- include/linux/skbuff.h                          | 2 +-
- include/net/{dropreason.h => dropreason-core.h} | 4 ++--
- include/net/inet_frag.h                         | 2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
- rename include/net/{dropreason.h => dropreason-core.h} (99%)
+ include/net/dropreason-core.h | 15 ++++++---
+ include/net/dropreason.h      | 31 ++++++++++++++++++
+ net/core/drop_monitor.c       | 33 ++++++++++++++------
+ net/core/skbuff.c             | 59 +++++++++++++++++++++++++++++++++--
+ 4 files changed, 121 insertions(+), 17 deletions(-)
+ create mode 100644 include/net/dropreason.h
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index a740be3bb911..c7e05e6352a1 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -52,7 +52,7 @@
- #include <linux/rbtree.h>
- #include <net/net_trackers.h>
- #include <net/net_debug.h>
--#include <net/dropreason.h>
-+#include <net/dropreason-core.h>
+diff --git a/include/net/dropreason-core.h b/include/net/dropreason-core.h
+index e775f9f7d384..a55d85ff5153 100644
+--- a/include/net/dropreason-core.h
++++ b/include/net/dropreason-core.h
+@@ -339,12 +339,19 @@ enum skb_drop_reason {
+ 	 */
+ 	SKB_DROP_REASON_IPV6_NDISC_NS_OTHERHOST,
+ 	/**
+-	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
+-	 * used as a real 'reason'
+-	 */
++	 * @SKB_DROP_REASON_MAX: the maximum of core drop reasons, which
++	 * shouldn't be used as a real 'reason' - only for tracing code gen
++         */
+ 	SKB_DROP_REASON_MAX,
++
++	/** @SKB_DROP_REASON_SUBSYS_MASK: subsystem mask in drop reasons,
++	 * see &enum skb_drop_reason_subsys
++	 */
++	SKB_DROP_REASON_SUBSYS_MASK = 0xffff0000,
+ };
  
- struct netpoll_info;
- struct device;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 82511b2f61ea..795b091e6d7d 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -37,7 +37,7 @@
- #include <linux/netfilter/nf_conntrack_common.h>
++#define SKB_DROP_REASON_SUBSYS_SHIFT	16
++
+ #define SKB_DR_INIT(name, reason)				\
+ 	enum skb_drop_reason name = SKB_DROP_REASON_##reason
+ #define SKB_DR(name)						\
+@@ -358,6 +365,4 @@ enum skb_drop_reason {
+ 			SKB_DR_SET(name, reason);		\
+ 	} while (0)
+ 
+-extern const char * const drop_reasons[];
+-
  #endif
- #include <net/net_debug.h>
--#include <net/dropreason.h>
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+new file mode 100644
+index 000000000000..f0f2378dbed0
+--- /dev/null
++++ b/include/net/dropreason.h
+@@ -0,0 +1,31 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++
++#ifndef _LINUX_DROPREASON_H
++#define _LINUX_DROPREASON_H
 +#include <net/dropreason-core.h>
++
++/**
++ * enum skb_drop_reason_subsys - subsystem tag for (extended) drop reasons
++ */
++enum skb_drop_reason_subsys {
++	/** @SKB_DROP_REASON_SUBSYS_CORE: core drop reasons defined above */
++	SKB_DROP_REASON_SUBSYS_CORE,
++
++	/** @SKB_DROP_REASON_SUBSYS_NUM: number of subsystems defined */
++	SKB_DROP_REASON_SUBSYS_NUM
++};
++
++struct drop_reason_list {
++	const char * const *reasons;
++	size_t n_reasons;
++};
++
++/* Note: due to dynamic registrations, access must be under RCU */
++extern const struct drop_reason_list __rcu *
++drop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_NUM];
++
++void drop_reasons_register_subsys(enum skb_drop_reason_subsys subsys,
++				  const struct drop_reason_list *list);
++void drop_reasons_unregister_subsys(enum skb_drop_reason_subsys subsys);
++
++#endif
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 5a782d1d8fd3..aff31cd944c2 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -21,6 +21,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/netlink.h>
+ #include <linux/net_dropmon.h>
++#include <linux/bitfield.h>
+ #include <linux/percpu.h>
+ #include <linux/timer.h>
+ #include <linux/bitops.h>
+@@ -29,6 +30,7 @@
+ #include <net/genetlink.h>
+ #include <net/netevent.h>
+ #include <net/flow_offload.h>
++#include <net/dropreason.h>
+ #include <net/devlink.h>
+ 
+ #include <trace/events/skb.h>
+@@ -504,8 +506,6 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ 	if (!nskb)
+ 		return;
+ 
+-	if (unlikely(reason >= SKB_DROP_REASON_MAX || reason <= 0))
+-		reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	cb = NET_DM_SKB_CB(nskb);
+ 	cb->reason = reason;
+ 	cb->pc = location;
+@@ -552,9 +552,9 @@ static size_t net_dm_in_port_size(void)
+ }
+ 
+ #define NET_DM_MAX_SYMBOL_LEN 40
++#define NET_DM_MAX_REASON_LEN 50
+ 
+-static size_t net_dm_packet_report_size(size_t payload_len,
+-					enum skb_drop_reason reason)
++static size_t net_dm_packet_report_size(size_t payload_len)
+ {
+ 	size_t size;
+ 
+@@ -576,7 +576,7 @@ static size_t net_dm_packet_report_size(size_t payload_len,
+ 	       /* NET_DM_ATTR_PROTO */
+ 	       nla_total_size(sizeof(u16)) +
+ 	       /* NET_DM_ATTR_REASON */
+-	       nla_total_size(strlen(drop_reasons[reason]) + 1) +
++	       nla_total_size(NET_DM_MAX_REASON_LEN + 1) +
+ 	       /* NET_DM_ATTR_PAYLOAD */
+ 	       nla_total_size(payload_len);
+ }
+@@ -610,6 +610,8 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 				     size_t payload_len)
+ {
+ 	struct net_dm_skb_cb *cb = NET_DM_SKB_CB(skb);
++	const struct drop_reason_list *list = NULL;
++	unsigned int subsys, subsys_reason;
+ 	char buf[NET_DM_MAX_SYMBOL_LEN];
+ 	struct nlattr *attr;
+ 	void *hdr;
+@@ -627,9 +629,24 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
+ 			      NET_DM_ATTR_PAD))
+ 		goto nla_put_failure;
+ 
++	rcu_read_lock();
++	subsys = u32_get_bits(cb->reason, SKB_DROP_REASON_SUBSYS_MASK);
++	if (subsys < SKB_DROP_REASON_SUBSYS_NUM)
++		list = rcu_dereference(drop_reasons_by_subsys[subsys]);
++	subsys_reason = cb->reason & ~SKB_DROP_REASON_SUBSYS_MASK;
++	if (!list ||
++	    subsys_reason >= list->n_reasons ||
++	    !list->reasons[subsys_reason] ||
++	    strlen(list->reasons[subsys_reason]) > NET_DM_MAX_REASON_LEN) {
++		list = rcu_dereference(drop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_CORE]);
++		subsys_reason = SKB_DROP_REASON_NOT_SPECIFIED;
++	}
+ 	if (nla_put_string(msg, NET_DM_ATTR_REASON,
+-			   drop_reasons[cb->reason]))
++			   list->reasons[subsys_reason])) {
++		rcu_read_unlock();
+ 		goto nla_put_failure;
++	}
++	rcu_read_unlock();
+ 
+ 	snprintf(buf, sizeof(buf), "%pS", cb->pc);
+ 	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+@@ -687,9 +704,7 @@ static void net_dm_packet_report(struct sk_buff *skb)
+ 	if (net_dm_trunc_len)
+ 		payload_len = min_t(size_t, net_dm_trunc_len, payload_len);
+ 
+-	msg = nlmsg_new(net_dm_packet_report_size(payload_len,
+-						  NET_DM_SKB_CB(skb)->reason),
+-			GFP_KERNEL);
++	msg = nlmsg_new(net_dm_packet_report_size(payload_len), GFP_KERNEL);
+ 	if (!msg)
+ 		goto out;
+ 
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 050a875d09c5..cf3b6b5d0b50 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -58,6 +58,7 @@
+ #include <linux/scatterlist.h>
+ #include <linux/errqueue.h>
+ #include <linux/prefetch.h>
++#include <linux/bitfield.h>
+ #include <linux/if_vlan.h>
+ #include <linux/mpls.h>
+ #include <linux/kcov.h>
+@@ -72,6 +73,7 @@
+ #include <net/mptcp.h>
+ #include <net/mctp.h>
+ #include <net/page_pool.h>
++#include <net/dropreason.h>
+ 
+ #include <linux/uaccess.h>
+ #include <trace/events/skb.h>
+@@ -122,11 +124,59 @@ EXPORT_SYMBOL(sysctl_max_skb_frags);
+ 
+ #undef FN
+ #define FN(reason) [SKB_DROP_REASON_##reason] = #reason,
+-const char * const drop_reasons[] = {
++static const char * const drop_reasons[] = {
+ 	[SKB_CONSUMED] = "CONSUMED",
+ 	DEFINE_DROP_REASON(FN, FN)
+ };
+-EXPORT_SYMBOL(drop_reasons);
++
++static const struct drop_reason_list drop_reasons_core = {
++	.reasons = drop_reasons,
++	.n_reasons = ARRAY_SIZE(drop_reasons),
++};
++
++const struct drop_reason_list __rcu *
++drop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_NUM] = {
++	[SKB_DROP_REASON_SUBSYS_CORE] = RCU_INITIALIZER(&drop_reasons_core),
++};
++EXPORT_SYMBOL(drop_reasons_by_subsys);
++
++/**
++ * drop_reasons_register_subsys - register another drop reason subsystem
++ * @subsys: the subsystem to register, must not be the core
++ * @list: the list of drop reasons within the subsystem, must point to
++ *	a statically initialized list
++ */
++void drop_reasons_register_subsys(enum skb_drop_reason_subsys subsys,
++				  const struct drop_reason_list *list)
++{
++	if (WARN(subsys <= SKB_DROP_REASON_SUBSYS_CORE ||
++		 subsys >= ARRAY_SIZE(drop_reasons_by_subsys),
++		 "invalid subsystem %d\n", subsys))
++		return;
++
++	/* must point to statically allocated memory, so INIT is OK */
++	RCU_INIT_POINTER(drop_reasons_by_subsys[subsys], list);
++}
++EXPORT_SYMBOL_GPL(drop_reasons_register_subsys);
++
++/**
++ * drop_reasons_unregister_subsys - unregister a drop reason subsystem
++ * @subsys: the subsystem to remove, must not be the core
++ *
++ * Note: This will synchronize_rcu() to ensure no users when it returns.
++ */
++void drop_reasons_unregister_subsys(enum skb_drop_reason_subsys subsys)
++{
++	if (WARN(subsys <= SKB_DROP_REASON_SUBSYS_CORE ||
++		 subsys >= ARRAY_SIZE(drop_reasons_by_subsys),
++		 "invalid subsystem %d\n", subsys))
++		return;
++
++	RCU_INIT_POINTER(drop_reasons_by_subsys[subsys], NULL);
++
++	synchronize_rcu();
++}
++EXPORT_SYMBOL_GPL(drop_reasons_unregister_subsys);
  
  /**
-  * DOC: skb checksums
-diff --git a/include/net/dropreason.h b/include/net/dropreason-core.h
-similarity index 99%
-rename from include/net/dropreason.h
-rename to include/net/dropreason-core.h
-index c0a3ea806cd5..e775f9f7d384 100644
---- a/include/net/dropreason.h
-+++ b/include/net/dropreason-core.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0-or-later */
+  *	skb_panic - private function for out-of-line support
+@@ -984,7 +1034,10 @@ bool __kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
+ 	if (unlikely(!skb_unref(skb)))
+ 		return false;
  
--#ifndef _LINUX_DROPREASON_H
--#define _LINUX_DROPREASON_H
-+#ifndef _LINUX_DROPREASON_CORE_H
-+#define _LINUX_DROPREASON_CORE_H
+-	DEBUG_NET_WARN_ON_ONCE(reason <= 0 || reason >= SKB_DROP_REASON_MAX);
++	DEBUG_NET_WARN_ON_ONCE(reason == SKB_NOT_DROPPED_YET ||
++			       u32_get_bits(reason,
++					    SKB_DROP_REASON_SUBSYS_MASK) >=
++				SKB_DROP_REASON_SUBSYS_NUM);
  
- #define DEFINE_DROP_REASON(FN, FNe)	\
- 	FN(NOT_SPECIFIED)		\
-diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
-index b23ddec3cd5c..325ad893f624 100644
---- a/include/net/inet_frag.h
-+++ b/include/net/inet_frag.h
-@@ -7,7 +7,7 @@
- #include <linux/in6.h>
- #include <linux/rbtree_types.h>
- #include <linux/refcount.h>
--#include <net/dropreason.h>
-+#include <net/dropreason-core.h>
- 
- /* Per netns frag queues directory */
- struct fqdir {
+ 	if (reason == SKB_CONSUMED)
+ 		trace_consume_skb(skb, __builtin_return_address(0));
 -- 
 2.39.2
 
