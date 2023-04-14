@@ -2,587 +2,848 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 262186E1EA5
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B3846E1EAE
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:45:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbjDNIpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 04:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
+        id S230179AbjDNIpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 04:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbjDNIpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:45:16 -0400
-Received: from domac.alu.hr (domac.alu.unizg.hr [IPv6:2001:b68:2:2800::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D49AA256;
-        Fri, 14 Apr 2023 01:44:51 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by domac.alu.hr (Postfix) with ESMTP id 07C47604F0;
-        Fri, 14 Apr 2023 10:44:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1681461887; bh=+S7xpdg2UKHlYQ4njvCa/nGmVlW/qoMYd2m6NiA69jA=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=TbJG/cMbTr7uCGTxtz1NUIRKEkoZ6m+p+Mw6Wx8+fQPirfixoVRe3QbzKMXeFd/pw
-         wYQMPgEDbyslH46sx6OFcfG4nQggYYLOzz1CKu5AtCTiKPNm7DJC9TexnKZ1HLlY0X
-         4E6bsy+w6W3X6Ddnp9DXkD83RjCOjf6UFNnOjDg+qvC9rvaVAA6Aq36ae5g0OOAOTH
-         jrsGvZ9a2xW28deGNKmFe5elg+Rw4+Glz2RUQCn/ruBsPUCzG5vtwonz3rFjpyVVYN
-         2eMJ/7Hw8tS9g9SLQcNTKSHXsebwTBbH8Y12RnEn/2A0IiWzse4C4i7ebCPU+Y5Qhn
-         apC1y//7kr/9w==
-X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
-Received: from domac.alu.hr ([127.0.0.1])
-        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id qGP5R_JKA2Nx; Fri, 14 Apr 2023 10:44:42 +0200 (CEST)
-Received: from [193.198.186.200] (pc-mtodorov.slava.alu.hr [193.198.186.200])
-        by domac.alu.hr (Postfix) with ESMTPSA id 8307F604ED;
-        Fri, 14 Apr 2023 10:44:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1681461882; bh=+S7xpdg2UKHlYQ4njvCa/nGmVlW/qoMYd2m6NiA69jA=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=fwTWKzA6LUZw3sAPX3O8C0QBt0YA7eclw4pGrN8SSzViJWRRVxK51v9sDoyw4BMdm
-         l0lzydkxaiW63h4mfauca6oGpBLqqrohcWDuD1i9U9qRGo0ewl2DEcX8A+vJElVTo6
-         5uokXs8Y2OSXdzjQGT8rqJF8WKF6JGHyraH8aez+9M04CARiNAgBqcVkyyrXdwx9rx
-         8owXYISZ/Vm16QrAxZKWIqNV4VkurW+FUWX55biAnLmrSnujC6ZWKdn3hpwdT0hJ1f
-         FBIAIO9fbuh0yO5qNGY6heaSG/F3nbXzE4LvjTkgAEkUakITO0MxW2Ed3JSRYLbj16
-         kyQNnA0/Fz+ew==
-Message-ID: <54d6b776-74d4-08d3-56b6-ef675ae94aca@alu.unizg.hr>
-Date:   Fri, 14 Apr 2023 10:44:37 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: BUG: drivers/net/wireless: iwlwifi: IWL Error: "BUG: kernel NULL
- pointer dereference, address: 0000000000000150" P.S.
-From:   Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>
-To:     "Greenman, Gregory" <gregory.greenman@intel.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
+        with ESMTP id S230097AbjDNIpq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:45:46 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E029033;
+        Fri, 14 Apr 2023 01:45:14 -0700 (PDT)
+Received: from kwepemi500017.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4PyVKq41brz17SBF;
+        Fri, 14 Apr 2023 16:41:35 +0800 (CST)
+Received: from kwepemi500015.china.huawei.com (7.221.188.92) by
+ kwepemi500017.china.huawei.com (7.221.188.110) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Fri, 14 Apr 2023 16:45:11 +0800
+Received: from kwepemi500015.china.huawei.com ([7.221.188.92]) by
+ kwepemi500015.china.huawei.com ([7.221.188.92]) with mapi id 15.01.2507.023;
+ Fri, 14 Apr 2023 16:45:11 +0800
+From:   "luwei (O)" <luwei32@huawei.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
         "kuba@kernel.org" <kuba@kernel.org>,
         "pabeni@redhat.com" <pabeni@redhat.com>,
+        "asml.silence@gmail.com" <asml.silence@gmail.com>,
+        "imagedong@tencent.com" <imagedong@tencent.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "jbenc@redhat.com" <jbenc@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <1f58a0d1-d2b9-d851-73c3-93fcc607501c@alu.unizg.hr>
- <4008aff6-c432-dd0f-fcf6-1d384b809cd4@alu.unizg.hr>
- <c6bbca2a83353423a95a80cf0e6c93ccb6652847.camel@intel.com>
- <f13514c5-5289-4b7d-a0ef-1f861d87cb25@alu.unizg.hr>
-Content-Language: en-US, hr
-In-Reply-To: <f13514c5-5289-4b7d-a0ef-1f861d87cb25@alu.unizg.hr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggbmV0XSBuZXQ6IEFkZCBjaGVjayBmb3IgY3N1bV9z?=
+ =?utf-8?B?dGFydCBpbiBza2JfcGFydGlhbF9jc3VtX3NldCgp?=
+Thread-Topic: [PATCH net] net: Add check for csum_start in
+ skb_partial_csum_set()
+Thread-Index: AQHZa1NFbi0tybUON0Cd6p1dAY5+wa8j/ISAgABLCACAAXzOyP//27CAgAGM/gCAA1WmIA==
+Date:   Fri, 14 Apr 2023 08:45:11 +0000
+Message-ID: <a30a8ffaa8dd4cb6a84103eecf0c3338@huawei.com>
+References: <20230410022152.4049060-1-luwei32@huawei.com>
+ <CANn89iKFLREJV_cfHEk6wz6xXVv_jSrZ_UyXAB8VpH7gMXacxQ@mail.gmail.com>
+ <643447ba5224a_83e69294b6@willemb.c.googlers.com.notmuch>
+ <450994d7-4a77-99df-6317-b535ea73e01d@huawei.com>
+ <CANn89iLOcvDRMi9kVr86xNp5=h4JWpx9yYWicVxCwSMgAJGf_g@mail.gmail.com>
+ <c90abe8c-ffa0-f986-11eb-bde65c84d18b@huawei.com>
+ <6436b5ba5c005_41e2294dd@willemb.c.googlers.com.notmuch>
+In-Reply-To: <6436b5ba5c005_41e2294dd@willemb.c.googlers.com.notmuch>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.178.171]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/12/23 13:46, Mirsad Todorovac wrote:
-> On 4/11/23 10:47, Greenman, Gregory wrote:
->> On Mon, 2023-04-10 at 01:43 +0200, Mirsad Goran Todorovac wrote:
->>> On 10. 04. 2023. 00:21, Mirsad Goran Todorovac wrote:
->>>> Hi all,
->>>>
->>>> This is an error is the syslog found after investigating a Youtube FF chirping hang
->>>> while running kseftest of 6.3-rc6 torvalds tree kernel.
->>>>
->>>> Running multimedia and kselftest might seem off, but multimedia performance on Linux
->>>> and open source software is a very interesting research area.
->>>>
->>>> Here is the trace from the log:
->>>>
->>>> Apr  9 23:01:11 marvin-IdeaPad-3-15ITL6 kernel: [  615.957145] mmiotrace: disabled.
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.881758] iwlwifi 0000:00:14.3: Error sending STATISTICS_CMD: time out 
->>>> after 2000ms.
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.882332] iwlwifi 0000:00:14.3: Current CMD queue read_ptr 67 write_ptr 68
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.884299] iwlwifi 0000:00:14.3: Start IWL Error Log Dump:
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.884373] iwlwifi 0000:00:14.3: Transport status: 0x0000004A, valid: 6
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.884446] iwlwifi 0000:00:14.3: Loaded firmware version: 73.35c0a2c6.0 
->>>> QuZ-a0-jf-b0-73.ucode
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.884520] iwlwifi 0000:00:14.3: 0x00000084 | NMI_INTERRUPT_UNKNOWN
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.884624] iwlwifi 0000:00:14.3: 0x000022F0 | trm_hw_status0
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.884695] iwlwifi 0000:00:14.3: 0x00000000 | trm_hw_status1
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.884766] iwlwifi 0000:00:14.3: 0x004C352E | branchlink2
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.884837] iwlwifi 0000:00:14.3: 0x004BA12A | interruptlink1
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.884907] iwlwifi 0000:00:14.3: 0x004BA12A | interruptlink2
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.885309] iwlwifi 0000:00:14.3: 0x0000CEEA | data1
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.885444] iwlwifi 0000:00:14.3: 0x01000000 | data2
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.885526] iwlwifi 0000:00:14.3: 0x00000000 | data3
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.885598] iwlwifi 0000:00:14.3: 0x840075C7 | beacon time
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.885670] iwlwifi 0000:00:14.3: 0x5282AA44 | tsf low
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.885741] iwlwifi 0000:00:14.3: 0x00000082 | tsf hi
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.885812] iwlwifi 0000:00:14.3: 0x00000000 | time gp1
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.885885] iwlwifi 0000:00:14.3: 0x24D400DC | time gp2
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.885963] iwlwifi 0000:00:14.3: 0x00000001 | uCode revision type
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886040] iwlwifi 0000:00:14.3: 0x00000049 | uCode version major
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886117] iwlwifi 0000:00:14.3: 0x35C0A2C6 | uCode version minor
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886193] iwlwifi 0000:00:14.3: 0x00000351 | hw version
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886268] iwlwifi 0000:00:14.3: 0x00489001 | board version
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886344] iwlwifi 0000:00:14.3: 0x80B3F400 | hcmd
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886420] iwlwifi 0000:00:14.3: 0x00020000 | isr0
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886496] iwlwifi 0000:00:14.3: 0x00000000 | isr1
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886632] iwlwifi 0000:00:14.3: 0x08F00002 | isr2
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886750] iwlwifi 0000:00:14.3: 0x00C3028C | isr3
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.886889] iwlwifi 0000:00:14.3: 0x00000000 | isr4
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.887035] iwlwifi 0000:00:14.3: 0x05C8001C | last cmd Id
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.887180] iwlwifi 0000:00:14.3: 0x0000CEEA | wait_event
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.887326] iwlwifi 0000:00:14.3: 0x00000854 | l2p_control
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.887467] iwlwifi 0000:00:14.3: 0x00000020 | l2p_duration
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.887610] iwlwifi 0000:00:14.3: 0x0000000F | l2p_mhvalid
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.887756] iwlwifi 0000:00:14.3: 0x00000000 | l2p_addr_match
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.887895] iwlwifi 0000:00:14.3: 0x00000009 | lmpm_pmg_sel
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.888150] iwlwifi 0000:00:14.3: 0x00000000 | timestamp
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.888288] iwlwifi 0000:00:14.3: 0x00006868 | flow_handler
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.888730] iwlwifi 0000:00:14.3: Start IWL Error Log Dump:
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.888867] iwlwifi 0000:00:14.3: Transport status: 0x0000004A, valid: 7
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.889159] iwlwifi 0000:00:14.3: 0x20000066 | NMI_INTERRUPT_HOST
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.889306] iwlwifi 0000:00:14.3: 0x00000000 | umac branchlink1
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.889450] iwlwifi 0000:00:14.3: 0x80453B88 | umac branchlink2
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.889594] iwlwifi 0000:00:14.3: 0x8046FE32 | umac interruptlink1
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.889740] iwlwifi 0000:00:14.3: 0x8046FE32 | umac interruptlink2
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.889886] iwlwifi 0000:00:14.3: 0x01000000 | umac data1
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.890033] iwlwifi 0000:00:14.3: 0x8046FE32 | umac data2
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.890176] iwlwifi 0000:00:14.3: 0x00000000 | umac data3
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.890323] iwlwifi 0000:00:14.3: 0x00000049 | umac major
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.890468] iwlwifi 0000:00:14.3: 0x35C0A2C6 | umac minor
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.890613] iwlwifi 0000:00:14.3: 0x24D400DA | frame pointer
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.890759] iwlwifi 0000:00:14.3: 0xC0886264 | stack pointer
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.890905] iwlwifi 0000:00:14.3: 0x0043019C | last host cmd
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.891050] iwlwifi 0000:00:14.3: 0x00000000 | isr status reg
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.891323] iwlwifi 0000:00:14.3: IML/ROM dump:
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.891469] iwlwifi 0000:00:14.3: 0x00000003 | IML/ROM error/state
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.891731] iwlwifi 0000:00:14.3: 0x000053F8 | IML/ROM data1
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.891997] iwlwifi 0000:00:14.3: 0x00000080 | IML/ROM WFPM_AUTH_KEY_0
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.892216] iwlwifi 0000:00:14.3: Fseq Registers:
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.893775] iwlwifi 0000:00:14.3: 0x60000000 | FSEQ_ERROR_CODE
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.893927] iwlwifi 0000:00:14.3: 0x80260000 | FSEQ_TOP_INIT_VERSION
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.894077] iwlwifi 0000:00:14.3: 0x00020006 | FSEQ_CNVIO_INIT_VERSION
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.894227] iwlwifi 0000:00:14.3: 0x0000A384 | FSEQ_OTP_VERSION
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.894374] iwlwifi 0000:00:14.3: 0x3D544A68 | FSEQ_TOP_CONTENT_VERSION
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.894526] iwlwifi 0000:00:14.3: 0x4552414E | FSEQ_ALIVE_TOKEN
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.894675] iwlwifi 0000:00:14.3: 0x20000302 | FSEQ_CNVI_ID
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.894826] iwlwifi 0000:00:14.3: 0x01300202 | FSEQ_CNVR_ID
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.894976] iwlwifi 0000:00:14.3: 0x20000302 | CNVI_AUX_MISC_CHIP
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.895129] iwlwifi 0000:00:14.3: 0x01300202 | CNVR_AUX_MISC_CHIP
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.895282] iwlwifi 0000:00:14.3: 0x0000485B | 
->>>> CNVR_SCU_SD_REGS_SD_REG_DIG_DCDC_VTRIM
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.895463] iwlwifi 0000:00:14.3: 0xA5A5A5A2 | 
->>>> CNVR_SCU_SD_REGS_SD_REG_ACTIVE_VDIG_MIRROR
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.898477] iwlwifi 0000:00:14.3: WRT: Collecting data: ini trigger 4 fired 
->>>> (delay=0ms).
->>>> Apr  9 23:01:25 marvin-IdeaPad-3-15ITL6 kernel: [  629.899785] ieee80211 phy0: Hardware restart was requested
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.878162] iwlwifi 0000:00:14.3: HCMD_ACTIVE already clear for command 
->>>> STATISTICS_CMD
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.878273] iwlwifi 0000:00:14.3: Hardware error detected. Restarting.
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.881860] ------------[ cut here ]------------
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.882201] WARNING: CPU: 5 PID: 47 at 
->>>> drivers/net/wireless/intel/iwlwifi/mvm/../iwl-trans.h:1200 iwl_mvm_rx_tx_cmd+0xc65/0xd50 [iwlmvm]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.882380] Modules linked in: ftrace_direct ccm rfcomm snd_seq_dummy 
->>>> snd_hrtimer cmac algif_skcipher snd_ctl_led snd_soc_skl_hda_dsp
->>>> snd_soc_intel_hda_dsp_common snd_soc_hdac_hdmi snd_sof_probes snd_hda_codec_hdmi snd_hda_codec_realtek snd_hda_codec_generic 
->>>> ledtrig_audio bnep joydev uvcvideo videobuf2_vmalloc btusb uvc
->>>> videobuf2_memops btrtl videobuf2_v4l2 btbcm videodev btintel btmtk usbhid videobuf2_common bluetooth mc ecdh_generic ecc 
->>>> snd_soc_dmic snd_sof_pci_intel_tgl snd_sof_intel_hda_common soundwire_intel
->>>> soundwire_generic_allocation soundwire_cadence hid_multitouch snd_sof_intel_hda snd_sof_pci snd_sof_xtensa_dsp snd_sof 
->>>> hid_generic snd_sof_utils snd_soc_hdac_hda snd_hda_ext_core
->>>> snd_soc_acpi_intel_match snd_soc_acpi intel_tcc_cooling soundwire_bus x86_pkg_temp_thermal sunrpc mei_pxp intel_powerclamp 
->>>> mei_hdcp snd_soc_core snd_compress coretemp ac97_bus spi_pxa2xx_platform
->>>> crct10dif_pclmul snd_pcm_dmaengine dw_dmac crc32_pclmul dw_dmac_core ghash_clmulni_intel snd_hda_intel sha512_ssse3 8250_dw
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.885849]  snd_intel_dspcfg snd_intel_sdw_acpi aesni_intel crypto_simd 
->>>> wmi_bmof snd_hda_codec cryptd binfmt_misc snd_hda_core rapl snd_hwdep
->>>> pmt_telemetry intel_rapl_msr pmt_class intel_cstate snd_pcm i2c_hid_acpi i915 iwlmvm i2c_hid snd_seq_midi snd_seq_midi_event 
->>>> nls_iso8859_1 snd_rawmidi mac80211 drm_buddy libarc4 ttm snd_seq
->>>> drm_display_helper processor_thermal_device_pci_legacy cec snd_seq_device ideapad_laptop snd_timer btrfs sparse_keymap 
->>>> processor_thermal_device drm_kms_helper iwlwifi platform_profile
->>>> processor_thermal_rfim processor_thermal_mbox int3400_thermal mei_me blake2b_generic xhci_pci xor processor_thermal_rapl video 
->>>> wmi acpi_thermal_rel mei acpi_tad i2c_algo_bit acpi_pad
->>>> int3403_thermal intel_rapl_common snd xhci_pci_renesas i2c_i801 syscopyarea ahci cfg80211 intel_vsec int340x_thermal_zone 
->>>> intel_lpss_pci sysfillrect soundcore i2c_smbus intel_lpss sysimgblt
->>>> intel_soc_dts_iosf libahci igen6_edac idma64 raid6_pq msr parport_pc ppdev lp parport ramoops pstore_blk reed_solomon 
->>>> pstore_zone drm
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.886823]  efi_pstore ip_tables x_tables autofs4 nvme nvme_core input_leds 
->>>> vmd serio_raw mac_hid pinctrl_tigerlake [last unloaded:
->>>> ftrace_direct]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.886986] CPU: 5 PID: 47 Comm: ksoftirqd/5 Not tainted 
->>>> 6.3.0-rc6-mt-20230401-00001-gf86822a1170f #4
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887006] Hardware name: LENOVO 82H8/LNVNB161216, BIOS GGCN51WW 11/16/2022
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887022] RIP: 0010:iwl_mvm_rx_tx_cmd+0xc65/0xd50 [iwlmvm]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887096] Code: 85 c0 74 0d 0f b6 40 27 89 f1 21 c1 84 c0 0f 45 f1 40 0f b6 
->>>> f6 4c 89 ff e8 e8 3f ff ff 41 88 84 24 7e 14 00 00 e9 7c fe ff ff
->>>> <0f> 0b 48 8b 7f 40 48 c7 c1 10 ba fa c0 48 c7 c2 58 ce fb c0 31 f6
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887114] RSP: 0018:ffffb60200267b70 EFLAGS: 00010293
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887142] RAX: 0000000000001c80 RBX: ffff8b5af378c000 RCX: 0000000000000005
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887159] RDX: 0000000000000000 RSI: ffffb60200267bb0 RDI: ffff8b5a8ff20028
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887174] RBP: ffffb60200267c40 R08: 0000000000000000 R09: 0000000000000001
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887189] R10: ffffb60200267c58 R11: 0000000000000000 R12: 0000000000000000
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887205] R13: 0000000000000030 R14: ffffb60200267d18 R15: ffff8b5aa39d33e8
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887221] FS:  0000000000000000(0000) GS:ffff8b5c27a80000(0000) 
->>>> knlGS:0000000000000000
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887238] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887255] CR2: 00007f49f4dfe008 CR3: 000000017d850001 CR4: 0000000000f70ee0
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887271] PKRU: 55555554
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887286] Call Trace:
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887302]  <TASK>
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887359]  ? __pfx_iwl_mvm_rx_tx_cmd+0x10/0x10 [iwlmvm]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887446]  ? iwl_mvm_rx_tx_cmd+0x9/0xd50 [iwlmvm]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887540]  ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887563]  ? ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887582]  ? iwl_mvm_rx_common+0xde/0x390 [iwlmvm]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887650]  ? iwl_mvm_rx_mq+0x9/0xc0 [iwlmvm]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887739]  ? ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887757]  iwl_mvm_rx_mq+0x79/0xc0 [iwlmvm]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887821]  ? ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887839]  iwl_pcie_rx_handle+0x402/0xaa0 [iwlwifi]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887979]  ? ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.887997]  iwl_pcie_napi_poll_msix+0x39/0xf0 [iwlwifi]
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888086]  ? ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888105]  __napi_poll+0x2e/0x1f0
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888146]  ? ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888164]  net_rx_action+0x1a5/0x330
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888240]  ? ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888258]  __do_softirq+0xb4/0x3a4
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888311]  ? smpboot_thread_fn+0x2a/0x290
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888340]  ? ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888358]  run_ksoftirqd+0x44/0x80
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888382]  ? ftrace_regs_caller_end+0x66/0x66
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888400]  smpboot_thread_fn+0x1d9/0x290
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888435]  ? __pfx_smpboot_thread_fn+0x10/0x10
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888458]  kthread+0x10f/0x140
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888481]  ? __pfx_kthread+0x10/0x10
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888517]  ret_from_fork+0x29/0x50
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888609]  </TASK>
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888623] irq event stamp: 4206602
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888636] hardirqs last  enabled at (4206608): [<ffffffffb9a51c98>] 
->>>> __up_console_sem+0x68/0x80
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888657] hardirqs last disabled at (4206613): [<ffffffffb9a51c7d>] 
->>>> __up_console_sem+0x4d/0x80
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888676] softirqs last  enabled at (4196852): [<ffffffffb9965b60>] 
->>>> return_to_handler+0x0/0x40
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888695] softirqs last disabled at (4196891): [<ffffffffb9965b60>] 
->>>> return_to_handler+0x0/0x40
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888714] ---[ end trace 0000000000000000 ]---
->>>> Apr  9 23:01:26 marvin-IdeaPad-3-15ITL6 kernel: [  630.888732] iwlwifi 0000:00:14.3: iwl_trans_reclaim bad state = 0
->>>>
->>>> Hope this helps.
->>>>
->>>> The platform is Ubuntu 22.10 kinetic kudu on Lenovo IdeaPad 3 15ITL6,
->>>> the above mentioned 6.3-rc6 torvalds tree kernel and GGCN51WW original
->>>> Lenovo BIOS.
->>>>
->>>> Please find the config and the lshw output and this listing at the URL:
->>>>
->>>> → https://domac.alu.unizg.hr/~mtodorov/linux/bugreports/intel/iwlwifi/
->>>
->>> The fault was reproduced while running complete "make kselftest" and having
->>> at the same time Firefox with 100+ tabs and 2 Youtube tabs running.
->>>
->>> Apr 10 00:32:16 marvin-IdeaPad-3-15ITL6 kernel: mmiotrace: disabled.
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Error sending STATISTICS_CMD: time out after 2000ms.
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Current CMD queue read_ptr 54 write_ptr 55
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Start IWL Error Log Dump:
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Transport status: 0x0000004A, valid: 6
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Loaded firmware version: 73.35c0a2c6.0 QuZ-a0-jf-b0-73.ucode
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000084 | NMI_INTERRUPT_UNKNOWN
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x1080A200 | trm_hw_status0
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00010000 | trm_hw_status1
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x004C352E | branchlink2
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0000638C | interruptlink1
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0000638C | interruptlink2
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00011864 | data1
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x01000000 | data2
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | data3
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x5F008D9F | beacon time
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x9892726D | tsf low
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000083 | tsf hi
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00008D3B | time gp1
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x2124C243 | time gp2
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000001 | uCode revision type
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000049 | uCode version major
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x35C0A2C6 | uCode version minor
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000351 | hw version
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00489001 | board version
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0489001C | hcmd
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0xE682B000 | isr0
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x09040000 | isr1
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x08F0011A | isr2
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00C3028C | isr3
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | isr4
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0488001C | last cmd Id
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00011864 | wait_event
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x000000C4 | l2p_control
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00018034 | l2p_duration
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000007 | l2p_mhvalid
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000081 | l2p_addr_match
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000009 | lmpm_pmg_sel
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | timestamp
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000808 | flow_handler
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Start IWL Error Log Dump:
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Transport status: 0x0000004A, valid: 7
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x20000066 | NMI_INTERRUPT_HOST
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | umac branchlink1
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x80453B88 | umac branchlink2
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x8046FE32 | umac interruptlink1
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x8046FE32 | umac interruptlink2
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x01000000 | umac data1
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x8046FE32 | umac data2
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | umac data3
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000049 | umac major
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x35C0A2C6 | umac minor
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x2124C241 | frame pointer
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0xC0886264 | stack pointer
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0036019C | last host cmd
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | isr status reg
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: IML/ROM dump:
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000003 | IML/ROM error/state
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00005404 | IML/ROM data1
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000080 | IML/ROM WFPM_AUTH_KEY_0
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Fseq Registers:
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x60000000 | FSEQ_ERROR_CODE
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x80260000 | FSEQ_TOP_INIT_VERSION
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00020006 | FSEQ_CNVIO_INIT_VERSION
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0000A384 | FSEQ_OTP_VERSION
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x3D544A68 | FSEQ_TOP_CONTENT_VERSION
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x4552414E | FSEQ_ALIVE_TOKEN
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x20000302 | FSEQ_CNVI_ID
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x01300202 | FSEQ_CNVR_ID
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x20000302 | CNVI_AUX_MISC_CHIP
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x01300202 | CNVR_AUX_MISC_CHIP
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0000485B | CNVR_SCU_SD_REGS_SD_REG_DIG_DCDC_VTRIM
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0xA5A5A5A2 | CNVR_SCU_SD_REGS_SD_REG_ACTIVE_VDIG_MIRROR
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: WRT: Collecting data: ini trigger 4 fired (delay=0ms).
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: ieee80211 phy0: Hardware restart was requested
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Hardware error detected. Restarting.
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: BUG: Apr 10 00:32:16 marvin-IdeaPad-3-15ITL6 kernel: mmiotrace: disabled.
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Error sending STATISTICS_CMD: time out after 2000ms.
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Current CMD queue read_ptr 54 write_ptr 55
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Start IWL Error Log Dump:
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Transport status: 0x0000004A, valid: 6
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Loaded firmware version: 73.35c0a2c6.0 QuZ-a0-jf-b0-73.ucode
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000084 | NMI_INTERRUPT_UNKNOWN
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x1080A200 | trm_hw_status0
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00010000 | trm_hw_status1
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x004C352E | branchlink2
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0000638C | interruptlink1
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0000638C | interruptlink2
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00011864 | data1
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x01000000 | data2
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | data3
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x5F008D9F | beacon time
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x9892726D | tsf low
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000083 | tsf hi
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00008D3B | time gp1
->>> Apr 10 00:32:36 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x2124C243 | time gp2
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000001 | uCode revision type
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000049 | uCode version major
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x35C0A2C6 | uCode version minor
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000351 | hw version
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00489001 | board version
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0489001C | hcmd
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0xE682B000 | isr0
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x09040000 | isr1
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x08F0011A | isr2
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00C3028C | isr3
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | isr4
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0488001C | last cmd Id
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00011864 | wait_event
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x000000C4 | l2p_control
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00018034 | l2p_duration
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000007 | l2p_mhvalid
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000081 | l2p_addr_match
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000009 | lmpm_pmg_sel
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | timestamp
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000808 | flow_handler
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Start IWL Error Log Dump:
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Transport status: 0x0000004A, valid: 7
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x20000066 | NMI_INTERRUPT_HOST
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | umac branchlink1
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x80453B88 | umac branchlink2
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x8046FE32 | umac interruptlink1
->>> Apr 10 00:32:37 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x8046FE32 | umac interruptlink2
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x01000000 | umac data1
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x8046FE32 | umac data2
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | umac data3
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000049 | umac major
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x35C0A2C6 | umac minor
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x2124C241 | frame pointer
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0xC0886264 | stack pointer
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0036019C | last host cmd
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000000 | isr status reg
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: IML/ROM dump:
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000003 | IML/ROM error/state
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00005404 | IML/ROM data1
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00000080 | IML/ROM WFPM_AUTH_KEY_0
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Fseq Registers:
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x60000000 | FSEQ_ERROR_CODE
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x80260000 | FSEQ_TOP_INIT_VERSION
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x00020006 | FSEQ_CNVIO_INIT_VERSION
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0000A384 | FSEQ_OTP_VERSION
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x3D544A68 | FSEQ_TOP_CONTENT_VERSION
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x4552414E | FSEQ_ALIVE_TOKEN
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x20000302 | FSEQ_CNVI_ID
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x01300202 | FSEQ_CNVR_ID
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x20000302 | CNVI_AUX_MISC_CHIP
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x01300202 | CNVR_AUX_MISC_CHIP
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0x0000485B | CNVR_SCU_SD_REGS_SD_REG_DIG_DCDC_VTRIM
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: 0xA5A5A5A2 | CNVR_SCU_SD_REGS_SD_REG_ACTIVE_VDIG_MIRROR
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: WRT: Collecting data: ini trigger 4 fired (delay=0ms).
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: ieee80211 phy0: Hardware restart was requested
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: iwlwifi 0000:00:14.3: Hardware error detected. Restarting.
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: BUG: kernel NULL pointer dereference, address: 0000000000000150
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: #PF: supervisor read access in kernel mode
->>> -- Boot 60997fcc74c1448a967138e3f6d00cbf --
->>> Apr 10 00:34:49 marvin-IdeaPad-3-15ITL6 kernel: microcode: updated early: 0xa4 -> 0xa6, date = 2022-06-28
->>>
->>> Apr 10 00:32:38 marvin-IdeaPad-3-15ITL6 kernel: #PF: supervisor read access in kernel mode
->>> -- Boot 60997fcc74c1448a967138e3f6d00cbf --
->>> Apr 10 00:34:49 marvin-IdeaPad-3-15ITL6 kernel: microcode: updated early: 0xa4 -> 0xa6, date = 2022-06-28
->>>
->>> I will add "make kselftest" log to the directory with lshw and config.
->>>
->>> Best regards,
->>> Mirsad
->>>
->> Thanks for the report!
->> The kernel stack there is not a real kernel crash, but is a result of a WARN_ON() in the code.
->> However, there's a kernel NULL pointer deref later. Can I ask you to collect a log of the
->> crash itself? Maybe with netconsole if the machine completely crashes?
-> 
-> Hi, Mr. Greenman,
-> 
-> Did you see the provided journalctl at the link?
-> 
-> I have found this interesting information:
-> 
->                                                  other info that might help us debug this:
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  Possible unsafe locking scenario:
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:        CPU0
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:        ----
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:   lock(&local->queue_stop_reason_lock);
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:   <Interrupt>
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:     lock(&local->queue_stop_reason_lock);
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:
->                                                   *** DEADLOCK ***
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel: 8 locks held by kworker/5:0/25656:
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  #0: ffff9d618009d138 ((wq_completion)events_freezable){+.+.}-{0:0}, at: 
-> process_one_work+0x1ca/0x530
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  #1: ffffb1ef4637fe68 ((work_completion)(&local->restart_work)){+.+.}-{0:0}, at: 
-> process_one_work+0x1ce/0x530
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  #2: ffffffff9f166548 (rtnl_mutex){+.+.}-{3:3}, at: return_to_handler+0x0/0x40
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  #3: ffff9d6190778728 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: return_to_handler+0x0/0x40
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  #4: ffff9d619077b480 (&mvm->mutex){+.+.}-{3:3}, at: return_to_handler+0x0/0x40
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  #5: ffff9d61907bacd8 (&trans_pcie->mutex){+.+.}-{3:3}, at: return_to_handler+0x0/0x40
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  #6: ffffffff9ef9cda0 (rcu_read_lock){....}-{1:2}, at: 
-> iwl_mvm_queue_state_change+0x59/0x3a0 [iwlmvm]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  #7: ffffffff9ef9cda0 (rcu_read_lock){....}-{1:2}, at: 
-> iwl_mvm_mac_itxq_xmit+0x42/0x210 [iwlmvm]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:
->                                                  stack backtrace:
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel: CPU: 5 PID: 25656 Comm: kworker/5:0 Tainted: G        W 
-> 6.3.0-rc6-mt-20230401-00001-gf86822a1170f #4
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel: Hardware name: LENOVO 82H8/LNVNB161216, BIOS GGCN51WW 11/16/2022
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel: Workqueue: events_freezable ieee80211_restart_work [mac80211]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel: Call Trace:
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  <TASK>
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  dump_stack_lvl+0x5f/0xa0
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  dump_stack+0x14/0x20
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  print_usage_bug.part.46+0x208/0x2a0
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  mark_lock.part.47+0x605/0x630
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? sched_clock+0xd/0x20
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? trace_clock_local+0x14/0x30
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? __rb_reserve_next+0x5f/0x490
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? _raw_spin_lock+0x1b/0x50
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  __lock_acquire+0x464/0x1990
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? mark_held_locks+0x4e/0x80
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  lock_acquire+0xc7/0x2d0
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_return_to_handler+0x8b/0x100
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? preempt_count_add+0x4/0x70
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  _raw_spin_lock+0x36/0x50
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ieee80211_tx_dequeue+0xb4/0x1330 [mac80211]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? prepare_ftrace_return+0xc5/0x190
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_graph_func+0x16/0x20
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? 0xffffffffc02ab0b1
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? lock_acquire+0xc7/0x2d0
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? iwl_mvm_mac_itxq_xmit+0x42/0x210 [iwlmvm]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ieee80211_tx_dequeue+0x9/0x1330 [mac80211]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? __rcu_read_lock+0x4/0x40
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  iwl_mvm_mac_itxq_xmit+0xae/0x210 [iwlmvm]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  iwl_mvm_queue_state_change+0x311/0x3a0 [iwlmvm]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  iwl_mvm_wake_sw_queue+0x17/0x20 [iwlmvm]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  iwl_txq_gen2_unmap+0x1c9/0x1f0 [iwlwifi]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  iwl_txq_gen2_free+0x55/0x130 [iwlwifi]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  iwl_txq_gen2_tx_free+0x63/0x80 [iwlwifi]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  _iwl_trans_pcie_gen2_stop_device+0x3f3/0x5b0 [iwlwifi]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? _iwl_trans_pcie_gen2_stop_device+0x9/0x5b0 [iwlwifi]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? mutex_lock_nested+0x4/0x30
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  iwl_trans_pcie_gen2_stop_device+0x5f/0x90 [iwlwifi]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  iwl_mvm_stop_device+0x78/0xd0 [iwlmvm]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  __iwl_mvm_mac_start+0x114/0x210 [iwlmvm]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  iwl_mvm_mac_start+0x76/0x150 [iwlmvm]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  drv_start+0x79/0x180 [mac80211]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ieee80211_reconfig+0x1523/0x1ce0 [mac80211]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? synchronize_net+0x4/0x50
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ieee80211_restart_work+0x108/0x170 [mac80211]
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  process_one_work+0x250/0x530
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? ftrace_regs_caller_end+0x66/0x66
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  worker_thread+0x48/0x3a0
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? __pfx_worker_thread+0x10/0x10
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  kthread+0x10f/0x140
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ? __pfx_kthread+0x10/0x10
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  ret_from_fork+0x29/0x50
-> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  </TASK>
-> 
-> Other than this, I am not technically savvy enough to give the other possible logs
-> than /var/log/syslog and journalctl ...
-> 
-> Could you please give additional instructions.
-
-Hi, Mr. Gregory,
-
-I am sorry to have to explain that I have studied the netconsole and ATM I do not have
-the logistics required to implement such infrastructure. Notably, not the hw.
-
-It would be impractical and unsafe to send kernel printk logs from an Ideapad 3 to our
-syslog-enabled server over the WAN.
-
-I will let you know if I have any more findings. The NULL pointer dereference was not
-deterministic and it is not happening every time I run the kselftest.
-
-I guess we are out of luck, unless you have something that we could implement on our
-premises.
-
-Best regards,
-Mirsad
-
--- 
-Mirsad Goran Todorovac
-Sistem inženjer
-Grafički fakultet | Akademija likovnih umjetnosti
-Sveučilište u Zagrebu
-
-System engineer
-Faculty of Graphic Arts | Academy of Fine Arts
-University of Zagreb, Republic of Croatia
-
-"What’s this thing suddenly coming towards me very fast? Very very fast.
-... I wonder if it will be friends with me?"
-
+eWVzLCBoZXJlIGlzIHRoZSB2bmV0X2hkcjoNCg0KICAgIGZsYWdzOiAzDQogICAgZ3NvX3R5cGU6
+IDMNCiAgICBoZHJfbGVuOiAyMw0KICAgIGdzb19zaXplOiA1ODQ1Mg0KICAgIGNzdW1fc3RhcnQ6
+IDUNCiAgICBjc3VtX29mZnNldDogMTYNCg0KYW5kIHRoZSBwYWNrZXQ6DQoNCnwgdm5ldF9oZHIg
+fCBtYWMgaGVhZGVyIHwgbmV0d29yayBoZWFkZXIgfCBkYXRhIC4uLiB8DQoNCg0KaGVyZSBpcyB0
+aGUgd2hvbGUgcmVwcm9kdWNlciwgYW5kIGl0IGNhbiByZXByb2R1Y2UgdGhlIHdhcm5pbmcgZWFz
+aWx5IGluIHRoZSBsYXRlc3Qga2VybmVsOg0KDQovLyBhdXRvZ2VuZXJhdGVkIGJ5IHN5emthbGxl
+ciAoaHR0cHM6Ly9naXRodWIuY29tL2dvb2dsZS9zeXprYWxsZXIpDQoNCiNkZWZpbmUgX0dOVV9T
+T1VSQ0UNCg0KI2luY2x1ZGUgPGFycGEvaW5ldC5oPg0KI2luY2x1ZGUgPGVuZGlhbi5oPg0KI2lu
+Y2x1ZGUgPGVycm5vLmg+DQojaW5jbHVkZSA8ZmNudGwuaD4NCiNpbmNsdWRlIDxuZXQvaWYuaD4N
+CiNpbmNsdWRlIDxuZXQvaWZfYXJwLmg+DQojaW5jbHVkZSA8bmV0aW5ldC9pbi5oPg0KI2luY2x1
+ZGUgPHNjaGVkLmg+DQojaW5jbHVkZSA8c3RkYXJnLmg+DQojaW5jbHVkZSA8c3RkYm9vbC5oPg0K
+I2luY2x1ZGUgPHN0ZGludC5oPg0KI2luY2x1ZGUgPHN0ZGlvLmg+DQojaW5jbHVkZSA8c3RkbGli
+Lmg+DQojaW5jbHVkZSA8c3RyaW5nLmg+DQojaW5jbHVkZSA8c3lzL2lvY3RsLmg+DQojaW5jbHVk
+ZSA8c3lzL21vdW50Lmg+DQojaW5jbHVkZSA8c3lzL3ByY3RsLmg+DQojaW5jbHVkZSA8c3lzL3Jl
+c291cmNlLmg+DQojaW5jbHVkZSA8c3lzL3NvY2tldC5oPg0KI2luY2x1ZGUgPHN5cy9zdGF0Lmg+
+DQojaW5jbHVkZSA8c3lzL3N5c2NhbGwuaD4NCiNpbmNsdWRlIDxzeXMvdGltZS5oPg0KI2luY2x1
+ZGUgPHN5cy90eXBlcy5oPg0KI2luY2x1ZGUgPHN5cy91aW8uaD4NCiNpbmNsdWRlIDxzeXMvd2Fp
+dC5oPg0KI2luY2x1ZGUgPHVuaXN0ZC5oPg0KDQojaW5jbHVkZSA8bGludXgvY2FwYWJpbGl0eS5o
+Pg0KI2luY2x1ZGUgPGxpbnV4L2dlbmV0bGluay5oPg0KI2luY2x1ZGUgPGxpbnV4L2lmX2FkZHIu
+aD4NCiNpbmNsdWRlIDxsaW51eC9pZl9ldGhlci5oPg0KI2luY2x1ZGUgPGxpbnV4L2lmX2xpbmsu
+aD4NCiNpbmNsdWRlIDxsaW51eC9pZl90dW4uaD4NCiNpbmNsdWRlIDxsaW51eC9pbjYuaD4NCiNp
+bmNsdWRlIDxsaW51eC9pcC5oPg0KI2luY2x1ZGUgPGxpbnV4L25laWdoYm91ci5oPg0KI2luY2x1
+ZGUgPGxpbnV4L25ldC5oPg0KI2luY2x1ZGUgPGxpbnV4L25ldGxpbmsuaD4NCiNpbmNsdWRlIDxs
+aW51eC9ydG5ldGxpbmsuaD4NCiNpbmNsdWRlIDxsaW51eC90Y3AuaD4NCiNpbmNsdWRlIDxsaW51
+eC92ZXRoLmg+DQoNCiNpZm5kZWYgX19OUl9pb2N0bA0KI2RlZmluZSBfX05SX2lvY3RsIDI5DQoj
+ZW5kaWYNCiNpZm5kZWYgX19OUl9tbWFwDQojZGVmaW5lIF9fTlJfbW1hcCAyMjINCiNlbmRpZg0K
+I2lmbmRlZiBfX05SX3NlbmRtc2cNCiNkZWZpbmUgX19OUl9zZW5kbXNnIDIxMQ0KI2VuZGlmDQoj
+aWZuZGVmIF9fTlJfc2VuZHRvDQojZGVmaW5lIF9fTlJfc2VuZHRvIDIwNg0KI2VuZGlmDQojaWZu
+ZGVmIF9fTlJfc2V0c29ja29wdA0KI2RlZmluZSBfX05SX3NldHNvY2tvcHQgMjA4DQojZW5kaWYN
+CiNpZm5kZWYgX19OUl9zb2NrZXQNCiNkZWZpbmUgX19OUl9zb2NrZXQgMTk4DQojZW5kaWYNCg0K
+c3RhdGljIHVuc2lnbmVkIGxvbmcgbG9uZyBwcm9jaWQ7DQoNCnN0YXRpYyBib29sIHdyaXRlX2Zp
+bGUoY29uc3QgY2hhciogZmlsZSwgY29uc3QgY2hhciogd2hhdCwgLi4uKQ0Kew0KICBjaGFyIGJ1
+ZlsxMDI0XTsNCiAgdmFfbGlzdCBhcmdzOw0KICB2YV9zdGFydChhcmdzLCB3aGF0KTsNCiAgdnNu
+cHJpbnRmKGJ1Ziwgc2l6ZW9mKGJ1ZiksIHdoYXQsIGFyZ3MpOw0KICB2YV9lbmQoYXJncyk7DQog
+IGJ1ZltzaXplb2YoYnVmKSAtIDFdID0gMDsNCiAgaW50IGxlbiA9IHN0cmxlbihidWYpOw0KICBp
+bnQgZmQgPSBvcGVuKGZpbGUsIE9fV1JPTkxZIHwgT19DTE9FWEVDKTsNCiAgaWYgKGZkID09IC0x
+KQ0KICAgIHJldHVybiBmYWxzZTsNCiAgaWYgKHdyaXRlKGZkLCBidWYsIGxlbikgIT0gbGVuKSB7
+DQogICAgaW50IGVyciA9IGVycm5vOw0KICAgIGNsb3NlKGZkKTsNCiAgICBlcnJubyA9IGVycjsN
+CiAgICByZXR1cm4gZmFsc2U7DQogIH0NCiAgY2xvc2UoZmQpOw0KICByZXR1cm4gdHJ1ZTsNCn0N
+Cg0Kc3RydWN0IG5sbXNnIHsNCiAgY2hhciogcG9zOw0KICBpbnQgbmVzdGluZzsNCiAgc3RydWN0
+IG5sYXR0ciogbmVzdGVkWzhdOw0KICBjaGFyIGJ1Zls0MDk2XTsNCn07DQoNCnN0YXRpYyB2b2lk
+IG5ldGxpbmtfaW5pdChzdHJ1Y3Qgbmxtc2cqIG5sbXNnLCBpbnQgdHlwLCBpbnQgZmxhZ3MsDQog
+ICAgICAgICAgICAgICAgICAgICAgICAgY29uc3Qgdm9pZCogZGF0YSwgaW50IHNpemUpDQp7DQog
+IG1lbXNldChubG1zZywgMCwgc2l6ZW9mKCpubG1zZykpOw0KICBzdHJ1Y3Qgbmxtc2doZHIqIGhk
+ciA9IChzdHJ1Y3Qgbmxtc2doZHIqKW5sbXNnLT5idWY7DQogIGhkci0+bmxtc2dfdHlwZSA9IHR5
+cDsNCiAgaGRyLT5ubG1zZ19mbGFncyA9IE5MTV9GX1JFUVVFU1QgfCBOTE1fRl9BQ0sgfCBmbGFn
+czsNCiAgbWVtY3B5KGhkciArIDEsIGRhdGEsIHNpemUpOw0KICBubG1zZy0+cG9zID0gKGNoYXIq
+KShoZHIgKyAxKSArIE5MTVNHX0FMSUdOKHNpemUpOw0KfQ0KDQpzdGF0aWMgdm9pZCBuZXRsaW5r
+X2F0dHIoc3RydWN0IG5sbXNnKiBubG1zZywgaW50IHR5cCwgY29uc3Qgdm9pZCogZGF0YSwNCiAg
+ICAgICAgICAgICAgICAgICAgICAgICBpbnQgc2l6ZSkNCnsNCiAgc3RydWN0IG5sYXR0ciogYXR0
+ciA9IChzdHJ1Y3QgbmxhdHRyKilubG1zZy0+cG9zOw0KICBhdHRyLT5ubGFfbGVuID0gc2l6ZW9m
+KCphdHRyKSArIHNpemU7DQogIGF0dHItPm5sYV90eXBlID0gdHlwOw0KICBpZiAoc2l6ZSA+IDAp
+DQogICAgbWVtY3B5KGF0dHIgKyAxLCBkYXRhLCBzaXplKTsNCiAgbmxtc2ctPnBvcyArPSBOTE1T
+R19BTElHTihhdHRyLT5ubGFfbGVuKTsNCn0NCg0Kc3RhdGljIHZvaWQgbmV0bGlua19uZXN0KHN0
+cnVjdCBubG1zZyogbmxtc2csIGludCB0eXApDQp7DQogIHN0cnVjdCBubGF0dHIqIGF0dHIgPSAo
+c3RydWN0IG5sYXR0ciopbmxtc2ctPnBvczsNCiAgYXR0ci0+bmxhX3R5cGUgPSB0eXA7DQogIG5s
+bXNnLT5wb3MgKz0gc2l6ZW9mKCphdHRyKTsNCiAgbmxtc2ctPm5lc3RlZFtubG1zZy0+bmVzdGlu
+ZysrXSA9IGF0dHI7DQp9DQoNCnN0YXRpYyB2b2lkIG5ldGxpbmtfZG9uZShzdHJ1Y3Qgbmxtc2cq
+IG5sbXNnKQ0Kew0KICBzdHJ1Y3QgbmxhdHRyKiBhdHRyID0gbmxtc2ctPm5lc3RlZFstLW5sbXNn
+LT5uZXN0aW5nXTsNCiAgYXR0ci0+bmxhX2xlbiA9IG5sbXNnLT5wb3MgLSAoY2hhciopYXR0cjsN
+Cn0NCg0Kc3RhdGljIGludCBuZXRsaW5rX3NlbmRfZXh0KHN0cnVjdCBubG1zZyogbmxtc2csIGlu
+dCBzb2NrLCB1aW50MTZfdCByZXBseV90eXBlLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IGludCogcmVwbHlfbGVuLCBib29sIGRvZmFpbCkNCnsNCiAgaWYgKG5sbXNnLT5wb3MgPiBubG1z
+Zy0+YnVmICsgc2l6ZW9mKG5sbXNnLT5idWYpIHx8IG5sbXNnLT5uZXN0aW5nKQ0KICAgIGV4aXQo
+MSk7DQogIHN0cnVjdCBubG1zZ2hkciogaGRyID0gKHN0cnVjdCBubG1zZ2hkciopbmxtc2ctPmJ1
+ZjsNCiAgaGRyLT5ubG1zZ19sZW4gPSBubG1zZy0+cG9zIC0gbmxtc2ctPmJ1ZjsNCiAgc3RydWN0
+IHNvY2thZGRyX25sIGFkZHI7DQogIG1lbXNldCgmYWRkciwgMCwgc2l6ZW9mKGFkZHIpKTsNCiAg
+YWRkci5ubF9mYW1pbHkgPSBBRl9ORVRMSU5LOw0KICBzc2l6ZV90IG4gPSBzZW5kdG8oc29jaywg
+bmxtc2ctPmJ1ZiwgaGRyLT5ubG1zZ19sZW4sIDAsDQogICAgICAgICAgICAgICAgICAgICAoc3Ry
+dWN0IHNvY2thZGRyKikmYWRkciwgc2l6ZW9mKGFkZHIpKTsNCiAgaWYgKG4gIT0gKHNzaXplX3Qp
+aGRyLT5ubG1zZ19sZW4pIHsNCiAgICBpZiAoZG9mYWlsKQ0KICAgICAgZXhpdCgxKTsNCiAgICBy
+ZXR1cm4gLTE7DQogIH0NCiAgbiA9IHJlY3Yoc29jaywgbmxtc2ctPmJ1Ziwgc2l6ZW9mKG5sbXNn
+LT5idWYpLCAwKTsNCiAgaWYgKHJlcGx5X2xlbikNCiAgICAqcmVwbHlfbGVuID0gMDsNCiAgaWYg
+KG4gPCAwKSB7DQogICAgaWYgKGRvZmFpbCkNCiAgICAgIGV4aXQoMSk7DQogICAgcmV0dXJuIC0x
+Ow0KICB9DQogIGlmIChuIDwgKHNzaXplX3Qpc2l6ZW9mKHN0cnVjdCBubG1zZ2hkcikpIHsNCiAg
+ICBlcnJubyA9IEVJTlZBTDsNCiAgICBpZiAoZG9mYWlsKQ0KICAgICAgZXhpdCgxKTsNCiAgICBy
+ZXR1cm4gLTE7DQogIH0NCiAgaWYgKGhkci0+bmxtc2dfdHlwZSA9PSBOTE1TR19ET05FKQ0KICAg
+IHJldHVybiAwOw0KICBpZiAocmVwbHlfbGVuICYmIGhkci0+bmxtc2dfdHlwZSA9PSByZXBseV90
+eXBlKSB7DQogICAgKnJlcGx5X2xlbiA9IG47DQogICAgcmV0dXJuIDA7DQogIH0NCiAgaWYgKG4g
+PCAoc3NpemVfdCkoc2l6ZW9mKHN0cnVjdCBubG1zZ2hkcikgKyBzaXplb2Yoc3RydWN0IG5sbXNn
+ZXJyKSkpIHsNCiAgICBlcnJubyA9IEVJTlZBTDsNCiAgICBpZiAoZG9mYWlsKQ0KICAgICAgZXhp
+dCgxKTsNCiAgICByZXR1cm4gLTE7DQogIH0NCiAgaWYgKGhkci0+bmxtc2dfdHlwZSAhPSBOTE1T
+R19FUlJPUikgew0KICAgIGVycm5vID0gRUlOVkFMOw0KICAgIGlmIChkb2ZhaWwpDQogICAgICBl
+eGl0KDEpOw0KICAgIHJldHVybiAtMTsNCiAgfQ0KICBlcnJubyA9IC0oKHN0cnVjdCBubG1zZ2Vy
+ciopKGhkciArIDEpKS0+ZXJyb3I7DQogIHJldHVybiAtZXJybm87DQp9DQoNCnN0YXRpYyBpbnQg
+bmV0bGlua19zZW5kKHN0cnVjdCBubG1zZyogbmxtc2csIGludCBzb2NrKQ0Kew0KICByZXR1cm4g
+bmV0bGlua19zZW5kX2V4dChubG1zZywgc29jaywgMCwgTlVMTCwgdHJ1ZSk7DQp9DQoNCnN0YXRp
+YyBpbnQgbmV0bGlua19xdWVyeV9mYW1pbHlfaWQoc3RydWN0IG5sbXNnKiBubG1zZywgaW50IHNv
+Y2ssDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IGNoYXIqIGZhbWls
+eV9uYW1lLCBib29sIGRvZmFpbCkNCnsNCiAgc3RydWN0IGdlbmxtc2doZHIgZ2VubGhkcjsNCiAg
+bWVtc2V0KCZnZW5saGRyLCAwLCBzaXplb2YoZ2VubGhkcikpOw0KICBnZW5saGRyLmNtZCA9IENU
+UkxfQ01EX0dFVEZBTUlMWTsNCiAgbmV0bGlua19pbml0KG5sbXNnLCBHRU5MX0lEX0NUUkwsIDAs
+ICZnZW5saGRyLCBzaXplb2YoZ2VubGhkcikpOw0KICBuZXRsaW5rX2F0dHIobmxtc2csIENUUkxf
+QVRUUl9GQU1JTFlfTkFNRSwgZmFtaWx5X25hbWUsDQogICAgICAgICAgICAgICBzdHJubGVuKGZh
+bWlseV9uYW1lLCBHRU5MX05BTVNJWiAtIDEpICsgMSk7DQogIGludCBuID0gMDsNCiAgaW50IGVy
+ciA9IG5ldGxpbmtfc2VuZF9leHQobmxtc2csIHNvY2ssIEdFTkxfSURfQ1RSTCwgJm4sIGRvZmFp
+bCk7DQogIGlmIChlcnIgPCAwKSB7DQogICAgcmV0dXJuIC0xOw0KICB9DQogIHVpbnQxNl90IGlk
+ID0gMDsNCiAgc3RydWN0IG5sYXR0ciogYXR0ciA9IChzdHJ1Y3QgbmxhdHRyKikobmxtc2ctPmJ1
+ZiArIE5MTVNHX0hEUkxFTiArDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIE5MTVNHX0FMSUdOKHNpemVvZihnZW5saGRyKSkpOw0KICBmb3IgKDsgKGNoYXIqKWF0dHIg
+PCBubG1zZy0+YnVmICsgbjsNCiAgICAgICBhdHRyID0gKHN0cnVjdCBubGF0dHIqKSgoY2hhciop
+YXR0ciArIE5MTVNHX0FMSUdOKGF0dHItPm5sYV9sZW4pKSkgew0KICAgIGlmIChhdHRyLT5ubGFf
+dHlwZSA9PSBDVFJMX0FUVFJfRkFNSUxZX0lEKSB7DQogICAgICBpZCA9ICoodWludDE2X3QqKShh
+dHRyICsgMSk7DQogICAgICBicmVhazsNCiAgICB9DQogIH0NCiAgaWYgKCFpZCkgew0KICAgIGVy
+cm5vID0gRUlOVkFMOw0KICAgIHJldHVybiAtMTsNCiAgfQ0KICByZWN2KHNvY2ssIG5sbXNnLT5i
+dWYsIHNpemVvZihubG1zZy0+YnVmKSwgMCk7DQogIHJldHVybiBpZDsNCn0NCg0Kc3RhdGljIGlu
+dCBuZXRsaW5rX25leHRfbXNnKHN0cnVjdCBubG1zZyogbmxtc2csIHVuc2lnbmVkIGludCBvZmZz
+ZXQsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgaW50IHRvdGFsX2xlbikN
+CnsNCiAgc3RydWN0IG5sbXNnaGRyKiBoZHIgPSAoc3RydWN0IG5sbXNnaGRyKikobmxtc2ctPmJ1
+ZiArIG9mZnNldCk7DQogIGlmIChvZmZzZXQgPT0gdG90YWxfbGVuIHx8IG9mZnNldCArIGhkci0+
+bmxtc2dfbGVuID4gdG90YWxfbGVuKQ0KICAgIHJldHVybiAtMTsNCiAgcmV0dXJuIGhkci0+bmxt
+c2dfbGVuOw0KfQ0KDQpzdGF0aWMgdm9pZCBuZXRsaW5rX2FkZF9kZXZpY2VfaW1wbChzdHJ1Y3Qg
+bmxtc2cqIG5sbXNnLCBjb25zdCBjaGFyKiB0eXBlLA0KICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgY29uc3QgY2hhciogbmFtZSwgYm9vbCB1cCkNCnsNCiAgc3RydWN0IGlmaW5m
+b21zZyBoZHI7DQogIG1lbXNldCgmaGRyLCAwLCBzaXplb2YoaGRyKSk7DQogIGlmICh1cCkNCiAg
+ICBoZHIuaWZpX2ZsYWdzID0gaGRyLmlmaV9jaGFuZ2UgPSBJRkZfVVA7DQogIG5ldGxpbmtfaW5p
+dChubG1zZywgUlRNX05FV0xJTkssIE5MTV9GX0VYQ0wgfCBOTE1fRl9DUkVBVEUsICZoZHIsDQog
+ICAgICAgICAgICAgICBzaXplb2YoaGRyKSk7DQogIGlmIChuYW1lKQ0KICAgIG5ldGxpbmtfYXR0
+cihubG1zZywgSUZMQV9JRk5BTUUsIG5hbWUsIHN0cmxlbihuYW1lKSk7DQogIG5ldGxpbmtfbmVz
+dChubG1zZywgSUZMQV9MSU5LSU5GTyk7DQogIG5ldGxpbmtfYXR0cihubG1zZywgSUZMQV9JTkZP
+X0tJTkQsIHR5cGUsIHN0cmxlbih0eXBlKSk7DQp9DQoNCnN0YXRpYyB2b2lkIG5ldGxpbmtfYWRk
+X2RldmljZShzdHJ1Y3Qgbmxtc2cqIG5sbXNnLCBpbnQgc29jaywgY29uc3QgY2hhciogdHlwZSwN
+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zdCBjaGFyKiBuYW1lKQ0Kew0KICBu
+ZXRsaW5rX2FkZF9kZXZpY2VfaW1wbChubG1zZywgdHlwZSwgbmFtZSwgZmFsc2UpOw0KICBuZXRs
+aW5rX2RvbmUobmxtc2cpOw0KICBpbnQgZXJyID0gbmV0bGlua19zZW5kKG5sbXNnLCBzb2NrKTsN
+CiAgaWYgKGVyciA8IDApIHsNCiAgfQ0KfQ0KDQpzdGF0aWMgdm9pZCBuZXRsaW5rX2FkZF92ZXRo
+KHN0cnVjdCBubG1zZyogbmxtc2csIGludCBzb2NrLCBjb25zdCBjaGFyKiBuYW1lLA0KICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBjb25zdCBjaGFyKiBwZWVyKQ0Kew0KICBuZXRsaW5rX2Fk
+ZF9kZXZpY2VfaW1wbChubG1zZywgInZldGgiLCBuYW1lLCBmYWxzZSk7DQogIG5ldGxpbmtfbmVz
+dChubG1zZywgSUZMQV9JTkZPX0RBVEEpOw0KICBuZXRsaW5rX25lc3Qobmxtc2csIFZFVEhfSU5G
+T19QRUVSKTsNCiAgbmxtc2ctPnBvcyArPSBzaXplb2Yoc3RydWN0IGlmaW5mb21zZyk7DQogIG5l
+dGxpbmtfYXR0cihubG1zZywgSUZMQV9JRk5BTUUsIHBlZXIsIHN0cmxlbihwZWVyKSk7DQogIG5l
+dGxpbmtfZG9uZShubG1zZyk7DQogIG5ldGxpbmtfZG9uZShubG1zZyk7DQogIG5ldGxpbmtfZG9u
+ZShubG1zZyk7DQogIGludCBlcnIgPSBuZXRsaW5rX3NlbmQobmxtc2csIHNvY2spOw0KICBpZiAo
+ZXJyIDwgMCkgew0KICB9DQp9DQoNCnN0YXRpYyB2b2lkIG5ldGxpbmtfYWRkX3hmcm0oc3RydWN0
+IG5sbXNnKiBubG1zZywgaW50IHNvY2ssIGNvbnN0IGNoYXIqIG5hbWUpDQp7DQogIG5ldGxpbmtf
+YWRkX2RldmljZV9pbXBsKG5sbXNnLCAieGZybSIsIG5hbWUsIHRydWUpOw0KICBuZXRsaW5rX25l
+c3Qobmxtc2csIElGTEFfSU5GT19EQVRBKTsNCiAgaW50IGlmX2lkID0gMTsNCiAgbmV0bGlua19h
+dHRyKG5sbXNnLCAyLCAmaWZfaWQsIHNpemVvZihpZl9pZCkpOw0KICBuZXRsaW5rX2RvbmUobmxt
+c2cpOw0KICBuZXRsaW5rX2RvbmUobmxtc2cpOw0KICBpbnQgZXJyID0gbmV0bGlua19zZW5kKG5s
+bXNnLCBzb2NrKTsNCiAgaWYgKGVyciA8IDApIHsNCiAgfQ0KfQ0KDQpzdGF0aWMgdm9pZCBuZXRs
+aW5rX2FkZF9oc3Ioc3RydWN0IG5sbXNnKiBubG1zZywgaW50IHNvY2ssIGNvbnN0IGNoYXIqIG5h
+bWUsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgY29uc3QgY2hhciogc2xhdmUxLCBjb25z
+dCBjaGFyKiBzbGF2ZTIpDQp7DQogIG5ldGxpbmtfYWRkX2RldmljZV9pbXBsKG5sbXNnLCAiaHNy
+IiwgbmFtZSwgZmFsc2UpOw0KICBuZXRsaW5rX25lc3Qobmxtc2csIElGTEFfSU5GT19EQVRBKTsN
+CiAgaW50IGlmaW5kZXgxID0gaWZfbmFtZXRvaW5kZXgoc2xhdmUxKTsNCiAgbmV0bGlua19hdHRy
+KG5sbXNnLCBJRkxBX0hTUl9TTEFWRTEsICZpZmluZGV4MSwgc2l6ZW9mKGlmaW5kZXgxKSk7DQog
+IGludCBpZmluZGV4MiA9IGlmX25hbWV0b2luZGV4KHNsYXZlMik7DQogIG5ldGxpbmtfYXR0cihu
+bG1zZywgSUZMQV9IU1JfU0xBVkUyLCAmaWZpbmRleDIsIHNpemVvZihpZmluZGV4MikpOw0KICBu
+ZXRsaW5rX2RvbmUobmxtc2cpOw0KICBuZXRsaW5rX2RvbmUobmxtc2cpOw0KICBpbnQgZXJyID0g
+bmV0bGlua19zZW5kKG5sbXNnLCBzb2NrKTsNCiAgaWYgKGVyciA8IDApIHsNCiAgfQ0KfQ0KDQpz
+dGF0aWMgdm9pZCBuZXRsaW5rX2FkZF9saW5rZWQoc3RydWN0IG5sbXNnKiBubG1zZywgaW50IHNv
+Y2ssIGNvbnN0IGNoYXIqIHR5cGUsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29u
+c3QgY2hhciogbmFtZSwgY29uc3QgY2hhciogbGluaykNCnsNCiAgbmV0bGlua19hZGRfZGV2aWNl
+X2ltcGwobmxtc2csIHR5cGUsIG5hbWUsIGZhbHNlKTsNCiAgbmV0bGlua19kb25lKG5sbXNnKTsN
+CiAgaW50IGlmaW5kZXggPSBpZl9uYW1ldG9pbmRleChsaW5rKTsNCiAgbmV0bGlua19hdHRyKG5s
+bXNnLCBJRkxBX0xJTkssICZpZmluZGV4LCBzaXplb2YoaWZpbmRleCkpOw0KICBpbnQgZXJyID0g
+bmV0bGlua19zZW5kKG5sbXNnLCBzb2NrKTsNCiAgaWYgKGVyciA8IDApIHsNCiAgfQ0KfQ0KDQpz
+dGF0aWMgdm9pZCBuZXRsaW5rX2FkZF92bGFuKHN0cnVjdCBubG1zZyogbmxtc2csIGludCBzb2Nr
+LCBjb25zdCBjaGFyKiBuYW1lLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zdCBj
+aGFyKiBsaW5rLCB1aW50MTZfdCBpZCwgdWludDE2X3QgcHJvdG8pDQp7DQogIG5ldGxpbmtfYWRk
+X2RldmljZV9pbXBsKG5sbXNnLCAidmxhbiIsIG5hbWUsIGZhbHNlKTsNCiAgbmV0bGlua19uZXN0
+KG5sbXNnLCBJRkxBX0lORk9fREFUQSk7DQogIG5ldGxpbmtfYXR0cihubG1zZywgSUZMQV9WTEFO
+X0lELCAmaWQsIHNpemVvZihpZCkpOw0KICBuZXRsaW5rX2F0dHIobmxtc2csIElGTEFfVkxBTl9Q
+Uk9UT0NPTCwgJnByb3RvLCBzaXplb2YocHJvdG8pKTsNCiAgbmV0bGlua19kb25lKG5sbXNnKTsN
+CiAgbmV0bGlua19kb25lKG5sbXNnKTsNCiAgaW50IGlmaW5kZXggPSBpZl9uYW1ldG9pbmRleChs
+aW5rKTsNCiAgbmV0bGlua19hdHRyKG5sbXNnLCBJRkxBX0xJTkssICZpZmluZGV4LCBzaXplb2Yo
+aWZpbmRleCkpOw0KICBpbnQgZXJyID0gbmV0bGlua19zZW5kKG5sbXNnLCBzb2NrKTsNCiAgaWYg
+KGVyciA8IDApIHsNCiAgfQ0KfQ0KDQpzdGF0aWMgdm9pZCBuZXRsaW5rX2FkZF9tYWN2bGFuKHN0
+cnVjdCBubG1zZyogbmxtc2csIGludCBzb2NrLCBjb25zdCBjaGFyKiBuYW1lLA0KICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBjb25zdCBjaGFyKiBsaW5rKQ0Kew0KICBuZXRsaW5rX2Fk
+ZF9kZXZpY2VfaW1wbChubG1zZywgIm1hY3ZsYW4iLCBuYW1lLCBmYWxzZSk7DQogIG5ldGxpbmtf
+bmVzdChubG1zZywgSUZMQV9JTkZPX0RBVEEpOw0KICB1aW50MzJfdCBtb2RlID0gTUFDVkxBTl9N
+T0RFX0JSSURHRTsNCiAgbmV0bGlua19hdHRyKG5sbXNnLCBJRkxBX01BQ1ZMQU5fTU9ERSwgJm1v
+ZGUsIHNpemVvZihtb2RlKSk7DQogIG5ldGxpbmtfZG9uZShubG1zZyk7DQogIG5ldGxpbmtfZG9u
+ZShubG1zZyk7DQogIGludCBpZmluZGV4ID0gaWZfbmFtZXRvaW5kZXgobGluayk7DQogIG5ldGxp
+bmtfYXR0cihubG1zZywgSUZMQV9MSU5LLCAmaWZpbmRleCwgc2l6ZW9mKGlmaW5kZXgpKTsNCiAg
+aW50IGVyciA9IG5ldGxpbmtfc2VuZChubG1zZywgc29jayk7DQogIGlmIChlcnIgPCAwKSB7DQog
+IH0NCn0NCg0Kc3RhdGljIHZvaWQgbmV0bGlua19hZGRfZ2VuZXZlKHN0cnVjdCBubG1zZyogbmxt
+c2csIGludCBzb2NrLCBjb25zdCBjaGFyKiBuYW1lLA0KICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIHVpbnQzMl90IHZuaSwgc3RydWN0IGluX2FkZHIqIGFkZHI0LA0KICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIHN0cnVjdCBpbjZfYWRkciogYWRkcjYpDQp7DQogIG5ldGxpbmtf
+YWRkX2RldmljZV9pbXBsKG5sbXNnLCAiZ2VuZXZlIiwgbmFtZSwgZmFsc2UpOw0KICBuZXRsaW5r
+X25lc3Qobmxtc2csIElGTEFfSU5GT19EQVRBKTsNCiAgbmV0bGlua19hdHRyKG5sbXNnLCBJRkxB
+X0dFTkVWRV9JRCwgJnZuaSwgc2l6ZW9mKHZuaSkpOw0KICBpZiAoYWRkcjQpDQogICAgbmV0bGlu
+a19hdHRyKG5sbXNnLCBJRkxBX0dFTkVWRV9SRU1PVEUsIGFkZHI0LCBzaXplb2YoKmFkZHI0KSk7
+DQogIGlmIChhZGRyNikNCiAgICBuZXRsaW5rX2F0dHIobmxtc2csIElGTEFfR0VORVZFX1JFTU9U
+RTYsIGFkZHI2LCBzaXplb2YoKmFkZHI2KSk7DQogIG5ldGxpbmtfZG9uZShubG1zZyk7DQogIG5l
+dGxpbmtfZG9uZShubG1zZyk7DQogIGludCBlcnIgPSBuZXRsaW5rX3NlbmQobmxtc2csIHNvY2sp
+Ow0KICBpZiAoZXJyIDwgMCkgew0KICB9DQp9DQoNCiNkZWZpbmUgSUZMQV9JUFZMQU5fRkxBR1Mg
+Mg0KI2RlZmluZSBJUFZMQU5fTU9ERV9MM1MgMg0KI3VuZGVmIElQVkxBTl9GX1ZFUEENCiNkZWZp
+bmUgSVBWTEFOX0ZfVkVQQSAyDQoNCnN0YXRpYyB2b2lkIG5ldGxpbmtfYWRkX2lwdmxhbihzdHJ1
+Y3Qgbmxtc2cqIG5sbXNnLCBpbnQgc29jaywgY29uc3QgY2hhciogbmFtZSwNCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBjb25zdCBjaGFyKiBsaW5rLCB1aW50MTZfdCBtb2RlLCB1aW50
+MTZfdCBmbGFncykNCnsNCiAgbmV0bGlua19hZGRfZGV2aWNlX2ltcGwobmxtc2csICJpcHZsYW4i
+LCBuYW1lLCBmYWxzZSk7DQogIG5ldGxpbmtfbmVzdChubG1zZywgSUZMQV9JTkZPX0RBVEEpOw0K
+ICBuZXRsaW5rX2F0dHIobmxtc2csIElGTEFfSVBWTEFOX01PREUsICZtb2RlLCBzaXplb2YobW9k
+ZSkpOw0KICBuZXRsaW5rX2F0dHIobmxtc2csIElGTEFfSVBWTEFOX0ZMQUdTLCAmZmxhZ3MsIHNp
+emVvZihmbGFncykpOw0KICBuZXRsaW5rX2RvbmUobmxtc2cpOw0KICBuZXRsaW5rX2RvbmUobmxt
+c2cpOw0KICBpbnQgaWZpbmRleCA9IGlmX25hbWV0b2luZGV4KGxpbmspOw0KICBuZXRsaW5rX2F0
+dHIobmxtc2csIElGTEFfTElOSywgJmlmaW5kZXgsIHNpemVvZihpZmluZGV4KSk7DQogIGludCBl
+cnIgPSBuZXRsaW5rX3NlbmQobmxtc2csIHNvY2spOw0KICBpZiAoZXJyIDwgMCkgew0KICB9DQp9
+DQoNCnN0YXRpYyB2b2lkIG5ldGxpbmtfZGV2aWNlX2NoYW5nZShzdHJ1Y3Qgbmxtc2cqIG5sbXNn
+LCBpbnQgc29jaywNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zdCBjaGFy
+KiBuYW1lLCBib29sIHVwLCBjb25zdCBjaGFyKiBtYXN0ZXIsDQogICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgY29uc3Qgdm9pZCogbWFjLCBpbnQgbWFjc2l6ZSwNCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBjb25zdCBjaGFyKiBuZXdfbmFtZSkNCnsNCiAgc3RydWN0
+IGlmaW5mb21zZyBoZHI7DQogIG1lbXNldCgmaGRyLCAwLCBzaXplb2YoaGRyKSk7DQogIGlmICh1
+cCkNCiAgICBoZHIuaWZpX2ZsYWdzID0gaGRyLmlmaV9jaGFuZ2UgPSBJRkZfVVA7DQogIGhkci5p
+ZmlfaW5kZXggPSBpZl9uYW1ldG9pbmRleChuYW1lKTsNCiAgbmV0bGlua19pbml0KG5sbXNnLCBS
+VE1fTkVXTElOSywgMCwgJmhkciwgc2l6ZW9mKGhkcikpOw0KICBpZiAobmV3X25hbWUpDQogICAg
+bmV0bGlua19hdHRyKG5sbXNnLCBJRkxBX0lGTkFNRSwgbmV3X25hbWUsIHN0cmxlbihuZXdfbmFt
+ZSkpOw0KICBpZiAobWFzdGVyKSB7DQogICAgaW50IGlmaW5kZXggPSBpZl9uYW1ldG9pbmRleCht
+YXN0ZXIpOw0KICAgIG5ldGxpbmtfYXR0cihubG1zZywgSUZMQV9NQVNURVIsICZpZmluZGV4LCBz
+aXplb2YoaWZpbmRleCkpOw0KICB9DQogIGlmIChtYWNzaXplKQ0KICAgIG5ldGxpbmtfYXR0cihu
+bG1zZywgSUZMQV9BRERSRVNTLCBtYWMsIG1hY3NpemUpOw0KICBpbnQgZXJyID0gbmV0bGlua19z
+ZW5kKG5sbXNnLCBzb2NrKTsNCiAgaWYgKGVyciA8IDApIHsNCiAgfQ0KfQ0KDQpzdGF0aWMgaW50
+IG5ldGxpbmtfYWRkX2FkZHIoc3RydWN0IG5sbXNnKiBubG1zZywgaW50IHNvY2ssIGNvbnN0IGNo
+YXIqIGRldiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zdCB2b2lkKiBhZGRyLCBp
+bnQgYWRkcnNpemUpDQp7DQogIHN0cnVjdCBpZmFkZHJtc2cgaGRyOw0KICBtZW1zZXQoJmhkciwg
+MCwgc2l6ZW9mKGhkcikpOw0KICBoZHIuaWZhX2ZhbWlseSA9IGFkZHJzaXplID09IDQgPyBBRl9J
+TkVUIDogQUZfSU5FVDY7DQogIGhkci5pZmFfcHJlZml4bGVuID0gYWRkcnNpemUgPT0gNCA/IDI0
+IDogMTIwOw0KICBoZHIuaWZhX3Njb3BlID0gUlRfU0NPUEVfVU5JVkVSU0U7DQogIGhkci5pZmFf
+aW5kZXggPSBpZl9uYW1ldG9pbmRleChkZXYpOw0KICBuZXRsaW5rX2luaXQobmxtc2csIFJUTV9O
+RVdBRERSLCBOTE1fRl9DUkVBVEUgfCBOTE1fRl9SRVBMQUNFLCAmaGRyLA0KICAgICAgICAgICAg
+ICAgc2l6ZW9mKGhkcikpOw0KICBuZXRsaW5rX2F0dHIobmxtc2csIElGQV9MT0NBTCwgYWRkciwg
+YWRkcnNpemUpOw0KICBuZXRsaW5rX2F0dHIobmxtc2csIElGQV9BRERSRVNTLCBhZGRyLCBhZGRy
+c2l6ZSk7DQogIHJldHVybiBuZXRsaW5rX3NlbmQobmxtc2csIHNvY2spOw0KfQ0KDQpzdGF0aWMg
+dm9pZCBuZXRsaW5rX2FkZF9hZGRyNChzdHJ1Y3Qgbmxtc2cqIG5sbXNnLCBpbnQgc29jaywgY29u
+c3QgY2hhciogZGV2LA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29uc3QgY2hhciog
+YWRkcikNCnsNCiAgc3RydWN0IGluX2FkZHIgaW5fYWRkcjsNCiAgaW5ldF9wdG9uKEFGX0lORVQs
+IGFkZHIsICZpbl9hZGRyKTsNCiAgaW50IGVyciA9IG5ldGxpbmtfYWRkX2FkZHIobmxtc2csIHNv
+Y2ssIGRldiwgJmluX2FkZHIsIHNpemVvZihpbl9hZGRyKSk7DQogIGlmIChlcnIgPCAwKSB7DQog
+IH0NCn0NCg0Kc3RhdGljIHZvaWQgbmV0bGlua19hZGRfYWRkcjYoc3RydWN0IG5sbXNnKiBubG1z
+ZywgaW50IHNvY2ssIGNvbnN0IGNoYXIqIGRldiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIGNvbnN0IGNoYXIqIGFkZHIpDQp7DQogIHN0cnVjdCBpbjZfYWRkciBpbjZfYWRkcjsNCiAg
+aW5ldF9wdG9uKEFGX0lORVQ2LCBhZGRyLCAmaW42X2FkZHIpOw0KICBpbnQgZXJyID0gbmV0bGlu
+a19hZGRfYWRkcihubG1zZywgc29jaywgZGV2LCAmaW42X2FkZHIsIHNpemVvZihpbjZfYWRkcikp
+Ow0KICBpZiAoZXJyIDwgMCkgew0KICB9DQp9DQoNCnN0YXRpYyBzdHJ1Y3Qgbmxtc2cgbmxtc2c7
+DQoNCiNkZWZpbmUgREVWTElOS19GQU1JTFlfTkFNRSAiZGV2bGluayINCg0KI2RlZmluZSBERVZM
+SU5LX0NNRF9QT1JUX0dFVCA1DQojZGVmaW5lIERFVkxJTktfQVRUUl9CVVNfTkFNRSAxDQojZGVm
+aW5lIERFVkxJTktfQVRUUl9ERVZfTkFNRSAyDQojZGVmaW5lIERFVkxJTktfQVRUUl9ORVRERVZf
+TkFNRSA3DQoNCnN0YXRpYyBzdHJ1Y3Qgbmxtc2cgbmxtc2cyOw0KDQpzdGF0aWMgdm9pZCBpbml0
+aWFsaXplX2RldmxpbmtfcG9ydHMoY29uc3QgY2hhciogYnVzX25hbWUsIGNvbnN0IGNoYXIqIGRl
+dl9uYW1lLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IGNoYXIq
+IG5ldGRldl9wcmVmaXgpDQp7DQogIHN0cnVjdCBnZW5sbXNnaGRyIGdlbmxoZHI7DQogIGludCBs
+ZW4sIHRvdGFsX2xlbiwgaWQsIGVyciwgb2Zmc2V0Ow0KICB1aW50MTZfdCBuZXRkZXZfaW5kZXg7
+DQogIGludCBzb2NrID0gc29ja2V0KEFGX05FVExJTkssIFNPQ0tfUkFXLCBORVRMSU5LX0dFTkVS
+SUMpOw0KICBpZiAoc29jayA9PSAtMSkNCiAgICBleGl0KDEpOw0KICBpbnQgcnRzb2NrID0gc29j
+a2V0KEFGX05FVExJTkssIFNPQ0tfUkFXLCBORVRMSU5LX1JPVVRFKTsNCiAgaWYgKHJ0c29jayA9
+PSAtMSkNCiAgICBleGl0KDEpOw0KICBpZCA9IG5ldGxpbmtfcXVlcnlfZmFtaWx5X2lkKCZubG1z
+Zywgc29jaywgREVWTElOS19GQU1JTFlfTkFNRSwgdHJ1ZSk7DQogIGlmIChpZCA9PSAtMSkNCiAg
+ICBnb3RvIGVycm9yOw0KICBtZW1zZXQoJmdlbmxoZHIsIDAsIHNpemVvZihnZW5saGRyKSk7DQog
+IGdlbmxoZHIuY21kID0gREVWTElOS19DTURfUE9SVF9HRVQ7DQogIG5ldGxpbmtfaW5pdCgmbmxt
+c2csIGlkLCBOTE1fRl9EVU1QLCAmZ2VubGhkciwgc2l6ZW9mKGdlbmxoZHIpKTsNCiAgbmV0bGlu
+a19hdHRyKCZubG1zZywgREVWTElOS19BVFRSX0JVU19OQU1FLCBidXNfbmFtZSwgc3RybGVuKGJ1
+c19uYW1lKSArIDEpOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBERVZMSU5LX0FUVFJfREVWX05B
+TUUsIGRldl9uYW1lLCBzdHJsZW4oZGV2X25hbWUpICsgMSk7DQogIGVyciA9IG5ldGxpbmtfc2Vu
+ZF9leHQoJm5sbXNnLCBzb2NrLCBpZCwgJnRvdGFsX2xlbiwgdHJ1ZSk7DQogIGlmIChlcnIgPCAw
+KSB7DQogICAgZ290byBlcnJvcjsNCiAgfQ0KICBvZmZzZXQgPSAwOw0KICBuZXRkZXZfaW5kZXgg
+PSAwOw0KICB3aGlsZSAoKGxlbiA9IG5ldGxpbmtfbmV4dF9tc2coJm5sbXNnLCBvZmZzZXQsIHRv
+dGFsX2xlbikpICE9IC0xKSB7DQogICAgc3RydWN0IG5sYXR0ciogYXR0ciA9IChzdHJ1Y3Qgbmxh
+dHRyKikobmxtc2cuYnVmICsgb2Zmc2V0ICsgTkxNU0dfSERSTEVOICsNCiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBOTE1TR19BTElHTihzaXplb2YoZ2VubGhkcikp
+KTsNCiAgICBmb3IgKDsgKGNoYXIqKWF0dHIgPCBubG1zZy5idWYgKyBvZmZzZXQgKyBsZW47DQog
+ICAgICAgICBhdHRyID0gKHN0cnVjdCBubGF0dHIqKSgoY2hhciopYXR0ciArIE5MTVNHX0FMSUdO
+KGF0dHItPm5sYV9sZW4pKSkgew0KICAgICAgaWYgKGF0dHItPm5sYV90eXBlID09IERFVkxJTktf
+QVRUUl9ORVRERVZfTkFNRSkgew0KICAgICAgICBjaGFyKiBwb3J0X25hbWU7DQogICAgICAgIGNo
+YXIgbmV0ZGV2X25hbWVbSUZOQU1TSVpdOw0KICAgICAgICBwb3J0X25hbWUgPSAoY2hhciopKGF0
+dHIgKyAxKTsNCiAgICAgICAgc25wcmludGYobmV0ZGV2X25hbWUsIHNpemVvZihuZXRkZXZfbmFt
+ZSksICIlcyVkIiwgbmV0ZGV2X3ByZWZpeCwNCiAgICAgICAgICAgICAgICAgbmV0ZGV2X2luZGV4
+KTsNCiAgICAgICAgbmV0bGlua19kZXZpY2VfY2hhbmdlKCZubG1zZzIsIHJ0c29jaywgcG9ydF9u
+YW1lLCB0cnVlLCAwLCAwLCAwLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbmV0ZGV2
+X25hbWUpOw0KICAgICAgICBicmVhazsNCiAgICAgIH0NCiAgICB9DQogICAgb2Zmc2V0ICs9IGxl
+bjsNCiAgICBuZXRkZXZfaW5kZXgrKzsNCiAgfQ0KZXJyb3I6DQogIGNsb3NlKHJ0c29jayk7DQog
+IGNsb3NlKHNvY2spOw0KfQ0KDQojZGVmaW5lIERFVl9JUFY0ICIxNzIuMjAuMjAuJWQiDQojZGVm
+aW5lIERFVl9JUFY2ICJmZTgwOjolMDJ4Ig0KI2RlZmluZSBERVZfTUFDIDB4MDBhYWFhYWFhYWFh
+DQoNCnN0YXRpYyB2b2lkIG5ldGRldnNpbV9hZGQodW5zaWduZWQgaW50IGFkZHIsIHVuc2lnbmVk
+IGludCBwb3J0X2NvdW50KQ0Kew0KICB3cml0ZV9maWxlKCIvc3lzL2J1cy9uZXRkZXZzaW0vZGVs
+X2RldmljZSIsICIldSIsIGFkZHIpOw0KICBpZiAod3JpdGVfZmlsZSgiL3N5cy9idXMvbmV0ZGV2
+c2ltL25ld19kZXZpY2UiLCAiJXUgJXUiLCBhZGRyLCBwb3J0X2NvdW50KSkgew0KICAgIGNoYXIg
+YnVmWzMyXTsNCiAgICBzbnByaW50ZihidWYsIHNpemVvZihidWYpLCAibmV0ZGV2c2ltJWQiLCBh
+ZGRyKTsNCiAgICBpbml0aWFsaXplX2RldmxpbmtfcG9ydHMoIm5ldGRldnNpbSIsIGJ1ZiwgIm5l
+dGRldnNpbSIpOw0KICB9DQp9DQoNCiNkZWZpbmUgV0dfR0VOTF9OQU1FICJ3aXJlZ3VhcmQiDQpl
+bnVtIHdnX2NtZCB7DQogIFdHX0NNRF9HRVRfREVWSUNFLA0KICBXR19DTURfU0VUX0RFVklDRSwN
+Cn07DQplbnVtIHdnZGV2aWNlX2F0dHJpYnV0ZSB7DQogIFdHREVWSUNFX0FfVU5TUEVDLA0KICBX
+R0RFVklDRV9BX0lGSU5ERVgsDQogIFdHREVWSUNFX0FfSUZOQU1FLA0KICBXR0RFVklDRV9BX1BS
+SVZBVEVfS0VZLA0KICBXR0RFVklDRV9BX1BVQkxJQ19LRVksDQogIFdHREVWSUNFX0FfRkxBR1Ms
+DQogIFdHREVWSUNFX0FfTElTVEVOX1BPUlQsDQogIFdHREVWSUNFX0FfRldNQVJLLA0KICBXR0RF
+VklDRV9BX1BFRVJTLA0KfTsNCmVudW0gd2dwZWVyX2F0dHJpYnV0ZSB7DQogIFdHUEVFUl9BX1VO
+U1BFQywNCiAgV0dQRUVSX0FfUFVCTElDX0tFWSwNCiAgV0dQRUVSX0FfUFJFU0hBUkVEX0tFWSwN
+CiAgV0dQRUVSX0FfRkxBR1MsDQogIFdHUEVFUl9BX0VORFBPSU5ULA0KICBXR1BFRVJfQV9QRVJT
+SVNURU5UX0tFRVBBTElWRV9JTlRFUlZBTCwNCiAgV0dQRUVSX0FfTEFTVF9IQU5EU0hBS0VfVElN
+RSwNCiAgV0dQRUVSX0FfUlhfQllURVMsDQogIFdHUEVFUl9BX1RYX0JZVEVTLA0KICBXR1BFRVJf
+QV9BTExPV0VESVBTLA0KICBXR1BFRVJfQV9QUk9UT0NPTF9WRVJTSU9OLA0KfTsNCmVudW0gd2dh
+bGxvd2VkaXBfYXR0cmlidXRlIHsNCiAgV0dBTExPV0VESVBfQV9VTlNQRUMsDQogIFdHQUxMT1dF
+RElQX0FfRkFNSUxZLA0KICBXR0FMTE9XRURJUF9BX0lQQUREUiwNCiAgV0dBTExPV0VESVBfQV9D
+SURSX01BU0ssDQp9Ow0KDQpzdGF0aWMgdm9pZCBuZXRsaW5rX3dpcmVndWFyZF9zZXR1cCh2b2lk
+KQ0Kew0KICBjb25zdCBjaGFyIGlmbmFtZV9hW10gPSAid2cwIjsNCiAgY29uc3QgY2hhciBpZm5h
+bWVfYltdID0gIndnMSI7DQogIGNvbnN0IGNoYXIgaWZuYW1lX2NbXSA9ICJ3ZzIiOw0KICBjb25z
+dCBjaGFyIHByaXZhdGVfYVtdID0NCiAgICAgICJceGEwXHg1Y1x4YThceDRmXHg2Y1x4OWNceDhl
+XHgzOFx4NTNceGUyXHhmZFx4N2FceDcwXHhhZVx4MGZceGIyXHgwZlx4YTEiDQogICAgICAiXHg1
+Mlx4NjBceDBjXHhiMFx4MDhceDQ1XHgxN1x4NGZceDA4XHgwN1x4NmZceDhkXHg3OFx4NDMiOw0K
+ICBjb25zdCBjaGFyIHByaXZhdGVfYltdID0NCiAgICAgICJceGIwXHg4MFx4NzNceGU4XHhkNFx4
+NGVceDkxXHhlM1x4ZGFceDkyXHgyY1x4MjJceDQzXHg4Mlx4NDRceGJiXHg4OFx4NWMiDQogICAg
+ICAiXHg2OVx4ZTJceDY5XHhjOFx4ZTlceGQ4XHgzNVx4YjFceDE0XHgyOVx4M2FceDRkXHhkY1x4
+NmUiOw0KICBjb25zdCBjaGFyIHByaXZhdGVfY1tdID0NCiAgICAgICJceGEwXHhjYlx4ODdceDlh
+XHg0N1x4ZjVceGJjXHg2NFx4NGNceDBlXHg2OVx4M2ZceGE2XHhkMFx4MzFceGM3XHg0YVx4MTUi
+DQogICAgICAiXHg1M1x4YjZceGU5XHgwMVx4YjlceGZmXHgyZlx4NTFceDhjXHg3OFx4MDRceDJm
+XHhiNVx4NDIiOw0KICBjb25zdCBjaGFyIHB1YmxpY19hW10gPQ0KICAgICAgIlx4OTdceDVjXHg5
+ZFx4ODFceGM5XHg4M1x4YzhceDIwXHg5ZVx4ZTdceDgxXHgyNVx4NGJceDg5XHg5Zlx4OGVceGQ5
+XHgyNSINCiAgICAgICJceGFlXHg5Zlx4MDlceDIzXHhjMlx4M2NceDYyXHhmNVx4M2NceDU3XHhj
+ZFx4YmZceDY5XHgxYyI7DQogIGNvbnN0IGNoYXIgcHVibGljX2JbXSA9DQogICAgICAiXHhkMVx4
+NzNceDI4XHg5OVx4ZjZceDExXHhjZFx4ODlceDk0XHgwM1x4NGRceDdmXHg0MVx4M2RceGM5XHg1
+N1x4NjNceDBlIg0KICAgICAgIlx4NTRceDkzXHhjMlx4ODVceGFjXHhhNFx4MDBceDY1XHhjYlx4
+NjNceDExXHhiZVx4NjlceDZiIjsNCiAgY29uc3QgY2hhciBwdWJsaWNfY1tdID0NCiAgICAgICJc
+eGY0XHg0ZFx4YTNceDY3XHhhOFx4OGVceGU2XHg1Nlx4NGZceDAyXHgwMlx4MTFceDQ1XHg2N1x4
+MjdceDA4XHgyZlx4NWMiDQogICAgICAiXHhlYlx4ZWVceDhiXHgxYlx4ZjVceGViXHg3M1x4Mzdc
+eDM0XHgxYlx4NDVceDliXHgzOVx4MjIiOw0KICBjb25zdCB1aW50MTZfdCBsaXN0ZW5fYSA9IDIw
+MDAxOw0KICBjb25zdCB1aW50MTZfdCBsaXN0ZW5fYiA9IDIwMDAyOw0KICBjb25zdCB1aW50MTZf
+dCBsaXN0ZW5fYyA9IDIwMDAzOw0KICBjb25zdCB1aW50MTZfdCBhZl9pbmV0ID0gQUZfSU5FVDsN
+CiAgY29uc3QgdWludDE2X3QgYWZfaW5ldDYgPSBBRl9JTkVUNjsNCiAgY29uc3Qgc3RydWN0IHNv
+Y2thZGRyX2luIGVuZHBvaW50X2JfdjQgPSB7DQogICAgICAuc2luX2ZhbWlseSA9IEFGX0lORVQs
+DQogICAgICAuc2luX3BvcnQgPSBodG9ucyhsaXN0ZW5fYiksDQogICAgICAuc2luX2FkZHIgPSB7
+aHRvbmwoSU5BRERSX0xPT1BCQUNLKX19Ow0KICBjb25zdCBzdHJ1Y3Qgc29ja2FkZHJfaW4gZW5k
+cG9pbnRfY192NCA9IHsNCiAgICAgIC5zaW5fZmFtaWx5ID0gQUZfSU5FVCwNCiAgICAgIC5zaW5f
+cG9ydCA9IGh0b25zKGxpc3Rlbl9jKSwNCiAgICAgIC5zaW5fYWRkciA9IHtodG9ubChJTkFERFJf
+TE9PUEJBQ0spfX07DQogIHN0cnVjdCBzb2NrYWRkcl9pbjYgZW5kcG9pbnRfYV92NiA9IHsuc2lu
+Nl9mYW1pbHkgPSBBRl9JTkVUNiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIC5zaW42X3BvcnQgPSBodG9ucyhsaXN0ZW5fYSl9Ow0KICBlbmRwb2ludF9hX3Y2LnNpbjZf
+YWRkciA9IGluNmFkZHJfbG9vcGJhY2s7DQogIHN0cnVjdCBzb2NrYWRkcl9pbjYgZW5kcG9pbnRf
+Y192NiA9IHsuc2luNl9mYW1pbHkgPSBBRl9JTkVUNiwNCiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIC5zaW42X3BvcnQgPSBodG9ucyhsaXN0ZW5fYyl9Ow0KICBlbmRwb2lu
+dF9jX3Y2LnNpbjZfYWRkciA9IGluNmFkZHJfbG9vcGJhY2s7DQogIGNvbnN0IHN0cnVjdCBpbl9h
+ZGRyIGZpcnN0X2hhbGZfdjQgPSB7MH07DQogIGNvbnN0IHN0cnVjdCBpbl9hZGRyIHNlY29uZF9o
+YWxmX3Y0ID0geyh1aW50MzJfdClodG9ubCgxMjggPDwgMjQpfTsNCiAgY29uc3Qgc3RydWN0IGlu
+Nl9hZGRyIGZpcnN0X2hhbGZfdjYgPSB7e3swfX19Ow0KICBjb25zdCBzdHJ1Y3QgaW42X2FkZHIg
+c2Vjb25kX2hhbGZfdjYgPSB7e3sweDgwfX19Ow0KICBjb25zdCB1aW50OF90IGhhbGZfY2lkciA9
+IDE7DQogIGNvbnN0IHVpbnQxNl90IHBlcnNpc3RlbnRfa2VlcGFsaXZlc1tdID0gezEsIDMsIDcs
+IDksIDE0LCAxOX07DQogIHN0cnVjdCBnZW5sbXNnaGRyIGdlbmxoZHIgPSB7LmNtZCA9IFdHX0NN
+RF9TRVRfREVWSUNFLCAudmVyc2lvbiA9IDF9Ow0KICBpbnQgc29jazsNCiAgaW50IGlkLCBlcnI7
+DQogIHNvY2sgPSBzb2NrZXQoQUZfTkVUTElOSywgU09DS19SQVcsIE5FVExJTktfR0VORVJJQyk7
+DQogIGlmIChzb2NrID09IC0xKSB7DQogICAgcmV0dXJuOw0KICB9DQogIGlkID0gbmV0bGlua19x
+dWVyeV9mYW1pbHlfaWQoJm5sbXNnLCBzb2NrLCBXR19HRU5MX05BTUUsIHRydWUpOw0KICBpZiAo
+aWQgPT0gLTEpDQogICAgZ290byBlcnJvcjsNCiAgbmV0bGlua19pbml0KCZubG1zZywgaWQsIDAs
+ICZnZW5saGRyLCBzaXplb2YoZ2VubGhkcikpOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0RF
+VklDRV9BX0lGTkFNRSwgaWZuYW1lX2EsIHN0cmxlbihpZm5hbWVfYSkgKyAxKTsNCiAgbmV0bGlu
+a19hdHRyKCZubG1zZywgV0dERVZJQ0VfQV9QUklWQVRFX0tFWSwgcHJpdmF0ZV9hLCAzMik7DQog
+IG5ldGxpbmtfYXR0cigmbmxtc2csIFdHREVWSUNFX0FfTElTVEVOX1BPUlQsICZsaXN0ZW5fYSwg
+Mik7DQogIG5ldGxpbmtfbmVzdCgmbmxtc2csIE5MQV9GX05FU1RFRCB8IFdHREVWSUNFX0FfUEVF
+UlMpOw0KICBuZXRsaW5rX25lc3QoJm5sbXNnLCBOTEFfRl9ORVNURUQgfCAwKTsNCiAgbmV0bGlu
+a19hdHRyKCZubG1zZywgV0dQRUVSX0FfUFVCTElDX0tFWSwgcHVibGljX2IsIDMyKTsNCiAgbmV0
+bGlua19hdHRyKCZubG1zZywgV0dQRUVSX0FfRU5EUE9JTlQsICZlbmRwb2ludF9iX3Y0LA0KICAg
+ICAgICAgICAgICAgc2l6ZW9mKGVuZHBvaW50X2JfdjQpKTsNCiAgbmV0bGlua19hdHRyKCZubG1z
+ZywgV0dQRUVSX0FfUEVSU0lTVEVOVF9LRUVQQUxJVkVfSU5URVJWQUwsDQogICAgICAgICAgICAg
+ICAmcGVyc2lzdGVudF9rZWVwYWxpdmVzWzBdLCAyKTsNCiAgbmV0bGlua19uZXN0KCZubG1zZywg
+TkxBX0ZfTkVTVEVEIHwgV0dQRUVSX0FfQUxMT1dFRElQUyk7DQogIG5ldGxpbmtfbmVzdCgmbmxt
+c2csIE5MQV9GX05FU1RFRCB8IDApOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJ
+UF9BX0ZBTUlMWSwgJmFmX2luZXQsIDIpOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9X
+RURJUF9BX0lQQUREUiwgJmZpcnN0X2hhbGZfdjQsDQogICAgICAgICAgICAgICBzaXplb2YoZmly
+c3RfaGFsZl92NCkpOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJUF9BX0NJRFJf
+TUFTSywgJmhhbGZfY2lkciwgMSk7DQogIG5ldGxpbmtfZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5r
+X25lc3QoJm5sbXNnLCBOTEFfRl9ORVNURUQgfCAwKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywg
+V0dBTExPV0VESVBfQV9GQU1JTFksICZhZl9pbmV0NiwgMik7DQogIG5ldGxpbmtfYXR0cigmbmxt
+c2csIFdHQUxMT1dFRElQX0FfSVBBRERSLCAmZmlyc3RfaGFsZl92NiwNCiAgICAgICAgICAgICAg
+IHNpemVvZihmaXJzdF9oYWxmX3Y2KSk7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHQUxMT1dF
+RElQX0FfQ0lEUl9NQVNLLCAmaGFsZl9jaWRyLCAxKTsNCiAgbmV0bGlua19kb25lKCZubG1zZyk7
+DQogIG5ldGxpbmtfZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX2RvbmUoJm5sbXNnKTsNCiAgbmV0
+bGlua19uZXN0KCZubG1zZywgTkxBX0ZfTkVTVEVEIHwgMCk7DQogIG5ldGxpbmtfYXR0cigmbmxt
+c2csIFdHUEVFUl9BX1BVQkxJQ19LRVksIHB1YmxpY19jLCAzMik7DQogIG5ldGxpbmtfYXR0cigm
+bmxtc2csIFdHUEVFUl9BX0VORFBPSU5ULCAmZW5kcG9pbnRfY192NiwNCiAgICAgICAgICAgICAg
+IHNpemVvZihlbmRwb2ludF9jX3Y2KSk7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHUEVFUl9B
+X1BFUlNJU1RFTlRfS0VFUEFMSVZFX0lOVEVSVkFMLA0KICAgICAgICAgICAgICAgJnBlcnNpc3Rl
+bnRfa2VlcGFsaXZlc1sxXSwgMik7DQogIG5ldGxpbmtfbmVzdCgmbmxtc2csIE5MQV9GX05FU1RF
+RCB8IFdHUEVFUl9BX0FMTE9XRURJUFMpOw0KICBuZXRsaW5rX25lc3QoJm5sbXNnLCBOTEFfRl9O
+RVNURUQgfCAwKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9GQU1JTFks
+ICZhZl9pbmV0LCAyKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9JUEFE
+RFIsICZzZWNvbmRfaGFsZl92NCwNCiAgICAgICAgICAgICAgIHNpemVvZihzZWNvbmRfaGFsZl92
+NCkpOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJUF9BX0NJRFJfTUFTSywgJmhh
+bGZfY2lkciwgMSk7DQogIG5ldGxpbmtfZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX25lc3QoJm5s
+bXNnLCBOTEFfRl9ORVNURUQgfCAwKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VE
+SVBfQV9GQU1JTFksICZhZl9pbmV0NiwgMik7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHQUxM
+T1dFRElQX0FfSVBBRERSLCAmc2Vjb25kX2hhbGZfdjYsDQogICAgICAgICAgICAgICBzaXplb2Yo
+c2Vjb25kX2hhbGZfdjYpKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9D
+SURSX01BU0ssICZoYWxmX2NpZHIsIDEpOw0KICBuZXRsaW5rX2RvbmUoJm5sbXNnKTsNCiAgbmV0
+bGlua19kb25lKCZubG1zZyk7DQogIG5ldGxpbmtfZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX2Rv
+bmUoJm5sbXNnKTsNCiAgZXJyID0gbmV0bGlua19zZW5kKCZubG1zZywgc29jayk7DQogIGlmIChl
+cnIgPCAwKSB7DQogIH0NCiAgbmV0bGlua19pbml0KCZubG1zZywgaWQsIDAsICZnZW5saGRyLCBz
+aXplb2YoZ2VubGhkcikpOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0RFVklDRV9BX0lGTkFN
+RSwgaWZuYW1lX2IsIHN0cmxlbihpZm5hbWVfYikgKyAxKTsNCiAgbmV0bGlua19hdHRyKCZubG1z
+ZywgV0dERVZJQ0VfQV9QUklWQVRFX0tFWSwgcHJpdmF0ZV9iLCAzMik7DQogIG5ldGxpbmtfYXR0
+cigmbmxtc2csIFdHREVWSUNFX0FfTElTVEVOX1BPUlQsICZsaXN0ZW5fYiwgMik7DQogIG5ldGxp
+bmtfbmVzdCgmbmxtc2csIE5MQV9GX05FU1RFRCB8IFdHREVWSUNFX0FfUEVFUlMpOw0KICBuZXRs
+aW5rX25lc3QoJm5sbXNnLCBOTEFfRl9ORVNURUQgfCAwKTsNCiAgbmV0bGlua19hdHRyKCZubG1z
+ZywgV0dQRUVSX0FfUFVCTElDX0tFWSwgcHVibGljX2EsIDMyKTsNCiAgbmV0bGlua19hdHRyKCZu
+bG1zZywgV0dQRUVSX0FfRU5EUE9JTlQsICZlbmRwb2ludF9hX3Y2LA0KICAgICAgICAgICAgICAg
+c2l6ZW9mKGVuZHBvaW50X2FfdjYpKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dQRUVSX0Ff
+UEVSU0lTVEVOVF9LRUVQQUxJVkVfSU5URVJWQUwsDQogICAgICAgICAgICAgICAmcGVyc2lzdGVu
+dF9rZWVwYWxpdmVzWzJdLCAyKTsNCiAgbmV0bGlua19uZXN0KCZubG1zZywgTkxBX0ZfTkVTVEVE
+IHwgV0dQRUVSX0FfQUxMT1dFRElQUyk7DQogIG5ldGxpbmtfbmVzdCgmbmxtc2csIE5MQV9GX05F
+U1RFRCB8IDApOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJUF9BX0ZBTUlMWSwg
+JmFmX2luZXQsIDIpOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJUF9BX0lQQURE
+UiwgJmZpcnN0X2hhbGZfdjQsDQogICAgICAgICAgICAgICBzaXplb2YoZmlyc3RfaGFsZl92NCkp
+Ow0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJUF9BX0NJRFJfTUFTSywgJmhhbGZf
+Y2lkciwgMSk7DQogIG5ldGxpbmtfZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX25lc3QoJm5sbXNn
+LCBOTEFfRl9ORVNURUQgfCAwKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBf
+QV9GQU1JTFksICZhZl9pbmV0NiwgMik7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHQUxMT1dF
+RElQX0FfSVBBRERSLCAmZmlyc3RfaGFsZl92NiwNCiAgICAgICAgICAgICAgIHNpemVvZihmaXJz
+dF9oYWxmX3Y2KSk7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHQUxMT1dFRElQX0FfQ0lEUl9N
+QVNLLCAmaGFsZl9jaWRyLCAxKTsNCiAgbmV0bGlua19kb25lKCZubG1zZyk7DQogIG5ldGxpbmtf
+ZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX2RvbmUoJm5sbXNnKTsNCiAgbmV0bGlua19uZXN0KCZu
+bG1zZywgTkxBX0ZfTkVTVEVEIHwgMCk7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHUEVFUl9B
+X1BVQkxJQ19LRVksIHB1YmxpY19jLCAzMik7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHUEVF
+Ul9BX0VORFBPSU5ULCAmZW5kcG9pbnRfY192NCwNCiAgICAgICAgICAgICAgIHNpemVvZihlbmRw
+b2ludF9jX3Y0KSk7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHUEVFUl9BX1BFUlNJU1RFTlRf
+S0VFUEFMSVZFX0lOVEVSVkFMLA0KICAgICAgICAgICAgICAgJnBlcnNpc3RlbnRfa2VlcGFsaXZl
+c1szXSwgMik7DQogIG5ldGxpbmtfbmVzdCgmbmxtc2csIE5MQV9GX05FU1RFRCB8IFdHUEVFUl9B
+X0FMTE9XRURJUFMpOw0KICBuZXRsaW5rX25lc3QoJm5sbXNnLCBOTEFfRl9ORVNURUQgfCAwKTsN
+CiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9GQU1JTFksICZhZl9pbmV0LCAy
+KTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9JUEFERFIsICZzZWNvbmRf
+aGFsZl92NCwNCiAgICAgICAgICAgICAgIHNpemVvZihzZWNvbmRfaGFsZl92NCkpOw0KICBuZXRs
+aW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJUF9BX0NJRFJfTUFTSywgJmhhbGZfY2lkciwgMSk7
+DQogIG5ldGxpbmtfZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX25lc3QoJm5sbXNnLCBOTEFfRl9O
+RVNURUQgfCAwKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9GQU1JTFks
+ICZhZl9pbmV0NiwgMik7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHQUxMT1dFRElQX0FfSVBB
+RERSLCAmc2Vjb25kX2hhbGZfdjYsDQogICAgICAgICAgICAgICBzaXplb2Yoc2Vjb25kX2hhbGZf
+djYpKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9DSURSX01BU0ssICZo
+YWxmX2NpZHIsIDEpOw0KICBuZXRsaW5rX2RvbmUoJm5sbXNnKTsNCiAgbmV0bGlua19kb25lKCZu
+bG1zZyk7DQogIG5ldGxpbmtfZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX2RvbmUoJm5sbXNnKTsN
+CiAgZXJyID0gbmV0bGlua19zZW5kKCZubG1zZywgc29jayk7DQogIGlmIChlcnIgPCAwKSB7DQog
+IH0NCiAgbmV0bGlua19pbml0KCZubG1zZywgaWQsIDAsICZnZW5saGRyLCBzaXplb2YoZ2VubGhk
+cikpOw0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0RFVklDRV9BX0lGTkFNRSwgaWZuYW1lX2Ms
+IHN0cmxlbihpZm5hbWVfYykgKyAxKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dERVZJQ0Vf
+QV9QUklWQVRFX0tFWSwgcHJpdmF0ZV9jLCAzMik7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdH
+REVWSUNFX0FfTElTVEVOX1BPUlQsICZsaXN0ZW5fYywgMik7DQogIG5ldGxpbmtfbmVzdCgmbmxt
+c2csIE5MQV9GX05FU1RFRCB8IFdHREVWSUNFX0FfUEVFUlMpOw0KICBuZXRsaW5rX25lc3QoJm5s
+bXNnLCBOTEFfRl9ORVNURUQgfCAwKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dQRUVSX0Ff
+UFVCTElDX0tFWSwgcHVibGljX2EsIDMyKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dQRUVS
+X0FfRU5EUE9JTlQsICZlbmRwb2ludF9hX3Y2LA0KICAgICAgICAgICAgICAgc2l6ZW9mKGVuZHBv
+aW50X2FfdjYpKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dQRUVSX0FfUEVSU0lTVEVOVF9L
+RUVQQUxJVkVfSU5URVJWQUwsDQogICAgICAgICAgICAgICAmcGVyc2lzdGVudF9rZWVwYWxpdmVz
+WzRdLCAyKTsNCiAgbmV0bGlua19uZXN0KCZubG1zZywgTkxBX0ZfTkVTVEVEIHwgV0dQRUVSX0Ff
+QUxMT1dFRElQUyk7DQogIG5ldGxpbmtfbmVzdCgmbmxtc2csIE5MQV9GX05FU1RFRCB8IDApOw0K
+ICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJUF9BX0ZBTUlMWSwgJmFmX2luZXQsIDIp
+Ow0KICBuZXRsaW5rX2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJUF9BX0lQQUREUiwgJmZpcnN0X2hh
+bGZfdjQsDQogICAgICAgICAgICAgICBzaXplb2YoZmlyc3RfaGFsZl92NCkpOw0KICBuZXRsaW5r
+X2F0dHIoJm5sbXNnLCBXR0FMTE9XRURJUF9BX0NJRFJfTUFTSywgJmhhbGZfY2lkciwgMSk7DQog
+IG5ldGxpbmtfZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX25lc3QoJm5sbXNnLCBOTEFfRl9ORVNU
+RUQgfCAwKTsNCiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9GQU1JTFksICZh
+Zl9pbmV0NiwgMik7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHQUxMT1dFRElQX0FfSVBBRERS
+LCAmZmlyc3RfaGFsZl92NiwNCiAgICAgICAgICAgICAgIHNpemVvZihmaXJzdF9oYWxmX3Y2KSk7
+DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHQUxMT1dFRElQX0FfQ0lEUl9NQVNLLCAmaGFsZl9j
+aWRyLCAxKTsNCiAgbmV0bGlua19kb25lKCZubG1zZyk7DQogIG5ldGxpbmtfZG9uZSgmbmxtc2cp
+Ow0KICBuZXRsaW5rX2RvbmUoJm5sbXNnKTsNCiAgbmV0bGlua19uZXN0KCZubG1zZywgTkxBX0Zf
+TkVTVEVEIHwgMCk7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHUEVFUl9BX1BVQkxJQ19LRVks
+IHB1YmxpY19iLCAzMik7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHUEVFUl9BX0VORFBPSU5U
+LCAmZW5kcG9pbnRfYl92NCwNCiAgICAgICAgICAgICAgIHNpemVvZihlbmRwb2ludF9iX3Y0KSk7
+DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHUEVFUl9BX1BFUlNJU1RFTlRfS0VFUEFMSVZFX0lO
+VEVSVkFMLA0KICAgICAgICAgICAgICAgJnBlcnNpc3RlbnRfa2VlcGFsaXZlc1s1XSwgMik7DQog
+IG5ldGxpbmtfbmVzdCgmbmxtc2csIE5MQV9GX05FU1RFRCB8IFdHUEVFUl9BX0FMTE9XRURJUFMp
+Ow0KICBuZXRsaW5rX25lc3QoJm5sbXNnLCBOTEFfRl9ORVNURUQgfCAwKTsNCiAgbmV0bGlua19h
+dHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9GQU1JTFksICZhZl9pbmV0LCAyKTsNCiAgbmV0bGlu
+a19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9JUEFERFIsICZzZWNvbmRfaGFsZl92NCwNCiAg
+ICAgICAgICAgICAgIHNpemVvZihzZWNvbmRfaGFsZl92NCkpOw0KICBuZXRsaW5rX2F0dHIoJm5s
+bXNnLCBXR0FMTE9XRURJUF9BX0NJRFJfTUFTSywgJmhhbGZfY2lkciwgMSk7DQogIG5ldGxpbmtf
+ZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX25lc3QoJm5sbXNnLCBOTEFfRl9ORVNURUQgfCAwKTsN
+CiAgbmV0bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9GQU1JTFksICZhZl9pbmV0Niwg
+Mik7DQogIG5ldGxpbmtfYXR0cigmbmxtc2csIFdHQUxMT1dFRElQX0FfSVBBRERSLCAmc2Vjb25k
+X2hhbGZfdjYsDQogICAgICAgICAgICAgICBzaXplb2Yoc2Vjb25kX2hhbGZfdjYpKTsNCiAgbmV0
+bGlua19hdHRyKCZubG1zZywgV0dBTExPV0VESVBfQV9DSURSX01BU0ssICZoYWxmX2NpZHIsIDEp
+Ow0KICBuZXRsaW5rX2RvbmUoJm5sbXNnKTsNCiAgbmV0bGlua19kb25lKCZubG1zZyk7DQogIG5l
+dGxpbmtfZG9uZSgmbmxtc2cpOw0KICBuZXRsaW5rX2RvbmUoJm5sbXNnKTsNCiAgZXJyID0gbmV0
+bGlua19zZW5kKCZubG1zZywgc29jayk7DQogIGlmIChlcnIgPCAwKSB7DQogIH0NCg0KZXJyb3I6
+DQogIGNsb3NlKHNvY2spOw0KfQ0KDQpzdGF0aWMgdm9pZCBpbml0aWFsaXplX25ldGRldmljZXMo
+dm9pZCkNCnsNCiAgY2hhciBuZXRkZXZzaW1bMTZdOw0KICBzcHJpbnRmKG5ldGRldnNpbSwgIm5l
+dGRldnNpbSVkIiwgKGludClwcm9jaWQpOw0KICBzdHJ1Y3Qgew0KICAgIGNvbnN0IGNoYXIqIHR5
+cGU7DQogICAgY29uc3QgY2hhciogZGV2Ow0KICB9IGRldnR5cGVzW10gPSB7DQogICAgICB7Imlw
+NmdyZXRhcCIsICJpcDZncmV0YXAwIn0sIHsiYnJpZGdlIiwgImJyaWRnZTAifSwgeyJ2Y2FuIiwg
+InZjYW4wIn0sDQogICAgICB7ImJvbmQiLCAiYm9uZDAifSwgICAgICAgICAgIHsidGVhbSIsICJ0
+ZWFtMCJ9LCAgICAgeyJkdW1teSIsICJkdW1teTAifSwNCiAgICAgIHsibmxtb24iLCAibmxtb24w
+In0sICAgICAgICAgeyJjYWlmIiwgImNhaWYwIn0sICAgICB7ImJhdGFkdiIsICJiYXRhZHYwIn0s
+DQogICAgICB7InZ4Y2FuIiwgInZ4Y2FuMSJ9LCAgICAgICAgIHsidmV0aCIsIDB9LCAgICAgICAg
+ICAgeyJ3aXJlZ3VhcmQiLCAid2cwIn0sDQogICAgICB7IndpcmVndWFyZCIsICJ3ZzEifSwgICAg
+ICAgIHsid2lyZWd1YXJkIiwgIndnMiJ9LA0KICB9Ow0KICBjb25zdCBjaGFyKiBkZXZtYXN0ZXJz
+W10gPSB7ImJyaWRnZSIsICJib25kIiwgInRlYW0iLCAiYmF0YWR2In07DQogIHN0cnVjdCB7DQog
+ICAgY29uc3QgY2hhciogbmFtZTsNCiAgICBpbnQgbWFjc2l6ZTsNCiAgICBib29sIG5vaXB2NjsN
+CiAgfSBkZXZpY2VzW10gPSB7DQogICAgICB7ImxvIiwgRVRIX0FMRU59LA0KICAgICAgeyJzaXQw
+IiwgMH0sDQogICAgICB7ImJyaWRnZTAiLCBFVEhfQUxFTn0sDQogICAgICB7InZjYW4wIiwgMCwg
+dHJ1ZX0sDQogICAgICB7InR1bmwwIiwgMH0sDQogICAgICB7ImdyZTAiLCAwfSwNCiAgICAgIHsi
+Z3JldGFwMCIsIEVUSF9BTEVOfSwNCiAgICAgIHsiaXBfdnRpMCIsIDB9LA0KICAgICAgeyJpcDZf
+dnRpMCIsIDB9LA0KICAgICAgeyJpcDZ0bmwwIiwgMH0sDQogICAgICB7ImlwNmdyZTAiLCAwfSwN
+CiAgICAgIHsiaXA2Z3JldGFwMCIsIEVUSF9BTEVOfSwNCiAgICAgIHsiZXJzcGFuMCIsIEVUSF9B
+TEVOfSwNCiAgICAgIHsiYm9uZDAiLCBFVEhfQUxFTn0sDQogICAgICB7InZldGgwIiwgRVRIX0FM
+RU59LA0KICAgICAgeyJ2ZXRoMSIsIEVUSF9BTEVOfSwNCiAgICAgIHsidGVhbTAiLCBFVEhfQUxF
+Tn0sDQogICAgICB7InZldGgwX3RvX2JyaWRnZSIsIEVUSF9BTEVOfSwNCiAgICAgIHsidmV0aDFf
+dG9fYnJpZGdlIiwgRVRIX0FMRU59LA0KICAgICAgeyJ2ZXRoMF90b19ib25kIiwgRVRIX0FMRU59
+LA0KICAgICAgeyJ2ZXRoMV90b19ib25kIiwgRVRIX0FMRU59LA0KICAgICAgeyJ2ZXRoMF90b190
+ZWFtIiwgRVRIX0FMRU59LA0KICAgICAgeyJ2ZXRoMV90b190ZWFtIiwgRVRIX0FMRU59LA0KICAg
+ICAgeyJ2ZXRoMF90b19oc3IiLCBFVEhfQUxFTn0sDQogICAgICB7InZldGgxX3RvX2hzciIsIEVU
+SF9BTEVOfSwNCiAgICAgIHsiaHNyMCIsIDB9LA0KICAgICAgeyJkdW1teTAiLCBFVEhfQUxFTn0s
+DQogICAgICB7Im5sbW9uMCIsIDB9LA0KICAgICAgeyJ2eGNhbjAiLCAwLCB0cnVlfSwNCiAgICAg
+IHsidnhjYW4xIiwgMCwgdHJ1ZX0sDQogICAgICB7ImNhaWYwIiwgRVRIX0FMRU59LA0KICAgICAg
+eyJiYXRhZHYwIiwgRVRIX0FMRU59LA0KICAgICAge25ldGRldnNpbSwgRVRIX0FMRU59LA0KICAg
+ICAgeyJ4ZnJtMCIsIEVUSF9BTEVOfSwNCiAgICAgIHsidmV0aDBfdmlydF93aWZpIiwgRVRIX0FM
+RU59LA0KICAgICAgeyJ2ZXRoMV92aXJ0X3dpZmkiLCBFVEhfQUxFTn0sDQogICAgICB7InZpcnRf
+d2lmaTAiLCBFVEhfQUxFTn0sDQogICAgICB7InZldGgwX3ZsYW4iLCBFVEhfQUxFTn0sDQogICAg
+ICB7InZldGgxX3ZsYW4iLCBFVEhfQUxFTn0sDQogICAgICB7InZsYW4wIiwgRVRIX0FMRU59LA0K
+ICAgICAgeyJ2bGFuMSIsIEVUSF9BTEVOfSwNCiAgICAgIHsibWFjdmxhbjAiLCBFVEhfQUxFTn0s
+DQogICAgICB7Im1hY3ZsYW4xIiwgRVRIX0FMRU59LA0KICAgICAgeyJpcHZsYW4wIiwgRVRIX0FM
+RU59LA0KICAgICAgeyJpcHZsYW4xIiwgRVRIX0FMRU59LA0KICAgICAgeyJ2ZXRoMF9tYWN2dGFw
+IiwgRVRIX0FMRU59LA0KICAgICAgeyJ2ZXRoMV9tYWN2dGFwIiwgRVRIX0FMRU59LA0KICAgICAg
+eyJtYWN2dGFwMCIsIEVUSF9BTEVOfSwNCiAgICAgIHsibWFjc2VjMCIsIEVUSF9BTEVOfSwNCiAg
+ICAgIHsidmV0aDBfdG9fYmF0YWR2IiwgRVRIX0FMRU59LA0KICAgICAgeyJ2ZXRoMV90b19iYXRh
+ZHYiLCBFVEhfQUxFTn0sDQogICAgICB7ImJhdGFkdl9zbGF2ZV8wIiwgRVRIX0FMRU59LA0KICAg
+ICAgeyJiYXRhZHZfc2xhdmVfMSIsIEVUSF9BTEVOfSwNCiAgICAgIHsiZ2VuZXZlMCIsIEVUSF9B
+TEVOfSwNCiAgICAgIHsiZ2VuZXZlMSIsIEVUSF9BTEVOfSwNCiAgICAgIHsid2cwIiwgMH0sDQog
+ICAgICB7IndnMSIsIDB9LA0KICAgICAgeyJ3ZzIiLCAwfSwNCiAgfTsNCiAgaW50IHNvY2sgPSBz
+b2NrZXQoQUZfTkVUTElOSywgU09DS19SQVcsIE5FVExJTktfUk9VVEUpOw0KICBpZiAoc29jayA9
+PSAtMSkNCiAgICBleGl0KDEpOw0KICB1bnNpZ25lZCBpOw0KICBmb3IgKGkgPSAwOyBpIDwgc2l6
+ZW9mKGRldnR5cGVzKSAvIHNpemVvZihkZXZ0eXBlc1swXSk7IGkrKykNCiAgICBuZXRsaW5rX2Fk
+ZF9kZXZpY2UoJm5sbXNnLCBzb2NrLCBkZXZ0eXBlc1tpXS50eXBlLCBkZXZ0eXBlc1tpXS5kZXYp
+Ow0KICBmb3IgKGkgPSAwOyBpIDwgc2l6ZW9mKGRldm1hc3RlcnMpIC8gKHNpemVvZihkZXZtYXN0
+ZXJzWzBdKSk7IGkrKykgew0KICAgIGNoYXIgbWFzdGVyWzMyXSwgc2xhdmUwWzMyXSwgdmV0aDBb
+MzJdLCBzbGF2ZTFbMzJdLCB2ZXRoMVszMl07DQogICAgc3ByaW50ZihzbGF2ZTAsICIlc19zbGF2
+ZV8wIiwgZGV2bWFzdGVyc1tpXSk7DQogICAgc3ByaW50Zih2ZXRoMCwgInZldGgwX3RvXyVzIiwg
+ZGV2bWFzdGVyc1tpXSk7DQogICAgbmV0bGlua19hZGRfdmV0aCgmbmxtc2csIHNvY2ssIHNsYXZl
+MCwgdmV0aDApOw0KICAgIHNwcmludGYoc2xhdmUxLCAiJXNfc2xhdmVfMSIsIGRldm1hc3RlcnNb
+aV0pOw0KICAgIHNwcmludGYodmV0aDEsICJ2ZXRoMV90b18lcyIsIGRldm1hc3RlcnNbaV0pOw0K
+ICAgIG5ldGxpbmtfYWRkX3ZldGgoJm5sbXNnLCBzb2NrLCBzbGF2ZTEsIHZldGgxKTsNCiAgICBz
+cHJpbnRmKG1hc3RlciwgIiVzMCIsIGRldm1hc3RlcnNbaV0pOw0KICAgIG5ldGxpbmtfZGV2aWNl
+X2NoYW5nZSgmbmxtc2csIHNvY2ssIHNsYXZlMCwgZmFsc2UsIG1hc3RlciwgMCwgMCwgTlVMTCk7
+DQogICAgbmV0bGlua19kZXZpY2VfY2hhbmdlKCZubG1zZywgc29jaywgc2xhdmUxLCBmYWxzZSwg
+bWFzdGVyLCAwLCAwLCBOVUxMKTsNCiAgfQ0KICBuZXRsaW5rX2FkZF94ZnJtKCZubG1zZywgc29j
+aywgInhmcm0wIik7DQogIG5ldGxpbmtfZGV2aWNlX2NoYW5nZSgmbmxtc2csIHNvY2ssICJicmlk
+Z2Vfc2xhdmVfMCIsIHRydWUsIDAsIDAsIDAsIE5VTEwpOw0KICBuZXRsaW5rX2RldmljZV9jaGFu
+Z2UoJm5sbXNnLCBzb2NrLCAiYnJpZGdlX3NsYXZlXzEiLCB0cnVlLCAwLCAwLCAwLCBOVUxMKTsN
+CiAgbmV0bGlua19hZGRfdmV0aCgmbmxtc2csIHNvY2ssICJoc3Jfc2xhdmVfMCIsICJ2ZXRoMF90
+b19oc3IiKTsNCiAgbmV0bGlua19hZGRfdmV0aCgmbmxtc2csIHNvY2ssICJoc3Jfc2xhdmVfMSIs
+ICJ2ZXRoMV90b19oc3IiKTsNCiAgbmV0bGlua19hZGRfaHNyKCZubG1zZywgc29jaywgImhzcjAi
+LCAiaHNyX3NsYXZlXzAiLCAiaHNyX3NsYXZlXzEiKTsNCiAgbmV0bGlua19kZXZpY2VfY2hhbmdl
+KCZubG1zZywgc29jaywgImhzcl9zbGF2ZV8wIiwgdHJ1ZSwgMCwgMCwgMCwgTlVMTCk7DQogIG5l
+dGxpbmtfZGV2aWNlX2NoYW5nZSgmbmxtc2csIHNvY2ssICJoc3Jfc2xhdmVfMSIsIHRydWUsIDAs
+IDAsIDAsIE5VTEwpOw0KICBuZXRsaW5rX2FkZF92ZXRoKCZubG1zZywgc29jaywgInZldGgwX3Zp
+cnRfd2lmaSIsICJ2ZXRoMV92aXJ0X3dpZmkiKTsNCiAgbmV0bGlua19hZGRfbGlua2VkKCZubG1z
+Zywgc29jaywgInZpcnRfd2lmaSIsICJ2aXJ0X3dpZmkwIiwNCiAgICAgICAgICAgICAgICAgICAg
+ICJ2ZXRoMV92aXJ0X3dpZmkiKTsNCiAgbmV0bGlua19hZGRfdmV0aCgmbmxtc2csIHNvY2ssICJ2
+ZXRoMF92bGFuIiwgInZldGgxX3ZsYW4iKTsNCiAgbmV0bGlua19hZGRfdmxhbigmbmxtc2csIHNv
+Y2ssICJ2bGFuMCIsICJ2ZXRoMF92bGFuIiwgMCwgaHRvbnMoRVRIX1BfODAyMVEpKTsNCiAgbmV0
+bGlua19hZGRfdmxhbigmbmxtc2csIHNvY2ssICJ2bGFuMSIsICJ2ZXRoMF92bGFuIiwgMSwgaHRv
+bnMoRVRIX1BfODAyMUFEKSk7DQogIG5ldGxpbmtfYWRkX21hY3ZsYW4oJm5sbXNnLCBzb2NrLCAi
+bWFjdmxhbjAiLCAidmV0aDFfdmxhbiIpOw0KICBuZXRsaW5rX2FkZF9tYWN2bGFuKCZubG1zZywg
+c29jaywgIm1hY3ZsYW4xIiwgInZldGgxX3ZsYW4iKTsNCiAgbmV0bGlua19hZGRfaXB2bGFuKCZu
+bG1zZywgc29jaywgImlwdmxhbjAiLCAidmV0aDBfdmxhbiIsIElQVkxBTl9NT0RFX0wyLCAwKTsN
+CiAgbmV0bGlua19hZGRfaXB2bGFuKCZubG1zZywgc29jaywgImlwdmxhbjEiLCAidmV0aDBfdmxh
+biIsIElQVkxBTl9NT0RFX0wzUywNCiAgICAgICAgICAgICAgICAgICAgIElQVkxBTl9GX1ZFUEEp
+Ow0KICBuZXRsaW5rX2FkZF92ZXRoKCZubG1zZywgc29jaywgInZldGgwX21hY3Z0YXAiLCAidmV0
+aDFfbWFjdnRhcCIpOw0KICBuZXRsaW5rX2FkZF9saW5rZWQoJm5sbXNnLCBzb2NrLCAibWFjdnRh
+cCIsICJtYWN2dGFwMCIsICJ2ZXRoMF9tYWN2dGFwIik7DQogIG5ldGxpbmtfYWRkX2xpbmtlZCgm
+bmxtc2csIHNvY2ssICJtYWNzZWMiLCAibWFjc2VjMCIsICJ2ZXRoMV9tYWN2dGFwIik7DQogIGNo
+YXIgYWRkclszMl07DQogIHNwcmludGYoYWRkciwgREVWX0lQVjQsIDE0ICsgMTApOw0KICBzdHJ1
+Y3QgaW5fYWRkciBnZW5ldmVfYWRkcjQ7DQogIGlmIChpbmV0X3B0b24oQUZfSU5FVCwgYWRkciwg
+JmdlbmV2ZV9hZGRyNCkgPD0gMCkNCiAgICBleGl0KDEpOw0KICBzdHJ1Y3QgaW42X2FkZHIgZ2Vu
+ZXZlX2FkZHI2Ow0KICBpZiAoaW5ldF9wdG9uKEFGX0lORVQ2LCAiZmMwMDo6MDEiLCAmZ2VuZXZl
+X2FkZHI2KSA8PSAwKQ0KICAgIGV4aXQoMSk7DQogIG5ldGxpbmtfYWRkX2dlbmV2ZSgmbmxtc2cs
+IHNvY2ssICJnZW5ldmUwIiwgMCwgJmdlbmV2ZV9hZGRyNCwgMCk7DQogIG5ldGxpbmtfYWRkX2dl
+bmV2ZSgmbmxtc2csIHNvY2ssICJnZW5ldmUxIiwgMSwgMCwgJmdlbmV2ZV9hZGRyNik7DQogIG5l
+dGRldnNpbV9hZGQoKGludClwcm9jaWQsIDQpOw0KICBuZXRsaW5rX3dpcmVndWFyZF9zZXR1cCgp
+Ow0KICBmb3IgKGkgPSAwOyBpIDwgc2l6ZW9mKGRldmljZXMpIC8gKHNpemVvZihkZXZpY2VzWzBd
+KSk7IGkrKykgew0KICAgIGNoYXIgYWRkclszMl07DQogICAgc3ByaW50ZihhZGRyLCBERVZfSVBW
+NCwgaSArIDEwKTsNCiAgICBuZXRsaW5rX2FkZF9hZGRyNCgmbmxtc2csIHNvY2ssIGRldmljZXNb
+aV0ubmFtZSwgYWRkcik7DQogICAgaWYgKCFkZXZpY2VzW2ldLm5vaXB2Nikgew0KICAgICAgc3By
+aW50ZihhZGRyLCBERVZfSVBWNiwgaSArIDEwKTsNCiAgICAgIG5ldGxpbmtfYWRkX2FkZHI2KCZu
+bG1zZywgc29jaywgZGV2aWNlc1tpXS5uYW1lLCBhZGRyKTsNCiAgICB9DQogICAgdWludDY0X3Qg
+bWFjYWRkciA9IERFVl9NQUMgKyAoKGkgKyAxMHVsbCkgPDwgNDApOw0KICAgIG5ldGxpbmtfZGV2
+aWNlX2NoYW5nZSgmbmxtc2csIHNvY2ssIGRldmljZXNbaV0ubmFtZSwgdHJ1ZSwgMCwgJm1hY2Fk
+ZHIsDQogICAgICAgICAgICAgICAgICAgICAgICAgIGRldmljZXNbaV0ubWFjc2l6ZSwgTlVMTCk7
+DQogIH0NCiAgY2xvc2Uoc29jayk7DQp9DQpzdGF0aWMgdm9pZCBpbml0aWFsaXplX25ldGRldmlj
+ZXNfaW5pdCh2b2lkKQ0Kew0KICBpbnQgc29jayA9IHNvY2tldChBRl9ORVRMSU5LLCBTT0NLX1JB
+VywgTkVUTElOS19ST1VURSk7DQogIGlmIChzb2NrID09IC0xKQ0KICAgIGV4aXQoMSk7DQogIHN0
+cnVjdCB7DQogICAgY29uc3QgY2hhciogdHlwZTsNCiAgICBpbnQgbWFjc2l6ZTsNCiAgICBib29s
+IG5vaXB2NjsNCiAgICBib29sIG5vdXA7DQogIH0gZGV2dHlwZXNbXSA9IHsNCiAgICAgIHsibnIi
+LCA3LCB0cnVlfSwNCiAgICAgIHsicm9zZSIsIDUsIHRydWUsIHRydWV9LA0KICB9Ow0KICB1bnNp
+Z25lZCBpOw0KICBmb3IgKGkgPSAwOyBpIDwgc2l6ZW9mKGRldnR5cGVzKSAvIHNpemVvZihkZXZ0
+eXBlc1swXSk7IGkrKykgew0KICAgIGNoYXIgZGV2WzMyXSwgYWRkclszMl07DQogICAgc3ByaW50
+ZihkZXYsICIlcyVkIiwgZGV2dHlwZXNbaV0udHlwZSwgKGludClwcm9jaWQpOw0KICAgIHNwcmlu
+dGYoYWRkciwgIjE3Mi4zMC4lZC4lZCIsIGksIChpbnQpcHJvY2lkICsgMSk7DQogICAgbmV0bGlu
+a19hZGRfYWRkcjQoJm5sbXNnLCBzb2NrLCBkZXYsIGFkZHIpOw0KICAgIGlmICghZGV2dHlwZXNb
+aV0ubm9pcHY2KSB7DQogICAgICBzcHJpbnRmKGFkZHIsICJmZTg4OjolMDJ4OiUwMngiLCBpLCAo
+aW50KXByb2NpZCArIDEpOw0KICAgICAgbmV0bGlua19hZGRfYWRkcjYoJm5sbXNnLCBzb2NrLCBk
+ZXYsIGFkZHIpOw0KICAgIH0NCiAgICBpbnQgbWFjc2l6ZSA9IGRldnR5cGVzW2ldLm1hY3NpemU7
+DQogICAgdWludDY0X3QgbWFjYWRkciA9IDB4YmJiYmJiICsNCiAgICAgICAgICAgICAgICAgICAg
+ICAgKCh1bnNpZ25lZCBsb25nIGxvbmcpaSA8PCAoOCAqIChtYWNzaXplIC0gMikpKSArDQogICAg
+ICAgICAgICAgICAgICAgICAgIChwcm9jaWQgPDwgKDggKiAobWFjc2l6ZSAtIDEpKSk7DQogICAg
+bmV0bGlua19kZXZpY2VfY2hhbmdlKCZubG1zZywgc29jaywgZGV2LCAhZGV2dHlwZXNbaV0ubm91
+cCwgMCwgJm1hY2FkZHIsDQogICAgICAgICAgICAgICAgICAgICAgICAgIG1hY3NpemUsIE5VTEwp
+Ow0KICB9DQogIGNsb3NlKHNvY2spOw0KfQ0KDQpzdGF0aWMgdm9pZCBzZXR1cF9jb21tb24oKQ0K
+ew0KICBpZiAobW91bnQoMCwgIi9zeXMvZnMvZnVzZS9jb25uZWN0aW9ucyIsICJmdXNlY3RsIiwg
+MCwgMCkpIHsNCiAgfQ0KfQ0KDQpzdGF0aWMgdm9pZCBzZXR1cF9iaW5kZXJmcygpDQp7DQogIGlm
+IChta2RpcigiL2Rldi9iaW5kZXJmcyIsIDA3NzcpKSB7DQogIH0NCiAgaWYgKG1vdW50KCJiaW5k
+ZXIiLCAiL2Rldi9iaW5kZXJmcyIsICJiaW5kZXIiLCAwLCBOVUxMKSkgew0KICB9DQogIGlmIChz
+eW1saW5rKCIvZGV2L2JpbmRlcmZzIiwgIi4vYmluZGVyZnMiKSkgew0KICB9DQp9DQoNCnN0YXRp
+YyB2b2lkIGxvb3AoKTsNCg0Kc3RhdGljIHZvaWQgc2FuZGJveF9jb21tb24oKQ0Kew0KICBwcmN0
+bChQUl9TRVRfUERFQVRIU0lHLCBTSUdLSUxMLCAwLCAwLCAwKTsNCiAgc2V0c2lkKCk7DQogIHN0
+cnVjdCBybGltaXQgcmxpbTsNCiAgcmxpbS5ybGltX2N1ciA9IHJsaW0ucmxpbV9tYXggPSAoMjAw
+IDw8IDIwKTsNCiAgc2V0cmxpbWl0KFJMSU1JVF9BUywgJnJsaW0pOw0KICBybGltLnJsaW1fY3Vy
+ID0gcmxpbS5ybGltX21heCA9IDMyIDw8IDIwOw0KICBzZXRybGltaXQoUkxJTUlUX01FTUxPQ0ss
+ICZybGltKTsNCiAgcmxpbS5ybGltX2N1ciA9IHJsaW0ucmxpbV9tYXggPSAxMzYgPDwgMjA7DQog
+IHNldHJsaW1pdChSTElNSVRfRlNJWkUsICZybGltKTsNCiAgcmxpbS5ybGltX2N1ciA9IHJsaW0u
+cmxpbV9tYXggPSAxIDw8IDIwOw0KICBzZXRybGltaXQoUkxJTUlUX1NUQUNLLCAmcmxpbSk7DQog
+IHJsaW0ucmxpbV9jdXIgPSBybGltLnJsaW1fbWF4ID0gMTI4IDw8IDIwOw0KICBzZXRybGltaXQo
+UkxJTUlUX0NPUkUsICZybGltKTsNCiAgcmxpbS5ybGltX2N1ciA9IHJsaW0ucmxpbV9tYXggPSAy
+NTY7DQogIHNldHJsaW1pdChSTElNSVRfTk9GSUxFLCAmcmxpbSk7DQogIGlmICh1bnNoYXJlKENM
+T05FX05FV05TKSkgew0KICB9DQogIGlmIChtb3VudChOVUxMLCAiLyIsIE5VTEwsIE1TX1JFQyB8
+IE1TX1BSSVZBVEUsIE5VTEwpKSB7DQogIH0NCiAgaWYgKHVuc2hhcmUoQ0xPTkVfTkVXSVBDKSkg
+ew0KICB9DQogIGlmICh1bnNoYXJlKDB4MDIwMDAwMDApKSB7DQogIH0NCiAgaWYgKHVuc2hhcmUo
+Q0xPTkVfTkVXVVRTKSkgew0KICB9DQogIGlmICh1bnNoYXJlKENMT05FX1NZU1ZTRU0pKSB7DQog
+IH0NCiAgdHlwZWRlZiBzdHJ1Y3Qgew0KICAgIGNvbnN0IGNoYXIqIG5hbWU7DQogICAgY29uc3Qg
+Y2hhciogdmFsdWU7DQogIH0gc3lzY3RsX3Q7DQogIHN0YXRpYyBjb25zdCBzeXNjdGxfdCBzeXNj
+dGxzW10gPSB7DQogICAgICB7Ii9wcm9jL3N5cy9rZXJuZWwvc2htbWF4IiwgIjE2Nzc3MjE2In0s
+DQogICAgICB7Ii9wcm9jL3N5cy9rZXJuZWwvc2htYWxsIiwgIjUzNjg3MDkxMiJ9LA0KICAgICAg
+eyIvcHJvYy9zeXMva2VybmVsL3NobW1uaSIsICIxMDI0In0sDQogICAgICB7Ii9wcm9jL3N5cy9r
+ZXJuZWwvbXNnbWF4IiwgIjgxOTIifSwNCiAgICAgIHsiL3Byb2Mvc3lzL2tlcm5lbC9tc2dtbmki
+LCAiMTAyNCJ9LA0KICAgICAgeyIvcHJvYy9zeXMva2VybmVsL21zZ21uYiIsICIxMDI0In0sDQog
+ICAgICB7Ii9wcm9jL3N5cy9rZXJuZWwvc2VtIiwgIjEwMjQgMTA0ODU3NiA1MDAgMTAyNCJ9LA0K
+ICB9Ow0KICB1bnNpZ25lZCBpOw0KICBmb3IgKGkgPSAwOyBpIDwgc2l6ZW9mKHN5c2N0bHMpIC8g
+c2l6ZW9mKHN5c2N0bHNbMF0pOyBpKyspDQogICAgd3JpdGVfZmlsZShzeXNjdGxzW2ldLm5hbWUs
+IHN5c2N0bHNbaV0udmFsdWUpOw0KfQ0KDQpzdGF0aWMgaW50IHdhaXRfZm9yX2xvb3AoaW50IHBp
+ZCkNCnsNCiAgaWYgKHBpZCA8IDApDQogICAgZXhpdCgxKTsNCiAgaW50IHN0YXR1cyA9IDA7DQog
+IHdoaWxlICh3YWl0cGlkKC0xLCAmc3RhdHVzLCBfX1dBTEwpICE9IHBpZCkgew0KICB9DQogIHJl
+dHVybiBXRVhJVFNUQVRVUyhzdGF0dXMpOw0KfQ0KDQpzdGF0aWMgdm9pZCBkcm9wX2NhcHModm9p
+ZCkNCnsNCiAgc3RydWN0IF9fdXNlcl9jYXBfaGVhZGVyX3N0cnVjdCBjYXBfaGRyID0ge307DQog
+IHN0cnVjdCBfX3VzZXJfY2FwX2RhdGFfc3RydWN0IGNhcF9kYXRhWzJdID0ge307DQogIGNhcF9o
+ZHIudmVyc2lvbiA9IF9MSU5VWF9DQVBBQklMSVRZX1ZFUlNJT05fMzsNCiAgY2FwX2hkci5waWQg
+PSBnZXRwaWQoKTsNCiAgaWYgKHN5c2NhbGwoU1lTX2NhcGdldCwgJmNhcF9oZHIsICZjYXBfZGF0
+YSkpDQogICAgZXhpdCgxKTsNCiAgY29uc3QgaW50IGRyb3AgPSAoMSA8PCBDQVBfU1lTX1BUUkFD
+RSkgfCAoMSA8PCBDQVBfU1lTX05JQ0UpOw0KICBjYXBfZGF0YVswXS5lZmZlY3RpdmUgJj0gfmRy
+b3A7DQogIGNhcF9kYXRhWzBdLnBlcm1pdHRlZCAmPSB+ZHJvcDsNCiAgY2FwX2RhdGFbMF0uaW5o
+ZXJpdGFibGUgJj0gfmRyb3A7DQogIGlmIChzeXNjYWxsKFNZU19jYXBzZXQsICZjYXBfaGRyLCAm
+Y2FwX2RhdGEpKQ0KICAgIGV4aXQoMSk7DQp9DQoNCnN0YXRpYyBpbnQgZG9fc2FuZGJveF9ub25l
+KHZvaWQpDQp7DQogIGlmICh1bnNoYXJlKENMT05FX05FV1BJRCkpIHsNCiAgfQ0KICBpbnQgcGlk
+ID0gZm9yaygpOw0KICBpZiAocGlkICE9IDApDQogICAgcmV0dXJuIHdhaXRfZm9yX2xvb3AocGlk
+KTsNCiAgc2V0dXBfY29tbW9uKCk7DQogIHNhbmRib3hfY29tbW9uKCk7DQogIGRyb3BfY2Fwcygp
+Ow0KICBpbml0aWFsaXplX25ldGRldmljZXNfaW5pdCgpOw0KICBpZiAodW5zaGFyZShDTE9ORV9O
+RVdORVQpKSB7DQogIH0NCiAgd3JpdGVfZmlsZSgiL3Byb2Mvc3lzL25ldC9pcHY0L3BpbmdfZ3Jv
+dXBfcmFuZ2UiLCAiMCA2NTUzNSIpOw0KICBpbml0aWFsaXplX25ldGRldmljZXMoKTsNCiAgc2V0
+dXBfYmluZGVyZnMoKTsNCiAgbG9vcCgpOw0KICBleGl0KDEpOw0KfQ0KDQp1aW50NjRfdCByWzRd
+ID0gezB4ZmZmZmZmZmZmZmZmZmZmZiwgMHhmZmZmZmZmZmZmZmZmZmZmLCAweGZmZmZmZmZmZmZm
+ZmZmZmYsDQogICAgICAgICAgICAgICAgIDB4MH07DQoNCnZvaWQgbG9vcCh2b2lkKQ0Kew0KICBp
+bnRwdHJfdCByZXMgPSAwOw0KICByZXMgPSBzeXNjYWxsKF9fTlJfc29ja2V0LCAweDEwdWwsIDN1
+bCwgMCk7DQogIGlmIChyZXMgIT0gLTEpDQogICAgclswXSA9IHJlczsNCiAgKih1aW50NjRfdCop
+MHgyMDAwMDAwMCA9IDA7DQogICoodWludDMyX3QqKTB4MjAwMDAwMDggPSAweGMzZmZmZmZmOw0K
+ICAqKHVpbnQ2NF90KikweDIwMDAwMDEwID0gMHgyMDAwMDA4MDsNCiAgKih1aW50NjRfdCopMHgy
+MDAwMDA4MCA9IDB4MjAwMDIxNDA7DQogIG1lbWNweSgodm9pZCopMHgyMDAwMjE0MCwNCiAgICAg
+ICAgICJceDI4XHgwMFx4MDBceDAwXHgxMFx4MDBceDAxXHgwMFx4MDBceDAwXHgwMFx4MDBceDAw
+XHgwMFx4MDBceDAwXHgwMCINCiAgICAgICAgICJceDAwXHgwMFx4MDBceDAwXHgwMFx4MDBceDAw
+IiwNCiAgICAgICAgIDI0KTsNCiAgKih1aW50MzJfdCopMHgyMDAwMjE1OCA9IC0xOw0KICBtZW1j
+cHkoKHZvaWQqKTB4MjAwMDIxNWMsICJceDdiXHgwMFx4MDBceDAwXHgwOFx4MDBceDFiIiwgNyk7
+DQogICoodWludDY0X3QqKTB4MjAwMDAwODggPSAweDI4Ow0KICAqKHVpbnQ2NF90KikweDIwMDAw
+MDE4ID0gMTsNCiAgKih1aW50NjRfdCopMHgyMDAwMDAyMCA9IDA7DQogICoodWludDY0X3QqKTB4
+MjAwMDAwMjggPSAwOw0KICAqKHVpbnQzMl90KikweDIwMDAwMDMwID0gMDsNCiAgc3lzY2FsbChf
+X05SX3NlbmRtc2csIHJbMF0sIDB4MjAwMDAwMDB1bCwgMHVsKTsNCiAgcmVzID0gc3lzY2FsbChf
+X05SX3NvY2tldCwgMHgxMXVsLCAzdWwsIDB4MzAwKTsNCiAgaWYgKHJlcyAhPSAtMSkNCiAgICBy
+WzFdID0gcmVzOw0KICAqKHVpbnQzMl90KikweDIwMDAwMzgwID0gMHg0MDQwMDsNCiAgc3lzY2Fs
+bChfX05SX3NldHNvY2tvcHQsIHJbMV0sIDB4MTA3LCAweGYsIDB4MjAwMDAzODB1bCwgNHVsKTsN
+CiAgcmVzID0gc3lzY2FsbChfX05SX3NvY2tldCwgMHgxMXVsLCAzdWwsIDB4MzAwKTsNCiAgaWYg
+KHJlcyAhPSAtMSkNCiAgICByWzJdID0gcmVzOw0KICBtZW1jcHkoKHZvaWQqKTB4MjAwMDAwNDAs
+ICJpcHZsYW4wXDAwMFwwMDBcMDAwXDAwMFwwMDBcMDAwXDAwMFwwMDBcMDAwIiwgMTYpOw0KICBy
+ZXMgPSBzeXNjYWxsKF9fTlJfaW9jdGwsIHJbMl0sIDB4ODkzMywgMHgyMDAwMDA0MHVsKTsNCiAg
+aWYgKHJlcyAhPSAtMSkNCiAgICByWzNdID0gKih1aW50MzJfdCopMHgyMDAwMDA1MDsNCiAgbWVt
+Y3B5KCh2b2lkKikweDIwMDAwMjAwLA0KICAgICAgICAgIlx4MDNceDAzXHgwMlx4MDBceDU0XHhl
+NFx4MDVceDAwXHgxMFx4MDBceDgwXHgwMFx4MDBceDUzXHhjY1x4OWNceDJiIg0KICAgICAgICAg
+Ilx4MTlceDNiXHgwMFx4MDBceDAwXHg4OVx4NGZceDA4XHgwM1x4ODNceDgxXHgwNCIsDQogICAg
+ICAgICAyOSk7DQogICoodWludDE2X3QqKTB4MjAwMDAwYzAgPSAweDExOw0KICAqKHVpbnQxNl90
+KikweDIwMDAwMGMyID0gaHRvYmUxNigwKTsNCiAgKih1aW50MzJfdCopMHgyMDAwMDBjNCA9IHJb
+M107DQogICoodWludDE2X3QqKTB4MjAwMDAwYzggPSAxOw0KICAqKHVpbnQ4X3QqKTB4MjAwMDAw
+Y2EgPSAwOw0KICAqKHVpbnQ4X3QqKTB4MjAwMDAwY2IgPSA2Ow0KICBtZW1zZXQoKHZvaWQqKTB4
+MjAwMDAwY2MsIDE3MCwgNSk7DQogICoodWludDhfdCopMHgyMDAwMDBkMSA9IDA7DQogIG1lbXNl
+dCgodm9pZCopMHgyMDAwMDBkMiwgMCwgMik7DQogIHN5c2NhbGwoX19OUl9zZW5kdG8sIHJbMV0s
+IDB4MjAwMDAyMDB1bCwgMHhlNDVmdWwsIDB1bCwgMHgyMDAwMDBjMHVsLCAweDE0dWwpOw0KfQ0K
+aW50IG1haW4odm9pZCkNCnsNCiAgc3lzY2FsbChfX05SX21tYXAsIDB4MWZmZmYwMDB1bCwgMHgx
+MDAwdWwsIDB1bCwgMHgzMnVsLCAtMSwgMHVsKTsNCiAgc3lzY2FsbChfX05SX21tYXAsIDB4MjAw
+MDAwMDB1bCwgMHgxMDAwMDAwdWwsIDd1bCwgMHgzMnVsLCAtMSwgMHVsKTsNCiAgc3lzY2FsbChf
+X05SX21tYXAsIDB4MjEwMDAwMDB1bCwgMHgxMDAwdWwsIDB1bCwgMHgzMnVsLCAtMSwgMHVsKTsN
+CiAgZG9fc2FuZGJveF9ub25lKCk7DQogIHJldHVybiAwOw0KfQ0KDQoNCg0KDQotLS0tLemCruS7
+tuWOn+S7ti0tLS0tDQrlj5Hku7bkuro6IFdpbGxlbSBkZSBCcnVpam4gW21haWx0bzp3aWxsZW1k
+ZWJydWlqbi5rZXJuZWxAZ21haWwuY29tXSANCuWPkemAgeaXtumXtDogMjAyM+W5tDTmnIgxMuaX
+pSA5OjQ0IFBNDQrmlLbku7bkuro6IGx1d2VpIChPKSA8bHV3ZWkzMkBodWF3ZWkuY29tPjsgRXJp
+YyBEdW1hemV0IDxlZHVtYXpldEBnb29nbGUuY29tPg0K5oqE6YCBOiBXaWxsZW0gZGUgQnJ1aWpu
+IDx3aWxsZW1kZWJydWlqbi5rZXJuZWxAZ21haWwuY29tPjsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsg
+a3ViYUBrZXJuZWwub3JnOyBwYWJlbmlAcmVkaGF0LmNvbTsgYXNtbC5zaWxlbmNlQGdtYWlsLmNv
+bTsgaW1hZ2Vkb25nQHRlbmNlbnQuY29tOyBicm91ZXJAcmVkaGF0LmNvbTsga2Vlc2Nvb2tAY2hy
+b21pdW0ub3JnOyBqYmVuY0ByZWRoYXQuY29tOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51
+eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQrkuLvpopg6IFJlOiBbUEFUQ0ggbmV0XSBuZXQ6IEFk
+ZCBjaGVjayBmb3IgY3N1bV9zdGFydCBpbiBza2JfcGFydGlhbF9jc3VtX3NldCgpDQoNCmx1d2Vp
+IChPKSB3cm90ZToNCj4gDQo+IOWcqCAyMDIzLzQvMTEgNDoxMyBQTSwgRXJpYyBEdW1hemV0IOWG
+memBkzoNCj4gPiBPbiBUdWUsIEFwciAxMSwgMjAyMyBhdCA0OjMz4oCvQU0gbHV3ZWkgKE8pIDxs
+dXdlaTMyQGh1YXdlaS5jb20+IHdyb3RlOg0KPiA+Pg0KPiA+PiDlnKggMjAyMy80LzExIDE6MzAg
+QU0sIFdpbGxlbSBkZSBCcnVpam4g5YaZ6YGTOg0KPiA+Pg0KPiA+PiBFcmljIER1bWF6ZXQgd3Jv
+dGU6DQo+ID4+DQo+ID4+IE9uIE1vbiwgQXByIDEwLCAyMDIzIGF0IDQ6MjLigK9BTSBMdSBXZWkg
+PGx1d2VpMzJAaHVhd2VpLmNvbT4gd3JvdGU6DQo+ID4+DQo+ID4+IElmIGFuIEFGX1BBQ0tFVCBz
+b2NrZXQgaXMgdXNlZCB0byBzZW5kIHBhY2tldHMgdGhyb3VnaCBhIEwzIG1vZGUgDQo+ID4+IGlw
+dmxhbiBhbmQgYSB2bmV0IGhlYWRlciBpcyBzZXQgdmlhIHNldHNvY2tvcHQoKSB3aXRoIHRoZSBv
+cHRpb24gDQo+ID4+IG5hbWUgb2YgUEFDS0VUX1ZORVRfSERSLCB0aGUgdmFsdWUgb2Ygb2Zmc2V0
+IHdpbGwgYmUgbmFnZXRpdmUgaW4gDQo+ID4+IGZ1bmN0aW9uDQo+ID4+IHNrYl9jaGVja3N1bV9o
+ZWxwKCkgYW5kIHRyaWdnZXIgdGhlIGZvbGxvd2luZyB3YXJuaW5nOg0KPiA+Pg0KPiA+PiBXQVJO
+SU5HOiBDUFU6IDMgUElEOiAyMDIzIGF0IG5ldC9jb3JlL2Rldi5jOjMyNjINCj4gPj4gc2tiX2No
+ZWNrc3VtX2hlbHArMHgyZGMvMHgzOTANCj4gPj4gLi4uLi4uDQo+ID4+IENhbGwgVHJhY2U6DQo+
+ID4+ICAgPFRBU0s+DQo+ID4+ICAgaXBfZG9fZnJhZ21lbnQrMHg2M2QvMHhkMDANCj4gPj4gICBp
+cF9mcmFnbWVudC5jb25zdHByb3AuMCsweGQyLzB4MTUwDQo+ID4+ICAgX19pcF9maW5pc2hfb3V0
+cHV0KzB4MTU0LzB4MWUwDQo+ID4+ICAgaXBfZmluaXNoX291dHB1dCsweDM2LzB4MWIwDQo+ID4+
+ICAgaXBfb3V0cHV0KzB4MTM0LzB4MjQwDQo+ID4+ICAgaXBfbG9jYWxfb3V0KzB4YmEvMHhlMA0K
+PiA+PiAgIGlwdmxhbl9wcm9jZXNzX3Y0X291dGJvdW5kKzB4MjZkLzB4MmIwDQo+ID4+ICAgaXB2
+bGFuX3htaXRfbW9kZV9sMysweDQ0Yi8weDQ4MA0KPiA+PiAgIGlwdmxhbl9xdWV1ZV94bWl0KzB4
+ZDYvMHgxZDANCj4gPj4gICBpcHZsYW5fc3RhcnRfeG1pdCsweDMyLzB4YTANCj4gPj4gICBkZXZf
+aGFyZF9zdGFydF94bWl0KzB4ZGYvMHgzZjANCj4gPj4gICBwYWNrZXRfc25kKzB4YTdkLzB4MTEz
+MA0KPiA+PiAgIHBhY2tldF9zZW5kbXNnKzB4N2IvMHhhMA0KPiA+PiAgIHNvY2tfc2VuZG1zZysw
+eDE0Zi8weDE2MA0KPiA+PiAgIF9fc3lzX3NlbmR0bysweDIwOS8weDJlMA0KPiA+PiAgIF9feDY0
+X3N5c19zZW5kdG8rMHg3ZC8weDkwDQo+ID4+DQo+ID4+IFRoZSByb290IGNhdXNlIGlzOg0KPiA+
+PiAxLiBza2ItPmNzdW1fc3RhcnQgaXMgc2V0IGluIHBhY2tldF9zbmQoKSBhY2NvcmRpbmcgdm5l
+dF9oZHI6DQo+ID4+ICAgICBza2ItPmNzdW1fc3RhcnQgPSBza2JfaGVhZHJvb20oc2tiKSArICh1
+MzIpc3RhcnQ7DQo+ID4+DQo+ID4+ICAgICAnc3RhcnQnIGlzIHRoZSBvZmZzZXQgZnJvbSBza2It
+PmRhdGEsIGFuZCBtYWMgaGVhZGVyIGhhcyBiZWVuDQo+ID4+ICAgICBzZXQgYXQgdGhpcyBtb21l
+bnQuDQo+ID4+DQo+ID4+IDIuIHdoZW4gdGhpcyBza2IgYXJyaXZlcyBpcHZsYW5fcHJvY2Vzc19v
+dXRib3VuZCgpLCB0aGUgbWFjIGhlYWRlcg0KPiA+PiAgICAgaXMgdW5zZXQgYW5kIHNrYl9wdWxs
+IGlzIGNhbGxlZCB0byBleHBhbmQgdGhlIHNrYiBoZWFkcm9vbS4NCj4gPj4NCj4gPj4gMy4gSW4g
+ZnVuY3Rpb24gc2tiX2NoZWNrc3VtX2hlbHAoKSwgdGhlIHZhcmlhYmxlIG9mZnNldCBpcyBjYWxj
+dWxhdGVkDQo+ID4+ICAgICBhczoNCj4gPj4gICAgICAgIG9mZnNldCA9IHNrYi0+Y3N1bV9zdGFy
+dCAtIHNrYl9oZWFkcm9vbShza2IpOw0KPiA+Pg0KPiA+PiAgICAgc2luY2Ugc2tiIGhlYWRyb29t
+IGlzIGV4cGFuZGVkIGluIHN0ZXAyLCBvZmZzZXQgaXMgbmFnZXRpdmUsIGFuZCBpdA0KPiA+PiAg
+ICAgaXMgY29udmVydGVkIHRvIGFuIHVuc2lnbmVkIGludGVnZXIgd2hlbiBjb21wYXJlZCB3aXRo
+IHNrYl9oZWFkbGVuDQo+ID4+ICAgICBhbmQgdHJpZ2dlciB0aGUgd2FybmluZy4NCj4gPj4NCj4g
+Pj4gTm90IHN1cmUgd2h5IGl0IGlzIG5lZ2F0aXZlID8gVGhpcyBzZWVtcyBsaWtlIHRoZSByZWFs
+IHByb2JsZW0uLi4NCj4gPj4NCj4gPj4gY3N1bV9zdGFydCBpcyByZWxhdGl2ZSB0byBza2ItPmhl
+YWQsIHJlZ2FyZGxlc3Mgb2YgcHVsbCBvcGVyYXRpb25zLg0KPiA+Pg0KPiA+PiB3aGF0ZXZlciBz
+ZXQgY3N1bV9zdGFydCB0byBhIHRvbyBzbWFsbCB2YWx1ZSBzaG91bGQgYmUgdHJhY2tlZCBhbmQg
+Zml4ZWQuDQo+ID4+DQo+ID4+IFJpZ2h0LiBUaGUgb25seSB3YXkgSSBjb3VsZCBzZWUgaXQgZ28g
+bmVnYXRpdmUgaXMgaWYgc29tZXRoaW5nIGRvZXMgDQo+ID4+IHRoZSBlcXVpdmFsZW50IG9mIHBz
+a2JfZXhwYW5kX2hlYWQgd2l0aCBwb3NpdGl2ZSBuaGVhZCwgYW5kIHdpdGhvdXQgDQo+ID4+IGNh
+bGxpbmcgc2tiX2hlYWRlcnNfb2Zmc2V0X3VwZGF0ZS4NCj4gPj4NCj4gPj4gUGVyaGFwcyB0aGUg
+Y2F1c2UgY2FuIGJlIGZvdW5kIGJ5IGluc3RydW1lbnRpbmcgYWxsIHRoZSBhYm92ZSANCj4gPj4g
+ZnVuY3Rpb25zIGluIHRoZSB0cmFjZSB0byByZXBvcnQgc2tiX2hlYWRyb29tIGFuZCBjc3VtX3N0
+YXJ0Lg0KPiA+PiBBbmQgYWxzbyB2aXJ0aW9fbmV0X2hkcl90b19za2IuDQo+ID4+IC4NCj4gPj4N
+Cj4gPj4gSGksIEVyaWMgIGFuZCBXaWxsZW0sICBzb3JyeSBmb3Igbm90IGRlc2NyaWJpbmcgdGhp
+cyBpc3N1ZSBjbGVhcmx5IGVub3VnaC4gSGVyZSBpcyB0aGUgZGV0YWlsZWQgZGF0YSBwYXRoOg0K
+PiA+Pg0KPiA+PiAxLiAgVXNlcnMgY2FsbCBzZW5kbXNnKCkgdG8gc2VuZCBtZXNzYWdlIHdpdGgg
+YSBBRl9QQUNLRVQgZG9tYWluIA0KPiA+PiBhbmQgU09DS19SQVcgdHlwZSBzb2NrZXQuIFNpbmNl
+IHZuZXRfaGRyDQo+ID4+DQo+ID4+IGlzIHNldCwgIGNzdW1fc3RhcnQgaXMgY2FsY3VsYXRlZCBh
+czoNCj4gPj4NCj4gPj4gICAgICAgICAgICAgICAgICAgICAgICBza2ItPmNzdW1fc3RhcnQgPSBz
+a2JfaGVhZHJvb20oc2tiKSArICh1MzIpc3RhcnQ7ICAgICAvLyBzZWUgdGhlIGZvbGxvd2luZyBj
+b2RlLg0KPiA+Pg0KPiA+PiB0aGUgdmFyaWJsZSAic3RhcnQiIGl0IHBhc3NlZCBmcm9tIHVzZXIg
+ZGF0YSwgaW4gbXkgY2FzZSBpdCBpcyA1IGFuZCBza2JfaGVhZHJvb20gaXMgMiwgc28gc2tiLT5j
+c3VtX3N0YXJ0IGlzIDcuDQo+ID4+DQo+ID4gSSB0aGluayB5b3UgYXJlIHJlcGhyYXNpbmcsIGJ1
+dCB5b3UgZGlkIG5vdCBhZGRyZXNzIG15IGZlZWRiYWNrLg0KPiA+DQo+ID4gTmFtZWx5LCAiY3N1
+bV9zdGFydCA8IHNrYi0+bmV0d29ya19oZWFkZXIiIGRvZXMgbm90IGxvb2sgc2Vuc2ljYWwgdG8g
+bWUuDQo+ID4NCj4gPiBjc3VtX3N0YXJ0IHNob3VsZCBiZSByZWxhdGVkIHRvIHRoZSB0cmFuc3Bv
+cnQgaGVhZGVyLCBub3QgbmV0d29yayBoZWFkZXIuDQo+IA0KPiAgwqDCoMKgIGNzdW1fc3RhcnQg
+aXMgY2FsY3VsYXRlZCBpbiBwYWtjZXRfc25kKCkgYXM6DQo+IA0KPiAgwqAgwqAgwqAgwqAgwqDC
+oCDCoCDCoCBza2ItPmNzdW1fc3RhcnQgPSBza2JfaGVhZHJvb20oc2tiKSArICh1MzIpc3RhcnQ7
+DQo+IA0KPiAgICAgdGhlIHZhcmlibGUgInN0YXJ0IiBpdCBwYXNzZWQgZnJvbSB1c2VyIGRhdGEg
+dmlhIHZuZXRfaGRyIGFzIGZvbGxvd3M6DQo+IA0KPiAgICAgIHBhY2tldF9zbmQoKQ0KPiAgICAg
+IC4uLgkNCj4gCWlmIChwby0+aGFzX3ZuZXRfaGRyKSB7DQo+IAkJZXJyID0gcGFja2V0X3NuZF92
+bmV0X3BhcnNlKG1zZywgJmxlbiwgJnZuZXRfaGRyKTsgICAvLyBnZXQgdm5ldF9oZHIgd2hpY2gg
+aW5jbHVkZXMgc3RhcnQNCj4gCQlpZiAoZXJyKQ0KPiAJCSAgICBnb3RvIG91dF91bmxvY2s7DQo+
+IAkJaGFzX3ZuZXRfaGRyID0gdHJ1ZTsNCj4gCX0NCj4gICAgICAuLi4NCj4gDQo+ICAgIGNzdW1f
+c3RhcnQgc2hvdWxkIGJlIGF0IHRoZSB0cmFuc3BvcnQgaGVhZGVyIGJ1dCB1c2VycyBtYXkgcGFz
+cyBhbiBpbmNvcnJlY3QgdmFsdWUuDQoNClRoYW5rcyBmb3IgdGhlIGNsYXJpZmljYXRpb24uDQoN
+ClNvIHRoaXMgaXMgYW5vdGhlciBib2d1cyBwYWNrZXQgc29ja2V0IHBhY2tldCwgd2l0aCBjc3Vt
+X3N0YXJ0IHNldCBzb21ld2hlcmUgaW4gdGhlIEwyIGhlYWRlciwgYW5kIHRoYXQgZ2V0cyBwb3Bw
+ZWQgYnkgaXB2bGFuLCBjb3JyZWN0Pw0KDQpEbyB5b3UgaGF2ZSB0aGUgZXhhY3QgcGFja2V0IGFu
+ZCB0aGUgdmlydGlvX25ldF9oZHIgdGhhdCBjYXVzZWQgdGhpcywgcGVyaGFwcz8NCg0Kc2tiX3Bh
+cnRpYWxfY3N1bV9zZXQgaW4gdmlydGlvX25ldF9oZHJfdG9fc2tiIGhhcyBzb21lIGJhc2ljIGJv
+dW5kcyB0ZXN0cyBmb3IgY3N1bV9zdGFydCwgY3N1bV9vZmYgYW5kIGNzdW1fZW5kLiBCdXQgdGhh
+dCBkb2VzIG5vdCBwcmVjbHVkZSBhbiBvZmZzZXQgaW4gdGhlIEwyIGhlYWRlciwgZnJvbSB3aGF0
+IEkgY2FuIHRlbGwuDQoNCkNvbmNlaXZhYmx5IHRoaXMgY2FuIGJlIGFkZGVkLCB0aG91Z2ggaXQg
+aXMgYSBiaXQgY29tcGxleCBmb3IgZGV2aWNlcyB3aXRoIHZhcmlhYmxlIGxlbmd0aCBsaW5rIGxh
+eWVyIGhlYWRlcnMuIEFuZCBpdCB3b3VsZCBoYXZlIHRvIGhhcHBlbiBub3Qgb25seSBmb3IgcGFj
+a2V0IHNvY2tldHMsIGJ1dCBhbGwgdXNlcnMgb2YgdmlydGlvX25ldF9oZHIuDQo=
