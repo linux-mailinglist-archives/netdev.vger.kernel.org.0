@@ -2,116 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 278756E1F66
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 11:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AE826E1F72
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 11:40:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbjDNJgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 05:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54530 "EHLO
+        id S230016AbjDNJkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 05:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbjDNJgb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 05:36:31 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989CC5B82;
-        Fri, 14 Apr 2023 02:36:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=LW6cOST+IVw4mFa0Tl2bUIYuEJ4a7bS+eYImfnyQXA8=; b=iBM8Wuei8FIzDoAK0k2csyvDVV
-        k/8Usw0+JklwaEy68DxdSB0NdgpqvwrmWSGTpHPQTYNA4ZLpyv0WgZRwG7v2VWEGvJqi/UOYDc2B+
-        7+oyw04nMzkiFgwYea9P/S4hxj9CreMinAZecQ1uEypzeCaUa8SAAdAho9ekqjcOlV6wcOsomVYj1
-        g3jJZZGS0rYGjNfjKvngt4o5JkjO56eKe4+fTbEipfxtazh8RCjrlh1SnuWjcccSn7dg7acn73Opv
-        2OOaphx00GoI+fEI+zjVOBvqryjWascKCi8cEtxX3jlhzdc9q294Idd5QouV39V19XAN0XbFKseY8
-        XbVRu/0Q==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pnFph-000Ahm-Hr; Fri, 14 Apr 2023 11:35:07 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1pnFph-000URX-1E; Fri, 14 Apr 2023 11:35:05 +0200
-Subject: Re: [PATCH net-next] bpf, net: Support redirecting to ifb with bpf
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Yafang Shao <laoar.shao@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, hawk@kernel.org, john.fastabend@gmail.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>, martin.lau@linux.dev
-References: <20230413025350.79809-1-laoar.shao@gmail.com>
- <968ea56a-301a-45c5-3946-497401eb95b5@iogearbox.net> <874jpj2682.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ee52c2e4-4199-da40-8e86-57ef4085c968@iogearbox.net>
-Date:   Fri, 14 Apr 2023 11:34:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S229908AbjDNJkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 05:40:04 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60FD1BD0
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 02:40:03 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-50489c109f4so4926118a12.2
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 02:40:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681465202; x=1684057202;
+        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=09ttSX06oRnzdKuIS/gGoRYpeZHjJP0fBn470Dk7WKI=;
+        b=LS8nMsN5zCHcTuGnYs15D8GtEVuS6/cl7i7AIg9CY99GV188l3IQvbGjjaefZK3WtH
+         FmKCG0G70C03PpauhLwX/Rgn6t9vxMnK5QHiNmCchi7g/nQjszLNPZvdLib9lPlsYF24
+         nbeFquKj16+9uD97Db7q8gDZNXaq1lcMe96amAIxLNdQ3B7zGktun83045bswYKYB06x
+         2sGt8nSxN2ATisBT8zz3WAagWw6Rglt9Y8uTW+c/CRxLZ8bbY4vECKOdZ9ghD6h4mO/E
+         KpKJ0NKys8pPLmo4JBo9d2ZeUq1ichQ9OSk0GmNWrJkFQYpEmnUcV56W6yQBEYmOHFvm
+         IzWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681465202; x=1684057202;
+        h=to:subject:message-id:date:from:sender:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=09ttSX06oRnzdKuIS/gGoRYpeZHjJP0fBn470Dk7WKI=;
+        b=lOcx3Jcbcn/+JTIj/pDHOgxT45ytUgpwzEwD01DY+G0cELzChL2dsqxIR9MeKHQo5i
+         cKPn2b1oxKdWGVz2OUZQXjxZyfJROn4RYleaVzQBKCZ/xoE02TDxFBYThIL+hTZL2ChB
+         seTn/JfCTZEVo4MBYA0lkphYZqgC1Nv2TdREkYmjosObF0aLqdPwoL7X+auIElvynOta
+         0BHeYsskRTheGDBAlZO59Z9hc9Fjb02MXNUadcTfBdjcEpJCSYnUsCIPG5Fre5IzVABB
+         6W6swz1TTnLQPrxO9F0MmOKYgZeLsf/duV5x5TlOdpVoYhTr53ZLGv6sF8Ld+ck+UEhM
+         qFJA==
+X-Gm-Message-State: AAQBX9cYf71bsxELkxt0pr7HRztfop5fQoqeNwLFhEFO9t/ohWwUV3bM
+        8Fs43CYrvCzr9iu16zGe7OrEmNqXEdctNDGUaV8=
+X-Google-Smtp-Source: AKy350bb60xMB/ARfpl6Joxr3W1p2YlcTZK2DaWbqTer+wNXCWxAGGZqMbpqxEO+6gnhueZpcrrO0gdLKLra8D8hvs8=
+X-Received: by 2002:a50:951c:0:b0:504:78b1:81b0 with SMTP id
+ u28-20020a50951c000000b0050478b181b0mr2741808eda.5.1681465201954; Fri, 14 Apr
+ 2023 02:40:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <874jpj2682.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26875/Fri Apr 14 09:23:27 2023)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Sender: mrslila67haber@gmail.com
+Received: by 2002:a05:6f02:c88e:b0:4a:bb48:dcaa with HTTP; Fri, 14 Apr 2023
+ 02:40:01 -0700 (PDT)
+From:   "Mrs. Lenny Tatiana" <mrslenytati44@gmail.com>
+Date:   Fri, 14 Apr 2023 11:40:01 +0200
+X-Google-Sender-Auth: 4pn96Us44YP9TbxcQylZJfwgykE
+Message-ID: <CADVoOvis4vovwBExiCXU06SGbVAdBhOVhiFsGswZVQj-cgXvkg@mail.gmail.com>
+Subject: Greetings dear friend
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.6 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
+        BAYES_00,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_FROM,HK_SCAM,LOTS_OF_MONEY,MONEY_FRAUD_8,RCVD_IN_DNSWL_NONE,
+        RISK_FREE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY,URG_BIZ autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:52e listed in]
+        [list.dnswl.org]
+        * -1.9 BAYES_00 BODY: Bayes spam probability is 0 to 1%
+        *      [score: 0.0000]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [mrslenytati44[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  2.0 HK_SCAM No description available.
+        *  0.6 URG_BIZ Contains urgent matter
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        *  0.0 RISK_FREE No risk!
+        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
+        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
+        *  3.1 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/13/23 4:43 PM, Toke Høiland-Jørgensen wrote:
-> Daniel Borkmann <daniel@iogearbox.net> writes:
-> 
->>> 2). We can't redirect ingress packet to ifb with bpf
->>> By trying to analyze if it is possible to redirect the ingress packet to
->>> ifb with a bpf program, we find that the ifb device is not supported by
->>> bpf redirect yet.
->>
->> You actually can: Just let BPF program return TC_ACT_UNSPEC for this
->> case and then add a matchall with higher prio (so it runs after bpf)
->> that contains an action with mirred egress redirect that pushes to ifb
->> dev - there is no change needed.
-> 
-> I wasn't aware that BPF couldn't redirect directly to an IFB; any reason
-> why we shouldn't merge this patch in any case?
-> 
->>> This patch tries to resolve it by supporting redirecting to ifb with bpf
->>> program.
->>>
->>> Ingress bandwidth limit is useful in some scenarios, for example, for the
->>> TCP-based service, there may be lots of clients connecting it, so it is
->>> not wise to limit the clients' egress. After limiting the server-side's
->>> ingress, it will lower the send rate of the client by lowering the TCP
->>> cwnd if the ingress bandwidth limit is reached. If we don't limit it,
->>> the clients will continue sending requests at a high rate.
->>
->> Adding artificial queueing for the inbound traffic, aren't you worried
->> about DoS'ing your node?
-> 
-> Just as an aside, the ingress filter -> ifb -> qdisc on the ifb
-> interface does work surprisingly well, and we've been using that over in
-> OpenWrt land for years[0]. It does have some overhead associated with it,
-> but I wouldn't expect it to be a source of self-DoS in itself (assuming
-> well-behaved TCP traffic).
+Greetings dear friend,
 
-Out of curiosity, wrt OpenWrt case, can you elaborate on the use case to why
-choosing to do this on ingress via ifb rather than on the egress side? I
-presume in this case it's regular router, so pkts would be forwarded anyway,
-and in your case traversing qdisc layer / queuing twice (ingress phys dev ->
-ifb, egress phys dev), right? What is the rationale that would justify such
-setup aka why it cannot be solved differently?
+Calvary Greetings in the name of the LORD Almighty and Our LORD JESUS
+CHRIST the giver of every good thing. Good day and compliments of the
+seasons, i know this letter will definitely come to you as a huge
+surprise, but I implore you to take the time to go through it
+carefully as the decision you make will go off a long way to determine
+my future and continued existence. I am Mrs. Lenny Tatiana aging widow
+of
+57 years old suffering from long time illness.I have some funds I
+inherited from my late husband, the sum of (19.2Million Dollars) and I
+needed a very honest and God fearing who can withdraw this money then
+use the funds for Charity works. I WISH TO GIVE THIS FUNDS TO YOU FOR
+CHARITY WORKS. I found your email address from the internet after
+honest prayers to the LORD to bring me a helper and i decided to
+contact you if you may be willing and interested to handle these trust
+funds in good faith before anything happens to me.
 
-Thanks,
-Daniel
+I accept this decision because I do not have any child who will
+inherit this money after I die. I want your urgent reply to me so that
+I will give you the deposit receipt which the SECURITY COMPANY issued
+to me as next of kin for immediate transfer of the money to your
+account in your country, to start the good work of God, I want you to
+use the 25/percent of the total amount to help yourself in doing the
+project. I am desperately in keen need of assistance and I have
+summoned up courage to contact you for this task, you must not fail me
+and the millions of the poor people in our todays WORLD. This is no
+stolen money and there are no dangers involved,100% RISK FREE with
+full legal proof. Please if you would be able to use the funds for the
+Charity works kindly let me know immediately.I will appreciate your
+utmost confidentiality and trust in this matter to accomplish my heart
+desire, as I don't want anything that will jeopardize my last wish.
 
-> -Toke
-> 
-> [0] https://openwrt.org/docs/guide-user/network/traffic-shaping/sqm
+Please kindly respond quickly for further details.
+
+Warmest Regards,
+Mrs. Lenny Tatiana
