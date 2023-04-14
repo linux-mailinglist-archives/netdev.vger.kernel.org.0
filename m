@@ -2,155 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 403966E1A01
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 04:10:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61F466E1A0F
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 04:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbjDNCJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 22:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
+        id S229703AbjDNCN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 22:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbjDNCJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 22:09:58 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965132D4A;
-        Thu, 13 Apr 2023 19:09:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681438197; x=1712974197;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=V6yxTKpwndzirxcebJgSFtOtxmxSXQn9YpBYMRBfZ4M=;
-  b=IwmEk92YKmlopoiubdxsDjVO5YVj8uqSre6G7rLEt9+f9p7e2Sf5w3FE
-   8JigK0pHLHdTMWgoTTrnFqoG1BrZrPhSEIeCL4meE+Y+m71/a0Bb8aiZj
-   oeEUQ5MbDTkQazeGt7kKnx4ZVGFWJwmcL39tOw87jkOqLfcSHboDhCVVg
-   WfS7L+OpJ0q/E0hgxTfLj3y6mY9fZAwPn5WTCBIIH3LKb7eIdaOb/0u5f
-   o0fcVRuD6KdC91ro0gULGfX1uOS/VRkpTNE8QWq2MGdXZT6XPpwFP9Jgo
-   94ssCv5U6njevTYfLDapt2tzEzO7xkNNbdAIQNQL55Swd8tk+OvvOge0+
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="333124446"
-X-IronPort-AV: E=Sophos;i="5.99,195,1677571200"; 
-   d="scan'208";a="333124446"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2023 19:09:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10679"; a="779019528"
-X-IronPort-AV: E=Sophos;i="5.99,195,1677571200"; 
-   d="scan'208";a="779019528"
-Received: from p12ill20yoongsia.png.intel.com ([10.88.227.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 13 Apr 2023 19:09:51 -0700
-From:   Song Yoong Siang <yoong.siang.song@intel.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>,
-        Jithu Joseph <jithu.joseph@intel.com>,
-        Andre Guedes <andre.guedes@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-hints@xdp-project.net, stable@vger.kernel.org,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: [PATCH net v2 1/1] igc: read before write to SRRCTL register
-Date:   Fri, 14 Apr 2023 10:09:15 +0800
-Message-Id: <20230414020915.1869456-1-yoong.siang.song@intel.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229571AbjDNCN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 22:13:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD452D4A
+        for <netdev@vger.kernel.org>; Thu, 13 Apr 2023 19:13:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681438393;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xU5po7bo+0f7mtpnyY2arS5aqu7vRvq3JKh8xv5QFh4=;
+        b=VH274XpqEoAdjEeRuwkeVHiAtiMpzpipZODHnKkgIFlDNejwHVIrSq6bkxYAbqL1Ykk7EM
+        LbJwSHJAi7WY/QoerPn9gOm03LrLreJURx+HaZZ/shwQCrheUjaBDDU72WC+97yncXwzOx
+        Oe/mjVTHpLbYB2B421FuxZzqS0BZrfg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-551-VKX7xa-EOl-aq5sktc-3bA-1; Thu, 13 Apr 2023 22:13:10 -0400
+X-MC-Unique: VKX7xa-EOl-aq5sktc-3bA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 814258996F5;
+        Fri, 14 Apr 2023 02:13:09 +0000 (UTC)
+Received: from ovpn-8-21.pek2.redhat.com (ovpn-8-21.pek2.redhat.com [10.72.8.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id F1F9214171B6;
+        Fri, 14 Apr 2023 02:12:58 +0000 (UTC)
+Date:   Fri, 14 Apr 2023 10:12:52 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Breno Leitao <leitao@debian.org>
+Cc:     asml.silence@gmail.com, axboe@kernel.dk, davem@davemloft.net,
+        dccp@vger.kernel.org, dsahern@kernel.org, edumazet@google.com,
+        io-uring@vger.kernel.org, kuba@kernel.org, leit@fb.com,
+        linux-kernel@vger.kernel.org, marcelo.leitner@gmail.com,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        willemdebruijn.kernel@gmail.com, ming.lei@redhat.com
+Subject: Re: [PATCH RFC] io_uring: Pass whole sqe to commands
+Message-ID: <ZDi2pP4jgHwCvJRm@ovpn-8-21.pek2.redhat.com>
+References: <20230406144330.1932798-1-leitao@debian.org>
+ <20230406165705.3161734-1-leitao@debian.org>
+ <ZDdvcSKLa6ZEAhRW@ovpn-8-18.pek2.redhat.com>
+ <ZDgyPL6UrX/MaBR4@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZDgyPL6UrX/MaBR4@gmail.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-igc_configure_rx_ring() function will be called as part of XDP program
-setup. If Rx hardware timestamp is enabled prio to XDP program setup,
-this timestamp enablement will be overwritten when buffer size is
-written into SRRCTL register.
+On Thu, Apr 13, 2023 at 09:47:56AM -0700, Breno Leitao wrote:
+> Hello Ming,
+> 
+> On Thu, Apr 13, 2023 at 10:56:49AM +0800, Ming Lei wrote:
+> > On Thu, Apr 06, 2023 at 09:57:05AM -0700, Breno Leitao wrote:
+> > > Currently uring CMD operation relies on having large SQEs, but future
+> > > operations might want to use normal SQE.
+> > > 
+> > > The io_uring_cmd currently only saves the payload (cmd) part of the SQE,
+> > > but, for commands that use normal SQE size, it might be necessary to
+> > > access the initial SQE fields outside of the payload/cmd block.  So,
+> > > saves the whole SQE other than just the pdu.
+> > > 
+> > > This changes slighlty how the io_uring_cmd works, since the cmd
+> > > structures and callbacks are not opaque to io_uring anymore. I.e, the
+> > > callbacks can look at the SQE entries, not only, in the cmd structure.
+> > > 
+> > > The main advantage is that we don't need to create custom structures for
+> > > simple commands.
+> > > 
+> > > Suggested-by: Pavel Begunkov <asml.silence@gmail.com>
+> > > Signed-off-by: Breno Leitao <leitao@debian.org>
+> > > ---
+> > 
+> > ...
+> > 
+> > > diff --git a/io_uring/uring_cmd.c b/io_uring/uring_cmd.c
+> > > index 2e4c483075d3..9648134ccae1 100644
+> > > --- a/io_uring/uring_cmd.c
+> > > +++ b/io_uring/uring_cmd.c
+> > > @@ -63,14 +63,15 @@ EXPORT_SYMBOL_GPL(io_uring_cmd_done);
+> > >  int io_uring_cmd_prep_async(struct io_kiocb *req)
+> > >  {
+> > >  	struct io_uring_cmd *ioucmd = io_kiocb_to_cmd(req, struct io_uring_cmd);
+> > > -	size_t cmd_size;
+> > > +	size_t size = sizeof(struct io_uring_sqe);
+> > >  
+> > >  	BUILD_BUG_ON(uring_cmd_pdu_size(0) != 16);
+> > >  	BUILD_BUG_ON(uring_cmd_pdu_size(1) != 80);
+> > >  
+> > > -	cmd_size = uring_cmd_pdu_size(req->ctx->flags & IORING_SETUP_SQE128);
+> > > +	if (req->ctx->flags & IORING_SETUP_SQE128)
+> > > +		size <<= 1;
+> > >  
+> > > -	memcpy(req->async_data, ioucmd->cmd, cmd_size);
+> > > +	memcpy(req->async_data, ioucmd->sqe, size);
+> > 
+> > The copy will make some fields of sqe become READ TWICE, and driver may see
+> > different sqe field value compared with the one observed in io_init_req().
+> 
+> This copy only happens if the operation goes to the async path
+> (calling io_uring_cmd_prep_async()).  This only happens if
+> f_op->uring_cmd() returns -EAGAIN.
+> 
+>           ret = file->f_op->uring_cmd(ioucmd, issue_flags);
+>           if (ret == -EAGAIN) {
+>                   if (!req_has_async_data(req)) {
+>                           if (io_alloc_async_data(req))
+>                                   return -ENOMEM;
+>                           io_uring_cmd_prep_async(req);
+>                   }
+>                   return -EAGAIN;
+>           }
+> 
+> Are you saying that after this copy, the operation is still reading from
+> sqe instead of req->async_data?
 
-Thus, this commit read the register value before write to SRRCTL
-register. This commit is tested by using xdp_hw_metadata bpf selftest
-tool. The tool enables Rx hardware timestamp and then attach XDP program
-to igc driver. It will display hardware timestamp of UDP packet with
-port number 9092. Below are detail of test steps and results.
+I meant that the 2nd read is on the sqe copy(req->aync_data), but same
+fields can become different between the two READs(first is done on original
+SQE during io_init_req(), and second is done on sqe copy in driver).
 
-Command on DUT:
-  sudo ./xdp_hw_metadata <interface name>
+Will this kind of inconsistency cause trouble for driver? Cause READ
+TWICE becomes possible with this patch.
 
-Command on Link Partner:
-  echo -n skb | nc -u -q1 <destination IPv4 addr> 9092
+> 
+> If you have an example of the two copes flow, that would be great.
 
-Result before this patch:
-  skb hwtstamp is not found!
+Not any example yet, but also not see any access on cmd->sqe(except for cmd_op)
+in your patches too.
 
-Result after this patch:
-  found skb hwtstamp = 1677800973.642836757
 
-Optionally, read PHC to confirm the values obtained are almost the same:
-Command:
-  sudo ./testptp -d /dev/ptp0 -g
-Result:
-  clock time: 1677800973.913598978 or Fri Mar  3 07:49:33 2023
-
-Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
-Cc: <stable@vger.kernel.org> # 5.14+
-Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
----
-v2 changelog:
- - Fix indention
----
- drivers/net/ethernet/intel/igc/igc_base.h | 7 +++++--
- drivers/net/ethernet/intel/igc/igc_main.c | 5 ++++-
- 2 files changed, 9 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc_base.h b/drivers/net/ethernet/intel/igc/igc_base.h
-index 7a992befca24..b95007d51d13 100644
---- a/drivers/net/ethernet/intel/igc/igc_base.h
-+++ b/drivers/net/ethernet/intel/igc/igc_base.h
-@@ -87,8 +87,11 @@ union igc_adv_rx_desc {
- #define IGC_RXDCTL_SWFLUSH		0x04000000 /* Receive Software Flush */
- 
- /* SRRCTL bit definitions */
--#define IGC_SRRCTL_BSIZEPKT_SHIFT		10 /* Shift _right_ */
--#define IGC_SRRCTL_BSIZEHDRSIZE_SHIFT		2  /* Shift _left_ */
-+#define IGC_SRRCTL_BSIZEPKT_MASK	GENMASK(6, 0)
-+#define IGC_SRRCTL_BSIZEPKT_SHIFT	10 /* Shift _right_ */
-+#define IGC_SRRCTL_BSIZEHDRSIZE_MASK	GENMASK(13, 8)
-+#define IGC_SRRCTL_BSIZEHDRSIZE_SHIFT	2  /* Shift _left_ */
-+#define IGC_SRRCTL_DESCTYPE_MASK	GENMASK(27, 25)
- #define IGC_SRRCTL_DESCTYPE_ADV_ONEBUF	0x02000000
- 
- #endif /* _IGC_BASE_H */
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 25fc6c65209b..88fac08d8a14 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -641,7 +641,10 @@ static void igc_configure_rx_ring(struct igc_adapter *adapter,
- 	else
- 		buf_size = IGC_RXBUFFER_2048;
- 
--	srrctl = IGC_RX_HDR_LEN << IGC_SRRCTL_BSIZEHDRSIZE_SHIFT;
-+	srrctl = rd32(IGC_SRRCTL(reg_idx));
-+	srrctl &= ~(IGC_SRRCTL_BSIZEPKT_MASK | IGC_SRRCTL_BSIZEHDRSIZE_MASK |
-+		    IGC_SRRCTL_DESCTYPE_MASK);
-+	srrctl |= IGC_RX_HDR_LEN << IGC_SRRCTL_BSIZEHDRSIZE_SHIFT;
- 	srrctl |= buf_size >> IGC_SRRCTL_BSIZEPKT_SHIFT;
- 	srrctl |= IGC_SRRCTL_DESCTYPE_ADV_ONEBUF;
- 
--- 
-2.34.1
+Thanks,
+Ming
 
