@@ -2,76 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EFD06E2BB7
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 23:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D8046E2BD1
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 23:43:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbjDNVYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 17:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34456 "EHLO
+        id S229829AbjDNVng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 17:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbjDNVYN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 17:24:13 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B285D6A70;
-        Fri, 14 Apr 2023 14:24:11 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id 2adb3069b0e04-4ec81245ae1so62156e87.0;
-        Fri, 14 Apr 2023 14:24:11 -0700 (PDT)
+        with ESMTP id S229491AbjDNVnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 17:43:35 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B9112E
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 14:43:34 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-187b51ed66fso3343971fac.6
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 14:43:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681507449; x=1684099449;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2EiDytvabdYN54DIeMJTMZ/ViwsZyEhMHyZ0a9MJx4o=;
-        b=f4bXWIVQdBvGSTrlBLVpdjpmOpLlf/2zdUUYvWsYmqr1oM2sa0uOWGdPjMUDAYU19/
-         9FRa/pjk5Bh3ItGibXEqYg/jPR8uXoOme2v5qsFilkyI+hJuLgtAaAP9vRbRD8YPJ9TP
-         TpQqaHKYS5JmhzpF/ivSf9LXQccZOYBd1u4hUxOGwpamErBL0Cep+J/a0+Wzl1LRhsXm
-         jWv/tCmWNbN8VVWD7Zo+g7mvIMoZqGYJgXlSuc4an0E+nlmGC6kqB1X3Cnjq0IEAEZvq
-         IRQerQ4SWmll4wSfdfNPParLM5LNk7Abli51mYfUvneX2An3VzgOyeQvd75oQzfsFTTK
-         9e7g==
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681508614; x=1684100614;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=kaVB6FqzkIVQTjXyQ1bdGlBUjLvgKvOTfzN1BdC6zv4=;
+        b=IoOcoQK8mAv82hpz96jsD/eLEAG0COMFPaylIzJJEUicwN1pXp0E2jv07fXUMrt8d4
+         FfGtpYEHTZR0dRnqTO5HhHGmYoK979v7HAORwEL2Con19f55I8jDVXNAk+lWgd8DnHl4
+         yA3cnC3hrTi3K1UB0uK2vVkI7vypt46hV44WiA4JhVkEbfeoIilkYkKJ+wZugiyfQvpZ
+         iDdeZ9FEGhYorEy7GsFNxh+MdFAqSiFvbVb4JRwybfvyJ9wBz+t9u2hRqcZqeaTxyHqx
+         ns8zhGxOOvO1mrDOq0k2E8+hS69fuIpVpd1npEjqjzKMktZM/ymjYvKFnLTl2qUK6APw
+         pLPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681507449; x=1684099449;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2EiDytvabdYN54DIeMJTMZ/ViwsZyEhMHyZ0a9MJx4o=;
-        b=L33sktSagTnIN+jS7RSlkaqsQtjDUMBQ2Tl+55arRAgqWxdLlU6jhFCBy5vAgNqHwy
-         pNbvLKHZ4X0z2qc7CbKw4bUmMWPa5njqLUjKwLItstX0H0+u3lVZDbg8+fA7etXyA9Of
-         cc6zDflrl37qBvS4zZIF9cPvl9hnesTVSDG6F5oLuta0LBqTmY6aUat6CX4jssn4jXC/
-         cWKI2k376nF8/obV5XjjhpiJAJyeyCUED9pV7gsqowIlOPBe4dqPB3dYubGMytWeeVQt
-         m1Uljdkupr5PXM/+tJFt1pfA5PQCBn8pR8AiIz3kEPU8WZZT65OOaSSdagChZswEoAeS
-         EUXg==
-X-Gm-Message-State: AAQBX9fd/SXRr/o8na+YSqZ1tp8AGv8jPGpr/XFjDytM7pPkOVqKx9lz
-        +4jYsaYNh5m+NUFBrSYV+Z8=
-X-Google-Smtp-Source: AKy350ZI1VywWQcvXG6FwGA8wlIsDCE6CZLzEI5r5l8KCp0+nQsf0jYJpptE+LEBb49w6SKevH1t1w==
-X-Received: by 2002:a19:7003:0:b0:4db:3605:9bd3 with SMTP id h3-20020a197003000000b004db36059bd3mr55621lfc.17.1681507449498;
-        Fri, 14 Apr 2023 14:24:09 -0700 (PDT)
-Received: from localhost.lan (031011218106.poznan.vectranet.pl. [31.11.218.106])
-        by smtp.gmail.com with ESMTPSA id m11-20020a056512014b00b004ecad67a925sm961263lfo.66.2023.04.14.14.24.08
+        d=1e100.net; s=20221208; t=1681508614; x=1684100614;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kaVB6FqzkIVQTjXyQ1bdGlBUjLvgKvOTfzN1BdC6zv4=;
+        b=Rvkz3ia1akjsGFmVhAKAQDSId/TidMMUSZyT0oagbxg/SkFFEdmkwhoGEtRCloDMnP
+         30qb5x+s4fsio0RGqvLkT4nlKo5n/d8gf1Iy5P4NfOyj7mKo5b6TrsxSQBI+Pdwzcd0V
+         97O/xwACjg/IOvJYl4WeLl+ZKfSP8YJA5UCVrAwu1El3tyrr8uikO/guB0BlhukpEbgd
+         VS5Q0ynvHjeloeF4UYNv7nEslF8RreDKhGOz2H1eh6TEAs8N5SiKsj7LkJGa473K+Huq
+         YTIrnd44nyCBA5sgdH+3nAmxpG8yv8VWtm07tfQBI465gWRfjke0pIVGHiis9WzbsUqo
+         GiUQ==
+X-Gm-Message-State: AAQBX9eXtZt1+a9g4AHspuD8Vc3IZFl7h9DNSDXHt4Q1uz4fNLYs3RjD
+        h0k+rCI1gyVs10s8miNtmbFiM1JaxCamh5RAKs4=
+X-Google-Smtp-Source: AKy350Yx0j+qpoggbj1jeHEzt2srHN9bdofQnttjBndmzWLhLFyTWId+Yz8Mfws+fX/SUJ/ZXKiDpQ==
+X-Received: by 2002:a05:6870:8290:b0:184:4016:a08a with SMTP id q16-20020a056870829000b001844016a08amr3443354oae.10.1681508613834;
+        Fri, 14 Apr 2023 14:43:33 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14d:5c5e:44fb:bb6:61a2:bf8b:4710])
+        by smtp.gmail.com with ESMTPSA id yo29-20020a05687c019d00b0017e0c13b29asm2212463oab.36.2023.04.14.14.43.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Apr 2023 14:24:09 -0700 (PDT)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Kalle Valo <kvalo@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Robert Marko <robimarko@gmail.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH 3/3] wifi: ath11k: support reading radio MAC from DT
-Date:   Fri, 14 Apr 2023 23:23:56 +0200
-Message-Id: <20230414212356.9326-3-zajec5@gmail.com>
+        Fri, 14 Apr 2023 14:43:33 -0700 (PDT)
+From:   Pedro Tammela <pctammela@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, marcelo.leitner@gmail.com, paulb@nvidia.com,
+        simon.horman@corigine.com, Pedro Tammela <pctammela@mojatatu.com>,
+        Palash Oswal <oswalpalash@gmail.com>
+Subject: [PATCH net-next] net/sched: clear actions pointer in miss cookie init fail
+Date:   Fri, 14 Apr 2023 18:43:17 -0300
+Message-Id: <20230414214317.227128-1-pctammela@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230414212356.9326-1-zajec5@gmail.com>
-References: <20230414212356.9326-1-zajec5@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,64 +70,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+Palash reports a UAF when using a modified version of syzkaller[1].
 
-On some devices (most routers) MAC is stored in an NVMEM cell. Support
-reading it.
+When 'tcf_exts_miss_cookie_base_alloc()' fails in 'tcf_exts_init_ex()'
+a call to 'tcf_exts_destroy()' is made to free up the tcf_exts
+resources.
+In flower, a call to '__fl_put()' when 'tcf_exts_init_ex()' fails is made;
+Then calling 'tcf_exts_destroy()', which triggers an UAF since the
+already freed tcf_exts action pointer is lingering in the struct.
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Before the offending patch, this was not an issue since there was no
+case where the tcf_exts action pointer could linger. Therefore, restore
+the old semantic by clearing the action pointer in case of a failure to
+initialize the miss_cookie.
+
+[1] https://github.com/cmu-pasta/linux-kernel-enriched-corpus
+
+Cc: paulb@nvidia.com
+Fixes: 80cd22c35c90 ("net/sched: cls_api: Support hardware miss to tc action")
+Reported-by: Palash Oswal <oswalpalash@gmail.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ net/sched/cls_api.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index ad5a22d12bd3..6550bb5b2ece 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -8,6 +8,7 @@
- #include <linux/etherdevice.h>
- #include <linux/bitfield.h>
- #include <linux/inetdevice.h>
-+#include <linux/of_net.h>
- #include <net/if_inet6.h>
- #include <net/ipv6.h>
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 2a6b6be0811b..84bad268e328 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3235,6 +3235,7 @@ int tcf_exts_init_ex(struct tcf_exts *exts, struct net *net, int action,
  
-@@ -9292,7 +9293,7 @@ int ath11k_mac_register(struct ath11k_base *ab)
- 	struct ath11k_pdev *pdev;
- 	int i;
- 	int ret;
--	u8 mac_addr[ETH_ALEN] = {0};
-+	u8 device_mac_addr[ETH_ALEN] = {0};
- 
- 	if (test_bit(ATH11K_FLAG_REGISTERED, &ab->dev_flags))
- 		return 0;
-@@ -9305,18 +9306,22 @@ int ath11k_mac_register(struct ath11k_base *ab)
- 	if (ret)
- 		return ret;
- 
--	device_get_mac_address(ab->dev, mac_addr);
-+	device_get_mac_address(ab->dev, device_mac_addr);
- 
- 	for (i = 0; i < ab->num_radios; i++) {
-+		u8 radio_mac_addr[ETH_ALEN];
-+
- 		pdev = &ab->pdevs[i];
- 		ar = pdev->ar;
--		if (ab->pdevs_macaddr_valid) {
-+		if (!of_get_mac_address(ar->np, radio_mac_addr)) {
-+			ether_addr_copy(ar->mac_addr, radio_mac_addr);
-+		} else if (ab->pdevs_macaddr_valid) {
- 			ether_addr_copy(ar->mac_addr, pdev->mac_addr);
- 		} else {
--			if (is_zero_ether_addr(mac_addr))
-+			if (is_zero_ether_addr(device_mac_addr))
- 				ether_addr_copy(ar->mac_addr, ab->mac_addr);
- 			else
--				ether_addr_copy(ar->mac_addr, mac_addr);
-+				ether_addr_copy(ar->mac_addr, device_mac_addr);
- 			ar->mac_addr[4] += i;
- 		}
- 
+ err_miss_alloc:
+ 	tcf_exts_destroy(exts);
++	exts->actions = NULL;
+ 	return err;
+ }
+ EXPORT_SYMBOL(tcf_exts_init_ex);
 -- 
 2.34.1
 
