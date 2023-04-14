@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D56086E2A46
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 20:54:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD2D6E2A47
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 20:54:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229804AbjDNSyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 14:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37844 "EHLO
+        id S229847AbjDNSyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 14:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbjDNSyF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 14:54:05 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF321900B
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 11:54:02 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-1879502e2afso6906487fac.5
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 11:54:02 -0700 (PDT)
+        with ESMTP id S229879AbjDNSyK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 14:54:10 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C94AA276
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 11:54:05 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-1879502e2afso6906610fac.5
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 11:54:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681498442; x=1684090442;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681498444; x=1684090444;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qSoqFwt7+H1OOSAj/UltcwIpxh1Rmjza6T4iPRFz5fU=;
-        b=TSyScEEXOSspRLuGg7/uUU/YiEh7/YSv2Ph3qqsIeKnVU3CBJ1Rjz5CYiAo4Kd9thA
-         OuPLrESaJuUqmQiPd4+k1jJNlW1LASs8TfkWkSwGZUvFsWctPlT7zLgfXZt+AqVhgtVw
-         595MAmRxuwDRNottZfrqyhlssJFhndQBDoiW4+gHXgcv0l3Lc29fMuVfcpPONLOyYfB+
-         YYuDQ/Bd/Tm25fIY0SxU3e6sjRczHfvsGHR9hBF/asjDV+gI68oNT444j6ln4Qj33YvJ
-         s6FTVttdMs44ACENhBi9UMWRgQdW2pJU9CGRSpbbQ220eOBhQehmUXJSkFeXNlWb2LsT
-         AkeA==
+        bh=76XxDD6/9vSUzkATpVj85RFC/Zu8lOoLfsLxuBaR2PI=;
+        b=EIUjDdUFL5o2KP3k/q+Jlfky8icEsm3qOkM0bWZG21QarVuO8VDiLou9SqOrTtFLoY
+         qD3u0k6XcnXnI72lGMkx/xFRM9WMasmqwDZUv+QIFyooJPc+vUEBq4lKp4IocaYeexVY
+         3rMpZu3fiKcpLsp5kN4HfStZU40JL/0GQZxwTMCqeFGXUxciQfxOqfMRlMipJKUA85Y8
+         xj22/3/xhr8AldEba1cL1qKuowrOfVY43nrBM5SPwhrc0IzqI7IMxijjcL+BGyCjiXE3
+         9d3dIG8tu0zR+tayAMfl2VrFfsFStqv64SIXc7+1tebtm1ouxwyxnC4wpHqoZoQv0unP
+         HG0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681498442; x=1684090442;
+        d=1e100.net; s=20221208; t=1681498444; x=1684090444;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=qSoqFwt7+H1OOSAj/UltcwIpxh1Rmjza6T4iPRFz5fU=;
-        b=NzMXsqAQ8wM2kUBY7oXYODT6mchtyVZKSCBYbIK7M69ojnftyWuHuZFxFL7ltpDeDj
-         0GlIHgYt0O4m0BaJu+DDtSAHM9FZSDkoXbZkUV6Xy7HESqs8DP9lJRVGyptO0b3TmBkS
-         KHl/fFMk+zsguelu4wJWnEZhWvfvCIbPSGAmZVoSGuE8OHoQL4MjcGxswwyugWgH79MR
-         jpnG9xKCkkvrOL+XYveQO3uJgIglv4G0FiM72sYqo0czViuLU7ncBTvG80ZNp3OROmLF
-         x2/pzG++9oTxmJe6k0hVr424hDLXfKuOhSQ+E0r6iJije1Gz71g7heL1GkZknK5s5oJe
-         0J4g==
-X-Gm-Message-State: AAQBX9e122+pbLUFf5B54xh9GElxXgItD7jblHKiJhEnYtrhApg8PhEY
-        Vyek7XKE3FbblIRh+eAtCXq0K1Slcdnn7Gcl25Y=
-X-Google-Smtp-Source: AKy350a6zSWYVchSjZ/J4feBYxBQ7OwooINn/Pjgq7VdA2jHGImOAL3M7GdzW84GSuYyOM6im/Saww==
-X-Received: by 2002:a05:6870:9123:b0:184:3c53:655a with SMTP id o35-20020a056870912300b001843c53655amr4122414oae.21.1681498441980;
-        Fri, 14 Apr 2023 11:54:01 -0700 (PDT)
+        bh=76XxDD6/9vSUzkATpVj85RFC/Zu8lOoLfsLxuBaR2PI=;
+        b=IVqGkI8aE5hfZUd3vmEDqMQObqymWyvkGLRUZ9ewow/KnzfF9Q73vhnTNkIn4KaHbz
+         hPFfXaZ0s4r/1BGB3ADAbCCYYwqesQC85VfzXHeQhxKYMZNVCEHrpGRxizFL2YsEkDTb
+         d2fU5Ng440tCL6deqjfJ7rjFqYrQbKCCeyLn+VvY1iNxYDLCly+U/UfwRefngJfa6M9X
+         EVGI7wHZ/0mrXrB9owbRhre0RxvK1BBGTRHnAYrhEuH4PQgXp+FAu3XZmuHPbeL5KzEx
+         T/Lgk2hoo8OamvGWLJ3p89z3aKStl7Q7X9mB8jwHnDpVmkNd9i2v3F04bMGhgif6CDcs
+         jNLA==
+X-Gm-Message-State: AAQBX9e2/KPOAeV5R6eHF5ChVjHHpD9Lx0KCBDizEk5J8aWWgHeRtPt3
+        mp2ETXrxT8IW/c7mGUkWlVlsvvX2dvzpjsFMYFg=
+X-Google-Smtp-Source: AKy350Zau9Cn5gVCzrOghAX1MWCDrEJCU4B6ovIVjMry8jsWSETwwKAvtOMOdr9ZvZT0+y3pM7pAqQ==
+X-Received: by 2002:a05:6870:a54d:b0:172:7fc0:9188 with SMTP id p13-20020a056870a54d00b001727fc09188mr5130819oal.35.1681498444698;
+        Fri, 14 Apr 2023 11:54:04 -0700 (PDT)
 Received: from localhost.localdomain ([2804:14d:5c5e:44fb:bb6:61a2:bf8b:4710])
-        by smtp.gmail.com with ESMTPSA id z21-20020a056870515500b0017f647294f5sm2096061oak.16.2023.04.14.11.53.59
+        by smtp.gmail.com with ESMTPSA id z21-20020a056870515500b0017f647294f5sm2096061oak.16.2023.04.14.11.54.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Apr 2023 11:54:01 -0700 (PDT)
+        Fri, 14 Apr 2023 11:54:04 -0700 (PDT)
 From:   Pedro Tammela <pctammela@mojatatu.com>
 To:     netdev@vger.kernel.org
 Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next 1/2] net/sched: sch_htb: use extack on errors messages
-Date:   Fri, 14 Apr 2023 15:53:09 -0300
-Message-Id: <20230414185309.220286-2-pctammela@mojatatu.com>
+Subject: [PATCH net-next 2/2] net/sched: sch_qfq: use extack on errors messages
+Date:   Fri, 14 Apr 2023 15:53:10 -0300
+Message-Id: <20230414185309.220286-3-pctammela@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230414185309.220286-1-pctammela@mojatatu.com>
 References: <20230414185309.220286-1-pctammela@mojatatu.com>
@@ -72,71 +72,63 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Some error messages are still being printed to dmesg.
-Since extack is available, provide error messages there.
+Since extack is available, report error messages there instead.
 
 Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 ---
- net/sched/sch_htb.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ net/sched/sch_qfq.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-index 92f2975b6a82..bc2da8027650 100644
---- a/net/sched/sch_htb.c
-+++ b/net/sched/sch_htb.c
-@@ -1786,7 +1786,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
- 		goto failure;
+diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
+index cf5ebe43b3b4..b2a4cf01766c 100644
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -403,19 +403,20 @@ static int qfq_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
+ 	int delta_w;
  
- 	err = nla_parse_nested_deprecated(tb, TCA_HTB_MAX, opt, htb_policy,
--					  NULL);
-+					  extack);
+ 	if (tca[TCA_OPTIONS] == NULL) {
+-		pr_notice("qfq: no options\n");
++		NL_SET_ERR_MSG_MOD(extack, "missing options");
+ 		return -EINVAL;
+ 	}
+ 
+ 	err = nla_parse_nested_deprecated(tb, TCA_QFQ_MAX, tca[TCA_OPTIONS],
+-					  qfq_policy, NULL);
++					  qfq_policy, extack);
  	if (err < 0)
- 		goto failure;
+ 		return err;
  
-@@ -1858,7 +1858,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
- 
- 		/* check maximal depth */
- 		if (parent && parent->parent && parent->parent->level < 2) {
--			pr_err("htb: tree is too deep\n");
-+			NL_SET_ERR_MSG_MOD(extack, "tree is too deep");
- 			goto failure;
+ 	if (tb[TCA_QFQ_WEIGHT]) {
+ 		weight = nla_get_u32(tb[TCA_QFQ_WEIGHT]);
+ 		if (!weight || weight > (1UL << QFQ_MAX_WSHIFT)) {
+-			pr_notice("qfq: invalid weight %u\n", weight);
++			NL_SET_ERR_MSG_FMT_MOD(extack, "invalid weight %u\n",
++					       weight);
+ 			return -EINVAL;
  		}
- 		err = -ENOBUFS;
-@@ -1917,8 +1917,9 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
- 			};
- 			err = htb_offload(dev, &offload_opt);
- 			if (err) {
--				pr_err("htb: TC_HTB_LEAF_ALLOC_QUEUE failed with err = %d\n",
--				       err);
-+				NL_SET_ERR_MSG_FMT_MOD(extack,
-+						       "TC_HTB_LEAF_ALLOC_QUEUE failed with err = %d\n",
-+						       err);
- 				goto err_kill_estimator;
- 			}
- 			dev_queue = netdev_get_tx_queue(dev, offload_opt.qid);
-@@ -1937,8 +1938,9 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
- 			};
- 			err = htb_offload(dev, &offload_opt);
- 			if (err) {
--				pr_err("htb: TC_HTB_LEAF_TO_INNER failed with err = %d\n",
--				       err);
-+				NL_SET_ERR_MSG_FMT_MOD(extack,
-+						       "TC_HTB_LEAF_TO_INNER failed with err = %d",
-+						       err);
- 				htb_graft_helper(dev_queue, old_q);
- 				goto err_kill_estimator;
- 			}
-@@ -2067,8 +2069,9 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
- 	qdisc_put(parent_qdisc);
+ 	} else
+@@ -424,7 +425,8 @@ static int qfq_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
+ 	if (tb[TCA_QFQ_LMAX]) {
+ 		lmax = nla_get_u32(tb[TCA_QFQ_LMAX]);
+ 		if (lmax < QFQ_MIN_LMAX || lmax > (1UL << QFQ_MTU_SHIFT)) {
+-			pr_notice("qfq: invalid max length %u\n", lmax);
++			NL_SET_ERR_MSG_FMT_MOD(extack,
++					       "invalid max length %u\n", lmax);
+ 			return -EINVAL;
+ 		}
+ 	} else
+@@ -441,8 +443,9 @@ static int qfq_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
+ 	delta_w = weight - (cl ? cl->agg->class_weight : 0);
  
- 	if (warn)
--		pr_warn("HTB: quantum of class %X is %s. Consider r2q change.\n",
--			    cl->common.classid, (warn == -1 ? "small" : "big"));
+ 	if (q->wsum + delta_w > QFQ_MAX_WSUM) {
+-		pr_notice("qfq: total weight out of range (%d + %u)\n",
+-			  delta_w, q->wsum);
 +		NL_SET_ERR_MSG_FMT_MOD(extack,
-+				       "quantum of class %X is %s. Consider r2q change.",
-+				       cl->common.classid, (warn == -1 ? "small" : "big"));
- 
- 	qdisc_class_hash_grow(sch, &q->clhash);
++				       "qfq: total weight out of range (%d + %u)\n",
++				       delta_w, q->wsum);
+ 		return -EINVAL;
+ 	}
  
 -- 
 2.34.1
