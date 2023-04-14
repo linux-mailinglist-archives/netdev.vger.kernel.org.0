@@ -2,211 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93FCF6E1A95
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 05:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A96BC6E1A9C
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 05:07:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbjDNDD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Apr 2023 23:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37616 "EHLO
+        id S229732AbjDNDHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Apr 2023 23:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbjDNDD0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 23:03:26 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2087.outbound.protection.outlook.com [40.107.94.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B926A213E;
-        Thu, 13 Apr 2023 20:03:24 -0700 (PDT)
+        with ESMTP id S229696AbjDNDHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Apr 2023 23:07:37 -0400
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01olkn2098.outbound.protection.outlook.com [40.92.107.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB0C640E1;
+        Thu, 13 Apr 2023 20:07:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QKXQBmqKYZaZ1RseKfrbHsSMC6N/tjDiPYvreAaiwFTjeSx8NFJJ4N1Ko8SB52i4DrjQBF6G69iuKKOVo87ydyGzFFcpYuXW6utm9/hCdG59+Z9v2dTYKAXvWGJQ5eTrvgSzSMbuHB7iIKV4p0nm0Z4WoaRGkvB9/Isz/WIAIj/d22xBQoMEK4AuE9plVJOJDcFIhM3qDNQ2c6R3YCqPKvCkYd+1ilMs5IOP33uXbBwMXOWxSA+BE2ez6zWcKxKwvQNn6ZAMHVqD8gpXDIvqKm0zlxXvva5SD+0LoCeoervr419oS+MRn/0XlpM9R+w9s+qP6HQHOx78Y9MWizUfzw==
+ b=XmvO20Oiz1Gz0JZdmroz38L5LzPE7DPHtvR/8YxK+cjcBoNtSsMcQu7dcylI9nNOARCSJMUJMJVdL65X4SSlvmSfGJSV98IfQAAq/7bO4+tiVOa4z+x0eJkpUOYKEVdR6ZRc++U5scHm7QROzDQY4luVS9Pm5UccYSp4iXc7rOn6zxIPyHmJor2/MsDC+tAAAofM53FhN8gxUfa/j6VmucFLJMYohi9WZPo9+vyu1DT0GwCHw+P87KbBZXtGx3RwU/iOmNE50ZANuG525k5CAb4ymK27RcWbn4r4IJS3gJUc0bYBs1otb7hms7WMZIEgP0/XFBTlOlBdifNkZr7ZIg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CuRrrpFUyoo/7M3JbM5dh+a2KOFxDwgzMFlTHVxdTts=;
- b=fefA2EtXr0FIDTjxkOyI41A5k/QCAmnPFkPKjFy4KQjigOtzUhe2Idq0IP08qT1qDXpsTIJ28UGCUzmd3ek3M6YFrwAWmTldcwDDhmKQG/QvE3J/+YfoB6doO3adGC+RugP5899K/A2MGQ1vnm4W7I6Q1sHGqiL0kYL4xrrZ/SD4NfYPedY5ZJ0LZhI1g/39vkZ/xlwZCl2Az+azuKebDICe6/pSD4Qwobeliaz0+s4yOe1XfMFAXWEpXNR1XvNE4R8LozCxsZ50PT+bNXO1Twvguoz9AJt7/J9EK6vYXzH95Rk9Blkq2WfxUGO2p3yo5FdE04Hey8n07m7FWLpWSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=5jIK4SC7p8yB2yk84IM/RO1i+FnGMUmeG0uYccvF4+4=;
+ b=faUQYGq+1XBoiZ6lqskUP2F2D3lwuK+yHWIxuFF/HWMRyftBFhm2AKfI+aqaSoVNN3tQvgnTLytucdaN0TRrmmduuZjmUHu6n9hpxddP0uMdxWJCR3d5MHszTPa7Rh/mi04oHkwBnJzAQpB/U6gq4RZMWVtHoXAxhfbCEiuqnEcH94155gcQrxlBZxUxFWlBi8zn5/XyjLt0+gent3Hb8T/Bqb0DjgpoppNpv2qPklI8TxD4Gma8YWhGnrQThvwHT2vT/rM6YRveEyP7oH33lSElBzu740vNHhz059VmGKHvzlYTrA3bZ+jeGLGUNg0qzFQ/mbjyN5HQumHMWLoWXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CuRrrpFUyoo/7M3JbM5dh+a2KOFxDwgzMFlTHVxdTts=;
- b=OCJVbGxLEj8dDeSj5WCuZAodSkqZvm2qmSmfxX3DvINHZcMI9BY338B+xRyGL7JhEPFiyhkjkhl7buJqLwrhBMC61rPnxyFWUDrImT5pJ2Xt29Ots7HymV9TBRiDOcMR0zG4i1FU/sRqrXVnU21D8+ypgnaxmiIaQyD/IYDdFqiHDco0LByf98KEFIE/OrT1mtDyTATv9ivGxPY0/icRTqzmvxrnQDK3bk3JZco4La29/9nPWjuTyYqNef1qpcX9E+P/fIVSlVMCKUDl8EeIPWJKJvwINcHNZxAQDC4PujDUKJXLUcKkl8mw+UDAepf7Iu0F6a3kd19/xqQOljxgqg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM5PR12MB1340.namprd12.prod.outlook.com (2603:10b6:3:76::15) by
- BL0PR12MB5505.namprd12.prod.outlook.com (2603:10b6:208:1ce::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6298.30; Fri, 14 Apr 2023 03:03:22 +0000
-Received: from DM5PR12MB1340.namprd12.prod.outlook.com
- ([fe80::7634:337:4a71:2b78]) by DM5PR12MB1340.namprd12.prod.outlook.com
- ([fe80::7634:337:4a71:2b78%8]) with mapi id 15.20.6298.030; Fri, 14 Apr 2023
- 03:03:22 +0000
-Date:   Thu, 13 Apr 2023 20:03:18 -0700
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Linux regressions mailing list <regressions@lists.linux.dev>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Shay Drory <shayd@nvidia.com>, netdev@vger.kernel.org,
-        selinux@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: Potential regression/bug in net/mlx5 driver
-Message-ID: <ZDjCdpWcchQGNBs1@x130>
-References: <CAHC9VhTvQLa=+Ykwmr_Uhgjrc6dfi24ou=NBsACkhwZN7X4EtQ@mail.gmail.com>
- <1c8a70fc-18cb-3da7-5240-b513bf1affb9@leemhuis.info>
- <CAHC9VhT+=DtJ1K1CJDY4=L_RRJSGqRDvnaOdA6j9n+bF7y+36A@mail.gmail.com>
- <20230410054605.GL182481@unreal>
- <20230413075421.044d7046@kernel.org>
- <CAHC9VhRKBLHfGHvFAsmcBQQEmbOxZ=M9TE4-pV70E+Y6G=uXWA@mail.gmail.com>
- <ZDhwUYpMFvCRf1EC@x130>
- <20230413152150.4b54d6f4@kernel.org>
- <ZDiDbQL5ksMwaMeB@x130>
- <20230413155139.22d3b2f4@kernel.org>
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20230413155139.22d3b2f4@kernel.org>
-X-ClientProxiedBy: BYAPR05CA0018.namprd05.prod.outlook.com
- (2603:10b6:a03:c0::31) To DM5PR12MB1340.namprd12.prod.outlook.com
- (2603:10b6:3:76::15)
+ bh=5jIK4SC7p8yB2yk84IM/RO1i+FnGMUmeG0uYccvF4+4=;
+ b=D8dhzldTz5O3gZfOlYVEGek/5gFyFMfhQz18KCzhsGA6g5zgBbbLEpS1yY629ZJ8blXrbVNnTWEIvplkuwXAbtOyGs2QNmgeEaPYAsarrhzYINo5HktvvY0IRTuBNBqiKyMC2FIMAu+2+yos/VJFiji+op/iTcfNLLDEoWsQTEXd2eDOgQeDsJwLCAUy2vI2P138GUsGJkdygkCCjzCSoub6csiDgon+Aob1v49coI2VlxXjSK5g9V6vt2YH/MMFqCKLujewm91SUN4sVcY1FoI8Jvu/b6vf3C//Z9jKIlyJJni0svN33RdKcxOf9Jrl240Om/5g0HXt+yLoHM7zQg==
+Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:9a::12) by SEZPR01MB4677.apcprd01.prod.exchangelabs.com
+ (2603:1096:101:9b::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.4; Fri, 14 Apr
+ 2023 03:07:30 +0000
+Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ ([fe80::5bff:fd7e:ec7c:e9d3]) by KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ ([fe80::5bff:fd7e:ec7c:e9d3%7]) with mapi id 15.20.6319.007; Fri, 14 Apr 2023
+ 03:07:30 +0000
+From:   Yan Wang <rk.code@outlook.com>
+To:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        kuba@kernel.org, mcoquelin.stm32@gmail.com
+Cc:     Yan Wang <rk.code@outlook.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        netdev@vger.kernel.org (open list:STMMAC ETHERNET DRIVER),
+        linux-stm32@st-md-mailman.stormreply.com (moderated list:ARM/STM32
+        ARCHITECTURE),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/STM32
+        ARCHITECTURE), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next v3] net: stmmac:fix system hang when setting up tag_8021q VLAN for DSA ports
+Date:   Fri, 14 Apr 2023 11:07:10 +0800
+Message-ID: <KL1PR01MB544872920F00149E3BDDC7ECE6999@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-TMN:  [cSbmDS+JFJOHtjoN62WoB98rJ1WDKxMJl2m4C8k0Ze0=]
+X-ClientProxiedBy: SG2PR02CA0007.apcprd02.prod.outlook.com
+ (2603:1096:3:17::19) To KL1PR01MB5448.apcprd01.prod.exchangelabs.com
+ (2603:1096:820:9a::12)
+X-Microsoft-Original-Message-ID: <20230414030710.23068-1-rk.code@outlook.com>
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1340:EE_|BL0PR12MB5505:EE_
-X-MS-Office365-Filtering-Correlation-Id: ad3c3bb0-0645-48af-bfa8-08db3c94cdd6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
+X-MS-TrafficTypeDiagnostic: KL1PR01MB5448:EE_|SEZPR01MB4677:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0cab73f8-928e-40dc-8357-08db3c9562a1
+X-MS-Exchange-SLBlob-MailProps: EgT5Wr3QDKx/5wRYKwbtF7hqq2E99L186u1AuTHSMLVr8Sz6hezcPG+NQIGT+Yp7R6M0NIbr/oOT80gOckGVrekeyDe6+rdwOnZqY7LSOhJz+i0dExKRTcBrB42WiSG4UP1Pd1cA4B70r3icydSmhaDtiIEY0D7/wOdeZn3HjSvbsJnNWtwm7tK0E5f3SqcwhagygVvF12bU+5TXFEWhMwPhICt4y5N1aHoYeVFNcnqhK3kBKdM2JRghXzBVDN3lVb6sfGtTr0GaDSQem0i7C5PUDepJ2s3oN7F3/qXKLRosODa9x6Q7R67nV53YLykorNm/NVM67R9o6FIolMFCgAlqxUDCgVdvL+xK3hT8squ9hLH69A8ngPY6nj/8WUcfG9RsENCfZ8K1pkZfsYPYflzoo8l8zu9w0a7FQbgaeVZ9iHRQq6TAypKnJ/EUasc9fL4JZ5AtRTrJy95M4C4QCnKiFNhpV53GQal2I2cq3DZrmAWVx3KTkZVPKUvrw+tn5ZD38rPebgY+j/I+o5GFL5T2Ev3FRD0WioAtxahS2cJynRnhtmIGsv4Nxf4A1F2MehVK3Y/bmclr4i1EIaAmc34CEnc/A00Q4P3nVn1+GMh5+ig/gtFLjdBxlQEeq3Q+/pG6wVMoO4IWP21asAvavOujLZIrLrrqpm7CNxvz8s1v2JVYeLgLlkhAynYHZnHd+2sSWHDZ1RAXT0xTjm/ZBAdacFzVxLTn793kswhX1ag=
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YdQ8OdxLrCckAqMliV02N3U/Q//IQLfaGAzXywZquslT0ePQusMNop5r6LS6jWLwTWoxLXw3X6ylNbtOhutRYJSKlTwNis6bwMhgyQOzbnHFGgaAoVVMA7FvhQGeNOBBb7RRQILt/A3E/RU6xaB/ZcxVyuIDk+DGR0avjNy845qg/srLtFa5R3BiHHuVLZvTxSuSCt/VLoY96wwrAVIc36zEWsXX6DW1zPwtBFPuprN6bTa+aDfKDq6IdDIIabeF/JFgBXO709uUfsKZ2GSCvqALAeR7/gBXxtF3DWAxEXqPUsCPdiWxQ75vS8sw9NifX5m/iprjWjefeMKSFMNBIzQbVv/GK01t29X8gghGJIkZPdi54H0xqatt7XNYeHNo1q8r6Mgl9ZagdIJymj5/4Yd+5Pwf/HVfH63jYD1jeXjlCvwtH4oPi53dDv1BiFvB3kLETGy+brckjb/xwKVEgT0rGrBNsSbvGcSptJlkHZ3tmjc52iyYR/OY2ymsvVo1sX58t6X3KfGAnNRQDNwMDLYvNitfPHK0Zz1lUw8EJMEqSr89/xGMNdx2IDxDX57V
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1340.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(376002)(39860400002)(396003)(346002)(136003)(366004)(451199021)(107886003)(83380400001)(86362001)(26005)(6486002)(6506007)(6512007)(9686003)(6666004)(316002)(54906003)(478600001)(186003)(6916009)(4326008)(66556008)(66946007)(66476007)(38100700002)(33716001)(8936002)(5660300002)(2906002)(8676002)(41300700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: KCq8Rw/pszmuIizy4iR0EsQhS5s0ffTAhn/te6XvNKZo/5I2OwzPU42Zza6fq1BxiVcz6Ke1d4PJAIG6yqTn2IzSpbXDlSvzujsUslrQG8PZGrnxyhgKOmzu5NXROmiIK+nEqv9ERMBqppgbIukSYymu7ehn7GQpT5dFQsbilSqoeCiexXkwRqxYRWuBARcU5PqGhp8a2IbkXHugIQ9NxinvAySY3W7D+TPSdMCyny/vpPhH10YMoV2eNJor4+WAXgnklbSUHUxwhDlruC2/CykyUZmy4l9Y6lAEEqRGjPVc2WK6haOqR1sqLR7gNUjtvFMwSXuF5wcCx0wmSL71WXXKcOg9wAmHzmJQ+tWrB8AXLGn6guYFyMDFIK9pKjaroOmZ6MDq1Oo0dcXxBra6xCJ6XVd9agRMh5tcID3jLc7vnurGauGmfBIl3MH94RYGo8RHr01QTBSfZZKeZ/LM3T/BM9lEQD/WP6XUuivKFZ4bL6Wg+jn4svkjsHY8g2sQCyHp/uvLJe+XHJXpu8RYy2NZd//N3JfMp9fnm6s6znoVqzVlwQQJLlXBWV8PMPPXFsb+zh/s/N8VzLgfZKUqM/vOWjJY0dNFyg54mGPuAOlkTSxCuio7/Z5z6y1G5pwb
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Y6eOTUMOnlFDa1BPASyBXZG8KZvQHSCjGTQf3+TGtAsNJJ+o9HPwzNd2i6qz?=
- =?us-ascii?Q?lrapHFVa2moYepudQ//Bax6uGt0c0CVov2oYz1g6zPyguQ/s11vp02A4YpnM?=
- =?us-ascii?Q?2vk9ojI0ktskfw4zydm2Yt5/jT4Eilw/FBUxaJVaQLtXwm6SmV9Y2OHOc3HN?=
- =?us-ascii?Q?yVw2yfrnofvuxHs45gahkW9BeoPfeEWwzKzHOOxhE7gsX4vA8TBnRy9HOgx1?=
- =?us-ascii?Q?ADnvxjphbV2CPRiwoIbVtCb39+1oILQRs6E5p9HXg2yTuKDsTAGAfAfP202a?=
- =?us-ascii?Q?HeYoXgcNgyfQG+B480QsuGkavh9JkBBhQFFuAJ52OQd37NEUbE2b7+XpGQjq?=
- =?us-ascii?Q?HrIyGu6issILOnRIe47kltkVee3DbtPTMuSKJgi5gBSn0zsPvDmu7asIr/+9?=
- =?us-ascii?Q?IovdlT1wyxM5uUepp7H9KBkhdG0lDa7uzjIHZijdWe8VeylFvRrP4FZBjkkl?=
- =?us-ascii?Q?Pb1Xp9vQSqZo85JAwS8bDk7E/QOwAcuuNUN0jXYE9uwKYm4ViASgEGbao52o?=
- =?us-ascii?Q?I0Onc6GqXE1K+H8VY5Ny1H1lIWwJAFZzpKyA+OvWGPN4vJXSCEDxo3uQqbhI?=
- =?us-ascii?Q?itJJ7pk0ISbxTCgQYKEUQXXjoA1YC6ZKpX9CuNQ9Ws99Y1m0IjV83Ovcitfw?=
- =?us-ascii?Q?/7NDi/4kKais0ylmdVfS7Aow8epDRaVjps/lHE61+HH4md1JUdSqpCaPpex/?=
- =?us-ascii?Q?8Kpmu2IV5gIn2UFrikB4w79AG2cZoZhG8ou+fWZy6udu9TbbZoSsL3zU+c6l?=
- =?us-ascii?Q?Km2ouZK2yUhcDsZm57qnZjc4nVjhzCzEfO84U+ugaFpfCzfqBA8M1hX3aWVU?=
- =?us-ascii?Q?CY9iSvJ70v5ACMXAZttfkhCztlhSmvnWcc/SCyK7UkEScRLDPdPWrpiysFIK?=
- =?us-ascii?Q?t5ECTZSaUtGuwz1VWLHQEwzitFXRWDETXSFlE69fLm3EsLbpFszH38JEzmf8?=
- =?us-ascii?Q?Cu+dlA7/oQeazL0P9Z5ED4Ymm/ArE3NFzKrdwuFx7NgrSut5jwyTqr2u1/j5?=
- =?us-ascii?Q?P4KDrs7E8o9CYyd7/u3626kkAk9jw5WdE21+4L6rIfYhBeqS9OQOPIqa/mIU?=
- =?us-ascii?Q?YBO3StZm9UX1xkv/IMZMBvrJlwivL0NVtPKlK/ODVF8HZTzKRqKw0bsMoTbK?=
- =?us-ascii?Q?J1g3hu1M4qdFnbWn2OZUcxNcDMBhwKlXMrNEtHL0US6XwvTZg2b2Rnwh2K7I?=
- =?us-ascii?Q?bJl8NAqXohJUTGWmA9fdKW4yV6lQzW1U/6Tdo4sjLNVbdmrH3EVj3x0XSXQp?=
- =?us-ascii?Q?x6+chi2HGr6sr7szb1fhEt+15QcMGKCMVKt0RM8I9yXX6MlbwDHBLAejUSKx?=
- =?us-ascii?Q?Ja+l4dMTJtOgVgSrR4v3vy5RINudEx9aJCkTKO3NNrE2JNmuj9DW542WFb2B?=
- =?us-ascii?Q?9/ECx28fRzLUjI0q2/yuFwPOJ2W8sKkkdZtlsTZjKoDVtIIwrqC7YADf2syJ?=
- =?us-ascii?Q?6prg8AxZjZmxXb+0/HQEfvk0FOqCwTQGOLg8nxHenaUPJ6vqZ/S9Pmsupabm?=
- =?us-ascii?Q?h+VSUHPQsTVqgirsFX8TVeqxWqTviBMIVPpEmCSHW1PDtj284it16gs+MoaC?=
- =?us-ascii?Q?vq2eSsYzxk9m8TyCAGFE0FVVJx3TUR4/NxA1YovG?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad3c3bb0-0645-48af-bfa8-08db3c94cdd6
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1340.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EIfsHeIk0IeBVj9jYlOkmjcSUDgi8HxIdLlR1uMMSbMJ9R4ZM4cpWmY0s/dj?=
+ =?us-ascii?Q?mJuMNCIENAVBLhMa8Rf0OeU/coZ4OwSb+5Ok5+1NlcKOU0u6hIwFtwR+cBVQ?=
+ =?us-ascii?Q?6bFIhDeqWhtd+rkkDqYqywfxM8ONn53lD8WODj/BwHS3k0JJ9nip7wkf9uql?=
+ =?us-ascii?Q?apJjkKd05LHS1bOQXgD5L5zv9B5BgkdKmkxulk/o+7Jn35oXoq9Yh7UekbLk?=
+ =?us-ascii?Q?U0iSZhNGAA7x4RONyXyz29SEDLmDQNeztTRKhyDA+1e+ftIN9xx6VQv6th22?=
+ =?us-ascii?Q?r2ZsTqXZ6qNM2+hm89PCsBsM9PmJ4FqC9/3kLjEgr0yrQp6YvEnKfAkRKyG4?=
+ =?us-ascii?Q?8tEyFS5FgDgJGzvnyS+aP7VFmZG1OxLqvNZ9Jao56jvBOnn6fyeZGBNsx/uU?=
+ =?us-ascii?Q?ySU/m2sUEkLLUk2dNwI3vE1dUkCHTSTXsvaRHlyIeiogJGKYg1pUzZu5tEAN?=
+ =?us-ascii?Q?WTcc3/RtgXywAORz4mr5YcmWYLMWdx2GTr1ZVlLDEzK5Zhg6Uvy3HohRcXvO?=
+ =?us-ascii?Q?B8iumzqYbxyYaWQA5j4MYCZQ3DC1bgTVSYPp4Gp/5rgYSKr7/Ai0xHXL80ct?=
+ =?us-ascii?Q?jYsBZR6NV3896P+EgjogwUX5QZOlcIQA0ZQgWlJtCoo9WGE9UGulU/6CFomQ?=
+ =?us-ascii?Q?fyiD7rcOTuRdJsjpSCSYy13w2x2guWinhN/3a/yKjGpz3WQ6uUxJWBn9Hu5t?=
+ =?us-ascii?Q?v1j0XiBs9F0ur5bXUEseYY3c5p4ahPdWiu4/OIPl3CLJJi5S9ktuVdXznJZf?=
+ =?us-ascii?Q?l/98I+t8wlwsV2tzG6Qq4/KyEH6ApLfrBXF7p6+Urb90sdG45NtPvj33kYd4?=
+ =?us-ascii?Q?/zIiTqU8AKkWmBn81e1nU972k+y+yGtr5invEfYnqEuQ2VtxTS5WC22/yWwZ?=
+ =?us-ascii?Q?Q+/LeWh7mk3MQ8Q7l/LvEC1CL6JptzTvEF9Z/XJc4JX79lzmiaHdZboxELVP?=
+ =?us-ascii?Q?7WFCckqy4+8CV0Cavfif0Ci+cxPQ2o9EyJERgm5MX3o+SWYmn4FcmkHzje1U?=
+ =?us-ascii?Q?d0Gb/TwDEQ8Uk7eWveiFzDux2aF0n9fxDCcXcnHfZAWb9frTJnZA4KXkHROV?=
+ =?us-ascii?Q?J1DbuHy/nJqRYOqR2FWXx13OivDj+7NSN3xp84rv9HEiR2T/HZBrvks7hefj?=
+ =?us-ascii?Q?kjGKfiNE3RMGwQTRu+O4uFK5U0IZyF3r/UkMjEfb0P7SOVzWr2aEi19ju/Dj?=
+ =?us-ascii?Q?xMoXnxNyO/7MvurXQ3GBcXt2OQljO3wcrYlvpw=3D=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0cab73f8-928e-40dc-8357-08db3c9562a1
+X-MS-Exchange-CrossTenant-AuthSource: KL1PR01MB5448.apcprd01.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2023 03:03:21.7328
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2023 03:07:30.7859
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7Ath9vrLGu1qyo47X7kjKa/gNMfqRLZuN1aMTeOuZYWTE6pg4E8h3RffwSxPCnGDC37Z5o1J8cRqgGPPPDGimg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5505
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZPR01MB4677
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13 Apr 15:51, Jakub Kicinski wrote:
->On Thu, 13 Apr 2023 15:34:21 -0700 Saeed Mahameed wrote:
->> >On a closer read I don't like what this patch is doing at all.
->> >I'm not sure we have precedent for "management connection" functions.
->> >This requires a larger discussion. And after looking up the patch set
->>
->> But this management connection function has the same architecture as other
->> "Normal" mlx5 functions, from the driver pov. The same way mlx5
->> doesn't care if the underlaying function is CX4/5/6 we don't care if it was
->> a "management function".
->
->Yes, and that's why every single IPU implementation thinks that it's
->a great idea. Because it's easy to implement. But what is it for
->architecturally? Running what is effectively FW commands over TCP?
+The system hang because of dsa_tag_8021q_port_setup()->
+				stmmac_vlan_rx_add_vid().
 
-Where did you get this idea from? maybe we got the name wrong, 
-"management PF" is simply a minimalistic netdev PF to have eth connection
-with the on board BMC .. 
+I found in stmmac_drv_probe() that cailing pm_runtime_put()
+disabled the clock.
 
-I agree that the name "management PF" sounds scary, but it is not a control
-function as you think, not at all. As the original commit message states:
-"loopback PF designed for communication with BMC".
+First, when the kernel is compiled with CONFIG_PM=y,The stmmac's
+resume/suspend is active.
 
->
->> We are currently working on enabling a subset of netdev functionality using
->> the same mlx5 constructs and current mlx5e code to load up a mlx5e netdev
->> on it..
->>
->> >it went in, it seems to have been one of the hastily merged ones.
->> >I'm sending a revert.
->>
->> But let's discuss what's wrong with it, and what are your thoughts ?
->> the fact that it breaks a 6 years OLD FW, doesn't make it so horrible.
->
->Right, the breakage is a separate topic.
->
->You say 6 years old but the part is EOL, right? The part is old and
->stable, AFAIU the breakage stems from development work for parts which
->are 3 or so generations newer.
->
+Secondly,stmmac as DSA master,the dsa_tag_8021q_port_setup() function
+will callback stmmac_vlan_rx_add_vid when DSA dirver starts. However,
+The system is hanged for the stmmac_vlan_rx_add_vid() accesses its
+registers after stmmac's clock is closed.
 
-Officially we test only 3 GA FWs back. The fact that mlx5 is a generic CX
-driver makes it really hard to test all the possible combinations, so we
-need to be strict with how back we want to officially support and test old
-generations.
+I would suggest adding the pm_runtime_resume_and_get() to the
+stmmac_vlan_rx_add_vid().This guarantees that resuming clock output
+while in use.
 
->The question is who's supposed to be paying the price of mlx5 being
->used for old and new parts? What is fair to expect from the user
->when the FW Paul has presumably works just fine for him?
->
-Upgrade FW when possible, it is always easier than upgrading the kernel.
-Anyways this was a very rare FW/Arch bug, We should've exposed an
-explicit cap for this new type of PF when we had the chance, now it's too
-late since a proper fix will require FW and Driver upgrades and breaking
-the current solution we have over other OSes as well.
+Fixes: b3dcb3127786 ("net: stmmac: correct clocks enabled in stmmac_vlan_rx_kill_vid()")
+Signed-off-by: Yan Wang <rk.code@outlook.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-Yes I can craft an if condition to explicitly check for chip id and FW
-version for this corner case, which has no precedence in mlx5, but I prefer
-to ask to upgrade FW first, and if that's an acceptable solution, I would
-like to keep the mlx5 clean and device agnostic as much as possible.
-
->> The patchset is a bug fix where previous mlx5 load on such function failed
->> with some nasty kernel log messages, so the patchset only provides a fix to
->> make mlx5 load on such function go smooth and avoid loading any interface
->> on that function until we provide the patches for that which is a WIP right
->> now.
->
->Ah, that's probably why I wasn't screaming at it when it was
->posted. I must have understood it then. The commit title is quite
->confusing by iteself - "_Enable_ management PF initialization".
->
-
-Yes the naming is misleading, this not what the name suggests, just a minimal
-PF ethernet channel to the BMC, no body is planning to run "raw FW commands
-over TCP", you don't need "special PF" to do this :) .. 
-In fact any vendor could already be doing this on any normal
-PF, so I think you are basing your argument on an irrelevant claim.
-
->Why is it hard to exclude anything older than CX6 from this condition?
->That part I'm still not understanding.. can you add more color?
-
-CX arch and mlx5 are forward compatible, we try to keep mlx5 device
-agnostic and use the CX well-defined feature discovery protocols to boot
-the correct set of features.
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d7fcab057032..f9cd063f1fe3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -6350,6 +6350,10 @@ static int stmmac_vlan_rx_add_vid(struct net_device *ndev, __be16 proto, u16 vid
+ 	bool is_double = false;
+ 	int ret;
+ 
++	ret = pm_runtime_resume_and_get(priv->device);
++	if (ret < 0)
++		return ret;
++
+ 	if (be16_to_cpu(proto) == ETH_P_8021AD)
+ 		is_double = true;
+ 
+@@ -6357,16 +6361,18 @@ static int stmmac_vlan_rx_add_vid(struct net_device *ndev, __be16 proto, u16 vid
+ 	ret = stmmac_vlan_update(priv, is_double);
+ 	if (ret) {
+ 		clear_bit(vid, priv->active_vlans);
+-		return ret;
++		goto err_pm_put;
+ 	}
+ 
+ 	if (priv->hw->num_vlan) {
+ 		ret = stmmac_add_hw_vlan_rx_fltr(priv, ndev, priv->hw, proto, vid);
+ 		if (ret)
+-			return ret;
++			goto err_pm_put;
+ 	}
++err_pm_put:
++	pm_runtime_put(priv->device);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int stmmac_vlan_rx_kill_vid(struct net_device *ndev, __be16 proto, u16 vid)
+-- 
+2.17.1
 
