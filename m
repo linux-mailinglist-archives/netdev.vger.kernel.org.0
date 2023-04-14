@@ -2,224 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DA5C6E28DE
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 19:00:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 264AD6E28E0
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 19:01:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbjDNRAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 13:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59352 "EHLO
+        id S230083AbjDNRBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 13:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbjDNRAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 13:00:52 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA6F5B93;
-        Fri, 14 Apr 2023 10:00:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681491649; x=1713027649;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=hC4SLAy52Cw/qO1/zp1ZmJyg7mcsjVpOit0Vr9crmx4=;
-  b=KLaCcO3hxeVRm3ETPrz2ZQKkpSfvq6TutX3Xk6T8fr4Hnt5H+03GpR++
-   aolPn9uSGZmu+osFeZSbqHDQiwUxplub7Ax4SOCQgcCS0FzLF8QB3ieOt
-   /t44vPynUnyVThzZOnLjD8ZiEanR4wug/h9CpM8wkyhKlKn+qLpgQInZl
-   CnHCkddaS4d2XKDrAfx4K/FkzL94CJSQw4IZbrKLy3KiwMeU/im3EF8+8
-   k8FVbNnlsnS6/9FTgJRIbiM+vXAyb/zqsjgThDfJJEMFrLDome8EQEI4z
-   QzmtL88g6JAD5bkqGjnrQSyo0BRjJOxk0LnveWteXnuDqHAxkV5JdVihj
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="372378822"
-X-IronPort-AV: E=Sophos;i="5.99,197,1677571200"; 
-   d="scan'208";a="372378822"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2023 10:00:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="759161314"
-X-IronPort-AV: E=Sophos;i="5.99,197,1677571200"; 
-   d="scan'208";a="759161314"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Apr 2023 10:00:45 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 14 Apr 2023 10:00:45 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Fri, 14 Apr 2023 10:00:45 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.176)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Fri, 14 Apr 2023 10:00:45 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C9+BSw6IGrhmgtron5AdnneF4Mf6fVjTWCHtiKzv0TQ76TPDfNa+lVjy88FTmCmIhi1jN8W/7LcHq5czaCst/onjA8F1e5I1lSz8Bqu4AfPsmqhO6E8GA6geud5RcmAES1kvZMNsBvjHs8MKolKviln85iuh0aOgwvhJFKuvI+iZqlFabhn/szYou+7z2zg4/ZEH+vJT9aqiP1DsCR6bVyV0d3pEY0zuyEWCLsCyVhzStm3WhvnEWsQE4bKSB2JUs9EL3/yf63SmdLKf2fo4NRTMR6rkEQcJBR1p+r0GJ9TNhg84H9IC0QVMrYMDJZFtC61JITDkTtGoZradLvpC4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GLlLMGhMKyra+YCkZEeAEGAGDQI/sDjGOdRkaR2vA8o=;
- b=nhvEOLbj55mnyRaJJl19BiQnKQWxQm3OAjWUP5P0W3UWRPQPaa6zeGO7VQgCS2i0sBL2MAdv9F1K8JCvm8nWi93JR9m0GEjVMnunr5gimvnCUdS2DpBpixkyHnZMT+NoIqEuu0t2bCuSL7Fg7SFY5gTtStduv8HEJvIaNRbcaZfdZU00kNrYJFbraaAk1ScYBNAnzfysHAyca+PlgW9wQMCi9nLfa6kSxYb74uzTNs36u5VqlxkiLy2pm0Rbnhada6boPbsx+kEh9sMV9nJq7KKIoVW64vlCHf0UfyxwMUjW9bRUU/pO4aiqwFOhiVWabzga9mcv/b+ffCnqEzF5oQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com (2603:10b6:5:13a::21)
- by SA1PR11MB6894.namprd11.prod.outlook.com (2603:10b6:806:2b1::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.24; Fri, 14 Apr
- 2023 17:00:43 +0000
-Received: from DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::7911:de29:ded:224]) by DM6PR11MB3625.namprd11.prod.outlook.com
- ([fe80::7911:de29:ded:224%5]) with mapi id 15.20.6298.030; Fri, 14 Apr 2023
- 17:00:43 +0000
-Message-ID: <06722642-f934-db3a-f88e-94263592b216@intel.com>
-Date:   Fri, 14 Apr 2023 19:00:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH net-next] net: lan966x: Fix lan966x_ifh_get
-Content-Language: en-US
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <UNGLinuxDriver@microchip.com>
-References: <20230414082047.1320947-1-horatiu.vultur@microchip.com>
-From:   Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <20230414082047.1320947-1-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0122.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:97::12) To DM6PR11MB3625.namprd11.prod.outlook.com
- (2603:10b6:5:13a::21)
+        with ESMTP id S230013AbjDNRBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 13:01:15 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6099DAF1D
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 10:01:04 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id lh8so5926841plb.1
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 10:01:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1681491663; x=1684083663;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DCiPADMR9pAaZ6QmtPFG00ZYmKHmpcRN9jgoFRRGwsw=;
+        b=wdRzS+lIMlIvaznjD90A4515mzaOT4UkMRxVPDdE3aKszh2u+GMprf2wTODtySuLsH
+         vIDQ0p608cVP14ecLcEy7EjY0qvbHuJe7UlXorn30wD19R4B9IfsoSXGfrQq+17sqd/v
+         JL6P4LbaQwVDZ2ptf5iwpj+X6DPXfPI++fN1TFbZyKyxQovXNnge5M76Ef+IrcAvBqJb
+         VGU/eGT9Jomtd8nRhrWPe7uSkA2plhmwFyNu8HL1Yu9137fwEzuS/syTbGRsVeTjxwGv
+         YWX0Ykg1MNfXmlhTIrW+lAwPPMnwGcvMrkObgRO/HGcy8N5e2H7M2bP03B8qpy2o9GKi
+         nO4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681491663; x=1684083663;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DCiPADMR9pAaZ6QmtPFG00ZYmKHmpcRN9jgoFRRGwsw=;
+        b=jvR6mDMGFDWkDTl9iICTsahT0+slMOgykep3IsY3jbv8j8zce984neZw4Kehla8u8I
+         Q0451WJO/yFxzJEC6TacVoghsmFmDLiLu+70VllsvgzS+v1av1ypdyz4CSqooxZzdxGq
+         6AlFsdt2bEK66IaBhCa2dZmzbk8ZBzCWfhCoAanzC1GMT3804RB7CN/SsazhpuIb0pZi
+         SQoItQIswFs53hs1q3CoL19WsYuuI24y6PVgb8jllb6bm/dc5hPGUrNs30/gBWebVamg
+         4ClcpGs/sq3TYofv9jKDTVMNDuBmZAfquex3AARgqa19LrwlvCTeB6hvv7aMC6zQt+W/
+         7+Cw==
+X-Gm-Message-State: AAQBX9cL/qdjQUW2bFV9gSE24z2XJQATBGHAhoqzIT3SgtwPNvXN68aS
+        zFTfEQfW35PfFwJBPFHb+gzmb3BeMk4cB4hUw4Crng==
+X-Google-Smtp-Source: AKy350Y2bX3WPERPFrm3j5pKY4XcXPrV/7YYQFWtSy13q/jbnPPI2afdp1Ib/EyqEBIlrGSXKqHZzA==
+X-Received: by 2002:a17:90a:9309:b0:23d:133a:62cc with SMTP id p9-20020a17090a930900b0023d133a62ccmr6222865pjo.17.1681491663542;
+        Fri, 14 Apr 2023 10:01:03 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id fv23-20020a17090b0e9700b002473c9c8d92sm1170358pjb.44.2023.04.14.10.01.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Apr 2023 10:01:03 -0700 (PDT)
+Date:   Fri, 14 Apr 2023 10:01:01 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Lars Ekman <uablrek@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: iproute2 bug in json output for encap
+Message-ID: <20230414100101.16813970@hermes.local>
+In-Reply-To: <65b59170-28c2-2e3b-f435-2bdcc6d7b10c@gmail.com>
+References: <e3bfc8e6-5522-4e65-373e-976388533765@gmail.com>
+        <20230414082103.1b7c0d82@hermes.local>
+        <cf099564-2b3c-e525-82cd-2d8065ba7fb3@gmail.com>
+        <65b59170-28c2-2e3b-f435-2bdcc6d7b10c@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB3625:EE_|SA1PR11MB6894:EE_
-X-MS-Office365-Filtering-Correlation-Id: 482898d1-6141-443b-31ba-08db3d09c826
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zseiyBcGhjGIVECzxqev0MaVGIuPyeGeSWyX08DfspdOK9x2uy+9vaL+/cNpaWELAvhglfCXcpjIcfx2/32Fw2H8gO5j7nVsLcx5nP/y85AlE+WVsGiboXOr42rmrE/Ej8bh+DAAEn8U4/rc679/u+zD0dsqNvmy/VdFZ72Bjdfvqib8kExwre5vosYSBAVWLo3zTDZElEwnxFozsCuIk5iUoa3IND+a2Ctr3immQs0RqSCEpc5inHKdse9Fx2QWmZJACwgCOoPEpUm7pFkR8Ni09Q98dZr04yiZpRgoz4vo5CDM3F27FOFpHHtvF5iiS/2clHRvhbLgv3ANupYIsXVjaCE6PHS505o0d6s1PvTLTqB/sXfmgE6AuugV+L9LbPultqlhR/2RNKeICiVlYd3dbpHXTUTXBqNgM2zH/RCYjn52zFKrrOJpm1EzRA0S/O4rnuPyUXO1A/Qv+y6FD5o1GX+N/IYgaxb21RHEf4F7mDCFiGMIICKWblzOM/uIILS68KR+WJG7TCGilJOs15SgJKHJs3KmKWeAtjy6Z+w10n1mpUEtVHM1uVc/l05rPOtc9CBUm6eym6XY2rZgOkozIkDCFLg5fxfqwD/rZZxgGjE28B5lEQS38/bdHU/jn2jjoTjVBGyOGXP6NVvdUA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3625.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(346002)(396003)(376002)(136003)(366004)(39860400002)(451199021)(6506007)(186003)(26005)(2616005)(316002)(2906002)(6512007)(41300700001)(83380400001)(4326008)(8676002)(66946007)(478600001)(8936002)(6666004)(5660300002)(82960400001)(38100700002)(31686004)(6486002)(66556008)(66476007)(31696002)(86362001)(36756003)(6916009)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YWY3K3Uyemx5TDgvWDFiem9wcGpxVVVsU3l3YTd5RWQwcDdYUmhLeGhrWElw?=
- =?utf-8?B?MmloREhOUXUxYkV4RHVHdFMvbjMrUDlPWkdSWENqemlHRkZrSXdyZ3VJeTB2?=
- =?utf-8?B?aWlrazBZMmhwOXc3MjFjZUdpd2M2MzNIZWtzZlVyV1hUdnFtVG1rVGZaOUZP?=
- =?utf-8?B?RWM2bFZFZFp4NDhaWitpU2ZnNEQ5aUlRVENES255a0VtM2xoY3pJTXcrNWFQ?=
- =?utf-8?B?d1JNUlJOQ2dQbXZpbk1WWHFhVzZ3WEE5dldkVWVXZzFiT3lQa0NyNm9IbFZY?=
- =?utf-8?B?a1JqajRJbFpyVWthUTdvNUwrcU5XUW1JL0ZBL3NyODljcWJ0OWthYzhXbjBC?=
- =?utf-8?B?NmxkOWEvVXhRK3hnS3o3NTlobGdpSlllUWcvWW91aFZ0NmVsMWh2Y2RLcWNQ?=
- =?utf-8?B?R09MQlhHVU9rd1ljcDEyUzkvTml4dU5TSUVRTVIrQU9nNURhK29QWXFMVm82?=
- =?utf-8?B?cU5xa2ZkdmZDbHc3c0ZhTDROc09qU2xtY3ZRODA4OTJlY0V6SFNBek5ZYVdn?=
- =?utf-8?B?TDBwck1odStQQTI5MHhtWFZmU0VWQVcwdkpTZlJHRHppaEJ6alFtVEFwNkF4?=
- =?utf-8?B?R0tXNlhiT0xOUXBPMmxCWU9Ib0hqK2VnV1kzcVZVMFhKc0t3MGVjQ2VTRnkv?=
- =?utf-8?B?ZWI2LzFYR3dOODJ1ZHQyUjRzbWJEVzhQZGZvclNXaUZnOGtpM0Y4S2Y4ZFVR?=
- =?utf-8?B?RTRIK2haQklCa3QwTi9lSERnSHdMQU5CTmRLQkt6ZXpwcUhVQ2g0Q0ZERUJF?=
- =?utf-8?B?NStSUXlvb1NndS9zM0orWkc4Q1N2MENMeGpUVDRNc1RMUnloMzFXbkxUeU92?=
- =?utf-8?B?WHZ4RGtHL3QyU1dkbWk2UnMzU1lMZ0lyNkZhTldiOEZSRWcyei9NeGFJYzBj?=
- =?utf-8?B?YTVONUhYcHpDZWU3djJhT3VxOXNBbldSTy9lTG9rWUZRaDJkNFVnSEVDQS9v?=
- =?utf-8?B?NFhUWENlM1l6VmNaY25jTFNxUFVZNkNMbDZKTWdEVHFrWElQdEViRVNEelVO?=
- =?utf-8?B?UlNtVFFJZGhmVVlZTGY5TldiT2dzeUkvOWt0OXNwZFpiWkZsL25lbkpReXla?=
- =?utf-8?B?bGR5OFMraEVxQXd5ZTh1aEdIeDVqWlRnUmVUR1RPMGl6enJ0V0dUOHpoaVEw?=
- =?utf-8?B?cDVvVXI3bzR5bUlUVCs2NG9HamxKWUNoMUlLYXVxWWZIc0JMSjVSMkdxRGo2?=
- =?utf-8?B?MHhGMG0vSGNHRWhWd25MbkY4bVNxTzFzY3hXSlBRdmxmZ21PWDdZZWRNdGNN?=
- =?utf-8?B?TksrMjVMbEM2RFRWV3lmYnV1WUpDWFUzSTd3cmxQRWtHNGx2WTJiWHdYVHh6?=
- =?utf-8?B?YytITWxVOVloK2ZXcnp1aUdmQkh0NEZkQnkwM1ZaM2hOcWkwY0xIUkQxOWEr?=
- =?utf-8?B?Zi82UVljdTJrOGhHUnN6V2Y5YkNrd1BFYmx6eEEvV3l6YkREWFFCQXhmZnc5?=
- =?utf-8?B?cFFoaVZaZ21pRjBScE1taHJSM2FaN2hGVFM0NmdweTFJcGhCZkRLOGNweHNZ?=
- =?utf-8?B?anF6TTEzaUpyR1U2d1hoTkx1VjVQYTNpU2VNYUpTVjlhZ2pKandUWG54VGUr?=
- =?utf-8?B?OGRTcHNNbzl3NmV5MTgvMkgreUJ6cVYyakxNa29YZHFWWUswQ3hzcTFSZVdP?=
- =?utf-8?B?M3gxRkJnVWExc2lmQlNPS1VaNEtjOGMyclh1d2FvaTlId1VIeWdSRnBsUHdo?=
- =?utf-8?B?NHlQMWxZYllwQjJ5VVNCYWtwRStqYUorR3NEK2IyL2tvRTRsM1F0REc4dzMz?=
- =?utf-8?B?QS9sRk1sZElVWGZqVUh0QWtlZzdRbnR3WmVzQUI5NkVaY01sV0R1TDQ4clc1?=
- =?utf-8?B?ekZqOEh1RWxvMnZzNjF6b2pyOWQ2RjZSclBKdXlCRzdUT29ZZzdoOW0rZSs5?=
- =?utf-8?B?QllHSjdhVnREdk5YaWZxNXdUTnd2OWxtY3k5MitPSzFYQmJBTWltMENkMGQy?=
- =?utf-8?B?SkltL2pTeG1wdXFCdGUxYlEvUlVvWi9CbWl5L2NMUjVVR24xbGk0c1hOcVd6?=
- =?utf-8?B?TjZUQmdpVHIxdkVzZGc4WTBTR0Z2b3UrQ1czbWFGdnFWQVhVZ1pVaUd1TTcy?=
- =?utf-8?B?bUlPVVdyV2lacmFDNUtGMFNvUXo3a3IwN0xRdmxTZFRkM2dNRit0SnVYUmN6?=
- =?utf-8?B?RG1FdUpWOThZM3BoTFpleFl2VDBQWDFhWld0OGZDMlllbnVMYjdEZEVVRUY2?=
- =?utf-8?B?K0E9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 482898d1-6141-443b-31ba-08db3d09c826
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3625.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2023 17:00:42.7471
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zmxJftv6LoniUBOfoKhczEYdFZDbLnnr2+hYJShGEFSCr9GUkhGFfqjYVYh/YMPtKJR88A+6G26CIOpaVfiJBeHs/Xr7J1ZLDSyaFbpJmwM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB6894
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
-Date: Fri, 14 Apr 2023 10:20:47 +0200
+On Fri, 14 Apr 2023 18:26:03 +0200
+Lars Ekman <uablrek@gmail.com> wrote:
 
->>From time to time, it was observed that the nanosecond part of the
-> received timestamp, which is extracted from the IFH, it was actually
-> bigger than 1 second. So then when actually calculating the full
-> received timestamp, based on the nanosecond part from IFH and the second
-> part which is read from HW, it was actually wrong.
-> 
-> The issue seems to be inside the function lan966x_ifh_get, which
-> extracts information from an IFH(which is an byte array) and returns the
-> value in a u64. When extracting the timestamp value from the IFH, which
-> starts at bit 192 and have the size of 32 bits, then if the most
-> significant bit was set in the timestamp, then this bit was extended
-> then the return value became 0xffffffff... . To fix this, make sure to
-> clear all the other bits before returning the value.
+> Hi again,
+>=20
+> Digging a little deeper I see that the double "dst" items will cause
+> problems with most (all?) json parsers. I intend to use "go" and json
+> parsing will be parsed to a "map" (hash-table) so duplicate keys will
+> not work.
+>=20
+> https://stackoverflow.com/questions/21832701/does-json-syntax-allow-dupli=
+cate-keys-in-an-object
+>=20
+> IMHO it would be better to use a structured "encap" item. Something like;
+>=20
+> [ {
+> =C2=A0=C2=A0=C2=A0 "dst": "192.168.11.0/24",
+> =C2=A0=C2=A0 =C2=A0"encap": {
+> =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0 "protocol": "ip6",
+> =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0 "id": 0,
+> =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0 "src": "::",
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "dst": "fd00::c0a8:2dd",
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "hoplimit": 0,
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "tc": 0
+> =C2=A0=C2=A0 =C2=A0},
+> =C2=A0=C2=A0=C2=A0 "scope": "link",
+> =C2=A0=C2=A0=C2=A0 "flags": [ ]
+> } ]
 
-Ooooh, I remember I was having the same issue with sign extension :s
-Pls see below.
+Something like this?
 
-> 
-> Fixes: fd7627833ddf ("net: lan966x: Stop using packing library")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> index 80e2ea7e6ce8a..508e494dcc342 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> @@ -608,6 +608,7 @@ static u64 lan966x_ifh_get(u8 *ifh, size_t pos, size_t length)
->  			val |= (1 << i);
-
-Alternatively, you can change that to (pick one that you like the most):
-
-			val |= 1ULL << i;
-			// or
-			val |= BIT_ULL(i);
-
-The thing is that constants without any postfix (U, UL etc.) are treated
-as signed longs, that's why `1 << 31` becomes 0xffffffff80000000. 1U /
-1UL / 1ULL don't.
-
-Adding unsigned postfix may also make it better for 32-bit systems, as
-`1 << i` there is 32-bit value, so `1 << 48` may go wrong and/or even
-trigger compilers.
-
->  	}
->  
-> +	val &= GENMASK(length, 0);
->  	return val;
->  }
->  
-
-(now blah not directly related to the fix)
-
-I'm wondering a bit if lan966x_ifh_get() can be improved in general to
-work with words rather than bits. You read one byte per each bit each
-iteration there.
-For example, byte arrays could be casted to __be{32,64} and you'd get
-native byteorder for 32/64 bits via one __be*_to_cpu*() call.
-
-Thanks,
-Olek
+diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
+index 52221c6976b3..37730024caaf 100644
+--- a/ip/iproute_lwtunnel.c
++++ b/ip/iproute_lwtunnel.c
+@@ -834,14 +834,15 @@ static void print_encap_xfrm(FILE *fp, struct rtattr =
+*encap)
+ void lwt_print_encap(FILE *fp, struct rtattr *encap_type,
+ 			  struct rtattr *encap)
+ {
+-	int et;
++	uint16_t et;
+=20
+ 	if (!encap_type)
+ 		return;
+=20
+ 	et =3D rta_getattr_u16(encap_type);
+-
+-	print_string(PRINT_ANY, "encap", " encap %s ", format_encap_type(et));
++	open_json_object("encap");
++	print_string(PRINT_ANY, "encap_type", " encap %s ",
++		     format_encap_type(et));
+=20
+ 	switch (et) {
+ 	case LWTUNNEL_ENCAP_MPLS:
+@@ -875,6 +876,7 @@ void lwt_print_encap(FILE *fp, struct rtattr *encap_typ=
+e,
+ 		print_encap_xfrm(fp, encap);
+ 		break;
+ 	}
++	close_json_object();
+ }
+=20
+ static struct ipv6_sr_hdr *parse_srh(char *segbuf, int hmac, bool encap)
