@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E77B6E29AB
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 19:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8EF76E29B1
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 19:51:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229830AbjDNRuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 13:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
+        id S229953AbjDNRvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 13:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbjDNRuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 13:50:14 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C021FE2
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 10:50:13 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id oo30so4525288qvb.12
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 10:50:13 -0700 (PDT)
+        with ESMTP id S229910AbjDNRvA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 13:51:00 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C9083ED
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 10:50:47 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id e9so14038045qvv.2
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 10:50:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681494612; x=1684086612;
+        d=gmail.com; s=20221208; t=1681494646; x=1684086646;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Rq+VpTXwF0j0tPREsbNl2SWjes36JpiC6uuoOwlgixQ=;
-        b=I0GX5RZFcQ9F//YSvDVSVfYgAfuAM9UgqtqQZNsI+D/P+bVZvXVxKPIFfLcP1h5G83
-         LKZL1TLzSyksXYraYyNxeTGLa0lyapmNSbwhaKoONyvRaOfBGOqTVksPSKHvOoYuo857
-         Uy/Mi4D56zN2ZMWIwqmWndPvbN1KzGHO5ZU4kEimfkLUUjRyb8QGvlCAaq1zhjWGvs3L
-         hFbkXFaxnNuK0+7bHWKLvY0mm7NiLNnMiNcgXL2q25lHjpadwzhByvk6rX5RMxP/8dXN
-         RTHg2lJhlAd+XqmRxK2QFgFSrFFuvnD+mj13WTZpy8Xq/mySO8K22yI9ogw8DGmyhpcz
-         la4Q==
+        bh=EueI5cVrnnNHzjUxI2/nKt92AcnkY2Q9sN+H97PB6FM=;
+        b=N3wrUNuss7kgbxajQ4/8OQw6xzvi0NvKB0w+AvcD0OncR0P52uXj0niuWY5fismBzn
+         kgDg+DhsdraQuz9q1gJGF+GP38I9AvYJ8BARPA8Bpy4ZlxrnEWj4H6sUIX5oXG06Qhjt
+         EBPQQwmmrLJHUTvdz8elp13sE3GVtWnDVDAlNbPgVQ0Q/HJW5AJHW6KLgyOzoGKqiuen
+         5qb//KpS2iZZ2MH4BvvRY2vRtlPMZnmZhKb/wHJxKktq78w5V/utsw5loCC4cVOtTYa9
+         n0717ZZLr6EnC12LF/8s24OR0Egd3ALmVT7ha+Dj9nrHzDQDCmh/007sv+B7bp+5pC/X
+         xTGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681494612; x=1684086612;
+        d=1e100.net; s=20221208; t=1681494646; x=1684086646;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Rq+VpTXwF0j0tPREsbNl2SWjes36JpiC6uuoOwlgixQ=;
-        b=RqLKuGSFE48rO7m2A4B26LDDgeQXypmJvSN6Ke6uCoWuJk/wRIU+MvnhsWTKOgsYJW
-         TjQ9RNNAEKTg8vreGlfQEQc4qvlPmjSpxLgvaQacZmwzVvhncVWnNhiOlur20g6zgTwo
-         UPNDFCPYf1KjTgEwu0EpfI3iRQv+0iZw4nw4jqiUubrSNK7O6VNg0pm18UQcR+kuKOft
-         CdrisI9PQ9BuOU5Kwy7IvT9o8mY+ZI3GrVZ4dlIhMetogh7JQKIfrJs6BgIoUd0K6ch+
-         H0YLCTVLdJqXopZyHGF88AABa+g11gtXrDnKLzigaCg2x5IVm3FiKiLLqgxQ9MMSvADX
-         G8Xw==
-X-Gm-Message-State: AAQBX9fubVobUyr6EKqYxIWow7ryIQjlFZzW22M+2/qJTdLNRnzIBULG
-        +V4IFBdCiAff+PFAwlxS6b0=
-X-Google-Smtp-Source: AKy350aWqSPETMyUkBS+YAe+72SzWsAWhN8MthJHluG3WCzZpbu5aMxp4dZrdWLfVMZXfKeIqeeLBw==
-X-Received: by 2002:a05:6214:5019:b0:5ee:4503:24f5 with SMTP id jo25-20020a056214501900b005ee450324f5mr5867893qvb.21.1681494612259;
-        Fri, 14 Apr 2023 10:50:12 -0700 (PDT)
+        bh=EueI5cVrnnNHzjUxI2/nKt92AcnkY2Q9sN+H97PB6FM=;
+        b=gQnRzL5yWw1BDs4gvd0eYJ14KqYTvMcbfE+Aji05lhtq9xyyTIy4OfQv/A4iEdEr8W
+         KXAf+EfV1qmusETCFsnuh3/gR/0EOMbXD5vZ9QEUkPXGNoVrFtIbAxxxQRDyYrrJKPnO
+         mz7KceFBL5u27d2sAnRAoAUBTCKlFQq8UOBK49v+0gLanwthvpwExiighjKMY1aBRxee
+         ZRbZ5wxl6Eh9SCK9SieEu3iaDQIUbU4xYjTxa1YCWGJdLHRVPmWqFTEXD5jId4LzFtmr
+         4OvInMeC87TP6mDaIa5BTQL576k8xUkudXY0olgX+B+aCvrn3j2x9rpFsPD3bfkIPEle
+         n6Dw==
+X-Gm-Message-State: AAQBX9dE1d5D7+VPOpo0QVL+nHzVOl1UO13TKXw0ArV5n0NOWOdBO9/+
+        nOWdgy8233Ooo/XYHXwWbp0=
+X-Google-Smtp-Source: AKy350bvigGai0JhFM432IfTgNQvYWRUA7EecWTq97oJjkLbmkwOYlfv9x081KxBHXH2NHiLi0lMIQ==
+X-Received: by 2002:a05:6214:2245:b0:5a6:1571:1eb with SMTP id c5-20020a056214224500b005a6157101ebmr5789628qvc.27.1681494646016;
+        Fri, 14 Apr 2023 10:50:46 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id lv4-20020a056214578400b005dd8b9345ecsm1246982qvb.132.2023.04.14.10.50.10
+        by smtp.googlemail.com with ESMTPSA id r19-20020a37a813000000b0074876c013f9sm1372495qke.123.2023.04.14.10.50.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Apr 2023 10:50:11 -0700 (PDT)
-Message-ID: <741012bd-70f7-63df-8d2a-37f713a587d1@gmail.com>
-Date:   Fri, 14 Apr 2023 10:50:09 -0700
+        Fri, 14 Apr 2023 10:50:45 -0700 (PDT)
+Message-ID: <aa53d1b2-4df7-6c42-a827-933f419a971d@gmail.com>
+Date:   Fri, 14 Apr 2023 10:50:39 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH net-next 5/5] net: skbuff: hide nf_trace and ipvs_property
+Subject: Re: [PATCH net-next 4/5] net: skbuff: push nf_trace down the bitfield
 Content-Language: en-US
 To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         pablo@netfilter.org, fw@strlen.de
 References: <20230414160105.172125-1-kuba@kernel.org>
- <20230414160105.172125-6-kuba@kernel.org>
+ <20230414160105.172125-5-kuba@kernel.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230414160105.172125-6-kuba@kernel.org>
+In-Reply-To: <20230414160105.172125-5-kuba@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -76,39 +76,20 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 4/14/23 09:01, Jakub Kicinski wrote:
-> Accesses to nf_trace and ipvs_property are already wrapped
-> by ifdefs where necessary. Don't allocate the bits for those
-> fields at all if possible.
+> nf_trace is a debug feature, AFAIU, and yet it sits oddly
+> high in the sk_buff bitfield. Move it down, pushing up
+> dst_pending_confirm and inner_protocol_type.
+> 
+> Next change will make nf_trace optional (under Kconfig)
+> and all optional fields should be placed after 2b fields
+> to avoid 2b fields straddling bytes.
+> 
+> dst_pending_confirm is L3, so it makes sense next to ignore_df.
+> inner_protocol_type goes up just to keep the balance.
 > 
 > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: pablo@netfilter.org
-> CC: fw@strlen.de
-> ---
->   include/linux/skbuff.h | 4 ++++
->   1 file changed, 4 insertions(+)
-> 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 543f7ae9f09f..7b43d5a03613 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -966,8 +966,12 @@ struct sk_buff {
->   	__u8			ndisc_nodetype:2;
->   #endif
->   
-> +#if IS_ENABLED(CONFIG_IP_VS)
->   	__u8			ipvs_property:1;
-> +#endif
-> +#if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE) || defined(CONFIG_NF_TABLES)
 
-Should that be IS_ENABLED(CONFIG_NT_TABLES) given it can be tristate?
-
->   	__u8			nf_trace:1;
-> +#endif
->   #ifdef CONFIG_NET_SWITCHDEV
->   	__u8			offload_fwd_mark:1;
->   	__u8			offload_l3_fwd_mark:1;
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
 
