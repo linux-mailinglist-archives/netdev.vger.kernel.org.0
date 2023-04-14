@@ -2,193 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24E8E6E2B00
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 22:13:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69F7F6E2B0C
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 22:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbjDNUNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 16:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35242 "EHLO
+        id S229951AbjDNUUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 16:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjDNUNU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 16:13:20 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A6D65B7
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 13:13:17 -0700 (PDT)
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 2CC643F46A
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 20:13:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1681503193;
-        bh=j+2C3bAGLZY5j/j5vsOTAv/QyDazrqmaWqDTFOuzdy8=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=iA8M8iQFhe50W4yaJPLcKnN1nhCkgAvW4JT70iC3YRxid0KZib8zenCwFRXjWnzga
-         ufAB9KyVrYoCnpqwF8uDprwl/liNcwq98Om4r3Kl7roxHJ0M/SeSF37ScxqZnoC0UQ
-         E0Adz1qXNP+Lca+xx8j+udjI1kGschSCqVgtbFslyLvOsUowGwwm+repNGQ2xpguwD
-         EfIkmgqu8nDoMW/3w3a9VNxJEIdDSr6P4IQ4xZ/twu3RzUwAJDyWujB8HMXGbTINoE
-         3AZquj+YFC+uCJ+tKdjMiuJdblZu9YzYPezx8bqyEckBruN37nfwBzNSTmaNgzwGr7
-         06J8I74BBMTBQ==
-Received: by mail-pj1-f69.google.com with SMTP id nn5-20020a17090b38c500b00246772f5325so7686784pjb.6
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 13:13:13 -0700 (PDT)
+        with ESMTP id S229967AbjDNUUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 16:20:18 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AFB6A58
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 13:20:17 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id ffacd0b85a97d-2f55ffdbaedso20466f8f.2
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 13:20:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681503615; x=1684095615;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=GvvNd+wHwGCcErTUPWuIL9UU1CBqAifvHTmE8loWibw=;
+        b=rjmMr3nizgQGh7ILRC7D7SLrt0PwIWEA7b9nXpwgR+8OU5n+LYvMpNSdVeduebcaHC
+         sGHY3vNHBhYpHMmQxY1LZVWwuSBgSqGGZKyLIgFFU38UB9H2YVyrVSyd3bFbE8kUQUtm
+         jxn8t8OSOd2ZRE4P60ZPPhYj6FmzuofKbjEVoehKjbBwk9x61BQBcwYmymolQbZorWAj
+         P/xuZvH2oOuYRUPvdAg4V+l4rsMXO8GhUgTTCXSzq2zd2gQiSTSQfzy6wQEoEdJsKBJZ
+         sF5zje3eEAsxG9I1ToJtXOTGlyiQtwNhEyJ4Iw/j1w/oBazYc/H/HKBYqNdZFicqvXWo
+         iYcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681503192; x=1684095192;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
+        d=1e100.net; s=20221208; t=1681503615; x=1684095615;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=j+2C3bAGLZY5j/j5vsOTAv/QyDazrqmaWqDTFOuzdy8=;
-        b=GDad8BsYFrRs9cUXxPlwvhSQUKgpZubJ/SvvOCNw3+7AjSD5W7v9gogI9UYDAyEA3V
-         tPRSZsNW/kiZDtAtQCoYS+3ewbAWmiplfRf0DvgAsJAnhqbyLg9RXhtcXT7o5+wqTSfA
-         yTORmYLDRHAAmfRaU0V5KdKhB8CWm1DvcDOujWWbZSR+YYmJW+Xdl64CZUzpWMNCleTa
-         Jmu3Wqk3d6fvcZL1S69Asa+KHexRhcvIpLhzoPHcnuOJpQvpQB9IlbHeotYacsaTdFwR
-         hBZ/yt3ZYe23SiA0DidnikBzk+Y+9GNb2frVNqGpuwF0BRcCXt3x9SFGxbyT72gBS784
-         QdCA==
-X-Gm-Message-State: AAQBX9cfjJVNGUMyyDiZaUQMXOgdB2B9QRD4MxfHBI8CYYCqWkYVR9ef
-        uEEB8iPDU5F/XvuBfHJ113nIcXIZPdYAtfeCaN00RdvGeXror8inNsP6s7bvKylNjTrpqt0cnl2
-        R2GhiJ6eGCT8iF6sY9FWFbBjYhrJqDZkNJw==
-X-Received: by 2002:a05:6a20:29a2:b0:d4:9d94:8e7c with SMTP id f34-20020a056a2029a200b000d49d948e7cmr6454704pzh.2.1681503191770;
-        Fri, 14 Apr 2023 13:13:11 -0700 (PDT)
-X-Google-Smtp-Source: AKy350awS9BNT5jrDx+qrxvYm8aFaxvtxQiPNuPQ+oKWy94+el4l8QaWGdCmLRd45xElXRurD9ARdQ==
-X-Received: by 2002:a05:6a20:29a2:b0:d4:9d94:8e7c with SMTP id f34-20020a056a2029a200b000d49d948e7cmr6454689pzh.2.1681503191458;
-        Fri, 14 Apr 2023 13:13:11 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id r11-20020a65498b000000b004e28be19d1csm3184505pgs.32.2023.04.14.13.13.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 14 Apr 2023 13:13:11 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 878E461E6E; Fri, 14 Apr 2023 13:13:10 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 824FE9FB79;
-        Fri, 14 Apr 2023 13:13:10 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Liang Li <liali@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>
-Subject: Re: [PATCHv4 net-next] bonding: add software tx timestamping support
-In-reply-to: <20230414083526.1984362-1-liuhangbin@gmail.com>
-References: <20230414083526.1984362-1-liuhangbin@gmail.com>
-Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
-   message dated "Fri, 14 Apr 2023 16:35:26 +0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        bh=GvvNd+wHwGCcErTUPWuIL9UU1CBqAifvHTmE8loWibw=;
+        b=BTBvRrLQccJSQseOXW4MCf7wocXly42/0DmLjS66PMzphV2LR6TD7bzFQuyTZBKFUr
+         RSs4PYvhBVcTBEd0K35tBdLnHtu5Rv4jHoV0Fkmd/gMWCkdREJrcRnAeMc0MbMaxVIte
+         IoruW6oxXLTI9vBP8tyQdTnJWQ9SYbscDceQdbH1PT3mX54aVr5br5x4Od8jCFHAUpOR
+         ExqxiYXjw0S1OxqgKhZR7kK04o5t9ZX/AhXRBHc0qS0p34gUuWF/FyKSHhdZpHTgGnUU
+         GofQVbyj3aAgTDLzGzp3ZDZoj/VNqWc4DqFAJkUAuqklH+EYgKh/AJSm8rr2rB9tHbFf
+         jeIg==
+X-Gm-Message-State: AAQBX9fAEGO2JNUB+KQjRaTFnvC0XGH/nTvOvdFY4yZAJUTiNF6EICBw
+        p3eImsa+KgKK6LO+WWz2TRo=
+X-Google-Smtp-Source: AKy350ZsgQKwhoMxkGxaeRs9SeTNCxeUmY5Z2wUv/I7A7x7ub4kJYuBn5spYDcEsTUMgtipo3Hlrmw==
+X-Received: by 2002:adf:fecd:0:b0:2ee:da1c:381a with SMTP id q13-20020adffecd000000b002eeda1c381amr54690wrs.69.1681503615336;
+        Fri, 14 Apr 2023 13:20:15 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id z13-20020adfd0cd000000b002ce9f0e4a8fsm4241863wrh.84.2023.04.14.13.20.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Apr 2023 13:20:15 -0700 (PDT)
+Subject: Re: [RFC PATCH v2 net-next 6/7] net: ethtool: add a mutex protecting
+ RSS contexts
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <kuba@kernel.org>, edward.cree@amd.com,
+        linux-net-drivers@amd.com, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org,
+        habetsm.xilinx@gmail.com, sudheer.mogilappagari@intel.com
+References: <cover.1681236653.git.ecree.xilinx@gmail.com>
+ <9e2bcb887b5cf9cbb8c0c4ba126115fe01a01f3f.1681236654.git.ecree.xilinx@gmail.com>
+ <ea711ae7-c730-4347-a148-0602c69c9828@lunn.ch>
+ <69612358-2003-677a-80a2-5971dc026646@gmail.com>
+ <61041c56-f7d2-49f8-9fc3-57852a96105a@lunn.ch>
+ <3623a7f3-6f90-8570-5b9a-10ff56cc04e5@gmail.com>
+ <20230412190650.70baee3e@kernel.org>
+ <485ebfeb-61d7-7636-80af-50b6a008b6dc@gmail.com>
+ <a628b861-47a9-44d2-a717-5268dc5b47f6@lunn.ch>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <2122a8d2-9348-53ca-22f0-18f62109f1bb@gmail.com>
+Date:   Fri, 14 Apr 2023 21:20:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <16052.1681503190.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 14 Apr 2023 13:13:10 -0700
-Message-ID: <16053.1681503190@famine>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <a628b861-47a9-44d2-a717-5268dc5b47f6@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> wrote:
+On 13/04/2023 22:58, Andrew Lunn wrote:
+>> (Idk, maybe sfc is just uniquely complex and messy.  It wouldn't be
+>>  the first time.)
+> 
+> Hi Ed
+> 
+> Have you looked at other drivers? It would be bad to design an API
+> around a messy driver.
 
->Currently, bonding only obtain the timestamp (ts) information of
->the active slave, which is available only for modes 1, 5, and 6.
->For other modes, bonding only has software rx timestamping support.
->
->However, some users who use modes such as LACP also want tx timestamp
->support. To address this issue, let's check the ts information of each
->slave. If all slaves support tx timestamping, we can enable tx
->timestamping support for the bond.
->
->Suggested-by: Miroslav Lichvar <mlichvar@redhat.com>
->Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+I have; there's really not many that implement custom RSS contexts
+ (just Marvell's mvpp2 and octeontx2, and Mellanox's mlx5).  The
+ `rss_ctx_max_id` field is designed for those as they all have fixed-
+ size arrays currently and idk whether that's a purely software limit
+ or whether it reflects the hardware.
+I couldn't find anything in any of them that looked like "restore
+ stuff after a device reboot"; maybe it's just not something those
+ devices expect to experience normally.
 
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+I don't know enough about mlx5 hw to really understand their filter
+ code, but the rough equivalent of our efx_mcdi_filter_insert_locked()
+ in that driver appears to be _mlx5_add_flow_rules(), which seems to
+ be doing some kind of hand-over-hand locking.  And no sign (whether
+ in comments or in asserts) of whether the function expects callers to
+ hold RTNL.  Same goes for their functions operating on TIRs (whatever
+ those are) which are called from all over (aRFS, tc, even kTLS!) in
+ addition to the ethtool RSS/ntuple paths.
 
-	-J
+Anyway I'll cc maintainers of those drivers on v3 so they can chime
+ in on the API design.  (Should've done that on v1 really, but I
+ forgot.  Mea culpa.)
 
->---
->v4: add ASSERT_RTNL to make sure bond_ethtool_get_ts_info() called via
->    RTNL. Only check _TX_SOFTWARE for the slaves.
->v3: remove dev_hold/dev_put. remove the '\' for line continuation.
->v2: check each slave's ts info to make sure bond support sw tx
->    timestamping
->---
-> drivers/net/bonding/bond_main.c | 32 ++++++++++++++++++++++++++++++++
-> 1 file changed, 32 insertions(+)
->
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
->index 00646aa315c3..9cf49b61f4b3 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -5686,11 +5686,17 @@ static int bond_ethtool_get_ts_info(struct net_de=
-vice *bond_dev,
-> 				    struct ethtool_ts_info *info)
-> {
-> 	struct bonding *bond =3D netdev_priv(bond_dev);
->+	struct ethtool_ts_info ts_info;
-> 	const struct ethtool_ops *ops;
-> 	struct net_device *real_dev;
->+	bool sw_tx_support =3D false;
-> 	struct phy_device *phydev;
->+	struct list_head *iter;
->+	struct slave *slave;
-> 	int ret =3D 0;
-> =
-
->+	ASSERT_RTNL();
->+
-> 	rcu_read_lock();
-> 	real_dev =3D bond_option_active_slave_get_rcu(bond);
-> 	dev_hold(real_dev);
->@@ -5707,10 +5713,36 @@ static int bond_ethtool_get_ts_info(struct net_de=
-vice *bond_dev,
-> 			ret =3D ops->get_ts_info(real_dev, info);
-> 			goto out;
-> 		}
->+	} else {
->+		/* Check if all slaves support software tx timestamping */
->+		rcu_read_lock();
->+		bond_for_each_slave_rcu(bond, slave, iter) {
->+			ret =3D -1;
->+			ops =3D slave->dev->ethtool_ops;
->+			phydev =3D slave->dev->phydev;
->+
->+			if (phy_has_tsinfo(phydev))
->+				ret =3D phy_ts_info(phydev, &ts_info);
->+			else if (ops->get_ts_info)
->+				ret =3D ops->get_ts_info(slave->dev, &ts_info);
->+
->+			if (!ret && (ts_info.so_timestamping & SOF_TIMESTAMPING_TX_SOFTWARE))=
- {
->+				sw_tx_support =3D true;
->+				continue;
->+			}
->+
->+			sw_tx_support =3D false;
->+			break;
->+		}
->+		rcu_read_unlock();
-> 	}
-> =
-
->+	ret =3D 0;
-> 	info->so_timestamping =3D SOF_TIMESTAMPING_RX_SOFTWARE |
-> 				SOF_TIMESTAMPING_SOFTWARE;
->+	if (sw_tx_support)
->+		info->so_timestamping |=3D SOF_TIMESTAMPING_TX_SOFTWARE;
->+
-> 	info->phc_index =3D -1;
-> =
-
-> out:
->-- =
-
->2.38.1
->
+-ed
