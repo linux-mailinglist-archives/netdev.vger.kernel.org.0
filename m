@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EB536E1DB5
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20C126E1DB8
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 10:01:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbjDNIBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 04:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
+        id S229805AbjDNIBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 04:01:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbjDNIBD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:01:03 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A906740F1
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:01:01 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id z9so16549507ejx.11
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:01:01 -0700 (PDT)
+        with ESMTP id S229689AbjDNIBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 04:01:40 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CF765BD
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:01:38 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id si1so13416567ejb.10
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 01:01:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681459260; x=1684051260;
+        d=linaro.org; s=google; t=1681459297; x=1684051297;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=uj24E0utItoUj+eQLTC83uT9r1QSYEGR8TG8+GQ0L+o=;
-        b=GcPL057XYpipwF4+iBqYzZ1J5xhLB+5K+M+EuKVsxXtSi59foLRiM+JtVNK+nt1Feh
-         b3AttSE8tWSI5gizSo07QQu2UDGjiXZc+sxlfeoSOc05YSgnxdxbHeO0M7d5hNWVQ05t
-         5/ckfvwNXR5C6kbrkP1PgN3sz5Ach5Y8vOQggId/xrlyFxc5oY/atvWKAmYqUdaAc8FR
-         53gVoNfNQvUUI/HloYdr09F83g+fOw5V1rGAAaJ7QluHyGF8F20GkUNFePVIJmS0v0dU
-         pRMAov2UBVimTOcmlx5nky8B1VWzoQgK111fPPQGb/4EqdUChxy4CRhOgtHcxotXmeYH
-         c+6A==
+        bh=xje8D9sa7nkYBBtoZ60rXI27tiHKZTyz3H3ko6glfWs=;
+        b=SNzhq9yJd9kEmkttqZyGlJGyME1zSO4jRes4LYWjxfYh998ByIMuuMTsRUC891pvxw
+         5AbB3DkE+/EOqA2BNkBBk8hUjWFZ/fsDHsISSnQjmlvPXuU+ZIjNOAu5lpXAwpfJfTEA
+         yO5q6VoErPQyjATCG48//JjePz1qHYt2qjl4TzMF9ZlJVwNabncUPeq+tecx6EDJUKf1
+         SmJBsa6PEJixtGxDfajFmw+YdCKCVQXPhhvgr9ARk8zGh5bbnAwaR8WlRfTPIIMRv581
+         skHZEIVneM3xKjRXv+yhfg+Kzzu/zgEY9CydYX7AmUffCqlQBHKN8c655e6lzeHPdX4E
+         d/Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681459260; x=1684051260;
+        d=1e100.net; s=20221208; t=1681459297; x=1684051297;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uj24E0utItoUj+eQLTC83uT9r1QSYEGR8TG8+GQ0L+o=;
-        b=UlLHhbZaS4Jkw0jZBYr0I5EZYGGRNOpsqZ9TDyDHCyXFwrPwD9AR70/dl5tHmfIXwu
-         zg2Gb4eazeHoTkizyf+iolSlBbjg2LpqWloyebdd//GmYVKKnUNn28jFJftAcr6QT7ZH
-         9T0XIfKPTUzeScvAhKgEQNL4KiR7siR2lVT+pKeFKh4blG9X3yl/KefzRkqIHfSpspVE
-         I3SzZ9+94G60lspYlaFxoFYhbcAaMnf4PuouEoUSIVtM8XHSVCstw6z9PJpHN0wJzbcA
-         3Xt7q4vorpARjlzdzwQn2dnN3390c05uBt6a3W0aPAsUSe1zIzPro3Gfe4H2SA8Fz4es
-         Cilw==
-X-Gm-Message-State: AAQBX9eIc7doeFtUtv4vQZuAXtq1L/dYdy5eWA5Tlwqp7sKP3W4T1WzR
-        3Jh1n3jdjPU7nP+L5A834EqGIQ==
-X-Google-Smtp-Source: AKy350bCXmdaTRCL/M+/LO6/ppWZKpBcQqXzDRpPqeaDbdg5FRk8xkQKylplO4qaCD4qcxjYDUetPw==
-X-Received: by 2002:a17:906:37c2:b0:8b2:c2fc:178e with SMTP id o2-20020a17090637c200b008b2c2fc178emr4972329ejc.74.1681459260184;
-        Fri, 14 Apr 2023 01:01:00 -0700 (PDT)
+        bh=xje8D9sa7nkYBBtoZ60rXI27tiHKZTyz3H3ko6glfWs=;
+        b=KHVCMmmT1FGol0d26+TxhA5X4FPoMEgAwOK2z0UeKo4oieWhqE41Tp1RTF1XrBSawD
+         y1Eyv509OFdI4JqAlDJAmtqtUzry6j/t/XTAm0yhOFtpYVn+EHATFoL2SqsVF+73Wal3
+         fo1zMBYGc8YQEAJ/ulyM/NRHvKWK59VEJJHqhDrJ++rJtlA79Z6LekdteRfmFoqMWCqh
+         gSYJ7KUkvsy9QQp5bxrdXNkQHBlv7ByDY8kz4T6g3ekZ1+FZR1U/Wm+MY4U8eapBAps7
+         exv0dzIcoNww6J6Mwljxb8IIEP0RjpySSootlwe2ouDTXFrUAVaYvX3bXhGmKqvYBj3s
+         L4nQ==
+X-Gm-Message-State: AAQBX9c0J/smtW6ZpYOEP7zHTzoz1bvbpswR3jVYGq4abn26W8MkiW9g
+        Y0A0Q0oGcxJZuBoRMgim6QxmUA==
+X-Google-Smtp-Source: AKy350ZpPz0lsPYf/WDpVV1jLkM/RaqXPVT1AUiSTHl5MrL2rJ/rUIEn3+7mlYfUZuE5d3lI///K/w==
+X-Received: by 2002:a17:906:4d1:b0:94e:8aeb:f8f3 with SMTP id g17-20020a17090604d100b0094e8aebf8f3mr5886098eja.57.1681459297579;
+        Fri, 14 Apr 2023 01:01:37 -0700 (PDT)
 Received: from ?IPV6:2a02:810d:15c0:828:8a60:6b0f:105a:eefb? ([2a02:810d:15c0:828:8a60:6b0f:105a:eefb])
-        by smtp.gmail.com with ESMTPSA id q13-20020a1709066acd00b0094e44445f30sm2049063ejs.215.2023.04.14.01.00.59
+        by smtp.gmail.com with ESMTPSA id gj19-20020a170906e11300b0094a83007249sm2129846ejb.16.2023.04.14.01.01.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Apr 2023 01:00:59 -0700 (PDT)
-Message-ID: <083e67e6-3e9f-27fe-64c9-431541c943e8@linaro.org>
-Date:   Fri, 14 Apr 2023 10:00:58 +0200
+        Fri, 14 Apr 2023 01:01:37 -0700 (PDT)
+Message-ID: <9ab56180-328e-1416-56cb-bbf71af0c26d@linaro.org>
+Date:   Fri, 14 Apr 2023 10:01:36 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [RFC PATCH 3/5] dt-binding: can: m_can: Remove required interrupt
- attributes
+Subject: Re: [RFC PATCH 4/5] arm64: dts: ti: Enable multiple MCAN for AM62x in
+ MCU MCAN overlay
 Content-Language: en-US
 To:     Judith Mendez <jm@ti.com>,
         Chandrasekar Ramakrishnan <rcsekar@samsung.com>
@@ -69,9 +69,9 @@ Cc:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
         devicetree@vger.kernel.org, netdev@vger.kernel.org,
         Schuyler Patton <spatton@ti.com>
 References: <20230413223051.24455-1-jm@ti.com>
- <20230413223051.24455-4-jm@ti.com>
+ <20230413223051.24455-5-jm@ti.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230413223051.24455-4-jm@ti.com>
+In-Reply-To: <20230413223051.24455-5-jm@ti.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -85,39 +85,104 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 14/04/2023 00:30, Judith Mendez wrote:
-> Remove required attributes for interrupt and interrupt names
-> since some MCANs may not have hardware interrupt routed to A53
-
-Like which? Can you give specific model names?
-
-> Linux.
+> Enable two MCAN in MCU domain. AM62x does not have on-board CAN
+> transcievers, so instead of changing the DTB permanently, add
+> MCU MCAN nodes and transceiver nodes to a MCU MCAN overlay.
 > 
-
-Use subject prefixes matching the subsystem (which you can get for
-example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
-your patch is touching).
-
-It's dt-bindings:
-
-
+> If there are no hardware interrupts rounted to the GIC interrupt
+> controller for MCAN IP, A53 Linux will not receive hardware
+> interrupts. If an hrtimer is used to generate software interrupts,
+> the two required interrupt attributes in the MCAN node do not have
+> to be included.
+> 
 > Signed-off-by: Judith Mendez <jm@ti.com>
 > ---
->  Documentation/devicetree/bindings/net/can/bosch,m_can.yaml | 2 --
->  1 file changed, 2 deletions(-)
+>  arch/arm64/boot/dts/ti/Makefile               |  2 +-
+>  .../boot/dts/ti/k3-am625-sk-mcan-mcu.dtso     | 75 +++++++++++++++++++
+>  2 files changed, 76 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
 > 
-> diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-> index 67879aab623b..43f1aa9addc0 100644
-> --- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-> +++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-> @@ -122,8 +122,6 @@ required:
->    - compatible
->    - reg
->    - reg-names
-> -  - interrupts
-> -  - interrupt-names
->    - clocks
->    - clock-names
->    - bosch,mram-cfg
+> diff --git a/arch/arm64/boot/dts/ti/Makefile b/arch/arm64/boot/dts/ti/Makefile
+> index abe15e76b614..c76be3888e4d 100644
+> --- a/arch/arm64/boot/dts/ti/Makefile
+> +++ b/arch/arm64/boot/dts/ti/Makefile
+> @@ -9,7 +9,7 @@
+>  # alphabetically.
+>  
+>  # Boards with AM62x SoC
+> -k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo
+> +k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo k3-am625-sk-mcan-mcu.dtbo
+>  dtb-$(CONFIG_ARCH_K3) += k3-am625-beagleplay.dtb
+>  dtb-$(CONFIG_ARCH_K3) += k3-am625-sk.dtb
+>  dtb-$(CONFIG_ARCH_K3) += k3-am625-sk-mcan.dtb
+> diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
+> new file mode 100644
+> index 000000000000..777705aea546
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
+> @@ -0,0 +1,75 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/**
+> + * DT overlay for MCAN in MCU domain on AM625 SK
+> + *
+> + * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
+> + */
+> +
+> +/dts-v1/;
+> +/plugin/;
+> +
+> +#include <dt-bindings/pinctrl/k3.h>
+> +#include <dt-bindings/soc/ti,sci_pm_domain.h>
+> +
+> +
+> +&{/} {
+> +	transceiver2: can-phy1 {
+> +		compatible = "ti,tcan1042";
+> +		#phy-cells = <0>;
+> +		max-bitrate = <5000000>;
+> +	};
+> +
+> +	transceiver3: can-phy2 {
+> +		compatible = "ti,tcan1042";
+> +		#phy-cells = <0>;
+> +		max-bitrate = <5000000>;
+> +	};
+> +};
+> +
+> +&mcu_pmx0 {
+> +	mcu_mcan1_pins_default: mcu-mcan1-pins-default {
+> +		pinctrl-single,pins = <
+> +			AM62X_IOPAD(0x038, PIN_INPUT, 0) /* (B3) MCU_MCAN0_RX */
+> +			AM62X_IOPAD(0x034, PIN_OUTPUT, 0) /* (D6) MCU_MCAN0_TX */
+> +		>;
+> +	};
+> +
+> +	mcu_mcan2_pins_default: mcu-mcan2-pins-default {
+> +		pinctrl-single,pins = <
+> +			AM62X_IOPAD(0x040, PIN_INPUT, 0) /* (D4) MCU_MCAN1_RX */
+> +			AM62X_IOPAD(0x03C, PIN_OUTPUT, 0) /* (E5) MCU_MCAN1_TX */
+> +		>;
+> +	};
+> +};
+> +
+> +&cbass_mcu {
+> +	mcu_mcan1: can@4e00000 {
+> +		compatible = "bosch,m_can";
+> +		reg = <0x00 0x4e00000 0x00 0x8000>,
+> +			  <0x00 0x4e08000 0x00 0x200>;
+> +		reg-names = "message_ram", "m_can";
+> +		power-domains = <&k3_pds 188 TI_SCI_PD_EXCLUSIVE>;
+> +		clocks = <&k3_clks 188 6>, <&k3_clks 188 1>;
+> +		clock-names = "hclk", "cclk";
+> +		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&mcu_mcan1_pins_default>;
+> +		phys = <&transceiver2>;
+> +		status = "okay";
+
+okay is by default. Why do you need it?
+
+
 
 Best regards,
 Krzysztof
