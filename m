@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C8D66E2C4B
+	by mail.lfdr.de (Postfix) with ESMTP id A8F4F6E2C4C
 	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 00:10:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229794AbjDNWJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 18:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49214 "EHLO
+        id S229990AbjDNWJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 18:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbjDNWJs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 18:09:48 -0400
+        with ESMTP id S229995AbjDNWJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 18:09:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57ACF40FD
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 15:09:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F713C3B
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 15:09:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35DD964A98
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5D7764A8A
         for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 22:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 904A2C4339B;
-        Fri, 14 Apr 2023 22:09:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E5F0C433D2;
+        Fri, 14 Apr 2023 22:09:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681510186;
-        bh=EiHIFOwmNz/xi/pe6WXyf97U8EJzZg+dOf3TxnkyDZ0=;
+        s=k20201202; t=1681510187;
+        bh=nSwoMDzRQ4cEup6S/IpnwxvNeUxe4ix6wYll6WKcT3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MyBB0gNf0HPDQOdifLXl209nee1cgiztJJVx6YaZj/SSg01ddHF1CDxggMTykMnbl
-         A7Raibp36nAsABaFFhTrZhPShErBGncuxqNTPWYb05VspqYF+dzWBgTthKHf8FYMVc
-         wSjQ1oaU+OwRfXZv4e8y6fs3wX8t+5OlcBFJcDi5H4r0dDq5Lb2l2/18dWHh5Wq+bo
-         OHxmWwVASdRxvL/6Q2mlRUzS9MEgQn2Au55UTOOm2evLHaJaAUTaUtKaB+zEreEQsA
-         SKKsYbshiQWKtI7PH+sfEF28kGXBPrD9hmyenKMf5/IXeMOV7nmBdJQTlTEd3IxLMz
-         O/2u4kRGCnjjA==
+        b=KNa+z2llmDcL5mAIfhMeH4aU4uKrGFnDB0mFrmRi2jxbJcqNQzzqwJRbQqNpqAzCQ
+         hH5VQEp19B7B72I3pc3mUop60PtGrDGciPhcK9JmaHeoCAQI5i2F1InI2c+xqpiB7K
+         sTir/6ijc80jIKtuflk3gtNzC6e35Vv83RYpNXO8A8D5tyIz6o5fVWEV5xl9CK7kH6
+         bMh5EdEZlCscsxYfdAFewhimfROTjaaAaOHDozery6Mn1IHBp4vGUJZSeeN0EoMuG8
+         FAmfmlNHWBIVNCA1eV77n3cCBoOwFy/W8rIs0aZF5eCLWB3Pw8H0t0l+L8foEicVrL
+         mZMjQ5HL1B/BQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,10 +39,11 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Erez Shitrit <erezsh@nvidia.com>,
         Alex Vesker <valex@nvidia.com>
-Subject: [net-next 06/15] net/mlx5: DR, Add support for writing modify header argument
-Date:   Fri, 14 Apr 2023 15:09:30 -0700
-Message-Id: <20230414220939.136865-7-saeed@kernel.org>
+Subject: [net-next 07/15] net/mlx5: DR, Read ICM memory into dedicated buffer
+Date:   Fri, 14 Apr 2023 15:09:31 -0700
+Message-Id: <20230414220939.136865-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230414220939.136865-1-saeed@kernel.org>
 References: <20230414220939.136865-1-saeed@kernel.org>
@@ -60,280 +61,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-The accelerated modify header arguments are written in the HW area
-with special WQE and specific data format.
-New function was added to support writing of new argument type.
-Note that GTA WQE is larger than READ and WRITE, so the queue
-management logic was updated to support this.
+Instead of using the write buffer for reading we will use a dedicated
+buffer only for reading ICM memory.
+Due to the new support for args, we can have a case with pending_wc
+being odd number, and with reading into the same write buffer, it is
+possible to overwrite next write on the same slot.
+For example:
+pending_wc is 17 so the buffer for write is:
+   | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+and we have requests as follows:
+   r wr wr wr wr wr wr wr wr
+Now, the first read will be written into the last write because we use
+the same buffer for read and write, before it was written to the HW and
+we will have a wrong data in the ICM area.
 
+Signed-off-by: Erez Shitrit <erezsh@nvidia.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Reviewed-by: Alex Vesker <valex@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_send.c     | 167 +++++++++++++++---
- .../mellanox/mlx5/core/steering/dr_types.h    |   3 +
- 2 files changed, 150 insertions(+), 20 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_send.c     | 21 ++++++++++++++-----
+ .../mellanox/mlx5/core/steering/dr_types.h    |  5 +----
+ 2 files changed, 17 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-index 78756840d263..d7c7363f9096 100644
+index d7c7363f9096..d052d469d4df 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-@@ -20,6 +20,7 @@ struct dr_data_seg {
+@@ -602,9 +602,10 @@ static void dr_fill_write_icm_segs(struct mlx5dr_domain *dmn,
  
- enum send_info_type {
- 	WRITE_ICM = 0,
-+	GTA_ARG   = 1,
- };
+ 	send_ring->pending_wqe++;
+ 	send_info->read.length = send_info->write.length;
+-	/* Read into the same write area */
+-	send_info->read.addr = (uintptr_t)send_info->write.addr;
+-	send_info->read.lkey = send_ring->mr->mkey;
++
++	/* Read into dedicated sync buffer */
++	send_info->read.addr = (uintptr_t)send_ring->sync_mr->dma_addr;
++	send_info->read.lkey = send_ring->sync_mr->mkey;
  
- struct postsend_info {
-@@ -269,6 +270,7 @@ static struct mlx5dr_qp *dr_create_rc_qp(struct mlx5_core_dev *mdev,
- 	dr_qp->rq.wqe_cnt = 4;
- 	dr_qp->sq.pc = 0;
- 	dr_qp->sq.cc = 0;
-+	dr_qp->sq.head = 0;
- 	dr_qp->sq.wqe_cnt = roundup_pow_of_two(attr->max_send_wr);
+ 	if (send_ring->pending_wqe % send_ring->signal_th == 0)
+ 		send_info->read.send_flags = IB_SEND_SIGNALED;
+@@ -1288,16 +1289,25 @@ int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn)
+ 		goto free_mem;
+ 	}
  
- 	MLX5_SET(qpc, temp_qpc, log_rq_stride, ilog2(MLX5_SEND_WQE_DS) - 4);
-@@ -367,39 +369,113 @@ static void dr_cmd_notify_hw(struct mlx5dr_qp *dr_qp, void *ctrl)
- 	mlx5_write64(ctrl, dr_qp->uar->map + MLX5_BF_OFFSET);
- }
- 
--static void dr_rdma_segments(struct mlx5dr_qp *dr_qp, u64 remote_addr,
--			     u32 rkey, struct dr_data_seg *data_seg,
--			     u32 opcode, bool notify_hw)
-+static void
-+dr_rdma_handle_flow_access_arg_segments(struct mlx5_wqe_ctrl_seg *wq_ctrl,
-+					u32 remote_addr,
-+					struct dr_data_seg *data_seg,
-+					int *size)
- {
--	struct mlx5_wqe_raddr_seg *wq_raddr;
--	struct mlx5_wqe_ctrl_seg *wq_ctrl;
--	struct mlx5_wqe_data_seg *wq_dseg;
--	unsigned int size;
--	unsigned int idx;
-+	struct mlx5_wqe_header_modify_argument_update_seg *wq_arg_seg;
-+	struct mlx5_wqe_flow_update_ctrl_seg *wq_flow_seg;
- 
--	size = sizeof(*wq_ctrl) / 16 + sizeof(*wq_dseg) / 16 +
--		sizeof(*wq_raddr) / 16;
-+	wq_ctrl->general_id = cpu_to_be32(remote_addr);
-+	wq_flow_seg = (void *)(wq_ctrl + 1);
- 
--	idx = dr_qp->sq.pc & (dr_qp->sq.wqe_cnt - 1);
-+	/* mlx5_wqe_flow_update_ctrl_seg - all reserved */
-+	memset(wq_flow_seg, 0, sizeof(*wq_flow_seg));
-+	wq_arg_seg = (void *)(wq_flow_seg + 1);
-+
-+	memcpy(wq_arg_seg->argument_list,
-+	       (void *)(uintptr_t)data_seg->addr,
-+	       data_seg->length);
-+
-+	*size = (sizeof(*wq_ctrl) +      /* WQE ctrl segment */
-+		 sizeof(*wq_flow_seg) +  /* WQE flow update ctrl seg - reserved */
-+		 sizeof(*wq_arg_seg)) /  /* WQE hdr modify arg seg - data */
-+		MLX5_SEND_WQE_DS;
-+}
-+
-+static void
-+dr_rdma_handle_icm_write_segments(struct mlx5_wqe_ctrl_seg *wq_ctrl,
-+				  u64 remote_addr,
-+				  u32 rkey,
-+				  struct dr_data_seg *data_seg,
-+				  unsigned int *size)
-+{
-+	struct mlx5_wqe_raddr_seg *wq_raddr;
-+	struct mlx5_wqe_data_seg *wq_dseg;
- 
--	wq_ctrl = mlx5_wq_cyc_get_wqe(&dr_qp->wq.sq, idx);
--	wq_ctrl->imm = 0;
--	wq_ctrl->fm_ce_se = (data_seg->send_flags) ?
--		MLX5_WQE_CTRL_CQ_UPDATE : 0;
--	wq_ctrl->opmod_idx_opcode = cpu_to_be32(((dr_qp->sq.pc & 0xffff) << 8) |
--						opcode);
--	wq_ctrl->qpn_ds = cpu_to_be32(size | dr_qp->qpn << 8);
- 	wq_raddr = (void *)(wq_ctrl + 1);
-+
- 	wq_raddr->raddr = cpu_to_be64(remote_addr);
- 	wq_raddr->rkey = cpu_to_be32(rkey);
- 	wq_raddr->reserved = 0;
- 
- 	wq_dseg = (void *)(wq_raddr + 1);
-+
- 	wq_dseg->byte_count = cpu_to_be32(data_seg->length);
- 	wq_dseg->lkey = cpu_to_be32(data_seg->lkey);
- 	wq_dseg->addr = cpu_to_be64(data_seg->addr);
- 
--	dr_qp->sq.wqe_head[idx] = dr_qp->sq.pc++;
-+	*size = (sizeof(*wq_ctrl) +    /* WQE ctrl segment */
-+		 sizeof(*wq_dseg) +    /* WQE data segment */
-+		 sizeof(*wq_raddr)) /  /* WQE remote addr segment */
-+		MLX5_SEND_WQE_DS;
-+}
-+
-+static void dr_set_ctrl_seg(struct mlx5_wqe_ctrl_seg *wq_ctrl,
-+			    struct dr_data_seg *data_seg)
-+{
-+	wq_ctrl->signature = 0;
-+	wq_ctrl->rsvd[0] = 0;
-+	wq_ctrl->rsvd[1] = 0;
-+	wq_ctrl->fm_ce_se = data_seg->send_flags & IB_SEND_SIGNALED ?
-+				MLX5_WQE_CTRL_CQ_UPDATE : 0;
-+	wq_ctrl->imm = 0;
-+}
-+
-+static void dr_rdma_segments(struct mlx5dr_qp *dr_qp, u64 remote_addr,
-+			     u32 rkey, struct dr_data_seg *data_seg,
-+			     u32 opcode, bool notify_hw)
-+{
-+	struct mlx5_wqe_ctrl_seg *wq_ctrl;
-+	int opcode_mod = 0;
-+	unsigned int size;
-+	unsigned int idx;
-+
-+	idx = dr_qp->sq.pc & (dr_qp->sq.wqe_cnt - 1);
-+
-+	wq_ctrl = mlx5_wq_cyc_get_wqe(&dr_qp->wq.sq, idx);
-+	dr_set_ctrl_seg(wq_ctrl, data_seg);
-+
-+	switch (opcode) {
-+	case MLX5_OPCODE_RDMA_READ:
-+	case MLX5_OPCODE_RDMA_WRITE:
-+		dr_rdma_handle_icm_write_segments(wq_ctrl, remote_addr,
-+						  rkey, data_seg, &size);
-+		break;
-+	case MLX5_OPCODE_FLOW_TBL_ACCESS:
-+		opcode_mod = MLX5_CMD_OP_MOD_UPDATE_HEADER_MODIFY_ARGUMENT;
-+		dr_rdma_handle_flow_access_arg_segments(wq_ctrl, remote_addr,
-+							data_seg, &size);
-+		break;
-+	default:
-+		WARN(true, "illegal opcode %d", opcode);
-+		return;
++	dmn->send_ring->sync_buff = kzalloc(dmn->send_ring->max_post_send_size,
++					    GFP_KERNEL);
++	if (!dmn->send_ring->sync_buff) {
++		ret = -ENOMEM;
++		goto clean_mr;
 +	}
 +
-+	/* --------------------------------------------------------
-+	 * |opcode_mod (8 bit)|wqe_index (16 bits)| opcod (8 bits)|
-+	 * --------------------------------------------------------
-+	 */
-+	wq_ctrl->opmod_idx_opcode =
-+		cpu_to_be32((opcode_mod << 24) |
-+			    ((dr_qp->sq.pc & 0xffff) << 8) |
-+			    opcode);
-+	wq_ctrl->qpn_ds = cpu_to_be32(size | dr_qp->qpn << 8);
-+
-+	dr_qp->sq.pc += DIV_ROUND_UP(size * 16, MLX5_SEND_WQE_BB);
-+	dr_qp->sq.wqe_head[idx] = dr_qp->sq.head++;
- 
- 	if (notify_hw)
- 		dr_cmd_notify_hw(dr_qp, wq_ctrl);
-@@ -412,7 +488,11 @@ static void dr_post_send(struct mlx5dr_qp *dr_qp, struct postsend_info *send_inf
- 				 &send_info->write, MLX5_OPCODE_RDMA_WRITE, false);
- 		dr_rdma_segments(dr_qp, send_info->remote_addr, send_info->rkey,
- 				 &send_info->read, MLX5_OPCODE_RDMA_READ, true);
-+	} else { /* GTA_ARG */
-+		dr_rdma_segments(dr_qp, send_info->remote_addr, send_info->rkey,
-+				 &send_info->write, MLX5_OPCODE_FLOW_TBL_ACCESS, true);
+ 	dmn->send_ring->sync_mr = dr_reg_mr(dmn->mdev,
+ 					    dmn->pdn, dmn->send_ring->sync_buff,
+-					    MIN_READ_SYNC);
++					    dmn->send_ring->max_post_send_size);
+ 	if (!dmn->send_ring->sync_mr) {
+ 		ret = -ENOMEM;
+-		goto clean_mr;
++		goto free_sync_mem;
  	}
-+
- }
- 
- /**
-@@ -478,11 +558,23 @@ static int dr_handle_pending_wc(struct mlx5dr_domain *dmn,
- 		} else if (ne == 1) {
- 			send_ring->pending_wqe -= send_ring->signal_th;
- 		}
--	} while (is_drain && send_ring->pending_wqe);
-+	} while (ne == 1 ||
-+		 (is_drain && send_ring->pending_wqe  >= send_ring->signal_th));
  
  	return 0;
+ 
++free_sync_mem:
++	kfree(dmn->send_ring->sync_buff);
+ clean_mr:
+ 	dr_dereg_mr(dmn->mdev, dmn->send_ring->mr);
+ free_mem:
+@@ -1320,6 +1330,7 @@ void mlx5dr_send_ring_free(struct mlx5dr_domain *dmn,
+ 	dr_dereg_mr(dmn->mdev, send_ring->sync_mr);
+ 	dr_dereg_mr(dmn->mdev, send_ring->mr);
+ 	kfree(send_ring->buf);
++	kfree(send_ring->sync_buff);
+ 	kfree(send_ring);
  }
  
-+static void dr_fill_write_args_segs(struct mlx5dr_send_ring *send_ring,
-+				    struct postsend_info *send_info)
-+{
-+	send_ring->pending_wqe++;
-+
-+	if (send_ring->pending_wqe % send_ring->signal_th == 0)
-+		send_info->write.send_flags |= IB_SEND_SIGNALED;
-+	else
-+		send_info->write.send_flags = 0;
-+}
-+
- static void dr_fill_write_icm_segs(struct mlx5dr_domain *dmn,
- 				   struct mlx5dr_send_ring *send_ring,
- 				   struct postsend_info *send_info)
-@@ -526,6 +618,8 @@ static void dr_fill_data_segs(struct mlx5dr_domain *dmn,
- {
- 	if (send_info->type == WRITE_ICM)
- 		dr_fill_write_icm_segs(dmn, send_ring, send_info);
-+	else /* args */
-+		dr_fill_write_args_segs(send_ring, send_info);
- }
- 
- static int dr_postsend_icm_data(struct mlx5dr_domain *dmn,
-@@ -774,6 +868,39 @@ int mlx5dr_send_postsend_pattern(struct mlx5dr_domain *dmn,
- 	return 0;
- }
- 
-+int mlx5dr_send_postsend_args(struct mlx5dr_domain *dmn, u64 arg_id,
-+			      u16 num_of_actions, u8 *actions_data)
-+{
-+	int data_len, iter = 0, cur_sent;
-+	u64 addr;
-+	int ret;
-+
-+	addr = (uintptr_t)actions_data;
-+	data_len = num_of_actions * DR_MODIFY_ACTION_SIZE;
-+
-+	do {
-+		struct postsend_info send_info = {};
-+
-+		send_info.type = GTA_ARG;
-+		send_info.write.addr = addr;
-+		cur_sent = min_t(u32, data_len, DR_ACTION_CACHE_LINE_SIZE);
-+		send_info.write.length = cur_sent;
-+		send_info.write.lkey = 0;
-+		send_info.remote_addr = arg_id + iter;
-+
-+		ret = dr_postsend_icm_data(dmn, &send_info);
-+		if (ret)
-+			goto out;
-+
-+		iter++;
-+		addr += cur_sent;
-+		data_len -= cur_sent;
-+	} while (data_len > 0);
-+
-+out:
-+	return ret;
-+}
-+
- static int dr_modify_qp_rst2init(struct mlx5_core_dev *mdev,
- 				 struct mlx5dr_qp *dr_qp,
- 				 int port)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 0075e2c7a441..7b35f78a84a2 100644
+index 7b35f78a84a2..81d7ac6d6258 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -1397,6 +1397,7 @@ struct mlx5dr_qp {
- 	struct mlx5_wq_ctrl wq_ctrl;
- 	u32 qpn;
- 	struct {
-+		unsigned int head;
- 		unsigned int pc;
- 		unsigned int cc;
- 		unsigned int size;
-@@ -1473,6 +1474,8 @@ int mlx5dr_send_postsend_pattern(struct mlx5dr_domain *dmn,
- 				 struct mlx5dr_icm_chunk *chunk,
- 				 u16 num_of_actions,
- 				 u8 *data);
-+int mlx5dr_send_postsend_args(struct mlx5dr_domain *dmn, u64 arg_id,
-+			      u16 num_of_actions, u8 *actions_data);
+@@ -1429,9 +1429,6 @@ struct mlx5dr_mr {
+ 	size_t size;
+ };
  
- int mlx5dr_send_info_pool_create(struct mlx5dr_domain *dmn);
- void mlx5dr_send_info_pool_destroy(struct mlx5dr_domain *dmn);
+-#define MAX_SEND_CQE		64
+-#define MIN_READ_SYNC		64
+-
+ struct mlx5dr_send_ring {
+ 	struct mlx5dr_cq *cq;
+ 	struct mlx5dr_qp *qp;
+@@ -1446,7 +1443,7 @@ struct mlx5dr_send_ring {
+ 	u32 tx_head;
+ 	void *buf;
+ 	u32 buf_size;
+-	u8 sync_buff[MIN_READ_SYNC];
++	u8 *sync_buff;
+ 	struct mlx5dr_mr *sync_mr;
+ 	spinlock_t lock; /* Protect the data path of the send ring */
+ 	bool err_state; /* send_ring is not usable in err state */
 -- 
 2.39.2
 
