@@ -2,72 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84F766E2046
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 12:08:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 263F26E2053
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 12:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbjDNKIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 06:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46596 "EHLO
+        id S229847AbjDNKKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 06:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbjDNKIB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 06:08:01 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBE210DE
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 03:07:59 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id he13so15040649wmb.2
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 03:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681466878; x=1684058878;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=cIuacTUe55V68yxCoo7ary9vLzT4+1nPwynRvBBZauw=;
-        b=UkOrd1RRTM25mxj1p5I5fnIrtj/ejTvq6ROpDCbeeILUAi7MHNax5/wKU8KmK0KdW9
-         xz4+ysZ88t7IQaCEEwMoj5bKyzYGQNTHlOnZcIefKbRUoJoOvNAJ9CPtHh89Wixpvk4q
-         dmUBpHEHMQo8tenvLQ25k/VryWvKrGchjyvAKDhMlN22hctXuz+pjSuhTyR9Kkh5xX8b
-         CruamDbostVGlYJP4P/oT/fWU2HDNFWWFfU8VonJbmx86TGwP2Y4/smlskFVFXsepylP
-         ZxxYUzg/niO2UuGRs8qbxB0qMmVeww9XNzR3UJ6vg6SFeZAKFcwetbyhSfCv3sl9i8dY
-         RdjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681466878; x=1684058878;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=cIuacTUe55V68yxCoo7ary9vLzT4+1nPwynRvBBZauw=;
-        b=NJrFUVd4+xNCC1mqTbxrKChalhrNpSUVXklQPfUN/LcwM48NHKaR18vU4pOUzmkWwV
-         6SkHaw/yxqDpcNJBxcJO7sJbtyv96dVIGWjp38lqVLFQqYhLoaJ2mTWkeKfwQdTeGDNQ
-         TJffhO7JqiiEcWae8jiSWFezjuJPiXkdepI4HQXWj2wQfaBZLotu5RHto6p6VHqfj/XF
-         nbxIKq3Lxko5db5SHwJLyCtMlXl3Kz72HzSX0UUpyigB69r4GUEfyhvCBKkcytg+815A
-         gt1t6HwPCL7prNkQnyz9LgsRjipUuN2xxMu/xGpKU9foSWBhm+lV5Zb1viC9RhZMlVNu
-         JcKg==
-X-Gm-Message-State: AAQBX9e4vX0sSIP9iODfp94trftomO8jdldLPq0L359Aa0fKX8eseCha
-        AMYz9bDZdPd6gsXFgxlakaNso13EVA0640jEYTc=
-X-Google-Smtp-Source: AKy350a2QgLxJtPIeeNlSPUDRhbft3OXkK0vR6wSxba9GLq+NCEtYk7PvXClj4+B5fszmqu3Rz7YNb5BFkub6Z/ZHiE=
-X-Received: by 2002:a1c:7901:0:b0:3ee:41a8:729a with SMTP id
- l1-20020a1c7901000000b003ee41a8729amr1301800wme.4.1681466877682; Fri, 14 Apr
- 2023 03:07:57 -0700 (PDT)
+        with ESMTP id S229707AbjDNKKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 06:10:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B83D9028;
+        Fri, 14 Apr 2023 03:10:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BF1C64626;
+        Fri, 14 Apr 2023 10:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8B8E4C4339B;
+        Fri, 14 Apr 2023 10:10:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681467018;
+        bh=6vFCtZdLswTTngNOHSWwKa2cqJCsc1kWkahPU6fh2IA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XTMCjyPzrz6aDFgnkhP9KSQ7vt+L9iUkAwmdUMISGkre3YgGlOrKzvpQ6nR8DUIvG
+         qK55a4fzU16WGRvze9wLIsPEMOM8EYD+JjmR9BHTTHiYL8mp2JUQ2H6dH5gGzr5a87
+         coRENjdodA7ZB06nK6FQ7gPD0N8CK2OFBUl9n75rbBzrZ/AWkocpzjREZOO4H7Wx4w
+         Kh8WBoYh1QV5csblMgGT1CqAKxX5+96g21LkZpNBJz/nbiWfaGM7/Ns3Io3XOjooDW
+         cM2xMRbs72LNGH1NxUkxaU6wf45p+R9g4uNuwPvkgCp6S8MGxYOFaxDSrfhSGR4vei
+         jZLeg7N1Y0N9A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73429E29F3B;
+        Fri, 14 Apr 2023 10:10:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:adf:e4c9:0:b0:2e5:6bfb:b905 with HTTP; Fri, 14 Apr 2023
- 03:07:57 -0700 (PDT)
-Reply-To: sharharshalom@gmail.com
-From:   Shahar shalom <kekererukayatoux@gmail.com>
-Date:   Fri, 14 Apr 2023 10:07:57 +0000
-Message-ID: <CAN5qXwFjDG9Bea9CmWkYfhAN4ex=iKqPrK3ZZMXO48Wu5jCn7Q@mail.gmail.com>
-Subject: =?UTF-8?B?5YaN5Lya?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v1] vsock/loopback: don't disable irqs for queue
+ access
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168146701846.23331.1103536295768648716.git-patchwork-notify@kernel.org>
+Date:   Fri, 14 Apr 2023 10:10:18 +0000
+References: <a4f17ab9-4be9-1b0a-0fc0-9fa8ef98273d@sberdevices.ru>
+In-Reply-To: <a4f17ab9-4be9-1b0a-0fc0-9fa8ef98273d@sberdevices.ru>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     stefanha@redhat.com, sgarzare@redhat.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        bobby.eshleman@bytedance.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@sberdevices.ru,
+        oxffffaa@gmail.com, avkrasnov@sberdevices.ru
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LS0gDQrkuIrlkajmn5DkuKrml7blgJnlr4TkuobkuIDlsIHpgq7ku7bnu5nkvaDvvIzmnJ/mnJsN
-CuaUtuWIsOS9oOeahOWbnuS/oe+8jOS9huS7pOaIkeaDiuiutueahOaYr+S9oOS7juadpeayoeac
-iei0ueW/g+WbnuWkjeOAgg0K6K+35Zue5aSN6L+b5LiA5q2l55qE6Kej6YeK44CCDQoNCuiCg+eE
-tu+8jA0K5rKZ5ZOI5bCU5bmz5a6JDQo=
+Hello:
+
+This patch was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 13 Apr 2023 12:17:19 +0300 you wrote:
+> This replaces 'skb_queue_tail()' with 'virtio_vsock_skb_queue_tail()'.
+> The first one uses 'spin_lock_irqsave()', second uses 'spin_lock_bh()'.
+> There is no need to disable interrupts in the loopback transport as
+> there is no access to the queue with skbs from interrupt context. Both
+> virtio and vhost transports work in the same way.
+> 
+> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v1] vsock/loopback: don't disable irqs for queue access
+    https://git.kernel.org/netdev/net-next/c/eaaa4e923979
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
