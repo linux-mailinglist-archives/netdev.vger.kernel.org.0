@@ -2,64 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7952F6E266E
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 17:07:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 516BA6E2687
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 17:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbjDNPHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 11:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57668 "EHLO
+        id S229720AbjDNPMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 11:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230092AbjDNPHl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 11:07:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D49C10F2;
-        Fri, 14 Apr 2023 08:07:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB82261633;
-        Fri, 14 Apr 2023 15:07:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4AF1C433D2;
-        Fri, 14 Apr 2023 15:07:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681484850;
-        bh=BhqDRlXbhJFVBZFdkSSkW5XqxP8BybMDa19WNKzFwEA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fZ0DE0145apnwE9EMAeWSHi93Q4QG7J+hXtNmv0IihebIZpHYbS0k9dk+WdfyEr3d
-         g0KNsmFjR4hvrguPr1MR3MxNjDlP3srSHJIBgf+boXuvwgWa8E43+cMLZ4hap+4rkW
-         /ogkWaViwI2mxJJEalCutdnmaVQCm49Ntu//zcbM6bx9lZKOYwFHnyO6OfUNmXdWss
-         Ws7jxJtMWH+L4Gr4tAZhSdFF7+bmkdVCGUb/ycLePo/qk8Z/32XfeH/huVzSx4JNTw
-         UXOnxPvI0/Orfj2UB1XFZHaINqpjv0sA0D1qdAyDqgzag/3UvtmMLpEIcQVjUmv3uW
-         9viI89hZpwmQw==
-Date:   Fri, 14 Apr 2023 08:07:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
+        with ESMTP id S229491AbjDNPMi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 11:12:38 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA761ED
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 08:12:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:To:From:Content-Type:Sender:Reply-To:Cc:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
+        Resent-Message-ID:In-Reply-To:References;
+        bh=fNo2gNspcRsohYWMXyamkRM54ZTjQ7x++CLNwJQTSbI=; t=1681485157; x=1682694757; 
+        b=rK23dqln4C8dgPywy0IG43Kg6hXq17SBxpzOeEPwFki33l5GxVbxayRuMirDj99diY1BrG9Ko3x
+        u4kejHVZnT+TE3klvpVD9q1j5aPNhZ4aZIYnJCxuEE9O2j3nTQIn8s0A7XS73F/5fsbEOG2Y8jCsU
+        uHUkMKh6OFu19x43Azf4bWrG4QkNqug75xZrHzuFxhgKi7vsDlg9pFa/5sxlGaKwVxbw45y6Eu7si
+        PTfWx1wAfoBWYkwwP5rBtpa+SR3VyW8cQE7dxU/oT7zzTGqRtuRMI0xiC3ghht+xQx2c17Sjs6sU+
+        sDC77GGwRd2DI5AKYKcIjnY/lz+Yayh0nhkg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1pnL6J-00Fdii-2C
+        for netdev@vger.kernel.org;
+        Fri, 14 Apr 2023 17:12:35 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
 To:     netdev@vger.kernel.org
-Cc:     Yixin Shen <bobankhshen@gmail.com>, leon@kernel.org,
-        akpm@linux-foundation.org, davem@davemloft.net,
-        edumazet@google.com, linux-kernel@vger.kernel.org,
-        ncardwell@google.com
-Subject: Re: [PATCH net-next] lib/win_minmax: export symbol of
- minmax_running_min
-Message-ID: <20230414080728.58918495@kernel.org>
-In-Reply-To: <20230414022736.63374-1-bobankhshen@gmail.com>
-References: <20230413171918.GX17993@unreal>
-        <20230414022736.63374-1-bobankhshen@gmail.com>
+Subject: [PATCH next-next v3 0/3] extend drop reasons
+Date:   Fri, 14 Apr 2023 17:12:24 +0200
+Message-Id: <20230414151227.348725-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Apr 2023 02:27:36 +0000 Yixin Shen wrote:
-> For example, Copa(NSDI'18) which is adopted by Facebook needs to maintain
-> such windowed min filters.
+Hi,
 
-Perhaps an unnecessary comment, but this should not be misread
-as this patch itself having anything to do with Meta.
+Here's v3 after the discussions. The first patch is new, to
+separate the reasons (needed in a lot of places) from the new
+infrastructure (needed only in skbuff.c, drop_monitor and in
+mac80211 in the last patch).
+
+johannes
+
+
