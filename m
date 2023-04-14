@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4905B6E27ED
-	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 18:04:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE0CB6E27EE
+	for <lists+netdev@lfdr.de>; Fri, 14 Apr 2023 18:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231126AbjDNQEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 12:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48520 "EHLO
+        id S230404AbjDNQEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 12:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbjDNQEE (ORCPT
+        with ESMTP id S230182AbjDNQEE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 12:04:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590C57698
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E7AA276
         for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 09:04:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7347648D8
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 16:04:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12489C4339C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5522B648DB
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 16:04:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FCBCC4339E;
         Fri, 14 Apr 2023 16:04:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1681488242;
-        bh=IocWLZpOcyUrm4BMGs2RRrtfIxK2AaiVG8Hjb6CHfTg=;
+        bh=SZs/CEFa5lHZZH4Y9Rfez7jmILSbsNIxYNSirHu+BKI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d+t/+OlsKbvH6R5VMnzDBHcKmyEBEe9Wt0NlpVxbYM8luzWmX9ry+yp/q5dHm2/VT
-         DwCi8P1ecKK44w6mbDeRKnK/sFqKW65Jb6BV5bgRgn2EVB9xZmqKiEzKTMgKfOwoDf
-         BCQrIur9b0g/TeEAkM/9uhHOfCck8t21J1YaTkH3jaBwlxjCFbvUFMDtagrLojLVyL
-         EFlDy4iBlqnSdvB4IlXKptRdWR1cmM20YDPzN0UMK7ksQxmEUi2HWvS5WzwjTO0Zvf
-         arJYFpoiq2o2sIDQU5kzGV/2zpxGnH3Sf9kzDFcaUfotdIY3Qr8tpRouz/pST8UqZA
-         yHeBQpXy5ibEA==
+        b=QX0t8s0i/2u1VyTPZiCleh+iAnPw7sWVqNXTcg3+csnZYqgyCDEuw2z4zeJLAZwzr
+         IYcCAE3EO51F03TQMSbRbc9uTLq485m/L7nFEH+YwjpXOEFKPLLicllLKC0dTTamZu
+         sgfvAw30NbuMEzQEKICa1ErsWTWwxMKu4jvktfRj+xqIVwXesVYAvI6CN6VgTlHUPT
+         zSni06WSvHeK6n+PE4kLLNczMqvKN0WwlO/DEZcYElGqav0/eCrRM7ceXW6vYb2g6F
+         x4zaj/SYQTke0Ndi6UwvmLCZE9xBHokJAnaE46AJaPuSm6Ufz+vSXZwetOnJzuwKCz
+         WorCWxSbPhxWw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, johannes@sipsolutions.net
-Subject: [PATCH net-next 1/5] net: skbuff: hide wifi_acked when CONFIG_WIRELESS not set
-Date:   Fri, 14 Apr 2023 09:01:01 -0700
-Message-Id: <20230414160105.172125-2-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 2/5] net: skbuff: hide csum_not_inet when CONFIG_IP_SCTP not set
+Date:   Fri, 14 Apr 2023 09:01:02 -0700
+Message-Id: <20230414160105.172125-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230414160105.172125-1-kuba@kernel.org>
 References: <20230414160105.172125-1-kuba@kernel.org>
@@ -53,103 +53,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Datacenter kernel builds will very likely not include WIRELESS,
-so let them shave 2 bits off the skb by hiding the wifi fields.
+SCTP is not universally deployed, allow hiding its bit
+from the skb.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: johannes@sipsolutions.net
----
- include/linux/skbuff.h | 11 +++++++++++
- include/net/sock.h     |  2 +-
- net/core/skbuff.c      |  2 ++
- net/socket.c           |  2 ++
- 4 files changed, 16 insertions(+), 1 deletion(-)
+ include/linux/skbuff.h | 14 ++++++++++++++
+ net/core/dev.c         |  3 +--
+ net/sched/act_csum.c   |  3 +--
+ 3 files changed, 16 insertions(+), 4 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 494a23a976b0..7160101edc8a 100644
+index 7160101edc8a..45c3044e8123 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -953,8 +953,10 @@ struct sk_buff {
- 
- 	__u8			l4_hash:1;
- 	__u8			sw_hash:1;
-+#ifdef CONFIG_WIRELESS
- 	__u8			wifi_acked_valid:1;
- 	__u8			wifi_acked:1;
-+#endif
- 	__u8			no_fcs:1;
- 	/* Indicates the inner headers are valid in the skbuff. */
- 	__u8			encapsulation:1;
-@@ -1187,6 +1189,15 @@ static inline unsigned int skb_napi_id(const struct sk_buff *skb)
+@@ -983,7 +983,9 @@ struct sk_buff {
+ 	__u8			decrypted:1;
  #endif
- }
+ 	__u8			slow_gro:1;
++#if IS_ENABLED(CONFIG_IP_SCTP)
+ 	__u8			csum_not_inet:1;
++#endif
  
-+static inline bool skb_wifi_acked_valid(const struct sk_buff *skb)
-+{
-+#ifdef CONFIG_WIRELESS
-+	return skb->wifi_acked_valid;
+ #ifdef CONFIG_NET_SCHED
+ 	__u16			tc_index;	/* traffic control index */
+@@ -5054,7 +5056,19 @@ static inline void skb_reset_redirect(struct sk_buff *skb)
+ 
+ static inline bool skb_csum_is_sctp(struct sk_buff *skb)
+ {
++#if IS_ENABLED(CONFIG_IP_SCTP)
+ 	return skb->csum_not_inet;
 +#else
 +	return 0;
 +#endif
 +}
 +
- /**
-  * skb_unref - decrement the skb's reference count
-  * @skb: buffer
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 5edf0038867c..8b7ed7167243 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2697,7 +2697,7 @@ sock_recv_timestamp(struct msghdr *msg, struct sock *sk, struct sk_buff *skb)
- 	else
- 		sock_write_timestamp(sk, kt);
- 
--	if (sock_flag(sk, SOCK_WIFI_STATUS) && skb->wifi_acked_valid)
-+	if (sock_flag(sk, SOCK_WIFI_STATUS) && skb_wifi_acked_valid(skb))
- 		__sock_recv_wifi_status(msg, sk, skb);
- }
- 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 78238a13dbcf..856926d2837e 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5187,6 +5187,7 @@ void skb_tstamp_tx(struct sk_buff *orig_skb,
- }
- EXPORT_SYMBOL_GPL(skb_tstamp_tx);
- 
-+#ifdef CONFIG_WIRELESS
- void skb_complete_wifi_ack(struct sk_buff *skb, bool acked)
- {
- 	struct sock *sk = skb->sk;
-@@ -5212,6 +5213,7 @@ void skb_complete_wifi_ack(struct sk_buff *skb, bool acked)
- 		kfree_skb(skb);
- }
- EXPORT_SYMBOL_GPL(skb_complete_wifi_ack);
-+#endif /* CONFIG_WIRELESS */
- 
- /**
-  * skb_partial_csum_set - set up and verify partial csum values for packet
-diff --git a/net/socket.c b/net/socket.c
-index 73e493da4589..a7b4b37d86df 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -957,6 +957,7 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
- }
- EXPORT_SYMBOL_GPL(__sock_recv_timestamp);
- 
-+#ifdef CONFIG_WIRELESS
- void __sock_recv_wifi_status(struct msghdr *msg, struct sock *sk,
- 	struct sk_buff *skb)
- {
-@@ -972,6 +973,7 @@ void __sock_recv_wifi_status(struct msghdr *msg, struct sock *sk,
- 	put_cmsg(msg, SOL_SOCKET, SCM_WIFI_STATUS, sizeof(ack), &ack);
- }
- EXPORT_SYMBOL_GPL(__sock_recv_wifi_status);
++static inline void skb_reset_csum_not_inet(struct sk_buff *skb)
++{
++	skb->ip_summed = CHECKSUM_NONE;
++#if IS_ENABLED(CONFIG_IP_SCTP)
++	skb->csum_not_inet = 0;
 +#endif
+ }
  
- static inline void sock_recv_drops(struct msghdr *msg, struct sock *sk,
- 				   struct sk_buff *skb)
+ static inline void skb_set_kcov_handle(struct sk_buff *skb,
+diff --git a/net/core/dev.c b/net/core/dev.c
+index c7f13742b56c..177e91819850 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3315,8 +3315,7 @@ int skb_crc32c_csum_help(struct sk_buff *skb)
+ 						  skb->len - start, ~(__u32)0,
+ 						  crc32c_csum_stub));
+ 	*(__le32 *)(skb->data + offset) = crc32c_csum;
+-	skb->ip_summed = CHECKSUM_NONE;
+-	skb->csum_not_inet = 0;
++	skb_reset_csum_not_inet(skb);
+ out:
+ 	return ret;
+ }
+diff --git a/net/sched/act_csum.c b/net/sched/act_csum.c
+index 95e9304024b7..8ed285023a40 100644
+--- a/net/sched/act_csum.c
++++ b/net/sched/act_csum.c
+@@ -376,8 +376,7 @@ static int tcf_csum_sctp(struct sk_buff *skb, unsigned int ihl,
+ 
+ 	sctph->checksum = sctp_compute_cksum(skb,
+ 					     skb_network_offset(skb) + ihl);
+-	skb->ip_summed = CHECKSUM_NONE;
+-	skb->csum_not_inet = 0;
++	skb_reset_csum_not_inet(skb);
+ 
+ 	return 1;
+ }
 -- 
 2.39.2
 
