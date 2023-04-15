@@ -2,58 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5FBC6E2E7E
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 04:06:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2526E2E7F
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 04:07:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229924AbjDOCGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 22:06:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47730 "EHLO
+        id S229574AbjDOCHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 22:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjDOCGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 22:06:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3874C39;
-        Fri, 14 Apr 2023 19:06:11 -0700 (PDT)
+        with ESMTP id S229491AbjDOCHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 22:07:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9774C22
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 19:07:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB32D61719;
-        Sat, 15 Apr 2023 02:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 483C6C433EF;
-        Sat, 15 Apr 2023 02:06:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43CE761719
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 02:07:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F421C433D2;
+        Sat, 15 Apr 2023 02:07:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681524370;
-        bh=F+qtdLH0oZFhkge6AY0Ykqz4k4fj38qMbGDX2XmCiZM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uaKoP85D6NkHWUhxRs2zayNwV8H66vAumDv9vsno1kIOc83s7lNVbfb4XOetEPRKw
-         XW8jA2yt+qte3GmQNnFUsFo3bCpwTEZ8T4p70JFgtA1wsLqIe7qmDr42XYrxfJybI7
-         FpWyqeES78iN7SypOX7BYickjse98mM+9aH5FX66UTz11bVYmHWXr3/NfYluB+ABCs
-         GqOXALZdBLSqNeRp5vRpM3ODbnd6Lsy0mcZ0qHCGEgiqKjuks5tZgc2+nBcCs5nvyy
-         PFcE8N7pR2c7PIoZXk2CS7EDSnlfACbOJ1U76jbZ+0sn0E+zjLHsM5co8kDokRzaOE
-         DWSv5hrY306WQ==
-Date:   Fri, 14 Apr 2023 19:06:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Haiyang Zhang <haiyangz@microsoft.com>
-Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        decui@microsoft.com, kys@microsoft.com, paulros@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
-        wei.liu@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        leon@kernel.org, longli@microsoft.com, ssengar@linux.microsoft.com,
-        linux-rdma@vger.kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, bpf@vger.kernel.org, ast@kernel.org,
-        sharmaajay@microsoft.com, hawk@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3,net-next, 3/4] net: mana: Enable RX path to handle
- various MTU sizes
-Message-ID: <20230414190608.3c21f44f@kernel.org>
-In-Reply-To: <1681334163-31084-4-git-send-email-haiyangz@microsoft.com>
-References: <1681334163-31084-1-git-send-email-haiyangz@microsoft.com>
-        <1681334163-31084-4-git-send-email-haiyangz@microsoft.com>
+        s=k20201202; t=1681524421;
+        bh=DkfNw8WLrcKXv/xxb67fcoCm7DZ9a3zFfkaBPpIpkMc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZN63nGV129Zw4NABtfmZcBxG+NBe3QTd8gMzbeBVNyuiaelGT1r4TRvzRgTZAypqZ
+         RxNFEBTGYE/O4lLEUIrKPIcbQydnt5Chw4zgHKDLn+IARvZVWWKBLSeJWUmtee5Zhv
+         ObRQs9Z++bNEQKr1bKqZn2HCb22XIFaTamJAweG6pgUeef++jWCN7aoPy7X0Gitbx1
+         WX/km0xCbyrlz9vZ28yGEc7tuCut72NvTOKBG3LNZZJ69YqCtGQFm8X4peNM5xTiji
+         a0K20u6Iz7JvKf0gJm9M24fHKrSh1RQh/AlrOiIFfC153nLuroXTL6RfD9BvZYXBGk
+         nqRktYVof+i6w==
+Date:   Fri, 14 Apr 2023 22:06:59 -0400
+From:   Chuck Lever <cel@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     pabeni@redhat.com, edumazet@google.com, netdev@vger.kernel.org,
+        kernel-tls-handshake@lists.linux.dev
+Subject: Re: [PATCH v9 3/3] net/handshake: Add Kunit tests for the handshake
+ consumer API
+Message-ID: <ZDoGw3nVG+jNWrwV@manet.1015granger.net>
+References: <168141287044.157208.15120359741792569671.stgit@manet.1015granger.net>
+ <168141324822.157208.14911977368369619191.stgit@manet.1015granger.net>
+ <20230414183113.318ee353@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230414183113.318ee353@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -62,10 +56,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Apr 2023 14:16:02 -0700 Haiyang Zhang wrote:
-> +	} else if (rxq->alloc_size > PAGE_SIZE) {
-> +		if (is_napi)
-> +			va = napi_alloc_frag(rxq->alloc_size);
+On Fri, Apr 14, 2023 at 06:31:13PM -0700, Jakub Kicinski wrote:
+> On Thu, 13 Apr 2023 15:14:08 -0400 Chuck Lever wrote:
+> >  net/Kconfig                    |   15 +
+> >  net/handshake/.kunitconfig     |   11 +
+> >  net/handshake/Makefile         |    2 
+> >  net/handshake/handshake-test.c |  523 ++++++++++++++++++++++++++++++++++++++++
+> >  net/handshake/netlink.c        |   22 ++
+> >  net/handshake/request.c        |    5 
+> >  6 files changed, 578 insertions(+)
+> >  create mode 100644 net/handshake/.kunitconfig
+> >  create mode 100644 net/handshake/handshake-test.c
+> 
+> We're getting:
+> 
+> net/handshake/.kunitconfig: warning: ignored by one of the .gitignore files
+> 
+> during allmodconfig build, any idea where that's coming from?
 
-Allocating frag larger than a page is not safe.
-Frag allocator falls back to allocating single pages, doesn't it?
+As far as I know, all of the .kunitconfig files in the kernel tree
+are marked "ignored". I'm not sure why, nor if it's a significant
+problem.
