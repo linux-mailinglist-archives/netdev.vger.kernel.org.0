@@ -2,115 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 682F56E3308
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 20:09:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFE936E334E
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 21:32:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229546AbjDOSJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 14:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57150 "EHLO
+        id S229730AbjDOTcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 15:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbjDOSJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 14:09:44 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2055.outbound.protection.outlook.com [40.107.21.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F552107;
-        Sat, 15 Apr 2023 11:09:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HUFq55TH3LlE0yybUzmZi8jDjZZ1ma6zEM7aPIZs8AsyzvUNkyq7wlo+bnJYP1NHjnFlG9TO7/JSgWvfrfafzC4tYx6LgusjFBVKBEqDZva6pHxiu67BufmTxK6bhj4IQPsPvy1xJsnOiA1j1WXG7dtDhqXEbJpdlmHPwMMMHQuSf5cx2F8j5oQi9XORKNrAC4SzlKUnP9LzBz+wRXHhm+j1f+FbmFm5OM0p3OFT0s/Fh5gJawn9+9qokR0v7TX2YorSxoPZm8Sn+0ZK+VkbL8AnSiEJzbT7f/s9TLAHPgY8eV0vpnxv7C/DY78Fqji53KrAegL2n/qU/i4NMIxQQA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V0MnB1RlfFZL19VJytgQZonFmdf3OqahFVUTAXbEr2c=;
- b=lK8IMFxQ8dV4OBAC7YyS98Z2RWxHbpMGVvnqmnf8nGNpJ8ktBWm3I/KXZSRCVs7lBfC462Jivb12w+67ZIzvHIUHRyJaNqeBAhepfTMGkYqdU+HsQ6r2G/pC6IQXKayAf/4UQfONH/DjtN+iy8DuYquaLNDOtFKbgniF1BVRpFSe/ALgU6ScHHkGOXmI+53UjYpgF8bkNP9T1AD+DOkP3L5jI+9/KHEUf9wD4wejFfvAS9/OknmqTsjRezgRTudEqULEQE5bf0PG+Bz8RMFPJNfGAXa18hzrPr/K5zIeUNySQ6N0ohxVkFD/m+aXgjhRoeSHpOQw0+t0Pv/w3O54gA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V0MnB1RlfFZL19VJytgQZonFmdf3OqahFVUTAXbEr2c=;
- b=WKJsJDnkn1IKpLR1P3OFljsMDZgauIpIzEIVn+xlVGz2Kmyg00GC/NRFvIPLEHTWZInOiV4zwtdU5mUI9bAgIux+IDxZATCE/dXlmJWFwWnlwZResWbVexKoslm0ys7AQL7/rRXNjASHIpAdiz4GIDhCtzYGfU4XnXHrGNLJv4s=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AS8PR04MB8947.eurprd04.prod.outlook.com (2603:10a6:20b:42e::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Sat, 15 Apr
- 2023 18:09:40 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::55b1:d2dd:4327:912b]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::55b1:d2dd:4327:912b%5]) with mapi id 15.20.6298.028; Sat, 15 Apr 2023
- 18:09:40 +0000
-Date:   Sat, 15 Apr 2023 21:09:36 +0300
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] ethtool mm API improvements
-Message-ID: <20230415180936.lx7sw4r3ungcl7w4@skbuf>
-References: <20230415173454.3970647-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230415173454.3970647-1-vladimir.oltean@nxp.com>
-X-ClientProxiedBy: FR2P281CA0060.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:93::16) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+        with ESMTP id S229548AbjDOTca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 15:32:30 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8292720;
+        Sat, 15 Apr 2023 12:32:28 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id qb20so53643838ejc.6;
+        Sat, 15 Apr 2023 12:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681587146; x=1684179146;
+        h=content-transfer-encoding:in-reply-to:references:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=nfRDfg5bIXBIhJpyx54fs18Q87nFwdIB8gGSodLfElM=;
+        b=Q6pCrqMf2uXAUSHTjiYzR9lZB/fV7qeKqf2VVFEZPIQRVgatL5weU8Qys5DkYB2UxA
+         yLlioVmVp0tIzgRAEJmA+Tu97Tnnwjztjf9nIqF3U/8sqAngaF5A/j0mJSDGWte8yVfn
+         e2UFIoEJzNUoaBlI6z9hvWk+4pRB9DDS2XQU3nD1rHW3BEGrTIZt7z0TgcAHKi2gljPY
+         HNyI1c2e/0tZgDyjUk5PqMb6lJvIXuBUI1A1tWGVmZSEkld0LvlXG/8Ptgl206qg8SIr
+         yPNgatkrCqJKoMvRJIPnedLj8TyOCPYpruf0daCtmRLfSPJE8Ht1AF5HVIowxlgM1Y4j
+         HCVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681587146; x=1684179146;
+        h=content-transfer-encoding:in-reply-to:references:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nfRDfg5bIXBIhJpyx54fs18Q87nFwdIB8gGSodLfElM=;
+        b=KJ8Y0cv8nlJUOIBNoOJIZOg5BqoUbSUcc7grJh1bvL9Qhp8yzgV0ie67VyirW+snmw
+         dHOBkUioWkfFTPz3F0UKfXYDqVPIJEf8fZJtMYLGv3acfrv5u8euwJulvhF2Sighpj6Q
+         vKIYOdl81CGT06QShY1KfQ0ssTGNUQEJ2hIZrPQcZ8DUOUguRfyeoexLA7Bre6gLfKlW
+         ZI3ZAlNFH7hWEzTmJ6a0abENlJlF4eXk6Hd7mWAGleKPtAHVVBZBUObX0t2hc4cQzphA
+         V1F5Mwsk81A/GvcGhfgEl4sS7h8w0fsk0vNftbpjIhQffwGgECC5W+1HrufQSAb4Y4zB
+         IFIg==
+X-Gm-Message-State: AAQBX9dl2YJRjqAq8+bgWSWgXA4UmZUTR7l/xvX3szRCjBCzuaUUdlv7
+        Bpdm6LYgOZRoRrr2g4O+T/fgoaivrxJ8ng==
+X-Google-Smtp-Source: AKy350bKobVIPFDsauDMvG0/mGZya7MJcmFgK401nShSjAK7jGcFFdIPjBLW7Z7dZkSotypjFiWSwA==
+X-Received: by 2002:a17:906:c355:b0:94f:b5c:a254 with SMTP id ci21-20020a170906c35500b0094f0b5ca254mr2457660ejb.49.1681587146123;
+        Sat, 15 Apr 2023 12:32:26 -0700 (PDT)
+Received: from shift.daheim (pd9e29911.dip0.t-ipconnect.de. [217.226.153.17])
+        by smtp.gmail.com with ESMTPSA id k13-20020a17090666cd00b009323f08827dsm4259005ejp.13.2023.04.15.12.32.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 15 Apr 2023 12:32:25 -0700 (PDT)
+Received: from localhost ([127.0.0.1])
+        by shift.daheim with esmtp (Exim 4.96)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1pnldJ-006Y0n-16;
+        Sat, 15 Apr 2023 21:32:25 +0200
+Message-ID: <03a74fbb-dd77-6283-0b08-6a9145a2f4f6@gmail.com>
+Date:   Sat, 15 Apr 2023 21:32:25 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB8947:EE_
-X-MS-Office365-Filtering-Correlation-Id: 76a4afe2-1ca0-4a0d-aad0-08db3ddc94d8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /pju1re7TS/8o0BrZHgAe2W2GH9U7DGhZOBTgJfJVIrKDLiHjTDAdU1fb3VCUjj2nzgDSA9lPfyGbM4PMx0Kn8pdklTNYpT9deI5RSPItEhxFsQroYFlBOyzdcCvEUz9Kgw68aTNy8njrPw80aXx9tYrLu1xsqEj4mBt4ZhxiiMa04zrgAkY6iIBYFknPkQB6jPvhp72wR36/NfEFrx8kC4A/PmhHRiEfOoDcu8NQVMMUUdW4o4WIBlfEEcAlrLToWfJqZor9OtibWFuLjOuTwVYkSo+4MwkFA80f3FwTXXrcFL7Mo5b3XNbR8SjzJJl4wClFSoinNk+sdrefbF149nQy2+yo7OMihjUeKFGaWE5gY6Hn9BmePh0RjV3SDD0OX94lXEyDZ1sYdvmUXVkGw9n1ygiKjSATTGPd3Jwol8/i5C7nVFF57E3dBiItSknt+49Z6VrwJkkkezMbPibJ26LDi//DHEDVXC4J4/6F/QyY077wnrVAO3bbji5b+pBqLzdQyaPO6sRXvO7QzKZa79fpxBBRcjtja0pWy3EMWM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(366004)(136003)(396003)(39860400002)(346002)(376002)(451199021)(38100700002)(5660300002)(6916009)(2906002)(8676002)(44832011)(86362001)(8936002)(316002)(4326008)(66556008)(41300700001)(66476007)(66946007)(966005)(1076003)(83380400001)(6512007)(186003)(9686003)(26005)(33716001)(6506007)(478600001)(54906003)(6486002)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?H2hDOM7pgi57Xa6GizYJkIfqNb4F9hvdhFx1BaYcKAYiUnL3qkt8QrymKMq2?=
- =?us-ascii?Q?XKG/1yuzwop2Nq24Vp38a/4+Fc5AdLWM8QzUz8uoxRpcvUsRg4gefGnua65d?=
- =?us-ascii?Q?IMqeV4J0MG8yhJGfKpIXA3WGxCkn+8fbckP+t8D2htqaqODAHdhi8NwpqMH8?=
- =?us-ascii?Q?Cq4FKWpKtpQBOChSaXYjHUsNgBe5WDApY2GpJ+QgZsrCMfPsr+dZNk1iaBdu?=
- =?us-ascii?Q?lal1H+HSD/fLXe3Qz1kT0YTcFWLgV2Tf/wIFshD6nlPAwPnsKm0rFlKc2q9P?=
- =?us-ascii?Q?W3wex3bB79paL2XA4zO5UZp6G0BSRuOjGa+RooAZIdGoFZ9xAqzICAf+b/px?=
- =?us-ascii?Q?N/NsWycbbp8Dj1ihvy2D2DWnXZoMyqfiUmorwaJ8+sZA9IFPBWycRFJ20b8E?=
- =?us-ascii?Q?18kjYdP11/jsuHD2BlSClT+KjL2KZKOfFuGFbAjlqLUDLaTIvHPpF1AcSqT0?=
- =?us-ascii?Q?P7m5wlPetZHhr5d3wxyoReGGpjUcw8WsQhbZzfFUIf+s6umB59vA4ySZOEGc?=
- =?us-ascii?Q?VYeXktXjoT8Wxp37jZCL0OyT4IEM6OyTFT+G4qD6kHPNPWvy8ejFPiki/UM2?=
- =?us-ascii?Q?dje/Sg+JZJccsO+Cs9BmsVlMD0XIEWizrHCjr/XlkVdVLXydoC7Hc+ZgWbgb?=
- =?us-ascii?Q?qMNchYUvkHUj8bmgoKCL6YOQ/kNyYXAlKY88+KPTi+Rtk9Lfdn+aBU1ZRqxC?=
- =?us-ascii?Q?xAwuL/QJ3HCT4prrARsiOflVQOud57gaUjKDvHAza3XleMM00nfvkzLRF8J1?=
- =?us-ascii?Q?r/KLcocMFhfrU+sNt+ziYridNDmMX6T06Ia8Qace2UZWZXz29a7FkF2UU+dJ?=
- =?us-ascii?Q?VfeKiSdr/vI8BNREQsM9V7PxotUN8WV4MhRYJSjqFL+YnQmNlSqENSklZVkT?=
- =?us-ascii?Q?e7BlRn6qPS7jASyMcs2uvUkKOH5KxP2pekMIt04o/8NGFQhjYqBLc6VzJ4RM?=
- =?us-ascii?Q?ErFH8LRQY/BA9tVJmND9pIpPb1gLSCB1D1If1OQp9dIXAiKAUWf8MGgjteYh?=
- =?us-ascii?Q?ypYEqXpJ2wKCaePJ1hPhZ1hrFyUdI1nHsldqPjjn0N6ktqXIMyX/XHGf8jX8?=
- =?us-ascii?Q?jv72ITMld1XExEzBs+Cu9O3fBxY9zkOTo1HsR1dc/G/Pn+QjilDeF2kUvYgw?=
- =?us-ascii?Q?HTkl/++jyGgdtBfDO4+B2WMaGdnYL4Cv4Ub9/UIr0CuuVGVYtrkM/IyqUeGF?=
- =?us-ascii?Q?gKiwa9NUTwn1KsEuACF6BSI4u+NfhsLT/T2Yc4KygML9jDvmlBkuTj7CONlQ?=
- =?us-ascii?Q?YPOJQUhEgVyu84pujXNep0G2ZZv8gnsjXHN//t0Qvyeng6c8R5xZHrOwI2d1?=
- =?us-ascii?Q?Si7oTvJ1M/C+sGJBYOEZyV+Z40zseWMN6E5nGCR5WWK1tpoTIugBd5kFh3w1?=
- =?us-ascii?Q?k4NHI7IDYTwQU/9pver/fEmayzUBvSWTVRwGTU1re4D/B7kEisA/nCpnNhW9?=
- =?us-ascii?Q?2Qxve01SpFayJ7rE3RMV6XVqA5LSfFUgVWrFIl/CrzNGm/rQwVO+k8TxwsNx?=
- =?us-ascii?Q?QCCOfM9hGEpgaDC50b0S++bImozNFhUli1Gsvk994QFZg5ahM0vxjJmwf4gr?=
- =?us-ascii?Q?UByJlzEcfs0+s02SiJtS6U4Ea8975eKRHqlvcnhUDRPbTrP0NOHkjoQaJzqj?=
- =?us-ascii?Q?Tg=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76a4afe2-1ca0-4a0d-aad0-08db3ddc94d8
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2023 18:09:40.4651
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QiTBg+kje+GVtCtka7ZjCAU7ieDeWJ2MH7toCfa5hmk70gnwzY66ygVyRSU6aTB5RqwR94A1KR88nk03C8jGYw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8947
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH] ath9k: fix calibration data endianness
+Content-Language: de-DE
+From:   Christian Lamparter <chunkeey@gmail.com>
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
+        f.fainelli@gmail.com, jonas.gorski@gmail.com, nbd@nbd.name,
+        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230415150542.2368179-1-noltari@gmail.com>
+ <87leitxj4k.fsf@toke.dk> <a7895e73-70a3-450d-64f9-8256c9470d25@gmail.com>
+In-Reply-To: <a7895e73-70a3-450d-64f9-8256c9470d25@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -118,31 +83,250 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 15, 2023 at 08:34:52PM +0300, Vladimir Oltean wrote:
-> Currently the ethtool --set-mm API permits the existence of 2
-> configurations which don't make sense:
+On 4/15/23 18:02, Christian Lamparter wrote:
+> Hi,
 > 
-> - pmac-enabled false tx-enabled true
-> - tx-enabled false verify-enabled true
+> On 4/15/23 17:25, Toke Høiland-Jørgensen wrote:
+>> Álvaro Fernández Rojas <noltari@gmail.com> writes:
+>>
+>>> BCM63xx (Big Endian MIPS) devices store the calibration data in MTD
+>>> partitions but it needs to be swapped in order to work, otherwise it fails:
+>>> ath9k 0000:00:01.0: enabling device (0000 -> 0002)
+>>> ath: phy0: Ignoring endianness difference in EEPROM magic bytes.
+>>> ath: phy0: Bad EEPROM VER 0x0001 or REV 0x00e0
+>>> ath: phy0: Unable to initialize hardware; initialization status: -22
+>>> ath9k 0000:00:01.0: Failed to initialize device
+>>> ath9k: probe of 0000:00:01.0 failed with error -22
+>>
+>> How does this affect other platforms? Why was the NO_EEP_SWAP flag set
+>> in the first place? Christian, care to comment on this?
 > 
-> By rejecting these, we can give driver-level code more guarantees.
-> I re-ran the MM selftest posted here (which I need to repost):
-> https://lore.kernel.org/netdev/20230210221243.228932-1-vladimir.oltean@nxp.com/
+> I knew this would come up. I've written what I know and remember in the
+> pull-request/buglink.
 > 
-> and it didn't cause functional problems.
+> Maybe this can be added to the commit?
+> Link: https://github.com/openwrt/openwrt/pull/12365
+> 
+> | From what I remember, the ah->ah_flags |= AH_NO_EEP_SWAP; was copied verbatim from ath9k_of_init's request_eeprom.
+> 
+> Since the existing request_firmware eeprom fetcher code set the flag,
+> the nvmem code had to do it too.
+> 
+> In theory, I don't think that not setting the AH_NO_EEP_SWAP flag will cause havoc.
+> I don't know if there are devices out there, which have a swapped magic (which is
+> used to detect the endianess), but the caldata is in the correct endiannes (or
+> vice versa - Magic is correct, but data needs swapping).
+> 
+> I can run tests with it on a Netzgear WNDR3700v2 (AR7161+2xAR9220)
+> and FritzBox 7360v2 (Lantiq XWAY+AR9220). (But these worked fine.
+> So I don't expect there to be a new issue there).
 
-Actually, it looks like that selftest passed by mistake in the
-configuration that I tested it in. I actually get these failures:
+Nope! This is a classic self-own!... Well at least, this now gets documented!
 
-~/selftests/net/forwarding# journalctl -b -u lldpad
-Apr 15 18:05:10 lldpad[705]: arg_path "tlvid00120f07.addFragSize"
-Apr 15 18:05:10 lldpad[705]: arg_path "tlvid00120f07.addFragSize"
-Apr 15 18:05:10 lldpad[705]: arg_path "tlvid00120f07.addFragSize"
-Apr 15 18:05:10 lldpad[705]: arg_path "tlvid00120f07.addFragSize"
-Apr 15 18:05:10 lldpad[705]: Signal 15 received - terminating
-Apr 15 18:05:10 lldpad[705]: ethtool: kernel reports: TX enabled requires pMAC enabled
-Apr 15 18:05:10 lldpad[705]: ethtool: kernel reports: TX enabled requires pMAC enabled
-Apr 15 18:05:10 systemd[1]: lldpad.service: Deactivated successfully.
-Apr 15 18:05:10 systemd[1]: Stopped Link Layer Discovery Protocol Agent Daemon..
+Here are my findings. Please excuse the overlong lines.
 
-Please disregard at least patch 2. Patch 1 is still perfectly valid as-is.
+## The good news / AVM FritzBox 7360v2 ##
+
+The good news: The AVM FritzBox 7360v2 worked the same as before.
+
+Bootlog with the patch applied - cold start:
+
+|[   14.738647] ath9k_pci_owl_loader 0000:01:00.0: enabling device (0000 -> 0002)
+|[   14.747344] ath9k_pci_owl_loader 0000:01:00.0: fixup device configuration
+|[   15.116403] pci 0000:01:00.0: [168c:002e] type 00 class 0x028000
+|[   15.121083] pci 0000:01:00.0: reg 0x10: [mem 0x1c000000-0x1c00ffff 64bit]
+|[   15.128162] pci 0000:01:00.0: supports D1
+|[   15.131841] pci 0000:01:00.0: PME# supported from D0 D1 D3hot
+|[   15.144186] pci 0000:01:00.0: BAR 0: assigned [mem 0x1c000000-0x1c00ffff 64bit]
+|[...] Wireguard loading
+|[   15.367461] ifx_pcie_bios_map_irq port 0 dev 0000:01:00.0 slot 0 pin 1
+|[   15.372676] ifx_pcie_bios_map_irq dev 0000:01:00.0 irq 144 assigned
+|[   15.379031] ath9k 0000:01:00.0: enabling device (0140 -> 0142)
+|[   15.392181] ath: EEPROM regdomain: 0x8114
+|[   15.392219] ath: EEPROM indicates we should expect a country code
+|[   15.392232] ath: doing EEPROM country->regdmn map search
+|[   15.392242] ath: country maps to regdmn code: 0x37
+|[   15.392254] ath: Country alpha2 being used: DE
+|[   15.392264] ath: Regpair used: 0x37
+|[   15.406435] ieee80211 phy0: Selected rate control algorithm 'minstrel_ht'
+|[   15.411722] ieee80211 phy0: Atheros AR9287 Rev:2 mem=0xbc000000, irq=144
+
+## The not so good news / Netgear WNDR3700v2 ##
+
+But not the Netgar WNDR3700v2. One WiFi (The 2.4G, reported itself now as the 5G @0000:00:11.0 -
+doesn't really work now), and the real 5G WiFi (@0000:00:12.0) failed with:
+"phy1: Bad EEPROM VER 0x0001 or REV 0x06e0"
+
+|[   23.260755] ath9k_pci_owl_loader 0000:00:11.0: enabling device (0000 -> 0002)
+|[   23.268319] ath9k_pci_owl_loader 0000:00:12.0: enabling device (0000 -> 0002)
+|[   23.285197] ath9k_pci_owl_loader 0000:00:11.0: fixup device configuration
+|[   23.297232] ath9k_pci_owl_loader 0000:00:12.0: fixup device configuration
+|[   23.320031] pci 0000:00:11.0: [168c:0029] type 00 class 0x028000
+|[   23.326070] pci 0000:00:11.0: reg 0x10: [mem 0x10000000-0x1000ffff]
+|[   23.332430] pci 0000:00:11.0: PME# supported from D0 D3hot
+|[   23.338570] pci 0000:00:11.0: BAR 0: assigned [mem 0x10000000-0x1000ffff]
+|[   23.347404] pci 0000:00:12.0: [168c:0029] type 00 class 0x028000
+|[   23.353441] pci 0000:00:12.0: reg 0x10: [mem 0x10010000-0x1001ffff]
+|[   23.359799] pci 0000:00:12.0: PME# supported from D0 D3hot
+|[   23.365906] pci 0000:00:12.0: BAR 0: assigned [mem 0x10010000-0x1001ffff]
+|[...] Wireguard loading
+|[   24.333503] ath9k 0000:00:11.0: enabling device (0000 -> 0002)
+|[   24.363290] ath: EEPROM regdomain: 0x0
+|[   24.363319] ath: EEPROM indicates default country code should be used
+|[   24.363325] ath: doing EEPROM country->regdmn map search
+|[   24.363338] ath: country maps to regdmn code: 0x3a
+|[   24.363346] ath: Country alpha2 being used: US
+|[   24.363353] ath: Regpair used: 0x3a
+|[   24.381709] ieee80211 phy0: Selected rate control algorithm 'minstrel_ht'
+|[   24.383599] gpio-508 (fixed antenna group 1): hogged as output/high
+|[   24.389941] gpio-509 (fixed antenna group 1): hogged as output/high
+|[   24.396204] gpio-510 (fixed antenna group 1): hogged as output/high
+|[   24.402480] gpio-511 (fixed antenna group 1): hogged as output/high
+|[   24.409007] ieee80211 phy0: Atheros AR9280 Rev:2 mem=0xb0000000, irq=18
+|[   24.415793] ath9k 0000:00:12.0: enabling device (0000 -> 0002)
+|[   24.505496] ath: phy1: Bad EEPROM VER 0x0001 or REV 0x06e0
+|[   24.511027] ath: phy1: Unable to initialize hardware; initialization status: -22
+|[   24.518420] ath9k 0000:00:12.0: Failed to initialize device
+|[   24.524004] ath9k: probe of 0000:00:12.0 failed with error -22
+
+without the patch (rebuild mac80211/backports and uploaded the newly
+created ath9k*.ko files and loaded them manually):
+
+[ 1205.670387] ath: phy10: Ignoring endianness difference in EEPROM magic bytes. <----
+[ 1205.679077] ath: EEPROM regdomain: 0x0
+[ 1205.679086] ath: EEPROM indicates default country code should be used
+[ 1205.679092] ath: doing EEPROM country->regdmn map search
+[ 1205.679105] ath: country maps to regdmn code: 0x3a
+[ 1205.679113] ath: Country alpha2 being used: US
+[ 1205.679120] ath: Regpair used: 0x3a
+[ 1205.692894] ieee80211 phy10: Selected rate control algorithm 'minstrel_ht'
+[ 1205.694757] gpio-508 (fixed antenna group 1): hogged as output/high
+[ 1205.701115] gpio-509 (fixed antenna group 1): hogged as output/high
+[ 1205.707396] gpio-510 (fixed antenna group 1): hogged as output/high
+[ 1205.713656] gpio-511 (fixed antenna group 1): hogged as output/high
+[ 1205.720192] ieee80211 phy10: Atheros AR9280 Rev:2 mem=0xb0000000, irq=18
+[ 1205.816842] ath: phy11: Ignoring endianness difference in EEPROM magic bytes. <----
+[ 1205.825521] ath: EEPROM regdomain: 0x0
+[ 1205.825530] ath: EEPROM indicates default country code should be used
+[ 1205.825537] ath: doing EEPROM country->regdmn map search
+[ 1205.825549] ath: country maps to regdmn code: 0x3a
+[ 1205.825557] ath: Country alpha2 being used: US
+[ 1205.825564] ath: Regpair used: 0x3a
+[ 1205.841571] ieee80211 phy11: Selected rate control algorithm 'minstrel_ht'
+[ 1205.843795] ieee80211 phy11: Atheros AR9280 Rev:2 mem=0xb0010000, irq=19
+
+Everything was fine again.
+
+### Hexdump extract of relevant ART data (/dev/mtd6)  ###
+|00001000  a5 5a 00 00 00 03 60 00  16 8c 00 29 60 08 00 01  |.Z....`....)`...|   <- 2.4GHz WiFi OwlLoader boot code
+|00001010  02 80 60 2c 16 8c a0 95  50 00 16 8c 00 2a 50 08  |..`,....P....*P.|   Apart from the Magic 0x5AA5 (or here in LE 0xA55A)
+|00001020  00 01 02 80 50 2c 16 8c  a0 95 50 64 0c c0 05 04  |....P,....Pd....|   this is irrelevant for ath9k (it skips it,
+|00001030  50 6c 38 11 00 03 40 04  07 3b 00 40 40 74 00 03  |Pl8...@..;.@@t..|   see ar5416_eep_start_loc in ath9k's eeprom_def.c)
+|00001040  00 00 40 00 00 00 01 c2  60 34 00 44 00 00 ff ff  |..@.....`4.D....|
+|00001050  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+|*
+|00001200  0c b8 d5 cc e0 16 02 01  00 00 00 1f 00 21 b7 9b  |.............!..|   <- 2.4GHz ath9k's base_eep_header
+|00001210  81 c3 03 03 00 00 00 00  00 00 00 09 07 00 04 01  |................|
+|00001220  00 ff 02 00 00 01 00 00  00 fb 00 00 00 00 00 00  |................|
+|00001230  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |.............
+|[...]
+|00005000  a5 5a 00 00 00 03 60 00  16 8c 00 29 60 08 00 01  |.Z....`....)`...|    <- 5GHz WiFi OwlLoader boot code
+|00005010  02 80 60 2c 16 8c a0 94  50 00 16 8c 00 2a 50 08  |..`,....P....*P.|
+|00005020  00 01 02 80 50 2c 16 8c  a0 94 50 64 0c c0 05 04  |....P,....Pd....|
+|00005030  50 6c 38 11 00 03 40 04  07 3b 00 40 40 74 00 03  |Pl8...@..;.@@t..|
+|00005040  00 00 40 00 00 00 01 c2  60 34 00 44 00 00 ff ff  |..@.....`4.D....|
+|00005050  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+|*
+|00005200  0c b8 27 40 e0 16 01 01  00 00 00 1f 00 21 b7 9b  |..'@.........!..| <- 5GHz ath9k's base_eep_header
+|00005210  81 c3 03 03 00 00 00 00  00 00 00 09 07 00 04 00  |................|
+|00005220  01 ff 02 00 00 01 00 00  00 fe 00 00 00 00 00 00  |................|
+|00005230  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+
+### ath9k debug dumps of ath9k w/o patch (working) ###
+# cat /sys/kernel/debug/ieee80211/phy10/ath9k/base_eeprom // 2.4GHz
+        Major Version :         14
+        Minor Version :         22
+             Checksum :      54732
+               Length :       3256
+           RegDomain1 :          0
+           RegDomain2 :         31
+              TX Mask :          3
+              RX Mask :          3
+           Allow 5GHz :          0
+           Allow 2GHz :          1
+    Disable 2GHz HT20 :          0
+    Disable 2GHz HT40 :          0
+    Disable 5Ghz HT20 :          0
+    Disable 5Ghz HT40 :          0
+           Big Endian :          1
+    Cal Bin Major Ver :          0
+    Cal Bin Minor Ver :          7
+        Cal Bin Build :          9
+  OpenLoop Power Ctrl :          0
+           MacAddress : 00:21:b7:9b:81:c3 <--- This looks like a valid MAC
+(Note: This MAC is not used. Netgear stores the MAC at a different location
+in the ART - not included in the extract above)
+
+# cat /sys/kernel/debug/ieee80211/phy11/ath9k // 5Ghz
+       Major Version :         14
+        Minor Version :         22
+             Checksum :      10048
+               Length :       3256
+           RegDomain1 :          0
+           RegDomain2 :         31
+              TX Mask :          3
+              RX Mask :          3
+           Allow 5GHz :          1
+           Allow 2GHz :          0
+    Disable 2GHz HT20 :          0
+    Disable 2GHz HT40 :          0
+    Disable 5Ghz HT20 :          0
+    Disable 5Ghz HT40 :          0
+           Big Endian :          1
+    Cal Bin Major Ver :          0
+    Cal Bin Minor Ver :          7
+        Cal Bin Build :          9
+  OpenLoop Power Ctrl :          0
+           MacAddress : 00:21:b7:9b:81:c3 <--- This one too (it's the same)!
+
+# cat /sys/kernel/debug/ieee80211/phy0/ath9k/modal_eeprom
+[...]
+  Ant. Common Control :        288  // That's 0x0120
+[...]
+
+### ath9k debug dumps of the ath9k with patch (Broken) ###
+
+# cat /sys/kernel/debug/ieee80211/phy0/ath9k/base_eeprom  // This is the 2.4GHz Wifi, But now it says 5 GHz
+        Major Version :         14
+        Minor Version :         22
+             Checksum :      54732 <--- checksum matches 2.4GHz @ 0x1200 (0xd5cc)
+               Length :       3256 <--- this looks OK? Ok!
+           RegDomain1 :          0
+           RegDomain2 :         31
+              TX Mask :          3
+              RX Mask :          3
+           Allow 5GHz :          1 <-- Says it's 5G! (0x1)
+           Allow 2GHz :          0
+    Disable 2GHz HT20 :          0
+    Disable 2GHz HT40 :          0
+    Disable 5Ghz HT20 :          0
+    Disable 5Ghz HT40 :          0
+           Big Endian :          0 <-- Oh? what happend here? This should have been 1 (Is this why the 5GHz PHY worked?)
+    Cal Bin Major Ver :          7   | My best guess is that the u16 swap ath9k does, swapped opCapFlags and eepmisc.
+                                     | So opCapFlags's value of 0x2/AR5416_OPFLAGS_11G in eepMisc is not publicy defined/known.
+				    | while the eepMisc value of 0x1 (AR5416_OPFLAGS_11G) became "AR5416_OPFLAGS_11A"
+				    | (=aka 5GHz capable) .
+    Cal Bin Minor Ver :          0
+        Cal Bin Build :          0
+  OpenLoop Power Ctrl :          1
+           MacAddress : 21:00:9b:b7:c3:81  <--- Multicast Bit set? This is bogus!
+
+# cat /sys/kernel/debug/ieee80211/phy0/ath9k/modal_eeprom
+[...]
+  Ant. Common Control :   18874368  // That's 0x01 20 00 00
+[...]
+
+
+Cheers,
+Christian
+
