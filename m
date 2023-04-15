@@ -2,65 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 596E86E312A
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 13:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 968706E312C
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 13:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229848AbjDOLyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 07:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40526 "EHLO
+        id S229961AbjDOLyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 07:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjDOLyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 07:54:09 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBEEF4C26
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 04:54:07 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id h10so654636ioz.10
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 04:54:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681559647; x=1684151647;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FkjcrkevaHRZu0RSR3d/4wmIPFePEY/n+PajfUzR8hA=;
-        b=a+3liXDdANha2pi65UTL2eRLwhC8MvMMyPScbngaPMsBx57Boc7ptIPKci93d9KF0A
-         dGE5iQYpoaq3Q5teMtTZvcFF4F+Q78R2/+WtJfiNTJ9qTq2sOgzR0K0LZDvXdIYBKrfG
-         e1jVU6JanANYa72hZm+HvXDJ3EZJ/xF7rJp3i+5ktXygd04fqmUKsWg8smvM7BC+lBxY
-         C5DUQHK6zCkvfYZl8f+hebxN8U3bqzyzsw1cCmAhUlGpluAOylzJXGvju8gE22tSxNJ9
-         5u0Qj55LIgNpQAS/NtZwQE1B61w3eOhsci9u0OfGZY5nKqQfXfhCXW2ENGdI4pzuRH0l
-         GdzQ==
+        with ESMTP id S229866AbjDOLyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 07:54:44 -0400
+Received: from mail-il1-f207.google.com (mail-il1-f207.google.com [209.85.166.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052734C2D
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 04:54:43 -0700 (PDT)
+Received: by mail-il1-f207.google.com with SMTP id i4-20020a056e020d8400b00325a80f683cso11635921ilj.22
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 04:54:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681559647; x=1684151647;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FkjcrkevaHRZu0RSR3d/4wmIPFePEY/n+PajfUzR8hA=;
-        b=QacAT2T3KigNCzHk1j8Rp5f0Gl2A/QGUh5oqN4Y0upLCnbkP42uUG6MIZh4V4dKaRV
-         E5q0jfSaXSdZ1GnxspSyjXJdhmZADED6kdEGXMFJ2dNSYkqrs4DG++bYTD0cIKuvHTqT
-         Ukbb7NB4if9e31kzJHhTtEwHeadi/ftRuc5jwt4a/Lk3D/uC60hUGdP9sqEz1ETv2VX4
-         rDoy5G9p/LLljJVGmWRjNkaA0EmMt4wtdeU70bPbJ1G8LZuhUZoSBZ1X0RHrcxl9SJos
-         B5+pJDKF1kgtRSz/68F73SE/AsYGj6+eIt/vxOjibT8I2gUJTNc3RoB46EJY6ApqemF7
-         kXHw==
-X-Gm-Message-State: AAQBX9ejKzBM0D5Wd9Ow3ZVUkE5jyXF5xSTULzL4Du8hWVgpZUBIjBWV
-        iml0y/wyFHGU80nFzSILBXpLDNnhNydc+l6CQgBosQ==
-X-Google-Smtp-Source: AKy350aqJiiACegF2I2EYPGKMleX+1Rzm2N81NkjKp/2z2L+BBwfVQ1levvKsUW4YqbAAPeNNIONgZnBj7uE6DBFfeI=
-X-Received: by 2002:a02:7a5c:0:b0:40f:8d6f:748f with SMTP id
- z28-20020a027a5c000000b0040f8d6f748fmr1363092jad.1.1681559646875; Sat, 15 Apr
- 2023 04:54:06 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681559682; x=1684151682;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Gw1ZDETNNEoLC8bozAtBwMlkLf8dC7i6XTm43c0ZuwI=;
+        b=ORTm1Yr2wHeqBrGTeegrl3KAq5xxjzPlxz7MDrmSr/V4Z9Jw9mCIhLxVMvzhM1CZNj
+         KO2RKDVaNGi1QWrZ1ik00WRTf7j7QfpMsi4e1Ai9p3muGtX3ebTGaF+fkFxU7sxje5Vp
+         gBNXpSOWYXtEeB77GM050xQ90an47y4uzRsQ+BTnTfenrHH2n8m4VIjvaTiCAcHz3kwp
+         1V+f6PrPJz7YNA4UJdBvFferpdS1RcqxkJZycBwNDoBLXEpmYVPOPX2Bmj/8nd/o8w9r
+         is0xJcX8c2V0ERiFfs8u+xyxDRkppDZXeA513q+ILRnXX0i7Ad+Rcu3ri0DpX0FOLv/z
+         nC+g==
+X-Gm-Message-State: AAQBX9fPZkIxLfA3Bp/wENC2JvFV8l70ejpZi8Cbfw4aIwMgcfpD8Cne
+        dA5kyntH7xLZmALnKllsMFYylVqu2lki65oDbnb718DV9CNH
+X-Google-Smtp-Source: AKy350bDbTzx/11Az3isJV5odN7J+8AgnBvwtk/Sc0eb8+pAxMc9dIycTpADWvO2W6g1M//8RdgkPIPHaMJqWi4rLvOLO07tCA7f
 MIME-Version: 1.0
-References: <20230414160105.172125-1-kuba@kernel.org>
-In-Reply-To: <20230414160105.172125-1-kuba@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 15 Apr 2023 13:53:55 +0200
-Message-ID: <CANn89iKD-PUp0gGVBs=WwR_w5OCYMVJM43L3azP-2iBqXYKFjg@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/5] net: skbuff: hide some bitfield members
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com
+X-Received: by 2002:a02:856f:0:b0:40b:c412:70a9 with SMTP id
+ g102-20020a02856f000000b0040bc41270a9mr3337698jai.4.1681559682368; Sat, 15
+ Apr 2023 04:54:42 -0700 (PDT)
+Date:   Sat, 15 Apr 2023 04:54:42 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000894f5f05f95e9f4d@google.com>
+Subject: [syzbot] [bluetooth?] WARNING: bad unlock balance in l2cap_recv_frame
+From:   syzbot <syzbot+9519d6b5b79cf7787cf3@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,16 +56,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 14, 2023 at 6:04=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> There is a number of protocol or subsystem specific fields
-> in struct sk_buff which are only accessed by one subsystem.
-> We can wrap them in ifdefs with minimal code impact.
->
-> This gives us a better chance to save a 2B and a 4B holes
-> resulting with the following savings (assuming a lucky
-> kernel config):
->
+Hello,
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+syzbot found the following issue on:
+
+HEAD commit:    95abc817ab3a Merge tag 'acpi-6.3-rc7' of git://git.kernel...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13c85123c80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c21559e740385326
+dashboard link: https://syzkaller.appspot.com/bug?extid=9519d6b5b79cf7787cf3
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/87e400f90ed9/disk-95abc817.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/cf7aa6546e50/vmlinux-95abc817.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/a44d83ac79a7/bzImage-95abc817.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9519d6b5b79cf7787cf3@syzkaller.appspotmail.com
+
+=====================================
+WARNING: bad unlock balance detected!
+6.3.0-rc6-syzkaller-00168-g95abc817ab3a #0 Not tainted
+-------------------------------------
+kworker/u5:7/5124 is trying to release lock (&conn->chan_lock) at:
+[<ffffffff89148e14>] l2cap_disconnect_rsp net/bluetooth/l2cap_core.c:4697 [inline]
+[<ffffffff89148e14>] l2cap_le_sig_cmd net/bluetooth/l2cap_core.c:6426 [inline]
+[<ffffffff89148e14>] l2cap_le_sig_channel net/bluetooth/l2cap_core.c:6464 [inline]
+[<ffffffff89148e14>] l2cap_recv_frame+0x85a4/0x9390 net/bluetooth/l2cap_core.c:7796
+but there are no more locks to release!
+
+other info that might help us debug this:
+2 locks held by kworker/u5:7/5124:
+ #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
+ #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:639 [inline]
+ #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:666 [inline]
+ #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: process_one_work+0x87a/0x15c0 kernel/workqueue.c:2361
+ #1: ffffc9000468fda8 ((work_completion)(&hdev->rx_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x15c0 kernel/workqueue.c:2365
+
+stack backtrace:
+CPU: 1 PID: 5124 Comm: kworker/u5:7 Not tainted 6.3.0-rc6-syzkaller-00168-g95abc817ab3a #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
+Workqueue: hci1 hci_rx_work
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+ __lock_release kernel/locking/lockdep.c:5346 [inline]
+ lock_release+0x4f1/0x670 kernel/locking/lockdep.c:5689
+ __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:907
+ l2cap_disconnect_rsp net/bluetooth/l2cap_core.c:4697 [inline]
+ l2cap_le_sig_cmd net/bluetooth/l2cap_core.c:6426 [inline]
+ l2cap_le_sig_channel net/bluetooth/l2cap_core.c:6464 [inline]
+ l2cap_recv_frame+0x85a4/0x9390 net/bluetooth/l2cap_core.c:7796
+ l2cap_recv_acldata+0xa80/0xbf0 net/bluetooth/l2cap_core.c:8504
+ hci_acldata_packet net/bluetooth/hci_core.c:3828 [inline]
+ hci_rx_work+0x709/0x1340 net/bluetooth/hci_core.c:4063
+ process_one_work+0x991/0x15c0 kernel/workqueue.c:2390
+ worker_thread+0x669/0x1090 kernel/workqueue.c:2537
+ kthread+0x2e8/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
