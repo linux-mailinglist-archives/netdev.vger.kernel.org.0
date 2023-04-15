@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC466E32EA
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 19:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B743F6E32EC
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 19:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbjDORgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 13:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47022 "EHLO
+        id S230058AbjDORgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 13:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230017AbjDORgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 13:36:17 -0400
+        with ESMTP id S229742AbjDORgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 13:36:44 -0400
 Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-db5eur01on2045.outbound.protection.outlook.com [40.107.15.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DF84EC5;
-        Sat, 15 Apr 2023 10:36:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2D24EFE;
+        Sat, 15 Apr 2023 10:36:16 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ifv6xZGW5pYrcdIF2ccJaTiPgKagTtU6IzjoPen1MmbbgQ3+NXrI54uTykfQ+bxcduJaAopLeBjZXjrLCK2VN1s/o3l9/z7Nn3AvnqVLKKVmwwfCZ+wd0E44XnTT0QTa+CZAf2jle5BETJw6I7EYK2eRsHGalavZFFU3yjCIYhGuRJtJlc49MrPVYOaf4PzsPwyrXqrUdZO0kZwRn31lPRTRsb9OEyelMJCd87R04O8tsEQzL/UFoKSi9Ig22rDZoytEbKv6hhPlIySVydp3kwAhZJa0mRCKYBoDlT5SobnU/DQicpAraxmsxpGrHT8laJAso6FBYSTwu/rGYpkxMQ==
+ b=bu8umIQjjvwLIpmNbUKO4fRbBVSOwM9Gvf2MNyKe6sZCmIhxqUN/Tg3eI0l94izeGs701+GtrTsuePGYe/nPMM1X1XCtfRLLf0qqL34fQHQELdPcD8976pJf7aTeINfyVDmEAfJ4xgYWTOOa+LSx/ABvi+te7SREJt6R6EAR20NKU9EZywTdl3AnjdVzVj4t0cw9ym5JN20M9nFq5aD610kOtFryN2cmVyhZS8x1uHDPJbDbO8Gp/KHkr7a/VXMM82iQAUwiRkUFHmZND5H3cuCy94BZE4u1VmP7lTwbpbqtOdGQbQgH1omnrCfHlNz43F9d0a7BnLxWTTgmN/z4zA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=djx9s4StOzchqIprWsTAWDvMggpPNPgl3/lqTPAuDCI=;
- b=agbWG6uOY/5q1O46h+yk66RXlVzXx9F+y/8VIJsQF00K+kJzK2bUWSYM5yKbSnKrspkRbOIHjWoU8OeZttCv/aGaqZV+XFkJhlvFPJdRZ/iEAt47lzUqKZRrixzPwYnsQISvmbhNwLBGq4oDjIl9SEVlO3/txCwVOZoKWXE0BQNwIOlOnWdZmEu9GwLXGVzpF1eyO7IPZl+/PGT1h5boQd+6cPUlxXfsSyI7kdR23heOEmXBnNl4vOJKgvhZddO2kwpTEycFyMor+o1QkpDMJgss+1n8/0JBV3Xd0wTdn2Mu512CSf48hSVTt+/cXTdE9O7rAv7RNCQeb8DATp8GCw==
+ bh=YqnotxNxZOo9YwZtR+TTEGTKUyCvcJSIimwo/xu5G80=;
+ b=XcPr6pnCDrbFKJ9s4AQ18aruVkswhPlXEc637tkmU+DINmTF2TI0psLRP3QoS5QmUy9UFLnHQoUNIeHjtyOGFtNE5HV3tEj7hlMA0dP95bjI6sYHln3MoTq80iKomJMeMrcNpFG4ihdPcuHwIABRVcx9OTiktCG4iVUOTdNnHT3s50Dv3noMWZTqx2pGumP3+ERGuy8ks+AZ1MdSpbNJIXmLjnspvgeF97pR4mcQNXjd+QlC+TyWqn0xRvU6EPOOyDFWX1YMBoFTqwOGhPo2z9PNJfp2ksNJbxKi7IAL17clVyHJKBph+SN3TZZSa7AXLH7+TuysQ6H4G7MJDnh2Vg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=djx9s4StOzchqIprWsTAWDvMggpPNPgl3/lqTPAuDCI=;
- b=RY4LRiOQrEf2re5wCpv8XgGPbfZVAZq7epD5ebyOQLJmJuG+lOahuqA4/lXPO/RELLaMeGR2MNZ8p03NScFGbyIaUOb+KyXXGn8l4SOehicefzoTnyOp3W8FD8zbcnrnuVuEaXk1ZPdCvB1/+77LONmt7vfbHN15cG0osQoJD3A=
+ bh=YqnotxNxZOo9YwZtR+TTEGTKUyCvcJSIimwo/xu5G80=;
+ b=BqbLK4uTFeqmxNfA4iiWEuWRVvfglDbe5rrvX6Li9oRNKCoahYiDDnR2dFCtHxoQR/+bojtdwZHhgh4FnTIChbhRUJUb6B9pDabKMp3WsHc057+xrKpzR3aR36SdUn1P2I0Fjc9S+/r0JYqpM3vSfp6yl6vDY5qpgQVRX83Bc9I=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
@@ -49,9 +49,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/2] net: enetc: fix MAC Merge layer remaining enabled until a link down event
-Date:   Sat, 15 Apr 2023 20:34:53 +0300
-Message-Id: <20230415173454.3970647-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 2/2] net: ethtool: mm: sanitize some UAPI configurations
+Date:   Sat, 15 Apr 2023 20:34:54 +0300
+Message-Id: <20230415173454.3970647-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230415173454.3970647-1-vladimir.oltean@nxp.com>
 References: <20230415173454.3970647-1-vladimir.oltean@nxp.com>
@@ -63,51 +63,51 @@ X-ClientProxiedBy: FR3P281CA0156.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AM9PR04MB8322:EE_
-X-MS-Office365-Filtering-Correlation-Id: e656bbfb-1672-4b2c-2478-08db3dd7dec7
+X-MS-Office365-Filtering-Correlation-Id: d13484b8-864f-43ed-586a-08db3dd7df3e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +0bZ4+eoTWSkt7mKkj+cMJCdjnxB81y0WlnyaEFPqff6GpEqLOWED4nx26R54eLJC+IaH7YfPaEfvNRJyT97e0cfgeP40WHIItVKg5xvLAu2EqaNutOzVEQqBNizYbKDFKp45M0DWKsTl8tHakmOemcBNkNo5zanIMIAxOI1D5SVBPBGjzkiiUgu5nYzYRA5iCVQ8BMb2nuoVJubiEwpT+YfLQhRGYbwLyPnTLZbN7vhGAeTr7yuWzqrVPiu6GWgLsJAzTyjEHSKb7CE6/f6EHp/toIFq17rjscWfkVCoVKpFJBGJ9kdJGiVTuoZ5Yr4p3eYyfKrTFksQ8Ssh+HSPUff1AeYWhYueHOGNkcKnYE1yFrgITXKubNd/NOzBhnHzx1ccBKvofnOgldIrPpfblXBtRH8l7Mstuabkyd+ov4Pr2BkuMHIXpl3Kg0dKRiMsf22byj50zW9Dwuot47M+7QftfzZtFkbzq6Ykjy17S2ktmC0VL8KF6mOYQh83JfIlK3PtI/zvdvsUmOVPVXgECTFgs+J099iD04KjjA0umpdBiWL/uAc6f/z+N76X1bdKJWMXCoeMryRqzAzxw8Qd/WbXsgpIsW8dM6abDTCrFluA7kcoZ0CvN2+8zbkRF0S
+X-Microsoft-Antispam-Message-Info: moCyl5yxWfcQP6YfFQaHUkmKM1CPTYYNexJLb4r45iiC28if9tfUoVTnbkLwheDymfaBn5UMElQMB9VSlsgQ5P3heCtJJewfrXkl30zC/iMaHprSbk8m+KNL0et/RlD/MrR2gs7Nf1eyu3cxwX7hQv2MSX4yfeJ8Qt0s76+7FL3U5qRR/LmNtHPYh1tqhA293plLssqVA6wlckP0/vE9OcUnOAAjgWcGXYVsVAaOO6idrcg9ZGtNBesIS4Oi/viGliyG4mfZdNaOdPSPmYj5f2kXu9JqdH1aIWuJpUOM0JQEbgb1IgVgpv8QdbLbPhq/0R5e7g7/up/DVGR5v1jmhN1XaVDul6aBSq7fMp12S2qYZWMVK4REVWIFrx9GGs4nf9aEpsHq0H5M0Wu2H89G7y8VanUxnrCpcb0F3JB3JK7ZQxdW28gKsusRi4n8xGZ0uDOSNqHPHodW3xmzetieVZlZ2Ik1hPfBaMEHB+AZSbNHVFZ9VMYdrEV0e/QzEQQgEkcF8TaqInRCM2HA11D0e8v0cCIJk0Fv+HR3Sr/YytHiEe2E7YGJl8xN54v+oaz2Vb7VxbtiSBBGntYRfL6rS+UEPGzKTiTPm702K+DAzm8jaqLZHBtQqjqzZ+XaljAh
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(451199021)(54906003)(478600001)(83380400001)(1076003)(2616005)(6506007)(38100700002)(186003)(36756003)(6512007)(26005)(38350700002)(86362001)(6486002)(6666004)(2906002)(41300700001)(66476007)(316002)(66556008)(66946007)(4326008)(6916009)(44832011)(8676002)(8936002)(52116002)(5660300002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?E+ks8fsNouY4ldrdvEDGzBPaLSpgn52X4+HicP2ZyOrl9aIeKfRXmiyCr0Q3?=
- =?us-ascii?Q?GIdHsWOHEVz0Rtd66ZEbuxTmMN7+7ZleKeTC+4hXateyZ3dpqzlhCXeXrYbL?=
- =?us-ascii?Q?E+XQgVhHyKwRNf0AGpuxY4u91Yt6L4/q7TgG8tBlwhfNPyB0WgYxjb5nSYKA?=
- =?us-ascii?Q?OkHi7Te7lUo5Rkld+/Gp0CKCZ2j+yhZ5RT7miR10FiLQsSUgTc2uRXMd0ld3?=
- =?us-ascii?Q?w+CjTxTR6/TBMnkYcoNZWGIRxH/XfkIsu2V5fMK+nWazIzTjGY3foxtLCpRS?=
- =?us-ascii?Q?87cedldk2GJTtE0/Qsmdawv9ySTTO6SaW52eVdvalKNK6nQjBIsa6jYk005S?=
- =?us-ascii?Q?HdxJDxGjR2GNGlnvF1tO6V1RLJ5eWxGoJbTevpLojMEBwht3Pg8Kve2IbxDm?=
- =?us-ascii?Q?bcZT4456u47gCprNVxcHtLvKdfThHug6mUXDWNdj5fVNGZ/WI1sYzlgtYiFJ?=
- =?us-ascii?Q?WEeKANHdmsq1uHK6jjr39xyJndhIM+RnwrFjsijpJ4qz3X4nLToBuxwuWPf9?=
- =?us-ascii?Q?6AGGnJ1vCCH0qsVnG6mLUXBRTA081hFqpKeBukw4kFsiuAF6OqZpYa31booc?=
- =?us-ascii?Q?qTocsj+qFbbq98OSHnvvrUGWZze3/bjO7VMgPgce/Gihp5855ki+4dEHCFgi?=
- =?us-ascii?Q?SBRcexnbw/6hbZRnapBCPUU3fO7ak27b4Sae6DduGbLQekLL6+tgAmcnT9Fy?=
- =?us-ascii?Q?ifEKCdi7Vv6r1L+84lmk5k/KO9ptLRIZtTS/kIgj4BT9oO/Qn9HxLAF9wdRw?=
- =?us-ascii?Q?9GUBPZnL4g3sGYD0hHiSMM2a3moQjEkDYSasHtA5aP7YvkLEOqJyn1PjQ54t?=
- =?us-ascii?Q?vF4OojMTn4OlOFyJitJeIJUvtiWBLFh5SsmvJrbptaIThnYx0s0EimQSfhuE?=
- =?us-ascii?Q?Bohx159wI+FrUl+qE3dYV0IkWDIupHm0w3uZ+WSizsXsD/hSN5e0VLlwwBnt?=
- =?us-ascii?Q?py963YjtVy1ZHaof0kaJ4hI0ZLyI+aZAwLhLxHBEcSHlpwwWdcASVkSlh0XE?=
- =?us-ascii?Q?1CwURrShZyoVIedAuIflJuSKfkCIzc+oOWBdVUdUT7t4lI8060XgaZU1xgAr?=
- =?us-ascii?Q?wvc2kXAVtaO4dtCKgNw+Jv5gCYDWBVLtF+kU2Ob4h+mXXpVt6Rd7LQCxZM+Z?=
- =?us-ascii?Q?4Bo6FA6dMLQEHVJ3XnyWjpZCAKkvHaRnKZdujJxzhLLcU3wubXJtSiiKF2pd?=
- =?us-ascii?Q?Xee1UV800uEiPo27JYYdFTJTTRC/Qi8ZPMScNY0rRUVb4Z44Ng12AGVDEhft?=
- =?us-ascii?Q?Ae6Swu3U5a6965pwSLl7T7hVxIuB+aIpUNVbYdvGvuLkmCxgPmOkWciRabXg?=
- =?us-ascii?Q?WVO/2usBBPlLxCHsfg95httQ6nNBMPB/4PBwMXRl3cVzPWJiFlHwBtNdfMje?=
- =?us-ascii?Q?fgNIGpjmyE/yvL4u0m0/2yKPzZCVqstqb0fM72v4ilObNPltxz8uVybeyyU/?=
- =?us-ascii?Q?ZmEG2FESCwICRzncz+QHhkQnro/axRPrfPn8GhnO5o+vdjnPUKGliJJ88Lv9?=
- =?us-ascii?Q?w1wNnnXoGXC4TO6j/SlgSK6I7h0l+JC00cv9ssUaCXKaGa30i6ADlphdfiIK?=
- =?us-ascii?Q?9+aPNDQBLZxq/hqbARfLS+0LAiLRQgqYfQW0+iZF88jlV7UJ8zyZPCD8thSC?=
- =?us-ascii?Q?uQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Qw+2zvcqj2vEjfjaYOeGbt3E+omC/1wTdmTeDn+WTnCFXQqsiWUBlAYoQncv?=
+ =?us-ascii?Q?bVVrxXoyDznVWCjj7zTe1UTfFMGCaDz14Q+c70hcNGm5G3qsunUJf/MqcBAv?=
+ =?us-ascii?Q?v0XBwAc+h4ETfLfQFj0rb1tCn0xiSAkFHYklVQfq1GKkoT4NfCRsQ9dLmx0H?=
+ =?us-ascii?Q?FUHQrnII6K+FFZt7dPS6gN6dk81FwYYKV+IeZsY3mPRIcmhWQnKgYaYBH7kr?=
+ =?us-ascii?Q?xxR8DXNyDhm2Z3bm19JS7vXhMm+IfAPzs+yJkoMuv33qk9plgj21y1A6tKmO?=
+ =?us-ascii?Q?J+HTZ4UKkvKHdwbMpIDpe8XF7F+d0OEpIKavE0xBX8URrVnjwQdZ4N9GxYfH?=
+ =?us-ascii?Q?xFA733U5tfu/oD59DxFZjmuEZbZpi9mxvwocNEoZXSjN3OrQcJ8SltRoGOyB?=
+ =?us-ascii?Q?ZSrjgLBOuFbBW30ZUblGHxdcN4VjS1QExJx/+y9dV1ZCy4JmbmmsoVqF3kSn?=
+ =?us-ascii?Q?0p354UdvQLgtVLCmsCyPxs0fp6ESMx2VeWP9iNWEFu6mfZj0r2L4EJpGmNxg?=
+ =?us-ascii?Q?8dMJrbsO0O/VLhuw/jFxBJF1qPp3K0cIyrgKDqhRjDYifNMnBSBmGVeLM54h?=
+ =?us-ascii?Q?2rSxr4TphFu6idAGmEOf5AgxFvhk6uDvoccQO5+0CNF7Ypa0bLpqvQe7mlDG?=
+ =?us-ascii?Q?fFWhH6iFv0TiFJ2ZN1wSImu3klnDFpS2bYIXsOnWsFDoWGXu1d0DvxEvwAxH?=
+ =?us-ascii?Q?O+TovakTLvjT75GucTX2jXI06HXG6ta3H5jLcUuV1y6ZkMAVy+iu1hUpEoeX?=
+ =?us-ascii?Q?qC5fmgvl4uxOwWvqmBQtZgHfS2arKughb33Gln8QZgpg9Nv/ddr5GlOenOTU?=
+ =?us-ascii?Q?cKpA7gC1AO5Uc1nnT6Z+kAw/eMkSN5qwaAs5sdyf/ve/mJ7HihoDAs9R9V50?=
+ =?us-ascii?Q?3sVqTxzLntNR2QQCYeL8IrJ9ES33LaL72xh033NeRwSg2IkT5h07wWouPlM1?=
+ =?us-ascii?Q?Fq92UklVDjIHBLKWDBWuoBdohT9zzHet3tP2Kefi/obccYIwCFLCK5+wuCgi?=
+ =?us-ascii?Q?EDRDfKcDuMQ41ZkWCb0FaIxd3v6rnrx4B33fzLVi00tXxdJutKRcH/yLpWTy?=
+ =?us-ascii?Q?Hojd3B3hDzqWnMx8yuOZGcqPDYgiFeT3pBzFggM1EXa9613LHpc7XDfpEDZh?=
+ =?us-ascii?Q?y1HcQrksp4ncu2zUU9LJiF5YKyAY7HYIfhenoj9bdc0TFeoBMcRUDAEJa+1A?=
+ =?us-ascii?Q?qlFl4cWEnPdW5X11lRpuBZZ5pa3EvLDTJAh9WsOqutdv5aFJ5b5kOIHANX7C?=
+ =?us-ascii?Q?iPMaaCthwWCRxpc4CKGmHG2iYSosw2DlM4a1O7nwAUrjFxgAtqZykgtDhPni?=
+ =?us-ascii?Q?6uZoCtlGti2n+oEDTokAmqyi7BgLmtL+k5uS4qYQC56ictCW7ROcpGjZhF8K?=
+ =?us-ascii?Q?vM0zF/HGu6bnYJdCw7i9pYmLJv3tgDDES8n/R/Ce9zuuogwZmgALFNOJ41XC?=
+ =?us-ascii?Q?FjpmsOJGFNP2pWCcF76CcxRI/Vc/KuDAMU4tEHjIFrYuVARMHXjHt5YhE+zu?=
+ =?us-ascii?Q?TnPRJ0s7aCEJ/t9/LsXrgfDiy7ma3HSIjOccH/hbfVCqa/D3el0oKKWkHHZC?=
+ =?us-ascii?Q?sufvNVaoLg9Gmd9a3aaYICW/n6+KJZQxEW6O1tkrKcTb28mnlZXGxoIqxVSI?=
+ =?us-ascii?Q?1w=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e656bbfb-1672-4b2c-2478-08db3dd7dec7
+X-MS-Exchange-CrossTenant-Network-Message-Id: d13484b8-864f-43ed-586a-08db3dd7df3e
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2023 17:35:56.9770
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2023 17:35:57.7631
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: blcHeQwRUYxRXkFNVB3FmSzYKPeaUlnJ+BjJekFhQkrX8QrzDpdr1NA8wCtaYM/k3vfcUE4pvUSftYqJmT5fPQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: NTenl4cxetSBhhhyiDC3M2Kb1mZc6SNXJcV7S3ZtRjtX1dzghiMF9L6toLVcLyfHvRECu4hvIJgx1T8wyNUPkg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8322
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -119,50 +119,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current enetc_set_mm() is designed to set the priv->active_offloads bit
-ENETC_F_QBU for enetc_mm_link_state_update() to act on, but if the link
-is already up, it modifies the ENETC_MMCSR_ME ("Merge Enable") bit
-directly.
+The verify-enabled boolean (ETHTOOL_A_MM_VERIFY_ENABLED) was intended to
+be a sub-setting of tx-enabled (ETHTOOL_A_MM_TX_ENABLED). IOW, MAC Merge
+TX can be enabled with or without verification, but verification with TX
+disabled makes no sense.
 
-The problem is that it only *sets* ENETC_MMCSR_ME if the link is up, it
-doesn't *clear* it if needed. So subsequent enetc_get_mm() calls still
-see tx-enabled as true, up until a link down event, which is when
-enetc_mm_link_state_update() will get called.
+The pmac-enabled boolean (ETHTOOL_A_MM_PMAC_ENABLED) was intended to be
+a global toggle from an API perspective, whereas tx-enabled just handles
+the TX direction. IOW, the pMAC can be enabled with or without TX, but
+it doesn't make sense to enable TX if the pMAC is not enabled.
 
-This is not a functional issue as far as I can assess. It has only come
-up because I'd like to uphold a simple API rule in core ethtool code:
-the pMAC cannot be disabled if TX is going to be enabled. Currently,
-the fact that TX remains enabled for longer than expected (after the
-enetc_set_mm() call that disables it) is going to violate that rule,
-which is how it was caught.
+Add two checks which sanitize and reject these invalid cases.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ net/ethtool/mm.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-index 838750a03cf6..ee1ea71fe79e 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-@@ -1041,10 +1041,13 @@ static int enetc_set_mm(struct net_device *ndev, struct ethtool_mm_cfg *cfg,
- 	else
- 		priv->active_offloads &= ~ENETC_F_QBU;
+diff --git a/net/ethtool/mm.c b/net/ethtool/mm.c
+index e00d7d5cea7e..0eb81231f342 100644
+--- a/net/ethtool/mm.c
++++ b/net/ethtool/mm.c
+@@ -214,6 +214,11 @@ static int ethnl_set_mm(struct ethnl_req_info *req_info, struct genl_info *info)
+ 		return -ERANGE;
+ 	}
  
--	/* If link is up, enable MAC Merge right away */
--	if (!!(priv->active_offloads & ENETC_F_QBU) &&
--	    !(val & ENETC_MMCSR_LINK_FAIL))
--		val |= ENETC_MMCSR_ME;
-+	/* If link is up, enable/disable MAC Merge right away */
-+	if (!(val & ENETC_MMCSR_LINK_FAIL)) {
-+		if (!!(priv->active_offloads & ENETC_F_QBU))
-+			val |= ENETC_MMCSR_ME;
-+		else
-+			val &= ~ENETC_MMCSR_ME;
++	if (cfg.tx_enabled && !cfg.pmac_enabled) {
++		NL_SET_ERR_MSG(extack, "TX enabled requires pMAC enabled");
++		return -EINVAL;
 +	}
- 
- 	val &= ~ENETC_MMCSR_VT_MASK;
- 	val |= ENETC_MMCSR_VT(cfg->verify_time);
++
+ 	ret = dev->ethtool_ops->set_mm(dev, &cfg, extack);
+ 	return ret < 0 ? ret : 1;
+ }
 -- 
 2.34.1
 
