@@ -2,116 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 710B56E3021
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 11:35:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 077996E3026
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 11:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229969AbjDOJff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 05:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
+        id S229822AbjDOJnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 05:43:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbjDOJfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 05:35:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24243C13
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 02:34:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681551284;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZxPnWAcQVBNBNS9KRY2KFLNjYwkNYHKUC4oRsplfh2c=;
-        b=UYWTlVgkphQlkSTddG2aOLCk4mcA0eJRNbkWa3J/1+cnT0SbIs+Qx5as4PMq71cXbvBjeq
-        b7WXbbBTW9hNkEdC60gcp95B6zYPGv6tgewOXdT6qVt5MMNs+zR2cL6pItjcJGil/QhUdQ
-        DTpkBWgXqIlDT5lH068vW8BDw3kTCWE=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-371-lr12U3eSPIy92HR50yq0gQ-1; Sat, 15 Apr 2023 05:34:43 -0400
-X-MC-Unique: lr12U3eSPIy92HR50yq0gQ-1
-Received: by mail-ej1-f71.google.com with SMTP id ud12-20020a170907c60c00b0093c44a07ad1so7417390ejc.2
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 02:34:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681551282; x=1684143282;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZxPnWAcQVBNBNS9KRY2KFLNjYwkNYHKUC4oRsplfh2c=;
-        b=DdZ1m1L5ZK2G4EgRfIiG6pcjVc3bXZcQcIJD5CqP/xDiEd0XhULS1SduwJXC7J8aug
-         1ijABGu0ntRBwo5lD6hi8uI3TQtz4MPInwQUseT40I7pr1OPZZWOF/rGIkVSSkyLymKR
-         Nyqy4tZwOGriXpoF1iazjYqy3uS4UlKlIFaNrBZJ7UgJBn/e40nxMmQmKiJIkSwLOA36
-         +HiTXOrTtdYS+wnGgAMnNizke2wKMsGA+m2oMwDbkxOCBgdGfZS//KMruiMQZM5s0JW4
-         E+MOOLtRfw8TW8Htlcf/GaVDVn7202MLem5AZPiNOb/pZqiFSSs/3p09K2zDJSEJQM56
-         Qcdw==
-X-Gm-Message-State: AAQBX9ftsS4n8W3Ry5ek6Ai3tcrhOhK1XqBOVqTm+FNMHt1sLuxiCwuE
-        YFT2GZ96ABh31j3GsrskUV4AQrGUI9a2b8SxcgpqYK2/PM8EEWfeiYkJUWC6UhRMlurScf/40j6
-        RAc8uuHaxYCXoVnDn
-X-Received: by 2002:a17:906:6bd0:b0:94e:f969:fb3e with SMTP id t16-20020a1709066bd000b0094ef969fb3emr1661563ejs.43.1681551282639;
-        Sat, 15 Apr 2023 02:34:42 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ahABqOGqRCJSwv9+bd3MwJOCg8HOEo/vfDe75jx4W55RgExcuyfQKh2L9CES3tCsodbIai/w==
-X-Received: by 2002:a17:906:6bd0:b0:94e:f969:fb3e with SMTP id t16-20020a1709066bd000b0094ef969fb3emr1661531ejs.43.1681551282362;
-        Sat, 15 Apr 2023 02:34:42 -0700 (PDT)
-Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id b22-20020a1709062b5600b009306ebc79d3sm3549540ejg.59.2023.04.15.02.34.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 15 Apr 2023 02:34:41 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <eb277f26-932b-d1b5-ec67-5aee2bd0a287@redhat.com>
-Date:   Sat, 15 Apr 2023 11:34:40 +0200
+        with ESMTP id S229561AbjDOJnm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 05:43:42 -0400
+Received: from sender3-op-o19.zoho.com (sender3-op-o19.zoho.com [136.143.184.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB5D30DA
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 02:43:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1681551806; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=OcHFqfnLvwp9YifVjzMuZ+HB2YRluFSTN+3aPD4Dfwx/reWJfSDSHfUh+XpYl+fX1jncXDq2vsASAJzs5RtsJPQGXvE/8xTWqPefGfpu+Rz9uDeuudTHFJTEwIvXmuStrANsFCYkEEAPqM0W3l21+KMqV2dCbMiM0DW2gG4eyJI=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1681551806; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=PExN2K/bTin7+noSDlKifKau0GphtZfIlR/63sIP7AQ=; 
+        b=CpWFE6CSKW9bcDecjgwHpJhkbC+ZuEh810kY6tBq3cemapa6swXRw8i2IMfa06r8o/i5L0kcL/aKYq/nykix59e3vMpZhOEpTOPSM5NocMssz4PdnI9E9PgCxEuZyB32f093syalkR4IrsJY0DJqLIrtCqqwetKCrJOX1UjFCJo=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1681551806;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:From:From:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=PExN2K/bTin7+noSDlKifKau0GphtZfIlR/63sIP7AQ=;
+        b=FwIDZXWN+iEJiKRuINnpwxwDgd7ygGEx0rXXlR0AP9V5y+p73X4Ma7DaAMXAe7SO
+        T3svKVOhV4ED18uu926tNJlzC/ea/ny7mUqXdP92WbYqPnEOyrxXdrEFI+0fuIXavBN
+        CPgcizZVYYh4xLfSdOq8xCJkF3uqB9xkohuIErhM=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1681551805253705.6158964342574; Sat, 15 Apr 2023 02:43:25 -0700 (PDT)
+Message-ID: <fe28c657-451c-064e-4d77-98dda8ea1f1b@arinc9.com>
+Date:   Sat, 15 Apr 2023 12:43:20 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, xdp-hints@xdp-project.net
-Subject: Re: [PATCH net-next v6 3/3] net: stmmac: add Rx HWTS metadata to XDP
- ZC receive pkt
+ Thunderbird/102.10.0
+Subject: Re: mt7530: dsa_switch_parse_of() fails, causes probe code to run
+ twice
 Content-Language: en-US
-To:     Song Yoong Siang <yoong.siang.song@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>
-References: <20230415064503.3225835-1-yoong.siang.song@intel.com>
- <20230415064503.3225835-4-yoong.siang.song@intel.com>
-In-Reply-To: <20230415064503.3225835-4-yoong.siang.song@intel.com>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com
+References: <896514df-af33-6408-8b33-d8fd06e671ef@arinc9.com>
+ <ZDnYSVWTUe5NCd1w@makrotopia.org>
+ <e10aa146-c307-8a14-3842-ae50ceabf8cc@arinc9.com>
+ <ZDnnjcG5uR9gQrUb@makrotopia.org>
+ <5e10f823-88f1-053a-d691-6bc900bd85a6@arinc9.com>
+ <ZDn1QabUsyZj6J0M@makrotopia.org>
+ <01fe9c85-f1e0-107a-6fb7-e643fb76544e@arinc9.com>
+In-Reply-To: <01fe9c85-f1e0-107a-6fb7-e643fb76544e@arinc9.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 15/04/2023 08.45, Song Yoong Siang wrote:
-> Add receive hardware timestamp metadata support via kfunc to XDP Zero Copy
-> receive packets.
+On 15.04.2023 10:53, Arınç ÜNAL wrote:
+> On 15.04.2023 03:52, Daniel Golle wrote:
+>> On Sat, Apr 15, 2023 at 03:28:55AM +0300, Arınç ÜNAL wrote:
+>>> On 15.04.2023 02:53, Daniel Golle wrote:
+>>>> On Sat, Apr 15, 2023 at 02:23:16AM +0300, Arınç ÜNAL wrote:
+>>>>> On 15.04.2023 01:48, Daniel Golle wrote:
+>>>>>> On Sat, Apr 15, 2023 at 01:41:07AM +0300, Arınç ÜNAL wrote:
+>>>>>>> Hey there,
+>>>>>>>
+>>>>>>> I've been working on the MT7530 DSA subdriver. While doing some 
+>>>>>>> tests, I
+>>>>>>> realised mt7530_probe() runs twice. I moved enabling the 
+>>>>>>> regulators from
+>>>>>>> mt7530_setup() to mt7530_probe(). Enabling the regulators there 
+>>>>>>> ends up
+>>>>>>> with exception warnings on the first time. It works fine when
+>>>>>>> mt7530_probe() is run again.
+>>>>>>>
+>>>>>>> This should not be an expected behaviour, right? Any ideas how we 
+>>>>>>> can make
+>>>>>>> it work the first time?
+>>>>>>
+>>>>>> Can you share the patch or work-in-progress tree which will allow me
+>>>>>> to reproduce this problem?
+>>>>>
+>>>>> I tested this on vanilla 6.3-rc6. There's just the diff below that is
+>>>>> applied. I encountered it on the standalone MT7530 on my Bananapi 
+>>>>> BPI-R2. I
+>>>>> haven't tried it on MCM MT7530 on MT7621 SoC yet.
+>>>>>
+>>>>>>
+>>>>>> It can of course be that regulator driver has not yet been loaded on
+>>>>>> the first run and -EPROBE_DEFER is returned in that case. Knowing the
+>>>>>> value of 'err' variable below would hence be valuable information.
+>>>>>
+>>>>> Regardless of enabling the regulator on either mt7530_probe() or
+>>>>> mt7530_setup(), dsa_switch_parse_of() always fails.
+>>>>
+>>>> So dsa_switch_parse_of() can return -EPROBE_DEFER if the ethernet
+>>>> driver responsible for the CPU port has not yet been loaded.
+>>>>
+>>>> See net/dsa/dsa.c (inside function dsa_port_parse_of):
+>>>> [...]
+>>>> 1232)                master = of_find_net_device_by_node(ethernet);
+>>>> 1233)                of_node_put(ethernet);
+>>>> 1234)                if (!master)
+>>>> 1235)                        return -EPROBE_DEFER;
+>>>> [...]
+>>>>
+>>>> Hence it would be important to include the value of 'err' in your
+>>>> debugging printf output, as -EPROBE_DEFER can be an expected and
+>>>> implicitely intended reality and nothing is wrong then.
+>>>
+>>> Thanks Daniel. I can't do more tests soon but this is probably what's 
+>>> going
+>>> on as the logs already indicate that the MediaTek ethernet driver was 
+>>> yet to
+>>> load.
+>>>
+>>> As acknowledged, since running the MT7530 DSA subdriver from scratch is
+>>> expected if the ethernet driver is not loaded yet, there's not really a
+>>> problem. Though the switch is reset twice in a short amount of time. 
+>>> I don't
+>>> think that's very great.
+>>
+>> That's true, and we should try to avoid that.
+>>
+>>>
+>>> The driver initialisation seems serialised (at least for the drivers 
+>>> built
+>>> into the kernel) as I tried sleeping for 5 seconds on mt7530_probe() 
+>>> but no
+>>> other driver was loaded in the meantime so I got the same behaviour.
+>>>
+>>> The regulator code will cause a long and nasty exception the first time.
+>>> Though there's nothing wrong as it does what it's supposed to do on the
+>>> second run. I'm not sure if that's negligible.
+>>>
+>>> Could we at least somehow make the MT7530 DSA subdriver wait until the
+>>> regulator driver is loaded?
+>>
+>> I assume the regulator-related stackdump is unrelated, but caused by
+>> cpufreq changes, which had now been fixed by commit 0883426fd07e
+>> ("cpufreq: mediatek: Raise proc and sram max voltage for MT7622/7623").
+>>
+>> If you are using v6.3-rc6 this commit is still missing there, but
+>> manually picking it from linux-next should fix it.
 > 
-> Signed-off-by: Song Yoong Siang<yoong.siang.song@intel.com>
-> ---
->   .../net/ethernet/stmicro/stmmac/stmmac_main.c | 22 +++++++++++++++++++
->   1 file changed, 22 insertions(+)
+> I did one better and just did the test on the current linux-next, I get 
+> exceptions that seem to be identical. I also made sure this commit was 
+> actually there.
+> 
+>>
+>> Let me know if I can help with testing on my farm of MediaTek boards.
+>> I'm a bit nervous about fixing MT7531BE soon, so deciding if we move
+>> PLL activation to mt7530_probe() would be essential as it makes the
+>> fix much easier...
+> 
+> Can you test this branch on MT7531AE, MT7531BE and the switch on MT7988 
+> SoC? I just need to complete the patch logs, the code won't change much.
+> 
+> https://github.com/arinc9/linux/commits/for-netnext
+> 
+> I'm thinking if we can -EPROBE_DEFER right at the start of 
+> mt7530_probe(), it should prevent the reset code from running twice, and 
+> enabling the regulator will run without any exceptions.
+> 
+> I think I can just keep enabling the regulator on mt7530_setup() if I 
+> can't figure that out. On MT7623NI, the switch stops working after 35 
+> seconds with these logs. As long as the regulator is enabled before 
+> this, everything keeps working.
+> 
+> [   35.037200] vusb: disabling
+> [   35.040089] vmc: disabling
+> [   35.042856] vmch: disabling
+> [   35.045709] vgp1: disabling
+> [   35.049010] vcamaf: disabling
 
-LGTM
+I was able to confirm the error code is -517, EPROBE_DEFER.
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
+Arınç
