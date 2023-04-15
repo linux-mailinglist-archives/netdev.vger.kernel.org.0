@@ -2,55 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 468FB6E2DFD
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 02:44:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0C0F6E2E00
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 02:51:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbjDOAoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 20:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54224 "EHLO
+        id S229772AbjDOAvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 20:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbjDOAoh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 20:44:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F876EB6
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 17:44:28 -0700 (PDT)
+        with ESMTP id S229457AbjDOAvm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 20:51:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9931BE6;
+        Fri, 14 Apr 2023 17:51:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75B1064AF2
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 00:44:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EB12C433D2;
-        Sat, 15 Apr 2023 00:44:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0731614E1;
+        Sat, 15 Apr 2023 00:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC1FC433D2;
+        Sat, 15 Apr 2023 00:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681519467;
-        bh=u2VHSkU2qFcse3Z9nMaBC6IagJK0l3YIrAuUFgWEtLU=;
+        s=k20201202; t=1681519901;
+        bh=bB2NT69LBZ9BjmwJ8HNoVcuUympJMh5JpNZZaQv1Rk8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fkYWocNKmdV7qxmBMwAKqVVD+F4cvc6z147I4VISsFElR4FBSD0NZbO8ija3e66n5
-         mO+KYfPvfwnSF+dg08Hz4EdJ15fthYQ15ZuLGulg9Anzcgw+12Ys3pGY7x8z+RnM6B
-         UViWFVa5EfxUT8HoZWqJesWKK1q8DRMvktiHcNHZ5DFy9+U2qBMx1xmMjQtMqUhVAw
-         OAObqFIcfLx0nZY66c5T7yad+/9GzY+1pR8IRUDMU6ELYDdwVTS6JMKxNzq3MsJf+B
-         yKyr/v6845luZyu9YqAQCmyJDYiTZeIyKgxTVHUCxEYRP75Z1UeZG3ZPalcCDrbDqa
-         CtDaN1qbhS64w==
-Date:   Fri, 14 Apr 2023 17:44:26 -0700
+        b=h7ovqmOjBpQgzV4olEuwILUyBuVA3unecvCVGbvIbNWpTqPUxNCMzTkunwwNa8pes
+         uLvAo96zOqp0x1AMVx7kFkdhs86Mh1eMyo8R+hdflknQPjLct7ofThSTFtMO7Oxfd7
+         B0t2mHZ0cZ0lGErO7kTX0VWaT9fQSxTzBPuOk43uLQom+IzEXKaVBoA8v9oqx49kM4
+         J7DIPx2wh5kwRn5mvCxm1xSnq4+O7w1ERoE9YcxX5ctUkbHTNMkeIGXEST/hDxdLGG
+         zfk5gJB5v4hBDOlIrIb9VFv2I7u9yMv2CcTcWgejfTfF9ZvhzwC5E9jNDqcZxY/UW3
+         S79Rg+0k5VxFQ==
+Date:   Fri, 14 Apr 2023 17:51:39 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        pablo@netfilter.org
-Subject: Re: [PATCH net-next 5/5] net: skbuff: hide nf_trace and
- ipvs_property
-Message-ID: <20230414174426.3fbf5483@kernel.org>
-In-Reply-To: <20230414231139.GD5927@breakpoint.cc>
-References: <20230414160105.172125-1-kuba@kernel.org>
-        <20230414160105.172125-6-kuba@kernel.org>
-        <20230414210950.GC5927@breakpoint.cc>
-        <20230414150758.4e6e9d81@kernel.org>
-        <20230414231139.GD5927@breakpoint.cc>
+To:     Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+Cc:     Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        linux-arch@vger.kernel.org, sdf@google.com
+Subject: Re: [PATCH net-next v4 2/4] net: socket: add sockopts blacklist for
+ BPF cgroup hook
+Message-ID: <20230414175139.21d284b6@kernel.org>
+In-Reply-To: <CAEivzxcEhfLttf0VK=NmHdQxF7CRYXNm6NwUVx6jx=-u2k-T6w@mail.gmail.com>
+References: <20230413133355.350571-1-aleksandr.mikhalitsyn@canonical.com>
+        <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com>
+        <CANn89iLuLkUvX-dDC=rJhtFcxjnVmfn_-crOevbQe+EjaEDGbg@mail.gmail.com>
+        <CAEivzxcEhfLttf0VK=NmHdQxF7CRYXNm6NwUVx6jx=-u2k-T6w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -59,26 +66,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 15 Apr 2023 01:11:39 +0200 Florian Westphal wrote:
-> > I copied it from:
-> > 
-> > static inline void nf_reset_trace(struct sk_buff *skb)
-> > {
-> > #if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE) || defined(CONFIG_NF_TABLES)
-> > 	skb->nf_trace = 0;
-> > #endif
-> > }
-> >
-> > I can't quite figure out why this would be intentional.
-> > Do the existing conditions need to be fixed?  
+On Thu, 13 Apr 2023 16:38:35 +0200 Aleksandr Mikhalitsyn wrote:
+> Sure, I will add next time.
 > 
-> Yes, this is not correct; needs to be "|| IS_ENABLED(CONFIG_NF_TABLES)".
+> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
 > 
-> Fixes: 478b360a47b7 ("netfilter: nf_tables: fix nf_trace always-on with XT_TRACE=n")
-> 
-> Let me know if you'd like to add the fix to v2 of your patchset
-> yourself, otherwise I'll send a fixup patch to netfilter-devel@ on
-> monday.
+> I think it's better to add Stanislav Fomichev to CC.
 
-You can take the fix thru netfilter, I reckon. The new condition 
-is wider so I should be able to proceed with v2 without waiting.
+This should go in separately as a fix, right? Not in a -next series.
+
+Also the whole set as is does not build on top of net-next :(
