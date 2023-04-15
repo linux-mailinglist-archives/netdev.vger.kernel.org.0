@@ -2,1527 +2,1059 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 621046E308A
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 12:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 748056E8A44
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 08:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbjDOK27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 06:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
+        id S233845AbjDTGVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 02:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjDOK27 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 06:28:59 -0400
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D5C421B;
-        Sat, 15 Apr 2023 03:28:55 -0700 (PDT)
-Received: by mail-pl1-f175.google.com with SMTP id la3so20630593plb.11;
-        Sat, 15 Apr 2023 03:28:55 -0700 (PDT)
+        with ESMTP id S233687AbjDTGVg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 02:21:36 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FEB46AF;
+        Wed, 19 Apr 2023 23:21:33 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id d2e1a72fcca58-63b46186c03so844060b3a.3;
+        Wed, 19 Apr 2023 23:21:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681971693; x=1684563693;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EhEk8DeUVNXm/WM99p2UPUpEwainyR/CfcUbiPpB54Q=;
+        b=osgBS7NIOiB22y7ImgTkIyeIov4z0kWeVW4ubYnj3E25Tp1lo0ra0pDLAIPRIvb8s1
+         snXa5QW2QVmmlguNtRpYmLME9aDh/Pmak18UUGNtzRZSw3gu5Ud1/XuMECGx0/qENoh0
+         UF/Pf0K3Zf0GvgOJR2vzdeD15+Fj4zoPfywKezCahtT4PhQt6BwPXPlSBR9UdRC5O5O7
+         mbB8ecxiWYr67SqwidG58YvZXl3KqnBdiZ4VVHr/I6xHndTXl5Zu8iG5HxNc829QFmXk
+         C+qQroGuusEoJlFanKb4loxz205c9i9vNrk6DiY4pymV396pdzIgEJ2og89Wicmknkpx
+         dzMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681554534; x=1684146534;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yy4ledyPEci/TYoNyI5ZWG9laD/wmZMGJC+OzO3oEVg=;
-        b=VUt38y59628GgKN5CReDbJK4kY2ZQJGZg3Ea5SexonXpxEUqs7Ufe86mxupXWsvggJ
-         L42HuJsmMj8Ya+76pLevWyC6+HYBCPPcjMiXFFq1qVXqpDMPzYX8JQ78ltNN5aGJnrmV
-         1fKzmT3chwValaoaEHcPysKLv4VAVpVIUCYJh/dNbGDhd+W7/S8enMXGpeL/2b67Tysk
-         DC6MfmkIrpj+9/vKe7CB8qjZsPZvMmdQfmTEj9bgZN9OfHJ28vM3K3qvBLTjtfMGsKTL
-         YdoqilL/rTxYpnwOZfdS0C1qOhWLzS3Ss5wHsgP/O3I0zEc3ZkdRXZvveTQabdmENoCQ
-         VkZw==
-X-Gm-Message-State: AAQBX9cYuJPg767Tjpo5aJx/eAZ3MUjxBBOfKBUDocLcCSAuwwtdubq9
-        r4d9ayLYpWSNNn5fOLpox7docYJJ4MdUOHLEAc3E14smxsI=
-X-Google-Smtp-Source: AKy350bSiF4LZbXInQwTnaEfyzL5y13CcBLnBr7xHmeJmFabWvIwjUTKcTVhq8KngHpNfF4ymGI/LFHQnyNoIrszu1s=
-X-Received: by 2002:a17:90a:2fc7:b0:247:4a26:72d4 with SMTP id
- n7-20020a17090a2fc700b002474a2672d4mr3988673pjm.32.1681554534144; Sat, 15 Apr
- 2023 03:28:54 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681971693; x=1684563693;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EhEk8DeUVNXm/WM99p2UPUpEwainyR/CfcUbiPpB54Q=;
+        b=EN+C0XEtJToHeEyfOWB0QotjIds49EWDNb41DFGbTHPAfEOW52Lxe2bsIZDM607Q8m
+         LIo6/mmN4ceuRKPn1g+0ciGZJLlCex7WwINTX/McbxlJAx+BwhN9F43ub9J8jQBlVvAY
+         sR9B/VgaO0ewZwGPo99BlGA1V+nEZX13tlXrUztbKD4s+Z8PTwD1G1XDve2nLFhZKrIZ
+         OFJ7iJIFkWbvnSicW8a6v+jtUktjp0nbYrdcAetxh7Wmd0uGCvDyF1//pI9Kmxei6Ic5
+         reAfKMNaGzHU1xQZZdiJdSCx9AFfuUXNPwTqH9vxxRRfMTVNcJILBDMlUsHCUPCGCggg
+         iSNw==
+X-Gm-Message-State: AAQBX9f5AWTagbXjVghBPR+eGAQvWE5fmZejlIF0kukwypFYntkeO6aN
+        u6PeN6FOiXcaSugreaAPOfc=
+X-Google-Smtp-Source: AKy350ar9SEg2V/FRc9CrsSBQEUDpMfNNTDwiqHc5fDQpKpQEQa5tb1Gwlo8NuzemDHWgTQoyouEcQ==
+X-Received: by 2002:a05:6a00:986:b0:63d:33c9:aec4 with SMTP id u6-20020a056a00098600b0063d33c9aec4mr191160pfg.10.1681971692367;
+        Wed, 19 Apr 2023 23:21:32 -0700 (PDT)
+Received: from localhost (ec2-54-67-115-33.us-west-1.compute.amazonaws.com. [54.67.115.33])
+        by smtp.gmail.com with ESMTPSA id w75-20020a62824e000000b0063b17b58822sm439749pfd.74.2023.04.19.23.21.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Apr 2023 23:21:31 -0700 (PDT)
+Date:   Sat, 15 Apr 2023 10:30:55 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH RFC net-next v2 3/4] vsock: Add lockless sendmsg() support
+Message-ID: <ZDp837+YDvAfoNLc@bullseye>
+References: <20230413-b4-vsock-dgram-v2-0-079cc7cee62e@bytedance.com>
+ <20230413-b4-vsock-dgram-v2-3-079cc7cee62e@bytedance.com>
+ <bs3elc4lwvvq22y2vq27ewo23qibei2neys4txszi6wybxpuzu@czyq5hb7iv5t>
 MIME-Version: 1.0
-References: <20230413084253.1524-1-peter_hong@fintek.com.tw>
-In-Reply-To: <20230413084253.1524-1-peter_hong@fintek.com.tw>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sat, 15 Apr 2023 19:28:42 +0900
-Message-ID: <CAMZ6RqKuBuZigMAW7CMOFSaWxNS=Q-kWh2xAE2TVtcoBLs+ybA@mail.gmail.com>
-Subject: Re: [PATCH V4] can: usb: f81604: add Fintek F81604 support
-To:     "Ji-Ze Hong (Peter Hong)" <peter_hong@fintek.com.tw>
-Cc:     wg@grandegger.com, mkl@pengutronix.de,
-        michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, frank.jungclaus@esd.eu,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bs3elc4lwvvq22y2vq27ewo23qibei2neys4txszi6wybxpuzu@czyq5hb7iv5t>
+X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Peter,
-
-The patch is getting better. But there are a lot of u8 * buffers I
-would like to get rid of.
-
-On Tue. 13 Apr 2023 at 17:42, Ji-Ze Hong (Peter Hong)
-<peter_hong@fintek.com.tw> wrote:
-> This patch adds support for Fintek USB to 2CAN controller.
->
-> Signed-off-by: Ji-Ze Hong (Peter Hong) <peter_hong@fintek.com.tw>
-> ---
-> Changelog:
-> v4:
->         1. Remove f81604_prepare_urbs/f81604_remove_urbs() and alloc URB/buffer
->            dynamically in f81604_register_urbs(), using "urbs_anchor" for manage
->            all rx/int URBs.
->         2. Add F81604 to MAINTAINERS list.
->         3. Change handle_clear_reg_work/handle_clear_overrun_work to single
->            clear_reg_work and using bitwise "clear_flags" to record it.
->         4. Move __f81604_set_termination in front of f81604_probe() to avoid
->            rarely racing condition.
->         5. Add __aligned to struct f81604_int_data / f81604_sff / f81604_eff.
->         6. Add aligned operations in f81604_start_xmit/f81604_process_rx_packet().
->         7. Change lots of CANBUS functions first parameter from struct usb_device*
->            to struct f81604_port_priv *priv. But remain f81604_write / f81604_read
->            / f81604_update_bits() as struct usb_device* for
->            __f81604_set_termination() in probe() stage.
->         8. Simplify f81604_read_int_callback() and separate into
->            f81604_handle_tx / f81604_handle_can_bus_errors() functions.
->
-> v3:
->         1. Change CAN clock to using MEGA units.
->         2. Remove USB set/get retry, only remain SJA1000 reset/operation retry.
->         3. Fix all numberic constant to define.
->         4. Add terminator control. (only 0 & 120 ohm)
->         5. Using struct data to represent INT/TX/RX endpoints data instead byte
->            arrays.
->         6. Error message reports changed from %d to %pe for mnemotechnic values.
->         7. Some bit operations are changed to FIELD_PREP().
->         8. Separate TX functions from f81604_read_int_callback().
->         9. cf->can_id |= CAN_ERR_CNT in f81604_read_int_callback to report valid
->            TX/RX error counts.
->         10. Move f81604_prepare_urbs/f81604_remove_urbs() from CAN open/close() to
->             USB probe/disconnect().
->         11. coding style refactoring.
->
-> v2:
->         1. coding style refactoring.
->         2. some const number are defined to describe itself.
->         3. fix wrong usage for can_get_echo_skb() in f81604_write_bulk_callback().
->
->  MAINTAINERS                  |    6 +
->  drivers/net/can/usb/Kconfig  |   12 +
->  drivers/net/can/usb/Makefile |    1 +
->  drivers/net/can/usb/f81604.c | 1221 ++++++++++++++++++++++++++++++++++
->  4 files changed, 1240 insertions(+)
->  create mode 100644 drivers/net/can/usb/f81604.c
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index f375bbf3bc80..fa573f637c2f 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -8058,6 +8058,12 @@ S:       Maintained
->  F:     drivers/hwmon/f75375s.c
->  F:     include/linux/f75375s.h
->
-> +FINTEK F81604 USB to 2xCANBUS DEVICE DRIVER
-> +M:     Ji-Ze Hong (Peter Hong) <peter_hong@fintek.com.tw>
-> +L:     linux-can@vger.kernel.org
-> +S:     Maintained
-> +F:     drivers/net/can/usb/f81604.c
-> +
->  FIREWIRE AUDIO DRIVERS and IEC 61883-1/6 PACKET STREAMING ENGINE
->  M:     Clemens Ladisch <clemens@ladisch.de>
->  M:     Takashi Sakamoto <o-takashi@sakamocchi.jp>
-> diff --git a/drivers/net/can/usb/Kconfig b/drivers/net/can/usb/Kconfig
-> index 445504ababce..58fcd2b34820 100644
-> --- a/drivers/net/can/usb/Kconfig
-> +++ b/drivers/net/can/usb/Kconfig
-> @@ -38,6 +38,18 @@ config CAN_ETAS_ES58X
->           To compile this driver as a module, choose M here: the module
->           will be called etas_es58x.
->
-> +config CAN_F81604
-> +        tristate "Fintek F81604 USB to 2CAN interface"
-> +        help
-> +          This driver supports the Fintek F81604 USB to 2CAN interface.
-> +          The device can support CAN2.0A/B protocol and also support
-> +          2 output pins to control external terminator (optional).
-> +
-> +          To compile this driver as a module, choose M here: the module will
-> +          be called f81604.
-> +
-> +          (see also https://www.fintek.com.tw).
-> +
->  config CAN_GS_USB
->         tristate "Geschwister Schneider UG and candleLight compatible interfaces"
->         help
-> diff --git a/drivers/net/can/usb/Makefile b/drivers/net/can/usb/Makefile
-> index 1ea16be5743b..8b11088e9a59 100644
-> --- a/drivers/net/can/usb/Makefile
-> +++ b/drivers/net/can/usb/Makefile
-> @@ -7,6 +7,7 @@ obj-$(CONFIG_CAN_8DEV_USB) += usb_8dev.o
->  obj-$(CONFIG_CAN_EMS_USB) += ems_usb.o
->  obj-$(CONFIG_CAN_ESD_USB) += esd_usb.o
->  obj-$(CONFIG_CAN_ETAS_ES58X) += etas_es58x/
-> +obj-$(CONFIG_CAN_F81604) += f81604.o
->  obj-$(CONFIG_CAN_GS_USB) += gs_usb.o
->  obj-$(CONFIG_CAN_KVASER_USB) += kvaser_usb/
->  obj-$(CONFIG_CAN_MCBA_USB) += mcba_usb.o
-> diff --git a/drivers/net/can/usb/f81604.c b/drivers/net/can/usb/f81604.c
-> new file mode 100644
-> index 000000000000..ce83a7993c4b
-> --- /dev/null
-> +++ b/drivers/net/can/usb/f81604.c
-> @@ -0,0 +1,1221 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Fintek F81604 USB-to-2CAN controller driver.
-> + *
-> + * Copyright (C) 2023 Ji-Ze Hong (Peter Hong) <peter_hong@fintek.com.tw>
-> + */
-> +#include <linux/bitfield.h>
-> +#include <linux/netdevice.h>
-> +#include <linux/units.h>
-> +#include <linux/usb.h>
-> +
-> +#include <linux/can.h>
-> +#include <linux/can/dev.h>
-> +#include <linux/can/error.h>
-> +#include <linux/can/platform/sja1000.h>
-> +
-> +#include <asm-generic/unaligned.h>
-> +
-> +/* vendor and product id */
-> +#define F81604_VENDOR_ID 0x2c42
-> +#define F81604_PRODUCT_ID 0x1709
-> +#define F81604_CAN_CLOCK (24 * MEGA / 2)
-
-Why not:
-
-  #define F81604_CAN_CLOCK (12 * MEGA)
-
-?
-
-> +#define F81604_MAX_DEV 2
-> +#define F81604_SET_DEVICE_RETRY 10
-> +
-> +#define F81604_USB_TIMEOUT 2000
-> +#define F81604_SET_GET_REGISTER 0xA0
-> +#define F81604_PORT_OFFSET 0x1000
-> +
-> +#define F81604_BULK_SIZE 64
-> +#define F81604_INT_SIZE 16
-> +#define F81604_DATA_SIZE 14
-> +#define F81604_MAX_RX_URBS 4
-> +
-> +#define F81604_CMD_DATA 0x00
-> +
-> +#define F81604_DLC_LEN_MASK 0x0f
-> +#define F81604_DLC_EFF_BIT BIT(7)
-> +#define F81604_DLC_RTR_BIT BIT(6)
-> +
-> +#define F81604_BRP_MASK GENMASK(5, 0)
-> +#define F81604_SJW_MASK GENMASK(7, 6)
-> +
-> +#define F81604_SEG1_MASK GENMASK(3, 0)
-> +#define F81604_SEG2_MASK GENMASK(6, 4)
-> +
-> +#define F81604_CLEAR_ALC 0
-> +#define F81604_CLEAR_ECC 1
-> +#define F81604_CLEAR_OVERRUN 2
-> +
-> +/* device setting */
-> +#define F81604_CTRL_MODE_REG 0x80
-> +#define F81604_TX_ONESHOT (0x03 << 3)
-> +#define F81604_TX_NORMAL (0x01 << 3)
-> +#define F81604_RX_AUTO_RELEASE_BUF BIT(1)
-> +#define F81604_INT_WHEN_CHANGE BIT(0)
-> +
-> +#define F81604_TERMINATOR_REG 0x105
-> +#define F81604_CAN0_TERM BIT(2)
-> +#define F81604_CAN1_TERM BIT(3)
-> +
-> +#define F81604_TERMINATION_DISABLED CAN_TERMINATION_DISABLED
-> +#define F81604_TERMINATION_ENABLED 120
-> +
-> +/* SJA1000 registers - manual section 6.4 (Pelican Mode) */
-> +#define F81604_SJA1000_MOD 0x00
-> +#define F81604_SJA1000_CMR 0x01
-> +#define F81604_SJA1000_IR 0x03
-> +#define F81604_SJA1000_IER 0x04
-> +#define F81604_SJA1000_ALC 0x0B
-> +#define F81604_SJA1000_ECC 0x0C
-> +#define F81604_SJA1000_RXERR 0x0E
-> +#define F81604_SJA1000_TXERR 0x0F
-> +#define F81604_SJA1000_ACCC0 0x10
-> +#define F81604_SJA1000_ACCM0 0x14
-> +#define F81604_MAX_FILTER_CNT 4
-> +
-> +/* Common registers - manual section 6.5 */
-> +#define F81604_SJA1000_BTR0 0x06
-> +#define F81604_SJA1000_BTR1 0x07
-> +#define F81604_SJA1000_BTR1_SAMPLE_TRIPLE BIT(7)
-> +#define F81604_SJA1000_OCR 0x08
-> +#define F81604_SJA1000_CDR 0x1F
-> +
-> +/* mode register */
-> +#define F81604_SJA1000_MOD_RM 0x01
-> +#define F81604_SJA1000_MOD_LOM 0x02
-> +#define F81604_SJA1000_MOD_STM 0x04
-> +
-> +/* commands */
-> +#define F81604_SJA1000_CMD_CDO 0x08
-> +
-> +/* interrupt sources */
-> +#define F81604_SJA1000_IRQ_BEI 0x80
-> +#define F81604_SJA1000_IRQ_ALI 0x40
-> +#define F81604_SJA1000_IRQ_EPI 0x20
-> +#define F81604_SJA1000_IRQ_DOI 0x08
-> +#define F81604_SJA1000_IRQ_EI 0x04
-> +#define F81604_SJA1000_IRQ_TI 0x02
-> +#define F81604_SJA1000_IRQ_RI 0x01
-> +#define F81604_SJA1000_IRQ_ALL 0xFF
-> +#define F81604_SJA1000_IRQ_OFF 0x00
-> +
-> +/* status register content */
-> +#define F81604_SJA1000_SR_BS 0x80
-> +#define F81604_SJA1000_SR_ES 0x40
-> +#define F81604_SJA1000_SR_TCS 0x08
-> +
-> +/* ECC register */
-> +#define F81604_SJA1000_ECC_SEG 0x1F
-> +#define F81604_SJA1000_ECC_DIR 0x20
-> +#define F81604_SJA1000_ECC_BIT 0x00
-> +#define F81604_SJA1000_ECC_FORM 0x40
-> +#define F81604_SJA1000_ECC_STUFF 0x80
-> +#define F81604_SJA1000_ECC_MASK 0xc0
-> +
-> +/* ALC register */
-> +#define F81604_SJA1000_ALC_MASK 0x1f
-> +
-> +/* table of devices that work with this driver */
-> +static const struct usb_device_id f81604_table[] = {
-> +       { USB_DEVICE(F81604_VENDOR_ID, F81604_PRODUCT_ID) },
-> +       {} /* Terminating entry */
-> +};
-> +
-> +MODULE_DEVICE_TABLE(usb, f81604_table);
-> +
-> +static const struct ethtool_ops f81604_ethtool_ops = {
-> +       .get_ts_info = ethtool_op_get_ts_info,
-> +};
-> +
-> +static const u16 f81604_termination[] = { F81604_TERMINATION_DISABLED,
-> +                                         F81604_TERMINATION_ENABLED };
-> +
-> +struct f81604_priv {
-> +       struct net_device *netdev[F81604_MAX_DEV];
-> +};
-> +
-> +struct f81604_port_priv {
-> +       struct can_priv can;
-> +       struct net_device *netdev;
-> +       struct sk_buff *echo_skb;
-> +
-> +       unsigned long clear_flags;
-> +       struct work_struct clear_reg_work;
-> +
-> +       struct usb_device *dev;
-> +       struct usb_interface *intf;
-> +
-> +       struct usb_anchor urbs_anchor;
-> +};
-> +
-> +/* Interrupt endpoint data format:
-> + *     Byte 0: Status register.
-> + *     Byte 1: Interrupt register.
-> + *     Byte 2: Interrupt enable register.
-> + *     Byte 3: Arbitration lost capture(ALC) register.
-> + *     Byte 4: Error code capture(ECC) register.
-> + *     Byte 5: Error warning limit register.
-> + *     Byte 6: RX error counter register.
-> + *     Byte 7: TX error counter register.
-> + *     Byte 8: Reserved.
-> + */
-> +struct f81604_int_data {
-> +       u8 sr;
-> +       u8 isrc;
-> +       u8 ier;
-> +       u8 alc;
-> +       u8 ecc;
-> +       u8 ewlr;
-> +       u8 rxerr;
-> +       u8 txerr;
-> +       u8 val;
-> +} __packed __aligned(4);
-> +
-> +struct f81604_sff {
-> +       __be16 id;
-> +       u8 data[CAN_MAX_DLEN];
-> +} __packed __aligned(2);
-> +
-> +struct f81604_eff {
-> +       __be32 id;
-> +       u8 data[CAN_MAX_DLEN];
-> +} __packed __aligned(2);
-> +
-> +struct f81604_can_frame {
-> +       u8 cmd;
-> +
-> +       /* According for F81604 DLC define:
-> +        *      bit 3~0: data length (0~8)
-> +        *      bit6: is RTR flag.
-> +        *      bit7: is EFF frame.
-> +        */
-> +       u8 dlc;
-> +
-> +       union {
-> +               struct f81604_sff sff;
-> +               struct f81604_eff eff;
-> +       };
-> +} __packed;
-
-__aligned(2)?
-
-> +
-> +static_assert(sizeof(struct f81604_can_frame) == F81604_DATA_SIZE);
-> +
-> +static const u8 bulk_in_addr[F81604_MAX_DEV] = { 2, 4 };
-> +static const u8 bulk_out_addr[F81604_MAX_DEV] = { 1, 3 };
-> +static const u8 int_in_addr[F81604_MAX_DEV] = { 1, 3 };
-> +
-> +static int f81604_write(struct usb_device *dev, u16 reg, u8 data)
-> +{
-> +       int ret;
-> +
-> +       ret = usb_control_msg_send(dev, 0, F81604_SET_GET_REGISTER,
-> +                                  USB_TYPE_VENDOR | USB_DIR_OUT, 0, reg,
-> +                                  &data, sizeof(data), F81604_USB_TIMEOUT,
-> +                                  GFP_KERNEL);
-> +       if (ret)
-> +               dev_err(&dev->dev, "%s: reg: %x data: %x failed: %pe\n",
-> +                       __func__, reg, data, ERR_PTR(ret));
-> +
-> +       return ret;
-> +}
-> +
-> +static int f81604_read(struct usb_device *dev, u16 reg, u8 *data)
-> +{
-> +       int ret;
-> +
-> +       ret = usb_control_msg_recv(dev, 0, F81604_SET_GET_REGISTER,
-> +                                  USB_TYPE_VENDOR | USB_DIR_IN, 0, reg, data,
-> +                                  sizeof(*data), F81604_USB_TIMEOUT,
-> +                                  GFP_KERNEL);
-> +
-> +       if (ret < 0)
-> +               dev_err(&dev->dev, "%s: reg: %x failed: %pe\n", __func__, reg,
-> +                       ERR_PTR(ret));
-> +
-> +       return ret;
-> +}
-> +
-> +static int f81604_update_bits(struct usb_device *dev, u16 reg, u8 mask,
-> +                             u8 data)
-> +{
-> +       int ret;
-> +       u8 tmp;
-> +
-> +       ret = f81604_read(dev, reg, &tmp);
-> +       if (ret)
-> +               return ret;
-> +
-> +       tmp &= ~mask;
-> +       tmp |= (mask & data);
-> +
-> +       return f81604_write(dev, reg, tmp);
-> +}
-> +
-> +static int f81604_sja1000_write(struct f81604_port_priv *priv, u16 reg,
-> +                               u8 data)
-> +{
-> +       int port = priv->netdev->dev_id;
-> +       int real_reg;
-> +
-> +       real_reg = reg + F81604_PORT_OFFSET * port + F81604_PORT_OFFSET;
-> +       return f81604_write(priv->dev, real_reg, data);
-> +}
-> +
-> +static int f81604_sja1000_read(struct f81604_port_priv *priv, u16 reg,
-> +                              u8 *data)
-> +{
-> +       int port = priv->netdev->dev_id;
-> +       int real_reg;
-> +
-> +       real_reg = reg + F81604_PORT_OFFSET * port + F81604_PORT_OFFSET;
-> +       return f81604_read(priv->dev, real_reg, data);
-> +}
-> +
-> +static int f81604_set_reset_mode(struct f81604_port_priv *priv)
-> +{
-> +       int ret, i;
-> +       u8 tmp;
-> +
-> +       /* disable interrupts */
-> +       ret = f81604_sja1000_write(priv, F81604_SJA1000_IER,
-> +                                  F81604_SJA1000_IRQ_OFF);
-> +       if (ret)
-> +               return ret;
-> +
-> +       for (i = 0; i < F81604_SET_DEVICE_RETRY; i++) {
-> +               ret = f81604_sja1000_read(priv, F81604_SJA1000_MOD, &tmp);
-> +               if (ret)
-> +                       return ret;
-> +
-> +               /* check reset bit */
-> +               if (tmp & F81604_SJA1000_MOD_RM) {
-> +                       priv->can.state = CAN_STATE_STOPPED;
-> +                       return 0;
-> +               }
-> +
-> +               /* reset chip */
-> +               ret = f81604_sja1000_write(priv, F81604_SJA1000_MOD,
-> +                                          F81604_SJA1000_MOD_RM);
-> +               if (ret)
-> +                       return ret;
-> +       }
-> +
-> +       return -EPERM;
-> +}
-> +
-> +static int f81604_set_normal_mode(struct f81604_port_priv *priv)
-> +{
-> +       u8 tmp, ier = 0;
-> +       u8 mod_reg = 0;
-> +       int ret, i;
-> +
-> +       for (i = 0; i < F81604_SET_DEVICE_RETRY; i++) {
-> +               ret = f81604_sja1000_read(priv, F81604_SJA1000_MOD, &tmp);
-> +               if (ret)
-> +                       return ret;
-> +
-> +               /* check reset bit */
-> +               if ((tmp & F81604_SJA1000_MOD_RM) == 0) {
-> +                       priv->can.state = CAN_STATE_ERROR_ACTIVE;
-> +                       /* enable interrupts, RI handled by bulk-in */
-> +                       ier = F81604_SJA1000_IRQ_ALL & ~F81604_SJA1000_IRQ_RI;
-> +                       if (!(priv->can.ctrlmode &
-> +                             CAN_CTRLMODE_BERR_REPORTING))
-> +                               ier &= ~F81604_SJA1000_IRQ_BEI;
-> +
-> +                       return f81604_sja1000_write(priv, F81604_SJA1000_IER,
-> +                                                   ier);
-> +               }
-> +
-> +               /* set chip to normal mode */
-> +               if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
-> +                       mod_reg |= F81604_SJA1000_MOD_LOM;
-> +               if (priv->can.ctrlmode & CAN_CTRLMODE_PRESUME_ACK)
-> +                       mod_reg |= F81604_SJA1000_MOD_STM;
-> +
-> +               ret = f81604_sja1000_write(priv, F81604_SJA1000_MOD, mod_reg);
-> +               if (ret)
-> +                       return ret;
-> +       }
-> +
-> +       return -EPERM;
-> +}
-> +
-> +static int f81604_chipset_init(struct f81604_port_priv *priv)
-> +{
-> +       int i, ret;
-> +
-> +       /* set clock divider and output control register */
-> +       ret = f81604_sja1000_write(priv, F81604_SJA1000_CDR,
-> +                                  CDR_CBP | CDR_PELICAN);
-> +       if (ret)
-> +               return ret;
-> +
-> +       /* set acceptance filter (accept all) */
-> +       for (i = 0; i < F81604_MAX_FILTER_CNT; ++i) {
-> +               ret = f81604_sja1000_write(priv, F81604_SJA1000_ACCC0 + i, 0);
-> +               if (ret)
-> +                       return ret;
-> +       }
-> +
-> +       for (i = 0; i < F81604_MAX_FILTER_CNT; ++i) {
-> +               ret = f81604_sja1000_write(priv, F81604_SJA1000_ACCM0 + i,
-> +                                          0xFF);
-> +               if (ret)
-> +                       return ret;
-> +       }
-> +
-> +       return f81604_sja1000_write(priv, F81604_SJA1000_OCR,
-> +                                   OCR_TX0_PUSHPULL | OCR_TX1_PUSHPULL |
-> +                                           OCR_MODE_NORMAL);
-> +}
-> +
-> +static void f81604_process_rx_packet(struct urb *urb)
-> +{
-> +       struct net_device *netdev = urb->context;
-> +       struct net_device_stats *stats;
-> +       struct f81604_can_frame *frame;
-> +       struct can_frame *cf;
-> +       struct sk_buff *skb;
-> +       unsigned int count;
-> +       unsigned int i;
-:> +       u8 *data;
-
-Do not use an opaque pointer. You can directly cast to an array of
-struct f81604_can_frame:
-
-          struct f81604_can_frame *frames = urb->transfer_buffer;
-
-> +       data = urb->transfer_buffer;
-> +       stats = &netdev->stats;
-> +
-> +       if (urb->actual_length % F81604_DATA_SIZE)
-> +               netdev_warn(netdev, "URB length %u not multiple of %u\n",
-> +                           urb->actual_length, F81604_DATA_SIZE);
-> +       else if (!urb->actual_length)
-> +               netdev_warn(netdev, "URB length is 0\n");
-> +
-> +       count = urb->actual_length / F81604_DATA_SIZE;
-
-It would be better to have the URB sanitization inside
-f81604_read_bulk_callback().
-
-> +       for (i = 0; i < count; ++i) {
-
-The loop iteration can also be in f81604_read_bulk_callback().
-
-> +               frame = (struct f81604_can_frame *)&data[i * F81604_DATA_SIZE];
-> +
-> +               if (frame->cmd != F81604_CMD_DATA)
-> +                       continue;
-> +
-> +               skb = alloc_can_skb(netdev, &cf);
-> +               if (!skb) {
-> +                       stats->rx_dropped++;
-> +                       continue;
-> +               }
-> +
-> +               cf->len = can_cc_dlc2len(frame->dlc & F81604_DLC_LEN_MASK);
-> +
-> +               if (frame->dlc & F81604_DLC_EFF_BIT) {
-> +                       cf->can_id = get_unaligned_be32(&frame->eff.id) >> 3;
-
-Use a #define instead of magic number.
-
-> +                       cf->can_id |= CAN_EFF_FLAG;
-> +
-> +                       if (cf->len)
-
-No need to check if len is not zero. memcpy(cf->data, frame->eff.data,
-0) works fine. However, you need to check that this is not an RTR
-frame:
-
-          if (!(frame->dlc & F81604_DLC_RTR_BIT))
-
-> +                               memcpy(cf->data, frame->eff.data, cf->len);
-> +               } else {
-> +                       cf->can_id = get_unaligned_be16(&frame->sff.id) >> 5;
-
-Use a #define instead of magic number.
-
-> +
-> +                       if (cf->len)
-
-No need to check if len is not zero. memcpy(cf->data, frame->eff.data,
-0) works fine. However, you need to check that this is not an RTR
-frame:
-
-          if (!(frame->dlc & F81604_DLC_RTR_BIT))
-
-> +                               memcpy(cf->data, frame->sff.data, cf->len);
-> +               }
-> +
-> +               if (frame->dlc & F81604_DLC_RTR_BIT)
-> +                       cf->can_id |= CAN_RTR_FLAG;
-> +               else
-> +                       stats->rx_bytes += cf->len;
-> +
-> +               stats->rx_packets++;
-> +               netif_rx(skb);
-> +       }
-> +}
-> +
-> +static void f81604_read_bulk_callback(struct urb *urb)
-> +{
-> +       struct net_device *netdev = urb->context;
-
-+        struct f81604_can_frame *frames = urb->transfer_buffer;
-+        int i;
-
-> +       int ret;
-> +
-> +       if (!netif_device_present(netdev))
-> +               return;
-> +
-> +       if (urb->status)
-> +               netdev_info(netdev, "%s: URB aborted %pe\n", __func__,
-> +                           ERR_PTR(urb->status));
-> +
-> +       switch (urb->status) {
-> +       case 0: /* success */
-> +               break;
-> +
-> +       case -ENOENT:
-> +       case -EPIPE:
-> +       case -EPROTO:
-> +       case -ESHUTDOWN:
-> +               return;
-> +
-> +       default:
-> +               goto resubmit_urb;
-> +       }
-
-Something like that (c.f. above):
-
-+       if (urb->actual_length % F81604_DATA_SIZE)
-+               netdev_warn(netdev, "URB length %u not multiple of %u\n",
-+                           urb->actual_length, F81604_DATA_SIZE);
-+       else if (!urb->actual_length)
-+               netdev_warn(netdev, "URB length is 0\n");
-+
-+       for (i = 0; i < urb->actual_length / sizeof(f81604_can_frame[0]; i++)
-+              f81604_process_rx_packet(netdev, &f81604_can_frame[i]);
-
-> +resubmit_urb:
-> +       ret = usb_submit_urb(urb, GFP_ATOMIC);
-> +       if (ret == -ENODEV)
-> +               netif_device_detach(netdev);
-> +       else if (ret)
-> +               netdev_err(netdev,
-> +                          "%s: failed to resubmit read bulk urb: %pe\n",
-> +                          __func__, ERR_PTR(ret));
-> +}
-> +
-> +static void f81604_handle_tx(struct f81604_port_priv *priv,
-> +                            struct f81604_int_data *data)
-> +{
-> +       struct net_device *netdev = priv->netdev;
-> +       struct net_device_stats *stats;
-> +
-> +       stats = &netdev->stats;
-> +
-> +       /* transmission buffer released */
-> +       if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT &&
-> +           !(data->sr & F81604_SJA1000_SR_TCS)) {
-> +               stats->tx_errors++;
-> +               can_free_echo_skb(netdev, 0, NULL);
-> +       } else {
-> +               /* transmission complete */
-> +               stats->tx_bytes += can_get_echo_skb(netdev, 0, NULL);
-> +               stats->tx_packets++;
-> +       }
-> +
-> +       netif_wake_queue(netdev);
-> +}
-> +
-> +static void f81604_handle_can_bus_errors(struct f81604_port_priv *priv,
-> +                                        struct f81604_int_data *data)
-> +{
-> +       enum can_state can_state = priv->can.state;
-> +       struct net_device *netdev = priv->netdev;
-> +       enum can_state tx_state, rx_state;
-> +       struct net_device_stats *stats;
-> +       struct can_frame *cf;
-> +       struct sk_buff *skb;
-> +
-> +       stats = &netdev->stats;
-> +
-> +       /* Note: ALC/ECC will not auto clear by read here, must be cleared by
-> +        * read register (via clear_reg_work).
-> +        */
-> +
-> +       skb = alloc_can_err_skb(netdev, &cf);
-> +       if (skb) {
-> +               cf->can_id |= CAN_ERR_CNT;
-> +               cf->data[6] = data->txerr;
-> +               cf->data[7] = data->rxerr;
-> +       }
-> +
-> +       if (data->isrc & F81604_SJA1000_IRQ_DOI) {
-> +               /* data overrun interrupt */
-> +               netdev_dbg(netdev, "data overrun interrupt\n");
-> +
-> +               if (skb) {
-> +                       cf->can_id |= CAN_ERR_CRTL;
-> +                       cf->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
-> +               }
-> +
-> +               stats->rx_over_errors++;
-> +               stats->rx_errors++;
-> +
-> +               set_bit(F81604_CLEAR_OVERRUN, &priv->clear_flags);
-> +       }
-> +
-> +       if (data->isrc & F81604_SJA1000_IRQ_EI) {
-> +               /* error warning interrupt */
-> +               netdev_dbg(netdev, "error warning interrupt\n");
-> +
-> +               if (data->sr & F81604_SJA1000_SR_BS)
-> +                       can_state = CAN_STATE_BUS_OFF;
-> +               else if (data->sr & F81604_SJA1000_SR_ES)
-> +                       can_state = CAN_STATE_ERROR_WARNING;
-> +               else
-> +                       can_state = CAN_STATE_ERROR_ACTIVE;
-> +       }
-> +
-> +       if (data->isrc & F81604_SJA1000_IRQ_BEI) {
-> +               /* bus error interrupt */
-> +               netdev_dbg(netdev, "bus error interrupt\n");
-> +
-> +               priv->can.can_stats.bus_error++;
-> +               stats->rx_errors++;
-> +
-> +               if (skb) {
-> +                       cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
-> +
-> +                       /* set error type */
-> +                       switch (data->ecc & F81604_SJA1000_ECC_MASK) {
-> +                       case F81604_SJA1000_ECC_BIT:
-> +                               cf->data[2] |= CAN_ERR_PROT_BIT;
-> +                               break;
-> +                       case F81604_SJA1000_ECC_FORM:
-> +                               cf->data[2] |= CAN_ERR_PROT_FORM;
-> +                               break;
-> +                       case F81604_SJA1000_ECC_STUFF:
-> +                               cf->data[2] |= CAN_ERR_PROT_STUFF;
-> +                               break;
-> +                       default:
-> +                               break;
-> +                       }
-> +
-> +                       /* set error location */
-> +                       cf->data[3] = data->ecc & F81604_SJA1000_ECC_SEG;
-> +
-> +                       /* Error occurred during transmission? */
-> +                       if ((data->ecc & F81604_SJA1000_ECC_DIR) == 0)
-> +                               cf->data[2] |= CAN_ERR_PROT_TX;
-> +               }
-> +
-> +               set_bit(F81604_CLEAR_ECC, &priv->clear_flags);
-> +       }
-> +
-> +       if (data->isrc & F81604_SJA1000_IRQ_EPI) {
-> +               if (can_state == CAN_STATE_ERROR_PASSIVE)
-> +                       can_state = CAN_STATE_ERROR_WARNING;
-> +               else
-> +                       can_state = CAN_STATE_ERROR_PASSIVE;
-> +
-> +               /* error passive interrupt */
-> +               netdev_dbg(netdev, "error passive interrupt: %d\n", can_state);
-> +       }
-> +
-> +       if (data->isrc & F81604_SJA1000_IRQ_ALI) {
-> +               /* arbitration lost interrupt */
-> +               netdev_dbg(netdev, "arbitration lost interrupt\n");
-> +
-> +               priv->can.can_stats.arbitration_lost++;
-> +
-> +               if (skb) {
-> +                       cf->can_id |= CAN_ERR_LOSTARB;
-> +                       cf->data[0] = data->alc & F81604_SJA1000_ALC_MASK;
-> +               }
-> +
-> +               set_bit(F81604_CLEAR_ALC, &priv->clear_flags);
-> +       }
-> +
-> +       if (can_state != priv->can.state) {
-> +               tx_state = data->txerr >= data->rxerr ? can_state : 0;
-> +               rx_state = data->txerr <= data->rxerr ? can_state : 0;
-> +
-> +               can_change_state(netdev, cf, tx_state, rx_state);
-> +
-> +               if (can_state == CAN_STATE_BUS_OFF)
-> +                       can_bus_off(netdev);
-> +       }
-> +
-> +       if (priv->clear_flags)
-> +               schedule_work(&priv->clear_reg_work);
-> +
-> +       if (skb)
-> +               netif_rx(skb);
-> +}
-> +
-> +static void f81604_read_int_callback(struct urb *urb)
-> +{
-> +       struct f81604_int_data *data = urb->transfer_buffer;
-> +       struct net_device *netdev = urb->context;
-> +       struct f81604_port_priv *priv;
-> +       int ret;
-> +
-> +       priv = netdev_priv(netdev);
-> +
-> +       if (!netif_device_present(netdev))
-> +               return;
-> +
-> +       if (urb->status)
-> +               netdev_info(netdev, "%s: Int URB aborted: %pe\n", __func__,
-> +                           ERR_PTR(urb->status));
-> +
-> +       switch (urb->status) {
-> +       case 0: /* success */
-> +               break;
-> +
-> +       case -ENOENT:
-> +       case -EPIPE:
-> +       case -EPROTO:
-> +       case -ESHUTDOWN:
-> +               return;
-> +
-> +       default:
-> +               goto resubmit_urb;
-> +       }
-> +
-> +       /* handle Errors */
-> +       if (data->isrc & (F81604_SJA1000_IRQ_DOI | F81604_SJA1000_IRQ_EI |
-> +                         F81604_SJA1000_IRQ_BEI | F81604_SJA1000_IRQ_EPI |
-> +                         F81604_SJA1000_IRQ_ALI))
-> +               f81604_handle_can_bus_errors(priv, data);
-> +
-> +       /* handle TX */
-> +       if (priv->can.state != CAN_STATE_BUS_OFF &&
-> +           (data->isrc & F81604_SJA1000_IRQ_TI))
-> +               f81604_handle_tx(priv, data);
-> +
-> +resubmit_urb:
-> +       ret = usb_submit_urb(urb, GFP_ATOMIC);
-> +       if (ret == -ENODEV)
-> +               netif_device_detach(netdev);
-> +       else if (ret)
-> +               netdev_err(netdev, "%s: failed to resubmit int urb: %pe\n",
-> +                          __func__, ERR_PTR(ret));
-> +}
-> +
-> +static void f81604_unregister_urbs(struct f81604_port_priv *priv)
-> +{
-> +       usb_kill_anchored_urbs(&priv->urbs_anchor);
-> +}
-> +
-> +static int f81604_register_urbs(struct f81604_port_priv *priv)
-> +{
-> +       struct net_device *netdev = priv->netdev;
-> +       struct urb *rx_urb, *int_urb;
-> +       int id = netdev->dev_id;
-> +       u8 *rx_buf, *int_buf;
-
-No opaque buffer, please.
-
-> +       int rx_urb_cnt;
-> +       int ret;
-> +
-> +       for (rx_urb_cnt = 0; rx_urb_cnt < F81604_MAX_RX_URBS; ++rx_urb_cnt) {
-> +               rx_urb = usb_alloc_urb(0, GFP_KERNEL);
-> +               if (!rx_urb) {
-> +                       ret = -ENOMEM;
-> +                       break;
-> +               }
-> +
-> +               rx_buf = kmalloc(F81604_BULK_SIZE, GFP_KERNEL);
-
-If I understand correctly, rx_buf contains some struct
-f81604_can_frame. What about:
-
-          struct f81604_can_frame *frames;
-          frames = kmalloc_array(F81604_RX_MAX_FRAMES_CNT,
-sizeof(*frame), GFP_KERNEL);
-
-?
-
-With F81604_RX_MAX_FRAMES_CNT the maximum number of frames the device
-is capable of sending in one bulk.
-
-> +               if (!rx_buf) {
-> +                       usb_free_urb(rx_urb);
-> +                       ret = -ENOMEM;
-> +                       break;
-> +               }
-> +
-> +               usb_fill_bulk_urb(rx_urb, priv->dev,
-> +                                 usb_rcvbulkpipe(priv->dev, bulk_in_addr[id]),
-> +                                 rx_buf, F81604_BULK_SIZE,
-> +                                 f81604_read_bulk_callback, netdev);
-> +
-> +               rx_urb->transfer_flags |= URB_FREE_BUFFER;
-> +               usb_anchor_urb(rx_urb, &priv->urbs_anchor);
-> +
-> +               ret = usb_submit_urb(rx_urb, GFP_KERNEL);
-> +               if (ret) {
-> +                       usb_unanchor_urb(rx_urb);
-> +                       usb_free_urb(rx_urb);
-> +
-> +                       break;
-> +               }
-> +
-> +               /* Drop reference, USB core will take care of freeing it */
-> +               usb_free_urb(rx_urb);
-> +       }
-> +
-> +       if (rx_urb_cnt == 0) {
-> +               netdev_warn(netdev, "%s: submit rx urb failed: %pe\n",
-> +                           __func__, ERR_PTR(ret));
-> +
-> +               goto error;
-> +       }
-> +       int_urb = usb_alloc_urb(0, GFP_KERNEL);
-> +       if (!int_urb) {
-> +               ret = -ENOMEM;
-> +               goto error;
-> +       }
-> +
-> +       int_buf = kmalloc(F81604_BULK_SIZE, GFP_KERNEL);
-
-Why F81604_BULK_SIZE?
-
-The int_buf is a struct f81604_int_data, right?
-
-         struct f81604_int_data *int_data;
-         int_data = kmalloc(sizeof(*int_data), GFP_KERNEL);
-
-> +       if (!int_buf) {
-> +               usb_free_urb(int_urb);
-> +               ret = -ENOMEM;
-> +               goto error;
-> +       }
-> +
-> +       usb_fill_int_urb(int_urb, priv->dev,
-> +                        usb_rcvintpipe(priv->dev, int_in_addr[id]), int_buf,
-> +                        F81604_INT_SIZE, f81604_read_int_callback, netdev, 1);
-
-       usb_fill_int_urb(int_urb, priv->dev,
-                        usb_rcvintpipe(priv->dev, int_in_addr[id]), int_data,
-                        sizeof(*int_data), f81604_read_int_callback, netdev, 1);
-
-> +
-> +       int_urb->transfer_flags |= URB_FREE_BUFFER;
-> +       usb_anchor_urb(int_urb, &priv->urbs_anchor);
-> +
-> +       ret = usb_submit_urb(int_urb, GFP_KERNEL);
-> +       if (ret) {
-> +               usb_unanchor_urb(int_urb);
-> +               usb_free_urb(int_urb);
-> +
-> +               netdev_warn(netdev, "%s: submit int urb failed: %pe\n",
-> +                           __func__, ERR_PTR(ret));
-> +               goto error;
-> +       }
-> +
-> +       /* Drop reference, USB core will take care of freeing it */
-> +       usb_free_urb(int_urb);
-> +
-> +       return 0;
-> +
-> +error:
-> +       f81604_unregister_urbs(priv);
-> +       return ret;
-> +}
-> +
-> +static int f81604_start(struct net_device *netdev)
-> +{
-> +       struct f81604_port_priv *priv = netdev_priv(netdev);
-> +       int ret;
-> +       u8 mode;
-> +       u8 tmp;
-> +
-> +       mode = F81604_RX_AUTO_RELEASE_BUF | F81604_INT_WHEN_CHANGE;
-> +
-> +       /* Set TR/AT mode */
-> +       if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT)
-> +               mode |= F81604_TX_ONESHOT;
-> +       else
-> +               mode |= F81604_TX_NORMAL;
-> +
-> +       ret = f81604_sja1000_write(priv, F81604_CTRL_MODE_REG, mode);
-> +       if (ret)
-> +               return ret;
-> +
-> +       /* set reset mode */
-> +       ret = f81604_set_reset_mode(priv);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = f81604_chipset_init(priv);
-> +       if (ret)
-> +               return ret;
-> +
-> +       /* Clear error counters and error code capture */
-> +       ret = f81604_sja1000_write(priv, F81604_SJA1000_TXERR, 0);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = f81604_sja1000_write(priv, F81604_SJA1000_RXERR, 0);
-> +       if (ret)
-> +               return ret;
-> +
-> +       /* Read clear for ECC/ALC/IR register */
-> +       ret = f81604_sja1000_read(priv, F81604_SJA1000_ECC, &tmp);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = f81604_sja1000_read(priv, F81604_SJA1000_ALC, &tmp);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = f81604_sja1000_read(priv, F81604_SJA1000_IR, &tmp);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = f81604_register_urbs(priv);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = f81604_set_normal_mode(priv);
-> +       if (ret) {
-> +               f81604_unregister_urbs(priv);
-> +               return ret;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int f81604_set_bittiming(struct net_device *dev)
-> +{
-> +       struct f81604_port_priv *priv = netdev_priv(dev);
-> +       struct can_bittiming *bt = &priv->can.bittiming;
-> +       u8 btr0, btr1;
-> +       int ret;
-> +
-> +       btr0 = FIELD_PREP(F81604_BRP_MASK, bt->brp - 1) |
-> +              FIELD_PREP(F81604_SJW_MASK, bt->sjw - 1);
-> +
-> +       btr1 = FIELD_PREP(F81604_SEG1_MASK,
-> +                         bt->prop_seg + bt->phase_seg1 - 1) |
-> +              FIELD_PREP(F81604_SEG2_MASK, bt->phase_seg2 - 1);
-> +
-> +       if (priv->can.ctrlmode & CAN_CTRLMODE_3_SAMPLES)
-> +               btr1 |= F81604_SJA1000_BTR1_SAMPLE_TRIPLE;
-> +
-> +       ret = f81604_sja1000_write(priv, F81604_SJA1000_BTR0, btr0);
-> +       if (ret) {
-> +               netdev_warn(dev, "%s: Set BTR0 failed: %pe\n", __func__,
-> +                           ERR_PTR(ret));
-> +               return ret;
-> +       }
-> +
-> +       ret = f81604_sja1000_write(priv, F81604_SJA1000_BTR1, btr1);
-> +       if (ret) {
-> +               netdev_warn(dev, "%s: Set BTR1 failed: %pe\n", __func__,
-> +                           ERR_PTR(ret));
-> +               return ret;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int f81604_set_mode(struct net_device *netdev, enum can_mode mode)
-> +{
-> +       int ret;
-> +
-> +       switch (mode) {
-> +       case CAN_MODE_START:
-> +               ret = f81604_start(netdev);
-> +               if (!ret && netif_queue_stopped(netdev))
-> +                       netif_wake_queue(netdev);
-> +               break;
-> +
-> +       default:
-> +               ret = -EOPNOTSUPP;
-> +       }
-> +
-> +       return ret;
-> +}
-> +
-> +static void f81604_write_bulk_callback(struct urb *urb)
-> +{
-> +       struct net_device *netdev = urb->context;
-> +
-> +       if (!netif_device_present(netdev))
-> +               return;
-> +
-> +       if (urb->status)
-> +               netdev_info(netdev, "%s: Tx URB error: %pe\n", __func__,
-> +                           ERR_PTR(urb->status));
-> +}
-> +
-> +static void f81604_clear_reg_work(struct work_struct *work)
-> +{
-> +       struct f81604_port_priv *priv;
-> +       struct net_device *netdev;
-> +       u8 tmp;
-> +
-> +       priv = container_of(work, struct f81604_port_priv, clear_reg_work);
-> +       netdev = priv->netdev;
-> +
-> +       /* dummy read for clear Arbitration lost capture(ALC) register. */
-> +       if (test_and_clear_bit(F81604_CLEAR_ALC, &priv->clear_flags))
-> +               f81604_sja1000_read(priv, F81604_SJA1000_ALC, &tmp);
-> +
-> +       /* dummy read for clear Error code capture(ECC) register. */
-> +       if (test_and_clear_bit(F81604_CLEAR_ECC, &priv->clear_flags))
-> +               f81604_sja1000_read(priv, F81604_SJA1000_ECC, &tmp);
-> +
-> +       /* dummy write for clear data overrun flag. */
-> +       if (test_and_clear_bit(F81604_CLEAR_OVERRUN, &priv->clear_flags))
-> +               f81604_sja1000_write(priv, F81604_SJA1000_CMR,
-> +                                    F81604_SJA1000_CMD_CDO);
-> +}
-> +
-> +static netdev_tx_t f81604_start_xmit(struct sk_buff *skb,
-> +                                    struct net_device *netdev)
-> +{
-> +       struct can_frame *cf = (struct can_frame *)skb->data;
-> +       struct f81604_port_priv *priv = netdev_priv(netdev);
-> +       struct net_device_stats *stats = &netdev->stats;
-> +       struct f81604_can_frame *frame;
-> +       u32 id = priv->netdev->dev_id;
-> +       struct urb *write_urb;
-> +       u8 *bulk_write_buffer;
-
-Do not use an opaque buffer. Instead, directly use struct f81604_can_frame.
-
-> +       int ret;
-> +
-> +       if (can_dev_dropped_skb(netdev, skb))
-> +               return NETDEV_TX_OK;
-> +
-> +       netif_stop_queue(netdev);
-> +
-> +       write_urb = usb_alloc_urb(0, GFP_ATOMIC);
-> +       if (!write_urb)
-> +               goto nomem_urb;
-> +
-> +       bulk_write_buffer = kzalloc(F81604_DATA_SIZE, GFP_ATOMIC);
-
-         frame = kzalloc(sizeof(*frame), GFP_ATOMIC);
-
-> +       if (!bulk_write_buffer)
-> +               goto nomem_buf;
-> +
-> +       usb_fill_bulk_urb(write_urb, priv->dev,
-> +                         usb_sndbulkpipe(priv->dev, bulk_out_addr[id]),
-> +                         bulk_write_buffer, F81604_DATA_SIZE,
-> +                         f81604_write_bulk_callback, priv->netdev);
-
-       usb_fill_bulk_urb(write_urb, priv->dev,
-                         usb_sndbulkpipe(priv->dev, bulk_out_addr[id]),
-                         frame, sizeof(*frame),
-                         f81604_write_bulk_callback, priv->netdev);
-
-> +
-> +       write_urb->transfer_flags |= URB_FREE_BUFFER;
-> +
-> +       frame = (struct f81604_can_frame *)bulk_write_buffer;
-> +       frame->cmd = F81604_CMD_DATA;
-> +       frame->dlc = cf->len;
-> +
-> +       if (cf->can_id & CAN_RTR_FLAG)
-> +               frame->dlc |= F81604_DLC_RTR_BIT;
-> +
-> +       if (cf->can_id & CAN_EFF_FLAG) {
-> +               id = (cf->can_id & CAN_EFF_MASK) << 3;
-
-Same as above: use a define instead of magic number.
-
-> +               put_unaligned_be32(id, &frame->eff.id);
-> +
-> +               frame->dlc |= F81604_DLC_EFF_BIT;
-> +
-> +               if (!(cf->can_id & CAN_RTR_FLAG))
-> +                       memcpy(&frame->eff.data, cf->data, cf->len);
-> +       } else {
-> +               id = (cf->can_id & CAN_SFF_MASK) << 5;
-
-Same as above: use a define instead of magic number.
-
-> +               put_unaligned_be16(id, &frame->sff.id);
-> +
-> +               if (!(cf->can_id & CAN_RTR_FLAG))
-> +                       memcpy(&frame->sff.data, cf->data, cf->len);
-> +       }
-> +
-> +       can_put_echo_skb(skb, netdev, 0, 0);
-> +
-> +       ret = usb_submit_urb(write_urb, GFP_ATOMIC);
-> +       if (ret) {
-> +               netdev_err(netdev, "%s: failed to resubmit tx bulk urb: %pe\n",
-> +                          __func__, ERR_PTR(ret));
-> +
-> +               can_free_echo_skb(netdev, 0, NULL);
-> +               stats->tx_dropped++;
-> +
-> +               if (ret == -ENODEV)
-> +                       netif_device_detach(netdev);
-> +               else
-> +                       netif_wake_queue(netdev);
-> +       }
-> +
-> +       /* let usb core take care of this urb */
-> +       usb_free_urb(write_urb);
-> +
-> +       return NETDEV_TX_OK;
-> +
-> +nomem_buf:
-> +       usb_free_urb(write_urb);
-> +
-> +nomem_urb:
-> +       dev_kfree_skb(skb);
-> +       stats->tx_dropped++;
-> +       netif_wake_queue(netdev);
-> +
-> +       return NETDEV_TX_OK;
-> +}
-> +
-> +static int f81604_get_berr_counter(const struct net_device *netdev,
-> +                                  struct can_berr_counter *bec)
-> +{
-> +       struct f81604_port_priv *priv = netdev_priv(netdev);
-> +       u8 txerr, rxerr;
-> +       int ret;
-> +
-> +       ret = f81604_sja1000_read(priv, F81604_SJA1000_TXERR, &txerr);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = f81604_sja1000_read(priv, F81604_SJA1000_RXERR, &rxerr);
-> +       if (ret)
-> +               return ret;
-> +
-> +       bec->txerr = txerr;
-> +       bec->rxerr = rxerr;
-> +
-> +       return 0;
-> +}
-> +
-> +/* Open USB device */
-> +static int f81604_open(struct net_device *netdev)
-> +{
-> +       int ret;
-> +
-> +       ret = open_candev(netdev);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = f81604_start(netdev);
-> +       if (ret)
-> +               goto start_failed;
-> +
-> +       netif_start_queue(netdev);
-> +       return 0;
-> +
-> +start_failed:
-> +       if (ret == -ENODEV)
-> +               netif_device_detach(netdev);
-> +
-> +       close_candev(netdev);
-> +
-> +       return ret;
-> +}
-> +
-> +/* Close USB device */
-> +static int f81604_close(struct net_device *netdev)
-> +{
-> +       struct f81604_port_priv *priv = netdev_priv(netdev);
-> +
-> +       f81604_set_reset_mode(priv);
-> +
-> +       netif_stop_queue(netdev);
-> +       cancel_work_sync(&priv->clear_reg_work);
-> +       close_candev(netdev);
-> +
-> +       f81604_unregister_urbs(priv);
-> +
-> +       return 0;
-> +}
-> +
-> +static const struct net_device_ops f81604_netdev_ops = {
-> +       .ndo_open = f81604_open,
-> +       .ndo_stop = f81604_close,
-> +       .ndo_start_xmit = f81604_start_xmit,
-> +       .ndo_change_mtu = can_change_mtu,
-> +};
-> +
-> +static const struct can_bittiming_const f81604_bittiming_const = {
-> +       .name = KBUILD_MODNAME,
-> +       .tseg1_min = 1,
-> +       .tseg1_max = 16,
-> +       .tseg2_min = 1,
-> +       .tseg2_max = 8,
-> +       .sjw_max = 4,
-> +       .brp_min = 1,
-> +       .brp_max = 64,
-> +       .brp_inc = 1,
-> +};
-> +
-> +/* Called by the usb core when driver is unloaded or device is removed */
-> +static void f81604_disconnect(struct usb_interface *intf)
-> +{
-> +       struct f81604_priv *priv = usb_get_intfdata(intf);
-> +       struct f81604_port_priv *port_priv;
-> +       int i;
-> +
-> +       for (i = 0; i < ARRAY_SIZE(priv->netdev); ++i) {
-> +               if (!priv->netdev[i])
-> +                       continue;
-> +
-> +               port_priv = netdev_priv(priv->netdev[i]);
-> +
-> +               unregister_netdev(priv->netdev[i]);
-> +               free_candev(priv->netdev[i]);
-> +       }
-> +}
-> +
-> +static int __f81604_set_termination(struct usb_device *dev, int idx, u16 term)
-> +{
-> +       u8 mask, data = 0;
-> +
-> +       if (idx == 0)
-> +               mask = F81604_CAN0_TERM;
-> +       else
-> +               mask = F81604_CAN1_TERM;
-> +
-> +       if (term)
-> +               data = mask;
-> +
-> +       return f81604_update_bits(dev, F81604_TERMINATOR_REG, mask, data);
-> +}
-> +
-> +static int f81604_set_termination(struct net_device *netdev, u16 term)
-> +{
-> +       struct f81604_port_priv *port_priv = netdev_priv(netdev);
-> +
-> +       ASSERT_RTNL();
-> +
-> +       return __f81604_set_termination(port_priv->dev, netdev->dev_id, term);
-> +}
-> +
-> +static int f81604_probe(struct usb_interface *intf,
-> +                       const struct usb_device_id *id)
-> +{
-> +       struct usb_device *dev = interface_to_usbdev(intf);
-> +       struct f81604_port_priv *port_priv;
-> +       struct net_device *netdev;
-> +       struct f81604_priv *priv;
-> +       int i, ret;
-> +
-> +       priv = devm_kzalloc(&intf->dev, sizeof(*priv), GFP_KERNEL);
-> +       if (!priv)
-> +               return -ENOMEM;
-> +
-> +       usb_set_intfdata(intf, priv);
-> +
-> +       for (i = 0; i < ARRAY_SIZE(priv->netdev); ++i) {
-> +               ret = __f81604_set_termination(dev, i, 0);
-> +               if (ret) {
-> +                       dev_err(&intf->dev,
-> +                               "Set can%d termination failed: %pe\n", i,
-
-That would print:
-
-  Set can0 termination failed
-
-or:
-
-  Set can1 termination failed
-
-But can0 and can1 could be already use if there are other can devices
-connected to the host. You should use a less ambiguous notation. e.g.
-
-  "Setting termination of channel #%d failed: %pe"
-
-> +                               ERR_PTR(ret));
-> +                       return ret;
-> +               }
-> +       }
-> +
-> +       for (i = 0; i < ARRAY_SIZE(priv->netdev); ++i) {
-> +               netdev = alloc_candev(sizeof(*port_priv), 1);
-> +               if (!netdev) {
-> +                       dev_err(&intf->dev, "Couldn't alloc candev: %d\n", i);
-> +                       ret = -ENOMEM;
-> +
-> +                       goto failure_cleanup;
-> +               }
-> +
-> +               port_priv = netdev_priv(netdev);
-> +               netdev->dev_id = i;
-
-I think that dev_port is more appropriated than dev_id here. c.f.:
-
-  https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-net
-
-> +               INIT_WORK(&port_priv->clear_reg_work, f81604_clear_reg_work);
-> +               init_usb_anchor(&port_priv->urbs_anchor);
-> +
-> +               port_priv->intf = intf;
-> +               port_priv->dev = dev;
-> +               port_priv->netdev = netdev;
-> +               port_priv->can.clock.freq = F81604_CAN_CLOCK;
-> +
-> +               port_priv->can.termination_const = f81604_termination;
-> +               port_priv->can.termination_const_cnt =
-> +                       ARRAY_SIZE(f81604_termination);
-> +               port_priv->can.bittiming_const = &f81604_bittiming_const;
-> +               port_priv->can.do_set_bittiming = f81604_set_bittiming;
-> +               port_priv->can.do_set_mode = f81604_set_mode;
-> +               port_priv->can.do_set_termination = f81604_set_termination;
-> +               port_priv->can.do_get_berr_counter = f81604_get_berr_counter;
-> +               port_priv->can.ctrlmode_supported =
-> +                       CAN_CTRLMODE_LISTENONLY | CAN_CTRLMODE_3_SAMPLES |
-> +                       CAN_CTRLMODE_ONE_SHOT | CAN_CTRLMODE_BERR_REPORTING |
-> +                       CAN_CTRLMODE_PRESUME_ACK;
-> +
-> +               netdev->ethtool_ops = &f81604_ethtool_ops;
-> +               netdev->netdev_ops = &f81604_netdev_ops;
-> +               netdev->flags |= IFF_ECHO;
-> +
-> +               SET_NETDEV_DEV(netdev, &intf->dev);
-> +
-> +               ret = register_candev(netdev);
-> +               if (ret) {
-> +                       netdev_err(netdev, "register CAN device failed: %pe\n",
-> +                                  ERR_PTR(ret));
-> +                       free_candev(netdev);
-> +
-> +                       goto failure_cleanup;
-> +               }
-> +
-> +               priv->netdev[i] = netdev;
-> +
-> +               dev_info(&intf->dev, "Channel #%d registered as %s\n", i,
-> +                        netdev->name);
-
-Do not print this message. Instead do:
-
-          netdev->dev_port = i;
-
-With this, you can then confirm the mapping using:
-
-  udevadm info --attribute-walk /sys/class/net/canX | grep dev_port
-
-> +       }
-> +
-> +       return 0;
-> +
-> +failure_cleanup:
-> +       f81604_disconnect(intf);
-> +       return ret;
-> +}
-> +
-> +static struct usb_driver f81604_driver = {
-> +       .name = KBUILD_MODNAME,
-> +       .probe = f81604_probe,
-> +       .disconnect = f81604_disconnect,
-> +       .id_table = f81604_table,
-> +};
-> +
-> +module_usb_driver(f81604_driver);
-> +
-> +MODULE_AUTHOR("Ji-Ze Hong (Peter Hong) <peter_hong@fintek.com.tw>");
-> +MODULE_DESCRIPTION("Fintek F81604 USB to 2xCANBUS");
-> +MODULE_LICENSE("GPL");
-> --
-> 2.17.1
->
+On Wed, Apr 19, 2023 at 11:30:53AM +0200, Stefano Garzarella wrote:
+> On Fri, Apr 14, 2023 at 12:25:59AM +0000, Bobby Eshleman wrote:
+> > Because the dgram sendmsg() path for AF_VSOCK acquires the socket lock
+> > it does not scale when many senders share a socket.
+> > 
+> > Prior to this patch the socket lock is used to protect the local_addr,
+> > remote_addr, transport, and buffer size variables. What follows are the
+> > new protection schemes for the various protected fields that ensure a
+> > race-free multi-sender sendmsg() path for vsock dgrams.
+> > 
+> > - local_addr
+> >    local_addr changes as a result of binding a socket. The write path
+> >    for local_addr is bind() and various vsock_auto_bind() call sites.
+> >    After a socket has been bound via vsock_auto_bind() or bind(), subsequent
+> >    calls to bind()/vsock_auto_bind() do not write to local_addr again. bind()
+> >    rejects the user request and vsock_auto_bind() early exits.
+> >    Therefore, the local addr can not change while a parallel thread is
+> >    in sendmsg() and lock-free reads of local addr in sendmsg() are safe.
+> >    Change: only acquire lock for auto-binding as-needed in sendmsg().
+> > 
+> > - vsk->transport
+> >    Updated upon socket creation and it doesn't change again until the
+> 
+> This is true only for dgram, right?
+> 
+
+Yes.
+
+> How do we decide which transport to assign for dgram?
+> 
+
+The transport is assigned in proto->create() [vsock_create()]. It is
+assigned there *only* for dgrams, whereas for streams/seqpackets it is
+assigned in connect(). vsock_create() sets transport to
+'transport_dgram' if sock->type == SOCK_DGRAM.
+
+vsock_sk_destruct() then eventually sets vsk->transport to NULL.
+
+Neither destruct nor create can occur in parallel with sendmsg().
+create() hasn't yet returned the sockfd for the user to call upon it
+sendmsg(), and AFAICT destruct is only called after the final socket
+reference is released, which only happens after the socket no longer
+exists in the fd lookup table and so sendmsg() will fail before it ever
+has the chance to race.
+
+> >    socket is destroyed, which only happens after the socket refcnt reaches
+> >    zero. This prevents any sendmsg() call from being entered because the
+> >    sockfd lookup fails beforehand. That is, sendmsg() and vsk->transport
+> >    writes cannot execute in parallel. Additionally, connect() doesn't
+> >    update vsk->transport for dgrams as it does for streams. Therefore
+> >    vsk->transport is also safe to access lock-free in the sendmsg() path.
+> >    No change.
+> > 
+> > - buffer size variables
+> >    Not used by dgram, so they do not need protection. No change.
+> 
+> Is this true because for dgram we use the socket buffer?
+> Is it the same for VMCI?
+
+Yes. The buf_alloc derived from buffer_size is also always ignored after
+being initialized once since credits aren't used.
+
+My reading of the VMCI code is that the buffer_size and
+buffer_{min,max}_size variables are used only in connectible calls (like
+connect and recv_listen), but not for datagrams.
+
+> 
+> > 
+> > - remote_addr
+> >    Needs additional protection because before this patch the
+> >    remote_addr (consisting of several fields such as cid, port, and flags)
+> >    only changed atomically under socket lock context. By acquiring the
+> >    socket lock to read the structure, the changes made by connect() were
+> >    always made visible to sendmsg() atomically. Consequently, to retain
+> >    atomicity of updates but offer lock-free access, this patch
+> >    redesigns this field as an RCU-protected pointer.
+> > 
+> >    Writers are still synchronized using the socket lock, but readers
+> >    only read inside RCU read-side critical sections.
+> > 
+> > Helpers are introduced for accessing and updating the new pointer.
+> > 
+> > The remote_addr structure is wrapped together with an rcu_head into a
+> > sockaddr_vm_rcu structure so that kfree_rcu() can be used. This removes
+> > the need of writers to use synchronize_rcu() after freeing old structures
+> > which is simply more efficient and reduces code churn where remote_addr
+> > is already being updated inside read-side sections.
+> > 
+> > Only virtio has been tested, but updates were necessary to the VMCI and
+> > hyperv code. Unfortunately the author does not have access to
+> > VMCI/hyperv systems so those changes are untested.
+> > 
+> > Perf Tests
+> > vCPUS: 16
+> > Threads: 16
+> > Payload: 4KB
+> > Test Runs: 5
+> > Type: SOCK_DGRAM
+> > 
+> > Before: 245.2 MB/s
+> > After: 509.2 MB/s (+107%)
+> > 
+> > Notably, on the same test system, vsock dgram even outperforms
+> > multi-threaded UDP over virtio-net with vhost and MQ support enabled.
+> 
+> Cool!
+> 
+> This patch is quite large, so I need to review it carefully in future
+> versions, but in general it makes sense to me.
+> 
+> Thanks,
+> Stefano
+> 
+
+Thanks for the initial comments!
+
+Best,
+Bobby
+
+> > 
+> > Throughput metrics for single-threaded SOCK_DGRAM and
+> > single/multi-threaded SOCK_STREAM showed no statistically signficant
+> > throughput changes (lowest p-value reaching 0.27), with the range of the
+> > mean difference ranging between -5% to +1%.
+> > 
+> > Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+> > ---
+> > drivers/vhost/vsock.c                   |  12 +-
+> > include/net/af_vsock.h                  |  19 ++-
+> > net/vmw_vsock/af_vsock.c                | 261 ++++++++++++++++++++++++++++----
+> > net/vmw_vsock/diag.c                    |  10 +-
+> > net/vmw_vsock/hyperv_transport.c        |  15 +-
+> > net/vmw_vsock/virtio_transport_common.c |  22 ++-
+> > net/vmw_vsock/vmci_transport.c          |  70 ++++++---
+> > 7 files changed, 344 insertions(+), 65 deletions(-)
+> > 
+> > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> > index 028cf079225e..da105cb856ac 100644
+> > --- a/drivers/vhost/vsock.c
+> > +++ b/drivers/vhost/vsock.c
+> > @@ -296,13 +296,17 @@ static int
+> > vhost_transport_cancel_pkt(struct vsock_sock *vsk)
+> > {
+> > 	struct vhost_vsock *vsock;
+> > +	unsigned int cid;
+> > 	int cnt = 0;
+> > 	int ret = -ENODEV;
+> > 
+> > 	rcu_read_lock();
+> > +	ret = vsock_remote_addr_cid(vsk, &cid);
+> > +	if (ret < 0)
+> > +		goto out;
+> > 
+> > 	/* Find the vhost_vsock according to guest context id  */
+> > -	vsock = vhost_vsock_get(vsk->remote_addr.svm_cid);
+> > +	vsock = vhost_vsock_get(cid);
+> > 	if (!vsock)
+> > 		goto out;
+> > 
+> > @@ -686,6 +690,10 @@ static void vhost_vsock_flush(struct vhost_vsock *vsock)
+> > static void vhost_vsock_reset_orphans(struct sock *sk)
+> > {
+> > 	struct vsock_sock *vsk = vsock_sk(sk);
+> > +	unsigned int cid;
+> > +
+> > +	if (vsock_remote_addr_cid(vsk, &cid) < 0)
+> > +		return;
+> > 
+> > 	/* vmci_transport.c doesn't take sk_lock here either.  At least we're
+> > 	 * under vsock_table_lock so the sock cannot disappear while we're
+> > @@ -693,7 +701,7 @@ static void vhost_vsock_reset_orphans(struct sock *sk)
+> > 	 */
+> > 
+> > 	/* If the peer is still valid, no need to reset connection */
+> > -	if (vhost_vsock_get(vsk->remote_addr.svm_cid))
+> > +	if (vhost_vsock_get(cid))
+> > 		return;
+> > 
+> > 	/* If the close timeout is pending, let it expire.  This avoids races
+> > diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+> > index 57af28fede19..c02fd6ad0047 100644
+> > --- a/include/net/af_vsock.h
+> > +++ b/include/net/af_vsock.h
+> > @@ -25,12 +25,17 @@ extern spinlock_t vsock_table_lock;
+> > #define vsock_sk(__sk)    ((struct vsock_sock *)__sk)
+> > #define sk_vsock(__vsk)   (&(__vsk)->sk)
+> > 
+> > +struct sockaddr_vm_rcu {
+> > +	struct sockaddr_vm addr;
+> > +	struct rcu_head rcu;
+> > +};
+> > +
+> > struct vsock_sock {
+> > 	/* sk must be the first member. */
+> > 	struct sock sk;
+> > 	const struct vsock_transport *transport;
+> > 	struct sockaddr_vm local_addr;
+> > -	struct sockaddr_vm remote_addr;
+> > +	struct sockaddr_vm_rcu * __rcu remote_addr;
+> > 	/* Links for the global tables of bound and connected sockets. */
+> > 	struct list_head bound_table;
+> > 	struct list_head connected_table;
+> > @@ -206,7 +211,7 @@ void vsock_release_pending(struct sock *pending);
+> > void vsock_add_pending(struct sock *listener, struct sock *pending);
+> > void vsock_remove_pending(struct sock *listener, struct sock *pending);
+> > void vsock_enqueue_accept(struct sock *listener, struct sock *connected);
+> > -void vsock_insert_connected(struct vsock_sock *vsk);
+> > +int vsock_insert_connected(struct vsock_sock *vsk);
+> > void vsock_remove_bound(struct vsock_sock *vsk);
+> > void vsock_remove_connected(struct vsock_sock *vsk);
+> > struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
+> > @@ -244,4 +249,14 @@ static inline void __init vsock_bpf_build_proto(void)
+> > {}
+> > #endif
+> > 
+> > +/* RCU-protected remote addr helpers */
+> > +int vsock_remote_addr_cid(struct vsock_sock *vsk, unsigned int *cid);
+> > +int vsock_remote_addr_port(struct vsock_sock *vsk, unsigned int *port);
+> > +int vsock_remote_addr_cid_port(struct vsock_sock *vsk, unsigned int *cid,
+> > +			       unsigned int *port);
+> > +int vsock_remote_addr_copy(struct vsock_sock *vsk, struct sockaddr_vm *dest);
+> > +bool vsock_remote_addr_bound(struct vsock_sock *vsk);
+> > +bool vsock_remote_addr_equals(struct vsock_sock *vsk, struct sockaddr_vm *other);
+> > +int vsock_remote_addr_update_cid_port(struct vsock_sock *vsk, u32 cid, u32 port);
+> > +
+> > #endif /* __AF_VSOCK_H__ */
+> > diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+> > index 46b3f35e3adc..93b4abbf20b4 100644
+> > --- a/net/vmw_vsock/af_vsock.c
+> > +++ b/net/vmw_vsock/af_vsock.c
+> > @@ -145,6 +145,139 @@ static const struct vsock_transport *transport_local;
+> > static DEFINE_MUTEX(vsock_register_mutex);
+> > 
+> > /**** UTILS ****/
+> > +bool vsock_remote_addr_bound(struct vsock_sock *vsk)
+> > +{
+> > +	struct sockaddr_vm_rcu *remote_addr;
+> > +	bool ret;
+> > +
+> > +	rcu_read_lock();
+> > +	remote_addr = rcu_dereference(vsk->remote_addr);
+> > +	if (!remote_addr) {
+> > +		rcu_read_unlock();
+> > +		return false;
+> > +	}
+> > +
+> > +	ret = vsock_addr_bound(&remote_addr->addr);
+> > +	rcu_read_unlock();
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vsock_remote_addr_bound);
+> > +
+> > +int vsock_remote_addr_copy(struct vsock_sock *vsk, struct sockaddr_vm *dest)
+> > +{
+> > +	struct sockaddr_vm_rcu *remote_addr;
+> > +
+> > +	rcu_read_lock();
+> > +	remote_addr = rcu_dereference(vsk->remote_addr);
+> > +	if (!remote_addr) {
+> > +		rcu_read_unlock();
+> > +		return -EINVAL;
+> > +	}
+> > +	memcpy(dest, &remote_addr->addr, sizeof(*dest));
+> > +	rcu_read_unlock();
+> > +
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vsock_remote_addr_copy);
+> > +
+> > +int vsock_remote_addr_cid(struct vsock_sock *vsk, unsigned int *cid)
+> > +{
+> > +	return vsock_remote_addr_cid_port(vsk, cid, NULL);
+> > +}
+> > +EXPORT_SYMBOL_GPL(vsock_remote_addr_cid);
+> > +
+> > +int vsock_remote_addr_port(struct vsock_sock *vsk, unsigned int *port)
+> > +{
+> > +	return vsock_remote_addr_cid_port(vsk, NULL, port);
+> > +}
+> > +EXPORT_SYMBOL_GPL(vsock_remote_addr_port);
+> > +
+> > +int vsock_remote_addr_cid_port(struct vsock_sock *vsk, unsigned int *cid,
+> > +			       unsigned int *port)
+> > +{
+> > +	struct sockaddr_vm_rcu *remote_addr;
+> > +
+> > +	rcu_read_lock();
+> > +	remote_addr = rcu_dereference(vsk->remote_addr);
+> > +	if (!remote_addr) {
+> > +		rcu_read_unlock();
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	if (cid)
+> > +		*cid = remote_addr->addr.svm_cid;
+> > +	if (port)
+> > +		*port = remote_addr->addr.svm_port;
+> > +
+> > +	rcu_read_unlock();
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vsock_remote_addr_cid_port);
+> > +
+> > +/* The socket lock must be held by the caller */
+> > +int vsock_remote_addr_update_cid_port(struct vsock_sock *vsk, u32 cid, u32 port)
+> > +{
+> > +	struct sockaddr_vm_rcu *old, *new;
+> > +
+> > +	new = kmalloc(sizeof(*new), GFP_KERNEL);
+> > +	if (!new)
+> > +		return -ENOMEM;
+> > +
+> > +	rcu_read_lock();
+> > +	old = rcu_dereference(vsk->remote_addr);
+> > +	if (!old) {
+> > +		kfree(new);
+> > +		return -EINVAL;
+> > +	}
+> > +	memcpy(&new->addr, &old->addr, sizeof(new->addr));
+> > +	rcu_read_unlock();
+> > +
+> > +	new->addr.svm_cid = cid;
+> > +	new->addr.svm_port = port;
+> > +
+> > +	old = rcu_replace_pointer(vsk->remote_addr, new, lockdep_sock_is_held(sk_vsock(vsk)));
+> > +	kfree_rcu(old, rcu);
+> > +
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vsock_remote_addr_update_cid_port);
+> > +
+> > +/* The socket lock must be held by the caller */
+> > +int vsock_remote_addr_update(struct vsock_sock *vsk, struct sockaddr_vm *src)
+> > +{
+> > +	struct sockaddr_vm_rcu *old, *new;
+> > +
+> > +	new = kmalloc(sizeof(*new), GFP_KERNEL);
+> > +	if (!new)
+> > +		return -ENOMEM;
+> > +
+> > +	memcpy(&new->addr, src, sizeof(new->addr));
+> > +	old = rcu_replace_pointer(vsk->remote_addr, new, lockdep_sock_is_held(sk_vsock(vsk)));
+> > +	kfree_rcu(old, rcu);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +bool vsock_remote_addr_equals(struct vsock_sock *vsk,
+> > +			      struct sockaddr_vm *other)
+> > +{
+> > +	struct sockaddr_vm_rcu *remote_addr;
+> > +	bool equals;
+> > +
+> > +	rcu_read_lock();
+> > +	remote_addr = rcu_dereference(vsk->remote_addr);
+> > +	if (!remote_addr) {
+> > +		rcu_read_unlock();
+> > +		return false;
+> > +	}
+> > +
+> > +	equals = vsock_addr_equals_addr(&remote_addr->addr, other);
+> > +	rcu_read_unlock();
+> > +
+> > +	return equals;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vsock_remote_addr_equals);
+> > 
+> > /* Each bound VSocket is stored in the bind hash table and each connected
+> >  * VSocket is stored in the connected hash table.
+> > @@ -254,10 +387,16 @@ static struct sock *__vsock_find_connected_socket(struct sockaddr_vm *src,
+> > 
+> > 	list_for_each_entry(vsk, vsock_connected_sockets(src, dst),
+> > 			    connected_table) {
+> > -		if (vsock_addr_equals_addr(src, &vsk->remote_addr) &&
+> > +		struct sockaddr_vm_rcu *remote_addr;
+> > +
+> > +		rcu_read_lock();
+> > +		remote_addr = rcu_dereference(vsk->remote_addr);
+> > +		if (vsock_addr_equals_addr(src, &remote_addr->addr) &&
+> > 		    dst->svm_port == vsk->local_addr.svm_port) {
+> > +			rcu_read_unlock();
+> > 			return sk_vsock(vsk);
+> > 		}
+> > +		rcu_read_unlock();
+> > 	}
+> > 
+> > 	return NULL;
+> > @@ -270,14 +409,25 @@ static void vsock_insert_unbound(struct vsock_sock *vsk)
+> > 	spin_unlock_bh(&vsock_table_lock);
+> > }
+> > 
+> > -void vsock_insert_connected(struct vsock_sock *vsk)
+> > +int vsock_insert_connected(struct vsock_sock *vsk)
+> > {
+> > -	struct list_head *list = vsock_connected_sockets(
+> > -		&vsk->remote_addr, &vsk->local_addr);
+> > +	struct list_head *list;
+> > +	struct sockaddr_vm_rcu *remote_addr;
+> > +
+> > +	rcu_read_lock();
+> > +	remote_addr = rcu_dereference(vsk->remote_addr);
+> > +	if (!remote_addr) {
+> > +		rcu_read_unlock();
+> > +		return -EINVAL;
+> > +	}
+> > +	list = vsock_connected_sockets(&remote_addr->addr, &vsk->local_addr);
+> > +	rcu_read_unlock();
+> > 
+> > 	spin_lock_bh(&vsock_table_lock);
+> > 	__vsock_insert_connected(list, vsk);
+> > 	spin_unlock_bh(&vsock_table_lock);
+> > +
+> > +	return 0;
+> > }
+> > EXPORT_SYMBOL_GPL(vsock_insert_connected);
+> > 
+> > @@ -438,10 +588,17 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+> > {
+> > 	const struct vsock_transport *new_transport;
+> > 	struct sock *sk = sk_vsock(vsk);
+> > -	unsigned int remote_cid = vsk->remote_addr.svm_cid;
+> > +	struct sockaddr_vm remote_addr;
+> > +	unsigned int remote_cid;
+> > 	__u8 remote_flags;
+> > 	int ret;
+> > 
+> > +	ret = vsock_remote_addr_copy(vsk, &remote_addr);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	remote_cid = remote_addr.svm_cid;
+> > +
+> > 	/* If the packet is coming with the source and destination CIDs higher
+> > 	 * than VMADDR_CID_HOST, then a vsock channel where all the packets are
+> > 	 * forwarded to the host should be established. Then the host will
+> > @@ -451,10 +608,15 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+> > 	 * the connect path the flag can be set by the user space application.
+> > 	 */
+> > 	if (psk && vsk->local_addr.svm_cid > VMADDR_CID_HOST &&
+> > -	    vsk->remote_addr.svm_cid > VMADDR_CID_HOST)
+> > -		vsk->remote_addr.svm_flags |= VMADDR_FLAG_TO_HOST;
+> > +	    remote_addr.svm_cid > VMADDR_CID_HOST) {
+> > +		remote_addr.svm_flags |= VMADDR_CID_HOST;
+> > +
+> > +		ret = vsock_remote_addr_update(vsk, &remote_addr);
+> > +		if (ret < 0)
+> > +			return ret;
+> > +	}
+> > 
+> > -	remote_flags = vsk->remote_addr.svm_flags;
+> > +	remote_flags = remote_addr.svm_flags;
+> > 
+> > 	switch (sk->sk_type) {
+> > 	case SOCK_DGRAM:
+> > @@ -742,6 +904,7 @@ static struct sock *__vsock_create(struct net *net,
+> > 				   unsigned short type,
+> > 				   int kern)
+> > {
+> > +	struct sockaddr_vm *remote_addr;
+> > 	struct sock *sk;
+> > 	struct vsock_sock *psk;
+> > 	struct vsock_sock *vsk;
+> > @@ -761,7 +924,14 @@ static struct sock *__vsock_create(struct net *net,
+> > 
+> > 	vsk = vsock_sk(sk);
+> > 	vsock_addr_init(&vsk->local_addr, VMADDR_CID_ANY, VMADDR_PORT_ANY);
+> > -	vsock_addr_init(&vsk->remote_addr, VMADDR_CID_ANY, VMADDR_PORT_ANY);
+> > +
+> > +	remote_addr = kmalloc(sizeof(*remote_addr), GFP_KERNEL);
+> > +	if (!remote_addr) {
+> > +		sk_free(sk);
+> > +		return NULL;
+> > +	}
+> > +	vsock_addr_init(remote_addr, VMADDR_CID_ANY, VMADDR_PORT_ANY);
+> > +	rcu_assign_pointer(vsk->remote_addr, remote_addr);
+> > 
+> > 	sk->sk_destruct = vsock_sk_destruct;
+> > 	sk->sk_backlog_rcv = vsock_queue_rcv_skb;
+> > @@ -845,6 +1015,7 @@ static void __vsock_release(struct sock *sk, int level)
+> > static void vsock_sk_destruct(struct sock *sk)
+> > {
+> > 	struct vsock_sock *vsk = vsock_sk(sk);
+> > +	struct sockaddr_vm_rcu *remote_addr;
+> > 
+> > 	vsock_deassign_transport(vsk);
+> > 
+> > @@ -852,8 +1023,8 @@ static void vsock_sk_destruct(struct sock *sk)
+> > 	 * possibly register the address family with the kernel.
+> > 	 */
+> > 	vsock_addr_init(&vsk->local_addr, VMADDR_CID_ANY, VMADDR_PORT_ANY);
+> > -	vsock_addr_init(&vsk->remote_addr, VMADDR_CID_ANY, VMADDR_PORT_ANY);
+> > -
+> > +	remote_addr = rcu_replace_pointer(vsk->remote_addr, NULL, 1);
+> > +	kfree_rcu(remote_addr);
+> > 	put_cred(vsk->owner);
+> > }
+> > 
+> > @@ -943,6 +1114,7 @@ static int vsock_getname(struct socket *sock,
+> > 	struct sock *sk;
+> > 	struct vsock_sock *vsk;
+> > 	struct sockaddr_vm *vm_addr;
+> > +	struct sockaddr_vm_rcu *rcu_ptr;
+> > 
+> > 	sk = sock->sk;
+> > 	vsk = vsock_sk(sk);
+> > @@ -951,11 +1123,17 @@ static int vsock_getname(struct socket *sock,
+> > 	lock_sock(sk);
+> > 
+> > 	if (peer) {
+> > +		rcu_read_lock();
+> > 		if (sock->state != SS_CONNECTED) {
+> > 			err = -ENOTCONN;
+> > 			goto out;
+> > 		}
+> > -		vm_addr = &vsk->remote_addr;
+> > +		rcu_ptr = rcu_dereference(vsk->remote_addr);
+> > +		if (!rcu_ptr) {
+> > +			err = -EINVAL;
+> > +			goto out;
+> > +		}
+> > +		vm_addr = &rcu_ptr->addr;
+> > 	} else {
+> > 		vm_addr = &vsk->local_addr;
+> > 	}
+> > @@ -975,6 +1153,8 @@ static int vsock_getname(struct socket *sock,
+> > 	err = sizeof(*vm_addr);
+> > 
+> > out:
+> > +	if (peer)
+> > +		rcu_read_unlock();
+> > 	release_sock(sk);
+> > 	return err;
+> > }
+> > @@ -1161,7 +1341,7 @@ static int vsock_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+> > 	int err;
+> > 	struct sock *sk;
+> > 	struct vsock_sock *vsk;
+> > -	struct sockaddr_vm *remote_addr;
+> > +	struct sockaddr_vm stack_addr, *remote_addr;
+> > 	const struct vsock_transport *transport;
+> > 
+> > 	if (msg->msg_flags & MSG_OOB)
+> > @@ -1172,15 +1352,26 @@ static int vsock_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+> > 	sk = sock->sk;
+> > 	vsk = vsock_sk(sk);
+> > 
+> > -	lock_sock(sk);
+> > +	/* If auto-binding is required, acquire the slock to avoid potential
+> > +	 * race conditions. Otherwise, do not acquire the lock.
+> > +	 *
+> > +	 * We know that the first check of local_addr is racy (indicated by
+> > +	 * data_race()). By acquiring the lock and then subsequently checking
+> > +	 * again if local_addr is bound (inside vsock_auto_bind()), we can
+> > +	 * ensure there are no real data races.
+> > +	 *
+> > +	 * This technique is borrowed by inet_send_prepare().
+> > +	 */
+> > +	if (data_race(!vsock_addr_bound(&vsk->local_addr))) {
+> > +		lock_sock(sk);
+> > +		err = vsock_auto_bind(vsk);
+> > +		release_sock(sk);
+> > +		if (err)
+> > +			return err;
+> > +	}
+> > 
+> > 	transport = vsk->transport;
+> > 
+> > -	err = vsock_auto_bind(vsk);
+> > -	if (err)
+> > -		goto out;
+> > -
+> > -
+> > 	/* If the provided message contains an address, use that.  Otherwise
+> > 	 * fall back on the socket's remote handle (if it has been connected).
+> > 	 */
+> > @@ -1199,18 +1390,26 @@ static int vsock_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+> > 			goto out;
+> > 		}
+> > 	} else if (sock->state == SS_CONNECTED) {
+> > -		remote_addr = &vsk->remote_addr;
+> > +		err = vsock_remote_addr_copy(vsk, &stack_addr);
+> > +		if (err < 0)
+> > +			goto out;
+> > 
+> > -		if (remote_addr->svm_cid == VMADDR_CID_ANY)
+> > -			remote_addr->svm_cid = transport->get_local_cid();
+> > +		if (stack_addr.svm_cid == VMADDR_CID_ANY) {
+> > +			stack_addr.svm_cid = transport->get_local_cid();
+> > +			lock_sock(sk_vsock(vsk));
+> > +			vsock_remote_addr_update(vsk, &stack_addr);
+> > +			release_sock(sk_vsock(vsk));
+> > +		}
+> > 
+> > 		/* XXX Should connect() or this function ensure remote_addr is
+> > 		 * bound?
+> > 		 */
+> > -		if (!vsock_addr_bound(&vsk->remote_addr)) {
+> > +		if (!vsock_addr_bound(&stack_addr)) {
+> > 			err = -EINVAL;
+> > 			goto out;
+> > 		}
+> > +
+> > +		remote_addr = &stack_addr;
+> > 	} else {
+> > 		err = -EINVAL;
+> > 		goto out;
+> > @@ -1225,7 +1424,6 @@ static int vsock_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+> > 	err = transport->dgram_enqueue(vsk, remote_addr, msg, len);
+> > 
+> > out:
+> > -	release_sock(sk);
+> > 	return err;
+> > }
+> > 
+> > @@ -1243,8 +1441,7 @@ static int vsock_dgram_connect(struct socket *sock,
+> > 	err = vsock_addr_cast(addr, addr_len, &remote_addr);
+> > 	if (err == -EAFNOSUPPORT && remote_addr->svm_family == AF_UNSPEC) {
+> > 		lock_sock(sk);
+> > -		vsock_addr_init(&vsk->remote_addr, VMADDR_CID_ANY,
+> > -				VMADDR_PORT_ANY);
+> > +		vsock_remote_addr_update_cid_port(vsk, VMADDR_CID_ANY, VMADDR_PORT_ANY);
+> > 		sock->state = SS_UNCONNECTED;
+> > 		release_sock(sk);
+> > 		return 0;
+> > @@ -1263,7 +1460,10 @@ static int vsock_dgram_connect(struct socket *sock,
+> > 		goto out;
+> > 	}
+> > 
+> > -	memcpy(&vsk->remote_addr, remote_addr, sizeof(vsk->remote_addr));
+> > +	err = vsock_remote_addr_update(vsk, remote_addr);
+> > +	if (err < 0)
+> > +		goto out;
+> > +
+> > 	sock->state = SS_CONNECTED;
+> > 
+> > 	/* sock map disallows redirection of non-TCP sockets with sk_state !=
+> > @@ -1399,8 +1599,9 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+> > 		}
+> > 
+> > 		/* Set the remote address that we are connecting to. */
+> > -		memcpy(&vsk->remote_addr, remote_addr,
+> > -		       sizeof(vsk->remote_addr));
+> > +		err = vsock_remote_addr_update(vsk, remote_addr);
+> > +		if (err)
+> > +			goto out;
+> > 
+> > 		err = vsock_assign_transport(vsk, NULL);
+> > 		if (err)
+> > @@ -1831,7 +2032,7 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+> > 		goto out;
+> > 	}
+> > 
+> > -	if (!vsock_addr_bound(&vsk->remote_addr)) {
+> > +	if (!vsock_remote_addr_bound(vsk)) {
+> > 		err = -EDESTADDRREQ;
+> > 		goto out;
+> > 	}
+> > diff --git a/net/vmw_vsock/diag.c b/net/vmw_vsock/diag.c
+> > index a2823b1c5e28..f843bae86b32 100644
+> > --- a/net/vmw_vsock/diag.c
+> > +++ b/net/vmw_vsock/diag.c
+> > @@ -15,8 +15,14 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb,
+> > 			u32 portid, u32 seq, u32 flags)
+> > {
+> > 	struct vsock_sock *vsk = vsock_sk(sk);
+> > +	struct sockaddr_vm remote_addr;
+> > 	struct vsock_diag_msg *rep;
+> > 	struct nlmsghdr *nlh;
+> > +	int err;
+> > +
+> > +	err = vsock_remote_addr_copy(vsk, &remote_addr);
+> > +	if (err < 0)
+> > +		return err;
+> > 
+> > 	nlh = nlmsg_put(skb, portid, seq, SOCK_DIAG_BY_FAMILY, sizeof(*rep),
+> > 			flags);
+> > @@ -36,8 +42,8 @@ static int sk_diag_fill(struct sock *sk, struct sk_buff *skb,
+> > 	rep->vdiag_shutdown = sk->sk_shutdown;
+> > 	rep->vdiag_src_cid = vsk->local_addr.svm_cid;
+> > 	rep->vdiag_src_port = vsk->local_addr.svm_port;
+> > -	rep->vdiag_dst_cid = vsk->remote_addr.svm_cid;
+> > -	rep->vdiag_dst_port = vsk->remote_addr.svm_port;
+> > +	rep->vdiag_dst_cid = remote_addr.svm_cid;
+> > +	rep->vdiag_dst_port = remote_addr.svm_port;
+> > 	rep->vdiag_ino = sock_i_ino(sk);
+> > 
+> > 	sock_diag_save_cookie(sk, rep->vdiag_cookie);
+> > diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
+> > index 7cb1a9d2cdb4..462b2ec3e6e9 100644
+> > --- a/net/vmw_vsock/hyperv_transport.c
+> > +++ b/net/vmw_vsock/hyperv_transport.c
+> > @@ -336,9 +336,11 @@ static void hvs_open_connection(struct vmbus_channel *chan)
+> > 		hvs_addr_init(&vnew->local_addr, if_type);
+> > 
+> > 		/* Remote peer is always the host */
+> > -		vsock_addr_init(&vnew->remote_addr,
+> > -				VMADDR_CID_HOST, VMADDR_PORT_ANY);
+> > -		vnew->remote_addr.svm_port = get_port_by_srv_id(if_instance);
+> > +		ret = vsock_remote_addr_update_cid_port(vnew, VMADDR_CID_HOST,
+> > +							get_port_by_srv_id(if_instance));
+> > +		if (ret < 0)
+> > +			goto out;
+> > +
+> > 		ret = vsock_assign_transport(vnew, vsock_sk(sk));
+> > 		/* Transport assigned (looking at remote_addr) must be the
+> > 		 * same where we received the request.
+> > @@ -459,13 +461,18 @@ static int hvs_connect(struct vsock_sock *vsk)
+> > {
+> > 	union hvs_service_id vm, host;
+> > 	struct hvsock *h = vsk->trans;
+> > +	int err;
+> > 
+> > 	vm.srv_id = srv_id_template;
+> > 	vm.svm_port = vsk->local_addr.svm_port;
+> > 	h->vm_srv_id = vm.srv_id;
+> > 
+> > 	host.srv_id = srv_id_template;
+> > -	host.svm_port = vsk->remote_addr.svm_port;
+> > +
+> > +	err = vsock_remote_addr_port(vsk, &host.svm_port);
+> > +	if (err < 0)
+> > +		return err;
+> > +
+> > 	h->host_srv_id = host.srv_id;
+> > 
+> > 	return vmbus_send_tl_connect_request(&h->vm_srv_id, &h->host_srv_id);
+> > diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+> > index 925acface893..1b87704e516a 100644
+> > --- a/net/vmw_vsock/virtio_transport_common.c
+> > +++ b/net/vmw_vsock/virtio_transport_common.c
+> > @@ -258,8 +258,9 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+> > 	src_cid = t_ops->transport.get_local_cid();
+> > 	src_port = vsk->local_addr.svm_port;
+> > 	if (!info->remote_cid) {
+> > -		dst_cid	= vsk->remote_addr.svm_cid;
+> > -		dst_port = vsk->remote_addr.svm_port;
+> > +		ret = vsock_remote_addr_cid_port(vsk, &dst_cid, &dst_port);
+> > +		if (ret < 0)
+> > +			return ret;
+> > 	} else {
+> > 		dst_cid = info->remote_cid;
+> > 		dst_port = info->remote_port;
+> > @@ -1169,7 +1170,9 @@ virtio_transport_recv_connecting(struct sock *sk,
+> > 	case VIRTIO_VSOCK_OP_RESPONSE:
+> > 		sk->sk_state = TCP_ESTABLISHED;
+> > 		sk->sk_socket->state = SS_CONNECTED;
+> > -		vsock_insert_connected(vsk);
+> > +		err = vsock_insert_connected(vsk);
+> > +		if (err)
+> > +			goto destroy;
+> > 		sk->sk_state_change(sk);
+> > 		break;
+> > 	case VIRTIO_VSOCK_OP_INVALID:
+> > @@ -1403,9 +1406,8 @@ virtio_transport_recv_listen(struct sock *sk, struct sk_buff *skb,
+> > 	vchild = vsock_sk(child);
+> > 	vsock_addr_init(&vchild->local_addr, le64_to_cpu(hdr->dst_cid),
+> > 			le32_to_cpu(hdr->dst_port));
+> > -	vsock_addr_init(&vchild->remote_addr, le64_to_cpu(hdr->src_cid),
+> > -			le32_to_cpu(hdr->src_port));
+> > -
+> > +	vsock_remote_addr_update_cid_port(vchild, le64_to_cpu(hdr->src_cid),
+> > +					  le32_to_cpu(hdr->src_port));
+> > 	ret = vsock_assign_transport(vchild, vsk);
+> > 	/* Transport assigned (looking at remote_addr) must be the same
+> > 	 * where we received the request.
+> > @@ -1420,7 +1422,13 @@ virtio_transport_recv_listen(struct sock *sk, struct sk_buff *skb,
+> > 	if (virtio_transport_space_update(child, skb))
+> > 		child->sk_write_space(child);
+> > 
+> > -	vsock_insert_connected(vchild);
+> > +	ret = vsock_insert_connected(vchild);
+> > +	if (ret) {
+> > +		release_sock(child);
+> > +		virtio_transport_reset_no_sock(t, skb);
+> > +		sock_put(child);
+> > +		return ret;
+> > +	}
+> > 	vsock_enqueue_accept(sk, child);
+> > 	virtio_transport_send_response(vchild, skb);
+> > 
+> > diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+> > index b370070194fa..c0c445e7d925 100644
+> > --- a/net/vmw_vsock/vmci_transport.c
+> > +++ b/net/vmw_vsock/vmci_transport.c
+> > @@ -283,18 +283,25 @@ vmci_transport_send_control_pkt(struct sock *sk,
+> > 				u16 proto,
+> > 				struct vmci_handle handle)
+> > {
+> > +	struct sockaddr_vm addr_stack;
+> > +	struct sockaddr_vm *remote_addr = &addr_stack;
+> > 	struct vsock_sock *vsk;
+> > +	int err;
+> > 
+> > 	vsk = vsock_sk(sk);
+> > 
+> > 	if (!vsock_addr_bound(&vsk->local_addr))
+> > 		return -EINVAL;
+> > 
+> > -	if (!vsock_addr_bound(&vsk->remote_addr))
+> > +	if (!vsock_remote_addr_bound(vsk))
+> > 		return -EINVAL;
+> > 
+> > +	err = vsock_remote_addr_copy(vsk, &addr_stack);
+> > +	if (err < 0)
+> > +		return err;
+> > +
+> > 	return vmci_transport_alloc_send_control_pkt(&vsk->local_addr,
+> > -						     &vsk->remote_addr,
+> > +						     remote_addr,
+> > 						     type, size, mode,
+> > 						     wait, proto, handle);
+> > }
+> > @@ -317,6 +324,7 @@ static int vmci_transport_send_reset(struct sock *sk,
+> > 	struct sockaddr_vm *dst_ptr;
+> > 	struct sockaddr_vm dst;
+> > 	struct vsock_sock *vsk;
+> > +	int err;
+> > 
+> > 	if (pkt->type == VMCI_TRANSPORT_PACKET_TYPE_RST)
+> > 		return 0;
+> > @@ -326,13 +334,16 @@ static int vmci_transport_send_reset(struct sock *sk,
+> > 	if (!vsock_addr_bound(&vsk->local_addr))
+> > 		return -EINVAL;
+> > 
+> > -	if (vsock_addr_bound(&vsk->remote_addr)) {
+> > -		dst_ptr = &vsk->remote_addr;
+> > +	if (vsock_remote_addr_bound(vsk)) {
+> > +		err = vsock_remote_addr_copy(vsk, &dst);
+> > +		if (err < 0)
+> > +			return err;
+> > 	} else {
+> > 		vsock_addr_init(&dst, pkt->dg.src.context,
+> > 				pkt->src_port);
+> > -		dst_ptr = &dst;
+> > 	}
+> > +	dst_ptr = &dst;
+> > +
+> > 	return vmci_transport_alloc_send_control_pkt(&vsk->local_addr, dst_ptr,
+> > 					     VMCI_TRANSPORT_PACKET_TYPE_RST,
+> > 					     0, 0, NULL, VSOCK_PROTO_INVALID,
+> > @@ -490,7 +501,7 @@ static struct sock *vmci_transport_get_pending(
+> > 
+> > 	list_for_each_entry(vpending, &vlistener->pending_links,
+> > 			    pending_links) {
+> > -		if (vsock_addr_equals_addr(&src, &vpending->remote_addr) &&
+> > +		if (vsock_remote_addr_equals(vpending, &src) &&
+> > 		    pkt->dst_port == vpending->local_addr.svm_port) {
+> > 			pending = sk_vsock(vpending);
+> > 			sock_hold(pending);
+> > @@ -1015,8 +1026,8 @@ static int vmci_transport_recv_listen(struct sock *sk,
+> > 
+> > 	vsock_addr_init(&vpending->local_addr, pkt->dg.dst.context,
+> > 			pkt->dst_port);
+> > -	vsock_addr_init(&vpending->remote_addr, pkt->dg.src.context,
+> > -			pkt->src_port);
+> > +	vsock_remote_addr_update_cid_port(vpending, pkt->dg.src.context,
+> > +					  pkt->src_port);
+> > 
+> > 	err = vsock_assign_transport(vpending, vsock_sk(sk));
+> > 	/* Transport assigned (looking at remote_addr) must be the same
+> > @@ -1133,6 +1144,7 @@ vmci_transport_recv_connecting_server(struct sock *listener,
+> > {
+> > 	struct vsock_sock *vpending;
+> > 	struct vmci_handle handle;
+> > +	unsigned int vpending_remote_cid;
+> > 	struct vmci_qp *qpair;
+> > 	bool is_local;
+> > 	u32 flags;
+> > @@ -1189,8 +1201,13 @@ vmci_transport_recv_connecting_server(struct sock *listener,
+> > 	/* vpending->local_addr always has a context id so we do not need to
+> > 	 * worry about VMADDR_CID_ANY in this case.
+> > 	 */
+> > -	is_local =
+> > -	    vpending->remote_addr.svm_cid == vpending->local_addr.svm_cid;
+> > +	err = vsock_remote_addr_cid(vpending, &vpending_remote_cid);
+> > +	if (err < 0) {
+> > +		skerr = EPROTO;
+> > +		goto destroy;
+> > +	}
+> > +
+> > +	is_local = vpending_remote_cid == vpending->local_addr.svm_cid;
+> > 	flags = VMCI_QPFLAG_ATTACH_ONLY;
+> > 	flags |= is_local ? VMCI_QPFLAG_LOCAL : 0;
+> > 
+> > @@ -1203,7 +1220,7 @@ vmci_transport_recv_connecting_server(struct sock *listener,
+> > 					flags,
+> > 					vmci_transport_is_trusted(
+> > 						vpending,
+> > -						vpending->remote_addr.svm_cid));
+> > +						vpending_remote_cid));
+> > 	if (err < 0) {
+> > 		vmci_transport_send_reset(pending, pkt);
+> > 		skerr = -err;
+> > @@ -1306,9 +1323,20 @@ vmci_transport_recv_connecting_client(struct sock *sk,
+> > 		break;
+> > 	case VMCI_TRANSPORT_PACKET_TYPE_NEGOTIATE:
+> > 	case VMCI_TRANSPORT_PACKET_TYPE_NEGOTIATE2:
+> > +		struct sockaddr_vm_rcu *remote_addr;
+> > +
+> > +		rcu_read_lock();
+> > +		remote_addr = rcu_dereference(vsk->remote_addr);
+> > +		if (!remote_addr) {
+> > +			skerr = EPROTO;
+> > +			err = -EINVAL;
+> > +			rcu_read_unlock();
+> > +			goto destroy;
+> > +		}
+> > +
+> > 		if (pkt->u.size == 0
+> > -		    || pkt->dg.src.context != vsk->remote_addr.svm_cid
+> > -		    || pkt->src_port != vsk->remote_addr.svm_port
+> > +		    || pkt->dg.src.context != remote_addr->addr.svm_cid
+> > +		    || pkt->src_port != remote_addr->addr.svm_port
+> > 		    || !vmci_handle_is_invalid(vmci_trans(vsk)->qp_handle)
+> > 		    || vmci_trans(vsk)->qpair
+> > 		    || vmci_trans(vsk)->produce_size != 0
+> > @@ -1316,9 +1344,10 @@ vmci_transport_recv_connecting_client(struct sock *sk,
+> > 		    || vmci_trans(vsk)->detach_sub_id != VMCI_INVALID_ID) {
+> > 			skerr = EPROTO;
+> > 			err = -EINVAL;
+> > -
+> > +			rcu_read_unlock();
+> > 			goto destroy;
+> > 		}
+> > +		rcu_read_unlock();
+> > 
+> > 		err = vmci_transport_recv_connecting_client_negotiate(sk, pkt);
+> > 		if (err) {
+> > @@ -1379,6 +1408,7 @@ static int vmci_transport_recv_connecting_client_negotiate(
+> > 	int err;
+> > 	struct vsock_sock *vsk;
+> > 	struct vmci_handle handle;
+> > +	unsigned int remote_cid;
+> > 	struct vmci_qp *qpair;
+> > 	u32 detach_sub_id;
+> > 	bool is_local;
+> > @@ -1449,19 +1479,23 @@ static int vmci_transport_recv_connecting_client_negotiate(
+> > 
+> > 	/* Make VMCI select the handle for us. */
+> > 	handle = VMCI_INVALID_HANDLE;
+> > -	is_local = vsk->remote_addr.svm_cid == vsk->local_addr.svm_cid;
+> > +
+> > +	err = vsock_remote_addr_cid(vsk, &remote_cid);
+> > +	if (err < 0)
+> > +		goto destroy;
+> > +
+> > +	is_local = remote_cid == vsk->local_addr.svm_cid;
+> > 	flags = is_local ? VMCI_QPFLAG_LOCAL : 0;
+> > 
+> > 	err = vmci_transport_queue_pair_alloc(&qpair,
+> > 					      &handle,
+> > 					      pkt->u.size,
+> > 					      pkt->u.size,
+> > -					      vsk->remote_addr.svm_cid,
+> > +					      remote_cid,
+> > 					      flags,
+> > 					      vmci_transport_is_trusted(
+> > 						  vsk,
+> > -						  vsk->
+> > -						  remote_addr.svm_cid));
+> > +						  remote_cid));
+> > 	if (err < 0)
+> > 		goto destroy;
+> > 
+> > 
+> > -- 
+> > 2.30.2
+> > 
+> 
