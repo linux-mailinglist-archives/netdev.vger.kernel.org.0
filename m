@@ -2,191 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6B06E89AC
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 07:45:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D3C56E307D
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 12:13:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233502AbjDTFpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 01:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45514 "EHLO
+        id S229468AbjDOKNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 06:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233224AbjDTFpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 01:45:17 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1A53A97;
-        Wed, 19 Apr 2023 22:45:15 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id d9443c01a7336-1a6715ee82fso8176925ad.1;
-        Wed, 19 Apr 2023 22:45:15 -0700 (PDT)
+        with ESMTP id S229720AbjDOKMl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 06:12:41 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D08B5FCA
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 03:12:39 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id q23so42263296ejz.3
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 03:12:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681969515; x=1684561515;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8Tf2VpWhxjAYxcYUQ0lyc/cD0H8jUE/mITS0goQbaSM=;
-        b=kmHGRQyXSOAb2hb/c/TdQ7b70sLmKBkMMlesr8i5GI5t8tp0Wfu9UYbw+5lDh4zc6w
-         pfV3aLuPQSzcKGJphND4fCxArwCqz2jgYaoSzANMQnQ5YPkIUiuR8+jSEqLDZXHvv/Bf
-         KREiyP+WlVuCf69MkVWr5EOyvQpaOxBq+19N0Jp8e3Y4AyKWu/g+vyGQysy9mn3L17ia
-         nDq5wf7b0i0031yybcp1BQUItDAS/eO5R1ivAo4RG4Us9gax6DpnqI0vyJFV03GoSqq7
-         xvStIdET0pZ24j7Qj9BntbwOVw9oRnCSzRUaL9XRH7umcsfDGAjr4H02k291U/lMcw7/
-         61sg==
+        d=gmail.com; s=20221208; t=1681553557; x=1684145557;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=noUmBjusnKF8bP4EcQltb+prOBD2flUzDYK4UCpcnnA=;
+        b=gtKAnRt5hz44Q83qpCGn2YNoRprwxFEmjiLtSrZKQn+2Nlps8yDvQPmEQ38gVq77DC
+         7YUowLagt4Ioh9f9E8yaYxMFVLA5um/hPIW4/FCTpLJA+hSua/CvTloYd/Zx4R93CIs6
+         HxXAKN5xI02dofafd5q9ruky6ge0OARsmYtAeSjo0BGjGCMQAGUuz08aSVM9714QCMVO
+         x+L0/3BTRSMIjrCbguDzc9d2tvJRDFBQsgrrcaanf3nyLSjQ+gGRmLJO1/IRi69hrCKf
+         2gWkZPBGPRnjocqcj/5Xs1iBwzY6n5OuTOSPUIzXsk3bTdy45jX5NyZsM8RaRGIxllX+
+         GuhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681969515; x=1684561515;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8Tf2VpWhxjAYxcYUQ0lyc/cD0H8jUE/mITS0goQbaSM=;
-        b=Fo/DvwRdxPD7aOaKca9xVAgU9+6mJg87bRNYjPMEaDARme+w8dimEb/avct+hHlsT7
-         y7J0qBfZ3Cdeis4hmiz2dqktzWPQ3BtLF/TAkIbU2AM7tNf7chE67hD9a8nDVgySTokF
-         ksTyXiVm5+4g+g3Tk3TTp0AzTBFwa2nFcnRPpUq6MLRsGlJK8e4OZvgYBy2oSgXzKxdW
-         tlNoMl1MpVfpU2GLcErLYjZ2HQC7YAu9W0bcIeF7Ee1Z7C52DiyDeTQIiL68ZwVHe5AZ
-         RLAHNd7F0Xg5ZopcpFYAW4mBY7FG5e4xff8CkBV4/MFkVnhcKmhNoVZc2QY/+eloSxuC
-         8tvw==
-X-Gm-Message-State: AAQBX9dUt9eI9lfTt4uLEx2h88HR+hX6mxFNjoF/AoQp6qzkyJV1AJRg
-        P9ZuSj1yUtqx4LsMtJ7e118=
-X-Google-Smtp-Source: AKy350Y0Rncfr/8NyRfa6Y+/CLdM0DMxQ/jGouIv344inzmImgPcIc3YFQVpA9L2MYOQdMEKKcdOBg==
-X-Received: by 2002:a17:902:c3c3:b0:1a2:1922:985b with SMTP id j3-20020a170902c3c300b001a21922985bmr340590plj.59.1681969515199;
-        Wed, 19 Apr 2023 22:45:15 -0700 (PDT)
-Received: from localhost (ec2-54-67-115-33.us-west-1.compute.amazonaws.com. [54.67.115.33])
-        by smtp.gmail.com with ESMTPSA id jb4-20020a170903258400b001a682a195basm391242plb.28.2023.04.19.22.45.14
+        d=1e100.net; s=20221208; t=1681553557; x=1684145557;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=noUmBjusnKF8bP4EcQltb+prOBD2flUzDYK4UCpcnnA=;
+        b=dBjcaloDETfhcjfbFRe0k/3yctAvfj9DeG20kUGOT0cYFcNtQ6dOp5z+nQzBKv5qXa
+         Hwi5frevyl9XABaB3u2/2OTdXZwgN+yGnXI8d96UXCQMvPs9gXOTG7T2U7hqYjnnXIBl
+         2UIaUfXsBVfBdEaeoV/MQdc0pAY+pmgxfsB2g/RoTMGV9F70Ndm2XXXylwgJhOCaJVWC
+         0bNeeQYfN8cxbN9QPan6oU2CIJ9OVxy+FTV5s1ZloF7LNoFfJbfOZHs50vJAms2owd++
+         4Y62vzXlgvxMu5U0jXw+6oV4tzd/NJiYwQKiS+oRmwWaF4jnD9a7zkeoluoxQAQSukkb
+         Of1Q==
+X-Gm-Message-State: AAQBX9cg0ljzdaI54rlo2EumtvOHxcLw1vUlu4rkppsSUj5DNXuohDXm
+        K1SmZXx4vga3au00hbZsV7c=
+X-Google-Smtp-Source: AKy350bv/mpgb0y0aguMq2kRGUej8BB1r1i3fbtPUflWAsPyL0Edo7vhN0g/w8bwJF4Zhwq1bfrMPg==
+X-Received: by 2002:a17:906:5e53:b0:94e:c97b:e3ba with SMTP id b19-20020a1709065e5300b0094ec97be3bamr1686623eju.37.1681553557318;
+        Sat, 15 Apr 2023 03:12:37 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id x12-20020a170906b08c00b0094e6a138170sm3598064ejy.72.2023.04.15.03.12.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Apr 2023 22:45:14 -0700 (PDT)
-Date:   Sat, 15 Apr 2023 09:51:37 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Vishnu Dasa <vdasa@vmware.com>, Wei Liu <wei.liu@kernel.org>,
-        Jiang Wang <jiang.wang@bytedance.com>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Bryan Tan <bryantan@vmware.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-hyperv@vger.kernel.org,
-        Stefan Hajnoczi <stefanha@redhat.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH RFC net-next v2 2/4] virtio/vsock: add
- VIRTIO_VSOCK_F_DGRAM feature bit
-Message-ID: <ZDpzqTewbtuxV/Sk@bullseye>
-References: <20230413-b4-vsock-dgram-v2-0-079cc7cee62e@bytedance.com>
- <20230413-b4-vsock-dgram-v2-2-079cc7cee62e@bytedance.com>
- <nbuuohh72i4n27rzlg7sj7bwsrsrnnxxcxj6w5yotw5bhpcznt@ormwl5d6jiuw>
+        Sat, 15 Apr 2023 03:12:36 -0700 (PDT)
+Date:   Sat, 15 Apr 2023 13:12:34 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Daniel Golle <daniel@makrotopia.org>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com
+Subject: Re: mt7530: dsa_switch_parse_of() fails, causes probe code to run
+ twice
+Message-ID: <20230415101234.rmo3b27iv3p5o42l@skbuf>
+References: <896514df-af33-6408-8b33-d8fd06e671ef@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <nbuuohh72i4n27rzlg7sj7bwsrsrnnxxcxj6w5yotw5bhpcznt@ormwl5d6jiuw>
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <896514df-af33-6408-8b33-d8fd06e671ef@arinc9.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 11:30:21AM +0200, Stefano Garzarella wrote:
-> On Fri, Apr 14, 2023 at 12:25:58AM +0000, Bobby Eshleman wrote:
-> > This commit adds a feature bit for virtio vsock to support datagrams.
-> > This commit should not be applied without first applying the commit
-> > that implements datagrams for virtio.
-> > 
-> > Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
-> > Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
-> > ---
-> > drivers/vhost/vsock.c             | 3 ++-
-> > include/uapi/linux/virtio_vsock.h | 1 +
-> > net/vmw_vsock/virtio_transport.c  | 8 ++++++--
-> > 3 files changed, 9 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-> > index dff6ee1c479b..028cf079225e 100644
-> > --- a/drivers/vhost/vsock.c
-> > +++ b/drivers/vhost/vsock.c
-> > @@ -32,7 +32,8 @@
-> > enum {
-> > 	VHOST_VSOCK_FEATURES = VHOST_FEATURES |
-> > 			       (1ULL << VIRTIO_F_ACCESS_PLATFORM) |
-> > -			       (1ULL << VIRTIO_VSOCK_F_SEQPACKET)
-> > +			       (1ULL << VIRTIO_VSOCK_F_SEQPACKET) |
-> > +			       (1ULL << VIRTIO_VSOCK_F_DGRAM)
-> > };
-> > 
-> > enum {
-> > diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
-> > index 331be28b1d30..0975b9c88292 100644
-> > --- a/include/uapi/linux/virtio_vsock.h
-> > +++ b/include/uapi/linux/virtio_vsock.h
-> > @@ -40,6 +40,7 @@
-> > 
-> > /* The feature bitmap for virtio vsock */
-> > #define VIRTIO_VSOCK_F_SEQPACKET	1	/* SOCK_SEQPACKET supported */
-> > +#define VIRTIO_VSOCK_F_DGRAM		2	/* Host support dgram vsock */
-> > 
-> > struct virtio_vsock_config {
-> > 	__le64 guest_cid;
-> > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-> > index 582c6c0f788f..bb43eea9a6f9 100644
-> > --- a/net/vmw_vsock/virtio_transport.c
-> > +++ b/net/vmw_vsock/virtio_transport.c
-> > @@ -29,6 +29,7 @@ static struct virtio_transport virtio_transport; /* forward declaration */
-> > struct virtio_vsock {
-> > 	struct virtio_device *vdev;
-> > 	struct virtqueue *vqs[VSOCK_VQ_MAX];
-> > +	bool has_dgram;
-> > 
-> > 	/* Virtqueue processing is deferred to a workqueue */
-> > 	struct work_struct tx_work;
-> > @@ -640,7 +641,6 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
-> > 	}
-> > 
-> > 	vsock->vdev = vdev;
-> > -
-> > 	vsock->rx_buf_nr = 0;
-> > 	vsock->rx_buf_max_nr = 0;
-> > 	atomic_set(&vsock->queued_replies, 0);
-> > @@ -657,6 +657,9 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
-> > 	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
-> > 		vsock->seqpacket_allow = true;
-> > 
-> > +	if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_DGRAM))
-> > +		vsock->has_dgram = true;
-> 
-> This is unused for now, but I think the idea is to use in
-> virtio_transport_dgram_allow(), right?
-> 
-> I would follow `seqpacket_allow` in this case.
-> 
+On Sat, Apr 15, 2023 at 01:41:07AM +0300, Arınç ÜNAL wrote:
+> I moved enabling the regulators from mt7530_setup() to mt7530_probe().
+> Enabling the regulators there ends up with exception warnings on the
+> first time.
 
-Got it, thanks.
+Have you read what the WARN_ON() in _regulator_put() has to say?
 
+	/* Docs say you must disable before calling regulator_put() */
+	WARN_ON(regulator->enable_count);
 
-> Thanks,
-> Stefano
-> 
-> > +
-> > 	vdev->priv = vsock;
-> > 
-> > 	ret = virtio_vsock_vqs_init(vsock);
-> > @@ -749,7 +752,8 @@ static struct virtio_device_id id_table[] = {
-> > };
-> > 
-> > static unsigned int features[] = {
-> > -	VIRTIO_VSOCK_F_SEQPACKET
-> > +	VIRTIO_VSOCK_F_SEQPACKET,
-> > +	VIRTIO_VSOCK_F_DGRAM
-> > };
-> > 
-> > static struct virtio_driver virtio_vsock_driver = {
-> > 
-> > -- 
-> > 2.30.2
-> > 
-> 
-> _______________________________________________
-> Virtualization mailing list
-> Virtualization@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+If you call regulator_enable() during probe, do you also call
+regulator_disable() during the probe error path?
