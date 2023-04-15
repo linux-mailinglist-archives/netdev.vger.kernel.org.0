@@ -2,155 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 051D36E3303
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 19:58:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 682F56E3308
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 20:09:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbjDOR6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 13:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56116 "EHLO
+        id S229546AbjDOSJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 14:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbjDOR6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 13:58:10 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000743C13
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 10:58:09 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33F5g6tZ030453;
-        Sat, 15 Apr 2023 17:58:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2023-03-30;
- bh=9wIP6HK7amCs/VMcbxycHIflGO/+6D57cXD9hauH150=;
- b=A5jnu3OwDz/3c82LvWbP1z0uJ4WC55Z9QpyRuOFETvRejTSj5FTiIHNxJV4AIGieHA7m
- Z8gIpdfIN2Eb8oOVbxz9pP3wOYixcNAeo8kDj5yOgVVkjTaUwd3ilqN0fRDibfn6Lpb9
- ZUCN2cvgLQDhmGv7dnovgNi9GWz9O4qM0VOUtThgPjs4wCsSVVDBPE2P1n9t5nY2HFJE
- vlOUtTbCvn+oaUjNcfE05o45uW+YFzQHuFdIu4kEfbwKqRHHZqKOroijm/P1L+r+j3HF
- mrVQXhb/juOYXd/ot2ocq/VueJm88XO41bE+RGYYpn0OY2d0kGyqTiYrrrplWn0NFDhj vw== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pykhtrnp5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 15 Apr 2023 17:58:00 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 33FH4FHI007634;
-        Sat, 15 Apr 2023 17:57:59 GMT
-Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam04lp2044.outbound.protection.outlook.com [104.47.73.44])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3pyjc27b8y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 15 Apr 2023 17:57:59 +0000
+        with ESMTP id S229505AbjDOSJo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 14:09:44 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2055.outbound.protection.outlook.com [40.107.21.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F552107;
+        Sat, 15 Apr 2023 11:09:43 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UfUbb14TLbpxTCW2vR6Rr41m6Ixv6vfP9PpSldzi/pkOCkymZE0s2MmjL2QuvAVgyC9WabyiN+R9HVXdU8hB0+zyRoS19sTCTemO5PMNJyT3/YKj0v1QD66tScjlQnHDxhxkiYHjGbNKhyDezI95HaInKjr2lorY7WC8gjj1pPs7B5WcocGsPWqqQ2WWm5NvnwCL+IZkIPm541Wl0BpqqAFJMahbNN4pMpLcIYv6rTCpBnnmQWfykuVrDd4lgXsKBCYO4eDDD2JlPMgBDhbyETMkhEYWlLa7Q4lwIAV1Gno8pTFCrCkt7ECQbULd+kNHhpLdBLYukAgJX8Ir6bOZEA==
+ b=HUFq55TH3LlE0yybUzmZi8jDjZZ1ma6zEM7aPIZs8AsyzvUNkyq7wlo+bnJYP1NHjnFlG9TO7/JSgWvfrfafzC4tYx6LgusjFBVKBEqDZva6pHxiu67BufmTxK6bhj4IQPsPvy1xJsnOiA1j1WXG7dtDhqXEbJpdlmHPwMMMHQuSf5cx2F8j5oQi9XORKNrAC4SzlKUnP9LzBz+wRXHhm+j1f+FbmFm5OM0p3OFT0s/Fh5gJawn9+9qokR0v7TX2YorSxoPZm8Sn+0ZK+VkbL8AnSiEJzbT7f/s9TLAHPgY8eV0vpnxv7C/DY78Fqji53KrAegL2n/qU/i4NMIxQQA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9wIP6HK7amCs/VMcbxycHIflGO/+6D57cXD9hauH150=;
- b=mBQGclVqfcQ4FfQGIFPGzBmxLCRgSHnOXhUN2v+30vDOtKrO+B3oJ47emgIE2CC509Y6zmyS37XaSJEIIjdAES2+9r1r7f5SpYfUvgpSVJtqWemYn3143d6QdP5eleWTRvs+F976lcnMmvpEQK1MuLziOxFYg5Nqj/7Zxm3gkqKr+A7VHMWPUTFEd7fRigvk4x4b1BYKmESAHtYYXjoG6naEvqazOiDuQhGrACz+PFSapQUqrEvyF6FvMFn8/daI/XD14UtifNrHZAeNiwuBVDdvfGcSvRHJrPRZNUmfagGIXWVKbmL/ZTWGJxjC+cfvzwtfSPnF8/HWOSM/swiofA==
+ bh=V0MnB1RlfFZL19VJytgQZonFmdf3OqahFVUTAXbEr2c=;
+ b=lK8IMFxQ8dV4OBAC7YyS98Z2RWxHbpMGVvnqmnf8nGNpJ8ktBWm3I/KXZSRCVs7lBfC462Jivb12w+67ZIzvHIUHRyJaNqeBAhepfTMGkYqdU+HsQ6r2G/pC6IQXKayAf/4UQfONH/DjtN+iy8DuYquaLNDOtFKbgniF1BVRpFSe/ALgU6ScHHkGOXmI+53UjYpgF8bkNP9T1AD+DOkP3L5jI+9/KHEUf9wD4wejFfvAS9/OknmqTsjRezgRTudEqULEQE5bf0PG+Bz8RMFPJNfGAXa18hzrPr/K5zIeUNySQ6N0ohxVkFD/m+aXgjhRoeSHpOQw0+t0Pv/w3O54gA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9wIP6HK7amCs/VMcbxycHIflGO/+6D57cXD9hauH150=;
- b=IKYK9M+01Z5uverTFCAt/+LNSZFF3Y5DtR6vUAB8QJHfX1dd+NkJaMk7ap4pN+RVRZ0qtwcELN5sEZdBJh2mANDKmbUNvJTTQXu7NlmM0T1DzPtVWc/XFkHMGjGjkqo6sm16MStRfa3ymqo8T/4FotU0MRhnw9dYD3yEaDAASKI=
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
- by MW4PR10MB5725.namprd10.prod.outlook.com (2603:10b6:303:18b::21) with
+ bh=V0MnB1RlfFZL19VJytgQZonFmdf3OqahFVUTAXbEr2c=;
+ b=WKJsJDnkn1IKpLR1P3OFljsMDZgauIpIzEIVn+xlVGz2Kmyg00GC/NRFvIPLEHTWZInOiV4zwtdU5mUI9bAgIux+IDxZATCE/dXlmJWFwWnlwZResWbVexKoslm0ys7AQL7/rRXNjASHIpAdiz4GIDhCtzYGfU4XnXHrGNLJv4s=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by AS8PR04MB8947.eurprd04.prod.outlook.com (2603:10a6:20b:42e::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Sat, 15 Apr
- 2023 17:57:56 +0000
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::ecbd:fc46:2528:36db]) by BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::ecbd:fc46:2528:36db%7]) with mapi id 15.20.6298.030; Sat, 15 Apr 2023
- 17:57:56 +0000
-From:   Chuck Lever III <chuck.lever@oracle.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>,
+ 2023 18:09:40 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::55b1:d2dd:4327:912b]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::55b1:d2dd:4327:912b%5]) with mapi id 15.20.6298.028; Sat, 15 Apr 2023
+ 18:09:40 +0000
+Date:   Sat, 15 Apr 2023 21:09:36 +0300
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
         Eric Dumazet <edumazet@google.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "kernel-tls-handshake@lists.linux.dev" 
-        <kernel-tls-handshake@lists.linux.dev>
-Subject: Re: [PATCH v9 3/3] net/handshake: Add Kunit tests for the handshake
- consumer API
-Thread-Topic: [PATCH v9 3/3] net/handshake: Add Kunit tests for the handshake
- consumer API
-Thread-Index: AQHZbjwkjSZ2M9hK9Ua6WU+fbYWpF68rl3WAgAAJ/oCAAAJwAIAAF0gAgADv7IA=
-Date:   Sat, 15 Apr 2023 17:57:56 +0000
-Message-ID: <ECA36DAF-F928-4EBD-9CD0-3AA20C2612FF@oracle.com>
-References: <168141287044.157208.15120359741792569671.stgit@manet.1015granger.net>
- <168141324822.157208.14911977368369619191.stgit@manet.1015granger.net>
- <20230414183113.318ee353@kernel.org> <ZDoGw3nVG+jNWrwV@manet.1015granger.net>
- <20230414191542.16a98637@kernel.org> <ZDocVvsqKJ57c1Tk@manet.1015granger.net>
-In-Reply-To: <ZDocVvsqKJ57c1Tk@manet.1015granger.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3731.500.231)
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN0PR10MB5128:EE_|MW4PR10MB5725:EE_
-x-ms-office365-filtering-correlation-id: 8af5151d-7761-4586-1887-08db3ddaf11b
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sb4xP83A8WzLM3K4TXrf30v6bVJ97HScVre+fk8CdFz6TOxX1pJq3epVSq/2ZthlQFtafD2eCxeQoGTmwP22jBfX/2AkVQADiX4FZIHvTNSNVls3p+dcHO41dNvD2fEzkv+7uAMJyB+S1eZFxYEJovwq2t8v0t52tJLxycEE/jJamZkQRkTPUoEHXqUCPD2PfAeNwJSpraU/tIwkh9dT9ejMq4+a2lCHmzuUiLWoln+3ehTxarABiFC9+8jjj8fFnaPIAC8r4mjXFl06/xHoPkIrLgx0MCEY0ll3iHjqE/npqS1Ej2SVC1nyK+QZlp6lk8qgalzNlYd+7lgMl6fMiVtqUF2JvZpSAIakcQuQObj+Q6Z7+UbojJ3XsFF/9wPMkXo9fhHd7JyukysVAKnZEVcrBivx5KX0pfRAgDD/t70wg/GtELZhPQe0d0TkHOVN45VOoUG+MYSZpJIjm3gV6vZHNcRY0jVHdRv26fylYfaqXwkk2R+pNS8i078yLQuXvRV8JXAqJZPzLWHbppPlHuSHimV9RNlhPc/iUGvs+FrrUBoczh0RxX+GzRkHZzan7dxt5zwHRKae5dBFL0NO4oWP8seLmoB2cjgKz6sAL0j8ohNcZctuLb5P8th0nn/0aS/oYl33t760I2jVL2/yGw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(346002)(396003)(376002)(39860400002)(136003)(451199021)(2906002)(8936002)(76116006)(91956017)(478600001)(8676002)(5660300002)(41300700001)(316002)(64756008)(66946007)(66476007)(83380400001)(36756003)(66556008)(54906003)(33656002)(66446008)(6916009)(4326008)(6506007)(122000001)(86362001)(38070700005)(38100700002)(186003)(53546011)(26005)(6512007)(6486002)(2616005)(71200400001)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?O+NI+ykwawSb48N1u6UPISxNIAXEdLF1UAf3ZsnuyRJuGL4M/PLkoqhApvsz?=
- =?us-ascii?Q?P84qxbNXH3y+FlfrHoYPCwuR3Ppib921WLDdKjleu0V4dg+6p5m0pyKZUXtC?=
- =?us-ascii?Q?pyEgf9dvlJQteCTcJd8/ybpx5PwaffYyoptoh+WhenYEFPOFRSkHF/V2YMEp?=
- =?us-ascii?Q?ADcly7IQpzs99k4mBqSBYT6KXI74MgES73/wSuw5xL786mK4vvv86KaiAWjM?=
- =?us-ascii?Q?grAdztEXgHfqfgqpU4WUR1hZAafGfL/4spwQGNnVRK9PdSL/Pnf+eytTuwWP?=
- =?us-ascii?Q?q/l8ntAExytCquFVxijvIlc9zJb6LMVXJWzz4KENvY8sdF44v+pKd9JyV3YU?=
- =?us-ascii?Q?EbKobTXymKH2omUy8SWXpvGSXGNBWY2tlu/vKdhHRbO2X7kVL8i6S0aCsWnf?=
- =?us-ascii?Q?T+DAeN/yE2zhAbs4OWqXekiMMriHdzIO5f+xF1zRackFGTS5WuUlrZA8SJpx?=
- =?us-ascii?Q?Ppn7HFFHIlKEe5Xn9qTjhkDfW/F47nz5a9ZdqdAK6rg10wiKLCuiV1Kz3Ayp?=
- =?us-ascii?Q?q9S5YIb4I3djFBbTOTI/E+hesy1A8X4ZwOz6OIMAE3ix6d/E7anhcDC4zb/H?=
- =?us-ascii?Q?BWauwBYTFyGO0ENLkYtl1RiH+5XBvBT/6OAxwlsmXYb/nzYbxKOUNlBRZNNc?=
- =?us-ascii?Q?8YfizxNz3BW0VF2n4sSZGtIi3UOa5qYScIVHgZW6LKHu3ROJtC/pMzj4YPCL?=
- =?us-ascii?Q?ke7r8hyJpR3EtjjyRqWNem6yB/tImQ7CEEOqEZJKfhfsuuKOAUFVV6lmDwSx?=
- =?us-ascii?Q?Ksz9/nB1MnBf0sn4c9nhgaBAtLFGS/+Cf+mSkJjt1x7Ha1h+1+VU6T5yqJbE?=
- =?us-ascii?Q?BcnfV6vrl6vLDkkBAkmXoQ1nlUO4swsaG0uTWySdrW0sjKnoIVlMhdgOBAz4?=
- =?us-ascii?Q?TQUl8uk1Fp1dHbMlKnHucg6B6kKWn4axOA36lK+CwqhF3b05apd1NMnjZKTH?=
- =?us-ascii?Q?N7eTgwW3miYR54zW7sT8TIWB+wKPfSIc33PuJOy7F6tHWrge3hMUB+MxbCWm?=
- =?us-ascii?Q?L/yZqVX11cs9Qo98Dl6hsVvbvqIkm/8hx0QePR32/HM3/oiJ4fqEzfADB0S5?=
- =?us-ascii?Q?Yx47G2yPueTvj4MGQWSFPQJtaH2S/SukiFIy1uxM25z0a78VDQoi/K5Kkj9H?=
- =?us-ascii?Q?8yeIXMZzKGzMIt2OYwUNn0iWB59VQcbOFZ7KpwRAqb81H8FzdY8AdGDY++/q?=
- =?us-ascii?Q?G+9spoIpTAYGcwh+XDv3y3iVCrzig8iBkDS6zlMEFeZXg5QmTcdKVb4T269b?=
- =?us-ascii?Q?E7itFifZoflDWjSG1tWuNg5gJTLrIIpRwMA7dKIVcih9uOvk5AlzuE/pSpuT?=
- =?us-ascii?Q?dv88oTW9vISp9MeR1Cp39yxVvOOrim9LupqAn0DZG6PD32ElbY3V+fnb/R8a?=
- =?us-ascii?Q?eTJuTq8M7N/n7jC38jLdjgXBJN0DOoBbsEbUSWNJxqlYzJJjCN+uHhO2MOua?=
- =?us-ascii?Q?a0asyPeYQGC+vVXRS0UrqtJqFmHJlN8FV0YtOx+h2rwkdOQOt2XqiO/qg58J?=
- =?us-ascii?Q?poRWmR8dM5rP3ZQN6FAa6avxwKKVxSrDBqVD1FEe/Zl57GWdyI0rfdh+7JOK?=
- =?us-ascii?Q?DCoxkqMSv0/OiTpcGrDp7mhETrYoiuYLEwT+1NlMMV4uM6rTE1p2KsL5cqim?=
- =?us-ascii?Q?NQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <EB61812F9CBD594892CA8E40138B3C82@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] ethtool mm API improvements
+Message-ID: <20230415180936.lx7sw4r3ungcl7w4@skbuf>
+References: <20230415173454.3970647-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230415173454.3970647-1-vladimir.oltean@nxp.com>
+X-ClientProxiedBy: FR2P281CA0060.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:93::16) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 0ykzSHw2oh3YeUh+JU16XfisKDENvhStq4Vxk5m2KwCNdEeDKGSma6k+4QBj/6Qi+6XlnnBIGdB91efZWZZtqF+vjbVLHhkh7WH0Wd5wx43DCBuvy7LeG/epppgFOKRVaxktmT+ucdCPncL0UR9u/vjVZuJ1slIC//99tioMh21mGULQROp05SXsMzOe0mVUfMLim4DdJClYDJNBM3kzLmcLAmNMxG/2zGMXiKIE4XgVNmPeTPFsmXexB/kjCTroFL1iHzZ28rfZZX1r4lOERtLjIg2rfyJqSkl59Q0NP1O70Ck+GIrWvyARWvzeFH5jYvXs9RpYAj7OX+CeG5cdK0wgWE3rS/G1UTvRmg5XcSgksC+vLjbDb5mTxfg6kPGxThdffBz1a/4g6XQXxHsh/hsYJktt6+C/hzgFJkK04nVDme//FXTqXGUALA7nAYwkYpRfmm5hoKpM88pjEpzsToivBPvkEfsdNrdWaYBsJvqMShwAWCzO2+k1Tgoo0ug9Ui7h3MGibIIsbb79MgPVsgmgoCVrlkqMpGIEnBansNJM7rv47tDG4jiszqOtrvZoWnBm223MNtaXkCQx9KTSaVTOZDYCBtu8eJIy36eQnCpRDVchXrck3PyuXmoDivaUHfQeh8SMFg13Auv+dsRInVsAhVM8ciV3+02y+e/hxvrMei0h2h6thywfJbfpr4VJIr8srkst2cKows7/5B0A3KPIHuLzSF5qyH4DPmMIvVPkoCdk7jrrP45OmxRqe4eEKHwrIZo6JeK1M2QajMjkS6DVTUtTadHZklr15nE2gH/mt8juhskE5PPfzwz0VUXIzktHYftLSAi8pEhJUi46tdapWCDN0/NjmGUuwbXa88kzqXlUSNun4d+U9W3oaEvi+unIjtDoHFdHjA+mCyEJZw==
-X-OriginatorOrg: oracle.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB8947:EE_
+X-MS-Office365-Filtering-Correlation-Id: 76a4afe2-1ca0-4a0d-aad0-08db3ddc94d8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /pju1re7TS/8o0BrZHgAe2W2GH9U7DGhZOBTgJfJVIrKDLiHjTDAdU1fb3VCUjj2nzgDSA9lPfyGbM4PMx0Kn8pdklTNYpT9deI5RSPItEhxFsQroYFlBOyzdcCvEUz9Kgw68aTNy8njrPw80aXx9tYrLu1xsqEj4mBt4ZhxiiMa04zrgAkY6iIBYFknPkQB6jPvhp72wR36/NfEFrx8kC4A/PmhHRiEfOoDcu8NQVMMUUdW4o4WIBlfEEcAlrLToWfJqZor9OtibWFuLjOuTwVYkSo+4MwkFA80f3FwTXXrcFL7Mo5b3XNbR8SjzJJl4wClFSoinNk+sdrefbF149nQy2+yo7OMihjUeKFGaWE5gY6Hn9BmePh0RjV3SDD0OX94lXEyDZ1sYdvmUXVkGw9n1ygiKjSATTGPd3Jwol8/i5C7nVFF57E3dBiItSknt+49Z6VrwJkkkezMbPibJ26LDi//DHEDVXC4J4/6F/QyY077wnrVAO3bbji5b+pBqLzdQyaPO6sRXvO7QzKZa79fpxBBRcjtja0pWy3EMWM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(366004)(136003)(396003)(39860400002)(346002)(376002)(451199021)(38100700002)(5660300002)(6916009)(2906002)(8676002)(44832011)(86362001)(8936002)(316002)(4326008)(66556008)(41300700001)(66476007)(66946007)(966005)(1076003)(83380400001)(6512007)(186003)(9686003)(26005)(33716001)(6506007)(478600001)(54906003)(6486002)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?H2hDOM7pgi57Xa6GizYJkIfqNb4F9hvdhFx1BaYcKAYiUnL3qkt8QrymKMq2?=
+ =?us-ascii?Q?XKG/1yuzwop2Nq24Vp38a/4+Fc5AdLWM8QzUz8uoxRpcvUsRg4gefGnua65d?=
+ =?us-ascii?Q?IMqeV4J0MG8yhJGfKpIXA3WGxCkn+8fbckP+t8D2htqaqODAHdhi8NwpqMH8?=
+ =?us-ascii?Q?Cq4FKWpKtpQBOChSaXYjHUsNgBe5WDApY2GpJ+QgZsrCMfPsr+dZNk1iaBdu?=
+ =?us-ascii?Q?lal1H+HSD/fLXe3Qz1kT0YTcFWLgV2Tf/wIFshD6nlPAwPnsKm0rFlKc2q9P?=
+ =?us-ascii?Q?W3wex3bB79paL2XA4zO5UZp6G0BSRuOjGa+RooAZIdGoFZ9xAqzICAf+b/px?=
+ =?us-ascii?Q?N/NsWycbbp8Dj1ihvy2D2DWnXZoMyqfiUmorwaJ8+sZA9IFPBWycRFJ20b8E?=
+ =?us-ascii?Q?18kjYdP11/jsuHD2BlSClT+KjL2KZKOfFuGFbAjlqLUDLaTIvHPpF1AcSqT0?=
+ =?us-ascii?Q?P7m5wlPetZHhr5d3wxyoReGGpjUcw8WsQhbZzfFUIf+s6umB59vA4ySZOEGc?=
+ =?us-ascii?Q?VYeXktXjoT8Wxp37jZCL0OyT4IEM6OyTFT+G4qD6kHPNPWvy8ejFPiki/UM2?=
+ =?us-ascii?Q?dje/Sg+JZJccsO+Cs9BmsVlMD0XIEWizrHCjr/XlkVdVLXydoC7Hc+ZgWbgb?=
+ =?us-ascii?Q?qMNchYUvkHUj8bmgoKCL6YOQ/kNyYXAlKY88+KPTi+Rtk9Lfdn+aBU1ZRqxC?=
+ =?us-ascii?Q?xAwuL/QJ3HCT4prrARsiOflVQOud57gaUjKDvHAza3XleMM00nfvkzLRF8J1?=
+ =?us-ascii?Q?r/KLcocMFhfrU+sNt+ziYridNDmMX6T06Ia8Qace2UZWZXz29a7FkF2UU+dJ?=
+ =?us-ascii?Q?VfeKiSdr/vI8BNREQsM9V7PxotUN8WV4MhRYJSjqFL+YnQmNlSqENSklZVkT?=
+ =?us-ascii?Q?e7BlRn6qPS7jASyMcs2uvUkKOH5KxP2pekMIt04o/8NGFQhjYqBLc6VzJ4RM?=
+ =?us-ascii?Q?ErFH8LRQY/BA9tVJmND9pIpPb1gLSCB1D1If1OQp9dIXAiKAUWf8MGgjteYh?=
+ =?us-ascii?Q?ypYEqXpJ2wKCaePJ1hPhZ1hrFyUdI1nHsldqPjjn0N6ktqXIMyX/XHGf8jX8?=
+ =?us-ascii?Q?jv72ITMld1XExEzBs+Cu9O3fBxY9zkOTo1HsR1dc/G/Pn+QjilDeF2kUvYgw?=
+ =?us-ascii?Q?HTkl/++jyGgdtBfDO4+B2WMaGdnYL4Cv4Ub9/UIr0CuuVGVYtrkM/IyqUeGF?=
+ =?us-ascii?Q?gKiwa9NUTwn1KsEuACF6BSI4u+NfhsLT/T2Yc4KygML9jDvmlBkuTj7CONlQ?=
+ =?us-ascii?Q?YPOJQUhEgVyu84pujXNep0G2ZZv8gnsjXHN//t0Qvyeng6c8R5xZHrOwI2d1?=
+ =?us-ascii?Q?Si7oTvJ1M/C+sGJBYOEZyV+Z40zseWMN6E5nGCR5WWK1tpoTIugBd5kFh3w1?=
+ =?us-ascii?Q?k4NHI7IDYTwQU/9pver/fEmayzUBvSWTVRwGTU1re4D/B7kEisA/nCpnNhW9?=
+ =?us-ascii?Q?2Qxve01SpFayJ7rE3RMV6XVqA5LSfFUgVWrFIl/CrzNGm/rQwVO+k8TxwsNx?=
+ =?us-ascii?Q?QCCOfM9hGEpgaDC50b0S++bImozNFhUli1Gsvk994QFZg5ahM0vxjJmwf4gr?=
+ =?us-ascii?Q?UByJlzEcfs0+s02SiJtS6U4Ea8975eKRHqlvcnhUDRPbTrP0NOHkjoQaJzqj?=
+ =?us-ascii?Q?Tg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76a4afe2-1ca0-4a0d-aad0-08db3ddc94d8
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8af5151d-7761-4586-1887-08db3ddaf11b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Apr 2023 17:57:56.0188
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2023 18:09:40.4651
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1nxrh4wKRBgCZfKntli7L+KqN7TApcMJwAfoNaOB9f38GNXetYeK7lxgTVJJZk+qkaIFYmcANKTXXIYQL3Bokg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB5725
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-15_08,2023-04-14_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0
- malwarescore=0 mlxlogscore=999 mlxscore=0 bulkscore=0 phishscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2304150166
-X-Proofpoint-GUID: g8Z-XTwBNfUEAiS8ahDL8MvcWo5uaLVN
-X-Proofpoint-ORIG-GUID: g8Z-XTwBNfUEAiS8ahDL8MvcWo5uaLVN
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QiTBg+kje+GVtCtka7ZjCAU7ieDeWJ2MH7toCfa5hmk70gnwzY66ygVyRSU6aTB5RqwR94A1KR88nk03C8jGYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8947
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -158,96 +118,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Apr 15, 2023 at 08:34:52PM +0300, Vladimir Oltean wrote:
+> Currently the ethtool --set-mm API permits the existence of 2
+> configurations which don't make sense:
+> 
+> - pmac-enabled false tx-enabled true
+> - tx-enabled false verify-enabled true
+> 
+> By rejecting these, we can give driver-level code more guarantees.
+> I re-ran the MM selftest posted here (which I need to repost):
+> https://lore.kernel.org/netdev/20230210221243.228932-1-vladimir.oltean@nxp.com/
+> 
+> and it didn't cause functional problems.
 
+Actually, it looks like that selftest passed by mistake in the
+configuration that I tested it in. I actually get these failures:
 
-> On Apr 14, 2023, at 11:39 PM, Chuck Lever <cel@kernel.org> wrote:
->=20
-> On Fri, Apr 14, 2023 at 07:15:42PM -0700, Jakub Kicinski wrote:
->> On Fri, 14 Apr 2023 22:06:59 -0400 Chuck Lever wrote:
->>> On Fri, Apr 14, 2023 at 06:31:13PM -0700, Jakub Kicinski wrote:
->>>> We're getting:
->>>>=20
->>>> net/handshake/.kunitconfig: warning: ignored by one of the .gitignore =
-files
->>>>=20
->>>> during allmodconfig build, any idea where that's coming from? =20
->>>=20
->>> As far as I know, all of the .kunitconfig files in the kernel tree
->>> are marked "ignored". I'm not sure why, nor if it's a significant
->>> problem.
->>=20
->> To be clear - no idea what the problem is but I don't think all
->> of them are:
->>=20
->> $ echo a > fs/fat/.kunitconfig
->> $ echo b > mm/kfence/.kunitconfig
->> $ echo c > net/sunrpc/.kunitconfig
->> $ git status
->> Changes not staged for commit:
->>  (use "git add <file>..." to update what will be committed)
->>  (use "git restore <file>..." to discard changes in working directory)
->> modified:   fs/fat/.kunitconfig
->> modified:   mm/kfence/.kunitconfig
->> modified:   net/sunrpc/.kunitconfig
->=20
-> The "ignored" list I got from the bot yesterday indeed included
-> net/sunrpc/.kunitconfig as well as net/handshake/.kunitconfig, but
-> git doesn't actually seem to ignore changes to these files, as you
-> demonstrate here.
->=20
-> I don't see a specific pattern in the kernel's .gitconfig that
-> would exclude .kunitconfig files from change tracking.
->=20
-> I can see where this warning might introduce false negative build
-> results, but so far I haven't heard that particular complaint about
-> net/sunrpc/.kunitconfig.
->=20
-> Again, I wasn't sure if this was a significant problem or simply
-> noise, so I haven't chased it. If someone on-list has insight,
-> please speak up. I can try to have a look at it tomorrow.
+~/selftests/net/forwarding# journalctl -b -u lldpad
+Apr 15 18:05:10 lldpad[705]: arg_path "tlvid00120f07.addFragSize"
+Apr 15 18:05:10 lldpad[705]: arg_path "tlvid00120f07.addFragSize"
+Apr 15 18:05:10 lldpad[705]: arg_path "tlvid00120f07.addFragSize"
+Apr 15 18:05:10 lldpad[705]: arg_path "tlvid00120f07.addFragSize"
+Apr 15 18:05:10 lldpad[705]: Signal 15 received - terminating
+Apr 15 18:05:10 lldpad[705]: ethtool: kernel reports: TX enabled requires pMAC enabled
+Apr 15 18:05:10 lldpad[705]: ethtool: kernel reports: TX enabled requires pMAC enabled
+Apr 15 18:05:10 systemd[1]: lldpad.service: Deactivated successfully.
+Apr 15 18:05:10 systemd[1]: Stopped Link Layer Discovery Protocol Agent Daemon..
 
-OK, shedding a little light on this:
-
-[cel@oracle-102 linux]$ git check-ignore -v .kunitconfig
-.gitignore:13:.* .kunitconfig
-[cel@oracle-102 linux]$ git status --ignored
-On branch upcall-v10
-Ignored files:
-  (use "git add -f <file>..." to include in what will be committed)
-.kunit/
-cscope.in.out
-cscope.out
-cscope.po.out
-tools/net/ynl/lib/__pycache__/
-tools/testing/kunit/__pycache__/
-
-nothing to commit, working tree clean
-[cel@oracle-102 linux]$=20
-
-So,
-
-a) There's a very broad wildcard pattern in .gitignore that
-matches all dotfiles, and
-
-b) git actually does not ignore .kunitconfig files.
-
-
-I'm wondering if this might help the overall situation:
-
-diff --git a/.gitignore b/.gitignore
-index 70ec6037fa7a..51117ba29c88 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -105,6 +105,7 @@ modules.order
- !.gitignore
- !.mailmap
- !.rustfmt.toml
-+!.kunitconfig
-   #
- # Generated include files
-
-
---
-Chuck Lever
-
-
+Please disregard at least patch 2. Patch 1 is still perfectly valid as-is.
