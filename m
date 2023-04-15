@@ -2,55 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F32C6E33BD
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 23:06:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 299ED6E3453
+	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 00:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229989AbjDOVGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 17:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58132 "EHLO
+        id S229946AbjDOW46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 18:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbjDOVGF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 17:06:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F5DB0
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 14:05:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681592720;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=p5y3qt1ic/0kK0H+TbeY6tD9Jioxkayq+/Q9SoCXkDY=;
-        b=X1TN2+ofjf6BKMmb5aR4EdcMJpdPMyahuqDN9ZBsKS9jpj9m7j/xPFTcHgmb9R6CDNTFZT
-        +9OSsYgH+IzYGKHGtQiA5H08u9N/d8D7mfgjvqAIWmzpTiRr+uPPHYR4fFnOpURgo8RD+M
-        Kv5mHqUHprhnGE3mEdu2D+QSYQzDrvw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-302-cm6IHhQQO-6vS0XajzW_Xw-1; Sat, 15 Apr 2023 17:05:16 -0400
-X-MC-Unique: cm6IHhQQO-6vS0XajzW_Xw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 541C68314E8;
-        Sat, 15 Apr 2023 21:05:16 +0000 (UTC)
-Received: from fs-i40c-03.fs.lab.eng.bos.redhat.com (fs-i40c-03.fs.lab.eng.bos.redhat.com [10.16.224.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B27D11415139;
-        Sat, 15 Apr 2023 21:05:15 +0000 (UTC)
-From:   Alexander Aring <aahringo@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, alex.aring@gmail.com,
-        daniel@iogearbox.net, ymittal@redhat.com, mcascell@redhat.com,
-        torvalds@linuxfoundation.org, mcr@sandelman.ca
-Subject: [PATCH net] net: rpl: fix rpl header size calculation
-Date:   Sat, 15 Apr 2023 17:05:06 -0400
-Message-Id: <20230415210506.2283603-1-aahringo@redhat.com>
+        with ESMTP id S229576AbjDOW44 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 18:56:56 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF412D59
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 15:56:55 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id v9so27349990pjk.0
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 15:56:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1681599414; x=1684191414;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ubRjxle8AfL59Prm/wkmTmVjb75/p8iBeRuuijtLjNg=;
+        b=TZKMN8poAHP4YwAqnU9eEVSOlb5ek8a5pOp6pAenCZDEHOJssxaf+A4++1IIYw7MpM
+         7aq9yaEQTpQNruGixDOeSiEIZuumGKqQqq61OfoKbml+6JwtYe2rw4/T/V8o5iEBSi51
+         OSOWCMJ+FlQaNG/1ktYx6rTm4HSd8b8EpSnbipfzd+GjNGowid2Q/djKv2jOWWHaHmEP
+         hSiqOIeyIH6QSf2ALrjHP/WGwHSsfWJFwgnpnRFGR3vBzTBTPXI+33kdhOkhQoB8hegE
+         UeeIqG5sqAzmDiUPg8p1YaOLplu+Tnxv7+bB8KIo23tQvL0qQzEtGCfEbteC9xiY3pS+
+         pioA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681599414; x=1684191414;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ubRjxle8AfL59Prm/wkmTmVjb75/p8iBeRuuijtLjNg=;
+        b=GRV7E3wSYQr+4BbfFXnjIjmji0Pd895ufvWdm5tDktGor5Y8us+nFh8EzpDEW9gY9s
+         z6NmTWksS18pbvqUdgatLyhpQ8O4BvSHYryOxsAmKJovoLiyOyvziCmizZmcbWGAePL+
+         31Pa6hOPKbq4ChZiOYpRBHEuIl+8noGQOgcoIuL7nbPyT1lsPAG80rrDEWDEIVlr+HV+
+         /tZoyfK4yU78xTPrD0hq0b3bzuI1fTNybVGFUiiVqGWKpysNRm78T1xDw+pRGAyCbivM
+         mNb0C6hNwZlKzkddIz/V6ILMr4KHx/UIiCbKuBjgd3U1lBqt7VKlTrgo7ygqOJ80Oegm
+         wEmw==
+X-Gm-Message-State: AAQBX9eU2KuP7VvrN4hQVdSypBB8AFkpmQHPTbVbyTmsh/EXKY4lm/rP
+        6ngP4WdBic5JKmpOA0RRnGRfAA==
+X-Google-Smtp-Source: AKy350bsEaGCTirqACeAVtm48St3ie5XE0fYZj2D3HWUz1dZxDWvNItGbUZOV8DjHKhZt7C3oJG6Eg==
+X-Received: by 2002:a05:6a20:78a8:b0:e9:5b0a:deff with SMTP id d40-20020a056a2078a800b000e95b0adeffmr9990865pzg.22.1681599414582;
+        Sat, 15 Apr 2023 15:56:54 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id e25-20020a635019000000b00502e6bfedc0sm4647359pgb.0.2023.04.15.15.56.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 15 Apr 2023 15:56:54 -0700 (PDT)
+Date:   Sat, 15 Apr 2023 15:56:51 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     david.keisarschm@mail.huji.ac.il
+Cc:     linux-kernel@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>, Jason@zx2c4.com,
+        keescook@chromium.org, ilay.bahat1@gmail.com, aksecurity@gmail.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-arch@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] Replace invocation of weak PRNG
+Message-ID: <20230415155651.18ce590f@hermes.local>
+In-Reply-To: <20230415173756.5520-1-david.keisarschm@mail.huji.ac.il>
+References: <20230415173756.5520-1-david.keisarschm@mail.huji.ac.il>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,35 +97,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a missing 8 byte for the header size calculation. The
-ipv6_rpl_srh_size() is used to check a skb_pull() on skb->data which
-points to skb_transport_header(). Currently we only check on the
-calculated addresses fields using CmprI and CmprE fields, see:
+On Sat, 15 Apr 2023 20:37:53 +0300
+david.keisarschm@mail.huji.ac.il wrote:
 
-https://www.rfc-editor.org/rfc/rfc6554#section-3
+> diff --git a/include/uapi/linux/netfilter/xt_dscp.h b/include/uapi/linux/netfilter/xt_dscp.h
+> index 7594e4df8..223d635e8 100644
+> --- a/include/uapi/linux/netfilter/xt_dscp.h
+> +++ b/include/uapi/linux/netfilter/xt_dscp.h
+> @@ -1,32 +1,27 @@
+>  /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> -/* x_tables module for matching the IPv4/IPv6 DSCP field
+> +/* x_tables module for setting the IPv4/IPv6 DSCP field
+>   *
+>   * (C) 2002 Harald Welte <laforge@gnumonks.org>
+> + * based on ipt_FTOS.c (C) 2000 by Matthew G. Marsh <mgm@paktronix.com>
+>   * This software is distributed under GNU GPL v2, 1991
+>   *
+>   * See RFC2474 for a description of the DSCP field within the IP Header.
+>   *
+> - * xt_dscp.h,v 1.3 2002/08/05 19:00:21 laforge Exp
+> + * xt_DSCP.h,v 1.7 2002/03/14 12:03:13 laforge Exp
+>  */
 
-there is however a missing 8 byte inside the calculation which stands
-for the fields before the addresses field.
-
-Fixes: 8610c7c6e3bd ("net: ipv6: add support for rpl sr exthdr")
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
----
- net/ipv6/rpl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv6/rpl.c b/net/ipv6/rpl.c
-index 488aec9e1a74..16e19fec18a4 100644
---- a/net/ipv6/rpl.c
-+++ b/net/ipv6/rpl.c
-@@ -32,7 +32,7 @@ static void *ipv6_rpl_segdata_pos(const struct ipv6_rpl_sr_hdr *hdr, int i)
- size_t ipv6_rpl_srh_size(unsigned char n, unsigned char cmpri,
- 			 unsigned char cmpre)
- {
--	return (n * IPV6_PFXTAIL_LEN(cmpri)) + IPV6_PFXTAIL_LEN(cmpre);
-+	return 8 + (n * IPV6_PFXTAIL_LEN(cmpri)) + IPV6_PFXTAIL_LEN(cmpre);
- }
- 
- void ipv6_rpl_srh_decompress(struct ipv6_rpl_sr_hdr *outhdr,
--- 
-2.31.1
+This part of the change is a mess.
+Why are you adding ipt_FTOS.c here?
+Why are you updating ancient header line from 2002?
 
