@@ -2,75 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8486C6E2FF0
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 11:09:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FC9D6E300E
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 11:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbjDOJJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 05:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
+        id S229886AbjDOJTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 05:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230085AbjDOJJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 05:09:10 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4775A27F;
-        Sat, 15 Apr 2023 02:08:51 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id ffacd0b85a97d-2f87c5b4635so189048f8f.1;
-        Sat, 15 Apr 2023 02:08:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681549730; x=1684141730;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=InhEM3EHiRkXrRv+rDOd/57bP6C2VpOkdZxgrLu5jHw=;
-        b=nIsKl560k8l1z5w+7Vj9euFCWZH9iEYRsj90660ZNXMvB3jyD9wfY0wtUFEPNkAAWr
-         DM6hd7rU2kNk23Pc+1FSpvcnPwXlB0bt0zS1jjavZpkr6ffnt04azfiMIHD5DTwYuv4S
-         C5XoRspwhOTPB2qwBSsm0HzAiNcEpf2KkiLZFtmKge8HFu/5PEZyeLddBuKAPjEXxn4T
-         Khp3w3pCQoHTkm4L5NakurRQD9sY0L+KWM7tvBwGcJlRyNXUdQSC2YMJ0hNJy1q73DSk
-         H1a9uPS+UUpLKnnhcDdM7CpraDeMo3FTa0RLWUsBx7q30BVtBuAXvfSO2aVDdxKRnJIn
-         wppw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681549730; x=1684141730;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=InhEM3EHiRkXrRv+rDOd/57bP6C2VpOkdZxgrLu5jHw=;
-        b=hFRIK7FWy23kfNieFrGKUFi6s5YObri4mDrOo/NPOwhuF69Li3La6jwLgL6gyWDGkw
-         yFfOqvmrf5RO2F3y7cqS34+lakl2bgxT2SKoy0qOhLQQGSxS6J8CvlwWQfBMW6r2UItf
-         OfYb53CrIrQxd/lDqR8x2puWd2i0z9je2kiCy03x8YjSvuevl19i/XiCLf0+/PP92wSN
-         APrvWn477rhhkfIu6cl7188M+5qEh08CINWxtIYI1pHDK5Yye8hXGOUdopX6wHB6YPGE
-         ym8DdyahxGAR4EAMf/WybCQGjAfcnMrO0YOGVvDfb8hZLo+bD47nd754kVrgecY3ta8Y
-         UGxQ==
-X-Gm-Message-State: AAQBX9fM9PDbX5V3dsCZ0qcALnpy4RKPCZLg2XGAa/DByBiJesXcnztW
-        T0zNwfIMaqYv741T4Jpne84=
-X-Google-Smtp-Source: AKy350Z5pLswAXLOFSTYMOtF/X2jVhBWwPLFnyPBpYeO/k93TYYcoLOvVvEGvTS833bwvHj8k46jZA==
-X-Received: by 2002:adf:f183:0:b0:2e4:d8d7:839a with SMTP id h3-20020adff183000000b002e4d8d7839amr1028458wro.43.1681549729931;
-        Sat, 15 Apr 2023 02:08:49 -0700 (PDT)
-Received: from lucifer.home ([2a00:23c5:dc8c:8701:1663:9a35:5a7b:1d76])
-        by smtp.googlemail.com with ESMTPSA id j4-20020a5d5644000000b002f02df4c7a3sm5338874wrw.30.2023.04.15.02.08.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Apr 2023 02:08:49 -0700 (PDT)
-From:   Lorenzo Stoakes <lstoakes@gmail.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        with ESMTP id S229587AbjDOJTw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 05:19:52 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on20600.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe1a::600])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6654949F5;
+        Sat, 15 Apr 2023 02:19:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bOTmARFK5H5ne9wqX2+63UdL0BHO1w4E8dHXKUYhDco0DsvmIBly4GF03kVER0f64FOQ5BwwwdKHp+Y4bUSWCRZta03Y8q6CH/CWv4x+CyhkyOWxEQ1rNoqDhuaTlR3nSAIOSsYRTao/lDi1YDpX7nYUexnbAxYXAL8PYWEpaR+Uj+4jAIi+ZD1NWBH2RcEo36oqGYmP2NOSm2+xgoaCzegPcJBmPyh+SEQLX13hTkmcvpMza3OoD2HiaX3Zou+XmdPOCho55rGY4eQTxVczIkGPQZkqZaLCyMVdSN26XpGfcvLoHwAXa+6NYd3TUv6c2YsG2t0nrlIAquQWcUWdQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=94/WLQC1iwlfxCwpll6F2i8MquJ3C6OUPCoQR8ci/i4=;
+ b=jndIM2nx4qrUXYulV5x0F7YHKewaXR/A1jOmNggBJb0s/VLPmRWiJh0vjSv7N+Na962WiLePwSmC1DGXXtv9Ee6jprOc15c1KYuw0p/uOll5fDfUY1J1gA+eetdiVoEwHUUsP32aDsqkEvRlEFNnusRbSyH09Le3tsBulx2UETk9My/gnFrvrO8KFZ5PCqKfNFkVvQS07DtgOMql471igif/f3zF8wPuNuQerEPJ+85yCtSR7+zivUFSC3bXHZg4/bNwBj7oo7mScoc694oyduaMg1ayEi6mg4u0jsTizpvnD9LejnBy2GKkOpoVTMWqDZH8sU5CaUrCkxCLv7y/aA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=94/WLQC1iwlfxCwpll6F2i8MquJ3C6OUPCoQR8ci/i4=;
+ b=sst+UAvYUsx3I19ElcAl19f/F214Se6+4H08yxI24AD9VZQ/OEBfOyqvDWL1A78yppYQUjwdaWo9q28g8teGLDVhgxVtGkS9xIL8CJQUeJvleLcjDkWvLtPBpsVza79oi7Z0mf5LiiPwgOBg9rn7NRYr/Li7XGcMIgZF656YQmRQP8dqgouwRT3btL48gux7iKa+NLA2UnWylw0rf6tPbu58gfMFFx6UP7wQiMFa46JT9Nf7oJTG+MsQUE709Q6Q9PAiIFutSBWn8wyufrpn9JKzMbwv/b3UFF2uY4BaKtuAbCaY6DHdIVDevquvwMofWmtwwMAtIoK0G+ofBLtPYA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:248::14)
+ by PAVPR10MB7137.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:315::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Sat, 15 Apr
+ 2023 09:19:46 +0000
+Received: from PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::3dcc:70a2:164e:ddd4]) by PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::3dcc:70a2:164e:ddd4%3]) with mapi id 15.20.6319.004; Sat, 15 Apr 2023
+ 09:19:46 +0000
+Message-ID: <ffa2551d-ca04-3fe9-944a-0383e1d079e3@siemens.com>
+Date:   Sat, 15 Apr 2023 11:19:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net v3 1/1] igc: read before write to SRRCTL register
+Content-Language: en-US
+To:     Song Yoong Siang <yoong.siang.song@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -79,249 +57,123 @@ Cc:     Matthew Wilcox <willy@infradead.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-rdma@vger.kernel.org,
-        linux-media@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, io-uring@vger.kernel.org,
-        bpf@vger.kernel.org, Lorenzo Stoakes <lstoakes@gmail.com>
-Subject: [PATCH v2 6/7] mm/gup: remove vmas parameter from pin_user_pages()
-Date:   Sat, 15 Apr 2023 10:08:45 +0100
-Message-Id: <925661e55664dd65a6aaa9f60e96bd0d71ed8197.1681547405.git.lstoakes@gmail.com>
-X-Mailer: git-send-email 2.40.0
-In-Reply-To: <cover.1681547405.git.lstoakes@gmail.com>
-References: <cover.1681547405.git.lstoakes@gmail.com>
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Vedang Patel <vedang.patel@intel.com>,
+        Jithu Joseph <jithu.joseph@intel.com>,
+        Andre Guedes <andre.guedes@intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        David Laight <David.Laight@ACULAB.COM>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        xdp-hints@xdp-project.net, stable@vger.kernel.org
+References: <20230414154902.2950535-1-yoong.siang.song@intel.com>
+From:   Florian Bezdeka <florian.bezdeka@siemens.com>
+In-Reply-To: <20230414154902.2950535-1-yoong.siang.song@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: VI1PR0601CA0024.eurprd06.prod.outlook.com
+ (2603:10a6:800:1e::34) To PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:248::14)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PAXPR10MB5712:EE_|PAVPR10MB7137:EE_
+X-MS-Office365-Filtering-Correlation-Id: a55ad259-bde7-4d13-949e-08db3d928e00
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kPZdiUaItGxTzDN7R1k7cqUdOqrKpZGLeeNAX4Z28w4IGXpYKyjBeXvYSU/jkwFCVcj/UICwptBuo4VJmWl4eIIuAI3VzhVwg5cvaqUo5QxoQaCVloomC2tZcWCdAYqee+F/5mBq2PY0VJw/pgfUt5eWraUSl0vCLnC0u79LtGoySwCd08AUx/OQ/o0wnyhY/jVG9d7VA4EIKXUoNOkjLCDBvt0ghy/vuu9pxSleqFhA5XMnAtk1CG6tc3WxGjYkT/4XhtECfTIaLiNpaf1A3HuR9nbK4NKWZUwmJaeVVTSb+VKJyAKBQYjinQNieXhqR2h/u1OQ+kdoaOw4JsvoqP5uZS3zrL2zcVMqBH0cAPYjT2A+kYjG3KK48pBC9NLojl74TiHxJN+ObJW15IEykKeXf9w4WXPdd1Kj//mdKU9MVgSqtr2snoLJbiM1sT1vUYtxWAN9D7CaRTF+ZVemHxZ3Xf1ynnTOJPjJyLk4p1u2cy9qK/coQt/yYP02zHK+QYvNCoT5GzDl+/t0A5Fb7jc9gWADD+cgZhjPNBtvfSTda4MsgtK++7y/Ml98EMIECm8fwaoyskZMzSK+aIhHgcHT7z/6CkGEHbdSRhiIs0quDPPRTyc4Wv8i7Af6c7Oc4/lsHNXX1hSZ3fw7zOvcNg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(136003)(376002)(366004)(451199021)(36756003)(83380400001)(31696002)(66476007)(316002)(86362001)(41300700001)(110136005)(66556008)(4326008)(478600001)(6486002)(8676002)(66946007)(921005)(5660300002)(186003)(4744005)(7416002)(8936002)(82960400001)(44832011)(2906002)(38100700002)(6512007)(53546011)(6506007)(2616005)(6666004)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TERUOVhtSXZzek42bGUxQVRLem12dUVzK29Yc1gyRXdzSkFYSzNjMi9BODI4?=
+ =?utf-8?B?c2NNdkYzbzBoSUdjV2RYQ29qMERDYVBGZnM4RUdsYUZ1eC9IbDBHemMzRzBh?=
+ =?utf-8?B?WktyVmpIcFBpZHV1UVByNVZTWk1VQzVqNFVoU1RYZlBmM0ZUZGkzanIwaFQ0?=
+ =?utf-8?B?NVhRdk56cndaUXdIaVducjJmbjVHd2syM1ZNYXNFeC9BckVLaVFNNkNNQnY1?=
+ =?utf-8?B?dGVEeUJzRXNNbWhCNEJMK0VieGMrdXBiNExDN2tUa2YwYS9RS1JiZXJoeGVs?=
+ =?utf-8?B?dHRhNGdCYmMvMHFLY0ZXdy9LY3N5T2o4VWJBV3Ntd2xTYWF2RmpDb21UUTd6?=
+ =?utf-8?B?NTFGcG9sbi8yV2k2ZlZiVUJkVHdXMC9OZ2N5OGJKUlpiS3llSisxc05JSTVM?=
+ =?utf-8?B?R082cHpFcVRZdGNaR3B4dHZ5ZHhHeEd6V0lmeDNqUG16U0tuaWk2eEEwMlB0?=
+ =?utf-8?B?d091dUxLUjcrK0cxbHFKY0hzU0RSN0R3MXJzd1cya0haZ253SFVZeCtrT1FC?=
+ =?utf-8?B?V0FSVTVpZDJmUmg4Mko4VmVFMUJqdGx0TkZrNVlnSGo3SFovZURoWjI2RjJQ?=
+ =?utf-8?B?WndXczhjWHh6UmJXcEh6akQvOFhKaUF0cllKcUhVOTg0WlRON1ovbjZxa3FF?=
+ =?utf-8?B?ZVF3M3laWEJ6YjZpRHE4OWszTmgyeVZFc2IrZVhXcXBpNWREaUxJQ1dtNTVQ?=
+ =?utf-8?B?b0p5cnJUWW5rYWJ0ek1KcTAvdDRhKzBBcFRsTDl4aEQ5SjgzMmR5eEoxL2lP?=
+ =?utf-8?B?MHBxU1E0ZXJiTzJJMWVOeVhLbm02VHlRZzhmYWhkZE5GYnRTTHU5N29aclNH?=
+ =?utf-8?B?Nzkza3BScWxmZzlWaFlJSEMxN3dxQ0dqaHV0SkNTRGczMkJLTjY4Z1dmWmth?=
+ =?utf-8?B?aG9DRjdzZmc4dVdQWFdJa3ZIUUY3Uk5oeC8vYVY1djY1MEF3djJyRjVmYzNr?=
+ =?utf-8?B?QzZMUnRQWGJrYy8xS0RmU3NPcDJDQTl0VHlMWUpWOSt0bFdSVjQ4NWoyM2lF?=
+ =?utf-8?B?TCtHQTNpeHdiaFl6RlhrNTNWS2FFTU5pVFJySHN1YWU0V0NQTkxmTWt4SjVi?=
+ =?utf-8?B?T3l1SE1PQ0I0c283Q0tQNU9mYm1HQ3VSMTNSSnUvc3djL25zcTRaVzJKWjRK?=
+ =?utf-8?B?a0ROU2pmWlhSdU8yU2FZaHRGNUFGa2ZxKzBCY2YzUW00SmdQUGRNQ010Qml5?=
+ =?utf-8?B?S2hBUEhBOWYzcmxaVmZKUVQxKzJQTXdQL2lNdEVkdi83WXpHWGpOeGo1WlBS?=
+ =?utf-8?B?TFRUdThtWnR3czR0RWROLzZnQVM3bzd2WDMyb1BpZkpqaVVxTHlTUnBDK0ta?=
+ =?utf-8?B?U1BCR2ZkVVFoQzN5eGJlU1FQTWJSbzhld0VVdi94bXNOVGQvd1UwU2lmcTdM?=
+ =?utf-8?B?UGQ4ajRIL2Q1Vmdtbkt4U2R4VTlLcWRiNDVFb3lid3BNbDZpTThIQ2ZFdmxE?=
+ =?utf-8?B?YzV6dEp4YUNrR2l1ZXg3RjFOYzR0emhtSWgyS0NZaWUySGNYMDNtUzFSaUhi?=
+ =?utf-8?B?NjNXMllrK3kvQWovR1IrWWVwNVNzUVNaRS9sYS8rV29zU2JVbGV5VTd1aUJO?=
+ =?utf-8?B?K21yYXpVaUxIWnRhYXBycWl3b1ROczJ2QndxN2svVEpMM0dFcitWdGZKUzl2?=
+ =?utf-8?B?eHFIYkdCK1ZDdHFLV0dZVkYzV0djb291M0lLOC9pL3FlQjI2TSt4Q2ZiYWdT?=
+ =?utf-8?B?b05lcjVFeE5rL2ZaOGdTb1dnTERzU1ZjSzRRUStmY2dyRWQrdVRXVVFRbjFB?=
+ =?utf-8?B?WXZDd0t6S2Roa0tyYmJzN1VGK1RsQjZkdVhpSmI0Y0lCUW5YNGhjTkJneWFa?=
+ =?utf-8?B?YkVYMHlYMFRJd2hVd29veFl1eEhnT1Y2YmNtMmlObmNsT2hVNHNPdXJDMVFh?=
+ =?utf-8?B?RGEwZTVidlB3eUU1cmRrOFBsalh4bzNiaStYNWxqRDdlb0l1NSs0S3ovSmZn?=
+ =?utf-8?B?dHkzekUrdjF3Yy9uQUVoQ0xoZjVXSmZDZkVGd1FZTjRsL0dIRGJOWFdQcTlU?=
+ =?utf-8?B?Qk9EV25PbERrekNQbEVpNXJ5UEtLaHByK1FQYklNT0JVM3huVXE5Tlk1Q1c4?=
+ =?utf-8?B?cGtHRU5MQ0NnRU1rN29TMXdkVGxiUHp2YkZrSllKSXAvMFVXa21HazFEemJt?=
+ =?utf-8?B?b2RXakFMaEhSUS9PbExWMDJYMXIzeU5HbnJoclJCa21iNGcrS3QzeWRLYXU5?=
+ =?utf-8?B?T2FqRUMxcU1wUFZnQkRVN0RNRnZpeng2cXhMQkZJZUd1MXdPZmZtNSs3WGdK?=
+ =?utf-8?B?eWVTTk9raEpvMFJuT3pXeU9lTC93PT0=?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a55ad259-bde7-4d13-949e-08db3d928e00
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR10MB5712.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2023 09:19:46.1775
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KAxGCFQN/A1eL7scH4UG4uLnxcfkPjhXygVynoqYn1FNNCssF0afGTkZA9Bg3CJViX5TD68/zx1JrtASnCrLuNpINPdVc6s+9/qSQX2Zepo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR10MB7137
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the introduction of FOLL_SAME_FILE we no longer require vmas for any
-invocation of pin_user_pages(), so eliminate this parameter from the
-function and all callers.
+On 14.04.23 17:49, Song Yoong Siang wrote:
+> igc_configure_rx_ring() function will be called as part of XDP program
+> setup. If Rx hardware timestamp is enabled prio to XDP program setup,
+> this timestamp enablement will be overwritten when buffer size is
+> written into SRRCTL register.
+> 
 
-This clears the way to removing the vmas parameter from GUP altogether.
+Hi all,
 
-Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
----
- arch/powerpc/mm/book3s64/iommu_api.c       | 2 +-
- drivers/infiniband/hw/qib/qib_user_pages.c | 2 +-
- drivers/infiniband/hw/usnic/usnic_uiom.c   | 2 +-
- drivers/infiniband/sw/siw/siw_mem.c        | 2 +-
- drivers/media/v4l2-core/videobuf-dma-sg.c  | 2 +-
- drivers/vdpa/vdpa_user/vduse_dev.c         | 2 +-
- drivers/vhost/vdpa.c                       | 2 +-
- include/linux/mm.h                         | 3 +--
- io_uring/rsrc.c                            | 2 +-
- mm/gup.c                                   | 9 +++------
- mm/gup_test.c                              | 9 ++++-----
- net/xdp/xdp_umem.c                         | 2 +-
- 12 files changed, 17 insertions(+), 22 deletions(-)
+I'm actually searching for the root cause of a similar problem (RX
+timestamp lost) that I can reproduce here, but the setup is slightly
+different. The setup:
 
-diff --git a/arch/powerpc/mm/book3s64/iommu_api.c b/arch/powerpc/mm/book3s64/iommu_api.c
-index 81d7185e2ae8..d19fb1f3007d 100644
---- a/arch/powerpc/mm/book3s64/iommu_api.c
-+++ b/arch/powerpc/mm/book3s64/iommu_api.c
-@@ -105,7 +105,7 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, unsigned long ua,
- 
- 		ret = pin_user_pages(ua + (entry << PAGE_SHIFT), n,
- 				FOLL_WRITE | FOLL_LONGTERM,
--				mem->hpages + entry, NULL);
-+				mem->hpages + entry);
- 		if (ret == n) {
- 			pinned += n;
- 			continue;
-diff --git a/drivers/infiniband/hw/qib/qib_user_pages.c b/drivers/infiniband/hw/qib/qib_user_pages.c
-index f693bc753b6b..1bb7507325bc 100644
---- a/drivers/infiniband/hw/qib/qib_user_pages.c
-+++ b/drivers/infiniband/hw/qib/qib_user_pages.c
-@@ -111,7 +111,7 @@ int qib_get_user_pages(unsigned long start_page, size_t num_pages,
- 		ret = pin_user_pages(start_page + got * PAGE_SIZE,
- 				     num_pages - got,
- 				     FOLL_LONGTERM | FOLL_WRITE,
--				     p + got, NULL);
-+				     p + got);
- 		if (ret < 0) {
- 			mmap_read_unlock(current->mm);
- 			goto bail_release;
-diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/hw/usnic/usnic_uiom.c
-index 2a5cac2658ec..84e0f41e7dfa 100644
---- a/drivers/infiniband/hw/usnic/usnic_uiom.c
-+++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
-@@ -140,7 +140,7 @@ static int usnic_uiom_get_pages(unsigned long addr, size_t size, int writable,
- 		ret = pin_user_pages(cur_base,
- 				     min_t(unsigned long, npages,
- 				     PAGE_SIZE / sizeof(struct page *)),
--				     gup_flags, page_list, NULL);
-+				     gup_flags, page_list);
- 
- 		if (ret < 0)
- 			goto out;
-diff --git a/drivers/infiniband/sw/siw/siw_mem.c b/drivers/infiniband/sw/siw/siw_mem.c
-index f51ab2ccf151..e6e25f15567d 100644
---- a/drivers/infiniband/sw/siw/siw_mem.c
-+++ b/drivers/infiniband/sw/siw/siw_mem.c
-@@ -422,7 +422,7 @@ struct siw_umem *siw_umem_get(u64 start, u64 len, bool writable)
- 		umem->page_chunk[i].plist = plist;
- 		while (nents) {
- 			rv = pin_user_pages(first_page_va, nents, foll_flags,
--					    plist, NULL);
-+					    plist);
- 			if (rv < 0)
- 				goto out_sem_up;
- 
-diff --git a/drivers/media/v4l2-core/videobuf-dma-sg.c b/drivers/media/v4l2-core/videobuf-dma-sg.c
-index 53001532e8e3..405b89ea1054 100644
---- a/drivers/media/v4l2-core/videobuf-dma-sg.c
-+++ b/drivers/media/v4l2-core/videobuf-dma-sg.c
-@@ -180,7 +180,7 @@ static int videobuf_dma_init_user_locked(struct videobuf_dmabuf *dma,
- 		data, size, dma->nr_pages);
- 
- 	err = pin_user_pages(data & PAGE_MASK, dma->nr_pages, gup_flags,
--			     dma->pages, NULL);
-+			     dma->pages);
- 
- 	if (err != dma->nr_pages) {
- 		dma->nr_pages = (err >= 0) ? err : 0;
-diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
-index 0c3b48616a9f..1f80254604f0 100644
---- a/drivers/vdpa/vdpa_user/vduse_dev.c
-+++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-@@ -995,7 +995,7 @@ static int vduse_dev_reg_umem(struct vduse_dev *dev,
- 		goto out;
- 
- 	pinned = pin_user_pages(uaddr, npages, FOLL_LONGTERM | FOLL_WRITE,
--				page_list, NULL);
-+				page_list);
- 	if (pinned != npages) {
- 		ret = pinned < 0 ? pinned : -ENOMEM;
- 		goto out;
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 7be9d9d8f01c..4317128c1c62 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -952,7 +952,7 @@ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
- 	while (npages) {
- 		sz2pin = min_t(unsigned long, npages, list_size);
- 		pinned = pin_user_pages(cur_base, sz2pin,
--					gup_flags, page_list, NULL);
-+					gup_flags, page_list);
- 		if (sz2pin != pinned) {
- 			if (pinned < 0) {
- 				ret = pinned;
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 1bfe73a2b6d3..363e3d0d46f4 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -2382,8 +2382,7 @@ long pin_user_pages_remote(struct mm_struct *mm,
- long get_user_pages(unsigned long start, unsigned long nr_pages,
- 		    unsigned int gup_flags, struct page **pages);
- long pin_user_pages(unsigned long start, unsigned long nr_pages,
--		    unsigned int gup_flags, struct page **pages,
--		    struct vm_area_struct **vmas);
-+		    unsigned int gup_flags, struct page **pages);
- long get_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
- 		    struct page **pages, unsigned int gup_flags);
- long pin_user_pages_unlocked(unsigned long start, unsigned long nr_pages,
-diff --git a/io_uring/rsrc.c b/io_uring/rsrc.c
-index adc860bcbd4f..92d0d47e322c 100644
---- a/io_uring/rsrc.c
-+++ b/io_uring/rsrc.c
-@@ -1157,7 +1157,7 @@ struct page **io_pin_pages(unsigned long ubuf, unsigned long len, int *npages)
- 
- 	pret = pin_user_pages(ubuf, nr_pages,
- 			      FOLL_WRITE | FOLL_LONGTERM | FOLL_SAME_FILE,
--			      pages, NULL);
-+			      pages);
- 	if (pret == nr_pages) {
- 		/*
- 		 * lookup the first VMA, we require that all VMAs in range
-diff --git a/mm/gup.c b/mm/gup.c
-index 3954ce499a4a..714970ef3b30 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -3132,8 +3132,6 @@ EXPORT_SYMBOL(pin_user_pages_remote);
-  * @gup_flags:	flags modifying lookup behaviour
-  * @pages:	array that receives pointers to the pages pinned.
-  *		Should be at least nr_pages long.
-- * @vmas:	array of pointers to vmas corresponding to each page.
-- *		Or NULL if the caller does not require them.
-  *
-  * Nearly the same as get_user_pages(), except that FOLL_TOUCH is not set, and
-  * FOLL_PIN is set.
-@@ -3142,15 +3140,14 @@ EXPORT_SYMBOL(pin_user_pages_remote);
-  * see Documentation/core-api/pin_user_pages.rst for details.
-  */
- long pin_user_pages(unsigned long start, unsigned long nr_pages,
--		    unsigned int gup_flags, struct page **pages,
--		    struct vm_area_struct **vmas)
-+		    unsigned int gup_flags, struct page **pages)
- {
- 	int locked = 1;
- 
--	if (!is_valid_gup_args(pages, vmas, NULL, &gup_flags, FOLL_PIN))
-+	if (!is_valid_gup_args(pages, NULL, NULL, &gup_flags, FOLL_PIN))
- 		return 0;
- 	return __gup_longterm_locked(current->mm, start, nr_pages,
--				     pages, vmas, &locked, gup_flags);
-+				     pages, NULL, &locked, gup_flags);
- }
- EXPORT_SYMBOL(pin_user_pages);
- 
-diff --git a/mm/gup_test.c b/mm/gup_test.c
-index 9ba8ea23f84e..1668ce0e0783 100644
---- a/mm/gup_test.c
-+++ b/mm/gup_test.c
-@@ -146,18 +146,17 @@ static int __gup_test_ioctl(unsigned int cmd,
- 						 pages + i);
- 			break;
- 		case PIN_BASIC_TEST:
--			nr = pin_user_pages(addr, nr, gup->gup_flags, pages + i,
--					    NULL);
-+			nr = pin_user_pages(addr, nr, gup->gup_flags, pages + i);
- 			break;
- 		case PIN_LONGTERM_BENCHMARK:
- 			nr = pin_user_pages(addr, nr,
- 					    gup->gup_flags | FOLL_LONGTERM,
--					    pages + i, NULL);
-+					    pages + i);
- 			break;
- 		case DUMP_USER_PAGES_TEST:
- 			if (gup->test_flags & GUP_TEST_FLAG_DUMP_PAGES_USE_PIN)
- 				nr = pin_user_pages(addr, nr, gup->gup_flags,
--						    pages + i, NULL);
-+						    pages + i);
- 			else
- 				nr = get_user_pages(addr, nr, gup->gup_flags,
- 						    pages + i);
-@@ -270,7 +269,7 @@ static inline int pin_longterm_test_start(unsigned long arg)
- 							gup_flags, pages);
- 		else
- 			cur_pages = pin_user_pages(addr, remaining_pages,
--						   gup_flags, pages, NULL);
-+						   gup_flags, pages);
- 		if (cur_pages < 0) {
- 			pin_longterm_test_stop();
- 			ret = cur_pages;
-diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-index 02207e852d79..06cead2b8e34 100644
---- a/net/xdp/xdp_umem.c
-+++ b/net/xdp/xdp_umem.c
-@@ -103,7 +103,7 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
- 
- 	mmap_read_lock(current->mm);
- 	npgs = pin_user_pages(address, umem->npgs,
--			      gup_flags | FOLL_LONGTERM, &umem->pgs[0], NULL);
-+			      gup_flags | FOLL_LONGTERM, &umem->pgs[0]);
- 	mmap_read_unlock(current->mm);
- 
- 	if (npgs != umem->npgs) {
--- 
-2.40.0
+- igc driver
+- i225/226 network card
+- When starting to transmit frames using XDP with zero copy enabled
+  another application (ptp4l) complains about missing RX timestamps
+- Loading the XDP program has already been removed (not needed for
+  TX only)
+- ptp4l is using the traditional socket API
+- The RX timestamps seem to come back once we stop sending frames
+  using XDP
+
+The "zero copy support" enabled part is important. If ZC support is not
+requested everything works fine.
+
+Any ideas?
+
+Best regards,
+Florian
+
 
