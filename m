@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C99C6E2E3D
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 03:31:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C89FF6E2E50
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 03:47:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbjDOBbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 21:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36484 "EHLO
+        id S229524AbjDOBq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 21:46:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbjDOBbQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 21:31:16 -0400
+        with ESMTP id S229450AbjDOBq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 21:46:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B1D40E1
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 18:31:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D4C3AA0
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 18:46:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88A826133F
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 01:31:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2815C433D2;
-        Sat, 15 Apr 2023 01:31:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 078F964664
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 01:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 006B7C433EF;
+        Sat, 15 Apr 2023 01:46:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681522274;
-        bh=QYG2kH1HEpd094NaB0WJOMtWh18mr0SfGY5BbhdM+rQ=;
+        s=k20201202; t=1681523215;
+        bh=ZXKj+yU5bJyvfW+AcqY3QPN0Pb/N5mZFp7eVM2lu2Tc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JLqICkbyhyQbMz1q3Pn4hxec8N6tXP+/UQKjCc7iyMfKbjUlMxrrIXF8cdajO/eb1
-         bAvOXk4ReZnMc4ykSXkDSs9bfycE40P8U0I2gS1aPUGNmhdyL4haxrSSY7b7EZ6ykW
-         X4PoY5YsC8npiZk7qreepw5HmLjLbNzklHB+A0mDRfQw/AExclqBg6clMhGlGelOPd
-         q/EBWovCIJ9FzD4pDHREbFV4bcPtnjMrLLCQea7CAacO5Q6jzy3RNFgaG5QEM4PAKw
-         mtidfRa4PoFogHTQWzeNcE/wBccgnSATUAEnLqDxUd/UisktIJJyykv0lFNP0sMqCj
-         k7zzSITtXU9OQ==
-Date:   Fri, 14 Apr 2023 18:31:13 -0700
+        b=dnH2N9iOeVDR7hama+KDnnOQRfJEAc7D5SuWkR5aAWcxznUeIOLnisXnUqkvqDQAN
+         dH75c04N1AqTJINc5GdLCP3mEDNnvf8l2Z4oG+j+qq0vygsp9HGyvM9a0op1xyhB6y
+         yl3AQbpQUHhmFEXeIp0rC+fPBF4xo5FxgyW+CeOByRKFD0Gl6o732iAS38ktdIYXvK
+         0xsyvTmnthUNiopv8zeXoT1vtHnateriwY1zY3j113XONxI32TJVAzf6x2kqNrgHch
+         uETTU6jlx3gZ7/geHzz+HE6DYYbwkZAGbunlSQscCTRhyY+k+p/mS4qVc/9AvKWRhp
+         AzuF6+nPBNhHg==
+Date:   Fri, 14 Apr 2023 18:46:53 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chuck Lever <cel@kernel.org>
-Cc:     pabeni@redhat.com, edumazet@google.com, netdev@vger.kernel.org,
-        kernel-tls-handshake@lists.linux.dev
-Subject: Re: [PATCH v9 3/3] net/handshake: Add Kunit tests for the handshake
- consumer API
-Message-ID: <20230414183113.318ee353@kernel.org>
-In-Reply-To: <168141324822.157208.14911977368369619191.stgit@manet.1015granger.net>
-References: <168141287044.157208.15120359741792569671.stgit@manet.1015granger.net>
-        <168141324822.157208.14911977368369619191.stgit@manet.1015granger.net>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        lorenzo.bianconi@redhat.com, jdamato@fastly.com
+Subject: Re: [PATCH net-next] net: page_pool: add pages and released_pages
+ counters
+Message-ID: <20230414184653.21b4303d@kernel.org>
+In-Reply-To: <a20f97acccce65d174f704eadbf685d0ce1201af.1681422222.git.lorenzo@kernel.org>
+References: <a20f97acccce65d174f704eadbf685d0ce1201af.1681422222.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,19 +56,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Apr 2023 15:14:08 -0400 Chuck Lever wrote:
->  net/Kconfig                    |   15 +
->  net/handshake/.kunitconfig     |   11 +
->  net/handshake/Makefile         |    2 
->  net/handshake/handshake-test.c |  523 ++++++++++++++++++++++++++++++++++++++++
->  net/handshake/netlink.c        |   22 ++
->  net/handshake/request.c        |    5 
->  6 files changed, 578 insertions(+)
->  create mode 100644 net/handshake/.kunitconfig
->  create mode 100644 net/handshake/handshake-test.c
+On Thu, 13 Apr 2023 23:46:03 +0200 Lorenzo Bianconi wrote:
+> @@ -411,6 +417,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>  		pool->pages_state_hold_cnt++;
+>  		trace_page_pool_state_hold(pool, page,
+>  					   pool->pages_state_hold_cnt);
+> +		alloc_stat_inc(pool, pages);
+>  	}
+>  
+>  	/* Return last page */
 
-We're getting:
+What about high order? If we use bulk API for high order one day, 
+will @slow_high_order not count calls like @slow does? So we should
+bump the new counter for high order, too.
 
-net/handshake/.kunitconfig: warning: ignored by one of the .gitignore files
-
-during allmodconfig build, any idea where that's coming from?
+Which makes it very similar to pages_state_hold_cnt, just 64bit...
