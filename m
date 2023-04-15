@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 054456E2E85
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 04:08:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2E506E2E88
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 04:16:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbjDOCIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 22:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48940 "EHLO
+        id S229853AbjDOCPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 22:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjDOCIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 22:08:30 -0400
+        with ESMTP id S229848AbjDOCPq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 22:15:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8F4138;
-        Fri, 14 Apr 2023 19:08:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D37C55B3
+        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 19:15:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22F03648CC;
-        Sat, 15 Apr 2023 02:08:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97C8EC433D2;
-        Sat, 15 Apr 2023 02:08:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDF5A649F5
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 02:15:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC9B5C433D2;
+        Sat, 15 Apr 2023 02:15:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681524507;
-        bh=6ku6pu6nfzZgQQnuE5fxPZEh2aPsOxfnPx3I/CAn3qs=;
+        s=k20201202; t=1681524944;
+        bh=I97hVf/6becCUJITM1Fo37A/cdhDH3Jul7cz2WQ+KwE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RbXfjDiFKQFLxCkm/FRUfPYcPmGAgVpfzvRIvDTFQcpkZk/OUuIWQOj2kEXesPD5r
-         9x/hwL92jfH34K4ckEHlncwPRcA9svJgMl2Unov2yACgenBznxBWuaRIPw1iolKriE
-         7eJzum71NxwMTj5pwisBYG2NyRHG/LnAlQa9eM7dqdxEo3BV2X5grHUDM9wd7EImR6
-         /JvkRJhUqo43NvybA2nC426q95Tli7f4zHvm+zJVWdxiG5tIsWkOrc3hK7Rt7qFgwo
-         LMuGEj/yj1kdAymkjOrMHNAqXezvDvAJQ0V6F/0Q6eJc1iPGVNtsXYrVsxk0ivfmQm
-         Velg1Z4Xbvt8A==
-Date:   Fri, 14 Apr 2023 19:08:25 -0700
+        b=D2ke2x5aqFdK0MWmnV2FU9d+ENN7Q98M+pEHFK9S9cbkTFexq0NlHbPFNMNORYz7W
+         7aGM3tg1PR9wP5sbrC9e+T6QEdxpZ8CaNUc8Ya2TMPiZEVymmNg8zYmA2hLft1RdND
+         9h1VuYy9UJ2KbRS8oCLMYDHfKrLNwW2o8Sx17KM0W1CWpGALof+ZnXW4ApGItYcVd9
+         ba8S/4qIwOXbRaqfOR5BPstOpgXFRmXPBIMA+Q5WUmxQmZKpdm8fDtx3uF59zC/uBK
+         mNNqHGAnBV7iHobBe+HjGc2+s4XdxppVnlsut75okIth6dYjjrD2fhYZPc6dXxIIoe
+         Ht6d3AohMlqFQ==
+Date:   Fri, 14 Apr 2023 19:15:42 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Haiyang Zhang <haiyangz@microsoft.com>
-Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        decui@microsoft.com, kys@microsoft.com, paulros@microsoft.com,
-        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
-        wei.liu@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        leon@kernel.org, longli@microsoft.com, ssengar@linux.microsoft.com,
-        linux-rdma@vger.kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, bpf@vger.kernel.org, ast@kernel.org,
-        sharmaajay@microsoft.com, hawk@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3,net-next, 0/4] net: mana: Add support for jumbo frame
-Message-ID: <20230414190825.6ce2d980@kernel.org>
-In-Reply-To: <1681334163-31084-1-git-send-email-haiyangz@microsoft.com>
-References: <1681334163-31084-1-git-send-email-haiyangz@microsoft.com>
+To:     Chuck Lever <cel@kernel.org>
+Cc:     pabeni@redhat.com, edumazet@google.com, netdev@vger.kernel.org,
+        kernel-tls-handshake@lists.linux.dev
+Subject: Re: [PATCH v9 3/3] net/handshake: Add Kunit tests for the handshake
+ consumer API
+Message-ID: <20230414191542.16a98637@kernel.org>
+In-Reply-To: <ZDoGw3nVG+jNWrwV@manet.1015granger.net>
+References: <168141287044.157208.15120359741792569671.stgit@manet.1015granger.net>
+        <168141324822.157208.14911977368369619191.stgit@manet.1015granger.net>
+        <20230414183113.318ee353@kernel.org>
+        <ZDoGw3nVG+jNWrwV@manet.1015granger.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,9 +57,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Apr 2023 14:15:59 -0700 Haiyang Zhang wrote:
-> The set adds support for jumbo frame,
-> with some optimization for the RX path.
+On Fri, 14 Apr 2023 22:06:59 -0400 Chuck Lever wrote:
+> On Fri, Apr 14, 2023 at 06:31:13PM -0700, Jakub Kicinski wrote:
+> > We're getting:
+> > 
+> > net/handshake/.kunitconfig: warning: ignored by one of the .gitignore files
+> > 
+> > during allmodconfig build, any idea where that's coming from?  
+> 
+> As far as I know, all of the .kunitconfig files in the kernel tree
+> are marked "ignored". I'm not sure why, nor if it's a significant
+> problem.
 
-Looks like this patch set got silently applied and is already 
-in net-next :( Please address my feedback with follow up patches.
+To be clear - no idea what the problem is but I don't think all
+of them are:
+
+$ echo a > fs/fat/.kunitconfig
+$ echo b > mm/kfence/.kunitconfig
+$ echo c > net/sunrpc/.kunitconfig
+$ git status
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   fs/fat/.kunitconfig
+	modified:   mm/kfence/.kunitconfig
+	modified:   net/sunrpc/.kunitconfig
+
