@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B9C26E2E76
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 04:04:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5FBC6E2E7E
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 04:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbjDOCEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Apr 2023 22:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46402 "EHLO
+        id S229924AbjDOCGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Apr 2023 22:06:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbjDOCEu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 22:04:50 -0400
+        with ESMTP id S229491AbjDOCGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Apr 2023 22:06:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E0C4ECE;
-        Fri, 14 Apr 2023 19:04:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3874C39;
+        Fri, 14 Apr 2023 19:06:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABDC1616C5;
-        Sat, 15 Apr 2023 02:04:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19B6AC433EF;
-        Sat, 15 Apr 2023 02:04:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB32D61719;
+        Sat, 15 Apr 2023 02:06:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 483C6C433EF;
+        Sat, 15 Apr 2023 02:06:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681524288;
-        bh=Csm4EYNPLH6QAZF7fKplciWMsh1+01xrJCMQTRnwAbg=;
+        s=k20201202; t=1681524370;
+        bh=F+qtdLH0oZFhkge6AY0Ykqz4k4fj38qMbGDX2XmCiZM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RhYpD9NArgG25ROMmPONTZjEGRElfFECaIblJ4IPQbzIKBs1VtlrQBxYhe25MR071
-         LNkO8V8FsM/tURYjuEs4D3jWv23lhheKb3FSs53/2iox36aQqYlRh38VXOtMCKFID9
-         CAREmcgqd7DhohfE5cAStOWasKW4A7WBK+ZbQHPX81Of04obpMpBRXapsEV4p2kl5H
-         e1qg6jiRBiIGGuGiXpc+vjASeN0jFEJmzhYiyWbQcNWY8ndFl/3tnZlJxarsVqOcnx
-         WleK0V84ADhuikD+T7G5EBuul9q8+9/JJpGCpUVi9grso/Ey25uVtVKZ9qeXcp4itR
-         5Gun3kpPNSTgw==
-Date:   Fri, 14 Apr 2023 19:04:46 -0700
+        b=uaKoP85D6NkHWUhxRs2zayNwV8H66vAumDv9vsno1kIOc83s7lNVbfb4XOetEPRKw
+         XW8jA2yt+qte3GmQNnFUsFo3bCpwTEZ8T4p70JFgtA1wsLqIe7qmDr42XYrxfJybI7
+         FpWyqeES78iN7SypOX7BYickjse98mM+9aH5FX66UTz11bVYmHWXr3/NfYluB+ABCs
+         GqOXALZdBLSqNeRp5vRpM3ODbnd6Lsy0mcZ0qHCGEgiqKjuks5tZgc2+nBcCs5nvyy
+         PFcE8N7pR2c7PIoZXk2CS7EDSnlfACbOJ1U76jbZ+0sn0E+zjLHsM5co8kDokRzaOE
+         DWSv5hrY306WQ==
+Date:   Fri, 14 Apr 2023 19:06:08 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Haiyang Zhang <haiyangz@microsoft.com>
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
@@ -43,12 +43,12 @@ Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         john.fastabend@gmail.com, bpf@vger.kernel.org, ast@kernel.org,
         sharmaajay@microsoft.com, hawk@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3,net-next, 2/4] net: mana: Refactor RX buffer
- allocation code to prepare for various MTU
-Message-ID: <20230414190446.719f651f@kernel.org>
-In-Reply-To: <1681334163-31084-3-git-send-email-haiyangz@microsoft.com>
+Subject: Re: [PATCH V3,net-next, 3/4] net: mana: Enable RX path to handle
+ various MTU sizes
+Message-ID: <20230414190608.3c21f44f@kernel.org>
+In-Reply-To: <1681334163-31084-4-git-send-email-haiyangz@microsoft.com>
 References: <1681334163-31084-1-git-send-email-haiyangz@microsoft.com>
-        <1681334163-31084-3-git-send-email-haiyangz@microsoft.com>
+        <1681334163-31084-4-git-send-email-haiyangz@microsoft.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,23 +62,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Apr 2023 14:16:01 -0700 Haiyang Zhang wrote:
-> +/* Allocate frag for rx buffer, and save the old buf */
-> +static void mana_refill_rxoob(struct device *dev, struct mana_rxq *rxq,
+On Wed, 12 Apr 2023 14:16:02 -0700 Haiyang Zhang wrote:
+> +	} else if (rxq->alloc_size > PAGE_SIZE) {
+> +		if (is_napi)
+> +			va = napi_alloc_frag(rxq->alloc_size);
 
-The fill function is spelled with a _ between rx and oob,
-please be consistent. 
-
-> +			      struct mana_recv_buf_oob *rxoob, void **old_buf)
-> +{
-> +	dma_addr_t da;
-> +	void *va;
-> +
-> +	va = mana_get_rxfrag(rxq, dev, &da, true);
-> +
-
-no empty lines between function call and error check.
-Please fix this in all the code this patch set is touching.
-
-> +	if (!va)
-> +		return;
+Allocating frag larger than a page is not safe.
+Frag allocator falls back to allocating single pages, doesn't it?
