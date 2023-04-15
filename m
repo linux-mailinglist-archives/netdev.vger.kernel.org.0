@@ -2,80 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1499A6E323A
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 18:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0F226E32B4
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 19:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbjDOQCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 12:02:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39868 "EHLO
+        id S229940AbjDORGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 13:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbjDOQCh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 12:02:37 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D371E120;
-        Sat, 15 Apr 2023 09:02:35 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50506111a6eso3234471a12.1;
-        Sat, 15 Apr 2023 09:02:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681574554; x=1684166554;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ZFaBZbGTLI7mmllrP+a+GARwM4nfHLzyRuhAkCEC5J4=;
-        b=hPZjPuj0v7BHjyFOoou+iVUeKPz5/pG+uCZcshfcKPw0R3PGPnvYCIC2vD7delbtdz
-         eVWhf1s6wkrGV2AlQ6hqMuElxBU/6zPL/vtRciCy7A1SfpHRsrwJZjSBsfMA2Cod6mAd
-         4IGoLqHE9waZtR3IAAVD1t2QazW82mZEQRNwoi/o40rFkZywPABoiAAkADXrScyvaPnc
-         cowGwTSKfuekhLnCg8/JrrxCATJfHCe9UXEUXIVtTLA+2ZYATWKw+kvnTFaE8HqoZfcp
-         VVDYOwluQIFay78EBmvzC0A8QqPWWlj+8EBZ9HyiSkaJRNoJqs0YJJvXcLWM8zViqn2e
-         6pIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681574554; x=1684166554;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZFaBZbGTLI7mmllrP+a+GARwM4nfHLzyRuhAkCEC5J4=;
-        b=SY07elUROFLOk/9lFgc3ngIlTMFeg52TcE7IK0HNiYuIHo0vJTYhWs9o9r2HiEkDdi
-         8vllLkURpNgiBhgPCuhjjDDVQ2rbDIfay32iMl6p6YHw0F/fI9NULu5126JjR8d/rsxo
-         1y1dr3QSPe0EnfxJt7+TzDNWipRY9GE1ExMunTKb/58h9tdVPTR9+k2d3sszHNu47Zvf
-         5jQ0gKdr9wIEjnXqN8nJqXBTuEnzFgfvaAh53fUsp48xHEjevGUncPTlVv8OGDP/gnol
-         OGzxUj/6ypYBionfQN/O/iZU/dNm+5OyDvwpweE2f7aYS/agFBWbMrftOD56ji10Ity2
-         Vr3A==
-X-Gm-Message-State: AAQBX9c4gS0aSU+jsCuR7zGArIBFp6H4meG9191B1V2UKAXlBiYvpqgV
-        BseUNurfrU4SEvRGSMt07fk=
-X-Google-Smtp-Source: AKy350Y+itPPwg3srajb3EfOX7KbwfdvotqWNvipp2HO1r93bJrMD/1H/QshtxXncu2Evz4pLQPcsg==
-X-Received: by 2002:aa7:c1ce:0:b0:4fc:6475:d249 with SMTP id d14-20020aa7c1ce000000b004fc6475d249mr8934467edp.3.1681574553815;
-        Sat, 15 Apr 2023 09:02:33 -0700 (PDT)
-Received: from shift.daheim (pd9e29911.dip0.t-ipconnect.de. [217.226.153.17])
-        by smtp.gmail.com with ESMTPSA id bo25-20020a0564020b3900b005067d129267sm2516937edb.39.2023.04.15.09.02.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Apr 2023 09:02:33 -0700 (PDT)
-Received: from localhost ([127.0.0.1])
-        by shift.daheim with esmtp (Exim 4.96)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1pniMD-0003Y1-00;
-        Sat, 15 Apr 2023 18:02:33 +0200
-Message-ID: <a7895e73-70a3-450d-64f9-8256c9470d25@gmail.com>
-Date:   Sat, 15 Apr 2023 18:02:32 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH] ath9k: fix calibration data endianness
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
-        =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
-        f.fainelli@gmail.com, jonas.gorski@gmail.com, nbd@nbd.name,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230415150542.2368179-1-noltari@gmail.com>
- <87leitxj4k.fsf@toke.dk>
-Content-Language: de-DE
-From:   Christian Lamparter <chunkeey@gmail.com>
-In-Reply-To: <87leitxj4k.fsf@toke.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        with ESMTP id S229774AbjDORGL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 13:06:11 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2052.outbound.protection.outlook.com [40.107.8.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26E730C6;
+        Sat, 15 Apr 2023 10:06:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U8W5mn/7olVcASxe8lEWNorRnxRpRxXyQendCs+W8PLSsWgkPHzHo93XnC6xnbYIp56h84gMkspVY9mSIEe7+gHDLhda3MaQkRJnoA3BauMNIyNqcSHohcPrCNpwukHeSCTa80XHGtU0ePAAqHeznZcFdm4+LPZNNxoXYZHUmZwnawbQ1N0Dlgw17SrhqQEzu5+pG/7zkFZxFVQtZ7rAINV9dZhUfypgSnUg3MMySCWeSrwq/6vUA8tfUzm9b3d+V/2cidRCTyJN3/N09A687TCdWqkAdRbj25EdpKVqQS1P6aNrWjL2vTP54z1z78D5x6S6cHj5VfDxgqoRAuzf9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=afY6r0Kn+k6weONKGzaM+H6Kcb4u6DXJGxF9+T37KLs=;
+ b=BNs32kg9jdvuLXU1jYE9dKusdd1tWsYpZVurS69mXjcIXibrIfpnblBbYOeStJg08yGgw6WBns/Q7/roF8LnZVAO6zBkSJM+IThF80j5MXMUAWbQtjBr2c7qktZYmgqjxI5as36eosbp/RegKEBA+AlwTALmbeNBDYqa0HBa4s7DyIy1cL/pEehSjjwP6v8I242x+g98Wzaly7cTBvoWZncpxMuqrKxK+XaWcXOeXm3W47WHpMdpt8Ed6PzSdeBPER9mDq/Vbdvl3kYycWlY6eNhoUmrfKT5BFGaPmGAHn2XFJvxRsyD4MUNFnFJQbSo9E5GCKdACShIc7asQYmpJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=afY6r0Kn+k6weONKGzaM+H6Kcb4u6DXJGxF9+T37KLs=;
+ b=XioVDDmnkM4iwv+b6zOwwZ3KylPJIfxmyR7xWAG5CgLBobiZ+3b6gFMCEtRFuiD2qI/iBybRh3FBWVPp10KAO/vXOenns3j1clG+kJvAQ8lgSwVjLIOgMmBo0IL3w3Llij0pz4+FjovpZ7Mpew2TuBzJCYP9XZmieKYgWOb5U74=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by PAXPR04MB8158.eurprd04.prod.outlook.com (2603:10a6:102:1c3::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Sat, 15 Apr
+ 2023 17:06:03 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::55b1:d2dd:4327:912b]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::55b1:d2dd:4327:912b%5]) with mapi id 15.20.6298.028; Sat, 15 Apr 2023
+ 17:06:03 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/7] Ocelot/Felix driver support for preemptible traffic classes
+Date:   Sat, 15 Apr 2023 20:05:44 +0300
+Message-Id: <20230415170551.3939607-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain
+X-ClientProxiedBy: FR0P281CA0100.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a9::6) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|PAXPR04MB8158:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1f0f1a08-5fa2-4ce2-82f5-08db3dd3b1ae
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1mlM67TYuobDk2vLgiRsC6jccMQaj12n8NkCeSiSPK3nwQnwwVtslVRBD58kaWbBLkF6U7BewKpZlVb2h29Uv7xqBhc9eYc0+Hi0iF534CIR8SrDYusls/QtfSWpfgOupTdkyr4duNoZFm9JhpOnoCM4/9+T+wFTndNgqZ22q5G2BO6H1UWhIsLHAGGxrsoAbXa9qNGoD3apNruMgsV2umcvyyfOaYE6DxLLo5+ihvuuOL+MnZJGJfhjOdWT0v/arZG+65G0hVz5wzqCYnCSMC8/RosWypeVnq36Z0tHPeoO4ZEiwx84uX6wAQfxEA2LYBZCSGNGICgSycRtiN3Ok9r0fQCW6wL5bAOxTxY0cD0KOZCk3s+CgocHGypOLiylsfHryDiVfSK+Vm75aN/SkqO3rrPt5Hievc8MAO5+lyGWFHmxZF64Brrp4Y4K5wqQdGv3unNgtd18+lAiISKBaCtHNMAvsTlB0emhqGhrR4Mb3cAmWX7YY2bIXxmwo49d65LUuQl5Q7tHdjDqajejjO9YV/DIrb5NUB2Tw2RyhsELjI49HODjqPrJSgkr6+ss1JY9MTSceMigFA275yyQTT4UP9VsZCZo8VBlQUQrXL8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(366004)(39860400002)(376002)(346002)(396003)(451199021)(316002)(4326008)(38100700002)(38350700002)(6916009)(66556008)(66946007)(66476007)(5660300002)(44832011)(2616005)(6666004)(52116002)(36756003)(86362001)(6486002)(966005)(41300700001)(54906003)(1076003)(186003)(6506007)(26005)(6512007)(2906002)(8676002)(7416002)(8936002)(83380400001)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qCRL550JyZIaYtIqFzUJ5icv/qoUKnbMDHU4Q9CYeRWgKd72FdMULBjYCTJm?=
+ =?us-ascii?Q?jQb2cKXsCwI5C+syQpqtlHelixlCVZmdfufl5LhWV3CJ06qVx3KyNnF8VPL4?=
+ =?us-ascii?Q?HtHTR44dUsbjn9BlsJNJ5nCC8bHe+GQWUesncrd9FhtSV4wbH0XLY3NziZLs?=
+ =?us-ascii?Q?qOLgrnGKj5pZOemjmbWe7LgExiHofUNUILDa6WCtmbtVRb+k+uNkDUakitiq?=
+ =?us-ascii?Q?03DsPYzBsp6QWUrjlfb5mw2a/iq3wNw8Q3K19P+wl1VNaQ1s/zPjhcCS78q7?=
+ =?us-ascii?Q?GSs5heekA1i9Sf3QQVy5/dBaSPK3k8L/UrChbKG7e7PUEKDAKDqlKpxFZnXz?=
+ =?us-ascii?Q?JhDcjML3ZvoaOFuS/OSZzu48NY/S+BZAM760yyC32S2X1NclRkaRq5+m7CfB?=
+ =?us-ascii?Q?X1YSJlnQ8p/2lRK1fCvBNUDoquV27M9Ke8oZ5l2/FGaM9F+J5hnSRGAAJ/XS?=
+ =?us-ascii?Q?JozQPoB0TS09qR6nBGXxHdQGvFzl7/TMkoVmtpJLSjKbktZK4woMFJMKfX23?=
+ =?us-ascii?Q?9shk46MYqxT9F/UZ70jGHChINqxm5XduMlYQomi0tOg9ORbcEVt0eAIecSRn?=
+ =?us-ascii?Q?AlihabZlmOA2wqERKHHDVpfzEbqxnZz63gb2osu7GADhjoyuuWhLfUt/qNNf?=
+ =?us-ascii?Q?ViZwkHzpPAzPgWZ9WKUT6F+eBseyujyovbCKmB7NH3k1gMG4jX/f+Kkh3J1R?=
+ =?us-ascii?Q?aQBtUzFYdAnrsQZ2nvNiQSPeFibBr167pKQPkHeeP5NBV15/bngWBNdcBWhC?=
+ =?us-ascii?Q?76269jbn8LDPonNNJeD3K1aJ8UxSD87I9GynOwyDJqaJVHd0zudB16kRD/gD?=
+ =?us-ascii?Q?DQNH8F8u74cGlhWfMIxDy74VOePqdq/N7Fxr8PPRYhXCR7FLUkEF1QPSC8lr?=
+ =?us-ascii?Q?Nheo61h2W+P4xpub0RXcbypfP8CFnmj4ZTXu9At7wdfi3ZsR/s0xR0lP7BqM?=
+ =?us-ascii?Q?lrZ6uwwGUb4a4N9839Sol6UTOV0HlZil/rzXIpjEay1u1q60sOjmPCy9Pykh?=
+ =?us-ascii?Q?6rHVuCrouKnhONUtFsP1P+hsBffS7rWxZ+WMWjrfpj44rrffFF4y7CEA6Q+0?=
+ =?us-ascii?Q?xdNQKTP9TyQrCmCWgsYGH6d1lqdE8uZpYuVIbiUPegT6gdqgfxz/g4jYOZbh?=
+ =?us-ascii?Q?t9mI2JAx3h42Q1cZL/31e+AT68Ny36CuGzXWVLglI/qOcP64kG8qbgNFLOFU?=
+ =?us-ascii?Q?SCDJtBB8QIpvKsfPRQgg7BvIoVVW2gJ8cq8sFowCc2NaqknF3GmicZ7TxovN?=
+ =?us-ascii?Q?BmhGH0yPJXzSzWzybBwdVCq/2DBIuydkjcJ3C55ak6HYR2m1jhn32u7slvMj?=
+ =?us-ascii?Q?5CWygm97XRJ5myWbTV6Uc9UURE1XYfTiurzAm2Ef4+uukDSefaF0/AawT5JN?=
+ =?us-ascii?Q?8fhwMGLgiRgpezK3sNeAW83cxIuFFYtBPpCPsFITUu2zsIFKIPsQCSs/xgB1?=
+ =?us-ascii?Q?b5T+1f5uKVTvZtztIb/YSiqAkYg/7OGsHi6Y18lbxWcbQS1HtBiKvSO8urcj?=
+ =?us-ascii?Q?B0Ud3SGLYiV//6Go2uDULHT9A9BSG/UnldITT4Avkq4yG2ltAbiYoegnTZx5?=
+ =?us-ascii?Q?SeONBDPFlgpPkoKX9PL0zfVNXtxelxQ6gt9z11sswWjVu15yBv5te3lPWnNW?=
+ =?us-ascii?Q?qw=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f0f1a08-5fa2-4ce2-82f5-08db3dd3b1ae
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2023 17:06:03.3527
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9bLBmqjAtPu4+OiFcUG93S9gmzxSB6a8XQxZt3Vt7+BFXYFzZxa1nF5bkEboAOmY23FtIoq3ek7d9eD+r0ziUg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8158
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,47 +120,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The series "Add tc-mqprio and tc-taprio support for preemptible traffic
+classes" from:
+https://lore.kernel.org/netdev/20230220122343.1156614-1-vladimir.oltean@nxp.com/
 
-On 4/15/23 17:25, Toke Høiland-Jørgensen wrote:
-> Álvaro Fernández Rojas <noltari@gmail.com> writes:
-> 
->> BCM63xx (Big Endian MIPS) devices store the calibration data in MTD
->> partitions but it needs to be swapped in order to work, otherwise it fails:
->> ath9k 0000:00:01.0: enabling device (0000 -> 0002)
->> ath: phy0: Ignoring endianness difference in EEPROM magic bytes.
->> ath: phy0: Bad EEPROM VER 0x0001 or REV 0x00e0
->> ath: phy0: Unable to initialize hardware; initialization status: -22
->> ath9k 0000:00:01.0: Failed to initialize device
->> ath9k: probe of 0000:00:01.0 failed with error -22
-> 
-> How does this affect other platforms? Why was the NO_EEP_SWAP flag set
-> in the first place? Christian, care to comment on this?
+was eventually submitted in a form without the support for the
+Ocelot/Felix switch driver. This patch set picks up that work again,
+and presents a fairly modified form compared to the original.
 
-I knew this would come up. I've written what I know and remember in the
-pull-request/buglink.
+Vladimir Oltean (7):
+  net: mscc: ocelot: export a single ocelot_mm_irq()
+  net: mscc: ocelot: remove struct ocelot_mm_state :: lock
+  net: mscc: ocelot: optimize ocelot_mm_irq()
+  net: mscc: ocelot: don't rely on cached verify_status in
+    ocelot_port_get_mm()
+  net: mscc: ocelot: add support for mqprio offload
+  net: dsa: felix: act upon the mqprio qopt in taprio offload
+  net: mscc: ocelot: add support for preemptible traffic classes
 
-Maybe this can be added to the commit?
-Link: https://github.com/openwrt/openwrt/pull/12365
+ drivers/net/dsa/ocelot/felix_vsc9959.c |  43 +++++++---
+ drivers/net/ethernet/mscc/ocelot.c     |  60 +++++++++++++-
+ drivers/net/ethernet/mscc/ocelot.h     |   3 +
+ drivers/net/ethernet/mscc/ocelot_mm.c  | 107 ++++++++++++++++++++++---
+ include/soc/mscc/ocelot.h              |  11 ++-
+ 5 files changed, 199 insertions(+), 25 deletions(-)
 
-| From what I remember, the ah->ah_flags |= AH_NO_EEP_SWAP; was copied verbatim from ath9k_of_init's request_eeprom.
+-- 
+2.34.1
 
-Since the existing request_firmware eeprom fetcher code set the flag,
-the nvmem code had to do it too.
-
-In theory, I don't think that not setting the AH_NO_EEP_SWAP flag will cause havoc.
-I don't know if there are devices out there, which have a swapped magic (which is
-used to detect the endianess), but the caldata is in the correct endiannes (or
-vice versa - Magic is correct, but data needs swapping).
-
-I can run tests with it on a Netzgear WNDR3700v2 (AR7161+2xAR9220)
-and FritzBox 7360v2 (Lantiq XWAY+AR9220). (But these worked fine.
-So I don't expect there to be a new issue there).
-
-The older platform_data code has a "endian_check" flag in
-the ath9k_platform_data struct:
-<https://github.com/torvalds/linux/blob/master/include/linux/ath9k_platform.h#L38>
-Which enables the check and the endian-swapping (though it's disabled by default).
-
-Cheers,
-Christian
