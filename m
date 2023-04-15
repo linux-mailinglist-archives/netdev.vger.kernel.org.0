@@ -2,50 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B4EB6E31F0
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 16:43:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5078F6E31FB
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 16:54:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230019AbjDOOnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 10:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
+        id S229846AbjDOOxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 10:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbjDOOnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 10:43:06 -0400
-Received: from mx23lb.world4you.com (mx23lb.world4you.com [81.19.149.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DEF422A;
-        Sat, 15 Apr 2023 07:43:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+/D4EcstfCJvxgLmyJ+amEKzX0tSdCmxhecWaW/qs8s=; b=LAmgiNSZfEueoKQFFwC1zrFA6C
-        ocgtjcLRH1xtRzb4Uz6Cq0a6Q4tABEk6KdQmX4TlFyapGTluEfT6CmBleL2DHGvSinhdoTTIyjW4e
-        JsNg63+xASBD2zkQIZmwULRNX074EFO06tHTe6WfqaJ6YqZsiOIjukKmhoX14xXmrEnk=;
-Received: from 88-117-57-231.adsl.highway.telekom.at ([88.117.57.231] helo=hornet.engleder.at)
-        by mx23lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pnh7G-0003zN-N5; Sat, 15 Apr 2023 16:43:02 +0200
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v2 6/6] tsnep: Add XDP socket zero-copy TX support
-Date:   Sat, 15 Apr 2023 16:42:56 +0200
-Message-Id: <20230415144256.27884-7-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230415144256.27884-1-gerhard@engleder-embedded.com>
-References: <20230415144256.27884-1-gerhard@engleder-embedded.com>
+        with ESMTP id S229545AbjDOOxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 10:53:04 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4AE198A
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 07:53:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=i39Y5oEO8XFjFWW0/zWRKVDoRukYejX7J4Z8p59cN7E=; b=hAXf5oEG+pmXBON23cAIHO0rpd
+        CiyKTdTmshcm8fpUVSibtyVM6Yu0Jit4Y4bFFW/nIKeW2G1xgAUUJCk/2w3yGJcxIVPcOYdkJ9wtL
+        KGV7/Aey1tiCno13vBwIvElzqltngTDhkHBd6qk0PDFqE4kN2IIPhKkknZdPseafNFLQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pnhGs-00AN02-Q5; Sat, 15 Apr 2023 16:52:58 +0200
+Date:   Sat, 15 Apr 2023 16:52:58 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mengyuan Lou <mengyuanlou@net-swift.com>
+Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com
+Subject: Re: [PATCH net-next 2/5] net: wangxun: libwx add rx offload functions
+Message-ID: <b4ec1acd-8013-4f90-a4a4-8a1336c457d2@lunn.ch>
+References: <20230414104833.42989-1-mengyuanlou@net-swift.com>
+ <20230414104833.42989-3-mengyuanlou@net-swift.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
-X-ACL-Warn: X-W4Y-Internal
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230414104833.42989-3-mengyuanlou@net-swift.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,271 +46,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Send and complete XSK pool frames within TX NAPI context. NAPI context
-is triggered by ndo_xsk_wakeup.
+> +#ifdef NAPI_GRO_CB
+> +		NAPI_GRO_CB(skb)->data_offset = 0;
+> +#endif
 
-Test results with A53 1.2GHz:
+https://elixir.bootlin.com/linux/latest/source/include/net/gro.h#L85
 
-xdpsock txonly copy mode:
-                   pps            pkts           1.00
-tx                 284,409        11,398,144
-Two CPUs with 100% and 10% utilization.
+NAPI_GRO_CB does not seem to be conditional. Why the #ifdef ?
 
-xdpsock txonly zero-copy mode:
-                   pps            pkts           1.00
-tx                 511,929        5,890,368
-Two CPUs with 100% and 1% utilization.
+> +		skb_shinfo(skb)->gso_size = WX_CB(skb)->mss;
 
-Packet rate increases and CPU utilization is reduced.
+I have to question how safe this is:
 
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
----
- drivers/net/ethernet/engleder/tsnep.h      |   2 +
- drivers/net/ethernet/engleder/tsnep_main.c | 131 +++++++++++++++++++--
- 2 files changed, 123 insertions(+), 10 deletions(-)
+#define NAPI_GRO_CB(skb) ((struct napi_gro_cb *)(skb)->cb)
+#define WX_CB(skb) ((struct wx_cb *)(skb)->cb)
 
-diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index d0bea605a1d1..11b29f56aaf9 100644
---- a/drivers/net/ethernet/engleder/tsnep.h
-+++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -70,6 +70,7 @@ struct tsnep_tx_entry {
- 	union {
- 		struct sk_buff *skb;
- 		struct xdp_frame *xdpf;
-+		bool zc;
- 	};
- 	size_t len;
- 	DEFINE_DMA_UNMAP_ADDR(dma);
-@@ -88,6 +89,7 @@ struct tsnep_tx {
- 	int read;
- 	u32 owner_counter;
- 	int increment_owner_counter;
-+	struct xsk_buff_pool *xsk_pool;
- 
- 	u32 packets;
- 	u32 bytes;
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index 13e5d4438082..de51d0cc8935 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -54,6 +54,8 @@
- #define TSNEP_TX_TYPE_SKB_FRAG	BIT(1)
- #define TSNEP_TX_TYPE_XDP_TX	BIT(2)
- #define TSNEP_TX_TYPE_XDP_NDO	BIT(3)
-+#define TSNEP_TX_TYPE_XDP	(TSNEP_TX_TYPE_XDP_TX | TSNEP_TX_TYPE_XDP_NDO)
-+#define TSNEP_TX_TYPE_XSK	BIT(4)
- 
- #define TSNEP_XDP_TX		BIT(0)
- #define TSNEP_XDP_REDIRECT	BIT(1)
-@@ -322,13 +324,51 @@ static void tsnep_tx_init(struct tsnep_tx *tx)
- 	tx->increment_owner_counter = TSNEP_RING_SIZE - 1;
- }
- 
-+static void tsnep_tx_enable(struct tsnep_tx *tx)
-+{
-+	struct netdev_queue *nq;
-+
-+	nq = netdev_get_tx_queue(tx->adapter->netdev, tx->queue_index);
-+
-+	local_bh_disable();
-+	__netif_tx_lock(nq, smp_processor_id());
-+	netif_tx_wake_queue(nq);
-+	__netif_tx_unlock(nq);
-+	local_bh_enable();
-+}
-+
-+static void tsnep_tx_disable(struct tsnep_tx *tx, struct napi_struct *napi)
-+{
-+	struct netdev_queue *nq;
-+	u32 val;
-+
-+	nq = netdev_get_tx_queue(tx->adapter->netdev, tx->queue_index);
-+
-+	local_bh_disable();
-+	__netif_tx_lock(nq, smp_processor_id());
-+	netif_tx_stop_queue(nq);
-+	__netif_tx_unlock(nq);
-+	local_bh_enable();
-+
-+	/* wait until TX is done in hardware */
-+	readx_poll_timeout(ioread32, tx->addr + TSNEP_CONTROL, val,
-+			   ((val & TSNEP_CONTROL_TX_ENABLE) == 0), 10000,
-+			   1000000);
-+
-+	/* wait until TX is also done in software */
-+	while (READ_ONCE(tx->read) != tx->write) {
-+		napi_schedule(napi);
-+		napi_synchronize(napi);
-+	}
-+}
-+
- static void tsnep_tx_activate(struct tsnep_tx *tx, int index, int length,
- 			      bool last)
- {
- 	struct tsnep_tx_entry *entry = &tx->entry[index];
- 
- 	entry->properties = 0;
--	/* xdpf is union with skb */
-+	/* xdpf and zc are union with skb */
- 	if (entry->skb) {
- 		entry->properties = length & TSNEP_DESC_LENGTH_MASK;
- 		entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
-@@ -646,10 +686,69 @@ static bool tsnep_xdp_xmit_back(struct tsnep_adapter *adapter,
- 	return xmit;
- }
- 
-+static int tsnep_xdp_tx_map_zc(struct xdp_desc *xdpd, struct tsnep_tx *tx)
-+{
-+	struct tsnep_tx_entry *entry;
-+	dma_addr_t dma;
-+
-+	entry = &tx->entry[tx->write];
-+	entry->zc = true;
-+
-+	dma = xsk_buff_raw_get_dma(tx->xsk_pool, xdpd->addr);
-+	xsk_buff_raw_dma_sync_for_device(tx->xsk_pool, dma, xdpd->len);
-+
-+	entry->type = TSNEP_TX_TYPE_XSK;
-+	entry->len = xdpd->len;
-+
-+	entry->desc->tx = __cpu_to_le64(dma);
-+
-+	return xdpd->len;
-+}
-+
-+static void tsnep_xdp_xmit_frame_ring_zc(struct xdp_desc *xdpd,
-+					 struct tsnep_tx *tx)
-+{
-+	int length;
-+
-+	length = tsnep_xdp_tx_map_zc(xdpd, tx);
-+
-+	tsnep_tx_activate(tx, tx->write, length, true);
-+	tx->write = (tx->write + 1) & TSNEP_RING_MASK;
-+}
-+
-+static void tsnep_xdp_xmit_zc(struct tsnep_tx *tx)
-+{
-+	int desc_available = tsnep_tx_desc_available(tx);
-+	struct xdp_desc *descs = tx->xsk_pool->tx_descs;
-+	int batch, i;
-+
-+	/* ensure that TX ring is not filled up by XDP, always MAX_SKB_FRAGS
-+	 * will be available for normal TX path and queue is stopped there if
-+	 * necessary
-+	 */
-+	if (desc_available <= (MAX_SKB_FRAGS + 1))
-+		return;
-+	desc_available -= MAX_SKB_FRAGS + 1;
-+
-+	batch = xsk_tx_peek_release_desc_batch(tx->xsk_pool, desc_available);
-+	for (i = 0; i < batch; i++)
-+		tsnep_xdp_xmit_frame_ring_zc(&descs[i], tx);
-+
-+	if (batch) {
-+		/* descriptor properties shall be valid before hardware is
-+		 * notified
-+		 */
-+		dma_wmb();
-+
-+		tsnep_xdp_xmit_flush(tx);
-+	}
-+}
-+
- static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- {
- 	struct tsnep_tx_entry *entry;
- 	struct netdev_queue *nq;
-+	int xsk_frames = 0;
- 	int budget = 128;
- 	int length;
- 	int count;
-@@ -676,7 +775,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 		if ((entry->type & TSNEP_TX_TYPE_SKB) &&
- 		    skb_shinfo(entry->skb)->nr_frags > 0)
- 			count += skb_shinfo(entry->skb)->nr_frags;
--		else if (!(entry->type & TSNEP_TX_TYPE_SKB) &&
-+		else if ((entry->type & TSNEP_TX_TYPE_XDP) &&
- 			 xdp_frame_has_frags(entry->xdpf))
- 			count += xdp_get_shared_info_from_frame(entry->xdpf)->nr_frags;
- 
-@@ -705,9 +804,11 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 
- 		if (entry->type & TSNEP_TX_TYPE_SKB)
- 			napi_consume_skb(entry->skb, napi_budget);
--		else
-+		else if (entry->type & TSNEP_TX_TYPE_XDP)
- 			xdp_return_frame_rx_napi(entry->xdpf);
--		/* xdpf is union with skb */
-+		else
-+			xsk_frames++;
-+		/* xdpf and zc are union with skb */
- 		entry->skb = NULL;
- 
- 		tx->read = (tx->read + count) & TSNEP_RING_MASK;
-@@ -718,6 +819,14 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 		budget--;
- 	} while (likely(budget));
- 
-+	if (tx->xsk_pool) {
-+		if (xsk_frames)
-+			xsk_tx_completed(tx->xsk_pool, xsk_frames);
-+		if (xsk_uses_need_wakeup(tx->xsk_pool))
-+			xsk_set_tx_need_wakeup(tx->xsk_pool);
-+		tsnep_xdp_xmit_zc(tx);
-+	}
-+
- 	if ((tsnep_tx_desc_available(tx) >= ((MAX_SKB_FRAGS + 1) * 2)) &&
- 	    netif_tx_queue_stopped(nq)) {
- 		netif_tx_wake_queue(nq);
-@@ -765,12 +874,6 @@ static int tsnep_tx_open(struct tsnep_tx *tx)
- 
- static void tsnep_tx_close(struct tsnep_tx *tx)
- {
--	u32 val;
--
--	readx_poll_timeout(ioread32, tx->addr + TSNEP_CONTROL, val,
--			   ((val & TSNEP_CONTROL_TX_ENABLE) == 0), 10000,
--			   1000000);
--
- 	tsnep_tx_ring_cleanup(tx);
- }
- 
-@@ -1783,12 +1886,18 @@ static void tsnep_queue_enable(struct tsnep_queue *queue)
- 	napi_enable(&queue->napi);
- 	tsnep_enable_irq(queue->adapter, queue->irq_mask);
- 
-+	if (queue->tx)
-+		tsnep_tx_enable(queue->tx);
-+
- 	if (queue->rx)
- 		tsnep_rx_enable(queue->rx);
- }
- 
- static void tsnep_queue_disable(struct tsnep_queue *queue)
- {
-+	if (queue->tx)
-+		tsnep_tx_disable(queue->tx, &queue->napi);
-+
- 	napi_disable(&queue->napi);
- 	tsnep_disable_irq(queue->adapter, queue->irq_mask);
- 
-@@ -1905,6 +2014,7 @@ int tsnep_enable_xsk(struct tsnep_queue *queue, struct xsk_buff_pool *pool)
- 	if (running)
- 		tsnep_queue_disable(queue);
- 
-+	queue->tx->xsk_pool = pool;
- 	queue->rx->xsk_pool = pool;
- 
- 	if (running) {
-@@ -1925,6 +2035,7 @@ void tsnep_disable_xsk(struct tsnep_queue *queue)
- 	tsnep_rx_free_zc(queue->rx);
- 
- 	queue->rx->xsk_pool = NULL;
-+	queue->tx->xsk_pool = NULL;
- 
- 	if (running) {
- 		tsnep_rx_reopen(queue->rx);
--- 
-2.30.2
+So they are both referring to the same bit of memory.
 
+Does the design take this into account?
+
+     Andrew
