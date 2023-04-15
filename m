@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 188026E2F6E
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 09:18:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6CB6E2F75
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 09:24:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbjDOHSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 03:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
+        id S229625AbjDOHYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 03:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjDOHSs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 03:18:48 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCB759E6
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 00:18:47 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id dx24so7114689ejb.11
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 00:18:47 -0700 (PDT)
+        with ESMTP id S229491AbjDOHYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 03:24:20 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FDD3A9C
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 00:24:17 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id qb20so50775745ejc.6
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 00:24:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681543126; x=1684135126;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=G9tHPxg5ARQ7Py1YbDuvv3IWOHfzSNBUVuD39czple0=;
-        b=pwTcrYUxocJ2IjTzU4ajGUfNzyqt2NQYxj8A6c2vOg6vIpjIZQX5DJMgygp+58YKO2
-         h4sGZwpVMgR6j3DymmebdF246WRY7Yin3clF30xXTTZqVANGNKxQIOmnd7y/r/fZzLrm
-         BkPDEF6LJdAtVnnukuIS4NIXK477DN0Xxi+Hw0zO91qFRyv/Gc0BATOfvQizTx4eBFM4
-         zU+9cZGSXHqJ5bFf3h3NQAMlPnCFeflc1o7r+gKUgwBnK2mhZcKrzK6PocUBltuXXtMK
-         wmI0VobqhxFbVedmumg61Nr5RkQJ/xm0I5EaTtNFUZC0ocP5A4d2jZDKbqsJsI3s3ChH
-         N0ww==
+        d=gmail.com; s=20221208; t=1681543456; x=1684135456;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+VAYy4x1VW7GQjpcDHqlJKO18XulsfdzrpJC5dPxENk=;
+        b=Uwe82IP25ZLJx6RcMRjmaz4B00nH2WVSEXxHCbeToeyWsOXYjpvRNq3ZYUg34HMDT8
+         df1aTl+zMh4df9g4OtZ/pEf+iVbo6D8fr+lYfuEdvdL/bJ2RQzpfJZ5xA5RBK96D41P+
+         CPwEfb7EY20mW4RX887jDB1Srcxc2HksfxNTSifEIOBXwfrE06G5y1mnON6Fi68GoOAi
+         znVgDD6x5EnoTdPu6MfP3KJkP1yw/YGWJIovu/yg9KzrZgzZncNWLsxgRw+2wXoe3y3Z
+         amhF9uIgEW/qt6je4LWO0B/FaGeUQ7rxwuYA0QIjdHmqEh4XBsSC1QuwgnoJwUiVxiQS
+         camQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681543126; x=1684135126;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=G9tHPxg5ARQ7Py1YbDuvv3IWOHfzSNBUVuD39czple0=;
-        b=f4tkk/KW4B4yMRVZo7XiRD/rLFjFG667VZVCP4ttSlcDX6hyi73uDHO4HwtzsaDseb
-         FjnvFxOlnPQr5sZDbzjrrWU6XehTvw7o/wRSG1HToZf1vB3UeoYgp+T8PFJlHJHnp0Gs
-         6bS5Imj7U5VHo1YYJalnyeQJdfxxCU3tFK5GPObWWInFK5xf2G2STHNNFZ/Qf4ZpQ5px
-         TEYJZlUAmIE8HyrDIa8HQX5aQhOjJjvbPYOfsWCbMtKd9xwH167pWmaZvfb1gW4jtB5E
-         7WIjOS6/+ub7y84+0nq9MkH27QrMl5BdRDOqa226nlB9GYR/cohXcpKntNBcPAW8tfXl
-         FScQ==
-X-Gm-Message-State: AAQBX9dVZCQb+Ni1BUwaQouAc2682FypNiJGGyctjc9pZzujVS6v2k2g
-        vR8bB930cGRExXWNWRDt0XA=
-X-Google-Smtp-Source: AKy350Yg/1UNpq2ay/36NURV7ztT9q1z55bzvU+DTK1IzFP7Vmj57peNEJJuYIzsk3UHyr+IsJaK0w==
-X-Received: by 2002:a17:906:3c19:b0:8b1:7de3:cfaa with SMTP id h25-20020a1709063c1900b008b17de3cfaamr1258734ejg.3.1681543126220;
-        Sat, 15 Apr 2023 00:18:46 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681543456; x=1684135456;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+VAYy4x1VW7GQjpcDHqlJKO18XulsfdzrpJC5dPxENk=;
+        b=B5DgmA36P6DdFrnf2yx+N19Zy2KiXBW3G7Cynlk6FbrTqnpZL52p75FPGMLiDw0C1w
+         0uK1OtQJqSS6cYalKoHcThljjLXbbOOch7P3C37axiZTIVJuV/yW3q0QqHx86/CC0Rvr
+         Bs6gYP8waZkfW6DGBMGZYPUTC1LEHltsjs5e46olLwavyNhjp/XoXhK9cTpOTbt0sK9l
+         kLH7Gd8vFOOLxltq8jF9e0LLtoxeKeYhr/DQJEobAR29kXqokEE44cKEXCqj28UP/g0c
+         cGnV9gMSMK1fD+yhBsipJSKAyawKH9hdVqk85IbGpVyqrhSjuv7q4WRVSdTSIQxnI2yK
+         mBrQ==
+X-Gm-Message-State: AAQBX9ew2UxzD/azY6DLanMn0VPqwIt6rz3c4B/vYNUdscfQKyC3YDZk
+        tKy9Tzgh3D/nlBteTTcN9pYIHFjTU/U=
+X-Google-Smtp-Source: AKy350aYqCggtcWKslreX6ui5iJrWISf3kMbMjakjgzSJfDk/WpVf+6Tijk6kF6owubhIEn3fBt4OQ==
+X-Received: by 2002:a17:907:3ad1:b0:933:868:413a with SMTP id fi17-20020a1709073ad100b009330868413amr1247444ejc.15.1681543456095;
+        Sat, 15 Apr 2023 00:24:16 -0700 (PDT)
 Received: from ?IPV6:2a01:c22:76c9:5300:c449:604e:39a7:3bce? (dynamic-2a01-0c22-76c9-5300-c449-604e-39a7-3bce.c22.pool.telefonica.de. [2a01:c22:76c9:5300:c449:604e:39a7:3bce])
-        by smtp.googlemail.com with ESMTPSA id 23-20020a508e17000000b0050692cfc24asm310937edw.16.2023.04.15.00.18.45
+        by smtp.googlemail.com with ESMTPSA id u11-20020aa7d98b000000b004ad601533a3sm2980846eds.55.2023.04.15.00.24.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 15 Apr 2023 00:18:45 -0700 (PDT)
-Message-ID: <f07fd01b-b431-6d8d-bd14-d447dffd8e64@gmail.com>
-Date:   Sat, 15 Apr 2023 09:18:44 +0200
+        Sat, 15 Apr 2023 00:24:15 -0700 (PDT)
+Message-ID: <85e0616f-76ac-26c0-b650-11bb7f0b9824@gmail.com>
+Date:   Sat, 15 Apr 2023 09:20:18 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
+Subject: [PATCH net-next v2 1/3] net: add macro netif_subqueue_completed_wake
 Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next v2 0/3] r8169: use new macros from netdev_queues.h
+References: <f07fd01b-b431-6d8d-bd14-d447dffd8e64@gmail.com>
+In-Reply-To: <f07fd01b-b431-6d8d-bd14-d447dffd8e64@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -75,21 +77,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add one missing subqueue version of the macros, and use the new macros
-in r8169 to simplify the code.
+Add netif_subqueue_completed_wake, complementing the subqueue versions
+netif_subqueue_try_stop and netif_subqueue_maybe_stop.
 
-Heiner Kallweit (3):
-  net: add macro netif_subqueue_completed_wake
-  r8169: use new macro netif_subqueue_maybe_stop in rtl8169_start_xmit
-  r8169: use new macro netif_subqueue_completed_wake in the tx cleanup path
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ include/net/netdev_queues.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-v2:
-- patch 2: ring doorbell if queue was stopped
-
- drivers/net/ethernet/realtek/r8169_main.c | 51 ++++++-----------------
- include/net/netdev_queues.h               | 10 +++++
- 2 files changed, 23 insertions(+), 38 deletions(-)
-
+diff --git a/include/net/netdev_queues.h b/include/net/netdev_queues.h
+index b26fdb441..d68b0a483 100644
+--- a/include/net/netdev_queues.h
++++ b/include/net/netdev_queues.h
+@@ -160,4 +160,14 @@ netdev_txq_completed_mb(struct netdev_queue *dev_queue,
+ 		netif_txq_maybe_stop(txq, get_desc, stop_thrs, start_thrs); \
+ 	})
+ 
++#define netif_subqueue_completed_wake(dev, idx, pkts, bytes,		\
++				      get_desc, start_thrs)		\
++	({								\
++		struct netdev_queue *txq;				\
++									\
++		txq = netdev_get_tx_queue(dev, idx);			\
++		netif_txq_completed_wake(txq, pkts, bytes,		\
++					 get_desc, start_thrs);		\
++	})
++
+ #endif
 -- 
 2.40.0
+
+
 
