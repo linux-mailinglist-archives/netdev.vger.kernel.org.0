@@ -2,109 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44C2A6E311A
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 13:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 596E86E312A
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 13:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbjDOLQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 07:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35458 "EHLO
+        id S229848AbjDOLyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 07:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230126AbjDOLQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 07:16:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34BEB3AAE
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 04:16:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B08666102C
-        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 11:16:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96336C433D2;
-        Sat, 15 Apr 2023 11:16:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681557404;
-        bh=PkJlTawFM67Hk6ioINwM+eHjcnQFwbM4MaJMaD+iSb4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Oos7g3en27IXSwwCK+8dmnZteiDoekGYq4JSjugHXJCFGD2G+XlvZp5ReXHuASoJv
-         1hKQTZ6OAUtwgsIi36r6KRPyvtI4mTJ9FHQLAdeye3Gn5Mvquq8A5IQlbwAiIbv5Qq
-         IddnsAyHowhG/q9Z5vxy9HXSCMQpULoWyzMMZHCJV+8l7gvqhWcAzLxJ++D7xbtNXf
-         0edgwXJg+uECk1oYmBj0LD+24SjZITGZ4gCKoPcb3oJKiHPAlBsynRqLgzxG0llQws
-         WfjsGhIR89ywT+YZJDU+CBrbjy9xz1hqYnN3FtNIOQaP5w9TNQZcdr+vIW12GhI59b
-         2u7uwHnpuD6YQ==
-Date:   Sat, 15 Apr 2023 13:16:40 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com,
-        lorenzo.bianconi@redhat.com, jdamato@fastly.com
-Subject: Re: [PATCH net-next] net: page_pool: add pages and released_pages
- counters
-Message-ID: <ZDqHmCX7D4aXOQzl@lore-desk>
-References: <a20f97acccce65d174f704eadbf685d0ce1201af.1681422222.git.lorenzo@kernel.org>
- <20230414184653.21b4303d@kernel.org>
+        with ESMTP id S229468AbjDOLyJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 07:54:09 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBEEF4C26
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 04:54:07 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id h10so654636ioz.10
+        for <netdev@vger.kernel.org>; Sat, 15 Apr 2023 04:54:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1681559647; x=1684151647;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FkjcrkevaHRZu0RSR3d/4wmIPFePEY/n+PajfUzR8hA=;
+        b=a+3liXDdANha2pi65UTL2eRLwhC8MvMMyPScbngaPMsBx57Boc7ptIPKci93d9KF0A
+         dGE5iQYpoaq3Q5teMtTZvcFF4F+Q78R2/+WtJfiNTJ9qTq2sOgzR0K0LZDvXdIYBKrfG
+         e1jVU6JanANYa72hZm+HvXDJ3EZJ/xF7rJp3i+5ktXygd04fqmUKsWg8smvM7BC+lBxY
+         C5DUQHK6zCkvfYZl8f+hebxN8U3bqzyzsw1cCmAhUlGpluAOylzJXGvju8gE22tSxNJ9
+         5u0Qj55LIgNpQAS/NtZwQE1B61w3eOhsci9u0OfGZY5nKqQfXfhCXW2ENGdI4pzuRH0l
+         GdzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681559647; x=1684151647;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FkjcrkevaHRZu0RSR3d/4wmIPFePEY/n+PajfUzR8hA=;
+        b=QacAT2T3KigNCzHk1j8Rp5f0Gl2A/QGUh5oqN4Y0upLCnbkP42uUG6MIZh4V4dKaRV
+         E5q0jfSaXSdZ1GnxspSyjXJdhmZADED6kdEGXMFJ2dNSYkqrs4DG++bYTD0cIKuvHTqT
+         Ukbb7NB4if9e31kzJHhTtEwHeadi/ftRuc5jwt4a/Lk3D/uC60hUGdP9sqEz1ETv2VX4
+         rDoy5G9p/LLljJVGmWRjNkaA0EmMt4wtdeU70bPbJ1G8LZuhUZoSBZ1X0RHrcxl9SJos
+         B5+pJDKF1kgtRSz/68F73SE/AsYGj6+eIt/vxOjibT8I2gUJTNc3RoB46EJY6ApqemF7
+         kXHw==
+X-Gm-Message-State: AAQBX9ejKzBM0D5Wd9Ow3ZVUkE5jyXF5xSTULzL4Du8hWVgpZUBIjBWV
+        iml0y/wyFHGU80nFzSILBXpLDNnhNydc+l6CQgBosQ==
+X-Google-Smtp-Source: AKy350aqJiiACegF2I2EYPGKMleX+1Rzm2N81NkjKp/2z2L+BBwfVQ1levvKsUW4YqbAAPeNNIONgZnBj7uE6DBFfeI=
+X-Received: by 2002:a02:7a5c:0:b0:40f:8d6f:748f with SMTP id
+ z28-20020a027a5c000000b0040f8d6f748fmr1363092jad.1.1681559646875; Sat, 15 Apr
+ 2023 04:54:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="VQCj+tTcV8zaDR4+"
-Content-Disposition: inline
-In-Reply-To: <20230414184653.21b4303d@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230414160105.172125-1-kuba@kernel.org>
+In-Reply-To: <20230414160105.172125-1-kuba@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sat, 15 Apr 2023 13:53:55 +0200
+Message-ID: <CANn89iKD-PUp0gGVBs=WwR_w5OCYMVJM43L3azP-2iBqXYKFjg@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/5] net: skbuff: hide some bitfield members
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Apr 14, 2023 at 6:04=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
+ote:
+>
+> There is a number of protocol or subsystem specific fields
+> in struct sk_buff which are only accessed by one subsystem.
+> We can wrap them in ifdefs with minimal code impact.
+>
+> This gives us a better chance to save a 2B and a 4B holes
+> resulting with the following savings (assuming a lucky
+> kernel config):
+>
 
---VQCj+tTcV8zaDR4+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> On Thu, 13 Apr 2023 23:46:03 +0200 Lorenzo Bianconi wrote:
-> > @@ -411,6 +417,7 @@ static struct page *__page_pool_alloc_pages_slow(st=
-ruct page_pool *pool,
-> >  		pool->pages_state_hold_cnt++;
-> >  		trace_page_pool_state_hold(pool, page,
-> >  					   pool->pages_state_hold_cnt);
-> > +		alloc_stat_inc(pool, pages);
-> >  	}
-> > =20
-> >  	/* Return last page */
->=20
-> What about high order? If we use bulk API for high order one day,=20
-> will @slow_high_order not count calls like @slow does? So we should
-> bump the new counter for high order, too.
-
-yes, right. AFAIU "slow_high_order" and "slow" just count number of
-pages returned to the pool consumer and not the number of pages
-allocated to the pool (as you said, since we do not use bulking
-for high_order allocation there is no difference at the moment).
-What I would like to track is the number of allocated pages
-(of any order) so I guess we can just increment "pages" counter in
-__page_pool_alloc_page_order() as well. Agree?
-
->=20
-> Which makes it very similar to pages_state_hold_cnt, just 64bit...
-
-do you prefer to use pages_state_hold_cnt instead of adding a new
-pages counter?
-
-Regards,
-Lorenzo
-
-
---VQCj+tTcV8zaDR4+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZDqHmAAKCRA6cBh0uS2t
-rJNFAQCjLoP/mBy2be+DFUf+2Tr9i5PktxN53NtBU4X7TpDp7gEAtnMMaYnrEzY9
-bGlT2emwpO10tQcxTp9JjUcLwh2GEAs=
-=dfgg
------END PGP SIGNATURE-----
-
---VQCj+tTcV8zaDR4+--
+Reviewed-by: Eric Dumazet <edumazet@google.com>
