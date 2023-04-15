@@ -2,203 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 823FC6E2F36
-	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 07:53:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B06346E2F51
+	for <lists+netdev@lfdr.de>; Sat, 15 Apr 2023 08:45:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbjDOFtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Apr 2023 01:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56900 "EHLO
+        id S229612AbjDOGpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Apr 2023 02:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbjDOFtS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 01:49:18 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D852A55B4
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 22:49:15 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id xd13so16945146ejb.4
-        for <netdev@vger.kernel.org>; Fri, 14 Apr 2023 22:49:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google; t=1681537754; x=1684129754;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KjriD5FCdH2a/g++1E9APszM1FlDTgYU+lq4VWSvnFA=;
-        b=vF7Xzuua89QO0OMIk2N15uCHG+sJA8D7jU2wjqPck/LO5zW/FNu2UIgOvsuvbvTuNh
-         ptF5/2jvcuhM+TXobLpslSfnldvPNZHN5f0r4R7J0weQy+yZS7wVqsamSgFrC8I5RjZf
-         09jbk2ojae6rCV8XDIe9UEmXzU8DHuhsv9FXk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681537754; x=1684129754;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KjriD5FCdH2a/g++1E9APszM1FlDTgYU+lq4VWSvnFA=;
-        b=fkrcrNpfxMSXwITwifgyO0gBCnvWc33SvWqcaS7mjo0oBmjujuOJKUT7Q9viQxbI8f
-         rrXKljo5Q8gia6cBqm9WaKOoHHXfk0uqL3sCsVaoCBF2rwUrUoF2k9KPeaYLgIZgy+KF
-         BqFwjrlggM75cD3Y5KYsWhf/M7mi9FelpvIFEbrkgSfLgq+gLmNvavaUxosiK2sG7Vyq
-         MIYpjhVYjA5KnpwSfDk/0sjO3HEpGN9V68+XRhgpLhrGL7HkYPHlk3GWvErmnhsXdw2D
-         Kplgsk/HZDVZhWcfbojYkMDV7qi5uvTfqmYvqWFB6RkUGNXzt0OOGPBHSVUllp5O7HSf
-         QyWA==
-X-Gm-Message-State: AAQBX9fQ6reAP64ikO5HlR3Oknwl3o2QGM4z+Z5hgnR9G8B5BqaOg4yl
-        3KFE0R2beqZapDf7vbSsiI9tbA==
-X-Google-Smtp-Source: AKy350YssNhoqlKHwl8NnPvgqpYczYd2nxY8tzFvbqdPBCfbOkUOhKrfzokmXFpYgdzW8DuKepa16g==
-X-Received: by 2002:a17:906:6bd0:b0:94e:f969:fb3e with SMTP id t16-20020a1709066bd000b0094ef969fb3emr1252290ejs.43.1681537754369;
-        Fri, 14 Apr 2023 22:49:14 -0700 (PDT)
-Received: from perf-sql133-029021.hosts.secretcdn.net ([2620:11a:c018:0:ea8:be91:8d1:f59b])
-        by smtp.gmail.com with ESMTPSA id b1-20020a170906038100b00947ccb6150bsm3294856eja.102.2023.04.14.22.49.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Apr 2023 22:49:14 -0700 (PDT)
-From:   Joe Damato <jdamato@fastly.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, kuba@kernel.org,
-        Joe Damato <jdamato@fastly.com>
-Subject: [PATCH net 2/2] ixgbe: Allow ixgbe to reset default flow hash
-Date:   Sat, 15 Apr 2023 05:48:55 +0000
-Message-Id: <20230415054855.9293-3-jdamato@fastly.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230415054855.9293-1-jdamato@fastly.com>
-References: <20230415054855.9293-1-jdamato@fastly.com>
+        with ESMTP id S229547AbjDOGpk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Apr 2023 02:45:40 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E36559D;
+        Fri, 14 Apr 2023 23:45:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681541139; x=1713077139;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XPf0NWZspgmTmraWV1B8of1VGZ27Uk2q/PwjqH0foXk=;
+  b=LoS2NEQQYFS+rj03ionLpzDk1zhJ+7Cihz/6QhiB01rsd/BbuEHqzS79
+   UxnP8HvG1dQfRglyMMuPiFK1vjAD9I+oKYtuOpSlVO3PasYt4leJfoDfE
+   d4HrLt1Z45If9WvTNiSvr0wXn+fiyJC5PL1X9H8BfO3FbEnx02i9WPjb6
+   l675rN+EarEYkUfNzdIZ3wb9Tbes+AKfUX+Q8m6l7aa3qp7nLEntNb4Su
+   AVyEyLVyzTQpA3bf21CMbnFPQchA/x+Zq+HDKbcBGfthgaBERPpjRlNEM
+   S/k1XhmD+kVlBXFltrRHGRG0zudlGKadCnoW6aiJ74IlQwcnyMPtTg7ds
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="343379257"
+X-IronPort-AV: E=Sophos;i="5.99,199,1677571200"; 
+   d="scan'208";a="343379257"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2023 23:45:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10680"; a="754727538"
+X-IronPort-AV: E=Sophos;i="5.99,199,1677571200"; 
+   d="scan'208";a="754727538"
+Received: from p12ill20yoongsia.png.intel.com ([10.88.227.28])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Apr 2023 23:45:33 -0700
+From:   Song Yoong Siang <yoong.siang.song@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, xdp-hints@xdp-project.net,
+        Song Yoong Siang <yoong.siang.song@intel.com>
+Subject: [PATCH net-next v6 0/3] XDP Rx HWTS metadata for stmmac driver
+Date:   Sat, 15 Apr 2023 14:45:00 +0800
+Message-Id: <20230415064503.3225835-1-yoong.siang.song@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ethtool uses `ETHTOOL_GRXRINGS` to compute how many queues are supported
-by RSS. The driver should return the smaller of either:
-  - The maximum number of RSS queues the device supports, OR
-  - The number of RX queues configured
+Implemented XDP receive hardware timestamp metadata for stmmac driver.
 
-Prior to this change, running `ethtool -X $iface default` fails if the
-number of queues configured is larger than the number supported by RSS,
-even though changing the queue count correctly resets the flowhash to
-use all supported queues.
+This patchset is tested with tools/testing/selftests/bpf/xdp_hw_metadata.
+Below are the test steps and results.
 
-Other drivers (for example, i40e) will succeed but the flow hash will
-reset to support the maximum number of queues supported by RSS, even if
-that amount is smaller than the configured amount.
+Command on DUT:
+	sudo ./xdp_hw_metadata <interface name>
 
-Prior to this change:
+Command on Link Partner:
+	echo -n xdp | nc -u -q1 <destination IPv4 addr> 9091
+	echo -n skb | nc -u -q1 <destination IPv4 addr> 9092
 
-$ sudo ethtool -L eth1 combined 20
-$ sudo ethtool -x eth1
-RX flow hash indirection table for eth1 with 20 RX ring(s):
-    0:      0     1     2     3     4     5     6     7
-    8:      8     9    10    11    12    13    14    15
-   16:      0     1     2     3     4     5     6     7
-   24:      8     9    10    11    12    13    14    15
-   32:      0     1     2     3     4     5     6     7
-...
+Result for port 9091:
+	poll: 1 (0) skip=1 fail=0 redir=1
+	xsk_ring_cons__peek: 1
+	0x55f69f65f6d0: rx_desc[0]->addr=100000000008000 addr=8100 comp_addr=8000
+	rx_timestamp: 1677762069053692631
+	No rx_hash err=-95
+	0x55f69f65f6d0: complete idx=8 addr=8000
 
-You can see that the flowhash was correctly set to use the maximum
-number of queues supported by the driver (16).
+Result for port 9092:
+	poll: 1 (0) skip=2 fail=0 redir=1
+	found skb hwtstamp = 1677762071.937207680
 
-However, asking the NIC to reset to "default" fails:
+changelog:
+v5 -> v6: improve field naming of struct stmmac_xdp_buff
 
-$ sudo ethtool -X eth1 default
-Cannot set RX flow hash configuration: Invalid argument
+v4 -> v5: remove zeroing operation on ctx variable
 
-After this change, the flowhash can be reset to default which will use
-all of the available RSS queues (16) or the configured queue count,
-whichever is smaller.
+v3 -> v4: directly retrieve Rx HWTS in stmmac_xdp_rx_timestamp(), instead
+	  of reuse stmmac_get_rx_hwtstamp()
 
-Starting with eth1 which has 10 queues and a flowhash distributing to
-all 10 queues:
+v2 -> v3: To reduce packet processing cost, get the Rx HWTS only when
+	  xmo_rx_timestamp() is called
 
-$ sudo ethtool -x eth1
-RX flow hash indirection table for eth1 with 10 RX ring(s):
-    0:      0     1     2     3     4     5     6     7
-    8:      8     9     0     1     2     3     4     5
-   16:      6     7     8     9     0     1     2     3
-...
+v1 -> v2: Add static to stmmac_xdp_metadata_ops declaration
 
-Increasing the queue count to 48 resets the flowhash to distribute to 16
-queues, as it did before this patch:
-
-$ sudo ethtool -L eth1 combined 48
-$ sudo ethtool -x eth1
-RX flow hash indirection table for eth1 with 16 RX ring(s):
-    0:      0     1     2     3     4     5     6     7
-    8:      8     9    10    11    12    13    14    15
-   16:      0     1     2     3     4     5     6     7
-...
-
-Due to the other bugfix in this series, the flowhash can be set to use
-queues 0-5:
-
-$ sudo ethtool -X eth1 equal 5
-$ sudo ethtool -x eth1
-RX flow hash indirection table for eth1 with 16 RX ring(s):
-    0:      0     1     2     3     4     0     1     2
-    8:      3     4     0     1     2     3     4     0
-   16:      1     2     3     4     0     1     2     3
-...
-
-Due to this bugfix, the flowhash can be reset to default and use 16
-queues:
-
-$ sudo ethtool -X eth1 default
-$ sudo ethtool -x eth1
-RX flow hash indirection table for eth1 with 16 RX ring(s):
-    0:      0     1     2     3     4     5     6     7
-    8:      8     9    10    11    12    13    14    15
-   16:      0     1     2     3     4     5     6     7
-...
-
-Signed-off-by: Joe Damato <jdamato@fastly.com>
 ---
- .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
-index 821dfd323fa9..0bbad4a5cc2f 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
-@@ -2665,6 +2665,14 @@ static int ixgbe_get_rss_hash_opts(struct ixgbe_adapter *adapter,
- 	return 0;
- }
- 
-+static int ixgbe_rss_indir_tbl_max(struct ixgbe_adapter *adapter)
-+{
-+	if (adapter->hw.mac.type < ixgbe_mac_X550)
-+		return 16;
-+	else
-+		return 64;
-+}
-+
- static int ixgbe_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
- 			   u32 *rule_locs)
- {
-@@ -2673,7 +2681,8 @@ static int ixgbe_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
- 
- 	switch (cmd->cmd) {
- 	case ETHTOOL_GRXRINGS:
--		cmd->data = adapter->num_rx_queues;
-+		cmd->data = min_t(int, adapter->num_rx_queues,
-+				  ixgbe_rss_indir_tbl_max(adapter));
- 		ret = 0;
- 		break;
- 	case ETHTOOL_GRXCLSRLCNT:
-@@ -3075,14 +3084,6 @@ static int ixgbe_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
- 	return ret;
- }
- 
--static int ixgbe_rss_indir_tbl_max(struct ixgbe_adapter *adapter)
--{
--	if (adapter->hw.mac.type < ixgbe_mac_X550)
--		return 16;
--	else
--		return 64;
--}
--
- static u32 ixgbe_get_rxfh_key_size(struct net_device *netdev)
- {
- 	return IXGBE_RSS_KEY_SIZE;
+Song Yoong Siang (3):
+  net: stmmac: introduce wrapper for struct xdp_buff
+  net: stmmac: add Rx HWTS metadata to XDP receive pkt
+  net: stmmac: add Rx HWTS metadata to XDP ZC receive pkt
+
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  7 ++
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 80 ++++++++++++++++---
+ 2 files changed, 77 insertions(+), 10 deletions(-)
+
 -- 
-2.25.1
+2.34.1
 
