@@ -2,125 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 252986E39CA
-	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 17:26:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 995136E39CF
+	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 17:29:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230032AbjDPP0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Apr 2023 11:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39954 "EHLO
+        id S230280AbjDPP3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Apr 2023 11:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbjDPP0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 11:26:02 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2100.outbound.protection.outlook.com [40.107.8.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC082710
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 08:25:59 -0700 (PDT)
+        with ESMTP id S230356AbjDPP3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 11:29:45 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD762710
+        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 08:29:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681658984; x=1713194984;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=xSdj+Uy1qO8aL8cTFu5AOVpz4t/w0vrHji5IYfRoo5g=;
+  b=Rfs/JlYJqKmM2JzFEWpsbQtQX5NIFjy5lcP8wUsXkqfvCsmNgk9E1FBn
+   ELsOYOGg1xomPQiYg8s+y6Nm+b1OjYlBSsfqhmI+i4p3+fZF3n1Uiqsgv
+   nClMsLYV7Ut2pZJmI7CLHzhFBpDzDhxFIaWqeZ+5FQf5VFQsuWTJtQ7NN
+   k8AG9/kl1SCoA+MzsTxgCLeM34NA8t94BPwfI0WWOLwHajpGaHNLYudqD
+   XaxAvyoNQ3GV6utH5xuDHHTl6WxCnu4r0vkAlcEVpILnfoTGk89XJxgD1
+   jD/Kzdp97BzwzjwbWTIYxy7OzmS4Z+X1uEcMJMtQZGoV0GwMY48Y0aE3u
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="324366435"
+X-IronPort-AV: E=Sophos;i="5.99,202,1677571200"; 
+   d="scan'208";a="324366435"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2023 08:29:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="755044131"
+X-IronPort-AV: E=Sophos;i="5.99,202,1677571200"; 
+   d="scan'208";a="755044131"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga008.fm.intel.com with ESMTP; 16 Apr 2023 08:29:43 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Sun, 16 Apr 2023 08:29:43 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Sun, 16 Apr 2023 08:29:43 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Sun, 16 Apr 2023 08:29:43 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EbdxN1zEm51fh9I4KxjTdQtmi03VBjorckU/smY3k8b46zYkG+SOBDA9JGmlPwmHYE/FwlvMX3KAK82nxKmr3dRA/1jJY7U3EP547xB9qba0yrRHV3wyHJbmT2Y+aVfctJZchmNv/7UxIJXSD4fu68f6Z1uI7aIWHPiXX3dL7678bgNVgdctjG+tTXNFYTArAW9l3ePz06TiEOnhDLY6Urd3t4safNGVzaRU8Gvion4OEhu7yvQGkwi9o99fNcN9NDRnIOLhiDpXHNAU4Z0xSx7oGE77ptceBA9K1BjLLn2waO7x6ym6pvt69WFoiita/pRM0kRhCcAotO91WCoFvA==
+ b=AOSQG/pV12GSOKvKl2zBA7UKpP5OGc0ElDKjEhFnyk4WhYgBma6oU6f5IuPHdVe5bDryWmIX900yyv4lWSpoYoo37doPtqNmN6Z6/4VXFqONvGBCxA34qv5l00xqSrkFu/VaxbJz6o2BQgtO80ofYuR3Ira2IYKB+Be5dShnHXvXQeSwNJI9mEzZ0y8G0wypi/zR/ZTakW2Kg50NqBC9MQg/dxlPGK3HaMZYsmR53rZLFDMx9RgAmBbf2lhPMIO/S0iBgnDJFGajMocZpiLaooydZNghw5ktngHYZ1YMVlSe9aBZ1Mq1ga/5Ro6WVEqzoyK444+AnAf7y6hyHw2NOg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZcYsEowBN6+swNzvIVLmkFCNxJWQRgNjy0Q1p0lV71A=;
- b=KmlwokA7n47wG7fnNowj5b/vAbriPQNHgRjmCU/YbuOL+vitWbRBJh7x8MJCNtfAz6lXC/S/oQFgx57URP/UW4yx5ayoyHag5Robm92YfmgD4DYXP/kNI+5d3+UzPfjgjqxa7Nkb2MdPVvTE2cheAovAA7uRnuGbnrR04qsfmQBPHdtfUmkbItEtV9rYTZ6Aa6z/2UUY5AEVe4VSA/eRXOAW0DXavFefzUgH4hPpxZvSDEs4Dh8dqb6h6YO4ksfLzSGRYGMgh8ZN6N2fZDXYFdHzer13t9MIQBhNzixDKugJ7vUxzC30w4n/UUmJR2exc3zBFKT7KfQd5OXfD8KgzQ==
+ bh=f8dDQw2F4C6c7IRoTjC+wRCRYprn4fHfXt3OR3vXoqk=;
+ b=VF4EzLOwrLc6HRiJmpMtpGFA1AelOoNyKv4aypMwX/yx7gjJ4d758f8mkDoUYtVz5+14/UZZaQZ/p7C/wxVeiASUfHeL9sA8sfD4bmDnzsnsui9Sx0RVO6j3ELQpF4u+vwuf699weNcXNjTVAMjAA53CvhLCfRB3FbBSF06oCLZxeoTYRaCA1mqPxXR3hmZLtOUww7IEyGQeAIPm3YUN8AGdRLeaI2xJaEYhTkmvcCS1voGq2xXMQDrODcBSJAPKzOpYGbPhfRBR6B9e/3FGwZa0elUCOuhHltBBnypVB+d1yyTS4KHKj2DhsNqwMgaS6JsLjrdePsZ4Evcs1ch7yQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siklu.com; dmarc=pass action=none header.from=siklu.com;
- dkim=pass header.d=siklu.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siklu.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZcYsEowBN6+swNzvIVLmkFCNxJWQRgNjy0Q1p0lV71A=;
- b=Okm4Yugb64jXjIR18KAWKJPL3/WF5uzNZ17G8emIV3FvZmGIUD+1UbFOqc+09UGeUgYD4wn99fHqfg8UZ5z1NH0QvbuovK++Pca3r+H+a4Vi2qHVeICnfxw8sBWxxx5jRHeg26WIcdeagjVvpOnWlxEP4NiQbp5nvtxl0uxTS8s=
-Received: from VI1PR0102MB3117.eurprd01.prod.exchangelabs.com
- (2603:10a6:803:5::17) by DU0PR01MB10115.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:319::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.38; Sun, 16 Apr
- 2023 15:25:56 +0000
-Received: from VI1PR0102MB3117.eurprd01.prod.exchangelabs.com
- ([fe80::a0b2:d7a9:4f7:4a70]) by
- VI1PR0102MB3117.eurprd01.prod.exchangelabs.com ([fe80::a0b2:d7a9:4f7:4a70%5])
- with mapi id 15.20.6298.030; Sun, 16 Apr 2023 15:25:56 +0000
-From:   Shmuel Hazan <shmuel.h@siklu.com>
-To:     "andrew@lunn.ch" <andrew@lunn.ch>
-CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "mw@semihalf.com" <mw@semihalf.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC PATCH] net: mvpp2: tai: add refcount for ptp worker
-Thread-Topic: [RFC PATCH] net: mvpp2: tai: add refcount for ptp worker
-Thread-Index: AQHZcG/3jS6cFCsc+UuSyaDRz1oYQq8uBT4AgAAJTQA=
-Date:   Sun, 16 Apr 2023 15:25:55 +0000
-Message-ID: <43513e82fcdf84ce363abe31d6998b4f40aaa49f.camel@siklu.com>
-References: <6806f01c8a6281a15495f5ead08c8b4403b1a581.camel@siklu.com>
-         <69b2616d-dfeb-4e06-8f9b-60ced06cca00@lunn.ch>
-In-Reply-To: <69b2616d-dfeb-4e06-8f9b-60ced06cca00@lunn.ch>
-Accept-Language: en-US
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB4886.namprd11.prod.outlook.com (2603:10b6:510:33::22)
+ by DS0PR11MB7532.namprd11.prod.outlook.com (2603:10b6:8:147::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Sun, 16 Apr
+ 2023 15:29:40 +0000
+Received: from PH0PR11MB4886.namprd11.prod.outlook.com
+ ([fe80::922:4817:b4f2:c7b3]) by PH0PR11MB4886.namprd11.prod.outlook.com
+ ([fe80::922:4817:b4f2:c7b3%5]) with mapi id 15.20.6298.045; Sun, 16 Apr 2023
+ 15:29:40 +0000
+Message-ID: <6a477f53-1b63-4e85-0c81-b60aff5fab0c@intel.com>
+Date:   Sun, 16 Apr 2023 10:29:36 -0500
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net 2/2] ixgbe: Allow ixgbe to reset default flow hash
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siklu.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: VI1PR0102MB3117:EE_|DU0PR01MB10115:EE_
-x-ms-office365-filtering-correlation-id: dfdb2a89-d8db-451e-6727-08db3e8edf71
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ewCmJEFv+tS9H3AdlDicx9wWNOqRU07L1jJpJ4/yx9UB2btD5L1UNhavteNfsY1fxgOV5IbJ6JxfCBclD7PolMfRMcagTd8GtCD3ZV/mBI324y8AGayEQMxCSBxCje3QvwcwQNw1Kq/U/jal1Ytx6aL+gz8G3hWlrds+Ornpwgu93wes4VlVnCNKnlvyMegh9XBvje5mq+XEjlvbbrRK9hP5euk//HFVbKXWnM3Zr3SvynLPzY9/+YlGNGw6OqRPTu9hgHK6xYQEHES8Dc/ph4uYmMQYNf/a8y9MRyS/2VRf0E782TuPuI/9AgtIiPna8KoLv3Ome3IUkYaovrCqvSOYsEI/VKYA796OcL0UkxCAteXHW/+AdZeNJsE5m6uzqr5N+hcmK2NhduszWegADUk1Qyt3/hOKN/BfRpgacbtRMa/H5IQkoHO7bbmVPwlNF5/ZMrIrS5gtembFdeOe2VE28SS8lSFZbXioJ9Y6+as8Yft72l92COxsSj/vzBtRP/SxkPIPq6OD1iRlRa+sVQfmMdFe9YSE/5U+FwseT9hPbTiDwlJCF9Ws3mq0+uiHzIPcl028la/8FvBWjSpei4fugRjDPlJH7KLjZTGsCTZT6KLO/36+tKV1MR3Atn35
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0102MB3117.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(39840400004)(376002)(346002)(136003)(451199021)(86362001)(4326008)(6916009)(66446008)(66946007)(64756008)(66556008)(8676002)(66476007)(6486002)(316002)(71200400001)(76116006)(41300700001)(36756003)(478600001)(54906003)(6512007)(2616005)(6506007)(26005)(83380400001)(38070700005)(38100700002)(8936002)(186003)(122000001)(2906002)(5660300002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?eFU2bkQzOTd4SG40NXBSbm42UmZUVkNiWnlVeU5IQ0FkM3B5NU1MZ05XWDRh?=
- =?utf-8?B?VDIzSzJnWnNZZEpycUtxcDFHakxrRkZ3eWxyZDY4QjBSdWVCSHhxNU9wTkVz?=
- =?utf-8?B?RzF6UGhKdmMvUDZyRWI0QjlJZ01FY29UUk5kWVBLQXA5MmZpUktSa2h5UG8v?=
- =?utf-8?B?THU2UUoxeDFFUHlhYWYrcmRKbHVMRHVuVmVVdHNLZFB2ZjVIRS8wVHF6dTc2?=
- =?utf-8?B?R3RUa1hLYTZxdFpkUTVuWlBpTjRkVkxad1pPRDQrU2FhSlJqK3E0OFptQ0xH?=
- =?utf-8?B?czhBQjBnTkE5cmVkRnJpeDhDZEVTOHlKcXQydFVxc0dFbi9VZytOQkNuR3Nl?=
- =?utf-8?B?VzVPQzVTNHdYQWRaYzg0UGR1U2FnZkc0YmdkM0ZjbFkxU1FoblN5VUx1Vmpo?=
- =?utf-8?B?Q0ZRSU1wZ1RhRll0MS9FS0hGWkVsd29hNWlFallnaTh4Skc0cDNtMGY5QmpQ?=
- =?utf-8?B?Ykk3dVU4UXpKaFVGemFaMms2bTZPbkFnR1d0RzlnMVBDSE0wZkIrZlNRMXo2?=
- =?utf-8?B?azU5eTZ1dGNWd3JPOWJwVFZkT2R0NnlTUmloT2xXcDZPNEJnK2lKbVFDTzdk?=
- =?utf-8?B?Y2ptM0k5NGhUT1EydStCTmsxSEdXa0FLbmRuT29TNnRQUHhzbER2QzBoVmRP?=
- =?utf-8?B?WVoyd3B5L251Q29LTEY4LythalVxYkxjVjZMZ2hoN2pDQTlMQnFjdGhtcTdP?=
- =?utf-8?B?Vms0YW5CcUVmU0c4YlliZW8yYzR4STQ1WHJBZnNNZS82Qk9kY0R3L2kza1Ro?=
- =?utf-8?B?UXIydWFRdU1uNGpOLzhuMDdKT2hCNjYxM2FTRkMwVmc2d3hPS0U1ZGdrd0w2?=
- =?utf-8?B?Z3REaDlxN2Q5OHVPY2ZJRFFDY3U4UkIwU1FkYTBtVS9LSzBSTEQ1cnFFcnZR?=
- =?utf-8?B?QTBUNFBzajRrMlF6Y2JSd0NQY2dhNFpyZkgxMzJ3cWtlMmIra3hvS2FuSjYy?=
- =?utf-8?B?VGl4aGlIeHRNd0JlMG9oRTloZTNLajVrdUxoWVp1RHE2cU85dHhxN2x0VGNR?=
- =?utf-8?B?WG9YUUV2R0FDa1U3VUFoSXZjRDJjYWRKRjhkeSt3UlZNZzBMMzFiSTZ2TUlU?=
- =?utf-8?B?VTEyZ0M1TEhac0YxS3dUTmhGaWtmK3hjMVBjazE1Qm5yRTJRdWZsQTFGdC9Q?=
- =?utf-8?B?WUVtU254d0k4MVcvRVRDNXE0d040cmVRYURGWWtSSDROUnlERE0yVSs1UzJ2?=
- =?utf-8?B?eUo0TU13dStOaERZejRYNmxwNkZqQ0EvcWZCVnZRU0toTWsrU3ZXQUdxQzBv?=
- =?utf-8?B?WDV3YXNBK3RUbHJrenVucWR6bnE1Z1lETDhSanp1bXlOYktlaTY2NFR0d1M1?=
- =?utf-8?B?U29JRENHNUpLQWluOEw5ZjkrazdydVJGd0VJZ2NCWkxJOE9rZ29ZVkZkaGlW?=
- =?utf-8?B?eUl0VHlKei9jR3RBdmx5ckFQUFJrV285UDZiMTlHZS8wUlhVVmpoVC9HeWtD?=
- =?utf-8?B?dmdWcmpkZ3VaZW94bmZMeFFRQWhYQ0N1a0VCZVNUWGZjWTcrdGxSUWtXQ2Rq?=
- =?utf-8?B?MWlGZUNXVGlHS1RWZ2h5eWZkS2tXOGoycnZhWm1DNFh3MGlZU0g0WVNlZ2V0?=
- =?utf-8?B?dWNPdTBzL0liZUs0UmdqaTdxdU9va2FWQmVhL1UyT1JNU2gwL1R6WlNJYzg0?=
- =?utf-8?B?d0VIb1ZqTnRkNVd4TGlFK0FsRUlVWVBXeFdpMzUrL0ptczFPUDRNZjdWQmRD?=
- =?utf-8?B?NVo3Q3JJMkhTM01pcHRqYXBuZW0zY2dQNWsxV2VJSm9kMHZBNTMra2R1UzJy?=
- =?utf-8?B?dVdQN1U4bUlVbUhzaks1NUZWMUtpb0RIY0czSnRFQjVqRFhKaWNmamtOTmFN?=
- =?utf-8?B?OVBQTWdGdDZ0WUR4WDFFUXIyb0tHblZoQXgwWk1OVnVMUGpyYmQxSVA1dTQ2?=
- =?utf-8?B?SElaRGhuMDYvNDNMVkhTbExsWXJkSmMyUDVFeHp1V2lCbzkyRkZXNEtIaXFS?=
- =?utf-8?B?S05HMzlVTTZ4TjB5MHVTS0RuMW96bStaZk5pOU5lLzg1enBjVENpT0l5cmRS?=
- =?utf-8?B?elF4eUgySzhDMVR3eDNsTmhCdE5EUzFCa2tiKzhMMkdvbENUQ0tEejJPWXdO?=
- =?utf-8?B?MGNmSG5JSzVLTWhKQzAxS0RBRWo5R1krbkZ4dk9mYVVmRTN1ZmtWeDVVRWV1?=
- =?utf-8?Q?lYNZto+77IFpMl/PxeyCTAHUr?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <837B24F3092F364383EF5979EF6E8765@eurprd01.prod.exchangelabs.com>
-Content-Transfer-Encoding: base64
+To:     Joe Damato <jdamato@fastly.com>, <intel-wired-lan@lists.osuosl.org>
+CC:     <netdev@vger.kernel.org>, <jesse.brandeburg@intel.com>,
+        <anthony.l.nguyen@intel.com>, <kuba@kernel.org>
+References: <20230415054855.9293-1-jdamato@fastly.com>
+ <20230415054855.9293-3-jdamato@fastly.com>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+In-Reply-To: <20230415054855.9293-3-jdamato@fastly.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0270.namprd03.prod.outlook.com
+ (2603:10b6:a03:3a0::35) To PH0PR11MB4886.namprd11.prod.outlook.com
+ (2603:10b6:510:33::22)
 MIME-Version: 1.0
-X-OriginatorOrg: siklu.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR11MB4886:EE_|DS0PR11MB7532:EE_
+X-MS-Office365-Filtering-Correlation-Id: 718452d3-ab86-4fbe-70ef-08db3e8f64c0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 93qX3xeuCkpRHpvhh9E5w0Gz3A7ms0vLzT1Il4/o+GwWfB9fH4Fw0/QWfIi7RFbHPror19yjRAbkH5PWIJFA4dADFqoeKmUHyOzBexKPJBZJaWuBcMjIvp6pXv+q9Vyr2oNjM8iphIyEjPPYSw0pchywE6bwILp47ojE86Jot/UI6uxsLf5JPejGo4+RjxEt7Q2mL6BLXAZ2omFE/bEDIc5bAEr8N3+lblHeDbxav7w5572oJBBE5M80xTLVYGH2+s3HW1jAiuhMccsmgqqGNjow94uhirkgOI5zYWFXhIj6C1BtSONwzODC5zp8QzHHrLoh+2uFg2DukEMnUZHXQMA9OT1bwV3DB4BjrDtJMnOTCRbOipgeoBc0rwJRtfn2cjv1yiwXdQpvFgGKNuDjd4miG+sOQ0hMBYFfeKNfEXwsqYp8eUJH1BjfpxrhjPoUn4tdy0qFcrkSOXJwjaBa5hEV8I9JgFqE1+7LYP7yosWKNBnIQCsvLiv/IfpBXik2RvMFW+oyIY9uAQmCZ25yLbRN1pAi6EaQ3P2vqYMmiZVZU3VWgd9yXIpdHxV9Y8e5+BReMhTSTgm/AS914w2Jlol3IA61wVoG8Srgdh9gEX5el2LNMvmkcjgxf8qVtFlSjZEP0t8j67iFKGjFsVsYPQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4886.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(396003)(376002)(346002)(366004)(451199021)(478600001)(26005)(6506007)(31686004)(53546011)(31696002)(6512007)(82960400001)(66946007)(4326008)(66476007)(66556008)(6486002)(6666004)(316002)(86362001)(186003)(8936002)(41300700001)(8676002)(83380400001)(36756003)(5660300002)(2616005)(2906002)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?c0FVVFRjdm5rZ3hkY3BmZzF4NEVrS01tdkdvRVEvWkpVYVI2MVc1YzhsSXAw?=
+ =?utf-8?B?eEVnb1M4b0lobnRsTmYrUmRqSGZZMjN5bnRzZ1hlS1RDWVIvZFpSS0JHVzFP?=
+ =?utf-8?B?WFdxUzljeFJmOVdKMUpjczZMTEkxRnpmVGhKS2RXWFlCVk1qV2R4U0c4LzF1?=
+ =?utf-8?B?OFp5TkNReit4MzZNWEdub3oxb2JxUjhybmhqanRjcm8wTUoxK3JEdjAxdkwr?=
+ =?utf-8?B?ZDZSSDZueWhub1AyWjVxY0JGMHlJWnBQRG9DRWJQMlNIS0FZZlZDYVBsK01E?=
+ =?utf-8?B?VWthVFljemFHeFpjRGljd01aaEJac0lxN3IyUlNkcEp3aHE0a1dESkQ5TllU?=
+ =?utf-8?B?Q1p6bTVjYW53SEZwWldZaUhKY2dBSXFSckQ5eDdKbXJsdHRyT0E1bmtnL0c4?=
+ =?utf-8?B?ZGY1RHRhU0NkQVRidlF6VDdnZEdEU2t6ZDhRaVhFbmcwRitXMWtXTjhZVnV3?=
+ =?utf-8?B?QXUwMmtQTVduSTdESzFNN083UEJyRTQxUFJDYlMraHY0c2xJYzRtVURFbVJl?=
+ =?utf-8?B?cGU2QUNiVUdzWERmMWdad1FzUm1tc0VCVEdDT1NwRm56RjFIaXBmL0h6VDRi?=
+ =?utf-8?B?YStVZ0dtYUowZXVKbGdHR0JPakJ1cmEwSVZqcHJEcVdxMTdKeXJZeUxuc3FX?=
+ =?utf-8?B?c1NabWxUSTY0SkorTFNRak4zM3d6YXVMWVVUZ1BwZ2gybzd2SC8xS3RxTDNa?=
+ =?utf-8?B?eW5YRjIwOUFEUk1zYnlUWEVTZkxxNW1WdUF4VGNRUFF4VTFTUURmT3NkcjVL?=
+ =?utf-8?B?empnYzVVcHFZZDZqVGM0Wmg2M3Qxc0pZeTZRdVo5K09ZQVVqQi9ob0RKOUpC?=
+ =?utf-8?B?Rk5RYUxBM2FCR0laeFVWSHJqM21yWXhsZDJLalhxVDZjcXNBcW1xbitWOGJs?=
+ =?utf-8?B?YmxoeExxbGdhOTNmNmgzaU1jeUdvWGgxVHB2SUpTc2NwaGtDTkowSDBOOGZj?=
+ =?utf-8?B?a1JOZWNSb1Bpc1F3YUZZMndnNGFlTEVLdkdhVnlrSFlJajZDb0x1V0dXSUNE?=
+ =?utf-8?B?U2FrdTFaWlhsUCtvNXg2eVJCTjdCeUtnSE9jZXhPbzhCVUVnK1NxWWhpUnpn?=
+ =?utf-8?B?NDBSb0xjYzBKVWNLek1Zb0VON3RkTkhKRjUyR0Z0S1c2dnJBVFR3bzY5VWcy?=
+ =?utf-8?B?YUxES1JsYUxCcWZLYmJqU0puMVlUemxaVnhnT0phUWJKTE95VEgwMXpvYXo0?=
+ =?utf-8?B?RHRra3JVQk9LeXhubFFyTnpDU2hWaXdWSUVtNzVnM1NpQklFTURiM2thM3N1?=
+ =?utf-8?B?OGd1ZEgyTjErRHoyOWUrSCtjc0tyUTkxNm45SjNCbWJkVVZIZWRURDRnRUI5?=
+ =?utf-8?B?WllNdUZmakNYYXZlZ0swSkNYM3NoRWxNYUo1V3NhOUtxYkYyOGJYR1BYSy9E?=
+ =?utf-8?B?eTJqd3IyV0NYZWc0TFY4M0xJWk9OZnBIYlVETGhUR3ZQWGZrek5NYXl5M1Nw?=
+ =?utf-8?B?Vml5WVAyWk8yWDdFd1RsME5rNnpjTVNCb1I4ZTFrbXFMMkJCOUxXTDJ6UjVD?=
+ =?utf-8?B?ZHFXU1VscnVBNDNyTGRMSEJjVTZnU2M5c05XdEJHZ2RVdHlqb1luUjFWOU9q?=
+ =?utf-8?B?c3RoZ2c3RnJmTmtFZ2VTVVFwZ1VsV1c5SVMxdG95MnJubG1rZUhVdUFXd2tl?=
+ =?utf-8?B?bFA0NDJaMzlyTHgrRkRpQ0xoRERFeDk4UG5DYlhITytPaTA5SEVSUjFWZWtp?=
+ =?utf-8?B?Z0lQUExTVjdpNjRuU3RuNGpDZ0tyV2tHWURUYjhXU0xLME9sY0ZMMHczcisw?=
+ =?utf-8?B?K2VMUmZ5U0k3ZVg5MHRpcUUvRlowL1hWbUJJOEpWZEJBQTJIdWx4OS9JUkh0?=
+ =?utf-8?B?dGdNNFJrd1ZPMUxaS1ZTREUvRVBNcEhldTJhaHBrYXIxVDBKcTlxK1RkaXl3?=
+ =?utf-8?B?YkplTkRGLzc0NzUydU01WituUmpuelFrQ0RMaUwrai9kMGJZWEhXYVNUMGFW?=
+ =?utf-8?B?TWFtWG8zY3ErbHZ0MWVUay9RTGFKUm1lRnNBRzJ6ZzZXajBjVERidFg3RTU4?=
+ =?utf-8?B?azZydEgwV3FIdVB2MWlsOUlucmU0WTZmVnpnMzRaTEdjcjk0T3EyTlA5Y3Mz?=
+ =?utf-8?B?aFA0bkJRNUhwVGdXZTliZzNpMTdlUkh3OG9hQXRITG5LK3F0WmcvNEdFMC9n?=
+ =?utf-8?B?WHBVcVZlWDVYUGlmNU8rSk5KNjJvS1EzbDFINVNXTmxhSVNDOGdHbUpLNEJ0?=
+ =?utf-8?B?S3c9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 718452d3-ab86-4fbe-70ef-08db3e8f64c0
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4886.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0102MB3117.eurprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dfdb2a89-d8db-451e-6727-08db3e8edf71
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Apr 2023 15:25:55.7866
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Apr 2023 15:29:39.8065
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5841c751-3c9b-43ec-9fa0-b99dbfc9c988
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XAXd8doOu8NS3IvL6VI+CuNT7e4KwP68crujVuWgnzC5bRqJGb1DljgGaiaFPC9fIr2oozI/J06pN4iysSXkdw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR01MB10115
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sjvYFkWzDZ1xoElG361OZew9D7eO44OsKdfAN2wroh7sO1lRC9zzD/GbarMX3cS6YNjIQKjPxL05V/qPtYBWA/r0lj5vlzmauG1QM1SvfJs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7532
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -128,26 +157,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU3VuLCAyMDIzLTA0LTE2IGF0IDE2OjUyICswMjAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
-DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvbXZwcDIvbXZw
-cDJfdGFpLmMNCj4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvbXZwcDIvbXZwcDJf
-dGFpLmMNCj4gPiBpbmRleCA5NTg2MmFmZjQ5ZjEuLjFiNTc1NzNkZDg2NiAxMDA2NDQNCj4gPiAt
-LS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL212cHAyL212cHAyX3RhaS5jDQo+ID4g
-KysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9tdnBwMi9tdnBwMl90YWkuYw0KPiA+
-IEBAIC02MSw2ICs2MSw3IEBAIHN0cnVjdCBtdnBwMl90YWkgew0KPiA+ICAgICAgIHU2NCBwZXJp
-b2Q7ICAgICAgICAgICAgIC8vIG5hbm9zZWNvbmQgcGVyaW9kIGluIDMyLjMyIGZpeGVkDQo+ID4g
-cG9pbnQNCj4gPiAgICAgICAvKiBUaGlzIHRpbWVzdGFtcCBpcyB1cGRhdGVkIGV2ZXJ5IHR3byBz
-ZWNvbmRzICovDQo+ID4gICAgICAgc3RydWN0IHRpbWVzcGVjNjQgc3RhbXA7DQo+ID4gKyAgICAg
-dTE2IHBvbGxfd29ya2VyX3JlZmNvdW50Ow0KPiANCj4gV2hhdCBsb2NrIGlzIHByb3RlY3Rpbmcg
-dGhpcz8gSXQgd291bGQgYmUgbmljZSB0byBjb21tZW50IGluIHRoZQ0KPiBjb21taXQgbWVzc2Fn
-ZSB3aHkgaXQgaXMgc2FmZSB0byB1c2UgYSBzaW1wbGUgdTE2Lg0KDQpIaSBBbmRyZXcsIA0KDQp0
-aGFua3MgZm9yIHlvdXIgcmVzcG9uc2UuIEluIHRoZW9yeSwgdGhlIG9ubHkgY29kZSBwYXRoDQp0
-byB0aGVzZSBmdW5jdGlvbnMgKG12cHAyMl90YWlfc3RhcnQgYW5kIG12cHAyMl90YWlfc3RvcCkN
-CmlzIGlvY3RsIChtdnBwMl9pb2N0bCAtPiBtdnBwMl9zZXRfdHNfY29uZmlnKSB3aGljaCBzaG91
-bGQgbG9jaw0KcnRubC4gSG93ZXZlciwgDQpJdCB3b3VsZCBwcm9iYWJseSBiZSBhIGdvb2QgaWRl
-YSB0byBhbHNvIGxvY2sgbXZwcDJfdGFpLT5sb2NrIHRvby4NCg0KQXMgZm9yIHRoZSBpbnRlZ2Vy
-IHNpemUsIGl0IHdpbGwgYmUgaW5jcmVhc2VkIG9uY2UgcGVyIGV0aGVybmV0IGRldmljZQ0Kb24g
-dGhhdCBDUCwgd2hpY2ggY3VycmVudGx5IGhhcyBvbmx5IG1heGltdW0gb2YgMyBldGhlcm5ldCBw
-b3J0cy4gSQ0KZ2F2ZSBpdCB1MTYganVzdCB0byBiZSBmdXR1cmVwcm9vZi4gSG93ZXZlciwgSSBj
-YW4gY2hhbmdlIGl0IHRvIGEgbW9yZQ0KYXBwcm9wcmlhdGUgdHlwZSBpZiBpdCBsb29rcyBtb3Jl
-IGFwcHJvcHJpYXRlIHRvIHlvdS4gDQoNCj4gDQo+ICAgICAgICBBbmRyZXcNCg0K
+
+
+On 4/15/2023 12:48 AM, Joe Damato wrote:
+> ethtool uses `ETHTOOL_GRXRINGS` to compute how many queues are supported
+> by RSS. The driver should return the smaller of either:
+>    - The maximum number of RSS queues the device supports, OR
+>    - The number of RX queues configured
+> 
+> Prior to this change, running `ethtool -X $iface default` fails if the
+> number of queues configured is larger than the number supported by RSS,
+> even though changing the queue count correctly resets the flowhash to
+> use all supported queues.
+> 
+> Other drivers (for example, i40e) will succeed but the flow hash will
+> reset to support the maximum number of queues supported by RSS, even if
+> that amount is smaller than the configured amount.
+> 
+> Prior to this change:
+> 
+> $ sudo ethtool -L eth1 combined 20
+> $ sudo ethtool -x eth1
+> RX flow hash indirection table for eth1 with 20 RX ring(s):
+>      0:      0     1     2     3     4     5     6     7
+>      8:      8     9    10    11    12    13    14    15
+>     16:      0     1     2     3     4     5     6     7
+>     24:      8     9    10    11    12    13    14    15
+>     32:      0     1     2     3     4     5     6     7
+> ...
+> 
+> You can see that the flowhash was correctly set to use the maximum
+> number of queues supported by the driver (16).
+> 
+> However, asking the NIC to reset to "default" fails:
+> 
+> $ sudo ethtool -X eth1 default
+> Cannot set RX flow hash configuration: Invalid argument
+> 
+> After this change, the flowhash can be reset to default which will use
+> all of the available RSS queues (16) or the configured queue count,
+> whichever is smaller.
+> 
+> Starting with eth1 which has 10 queues and a flowhash distributing to
+> all 10 queues:
+> 
+> $ sudo ethtool -x eth1
+> RX flow hash indirection table for eth1 with 10 RX ring(s):
+>      0:      0     1     2     3     4     5     6     7
+>      8:      8     9     0     1     2     3     4     5
+>     16:      6     7     8     9     0     1     2     3
+> ...
+> 
+> Increasing the queue count to 48 resets the flowhash to distribute to 16
+> queues, as it did before this patch:
+> 
+> $ sudo ethtool -L eth1 combined 48
+> $ sudo ethtool -x eth1
+> RX flow hash indirection table for eth1 with 16 RX ring(s):
+>      0:      0     1     2     3     4     5     6     7
+>      8:      8     9    10    11    12    13    14    15
+>     16:      0     1     2     3     4     5     6     7
+> ...
+> 
+> Due to the other bugfix in this series, the flowhash can be set to use
+> queues 0-5:
+> 
+> $ sudo ethtool -X eth1 equal 5
+> $ sudo ethtool -x eth1
+> RX flow hash indirection table for eth1 with 16 RX ring(s):
+>      0:      0     1     2     3     4     0     1     2
+>      8:      3     4     0     1     2     3     4     0
+>     16:      1     2     3     4     0     1     2     3
+> ...
+> 
+> Due to this bugfix, the flowhash can be reset to default and use 16
+> queues:
+> 
+> $ sudo ethtool -X eth1 default
+> $ sudo ethtool -x eth1
+> RX flow hash indirection table for eth1 with 16 RX ring(s):
+>      0:      0     1     2     3     4     5     6     7
+>      8:      8     9    10    11    12    13    14    15
+>     16:      0     1     2     3     4     5     6     7
+> ...
+> 
+> Signed-off-by: Joe Damato <jdamato@fastly.com>
+
+Thanks for the detailed commit message and steps to reproduce
+and validate the issue.
+
+Would suggest changing the title to indicate that this fix is enabling
+setting the RSS indirection table to default value.
+
+Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+
+> ---
+>   .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  | 19 ++++++++++---------
+>   1 file changed, 10 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> index 821dfd323fa9..0bbad4a5cc2f 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+> @@ -2665,6 +2665,14 @@ static int ixgbe_get_rss_hash_opts(struct ixgbe_adapter *adapter,
+>   	return 0;
+>   }
+>   
+> +static int ixgbe_rss_indir_tbl_max(struct ixgbe_adapter *adapter)
+> +{
+> +	if (adapter->hw.mac.type < ixgbe_mac_X550)
+> +		return 16;
+> +	else
+> +		return 64;
+> +}
+> +
+>   static int ixgbe_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
+>   			   u32 *rule_locs)
+>   {
+> @@ -2673,7 +2681,8 @@ static int ixgbe_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd,
+>   
+>   	switch (cmd->cmd) {
+>   	case ETHTOOL_GRXRINGS:
+> -		cmd->data = adapter->num_rx_queues;
+> +		cmd->data = min_t(int, adapter->num_rx_queues,
+> +				  ixgbe_rss_indir_tbl_max(adapter));
+>   		ret = 0;
+>   		break;
+>   	case ETHTOOL_GRXCLSRLCNT:
+> @@ -3075,14 +3084,6 @@ static int ixgbe_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
+>   	return ret;
+>   }
+>   
+> -static int ixgbe_rss_indir_tbl_max(struct ixgbe_adapter *adapter)
+> -{
+> -	if (adapter->hw.mac.type < ixgbe_mac_X550)
+> -		return 16;
+> -	else
+> -		return 64;
+> -}
+> -
+>   static u32 ixgbe_get_rxfh_key_size(struct net_device *netdev)
+>   {
+>   	return IXGBE_RSS_KEY_SIZE;
