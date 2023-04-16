@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44AFC6E3A21
-	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 18:09:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5F846E3A25
+	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 18:10:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229513AbjDPQJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Apr 2023 12:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53294 "EHLO
+        id S229819AbjDPQJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Apr 2023 12:09:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjDPQJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 12:09:33 -0400
-Received: from smtp-8fab.mail.infomaniak.ch (smtp-8fab.mail.infomaniak.ch [IPv6:2001:1600:3:17::8fab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCEAF1FF5
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 09:09:31 -0700 (PDT)
+        with ESMTP id S229693AbjDPQJ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 12:09:57 -0400
+Received: from smtp-bc0d.mail.infomaniak.ch (smtp-bc0d.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc0d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542AD2115
+        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 09:09:55 -0700 (PDT)
 Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Pzw9k06M4zMqdXK;
-        Sun, 16 Apr 2023 18:09:30 +0200 (CEST)
-Received: from unknown by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Pzw9g5qf9zMppDP;
-        Sun, 16 Apr 2023 18:09:27 +0200 (CEST)
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4PzwB766kzzMpqwT;
+        Sun, 16 Apr 2023 18:09:51 +0200 (CEST)
+Received: from unknown by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4PzwB64lqvzMpnPl;
+        Sun, 16 Apr 2023 18:09:50 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1681661369;
-        bh=bl090cWcqg/KPhSiPqAXrLgK7zsN8bX1R+IXbcvSQ8M=;
+        s=20191114; t=1681661391;
+        bh=Fjt3KwyGUeXYnsyCOyzBSVeFvswxdPFD95xkQS+s5Is=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=1A6VUFJyqE3tONpoLZfrgNcOW5ZbFPthbrHVLOobr0q8XjDD+7SSnqy1HpTVjSAww
-         AV5ry4AjXigem45Pq1tgOK7pR5rI3x0uHwGQNDG5YeYpsmrvPLUMZ7mBhAaBprvkLb
-         lrcFpbVTDQDqyQWj3Kr0LELRuM/q40h6x3/ZULeI=
-Message-ID: <72ef81d8-b7a0-de1e-83b6-1bfe7028ad25@digikod.net>
-Date:   Sun, 16 Apr 2023 18:09:34 +0200
+        b=Uya7BOsK1ZjWiPHtQjkphf9ol923mfDVJC92aQENBgtyRwz7VyPkpZFokBZAViQcE
+         vs+Exz4yfRZ+sXs9TDgJLg1cQJEW84Om5ViG3nbD1yopndRX9RG/NYNwwnyJnJWHQf
+         rhs/tjytiwyZP78zIlpoIQQBYVdMc3IfL8SpLMuk=
+Message-ID: <8b2f2e0f-0a95-ef87-7eb2-286e75a62e2c@digikod.net>
+Date:   Sun, 16 Apr 2023 18:09:57 +0200
 MIME-Version: 1.0
 User-Agent: 
-Subject: Re: [PATCH v10 03/13] landlock: Remove unnecessary inlining
+Subject: Re: [PATCH v10 05/13] landlock: Refactor merge/inherit_ruleset
+ functions
 Content-Language: en-US
 To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
 Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
@@ -38,168 +39,250 @@ Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
         netfilter-devel@vger.kernel.org, yusongping@huawei.com,
         artem.kuzin@huawei.com
 References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
- <20230323085226.1432550-4-konstantin.meskhidze@huawei.com>
+ <20230323085226.1432550-6-konstantin.meskhidze@huawei.com>
 From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <20230323085226.1432550-4-konstantin.meskhidze@huawei.com>
+In-Reply-To: <20230323085226.1432550-6-konstantin.meskhidze@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Infomaniak-Routing: alpha
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unfortunately this patch could not be easily backported because it 
-changes too much as the same time, and it would then be an issue for 
-patches on top of it that would need to be backported. Please remove 
-this patch for the next series, but keep the required changes for the 
-function that are modified by the following patches, i.e. 
-opportunistically remove inline function when changing their signature 
-(which should be a subset of the same patch for v9). I'll take care of 
-doing the remaining clean up.
-
 
 On 23/03/2023 09:52, Konstantin Meskhidze wrote:
-> Remove all "inline" keywords in all .c files. This should be simple
-> for the compiler to inline them automatically, and it makes the
-> code cleaner.
+> Refactor merge_ruleset() and inherit_ruleset() functions to support
+> new rule types. This patch adds merge_tree() and inherit_tree()
+> helpers. They use a specific ruleset's red-black tree according to
+> a key type argument.
 > 
 > Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
 > ---
 > 
 > Changes since v9:
-> * Splits commit.
+> * None
+> 
+> Changes since v8:
+> * Refactors commit message.
+> * Minor fixes.
+> 
+> Changes since v7:
+> * Adds missed lockdep_assert_held it inherit_tree() and merge_tree().
+> * Fixes comment.
+> 
+> Changes since v6:
+> * Refactors merge_ruleset() and inherit_ruleset() functions to support
+>    new rule types.
+> * Renames tree_merge() to merge_tree() (and reorder arguments), and
+>    tree_copy() to inherit_tree().
+> 
+> Changes since v5:
+> * Refactors some logic errors.
+> * Formats code with clang-format-14.
+> 
+> Changes since v4:
+> * None
 > 
 > ---
->   security/landlock/fs.c      | 26 +++++++++++++-------------
->   security/landlock/ruleset.c |  2 +-
->   2 files changed, 14 insertions(+), 14 deletions(-)
+>   security/landlock/ruleset.c | 110 ++++++++++++++++++++++++------------
+>   1 file changed, 73 insertions(+), 37 deletions(-)
 > 
-> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
-> index 05a339bf2a7c..b5fa6f56665f 100644
-> --- a/security/landlock/fs.c
-> +++ b/security/landlock/fs.c
-> @@ -191,7 +191,7 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
->    *
->    * Returns NULL if no rule is found or if @dentry is negative.
->    */
-> -static inline const struct landlock_rule *
-> +static const struct landlock_rule *
->   find_rule(const struct landlock_ruleset *const domain,
->   	  const struct dentry *const dentry)
->   {
-> @@ -217,7 +217,7 @@ find_rule(const struct landlock_ruleset *const domain,
->    * Returns true if the request is allowed (i.e. relevant layer masks for the
->    * request are empty).
->    */
-> -static inline bool
-> +static bool
->   unmask_layers(const struct landlock_rule *const rule,
->   	      const access_mask_t access_request,
->   	      layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
-> @@ -269,7 +269,7 @@ unmask_layers(const struct landlock_rule *const rule,
->    * sockfs, pipefs), but can still be reachable through
->    * /proc/<pid>/fd/<file-descriptor>
->    */
-> -static inline bool is_nouser_or_private(const struct dentry *dentry)
-> +static bool is_nouser_or_private(const struct dentry *dentry)
->   {
->   	return (dentry->d_sb->s_flags & SB_NOUSER) ||
->   	       (d_is_positive(dentry) &&
-> @@ -301,7 +301,7 @@ get_raw_handled_fs_accesses(const struct landlock_ruleset *const domain)
->    * Returns: An access mask where each access right bit is set which is handled
->    * in any of the active layers in @domain.
->    */
-> -static inline access_mask_t
-> +static access_mask_t
->   init_layer_masks(const struct landlock_ruleset *const domain,
->   		 const access_mask_t access_request,
->   		 layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
-> @@ -357,7 +357,7 @@ static const struct landlock_ruleset *get_current_fs_domain(void)
->    *
->    * @layer_masks_child2: Optional child masks.
->    */
-> -static inline bool no_more_access(
-> +static bool no_more_access(
->   	const layer_mask_t (*const layer_masks_parent1)[LANDLOCK_NUM_ACCESS_FS],
->   	const layer_mask_t (*const layer_masks_child1)[LANDLOCK_NUM_ACCESS_FS],
->   	const bool child1_is_directory,
-> @@ -409,7 +409,7 @@ static inline bool no_more_access(
->    *
->    * Returns true if the request is allowed, false otherwise.
->    */
-> -static inline bool
-> +static bool
->   scope_to_request(const access_mask_t access_request,
->   		 layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
->   {
-> @@ -428,7 +428,7 @@ scope_to_request(const access_mask_t access_request,
->    * Returns true if there is at least one access right different than
->    * LANDLOCK_ACCESS_FS_REFER.
->    */
-> -static inline bool
-> +static bool
->   is_eacces(const layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS],
->   	  const access_mask_t access_request)
->   {
-> @@ -639,9 +639,9 @@ static bool is_access_to_paths_allowed(
->   	return allowed_parent1 && allowed_parent2;
->   }
-> 
-> -static inline int check_access_path(const struct landlock_ruleset *const domain,
-> -				    const struct path *const path,
-> -				    access_mask_t access_request)
-> +static int check_access_path(const struct landlock_ruleset *const domain,
-> +			     const struct path *const path,
-> +			     access_mask_t access_request)
->   {
->   	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_FS] = {};
-> 
-> @@ -662,7 +662,7 @@ static int current_check_access_path(const struct path *const path,
->   	return check_access_path(dom, path, access_request);
->   }
-> 
-> -static inline access_mask_t get_mode_access(const umode_t mode)
-> +static access_mask_t get_mode_access(const umode_t mode)
->   {
->   	switch (mode & S_IFMT) {
->   	case S_IFLNK:
-> @@ -687,7 +687,7 @@ static inline access_mask_t get_mode_access(const umode_t mode)
+> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+> index d3859d5e7306..2579c9bbedbc 100644
+> --- a/security/landlock/ruleset.c
+> +++ b/security/landlock/ruleset.c
+> @@ -302,36 +302,22 @@ static void put_hierarchy(struct landlock_hierarchy *hierarchy)
 >   	}
 >   }
 > 
-> -static inline access_mask_t maybe_remove(const struct dentry *const dentry)
-> +static access_mask_t maybe_remove(const struct dentry *const dentry)
+> -static int merge_ruleset(struct landlock_ruleset *const dst,
+> -			 struct landlock_ruleset *const src)
+> +static int merge_tree(struct landlock_ruleset *const dst,
+> +		      struct landlock_ruleset *const src,
+> +		      const enum landlock_key_type key_type)
 >   {
->   	if (d_is_negative(dentry))
->   		return 0;
-> @@ -1171,7 +1171,7 @@ static int hook_path_truncate(const struct path *const path)
->    * Returns the access rights that are required for opening the given file,
->    * depending on the file type and open mode.
->    */
-> -static inline access_mask_t
-> +static access_mask_t
->   get_required_file_open_access(const struct file *const file)
->   {
->   	access_mask_t access = 0;
-> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
-> index 1f3188b4e313..1f432a809ad5 100644
-> --- a/security/landlock/ruleset.c
-> +++ b/security/landlock/ruleset.c
-> @@ -243,7 +243,7 @@ int landlock_insert_rule(struct landlock_ruleset *const ruleset,
->   	return insert_rule(ruleset, object, &layers, ARRAY_SIZE(layers));
+>   	struct landlock_rule *walker_rule, *next_rule;
+>   	struct rb_root *src_root;
+>   	int err = 0;
+> 
+>   	might_sleep();
+> -	/* Should already be checked by landlock_merge_ruleset() */
+> -	if (WARN_ON_ONCE(!src))
+> -		return 0;
+> -	/* Only merge into a domain. */
+> -	if (WARN_ON_ONCE(!dst || !dst->hierarchy))
+> -		return -EINVAL;
+> +	lockdep_assert_held(&dst->lock);
+> +	lockdep_assert_held(&src->lock);
+> 
+> -	src_root = get_root(src, LANDLOCK_KEY_INODE);
+> +	src_root = get_root(src, key_type);
+>   	if (IS_ERR(src_root))
+>   		return PTR_ERR(src_root);
+> 
+> -	/* Locks @dst first because we are its only owner. */
+> -	mutex_lock(&dst->lock);
+> -	mutex_lock_nested(&src->lock, SINGLE_DEPTH_NESTING);
+> -
+> -	/* Stacks the new layer. */
+> -	if (WARN_ON_ONCE(src->num_layers != 1 || dst->num_layers < 1)) {
+> -		err = -EINVAL;
+> -		goto out_unlock;
+> -	}
+> -	dst->access_masks[dst->num_layers - 1] = src->access_masks[0];
+> -
+>   	/* Merges the @src tree. */
+>   	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule, src_root,
+>   					     node) {
+> @@ -340,23 +326,52 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
+>   		} };
+>   		const struct landlock_id id = {
+>   			.key = walker_rule->key,
+> -			.type = LANDLOCK_KEY_INODE,
+> +			.type = key_type,
+>   		};
+> 
+>   		if (WARN_ON_ONCE(walker_rule->num_layers != 1)) {
+>   			err = -EINVAL;
+> -			goto out_unlock;
+
+This should be replaced with `return -EINVAL;` and the `{` `}` after the 
+if condition are not needed anymore.
+
+
+>   		}
+>   		if (WARN_ON_ONCE(walker_rule->layers[0].level != 0)) {
+>   			err = -EINVAL;
+> -			goto out_unlock;
+
+ditto
+
+>   		}
+>   		layers[0].access = walker_rule->layers[0].access;
+> 
+>   		err = insert_rule(dst, id, &layers, ARRAY_SIZE(layers));
+>   		if (err)
+> -			goto out_unlock;
+> +			return err;
+> +	}
+> +	return err;
+> +}
+> +
+> +static int merge_ruleset(struct landlock_ruleset *const dst,
+> +			 struct landlock_ruleset *const src)
+> +{
+> +	int err = 0;
+> +
+> +	might_sleep();
+> +	/* Should already be checked by landlock_merge_ruleset() */
+> +	if (WARN_ON_ONCE(!src))
+> +		return 0;
+> +	/* Only merge into a domain. */
+> +	if (WARN_ON_ONCE(!dst || !dst->hierarchy))
+> +		return -EINVAL;
+> +
+> +	/* Locks @dst first because we are its only owner. */
+> +	mutex_lock(&dst->lock);
+> +	mutex_lock_nested(&src->lock, SINGLE_DEPTH_NESTING);
+> +
+> +	/* Stacks the new layer. */
+> +	if (WARN_ON_ONCE(src->num_layers != 1 || dst->num_layers < 1)) {
+> +		err = -EINVAL;
+> +		goto out_unlock;
+>   	}
+> +	dst->access_masks[dst->num_layers - 1] = src->access_masks[0];
+> +
+> +	/* Merges the @src inode tree. */
+> +	err = merge_tree(dst, src, LANDLOCK_KEY_INODE);
+> +	if (err)
+> +		goto out_unlock;
+> 
+>   out_unlock:
+>   	mutex_unlock(&src->lock);
+> @@ -364,43 +379,64 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
+>   	return err;
 >   }
 > 
-> -static inline void get_hierarchy(struct landlock_hierarchy *const hierarchy)
-> +static void get_hierarchy(struct landlock_hierarchy *const hierarchy)
+> -static int inherit_ruleset(struct landlock_ruleset *const parent,
+> -			   struct landlock_ruleset *const child)
+> +static int inherit_tree(struct landlock_ruleset *const parent,
+> +			struct landlock_ruleset *const child,
+> +			const enum landlock_key_type key_type)
 >   {
->   	if (hierarchy)
->   		refcount_inc(&hierarchy->usage);
+>   	struct landlock_rule *walker_rule, *next_rule;
+>   	struct rb_root *parent_root;
+>   	int err = 0;
+> 
+>   	might_sleep();
+> -	if (!parent)
+> -		return 0;
+> +	lockdep_assert_held(&parent->lock);
+> +	lockdep_assert_held(&child->lock);
+> 
+> -	parent_root = get_root(parent, LANDLOCK_KEY_INODE);
+> +	parent_root = get_root(parent, key_type);
+>   	if (IS_ERR(parent_root))
+>   		return PTR_ERR(parent_root);
+> 
+> -	/* Locks @child first because we are its only owner. */
+> -	mutex_lock(&child->lock);
+> -	mutex_lock_nested(&parent->lock, SINGLE_DEPTH_NESTING);
+> -
+> -	/* Copies the @parent tree. */
+> +	/* Copies the @parent inode or network tree. */
+>   	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule,
+>   					     parent_root, node) {
+>   		const struct landlock_id id = {
+>   			.key = walker_rule->key,
+> -			.type = LANDLOCK_KEY_INODE,
+> +			.type = key_type,
+>   		};
+> +
+>   		err = insert_rule(child, id, &walker_rule->layers,
+>   				  walker_rule->num_layers);
+>   		if (err)
+> -			goto out_unlock;
+> +			return err;
+>   	}
+> +	return err;
+> +}
+> +
+> +static int inherit_ruleset(struct landlock_ruleset *const parent,
+> +			   struct landlock_ruleset *const child)
+> +{
+> +	int err = 0;
+> +
+> +	might_sleep();
+> +	if (!parent)
+> +		return 0;
+> +
+> +	/* Locks @child first because we are its only owner. */
+> +	mutex_lock(&child->lock);
+> +	mutex_lock_nested(&parent->lock, SINGLE_DEPTH_NESTING);
+> +
+> +	/* Copies the @parent inode tree. */
+> +	err = inherit_tree(parent, child, LANDLOCK_KEY_INODE);
+> +	if (err)
+> +		goto out_unlock;
+> 
+>   	if (WARN_ON_ONCE(child->num_layers <= parent->num_layers)) {
+>   		err = -EINVAL;
+>   		goto out_unlock;
+>   	}
+> -	/* Copies the parent layer stack and leaves a space for the new layer. */
+> +	/*
+> +	 * Copies the parent layer stack and leaves a space
+> +	 * for the new layer.
+> +	 */
+>   	memcpy(child->access_masks, parent->access_masks,
+>   	       flex_array_size(parent, access_masks, parent->num_layers));
+> 
 > --
 > 2.25.1
 > 
