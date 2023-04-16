@@ -2,108 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12EB86E3C2A
-	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 23:32:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97CCD6E3C36
+	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 23:49:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229664AbjDPVck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Apr 2023 17:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56810 "EHLO
+        id S229789AbjDPVtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Apr 2023 17:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbjDPVcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 17:32:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DBF1FEF
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 14:31:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681680706;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ruH//Xy9e9ni2YfVHT5JNNTiAFGpSuPtH8/J+rNytAA=;
-        b=FamteYj7n5qy+4qGfjt9BLOmLhXbZ6J3fVt5+jGm9myWPVuVGc1WwiB50PVNUOVe3HFlWj
-        r/OdgMywtTQyXP4wfiko4GQwrJDinhrECLVLRW77fT/JqoS0y7CmduOgMfcaRAfCaw8yHX
-        uMBcckllZ83kmdjf8r0FrddxwoLZAPc=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-606-pFeAozcgMZm1NsTq5WJgVg-1; Sun, 16 Apr 2023 17:31:45 -0400
-X-MC-Unique: pFeAozcgMZm1NsTq5WJgVg-1
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-94a341ee4fcso343888866b.0
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 14:31:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681680704; x=1684272704;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ruH//Xy9e9ni2YfVHT5JNNTiAFGpSuPtH8/J+rNytAA=;
-        b=UsQ692eMRjLAMX1g1dPR2myFAINIZMC3Xbt1qWP0mEzDm+KU4c8UYLMQ+yz61kcJde
-         V1gTyakz3CohO07jPxohWpcwi85gZc3yZdM7+aGJAPFShJTCZy0J2LrF6NGKl+0r+nmz
-         2LXmHwAiUItczBSc74THHHjNMlok52e59diDY3K6IBztGTUcF2n82FFMrps9oup9/j6h
-         llhN1MdSotME5Ed4qj2YnuLr7kq+9C+QK8qs0TgDEcxFeGkj8L2z1FoTAvphtFcvhRyr
-         YzEPJpwBkZMSkthWUPoPhjx1USEgzcY8t5NV1CeFAiLg7w1c/c41AATC4dtRfm5cNrwm
-         vSeA==
-X-Gm-Message-State: AAQBX9c9Bvg7kFSoanBzOAeDYQBmeFZrTtwEWsRyCImiimFK+/1OKgHx
-        J2HVFeUDdONScCIFQ6Kfd5mXyM77pesYZA1ZwMry6ge1oFxShO2MfOzYDeRjMaeZFUP8wWhbDUv
-        X5zNOIAnzrs0EFWnCsA48MI/8oR+udm7N
-X-Received: by 2002:a05:6402:2d9:b0:506:87cb:149f with SMTP id b25-20020a05640202d900b0050687cb149fmr6259777edx.39.1681680704241;
-        Sun, 16 Apr 2023 14:31:44 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aR7Ah/WWghVQJKF8V+r/pbNP/8xiztQhL3nVkhLJX3wC7Q1Sm8LR73iCNJfCE140fXI9M5Axu5hFQUNH8LROQ=
-X-Received: by 2002:a05:6402:2d9:b0:506:87cb:149f with SMTP id
- b25-20020a05640202d900b0050687cb149fmr6259758edx.39.1681680704011; Sun, 16
- Apr 2023 14:31:44 -0700 (PDT)
+        with ESMTP id S229513AbjDPVtm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 17:49:42 -0400
+X-Greylist: delayed 39576 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 16 Apr 2023 14:49:39 PDT
+Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732852113;
+        Sun, 16 Apr 2023 14:49:39 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1681681777; bh=/dZxFov0kKMekXQ4mAEBxqM+dB5IiCHd/Tlf9+QLYaI=;
+        h=From:To:Subject:In-Reply-To:References:Date:From;
+        b=Of0yv5IcxyGnQUqYVFewlixL1iIH0Me9MU71YH/oKH5oxpJuGz3YIvDxhRFZJadp7
+         nf2rCh0jL6P8CeJbzSN/TzUikSZ4MYxWXD0eo7PZe3CKMB/cRqCrvRsQ4AfSwGdDbQ
+         uLax9/u8Pc8XHX3TGBfByRONtpNCvY5xWm8qjRI4Q87vuYQR0NuWol4qSzdfM1AMJP
+         7kKUU+ZVJc0FviaoAIbaXzGYA2UAjNrzq9l12B/xyAKHPEkiXZnwXEEdrn2o/BKDOe
+         XIJCXFDhaBHl1CrpuGphsFD/DVYZ2Ux17e4eHGFofR/1wcDBLypip+78UglNG4XLxV
+         jwurhXeeK4PrA==
+To:     Christian Lamparter <chunkeey@gmail.com>,
+        =?utf-8?Q?=C3=81lvaro_Fern?= =?utf-8?Q?=C3=A1ndez?= Rojas 
+        <noltari@gmail.com>, f.fainelli@gmail.com, jonas.gorski@gmail.com,
+        nbd@nbd.name, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ath9k: fix calibration data endianness
+In-Reply-To: <8caecebf-bd88-dffe-7749-b79b7ea61cc7@gmail.com>
+References: <20230415150542.2368179-1-noltari@gmail.com>
+ <87leitxj4k.fsf@toke.dk> <a7895e73-70a3-450d-64f9-8256c9470d25@gmail.com>
+ <03a74fbb-dd77-6283-0b08-6a9145a2f4f6@gmail.com> <874jpgxfs7.fsf@toke.dk>
+ <8caecebf-bd88-dffe-7749-b79b7ea61cc7@gmail.com>
+Date:   Sun, 16 Apr 2023 23:49:35 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <871qkjxztc.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20230415210506.2283603-1-aahringo@redhat.com> <2501c864-cbca-0b81-2e6a-0ee63473c31c@kernel.org>
-In-Reply-To: <2501c864-cbca-0b81-2e6a-0ee63473c31c@kernel.org>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sun, 16 Apr 2023 17:31:32 -0400
-Message-ID: <CAK-6q+iQprUr3JJCytxbAUC-QLxaSRgz6WO+U=bZ6L9rxYHFfg@mail.gmail.com>
-Subject: Re: [PATCH net] net: rpl: fix rpl header size calculation
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, alex.aring@gmail.com,
-        daniel@iogearbox.net, ymittal@redhat.com, mcascell@redhat.com,
-        torvalds@linuxfoundation.org, mcr@sandelman.ca
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Christian Lamparter <chunkeey@gmail.com> writes:
 
-On Sun, Apr 16, 2023 at 12:37=E2=80=AFPM David Ahern <dsahern@kernel.org> w=
-rote:
+> On 4/16/23 12:50, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Christian Lamparter <chunkeey@gmail.com> writes:
+>>=20
+>>> On 4/15/23 18:02, Christian Lamparter wrote:
+>>>> Hi,
+>>>>
+>>>> On 4/15/23 17:25, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>>> =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com> writes:
+>>>>>
+>>>>>> BCM63xx (Big Endian MIPS) devices store the calibration data in MTD
+>>>>>> partitions but it needs to be swapped in order to work, otherwise it=
+ fails:
+>>>>>> ath9k 0000:00:01.0: enabling device (0000 -> 0002)
+>>>>>> ath: phy0: Ignoring endianness difference in EEPROM magic bytes.
+>>>>>> ath: phy0: Bad EEPROM VER 0x0001 or REV 0x00e0
+>>>>>> ath: phy0: Unable to initialize hardware; initialization status: -22
+>>>>>> ath9k 0000:00:01.0: Failed to initialize device
+>>>>>> ath9k: probe of 0000:00:01.0 failed with error -22
+>>>>>
+>>>>> How does this affect other platforms? Why was the NO_EEP_SWAP flag set
+>>>>> in the first place? Christian, care to comment on this?
+>>>>
+>>>> I knew this would come up. I've written what I know and remember in the
+>>>> pull-request/buglink.
+>>>>
+>>>> Maybe this can be added to the commit?
+>>>> Link: https://github.com/openwrt/openwrt/pull/12365
+>>>>
+>>>> | From what I remember, the ah->ah_flags |=3D AH_NO_EEP_SWAP; was copi=
+ed verbatim from ath9k_of_init's request_eeprom.
+>>>>
+>>>> Since the existing request_firmware eeprom fetcher code set the flag,
+>>>> the nvmem code had to do it too.
+>>>>
+>>>> In theory, I don't think that not setting the AH_NO_EEP_SWAP flag will=
+ cause havoc.
+>>>> I don't know if there are devices out there, which have a swapped magi=
+c (which is
+>>>> used to detect the endianess), but the caldata is in the correct endia=
+nnes (or
+>>>> vice versa - Magic is correct, but data needs swapping).
+>>>>
+>>>> I can run tests with it on a Netzgear WNDR3700v2 (AR7161+2xAR9220)
+>>>> and FritzBox 7360v2 (Lantiq XWAY+AR9220). (But these worked fine.
+>>>> So I don't expect there to be a new issue there).
+>>>
+>>> Nope! This is a classic self-own!... Well at least, this now gets docum=
+ented!
+>>>
+>>> Here are my findings. Please excuse the overlong lines.
+>>>
+>>> ## The good news / AVM FritzBox 7360v2 ##
+>>>
+>>> The good news: The AVM FritzBox 7360v2 worked the same as before.
+>>=20
+>> [...]
+>>=20
+>>> ## The not so good news / Netgear WNDR3700v2 ##
+>>>
+>>> But not the Netgar WNDR3700v2. One WiFi (The 2.4G, reported itself now =
+as the 5G @0000:00:11.0 -
+>>> doesn't really work now), and the real 5G WiFi (@0000:00:12.0) failed w=
+ith:
+>>> "phy1: Bad EEPROM VER 0x0001 or REV 0x06e0"
+>>=20
+>> [...]
+>>=20
+>> Alright, so IIUC, we have a situation where some devices only work
+>> *with* the flag, and some devices only work *without* the flag? So we'll
+>> need some kind of platform-specific setting? Could we put this in the
+>> device trees, or is there a better solution?
 >
-> On 4/15/23 3:05 PM, Alexander Aring wrote:
-> > diff --git a/net/ipv6/rpl.c b/net/ipv6/rpl.c
-> > index 488aec9e1a74..16e19fec18a4 100644
-> > --- a/net/ipv6/rpl.c
-> > +++ b/net/ipv6/rpl.c
-> > @@ -32,7 +32,7 @@ static void *ipv6_rpl_segdata_pos(const struct ipv6_r=
-pl_sr_hdr *hdr, int i)
-> >  size_t ipv6_rpl_srh_size(unsigned char n, unsigned char cmpri,
-> >                        unsigned char cmpre)
-> >  {
-> > -     return (n * IPV6_PFXTAIL_LEN(cmpri)) + IPV6_PFXTAIL_LEN(cmpre);
-> > +     return 8 + (n * IPV6_PFXTAIL_LEN(cmpri)) + IPV6_PFXTAIL_LEN(cmpre=
-);
+> Depends. From what I gather, ath9k calls this "need_swap". Thing is,
+> the flag in the EEPROM is called "AR5416_EEPMISC_BIG_ENDIAN". In the
+> official documentation about the AR9170 Base EEPROM (has the same base
+> structure as AR5008 up to AR92xx) this is specified as:
 >
+> "Only bit 0 is defined as Big Endian. This bit should be written as 1
+> when the structure is interpreted in big Endian byte ordering. This bit
+> must be reviewed before any larger than byte parameters can be interprete=
+d."
 >
+> It makes sense that on a Big-Endian MIPS device (like the Netgear WNDR370=
+0v2),
+> the  caldata should be in "Big-Endian" too... so no swapping is necessary.
 >
-> no magic numbers; there should be a macro for that size.
+> Looking in ath9k's eeprom.c function ath9k_hw_nvram_swap_data() that deals
+> with this eepmisc flag:
 >
+> |       if (ah->eep_ops->get_eepmisc(ah) & AR5416_EEPMISC_BIG_ENDIAN) {
+> |               *swap_needed =3D true;
+> |               ath_dbg(common, EEPROM,
+> |                       "Big Endian EEPROM detected according to EEPMISC =
+register.\n");
+> |       } else {
+> |               *swap_needed =3D false;
+> |       }
+>
+> This doesn't take into consideration that swapping is not needed if
+> the data is in big endian format on a big endian device. So, this
+> could be changed so that the *swap_needed is only true if the flag and
+> device endiannes disagrees?
+>
+> That said, Martin and Felix have written their reasons in the cover letter
+> and patches for why the code is what it is:
+> <https://ath9k-devel.ath9k.narkive.com/2q5A6nu0/patch-0-5-ath9k-eeprom-sw=
+apping-improvements>
+>
+> Toke, What's your take on this? Having something similar like the
+> check_endian bool... but for OF? Or more logic that can somehow
+> figure out if it's big or little endian.
 
-ok. We can actually use sizeof(*hdr) here. Which is actually the
-header size without the "addresses" payload.
+Digging into that old thread, it seems we are re-hashing a lot of the
+old discussion when those patches went in. Basically, the code you
+quoted above is correct because the commit that introduced it sets all
+fields to be __le16 and __le32 types and reads them using the
+leXX_to_cpu() macros.
 
-Thanks.
+The code *further up* in that function is what is enabled by Alvaro's
+patch. Which is a different type of swapping (where the whole eeprom is
+swab16()'ed, not just the actual multi-byte data fields in them).
+However, in OpenWrt the in-driver code to do this is not used; instead,
+a hotplug script applies the swapping before the device is seen by the
+driver, as described in this commit[0]. Martin indeed mentions that this
+is a device-specific thing, so the driver can't actually do the right
+thing without some outside feature flag[1]. The commit[0] also indicates
+that there used used to exist a device-tree binding in the out-of-tree
+device trees used in OpenWrt to do the unconditional swab16().
 
-- Alex
+The code in [0] still exists in OpenWrt today, albeit in a somewhat
+modified form[2]. I guess the question then boils down to, =C3=81lvaro, can
+your issue be resolved by a pre-processing step similar to that which is
+done in [2]? Or do we need the device tree flag after all?
 
+-Toke
+
+[0] https://git.openwrt.org/?p=3Dopenwrt/openwrt.git;a=3Dcommitdiff;h=3Dafa=
+37092663d00aa0abf8c61943d9a1b5558b144
+[1] https://narkive.com/2q5A6nu0.34
+[2] https://git.openwrt.org/?p=3Dopenwrt/openwrt.git;a=3Dblob;f=3Dtarget/li=
+nux/lantiq/xway/base-files/etc/hotplug.d/firmware/12-ath9k-eeprom;h=3D98bb9=
+af6947a298775ff7fa26ac6501c57df8378;hb=3DHEAD
