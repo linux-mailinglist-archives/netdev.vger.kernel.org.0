@@ -2,284 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6DB76E368B
-	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 11:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3A06E36AD
+	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 11:38:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230063AbjDPJTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Apr 2023 05:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
+        id S230238AbjDPJic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Apr 2023 05:38:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbjDPJTy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 05:19:54 -0400
-X-Greylist: delayed 387 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 16 Apr 2023 02:19:52 PDT
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7937C1BD2
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 02:19:52 -0700 (PDT)
-Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout4.routing.net (Postfix) with ESMTP id 09A601012C4;
-        Sun, 16 Apr 2023 09:13:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1681636403;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=KSatJAZyCfwpD4TZPKhwQdPlv6+YyvJv4XQLuenDj2A=;
-        b=A9mOekSEXDx7Zp1E9gy+f6GvqZskvOPcfTOwPI/YSnYoclR6u1WyETS6vXTKSRG3NGgVZJ
-        G1mxhuD/5tZ1l2w8a85Lqgj+OeucODT3B1r50jasNfVJAOVSt/QXQUQw46I9KYp46Bymex
-        tsjZOt7NFjxOR9VmelXciagSNvikFbQ=
-Received: from frank-G5.. (fttx-pool-217.61.152.230.bambit.de [217.61.152.230])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 9AD651013A7;
-        Sun, 16 Apr 2023 09:11:35 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     Felix Fietkau <nbd@nbd.name>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Cc:     John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: [RFC/RFT v1] net: ethernet: mtk_eth_soc: drop generic vlan rx offload, only use DSA untagging
-Date:   Sun, 16 Apr 2023 11:10:38 +0200
-Message-Id: <20230416091038.54479-1-linux@fw-web.de>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S230221AbjDPJib (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 05:38:31 -0400
+Received: from sender3-op-o19.zoho.com (sender3-op-o19.zoho.com [136.143.184.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47AE226A0
+        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 02:38:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1681637892; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=cFFMwzraYK+KuxPM69hvSZ+IK0SSJ8wAlPi1N4cPiuC0tMaHs30VzNrAcaPhLRpvavIIamHG+RT7pgla5/442dfLfIxDEAyR/fth51Q3t6E2LaUzUm+Wc3S17rLbpBpQ19HzFQRgSPh1b/QON8XqqyKN1RqkIn5fcXS4zGSHB4w=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1681637892; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=tvrOzz6+xGmgVvh/aEzUOHUvqKP9hyuu1e3eqS9nJeE=; 
+        b=NYq6mW3eXD/iAPnTLMcLGFRQjL6wwCTp0I60ZsiiEJBQVuiY5E1Qxd+dynSYbXzkzV1s8kH7g6tQXsOh2AwsZaH8EHE74akrNvCttTWDM6uybGRfFdGJBSyBRNMKqa6TNC/I9RbEG0JLN0GpXQKqr/ff2SMJY6uIWOfAhnEY9m0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1681637892;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:From:From:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=tvrOzz6+xGmgVvh/aEzUOHUvqKP9hyuu1e3eqS9nJeE=;
+        b=SXh/3W2XPlGCb+ajrORtfuhquGXDBqlXL3RLOJyV0YnESUIecrNgNPjm9/w/E7k+
+        s9BVBAoK2rlro3QbYE9UKgIa0GocEjqAl4N2NOSSrlS9yP2+N87q3jgOtcujKVGaNTp
+        7n0zmLA7JnFsv3Dt1863DAiGO9E0NJd/YJR5zcBY=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1681637889741573.8601874554939; Sun, 16 Apr 2023 02:38:09 -0700 (PDT)
+Message-ID: <2f3796e3-438c-604f-1e61-ccb2fa118aff@arinc9.com>
+Date:   Sun, 16 Apr 2023 12:38:03 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: mt7530: dsa_switch_parse_of() fails, causes probe code to run
+ twice
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        netdev <netdev@vger.kernel.org>, erkin.bozoglu@xeront.com,
+        Thibaut <hacks@slashdirt.org>
+References: <ZDnnjcG5uR9gQrUb@makrotopia.org>
+ <5e10f823-88f1-053a-d691-6bc900bd85a6@arinc9.com>
+ <ZDn1QabUsyZj6J0M@makrotopia.org>
+ <01fe9c85-f1e0-107a-6fb7-e643fb76544e@arinc9.com>
+ <ZDqb9zrxaZywP5QZ@makrotopia.org>
+ <9284c5c0-3295-92a5-eccc-a7b3080f8915@arinc9.com>
+ <20230415133813.d4et4oet53ifg2gi@skbuf>
+ <5f7d58ba-60c8-f635-a06d-a041588f64da@arinc9.com>
+ <20230415134604.2mw3iodnrd2savs3@skbuf> <ZDquYkt_5Ku2ysSA@makrotopia.org>
+ <20230415142014.katsq5axop6gov3i@skbuf>
+ <ef677f5f-07a3-2cf7-79d1-ae8980b73701@arinc9.com>
+Content-Language: en-US
+In-Reply-To: <ef677f5f-07a3-2cf7-79d1-ae8980b73701@arinc9.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: 33c41008-f1e3-46f3-802e-ecce294b5d3c
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+On 15.04.2023 17:57, Arınç ÜNAL wrote:
+> On 15.04.2023 17:20, Vladimir Oltean wrote:
+>> On Sat, Apr 15, 2023 at 03:02:10PM +0100, Daniel Golle wrote:
+>>> As the PHYs are accessed over the MDIO bus which is exposed by the 
+>>> mt7530.c
+>>> DSA driver the only middle ground would possibly be to introduce a MFD
+>>> driver taking care of creating the bus access regmap (MDIO vs. MDIO) and
+>>> expose the mt7530-controlled MDIO bus.
+>>
+>> Which is something I had already mentioned as a possible way forward in
+>> the other thread. One would need to take care of ensuring a reasonable
+>> migration path in terms of device tree compatibility though.
+>>
+>>>
+>>> Obviously that'd be a bit more work than just moving some things from 
+>>> the
+>>> switch setup function to the probe function...
+>>
+>> On the other hand, it would actually work reliably, and would not depend
+>> on whomever wanted to reorder things just a little bit differently for
+>> his system to probe faster.
+> 
+> Ok thanks. I will investigate how the switch would be set up with an MFD 
+> driver, and how it would affect dt-bindings.
+> 
+> Looking back at my patch series, currently with this [0], SGMII on 
+> MT7531BE's port 6 starts working, and with Daniel's addition [1], the 
+> regulator warnings disappear.
+> 
+> I will submit the patch series as an RFC after addressing Daniel's 
+> inline functions suggestion.
 
-Through testing I found out that hardware vlan rx offload support seems to
-have some hardware issues. At least when using multiple MACs and when receiving
-tagged packets on the secondary MAC, the hardware can sometimes start to emit
-wrong tags on the first MAC as well.
+I've been giving this some thought. My understanding of probe in this 
+context has changed drastically. The probe here is supposed to probe the 
+driver, like setting up the pointers, reading from the devicetree, 
+filling up the info table, and finally calling dsa_register_switch(). It 
+would not necessarily do anything to the switch hardware like resetting 
+and reading information from the registers. This is currently how 
+mt7530-mdio and mt7530-mmio already operate. So I'm not going to move 
+anything from setup to probe.
 
-In order to avoid such issues, drop the feature configuration and use the
-offload feature only for DSA hardware untagging on MT7621/MT7622 devices which
-only use one MAC.
+The duplicate code on mt7530_setup() and mt7531_setup() could rather be 
+put on mt753x_setup() instead. But now there's ID_MT7988 also going 
+through mt753x_setup, so it's not very feasible to do this anymore, too 
+many ID checks there would be.
 
-Tested-by: Frank Wunderlich <frank-w@public-files.de>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
----
-used felix Patch as base and ported up to 6.3-rc6 which seems to get lost
-and the original bug is not handled again.
+Moving forward, I will send a separate bugfix patch that makes port 6 on 
+MT7531BE work. My patch series will solely be for improving the driver.
 
-it reverts changes from vladimirs patch
+Daniel, can you confirm this patch is enough to make port 6 work on 
+MT7531BE? I won't touch the PCS creation code here as it'd be an 
+improvement rather than a fix, if this works.
 
-1a3245fe0cf8 net: ethernet: mtk_eth_soc: fix DSA TX tag hwaccel for switch port 0
+https://github.com/arinc9/linux/commit/bb55b97b8f600cf28433e7ff494d296a15191cb3
 
-tested this on bananapi-r3 on non-dsa gmac1 and dsa aware eth0 (wan).
-on both vlan is working, but maybe it breaks HW-vlan-untagging
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 105 ++++++++------------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |   1 -
- 2 files changed, 39 insertions(+), 67 deletions(-)
-
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index e14050e17862..20c60cee6aa7 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1921,9 +1921,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 
- 	while (done < budget) {
- 		unsigned int pktlen, *rxdcsum;
--		bool has_hwaccel_tag = false;
- 		struct net_device *netdev;
--		u16 vlan_proto, vlan_tci;
- 		dma_addr_t dma_addr;
- 		u32 hash, reason;
- 		int mac = 0;
-@@ -2058,31 +2056,16 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			skb_checksum_none_assert(skb);
- 		skb->protocol = eth_type_trans(skb, netdev);
- 
--		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX) {
--			if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
--				if (trxd.rxd3 & RX_DMA_VTAG_V2) {
--					vlan_proto = RX_DMA_VPID(trxd.rxd4);
--					vlan_tci = RX_DMA_VID(trxd.rxd4);
--					has_hwaccel_tag = true;
--				}
--			} else if (trxd.rxd2 & RX_DMA_VTAG) {
--				vlan_proto = RX_DMA_VPID(trxd.rxd3);
--				vlan_tci = RX_DMA_VID(trxd.rxd3);
--				has_hwaccel_tag = true;
--			}
--		}
--
- 		/* When using VLAN untagging in combination with DSA, the
- 		 * hardware treats the MTK special tag as a VLAN and untags it.
- 		 */
--		if (has_hwaccel_tag && netdev_uses_dsa(netdev)) {
--			unsigned int port = vlan_proto & GENMASK(2, 0);
-+		if (!MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2) &&
-+		    (trxd.rxd2 & RX_DMA_VTAG) && netdev_uses_dsa(netdev)) {
-+			unsigned int port = RX_DMA_VPID(trxd.rxd3) & GENMASK(2, 0);
- 
- 			if (port < ARRAY_SIZE(eth->dsa_meta) &&
- 			    eth->dsa_meta[port])
- 				skb_dst_set_noref(skb, &eth->dsa_meta[port]->dst);
--		} else if (has_hwaccel_tag) {
--			__vlan_hwaccel_put_tag(skb, htons(vlan_proto), vlan_tci);
- 		}
- 
- 		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED)
-@@ -2910,29 +2893,11 @@ static netdev_features_t mtk_fix_features(struct net_device *dev,
- 
- static int mtk_set_features(struct net_device *dev, netdev_features_t features)
- {
--	struct mtk_mac *mac = netdev_priv(dev);
--	struct mtk_eth *eth = mac->hw;
- 	netdev_features_t diff = dev->features ^ features;
--	int i;
- 
- 	if ((diff & NETIF_F_LRO) && !(features & NETIF_F_LRO))
- 		mtk_hwlro_netdev_disable(dev);
- 
--	/* Set RX VLAN offloading */
--	if (!(diff & NETIF_F_HW_VLAN_CTAG_RX))
--		return 0;
--
--	mtk_w32(eth, !!(features & NETIF_F_HW_VLAN_CTAG_RX),
--		MTK_CDMP_EG_CTRL);
--
--	/* sync features with other MAC */
--	for (i = 0; i < MTK_MAC_COUNT; i++) {
--		if (!eth->netdev[i] || eth->netdev[i] == dev)
--			continue;
--		eth->netdev[i]->features &= ~NETIF_F_HW_VLAN_CTAG_RX;
--		eth->netdev[i]->features |= features & NETIF_F_HW_VLAN_CTAG_RX;
--	}
--
- 	return 0;
- }
- 
-@@ -3250,30 +3215,6 @@ static int mtk_open(struct net_device *dev)
- 	struct mtk_eth *eth = mac->hw;
- 	int i, err;
- 
--	if (mtk_uses_dsa(dev) && !eth->prog) {
--		for (i = 0; i < ARRAY_SIZE(eth->dsa_meta); i++) {
--			struct metadata_dst *md_dst = eth->dsa_meta[i];
--
--			if (md_dst)
--				continue;
--
--			md_dst = metadata_dst_alloc(0, METADATA_HW_PORT_MUX,
--						    GFP_KERNEL);
--			if (!md_dst)
--				return -ENOMEM;
--
--			md_dst->u.port_info.port_id = i;
--			eth->dsa_meta[i] = md_dst;
--		}
--	} else {
--		/* Hardware special tag parsing needs to be disabled if at least
--		 * one MAC does not use DSA.
--		 */
--		u32 val = mtk_r32(eth, MTK_CDMP_IG_CTRL);
--		val &= ~MTK_CDMP_STAG_EN;
--		mtk_w32(eth, val, MTK_CDMP_IG_CTRL);
--	}
--
- 	err = phylink_of_phy_connect(mac->phylink, mac->of_node, 0);
- 	if (err) {
- 		netdev_err(dev, "%s: could not attach PHY: %d\n", __func__,
-@@ -3312,6 +3253,39 @@ static int mtk_open(struct net_device *dev)
- 	phylink_start(mac->phylink);
- 	netif_tx_start_all_queues(dev);
- 
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
-+		return 0;
-+
-+	if (mtk_uses_dsa(dev) && !eth->prog) {
-+		for (i = 0; i < ARRAY_SIZE(eth->dsa_meta); i++) {
-+			struct metadata_dst *md_dst = eth->dsa_meta[i];
-+
-+			if (md_dst)
-+				continue;
-+
-+			md_dst = metadata_dst_alloc(0, METADATA_HW_PORT_MUX,
-+						    GFP_KERNEL);
-+			if (!md_dst)
-+				return -ENOMEM;
-+
-+			md_dst->u.port_info.port_id = i;
-+			eth->dsa_meta[i] = md_dst;
-+		}
-+	} else {
-+		/* Hardware special tag parsing needs to be disabled if at least
-+		 * one MAC does not use DSA.
-+		 */
-+		u32 val = mtk_r32(eth, MTK_CDMP_IG_CTRL);
-+		val &= ~MTK_CDMP_STAG_EN;
-+		mtk_w32(eth, val, MTK_CDMP_IG_CTRL);
-+
-+		val = mtk_r32(eth, MTK_CDMQ_IG_CTRL);
-+		val &= ~MTK_CDMQ_STAG_EN;
-+		mtk_w32(eth, val, MTK_CDMQ_IG_CTRL);
-+
-+		mtk_w32(eth, 0, MTK_CDMP_EG_CTRL);
-+	}
-+
- 	return 0;
- }
- 
-@@ -3796,10 +3770,9 @@ static int mtk_hw_init(struct mtk_eth *eth, bool reset)
- 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
- 		val = mtk_r32(eth, MTK_CDMP_IG_CTRL);
- 		mtk_w32(eth, val | MTK_CDMP_STAG_EN, MTK_CDMP_IG_CTRL);
--	}
- 
--	/* Enable RX VLan Offloading */
--	mtk_w32(eth, 1, MTK_CDMP_EG_CTRL);
-+		mtk_w32(eth, 1, MTK_CDMP_EG_CTRL);
-+	}
- 
- 	/* set interrupt delays based on current Net DIM sample */
- 	mtk_dim_rx(&eth->rx_dim.work);
-@@ -4437,7 +4410,7 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
- 		eth->netdev[id]->hw_features |= NETIF_F_LRO;
- 
- 	eth->netdev[id]->vlan_features = eth->soc->hw_features &
--		~(NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX);
-+		~NETIF_F_HW_VLAN_CTAG_TX;
- 	eth->netdev[id]->features |= eth->soc->hw_features;
- 	eth->netdev[id]->ethtool_ops = &mtk_ethtool_ops;
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 084a6badef6d..ac57dc87c59a 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -48,7 +48,6 @@
- #define MTK_HW_FEATURES		(NETIF_F_IP_CSUM | \
- 				 NETIF_F_RXCSUM | \
- 				 NETIF_F_HW_VLAN_CTAG_TX | \
--				 NETIF_F_HW_VLAN_CTAG_RX | \
- 				 NETIF_F_SG | NETIF_F_TSO | \
- 				 NETIF_F_TSO6 | \
- 				 NETIF_F_IPV6_CSUM |\
--- 
-2.34.1
-
+Arınç
