@@ -2,97 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6833D6E36CA
-	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 11:52:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DEF26E36CC
+	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 11:53:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230358AbjDPJw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Apr 2023 05:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50666 "EHLO
+        id S230372AbjDPJxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Apr 2023 05:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230238AbjDPJwZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 05:52:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14EEF1BDA
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 02:51:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681638696;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3rm3Tx4scnUmIq1Y7/GKTAQGQLeBUUnvNMLalbZs9d4=;
-        b=IapjlLR4ztDMDpW+rx6/AS5XEE9FtpM+74iVkFZbyimyneGzYA/SPpEzLbmFSU/eWsaEFb
-        FnG+JXq/y/cXMWe9N92eHfzZRjV/eD6EcWhbVqEFZ9Z+8KHQWee0XQ3s0lhOvkeMluKYJx
-        jGu5/91WFeguANMV3k5aUG1a2uQe8/8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-492-pFmwaZ38MRmb-VHaBeYHqg-1; Sun, 16 Apr 2023 05:51:33 -0400
-X-MC-Unique: pFmwaZ38MRmb-VHaBeYHqg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BA6AB185A78F;
-        Sun, 16 Apr 2023 09:51:32 +0000 (UTC)
-Received: from ovpn-8-16.pek2.redhat.com (ovpn-8-16.pek2.redhat.com [10.72.8.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2053614152F6;
-        Sun, 16 Apr 2023 09:51:20 +0000 (UTC)
-Date:   Sun, 16 Apr 2023 17:51:14 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Pavel Begunkov <asml.silence@gmail.com>
-Cc:     Breno Leitao <leitao@debian.org>, axboe@kernel.dk,
-        davem@davemloft.net, dccp@vger.kernel.org, dsahern@kernel.org,
-        edumazet@google.com, io-uring@vger.kernel.org, kuba@kernel.org,
-        leit@fb.com, linux-kernel@vger.kernel.org,
-        marcelo.leitner@gmail.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev, netdev@vger.kernel.org, pabeni@redhat.com,
-        willemdebruijn.kernel@gmail.com, ming.lei@redhat.com
-Subject: Re: [PATCH RFC] io_uring: Pass whole sqe to commands
-Message-ID: <ZDvFEkRo+yor7FM+@ovpn-8-16.pek2.redhat.com>
-References: <20230406144330.1932798-1-leitao@debian.org>
- <20230406165705.3161734-1-leitao@debian.org>
- <ZDdvcSKLa6ZEAhRW@ovpn-8-18.pek2.redhat.com>
- <ZDgyPL6UrX/MaBR4@gmail.com>
- <ZDi2pP4jgHwCvJRm@ovpn-8-21.pek2.redhat.com>
- <44420e92-f629-f56e-f930-475be6f6a83a@gmail.com>
- <ZDlcXd4K+a2iGbnv@ovpn-8-21.pek2.redhat.com>
- <e152d8f0-6bf9-f658-f484-f7a18055a664@gmail.com>
+        with ESMTP id S230164AbjDPJxb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 05:53:31 -0400
+Received: from sender3-op-o18.zoho.com (sender3-op-o18.zoho.com [136.143.184.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D894AE62;
+        Sun, 16 Apr 2023 02:53:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1681638761; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=E0swol1jw29yr7sbkD56kf0SXwk+LNzYdYTwvIMMhagyxm0z6vxHQZoLvxwjAjISMrIEc7XWnhviPfJy7EZOZ3lVAowfmmjdTC27FwHtQFGqQGLUkCQXXFQK84B5Nl8iAQOvy0gU1MgfZa+pogwdHLx6GaZXpUjoxH18kREFcQk=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1681638761; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=GCZjhm4Hbh1Xe4YSlI4A2hA8xi0IlyPYCkMgUVWDgKg=; 
+        b=abx6MaJDAXNiOU77CW+9MuEOVWOjcOjjS5/G6GwxWQN161hmmK0YoEgZpSc8mASh5p3ken7rBFBGz9OYGYGnl+yUldoERi+r+S+/oW/eFtkSu7rvFbcMCcpTw7hBdZ7wicNTcIU0TvEYTDFtZh8vR1dzxHA2s03v+cTnkH9l3rA=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1681638761;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=GCZjhm4Hbh1Xe4YSlI4A2hA8xi0IlyPYCkMgUVWDgKg=;
+        b=GMZ9Mi9oXvS+IUd1T5GR+csOJt5VeL93w9TXXeG4IGa1BF0s/Jb9eHL/irN5fYOY
+        a3+qZQeGd89KFxbYrY74lLcGEAzxrwGy8A5tauSRwex33XtR2UunlWHUupWsz1zTMEu
+        pEFdBN9lTQ5L9q2MJoxBbmKFMGgd45zDVXG4t+1E=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1681638759506996.2741470788767; Sun, 16 Apr 2023 02:52:39 -0700 (PDT)
+Message-ID: <c657f6a2-74fa-2cc1-92cf-18f25464b1e1@arinc9.com>
+Date:   Sun, 16 Apr 2023 12:52:31 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e152d8f0-6bf9-f658-f484-f7a18055a664@gmail.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [RFC/RFT v1] net: ethernet: mtk_eth_soc: drop generic vlan rx
+ offload, only use DSA untagging
+Content-Language: en-US
+To:     Frank Wunderlich <linux@fw-web.de>, Felix Fietkau <nbd@nbd.name>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Daniel Golle <daniel@makrotopia.org>
+Cc:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Frank Wunderlich <frank-w@public-files.de>
+References: <20230416091038.54479-1-linux@fw-web.de>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20230416091038.54479-1-linux@fw-web.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 14, 2023 at 03:56:47PM +0100, Pavel Begunkov wrote:
-> On 4/14/23 14:59, Ming Lei wrote:
-> [...]
-> > > > Will this kind of inconsistency cause trouble for driver? Cause READ
-> > > > TWICE becomes possible with this patch.
-> > > 
-> > > Right it might happen, and I was keeping that in mind, but it's not
-> > > specific to this patch. It won't reload core io_uring bits, and all
-> > 
-> > It depends if driver reloads core bits or not, anyway the patch exports
-> > all fields and opens the window.
+On 16.04.2023 12:10, Frank Wunderlich wrote:
+> From: Felix Fietkau <nbd@nbd.name>
 > 
-> If a driver tries to reload core bits and even worse modify io_uring
-> request without proper helpers, it should be rooted out and thrown
-> into a bin. In any case cmds are expected to exercise cautiousness
-> while working with SQEs as they may change. I'd even argue that
-> hiding it as void *cmd makes it much less obvious.
+> Through testing I found out that hardware vlan rx offload support seems to
+> have some hardware issues. At least when using multiple MACs and when receiving
+> tagged packets on the secondary MAC, the hardware can sometimes start to emit
+> wrong tags on the first MAC as well.
+> 
+> In order to avoid such issues, drop the feature configuration and use the
+> offload feature only for DSA hardware untagging on MT7621/MT7622 devices which
+> only use one MAC.
 
-Fair enough, if it is well documented, then people will know these
-problems and any change in this area can get careful review.
+MT7621 devices most certainly use both MACs.
 
+> 
+> Tested-by: Frank Wunderlich <frank-w@public-files.de>
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> ---
+> used felix Patch as base and ported up to 6.3-rc6 which seems to get lost
+> and the original bug is not handled again.
+> 
+> it reverts changes from vladimirs patch
+> 
+> 1a3245fe0cf8 net: ethernet: mtk_eth_soc: fix DSA TX tag hwaccel for switch port 0
 
-Thanks, 
-Ming
+Do I understand correctly that this is considered being reverted because 
+the feature it fixes is being removed?
 
+Arınç
