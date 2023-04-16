@@ -2,156 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD37A6E37ED
-	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 14:18:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB63D6E380A
+	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 14:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbjDPMSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Apr 2023 08:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
+        id S230233AbjDPMgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Apr 2023 08:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbjDPMSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 08:18:09 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2081.outbound.protection.outlook.com [40.107.244.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFFB544B6
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 05:18:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EaWHql1r52QQE/SLIan4jlpcIhJKfaQaMhTQIIVgSDS6qrBnWH5S23a54RLCD7boFbM+WdWZ2fAEelLYy25UkbkGpz89Wpo0oF8ZStxXRIwcSC3mrtNTvpZGLu0bLdlwomWY57AAaYthpOr8FOezJ+dM0ymJf7T5klUMhnk/HnhnEVDkl7gFRPvY33F8/FvnKHdcu8CQNqBSNF77ZFTyJd7F6qwl9X6aAlB91wDfX5vL597zAH3zRd+IrzdA/4cM0SoPx5t+l+UMrgKLcGI3lrBgdk85X70h9Og5BZkHUuA8OWyum8KUXrzXuzdtMamyF6pHwAaC2oHgp3DWs3QNBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K7n9Bog4bNB5e1MQRol7E5KIyUdigXSvGgsZqDs3Okc=;
- b=Rhz2UfT8WmR/DBbW45KLRZ8lMZWRG/HzS38F5KnSinKojxkiMx7ypw5AhPJM5dGTy33+qs8zrM+5x42G6AiwzmLE8zPTwFDsWgKpvBGgO/0XXoLCjtlp5d06LK1HzUPFyyoHa2mnGD/cyiIGSPMmMRVpTMy7xtuZCNT+ffhxSOR32qCfE6ppowEErDIYW+nBrEBobJlP2qfbp74jHAMw3STz1rPHqJe5tkJ48HdWZZm34D35uVX471nbPNT8TZi8uX6J3mDQpsJcidzFP7eql9x2HSlzoWYpm4oGtsUaAEGO8QcQVr6cA4d86XO2/ZxQ7bPQgFauo8mMVJt0k6G9nw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K7n9Bog4bNB5e1MQRol7E5KIyUdigXSvGgsZqDs3Okc=;
- b=frshgo0njGJuCk2iWklgrkRi7gmkXbW292WS2/2p8/xSVIYFKo4SkUig66ACmHIDIx98TeGa8ws8Yo7US83aFNh0pyOdh32JlTF0HeFs7/kBK5KFj3AUbyrwBWeMft4jUTx4wM+1eY7gWVsbzEh0OSKM/KA3+eP4kFHFVTjotobERYFG0y1gXjdF2aIXJ5yrFOFd++5iC+iiRRKBCbq9WHHoHtLChkyvzuwAn/Dk1DhEDijMLYWAqRKtgijTh1RJnsWX2nzPMXifWRvoEXiYhNjt0HkkKJIMuu0Nu2ZE3fmEhRUX59SSz8gZNDjkjA0l0GZXp6Ez9lVw4Y0V6DZd4Q==
-Received: from IA1PR12MB6353.namprd12.prod.outlook.com (2603:10b6:208:3e3::9)
- by DS0PR12MB7876.namprd12.prod.outlook.com (2603:10b6:8:148::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Sun, 16 Apr
- 2023 12:18:05 +0000
-Received: from IA1PR12MB6353.namprd12.prod.outlook.com
- ([fe80::adb:45dc:7c9a:dff5]) by IA1PR12MB6353.namprd12.prod.outlook.com
- ([fe80::adb:45dc:7c9a:dff5%6]) with mapi id 15.20.6277.049; Sun, 16 Apr 2023
- 12:18:05 +0000
-From:   Emeel Hakim <ehakim@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "sd@queasysnail.net" <sd@queasysnail.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: RE: [PATCH net-next v5 5/5] macsec: Don't rely solely on the dst MAC
- address to identify destination MACsec device
-Thread-Topic: [PATCH net-next v5 5/5] macsec: Don't rely solely on the dst MAC
- address to identify destination MACsec device
-Thread-Index: AQHZbfas1af6DPo1R0GdH5VM8khTN68q5+GAgAL2PCA=
-Date:   Sun, 16 Apr 2023 12:18:05 +0000
-Message-ID: <IA1PR12MB63533E6FD3BE343E78ED60B9AB9F9@IA1PR12MB6353.namprd12.prod.outlook.com>
-References: <20230413105622.32697-1-ehakim@nvidia.com>
-        <20230413105622.32697-6-ehakim@nvidia.com>
- <20230414080051.004e2a67@kernel.org>
-In-Reply-To: <20230414080051.004e2a67@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: IA1PR12MB6353:EE_|DS0PR12MB7876:EE_
-x-ms-office365-filtering-correlation-id: 04f472bc-b02c-4132-65b4-08db3e74a1cd
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: i+zSx76spDz/FOROkh+eN+c2wrBy0FHOZY+OiEm8zcfKhCHhtMjuc4GkrBD6vm45HrUmirxn60K1+PalWeMEZdbqj6t7QumqVAet5LqqjuhZFKPSFntV17ZkYCkzEUzrTlQvugbs2MOMsFyNzvLXRxlCrLSVf08OB7rDQpDhK44nHh2pf6Jvh3j7/SajP8xtkZyA2pnQC6mFpj5tWhjN3pwQJYQCod/rSsY5uBGFWuBeuolGORZzIvpqvWZ1E3SxmpdC+/NBr5KjOes64ny1npdPx6NwILivtHp8GTVi9Fk9VgZ1KIeqmrqsPh1q+Y37r6ZDOaQuLvWZrptgoBFVLb8GlTUxYUYwFGw19cJruza45hHxcJcCtKJfo+3cUoUqcQh7++N1aW2jczAoOCYo4Gi+q2VX/SltzXh3QxNJvpAdsWpD3X+ig72eZMpYQ6YLINhd7QVwFaSQ8JMhyUqPU5hQP43rcN9sDA6f2ku58DuNp/1uEQ9QWmDWYTsw4HyzOIXBVhn53ZghXQCeEbPIn2neK9oqmA2UQ7ItxnhNrP01wvrSDFNkZZuGD12Z7df2vyoHqllAosJxInMtLv3spCavMuA5C/js3syJSAig8YqykA0wjhzwsUxtDCj5H+in
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6353.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(346002)(136003)(39860400002)(366004)(376002)(451199021)(5660300002)(71200400001)(7696005)(6916009)(66476007)(66556008)(2906002)(66946007)(4326008)(76116006)(64756008)(66446008)(86362001)(38070700005)(122000001)(38100700002)(41300700001)(33656002)(478600001)(8936002)(52536014)(8676002)(316002)(55016003)(54906003)(9686003)(53546011)(6506007)(26005)(186003)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Z29sbTlESThkVkMyL2xiTUtTMktWekhDVXphVEsyRjZaaXBaVWlTb1hzb2xh?=
- =?utf-8?B?YjF2bkJMVTlYV3Yvd2EvU3pDNHBjYmtTWGdFQ2RwekJLdnVoSnBGNFRvU21K?=
- =?utf-8?B?MFM5S2tKVk9vdmV1bUlvL1U2dUhCZHg5VnBjdVo0L1ErLy9XVmpHL3lFWTk1?=
- =?utf-8?B?RkNtcFpMRDRTK0M4bE5hUlJDUzBLbWpDaVVCRGY0S2FObW5HU0FSKzEyOUVQ?=
- =?utf-8?B?Snh3a2MrYi9nQmdFL2pmQi8vSWYveHo3WmE4WlNmZi9HZDdsSEhDVzJMVU8r?=
- =?utf-8?B?TmJTUFM4bmNDMjZ1cDNycHRObWhGc2pHMGFUNlE3MkdsaUlhbjJJWjY3WmpM?=
- =?utf-8?B?MExoRVVRZC92dkQxT1dZSCtkN1BoTkpCcThZbHFwa01hSkpiQmMvenVTcTBs?=
- =?utf-8?B?QjBNUFJRNWNiOC9PTWF6K1loN3NkWGhPWjJwUjRVR01yOVVzVU56TnFsZS9j?=
- =?utf-8?B?V1B3Q3VmdWRpc09zQU5aN2FsNkNmRkdYUzBDdXZ3UlAwVWxiUkVYd05wZGhx?=
- =?utf-8?B?eVFvNklScnV6ZXdyMk1vaFFSVVdlcElCSmVEZ3VHY2tFbkRUb0d0UEZDVDJv?=
- =?utf-8?B?RnEvQ2RYRzVXS3VGNFRIZ3hoWHFkdWxtWlozYWRLTXRmZzJqZHVsMW9iVUp2?=
- =?utf-8?B?WWZ3dWZ6cGlqc0xEL2hUc1dHVTNST1k3NEVSZnVaeVlaUXBjaUNUVVEyWnJ3?=
- =?utf-8?B?WWQydkJod3hTMzlFS05tWWV1cTdJaGszeEkwVGdxKzZCcThsdjNvSXg4UHUr?=
- =?utf-8?B?NFRid3ZqRWNLRkNIQkdCWFRJdlB0Y0pkd1BzcXRUTVh0VDd1MVQvZC9lWmFE?=
- =?utf-8?B?U1R2cGVGUjdHUnNLMXg3OVdJanh5Z0RMTml6UTh5ZEtjRVVyV3g0OGFxY0Jj?=
- =?utf-8?B?NnlSenR4d0ROc2Z5dzdPdDNBemErWjBjYWRlQUdMU0lLU0hZTVdjaWc5T0J5?=
- =?utf-8?B?RW1SanVIR05qUzBRYWtET0MzVXRrdWtjbzVxVm50Y2pab3MzSWxsaXZKSWk1?=
- =?utf-8?B?QlF1UDVadzZtTUg1NEkvc09iMGdEeFFUa1VkMTZrRzczRVlEdmw4Z1IvOWE2?=
- =?utf-8?B?QXJJMlNoWURWTHp3NDV1a2svajVya1VXenRJaGkyKzY1dGN0YWhLQnIrZDAw?=
- =?utf-8?B?S1R3NjlyR1duV0dydmNCTmFhbjN3SW5tVEhWMmJBT0tWbmE3VUgrU3l3L0NN?=
- =?utf-8?B?bStHYUgvcmZXc2VsMTdKTmw2WHY1aU10YXMwYjhaNUJwWnVIazZObDFMaGVT?=
- =?utf-8?B?Wi9vcE9ONnNIVkt5MUl6OVVxWEFhZjRMY2hTOW8rcXBVRFRlQ2VvcWVSZGF6?=
- =?utf-8?B?eDArL3NYQzVndndhSHcyQXFnU0RtWHFnd2lBaWhoak9kd0pjbjdaQ0RUWElE?=
- =?utf-8?B?Zitma1JXYWR3UGFKdFMrMy91U0wyelB3QUdzY0J2UjFlbng0d0c5amduRFU4?=
- =?utf-8?B?WjBReGNRWHY5WTFmQy8rQi9Jc2IxMmdKSUJtRDA1OFc2czE4bDFxNnJpb05x?=
- =?utf-8?B?WkVZQUNvRUVDa2pnOEx1Nkt2cTBpUW9RU0hSK1RkamJ5R2YzT09wU091QkZ2?=
- =?utf-8?B?NXZoVXZ5WGZ0OFZZZTZmejFsODdjdngvM1o0cUs1ODNiR0J6ZFVrWU12R2pz?=
- =?utf-8?B?R2RRczNTd3E5aEpsY3lzbEkrTllsblRIOVl1UTY0QnVDanVWRzBuMi9Ob2Q4?=
- =?utf-8?B?eHlTY3pldnhXWDB1TnRSSjhCYXR6K3R1YytJYzVUanl3NFdDOFFwcEUyY2VJ?=
- =?utf-8?B?dTI4c094cnptOTExakloOWxvSWhtdWdPWVFqcUVGUG5nb0h2bHF5T0pxaXAx?=
- =?utf-8?B?WnMwMFVvWUlaNUVNTi9CclNaTGdrSUZ3YTlkQ0dGWUhYSC9BcTdwNUV1NSts?=
- =?utf-8?B?V1dQU3d0RnNIWWQwa21vTWJqRHJBcW14Kzl2Nm5sRVllTGwvV0FZZTQxRDJa?=
- =?utf-8?B?ZjRqNXhmR2JwbjA1MmFWb24wQ1g0K2dDYmd3SkJidFVJWDFuR29yOWtaV3dY?=
- =?utf-8?B?a0ZmSHBwaCtGSUhmWVZpQk9aOTVxcmxjZTlwSEFjdTJWeGp1dDdwN1J1bjN4?=
- =?utf-8?B?K0hVaVBjOHUxSG9ZR21KdXNVMkxyUE1nNitXRk53YlJaSjlOWUJwd3cvUm4y?=
- =?utf-8?Q?2AfE=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229715AbjDPMgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 08:36:23 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D3D2127;
+        Sun, 16 Apr 2023 05:36:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1681648397; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=GnggELMCxxFRPmgSUsNqxykb1r16VuqNLwt6tSaiNLtaaGbimwlLLIx+mchgqhmC5R
+    9o006fjlCLY29DblZYAEO7tNNYagQqf8IoivVA4VZzYCO2BVnoNhVvv9e0+jo430zrjs
+    t6zn3PmPAl5sAD7eloLRFhWmrgnH2pVWWxYgphgzhvxPNlLxLhZ2RK8g8tczGfxBA8p2
+    I9DGscWxHLNx/MzWN/KPwj9BfAHv/qNb3fHdyXTyIguIp9D0OwxdcC06I7Eavh2QV9Rz
+    n4IgFc1TeONGhflTbQKqZnrc7VG71IDwLr3Fp6P9PCpSQ6KA98+70PeUj4K8RqijlgfM
+    J6cg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1681648397;
+    s=strato-dkim-0002; d=strato.com;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=IKBUJF6tZX/jXw35f486xVBREJLR9ANrCysZJ8pX18o=;
+    b=Ql8IPZb1g2ceSCX5yqJHRdrk2vPnuZVKj0DxzqVaMGNF6Fa8mTIuxA8xmewXKty6vV
+    CbbdEa6nkDFMe7CYtbt9BXvYpuZDjHx3tyL3D4BonotSMN3qahgYof2YSUnsXdkE1c8a
+    iKftj38FXPL91/w0Hdlz4EVQKQ+iLQEG231g7ae2e92KHnp/9kkTCqyTjbui2+xyHpox
+    TaJQoo7vi49kvfW+DoNyaEvoH7B0LJdpCECgrx0Oib4CKmKt3KXQtd7eOtmUzxnuapwS
+    eZBtia+S+0u/MqGwVQVyu0OCZfwjNrvzPC32scxwNEVWHGcjuUt17yCQ2586F66ZB6W5
+    t3QA==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1681648397;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=IKBUJF6tZX/jXw35f486xVBREJLR9ANrCysZJ8pX18o=;
+    b=NyM4PPqeDa3ugRYF+mjgrhtpIfqE+9W9pR9ZXFeDzAg2aPhPdJmuc0fB+SIDJimcLf
+    IvDYuB8byRqdYyUAEbLMeTZMnHLsSdu1OvYC6ugrEH2CkjW+AOJW62MW6QbPr0+Jx7Az
+    A/5GaRR/vMjT+/sO0BGzYD87Oj/of7dBKdpRMY5QGxSXDtKiyHeqKcn3EZqslIOa8lmq
+    vtAzYrE1HGlm0zbxbUz5QGzZcdm4F1ZFdfCuY439jvH638q6PZJ8DVba9jq7vhp1bA/O
+    QdZamburdlOuDYOTPInyPBFaXiIlaQZRxFiWHtBLhB6vXu20Zb52UBQ6hnhwh158Nd3E
+    Mr/w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1681648397;
+    s=strato-dkim-0003; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=IKBUJF6tZX/jXw35f486xVBREJLR9ANrCysZJ8pX18o=;
+    b=rN1MJWIkjV6/zDin0Iz85QSrhUjH+SFBtFS0k6RjJH1zON7WYXP5otZBLr5YNJbzTZ
+    4SjmyQlvvkB8WzGJp3Aw==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusl129OHEdFq0USEbVLYqA=="
+Received: from [IPV6:2a00:6020:4a8e:5000::83c]
+    by smtp.strato.de (RZmta 49.4.0 AUTH)
+    with ESMTPSA id x06214z3GCXGS6h
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Sun, 16 Apr 2023 14:33:16 +0200 (CEST)
+Message-ID: <4a6c66eb-2ccf-fc42-a6fc-9f411861fcef@hartkopp.net>
+Date:   Sun, 16 Apr 2023 14:33:11 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6353.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04f472bc-b02c-4132-65b4-08db3e74a1cd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Apr 2023 12:18:05.4310
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jfUpZKJxLJdADP1CirK1iY25wzZuBbZ+epB8rP+QHK+Jt8mI7oBPgsrMBcVWKEpjG5xoR+1UWHc43SjQ0GthpQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7876
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [RFC PATCH 5/5] can: m_can: Add hrtimer to generate software
+ interrupt
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, Judith Mendez <jm@ti.com>
+Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Andrew Davis <afd@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Schuyler Patton <spatton@ti.com>
+References: <20230413223051.24455-1-jm@ti.com>
+ <20230413223051.24455-6-jm@ti.com>
+ <20230414-bounding-guidance-262dffacd05c-mkl@pengutronix.de>
+Content-Language: en-US
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20230414-bounding-guidance-262dffacd05c-mkl@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFrdWIgS2ljaW5za2kg
-PGt1YmFAa2VybmVsLm9yZz4NCj4gU2VudDogRnJpZGF5LCAxNCBBcHJpbCAyMDIzIDE4OjAxDQo+
-IFRvOiBFbWVlbCBIYWtpbSA8ZWhha2ltQG52aWRpYS5jb20+DQo+IENjOiBkYXZlbUBkYXZlbWxv
-ZnQubmV0OyBwYWJlbmlAcmVkaGF0LmNvbTsgZWR1bWF6ZXRAZ29vZ2xlLmNvbTsNCj4gc2RAcXVl
-YXN5c25haWwubmV0OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsZW9uQGtlcm5lbC5vcmcNCj4g
-U3ViamVjdDogUmU6IFtQQVRDSCBuZXQtbmV4dCB2NSA1LzVdIG1hY3NlYzogRG9uJ3QgcmVseSBz
-b2xlbHkgb24gdGhlIGRzdCBNQUMNCj4gYWRkcmVzcyB0byBpZGVudGlmeSBkZXN0aW5hdGlvbiBN
-QUNzZWMgZGV2aWNlDQo+IA0KPiBFeHRlcm5hbCBlbWFpbDogVXNlIGNhdXRpb24gb3BlbmluZyBs
-aW5rcyBvciBhdHRhY2htZW50cw0KPiANCj4gDQo+IE9uIFRodSwgMTMgQXByIDIwMjMgMTM6NTY6
-MjIgKzAzMDAgRW1lZWwgSGFraW0gd3JvdGU6DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgIHN0
-cnVjdCBtYWNzZWNfcnhfc2MgKnJ4X3NjID0gKG1kX2RzdCAmJiBtZF9kc3QtPnR5cGUgPT0NCj4g
-TUVUQURBVEFfTUFDU0VDKSA/DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgZmluZF9yeF9zYygmbWFjc2VjLT5zZWN5LA0KPiA+ICsgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWRf
-ZHN0LT51Lm1hY3NlY19pbmZvLnNjaSkgOiBOVUxMOw0KPiANCj4gSnVzdCBhIGNvZGluZyBuaXQs
-IGluIGFkZGl0aW9uIHRvIFN1YmJhcmF5YSdzIHF1ZXN0aW9uOg0KPiB3aHkgdXNlIGEgdGVybmFy
-eSBvcGVyYXRvciBpZiB0aGUgZW50aXJlIGV4cHJlc3Npb24gZW5kcyB1cCBiZWluZw0KPiAzIGxp
-bmVzIG9mIGNvZGU/IDp8IEFuZCB3ZWxsIGFib3ZlIDgwIGNoYXIuDQoNCnJpZ2h0LCBtYXliZSB0
-aGlzIGlzIGEgYmV0dGVyIGFwcHJvYWNoPw0KDQogc3RydWN0IG1hY3NlY19yeF9zYyAqcnhfc2Mg
-PSBOVUxMOw0KDQppZiAobWRfZHN0ICYmIG1kX2RzdC0+dHlwZSA9PSBNRVRBREFUQV9NQUNTRUMp
-IA0KICAgICAgICByeF9zYyAgPSBmaW5kX3J4X3NjKCZtYWNzZWMtPnNlY3ksIG1kX2RzdC0+dS5t
-YWNzZWNfaW5mby5zY2kpOw0KDQp3aGF0IGRvIHlvdSB0aGluaz8NCg==
+
+
+On 4/14/23 20:20, Marc Kleine-Budde wrote:
+> On 13.04.2023 17:30:51, Judith Mendez wrote:
+>> Add a hrtimer to MCAN struct. Each MCAN will have its own
+>> hrtimer instantiated if there is no hardware interrupt found.
+>>
+>> The hrtimer will generate a software interrupt every 1 ms. In
+> 
+> Are you sure about the 1ms?
+
+The "shortest" 11 bit CAN ID CAN frame is a Classical CAN frame with DLC 
+= 0 and 1 Mbit/s (arbitration) bitrate. This should be 48 bits @1Mbit => 
+~50 usecs
+
+So it should be something about
+
+     50 usecs * (FIFO queue len - 2)
+
+if there is some FIFO involved, right?
+
+Best regards,
+Oliver
+
+>> hrtimer callback, we check if there is a transaction pending by
+>> reading a register, then process by calling the isr if there is.
+>>
+>> Signed-off-by: Judith Mendez <jm@ti.com>
+>> ---
+>>   drivers/net/can/m_can/m_can.c          | 24 ++++++++++++++++++++++--
+>>   drivers/net/can/m_can/m_can.h          |  3 +++
+>>   drivers/net/can/m_can/m_can_platform.c |  9 +++++++--
+>>   3 files changed, 32 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+>> index 8e83d6963d85..bb9d53f4d3cc 100644
+>> --- a/drivers/net/can/m_can/m_can.c
+>> +++ b/drivers/net/can/m_can/m_can.c
+>> @@ -23,6 +23,7 @@
+>>   #include <linux/pinctrl/consumer.h>
+>>   #include <linux/platform_device.h>
+>>   #include <linux/pm_runtime.h>
+>> +#include <linux/hrtimer.h>
+>>   
+>>   #include "m_can.h"
+>>   
+>> @@ -1584,6 +1585,11 @@ static int m_can_close(struct net_device *dev)
+>>   	if (!cdev->is_peripheral)
+>>   		napi_disable(&cdev->napi);
+>>   
+>> +	if (dev->irq < 0) {
+>> +		dev_info(cdev->dev, "Disabling the hrtimer\n");
+> 
+> Make it a dev_dbg() or remove completely.
+> 
+>> +		hrtimer_cancel(&cdev->hrtimer);
+>> +	}
+>> +
+>>   	m_can_stop(dev);
+>>   	m_can_clk_stop(cdev);
+>>   	free_irq(dev->irq, dev);
+>> @@ -1792,6 +1798,19 @@ static netdev_tx_t m_can_start_xmit(struct sk_buff *skb,
+>>   	return NETDEV_TX_OK;
+>>   }
+>>   
+>> +enum hrtimer_restart hrtimer_callback(struct hrtimer *timer)
+>> +{
+>> +	irqreturn_t ret;
+> 
+> never read value?
+> 
+>> +	struct m_can_classdev *cdev =
+>> +		container_of(timer, struct m_can_classdev, hrtimer);
+>> +
+>> +	ret = m_can_isr(0, cdev->net);
+>> +
+>> +	hrtimer_forward_now(timer, ns_to_ktime(5 * NSEC_PER_MSEC));
+> 
+> There's ms_to_ktime()....and the "5" doesn't match your patch
+> description.
+> 
+>> +
+>> +	return HRTIMER_RESTART;
+>> +}
+>> +
+>>   static int m_can_open(struct net_device *dev)
+>>   {
+>>   	struct m_can_classdev *cdev = netdev_priv(dev);
+>> @@ -1836,8 +1855,9 @@ static int m_can_open(struct net_device *dev)
+>>   	}
+>>   
+>>   	if (err < 0) {
+>> -		netdev_err(dev, "failed to request interrupt\n");
+>> -		goto exit_irq_fail;
+>> +		dev_info(cdev->dev, "Enabling the hrtimer\n");
+>> +		cdev->hrtimer.function = &hrtimer_callback;
+>> +		hrtimer_start(&cdev->hrtimer, ns_to_ktime(0), HRTIMER_MODE_REL_PINNED);
+> 
+> IMHO it makes no sense to request an IRQ if the device doesn't have one,
+> and then try to fix up things in the error path. What about this?
+> 
+> --- a/drivers/net/can/m_can/m_can.c
+> +++ b/drivers/net/can/m_can/m_can.c
+> @@ -1831,9 +1831,11 @@ static int m_can_open(struct net_device *dev)
+>                   err = request_threaded_irq(dev->irq, NULL, m_can_isr,
+>                                              IRQF_ONESHOT,
+>                                              dev->name, dev);
+> -        } else {
+> +        } else if (dev->irq) {
+>                   err = request_irq(dev->irq, m_can_isr, IRQF_SHARED, dev->name,
+>                                     dev);
+> +        } else {
+> +                // polling
+>           }
+>   
+>           if (err < 0) {
+> 
+>>   	}
+>>   
+>>   	/* start the m_can controller */
+>> diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
+>> index a839dc71dc9b..ed046d77fdb9 100644
+>> --- a/drivers/net/can/m_can/m_can.h
+>> +++ b/drivers/net/can/m_can/m_can.h
+>> @@ -28,6 +28,7 @@
+>>   #include <linux/pm_runtime.h>
+>>   #include <linux/slab.h>
+>>   #include <linux/uaccess.h>
+>> +#include <linux/hrtimer.h>
+>>   
+>>   /* m_can lec values */
+>>   enum m_can_lec_type {
+>> @@ -93,6 +94,8 @@ struct m_can_classdev {
+>>   	int is_peripheral;
+>>   
+>>   	struct mram_cfg mcfg[MRAM_CFG_NUM];
+>> +
+>> +	struct hrtimer hrtimer;
+>>   };
+>>   
+>>   struct m_can_classdev *m_can_class_allocate_dev(struct device *dev, int sizeof_priv);
+>> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
+>> index 9c1dcf838006..53e1648e9dab 100644
+>> --- a/drivers/net/can/m_can/m_can_platform.c
+>> +++ b/drivers/net/can/m_can/m_can_platform.c
+>> @@ -7,6 +7,7 @@
+>>   
+>>   #include <linux/phy/phy.h>
+>>   #include <linux/platform_device.h>
+>> +#include <linux/hrtimer.h>
+>>   
+>>   #include "m_can.h"
+>>   
+>> @@ -98,8 +99,12 @@ static int m_can_plat_probe(struct platform_device *pdev)
+>>   	addr = devm_platform_ioremap_resource_byname(pdev, "m_can");
+>>   	irq = platform_get_irq_byname(pdev, "int0");
+>>   	if (IS_ERR(addr) || irq < 0) {
+> 
+> What about the IS_ERR(addr) case?
+> 
+>> -		ret = -EINVAL;
+>> -		goto probe_fail;
+>> +		if (irq == -EPROBE_DEFER) {
+>> +			ret = -EPROBE_DEFER;
+>> +			goto probe_fail;
+>> +		}
+>> +		dev_info(mcan_class->dev, "Failed to get irq, initialize hrtimer\n");
+>> +		hrtimer_init(&mcan_class->hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
+> 
+> I don't like it when polling is unconditionally set up in case of an irq
+> error. I'm not sure if we need an explicit device tree property....
+> 
+>>   	}
+>>   
+>>   	/* message ram could be shared */
+>> -- 
+>> 2.17.1
+>>
+>>
+> 
+> Marc
+> 
