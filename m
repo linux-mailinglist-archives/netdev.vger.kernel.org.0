@@ -2,125 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 995CF6E3789
-	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 12:50:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8336E3794
+	for <lists+netdev@lfdr.de>; Sun, 16 Apr 2023 12:56:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230108AbjDPKuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Apr 2023 06:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45520 "EHLO
+        id S229924AbjDPK4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Apr 2023 06:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230019AbjDPKuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 06:50:08 -0400
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E65B213D;
-        Sun, 16 Apr 2023 03:50:05 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1681642201; bh=krAhv5Gdwtdch69DnlxztO7O9LULBCdgNHqdroaY+zY=;
-        h=From:To:Subject:In-Reply-To:References:Date:From;
-        b=oQSseEAnlJSPJBRBLUq7qHz+19X9VBWLONfuWb+/7Q8caquelMihfqLSosRcsANXS
-         JCZUI0KGKoLi3+KPlXKIZaRyxJCcvp08Mwe9C3qjBHTIO0kINrN70dN9HDrGVCv/8f
-         AAzu1Zgbql2ZgE3A6P3pYZKZSU+Do9ci+3XCnneuhtJszdq+wyj1Sy6vgKNOJfKHKd
-         qe1JjRGBF+e6wJ2L4zMUOK70TTEwLiUbhDl8NJYtv4vajkCV933ratGa/DA/A3DIY1
-         HIe0npy+t7/XwIpOEte+qcLEuDUHJ9x1j5hGfeE/FmE/+sGlKh+w39x8lZlPb5RKP0
-         ql7X5cAUF4/Kw==
-To:     Christian Lamparter <chunkeey@gmail.com>,
-        =?utf-8?Q?=C3=81lvaro_Fern?= =?utf-8?Q?=C3=A1ndez?= Rojas 
-        <noltari@gmail.com>, f.fainelli@gmail.com, jonas.gorski@gmail.com,
-        nbd@nbd.name, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ath9k: fix calibration data endianness
-In-Reply-To: <03a74fbb-dd77-6283-0b08-6a9145a2f4f6@gmail.com>
-References: <20230415150542.2368179-1-noltari@gmail.com>
- <87leitxj4k.fsf@toke.dk> <a7895e73-70a3-450d-64f9-8256c9470d25@gmail.com>
- <03a74fbb-dd77-6283-0b08-6a9145a2f4f6@gmail.com>
-Date:   Sun, 16 Apr 2023 12:50:00 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <874jpgxfs7.fsf@toke.dk>
+        with ESMTP id S229615AbjDPK4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 06:56:17 -0400
+Received: from sender3-op-o17.zoho.com (sender3-op-o17.zoho.com [136.143.184.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D0826A4;
+        Sun, 16 Apr 2023 03:56:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1681642533; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=UqMHckyXcIFHfoaEyjSWBgSItMRDJGCT/lSiPfTTztXU+esoRDFCPNG5VHTVWdI5yeXwkF+ThMd5wZeHhf+vFczNpbnVNQ8qi9dLDfbbxOP2HQm0elNaagkpvf2jtfGGp5By6juMKOEWrB3wb4oK7M4pVwEUvS9dR0BPsxw2+B4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1681642533; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=V97CTbRRx60wlBMlbpYx7Tf+OkDSsIy8nufSdDeF6Cw=; 
+        b=UttCBE28loNQMpNq3POemwT5lMIKSTAntgb+F25KGLPAqug6yp9AvaPpVD0Ite22J0zgDWSb9l+mr+ZITCCGZbpOEJSkWmPW2Lrw7ld3hKVPQZK6nak9T/rX1HKPeM7BoofWv/XFabQmD2mPOyGVT9edtR6t6uVpdlCPag1Y4RM=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1681642533;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=V97CTbRRx60wlBMlbpYx7Tf+OkDSsIy8nufSdDeF6Cw=;
+        b=W5VPss4P6cukgI3IUb1vyNbj3IP6miJhzJFQ2Taq9S6XOCsbGKaCIukbHiRz4rcy
+        eRaECDM3thiWG0oFsGwgQwQknnI12pTaZyf1hI/mMWOJazcYvkD6o7FXZXgN1kknWvb
+        PlfRqSvpDyOfIASd160zpIsT6COPO918w3NgkKlo=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1681642532775839.6157058403239; Sun, 16 Apr 2023 03:55:32 -0700 (PDT)
+Message-ID: <2ad08330-59a0-d3b2-214e-13d93dbe35a1@arinc9.com>
+Date:   Sun, 16 Apr 2023 13:55:23 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [RFC/RFT v1] net: ethernet: mtk_eth_soc: drop generic vlan rx
+ offload, only use DSA untagging
+Content-Language: en-US
+To:     frank-w@public-files.de, Frank Wunderlich <linux@fw-web.de>,
+        Felix Fietkau <nbd@nbd.name>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Daniel Golle <daniel@makrotopia.org>
+Cc:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20230416091038.54479-1-linux@fw-web.de>
+ <c657f6a2-74fa-2cc1-92cf-18f25464b1e1@arinc9.com>
+ <161044DF-0663-42D4-94B8-03741C91B1A4@public-files.de>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <161044DF-0663-42D4-94B8-03741C91B1A4@public-files.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christian Lamparter <chunkeey@gmail.com> writes:
-
-> On 4/15/23 18:02, Christian Lamparter wrote:
->> Hi,
->>=20
->> On 4/15/23 17:25, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>> =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com> writes:
+On 16.04.2023 13:15, Frank Wunderlich wrote:
+> Am 16. April 2023 11:52:31 MESZ schrieb "Arınç ÜNAL" <arinc.unal@arinc9.com>:
+>> On 16.04.2023 12:10, Frank Wunderlich wrote:
+>>> From: Felix Fietkau <nbd@nbd.name>
 >>>
->>>> BCM63xx (Big Endian MIPS) devices store the calibration data in MTD
->>>> partitions but it needs to be swapped in order to work, otherwise it f=
-ails:
->>>> ath9k 0000:00:01.0: enabling device (0000 -> 0002)
->>>> ath: phy0: Ignoring endianness difference in EEPROM magic bytes.
->>>> ath: phy0: Bad EEPROM VER 0x0001 or REV 0x00e0
->>>> ath: phy0: Unable to initialize hardware; initialization status: -22
->>>> ath9k 0000:00:01.0: Failed to initialize device
->>>> ath9k: probe of 0000:00:01.0 failed with error -22
+>>> Through testing I found out that hardware vlan rx offload support seems to
+>>> have some hardware issues. At least when using multiple MACs and when receiving
+>>> tagged packets on the secondary MAC, the hardware can sometimes start to emit
+>>> wrong tags on the first MAC as well.
 >>>
->>> How does this affect other platforms? Why was the NO_EEP_SWAP flag set
->>> in the first place? Christian, care to comment on this?
->>=20
->> I knew this would come up. I've written what I know and remember in the
->> pull-request/buglink.
->>=20
->> Maybe this can be added to the commit?
->> Link: https://github.com/openwrt/openwrt/pull/12365
->>=20
->> | From what I remember, the ah->ah_flags |=3D AH_NO_EEP_SWAP; was copied=
- verbatim from ath9k_of_init's request_eeprom.
->>=20
->> Since the existing request_firmware eeprom fetcher code set the flag,
->> the nvmem code had to do it too.
->>=20
->> In theory, I don't think that not setting the AH_NO_EEP_SWAP flag will c=
-ause havoc.
->> I don't know if there are devices out there, which have a swapped magic =
-(which is
->> used to detect the endianess), but the caldata is in the correct endiann=
-es (or
->> vice versa - Magic is correct, but data needs swapping).
->>=20
->> I can run tests with it on a Netzgear WNDR3700v2 (AR7161+2xAR9220)
->> and FritzBox 7360v2 (Lantiq XWAY+AR9220). (But these worked fine.
->> So I don't expect there to be a new issue there).
->
-> Nope! This is a classic self-own!... Well at least, this now gets documen=
-ted!
->
-> Here are my findings. Please excuse the overlong lines.
->
-> ## The good news / AVM FritzBox 7360v2 ##
->
-> The good news: The AVM FritzBox 7360v2 worked the same as before.
+>>> In order to avoid such issues, drop the feature configuration and use the
+>>> offload feature only for DSA hardware untagging on MT7621/MT7622 devices which
+>>> only use one MAC.
+>>
+>> MT7621 devices most certainly use both MACs.
+>>
+>>>
+>>> Tested-by: Frank Wunderlich <frank-w@public-files.de>
+>>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+>>> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+>>> ---
+>>> used felix Patch as base and ported up to 6.3-rc6 which seems to get lost
+>>> and the original bug is not handled again.
+>>>
+>>> it reverts changes from vladimirs patch
+>>>
+>>> 1a3245fe0cf8 net: ethernet: mtk_eth_soc: fix DSA TX tag hwaccel for switch port 0
+>>
+>> Do I understand correctly that this is considered being reverted because the feature it fixes is being removed?
+> 
+> As far as i understood, vladimirs patch fixes one
+> cornercase of hw rx offload where felix original
+> patch was fixing more..sent it as rft to you to test
+> if your bug (which vladimir fixed) is not coming in
+> again. If it does we can try to merge both
+> attempts. But current state has broken vlan on
+> bpi-r3 non-dsa gmac1 (sfp-wan).
 
-[...]
+I tested this patch on MT7621AT and MT7623NI SoCs on the current 
+linux-next. Port 0 keeps working fine.
 
-> ## The not so good news / Netgear WNDR3700v2 ##
->
-> But not the Netgar WNDR3700v2. One WiFi (The 2.4G, reported itself now as=
- the 5G @0000:00:11.0 -
-> doesn't really work now), and the real 5G WiFi (@0000:00:12.0) failed wit=
-h:
-> "phy1: Bad EEPROM VER 0x0001 or REV 0x06e0"
+So when you use VLANs on non-DSA gmac1, network connectivity is broken?
 
-[...]
+I've got an MT7621AT device which gmac1 is connected to an external phy 
+(sfp-wan, the same case as yours). I'll test VLANs there. See if MT7621 
+is affected by this as well since the patch log here states this feature 
+is kept enabled for MT7621 because only gmac0 is used which is false.
 
-Alright, so IIUC, we have a situation where some devices only work
-*with* the flag, and some devices only work *without* the flag? So we'll
-need some kind of platform-specific setting? Could we put this in the
-device trees, or is there a better solution?
-
--Toke
+Arınç
