@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A64A86E4CDA
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 17:22:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 044516E4CED
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 17:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231266AbjDQPWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 11:22:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45164 "EHLO
+        id S231330AbjDQPWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 11:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231265AbjDQPWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 11:22:10 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E377EFC;
-        Mon, 17 Apr 2023 08:21:13 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id d8-20020a05600c3ac800b003ee6e324b19so13286463wms.1;
-        Mon, 17 Apr 2023 08:21:13 -0700 (PDT)
+        with ESMTP id S231273AbjDQPWL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 11:22:11 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6090EC152;
+        Mon, 17 Apr 2023 08:21:16 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id q5so13977442wmo.4;
+        Mon, 17 Apr 2023 08:21:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681744870; x=1684336870;
+        d=gmail.com; s=20221208; t=1681744874; x=1684336874;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=0YYZ7SwCQ04rm/iigLtXpTTa80qoaqR0QMHYPp6JmVI=;
-        b=OAf/1088HNqJXQAQBMzqSc1ifdu1eQ6Haa3qlu5QKk99xK7o3cV8+mmTw+1uswREy8
-         crvqfFOU2F4w9oQorogwnEgaVPC1mmvRK5wciua+bJh36hwgCefw5mivrR99KcaI1yJV
-         HW5JqbzE+O8fDDPMugVk+UUrGXR96hSWGfUd8fxr0IWdCJ6DzH479BNU1QMUB9+hQe1S
-         MPNhB3RaKysqR9O6smvjwWZP+TGELyb6AyvPg1YYAxm3NM2EcEBdwCAYYg1DRc1ed/n7
-         nDHYhZXtWX2Ncg3e4HhaouuhvBiPnyQaugI7uWS0EUJoz3BJ4gy3sKSSpK87UgA51PTH
-         Dl/w==
+        bh=E1ISj2J2PV03tP4krHTpRHjfXqHsXcJJVLFtazUDZkU=;
+        b=B93Ol3o2J5Ek8f9qxd0WyFR5pu8RcoK4bPoIaVzz5FOjINaPjMdIqbXFz/hDOyjnQR
+         MJEuYDi+D6GP3/bkUGLMAQ7/pvBFY5xCfKj0p8hvE0WdEJff8qg2h7oWbLrK8frRhnuC
+         t6GZAhlfrz0wzhNoJn94qXxc3R0YsqYNiwEpOOd11FLdpWKCUqTx82VjZSpVsrZSIKiO
+         hpmg4bKHhgPr7UI6i+gQS9NfZoHu/0MdCUZnv6VHmQB0uOBv6h4LrMsOhJy7nORod0nd
+         PcOAF9O5iaNOzLzL6vLISO+FtlM1W4r7gEr/oiQ8GFpjMRl50gjBC5hny9DuEGza4Av8
+         tstg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681744870; x=1684336870;
+        d=1e100.net; s=20221208; t=1681744874; x=1684336874;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=0YYZ7SwCQ04rm/iigLtXpTTa80qoaqR0QMHYPp6JmVI=;
-        b=T69QKMfjj/6QzW/Qplm8NZitQBIsU/rXaNeHWCzV6GD/xlS9aAPw8IukIbG30WLsJj
-         RIDLfSiXU401CJbNL7OYNGrG6rzfQ9LCbx1wIMH+trju7T1Sk93kweXEHjiRnpID6GkA
-         NfWcUPmvxI5RSoNWWG4qMvpuzypDT1x6zAjS3LSYMMWbJiTn2PuuoJrd5fRyjNW1UOIP
-         Nwq5l7KOaLFZCWrcoyLErHgiD2RX4gEOLBAfLEUi/Ib3CWh/ecLjlreVLrgnhtY85afN
-         99qci7v60kVq2fAAhnQT4X6vyvucqg6l4qsaHuIWgYVW/KWPiRVqc2k2bnYx3YYgSIhn
-         BsfQ==
-X-Gm-Message-State: AAQBX9fu28yyPu3M9FiIhySRD3zK2MAZMU/zMf5TEXJmeanBHxZNfGlI
-        2ebkWWsje3s3lWfppxKAOhA=
-X-Google-Smtp-Source: AKy350bNkYePTpwHhda2y/bA29Ro7+vCA9c1Zxn6kPqkkwZZcHFgHxInUONl7Wn6rc1n6AS7ElEOrw==
-X-Received: by 2002:a05:600c:ac8:b0:3f1:6fe2:c4b2 with SMTP id c8-20020a05600c0ac800b003f16fe2c4b2mr4085691wmr.23.1681744870027;
-        Mon, 17 Apr 2023 08:21:10 -0700 (PDT)
+        bh=E1ISj2J2PV03tP4krHTpRHjfXqHsXcJJVLFtazUDZkU=;
+        b=bjkWMjcwKgc6SUxxgcvaOsCpf0e6Mt79/eW/NhdzMZ7hVuD41cWlE7OGsgeozCG0yF
+         1qV7zXxrBRJ+S3roNLMCEtxveJF21vrl84vx7PGyKDTL+dDUDUbjFoiGBClXL4QWmmMj
+         yJb1RuBixr2vOacd5VtcgBxY47bI+XIxMO+2WW+OyCDFFGSaVRN+5nHpYisFTzz1+nqW
+         0v7etSOV/RsWEwem8//4OBswta2qIELs3F4nZuKNEq+jYn26oI88RZNX9yUdjo8s/BGk
+         UqtolbdS5l9GV3MrmXYYAJjgo6H6lr3Cd42ZslKNjDixepVcVY3QMXWzIFw9BSXvijsx
+         zJ4g==
+X-Gm-Message-State: AAQBX9dBF7Gsj/aRUznFoQM06f44G8UxRTyM/sqVuszdRBJ5VzJEwLJy
+        W3qanLBHV+w5MISrW32v2Sk=
+X-Google-Smtp-Source: AKy350aEvCB4SkeGEMEgvBixg+WJApsZ++SBQQbR/m8GUqCbS1JahWn+Vkxap90hMcHbMQihvoCB/A==
+X-Received: by 2002:a7b:ce10:0:b0:3ed:2606:d236 with SMTP id m16-20020a7bce10000000b003ed2606d236mr11175269wmc.38.1681744874295;
+        Mon, 17 Apr 2023 08:21:14 -0700 (PDT)
 Received: from localhost.localdomain (host-87-7-13-196.retail.telecomitalia.it. [87.7.13.196])
-        by smtp.googlemail.com with ESMTPSA id j15-20020a05600c1c0f00b003f173be2ccfsm3501354wms.2.2023.04.17.08.20.55
+        by smtp.googlemail.com with ESMTPSA id j15-20020a05600c1c0f00b003f173be2ccfsm3501354wms.2.2023.04.17.08.21.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Apr 2023 08:21:03 -0700 (PDT)
+        Mon, 17 Apr 2023 08:21:13 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -73,9 +73,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: [net-next PATCH v7 08/16] net: phy: phy_device: Call into the PHY driver to set LED blinking
-Date:   Mon, 17 Apr 2023 17:17:30 +0200
-Message-Id: <20230417151738.19426-9-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v7 09/16] net: phy: marvell: Implement led_blink_set()
+Date:   Mon, 17 Apr 2023 17:17:31 +0200
+Message-Id: <20230417151738.19426-10-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230417151738.19426-1-ansuelsmth@gmail.com>
 References: <20230417151738.19426-1-ansuelsmth@gmail.com>
@@ -93,76 +93,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrew Lunn <andrew@lunn.ch>
 
-Linux LEDs can be requested to perform hardware accelerated
-blinking. Pass this to the PHY driver, if it implements the op.
+The Marvell PHY can blink the LEDs, simple on/off. All LEDs blink at
+the same rate, and the reset default is 84ms per blink, which is
+around 12Hz.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/phy/phy_device.c | 18 ++++++++++++++++++
- include/linux/phy.h          | 12 ++++++++++++
- 2 files changed, 30 insertions(+)
+ drivers/net/phy/marvell.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 5c1200160c51..538523a7cd51 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -3005,6 +3005,22 @@ static int phy_led_set_brightness(struct led_classdev *led_cdev,
- 	return err;
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 8d1eb4c4e1ab..cd5d0ed9c5e5 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -147,6 +147,8 @@
+ #define MII_88E1318S_PHY_LED_FUNC		0x10
+ #define MII_88E1318S_PHY_LED_FUNC_OFF		(0x8)
+ #define MII_88E1318S_PHY_LED_FUNC_ON		(0x9)
++#define MII_88E1318S_PHY_LED_FUNC_HI_Z		(0xa)
++#define MII_88E1318S_PHY_LED_FUNC_BLINK		(0xb)
+ #define MII_88E1318S_PHY_LED_TCR		0x12
+ #define MII_88E1318S_PHY_LED_TCR_FORCE_INT	BIT(15)
+ #define MII_88E1318S_PHY_LED_TCR_INTn_ENABLE	BIT(7)
+@@ -2862,6 +2864,35 @@ static int m88e1318_led_brightness_set(struct phy_device *phydev,
+ 			       MII_88E1318S_PHY_LED_FUNC, reg);
  }
  
-+static int phy_led_blink_set(struct led_classdev *led_cdev,
-+			     unsigned long *delay_on,
-+			     unsigned long *delay_off)
++static int m88e1318_led_blink_set(struct phy_device *phydev, u8 index,
++				  unsigned long *delay_on,
++				  unsigned long *delay_off)
 +{
-+	struct phy_led *phyled = to_phy_led(led_cdev);
-+	struct phy_device *phydev = phyled->phydev;
-+	int err;
++	int reg;
 +
-+	mutex_lock(&phydev->lock);
-+	err = phydev->drv->led_blink_set(phydev, phyled->index,
-+					 delay_on, delay_off);
-+	mutex_unlock(&phydev->lock);
++	reg = phy_read_paged(phydev, MII_MARVELL_LED_PAGE,
++			     MII_88E1318S_PHY_LED_FUNC);
++	if (reg < 0)
++		return reg;
 +
-+	return err;
++	switch (index) {
++	case 0:
++	case 1:
++	case 2:
++		reg &= ~(0xf << (4 * index));
++			reg |= MII_88E1318S_PHY_LED_FUNC_BLINK << (4 * index);
++			/* Reset default is 84ms */
++			*delay_on = 84 / 2;
++			*delay_off = 84 / 2;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return phy_write_paged(phydev, MII_MARVELL_LED_PAGE,
++			       MII_88E1318S_PHY_LED_FUNC, reg);
 +}
 +
- static int of_phy_led(struct phy_device *phydev,
- 		      struct device_node *led)
+ static int marvell_probe(struct phy_device *phydev)
  {
-@@ -3027,6 +3043,8 @@ static int of_phy_led(struct phy_device *phydev,
- 
- 	if (phydev->drv->led_brightness_set)
- 		cdev->brightness_set_blocking = phy_led_set_brightness;
-+	if (phydev->drv->led_blink_set)
-+		cdev->blink_set = phy_led_blink_set;
- 	cdev->max_brightness = 1;
- 	init_data.devicename = dev_name(&phydev->mdio.dev);
- 	init_data.fwnode = of_fwnode_handle(led);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index f3c7e3c99f24..c5a0dc829714 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1085,6 +1085,18 @@ struct phy_driver {
- 	 */
- 	int (*led_brightness_set)(struct phy_device *dev,
- 				  u8 index, enum led_brightness value);
-+
-+	/**
-+	 * @led_blink_set: Set a PHY LED brightness.  Index indicates
-+	 * which of the PHYs led should be configured to blink. Delays
-+	 * are in milliseconds and if both are zero then a sensible
-+	 * default should be chosen.  The call should adjust the
-+	 * timings in that case and if it can't match the values
-+	 * specified exactly.
-+	 */
-+	int (*led_blink_set)(struct phy_device *dev, u8 index,
-+			     unsigned long *delay_on,
-+			     unsigned long *delay_off);
+ 	struct marvell_priv *priv;
+@@ -3112,6 +3143,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_strings = marvell_get_strings,
+ 		.get_stats = marvell_get_stats,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
++		.led_blink_set = m88e1318_led_blink_set,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1145,
+@@ -3219,6 +3251,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
+ 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
++		.led_blink_set = m88e1318_led_blink_set,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1540,
+@@ -3246,6 +3279,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
+ 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
++		.led_blink_set = m88e1318_led_blink_set,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1545,
+@@ -3273,6 +3307,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
+ 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
++		.led_blink_set = m88e1318_led_blink_set,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E3016,
+@@ -3415,6 +3450,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_tunable = m88e1540_get_tunable,
+ 		.set_tunable = m88e1540_set_tunable,
+ 		.led_brightness_set = m88e1318_led_brightness_set,
++		.led_blink_set = m88e1318_led_blink_set,
+ 	},
  };
- #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
- 				      struct phy_driver, mdiodrv)
+ 
 -- 
 2.39.2
 
