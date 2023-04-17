@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ECD86E4774
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 593CE6E4775
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:20:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbjDQMUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 08:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39880 "EHLO
+        id S230434AbjDQMUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 08:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230434AbjDQMUb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 08:20:31 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE841FC0
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 05:19:59 -0700 (PDT)
+        with ESMTP id S230514AbjDQMUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 08:20:43 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2048.outbound.protection.outlook.com [40.107.93.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761428A74
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 05:20:09 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dtlbnGXZuCHnLG0Axrj3TdKUgwWGxzEv5RLv+j96H6gEx2R/VMDjU2z+CmMO1ZVxquStiZORpdbm4R1wduLyrQeEj/Xn198iKp2S8hhJ7qlYKoZ2dvmXUUY6zGh31Y+u/vKFuammmgZDiQe0M/LaJZWhDG7y85x/bwUpbQpS8DZxNtzniDFhqkiIA1Ftk1OJtQetqHjPy9fNQJwMNV2TPRqCdpzgrn1ZVH980awZYGgU9CRRAdOM2112Vox9H2vE+4MyRpIZLKzWpcBNEhifdI9jSUK/wY5M9l8Qrtz2I0NuZX+GqIAkPeGTA1mWSd1pRgEQHC5B7jbvC5Iy7krqeA==
+ b=P/X8CToPTA5FjfyU0f13JnNx5Ewf7DAI2+qMQZVNbzZppvkLdFbgwJEs/fTu9qMbRx1qJ4HeGywWf2HntwsU1HYSwxSwKP6QVz7RIp30DGl9PE40nPgrULZWXpUrp5ibhjng1U9xOGvDhc1nSjPdTQUeBqUtq8knMCNYD3blrRf4tM8NUnDpCqVZcBb1PdUnE1J+7vBsSc6XebKdmI8NYopjhGBr5VuLQEa4/hy1qb2lj9NUSVyTblSzw1QloRjput8EPS8Ssk++8vCOS5U4V3ZQVf1DO3eTcF6ChIyFqCoreE+T5X6Snua9QvZhO1W3HuNLUsA6kn8V6Jj8DT5Mww==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lVdRgkmNOT0T/mP9Jxhl5rRvzkBecomXi6ZakO4A8Qk=;
- b=VEEDfXLY4sVRCYMeotEghzR8LOF2Mfq6uYfesiPmqqNX512m4UM/9BmIE0h++CafiDWU6cxSBNhsgZ+g0ud1Jbd0MvQJxJU6g+sl/U/bJNDM/mbqM3R2j2J9bUHN/RScw1z0v49AkavUUgxb1x6x1sKfNwksQN8eDE0s5a2UdD2azeZ4W2GWtQ8bBXw/ZaJhj50/EdeEuPd4j8sHm1H5ml03awf3QH8D512iR/r9XMjgKmP658AHjbBDmWZeZrK6WGDu7hOmCTQ7bDe+EESotTLixbM5gYAn1ft7RPM0A/3pHXpY90EntCCnMOEH+LERm9S9qvlU0xgQiHgGDCoyTA==
+ bh=M1nHro+SIGGfK26WM+xW3wCwE1L5olwZQ6ctdD+gLOQ=;
+ b=QGOvn6MhlKZMJ4kkrcVoMYbxNPX9ayErRlnr5ZsgMmuJAWEefWXE4uN4g+PNfS5Va3svsQWBazQPwo0wHo2i9ZldU8NA4RIDogLzw4SH1VYmAAr2DIwQpcDG8g1Jjn96s8/GBnKQt6IgRRv9cNsElj1TKzrcpvvTqm30t6NMmnoeSEnEKnNaV3IEmTYUq5LUGqSokwyIErLAxWbRk9D99fX7DoZw/k7oSyZJkXo2qXxomwHOv4F9Tcr6uK6aci8OdeXQZCR1JxTEok4KIP/6zu8wveJsJok/zm10VGAsdi0KVrcKL25gsgQEmaKqrjgrryMvGwOdC+8b3HyHApS7oQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lVdRgkmNOT0T/mP9Jxhl5rRvzkBecomXi6ZakO4A8Qk=;
- b=OuPGzcEi8k+HcCizQ29875aIoHfdUT5iL/o77vE58LvwiYvu6YPoiydZuFU06TrTk0OSsYF/lntL++Dhnhr1i4+FSvaRXIy2/UicWpLUAINffH/pDaxphcXJXrDiqXlu+YTYG9OLad6Dvqe2H/1DV7DpdAymgivl0L0ZIeu/peVB3M8zEDgqQNQI8gzaTZw2ME4DjnHljENRwsw8thwDV6YjKJ3DkhyQYIwBnteFR647pRe+7Rim7UWi+3rzLgfjAHYGGOOaqh88FxvwkbIWi/vvNlWGzWGpMQuVOWTsikSLrsZHjYG22POAawPVoYGAZRNYpOfUsAg0bsFhbr9MrQ==
-Received: from DM6PR07CA0057.namprd07.prod.outlook.com (2603:10b6:5:74::34) by
- BL1PR12MB5320.namprd12.prod.outlook.com (2603:10b6:208:314::17) with
+ bh=M1nHro+SIGGfK26WM+xW3wCwE1L5olwZQ6ctdD+gLOQ=;
+ b=Qdg7FdxEpbGcs7uC78FD8LM+INiT0vg3pMQujLReovZOirtD2Md/znxEkRzPAOQa31ywPMfu8FQxbdvhGt8TmorhK5hPzeT98b4f3GizTDx0+jVCkrF8sOW16qR1ieOrVVmgjSVZfSc0gJHnwAsQ4xOpg89pJ7gpZbyuGc771/SQDSSizoKycJcWluzEDuNMn/tJkheVU/eWe9Q2R5gS+BNxf++DapPBIP1nGIoGfGTQQbqeXTA4IbqwUXH73kpl5jmh+lL+BEVWUuf0GUBVJ0k57r7BXcD2ITpsnx0+IWVZbEMOJkIFD6Yo46KMmRml0+66GxoQu/VLqHMoOwwR6w==
+Received: from BN9PR03CA0878.namprd03.prod.outlook.com (2603:10b6:408:13c::13)
+ by DM6PR12MB4332.namprd12.prod.outlook.com (2603:10b6:5:21e::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Mon, 17 Apr
- 2023 12:19:58 +0000
-Received: from DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:74:cafe::eb) by DM6PR07CA0057.outlook.office365.com
- (2603:10b6:5:74::34) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 12:20:07 +0000
+Received: from BN8NAM11FT087.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13c:cafe::ce) by BN9PR03CA0878.outlook.office365.com
+ (2603:10b6:408:13c::13) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.46 via Frontend
- Transport; Mon, 17 Apr 2023 12:19:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ Transport; Mon, 17 Apr 2023 12:20:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM6NAM11FT016.mail.protection.outlook.com (10.13.173.139) with Microsoft SMTP
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT087.mail.protection.outlook.com (10.13.177.24) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6319.20 via Frontend Transport; Mon, 17 Apr 2023 12:19:57 +0000
+ 15.20.6319.19 via Frontend Transport; Mon, 17 Apr 2023 12:20:06 +0000
 Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 17 Apr 2023
- 05:19:47 -0700
+ 05:19:51 -0700
 Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
  (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 17 Apr
- 2023 05:19:47 -0700
+ 2023 05:19:50 -0700
 Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.8)
  with Microsoft SMTP Server id 15.2.986.37 via Frontend Transport; Mon, 17 Apr
- 2023 05:19:44 -0700
+ 2023 05:19:47 -0700
 From:   Tariq Toukan <tariqt@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -74,32 +74,34 @@ CC:     Eric Dumazet <edumazet@google.com>,
         Henning Fehrmann <henning.fehrmann@aei.mpg.de>,
         "Oliver Behnke" <oliver.behnke@aei.mpg.de>,
         Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net-next 00/15] net/mlx5e: Extend XDP multi-buffer capabilities
-Date:   Mon, 17 Apr 2023 15:18:48 +0300
-Message-ID: <20230417121903.46218-1-tariqt@nvidia.com>
+Subject: [PATCH net-next 01/15] net/mlx5e: Move XDP struct and enum to XDP header
+Date:   Mon, 17 Apr 2023 15:18:49 +0300
+Message-ID: <20230417121903.46218-2-tariqt@nvidia.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230417121903.46218-1-tariqt@nvidia.com>
+References: <20230417121903.46218-1-tariqt@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT016:EE_|BL1PR12MB5320:EE_
-X-MS-Office365-Filtering-Correlation-Id: e4e355dc-21a7-456b-0c08-08db3f3e0f21
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT087:EE_|DM6PR12MB4332:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7b8435ef-7813-4c9e-f702-08db3f3e1469
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 84AQk2Sg86Vv1j7CoEqJipohN1msZXco45fQwu0edx8ngRv7fp/IoDxBYoyZ/O2VIBzZy+0lWnJqPuj6W2/kDE4noHT0xopzeeGc4CAJDJZ1H0AXiOVFvlseTFfAWRQJJloc8I1MbkUgkhIdbQdh83RdwhAId1L2CXtlwkrKHg4mmhn3sM7DQbNSMCj0KOGVVGu/y7UndlAEHDFUWyubTf8fLHmteJPekUN8a4xmL930yWsX0w1KbvNrOjLfpdELVcGs45TF92GAzmnlXiHMpbKZrIagiLwt9cGakwWNWqlnHBvfkmTlFj7O75RebLrv586tI7WFgOtDROkYFXCYE31IZMGewjiXNeW7nip5rXBnisBjww2OrPb6VIH6vq1flPxW387HHGjX0pwyd7y8bHcfaOiZzZ213Q3gqcSEngbBOpmpl0v36Hui3HBF6xULg3ozn1woRzOnC5iOZf4BNyIeVX/SqJC4IYZlQ8awolXFjGlQMO3Mi1QcnBK1IDBEP2UOZGFwDl/VVX6nAmcv8O3obZCpPEgO0jFJIE12hHHKvVixMY9vOxMK6FU2RNaNNWPbW7fx40AEIsvaSptJS9yh0MvHvmeWXyWM6UgIJL2ytkRQDnZDYPoS3/QdE1t8BZRx82F5egKjE58p37b7CQhL383BWEECxOtTUGVmVhPEAyRZ1yCQgff2nwtF1naoXBFgO7TTynvPo5ax1Dn5RWg1toNwYJeQtQIFyAC/2sTvfhQEyW4JhUNmYcJbsJoOrZ1Zz24CO0jpu0E7lov3QHS4yg2OOQ6e6YsEtGE92/o=
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(376002)(39860400002)(346002)(451199021)(40470700004)(36840700001)(46966006)(54906003)(4326008)(316002)(110136005)(70206006)(70586007)(478600001)(7696005)(40480700001)(82310400005)(5660300002)(8676002)(8936002)(41300700001)(2906002)(7416002)(7636003)(356005)(34020700004)(82740400003)(86362001)(36756003)(426003)(2616005)(336012)(1076003)(26005)(107886003)(186003)(40460700003)(36860700001)(83380400001)(47076005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 8HDY32wRGMah5B/CMw08TmBLQICoY7AQshKUhy3D+h+NUFVVwETk5CgfPcpoFjXfRxgm5s3uoGaqHq56hph+tG2MLWTt1p+Jf+Xurp6JnyajdNCfxStd16Z6xUOVIb6554oKNBQXYr7oUT0i6Z/17AOZeNs0U1VR2glbt45VZW5zVkD/kdA8bgVDwYyJyLSsB+NxCAN+6ctw3SJPXj3TCv/PtNoS8fL6Dh4VgawQDOELYpW2lqOyP3zLwkT/qpzdilBln4n1ThE05l8vGzSHsRjMPkEQ8cQNIq9M8voisAnLDTesApziUXYdZWPSTNzkdVNhPYsdqn1NXWh5enuvFOyf9UpogfERgOjdmW7WWgHqYeLV26CgtjkcGZpItz9jMptgge0Cxjp4OP3n9pC4HCNJasQhHAIEaCws3apkNTTrVFIJA66WVKPBXlLIwxe54bgm1XLucbOpXXU50Nlv1F/S6VLhKnqkudn0UKezRi0C01zCI9FLiVvETFCGD1T1cvJKZDVfk0/pLAnexalQFV2TQNDSjqGYsvKcu+ZvfuUSb9TgMAgrvVtD3nYIu12eGMzBjzt/AaVaLudCEjmFhfOTXs9Zw0Rhntu+cmUfNKqMkZYDw4hG1qmAT3kfmPWbat9W1TZSE4q9e5GWa5aiZLup/t1UOBBoSptsueIHg0vvVjN8dvTsRCmPCilC2+qKlhghFY4AJuIbz7rfIhGhPmd606PuXsJ9uPOpEvm0Bqy1FS8xxs/364SHYyMTxdPImowGmNM5c6EtX6Shf0osPxVfPSU/hQ3m2n1xt57JC70=
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(396003)(136003)(376002)(451199021)(46966006)(40470700004)(36840700001)(36756003)(7416002)(40460700003)(82310400005)(2906002)(5660300002)(7636003)(8936002)(8676002)(356005)(41300700001)(40480700001)(86362001)(478600001)(34020700004)(54906003)(2616005)(110136005)(36860700001)(26005)(1076003)(107886003)(186003)(7696005)(336012)(4326008)(426003)(70206006)(70586007)(82740400003)(316002)(83380400001)(47076005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2023 12:19:57.5840
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2023 12:20:06.3412
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e4e355dc-21a7-456b-0c08-08db3f3e0f21
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b8435ef-7813-4c9e-f702-08db3f3e1469
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT087.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5320
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4332
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -110,75 +112,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Move struct mlx5e_xdp_info and enum mlx5e_xdp_xmit_mode from the generic
+en.h to the XDP header, where they belong.
 
-This series extends the XDP multi-buffer support in the mlx5e driver.
+Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  | 35 -------------------
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.h  | 35 +++++++++++++++++++
+ 2 files changed, 35 insertions(+), 35 deletions(-)
 
-Patchset breakdown:
-- Infrastructural changes and preparations.
-- Add XDP multi-buffer support for XDP redirect-in.
-- Use TX MPWQE (multi-packet WQE) HW feature for non-linear
-  single-segmented XDP frames.
-- Add XDP multi-buffer support for striding RQ.
-
-In Striding RQ, we overcome the lack of headroom and tailroom between
-the RQ strides by allocating a side page per packet and using it for the
-xdp_buff descriptor. We structure the xdp_buff so that it contains
-nothing in the linear part, and the whole packet resides in the
-fragments.
-
-Performance highlight:
-
-Packet rate test, 64 bytes, 32 channels, MTU 9000 bytes.
-CPU: Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz.
-NIC: ConnectX-6 Dx, at 100 Gbps.
-
-+----------+-------------+-------------+---------+
-| Test     | Legacy RQ   | Striding RQ | Speedup |
-+----------+-------------+-------------+---------+
-| XDP_DROP | 101,615,544 | 117,191,020 | +15%    |
-+----------+-------------+-------------+---------+
-| XDP_TX   |  95,608,169 | 117,043,422 | +22%    |
-+----------+-------------+-------------+---------+
-
-Series generated against net commit:
-e61caf04b9f8 Merge branch 'page_pool-allow-caching-from-safely-localized-napi'
-
-I'm submitting this directly as Saeed is traveling.
-
-Regards,
-Tariq
-
-Tariq Toukan (15):
-  net/mlx5e: Move XDP struct and enum to XDP header
-  net/mlx5e: Move struct mlx5e_xmit_data to datapath header
-  net/mlx5e: Introduce extended version for mlx5e_xmit_data
-  net/mlx5e: XDP, Remove doubtful unlikely calls
-  net/mlx5e: XDP, Use multiple single-entry objects in xdpi_fifo
-  net/mlx5e: XDP, Add support for multi-buffer XDP redirect-in
-  net/mlx5e: XDP, Improve Striding RQ check with XDP
-  net/mlx5e: XDP, Let XDP checker function get the params as input
-  net/mlx5e: XDP, Consider large muti-buffer packets in Striding RQ
-    params calculations
-  net/mlx5e: XDP, Remove un-established assumptions on XDP buffer
-  net/mlx5e: XDP, Allow non-linear single-segment frames in XDP TX MPWQE
-  net/mlx5e: RX, Take shared info fragment addition into a function
-  net/mlx5e: RX, Generalize mlx5e_fill_mxbuf()
-  net/mlx5e: RX, Prepare non-linear striding RQ for XDP multi-buffer
-    support
-  net/mlx5e: RX, Add XDP multi-buffer support in Striding RQ
-
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  46 +--
- .../ethernet/mellanox/mlx5/core/en/params.c   |  32 +-
- .../ethernet/mellanox/mlx5/core/en/params.h   |   3 +
- .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  13 +
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 305 +++++++++++++-----
- .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  55 +++-
- .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   |  12 +-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  92 +++---
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 215 +++++++++---
- 9 files changed, 519 insertions(+), 254 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index ba615b74bb8e..3f5463d42a1e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -475,41 +475,6 @@ struct mlx5e_txqsq {
+ 	cqe_ts_to_ns               ptp_cyc2time;
+ } ____cacheline_aligned_in_smp;
+ 
+-/* XDP packets can be transmitted in different ways. On completion, we need to
+- * distinguish between them to clean up things in a proper way.
+- */
+-enum mlx5e_xdp_xmit_mode {
+-	/* An xdp_frame was transmitted due to either XDP_REDIRECT from another
+-	 * device or XDP_TX from an XSK RQ. The frame has to be unmapped and
+-	 * returned.
+-	 */
+-	MLX5E_XDP_XMIT_MODE_FRAME,
+-
+-	/* The xdp_frame was created in place as a result of XDP_TX from a
+-	 * regular RQ. No DMA remapping happened, and the page belongs to us.
+-	 */
+-	MLX5E_XDP_XMIT_MODE_PAGE,
+-
+-	/* No xdp_frame was created at all, the transmit happened from a UMEM
+-	 * page. The UMEM Completion Ring producer pointer has to be increased.
+-	 */
+-	MLX5E_XDP_XMIT_MODE_XSK,
+-};
+-
+-struct mlx5e_xdp_info {
+-	enum mlx5e_xdp_xmit_mode mode;
+-	union {
+-		struct {
+-			struct xdp_frame *xdpf;
+-			dma_addr_t dma_addr;
+-		} frame;
+-		struct {
+-			struct mlx5e_rq *rq;
+-			struct page *page;
+-		} page;
+-	};
+-};
+-
+ struct mlx5e_xmit_data {
+ 	dma_addr_t  dma_addr;
+ 	void       *data;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+index 10bcfa6f88c1..8208692035f8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+@@ -50,6 +50,41 @@ struct mlx5e_xdp_buff {
+ 	struct mlx5e_rq *rq;
+ };
+ 
++/* XDP packets can be transmitted in different ways. On completion, we need to
++ * distinguish between them to clean up things in a proper way.
++ */
++enum mlx5e_xdp_xmit_mode {
++	/* An xdp_frame was transmitted due to either XDP_REDIRECT from another
++	 * device or XDP_TX from an XSK RQ. The frame has to be unmapped and
++	 * returned.
++	 */
++	MLX5E_XDP_XMIT_MODE_FRAME,
++
++	/* The xdp_frame was created in place as a result of XDP_TX from a
++	 * regular RQ. No DMA remapping happened, and the page belongs to us.
++	 */
++	MLX5E_XDP_XMIT_MODE_PAGE,
++
++	/* No xdp_frame was created at all, the transmit happened from a UMEM
++	 * page. The UMEM Completion Ring producer pointer has to be increased.
++	 */
++	MLX5E_XDP_XMIT_MODE_XSK,
++};
++
++struct mlx5e_xdp_info {
++	enum mlx5e_xdp_xmit_mode mode;
++	union {
++		struct {
++			struct xdp_frame *xdpf;
++			dma_addr_t dma_addr;
++		} frame;
++		struct {
++			struct mlx5e_rq *rq;
++			struct page *page;
++		} page;
++	};
++};
++
+ struct mlx5e_xsk_param;
+ int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk);
+ bool mlx5e_xdp_handle(struct mlx5e_rq *rq,
 -- 
 2.34.1
 
