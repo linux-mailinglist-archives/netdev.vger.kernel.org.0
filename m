@@ -2,100 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 984A46E4406
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04FDF6E4409
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230135AbjDQJgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 05:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
+        id S230493AbjDQJhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 05:37:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbjDQJgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:36:22 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFFD59DC;
-        Mon, 17 Apr 2023 02:35:41 -0700 (PDT)
-Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1poLFA-0005dj-Nc; Mon, 17 Apr 2023 11:33:52 +0200
-Message-ID: <f84c39ed-b8d8-7d0c-0eff-c90feaf5ab4f@leemhuis.info>
-Date:   Mon, 17 Apr 2023 11:33:49 +0200
+        with ESMTP id S230425AbjDQJhD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:37:03 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E514165A7
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:36:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681724192; x=1713260192;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vuW0wz+O7zcEpcd8ZWQSik+qd6XqX8nuuqdf6+EcAjA=;
+  b=KaGJO4D0moilTlvD0OfhZ6SXchAVDuNFf//RgmVS7qFYYJauBOd7DnTb
+   c0fBtsRl4CioIX9ruEHjGo1OXIMk33dDtor8CuAzsAqRBweVOoLtFKug7
+   j9SiZDjZWIqiGXUPagKU8Ac5/5mqx6LWoXK4SlMCwVXshQXPNACWc8Y6D
+   CXRyGJ/91TrT7fhGZ4odf9iUl9UVT07Pwj2Jo+inzCnJ9qZJz/Qik4LPi
+   D+AuSjyi8ROULqtIFI5mlKQ+APV9ZEeM/MZfLtYjXqf/b85xDfTgOY3QT
+   x4bNNA2WD1qzC/0bqr8rYNp940WNw11bS1bZW/oC8pQaKxaKbwcsfotgc
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="333644080"
+X-IronPort-AV: E=Sophos;i="5.99,203,1677571200"; 
+   d="scan'208";a="333644080"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 02:35:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="640899243"
+X-IronPort-AV: E=Sophos;i="5.99,203,1677571200"; 
+   d="scan'208";a="640899243"
+Received: from irvmail002.ir.intel.com ([10.43.11.120])
+  by orsmga003.jf.intel.com with ESMTP; 17 Apr 2023 02:35:18 -0700
+Received: from rozewie.igk.intel.com (rozewie.igk.intel.com [10.211.8.69])
+        by irvmail002.ir.intel.com (Postfix) with ESMTP id 2848037E2A;
+        Mon, 17 Apr 2023 10:35:17 +0100 (IST)
+From:   Wojciech Drewek <wojciech.drewek@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, alexandr.lobakin@intel.com,
+        david.m.ertman@intel.com, michal.swiatkowski@linux.intel.com,
+        marcin.szycik@linux.intel.com, pawel.chmielewski@intel.com,
+        sridhar.samudrala@intel.com
+Subject: [PATCH net-next 00/12] ice: switchdev bridge offload
+Date:   Mon, 17 Apr 2023 11:34:00 +0200
+Message-Id: <20230417093412.12161-1-wojciech.drewek@intel.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [regression] Bug 217286 - ath11k:deny assoc request, Invalid
- supported ch width and ext nss combination
-Content-Language: en-US, de-DE
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-To:     P Praneesh <ppranees@codeaurora.org>,
-        Ganesh Sesetti <gseset@codeaurora.org>,
-        Sathishkumar Muruganandam <murugana@codeaurora.org>
-Cc:     ath11k <ath11k@lists.infradead.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux kernel regressions list <regressions@lists.linux.dev>,
-        Kalle Valo <kvalo@kernel.org>,
-        Jouni Malinen <jouni@codeaurora.org>
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
-References: <ed31b6fe-e73d-34af-445b-81c5c644d615@leemhuis.info>
-In-Reply-To: <ed31b6fe-e73d-34af-445b-81c5c644d615@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1681724141;503caf1c;
-X-HE-SMSGID: 1poLFA-0005dj-Nc
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.04.23 13:52, Linux regression tracking (Thorsten Leemhuis) wrote:
-> Hi, Thorsten here, the Linux kernel's regression tracker.
-> 
-> I noticed a regression report in bugzilla.kernel.org. As many (most?)
-> kernel developers don't keep an eye on it, I decided to forward it by mail.
-> 
-> Note, you have to use bugzilla to reach the reporter, as I sadly[1] can
-> not CCed them in mails like this.
-> 
-> Quoting from https://bugzilla.kernel.org/show_bug.cgi?id=217286 :
-> 
->> Built and installed v6.2 kernel (with ath11k_pci) on arm64 hardware
->> running Ubuntu22.04. Hardware has both Atheros QCN9074 module and Intel
->> AX210 module. Running each (separately) in station mode and try to
->> connect to Synology router with WiFi Access Point based on QCN9074.
->> AX210 has no problem connecting to AP but Atheros is successfully
->> authenticating but association is rejected by AP with this error message:
->>
->>
->> wlan: [0:I:ANY] [UNSPECIFIED] vap-0(wlan100): [04:f0:21:a1:7c:3e]deny assoc request, Invalid supported ch width and ext nss combination
->>
->> Please note that when running v5.15.5 kernel (with ath11k_pci), I am
->> able to connect to the same AP without problems.
->>
->> Detailed logs follow:
->> [...]
-> 
-> See the ticket for more details.
+Linux bridge provides ability to learn MAC addresses and vlans
+detected on bridge's ports. As a result of this, FDB (forward data base)
+entries are created and they can be offloaded to the HW. By adding
+VF's port representors to the bridge together with the uplink netdev,
+we can learn VF's and link partner's MAC addresses. This is achieved
+by slow/exception-path, where packets that do not match any filters
+(FDB entries in this case) are send to the bridge ports.
 
-FWIW, the reporter bisected the regression down to
+Driver keeps track of the netdevs added to the bridge
+by listening for NETDEV_CHANGEUPPER event. We distinguish two types
+of bridge ports: uplink port and VF's representor port. Linux
+bridge always learns src MAC of the packet on rx path. With the
+current slow-path implementation, it means that we will learn
+VF's MAC on port repr (when the VF transmits the packet) and
+link partner's MAC on uplink (when we receive it on uplink from LAN).
 
-552d6fd2f2 ("ath11k: add support for 80P80 and 160 MHz bandwidth")
+The driver is notified about learning of the MAC/VLAN by
+SWITCHDEV_FDB_{ADD|DEL}_TO_DEVICE events. This is followed by creation
+of the HW filter. The direction of the filter is based on port
+type (uplink or VF repr). In case of the uplink, rule forwards
+the packets to the LAN (matching on link partner's MAC). When the
+notification is received on VF repr then the rule forwards the
+packets to the associated VF (matching on VF's MAC).
 
-Authored by P Praneesh, Ganesh Sesetti, and Sathishkumar Muruganandam,.
-all of which I added to the list of recipients (just like Jouni Malinen,
-who handled the patch). Could one of you please look into this?
+This approach would not work on its own however. This is because if
+one of the directions is offloaded, then the bridge would not be able
+to learn the other one. If the egress rule is added (learned on uplink)
+then the response from the VF will be sent directly to the LAN.
+The packet will not got through slow-path, it would not be seen on
+VF's port repr. Because of that, the bridge would not learn VF's MAC.
 
-While at it, let me update the tracking status:
+This is solved by introducing guard rule. It prevents forward rule from
+working until the opposite direction is offloaded.
 
-#regzbot introduced: 552d6fd2f2
-#regzbot ignore-activity
+Aging is not fully supported yet, aging time is static for now. The
+follow up submissions will introduce counters that will allow us to
+keep track if the rule is actually being used or not.
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
+A few fixes/changes are needed for this feature to work with ice driver.
+These are introduced in first 3 patches.
+
+Dave Ertman (1):
+  ice: Remove exclusion code for RDMA+SRIOV
+
+Marcin Szycik (2):
+  ice: Add guard rule when creating FDB in switchdev
+  ice: Add VLAN FDB support in switchdev mode
+
+Michal Swiatkowski (2):
+  ice: implement bridge port vlan
+  ice: implement static version of ageing
+
+Pawel Chmielewski (1):
+  ice: add tracepoints for the switchdev bridge
+
+Wojciech Drewek (6):
+  ice: Minor switchdev fixes
+  ice: Unset src prune on uplink VSI
+  ice: Implement basic eswitch bridge setup
+  ice: Switchdev FDB events support
+  ice: Accept LAG netdevs in bridge offloads
+  ice: Ethtool fdb_cnt stats
+
+ drivers/net/ethernet/intel/ice/Makefile       |    2 +-
+ drivers/net/ethernet/intel/ice/ice.h          |   26 +-
+ drivers/net/ethernet/intel/ice/ice_eswitch.c  |   43 +-
+ .../net/ethernet/intel/ice/ice_eswitch_br.c   | 1350 +++++++++++++++++
+ .../net/ethernet/intel/ice/ice_eswitch_br.h   |  112 ++
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |    1 +
+ drivers/net/ethernet/intel/ice/ice_lag.c      |   12 -
+ drivers/net/ethernet/intel/ice/ice_lag.h      |   50 -
+ drivers/net/ethernet/intel/ice/ice_lib.c      |   26 +-
+ drivers/net/ethernet/intel/ice/ice_lib.h      |    1 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |    4 +-
+ drivers/net/ethernet/intel/ice/ice_repr.c     |    2 +-
+ drivers/net/ethernet/intel/ice/ice_repr.h     |    3 +-
+ drivers/net/ethernet/intel/ice/ice_sriov.c    |    4 -
+ drivers/net/ethernet/intel/ice/ice_switch.c   |   45 +-
+ drivers/net/ethernet/intel/ice/ice_switch.h   |    5 +
+ drivers/net/ethernet/intel/ice/ice_trace.h    |   90 ++
+ drivers/net/ethernet/intel/ice/ice_type.h     |    1 +
+ .../ethernet/intel/ice/ice_vf_vsi_vlan_ops.c  |  195 ++-
+ .../ethernet/intel/ice/ice_vf_vsi_vlan_ops.h  |    3 +
+ .../net/ethernet/intel/ice/ice_vsi_vlan_lib.c |   84 +-
+ .../net/ethernet/intel/ice/ice_vsi_vlan_lib.h |    8 +
+ .../net/ethernet/intel/ice/ice_vsi_vlan_ops.h |    1 +
+ 23 files changed, 1876 insertions(+), 192 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch_br.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_eswitch_br.h
+
+-- 
+2.39.2
+
