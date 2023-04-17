@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B13D6E4802
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D76826E47FE
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:40:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231248AbjDQMko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 08:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
+        id S231209AbjDQMkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 08:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231205AbjDQMkb (ORCPT
+        with ESMTP id S231200AbjDQMkb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 08:40:31 -0400
 Received: from ubuntu20 (unknown [193.203.214.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1C65584;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0AB5267;
         Mon, 17 Apr 2023 05:40:29 -0700 (PDT)
 Received: by ubuntu20 (Postfix, from userid 1003)
-        id 46D24E1A71; Mon, 17 Apr 2023 12:24:30 +0000 (UTC)
+        id 21913E1A83; Mon, 17 Apr 2023 12:25:05 +0000 (UTC)
 From:   Yang Yang <yang.yang29@zte.com.cn>
 To:     davem@davemloft.net, edumazet@google.com,
         willemdebruijn.kernel@gmail.com
@@ -24,9 +24,9 @@ Cc:     yang.yang29@zte.com.cn, kuba@kernel.org,
         netdev@vger.kernel.org, pabeni@redhat.com, shuah@kernel.org,
         zhang.yunkai@zte.com.cn, xu.xin16@zte.com.cn,
         Xuexin Jiang <jiang.xuexin@zte.com.cn>
-Subject: [PATCH linux-next 2/3] selftests: net: udpgso_bench_rx: Fix gsosize exceptions
-Date:   Mon, 17 Apr 2023 20:24:28 +0800
-Message-Id: <20230417122428.193297-1-yang.yang29@zte.com.cn>
+Subject: [PATCH linux-next 3/3] selftests: net: udpgso_bench_rx: Fix packet number exceptions
+Date:   Mon, 17 Apr 2023 20:25:04 +0800
+Message-Id: <20230417122504.193350-1-yang.yang29@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <202304172017351308785@zte.com.cn>
 References: <202304172017351308785@zte.com.cn>
@@ -46,55 +46,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Zhang Yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
 
-The -S parameter of the receiving terminal will most likely cause the
-following error.
+The -n parameter is confusing and seems to only affect the frequency of
+determining whether the time reaches 1s. However, the final print of the
+program is the number of messages expected to be received, which is always
+0.
 
-Executing the following command fails:
-bash# udpgso_bench_tx -l 4 -4 -D "$DST"
-bash# udpgso_bench_tx -l 4 -4 -D "$DST" -S 0
-bash# udpgso_bench_rx -4 -G -S 1472
-udp rx:     15 MB/s      256 calls/s
-udp rx:     30 MB/s      512 calls/s
-udpgso_bench_rx: recv: bad gso size, got -1, expected 1472
-(-1 == no gso cmsg))
+bash# udpgso_bench_rx -4 -n 100
+bash# udpgso_bench_tx -l 1 -4 -D "$DST"
+udpgso_bench_rx: wrong packet number! got 0, expected 100
 
-The actual message on the receiving end is as follows:
- IP 192.168.2.199.55238 > 192.168.2.203.8000: UDP, length 7360
- IP 192.168.2.199.55238 > 192.168.2.203.8000: UDP, length 1472
- IP 192.168.2.199.55238 > 192.168.2.203.8000: UDP, length 1472
- IP 192.168.2.199.55238 > 192.168.2.203.8000: UDP, length 4416
- IP 192.168.2.199.55238 > 192.168.2.203.8000: UDP, length 11776
- IP 192.168.2.199.55238 > 192.168.2.203.8000: UDP, length 20608
-recv: got one message len:1472, probably not an error.
-recv: got one message len:1472, probably not an error.
-
-This is due to network, NAPI, timer, etc., only one message being received.
-We believe that this situation should be normal. We add judgment to filter
-out packets that are less than gso_size and do not contain CMSG
-information.
+This is because the packets are always cleared after print.
 
 Signed-off-by: Zhang Yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
 Reviewed-by: xu xin (CGEL ZTE) <xu.xin16@zte.com.cn>
 Reviewed-by: Yang Yang (CGEL ZTE) <yang.yang29@zte.com.cn>
 Cc: Xuexin Jiang (CGEL ZTE) <jiang.xuexin@zte.com.cn>
 ---
- tools/testing/selftests/net/udpgso_bench_rx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/udpgso_bench_rx.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/tools/testing/selftests/net/udpgso_bench_rx.c b/tools/testing/selftests/net/udpgso_bench_rx.c
-index a5b7f30659a5..784e88b31f7d 100644
+index 784e88b31f7d..b66bb53af19f 100644
 --- a/tools/testing/selftests/net/udpgso_bench_rx.c
 +++ b/tools/testing/selftests/net/udpgso_bench_rx.c
-@@ -282,7 +282,9 @@ static void do_flush_udp(int fd)
- 		if (cfg_expected_pkt_len && ret != cfg_expected_pkt_len)
- 			error(1, 0, "recv: bad packet len, got %d,"
- 			      " expected %d\n", ret, cfg_expected_pkt_len);
--		if (cfg_expected_gso_size && cfg_expected_gso_size != gso_size)
-+		/* For some network reasons, ret less than gso_size is not an error */
-+		if (cfg_expected_gso_size && cfg_expected_gso_size != gso_size &&
-+				ret > cfg_expected_gso_size)
- 			error(1, 0, "recv: bad gso size, got %d, expected %d %s",
- 				gso_size, cfg_expected_gso_size, "(-1 == no gso cmsg))\n");
- 		if (len && cfg_verify) {
+@@ -50,7 +50,7 @@ static int  cfg_rcv_timeout_ms;
+ static struct sockaddr_storage cfg_bind_addr;
+ 
+ static bool interrupted;
+-static unsigned long packets, bytes;
++static unsigned long packets, total_packets, bytes;
+ 
+ static void sigint_handler(int signum)
+ {
+@@ -405,6 +405,7 @@ static void do_recv(void)
+ 					"%s rx: %6lu MB/s %8lu calls/s\n",
+ 					cfg_tcp ? "tcp" : "udp",
+ 					bytes >> 20, packets);
++			total_packets += packets;
+ 			bytes = packets = 0;
+ 			treport = tnow + 1000;
+ 		}
+@@ -415,7 +416,7 @@ static void do_recv(void)
+ 
+ 	if (cfg_expected_pkt_nr && (packets != cfg_expected_pkt_nr))
+ 		error(1, 0, "wrong packet number! got %ld, expected %d\n",
+-		      packets, cfg_expected_pkt_nr);
++		      total_packets + packets, cfg_expected_pkt_nr);
+ 
+ 	if (close(fd))
+ 		error(1, errno, "close");
 -- 
 2.15.2
