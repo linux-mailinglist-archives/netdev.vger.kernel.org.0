@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29D976E53E6
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:32:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BB8C6E53E7
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbjDQVcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 17:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
+        id S230281AbjDQVcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 17:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbjDQVcr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 17:32:47 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EB24C3B
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:32:46 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id xi5so67916910ejb.13
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:32:46 -0700 (PDT)
+        with ESMTP id S230254AbjDQVcx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 17:32:53 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A8E4EC0
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:32:51 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id 4fb4d7f45d1cf-506b8c6bbdbso243143a12.1
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:32:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20221208; t=1681767164; x=1684359164;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=fJ+r+I2Yz9XcEGeDuZ1h0EMLgpcCZeatorwQT2A55fA=;
-        b=X3CJnNSKMprrTEka2qfQ0nQBn7CYdIIr2V0kGa5KGBaYIdc6oK8Fv9s5Gdq0zacrH3
-         Eh7KIHY4ilUOxGu8U8c9QsfB5AfIXBt9iyELkY7Oya9CeFIdqRZ8fHDkUzfWzVAM5p0J
-         /Edc0AUo2U1ZDzgo2Sm2tdJn8mb2Kb5ewXGnPV6WP7TVRW/wEi0/Fos2TtC9uJ653Zr0
-         MstfDsceXO+vd+kxd5gwFZe8mJQVcfe0+Eo3GT+yuZdrLRWtXKeZrusTCb75fwsaODat
-         xRVGx8aj44BTP6BsyleTcZ6PtDbFJVFmocg5Jbrbkcm97yzUvlKhLjYTcRg6nhu1vlkm
-         eN3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681767164; x=1684359164;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
+        d=googlemail.com; s=20221208; t=1681767170; x=1684359170;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fJ+r+I2Yz9XcEGeDuZ1h0EMLgpcCZeatorwQT2A55fA=;
-        b=PELyuL0hXNQshz7zvbssNFUlOZGI7BT1O2dSIr0257kLn3Y2aToIyhFphBMevv1K7C
-         68vHosE1ks4/1USFHyjK/R3F1ZPE8sHv8BF+1zoy9JBrxQo6tQIJqFiUdP++q0EiqnLc
-         eUV0pjiaIN+X5nGz9JC6Qc50enJjmyiHsGUSj6fxXe78pzITxlCTv2scGT4h2ikX9SeJ
-         4g9LHUxloc+VS+3EIqtb9ZyPePQAmB8d57ogBLQo9q4XfzBMnNlJ+YY3KOZnr70FAMzq
-         PtqeAhG85fikLRt0LwnfTykOP5Ctb6FPdI6FvHV+TR3L1e6p1HH95hu8WttZ4QKSZzf/
-         2wxQ==
-X-Gm-Message-State: AAQBX9fCU+StGoXBqHfOy1jWLtnd3/Cg2JY/PAam93SsgbFDGaNmBl4x
-        7Sr/Mi9tRgK3pElKbXIDHphiUWkNm+L+cmcX
-X-Google-Smtp-Source: AKy350apLFMKjMFCepRGotRMfYS/g3h4HJStrXORIvqBVY8TwKCUTAUIR9h8+A5vwPA6RSvDlBeEvA==
-X-Received: by 2002:a17:907:77d5:b0:94e:f738:514f with SMTP id kz21-20020a17090777d500b0094ef738514fmr8656965ejc.13.1681767164573;
-        Mon, 17 Apr 2023 14:32:44 -0700 (PDT)
+        bh=BM90YRQwqNZnnjkPWJq7Gxrd9nK6/umT338BzFntPRg=;
+        b=YYRPpr10xX50GYpkEfId07D+YFaWViLMbxwwauuDlD/81TBpkZhvuqe9p+Jg7Edm/A
+         wmzUFvPyqXleS8Zin+Pdazdcgozg2TEpPppLTNN18DpxG/yLh8cAJNT1FYJ44SLLcYgu
+         729ilLcxl4ETY7hGIBkipMMBVE3M15atFoj7f5Aq+HmckfBm1Qh31hbQh/uySm3Eg19v
+         ax5KpLM5fJC/nDD+63cvW9v60K0vMIfn+ODxzJRFtisqtqNWoxXFDFC/2YTy+ii+6LRx
+         8fByRzoUTv0KktCIzUl57ySBKTNqAhcvkliicsX/Za+n4Z0wm2/PJMPVdvapTjUBKkv+
+         wKPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681767170; x=1684359170;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=BM90YRQwqNZnnjkPWJq7Gxrd9nK6/umT338BzFntPRg=;
+        b=iID3KjwT/pPtYRwBMna8CaBdwtaM/diDoMbUki4fQtbvj706hYxa8UF8CMW+gPRvUi
+         1D2Ex4xig79kg5RJ5WYGjW61zDaPgv9e3DgUsCq5+lv/RRmaNlHLTJRaRyOEJNCl8Igp
+         gw7DPNjh4rEMJmpSFtHkJvMNkXvZoubI8s+bJ3FVUIEpQaoeRDKNwUwz52fiblAH3HJE
+         lQyuGyWz5f5EeDp6plzgWOUePpKVmrNDvAtSf0dY778GH08nJUEQstPcaXB43vKBlAXI
+         8BUBvN2wik9YPqS2AG+4S4GGiPAEhlw/MJZNvfRxusl87AXwd/yLeKMqAd4WBKkxh/Pe
+         xzKg==
+X-Gm-Message-State: AAQBX9dzf6OMckWFH1eihM/vuJsoZxJIMNRloCicvlgYuWge7S33tCFc
+        IcUYGqSMOt2WABzH1EepfPI7yGsebnAwUF2Y
+X-Google-Smtp-Source: AKy350bpkiyI6DZA+Amli9EQtJFje31YCF99jEi1Js+5s8j5toolJomeK9fNJalu2ms07rRFsX1iqw==
+X-Received: by 2002:aa7:c68e:0:b0:4fe:ddf:8d8c with SMTP id n14-20020aa7c68e000000b004fe0ddf8d8cmr381919edq.13.1681767169678;
+        Mon, 17 Apr 2023 14:32:49 -0700 (PDT)
 Received: from localhost.localdomain (p200300c1c74c0400ba8584fffebf2b17.dip0.t-ipconnect.de. [2003:c1:c74c:400:ba85:84ff:febf:2b17])
-        by smtp.gmail.com with ESMTPSA id k18-20020a17090632d200b0094f05fee9d3sm4670005ejk.211.2023.04.17.14.32.43
+        by smtp.gmail.com with ESMTPSA id k18-20020a17090632d200b0094f05fee9d3sm4670005ejk.211.2023.04.17.14.32.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Apr 2023 14:32:44 -0700 (PDT)
+        Mon, 17 Apr 2023 14:32:49 -0700 (PDT)
 Sender: Zahari Doychev <zahari.doychev@googlemail.com>
 From:   Zahari Doychev <zahari.doychev@linux.com>
 To:     netdev@vger.kernel.org
@@ -56,10 +57,12 @@ Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         pabeni@redhat.com, hmehrtens@maxlinear.com,
         aleksander.lobakin@intel.com, simon.horman@corigine.com,
         Zahari Doychev <zdoychev@maxlinear.com>
-Subject: [PATCH net-next v3 0/3] net: flower: add cfm support
-Date:   Mon, 17 Apr 2023 23:32:30 +0200
-Message-Id: <20230417213233.525380-1-zahari.doychev@linux.com>
+Subject: [PATCH net-next v3 1/3] net: flow_dissector: add support for cfm packets
+Date:   Mon, 17 Apr 2023 23:32:31 +0200
+Message-Id: <20230417213233.525380-2-zahari.doychev@linux.com>
 X-Mailer: git-send-email 2.40.0
+In-Reply-To: <20230417213233.525380-1-zahari.doychev@linux.com>
+References: <20230417213233.525380-1-zahari.doychev@linux.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -75,42 +78,101 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Zahari Doychev <zdoychev@maxlinear.com>
 
-The first patch adds cfm support to the flow dissector.
-The second adds the flower classifier support.
-The third adds a selftest for the flower cfm functionality.
+Add support for dissecting cfm packets. The cfm packet header
+fields maintenance domain level and opcode can be dissected.
 
-iproute2 changes will come in follow up patches.
-
+Signed-off-by: Zahari Doychev <zdoychev@maxlinear.com>
 ---
-v2->v3
- - split the flow dissector and flower changes in separate patches
- - use bit field macros
- - copy separately each cfm key field
+ include/net/flow_dissector.h | 20 ++++++++++++++++++++
+ net/core/flow_dissector.c    | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+)
 
-v1->v2:
- - add missing comments
- - improve cfm packet dissection
- - move defines to header file
- - fix code formatting
- - remove unneeded attribute defines
-
-rfc->v1:
- - add selftest to the makefile TEST_PROGS.
-
-Zahari Doychev (3):
-  net: flow_dissector: add support for cfm packets
-  net: flower: add support for matching cfm fields
-  selftests: net: add tc flower cfm test
-
- include/net/flow_dissector.h                  |  20 ++
- include/uapi/linux/pkt_cls.h                  |   9 +
- net/core/flow_dissector.c                     |  30 +++
- net/sched/cls_flower.c                        | 109 ++++++++++-
- .../testing/selftests/net/forwarding/Makefile |   1 +
- .../selftests/net/forwarding/tc_flower_cfm.sh | 175 ++++++++++++++++++
- 6 files changed, 343 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/net/forwarding/tc_flower_cfm.sh
-
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index 5ccf52ef8809..b6d6d2d36d79 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -297,6 +297,25 @@ struct flow_dissector_key_l2tpv3 {
+ 	__be32 session_id;
+ };
+ 
++/**
++ * struct flow_dissector_key_cfm
++ * @mdl_ver: maintenance domain level(mdl) and cfm protocol version
++ * @opcode: code specifying a type of cfm protocol packet
++ *
++ * See 802.1ag, ITU-T G.8013/Y.1731
++ *         1               2
++ * |7 6 5 4 3 2 1 0|7 6 5 4 3 2 1 0|
++ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++ * | mdl | version |     opcode    |
++ * +-----+---------+-+-+-+-+-+-+-+-+
++ */
++struct flow_dissector_key_cfm {
++	u8	mdl_ver;
++	u8	opcode;
++};
++
++#define FLOW_DIS_CFM_MDL_MASK GENMASK(7, 5)
++
+ enum flow_dissector_key_id {
+ 	FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
+ 	FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
+@@ -329,6 +348,7 @@ enum flow_dissector_key_id {
+ 	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
+ 	FLOW_DISSECTOR_KEY_PPPOE, /* struct flow_dissector_key_pppoe */
+ 	FLOW_DISSECTOR_KEY_L2TPV3, /* struct flow_dissector_key_l2tpv3 */
++	FLOW_DISSECTOR_KEY_CFM, /* struct flow_dissector_key_cfm */
+ 
+ 	FLOW_DISSECTOR_KEY_MAX,
+ };
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 25fb0bbc310f..62cc1be693de 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -547,6 +547,30 @@ __skb_flow_dissect_arp(const struct sk_buff *skb,
+ 	return FLOW_DISSECT_RET_OUT_GOOD;
+ }
+ 
++static enum flow_dissect_ret
++__skb_flow_dissect_cfm(const struct sk_buff *skb,
++		       struct flow_dissector *flow_dissector,
++		       void *target_container, const void *data,
++		       int nhoff, int hlen)
++{
++	struct flow_dissector_key_cfm *key, *hdr, _hdr;
++
++	if (!dissector_uses_key(flow_dissector, FLOW_DISSECTOR_KEY_CFM))
++		return FLOW_DISSECT_RET_OUT_GOOD;
++
++	hdr = __skb_header_pointer(skb, nhoff, sizeof(*key), data, hlen, &_hdr);
++	if (!hdr)
++		return FLOW_DISSECT_RET_OUT_BAD;
++
++	key = skb_flow_dissector_target(flow_dissector, FLOW_DISSECTOR_KEY_CFM,
++					target_container);
++
++	key->mdl_ver = hdr->mdl_ver;
++	key->opcode = hdr->opcode;
++
++	return  FLOW_DISSECT_RET_OUT_GOOD;
++}
++
+ static enum flow_dissect_ret
+ __skb_flow_dissect_gre(const struct sk_buff *skb,
+ 		       struct flow_dissector_key_control *key_control,
+@@ -1390,6 +1414,12 @@ bool __skb_flow_dissect(const struct net *net,
+ 		break;
+ 	}
+ 
++	case htons(ETH_P_CFM): {
++		fdret = __skb_flow_dissect_cfm(skb, flow_dissector,
++					       target_container, data,
++					       nhoff, hlen);
++		break;
++	}
+ 	default:
+ 		fdret = FLOW_DISSECT_RET_OUT_BAD;
+ 		break;
 -- 
 2.40.0
 
