@@ -2,82 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C8686E521B
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 22:51:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5DAF6E5381
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 22:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230256AbjDQUvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 16:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
+        id S231384AbjDQU7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 16:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbjDQUvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 16:51:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA34B55BF;
-        Mon, 17 Apr 2023 13:51:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FB5B629E0;
-        Mon, 17 Apr 2023 20:51:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDA26C433EF;
-        Mon, 17 Apr 2023 20:51:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681764696;
-        bh=7oMkRCDaFg+wfH6ptTE6Sp7O08C4+TxSN4TX54d3UA8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RW4beKM7zkF9W6LbmXtpRpLh+/LU7+cwo0UTwsnNd6rzLgbun5mIGHT8saIbrONGO
-         joX7z40OnA2PeXWuCyZ7J+6kAjW+g6PPOx/xbRPgRTh0ZvII2Mw9IXANcnn4mewIUv
-         l5OtmrPsCvIFZDP+4gX5nPU+oSX7ZHWRYbdz+SlhnEfN1zNAeOIjsqESSLEs/x8bWH
-         GVS3LpVt1jBLkw7V9yOXmQEBlfqxfDzNiqDVdxdENP13kbKLln59qp+Y69AnRGztbo
-         DN5t9e7rAD6ZgiagjbE6NwCwRvHi9JrrIzE5XLdL5SmGcohtVUcgwkgqomrzf6fnue
-         nRJzKykIzRGZA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] wireless: airo: remove ISA_DMA_API dependency
-Date:   Mon, 17 Apr 2023 22:51:24 +0200
-Message-Id: <20230417205131.1560074-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S231411AbjDQU7Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 16:59:16 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA02C172
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 13:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681765036; x=1713301036;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fChB/H0FOP/LC7AyzsHi2M6L+z1XCYz81GFxgezknOc=;
+  b=E2lyRY+FK+MnzNnW/1VzvLWFl9PG7SKINW4bZbF5Nu6VK5pAEgRmcOYq
+   8EwrmhOMnlWIv0ljmdoULL/+XvNAiwEVjg+m9txqSG5dJe/BpaaLqwGpk
+   q46Dkb1hk0DZwesJW+eYS1McLPqIbUf9bfh9qgyZ92v1/BJyGojao2nMJ
+   M35zAcASC7Aptp4+vvwNwfD7aH0H3hqkHuHXGWZT8Px07HF/3gxkzb5Nz
+   MVkyTvbY4oZMaY7KCYDVwh09TpxJWyt/gTNR9Hjw46QAPeHQL5+TAX9Ze
+   Rhi+5361aW3AeW5qdr2jaxJQlveQkWU519zUgX15N1AWXJaUY3e/XZetZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="410222165"
+X-IronPort-AV: E=Sophos;i="5.99,205,1677571200"; 
+   d="scan'208";a="410222165"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 13:55:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="690818632"
+X-IronPort-AV: E=Sophos;i="5.99,205,1677571200"; 
+   d="scan'208";a="690818632"
+Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
+  by orsmga002.jf.intel.com with ESMTP; 17 Apr 2023 13:55:26 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        aleksandr.loktionov@intel.com
+Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2023-04-17 (i40e)
+Date:   Mon, 17 Apr 2023 13:52:43 -0700
+Message-Id: <20230417205245.1030733-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+This series contains updates to i40e only.
 
-This driver does not actually use the ISA DMA API, it is purely
-PIO based, so remove the dependency.
+Alex moves setting of active filters to occur under lock and checks/takes
+error path in rebuild if re-initializing the misc interrupt vector
+failed.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/wireless/cisco/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The following are changes since commit 338469d677e5d426f5ada88761f16f6d2c7c1981:
+  net/sched: clear actions pointer in miss cookie init fail
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
 
-diff --git a/drivers/net/wireless/cisco/Kconfig b/drivers/net/wireless/cisco/Kconfig
-index 681bfc2d740a..b40ee25aca99 100644
---- a/drivers/net/wireless/cisco/Kconfig
-+++ b/drivers/net/wireless/cisco/Kconfig
-@@ -14,7 +14,7 @@ if WLAN_VENDOR_CISCO
- 
- config AIRO
- 	tristate "Cisco/Aironet 34X/35X/4500/4800 ISA and PCI cards"
--	depends on CFG80211 && ISA_DMA_API && (PCI || BROKEN)
-+	depends on CFG80211 && (PCI || BROKEN)
- 	select WIRELESS_EXT
- 	select CRYPTO
- 	select CRYPTO_SKCIPHER
+Aleksandr Loktionov (2):
+  i40e: fix accessing vsi->active_filters without holding lock
+  i40e: fix i40e_setup_misc_vector() error handling
+
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
 -- 
-2.39.2
+2.38.1
 
