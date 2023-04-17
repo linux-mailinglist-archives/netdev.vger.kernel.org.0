@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A1626E5370
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 22:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3AC06E536D
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 22:58:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230498AbjDQU6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 16:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        id S230466AbjDQU6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 16:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231130AbjDQU6e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 16:58:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D039747;
-        Mon, 17 Apr 2023 13:56:28 -0700 (PDT)
+        with ESMTP id S229589AbjDQU6Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 16:58:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDC3118ED;
+        Mon, 17 Apr 2023 13:56:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF82062A6A;
-        Mon, 17 Apr 2023 20:55:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9C33C433EF;
-        Mon, 17 Apr 2023 20:55:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9A4762A71;
+        Mon, 17 Apr 2023 20:56:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21F80C433D2;
+        Mon, 17 Apr 2023 20:55:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681764937;
-        bh=buAWzCxZJq6sFI4FVlHCCkhTeXIXRB+HhrOpnqKq2Bo=;
+        s=k20201202; t=1681764960;
+        bh=q90+u87m3wUu+Fg6qEnvdX/mkRJR5IxIH+69ZC9pncI=;
         h=From:To:Cc:Subject:Date:From;
-        b=Yi/vRXGl+Fe7SQP2xUdVEqghN1XlXMudVEM97w32prLWMGIYMUIuY0ZcCTdrbu1f5
-         J9NkrHqcnFDdmdDp5Pd8Hsf/BGymT+zhvTr/0cTdnZQBTNLlUUdicBBLFR95ShPeA9
-         K65/Nr7u7QJ4b/afXFxmGEQsGyxp5wjCRicJt/FpnnRTOR3K8pmhLn9BXllMawhzAe
-         S5t2qDBsXvyjNSX3CY9IjGwiBm8UZCA7P2SdwDHuwq4eN4mNjKDsb9ZkEVJCpHLrcZ
-         +MldcW6U/WPovGo6wYxJztk4NxK2ZvwjjnTJ3zp+JHeywP0t9UXrYcrYR2Fc0W1RIj
-         7mB6ACQheIrkA==
+        b=Yx/ebFoesBk8zWG2ppjw3XKCaVeJ2vKIcePzvjJurU5ReyFJj9mRsOx0zsYUVaHWQ
+         w7afQvyS48RXdmqbfYVku8tUeGmiz3AS3Uam5F4bSUs6UExOsUi21UefIEvC3u3Bvt
+         Az7LjvfhTTme9D+vtyz/5Y8nuRSJA81Z8M1tznIU8wYvIMucm6v1bBrh2jG8urrQa1
+         uOyYgIzqSO9F4DAs5yRVc/sIJLJqWrxytpj2K69OWZXl6Hb4kcZdj/hSjmRVekWeif
+         XXxh/Rslpm8LD+mFjpDdzo2UUJl99CqyYvMaNbIIxFrNQ3Q7KiGTgoPFkBdiYXsf4F
+         ge8i8cNNnfmLQ==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
+To:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: mscc: ocelot: remove incompatible prototypes
-Date:   Mon, 17 Apr 2023 22:55:25 +0200
-Message-Id: <20230417205531.1880657-1-arnd@kernel.org>
+        Saurabh Sengar <ssengar@linux.microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: hyperv: select CONFIG_NLS for mac address setting
+Date:   Mon, 17 Apr 2023 22:55:48 +0200
+Message-Id: <20230417205553.1910749-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,38 +61,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The types for the register argument changed recently, but there are
-still incompatible prototypes that got left behind, and gcc-13 warns
-about these:
+A rare randconfig build error happens when this driver is
+enabled, but nothing else enables NLS support:
 
-In file included from drivers/net/ethernet/mscc/ocelot.c:13:
-drivers/net/ethernet/mscc/ocelot.h:97:5: error: conflicting types for 'ocelot_port_readl' due to enum/integer mismatch; have 'u32(struct ocelot_port *, u32)' {aka 'unsigned int(struct ocelot_port *, unsigned int)'} [-Werror=enum-int-mismatch]
-   97 | u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
-      |     ^~~~~~~~~~~~~~~~~
+x86_64-linux-ld: drivers/net/hyperv/rndis_filter.o: in function `rndis_filter_set_device_mac':
+rndis_filter.c:(.text+0x1536): undefined reference to `utf8s_to_utf16s'
 
-Just remove the two prototypes, and rely on the copy in the global
-header.
+This is normally selected by PCI, USB, ACPI, or common file systems.
+Since the dependency on ACPI is now gone, NLS has to be selected
+here directly.
 
-Fixes: 9ecd05794b8d ("net: mscc: ocelot: strengthen type of "u32 reg" in I/O accessors")
+Fixes: 38299f300c12 ("Driver: VMBus: Add Devicetree support")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/mscc/ocelot.h | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/hyperv/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index d920ca930690..ed024d6504c5 100644
---- a/drivers/net/ethernet/mscc/ocelot.h
-+++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -94,9 +94,6 @@ int ocelot_mact_forget(struct ocelot *ocelot,
- struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port);
- int ocelot_netdev_to_port(struct net_device *dev);
- 
--u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
--void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
--
- int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
- 		      struct device_node *portnp);
- void ocelot_release_port(struct ocelot_port *ocelot_port);
+diff --git a/drivers/net/hyperv/Kconfig b/drivers/net/hyperv/Kconfig
+index ca7bf7f897d3..924dad26ad47 100644
+--- a/drivers/net/hyperv/Kconfig
++++ b/drivers/net/hyperv/Kconfig
+@@ -2,6 +2,7 @@
+ config HYPERV_NET
+ 	tristate "Microsoft Hyper-V virtual network driver"
+ 	depends on HYPERV
++	select NLS
+ 	select UCS2_STRING
+ 	help
+ 	  Select this option to enable the Hyper-V virtual network driver.
 -- 
 2.39.2
 
