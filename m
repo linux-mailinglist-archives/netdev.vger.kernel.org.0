@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9AA96E509D
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 21:08:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42ECD6E50A8
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 21:11:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230344AbjDQTIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 15:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
+        id S230342AbjDQTLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 15:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbjDQTIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 15:08:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3036335A2;
-        Mon, 17 Apr 2023 12:08:40 -0700 (PDT)
+        with ESMTP id S230147AbjDQTLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 15:11:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34B935A2
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 12:11:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB89F6208F;
-        Mon, 17 Apr 2023 19:08:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA970C4339C;
-        Mon, 17 Apr 2023 19:08:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45C1F6208F
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 19:11:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 451A7C433D2;
+        Mon, 17 Apr 2023 19:11:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681758519;
-        bh=UueH1t+Mv4rXYKAFQryG7yFWxrdjovrCqKet7AaeWsQ=;
+        s=k20201202; t=1681758707;
+        bh=ZXiY5/ZCwLsBDi0GdwAdAzVnflo2CkJapJ9/139Z6uc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lv6vdXCQWpn3i5GhRmjf3RTTVqEhhEmIBvPvjJqpHd5hU++AzyHRON6mVQMUESeBK
-         ayPknegXEhSQciGFx9/L5u+a8/Vm9gdiyM+rPpJ+OaxzpZz6i67/KOulj16tExEznO
-         1EOL7ZDuv3RemhxRChtrZxrxAge1J+S7inrbFa2zuQ1v6g/0UWp8xRnHZwL6xDo9jm
-         9rApAM1eXfBdlM+Tfpcz2/O6STtx0r5UMKK/i+4hiZvp81KdtTMjDn4eBqEhSzTtYU
-         U/VHyrwdgsss/LjKi4DObr3/Nja5aBrVKj03kF1yncZWx4wPBEUsTrAhjiKUndXSYd
-         t2FbQhoQGxAMg==
-Date:   Mon, 17 Apr 2023 12:08:37 -0700
+        b=cfLB0C/Z/2VlWMDAQxBYaJImooW+Oi5QyMMKHoUCZxYQcJKIHYo42dxoKejOYtMk8
+         DSreW4/2fmiReERVXSgW2BtWwwc/2pm2Iyghj6fT0tZ2jF6b6cOdGwQeqBBwAPKu/D
+         K6101Bl+XwCl7jSED/D9yYWQfFzGaamTe3JRs9E0DXwqSvuYZBpCSrU9H52LW0ynlK
+         ZYgoxLyuy+mzwtVSN/OPpGvJ81ILdw8+t3Gr7C+t1/bYwtINbA6VgEFIqrjrK9FE8B
+         O8Vp5i/6VTXG4es1YLFj0rDojVB4m3e4foaXfEqcKLBum0Zev+EN/ZsvSyLLuFJlzm
+         Th7Brr8QOM9sg==
+Date:   Mon, 17 Apr 2023 12:11:46 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        hawk@kernel.org, ilias.apalodimas@linaro.org, davem@davemloft.net,
-        pabeni@redhat.com, bpf@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, nbd@nbd.name
-Subject: Re: issue with inflight pages from page_pool
-Message-ID: <20230417120837.6f1e0ef6@kernel.org>
-In-Reply-To: <ZD2TH4PsmSNayhfs@lore-desk>
-References: <ZD2HjZZSOjtsnQaf@lore-desk>
-        <CANn89iK7P2aONo0EB9o+YiRG+9VfqqVVra4cd14m_Vo4hcGVnQ@mail.gmail.com>
-        <ZD2NSSYFzNeN68NO@lore-desk>
-        <20230417112346.546dbe57@kernel.org>
-        <ZD2TH4PsmSNayhfs@lore-desk>
+To:     Corinna Vinschen <vinschen@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        alexandre.torgue@foss.st.com, Jose Abreu <joabreu@synopsys.com>
+Subject: Re: [PATCH net-next] net: stmmac: propagate feature flags to vlan
+Message-ID: <20230417121146.654b980d@kernel.org>
+In-Reply-To: <ZD2X8ALO3m7dmbOu@calimero.vinschen.de>
+References: <20230411130028.136250-1-vinschen@redhat.com>
+        <20230412211513.2d6fc1f7@kernel.org>
+        <ZDgfBEnxLWczPLQO@calimero.vinschen.de>
+        <20230413090040.44aa0d55@kernel.org>
+        <ZD2X8ALO3m7dmbOu@calimero.vinschen.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -59,26 +58,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 17 Apr 2023 20:42:39 +0200 Lorenzo Bianconi wrote:
-> > Is drgn available for your target? You could try to scan the pages on
-> > the system and see if you can find what's still pointing to the page
-> > pool (assuming they are indeed leaked and not returned to the page
-> > allocator without releasing :()  
-> 
-> I will test it but since setting sysctl_skb_defer_max to 0 fixes the issue,
-> I think the pages are still properly linked to the pool, they are just not
-> returned to it. I proved it using the other patch I posted [0] where I can see
-> the counter of returned pages incrementing from time to time (in a very long
-> time slot..).
+On Mon, 17 Apr 2023 21:03:12 +0200 Corinna Vinschen wrote:
+> Yes, that was a good idea.  Turns out, TSO doesn't really work well
+> with VLANs.  The speed is... suboptimal.  Here are some results
+> with iperf, showing only the summary lines.
 
-If it's that then I'm with Eric. There are many ways to keep the pages
-in use, no point working around one of them and not the rest :(
+Hah, good to find out before users did :)
 
-> Unrelated to this issue, but debugging it I think a found a page_pool leak in
-> skb_condense() [1] where we can reallocate the skb data using kmalloc for a
-> page_pool recycled skb.
-
-I don't see a problem having pp_recycle = 1 and head in slab is legal.
-pp_recycle just means that *if* a page is from the page pool we own 
-the recycling reference. A page from slab will not be treated as a PP
-page cause it doesn't have pp_magic set to the correct pattern.
+IIRC there is something in the TCP stack which retries sending 
+as non-TSO if TSO keeps failing so "TSO is very slow" may in fact 
+mean TSO is completely broken but TCP is managing to deliver a little
+bit with just retransmissions or super tiny cwnd or some such.
