@@ -2,207 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8FFB6E467C
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 13:30:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 928F66E4697
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 13:37:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbjDQLak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 07:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51962 "EHLO
+        id S229974AbjDQLhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 07:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229914AbjDQLag (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 07:30:36 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2072a.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D0B72B1;
-        Mon, 17 Apr 2023 04:29:40 -0700 (PDT)
+        with ESMTP id S229568AbjDQLhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 07:37:19 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2100.outbound.protection.outlook.com [40.107.93.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404C493C1;
+        Mon, 17 Apr 2023 04:36:28 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hHiraOzF6iW/Hd+bfMYdBnm3CBcejsQ+dlU3T/UYhdxwpedYRx09+Au9Q4GJTiKFsg4+j4NTPxBa0yW+E246lHgbQzvRJWcvfgvnlcBvDfrgQz3vRTQNQfvqKst687G6sh2Im7LDw/UjUxm4/RWjrMfhzT0q1JuP5aOFPs9bfJSwV8jHGLO43JQWVawtI2GwAGUFnJo4ih4PQKO8sLI6UqhKQovz15o0uAkE/YlLHBf4Nm9lsUM95bwrWFpKBn+O7qzAy6CcHiyhsMGe4yo8zaGB9ymLKtoVc3Ntb0Uh41Ou3g0W7M7+oqZlFAyzG0t0c0mEW13Cq16Ru2UKiSwzAw==
+ b=Hm3F88jytIOekDhLUqkfKOnmOBOsreNZ1X9yhIl2IwQNiboBwnW3pCVKl/GPI07pgVCh3biy/E2OyUqDwmFvYQPQzk+altmlUPbjla6YKrA55Bo6+IYvYZRo6IKkX4Z4jm2H8uFrCEzRNQ3qAa0fYiXqN0hOHN0h6eEk5r0S8Kbq0LADUm+JI3qKgo9EfEPsIXWeRhB2HDBrQ4FpZU5Nzfx81dLF2XuLBCcQsiy8+q5gBD9YSfvgLlX26uXhyw7jBqF6Ld0gUjrhSXECtstI+tWUqjar3YWPZVpe0gXLUS87mHc9KoOaxx9FAaapTbrSmnKBk4qpnPfGHVnhPE2LyA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0TZuCnIPF8V0xIsRwTrobY6BXoO0odj0vW31o/UoNeo=;
- b=Zxn816QbXXQevfTf0+lUcBR1C4d9F/vXMPyJCmXs89Nc8//LTybvZ3xlzZ4Rj3gSb0fDUiUtXtLood1tJWbGfhekXaU56u4dR+O5uxdFWgF0Lfb7skmjcSpJJoaaXnhrL5gbUQYMRH/9Z4mq2pHquq0fulSQ8bYZwap88d2FgxcM1mGjgUnfvaBKQSxwzDVjBihdiaAJw3tXdVJRLrP8sBzZwOe2fKth9lBfD9EKjbeKgz34cwLRBQPW7T8udHlA1Y/GdRmj6hDPy3HoW9JDClD8Y34aOMBf2ZXCJKy7NlRqoWajDqMM7XUlXQ3HX/PgwWV+9hO5Uzy4QWPutLdetQ==
+ bh=FlAROnkAYihJtb8qk3AteRDhqWNaWPyaxxryUDANZhI=;
+ b=DE9jh16KYq9kRVbUO8smJRcRREPcOeYwaF7sMrT79ywBw1MxPIfmHGjIHmQhC4IJx9oJSiq0S5Iv3VfmoxO0edg0xCEuKasg3OdizxDEXEWAShTOu/ogAwiGJaPkuI+pxlVoIKvnhyJBpJhqnpVyC2nT2O1Ljmb3Sb3nNpxZuCM9+XgZeJgpoDfieKwCP3xllRH8UK3qDs/JR/xc07Rc+Rqz3CU0czluToi9w+i6tT70LIz8msmT6nzN62elzaLt6Z+8KrGaAfYMIkO/YTI/htGcnTpZrfG7+IRc3bi3FegRF4cdXZrIWr5d9w/eb+edKrSyLeJ1mE/f+0v7ykrMCQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0TZuCnIPF8V0xIsRwTrobY6BXoO0odj0vW31o/UoNeo=;
- b=A2bBDJ/L/ogFT4IfukrhZB1KMTFy1MOq8Fo97gkAZ1ecOcd8ZP3yuDdYwZD05P+iqb7zLnWI8zXhcGqN7sxw3AE87WbVcAU1JOTjhCNvKaIlLTA5hH6VCBGlm9yQRaPFPQJF+P40KjAQN4JnS/k7rv07/nnnSdWq0pwkFK/788c=
+ bh=FlAROnkAYihJtb8qk3AteRDhqWNaWPyaxxryUDANZhI=;
+ b=P01AlInQwYJHP20LhebJiH49r7llfhRBuagjivL1LUF6NjMi1lwavw1hZZgsBmJ3jeyW74f0UlsseFnIVTg36zqz9mhMIhBgWTZhTSJq4NGZKQlJxCJ64zxxsY9/dc9VkfyURJWgQh9gqh0yxc+p/ZtpSlAFKhsTy9q8tzR0Exc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB4035.namprd13.prod.outlook.com (2603:10b6:5:2a3::9) with
+ by DM6PR13MB4431.namprd13.prod.outlook.com (2603:10b6:5:1bb::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Mon, 17 Apr
- 2023 11:28:48 +0000
+ 2023 11:35:23 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6298.045; Mon, 17 Apr 2023
- 11:28:48 +0000
-Date:   Mon, 17 Apr 2023 13:28:40 +0200
+ 11:35:23 +0000
+Date:   Mon, 17 Apr 2023 13:35:14 +0200
 From:   Simon Horman <simon.horman@corigine.com>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] wifi: mt76: Replace zero-length array with
- flexible-array member
-Message-ID: <ZD0taOx3gjSIB3Ax@corigine.com>
-References: <ZC7X7KCb+JEkPe5D@work>
- <ZC/FA/t1mzrRydD7@corigine.com>
- <cec9fa10-eb1e-dd5b-8ec0-579e87b5bc1d@embeddedor.com>
-Content-Type: text/plain; charset=us-ascii
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     brouer@redhat.com, bpf@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        alexandr.lobakin@intel.com, larysa.zaremba@intel.com,
+        xdp-hints@xdp-project.net, anthony.l.nguyen@intel.com,
+        yoong.siang.song@intel.com, boon.leong.ong@intel.com,
+        intel-wired-lan@lists.osuosl.org, pabeni@redhat.com,
+        jesse.brandeburg@intel.com, kuba@kernel.org, edumazet@google.com,
+        john.fastabend@gmail.com, hawk@kernel.org, davem@davemloft.net,
+        tariqt@nvidia.com, saeedm@nvidia.com, leon@kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH bpf V7 4/7] mlx5: bpf_xdp_metadata_rx_hash add xdp rss
+ hash type
+Message-ID: <ZD0u8i+SIr6IAQ7C@corigine.com>
+References: <168098183268.96582.7852359418481981062.stgit@firesoul>
+ <168098189656.96582.16141211495116669329.stgit@firesoul>
+ <ZDQnFmZdESpF1BEz@corigine.com>
+ <8cd2d200-09ec-57c2-0619-963dfe5efd58@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <cec9fa10-eb1e-dd5b-8ec0-579e87b5bc1d@embeddedor.com>
-X-ClientProxiedBy: AM0PR07CA0027.eurprd07.prod.outlook.com
- (2603:10a6:208:ac::40) To PH0PR13MB4842.namprd13.prod.outlook.com
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8cd2d200-09ec-57c2-0619-963dfe5efd58@redhat.com>
+X-ClientProxiedBy: AM0PR01CA0123.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:168::28) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB4035:EE_
-X-MS-Office365-Filtering-Correlation-Id: fbe5588d-2766-4af0-ca99-08db3f36e95e
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB4431:EE_
+X-MS-Office365-Filtering-Correlation-Id: 486d9871-041d-42fe-435e-08db3f37d509
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sNKH3cvY7f4pIUz9fT6L3XyEMMJDa7CCyjiLaNxCBMAKExwy3fFzzIBMTo08gdKGf3ahRrlAesrz7a6yFWkoo8hIa9extwal9E1jYrpXlxrPqKYD4ITjSJVYmK+rpCWGtEGbuNvAP4Y3ffoyUpH/GJhu42ybvffCWBLUTxN8+Ygk1fQmfo15duboPSJxLdmlXhmSbZeVLx/nzNIjdpmzE4FcfUQRin/KAQYHjiCwT1/zTt6GvTvRt6DB6RQE6cDTwC0y9pZpRdLUl2cedOWfpoDxWH2w8eBk6Ziebs8GSGH6su+KBt0lZdhDICX2CPvLJ/83TfIG/xZqqLWbftIwfkf5S4DY5DObUWsD6AzrRTUD3XAcJ/XGjl9nMfxBy49+T6uE7EAVlqDXzkBTu7Zi3qtgQEo2e9EkyYIkvOxnVc7iS0d/0z+cANndGJpGb0TdfptJN+JNEziFZ+9qJiQynGYrf+oMgYwBwnkB5AgH03uC4+exkWZ1XvpBXpTQG9BwByh++FG8X6O/YgG3zCMOqopNwd1Eef9oSyZSLd0p3mRLexnZUjuoSuEeKYqIcg1aE1t6IEFtX9k0Ie6loiMhf7u7ZfJCNALMbAQYBkCoXrQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39830400003)(346002)(136003)(396003)(366004)(376002)(451199021)(38100700002)(8676002)(8936002)(44832011)(5660300002)(7416002)(2906002)(36756003)(86362001)(478600001)(6486002)(6666004)(54906003)(186003)(2616005)(966005)(6506007)(6512007)(53546011)(66946007)(66476007)(83380400001)(316002)(41300700001)(4326008)(6916009)(66556008)(2004002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: y43xGCDqODxe8wWoUbXwToAejC9gA+Tekz0H9hHElVzioW1UGBLiCtmQdUVPjTZWg+qun8k65bHD+o6TYoogWbO7NC/J+5Nx5aXvEYO/r1jgB1woFe1PXNq0Ke9bDl81OIgW0FSW1jjSLpz4vHrgbW/bxNDuXX9xIy3j4RnWyldbaANzx3BcWUn8ZbQnLfyvOfBdvkZUH48VBmLesTj2he8H0ejI576QIINEfF/Ytiewpls9ZjqUmABMnkaexZZP74qGGCoZSESM2zhdETvA84RXKfl5klLmN4WowyC1GaQXnnMxxzaZHB8OX3RUN6X+GB2v3C6gHkhAj1yvHh85kTmlDD6QTlMRdoZlD/yh+uJwPQ25AiH/AWDIGHdEZ+lhFjgVitVdL8vcX8zXGjHu1DVBb/gof31JLvOW9Li0Z+totGQf5hrhA5PTSdzNvDkApEf/Xge+kV6NvAQqjkAlW34uIfhiyvf9MIOUX6F8q5OsAV3HeVPbAYFye3cDGTCkquNJOTO/0OPQWgoaazrmcKeS/8Tg1i/W5LUItQqIT+s57Wjqggtux+E2opaL8cXpTyopd79wk3nXmCbFTRkeCef1gXybiDLYBBlGuyU79ig=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39830400003)(396003)(136003)(346002)(376002)(366004)(451199021)(7416002)(5660300002)(44832011)(2616005)(86362001)(83380400001)(966005)(66574015)(186003)(6506007)(6512007)(38100700002)(8676002)(8936002)(54906003)(478600001)(6666004)(6486002)(316002)(41300700001)(36756003)(66476007)(66556008)(4326008)(6916009)(66946007)(2906002)(67856001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2rjRF4mML/xCcYkqyA6AItClbUWsW7hGIIbHkBSraLngFIN2Tz3E4+MoNCDH?=
- =?us-ascii?Q?RRNphXkfq6fGlbLvOXczm0xwPKp0tBNceUNGHPalgFZkQ6BxVWzR+E85W5bv?=
- =?us-ascii?Q?quzK8U2Zk4eqqvX3X33YeZW3HM0czoVnDjZ2RAxGdJibjZudkXsEMVei2vcB?=
- =?us-ascii?Q?MyfxMAQxK50mc00A/l200zRxN8iLR3d4pgrC9Jb9+ZxMAEsgTYuZQaTyRIo/?=
- =?us-ascii?Q?VnISAIAguRy2nkAj4J5h3JaYGsRw9hKL0wj2f3iWTT9FGSK+IUACfYAlAIC1?=
- =?us-ascii?Q?khcdh8uh3V1SIEWp+v6T3qucZU3npFx9hhoi/vYY1f0YSCn+o04G9G7iYWMX?=
- =?us-ascii?Q?81pdeKi53XE1g05KhOPmKawz59sFeOX56jAeweFawKg5S15nwHEKJlOJzH1n?=
- =?us-ascii?Q?9fjrtoPYKKyiSVjg+6D8wwCyfwX499DitNpPFrEfIJTC3/Cd4J5fdEewIb7X?=
- =?us-ascii?Q?sYpFIoMeOH8adrEYMXcRlfkG4BAT3KEa56rOgQrK00mBJqHwRkuHu+0VSaOB?=
- =?us-ascii?Q?q7EFavT8XNfxQTOoDuycsXUc6GeQw80zwlgsSI01yRaylm8Nv+26s7O98AXS?=
- =?us-ascii?Q?DuQ+wnqAwL0zBWOxP8+WLjMlSp3TnrHMUhyYuOGH33L51weW5alKMWNcDNSM?=
- =?us-ascii?Q?e8cmGOvTWLNnxVdarZF7kCuoQWzdv+g3yF2xt/Z86MzHLEjP7oVI9HWkNq70?=
- =?us-ascii?Q?xvGL5vHOZ6OgXZpGqqaIYZJISDD0XKyKyrihl3VVH7sinq5JDRpKztXITVTb?=
- =?us-ascii?Q?nEWJqvb3TC2HQ9WWtPYdYojRZ7qdanfY5Lut30vtHLbVq+dmpZFdPnjV0+VW?=
- =?us-ascii?Q?kvzNN0rWz5Rk1yD3eN/hkLMlLl07tjfT+YQm0dqUXYJZRKz0NrXTg4F0Hpwq?=
- =?us-ascii?Q?2h303aF+FXx2o5rzCMbMjmPhW/c5jOGsJpuqL4wuz4mxaTPL5/7nSiKaWFJy?=
- =?us-ascii?Q?wFS29TNCISDhcPJhYDUMssyNzJWeqDM8eskBW2xqx7QkbLe2sXXYcR2OAwCb?=
- =?us-ascii?Q?wrEUjFII1c4aCdWe6L67OVSP7hhDucKFRlx7i8j11fCt1m8c1RiP95KZze9p?=
- =?us-ascii?Q?3pzAe+NjG46tJb8DWnpTJlQDNUxj2ojdhsh3yg+MucoJVGALwv5m4MgAg4WS?=
- =?us-ascii?Q?PZZa3b1prdV/TzahVuDyRDoBYwQsRBueYSbeVYjXJOivRMjRJPGvmxnxoWR1?=
- =?us-ascii?Q?bqZo9rUbKYVyPbLqRLe6ASNiHNVCOJl/zRnvpL3kMRel2Bw+G2Z7fpARiOuw?=
- =?us-ascii?Q?0zuBJ51vj+1lri1uHGIqLFXODN21VKfJQXUnexbqK783ZhySJ7HdwlFybzK3?=
- =?us-ascii?Q?GD28kILGxaBBiM7J3wI8DvzVCty3ixOP2kszHo4+MRlFpd6WywWQXFvxb/eI?=
- =?us-ascii?Q?0frC23NP4dpAdwRgfRgpTFt7ILc5zjXBEJToR/cXx7H9h9LjrGXy/fxzP1Uj?=
- =?us-ascii?Q?ODPqX+gCvTXqx2qiTLqoqm+widsgY1mjJo36qE0BiImfFv66qFDyNVZ+yky0?=
- =?us-ascii?Q?mkoHGN3qTu0Sp4fbOVveoU8ElukNNZqI6dQ4C6MuW8xwnQP47dxO5hxJIM9X?=
- =?us-ascii?Q?uCvAIM8qlSe6PViMtW4wpbPX59jxzoAGeQdVH7gzXYgtLd0M9z3aOBjiajMV?=
- =?us-ascii?Q?8jinLxfOI/L+ctaI+ulaFvNSbYysoK3JSe7mQEpGuQrgvcevW5lCq4YRdLpZ?=
- =?us-ascii?Q?U+OiEQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZDV3aU1kU0Zsb1NkdlVxaUFiM2tlaFBRWVJJR3owT3ZUV0lld3NmY1ZLRVRY?=
+ =?utf-8?B?RUpvelhMWkMxaldHTmNJa0pxcnZMMjVGc2xRL3ZFNVZVWjB3QkJmdExkMTBY?=
+ =?utf-8?B?RUE1V2lKeVZuNStxbm9IS3Z6ejF5YWNjdWhkWk1vMmlFOTN5M1R0MmViYXZu?=
+ =?utf-8?B?YkxmZUw5ckpDSm1SaHlYU0Q4ZThhbGFCa0EydE5SaDkybUtoWk94YWZCeXlk?=
+ =?utf-8?B?TDNGT2hJeEhadWF1aTdJck4xb1RHNFhUY29DL21melBPUjhaVFcvTXFtQm9E?=
+ =?utf-8?B?VDM4VDhKSmJVMFVPVVRoT0hFb2pONDlhcU80NHRtZFBzYzE0bkdzMnJoeUpN?=
+ =?utf-8?B?aDAxU2kzOHI0dy9PYUFCTUpDOFhUbUl5NHRwMUJPN1o3SWZzcHFLcG9LOXNZ?=
+ =?utf-8?B?Um5OSlpkNWIxZFNURDJFRk9pQUZabUQySTBhcVkwUTMzbW9uQTBNb0FTdEZE?=
+ =?utf-8?B?Rk5SQUZGR0FFNTFaOW9Wb0lMMThHalU0RVIrLzdGdHNveUZvOXhSRi9WM1JZ?=
+ =?utf-8?B?OG9EMlZwbExsVXZJYmVIZXE3MkdrSlBtM0ZiN0cwRjVjYmNjQ3JzSXo4RGc3?=
+ =?utf-8?B?L0dHeHdGZmhvU084Q3N3UEVBcFZ5V0N4dzhWM3pQR2FsZnkzamF6eXBjR054?=
+ =?utf-8?B?ZlRhNXFjdHhOa25DZU5CZTdFRVNUMGdiekNWQ2dBaFpDeDlBcnJGaFkxbTVx?=
+ =?utf-8?B?R3l5S2lqL0xvSWZyWjdwemlvNlpmZEd6Rzk5d2RjUHZvSzBGL2tDVDMvenVN?=
+ =?utf-8?B?SUJGZjJ4M09aSEFkV0w3aTd2cWJBaEZIMW5TUlR1YnE0RWJCclJOaUNsd3Nz?=
+ =?utf-8?B?eGswdG9xWStIaUVsSlhzUzloVm84dkJaS3JkbFBQbEtTSURWSUUrdjZUSllC?=
+ =?utf-8?B?TEtBanlMc2duTzZtNnJHUEpvenZKekJ1K2twMVhhVXlVZG5tSXlBb1E3OTBB?=
+ =?utf-8?B?MENZS1g5UkZXN3VlY2pzSHBQMU03L0V0RXl4OEtGK2QyNmhvSzR1bTdRbTVo?=
+ =?utf-8?B?K29PTVpENW9lc2F1NHV4bHp0YWp1YU9WWWpXZUdzbnc5eHgvRktNV21LMjFo?=
+ =?utf-8?B?RmszRW5PazZXdGhCS1FTTVgzblJPQlhscnY4c0F4dStFZmNxaDJkZkliek9X?=
+ =?utf-8?B?aHV3UUN1bGtMdnJYZHF0dmU3ZVFOSEEvZ2hoZk1idnFYZjNmd0Q4eUJiRVpI?=
+ =?utf-8?B?Ukx5RmZTeCsvWS9nNkt1dDFtMnc2UjN0cUY4c1NoL0IzY1hXbWgvNUo4QUQ5?=
+ =?utf-8?B?UFFOdjQ4S2ZJeHVGREtRZWI2ZDc2YlBtNUh6cm1OSFVDcE5raVJLK3NHUllC?=
+ =?utf-8?B?TllSN2F1Qy9pZGs0Sm5ZSkUwenhidTlTMlk5WXBCRHRna1BqTys4RTJ1bE0y?=
+ =?utf-8?B?TnVKTkRkUXExNml5ZGVUUTdBaVlFRDJTUFMyUDVWKzVid2tFVEo2Lzg1TzNC?=
+ =?utf-8?B?Wlh4ck4yS24vVWlEbzY3cCtaY1FGUFZBSGdNQnNPTGQvbDRxNVREekJDaUh1?=
+ =?utf-8?B?T3Q5cnYrTitzL0hMVWt4a2tmczhoSVRpL2k1ZWJCWE1ZS2M0ODVDREhIekM3?=
+ =?utf-8?B?a1k1R3ZlelpMdk5tUXVGNHV2KzNpdWE1NzFVSnRWU3R0dm55aXJXQm9UUmp1?=
+ =?utf-8?B?TlVIMzkzQWZheEM4V2F5Z1RqMjVQekZrb1NXMWx1RDNabnlMUnh0SVQ3eSto?=
+ =?utf-8?B?VTUwcXh2Q2oyQ3d1ZUp5eHNqZmhoR1VjR2Y5S2czdExtK3JNRVpMRmxLeC9E?=
+ =?utf-8?B?cmd1a3QzdlgrVWozMTEzK3hpV09RZXRON3JPWXJnZ0lOUmg5OHFTRVVpT2Iv?=
+ =?utf-8?B?N0s4S0Y0bzA4Wnp1eHdjbDFTaDY1K3hXNEI0dnJlZzU5NVZFMUlQMFVKM2lC?=
+ =?utf-8?B?ZDdjL2VDQzhCby9uY3V3RHVLWTUvK3RDRHp2R1pWeHBSZ0liNEhhd2d6WDZL?=
+ =?utf-8?B?WWhJVkhFRWQvUUZuZER5ZUE4ZzBXOGdHcjJOMlVwNlVHaTBhVkpLVk9qZjFL?=
+ =?utf-8?B?OFI2dVJYaHpUZDNuNVo5STNrdXI1NG1WdG0wUTZSenlURStIMzArK2dqd2hr?=
+ =?utf-8?B?bU1rbkhDUVdYVGR4T1ZDb3hDcTZlMitmWGtQT1ZsTFpPTWRqOEIxTjgwSVRr?=
+ =?utf-8?B?RHBQdE56cXhIQStSMzkxaUJvWWcxT213TytuYWd2eUJWelFkc3ozb3l5RW8y?=
+ =?utf-8?B?eUREQWNFRXlXQVMxWjV3U2luTzQrVUZXTGhOY2FRZTlOL3JTR0N0aHo1U0Z0?=
+ =?utf-8?B?ZnhOSjJRZ1JoSFhzM2QzSk9jS2NRPT0=?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbe5588d-2766-4af0-ca99-08db3f36e95e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 486d9871-041d-42fe-435e-08db3f37d509
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2023 11:28:48.2452
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2023 11:35:23.6190
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XRAjZ6crE6wFleHfwHJdK3nOz/lRr0netlVeVqJlPbhUleA2+gp70rZTtiugDCMwVt5fHONUNpgnQGOMnUtWbNQ9v1oyu+7zXGetCsLs+po=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4035
+X-MS-Exchange-CrossTenant-UserPrincipalName: OZ6ydsV//ir72n2XxjIEDbtgY1udDM0OBPTmyrmC6/lxY7aTPtkcoDJL2bBIdZjhI2VhYbjlfcfWId7Vzad29B8+vocovzpcovWO6CeKzOw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4431
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 12:39:06PM -0600, Gustavo A. R. Silva wrote:
-> [You don't often get email from gustavo@embeddedor.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+On Wed, Apr 12, 2023 at 01:31:18PM +0200, Jesper Dangaard Brouer wrote:
+> [You don't often get email from jbrouer@redhat.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
 > 
-> On 4/7/23 01:23, Simon Horman wrote:
-> > On Thu, Apr 06, 2023 at 08:32:12AM -0600, Gustavo A. R. Silva wrote:
-> > > Zero-length arrays are deprecated [1] and have to be replaced by C99
-> > > flexible-array members.
+> On 10/04/2023 17.11, Simon Horman wrote:
+> > On Sat, Apr 08, 2023 at 09:24:56PM +0200, Jesper Dangaard Brouer wrote:
+> > > Update API for bpf_xdp_metadata_rx_hash() with arg for xdp rss hash type
+> > > via mapping table.
 > > > 
-> > > This helps with the ongoing efforts to tighten the FORTIFY_SOURCE routines
-> > > on memcpy() and help to make progress towards globally enabling
-> > > -fstrict-flex-arrays=3 [2]
+> > > The mlx5 hardware can also identify and RSS hash IPSEC.  This indicate
+> > > hash includes SPI (Security Parameters Index) as part of IPSEC hash.
 > > > 
-> > > Link: https://github.com/KSPP/linux/issues/78 [1]
-> > > Link: https://gcc.gnu.org/pipermail/gcc-patches/2022-October/602902.html [2]
-> > > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> > 
-> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> 
-> Thanks :)
-> 
-> > 
+> > > Extend xdp core enum xdp_rss_hash_type with IPSEC hash type.
+> > > 
+> > > Fixes: bc8d405b1ba9 ("net/mlx5e: Support RX XDP metadata")
+> > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > > Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> > > Acked-by: Stanislav Fomichev <sdf@google.com>
 > > > ---
-> > >   drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h | 2 +-
-> > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > >   drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c |   60 ++++++++++++++++++++++
+> > >   include/linux/mlx5/device.h                      |   14 ++++-
+> > >   include/net/xdp.h                                |    2 +
+> > >   3 files changed, 73 insertions(+), 3 deletions(-)
 > > > 
-> > > diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-> > > index a5e6ee4daf92..9bf4b4199ee3 100644
-> > > --- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-> > > +++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-> > > @@ -127,7 +127,7 @@ struct mt76_connac2_mcu_rxd {
-> > >      u8 rsv1[2];
-> > >      u8 s2d_index;
+> > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> > > index efe609f8e3aa..97ef1df94d50 100644
+> > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> > > @@ -34,6 +34,7 @@
+> > >   #include <net/xdp_sock_drv.h>
+> > >   #include "en/xdp.h"
+> > >   #include "en/params.h"
+> > > +#include <linux/bitfield.h>
 > > > 
-> > > -    u8 tlv[0];
-> > > +    u8 tlv[];
-> > >   };
+> > >   int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk)
+> > >   {
+> > > @@ -169,15 +170,72 @@ static int mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+> > >      return 0;
+> > >   }
 > > > 
-> > >   struct mt76_connac2_patch_hdr {
+> > > +/* Mapping HW RSS Type bits CQE_RSS_HTYPE_IP + CQE_RSS_HTYPE_L4 into 4-bits*/
+> > > +#define RSS_TYPE_MAX_TABLE  16 /* 4-bits max 16 entries */
+> > > +#define RSS_L4              GENMASK(1, 0)
+> > > +#define RSS_L3              GENMASK(3, 2) /* Same as CQE_RSS_HTYPE_IP */
+> > > +
+> > > +/* Valid combinations of CQE_RSS_HTYPE_IP + CQE_RSS_HTYPE_L4 sorted numerical */
+> > > +enum mlx5_rss_hash_type {
+> > > +    RSS_TYPE_NO_HASH        = (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IP_NONE) |
+> > > +                               FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_NONE)),
+> > > +    RSS_TYPE_L3_IPV4        = (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV4) |
+> > > +                               FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_NONE)),
+> > > +    RSS_TYPE_L4_IPV4_TCP    = (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV4) |
+> > > +                               FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_TCP)),
+> > > +    RSS_TYPE_L4_IPV4_UDP    = (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV4) |
+> > > +                               FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_UDP)),
+> > > +    RSS_TYPE_L4_IPV4_IPSEC  = (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV4) |
+> > > +                               FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_IPSEC)),
+> > > +    RSS_TYPE_L3_IPV6        = (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV6) |
+> > > +                               FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_NONE)),
+> > > +    RSS_TYPE_L4_IPV6_TCP    = (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV6) |
+> > > +                               FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_TCP)),
+> > > +    RSS_TYPE_L4_IPV6_UDP    = (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV6) |
+> > > +                               FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_UDP)),
+> > > +    RSS_TYPE_L4_IPV6_IPSEC  = (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV6) |
+> > > +                               FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_IPSEC)),
+> > > +} mlx5_rss_hash_type;
 > > 
-> > Curiously -fstrict-flex-arrays=3 didn't flag this one in my environment,
-> > Ubuntu Lunar.
-> 
-> Yep; that's why I didn't include any warning message in the changelog text
-> this time.
-> 
-> And the reason for that is that tlv is not being indexed anywhere in the
-> code. However, it's being used in the pointer arithmetic operation below:
-> 
-> drivers/net/wireless/mediatek/mt76/mt7921/mcu.c:
->  164         rxd = (struct mt76_connac2_mcu_rxd *)skb->data;
->  165         grant = (struct mt7921_roc_grant_tlv *)(rxd->tlv + 4);
-> 
-> 
-> which means that it can be considered as an array of size greater than zero
-> at some point. Hence, it should be transformed into a C99 flexible array.
-
-Understood, thanks for the explanation.
-
-> >   gcc-13 --version
-> >   gcc-13 (Ubuntu 13-20230320-1ubuntu1) 13.0.1 20230320 (experimental) [master r13-6759-g5194ad1958c]
-> >   Copyright (C) 2023 Free Software Foundation, Inc.
-> >   This is free software; see the source for copying conditions.  There is NO
-> >   warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+> > Hi Jesper,
 > > 
-> > I did, however, notice some other problems reported by gcc-13 with
-> > -fstrict-flex-arrays=3 in drivers/net/wireless/mediatek/mt76
-> > when run against net-next wireless. I've listed them in diff format below.
+> > Sparse seems confused about 'mlx5_rss_hash_type' on the line above.
+> > And I am too. Perhaps it can be removed?
 > > 
-> > Are these on your radar too?
 > 
-> Yep; those are being addressed here:
+> Yes, it can be removed (in V8).
 > 
-> https://lore.kernel.org/linux-hardening/ZBTUB%2FkJYQxq%2F6Cj@work/
+> The reason/trick for doing this was to get compiler to create the enum
+> symbol, which allowed me to inspect the type using pahole (see cmd
+> below).  (This will also expose this to BTF, but it isn't actually
+> useful to keep around for BTF, so I will remove it in V8.)
 
-Thanks, I had forgotten about that.
+Thanks Jesper,
+
+I didn't know that trick :)
+
+> $ pahole -C mlx5_rss_hash_type
+> drivers/net/ethernet/mellanox/mlx5/core/en/xdp.o
+> enum mlx5_rss_hash_type {
+>        RSS_TYPE_NO_HASH       = 0,
+>        RSS_TYPE_L3_IPV4       = 4,
+>        RSS_TYPE_L4_IPV4_TCP   = 5,
+>        RSS_TYPE_L4_IPV4_UDP   = 6,
+>        RSS_TYPE_L4_IPV4_IPSEC = 7,
+>        RSS_TYPE_L3_IPV6       = 8,
+>        RSS_TYPE_L4_IPV6_TCP   = 9,
+>        RSS_TYPE_L4_IPV6_UDP   = 10,
+>        RSS_TYPE_L4_IPV6_IPSEC = 11,
+> };
+> 
+> This is practical to for reviewers to see if below code is correct:
+> 
+> > +/* Invalid combinations will simply return zero, allows no boundary
+> checks */
+> > +static const enum xdp_rss_hash_type
+> mlx5_xdp_rss_type[RSS_TYPE_MAX_TABLE] = {
+> > +    [RSS_TYPE_NO_HASH]       = XDP_RSS_TYPE_NONE,
+> > +    [1]                      = XDP_RSS_TYPE_NONE, /* Implicit zero */
+> > +    [2]                      = XDP_RSS_TYPE_NONE, /* Implicit zero */
+> > +    [3]                      = XDP_RSS_TYPE_NONE, /* Implicit zero */
+> > +    [RSS_TYPE_L3_IPV4]       = XDP_RSS_TYPE_L3_IPV4,
+> > +    [RSS_TYPE_L4_IPV4_TCP]   = XDP_RSS_TYPE_L4_IPV4_TCP,
+> > +    [RSS_TYPE_L4_IPV4_UDP]   = XDP_RSS_TYPE_L4_IPV4_UDP,
+> > +    [RSS_TYPE_L4_IPV4_IPSEC] = XDP_RSS_TYPE_L4_IPV4_IPSEC,
+> > +    [RSS_TYPE_L3_IPV6]       = XDP_RSS_TYPE_L3_IPV6,
+> > +    [RSS_TYPE_L4_IPV6_TCP]   = XDP_RSS_TYPE_L4_IPV6_TCP,
+> > +    [RSS_TYPE_L4_IPV6_UDP]   = XDP_RSS_TYPE_L4_IPV6_UDP,
+> > +    [RSS_TYPE_L4_IPV6_IPSEC] = XDP_RSS_TYPE_L4_IPV6_IPSEC,
+> > +    [12]                     = XDP_RSS_TYPE_NONE, /* Implicit zero */
+> > +    [13]                     = XDP_RSS_TYPE_NONE, /* Implicit zero */
+> > +    [14]                     = XDP_RSS_TYPE_NONE, /* Implicit zero */
+> > +    [15]                     = XDP_RSS_TYPE_NONE, /* Implicit zero */
+> > +};
+> 
+> > drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c:198:3: warning: symbol 'mlx5_rss_hash_type' was not declared. Should it be static?
+> > 
+> > ...
+> > 
+> 
