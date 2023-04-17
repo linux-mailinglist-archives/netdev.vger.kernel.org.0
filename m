@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87C796E4422
+	by mail.lfdr.de (Postfix) with ESMTP id DC8826E4423
 	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230304AbjDQJkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 05:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40244 "EHLO
+        id S230306AbjDQJkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 05:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230510AbjDQJjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:39:46 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6660E1BCB
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:38:59 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id u3so10439063ejj.12
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:38:59 -0700 (PDT)
+        with ESMTP id S230523AbjDQJjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:39:47 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F03235A4
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:39:00 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id u3so10439225ejj.12
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:39:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681724333; x=1684316333;
+        d=gmail.com; s=20221208; t=1681724334; x=1684316334;
         h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=VGc/AXBbd3S7d1pfj4NXOSpGX22EGMAWawOhVjM8r1Y=;
-        b=SBXMJP8x4UF5byWwUAKoX68wMXB1iy+JYIKx4DgcaEvcx06aSb5EHlK5YwL3NyOgHP
-         RxVUrn4QzesZfAiEfQnP5MKHEofTeER61tfS86tgIznH+CLAaYJ5U0TSo5CIG9zK9fDK
-         1bfO+GjtdUl9By6e7065lDqagiLNUP4U7RK59Mx0jqY/bA+ObIojmb5qK12rurr9I610
-         WO1F64bnQESuxxZgoRwoiqMaskxMhVPA5LOPW04UucOWo/2NN+yK7ZrvN1UD6lIJjBsz
-         jzmNMiR1ms1hUlIxrI7I3Vhb9YD1WhttiVKz3xEN7zHuacZjgbtjDYBP04AI46xVaHw7
-         PLUw==
+        bh=tRUb1jq6dyRB1byqY/bTgCFESHTySsZnF7VVr6Rsffk=;
+        b=arecx17cX1mMOuW4wOrHUcWd5k6pvudYg+wa4n4o/rtQGsloHelKlX+fCwN2W98DlY
+         nhNPMAVbuDR/alIBmYTeW3Z1zJXyLBvI88kb7OyVjH35IOwBmMUYS/19vC6NoFM/6bJp
+         /NHGvnxCE0Yxi7ZHPTOSYwLwtQJsp432R5tCamjmTTu02yz+5qzYfrUyiuiaEz02/bmD
+         Bh3HGuWCay9dF+I0Yb6+cUpp5yaF5taTsgxnXyofwaUJylyy9PD5wKnFdqLCiIVQglMP
+         /+ilS8HBIaiREeMu+3P8qjUM2WrUr9BTeDA1KaVHZW+We2ecGx9JuggzqLPtFI1h62G+
+         T7nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681724333; x=1684316333;
+        d=1e100.net; s=20221208; t=1681724334; x=1684316334;
         h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=VGc/AXBbd3S7d1pfj4NXOSpGX22EGMAWawOhVjM8r1Y=;
-        b=GfidH6iNuEYo+OGUjZCWlMDrGLQs+h9zCqC5WQsdfqOCLVP2lSxT9jbqL3m8AQBzA2
-         y+juXGu3HJ8lmK+k3ZFKH1CM5ZzBmwyCnksxrPOqL3JYN3BbvuK2BG/3qLXCjYYz0EK7
-         f813o2oAXo2VpRpHy3D5c2OKd1P8pcQ1CsLTlRnyu51qjEZGqEiLpAduth4uWpZDJ3fI
-         +qf6702RsNHhi47gNvu9zCyOf6+GGr5C7HIAvJEqq5lX4Ec4i1Ksja6wXt2wB/9kjn3O
-         RFIX0KXx9msTdvz9HElVdBdJQf4cq9O1H1fC10e+cRLAtoFzVwyi21K0gbWU9I+GEKd1
-         V1RQ==
-X-Gm-Message-State: AAQBX9flf3ZugqBtFMEofrNJtEFdWuGvxZbU6XpQShZCV6QhehgWM715
-        8rZzAZbtfdaGpfdEMD89eBQ=
-X-Google-Smtp-Source: AKy350bWfPlfY83PQ/nuCszjfxi7O2zL+vfXiP37NGqtKAz5zFCQf3tQ5LAeg2vU2bhLJpMYb/Pljw==
-X-Received: by 2002:a17:906:4e53:b0:930:f953:9614 with SMTP id g19-20020a1709064e5300b00930f9539614mr7008362ejw.1.1681724332714;
-        Mon, 17 Apr 2023 02:38:52 -0700 (PDT)
+        bh=tRUb1jq6dyRB1byqY/bTgCFESHTySsZnF7VVr6Rsffk=;
+        b=cJsdTciee29kZJG/ZOV80sUqXI3PlysUzTIFmhFnC2Waw9sdI7zVMnS4mM0jWeWeWB
+         VNaitXZmd/fYCj8o40zZhbtNFAizRyIlJIT6F3SBIUrV0UoVMUY2mhCQNffssxKI2Ec7
+         s4srTAy6g/XOUu78jxQGj2+mL7euyY16c4KBAZcNUKl7iP23TVEyNm9jqtP4+s/6B3dX
+         OF92pMq+o9ohKSRiPTRiKFRMqyqmIIutTszxd8zn+CunTI+PXQFppm1C08fG3K6p9Kgx
+         sn7YKXbLo/jm0vafi+GZqD/V1b2yV6HuA0mGOtznqEA0kcBySnMsLwb9Bog+w4Nbym4x
+         bO9g==
+X-Gm-Message-State: AAQBX9d4wDO8IoYtcmb1KJmOg1Mf6VYImElxVx5sXA+FtUqLtexpwx03
+        mhKhSsSo9YiVY2xhGqgsTJ8=
+X-Google-Smtp-Source: AKy350Yx2sUMUEOGDehcXSjRShH6arkO46HnfzAKg2R9phj312niRh/ge7t36YWMqYPgxDPbC9Rd7A==
+X-Received: by 2002:a17:906:6bd9:b0:94e:43ce:95f6 with SMTP id t25-20020a1709066bd900b0094e43ce95f6mr7263966ejs.47.1681724333999;
+        Mon, 17 Apr 2023 02:38:53 -0700 (PDT)
 Received: from ?IPV6:2a01:c22:770d:1c00:59f1:1548:39fc:ccd5? (dynamic-2a01-0c22-770d-1c00-59f1-1548-39fc-ccd5.c22.pool.telefonica.de. [2a01:c22:770d:1c00:59f1:1548:39fc:ccd5])
-        by smtp.googlemail.com with ESMTPSA id gy23-20020a170906f25700b0094f31208918sm2923500ejb.108.2023.04.17.02.38.52
+        by smtp.googlemail.com with ESMTPSA id a12-20020a170906368c00b0094e8de89111sm6277995ejc.201.2023.04.17.02.38.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Apr 2023 02:38:52 -0700 (PDT)
-Message-ID: <8a12a0fd-849a-82c2-fdd5-8ece23111318@gmail.com>
-Date:   Mon, 17 Apr 2023 11:37:20 +0200
+        Mon, 17 Apr 2023 02:38:53 -0700 (PDT)
+Message-ID: <d1dc186b-ea95-35fa-6fcf-d885e7626656@gmail.com>
+Date:   Mon, 17 Apr 2023 11:38:36 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: [PATCH net-next v3 2/3] r8169: use new macro
- netif_subqueue_maybe_stop in rtl8169_start_xmit
+Subject: [PATCH net-next v3 3/3] r8169: use new macro
+ netif_subqueue_completed_wake in the tx cleanup path
 Content-Language: en-US
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
@@ -78,100 +78,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use new net core macro netif_subqueue_maybe_stop in the start_xmit path
-to simplify the code. Whilst at it, set the tx queue start threshold to
-twice the stop threshold. Before values were the same, resulting in
-stopping/starting the queue more often than needed.
+Use new net core macro netif_subqueue_completed_wake to simplify
+the code of the tx cleanup path.
 
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
-v2:
-- ring doorbell if queue was stopped
-v3:
-- remove change log from commit message
----
- drivers/net/ethernet/realtek/r8169_main.c | 39 +++++++----------------
- 1 file changed, 11 insertions(+), 28 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 9f8357bbc..fff44d46b 100644
+index fff44d46b..a7e376e7e 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -30,6 +30,7 @@
- #include <linux/ipv6.h>
- #include <asm/unaligned.h>
- #include <net/ip6_checksum.h>
-+#include <net/netdev_queues.h>
+@@ -4371,20 +4371,12 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+ 	}
  
- #include "r8169.h"
- #include "r8169_firmware.h"
-@@ -68,6 +69,8 @@
- #define NUM_RX_DESC	256	/* Number of Rx descriptor registers */
- #define R8169_TX_RING_BYTES	(NUM_TX_DESC * sizeof(struct TxDesc))
- #define R8169_RX_RING_BYTES	(NUM_RX_DESC * sizeof(struct RxDesc))
-+#define R8169_TX_STOP_THRS	(MAX_SKB_FRAGS + 1)
-+#define R8169_TX_START_THRS	(2 * R8169_TX_STOP_THRS)
+ 	if (tp->dirty_tx != dirty_tx) {
+-		netdev_completed_queue(dev, pkts_compl, bytes_compl);
+ 		dev_sw_netstats_tx_add(dev, pkts_compl, bytes_compl);
++		WRITE_ONCE(tp->dirty_tx, dirty_tx);
  
- #define OCP_STD_PHY_BASE	0xa400
- 
-@@ -4162,13 +4165,9 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
- 	return true;
- }
- 
--static bool rtl_tx_slots_avail(struct rtl8169_private *tp)
-+static unsigned int rtl_tx_slots_avail(struct rtl8169_private *tp)
- {
--	unsigned int slots_avail = READ_ONCE(tp->dirty_tx) + NUM_TX_DESC
--					- READ_ONCE(tp->cur_tx);
--
--	/* A skbuff with nr_frags needs nr_frags+1 entries in the tx queue */
--	return slots_avail > MAX_SKB_FRAGS;
-+	return READ_ONCE(tp->dirty_tx) + NUM_TX_DESC - READ_ONCE(tp->cur_tx);
- }
- 
- /* Versions RTL8102e and from RTL8168c onwards support csum_v2 */
-@@ -4245,27 +4244,10 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
- 
- 	WRITE_ONCE(tp->cur_tx, tp->cur_tx + frags + 1);
- 
--	stop_queue = !rtl_tx_slots_avail(tp);
--	if (unlikely(stop_queue)) {
--		/* Avoid wrongly optimistic queue wake-up: rtl_tx thread must
--		 * not miss a ring update when it notices a stopped queue.
+-		/* Sync with rtl8169_start_xmit:
+-		 * - publish dirty_tx ring index (write barrier)
+-		 * - refresh cur_tx ring index and queue status (read barrier)
+-		 * May the current thread miss the stopped queue condition,
+-		 * a racing xmit thread can only have a right view of the
+-		 * ring status.
 -		 */
--		smp_wmb();
--		netif_stop_queue(dev);
--		/* Sync with rtl_tx:
--		 * - publish queue status and cur_tx ring index (write barrier)
--		 * - refresh dirty_tx ring index (read barrier).
--		 * May the current thread have a pessimistic view of the ring
--		 * status and forget to wake up queue, a racing rtl_tx thread
--		 * can't.
--		 */
--		smp_mb__after_atomic();
--		if (rtl_tx_slots_avail(tp))
--			netif_start_queue(dev);
--		door_bell = true;
--	}
--
--	if (door_bell)
-+	stop_queue = !netif_subqueue_maybe_stop(dev, 0, rtl_tx_slots_avail(tp),
-+						R8169_TX_STOP_THRS,
-+						R8169_TX_START_THRS);
-+	if (door_bell || stop_queue)
- 		rtl8169_doorbell(tp);
- 
- 	return NETDEV_TX_OK;
-@@ -4400,7 +4382,8 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
- 		 * ring status.
- 		 */
- 		smp_store_mb(tp->dirty_tx, dirty_tx);
--		if (netif_queue_stopped(dev) && rtl_tx_slots_avail(tp))
-+		if (netif_queue_stopped(dev) &&
-+		    rtl_tx_slots_avail(tp) >= R8169_TX_START_THRS)
- 			netif_wake_queue(dev);
+-		smp_store_mb(tp->dirty_tx, dirty_tx);
+-		if (netif_queue_stopped(dev) &&
+-		    rtl_tx_slots_avail(tp) >= R8169_TX_START_THRS)
+-			netif_wake_queue(dev);
++		netif_subqueue_completed_wake(dev, 0, pkts_compl, bytes_compl,
++					      rtl_tx_slots_avail(tp),
++					      R8169_TX_START_THRS);
  		/*
  		 * 8168 hack: TxPoll requests are lost when the Tx packets are
+ 		 * too close. Let's kick an extra TxPoll request when a burst
 -- 
 2.40.0
 
