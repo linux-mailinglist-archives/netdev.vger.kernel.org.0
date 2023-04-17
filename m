@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3356E493D
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 15:04:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CC116E4946
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 15:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231389AbjDQNEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 09:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
+        id S231449AbjDQNEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 09:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbjDQNDn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 09:03:43 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D190211B8F;
-        Mon, 17 Apr 2023 06:00:43 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id l11so25473482qtj.4;
-        Mon, 17 Apr 2023 06:00:43 -0700 (PDT)
+        with ESMTP id S231357AbjDQNEZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 09:04:25 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E8A33A58;
+        Mon, 17 Apr 2023 06:01:17 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id me15so4807606qvb.4;
+        Mon, 17 Apr 2023 06:01:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681736365; x=1684328365;
+        d=gmail.com; s=20221208; t=1681736401; x=1684328401;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=CyYBTz03mfBLsJW8tiSqcSJkgsMmOf2d9JitR3jDZRQ=;
-        b=r+VRtoi03bmQ5p20OJ90kKWilYyIpAzVZvNdW9lzekBxS3Mrby3BBBEewCAElenD9j
-         mfolNc6N5M0XJk4Xpalmp8DZibj7JUdMj9xzAn3yMfU8xRcz2uitanFH4aLjlZ6qg2L5
-         R9NIbbFDkSIL7mj7HqETvoHCnD8OPBrTqmJI8bKqLMrRoz5ptF8WgBy0ET4d5VekxSJx
-         hb6Y9k2ffYpR9FySnyFy9aTSxIX9mNydYMEGtRb+5DmFaJQ8eejwBkf5524VIz3POitV
-         BQNHc55vrH7w5hziTwj2LcscPiHJRGC7HAXKcvW6+e6t+UMzqelBX+hr4pKkeMEy+o+g
-         w6Kw==
+        bh=EU8lt8g3BHj29DyEU3O7m04VLuto4byGKmuRQPUH1+M=;
+        b=nPuj0w7LyS4vsjQIgfCDKN0zyGHxauQq0+rCh/ZlhTmipM8CwP0cF6aS6s4JVjMwb5
+         TmYE7iIB0qVK4kq88esBAO1VITCJiqhYjYCLd7lycuHY+qrYoaNATxJUWdU9f40qSeKq
+         8roEc2Zb3ydkimNq26HzNUYLHiKPsSFQgPTZiePMRWISHkNMChY0j0QRxmk33ucKI3jd
+         Avx1e+DMuN0m3cSgwTlYdALqjXeb0LofYcAWpTb6IHkIKxIyPv/N5CZ8350V1K0zBiFM
+         I1lCsoOc/gf5AhxR5LBjc5f9vY9CDMt5g7M/inQMCsavx6K3AmVPFRSwB+3Z9U6vi+6o
+         IzIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681736365; x=1684328365;
+        d=1e100.net; s=20221208; t=1681736401; x=1684328401;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CyYBTz03mfBLsJW8tiSqcSJkgsMmOf2d9JitR3jDZRQ=;
-        b=SgDfbS3Gcw3rBhvNnTzdF9FOO6AkCFy35fF9yYZig9xHKFGnPwCBZlqGtF05t0+HIP
-         ynWKONmruEwZYte62g1qWrHm4rb+5WvEbyz1rBJN+hJkbh40U2MyBRl2ngD8gZ1gnHo6
-         mDpLbfpyLytH/j0WXg1OJiYtX9FHYH42vT2w5+COaPgtjphW1EfPfANtD+Xiblt1Azhk
-         l+hC6la1KOks8mDsvSYM6sE+kiZiTNk9cz9dj01/6VG622/3PbJwYxnwkIoOT5+oillr
-         s1EFShx9pBGZz7XNK2RpYNnJCABh1+FJhj+OiW8IKeurcVSsF6heCxJK9oMzxcSwloce
-         E8Bg==
-X-Gm-Message-State: AAQBX9fKCpn5Z5YJJ4rXcOQrOno8KjoVZGAhtFPDdAq/ZKD662BLfVYO
-        srYH8eZxbX3NT1M86egJYr8=
-X-Google-Smtp-Source: AKy350bJ3sUiNQ+coMBpfLT9WdwtF6WidiVq9lfTADsSJCkXLEc/ADKRro0sVhf1ZIKipDUbp4F3SQ==
-X-Received: by 2002:ac8:5b01:0:b0:3e3:86d4:5df0 with SMTP id m1-20020ac85b01000000b003e386d45df0mr21939463qtw.55.1681736364763;
-        Mon, 17 Apr 2023 05:59:24 -0700 (PDT)
+        bh=EU8lt8g3BHj29DyEU3O7m04VLuto4byGKmuRQPUH1+M=;
+        b=R2h158NfczQ+0RfKjX74DRG6EbhG+Sjt+VBejkuTMiekqWFyRusvR8t7v6q4U2+17l
+         hfuULy+sZ90TJZI0rRClVuN6LogEWFu9XYGCkEMTlhsLVHbOAeDADu4N/qc57zl6qeP7
+         Q4tKbOPT3I4ZyAP7rpUA0mBRbjSvDvIhIQhljVGEXCoGgmR/iF/A3FAGIQwgrlefA4Up
+         6l19glnlF9XKVKn+py/6MZNl2TaYeG0kQ5hqWK0R3QDr1wKB0fhNO1Ove69gLKoZ0Aqm
+         Eq6lRzEp/9zlbQ/QbKgXVX++jvSD6SJZTZWjlZ+UF1a7Alil6kdCjNAs0y+U/tzECEno
+         KtTA==
+X-Gm-Message-State: AAQBX9csBv7RauMk036vk9o2uUW6Hcf1rdQvOFBu9qcAzokuvyLgLucr
+        xdHtTFxCbJ6H8n82LMUIafc=
+X-Google-Smtp-Source: AKy350YjYQ1xFRHmsgqqYTyHX6+4El7x1QTwiKMzVkFWTqZ6GHPGaCRvix4ZQB9h+4VHbJgcNkzzSw==
+X-Received: by 2002:ad4:5c82:0:b0:5ef:565d:ae6f with SMTP id o2-20020ad45c82000000b005ef565dae6fmr20623225qvh.52.1681736401091;
+        Mon, 17 Apr 2023 06:00:01 -0700 (PDT)
 Received: from [192.168.1.105] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id t13-20020a05620a0b0d00b007426e664cdcsm3101839qkg.133.2023.04.17.05.59.22
+        by smtp.gmail.com with ESMTPSA id lx13-20020a0562145f0d00b005dd8b9345b8sm3022945qvb.80.2023.04.17.05.59.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Apr 2023 05:59:24 -0700 (PDT)
-Message-ID: <4f09dad9-eb49-4a26-7237-79b1ec171486@gmail.com>
-Date:   Mon, 17 Apr 2023 05:59:21 -0700
+        Mon, 17 Apr 2023 06:00:00 -0700 (PDT)
+Message-ID: <0f5dd91c-2e18-adef-2dfa-51e48696b2a6@gmail.com>
+Date:   Mon, 17 Apr 2023 05:59:57 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH net-next 3/7] net: mscc: ocelot: optimize ocelot_mm_irq()
+Subject: Re: [PATCH net-next 4/7] net: mscc: ocelot: don't rely on cached
+ verify_status in ocelot_port_get_mm()
 Content-Language: en-US
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -68,9 +69,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
         linux-kernel@vger.kernel.org
 References: <20230415170551.3939607-1-vladimir.oltean@nxp.com>
- <20230415170551.3939607-4-vladimir.oltean@nxp.com>
+ <20230415170551.3939607-5-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230415170551.3939607-4-vladimir.oltean@nxp.com>
+In-Reply-To: <20230415170551.3939607-5-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -86,30 +87,19 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/15/2023 10:05 AM, Vladimir Oltean wrote:
-> The MAC Merge IRQ of all ports is shared with the PTP TX timestamp IRQ
-> of all ports, which means that currently, when a PTP TX timestamp is
-> generated, felix_irq_handler() also polls for the MAC Merge layer status
-> of all ports, looking for changes. This makes the kernel do more work,
-> and under certain circumstances may make ptp4l require a
-> tx_timestamp_timeout argument higher than before.
+> ocelot_mm_update_port_status() updates mm->verify_status, but when the
+> verification state of a port changes, an IRQ isn't emitted, but rather,
+> only when the verification state reaches one of the final states (like
+> DISABLED, FAILED, SUCCEEDED) - things that would affect mm->tx_active,
+> which is what the IRQ *is* actually emitted for.
 > 
-> Changes to the MAC Merge layer status are only to be expected under
-> certain conditions - its TX direction needs to be enabled - so we can
-> check early if that is the case, and omit register access otherwise.
+> That is to say, user space may miss reports of an intermediary MAC Merge
+> verification state (like from INITIAL to VERIFYING), unless there was an
+> IRQ notifying the driver of the change in mm->tx_active as well.
 > 
-> Make ocelot_mm_update_port_status() skip register access if
-> mm->tx_enabled is unset, and also call it once more, outside IRQ
-> context, from ocelot_port_set_mm(), when mm->tx_enabled transitions from
-> true to false, because an IRQ is also expected in that case.
-> 
-> Also, a port may have its MAC Merge layer enabled but it may not have
-> generated the interrupt. In that case, there's no point in writing to
-> DEV_MM_STATUS to acknowledge that IRQ. We can reduce the number of
-> register writes per port with MM enabled by keeping an "ack" variable
-> which writes the "write-one-to-clear" bits. Those are 3 in number:
-> PRMPT_ACTIVE_STICKY, UNEXP_RX_PFRM_STICKY and UNEXP_TX_PFRM_STICKY.
-> The other fields in DEV_MM_STATUS are read-only and it doesn't matter
-> what is written to them, so writing zero is just fine.
+> This is not a huge deal, but for reliable reporting to user space, let's
+> call ocelot_mm_update_port_status() synchronously from
+> ocelot_port_get_mm(), which makes user space see the current MM status.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
