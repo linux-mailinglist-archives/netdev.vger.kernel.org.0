@@ -2,232 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E3596E53D5
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F36586E53DD
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:31:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbjDQV1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 17:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34522 "EHLO
+        id S230411AbjDQVbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 17:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbjDQV1O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 17:27:14 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4F62D50
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:27:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1681766832; x=1713302832;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TK4GQ//pKvsx3vLmHpCokq7p86dfZg1hi0wkCAX/dtc=;
-  b=QCnmSTA3282NJCtksDsU3Lwakwzla/n0Lo44H0CAD9wmGTuNsGjbKHAI
-   x79CZb58Pie/b1jew5Xxzq2gtBWVG5WvjbXn3mcrP2Czx+aRwi8WSEVl9
-   sQNsy4HJzteW/5zOQ9jMEtz2823r7tlmgODFATKzCzDUzYmSKK1/VW/sY
-   A=;
-X-IronPort-AV: E=Sophos;i="5.99,205,1677542400"; 
-   d="scan'208";a="205396965"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-7fa2de02.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 21:27:09 +0000
-Received: from EX19MTAUWA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-m6i4x-7fa2de02.us-west-2.amazon.com (Postfix) with ESMTPS id DA6B340D54;
-        Mon, 17 Apr 2023 21:27:08 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Mon, 17 Apr 2023 21:27:08 +0000
-Received: from 88665a182662.ant.amazon.com (10.94.51.151) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Mon, 17 Apr 2023 21:27:05 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <willemdebruijn.kernel@gmail.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <syzkaller@googlegroups.com>, <willemb@google.com>
-Subject: RE: [PATCH v1 net] udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.
-Date:   Mon, 17 Apr 2023 14:26:57 -0700
-Message-ID: <20230417212658.51343-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <643dadc434cac_2d31fb2945@willemb.c.googlers.com.notmuch>
-References: <643dadc434cac_2d31fb2945@willemb.c.googlers.com.notmuch>
+        with ESMTP id S230288AbjDQVbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 17:31:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90B544B4;
+        Mon, 17 Apr 2023 14:31:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4368862AA3;
+        Mon, 17 Apr 2023 21:31:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56BBBC433EF;
+        Mon, 17 Apr 2023 21:31:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681767065;
+        bh=X7/XKh0tfw2LkGLYNbrUS3Ifq5cyxuxuTvnfPsqt4aw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mx7rns5lAtVCbqsjB3rINNj1hvjiO7pO/QZqRlySjdkfNvrNY9/nWfoXUx335CrN3
+         FzrNZgCFPZvDT3nKkX+yykp54wsGWJfa1vWQHKH3K2PQXR+ZojcBViBlVggFXDjmC+
+         ogVwmZl75gi3PgPjZXhRiaCkW1HYp+Zvuai54mYq2bXabVIw0KBRWFUpwM/Nu5fnWo
+         m6xz8KBCTC+XLZzYznLFk89Ko1m7RoWFI1T7/3Z1AggrXjewY0y8z5JrAdYhq0H/Iu
+         mEa4KfCC7jJrmYpzWkDQg/CvmYcECQNpze/A5C7mLKnEaiT/RS+bs7VcUGWJ0AQpKT
+         GhljhOvf22TKg==
+Date:   Mon, 17 Apr 2023 23:31:01 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        hawk@kernel.org, ilias.apalodimas@linaro.org, davem@davemloft.net,
+        pabeni@redhat.com, bpf@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, nbd@nbd.name
+Subject: Re: issue with inflight pages from page_pool
+Message-ID: <ZD26lb2qdsdX16qa@lore-desk>
+References: <ZD2HjZZSOjtsnQaf@lore-desk>
+ <CANn89iK7P2aONo0EB9o+YiRG+9VfqqVVra4cd14m_Vo4hcGVnQ@mail.gmail.com>
+ <ZD2NSSYFzNeN68NO@lore-desk>
+ <20230417112346.546dbe57@kernel.org>
+ <ZD2TH4PsmSNayhfs@lore-desk>
+ <20230417120837.6f1e0ef6@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.94.51.151]
-X-ClientProxiedBy: EX19D039UWB004.ant.amazon.com (10.13.138.57) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="SutYOmmiMl9JrJVi"
+Content-Disposition: inline
+In-Reply-To: <20230417120837.6f1e0ef6@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 17 Apr 2023 16:36:20 -0400
-> Kuniyuki Iwashima wrote:
-> > syzkaller reported [0] memory leaks of an UDP socket and ZEROCOPY
-> > skbs.  We can reproduce the problem with these sequences:
-> > 
-> >   sk = socket(AF_INET, SOCK_DGRAM, 0)
-> >   sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING_TX_SOFTWARE)
-> >   sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
-> >   sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
-> >   sk.close()
-> > 
-> > sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, sets
-> > skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, struct
-> > ubuf_info_msgzc indirectly holds a refcnt of the socket.  When the
-> > skb is sent, __skb_tstamp_tx() clones it and puts the clone into
-> > the socket's error queue with the TX timestamp.
-> > 
-> > When the original skb is received locally, skb_copy_ubufs() calls
-> > skb_unclone(), and pskb_expand_head() increments skb->cb->ubuf.refcnt.
-> > This additional count is decremented while freeing the skb, but struct
-> > ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callback() is
-> > not called.
-> > 
-> > The last refcnt is not released unless we retrieve the TX timestamped
-> > skb by recvmsg().  When we close() the socket holding such skb, we
-> > never call sock_put() and leak the count, skb, and sk.
-> > 
-> > To avoid this problem, we must call skb_queue_purge() while we close()
-> > UDP sockets.
-> > 
-> > Note that TCP does not have this problem because skb_queue_purge() is
-> > called by sk_stream_kill_queues() during close().
-> 
-> Thanks for the clear description.
-> 
-> So the issue is that the tx timestamp notification is still queued on
-> the error queue and this is not freed on socket destruction.
-> 
-> That surprises me. The error definitely needs to be purged on socket
-> destruction. And it is, called in inet_sock_destruct, which is called
-> udp_destruct_sock.
-> 
-> The issue here is that there is a circular dependency, where the
-> sk_destruct is not called until the ref count drops to zero?
 
-Yes, right.
+--SutYOmmiMl9JrJVi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> sk_stream_kill_queues is called from inet_csk_destroy_sock, from
-> __tcp_close (and thus tcp_prot.close) among others.
-> 
-> purging the error queue for other sockets on .close rather than
-> .destroy sounds good to me.
-> 
-> But SOF_TIMESTAMPING_TX_SOFTWARE and MSG_ZEROCOPY are not limited to
-> TCP and UDP. So we probably need this in a more protocol independent
-> close.
+> On Mon, 17 Apr 2023 20:42:39 +0200 Lorenzo Bianconi wrote:
+> > > Is drgn available for your target? You could try to scan the pages on
+> > > the system and see if you can find what's still pointing to the page
+> > > pool (assuming they are indeed leaked and not returned to the page
+> > > allocator without releasing :() =20
+> >=20
+> > I will test it but since setting sysctl_skb_defer_max to 0 fixes the is=
+sue,
+> > I think the pages are still properly linked to the pool, they are just =
+not
+> > returned to it. I proved it using the other patch I posted [0] where I =
+can see
+> > the counter of returned pages incrementing from time to time (in a very=
+ long
+> > time slot..).
+>=20
+> If it's that then I'm with Eric. There are many ways to keep the pages
+> in use, no point working around one of them and not the rest :(
 
-At least, we limit SO_ZEROCOPY to TCP, UDP and RDS for now.  Also, RDS
-seems to just use TCP. [0]
+I was not clear here, my fault. What I mean is I can see the returned
+pages counter increasing from time to time, but during most of tests,
+even after 2h the tcp traffic has stopped, page_pool_release_retry()
+still complains not all the pages are returned to the pool and so the
+pool has not been deallocated yet.
+The chunk of code in my first email is just to demonstrate the issue
+and I am completely fine to get a better solution :) I guess we just
+need a way to free the pool in a reasonable amount of time. Agree?
 
----8<---
-	case SO_ZEROCOPY:
-		if (sk->sk_family == PF_INET || sk->sk_family == PF_INET6) {
-			if (!(sk_is_tcp(sk) ||
-			      (sk->sk_type == SOCK_DGRAM &&
-			       sk->sk_protocol == IPPROTO_UDP)))
-				ret = -EOPNOTSUPP;
-		} else if (sk->sk_family != PF_RDS) {
-			ret = -EOPNOTSUPP;
-		}
-		if (!ret) {
-			if (val < 0 || val > 1)
-				ret = -EINVAL;
-			else
-				sock_valbool_flag(sk, SOCK_ZEROCOPY, valbool);
-		}
-		break;
----8<---
+>=20
+> > Unrelated to this issue, but debugging it I think a found a page_pool l=
+eak in
+> > skb_condense() [1] where we can reallocate the skb data using kmalloc f=
+or a
+> > page_pool recycled skb.
+>=20
+> I don't see a problem having pp_recycle =3D 1 and head in slab is legal.
+> pp_recycle just means that *if* a page is from the page pool we own=20
+> the recycling reference. A page from slab will not be treated as a PP
+> page cause it doesn't have pp_magic set to the correct pattern.
 
-[0]: https://lore.kernel.org/netdev/cover.1518718761.git.sowmini.varadhan@oracle.com/
+ack, right. Thx for pointing this out.
 
+Regards,
+Lorenzo
 
-Thanks,
-Kuniyuki
+--SutYOmmiMl9JrJVi
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-> 
-> > [0]:
-> > BUG: memory leak
-> > unreferenced object 0xffff88800c6d2d00 (size 1152):
-> >   comm "syz-executor392", pid 264, jiffies 4294785440 (age 13.044s)
-> >   hex dump (first 32 bytes):
-> >     00 00 00 00 00 00 00 00 cd af e8 81 00 00 00 00  ................
-> >     02 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
-> >   backtrace:
-> >     [<0000000055636812>] sk_prot_alloc+0x64/0x2a0 net/core/sock.c:2024
-> >     [<0000000054d77b7a>] sk_alloc+0x3b/0x800 net/core/sock.c:2083
-> >     [<0000000066f3c7e0>] inet_create net/ipv4/af_inet.c:319 [inline]
-> >     [<0000000066f3c7e0>] inet_create+0x31e/0xe40 net/ipv4/af_inet.c:245
-> >     [<000000009b83af97>] __sock_create+0x2ab/0x550 net/socket.c:1515
-> >     [<00000000b9b11231>] sock_create net/socket.c:1566 [inline]
-> >     [<00000000b9b11231>] __sys_socket_create net/socket.c:1603 [inline]
-> >     [<00000000b9b11231>] __sys_socket_create net/socket.c:1588 [inline]
-> >     [<00000000b9b11231>] __sys_socket+0x138/0x250 net/socket.c:1636
-> >     [<000000004fb45142>] __do_sys_socket net/socket.c:1649 [inline]
-> >     [<000000004fb45142>] __se_sys_socket net/socket.c:1647 [inline]
-> >     [<000000004fb45142>] __x64_sys_socket+0x73/0xb0 net/socket.c:1647
-> >     [<0000000066999e0e>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >     [<0000000066999e0e>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
-> >     [<0000000017f238c1>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > 
-> > BUG: memory leak
-> > unreferenced object 0xffff888017633a00 (size 240):
-> >   comm "syz-executor392", pid 264, jiffies 4294785440 (age 13.044s)
-> >   hex dump (first 32 bytes):
-> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-> >     00 00 00 00 00 00 00 00 00 2d 6d 0c 80 88 ff ff  .........-m.....
-> >   backtrace:
-> >     [<000000002b1c4368>] __alloc_skb+0x229/0x320 net/core/skbuff.c:497
-> >     [<00000000143579a6>] alloc_skb include/linux/skbuff.h:1265 [inline]
-> >     [<00000000143579a6>] sock_omalloc+0xaa/0x190 net/core/sock.c:2596
-> >     [<00000000be626478>] msg_zerocopy_alloc net/core/skbuff.c:1294 [inline]
-> >     [<00000000be626478>] msg_zerocopy_realloc+0x1ce/0x7f0 net/core/skbuff.c:1370
-> >     [<00000000cbfc9870>] __ip_append_data+0x2adf/0x3b30 net/ipv4/ip_output.c:1037
-> >     [<0000000089869146>] ip_make_skb+0x26c/0x2e0 net/ipv4/ip_output.c:1652
-> >     [<00000000098015c2>] udp_sendmsg+0x1bac/0x2390 net/ipv4/udp.c:1253
-> >     [<0000000045e0e95e>] inet_sendmsg+0x10a/0x150 net/ipv4/af_inet.c:819
-> >     [<000000008d31bfde>] sock_sendmsg_nosec net/socket.c:714 [inline]
-> >     [<000000008d31bfde>] sock_sendmsg+0x141/0x190 net/socket.c:734
-> >     [<0000000021e21aa4>] __sys_sendto+0x243/0x360 net/socket.c:2117
-> >     [<00000000ac0af00c>] __do_sys_sendto net/socket.c:2129 [inline]
-> >     [<00000000ac0af00c>] __se_sys_sendto net/socket.c:2125 [inline]
-> >     [<00000000ac0af00c>] __x64_sys_sendto+0xe1/0x1c0 net/socket.c:2125
-> >     [<0000000066999e0e>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >     [<0000000066999e0e>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
-> >     [<0000000017f238c1>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > 
-> > Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
-> > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > ---
-> >  include/net/udp.h | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> > 
-> > diff --git a/include/net/udp.h b/include/net/udp.h
-> > index de4b528522bb..b9182f166b2f 100644
-> > --- a/include/net/udp.h
-> > +++ b/include/net/udp.h
-> > @@ -195,6 +195,11 @@ void udp_lib_rehash(struct sock *sk, u16 new_hash);
-> >  
-> >  static inline void udp_lib_close(struct sock *sk, long timeout)
-> >  {
-> > +	/* A zerocopy skb has a refcnt of sk and may be
-> > +	 * put into sk_error_queue with TX timestamp
-> > +	 */
-> > +	skb_queue_purge(&sk->sk_error_queue);
-> > +
-> >  	sk_common_release(sk);
-> >  }
-> >  
-> > -- 
-> > 2.30.2
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZD26lQAKCRA6cBh0uS2t
+rPjVAQCHrFx3TcfwPeHcJL1jsHp7zocc30VFsZSmJOzk+JUWmQEAwEkzQH4m926X
+anWg8h7IrJEOFZY+wiDK9jR0qpmjFgA=
+=Ma8w
+-----END PGP SIGNATURE-----
+
+--SutYOmmiMl9JrJVi--
