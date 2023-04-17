@@ -2,79 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B246E50CF
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 21:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60D1D6E50F2
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 21:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230488AbjDQT0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 15:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42584 "EHLO
+        id S229710AbjDQTaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 15:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230465AbjDQT0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 15:26:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448C87A91
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 12:26:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S231224AbjDQTaG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 15:30:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADFF7AA4
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 12:28:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681759732;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GbsTDSdEYWYb0Ug2wp+3Q3zdLxW1lWnMaS36fo47Lak=;
+        b=i7RPqq+UbOiZ7+aZMiJFouHbdzeTw9yP2plVzgAg2p9s/vY4xR8XpTtjKQyx5X2NHMNI2s
+        sW9Ij/4ILkoLwIFQxgmIfPSnu+BamMArbm+8tr9DQikfrPr9uI3Mo16pgW3qxSAgRjT5DX
+        W16YQUn7iJRB6qDzypqHTqpVwb6XgVk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-548-9SOwtL2kO_-hs9n0NIaeMg-1; Mon, 17 Apr 2023 15:28:47 -0400
+X-MC-Unique: 9SOwtL2kO_-hs9n0NIaeMg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB990624AB
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 19:26:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3FD7C4339B;
-        Mon, 17 Apr 2023 19:26:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681759577;
-        bh=x7RT5DmwA0MN1byo3Vn7b8wi7XhNBsENhrYQRgalGpc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OCskGTGYtwKdGfGqvGUzmlTh4aS/6cGVs8v3I7mB/f95wOS+3fPdbFZ1WhRZH0d+N
-         Vpj9NSJlsF9MMawqr8oEfzDvMru0rjtcsgzPtdgbrh3yLjEY7/9orSL/2nGZU+TOEY
-         oPqsjvb/WGrhuD3gWjQiTt4xpllcRtnOo9lr2ahZJTTRQtN9npsNV8LUhgfauHvVkE
-         09ofZKPb01OAbdXz6O1eHtYhoQcOY8rSDgL/7XKhYZX6q4ER7SiBdoCQG48ZKKSfzp
-         Ofqer+eo0eQzQRKX+lKmi3vSTYjYV9U2oyQCD4byolBz7VqjqqjlctchonbLPI1ABo
-         hRziWkQUX9sxA==
-Date:   Mon, 17 Apr 2023 12:26:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
-Subject: Re: [PATCH net-next v2 0/5] net: skbuff: hide some bitfield members
-Message-ID: <20230417122616.230880c1@kernel.org>
-In-Reply-To: <20230417155350.337873-1-kuba@kernel.org>
-References: <20230417155350.337873-1-kuba@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 700C63815EE2;
+        Mon, 17 Apr 2023 19:28:47 +0000 (UTC)
+Received: from calimero.vinschen.de (unknown [10.39.195.69])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 11BD740C83AC;
+        Mon, 17 Apr 2023 19:28:47 +0000 (UTC)
+Received: by calimero.vinschen.de (Postfix, from userid 500)
+        id AB0ACA808C0; Mon, 17 Apr 2023 21:28:45 +0200 (CEST)
+From:   Corinna Vinschen <vinschen@redhat.com>
+To:     netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        alexandre.torgue@foss.st.com, Jose Abreu <joabreu@synopsys.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v2 net-next] net: stmmac: propagate feature flags to vlan
+Date:   Mon, 17 Apr 2023 21:28:45 +0200
+Message-Id: <20230417192845.590034-1-vinschen@redhat.com>
+In-Reply-To: <20230417121146.654b980d@kernel.org>
+References: <20230417121146.654b980d@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 17 Apr 2023 08:53:45 -0700 Jakub Kicinski wrote:
-> There is a number of protocol or subsystem specific fields
-> in struct sk_buff which are only accessed by one subsystem.
-> We can wrap them in ifdefs with minimal code impact.
-> 
-> This gives us a better chance to save a 2B and a 4B holes
-> resulting with the following savings (assuming a lucky
-> kernel config):
-> 
-> -	/* size: 232, cachelines: 4, members: 28 */
-> -	/* sum members: 227, holes: 1, sum holes: 4 */
-> -	/* sum bitfield members: 8 bits (1 bytes) */
-> +	/* size: 224, cachelines: 4, members: 28 */
->  	/* forced alignments: 2 */
-> -	/* last cacheline: 40 bytes */
-> +	/* last cacheline: 32 bytes */
-> 
-> I think that the changes shouldn't be too controversial.
-> The only one I'm not 100% sure of is the SCTP one,
-> 12 extra LoC for one bit.. But it did fit squarely
-> in the "this bit has only one user" category.
+stmmac_dev_probe doesn't propagate feature flags to VLANs.  So features
+like offloading don't correspond with the general features and it's not
+possible to manipulate features via ethtool -K to affect VLANs.
 
-Missed Simon's tag, sorry about that: 
-https://lore.kernel.org/all/ZD03APYJqdhflYNJ@kernel.org/
+Propagate feature flags to vlan features.  Drop TSO feature because
+it does not work on VLANs yet.
 
-Acked-by: Simon Horman <horms@kernel.org>
+Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d7fcab057032..8ab67c020a08 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -7253,6 +7253,10 @@ int stmmac_dvr_probe(struct device *device,
+ 	if (priv->dma_cap.rssen && priv->plat->rss_en)
+ 		ndev->features |= NETIF_F_RXHASH;
+ 
++	ndev->vlan_features |= ndev->features;
++	/* TSO doesn't work on VLANs yet */
++	ndev->vlan_features &= ~NETIF_F_TSO;
++
+ 	/* MTU range: 46 - hw-specific max */
+ 	ndev->min_mtu = ETH_ZLEN - ETH_HLEN;
+ 	if (priv->plat->has_xgmac)
+-- 
+2.31.1
+
