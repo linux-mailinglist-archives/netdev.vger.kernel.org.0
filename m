@@ -2,83 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC1E86E4FA1
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 19:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26DE36E4FA6
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 19:52:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229784AbjDQRvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 13:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45864 "EHLO
+        id S230355AbjDQRwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 13:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbjDQRvP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 13:51:15 -0400
+        with ESMTP id S229579AbjDQRwd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 13:52:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2381FC3
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 10:51:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAE540FC;
+        Mon, 17 Apr 2023 10:52:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3311628DB
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 17:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 559FFC433EF;
-        Mon, 17 Apr 2023 17:51:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6871628D8;
+        Mon, 17 Apr 2023 17:52:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 590E0C433EF;
+        Mon, 17 Apr 2023 17:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681753872;
-        bh=eA/Pmv5a2ma7V4BCaBPliTqL+YWPU3cTmWdQCfrbjqc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=a2CCPjXPhg71SF/nSbQriwEh157TiYTmTPtRcYUrcCoRklE/FwrRD9TinsG0kp6Sj
-         2VCqzbbVECNRJUtAKO57M66Ud8m5+iKoHqJ3qviWX1BNTXkaFH6JdcY9FK5/qn4JMr
-         aMa1WSMnJlgqiKzLCj/WGg7ifyX+lKvBlqsicuqGsnoCrjUgukk5OQc4v642ngLSbK
-         tZRYkAm3zzabqjUOqjwq1YCAIoJc27H7o22l/Et5dKJRH4zsajmVXGLKOSFETVoOCN
-         LqlWdjpkBuAqOZ5fObOjff9AbPCXujbcaiE9fxhLDIO8yX9NeJ5aRLIRAE2y/EUQZF
-         d6SIxnnkndLyg==
-Message-ID: <f04d922e-c872-b6ab-32b6-4452cb34890b@kernel.org>
-Date:   Mon, 17 Apr 2023 11:51:11 -0600
+        s=k20201202; t=1681753951;
+        bh=KUWjXDPTi3zx4/aPtq9cu6CjLL1a2cS0RTwS+jLqeXA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GyKhjju38oDxcu+ziCWD7KV7feK0ctul+XMO8fJzxDUPamU6KI/8qqWMTfJSKwthb
+         hr9iLhJjTljD4TtxRqdFcdx324GVZhFTMB7TaqJZw9337rFvLuH7vrYSw57/5n+Dak
+         mzKJMgLShjqSOLVv8A3Q6nkAdR2wwrtLyDXxR0p3Q/OATOQFyFV4Hish0JvuG5xo4d
+         KZed9yxKQqRJULKioPAfD33fkRaFbWcz3WM2gaG2q78xCvyMwQYIxbAgjOB+54UnQT
+         g+qXhT5jMrCB1PCnB+KYjEpEbjWUmdIY68h8XhNjyuIhNnlnZircAw0TBbF2cngkt9
+         p5BKB06tH6vIw==
+Date:   Mon, 17 Apr 2023 10:52:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Haiyang Zhang <haiyangz@microsoft.com>
+Cc:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Paul Rosswurm <paulros@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Long Li <longli@microsoft.com>,
+        "ssengar@linux.microsoft.com" <ssengar@linux.microsoft.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        Ajay Sharma <sharmaajay@microsoft.com>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V3,net-next, 3/4] net: mana: Enable RX path to handle
+ various MTU sizes
+Message-ID: <20230417105229.7d1eb988@kernel.org>
+In-Reply-To: <PH7PR21MB3116023068CFA8D600FA5B18CA9E9@PH7PR21MB3116.namprd21.prod.outlook.com>
+References: <1681334163-31084-1-git-send-email-haiyangz@microsoft.com>
+        <1681334163-31084-4-git-send-email-haiyangz@microsoft.com>
+        <20230414190608.3c21f44f@kernel.org>
+        <PH7PR21MB3116023068CFA8D600FA5B18CA9E9@PH7PR21MB3116.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.1
-Subject: Re: [PATCHv2 net] net: rpl: fix rpl header size calculation
-Content-Language: en-US
-To:     Alexander Aring <aahringo@redhat.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, alex.aring@gmail.com, daniel@iogearbox.net,
-        ymittal@redhat.com, mcascell@redhat.com,
-        torvalds@linuxfoundation.org, mcr@sandelman.ca
-References: <20230417130052.2316819-1-aahringo@redhat.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20230417130052.2316819-1-aahringo@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/17/23 7:00 AM, Alexander Aring wrote:
-> This patch fixes a missing 8 byte for the header size calculation. The
-> ipv6_rpl_srh_size() is used to check a skb_pull() on skb->data which
-> points to skb_transport_header(). Currently we only check on the
-> calculated addresses fields using CmprI and CmprE fields, see:
-> 
-> https://www.rfc-editor.org/rfc/rfc6554#section-3
-> 
-> there is however a missing 8 byte inside the calculation which stands
-> for the fields before the addresses field. Those 8 bytes are represented
-> by sizeof(struct ipv6_rpl_sr_hdr) expression.
-> 
-> Fixes: 8610c7c6e3bd ("net: ipv6: add support for rpl sr exthdr")
-> Signed-off-by: Alexander Aring <aahringo@redhat.com>
-> ---
-> changes since v2:
->  - use sizeof(struct ipv6_rpl_sr_hdr) instead of hardcoded 8
-> 
->  net/ipv6/rpl.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+On Sat, 15 Apr 2023 14:25:29 +0000 Haiyang Zhang wrote:
+> > Allocating frag larger than a page is not safe. =20
+>=20
+>  I saw other drivers doing this - use napi_alloc_frag for size bigger tha=
+n a page.
+> And it returns compound page. Why it's not safe? Should we use other allo=
+cator
+> when need compound pages?
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+I believe so. There was a thread about this within the last year.
+Someone was trying to fix the page frag allocator to not fall back
+to order 0 pages in case of failure if requested size is > PAGE_SIZE.
+But there was push back and folks were saying that it's simply not=20
+a case supported by the frag allocator. =F0=9F=A4=B7=EF=B8=8F
 
+> > Frag allocator falls back to allocating single pages, doesn't it? =20
+>=20
+> Actually I checked it. Compound page is still returned for size smaller t=
+han PAGE_SIZE,
+> so I used single page allocation for that.
+
+https://elixir.bootlin.com/linux/v6.3-rc6/source/mm/page_alloc.c#L5723
+
+Jumbo frames should really be supported as scatter transfers,=20
+if possible.
