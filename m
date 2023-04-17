@@ -2,53 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 063286E536A
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 22:58:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A1626E5370
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 22:58:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231288AbjDQU6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 16:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
+        id S230498AbjDQU6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 16:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230361AbjDQU6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 16:58:02 -0400
+        with ESMTP id S231130AbjDQU6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 16:58:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4614C17;
-        Mon, 17 Apr 2023 13:55:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D039747;
+        Mon, 17 Apr 2023 13:56:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C1C362A46;
-        Mon, 17 Apr 2023 20:54:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC1FC433EF;
-        Mon, 17 Apr 2023 20:54:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF82062A6A;
+        Mon, 17 Apr 2023 20:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9C33C433EF;
+        Mon, 17 Apr 2023 20:55:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681764894;
-        bh=moYYi4bJv8zGeQ0K0+Ne+l5Pi5iujfuXRILl1xpKhX4=;
+        s=k20201202; t=1681764937;
+        bh=buAWzCxZJq6sFI4FVlHCCkhTeXIXRB+HhrOpnqKq2Bo=;
         h=From:To:Cc:Subject:Date:From;
-        b=U80ja+1SzcQ202GY/MR/HKPGvEWUeI+Xc2gUAU5uNT5lGU/HSaRvyE8BxOaMLO5tL
-         xRIasBX5T/QwtzhQ+2rLuEKOV9HrGGBzOiYPEOxooWyM6UqZAi9oHAwYHb5ZHo/9t+
-         VavPigphAxfhdnYbUUn4LS17ceOwbrjNzAmhNzbP67u7QLV6PG9jI9BunFH9GieKBI
-         Rf4w/fSR1d4GJfu2B8zueaVftAseqsHM73MTVSRDQlMQGrlNarbhp6ks3tR8epgFrn
-         i4d56r8ZG895VfwH+ys+nUe4wioyJptqFqAChbslE+wIrTTtBaS4FJV5Vg+L1GmdSp
-         TBCz7Lip00L9w==
+        b=Yi/vRXGl+Fe7SQP2xUdVEqghN1XlXMudVEM97w32prLWMGIYMUIuY0ZcCTdrbu1f5
+         J9NkrHqcnFDdmdDp5Pd8Hsf/BGymT+zhvTr/0cTdnZQBTNLlUUdicBBLFR95ShPeA9
+         K65/Nr7u7QJ4b/afXFxmGEQsGyxp5wjCRicJt/FpnnRTOR3K8pmhLn9BXllMawhzAe
+         S5t2qDBsXvyjNSX3CY9IjGwiBm8UZCA7P2SdwDHuwq4eN4mNjKDsb9ZkEVJCpHLrcZ
+         +MldcW6U/WPovGo6wYxJztk4NxK2ZvwjjnTJ3zp+JHeywP0t9UXrYcrYR2Fc0W1RIj
+         7mB6ACQheIrkA==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>,
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Manikanta Pubbisetty <quic_mpubbise@quicinc.com>,
-        Wen Gong <quic_wgong@quicinc.com>,
-        Baochen Qiang <quic_bqiang@quicinc.com>,
-        Sowmiya Sree Elavalagan <quic_ssreeela@quicinc.com>,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath12k@lists.infradead.org
-Subject: [PATCH] wireless: ath: work around false-positive stringop-overread warning
-Date:   Mon, 17 Apr 2023 22:54:20 +0200
-Message-Id: <20230417205447.1800912-1-arnd@kernel.org>
+        Paolo Abeni <pabeni@redhat.com>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: mscc: ocelot: remove incompatible prototypes
+Date:   Mon, 17 Apr 2023 22:55:25 +0200
+Message-Id: <20230417205531.1880657-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,125 +61,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-In a rare arm64 randconfig build, I got multiple warnings for ath11k
-and ath12k:
+The types for the register argument changed recently, but there are
+still incompatible prototypes that got left behind, and gcc-13 warns
+about these:
 
-In function 'ath11k_peer_assoc_h_ht',
-    inlined from 'ath11k_peer_assoc_prepare' at drivers/net/wireless/ath/ath11k/mac.c:2665:2:
-drivers/net/wireless/ath/ath11k/mac.c:1709:13: error: 'ath11k_peer_assoc_h_ht_masked' reading 10 bytes from a region of size 0 [-Werror=stringop-overread]
- 1709 |         if (ath11k_peer_assoc_h_ht_masked(ht_mcs_mask))
-      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from drivers/net/ethernet/mscc/ocelot.c:13:
+drivers/net/ethernet/mscc/ocelot.h:97:5: error: conflicting types for 'ocelot_port_readl' due to enum/integer mismatch; have 'u32(struct ocelot_port *, u32)' {aka 'unsigned int(struct ocelot_port *, unsigned int)'} [-Werror=enum-int-mismatch]
+   97 | u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
+      |     ^~~~~~~~~~~~~~~~~
 
-This happens whenever gcc-13 fails to inline one of the functions
-that take a fixed-length array argument but gets passed a pointer.
+Just remove the two prototypes, and rely on the copy in the global
+header.
 
-Change these functions to all take a regular pointer argument
-instead.
-
+Fixes: 9ecd05794b8d ("net: mscc: ocelot: strengthen type of "u32 reg" in I/O accessors")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 12 ++++++------
- drivers/net/wireless/ath/ath12k/mac.c |  8 ++++----
- 2 files changed, 10 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.h | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index cad832e0e6b8..393669be7847 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -433,7 +433,7 @@ u8 ath11k_mac_bitrate_to_idx(const struct ieee80211_supported_band *sband,
- }
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index d920ca930690..ed024d6504c5 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -94,9 +94,6 @@ int ocelot_mact_forget(struct ocelot *ocelot,
+ struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port);
+ int ocelot_netdev_to_port(struct net_device *dev);
  
- static u32
--ath11k_mac_max_ht_nss(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
-+ath11k_mac_max_ht_nss(const u8 *ht_mcs_mask)
- {
- 	int nss;
- 
-@@ -445,7 +445,7 @@ ath11k_mac_max_ht_nss(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
- }
- 
- static u32
--ath11k_mac_max_vht_nss(const u16 vht_mcs_mask[NL80211_VHT_NSS_MAX])
-+ath11k_mac_max_vht_nss(const u16 *vht_mcs_mask)
- {
- 	int nss;
- 
-@@ -457,7 +457,7 @@ ath11k_mac_max_vht_nss(const u16 vht_mcs_mask[NL80211_VHT_NSS_MAX])
- }
- 
- static u32
--ath11k_mac_max_he_nss(const u16 he_mcs_mask[NL80211_HE_NSS_MAX])
-+ath11k_mac_max_he_nss(const u16 *he_mcs_mask)
- {
- 	int nss;
- 
-@@ -1658,7 +1658,7 @@ static void ath11k_peer_assoc_h_rates(struct ath11k *ar,
- }
- 
- static bool
--ath11k_peer_assoc_h_ht_masked(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
-+ath11k_peer_assoc_h_ht_masked(const u8 *ht_mcs_mask)
- {
- 	int nss;
- 
-@@ -1670,7 +1670,7 @@ ath11k_peer_assoc_h_ht_masked(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
- }
- 
- static bool
--ath11k_peer_assoc_h_vht_masked(const u16 vht_mcs_mask[])
-+ath11k_peer_assoc_h_vht_masked(const u16 *vht_mcs_mask)
- {
- 	int nss;
- 
-@@ -2065,7 +2065,7 @@ static u16 ath11k_peer_assoc_h_he_limit(u16 tx_mcs_set,
- }
- 
- static bool
--ath11k_peer_assoc_h_he_masked(const u16 he_mcs_mask[NL80211_HE_NSS_MAX])
-+ath11k_peer_assoc_h_he_masked(const u16 *he_mcs_mask)
- {
- 	int nss;
- 
-diff --git a/drivers/net/wireless/ath/ath12k/mac.c b/drivers/net/wireless/ath/ath12k/mac.c
-index d683a0668989..ea2313b6b759 100644
---- a/drivers/net/wireless/ath/ath12k/mac.c
-+++ b/drivers/net/wireless/ath/ath12k/mac.c
-@@ -381,7 +381,7 @@ u8 ath12k_mac_bitrate_to_idx(const struct ieee80211_supported_band *sband,
- }
- 
- static u32
--ath12k_mac_max_ht_nss(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
-+ath12k_mac_max_ht_nss(const u8 *ht_mcs_mask)
- {
- 	int nss;
- 
-@@ -393,7 +393,7 @@ ath12k_mac_max_ht_nss(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
- }
- 
- static u32
--ath12k_mac_max_vht_nss(const u16 vht_mcs_mask[NL80211_VHT_NSS_MAX])
-+ath12k_mac_max_vht_nss(const u16 *vht_mcs_mask)
- {
- 	int nss;
- 
-@@ -1303,7 +1303,7 @@ static void ath12k_peer_assoc_h_rates(struct ath12k *ar,
- }
- 
- static bool
--ath12k_peer_assoc_h_ht_masked(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
-+ath12k_peer_assoc_h_ht_masked(const u8 *ht_mcs_mask)
- {
- 	int nss;
- 
-@@ -1315,7 +1315,7 @@ ath12k_peer_assoc_h_ht_masked(const u8 ht_mcs_mask[IEEE80211_HT_MCS_MASK_LEN])
- }
- 
- static bool
--ath12k_peer_assoc_h_vht_masked(const u16 vht_mcs_mask[NL80211_VHT_NSS_MAX])
-+ath12k_peer_assoc_h_vht_masked(const u16 *vht_mcs_mask)
- {
- 	int nss;
- 
+-u32 ocelot_port_readl(struct ocelot_port *port, u32 reg);
+-void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
+-
+ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
+ 		      struct device_node *portnp);
+ void ocelot_release_port(struct ocelot_port *ocelot_port);
 -- 
 2.39.2
 
