@@ -2,119 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B409A6E424A
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 10:14:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E48C6E42B6
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 10:37:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230290AbjDQIN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 04:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60994 "EHLO
+        id S230033AbjDQIhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 04:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbjDQIN4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 04:13:56 -0400
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DDB40C3;
-        Mon, 17 Apr 2023 01:13:51 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 3696941F72;
-        Mon, 17 Apr 2023 08:13:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1681719229; bh=ZRiy6qdtYG9gSvsJM9Fbh019YpZ1VS/7JH0gfpCcJKU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=Oc4R2Shwbxp0hWo+owR+2A1muBziLfN7tJBDMEigI4MJqhVtKjxc0cAQNcqUmO9b9
-         irzIcKQWpVNPQswzja+uszpvPMGErPcizmkTnVwcDycDbE8lJDl02sZmYQLMXyYT/8
-         CI4sJ/dEHUCt+sdRXw56dq+Yexdwb24Ze0DYbB3bSDJ05hEmYNwTrh3LH6EbfgqCi3
-         /4nSRgfUURtfrPdHyssArJtaGVlUmNexRYA91CKomdbmkghoXNvtaIyGvwVv0EGXCi
-         McileHTjhm9GjWzr5DHFZWvoJM3SdMjq5tXWR/qGEwsEXLOKG/+TSD60fKYuw5KGlp
-         O3tihc2Vryu3g==
-Message-ID: <1201f65f-1b92-a121-05af-9f0290eb0c47@marcan.st>
-Date:   Mon, 17 Apr 2023 17:13:43 +0900
+        with ESMTP id S229604AbjDQIhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 04:37:42 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F1B1FEE;
+        Mon, 17 Apr 2023 01:37:40 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id d8-20020a05600c3ac800b003ee6e324b19so12681774wms.1;
+        Mon, 17 Apr 2023 01:37:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681720659; x=1684312659;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=1TS0efwUAAd7nlMdFggdSRaEYHBszL5PVl2VfDfaNHg=;
+        b=nVVXDYKM7dS4sxRa/jMCyNcxKoWwzHPzKRS0iVd6JdsLC4Yvf7HqH5uJYkZn6sPUaL
+         iCcJorJ9taEkn5S/3hZFlnNfdUXK8M9QZR9HeG/ElesAuSQ0SxIH3lplS8Z3IVQJ9tK2
+         8nfGLoQaiJgUbrvKa5++zjHL1JtK9vMOCOZ11G2mGaYsJtcN5AdMBQp7Mcy5E43bRwMA
+         4JUppzGWq8k1kaih4oTsHrEuznAt4v1Njjmr+1B2RtULOASeBzU5CCLFl18qC2Y5VYBW
+         jmlQ0p3MbMsR+GEyRUnpskMp+fYdwMXusiBhofFYKAd271MjGcWIR3P5YhGhFIQ8ZPBQ
+         jo8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681720659; x=1684312659;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1TS0efwUAAd7nlMdFggdSRaEYHBszL5PVl2VfDfaNHg=;
+        b=eXTICIODZXN9B43gR+uc4si7jF4inzrdzs4ytzNGSs4iObEm2NnM4/7VbYgyOUwOVL
+         q+hobA5MnxP3VoRG14SnG/kKvlIiXUhuaAAxzCR4zLuqHYX8lH0wy1vCRbjG19pId/oM
+         BzBeUxy+C4FkupLHR7d0K0pjkZSEvxhMYfTV9ITklf93oqCxBJXb8uRS8W2Pp/VLC/rf
+         9Wodz8v+7HoDTFb0bUXU0o8sJM1B+VjdJA0xME+BCmydRvOjLvIqvhT/ey12SnST63k+
+         AnCZx5ey7vbg2cK6AUzxH1x1pR7J7gQZ2Tq5BbyOVX2Cus0+NrR5ZB5U6X40kLaqGYh5
+         4Hcg==
+X-Gm-Message-State: AAQBX9d7eJjpSKsy1clMOBiyw3OT6N5h1c6WCXozkIKN5dfL9gajysSc
+        Nf8nVT1Lj063S4fZKA3VJgBku2d6HD8=
+X-Google-Smtp-Source: AKy350alSXGGOxruHJRLZ27Qv5gwxhcs5eIGFX7ZpE88yZEtv4l1XpzjXc4my9iIW8NDRUQO5YYFsQ==
+X-Received: by 2002:a05:600c:1e0f:b0:3f1:7510:62e8 with SMTP id ay15-20020a05600c1e0f00b003f1751062e8mr763946wmb.3.1681720659317;
+        Mon, 17 Apr 2023 01:37:39 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id t12-20020a5d460c000000b002c561805a4csm9943079wrq.45.2023.04.17.01.37.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Apr 2023 01:37:38 -0700 (PDT)
+Date:   Mon, 17 Apr 2023 11:37:30 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ladislav Michl <oss-lists@triops.cz>,
+        linux-staging@lists.linux.dev, netdev@vger.kernel.org,
+        linux-mips@vger.kernel.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: Re: [PATCH 2/3] staging: octeon: avoid needless device allocation
+Message-ID: <26dd05e9-befa-4190-ac3c-bf31d58a5f1e@kili.mountain>
+References: <ZDgNexVTEfyGo77d@lenoch>
+ <ZDgOLHw1IkmWVU79@lenoch>
+ <543bfbb6-af60-4b5d-abf8-0274ab0b713f@lunn.ch>
+ <ZDgxPet9RIDC9Oz1@lenoch>
+ <e2f5462d-5573-483c-9428-5f2b052cf939@lunn.ch>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 1/2] wifi: brcmfmac: Demote vendor-specific attach/detach
- messages to info
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
-        stable@vger.kernel.org
-References: <20230416-brcmfmac-noise-v1-0-f0624e408761@marcan.st>
- <20230416-brcmfmac-noise-v1-1-f0624e408761@marcan.st>
- <2023041631-crying-contour-5e11@gregkh>
- <8b2e7bb9-3681-0265-01bc-e7abdd0d08b8@marcan.st> <ZDz-F50Zlwkf2njN@kroah.com>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <ZDz-F50Zlwkf2njN@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e2f5462d-5573-483c-9428-5f2b052cf939@lunn.ch>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/04/2023 17.06, Greg KH wrote:
-> On Mon, Apr 17, 2023 at 04:54:33PM +0900, Hector Martin wrote:
->> On 16/04/2023 21.46, Greg KH wrote:
->>> On Sun, Apr 16, 2023 at 09:42:17PM +0900, Hector Martin wrote:
->>>> People are getting spooked by brcmfmac errors on their boot console.
->>>> There's no reason for these messages to be errors.
->>>>
->>>> Cc: stable@vger.kernel.org
->>>> Fixes: d6a5c562214f ("wifi: brcmfmac: add support for vendor-specific firmware api")
->>>> Signed-off-by: Hector Martin <marcan@marcan.st>
->>>> ---
->>>>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/core.c | 4 ++--
->>>>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/cyw/core.c | 4 ++--
->>>>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/wcc/core.c | 4 ++--
->>>>  3 files changed, 6 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/core.c
->>>> index ac3a36fa3640..c83bc435b257 100644
->>>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/core.c
->>>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/core.c
->>>> @@ -12,13 +12,13 @@
->>>>  
->>>>  static int brcmf_bca_attach(struct brcmf_pub *drvr)
->>>>  {
->>>> -	pr_err("%s: executing\n", __func__);
->>>> +	pr_info("%s: executing\n", __func__);
->>>
->>> Why are these here at all?  Please just remove these entirely, you can
->>> get this information normally with ftrace.
->>>
->>> Or, just delete these functions, why have empty ones at all?
->>
->> This is a new WIP code path that Arend introduced which currently
->> deliberately does nothing (but is intended to hold firmware vendor
->> specific init in the future). So we can just drop the messages, but I
->> don't think we want to remove the code entirely.
+On Thu, Apr 13, 2023 at 07:20:08PM +0200, Andrew Lunn wrote:
+> > I was asking this question myself and then came to this:
+> > Converting driver to phylink makes separating different macs easier as
+> > this driver is splitted between staging and arch/mips/cavium-octeon/executive/
+> > However I'll provide changes spotted previously as separate preparational
+> > patches. Would that work for you?
 > 
-> Why have empty functions that do nothing?  If you want to put
-> vendor-specific anything in here, add it when that is needed.  We don't
-> like having dead code laying around in the kernel if at all possible.
+> Is you end goal to get this out of staging? phylib vs phylink is not a
+> reason to keep it in staging.
+> 
+> It just seems odd to be adding new features to a staging driver. As a
+> bit of a "carrot and stick" maybe we should say you cannot add new
+> features until it is ready to move out of staging?
 
-That's a question for Arend. But I think we should not be blocking this
-fix on that. I'll send a v2 that just removes the messages.
+We already have that rule.  But I don't know anything about phy vs
+phylink...
 
-
-- Hector
+regards,
+dan carpenter
 
