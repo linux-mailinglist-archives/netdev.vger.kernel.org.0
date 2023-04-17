@@ -2,119 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 332886E3FA3
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 08:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF9376E3FE1
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 08:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229763AbjDQGVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 02:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
+        id S229995AbjDQGiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 02:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbjDQGVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 02:21:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D0A3593
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 23:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681712426;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ePbMyRA1sPZRgCUtm4jF6vrpMcXUEcAn5cv4sWSGRdg=;
-        b=HnFmpt8n9LNrWigutZzu/ISfmmZSYwMzT6SUZb7MXFtmZbVE2nQex6bi8ZRf+9dLGXkk7b
-        FLZ+lapY69suM5oCVameST1+WBGAxG99+w3V+p8b/JijXDDH9uzBf72vLvN6jSXFH29pY+
-        8Y32TVqQrVwxTJa0usvG/cvWtmBAepk=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-30-XmzC21OKPbO1NJ4qOQ8k0g-1; Mon, 17 Apr 2023 02:20:24 -0400
-X-MC-Unique: XmzC21OKPbO1NJ4qOQ8k0g-1
-Received: by mail-qt1-f197.google.com with SMTP id 13-20020ac8570d000000b003e37d3e6de2so17432048qtw.16
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 23:20:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681712424; x=1684304424;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ePbMyRA1sPZRgCUtm4jF6vrpMcXUEcAn5cv4sWSGRdg=;
-        b=ls2V/L5NE9m89luWawGbXtvA4bcsxvtgeKMW3scwTZgi7OIDce5J2bnVhkKDYS37al
-         b3PIskpA5Np+EA+GXhXpQlahgiogs5wPWgjTZG9OXLsXwixrkSQQ0MXECEl0qaF1+ePf
-         oNgqA3RO+XnSHLjcqlw96TEUSS895iNWhEr7n3v8VcT4+Hx+Ld2m3A69mYAOgf0GJ92E
-         7FST3qGeucEFUq6ZUWe2kvop1Mb0YVvvp7blcku0Y+gpAoe7+wqpqfqwopVSwjW6FqIP
-         tOU5L3WBJAtcvuOkhWNsfX4YWVH7JZoFazMrG5ZGtGu0S07Szao4PZLIqHdcr9OczW1k
-         mrng==
-X-Gm-Message-State: AAQBX9dUHA/Pe0BpokVia9ONtLX/9M60ZVYrU906RrBwLXtLowj5AV1+
-        z8coq7R131CllpFj5XFPT0ZUZupyJQuplC/BOA1gzebkt0ekXCjxK2Rwk1kNYiOTZOeuBHpGzua
-        2kYr9qkkX7EEQciKm
-X-Received: by 2002:a05:6214:400e:b0:5ef:5503:d41c with SMTP id kd14-20020a056214400e00b005ef5503d41cmr13070241qvb.15.1681712424108;
-        Sun, 16 Apr 2023 23:20:24 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YGBvzLQl8TSywlbRHoWsuwzUmdZAtbC2GsJy/SU9rWuxjFVNqOx/mP7CdWEeGgZjqG0Nm5bg==
-X-Received: by 2002:a05:6214:400e:b0:5ef:5503:d41c with SMTP id kd14-20020a056214400e00b005ef5503d41cmr13070223qvb.15.1681712423865;
-        Sun, 16 Apr 2023 23:20:23 -0700 (PDT)
-Received: from redhat.com ([185.199.103.251])
-        by smtp.gmail.com with ESMTPSA id lx4-20020a0562145f0400b005ef42af7eb7sm2870554qvb.25.2023.04.16.23.20.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Apr 2023 23:20:23 -0700 (PDT)
-Date:   Mon, 17 Apr 2023 02:20:16 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Alvaro Karsz <alvaro.karsz@solid-run.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] virtio-net: reject small vring sizes
-Message-ID: <20230417021725-mutt-send-email-mst@kernel.org>
-References: <20230416074607.292616-1-alvaro.karsz@solid-run.com>
- <AM0PR04MB4723C6E99A217F51973710F5D49F9@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230416164453-mutt-send-email-mst@kernel.org>
- <CACGkMEvFhVyWb5+ET_akPvnjUq04+ZbJC8o_GtNBWqSMGNum8A@mail.gmail.com>
+        with ESMTP id S229754AbjDQGip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 02:38:45 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362611729;
+        Sun, 16 Apr 2023 23:38:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681713524; x=1713249524;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=APSV8unHo6232fDV6VKenS3ZBFA96bR9koTl2+6CQjk=;
+  b=NUGYxRJKyfxby7dQaJ2TAH10e1KBy6u2NmRnNEhLQXm+5kGHGy5LL+am
+   Y4/I5Xki9D/xYYJ/Vv4kHGgl3CPmrmn5kAviZ/YICis3SwHrS18SQmig/
+   PRQDbfNQTD4sLejJ2A3n2MjChIYraXxjS0QqKz42aIwX6/7+p7G82o1JA
+   KijFLwNKwudb6O+ngV0dhG+1yqqqvLK9Lrc0QfakUumZaqhpBcfF9oUmj
+   JZGCbHlv0br+eDQlg8T92Cc7LAGCnXzLF3EAvZcOojZPk2PXJTTVGaFxv
+   18DeZXAQbIDD0XzZpcJvGabbG6b+ZG5/jEGlDei+5vyUFgk3qmXwVxsGV
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="325162559"
+X-IronPort-AV: E=Sophos;i="5.99,203,1677571200"; 
+   d="scan'208";a="325162559"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2023 23:38:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="684051518"
+X-IronPort-AV: E=Sophos;i="5.99,203,1677571200"; 
+   d="scan'208";a="684051518"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 16 Apr 2023 23:38:37 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1poIVZ-000cD3-0V;
+        Mon, 17 Apr 2023 06:38:37 +0000
+Date:   Mon, 17 Apr 2023 14:38:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
+Message-ID: <202304171427.Uaryn9jl-lkp@intel.com>
+References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEvFhVyWb5+ET_akPvnjUq04+ZbJC8o_GtNBWqSMGNum8A@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 17, 2023 at 11:24:16AM +0800, Jason Wang wrote:
-> On Mon, Apr 17, 2023 at 4:45 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Sun, Apr 16, 2023 at 04:54:57PM +0000, Alvaro Karsz wrote:
-> > > After further consideration, other virtio drivers need a minimum limit to the vring size too.
-> > >
-> > > Maybe this can be more general, for example a new virtio_driver callback that is called (if implemented) during virtio_dev_probe, before drv->probe.
-> > >
-> > > What do you think?
-> > >
-> > > Thanks,
-> > > Alvaro
-> >
-> > Let's start with what you did here, when more than 2 drivers do it we'll
-> > move it to core.
-> 
-> I wonder how hard it is to let virtio support small vring size?
-> 
-> Thanks
+Hi Xuan,
 
-Actually, I think that all you need to do is disable NETIF_F_SG,
-and things will work, no?
-Alvaro, can you try?
+kernel test robot noticed the following build errors:
+
+[auto build test ERROR on net-next/main]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Xuan-Zhuo/xsk-introduce-xsk_dma_ops/20230417-112903
+patch link:    https://lore.kernel.org/r/20230417032750.7086-1-xuanzhuo%40linux.alibaba.com
+patch subject: [PATCH net-next] xsk: introduce xsk_dma_ops
+config: i386-randconfig-a011-20230417 (https://download.01.org/0day-ci/archive/20230417/202304171427.Uaryn9jl-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/28e766603a33761d7bd1fdd3e107595408319f7d
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Xuan-Zhuo/xsk-introduce-xsk_dma_ops/20230417-112903
+        git checkout 28e766603a33761d7bd1fdd3e107595408319f7d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/
+
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202304171427.Uaryn9jl-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> net/xdp/xsk_buff_pool.c:430:26: error: incompatible function pointer types assigning to 'dma_addr_t (*)(struct device *, struct page *, unsigned long, size_t, enum dma_data_direction, unsigned long)' (aka 'unsigned int (*)(struct device *, struct page *, unsigned long, unsigned int, enum dma_data_direction, unsigned long)') from 'dma_addr_t (struct device *, struct page *, size_t, size_t, enum dma_data_direction, unsigned long)' (aka 'unsigned int (struct device *, struct page *, unsigned int, unsigned int, enum dma_data_direction, unsigned long)') [-Werror,-Wincompatible-function-pointer-types]
+                   pool->dma_ops.map_page = dma_map_page_attrs;
+                                          ^ ~~~~~~~~~~~~~~~~~~
+   1 error generated.
 
 
-> >
-> > --
-> > MST
-> >
+vim +430 net/xdp/xsk_buff_pool.c
 
+   409	
+   410	int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
+   411		       struct xsk_dma_ops *dma_ops,
+   412		       unsigned long attrs, struct page **pages, u32 nr_pages)
+   413	{
+   414		struct xsk_dma_map *dma_map;
+   415		dma_addr_t dma;
+   416		int err;
+   417		u32 i;
+   418	
+   419		dma_map = xp_find_dma_map(pool);
+   420		if (dma_map) {
+   421			err = xp_init_dma_info(pool, dma_map);
+   422			if (err)
+   423				return err;
+   424	
+   425			refcount_inc(&dma_map->users);
+   426			return 0;
+   427		}
+   428	
+   429		if (!dma_ops) {
+ > 430			pool->dma_ops.map_page = dma_map_page_attrs;
+   431			pool->dma_ops.mapping_error = dma_mapping_error;
+   432			pool->dma_ops.need_sync = dma_need_sync;
+   433			pool->dma_ops.sync_single_range_for_device = dma_sync_single_range_for_device;
+   434			pool->dma_ops.sync_single_range_for_cpu = dma_sync_single_range_for_cpu;
+   435			dma_ops = &pool->dma_ops;
+   436		} else {
+   437			pool->dma_ops = *dma_ops;
+   438		}
+   439	
+   440		dma_map = xp_create_dma_map(dev, pool->netdev, nr_pages, pool->umem);
+   441		if (!dma_map)
+   442			return -ENOMEM;
+   443	
+   444		for (i = 0; i < dma_map->dma_pages_cnt; i++) {
+   445			dma = dma_ops->map_page(dev, pages[i], 0, PAGE_SIZE,
+   446						DMA_BIDIRECTIONAL, attrs);
+   447			if (dma_ops->mapping_error(dev, dma)) {
+   448				__xp_dma_unmap(dma_map, dma_ops, attrs);
+   449				return -ENOMEM;
+   450			}
+   451			if (dma_ops->need_sync(dev, dma))
+   452				dma_map->dma_need_sync = true;
+   453			dma_map->dma_pages[i] = dma;
+   454		}
+   455	
+   456		if (pool->unaligned)
+   457			xp_check_dma_contiguity(dma_map);
+   458	
+   459		err = xp_init_dma_info(pool, dma_map);
+   460		if (err) {
+   461			__xp_dma_unmap(dma_map, dma_ops, attrs);
+   462			return err;
+   463		}
+   464	
+   465		return 0;
+   466	}
+   467	EXPORT_SYMBOL(xp_dma_map);
+   468	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
