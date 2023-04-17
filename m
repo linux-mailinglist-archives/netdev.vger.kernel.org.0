@@ -2,48 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC126E4A28
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 15:42:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 291BF6E4A25
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 15:42:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbjDQNmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 09:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
+        id S230361AbjDQNmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 09:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230514AbjDQNmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 09:42:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B5C7EFD;
-        Mon, 17 Apr 2023 06:42:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07BE3624FA;
-        Mon, 17 Apr 2023 13:42:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AF26C43443;
-        Mon, 17 Apr 2023 13:42:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681738935;
-        bh=QzqCugjzQH1Lr4AppRKbCr+Vu0Q06zyTuT7vZV5X6tc=;
-        h=Subject:From:To:Date:From;
-        b=ZoAqjkJK+bP8KqGmqxdl3dSpW/HDfrTExOruOzAn2krRF/PE8n5ExawRf/obl9y+l
-         BXwf50bdQb8Qm/UWZhVIkTzSmMRsbjfouLGWvs/cUYFRcHNEv09gjolI8BVxOGn54a
-         PuhmSEUnXFCwOhiuX36P9QSfuCyNmjUyp/Juz3WCECdSMNLd/3libhqnZgv9Q5Zakp
-         6rBSk/JGSQeBmk+K/Bry8EihOuQn806z5cF1nFU0/vLXnPZlmHFHYMq0rtfS3f/WT3
-         MZMwJv6P7lP9nxxYiRI7uxXYcU/n9yhvTOAcyGTlgRNKk17MjwNWKihfXrlNV6nB44
-         YYmO4Fm9qp9EA==
-Subject: [PATCH] SUNRPC: Recognize control messages in server-side TCP socket
- code
-From:   Chuck Lever <cel@kernel.org>
-To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org
-Date:   Mon, 17 Apr 2023 09:42:14 -0400
-Message-ID: <168173882205.9129.1071917922340260936.stgit@91.116.238.104.host.secureserver.net>
-User-Agent: StGit/1.5
+        with ESMTP id S230387AbjDQNmI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 09:42:08 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EED91FF0
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 06:42:06 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-94f1d0d2e03so106760166b.0
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 06:42:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dectris.com; s=google; t=1681738924; x=1684330924;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=t7q804lvwVfzVDb04S7d3arCFTMYVaFz/3CbX2I4M+g=;
+        b=PTdEhXsvOAH0NPbH1KvjkZ30CxIHea9a8M5x6iGhsGoklYTu1JOGyiFtJX7SBQ6/Pa
+         vs4nXR2w66a9tH/pLotuNt1vTLJLChWL7bCGco6Fn2ot9MZG+7dX8RuPqp9zuVeJTuKS
+         zd8m4H8fbbi2iI4HKkjtQsJIC/p0yj4RM+OsI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681738924; x=1684330924;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=t7q804lvwVfzVDb04S7d3arCFTMYVaFz/3CbX2I4M+g=;
+        b=PQCfuLoiyR0WiCSZuAZsF8NFWZ1GVXj/oXANpuQvn4N8U7ALC9mTFWuVCvFUlih16C
+         7fQ528wrVhiAQj7JxRHfXbEhKzyhlpL9IUA0U1gZqIk6u/VDxArMQCPNHFhI/z3ITXvb
+         3ZWwjXk/RUZCFBDDKIeTr3HqtfL3kOcJ+YHtGZKla22CVYvCXX88cD7VeWJCl5xlQ5VO
+         duWa3kRFdj99OojyNSNH3RNdU7bKehyiQ/9bNRMA4AWt6Z9GR87zyLdQW/ZO5F6b6ET0
+         RM+nLgd3bCSGqzL6Hyf2dyXcumW5vyrPaoRQLO50rYMWirHqEebJ7fKgReirFRqAMIjb
+         vYWA==
+X-Gm-Message-State: AAQBX9c/IxtpaWIhkzXQaatRapj+syqoXTPm551l7PUbOyYy4U2aIXwO
+        vdFT5Fsx042s4YsW9l2UaCBqMUPO+n0IoTWkO+iujQ==
+X-Google-Smtp-Source: AKy350Zg3QLHvnw/95Q6vTliZqLHidyDkByatnyFjttjBqUdRRoocqimA7oznXx8BAS5QIBs7O/4aw1cWeaH5bWr/TA=
+X-Received: by 2002:a50:9f88:0:b0:4fb:7e7a:ebf1 with SMTP id
+ c8-20020a509f88000000b004fb7e7aebf1mr7231823edf.6.1681738922075; Mon, 17 Apr
+ 2023 06:42:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20230406130205.49996-1-kal.conley@dectris.com>
+ <20230406130205.49996-2-kal.conley@dectris.com> <87sfdckgaa.fsf@toke.dk>
+ <ZDBEng1KEEG5lOA6@boxer> <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
+ <875ya12phx.fsf@toke.dk> <CAHApi-=rMHt7uR8Sw1Vw+MHDrtkyt=jSvTvwz8XKV7SEb01CmQ@mail.gmail.com>
+ <87ile011kz.fsf@toke.dk> <CAHApi-m4gu8SX_1rBtUwrw+1-Q3ERFEX-HPMcwcCK1OceirwuA@mail.gmail.com>
+ <87o7nrzeww.fsf@toke.dk> <CAJ8uoz3Rts2Xfhqq+0cm3GES=dMb2hTqPzGm515oG_nmt=-Nbg@mail.gmail.com>
+ <87o7nmwul7.fsf@toke.dk>
+In-Reply-To: <87o7nmwul7.fsf@toke.dk>
+From:   Kal Cutter Conley <kal.conley@dectris.com>
+Date:   Mon, 17 Apr 2023 15:46:46 +0200
+Message-ID: <CAHApi-nSpUSVjeAX=UQEYGd2=H+DJ+xQYPvP8yQMuosGq22-Vg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/3] xsk: Support UMEM chunk_size > PAGE_SIZE
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,171 +83,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+> > We will measure it and get back to you. Would be good with some
+> > numbers.
+>
+> Sounds good, thanks! :)
+>
+> -Toke
+>
 
-To support kTLS, the server-side TCP socket code needs to watch for
-CMSGs, just like on the client side.
-
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
----
- include/net/tls.h             |    2 ++
- include/trace/events/sunrpc.h |   39 +++++++++++++++++++++++++++++++++
- net/sunrpc/svcsock.c          |   49 +++++++++++++++++++++++++++++++++++++++--
- 3 files changed, 88 insertions(+), 2 deletions(-)
-
-I'm planning to add this to nfsd-next, as it can be applied before
-the net/handshake/ changes go in.
-
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 154949c7b0c8..6056ce5a2aa5 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -69,6 +69,8 @@ extern const struct tls_cipher_size_desc tls_cipher_size_desc[];
- 
- #define TLS_CRYPTO_INFO_READY(info)	((info)->cipher_type)
- 
-+#define TLS_RECORD_TYPE_ALERT		0x15
-+#define TLS_RECORD_TYPE_HANDSHAKE	0x16
- #define TLS_RECORD_TYPE_DATA		0x17
- 
- #define TLS_AAD_SPACE_SIZE		13
-diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
-index 3ca54536f8f7..3ffb82956bd1 100644
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -49,6 +49,19 @@ TRACE_DEFINE_ENUM(AF_INET6);
- 		{ AF_INET,		"AF_INET" },		\
- 		{ AF_INET6,		"AF_INET6" })
- 
-+/*
-+ * From https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml
-+ */
-+#define rpc_show_tls_content_type(type) \
-+	__print_symbolic(type, \
-+		{ 20,		"change cipher spec" }, \
-+		{ 21,		"alert" }, \
-+		{ 22,		"handshake" }, \
-+		{ 23,		"application data" }, \
-+		{ 24,		"heartbeat" }, \
-+		{ 25,		"tls12_cid" }, \
-+		{ 26,		"ACK" })
-+
- DECLARE_EVENT_CLASS(rpc_xdr_buf_class,
- 	TP_PROTO(
- 		const struct rpc_task *task,
-@@ -2254,6 +2267,32 @@ DECLARE_EVENT_CLASS(svcsock_accept_class,
- DEFINE_ACCEPT_EVENT(accept);
- DEFINE_ACCEPT_EVENT(getpeername);
- 
-+TRACE_EVENT(svcsock_tls_ctype,
-+	TP_PROTO(
-+		const struct svc_xprt *xprt,
-+		unsigned char ctype
-+	),
-+
-+	TP_ARGS(xprt, ctype),
-+
-+	TP_STRUCT__entry(
-+		SVC_XPRT_ENDPOINT_FIELDS(xprt)
-+
-+		__field(unsigned long, ctype)
-+	),
-+
-+	TP_fast_assign(
-+		SVC_XPRT_ENDPOINT_ASSIGNMENTS(xprt);
-+
-+		__entry->ctype = ctype;
-+	),
-+
-+	TP_printk(SVC_XPRT_ENDPOINT_FORMAT " %s",
-+		SVC_XPRT_ENDPOINT_VARARGS,
-+		rpc_show_tls_content_type(__entry->ctype)
-+	)
-+);
-+
- DECLARE_EVENT_CLASS(cache_event,
- 	TP_PROTO(
- 		const struct cache_detail *cd,
-diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
-index 03a4f5615086..c8cbe3b5182d 100644
---- a/net/sunrpc/svcsock.c
-+++ b/net/sunrpc/svcsock.c
-@@ -43,6 +43,7 @@
- #include <net/udp.h>
- #include <net/tcp.h>
- #include <net/tcp_states.h>
-+#include <net/tls.h>
- #include <linux/uaccess.h>
- #include <linux/highmem.h>
- #include <asm/ioctls.h>
-@@ -216,6 +217,50 @@ static int svc_one_sock_name(struct svc_sock *svsk, char *buf, int remaining)
- 	return len;
- }
- 
-+static int
-+svc_tcp_sock_process_cmsg(struct svc_sock *svsk, struct msghdr *msg,
-+			  struct cmsghdr *cmsg, int ret)
-+{
-+	if (cmsg->cmsg_level == SOL_TLS &&
-+	    cmsg->cmsg_type == TLS_GET_RECORD_TYPE) {
-+		u8 content_type = *((u8 *)CMSG_DATA(cmsg));
-+
-+		trace_svcsock_tls_ctype(&svsk->sk_xprt, content_type);
-+		switch (content_type) {
-+		case TLS_RECORD_TYPE_DATA:
-+			/* TLS sets EOR at the end of each application data
-+			 * record, even though there might be more frames
-+			 * waiting to be decrypted.
-+			 */
-+			msg->msg_flags &= ~MSG_EOR;
-+			break;
-+		case TLS_RECORD_TYPE_ALERT:
-+			ret = -ENOTCONN;
-+			break;
-+		default:
-+			ret = -EAGAIN;
-+		}
-+	}
-+	return ret;
-+}
-+
-+static int
-+svc_tcp_sock_recv_cmsg(struct svc_sock *svsk, struct msghdr *msg)
-+{
-+	union {
-+		struct cmsghdr	cmsg;
-+		u8		buf[CMSG_SPACE(sizeof(u8))];
-+	} u;
-+	int ret;
-+
-+	msg->msg_control = &u;
-+	msg->msg_controllen = sizeof(u);
-+	ret = sock_recvmsg(svsk->sk_sock, msg, MSG_DONTWAIT);
-+	if (unlikely(msg->msg_controllen != sizeof(u)))
-+		ret = svc_tcp_sock_process_cmsg(svsk, msg, &u.cmsg, ret);
-+	return ret;
-+}
-+
- #if ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE
- static void svc_flush_bvec(const struct bio_vec *bvec, size_t size, size_t seek)
- {
-@@ -263,7 +308,7 @@ static ssize_t svc_tcp_read_msg(struct svc_rqst *rqstp, size_t buflen,
- 		iov_iter_advance(&msg.msg_iter, seek);
- 		buflen -= seek;
- 	}
--	len = sock_recvmsg(svsk->sk_sock, &msg, MSG_DONTWAIT);
-+	len = svc_tcp_sock_recv_cmsg(svsk, &msg);
- 	if (len > 0)
- 		svc_flush_bvec(bvec, len, seek);
- 
-@@ -877,7 +922,7 @@ static ssize_t svc_tcp_read_marker(struct svc_sock *svsk,
- 		iov.iov_base = ((char *)&svsk->sk_marker) + svsk->sk_tcplen;
- 		iov.iov_len  = want;
- 		iov_iter_kvec(&msg.msg_iter, ITER_DEST, &iov, 1, want);
--		len = sock_recvmsg(svsk->sk_sock, &msg, MSG_DONTWAIT);
-+		len = svc_tcp_sock_recv_cmsg(svsk, &msg);
- 		if (len < 0)
- 			return len;
- 		svsk->sk_tcplen += len;
-
-
++1. Thanks a lot for doing this! :-)
