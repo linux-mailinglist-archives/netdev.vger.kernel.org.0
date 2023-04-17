@@ -2,93 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 564346E434E
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FFF66E438F
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:21:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbjDQJKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 05:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41278 "EHLO
+        id S230487AbjDQJVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 05:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbjDQJKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:10:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1D7184;
-        Mon, 17 Apr 2023 02:10:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC2076108F;
-        Mon, 17 Apr 2023 09:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 30B5CC433A4;
-        Mon, 17 Apr 2023 09:10:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681722618;
-        bh=s1LfW34HbO3mT+PyzMnStn20sJg5U9nSWN5qtvT69JY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Zgsun1SGdjzkxtKRMjor6dPsQMVH+IXC7yenEe5lGj24688Zhc7n9O+Cza3YahPWi
-         MjqIkDLLUQbNUHx2W6IYXKkxn3xeTIeeP3UdOG+YFEk3snG34HGn/LIQkm3AoSfaMI
-         PZr3zuonPXsPjes60ngUCQqbKWUAQPsqQwvIdCu13fJKxxfRINOWjgiMW760wXsMkm
-         QJck+6ptDLUch3dsoWU7cxHu30qTubjoxZj198VUA1n/GgNuKYTQVu7bPFuQOKm7vN
-         QahiwiL9mqRfBqpsVXSX3iU1XLdTogh9QNitcmaBoo0xFxAfEHHOfYiPnG/NigW7Qk
-         AbvDU5P09pqtA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1CD2AC41671;
-        Mon, 17 Apr 2023 09:10:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231171AbjDQJVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:21:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A587040FD
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:20:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681723217;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vNVnMNLujGbpw5r7sYnlsLlVBFalrrcN8dNsOuZXTw0=;
+        b=LvSWET45AKADXPG2360TOKh/wZ0nwHafApESXq4iCJn4EJwaOJHsHkfl+8gwdyAbxArc40
+        XuzNDHAxTdA5kz0gZha8v9TTzwBMZavdtROwvhETxDYqCKUha5NalqR0WfVofUGDj5CTIl
+        t62f/sSRcisTirF29swZVEM/Oru4aTY=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-626-vCJPLSAoP-yscsrtY9q6Dg-1; Mon, 17 Apr 2023 05:20:16 -0400
+X-MC-Unique: vCJPLSAoP-yscsrtY9q6Dg-1
+Received: by mail-qt1-f200.google.com with SMTP id l20-20020a05622a051400b003e6d92a606bso12799561qtx.14
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:20:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681723216; x=1684315216;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vNVnMNLujGbpw5r7sYnlsLlVBFalrrcN8dNsOuZXTw0=;
+        b=eUYeeN+ZqQRcO44r1/B2EndC0LekDdE8BIKFzbwNlzCKQ34+8/vWUsee65nyeMNWJW
+         8yBFbiwLxdPE2pTZhc2ILPkSyXoxazc5FZoASVioGXNY7zkrxt1SorwBvgbTSlc4vYYL
+         AJeif/HFJyVzIz0LVDdkwofDuEt8BIaOSTXrzEOWRDt5R1W2OMSNrRj77am7XIpK/WAH
+         myRxI9zQs7oo68IODbKSHnM9QsSbz/WDHZ/KvQwc8kYQtP3SQ5R7PE0/x2JCs0W90cJW
+         z2DZROaqEoc+pqGxbjW+3e/VZCnOt4ekWF8hjhBU6vrcaaHKpycEYKOhggU/FLvyS4n9
+         NB4Q==
+X-Gm-Message-State: AAQBX9fXIXRjTJXgcQ8NmYaJ6DP7iK+mav1HNC0PSiIXyKGFN1FsUaAr
+        uE15WaEuG2skj/K0YcCnlRLoUF3n9VLMpoCWGkGDoDeQdMbgH1k7ebeb7c/o7hT0gBkPY4DXyHN
+        DkGM1yXI1/qN7DX6j
+X-Received: by 2002:a05:622a:550:b0:3e6:35d9:2c14 with SMTP id m16-20020a05622a055000b003e635d92c14mr25324985qtx.19.1681723216016;
+        Mon, 17 Apr 2023 02:20:16 -0700 (PDT)
+X-Google-Smtp-Source: AKy350b2JvceDDe59kay7fdrE1cUYDltBYRWJcjOLEX8d+sK0DHfxcKJlAzVlK4Jy62gtSq9j6RpqQ==
+X-Received: by 2002:a05:622a:550:b0:3e6:35d9:2c14 with SMTP id m16-20020a05622a055000b003e635d92c14mr25324970qtx.19.1681723215756;
+        Mon, 17 Apr 2023 02:20:15 -0700 (PDT)
+Received: from redhat.com ([185.199.103.251])
+        by smtp.gmail.com with ESMTPSA id bp11-20020a05620a458b00b0074cf9d16cb0sm1481988qkb.14.2023.04.17.02.20.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Apr 2023 02:20:15 -0700 (PDT)
+Date:   Mon, 17 Apr 2023 05:20:09 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] virtio-net: reject small vring sizes
+Message-ID: <20230417051816-mutt-send-email-mst@kernel.org>
+References: <20230416074607.292616-1-alvaro.karsz@solid-run.com>
+ <AM0PR04MB4723C6E99A217F51973710F5D49F9@AM0PR04MB4723.eurprd04.prod.outlook.com>
+ <20230416164453-mutt-send-email-mst@kernel.org>
+ <CACGkMEvFhVyWb5+ET_akPvnjUq04+ZbJC8o_GtNBWqSMGNum8A@mail.gmail.com>
+ <20230417021725-mutt-send-email-mst@kernel.org>
+ <AM0PR04MB4723B8489F8F9AE547393697D49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
+ <20230417023911-mutt-send-email-mst@kernel.org>
+ <AM0PR04MB47237BFB8BB3A3606CE6A408D49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
+ <20230417030713-mutt-send-email-mst@kernel.org>
+ <AM0PR04MB4723F3E6AE381AEC36D1AEFED49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] net: lan966x: Fix lan966x_ifh_get
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168172261811.15038.16817506134246083611.git-patchwork-notify@kernel.org>
-Date:   Mon, 17 Apr 2023 09:10:18 +0000
-References: <20230417072641.1656960-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20230417072641.1656960-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, UNGLinuxDriver@microchip.com,
-        aleksander.lobakin@intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM0PR04MB4723F3E6AE381AEC36D1AEFED49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
-
-On Mon, 17 Apr 2023 09:26:41 +0200 you wrote:
-> From time to time, it was observed that the nanosecond part of the
-> received timestamp, which is extracted from the IFH, it was actually
-> bigger than 1 second. So then when actually calculating the full
-> received timestamp, based on the nanosecond part from IFH and the second
-> part which is read from HW, it was actually wrong.
+On Mon, Apr 17, 2023 at 07:33:58AM +0000, Alvaro Karsz wrote:
+> > > > > > Actually, I think that all you need to do is disable NETIF_F_SG,
+> > > > > > and things will work, no?
+> > > > >
+> > > > > I think that this is not so simple, if I understand correctly, by disabling NETIF_F_SG we will never receive a chained skbs to transmit, but we still have more functionality to address, for example:
+> > > > > * The TX timeouts.
+> > > >
+> > > > I don't get it. With a linear skb we can transmit it as long as there's
+> > > > space for 2 entries in the vq: header and data. What's the source of the
+> > > > timeouts?
+> > > >
+> > >
+> > > I'm not saying that this is not possible, I meant that we need more changes to virtio-net.
+> > > The source of the timeouts is from the current implementation of virtnet_poll_tx.
+> > >
+> > > if (sq->vq->num_free >= 2 + MAX_SKB_FRAGS)
+> > >       netif_tx_wake_queue(txq);
+> > 
+> > Oh right. So this should check NETIF_F_SG then.
+> > BTW both ring size and s/g can be tweaked by ethtool, also
+> > needs handling.
+> > 
 > 
-> The issue seems to be inside the function lan966x_ifh_get, which
-> extracts information from an IFH(which is an byte array) and returns the
-> value in a u64. When extracting the timestamp value from the IFH, which
-> starts at bit 192 and have the size of 32 bits, then if the most
-> significant bit was set in the timestamp, then this bit was extended
-> then the return value became 0xffffffff... . And the reason of this is
-> because constants without any postfix are treated as signed longs and
-> that is the reason why '1 << 31' becomes 0xffffffff80000000.
-> This is fixed by adding the postfix 'ULL' to 1.
+> Good point.
 > 
-> [...]
+> > >
+> > > > > * Guest GSO/big MTU (without VIRTIO_NET_F_MRG_RXBUF?), we can't chain page size buffers anymore.
+> > > >
+> > > > I think we can.  mergeable_min_buf_len will just be large.
+> > > >
+> > >
+> > > I meant that we can't just by clearing NETIF_F_SG, we'll need to change virtio-net a little bit more, for example, the virtnet_set_big_packets function.
+> > >
+> > 
+> > Right - for RX, big_packets_num_skbfrags ignores ring size and that's
+> > probably a bug if mtu is very large.
+> > 
+> 
+> So, what do you think, we should fix virtio-net to work with smaller rings? we should fail probe?
+> 
+> I think that since this never came up until now, there is no big demand to such small rings.
 
-Here is the summary with links:
-  - [net-next,v2] net: lan966x: Fix lan966x_ifh_get
-    https://git.kernel.org/netdev/net-next/c/99676a576641
+The worry is that once we start failing probe there's just a tiny chance
+hosts begin to rely on us failing probe then we won't be able to fix it.
+So it depends on the size of the patch I think. So far it seems small enough
+that wasting code on failing probe isn't worth it.
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+MST
 
