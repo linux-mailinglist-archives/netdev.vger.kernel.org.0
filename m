@@ -2,92 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87E906E403F
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 08:58:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA3E26E4040
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 08:58:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbjDQG6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 02:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50774 "EHLO
+        id S230315AbjDQG6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 02:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230085AbjDQG6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 02:58:35 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927861BC2
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 23:58:34 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id hg12so10045278pjb.2
-        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 23:58:34 -0700 (PDT)
+        with ESMTP id S230280AbjDQG6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 02:58:36 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11FA1BD2
+        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 23:58:35 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id y6so23522883plp.2
+        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 23:58:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1681714714; x=1684306714;
-        h=mime-version:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=arcYo3/6zEwATo/QhY/9l8SiYX1Jc27ZrxW35de+8W0=;
-        b=OZeQpwO+ONdvhsokV/Zs7YuTAeSoIFPC/CsUw4UYWcsI3zz4H/wNCtgSvh0OfVmDpf
-         378Svd5lJ4cXvS9UMAyNN6xMmy/gkGVaFPZXf1ACrG6rqipr2FZryZiN/7Bx9aGIf3Cf
-         VhZfutvO6yb1zOlaaIDuhLS2E/DDJETD0W2RQ=
+        d=broadcom.com; s=google; t=1681714715; x=1684306715;
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=bJr0nUKynJSjfhCdpbMNwui39LJrsOhhL2hWRXOky8s=;
+        b=RORFeHnRbbxQYDlIAovXk0W3iScPDnVAV9oxpEY7+FuMQ2NJ8+NbS6/ZH5f0CCxFil
+         pTRSD//5g2MRQNd3W8fCnhthqUGyXXBwLaclQl5YybQLInsfRWB0HoyZNWChAqcPotKO
+         NjR06upEFBPWbEiSf9SjQ/HkhzEAZ71HciWLE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681714714; x=1684306714;
-        h=mime-version:message-id:date:subject:cc:to:from:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=arcYo3/6zEwATo/QhY/9l8SiYX1Jc27ZrxW35de+8W0=;
-        b=iQZnMTTvEMQxhxKJcTtDnG65+qnbL7QbuQe0cTPGG8tozJvle8T7fwJ1QyulbE2jyG
-         kbBXUptnjySu75q8QfxzmlqIr1/wJfdzBaVu4p7vUIdm7qSkB8yqc+k11UkfaNlchHDk
-         ofUxNjPjLglO0JDM6r6OCu+Iv0luCOFTbDZYXYudl7YrbeJ5sX2mXGcWTtD98QFC3peh
-         NkUxPWBBSKV0HmQIW6mUvzqE7kcqVB6UdjQponqaYG/0s8HwyjnsLjCA5VMPN7h/CUTG
-         8EfnReck0r/BbF5QxCF9VBsq5Aj2MA9njjJpr8MRv8q2wHKv2+XCAZ8IGOWPKeWgNxZh
-         Oqzw==
-X-Gm-Message-State: AAQBX9ddQ5sgdxBkijwWQWXIDFc5fN43y453As+UU4Tm8bfynk9P4wqu
-        SoIljcx5SGB1RVa4Pye3OagWSA==
-X-Google-Smtp-Source: AKy350bFWCjNiiS2nDXQATRNkBHjp2FzmE+M2e2aO/r+PuLArPhCINDWsBnZr1qybX/3Nmd2lMJXyg==
-X-Received: by 2002:a17:90b:4a0d:b0:246:5968:43f0 with SMTP id kk13-20020a17090b4a0d00b00246596843f0mr13574702pjb.10.1681714713899;
-        Sun, 16 Apr 2023 23:58:33 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681714715; x=1684306715;
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=bJr0nUKynJSjfhCdpbMNwui39LJrsOhhL2hWRXOky8s=;
+        b=jS7EPHujWNMXklCwELrVYMSXYifbipw9BB+YksPO28/LCYK4gNWxFjvMu3ggc75TFy
+         phXKKH8RCpeuYAf3fsDJNVrhheMfxFR7CSPbzypoQRc7aMPFeByLBuGp+/ma7aFgTP9R
+         zMVLgmlu1Z4K1yOHwTrRGS+jZhsg2cQXvzgLV8gJEjpiSFl5hSYJgyOi02mNpxhJBnub
+         C7cSfxS78/o406WiwMD2MkX129fYk5aspGdq6EAjonflQbo3JlS8ZXA+byK7/gToCH8W
+         1iHruJ4dmSpWcjIcDlk8OR0HFW3a2uctlse+HZ5AKdkVUptJgUAx9eNv8qcHzMmvchTc
+         C7Aw==
+X-Gm-Message-State: AAQBX9cllnQ6yWiLp3mQfiUOcqlTW2YYmjY2eANO4le/GKyxSY33vw1X
+        Cb3ydwLKVBGz5LpIXPHFE+SMiQ==
+X-Google-Smtp-Source: AKy350ZH7GrA8jgz4X57m5jpW9E6pEYfe31bQYPPFCrd96bIdWKzX9nl9CQTxZr46qU5mwbg984kTg==
+X-Received: by 2002:a05:6a20:3d8c:b0:ee:6dc9:e794 with SMTP id s12-20020a056a203d8c00b000ee6dc9e794mr11745561pzi.56.1681714715009;
+        Sun, 16 Apr 2023 23:58:35 -0700 (PDT)
 Received: from lvnvda1597.lvn.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id h15-20020a17090a050f00b00247abbb157fsm374132pjh.31.2023.04.16.23.58.32
+        by smtp.gmail.com with ESMTPSA id h15-20020a17090a050f00b00247abbb157fsm374132pjh.31.2023.04.16.23.58.34
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 16 Apr 2023 23:58:33 -0700 (PDT)
+        Sun, 16 Apr 2023 23:58:34 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, gospo@broadcom.com
-Subject: [PATCH net 0/2] bnxt_en: Bug fixes
-Date:   Sun, 16 Apr 2023 23:58:17 -0700
-Message-Id: <20230417065819.122055-1-michael.chan@broadcom.com>
+Subject: [PATCH net 1/2] bnxt_en: Do not initialize PTP on older P3/P4 chips
+Date:   Sun, 16 Apr 2023 23:58:18 -0700
+Message-Id: <20230417065819.122055-2-michael.chan@broadcom.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20230417065819.122055-1-michael.chan@broadcom.com>
+References: <20230417065819.122055-1-michael.chan@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000293fe405f982b899"
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MIME_NO_TEXT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        boundary="0000000000003ecae305f982b88b"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000293fe405f982b899
+--0000000000003ecae305f982b88b
 Content-Transfer-Encoding: 8bit
 
-This small series contains 2 fixes.  The first one fixes the PTP
-initialization logic on older chips to avoid logging a warning.  The
-second one fixes a potenial NULL pointer dereference in the driver's
-aux bus unload path.
+The driver does not support PTP on these older chips and it is assuming
+that firmware on these older chips will not return the
+PORT_MAC_PTP_QCFG_RESP_FLAGS_HWRM_ACCESS flag in __bnxt_hwrm_ptp_qcfg(),
+causing the function to abort quietly.
 
-Kalesh AP (1):
-  bnxt_en: Fix a possible NULL pointer dereference in unload path
+But newer firmware now sets this flag and so __bnxt_hwrm_ptp_qcfg()
+will proceed further.  Eventually it will fail in bnxt_ptp_init() ->
+bnxt_map_ptp_regs() because there is no code to support the older chips.
+The driver will then complain:
 
-Michael Chan (1):
-  bnxt_en: Do not initialize PTP on older P3/P4 chips
+"PTP initialization failed.\n"
 
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 19 ++++++++++---------
- 2 files changed, 11 insertions(+), 10 deletions(-)
+Fix it so that we abort quietly earlier without going through the
+unnecessary steps and alarming the user with the warning log.
 
+Fixes: ae5c42f0b92c ("bnxt_en: Get PTP hardware capability from firmware")
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index c23e3b397bcf..ef97a4190b39 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -7627,7 +7627,7 @@ static int __bnxt_hwrm_ptp_qcfg(struct bnxt *bp)
+ 	u8 flags;
+ 	int rc;
+ 
+-	if (bp->hwrm_spec_code < 0x10801) {
++	if (bp->hwrm_spec_code < 0x10801 || !BNXT_CHIP_P5_THOR(bp)) {
+ 		rc = -ENODEV;
+ 		goto no_ptp;
+ 	}
 -- 
 2.18.1
 
 
---000000000000293fe405f982b899
+--0000000000003ecae305f982b88b
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -158,13 +179,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOwXTz5YOb9FO7wG+Si0tzEnIugGC2Gg
-15oX3F1LFdhpMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDQx
-NzA2NTgzNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIL0+ldBc99mog3W+iuzPG7j8+a/iMrfX
+nya3wsV+aepQMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDQx
+NzA2NTgzNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAtTFG2Wa02cjRnckxVDHfqf95sd75KHxhwp7p18XwpyQqMqcVj
-TT2T+eG40gPx+oUlu1W3wt9wyyCxYTLMz6WmS6Nm1pY4hr1DMcU9Zt9ik3gclzjwwRXoWFaBZPwf
-897K5e1ZF0cC8YsaU2K4SHxvOhMed3rO8enJIdBX3CnwPJ1jFThgRw7crx4Eu+MXiUPgnrfgkOwr
-lgqELICIcvwnOZzcIdk0tIslDrhnDDD31BEnd4HmX42+hVkDU/OUK/29+2vZpk+IDXRijkFNPdv+
-KEmi7+VfliQv1oRKOasIwVL9U1kjWDZhz5a/xPJT3x1q3nxzJZax88ESx3mOXn3c
---000000000000293fe405f982b899--
+ATANBgkqhkiG9w0BAQEFAASCAQAWKV4aTQf0FXmBFzBgNnT2hXIKvK6tn0m0bNd9+X6y3Ag9cW2h
+UzzFUTJoH+3AfZijlYQBTyCIxAbp49uspvBqf9XSa9KtfowOF/r2GAf2oZvboFvsIfnlxr+9YlbP
+o2vfEP/8qIBVt9fsbyrDZuGYMivbI+cDqsUPTl7DD9g4MDSMDbrUeJod6PA8OIQJ2Sai3puRtekW
+RbOWXxMZIMYqWDnkan2nyl+7faOOmXu3tOeHH4qpEN42yAoi87nDPfXL88nbOEaSQIi8mw6Y2VfV
+LjReP2PrqOuNNR/JcEVCFnpsDMR/GqTcJ+7POdD7fGrhJ8KUAeeBG0EpZIZKmMi4
+--0000000000003ecae305f982b88b--
