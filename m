@@ -2,72 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF286E3D3B
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 03:47:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F22326E3D41
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 03:54:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbjDQBrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Apr 2023 21:47:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
+        id S229519AbjDQBx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Apr 2023 21:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjDQBq7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 21:46:59 -0400
-Received: from smtpbg153.qq.com (smtpbg153.qq.com [13.245.218.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B41211D;
-        Sun, 16 Apr 2023 18:46:49 -0700 (PDT)
-X-QQ-mid: Yeas43t1681695972t617t22105
-Received: from 7082A6556EBF4E69829842272A565F7C (jiawenwu@trustnetic.com [183.129.236.74])
-X-QQ-SSF: 00400000000000F0FL9000000000000
-From:   =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
-X-BIZMAIL-ID: 6726329158921540316
-To:     "'Andrew Lunn'" <andrew@lunn.ch>
-Cc:     "'Wolfram Sang'" <wsa@kernel.org>,
-        "'Jarkko Nikula'" <jarkko.nikula@linux.intel.com>,
-        <netdev@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <linux-i2c@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <mengyuanlou@net-swift.com>
-References: <20230411092725.104992-1-jiawenwu@trustnetic.com> <20230411092725.104992-3-jiawenwu@trustnetic.com> <00cf01d96c58$8d3e9130$a7bbb390$@trustnetic.com> <09dc3146-a1c6-e1a3-c8bd-e9fe547f9b99@linux.intel.com> <ZDgtryRooJdVHCzH@sai> <01ec01d96ec0$f2e10670$d8a31350$@trustnetic.com> <438840fa-6e8b-44c5-8b90-be521c72b77a@lunn.ch>
-In-Reply-To: <438840fa-6e8b-44c5-8b90-be521c72b77a@lunn.ch>
-Subject: RE: [PATCH net-next v2 2/6] net: txgbe: Implement I2C bus master driver
-Date:   Mon, 17 Apr 2023 09:46:09 +0800
-Message-ID: <024001d970ce$62482750$26d875f0$@trustnetic.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: zh-cn
-Thread-Index: AQJXy8bYFbRwx/PFgpvJPX7PgyT97wJCMZrbAk6D9c4BtpNb5AI7nLSFAlh8gEMBnL3xP63OQy8g
-X-QQ-SENDSIZE: 520
-Feedback-ID: Yeas:trustnetic.com:qybglogicsvr:qybglogicsvr5
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229461AbjDQBx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Apr 2023 21:53:58 -0400
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586051987;
+        Sun, 16 Apr 2023 18:53:56 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R721e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VgBVEby_1681696431;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgBVEby_1681696431)
+          by smtp.aliyun-inc.com;
+          Mon, 17 Apr 2023 09:53:52 +0800
+Message-ID: <1681696410.7972026-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net] virtio-net: reject small vring sizes
+Date:   Mon, 17 Apr 2023 09:53:30 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alvaro Karsz <alvaro.karsz@solid-run.com>, mst@redhat.com,
+        jasowang@redhat.com
+References: <20230416074607.292616-1-alvaro.karsz@solid-run.com>
+In-Reply-To: <20230416074607.292616-1-alvaro.karsz@solid-run.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Saturday, April 15, 2023 11:11 PM, Andrew Lunn wrote:
-> > I don't quite understand how to get the clock rate. I tried to add a software
-> > node of clock with property ("clock-frequency", 100000) and referenced by
-> > I2C node. But it didn't work.
-> 
-> I've not spent the time to fully understand the code, so i could be
-> very wrong....
-> 
-> From what you said above, you clock is fixed? So maybe you can do
-> something like:
-> 
-> mfld_get_clk_rate_khz()
-> 
-> https://elixir.bootlin.com/linux/latest/source/drivers/i2c/busses/i2c-designware-pcidrv.c#L97
-> 
-> How are you instantiating the driver? Can you add to
-> i2_designware_pci_ids[]?
-> 
->     Andrew
-> 
+On Sun, 16 Apr 2023 10:46:07 +0300, Alvaro Karsz <alvaro.karsz@solid-run.com> wrote:
+> Check vring size and fail probe if a transmit/receive vring size is
+> smaller than MAX_SKB_FRAGS + 2.
+>
+> At the moment, any vring size is accepted. This is problematic because
+> it may result in attempting to transmit a packet with more fragments
+> than there are descriptors in the ring.
 
-There is no PCI ID for our I2C device, so I register the platform I2C device.
+So, why we check the rx ring?
 
+Thanks.
+
+
+>
+> Furthermore, it leads to an immediate bug:
+>
+> The condition: (sq->vq->num_free >= 2 + MAX_SKB_FRAGS) in
+> virtnet_poll_cleantx and virtnet_poll_tx always evaluates to false,
+> so netif_tx_wake_queue is not called, leading to TX timeouts.
+>
+> Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+> ---
+>  drivers/net/virtio_net.c | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 2396c28c012..59676252c5c 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3745,6 +3745,26 @@ static int init_vqs(struct virtnet_info *vi)
+>  	return ret;
+>  }
+>
+> +static int virtnet_validate_vqs(struct virtnet_info *vi)
+> +{
+> +	u32 i, min_size = roundup_pow_of_two(MAX_SKB_FRAGS + 2);
+> +
+> +	/* Transmit/Receive vring size must be at least MAX_SKB_FRAGS + 2
+> +	 * (fragments + linear part + virtio header)
+> +	 */
+> +	for (i = 0; i < vi->max_queue_pairs; i++) {
+> +		if (virtqueue_get_vring_size(vi->sq[i].vq) < min_size ||
+> +		    virtqueue_get_vring_size(vi->rq[i].vq) < min_size) {
+> +			dev_warn(&vi->vdev->dev,
+> +				 "Transmit/Receive virtqueue vring size must be at least %u\n",
+> +				 min_size);
+> +			return -EINVAL;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  #ifdef CONFIG_SYSFS
+>  static ssize_t mergeable_rx_buffer_size_show(struct netdev_rx_queue *queue,
+>  		char *buf)
+> @@ -4056,6 +4076,10 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  	if (err)
+>  		goto free;
+>
+> +	err = virtnet_validate_vqs(vi);
+> +	if (err)
+> +		goto free_vqs;
+> +
+>  #ifdef CONFIG_SYSFS
+>  	if (vi->mergeable_rx_bufs)
+>  		dev->sysfs_rx_queue_group = &virtio_net_mrg_rx_group;
+> --
+> 2.34.1
+>
