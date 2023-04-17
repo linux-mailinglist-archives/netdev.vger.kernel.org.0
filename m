@@ -2,67 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EB706E4BB8
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 16:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F466E4BCF
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 16:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230030AbjDQOmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 10:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38234 "EHLO
+        id S229951AbjDQOr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 10:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbjDQOmj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 10:42:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A5B10CF;
-        Mon, 17 Apr 2023 07:42:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C8C661D57;
-        Mon, 17 Apr 2023 14:42:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0820C433EF;
-        Mon, 17 Apr 2023 14:42:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681742557;
-        bh=vK2Mdh81hU0JcVT4r2p86moQFzFGUnlZDHXh1AzFMFU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZladgrftPwmlvOxj9rleuJBtqTLN4AMElXXoPxwqYfn7tuJEKuRJH7dRYCkW+w0oA
-         QVDdG7eL5O383ATdRuJn2WGuU4052SCGbkZTctH88NRChqbDXWKHUHyl3LI9UGvg4+
-         U5wlN5L8QgSa9qRz6IMq/i7R5M3RPOe9JlhFjLngFNqkOSG6ZRm6y0lOhR5vPd2V4n
-         sQbgGwaSSCfBS5YIsQivPArb+m9r4kLN2RbEjCVL1rAAzV8dW0Wzwn8+Vl/zq0nnr5
-         Bh2sbwhk1bBx2Hmh3qN1U4TgHyV65DamYSQ9/ms0bHZ+D4C8stNY4RhW0ni4Oo9JsE
-         Fs2k+f5y3kaOw==
-Date:   Mon, 17 Apr 2023 16:42:30 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
-        Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        linux-arch@vger.kernel.org
-Subject: Re: [PATCH net-next v4 2/4] net: socket: add sockopts blacklist for
- BPF cgroup hook
-Message-ID: <20230417-wellblech-zoodirektor-76a80f7763ab@brauner>
-References: <20230413133355.350571-1-aleksandr.mikhalitsyn@canonical.com>
- <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com>
- <CANn89iLuLkUvX-dDC=rJhtFcxjnVmfn_-crOevbQe+EjaEDGbg@mail.gmail.com>
- <CAEivzxcEhfLttf0VK=NmHdQxF7CRYXNm6NwUVx6jx=-u2k-T6w@mail.gmail.com>
- <CAKH8qBt+xPygUVPMUuzbi1HCJuxc4gYOdU6JkrFmSouRQgoG6g@mail.gmail.com>
- <ZDoEG0VF6fb9y0EC@google.com>
+        with ESMTP id S229662AbjDQOr4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 10:47:56 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83B95FE8;
+        Mon, 17 Apr 2023 07:47:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1681742875; x=1713278875;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IErMJSxlbjeVZMyODKXty2E2HhnlM8oazVPdgH+Zb2I=;
+  b=LQA8sawsH+jldxdtCsze8HC3dFdRz37v5vv9eNm0MzDvFpqd9i0nrPdF
+   GtS2LWQ7P+kvTOWqGRv77mtS7JatAUwVgy8IqUo+I5g8cBEr2u1WKgG5u
+   IdXfX4gWktaI2k2VJxebfFwCvhmY2tFd7ZBgnvx8cATi9CPFjuVBeCFJa
+   KpqoVl4Q4KzGbR6w38HZQc6KqP5Jv/XzX0c/4NU9iEjIhpakWCe3DvXen
+   Rbbck7oWCmlXSWciugD19Q1hIgj9b/AxcIU284uvXur3U2lVLmVhcz2ni
+   m0IAqQVCRU6AMovkV9tpj0fZturvErU4IoCJfywqYxPDaxVwXCMy2Jhcd
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="325251496"
+X-IronPort-AV: E=Sophos;i="5.99,204,1677571200"; 
+   d="scan'208";a="325251496"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 07:47:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10683"; a="755337281"
+X-IronPort-AV: E=Sophos;i="5.99,204,1677571200"; 
+   d="scan'208";a="755337281"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 17 Apr 2023 07:47:51 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1poQ90-000cUd-2B;
+        Mon, 17 Apr 2023 14:47:50 +0000
+Date:   Mon, 17 Apr 2023 22:47:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
+        linux@armlinux.org.uk
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: Re: [PATCH net-next v2 5/6] net: txgbe: Implement phylink pcs
+Message-ID: <202304172223.PoHEDYCs-lkp@intel.com>
+References: <20230411092725.104992-6-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZDoEG0VF6fb9y0EC@google.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20230411092725.104992-6-jiawenwu@trustnetic.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,68 +66,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 14, 2023 at 06:55:39PM -0700, Stanislav Fomichev wrote:
-> On 04/13, Stanislav Fomichev wrote:
-> > On Thu, Apr 13, 2023 at 7:38 AM Aleksandr Mikhalitsyn
-> > <aleksandr.mikhalitsyn@canonical.com> wrote:
-> > >
-> > > On Thu, Apr 13, 2023 at 4:22 PM Eric Dumazet <edumazet@google.com> wrote:
-> > > >
-> > > > On Thu, Apr 13, 2023 at 3:35 PM Alexander Mikhalitsyn
-> > > > <aleksandr.mikhalitsyn@canonical.com> wrote:
-> > > > >
-> > > > > During work on SO_PEERPIDFD, it was discovered (thanks to Christian),
-> > > > > that bpf cgroup hook can cause FD leaks when used with sockopts which
-> > > > > install FDs into the process fdtable.
-> > > > >
-> > > > > After some offlist discussion it was proposed to add a blacklist of
-> > > >
-> > > > We try to replace this word by either denylist or blocklist, even in changelogs.
-> > >
-> > > Hi Eric,
-> > >
-> > > Oh, I'm sorry about that. :( Sure.
-> > >
-> > > >
-> > > > > socket options those can cause troubles when BPF cgroup hook is enabled.
-> > > > >
-> > > >
-> > > > Can we find the appropriate Fixes: tag to help stable teams ?
-> > >
-> > > Sure, I will add next time.
-> > >
-> > > Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
-> > >
-> > > I think it's better to add Stanislav Fomichev to CC.
-> > 
-> > Can we use 'struct proto' bpf_bypass_getsockopt instead? We already
-> > use it for tcp zerocopy, I'm assuming it should work in this case as
-> > well?
-> 
-> Jakub reminded me of the other things I wanted to ask here bug forgot:
-> 
-> - setsockopt is probably not needed, right? setsockopt hook triggers
->   before the kernel and shouldn't leak anything
-> - for getsockopt, instead of bypassing bpf completely, should we instead
->   ignore the error from the bpf program? that would still preserve
+Hi Jiawen,
 
-That's fine by me as well.
+kernel test robot noticed the following build warnings:
 
-It'd be great if the net folks could tell Alex how they would want this
-handled.
+[auto build test WARNING on net-next/main]
 
->   the observability aspect
+url:    https://github.com/intel-lab-lkp/linux/commits/Jiawen-Wu/net-txgbe-Add-software-nodes-to-support-phylink/20230411-173314
+patch link:    https://lore.kernel.org/r/20230411092725.104992-6-jiawenwu%40trustnetic.com
+patch subject: [PATCH net-next v2 5/6] net: txgbe: Implement phylink pcs
+config: riscv-randconfig-r042-20230417 (https://download.01.org/0day-ci/archive/20230417/202304172223.PoHEDYCs-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 9638da200e00bd069e6dd63604e14cbafede9324)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/5903347a21d42b4f2d632e08e04890d7f638a947
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jiawen-Wu/net-txgbe-Add-software-nodes-to-support-phylink/20230411-173314
+        git checkout 5903347a21d42b4f2d632e08e04890d7f638a947
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/net/ethernet/wangxun/txgbe/
 
-Please see for more details
-https://lore.kernel.org/lkml/20230411-nudelsalat-spreu-3038458f25c4@brauner
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202304172223.PoHEDYCs-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c:269:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+           if (interface == txgbe->interface)
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c:325:9: note: uninitialized use occurs here
+           return ret;
+                  ^~~
+   drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c:269:2: note: remove the 'if' if its condition is always false
+           if (interface == txgbe->interface)
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c:267:9: note: initialize the variable 'ret' to silence this warning
+           int ret, val;
+                  ^
+                   = 0
+   1 warning generated.
 
 
-> - or maybe we can even have a per-proto bpf_getsockopt_cleanup call that
->   gets called whenever bpf returns an error to make sure protocols have
->   a chance to handle that condition (and free the fd)
+vim +269 drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
 
-Installing an fd into an fdtable makes it visible to userspace at which
-point calling close_fd() is doable but an absolute last resort and
-generally a good indicator of misdesign. If the bpf hook wants to make
-decisions based on the file then it should receive a struct
-file, not an fd.
+   259	
+   260	static int txgbe_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+   261				    phy_interface_t interface,
+   262				    const unsigned long *advertising,
+   263				    bool permit_pause_to_mac)
+   264	{
+   265		struct txgbe *txgbe = container_of(pcs, struct txgbe, pcs);
+   266		struct wx *wx = txgbe->wx;
+   267		int ret, val;
+   268	
+ > 269		if (interface == txgbe->interface)
+   270			goto out;
+   271	
+   272		/* Wait xpcs power-up good */
+   273		ret = read_poll_timeout(pcs_read, val,
+   274					(val & TXGBE_PCS_DIG_STS_PSEQ_ST) ==
+   275					TXGBE_PCS_DIG_STS_PSEQ_ST_GOOD,
+   276					10000, 1000000, false,
+   277					txgbe, MDIO_MMD_PCS, TXGBE_PCS_DIG_STS);
+   278		if (ret < 0) {
+   279			wx_err(wx, "xpcs power-up timeout.\n");
+   280			return ret;
+   281		}
+   282	
+   283		/* Disable xpcs AN-73 */
+   284		pcs_write(txgbe, MDIO_MMD_AN, MDIO_CTRL1, 0);
+   285	
+   286		/* Disable PHY MPLLA for eth mode change(after ECO) */
+   287		txgbe_ephy_write(txgbe, TXGBE_SUP_DIG_MPLLA_OVRD_IN_0, 0x243A);
+   288		WX_WRITE_FLUSH(wx);
+   289		usleep_range(1000, 2000);
+   290	
+   291		/* Set the eth change_mode bit first in mis_rst register
+   292		 * for corresponding LAN port
+   293		 */
+   294		wr32(wx, TXGBE_MIS_RST, TXGBE_MIS_RST_LAN_ETH_MODE(wx->bus.func));
+   295	
+   296		switch (interface) {
+   297		case PHY_INTERFACE_MODE_10GBASER:
+   298			txgbe_pma_config_10gbaser(txgbe);
+   299			break;
+   300		case PHY_INTERFACE_MODE_1000BASEX:
+   301			txgbe_pma_config_1000basex(txgbe);
+   302			break;
+   303		default:
+   304			break;
+   305		}
+   306	
+   307		pcs_write(txgbe, MDIO_MMD_PCS, TXGBE_PCS_DIG_CTRL1,
+   308			  TXGBE_PCS_DIG_CTRL1_VR_RST | TXGBE_PCS_DIG_CTRL1_EN_VSMMD1);
+   309		/* wait phy initialization done */
+   310		ret = read_poll_timeout(pcs_read, val,
+   311					!(val & TXGBE_PCS_DIG_CTRL1_VR_RST),
+   312					100000, 10000000, false,
+   313					txgbe, MDIO_MMD_PCS, TXGBE_PCS_DIG_CTRL1);
+   314		if (ret < 0)
+   315			wx_err(wx, "PHY initialization timeout.\n");
+   316	
+   317		txgbe->interface = interface;
+   318	
+   319	out:
+   320		if (interface == PHY_INTERFACE_MODE_1000BASEX) {
+   321			txgbe_setup_adv(txgbe, interface, advertising);
+   322			txgbe_set_an37_ability(txgbe);
+   323		}
+   324	
+   325		return ret;
+   326	}
+   327	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
