@@ -2,247 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B77E96E3EE4
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 07:33:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BFC56E3EFD
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 07:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229649AbjDQFdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 01:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54282 "EHLO
+        id S229669AbjDQFfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 01:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbjDQFdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 01:33:46 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD351BC0;
-        Sun, 16 Apr 2023 22:33:42 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-552ae3e2cbeso34244107b3.13;
-        Sun, 16 Apr 2023 22:33:42 -0700 (PDT)
+        with ESMTP id S229598AbjDQFfh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 01:35:37 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6383AAF
+        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 22:35:16 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id 2adb3069b0e04-4ec816c9d03so1168454e87.2
+        for <netdev@vger.kernel.org>; Sun, 16 Apr 2023 22:35:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681709621; x=1684301621;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Bd4dQc1FpkwZYZhwWOOHutAGKXr41UyMWvG9J+VrOtw=;
-        b=W6jp2+VPSJ6XcDqc5ekEGiUOC2rSj1xTbO//rViw8zv+ifG0ENU6HRF1+inx9rfILD
-         2QSMiGwHhuLnsMcw0LceQ2wC81mDW4AXJnOl0DeOUWVi7xI0ywt/76IOC+mzlW1SKUvn
-         Zx7VCJJS0KWYkY0nmTZrlanGg0EFZiEq8ELmQtGm+BXLa85p7D16XKdPlfv1J5Hr30CJ
-         MQ0P0HRjxd44UFXnyTbj1EqIa5XYFvyUeIWV6b9GyZ/U0ROnasJZ1Qij9SgMqjqgnpPk
-         Qw6AdpgzidNWnE88iwwfG30Mp8unilJInkIjQf14rY++RrCtFyVkekbdcNDXTUFTsae7
-         pOmA==
+        d=google.com; s=20221208; t=1681709712; x=1684301712;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=zyyAvuW/pOY8jPhiXRm2ACIKthV+mmOLRNiYf8O659s=;
+        b=BvMcypFFc/03aEor9OrCqiJSdASWSsAckH7U4ze+vUSXdxzFbxXCl7ZURDS+RWv4/U
+         PYKlj+YfKjcByVj9P5XzkGwvTko7iYJGW7u8N/B92Yi9vKwNqOMP96h+bNb+xwPTK/E3
+         EDmPx/ib9LVKi2qX04V8sQz6w/DY2Fpa4fYmfu39LnirMRxEXGNIS9LG6kNp67PmcbuF
+         A+kj/4OU4JReYrHfpWmVYxGbUHfQ59M0v+gfkXV/oyzSZ8fBf/kU75rqgDxZXM5ZT9VB
+         aSbLgxsrOPJ5LtvtSclz5vXXql0Fb+JtjQD/qSjqZCC+tHF8G3aAGu8hWepFoFQrpbiX
+         YRBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681709621; x=1684301621;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Bd4dQc1FpkwZYZhwWOOHutAGKXr41UyMWvG9J+VrOtw=;
-        b=VHx924Gjgu3jhyENULKp2WQ+O9FFpWzjYfBGAz78eSEKDtRuswiRFTbWAi7PQ9OpTc
-         xrr0s4iscszWBvj5DFBvrgUbv/S5qdqnN8ne/cPj8zpZS9j1/juuIeXhkQVnkE0FLOxE
-         SKlxNS3d1wgHEsVelgGspcIqpnlE9ukYxPgvO58xViqvwBvNxM4m23ps6PclI2sAqxmP
-         JyVfeVPUmODBPpWAOIfcHdS0aBY+8zPQxEQOf8rbC4ZwFr5+kTVW1jI2YhuZFkllv3yK
-         MWWAW/gf2xYt1Nzw3HLrqCihTYk3mP87/mFeK4GqKca8vgUSkt7nuGaH3k3ls3qQED6Y
-         gPmw==
-X-Gm-Message-State: AAQBX9dM6T3tFe+rxXj4gJHFK7xu2drbE8u8clPrzKiSWyY3hLd7Hmcr
-        e0/wQCdaNEbQDZEqi5uemeu0Sox0742qMiuMDok=
-X-Google-Smtp-Source: AKy350Yk9Tv6HCQzCayejAyB1Fw5PAEanr1+f9Eco4+j6qhmF0bsQjcV7x90pm8V8B42ayqutlvCzlq0RJupVaa8d8c=
-X-Received: by 2002:a05:690c:706:b0:545:5f92:f7ee with SMTP id
- bs6-20020a05690c070600b005455f92f7eemr9153411ywb.2.1681709621205; Sun, 16 Apr
- 2023 22:33:41 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681709712; x=1684301712;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zyyAvuW/pOY8jPhiXRm2ACIKthV+mmOLRNiYf8O659s=;
+        b=dxhlFcQun59G3tM2pFlzBiCISjlyANc4JeD5SaTDUKCAMlwBqzLeEcNh0Z9RTRD8fS
+         pr9efYwGMWg/8rlWl/9r5yrYpZWkk1DRTwaUjr6dsjtlkc3mP8W2PHk1pU/2sdFB0uw6
+         T+neyZ6QJFEdl+baHtuudwBeYF+3IqA1NObHgMuSwBNDC7gY0hWeq3F6IYnwtjqB5kAC
+         wj69El1f1JKK9a5uvyL2h2XqlSwNRtGjLJ1da2loSIIGUkD1QsiXRoy2vRGv7ehkbleM
+         0CbDRCLQXsw3SrACZHpAzM+h/jiLVU7ylOU/QtUJMZdtHC5xR2dSxpeNQL0ImIaVWtFK
+         NHDQ==
+X-Gm-Message-State: AAQBX9cJsrRBU6nf04PrHOwgX9r2JUchlYQdcLo2p2X+tYTjbdO3z4uo
+        p+1fEPFh+Ck+SY4toRM1TYUsnCx9ODX/AwuG+2LUCA==
+X-Google-Smtp-Source: AKy350Z5ECMvRkWIvE7F95LlZtfJhA+x9x8GVV6fkpUC9OmmafnMj3yfsH4O3koHyJ4alQ+5IVMGwnwXntVRNMsSYoo=
+X-Received: by 2002:a05:6512:408:b0:4ec:90b2:b514 with SMTP id
+ u8-20020a056512040800b004ec90b2b514mr1794111lfk.6.1681709711628; Sun, 16 Apr
+ 2023 22:35:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230415150542.2368179-1-noltari@gmail.com> <87leitxj4k.fsf@toke.dk>
- <a7895e73-70a3-450d-64f9-8256c9470d25@gmail.com> <03a74fbb-dd77-6283-0b08-6a9145a2f4f6@gmail.com>
- <874jpgxfs7.fsf@toke.dk> <8caecebf-bd88-dffe-7749-b79b7ea61cc7@gmail.com> <871qkjxztc.fsf@toke.dk>
-In-Reply-To: <871qkjxztc.fsf@toke.dk>
-From:   =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
-Date:   Mon, 17 Apr 2023 07:33:30 +0200
-Message-ID: <CAKR-sGdcaYTzzcG6yLkor20d0qWamMAv6g-fb8M5b4tsZHadRA@mail.gmail.com>
-Subject: Re: [PATCH] ath9k: fix calibration data endianness
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>
-Cc:     Christian Lamparter <chunkeey@gmail.com>, f.fainelli@gmail.com,
-        jonas.gorski@gmail.com, nbd@nbd.name, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <000000000000894f5f05f95e9f4d@google.com>
+In-Reply-To: <000000000000894f5f05f95e9f4d@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 17 Apr 2023 07:34:59 +0200
+Message-ID: <CACT4Y+a9S4dwxAnD0AMcYDKfrZ7JxYcAaYM3QtccNGdpGd7g_Q@mail.gmail.com>
+Subject: Re: [syzbot] [bluetooth?] WARNING: bad unlock balance in l2cap_recv_frame
+To:     syzbot <syzbot+9519d6b5b79cf7787cf3@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Toke,
+On Sat, 15 Apr 2023 at 13:54, syzbot
+<syzbot+9519d6b5b79cf7787cf3@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    95abc817ab3a Merge tag 'acpi-6.3-rc7' of git://git.kernel...
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13c85123c80000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=c21559e740385326
+> dashboard link: https://syzkaller.appspot.com/bug?extid=9519d6b5b79cf7787cf3
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>
+> Unfortunately, I don't have any reproducer for this issue yet.
+>
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/87e400f90ed9/disk-95abc817.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/cf7aa6546e50/vmlinux-95abc817.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/a44d83ac79a7/bzImage-95abc817.xz
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+9519d6b5b79cf7787cf3@syzkaller.appspotmail.com
+>
+> =====================================
+> WARNING: bad unlock balance detected!
+> 6.3.0-rc6-syzkaller-00168-g95abc817ab3a #0 Not tainted
+> -------------------------------------
+> kworker/u5:7/5124 is trying to release lock (&conn->chan_lock) at:
+> [<ffffffff89148e14>] l2cap_disconnect_rsp net/bluetooth/l2cap_core.c:4697 [inline]
+> [<ffffffff89148e14>] l2cap_le_sig_cmd net/bluetooth/l2cap_core.c:6426 [inline]
+> [<ffffffff89148e14>] l2cap_le_sig_channel net/bluetooth/l2cap_core.c:6464 [inline]
+> [<ffffffff89148e14>] l2cap_recv_frame+0x85a4/0x9390 net/bluetooth/l2cap_core.c:7796
+> but there are no more locks to release!
+>
+> other info that might help us debug this:
+> 2 locks held by kworker/u5:7/5124:
+>  #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+>  #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+>  #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
+>  #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:639 [inline]
+>  #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:666 [inline]
+>  #0: ffff88801ecca938 ((wq_completion)hci1#2){+.+.}-{0:0}, at: process_one_work+0x87a/0x15c0 kernel/workqueue.c:2361
+>  #1: ffffc9000468fda8 ((work_completion)(&hdev->rx_work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x15c0 kernel/workqueue.c:2365
+>
+> stack backtrace:
+> CPU: 1 PID: 5124 Comm: kworker/u5:7 Not tainted 6.3.0-rc6-syzkaller-00168-g95abc817ab3a #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
+> Workqueue: hci1 hci_rx_work
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+>  __lock_release kernel/locking/lockdep.c:5346 [inline]
+>  lock_release+0x4f1/0x670 kernel/locking/lockdep.c:5689
+>  __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:907
+>  l2cap_disconnect_rsp net/bluetooth/l2cap_core.c:4697 [inline]
+>  l2cap_le_sig_cmd net/bluetooth/l2cap_core.c:6426 [inline]
+>  l2cap_le_sig_channel net/bluetooth/l2cap_core.c:6464 [inline]
+>  l2cap_recv_frame+0x85a4/0x9390 net/bluetooth/l2cap_core.c:7796
+>  l2cap_recv_acldata+0xa80/0xbf0 net/bluetooth/l2cap_core.c:8504
+>  hci_acldata_packet net/bluetooth/hci_core.c:3828 [inline]
+>  hci_rx_work+0x709/0x1340 net/bluetooth/hci_core.c:4063
 
-El dom, 16 abr 2023 a las 23:49, Toke H=C3=B8iland-J=C3=B8rgensen
-(<toke@toke.dk>) escribi=C3=B3:
->
-> Christian Lamparter <chunkeey@gmail.com> writes:
->
-> > On 4/16/23 12:50, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> >> Christian Lamparter <chunkeey@gmail.com> writes:
-> >>
-> >>> On 4/15/23 18:02, Christian Lamparter wrote:
-> >>>> Hi,
-> >>>>
-> >>>> On 4/15/23 17:25, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> >>>>> =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com> writes:
-> >>>>>
-> >>>>>> BCM63xx (Big Endian MIPS) devices store the calibration data in MT=
-D
-> >>>>>> partitions but it needs to be swapped in order to work, otherwise =
-it fails:
-> >>>>>> ath9k 0000:00:01.0: enabling device (0000 -> 0002)
-> >>>>>> ath: phy0: Ignoring endianness difference in EEPROM magic bytes.
-> >>>>>> ath: phy0: Bad EEPROM VER 0x0001 or REV 0x00e0
-> >>>>>> ath: phy0: Unable to initialize hardware; initialization status: -=
-22
-> >>>>>> ath9k 0000:00:01.0: Failed to initialize device
-> >>>>>> ath9k: probe of 0000:00:01.0 failed with error -22
-> >>>>>
-> >>>>> How does this affect other platforms? Why was the NO_EEP_SWAP flag =
-set
-> >>>>> in the first place? Christian, care to comment on this?
-> >>>>
-> >>>> I knew this would come up. I've written what I know and remember in =
-the
-> >>>> pull-request/buglink.
-> >>>>
-> >>>> Maybe this can be added to the commit?
-> >>>> Link: https://github.com/openwrt/openwrt/pull/12365
-> >>>>
-> >>>> | From what I remember, the ah->ah_flags |=3D AH_NO_EEP_SWAP; was co=
-pied verbatim from ath9k_of_init's request_eeprom.
-> >>>>
-> >>>> Since the existing request_firmware eeprom fetcher code set the flag=
-,
-> >>>> the nvmem code had to do it too.
-> >>>>
-> >>>> In theory, I don't think that not setting the AH_NO_EEP_SWAP flag wi=
-ll cause havoc.
-> >>>> I don't know if there are devices out there, which have a swapped ma=
-gic (which is
-> >>>> used to detect the endianess), but the caldata is in the correct end=
-iannes (or
-> >>>> vice versa - Magic is correct, but data needs swapping).
-> >>>>
-> >>>> I can run tests with it on a Netzgear WNDR3700v2 (AR7161+2xAR9220)
-> >>>> and FritzBox 7360v2 (Lantiq XWAY+AR9220). (But these worked fine.
-> >>>> So I don't expect there to be a new issue there).
-> >>>
-> >>> Nope! This is a classic self-own!... Well at least, this now gets doc=
-umented!
-> >>>
-> >>> Here are my findings. Please excuse the overlong lines.
-> >>>
-> >>> ## The good news / AVM FritzBox 7360v2 ##
-> >>>
-> >>> The good news: The AVM FritzBox 7360v2 worked the same as before.
-> >>
-> >> [...]
-> >>
-> >>> ## The not so good news / Netgear WNDR3700v2 ##
-> >>>
-> >>> But not the Netgar WNDR3700v2. One WiFi (The 2.4G, reported itself no=
-w as the 5G @0000:00:11.0 -
-> >>> doesn't really work now), and the real 5G WiFi (@0000:00:12.0) failed=
- with:
-> >>> "phy1: Bad EEPROM VER 0x0001 or REV 0x06e0"
-> >>
-> >> [...]
-> >>
-> >> Alright, so IIUC, we have a situation where some devices only work
-> >> *with* the flag, and some devices only work *without* the flag? So we'=
-ll
-> >> need some kind of platform-specific setting? Could we put this in the
-> >> device trees, or is there a better solution?
-> >
-> > Depends. From what I gather, ath9k calls this "need_swap". Thing is,
-> > the flag in the EEPROM is called "AR5416_EEPMISC_BIG_ENDIAN". In the
-> > official documentation about the AR9170 Base EEPROM (has the same base
-> > structure as AR5008 up to AR92xx) this is specified as:
-> >
-> > "Only bit 0 is defined as Big Endian. This bit should be written as 1
-> > when the structure is interpreted in big Endian byte ordering. This bit
-> > must be reviewed before any larger than byte parameters can be interpre=
-ted."
-> >
-> > It makes sense that on a Big-Endian MIPS device (like the Netgear WNDR3=
-700v2),
-> > the  caldata should be in "Big-Endian" too... so no swapping is necessa=
-ry.
-> >
-> > Looking in ath9k's eeprom.c function ath9k_hw_nvram_swap_data() that de=
-als
-> > with this eepmisc flag:
-> >
-> > |       if (ah->eep_ops->get_eepmisc(ah) & AR5416_EEPMISC_BIG_ENDIAN) {
-> > |               *swap_needed =3D true;
-> > |               ath_dbg(common, EEPROM,
-> > |                       "Big Endian EEPROM detected according to EEPMIS=
-C register.\n");
-> > |       } else {
-> > |               *swap_needed =3D false;
-> > |       }
-> >
-> > This doesn't take into consideration that swapping is not needed if
-> > the data is in big endian format on a big endian device. So, this
-> > could be changed so that the *swap_needed is only true if the flag and
-> > device endiannes disagrees?
-> >
-> > That said, Martin and Felix have written their reasons in the cover let=
-ter
-> > and patches for why the code is what it is:
-> > <https://ath9k-devel.ath9k.narkive.com/2q5A6nu0/patch-0-5-ath9k-eeprom-=
-swapping-improvements>
-> >
-> > Toke, What's your take on this? Having something similar like the
-> > check_endian bool... but for OF? Or more logic that can somehow
-> > figure out if it's big or little endian.
->
-> Digging into that old thread, it seems we are re-hashing a lot of the
-> old discussion when those patches went in. Basically, the code you
-> quoted above is correct because the commit that introduced it sets all
-> fields to be __le16 and __le32 types and reads them using the
-> leXX_to_cpu() macros.
->
-> The code *further up* in that function is what is enabled by Alvaro's
-> patch. Which is a different type of swapping (where the whole eeprom is
-> swab16()'ed, not just the actual multi-byte data fields in them).
-> However, in OpenWrt the in-driver code to do this is not used; instead,
-> a hotplug script applies the swapping before the device is seen by the
-> driver, as described in this commit[0]. Martin indeed mentions that this
-> is a device-specific thing, so the driver can't actually do the right
-> thing without some outside feature flag[1]. The commit[0] also indicates
-> that there used used to exist a device-tree binding in the out-of-tree
-> device trees used in OpenWrt to do the unconditional swab16().
->
-> The code in [0] still exists in OpenWrt today, albeit in a somewhat
-> modified form[2]. I guess the question then boils down to, =C3=81lvaro, c=
-an
-> your issue be resolved by a pre-processing step similar to that which is
-> done in [2]? Or do we need the device tree flag after all?
+/\/\/\/\/\/\/\/\
 
-TBH, yes, it can be solved by a pre-processing step similar to what's
-done in [2], but then having added nvmem support would make no sense
-at all for those devices that need swapping, since it's unusable
-without the flag.
-So, in my opinion the flag should be added in order to be able to use
-it without pre-processing the calibration data and to take advantage
-of nvmem support.
-I will send the v2 patch and even if it's not accepted I think I will
-add it as a downstream patch on OpenWrt...
+This is on the receiving path. Can this be triggered remotely?
 
+>  process_one_work+0x991/0x15c0 kernel/workqueue.c:2390
+>  worker_thread+0x669/0x1090 kernel/workqueue.c:2537
+>  kthread+0x2e8/0x3a0 kernel/kthread.c:376
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+>  </TASK>
 >
-> -Toke
 >
-> [0] https://git.openwrt.org/?p=3Dopenwrt/openwrt.git;a=3Dcommitdiff;h=3Da=
-fa37092663d00aa0abf8c61943d9a1b5558b144
-> [1] https://narkive.com/2q5A6nu0.34
-> [2] https://git.openwrt.org/?p=3Dopenwrt/openwrt.git;a=3Dblob;f=3Dtarget/=
-linux/lantiq/xway/base-files/etc/hotplug.d/firmware/12-ath9k-eeprom;h=3D98b=
-b9af6947a298775ff7fa26ac6501c57df8378;hb=3DHEAD
-
-Best regards,
-=C3=81lvaro.
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
