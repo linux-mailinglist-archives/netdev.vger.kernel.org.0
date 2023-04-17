@@ -2,135 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52CC16E4616
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 13:12:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78EF96E4673
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 13:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231190AbjDQLMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 07:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37244 "EHLO
+        id S229700AbjDQL36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 07:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbjDQLMF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 07:12:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580AD6A78
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 04:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681729740;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JPjIm3Vq19KYZ2oEFTQUD3krJLjmBIkBqTeJ33Vqnrk=;
-        b=FE0Aq1aA8HOFuE89asS3TWJyaoUDT10brjzx3lw/2wcvTV0erMdR2Xrr4SlNqB4+ivD2wf
-        DHwAxwE1bO8I7gnQ7Gojz274Rzef5v0qXrozqnAhBZysy0BhjKqpv1Kyfb7jTxVzWeEm0w
-        QLNbD0qMB5Zfa3sY9VYpIlA4xKCOMGg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-504-XARlszbgOLCaPY3UiJ_vIA-1; Mon, 17 Apr 2023 07:02:50 -0400
-X-MC-Unique: XARlszbgOLCaPY3UiJ_vIA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A6D22101A54F;
-        Mon, 17 Apr 2023 11:02:49 +0000 (UTC)
-Received: from dcaratti.users.ipa.redhat.com (unknown [10.45.226.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6350F1121315;
-        Mon, 17 Apr 2023 11:02:48 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Christoph Paasch <cpaasch@apple.com>, netdev@vger.kernel.org
-Subject: [PATCH net] net/sched: sch_fq: fix integer overflow of "credit"
-Date:   Mon, 17 Apr 2023 13:02:40 +0200
-Message-Id: <a5288a1f4b69eb2da3e704d0e1ff082489432d25.1681728988.git.dcaratti@redhat.com>
+        with ESMTP id S230295AbjDQL3z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 07:29:55 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E61D93D6
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 04:28:57 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1poMdd-0000eR-4a; Mon, 17 Apr 2023 13:03:13 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1poMdb-0005No-Nb; Mon, 17 Apr 2023 13:03:11 +0200
+Date:   Mon, 17 Apr 2023 13:03:11 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, Eric Dumazet <edumazet@google.com>,
+        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v1 2/2] net: dsa: microchip: Add partial ACL
+ support for ksz9477 switches
+Message-ID: <20230417110311.GA11474@pengutronix.de>
+References: <20230411172456.3003003-1-o.rempel@pengutronix.de>
+ <20230411172456.3003003-1-o.rempel@pengutronix.de>
+ <20230411172456.3003003-3-o.rempel@pengutronix.de>
+ <20230411172456.3003003-3-o.rempel@pengutronix.de>
+ <20230416165658.fuo7vwer7m7ulkg2@skbuf>
+ <20230417045710.GB20350@pengutronix.de>
+ <20230417101209.m5fhc7njeeomljkf@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230417101209.m5fhc7njeeomljkf@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-if sch_fq is configured with "initial quantum" having values greater than
-INT_MAX, the first assignment of "credit" does signed integer overflow to
-a very negative value.
-In this situation, the syzkaller script provided by Cristoph triggers the
-CPU soft-lockup warning even with few sockets. It's not an infinite loop,
-but "credit" wasn't probably meant to be minus 2Gb for each new flow.
-Capping "initial quantum" to INT_MAX proved to fix the issue.
+On Mon, Apr 17, 2023 at 01:12:09PM +0300, Vladimir Oltean wrote:
+> On Mon, Apr 17, 2023 at 06:57:10AM +0200, Oleksij Rempel wrote:
+> > > On Tue, Apr 11, 2023 at 07:24:55PM +0200, Oleksij Rempel wrote:
+> > > > The ACL also implements a count function, generating an interrupt
+> > > > instead of a forwarding action. It can be used as a watchdog timer or an
+> > > > event counter.
+> > > 
+> > > Is the interrupt handled here? I didn't see cls_flower_stats().
+> > 
+> > No, it is not implemented in this patch. It is generic description of things
+> > ACL should be able to do. Is it confusing? Should I remove it?
+> 
+> No, it's confusing that the ACL statistics are not reported even though
+> it's mentioned that it's possible...
 
-Reported-by: Christoph Paasch <cpaasch@apple.com>
-Link: https://github.com/multipath-tcp/mptcp_net-next/issues/377
-Fixes: afe4fd062416 ("pkt_sched: fq: Fair Queue packet scheduler")
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/sched/sch_fq.c                            | 12 ++++++++--
- .../tc-testing/tc-tests/qdiscs/fq.json        | 22 +++++++++++++++++++
- 2 files changed, 32 insertions(+), 2 deletions(-)
+Certain aspects of the chip specification appeared ambiguous, leading me
+to decide to allocate a separate time slot for investigating the counter
+topic if necessary.
 
-diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
-index 48d14fb90ba0..12efbcfc2938 100644
---- a/net/sched/sch_fq.c
-+++ b/net/sched/sch_fq.c
-@@ -842,8 +842,16 @@ static int fq_change(struct Qdisc *sch, struct nlattr *opt,
- 		}
- 	}
- 
--	if (tb[TCA_FQ_INITIAL_QUANTUM])
--		q->initial_quantum = nla_get_u32(tb[TCA_FQ_INITIAL_QUANTUM]);
-+	if (tb[TCA_FQ_INITIAL_QUANTUM]) {
-+		u32 initial_quantum = nla_get_u32(tb[TCA_FQ_INITIAL_QUANTUM]);
-+
-+		if (initial_quantum <= INT_MAX) {
-+			q->initial_quantum = initial_quantum;
-+		} else {
-+			NL_SET_ERR_MSG_MOD(extack, "invalid initial quantum");
-+			err = -EINVAL;
-+		}
-+	}
- 
- 	if (tb[TCA_FQ_FLOW_DEFAULT_RATE])
- 		pr_warn_ratelimited("sch_fq: defrate %u ignored.\n",
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
-index 8acb904d1419..3593fb8f79ad 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
-@@ -114,6 +114,28 @@
-             "$IP link del dev $DUMMY type dummy"
-         ]
-     },
-+    {
-+        "id": "10f7",
-+        "name": "Create FQ with invalid initial_quantum setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq initial_quantum 0x80000000",
-+        "expExitCode": "2",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root.*initial_quantum 2048Mb",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-     {
-         "id": "9398",
-         "name": "Create FQ with maxrate setting",
+For example, according to the
+KSZ9477 4.4.18 ACCESS CONTROL LIST (ACL) FILTERING:
+
+"It is also possible to configure the ACL table so that multiple processing
+entries specify the same action rule. In this way, the final matching result is
+the OR of the matching results from each of the multiple RuleSets.
+The 16 ACL rules represent an ordered list, with entry #0 having the highest
+priority and entry #15 having the lowest priority. All matching rules are
+evaluated. If there are multiple true match results and multiple corresponding
+actions, the highest priority (lowest numbered) of those actions will be the
+one taken."
+
+A summary of this part of documentation is:
+1. ACL table can have multiple entries specifying the same action rule.
+2. Final matching result is the OR of multiple RuleSets' results.
+3. 16 ACL rules form an ordered list, with priority descending from #0 to #15.
+4. All matching rules are evaluated.
+5. When multiple true matches and actions occur, the highest priority action is
+   executed.
+
+Considering this, there is a possibility that separate action rules would not
+be executed, as they might not be the highest priority match.  Since counters
+would have separation action rules, they would not be executed or prevent other
+action rules from execution.
+
+To confirm my hypothesis, additional time and testing will be required.
+Nonetheless, I hope this issue does not impede the progress of this patch.
+
+> > > Have you considered the "skbedit priority" action as opposed to hw_tc?
+> > 
+> > I had already thought of that, but since bridging is offloaded in the HW
+> > no skbs are involved, i thought it will be confusing. Since tc-flower seems to
+> > already support hw_tc remapping, I decided to use it. I hope it will not harm,
+> > to use it for now as mandatory option and make it optional later if other
+> > actions are added, including skbedit.
+> 
+> Well, skbedit is offloadable, so in that sense, its behavior is defined
+> even when no skbs are involved. OTOH, skbedit also has a software data
+> path (sets skb->priority), as opposed to hw_tc, which last time I checked,
+> did not.
+
+Alright, having tc rules be portable is certainly a benefit. I presume
+that in this situation, it's not an exclusive "either...or" choice. Both
+variants can coexist, and the skbedit action can be incorporated at a
+later time. Is that accurate?
+
+Regards,
+Oleksij
 -- 
-2.39.2
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
