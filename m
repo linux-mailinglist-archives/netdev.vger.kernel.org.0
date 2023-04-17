@@ -2,126 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D633A6E4391
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:22:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 984A46E4406
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbjDQJWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 05:22:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51214 "EHLO
+        id S230135AbjDQJgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 05:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbjDQJW1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:22:27 -0400
-Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9759240C6;
-        Mon, 17 Apr 2023 02:21:46 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1681723271; bh=zxAtmVjE1QkeQ/zLqggs+pv59RGEGM9/BqmB27YqErA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=k4opQFXwX6NFBtUnZvJeOlasOPCBS1ZVU0UF4tDkBdh8MrESmp/+3HYwZhQPcFYlp
-         3K0jeLOWA/l4WqZ/bx6v1ELdeZurFySqP00tFCB/UCTRGDgl3pgNL9GLEiObG0BQol
-         8PX8ajnCVtbHjgDLiTywjFF/G74yOSQxlNwnHbvqGAll5HKsD/kZzQ6dE4XNhT1bh0
-         8RMOqChAkrWY7O+lZurhBjTqm9thnUKw49P/1tY4h8yrbapq6mwypQXeDvjL//Us2g
-         WqsCBuZbwv3Dq20Oc3UazMPL3Y5eX9ablQHo4bJmUsAwNojh773tBv44HgR+ITtRFq
-         /8NGHx17CpCYA==
-To:     =?utf-8?Q?=C3=81lvaro_Fern=C3=A1ndez?= Rojas <noltari@gmail.com>,
-        f.fainelli@gmail.com, jonas.gorski@gmail.com, nbd@nbd.name,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, chunkeey@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?utf-8?Q?=C3=81lvaro_Fern=C3=A1ndez?= Rojas <noltari@gmail.com>
-Subject: Re: [PATCH v2 2/2] ath9k: of_init: add endian check
-In-Reply-To: <20230417053509.4808-3-noltari@gmail.com>
-References: <20230417053509.4808-1-noltari@gmail.com>
- <20230417053509.4808-3-noltari@gmail.com>
-Date:   Mon, 17 Apr 2023 11:21:09 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87wn2ax3sq.fsf@toke.dk>
+        with ESMTP id S229648AbjDQJgW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:36:22 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFFD59DC;
+        Mon, 17 Apr 2023 02:35:41 -0700 (PDT)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1poLFA-0005dj-Nc; Mon, 17 Apr 2023 11:33:52 +0200
+Message-ID: <f84c39ed-b8d8-7d0c-0eff-c90feaf5ab4f@leemhuis.info>
+Date:   Mon, 17 Apr 2023 11:33:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [regression] Bug 217286 - ath11k:deny assoc request, Invalid
+ supported ch width and ext nss combination
+Content-Language: en-US, de-DE
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     P Praneesh <ppranees@codeaurora.org>,
+        Ganesh Sesetti <gseset@codeaurora.org>,
+        Sathishkumar Muruganandam <murugana@codeaurora.org>
+Cc:     ath11k <ath11k@lists.infradead.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux kernel regressions list <regressions@lists.linux.dev>,
+        Kalle Valo <kvalo@kernel.org>,
+        Jouni Malinen <jouni@codeaurora.org>
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+References: <ed31b6fe-e73d-34af-445b-81c5c644d615@leemhuis.info>
+In-Reply-To: <ed31b6fe-e73d-34af-445b-81c5c644d615@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1681724141;503caf1c;
+X-HE-SMSGID: 1poLFA-0005dj-Nc
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com> writes:
+On 08.04.23 13:52, Linux regression tracking (Thorsten Leemhuis) wrote:
+> Hi, Thorsten here, the Linux kernel's regression tracker.
+> 
+> I noticed a regression report in bugzilla.kernel.org. As many (most?)
+> kernel developers don't keep an eye on it, I decided to forward it by mail.
+> 
+> Note, you have to use bugzilla to reach the reporter, as I sadly[1] can
+> not CCed them in mails like this.
+> 
+> Quoting from https://bugzilla.kernel.org/show_bug.cgi?id=217286 :
+> 
+>> Built and installed v6.2 kernel (with ath11k_pci) on arm64 hardware
+>> running Ubuntu22.04. Hardware has both Atheros QCN9074 module and Intel
+>> AX210 module. Running each (separately) in station mode and try to
+>> connect to Synology router with WiFi Access Point based on QCN9074.
+>> AX210 has no problem connecting to AP but Atheros is successfully
+>> authenticating but association is rejected by AP with this error message:
+>>
+>>
+>> wlan: [0:I:ANY] [UNSPECIFIED] vap-0(wlan100): [04:f0:21:a1:7c:3e]deny assoc request, Invalid supported ch width and ext nss combination
+>>
+>> Please note that when running v5.15.5 kernel (with ath11k_pci), I am
+>> able to connect to the same AP without problems.
+>>
+>> Detailed logs follow:
+>> [...]
+> 
+> See the ticket for more details.
 
-> BCM63xx (Big Endian MIPS) devices store the calibration data in MTD
-> partitions but it needs to be swapped in order to work, otherwise it fail=
-s:
-> ath9k 0000:00:01.0: enabling device (0000 -> 0002)
-> ath: phy0: Ignoring endianness difference in EEPROM magic bytes.
-> ath: phy0: Bad EEPROM VER 0x0001 or REV 0x00e0
-> ath: phy0: Unable to initialize hardware; initialization status: -22
-> ath9k 0000:00:01.0: Failed to initialize device
-> ath9k: probe of 0000:00:01.0 failed with error -22
->
-> For compatibility with current devices the AH_NO_EEP_SWAP flag will be
-> activated only when qca,endian-check isn't present in the device tree.
-> This is because some devices have the magic values swapped but not the ac=
-tual
-> EEPROM data, so activating the flag for those devices will break them.
->
-> Signed-off-by: =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com>
-> ---
->  drivers/net/wireless/ath/ath9k/init.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/wireless/ath/ath9k/init.c b/drivers/net/wireless=
-/ath/ath9k/init.c
-> index 4f00400c7ffb..abde953aec61 100644
-> --- a/drivers/net/wireless/ath/ath9k/init.c
-> +++ b/drivers/net/wireless/ath/ath9k/init.c
-> @@ -615,7 +615,6 @@ static int ath9k_nvmem_request_eeprom(struct ath_soft=
-c *sc)
->=20=20
->  	ah->nvmem_blob_len =3D len;
->  	ah->ah_flags &=3D ~AH_USE_EEPROM;
-> -	ah->ah_flags |=3D AH_NO_EEP_SWAP;
->=20=20
->  	return 0;
->  }
-> @@ -688,9 +687,11 @@ static int ath9k_of_init(struct ath_softc *sc)
->  			return ret;
->=20=20
->  		ah->ah_flags &=3D ~AH_USE_EEPROM;
-> -		ah->ah_flags |=3D AH_NO_EEP_SWAP;
->  	}
->=20=20
-> +	if (!of_property_read_bool(np, "qca,endian-check"))
-> +		ah->ah_flags |=3D AH_NO_EEP_SWAP;
-> +
+FWIW, the reporter bisected the regression down to
 
-So I'm not sure just setting (or not) this flag actually leads to
-consistent behaviour. The code in ath9k_hw_nvram_swap_data() that reacts
-to this flag does an endianness check before swapping, and the behaviour
-of this check depends on the CPU endianness. However, the byte swapping
-you're after here also swaps u8 members of the eeprom, so it's not
-really a data endianness swap, and I don't think it should depend on the
-endianness of the CPU?
+552d6fd2f2 ("ath11k: add support for 80P80 and 160 MHz bandwidth")
 
-So at least conceptually, the magic byte check in
-ath9k_hw_nvram_swap_data() is wrong; instead the byteswap check should
-just be checking against the little-endian version of the firmware
-(i.e., 0xa55a; I think that's what your device has, right?). However,
-since we're setting an explicit per-device property anyway (in the
-device tree), maybe it's better to just have that be an "eeprom needs
-swapping" flag and do the swap unconditionally if it's set? I think that
-would address Krzysztof's comment as well ("needs swapping" is a
-hardware property, "do the check" is not).
+Authored by P Praneesh, Ganesh Sesetti, and Sathishkumar Muruganandam,.
+all of which I added to the list of recipients (just like Jouni Malinen,
+who handled the patch). Could one of you please look into this?
 
-Now, the question becomes whether the "check" code path is actually used
-for anything today? The old mail thread I quoted in the other thread
-seems to indicate it's not, but it's not quite clear from the code
-whether there's currently any way to call into
-ath9k_hw_nvram_swap_data() without the NO_EEP_SWAP flag being set?
+While at it, let me update the tracking status:
 
-WDYT?
+#regzbot introduced: 552d6fd2f2
+#regzbot ignore-activity
 
--Toke
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+If I did something stupid, please tell me, as explained on that page.
