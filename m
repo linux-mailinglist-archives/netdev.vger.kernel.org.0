@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 284C56E53E9
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:33:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D4CC6E53E8
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:32:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbjDQVc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 17:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37362 "EHLO
+        id S230331AbjDQVc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 17:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbjDQVcz (ORCPT
+        with ESMTP id S229554AbjDQVcz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 17:32:55 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811925272
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F328B4EC4
         for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:32:52 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id dx24so23916266ejb.11
+Received: by mail-ej1-x62e.google.com with SMTP id c9so29092746ejz.1
         for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:32:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20221208; t=1681767170; x=1684359170;
+        d=googlemail.com; s=20221208; t=1681767171; x=1684359171;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=I7UpKVaFBfq5Rg4wLX5/+hvj8XbVayo9/OxCuE/1q/4=;
-        b=YVkOw7IFgHhccZczhyGGcIxzvrgC8F67pUJzHD1ddEKlCsIsUtv0L+fDAwd2lQ5JQT
-         zbpRO0dAYujC1HlMYnpY4kzjduAE2yI6kcqQPGVubpSjQWGExP3/Hv1ZSEKnBA9dirvF
-         cWc1EL2sBDqOrLPNYGQa3Q49CqQw4lnpYvSHAVlK1EnrCPSJw669A5XjabQcfyXfueaI
-         3L2c6jhVbb2CwSvpb6RLT+hNtbNWOOcGMZZ2eQUDUEPZYhwwgGKOGngO8/HFY8Zh0cMe
-         8RFESE6V5vVx4HMdDAbY2CnuQmnfylUAP14qOyLH2Wlm+k9+Cfw9FIODhmUnCTaH+6gl
-         Ll5A==
+        bh=Swqr8f5iTSDQJesOkVMR28rdhhUjexNl96oyGcoDwB0=;
+        b=ejIQt7d1iTMVcn5XnGgOEE3GOqmjMpU7Icyvksu3rX7yzsct8G5wdlHmkMdAEuINM+
+         8P9h8ms8eAFvbsh0kMLsXVVDjAvAYRdm6/gx4rf0T+Y7sRMPJr58LDpnb8pTX2BQq5KS
+         sz5v/QqnTPXdVRr/1V4gVqSKn0rMldPOtnXo50KrpKOCOt88YBqRMN0Dd7+3XgVe6t5j
+         S8TRm8EtO0yQiSw6+3W4K/LhGMqzirh0q/17aDxTUboP2s980f6RpjR4ELE4fEtp+ScW
+         jqQshAkP+1Lfbz/RB9bTPA87Cuet8Fwgn4u8cJwfrnjchdq1Z+U77s51Ks1olU2M1XC9
+         mizg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681767170; x=1684359170;
+        d=1e100.net; s=20221208; t=1681767171; x=1684359171;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=I7UpKVaFBfq5Rg4wLX5/+hvj8XbVayo9/OxCuE/1q/4=;
-        b=ULbvDpGIS0g5HDxOOtjV9Hk3ytnAIFQp8GHqnn1JWNct+abplbb2tKxjYQfwB87+FF
-         SgIbkMtn9QOv8uCMm19SjfjmnKpzg+u1/n6fgiwQBaCLaQ8EOgTQOAa/kI2xGqkzh8oW
-         ZlkG/K1XaLpvQieRloyxsmEIti51R790U+PrPuFhyn/sUA/Ld+N/ITvWzVoNTE3Npo4W
-         xNY4rq8tIksQiF58pVoXhuw4BV1g+hU2mTqh5H8466890rsjCligInWA11yTiEICcTGM
-         +ajzismf6PutSX3lMvmIHvm+WUOo6FNztRg0DOY0ZD14EZc99sJxw3Wyw5oUiz3ArcGn
-         MLdA==
-X-Gm-Message-State: AAQBX9fXUTY9oROT8uVCUTCEIyG8Bij9Zfai6CzpTRCKBx52TI0ai3bu
-        su6yIuGr0+9vzdNcttBbjSOskfarT+S+Xth1
-X-Google-Smtp-Source: AKy350Zf5h02NU5KF2Hp9nPBYAQBGlP5Gc0BExy8lvZ5ODb522SVy/X/pvMyqhR+uUoBCmo2AqDmVQ==
-X-Received: by 2002:a17:906:28cc:b0:94b:769f:3ba3 with SMTP id p12-20020a17090628cc00b0094b769f3ba3mr8886878ejd.8.1681767170510;
-        Mon, 17 Apr 2023 14:32:50 -0700 (PDT)
+        bh=Swqr8f5iTSDQJesOkVMR28rdhhUjexNl96oyGcoDwB0=;
+        b=jbjix1X+O48Eb7VcM4MrkJXX+wNYTZT5b0EQ/L+cO2W1UzGNpW5b5DVnS50oWpJDko
+         5OPXtqN+qoBY8EKI2mxjplatC0j5w/bKfmcFuVgl69xlh8ZynxGjKZd0weLj6+GwoK94
+         7JgaYcYCPDlI2tb+A10sQaNeOrBsdhTI/+YkZKspmBZQiGK5Hfan6sScVMlWqKLRYWo/
+         SusE/ag8dEUKqi1iADkccyZV1/bf//PA8Gs4jgN/zdxYRk+qqGDK7mPg2kC2e5eqhaUq
+         vEiP5f/32iC0wBH1sp5pvBKehiKyxA29tA1sNh0e3wzOeaJQv5iLc4oHsXXpH2uaJLc6
+         IG9A==
+X-Gm-Message-State: AAQBX9cEmupD1/1N4v8Phvg5/XEugrCi4wDP6DUNlneGuoblxpd675Mg
+        2UiZN87MHgXQBbxQG2vFXyIXrsQq9S/00Zhb
+X-Google-Smtp-Source: AKy350bpzWRpvEWGnfYSvVL+5jz4k24m/7916/XsUPp7na2hOhypNJ/OgPHydQ08RjrS/Gv4HEvnAw==
+X-Received: by 2002:a17:906:3747:b0:94f:ca5:1a66 with SMTP id e7-20020a170906374700b0094f0ca51a66mr8867521ejc.59.1681767171381;
+        Mon, 17 Apr 2023 14:32:51 -0700 (PDT)
 Received: from localhost.localdomain (p200300c1c74c0400ba8584fffebf2b17.dip0.t-ipconnect.de. [2003:c1:c74c:400:ba85:84ff:febf:2b17])
-        by smtp.gmail.com with ESMTPSA id k18-20020a17090632d200b0094f05fee9d3sm4670005ejk.211.2023.04.17.14.32.49
+        by smtp.gmail.com with ESMTPSA id k18-20020a17090632d200b0094f05fee9d3sm4670005ejk.211.2023.04.17.14.32.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Apr 2023 14:32:50 -0700 (PDT)
+        Mon, 17 Apr 2023 14:32:51 -0700 (PDT)
 Sender: Zahari Doychev <zahari.doychev@googlemail.com>
 From:   Zahari Doychev <zahari.doychev@linux.com>
 To:     netdev@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         pabeni@redhat.com, hmehrtens@maxlinear.com,
         aleksander.lobakin@intel.com, simon.horman@corigine.com,
         Zahari Doychev <zdoychev@maxlinear.com>
-Subject: [PATCH net-next v3 2/3] net: flower: add support for matching cfm fields
-Date:   Mon, 17 Apr 2023 23:32:32 +0200
-Message-Id: <20230417213233.525380-3-zahari.doychev@linux.com>
+Subject: [PATCH net-next v3 3/3] selftests: net: add tc flower cfm test
+Date:   Mon, 17 Apr 2023 23:32:33 +0200
+Message-Id: <20230417213233.525380-4-zahari.doychev@linux.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230417213233.525380-1-zahari.doychev@linux.com>
 References: <20230417213233.525380-1-zahari.doychev@linux.com>
@@ -78,222 +78,208 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Zahari Doychev <zdoychev@maxlinear.com>
 
-Add support to the tc flower classifier to match based on fields in CFM
-information elements like level and opcode.
-
-tc filter add dev ens6 ingress protocol 802.1q \
-	flower vlan_id 698 vlan_ethtype 0x8902 cfm mdl 5 op 46 \
-	action drop
+New cfm flower test case is added to the net forwarding selfttests.
 
 Signed-off-by: Zahari Doychev <zdoychev@maxlinear.com>
 ---
- include/uapi/linux/pkt_cls.h |   9 +++
- net/sched/cls_flower.c       | 109 ++++++++++++++++++++++++++++++++++-
- 2 files changed, 117 insertions(+), 1 deletion(-)
+ .../testing/selftests/net/forwarding/Makefile |   1 +
+ .../selftests/net/forwarding/tc_flower_cfm.sh | 175 ++++++++++++++++++
+ 2 files changed, 176 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/tc_flower_cfm.sh
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 648a82f32666..8e3f809c9a03 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -594,6 +594,8 @@ enum {
- 
- 	TCA_FLOWER_KEY_L2TPV3_SID,	/* be32 */
- 
-+	TCA_FLOWER_KEY_CFM,	/* nested */
+diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
+index 236f6b796a52..3938e664d4ce 100644
+--- a/tools/testing/selftests/net/forwarding/Makefile
++++ b/tools/testing/selftests/net/forwarding/Makefile
+@@ -82,6 +82,7 @@ TEST_PROGS = bridge_igmp.sh \
+ 	tc_chains.sh \
+ 	tc_flower_router.sh \
+ 	tc_flower.sh \
++	tc_flower_cfm.sh \
+ 	tc_mpls_l2vpn.sh \
+ 	tc_police.sh \
+ 	tc_shblocks.sh \
+diff --git a/tools/testing/selftests/net/forwarding/tc_flower_cfm.sh b/tools/testing/selftests/net/forwarding/tc_flower_cfm.sh
+new file mode 100755
+index 000000000000..0509bc3c9f75
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/tc_flower_cfm.sh
+@@ -0,0 +1,175 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
- 	__TCA_FLOWER_MAX,
- };
- 
-@@ -702,6 +704,13 @@ enum {
- 	TCA_FLOWER_KEY_FLAGS_FRAG_IS_FIRST = (1 << 1),
- };
- 
-+enum {
-+	TCA_FLOWER_KEY_CFM_OPT_UNSPEC,
-+	TCA_FLOWER_KEY_CFM_MD_LEVEL,
-+	TCA_FLOWER_KEY_CFM_OPCODE,
-+	TCA_FLOWER_KEY_CFM_OPT_MAX,
-+};
++ALL_TESTS="match_cfm_opcode match_cfm_level match_cfm_level_and_opcode"
++NUM_NETIFS=2
++source tc_common.sh
++source lib.sh
 +
- #define TCA_FLOWER_MASK_FLAGS_RANGE	(1 << 0) /* Range-based match */
- 
- /* Match-all classifier */
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index cc49256d5318..4962d6c90d0f 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -11,6 +11,7 @@
- #include <linux/rhashtable.h>
- #include <linux/workqueue.h>
- #include <linux/refcount.h>
-+#include <linux/bitfield.h>
- 
- #include <linux/if_ether.h>
- #include <linux/in6.h>
-@@ -71,6 +72,7 @@ struct fl_flow_key {
- 	struct flow_dissector_key_num_of_vlans num_of_vlans;
- 	struct flow_dissector_key_pppoe pppoe;
- 	struct flow_dissector_key_l2tpv3 l2tpv3;
-+	struct flow_dissector_key_cfm cfm;
- } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
- 
- struct fl_flow_mask_range {
-@@ -720,7 +722,7 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
- 	[TCA_FLOWER_KEY_PPPOE_SID]	= { .type = NLA_U16 },
- 	[TCA_FLOWER_KEY_PPP_PROTO]	= { .type = NLA_U16 },
- 	[TCA_FLOWER_KEY_L2TPV3_SID]	= { .type = NLA_U32 },
--
-+	[TCA_FLOWER_KEY_CFM]		= { .type = NLA_NESTED },
- };
- 
- static const struct nla_policy
-@@ -769,6 +771,11 @@ mpls_stack_entry_policy[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1] = {
- 	[TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL]    = { .type = NLA_U32 },
- };
- 
-+static const struct nla_policy cfm_opt_policy[TCA_FLOWER_KEY_CFM_OPT_MAX] = {
-+	[TCA_FLOWER_KEY_CFM_MD_LEVEL]		= { .type = NLA_U8 },
-+	[TCA_FLOWER_KEY_CFM_OPCODE]		= { .type = NLA_U8 },
-+};
++tcflags="skip_hw"
 +
- static void fl_set_key_val(struct nlattr **tb,
- 			   void *val, int val_type,
- 			   void *mask, int mask_type, int len)
-@@ -1653,6 +1660,60 @@ static bool is_vlan_key(struct nlattr *tb, __be16 *ethertype,
- 	return false;
- }
- 
-+static int fl_set_key_cfm_md_level(struct nlattr **tb,
-+				   struct fl_flow_key *key,
-+				   struct fl_flow_key *mask,
-+				   struct netlink_ext_ack *extack)
++h1_create()
 +{
-+	u8 level;
-+
-+	if (!tb[TCA_FLOWER_KEY_CFM_MD_LEVEL])
-+		return 0;
-+
-+	level = nla_get_u8(tb[TCA_FLOWER_KEY_CFM_MD_LEVEL]);
-+	if (level & ~FIELD_MAX(FLOW_DIS_CFM_MDL_MASK)) {
-+		NL_SET_ERR_MSG_ATTR(extack, tb[TCA_FLOWER_KEY_CFM_MD_LEVEL],
-+				    "cfm md level must be in [0, 7]");
-+		return -EINVAL;
-+	}
-+
-+	key->cfm.mdl_ver = FIELD_PREP(FLOW_DIS_CFM_MDL_MASK, level);
-+	mask->cfm.mdl_ver = FLOW_DIS_CFM_MDL_MASK;
-+
-+	return 0;
++	simple_if_init $h1 192.0.2.1/24 198.51.100.1/24
 +}
 +
-+static void fl_set_key_cfm_opcode(struct nlattr **tb,
-+				  struct fl_flow_key *key,
-+				  struct fl_flow_key *mask,
-+				  struct netlink_ext_ack *extack)
++h1_destroy()
 +{
-+	fl_set_key_val(tb, &key->cfm.opcode, TCA_FLOWER_KEY_CFM_OPCODE,
-+		       &mask->cfm.opcode, TCA_FLOWER_UNSPEC,
-+		       sizeof(key->cfm.opcode));
++	simple_if_fini $h1 192.0.2.1/24 198.51.100.1/24
 +}
 +
-+static int fl_set_key_cfm(struct nlattr **tb,
-+			  struct fl_flow_key *key,
-+			  struct fl_flow_key *mask,
-+			  struct netlink_ext_ack *extack)
++h2_create()
 +{
-+	struct nlattr *nla_cfm_opt[TCA_FLOWER_KEY_CFM_OPT_MAX];
-+	int err;
-+
-+	if (!tb[TCA_FLOWER_KEY_CFM])
-+		return 0;
-+
-+	err = nla_parse_nested(nla_cfm_opt, TCA_FLOWER_KEY_CFM_OPT_MAX,
-+			       tb[TCA_FLOWER_KEY_CFM], cfm_opt_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	fl_set_key_cfm_opcode(nla_cfm_opt, key, mask, extack);
-+
-+	return fl_set_key_cfm_md_level(nla_cfm_opt, key, mask, extack);
++	simple_if_init $h2 192.0.2.2/24 198.51.100.2/24
++	tc qdisc add dev $h2 clsact
 +}
 +
- static int fl_set_key(struct net *net, struct nlattr **tb,
- 		      struct fl_flow_key *key, struct fl_flow_key *mask,
- 		      struct netlink_ext_ack *extack)
-@@ -1803,6 +1864,10 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 			       TCA_FLOWER_KEY_L2TPV3_SID,
- 			       &mask->l2tpv3.session_id, TCA_FLOWER_UNSPEC,
- 			       sizeof(key->l2tpv3.session_id));
-+	} else if (key->basic.n_proto  == htons(ETH_P_CFM)) {
-+		ret = fl_set_key_cfm(tb, key, mask, extack);
-+		if (ret)
-+			return ret;
- 	}
- 
- 	if (key->basic.ip_proto == IPPROTO_TCP ||
-@@ -1985,6 +2050,8 @@ static void fl_init_dissector(struct flow_dissector *dissector,
- 			     FLOW_DISSECTOR_KEY_PPPOE, pppoe);
- 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
- 			     FLOW_DISSECTOR_KEY_L2TPV3, l2tpv3);
-+	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
-+			     FLOW_DISSECTOR_KEY_CFM, cfm);
- 
- 	skb_flow_dissector_init(dissector, keys, cnt);
- }
-@@ -3004,6 +3071,43 @@ static int fl_dump_key_ct(struct sk_buff *skb,
- 	return -EMSGSIZE;
- }
- 
-+static int fl_dump_key_cfm(struct sk_buff *skb,
-+			   struct flow_dissector_key_cfm *key,
-+			   struct flow_dissector_key_cfm *mask)
++h2_destroy()
 +{
-+	struct nlattr *opts;
-+	int err;
-+	u8 mdl;
-+
-+	if (!memchr_inv(mask, 0, sizeof(mask)))
-+		return 0;
-+
-+	opts = nla_nest_start(skb, TCA_FLOWER_KEY_CFM);
-+	if (!opts)
-+		return -EMSGSIZE;
-+
-+	if (FIELD_GET(FLOW_DIS_CFM_MDL_MASK, mask->mdl_ver)) {
-+		mdl = FIELD_GET(FLOW_DIS_CFM_MDL_MASK, key->mdl_ver);
-+		err = nla_put_u8(skb, TCA_FLOWER_KEY_CFM_MD_LEVEL, mdl);
-+		if (err)
-+			goto err_cfm_opts;
-+	}
-+
-+	if (mask->opcode) {
-+		err = nla_put_u8(skb, TCA_FLOWER_KEY_CFM_OPCODE, key->opcode);
-+		if (err)
-+			goto err_cfm_opts;
-+	}
-+
-+	nla_nest_end(skb, opts);
-+
-+	return 0;
-+
-+err_cfm_opts:
-+	nla_nest_cancel(skb, opts);
-+	return err;
++	tc qdisc del dev $h2 clsact
++	simple_if_fini $h2 192.0.2.2/24 198.51.100.2/24
 +}
 +
- static int fl_dump_key_options(struct sk_buff *skb, int enc_opt_type,
- 			       struct flow_dissector_key_enc_opts *enc_opts)
- {
-@@ -3286,6 +3390,9 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
- 			     sizeof(key->hash.hash)))
- 		goto nla_put_failure;
- 
-+	if (fl_dump_key_cfm(skb, &key->cfm, &mask->cfm))
-+		goto nla_put_failure;
++cfm_mdl_opcode()
++{
++	local mdl=$1
++	local op=$2
++	local flags=$3
++	local tlv_offset=$4
 +
- 	return 0;
- 
- nla_put_failure:
++	printf "%02x %02x %02x %02x"    \
++		   $((mdl << 5))             \
++		   $((op & 0xff))             \
++		   $((flags & 0xff)) \
++		   $tlv_offset
++}
++
++match_cfm_opcode()
++{
++	local ethtype="89 02"; readonly ethtype
++	RET=0
++
++	tc filter add dev $h2 ingress protocol cfm pref 1 handle 101 \
++	   flower cfm op 47 action drop
++	tc filter add dev $h2 ingress protocol cfm pref 2 handle 102 \
++	   flower cfm op 43 action drop
++
++	pkt="$ethtype $(cfm_mdl_opcode 7 47 0 4)"
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac "$pkt" -q
++	pkt="$ethtype $(cfm_mdl_opcode 6 5 0 4)"
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac "$pkt" -q
++
++	tc_check_packets "dev $h2 ingress" 101 1
++	check_err $? "Did not match on correct opcode"
++
++	tc_check_packets "dev $h2 ingress" 102 0
++	check_err $? "Matched on the wrong opcode"
++
++	tc filter del dev $h2 ingress protocol cfm pref 1 handle 101 flower
++	tc filter del dev $h2 ingress protocol cfm pref 2 handle 102 flower
++
++	log_test "CFM opcode match test"
++}
++
++match_cfm_level()
++{
++	local ethtype="89 02"; readonly ethtype
++	RET=0
++
++	tc filter add dev $h2 ingress protocol cfm pref 1 handle 101 \
++	   flower cfm mdl 5 action drop
++	tc filter add dev $h2 ingress protocol cfm pref 2 handle 102 \
++	   flower cfm mdl 3 action drop
++	tc filter add dev $h2 ingress protocol cfm pref 3 handle 103 \
++	   flower cfm mdl 0 action drop
++
++	pkt="$ethtype $(cfm_mdl_opcode 5 42 0 4)"
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac "$pkt" -q
++	pkt="$ethtype $(cfm_mdl_opcode 6 1 0 4)"
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac "$pkt" -q
++	pkt="$ethtype $(cfm_mdl_opcode 0 1 0 4)"
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac "$pkt" -q
++
++	tc_check_packets "dev $h2 ingress" 101 1
++	check_err $? "Did not match on correct level"
++
++	tc_check_packets "dev $h2 ingress" 102 0
++	check_err $? "Matched on the wrong level"
++
++	tc_check_packets "dev $h2 ingress" 103 1
++	check_err $? "Did not match on correct level"
++
++	tc filter del dev $h2 ingress protocol cfm pref 1 handle 101 flower
++	tc filter del dev $h2 ingress protocol cfm pref 2 handle 102 flower
++	tc filter del dev $h2 ingress protocol cfm pref 3 handle 103 flower
++
++	log_test "CFM level match test"
++}
++
++match_cfm_level_and_opcode()
++{
++	local ethtype="89 02"; readonly ethtype
++	RET=0
++
++	tc filter add dev $h2 ingress protocol cfm pref 1 handle 101 \
++	   flower cfm mdl 5 op 41 action drop
++	tc filter add dev $h2 ingress protocol cfm pref 2 handle 102 \
++	   flower cfm mdl 7 op 42 action drop
++
++	pkt="$ethtype $(cfm_mdl_opcode 5 41 0 4)"
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac "$pkt" -q
++	pkt="$ethtype $(cfm_mdl_opcode 7 3 0 4)"
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac "$pkt" -q
++	pkt="$ethtype $(cfm_mdl_opcode 3 42 0 4)"
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac "$pkt" -q
++
++	tc_check_packets "dev $h2 ingress" 101 1
++	check_err $? "Did not match on correct level and opcode"
++	tc_check_packets "dev $h2 ingress" 102 0
++	check_err $? "Matched on the wrong level and opcode"
++
++	tc filter del dev $h2 ingress protocol cfm pref 1 handle 101 flower
++	tc filter del dev $h2 ingress protocol cfm pref 2 handle 102 flower
++
++	log_test "CFM opcode and level match test"
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	h2=${NETIFS[p2]}
++	h1mac=$(mac_get $h1)
++	h2mac=$(mac_get $h2)
++
++	vrf_prepare
++
++	h1_create
++	h2_create
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	h2_destroy
++	h1_destroy
++
++	vrf_cleanup
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++tests_run
++
++tc_offload_check
++if [[ $? -ne 0 ]]; then
++	log_info "Could not test offloaded functionality"
++else
++	tcflags="skip_sw"
++	tests_run
++fi
++
++exit $EXIT_STATUS
 -- 
 2.40.0
 
