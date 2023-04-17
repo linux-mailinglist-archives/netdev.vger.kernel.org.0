@@ -2,116 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15EA36E53EA
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:33:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B370B6E53F9
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:39:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbjDQVdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 17:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38032 "EHLO
+        id S229781AbjDQVjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 17:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbjDQVds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 17:33:48 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637E94EC9
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:33:46 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-54fbee98814so185366257b3.8
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:33:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681767225; x=1684359225;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vKCePm3ajYIi83+RipY8QNKSSnNw0uz4x0IE1t5/iA4=;
-        b=FwvsARl7D+4MqR0JA1Y+q2Fte10nfp3NEpS7gIFffgaEi5Lfc9nE4z3Kxby3OI9sja
-         TAOofwI1Zf/5wTxl7AenBr1KRXIHEeqtlW5Ya02W2ITtvrnDFgKPGOUaa0ZJjvgKIopl
-         EqrO5cxqvDgN92s7VjUUe3qbX2X7LS3IlVDxgXunOWzicFjUoGrTuubdZPMusISb5k1d
-         ADQW1+D5ZOG/017CK5h9TzbzUXcK8jjEFsw/b0M+StQLvd+MQAqKhiUPiFqIPWsaSaLG
-         1tNkDB6ona7OnLhCYgEm2eiUd0OirgwkuuYbbFz2IHJRuKwGh1vUUfIBQtDWjYlClJmo
-         7+Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681767225; x=1684359225;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vKCePm3ajYIi83+RipY8QNKSSnNw0uz4x0IE1t5/iA4=;
-        b=OFr5GoIyAGGbLYoM9N5v63zR+mliLhRFQZo0vB/DrRkIFPaoq/5+4V7OaTT7+T2mOe
-         irCUhuPlFORkOYkUAqlby1fBAy3DQTR1zzSTgCRqbsp/9MqunB+lvA7BYgdgmhOmFb1O
-         5gsmAReYy24VfUK+iUwOs9d/FrOTjNbB9LkOlezql5YvH1pnHclI8DwQ2iMEo60IkAHx
-         8e2wVQ4chr2EEXz+1Fi6wbfmW0bYeZwQUlxVu6no5lsynm1dk4HaqijnsvQvx7wS/GrQ
-         TBLsGsOT9u4qmCrHSUG+2qN95dH1Nwnmo5evMV4VyzGogtVwWDwxO+xhoLFftruRxaPW
-         E5lg==
-X-Gm-Message-State: AAQBX9ci0bmtRlrNsk0hjmRCD7MIFQSXnP+3SCPjXMdSztAwqX6U8Ar9
-        De6pXVDEVNjAoWzU/ixit7c5z4SdnltF6cNFkflovRYeW90CVu0tGMQ=
-X-Google-Smtp-Source: AKy350bkctE0AUV8AVNhXMjiJtNJ4bfHBOjW2z5wo/H4tRakzWZBubmcuyqP7ZCntokm1rI0mjQn5HsoRaWcucZqH3I=
-X-Received: by 2002:a81:b667:0:b0:54f:cc40:cf68 with SMTP id
- h39-20020a81b667000000b0054fcc40cf68mr9299674ywk.7.1681767225622; Mon, 17 Apr
- 2023 14:33:45 -0700 (PDT)
+        with ESMTP id S229682AbjDQVjp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 17:39:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C541BC2
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:39:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 602D06230E
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 21:39:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E627C433D2;
+        Mon, 17 Apr 2023 21:39:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681767583;
+        bh=1gB+wpeniBRm7xJNTM78fmgVHcAWvLD4FXYSIG00fK4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UXyFq2npFKJ75E9iS9DekJe59swdfge5D0BjRjHUaVNfl06R9XpSEa643jnAC5uTY
+         vOfJAmV0JQGOv3T4L8EC/2CVU72TA8Pp9b06rvfWTNzhiNCp7TZdjPoja34NL/kNbw
+         GusMfBzTJxwSYXx4p2zK9vdBAXDwDSFIZyctGGhTnmhbhZku3UJHjckbVAavhAUzQ4
+         sGpVKH/FMKftlXhiP6x5A+pJ4LUBjZ5JFDQfPqeFgZDR/4LBwJQh8ZgOZzOoanCAEu
+         mvl/9DNtI2WgRRxAdtGslk0v51hLsemUdKlumVHZ6ajGd3jUD8i4U2XCl8U2kJuiVw
+         Lxm+0xxjN7cGw==
+Date:   Mon, 17 Apr 2023 23:39:40 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        lorenzo.bianconi@redhat.com, jdamato@fastly.com
+Subject: Re: [PATCH net-next] net: page_pool: add pages and released_pages
+ counters
+Message-ID: <ZD28nJonfDPiW4F8@lore-desk>
+References: <a20f97acccce65d174f704eadbf685d0ce1201af.1681422222.git.lorenzo@kernel.org>
+ <20230414184653.21b4303d@kernel.org>
+ <ZDqHmCX7D4aXOQzl@lore-desk>
+ <20230417111204.08f19827@kernel.org>
 MIME-Version: 1.0
-References: <20230417171218.333567-1-pctammela@mojatatu.com> <20230417171218.333567-3-pctammela@mojatatu.com>
-In-Reply-To: <20230417171218.333567-3-pctammela@mojatatu.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Mon, 17 Apr 2023 17:33:34 -0400
-Message-ID: <CAM0EoMnr_a5-R_HdUGk7tG9s9KesReVhch=5ncp44aaPBv6BKA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/4] net/sched: sch_qfq: use extack on errors messages
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="CTTEipT+S1EDNELL"
+Content-Disposition: inline
+In-Reply-To: <20230417111204.08f19827@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 17, 2023 at 1:12=E2=80=AFPM Pedro Tammela <pctammela@mojatatu.c=
-om> wrote:
->
-> Some error messages are still being printed to dmesg.
-> Since extack is available, provide error messages there.
->
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+--CTTEipT+S1EDNELL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> ---
->  net/sched/sch_qfq.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
->
-> diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-> index cf5ebe43b3b4..323609cfbc67 100644
-> --- a/net/sched/sch_qfq.c
-> +++ b/net/sched/sch_qfq.c
-> @@ -402,8 +402,8 @@ static int qfq_change_class(struct Qdisc *sch, u32 cl=
-assid, u32 parentid,
->         int err;
->         int delta_w;
->
-> -       if (tca[TCA_OPTIONS] =3D=3D NULL) {
-> -               pr_notice("qfq: no options\n");
-> +       if (NL_REQ_ATTR_CHECK(extack, NULL, tca, TCA_OPTIONS)) {
-> +               NL_SET_ERR_MSG_MOD(extack, "missing options");
->                 return -EINVAL;
->         }
->
-> @@ -441,8 +441,9 @@ static int qfq_change_class(struct Qdisc *sch, u32 cl=
-assid, u32 parentid,
->         delta_w =3D weight - (cl ? cl->agg->class_weight : 0);
->
->         if (q->wsum + delta_w > QFQ_MAX_WSUM) {
-> -               pr_notice("qfq: total weight out of range (%d + %u)\n",
-> -                         delta_w, q->wsum);
-> +               NL_SET_ERR_MSG_FMT_MOD(extack,
-> +                                      "total weight out of range (%d + %=
-u)\n",
-> +                                      delta_w, q->wsum);
->                 return -EINVAL;
->         }
->
-> --
-> 2.34.1
->
+> On Sat, 15 Apr 2023 13:16:40 +0200 Lorenzo Bianconi wrote:
+> > > What about high order? If we use bulk API for high order one day,=20
+> > > will @slow_high_order not count calls like @slow does? So we should
+> > > bump the new counter for high order, too. =20
+> >=20
+> > yes, right. AFAIU "slow_high_order" and "slow" just count number of
+> > pages returned to the pool consumer and not the number of pages
+> > allocated to the pool (as you said, since we do not use bulking
+> > for high_order allocation there is no difference at the moment).
+> > What I would like to track is the number of allocated pages
+> > (of any order) so I guess we can just increment "pages" counter in
+> > __page_pool_alloc_page_order() as well. Agree?
+>=20
+> Yup, that sounds better.
+
+ack, fine. I am now wondering if these counters are useful just during
+debugging or even in the normal use-case.
+@Jesper, Ilias, Joe: what do you think?
+
+Regards,
+Lorenzo
+
+>=20
+> > > Which makes it very similar to pages_state_hold_cnt, just 64bit... =
+=20
+> >=20
+> > do you prefer to use pages_state_hold_cnt instead of adding a new
+> > pages counter?
+>=20
+> No strong preference either way. It's a tradeoff between saving 4B=20
+> and making the code a little more complex. Perhaps we should stick=20
+> to simplicity and add the counter like you did. Nothing stops us from
+> optimizing later.
+
+--CTTEipT+S1EDNELL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZD28nAAKCRA6cBh0uS2t
+rF68AQDhDJvlI0FQzfII9/UCDZD7DUzIArl6d477bvoa53KVQAEAh+YvanDznP7q
+JayWlwar+xg1pwS4ujcosAI0o4rkWws=
+=NfTK
+-----END PGP SIGNATURE-----
+
+--CTTEipT+S1EDNELL--
