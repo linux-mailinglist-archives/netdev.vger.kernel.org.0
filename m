@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACC956E4EE5
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 19:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1EE6E4EE6
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 19:12:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229710AbjDQRMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 13:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42746 "EHLO
+        id S230089AbjDQRMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 13:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbjDQRMn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 13:12:43 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724FFF2
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 10:12:39 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id cg19-20020a056830631300b0069f922cd5ceso12503261otb.12
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 10:12:39 -0700 (PDT)
+        with ESMTP id S230093AbjDQRMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 13:12:45 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4876A7B
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 10:12:42 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id k101-20020a9d19ee000000b006a14270bc7eso10080937otk.6
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 10:12:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681751558; x=1684343558;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681751561; x=1684343561;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=XrgOqbQ8tfhAtqn08b0XzePIyM6gaBBRIcqWgwZFTtY=;
-        b=CVqzSS/L0JlyAGNcnWHyUkRIn5nbbn/sne3l4oxTU6izLlnDmazZLLZhbnnVITu/m7
-         JPm37IQ3+oeM3eXNWX/1Glu5UijVxs2RqkKkpX1xi+HZ1l4oQo3uspwsdepV3LgHkrXS
-         +9GSyzIJvzQ7YdlkRyDA976L02KROz/A6QVmmVVYJ/aKX4bAAlsOtK8avt2lrG/Elngb
-         CXrPWaC/Y7Op4XLPvFITLsdJfiee10IXmDbOsMo0ID2oa0rP2qcF9i3oEHX2BcUhBYia
-         qLHHT1GU7YE+W3VMPBO2QRBx8Z7cfspshOF5XlNiDnY6PYe9090Rrv2T37ozwHMZVv5t
-         TbaQ==
+        bh=XAykbLVeHziw0JUwYHoJmyn/25zTSaV2zD2m1EHgVFo=;
+        b=oIYtJ0vmwaCldoTz/3/9KbR9ugwcYFmhZOvUgE2KJzM6ytLR6JXrTMohzOEiHQ/ISb
+         iaIg/WzZ95f0/glBak3MIEl1hIW3svxMLAk8u/ZD+k+DtXNt5ClE2m1eBhC/FPDegTzL
+         45M+SlY8ItNGD0LFr9irE1uEoTwCm/5o3d8nKLEZUTYQcDyfRVyktydqdOc9DQORundR
+         +FSxGSG7GLrKevXcBhK4wEFoBVOxQOXgGuOgH39Sz1n0ShMDP5H8sns1wbaOttpFuGwE
+         jYuOgKWZHlt6DZ549ZrWcafZLWDB37fHwXMdAmkX8oJVMmia3RcvMXv/4aOwTznBtJ6a
+         Js6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681751558; x=1684343558;
+        d=1e100.net; s=20221208; t=1681751561; x=1684343561;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=XrgOqbQ8tfhAtqn08b0XzePIyM6gaBBRIcqWgwZFTtY=;
-        b=E0Bud5EXlD9hOoWzTt9Rc50Kylgk/i8af1Yp53Cyc7yivJd6ksuIUKmOCuidp6OCXj
-         nPbr1YBQCul0/k64hpY5y2iqseb6IAby0rxxp78BEj50Dz4CRSgHtJDbcyiivdKlVfG9
-         jnzZzzJQ1NyS4UiX8bLqb7syQpebeLipgarihZc8h3fCYbDmhXZ2VDE6AqXcY6z4Bw26
-         EODzfWqZMwLOVpCk3JduDN86TtWVdfmP3uWac9mxRB/B/egQEr58z2MCSXUcyTCGSaWw
-         nAIVmqu2BMDhL9Jb7DWgq3KAO1V6qThm6PiFy2TJWfS2bivHqjFxCUZBRmTGMIUhmO3d
-         lt4w==
-X-Gm-Message-State: AAQBX9ed80w7ZPzlsbqyukUjohR1VEgVWotNIhUkaaIvhxvPpZEASp4n
-        RuFY6+N0QUTwa1JHJRsN2HjCM0BYclhsMGH7/D4=
-X-Google-Smtp-Source: AKy350Z/f06YBcQHgG3xzFhTkvDD0ncb7+9crVenr8v/1LmnlY3dgd25bmknb/9KBYD8DByYQXM0xw==
-X-Received: by 2002:a9d:7384:0:b0:6a4:32e7:e559 with SMTP id j4-20020a9d7384000000b006a432e7e559mr6567837otk.33.1681751558592;
-        Mon, 17 Apr 2023 10:12:38 -0700 (PDT)
+        bh=XAykbLVeHziw0JUwYHoJmyn/25zTSaV2zD2m1EHgVFo=;
+        b=gVZ/86F6McXqdtr7ghHqorwLunWRiqK5QUDriMQbnz2YORYP5HkhuENeZuosa0k5oM
+         Vh0G/F4HKDfo4W/yoLm/MDDp7nOmNPYlq1ndOsSokIC8EDJA984kBCKWh5A3ZVyU9rob
+         FYEny0HHTOPNVBZ7VrtruZcOuu14TN8LOuXzix9j/sy0PQ14speJrEiEU2/3du1/fgM8
+         mf7+9CzmQtt/V9OvtkGoX5/8LKIEw03Ei9vZLxZswSTAxq3fD3U/L0CwpAMZ0p77wWre
+         htrankt7KUlkFV81PKQizkYAz69XfDnFssyITOCzezEvqyyy38+pkLT0UKqKBmvvleuX
+         R3Ww==
+X-Gm-Message-State: AAQBX9dgxokQ8hLYWFnfrjNwsZcBV8XnrJHub5/j+h8iT56YFfnqzZKG
+        9EgXahbXuqbd+YlkMM0FmCh2FqGQWb9bQsRiuoo=
+X-Google-Smtp-Source: AKy350bLZJts96elB29dckb3mEn3vrZtrZ6JEHAqbeum2zxZxLtVNpabLWvI1gllSOKZE9Vas5jZXA==
+X-Received: by 2002:a05:6830:4424:b0:6a5:dafc:3d1e with SMTP id q36-20020a056830442400b006a5dafc3d1emr5868371otv.5.1681751561711;
+        Mon, 17 Apr 2023 10:12:41 -0700 (PDT)
 Received: from localhost.localdomain ([2804:14d:5c5e:44fb:150:be5b:9489:90ac])
-        by smtp.gmail.com with ESMTPSA id v17-20020a9d5a11000000b006a205a8d5bdsm4761248oth.45.2023.04.17.10.12.35
+        by smtp.gmail.com with ESMTPSA id v17-20020a9d5a11000000b006a205a8d5bdsm4761248oth.45.2023.04.17.10.12.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Apr 2023 10:12:38 -0700 (PDT)
+        Mon, 17 Apr 2023 10:12:41 -0700 (PDT)
 From:   Pedro Tammela <pctammela@mojatatu.com>
 To:     netdev@vger.kernel.org
 Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v2 2/4] net/sched: sch_qfq: use extack on errors messages
-Date:   Mon, 17 Apr 2023 14:12:16 -0300
-Message-Id: <20230417171218.333567-3-pctammela@mojatatu.com>
+Subject: [PATCH net-next v2 3/4] net/sched: sch_qfq: refactor parsing of netlink parameters
+Date:   Mon, 17 Apr 2023 14:12:17 -0300
+Message-Id: <20230417171218.333567-4-pctammela@mojatatu.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230417171218.333567-1-pctammela@mojatatu.com>
 References: <20230417171218.333567-1-pctammela@mojatatu.com>
@@ -71,41 +71,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some error messages are still being printed to dmesg.
-Since extack is available, provide error messages there.
+Two parameters can be transformed into netlink policies and
+validated while parsing the netlink message.
 
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 ---
- net/sched/sch_qfq.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/sched/sch_qfq.c | 28 +++++++++++++---------------
+ 1 file changed, 13 insertions(+), 15 deletions(-)
 
 diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-index cf5ebe43b3b4..323609cfbc67 100644
+index 323609cfbc67..151102ac8cce 100644
 --- a/net/sched/sch_qfq.c
 +++ b/net/sched/sch_qfq.c
-@@ -402,8 +402,8 @@ static int qfq_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
- 	int err;
- 	int delta_w;
+@@ -214,9 +214,15 @@ static struct qfq_class *qfq_find_class(struct Qdisc *sch, u32 classid)
+ 	return container_of(clc, struct qfq_class, common);
+ }
  
--	if (tca[TCA_OPTIONS] == NULL) {
--		pr_notice("qfq: no options\n");
-+	if (NL_REQ_ATTR_CHECK(extack, NULL, tca, TCA_OPTIONS)) {
-+		NL_SET_ERR_MSG_MOD(extack, "missing options");
- 		return -EINVAL;
++static struct netlink_range_validation lmax_range = {
++	.min = QFQ_MIN_LMAX,
++	.max = (1UL << QFQ_MTU_SHIFT),
++};
++
+ static const struct nla_policy qfq_policy[TCA_QFQ_MAX + 1] = {
+-	[TCA_QFQ_WEIGHT] = { .type = NLA_U32 },
+-	[TCA_QFQ_LMAX] = { .type = NLA_U32 },
++	[TCA_QFQ_WEIGHT] =
++		NLA_POLICY_RANGE(NLA_U32, 1, (1UL << QFQ_MAX_WSHIFT)),
++	[TCA_QFQ_LMAX] = NLA_POLICY_FULL_RANGE(NLA_U32, &lmax_range),
+ };
+ 
+ /*
+@@ -408,26 +414,18 @@ static int qfq_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
  	}
  
-@@ -441,8 +441,9 @@ static int qfq_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
- 	delta_w = weight - (cl ? cl->agg->class_weight : 0);
+ 	err = nla_parse_nested_deprecated(tb, TCA_QFQ_MAX, tca[TCA_OPTIONS],
+-					  qfq_policy, NULL);
++					  qfq_policy, extack);
+ 	if (err < 0)
+ 		return err;
  
- 	if (q->wsum + delta_w > QFQ_MAX_WSUM) {
--		pr_notice("qfq: total weight out of range (%d + %u)\n",
--			  delta_w, q->wsum);
-+		NL_SET_ERR_MSG_FMT_MOD(extack,
-+				       "total weight out of range (%d + %u)\n",
-+				       delta_w, q->wsum);
- 		return -EINVAL;
- 	}
+-	if (tb[TCA_QFQ_WEIGHT]) {
++	if (tb[TCA_QFQ_WEIGHT])
+ 		weight = nla_get_u32(tb[TCA_QFQ_WEIGHT]);
+-		if (!weight || weight > (1UL << QFQ_MAX_WSHIFT)) {
+-			pr_notice("qfq: invalid weight %u\n", weight);
+-			return -EINVAL;
+-		}
+-	} else
++	else
+ 		weight = 1;
  
+-	if (tb[TCA_QFQ_LMAX]) {
++	if (tb[TCA_QFQ_LMAX])
+ 		lmax = nla_get_u32(tb[TCA_QFQ_LMAX]);
+-		if (lmax < QFQ_MIN_LMAX || lmax > (1UL << QFQ_MTU_SHIFT)) {
+-			pr_notice("qfq: invalid max length %u\n", lmax);
+-			return -EINVAL;
+-		}
+-	} else
++	else
+ 		lmax = psched_mtu(qdisc_dev(sch));
+ 
+ 	inv_w = ONE_FP / weight;
 -- 
 2.34.1
 
