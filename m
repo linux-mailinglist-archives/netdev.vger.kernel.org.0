@@ -2,110 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2386E4795
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:24:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A69486E4803
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:40:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbjDQMYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 08:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
+        id S231254AbjDQMkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 08:40:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbjDQMYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 08:24:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91626E9D
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 05:22:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681734095;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=UoZHzg38lYRU038fq8iVgnN+aH9aQi+SKq1StiePsIk=;
-        b=ChXtUEDBL4jRKAh1VQj8aPSyLiSVfq4xbGjUK1etebp1/mDY8JytxMyqr4JUZdhCRMWZEJ
-        V9QpYoHWT8krQtnwyzs7Hyk0XTJSJiaYQPy4pVHhCERKl2BfdyWvxK6vWcfCwKLs6dU/+N
-        rhC2yCVd7PGxqFzXSl9Hb0cSTFUXyeY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-628-4os7Ef5LPPaYuqM_VDlL4w-1; Mon, 17 Apr 2023 08:21:34 -0400
-X-MC-Unique: 4os7Ef5LPPaYuqM_VDlL4w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 75F5985A588;
-        Mon, 17 Apr 2023 12:21:34 +0000 (UTC)
-Received: from ovpn-242-143.nrt.redhat.com (unknown [10.64.242.143])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9932251FF;
-        Mon, 17 Apr 2023 12:21:33 +0000 (UTC)
-From:   Seiji Nishikawa <snishika@redhat.com>
-To:     doshir@vmware.com
-Cc:     netdev@vger.kernel.org, Seiji Nishikawa <snishika@redhat.com>
-Subject: [PATCH] net: vmxnet3: Fix NULL pointer dereference in vmxnet3_rq_rx_complete()
-Date:   Mon, 17 Apr 2023 21:21:27 +0900
-Message-Id: <20230417122127.178549-1-snishika@redhat.com>
+        with ESMTP id S231203AbjDQMkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 08:40:31 -0400
+X-Greylist: delayed 607 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 17 Apr 2023 05:40:30 PDT
+Received: from ubuntu20 (unknown [193.203.214.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC48E59EB;
+        Mon, 17 Apr 2023 05:40:29 -0700 (PDT)
+Received: by ubuntu20 (Postfix, from userid 1003)
+        id BBF41E0C2F; Mon, 17 Apr 2023 12:24:25 +0000 (UTC)
+From:   Yang Yang <yang.yang29@zte.com.cn>
+To:     davem@davemloft.net, edumazet@google.com,
+        willemdebruijn.kernel@gmail.com
+Cc:     yang.yang29@zte.com.cn, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, shuah@kernel.org,
+        zhang.yunkai@zte.com.cn, xu.xin16@zte.com.cn,
+        Xuexin Jiang <jiang.xuexin@zte.com.cn>
+Subject: [PATCH linux-next 1/3] selftests: net: udpgso_bench_rx: Fix verifty exceptions
+Date:   Mon, 17 Apr 2023 20:24:23 +0800
+Message-Id: <20230417122423.193237-1-yang.yang29@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <202304172017351308785@zte.com.cn>
+References: <202304172017351308785@zte.com.cn>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=3.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,FSL_HELO_NON_FQDN_1,
+        HEADER_FROM_DIFFERENT_DOMAINS,HELO_NO_DOMAIN,NO_DNS_FOR_FROM,
+        RCVD_IN_PBL,RDNS_NONE,SPF_SOFTFAIL,SPOOFED_FREEMAIL_NO_RDNS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When vmxnet3_rq_create() fails to allocate rq->data_ring.base due to page
-allocation failure, subsequent call to vmxnet3_rq_rx_complete() can result in
-NULL pointer dereference.
+From: Zhang Yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
 
-To fix this bug, check not only that rxDataRingUsed is true but also that
-adapter->rxdataring_enabled is true before calling memcpy() in
-vmxnet3_rq_rx_complete().
+The verification function of this test case is likely to encounter the
+following error, which may confuse users.
 
-[1728352.477993] ethtool: page allocation failure: order:9, mode:0x6000c0(GFP_KERNEL), nodemask=(null),cpuset=/,mems_allowed=0
-...
-[1728352.478009] Call Trace:
-[1728352.478028]  dump_stack+0x41/0x60
-[1728352.478035]  warn_alloc.cold.120+0x7b/0x11b
-[1728352.478038]  ? _cond_resched+0x15/0x30
-[1728352.478042]  ? __alloc_pages_direct_compact+0x15f/0x170
-[1728352.478043]  __alloc_pages_slowpath+0xcd3/0xd10
-[1728352.478047]  __alloc_pages_nodemask+0x2e2/0x320
-[1728352.478049]  __dma_direct_alloc_pages.constprop.25+0x8a/0x120
-[1728352.478053]  dma_direct_alloc+0x5a/0x2a0
-[1728352.478056]  vmxnet3_rq_create.part.57+0x17c/0x1f0 [vmxnet3]
-...
-[1728352.478188] vmxnet3 0000:0b:00.0 ens192: rx data ring will be disabled
-...
-[1728352.515347] BUG: unable to handle kernel NULL pointer dereference at 0000000000000034
-...
-[1728352.515440] RIP: 0010:memcpy_orig+0x54/0x130
-...
-[1728352.515655] Call Trace:
-[1728352.515665]  <IRQ>
-[1728352.515672]  vmxnet3_rq_rx_complete+0x419/0xef0 [vmxnet3]
-[1728352.515690]  vmxnet3_poll_rx_only+0x31/0xa0 [vmxnet3]
-...
+Executing the following command fails:
+bash# udpgso_bench_tx -l 4 -4 -D "$DST"
+bash# udpgso_bench_tx -l 4 -4 -D "$DST" -S 0
+bash# udpgso_bench_rx -4 -G -S 1472 -v
+udpgso_bench_rx: data[1472]: len 2944, a(97) != q(113)
 
-Signed-off-by: Seiji Nishikawa <snishika@redhat.com>
+This is because the sending buffers are not aligned by 26 bytes, and the
+GRO is not merged sequentially, and the receiver does not judge this
+situation. We do the validation after the data is split at the receiving
+end, just as the application actually uses this feature.
+
+Signed-off-by: Zhang Yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
+Reviewed-by: xu xin (CGEL ZTE) <xu.xin16@zte.com.cn>
+Reviewed-by: Yang Yang (CGEL ZTE) <yang.yang29@zte.com.cn>
+Cc: Xuexin Jiang (CGEL ZTE) <jiang.xuexin@zte.com.cn>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/net/udpgso_bench_rx.c | 38 +++++++++++++++++++++------
+ 1 file changed, 30 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index da488cbb0542..f2b76ee866a4 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1504,7 +1504,7 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 				goto rcd_done;
- 			}
+diff --git a/tools/testing/selftests/net/udpgso_bench_rx.c b/tools/testing/selftests/net/udpgso_bench_rx.c
+index f35a924d4a30..a5b7f30659a5 100644
+--- a/tools/testing/selftests/net/udpgso_bench_rx.c
++++ b/tools/testing/selftests/net/udpgso_bench_rx.c
+@@ -189,16 +189,16 @@ static char sanitized_char(char val)
+ 	return (val >= 'a' && val <= 'z') ? val : '.';
+ }
  
--			if (rxDataRingUsed) {
-+			if (rxDataRingUsed && adapter->rxdataring_enabled) {
- 				size_t sz;
+-static void do_verify_udp(const char *data, int len)
++static void do_verify_udp(const char *data, int start, int len)
+ {
+-	char cur = data[0];
++	char cur = data[start];
+ 	int i;
  
- 				BUG_ON(rcd->len > rq->data_ring.desc_size);
+ 	/* verify contents */
+ 	if (cur < 'a' || cur > 'z')
+ 		error(1, 0, "data initial byte out of range");
+ 
+-	for (i = 1; i < len; i++) {
++	for (i = start + 1; i < start + len; i++) {
+ 		if (cur == 'z')
+ 			cur = 'a';
+ 		else
+@@ -212,6 +212,24 @@ static void do_verify_udp(const char *data, int len)
+ 	}
+ }
+ 
++static void do_verify_udp_gro(const char *data, int len, int gso_size)
++{
++	int remaining = len;
++	int start = 0;
++
++	while (remaining) {
++		if (remaining < 0)
++			break;
++
++		if (remaining > gso_size)
++			do_verify_udp(data, start, gso_size);
++		else
++			do_verify_udp(data, start, remaining);
++		start += gso_size;
++		remaining -= gso_size;
++	}
++}
++
+ static int recv_msg(int fd, char *buf, int len, int *gso_size)
+ {
+ 	char control[CMSG_SPACE(sizeof(int))] = {0};
+@@ -264,16 +282,20 @@ static void do_flush_udp(int fd)
+ 		if (cfg_expected_pkt_len && ret != cfg_expected_pkt_len)
+ 			error(1, 0, "recv: bad packet len, got %d,"
+ 			      " expected %d\n", ret, cfg_expected_pkt_len);
++		if (cfg_expected_gso_size && cfg_expected_gso_size != gso_size)
++			error(1, 0, "recv: bad gso size, got %d, expected %d %s",
++				gso_size, cfg_expected_gso_size, "(-1 == no gso cmsg))\n");
+ 		if (len && cfg_verify) {
+ 			if (ret == 0)
+ 				error(1, errno, "recv: 0 byte datagram\n");
+ 
+-			do_verify_udp(rbuf, ret);
++			if (!cfg_gro_segment)
++				do_verify_udp(rbuf, 0, ret);
++			else if (gso_size > 0)
++				do_verify_udp_gro(rbuf, ret, gso_size);
++			else
++				do_verify_udp_gro(rbuf, ret, ret);
+ 		}
+-		if (cfg_expected_gso_size && cfg_expected_gso_size != gso_size)
+-			error(1, 0, "recv: bad gso size, got %d, expected %d "
+-			      "(-1 == no gso cmsg))\n", gso_size,
+-			      cfg_expected_gso_size);
+ 
+ 		packets++;
+ 		bytes += ret;
 -- 
-2.39.2
-
+2.15.2
