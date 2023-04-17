@@ -2,97 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E48C6E42B6
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 10:37:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CCE56E42F2
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 10:52:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbjDQIhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 04:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
+        id S229841AbjDQIwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 04:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbjDQIhm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 04:37:42 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F1B1FEE;
-        Mon, 17 Apr 2023 01:37:40 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id d8-20020a05600c3ac800b003ee6e324b19so12681774wms.1;
-        Mon, 17 Apr 2023 01:37:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681720659; x=1684312659;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1TS0efwUAAd7nlMdFggdSRaEYHBszL5PVl2VfDfaNHg=;
-        b=nVVXDYKM7dS4sxRa/jMCyNcxKoWwzHPzKRS0iVd6JdsLC4Yvf7HqH5uJYkZn6sPUaL
-         iCcJorJ9taEkn5S/3hZFlnNfdUXK8M9QZR9HeG/ElesAuSQ0SxIH3lplS8Z3IVQJ9tK2
-         8nfGLoQaiJgUbrvKa5++zjHL1JtK9vMOCOZ11G2mGaYsJtcN5AdMBQp7Mcy5E43bRwMA
-         4JUppzGWq8k1kaih4oTsHrEuznAt4v1Njjmr+1B2RtULOASeBzU5CCLFl18qC2Y5VYBW
-         jmlQ0p3MbMsR+GEyRUnpskMp+fYdwMXusiBhofFYKAd271MjGcWIR3P5YhGhFIQ8ZPBQ
-         jo8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681720659; x=1684312659;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1TS0efwUAAd7nlMdFggdSRaEYHBszL5PVl2VfDfaNHg=;
-        b=eXTICIODZXN9B43gR+uc4si7jF4inzrdzs4ytzNGSs4iObEm2NnM4/7VbYgyOUwOVL
-         q+hobA5MnxP3VoRG14SnG/kKvlIiXUhuaAAxzCR4zLuqHYX8lH0wy1vCRbjG19pId/oM
-         BzBeUxy+C4FkupLHR7d0K0pjkZSEvxhMYfTV9ITklf93oqCxBJXb8uRS8W2Pp/VLC/rf
-         9Wodz8v+7HoDTFb0bUXU0o8sJM1B+VjdJA0xME+BCmydRvOjLvIqvhT/ey12SnST63k+
-         AnCZx5ey7vbg2cK6AUzxH1x1pR7J7gQZ2Tq5BbyOVX2Cus0+NrR5ZB5U6X40kLaqGYh5
-         4Hcg==
-X-Gm-Message-State: AAQBX9d7eJjpSKsy1clMOBiyw3OT6N5h1c6WCXozkIKN5dfL9gajysSc
-        Nf8nVT1Lj063S4fZKA3VJgBku2d6HD8=
-X-Google-Smtp-Source: AKy350alSXGGOxruHJRLZ27Qv5gwxhcs5eIGFX7ZpE88yZEtv4l1XpzjXc4my9iIW8NDRUQO5YYFsQ==
-X-Received: by 2002:a05:600c:1e0f:b0:3f1:7510:62e8 with SMTP id ay15-20020a05600c1e0f00b003f1751062e8mr763946wmb.3.1681720659317;
-        Mon, 17 Apr 2023 01:37:39 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id t12-20020a5d460c000000b002c561805a4csm9943079wrq.45.2023.04.17.01.37.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Apr 2023 01:37:38 -0700 (PDT)
-Date:   Mon, 17 Apr 2023 11:37:30 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ladislav Michl <oss-lists@triops.cz>,
-        linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: Re: [PATCH 2/3] staging: octeon: avoid needless device allocation
-Message-ID: <26dd05e9-befa-4190-ac3c-bf31d58a5f1e@kili.mountain>
-References: <ZDgNexVTEfyGo77d@lenoch>
- <ZDgOLHw1IkmWVU79@lenoch>
- <543bfbb6-af60-4b5d-abf8-0274ab0b713f@lunn.ch>
- <ZDgxPet9RIDC9Oz1@lenoch>
- <e2f5462d-5573-483c-9428-5f2b052cf939@lunn.ch>
+        with ESMTP id S229461AbjDQIwj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 04:52:39 -0400
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [80.241.56.152])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3007C210D;
+        Mon, 17 Apr 2023 01:52:37 -0700 (PDT)
+Received: from smtp102.mailbox.org (unknown [10.196.197.102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4Q0LR34Cj6z9sdW;
+        Mon, 17 Apr 2023 10:52:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cookiesoft.de;
+        s=MBO0001; t=1681721551;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=KsFkyz4MRyQ4FcmUuleFlCbfeDCalAVJgeJVMb81CEY=;
+        b=F2E2ZDmFPG4CcXfigz0icbw9QWhIyiXDrJCeN41JD7zd/6vNGygYkQVui9ME/hX3cWaPug
+        2mIrey8PBl6Hzn10e3qv0++DxiLztht++eAyVeiwWahF4dO9o2I0iBLal2uDeYrZ/F39Xp
+        nkajnZFP14WS8LbzmrgdK8rfE4rPfD8s1yed80XuofAEP2V3yfF4ICONtG8WCiaQtHLr2z
+        fV6X+Y8TizBcDNl5cn0dgZmp9X73AX4tbFtoPKhHe+brGDnLhfxo/ab8wQcYiNTqTfl+xY
+        OkXtNibHdMn0VSWIzpx6vhpAq5a3n5aUWylQr3MU0Bh1mxrIxJWZH3W1euxqUw==
+From:   Marcel Hellwig <git@cookiesoft.de>
+To:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Marcel Hellwig <mhellwig@mut-group.com>,
+        Marcel Hellwig <git@cookiesoft.de>
+Subject: [PATCH] can: dev: add transceiver capabilities to xilinx_can
+Date:   Mon, 17 Apr 2023 10:52:04 +0200
+Message-Id: <20230417085204.179268-1-git@cookiesoft.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e2f5462d-5573-483c-9428-5f2b052cf939@lunn.ch>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 13, 2023 at 07:20:08PM +0200, Andrew Lunn wrote:
-> > I was asking this question myself and then came to this:
-> > Converting driver to phylink makes separating different macs easier as
-> > this driver is splitted between staging and arch/mips/cavium-octeon/executive/
-> > However I'll provide changes spotted previously as separate preparational
-> > patches. Would that work for you?
-> 
-> Is you end goal to get this out of staging? phylib vs phylink is not a
-> reason to keep it in staging.
-> 
-> It just seems odd to be adding new features to a staging driver. As a
-> bit of a "carrot and stick" maybe we should say you cannot add new
-> features until it is ready to move out of staging?
+Currently the xilinx_can driver does not support adding a phy like the
+"ti,tcan1043" to its devicetree.
 
-We already have that rule.  But I don't know anything about phy vs
-phylink...
+This code makes it possible to add such phy, so that the kernel makes
+sure that the PHY is in operational state, when the link is set to an
+"up" state.
 
-regards,
-dan carpenter
+Signed-off-by: Marcel Hellwig <git@cookiesoft.de>
+---
+ drivers/net/can/xilinx_can.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 43c812ea1de0..6a5b805d579a 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -28,6 +28,7 @@
+ #include <linux/types.h>
+ #include <linux/can/dev.h>
+ #include <linux/can/error.h>
++#include <linux/phy/phy.h>
+ #include <linux/pm_runtime.h>
+ 
+ #define DRIVER_NAME	"xilinx_can"
+@@ -215,6 +216,7 @@ struct xcan_priv {
+ 	struct clk *bus_clk;
+ 	struct clk *can_clk;
+ 	struct xcan_devtype_data devtype;
++	struct phy *transceiver;
+ };
+ 
+ /* CAN Bittiming constants as per Xilinx CAN specs */
+@@ -1419,6 +1421,12 @@ static int xcan_open(struct net_device *ndev)
+ 	struct xcan_priv *priv = netdev_priv(ndev);
+ 	int ret;
+ 
++	ret = phy_power_on(priv->transceiver);
++	if (ret) {
++		netdev_err(ndev, "%s: phy_power_on failed(%d)\n", __func__, ret);
++		return ret;
++	}
++
+ 	ret = pm_runtime_get_sync(priv->dev);
+ 	if (ret < 0) {
+ 		netdev_err(ndev, "%s: pm_runtime_get failed(%d)\n",
+@@ -1461,6 +1469,7 @@ static int xcan_open(struct net_device *ndev)
+ err_irq:
+ 	free_irq(ndev->irq, ndev);
+ err:
++	phy_power_off(priv->transceiver);
+ 	pm_runtime_put(priv->dev);
+ 
+ 	return ret;
+@@ -1482,6 +1491,7 @@ static int xcan_close(struct net_device *ndev)
+ 	free_irq(ndev->irq, ndev);
+ 	close_candev(ndev);
+ 
++	phy_power_off(priv->transceiver);
+ 	pm_runtime_put(priv->dev);
+ 
+ 	return 0;
+@@ -1713,6 +1723,7 @@ static int xcan_probe(struct platform_device *pdev)
+ {
+ 	struct net_device *ndev;
+ 	struct xcan_priv *priv;
++	struct phy *transceiver;
+ 	const struct of_device_id *of_id;
+ 	const struct xcan_devtype_data *devtype = &xcan_axi_data;
+ 	void __iomem *addr;
+@@ -1843,6 +1854,14 @@ static int xcan_probe(struct platform_device *pdev)
+ 		goto err_free;
+ 	}
+ 
++	transceiver = devm_phy_optional_get(&pdev->dev, NULL);
++	if (IS_ERR(transceiver)) {
++		ret = PTR_ERR(transceiver);
++		dev_err_probe(&pdev->dev, ret, "failed to get phy\n");
++		goto err_free;
++	}
++	priv->transceiver = transceiver;
++
+ 	priv->write_reg = xcan_write_reg_le;
+ 	priv->read_reg = xcan_read_reg_le;
+ 
+@@ -1869,6 +1888,7 @@ static int xcan_probe(struct platform_device *pdev)
+ 		goto err_disableclks;
+ 	}
+ 
++	of_can_transceiver(ndev);
+ 	pm_runtime_put(&pdev->dev);
+ 
+ 	if (priv->devtype.flags & XCAN_FLAG_CANFD_2) {
+-- 
+2.34.1
 
