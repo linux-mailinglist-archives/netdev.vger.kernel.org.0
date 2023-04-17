@@ -2,264 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D210D6E4D1C
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 17:28:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B31C6E4D2D
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 17:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230304AbjDQP2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 11:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53194 "EHLO
+        id S231446AbjDQP2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 11:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230300AbjDQP2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 11:28:06 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6906D44B1;
-        Mon, 17 Apr 2023 08:27:31 -0700 (PDT)
+        with ESMTP id S231324AbjDQP2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 11:28:21 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2E1A26D;
+        Mon, 17 Apr 2023 08:27:53 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id qh25so15461530qvb.1;
+        Mon, 17 Apr 2023 08:27:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1681745252; x=1713281252;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=v0/0PkaXNmulsOMq+tVEtmLwKhDdTddNBPViBM0pdDg=;
-  b=Bd0mfg6be7zd5sXL6PjvCyX0+2I4b1TDCeelXmepa/eMKp0ZYgIbjMvK
-   VmD6gVsrvfYP4HJvLPzlI0rhhPSg6w67uCGzIMETAjLuFgaZkSmspJl5r
-   I9kljljhaqJiTOqhKfbMxiG4DVIlFPw0Tk2nQBXFPTm7J+UuJ70XyGSjN
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.99,204,1677542400"; 
-   d="scan'208";a="321268303"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-245b69b1.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 15:27:16 +0000
-Received: from EX19MTAUWA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-m6i4x-245b69b1.us-east-1.amazon.com (Postfix) with ESMTPS id 6EB2F340028;
-        Mon, 17 Apr 2023 15:27:13 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Mon, 17 Apr 2023 15:27:10 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.94.51.151) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Mon, 17 Apr 2023 15:27:08 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <edumazet@google.com>
-CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <kuba@kernel.org>,
-        <kuniyu@amazon.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <oswalpalash@gmail.com>,
-        <pabeni@redhat.com>, <syzkaller-bugs@googlegroups.com>
-Subject: Re: kernel BUG in fou_build_udp
-Date:   Mon, 17 Apr 2023 08:26:59 -0700
-Message-ID: <20230417152659.14209-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANn89iJvYSRboReUkcT4M4OjoZV6EkuPbtTsDgZ2=5p7peNTbg@mail.gmail.com>
-References: <CANn89iJvYSRboReUkcT4M4OjoZV6EkuPbtTsDgZ2=5p7peNTbg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.94.51.151]
-X-ClientProxiedBy: EX19D033UWA002.ant.amazon.com (10.13.139.10) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+        d=gmail.com; s=20221208; t=1681745272; x=1684337272;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZEQ2oNibFotvr5G4IgFOlkkqVrIF5WmB966PXHAIqYs=;
+        b=lp2FjqYR9bRT7soE2oA/pVOtVUPK7imTwVeA6scU73HX+nuoo5W0Bp2bLLqKNh6AXq
+         IB0OuZsPg71BwKREtj+eURmUL7cP8gDYiZf6NbPAeOsyYAXBhC2aIbmMNb3G7A8r/Yrh
+         Y4GRE/tLCMujisIMF+5dst248YxCIGK7nipw9CFihrFwkFLmY3Z8068w+7QdSw+golU4
+         BoadS3ifDUJqdwXyaO67rpi1G2VP2Ca63TdaqTGmegf8Z3u+hQFzHi3B/b0sUtXwxvMq
+         44JD7/WSaBEW3wUgMcSbHgk/5fZ0JN3NsiYnaRNabk7/Chfp1wkvwqKSChqzqXhFutJZ
+         HUXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681745272; x=1684337272;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ZEQ2oNibFotvr5G4IgFOlkkqVrIF5WmB966PXHAIqYs=;
+        b=SyDYk640GE/wpnWVRs+Il8GRB1G89Be1blcSDKOYmkHMz/c9eFZUqGVaA2USXWY40m
+         mD9ILgkHkv0WNZCJ7cJXuNEpawAK9Z/BkntEDj/ukaRK4GNopXl28/unE4/AwZ1DEC+U
+         agNpVZ/quhZQABBwX3lWQuqpO3Oty7+QfkzX72K1sIKBgZ7dqg9vGJb71f2uRM/Qhsr3
+         aqHmlTGi4MZP5Yhasnl23hFjWYWY8gUPnD2Z2eOOP3HvikR+RLx2cjolgZhVXPifj8Nd
+         39aUy1VNsCUmyVBocfmC0oFFUXHyKjSRsJnOggt0CJsX4s/MCkc5oXK1Y+If6fu+hoUz
+         Mt9w==
+X-Gm-Message-State: AAQBX9euaYfwHtmDUkrEsghr5gj1WONTLTsMercfbbIh5aPsUbKPy7LF
+        WMsZ9Vur7W/cmUwFtQZpz4o=
+X-Google-Smtp-Source: AKy350YvxV0rJQsZ8oURwTNvCim8hlxVVBwPkX6XTLeGhzsGNA1SAk+qA3MjK7dMm41fm7k7vYJijg==
+X-Received: by 2002:a05:6214:20a3:b0:5ef:4e96:11c5 with SMTP id 3-20020a05621420a300b005ef4e9611c5mr15756682qvd.17.1681745272640;
+        Mon, 17 Apr 2023 08:27:52 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id 70-20020a370649000000b0074df1d74841sm882413qkg.72.2023.04.17.08.27.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Apr 2023 08:27:52 -0700 (PDT)
+Date:   Mon, 17 Apr 2023 11:27:51 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Yang Yang <yang.yang29@zte.com.cn>, davem@davemloft.net,
+        edumazet@google.com, willemdebruijn.kernel@gmail.com
+Cc:     yang.yang29@zte.com.cn, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, shuah@kernel.org,
+        zhang.yunkai@zte.com.cn, xu.xin16@zte.com.cn,
+        Xuexin Jiang <jiang.xuexin@zte.com.cn>
+Message-ID: <643d6577e81f1_29b64929414@willemb.c.googlers.com.notmuch>
+In-Reply-To: <20230417122504.193350-1-yang.yang29@zte.com.cn>
+References: <202304172017351308785@zte.com.cn>
+ <20230417122504.193350-1-yang.yang29@zte.com.cn>
+Subject: RE: [PATCH linux-next 3/3] selftests: net: udpgso_bench_rx: Fix
+ packet number exceptions
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 17 Apr 2023 11:00:20 +0200
-> On Sat, Apr 15, 2023 at 9:44 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> >
-> > Hi,
-> >
-> > Thanks for reporting the issue.
-> >
-> > From:   Palash Oswal <oswalpalash@gmail.com>
-> > Date:   Thu, 13 Apr 2023 20:35:52 -0700
-> > > Hello,
-> > > I found the following issue using syzkaller with enriched corpus on:
-> > > HEAD commit : 0bcc4025550403ae28d2984bddacafbca0a2f112
-> > > git tree: linux
-> > >
-> > > C Reproducer : https://gist.github.com/oswalpalash/2a4bdb639c605ec80dbeec220e09603c
-> > > Kernel .config :
-> > > https://gist.github.com/oswalpalash/d9580b0bfce202b37445fa5fd426e41f
-> > > syz-repro :
-> > > r0 = socket$inet6(0xa, 0x2, 0x0)
-> > > r1 = socket$nl_route(0x10, 0x3, 0x0)
-> > > r2 = socket(0x10, 0x803, 0x0)
-> > > sendmsg$nl_route(r2, &(0x7f0000000380)={0x0, 0x0,
-> > > &(0x7f0000000340)={0x0, 0x14}}, 0x0)
-> > > getsockname$packet(r2, &(0x7f0000000100)={0x11, 0x0, <r3=>0x0, 0x1,
-> > > 0x0, 0x6, @broadcast}, &(0x7f00000000c0)=0x14)
-> > > sendmsg$nl_route(r1, &(0x7f0000000080)={0x0, 0x0,
-> > > &(0x7f0000000500)={&(0x7f0000000180)=@newlink={0x60, 0x10, 0x439, 0x0,
-> > > 0x0, {0x0, 0x0, 0x0, 0x0, 0x9801}, [@IFLA_LINKINFO={0x40, 0x12, 0x0,
-> > > 0x1, @sit={{0x8}, {0x34, 0x2, 0x0, 0x1, [@IFLA_IPTUN_LINK={0x8, 0x1,
-> > > r3}, @IFLA_IPTUN_ENCAP_TYPE={0x6, 0xf, 0x2},
-> > > @IFLA_IPTUN_ENCAP_SPORT={0x6, 0x11, 0x4e21},
-> > > @IFLA_IPTUN_ENCAP_SPORT={0x6, 0x11, 0x4e24}, @IFLA_IPTUN_LOCAL={0x8,
-> > > 0x2, @dev={0xac, 0x14, 0x14, 0x16}}, @IFLA_IPTUN_ENCAP_FLAGS={0x6,
-> > > 0x10, 0xfff}]}}}]}, 0x60}}, 0x20048894)
-> > > sendmmsg$inet(r0, &(0x7f00000017c0)=[{{&(0x7f0000000040)={0x2, 0x4e20,
-> > > @multicast1}, 0x10, 0x0, 0x0, &(0x7f0000000000)=[@ip_pktinfo={{0x1c,
-> > > 0x0, 0x8, {r3, @empty, @remote}}}], 0x20}}], 0x1, 0x0)
-> > >
-> > >
-> > > Console log:
-> > >
-> > > skbuff: skb_under_panic: text:ffffffff88a09da0 len:48 put:8
-> > > head:ffff88801e4be680 data:ffff88801e4be67c tail:0x2c end:0x140
-> > > dev:sit1
-> > > ------------[ cut here ]------------
-> > > kernel BUG at net/core/skbuff.c:150!
-> > > invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> > > CPU: 0 PID: 10068 Comm: syz-executor.3 Not tainted
-> > > 6.3.0-rc6-pasta-00035-g0bcc40255504 #1
-> > > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-> > > 1.13.0-1ubuntu1.1 04/01/2014
-> > > RIP: 0010:skb_panic+0x152/0x1d0
-> > > Code: 0f b6 04 01 84 c0 74 04 3c 03 7e 20 8b 4b 70 41 56 45 89 e8 48
-> > > c7 c7 80 b3 5b 8b 41 57 56 48 89 ee 52 4c 89 e2 e8 ae 15 6c f9 <0f> 0b
-> > > 4c 89 4c 24 10 48 89 54 24 08 48 89 34 24 e8 69 1f d8 f9 4c
-> > > RSP: 0018:ffffc900029bead0 EFLAGS: 00010282
-> > > RAX: 0000000000000084 RBX: ffff88801d1c3d00 RCX: ffffc9000d863000
-> > > RDX: 0000000000000000 RSI: ffffffff816695cc RDI: 0000000000000005
-> > > RBP: ffffffff8b5bc1e0 R08: 0000000000000005 R09: 0000000000000000
-> > > R10: 0000000000000400 R11: 0000000000000000 R12: ffffffff88a09da0
-> > > R13: 0000000000000008 R14: ffff8880306b8000 R15: 0000000000000140
-> > > FS:  00007f1dae5ed700(0000) GS:ffff888063a00000(0000) knlGS:0000000000000000
-> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 0000564f403b7d10 CR3: 0000000117f1c000 CR4: 00000000000006f0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > Call Trace:
-> > >  <TASK>
-> > >  skb_push+0xc8/0xe0
-> > >  fou_build_udp+0x30/0x370
-> >
-> > It seems we need skb_cow_head() before skb_push().
-> > I'll take a deeper look on the repro.
+Yang Yang wrote:
+> From: Zhang Yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
 > 
-> Not sure about that.
-> 
-> The issue looks to be a lack of dev->needed_headroom update as we do
-> in other tunnels.
+> The -n parameter is confusing and seems to only affect the frequency of
+> determining whether the time reaches 1s.
 
-I'll check around it as well.
-Thank you!
+This statement seems irrelevant to this patch.
 
+Is the point that cfg_expected_pkt_nr is tested in do_flush_udp to
+stop reading, but not in the caller of that function, do_recv, to
+break out of the loop? That's a fair point and may deserve a fix.
+
+> However, the final print of the
+> program is the number of messages expected to be received, which is always
+> 0.
 > 
-> >
-> > ---8<---
-> > diff --git a/net/ipv4/fou_core.c b/net/ipv4/fou_core.c
-> > index cafec9b4eee0..24c751f1dbc4 100644
-> > --- a/net/ipv4/fou_core.c
-> > +++ b/net/ipv4/fou_core.c
-> > @@ -1013,10 +1013,15 @@ EXPORT_SYMBOL(__gue_build_header);
-> >
-> >  #ifdef CONFIG_NET_FOU_IP_TUNNELS
-> >
-> > -static void fou_build_udp(struct sk_buff *skb, struct ip_tunnel_encap *e,
-> > -                         struct flowi4 *fl4, u8 *protocol, __be16 sport)
-> > +static int fou_build_udp(struct sk_buff *skb, struct ip_tunnel_encap *e,
-> > +                        struct flowi4 *fl4, u8 *protocol, __be16 sport)
-> >  {
-> >         struct udphdr *uh;
-> > +       int err;
-> > +
-> > +       err = skb_cow_head(skb, sizeof(*uh));
-> > +       if (err)
-> > +               return err;
-> >
-> >         skb_push(skb, sizeof(struct udphdr));
-> >         skb_reset_transport_header(skb);
-> > @@ -1030,6 +1035,8 @@ static void fou_build_udp(struct sk_buff *skb, struct ip_tunnel_encap *e,
-> >                      fl4->saddr, fl4->daddr, skb->len);
-> >
-> >         *protocol = IPPROTO_UDP;
-> > +
-> > +       return 0;
-> >  }
-> >
-> >  static int fou_build_header(struct sk_buff *skb, struct ip_tunnel_encap *e,
-> > @@ -1044,9 +1051,7 @@ static int fou_build_header(struct sk_buff *skb, struct ip_tunnel_encap *e,
-> >         if (err)
-> >                 return err;
-> >
-> > -       fou_build_udp(skb, e, fl4, protocol, sport);
-> > -
-> > -       return 0;
-> > +       return fou_build_udp(skb, e, fl4, protocol, sport);
-> >  }
-> >
-> >  static int gue_build_header(struct sk_buff *skb, struct ip_tunnel_encap *e,
-> > @@ -1061,9 +1066,7 @@ static int gue_build_header(struct sk_buff *skb, struct ip_tunnel_encap *e,
-> >         if (err)
-> >                 return err;
-> >
-> > -       fou_build_udp(skb, e, fl4, protocol, sport);
-> > -
-> > -       return 0;
-> > +       return fou_build_udp(skb, e, fl4, protocol, sport);
-> >  }
-> >
-> >  static int gue_err_proto_handler(int proto, struct sk_buff *skb, u32 info)
-> > ---8<---
-> >
-> > Thanks,
-> > Kuniyuki
-> >
-> >
-> > >  gue_build_header+0xfb/0x150
-> > >  ip_tunnel_xmit+0x66e/0x3150
-> > >  sit_tunnel_xmit__.isra.0+0xe7/0x150
-> > >  sit_tunnel_xmit+0xf7e/0x28e0
-> > >  dev_hard_start_xmit+0x187/0x700
-> > >  __dev_queue_xmit+0x2ce4/0x3c40
-> > >  neigh_connected_output+0x3c2/0x550
-> > >  ip_finish_output2+0x78a/0x22e0
-> > >  __ip_finish_output+0x396/0x650
-> > >  ip_finish_output+0x31/0x280
-> > >  ip_mc_output+0x21f/0x710
-> > >  ip_send_skb+0xd8/0x260
-> > >  udp_send_skb+0x73a/0x1480
-> > >  udp_sendmsg+0x1bb2/0x2840
-> > >  udpv6_sendmsg+0x1710/0x2c20
-> > >  inet6_sendmsg+0x9d/0xe0
-> > >  sock_sendmsg+0xde/0x190
-> > >  ____sys_sendmsg+0x334/0x900
-> > >  ___sys_sendmsg+0x110/0x1b0
-> > >  __sys_sendmmsg+0x18f/0x460
-> > >  __x64_sys_sendmmsg+0x9d/0x100
-> > >  do_syscall_64+0x39/0xb0
-> > >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> > > RIP: 0033:0x7f1dad88eacd
-> > > Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48
-> > > 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
-> > > 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> > > RSP: 002b:00007f1dae5ecbf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-> > > RAX: ffffffffffffffda RBX: 00007f1dad9bbf80 RCX: 00007f1dad88eacd
-> > > RDX: 0000000000000001 RSI: 00000000200017c0 RDI: 0000000000000003
-> > > RBP: 00007f1dad8fcb05 R08: 0000000000000000 R09: 0000000000000000
-> > > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> > > R13: 00007fff4922802f R14: 00007fff492281d0 R15: 00007f1dae5ecd80
-> > >  </TASK>
-> > > Modules linked in:
-> > > ---[ end trace 0000000000000000 ]---
-> > > RIP: 0010:skb_panic+0x152/0x1d0
-> > > Code: 0f b6 04 01 84 c0 74 04 3c 03 7e 20 8b 4b 70 41 56 45 89 e8 48
-> > > c7 c7 80 b3 5b 8b 41 57 56 48 89 ee 52 4c 89 e2 e8 ae 15 6c f9 <0f> 0b
-> > > 4c 89 4c 24 10 48 89 54 24 08 48 89 34 24 e8 69 1f d8 f9 4c
-> > > RSP: 0018:ffffc900029bead0 EFLAGS: 00010282
-> > > RAX: 0000000000000084 RBX: ffff88801d1c3d00 RCX: ffffc9000d863000
-> > > RDX: 0000000000000000 RSI: ffffffff816695cc RDI: 0000000000000005
-> > > RBP: ffffffff8b5bc1e0 R08: 0000000000000005 R09: 0000000000000000
-> > > R10: 0000000000000400 R11: 0000000000000000 R12: ffffffff88a09da0
-> > > R13: 0000000000000008 R14: ffff8880306b8000 R15: 0000000000000140
-> > > FS:  00007f1dae5ed700(0000) GS:ffff888063a00000(0000) knlGS:0000000000000000
-> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > CR2: 0000564f403b7d10 CR3: 0000000117f1c000 CR4: 00000000000006f0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> bash# udpgso_bench_rx -4 -n 100
+> bash# udpgso_bench_tx -l 1 -4 -D "$DST"
+> udpgso_bench_rx: wrong packet number! got 0, expected 100
+> 
+> This is because the packets are always cleared after print.
+
+This looks good to me. Would be a fix to the commit that introduced
+that wrong packet number branch, commit 3327a9c46352
+("selftests: add functionals test for UDP GRO").
+> 
+> Signed-off-by: Zhang Yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
+> Reviewed-by: xu xin (CGEL ZTE) <xu.xin16@zte.com.cn>
+> Reviewed-by: Yang Yang (CGEL ZTE) <yang.yang29@zte.com.cn>
+> Cc: Xuexin Jiang (CGEL ZTE) <jiang.xuexin@zte.com.cn>
+> ---
+>  tools/testing/selftests/net/udpgso_bench_rx.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/net/udpgso_bench_rx.c b/tools/testing/selftests/net/udpgso_bench_rx.c
+> index 784e88b31f7d..b66bb53af19f 100644
+> --- a/tools/testing/selftests/net/udpgso_bench_rx.c
+> +++ b/tools/testing/selftests/net/udpgso_bench_rx.c
+> @@ -50,7 +50,7 @@ static int  cfg_rcv_timeout_ms;
+>  static struct sockaddr_storage cfg_bind_addr;
+>  
+>  static bool interrupted;
+> -static unsigned long packets, bytes;
+> +static unsigned long packets, total_packets, bytes;
+>  
+>  static void sigint_handler(int signum)
+>  {
+> @@ -405,6 +405,7 @@ static void do_recv(void)
+>  					"%s rx: %6lu MB/s %8lu calls/s\n",
+>  					cfg_tcp ? "tcp" : "udp",
+>  					bytes >> 20, packets);
+> +			total_packets += packets;
+>  			bytes = packets = 0;
+>  			treport = tnow + 1000;
+>  		}
+> @@ -415,7 +416,7 @@ static void do_recv(void)
+>  
+>  	if (cfg_expected_pkt_nr && (packets != cfg_expected_pkt_nr))
+>  		error(1, 0, "wrong packet number! got %ld, expected %d\n",
+> -		      packets, cfg_expected_pkt_nr);
+> +		      total_packets + packets, cfg_expected_pkt_nr);
+>  
+>  	if (close(fd))
+>  		error(1, errno, "close");
+> -- 
+> 2.15.2
+
+
