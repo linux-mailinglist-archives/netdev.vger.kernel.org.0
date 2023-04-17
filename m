@@ -2,125 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F36586E53DD
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:31:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D976E53E6
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 23:32:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbjDQVbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 17:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35996 "EHLO
+        id S229717AbjDQVcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 17:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230288AbjDQVbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 17:31:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90B544B4;
-        Mon, 17 Apr 2023 14:31:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4368862AA3;
-        Mon, 17 Apr 2023 21:31:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56BBBC433EF;
-        Mon, 17 Apr 2023 21:31:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681767065;
-        bh=X7/XKh0tfw2LkGLYNbrUS3Ifq5cyxuxuTvnfPsqt4aw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mx7rns5lAtVCbqsjB3rINNj1hvjiO7pO/QZqRlySjdkfNvrNY9/nWfoXUx335CrN3
-         FzrNZgCFPZvDT3nKkX+yykp54wsGWJfa1vWQHKH3K2PQXR+ZojcBViBlVggFXDjmC+
-         ogVwmZl75gi3PgPjZXhRiaCkW1HYp+Zvuai54mYq2bXabVIw0KBRWFUpwM/Nu5fnWo
-         m6xz8KBCTC+XLZzYznLFk89Ko1m7RoWFI1T7/3Z1AggrXjewY0y8z5JrAdYhq0H/Iu
-         mEa4KfCC7jJrmYpzWkDQg/CvmYcECQNpze/A5C7mLKnEaiT/RS+bs7VcUGWJ0AQpKT
-         GhljhOvf22TKg==
-Date:   Mon, 17 Apr 2023 23:31:01 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        hawk@kernel.org, ilias.apalodimas@linaro.org, davem@davemloft.net,
-        pabeni@redhat.com, bpf@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, nbd@nbd.name
-Subject: Re: issue with inflight pages from page_pool
-Message-ID: <ZD26lb2qdsdX16qa@lore-desk>
-References: <ZD2HjZZSOjtsnQaf@lore-desk>
- <CANn89iK7P2aONo0EB9o+YiRG+9VfqqVVra4cd14m_Vo4hcGVnQ@mail.gmail.com>
- <ZD2NSSYFzNeN68NO@lore-desk>
- <20230417112346.546dbe57@kernel.org>
- <ZD2TH4PsmSNayhfs@lore-desk>
- <20230417120837.6f1e0ef6@kernel.org>
+        with ESMTP id S229554AbjDQVcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 17:32:47 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EB24C3B
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:32:46 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id xi5so67916910ejb.13
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 14:32:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20221208; t=1681767164; x=1684359164;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=fJ+r+I2Yz9XcEGeDuZ1h0EMLgpcCZeatorwQT2A55fA=;
+        b=X3CJnNSKMprrTEka2qfQ0nQBn7CYdIIr2V0kGa5KGBaYIdc6oK8Fv9s5Gdq0zacrH3
+         Eh7KIHY4ilUOxGu8U8c9QsfB5AfIXBt9iyELkY7Oya9CeFIdqRZ8fHDkUzfWzVAM5p0J
+         /Edc0AUo2U1ZDzgo2Sm2tdJn8mb2Kb5ewXGnPV6WP7TVRW/wEi0/Fos2TtC9uJ653Zr0
+         MstfDsceXO+vd+kxd5gwFZe8mJQVcfe0+Eo3GT+yuZdrLRWtXKeZrusTCb75fwsaODat
+         xRVGx8aj44BTP6BsyleTcZ6PtDbFJVFmocg5Jbrbkcm97yzUvlKhLjYTcRg6nhu1vlkm
+         eN3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681767164; x=1684359164;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fJ+r+I2Yz9XcEGeDuZ1h0EMLgpcCZeatorwQT2A55fA=;
+        b=PELyuL0hXNQshz7zvbssNFUlOZGI7BT1O2dSIr0257kLn3Y2aToIyhFphBMevv1K7C
+         68vHosE1ks4/1USFHyjK/R3F1ZPE8sHv8BF+1zoy9JBrxQo6tQIJqFiUdP++q0EiqnLc
+         eUV0pjiaIN+X5nGz9JC6Qc50enJjmyiHsGUSj6fxXe78pzITxlCTv2scGT4h2ikX9SeJ
+         4g9LHUxloc+VS+3EIqtb9ZyPePQAmB8d57ogBLQo9q4XfzBMnNlJ+YY3KOZnr70FAMzq
+         PtqeAhG85fikLRt0LwnfTykOP5Ctb6FPdI6FvHV+TR3L1e6p1HH95hu8WttZ4QKSZzf/
+         2wxQ==
+X-Gm-Message-State: AAQBX9fCU+StGoXBqHfOy1jWLtnd3/Cg2JY/PAam93SsgbFDGaNmBl4x
+        7Sr/Mi9tRgK3pElKbXIDHphiUWkNm+L+cmcX
+X-Google-Smtp-Source: AKy350apLFMKjMFCepRGotRMfYS/g3h4HJStrXORIvqBVY8TwKCUTAUIR9h8+A5vwPA6RSvDlBeEvA==
+X-Received: by 2002:a17:907:77d5:b0:94e:f738:514f with SMTP id kz21-20020a17090777d500b0094ef738514fmr8656965ejc.13.1681767164573;
+        Mon, 17 Apr 2023 14:32:44 -0700 (PDT)
+Received: from localhost.localdomain (p200300c1c74c0400ba8584fffebf2b17.dip0.t-ipconnect.de. [2003:c1:c74c:400:ba85:84ff:febf:2b17])
+        by smtp.gmail.com with ESMTPSA id k18-20020a17090632d200b0094f05fee9d3sm4670005ejk.211.2023.04.17.14.32.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Apr 2023 14:32:44 -0700 (PDT)
+Sender: Zahari Doychev <zahari.doychev@googlemail.com>
+From:   Zahari Doychev <zahari.doychev@linux.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, hmehrtens@maxlinear.com,
+        aleksander.lobakin@intel.com, simon.horman@corigine.com,
+        Zahari Doychev <zdoychev@maxlinear.com>
+Subject: [PATCH net-next v3 0/3] net: flower: add cfm support
+Date:   Mon, 17 Apr 2023 23:32:30 +0200
+Message-Id: <20230417213233.525380-1-zahari.doychev@linux.com>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="SutYOmmiMl9JrJVi"
-Content-Disposition: inline
-In-Reply-To: <20230417120837.6f1e0ef6@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Zahari Doychev <zdoychev@maxlinear.com>
 
---SutYOmmiMl9JrJVi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The first patch adds cfm support to the flow dissector.
+The second adds the flower classifier support.
+The third adds a selftest for the flower cfm functionality.
 
-> On Mon, 17 Apr 2023 20:42:39 +0200 Lorenzo Bianconi wrote:
-> > > Is drgn available for your target? You could try to scan the pages on
-> > > the system and see if you can find what's still pointing to the page
-> > > pool (assuming they are indeed leaked and not returned to the page
-> > > allocator without releasing :() =20
-> >=20
-> > I will test it but since setting sysctl_skb_defer_max to 0 fixes the is=
-sue,
-> > I think the pages are still properly linked to the pool, they are just =
-not
-> > returned to it. I proved it using the other patch I posted [0] where I =
-can see
-> > the counter of returned pages incrementing from time to time (in a very=
- long
-> > time slot..).
->=20
-> If it's that then I'm with Eric. There are many ways to keep the pages
-> in use, no point working around one of them and not the rest :(
+iproute2 changes will come in follow up patches.
 
-I was not clear here, my fault. What I mean is I can see the returned
-pages counter increasing from time to time, but during most of tests,
-even after 2h the tcp traffic has stopped, page_pool_release_retry()
-still complains not all the pages are returned to the pool and so the
-pool has not been deallocated yet.
-The chunk of code in my first email is just to demonstrate the issue
-and I am completely fine to get a better solution :) I guess we just
-need a way to free the pool in a reasonable amount of time. Agree?
+---
+v2->v3
+ - split the flow dissector and flower changes in separate patches
+ - use bit field macros
+ - copy separately each cfm key field
 
->=20
-> > Unrelated to this issue, but debugging it I think a found a page_pool l=
-eak in
-> > skb_condense() [1] where we can reallocate the skb data using kmalloc f=
-or a
-> > page_pool recycled skb.
->=20
-> I don't see a problem having pp_recycle =3D 1 and head in slab is legal.
-> pp_recycle just means that *if* a page is from the page pool we own=20
-> the recycling reference. A page from slab will not be treated as a PP
-> page cause it doesn't have pp_magic set to the correct pattern.
+v1->v2:
+ - add missing comments
+ - improve cfm packet dissection
+ - move defines to header file
+ - fix code formatting
+ - remove unneeded attribute defines
 
-ack, right. Thx for pointing this out.
+rfc->v1:
+ - add selftest to the makefile TEST_PROGS.
 
-Regards,
-Lorenzo
+Zahari Doychev (3):
+  net: flow_dissector: add support for cfm packets
+  net: flower: add support for matching cfm fields
+  selftests: net: add tc flower cfm test
 
---SutYOmmiMl9JrJVi
-Content-Type: application/pgp-signature; name="signature.asc"
+ include/net/flow_dissector.h                  |  20 ++
+ include/uapi/linux/pkt_cls.h                  |   9 +
+ net/core/flow_dissector.c                     |  30 +++
+ net/sched/cls_flower.c                        | 109 ++++++++++-
+ .../testing/selftests/net/forwarding/Makefile |   1 +
+ .../selftests/net/forwarding/tc_flower_cfm.sh | 175 ++++++++++++++++++
+ 6 files changed, 343 insertions(+), 1 deletion(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/tc_flower_cfm.sh
 
------BEGIN PGP SIGNATURE-----
+-- 
+2.40.0
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZD26lQAKCRA6cBh0uS2t
-rPjVAQCHrFx3TcfwPeHcJL1jsHp7zocc30VFsZSmJOzk+JUWmQEAwEkzQH4m926X
-anWg8h7IrJEOFZY+wiDK9jR0qpmjFgA=
-=Ma8w
------END PGP SIGNATURE-----
-
---SutYOmmiMl9JrJVi--
