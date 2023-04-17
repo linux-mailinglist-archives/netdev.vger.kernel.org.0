@@ -2,115 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E5906E441C
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:39:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87C796E4422
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbjDQJjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 05:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        id S230304AbjDQJkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 05:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230370AbjDQJjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:39:03 -0400
-Received: from h2.cmg1.smtp.forpsi.com (h2.cmg1.smtp.forpsi.com [81.2.195.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD7B44B2
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:38:14 -0700 (PDT)
-Received: from lenoch ([91.218.190.200])
-        by cmgsmtp with ESMTPSA
-        id oLIFpknAFPm6CoLIGpSh4V; Mon, 17 Apr 2023 11:37:06 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=triops.cz; s=f2019;
-        t=1681724226; bh=fiuH0GcWevmCpKJ/ebsllotu+6NfmGBkbeZMX+tvMQw=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=XbifxrbHWa2akLpHL77M7J1IM1oSZf+O6kgZMCP1i+0mQuC2kJqxOcxzkyvBQXSO5
-         lCi1eVtUkNP9ylcEIxw9cWQjUptigbtxRyyF5eXGAlm24u1hYvJ3ICK303jgctEh0j
-         /lNb4201QskdA5dpv81MZzSoHXjVtN1Z4JiEtWhlJrb/c8zkNox0ObktjQNFO8lC4z
-         zcfpe7iX3US2H7mfVn5JLi6VWqyGWSQT2a1zxKgSvqaO7dy0v1bE1vCTu5Z3rHECUt
-         gM/qksVzsq2KtWVbZL4l5/LqvEwdAsa356YwMvlY6iWwfK5w2vsZW6KWgjc+JKSXiE
-         APkGYz9mdAsNA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=triops.cz; s=f2019;
-        t=1681724226; bh=fiuH0GcWevmCpKJ/ebsllotu+6NfmGBkbeZMX+tvMQw=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
-        b=XbifxrbHWa2akLpHL77M7J1IM1oSZf+O6kgZMCP1i+0mQuC2kJqxOcxzkyvBQXSO5
-         lCi1eVtUkNP9ylcEIxw9cWQjUptigbtxRyyF5eXGAlm24u1hYvJ3ICK303jgctEh0j
-         /lNb4201QskdA5dpv81MZzSoHXjVtN1Z4JiEtWhlJrb/c8zkNox0ObktjQNFO8lC4z
-         zcfpe7iX3US2H7mfVn5JLi6VWqyGWSQT2a1zxKgSvqaO7dy0v1bE1vCTu5Z3rHECUt
-         gM/qksVzsq2KtWVbZL4l5/LqvEwdAsa356YwMvlY6iWwfK5w2vsZW6KWgjc+JKSXiE
-         APkGYz9mdAsNA==
-Date:   Mon, 17 Apr 2023 11:37:02 +0200
-From:   Ladislav Michl <oss-lists@triops.cz>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, linux-staging@lists.linux.dev,
-        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: Re: [PATCH 2/3] staging: octeon: avoid needless device allocation
-Message-ID: <ZD0TPvDa7zopm0dx@lenoch>
-References: <ZDgNexVTEfyGo77d@lenoch>
- <ZDgOLHw1IkmWVU79@lenoch>
- <543bfbb6-af60-4b5d-abf8-0274ab0b713f@lunn.ch>
- <ZDgxPet9RIDC9Oz1@lenoch>
- <e2f5462d-5573-483c-9428-5f2b052cf939@lunn.ch>
- <26dd05e9-befa-4190-ac3c-bf31d58a5f1e@kili.mountain>
+        with ESMTP id S230510AbjDQJjq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:39:46 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6660E1BCB
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:38:59 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id u3so10439063ejj.12
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681724333; x=1684316333;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VGc/AXBbd3S7d1pfj4NXOSpGX22EGMAWawOhVjM8r1Y=;
+        b=SBXMJP8x4UF5byWwUAKoX68wMXB1iy+JYIKx4DgcaEvcx06aSb5EHlK5YwL3NyOgHP
+         RxVUrn4QzesZfAiEfQnP5MKHEofTeER61tfS86tgIznH+CLAaYJ5U0TSo5CIG9zK9fDK
+         1bfO+GjtdUl9By6e7065lDqagiLNUP4U7RK59Mx0jqY/bA+ObIojmb5qK12rurr9I610
+         WO1F64bnQESuxxZgoRwoiqMaskxMhVPA5LOPW04UucOWo/2NN+yK7ZrvN1UD6lIJjBsz
+         jzmNMiR1ms1hUlIxrI7I3Vhb9YD1WhttiVKz3xEN7zHuacZjgbtjDYBP04AI46xVaHw7
+         PLUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681724333; x=1684316333;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VGc/AXBbd3S7d1pfj4NXOSpGX22EGMAWawOhVjM8r1Y=;
+        b=GfidH6iNuEYo+OGUjZCWlMDrGLQs+h9zCqC5WQsdfqOCLVP2lSxT9jbqL3m8AQBzA2
+         y+juXGu3HJ8lmK+k3ZFKH1CM5ZzBmwyCnksxrPOqL3JYN3BbvuK2BG/3qLXCjYYz0EK7
+         f813o2oAXo2VpRpHy3D5c2OKd1P8pcQ1CsLTlRnyu51qjEZGqEiLpAduth4uWpZDJ3fI
+         +qf6702RsNHhi47gNvu9zCyOf6+GGr5C7HIAvJEqq5lX4Ec4i1Ksja6wXt2wB/9kjn3O
+         RFIX0KXx9msTdvz9HElVdBdJQf4cq9O1H1fC10e+cRLAtoFzVwyi21K0gbWU9I+GEKd1
+         V1RQ==
+X-Gm-Message-State: AAQBX9flf3ZugqBtFMEofrNJtEFdWuGvxZbU6XpQShZCV6QhehgWM715
+        8rZzAZbtfdaGpfdEMD89eBQ=
+X-Google-Smtp-Source: AKy350bWfPlfY83PQ/nuCszjfxi7O2zL+vfXiP37NGqtKAz5zFCQf3tQ5LAeg2vU2bhLJpMYb/Pljw==
+X-Received: by 2002:a17:906:4e53:b0:930:f953:9614 with SMTP id g19-20020a1709064e5300b00930f9539614mr7008362ejw.1.1681724332714;
+        Mon, 17 Apr 2023 02:38:52 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:770d:1c00:59f1:1548:39fc:ccd5? (dynamic-2a01-0c22-770d-1c00-59f1-1548-39fc-ccd5.c22.pool.telefonica.de. [2a01:c22:770d:1c00:59f1:1548:39fc:ccd5])
+        by smtp.googlemail.com with ESMTPSA id gy23-20020a170906f25700b0094f31208918sm2923500ejb.108.2023.04.17.02.38.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Apr 2023 02:38:52 -0700 (PDT)
+Message-ID: <8a12a0fd-849a-82c2-fdd5-8ece23111318@gmail.com>
+Date:   Mon, 17 Apr 2023 11:37:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <26dd05e9-befa-4190-ac3c-bf31d58a5f1e@kili.mountain>
-X-CMAE-Envelope: MS4wfEZoGX5SjGjVN9HkENAmeGDGDqi/iG6ZWS3FtNZ+NfpDCsvAiEsGbJG0frJEQz+t3qh3s9ZgEjxgF4rr/tt8EqHHyu4w5ezF4oieB+uDA7J22lrYoAGe
- 3L3zavGD6+BrPIeUKPRcvvcRCgOIEhYg25QqzUmq6cXBpG/W5GBY9yPCsWhw37E6k8MRpCdL3GaLMZyuVxRotSrWoPnIgLwzPFKFe3+lW5M/w2N9+4BKMQVa
- 07VstyGTle8yMFw/xvD6zh6CH/X8rIs7j/56AAOZovAb6EJ98qs/4yUvFOaMscg9ZNA4t8hJgCZ6Pskc1s88eDjykwdeEeLc8h7qhy5aC7VxXic6hFf/npmA
- 1Q8ZoCPz
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: [PATCH net-next v3 2/3] r8169: use new macro
+ netif_subqueue_maybe_stop in rtl8169_start_xmit
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <7147a001-3d9c-a48d-d398-a94c666aa65b@gmail.com>
+In-Reply-To: <7147a001-3d9c-a48d-d398-a94c666aa65b@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 17, 2023 at 11:37:30AM +0300, Dan Carpenter wrote:
-> On Thu, Apr 13, 2023 at 07:20:08PM +0200, Andrew Lunn wrote:
-> > > I was asking this question myself and then came to this:
-> > > Converting driver to phylink makes separating different macs easier as
-> > > this driver is splitted between staging and arch/mips/cavium-octeon/executive/
-> > > However I'll provide changes spotted previously as separate preparational
-> > > patches. Would that work for you?
-> > 
-> > Is you end goal to get this out of staging? phylib vs phylink is not a
-> > reason to keep it in staging.
-> > 
-> > It just seems odd to be adding new features to a staging driver. As a
-> > bit of a "carrot and stick" maybe we should say you cannot add new
-> > features until it is ready to move out of staging?
-> 
-> We already have that rule.  But I don't know anything about phy vs
-> phylink...
+Use new net core macro netif_subqueue_maybe_stop in the start_xmit path
+to simplify the code. Whilst at it, set the tx queue start threshold to
+twice the stop threshold. Before values were the same, resulting in
+stopping/starting the queue more often than needed.
 
-Let me elaborate here a bit then.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+v2:
+- ring doorbell if queue was stopped
+v3:
+- remove change log from commit message
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 39 +++++++----------------
+ 1 file changed, 11 insertions(+), 28 deletions(-)
 
-Current Octeon driver comes from Cavium's vendor kernel tree. Cavium
-started this about two decades ago based on their own ideas and tries
-to bend kernel interfaces around them.
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 9f8357bbc..fff44d46b 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -30,6 +30,7 @@
+ #include <linux/ipv6.h>
+ #include <asm/unaligned.h>
+ #include <net/ip6_checksum.h>
++#include <net/netdev_queues.h>
+ 
+ #include "r8169.h"
+ #include "r8169_firmware.h"
+@@ -68,6 +69,8 @@
+ #define NUM_RX_DESC	256	/* Number of Rx descriptor registers */
+ #define R8169_TX_RING_BYTES	(NUM_TX_DESC * sizeof(struct TxDesc))
+ #define R8169_RX_RING_BYTES	(NUM_RX_DESC * sizeof(struct RxDesc))
++#define R8169_TX_STOP_THRS	(MAX_SKB_FRAGS + 1)
++#define R8169_TX_START_THRS	(2 * R8169_TX_STOP_THRS)
+ 
+ #define OCP_STD_PHY_BASE	0xa400
+ 
+@@ -4162,13 +4165,9 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
+ 	return true;
+ }
+ 
+-static bool rtl_tx_slots_avail(struct rtl8169_private *tp)
++static unsigned int rtl_tx_slots_avail(struct rtl8169_private *tp)
+ {
+-	unsigned int slots_avail = READ_ONCE(tp->dirty_tx) + NUM_TX_DESC
+-					- READ_ONCE(tp->cur_tx);
+-
+-	/* A skbuff with nr_frags needs nr_frags+1 entries in the tx queue */
+-	return slots_avail > MAX_SKB_FRAGS;
++	return READ_ONCE(tp->dirty_tx) + NUM_TX_DESC - READ_ONCE(tp->cur_tx);
+ }
+ 
+ /* Versions RTL8102e and from RTL8168c onwards support csum_v2 */
+@@ -4245,27 +4244,10 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
+ 
+ 	WRITE_ONCE(tp->cur_tx, tp->cur_tx + frags + 1);
+ 
+-	stop_queue = !rtl_tx_slots_avail(tp);
+-	if (unlikely(stop_queue)) {
+-		/* Avoid wrongly optimistic queue wake-up: rtl_tx thread must
+-		 * not miss a ring update when it notices a stopped queue.
+-		 */
+-		smp_wmb();
+-		netif_stop_queue(dev);
+-		/* Sync with rtl_tx:
+-		 * - publish queue status and cur_tx ring index (write barrier)
+-		 * - refresh dirty_tx ring index (read barrier).
+-		 * May the current thread have a pessimistic view of the ring
+-		 * status and forget to wake up queue, a racing rtl_tx thread
+-		 * can't.
+-		 */
+-		smp_mb__after_atomic();
+-		if (rtl_tx_slots_avail(tp))
+-			netif_start_queue(dev);
+-		door_bell = true;
+-	}
+-
+-	if (door_bell)
++	stop_queue = !netif_subqueue_maybe_stop(dev, 0, rtl_tx_slots_avail(tp),
++						R8169_TX_STOP_THRS,
++						R8169_TX_START_THRS);
++	if (door_bell || stop_queue)
+ 		rtl8169_doorbell(tp);
+ 
+ 	return NETDEV_TX_OK;
+@@ -4400,7 +4382,8 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
+ 		 * ring status.
+ 		 */
+ 		smp_store_mb(tp->dirty_tx, dirty_tx);
+-		if (netif_queue_stopped(dev) && rtl_tx_slots_avail(tp))
++		if (netif_queue_stopped(dev) &&
++		    rtl_tx_slots_avail(tp) >= R8169_TX_START_THRS)
+ 			netif_wake_queue(dev);
+ 		/*
+ 		 * 8168 hack: TxPoll requests are lost when the Tx packets are
+-- 
+2.40.0
 
-Driver is based aroud Packet Input Processing/Input Packet Data (PIP/IPD)
-units which can connect their data streams to various interfaces.
-SGMII/1000BASE-X/QSGMII and RGMII are just two of them.
-
-Currently driver iterates over all interfaces and all ports to bind
-interfaces to PIP/IPD. There is a lot of code deciding which
-interfaces/ports exits on given Octeon SoC, see
-arch/mips/cavium-octeon/executive/
-Driver code then calls those helpers with interface/port aguments
-and they do the magic using switches deciding what to do based
-on interface type.
-
-I'm proposing to leave all that trickery behind and just follow what's
-written in device tree, so each I/O interface ends up as a driver
-with its own mac ops. While it is possible to implement that as
-private mac ops as some other drivers do, I think it is more
-convenient to use phylink_mac_ops.
-
-In case I'm missing something or I'm wrong with analysis, please let
-me know.
-
-Thanks,
-	ladis
