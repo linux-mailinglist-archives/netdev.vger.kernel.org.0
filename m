@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 248866E4EC8
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 19:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCB506E4EC7
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 19:08:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbjDQRIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 13:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37960 "EHLO
+        id S229870AbjDQRIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 13:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjDQRIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 13:08:00 -0400
+        with ESMTP id S229800AbjDQRID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 13:08:03 -0400
 Received: from synguard (unknown [212.29.212.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D7546AE;
-        Mon, 17 Apr 2023 10:07:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BE546AE;
+        Mon, 17 Apr 2023 10:08:01 -0700 (PDT)
 Received: from T14.siklu.local (unknown [192.168.42.162])
-        by synguard (Postfix) with ESMTP id 0776B4DE95;
-        Mon, 17 Apr 2023 20:07:57 +0300 (IDT)
+        by synguard (Postfix) with ESMTP id 0D2CE4DE99;
+        Mon, 17 Apr 2023 20:08:00 +0300 (IDT)
 From:   Shmuel Hazan <shmuel.h@siklu.com>
 To:     Russell King <linux@armlinux.org.uk>
 Cc:     Marcin Wojtas <mw@semihalf.com>,
@@ -27,10 +27,12 @@ Cc:     Marcin Wojtas <mw@semihalf.com>,
         Richard Cochran <richardcochran@gmail.com>,
         horatiu.vultur@microchip.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Shmuel Hazan <shmuel.h@siklu.com>
-Subject: [PATCH v2 0/3] net: mvpp2: tai: add extts support
-Date:   Mon, 17 Apr 2023 20:07:38 +0300
-Message-Id: <20230417170741.1714310-1-shmuel.h@siklu.com>
+Subject: [PATCH v2 1/3] net: mvpp2: tai: add refcount for ptp worker
+Date:   Mon, 17 Apr 2023 20:07:39 +0300
+Message-Id: <20230417170741.1714310-2-shmuel.h@siklu.com>
 X-Mailer: git-send-email 2.40.0
+In-Reply-To: <20230417170741.1714310-1-shmuel.h@siklu.com>
+References: <20230417170741.1714310-1-shmuel.h@siklu.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,FSL_HELO_NON_FQDN_1,
@@ -42,29 +44,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series adds support for PTP event capture on the Aramda
-80x0/70x0. This feature is mainly used by tools linux ts2phc(3) in order
-to synchronize a timestamping unit (like the mvpp2's TAI) and a system
-DPLL on the same PCB. 
+In some configurations, a single TAI can be responsible for multiple
+mvpp2 interfaces. However, the mvpp2 driver will call mvpp22_tai_stop
+and mvpp22_tai_start per interface RX timestamp disable/enable.
 
-The patch series includes 3 patches: the second one implements the
-actual extts function.
+As a result, disabling timestamping for one interface would stop the
+worker and corrupt the other interface's RX timestamps.
 
-Changes in v2:
-	* Fixed a deadlock in the poll worker.
-	* Removed tabs from comments.
+This commit solves the issue by introducing a simpler ref count for each
+TAI instance.
 
-Shmuel Hazan (3):
-  net: mvpp2: tai: add refcount for ptp worker
-  net: mvpp2: tai: add extts support
-  dt-bindings: net: marvell,pp2: add extts docs
+Fixes: ce3497e2072e ("net: mvpp2: ptp: add support for receive timestamping")
+Signed-off-by: Shmuel Hazan <shmuel.h@siklu.com>
+---
+ .../net/ethernet/marvell/mvpp2/mvpp2_tai.c    | 30 ++++++++++++++++---
+ 1 file changed, 26 insertions(+), 4 deletions(-)
 
- .../devicetree/bindings/net/marvell,pp2.yaml  |  18 +
- .../net/ethernet/marvell/mvpp2/mvpp2_tai.c    | 334 ++++++++++++++++--
- 2 files changed, 317 insertions(+), 35 deletions(-)
-
-
-base-commit: 3e7bb4f2461710b70887704af7f175383251088e
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_tai.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_tai.c
+index 95862aff49f1..2e3d43b1bac1 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_tai.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_tai.c
+@@ -61,6 +61,7 @@ struct mvpp2_tai {
+ 	u64 period;		// nanosecond period in 32.32 fixed point
+ 	/* This timestamp is updated every two seconds */
+ 	struct timespec64 stamp;
++	u16 poll_worker_refcount;
+ };
+ 
+ static void mvpp2_tai_modify(void __iomem *reg, u32 mask, u32 set)
+@@ -368,18 +369,39 @@ void mvpp22_tai_tstamp(struct mvpp2_tai *tai, u32 tstamp,
+ 	hwtstamp->hwtstamp = timespec64_to_ktime(ts);
+ }
+ 
++static void mvpp22_tai_start_unlocked(struct mvpp2_tai *tai)
++{
++	tai->poll_worker_refcount++;
++	if (tai->poll_worker_refcount > 1)
++		return;
++
++	ptp_schedule_worker(tai->ptp_clock, 0);
++}
++
+ void mvpp22_tai_start(struct mvpp2_tai *tai)
+ {
+-	long delay;
++	unsigned long flags;
+ 
+-	delay = mvpp22_tai_aux_work(&tai->caps);
++	spin_lock_irqsave(&tai->lock, flags);
++	mvpp22_tai_start_unlocked(tai);
++	spin_unlock_irqrestore(&tai->lock, flags);
++}
+ 
+-	ptp_schedule_worker(tai->ptp_clock, delay);
++static void mvpp22_tai_stop_unlocked(struct mvpp2_tai *tai)
++{
++	tai->poll_worker_refcount--;
++	if (tai->poll_worker_refcount)
++		return;
++	ptp_cancel_worker_sync(tai->ptp_clock);
+ }
+ 
+ void mvpp22_tai_stop(struct mvpp2_tai *tai)
+ {
+-	ptp_cancel_worker_sync(tai->ptp_clock);
++	unsigned long flags;
++
++	spin_lock_irqsave(&tai->lock, flags);
++	mvpp22_tai_stop_unlocked(tai);
++	spin_unlock_irqrestore(&tai->lock, flags);
+ }
+ 
+ static void mvpp22_tai_remove(void *priv)
 -- 
 2.40.0
 
