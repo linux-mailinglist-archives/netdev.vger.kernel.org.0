@@ -2,94 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 602D86E472B
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA47B6E4751
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:14:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbjDQMKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 08:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
+        id S230434AbjDQMN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 08:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230388AbjDQMKB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 08:10:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855FB269E
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 05:09:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47FCC61CAC
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 12:09:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 473DCC433D2;
-        Mon, 17 Apr 2023 12:09:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681733380;
-        bh=hKYkSpvhATstDaFtEHuCRj8Qj7ipW25dMadGs/JlFgE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kLwOJM82xZajMYhCEkoP1f85BSzadUN/2728UXME5sR9+cCwbg8o11KCPCTQ9Q1eD
-         H/n4tcBSJIW9H+oyVAUTD4cuRrPBx3K4J3C3RVU0doi3g8AF910mpmUTKLYonLPOYT
-         QviqaQzVDRGkXUrAfGzLqhM7bOyRwbbCHy+l8Vqcf1xbUEL0q/HjPrkDzn5SVkQKn9
-         m+LLjbTCduMq43Jf/KnV8zE9s7CMOtWIWVW5SOhgFuAMmD+6TYBNtd3pokZZp5fExx
-         tRl4+v/FVQjNtkD+27K7kivDja7zC64rLpEXI6Qn0wOhSAKdFQ66v/YEpMd2d6Ns/n
-         JOj+vPt59IIIg==
-Date:   Mon, 17 Apr 2023 14:09:36 +0200
-From:   Simon Horman <horms@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, pablo@netfilter.org, fw@strlen.de
-Subject: Re: [PATCH net-next 5/5] net: skbuff: hide nf_trace and ipvs_property
-Message-ID: <ZD03APYJqdhflYNJ@kernel.org>
-References: <20230414160105.172125-1-kuba@kernel.org>
- <20230414160105.172125-6-kuba@kernel.org>
+        with ESMTP id S230323AbjDQMNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 08:13:55 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A395D4EF1;
+        Mon, 17 Apr 2023 05:13:20 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id j15so4428007ybl.10;
+        Mon, 17 Apr 2023 05:13:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681733598; x=1684325598;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SHhPz+EuIXTc1mVy+d6/xeEAaq2+DiiC9QI7fkSBxRM=;
+        b=BbNpNiGbmO3q3OE3llCQvT+0cvIcVVESgUqwP8dut5rK3te/4mV2aRs5xtYkhQvdru
+         iGRFHuEBEWCe//1QQNQLiUimO7oiSF4ir2Htu2JU6CmiYEafd+gXthH/+zfYPXh/t7h5
+         9NLD++wSaozK12jZ8chWzGHWcsLsKfJct47lB5Xb1F4MfkF7BwkwpIDl7MhBbUeW/M3B
+         npoj13RyjRsdrMbuvc3KzJT1ZIMl9ykYe5tbccpAht/h2ipRndQ1/5f68DI8YX2Qs17I
+         hE5aoarx/cm8AKuRLp57e6Dnme68istUazyQVeRZdsGnfZkSXKQrWDDP0e9WaAsOv3H5
+         oRoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681733598; x=1684325598;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SHhPz+EuIXTc1mVy+d6/xeEAaq2+DiiC9QI7fkSBxRM=;
+        b=f6yjL6GyHXhP/MI2aa90uMnB0h/pYFhFhIYlzWMFHL240OhvQHqUebhPBKuf09OXiL
+         DvyzOMeleAwNzSppCF6fN8elIxXkGpq07o2xpBQRii8xx7FhOhsrBLFeb7Y+8w4rh4lY
+         QGAu4enB3bY4hVAYF5a4/5WaL6ripMAEvWf3mmm9oD47KDs5anS9r/ld3e2ew8v9pfT2
+         ffBvq1oT6KHGe37sVEbiYKZyDFzK5BD6fwgMMpT7FrumHOLu2/ssdjOPjHY+X/IgjnXh
+         L49KYa6nWulUB//4eoW2MW0unCjxEum4IjGFIUa5YD+LH5Ia4jBNV516hrO632FniJ2f
+         nJaw==
+X-Gm-Message-State: AAQBX9ed9/C3v1va5mGOqIaneLgJmZ/zS5ej810aEKlwYl35GlF0h+Tu
+        9FQz4ceo89dRdE07aHLCmc+WR4uqu1wzQ0dVGD0=
+X-Google-Smtp-Source: AKy350Zi96A5jujccZMknsThLjiF44PbqWdaH/fiFQYsDPOOiQsU6l9PuK4H5Co6mSVausbSA2EP4+TyOAKnpjlS0fg=
+X-Received: by 2002:a25:da0b:0:b0:b8f:6f3f:ed20 with SMTP id
+ n11-20020a25da0b000000b00b8f6f3fed20mr7039281ybf.5.1681733597805; Mon, 17 Apr
+ 2023 05:13:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230414160105.172125-6-kuba@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230406130205.49996-1-kal.conley@dectris.com>
+ <20230406130205.49996-2-kal.conley@dectris.com> <87sfdckgaa.fsf@toke.dk>
+ <ZDBEng1KEEG5lOA6@boxer> <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
+ <875ya12phx.fsf@toke.dk> <CAHApi-=rMHt7uR8Sw1Vw+MHDrtkyt=jSvTvwz8XKV7SEb01CmQ@mail.gmail.com>
+ <87ile011kz.fsf@toke.dk> <CAHApi-m4gu8SX_1rBtUwrw+1-Q3ERFEX-HPMcwcCK1OceirwuA@mail.gmail.com>
+ <87o7nrzeww.fsf@toke.dk>
+In-Reply-To: <87o7nrzeww.fsf@toke.dk>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 17 Apr 2023 14:13:06 +0200
+Message-ID: <CAJ8uoz3Rts2Xfhqq+0cm3GES=dMb2hTqPzGm515oG_nmt=-Nbg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/3] xsk: Support UMEM chunk_size > PAGE_SIZE
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Kal Cutter Conley <kal.conley@dectris.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 14, 2023 at 09:01:05AM -0700, Jakub Kicinski wrote:
-> Accesses to nf_trace and ipvs_property are already wrapped
-> by ifdefs where necessary. Don't allocate the bits for those
-> fields at all if possible.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+On Thu, 13 Apr 2023 at 22:52, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
+.com> wrote:
+>
+> Kal Cutter Conley <kal.conley@dectris.com> writes:
+>
+> >> Well, you mentioned yourself that:
+> >>
+> >> > The disadvantage of this patchset is requiring the user to allocate
+> >> > HugeTLB pages which is an extra complication.
+> >
+> > It's a small extra complication *for the user*. However, users that
+> > need this feature are willing to allocate hugepages. We are one such
+> > user. For us, having to deal with packets split into disjoint buffers
+> > (from the XDP multi-buffer paradigm) is a significantly more annoying
+> > complication than allocating hugepages (particularly on the RX side).
+>
+> "More annoying" is not a great argument, though. You're basically saying
+> "please complicate your code so I don't have to complicate mine". And
+> since kernel API is essentially frozen forever, adding more of them
+> carries a pretty high cost, which is why kernel developers tend not to
+> be easily swayed by convenience arguments (if all you want is a more
+> convenient API, just build one on top of the kernel primitives and wrap
+> it into a library).
+>
+> So you'll need to come up with either (1) a use case that you *can't*
+> solve without this new API (with specifics as to why that is the case),
+> or (2) a compelling performance benchmark showing the complexity is
+> worth it. Magnus indicated he would be able to produce the latter, in
+> which case I'm happy to be persuaded by the numbers.
 
-FWIIW, I'm fine with this, modulo the module handling
-discussed elsewhere in this thread.
+We will measure it and get back to you. Would be good with some numbers.
 
-Acked-by: Simon Horman <horms@kernel.org>
-
-> ---
-> CC: pablo@netfilter.org
-> CC: fw@strlen.de
-> ---
->  include/linux/skbuff.h | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 543f7ae9f09f..7b43d5a03613 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -966,8 +966,12 @@ struct sk_buff {
->  	__u8			ndisc_nodetype:2;
->  #endif
->  
-> +#if IS_ENABLED(CONFIG_IP_VS)
->  	__u8			ipvs_property:1;
-> +#endif
-> +#if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE) || defined(CONFIG_NF_TABLES)
->  	__u8			nf_trace:1;
-> +#endif
->  #ifdef CONFIG_NET_SWITCHDEV
->  	__u8			offload_fwd_mark:1;
->  	__u8			offload_l3_fwd_mark:1;
-> -- 
-> 2.39.2
-> 
+> In any case, however, the behaviour needs to be consistent wrt the rest
+> of XDP, so it's not as simple as just increasing the limit (as I
+> mentioned in my previous email).
+>
+> -Toke
+>
