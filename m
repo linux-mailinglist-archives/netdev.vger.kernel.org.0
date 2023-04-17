@@ -2,56 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDF576E4098
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 09:20:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 549636E40D2
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 09:27:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230355AbjDQHUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 03:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36418 "EHLO
+        id S230106AbjDQH0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 03:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230221AbjDQHUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 03:20:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B11C4207;
-        Mon, 17 Apr 2023 00:20:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2A5161EF3;
-        Mon, 17 Apr 2023 07:20:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5C04FC433EF;
-        Mon, 17 Apr 2023 07:20:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681716022;
-        bh=ATCzHu0AM9hhYzQ0hEl2s+8H9HWR5MRyo+URZre6FBU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AH3uBEXXLf6yQsq6qJE6j2Ej3doMs09KIqmAUZoLY0sNepJCPMx0MCPX4LMKvfcnz
-         GQ+YjEBNZ0R+KnJLo54oXlDzEjzLBAJzgFU8W4ihm8bRU7BottxH0uO2DPCZzQJKf6
-         cpr57bF86GknK8R/ce9LjG5w9bW8pk01DuOyfoEbZ0o2Cbf/qZHTUp218NvwXbS85h
-         mA9I4pBruKKsUJCsn9dp+MCWz7TQ6eVtJ77sPDcdA6XwkC5bAiNuoW/fHZ1RpLoF8u
-         c8OXDt7gkWeUuQga7ABwohOVwRp45N++hrGGYDzssWN+OXgfKIlsjnUO6c+0gmX7z4
-         /X5LpzKl/LXvw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3DDAAC41671;
-        Mon, 17 Apr 2023 07:20:22 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230241AbjDQH0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 03:26:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B3844A6
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 00:26:35 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1poJFh-0006hA-8x; Mon, 17 Apr 2023 09:26:17 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 0A8271B04D6;
+        Mon, 17 Apr 2023 07:26:14 +0000 (UTC)
+Date:   Mon, 17 Apr 2023 09:26:13 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Judith Mendez <jm@ti.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Andrew Davis <afd@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Schuyler Patton <spatton@ti.com>
+Subject: Re: [RFC PATCH 5/5] can: m_can: Add hrtimer to generate software
+ interrupt
+Message-ID: <20230417-taking-relieving-f2c8532864c0-mkl@pengutronix.de>
+References: <20230413223051.24455-1-jm@ti.com>
+ <20230413223051.24455-6-jm@ti.com>
+ <20230414-bounding-guidance-262dffacd05c-mkl@pengutronix.de>
+ <4a6c66eb-2ccf-fc42-a6fc-9f411861fcef@hartkopp.net>
+ <20230416-failing-washbasin-e4fa5caea267-mkl@pengutronix.de>
+ <f58e8dce-898c-8797-5293-1001c9a75381@hartkopp.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] selftests: openvswitch: add support for testing
- upcall interface
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168171602224.1935.16517094817384926030.git-patchwork-notify@kernel.org>
-Date:   Mon, 17 Apr 2023 07:20:22 +0000
-References: <20230414131750.4185160-1-aconole@redhat.com>
-In-Reply-To: <20230414131750.4185160-1-aconole@redhat.com>
-To:     Aaron Conole <aconole@redhat.com>
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org, pshelar@ovn.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, i.maximets@ovn.org, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="f6bxkwneko5oxwq5"
+Content-Disposition: inline
+In-Reply-To: <f58e8dce-898c-8797-5293-1001c9a75381@hartkopp.net>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,35 +67,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
+--f6bxkwneko5oxwq5
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 14 Apr 2023 09:17:47 -0400 you wrote:
-> The existing selftest suite for openvswitch will work for regression
-> testing the datapath feature bits, but won't test things like adding
-> interfaces, or the upcall interface.  Here, we add some additional
-> test facilities.
-> 
-> First, extend the ovs-dpctl.py python module to support the OVS_FLOW
-> and OVS_PACKET netlink families, with some associated messages.  These
-> can be extended over time, but the initial support is for more well
-> known cases (output, userspace, and CT).
-> 
-> [...]
+On 16.04.2023 21:46:40, Oliver Hartkopp wrote:
+> > I had the 5ms that are actually used in the code in mind. But this is a
+> > good calculation.
+>=20
+> @Judith: Can you acknowledge the value calculation?
+>=20
+> > > The "shortest" 11 bit CAN ID CAN frame is a Classical CAN frame with =
+DLC =3D 0
+> > > and 1 Mbit/s (arbitration) bitrate. This should be 48 bits @1Mbit =3D=
+> ~50
+> > > usecs
+> > >=20
+> > > So it should be something about
+> > >=20
+> > >      50 usecs * (FIFO queue len - 2)
+> >=20
+> > Where does the "2" come from?
+>=20
+> I thought about handling the FIFO earlier than it gets completely "full".
+>=20
+> The fetching routine would need some time too and the hrtimer could also
+> jitter to some extend.
 
-Here is the summary with links:
-  - [net-next,1/3] selftests: openvswitch: add interface support
-    https://git.kernel.org/netdev/net-next/c/74cc26f416b9
-  - [net-next,2/3] selftests: openvswitch: add flow dump support
-    https://git.kernel.org/netdev/net-next/c/e52b07aa1a54
-  - [net-next,3/3] selftests: openvswitch: add support for upcall testing
-    https://git.kernel.org/netdev/net-next/c/9feac87b673c
+I was assuming something like this.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I would argue that the polling time should be:
 
+    50 =C2=B5s * FIFO length - IRQ overhead.
 
+The max IRQ overhead depends on your SoC and kernel configuration.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--f6bxkwneko5oxwq5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQ89JIACgkQvlAcSiqK
+BOj1QAf8C3XM8k07BC2j8JyiAa7udtivyxZJ8HO2LKeVF312gm8khfUIMOo06Sqp
+jW+3LndAnjaby9ahmfPCWHwPPdF6X1xWJhH+JUCFTeM6C7JBdtKjSkFcVx2o69ot
+ZgMQnqOaxunKcnm2EOTOSsP9P2PLNzjm0MD0Nf+soV9PYgMdLfl/oKjZRMqQFbG/
+yMMZ40JaMt9kzwZSE9d6YE/EfygUmHmYQERz3OXGMhKVLMEe0CrOOKV+goEXvJfP
+SOg+kCqU14RzDC8fzJMk8Ju1bgICmQksIvHAH05hbuCctWjhePYHINx3kF8JZut+
+yJP8lWEBWlsf+uGi7oINsvn6ZTY4WA==
+=3slR
+-----END PGP SIGNATURE-----
+
+--f6bxkwneko5oxwq5--
