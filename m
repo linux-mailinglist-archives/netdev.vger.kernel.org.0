@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3944F6E441B
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:39:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C78A66E4414
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 11:39:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbjDQJjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 05:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39708 "EHLO
+        id S229956AbjDQJir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 05:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230411AbjDQJjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:39:08 -0400
+        with ESMTP id S230347AbjDQJi2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 05:38:28 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF60359DC
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:38:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7EC761B2
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 02:37:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1681724308; x=1713260308;
+  t=1681724276; x=1713260276;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Z4LAKjuoijdWtrWS+X+HJ05/VL6zksxC+El2iTVe+EU=;
-  b=F9TEOZsIEXu+fLR0/9j32xvBzcMMGcVka59hQ1p/fIlCIhhWt1BSequa
-   WdXskNHNVTYK56dXvK7DnqD0TbESwkhMkgvRafrbxfGlYt3CnjeCNd+gf
-   uR2gts/e+jSs1w9aw8/aKek7iMMYDX9oOdv2yhLoMX1pugjDUQ31qAEIO
-   3wnt+neGMSYLqQMYsN9TJJJuRtx1CGdvzTjvjPZkxOVq1ma/QmZZZVRBm
-   l2SPTy0b02Cho6zT+1O4pWsbTZu0Us5xoVewlug/8SjZs1364MYgcYQSi
-   Xe22elrkgtpOI1Iq1T37rgqHR2GhtfYmaTvkycSlwrpnG+tSGOzHvMuMo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="333644104"
+  bh=WVMzcQmJMWcYa/TVIasKk8Rv+Cg1TScngvGoHZla3FY=;
+  b=f5xnijpLOEqiwIc4yKDHK79cOoWjsz7/7Dmdh2U6IfCFeLiPdIy3VHvN
+   GaxJiz8O9SiOtLFUncGfVvXquq5AL4CIDxm28JGq2p1Xb6yMsSLKHkp9S
+   SzZAqbSQT6vrsyggqXzZshDDxF3HhZ8jfGqLtYr1urOC2xgZZig5TxWdC
+   3DmJeGKwgndaeWNzPKbwheO4oZLp/UMhsIWFOwfMUu1+8K/IjyesqMOea
+   dfPO9WYwnHOd+tQKMTgAJvvCCo0cVIJKbTsQowU5ceYQpJ+pNt2wJMj3T
+   iwHWReFV7xgUmiCXdz8V9N1syxiNsm4dZAgTLynTMLeHOFf19cugF42sq
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="333644098"
 X-IronPort-AV: E=Sophos;i="5.99,203,1677571200"; 
-   d="scan'208";a="333644104"
+   d="scan'208";a="333644098"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 02:35:27 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2023 02:35:26 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="640899276"
+X-IronPort-AV: E=McAfee;i="6600,9927,10682"; a="640899272"
 X-IronPort-AV: E=Sophos;i="5.99,203,1677571200"; 
-   d="scan'208";a="640899276"
+   d="scan'208";a="640899272"
 Received: from irvmail002.ir.intel.com ([10.43.11.120])
-  by orsmga003.jf.intel.com with ESMTP; 17 Apr 2023 02:35:24 -0700
+  by orsmga003.jf.intel.com with ESMTP; 17 Apr 2023 02:35:25 -0700
 Received: from rozewie.igk.intel.com (rozewie.igk.intel.com [10.211.8.69])
-        by irvmail002.ir.intel.com (Postfix) with ESMTP id DC86537F62;
-        Mon, 17 Apr 2023 10:35:23 +0100 (IST)
+        by irvmail002.ir.intel.com (Postfix) with ESMTP id 76DF937F56;
+        Mon, 17 Apr 2023 10:35:24 +0100 (IST)
 From:   Wojciech Drewek <wojciech.drewek@intel.com>
 To:     intel-wired-lan@lists.osuosl.org
 Cc:     netdev@vger.kernel.org, alexandr.lobakin@intel.com,
         david.m.ertman@intel.com, michal.swiatkowski@linux.intel.com,
         marcin.szycik@linux.intel.com, pawel.chmielewski@intel.com,
         sridhar.samudrala@intel.com
-Subject: [PATCH net-next 11/12] ice: add tracepoints for the switchdev bridge
-Date:   Mon, 17 Apr 2023 11:34:11 +0200
-Message-Id: <20230417093412.12161-12-wojciech.drewek@intel.com>
+Subject: [PATCH net-next 12/12] ice: Ethtool fdb_cnt stats
+Date:   Mon, 17 Apr 2023 11:34:12 +0200
+Message-Id: <20230417093412.12161-13-wojciech.drewek@intel.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230417093412.12161-1-wojciech.drewek@intel.com>
 References: <20230417093412.12161-1-wojciech.drewek@intel.com>
@@ -65,199 +65,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Introduce new ethtool statistic which is 'fdb_cnt'. It
+provides information about how many bridge fdbs are created on
+a given netdev.
 
-Add tracepoints for the following events:
-- Add FDB entry
-- Delete FDB entry
-- Create bridge VLAN
-- Cleanup bridge VLAN
-- Link port to the bridge
-- Unlink port from the bridge
-
-Signed-off-by: Pawel Chmielewski <pawel.chmielewski@intel.com>
+Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_eswitch_br.c   |  9 ++
- drivers/net/ethernet/intel/ice/ice_trace.h    | 90 +++++++++++++++++++
- 2 files changed, 99 insertions(+)
+ drivers/net/ethernet/intel/ice/ice.h            | 2 ++
+ drivers/net/ethernet/intel/ice/ice_eswitch_br.c | 6 ++++++
+ drivers/net/ethernet/intel/ice/ice_ethtool.c    | 1 +
+ 3 files changed, 9 insertions(+)
 
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index 489934ddfbb8..90e007942af6 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -350,6 +350,8 @@ struct ice_vsi {
+ 	u16 num_gfltr;
+ 	u16 num_bfltr;
+ 
++	u32 fdb_cnt;
++
+ 	/* RSS config */
+ 	u16 rss_table_size;	/* HW RSS table size */
+ 	u16 rss_size;		/* Allocated RSS queues */
 diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch_br.c b/drivers/net/ethernet/intel/ice/ice_eswitch_br.c
-index 6c3144f98100..4a69b3a67914 100644
+index 4a69b3a67914..cfa4324bf1a2 100644
 --- a/drivers/net/ethernet/intel/ice/ice_eswitch_br.c
 +++ b/drivers/net/ethernet/intel/ice/ice_eswitch_br.c
-@@ -7,6 +7,7 @@
- #include "ice_switch.h"
- #include "ice_vlan.h"
- #include "ice_vf_vsi_vlan_ops.h"
-+#include "ice_trace.h"
+@@ -330,6 +330,7 @@ static void
+ ice_eswitch_br_fdb_entry_delete(struct ice_esw_br *bridge,
+ 				struct ice_esw_br_fdb_entry *fdb_entry)
+ {
++	struct ice_vsi *vsi = fdb_entry->br_port->vsi;
+ 	struct ice_pf *pf = bridge->br_offloads->pf;
  
- #define ICE_ESW_BRIDGE_UPDATE_INTERVAL_MS 1000
+ 	rhashtable_remove_fast(&bridge->fdb_ht, &fdb_entry->ht_node,
+@@ -339,6 +340,7 @@ ice_eswitch_br_fdb_entry_delete(struct ice_esw_br *bridge,
+ 	ice_eswitch_br_flow_delete(pf, fdb_entry->flow);
  
-@@ -379,6 +380,7 @@ ice_eswitch_br_fdb_entry_find_and_delete(struct ice_esw_br *bridge,
- 		return;
- 	}
- 
-+	trace_ice_eswitch_br_fdb_entry_find_and_delete(fdb_entry);
- 	ice_eswitch_br_fdb_entry_notify_and_cleanup(bridge, fdb_entry);
+ 	kfree(fdb_entry);
++	vsi->fdb_cnt--;
  }
  
-@@ -456,6 +458,7 @@ ice_eswitch_br_fdb_entry_create(struct net_device *netdev,
- 		goto err_fdb_insert;
- 
- 	list_add(&fdb_entry->list, &bridge->fdb_list);
-+	trace_ice_eswitch_br_fdb_entry_create(fdb_entry);
+ static void
+@@ -462,6 +464,8 @@ ice_eswitch_br_fdb_entry_create(struct net_device *netdev,
  
  	ice_eswitch_br_fdb_offload_notify(netdev, mac, vid, event);
  
-@@ -632,6 +635,7 @@ static void
- ice_eswitch_br_vlan_cleanup(struct ice_esw_br_port *port,
- 			    struct ice_esw_br_vlan *vlan)
- {
-+	trace_ice_eswitch_br_vlan_cleanup(vlan);
- 	xa_erase(&port->vlans, vlan->vid);
- 	if (port->pvid == vlan->vid)
- 		ice_eswitch_br_clear_pvid(port);
-@@ -715,6 +719,8 @@ ice_eswitch_br_vlan_create(u16 vid, u16 flags, struct ice_esw_br_port *port)
- 	if (err)
- 		goto err_insert;
- 
-+	trace_ice_eswitch_br_vlan_create(vlan);
++	br_port->vsi->fdb_cnt++;
 +
- 	return vlan;
+ 	return;
  
- err_insert:
-@@ -1078,6 +1084,7 @@ ice_eswitch_br_port_unlink(struct ice_esw_br_offloads *br_offloads,
- 		return -EINVAL;
- 	}
+ err_fdb_insert:
+@@ -941,6 +945,7 @@ ice_eswitch_br_vf_repr_port_init(struct ice_esw_br *bridge,
+ 	br_port->vsi_idx = br_port->vsi->idx;
+ 	br_port->type = ICE_ESWITCH_BR_VF_REPR_PORT;
+ 	repr->br_port = br_port;
++	repr->src_vsi->fdb_cnt = 0;
  
-+	trace_ice_eswitch_br_port_unlink(br_port);
- 	ice_eswitch_br_port_deinit(br_port->bridge, br_port);
- 	ice_eswitch_br_verify_deinit(br_offloads, br_port->bridge);
- 
-@@ -1106,6 +1113,7 @@ ice_eswitch_br_port_link(struct ice_esw_br_offloads *br_offloads,
- 		struct ice_repr *repr = ice_netdev_to_repr(dev);
- 
- 		err = ice_eswitch_br_vf_repr_port_init(bridge, repr);
-+		trace_ice_eswitch_br_port_link(repr->br_port);
- 	} else {
- 		struct net_device *ice_dev = dev;
- 		struct ice_pf *pf;
-@@ -1119,6 +1127,7 @@ ice_eswitch_br_port_link(struct ice_esw_br_offloads *br_offloads,
- 		pf = ice_netdev_to_pf(ice_dev);
- 
- 		err = ice_eswitch_br_uplink_port_init(bridge, pf);
-+		trace_ice_eswitch_br_port_link(pf->br_port);
- 	}
+ 	err = xa_insert(&bridge->ports, br_port->vsi_idx, br_port, GFP_KERNEL);
  	if (err) {
- 		NL_SET_ERR_MSG_MOD(extack, "Failed to init bridge port");
-diff --git a/drivers/net/ethernet/intel/ice/ice_trace.h b/drivers/net/ethernet/intel/ice/ice_trace.h
-index ae98d5a8ff60..b2f5c9fe0149 100644
---- a/drivers/net/ethernet/intel/ice/ice_trace.h
-+++ b/drivers/net/ethernet/intel/ice/ice_trace.h
-@@ -21,6 +21,7 @@
- #define _ICE_TRACE_H_
+@@ -966,6 +971,7 @@ ice_eswitch_br_uplink_port_init(struct ice_esw_br *bridge, struct ice_pf *pf)
+ 	br_port->vsi_idx = br_port->vsi->idx;
+ 	br_port->type = ICE_ESWITCH_BR_UPLINK_PORT;
+ 	pf->br_port = br_port;
++	vsi->fdb_cnt = 0;
  
- #include <linux/tracepoint.h>
-+#include "ice_eswitch_br.h"
+ 	err = xa_insert(&bridge->ports, br_port->vsi_idx, br_port, GFP_KERNEL);
+ 	if (err) {
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index 8407c7175cf6..d06b2a688323 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -64,6 +64,7 @@ static const struct ice_stats ice_gstrings_vsi_stats[] = {
+ 	ICE_VSI_STAT("tx_linearize", tx_linearize),
+ 	ICE_VSI_STAT("tx_busy", tx_busy),
+ 	ICE_VSI_STAT("tx_restart", tx_restart),
++	ICE_VSI_STAT("fdb_cnt", fdb_cnt),
+ };
  
- /* ice_trace() macro enables shared code to refer to trace points
-  * like:
-@@ -240,6 +241,95 @@ DEFINE_TX_TSTAMP_OP_EVENT(ice_tx_tstamp_fw_req);
- DEFINE_TX_TSTAMP_OP_EVENT(ice_tx_tstamp_fw_done);
- DEFINE_TX_TSTAMP_OP_EVENT(ice_tx_tstamp_complete);
- 
-+DECLARE_EVENT_CLASS(ice_esw_br_fdb_template,
-+		    TP_PROTO(struct ice_esw_br_fdb_entry *fdb),
-+		    TP_ARGS(fdb),
-+		    TP_STRUCT__entry(__array(char, dev_name, IFNAMSIZ)
-+				     __array(unsigned char, addr, ETH_ALEN)
-+				     __field(u16, vid)
-+				     __field(int, flags)),
-+		    TP_fast_assign(strscpy(__entry->dev_name,
-+					   netdev_name(fdb->dev),
-+					   IFNAMSIZ);
-+				   memcpy(__entry->addr, fdb->data.addr, ETH_ALEN);
-+				   __entry->vid = fdb->data.vid;
-+				   __entry->flags = fdb->flags;),
-+		    TP_printk("net_device=%s addr=%pM vid=%u flags=%x",
-+			      __entry->dev_name,
-+			      __entry->addr,
-+			      __entry->vid,
-+			      __entry->flags)
-+);
-+
-+DEFINE_EVENT(ice_esw_br_fdb_template,
-+	     ice_eswitch_br_fdb_entry_create,
-+	     TP_PROTO(struct ice_esw_br_fdb_entry *fdb),
-+	     TP_ARGS(fdb)
-+);
-+
-+DEFINE_EVENT(ice_esw_br_fdb_template,
-+	     ice_eswitch_br_fdb_entry_find_and_delete,
-+	     TP_PROTO(struct ice_esw_br_fdb_entry *fdb),
-+	     TP_ARGS(fdb)
-+);
-+
-+DECLARE_EVENT_CLASS(ice_esw_br_vlan_template,
-+		    TP_PROTO(struct ice_esw_br_vlan *vlan),
-+		    TP_ARGS(vlan),
-+		    TP_STRUCT__entry(__field(u16, vid)
-+				     __field(u16, flags)),
-+		    TP_fast_assign(__entry->vid = vlan->vid;
-+				   __entry->flags = vlan->flags;),
-+		    TP_printk("vid=%u flags=%x",
-+			      __entry->vid,
-+			      __entry->flags)
-+);
-+
-+DEFINE_EVENT(ice_esw_br_vlan_template,
-+	     ice_eswitch_br_vlan_create,
-+	     TP_PROTO(struct ice_esw_br_vlan *vlan),
-+	     TP_ARGS(vlan)
-+);
-+
-+DEFINE_EVENT(ice_esw_br_vlan_template,
-+	     ice_eswitch_br_vlan_cleanup,
-+	     TP_PROTO(struct ice_esw_br_vlan *vlan),
-+	     TP_ARGS(vlan)
-+);
-+
-+#define ICE_ESW_BR_PORT_NAME_L 16
-+
-+DECLARE_EVENT_CLASS(ice_esw_br_port_template,
-+		    TP_PROTO(struct ice_esw_br_port *port),
-+		    TP_ARGS(port),
-+		    TP_STRUCT__entry(__field(u16, vport_num)
-+				     __array(char, port_type, ICE_ESW_BR_PORT_NAME_L)),
-+		    TP_fast_assign(__entry->vport_num = port->vsi_idx;
-+					if (port->type == ICE_ESWITCH_BR_UPLINK_PORT)
-+						strscpy(__entry->port_type,
-+							"Uplink",
-+							ICE_ESW_BR_PORT_NAME_L);
-+					else
-+						strscpy(__entry->port_type,
-+							"VF Representor",
-+							ICE_ESW_BR_PORT_NAME_L);),
-+		    TP_printk("vport_num=%u port type=%s",
-+			      __entry->vport_num,
-+			      __entry->port_type)
-+);
-+
-+DEFINE_EVENT(ice_esw_br_port_template,
-+	     ice_eswitch_br_port_link,
-+	     TP_PROTO(struct ice_esw_br_port *port),
-+	     TP_ARGS(port)
-+);
-+
-+DEFINE_EVENT(ice_esw_br_port_template,
-+	     ice_eswitch_br_port_unlink,
-+	     TP_PROTO(struct ice_esw_br_port *port),
-+	     TP_ARGS(port)
-+);
-+
- /* End tracepoints */
- 
- #endif /* _ICE_TRACE_H_ */
+ enum ice_ethtool_test_id {
 -- 
 2.39.2
 
