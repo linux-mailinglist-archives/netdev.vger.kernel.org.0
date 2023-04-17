@@ -2,111 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12F986E44E1
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 12:14:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D15A06E44F4
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 12:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230150AbjDQKOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 06:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
+        id S230483AbjDQKQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 06:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229870AbjDQKO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 06:14:29 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACB17690;
-        Mon, 17 Apr 2023 03:13:46 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id dx24so18631754ejb.11;
-        Mon, 17 Apr 2023 03:13:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681726332; x=1684318332;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SfLtmsjn+24Jwv+y0uMTpgAcgZGonR8dQYvfUTmESeI=;
-        b=AB2AHp53fooDJFP65B3EGwEfjtnxhcT3SBZK4tA+Oyi9fmrGYL/gi+u+16yINFKJme
-         +gdQ6rkARK8d3As/QzTZObvI+R/UwIjguAzbrEuPZuVih56VWrz3iKDXGmc9wylwobT0
-         5fni+Ai90yZTxYfm9iTpocYa11RqthmyyhVb91ATJ1P1YuH3niq6aMN07EkjEFSFrHte
-         Qrpr24QwwAtw+8VIvEzo+AxbPGEUqg1FsnBLX5VxAaKL+kKgleq1fO/VFSHt6I/hJOb1
-         yP4z9F2SIliJYER9FI817gje7wDtO/MyZyXIbsem4FTxRlbh0/SELQYFc2C2WUNgU6on
-         tySw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681726332; x=1684318332;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SfLtmsjn+24Jwv+y0uMTpgAcgZGonR8dQYvfUTmESeI=;
-        b=UjExTMAcEt2aDAzJ8ULK/H102fZutvO8MdLEaif2RKClsfHTJFOi1trR9XQvAQ9TvP
-         PXOB3+UrFolQF9M5vf+HR8taNzBPZa/0LL4Y9KBBCO2bMvvGsfF/+AF91jRPkGcqPxtL
-         GCr8uJPddWOldgyeHq5l5oGIgBavBCdnpl9IyyC5HKvsVolR1TxLWgUj49pDHJY+n6nE
-         wQZC/aOdGPshgPc6pgmV0kvv0WDfTeu9wsnjvj41NSi/B+UNIARLVH4pLRDwC6j8+dla
-         lvuJ3w3SPe7QdkLAgOu/XXvioNljpJbNiVE75GUm4xpAaj0/nSq7EJUB8owHnJl8V0Rx
-         J0Gw==
-X-Gm-Message-State: AAQBX9cPUcxYR9sZE/Dgi2jIxdlgovgqHxsI/XPb3y4evf0R8/u5t+eg
-        jz7LQOGpCebOXRVTCtOIXuE=
-X-Google-Smtp-Source: AKy350bNDPOTgu/bK+fIwYt0hZJQTCtIapFZd95PX++lE2617xdy8wO4a8bezvWykCCVpk0tXbIQxQ==
-X-Received: by 2002:a17:906:4708:b0:94f:764e:e311 with SMTP id y8-20020a170906470800b0094f764ee311mr2413993ejq.16.1681726331690;
-        Mon, 17 Apr 2023 03:12:11 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id f10-20020a1709064dca00b0094f2dca017fsm3038853ejw.50.2023.04.17.03.12.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Apr 2023 03:12:11 -0700 (PDT)
-Date:   Mon, 17 Apr 2023 13:12:09 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
+        with ESMTP id S231154AbjDQKQG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 06:16:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C7140EC;
+        Mon, 17 Apr 2023 03:15:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DFB862196;
+        Mon, 17 Apr 2023 10:12:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EC68C433D2;
+        Mon, 17 Apr 2023 10:12:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681726366;
+        bh=GRAa2RVEdoP6sWFZTaUzor42MJUN7cAoBncwKS2n97w=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=tUaLe0MUroPoDEhW71YLn96ifF/ylQ2u0qpI06Wi+jenuZJ1Yu39UVc/9jX0B3pk/
+         bWnIC3Tlu3aRcrLzxjRcxVB0CXYgPUHh1c3tKwfPBHFXirI5lH7E5PVL6bLQs0uP6d
+         bTMvxjN/ikO0GS6PP59POWkGeyEkja8rmfTnG46HIk6Ri3JNAOevyl/59C9RfgeQGg
+         FR3zJ1e5M89rXAoD3wf5Y3tsdTNRI6mW/d+aSvpvvJHTfw6j+hmbOQD8ibVJ9kfOKC
+         OskbZ+jaXv5z5J8qurxK/M9V480VClSYqj3x9ODtaKYCHrnEtRX35sElQa4Zr0qjk1
+         iao4t/5D/nOkg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Konrad Dybcio <konrad.dybcio@linaro.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v1 2/2] net: dsa: microchip: Add partial ACL
- support for ksz9477 switches
-Message-ID: <20230417101209.m5fhc7njeeomljkf@skbuf>
-References: <20230411172456.3003003-1-o.rempel@pengutronix.de>
- <20230411172456.3003003-1-o.rempel@pengutronix.de>
- <20230411172456.3003003-3-o.rempel@pengutronix.de>
- <20230411172456.3003003-3-o.rempel@pengutronix.de>
- <20230416165658.fuo7vwer7m7ulkg2@skbuf>
- <20230417045710.GB20350@pengutronix.de>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v4] dt-bindings: net: Convert ATH10K to YAML
+References: <20230406-topic-ath10k_bindings-v4-1-9f67a6bb0d56@linaro.org>
+Date:   Mon, 17 Apr 2023 13:12:39 +0300
+In-Reply-To: <20230406-topic-ath10k_bindings-v4-1-9f67a6bb0d56@linaro.org>
+        (Konrad Dybcio's message of "Tue, 11 Apr 2023 20:19:22 +0200")
+Message-ID: <87pm82x1ew.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230417045710.GB20350@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 17, 2023 at 06:57:10AM +0200, Oleksij Rempel wrote:
-> > On Tue, Apr 11, 2023 at 07:24:55PM +0200, Oleksij Rempel wrote:
-> > > The ACL also implements a count function, generating an interrupt
-> > > instead of a forwarding action. It can be used as a watchdog timer or an
-> > > event counter.
-> > 
-> > Is the interrupt handled here? I didn't see cls_flower_stats().
-> 
-> No, it is not implemented in this patch. It is generic description of things
-> ACL should be able to do. Is it confusing? Should I remove it?
+Konrad Dybcio <konrad.dybcio@linaro.org> writes:
 
-No, it's confusing that the ACL statistics are not reported even though
-it's mentioned that it's possible...
+> Convert the ATH10K bindings to YAML.
+>
+> Dropped properties that are absent at the current state of mainline:
+> - qcom,msi_addr
+> - qcom,msi_base
 
-> > Have you considered the "skbedit priority" action as opposed to hw_tc?
-> 
-> I had already thought of that, but since bridging is offloaded in the HW
-> no skbs are involved, i thought it will be confusing. Since tc-flower seems to
-> already support hw_tc remapping, I decided to use it. I hope it will not harm,
-> to use it for now as mandatory option and make it optional later if other
-> actions are added, including skbedit.
+Very good, thanks. Clearly I had missed that those were unused during
+the review.
 
-Well, skbedit is offloadable, so in that sense, its behavior is defined
-even when no skbs are involved. OTOH, skbedit also has a software data
-path (sets skb->priority), as opposed to hw_tc, which last time I checked,
-did not.
+> qcom,coexist-support and qcom,coexist-gpio-pin do very little and should
+> be reconsidered on the driver side, especially the latter one.
+
+I'm curious, what do you mean very little? We set ath10k firmware
+parameters based on these coex properties. How would you propose to
+handle these?
+
+> Somewhat based on the ath11k bindings.
+>
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+
+[...]
+
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.yaml
+> @@ -0,0 +1,358 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/wireless/qcom,ath10k.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm Technologies ATH10K wireless devices
+
+[...]
+
+> +  wifi-firmware:
+> +    type: object
+> +    additionalProperties: false
+> +    description: |
+> +      The ATH10K Wi-Fi node can contain one optional firmware subnode.
+> +      Firmware subnode is needed when the platform does not have Trustzone.
+
+Is there a reason why you write ath10k in upper case? There are two case
+of that in the yaml file. We usually write it in lower case, can I
+change to that?
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
