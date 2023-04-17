@@ -2,79 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E37D6E472A
-	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:10:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 602D86E472B
+	for <lists+netdev@lfdr.de>; Mon, 17 Apr 2023 14:10:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbjDQMKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 08:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55592 "EHLO
+        id S230181AbjDQMKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 08:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230212AbjDQMJw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 08:09:52 -0400
-Received: from exchange.fintech.ru (e10edge.fintech.ru [195.54.195.159])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A84046B2;
-        Mon, 17 Apr 2023 05:09:28 -0700 (PDT)
-Received: from Ex16-01.fintech.ru (10.0.10.18) by exchange.fintech.ru
- (195.54.195.169) with Microsoft SMTP Server (TLS) id 14.3.498.0; Mon, 17 Apr
- 2023 15:07:23 +0300
-Received: from localhost (10.0.253.138) by Ex16-01.fintech.ru (10.0.10.18)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Mon, 17 Apr
- 2023 15:07:22 +0300
-From:   Nikita Zhandarovich <n.zhandarovich@fintech.ru>
-To:     <mlxsw@nvidia.com>
-CC:     Nikita Zhandarovich <n.zhandarovich@fintech.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lvc-project@linuxtesting.org>,
-        "Natalia Petrova" <n.petrova@fintech.ru>
-Subject: [PATCH net] mlxfw: fix null-ptr-deref in mlxfw_mfa2_tlv_next()
-Date:   Mon, 17 Apr 2023 05:07:18 -0700
-Message-ID: <20230417120718.52325-1-n.zhandarovich@fintech.ru>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230388AbjDQMKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 08:10:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855FB269E
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 05:09:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47FCC61CAC
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 12:09:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 473DCC433D2;
+        Mon, 17 Apr 2023 12:09:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681733380;
+        bh=hKYkSpvhATstDaFtEHuCRj8Qj7ipW25dMadGs/JlFgE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kLwOJM82xZajMYhCEkoP1f85BSzadUN/2728UXME5sR9+cCwbg8o11KCPCTQ9Q1eD
+         H/n4tcBSJIW9H+oyVAUTD4cuRrPBx3K4J3C3RVU0doi3g8AF910mpmUTKLYonLPOYT
+         QviqaQzVDRGkXUrAfGzLqhM7bOyRwbbCHy+l8Vqcf1xbUEL0q/HjPrkDzn5SVkQKn9
+         m+LLjbTCduMq43Jf/KnV8zE9s7CMOtWIWVW5SOhgFuAMmD+6TYBNtd3pokZZp5fExx
+         tRl4+v/FVQjNtkD+27K7kivDja7zC64rLpEXI6Qn0wOhSAKdFQ66v/YEpMd2d6Ns/n
+         JOj+vPt59IIIg==
+Date:   Mon, 17 Apr 2023 14:09:36 +0200
+From:   Simon Horman <horms@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, pablo@netfilter.org, fw@strlen.de
+Subject: Re: [PATCH net-next 5/5] net: skbuff: hide nf_trace and ipvs_property
+Message-ID: <ZD03APYJqdhflYNJ@kernel.org>
+References: <20230414160105.172125-1-kuba@kernel.org>
+ <20230414160105.172125-6-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.0.253.138]
-X-ClientProxiedBy: Ex16-02.fintech.ru (10.0.10.19) To Ex16-01.fintech.ru
- (10.0.10.18)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230414160105.172125-6-kuba@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function mlxfw_mfa2_tlv_multi_get() returns NULL if 'tlv' in
-question does not pass checks in mlxfw_mfa2_tlv_payload_get(). This
-behaviour may lead to NULL pointer dereference in 'multi->total_len'.
-Fix this issue by testing mlxfw_mfa2_tlv_multi_get()'s return value
-against NULL.
+On Fri, Apr 14, 2023 at 09:01:05AM -0700, Jakub Kicinski wrote:
+> Accesses to nf_trace and ipvs_property are already wrapped
+> by ifdefs where necessary. Don't allocate the bits for those
+> fields at all if possible.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Found by Linux Verification Center (linuxtesting.org) with static
-analysis tool SVACE.
+FWIIW, I'm fine with this, modulo the module handling
+discussed elsewhere in this thread.
 
-Fixes: 410ed13cae39 ("Add the mlxfw module for Mellanox firmware flash process")
-Co-developed-by: Natalia Petrova <n.petrova@fintech.ru>
-Signed-off-by: Nikita Zhandarovich <n.zhandarovich@fintech.ru>
----
- drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_tlv_multi.c | 2 ++
- 1 file changed, 2 insertions(+)
+Acked-by: Simon Horman <horms@kernel.org>
 
-diff --git a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_tlv_multi.c b/drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_tlv_multi.c
-index 017d68f1e123..972c571b4158 100644
---- a/drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_tlv_multi.c
-+++ b/drivers/net/ethernet/mellanox/mlxfw/mlxfw_mfa2_tlv_multi.c
-@@ -31,6 +31,8 @@ mlxfw_mfa2_tlv_next(const struct mlxfw_mfa2_file *mfa2_file,
- 
- 	if (tlv->type == MLXFW_MFA2_TLV_MULTI_PART) {
- 		multi = mlxfw_mfa2_tlv_multi_get(mfa2_file, tlv);
-+		if (!multi)
-+			return NULL;
- 		tlv_len = NLA_ALIGN(tlv_len + be16_to_cpu(multi->total_len));
- 	}
- 
+> ---
+> CC: pablo@netfilter.org
+> CC: fw@strlen.de
+> ---
+>  include/linux/skbuff.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 543f7ae9f09f..7b43d5a03613 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -966,8 +966,12 @@ struct sk_buff {
+>  	__u8			ndisc_nodetype:2;
+>  #endif
+>  
+> +#if IS_ENABLED(CONFIG_IP_VS)
+>  	__u8			ipvs_property:1;
+> +#endif
+> +#if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE) || defined(CONFIG_NF_TABLES)
+>  	__u8			nf_trace:1;
+> +#endif
+>  #ifdef CONFIG_NET_SWITCHDEV
+>  	__u8			offload_fwd_mark:1;
+>  	__u8			offload_l3_fwd_mark:1;
+> -- 
+> 2.39.2
+> 
