@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60B3B6E6C9B
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 21:05:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D9EF6E6C96
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 21:05:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232218AbjDRTFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 15:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49678 "EHLO
+        id S232409AbjDRTFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 15:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbjDRTFK (ORCPT
+        with ESMTP id S231627AbjDRTFK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 15:05:10 -0400
 Received: from mx25lb.world4you.com (mx25lb.world4you.com [81.19.149.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E449619A2;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46705BA1;
         Tue, 18 Apr 2023 12:05:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
@@ -20,23 +20,23 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=khtgD2dlqys33XlLzQIKFbAd+FNZ0CBOijYymTYFaRE=; b=cCDS/cM56dMtlnMQcXqVKSv8PW
-        iQL5oMnxGVubZ4R+bjwMSUGS8aHhBSC5xHMpfbOfmxjPzPH0ja+tYSvhCS4cwecNgUL6HooYKjy5B
-        yyhYu7rbMWlIGtPBeq3hEkb5/BoPAYADm0UUBtEiPQzSZkL8wG1aSXkQ8xGRldkfMPd4=;
+        bh=7BkLL9a3OK4TKMdRSUMi9WqIatgstE4uD+RtocXQFuA=; b=DAIXIe0jAfBbADE0jw0Dd1iBYA
+        2JqiSzTSysaINYrTifmHOQ+Ej8jO8zgn41h+r/JRO5EhHqzeReT6L6hT+mjKHw1cKqMfMe+7bsmzj
+        5sgnLn7nbRKMxfmFaN26FO6YkoMSvhgX0gPg78sIlQ0HKYV/K38oLpMQ47npv6JT7x9I=;
 Received: from 88-117-57-231.adsl.highway.telekom.at ([88.117.57.231] helo=hornet.engleder.at)
         by mx25lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gerhard@engleder-embedded.com>)
-        id 1poqdW-0002eV-70; Tue, 18 Apr 2023 21:05:06 +0200
+        id 1poqdW-0002eV-Qm; Tue, 18 Apr 2023 21:05:06 +0200
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
         maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v3 1/6] tsnep: Replace modulo operation with mask
-Date:   Tue, 18 Apr 2023 21:04:54 +0200
-Message-Id: <20230418190459.19326-2-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v3 2/6] tsnep: Rework TX/RX queue initialization
+Date:   Tue, 18 Apr 2023 21:04:55 +0200
+Message-Id: <20230418190459.19326-3-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230418190459.19326-1-gerhard@engleder-embedded.com>
 References: <20230418190459.19326-1-gerhard@engleder-embedded.com>
@@ -54,146 +54,223 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TX/RX ring size is static and power of 2 to enable compiler to optimize
-modulo operation to mask operation. Make this optimization already in
-the code and don't rely on the compiler.
+Make initialization of TX and RX queues less dynamic by moving some
+initialization from netdev open/close to device probing.
+
+Additionally, move some initialization code to separate functions to
+enable future use in other execution paths.
+
+This is done as preparation for queue reconfigure at runtime, which is
+necessary for XSK zero-copy support.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- drivers/net/ethernet/engleder/tsnep.h      |  1 +
- drivers/net/ethernet/engleder/tsnep_main.c | 28 +++++++++++-----------
- 2 files changed, 15 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/engleder/tsnep_main.c | 94 ++++++++++++----------
+ 1 file changed, 51 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index 058c2bcf31a7..1de26aec78d3 100644
---- a/drivers/net/ethernet/engleder/tsnep.h
-+++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -18,6 +18,7 @@
- #define TSNEP "tsnep"
- 
- #define TSNEP_RING_SIZE 256
-+#define TSNEP_RING_MASK (TSNEP_RING_SIZE - 1)
- #define TSNEP_RING_RX_REFILL 16
- #define TSNEP_RING_RX_REUSE (TSNEP_RING_SIZE - TSNEP_RING_SIZE / 4)
- #define TSNEP_RING_ENTRIES_PER_PAGE (PAGE_SIZE / TSNEP_DESC_SIZE)
 diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index ed1b6102cfeb..3d15e673894a 100644
+index 3d15e673894a..095d36e953fc 100644
 --- a/drivers/net/ethernet/engleder/tsnep_main.c
 +++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -292,7 +292,7 @@ static int tsnep_tx_ring_init(struct tsnep_tx *tx)
+@@ -265,7 +265,7 @@ static void tsnep_tx_ring_cleanup(struct tsnep_tx *tx)
+ 	}
+ }
+ 
+-static int tsnep_tx_ring_init(struct tsnep_tx *tx)
++static int tsnep_tx_ring_create(struct tsnep_tx *tx)
+ {
+ 	struct device *dmadev = tx->adapter->dmadev;
+ 	struct tsnep_tx_entry *entry;
+@@ -288,6 +288,7 @@ static int tsnep_tx_ring_init(struct tsnep_tx *tx)
+ 			entry->desc = (struct tsnep_tx_desc *)
+ 				(((u8 *)entry->desc_wb) + TSNEP_DESC_OFFSET);
+ 			entry->desc_dma = tx->page_dma[i] + TSNEP_DESC_SIZE * j;
++			entry->owner_user_flag = false;
+ 		}
  	}
  	for (i = 0; i < TSNEP_RING_SIZE; i++) {
- 		entry = &tx->entry[i];
--		next_entry = &tx->entry[(i + 1) % TSNEP_RING_SIZE];
-+		next_entry = &tx->entry[(i + 1) & TSNEP_RING_MASK];
- 		entry->desc->next = __cpu_to_le64(next_entry->desc_dma);
- 	}
+@@ -303,6 +304,19 @@ static int tsnep_tx_ring_init(struct tsnep_tx *tx)
+ 	return retval;
+ }
  
-@@ -381,7 +381,7 @@ static int tsnep_tx_map(struct sk_buff *skb, struct tsnep_tx *tx, int count)
- 	int i;
++static void tsnep_tx_init(struct tsnep_tx *tx)
++{
++	dma_addr_t dma;
++
++	dma = tx->entry[0].desc_dma | TSNEP_RESET_OWNER_COUNTER;
++	iowrite32(DMA_ADDR_LOW(dma), tx->addr + TSNEP_TX_DESC_ADDR_LOW);
++	iowrite32(DMA_ADDR_HIGH(dma), tx->addr + TSNEP_TX_DESC_ADDR_HIGH);
++	tx->write = 0;
++	tx->read = 0;
++	tx->owner_counter = 1;
++	tx->increment_owner_counter = TSNEP_RING_SIZE - 1;
++}
++
+ static void tsnep_tx_activate(struct tsnep_tx *tx, int index, int length,
+ 			      bool last)
+ {
+@@ -731,26 +745,15 @@ static bool tsnep_tx_pending(struct tsnep_tx *tx)
+ 	return pending;
+ }
  
- 	for (i = 0; i < count; i++) {
--		entry = &tx->entry[(tx->write + i) % TSNEP_RING_SIZE];
-+		entry = &tx->entry[(tx->write + i) & TSNEP_RING_MASK];
- 
- 		if (!i) {
- 			len = skb_headlen(skb);
-@@ -419,7 +419,7 @@ static int tsnep_tx_unmap(struct tsnep_tx *tx, int index, int count)
- 	int i;
- 
- 	for (i = 0; i < count; i++) {
--		entry = &tx->entry[(index + i) % TSNEP_RING_SIZE];
-+		entry = &tx->entry[(index + i) & TSNEP_RING_MASK];
- 
- 		if (entry->len) {
- 			if (entry->type & TSNEP_TX_TYPE_SKB)
-@@ -481,9 +481,9 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
- 		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
- 
- 	for (i = 0; i < count; i++)
--		tsnep_tx_activate(tx, (tx->write + i) % TSNEP_RING_SIZE, length,
-+		tsnep_tx_activate(tx, (tx->write + i) & TSNEP_RING_MASK, length,
- 				  i == count - 1);
--	tx->write = (tx->write + count) % TSNEP_RING_SIZE;
-+	tx->write = (tx->write + count) & TSNEP_RING_MASK;
- 
- 	skb_tx_timestamp(skb);
- 
-@@ -516,7 +516,7 @@ static int tsnep_xdp_tx_map(struct xdp_frame *xdpf, struct tsnep_tx *tx,
- 	frag = NULL;
- 	len = xdpf->len;
- 	for (i = 0; i < count; i++) {
--		entry = &tx->entry[(tx->write + i) % TSNEP_RING_SIZE];
-+		entry = &tx->entry[(tx->write + i) & TSNEP_RING_MASK];
- 		if (type & TSNEP_TX_TYPE_XDP_NDO) {
- 			data = unlikely(frag) ? skb_frag_address(frag) :
- 						xdpf->data;
-@@ -589,9 +589,9 @@ static bool tsnep_xdp_xmit_frame_ring(struct xdp_frame *xdpf,
- 	length = retval;
- 
- 	for (i = 0; i < count; i++)
--		tsnep_tx_activate(tx, (tx->write + i) % TSNEP_RING_SIZE, length,
-+		tsnep_tx_activate(tx, (tx->write + i) & TSNEP_RING_MASK, length,
- 				  i == count - 1);
--	tx->write = (tx->write + count) % TSNEP_RING_SIZE;
-+	tx->write = (tx->write + count) & TSNEP_RING_MASK;
- 
- 	/* descriptor properties shall be valid before hardware is notified */
- 	dma_wmb();
-@@ -691,7 +691,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 		/* xdpf is union with skb */
- 		entry->skb = NULL;
- 
--		tx->read = (tx->read + count) % TSNEP_RING_SIZE;
-+		tx->read = (tx->read + count) & TSNEP_RING_MASK;
- 
- 		tx->packets++;
- 		tx->bytes += length + ETH_FCS_LEN;
-@@ -839,7 +839,7 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
- 
- 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
- 		entry = &rx->entry[i];
--		next_entry = &rx->entry[(i + 1) % TSNEP_RING_SIZE];
-+		next_entry = &rx->entry[(i + 1) & TSNEP_RING_MASK];
- 		entry->desc->next = __cpu_to_le64(next_entry->desc_dma);
- 	}
- 
-@@ -925,7 +925,7 @@ static int tsnep_rx_refill(struct tsnep_rx *rx, int count, bool reuse)
+-static int tsnep_tx_open(struct tsnep_adapter *adapter, void __iomem *addr,
+-			 int queue_index, struct tsnep_tx *tx)
++static int tsnep_tx_open(struct tsnep_tx *tx)
+ {
+-	dma_addr_t dma;
  	int retval;
  
- 	for (i = 0; i < count && !alloc_failed; i++) {
--		index = (rx->write + i) % TSNEP_RING_SIZE;
-+		index = (rx->write + i) & TSNEP_RING_MASK;
+-	memset(tx, 0, sizeof(*tx));
+-	tx->adapter = adapter;
+-	tx->addr = addr;
+-	tx->queue_index = queue_index;
+-
+-	retval = tsnep_tx_ring_init(tx);
++	retval = tsnep_tx_ring_create(tx);
+ 	if (retval)
+ 		return retval;
  
- 		retval = tsnep_rx_alloc_buffer(rx, index);
- 		if (unlikely(retval)) {
-@@ -945,7 +945,7 @@ static int tsnep_rx_refill(struct tsnep_rx *rx, int count, bool reuse)
+-	dma = tx->entry[0].desc_dma | TSNEP_RESET_OWNER_COUNTER;
+-	iowrite32(DMA_ADDR_LOW(dma), tx->addr + TSNEP_TX_DESC_ADDR_LOW);
+-	iowrite32(DMA_ADDR_HIGH(dma), tx->addr + TSNEP_TX_DESC_ADDR_HIGH);
+-	tx->owner_counter = 1;
+-	tx->increment_owner_counter = TSNEP_RING_SIZE - 1;
++	tsnep_tx_init(tx);
+ 
+ 	return 0;
+ }
+@@ -795,7 +798,7 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
  	}
+ }
  
- 	if (enable) {
--		rx->write = (rx->write + i) % TSNEP_RING_SIZE;
-+		rx->write = (rx->write + i) & TSNEP_RING_MASK;
+-static int tsnep_rx_ring_init(struct tsnep_rx *rx)
++static int tsnep_rx_ring_create(struct tsnep_rx *rx)
+ {
+ 	struct device *dmadev = rx->adapter->dmadev;
+ 	struct tsnep_rx_entry *entry;
+@@ -850,6 +853,19 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
+ 	return retval;
+ }
  
- 		/* descriptor properties shall be valid before hardware is
- 		 * notified
-@@ -1090,7 +1090,7 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 				 * empty RX ring, thus buffer cannot be used for
- 				 * RX processing
- 				 */
--				rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
-+				rx->read = (rx->read + 1) & TSNEP_RING_MASK;
- 				desc_available++;
++static void tsnep_rx_init(struct tsnep_rx *rx)
++{
++	dma_addr_t dma;
++
++	dma = rx->entry[0].desc_dma | TSNEP_RESET_OWNER_COUNTER;
++	iowrite32(DMA_ADDR_LOW(dma), rx->addr + TSNEP_RX_DESC_ADDR_LOW);
++	iowrite32(DMA_ADDR_HIGH(dma), rx->addr + TSNEP_RX_DESC_ADDR_HIGH);
++	rx->write = 0;
++	rx->read = 0;
++	rx->owner_counter = 1;
++	rx->increment_owner_counter = TSNEP_RING_SIZE - 1;
++}
++
+ static int tsnep_rx_desc_available(struct tsnep_rx *rx)
+ {
+ 	if (rx->read <= rx->write)
+@@ -1181,26 +1197,15 @@ static bool tsnep_rx_pending(struct tsnep_rx *rx)
+ 	return false;
+ }
  
- 				rx->dropped++;
-@@ -1117,7 +1117,7 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 		 */
- 		length -= TSNEP_RX_INLINE_METADATA_SIZE;
+-static int tsnep_rx_open(struct tsnep_adapter *adapter, void __iomem *addr,
+-			 int queue_index, struct tsnep_rx *rx)
++static int tsnep_rx_open(struct tsnep_rx *rx)
+ {
+-	dma_addr_t dma;
+ 	int retval;
  
--		rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
-+		rx->read = (rx->read + 1) & TSNEP_RING_MASK;
- 		desc_available++;
+-	memset(rx, 0, sizeof(*rx));
+-	rx->adapter = adapter;
+-	rx->addr = addr;
+-	rx->queue_index = queue_index;
+-
+-	retval = tsnep_rx_ring_init(rx);
++	retval = tsnep_rx_ring_create(rx);
+ 	if (retval)
+ 		return retval;
  
- 		if (prog) {
+-	dma = rx->entry[0].desc_dma | TSNEP_RESET_OWNER_COUNTER;
+-	iowrite32(DMA_ADDR_LOW(dma), rx->addr + TSNEP_RX_DESC_ADDR_LOW);
+-	iowrite32(DMA_ADDR_HIGH(dma), rx->addr + TSNEP_RX_DESC_ADDR_HIGH);
+-	rx->owner_counter = 1;
+-	rx->increment_owner_counter = TSNEP_RING_SIZE - 1;
++	tsnep_rx_init(rx);
+ 
+ 	tsnep_rx_refill(rx, tsnep_rx_desc_available(rx), false);
+ 
+@@ -1335,8 +1340,6 @@ static int tsnep_queue_open(struct tsnep_adapter *adapter,
+ 	struct tsnep_tx *tx = queue->tx;
+ 	int retval;
+ 
+-	queue->adapter = adapter;
+-
+ 	netif_napi_add(adapter->netdev, &queue->napi, tsnep_poll);
+ 
+ 	if (rx) {
+@@ -1377,27 +1380,18 @@ static int tsnep_queue_open(struct tsnep_adapter *adapter,
+ static int tsnep_netdev_open(struct net_device *netdev)
+ {
+ 	struct tsnep_adapter *adapter = netdev_priv(netdev);
+-	int tx_queue_index = 0;
+-	int rx_queue_index = 0;
+-	void __iomem *addr;
+ 	int i, retval;
+ 
+ 	for (i = 0; i < adapter->num_queues; i++) {
+ 		if (adapter->queue[i].tx) {
+-			addr = adapter->addr + TSNEP_QUEUE(tx_queue_index);
+-			retval = tsnep_tx_open(adapter, addr, tx_queue_index,
+-					       adapter->queue[i].tx);
++			retval = tsnep_tx_open(adapter->queue[i].tx);
+ 			if (retval)
+ 				goto failed;
+-			tx_queue_index++;
+ 		}
+ 		if (adapter->queue[i].rx) {
+-			addr = adapter->addr + TSNEP_QUEUE(rx_queue_index);
+-			retval = tsnep_rx_open(adapter, addr, rx_queue_index,
+-					       adapter->queue[i].rx);
++			retval = tsnep_rx_open(adapter->queue[i].rx);
+ 			if (retval)
+ 				goto failed;
+-			rx_queue_index++;
+ 		}
+ 
+ 		retval = tsnep_queue_open(adapter, &adapter->queue[i], i == 0);
+@@ -1796,9 +1790,16 @@ static int tsnep_queue_init(struct tsnep_adapter *adapter, int queue_count)
+ 	adapter->num_tx_queues = 1;
+ 	adapter->num_rx_queues = 1;
+ 	adapter->num_queues = 1;
++	adapter->queue[0].adapter = adapter;
+ 	adapter->queue[0].irq = retval;
+ 	adapter->queue[0].tx = &adapter->tx[0];
++	adapter->queue[0].tx->adapter = adapter;
++	adapter->queue[0].tx->addr = adapter->addr + TSNEP_QUEUE(0);
++	adapter->queue[0].tx->queue_index = 0;
+ 	adapter->queue[0].rx = &adapter->rx[0];
++	adapter->queue[0].rx->adapter = adapter;
++	adapter->queue[0].rx->addr = adapter->addr + TSNEP_QUEUE(0);
++	adapter->queue[0].rx->queue_index = 0;
+ 	adapter->queue[0].irq_mask = irq_mask;
+ 	adapter->queue[0].irq_delay_addr = adapter->addr + ECM_INT_DELAY;
+ 	retval = tsnep_set_irq_coalesce(&adapter->queue[0],
+@@ -1820,9 +1821,16 @@ static int tsnep_queue_init(struct tsnep_adapter *adapter, int queue_count)
+ 		adapter->num_tx_queues++;
+ 		adapter->num_rx_queues++;
+ 		adapter->num_queues++;
++		adapter->queue[i].adapter = adapter;
+ 		adapter->queue[i].irq = retval;
+ 		adapter->queue[i].tx = &adapter->tx[i];
++		adapter->queue[i].tx->adapter = adapter;
++		adapter->queue[i].tx->addr = adapter->addr + TSNEP_QUEUE(i);
++		adapter->queue[i].tx->queue_index = i;
+ 		adapter->queue[i].rx = &adapter->rx[i];
++		adapter->queue[i].rx->adapter = adapter;
++		adapter->queue[i].rx->addr = adapter->addr + TSNEP_QUEUE(i);
++		adapter->queue[i].rx->queue_index = i;
+ 		adapter->queue[i].irq_mask =
+ 			irq_mask << (ECM_INT_TXRX_SHIFT * i);
+ 		adapter->queue[i].irq_delay_addr =
 -- 
 2.30.2
 
