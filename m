@@ -2,85 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A12C96E5F0B
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 12:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 808906E5F22
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 12:49:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231302AbjDRKkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 06:40:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
+        id S231329AbjDRKtB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Apr 2023 06:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231324AbjDRKkb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 06:40:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A223183FE
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 03:40:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S230435AbjDRKsj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 06:48:39 -0400
+Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63ACC421B
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 03:48:36 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-137-HMs8CwXTMtO7vJUWSLxAIQ-1; Tue, 18 Apr 2023 06:48:17 -0400
+X-MC-Unique: HMs8CwXTMtO7vJUWSLxAIQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D60562481
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 10:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 90A4AC4339B;
-        Tue, 18 Apr 2023 10:40:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681814419;
-        bh=mp1jUM7FA9Ce+ogbJUnDvozLoq+DflTxljcFKstGllA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=E4AENG7s2VjlRyWT5/ldpvXOMg71SMxWhAoqip+NsueYnjC5OR086cH97wJrstzeh
-         mm/z4Dp1cVxqfeNisfD+Hw2d6MPA9P0ZvDxnlfxWy0Uww905VQ1zsNoM+kCBPlU3Xa
-         +qZAejMXPgbHYGkrrXwxdvA9V0ZH6OcnHOaBVK5+bUVff4vY/8uc691QsopDMaHTDs
-         RmBXO7pBi1wgYiKLvpUcc3mkA3rzG6UFPBmZfkfQjd6Ii9ftGhgFURA+4OSS1RmS3r
-         nNF9olufBtIOKW4hT4bsy2fESMOqiV5prUKzkiYv/EvscXOwpZOyAvIIpPpcZOYYTP
-         7kOrf4PbwtHtQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6D8C3C4167B;
-        Tue, 18 Apr 2023 10:40:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BC5F8185A790;
+        Tue, 18 Apr 2023 10:48:16 +0000 (UTC)
+Received: from hog (unknown [10.45.225.92])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1A8D32A68;
+        Tue, 18 Apr 2023 10:48:14 +0000 (UTC)
+Date:   Tue, 18 Apr 2023 12:48:13 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
+Cc:     "ehakim@nvidia.com" <ehakim@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Naveen Mamindlapalli <naveenm@marvell.com>, atenart@kernel.org
+Subject: Re: [PATCH net-next v5 5/5] macsec: Don't rely solely on the dst MAC
+ address to identify destination MACsec device
+Message-ID: <ZD51bbwHzYGxL3F3@hog>
+References: <20230413105622.32697-6-ehakim@nvidia.com>
+ <CO1PR18MB4666A6E343DBB5A1CCD005D4A1999@CO1PR18MB4666.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] bnxt_en: Bug fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168181441944.15261.3551106304375753138.git-patchwork-notify@kernel.org>
-Date:   Tue, 18 Apr 2023 10:40:19 +0000
-References: <20230417065819.122055-1-michael.chan@broadcom.com>
-In-Reply-To: <20230417065819.122055-1-michael.chan@broadcom.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, gospo@broadcom.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CO1PR18MB4666A6E343DBB5A1CCD005D4A1999@CO1PR18MB4666.namprd18.prod.outlook.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,PDS_BTC_ID,
+        PDS_BTC_MSGID,RCVD_IN_DNSWL_LOW,RDNS_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (main)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Sun, 16 Apr 2023 23:58:17 -0700 you wrote:
-> This small series contains 2 fixes.  The first one fixes the PTP
-> initialization logic on older chips to avoid logging a warning.  The
-> second one fixes a potenial NULL pointer dereference in the driver's
-> aux bus unload path.
+2023-04-14, 06:32:28 +0000, Subbaraya Sundeep Bhatta wrote:
+> Hi,
 > 
-> Kalesh AP (1):
->   bnxt_en: Fix a possible NULL pointer dereference in unload path
+> >-----Original Message-----
+> >From: Emeel Hakim <ehakim@nvidia.com> <ehakim@nvidia.com>
+> >Sent: Thursday, April 13, 2023 4:26 PM
+> >To: davem@davemloft.net; kuba@kernel.org; pabeni@redhat.com;
+> >edumazet@google.com; sd@queasysnail.net
+> >Cc: netdev@vger.kernel.org; leon@kernel.org; Emeel Hakim
+> ><ehakim@nvidia.com>
+> >Subject: [PATCH net-next v5 5/5] macsec: Don't rely solely on the dst MAC
+> >address to identify destination MACsec device
+> >
+> >Offloading device drivers will mark offloaded MACsec SKBs with the
+> >corresponding SCI in the skb_metadata_dst so the macsec rx handler will know to
+> >which interface to divert those skbs, in case of a marked skb and a mismatch on
+> >the dst MAC address, divert the skb to the macsec net_device where the macsec
+> >rx_handler will be called to consider cases where relying solely on the dst MAC
+> >address is insufficient.
+> >
+> >One such instance is when using MACsec with a VLAN as an inner header, where
+> >the packet structure is ETHERNET | SECTAG | VLAN.
+> >In such a scenario, the dst MAC address in the ethernet header will correspond to
+> >the VLAN MAC address, resulting in a mismatch.
+> >
 > 
-> [...]
+> I did below commands:
+> ifconfig eth2 up
+> ip link add link eth2 macsec0 type macsec sci cacbcd4142430002
+> ifconfig macsec0 hw ether ca:cb:cd:41:42:43
+> ip macsec offload macsec0 mac
+> ifconfig macsec0 up
+> ip macsec add macsec0 tx sa 0 on pn 5 key 02 22222222222222222222222222222222
+> ip macsec add macsec0 rx sci cacbcd2122230001
+> ip macsec add macsec0 rx sci cacbcd2122230001 sa 0 pn 5 on key 01 11111111111111111111111111111111
+> ip link add link macsec0 vlan0 type vlan id 2
+> 
+> ifconfig vlan0 hw ether ca:cb:cd:21:22:23
+> ifconfig vlan0 up
+> [ 7106.072451] device macsec0 entered promiscuous mode
+> [ 7106.077330] device eth2 entered promiscuous mode
+> 
+> macsec0 entered promisc mode when upper_dev mac address is not equal to its mac.
+> I think we should check if macsec device is in promisc mode instead of omitting mac address compare.
+> Also all drivers/hardware do not support md_dst->type == METADATA_MACSEC 
 
-Here is the summary with links:
-  - [net,1/2] bnxt_en: Do not initialize PTP on older P3/P4 chips
-    https://git.kernel.org/netdev/net/c/e8b51a1a15d5
-  - [net,2/2] bnxt_en: Fix a possible NULL pointer dereference in unload path
-    https://git.kernel.org/netdev/net/c/4f4e54b1041e
+Is there a good reason to not make all drivers use metadata? It seems
+to me it would be cleaner than trying to guess where a packet belongs
+once it reaches the macsec core.
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Sabrina
 
