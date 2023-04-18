@@ -2,690 +2,1112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9E706E6F3D
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 00:14:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81C4B6E6FCD
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 01:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232870AbjDRWOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 18:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
+        id S231171AbjDRXCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 19:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231128AbjDRWNd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 18:13:33 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763854C13
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 15:13:31 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-54fba72c1adso147782887b3.18
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 15:13:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681856010; x=1684448010;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=+E0NNi/3ErpI/jsTHhMI1yP8O4892F+5zYcSjcyv2GY=;
-        b=lI1sbZvCAkTun/2mmf2uZ/K+OVTKLC2M/tRDT+8+G3SrvtfINBBnQaocd5E/sSJx7i
-         2IdZ62iy0IVmpXGb2sVvhf4nNhQecx7Fg3q7WQg1cUTjneyjUP+Qj3Z+qNkMRF+TNpg0
-         0HCP5FMErRctbqudJcQzK1dgA2Nj5jNK/qr9HPkKmSNf/na/EGw5ExU/ztGufmFx6fkX
-         oGiJoBW9ao5/y0HPvAsksLouWvpI61iw1ZHo0S4oR1qcSn4JK9zeygDa5ips/6d2YyYq
-         g3wfODlZ6gWwWuHKY+f8GfIbTb6qTbXRg4LM97tK+ba9I0cuWFFxoKhi74dnM6i77PS0
-         51SA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681856010; x=1684448010;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=+E0NNi/3ErpI/jsTHhMI1yP8O4892F+5zYcSjcyv2GY=;
-        b=SdgzE778qL3Rv5nits2T5t/425FXTiHvPubWNN7ZAskjUK4wvyb+OwdTBq8CJ6SKoP
-         ZqHKaV+S+k6JnQRtJxR+b6HcTsGgdjHwpyoMMIFOhVnemL2giU2OLKT65MEwIpXxPQml
-         s9Pb2YWsGYcM+mebinXwiyGtNWpA9gkN0TFHAfuJMY4lJ2PI4QjRWbAJ2/v6kpmasucK
-         YljNjQMvfy2OtTz0tkt7T0oSFzDpv9PldUIkhHiYhy3op/Lce0pIEUPDdHbwiUgxHgsS
-         fhWEQEoFcE1KLcWAFA7qYJNfu1kvMfw6RqzNSXHE5WJDBBUvZ7nB5Bctue7FhtE6BI6b
-         X5Gg==
-X-Gm-Message-State: AAQBX9e3zwuOpAiKRvsX7zHW3rcqD+OvBqti/hyJxq+veAmg0ddMxFPL
-        5/WvYEsrvhV9JOivKzOvo1vwUIhhe+i1LL0CYMr32TwaHk0AnKf2Evc2vxcr/bqb68yOFPBHJDy
-        simO8LQcBnjqCLOvlhYKA8N7nBzl5tIwpRFlZtl4yUVdxSx+sDTK0ftMxexpk3BrYDL96M2Ehro
-        AXOA==
-X-Google-Smtp-Source: AKy350YiRHG/n2QDil0KSMKa2r+dQqzUxQD+i7RDcP+tf0Z4gOLYHmDfPr3+agkppeedPXJyIVyOXQzMEoHxyHIC/fA=
-X-Received: from alexberlinerc.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:1bc0])
- (user=alexberliner job=sendgmr) by 2002:a05:690c:2787:b0:54f:e2ca:3085 with
- SMTP id dz7-20020a05690c278700b0054fe2ca3085mr276217ywb.1.1681856010730; Tue,
- 18 Apr 2023 15:13:30 -0700 (PDT)
-Date:   Tue, 18 Apr 2023 22:13:13 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.634.g4ca3ef3211-goog
-Message-ID: <20230418221313.39112-1-alexberliner@google.com>
-Subject: [PATCH net-next] gve: Add modify ring size support
-From:   Alex Berliner <alexberliner@google.com>
+        with ESMTP id S231140AbjDRXCh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 19:02:37 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CEC78A6C
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 16:02:33 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 1AD85219DA;
+        Tue, 18 Apr 2023 23:02:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1681858952; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         in-reply-to:in-reply-to:references:references;
+        bh=tQ0I1LpmchAW/JLLZJ5+Ml4nSsj8PckawkxAjn8UaeQ=;
+        b=QyNqgR4Dai9NjawEc/2vFhaOqzdhZXAgpP9g3eS0TTvTpLZoh1RgJWYBfQbSlBGWETVixf
+        8ZzR8jjqyBKTLCIRaZInUy3HvCvgw3K/J33JDMIZWRY5+wCZknUwFStSY7pxxwkXQjfMRv
+        QPVFOF0DtMT9EdKfRF70qXujLI1NM+E=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1681858952;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         in-reply-to:in-reply-to:references:references;
+        bh=tQ0I1LpmchAW/JLLZJ5+Ml4nSsj8PckawkxAjn8UaeQ=;
+        b=vwqHj9fum+EvwHMsiWzF9m4kWJ3mTG0OVrXHxOWtgOJuxnHTxcPUra0+J/Lc6A3wKx+OKx
+        LmMolX6H10yqXBAA==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 072C02C141;
+        Tue, 18 Apr 2023 23:02:32 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id D25FE60517; Wed, 19 Apr 2023 01:02:31 +0200 (CEST)
+Message-Id: <94285a649ff0dd06fc61c51b8c3ac273a76723b3.1681858286.git.mkubecek@suse.cz>
+In-Reply-To: <cover.1681858286.git.mkubecek@suse.cz>
+References: <cover.1681858286.git.mkubecek@suse.cz>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Date:   Wed, 19 Apr 2023 00:13:46 +0200
+Subject: [PATCH ethtool 3/3] update UAPI header copies
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Alex Berliner <alexberliner@google.com>,
-        Jeroen de Borst <jeroendb@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Cc:     Thomas Devoogdt <thomas@devoogdt.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add driver support and ethtool bindings for changing the size of the
-driver's descriptor rings.
+Update to kernel v6.3-rc7.
 
-- Add logic to change ring size via ethtool
-- Handle ring sizes being provided by ring size device option
-- Add structures to store max ring size
-- Consolidate duplicate variables for storing ring size
-
-Signed-off-by: Alex Berliner <alexberliner@google.com>
-Reviewed-by: Jeroen de Borst <jeroendb@google.com>
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- drivers/net/ethernet/google/gve/gve.h         | 26 ++++--
- drivers/net/ethernet/google/gve/gve_adminq.c  | 85 +++++++++++++------
- drivers/net/ethernet/google/gve/gve_adminq.h  | 18 +++-
- drivers/net/ethernet/google/gve/gve_ethtool.c | 79 ++++++++++++++++-
- drivers/net/ethernet/google/gve/gve_main.c    | 43 ++++++++--
- drivers/net/ethernet/google/gve/gve_rx.c      | 10 +--
- drivers/net/ethernet/google/gve/gve_rx_dqo.c  |  3 +-
- drivers/net/ethernet/google/gve/gve_tx_dqo.c  |  2 +-
- 8 files changed, 206 insertions(+), 60 deletions(-)
+ uapi/linux/const.h       |  36 ++++++
+ uapi/linux/if_addr.h     |  77 +++++++++++
+ uapi/linux/if_ether.h    | 181 ++++++++++++++++++++++++++
+ uapi/linux/libc-compat.h | 267 +++++++++++++++++++++++++++++++++++++++
+ uapi/linux/neighbour.h   | 224 ++++++++++++++++++++++++++++++++
+ uapi/linux/posix_types.h |  38 ++++++
+ uapi/linux/rtnetlink.h   |   1 +
+ uapi/linux/socket.h      |  38 ++++++
+ uapi/linux/stddef.h      |  47 +++++++
+ uapi/linux/types.h       |  53 ++++++++
+ 10 files changed, 962 insertions(+)
+ create mode 100644 uapi/linux/const.h
+ create mode 100644 uapi/linux/if_addr.h
+ create mode 100644 uapi/linux/if_ether.h
+ create mode 100644 uapi/linux/libc-compat.h
+ create mode 100644 uapi/linux/neighbour.h
+ create mode 100644 uapi/linux/posix_types.h
+ create mode 100644 uapi/linux/socket.h
+ create mode 100644 uapi/linux/stddef.h
+ create mode 100644 uapi/linux/types.h
 
-diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index e214b51d3c8b..e2196646554f 100644
---- a/drivers/net/ethernet/google/gve/gve.h
-+++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -40,6 +40,18 @@
- #define NIC_TX_STATS_REPORT_NUM	0
- #define NIC_RX_STATS_REPORT_NUM	4
- 
-+/* Experiment derived */
-+#define GVE_TX_PAGE_COUNT 64
+diff --git a/uapi/linux/const.h b/uapi/linux/const.h
+new file mode 100644
+index 000000000000..5e4898725168
+--- /dev/null
++++ b/uapi/linux/const.h
+@@ -0,0 +1,36 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/* const.h: Macros for dealing with constants.  */
 +
-+/* Minimum descriptor ring size in bytes */
-+#define GVE_RING_SIZE_MIN 4096
++#ifndef _LINUX_CONST_H
++#define _LINUX_CONST_H
 +
-+/* Sanity check min ring element length for tx and rx queues */
-+#define GVE_RING_LENGTH_LIMIT_MIN 64
++/* Some constant macros are used in both assembler and
++ * C code.  Therefore we cannot annotate them always with
++ * 'UL' and other type specifiers unilaterally.  We
++ * use the following macros to deal with this.
++ *
++ * Similarly, _AT() will cast an expression with a type in C, but
++ * leave it unchanged in asm.
++ */
 +
-+/* Sanity check max ring element length for tx and rx queues */
-+#define GVE_RING_LENGTH_LIMIT_MAX 2048
++#ifdef __ASSEMBLY__
++#define _AC(X,Y)	X
++#define _AT(T,X)	X
++#else
++#define __AC(X,Y)	(X##Y)
++#define _AC(X,Y)	__AC(X,Y)
++#define _AT(T,X)	((T)(X))
++#endif
 +
- #define GVE_DATA_SLOT_ADDR_PAGE_MASK (~(PAGE_SIZE - 1))
- 
- /* PTYPEs are always 10 bits. */
-@@ -504,11 +516,6 @@ struct gve_qpl_config {
- 	unsigned long *qpl_id_map; /* bitmap of used qpl ids */
- };
- 
--struct gve_options_dqo_rda {
--	u16 tx_comp_ring_entries; /* number of tx_comp descriptors */
--	u16 rx_buff_ring_entries; /* number of rx_buff descriptors */
--};
--
- struct gve_irq_db {
- 	__be32 index;
- } ____cacheline_aligned;
-@@ -550,13 +557,14 @@ struct gve_priv {
- 	u16 num_event_counters;
- 	u16 tx_desc_cnt; /* num desc per ring */
- 	u16 rx_desc_cnt; /* num desc per ring */
--	u16 tx_pages_per_qpl; /* tx buffer length */
--	u16 rx_data_slot_cnt; /* rx buffer length */
-+	u16 max_rx_desc_cnt; /* max num desc per rx ring */
-+	u16 max_tx_desc_cnt; /* max num desc per tx ring */
- 	u64 max_registered_pages;
- 	u64 num_registered_pages; /* num pages registered with NIC */
- 	struct bpf_prog *xdp_prog; /* XDP BPF program */
- 	u32 rx_copybreak; /* copy packets smaller than this */
- 	u16 default_num_queues; /* default num queues to set up */
-+	bool modify_ringsize_enabled;
- 
- 	u16 num_xdp_queues;
- 	struct gve_queue_config tx_cfg;
-@@ -622,7 +630,6 @@ struct gve_priv {
- 	u64 link_speed;
- 	bool up_before_suspend; /* True if dev was up before suspend */
- 
--	struct gve_options_dqo_rda options_dqo_rda;
- 	struct gve_ptype_lut *ptype_lut_dqo;
- 
- 	/* Must be a power of two. */
-@@ -961,6 +968,9 @@ int gve_adjust_queues(struct gve_priv *priv,
- 		      struct gve_queue_config new_tx_config);
- /* report stats handling */
- void gve_handle_report_stats(struct gve_priv *priv);
-+int gve_adjust_ring_sizes(struct gve_priv *priv,
-+			  int new_tx_desc_cnt,
-+			  int new_rx_desc_cnt);
- /* exported by ethtool.c */
- extern const struct ethtool_ops gve_ethtool_ops;
- /* needed by ethtool */
-diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
-index 252974202a3f..339e187a070a 100644
---- a/drivers/net/ethernet/google/gve/gve_adminq.c
-+++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -39,6 +39,7 @@ void gve_parse_device_option(struct gve_priv *priv,
- 			     struct gve_device_option_gqi_rda **dev_op_gqi_rda,
- 			     struct gve_device_option_gqi_qpl **dev_op_gqi_qpl,
- 			     struct gve_device_option_dqo_rda **dev_op_dqo_rda,
-+			     struct gve_device_option_modify_ring **dev_op_modify_ring,
- 			     struct gve_device_option_jumbo_frames **dev_op_jumbo_frames)
- {
- 	u32 req_feat_mask = be32_to_cpu(option->required_features_mask);
-@@ -112,6 +113,23 @@ void gve_parse_device_option(struct gve_priv *priv,
- 		}
- 		*dev_op_dqo_rda = (void *)(option + 1);
- 		break;
-+	case GVE_DEV_OPT_ID_MODIFY_RING:
-+		if (option_length < sizeof(**dev_op_modify_ring) ||
-+		    req_feat_mask != GVE_DEV_OPT_REQ_FEAT_MASK_MODIFY_RING) {
-+			dev_warn(&priv->pdev->dev, GVE_DEVICE_OPTION_ERROR_FMT,
-+				 "Modify Ring",
-+				 (int)sizeof(**dev_op_modify_ring),
-+				 GVE_DEV_OPT_REQ_FEAT_MASK_MODIFY_RING,
-+				 option_length, req_feat_mask);
-+			break;
-+		}
++#define _UL(x)		(_AC(x, UL))
++#define _ULL(x)		(_AC(x, ULL))
 +
-+		if (option_length > sizeof(**dev_op_modify_ring)) {
-+			dev_warn(&priv->pdev->dev,
-+				 GVE_DEVICE_OPTION_TOO_BIG_FMT, "Modify Ring");
-+		}
-+		*dev_op_modify_ring = (void *)(option + 1);
-+		break;
- 	case GVE_DEV_OPT_ID_JUMBO_FRAMES:
- 		if (option_length < sizeof(**dev_op_jumbo_frames) ||
- 		    req_feat_mask != GVE_DEV_OPT_REQ_FEAT_MASK_JUMBO_FRAMES) {
-@@ -146,6 +164,7 @@ gve_process_device_options(struct gve_priv *priv,
- 			   struct gve_device_option_gqi_rda **dev_op_gqi_rda,
- 			   struct gve_device_option_gqi_qpl **dev_op_gqi_qpl,
- 			   struct gve_device_option_dqo_rda **dev_op_dqo_rda,
-+			   struct gve_device_option_modify_ring **dev_op_modify_ring,
- 			   struct gve_device_option_jumbo_frames **dev_op_jumbo_frames)
- {
- 	const int num_options = be16_to_cpu(descriptor->num_device_options);
-@@ -166,7 +185,8 @@ gve_process_device_options(struct gve_priv *priv,
- 
- 		gve_parse_device_option(priv, descriptor, dev_opt,
- 					dev_op_gqi_rda, dev_op_gqi_qpl,
--					dev_op_dqo_rda, dev_op_jumbo_frames);
-+					dev_op_dqo_rda, dev_op_modify_ring,
-+					dev_op_jumbo_frames);
- 		dev_opt = next_opt;
- 	}
- 
-@@ -496,7 +516,9 @@ static int gve_adminq_create_tx_queue(struct gve_priv *priv, u32 queue_index)
- 		.queue_resources_addr =
- 			cpu_to_be64(tx->q_resources_bus),
- 		.tx_ring_addr = cpu_to_be64(tx->bus),
-+		.tx_comp_ring_addr = cpu_to_be64(tx->complq_bus_dqo),
- 		.ntfy_id = cpu_to_be32(tx->ntfy_id),
-+		.tx_ring_size = cpu_to_be16(priv->tx_desc_cnt),
- 	};
- 
- 	if (gve_is_gqi(priv)) {
-@@ -505,12 +527,10 @@ static int gve_adminq_create_tx_queue(struct gve_priv *priv, u32 queue_index)
- 
- 		cmd.create_tx_queue.queue_page_list_id = cpu_to_be32(qpl_id);
- 	} else {
--		cmd.create_tx_queue.tx_ring_size =
--			cpu_to_be16(priv->tx_desc_cnt);
- 		cmd.create_tx_queue.tx_comp_ring_addr =
- 			cpu_to_be64(tx->complq_bus_dqo);
- 		cmd.create_tx_queue.tx_comp_ring_size =
--			cpu_to_be16(priv->options_dqo_rda.tx_comp_ring_entries);
-+			cpu_to_be16(priv->tx_desc_cnt);
- 	}
- 
- 	return gve_adminq_issue_cmd(priv, &cmd);
-@@ -541,6 +561,7 @@ static int gve_adminq_create_rx_queue(struct gve_priv *priv, u32 queue_index)
- 		.queue_id = cpu_to_be32(queue_index),
- 		.ntfy_id = cpu_to_be32(rx->ntfy_id),
- 		.queue_resources_addr = cpu_to_be64(rx->q_resources_bus),
-+		.rx_ring_size = cpu_to_be16(priv->rx_desc_cnt),
- 	};
- 
- 	if (gve_is_gqi(priv)) {
-@@ -555,8 +576,6 @@ static int gve_adminq_create_rx_queue(struct gve_priv *priv, u32 queue_index)
- 		cmd.create_rx_queue.queue_page_list_id = cpu_to_be32(qpl_id);
- 		cmd.create_rx_queue.packet_buffer_size = cpu_to_be16(rx->packet_buffer_size);
- 	} else {
--		cmd.create_rx_queue.rx_ring_size =
--			cpu_to_be16(priv->rx_desc_cnt);
- 		cmd.create_rx_queue.rx_desc_ring_addr =
- 			cpu_to_be64(rx->dqo.complq.bus);
- 		cmd.create_rx_queue.rx_data_ring_addr =
-@@ -564,7 +583,7 @@ static int gve_adminq_create_rx_queue(struct gve_priv *priv, u32 queue_index)
- 		cmd.create_rx_queue.packet_buffer_size =
- 			cpu_to_be16(priv->data_buffer_size_dqo);
- 		cmd.create_rx_queue.rx_buff_ring_size =
--			cpu_to_be16(priv->options_dqo_rda.rx_buff_ring_entries);
-+			cpu_to_be16(priv->rx_desc_cnt);
- 		cmd.create_rx_queue.enable_rsc =
- 			!!(priv->dev->features & NETIF_F_LRO);
- 	}
-@@ -654,14 +673,14 @@ static int gve_set_desc_cnt(struct gve_priv *priv,
- 			    struct gve_device_descriptor *descriptor)
- {
- 	priv->tx_desc_cnt = be16_to_cpu(descriptor->tx_queue_entries);
--	if (priv->tx_desc_cnt * sizeof(priv->tx->desc[0]) < PAGE_SIZE) {
-+	if (priv->tx_desc_cnt * sizeof(priv->tx->desc[0]) < GVE_RING_SIZE_MIN) {
- 		dev_err(&priv->pdev->dev, "Tx desc count %d too low\n",
- 			priv->tx_desc_cnt);
- 		return -EINVAL;
- 	}
- 	priv->rx_desc_cnt = be16_to_cpu(descriptor->rx_queue_entries);
- 	if (priv->rx_desc_cnt * sizeof(priv->rx->desc.desc_ring[0])
--	    < PAGE_SIZE) {
-+	    < GVE_RING_SIZE_MIN) {
- 		dev_err(&priv->pdev->dev, "Rx desc count %d too low\n",
- 			priv->rx_desc_cnt);
- 		return -EINVAL;
-@@ -671,24 +690,34 @@ static int gve_set_desc_cnt(struct gve_priv *priv,
- 
- static int
- gve_set_desc_cnt_dqo(struct gve_priv *priv,
--		     const struct gve_device_descriptor *descriptor,
--		     const struct gve_device_option_dqo_rda *dev_op_dqo_rda)
-+		     const struct gve_device_descriptor *descriptor)
- {
- 	priv->tx_desc_cnt = be16_to_cpu(descriptor->tx_queue_entries);
--	priv->options_dqo_rda.tx_comp_ring_entries =
--		be16_to_cpu(dev_op_dqo_rda->tx_comp_ring_entries);
- 	priv->rx_desc_cnt = be16_to_cpu(descriptor->rx_queue_entries);
--	priv->options_dqo_rda.rx_buff_ring_entries =
--		be16_to_cpu(dev_op_dqo_rda->rx_buff_ring_entries);
- 
- 	return 0;
- }
- 
--static void gve_enable_supported_features(struct gve_priv *priv,
--					  u32 supported_features_mask,
--					  const struct gve_device_option_jumbo_frames
--						  *dev_op_jumbo_frames)
--{
-+static void gve_enable_supported_features(
-+	struct gve_priv *priv,
-+	u32 supported_features_mask,
-+	const struct gve_device_option_modify_ring *dev_op_modify_ring,
-+	const struct gve_device_option_jumbo_frames *dev_op_jumbo_frames)
-+{
-+	if (dev_op_modify_ring &&
-+	    (supported_features_mask & GVE_SUP_MODIFY_RING_MASK)) {
-+		priv->modify_ringsize_enabled = true;
-+		dev_info(&priv->pdev->dev, "MODIFY RING device option enabled.\n");
-+		priv->max_rx_desc_cnt = min_t(
-+			int,
-+			be16_to_cpu(dev_op_modify_ring->max_rx_ring_size),
-+			GVE_RING_LENGTH_LIMIT_MAX);
-+		priv->max_tx_desc_cnt = min_t(
-+			int,
-+			be16_to_cpu(dev_op_modify_ring->max_tx_ring_size),
-+			GVE_RING_LENGTH_LIMIT_MAX);
-+	}
++#define _BITUL(x)	(_UL(1) << (x))
++#define _BITULL(x)	(_ULL(1) << (x))
 +
- 	/* Before control reaches this point, the page-size-capped max MTU from
- 	 * the gve_device_descriptor field has already been stored in
- 	 * priv->dev->max_mtu. We overwrite it with the true max MTU below.
-@@ -703,6 +732,7 @@ static void gve_enable_supported_features(struct gve_priv *priv,
- 
- int gve_adminq_describe_device(struct gve_priv *priv)
- {
-+	struct gve_device_option_modify_ring *dev_op_modify_ring = NULL;
- 	struct gve_device_option_jumbo_frames *dev_op_jumbo_frames = NULL;
- 	struct gve_device_option_gqi_rda *dev_op_gqi_rda = NULL;
- 	struct gve_device_option_gqi_qpl *dev_op_gqi_qpl = NULL;
-@@ -733,6 +763,7 @@ int gve_adminq_describe_device(struct gve_priv *priv)
- 
- 	err = gve_process_device_options(priv, descriptor, &dev_op_gqi_rda,
- 					 &dev_op_gqi_qpl, &dev_op_dqo_rda,
-+					 &dev_op_modify_ring,
- 					 &dev_op_jumbo_frames);
- 	if (err)
- 		goto free_device_descriptor;
-@@ -769,11 +800,15 @@ int gve_adminq_describe_device(struct gve_priv *priv)
- 	} else {
- 		/* DQO supports LRO. */
- 		priv->dev->hw_features |= NETIF_F_LRO;
--		err = gve_set_desc_cnt_dqo(priv, descriptor, dev_op_dqo_rda);
-+		err = gve_set_desc_cnt_dqo(priv, descriptor);
- 	}
- 	if (err)
- 		goto free_device_descriptor;
- 
-+	/* Default max to current in case modify ring size option is disabled */
-+	priv->max_rx_desc_cnt = priv->rx_desc_cnt;
-+	priv->max_tx_desc_cnt = priv->tx_desc_cnt;
++#define __ALIGN_KERNEL(x, a)		__ALIGN_KERNEL_MASK(x, (typeof(x))(a) - 1)
++#define __ALIGN_KERNEL_MASK(x, mask)	(((x) + (mask)) & ~(mask))
 +
- 	priv->max_registered_pages =
- 				be64_to_cpu(descriptor->max_registered_pages);
- 	mtu = be16_to_cpu(descriptor->mtu);
-@@ -787,17 +822,11 @@ int gve_adminq_describe_device(struct gve_priv *priv)
- 	eth_hw_addr_set(priv->dev, descriptor->mac);
- 	mac = descriptor->mac;
- 	dev_info(&priv->pdev->dev, "MAC addr: %pM\n", mac);
--	priv->tx_pages_per_qpl = be16_to_cpu(descriptor->tx_pages_per_qpl);
--	priv->rx_data_slot_cnt = be16_to_cpu(descriptor->rx_pages_per_qpl);
- 
--	if (gve_is_gqi(priv) && priv->rx_data_slot_cnt < priv->rx_desc_cnt) {
--		dev_err(&priv->pdev->dev, "rx_data_slot_cnt cannot be smaller than rx_desc_cnt, setting rx_desc_cnt down to %d.\n",
--			priv->rx_data_slot_cnt);
--		priv->rx_desc_cnt = priv->rx_data_slot_cnt;
--	}
- 	priv->default_num_queues = be16_to_cpu(descriptor->default_num_queues);
- 
- 	gve_enable_supported_features(priv, supported_features_mask,
-+				      dev_op_modify_ring,
- 				      dev_op_jumbo_frames);
- 
- free_device_descriptor:
-diff --git a/drivers/net/ethernet/google/gve/gve_adminq.h b/drivers/net/ethernet/google/gve/gve_adminq.h
-index f894beb3deaf..1ff55f957427 100644
---- a/drivers/net/ethernet/google/gve/gve_adminq.h
-+++ b/drivers/net/ethernet/google/gve/gve_adminq.h
-@@ -71,12 +71,12 @@ struct gve_device_descriptor {
- 	__be16 default_num_queues;
- 	__be16 mtu;
- 	__be16 counters;
--	__be16 tx_pages_per_qpl;
-+	__be16 reserved2;
- 	__be16 rx_pages_per_qpl;
- 	u8  mac[ETH_ALEN];
- 	__be16 num_device_options;
- 	__be16 total_length;
--	u8  reserved2[6];
-+	u8  reserved3[6];
- };
- 
- static_assert(sizeof(struct gve_device_descriptor) == 40);
-@@ -103,12 +103,19 @@ static_assert(sizeof(struct gve_device_option_gqi_qpl) == 4);
- 
- struct gve_device_option_dqo_rda {
- 	__be32 supported_features_mask;
--	__be16 tx_comp_ring_entries;
--	__be16 rx_buff_ring_entries;
-+	__be32 reserved;
- };
- 
- static_assert(sizeof(struct gve_device_option_dqo_rda) == 8);
- 
-+struct gve_device_option_modify_ring {
-+	__be32 supported_features_mask;
-+	__be16 max_rx_ring_size;
-+	__be16 max_tx_ring_size;
++#define __KERNEL_DIV_ROUND_UP(n, d) (((n) + (d) - 1) / (d))
++
++#endif /* _LINUX_CONST_H */
+diff --git a/uapi/linux/if_addr.h b/uapi/linux/if_addr.h
+new file mode 100644
+index 000000000000..d6db3ff7fa10
+--- /dev/null
++++ b/uapi/linux/if_addr.h
+@@ -0,0 +1,77 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef __LINUX_IF_ADDR_H
++#define __LINUX_IF_ADDR_H
++
++#include <linux/types.h>
++#include <linux/netlink.h>
++
++struct ifaddrmsg {
++	__u8		ifa_family;
++	__u8		ifa_prefixlen;	/* The prefix length		*/
++	__u8		ifa_flags;	/* Flags			*/
++	__u8		ifa_scope;	/* Address scope		*/
++	__u32		ifa_index;	/* Link index			*/
 +};
 +
-+static_assert(sizeof(struct gve_device_option_modify_ring) == 8);
++/*
++ * Important comment:
++ * IFA_ADDRESS is prefix address, rather than local interface address.
++ * It makes no difference for normally configured broadcast interfaces,
++ * but for point-to-point IFA_ADDRESS is DESTINATION address,
++ * local address is supplied in IFA_LOCAL attribute.
++ *
++ * IFA_FLAGS is a u32 attribute that extends the u8 field ifa_flags.
++ * If present, the value from struct ifaddrmsg will be ignored.
++ */
++enum {
++	IFA_UNSPEC,
++	IFA_ADDRESS,
++	IFA_LOCAL,
++	IFA_LABEL,
++	IFA_BROADCAST,
++	IFA_ANYCAST,
++	IFA_CACHEINFO,
++	IFA_MULTICAST,
++	IFA_FLAGS,
++	IFA_RT_PRIORITY,	/* u32, priority/metric for prefix route */
++	IFA_TARGET_NETNSID,
++	IFA_PROTO,		/* u8, address protocol */
++	__IFA_MAX,
++};
 +
- struct gve_device_option_jumbo_frames {
- 	__be32 supported_features_mask;
- 	__be16 max_mtu;
-@@ -130,6 +137,7 @@ enum gve_dev_opt_id {
- 	GVE_DEV_OPT_ID_GQI_RDA = 0x2,
- 	GVE_DEV_OPT_ID_GQI_QPL = 0x3,
- 	GVE_DEV_OPT_ID_DQO_RDA = 0x4,
-+	GVE_DEV_OPT_ID_MODIFY_RING = 0x6,
- 	GVE_DEV_OPT_ID_JUMBO_FRAMES = 0x8,
++#define IFA_MAX (__IFA_MAX - 1)
++
++/* ifa_flags */
++#define IFA_F_SECONDARY		0x01
++#define IFA_F_TEMPORARY		IFA_F_SECONDARY
++
++#define	IFA_F_NODAD		0x02
++#define IFA_F_OPTIMISTIC	0x04
++#define IFA_F_DADFAILED		0x08
++#define	IFA_F_HOMEADDRESS	0x10
++#define IFA_F_DEPRECATED	0x20
++#define IFA_F_TENTATIVE		0x40
++#define IFA_F_PERMANENT		0x80
++#define IFA_F_MANAGETEMPADDR	0x100
++#define IFA_F_NOPREFIXROUTE	0x200
++#define IFA_F_MCAUTOJOIN	0x400
++#define IFA_F_STABLE_PRIVACY	0x800
++
++struct ifa_cacheinfo {
++	__u32	ifa_prefered;
++	__u32	ifa_valid;
++	__u32	cstamp; /* created timestamp, hundredths of seconds */
++	__u32	tstamp; /* updated timestamp, hundredths of seconds */
++};
++
++/* backwards compatibility for userspace */
++#define IFA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ifaddrmsg))))
++#define IFA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifaddrmsg))
++
++/* ifa_proto */
++#define IFAPROT_UNSPEC		0
++#define IFAPROT_KERNEL_LO	1	/* loopback */
++#define IFAPROT_KERNEL_RA	2	/* set by kernel from router announcement */
++#define IFAPROT_KERNEL_LL	3	/* link-local set by kernel */
++
++#endif
+diff --git a/uapi/linux/if_ether.h b/uapi/linux/if_ether.h
+new file mode 100644
+index 000000000000..a1aff8e33799
+--- /dev/null
++++ b/uapi/linux/if_ether.h
+@@ -0,0 +1,181 @@
++/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
++/*
++ * INET		An implementation of the TCP/IP protocol suite for the LINUX
++ *		operating system.  INET is implemented using the  BSD Socket
++ *		interface as the means of communication with the user level.
++ *
++ *		Global definitions for the Ethernet IEEE 802.3 interface.
++ *
++ * Version:	@(#)if_ether.h	1.0.1a	02/08/94
++ *
++ * Author:	Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
++ *		Donald Becker, <becker@super.org>
++ *		Alan Cox, <alan@lxorguk.ukuu.org.uk>
++ *		Steve Whitehouse, <gw7rrm@eeshack3.swan.ac.uk>
++ *
++ *		This program is free software; you can redistribute it and/or
++ *		modify it under the terms of the GNU General Public License
++ *		as published by the Free Software Foundation; either version
++ *		2 of the License, or (at your option) any later version.
++ */
++
++#ifndef _LINUX_IF_ETHER_H
++#define _LINUX_IF_ETHER_H
++
++#include <linux/types.h>
++
++/*
++ *	IEEE 802.3 Ethernet magic constants.  The frame sizes omit the preamble
++ *	and FCS/CRC (frame check sequence).
++ */
++
++#define ETH_ALEN	6		/* Octets in one ethernet addr	 */
++#define ETH_TLEN	2		/* Octets in ethernet type field */
++#define ETH_HLEN	14		/* Total octets in header.	 */
++#define ETH_ZLEN	60		/* Min. octets in frame sans FCS */
++#define ETH_DATA_LEN	1500		/* Max. octets in payload	 */
++#define ETH_FRAME_LEN	1514		/* Max. octets in frame sans FCS */
++#define ETH_FCS_LEN	4		/* Octets in the FCS		 */
++
++#define ETH_MIN_MTU	68		/* Min IPv4 MTU per RFC791	*/
++#define ETH_MAX_MTU	0xFFFFU		/* 65535, same as IP_MAX_MTU	*/
++
++/*
++ *	These are the defined Ethernet Protocol ID's.
++ */
++
++#define ETH_P_LOOP	0x0060		/* Ethernet Loopback packet	*/
++#define ETH_P_PUP	0x0200		/* Xerox PUP packet		*/
++#define ETH_P_PUPAT	0x0201		/* Xerox PUP Addr Trans packet	*/
++#define ETH_P_TSN	0x22F0		/* TSN (IEEE 1722) packet	*/
++#define ETH_P_ERSPAN2	0x22EB		/* ERSPAN version 2 (type III)	*/
++#define ETH_P_IP	0x0800		/* Internet Protocol packet	*/
++#define ETH_P_X25	0x0805		/* CCITT X.25			*/
++#define ETH_P_ARP	0x0806		/* Address Resolution packet	*/
++#define	ETH_P_BPQ	0x08FF		/* G8BPQ AX.25 Ethernet Packet	[ NOT AN OFFICIALLY REGISTERED ID ] */
++#define ETH_P_IEEEPUP	0x0a00		/* Xerox IEEE802.3 PUP packet */
++#define ETH_P_IEEEPUPAT	0x0a01		/* Xerox IEEE802.3 PUP Addr Trans packet */
++#define ETH_P_BATMAN	0x4305		/* B.A.T.M.A.N.-Advanced packet [ NOT AN OFFICIALLY REGISTERED ID ] */
++#define ETH_P_DEC       0x6000          /* DEC Assigned proto           */
++#define ETH_P_DNA_DL    0x6001          /* DEC DNA Dump/Load            */
++#define ETH_P_DNA_RC    0x6002          /* DEC DNA Remote Console       */
++#define ETH_P_DNA_RT    0x6003          /* DEC DNA Routing              */
++#define ETH_P_LAT       0x6004          /* DEC LAT                      */
++#define ETH_P_DIAG      0x6005          /* DEC Diagnostics              */
++#define ETH_P_CUST      0x6006          /* DEC Customer use             */
++#define ETH_P_SCA       0x6007          /* DEC Systems Comms Arch       */
++#define ETH_P_TEB	0x6558		/* Trans Ether Bridging		*/
++#define ETH_P_RARP      0x8035		/* Reverse Addr Res packet	*/
++#define ETH_P_ATALK	0x809B		/* Appletalk DDP		*/
++#define ETH_P_AARP	0x80F3		/* Appletalk AARP		*/
++#define ETH_P_8021Q	0x8100          /* 802.1Q VLAN Extended Header  */
++#define ETH_P_ERSPAN	0x88BE		/* ERSPAN type II		*/
++#define ETH_P_IPX	0x8137		/* IPX over DIX			*/
++#define ETH_P_IPV6	0x86DD		/* IPv6 over bluebook		*/
++#define ETH_P_PAUSE	0x8808		/* IEEE Pause frames. See 802.3 31B */
++#define ETH_P_SLOW	0x8809		/* Slow Protocol. See 802.3ad 43B */
++#define ETH_P_WCCP	0x883E		/* Web-cache coordination protocol
++					 * defined in draft-wilson-wrec-wccp-v2-00.txt */
++#define ETH_P_MPLS_UC	0x8847		/* MPLS Unicast traffic		*/
++#define ETH_P_MPLS_MC	0x8848		/* MPLS Multicast traffic	*/
++#define ETH_P_ATMMPOA	0x884c		/* MultiProtocol Over ATM	*/
++#define ETH_P_PPP_DISC	0x8863		/* PPPoE discovery messages     */
++#define ETH_P_PPP_SES	0x8864		/* PPPoE session messages	*/
++#define ETH_P_LINK_CTL	0x886c		/* HPNA, wlan link local tunnel */
++#define ETH_P_ATMFATE	0x8884		/* Frame-based ATM Transport
++					 * over Ethernet
++					 */
++#define ETH_P_PAE	0x888E		/* Port Access Entity (IEEE 802.1X) */
++#define ETH_P_PROFINET	0x8892		/* PROFINET			*/
++#define ETH_P_REALTEK	0x8899          /* Multiple proprietary protocols */
++#define ETH_P_AOE	0x88A2		/* ATA over Ethernet		*/
++#define ETH_P_ETHERCAT	0x88A4		/* EtherCAT			*/
++#define ETH_P_8021AD	0x88A8          /* 802.1ad Service VLAN		*/
++#define ETH_P_802_EX1	0x88B5		/* 802.1 Local Experimental 1.  */
++#define ETH_P_PREAUTH	0x88C7		/* 802.11 Preauthentication */
++#define ETH_P_TIPC	0x88CA		/* TIPC 			*/
++#define ETH_P_LLDP	0x88CC		/* Link Layer Discovery Protocol */
++#define ETH_P_MRP	0x88E3		/* Media Redundancy Protocol	*/
++#define ETH_P_MACSEC	0x88E5		/* 802.1ae MACsec */
++#define ETH_P_8021AH	0x88E7          /* 802.1ah Backbone Service Tag */
++#define ETH_P_MVRP	0x88F5          /* 802.1Q MVRP                  */
++#define ETH_P_1588	0x88F7		/* IEEE 1588 Timesync */
++#define ETH_P_NCSI	0x88F8		/* NCSI protocol		*/
++#define ETH_P_PRP	0x88FB		/* IEC 62439-3 PRP/HSRv0	*/
++#define ETH_P_CFM	0x8902		/* Connectivity Fault Management */
++#define ETH_P_FCOE	0x8906		/* Fibre Channel over Ethernet  */
++#define ETH_P_IBOE	0x8915		/* Infiniband over Ethernet	*/
++#define ETH_P_TDLS	0x890D          /* TDLS */
++#define ETH_P_FIP	0x8914		/* FCoE Initialization Protocol */
++#define ETH_P_80221	0x8917		/* IEEE 802.21 Media Independent Handover Protocol */
++#define ETH_P_HSR	0x892F		/* IEC 62439-3 HSRv1	*/
++#define ETH_P_NSH	0x894F		/* Network Service Header */
++#define ETH_P_LOOPBACK	0x9000		/* Ethernet loopback packet, per IEEE 802.3 */
++#define ETH_P_QINQ1	0x9100		/* deprecated QinQ VLAN [ NOT AN OFFICIALLY REGISTERED ID ] */
++#define ETH_P_QINQ2	0x9200		/* deprecated QinQ VLAN [ NOT AN OFFICIALLY REGISTERED ID ] */
++#define ETH_P_QINQ3	0x9300		/* deprecated QinQ VLAN [ NOT AN OFFICIALLY REGISTERED ID ] */
++#define ETH_P_EDSA	0xDADA		/* Ethertype DSA [ NOT AN OFFICIALLY REGISTERED ID ] */
++#define ETH_P_DSA_8021Q	0xDADB		/* Fake VLAN Header for DSA [ NOT AN OFFICIALLY REGISTERED ID ] */
++#define ETH_P_DSA_A5PSW	0xE001		/* A5PSW Tag Value [ NOT AN OFFICIALLY REGISTERED ID ] */
++#define ETH_P_IFE	0xED3E		/* ForCES inter-FE LFB type */
++#define ETH_P_AF_IUCV   0xFBFB		/* IBM af_iucv [ NOT AN OFFICIALLY REGISTERED ID ] */
++
++#define ETH_P_802_3_MIN	0x0600		/* If the value in the ethernet type is more than this value
++					 * then the frame is Ethernet II. Else it is 802.3 */
++
++/*
++ *	Non DIX types. Won't clash for 1500 types.
++ */
++
++#define ETH_P_802_3	0x0001		/* Dummy type for 802.3 frames  */
++#define ETH_P_AX25	0x0002		/* Dummy protocol id for AX.25  */
++#define ETH_P_ALL	0x0003		/* Every packet (be careful!!!) */
++#define ETH_P_802_2	0x0004		/* 802.2 frames 		*/
++#define ETH_P_SNAP	0x0005		/* Internal only		*/
++#define ETH_P_DDCMP     0x0006          /* DEC DDCMP: Internal only     */
++#define ETH_P_WAN_PPP   0x0007          /* Dummy type for WAN PPP frames*/
++#define ETH_P_PPP_MP    0x0008          /* Dummy type for PPP MP frames */
++#define ETH_P_LOCALTALK 0x0009		/* Localtalk pseudo type 	*/
++#define ETH_P_CAN	0x000C		/* CAN: Controller Area Network */
++#define ETH_P_CANFD	0x000D		/* CANFD: CAN flexible data rate*/
++#define ETH_P_CANXL	0x000E		/* CANXL: eXtended frame Length */
++#define ETH_P_PPPTALK	0x0010		/* Dummy type for Atalk over PPP*/
++#define ETH_P_TR_802_2	0x0011		/* 802.2 frames 		*/
++#define ETH_P_MOBITEX	0x0015		/* Mobitex (kaz@cafe.net)	*/
++#define ETH_P_CONTROL	0x0016		/* Card specific control frames */
++#define ETH_P_IRDA	0x0017		/* Linux-IrDA			*/
++#define ETH_P_ECONET	0x0018		/* Acorn Econet			*/
++#define ETH_P_HDLC	0x0019		/* HDLC frames			*/
++#define ETH_P_ARCNET	0x001A		/* 1A for ArcNet :-)            */
++#define ETH_P_DSA	0x001B		/* Distributed Switch Arch.	*/
++#define ETH_P_TRAILER	0x001C		/* Trailer switch tagging	*/
++#define ETH_P_PHONET	0x00F5		/* Nokia Phonet frames          */
++#define ETH_P_IEEE802154 0x00F6		/* IEEE802.15.4 frame		*/
++#define ETH_P_CAIF	0x00F7		/* ST-Ericsson CAIF protocol	*/
++#define ETH_P_XDSA	0x00F8		/* Multiplexed DSA protocol	*/
++#define ETH_P_MAP	0x00F9		/* Qualcomm multiplexing and
++					 * aggregation protocol
++					 */
++#define ETH_P_MCTP	0x00FA		/* Management component transport
++					 * protocol packets
++					 */
++
++/*
++ *	This is an Ethernet frame header.
++ */
++
++/* allow libcs like musl to deactivate this, glibc does not implement this. */
++#ifndef __UAPI_DEF_ETHHDR
++#define __UAPI_DEF_ETHHDR		1
++#endif
++
++#if __UAPI_DEF_ETHHDR
++struct ethhdr {
++	unsigned char	h_dest[ETH_ALEN];	/* destination eth addr	*/
++	unsigned char	h_source[ETH_ALEN];	/* source ether addr	*/
++	__be16		h_proto;		/* packet type ID field	*/
++} __attribute__((packed));
++#endif
++
++
++#endif /* _LINUX_IF_ETHER_H */
+diff --git a/uapi/linux/libc-compat.h b/uapi/linux/libc-compat.h
+new file mode 100644
+index 000000000000..a1599911e7a9
+--- /dev/null
++++ b/uapi/linux/libc-compat.h
+@@ -0,0 +1,267 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/*
++ * Compatibility interface for userspace libc header coordination:
++ *
++ * Define compatibility macros that are used to control the inclusion or
++ * exclusion of UAPI structures and definitions in coordination with another
++ * userspace C library.
++ *
++ * This header is intended to solve the problem of UAPI definitions that
++ * conflict with userspace definitions. If a UAPI header has such conflicting
++ * definitions then the solution is as follows:
++ *
++ * * Synchronize the UAPI header and the libc headers so either one can be
++ *   used and such that the ABI is preserved. If this is not possible then
++ *   no simple compatibility interface exists (you need to write translating
++ *   wrappers and rename things) and you can't use this interface.
++ *
++ * Then follow this process:
++ *
++ * (a) Include libc-compat.h in the UAPI header.
++ *      e.g. #include <linux/libc-compat.h>
++ *     This include must be as early as possible.
++ *
++ * (b) In libc-compat.h add enough code to detect that the comflicting
++ *     userspace libc header has been included first.
++ *
++ * (c) If the userspace libc header has been included first define a set of
++ *     guard macros of the form __UAPI_DEF_FOO and set their values to 1, else
++ *     set their values to 0.
++ *
++ * (d) Back in the UAPI header with the conflicting definitions, guard the
++ *     definitions with:
++ *     #if __UAPI_DEF_FOO
++ *       ...
++ *     #endif
++ *
++ * This fixes the situation where the linux headers are included *after* the
++ * libc headers. To fix the problem with the inclusion in the other order the
++ * userspace libc headers must be fixed like this:
++ *
++ * * For all definitions that conflict with kernel definitions wrap those
++ *   defines in the following:
++ *   #if !__UAPI_DEF_FOO
++ *     ...
++ *   #endif
++ *
++ * This prevents the redefinition of a construct already defined by the kernel.
++ */
++#ifndef _LIBC_COMPAT_H
++#define _LIBC_COMPAT_H
++
++/* We have included glibc headers... */
++#if defined(__GLIBC__)
++
++/* Coordinate with glibc net/if.h header. */
++#if defined(_NET_IF_H) && defined(__USE_MISC)
++
++/* GLIBC headers included first so don't define anything
++ * that would already be defined. */
++
++#define __UAPI_DEF_IF_IFCONF 0
++#define __UAPI_DEF_IF_IFMAP 0
++#define __UAPI_DEF_IF_IFNAMSIZ 0
++#define __UAPI_DEF_IF_IFREQ 0
++/* Everything up to IFF_DYNAMIC, matches net/if.h until glibc 2.23 */
++#define __UAPI_DEF_IF_NET_DEVICE_FLAGS 0
++/* For the future if glibc adds IFF_LOWER_UP, IFF_DORMANT and IFF_ECHO */
++#ifndef __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO
++#define __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO 1
++#endif /* __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO */
++
++#else /* _NET_IF_H */
++
++/* Linux headers included first, and we must define everything
++ * we need. The expectation is that glibc will check the
++ * __UAPI_DEF_* defines and adjust appropriately. */
++
++#define __UAPI_DEF_IF_IFCONF 1
++#define __UAPI_DEF_IF_IFMAP 1
++#define __UAPI_DEF_IF_IFNAMSIZ 1
++#define __UAPI_DEF_IF_IFREQ 1
++/* Everything up to IFF_DYNAMIC, matches net/if.h until glibc 2.23 */
++#define __UAPI_DEF_IF_NET_DEVICE_FLAGS 1
++/* For the future if glibc adds IFF_LOWER_UP, IFF_DORMANT and IFF_ECHO */
++#define __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO 1
++
++#endif /* _NET_IF_H */
++
++/* Coordinate with glibc netinet/in.h header. */
++#if defined(_NETINET_IN_H)
++
++/* GLIBC headers included first so don't define anything
++ * that would already be defined. */
++#define __UAPI_DEF_IN_ADDR		0
++#define __UAPI_DEF_IN_IPPROTO		0
++#define __UAPI_DEF_IN_PKTINFO		0
++#define __UAPI_DEF_IP_MREQ		0
++#define __UAPI_DEF_SOCKADDR_IN		0
++#define __UAPI_DEF_IN_CLASS		0
++
++#define __UAPI_DEF_IN6_ADDR		0
++/* The exception is the in6_addr macros which must be defined
++ * if the glibc code didn't define them. This guard matches
++ * the guard in glibc/inet/netinet/in.h which defines the
++ * additional in6_addr macros e.g. s6_addr16, and s6_addr32. */
++#if defined(__USE_MISC) || defined (__USE_GNU)
++#define __UAPI_DEF_IN6_ADDR_ALT		0
++#else
++#define __UAPI_DEF_IN6_ADDR_ALT		1
++#endif
++#define __UAPI_DEF_SOCKADDR_IN6		0
++#define __UAPI_DEF_IPV6_MREQ		0
++#define __UAPI_DEF_IPPROTO_V6		0
++#define __UAPI_DEF_IPV6_OPTIONS		0
++#define __UAPI_DEF_IN6_PKTINFO		0
++#define __UAPI_DEF_IP6_MTUINFO		0
++
++#else
++
++/* Linux headers included first, and we must define everything
++ * we need. The expectation is that glibc will check the
++ * __UAPI_DEF_* defines and adjust appropriately. */
++#define __UAPI_DEF_IN_ADDR		1
++#define __UAPI_DEF_IN_IPPROTO		1
++#define __UAPI_DEF_IN_PKTINFO		1
++#define __UAPI_DEF_IP_MREQ		1
++#define __UAPI_DEF_SOCKADDR_IN		1
++#define __UAPI_DEF_IN_CLASS		1
++
++#define __UAPI_DEF_IN6_ADDR		1
++/* We unconditionally define the in6_addr macros and glibc must
++ * coordinate. */
++#define __UAPI_DEF_IN6_ADDR_ALT		1
++#define __UAPI_DEF_SOCKADDR_IN6		1
++#define __UAPI_DEF_IPV6_MREQ		1
++#define __UAPI_DEF_IPPROTO_V6		1
++#define __UAPI_DEF_IPV6_OPTIONS		1
++#define __UAPI_DEF_IN6_PKTINFO		1
++#define __UAPI_DEF_IP6_MTUINFO		1
++
++#endif /* _NETINET_IN_H */
++
++/* Coordinate with glibc netipx/ipx.h header. */
++#if defined(__NETIPX_IPX_H)
++
++#define __UAPI_DEF_SOCKADDR_IPX			0
++#define __UAPI_DEF_IPX_ROUTE_DEFINITION		0
++#define __UAPI_DEF_IPX_INTERFACE_DEFINITION	0
++#define __UAPI_DEF_IPX_CONFIG_DATA		0
++#define __UAPI_DEF_IPX_ROUTE_DEF		0
++
++#else /* defined(__NETIPX_IPX_H) */
++
++#define __UAPI_DEF_SOCKADDR_IPX			1
++#define __UAPI_DEF_IPX_ROUTE_DEFINITION		1
++#define __UAPI_DEF_IPX_INTERFACE_DEFINITION	1
++#define __UAPI_DEF_IPX_CONFIG_DATA		1
++#define __UAPI_DEF_IPX_ROUTE_DEF		1
++
++#endif /* defined(__NETIPX_IPX_H) */
++
++/* Definitions for xattr.h */
++#if defined(_SYS_XATTR_H)
++#define __UAPI_DEF_XATTR		0
++#else
++#define __UAPI_DEF_XATTR		1
++#endif
++
++/* If we did not see any headers from any supported C libraries,
++ * or we are being included in the kernel, then define everything
++ * that we need. Check for previous __UAPI_* definitions to give
++ * unsupported C libraries a way to opt out of any kernel definition. */
++#else /* !defined(__GLIBC__) */
++
++/* Definitions for if.h */
++#ifndef __UAPI_DEF_IF_IFCONF
++#define __UAPI_DEF_IF_IFCONF 1
++#endif
++#ifndef __UAPI_DEF_IF_IFMAP
++#define __UAPI_DEF_IF_IFMAP 1
++#endif
++#ifndef __UAPI_DEF_IF_IFNAMSIZ
++#define __UAPI_DEF_IF_IFNAMSIZ 1
++#endif
++#ifndef __UAPI_DEF_IF_IFREQ
++#define __UAPI_DEF_IF_IFREQ 1
++#endif
++/* Everything up to IFF_DYNAMIC, matches net/if.h until glibc 2.23 */
++#ifndef __UAPI_DEF_IF_NET_DEVICE_FLAGS
++#define __UAPI_DEF_IF_NET_DEVICE_FLAGS 1
++#endif
++/* For the future if glibc adds IFF_LOWER_UP, IFF_DORMANT and IFF_ECHO */
++#ifndef __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO
++#define __UAPI_DEF_IF_NET_DEVICE_FLAGS_LOWER_UP_DORMANT_ECHO 1
++#endif
++
++/* Definitions for in.h */
++#ifndef __UAPI_DEF_IN_ADDR
++#define __UAPI_DEF_IN_ADDR		1
++#endif
++#ifndef __UAPI_DEF_IN_IPPROTO
++#define __UAPI_DEF_IN_IPPROTO		1
++#endif
++#ifndef __UAPI_DEF_IN_PKTINFO
++#define __UAPI_DEF_IN_PKTINFO		1
++#endif
++#ifndef __UAPI_DEF_IP_MREQ
++#define __UAPI_DEF_IP_MREQ		1
++#endif
++#ifndef __UAPI_DEF_SOCKADDR_IN
++#define __UAPI_DEF_SOCKADDR_IN		1
++#endif
++#ifndef __UAPI_DEF_IN_CLASS
++#define __UAPI_DEF_IN_CLASS		1
++#endif
++
++/* Definitions for in6.h */
++#ifndef __UAPI_DEF_IN6_ADDR
++#define __UAPI_DEF_IN6_ADDR		1
++#endif
++#ifndef __UAPI_DEF_IN6_ADDR_ALT
++#define __UAPI_DEF_IN6_ADDR_ALT		1
++#endif
++#ifndef __UAPI_DEF_SOCKADDR_IN6
++#define __UAPI_DEF_SOCKADDR_IN6		1
++#endif
++#ifndef __UAPI_DEF_IPV6_MREQ
++#define __UAPI_DEF_IPV6_MREQ		1
++#endif
++#ifndef __UAPI_DEF_IPPROTO_V6
++#define __UAPI_DEF_IPPROTO_V6		1
++#endif
++#ifndef __UAPI_DEF_IPV6_OPTIONS
++#define __UAPI_DEF_IPV6_OPTIONS		1
++#endif
++#ifndef __UAPI_DEF_IN6_PKTINFO
++#define __UAPI_DEF_IN6_PKTINFO		1
++#endif
++#ifndef __UAPI_DEF_IP6_MTUINFO
++#define __UAPI_DEF_IP6_MTUINFO		1
++#endif
++
++/* Definitions for ipx.h */
++#ifndef __UAPI_DEF_SOCKADDR_IPX
++#define __UAPI_DEF_SOCKADDR_IPX			1
++#endif
++#ifndef __UAPI_DEF_IPX_ROUTE_DEFINITION
++#define __UAPI_DEF_IPX_ROUTE_DEFINITION		1
++#endif
++#ifndef __UAPI_DEF_IPX_INTERFACE_DEFINITION
++#define __UAPI_DEF_IPX_INTERFACE_DEFINITION	1
++#endif
++#ifndef __UAPI_DEF_IPX_CONFIG_DATA
++#define __UAPI_DEF_IPX_CONFIG_DATA		1
++#endif
++#ifndef __UAPI_DEF_IPX_ROUTE_DEF
++#define __UAPI_DEF_IPX_ROUTE_DEF		1
++#endif
++
++/* Definitions for xattr.h */
++#ifndef __UAPI_DEF_XATTR
++#define __UAPI_DEF_XATTR		1
++#endif
++
++#endif /* __GLIBC__ */
++
++#endif /* _LIBC_COMPAT_H */
+diff --git a/uapi/linux/neighbour.h b/uapi/linux/neighbour.h
+new file mode 100644
+index 000000000000..5e67a7eaf4a7
+--- /dev/null
++++ b/uapi/linux/neighbour.h
+@@ -0,0 +1,224 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef __LINUX_NEIGHBOUR_H
++#define __LINUX_NEIGHBOUR_H
++
++#include <linux/types.h>
++#include <linux/netlink.h>
++
++struct ndmsg {
++	__u8		ndm_family;
++	__u8		ndm_pad1;
++	__u16		ndm_pad2;
++	__s32		ndm_ifindex;
++	__u16		ndm_state;
++	__u8		ndm_flags;
++	__u8		ndm_type;
++};
++
++enum {
++	NDA_UNSPEC,
++	NDA_DST,
++	NDA_LLADDR,
++	NDA_CACHEINFO,
++	NDA_PROBES,
++	NDA_VLAN,
++	NDA_PORT,
++	NDA_VNI,
++	NDA_IFINDEX,
++	NDA_MASTER,
++	NDA_LINK_NETNSID,
++	NDA_SRC_VNI,
++	NDA_PROTOCOL,  /* Originator of entry */
++	NDA_NH_ID,
++	NDA_FDB_EXT_ATTRS,
++	NDA_FLAGS_EXT,
++	NDA_NDM_STATE_MASK,
++	NDA_NDM_FLAGS_MASK,
++	__NDA_MAX
++};
++
++#define NDA_MAX (__NDA_MAX - 1)
++
++/*
++ *	Neighbor Cache Entry Flags
++ */
++
++#define NTF_USE		(1 << 0)
++#define NTF_SELF	(1 << 1)
++#define NTF_MASTER	(1 << 2)
++#define NTF_PROXY	(1 << 3)	/* == ATF_PUBL */
++#define NTF_EXT_LEARNED	(1 << 4)
++#define NTF_OFFLOADED   (1 << 5)
++#define NTF_STICKY	(1 << 6)
++#define NTF_ROUTER	(1 << 7)
++/* Extended flags under NDA_FLAGS_EXT: */
++#define NTF_EXT_MANAGED		(1 << 0)
++#define NTF_EXT_LOCKED		(1 << 1)
++
++/*
++ *	Neighbor Cache Entry States.
++ */
++
++#define NUD_INCOMPLETE	0x01
++#define NUD_REACHABLE	0x02
++#define NUD_STALE	0x04
++#define NUD_DELAY	0x08
++#define NUD_PROBE	0x10
++#define NUD_FAILED	0x20
++
++/* Dummy states */
++#define NUD_NOARP	0x40
++#define NUD_PERMANENT	0x80
++#define NUD_NONE	0x00
++
++/* NUD_NOARP & NUD_PERMANENT are pseudostates, they never change and make no
++ * address resolution or NUD.
++ *
++ * NUD_PERMANENT also cannot be deleted by garbage collectors. This holds true
++ * for dynamic entries with NTF_EXT_LEARNED flag as well. However, upon carrier
++ * down event, NUD_PERMANENT entries are not flushed whereas NTF_EXT_LEARNED
++ * flagged entries explicitly are (which is also consistent with the routing
++ * subsystem).
++ *
++ * When NTF_EXT_LEARNED is set for a bridge fdb entry the different cache entry
++ * states don't make sense and thus are ignored. Such entries don't age and
++ * can roam.
++ *
++ * NTF_EXT_MANAGED flagged neigbor entries are managed by the kernel on behalf
++ * of a user space control plane, and automatically refreshed so that (if
++ * possible) they remain in NUD_REACHABLE state.
++ *
++ * NTF_EXT_LOCKED flagged bridge FDB entries are entries generated by the
++ * bridge in response to a host trying to communicate via a locked bridge port
++ * with MAB enabled. Their purpose is to notify user space that a host requires
++ * authentication.
++ */
++
++struct nda_cacheinfo {
++	__u32		ndm_confirmed;
++	__u32		ndm_used;
++	__u32		ndm_updated;
++	__u32		ndm_refcnt;
++};
++
++/*****************************************************************
++ *		Neighbour tables specific messages.
++ *
++ * To retrieve the neighbour tables send RTM_GETNEIGHTBL with the
++ * NLM_F_DUMP flag set. Every neighbour table configuration is
++ * spread over multiple messages to avoid running into message
++ * size limits on systems with many interfaces. The first message
++ * in the sequence transports all not device specific data such as
++ * statistics, configuration, and the default parameter set.
++ * This message is followed by 0..n messages carrying device
++ * specific parameter sets.
++ * Although the ordering should be sufficient, NDTA_NAME can be
++ * used to identify sequences. The initial message can be identified
++ * by checking for NDTA_CONFIG. The device specific messages do
++ * not contain this TLV but have NDTPA_IFINDEX set to the
++ * corresponding interface index.
++ *
++ * To change neighbour table attributes, send RTM_SETNEIGHTBL
++ * with NDTA_NAME set. Changeable attribute include NDTA_THRESH[1-3],
++ * NDTA_GC_INTERVAL, and all TLVs in NDTA_PARMS unless marked
++ * otherwise. Device specific parameter sets can be changed by
++ * setting NDTPA_IFINDEX to the interface index of the corresponding
++ * device.
++ ****/
++
++struct ndt_stats {
++	__u64		ndts_allocs;
++	__u64		ndts_destroys;
++	__u64		ndts_hash_grows;
++	__u64		ndts_res_failed;
++	__u64		ndts_lookups;
++	__u64		ndts_hits;
++	__u64		ndts_rcv_probes_mcast;
++	__u64		ndts_rcv_probes_ucast;
++	__u64		ndts_periodic_gc_runs;
++	__u64		ndts_forced_gc_runs;
++	__u64		ndts_table_fulls;
++};
++
++enum {
++	NDTPA_UNSPEC,
++	NDTPA_IFINDEX,			/* u32, unchangeable */
++	NDTPA_REFCNT,			/* u32, read-only */
++	NDTPA_REACHABLE_TIME,		/* u64, read-only, msecs */
++	NDTPA_BASE_REACHABLE_TIME,	/* u64, msecs */
++	NDTPA_RETRANS_TIME,		/* u64, msecs */
++	NDTPA_GC_STALETIME,		/* u64, msecs */
++	NDTPA_DELAY_PROBE_TIME,		/* u64, msecs */
++	NDTPA_QUEUE_LEN,		/* u32 */
++	NDTPA_APP_PROBES,		/* u32 */
++	NDTPA_UCAST_PROBES,		/* u32 */
++	NDTPA_MCAST_PROBES,		/* u32 */
++	NDTPA_ANYCAST_DELAY,		/* u64, msecs */
++	NDTPA_PROXY_DELAY,		/* u64, msecs */
++	NDTPA_PROXY_QLEN,		/* u32 */
++	NDTPA_LOCKTIME,			/* u64, msecs */
++	NDTPA_QUEUE_LENBYTES,		/* u32 */
++	NDTPA_MCAST_REPROBES,		/* u32 */
++	NDTPA_PAD,
++	NDTPA_INTERVAL_PROBE_TIME_MS,	/* u64, msecs */
++	__NDTPA_MAX
++};
++#define NDTPA_MAX (__NDTPA_MAX - 1)
++
++struct ndtmsg {
++	__u8		ndtm_family;
++	__u8		ndtm_pad1;
++	__u16		ndtm_pad2;
++};
++
++struct ndt_config {
++	__u16		ndtc_key_len;
++	__u16		ndtc_entry_size;
++	__u32		ndtc_entries;
++	__u32		ndtc_last_flush;	/* delta to now in msecs */
++	__u32		ndtc_last_rand;		/* delta to now in msecs */
++	__u32		ndtc_hash_rnd;
++	__u32		ndtc_hash_mask;
++	__u32		ndtc_hash_chain_gc;
++	__u32		ndtc_proxy_qlen;
++};
++
++enum {
++	NDTA_UNSPEC,
++	NDTA_NAME,			/* char *, unchangeable */
++	NDTA_THRESH1,			/* u32 */
++	NDTA_THRESH2,			/* u32 */
++	NDTA_THRESH3,			/* u32 */
++	NDTA_CONFIG,			/* struct ndt_config, read-only */
++	NDTA_PARMS,			/* nested TLV NDTPA_* */
++	NDTA_STATS,			/* struct ndt_stats, read-only */
++	NDTA_GC_INTERVAL,		/* u64, msecs */
++	NDTA_PAD,
++	__NDTA_MAX
++};
++#define NDTA_MAX (__NDTA_MAX - 1)
++
++ /* FDB activity notification bits used in NFEA_ACTIVITY_NOTIFY:
++  * - FDB_NOTIFY_BIT - notify on activity/expire for any entry
++  * - FDB_NOTIFY_INACTIVE_BIT - mark as inactive to avoid multiple notifications
++  */
++enum {
++	FDB_NOTIFY_BIT		= (1 << 0),
++	FDB_NOTIFY_INACTIVE_BIT	= (1 << 1)
++};
++
++/* embedded into NDA_FDB_EXT_ATTRS:
++ * [NDA_FDB_EXT_ATTRS] = {
++ *     [NFEA_ACTIVITY_NOTIFY]
++ *     ...
++ * }
++ */
++enum {
++	NFEA_UNSPEC,
++	NFEA_ACTIVITY_NOTIFY,
++	NFEA_DONT_REFRESH,
++	__NFEA_MAX
++};
++#define NFEA_MAX (__NFEA_MAX - 1)
++
++#endif
+diff --git a/uapi/linux/posix_types.h b/uapi/linux/posix_types.h
+new file mode 100644
+index 000000000000..9a7a740b35a2
+--- /dev/null
++++ b/uapi/linux/posix_types.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _LINUX_POSIX_TYPES_H
++#define _LINUX_POSIX_TYPES_H
++
++#include <linux/stddef.h>
++
++/*
++ * This allows for 1024 file descriptors: if NR_OPEN is ever grown
++ * beyond that you'll have to change this too. But 1024 fd's seem to be
++ * enough even for such "real" unices like OSF/1, so hopefully this is
++ * one limit that doesn't have to be changed [again].
++ *
++ * Note that POSIX wants the FD_CLEAR(fd,fdsetp) defines to be in
++ * <sys/time.h> (and thus <linux/time.h>) - but this is a more logical
++ * place for them. Solved by having dummy defines in <sys/time.h>.
++ */
++
++/*
++ * This macro may have been defined in <gnu/types.h>. But we always
++ * use the one here.
++ */
++#undef __FD_SETSIZE
++#define __FD_SETSIZE	1024
++
++typedef struct {
++	unsigned long fds_bits[__FD_SETSIZE / (8 * sizeof(long))];
++} __kernel_fd_set;
++
++/* Type of a signal handler.  */
++typedef void (*__kernel_sighandler_t)(int);
++
++/* Type of a SYSV IPC key.  */
++typedef int __kernel_key_t;
++typedef int __kernel_mqd_t;
++
++#include <asm/posix_types.h>
++
++#endif /* _LINUX_POSIX_TYPES_H */
+diff --git a/uapi/linux/rtnetlink.h b/uapi/linux/rtnetlink.h
+index 217b25b963f5..2132e941b93a 100644
+--- a/uapi/linux/rtnetlink.h
++++ b/uapi/linux/rtnetlink.h
+@@ -787,6 +787,7 @@ enum {
+ 	TCA_ROOT_FLAGS,
+ 	TCA_ROOT_COUNT,
+ 	TCA_ROOT_TIME_DELTA, /* in msecs */
++	TCA_ROOT_EXT_WARN_MSG,
+ 	__TCA_ROOT_MAX,
+ #define	TCA_ROOT_MAX (__TCA_ROOT_MAX - 1)
  };
- 
-@@ -138,10 +146,12 @@ enum gve_dev_opt_req_feat_mask {
- 	GVE_DEV_OPT_REQ_FEAT_MASK_GQI_RDA = 0x0,
- 	GVE_DEV_OPT_REQ_FEAT_MASK_GQI_QPL = 0x0,
- 	GVE_DEV_OPT_REQ_FEAT_MASK_DQO_RDA = 0x0,
-+	GVE_DEV_OPT_REQ_FEAT_MASK_MODIFY_RING = 0x0,
- 	GVE_DEV_OPT_REQ_FEAT_MASK_JUMBO_FRAMES = 0x0,
- };
- 
- enum gve_sup_feature_mask {
-+	GVE_SUP_MODIFY_RING_MASK  = 1 << 0,
- 	GVE_SUP_JUMBO_FRAMES_MASK = 1 << 2,
- };
- 
-diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-index cfd4b8d284d1..e25c1bc07172 100644
---- a/drivers/net/ethernet/google/gve/gve_ethtool.c
-+++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -475,13 +475,85 @@ static void gve_get_ringparam(struct net_device *netdev,
- 			      struct netlink_ext_ack *extack)
- {
- 	struct gve_priv *priv = netdev_priv(netdev);
--
--	cmd->rx_max_pending = priv->rx_desc_cnt;
--	cmd->tx_max_pending = priv->tx_desc_cnt;
-+	cmd->rx_max_pending = priv->max_rx_desc_cnt;
-+	cmd->tx_max_pending = priv->max_tx_desc_cnt;
- 	cmd->rx_pending = priv->rx_desc_cnt;
- 	cmd->tx_pending = priv->tx_desc_cnt;
- }
- 
-+static int gve_set_ringparam(struct net_device *netdev,
-+			     struct ethtool_ringparam *cmd,
-+			     struct kernel_ethtool_ringparam *kernel_cmd,
-+			     struct netlink_ext_ack *extack)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+	int old_rx_desc_cnt = priv->rx_desc_cnt;
-+	int old_tx_desc_cnt = priv->tx_desc_cnt;
-+	int new_tx_desc_cnt = cmd->tx_pending;
-+	int new_rx_desc_cnt = cmd->rx_pending;
-+	int new_max_registered_pages =
-+		new_rx_desc_cnt * gve_num_rx_qpls(priv) +
-+			GVE_TX_PAGE_COUNT * gve_num_tx_qpls(priv);
+diff --git a/uapi/linux/socket.h b/uapi/linux/socket.h
+new file mode 100644
+index 000000000000..89c227f3d4cd
+--- /dev/null
++++ b/uapi/linux/socket.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _LINUX_SOCKET_H
++#define _LINUX_SOCKET_H
 +
-+	if (!priv->modify_ringsize_enabled) {
-+		dev_err(&priv->pdev->dev, "Modify ringsize disabled\n");
-+		return -EINVAL;
++/*
++ * Desired design of maximum size and alignment (see RFC2553)
++ */
++#define _K_SS_MAXSIZE	128	/* Implementation specific max size */
++
++typedef unsigned short __kernel_sa_family_t;
++
++/*
++ * The definition uses anonymous union and struct in order to control the
++ * default alignment.
++ */
++struct __kernel_sockaddr_storage {
++	union {
++		struct {
++			__kernel_sa_family_t	ss_family; /* address family */
++			/* Following field(s) are implementation specific */
++			char __data[_K_SS_MAXSIZE - sizeof(unsigned short)];
++				/* space to achieve desired size, */
++				/* _SS_MAXSIZE value minus size of ss_family */
++		};
++		void *__align; /* implementation specific desired alignment */
++	};
++};
++
++#define SOCK_SNDBUF_LOCK	1
++#define SOCK_RCVBUF_LOCK	2
++
++#define SOCK_BUF_LOCK_MASK (SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK)
++
++#define SOCK_TXREHASH_DEFAULT	255
++#define SOCK_TXREHASH_DISABLED	0
++#define SOCK_TXREHASH_ENABLED	1
++
++#endif /* _LINUX_SOCKET_H */
+diff --git a/uapi/linux/stddef.h b/uapi/linux/stddef.h
+new file mode 100644
+index 000000000000..bb6ea517efb5
+--- /dev/null
++++ b/uapi/linux/stddef.h
+@@ -0,0 +1,47 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _LINUX_STDDEF_H
++#define _LINUX_STDDEF_H
++
++
++
++#ifndef __always_inline
++#define __always_inline __inline__
++#endif
++
++/**
++ * __struct_group() - Create a mirrored named and anonyomous struct
++ *
++ * @TAG: The tag name for the named sub-struct (usually empty)
++ * @NAME: The identifier name of the mirrored sub-struct
++ * @ATTRS: Any struct attributes (usually empty)
++ * @MEMBERS: The member declarations for the mirrored structs
++ *
++ * Used to create an anonymous union of two structs with identical layout
++ * and size: one anonymous and one named. The former's members can be used
++ * normally without sub-struct naming, and the latter can be used to
++ * reason about the start, end, and size of the group of struct members.
++ * The named struct can also be explicitly tagged for layer reuse, as well
++ * as both having struct attributes appended.
++ */
++#define __struct_group(TAG, NAME, ATTRS, MEMBERS...) \
++	union { \
++		struct { MEMBERS } ATTRS; \
++		struct TAG { MEMBERS } ATTRS NAME; \
 +	}
 +
-+	if (new_tx_desc_cnt < GVE_RING_LENGTH_LIMIT_MIN ||
-+		new_rx_desc_cnt < GVE_RING_LENGTH_LIMIT_MIN) {
-+		dev_err(&priv->pdev->dev, "Ring size cannot be less than %d\n",
-+			GVE_RING_LENGTH_LIMIT_MIN);
-+		return -EINVAL;
++/**
++ * __DECLARE_FLEX_ARRAY() - Declare a flexible array usable in a union
++ *
++ * @TYPE: The type of each flexible array element
++ * @NAME: The name of the flexible array member
++ *
++ * In order to have a flexible array member in a union or alone in a
++ * struct, it needs to be wrapped in an anonymous struct with at least 1
++ * named member, but that member can be empty.
++ */
++#define __DECLARE_FLEX_ARRAY(TYPE, NAME)	\
++	struct { \
++		struct { } __empty_ ## NAME; \
++		TYPE NAME[]; \
 +	}
++#endif
+diff --git a/uapi/linux/types.h b/uapi/linux/types.h
+new file mode 100644
+index 000000000000..6546100a69f2
+--- /dev/null
++++ b/uapi/linux/types.h
+@@ -0,0 +1,53 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _LINUX_TYPES_H
++#define _LINUX_TYPES_H
 +
-+	if (new_tx_desc_cnt > GVE_RING_LENGTH_LIMIT_MAX ||
-+		new_rx_desc_cnt > GVE_RING_LENGTH_LIMIT_MAX) {
-+		dev_err(&priv->pdev->dev,
-+			"Ring size cannot be greater than %d\n",
-+			GVE_RING_LENGTH_LIMIT_MAX);
-+		return -EINVAL;
-+	}
++#include <asm/types.h>
 +
-+	/* Ring size must be a power of 2, will fail if passed values are not
-+	 * In the future we may want to update to round down to the
-+	 * closest valid ring size
-+	 */
-+	if ((new_tx_desc_cnt & (new_tx_desc_cnt - 1)) != 0 ||
-+		(new_rx_desc_cnt & (new_rx_desc_cnt - 1)) != 0) {
-+		dev_err(&priv->pdev->dev, "Ring size must be a power of 2\n");
-+		return -EINVAL;
-+	}
++#ifndef __ASSEMBLY__
 +
-+	if (new_tx_desc_cnt > priv->max_tx_desc_cnt) {
-+		dev_err(&priv->pdev->dev,
-+			"Tx ring size passed %d is larger than max tx ring size %u\n",
-+			new_tx_desc_cnt, priv->max_tx_desc_cnt);
-+		return -EINVAL;
-+	}
++#include <linux/posix_types.h>
 +
-+	if (new_rx_desc_cnt > priv->max_rx_desc_cnt) {
-+		dev_err(&priv->pdev->dev,
-+			"Rx ring size passed %d is larger than max rx ring size %u\n",
-+			new_rx_desc_cnt, priv->max_rx_desc_cnt);
-+		return -EINVAL;
-+	}
 +
-+	if (new_max_registered_pages > priv->max_registered_pages) {
-+		dev_err(&priv->pdev->dev,
-+				"Allocating too many pages %d; max %llu",
-+				new_max_registered_pages,
-+				priv->max_registered_pages);
-+		return -EINVAL;
-+	}
++/*
++ * Below are truly Linux-specific types that should never collide with
++ * any application/library that wants linux/types.h.
++ */
 +
-+	// Nothing to change return success
-+	if (new_tx_desc_cnt == old_tx_desc_cnt && new_rx_desc_cnt == old_rx_desc_cnt)
-+		return 0;
++/* sparse defines __CHECKER__; see Documentation/dev-tools/sparse.rst */
++#ifdef __CHECKER__
++#define __bitwise	__attribute__((bitwise))
++#else
++#define __bitwise
++#endif
 +
-+	return gve_adjust_ring_sizes(priv, new_tx_desc_cnt, new_rx_desc_cnt);
-+}
++/* The kernel doesn't use this legacy form, but user space does */
++#define __bitwise__ __bitwise
 +
- static int gve_user_reset(struct net_device *netdev, u32 *flags)
- {
- 	struct gve_priv *priv = netdev_priv(netdev);
-@@ -664,6 +736,7 @@ const struct ethtool_ops gve_ethtool_ops = {
- 	.get_coalesce = gve_get_coalesce,
- 	.set_coalesce = gve_set_coalesce,
- 	.get_ringparam = gve_get_ringparam,
-+	.set_ringparam = gve_set_ringparam,
- 	.reset = gve_user_reset,
- 	.get_tunable = gve_get_tunable,
- 	.set_tunable = gve_set_tunable,
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 57ce74315eba..13ed755908c7 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -1077,8 +1077,7 @@ static int gve_alloc_xdp_qpls(struct gve_priv *priv)
- 
- 	start_id = gve_tx_qpl_id(priv, gve_xdp_tx_start_queue_id(priv));
- 	for (i = start_id; i < start_id + gve_num_xdp_qpls(priv); i++) {
--		err = gve_alloc_queue_page_list(priv, i,
--						priv->tx_pages_per_qpl);
-+		err = gve_alloc_queue_page_list(priv, i, GVE_TX_PAGE_COUNT);
- 		if (err)
- 			goto free_qpls;
- 	}
-@@ -1107,16 +1106,14 @@ static int gve_alloc_qpls(struct gve_priv *priv)
- 
- 	start_id = gve_tx_start_qpl_id(priv);
- 	for (i = start_id; i < start_id + gve_num_tx_qpls(priv); i++) {
--		err = gve_alloc_queue_page_list(priv, i,
--						priv->tx_pages_per_qpl);
-+		err = gve_alloc_queue_page_list(priv, i, GVE_TX_PAGE_COUNT);
- 		if (err)
- 			goto free_qpls;
- 	}
- 
- 	start_id = gve_rx_start_qpl_id(priv);
- 	for (i = start_id; i < start_id + gve_num_rx_qpls(priv); i++) {
--		err = gve_alloc_queue_page_list(priv, i,
--						priv->rx_data_slot_cnt);
-+		err = gve_alloc_queue_page_list(priv, i, priv->rx_desc_cnt);
- 		if (err)
- 			goto free_qpls;
- 	}
-@@ -1387,6 +1384,38 @@ static int gve_close(struct net_device *dev)
- 	return gve_reset_recovery(priv, false);
- }
- 
-+int gve_adjust_ring_sizes(struct gve_priv *priv,
-+			  int new_tx_desc_cnt,
-+			  int new_rx_desc_cnt)
-+{
-+	int err;
++typedef __u16 __bitwise __le16;
++typedef __u16 __bitwise __be16;
++typedef __u32 __bitwise __le32;
++typedef __u32 __bitwise __be32;
++typedef __u64 __bitwise __le64;
++typedef __u64 __bitwise __be64;
 +
-+	if (netif_carrier_ok(priv->dev)) {
-+		err = gve_close(priv->dev);
-+		if (err)
-+			return err;
-+		priv->tx_desc_cnt = new_tx_desc_cnt;
-+		priv->rx_desc_cnt = new_rx_desc_cnt;
++typedef __u16 __bitwise __sum16;
++typedef __u32 __bitwise __wsum;
 +
-+		err = gve_open(priv->dev);
-+		if (err)
-+			goto err;
-+		return 0;
-+	}
++/*
++ * aligned_u64 should be used in defining kernel<->userspace ABIs to avoid
++ * common 32/64-bit compat problems.
++ * 64-bit values align to 4-byte boundaries on x86_32 (and possibly other
++ * architectures) and to 8-byte boundaries on 64-bit architectures.  The new
++ * aligned_64 type enforces 8-byte alignment so that structs containing
++ * aligned_64 values have the same alignment on 32-bit and 64-bit architectures.
++ * No conversions are necessary between 32-bit user-space and a 64-bit kernel.
++ */
++#define __aligned_u64 __u64 __attribute__((aligned(8)))
++#define __aligned_be64 __be64 __attribute__((aligned(8)))
++#define __aligned_le64 __le64 __attribute__((aligned(8)))
 +
-+	priv->tx_desc_cnt = new_tx_desc_cnt;
-+	priv->rx_desc_cnt = new_rx_desc_cnt;
++typedef unsigned __bitwise __poll_t;
 +
-+	return 0;
-+
-+err:
-+	dev_err(&priv->pdev->dev,
-+		"Failed to adjust ring sizes: err=%d. Disabling all queues.\n",
-+		err);
-+	gve_turndown(priv);
-+	return err;
-+}
-+
- static int gve_remove_xdp_queues(struct gve_priv *priv)
- {
- 	int err;
-@@ -2039,6 +2068,8 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
- 		goto setup_device;
- 
- 	priv->queue_format = GVE_QUEUE_FORMAT_UNSPECIFIED;
-+	priv->modify_ringsize_enabled = false;
-+
- 	/* Get the initial information we need from the device */
- 	err = gve_adminq_describe_device(priv);
- 	if (err) {
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index d1da7413dc4d..e52c048fc846 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -197,9 +197,9 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
- {
- 	struct gve_rx_ring *rx = &priv->rx[idx];
- 	struct device *hdev = &priv->pdev->dev;
--	u32 slots, npages;
- 	int filled_pages;
- 	size_t bytes;
-+	u32 slots;
- 	int err;
- 
- 	netif_dbg(priv, drv, priv->dev, "allocating rx ring\n");
-@@ -209,7 +209,7 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
- 	rx->gve = priv;
- 	rx->q_num = idx;
- 
--	slots = priv->rx_data_slot_cnt;
-+	slots = priv->rx_desc_cnt;
- 	rx->mask = slots - 1;
- 	rx->data.raw_addressing = priv->queue_format == GVE_GQI_RDA_FORMAT;
- 
-@@ -256,12 +256,6 @@ static int gve_rx_alloc_ring(struct gve_priv *priv, int idx)
- 
- 	/* alloc rx desc ring */
- 	bytes = sizeof(struct gve_rx_desc) * priv->rx_desc_cnt;
--	npages = bytes / PAGE_SIZE;
--	if (npages * PAGE_SIZE != bytes) {
--		err = -EIO;
--		goto abort_with_q_resources;
--	}
--
- 	rx->desc.desc_ring = dma_alloc_coherent(hdev, bytes, &rx->desc.bus,
- 						GFP_KERNEL);
- 	if (!rx->desc.desc_ring) {
-diff --git a/drivers/net/ethernet/google/gve/gve_rx_dqo.c b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-index e57b73eb70f6..90344e6fdff7 100644
---- a/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx_dqo.c
-@@ -228,8 +228,7 @@ static int gve_rx_alloc_ring_dqo(struct gve_priv *priv, int idx)
- 	size_t size;
- 	int i;
- 
--	const u32 buffer_queue_slots =
--		priv->options_dqo_rda.rx_buff_ring_entries;
-+	const u32 buffer_queue_slots = priv->rx_desc_cnt;
- 	const u32 completion_queue_slots = priv->rx_desc_cnt;
- 
- 	netif_dbg(priv, drv, priv->dev, "allocating rx ring DQO\n");
-diff --git a/drivers/net/ethernet/google/gve/gve_tx_dqo.c b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-index b76143bfd594..107eca0b5c1c 100644
---- a/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-+++ b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-@@ -154,7 +154,7 @@ static int gve_tx_alloc_ring_dqo(struct gve_priv *priv, int idx)
- 
- 	/* Queue sizes must be a power of 2 */
- 	tx->mask = priv->tx_desc_cnt - 1;
--	tx->dqo.complq_mask = priv->options_dqo_rda.tx_comp_ring_entries - 1;
-+	tx->dqo.complq_mask = priv->tx_desc_cnt - 1;
- 
- 	/* The max number of pending packets determines the maximum number of
- 	 * descriptors which maybe written to the completion queue.
++#endif /*  __ASSEMBLY__ */
++#endif /* _LINUX_TYPES_H */
 -- 
-2.40.0.634.g4ca3ef3211-goog
+2.40.0
 
