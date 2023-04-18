@@ -2,110 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6D0E6E5D12
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 11:11:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB0476E5D61
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 11:29:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230359AbjDRJLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 05:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
+        id S231344AbjDRJ3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 05:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbjDRJLv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 05:11:51 -0400
-Received: from sonata.ens-lyon.org (sonata.ens-lyon.org [140.77.166.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF6B10E0;
-        Tue, 18 Apr 2023 02:11:50 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by sonata.ens-lyon.org (Postfix) with ESMTP id 175AE20180;
-        Tue, 18 Apr 2023 11:11:49 +0200 (CEST)
-Received: from sonata.ens-lyon.org ([127.0.0.1])
-        by localhost (sonata.ens-lyon.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id bKQ3-A0V8pgX; Tue, 18 Apr 2023 11:11:48 +0200 (CEST)
-Received: from begin.home (apoitiers-658-1-118-253.w92-162.abo.wanadoo.fr [92.162.65.253])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by sonata.ens-lyon.org (Postfix) with ESMTPSA id B380620177;
-        Tue, 18 Apr 2023 11:11:48 +0200 (CEST)
-Received: from samy by begin.home with local (Exim 4.96)
-        (envelope-from <samuel.thibault@ens-lyon.org>)
-        id 1pohNM-00BMWM-0m;
-        Tue, 18 Apr 2023 11:11:48 +0200
-Date:   Tue, 18 Apr 2023 11:11:48 +0200
-From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     James Chapman <jchapman@katalix.com>, tparkin@katalix.com,
-        edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, corbet@lwn.net, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PPPoL2TP: Add more code snippets
-Message-ID: <20230418091148.hh3b52zceacduex6@begin>
-Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Guillaume Nault <gnault@redhat.com>,
-        James Chapman <jchapman@katalix.com>, tparkin@katalix.com,
-        edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, corbet@lwn.net, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230416220704.xqk4q6uwjbujnqpv@begin>
- <ZD5V+z+cBaXvPbQa@debian>
- <20230418085323.h6xij7w6d2o4kxxi@begin>
- <ZD5dqwPblo4FOex1@debian>
+        with ESMTP id S231316AbjDRJ24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 05:28:56 -0400
+Received: from sender3-op-o17.zoho.com (sender3-op-o17.zoho.com [136.143.184.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BB56591;
+        Tue, 18 Apr 2023 02:28:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1681810087; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=lLvySzOabgFP/7Ao7CJlTBRyDWY6A1ilWyhW0ndfEuusPbEDT/0r6cNX0iW6rkVXOG6NWtr+YcioR5CAKESG8PQV1kHmvhgSM4b/qsI74Nid/Aor+bLFdq0n7IQZHqOB6nIIUPVzDQlXI8o6yrqhZ2YliJeGvY17RiBgcZSvpcY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1681810087; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=iDqp1SgzROa/7M8TqdAaMU2o1J0hj8rCWz0qyNlos7g=; 
+        b=TVBBWawTRu16UVXrfJRP+h+QvQU2AGOKSh7y3WQFpUwKF6uiKUW6EnKXM529ta0kbCwCRLGfS+kMeljHzOVNzuThnMP5+7mt5NV2apcWaHw5q6uZhUFPTLcqGnu2fXVdnk2nYvSmIQBy9XYI1HJQAR3pAx1lxhdutoO80dw8Vho=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1681810087;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=iDqp1SgzROa/7M8TqdAaMU2o1J0hj8rCWz0qyNlos7g=;
+        b=L2sWvgxViPh4NyfAkwuFIx7NalD2FR/IBDd8b8LCwpo/A7XWgzOQ5aHw3UCh6UVg
+        89+HHmOSBXo0t3J7QsjLaGCrYPl2Ryhz7RRyqZIAoJCx61K78v4loU0AVXRktEtOH53
+        C5+7pH7qQd1tNuFS1pj5axwiG+3i8SY7ZoGo3QqM=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 168181008614670.97003674812629; Tue, 18 Apr 2023 02:28:06 -0700 (PDT)
+Message-ID: <e8accb50-6e46-4309-adf3-62f7445e18f2@arinc9.com>
+Date:   Tue, 18 Apr 2023 12:27:59 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZD5dqwPblo4FOex1@debian>
-Organization: I am not organized
-User-Agent: NeoMutt/20170609 (1.8.3)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [RFC/RFT v1] net: ethernet: mtk_eth_soc: drop generic vlan rx
+ offload, only use DSA untagging
+To:     Frank Wunderlich <linux@fw-web.de>, Felix Fietkau <nbd@nbd.name>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Daniel Golle <daniel@makrotopia.org>
+Cc:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Frank Wunderlich <frank-w@public-files.de>
+References: <20230416091038.54479-1-linux@fw-web.de>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20230416091038.54479-1-linux@fw-web.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Guillaume Nault, le mar. 18 avril 2023 11:06:51 +0200, a ecrit:
-> On Tue, Apr 18, 2023 at 10:53:23AM +0200, Samuel Thibault wrote:
-> > Guillaume Nault, le mar. 18 avril 2023 10:34:03 +0200, a ecrit:
-> > > On Mon, Apr 17, 2023 at 12:07:04AM +0200, Samuel Thibault wrote:
-> > > >          sax.sa_family = AF_PPPOX;
-> > > >          sax.sa_protocol = PX_PROTO_OL2TP;
-> > > >          sax.pppol2tp.fd = tunnel_fd;
-> > > > @@ -406,12 +407,64 @@ Sample userspace code:
-> > > >          /* session_fd is the fd of the session's PPPoL2TP socket.
-> > > >           * tunnel_fd is the fd of the tunnel UDP / L2TPIP socket.
-> > > >           */
-> > > > -        fd = connect(session_fd, (struct sockaddr *)&sax, sizeof(sax));
-> > > > -        if (fd < 0 ) {
-> > > > +        ret = connect(session_fd, (struct sockaddr *)&sax, sizeof(sax));
-> > > > +        if (ret < 0 ) {
-> > > 
-> > > Now you also need to close session_fd.
-> > 
-> > ? No, we need it for PPPIOCGCHAN, and also PPPIOCGL2TPSTATS.
+On 16.04.2023 12:10, Frank Wunderlich wrote:
+> From: Felix Fietkau <nbd@nbd.name>
 > 
-> connect() failed. You can't do anything with this socket.
-
-Ah, you were talking about the failure case, ok.
-
-> > > > +The ppp<ifunit> interface can then be configured as usual with SIOCSIFMTU,
-> > > > +SIOCSIFADDR, SIOCSIFDSTADDR, SIOCSIFNETMASK, and activated by setting IFF_UP
-> > > > +with SIOCSIFFLAGS
-> > > > +
-> > > > +  - Tunnel switching is supported by bridging channels::
-> > > 
-> > > This is a PPP feature not an L2TP one.
-> > > 
-> > > PPPIOCBRIDGECHAN's description
-> > > belongs to Documentation/networking/ppp_generic.rst, where it's already
-> > > documented.
-> > 
-> > Yes but that's hard to find out when you're looking from the L2TP end.
+> Through testing I found out that hardware vlan rx offload support seems to
+> have some hardware issues. At least when using multiple MACs and when receiving
+> tagged packets on the secondary MAC, the hardware can sometimes start to emit
+> wrong tags on the first MAC as well.
 > 
-> That's why I proposed linking to ppp_generic.rst.
+> In order to avoid such issues, drop the feature configuration and use the
+> offload feature only for DSA hardware untagging on MT7621/MT7622 devices which
+> only use one MAC.
 
-Yes, but it's still not obvious to L2TP people that it's a ppp channel
-that you have to bridge. Really, having that 20-line snippet available
-would have saved me some head-scratching time.
+I would change this part to:
 
-Samuel
+In order to avoid such issues, drop the feature configuration and use 
+the offload feature only for DSA hardware untagging on MT7621/MT7622 
+devices where this feature works properly.
+
+I tried this on linux-next with my defconfig and devicetree [0], on a 
+MikroTik RouterBOARD 760iGS. I tried both VLAN configurations possible, 
+VLAN subinterface of the eth1 interface, and bridge VLAN filtering on a 
+bridge with eth1 joined. In both cases, both sides receive VLAN tagged 
+frames whether this patch is applied or not.
+
+My computer is plugged to the RJ45 SFP module which is connected to the 
+Qualcomm Atheros AR8031/AR8033 PHY which is connected to MT7621's gmac1.
+
+My computer:
+sudo ip l add link enp9s0 name enp9s0.10 type vlan id 10
+sudo ip a add 192.168.3.2/24 dev enp9s0.10
+sudo ip l set up enp9s0
+
+MT7621 VLAN subinterface test:
+ip l add l eth1 name eth1.10 type vlan id 10
+ip a add 192.168.3.1/24 dev eth1.10
+ip l set up eth1
+ip l set up eth1.10
+ping 192.168.3.2
+
+MT7621 bridge VLAN filtering test:
+
+ip l del eth1.10
+ip l add br0 type bridge vlan_filtering 1
+ip l set eth1 master br0
+bridge v add vid 10 dev eth1
+bridge v add vid 10 dev br0 self
+ip l add l br0 name br0.10 type vlan id 10
+ip a add 192.168.3.1/24 dev br0.10
+ip l set up br0
+ip l set up br0.10
+ping 192.168.3.2
+
+In conclusion, it's not that VLAN RX offloading is being kept enabled 
+for MT7621 because it uses only one MAC. It's because it just works. I 
+am assuming this is the same case for MT7622.
+
+With that:
+
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+
+[0] https://github.com/arinc9/linux/commits/test-on-linuxnext
+
+Arınç
