@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F50B6E55E9
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 02:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 843046E55EA
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 02:33:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbjDRAdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 20:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
+        id S229976AbjDRAdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 20:33:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbjDRAdI (ORCPT
+        with ESMTP id S229929AbjDRAdI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 20:33:08 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on20604.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e89::604])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716604EC0
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2062c.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e83::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D269E4EFE
         for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 17:33:05 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PKhQ7YXDHfLPqDWni11r6ysmPTfM6ehOc9X0DWWqqIQ3hCHTSLPtB2jOPbxLUCCZblpFHJIYxafJ70ND/cnCKJQaZDTBlO2xApQJlauQad8kTxzZShdz1Oi0jYHLYHfM9HcoZ+iARgp1Kc5tmsyTpwYqNm/FoHZJNOnSpaBRXhydtUjEzLRnpZACasPu61Yv/N5B0PU4ZhHV3x6RnmGkGFEhHizXK8WA+sjfu3DKqWBjXrCrFa0RqyBOzvM3F9xXbtpv5wunM8pa+uCNYduSI2Bw0hcrsPRIPrClahg6rnnVwkAdCGoIvEY+3Xt85IKtjZII629J+2ClEINQ0oL/SA==
+ b=C/CRVtLCM6V/aaUkphGHFh1vVj7C+3WSEwXXoF425qMBMm3ECrEoFOt8T4gswoMZ+3DsOjZCGr40DFG7TYM/ZW57h7dHsFcRSdOpvuCOX89m6JahpVUqnQdYeovO08WeTKQ9kk3Oy9xRcM2IxpboOb+6HXfXDqLf0RJ64wSKGsMNey1VXBX1zoRh8GfRkrbczU3qjt9IzgKBa8vcn+YV0cPkwdf54NN28y4ji+k0tmnwSrK3uRF2/by39k5CcEORQa2fw9cpY6jT32czaG43dMM0CzJl3iFyhl9TP1mwK903eBUkvrFV+lVrMlthKiu4mPdyS4YBtLTjtr1YhT4Cpg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PB4I6xNq1bYGRUFqoX94CcmGyOc2dEzJDhdlHI3y2e4=;
- b=GPwYDiRBWfzEkVo7xn45aL1IoygxlhGKIii9coQwL/QrDpQCxKVKW7XRpoPAoiNjYwZg8pApXfnRZ9N49lrYumLwAjW4FXKZo/TO+y/Yv/cRbkDmnBriqfAZKbATC+u9/RiNz+f4w10ElWIeQK+qY8M04SwCcO8A6AMa5IeMHIF4jC4f2HQ6Wv7gtl9wQzg8jfDY6VOwaqsP25lQ7pQxWXApl8XojmkvBgC942wiI+yXarLCYANnbNp+Do3jklDk7FKJkGTAUw3PLcyfXTbsFbHT83r2+SrWp3xotXwlPhSdPd3dmGR7npc5JESETveHUeOeGDa5oBprqtTCaVht4g==
+ bh=Guz4jmSs/1RD9y4gk31Uob+xHShOlWkuCSZ/mPFRfSY=;
+ b=I2FdTaQ27FHAqMnojXRxrVYCnpG0KP5NUYnnHUZjkDiQnIMbCAxV53V32HRIeMy5RVMBO9pjx3M58Y0BE7NOERAfOFCZD0XJeLMBxrgwW9C7sK0n2Sbs2MqDr17jpsJSArn53RnY4lOoDU6SY/kc9arkoif8VN7EYE9lIy01wiD18is1Tz/WIqnxp77vrsYQ6iRonCqnYXiWku2fIMh/D6lzeUwk+jFkY3Zh6Ihz5PFGFT2eooNMN0MQAA4ZCXlU+SBrWUgKELKbkJLkcg8D8yvljNAFizoLJy5lcZVw4AwRlm093eTI4yNqX9wD0ay7xPiR/V09P4jskERrCD9+Bw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PB4I6xNq1bYGRUFqoX94CcmGyOc2dEzJDhdlHI3y2e4=;
- b=U7EEZC+EyB/61PqVN6287KTeCsOEERdKgMfeoDT8yBl8HHayICcIsPkfTm/1PzekfYe3Mx4OY9chch1kMcxWmQ+f0diS+f5UIz35ckLPOCKjSsOKNA2e/6+BP/NJABv44e3OSFYl8hwS8VgoJDbPEDAJ+Q7FLRVhdU56amg0IsA=
-Received: from BN9PR03CA0599.namprd03.prod.outlook.com (2603:10b6:408:10d::34)
- by SA1PR12MB6895.namprd12.prod.outlook.com (2603:10b6:806:24e::5) with
+ bh=Guz4jmSs/1RD9y4gk31Uob+xHShOlWkuCSZ/mPFRfSY=;
+ b=Z/SPXjQm9kTJHktevfU2gUx/EmmOA32pK6y7sf7VSiaXXPc+iNAfHz94ybtzByAWjPMxIdxgka3C1KjWcgyqygw9J3gUgzqws1A1ghXtG1UfgApunVE+nGHXUC5q3U1YigJNsMSa4SEyEhhxzP/M/GCKtPWh5S2SIt6mhflrOIk=
+Received: from BN9PR03CA0572.namprd03.prod.outlook.com (2603:10b6:408:10d::7)
+ by MW4PR12MB7000.namprd12.prod.outlook.com (2603:10b6:303:20a::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Tue, 18 Apr
- 2023 00:33:01 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Tue, 18 Apr
+ 2023 00:33:02 +0000
 Received: from BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10d:cafe::d4) by BN9PR03CA0599.outlook.office365.com
- (2603:10b6:408:10d::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.47 via Frontend
+ (2603:10b6:408:10d:cafe::3f) by BN9PR03CA0572.outlook.office365.com
+ (2603:10b6:408:10d::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.46 via Frontend
  Transport; Tue, 18 Apr 2023 00:33:01 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
@@ -52,15 +52,15 @@ Received: from SATLEXMB04.amd.com (165.204.84.17) by
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 17 Apr
- 2023 19:32:59 -0500
+ 2023 19:33:00 -0500
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
         <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>
 CC:     <drivers@pensando.io>, <leon@kernel.org>, <jiri@resnulli.us>,
         <simon.horman@corigine.com>
-Subject: [PATCH v10 net-next 07/14] pds_core: add FW update feature to devlink
-Date:   Mon, 17 Apr 2023 17:32:21 -0700
-Message-ID: <20230418003228.28234-8-shannon.nelson@amd.com>
+Subject: [PATCH v10 net-next 08/14] pds_core: set up the VIF definitions and defaults
+Date:   Mon, 17 Apr 2023 17:32:22 -0700
+Message-ID: <20230418003228.28234-9-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230418003228.28234-1-shannon.nelson@amd.com>
 References: <20230418003228.28234-1-shannon.nelson@amd.com>
@@ -71,23 +71,23 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT051:EE_|SA1PR12MB6895:EE_
-X-MS-Office365-Filtering-Correlation-Id: 756ff395-1656-4914-96ca-08db3fa4777f
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT051:EE_|MW4PR12MB7000:EE_
+X-MS-Office365-Filtering-Correlation-Id: 73006e26-06c8-4d4c-30bd-08db3fa477bb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ti9QH66CsOywLiMsQzXGHH3ATOIJ+uqptuuFIUfImhKO8JC0NS6e0osszToxwlqBagIhSpACDaGFdt3anTHirooNHf0BfdNSJykqGsZ+WAtjFcC4QO92prokSuWLc7WxVqBr4BCPBRAbCYXXG2FvohhZMF/JiGOtVgcr6RguW9yyBduISR1ct/HYI/LfsBGA8cG78COmJvPtvp3OqhsyjB+3Rrg8jV7DRt3oOqGa2UiuWwd3qtpC3sIY3Tf9j+GGZyXMCCOHJjifUoW3PzbBuFVFnPzCKRcvODuHonqTgfchVmeBUCOHNDJ038SSF15ozyZG5rveXK7d0c9JwtEZrlpBR363BffIxZsxBMeedVIhxmjzvuhEWiluxkfH0akn5rnJZzdQ8yR5NZP05P4uDBtInTTl/kaKlRFN9DZnTG6Srse/LyN5Mu4e0K+dysMzhfPIaXHZTOuiGkHCew8G61sbF4lDoEJ6q3jYZbssI4nftmHUbjQ3sV/VYAyKpk8E/b27djBMtzfyfFFDagNKBcvZbR8OyZcNoHzwNqwaLXBOyBgx9ZjjXkZCEsmy51hjIFabzeG8z6INfrLoBS5E45J3+Hd2YBO5CNEeL8y5965Px1A71ORf9Q8hwe+JDdCMApPyxftRC7C1i1Hbf1o/DOo87rslP0DwEmqBEgXSTPDEwGcMkHD5mt/pyofSEdDrlhEI7cM6vtB3wJEYTciyhEmueAe954AlBCsX0fOHLTs=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(136003)(39860400002)(346002)(451199021)(46966006)(36840700001)(40470700004)(36756003)(4326008)(110136005)(54906003)(316002)(70586007)(70206006)(478600001)(6666004)(41300700001)(5660300002)(82310400005)(8676002)(8936002)(15650500001)(40480700001)(2906002)(44832011)(82740400003)(86362001)(81166007)(356005)(426003)(2616005)(336012)(40460700003)(1076003)(26005)(186003)(36860700001)(16526019)(47076005)(83380400001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: i/c/vChtBNxzCnpMXx2THKxHxXXTD4IfrnrJu7+1z4K39Nx6AewJJcdW3ZsOt5ibli+PPc4oXHKIBuoqNS74hnhwCQT40jEazdDp9DiMoz2VUG591mysdprdiF0XTrO/OMqvr/ZcTR0aZ8fDaJy1xo/rePcXefUvD36JKqPV7BVCgc5izg7i2bXwgC7KSyqtxfzqZomrjFpT3ermZYEaB2EyX2l6zE+YY9mgLArVaXwnAdEcOg3OpQfVJeGNex72oPVemCxN7K6hjrPS+GLs1V5CmRLevJJk6jA4p9LL9M84SR+8rZqMJaSoZNmMOGE6yRPysAMEb9H2Vxx1v9elxgifrQepPRQUDnacJ9xyB0+To+Oj0o1c1uE55rymD/oRB70WS5SB122X9RrkC19vn7gptdjElpEAf2tx4d6DkNnXn9wYOyjWNjq2wSLmrNoMq27COOKzIa0GbR1ptlcUdyt3n8XdoRoj9Qi+rYSzJ1/rpDqeLRN3WhMii4qMI4TQYYg2RryRl/uTBzpxYYYR7s6bZ/KER2dpYSL9Z1dKdJ5Bz+5RQ5Z8sdQW4UDaTmQBwHO9Ak6nWbXwjxQpeTXi66HBUER0T6QPeIneXb5GCB/tmOdGc7TM3O9xeIrCziEaPr9nw1uWGAVGyE5vVB+HKMOsbIPa+gk1XGAC34Snm4U98pDqAiFwxIxCBDYsDRKId2K6hQEg02wmesK7K8qXIX/cooWKY64lrzEbICgNh9M6UjLcxOZuv5Fn1DPwHkjm1h3dCDylCEGACo1a7pVNmw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(376002)(39860400002)(451199021)(36840700001)(46966006)(40470700004)(5660300002)(40460700003)(2906002)(70586007)(4326008)(36756003)(70206006)(44832011)(86362001)(8936002)(81166007)(41300700001)(82310400005)(6666004)(478600001)(316002)(356005)(8676002)(82740400003)(40480700001)(54906003)(110136005)(26005)(1076003)(336012)(426003)(36860700001)(2616005)(16526019)(47076005)(186003)(83380400001)(36900700001)(309714004);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2023 00:33:01.4625
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2023 00:33:01.8531
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 756ff395-1656-4914-96ca-08db3fa4777f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73006e26-06c8-4d4c-30bd-08db3fa477bb
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6895
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7000
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
         SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
@@ -98,313 +98,195 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add in the support for doing firmware updates.  Of the two
-main banks available, a and b, this updates the one not in
-use and then selects it for the next boot.
-
-Example:
-    devlink dev flash pci/0000:b2:00.0 \
-	    file pensando/dsc_fw_1.63.0-22.tar
+The Virtual Interfaces (VIFs) supported by the DSC's
+configuration (vDPA, Eth, RDMA, etc) are reported in the
+dev_ident struct and made visible in debugfs.  At this point
+only vDPA is supported in this driver so we only setup
+devices for that feature.
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 Acked-by: Jakub Kicinski <kuba@kernel.org>
 ---
- .../device_drivers/ethernet/amd/pds_core.rst  |  10 +
- drivers/net/ethernet/amd/pds_core/Makefile    |   3 +-
- drivers/net/ethernet/amd/pds_core/core.h      |   5 +
- drivers/net/ethernet/amd/pds_core/devlink.c   |   9 +
- drivers/net/ethernet/amd/pds_core/fw.c        | 194 ++++++++++++++++++
- drivers/net/ethernet/amd/pds_core/main.c      |   1 +
- 6 files changed, 221 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/amd/pds_core/fw.c
+ drivers/net/ethernet/amd/pds_core/core.c    | 48 +++++++++++++++++++++
+ drivers/net/ethernet/amd/pds_core/core.h    | 11 +++++
+ drivers/net/ethernet/amd/pds_core/debugfs.c | 24 +++++++++++
+ include/linux/pds/pds_common.h              | 19 ++++++++
+ 4 files changed, 102 insertions(+)
 
-diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-index a48eafb3d0d3..932ac03a3359 100644
---- a/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-+++ b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-@@ -73,6 +73,16 @@ The ``pds_core`` driver reports the following versions
-      - fixed
-      - The revision of the ASIC for this device
+diff --git a/drivers/net/ethernet/amd/pds_core/core.c b/drivers/net/ethernet/amd/pds_core/core.c
+index 59daf8a67ac6..b2fca3b99f02 100644
+--- a/drivers/net/ethernet/amd/pds_core/core.c
++++ b/drivers/net/ethernet/amd/pds_core/core.c
+@@ -346,6 +346,43 @@ static int pdsc_core_init(struct pdsc *pdsc)
+ 	return err;
+ }
  
-+Firmware Management
-+===================
++static struct pdsc_viftype pdsc_viftype_defaults[] = {
++	[PDS_DEV_TYPE_VDPA] = { .name = PDS_DEV_TYPE_VDPA_STR,
++				.vif_id = PDS_DEV_TYPE_VDPA,
++				.dl_id = DEVLINK_PARAM_GENERIC_ID_ENABLE_VNET },
++	[PDS_DEV_TYPE_MAX] = {}
++};
 +
-+The ``flash`` command can update a the DSC firmware.  The downloaded firmware
-+will be saved into either of firmware bank 1 or bank 2, whichever is not
-+currently in use, and that bank will used for the next boot::
++static int pdsc_viftypes_init(struct pdsc *pdsc)
++{
++	enum pds_core_vif_types vt;
 +
-+  # devlink dev flash pci/0000:b5:00.0 \
-+            file pensando/dsc_fw_1.63.0-22.tar
++	pdsc->viftype_status = kzalloc(sizeof(pdsc_viftype_defaults),
++				       GFP_KERNEL);
++	if (!pdsc->viftype_status)
++		return -ENOMEM;
 +
- Health Reporters
- ================
++	for (vt = 0; vt < PDS_DEV_TYPE_MAX; vt++) {
++		bool vt_support;
++
++		if (!pdsc_viftype_defaults[vt].name)
++			continue;
++
++		/* Grab the defaults */
++		pdsc->viftype_status[vt] = pdsc_viftype_defaults[vt];
++
++		/* See what the Core device has for support */
++		vt_support = !!le16_to_cpu(pdsc->dev_ident.vif_types[vt]);
++		dev_dbg(pdsc->dev, "VIF %s is %ssupported\n",
++			pdsc->viftype_status[vt].name,
++			vt_support ? "" : "not ");
++
++		pdsc->viftype_status[vt].supported = vt_support;
++	}
++
++	return 0;
++}
++
+ int pdsc_setup(struct pdsc *pdsc, bool init)
+ {
+ 	int numdescs;
+@@ -388,6 +425,14 @@ int pdsc_setup(struct pdsc *pdsc, bool init)
+ 	if (err)
+ 		goto err_out_teardown;
  
-diff --git a/drivers/net/ethernet/amd/pds_core/Makefile b/drivers/net/ethernet/amd/pds_core/Makefile
-index ef76dcd7fccd..6d1d6c58a1fa 100644
---- a/drivers/net/ethernet/amd/pds_core/Makefile
-+++ b/drivers/net/ethernet/amd/pds_core/Makefile
-@@ -7,6 +7,7 @@ pds_core-y := main.o \
- 	      devlink.o \
- 	      dev.o \
- 	      adminq.o \
--	      core.o
-+	      core.o \
-+	      fw.o
++	/* Set up the VIFs */
++	err = pdsc_viftypes_init(pdsc);
++	if (err)
++		goto err_out_teardown;
++
++	if (init)
++		pdsc_debugfs_add_viftype(pdsc);
++
+ 	clear_bit(PDSC_S_FW_DEAD, &pdsc->state);
+ 	return 0;
  
- pds_core-$(CONFIG_DEBUG_FS) += debugfs.o
+@@ -404,6 +449,9 @@ void pdsc_teardown(struct pdsc *pdsc, bool removing)
+ 	pdsc_qcq_free(pdsc, &pdsc->notifyqcq);
+ 	pdsc_qcq_free(pdsc, &pdsc->adminqcq);
+ 
++	kfree(pdsc->viftype_status);
++	pdsc->viftype_status = NULL;
++
+ 	if (pdsc->intr_info) {
+ 		for (i = 0; i < pdsc->nintrs; i++)
+ 			pdsc_intr_free(pdsc, i);
 diff --git a/drivers/net/ethernet/amd/pds_core/core.h b/drivers/net/ethernet/amd/pds_core/core.h
-index 7adbd10cb6d9..7eb02b359f3a 100644
+index 7eb02b359f3a..ac0480d7f0f1 100644
 --- a/drivers/net/ethernet/amd/pds_core/core.h
 +++ b/drivers/net/ethernet/amd/pds_core/core.h
-@@ -226,6 +226,9 @@ int pdsc_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
- 			      struct netlink_ext_ack *extack);
- int pdsc_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 		     struct netlink_ext_ack *extack);
-+int pdsc_dl_flash_update(struct devlink *dl,
-+			 struct devlink_flash_update_params *params,
-+			 struct netlink_ext_ack *extack);
- 
- void __iomem *pdsc_map_dbpage(struct pdsc *pdsc, int page_num);
- 
-@@ -268,4 +271,6 @@ void pdsc_process_adminq(struct pdsc_qcq *qcq);
- void pdsc_work_thread(struct work_struct *work);
- irqreturn_t pdsc_adminq_isr(int irq, void *data);
- 
-+int pdsc_firmware_update(struct pdsc *pdsc, const struct firmware *fw,
-+			 struct netlink_ext_ack *extack);
- #endif /* _PDSC_H_ */
-diff --git a/drivers/net/ethernet/amd/pds_core/devlink.c b/drivers/net/ethernet/amd/pds_core/devlink.c
-index 89f23d620d1d..f91d65cc78b5 100644
---- a/drivers/net/ethernet/amd/pds_core/devlink.c
-+++ b/drivers/net/ethernet/amd/pds_core/devlink.c
-@@ -3,6 +3,15 @@
- 
- #include "core.h"
- 
-+int pdsc_dl_flash_update(struct devlink *dl,
-+			 struct devlink_flash_update_params *params,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct pdsc *pdsc = devlink_priv(dl);
-+
-+	return pdsc_firmware_update(pdsc, params->fw, extack);
-+}
-+
- static char *fw_slotnames[] = {
- 	"fw.goldfw",
- 	"fw.mainfwa",
-diff --git a/drivers/net/ethernet/amd/pds_core/fw.c b/drivers/net/ethernet/amd/pds_core/fw.c
-new file mode 100644
-index 000000000000..90a811f3878a
---- /dev/null
-+++ b/drivers/net/ethernet/amd/pds_core/fw.c
-@@ -0,0 +1,194 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-+
-+#include "core.h"
-+
-+/* The worst case wait for the install activity is about 25 minutes when
-+ * installing a new CPLD, which is very seldom.  Normal is about 30-35
-+ * seconds.  Since the driver can't tell if a CPLD update will happen we
-+ * set the timeout for the ugly case.
-+ */
-+#define PDSC_FW_INSTALL_TIMEOUT	(25 * 60)
-+#define PDSC_FW_SELECT_TIMEOUT	30
-+
-+/* Number of periodic log updates during fw file download */
-+#define PDSC_FW_INTERVAL_FRACTION	32
-+
-+static int pdsc_devcmd_fw_download_locked(struct pdsc *pdsc, u64 addr,
-+					  u32 offset, u32 length)
-+{
-+	union pds_core_dev_cmd cmd = {
-+		.fw_download.opcode = PDS_CORE_CMD_FW_DOWNLOAD,
-+		.fw_download.offset = cpu_to_le32(offset),
-+		.fw_download.addr = cpu_to_le64(addr),
-+		.fw_download.length = cpu_to_le32(length),
-+	};
-+	union pds_core_dev_comp comp;
-+
-+	return pdsc_devcmd_locked(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
-+}
-+
-+static int pdsc_devcmd_fw_install(struct pdsc *pdsc)
-+{
-+	union pds_core_dev_cmd cmd = {
-+		.fw_control.opcode = PDS_CORE_CMD_FW_CONTROL,
-+		.fw_control.oper = PDS_CORE_FW_INSTALL_ASYNC
-+	};
-+	union pds_core_dev_comp comp;
-+	int err;
-+
-+	err = pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
-+	if (err < 0)
-+		return err;
-+
-+	return comp.fw_control.slot;
-+}
-+
-+static int pdsc_devcmd_fw_activate(struct pdsc *pdsc,
-+				   enum pds_core_fw_slot slot)
-+{
-+	union pds_core_dev_cmd cmd = {
-+		.fw_control.opcode = PDS_CORE_CMD_FW_CONTROL,
-+		.fw_control.oper = PDS_CORE_FW_ACTIVATE_ASYNC,
-+		.fw_control.slot = slot
-+	};
-+	union pds_core_dev_comp comp;
-+
-+	return pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
-+}
-+
-+static int pdsc_fw_status_long_wait(struct pdsc *pdsc,
-+				    const char *label,
-+				    unsigned long timeout,
-+				    u8 fw_cmd,
-+				    struct netlink_ext_ack *extack)
-+{
-+	union pds_core_dev_cmd cmd = {
-+		.fw_control.opcode = PDS_CORE_CMD_FW_CONTROL,
-+		.fw_control.oper = fw_cmd,
-+	};
-+	union pds_core_dev_comp comp;
-+	unsigned long start_time;
-+	unsigned long end_time;
-+	int err;
-+
-+	/* Ping on the status of the long running async install
-+	 * command.  We get EAGAIN while the command is still
-+	 * running, else we get the final command status.
-+	 */
-+	start_time = jiffies;
-+	end_time = start_time + (timeout * HZ);
-+	do {
-+		err = pdsc_devcmd(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
-+		msleep(20);
-+	} while (time_before(jiffies, end_time) &&
-+		 (err == -EAGAIN || err == -ETIMEDOUT));
-+
-+	if (err == -EAGAIN || err == -ETIMEDOUT) {
-+		NL_SET_ERR_MSG_MOD(extack, "Firmware wait timed out");
-+		dev_err(pdsc->dev, "DEV_CMD firmware wait %s timed out\n",
-+			label);
-+	} else if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Firmware wait failed");
-+	}
-+
-+	return err;
-+}
-+
-+int pdsc_firmware_update(struct pdsc *pdsc, const struct firmware *fw,
-+			 struct netlink_ext_ack *extack)
-+{
-+	u32 buf_sz, copy_sz, offset;
-+	struct devlink *dl;
-+	int next_interval;
-+	u64 data_addr;
-+	int err = 0;
-+	int fw_slot;
-+
-+	dev_info(pdsc->dev, "Installing firmware\n");
-+
-+	dl = priv_to_devlink(pdsc);
-+	devlink_flash_update_status_notify(dl, "Preparing to flash",
-+					   NULL, 0, 0);
-+
-+	buf_sz = sizeof(pdsc->cmd_regs->data);
-+
-+	dev_dbg(pdsc->dev,
-+		"downloading firmware - size %d part_sz %d nparts %lu\n",
-+		(int)fw->size, buf_sz, DIV_ROUND_UP(fw->size, buf_sz));
-+
-+	offset = 0;
-+	next_interval = 0;
-+	data_addr = offsetof(struct pds_core_dev_cmd_regs, data);
-+	while (offset < fw->size) {
-+		if (offset >= next_interval) {
-+			devlink_flash_update_status_notify(dl, "Downloading",
-+							   NULL, offset,
-+							   fw->size);
-+			next_interval = offset +
-+					(fw->size / PDSC_FW_INTERVAL_FRACTION);
-+		}
-+
-+		copy_sz = min_t(unsigned int, buf_sz, fw->size - offset);
-+		mutex_lock(&pdsc->devcmd_lock);
-+		memcpy_toio(&pdsc->cmd_regs->data, fw->data + offset, copy_sz);
-+		err = pdsc_devcmd_fw_download_locked(pdsc, data_addr,
-+						     offset, copy_sz);
-+		mutex_unlock(&pdsc->devcmd_lock);
-+		if (err) {
-+			dev_err(pdsc->dev,
-+				"download failed offset 0x%x addr 0x%llx len 0x%x: %pe\n",
-+				offset, data_addr, copy_sz, ERR_PTR(err));
-+			NL_SET_ERR_MSG_MOD(extack, "Segment download failed");
-+			goto err_out;
-+		}
-+		offset += copy_sz;
-+	}
-+	devlink_flash_update_status_notify(dl, "Downloading", NULL,
-+					   fw->size, fw->size);
-+
-+	devlink_flash_update_timeout_notify(dl, "Installing", NULL,
-+					    PDSC_FW_INSTALL_TIMEOUT);
-+
-+	fw_slot = pdsc_devcmd_fw_install(pdsc);
-+	if (fw_slot < 0) {
-+		err = fw_slot;
-+		dev_err(pdsc->dev, "install failed: %pe\n", ERR_PTR(err));
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to start firmware install");
-+		goto err_out;
-+	}
-+
-+	err = pdsc_fw_status_long_wait(pdsc, "Installing",
-+				       PDSC_FW_INSTALL_TIMEOUT,
-+				       PDS_CORE_FW_INSTALL_STATUS,
-+				       extack);
-+	if (err)
-+		goto err_out;
-+
-+	devlink_flash_update_timeout_notify(dl, "Selecting", NULL,
-+					    PDSC_FW_SELECT_TIMEOUT);
-+
-+	err = pdsc_devcmd_fw_activate(pdsc, fw_slot);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to start firmware select");
-+		goto err_out;
-+	}
-+
-+	err = pdsc_fw_status_long_wait(pdsc, "Selecting",
-+				       PDSC_FW_SELECT_TIMEOUT,
-+				       PDS_CORE_FW_ACTIVATE_STATUS,
-+				       extack);
-+	if (err)
-+		goto err_out;
-+
-+	dev_info(pdsc->dev, "Firmware update completed, slot %d\n", fw_slot);
-+
-+err_out:
-+	if (err)
-+		devlink_flash_update_status_notify(dl, "Flash failed",
-+						   NULL, 0, 0);
-+	else
-+		devlink_flash_update_status_notify(dl, "Flash done",
-+						   NULL, 0, 0);
-+	return err;
-+}
-diff --git a/drivers/net/ethernet/amd/pds_core/main.c b/drivers/net/ethernet/amd/pds_core/main.c
-index eaff311d4a10..54aaf213679f 100644
---- a/drivers/net/ethernet/amd/pds_core/main.c
-+++ b/drivers/net/ethernet/amd/pds_core/main.c
-@@ -228,6 +228,7 @@ static int pdsc_init_pf(struct pdsc *pdsc)
- 
- static const struct devlink_ops pdsc_dl_ops = {
- 	.info_get	= pdsc_dl_info_get,
-+	.flash_update	= pdsc_dl_flash_update,
+@@ -123,6 +123,15 @@ struct pdsc_qcq {
+ 	struct dentry *dentry;
  };
  
- static const struct devlink_ops pdsc_dl_vf_ops = {
++struct pdsc_viftype {
++	char *name;
++	bool supported;
++	bool enabled;
++	int dl_id;
++	int vif_id;
++	struct pds_auxiliary_dev *padev;
++};
++
+ /* No state flags set means we are in a steady running state */
+ enum pdsc_state_flags {
+ 	PDSC_S_FW_DEAD,		    /* stopped, wait on startup or recovery */
+@@ -174,6 +183,7 @@ struct pdsc {
+ 	struct pdsc_qcq adminqcq;
+ 	struct pdsc_qcq notifyqcq;
+ 	u64 last_eid;
++	struct pdsc_viftype *viftype_status;
+ };
+ 
+ /** enum pds_core_dbell_bits - bitwise composition of dbell values.
+@@ -237,6 +247,7 @@ void pdsc_debugfs_destroy(void);
+ void pdsc_debugfs_add_dev(struct pdsc *pdsc);
+ void pdsc_debugfs_del_dev(struct pdsc *pdsc);
+ void pdsc_debugfs_add_ident(struct pdsc *pdsc);
++void pdsc_debugfs_add_viftype(struct pdsc *pdsc);
+ void pdsc_debugfs_add_irqs(struct pdsc *pdsc);
+ void pdsc_debugfs_add_qcq(struct pdsc *pdsc, struct pdsc_qcq *qcq);
+ void pdsc_debugfs_del_qcq(struct pdsc_qcq *qcq);
+diff --git a/drivers/net/ethernet/amd/pds_core/debugfs.c b/drivers/net/ethernet/amd/pds_core/debugfs.c
+index b83e5016644b..8ec392299b7d 100644
+--- a/drivers/net/ethernet/amd/pds_core/debugfs.c
++++ b/drivers/net/ethernet/amd/pds_core/debugfs.c
+@@ -68,6 +68,30 @@ void pdsc_debugfs_add_ident(struct pdsc *pdsc)
+ 			    pdsc, &identity_fops);
+ }
+ 
++static int viftype_show(struct seq_file *seq, void *v)
++{
++	struct pdsc *pdsc = seq->private;
++	int vt;
++
++	for (vt = 0; vt < PDS_DEV_TYPE_MAX; vt++) {
++		if (!pdsc->viftype_status[vt].name)
++			continue;
++
++		seq_printf(seq, "%s\t%d supported %d enabled\n",
++			   pdsc->viftype_status[vt].name,
++			   pdsc->viftype_status[vt].supported,
++			   pdsc->viftype_status[vt].enabled);
++	}
++	return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(viftype);
++
++void pdsc_debugfs_add_viftype(struct pdsc *pdsc)
++{
++	debugfs_create_file("viftypes", 0400, pdsc->dentry,
++			    pdsc, &viftype_fops);
++}
++
+ static const struct debugfs_reg32 intr_ctrl_regs[] = {
+ 	{ .name = "coal_init", .offset = 0, },
+ 	{ .name = "mask", .offset = 4, },
+diff --git a/include/linux/pds/pds_common.h b/include/linux/pds/pds_common.h
+index f0798ce01acf..b2be14ebadb6 100644
+--- a/include/linux/pds/pds_common.h
++++ b/include/linux/pds/pds_common.h
+@@ -20,6 +20,25 @@ enum pds_core_driver_type {
+ 	PDS_DRIVER_ESXI    = 6,
+ };
+ 
++enum pds_core_vif_types {
++	PDS_DEV_TYPE_CORE	= 0,
++	PDS_DEV_TYPE_VDPA	= 1,
++	PDS_DEV_TYPE_VFIO	= 2,
++	PDS_DEV_TYPE_ETH	= 3,
++	PDS_DEV_TYPE_RDMA	= 4,
++	PDS_DEV_TYPE_LM		= 5,
++
++	/* new ones added before this line */
++	PDS_DEV_TYPE_MAX	= 16   /* don't change - used in struct size */
++};
++
++#define PDS_DEV_TYPE_CORE_STR	"Core"
++#define PDS_DEV_TYPE_VDPA_STR	"vDPA"
++#define PDS_DEV_TYPE_VFIO_STR	"VFio"
++#define PDS_DEV_TYPE_ETH_STR	"Eth"
++#define PDS_DEV_TYPE_RDMA_STR	"RDMA"
++#define PDS_DEV_TYPE_LM_STR	"LM"
++
+ #define PDS_CORE_IFNAMSIZ		16
+ 
+ /**
 -- 
 2.17.1
 
