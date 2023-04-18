@@ -2,246 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC026E6CE9
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 21:25:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE0B6E6D07
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 21:41:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231539AbjDRTZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 15:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
+        id S232558AbjDRTl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 15:41:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229915AbjDRTZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 15:25:28 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B1E10E2
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 12:25:26 -0700 (PDT)
+        with ESMTP id S231174AbjDRTl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 15:41:27 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C34659B;
+        Tue, 18 Apr 2023 12:41:26 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id oo30so15825522qvb.12;
+        Tue, 18 Apr 2023 12:41:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1681845927; x=1713381927;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rNijkR9wQIuH6LW1jzSRJ1IYqZy332VhSMO5uQJmubY=;
-  b=o9BcNszWFg11vOMnDhXkXMrCxycj1WWTWvlbu0xSnkavk//CLKSkSP/E
-   8rj2wT6JHjF6vnQPrJsVg9Sj/7xs4Z+75FVbrmBLoHB5ROmDTofq0qG5i
-   QH8FbrR2osAn7Wkg4K5jvjLNFCjJ5J6S9EkcJMzwU/RpOAQzptLWVu1zy
-   4=;
-X-IronPort-AV: E=Sophos;i="5.99,207,1677542400"; 
-   d="scan'208";a="278145411"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 19:25:21 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com (Postfix) with ESMTPS id 788A280E08;
-        Tue, 18 Apr 2023 19:25:18 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Tue, 18 Apr 2023 19:25:17 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.106.101.27) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 18 Apr 2023 19:25:13 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <edumazet@google.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <syzkaller@googlegroups.com>, <willemb@google.com>
-Subject: Re: [PATCH v2 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.
-Date:   Tue, 18 Apr 2023 12:25:04 -0700
-Message-ID: <20230418192504.98991-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANn89iJ3MhBYtU3vCNjLLo45tu3eyp4TbJBGP1t8yxarK2Sziw@mail.gmail.com>
-References: <CANn89iJ3MhBYtU3vCNjLLo45tu3eyp4TbJBGP1t8yxarK2Sziw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.106.101.27]
-X-ClientProxiedBy: EX19D044UWA003.ant.amazon.com (10.13.139.43) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+        d=gmail.com; s=20221208; t=1681846885; x=1684438885;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Dqdkta1Zk1UqyIAXbk1/CAopdFNFnp9tf0jtsKEKX/U=;
+        b=k+BsMLjVgeY/JRtYXrnJI7vJ28yuIV8fhFcqK/kmJDiMB5YFSQbzH9svJL79M/gtvu
+         VkXtGsnxtx/EqNRIl8oeR6K/kcokITpfVeYv6D7/FX6vBT1SPZJFAjj6YSU5U1EHyLM/
+         brSazLGWCynYtMhGzcI9jBakr2lDu7uVETrKXbQat9FsDly4XNz+9FFrGEZ5B868rTpN
+         Jyb9BpH/eHjDgs7P9638iPyZAgf9P7phn0RWP4cTLoJg3WbB9XYltFDYNufzNi6l8jhJ
+         kM7LEU7ZG+svskLUAyWp8q0RtlTvZkPwFsMWHwil8kjM/j/WegL9cCFlceZl/xOq76bs
+         NLBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681846885; x=1684438885;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Dqdkta1Zk1UqyIAXbk1/CAopdFNFnp9tf0jtsKEKX/U=;
+        b=GPLt6N4rMdAMQerU/3omvHZgVSzr8A4JzRPh9KGDckM5G5b+3FjtwtfYVCbHN4uhma
+         qa1sUDRGOFU6tPMmtfEJol3Kk00kHCXF5E054tFJFlNsX6wqA3LMVeQHK1sEiZ6+XbWO
+         ak1+tZ8iewyeqiMnX/oTkBq1vwbjHLE1QWQKd9PNvuS2mFEp1HLhf4/dDI4/8pufdZ4d
+         mTXEmudk9m/97g42nCUN9Qq1XNcpni05ev0bBUXaQO/bGlXxw36qACEno3tCKYRK3z1j
+         Bim7DTjlSZ05sAdfNqHjFq8SYNZe7pLlppDFAYS6VCPxhY2sD1uOJd/zUfeDbPlDblhp
+         xgIw==
+X-Gm-Message-State: AAQBX9cuG1nyhUXDUO3Jd5r5+xevoff4YcD33dqAFyBdtC9F3TIGYE5r
+        n0GP+SjpJY81KPUmGq3xkfo=
+X-Google-Smtp-Source: AKy350Y3WRyEQO9TtYe/YYFXZqAOBuHoJeYs1uPJYBRJu7+rvTUnFvSGRVH65/YcG6Zgt2Qr5fL+Ag==
+X-Received: by 2002:a05:6214:1c4e:b0:5e3:d150:3168 with SMTP id if14-20020a0562141c4e00b005e3d1503168mr25374707qvb.18.1681846885409;
+        Tue, 18 Apr 2023 12:41:25 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id w14-20020a0cfc4e000000b005ef6ba1f4afsm2179222qvp.134.2023.04.18.12.41.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Apr 2023 12:41:24 -0700 (PDT)
+Date:   Tue, 18 Apr 2023 15:41:24 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Breno Leitao <leitao@debian.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        kuba@kernel.org
+Cc:     Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        io-uring@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        asml.silence@gmail.com, leit@fb.com, edumazet@google.com,
+        pabeni@redhat.com, davem@davemloft.net, dccp@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
+        matthieu.baerts@tessares.net, marcelo.leitner@gmail.com
+Message-ID: <643ef2643f3ce_352b2f2945d@willemb.c.googlers.com.notmuch>
+In-Reply-To: <ZD6Zw1GAZR28++3v@gmail.com>
+References: <643573df81e20_11117c2942@willemb.c.googlers.com.notmuch>
+ <036c80e5-4844-5c84-304c-7e553fe17a9b@kernel.dk>
+ <64357608c396d_113ebd294ba@willemb.c.googlers.com.notmuch>
+ <19c69021-dce3-1a4a-00eb-920d1f404cfc@kernel.dk>
+ <64357bb97fb19_114b22294c4@willemb.c.googlers.com.notmuch>
+ <20cb4641-c765-e5ef-41cb-252be7721ce5@kernel.dk>
+ <ZDa32u9RNI4NQ7Ko@gmail.com>
+ <6436c01979c9b_163b6294b4@willemb.c.googlers.com.notmuch>
+ <ZDdGl/JGDoRDL8ja@gmail.com>
+ <6438109fe8733_13361929472@willemb.c.googlers.com.notmuch>
+ <ZD6Zw1GAZR28++3v@gmail.com>
+Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 18 Apr 2023 21:04:32 +0200
-> On Tue, Apr 18, 2023 at 8:44 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> >
-> > From:   Eric Dumazet <edumazet@google.com>
-> > Date:   Tue, 18 Apr 2023 20:33:44 +0200
-> > > On Tue, Apr 18, 2023 at 8:09 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > > >
-> > > > syzkaller reported [0] memory leaks of an UDP socket and ZEROCOPY
-> > > > skbs.  We can reproduce the problem with these sequences:
-> > > >
-> > > >   sk = socket(AF_INET, SOCK_DGRAM, 0)
-> > > >   sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING_TX_SOFTWARE)
-> > > >   sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
-> > > >   sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
-> > > >   sk.close()
-> > > >
-> > > > sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, sets
-> > > > skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, struct
-> > > > ubuf_info_msgzc indirectly holds a refcnt of the socket.  When the
-> > > > skb is sent, __skb_tstamp_tx() clones it and puts the clone into
-> > > > the socket's error queue with the TX timestamp.
-> > > >
-> > > > When the original skb is received locally, skb_copy_ubufs() calls
-> > > > skb_unclone(), and pskb_expand_head() increments skb->cb->ubuf.refcnt.
-> > > > This additional count is decremented while freeing the skb, but struct
-> > > > ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callback() is
-> > > > not called.
-> > > >
-> > > > The last refcnt is not released unless we retrieve the TX timestamped
-> > > > skb by recvmsg().  When we close() the socket holding such skb, we
-> > > > never call sock_put() and leak the count, skb, and sk.
-> > > >
-> > > > To avoid this problem, we must (i) call skb_queue_purge() after
-> > > > flagging SOCK_DEAD during close() and (ii) make sure that TX tstamp
-> > > > skb is not queued when SOCK_DEAD is flagged.  UDP lacks (i) and (ii),
-> > > > and TCP lacks (ii).
-> > > >
-> > > > Without (ii), a skb queued in a qdisc or device could be put into
-> > > > the error queue after skb_queue_purge().
-> > > >
-> > > >   sendmsg() /* return immediately, but packets
-> > > >              * are queued in a qdisc or device
-> > > >              */
-> > > >                                     close()
-> > > >                                       skb_queue_purge()
-> > > >   __skb_tstamp_tx()
-> > > >     __skb_complete_tx_timestamp()
-> > > >       sock_queue_err_skb()
-> > > >         skb_queue_tail()
-> > > >
-> > > > Also, we need to check SOCK_DEAD under sk->sk_error_queue.lock
-> > > > in sock_queue_err_skb() to avoid this race.
-> > > >
-> > > >   if (!sock_flag(sk, SOCK_DEAD))
-> > > >                                     sock_set_flag(sk, SOCK_DEAD)
-> > > >                                     skb_queue_purge()
-> > > >
-> > > >     skb_queue_tail()
-> > > >
-> > > > [0]:
-> > >
-> > > > Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
-> > > > Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
-> > > > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > > > ---
-> > > > v2:
-> > > >   * Move skb_queue_purge() after setting SOCK_DEAD in udp_destroy_sock()
-> > > >   * Check SOCK_DEAD in sock_queue_err_skb() with sk_error_queue.lock
-> > > >   * Add Fixes tag for TCP
-> > > >
-> > > > v1: https://lore.kernel.org/netdev/20230417171155.22916-1-kuniyu@amazon.com/
-> > > > ---
-> > > >  net/core/skbuff.c | 15 ++++++++++++---
-> > > >  net/ipv4/udp.c    |  5 +++++
-> > > >  2 files changed, 17 insertions(+), 3 deletions(-)
-> > > >
-> > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > > > index 4c0879798eb8..287b834df9c8 100644
-> > > > --- a/net/core/skbuff.c
-> > > > +++ b/net/core/skbuff.c
-> > > > @@ -4979,6 +4979,8 @@ static void skb_set_err_queue(struct sk_buff *skb)
-> > > >   */
-> > > >  int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
-> > > >  {
-> > > > +       unsigned long flags;
-> > > > +
-> > > >         if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
-> > > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
-> > > >                 return -ENOMEM;
-> > > > @@ -4992,9 +4994,16 @@ int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
-> > > >         /* before exiting rcu section, make sure dst is refcounted */
-> > > >         skb_dst_force(skb);
-> > > >
-> > > > -       skb_queue_tail(&sk->sk_error_queue, skb);
-> > > > -       if (!sock_flag(sk, SOCK_DEAD))
-> > > > -               sk_error_report(sk);
-> > > > +       spin_lock_irqsave(&sk->sk_error_queue.lock, flags);
-> > > > +       if (sock_flag(sk, SOCK_DEAD)) {
-> > >
-> > > SOCK_DEAD is set without holding sk_error_queue.lock, so I wonder why you
-> > > want to add a confusing construct.
-> > >
-> > > Just bail early ?
-> > >
-> > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > > index ef81452759be3fd251faaf76d89cfd002ee79256..fda05cb44f95821e98f8c5c05fba840a9d276abb
-> > > 100644
-> > > --- a/net/core/skbuff.c
-> > > +++ b/net/core/skbuff.c
-> > > @@ -4983,6 +4983,9 @@ int sock_queue_err_skb(struct sock *sk, struct
-> > > sk_buff *skb)
-> > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
-> > >                 return -ENOMEM;
-> > >
-> > > +       if (sock_flag(sk, SOCK_DEAD))
-> > > +               return -EINVAL;
-> > > +
-> >
-> > Isn't it possible that these sequences happen
-> >
-> >   close()
-> >     sock_set_flag(sk, SOCK_DEAD);
-> >     skb_queue_purge(&sk->sk_error_queue)
-> >
-> > between the skb_queue_tail() below ? (2nd race mentioned in changelog)
-> >
-> > I thought we can guarantee the ordering by taking the same lock.
-> >
+Breno Leitao wrote:
+> On Thu, Apr 13, 2023 at 10:24:31AM -0400, Willem de Bruijn wrote:
+> > > How to handle these contradictory behaviour ahead of time (at callee
+> > > time, where the buffers will be prepared)?
+> > 
+> > Ah you found a counter-example to the simple pattern of put_user.
+> > 
+> > The answer perhaps depends on how many such counter-examples you
+> > encounter in the list you gave. If this is the only one, exceptions
+> > in the wrapper are reasonable. Not if there are many.
 > 
-> This is fragile.
-
-Yes, but I didn't have better idea to avoid the race...
-
 > 
-> We could very well rewrite skb_queue_purge() to not acquire the lock
-> in the common case.
-> I had the following in my tree for a while, to avoid many atomic and
-> irq masking operations...
-
-Cool, and it still works with my patch, no ?
-
-
+> Hello Williem,
 > 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index ef81452759be3fd251faaf76d89cfd002ee79256..f570e7c89248e2d9d9ab50c2e86ac7019b837484
-> 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -3606,14 +3606,24 @@ EXPORT_SYMBOL(skb_dequeue_tail);
->   *     skb_queue_purge - empty a list
->   *     @list: list to empty
->   *
-> - *     Delete all buffers on an &sk_buff list. Each buffer is removed from
-> - *     the list and one reference dropped. This function takes the list
-> - *     lock and is atomic with respect to other list locking functions.
-> + *     Delete all buffers on an &sk_buff list.
->   */
->  void skb_queue_purge(struct sk_buff_head *list)
->  {
-> +       struct sk_buff_head priv;
-> +       unsigned long flags;
->         struct sk_buff *skb;
-> -       while ((skb = skb_dequeue(list)) != NULL)
-> +
-> +       if (skb_queue_empty_lockless(list))
-> +               return;
-> +
-> +       __skb_queue_head_init(&priv);
-> +
-> +       spin_lock_irqsave(&list->lock, flags);
-> +       skb_queue_splice_init(list, &priv);
-> +       spin_unlock_irqrestore(&list->lock, flags);
-> +
-> +       while ((skb = __skb_dequeue(&priv)) != NULL)
->                 kfree_skb(skb);
->  }
->  EXPORT_SYMBOL(skb_queue_purge);
+> I spend sometime dealing with it, and the best way for me to figure out
+> how much work this is, was implementing a PoC. You can find a basic PoC
+> in the link below. It is not 100% complete (still need to convert 4
+> simple ioctls), but, it deals with the most complicated cases. The
+> missing parts are straighforward if we are OK with this approach.
+> 
+> 	https://github.com/leitao/linux/commits/ioctl_refactor
+> 
+> Details
+> =======
+> 
+> 1)  Change the ioctl callback to use kernel memory arguments. This
+> changes a lot of files but most of them are trivial. This is the new
+> ioctl callback:
+> 
+> struct proto {
+> 
+>         int                     (*ioctl)(struct sock *sk, int cmd,
+> -                                        unsigned long arg);
+> +                                        int *karg);
+> 
+> 	You can see the full changeset in the following commit (which is
+> 	the last in the tree above)
+> 	https://github.com/leitao/linux/commit/ad78da14601b078c4b6a9f63a86032467ab59bf7
+> 
+> 2) Create a wrapper (sock_skprot_ioctl()) that should be called instead
+> of sk->sk_prot->ioctl(). For every exception, calls a specific function
+> for the exception (basically ipmr_ioctl and ipmr_ioctl) (see more on 3)
+> 
+> 	This is the commit https://github.com/leitao/linux/commit/511592e549c39ef0de19efa2eb4382cac5786227
+> 
+> 3) There are two exceptions, they are ip{6}mr_ioctl() and pn_ioctl().
+> ip{6}mr is the hardest one, and I implemented the exception flow for it.
+> 
+> 	You could find ipmr changes here:
+> 	https://github.com/leitao/linux/commit/659a76dc0547ab2170023f31e20115520ebe33d9
+> 
+> Is this what you had in mind?
+> 
+> Thank you!
+
+Thanks for the series, Breno. Yes, this looks very much what I hoped for.
+
+The series shows two cases of ioctls: getters that return an int, and
+combined getter/setters that take a struct of a certain size and
+return the exact same.
+
+I would deduplicate the four ipmr/ip6mr cases that constitute the second
+type, by having a single helper for this type. sock_skprot_ioctl_struct,
+which takes an argument for the struct size to copy in/out.
+
+Did this series cover all proto ioctls, or is this still a subset just
+for demonstration purposes -- and might there still be other types
+lurking elsewhere?
+
+If this is all, this looks like a reasonable amount of code churn to me.
+
+Three small points
+
+* please keep the __user annotation. Use make C=2 when unsure to warn
+  about mismatched annotation
+* minor: special case the ipmr (type 2) ioctls in sock_skprot_ioctl
+  and treat the "return int" (type 1) ioctls as the default case.
+* introduce code in a patch together with its use-case, so no separate
+  patches for sock_skprot_ioctl and sock_skprot_ioctl_ipmr. Either one
+  patch, or two, for each type of conversion.
+
