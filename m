@@ -2,137 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C23606E5D04
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 11:08:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6D0E6E5D12
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 11:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231365AbjDRJIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 05:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44108 "EHLO
+        id S230359AbjDRJLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 05:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230523AbjDRJIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 05:08:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FF376B7
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 02:07:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681808817;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pRNrCYgGB848z5UzPrsHH5olhsaYvQSEqVGi0dF9+RM=;
-        b=fZopZSr+AuKScplOVUJYvdyhH5qj/LhPlQYcia6bxsDZANQPV4nA9keawItsZi9X5vUb8w
-        VeLuDfIZ5y8KFjGZCVi97hYyCYWg8G9wtHkp3irsmCj0oLE5v5kM2XvJ+t+gE+LfB2mdNO
-        F1fEblH7u0XgiG9Ju7jOr2zD0dwtwDk=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-298-pLRkavXHN9ierq-nSrwdvA-1; Tue, 18 Apr 2023 05:06:55 -0400
-X-MC-Unique: pLRkavXHN9ierq-nSrwdvA-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-3f0b0c85c4fso36520265e9.0
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 02:06:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681808814; x=1684400814;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pRNrCYgGB848z5UzPrsHH5olhsaYvQSEqVGi0dF9+RM=;
-        b=UW+7BHvG4cay1LXSbDyHepRRKj0cWcNzHmKn2QyeUqrRKCt147v1nRJl7w0/l116X+
-         1Apc4Q5Lw/fMxVJowpYVOtwC4dHRk2CipBpvkzQj4EQ1pr+v00QKoNc+mTn1BW6vqFln
-         IJCHqStslbbiMILXFHuoKfhorlzNYfcRVQmY03D5tAayIpJSgjK7YxK0XwBjffc2Nd82
-         qCZCzPkCxaHLBe/OBWA/zxv/t5XM2XxHP2fodu7UvGbkAzs2zR2smT1/Y2TcVxXMfRrh
-         d6WjDW4KkUkX8mvS/HB9p+eNJSZzy3x4LRe0/zJV0sZUtSp5I8TDrYi44vgW+cr0qmNN
-         70TA==
-X-Gm-Message-State: AAQBX9c5Z3Cr2BTlrjucX33YcrI4Nvr7wSr0A7wrTwBup1qOKOBRCS1n
-        gHqX5TDgERciX1zjbfBFOxwdw8XkHolsCfCGHM0PzQ4g/2twOaANroKTDtwaNrQh8JKV3wexSlw
-        420afoY5/lFaVyrFG+PtQ0j37
-X-Received: by 2002:adf:e946:0:b0:2f4:e2d5:401 with SMTP id m6-20020adfe946000000b002f4e2d50401mr1519792wrn.25.1681808814379;
-        Tue, 18 Apr 2023 02:06:54 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bz/rwcsf+s+AD4QbxZIhyM+n7t/iwWgYMWM6XYFAl0LJK2SNq+DkwwG58Zh35mwMuSCxt1rw==
-X-Received: by 2002:adf:e946:0:b0:2f4:e2d5:401 with SMTP id m6-20020adfe946000000b002f4e2d50401mr1519763wrn.25.1681808814032;
-        Tue, 18 Apr 2023 02:06:54 -0700 (PDT)
-Received: from debian ([92.62.32.42])
-        by smtp.gmail.com with ESMTPSA id x13-20020a5d60cd000000b002c54c9bd71fsm12429777wrt.93.2023.04.18.02.06.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Apr 2023 02:06:53 -0700 (PDT)
-Date:   Tue, 18 Apr 2023 11:06:51 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        James Chapman <jchapman@katalix.com>, tparkin@katalix.com,
+        with ESMTP id S230352AbjDRJLv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 05:11:51 -0400
+Received: from sonata.ens-lyon.org (sonata.ens-lyon.org [140.77.166.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF6B10E0;
+        Tue, 18 Apr 2023 02:11:50 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by sonata.ens-lyon.org (Postfix) with ESMTP id 175AE20180;
+        Tue, 18 Apr 2023 11:11:49 +0200 (CEST)
+Received: from sonata.ens-lyon.org ([127.0.0.1])
+        by localhost (sonata.ens-lyon.org [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id bKQ3-A0V8pgX; Tue, 18 Apr 2023 11:11:48 +0200 (CEST)
+Received: from begin.home (apoitiers-658-1-118-253.w92-162.abo.wanadoo.fr [92.162.65.253])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by sonata.ens-lyon.org (Postfix) with ESMTPSA id B380620177;
+        Tue, 18 Apr 2023 11:11:48 +0200 (CEST)
+Received: from samy by begin.home with local (Exim 4.96)
+        (envelope-from <samuel.thibault@ens-lyon.org>)
+        id 1pohNM-00BMWM-0m;
+        Tue, 18 Apr 2023 11:11:48 +0200
+Date:   Tue, 18 Apr 2023 11:11:48 +0200
+From:   Samuel Thibault <samuel.thibault@ens-lyon.org>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     James Chapman <jchapman@katalix.com>, tparkin@katalix.com,
         edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
         pabeni@redhat.com, corbet@lwn.net, netdev@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] PPPoL2TP: Add more code snippets
-Message-ID: <ZD5dqwPblo4FOex1@debian>
+Message-ID: <20230418091148.hh3b52zceacduex6@begin>
+Mail-Followup-To: Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Guillaume Nault <gnault@redhat.com>,
+        James Chapman <jchapman@katalix.com>, tparkin@katalix.com,
+        edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, corbet@lwn.net, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20230416220704.xqk4q6uwjbujnqpv@begin>
  <ZD5V+z+cBaXvPbQa@debian>
  <20230418085323.h6xij7w6d2o4kxxi@begin>
+ <ZD5dqwPblo4FOex1@debian>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230418085323.h6xij7w6d2o4kxxi@begin>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <ZD5dqwPblo4FOex1@debian>
+Organization: I am not organized
+User-Agent: NeoMutt/20170609 (1.8.3)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 10:53:23AM +0200, Samuel Thibault wrote:
-> Guillaume Nault, le mar. 18 avril 2023 10:34:03 +0200, a ecrit:
-> > On Mon, Apr 17, 2023 at 12:07:04AM +0200, Samuel Thibault wrote:
-> > >          sax.sa_family = AF_PPPOX;
-> > >          sax.sa_protocol = PX_PROTO_OL2TP;
-> > >          sax.pppol2tp.fd = tunnel_fd;
-> > > @@ -406,12 +407,64 @@ Sample userspace code:
-> > >          /* session_fd is the fd of the session's PPPoL2TP socket.
-> > >           * tunnel_fd is the fd of the tunnel UDP / L2TPIP socket.
-> > >           */
-> > > -        fd = connect(session_fd, (struct sockaddr *)&sax, sizeof(sax));
-> > > -        if (fd < 0 ) {
-> > > +        ret = connect(session_fd, (struct sockaddr *)&sax, sizeof(sax));
-> > > +        if (ret < 0 ) {
+Guillaume Nault, le mar. 18 avril 2023 11:06:51 +0200, a ecrit:
+> On Tue, Apr 18, 2023 at 10:53:23AM +0200, Samuel Thibault wrote:
+> > Guillaume Nault, le mar. 18 avril 2023 10:34:03 +0200, a ecrit:
+> > > On Mon, Apr 17, 2023 at 12:07:04AM +0200, Samuel Thibault wrote:
+> > > >          sax.sa_family = AF_PPPOX;
+> > > >          sax.sa_protocol = PX_PROTO_OL2TP;
+> > > >          sax.pppol2tp.fd = tunnel_fd;
+> > > > @@ -406,12 +407,64 @@ Sample userspace code:
+> > > >          /* session_fd is the fd of the session's PPPoL2TP socket.
+> > > >           * tunnel_fd is the fd of the tunnel UDP / L2TPIP socket.
+> > > >           */
+> > > > -        fd = connect(session_fd, (struct sockaddr *)&sax, sizeof(sax));
+> > > > -        if (fd < 0 ) {
+> > > > +        ret = connect(session_fd, (struct sockaddr *)&sax, sizeof(sax));
+> > > > +        if (ret < 0 ) {
+> > > 
+> > > Now you also need to close session_fd.
 > > 
-> > Now you also need to close session_fd.
+> > ? No, we need it for PPPIOCGCHAN, and also PPPIOCGL2TPSTATS.
 > 
-> ? No, we need it for PPPIOCGCHAN, and also PPPIOCGL2TPSTATS.
+> connect() failed. You can't do anything with this socket.
 
-connect() failed. You can't do anything with this socket.
+Ah, you were talking about the failure case, ok.
 
-> I'll put return session_fd instead.
-
-What's the point of returning session_fd if connect() failed?
-How will the caller know if session_fd is connected or not?
-Why would it even be interested in a half-created session fd?
-
-> > > +The ppp<ifunit> interface can then be configured as usual with SIOCSIFMTU,
-> > > +SIOCSIFADDR, SIOCSIFDSTADDR, SIOCSIFNETMASK, and activated by setting IFF_UP
-> > > +with SIOCSIFFLAGS
-> > > +
-> > > +  - Tunnel switching is supported by bridging channels::
+> > > > +The ppp<ifunit> interface can then be configured as usual with SIOCSIFMTU,
+> > > > +SIOCSIFADDR, SIOCSIFDSTADDR, SIOCSIFNETMASK, and activated by setting IFF_UP
+> > > > +with SIOCSIFFLAGS
+> > > > +
+> > > > +  - Tunnel switching is supported by bridging channels::
+> > > 
+> > > This is a PPP feature not an L2TP one.
+> > > 
+> > > PPPIOCBRIDGECHAN's description
+> > > belongs to Documentation/networking/ppp_generic.rst, where it's already
+> > > documented.
 > > 
-> > This is a PPP feature not an L2TP one.
-> > 
-> > PPPIOCBRIDGECHAN's description
-> > belongs to Documentation/networking/ppp_generic.rst, where it's already
-> > documented.
+> > Yes but that's hard to find out when you're looking from the L2TP end.
 > 
-> Yes but that's hard to find out when you're looking from the L2TP end.
+> That's why I proposed linking to ppp_generic.rst.
 
-That's why I proposed linking to ppp_generic.rst.
+Yes, but it's still not obvious to L2TP people that it's a ppp channel
+that you have to bridge. Really, having that 20-line snippet available
+would have saved me some head-scratching time.
 
-> > If necessary, you can link to ppp_generic.rst here.
-> > 
-> > Also, calling this feature 'tunnel switching' is misleading.
-> 
-> That's how I have seen it is called in L2TP jargon.
-
-That still doesn't describe the kernel feature. We can add a 'so called
-"tunnel switching" in L2TP jargon' into parenthesis to give a hint to
-the people using this terminology.
-
-> Samuel
-> 
-
+Samuel
