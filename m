@@ -2,209 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 968B76E6CAF
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 21:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC026E6CE9
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 21:25:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232732AbjDRTJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 15:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54052 "EHLO
+        id S231539AbjDRTZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 15:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231261AbjDRTI7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 15:08:59 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CCAB9750;
-        Tue, 18 Apr 2023 12:08:32 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1681844906;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VOrKFynLGckPk+CYqhbx8+jNQeXYmrsMC2Orct/hMls=;
-        b=Ur0Ke5DZuNUaFjbU1FGowS7C3QoGBwm836/R9d/gzxEYnmiF41jI1FjmBHlRhuBVYw/5nw
-        J/7QQNtG0CMKijupuLR3ptp51FyTjFh8dBEUQmoN8xNPMGZ+YUdLZjqiTrkb4qNoIWIAvd
-        /NNpZZltUdPcakYq6bXQFMt8WoUttrRqgzWqDVKrwylsPSkbXXusxPMdu9MGYNwTM8PhUS
-        Z1DbjsDh69FPU6ECTW23WNh7z6RkOgLpe8/jo3kwPDMpJYRIzBt6IKT3OtXlMtfBSHFYuq
-        1HuO+0mcnueKiMFhdho1mYeSn7lQ37PCIuajxvTn6RV2iXRzEH+TSiEtbYCtmQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1681844906;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VOrKFynLGckPk+CYqhbx8+jNQeXYmrsMC2Orct/hMls=;
-        b=WsReauLGocmtBrm0ZxTvlTCrnrV9WrA1s890zEnWeSMUm/wbZ5BS+b135oYcyIxP9rBIx6
-        /uNDW3uQ8Wt9bbAg==
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        yoong.siang.song@intel.com
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        intel-wired-lan@lists.osuosl.org, pabeni@redhat.com,
-        jesse.brandeburg@intel.com, kuba@kernel.org, bpf@vger.kernel.org,
-        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
-        davem@davemloft.net, Stanislav Fomichev <sdf@google.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Pasi Vaananen <pvaanane@redhat.com>
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next V1 5/5] selftests/bpf:
- xdp_hw_metadata track more timestamps
-In-Reply-To: <d805e350-1d59-eb3a-ec27-adaa72cdc20b@redhat.com>
-References: <168174338054.593471.8312147519616671551.stgit@firesoul>
- <168174344813.593471.4026230439937368990.stgit@firesoul>
- <87leiqsexd.fsf@kurt> <d805e350-1d59-eb3a-ec27-adaa72cdc20b@redhat.com>
-Date:   Tue, 18 Apr 2023 21:08:23 +0200
-Message-ID: <874jpdatzs.fsf@kurt>
+        with ESMTP id S229915AbjDRTZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 15:25:28 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B1E10E2
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 12:25:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1681845927; x=1713381927;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=rNijkR9wQIuH6LW1jzSRJ1IYqZy332VhSMO5uQJmubY=;
+  b=o9BcNszWFg11vOMnDhXkXMrCxycj1WWTWvlbu0xSnkavk//CLKSkSP/E
+   8rj2wT6JHjF6vnQPrJsVg9Sj/7xs4Z+75FVbrmBLoHB5ROmDTofq0qG5i
+   QH8FbrR2osAn7Wkg4K5jvjLNFCjJ5J6S9EkcJMzwU/RpOAQzptLWVu1zy
+   4=;
+X-IronPort-AV: E=Sophos;i="5.99,207,1677542400"; 
+   d="scan'208";a="278145411"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 19:25:21 +0000
+Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-m6i4x-bbc6e425.us-east-1.amazon.com (Postfix) with ESMTPS id 788A280E08;
+        Tue, 18 Apr 2023 19:25:18 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Tue, 18 Apr 2023 19:25:17 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.106.101.27) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Tue, 18 Apr 2023 19:25:13 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <edumazet@google.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <syzkaller@googlegroups.com>, <willemb@google.com>
+Subject: Re: [PATCH v2 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.
+Date:   Tue, 18 Apr 2023 12:25:04 -0700
+Message-ID: <20230418192504.98991-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CANn89iJ3MhBYtU3vCNjLLo45tu3eyp4TbJBGP1t8yxarK2Sziw@mail.gmail.com>
+References: <CANn89iJ3MhBYtU3vCNjLLo45tu3eyp4TbJBGP1t8yxarK2Sziw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.106.101.27]
+X-ClientProxiedBy: EX19D044UWA003.ant.amazon.com (10.13.139.43) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 18 Apr 2023 21:04:32 +0200
+> On Tue, Apr 18, 2023 at 8:44 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > From:   Eric Dumazet <edumazet@google.com>
+> > Date:   Tue, 18 Apr 2023 20:33:44 +0200
+> > > On Tue, Apr 18, 2023 at 8:09 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > >
+> > > > syzkaller reported [0] memory leaks of an UDP socket and ZEROCOPY
+> > > > skbs.  We can reproduce the problem with these sequences:
+> > > >
+> > > >   sk = socket(AF_INET, SOCK_DGRAM, 0)
+> > > >   sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING_TX_SOFTWARE)
+> > > >   sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
+> > > >   sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
+> > > >   sk.close()
+> > > >
+> > > > sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, sets
+> > > > skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, struct
+> > > > ubuf_info_msgzc indirectly holds a refcnt of the socket.  When the
+> > > > skb is sent, __skb_tstamp_tx() clones it and puts the clone into
+> > > > the socket's error queue with the TX timestamp.
+> > > >
+> > > > When the original skb is received locally, skb_copy_ubufs() calls
+> > > > skb_unclone(), and pskb_expand_head() increments skb->cb->ubuf.refcnt.
+> > > > This additional count is decremented while freeing the skb, but struct
+> > > > ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callback() is
+> > > > not called.
+> > > >
+> > > > The last refcnt is not released unless we retrieve the TX timestamped
+> > > > skb by recvmsg().  When we close() the socket holding such skb, we
+> > > > never call sock_put() and leak the count, skb, and sk.
+> > > >
+> > > > To avoid this problem, we must (i) call skb_queue_purge() after
+> > > > flagging SOCK_DEAD during close() and (ii) make sure that TX tstamp
+> > > > skb is not queued when SOCK_DEAD is flagged.  UDP lacks (i) and (ii),
+> > > > and TCP lacks (ii).
+> > > >
+> > > > Without (ii), a skb queued in a qdisc or device could be put into
+> > > > the error queue after skb_queue_purge().
+> > > >
+> > > >   sendmsg() /* return immediately, but packets
+> > > >              * are queued in a qdisc or device
+> > > >              */
+> > > >                                     close()
+> > > >                                       skb_queue_purge()
+> > > >   __skb_tstamp_tx()
+> > > >     __skb_complete_tx_timestamp()
+> > > >       sock_queue_err_skb()
+> > > >         skb_queue_tail()
+> > > >
+> > > > Also, we need to check SOCK_DEAD under sk->sk_error_queue.lock
+> > > > in sock_queue_err_skb() to avoid this race.
+> > > >
+> > > >   if (!sock_flag(sk, SOCK_DEAD))
+> > > >                                     sock_set_flag(sk, SOCK_DEAD)
+> > > >                                     skb_queue_purge()
+> > > >
+> > > >     skb_queue_tail()
+> > > >
+> > > > [0]:
+> > >
+> > > > Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
+> > > > Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
+> > > > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > > ---
+> > > > v2:
+> > > >   * Move skb_queue_purge() after setting SOCK_DEAD in udp_destroy_sock()
+> > > >   * Check SOCK_DEAD in sock_queue_err_skb() with sk_error_queue.lock
+> > > >   * Add Fixes tag for TCP
+> > > >
+> > > > v1: https://lore.kernel.org/netdev/20230417171155.22916-1-kuniyu@amazon.com/
+> > > > ---
+> > > >  net/core/skbuff.c | 15 ++++++++++++---
+> > > >  net/ipv4/udp.c    |  5 +++++
+> > > >  2 files changed, 17 insertions(+), 3 deletions(-)
+> > > >
+> > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > > index 4c0879798eb8..287b834df9c8 100644
+> > > > --- a/net/core/skbuff.c
+> > > > +++ b/net/core/skbuff.c
+> > > > @@ -4979,6 +4979,8 @@ static void skb_set_err_queue(struct sk_buff *skb)
+> > > >   */
+> > > >  int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
+> > > >  {
+> > > > +       unsigned long flags;
+> > > > +
+> > > >         if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
+> > > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+> > > >                 return -ENOMEM;
+> > > > @@ -4992,9 +4994,16 @@ int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
+> > > >         /* before exiting rcu section, make sure dst is refcounted */
+> > > >         skb_dst_force(skb);
+> > > >
+> > > > -       skb_queue_tail(&sk->sk_error_queue, skb);
+> > > > -       if (!sock_flag(sk, SOCK_DEAD))
+> > > > -               sk_error_report(sk);
+> > > > +       spin_lock_irqsave(&sk->sk_error_queue.lock, flags);
+> > > > +       if (sock_flag(sk, SOCK_DEAD)) {
+> > >
+> > > SOCK_DEAD is set without holding sk_error_queue.lock, so I wonder why you
+> > > want to add a confusing construct.
+> > >
+> > > Just bail early ?
+> > >
+> > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > index ef81452759be3fd251faaf76d89cfd002ee79256..fda05cb44f95821e98f8c5c05fba840a9d276abb
+> > > 100644
+> > > --- a/net/core/skbuff.c
+> > > +++ b/net/core/skbuff.c
+> > > @@ -4983,6 +4983,9 @@ int sock_queue_err_skb(struct sock *sk, struct
+> > > sk_buff *skb)
+> > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+> > >                 return -ENOMEM;
+> > >
+> > > +       if (sock_flag(sk, SOCK_DEAD))
+> > > +               return -EINVAL;
+> > > +
+> >
+> > Isn't it possible that these sequences happen
+> >
+> >   close()
+> >     sock_set_flag(sk, SOCK_DEAD);
+> >     skb_queue_purge(&sk->sk_error_queue)
+> >
+> > between the skb_queue_tail() below ? (2nd race mentioned in changelog)
+> >
+> > I thought we can guarantee the ordering by taking the same lock.
+> >
+> 
+> This is fragile.
 
-On Tue Apr 18 2023, Jesper Dangaard Brouer wrote:
-> On 17/04/2023 17.31, Kurt Kanzenbach wrote:
->> On Mon Apr 17 2023, Jesper Dangaard Brouer wrote:
->>> To correlate the hardware RX timestamp with something, add tracking of
->>> two software timestamps both clock source CLOCK_TAI (see description in
->>> man clock_gettime(2)).
->>>
->>> XDP metadata is extended with xdp_timestamp for capturing when XDP
->>> received the packet. Populated with BPF helper bpf_ktime_get_tai_ns(). I
->>> could not find a BPF helper for getting CLOCK_REALTIME, which would have
->>> been preferred. In userspace when AF_XDP sees the packet another
->>> software timestamp is recorded via clock_gettime() also clock source
->>> CLOCK_TAI.
->>>
->>> Example output shortly after loading igc driver:
->>>
->>>    poll: 1 (0) skip=3D1 fail=3D0 redir=3D2
->>>    xsk_ring_cons__peek: 1
->>>    0x12557a8: rx_desc[1]->addr=3D100000000009000 addr=3D9100 comp_addr=
-=3D9000
->>>    rx_hash: 0x82A96531 with RSS type:0x1
->>>    rx_timestamp:  1681740540304898909 (sec:1681740540.3049)
->>>    XDP RX-time:   1681740577304958316 (sec:1681740577.3050) delta sec:3=
-7.0001 (37000059.407 usec)
->>>    AF_XDP time:   1681740577305051315 (sec:1681740577.3051) delta sec:0=
-.0001 (92.999 usec)
->>>    0x12557a8: complete idx=3D9 addr=3D9000
->>>
->>> The first observation is that the 37 sec difference between RX HW vs XDP
->>> timestamps, which indicate hardware is likely clock source
->>> CLOCK_REALTIME, because (as of this writing) CLOCK_TAI is initialised
->>> with a 37 sec offset.
->>=20
->> Maybe I'm missing something here, but in order to compare the hardware
->> with software timestamps (e.g., by using bpf_ktime_get_tai_ns()) the
->> time sources have to be synchronized by using something like
->> phc2sys. That should make them comparable within reasonable range
->> (nanoseconds).
->
-> Precisely, in this test I've not synchronized the clocks.
-> The observation is that driver igc clock gets initialized to
-> CLOCK_REALTIME wall-clock time
+Yes, but I didn't have better idea to avoid the race...
 
-Yes. The igc driver uses ktime_get_real() to initialize the PHC time in
-init() and reset(). However, that's driver specific. PTP is based on
-TAI.
+> 
+> We could very well rewrite skb_queue_purge() to not acquire the lock
+> in the common case.
+> I had the following in my tree for a while, to avoid many atomic and
+> irq masking operations...
 
->, and it slowly drifts as documented in provided link[1].
+Cool, and it still works with my patch, no ?
 
-Yes, it does without proper synchronization. Linux has its own
-independent system clock. Therefore, tools like phc2sys are required.
 
->
->   [1]=20
-> https://github.com/xdp-project/xdp-project/blob/master/areas/hints/xdp_hi=
-nts_kfuncs02_driver_igc.org#driver-igc-clock-drift-observations
->   [2]=20
-> https://github.com/xdp-project/xdp-project/blob/master/areas/hints/xdp_hi=
-nts_kfuncs02_driver_igc.org#quick-time-sync-setup
->
-> I've also played with using phc2sys (in same doc[2]) to sync HW clock
-> with SW clock. I do *seek input* if I'm using it correctly?!?.
-
-Looks correct.
-
->
-> I don't have a PTP clock setup , so I manually: Use phc2sys to
-> synchronize the system clock to the PTP hardware clock (PHC) on the
-> network card (which driver inited to CLOCK_REALTIME wall-clock).
->
-> Stop ntp clock sync and disable most CPU sleep states:
->
->    sudo systemctl stop chronyd
->    sudo tuned-adm profile latency-performance
->    sudo hexdump --format '"%d\n"' /dev/cpu_dma_latency
->    2
->
-> Adjust for the 37 sec offset to TAI, such that our BPF-prog using TAI=20
-> will align:
->
->    sudo phc2sys -s igc1 -O -37 -R 2 -u 10
->
-> Result on igc with xdp_hw_metadata:
->
->   poll: 1 (0) skip=3D1 fail=3D0 redir=3D6
->   xsk_ring_cons__peek: 1
->   rx_hash: 0x82A96531 with RSS type:0x1
->   rx_timestamp:  1681825632645744805 (sec:1681825632.6457)
->   XDP RX-time:   1681825632645755858 (sec:1681825632.6458) delta=20
-> sec:0.0000 (11.053 usec)
->   AF_XDP time:   1681825632645769371 (sec:1681825632.6458) delta=20
-> sec:0.0000 (13.513 usec)
->
-> The log file from phc2sys says:
->
->   phc2sys[1294263]: [86275.140] CLOCK_REALTIME rms    6 max   11 freq=20
-> +13719 +/-   5 delay  1435 +/-   5
->
-> Notice the delta between HW and SW timestamps is 11.053 usec.
-> Even-though it is small, I don't really trust it, because the phc2sys
-> log says frequency offset mean is "+13719" nanosec.
-
-The offset between the system and PHC clock is 11ns at maximum (and 6ns
-in mean) which is quite good. The frequency offset is displayed in ppb.
-
->
-> So, it is true that latency/delay between HW to XDP-SW is 11 usec?
-
-I think so.
-
-> Or is this due to (in)accuracy of phc2sys sync?
-
-Nope.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJSBAEBCgA8FiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmQ+6qceHGt1cnQua2Fu
-emVuYmFjaEBsaW51dHJvbml4LmRlAAoJEMGT0fKqRnOCea0QAKc/SxH158WmCZZF
-SAzioGJ2WQ1qWJkaR8MaIMEwrDUqGKFqYJLXNmzLuGlJQJIl1YI8/9XQmFd1Xq/H
-2sFW50X1nP53OXP01hSKna33xlt5T5MitLD1krlK+6FYC5GlZ9jTGNP8vg2cIvRb
-9t2blNR0J8lMm42uS/8hQgDOoYj+9Mgxs14fG6WZyKzjJEKZPt11U0VfZsh9u98/
-rxuSXytQ+mKgY83AnY59O2Pr7+Da9XjppcBMbLVfrthFX1FDqj0RSGlWPQjbngJe
-+hcxANRlQGPUjJQeK51Lb6ZZYY8rB0vTnoNgsNyaMbPlcQgSKwEH5NSwQSwwBzk0
-/ANfBb+hknxkfv/a9LEwJBQGkxSnkIyUTNXg/KztkVNMmjsfy2TwUWqq5zW8eJkb
-foYl3OmOcIl3fC4ifewsFDhy9qsdF0g02geN7hKZMIUuQ7AFZG10EHCEqzIWf+il
-IqP3oy3CjyZxuBbR6TUNWOpgSkfctUWc2bEMwG9w5eoDoZxDypgDQTvtuulsuF7Q
-2qtyst5kgG0pndPay9cSwYC6AVi+lIVCMZ8fQMJG/ZcUNTQUt2UpHtBACpBv75Jk
-doUcszC9/XOqPXw6rDy6IwWwX80Hw1tqKporXCYf2WKtYxB1bqAxE5azz98AnmmL
-b6+rrbfCleWELNhj+AOu0v+M5G2f
-=bJsX
------END PGP SIGNATURE-----
---=-=-=--
+> 
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index ef81452759be3fd251faaf76d89cfd002ee79256..f570e7c89248e2d9d9ab50c2e86ac7019b837484
+> 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -3606,14 +3606,24 @@ EXPORT_SYMBOL(skb_dequeue_tail);
+>   *     skb_queue_purge - empty a list
+>   *     @list: list to empty
+>   *
+> - *     Delete all buffers on an &sk_buff list. Each buffer is removed from
+> - *     the list and one reference dropped. This function takes the list
+> - *     lock and is atomic with respect to other list locking functions.
+> + *     Delete all buffers on an &sk_buff list.
+>   */
+>  void skb_queue_purge(struct sk_buff_head *list)
+>  {
+> +       struct sk_buff_head priv;
+> +       unsigned long flags;
+>         struct sk_buff *skb;
+> -       while ((skb = skb_dequeue(list)) != NULL)
+> +
+> +       if (skb_queue_empty_lockless(list))
+> +               return;
+> +
+> +       __skb_queue_head_init(&priv);
+> +
+> +       spin_lock_irqsave(&list->lock, flags);
+> +       skb_queue_splice_init(list, &priv);
+> +       spin_unlock_irqrestore(&list->lock, flags);
+> +
+> +       while ((skb = __skb_dequeue(&priv)) != NULL)
+>                 kfree_skb(skb);
+>  }
+>  EXPORT_SYMBOL(skb_queue_purge);
