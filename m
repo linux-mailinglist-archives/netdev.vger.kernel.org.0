@@ -2,141 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F77A6E5FC5
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 13:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AE606E5FCA
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 13:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbjDRLYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 07:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
+        id S230029AbjDRL02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 07:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbjDRLYh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 07:24:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752E91A4
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 04:23:50 -0700 (PDT)
+        with ESMTP id S229504AbjDRL01 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 07:26:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F181706
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 04:25:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681817029;
+        s=mimecast20190719; t=1681817144;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=eW2HJ/hWgV6GMo9eudAySZb1AravgW3aPWGJ85AI+7g=;
-        b=aS3btEnhDPs1a/LGhYohGr/927dOcslr3WGSaxHG+qd49Rtob05j4st+q7WWSGN15i7LNX
-        J80rBo6SCh6ZcSjVBKy5D1GmV01paXldLG0GwrR3CDq0qFsNB4yk6PrkdmGePgu4rRAcbc
-        8FdQ62XtoiqIMW0Dz+cy6bLEuVB++xg=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=kWyZgCkBrZ1/Axz9/Rwj79MSJtzDJwVgqnG29eqUgKE=;
+        b=EOwbt5aAmD0Z9l7/P05AEXh8g/DmO9iGGmN7t9CYcu+HHTRIAOkBKId5cvCjUpa9EUzo9a
+        FNTLjjBrraHOC1a/gwuLNmDFRjlXQfgmAXmX8dQj2j/yjOCh9/eY88FfLozJ3e6rkJSlav
+        EE/5gQjsVpaVEN2tXfNLrlp8KMR8NWE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-589-Y3oTtVkkPoq5aPH6cOXf_g-1; Tue, 18 Apr 2023 07:23:48 -0400
-X-MC-Unique: Y3oTtVkkPoq5aPH6cOXf_g-1
-Received: by mail-ed1-f71.google.com with SMTP id k24-20020a508ad8000000b005068d942d3fso5337689edk.2
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 04:23:47 -0700 (PDT)
+ us-mta-136-3EJ5gp_MN4moqmgPjuQ1dg-1; Tue, 18 Apr 2023 07:25:42 -0400
+X-MC-Unique: 3EJ5gp_MN4moqmgPjuQ1dg-1
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-3f08901fed3so12666445e9.1
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 04:25:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681817027; x=1684409027;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eW2HJ/hWgV6GMo9eudAySZb1AravgW3aPWGJ85AI+7g=;
-        b=HNv4UPX5xb6+s59VJOCBeuWnqKzHUcu61F6sn23YLIInqjhpryxSXqO6W1YNmNYrre
-         MFqrf1SxZx1q5GG01ePmIIKWsjlFV0soI/uNikqFPUIR1aQU6skBS3IpqrDkBcKdOZTx
-         R8WNMNid1xAhAJDo6ZX4kbd7geA8q4AMHEX9UrbdPUZp4TA95LtepWexHHK1biAvSyVs
-         NJA0qAqGSB9HaxnprMqOkvRNRysVRa/ITElQQ4fRrH4yDKvmwXYCX/qEVuyChFdH78+Z
-         54FerEc1aGdk41RMkp9ja0p0V90GwQFP8yiJWSvSria38XShIcrJT2aATpDo/F/RUczB
-         SIuw==
-X-Gm-Message-State: AAQBX9eNgloMpzCgSLDwe1Tp8gUMFWSA7HkUHAR2ICUsZxm0o9mZnFdT
-        13J3A0vhnlVTHcz9Y7Rb2SydzMCnf5cwisKd8iu1pYRawVsk0a8f79YaX6yGvYtL3pNRgmFip3E
-        dWBC4H0zLYEzlgwJJ
-X-Received: by 2002:a17:906:a211:b0:94e:f9b:2b14 with SMTP id r17-20020a170906a21100b0094e0f9b2b14mr9837319ejy.62.1681817027141;
-        Tue, 18 Apr 2023 04:23:47 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YO77OzXBJWFiuaCg+Hi3J7qQfOb2s30+ejMyMYxDVnQj82qj8xsiueD03W0GMRggyFB2YMJw==
-X-Received: by 2002:a17:906:a211:b0:94e:f9b:2b14 with SMTP id r17-20020a170906a21100b0094e0f9b2b14mr9837302ejy.62.1681817026708;
-        Tue, 18 Apr 2023 04:23:46 -0700 (PDT)
-Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id vt2-20020a170907a60200b0094f257e3e05sm4730588ejc.168.2023.04.18.04.23.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Apr 2023 04:23:46 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <6bd4adc4-8d0f-85c2-fa6a-8ce277e52f4e@redhat.com>
-Date:   Tue, 18 Apr 2023 13:23:45 +0200
+        d=1e100.net; s=20221208; t=1681817142; x=1684409142;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kWyZgCkBrZ1/Axz9/Rwj79MSJtzDJwVgqnG29eqUgKE=;
+        b=S0hWFAe49cHdv5bGO/cYm5sQUQUEG2vCvTeg/VAUS9NwrKHpyQIwk1WHD6i7AmW7lD
+         jfTNu/jmm7VeIfjZGU1BxQp6WClbQBihDtMJ7gVYODXvD13K7noBvbWu4p5rIAMaywu0
+         Z5ULcntj6qzUtMzwODYVJvnxfGXrqPrjrAzesjfJSrif9CXcVfO2EdsVgmXqrp1XSW9V
+         qUbWzfI8RLSZvNOZAG0JLnz3CVOhBVRlCWmXOgYO0wPGD5PXMoOLrSlUnJXmUGznfHoY
+         8eIBmNHx6oXrLc6dcZT+QMuPEqR6I4euvtDAANyXbZE7Bat1g6NsfOSpVoJlrTsF1O2Y
+         KaTQ==
+X-Gm-Message-State: AAQBX9caSsVl6aXlT/acWWi1hWgAnZwZinOjBqMiPjcBwR0P/9VvBn4a
+        d9lVm809GkfeU9u3v8fqwBOp2DRObwi9pEeYFx5CoXhqScVRtd635R+XaK3dJGD/zeMCsZty8zZ
+        8ZqEIe5MOpTwJf7Kd
+X-Received: by 2002:adf:f787:0:b0:2f8:6c01:3bfc with SMTP id q7-20020adff787000000b002f86c013bfcmr1812227wrp.30.1681817141805;
+        Tue, 18 Apr 2023 04:25:41 -0700 (PDT)
+X-Google-Smtp-Source: AKy350azIaI0Kxl3NyD8xy6Wc5DWoVBB0V9hbzIQevlayPH3k/wRvLwy36JwkUcm+mLFs05FzBWV6g==
+X-Received: by 2002:adf:f787:0:b0:2f8:6c01:3bfc with SMTP id q7-20020adff787000000b002f86c013bfcmr1812209wrp.30.1681817141475;
+        Tue, 18 Apr 2023 04:25:41 -0700 (PDT)
+Received: from debian ([92.62.32.42])
+        by smtp.gmail.com with ESMTPSA id t16-20020a7bc3d0000000b003f1692ebd0asm9413463wmj.3.2023.04.18.04.25.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Apr 2023 04:25:41 -0700 (PDT)
+Date:   Tue, 18 Apr 2023 13:25:38 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        James Chapman <jchapman@katalix.com>, tparkin@katalix.com,
+        edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, corbet@lwn.net, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PPPoL2TP: Add more code snippets
+Message-ID: <ZD5+MouUk8YFVOX3@debian>
+References: <20230416220704.xqk4q6uwjbujnqpv@begin>
+ <ZD5V+z+cBaXvPbQa@debian>
+ <20230418085323.h6xij7w6d2o4kxxi@begin>
+ <ZD5dqwPblo4FOex1@debian>
+ <20230418091148.hh3b52zceacduex6@begin>
+ <ZD5uU8Wrz4cTSwqP@debian>
+ <20230418103140.cps6csryl2xhrazz@begin>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, michael.chan@broadcom.com, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, davem@davemloft.net
-Subject: Re: [PATCH net-next] page_pool: add DMA_ATTR_WEAK_ORDERING on all
- mappings
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>
-References: <20230417152805.331865-1-kuba@kernel.org>
-In-Reply-To: <20230417152805.331865-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230418103140.cps6csryl2xhrazz@begin>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To Hellwig,
+On Tue, Apr 18, 2023 at 12:31:40PM +0200, Samuel Thibault wrote:
+> Guillaume Nault, le mar. 18 avril 2023 12:17:55 +0200, a ecrit:
+> > On Tue, Apr 18, 2023 at 11:11:48AM +0200, Samuel Thibault wrote:
+> > > Guillaume Nault, le mar. 18 avril 2023 11:06:51 +0200, a ecrit:
+> > > > On Tue, Apr 18, 2023 at 10:53:23AM +0200, Samuel Thibault wrote:
+> > > > > Guillaume Nault, le mar. 18 avril 2023 10:34:03 +0200, a ecrit:
+> > > > > > PPPIOCBRIDGECHAN's description
+> > > > > > belongs to Documentation/networking/ppp_generic.rst, where it's already
+> > > > > > documented.
+> > > > > 
+> > > > > Yes but that's hard to find out when you're looking from the L2TP end.
+> > > > 
+> > > > That's why I proposed linking to ppp_generic.rst.
+> > > 
+> > > Yes, but it's still not obvious to L2TP people that it's a ppp channel
+> > > that you have to bridge. Really, having that 20-line snippet available
+> > > would have saved me some head-scratching time.
+> > 
+> > But the reverse is also true: someone looking at the PPP documentation
+> > is probably not going to realise that PPP sample code have been put in
+> > the L2TP doc.
+> 
+> Yes, but for PPP people it is obvious that you'll want to bridge two
+> channels.
+> 
+> The point of the code is not really the bridging ioctl call, but the
+> fact that you have to use PPPIOCGCHAN over the two sessions, then open
+> a ppp channel, to be able to make the bridging ioctl call. *That*
+> is what is really not obvious, and will not actually fit in the PPP
+> documentation. Of course we could move the few ppp-only lines to the PPP
+> documentation, but I really don't see the point: that part is obvious in
+> the PPP context.
 
-On 17/04/2023 17.28, Jakub Kicinski wrote:
-> Commit c519fe9a4f0d ("bnxt: add dma mapping attributes") added
-> DMA_ATTR_WEAK_ORDERING to DMA attrs on bnxt. It has since spread
-> to a few more drivers (possibly as a copy'n'paste).
-> 
-> DMA_ATTR_WEAK_ORDERING only seems to matter on Sparc and PowerPC/cell,
-> the rarity of these platforms is likely why we never bothered adding
-> the attribute in the page pool, even though it should be safe to add.
-> 
-> To make the page pool migration in drivers which set this flag less
-> of a risk (of regressing the precious sparc database workloads or
-> whatever needed this) let's add DMA_ATTR_WEAK_ORDERING on all
-> page pool DMA mappings.
-> 
+For PPPIOCGCHAN, I agree it should be documented in l2tp.rst. This
+ioctl is common to all PPPOX sockets, but it wouldn't make sense to
+have a separate document just for it. And L2TP is the only PPPOX user
+that is documented as far as I know.
 
-This sounds reasonable to me, but I don't know the DMA APIs well enough.
-Thus, I would like to hear if Hellwig thinks this is okay?
+As I said in my previous reply, a simple L2TP example that goes until PPP
+channel and unit creation is fine. But any more advanced use of the PPP
+API should be documented in the PPP documentation.
 
-> We could make this a driver opt-in but frankly I don't think it's
-> worth complicating the API. I can't think of a reason why device
-> accesses to packet memory would have to be ordered.
+I mean, these files document the API of their corresponding modules,
+their scope should be limitted to that (the PPP and L2TP layers are
+really different).
+
+That shouldn't preclude anyone from describing how to combine L2TP, PPP
+and others to cover more advanced use cases. It's just better done in a
+different file.
+
+> Samuel
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: hawk@kernel.org
-> CC: ilias.apalodimas@linaro.org
-> ---
->   net/core/page_pool.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 2f6bf422ed30..97f20f7ff4fc 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -316,7 +316,8 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
->   	 */
->   	dma = dma_map_page_attrs(pool->p.dev, page, 0,
->   				 (PAGE_SIZE << pool->p.order),
-> -				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
-> +				 pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC |
-> +						  DMA_ATTR_WEAK_ORDERING);
->   	if (dma_mapping_error(pool->p.dev, dma))
->   		return false;
->   
-> @@ -484,7 +485,7 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
->   	/* When page is unmapped, it cannot be returned to our pool */
->   	dma_unmap_page_attrs(pool->p.dev, dma,
->   			     PAGE_SIZE << pool->p.order, pool->p.dma_dir,
-> -			     DMA_ATTR_SKIP_CPU_SYNC);
-> +			     DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING);
->   	page_pool_set_dma_addr(page, 0);
->   skip_dma_unmap:
->   	page_pool_clear_pp_info(page);
 
