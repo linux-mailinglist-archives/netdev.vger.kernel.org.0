@@ -2,69 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF2C6E6C2D
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 20:35:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B230A6E6C36
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 20:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232588AbjDRSf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 14:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
+        id S232517AbjDRSgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 14:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232431AbjDRSf0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 14:35:26 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE59D301;
-        Tue, 18 Apr 2023 11:35:08 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id d2e1a72fcca58-63b73203e0aso10806935b3a.1;
-        Tue, 18 Apr 2023 11:35:08 -0700 (PDT)
+        with ESMTP id S232100AbjDRSgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 14:36:35 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8445FEB
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 11:36:29 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id 41be03b00d2f7-517bfdf55c3so1102246a12.2
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 11:36:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681842907; x=1684434907;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+LkTvhTOXVJ1s/XuxAodTCn49+ye6FDPI1LEp8TzFyM=;
-        b=ExMh+q7GfkXnLKv7xHYL4ueZu9lbA3rANpmVebt1wn6KFsfREyYAiTy+nIwtz5yHOI
-         OqKgj1aChzkJ5I50NVVUdOYAzUD8Fe54llrBdLcKeCffr1C2UdlbaYkTTM3msqZ9bhm7
-         oA1hcczQRawE2pgfa1rrtiIjRr9QYEfIztchnkFP2d9ZIR++Vm7fkbg2X8pBf7j+W4n5
-         Mmf1DICdtWmv10x9JLYmhtj/JaRAM3zyVHXxpfBFxZri1PzOTMiZYKYju+nWEdCt4mvj
-         r3BGr7064Cq3NUXatnw3hQfE5TmbpF7LZu7U6ag4Ydduytpn03jrr6qSNl+dD3T2aBC+
-         zuQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681842907; x=1684434907;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20221208; t=1681842988; x=1684434988;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+LkTvhTOXVJ1s/XuxAodTCn49+ye6FDPI1LEp8TzFyM=;
-        b=QxYZE2RXd7WMnfvpzGUIabIp3dInyAMtnjP3q/LvrkOSGMunU6m2flQK61vlaYnf9g
-         HUngFdtp96rzYEVAIdoHAK2R7B5HiHsq12ObSoACltpDFwQpziPr8TpU9WMKwt4ERBoJ
-         6eftySzxOUVBJ+Atqi8YmM7W2OsZUCW2Vj+P4L98yBfXwAw8Ln43IASzyPSW+hdlJEzW
-         5xZW5D8MztuhPKlugUFVAsgyGindj9dclFq+xZsZfQE07Z2kiBXTNLCg6lay11TB4P+t
-         Y1tojsYA1Mva6KyNwbPz579EEon9Lfff+vKwUIHKPHAbU9htra2+Dz1lnvSPrI3+eebI
-         KNCw==
-X-Gm-Message-State: AAQBX9cp1QrrnLo5Ob0P0AEBa54IzOVmTuQDVdG8L0OGTJ2zJjJcvx/R
-        NGJbinjRjae7BQyuh0uLtAJpYWy9Gac=
-X-Google-Smtp-Source: AKy350b6/4oIoJpjf5siFWAARrFs6ZOw41D6oD4lSEqRzBX4RgXFfZdzEbBrAvEA4dsE1YYp6g2PbA==
-X-Received: by 2002:a17:90a:9f05:b0:247:1131:dcd2 with SMTP id n5-20020a17090a9f0500b002471131dcd2mr422862pjp.23.1681842907191;
-        Tue, 18 Apr 2023 11:35:07 -0700 (PDT)
-Received: from MacBook-Pro-6.local.dhcp.thefacebook.com ([2620:10d:c090:500::4:4cf1])
-        by smtp.gmail.com with ESMTPSA id gl13-20020a17090b120d00b0024781f5e8besm4451623pjb.26.2023.04.18.11.35.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Apr 2023 11:35:06 -0700 (PDT)
-Date:   Tue, 18 Apr 2023 11:35:04 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, dxu@dxuuu.xyz, qde@naccy.de
-Subject: Re: [PATCH bpf-next v3 1/6] bpf: add bpf_link support for
- BPF_NETFILTER programs
-Message-ID: <20230418183504.cxa3wdfxs2yx4cqo@MacBook-Pro-6.local.dhcp.thefacebook.com>
-References: <20230418131038.18054-1-fw@strlen.de>
- <20230418131038.18054-2-fw@strlen.de>
+        bh=ApsPN1GAt+bKSjbs42LxkANlc6ClVgqELeBRCapEZOY=;
+        b=fcvQ6uiiAwbiDHp9ofdozAuOiqo8sbjEaS1wJfZPJdR7ku/k91ggC43xkhzyyW+7nI
+         yL05D8fKTVowBu7cH7oGSbwvorwMmpZfZp+be71T12rL9TRGAsRKhgX9BtbLc+iyZwgq
+         Qb48G1rKzQZjLEUD5f92333ozX9LrkHTarpi26AV6WxfUdF8E317PyK+GRvYlhJDse5Z
+         MEZRohJ9XuAxL4kVb0Aft7cnNRU1ffRIyB+Hpuwglq4gprdj5r075/QYekStmw9Zcc7e
+         uJaoVEg0RaJ6z9kkri0qCgyEJPxz6DZVa/1Zx09Yl/HmHiUZVgIL62G/nueZQ1DngeXx
+         2F5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681842988; x=1684434988;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ApsPN1GAt+bKSjbs42LxkANlc6ClVgqELeBRCapEZOY=;
+        b=PqsNdsfhlKHjnys+QXT5IA6gSbAirIpYc4gnJzWGzPhRKkwi6FlDBUIlOwmiwZx0dO
+         4FnUChVX7FAuupGjjfuurKYfy7r3fBBBQIh6YJ+9T9XoiNlEL7ZBiUEsoxVT6U4m+HoX
+         pd97b2ign2FEnsLMhxxN4SMs1kxuOkZGOGcwPM2Paeu+mFRv6qH2OKo7117zvgnQtAvP
+         Rbo1BQ810av8bcZxUKyllntj47vQYm2BdU7+MmrRLzC1Fm0+WK2cNusgf8w28urlwtp7
+         BxZHfRJq+qlUf72atRQV3u8Ct8bcQLALXod2IseK2EvDXJnAKs+ectamB0l3JSBNfGmb
+         1ZfA==
+X-Gm-Message-State: AAQBX9eIqvRDE7t7LKWpkwGjfkdYaagkGZ/mAXhSHHWYGSV6rYFnLuOT
+        sCbBRR7LIyQugoeYEV390U/0GTtom5PW8OBo2Enf9A==
+X-Google-Smtp-Source: AKy350ZShnO2tG7T/57z/jUzMW01PDWOatg+RwsX6uSLq6+zwhs8lAyWd6JaHE6qNghBF+/vCyIJp0/ga1bkMCOPgjE=
+X-Received: by 2002:a17:90a:d70b:b0:246:ba3f:4f3e with SMTP id
+ y11-20020a17090ad70b00b00246ba3f4f3emr605102pju.6.1681842988421; Tue, 18 Apr
+ 2023 11:36:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230418131038.18054-2-fw@strlen.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20230418-dwmac-meson8b-clk-cb-cast-v1-1-e892b670cbbb@kernel.org>
+In-Reply-To: <20230418-dwmac-meson8b-clk-cb-cast-v1-1-e892b670cbbb@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 18 Apr 2023 11:36:17 -0700
+Message-ID: <CAKwvOd=DeCNoQYuTJVfbd0tSddJpGVaKBTEfC-+XUN4OJ4hRRw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: stmmac: dwmac-meson8b: Avoid cast to
+ incompatible function type
+To:     Simon Horman <horms@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, llvm@lists.linux.dev,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Nathan Huckleberry <nhuck@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,53 +87,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 03:10:33PM +0200, Florian Westphal wrote:
-> @@ -1560,6 +1562,13 @@ union bpf_attr {
->  				 */
->  				__u64		cookie;
->  			} tracing;
-> +			struct {
-> +				__u32		pf;
-> +				__u32		hooknum;
-> +				__s32		prio;
-> +				__u32		flags;
-> +				__u64		reserved[2];
-> +			} netfilter;
->  		};
->  	} link_create;
->  
-> @@ -6410,6 +6419,12 @@ struct bpf_link_info {
->  		struct {
->  			__u32 map_id;
->  		} struct_ops;
-> +		struct {
-> +			__u32 pf;
-> +			__u32 hooknum;
-> +			__s32 priority;
-> +			__u32 flags;
-> +		} netfilter;
->  	};
->  } __attribute__((aligned(8)));
-...
-> +int bpf_nf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+On Tue, Apr 18, 2023 at 4:07=E2=80=AFAM Simon Horman <horms@kernel.org> wro=
+te:
+>
+> Rather than casting clk_disable_unprepare to an incompatible function
+> type provide a trivial wrapper with the correct signature for the
+> use-case.
+>
+> Reported by clang-16 with W=3D1:
+>
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c:276:6: error: cast f=
+rom 'void (*)(struct clk *)' to 'void (*)(void *)' converts to incompatible=
+ function type [-Werror,-Wcast-function-type-strict]
+>                                         (void(*)(void *))clk_disable_unpr=
+epare,
+>                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~
+> No functional change intended.
+> Compile tested only.
+>
+> Signed-off-by: Simon Horman <horms@kernel.org>
+
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/driver=
+s/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+> index e8b507f88fbc..f6754e3643f3 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+> @@ -263,6 +263,11 @@ static int meson_axg_set_phy_mode(struct meson8b_dwm=
+ac *dwmac)
+>         return 0;
+>  }
+>
+> +static void meson8b_clk_disable_unprepare(void *data)
 > +{
-> +	struct net *net = current->nsproxy->net_ns;
-> +	struct bpf_link_primer link_primer;
-> +	struct bpf_nf_link *link;
-> +	int err;
+> +       clk_disable_unprepare(data);
+> +}
 > +
-> +	if (attr->link_create.flags)
-> +		return -EINVAL;
-> +
-> +	if (attr->link_create.netfilter.reserved[0] | attr->link_create.netfilter.reserved[1])
-> +		return -EINVAL;
+>  static int meson8b_devm_clk_prepare_enable(struct meson8b_dwmac *dwmac,
+>                                            struct clk *clk)
+>  {
+> @@ -273,8 +278,7 @@ static int meson8b_devm_clk_prepare_enable(struct mes=
+on8b_dwmac *dwmac,
+>                 return ret;
+>
+>         return devm_add_action_or_reset(dwmac->dev,
+> -                                       (void(*)(void *))clk_disable_unpr=
+epare,
+> -                                       clk);
+> +                                       meson8b_clk_disable_unprepare, cl=
+k);
+>  }
+>
+>  static int meson8b_init_rgmii_delays(struct meson8b_dwmac *dwmac)
+>
 
-Why add 'reserved' name that we cannot change later?
-I think 'flags' is enough.
 
-> +	link->hook_ops.pf = attr->link_create.netfilter.pf;
-> +	link->hook_ops.priority = attr->link_create.netfilter.prio;
-
-let's use the same name in both cases ? Either prio or priority. Both sound fine.
-
-> +	link->hook_ops.hooknum = attr->link_create.netfilter.hooknum;
+--=20
+Thanks,
+~Nick Desaulniers
