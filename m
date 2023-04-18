@@ -2,131 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D57666E5A92
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 09:36:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 337F36E5AA3
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 09:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230357AbjDRHg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 03:36:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
+        id S229682AbjDRHn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 03:43:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbjDRHgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 03:36:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2AA74C1F;
-        Tue, 18 Apr 2023 00:36:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E9C762D6F;
-        Tue, 18 Apr 2023 07:36:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60AC2C433D2;
-        Tue, 18 Apr 2023 07:36:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681803382;
-        bh=E1EIySyr85mH28dqigAe0UMW4kBm9cIMgWf4lGA434Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Jt2KCVvtGGVIeM4PDSCkgqGkbT+gt29mDtyO3GJO+f6LRY7iioOQ+L1/vhrefF3Ti
-         OfSP9TCAwoERgJZLFb8TH7Z2eL8oFCS951vlFBM+Vz94J/4t+UM1PAPL5t8jGKeVG2
-         bE7SWGZjcxnwW2MSnQvwdoACeEapvcaRF4AjZNI+3FkSEv71YCaEKNvdYfaoFSxv3q
-         G90IRrDdqsurdrM4fH0JL0bQWt6SuNjfj4yl+hqaVCHr6V9nlXxBFGJpkscTFvOgXI
-         gyJu0r8MFs1OOsAoHGUoCkPmt1Nqa4gcMUHF/1jJsUq0U2zVMI6/A7OWZU9ryOm7jd
-         z81weMrFJsm2Q==
-Date:   Tue, 18 Apr 2023 09:36:18 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        hawk@kernel.org, ilias.apalodimas@linaro.org, davem@davemloft.net,
-        pabeni@redhat.com, bpf@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, nbd@nbd.name
-Subject: Re: issue with inflight pages from page_pool
-Message-ID: <ZD5IcgN5s9lCqIgl@lore-desk>
-References: <ZD2HjZZSOjtsnQaf@lore-desk>
- <CANn89iK7P2aONo0EB9o+YiRG+9VfqqVVra4cd14m_Vo4hcGVnQ@mail.gmail.com>
- <ZD2NSSYFzNeN68NO@lore-desk>
- <20230417112346.546dbe57@kernel.org>
- <ZD2TH4PsmSNayhfs@lore-desk>
- <20230417120837.6f1e0ef6@kernel.org>
- <ZD26lb2qdsdX16qa@lore-desk>
- <20230417163210.2433ae40@kernel.org>
+        with ESMTP id S229498AbjDRHn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 03:43:27 -0400
+Received: from hust.edu.cn (unknown [202.114.0.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6103A8;
+        Tue, 18 Apr 2023 00:43:25 -0700 (PDT)
+Received: from zrt-virtual-machine.localdomain ([10.21.199.38])
+        (user=u202112078@hust.edu.cn mech=LOGIN bits=0)
+        by mx1.hust.edu.cn  with ESMTP id 33I7d2Go022630-33I7d2Gp022630
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 18 Apr 2023 15:39:13 +0800
+From:   Ruting Zhang <u202112078@hust.edu.cn>
+To:     M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     hust-os-kernel-patches@googlegroups.com,
+        Ruting Zhang <u202112078@hust.edu.cn>,
+        Dongliang Mu <dzm91@hust.edu.cn>,
+        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: wwan: iosm: fix a resource leak in probe
+Date:   Tue, 18 Apr 2023 15:38:57 +0800
+Message-Id: <20230418073858.36507-1-u202112078@hust.edu.cn>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="XpIrzH4lv/jz4U1A"
-Content-Disposition: inline
-In-Reply-To: <20230417163210.2433ae40@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-FEAS-AUTH-USER: u202112078@hust.edu.cn
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+drivers/net/wwan/iosm/iosm_ipc_pcie.c:298 ipc_pcie_probe() Smatch warn:
+missing unwind goto?
+There is a resource leak in this place.
 
---XpIrzH4lv/jz4U1A
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fix it by changing "return ret" into "goto resources_req_fail".
+Fixes: 035e3befc191 ("net: wwan: iosm: fix driver not working with INTEL_IOMMU disabled")
 
-> On Mon, 17 Apr 2023 23:31:01 +0200 Lorenzo Bianconi wrote:
-> > > If it's that then I'm with Eric. There are many ways to keep the pages
-> > > in use, no point working around one of them and not the rest :( =20
-> >=20
-> > I was not clear here, my fault. What I mean is I can see the returned
-> > pages counter increasing from time to time, but during most of tests,
-> > even after 2h the tcp traffic has stopped, page_pool_release_retry()
-> > still complains not all the pages are returned to the pool and so the
-> > pool has not been deallocated yet.
-> > The chunk of code in my first email is just to demonstrate the issue
-> > and I am completely fine to get a better solution :)=20
->=20
-> Your problem is perhaps made worse by threaded NAPI, you have
-> defer-free skbs sprayed across all cores and no NAPI there to=20
-> flush them :(
+Signed-off-by: Ruting Zhang <u202112078@hust.edu.cn>
+Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
+---
+The issue is found by static analysis and remains untested.
+---
+ drivers/net/wwan/iosm/iosm_ipc_pcie.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-yes, exactly :)
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_pcie.c b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+index 5bf5a93937c9..33339e8af1dc 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+@@ -295,7 +295,7 @@ static int ipc_pcie_probe(struct pci_dev *pci,
+ 	ret = dma_set_mask(ipc_pcie->dev, DMA_BIT_MASK(64));
+ 	if (ret) {
+ 		dev_err(ipc_pcie->dev, "Could not set PCI DMA mask: %d", ret);
+-		return ret;
++		goto resources_req_fail;
+ 	}
+ 
+ 	ipc_pcie_config_aspm(ipc_pcie);
+-- 
+2.34.1
 
->=20
-> > I guess we just need a way to free the pool in a reasonable amount=20
-> > of time. Agree?
->=20
-> Whether we need to guarantee the release is the real question.
-
-yes, this is the main goal of my email. The defer-free skbs behaviour seems=
- in
-contrast with the page_pool pending pages monitor mechanism or at least they
-do not work well together.
-
-@Jesper, Ilias: any input on it?
-
-> Maybe it's more of a false-positive warning.
->=20
-> Flushing the defer list is probably fine as a hack, but it's not
-> a full fix as Eric explained. False positive can still happen.
-
-agree, it was just a way to give an idea of the issue, not a proper solutio=
-n.
-
-Regards,
-Lorenzo
-
->=20
-> I'm ambivalent. My only real request wold be to make the flushing=20
-> a helper in net/core/dev.c rather than open coded in page_pool.c.
->=20
-> Somewhat related - Eric, do we need to handle defer_list in dev_cpu_dead(=
-)?
-
---XpIrzH4lv/jz4U1A
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZD5IcgAKCRA6cBh0uS2t
-rIqjAQDYt+gEaRt7vfajC3orbaGEGZW1pkY7eWVcst5V6UfQSAEAxTxX8Ry4wPh6
-5yOcKeHWnsEuWXCC3QuiHpsgNIRCyg4=
-=tNWN
------END PGP SIGNATURE-----
-
---XpIrzH4lv/jz4U1A--
