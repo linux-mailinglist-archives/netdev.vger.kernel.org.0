@@ -2,209 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C2E6E63F6
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 14:45:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 929EB6E642B
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 14:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbjDRMo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 08:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34678 "EHLO
+        id S232021AbjDRMql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 08:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231954AbjDRMoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 08:44:55 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7D3118C9;
-        Tue, 18 Apr 2023 05:44:54 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id fv6so15762624qtb.9;
-        Tue, 18 Apr 2023 05:44:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681821893; x=1684413893;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=u//LQYDS+VuadTIFmR9meMJEyMLjxtTKHqVLJAzFJgU=;
-        b=VWF3Tf0XTZfvl1p3++okKWX1rLhVtRTh3SCN8uzr1fPWJ4PUH7dHHVg3U3ufYAXlIL
-         XjbqV71V4DYq1ryD7OyuVutZOq/BjHA4BMpkqB+LyCFw/cMGyB05HHOBzXWto0xZdCL5
-         SopaT/QUuCemcSOqTqSbhTyqippTmmb5TseHUmr9SPu+BuGGej7ISXhrdRPENEZlBFpK
-         Fg6LiFkhJP8Kq1Nf6SQBIt0apJpUDLdESDsULPrV/JVpv5TVhAjQXj7WNNix8HZClTE9
-         6Njh0UTdTDQ04BN6XE9Om3zVy1lYayq7ja3kVGezkLorhzpFZlUjTGV+FlMMN18r0ZO9
-         vTRw==
+        with ESMTP id S232018AbjDRMqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 08:46:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE17914F4E
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 05:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681821957;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pDXDjF1nYY/KD56jlqYvE6WKgtxK7sp+U3MRycfCfiA=;
+        b=X0mdOLUZphru6oWf3HZuDdwA43COkv/8YA8IKKOQre4A3GatajIy4yxcjSkyMz8GvVps/c
+        FgmcTWjYRBCw/62pGq3nbn/Lu2QsxtEobOBBO8YQMmcn0HP8CahQthbLWa5mmBuR6+5Rhn
+        yb7AmZF3Zu8kVrjhtEDDhTcH122KB+w=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-488-8gf0u-U8Pn60n4BKxLNoYQ-1; Tue, 18 Apr 2023 08:45:56 -0400
+X-MC-Unique: 8gf0u-U8Pn60n4BKxLNoYQ-1
+Received: by mail-ed1-f69.google.com with SMTP id u19-20020a50a413000000b0050670a8cb7dso8563192edb.13
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 05:45:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681821893; x=1684413893;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=u//LQYDS+VuadTIFmR9meMJEyMLjxtTKHqVLJAzFJgU=;
-        b=XT5sCNJaT1DfnJlucucXiKT0xUeEHFJeMVSNE78eLakyWMW0wE13e2wIWXRUEPr/Ge
-         osgIeQFZI1EmF22LTFln5i6LaEuHhnutVUpcLJF3JSstqlXPd/7yA8QEN0gbvWLCfZZ4
-         K/6aVGGHb1t9/JPe17Rp6UGVym4xhgQ5ZSiwZwPLiL5wfXQt3xQmPb15j1FCCfQWWqrN
-         e2QHIA1Xwe18PhOmxRKPzMFglRe299TrIwNp9jAv2t2mGTAvcKCk6OgwlnmX7wM1E6C0
-         OD9Uo1DKZ7g/H0dWl1Ttcn56GSiMjUHnN4jwWV5hsF4L/jnjgdv1EJxNjj19ysBb3YKh
-         aeSg==
-X-Gm-Message-State: AAQBX9c9qZw5+TwSj/p8vp6T/DvMh3tQki66KCB0mxyKuFIiYi5ZJxeV
-        jj4M/2NJq6VYy9ldATr2eP4=
-X-Google-Smtp-Source: AKy350b7eHdH8LO3jawP225cJsvVlppKbI8nuylOLCQ6r3Ey9pjFblJuDWAPx26RZAELOUqW7ZOeqw==
-X-Received: by 2002:ac8:7f88:0:b0:3e4:e4e4:ec1 with SMTP id z8-20020ac87f88000000b003e4e4e40ec1mr25343892qtj.64.1681821893616;
-        Tue, 18 Apr 2023 05:44:53 -0700 (PDT)
-Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
-        by smtp.gmail.com with ESMTPSA id g24-20020ac84b78000000b003ee4b5a2dd3sm2165795qts.21.2023.04.18.05.44.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Apr 2023 05:44:53 -0700 (PDT)
-Date:   Tue, 18 Apr 2023 08:44:52 -0400
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     "luwei (O)" <luwei32@huawei.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "asml.silence@gmail.com" <asml.silence@gmail.com>,
-        "imagedong@tencent.com" <imagedong@tencent.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "jbenc@redhat.com" <jbenc@redhat.com>,
+        d=1e100.net; s=20221208; t=1681821955; x=1684413955;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pDXDjF1nYY/KD56jlqYvE6WKgtxK7sp+U3MRycfCfiA=;
+        b=NjlpQc/tXsBW/r9Xmaz7nR9cqc0tXOCAqVCc94yC6sN+Hm8/zKofrlIXCRMF8wB17S
+         Sph59q9SvO50PeuYQXLSKqN0YTjSx+zArnSbGiX04ktmiOrnbUWXOMSKBbxDEVzJRyLT
+         iXTqWwGAgYfuBJrOHsyIxw3IuMT6zxKH7Q6kZIPgh/+nssTiXVh4JYCRIgGyN/cJfZ1H
+         UbDwqEcSnVlSWRmVn3BMJLhE9fMsKOvH40Ia5d6+y2pRnkhF955JgNJoGHkg9vZpAedz
+         KDDHUF2Lk04EdjJyElBqmBwOCWASu2WHD509hgYhKGUT7HtGgLQdK0tAECw7BFl0pa1o
+         ivfA==
+X-Gm-Message-State: AAQBX9euZPllKsofJwEx4FLfTU2G1ssqAnG5yVbFWxHbntMZuP/PYRGk
+        1qlD5aJ2tJLA/ey/uYqRvYKoAII/MvC5l+ZGsC5Jf84G2aQeis3isvyP0oGkQlUYbGW8b8Q7ozE
+        Ss0i7d6M3KqHAJiPB
+X-Received: by 2002:a17:907:20c8:b0:93c:efaf:ba75 with SMTP id qq8-20020a17090720c800b0093cefafba75mr10178442ejb.37.1681821955283;
+        Tue, 18 Apr 2023 05:45:55 -0700 (PDT)
+X-Google-Smtp-Source: AKy350aiC5zCA5YAs3FTtyCXVLr/PBTq902GZqsOW+OujaYsI0J5kBFLBO9dijp8pa5nkXMHxAU4EA==
+X-Received: by 2002:a17:907:20c8:b0:93c:efaf:ba75 with SMTP id qq8-20020a17090720c800b0093cefafba75mr10178419ejb.37.1681821954909;
+        Tue, 18 Apr 2023 05:45:54 -0700 (PDT)
+Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
+        by smtp.gmail.com with ESMTPSA id rx22-20020a1709068e1600b0094f968ecc97sm2304338ejc.13.2023.04.18.05.45.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Apr 2023 05:45:54 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <6b04def5-a3aa-1f77-b29d-bea4845e2678@redhat.com>
+Date:   Tue, 18 Apr 2023 14:45:52 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Cc:     brouer@redhat.com,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Message-ID: <643e90c4c7d0b_327ccc294a8@willemb.c.googlers.com.notmuch>
-In-Reply-To: <0f1d25fa-0704-f3b0-cc33-d89a5f87daac@huawei.com>
-References: <20230410022152.4049060-1-luwei32@huawei.com>
- <CANn89iKFLREJV_cfHEk6wz6xXVv_jSrZ_UyXAB8VpH7gMXacxQ@mail.gmail.com>
- <643447ba5224a_83e69294b6@willemb.c.googlers.com.notmuch>
- <450994d7-4a77-99df-6317-b535ea73e01d@huawei.com>
- <CANn89iLOcvDRMi9kVr86xNp5=h4JWpx9yYWicVxCwSMgAJGf_g@mail.gmail.com>
- <c90abe8c-ffa0-f986-11eb-bde65c84d18b@huawei.com>
- <6436b5ba5c005_41e2294dd@willemb.c.googlers.com.notmuch>
- <a30a8ffaa8dd4cb6a84103eecf0c3338@huawei.com>
- <643983f69b440_17854f2948c@willemb.c.googlers.com.notmuch>
- <64398b4c4585f_17abe429442@willemb.c.googlers.com.notmuch>
- <47fca2c7-db7c-0265-d724-38dffc62debe@huawei.com>
- <643aab0f2f39c_1afa5d2943f@willemb.c.googlers.com.notmuch>
- <0f1d25fa-0704-f3b0-cc33-d89a5f87daac@huawei.com>
-Subject: =?UTF-8?Q?Re:_=E7=AD=94=E5=A4=8D:_[PATCH_net]_net:_Add_check_for?=
- =?UTF-8?Q?_csum=5Fstart_in_skb=5Fpartial=5Fcsum=5Fset=28=29?=
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        "martin.lau@kernel.org" <martin.lau@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "Lobakin, Aleksander" <aleksander.lobakin@intel.com>,
+        "Zaremba, Larysa" <larysa.zaremba@intel.com>,
+        "xdp-hints@xdp-project.net" <xdp-hints@xdp-project.net>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH bpf-next V1 2/5] igc: add igc_xdp_buff wrapper for
+ xdp_buff in driver
+Content-Language: en-US
+To:     "Song, Yoong Siang" <yoong.siang.song@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
+        <toke@redhat.com>
+References: <168174338054.593471.8312147519616671551.stgit@firesoul>
+ <168174343294.593471.10523474360770220196.stgit@firesoul>
+ <PH0PR11MB5830DD3BA9F6CBDA648F5AF8D89D9@PH0PR11MB5830.namprd11.prod.outlook.com>
+In-Reply-To: <PH0PR11MB5830DD3BA9F6CBDA648F5AF8D89D9@PH0PR11MB5830.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-luwei (O) wrote:
-> =
 
-> =E5=9C=A8 2023/4/15 9:47 PM, Willem de Bruijn =E5=86=99=E9=81=93:
-> > luwei (O) wrote:
-> >> =E5=9C=A8 2023/4/15 1:20 AM, Willem de Bruijn =E5=86=99=E9=81=93:
-> >>> Willem de Bruijn wrote:
-> >>>> luwei (O) wrote:
-> >>>>> yes, here is the vnet_hdr:
-> >>>>>
-> >>>>>       flags: 3
-> >>>>>       gso_type: 3
-> >>>>>       hdr_len: 23
-> >>>>>       gso_size: 58452
-> >>>>>       csum_start: 5
-> >>>>>       csum_offset: 16
-> >>>>>
-> >>>>> and the packet:
-> >>>>>
-> >>>>> | vnet_hdr | mac header | network header | data ... |
-> >>>>>
-> >>>>>     memcpy((void*)0x20000200,
-> >>>>>            "\x03\x03\x02\x00\x54\xe4\x05\x00\x10\x00\x80\x00\x00\=
-x53\xcc\x9c\x2b"
-> >>>>>            "\x19\x3b\x00\x00\x00\x89\x4f\x08\x03\x83\x81\x04",
-> >>>>>            29);
-> >>>>>     *(uint16_t*)0x200000c0 =3D 0x11;
-> >>>>>     *(uint16_t*)0x200000c2 =3D htobe16(0);
-> >>>>>     *(uint32_t*)0x200000c4 =3D r[3];
-> >>>>>     *(uint16_t*)0x200000c8 =3D 1;
-> >>>>>     *(uint8_t*)0x200000ca =3D 0;
-> >>>>>     *(uint8_t*)0x200000cb =3D 6;
-> >>>>>     memset((void*)0x200000cc, 170, 5);
-> >>>>>     *(uint8_t*)0x200000d1 =3D 0;
-> >>>>>     memset((void*)0x200000d2, 0, 2);
-> >>>>>     syscall(__NR_sendto, r[1], 0x20000200ul, 0xe45ful, 0ul, 0x200=
-000c0ul, 0x14ul);
-> >>>> Thanks. So this can happen whenever a packet is injected into the =
-tx
-> >>>> path with a virtio_net_hdr.
-> >>>>
-> >>>> Even if we add bounds checking for the link layer header in pf_pac=
-ket,
-> >>>> it can still point to the network header.
-> >>>>
-> >>>> If packets are looped to the tx path, skb_pull is common if a pack=
-et
-> >>>> traverses tunnel devices. But csum_start does not directly matter =
-in
-> >>>> the rx path (CHECKSUM_PARTIAL is just seen as CHECKSUM_UNNECESSARY=
-).
-> >>>> Until it is forwarded again to the tx path.
-> >>>>
-> >>>> So the question is which code calls skb_checksum_start_offset on t=
-he
-> >>>> tx path. Clearly, skb_checksum_help. Also a lot of drivers. Which
-> >>>> may cast the signed int return value to an unsigned. Even an u8 in=
+On 18/04/2023 06.34, Song, Yoong Siang wrote:
+> On Monday, April 17, 2023 10:57 PM, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+>> Driver specific metadata data for XDP-hints kfuncs are propagated via tail
+>> extending the struct xdp_buff with a locally scoped driver struct.
+>>
+>> Zero-Copy AF_XDP/XSK does similar tricks via struct xdp_buff_xsk. This
+>> xdp_buff_xsk struct contains a CB area (24 bytes) that can be used for extending
+>> the locally scoped driver into. The XSK_CHECK_PRIV_TYPE define catch size
+>> violations build time.
+>>
+> 
+> Since the main purpose of this patch is to introduce igc_xdp_buff, and
+> you have another two patches for timestamp and hash,
+> thus, suggest to move timestamp and hash related code into respective patches.
+> 
+>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>> ---
+>> drivers/net/ethernet/intel/igc/igc.h      |    6 ++++++
+>> drivers/net/ethernet/intel/igc/igc_main.c |   30 ++++++++++++++++++++++-------
+>> 2 files changed, 29 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/igc/igc.h
+>> b/drivers/net/ethernet/intel/igc/igc.h
+>> index f7f9e217e7b4..c609a2e648f8 100644
+>> --- a/drivers/net/ethernet/intel/igc/igc.h
+>> +++ b/drivers/net/ethernet/intel/igc/igc.h
+>> @@ -499,6 +499,12 @@ struct igc_rx_buffer {
+>> 	};
+>> };
+>>
+>> +/* context wrapper around xdp_buff to provide access to descriptor
+>> +metadata */ struct igc_xdp_buff {
+>> +	struct xdp_buff xdp;
+>> +	union igc_adv_rx_desc *rx_desc;
+> 
+> Move rx_desc to 4th patch (Rx hash patch)
+> 
 
-> >>>> the first driver I spotted (alx).
-> >>>>
-> >>>> skb_postpull_rcsum anticipates a negative return value, as do othe=
-r
-> >>>> core functions. So it clearly allowed in certain cases. We cannot
-> >>>> just bound it.
-> >>>>
-> >>>> Summary after a long story: an initial investigation, but I don't =
-have
-> >>>> a good solution so far. Maybe others have a good suggestiong based=
- on
-> >>>> this added context.
-> >>> Specific to skb_checksum_help, it appears that skb_checksum will
-> >>> work with negative offset just fine.
-> >>   =C2=A0=C2=A0=C2=A0 =C2=A0 In this case maybe not, since it checksu=
-ms from within the mac
-> >> header, and the mac header
-> >>
-> >>   =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 will be stripped when the rx =
-path checks the checksum.
-> > The header is pulled, but still present. Obviously something bogus ge=
-ts
-> > written if the virtio_net_hdr configures csum offload with a bogus
-> > offset. But as long as the offset is zero or positive from skb->head,=
+Hmm, rx_desc is also needed by 3rd patch (Rx timestamp), so that would 
+break...
 
-> > the checksum helper works as intended.
-> =
-
->  =C2=A0=C2=A0 OK, Thanks for your reply
-
-We still should address the unnecessary warning triggerable by syzbot.
-
-If I'm correct that any offset programmable through virtio_net_hdr ends
-up in the skb linear section and skb_checksum_help will compute it fine,
-then the WARN_ON_ONCE just needs an explicit cast to signed.
-
-I have only skimmed, so not 100% sure yet. But that's the short take.
- =
-
-> >   =
-
-> >>> Perhaps the only issue is that the WARN_ON_ONCE compares signed to
-> >>> unsigned, and thus incorrectly interprets a negative offset as
-> >>>    >=3D skb_headlen(skb)
-> > .
-> =
-
-> -- =
-
-> Best Regards,
-> Lu Wei
-> =
+I can reorder patches, and have "Rx hash patch" come before "Rx 
+timestamp" patch.
 
 
+>> +};
+>> +
+>> struct igc_q_vector {
+>> 	struct igc_adapter *adapter;    /* backlink */
+>> 	void __iomem *itr_register;
+>> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c
+>> b/drivers/net/ethernet/intel/igc/igc_main.c
+>> index bfa9768d447f..3a844cf5be3f 100644
+>> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+>> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+>> @@ -2236,6 +2236,8 @@ static bool igc_alloc_rx_buffers_zc(struct igc_ring
+>> *ring, u16 count)
+>> 	if (!count)
+>> 		return ok;
+>>
+>> +	XSK_CHECK_PRIV_TYPE(struct igc_xdp_buff);
+>> +
+>> 	desc = IGC_RX_DESC(ring, i);
+>> 	bi = &ring->rx_buffer_info[i];
+>> 	i -= ring->count;
+>> @@ -2520,8 +2522,8 @@ static int igc_clean_rx_irq(struct igc_q_vector
+>> *q_vector, const int budget)
+>> 		union igc_adv_rx_desc *rx_desc;
+>> 		struct igc_rx_buffer *rx_buffer;
+>> 		unsigned int size, truesize;
+>> +		struct igc_xdp_buff ctx;
+>> 		ktime_t timestamp = 0;
+>> -		struct xdp_buff xdp;
+>> 		int pkt_offset = 0;
+>> 		void *pktbuf;
+>>
+>> @@ -2555,13 +2557,14 @@ static int igc_clean_rx_irq(struct igc_q_vector
+>> *q_vector, const int budget)
+>> 		}
+>>
+>> 		if (!skb) {
+>> -			xdp_init_buff(&xdp, truesize, &rx_ring->xdp_rxq);
+>> -			xdp_prepare_buff(&xdp, pktbuf - igc_rx_offset(rx_ring),
+>> +			xdp_init_buff(&ctx.xdp, truesize, &rx_ring->xdp_rxq);
+>> +			xdp_prepare_buff(&ctx.xdp, pktbuf - igc_rx_offset(rx_ring),
+>> 					 igc_rx_offset(rx_ring) + pkt_offset,
+>> 					 size, true);
+>> -			xdp_buff_clear_frags_flag(&xdp);
+>> +			xdp_buff_clear_frags_flag(&ctx.xdp);
+>> +			ctx.rx_desc = rx_desc;
+> 
+> Move rx_desc to 4th patch (Rx hash patch)
+
+Again would break 3rd patch.
+
+> 
+>>
+>> -			skb = igc_xdp_run_prog(adapter, &xdp);
+>> +			skb = igc_xdp_run_prog(adapter, &ctx.xdp);
+>> 		}
+>>
+>> 		if (IS_ERR(skb)) {
+>> @@ -2583,9 +2586,9 @@ static int igc_clean_rx_irq(struct igc_q_vector
+>> *q_vector, const int budget)
+>> 		} else if (skb)
+>> 			igc_add_rx_frag(rx_ring, rx_buffer, skb, size);
+>> 		else if (ring_uses_build_skb(rx_ring))
+>> -			skb = igc_build_skb(rx_ring, rx_buffer, &xdp);
+>> +			skb = igc_build_skb(rx_ring, rx_buffer, &ctx.xdp);
+>> 		else
+>> -			skb = igc_construct_skb(rx_ring, rx_buffer, &xdp,
+>> +			skb = igc_construct_skb(rx_ring, rx_buffer, &ctx.xdp,
+>> 						timestamp);
+>>
+>> 		/* exit if we failed to retrieve a buffer */ @@ -2686,6 +2689,15
+>> @@ static void igc_dispatch_skb_zc(struct igc_q_vector *q_vector,
+>> 	napi_gro_receive(&q_vector->napi, skb);  }
+>>
+>> +static struct igc_xdp_buff *xsk_buff_to_igc_ctx(struct xdp_buff *xdp) {
+>> +	/* xdp_buff pointer used by ZC code path is alloc as xdp_buff_xsk. The
+>> +	 * igc_xdp_buff shares its layout with xdp_buff_xsk and private
+>> +	 * igc_xdp_buff fields fall into xdp_buff_xsk->cb
+>> +	 */
+>> +       return (struct igc_xdp_buff *)xdp; }
+>> +
+> 
+> Move xsk_buff_to_igc_ctx to 3th patch (timestamp patch), which is first patch
+> adding xdp_metadata_ops support to igc.
+> 
+
+Hmm, maybe, but that make the "wrapper" patch incomplete and then it
+gets "completed" in the first patch that adds a xdp_metadata_ops.
+
+>> static int igc_clean_rx_irq_zc(struct igc_q_vector *q_vector, const int budget)  {
+>> 	struct igc_adapter *adapter = q_vector->adapter; @@ -2704,6 +2716,7
+>> @@ static int igc_clean_rx_irq_zc(struct igc_q_vector *q_vector, const int
+>> budget)
+>> 	while (likely(total_packets < budget)) {
+>> 		union igc_adv_rx_desc *desc;
+>> 		struct igc_rx_buffer *bi;
+>> +		struct igc_xdp_buff *ctx;
+>> 		ktime_t timestamp = 0;
+>> 		unsigned int size;
+>> 		int res;
+>> @@ -2721,6 +2734,9 @@ static int igc_clean_rx_irq_zc(struct igc_q_vector
+>> *q_vector, const int budget)
+>>
+>> 		bi = &ring->rx_buffer_info[ntc];
+>>
+>> +		ctx = xsk_buff_to_igc_ctx(bi->xdp);
+> 
+> Move xsk_buff_to_igc_ctx to 3th patch (timestamp patch), which is first patch
+> adding xdp_metadata_ops support to igc.
+>
+Sure, but it feels wrong to no "complete" the wrapper work in the
+wrapper patch.
+
+>> +		ctx->rx_desc = desc;
+> 
+> Move rx_desc to 4th patch (Rx hash patch)
+> 
+
+I'll reorder patch 3 and 4, else it doesn't make any sense to gradually
+introduce the members in wrapper struct igc_xdp_buff.
+
+--Jesper
 
