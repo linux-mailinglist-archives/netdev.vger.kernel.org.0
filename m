@@ -2,179 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEB3E6E6C21
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 20:34:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 127BE6E6C20
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 20:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232565AbjDRSeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 14:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
+        id S232422AbjDRSeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 14:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbjDRSeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 14:34:10 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C49618D
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 11:34:08 -0700 (PDT)
+        with ESMTP id S230143AbjDRSd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 14:33:59 -0400
+Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE8359FE
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 11:33:57 -0700 (PDT)
+Received: by mail-vs1-xe2d.google.com with SMTP id dl6so14101913vsb.7
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 11:33:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1681842849; x=1713378849;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=foijmmpJ0qNHrmHSUur6rUaRri5E7qRcdd3FNHRlnYI=;
-  b=QdsbMR/6lv2vA257z6vwnGUAC3tXftgJUTpxyoG9G3N433oX9Lgmfe9i
-   XOTUzWS2vTAXe1UoP5TfTFbEx8pvDtdXlneLo2LGylLDo7ndSBhCIGPoz
-   ez4qcyinM5cfWPpPQBj1IhWgMxV8AX6GctZVMzQXnX59s4GWZsZ421+nF
-   c=;
-X-IronPort-AV: E=Sophos;i="5.99,207,1677542400"; 
-   d="scan'208";a="315440238"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-d2040ec1.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 18:33:55 +0000
-Received: from EX19MTAUWA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-m6i4x-d2040ec1.us-west-2.amazon.com (Postfix) with ESMTPS id 908CA415C8;
-        Tue, 18 Apr 2023 18:33:53 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 18 Apr 2023 18:33:51 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.106.101.27) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 18 Apr 2023 18:33:47 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <maheshb@google.com>
-CC:     <corbet@lwn.net>, <davem@davemloft.net>, <dsahern@kernel.org>,
-        <edumazet@google.com>, <kuba@kernel.org>, <mahesh@bandewar.net>,
-        <maze@google.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <kuniyu@amazon.com>
-Subject: Re: [PATCH next] ipv6: add icmpv6_error_anycast_as_unicast for ICMPv6
-Date:   Tue, 18 Apr 2023 11:33:39 -0700
-Message-ID: <20230418183339.83599-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230417204407.2463297-1-maheshb@google.com>
-References: <20230417204407.2463297-1-maheshb@google.com>
+        d=google.com; s=20221208; t=1681842836; x=1684434836;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VPq+fzjJqrxlSML+/NoVX0XV7Ohlp1ClzsoWWs/ufVc=;
+        b=LQAVrwo37EDHHba8SZDWchNeJNmLq68lZbVGShOBlV79mHkPwy92tYq1tRedFrrKj+
+         DvlI8twyc1ECzQqD5nb9Sj4/rmh5U5do/MmzTkfF5iHA/Q02N5ZbFaAX09pI91FWFaPq
+         UPMILWSZj/gMgYW8ZCfS+9dbEgiVR2nGra1eIjHgTYo27wXisnbZW0MZ2yIh1F4zy85Z
+         ho1mFEIcnwNfnBewDiLKuZrWosi2mZtpSHuuT0XxpeKSHIy7YX/C7W/tkZWdKwakh+7Q
+         8DsUzB92IxWdiUyqM3racMTjo4TjchQAOOFWGi3rrfBkpMQAmDZ930KKkpwKfvOsgTEw
+         h2jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681842836; x=1684434836;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=VPq+fzjJqrxlSML+/NoVX0XV7Ohlp1ClzsoWWs/ufVc=;
+        b=mAT0azG3IoUhUV1Y5zaYgb5ogoJGI6WVYQkhGsP9AfzvoRJYqVnVrkdJo+sgaFI/65
+         5dar7EGQR7ND+LI/nifLqLQzBkKEKgYFJ70YfN85RpKxGO/FWaM3UCMXTKuFekrJv4Rq
+         TZail4FhVS2mUlF9VV/iaCDKB1g3/Af6udenWE59o+LGtUmxpiMe6TiU7Isy0Atmk3UH
+         gd6UCc51m4xzHfv7lP1otdWKjea7Yq7WTjJG5fIblniTIeYFOFq4ZnlK5yyIcgVnneUR
+         Jtbir0Jkkc+xb9DZx2Fw5YG/L1j4gqNnDzsureyEjIvtNbgCix2f1fvMZf3RkhpZfN52
+         3bGQ==
+X-Gm-Message-State: AAQBX9fOMPQBneKFHgyg3KjW0HLqJkNNHvwEtfXMAPU80wkarFo9KuHM
+        MLnbBHDOg4o/SFkD4LvxGc7pH00AooFP0CjUJ084+MayGYHZmiDREyur1DQT
+X-Google-Smtp-Source: AKy350bhqhJebZj1OlR46EOHtIP7ZBuOEsNsys6O1oWEphrZaxrQyN9h+MHx6o1D9GQAFhq9u1fGLbJNI94SLLUs9sY=
+X-Received: by 2002:a67:d591:0:b0:42e:6005:2b1d with SMTP id
+ m17-20020a67d591000000b0042e60052b1dmr6851843vsj.7.1681842836253; Tue, 18 Apr
+ 2023 11:33:56 -0700 (PDT)
 MIME-Version: 1.0
+References: <20230418180832.81430-1-kuniyu@amazon.com>
+In-Reply-To: <20230418180832.81430-1-kuniyu@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 18 Apr 2023 20:33:44 +0200
+Message-ID: <CANn89i+y=vdj5p_BRSRPYoY+Bdp3vrdPSB=DyCbikHw37q80ww@mail.gmail.com>
+Subject: Re: [PATCH v2 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with
+ TX timestamp.
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.106.101.27]
-X-ClientProxiedBy: EX19D044UWA003.ant.amazon.com (10.13.139.43) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Mahesh Bandewar <maheshb@google.com>
-Date:   Mon, 17 Apr 2023 13:44:07 -0700
-> ICMPv6 error packets are not sent to the anycast destinations and this
-> prevents things like traceroute from working. So create a setting similar
-> to ECHO when dealing with Anycast sources (icmpv6_echo_ignore_anycast).
-> 
-> Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-> CC: Maciej Żenczykowski <maze@google.com>
+On Tue, Apr 18, 2023 at 8:09=E2=80=AFPM Kuniyuki Iwashima <kuniyu@amazon.co=
+m> wrote:
+>
+> syzkaller reported [0] memory leaks of an UDP socket and ZEROCOPY
+> skbs.  We can reproduce the problem with these sequences:
+>
+>   sk =3D socket(AF_INET, SOCK_DGRAM, 0)
+>   sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING_TX_SOFTWARE=
+)
+>   sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
+>   sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
+>   sk.close()
+>
+> sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, sets
+> skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, struct
+> ubuf_info_msgzc indirectly holds a refcnt of the socket.  When the
+> skb is sent, __skb_tstamp_tx() clones it and puts the clone into
+> the socket's error queue with the TX timestamp.
+>
+> When the original skb is received locally, skb_copy_ubufs() calls
+> skb_unclone(), and pskb_expand_head() increments skb->cb->ubuf.refcnt.
+> This additional count is decremented while freeing the skb, but struct
+> ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callback() is
+> not called.
+>
+> The last refcnt is not released unless we retrieve the TX timestamped
+> skb by recvmsg().  When we close() the socket holding such skb, we
+> never call sock_put() and leak the count, skb, and sk.
+>
+> To avoid this problem, we must (i) call skb_queue_purge() after
+> flagging SOCK_DEAD during close() and (ii) make sure that TX tstamp
+> skb is not queued when SOCK_DEAD is flagged.  UDP lacks (i) and (ii),
+> and TCP lacks (ii).
+>
+> Without (ii), a skb queued in a qdisc or device could be put into
+> the error queue after skb_queue_purge().
+>
+>   sendmsg() /* return immediately, but packets
+>              * are queued in a qdisc or device
+>              */
+>                                     close()
+>                                       skb_queue_purge()
+>   __skb_tstamp_tx()
+>     __skb_complete_tx_timestamp()
+>       sock_queue_err_skb()
+>         skb_queue_tail()
+>
+> Also, we need to check SOCK_DEAD under sk->sk_error_queue.lock
+> in sock_queue_err_skb() to avoid this race.
+>
+>   if (!sock_flag(sk, SOCK_DEAD))
+>                                     sock_set_flag(sk, SOCK_DEAD)
+>                                     skb_queue_purge()
+>
+>     skb_queue_tail()
+>
+> [0]:
+
+> Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
+> Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 > ---
->  Documentation/networking/ip-sysctl.rst |  7 +++++++
->  include/net/netns/ipv6.h               |  1 +
->  net/ipv6/af_inet6.c                    |  1 +
->  net/ipv6/icmp.c                        | 13 +++++++++++--
->  4 files changed, 20 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> index 87dd1c5283e6..e97896d38e9f 100644
-> --- a/Documentation/networking/ip-sysctl.rst
-> +++ b/Documentation/networking/ip-sysctl.rst
-> @@ -2719,6 +2719,13 @@ echo_ignore_anycast - BOOLEAN
->  
->  	Default: 0
->  
-> +error_anycast_as_unicast - BOOLEAN
-> +	If set non-zero, then the kernel will respond with ICMP Errors
-
-s/non-zero/1/, see below to limit 0-1.
-
-
-> +	resulting from requests sent to it over the IPv6 protocol destined
-> +	to anycast address essentially treating anycast as unicast.
+> v2:
+>   * Move skb_queue_purge() after setting SOCK_DEAD in udp_destroy_sock()
+>   * Check SOCK_DEAD in sock_queue_err_skb() with sk_error_queue.lock
+>   * Add Fixes tag for TCP
+>
+> v1: https://lore.kernel.org/netdev/20230417171155.22916-1-kuniyu@amazon.c=
+om/
+> ---
+>  net/core/skbuff.c | 15 ++++++++++++---
+>  net/ipv4/udp.c    |  5 +++++
+>  2 files changed, 17 insertions(+), 3 deletions(-)
+>
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 4c0879798eb8..287b834df9c8 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -4979,6 +4979,8 @@ static void skb_set_err_queue(struct sk_buff *skb)
+>   */
+>  int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
+>  {
+> +       unsigned long flags;
 > +
-> +	Default: 0
+>         if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=3D
+>             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+>                 return -ENOMEM;
+> @@ -4992,9 +4994,16 @@ int sock_queue_err_skb(struct sock *sk, struct sk_=
+buff *skb)
+>         /* before exiting rcu section, make sure dst is refcounted */
+>         skb_dst_force(skb);
+>
+> -       skb_queue_tail(&sk->sk_error_queue, skb);
+> -       if (!sock_flag(sk, SOCK_DEAD))
+> -               sk_error_report(sk);
+> +       spin_lock_irqsave(&sk->sk_error_queue.lock, flags);
+> +       if (sock_flag(sk, SOCK_DEAD)) {
+
+SOCK_DEAD is set without holding sk_error_queue.lock, so I wonder why you
+want to add a confusing construct.
+
+Just bail early ?
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index ef81452759be3fd251faaf76d89cfd002ee79256..fda05cb44f95821e98f8c5c05fb=
+a840a9d276abb
+100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4983,6 +4983,9 @@ int sock_queue_err_skb(struct sock *sk, struct
+sk_buff *skb)
+            (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+                return -ENOMEM;
+
++       if (sock_flag(sk, SOCK_DEAD))
++               return -EINVAL;
++
+        skb_orphan(skb);
+        skb->sk =3D sk;
+        skb->destructor =3D sock_rmem_free;
+@@ -4993,8 +4996,7 @@ int sock_queue_err_skb(struct sock *sk, struct
+sk_buff *skb)
+        skb_dst_force(skb);
+
+        skb_queue_tail(&sk->sk_error_queue, skb);
+-       if (!sock_flag(sk, SOCK_DEAD))
+-               sk_error_report(sk);
++       sk_error_report(sk);
+        return 0;
+ }
+ EXPORT_SYMBOL(sock_queue_err_skb);
+
+
+> +               spin_unlock_irqrestore(&sk->sk_error_queue.lock, flags);
+> +               return -EINVAL;
+> +       }
+> +       __skb_queue_tail(&sk->sk_error_queue, skb);
+> +       spin_unlock_irqrestore(&sk->sk_error_queue.lock, flags);
 > +
->  xfrm6_gc_thresh - INTEGER
->  	(Obsolete since linux-4.14)
->  	The threshold at which we will start garbage collecting for IPv6
-> diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
-> index b4af4837d80b..3cceb3e9320b 100644
-> --- a/include/net/netns/ipv6.h
-> +++ b/include/net/netns/ipv6.h
-> @@ -55,6 +55,7 @@ struct netns_sysctl_ipv6 {
->  	u64 ioam6_id_wide;
->  	bool skip_notify_on_dev_down;
->  	u8 fib_notify_on_flag_change;
-> +	u8 icmpv6_error_anycast_as_unicast;
->  };
->  
->  struct netns_ipv6 {
-> diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-> index 38689bedfce7..2b7ac752afc2 100644
-> --- a/net/ipv6/af_inet6.c
-> +++ b/net/ipv6/af_inet6.c
-> @@ -952,6 +952,7 @@ static int __net_init inet6_net_init(struct net *net)
->  	net->ipv6.sysctl.icmpv6_echo_ignore_all = 0;
->  	net->ipv6.sysctl.icmpv6_echo_ignore_multicast = 0;
->  	net->ipv6.sysctl.icmpv6_echo_ignore_anycast = 0;
-> +	net->ipv6.sysctl.icmpv6_error_anycast_as_unicast = 0;
->  
->  	/* By default, rate limit error messages.
->  	 * Except for pmtu discovery, it would break it.
-> diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-> index f32bc98155bf..db2aef50fdf5 100644
-> --- a/net/ipv6/icmp.c
-> +++ b/net/ipv6/icmp.c
-> @@ -362,9 +362,10 @@ static struct dst_entry *icmpv6_route_lookup(struct net *net,
->  
->  	/*
->  	 * We won't send icmp if the destination is known
-> -	 * anycast.
-> +	 * anycast unless we need to treat anycast as unicast.
->  	 */
-> -	if (ipv6_anycast_destination(dst, &fl6->daddr)) {
-> +	if (!net->ipv6.sysctl.icmpv6_error_anycast_as_unicast &&
-
-Please use READ_ONCE() to silence KCSAN.
-
-
-> +	    ipv6_anycast_destination(dst, &fl6->daddr)) {
->  		net_dbg_ratelimited("icmp6_send: acast source\n");
->  		dst_release(dst);
->  		return ERR_PTR(-EINVAL);
-> @@ -1192,6 +1193,13 @@ static struct ctl_table ipv6_icmp_table_template[] = {
->  		.mode		= 0644,
->  		.proc_handler = proc_do_large_bitmap,
->  	},
-> +	{
-> +		.procname	= "error_anycast_as_unicast",
-> +		.data		= &init_net.ipv6.sysctl.icmpv6_error_anycast_as_unicast,
-> +		.maxlen		= sizeof(u8),
-> +		.mode		= 0644,
-> +		.proc_handler = proc_dou8vec_minmax,
-
-		.extra1		= SYSCTL_ZERO,
-		.extra2		= SYSCTL_ONE
-
-> +	},
->  	{ },
->  };
->  
-> @@ -1209,6 +1217,7 @@ struct ctl_table * __net_init ipv6_icmp_sysctl_init(struct net *net)
->  		table[2].data = &net->ipv6.sysctl.icmpv6_echo_ignore_multicast;
->  		table[3].data = &net->ipv6.sysctl.icmpv6_echo_ignore_anycast;
->  		table[4].data = &net->ipv6.sysctl.icmpv6_ratemask_ptr;
-> +		table[5].data = &net->ipv6.sysctl.icmpv6_error_anycast_as_unicast;
->  	}
->  	return table;
+> +       sk_error_report(sk);
+> +
+>         return 0;
 >  }
-> -- 
-> 2.40.0.634.g4ca3ef3211-goog
+>  EXPORT_SYMBOL(sock_queue_err_skb);
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index c605d171eb2d..7060a5cda711 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -2674,6 +2674,11 @@ void udp_destroy_sock(struct sock *sk)
+>                 if (up->encap_enabled)
+>                         static_branch_dec(&udp_encap_needed_key);
+>         }
+> +
+> +       /* A zerocopy skb has a refcnt of sk and may be
+> +        * put into sk_error_queue with TX timestamp
+> +        */
+> +       skb_queue_purge(&sk->sk_error_queue);
+>  }
+>
+>  /*
+> --
+> 2.30.2
+>
