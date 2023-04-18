@@ -2,170 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 551E46E6A71
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 19:04:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 720036E6BB7
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 20:07:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231432AbjDRREm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 13:04:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
+        id S232353AbjDRSHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 14:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232297AbjDRREl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 13:04:41 -0400
-X-Greylist: delayed 572 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 18 Apr 2023 10:04:36 PDT
-Received: from ns.iliad.fr (ns.iliad.fr [212.27.33.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD466A6A
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 10:04:36 -0700 (PDT)
-Received: from ns.iliad.fr (localhost [127.0.0.1])
-        by ns.iliad.fr (Postfix) with ESMTP id 8D10D200D6;
-        Tue, 18 Apr 2023 18:55:02 +0200 (CEST)
-Received: from sakura.iliad.local (freebox.vlq16.iliad.fr [213.36.7.13])
-        by ns.iliad.fr (Postfix) with ESMTP id 71D0B20066;
-        Tue, 18 Apr 2023 18:55:02 +0200 (CEST)
-From:   Maxime Bizon <mbizon@freebox.fr>
-To:     davem@davemloft.net, edumazet@google.com, tglx@linutronix.de,
-        wangyang.guo@intel.com, netdev@vger.kernel.org
-Cc:     Maxime Bizon <mbizon@freebox.fr>
-Subject: [PATCH net-next] net: dst: fix missing initialization of rt_uncached
-Date:   Tue, 18 Apr 2023 18:54:26 +0200
-Message-Id: <20230418165426.1869051-1-mbizon@freebox.fr>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229564AbjDRSHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 14:07:15 -0400
+X-Greylist: delayed 891 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 18 Apr 2023 11:07:13 PDT
+Received: from smtp-p01.blackberry.com (smtp-p01.blackberry.com [208.65.78.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7288D1FFD;
+        Tue, 18 Apr 2023 11:07:13 -0700 (PDT)
+Received: from pps.filterd (mhs402ykf.rim.net [127.0.0.1])
+        by mhs402ykf.rim.net (8.17.1.19/8.17.1.19) with ESMTP id 33IEaVeG025938;
+        Tue, 18 Apr 2023 13:38:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=blackberry.com; h=date : from : to
+ : cc : subject : message-id : mime-version : content-type; s=corp19;
+ bh=hUjH+UcOR8+h90zgid1y9EaQTtp4ffhjogvzBY0M7S4=;
+ b=bNClmIpkcOxfuAIVIvSuXe60LTmlq17pWAC3vsYoIFlq99msPYqLQo/NX5HH1DrR8Pqr
+ AwOrG1t/X+LD0PSmlvOks6HKkzrHc5uqMl6iZGUugEgbICkjlghzHNik5O/O+uhP3t21
+ XUwyn3aW2o7BieZkwIycDouxv84fh5/zW0e9jbkQSejLXfd/Bg5lkLfsodz1CMKibGn8
+ Q3Z2xu/0yagqRFJqq6KBNJDMhJ66MzK6YIfqDtxGeuUDmoPv3ClULKY1iR1fO8xsmSvi
+ WpKugrWGurkgEPBOtOsN/pUIQAgWb1kIAR3VATAkYFQAzsAidCjESIOlL8adjFm5HyGv Ig== 
+Received: from mhs300ykf.rim.net (mhs300ykf.rim.net [10.12.100.129])
+        by mhs402ykf.rim.net (PPS) with ESMTPS id 3pyp4wgka2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Apr 2023 13:38:26 -0400
+Received: from pps.filterd (mhs300ykf.rim.net [127.0.0.1])
+        by mhs300ykf.rim.net (8.17.1.19/8.17.1.19) with ESMTP id 33IFB5W1026205;
+        Tue, 18 Apr 2023 13:38:26 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mhs300ykf.rim.net (PPS) with ESMTPS id 3pyrwepkre-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Apr 2023 13:38:26 -0400
+Received: from mhs300ykf.rim.net (mhs300ykf.rim.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 33IHcPEm021157;
+        Tue, 18 Apr 2023 13:38:25 -0400
+Received: from datsun.rim.net (datsun.rim.net [10.4.2.118])
+        by mhs300ykf.rim.net (PPS) with ESMTPS id 3pyrwepkrc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Apr 2023 13:38:25 -0400
+Received: from bspencer by datsun.rim.net with local (Exim 4.94.2)
+        (envelope-from <bspencer@datsun.rim.net>)
+        id 1popHd-001Dw9-0F; Tue, 18 Apr 2023 14:38:25 -0300
+Date:   Tue, 18 Apr 2023 14:38:24 -0300
+From:   Brad Spencer <bspencer@blackberry.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: netlink getsockopt() sets only one byte?
+Message-ID: <ZD7VkNWFfp22kTDt@datsun.rim.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Proofpoint-GUID: sCDS1fd-m7n6H24Bx4xDsEWh-qiYRP6K
+X-Proofpoint-ORIG-GUID: Nk3K6GA95w1lmyFTEadlSltIHAdnaqBb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-18_13,2023-04-18_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ spamscore=0 mlxlogscore=999 phishscore=0 bulkscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2304180145
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-18_13,2023-04-18_01,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-xfrm_alloc_dst() followed by xfrm4_dst_destroy(), without a
-xfrm4_fill_dst() call in between, causes the following BUG:
+Calling getsockopt() on a netlink socket with SOL_NETLINK options that
+use type int only sets the first byte of the int value but returns an
+optlen equal to sizeof(int), at least on x86_64.
 
- BUG: spinlock bad magic on CPU#0, fbxhostapd/732
-  lock: 0x890b7668, .magic: 890b7668, .owner: <none>/-1, .owner_cpu: 0
- CPU: 0 PID: 732 Comm: fbxhostapd Not tainted 6.3.0-rc6-next-20230414-00613-ge8de66369925-dirty #9
- Hardware name: Marvell Kirkwood (Flattened Device Tree)
-  unwind_backtrace from show_stack+0x10/0x14
-  show_stack from dump_stack_lvl+0x28/0x30
-  dump_stack_lvl from do_raw_spin_lock+0x20/0x80
-  do_raw_spin_lock from rt_del_uncached_list+0x30/0x64
-  rt_del_uncached_list from xfrm4_dst_destroy+0x3c/0xbc
-  xfrm4_dst_destroy from dst_destroy+0x5c/0xb0
-  dst_destroy from rcu_process_callbacks+0xc4/0xec
-  rcu_process_callbacks from __do_softirq+0xb4/0x22c
-  __do_softirq from call_with_stack+0x1c/0x24
-  call_with_stack from do_softirq+0x60/0x6c
-  do_softirq from __local_bh_enable_ip+0xa0/0xcc
 
-Patch "net: dst: Prevent false sharing vs. dst_entry:: __refcnt" moved
-rt_uncached and rt_uncached_list fields from rtable struct to dst
-struct, so they are more zeroed by memset_after(xdst, 0, u.dst) in
-xfrm_alloc_dst().
+The detailed description:
 
-Note that rt_uncached (list_head) was never properly initialized at
-alloc time, but xfrm[46]_dst_destroy() is written in such a way that
-it was not an issue thanks to the memset:
+It looks like netlink_getsockopt() calls put_user() with a char*
+pointer, and I think that causes it to copy only one byte from the val
+result, despite len being sizeof(int).
 
-	if (xdst->u.rt.dst.rt_uncached_list)
-		rt_del_uncached_list(&xdst->u.rt);
+Is this the expected behaviour?  The returned size is 4, after all,
+and other int-sized socket options (outside of netlink) like
+SO_REUSEADDR set all bytes of the int.
 
-The route code does it the other way around: rt_uncached_list is
-assumed to be valid IIF rt_uncached list_head is not empty:
+Programs that do not expect this behaviour and do not initialize the
+value to some known bit pattern are likely to misinterpret the result,
+especially when checking to see if the value is or isn't zero.
 
-void rt_del_uncached_list(struct rtable *rt)
+Attached is a short program that demonstrates the issue on Arch Linux
+with the 6.3.0-rc6 mainline kernel on x86_64, and also with the same
+Arch Linux userland on 6.2.10-arch1-1.  I've seen the same behaviour
+on older Debian and Ubuntu kernels.
+
+    gcc -Wall -o prog prog.c
+    
+Show only the first byte being written to when the setting is `0`:
+
+    $ ./progboot
+    SOL_SOCKET SO_REUSEADDR:
+    size=4 value=0x0
+    SOL_NETLINK NETLINK_NO_ENOBUFS:
+    size=4 value=0xdeadbe00
+    prog: prog.c:39: tryOption: Assertion `value == 0' failed.
+    Aborted (core dumped)
+
+Workaround by initializing to zero:
+
+    $ ./prog workaround
+    SOL_SOCKET SO_REUSEADDR:
+    size=4 value=0x0
+    SOL_NETLINK NETLINK_NO_ENOBUFS:
+    size=4 value=0x0
+
+Show only the first byte being written to when the setting is `1`:
+
+    $ SET_FIRST=yes ./prog
+    SOL_SOCKET SO_REUSEADDR:
+    size=4 value=0x1
+    SOL_NETLINK NETLINK_NO_ENOBUFS:
+    size=4 value=0xdeadbe01
+    prog: prog.c:35: tryOption: Assertion `value == 1' failed.
+    Aborted (core dumped)
+
+Workaround by initializing to zero:
+
+    $ SET_FIRST=yes ./prog workaround
+    SOL_SOCKET SO_REUSEADDR:
+    size=4 value=0x1
+    SOL_NETLINK NETLINK_NO_ENOBUFS:
+    size=4 value=0x1
+
+
+Demonstration program:
+
+#include <asm/types.h>
+#include <assert.h>
+#include <linux/netlink.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+static void tryOption(const int fd,
+                      const int level,
+                      const int optname,
+                      const int workaround,
+                      const int setFirst)
 {
-        if (!list_empty(&rt->dst.rt_uncached)) {
-                struct uncached_list *ul = rt->dst.rt_uncached_list;
+  assert(fd != -1);
+  
+  // Setting it to 1 gives similar results.
+  if(setFirst)
+  {
+    int value = 1;
+    assert(!setsockopt(fd, level, optname, &value, sizeof(value)));
+  }
 
-                spin_lock_bh(&ul->lock);
-                list_del_init(&rt->dst.rt_uncached);
-                spin_unlock_bh(&ul->lock);
-        }
+  // Get the option.
+  {
+    int value = workaround ? 0 : 0xdeadbeef;
+    socklen_t size = sizeof(value);
+
+    // Only the first byte of `value` is written to!
+    assert(!getsockopt(fd, level, optname, &value, &size));
+    printf("size=%u value=0x%x\n", size, value);
+    if(setFirst)
+    {
+      assert(value == 1);
+    }
+    else
+    {
+      assert(value == 0);
+    }
+
+    // But it always reports a 4 byte option size.
+    assert(size == sizeof(int));
+  }
+
+  close(fd);
 }
 
-This patch adds mandatory rt_uncached list_head initialization in
-generic dst_init(), and adapt xfrm[46]_dst_destroy logic to match the
-rest of the code.
+int
+main(int argc, char** argv)
+{
+  // If any argument is supplied, apply a workaround.
+  const int workaround = argc > 1;
 
-Fixes: d288a162dd1c ("net: dst: Prevent false sharing vs. dst_entry:: __refcnt")
-Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
----
- net/core/dst.c          | 1 +
- net/ipv4/xfrm4_policy.c | 4 +---
- net/ipv6/route.c        | 1 -
- net/ipv6/xfrm6_policy.c | 4 +---
- 4 files changed, 3 insertions(+), 7 deletions(-)
+  // If $SET_FIRST is set to anything, set the option to 1 first.
+  const int setFirst = getenv("SET_FIRST") != NULL;
 
-diff --git a/net/core/dst.c b/net/core/dst.c
-index 3247e84045ca..79d9306ad1ee 100644
---- a/net/core/dst.c
-+++ b/net/core/dst.c
-@@ -67,6 +67,7 @@ void dst_init(struct dst_entry *dst, struct dst_ops *ops,
- #endif
- 	dst->lwtstate = NULL;
- 	rcuref_init(&dst->__rcuref, initial_ref);
-+	INIT_LIST_HEAD(&dst->rt_uncached);
- 	dst->__use = 0;
- 	dst->lastuse = jiffies;
- 	dst->flags = flags;
-diff --git a/net/ipv4/xfrm4_policy.c b/net/ipv4/xfrm4_policy.c
-index 47861c8b7340..9403bbaf1b61 100644
---- a/net/ipv4/xfrm4_policy.c
-+++ b/net/ipv4/xfrm4_policy.c
-@@ -91,7 +91,6 @@ static int xfrm4_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
- 		xdst->u.rt.rt_gw6 = rt->rt_gw6;
- 	xdst->u.rt.rt_pmtu = rt->rt_pmtu;
- 	xdst->u.rt.rt_mtu_locked = rt->rt_mtu_locked;
--	INIT_LIST_HEAD(&xdst->u.rt.dst.rt_uncached);
- 	rt_add_uncached_list(&xdst->u.rt);
- 
- 	return 0;
-@@ -121,8 +120,7 @@ static void xfrm4_dst_destroy(struct dst_entry *dst)
- 	struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
- 
- 	dst_destroy_metrics_generic(dst);
--	if (xdst->u.rt.dst.rt_uncached_list)
--		rt_del_uncached_list(&xdst->u.rt);
-+	rt_del_uncached_list(&xdst->u.rt);
- 	xfrm_dst_destroy(xdst);
- }
- 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 35085fc0cf15..e3aec46bd466 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -334,7 +334,6 @@ static const struct rt6_info ip6_blk_hole_entry_template = {
- static void rt6_info_init(struct rt6_info *rt)
- {
- 	memset_after(rt, 0, dst);
--	INIT_LIST_HEAD(&rt->dst.rt_uncached);
- }
- 
- /* allocate dst with ip6_dst_ops */
-diff --git a/net/ipv6/xfrm6_policy.c b/net/ipv6/xfrm6_policy.c
-index 2b493f8d0091..eecc5e59da17 100644
---- a/net/ipv6/xfrm6_policy.c
-+++ b/net/ipv6/xfrm6_policy.c
-@@ -89,7 +89,6 @@ static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
- 	xdst->u.rt6.rt6i_gateway = rt->rt6i_gateway;
- 	xdst->u.rt6.rt6i_dst = rt->rt6i_dst;
- 	xdst->u.rt6.rt6i_src = rt->rt6i_src;
--	INIT_LIST_HEAD(&xdst->u.rt6.dst.rt_uncached);
- 	rt6_uncached_list_add(&xdst->u.rt6);
- 
- 	return 0;
-@@ -121,8 +120,7 @@ static void xfrm6_dst_destroy(struct dst_entry *dst)
- 	if (likely(xdst->u.rt6.rt6i_idev))
- 		in6_dev_put(xdst->u.rt6.rt6i_idev);
- 	dst_destroy_metrics_generic(dst);
--	if (xdst->u.rt6.dst.rt_uncached_list)
--		rt6_uncached_list_del(&xdst->u.rt6);
-+	rt6_uncached_list_del(&xdst->u.rt6);
- 	xfrm_dst_destroy(xdst);
- }
- 
+  // Other int options set all bytes of the int.
+  printf("SOL_SOCKET SO_REUSEADDR:\n");
+  tryOption(
+    socket(AF_INET, SOCK_STREAM, 0),
+    SOL_SOCKET,
+    SO_REUSEADDR,
+    workaround,
+    setFirst);
+
+  // Netlink int socket options do not set all bytes of the int.
+  printf("SOL_NETLINK NETLINK_NO_ENOBUFS:\n");
+  tryOption(
+    socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE),
+    SOL_NETLINK,
+    NETLINK_NO_ENOBUFS,
+    workaround,
+    setFirst);
+}
+
 -- 
-2.34.1
+Brad Spencer
 
+----------------------------------------------------------------------
+This transmission (including any attachments) may contain confidential information, privileged material (including material protected by the solicitor-client or other applicable privileges), or constitute non-public information. Any use of this information by anyone other than the intended recipient is prohibited. If you have received this transmission in error, please immediately reply to the sender and delete this information from your system. Use, dissemination, distribution, or reproduction of this transmission by unintended recipients is not authorized and may be unlawful.
