@@ -2,144 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64BFF6E5628
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 03:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1E236E5632
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 03:08:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbjDRBDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 21:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35924 "EHLO
+        id S230168AbjDRBIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 21:08:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbjDRBDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 21:03:45 -0400
-Received: from out-53.mta1.migadu.com (out-53.mta1.migadu.com [IPv6:2001:41d0:203:375::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D9D3581
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 18:03:43 -0700 (PDT)
-Message-ID: <a4591e85-d58b-0efd-c8a4-2652dc69ff68@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1681779821;
+        with ESMTP id S230026AbjDRBIa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 21:08:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBDAAD
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 18:07:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681780064;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F6L4XXjJ7DAIawwAHN6exDhyLIgvinWJ7u4alQvnINk=;
-        b=lrWoVAvN2dp4uPEXlR77OB9JFoLC9kWgFsZ9/4nEg+fkkX22rpYNjZ5BF5XaMVYgdbk15j
-        yhdXAjHD9Ey+WsBnri+bIiW4dwJXCnhqcJgCMf+C4tMtcF2XvUj3AqxgOBy6x/dojejDj/
-        Ae2yiGOgVqeW9s9fpj36dJzyQNjz8Es=
-Date:   Mon, 17 Apr 2023 18:03:35 -0700
+        bh=FJ5eAv/wPSjHQtCSmc7/SAtq7IJeARTquIRQEcE2Hzo=;
+        b=ZL2jy4bM2YNSCsVjglUHBcwg/RMWpXsDlI97VY1vjbvH/I9K5JsVVGtFq85K2o9odUn/wt
+        jfqmy+iBdSUbQw/sUsgu/d4d82hRNIHptxEJg8xhr0jNiFXCib/uqliKDY1fVYxrJxzjSe
+        aIxy9xV3+pfZl7uAR0ccMoK3bp+8S9M=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-85-V8DLwkCdOCa2f5sskdLbAQ-1; Mon, 17 Apr 2023 21:07:42 -0400
+X-MC-Unique: V8DLwkCdOCa2f5sskdLbAQ-1
+Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-38c0db69fdfso69963b6e.1
+        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 18:07:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681780062; x=1684372062;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FJ5eAv/wPSjHQtCSmc7/SAtq7IJeARTquIRQEcE2Hzo=;
+        b=Ul6EhRb+09PlSHefEFaUM5ybkg3X8oKwVUZKkXGfX3eYlpRjOgWuMnk7VGopSLacSI
+         ZvgJDmKkUHy2TPBR9LB55ZwzKQNArqR9wNmjUHcsSiUfdGTxzNXgNV3ZATzF57fRqsh/
+         bEfwY4QBrmAsvDaWjG7KXEH+52fxYBcTbDD1GsEiCBoFOCRoJ9AXmHzVWmHlM7FLjg8t
+         /FpLYmCWEmffsu9fZOQM4cdFH1A3T39kwPc5jPDB34DJnOUBYB8m9dfZ+UTvemv7aD+G
+         pQSOo6IFXjubc33zTkmyQHUp3elxeqPiZlx9tlvzoaMjGf6Aht0Z6D1fjAeGXAvdirHi
+         PnzQ==
+X-Gm-Message-State: AAQBX9emgG6i+sx/CBqvnDcBWjm3jHXqrwKggZ8dZvXYPQ7Un3dwrmIO
+        xDcvr2FxezbXTwxTthWaAfjcQUMN5UtIlwvfXOh7fb4pz+s5iT+x+a8PAe80/o9fQUm/pINUomR
+        E7rOQil+po/L8JNHMvhUzC8DZm4TfwIum
+X-Received: by 2002:aca:a90f:0:b0:38c:2e50:7ba1 with SMTP id s15-20020acaa90f000000b0038c2e507ba1mr70572oie.9.1681780062177;
+        Mon, 17 Apr 2023 18:07:42 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZqCb2yI8XjPtu0T702ZUJh3g15tnGze7/cYh3km5B2h6oWo65vgswsQUHg5Pv5UfUHzBzjLVKg/U5tifRvxHw=
+X-Received: by 2002:aca:a90f:0:b0:38c:2e50:7ba1 with SMTP id
+ s15-20020acaa90f000000b0038c2e507ba1mr70553oie.9.1681780061908; Mon, 17 Apr
+ 2023 18:07:41 -0700 (PDT)
 MIME-Version: 1.0
-Subject: handling unsupported optlen in cgroup bpf getsockopt: (was [PATCH
- net-next v4 2/4] net: socket: add sockopts blacklist for BPF cgroup hook)
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, Jakub Kicinski <kuba@kernel.org>,
+References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
+ <ZDzKAD2SNe1q/XA6@infradead.org> <1681711081.378984-2-xuanzhuo@linux.alibaba.com>
+ <20230417115610.7763a87c@kernel.org> <20230417115753.7fb64b68@kernel.org>
+In-Reply-To: <20230417115753.7fb64b68@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 18 Apr 2023 09:07:30 +0800
+Message-ID: <CACGkMEtPNPXFThHt4aNm4g-fC1DqTLcDnB_iBWb9-cAOHMYV_A@mail.gmail.com>
+Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Christoph Hellwig <hch@infradead.org>, netdev@vger.kernel.org,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        linux-arch@vger.kernel.org,
-        Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
-        bpf <bpf@vger.kernel.org>
-References: <20230413133355.350571-1-aleksandr.mikhalitsyn@canonical.com>
- <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com>
- <CANn89iLuLkUvX-dDC=rJhtFcxjnVmfn_-crOevbQe+EjaEDGbg@mail.gmail.com>
- <CAEivzxcEhfLttf0VK=NmHdQxF7CRYXNm6NwUVx6jx=-u2k-T6w@mail.gmail.com>
- <CAKH8qBt+xPygUVPMUuzbi1HCJuxc4gYOdU6JkrFmSouRQgoG6g@mail.gmail.com>
- <ZDoEG0VF6fb9y0EC@google.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <ZDoEG0VF6fb9y0EC@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Gerd Hoffmann <kraxel@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/14/23 6:55 PM, Stanislav Fomichev wrote:
-> On 04/13, Stanislav Fomichev wrote:
->> On Thu, Apr 13, 2023 at 7:38 AM Aleksandr Mikhalitsyn
->> <aleksandr.mikhalitsyn@canonical.com> wrote:
->>>
->>> On Thu, Apr 13, 2023 at 4:22 PM Eric Dumazet <edumazet@google.com> wrote:
->>>>
->>>> On Thu, Apr 13, 2023 at 3:35 PM Alexander Mikhalitsyn
->>>> <aleksandr.mikhalitsyn@canonical.com> wrote:
->>>>>
->>>>> During work on SO_PEERPIDFD, it was discovered (thanks to Christian),
->>>>> that bpf cgroup hook can cause FD leaks when used with sockopts which
->>>>> install FDs into the process fdtable.
->>>>>
->>>>> After some offlist discussion it was proposed to add a blacklist of
->>>>
->>>> We try to replace this word by either denylist or blocklist, even in changelogs.
->>>
->>> Hi Eric,
->>>
->>> Oh, I'm sorry about that. :( Sure.
->>>
->>>>
->>>>> socket options those can cause troubles when BPF cgroup hook is enabled.
->>>>>
->>>>
->>>> Can we find the appropriate Fixes: tag to help stable teams ?
->>>
->>> Sure, I will add next time.
->>>
->>> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
->>>
->>> I think it's better to add Stanislav Fomichev to CC.
->>
->> Can we use 'struct proto' bpf_bypass_getsockopt instead? We already
->> use it for tcp zerocopy, I'm assuming it should work in this case as
->> well?
-> 
-> Jakub reminded me of the other things I wanted to ask here bug forgot:
-> 
-> - setsockopt is probably not needed, right? setsockopt hook triggers
->    before the kernel and shouldn't leak anything
-> - for getsockopt, instead of bypassing bpf completely, should we instead
->    ignore the error from the bpf program? that would still preserve
->    the observability aspect
+On Tue, Apr 18, 2023 at 2:58=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
+ote:
+>
+> On Mon, 17 Apr 2023 11:56:10 -0700 Jakub Kicinski wrote:
+> > > May misunderstand, here the "dma_ops" is not the "dma_ops" of DMA API=
+.
+> > >
+> > > I mean the callbacks for xsk to do dma.
+> > >
+> > > Maybe, I should rename it in the next version.
+> >
+> > Would you mind explaining this a bit more to folks like me who are not
+> > familiar with VirtIO?  DMA API is supposed to hide the DMA mapping
+> > details from the stack, why is it not sufficient here.
 
-stealing this thread to discuss the optlen issue which may make sense to bypass 
-also.
+The reason is that legacy virtio device don't use DMA(vring_use_dma_api()).
 
-There has been issue with optlen. Other than this older post related to optlen > 
-PAGE_SIZE: 
-https://lore.kernel.org/bpf/5c8b7d59-1f28-2284-f7b9-49d946f2e982@linux.dev/, the 
-recent one related to optlen that we have seen is NETLINK_LIST_MEMBERSHIPS. The 
-userspace passed in optlen == 0 and the kernel put the expected optlen (> 0) and 
-'return 0;' to userspace. The userspace intention is to learn the expected 
-optlen. This makes 'ctx.optlen > max_optlen' and 
-__cgroup_bpf_run_filter_getsockopt() ends up returning -EFAULT to the userspace 
-even the bpf prog has not changed anything.
+The AF_XDP assumes DMA for netdev doesn't work in this case. We need a
+way to make it work.
 
-Does it make sense to also bypass the bpf prog when 'ctx.optlen > max_optlen' 
-for now (and this can use a separate patch which as usual requires a bpf selftests)?
+Thanks
 
-In the future, does it make sense to have a specific cgroup-bpf-prog (a specific 
-attach type?) that only uses bpf_dynptr kfunc to access the optval such that it 
-can enforce read-only for some optname and potentially also track if bpf-prog 
-has written a new optval? The bpf-prog can only return 1 (OK) and only allows 
-using bpf_set_retval() instead. Likely there is still holes but could be a seed 
-of thought to continue polishing the idea.
-
-
-> - or maybe we can even have a per-proto bpf_getsockopt_cleanup call that
->    gets called whenever bpf returns an error to make sure protocols have
->    a chance to handle that condition (and free the fd)
-> 
-
+>
+> Umm.. also it'd help to post the user of the API in the same series.
+> I only see the XSK changes, maybe if the virtio changes were in
+> the same series I could answer my own question.
+>
 
