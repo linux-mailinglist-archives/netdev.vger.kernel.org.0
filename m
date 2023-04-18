@@ -2,48 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E45646E6525
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 14:58:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6247C6E6530
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 15:01:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbjDRM6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 08:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53364 "EHLO
+        id S232021AbjDRNBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 09:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbjDRM6g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 08:58:36 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DDC23581
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 05:58:34 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [7.192.105.130])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Q13m91qTwznbW1;
-        Tue, 18 Apr 2023 20:54:49 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 18 Apr 2023 20:58:31 +0800
-Subject: Re: [PATCH net v2] ipv4: Fix potential uninit variable access buf in
- __ip_make_skb()
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>
-References: <20230410014526.4035442-1-william.xuanziyang@huawei.com>
- <64341d839d862_7d2a4294d@willemb.c.googlers.com.notmuch>
- <ae16f222-86ad-af35-8a05-82d7a0e7f234@huawei.com>
-Message-ID: <a57ca89f-0816-d691-06b1-78f28a824b1a@huawei.com>
-Date:   Tue, 18 Apr 2023 20:58:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <ae16f222-86ad-af35-8a05-82d7a0e7f234@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        with ESMTP id S232161AbjDRNBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 09:01:20 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1078F;
+        Tue, 18 Apr 2023 06:01:19 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id h14so17238620qvr.7;
+        Tue, 18 Apr 2023 06:01:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681822878; x=1684414878;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CL9yk8kR8JQHCBiG6XJPcoKIWuAuKCuMXhZTdC/kwrs=;
+        b=nKsTehVbZ82XntFvPWdPhF+0TCfRkC9HA8Q+iZ6PVkShou4eoJ2ewuO6YDNeDcnejk
+         ja3tNceWubITIcWnV3jUea1VpEO8Em7upC1RXsuJnWiRlMTYfLwFKtslSvhuFKpE2VrC
+         qtSOf+g0i/rEfmvvKMhf8DhB+1yIwNn8mqaBeakOeAandQQmb78vaF5E3dIGbn7mgwUj
+         5C7Jbf0WOdk4zgL1gae1DJlo0mYbe7/TWCfdpAp1aAtCHIhZFpAWNg30fyMx/S6/4aSU
+         ENo1mLyyh5qL3+bmFmL7g4q98gHjegb+ihMuYxqtJ0ciH9g5isNA0OKfBTb9V0C4AwGq
+         dLnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681822878; x=1684414878;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=CL9yk8kR8JQHCBiG6XJPcoKIWuAuKCuMXhZTdC/kwrs=;
+        b=MVP/d6Dx30vd78a5WuFGBWelSNtWr2hm+EnwqzxtifLWfLXdgWot81nzVRoGGYUGg6
+         i850hQ+7RcbUQqx43wd6XV21oOMjwP07HsMQd0gJ2UzIPOO4WgKglhcZX/CM6kmu4Tf8
+         Mp96gPPDvG1wPYPfJyPpBTaYLcOW/XNOmcdJDIAsL5DcKCjv/Jg/8RUyZF/u0qSjCiAG
+         9eMCG3ABGmQDr1Dkb87Qglta15hwS+phQINEHS/d84+QJxnXvKaIfhZAsoC+fNDEUSo/
+         BWJSt+p0gG0nll4LHohNSQxV7D6ez5KB/nmTkjsTw3s8qWnz3wCo3v6GoCkfJ8Tv6yPr
+         YwNg==
+X-Gm-Message-State: AAQBX9cLeO5+HnzzR1kpCsr/x67xMWEceouMm0K5holRXvc3FZKXzWBR
+        tem5JP8OYa7602c0SuhrZQBW2NlfpNw=
+X-Google-Smtp-Source: AKy350bUY+ve5/bYNtJHpsxYFA3wdEg5faDFlBXtu3rCcJ4Dj0VzAq8hz6tem8hH7nW0vAZ+PVjDbg==
+X-Received: by 2002:ad4:4eae:0:b0:5ca:83ed:12be with SMTP id ed14-20020ad44eae000000b005ca83ed12bemr26507409qvb.21.1681822878386;
+        Tue, 18 Apr 2023 06:01:18 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id dd11-20020ad4580b000000b005dd8b9345a8sm3698594qvb.64.2023.04.18.06.01.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Apr 2023 06:01:17 -0700 (PDT)
+Date:   Tue, 18 Apr 2023 09:01:17 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Yang Yang <yang.yang29@zte.com.cn>, willemdebruijn.kernel@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, jiang.xuexin@zte.com.cn,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, xu.xin16@zte.com.cn,
+        yang.yang29@zte.com.cn, zhang.yunkai@zte.com.cn
+Message-ID: <643e949db6497_328d8929430@willemb.c.googlers.com.notmuch>
+In-Reply-To: <20230418012910.194745-1-yang.yang29@zte.com.cn>
+References: <643d62b28e413_29adc929416@willemb.c.googlers.com.notmuch>
+ <20230418012910.194745-1-yang.yang29@zte.com.cn>
+Subject: RE: [PATCH linux-next 1/3] selftests: net: udpgso_bench_rx: Fix
+ verifty exceptions
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,81 +77,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> Ziyang Xuan wrote:
->>> Like commit ea30388baebc ("ipv6: Fix an uninit variable access bug in
->>> __ip6_make_skb()"). icmphdr does not in skb linear region under the
->>> scenario of SOCK_RAW socket. Access icmp_hdr(skb)->type directly will
->>> trigger the uninit variable access bug.
->>>
->>> Use a local variable icmp_type to carry the correct value in different
->>> scenarios.
->>>
->>> Fixes: 96793b482540 ("[IPV4]: Add ICMPMsgStats MIB (RFC 4293)")
->>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->>> ---
->>> v2:
->>>   - Use sk->sk_type not sk->sk_socket->type.
->>
->> This is reached through
->>
->>   raw_sendmsg
->>     raw_probe_proto_opt
->>     ip_push_pending_frames
->>       ip_finish_skb
->>         __ip_make_skb
->>
->> At this point, the icmp header has already been copied into skb linear
->> area. Is the isue that icmp_hdr/skb_transport_header is not set in
->> this path? 
->>
-> Hello Willem,
+Yang Yang wrote:
+> > Why are you running two senders concurrently? The test is not intended
+> > to handle that case.
 > 
-> raw_sendmsg
->   ip_append_data(..., transhdrlen==0, ...) // !inet->hdrincl
+> Sorry for the inaccuracy of the description here, these two commands,
+> i.e. with or without GSO, cause the problem. The same goes for patch 2/3.
+> The problem is easily reproducible in the latest kernel, QEMU environment, E1000.
 > 
-> Parameter "transhdrlen" of ip_append_data() equals to 0 in raw_sendmsg()
-> not sizeof(struct icmphdr) as in ping_v4_sendmsg().
+> bash# udpgso_bench_tx -l 4 -4 -D "$DST" 
+> udpgso_bench_tx: write: Connection refused
+> bash# udpgso_bench_rx -4 -G -S 1472 -v
+> udpgso_bench_rx: data[1472]: len 17664, a(97) != q(113)
 > 
-> William Xuan.
-Hello Willem,
+> bash# udpgso_bench_tx -l 4 -4 -D "$DST" -S 0
+> udpgso_bench_tx: sendmsg: Connection refused
+> bash# udpgso_bench_rx -4 -G -S 1472 -v
+> udpgso_bench_rx: data[61824]: len 64768, a(97) != w(119)
 
-Does my answer answer your doubts?
+I still don't follow: are you running the tx and rx commands
+sequentially or in parallel? On different (virtual) hosts?
+ 
+> In one test, the verification data is printed as follows:
+> abcd...xyz
+> ...
+> abcd...xyz
+> abcd...opabcd...xyz
+> 
+> This is because the sender intercepts from the buf at a certain length,
+> which is not aligned according to 26 bytes, and multiple packets are
+> merged. The verification of the receiving end needs to be performed
+> after splitting.
 
-William Xuan
->>> ---
->>>  net/ipv4/ip_output.c | 12 +++++++++---
->>>  1 file changed, 9 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
->>> index 4e4e308c3230..21507c9ce0fc 100644
->>> --- a/net/ipv4/ip_output.c
->>> +++ b/net/ipv4/ip_output.c
->>> @@ -1570,9 +1570,15 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
->>>  	cork->dst = NULL;
->>>  	skb_dst_set(skb, &rt->dst);
->>>  
->>> -	if (iph->protocol == IPPROTO_ICMP)
->>> -		icmp_out_count(net, ((struct icmphdr *)
->>> -			skb_transport_header(skb))->type);
->>> +	if (iph->protocol == IPPROTO_ICMP) {
->>> +		u8 icmp_type;
->>> +
->>> +		if (sk->sk_type == SOCK_RAW && !inet_sk(sk)->hdrincl)
->>> +			icmp_type = fl4->fl4_icmp_type;
->>> +		else
->>> +			icmp_type = icmp_hdr(skb)->type;
->>> +		icmp_out_count(net, icmp_type);
->>> +	}
->>>  
->>>  	ip_cork_release(cork);
->>>  out:
->>> -- 
->>> 2.25.1
->>>
->>
->>
->> .
->>
-> 
-> .
-> 
+The 26 bytes is a reference to the pattern printed by the test, which
+iterates over A-Z.
+
+Is your point that each individual segment starts at A, so that a test
+for pattern {ABC..Z}+ only matches if the segments size is a multiple
+of 26, else a the pattern will have discontinuities?
+
+
