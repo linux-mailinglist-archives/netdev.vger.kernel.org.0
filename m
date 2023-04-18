@@ -2,67 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 773586E5D68
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 11:31:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D94EF6E5D70
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 11:33:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230411AbjDRJb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 05:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
+        id S230026AbjDRJda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 05:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbjDRJb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 05:31:27 -0400
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BAA59DC
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 02:31:23 -0700 (PDT)
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20230418093119bc01c4187ddbe3a376
-        for <netdev@vger.kernel.org>;
-        Tue, 18 Apr 2023 11:31:20 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=CqK3hsqP4ZsT3ZUY+isIcg9eKHACr0lAiNG1+JRla6g=;
- b=qgSvw768XrHXL9zjoF5Fi+WBoNdMdWHl324bLBiS9wq1u4tQkr2ulODt4ZPNSvEiHuxy2w
- RKE2yu8Sb8Bi5ojr66/Z5zlRmyQQ9lRmWdbz4qoWuBo9sjNznGinj7y4/74qtLGJqMnle6KC
- e1VTaI9CzcGE4fniV7kl20klcOhV8=;
-Message-ID: <98a4831de6c2ae4a3eb8d29dcd114a6e96c34f94.camel@siemens.com>
-Subject: Re: [PATCH net v3 1/1] igc: read before write to SRRCTL register
-From:   Florian Bezdeka <florian.bezdeka@siemens.com>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>,
-        Jithu Joseph <jithu.joseph@intel.com>,
-        Andre Guedes <andre.guedes@intel.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        David Laight <David.Laight@ACULAB.COM>
-Cc:     brouer@redhat.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, xdp-hints@xdp-project.net,
-        stable@vger.kernel.org
-Date:   Tue, 18 Apr 2023 11:31:16 +0200
-In-Reply-To: <e7b9cb2c-1c18-7354-8d33-a924b5ae1d5b@redhat.com>
-References: <20230414154902.2950535-1-yoong.siang.song@intel.com>
-         <934a4204-1920-f5e1-bcde-89429554d0d6@redhat.com>
-         <e7b9cb2c-1c18-7354-8d33-a924b5ae1d5b@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229635AbjDRJd3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 05:33:29 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C77AD
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 02:33:24 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id a10so12876686ljr.5
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 02:33:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681810403; x=1684402403;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=UkJRiG6xBagkkbHONkrh8XGPSkiHk+zGZ5JXRxSS1c0=;
+        b=pvSGk9F7AD9cr6KUMyfjGrgG3aBsNzakie8ULZZMIiBlvQ1TT9WLwzFRMXVV/d0XMZ
+         i5HW1U4mjIXIed0FtMu7A683wMNvwEV54rUPaTSH61c/d0EmN13PxHO13f8oCe3M5xv/
+         w0F7EerJNHJ6xjzM3vXBe8djBuyEdZ1Qpk0zEndpVwrZbsxD2U6PL15QfUHRIbJPNyD7
+         1WBfonFSrSYm/47d7DUmDl1MTWt34wkE50evktcDmwStRJHSe7JJmSzjVS4SvysiRx6Z
+         w78/8SOyXuQVDOl1fFAKWlgXe533TrJWUz7EY5RGZBJLOKe03865LxGL0QOKg7x3MWuF
+         M8JQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681810403; x=1684402403;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UkJRiG6xBagkkbHONkrh8XGPSkiHk+zGZ5JXRxSS1c0=;
+        b=C1MnkjefWwC3esSAKwiPjWpFDwAmbNkiQ5EVA1JHU2ibyFqXWEjB0R0eNWta3ogzop
+         29WKGZA/r8wYQ2i0zol3ZnEvm04FzBkf9vMGn6or+eo+sHUuvjlV34xHFxBmYSeSYHBF
+         NMMuZtxcPLcl6Mwov8GAIHUECbaCMSLh7DX6/FGsLJJm4l15w3zdZDWPdRWyYKMFCSfc
+         /YAvO0kPBmi9S9oRhthmcH3clLGXClUtmRbON0eZB/kx6Rqft75VAx7eWDTrwhAUs9xn
+         /mYp1kuMWGjCywGYG2Kx8+0kO8MKQSUw/8QWHcCnYfCdnmEdhxY3CWbUjlE3Lv/jysxH
+         0B7Q==
+X-Gm-Message-State: AAQBX9eCAqPQvzJkCMZdFT3Sp7ivKEazaMmTtRaTpalND/7aK6q6mEeZ
+        Ap/P4FV7zAuJ+QH8S1gldIH5BUklIl1MUdBuKKacTQ==
+X-Google-Smtp-Source: AKy350aZchPtYSzQUuwcCsZ5uHAbJunAC83LRC6+2j6gb03cKt7XDH9OkxmYKraH3ej3FmPeu1vTI4llrVQvf7HSycY=
+X-Received: by 2002:a2e:8753:0:b0:2a7:7470:4ebc with SMTP id
+ q19-20020a2e8753000000b002a774704ebcmr590028ljj.2.1681810403169; Tue, 18 Apr
+ 2023 02:33:23 -0700 (PDT)
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <20230417152805.331865-1-kuba@kernel.org>
+In-Reply-To: <20230417152805.331865-1-kuba@kernel.org>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Tue, 18 Apr 2023 12:32:47 +0300
+Message-ID: <CAC_iWjLXL_FbCsCvuhqhz_i8j_yOgAs3gn2DAVktV0aZqT3QYg@mail.gmail.com>
+Subject: Re: [PATCH net-next] page_pool: add DMA_ATTR_WEAK_ORDERING on all mappings
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, michael.chan@broadcom.com, hawk@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,74 +66,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2023-04-17 at 16:24 +0200, Jesper Dangaard Brouer wrote:
-> On 14/04/2023 22.05, Jesper Dangaard Brouer wrote:
-> > =20
-> > On 14/04/2023 17.49, Song Yoong Siang wrote:
-> > > igc_configure_rx_ring() function will be called as part of XDP progra=
-m
-> > > setup. If Rx hardware timestamp is enabled prio to XDP program setup,
-> > > this timestamp enablement will be overwritten when buffer size is
-> > > written into SRRCTL register.
-> > >=20
-> > > Thus, this commit read the register value before write to SRRCTL
-> > > register. This commit is tested by using xdp_hw_metadata bpf selftest
-> > > tool. The tool enables Rx hardware timestamp and then attach XDP prog=
-ram
-> > > to igc driver. It will display hardware timestamp of UDP packet with
-> > > port number 9092. Below are detail of test steps and results.
-> > >=20
-> [...]
-> > >=20
-> > > Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
-> > > Cc: <stable@vger.kernel.org> # 5.14+
-> > > Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
-> > > Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-> > > Reviewed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > > ---
-> >=20
-> > LGTM, thank for the adjustments :-)
-> >=20
-> > Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> >=20
->=20
-> Tested-by: Jesper Dangaard Brouer <brouer@redhat.com>
->=20
-> I can confirm that this patch fix the issue I experienced with igc.
->=20
-> This patch clearly fixes a bug in igc when writing the SRRCTL register.
-> (as bit 30 in register is "Timestamp Received Packet" which got cleared=
-=20
-> before).
->=20
-> Florian might have found another bug around RX timestamps, but this
-> patch should be safe and sane to apply as is.
+This seems sane to me, especially since we use page pool on the Rx
+path for normal drivers.  If anyone has a different opinion please
+shout\
 
-After a closer look I'm quite sure now that this patch should fix my
-issue as well. The register will be overwritten when setting up a
-XSK_POOL as well:
+On Mon, 17 Apr 2023 at 18:28, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Commit c519fe9a4f0d ("bnxt: add dma mapping attributes") added
+> DMA_ATTR_WEAK_ORDERING to DMA attrs on bnxt. It has since spread
+> to a few more drivers (possibly as a copy'n'paste).
+>
+> DMA_ATTR_WEAK_ORDERING only seems to matter on Sparc and PowerPC/cell,
+> the rarity of these platforms is likely why we never bothered adding
+> the attribute in the page pool, even though it should be safe to add.
+>
+> To make the page pool migration in drivers which set this flag less
+> of a risk (of regressing the precious sparc database workloads or
+> whatever needed this) let's add DMA_ATTR_WEAK_ORDERING on all
+> page pool DMA mappings.
+>
+> We could make this a driver opt-in but frankly I don't think it's
+> worth complicating the API. I can't think of a reason why device
+> accesses to packet memory would have to be ordered.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: hawk@kernel.org
+> CC: ilias.apalodimas@linaro.org
+> ---
+>  net/core/page_pool.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 2f6bf422ed30..97f20f7ff4fc 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -316,7 +316,8 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
+>          */
+>         dma = dma_map_page_attrs(pool->p.dev, page, 0,
+>                                  (PAGE_SIZE << pool->p.order),
+> -                                pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+> +                                pool->p.dma_dir, DMA_ATTR_SKIP_CPU_SYNC |
+> +                                                 DMA_ATTR_WEAK_ORDERING);
+>         if (dma_mapping_error(pool->p.dev, dma))
+>                 return false;
+>
+> @@ -484,7 +485,7 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
+>         /* When page is unmapped, it cannot be returned to our pool */
+>         dma_unmap_page_attrs(pool->p.dev, dma,
+>                              PAGE_SIZE << pool->p.order, pool->p.dma_dir,
+> -                            DMA_ATTR_SKIP_CPU_SYNC);
+> +                            DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING);
+>         page_pool_set_dma_addr(page, 0);
+>  skip_dma_unmap:
+>         page_pool_clear_pp_info(page);
+> --
+> 2.39.2
+>
 
-igc_bpf
-  igc_xdp_setup_pool
-    igc_enable_rx_ring
-      igc_configure_rx_ring
-        wr32(IGC_SRRCTL)
-
-I already removed the BPF loading (which is the use case that the patch
-description mentions) from my setup to limit the search scope. If you
-like you could extend the patch description, but I'm fine with it.
-
-Thanks a lot for all the support / ideas! Highly appreciated!
-
-Florian
-
->=20
-> > > v2 -> v3: Refactor SRRCTL definitions to more human readable definiti=
-ons
-> > > v1 -> v2: Fix indention
-> > > ---
-> > > =C2=A0 drivers/net/ethernet/intel/igc/igc_base.h | 11 ++++++++---
-> > > =C2=A0 drivers/net/ethernet/intel/igc/igc_main.c |=C2=A0 7 +++++--
-> > > =C2=A0 2 files changed, 13 insertions(+), 5 deletions(-)
->=20
-
+Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
