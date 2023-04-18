@@ -2,99 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB9476E574E
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 04:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 873A06E5767
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 04:17:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230135AbjDRCKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 22:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
+        id S230425AbjDRCRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 22:17:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbjDRCKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 22:10:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE9B12C;
-        Mon, 17 Apr 2023 19:10:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67C6E62622;
-        Tue, 18 Apr 2023 02:10:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BACCFC433D2;
-        Tue, 18 Apr 2023 02:10:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681783819;
-        bh=kQ6zw/lfkMNLksaXZVCMbwfvPw9Ucj/gHl1i7ZSW4DQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=j2C9+vkV7gON74ijOdPEG3moiI7/9egr5eUIiVDTbxZLmf7Ojd5/GMraL9rvQ5jT7
-         hE3G3AE0lq5ywJtfstA23+c/6tQWAxDoepKslAU4TrSnPVsHi02EWoeUDkCfrNurdS
-         vAK341YasDeibwm3sqfJyzttBD7re44zS7It2y2Yb0HrGDBh1Lg4PhES1kbRxB92jz
-         ClaE0nYIKIhiQql8GsU9tm1cj1mXidW9vPlIcnHF801i12vGF6A2sECZikfWmgJ64S
-         LfGVYUa6tQSHbjHqjcVoUPtxJAqEjVVZSRHzB7WXAvyUj+STdHNtslZhWyJGPANfQc
-         gkbX3XVLI6qiw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9DD33E3309F;
-        Tue, 18 Apr 2023 02:10:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/7] Ocelot/Felix driver support for preemptible
- traffic classes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168178381963.5081.10115603505597492092.git-patchwork-notify@kernel.org>
-Date:   Tue, 18 Apr 2023 02:10:19 +0000
-References: <20230415170551.3939607-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20230415170551.3939607-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        xiaoliang.yang_1@nxp.com, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229589AbjDRCRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 22:17:04 -0400
+Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5942A198C;
+        Mon, 17 Apr 2023 19:17:02 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R331e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VgN903e_1681784216;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgN903e_1681784216)
+          by smtp.aliyun-inc.com;
+          Tue, 18 Apr 2023 10:16:57 +0800
+Message-ID: <1681784149.312022-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
+Date:   Tue, 18 Apr 2023 10:15:49 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>, netdev@vger.kernel.org,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Gerd Hoffmann <kraxel@redhat.com>
+References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
+ <ZDzKAD2SNe1q/XA6@infradead.org>
+ <1681711081.378984-2-xuanzhuo@linux.alibaba.com>
+ <20230417115610.7763a87c@kernel.org>
+ <20230417115753.7fb64b68@kernel.org>
+In-Reply-To: <20230417115753.7fb64b68@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat, 15 Apr 2023 20:05:44 +0300 you wrote:
-> The series "Add tc-mqprio and tc-taprio support for preemptible traffic
-> classes" from:
-> https://lore.kernel.org/netdev/20230220122343.1156614-1-vladimir.oltean@nxp.com/
-> 
-> was eventually submitted in a form without the support for the
-> Ocelot/Felix switch driver. This patch set picks up that work again,
-> and presents a fairly modified form compared to the original.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/7] net: mscc: ocelot: export a single ocelot_mm_irq()
-    https://git.kernel.org/netdev/net-next/c/15f93f46f312
-  - [net-next,2/7] net: mscc: ocelot: remove struct ocelot_mm_state :: lock
-    https://git.kernel.org/netdev/net-next/c/3ff468ef987e
-  - [net-next,3/7] net: mscc: ocelot: optimize ocelot_mm_irq()
-    https://git.kernel.org/netdev/net-next/c/7bf4a5b071e5
-  - [net-next,4/7] net: mscc: ocelot: don't rely on cached verify_status in ocelot_port_get_mm()
-    https://git.kernel.org/netdev/net-next/c/bddd96dd8077
-  - [net-next,5/7] net: mscc: ocelot: add support for mqprio offload
-    https://git.kernel.org/netdev/net-next/c/aac80140dc31
-  - [net-next,6/7] net: dsa: felix: act upon the mqprio qopt in taprio offload
-    https://git.kernel.org/netdev/net-next/c/a1ca9f8b07d8
-  - [net-next,7/7] net: mscc: ocelot: add support for preemptible traffic classes
-    https://git.kernel.org/netdev/net-next/c/403ffc2c34de
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+On Mon, 17 Apr 2023 11:57:53 -0700, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Mon, 17 Apr 2023 11:56:10 -0700 Jakub Kicinski wrote:
+> > > May misunderstand, here the "dma_ops" is not the "dma_ops" of DMA API.
+> > >
+> > > I mean the callbacks for xsk to do dma.
+> > >
+> > > Maybe, I should rename it in the next version.
+> >
+> > Would you mind explaining this a bit more to folks like me who are not
+> > familiar with VirtIO?  DMA API is supposed to hide the DMA mapping
+> > details from the stack, why is it not sufficient here.
+>
+> Umm.. also it'd help to post the user of the API in the same series.
+> I only see the XSK changes, maybe if the virtio changes were in
+> the same series I could answer my own question.
 
 
+This [1] is the similar code. This is the early version. But the idea is
+similar to this patch.
+
+
+[1] https://lore.kernel.org/virtualization/20230202110058.130695-1-xuanzhuo@linux.alibaba.com/
+
+
+Thanks.
