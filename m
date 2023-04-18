@@ -2,123 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F27096E576A
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 04:17:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38F506E5783
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 04:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230499AbjDRCRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Apr 2023 22:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56318 "EHLO
+        id S230257AbjDRCaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Apr 2023 22:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbjDRCRi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 22:17:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233B2A7;
-        Mon, 17 Apr 2023 19:17:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AEC4B62BAA;
-        Tue, 18 Apr 2023 02:17:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7088AC433D2;
-        Tue, 18 Apr 2023 02:17:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681784256;
-        bh=RJBV+GpQnO6E09AAkDfpwLAYfeR7ZcsdzQtUcu+2ec8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oQnjG1WG4kx0WQ3S/essGLapdxQhgOBa5eC29P93rakGeYnci1+dUW7oDKuIobB5I
-         aL68s6Mb2L3xJdYnI+IN2Xye7GS9BCq96BKKnH6VyNTcCatsJl5VCkZIJTA6OysbyU
-         V4t+0GmPyuDprZF/ctzObR8UGI8mIGZWH66t9hVgdQAU4mnTFMoXZYvGMUhwUqJoDl
-         BGXXpffZ5qRJP8WMMW6gojHg2SW9G01e3aGSibWBKJRJNz0L1QND5P+DRXhs+4cCxB
-         1754ZRObzfkzQ2Ky3VDqf81G/UY4ATI0ws8/0NoODzZgoYlFAxb3z2GH2PHJep6IPF
-         YNQt0XJEm9UQA==
-Date:   Mon, 17 Apr 2023 19:17:34 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>, Haoyi Liu <iccccc@hust.edu.cn>,
+        with ESMTP id S229901AbjDRCav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Apr 2023 22:30:51 -0400
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4875B35B7;
+        Mon, 17 Apr 2023 19:30:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0VgNI19z_1681785044;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgNI19z_1681785044)
+          by smtp.aliyun-inc.com;
+          Tue, 18 Apr 2023 10:30:45 +0800
+Message-ID: <1681784379.909136-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
+Date:   Tue, 18 Apr 2023 10:19:39 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Christoph Hellwig <hch@infradead.org>, netdev@vger.kernel.org,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        hust-os-kernel-patches@googlegroups.com, yalongz@hust.edu.cn,
-        Dongliang Mu <dzm91@hust.edu.cn>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net/ipv6: silence 'passing zero to
- ERR_PTR()' warning
-Message-ID: <20230417191734.78c18a5f@kernel.org>
-In-Reply-To: <11c76aa6-4c19-4f1d-86dd-e94e683dbd64@kili.mountain>
-References: <20230413101005.7504-1-iccccc@hust.edu.cn>
-        <a3e202ed-a50f-2a0f-082b-ec0313be096e@kernel.org>
-        <11c76aa6-4c19-4f1d-86dd-e94e683dbd64@kili.mountain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
+ <ZDzKAD2SNe1q/XA6@infradead.org>
+ <1681711081.378984-2-xuanzhuo@linux.alibaba.com>
+ <20230417115610.7763a87c@kernel.org>
+ <20230417115753.7fb64b68@kernel.org>
+ <CACGkMEtPNPXFThHt4aNm4g-fC1DqTLcDnB_iBWb9-cAOHMYV_A@mail.gmail.com>
+ <20230417181950.5db68526@kernel.org>
+In-Reply-To: <20230417181950.5db68526@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Apr 2023 09:32:51 +0300 Dan Carpenter wrote:
-> Also it can return NULL.
-> 
-> net/xfrm/xfrm_policy.c
->   3229                  dst = dst_orig;
->   3230          }
->   3231  ok:
->   3232          xfrm_pols_put(pols, drop_pols);
->   3233          if (dst && dst->xfrm &&
->                     ^^^
-> "dst" is NULL.
+On Mon, 17 Apr 2023 18:19:50 -0700, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 18 Apr 2023 09:07:30 +0800 Jason Wang wrote:
+> > > > Would you mind explaining this a bit more to folks like me who are not
+> > > > familiar with VirtIO?  DMA API is supposed to hide the DMA mapping
+> > > > details from the stack, why is it not sufficient here.
+> >
+> > The reason is that legacy virtio device don't use DMA(vring_use_dma_api()).
+> >
+> > The AF_XDP assumes DMA for netdev doesn't work in this case. We need a
+> > way to make it work.
+>
+> Can we not push this down to be bus level? virtio has its own bus it
+> can plug in whatever magic it wants into dma ops.
 
-Don't take my word for it, but AFAICT it's impossible to get there with
-dst == NULL. I think we can remove this check instead if that's what
-makes smatch infer that dst may be NULL.
+It is actually not possible.
 
->   3234              dst->xfrm->props.mode == XFRM_MODE_TUNNEL)
->   3235                  dst->flags |= DST_XFRM_TUNNEL;
->   3236          return dst;
->                 ^^^^^^^^^^^
->   3237  
-> 
-> So in the original code what happened here was:
-> 
-> net/ipv6/icmp.c
->    395          dst2 = xfrm_lookup(net, dst2, flowi6_to_flowi(&fl2), sk, XFRM_LOOKUP_ICMP);
->    396          if (!IS_ERR(dst2)) {
-> 
-> xfrm_lookup() returns NULL.  NULL is not an error pointer.
-> 
->    397                  dst_release(dst);
->    398                  dst = dst2;
-> 
-> We set "dst" to NULL.
-> 
->    399          } else {
->    400                  err = PTR_ERR(dst2);
->    401                  if (err == -EPERM) {
->    402                          dst_release(dst);
->    403                          return dst2;
->    404                  } else
->    405                          goto relookup_failed;
->    406          }
->    407  
->    408  relookup_failed:
->    409          if (dst)
->    410                  return dst;
-> 
-> dst is not NULL so we don't return it.
-> 
->    411          return ERR_PTR(err);
-> 
-> However "err" is not set so we do return NULL and Smatch complains about
-> that.
-> 
-> Returning ERR_PTR(0); is not necessarily a bug, however 80% of the time
-> in newly introduced code it is a bug.  Here, returning NULL is correct.
-> So this is a false positive, but the code is just wibbly winding and so
-> difficult to read.
-> 
->    412  }
+[1] https://lore.kernel.org/virtualization/ZDUCDeYLqAwQVJe7@infradead.org/
+
+>
+> Doesn't have to be super fast for af_xdp's sake - for af_xdp dma mapping
+> is on the control path. You can keep using the if (vring_use_dma_api())
+> elsewhere for now if there is a perf concern.
+
+Sorry, I don't particularly understand this passage.
+
+Now, the question is if vring_use_dma_api() is false, then we cannot use DMA
+API in AF_XDP.
+
+The good news is that except for some of sync's operations, they are in the
+control path. I think it is very small effect on performance. Because in most
+case the sync is unnecessary.
+
+
+>
+> Otherwise it really seems like we're bubbling up a virtio hack into
+> generic code :(
+
+Can we understand the purpose of this matter to back the DMA operation to the
+driver? Although I don't know if there are other drivers with similar
+requirements.
+
+Thanks.
+
+
+
