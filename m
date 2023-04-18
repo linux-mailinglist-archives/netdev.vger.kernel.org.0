@@ -2,134 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 765346E6927
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 18:16:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C7D16E692A
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 18:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229838AbjDRQQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 12:16:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56756 "EHLO
+        id S231774AbjDRQQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 12:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231874AbjDRQQA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 12:16:00 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201309015;
-        Tue, 18 Apr 2023 09:15:58 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33IGFZBV066640;
-        Tue, 18 Apr 2023 11:15:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1681834535;
-        bh=b2Muf9dAA40HdBdETNXJB5N4N/DA+1zVrwJXAjg9daI=;
-        h=Date:Subject:To:References:From:CC:In-Reply-To;
-        b=VTZiIC/ITCgUJh36OJI1SkfMDN5QGiLg2ijgpecW+kqi+6VVdF7n0Bkh8wUPZ9By/
-         2uYskEJ56d2qeTyEiA7O2hwDju2j6q/gBFOdKAxUDVQb63Ng4+7QEzFkZMzqxiFCl/
-         IzgigGjLVcA3kOzDip1NpvCYL2/zcywxUycvbFFw=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33IGFZhc017910
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 18 Apr 2023 11:15:35 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 18
- Apr 2023 11:15:35 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Tue, 18 Apr 2023 11:15:35 -0500
-Received: from [128.247.81.102] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33IGFZ19006354;
-        Tue, 18 Apr 2023 11:15:35 -0500
-Message-ID: <6eb588ef-ab12-186d-b0d3-35fc505a225a@ti.com>
-Date:   Tue, 18 Apr 2023 11:15:35 -0500
+        with ESMTP id S231293AbjDRQQz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 12:16:55 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD00975D
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 09:16:53 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id 41be03b00d2f7-51452556acdso2459625a12.2
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 09:16:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681834613; x=1684426613;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lmgdHSEBRJNsYGGAJ9I5LZ32sRl0hFuvA05jW3gCQks=;
+        b=KAbIOj0ONdbbzyz/2K6RqdxSTvuTUbADZXyP6ka/WfElHlTky9Fcuz9auJeJDnsOiQ
+         u+8rSDPQUZjc/rYXq/v/fTwF7Zj/cZvgT4FD6CnS60/jBvSAc6JSrehbAYe3MK8Z8xiG
+         TEUe2T3fvdLxUS9PfhGIX1fAarhH4yWj8I6IQXat1P/DXxLJx1+dZhur6yxzx9oi1V/i
+         d/ufAlxEqerXx+njreXlV9QgmM7dZh5DKeciRWZl61a7emlO4+EtzCAeDiy+afa8GBCG
+         cgtMFJUlMEqnAiiOU7NWMkOm/RscCsqGLrkk18ZKgI2eje7MSkQ8kyAyT4DOiy1SMYMz
+         9euA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681834613; x=1684426613;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lmgdHSEBRJNsYGGAJ9I5LZ32sRl0hFuvA05jW3gCQks=;
+        b=lt/v7Ly2b1m4mzpO6BaxA8OsuH9SDRm4O5VoR3ITJWJPSrqAC7X+U4vrUxpCnXDG4Z
+         uo+MYKt4pI694kFrEIuVlFmiwNXOgyRPU8kztLkuWEnFzYCqpmVjeLA/a/m5j1LzT/+U
+         KlM3FkP3N8LovS/ftIHeowdSWcYlJ02bdfIztG8ttJ9XNkqWEfB7GG8yg2W9CBpQUsuz
+         Xz2QaWn1FuF5tr2cIIKi2VkQpoIc1TMjkx0SzEmGZGS2ZU2poW0+jeVwKXU3JEa5Xn1T
+         mIy3D05V/Eo3m/dizh4+1Rvs4QZ9M1WJnOBZZTfNXrfqZmfnZgdBut5R3wwZhQft3diq
+         yvMQ==
+X-Gm-Message-State: AAQBX9ffMOvmmm1Lc4LQhMovpv072jUcUNNU8KILrFFmJqXb0hcxvUDR
+        bPGPDou/WNn3FcCf2jGWCwswfSvyGI+Qf8Ym2as=
+X-Google-Smtp-Source: AKy350aTG7mw0PrPJnCGC9nQ139VHaphvVC1GYLKxN7iAyesTogFXpS2+L7Ykt/98Q7/pyJDw18c4B7vWKRicB60QII=
+X-Received: by 2002:a17:90a:6097:b0:246:f99b:fd65 with SMTP id
+ z23-20020a17090a609700b00246f99bfd65mr106606pji.5.1681834613540; Tue, 18 Apr
+ 2023 09:16:53 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [RFC PATCH 0/5] Enable multiple MCAN on AM62x
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-References: <20230413223051.24455-1-jm@ti.com>
- <20230414-tubular-service-3404c64c6c62-mkl@pengutronix.de>
-Content-Language: en-US
-From:   "Mendez, Judith" <jm@ti.com>
-CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-can@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Andrew Davis <afd@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Nishanth Menon <nm@ti.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        <linux-can@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
-In-Reply-To: <20230414-tubular-service-3404c64c6c62-mkl@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6a11:594:b0:486:2d30:9b78 with HTTP; Tue, 18 Apr 2023
+ 09:16:53 -0700 (PDT)
+Reply-To: thajxoa@gmail.com
+From:   Thaj ti <t3997936@gmail.com>
+Date:   Tue, 18 Apr 2023 09:16:53 -0700
+Message-ID: <CAJYqmPqSM7ySTRmGUJKMZxQ5AivmOTK+q8sXXV0YujZffUj6HQ@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM,UNDISC_MONEY autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:534 listed in]
+        [list.dnswl.org]
+        * -1.9 BAYES_00 BODY: Bayes spam probability is 0 to 1%
+        *      [score: 0.0000]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [t3997936[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [t3997936[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.0 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+        *  3.2 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marc,
+-- 
+Dear Friend,
 
-On 4/14/2023 12:49 PM, Marc Kleine-Budde wrote:
-> On 13.04.2023 17:30:46, Judith Mendez wrote:
->> On AM62x there is one MCAN in MAIN domain and two in MCU domain.
->> The MCANs in MCU domain were not enabled since there is no
->> hardware interrupt routed to A53 GIC interrupt controller.
->> Therefore A53 Linux cannot be interrupted by MCU MCANs.
-> 
-> Is this a general hardware limitation, that effects all MCU domain
-> peripherals? Is there a mailbox mechanism between the MCU and the MAIN
-> domain, would it be possible to pass the IRQ with a small firmware on
-> the MCU? Anyways, that's future optimization.
-> 
+I am Mr Thaj Xoa From Vietnam and I have an important message for you
+just get back for further details.
 
-This is a hardware limitation that affects AM62x SoC and has been 
-carried over to at least 1 other SoC. Using the MCU is an idea that we 
-have juggled around for a while, we will definitely keep it in mind for 
-future optimization. Thanks for your feedback.
 
->> This solution instantiates a hrtimer with 1 ms polling interval
->> for a MCAN when there is no hardware interrupt. This hrtimer
->> generates a recurring software interrupt which allows to call the
->> isr. The isr will check if there is pending transaction by reading
->> a register and proceed normally if there is.
->>
->> On AM62x this series enables two MCU MCAN which will use the hrtimer
->> implementation. MCANs with hardware interrupt routed to A53 Linux
->> will continue to use the hardware interrupt as expected.
->>
->> Timer polling method was tested on both classic CAN and CAN-FD
->> at 125 KBPS, 250 KBPS, 1 MBPS and 2.5 MBPS with 4 MBPS bitrate
->> switching.
->>
->> Letency and CPU load benchmarks were tested on 3x MCAN on AM62x.
->> 1 MBPS timer polling interval is the better timer polling interval
->> since it has comparable latency to hardware interrupt with the worse
->> case being 1ms + CAN frame propagation time and CPU load is not
->> substantial. Latency can be improved further with less than 1 ms
->> polling intervals, howerver it is at the cost of CPU usage since CPU
->> load increases at 0.5 ms and lower polling periods than 1ms.
-> 
-> Some Linux input drivers have the property poll-interval, would it make
-> sense to ass this here too?
-> 
->> Note that in terms of power, enabling MCU MCANs with timer-polling
->> implementation might have negative impact since we will have to wake
->> up every 1 ms whether there are CAN packets pending in the RX FIFO or
->> not. This might prevent the CPU from entering into deeper idle states
->> for extended periods of time.
->>
->> This patch series depends on 'Enable CAN PHY transceiver driver':
->> https://lore.kernel.org/lkml/775ec9ce-7668-429c-a977-6c8995968d6e@app.fastmail.com/T/
-> 
-> Marc
-> 
-
-regards,
-Judith
+Regards
+Mr Thaj Xoa
