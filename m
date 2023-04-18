@@ -2,100 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D28D76E67BA
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 17:04:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2C0F6E67C7
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 17:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232239AbjDRPEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 11:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59288 "EHLO
+        id S231309AbjDRPHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 11:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231644AbjDRPEn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 11:04:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD80B76E
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 08:04:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681830242;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iwUK7qUisEu7dIOb1WAcA06+qh2WAKNBpoYewOqKil4=;
-        b=eZaQYTWTNk598YnIDM+mMJuzz4h+8ChhTNgUQCD8ikWUzZaA3lWMLDQm3Ri6a5QOd04JVx
-        ZgjGwdQmXlekTf41+8//mdw/HOp+OrxXvh1v7YheaZXLDUxtEXza+LHmv/689+RwxRL96y
-        Zx3z5DRoS1rMEpCZ8ScSQmwvcJOJnCQ=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-499-2J21p7SROCS_rkOKqJoceA-1; Tue, 18 Apr 2023 11:04:01 -0400
-X-MC-Unique: 2J21p7SROCS_rkOKqJoceA-1
-Received: by mail-lj1-f200.google.com with SMTP id 38308e7fff4ca-2a83a0b7be1so8824021fa.1
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 08:04:00 -0700 (PDT)
+        with ESMTP id S232291AbjDRPHU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 11:07:20 -0400
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAED610E6;
+        Tue, 18 Apr 2023 08:07:09 -0700 (PDT)
+Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-6a60460a23dso188456a34.0;
+        Tue, 18 Apr 2023 08:07:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681830240; x=1684422240;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=iwUK7qUisEu7dIOb1WAcA06+qh2WAKNBpoYewOqKil4=;
-        b=bbHyviRptBNof98uSd1pAECP1KaS/88jUN8sHkFNzqI75Ms43p2KPQX4All14hmD3m
-         2wN1okdg5TAWwAO7ndIjPcOgfp9xkpLmpIhm9VDGtvij5wilYN+g2OmtG6XYHZ8v3x8X
-         kCoc7vhklruKT+RCGYk2XY4TVaiGa+bhZdTfMh8pExVtYLgl5Xj3vzpNRRTzS0v7wbW0
-         HgVfOkUgR/jxWAtq0U3+/WtIwxNc+VfQ5+27aYhAo30V6McWj4MiRauKwqcOGPY4GMRK
-         6GKdCW89vUR5jXIrfsStHhJg95jQDG97e6sK6m9lPybnYpwxAKkEc/6ngXTE1e7tTpwl
-         G9lg==
-X-Gm-Message-State: AAQBX9cebVTrMDPKZUvfp6OAup1Y2CojAfYFsZuFoOhUjW77oFigi3hy
-        VNZlEZX526zn+ntlxYAfmO4Y73d5A12UA3yAbV00r58pK4IjUhTS4Cj/Yo3/7QGF3zo+69FnVdY
-        SeJnArFUqDTmXoGJNsb4epiJgXnIQYutC
-X-Received: by 2002:a19:c515:0:b0:4ed:af44:1c27 with SMTP id w21-20020a19c515000000b004edaf441c27mr3309633lfe.3.1681830239571;
-        Tue, 18 Apr 2023 08:03:59 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bNS74G9PITD3o1l5HtfmzCqdNS9l/G/WkdCFaxOfugZatOMFV9bY0Exz55NRlsBfs0y7Ufbs1JdsIV/0zyi9k=
-X-Received: by 2002:a19:c515:0:b0:4ed:af44:1c27 with SMTP id
- w21-20020a19c515000000b004edaf441c27mr3309623lfe.3.1681830239069; Tue, 18 Apr
- 2023 08:03:59 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681830429; x=1684422429;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VH0juF1Ay9WqDgJkMzXt8/4BdR/G5VxOS4AZ5Dc0VG0=;
+        b=S8XTZFP2Sou81ujmCL9gsRosY+uYdXjg59lvHUSDh2rclx4R6dBpcDGz/TnMNN2lOb
+         aeHOzxmmWNRfmEkIZnTuYnlSR/37w3vI6oEUegcOTWwZtLSHGFfOdu/rqq4gm0liLmOA
+         IZkIRNLO+oETGjtl4rRz+wCNSte5v2HJixDKRcHPVaHrhfbCEA+2J0UjqSwssWhi0Hsp
+         Sa1tEiiZcCio8M8FD1/AfSUB1NjxCwZFJYBt4Q7PjdjXor9AUrKtGoVh6TpceNDl+lz2
+         au9WbuhA14JfW+e73Sx3LEe7y26XWx/Z5DfRv1lOPaI2gMZZi+y6H9nMY8C7OkvPaPNv
+         6kdw==
+X-Gm-Message-State: AAQBX9f4FL02M23sgtx1hFHqZOfmgRlWPsaGgUMofN9PG/gZhsoY+0Jr
+        UY4FxC/ZOaejCuk7ic3YYsv7ymZNdA==
+X-Google-Smtp-Source: AKy350Y+FFNVhEH8J/xbnSRbbO1WGuy7IynVY3++C2eC62dOzu64tMYXqP0pSiyYkAJ3MP+9jkpkqA==
+X-Received: by 2002:a9d:6f90:0:b0:6a4:3c9e:d5a9 with SMTP id h16-20020a9d6f90000000b006a43c9ed5a9mr1142369otq.35.1681830429077;
+        Tue, 18 Apr 2023 08:07:09 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id i18-20020a056830011200b006a44d90de05sm4010988otp.69.2023.04.18.08.06.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Apr 2023 08:06:52 -0700 (PDT)
+Received: (nullmailer pid 1528776 invoked by uid 1000);
+        Tue, 18 Apr 2023 15:06:36 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: net: ethernet: Fix JSON pointer references
+Date:   Tue, 18 Apr 2023 10:06:27 -0500
+Message-Id: <20230418150628.1528480-1-robh@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <a5288a1f4b69eb2da3e704d0e1ff082489432d25.1681728988.git.dcaratti@redhat.com>
- <20230417193031.3ab4ee2a@kernel.org> <CANn89iJ0zy6rr4=O3328heYgiBHNcc9hmAHweTFvAW7iZi8QFw@mail.gmail.com>
- <20230418074333.7d084348@kernel.org>
-In-Reply-To: <20230418074333.7d084348@kernel.org>
-From:   Davide Caratti <dcaratti@redhat.com>
-Date:   Tue, 18 Apr 2023 17:03:47 +0200
-Message-ID: <CAKa-r6s2Qn_O+c1_gBT=+5ndHcL92FspSogo22ws3-iCqUSjEw@mail.gmail.com>
-Subject: Re: [PATCH net] net/sched: sch_fq: fix integer overflow of "credit"
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Christoph Paasch <cpaasch@apple.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hello,
+A JSON pointer reference (the part after the "#") must start with a "/".
+Conversely, references to the entire document must not have a trailing "/"
+and should be just a "#". The existing jsonschema package allows these,
+but coming changes make allowed "$ref" URIs stricter and throw errors on
+these references.
 
-On Tue, Apr 18, 2023 at 4:43=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> On Tue, 18 Apr 2023 12:26:13 +0200 Eric Dumazet wrote:
-> > > Please set the right policy in fq_policy[] instead.
-> >
-> > Not sure these policies are available for old kernels (sch_fq was
-> > added in linux-3.12) ?
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/net/ethernet-controller.yaml | 2 +-
+ Documentation/devicetree/bindings/net/ethernet-switch.yaml     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-[...]
-
-> Good point, Davide, once the policy based fix hits the trees please
-> send this version of the fix to stable@ for 5.4 and older stable trees.
-
-Sure, I will do that. And thanks for the review! :)
---
-davide
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index 00be387984ac..b7ac69dafbe9 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -205,7 +205,7 @@ properties:
+               duplex is assumed.
+ 
+           pause:
+-            $ref: /schemas/types.yaml#definitions/flag
++            $ref: /schemas/types.yaml#/definitions/flag
+             description:
+               Indicates that pause should be enabled.
+ 
+diff --git a/Documentation/devicetree/bindings/net/ethernet-switch.yaml b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
+index a04f8ef744aa..3a9bac7b1b98 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-switch.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
+@@ -51,7 +51,7 @@ additionalProperties: true
+ $defs:
+   base:
+     description: An ethernet switch without any extra port properties
+-    $ref: '#/'
++    $ref: '#'
+ 
+     patternProperties:
+       "^(ethernet-)?port@[0-9]+$":
+-- 
+2.39.2
 
