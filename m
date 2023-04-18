@@ -2,327 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80C466E6E23
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 23:27:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2C706E6E93
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 23:48:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232769AbjDRV1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 17:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44104 "EHLO
+        id S232744AbjDRVsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 17:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbjDRV1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 17:27:38 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94309B47A;
-        Tue, 18 Apr 2023 14:27:19 -0700 (PDT)
+        with ESMTP id S232772AbjDRVsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 17:48:07 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31465C176
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 14:47:48 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id fy21so33829650ejb.9
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 14:47:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1681853240; x=1713389240;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mPAtd9FvdcYW8PHV7v552N7qJEi+dhgg4FhQAL2516s=;
-  b=hq8XU58WPNuz49sgV9Y401qAq5hPSwC2sWFqD+KwVMzq/AgVAuCxhE3m
-   o0ySnDFc/a1qMCuNcXdffGHLVm4BN3fMjbOJaCirJvvSqsFg7lYax9dva
-   zd5sftnlyWDLjMwHR6lgS3XhSWSJaaOo8wbHU5LoTejljX6FL8yx9tyCi
-   w=;
-X-IronPort-AV: E=Sophos;i="5.99,207,1677542400"; 
-   d="scan'208";a="321952178"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-366646a6.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 21:27:16 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-m6i4x-366646a6.us-east-1.amazon.com (Postfix) with ESMTPS id 52C54A80F9;
-        Tue, 18 Apr 2023 21:27:15 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Tue, 18 Apr 2023 21:27:01 +0000
-Received: from 88665a182662.ant.amazon.com (10.106.101.27) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Tue, 18 Apr 2023 21:26:59 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <bspencer@blackberry.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <kuniyu@amazon.com>
-Subject: Re: netlink getsockopt() sets only one byte?
-Date:   Tue, 18 Apr 2023 14:26:51 -0700
-Message-ID: <20230418212651.10035-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <ZD7VkNWFfp22kTDt@datsun.rim.net>
-References: <ZD7VkNWFfp22kTDt@datsun.rim.net>
+        d=broadcom.com; s=google; t=1681854466; x=1684446466;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=NSsdXOkTWhUfz9UmaRFbEXsR6uFWJllzsqqAi+bTqbk=;
+        b=fQr3d/5QeuH+nyhZrkZggPJ0B0lOyJ5A19VR7DEMg96RohvpvO+db+Ha5bpTS6cBwi
+         bDjGyphaQCyuF8AzI6Flejjw1iwrUxw+eIsu0U0KZWoyC7mM7kAuAIFfgrID0Mq4yP1r
+         0rqy0YJNl8MxAagI9Aub9+Q40H2DDlkFD8XVo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681854466; x=1684446466;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=NSsdXOkTWhUfz9UmaRFbEXsR6uFWJllzsqqAi+bTqbk=;
+        b=Ea3mKV+sv5OcnORTYYZbhsACRGv2dfuTsivgzatGdxnG26+ixLvA1cJ6IbCDvFj/Sf
+         RJtW16QP3cAWo0iZN3SOVDaQxg2OF2Oki09a2gTbWhcksSNYDX5nXGfECEaGP5irc/tR
+         W7odic3ZIBXjy6sAVxf+f9Pg/IpaaECF4yx8OB//LuJsJ+K/AGYwII/yVCFBYksQpnJ2
+         amspwh1RPCZjXdx7Id/gLqnK8iyATHxjzGLh8+8PRcFNLlht5PmHLHC1nQW3Bcb4z9gd
+         w/5p0cDxcT6QXtnubwlnqqBu66BKBLkQ+53gInDPfhhUawbsxTruu5smTdxMsyuJQe5C
+         XGxw==
+X-Gm-Message-State: AAQBX9cygpiMDl/8MYa/rOyqUg0AIBvB59pWbjPXlrJCNKhD3+rfJdpC
+        NsJ/LAE0ZNCHVcqfughpbxGaxP800q1cq2qeQVlXCg==
+X-Google-Smtp-Source: AKy350aENwOqPqzMWfax3h4Si26kCFVoRZe+pUYc4px3232dcDyn1Jro8wX73LMMfhieDIsUyo0Goy4LckuS5rTwWZ4=
+X-Received: by 2002:a17:906:1cd2:b0:94e:d486:7232 with SMTP id
+ i18-20020a1709061cd200b0094ed4867232mr6043155ejh.12.1681854465906; Tue, 18
+ Apr 2023 14:47:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.101.27]
-X-ClientProxiedBy: EX19D042UWB001.ant.amazon.com (10.13.139.160) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+References: <20230418202511.1544735-1-vadfed@meta.com>
+In-Reply-To: <20230418202511.1544735-1-vadfed@meta.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Tue, 18 Apr 2023 14:47:33 -0700
+Message-ID: <CACKFLikpQ+q20=PMFKoKF4w9q7f2Fhj0t9e24CFuF=fRK0pNoQ@mail.gmail.com>
+Subject: Re: [PATCH net] bnxt_en: fix free-runnig PHC mode
+To:     Vadim Fedorenko <vadfed@meta.com>
+Cc:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        netdev@vger.kernel.org
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000010ac9e05f9a342a5"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Brad Spencer <bspencer@blackberry.com>
-Date:   Tue, 18 Apr 2023 14:38:24 -0300
-> Calling getsockopt() on a netlink socket with SOL_NETLINK options that
-> use type int only sets the first byte of the int value but returns an
-> optlen equal to sizeof(int), at least on x86_64.
-> 
-> 
-> The detailed description:
-> 
-> It looks like netlink_getsockopt() calls put_user() with a char*
-> pointer, and I think that causes it to copy only one byte from the val
-> result, despite len being sizeof(int).
+--00000000000010ac9e05f9a342a5
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Right, we need to use copy_to_user() like udp_lib_getsockopt()
-or cast optval as done in NETLINK_LIST_MEMBERSHIPS.
+On Tue, Apr 18, 2023 at 1:25=E2=80=AFPM Vadim Fedorenko <vadfed@meta.com> w=
+rote:
+>
+> The patch in fixes changed the way real-time mode is chosen for PHC on
+> the NIC. Apparently there is one more use case of the check outside of
+> ptp part of the driver which was not converted to the new macro and is
+> making a lot of noise in free-running mode.
+>
+> Fixes: 131db4991622 ("bnxt_en: reset PHC frequency in free-running mode")
+> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
 
----8<---
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 1db4742e443d..780f3e6496be 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -1742,7 +1742,7 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
- {
- 	struct sock *sk = sock->sk;
- 	struct netlink_sock *nlk = nlk_sk(sk);
--	int len, val, err;
-+	int len, val, err = 0;
- 
- 	if (level != SOL_NETLINK)
- 		return -ENOPROTOOPT;
-@@ -1753,35 +1753,23 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
- 		return -EINVAL;
- 
- 	switch (optname) {
--	case NETLINK_PKTINFO:
-+	case NETLINK_LIST_MEMBERSHIPS:
-+		break;
-+	default:
- 		if (len < sizeof(int))
- 			return -EINVAL;
- 		len = sizeof(int);
-+	}
-+
-+	switch (optname) {
-+	case NETLINK_PKTINFO:
- 		val = nlk->flags & NETLINK_F_RECV_PKTINFO ? 1 : 0;
--		if (put_user(len, optlen) ||
--		    put_user(val, optval))
--			return -EFAULT;
--		err = 0;
- 		break;
- 	case NETLINK_BROADCAST_ERROR:
--		if (len < sizeof(int))
--			return -EINVAL;
--		len = sizeof(int);
- 		val = nlk->flags & NETLINK_F_BROADCAST_SEND_ERROR ? 1 : 0;
--		if (put_user(len, optlen) ||
--		    put_user(val, optval))
--			return -EFAULT;
--		err = 0;
- 		break;
- 	case NETLINK_NO_ENOBUFS:
--		if (len < sizeof(int))
--			return -EINVAL;
--		len = sizeof(int);
- 		val = nlk->flags & NETLINK_F_RECV_NO_ENOBUFS ? 1 : 0;
--		if (put_user(len, optlen) ||
--		    put_user(val, optval))
--			return -EFAULT;
--		err = 0;
- 		break;
- 	case NETLINK_LIST_MEMBERSHIPS: {
- 		int pos, idx, shift;
-@@ -1796,6 +1784,7 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
- 			shift = (pos % sizeof(unsigned long)) * 8;
- 			if (put_user((u32)(nlk->groups[idx] >> shift),
- 				     (u32 __user *)(optval + pos))) {
-+				netlink_unlock_table();
- 				err = -EFAULT;
- 				break;
- 			}
-@@ -1803,39 +1792,25 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
- 		if (put_user(ALIGN(nlk->ngroups / 8, sizeof(u32)), optlen))
- 			err = -EFAULT;
- 		netlink_unlock_table();
--		break;
-+		return err;
- 	}
- 	case NETLINK_CAP_ACK:
--		if (len < sizeof(int))
--			return -EINVAL;
--		len = sizeof(int);
- 		val = nlk->flags & NETLINK_F_CAP_ACK ? 1 : 0;
--		if (put_user(len, optlen) ||
--		    put_user(val, optval))
--			return -EFAULT;
--		err = 0;
- 		break;
- 	case NETLINK_EXT_ACK:
--		if (len < sizeof(int))
--			return -EINVAL;
--		len = sizeof(int);
- 		val = nlk->flags & NETLINK_F_EXT_ACK ? 1 : 0;
--		if (put_user(len, optlen) || put_user(val, optval))
--			return -EFAULT;
--		err = 0;
- 		break;
- 	case NETLINK_GET_STRICT_CHK:
--		if (len < sizeof(int))
--			return -EINVAL;
--		len = sizeof(int);
- 		val = nlk->flags & NETLINK_F_STRICT_CHK ? 1 : 0;
--		if (put_user(len, optlen) || put_user(val, optval))
--			return -EFAULT;
--		err = 0;
- 		break;
- 	default:
--		err = -ENOPROTOOPT;
-+		return -ENOPROTOOPT;
- 	}
-+
-+	if (put_user(len, optlen) ||
-+	    copy_to_user(optval, &val, len))
-+		return -EFAULT;
-+
- 	return err;
- }
- 
----8<---
+Looks good to me.  Please wait for Pavan to review it also.  Thanks.
 
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 
-> 
-> Is this the expected behaviour?  The returned size is 4, after all,
-> and other int-sized socket options (outside of netlink) like
-> SO_REUSEADDR set all bytes of the int.
-> 
-> Programs that do not expect this behaviour and do not initialize the
-> value to some known bit pattern are likely to misinterpret the result,
-> especially when checking to see if the value is or isn't zero.
-> 
-> Attached is a short program that demonstrates the issue on Arch Linux
-> with the 6.3.0-rc6 mainline kernel on x86_64, and also with the same
-> Arch Linux userland on 6.2.10-arch1-1.  I've seen the same behaviour
-> on older Debian and Ubuntu kernels.
-> 
->     gcc -Wall -o prog prog.c
->     
-> Show only the first byte being written to when the setting is `0`:
-> 
->     $ ./progboot
->     SOL_SOCKET SO_REUSEADDR:
->     size=4 value=0x0
->     SOL_NETLINK NETLINK_NO_ENOBUFS:
->     size=4 value=0xdeadbe00
->     prog: prog.c:39: tryOption: Assertion `value == 0' failed.
->     Aborted (core dumped)
-> 
-> Workaround by initializing to zero:
-> 
->     $ ./prog workaround
->     SOL_SOCKET SO_REUSEADDR:
->     size=4 value=0x0
->     SOL_NETLINK NETLINK_NO_ENOBUFS:
->     size=4 value=0x0
-> 
-> Show only the first byte being written to when the setting is `1`:
-> 
->     $ SET_FIRST=yes ./prog
->     SOL_SOCKET SO_REUSEADDR:
->     size=4 value=0x1
->     SOL_NETLINK NETLINK_NO_ENOBUFS:
->     size=4 value=0xdeadbe01
->     prog: prog.c:35: tryOption: Assertion `value == 1' failed.
->     Aborted (core dumped)
-> 
-> Workaround by initializing to zero:
-> 
->     $ SET_FIRST=yes ./prog workaround
->     SOL_SOCKET SO_REUSEADDR:
->     size=4 value=0x1
->     SOL_NETLINK NETLINK_NO_ENOBUFS:
->     size=4 value=0x1
-> 
-> 
-> Demonstration program:
-> 
-> #include <asm/types.h>
-> #include <assert.h>
-> #include <linux/netlink.h>
-> #include <stdio.h>
-> #include <stdlib.h>
-> #include <sys/socket.h>
-> #include <sys/socket.h>
-> #include <unistd.h>
-> 
-> static void tryOption(const int fd,
->                       const int level,
->                       const int optname,
->                       const int workaround,
->                       const int setFirst)
-> {
->   assert(fd != -1);
->   
->   // Setting it to 1 gives similar results.
->   if(setFirst)
->   {
->     int value = 1;
->     assert(!setsockopt(fd, level, optname, &value, sizeof(value)));
->   }
-> 
->   // Get the option.
->   {
->     int value = workaround ? 0 : 0xdeadbeef;
->     socklen_t size = sizeof(value);
-> 
->     // Only the first byte of `value` is written to!
->     assert(!getsockopt(fd, level, optname, &value, &size));
->     printf("size=%u value=0x%x\n", size, value);
->     if(setFirst)
->     {
->       assert(value == 1);
->     }
->     else
->     {
->       assert(value == 0);
->     }
-> 
->     // But it always reports a 4 byte option size.
->     assert(size == sizeof(int));
->   }
-> 
->   close(fd);
-> }
-> 
-> int
-> main(int argc, char** argv)
-> {
->   // If any argument is supplied, apply a workaround.
->   const int workaround = argc > 1;
-> 
->   // If $SET_FIRST is set to anything, set the option to 1 first.
->   const int setFirst = getenv("SET_FIRST") != NULL;
-> 
->   // Other int options set all bytes of the int.
->   printf("SOL_SOCKET SO_REUSEADDR:\n");
->   tryOption(
->     socket(AF_INET, SOCK_STREAM, 0),
->     SOL_SOCKET,
->     SO_REUSEADDR,
->     workaround,
->     setFirst);
-> 
->   // Netlink int socket options do not set all bytes of the int.
->   printf("SOL_NETLINK NETLINK_NO_ENOBUFS:\n");
->   tryOption(
->     socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE),
->     SOL_NETLINK,
->     NETLINK_NO_ENOBUFS,
->     workaround,
->     setFirst);
-> }
+--00000000000010ac9e05f9a342a5
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIQbQYJKoZIhvcNAQcCoIIQXjCCEFoCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3EMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBUwwggQ0oAMCAQICDF5AaMOe0cZvaJpCQjANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAwODIxMzhaFw0yNTA5MTAwODIxMzhaMIGO
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFTATBgNVBAMTDE1pY2hhZWwgQ2hhbjEoMCYGCSqGSIb3DQEJ
+ARYZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBALhEmG7egFWvPKcrDxuNhNcn2oHauIHc8AzGhPyJxU4S6ZUjHM/psoNo5XxlMSRpYE7g7vLx
+J4NBefU36XTEWVzbEkAuOSuJTuJkm98JE3+wjeO+aQTbNF3mG2iAe0AZbAWyqFxZulWitE8U2tIC
+9mttDjSN/wbltcwuti7P57RuR+WyZstDlPJqUMm1rJTbgDqkF2pnvufc4US2iexnfjGopunLvioc
+OnaLEot1MoQO7BIe5S9H4AcCEXXcrJJiAtMCl47ARpyHmvQFQFFTrHgUYEd9V+9bOzY7MBIGSV1N
+/JfsT1sZw6HT0lJkSQefhPGpBniAob62DJP3qr11tu8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU31rAyTdZweIF0tJTFYwfOv2w
+L4QwDQYJKoZIhvcNAQELBQADggEBACcuyaGmk0NSZ7Kio7O7WSZ0j0f9xXcBnLbJvQXFYM7JI5uS
+kw5ozATEN5gfmNIe0AHzqwoYjAf3x8Dv2w7HgyrxWdpjTKQFv5jojxa3A5LVuM8mhPGZfR/L5jSk
+5xc3llsKqrWI4ov4JyW79p0E99gfPA6Waixoavxvv1CZBQ4Stu7N660kTu9sJrACf20E+hdKLoiU
+hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
+E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBvitPrERRkfY7OGT3UnFc2OYUSpe6dL
+QD4+ztoMz/7XMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDQx
+ODIxNDc0NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQCzGVrYzWcrlzFV6+nVppMlT8DyIwTtPltxKCAlIkXWQhN0mS3o
+3cUhnLNufk19VrdWAI6O9HlyoIkJstxjpOhS6aB/F1F5iCJfge6vEqEsgwNrcZtzBeATm+Yb0IfB
+iw/GUL4kfHwjDfGlweyCpukRtBTSXwbsZn6748oACI0SyCHSPzlEiy/Jv9RWnXTbbudrqwRsqBva
+VfxTAYjXWCBL52SK8IjxxfrBNY2mokgbP8/DZPgSP5aRLQlAiXr053Xcyf9UwaWwDiYbhwWD/Mmr
+4Gn3796b8b4H3Xf6ahan3Ql1qSsaNsjbYKMtbZGRcTR5gDiDvrmXw6twWfZLJMDA
+--00000000000010ac9e05f9a342a5--
