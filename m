@@ -2,89 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99F0E6E668F
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 16:02:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 168DD6E66EA
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 16:17:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231769AbjDROCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 10:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42638 "EHLO
+        id S232176AbjDRORX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 10:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231410AbjDROCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 10:02:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6DCA13866
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 07:01:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681826495;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5fONgD5ZI0CkRixaJ2Z/vCiQZM4I6ehW6VIFsC+eLAk=;
-        b=aygsn9EkFvLQXwkuHK+fy7LhUj4TOqqXfwFB5wKsvS6pil/9Ga89t1ZORN0IVUYA0pObgq
-        DyVDKWJlU9WPAylx+Y0+FaM3HStHUsoL9Q7GlI+rjF5XC57BdMaS5gcN7yQsr5beRX28vj
-        PJN6FSXstfSj1yta+do01s7Iq3gBtro=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-275-5CmZ9j6sMLKtS-f3s3rxnA-1; Tue, 18 Apr 2023 10:01:34 -0400
-X-MC-Unique: 5CmZ9j6sMLKtS-f3s3rxnA-1
-Received: by mail-ed1-f70.google.com with SMTP id u19-20020a50a413000000b0050670a8cb7dso8673603edb.13
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 07:01:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681826493; x=1684418493;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5fONgD5ZI0CkRixaJ2Z/vCiQZM4I6ehW6VIFsC+eLAk=;
-        b=YJwc74ult9vbkF2pM8M6rIbc22hPozyB1j5S2ZgHD34jwu/LAgVucUda4uV7MZf7/a
-         PaazosMUIcASKXavmKqm2sQZ1kgSscKO24ZQzotY32QflRtTKeVhuszXKmwdLp72vekk
-         I/mZ4mGXIfzA2F2a9HG12X51rH3av9DXUsJ9oil2W7yJqwlOhjofihlOQ7DDKUHTvRC9
-         PgFR/cal110BigiIRO9Tn7/q+CLfo9ENGshME4Xo9VRse6Nu0qVRXbzCrYizrnypQf1o
-         5Bou7cDVha9KzPswF3oWjpi7tlO2vDifUbs7WZFxv9uqvkRImi6OVU2pkA0hofpBooy8
-         lsiQ==
-X-Gm-Message-State: AAQBX9f+kshJfxRrJk5DJrpnBAHv/uj4ZgSfl39tl3JaCF31+3FCElPa
-        356yajfSp31VJPfBQQkFenwHu7zEhICrZcfl6Um0qvbQ8XyVISpkgDA4YdPEMTsb7dlVucCB+yN
-        btZXWniceXuuFH5gs
-X-Received: by 2002:a17:907:d689:b0:953:1a7c:51b7 with SMTP id wf9-20020a170907d68900b009531a7c51b7mr1833372ejc.28.1681826493390;
-        Tue, 18 Apr 2023 07:01:33 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aemARlMVPdy8kgJgXVuHzGD4sbX/Gl6p99Go7osU8PHjd+oUCms+1rCgpAgVHjctvdD0LBVw==
-X-Received: by 2002:a17:907:d689:b0:953:1a7c:51b7 with SMTP id wf9-20020a170907d68900b009531a7c51b7mr1833311ejc.28.1681826492813;
-        Tue, 18 Apr 2023 07:01:32 -0700 (PDT)
-Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id qx11-20020a170906fccb00b0094f499257f7sm4053337ejb.151.2023.04.18.07.01.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Apr 2023 07:01:31 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <d805e350-1d59-eb3a-ec27-adaa72cdc20b@redhat.com>
-Date:   Tue, 18 Apr 2023 16:01:30 +0200
+        with ESMTP id S231545AbjDRORW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 10:17:22 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2109.outbound.protection.outlook.com [40.107.102.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D609AD3;
+        Tue, 18 Apr 2023 07:17:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OHaThSro5gV6KnKeyG0caF3Df4Glnlx8YCrlrTWuPZqkoK9l1b6jZ0vZYe+ee7IxVHT/TTpYBqr0c2WhwrqROmj/18kga5jgvqVce128d2K6BB9ynJ5yxAROh5+7cg89ZTR/SwoRVR4F7g85XLp85hB/02C7kMsqI8pZRUHQ8lqemTnDXnA14QFVSVdesGdjUNRmOtslgVMAuZuLZtLk1vgXbOJOlONDgc7OX3Le6dw4OQ23I+JiFpu7g2xFVM1kVaOaHn3Cqz+U9HDwCTYNlXviehcmDZXliGoOlN242k8Ee8OFDZNNThFyqSXk2Y5yEGAYHkh1upqkezAw0AXQ5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jhF8k5oV0/utwMtZSGAzycwMywgHgHKH8/OmfAM+0BA=;
+ b=mhSacyghBz9blS+Z63gsMLa6EAXMYdJ3wLYIqogXBWxLheKUbMdqJW+BEkssNy0OJjHnUTEniIrs3z+38gtfJW/0+8HwXjgiB808XtgamkMQyEOvbjcdSmbVPzZwgsvruTpcUtASKIJlgRN3uzzPmx70PZKYzwASy8xQCr4m8JDZfnhnPwBeF/lXwqcCq1J2aZh15JYtHYw9HR/mRZ5I8rgyUcdFCQMAkk/xalhY4vDxCgcajRmpFFKHdXaTwrzQxL+1xJeCf7Dpkv9tYi9whRY8RspoKw0zDEKuCUCU/LtSZChD24Rp5rosj0j5aAL2FqbKT1IWrMqq9Wh3eB8VoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jhF8k5oV0/utwMtZSGAzycwMywgHgHKH8/OmfAM+0BA=;
+ b=Pc5qTF2C926GYlP8nvIxFVHaPVrWNZOKjJB8lm2amcFX+Ks4vOkT5hLPRvFNQwmzaCscd+aRDoW4z1tCFx0mAPmAXI2KpHSDhJm4jqv6w/6GICr9mTRPVe6Xm37jnVzNInTTrZEYrEfPQdpOUEh1IdjF/ExHhlydVtzEG2ZO1dk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MW3PR13MB4043.namprd13.prod.outlook.com (2603:10b6:303:2d::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Tue, 18 Apr
+ 2023 14:17:17 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::89d1:63f2:2ed4:9169%5]) with mapi id 15.20.6298.045; Tue, 18 Apr 2023
+ 14:17:17 +0000
+Date:   Tue, 18 Apr 2023 16:17:10 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, llvm@lists.linux.dev,
+        linux-phy@lists.infradead.org,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Guillaume Ranquet <granquet@baylibre.com>,
+        Vinod Koul <vkoul@kernel.org>, Kishon <kishon@ti.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Netdev <netdev@vger.kernel.org>, chunfeng.yun@mediatek.com
+Subject: Re: next: allmodconfig: phy-mtk-hdmi-mt8195.c:298:6: error: variable
+ 'ret' is uninitialized when used here [-Werror,-Wuninitialized]
+Message-ID: <ZD6mZv2n2yUZKA1G@corigine.com>
+References: <CA+G9fYu4o0-ZKSthi7kdCjz_kFazZS-rn17Z2NPz3=1Oayr9cw@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYu4o0-ZKSthi7kdCjz_kFazZS-rn17Z2NPz3=1Oayr9cw@mail.gmail.com>
+X-ClientProxiedBy: AM0PR05CA0090.eurprd05.prod.outlook.com
+ (2603:10a6:208:136::30) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        intel-wired-lan@lists.osuosl.org, pabeni@redhat.com,
-        jesse.brandeburg@intel.com, kuba@kernel.org, bpf@vger.kernel.org,
-        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
-        davem@davemloft.net, Stanislav Fomichev <sdf@google.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Pasi Vaananen <pvaanane@redhat.com>
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next V1 5/5] selftests/bpf:
- xdp_hw_metadata track more timestamps
-Content-Language: en-US
-To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        yoong.siang.song@intel.com
-References: <168174338054.593471.8312147519616671551.stgit@firesoul>
- <168174344813.593471.4026230439937368990.stgit@firesoul>
- <87leiqsexd.fsf@kurt>
-In-Reply-To: <87leiqsexd.fsf@kurt>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW3PR13MB4043:EE_
+X-MS-Office365-Filtering-Correlation-Id: 184862bd-940d-4cd2-7bec-08db40179d1e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2+qUp06GAFeH6HLOaUyUpW0NDaaz9b3SVzoe78ao64JOTlYaT+IVNGEOVwqcc7w+SCsiQLHry9LPeYrurVlREGH4gLobVgQynAL7YqWj1KKa58jYqetWzgtbkMBrzGgoWXFLw4Mn3+AbQFYe0DxSkveioM3LYmTcIN+wORIkKwcstLlm3lZNeEPUoGiWRont306+SBcftdFUUK9tm7ErTC62YgB3hlUXOFwX0iXtM8BobeN8Yk8F7ySuPivV0hhgpccYLyikYx1+YAn0Na4Aa0pjZ8CFpdhciOWw/xVYK2f2+0uTaYcUEWyIIOOC+xv0PvvCZYMgjBs6+Zox8MvMDCXhpXjfSV/jtHsS0yFQtGrkM+ZjNiTQ9lJTERSHK22qr0zyUyOVF9lmUCYrLR0uVE90ZP5EBkL9X01g1h40WCaowCu8Uk2CNpnJd4u7R13KrAls17F/YOyj5AyZfoQ7r6dLcINj4zlvwj13BnrEacBuQ76pSaCu2mXz1/ue9MmMrwaoeHUaL98xylLOOqcJCZVlnaGEiI9nKAzzpANZFxk7qLwkyU9uKDGB8+bPkhh3Gib1QA8sKf28H8nhnSfVqBVrm9MK9ciaZ0jsxMx7TCI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39840400004)(366004)(376002)(396003)(451199021)(36756003)(38100700002)(8936002)(8676002)(44832011)(5660300002)(7416002)(2906002)(4744005)(86362001)(478600001)(6486002)(6666004)(54906003)(186003)(2616005)(966005)(6512007)(66946007)(6506007)(66476007)(41300700001)(316002)(83380400001)(6916009)(4326008)(66556008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ifEvLNH6OdSzX1YmiP5hiQTo7ZerqkjKrsvWMMyXarE+lJAeno0EvZaD489f?=
+ =?us-ascii?Q?UH2ky7WiM0lJortTc8cEeZCYdF4PTSpKkVBQybZ2X4/8FC7CaYnwiiow5a0f?=
+ =?us-ascii?Q?eJn2khdIzpbeDX9rmsVHfFLyYo+MycB4I2CNMRkHPOi8N4gSyPEuB7unYNJv?=
+ =?us-ascii?Q?6Q4H9gj63NOThQ1xdwZeAQh9E7FhK3IXMc5AwH4yyeaGLpwq5cLAYXsgP9JZ?=
+ =?us-ascii?Q?wDVAFghNZ3B/N5TbYCQHatu0U4rltKbnrKWGMt0erIO2rO/u5SYXv/r95utH?=
+ =?us-ascii?Q?UcMFMdJ1dwdcD8b9zOuowySVwBytje9jF9pWhddmah/GDKUFuV313LSU5hiC?=
+ =?us-ascii?Q?/sXsTae0WmX+2RQwaPtETRndq/5p6sl7EWSDuSmYnZ+wrJf5MhC2KLiN5Kwy?=
+ =?us-ascii?Q?4spYsTtcvN2exqOLs5tG2cP8WF9iaVNUJsKgvwtpqzMNLPG3z0ZkVQaR9TjZ?=
+ =?us-ascii?Q?nB8o4pqdSI0nF/JEmdc4SfgxcV4sLzQzF2yB9qiEuTPDyPcOrjGFOogWFYZV?=
+ =?us-ascii?Q?2KnHyPyAQhXhly/CG5lG0GlforhLfyttxCQiP6vqGyqisC8U2Tgj8QKgPZi+?=
+ =?us-ascii?Q?/I5Ll+Wgq6q+5b8yQ2R1uo8Zz1rfrHxMo9pzbgVgdwDxbdgJoZzpwXlIPu2P?=
+ =?us-ascii?Q?sZkDiNC5yCqKV5ieNY0QpV4lmU2MY4oJDjpu4AG1lzQV4wbqI7770lJ2Si2G?=
+ =?us-ascii?Q?U44U60o8G/+/97pRabhsCf+jGuVhx4+E7yCy10oIiLsyUDgPJhKi3p3CUxMz?=
+ =?us-ascii?Q?djHnyWDyaYHLwdF7qMF8ez+euCGkfuaP2JcA607SVdlGI55ksbzfH3P0B4Q2?=
+ =?us-ascii?Q?f88IloAm6p0LlH/Efae9O2KoWBNiJBz5aNn1aP6Q8aGhBDGCFouqXde7kgjy?=
+ =?us-ascii?Q?p6eRLClsW+XM/HHDUhayvt6SvE/dndVqnZY7ZGTGtoNggo8NQ2odobCl7eq1?=
+ =?us-ascii?Q?wovEskpaM8eTsbmp/HjCnOHqJ6LGNOKmLvl4aa9aKdRWgh+ImO27U/t5eSRF?=
+ =?us-ascii?Q?DRqPHrgBourlf3xswWmT9DiVLoFasd6+mSvUSEWn5VP8H8ohx3tTZ4Y9yXa9?=
+ =?us-ascii?Q?xYJIECOp5dnBzLIYFUA8nhc4c19DEVdJ/vXcQjBOVB/Yhjy/+ACUmaPK/u34?=
+ =?us-ascii?Q?LZVJoZtUT4kAncayfFzBOubuWwWDHBq45MBAcFoqWb7mZympjHXUpEXXIKWJ?=
+ =?us-ascii?Q?/DD88kFm/36lDjrLA8tjiQeWjaSMMOWSdt+FAfl2P/ZDx/Aeay6h4k8dPerM?=
+ =?us-ascii?Q?bFKYPRXoNIUWlpQWUuos6jdNeoTgRL2S5clX6M2ADFlS0fjqPXlW08D2ytqT?=
+ =?us-ascii?Q?wpg1y6N8Ra/gp/9JNk4zROOoLqCxNEr1IOcFS4b0VRGRbom0veISSwyefx/b?=
+ =?us-ascii?Q?uxhX7Agjpcw199OmUV1LGCpRYl2rvBRsRUIarzq1ecfFXWl36ZuB/qVsmBGO?=
+ =?us-ascii?Q?1Fi3zsbhyuurU25hR7k2vLLPYq8RXWDZgcoPC0Hg8H3PazSRFE7Ay/l5SAnI?=
+ =?us-ascii?Q?FFwwgsyUivCENQVIM/7/QLx7sGQRUPAlPel84vYGajzbEZIFMAq2QNacMj8o?=
+ =?us-ascii?Q?eSJ3oVNYRugyUibQ3Y0wParouE1fPK91Mv03Xkuran8CmvMKbXgB5AaV5kWD?=
+ =?us-ascii?Q?A+NMcrfK6qheK7QmzRnsYPYBrhSfUxN4D6Kd3tL6P0fJT8hyqnbeE9b0iNOS?=
+ =?us-ascii?Q?F+Chgg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 184862bd-940d-4cd2-7bec-08db40179d1e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2023 14:17:16.9798
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QmYulTcqj7EgAma7/vdam3mxXucoHafi7nqJJDp3TbBqTvf5WKzfR0kcIq9psQX0a5e2d2DK8N9R4B5K8v/l8dJ6UY62w4ECPfeyF2OXBXs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR13MB4043
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -92,93 +122,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 17/04/2023 17.31, Kurt Kanzenbach wrote:
-> On Mon Apr 17 2023, Jesper Dangaard Brouer wrote:
->> To correlate the hardware RX timestamp with something, add tracking of
->> two software timestamps both clock source CLOCK_TAI (see description in
->> man clock_gettime(2)).
->>
->> XDP metadata is extended with xdp_timestamp for capturing when XDP
->> received the packet. Populated with BPF helper bpf_ktime_get_tai_ns(). I
->> could not find a BPF helper for getting CLOCK_REALTIME, which would have
->> been preferred. In userspace when AF_XDP sees the packet another
->> software timestamp is recorded via clock_gettime() also clock source
->> CLOCK_TAI.
->>
->> Example output shortly after loading igc driver:
->>
->>    poll: 1 (0) skip=1 fail=0 redir=2
->>    xsk_ring_cons__peek: 1
->>    0x12557a8: rx_desc[1]->addr=100000000009000 addr=9100 comp_addr=9000
->>    rx_hash: 0x82A96531 with RSS type:0x1
->>    rx_timestamp:  1681740540304898909 (sec:1681740540.3049)
->>    XDP RX-time:   1681740577304958316 (sec:1681740577.3050) delta sec:37.0001 (37000059.407 usec)
->>    AF_XDP time:   1681740577305051315 (sec:1681740577.3051) delta sec:0.0001 (92.999 usec)
->>    0x12557a8: complete idx=9 addr=9000
->>
->> The first observation is that the 37 sec difference between RX HW vs XDP
->> timestamps, which indicate hardware is likely clock source
->> CLOCK_REALTIME, because (as of this writing) CLOCK_TAI is initialised
->> with a 37 sec offset.
+On Fri, Apr 14, 2023 at 03:14:27PM +0530, Naresh Kamboju wrote:
+> Following build warnings / errors noticed while building allmodconfig for arm64
+> with clang-16 on Linux next-20230414.
 > 
-> Maybe I'm missing something here, but in order to compare the hardware
-> with software timestamps (e.g., by using bpf_ktime_get_tai_ns()) the
-> time sources have to be synchronized by using something like
-> phc2sys. That should make them comparable within reasonable range
-> (nanoseconds).
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> drivers/phy/mediatek/phy-mtk-hdmi-mt8195.c:298:6: error: variable
+> 'ret' is uninitialized when used here [-Werror,-Wuninitialized]
+>         if (ret)
+>             ^~~
+> drivers/phy/mediatek/phy-mtk-hdmi-mt8195.c:216:12: note: initialize
+> the variable 'ret' to silence this warning
+>         int i, ret;
+>                   ^
+>                    = 0
+> 1 error generated.
 
-Precisely, in this test I've not synchronized the clocks.
-The observation is that driver igc clock gets initialized to
-CLOCK_REALTIME wall-clock time, and it slowly drifts as documented in 
-provided link[1].
+I believe a fix for this has been submitted but not yet applied.
 
-  [1] 
-https://github.com/xdp-project/xdp-project/blob/master/areas/hints/xdp_hints_kfuncs02_driver_igc.org#driver-igc-clock-drift-observations
-  [2] 
-https://github.com/xdp-project/xdp-project/blob/master/areas/hints/xdp_hints_kfuncs02_driver_igc.org#quick-time-sync-setup
+- [PATCH v2 1/2] phy: mediatek: hdmi: mt8195: fix uninitialized variable usage in pll_calc
 
-I've also played with using phc2sys (in same doc[2]) to sync HW clock
-with SW clock. I do *seek input* if I'm using it correctly?!?.
-
-I don't have a PTP clock setup , so I manually: Use phc2sys to
-synchronize the system clock to the PTP hardware clock (PHC) on the
-network card (which driver inited to CLOCK_REALTIME wall-clock).
-
-Stop ntp clock sync and disable most CPU sleep states:
-
-   sudo systemctl stop chronyd
-   sudo tuned-adm profile latency-performance
-   sudo hexdump --format '"%d\n"' /dev/cpu_dma_latency
-   2
-
-Adjust for the 37 sec offset to TAI, such that our BPF-prog using TAI 
-will align:
-
-   sudo phc2sys -s igc1 -O -37 -R 2 -u 10
-
-Result on igc with xdp_hw_metadata:
-
-  poll: 1 (0) skip=1 fail=0 redir=6
-  xsk_ring_cons__peek: 1
-  rx_hash: 0x82A96531 with RSS type:0x1
-  rx_timestamp:  1681825632645744805 (sec:1681825632.6457)
-  XDP RX-time:   1681825632645755858 (sec:1681825632.6458) delta 
-sec:0.0000 (11.053 usec)
-  AF_XDP time:   1681825632645769371 (sec:1681825632.6458) delta 
-sec:0.0000 (13.513 usec)
-
-The log file from phc2sys says:
-
-  phc2sys[1294263]: [86275.140] CLOCK_REALTIME rms    6 max   11 freq 
-+13719 +/-   5 delay  1435 +/-   5
-
-Notice the delta between HW and SW timestamps is 11.053 usec.
-Even-though it is small, I don't really trust it, because the phc2sys
-log says frequency offset mean is "+13719" nanosec.
-
-So, it is true that latency/delay between HW to XDP-SW is 11 usec?
-Or is this due to (in)accuracy of phc2sys sync?
-
---Jesper
-
+Link: https://lore.kernel.org/all/20230413-fixes-for-mt8195-hdmi-phy-v2-1-bbad62e64321@baylibre.com/
