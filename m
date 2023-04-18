@@ -2,132 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 229126E60AE
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 14:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B2586E60B9
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 14:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbjDRMI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 08:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
+        id S229453AbjDRMKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 08:10:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbjDRMIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 08:08:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2060B762
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 05:06:57 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pok6b-0004Ph-Q3; Tue, 18 Apr 2023 14:06:41 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B607A1B218A;
-        Tue, 18 Apr 2023 12:06:39 +0000 (UTC)
-Date:   Tue, 18 Apr 2023 14:06:39 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Harald Mommer <hmo@opensynergy.com>
-Cc:     Mikhail Golubev <Mikhail.Golubev@opensynergy.com>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Harald Mommer <harald.mommer@opensynergy.com>,
-        virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S231409AbjDRMJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 08:09:43 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A2FB767;
+        Tue, 18 Apr 2023 05:08:38 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id 5b1f17b1804b1-3f17b967bfbso5657865e9.1;
+        Tue, 18 Apr 2023 05:08:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681819717; x=1684411717;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=xqD3uLs0akknQuC+1QDW9JQQl0Fj4X33/dPlJQV5jPc=;
+        b=XF2+u0j25J/TwSxau1ZWpFxZ5xGvYDu4C59y7b+MOzjIKp/j3lE4ettHlwkDDZTl+7
+         0NuRtyEwKEk8ji5r4hyTETXJOarcN2tTcIiPSTdUaOhl5ct0JF72174dIijevvDfBkPJ
+         ZWgEYdg3FIG+vp82z7d4bQg/U5d3e/mbvUGNTryr8EUlFrovQ4ny9BlI13g3q2zvffbs
+         IUyRCQ3Hla0lppwyVIgVXJ3qp0hqQqYczD2/lDhtfF74aVzl92lsRog7UP5PJRD6LBTs
+         swcWHAG0iRWh33bBadFdZhtxKjiC2aHDI5kVeO+GwlO6EuCd+grmNDrz0VRnNPmOGnm8
+         22dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681819717; x=1684411717;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xqD3uLs0akknQuC+1QDW9JQQl0Fj4X33/dPlJQV5jPc=;
+        b=Keb2r4WMy7qlOIVoQwfgosjDWXLQ8scDzPqjgV+ACmg09M2zJX1NCkvjFuqBc7+ZnT
+         0Dhrs7S03t9gb0ZZ40O3Wnq1gCx84yRLijs/+ng5KTlFJhOaVYXA3FDC2eiCF6Kec/jn
+         4hDPv7vGnCgPHqpmu5mLk+hnLI6RW7oa9dihvi0MroMhQWkeHFua8qbMsMmiMOFknqIN
+         crLOHaxlrBh9cIeB2Im8TsTWUbDeQldy37uWNFD+FbGjYALwdMBhWsu+LjnRMHAfto8F
+         qa1Xr82ALT5nDimwZZblYd6muD9/wX3Jjdf/h8IxmBT9SaIawq6IOVznDpa3TdwYkyCP
+         N4yQ==
+X-Gm-Message-State: AAQBX9cSlINQteCSBkA/qJr/SuZ7ur45/PUOKuPiicrTeJ10DTc7cGVP
+        9lS37EumYisZx3aFPLUcMF0=
+X-Google-Smtp-Source: AKy350YTTs8NDSLDbSwNBUhPgu+ySlyTVzqzZPhCyVgNlSXbq/5wLZ7QI31Vv/MOIpgzZMvwn5scUw==
+X-Received: by 2002:a5d:61c4:0:b0:2ef:84c:a4bc with SMTP id q4-20020a5d61c4000000b002ef084ca4bcmr1670727wrv.19.1681819716461;
+        Tue, 18 Apr 2023 05:08:36 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id m4-20020a5d6a04000000b002f0442a2d3asm12963954wru.48.2023.04.18.05.08.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Apr 2023 05:08:36 -0700 (PDT)
+Date:   Tue, 18 Apr 2023 15:08:33 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>,
-        stratos-dev@op-lists.linaro.org,
-        Matti Moell <Matti.Moell@opensynergy.com>
-Subject: Re: [virtio-dev] Re: [RFC PATCH 1/1] can: virtio: Initial virtio CAN
- driver.
-Message-ID: <20230418-pull-negligee-f253a3c8e7db-mkl@pengutronix.de>
-References: <20220825134449.18803-1-harald.mommer@opensynergy.com>
- <20220827093909.ag3zi7k525k4zuqq@pengutronix.de>
- <40e3d678-b840-e780-c1da-367000724f69@opensynergy.com>
- <c2c0ba34-2985-21ea-0809-b96a3aa5e401@siemens.com>
- <36bb910c-4874-409b-ac71-d141cd1d8ecb@app.fastmail.com>
- <c20ee6cf-2aae-25ef-e97f-0e7fc3f9c5b6@opensynergy.com>
- <20230414-scariness-disrupt-5ec9cc82b20c-mkl@pengutronix.de>
- <9786872e-1063-e1ff-dc0d-6be5952a1826@opensynergy.com>
+        Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v1 2/2] net: dsa: microchip: Add partial ACL
+ support for ksz9477 switches
+Message-ID: <20230418120833.5xzyinqb2utw77qa@skbuf>
+References: <20230411172456.3003003-1-o.rempel@pengutronix.de>
+ <20230411172456.3003003-3-o.rempel@pengutronix.de>
+ <20230413042936.GA12562@pengutronix.de>
+ <20230416165904.2y7zwgyxwltjzj7m@skbuf>
+ <20230418072450.GC30964@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qbejfhwai7v6uczb"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <9786872e-1063-e1ff-dc0d-6be5952a1826@opensynergy.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230418072450.GC30964@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Apr 18, 2023 at 09:24:50AM +0200, Oleksij Rempel wrote:
+> On Sun, Apr 16, 2023 at 07:59:04PM +0300, Vladimir Oltean wrote:
+> > On Thu, Apr 13, 2023 at 06:29:36AM +0200, Oleksij Rempel wrote:
+> > > According to KSZ9477S 5.2.8.2 Port Priority Control Register
+> > > "To achieve the desired functionality, do not set more than one bit at a
+> > > time in this register.
+> > > ...
+> > > Bit 6 - OR’ed Priority
+> > > ...
+> > > Bit 2 - 802.1p Priority Classification
+> > > Bit 1 - Diffserv Priority Classification
+> > > Bit 0 - ACL Priority Classification
+> > > "
+> > > @Arun  what will happen if multiple engines are used for packet
+> > > prioritization? For example ACL || Diffserv || 802.1p... ?
+> > > If I see it correctly, it is possible but not recommended. Should I
+> > > prevent usage of multiple prio sources? 
+> > 
+> > You could try and find out which one takes priority... we support VLAN
+> > PCP and DSCP prioritization through the dcbnl application priority table.
+> 
+> What will be the mainlineable interface for the DSCP support for KSZ8 series?
+> If i see it correctly, it should be possible to use tc:
+> tc filter add dev lan2 ingress protocol ip flower ip_tos 0x28 skip_sw skbedit priority 7
+> or dcb:
+> dcb app add dev lan2 dscp-prio 28:7
+> 
+> dcb implementation seems to have some advantages, since it will
+> allow to use OpenLLDP to configure traffic priorities. Correct?
 
---qbejfhwai7v6uczb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 18.04.2023 11:50:56, Harald Mommer wrote:
-> there is now an implementation of the device for qemu internally under
-> review.
-
-Great news!
-
-> The paperwork with the company lawyer to publish source code has also been
-> done.
-
-This was probably more work than the actual coding :)
-
-> At the same time we changed the driver and the specification draft also,
-> especially the bus off indication is now done by a config space bit inste=
-ad
-> of having a dedicated indication queue. Minor updates to some other
-> structures. This means what we have will match an updated driver and
-> specification version not yet sent out. Also to be done so that people can
-> play around.
-
-Looking forward to see the code.
-
-> So an open source qemu device is in the work and we are close to publish
-> this in our public github repository but until now nothing has been pushed
-> yet to github.
-
-Next week is our yearly hacking week. Some working qemu and Linux
-drivers would be excellent.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---qbejfhwai7v6uczb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQ+h8wACgkQvlAcSiqK
-BOiFFgf/XM5nIh2LYk0Iu4Ns08EGdD12H+7cz4mwTAm26MgLjkcJGG5bEMD4AZ6e
-OnrKmz+c7hsBk0h+BwF18phQqH3prdje2vnKaczvjD4iNnpId57mCu2hNWP05NhP
-x46zraLhQwcy3qS5qpki9gWAV4oMzSAFBhZpV2qp4wwy0HMc2MQhefzJgCa1HxVg
-emwNT/3vuf38IslMUlSqZGsnKhCvOajZVTcyo1hpo5DSVf3J0aYWXNRJj/bGaHS3
-3KNXmRQjvCCRi5u8VJyYIEp3FGMK6cGtWiNMX+TkIRH6uO/PK9yjLcz/N+1RJbzH
-uTR79ceo/ekik35HjzYGnUCxgmtmpw==
-=LT/a
------END PGP SIGNATURE-----
-
---qbejfhwai7v6uczb--
+Switch driver writers (DSA/felix/ocelot, sparx5, mlxsw/spectrum) seem to
+have decided that basic QoS classification (VLAN PCP, IP DSCP) should go
+through something more simple for the user to digest than tc, which
+should be used only for advanced QoS classification, and which, in
+general, can have all sorts of gotchas preventing easy portability
+(I'm thinking of chains, for example). I would say go for dcbnl.
+Daniel Machon, with Petr's help, added support for VLAN PCP
+prioritization there as well, so it should be fairly usable now.
