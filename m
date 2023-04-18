@@ -2,102 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9C76E6C4C
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 20:42:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF526E6C56
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 20:44:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232624AbjDRSmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 14:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36162 "EHLO
+        id S231135AbjDRSod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 14:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231296AbjDRSmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 14:42:07 -0400
-Received: from mx16lb.world4you.com (mx16lb.world4you.com [81.19.149.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6A19031;
-        Tue, 18 Apr 2023 11:42:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=icQqXp8H6dbIv/Jfy/LwqTJbTa7u53xAx/U7gBNJXnw=; b=t6YsmUnoDKkjQ3Mn3xrcdMUnPS
-        8qUnqgv8yFVfltFYJ4P+A6HBiUT9QNthC8tdUs1SuWDTLJl1Ahfy+Ix/6LNTeHBH/80ONw9B6Ly/d
-        5h/TRVvLA7TvMmmsJcMdilokEOTlZ1sA9R0Z0UbTqLQEubpGUNTBrhLI0pm8CSDvew1I=;
-Received: from [88.117.57.231] (helo=[10.0.0.160])
-        by mx16lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1poqH9-0004VC-Fm; Tue, 18 Apr 2023 20:41:59 +0200
-Message-ID: <6661221c-2dc8-0501-3f59-8c59f3ad2d49@engleder-embedded.com>
-Date:   Tue, 18 Apr 2023 20:41:59 +0200
+        with ESMTP id S229633AbjDRSob (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 14:44:31 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71FCC2694
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 11:44:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1681843470; x=1713379470;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ZLXoLLZ2XHo0p93sE1aL/FKGYF/6K0Df03Xx9AlU5Jg=;
+  b=XBmRV3sssS9XudMimBEZqipBOFLry8jUNFv6PS4wDcLcsd9NXD7BbatU
+   EwiPHJQDfS862lBk9xMnVbJgZlDOHn7XgrDv6b8fGp9Y7vvAY/S+2yf46
+   HY845hSzsQKPalKUaKfPDCokBZG7QEmK+Egw68r0qrfjVYFsUsoCVViUm
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.99,207,1677542400"; 
+   d="scan'208";a="321878490"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-7dc0ecf1.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2023 18:44:27 +0000
+Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-m6i4x-7dc0ecf1.us-east-1.amazon.com (Postfix) with ESMTPS id AF3A680DB5;
+        Tue, 18 Apr 2023 18:44:25 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Tue, 18 Apr 2023 18:44:24 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.106.101.27) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.26;
+ Tue, 18 Apr 2023 18:44:22 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <edumazet@google.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <syzkaller@googlegroups.com>, <willemb@google.com>
+Subject: Re: [PATCH v2 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.
+Date:   Tue, 18 Apr 2023 11:44:13 -0700
+Message-ID: <20230418184413.85516-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CANn89i+y=vdj5p_BRSRPYoY+Bdp3vrdPSB=DyCbikHw37q80ww@mail.gmail.com>
+References: <CANn89i+y=vdj5p_BRSRPYoY+Bdp3vrdPSB=DyCbikHw37q80ww@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH net-next v2 5/6] tsnep: Add XDP socket zero-copy RX
- support
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com
-References: <20230415144256.27884-1-gerhard@engleder-embedded.com>
- <20230415144256.27884-6-gerhard@engleder-embedded.com>
- <d872b08538aface37cb21eecb8a793a7063c4c49.camel@redhat.com>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <d872b08538aface37cb21eecb8a793a7063c4c49.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.106.101.27]
+X-ClientProxiedBy: EX19D037UWB004.ant.amazon.com (10.13.138.84) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.04.23 10:22, Paolo Abeni wrote:
-> On Sat, 2023-04-15 at 16:42 +0200, Gerhard Engleder wrote:
->> @@ -892,6 +900,37 @@ static int tsnep_rx_desc_available(struct tsnep_rx *rx)
->>   		return rx->read - rx->write - 1;
->>   }
->>   
->> +static void tsnep_rx_free_page_buffer(struct tsnep_rx *rx)
->> +{
->> +	struct page **page;
->> +
->> +	page = rx->page_buffer;
->> +	while (*page) {
->> +		page_pool_put_full_page(rx->page_pool, *page, false);
->> +		*page = NULL;
->> +		page++;
->> +	}
->> +}
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 18 Apr 2023 20:33:44 +0200
+> On Tue, Apr 18, 2023 at 8:09 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > syzkaller reported [0] memory leaks of an UDP socket and ZEROCOPY
+> > skbs.  We can reproduce the problem with these sequences:
+> >
+> >   sk = socket(AF_INET, SOCK_DGRAM, 0)
+> >   sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING_TX_SOFTWARE)
+> >   sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
+> >   sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
+> >   sk.close()
+> >
+> > sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, sets
+> > skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, struct
+> > ubuf_info_msgzc indirectly holds a refcnt of the socket.  When the
+> > skb is sent, __skb_tstamp_tx() clones it and puts the clone into
+> > the socket's error queue with the TX timestamp.
+> >
+> > When the original skb is received locally, skb_copy_ubufs() calls
+> > skb_unclone(), and pskb_expand_head() increments skb->cb->ubuf.refcnt.
+> > This additional count is decremented while freeing the skb, but struct
+> > ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callback() is
+> > not called.
+> >
+> > The last refcnt is not released unless we retrieve the TX timestamped
+> > skb by recvmsg().  When we close() the socket holding such skb, we
+> > never call sock_put() and leak the count, skb, and sk.
+> >
+> > To avoid this problem, we must (i) call skb_queue_purge() after
+> > flagging SOCK_DEAD during close() and (ii) make sure that TX tstamp
+> > skb is not queued when SOCK_DEAD is flagged.  UDP lacks (i) and (ii),
+> > and TCP lacks (ii).
+> >
+> > Without (ii), a skb queued in a qdisc or device could be put into
+> > the error queue after skb_queue_purge().
+> >
+> >   sendmsg() /* return immediately, but packets
+> >              * are queued in a qdisc or device
+> >              */
+> >                                     close()
+> >                                       skb_queue_purge()
+> >   __skb_tstamp_tx()
+> >     __skb_complete_tx_timestamp()
+> >       sock_queue_err_skb()
+> >         skb_queue_tail()
+> >
+> > Also, we need to check SOCK_DEAD under sk->sk_error_queue.lock
+> > in sock_queue_err_skb() to avoid this race.
+> >
+> >   if (!sock_flag(sk, SOCK_DEAD))
+> >                                     sock_set_flag(sk, SOCK_DEAD)
+> >                                     skb_queue_purge()
+> >
+> >     skb_queue_tail()
+> >
+> > [0]:
 > 
-> [...]
+> > Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
+> > Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
+> > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > ---
+> > v2:
+> >   * Move skb_queue_purge() after setting SOCK_DEAD in udp_destroy_sock()
+> >   * Check SOCK_DEAD in sock_queue_err_skb() with sk_error_queue.lock
+> >   * Add Fixes tag for TCP
+> >
+> > v1: https://lore.kernel.org/netdev/20230417171155.22916-1-kuniyu@amazon.com/
+> > ---
+> >  net/core/skbuff.c | 15 ++++++++++++---
+> >  net/ipv4/udp.c    |  5 +++++
+> >  2 files changed, 17 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 4c0879798eb8..287b834df9c8 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -4979,6 +4979,8 @@ static void skb_set_err_queue(struct sk_buff *skb)
+> >   */
+> >  int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
+> >  {
+> > +       unsigned long flags;
+> > +
+> >         if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
+> >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+> >                 return -ENOMEM;
+> > @@ -4992,9 +4994,16 @@ int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
+> >         /* before exiting rcu section, make sure dst is refcounted */
+> >         skb_dst_force(skb);
+> >
+> > -       skb_queue_tail(&sk->sk_error_queue, skb);
+> > -       if (!sock_flag(sk, SOCK_DEAD))
+> > -               sk_error_report(sk);
+> > +       spin_lock_irqsave(&sk->sk_error_queue.lock, flags);
+> > +       if (sock_flag(sk, SOCK_DEAD)) {
 > 
->>   static void tsnep_rx_close(struct tsnep_rx *rx)
->>   {
->> +	if (rx->xsk_pool)
->> +		tsnep_rx_free_page_buffer(rx);
+> SOCK_DEAD is set without holding sk_error_queue.lock, so I wonder why you
+> want to add a confusing construct.
 > 
-> It looks like the above could call tsnep_rx_free_page_buffer() with
-> each page ptr in rx->page_buffer not zero. If so
-> tsnep_rx_free_page_buffer() will do an out of bound access.
+> Just bail early ?
+> 
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index ef81452759be3fd251faaf76d89cfd002ee79256..fda05cb44f95821e98f8c5c05fba840a9d276abb
+> 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -4983,6 +4983,9 @@ int sock_queue_err_skb(struct sock *sk, struct
+> sk_buff *skb)
+>             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+>                 return -ENOMEM;
+> 
+> +       if (sock_flag(sk, SOCK_DEAD))
+> +               return -EINVAL;
+> +
 
-rx->page_buffer has space for up to TSNEP_RING_SIZE ptr's. The
-descriptor ring is filled with at most TSNEP_RING_SIZE - 1
-pages. Thus, the last ptr in rx->page_buffer is always zero.
+Isn't it possible that these sequences happen
 
-> Also, why testing rx->xsk_pool instead of rx->page_buffer?
+  close()
+    sock_set_flag(sk, SOCK_DEAD);
+    skb_queue_purge(&sk->sk_error_queue)
 
-Testing for rx->xsk_pool is done for all code, which is only needed
-if XSK zero-copy is enabled. For me this is more consistent to the
-rest of the code.
+between the skb_queue_tail() below ? (2nd race mentioned in changelog)
 
-Thanks!
+I thought we can guarantee the ordering by taking the same lock.
 
-Gerhard
+>         skb_orphan(skb);
+>         skb->sk = sk;
+>         skb->destructor = sock_rmem_free;
+> @@ -4993,8 +4996,7 @@ int sock_queue_err_skb(struct sock *sk, struct
+> sk_buff *skb)
+>         skb_dst_force(skb);
+> 
+>         skb_queue_tail(&sk->sk_error_queue, skb);
+> -       if (!sock_flag(sk, SOCK_DEAD))
+> -               sk_error_report(sk);
+> +       sk_error_report(sk);
+>         return 0;
+>  }
+>  EXPORT_SYMBOL(sock_queue_err_skb);
+> 
+> 
+> > +               spin_unlock_irqrestore(&sk->sk_error_queue.lock, flags);
+> > +               return -EINVAL;
+> > +       }
+> > +       __skb_queue_tail(&sk->sk_error_queue, skb);
+> > +       spin_unlock_irqrestore(&sk->sk_error_queue.lock, flags);
+> > +
+> > +       sk_error_report(sk);
+> > +
+> >         return 0;
+> >  }
+> >  EXPORT_SYMBOL(sock_queue_err_skb);
+> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > index c605d171eb2d..7060a5cda711 100644
+> > --- a/net/ipv4/udp.c
+> > +++ b/net/ipv4/udp.c
+> > @@ -2674,6 +2674,11 @@ void udp_destroy_sock(struct sock *sk)
+> >                 if (up->encap_enabled)
+> >                         static_branch_dec(&udp_encap_needed_key);
+> >         }
+> > +
+> > +       /* A zerocopy skb has a refcnt of sk and may be
+> > +        * put into sk_error_queue with TX timestamp
+> > +        */
+> > +       skb_queue_purge(&sk->sk_error_queue);
+> >  }
+> >
+> >  /*
+> > --
+> > 2.30.2
