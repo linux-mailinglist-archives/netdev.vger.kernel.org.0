@@ -2,147 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEDE86E5838
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 06:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40D3B6E5843
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 07:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230203AbjDREzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 00:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        id S230045AbjDRFBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 01:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230002AbjDREze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 00:55:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7FAA46B4
-        for <netdev@vger.kernel.org>; Mon, 17 Apr 2023 21:55:31 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1podNI-0002CH-Mf; Tue, 18 Apr 2023 06:55:28 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1podNG-0002S8-JK; Tue, 18 Apr 2023 06:55:26 +0200
-Date:   Tue, 18 Apr 2023 06:55:26 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Petr Machata <petrm@nvidia.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, Eric Dumazet <edumazet@google.com>,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229517AbjDRFBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 01:01:48 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B6A44BE;
+        Mon, 17 Apr 2023 22:01:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=9kmYCb9yawE8YYNy37ygsAKRKnVXDz2MLuTV4YDF8yM=; b=4GkQQrxYYf1q00fiSJejR4fG+s
+        NdgsjovWVQwCOqPOiSi+R3TnFnALLUfI/mM8dkDKzyacJo357IjDsLrZQcP1m/Yr8K1sDw03c3TPI
+        qh66gLRqLwNY1rQIg7Pc7JFVoQEXYCqUQVwA9sQ3SUQ/RwOP9i8vcNaRlPdj89vtJgnlB30AZT5ni
+        X8QQehmCDfyEGRWkYHhV7By0gc5hSnu3GhnoIbuZS4r9foQ95rjsMf6R/nPN705mA4pHmtBPfLDQU
+        /AuAoOAlhsFvbPmCTjQ1bUS3NT5nkdKCtuhefSpYYK2hxJ0/qlZedeKl8kOGx2z3yJIS2v+vBMUcy
+        RC++50GA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
+        id 1podTE-000rE6-0k;
+        Tue, 18 Apr 2023 05:01:36 +0000
+Date:   Mon, 17 Apr 2023 22:01:36 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Christoph Hellwig <hch@infradead.org>, netdev@vger.kernel.org,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v1 2/2] net: dsa: microchip: Add partial ACL
- support for ksz9477 switches
-Message-ID: <20230418045526.GB30964@pengutronix.de>
-References: <20230411172456.3003003-1-o.rempel@pengutronix.de>
- <20230411172456.3003003-1-o.rempel@pengutronix.de>
- <20230411172456.3003003-3-o.rempel@pengutronix.de>
- <20230411172456.3003003-3-o.rempel@pengutronix.de>
- <20230416165658.fuo7vwer7m7ulkg2@skbuf>
- <20230417045710.GB20350@pengutronix.de>
- <20230417101209.m5fhc7njeeomljkf@skbuf>
- <20230417110311.GA11474@pengutronix.de>
- <20230417121917.cfixzwoqds6wwlyu@skbuf>
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
+Message-ID: <ZD4kMOym15pFcjq+@infradead.org>
+References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
+ <ZDzKAD2SNe1q/XA6@infradead.org>
+ <1681711081.378984-2-xuanzhuo@linux.alibaba.com>
+ <20230417115610.7763a87c@kernel.org>
+ <20230417115753.7fb64b68@kernel.org>
+ <CACGkMEtPNPXFThHt4aNm4g-fC1DqTLcDnB_iBWb9-cAOHMYV_A@mail.gmail.com>
+ <20230417181950.5db68526@kernel.org>
+ <1681784379.909136-2-xuanzhuo@linux.alibaba.com>
+ <20230417195400.482cfe75@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230417121917.cfixzwoqds6wwlyu@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230417195400.482cfe75@kernel.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 17, 2023 at 03:19:17PM +0300, Vladimir Oltean wrote:
-> On Mon, Apr 17, 2023 at 01:03:11PM +0200, Oleksij Rempel wrote:
-> > Certain aspects of the chip specification appeared ambiguous, leading me
-> > to decide to allocate a separate time slot for investigating the counter
-> > topic if necessary.
-> > 
-> > For example, according to the
-> > KSZ9477 4.4.18 ACCESS CONTROL LIST (ACL) FILTERING:
-> > 
-> > "It is also possible to configure the ACL table so that multiple processing
-> > entries specify the same action rule. In this way, the final matching result is
-> > the OR of the matching results from each of the multiple RuleSets.
-> > The 16 ACL rules represent an ordered list, with entry #0 having the highest
-> > priority and entry #15 having the lowest priority. All matching rules are
-> > evaluated. If there are multiple true match results and multiple corresponding
-> > actions, the highest priority (lowest numbered) of those actions will be the
-> > one taken."
-> > 
-> > A summary of this part of documentation is:
-> > 1. ACL table can have multiple entries specifying the same action rule.
-> > 2. Final matching result is the OR of multiple RuleSets' results.
-> > 3. 16 ACL rules form an ordered list, with priority descending from #0 to #15.
-> > 4. All matching rules are evaluated.
-> > 5. When multiple true matches and actions occur, the highest priority action is
-> >    executed.
-> > 
-> > Considering this, there is a possibility that separate action rules would not
-> > be executed, as they might not be the highest priority match.  Since counters
-> > would have separation action rules, they would not be executed or prevent other
-> > action rules from execution.
-> > 
-> > To confirm my hypothesis, additional time and testing will be required.
-> > Nonetheless, I hope this issue does not impede the progress of this patch.
-> 
-> This is the kind of stuff you'd have to know when adding a software model
-> for the rules, right?
+On Mon, Apr 17, 2023 at 07:54:00PM -0700, Jakub Kicinski wrote:
+> AF_XDP, io_uring, and increasing number of pinned memory / zero copy
+> implementations need to do DMA mapping outside the drivers.
 
-right :)
+You can't just do dma mapping outside the driver, because there are
+drivers that do not require DMA mapping at all.  virtio is an example,
+but all the classic s390 drivers and some other odd virtualization
+ones are others.
 
-> Could you consider writing a selftest that
-> precisely illustrates the matching pattern of the hardware? It would be
-> good if the same test could then be run on a software-only implementation
-> and if the behavior would match. The tc tool should be more than a
-> vendor agnostic tool of doing vendor specific stuff. It should offload
-> as faithfully as possible the software data path. It would also be good,
-> but I haven't studied or used this test personally, if the test could be
-> based on the existing tools/testing/selftests/net/forwarding/skbedit_priority.sh.
+> I don't think it's reasonable to be bubbling up custom per-subsystem
+> DMA ops into all of them for the sake of virtio.
 
-ok I added it to my todo list. My next time slot for this project will
-be in two months.
-
-> > > > > Have you considered the "skbedit priority" action as opposed to hw_tc?
-> > > > 
-> > > > I had already thought of that, but since bridging is offloaded in the HW
-> > > > no skbs are involved, i thought it will be confusing. Since tc-flower seems to
-> > > > already support hw_tc remapping, I decided to use it. I hope it will not harm,
-> > > > to use it for now as mandatory option and make it optional later if other
-> > > > actions are added, including skbedit.
-> > > 
-> > > Well, skbedit is offloadable, so in that sense, its behavior is defined
-> > > even when no skbs are involved. OTOH, skbedit also has a software data
-> > > path (sets skb->priority), as opposed to hw_tc, which last time I checked,
-> > > did not.
-> > 
-> > Alright, having tc rules be portable is certainly a benefit. I presume
-> > that in this situation, it's not an exclusive "either...or" choice. Both
-> > variants can coexist, and the skbedit action can be incorporated at a
-> > later time. Is that accurate?
-> 
-> I believe Petr Machata (now copied) could have an opinion here too.
-> 
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+dma addresses and thus dma mappings are completely driver specific.
+Upper layers have no business looking at them.
