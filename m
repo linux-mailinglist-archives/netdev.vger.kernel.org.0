@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 389286E5E90
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 12:20:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAD326E5E94
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 12:20:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231387AbjDRKUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 06:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46472 "EHLO
+        id S231423AbjDRKU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 06:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231373AbjDRKTu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 06:19:50 -0400
-Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379FA83CA;
-        Tue, 18 Apr 2023 03:19:40 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0VgQLRPS_1681813174;
-Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VgQLRPS_1681813174)
+        with ESMTP id S229568AbjDRKTw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 06:19:52 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3743C7EE5;
+        Tue, 18 Apr 2023 03:19:42 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0VgQLRQ._1681813175;
+Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VgQLRQ._1681813175)
           by smtp.aliyun-inc.com;
-          Tue, 18 Apr 2023 18:19:35 +0800
+          Tue, 18 Apr 2023 18:19:36 +0800
 From:   "D. Wythe" <alibuda@linux.alibaba.com>
 To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
         ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -27,9 +27,9 @@ To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
 Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
         linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [RFC PATCH bpf-next v2 4/5] bpf: add smc negotiator support in BPF struct_ops
-Date:   Tue, 18 Apr 2023 18:19:19 +0800
-Message-Id: <1681813160-120214-5-git-send-email-alibuda@linux.alibaba.com>
+Subject: [RFC PATCH bpf-next v2 5/5] bpf/selftests: add selftest for SMC bpf capability
+Date:   Tue, 18 Apr 2023 18:19:20 +0800
+Message-Id: <1681813160-120214-6-git-send-email-alibuda@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1681813160-120214-1-git-send-email-alibuda@linux.alibaba.com>
 References: <1681813160-120214-1-git-send-email-alibuda@linux.alibaba.com>
@@ -45,230 +45,415 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-This PATCH attempts to introduce BPF injection capability for SMC.
-Considering that the SMC protocol is not suitable for all scenarios,
-especially for short-lived. However, for most applications, they cannot
-guarantee that there are no such scenarios at all. Therefore, apps
-may need some specific strategies to decide shall we need to use SMC
-or not, for example, apps can limit the scope of the SMC to a specific
-IP address or port.
+This PATCH adds a tiny selftest for SMC bpf capability,
+making decisions on whether to use SMC by collecting
+certain information from kernel smc sock.
 
-Based on the consideration of transparent replacement, we hope that apps
-can remain transparent even if they need to formulate some specific
-strategies for SMC using. That is, do not need to recompile their code.
+Follow the steps below to run this test.
 
-On the other hand, we need to ensure the scalability of strategies
-implementation. Although it is simple to use socket options or sysctl,
-it will bring more complexity to subsequent expansion.
+make -C tools/testing/selftests/bpf
+cd tools/testing/selftests/bpf
+sudo ./test_progs -t smc
 
-Fortunately, BPF can solve these concerns very well, users can write
-thire own strategies in eBPF to choose whether to use SMC or not.
-And it's quite easy for them to modify their strategies in the future.
-
-This PATCH implement injection capability for SMC via struct_ops.
-In that way, we can add new injection scenarios in the future.
+Results shows:
+18/1    bpf_smc/load:OK
+18/2    bpf_smc/update:OK
+18/3    bpf_smc/ref:OK
+18      bpf_smc:OK
+Summary: 1/3 PASSED, 0 SKIPPED, 0 FAILED
 
 Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
 ---
- kernel/bpf/bpf_struct_ops_types.h |   4 +
- net/smc/bpf_smc.c                 | 159 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 163 insertions(+)
+ tools/testing/selftests/bpf/prog_tests/bpf_smc.c | 107 +++++++++
+ tools/testing/selftests/bpf/progs/bpf_smc.c      | 265 +++++++++++++++++++++++
+ 2 files changed, 372 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_smc.c
 
-diff --git a/kernel/bpf/bpf_struct_ops_types.h b/kernel/bpf/bpf_struct_ops_types.h
-index 5678a9d..d952b85 100644
---- a/kernel/bpf/bpf_struct_ops_types.h
-+++ b/kernel/bpf/bpf_struct_ops_types.h
-@@ -9,4 +9,8 @@
- #include <net/tcp.h>
- BPF_STRUCT_OPS_TYPE(tcp_congestion_ops)
- #endif
-+#if IS_ENABLED(CONFIG_SMC_BPF)
-+#include <net/smc.h>
-+BPF_STRUCT_OPS_TYPE(smc_sock_negotiator_ops)
-+#endif
- #endif
-diff --git a/net/smc/bpf_smc.c b/net/smc/bpf_smc.c
-index 0c0ec05..37307ea 100644
---- a/net/smc/bpf_smc.c
-+++ b/net/smc/bpf_smc.c
-@@ -7,14 +7,20 @@
-  *  Author(s):  D. Wythe <alibuda@linux.alibaba.com>
-  */
- 
-+#include <linux/bpf_verifier.h>
-+#include <linux/btf_ids.h>
- #include <linux/kernel.h>
- #include <linux/bpf.h>
-+#include <linux/btf.h>
- #include <linux/smc.h>
- #include <net/sock.h>
- #include "smc.h"
- 
-+struct bpf_struct_ops bpf_smc_sock_negotiator_ops;
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_smc.c b/tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+new file mode 100644
+index 0000000..e668857
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+@@ -0,0 +1,107 @@
++// SPDX-License-Identifier: GPL-2.0
 +
- static DEFINE_SPINLOCK(smc_sock_negotiator_list_lock);
- static LIST_HEAD(smc_sock_negotiator_list);
-+static u32 smc_sock_id, sock_id;
- 
- /* required smc_sock_negotiator_list_lock locked */
- static struct smc_sock_negotiator_ops *smc_negotiator_ops_get_by_key(u32 key)
-@@ -199,3 +205,156 @@ void smc_sock_clone_negotiator_ops(struct sock *parent, struct sock *child)
- }
- EXPORT_SYMBOL_GPL(smc_sock_clone_negotiator_ops);
- 
-+static int bpf_smc_negotiator_init(struct btf *btf)
++#include <linux/err.h>
++#include <netinet/tcp.h>
++#include <test_progs.h>
++#include "network_helpers.h"
++#include "bpf_smc.skel.h"
++
++#define SOL_SMC 286
++#define SMC_NEGOTIATOR 2
++static const char name[] = "apps";
++
++void run_smc(void)
 +{
-+	s32 type_id;
++	int fd, err;
 +
-+	type_id = btf_find_by_name_kind(btf, "sock", BTF_KIND_STRUCT);
-+	if (type_id < 0)
-+		return -EINVAL;
-+	sock_id = type_id;
++	fd = socket(AF_SMC, SOCK_STREAM, 0);
++	ASSERT_GT(fd, 0, "create smc socket");
 +
-+	type_id = btf_find_by_name_kind(btf, "smc_sock", BTF_KIND_STRUCT);
-+	if (type_id < 0)
-+		return -EINVAL;
-+	smc_sock_id = type_id;
++	err = setsockopt(fd, SOL_SMC, SMC_NEGOTIATOR, name, sizeof(name) / sizeof(char));
++	ASSERT_EQ(err, 0, "setsockopt");
 +
-+	return 0;
++	close(fd);
 +}
 +
-+/* register ops */
-+static int bpf_smc_negotiator_reg(void *kdata)
++void test_load(void)
 +{
-+	return smc_sock_register_negotiator_ops(kdata);
++	struct bpf_smc *smc_skel;
++	struct bpf_link *link;
++
++	smc_skel = bpf_smc__open_and_load();
++	if (!ASSERT_OK_PTR(smc_skel, "skel_open"))
++		return;
++
++	link = bpf_map__attach_struct_ops(smc_skel->maps.ops);
++	if (!ASSERT_OK_PTR(link, "bpf_map__attach_struct_ops"))
++		goto error;
++
++	bpf_link__destroy(link);
++error:
++	bpf_smc__destroy(smc_skel);
 +}
 +
-+/* unregister ops */
-+static void bpf_smc_negotiator_unreg(void *kdata)
++void test_update(void)
 +{
-+	smc_sock_unregister_negotiator_ops(kdata);
++	struct bpf_smc *smc_skel;
++	struct bpf_link *link;
++	int err;
++
++	smc_skel = bpf_smc__open_and_load();
++	if (!ASSERT_OK_PTR(smc_skel, "skel_open"))
++		return;
++
++	link = bpf_map__attach_struct_ops(smc_skel->maps.accept);
++	if (!ASSERT_OK_PTR(link, "bpf_map__attach_struct_ops"))
++		goto error;
++
++	run_smc();
++	ASSERT_EQ(smc_skel->bss->accept_cnt, 1, "accept_cnt");
++
++	err = bpf_link__update_map(link, smc_skel->maps.drop);
++	ASSERT_OK(err, "update_map");
++
++	run_smc();
++	ASSERT_EQ(smc_skel->bss->accept_cnt, 1, "accept_cnt");
++	ASSERT_EQ(smc_skel->bss->drop_cnt, 1, "drop_cnt");
++
++	bpf_link__destroy(link);
++error:
++	bpf_smc__destroy(smc_skel);
 +}
 +
-+/* unregister ops */
-+static int bpf_smc_negotiator_update(void *kdata, void *old_kdata)
++void test_ref(void)
 +{
-+	return smc_sock_update_negotiator_ops(kdata, old_kdata);
++	struct bpf_smc *smc_skel;
++	struct bpf_link *link;
++	int fd = 0, err;
++
++	smc_skel = bpf_smc__open_and_load();
++	if (!ASSERT_OK_PTR(smc_skel, "skel_open"))
++		return;
++
++	link = bpf_map__attach_struct_ops(smc_skel->maps.accept);
++	if (!ASSERT_OK_PTR(link, "bpf_map__attach_struct_ops"))
++		goto error;
++
++	fd = socket(AF_SMC, SOCK_STREAM, 0);
++	ASSERT_GT(fd, 0, "create smc socket");
++	err = setsockopt(fd, SOL_SMC, SMC_NEGOTIATOR, name, sizeof(name) / sizeof(char));
++	ASSERT_EQ(err, 0, "setsockopt");
++	bpf_link__destroy(link);
++	if (fd > 0)
++		close(fd);
++	ASSERT_EQ(smc_skel->bss->accept_release_cnt, 1, "accept_release_cnt");
++error:
++	bpf_smc__destroy(smc_skel);
 +}
 +
-+static int bpf_smc_negotiator_validate(void *kdata)
++void test_bpf_smc(void)
 +{
-+	return smc_sock_validate_negotiator_ops(kdata);
++	if (test__start_subtest("load"))
++		test_load();
++	if (test__start_subtest("update"))
++		test_update();
++	if (test__start_subtest("ref"))
++		test_ref();
++}
+diff --git a/tools/testing/selftests/bpf/progs/bpf_smc.c b/tools/testing/selftests/bpf/progs/bpf_smc.c
+new file mode 100644
+index 0000000..8ff70af
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_smc.c
+@@ -0,0 +1,265 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include "vmlinux.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_core_read.h>
++#include <bpf/bpf_tracing.h>
++
++#define AF_SMC			(43)
++#define SMC_LISTEN		(10)
++#define SMC_SOCK_CLOSED_TIMING	(0)
++extern unsigned long CONFIG_HZ __kconfig;
++#define HZ CONFIG_HZ
++
++char _license[] SEC("license") = "GPL";
++#define max(a, b) ((a) > (b) ? (a) : (b))
++
++static __always_inline struct smc_sock *smc_sk(struct sock *sk)
++{
++	return (struct smc_sock *)sk;
 +}
 +
-+static int bpf_smc_negotiator_check_member(const struct btf_type *t,
-+					   const struct btf_member *member,
-+					   const struct bpf_prog *prog)
-+{
-+	return 0;
-+}
-+
-+static int bpf_smc_negotiator_init_member(const struct btf_type *t,
-+					  const struct btf_member *member,
-+					  void *kdata, const void *udata)
-+{
-+	const struct smc_sock_negotiator_ops *uops;
-+	struct smc_sock_negotiator_ops *ops;
-+	u32 moff;
-+
-+	uops = (const struct smc_sock_negotiator_ops *)udata;
-+	ops = (struct smc_sock_negotiator_ops *)kdata;
-+
-+	moff = __btf_member_bit_offset(t, member) / 8;
-+
-+	/* init name */
-+	if (moff ==  offsetof(struct smc_sock_negotiator_ops, name)) {
-+		if (bpf_obj_name_cpy(ops->name, uops->name,
-+				     sizeof(uops->name)) <= 0)
-+			return -EINVAL;
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+BPF_CALL_1(bpf_smc_skc_to_tcp_sock, struct sock *, sk)
-+{
-+	if (sk && sk_fullsock(sk) && sk->sk_family == AF_SMC)
-+		return (unsigned long)((struct smc_sock *)(sk))->clcsock->sk;
-+
-+	return (unsigned long)NULL;
-+}
-+
-+const struct bpf_func_proto bpf_smc_skc_to_tcp_sock_proto = {
-+	.func			= bpf_smc_skc_to_tcp_sock,
-+	.gpl_only		= false,
-+	.ret_type		= RET_PTR_TO_BTF_ID_OR_NULL,
-+	.arg1_type		= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
-+	.ret_btf_id		= &btf_sock_ids[BTF_SOCK_TYPE_TCP],
++struct smc_prediction {
++	/* protection for smc_prediction */
++	struct bpf_spin_lock lock;
++	/* start of time slice */
++	__u64	start_tstamp;
++	/* delta of pacing */
++	__u64	pacing_delta;
++	/* N of closed connections determined as long connections
++	 * in current time slice
++	 */
++	__u32	closed_long_cc;
++	/* N of closed connections in this time slice */
++	__u32	closed_total_cc;
++	/* N of incoming connections determined as long connections
++	 * in current time slice
++	 */
++	__u32	incoming_long_cc;
++	/* last splice rate of long cc */
++	__u32	last_rate_of_lcc;
 +};
 +
-+static const struct bpf_func_proto *
-+smc_negotiator_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
++#define SMC_PREDICTION_MIN_PACING_DELTA                (1llu)
++#define SMC_PREDICTION_MAX_PACING_DELTA                (HZ << 3)
++#define SMC_PREDICTION_MAX_LONGCC_PER_SPLICE           (8)
++#define SMC_PREDICTION_MAX_PORT                        (64)
++#define SMC_PREDICTION_MAX_SPLICE_GAP                  (1)
++#define SMC_PREDICTION_LONGCC_RATE_THRESHOLD           (13189)
++#define SMC_PREDICTION_LONGCC_PACKETS_THRESHOLD        (100)
++#define SMC_PREDICTION_LONGCC_BYTES_THRESHOLD	\
++		(SMC_PREDICTION_LONGCC_PACKETS_THRESHOLD * 1024)
++
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__uint(max_entries, SMC_PREDICTION_MAX_PORT);
++	__type(key, __u16);
++	__type(value, struct smc_prediction);
++} negotiator_map SEC(".maps");
++
++
++static inline __u32 smc_prediction_calt_rate(struct smc_prediction *smc_predictor)
 +{
-+	const struct btf_member *m;
-+	const struct btf_type *t;
-+	u32 midx, moff;
++	if (!smc_predictor->closed_total_cc)
++		return smc_predictor->last_rate_of_lcc;
 +
-+	midx = prog->expected_attach_type;
-+	t = bpf_smc_sock_negotiator_ops.type;
-+	m = &btf_type_member(t)[midx];
++	return (smc_predictor->closed_long_cc << 14) / smc_predictor->closed_total_cc;
++}
 +
-+	moff = __btf_member_bit_offset(t, m) / 8;
++static inline struct smc_prediction *smc_prediction_get(__u16 key, __u64 tstamp)
++{
++	struct smc_prediction zero = {}, *smc_predictor;
++	__u32 gap;
++	int err;
 +
-+	switch (func_id) {
-+	case BPF_FUNC_setsockopt:
-+		switch (moff) {
-+		/* Avoid potential deadloop risk */
-+		case offsetof(struct smc_sock_negotiator_ops, init):
-+			fallthrough;
-+		/* Avoid potential leak risk */
-+		case offsetof(struct smc_sock_negotiator_ops, release):
++	smc_predictor = bpf_map_lookup_elem(&negotiator_map, &key);
++	if (!smc_predictor) {
++		zero.start_tstamp = bpf_jiffies64();
++		zero.pacing_delta = SMC_PREDICTION_MIN_PACING_DELTA;
++		err = bpf_map_update_elem(&negotiator_map, &key, &zero, 0);
++		if (err)
 +			return NULL;
-+		}
-+		return &bpf_sk_setsockopt_proto;
-+	case BPF_FUNC_getsockopt:
-+		return &bpf_sk_getsockopt_proto;
-+	case BPF_FUNC_skc_to_tcp_sock:
-+		return &bpf_smc_skc_to_tcp_sock_proto;
-+	default:
-+		return bpf_base_func_proto(func_id);
++		smc_predictor =  bpf_map_lookup_elem(&negotiator_map, &key);
++		if (!smc_predictor)
++			return NULL;
 +	}
++
++	if (tstamp) {
++		bpf_spin_lock(&smc_predictor->lock);
++		gap = (tstamp - smc_predictor->start_tstamp) / smc_predictor->pacing_delta;
++		/* new splice */
++		if (gap > 0) {
++			smc_predictor->start_tstamp = tstamp;
++			smc_predictor->last_rate_of_lcc =
++				(smc_prediction_calt_rate(smc_predictor) * 7) >> (2 + gap);
++			smc_predictor->closed_long_cc = 0;
++			smc_predictor->closed_total_cc = 0;
++			smc_predictor->incoming_long_cc = 0;
++		}
++		bpf_spin_unlock(&smc_predictor->lock);
++	}
++	return smc_predictor;
 +}
 +
-+static bool smc_negotiator_prog_is_valid_access(int off, int size, enum bpf_access_type type,
-+						const struct bpf_prog *prog,
-+						struct bpf_insn_access_aux *info)
++int SEC("struct_ops/bpf_smc_negotiate")
++BPF_PROG(bpf_smc_negotiate, struct sock *sk)
 +{
-+	if (!bpf_tracing_btf_ctx_access(off, size, type, prog, info))
-+		return false;
++	struct smc_prediction *smc_predictor;
++	struct smc_sock *smc = smc_sk(sk);
++	struct tcp_sock *tp;
++	__u32 rate = 0;
++	__u16 key;
 +
-+	/* promote it to smc_sock */
-+	if (base_type(info->reg_type) == PTR_TO_BTF_ID &&
-+	    !bpf_type_has_unsafe_modifiers(info->reg_type) &&
-+	    info->btf_id == sock_id)
-+		info->btf_id = smc_sock_id;
++	/* client side */
++	if (smc == NULL || smc->sk.__sk_common.skc_state != SMC_LISTEN) {
++		/* use Global smc_predictor */
++		key = 0;
++	} else {	/* server side */
++		tp = bpf_skc_to_tcp_sock(sk);
++		if (!tp)
++			goto error;
++		key = tp->inet_conn.icsk_inet.sk.__sk_common.skc_num;
++	}
 +
-+	return true;
++	smc_predictor = smc_prediction_get(key, bpf_jiffies64());
++	if (!smc_predictor)
++		return SK_PASS;
++
++	bpf_spin_lock(&smc_predictor->lock);
++
++	if (smc_predictor->incoming_long_cc == 0)
++		goto out_locked_pass;
++
++	if (smc_predictor->incoming_long_cc > SMC_PREDICTION_MAX_LONGCC_PER_SPLICE)
++		goto out_locked_drop;
++
++	rate = smc_prediction_calt_rate(smc_predictor);
++	if (rate < SMC_PREDICTION_LONGCC_RATE_THRESHOLD)
++		goto out_locked_drop;
++
++out_locked_pass:
++	smc_predictor->incoming_long_cc++;
++	bpf_spin_unlock(&smc_predictor->lock);
++	return SK_PASS;
++out_locked_drop:
++	bpf_spin_unlock(&smc_predictor->lock);
++error:
++	return SK_DROP;
 +}
 +
-+static const struct bpf_verifier_ops bpf_smc_negotiator_verifier_ops = {
-+	.get_func_proto  = smc_negotiator_prog_func_proto,
-+	.is_valid_access = smc_negotiator_prog_is_valid_access,
++void SEC("struct_ops/bpf_smc_collect_info")
++BPF_PROG(bpf_smc_collect_info, struct sock *sk, int timing)
++{
++	struct smc_prediction *smc_predictor;
++	int use_fallback, sndbuf;
++	struct smc_sock *smc;
++	struct tcp_sock *tp;
++	bool match = false;
++	__u16 wrap, count;
++	__u16 key;
++
++	/* no info can collect */
++	if (sk == NULL)
++		return;
++
++	/* only fouces on closed */
++	if (timing != SMC_SOCK_CLOSED_TIMING)
++		return;
++
++	/* every full smc sock should contains a tcp sock */
++	tp = bpf_skc_to_tcp_sock(sk);
++	if (!tp)
++		return;
++
++	smc = smc_sk(sk);
++	if (smc->use_fallback) {
++		use_fallback = 1;
++		match = tp->delivered > SMC_PREDICTION_LONGCC_PACKETS_THRESHOLD;
++	} else {
++		wrap = smc->conn.tx_curs_sent.wrap;
++		count = smc->conn.tx_curs_sent.count;
++		sndbuf = tp->inet_conn.icsk_inet.sk.sk_sndbuf;
++		match = (count + wrap * sndbuf) > SMC_PREDICTION_LONGCC_BYTES_THRESHOLD;
++	}
++
++	key = tp->inet_conn.icsk_inet.sk.__sk_common.skc_num;
++
++	smc_predictor = smc_prediction_get(key, 0);
++	if (!smc_predictor)
++		goto error;
++
++	bpf_spin_lock(&smc_predictor->lock);
++	smc_predictor->closed_total_cc++;
++	if (match) {
++		/* increase stats */
++		smc_predictor->closed_long_cc++;
++		/* try more aggressive */
++		if (smc_predictor->pacing_delta > SMC_PREDICTION_MIN_PACING_DELTA) {
++			if (use_fallback) {
++				smc_predictor->pacing_delta = max(SMC_PREDICTION_MIN_PACING_DELTA,
++						(smc_predictor->pacing_delta * 3) >> 2);
++			}
++		}
++	} else if (!use_fallback) {
++		smc_predictor->pacing_delta <<= 1;
++	}
++	bpf_spin_unlock(&smc_predictor->lock);
++error:
++	return;
++}
++
++SEC(".struct_ops.link")
++struct smc_sock_negotiator_ops ops = {
++	.name = "apps",
++	.negotiate	= (void *)bpf_smc_negotiate,
++	.collect_info	= (void *)bpf_smc_collect_info,
 +};
 +
-+struct bpf_struct_ops bpf_smc_sock_negotiator_ops = {
-+	.verifier_ops = &bpf_smc_negotiator_verifier_ops,
-+	.init = bpf_smc_negotiator_init,
-+	.check_member = bpf_smc_negotiator_check_member,
-+	.init_member = bpf_smc_negotiator_init_member,
-+	.reg = bpf_smc_negotiator_reg,
-+	.update = bpf_smc_negotiator_update,
-+	.unreg = bpf_smc_negotiator_unreg,
-+	.validate = bpf_smc_negotiator_validate,
-+	.name = "smc_sock_negotiator_ops",
++int accept_cnt = 0;
++int drop_cnt = 0;
++int accept_release_cnt = 0;
++
++int SEC("struct_ops/bpf_smc_accept")
++BPF_PROG(bpf_smc_accept, struct sock *sk)
++{
++	return SK_PASS;
++}
++
++void SEC("struct_ops/bpf_smc_accept_init")
++BPF_PROG(bpf_smc_accept_init, struct sock *sk)
++{
++	accept_cnt++;
++}
++
++void SEC("struct_ops/bpf_smc_accept_release")
++BPF_PROG(bpf_smc_accept_release, struct sock *sk)
++{
++	accept_release_cnt++;
++}
++
++int SEC("struct_ops/bpf_smc_drop")
++BPF_PROG(bpf_smc_drop, struct sock *sk)
++{
++	return SK_DROP;
++}
++
++void SEC("struct_ops/bpf_smc_drop_init")
++BPF_PROG(bpf_smc_drop_init, struct sock *sk)
++{
++	drop_cnt++;
++}
++
++SEC(".struct_ops.link")
++struct smc_sock_negotiator_ops accept = {
++	.name = "apps",
++	.init = (void *) bpf_smc_accept_init,
++	.release = (void *) bpf_smc_accept_release,
++	.negotiate = (void *) bpf_smc_accept,
 +};
 +
++SEC(".struct_ops.link")
++struct smc_sock_negotiator_ops drop = {
++	.name = "apps",
++	.init = (void *) bpf_smc_drop_init,
++	.negotiate = (void *) bpf_smc_drop,
++};
 -- 
 1.8.3.1
 
