@@ -2,153 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B230A6E6C36
-	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 20:36:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9C76E6C4C
+	for <lists+netdev@lfdr.de>; Tue, 18 Apr 2023 20:42:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232517AbjDRSgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 14:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
+        id S232624AbjDRSmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 14:42:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232100AbjDRSgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 14:36:35 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8445FEB
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 11:36:29 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id 41be03b00d2f7-517bfdf55c3so1102246a12.2
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 11:36:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681842988; x=1684434988;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ApsPN1GAt+bKSjbs42LxkANlc6ClVgqELeBRCapEZOY=;
-        b=fcvQ6uiiAwbiDHp9ofdozAuOiqo8sbjEaS1wJfZPJdR7ku/k91ggC43xkhzyyW+7nI
-         yL05D8fKTVowBu7cH7oGSbwvorwMmpZfZp+be71T12rL9TRGAsRKhgX9BtbLc+iyZwgq
-         Qb48G1rKzQZjLEUD5f92333ozX9LrkHTarpi26AV6WxfUdF8E317PyK+GRvYlhJDse5Z
-         MEZRohJ9XuAxL4kVb0Aft7cnNRU1ffRIyB+Hpuwglq4gprdj5r075/QYekStmw9Zcc7e
-         uJaoVEg0RaJ6z9kkri0qCgyEJPxz6DZVa/1Zx09Yl/HmHiUZVgIL62G/nueZQ1DngeXx
-         2F5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681842988; x=1684434988;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ApsPN1GAt+bKSjbs42LxkANlc6ClVgqELeBRCapEZOY=;
-        b=PqsNdsfhlKHjnys+QXT5IA6gSbAirIpYc4gnJzWGzPhRKkwi6FlDBUIlOwmiwZx0dO
-         4FnUChVX7FAuupGjjfuurKYfy7r3fBBBQIh6YJ+9T9XoiNlEL7ZBiUEsoxVT6U4m+HoX
-         pd97b2ign2FEnsLMhxxN4SMs1kxuOkZGOGcwPM2Paeu+mFRv6qH2OKo7117zvgnQtAvP
-         Rbo1BQ810av8bcZxUKyllntj47vQYm2BdU7+MmrRLzC1Fm0+WK2cNusgf8w28urlwtp7
-         BxZHfRJq+qlUf72atRQV3u8Ct8bcQLALXod2IseK2EvDXJnAKs+ectamB0l3JSBNfGmb
-         1ZfA==
-X-Gm-Message-State: AAQBX9eIqvRDE7t7LKWpkwGjfkdYaagkGZ/mAXhSHHWYGSV6rYFnLuOT
-        sCbBRR7LIyQugoeYEV390U/0GTtom5PW8OBo2Enf9A==
-X-Google-Smtp-Source: AKy350ZShnO2tG7T/57z/jUzMW01PDWOatg+RwsX6uSLq6+zwhs8lAyWd6JaHE6qNghBF+/vCyIJp0/ga1bkMCOPgjE=
-X-Received: by 2002:a17:90a:d70b:b0:246:ba3f:4f3e with SMTP id
- y11-20020a17090ad70b00b00246ba3f4f3emr605102pju.6.1681842988421; Tue, 18 Apr
- 2023 11:36:28 -0700 (PDT)
+        with ESMTP id S231296AbjDRSmH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 14:42:07 -0400
+Received: from mx16lb.world4you.com (mx16lb.world4you.com [81.19.149.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6A19031;
+        Tue, 18 Apr 2023 11:42:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=icQqXp8H6dbIv/Jfy/LwqTJbTa7u53xAx/U7gBNJXnw=; b=t6YsmUnoDKkjQ3Mn3xrcdMUnPS
+        8qUnqgv8yFVfltFYJ4P+A6HBiUT9QNthC8tdUs1SuWDTLJl1Ahfy+Ix/6LNTeHBH/80ONw9B6Ly/d
+        5h/TRVvLA7TvMmmsJcMdilokEOTlZ1sA9R0Z0UbTqLQEubpGUNTBrhLI0pm8CSDvew1I=;
+Received: from [88.117.57.231] (helo=[10.0.0.160])
+        by mx16lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1poqH9-0004VC-Fm; Tue, 18 Apr 2023 20:41:59 +0200
+Message-ID: <6661221c-2dc8-0501-3f59-8c59f3ad2d49@engleder-embedded.com>
+Date:   Tue, 18 Apr 2023 20:41:59 +0200
 MIME-Version: 1.0
-References: <20230418-dwmac-meson8b-clk-cb-cast-v1-1-e892b670cbbb@kernel.org>
-In-Reply-To: <20230418-dwmac-meson8b-clk-cb-cast-v1-1-e892b670cbbb@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 18 Apr 2023 11:36:17 -0700
-Message-ID: <CAKwvOd=DeCNoQYuTJVfbd0tSddJpGVaKBTEfC-+XUN4OJ4hRRw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: stmmac: dwmac-meson8b: Avoid cast to
- incompatible function type
-To:     Simon Horman <horms@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, llvm@lists.linux.dev,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Huckleberry <nhuck@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH net-next v2 5/6] tsnep: Add XDP socket zero-copy RX
+ support
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com
+References: <20230415144256.27884-1-gerhard@engleder-embedded.com>
+ <20230415144256.27884-6-gerhard@engleder-embedded.com>
+ <d872b08538aface37cb21eecb8a793a7063c4c49.camel@redhat.com>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+In-Reply-To: <d872b08538aface37cb21eecb8a793a7063c4c49.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AV-Do-Run: Yes
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 4:07=E2=80=AFAM Simon Horman <horms@kernel.org> wro=
-te:
->
-> Rather than casting clk_disable_unprepare to an incompatible function
-> type provide a trivial wrapper with the correct signature for the
-> use-case.
->
-> Reported by clang-16 with W=3D1:
->
->  drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c:276:6: error: cast f=
-rom 'void (*)(struct clk *)' to 'void (*)(void *)' converts to incompatible=
- function type [-Werror,-Wcast-function-type-strict]
->                                         (void(*)(void *))clk_disable_unpr=
-epare,
->                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
-~~~~~
-> No functional change intended.
-> Compile tested only.
->
-> Signed-off-by: Simon Horman <horms@kernel.org>
+On 18.04.23 10:22, Paolo Abeni wrote:
+> On Sat, 2023-04-15 at 16:42 +0200, Gerhard Engleder wrote:
+>> @@ -892,6 +900,37 @@ static int tsnep_rx_desc_available(struct tsnep_rx *rx)
+>>   		return rx->read - rx->write - 1;
+>>   }
+>>   
+>> +static void tsnep_rx_free_page_buffer(struct tsnep_rx *rx)
+>> +{
+>> +	struct page **page;
+>> +
+>> +	page = rx->page_buffer;
+>> +	while (*page) {
+>> +		page_pool_put_full_page(rx->page_pool, *page, false);
+>> +		*page = NULL;
+>> +		page++;
+>> +	}
+>> +}
+> 
+> [...]
+> 
+>>   static void tsnep_rx_close(struct tsnep_rx *rx)
+>>   {
+>> +	if (rx->xsk_pool)
+>> +		tsnep_rx_free_page_buffer(rx);
+> 
+> It looks like the above could call tsnep_rx_free_page_buffer() with
+> each page ptr in rx->page_buffer not zero. If so
+> tsnep_rx_free_page_buffer() will do an out of bound access.
 
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+rx->page_buffer has space for up to TSNEP_RING_SIZE ptr's. The
+descriptor ring is filled with at most TSNEP_RING_SIZE - 1
+pages. Thus, the last ptr in rx->page_buffer is always zero.
 
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/driver=
-s/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-> index e8b507f88fbc..f6754e3643f3 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-> @@ -263,6 +263,11 @@ static int meson_axg_set_phy_mode(struct meson8b_dwm=
-ac *dwmac)
->         return 0;
->  }
->
-> +static void meson8b_clk_disable_unprepare(void *data)
-> +{
-> +       clk_disable_unprepare(data);
-> +}
-> +
->  static int meson8b_devm_clk_prepare_enable(struct meson8b_dwmac *dwmac,
->                                            struct clk *clk)
->  {
-> @@ -273,8 +278,7 @@ static int meson8b_devm_clk_prepare_enable(struct mes=
-on8b_dwmac *dwmac,
->                 return ret;
->
->         return devm_add_action_or_reset(dwmac->dev,
-> -                                       (void(*)(void *))clk_disable_unpr=
-epare,
-> -                                       clk);
-> +                                       meson8b_clk_disable_unprepare, cl=
-k);
->  }
->
->  static int meson8b_init_rgmii_delays(struct meson8b_dwmac *dwmac)
->
+> Also, why testing rx->xsk_pool instead of rx->page_buffer?
 
+Testing for rx->xsk_pool is done for all code, which is only needed
+if XSK zero-copy is enabled. For me this is more consistent to the
+rest of the code.
 
---=20
-Thanks,
-~Nick Desaulniers
+Thanks!
+
+Gerhard
