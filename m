@@ -2,82 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 884776E719D
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 05:33:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E11F6E71CD
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 05:48:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231400AbjDSDdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 23:33:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53062 "EHLO
+        id S231797AbjDSDs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 23:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbjDSDdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 23:33:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1AC40FE
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 20:33:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8316363A7F
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 03:33:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65DD7C433EF;
-        Wed, 19 Apr 2023 03:33:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681875199;
-        bh=WYqhr0gs0QI/S7bZ3TkzeQ+0TQymyEs7MY0s9TRTXns=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=u30Yw7ZnMRcJXGMJTytzKW4E/t4qTzITwN0VHdGCjbiLuuMblC6DAmOmsSuRKR61G
-         qeXg42PxiGpMB/W3eYhkqRIguuzzM8+I9f6ZD/hFvn4bzF/G2iq3kHOvOoGiA1ylE2
-         cnwhR3B9XgayQ/PJzDvtDZO3E+zzCJlaSHvXNONDw4/UVEz1QyrwsKe6djXyvV0NN3
-         XZgVVMoDA39ZVyAq8YVYJFNLfFCCBoWO6FhpbxAqbuI1BiF3FlxfvuD7F4i4FAVfoY
-         90H2iymFMLPeoWNRCvQWDYNZevoagtJpl1L55GkA8GjYFjxyGODbvhI8ewsiuaccvJ
-         OHBKk6OOYhkyg==
-Date:   Tue, 18 Apr 2023 20:33:18 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Patrick McHardy <kaber@trash.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Christophe Ricard <christophe-h.ricard@st.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, Brad Spencer <bspencer@blackberry.com>
-Subject: Re: [PATCH v1 net] netlink: Use copy_to_user() for optval in
- netlink_getsockopt().
-Message-ID: <20230418203318.2053c4f9@kernel.org>
-In-Reply-To: <20230419004246.25770-1-kuniyu@amazon.com>
-References: <20230419004246.25770-1-kuniyu@amazon.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229879AbjDSDs2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 23:48:28 -0400
+Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3589F8E;
+        Tue, 18 Apr 2023 20:48:26 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VgTAsnt_1681876102;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgTAsnt_1681876102)
+          by smtp.aliyun-inc.com;
+          Wed, 19 Apr 2023 11:48:23 +0800
+Message-ID: <1681876092.206569-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH] MAINTAINERS: make me a reviewer of VIRTIO CORE AND NET DRIVERS
+Date:   Wed, 19 Apr 2023 11:48:12 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org
+References: <20230413071610.43659-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20230413071610.43659-1-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Apr 2023 17:42:46 -0700 Kuniyuki Iwashima wrote:
-> Brad Spencer provided a detailed report that when calling getsockopt()
-> for AF_NETLINK, some SOL_NETLINK options set only 1 byte even though such
-> options require more than int as length.
-> 
-> The options return a flag value that fits into 1 byte, but such behaviour
-> confuses users who do not strictly check the value as char.
-> 
-> Currently, netlink_getsockopt() uses put_user() to copy data to optlen and
-> optval, but put_user() casts the data based on the pointer, char *optval.
-> So, only 1 byte is set to optval.
-> 
-> To avoid this behaviour, we need to use copy_to_user() or cast optval for
-> put_user().
-> 
-> Now getsockopt() accepts char as optval as the flags are only 1 byte.
+On Thu, 13 Apr 2023 15:16:10 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> First of all, I personally love open source, linux and virtio. I have
+> also participated in community work such as virtio for a long time.
+>
+> I think I am familiar enough with virtio/virtio-net and is adequate as a
+> reviewer.
+>
+> Every time there is some patch/bug, I wish I can get pinged
+> and I will feedback on that.
+>
+> For me personally, being a reviewer is an honor and a responsibility,
+> and it also makes it easier for me to participate in virtio-related
+> work. And I will spend more time reviewing virtio patch. Better advance
+> virtio development
+>
+> I had some contributions to virtio/virtio-net and some support for it.
+>
+> * per-queue reset
+> * virtio-net xdp
+> * some bug fix
+> * ......
+>
+> I make a humble request to grant the reviewer role for the virtio core
+> and net drivers.
 
-I think it's worth doing, but it will change the return value on big
-endian, right?
+ping!!
+
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index cacd6074fb89..700b00a9e225 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -22064,6 +22064,7 @@ F:	include/uapi/linux/virtio_console.h
+>  VIRTIO CORE AND NET DRIVERS
+>  M:	"Michael S. Tsirkin" <mst@redhat.com>
+>  M:	Jason Wang <jasowang@redhat.com>
+> +R:	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>  L:	virtualization@lists.linux-foundation.org
+>  S:	Maintained
+>  F:	Documentation/ABI/testing/sysfs-bus-vdpa
+> --
+> 2.32.0.3.g01195cf9f
+>
