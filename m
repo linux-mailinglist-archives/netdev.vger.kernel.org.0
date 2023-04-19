@@ -2,118 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5513A6E70B0
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 03:16:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F6396E70B5
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 03:21:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231537AbjDSBQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 21:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
+        id S231352AbjDSBVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 21:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbjDSBQ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 21:16:29 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39819E4D;
-        Tue, 18 Apr 2023 18:16:28 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-63b5c48ea09so2346223b3a.1;
-        Tue, 18 Apr 2023 18:16:28 -0700 (PDT)
+        with ESMTP id S231166AbjDSBVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 21:21:13 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893982109
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 18:21:11 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-187df75c908so922618fac.1
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 18:21:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681866988; x=1684458988;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=l7KcAK1S7DUZq/Db3Jz+q+bCAF609VatxfLnf+LJlvo=;
-        b=UImrKatqY1FwR0yQweibDR4DseukfyBwClwOPcMSYL3LBowh0aaBzIJSwFoWoMpZRx
-         ZSWprAGqMtPABENmu6U6o5rsAqL42xljbObDCdLi6RpQtW6TLxizruD/9K06SRsgLK6s
-         BJvj3ltjBCwGMLO9bjQbpfHPQH8UFr9M1+kbeiylIgLuLpOhWZ5MBOUTSyLFfy6HlYqz
-         IwCO5OogzV7U5Yvaa31THa8mXH0Kj8DLkBLG1CGBXLWDKruXECOmGTkpVZ7gSzycuTCJ
-         9gDXKcTm3dKfe6Ss4wV4g7/JEMCV1dM7fPygD/70/S4oMNXqIrZ0VMD9WKinPLiZSpCH
-         m14A==
+        d=semihalf.com; s=google; t=1681867270; x=1684459270;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YwHPeuRPnETS7J1gGG+x8FJe/TP2H/54Upfy2bsQ9qw=;
+        b=qq2zMdT2dkBvxZf0m8fww9/ALWu4OeFEX+uDAv2YwGNASL0eg/YzOh8s85GWnPVzln
+         o+EwGoqAyRR9ipSoJQ5hAlW33xgRAP6YnLSDTxbVlSEe7r3IyTRkRIpd0822aIMCf8Rz
+         LiwTvE5b7IfCFpGs2h/VXgYEHgL/xnpXOWqoZbXHw9Y8itcuj00EpOI3GdVBN34Nhh9v
+         pJQrV2gJ+4sSwCu1onWIjc0toqILeYoTdEDVS7EGR7KlJP8/VSuZ2ZcMkvhjPsCo7z8k
+         aktVKLgWOCEvKkSRnn/QWWMZvvulB/xfBWzh96vSPqpKVYYE1i2uEP5oUZET+Rhi/0Zl
+         E4Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681866988; x=1684458988;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=l7KcAK1S7DUZq/Db3Jz+q+bCAF609VatxfLnf+LJlvo=;
-        b=eaHxFzCmtI5NFLwRlo8k7o1qW0ToznYDrr7xnOBJSswcmttbrE3vQWbciXRLXHfo5p
-         B+P/gMeQ/GnXigSwU53iZQ+luRtDgMsZ+WZY6DJw5fkiELrfp+kxeXGR4ogGjvg939f0
-         j30u5YwplorxInXrhJtz+Mv89Wy6QTIS7bn9YzOAXhTLEgWOSIXliNWBvZqwxqMwKeh+
-         /5fsUWpnTTlva5gbFVxFXTvewrWdzGbfgmWN0+FhazaLvx9fPnvsZDzmXui+NV6QXJwE
-         pjl6KRDUMDxsnijh31XvIrHnOrXFyu7yLa/SAt2jVWX925yCfZURdUfxs4TWKv/Ovedk
-         Z+dQ==
-X-Gm-Message-State: AAQBX9eD5/cvMp0CEKAfi9paA28KZkBpiiZF33D+HxBKrDA0DFQxxGtO
-        1qlnGOv87asW1ya5PE6e6oitzFK9Wt/gkNxh
-X-Google-Smtp-Source: AKy350YjcaDx5WmdZkF9f2yyCEe57eKJTE93TCYPqXHAZDDTX2kvT5q/9JN9Nvf4osvomTvKY0qU6A==
-X-Received: by 2002:a05:6a00:1493:b0:63b:19e5:a9ec with SMTP id v19-20020a056a00149300b0063b19e5a9ecmr2033968pfu.33.1681866987601;
-        Tue, 18 Apr 2023 18:16:27 -0700 (PDT)
-Received: from yoga ([2400:1f00:13:d56c:e810:608c:4286:179f])
-        by smtp.gmail.com with ESMTPSA id q25-20020a62ae19000000b0063b89300316sm5232157pff.14.2023.04.18.18.16.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Apr 2023 18:16:27 -0700 (PDT)
-Date:   Wed, 19 Apr 2023 06:46:20 +0530
-From:   Anup Sharma <anupnewsmail@gmail.com>
-To:     krzysztof.kozlowski@linaro.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linma@zju.edu.cn, dvyukov@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: nfc: nci: fix for UBSAN: shift-out-of-bounds in
- nci_activate_target
-Message-ID: <ZD9A5Krm+ZoFEFWZ@yoga>
+        d=1e100.net; s=20221208; t=1681867270; x=1684459270;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YwHPeuRPnETS7J1gGG+x8FJe/TP2H/54Upfy2bsQ9qw=;
+        b=Q27AILD/sPHk28p3ahjAjnstDb7vk/M8a6RsRp8SSfcP26MgSjzHaKIjz7WU+zolsR
+         LQ8rJm6cRab+Pf2muBF1g4g1kb4cJzVO/XisP9ud1wV1zvx+mr2vozR3VZ3dAW3OUq07
+         KMBHS8f7ib/loislWHNuoVcdIhxJ0zv+L5S/LySHqN5EIQwnNvzlIqgF7AmTYeoJKEfi
+         WhJkCXY94kdwzngNrtnn5bf7HqGoWZFVewUrlP4cfALYaVh5FpraWN5OACJ/WCY6gCH+
+         zfADe9bJtDkXVGvsHrUxZYL1RvqSPJ/o74DjnXOY7lqtfZot7kARqTTqDrbsWAIc85WU
+         ybig==
+X-Gm-Message-State: AAQBX9eW58xV2gH5MgszZMhqurFoZJgCWb1CJ6M29UKC4e5th23vG1Gg
+        Ko+eZ7Zk5q6mUIbuoXSxCYqOTFIDwl53JFVJKxSldw==
+X-Google-Smtp-Source: AKy350Y0POSinYjDSsb1g3q8aHg7C+2SmuUrhTSPsQAVX/CabzpgHmjJ3DTtmxg/p69WSsYw3PLJbGp5L2j7kvFe/QQ=
+X-Received: by 2002:a05:6870:910a:b0:187:ffb1:d3ee with SMTP id
+ o10-20020a056870910a00b00187ffb1d3eemr1747416oae.0.1681867270455; Tue, 18 Apr
+ 2023 18:21:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20230417160151.1617256-1-shmuel.h@siklu.com>
+In-Reply-To: <20230417160151.1617256-1-shmuel.h@siklu.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Wed, 19 Apr 2023 03:20:59 +0200
+Message-ID: <CAPv3WKey+AXGvXwYTWA5R4ZROB5v0afDZVXr4cbPwS7O_WFh+Q@mail.gmail.com>
+Subject: Re: net: mvpp2: tai: add extts support
+To:     Shmuel Hazan <shmuel.h@siklu.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        horatiu.vultur@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot found  UBSAN: shift-out-of-bounds in nci_activate_target [1],
-when nci_target->supported_protocols is bigger than UNIT_MAX,
-where supported_protocols is unsigned 32-bit interger type.
+Hi Shmuel,
 
-32 is the maximum allowed for supported_protocols. Added a check
-for it. 
+pon., 17 kwi 2023 o 18:03 Shmuel Hazan <shmuel.h@siklu.com> napisa=C5=82(a)=
+:
+>
+> This patch series adds support for PTP event capture on the Aramda
+> 80x0/70x0. This feature is mainly used by tools linux ts2phc(3) in order
+> to synchronize a timestamping unit (like the mvpp2's TAI) and a system
+> DPLL on the same PCB.
+>
+> The patch series includes 3 patches: the second one implements the
+> actual extts function.
+>
+>
 
-[1] UBSAN: shift-out-of-bounds in net/nfc/nci/core.c:912:45
-shift exponent 4294967071 is too large for 32-bit type 'int'
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x136/0x150 lib/dump_stack.c:106
- ubsan_epilogue lib/ubsan.c:217 [inline]
- __ubsan_handle_shift_out_of_bounds+0x221/0x5a0 lib/ubsan.c:387
- nci_activate_target.cold+0x1a/0x1f net/nfc/nci/core.c:912
- nfc_activate_target+0x1f8/0x4c0 net/nfc/core.c:420
- nfc_genl_activate_target+0x1f3/0x290 net/nfc/netlink.c:900
- genl_family_rcv_msg_doit.isra.0+0x1e6/0x2d0 net/netlink/genetlink.c:968
- genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
+Thank you for the patches. For v3, could you please generate a cover
+letter and properly number all the patches? Please also list the
+changes between the revisions.
 
-Reported-by: syzbot+0839b78e119aae1fec78@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?id=19cf2724120ef8c51c8d2566df0cc34617188433
+What setup/tooling is required to verify the changes?
 
-Signed-off-by: anupsharma <anupnewsmail@gmail.com>
----
- net/nfc/nci/core.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-index fff755dde30d..e9d968bd1cd9 100644
---- a/net/nfc/nci/core.c
-+++ b/net/nfc/nci/core.c
-@@ -908,6 +908,11 @@ static int nci_activate_target(struct nfc_dev *nfc_dev,
- 		pr_err("unable to find the selected target\n");
- 		return -EINVAL;
- 	}
-+	
-+	if (nci_target->supported_protocols >= 32) {
-+		pr_err("Too many supported protocol by the device\n");
-+		return -EINVAL;
-+	}
- 
- 	if (!(nci_target->supported_protocols & (1 << protocol))) {
- 		pr_err("target does not support the requested protocol 0x%x\n",
--- 
-2.34.1
-
+Best regards,
+Marcin
