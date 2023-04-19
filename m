@@ -2,54 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F1156E8218
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 21:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA40A6E823F
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 21:58:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231204AbjDSTrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 15:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52132 "EHLO
+        id S231273AbjDST6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 15:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbjDSTrv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 15:47:51 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19025FFA
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 12:47:39 -0700 (PDT)
+        with ESMTP id S230373AbjDST6w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 15:58:52 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E7F26B5;
+        Wed, 19 Apr 2023 12:58:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=gY/c7vqJLTiq7QAIpEp8Q1nJa2AF866bT22FcfMvSME=;
-        t=1681933659; x=1683143259; b=vdTL3VfXQdbLKR5shpl/TMqhmR4ze4I5wynaImUNtN/+KcT
-        osVCHUYXgV7/uM6Gio64TexPXl0k6uukBGdgcFwyyMjHLDeNucyWWuvOqFdruUmbwkvy+AtC8MfZx
-        C/g7FKRaNjXEAv7uyhUEkNSLn9/Zo85CHDnW0XPK+wl7sv264VV1u0RySQS2h2ep2OuJ+UbMKmLC7
-        VMDI7fkbv2TU/pgOhxcyGMLtYtukbFjQzcVakIIjJMaEXMoSxqFBCboddEg6ubIDKFKmGVp8vD1+V
-        zst86e3cg7jTPNP/4d/c1RY9Smn32lxZqfGBCdgcjBaxt6aYRqi2D45p7+sEUlyg==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1ppDm6-002gFP-0T;
-        Wed, 19 Apr 2023 21:47:30 +0200
-Message-ID: <e0ec2ca90c10529c597c6c936109e9c73cc55c31.camel@sipsolutions.net>
-Subject: Re: [PATCH v1 net] netlink: Use copy_to_user() for optval in
- netlink_getsockopt().
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     bspencer@blackberry.com, christophe-h.ricard@st.com,
-        davem@davemloft.net, dsahern@gmail.com, edumazet@google.com,
-        kaber@trash.net, kuba@kernel.org, kuni1840@gmail.com,
-        netdev@vger.kernel.org, pabeni@redhat.com, pablo@netfilter.org
-Date:   Wed, 19 Apr 2023 21:47:29 +0200
-In-Reply-To: <5bab80687cfc0a641b8110530bc1277e6cbf00e6.camel@sipsolutions.net>
-References: <d098026456c8393463e6cf33195edc19369c220b.camel@sipsolutions.net>
-         <20230419175258.37172-1-kuniyu@amazon.com>
-         <5bab80687cfc0a641b8110530bc1277e6cbf00e6.camel@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References;
+        bh=LxBKG7hjPDqtJt40ExcWnkknGjlZ3Me2MkkSjoLZIu0=; b=aRbIiBZ5hqDSRRQx/dKT6t6Y0s
+        3gCp2ICJLC7zm0VtCJJPLUwzshdNA9Ijl5nJCItJRJhuwuVL0UPnezMmzyccNYeEqF1qaggn2O8EH
+        8jbfAoQC3c5WRe+n7H+cfOLDrg8SmCcM2P3zn27KLDosJ7QZKK3MEPBIhexwXnYeZI4e52cHIhEkL
+        FHVn158LDcShC7iexE5hjYJj4FgLBPgIr/CRN8Ct/VoU7aDxdbOWcgDMSr0S2hqHWgjsNPLdrsjLN
+        BfXobzuK41oki0wGDeZ9xaDIGW3uWRrLqHuY1INhnmxyEVBUmJa9s73r0qaqWHqAKvI+IS6tcWvMJ
+        xZLU4S2A==;
+Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
+        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ppDx1-0002CQ-Rz; Wed, 19 Apr 2023 21:58:47 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
+        martin.lau@linux.dev, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2023-04-19
+Date:   Wed, 19 Apr 2023 21:58:47 +0200
+Message-Id: <20230419195847.27060-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.8/26880/Wed Apr 19 09:22:57 2023)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -58,27 +53,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-04-19 at 21:46 +0200, Johannes Berg wrote:
->=20
-> > > So my 2 cents:
-> > >  * I wouldn't remove the checks that the size is at least sizeof(int)
-> > >  * I'd - even if it's not strictly backwards compatible - think about
-> > >    restricting to *exactly* sizeof(int), which would make the issue
-> > >    with the copy_to_user() go away as well (**)
-> > >  * if we don't restrict the input length, then need to be much more
-> > >    careful about the copy_to_user() I think, but then what if someone
-> > >    specifies something really huge as the size?
-> >=20
-> > I'm fine either, but I would prefer the latter using u64 for val and
-> > set limit for len as sizeof(u64).
-> >=20
->=20
-> That doesn't actually work on big endian,
+Hi David, hi Jakub, hi Paolo, hi Eric,
 
-[snip]
+The following pull-request contains BPF updates for your *net* tree.
 
-and come to think of it, that also makes the code in your patch now only
-work for 'char' or 'short' on little endian, which is again another
-tricky gotcha, and also there another argument for not allowing that?
+We've added 3 non-merge commits during the last 6 day(s) which contain
+a total of 3 files changed, 34 insertions(+), 9 deletions(-).
 
-johannes
+The main changes are:
+
+1) Fix a crash on s390's bpf_arch_text_poke() under a NULL new_addr,
+   from Ilya Leoshkevich.
+
+2) Fix a bug in BPF verifier's precision tracker, from Daniel Borkmann
+   and Andrii Nakryiko.
+
+3) Fix a regression in veth's xdp_features which led to a broken BPF CI
+   selftest, from Lorenzo Bianconi.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Heiko Carstens, John Fastabend, Juan Jose Lopez Jaimez, Meador Inge, 
+Nenad Stojanovski, Simon Scannell, Thomas Richter
+
+----------------------------------------------------------------
+
+The following changes since commit 829cca4d1783088e43bace57a555044cc937c554:
+
+  Merge tag 'net-6.3-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2023-04-13 15:33:04 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
+
+for you to fetch changes up to 71b547f561247897a0a14f3082730156c0533fed:
+
+  bpf: Fix incorrect verifier pruning due to missing register precision taints (2023-04-19 10:18:18 -0700)
+
+----------------------------------------------------------------
+bpf-for-netdev
+
+----------------------------------------------------------------
+Daniel Borkmann (1):
+      bpf: Fix incorrect verifier pruning due to missing register precision taints
+
+Ilya Leoshkevich (1):
+      s390/bpf: Fix bpf_arch_text_poke() with new_addr == NULL
+
+Lorenzo Bianconi (1):
+      veth: take into account peer device for NETDEV_XDP_ACT_NDO_XMIT xdp_features flag
+
+ arch/s390/net/bpf_jit_comp.c | 11 ++++++++---
+ drivers/net/veth.c           | 17 +++++++++++------
+ kernel/bpf/verifier.c        | 15 +++++++++++++++
+ 3 files changed, 34 insertions(+), 9 deletions(-)
