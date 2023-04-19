@@ -2,113 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96EBA6E77BD
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 12:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 456096E77FE
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 13:04:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232240AbjDSKvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 06:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S232664AbjDSLEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 07:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbjDSKvW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 06:51:22 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2128.outbound.protection.outlook.com [40.107.223.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CAB26A4E;
-        Wed, 19 Apr 2023 03:51:20 -0700 (PDT)
+        with ESMTP id S231958AbjDSLEJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 07:04:09 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2129.outbound.protection.outlook.com [40.107.220.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E3B65BF;
+        Wed, 19 Apr 2023 04:04:07 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oC/WdebH1rGdHCpX6gjyIZ5bg3m4htqdpLh5nnlc/hE1EI1kLbK2xMd0hmN9s6w6G3ctglRBQgt72e2wuBwz5nNF5GH01Uz+nPIF8Y/hf6wMNr0zerNhrjbJJUFiPB0L2/SGv2sk/b7ZGlhCeFBrBR7QQZ+i9diLY7YClW8O1wwTcojvPSWSNUDzQzBsa2EOhwF5+UtRikBtEn4PTHFomX8lXkTRHn2nRhJZGxTL3HwsxXielfQawr+bjrmUxYYAgDCK8F2j4GCLmgw6X0SvSSzXdyD2IfbC4NK3vatQ49zFle2ojMR/surMc3KCd681wp2i4uNmJYYYFD+91wxC4A==
+ b=XFjuXG9DKOQOYk0A8FjZfvv21S/M5+OA3lgv4ztt31l4iDZuPHpPkBwsO6h31ILH8ee4sUAxUHMtH1kkfe2WuamXx/q1GhkYwd2/79QJLCvlC+729K3M3XpA34aOURpUhl7yOQ2VK67qjXewIVKQlwcJrS6DadpuNDMeLLzbg7t5csu5ViKvgLV02jN6Eq7TDoo94d6yryLXVR/Qr7VujZfwLAkVvqFnpq1VNkjsdCqeQnQ7OTPaCwzdjmCSXMbANfUyWeF2ujWSnGYGa8t+nxNzDid8V3vw7udc5vpjYzielZ52PY8IbEGD2cg4kBVM0sr5UXY2jmldVpomRGxR5g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hYK6EdBatvtbVUEZi46ijTzzqswddwCZk+GyUrCiuYk=;
- b=ZotqgWvX4M/gI8u3HEK4bWvqmR1tPqJFgYli9Y66KiLqXMDSPKJck7VHIX4wgKomfuT/Lgb0YY4GYMoghaskvTulDM48WIGshUMzFFBV97BOjaKzXuWpkSXEKTX+lYfw1bRE4JselLzRugeNa7yh47nckjtqWATwaxNQVQn8CNwkeYXSIrEjtCNKtGq12eh0pacGhORkWxTkYMUqywUoQYTtkRsIb4gmm5XLD3kSoJOQq1L2kxhHPxMsWYBTBJu9dkgR1Adx346GEuBGo7XqZxtWJqzB9f9SWzTFnOwPkyOHa+iLacEDXPG6pJAfRKaF2Q/SXfpIveeRygb8UWMyYQ==
+ bh=txNyvIXzAOgHN1rtANTUc3gzSgzvUNeviRk+D3fhlso=;
+ b=hCzy99kQacYMffrGB/KFU3BOkc5SbrUIkTFQPzUSLqjQXGPlUFBr8BwE84IrMdI7aNuBC9d4h0ghHRHBOqI/hasmmAdknZLcxWfF1sVlwDCsOds5Wo7Az6DJGp5VryacQlF0U5cc9BoGlysRA6ET9vmRx6gvkVn2VS/2homtGRJskOQa0xdNuwllDYCf9+K6HfUGVETDKLbzaoDnGeUA+pNavcctwoeIAAq9WIU8HK3Wk9CUYirclXEbcgDp6+uJhg5C7/Lc5FEAbtbAHCHv5CONShP2UMz0uznkd8MWib9l4YWfOHZv4JHT3dGCYpS2m/aXH7yKEguXmlDfiIV5kw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hYK6EdBatvtbVUEZi46ijTzzqswddwCZk+GyUrCiuYk=;
- b=k2fqxMW2bSYK++ZMa/UL8Gcci932/gzUhZqTbxVSrpn4ZBecci19+42b+rDhMIMFwMt5l8oGswI0XSRkyettCMV7nAHqbWjMtNZm0hb+YTDIL+Sqwv7IkaeSYdaJ6fWnSckA0sZZQwYiaQ/cB5G+ZZhyWz20t8H80SzHRwtzXj4=
+ bh=txNyvIXzAOgHN1rtANTUc3gzSgzvUNeviRk+D3fhlso=;
+ b=dU1oDgnM94eZD9ZiyXHjGCU94yjOEzGdghE7kO5VyAkxpcCkGvZpgUcJBYCqBFhlAQ0jvTIL0nFbzquXrn9N02JLUff5nWEKVopy2mvVCrwFFGw/wUnfODYI7wzcIltPyWCAo/rc7+se4MKIZgqEac41EbpWT93RvQyXzhAkxV4=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SN4PR13MB5678.namprd13.prod.outlook.com (2603:10b6:806:21e::22) with
+ by PH7PR13MB5503.namprd13.prod.outlook.com (2603:10b6:510:139::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Wed, 19 Apr
- 2023 10:51:18 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Wed, 19 Apr
+ 2023 11:04:05 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Wed, 19 Apr 2023
- 10:51:18 +0000
-Date:   Wed, 19 Apr 2023 12:51:09 +0200
+ 11:04:05 +0000
+Date:   Wed, 19 Apr 2023 13:03:46 +0200
 From:   Simon Horman <simon.horman@corigine.com>
 To:     Sai Krishna <saikrishnag@marvell.com>
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, leon@kernel.org,
         sgoutham@marvell.com, gakula@marvell.com, lcherian@marvell.com,
-        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com,
-        Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: Re: [net PATCH v3 09/10] octeontx2-af: Skip PFs if not enabled
-Message-ID: <ZD/HncVvuuDIlHXv@corigine.com>
+        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com
+Subject: Re: [net PATCH v3 10/10] octeontx2-pf: Disable packet I/O for
+ graceful exit
+Message-ID: <ZD/KklR3coHRY580@corigine.com>
 References: <20230419062018.286136-1-saikrishnag@marvell.com>
- <20230419062018.286136-10-saikrishnag@marvell.com>
+ <20230419062018.286136-11-saikrishnag@marvell.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230419062018.286136-10-saikrishnag@marvell.com>
-X-ClientProxiedBy: AM9P192CA0016.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:21d::21) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <20230419062018.286136-11-saikrishnag@marvell.com>
+X-ClientProxiedBy: AS4P250CA0008.EURP250.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5df::9) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB5678:EE_
-X-MS-Office365-Filtering-Correlation-Id: 878e734e-225d-4e22-a164-08db40c400e9
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB5503:EE_
+X-MS-Office365-Filtering-Correlation-Id: 668dcf84-1241-4737-a45c-08db40c5ca66
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Wg72y9nsO+vXU4+7xAtVEweqiIAs4fTLA0YDYYTk4zkUqpHYBDSUsnK+JnGsUT0xAMMAohFABz504gyOXBj9Rr2qN/eS0Ph4vW6yWZkVXWjhhldUmvvjBuJSq6+QT0HVERQN/mIq1oeXu2M0lT2CbLRFyigOMSXvjHe+ZGxywo8/sAssVBhE05kcdhyc3BYQzXhiTN8Wo53xhRVbYcUJt4Qs5x54X5b7nHeaAqEECH/HKP2ULtejTNVymT8g353SsmNetJK2Am3arkEHKN+DBjoDdHdpWeNlZPDuC2R+RL+M3q06MEConXMfX0CkteDzU9MNkTYjSiFvGxwNMWAMbDef/jLfmk8sGCDg4qoiPRNIma7gCdEp9MT2Xa3viVszeORkXzkgeXEDdHB3f/LCrGgGVuPrlJkFrzA594lutE7og/WwqIkxdGX/Y7E7iirKw9q12JTFXjmudEx+KJMmU8K1W0WxfoZFSzoSVENMGWehHZ75U7icfsGaoLd9eLCWHXNLDNR9h40iEke9HMd3giKTgYJanrM7J70nJcwZs7RbBvMAAVG0oSWyijZCyfT6cJKhMDnGVQFHplspvvXI4PI69hH6c5cLicfhUBAdLNI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(346002)(366004)(396003)(376002)(136003)(451199021)(36756003)(44832011)(6916009)(7416002)(38100700002)(2906002)(8676002)(8936002)(41300700001)(5660300002)(86362001)(478600001)(2616005)(6506007)(6512007)(6666004)(186003)(6486002)(4326008)(66476007)(66946007)(316002)(66556008)(83380400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 6py7vsnKYBvOerRxVpB9r+UFPYJBVUN+RtB8/Fc2R3sM/nZBJj8xfK0MJIQRGWJDgp1dau1WSTw/32wF3aQZTGkWdw50nrurifY/Uf9Tx6WQ3yCrfm7KEOG/Yo8/u7J3WQ5n4yK0EyKsQai9T0kIWAXNgBBVuPiRX4DXgkUjBklmkgfVA+2+hNk2gqwDRGAOE+PqFhfvQ8LrKEThGyH6u65f9a+tx6MFtOeg+bdiihXWGHqI0TzvDcSH3Q7udIJEtAPIVfUzN+fk+DuJ4/+X26ZtTS3ob6X9aB9o/I9fNYI8EnupXcEvl+stwsk12LI+aw1PmecYrZUGmmprl7OOjBjXxZI+jVlPaqV0aqzkr5trEJlBzfHDIXzZir6LjOzRz5WSjyb/DRzTv1CgraRkYIkyPoWN+0zMZeXay+iNbTQJodZJGTfi6vm9nDvQhBJHbZ8FNFwNKdcFJtSxRwRx4ZApKSwOCYaqy8Q7Wujs5PvuJkx2iAXdLVMQ3tHC2rSCPjWm9wfTxnxf54/0vV0B3oCe1J8AjwBVpblIo13hZ6FAN4/S1xnjHAqBc/qp0vDp
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(366004)(396003)(346002)(136003)(376002)(451199021)(36756003)(86362001)(478600001)(41300700001)(8936002)(8676002)(38100700002)(7416002)(44832011)(5660300002)(2906002)(66476007)(66556008)(66946007)(4326008)(6916009)(316002)(6506007)(6512007)(83380400001)(186003)(6666004)(6486002)(2616005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4rT4VDlzZGk4r2ICNCDpYpr5Z3ODhKYElSJb4ZTQbONsjcqGqnxXUB+cQ0iY?=
- =?us-ascii?Q?yOGjHuf+mjQPQzeQvnhGWUWq8lNOaBhx2S8lhi/OOpWQRZ0ZXOXL25pywa0W?=
- =?us-ascii?Q?AhnBldX0BS0eQ7AcwD6bJxOgPg420Z2atw5lPuOvX9urIV5UUPeLD2KrsLh3?=
- =?us-ascii?Q?pSUl562ux5UNmFSNSpz0EcZ2L5PhkhIcZfElADLr9ZntSxiNmnnAVmbsloud?=
- =?us-ascii?Q?7j9bpVB0C4h7LLtGelRHLeEI6IcPFcC4GlbjYv2HTP9gSUlT0BASZn6Jzw9X?=
- =?us-ascii?Q?HE/GDMdKbVVOx+qOcNBeIqmhlJi8ze137gOLoDblp7ThrqbkI+n4dmHwCsFh?=
- =?us-ascii?Q?Cv5F7PfbnX5IAfeHvH+cXEhOaWmjtjW50ixWYoHSBSjAGcnhsCBk8K3WqfRp?=
- =?us-ascii?Q?+wiuq2gu8CxlhqEkq4BC7jjV37841KFJDjtBhAx+jTqTNtqjPeXCaacv6WbW?=
- =?us-ascii?Q?Ll0Ncu84ZH9rfymEGRvUoV8LovO4j1p1jNbNXjUeXPhrCwl/qAbCpNdsDj/U?=
- =?us-ascii?Q?Za4UF6zXrwo8W35rX8SMdIvAoURjxfj//ttaFDHeC79tCAo/udkcwUQFc8Dn?=
- =?us-ascii?Q?gBhvzwmYCPZa1gUVPHfDa4lTUXmhuVtFKLGsXOhSMKfTty33bGRNl6uZLhbH?=
- =?us-ascii?Q?orxb5fMwHuFY8YQmxJMjGQ8ZxSC8r4MNcF5RA4unlCmwz4HYpN09VvPO/ZLW?=
- =?us-ascii?Q?V2vGBPsHarKRy+K1Jteu+LJmWUcKKfFM0hDCNGQECcx7V/NoaDBe+eQSgVQl?=
- =?us-ascii?Q?mF4iw3SnaupXvWubUTFr99xGWZl1HQQDl99oGzc/ugdYCLSXOU/IUXBWPYro?=
- =?us-ascii?Q?pNOhwQajNWLpDkK/5z5tJm+jENWCftsEfHuMlbTToyMB5itRy0ldnJqtOgcJ?=
- =?us-ascii?Q?NjrBAnkwjwxVs9nFR+IHG+Fh0uDtwPXuPNAHZeZHacOnbEwcbguSCWoX9CYT?=
- =?us-ascii?Q?WMXVVG5wIskzUCkD7ezGxDP8oRp9xDCu8V5QD89UsGY2zTw1iN00XCB3E7fk?=
- =?us-ascii?Q?JYfGkJSD4bVqYHEYlZIYkVKyLKAzAIS1nan9azkbZ8r13zW/wF38+OL0L81X?=
- =?us-ascii?Q?NWc/Uubb2JWHKMugz3uh4A/scaGbLXCV6WPcmevdxjc0dkywFKHg58le8Fs8?=
- =?us-ascii?Q?64o2Nq8bnXQRY9iYEe0g8Jc3b48EA1dhW3Wie5XsoMEiWOgi8ODidDHBftBd?=
- =?us-ascii?Q?Kecr3r6db/MSdt7fep9fRe+bIWAVeq9whoyvDbhNgrT52zgFP9balU0XDW7k?=
- =?us-ascii?Q?ttCJZveyo1WETm9oyZJAsPJQAebRqun94tPC1tyFghTpvFSok/mQLNF0JkMF?=
- =?us-ascii?Q?jdutTQbIHpR+tYlX4uWoFoNk2Ieu7AUAASL1f+YrkVFCscumuV6H/3J7w9JB?=
- =?us-ascii?Q?2ampoA+9YEPFu7lSQU9Wtr8vndoob1Xbg5KMIfjhiiODCg1iZGMlXXkeKNxj?=
- =?us-ascii?Q?nSwNPzErZM++A+pUhVdin9WC+uQpLWAOJD87ikB8Pr3Mfp9pc/qqTPKJKnhO?=
- =?us-ascii?Q?kic7Goh+RfNOSo/lfSAvOcSNmoz1xW5u/CElV++D6hGvSpxDJYyHYahobDy8?=
- =?us-ascii?Q?Y8hQfA6aa2A+HwKx13F3xJZx9QnGZr3Ynodh7gGioyiQUJfcL3uNOUS0N5UF?=
- =?us-ascii?Q?9sWtM1fQHd2YZDDbmTmQFCsUo1wvJ2JQfIpFD/w727WU7DZ+agQcdr7b8jKO?=
- =?us-ascii?Q?qTydsw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WM4eh3wlHTLR4c2emn8gsXNhRJ1EAxD6LQ6PaYdqoQQZrw3FWxXa5DO/78ZL?=
+ =?us-ascii?Q?kSXgtptYfIfZ8qTtdLOPXX+WpmzdwwhgBY8gDaAeQQnfIHdFFTdlF5/r0BO4?=
+ =?us-ascii?Q?ScV2ALmH3LSPO9r9XAtqOaM5g3ReTUF8Pcewi52qLjzT/TSGL0gNUUILhKFu?=
+ =?us-ascii?Q?mtj9I4H28ifsbYBU5W1+IynTxPAaJifY0V4uQMPLouHS06aJT0NzJU88Wt4j?=
+ =?us-ascii?Q?PXDoAvBFtwb/QBaLthO0+fuz3F1BwgXalPB5AlKx9CbfNyQqkZEmjGXhvJte?=
+ =?us-ascii?Q?HYqP2A53+ZgiWC8tfwvs+Nf+Z+H5Tf6i0479AcaicLJKdhc/QbD6kyosq3gt?=
+ =?us-ascii?Q?l3XWfaeUuKKMqYeHcYNw11xt1whwLSpsFdbEjl7ll6MM9TDRJHtcuheMtaeG?=
+ =?us-ascii?Q?9COYy/046qnmDMF8xTmC0LyEc9oB+YrOedZL4Izdk+Vstft95AMF2yaK9ydr?=
+ =?us-ascii?Q?wUZHXRJ4EuwvJMP4wMZg5i2v6xRKI5vggSYGrW/RKUxAsCjFon2rmhfceEiA?=
+ =?us-ascii?Q?qMk/Aqba5mYpaZuSpuy+xQhTk9fc0c2XTXbaJO5SBs6irMfecX60xFMO9RuN?=
+ =?us-ascii?Q?8q1om/BBT89wIKDooYb9QPAvaAwF7zVJz3BE9tMB8g+NZ4ZJlUfk8CTlLHcw?=
+ =?us-ascii?Q?63UGqw0wqC+12suqhf+pR82qjb0M1FfEaJLAk077vPsAbB1BCARKKHUSLMrN?=
+ =?us-ascii?Q?AA1ZN6iMp3I/h8oMfg8jNOuVVGjnIhJK+BfasWam55d8FrUYqTe/MJSxpH4g?=
+ =?us-ascii?Q?oRC+M/gmDBgYMWyVUI+8vJ+lxaysZ87QckI2pu5pZ02U8bzDEBDbU4FwJ7ea?=
+ =?us-ascii?Q?ht3MnOG3ySCHXjyiEVNXLi1Fj1XLf1cdUSGbUvCaKVqGa2aXSwM2JQFdn5X0?=
+ =?us-ascii?Q?3rULTRA4jLUUQSDDBZU7GIjpZv8LSdCFHd+o8pO/PDtQ5j8eQ49KnFE3iyal?=
+ =?us-ascii?Q?70i70BBaQfdKBktFoZ90shfA9dlzQ4p4Orxrp1Ls5aT8ZaIol8xhhtPBgENm?=
+ =?us-ascii?Q?ikscZyXb17n/nmML+J4hXDxeQQ2Xw3VdND9jlNmDKvBR51yvd1i5D+uunDH5?=
+ =?us-ascii?Q?a2dMiVsICa/BYIls9gQ52Ytq6mKFMRXpk0d/DDVSniGsAWj01ish0kbG5cpV?=
+ =?us-ascii?Q?0Lyli2U2tVPLpjJVZA4BmcqwDcbV3t5jLfSk/H81vCYG+vat5PmKCr7giebt?=
+ =?us-ascii?Q?texMBuMsiIIcy6IGZcOjxkvZ9bUxwd7jAFMWcStin9nwDW1ZG48whXaKJ5PC?=
+ =?us-ascii?Q?HcYVxUKNizedax7r/O8hje45pkPqD9z5gNny4kvut5yAQaxTOYwERDbVLC90?=
+ =?us-ascii?Q?47bfn/2Lw8i9oXu0lGVKScAvGfRP9q+BylNzbKyoHyq4s+qa/vV/kS13/JdT?=
+ =?us-ascii?Q?Smy2hRG9PPadl3dFEGHvvLm1hEZptPTHxEXYqUkTOLlXNJ5n8PJmrHA9+M6u?=
+ =?us-ascii?Q?C7oOKVakhSOv/DefZPWO0XJxlc9c3z47dfWQIMGilcDjh7kUCjHp1y+tWJR3?=
+ =?us-ascii?Q?G4rSR7bqt/aaSS4aUtm0KHgMkR8595TcROQAdHPzN9K3zLpaM1EDQSMqT/SJ?=
+ =?us-ascii?Q?x8JJVu5mBAC8ONc1AkB711RCepFyvhIIYs0ifV/FDU0yrK9OTEVkzP9stnDc?=
+ =?us-ascii?Q?AX2t/HDJCbiDQlOpMFlKQY7QJUHGM96wHHK3xif7IHcWC36tRKujwusMt2/5?=
+ =?us-ascii?Q?gyivLw=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 878e734e-225d-4e22-a164-08db40c400e9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 668dcf84-1241-4737-a45c-08db40c5ca66
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 10:51:17.8194
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 11:04:05.3370
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PIZ1Z4fG8yR1z6WQFpHFwLIDW1A7xPwS7BijO9psT2oLwWpTaZ2BVvu1Z/9RBZHJiWmDEUsCzBrPiUK6qVzXFTAvZXSlP2hCgk/env6MPwk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5678
+X-MS-Exchange-CrossTenant-UserPrincipalName: WrRB/x3oJn3cA5XQIRzoMKuiOxknRPQyuL/lfU64QGBiKVmEop8p/MhEMdHuDThPiDtK8ZlOmoeMwxNu0GI7Znc1K/goJApsw28S4/atQe8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5503
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -118,111 +118,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 11:50:17AM +0530, Sai Krishna wrote:
-> From: Ratheesh Kannoth <rkannoth@marvell.com>
+On Wed, Apr 19, 2023 at 11:50:18AM +0530, Sai Krishna wrote:
+> From: Subbaraya Sundeep <sbhatta@marvell.com>
 > 
-> Skip mbox initialization of disabled PFs. Firmware configures PFs
-> and allocate mbox resources etc. Linux should configure particular
-> PFs, which ever are enabled by firmware.
+> At the stage of enabling packet I/O in otx2_open, If mailbox
+> timeout occurs then interface ends up in down state where as
+> hardware packet I/O is enabled. Hence disable packet I/O also
+> before bailing out.
 > 
-> Fixes: 9bdc47a6e328 ("octeontx2-af: Mbox communication support btw AF and it's VFs")
-> Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
+> Fixes: 1ea0166da050 ("octeontx2-pf: Fix the device state on error")
+> Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 > Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 > Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
-
-...
-
-> @@ -2343,8 +2349,27 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
->  	int err = -EINVAL, i, dir, dir_up;
->  	void __iomem *reg_base;
->  	struct rvu_work *mwork;
-> +	unsigned long *pf_bmap;
->  	void **mbox_regions;
->  	const char *name;
-> +	u64 cfg;
-> +
-> +	pf_bmap = kcalloc(BITS_TO_LONGS(num), sizeof(long), GFP_KERNEL);
-
-Sorry for not noticing this earlier, but
-maybe bitmap_alloc() is appropriate here.
-
-> +	if (!pf_bmap)
-> +		return -ENOMEM;
-> +
-> +	/* RVU VFs */
-> +	if (type == TYPE_AFVF)
-> +		bitmap_set(pf_bmap, 0, num);
-> +
-> +	if (type == TYPE_AFPF) {
-> +		/* Mark enabled PFs in bitmap */
-> +		for (i = 0; i < num; i++) {
-> +			cfg = rvu_read64(rvu, BLKADDR_RVUM, RVU_PRIV_PFX_CFG(i));
-> +			if (cfg & BIT_ULL(20))
-> +				set_bit(i, pf_bmap);
-> +		}
-> +	}
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 11 ++++++++++-
+>  drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c |  2 +-
+>  2 files changed, 11 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> index 179433d0a54a..52a57d2493dc 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> @@ -1835,13 +1835,22 @@ int otx2_open(struct net_device *netdev)
+>  		otx2_dmacflt_reinstall_flows(pf);
 >  
->  	mbox_regions = kcalloc(num, sizeof(void *), GFP_KERNEL);
->  	if (!mbox_regions)
-
-		I think pf_bmap is leaked here.
-
-> @@ -2356,7 +2381,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
->  		dir = MBOX_DIR_AFPF;
->  		dir_up = MBOX_DIR_AFPF_UP;
->  		reg_base = rvu->afreg_base;
-> -		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFPF);
-> +		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFPF, pf_bmap);
->  		if (err)
->  			goto free_regions;
->  		break;
-> @@ -2365,7 +2390,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
->  		dir = MBOX_DIR_PFVF;
->  		dir_up = MBOX_DIR_PFVF_UP;
->  		reg_base = rvu->pfreg_base;
-> -		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFVF);
-> +		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFVF, pf_bmap);
->  		if (err)
->  			goto free_regions;
->  		break;
-> @@ -2396,16 +2421,19 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
->  	}
+>  	err = otx2_rxtx_enable(pf, true);
+> -	if (err)
+> +	/* If a mbox communication error happens at this point then interface
+> +	 * will end up in a state such that it is in down state but hardware
+> +	 * mcam entries are enabled to receive the packets. Hence disable the
+> +	 * packet I/O.
+> +	 */
+> +	if (err == EIO)
+> +		goto err_disable_rxtx;
+> +	else if (err)
+>  		goto err_tx_stop_queues;
 >  
->  	err = otx2_mbox_regions_init(&mw->mbox, mbox_regions, rvu->pdev,
-> -				     reg_base, dir, num);
-> +				     reg_base, dir, num, pf_bmap);
->  	if (err)
->  		goto exit;
+>  	otx2_do_set_rx_mode(pf);
 >  
->  	err = otx2_mbox_regions_init(&mw->mbox_up, mbox_regions, rvu->pdev,
-> -				     reg_base, dir_up, num);
-> +				     reg_base, dir_up, num, pf_bmap);
->  	if (err)
->  		goto exit;
->  
->  	for (i = 0; i < num; i++) {
-> +		if (!test_bit(i, pf_bmap))
-> +			continue;
-> +
->  		mwork = &mw->mbox_wrk[i];
->  		mwork->rvu = rvu;
->  		INIT_WORK(&mwork->work, mbox_handler);
-> @@ -2415,6 +2443,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
->  		INIT_WORK(&mwork->work, mbox_up_handler);
->  	}
->  	kfree(mbox_regions);
-> +	kfree(pf_bmap);
 >  	return 0;
 >  
->  exit:
-> @@ -2424,6 +2453,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
->  		iounmap((void __iomem *)mbox_regions[num]);
->  free_regions:
->  	kfree(mbox_regions);
-> +	kfree(pf_bmap);
->  	return err;
->  }
+> +err_disable_rxtx:
+> +	otx2_rxtx_enable(pf, false);
+>  err_tx_stop_queues:
+>  	netif_tx_stop_all_queues(netdev);
+>  	netif_carrier_off(netdev);
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> index ab126f8706c7..53366dbfbf27 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> @@ -621,7 +621,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 >  
+>  	err = otx2vf_realloc_msix_vectors(vf);
+>  	if (err)
+> -		goto err_mbox_destroy;
+> +		goto err_detach_rsrc;
+
+I think it would be worth expanding on this part of the change
+in the commit message. Because it's not obvious to me.
+And I do wonder if it is a separate fix.
+
+r 
+>  
+>  	err = otx2_set_real_num_queues(netdev, qcount, qcount);
+>  	if (err)
 > -- 
 > 2.25.1
 > 
