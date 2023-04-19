@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ADE66E7B19
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 15:42:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9657C6E7B20
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 15:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233180AbjDSNmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 09:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
+        id S233239AbjDSNnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 09:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233017AbjDSNl7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 09:41:59 -0400
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4FD171D;
-        Wed, 19 Apr 2023 06:41:54 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0VgVGQZB_1681911709;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgVGQZB_1681911709)
+        with ESMTP id S231584AbjDSNnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 09:43:22 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B98713C3B;
+        Wed, 19 Apr 2023 06:43:20 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VgVBGnO_1681911795;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgVBGnO_1681911795)
           by smtp.aliyun-inc.com;
-          Wed, 19 Apr 2023 21:41:50 +0800
-Message-ID: <1681911643.4417202-1-xuanzhuo@linux.alibaba.com>
+          Wed, 19 Apr 2023 21:43:16 +0800
+Message-ID: <1681911760.8853464-2-xuanzhuo@linux.alibaba.com>
 Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
-Date:   Wed, 19 Apr 2023 21:40:43 +0800
+Date:   Wed, 19 Apr 2023 21:42:40 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     Alexander Lobakin <aleksander.lobakin@intel.com>
 Cc:     <netdev@vger.kernel.org>,
@@ -30,35 +30,21 @@ Cc:     <netdev@vger.kernel.org>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         <bpf@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        Jason Wang <jasowang@redhat.com>,
         "Michael S. Tsirkin" <mst@redhat.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Gerd Hoffmann <kraxel@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jakub Kicinski <kuba@kernel.org>
+        Christoph Hellwig <hch@infradead.org>
 References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
- <ZDzKAD2SNe1q/XA6@infradead.org>
- <1681711081.378984-2-xuanzhuo@linux.alibaba.com>
- <20230417115610.7763a87c@kernel.org>
- <20230417115753.7fb64b68@kernel.org>
- <CACGkMEtPNPXFThHt4aNm4g-fC1DqTLcDnB_iBWb9-cAOHMYV_A@mail.gmail.com>
- <20230417181950.5db68526@kernel.org>
- <1681784379.909136-2-xuanzhuo@linux.alibaba.com>
- <20230417195400.482cfe75@kernel.org>
- <ZD4kMOym15pFcjq+@infradead.org>
- <20230417231947.3972f1a8@kernel.org>
- <ZD95RY9PjVRi7qz3@infradead.org>
- <d18eea7a-a71c-8de0-bde3-7ab000a77539@intel.com>
-In-Reply-To: <d18eea7a-a71c-8de0-bde3-7ab000a77539@intel.com>
+ <88d5a2f6-af43-c3f9-615d-701ef01d923d@intel.com>
+In-Reply-To: <88d5a2f6-af43-c3f9-615d-701ef01d923d@intel.com>
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
@@ -69,76 +55,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Apr 2023 15:14:48 +0200, Alexander Lobakin <aleksander.lobakin@intel.com> wrote:
-> From: Christoph Hellwig <hch@infradead.org>
-> Date: Tue, 18 Apr 2023 22:16:53 -0700
+On Wed, 19 Apr 2023 15:22:39 +0200, Alexander Lobakin <aleksander.lobakin@intel.com> wrote:
+> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Date: Mon, 17 Apr 2023 11:27:50 +0800
 >
-> > On Mon, Apr 17, 2023 at 11:19:47PM -0700, Jakub Kicinski wrote:
-> >>> You can't just do dma mapping outside the driver, because there are
-> >>> drivers that do not require DMA mapping at all.  virtio is an example,
-> >>> but all the classic s390 drivers and some other odd virtualization
-> >>> ones are others.
-> >>
-> >> What bus are the classic s390 on (in terms of the device model)?
+> > The purpose of this patch is to allow driver pass the own dma_ops to
+> > xsk.
 > >
-> > I think most of them are based on struct ccw_device, but I'll let the
-> > s390 maintainers fill in.
+> > This is to cope with the scene of virtio-net. If virtio does not have
+> > VIRTIO_F_ACCESS_PLATFORM, then virtio cannot use DMA API. In this case,
+> > XSK cannot use DMA API directly to achieve DMA address. Based on this
+> > scene, we must let XSK support driver to use the driver's dma_ops.
 > >
-> > Another interesting case that isn't really relevant for your networking
-> > guys, but that caused as problems is RDMA.  For hardware RDMA devices
-> > it wants the ULPs to DMA map, but it turns out we have various software
-> > drivers that map to network drivers that do their own DMA mapping
-> > at a much lower layer and after potentially splitting packets or
-> > even mangling them.
+> > On the other hand, the implementation of XSK as a highlevel code
+> > should put the underlying operation of DMA to the driver layer.
+> > The driver layer determines the implementation of the final DMA. XSK
+> > should not make such assumptions. Everything will be simplified if DMA
+> > is done at the driver level.
 > >
-> >>
-> >>>> I don't think it's reasonable to be bubbling up custom per-subsystem
-> >>>> DMA ops into all of them for the sake of virtio.
-> >>>
-> >>> dma addresses and thus dma mappings are completely driver specific.
-> >>> Upper layers have no business looking at them.
->
-> Here it's not an "upper layer". XSk core doesn't look at them or pass
-> them between several drivers. It maps DMA solely via the struct device
-> passed from the driver and then just gets-sets addresses for this driver
-> only. Just like Page Pool does for regular Rx buffers. This got moved to
-> the XSk core to not repeat the same code pattern in each driver.
->
-> >>
-> >> Damn, that's unfortunate. Thinking aloud -- that means that if we want
-> >> to continue to pull memory management out of networking drivers to
-> >> improve it for all, cross-optimize with the rest of the stack and
-> >> allow various upcoming forms of zero copy -- then we need to add an
-> >> equivalent of dma_ops and DMA API locally in networking?
->
-> Managing DMA addresses is totally fine as long as you don't try to pass
-> mapped addresses between different drivers :D Page Pool already does
-> that and I don't see a problem in that in general.
->
+> > More is here:
+> >     https://lore.kernel.org/virtualization/1681265026.6082013-1-xuanzhuo@linux.alibaba.com/
 > >
-> > Can you explain what the actual use case is?
-> >
-> >>From the original patchset I suspect it is dma mapping something very
-> > long term and then maybe doing syncs on it as needed?
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 >
-> As I mentioned, XSk provides some handy wrappers to map DMA for drivers.
-> Previously, XSk was supported by real hardware drivers only, but here
-> the developer tries to add support to virtio-net. I suspect he needs to
-> use DMA mapping functions different from which the regular driver use.
-> So this is far from dma_map_ops, the author picked wrong name :D
+> [...]
+>
+> >  struct xsk_buff_pool {
+> >  	/* Members only used in the control path first. */
+> >  	struct device *dev;
+> > @@ -85,6 +102,7 @@ struct xsk_buff_pool {
+> >  	 * sockets share a single cq when the same netdev and queue id is shared.
+> >  	 */
+> >  	spinlock_t cq_lock;
+> > +	struct xsk_dma_ops dma_ops;
+>
+> Why full struct, not a const pointer? You'll have indirect calls either
+> way, copying the full struct won't reclaim you much performance.
+>
+> >  	struct xdp_buff_xsk *free_heads[];
+> >  };
+> >
+>
+> [...]
+>
+> > @@ -424,18 +426,29 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
+> >  		return 0;
+> >  	}
+> >
+> > +	if (!dma_ops) {
+> > +		pool->dma_ops.map_page = dma_map_page_attrs;
+> > +		pool->dma_ops.mapping_error = dma_mapping_error;
+> > +		pool->dma_ops.need_sync = dma_need_sync;
+> > +		pool->dma_ops.sync_single_range_for_device = dma_sync_single_range_for_device;
+> > +		pool->dma_ops.sync_single_range_for_cpu = dma_sync_single_range_for_cpu;
+> > +		dma_ops = &pool->dma_ops;
+> > +	} else {
+> > +		pool->dma_ops = *dma_ops;
+> > +	}
+>
+> If DMA syncs are not needed on your x86_64 DMA-coherent system, it
+> doesn't mean we all don't need it. Instead of filling pointers with
+> "default" callbacks, you could instead avoid indirect calls at all when
+> no custom DMA ops are specified. Pls see how for example Christoph did
+> that for direct DMA. It would cost only one if-else for case without
+> custom DMA ops here instead of an indirect call each time.
+>
+> (I *could* suggest using INDIRECT_CALL_WRAPPER(), but I won't, since
+>  it's more expensive than direct checking and I feel like it's more
+>  appropriate to check directly here)
 
-
-Yes, dma_ops caused some misunderstandings, which is indeed a wrong name.
+OK, I will fix it in next version.
 
 Thanks.
 
 
-> And correct, for XSk we map one big piece of memory only once and then
-> reuse it for buffers, no inflight map/unmap on hotpath (only syncs when
-> needed). So this mapping is longterm and is stored in XSk core structure
-> assigned to the driver which this mapping was done for.
-> I think Jakub thinks of something similar, but for the "regular" Rx/Tx,
-> not only XDP sockets :)
+
+
+>
+> > +
+> >  	dma_map = xp_create_dma_map(dev, pool->netdev, nr_pages, pool->umem);
+> >  	if (!dma_map)
+> >  		return -ENOMEM;
+> [...]
 >
 > Thanks,
 > Olek
