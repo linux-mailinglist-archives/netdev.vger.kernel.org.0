@@ -2,123 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB4ED6E7991
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 14:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 752A56E7998
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 14:22:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233232AbjDSMUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 08:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38494 "EHLO
+        id S232855AbjDSMWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 08:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232465AbjDSMU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 08:20:26 -0400
-Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E526A66;
-        Wed, 19 Apr 2023 05:20:24 -0700 (PDT)
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-1878f1ebf46so865897fac.1;
-        Wed, 19 Apr 2023 05:20:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681906824; x=1684498824;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=vDWn7LWX55rdAgK8lkZTjI/cl/gmcQIjVsQZmuaFPok=;
-        b=S4OebHC6bPZWBCttDxrOlO33hLtezQgy1kZr5K65sj8zuJu/c85gJ53084t19Y5/r4
-         Bh5x6ly3VyTl8CnZhOaW+kc1+tfvmjmrwKYhwq7T6EutbagKz90GDREXK2uOJJCtUNSh
-         mvwtK5TmtZZBCHCQAt+cbapxWSRiOINqgPF0zUG7Wbu0UBUkfw1DcfrgxRMifMn/tJgz
-         6tZXrjSxmul3ilK06n1SQGhv44NrlbMlcZgRE2TFhJyYIvZ7pplZl5QBrRZVyw0/m9V3
-         ZZ9sPOq7LoWgLryii/Yxx+PXZFQZ9oOzAjdrKXH1Zs+eJLTY+2483fiitEGdDWusfJHg
-         sXsg==
-X-Gm-Message-State: AAQBX9cg75J4xmV5erjPb8OPUdJTTCICEkIvAsLZXHbF/QKH2rEbheNh
-        aUz+ezwuQm1uKMID3d4qiw==
-X-Google-Smtp-Source: AKy350achMGLsukLbt5lzLwN1OM7sY4Y18eDzdY5EhXFZgcfFGxbh3Xvp0buod3QAyAniCdmJL8Ycg==
-X-Received: by 2002:a05:6870:f295:b0:17f:e768:60fb with SMTP id u21-20020a056870f29500b0017fe76860fbmr3024069oap.54.1681906823992;
-        Wed, 19 Apr 2023 05:20:23 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 64-20020a4a0143000000b00529cc3986c8sm6920510oor.40.2023.04.19.05.20.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Apr 2023 05:20:23 -0700 (PDT)
-Received: (nullmailer pid 3779626 invoked by uid 1000);
-        Wed, 19 Apr 2023 12:20:22 -0000
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S233269AbjDSMWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 08:22:05 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116E8AF16;
+        Wed, 19 Apr 2023 05:22:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=3727NmUMcKOHnmbIl6QjHpZThXQiWOr0LA3853eLbMg=; b=3T/f3TbTMdCCzOrAy1sR3I9Kc2
+        iqMNzM2wINtFVJNS0zpfAQ4CErijw2EarjY/Yjat2KYowuB1YVh+09gJbHkivukwc05RFrVW34wnP
+        yEL0SYDO0t4D9AkEOirxtCSZ3tCrcbQrDRTCStdxCLArR6nV/FnBZANc8pE+1vKILJDs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pp6oo-00Ah50-L1; Wed, 19 Apr 2023 14:21:50 +0200
+Date:   Wed, 19 Apr 2023 14:21:50 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [net-next PATCH v7 00/16] net: Add basic LED support for
+ switch/phy
+Message-ID: <0501856b-2db7-4a7d-803d-ba18682d6a6c@lunn.ch>
+References: <20230417151738.19426-1-ansuelsmth@gmail.com>
+ <20230418212746.7db8096e@kernel.org>
 MIME-Version: 1.0
-From:   Rob Herring <robh@kernel.org>
-To:     Justin Chen <justinpopo6@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-media@vger.kernel.org, hkallweit1@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        dri-devel@lists.freedesktop.org, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, opendmb@gmail.com,
-        linaro-mm-sig@lists.linaro.org, pabeni@redhat.com,
-        edumazet@google.com, robh+dt@kernel.org, sumit.semwal@linaro.org,
-        christian.koenig@amd.com, andrew@lunn.ch, richardcochran@gmail.com,
-        kuba@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        justin.chen@broadcom.com
-In-Reply-To: <1681863018-28006-2-git-send-email-justinpopo6@gmail.com>
-References: <1681863018-28006-1-git-send-email-justinpopo6@gmail.com>
- <1681863018-28006-2-git-send-email-justinpopo6@gmail.com>
-Message-Id: <168190678873.3778743.3635324500677416742.robh@kernel.org>
-Subject: Re: [PATCH net-next 1/6] dt-bindings: net: Brcm ASP 2.0 Ethernet
- controller
-Date:   Wed, 19 Apr 2023 07:20:22 -0500
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230418212746.7db8096e@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> IIRC we were supposed to take these via netdev with acks from Pavel/Lee.
+> So we need acks on patches 4/5/16 ? If there is a repost, could you
+> take out the arch/arm patches? They should not go via netdev, we'll try
+> to filter them out when applying but mistakes happen.
 
-On Tue, 18 Apr 2023 17:10:13 -0700, Justin Chen wrote:
-> From: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> Add a binding document for the Broadcom ASP 2.0 Ethernet
-> controller.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
-> ---
->  .../devicetree/bindings/net/brcm,asp-v2.0.yaml     | 146 +++++++++++++++++++++
->  1 file changed, 146 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
-> 
+Ah, mute point now, the whole patchset has been merged.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/brcm,asp-v2.0.example.dtb: asp@9c00000: mdio@c614:compatible:0: 'brcm,asp-v2.0-mdio' is not one of ['brcm,genet-mdio-v1', 'brcm,genet-mdio-v2', 'brcm,genet-mdio-v3', 'brcm,genet-mdio-v4', 'brcm,genet-mdio-v5', 'brcm,unimac-mdio']
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/brcm,asp-v2.0.example.dtb: asp@9c00000: mdio@c614: Unevaluated properties are not allowed ('compatible' was unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/brcm,asp-v2.0.example.dtb: asp@9c00000: mdio@ce14:compatible:0: 'brcm,asp-v2.0-mdio' is not one of ['brcm,genet-mdio-v1', 'brcm,genet-mdio-v2', 'brcm,genet-mdio-v3', 'brcm,genet-mdio-v4', 'brcm,genet-mdio-v5', 'brcm,unimac-mdio']
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/brcm,asp-v2.0.example.dtb: asp@9c00000: mdio@ce14: Unevaluated properties are not allowed ('compatible' was unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
-Documentation/devicetree/bindings/net/brcm,asp-v2.0.example.dtb: /example-0/asp@9c00000/mdio@c614: failed to match any schema with compatible: ['brcm,asp-v2.0-mdio']
-Documentation/devicetree/bindings/net/brcm,asp-v2.0.example.dtb: /example-0/asp@9c00000/mdio@ce14: failed to match any schema with compatible: ['brcm,asp-v2.0-mdio']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/1681863018-28006-2-git-send-email-justinpopo6@gmail.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+    Andrew
