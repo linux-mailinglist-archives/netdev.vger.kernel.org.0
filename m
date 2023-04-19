@@ -2,101 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5BFC6E7088
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 02:53:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BC966E7093
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 03:00:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbjDSAxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 20:53:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49510 "EHLO
+        id S230492AbjDSBAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 21:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbjDSAxp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 20:53:45 -0400
+        with ESMTP id S229879AbjDSBAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 21:00:46 -0400
 Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A7593C2;
-        Tue, 18 Apr 2023 17:53:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBEDE71;
+        Tue, 18 Apr 2023 18:00:44 -0700 (PDT)
 Received: from [0.0.0.0] (unknown [172.96.223.238])
-        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id A0EC62802EC;
-        Wed, 19 Apr 2023 08:53:33 +0800 (CST)
-Message-ID: <63170820-473b-5f50-a8ff-3cba91fe5046@sangfor.com.cn>
-Date:   Wed, 19 Apr 2023 08:53:21 +0800
+        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id 9995B2803A9;
+        Wed, 19 Apr 2023 09:00:34 +0800 (CST)
+Message-ID: <4831d6e8-72be-dd17-9c6c-6f37f58fa37c@sangfor.com.cn>
+Date:   Wed, 19 Apr 2023 09:00:22 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH net 2/2] iavf: Fix out-of-bounds when setting channels on
- remove
+Subject: Re: [PATCH net 1/2] iavf: Fix use-after-free in free_netdev
 Content-Language: en-US
-To:     Michal Kubiak <michal.kubiak@intel.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        keescook@chromium.org, grzegorzx.szczurek@intel.com,
-        mateusz.palczewski@intel.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        intel-wired-lan@lists.osuosl.org
+Cc:     jesse.brandeburg@intel.com, keescook@chromium.org,
+        grzegorzx.szczurek@intel.com, mateusz.palczewski@intel.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
         Donglin Peng <pengdonglin@sangfor.com.cn>,
         Huang Cun <huangcun@sangfor.com.cn>
 References: <20230408140030.5769-1-dinghui@sangfor.com.cn>
- <20230408140030.5769-3-dinghui@sangfor.com.cn>
- <ZD7BMI+OjggaQmZg@localhost.localdomain>
+ <20230408140030.5769-2-dinghui@sangfor.com.cn>
+ <be26a12c-6463-0e3b-9e05-eee8645e7fa6@intel.com>
 From:   Ding Hui <dinghui@sangfor.com.cn>
-In-Reply-To: <ZD7BMI+OjggaQmZg@localhost.localdomain>
+In-Reply-To: <be26a12c-6463-0e3b-9e05-eee8645e7fa6@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkZTBgZVkMfGhpJSx1NHh1LHlUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVSktLVUtZBg++
-X-HM-Tid: 0a879700bc852eb1kusna0ec62802ec
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkZQx5LVk5LH04eSUNJTBlDSlUTARMWGhIXJBQOD1
+        lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkxVSktLVUtZBg++
+X-HM-Tid: 0a879707273b2eb1kusn9995b2803a9
 X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NE06USo4GD0OGhEdKDUjCkpO
-        FEpPFBVVSlVKTUNKQ01OTUlKTUtLVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-        QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFITUlJNwY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6N006Djo*Cj0SDhEdOBUqLwMp
+        QgFPFENVSlVKTUNKQ01NS09JS0hKVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+        QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFISktLNwY+
 X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/4/19 0:11, Michal Kubiak wrote:
-> On Sat, Apr 08, 2023 at 10:00:30PM +0800, Ding Hui wrote:
->> If we set channels greater when iavf_remove, the waiting reset done
->> will be timeout, then returned with error but changed num_active_queues
->> directly, that will lead to OOB like the following logs. Because the
->> num_active_queues is greater than tx/rx_rings[] allocated actually.
+On 2023/4/19 0:50, Tony Nguyen wrote:
+> On 4/8/2023 7:00 AM, Ding Hui wrote:
+>> We do netif_napi_add() for all allocated q_vectors[], but potentially
+>> do netif_napi_del() for part of them, then kfree q_vectors and lefted
+>> invalid pointers at dev->napi_list.
 >>
-
-...
-
+>> If num_active_queues is changed to less than allocated q_vectors[] by
+>> by unexpected, when iavf_remove, we might see UAF in free_netdev like 
+>> this:
 >>
->> diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
->> index 6f171d1d85b7..d8a3c0cfedd0 100644
->> --- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
->> +++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
->> @@ -1857,13 +1857,15 @@ static int iavf_set_channels(struct net_device *netdev,
->>   	/* wait for the reset is done */
->>   	for (i = 0; i < IAVF_RESET_WAIT_COMPLETE_COUNT; i++) {
->>   		msleep(IAVF_RESET_WAIT_MS);
->> +		if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
->> +			return -EOPNOTSUPP;
->>   		if (adapter->flags & IAVF_FLAG_RESET_PENDING)
->>   			continue;
->>   		break;
->>   	}
->>   	if (i == IAVF_RESET_WAIT_COMPLETE_COUNT) {
->>   		adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
->> -		adapter->num_active_queues = num_req;
->> +		adapter->num_req_queues = 0;
->>   		return -EOPNOTSUPP;
->>   	}
->>   
+>> [ 4093.900222] 
+>> ==================================================================
+>> [ 4093.900230] BUG: KASAN: use-after-free in free_netdev+0x308/0x390
+>> [ 4093.900232] Read of size 8 at addr ffff88b4dc145640 by task 
+>> test-iavf-1.sh/6699
 > 
-> Looks OK to me.
-> Just consider moving repro scripts from the cover letter to the commit
-> message.
+> ...
+> 
+>> Fix it by letting netif_napi_del() match to netif_napi_add().
+>>
+> 
+> Should this have a Fixes:?
 > 
 
-Sure, I will. Thanks again.
+Yes, I searched the git log, and found that the mismatched usage was
+introduced since the beginning of i40evf_main.c, so I'll add
+
+Fixes: 5eae00c57f5e ("i40evf: main driver core")
+
+in v2.
 
 -- 
 Thanks,
