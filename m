@@ -2,174 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64EF16E77DC
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 12:58:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96EBA6E77BD
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 12:51:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232769AbjDSK6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 06:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
+        id S232240AbjDSKvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 06:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231895AbjDSK6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 06:58:08 -0400
-X-Greylist: delayed 512 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 19 Apr 2023 03:57:58 PDT
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 309D883D8;
-        Wed, 19 Apr 2023 03:57:57 -0700 (PDT)
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 7EED684C45;
-        Wed, 19 Apr 2023 11:49:23 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1681901363; bh=iVVLIE5L1lv50wYWj5uM1b8QK2rm1y1nKcE7860TRbY=;
-        h=Date:From:To:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Wed,=2019=20Apr=202023=2011:49:23=20+0100|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20Samuel=20Thibault=20<samuel.th
-         ibault@ens-lyon.org>,=0D=0A=09Guillaume=20Nault=20<gnault@redhat.c
-         om>,=0D=0A=09James=20Chapman=20<jchapman@katalix.com>,=20edumazet@
-         google.com,=0D=0A=09davem@davemloft.net,=20kuba@kernel.org,=20pabe
-         ni@redhat.com,=0D=0A=09corbet@lwn.net,=20netdev@vger.kernel.org,=2
-         0linux-doc@vger.kernel.org,=0D=0A=09linux-kernel@vger.kernel.org|S
-         ubject:=20Re:=20[PATCH]=20PPPoL2TP:=20Add=20more=20code=20snippets
-         |Message-ID:=20<20230419104923.GA13324@katalix.com>|References:=20
-         <ZD5V+z+cBaXvPbQa@debian>=0D=0A=20<20230418085323.h6xij7w6d2o4kxxi
-         @begin>=0D=0A=20<ZD5dqwPblo4FOex1@debian>=0D=0A=20<20230418091148.
-         hh3b52zceacduex6@begin>=0D=0A=20<ZD5uU8Wrz4cTSwqP@debian>=0D=0A=20
-         <20230418103140.cps6csryl2xhrazz@begin>=0D=0A=20<ZD5+MouUk8YFVOX3@
-         debian>=0D=0A=20<20230418115409.aqsqi6pa4s4nhwgs@begin>=0D=0A=20<Z
-         D6dON0gl3DE8mYr@debian>=0D=0A=20<20230418141820.gxueo5pz2vvre442@b
-         egin>|MIME-Version:=201.0|Content-Disposition:=20inline|In-Reply-T
-         o:=20<20230418141820.gxueo5pz2vvre442@begin>;
-        b=InE1w+opVpnbLv6A44O5YRc+SAbWnaij3nz8QiyX+3OLYsancHsI9Q5KDHuI4a65G
-         +9Rt9+kgFQRck1sWASt771vt7o1PC/w9u3H076BdlsRrT4Ck2YQs5FT68shYKfVQSg
-         pnD3EJz8Y4I2LSNtVXGRRhxkUP+W1DezQfhxzJmHTMnL7/wBLP9gNCGJyMJwO9pr3D
-         UbhHeMmFDCPVcoLJLAJwSmsyzmpmSRx9aHGvyUXIqiLaOFx0MnSTkp+MRkgLgWFpaT
-         ES9wKa/fbXPTLcMNRaweoptkm750xTYyj2elCCv1c4HqhbTdH1teeZpz9OHjTzixFr
-         3WIgY15hwLQyw==
-Date:   Wed, 19 Apr 2023 11:49:23 +0100
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Guillaume Nault <gnault@redhat.com>,
-        James Chapman <jchapman@katalix.com>, edumazet@google.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PPPoL2TP: Add more code snippets
-Message-ID: <20230419104923.GA13324@katalix.com>
-References: <ZD5V+z+cBaXvPbQa@debian>
- <20230418085323.h6xij7w6d2o4kxxi@begin>
- <ZD5dqwPblo4FOex1@debian>
- <20230418091148.hh3b52zceacduex6@begin>
- <ZD5uU8Wrz4cTSwqP@debian>
- <20230418103140.cps6csryl2xhrazz@begin>
- <ZD5+MouUk8YFVOX3@debian>
- <20230418115409.aqsqi6pa4s4nhwgs@begin>
- <ZD6dON0gl3DE8mYr@debian>
- <20230418141820.gxueo5pz2vvre442@begin>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="YiEDa0DAkWCtVeE4"
+        with ESMTP id S231722AbjDSKvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 06:51:22 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2128.outbound.protection.outlook.com [40.107.223.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CAB26A4E;
+        Wed, 19 Apr 2023 03:51:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oC/WdebH1rGdHCpX6gjyIZ5bg3m4htqdpLh5nnlc/hE1EI1kLbK2xMd0hmN9s6w6G3ctglRBQgt72e2wuBwz5nNF5GH01Uz+nPIF8Y/hf6wMNr0zerNhrjbJJUFiPB0L2/SGv2sk/b7ZGlhCeFBrBR7QQZ+i9diLY7YClW8O1wwTcojvPSWSNUDzQzBsa2EOhwF5+UtRikBtEn4PTHFomX8lXkTRHn2nRhJZGxTL3HwsxXielfQawr+bjrmUxYYAgDCK8F2j4GCLmgw6X0SvSSzXdyD2IfbC4NK3vatQ49zFle2ojMR/surMc3KCd681wp2i4uNmJYYYFD+91wxC4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hYK6EdBatvtbVUEZi46ijTzzqswddwCZk+GyUrCiuYk=;
+ b=ZotqgWvX4M/gI8u3HEK4bWvqmR1tPqJFgYli9Y66KiLqXMDSPKJck7VHIX4wgKomfuT/Lgb0YY4GYMoghaskvTulDM48WIGshUMzFFBV97BOjaKzXuWpkSXEKTX+lYfw1bRE4JselLzRugeNa7yh47nckjtqWATwaxNQVQn8CNwkeYXSIrEjtCNKtGq12eh0pacGhORkWxTkYMUqywUoQYTtkRsIb4gmm5XLD3kSoJOQq1L2kxhHPxMsWYBTBJu9dkgR1Adx346GEuBGo7XqZxtWJqzB9f9SWzTFnOwPkyOHa+iLacEDXPG6pJAfRKaF2Q/SXfpIveeRygb8UWMyYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hYK6EdBatvtbVUEZi46ijTzzqswddwCZk+GyUrCiuYk=;
+ b=k2fqxMW2bSYK++ZMa/UL8Gcci932/gzUhZqTbxVSrpn4ZBecci19+42b+rDhMIMFwMt5l8oGswI0XSRkyettCMV7nAHqbWjMtNZm0hb+YTDIL+Sqwv7IkaeSYdaJ6fWnSckA0sZZQwYiaQ/cB5G+ZZhyWz20t8H80SzHRwtzXj4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SN4PR13MB5678.namprd13.prod.outlook.com (2603:10b6:806:21e::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Wed, 19 Apr
+ 2023 10:51:18 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Wed, 19 Apr 2023
+ 10:51:18 +0000
+Date:   Wed, 19 Apr 2023 12:51:09 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Sai Krishna <saikrishnag@marvell.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, leon@kernel.org,
+        sgoutham@marvell.com, gakula@marvell.com, lcherian@marvell.com,
+        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com,
+        Ratheesh Kannoth <rkannoth@marvell.com>
+Subject: Re: [net PATCH v3 09/10] octeontx2-af: Skip PFs if not enabled
+Message-ID: <ZD/HncVvuuDIlHXv@corigine.com>
+References: <20230419062018.286136-1-saikrishnag@marvell.com>
+ <20230419062018.286136-10-saikrishnag@marvell.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230418141820.gxueo5pz2vvre442@begin>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230419062018.286136-10-saikrishnag@marvell.com>
+X-ClientProxiedBy: AM9P192CA0016.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21d::21) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB5678:EE_
+X-MS-Office365-Filtering-Correlation-Id: 878e734e-225d-4e22-a164-08db40c400e9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Wg72y9nsO+vXU4+7xAtVEweqiIAs4fTLA0YDYYTk4zkUqpHYBDSUsnK+JnGsUT0xAMMAohFABz504gyOXBj9Rr2qN/eS0Ph4vW6yWZkVXWjhhldUmvvjBuJSq6+QT0HVERQN/mIq1oeXu2M0lT2CbLRFyigOMSXvjHe+ZGxywo8/sAssVBhE05kcdhyc3BYQzXhiTN8Wo53xhRVbYcUJt4Qs5x54X5b7nHeaAqEECH/HKP2ULtejTNVymT8g353SsmNetJK2Am3arkEHKN+DBjoDdHdpWeNlZPDuC2R+RL+M3q06MEConXMfX0CkteDzU9MNkTYjSiFvGxwNMWAMbDef/jLfmk8sGCDg4qoiPRNIma7gCdEp9MT2Xa3viVszeORkXzkgeXEDdHB3f/LCrGgGVuPrlJkFrzA594lutE7og/WwqIkxdGX/Y7E7iirKw9q12JTFXjmudEx+KJMmU8K1W0WxfoZFSzoSVENMGWehHZ75U7icfsGaoLd9eLCWHXNLDNR9h40iEke9HMd3giKTgYJanrM7J70nJcwZs7RbBvMAAVG0oSWyijZCyfT6cJKhMDnGVQFHplspvvXI4PI69hH6c5cLicfhUBAdLNI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(346002)(366004)(396003)(376002)(136003)(451199021)(36756003)(44832011)(6916009)(7416002)(38100700002)(2906002)(8676002)(8936002)(41300700001)(5660300002)(86362001)(478600001)(2616005)(6506007)(6512007)(6666004)(186003)(6486002)(4326008)(66476007)(66946007)(316002)(66556008)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4rT4VDlzZGk4r2ICNCDpYpr5Z3ODhKYElSJb4ZTQbONsjcqGqnxXUB+cQ0iY?=
+ =?us-ascii?Q?yOGjHuf+mjQPQzeQvnhGWUWq8lNOaBhx2S8lhi/OOpWQRZ0ZXOXL25pywa0W?=
+ =?us-ascii?Q?AhnBldX0BS0eQ7AcwD6bJxOgPg420Z2atw5lPuOvX9urIV5UUPeLD2KrsLh3?=
+ =?us-ascii?Q?pSUl562ux5UNmFSNSpz0EcZ2L5PhkhIcZfElADLr9ZntSxiNmnnAVmbsloud?=
+ =?us-ascii?Q?7j9bpVB0C4h7LLtGelRHLeEI6IcPFcC4GlbjYv2HTP9gSUlT0BASZn6Jzw9X?=
+ =?us-ascii?Q?HE/GDMdKbVVOx+qOcNBeIqmhlJi8ze137gOLoDblp7ThrqbkI+n4dmHwCsFh?=
+ =?us-ascii?Q?Cv5F7PfbnX5IAfeHvH+cXEhOaWmjtjW50ixWYoHSBSjAGcnhsCBk8K3WqfRp?=
+ =?us-ascii?Q?+wiuq2gu8CxlhqEkq4BC7jjV37841KFJDjtBhAx+jTqTNtqjPeXCaacv6WbW?=
+ =?us-ascii?Q?Ll0Ncu84ZH9rfymEGRvUoV8LovO4j1p1jNbNXjUeXPhrCwl/qAbCpNdsDj/U?=
+ =?us-ascii?Q?Za4UF6zXrwo8W35rX8SMdIvAoURjxfj//ttaFDHeC79tCAo/udkcwUQFc8Dn?=
+ =?us-ascii?Q?gBhvzwmYCPZa1gUVPHfDa4lTUXmhuVtFKLGsXOhSMKfTty33bGRNl6uZLhbH?=
+ =?us-ascii?Q?orxb5fMwHuFY8YQmxJMjGQ8ZxSC8r4MNcF5RA4unlCmwz4HYpN09VvPO/ZLW?=
+ =?us-ascii?Q?V2vGBPsHarKRy+K1Jteu+LJmWUcKKfFM0hDCNGQECcx7V/NoaDBe+eQSgVQl?=
+ =?us-ascii?Q?mF4iw3SnaupXvWubUTFr99xGWZl1HQQDl99oGzc/ugdYCLSXOU/IUXBWPYro?=
+ =?us-ascii?Q?pNOhwQajNWLpDkK/5z5tJm+jENWCftsEfHuMlbTToyMB5itRy0ldnJqtOgcJ?=
+ =?us-ascii?Q?NjrBAnkwjwxVs9nFR+IHG+Fh0uDtwPXuPNAHZeZHacOnbEwcbguSCWoX9CYT?=
+ =?us-ascii?Q?WMXVVG5wIskzUCkD7ezGxDP8oRp9xDCu8V5QD89UsGY2zTw1iN00XCB3E7fk?=
+ =?us-ascii?Q?JYfGkJSD4bVqYHEYlZIYkVKyLKAzAIS1nan9azkbZ8r13zW/wF38+OL0L81X?=
+ =?us-ascii?Q?NWc/Uubb2JWHKMugz3uh4A/scaGbLXCV6WPcmevdxjc0dkywFKHg58le8Fs8?=
+ =?us-ascii?Q?64o2Nq8bnXQRY9iYEe0g8Jc3b48EA1dhW3Wie5XsoMEiWOgi8ODidDHBftBd?=
+ =?us-ascii?Q?Kecr3r6db/MSdt7fep9fRe+bIWAVeq9whoyvDbhNgrT52zgFP9balU0XDW7k?=
+ =?us-ascii?Q?ttCJZveyo1WETm9oyZJAsPJQAebRqun94tPC1tyFghTpvFSok/mQLNF0JkMF?=
+ =?us-ascii?Q?jdutTQbIHpR+tYlX4uWoFoNk2Ieu7AUAASL1f+YrkVFCscumuV6H/3J7w9JB?=
+ =?us-ascii?Q?2ampoA+9YEPFu7lSQU9Wtr8vndoob1Xbg5KMIfjhiiODCg1iZGMlXXkeKNxj?=
+ =?us-ascii?Q?nSwNPzErZM++A+pUhVdin9WC+uQpLWAOJD87ikB8Pr3Mfp9pc/qqTPKJKnhO?=
+ =?us-ascii?Q?kic7Goh+RfNOSo/lfSAvOcSNmoz1xW5u/CElV++D6hGvSpxDJYyHYahobDy8?=
+ =?us-ascii?Q?Y8hQfA6aa2A+HwKx13F3xJZx9QnGZr3Ynodh7gGioyiQUJfcL3uNOUS0N5UF?=
+ =?us-ascii?Q?9sWtM1fQHd2YZDDbmTmQFCsUo1wvJ2JQfIpFD/w727WU7DZ+agQcdr7b8jKO?=
+ =?us-ascii?Q?qTydsw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 878e734e-225d-4e22-a164-08db40c400e9
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 10:51:17.8194
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PIZ1Z4fG8yR1z6WQFpHFwLIDW1A7xPwS7BijO9psT2oLwWpTaZ2BVvu1Z/9RBZHJiWmDEUsCzBrPiUK6qVzXFTAvZXSlP2hCgk/env6MPwk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5678
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 19, 2023 at 11:50:17AM +0530, Sai Krishna wrote:
+> From: Ratheesh Kannoth <rkannoth@marvell.com>
+> 
+> Skip mbox initialization of disabled PFs. Firmware configures PFs
+> and allocate mbox resources etc. Linux should configure particular
+> PFs, which ever are enabled by firmware.
+> 
+> Fixes: 9bdc47a6e328 ("octeontx2-af: Mbox communication support btw AF and it's VFs")
+> Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
+> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
 
---YiEDa0DAkWCtVeE4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+...
 
-On  Tue, Apr 18, 2023 at 16:18:20 +0200, Samuel Thibault wrote:
-> Guillaume Nault, le mar. 18 avril 2023 15:38:00 +0200, a ecrit:
-> > On Tue, Apr 18, 2023 at 01:54:09PM +0200, Samuel Thibault wrote:
-> > > Guillaume Nault, le mar. 18 avril 2023 13:25:38 +0200, a ecrit:
-> > > > As I said in my previous reply, a simple L2TP example that goes unt=
-il PPP
-> > > > channel and unit creation is fine. But any more advanced use of the=
- PPP
-> > > > API should be documented in the PPP documentation.
-> > >=20
-> > > When it's really advanced, yes. But here it's just about tunnel
-> > > bridging, which is a very common L2TP thing to do.
-> >=20
-> > I can't undestand why you absolutely want this covered in l2tp.rst.
->=20
-> Because that's where people working on L2TP software will look for it.
+> @@ -2343,8 +2349,27 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
+>  	int err = -EINVAL, i, dir, dir_up;
+>  	void __iomem *reg_base;
+>  	struct rvu_work *mwork;
+> +	unsigned long *pf_bmap;
+>  	void **mbox_regions;
+>  	const char *name;
+> +	u64 cfg;
+> +
+> +	pf_bmap = kcalloc(BITS_TO_LONGS(num), sizeof(long), GFP_KERNEL);
 
-Sorry to have not commented earlier, and thank you Samuel for working
-on improving the L2TP documentation.
+Sorry for not noticing this earlier, but
+maybe bitmap_alloc() is appropriate here.
 
-I think documentation like l2tp.rst is best when it provides a high
-level overview of how things fit together.
+> +	if (!pf_bmap)
+> +		return -ENOMEM;
+> +
+> +	/* RVU VFs */
+> +	if (type == TYPE_AFVF)
+> +		bitmap_set(pf_bmap, 0, num);
+> +
+> +	if (type == TYPE_AFPF) {
+> +		/* Mark enabled PFs in bitmap */
+> +		for (i = 0; i < num; i++) {
+> +			cfg = rvu_read64(rvu, BLKADDR_RVUM, RVU_PRIV_PFX_CFG(i));
+> +			if (cfg & BIT_ULL(20))
+> +				set_bit(i, pf_bmap);
+> +		}
+> +	}
+>  
+>  	mbox_regions = kcalloc(num, sizeof(void *), GFP_KERNEL);
+>  	if (!mbox_regions)
 
-When it comes to actually implementing a userspace L2TP/PPP daemon,
-I feel that at a certain point you're better off referring to existing
-userspace code alongside the kernel sources themselves, as any summary is
-inevitably going to leave gaps.  From that perspective I'd almost sooner
-we didn't have the code snippet in l2tp.rst.
+		I think pf_bmap is leaked here.
 
-That said, I can't see the harm in improving the code snippet, given
-that we have it already.  Having no mention of PPPIOCBRIDGECHAN given
-that it can be used to implement tunnel switching is an oversight
-really.
-
-FWIW I agree the term "tunnel switching" is a bit misleading, and of
-course the PPP ioctl supports bridging any flavour of channel, not
-just PPPoL2TP.  However from the L2TP perspective people perhaps have
-something along the lines of this IETF draft in mind:
-
-https://datatracker.ietf.org/doc/html/draft-ietf-l2tpext-tunnel-switching-08
-
-=2E..which we could perhaps link to to clarify the intent in the context
-of the L2TP codebase?
-
-> > Also, it's probably a desirable feature, but certainly not a common
-> > thing on Linux. This interface was added a bit more than 2 years ago,
-> > which is really recent considering the age of the code.
->=20
-> Yes, and in ISPs we have been in need for it for something like
-> decades. I can find RFC drafts around 2000.
->=20
-> Or IPs have just baked their own kernel implementation (xl2tpd,
-> accel-ppp, etc.)
-
-Yes.  It's sad that support wasn't available sooner in the kernel, but
-I'm not sure that's indicative of lack of desire for the feature
-necessarily.
-
-> > Appart from maybe go-l2tp, I don't know of any user.
->=20
-
-I confirm that go-l2tp does use it :-)
-
---=20
-Tom Parkin
-Katalix Systems Ltd
-https://katalix.com
-Catalysts for your Embedded Linux software development
-
---YiEDa0DAkWCtVeE4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmQ/xyYACgkQlIwGZQq6
-i9At8QgAsFZhEpP2qxWypS68H5NKarIfFYarOkKszlZYYGSxuSFsx1uNYGc/m6dM
-EfB4N00yMNLIhUU7gimjytfZXVTFYyoAZ4ZIxSdngkyJiSMkwGdccSlu/nTbCFwa
-NbfC5v3e2/liDGDleT1CrpxrBD6IBNzG6PzUti3BhG8wJoODy2xyRbS2bDDFkjMr
-GUF9rRVxlIt/+V8iOPKBvlib7mLPyRh7lSOELQqWVKLLosuaAtb5NW8vNfpnRLxz
-2rg307GafbG/zgFJcDHKaYjUT2AaoEC44eh0laOFZgbUr9lJtSejjRIQROQQ00uJ
-MngGtrhkFgaUEDs/cILtSqlU6G/nBA==
-=gtf3
------END PGP SIGNATURE-----
-
---YiEDa0DAkWCtVeE4--
+> @@ -2356,7 +2381,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
+>  		dir = MBOX_DIR_AFPF;
+>  		dir_up = MBOX_DIR_AFPF_UP;
+>  		reg_base = rvu->afreg_base;
+> -		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFPF);
+> +		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFPF, pf_bmap);
+>  		if (err)
+>  			goto free_regions;
+>  		break;
+> @@ -2365,7 +2390,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
+>  		dir = MBOX_DIR_PFVF;
+>  		dir_up = MBOX_DIR_PFVF_UP;
+>  		reg_base = rvu->pfreg_base;
+> -		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFVF);
+> +		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFVF, pf_bmap);
+>  		if (err)
+>  			goto free_regions;
+>  		break;
+> @@ -2396,16 +2421,19 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
+>  	}
+>  
+>  	err = otx2_mbox_regions_init(&mw->mbox, mbox_regions, rvu->pdev,
+> -				     reg_base, dir, num);
+> +				     reg_base, dir, num, pf_bmap);
+>  	if (err)
+>  		goto exit;
+>  
+>  	err = otx2_mbox_regions_init(&mw->mbox_up, mbox_regions, rvu->pdev,
+> -				     reg_base, dir_up, num);
+> +				     reg_base, dir_up, num, pf_bmap);
+>  	if (err)
+>  		goto exit;
+>  
+>  	for (i = 0; i < num; i++) {
+> +		if (!test_bit(i, pf_bmap))
+> +			continue;
+> +
+>  		mwork = &mw->mbox_wrk[i];
+>  		mwork->rvu = rvu;
+>  		INIT_WORK(&mwork->work, mbox_handler);
+> @@ -2415,6 +2443,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
+>  		INIT_WORK(&mwork->work, mbox_up_handler);
+>  	}
+>  	kfree(mbox_regions);
+> +	kfree(pf_bmap);
+>  	return 0;
+>  
+>  exit:
+> @@ -2424,6 +2453,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
+>  		iounmap((void __iomem *)mbox_regions[num]);
+>  free_regions:
+>  	kfree(mbox_regions);
+> +	kfree(pf_bmap);
+>  	return err;
+>  }
+>  
+> -- 
+> 2.25.1
+> 
