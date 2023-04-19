@@ -2,114 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA40A6E823F
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 21:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67BF36E824F
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 22:05:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231273AbjDST6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 15:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57192 "EHLO
+        id S231588AbjDSUFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 16:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230373AbjDST6w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 15:58:52 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E7F26B5;
-        Wed, 19 Apr 2023 12:58:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References;
-        bh=LxBKG7hjPDqtJt40ExcWnkknGjlZ3Me2MkkSjoLZIu0=; b=aRbIiBZ5hqDSRRQx/dKT6t6Y0s
-        3gCp2ICJLC7zm0VtCJJPLUwzshdNA9Ijl5nJCItJRJhuwuVL0UPnezMmzyccNYeEqF1qaggn2O8EH
-        8jbfAoQC3c5WRe+n7H+cfOLDrg8SmCcM2P3zn27KLDosJ7QZKK3MEPBIhexwXnYeZI4e52cHIhEkL
-        FHVn158LDcShC7iexE5hjYJj4FgLBPgIr/CRN8Ct/VoU7aDxdbOWcgDMSr0S2hqHWgjsNPLdrsjLN
-        BfXobzuK41oki0wGDeZ9xaDIGW3uWRrLqHuY1INhnmxyEVBUmJa9s73r0qaqWHqAKvI+IS6tcWvMJ
-        xZLU4S2A==;
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ppDx1-0002CQ-Rz; Wed, 19 Apr 2023 21:58:47 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        martin.lau@linux.dev, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2023-04-19
-Date:   Wed, 19 Apr 2023 21:58:47 +0200
-Message-Id: <20230419195847.27060-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        with ESMTP id S231542AbjDSUFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 16:05:09 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0226249D9
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 13:05:08 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-505035e3368so287916a12.0
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 13:05:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681934706; x=1684526706;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=O19qCOe0DTNX6gqRTl+uSUcgN/pbPN+NZIitnjjF7kU=;
+        b=WpzhJ5mOLEIpKXG0XRpkqTHjOLPik2bQL9X7PsdCdaHBu/yf3B3+GVSaDYQ1MHriKX
+         auq4CO/5oM0teoGCzA/49JRaU/urk1q3QCIluNfhYNMg7ePa1Obi2bc/T+/J/Gj/dtgH
+         3Z0jxuVMSNLzQH4OAb9Yu/pqPSWpAXsOpeHy0vqLT82UINEy+ZimfleZQCwzi49cVmja
+         wWdYYKVNDHWAOhYirwSkfKCYUFWfewrfWaUblRHf5iChOl6axhj7RV6HtrSB3J+fJPbL
+         uapx2QB9WIY9P52+Bi8SmXDcuiTgt0K1snBh6/1bp+4DzpOdu8GdeW55HkE11l0TFUuv
+         mczw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681934706; x=1684526706;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=O19qCOe0DTNX6gqRTl+uSUcgN/pbPN+NZIitnjjF7kU=;
+        b=h3quZBqnFeqqKLPfs/PhtSxhPt7IKxjemZbPjhaUTwb+cu6QH4hB0yOA7GIR7vzRej
+         NOKbQcDwPmIrQ80eBrSswdQ8Y0yGtkoNaf9UeElRir9gTQ6+v3icaNoxwME4s8mF7Eem
+         T9deHTJLqkuLmm6aDXvoV8Q8KmgAuKMiDcKPnBNOwRA4aFJqfGIVro3xDNFTO1DQbzy+
+         z4nMKcpOhydlS79440hVX95eZJohScjU0+obsy01H5HHTYAJdw9pQ/DzFAwQClVcZ2bA
+         zxmA6FipbjjjZJTvW1utQUSIG7uZCz1Oa0kAp1cK9WTHxOwVYcStTSJlYkbqadwH9H89
+         QPmg==
+X-Gm-Message-State: AAQBX9e+uZWGsd88/cbvR57xOlajkX0dRoMeIPEPjJMPGXbWketw5KIz
+        h/MZD2XkrMw6fbK0opBS5IARuQ==
+X-Google-Smtp-Source: AKy350aaLQ3lajWBdIxdSjFZYfHpAu1ZC15ZkICq3r8HSBuYErL71cxpOOL9pJEKVG9VG3IhfD1Qzg==
+X-Received: by 2002:aa7:d882:0:b0:506:747f:3bf0 with SMTP id u2-20020aa7d882000000b00506747f3bf0mr7038464edq.8.1681934706426;
+        Wed, 19 Apr 2023 13:05:06 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:976c:1d6c:6ed0:8935? ([2a02:810d:15c0:828:976c:1d6c:6ed0:8935])
+        by smtp.gmail.com with ESMTPSA id k26-20020a056402049a00b0050841de16e9sm440030edv.64.2023.04.19.13.05.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Apr 2023 13:05:05 -0700 (PDT)
+Message-ID: <4366b07b-a144-5e7f-ec41-1f58491b36f5@linaro.org>
+Date:   Wed, 19 Apr 2023 22:05:04 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH V2 1/3] dt-bindings: net: wireless: qcom,ath11k: allow
+ describing radios
+Content-Language: en-US
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Robert Marko <robimarko@gmail.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20230418093822.24005-1-zajec5@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230418093822.24005-1-zajec5@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26880/Wed Apr 19 09:22:57 2023)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub, hi Paolo, hi Eric,
+On 18/04/2023 11:38, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> Qualcomm ath11k chipsets can have up to 3 radios. Each radio may need to
+> be additionally described by including its MAC or available frequency
+> ranges.
 
-The following pull-request contains BPF updates for your *net* tree.
+The binding looks fine, but I wonder what is the radio here? It feels
+like one antenna, e.g. 2.4 or 5 GHz, but you added $ref to
+ieee80211.yaml which is used for entire device. What is the "radio" here?
 
-We've added 3 non-merge commits during the last 6 day(s) which contain
-a total of 3 files changed, 34 insertions(+), 9 deletions(-).
+> 
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> ---
+> V2: Fix dt_binding_check (add address + size cells & reg)
+> ---
 
-The main changes are:
+Best regards,
+Krzysztof
 
-1) Fix a crash on s390's bpf_arch_text_poke() under a NULL new_addr,
-   from Ilya Leoshkevich.
-
-2) Fix a bug in BPF verifier's precision tracker, from Daniel Borkmann
-   and Andrii Nakryiko.
-
-3) Fix a regression in veth's xdp_features which led to a broken BPF CI
-   selftest, from Lorenzo Bianconi.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Heiko Carstens, John Fastabend, Juan Jose Lopez Jaimez, Meador Inge, 
-Nenad Stojanovski, Simon Scannell, Thomas Richter
-
-----------------------------------------------------------------
-
-The following changes since commit 829cca4d1783088e43bace57a555044cc937c554:
-
-  Merge tag 'net-6.3-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2023-04-13 15:33:04 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git tags/for-netdev
-
-for you to fetch changes up to 71b547f561247897a0a14f3082730156c0533fed:
-
-  bpf: Fix incorrect verifier pruning due to missing register precision taints (2023-04-19 10:18:18 -0700)
-
-----------------------------------------------------------------
-bpf-for-netdev
-
-----------------------------------------------------------------
-Daniel Borkmann (1):
-      bpf: Fix incorrect verifier pruning due to missing register precision taints
-
-Ilya Leoshkevich (1):
-      s390/bpf: Fix bpf_arch_text_poke() with new_addr == NULL
-
-Lorenzo Bianconi (1):
-      veth: take into account peer device for NETDEV_XDP_ACT_NDO_XMIT xdp_features flag
-
- arch/s390/net/bpf_jit_comp.c | 11 ++++++++---
- drivers/net/veth.c           | 17 +++++++++++------
- kernel/bpf/verifier.c        | 15 +++++++++++++++
- 3 files changed, 34 insertions(+), 9 deletions(-)
