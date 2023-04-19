@@ -2,50 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9BC36E75D2
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 10:58:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43CDF6E75D7
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 10:59:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232778AbjDSI6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 04:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35456 "EHLO
+        id S232788AbjDSI7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 04:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231621AbjDSI6N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 04:58:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F036E8A
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:58:07 -0700 (PDT)
+        with ESMTP id S232787AbjDSI7L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 04:59:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCEC1026E
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:59:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6204060AE9
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 08:58:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E6BC433EF;
-        Wed, 19 Apr 2023 08:58:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A718A630AF
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 08:59:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90718C4339B;
+        Wed, 19 Apr 2023 08:59:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681894686;
-        bh=uOjT3KvfzFNZM3WMEWnJcIu5wyHtZ1KNuqzjUJ63Bmg=;
+        s=k20201202; t=1681894749;
+        bh=bPUspiHGV/cQHYqjuDQgmKqH62SgWxZuQwh73JM2jjk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=noBSqNM+nIdxtiGt6dz7a4bwbBlYuayw56MCFMP3yjVrEJbk0NX5Vm/atLUzIGzY7
-         CINnu03dp/Gi7VwZwxPSdJb+EuWFdYIu169SDJchOFU0+ydiVRajPckLmT7jCRSyaR
-         kTvkkBp7uQrQuHiH1ta5kUxq3bcqgDgOE4V7Yq7zGjuwXKE9E7kDuEeLCMQhI7mihK
-         sY08kmhErVLesRN6+9xN2C6yORPrFFIe+mFdIG57iDzZ8ora1sJIzIsZXg1YpQgUwK
-         x/mM6pyqdpwGq5VfwQVcA3lu49IeppVfZ/qb8fq6F96M2lTnOY0POSTHSZ6DdGc0Ai
-         kpHbqJQGWR4PQ==
-Date:   Wed, 19 Apr 2023 11:58:02 +0300
+        b=ntrcwJwe36MwGpjRUBHS824gYAEuQTlevH6WIBGMs6AIikoaH42bfMZvm1w+AwEfg
+         JNGSNTSt5HVxWunytraXUte7XSaP9qSaY7a7V14M92+gtpSsZJxZaJu04HS66n/Eij
+         ep2LxyABXlx/wNKaEusTNb3z25fV2ojZn/+WUAToLAJAHF28TRI8fGZWkTWhgtJKMc
+         mFqHK5RSCQbxg4hASHoqPFDM46I5mAxv7+Zs9szsx7DyfNk0/adxWyDWnaduznxsBJ
+         QY7hWUoa5hszSrCPCBJPLBM9t0PJYAewkWLSKaKQCAzJJpORWzjm67YujUB9AShnn9
+         laFdug2h+lQXA==
+Date:   Wed, 19 Apr 2023 11:59:05 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Maxime Bizon <mbizon@freebox.fr>
-Cc:     davem@davemloft.net, edumazet@google.com, tglx@linutronix.de,
-        wangyang.guo@intel.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dst: fix missing initialization of
- rt_uncached
-Message-ID: <20230419085802.GD44666@unreal>
-References: <20230418165426.1869051-1-mbizon@freebox.fr>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        Wangyang Guo <wangyang.guo@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, oe-lkp@lists.linux.dev,
+        lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
+        Arjan van de Ven <arjan@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com
+Subject: Re: [linux-next:master] [net] d288a162dd: canonical_address#:#[##]
+Message-ID: <20230419085905.GE44666@unreal>
+References: <202304162125.18b7bcdd-oliver.sang@intel.com>
+ <20230418164133.GA44666@unreal>
+ <509b08bd-d2bf-eaa8-6c49-c0860d1adbe0@kernel.org>
+ <20230419055916.GB44666@unreal>
+ <CANn89iLbHDjBZZT1ZOms3Ak0D0V4JTnyeEWZ26Eoc3v9PsGs6g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230418165426.1869051-1-mbizon@freebox.fr>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANn89iLbHDjBZZT1ZOms3Ak0D0V4JTnyeEWZ26Eoc3v9PsGs6g@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -54,68 +64,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 06:54:26PM +0200, Maxime Bizon wrote:
-> xfrm_alloc_dst() followed by xfrm4_dst_destroy(), without a
-> xfrm4_fill_dst() call in between, causes the following BUG:
+On Wed, Apr 19, 2023 at 10:41:00AM +0200, Eric Dumazet wrote:
+> On Wed, Apr 19, 2023 at 7:59 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Tue, Apr 18, 2023 at 02:43:02PM -0600, David Ahern wrote:
+> > > On 4/18/23 10:41 AM, Leon Romanovsky wrote:
+> > > > Hi,
+> > > >
+> > > > I came to the following diff which eliminates the kernel panics,
+> > > > unfortunately I can explain only second hunk, but first is required
+> > > > too.
+> > > >
+> > > > diff --git a/net/core/dst.c b/net/core/dst.c
+> > > > index 3247e84045ca..750c8edfe29a 100644
+> > > > --- a/net/core/dst.c
+> > > > +++ b/net/core/dst.c
+> > > > @@ -72,6 +72,8 @@ void dst_init(struct dst_entry *dst, struct dst_ops *ops,
+> > > >         dst->flags = flags;
+> > > >         if (!(flags & DST_NOCOUNT))
+> > > >                 dst_entries_add(ops, 1);
+> > > > +
+> > > > +       INIT_LIST_HEAD(&dst->rt_uncached);
+> > >
+> > > d288a162dd1c73507da582966f17dd226e34a0c0 moved rt_uncached from rt6_info
+> > > and rtable to dst_entry. Only ipv4 and ipv6 usages initialize it. Since
+> > > it is now in dst_entry, dst_init is the better place so it can be
+> > > removed from rt_dst_alloc and rt6_info_init.
+> >
+> > This is why I placed it there, but the rt_uncached list is initialized
+> > in xfrm6 right before first call to rt6_uncached_list_add().
+> >
+> >    70 static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
+> >    71                           const struct flowi *fl)
+> >    72 {
+> > ...
+> >    92         INIT_LIST_HEAD(&xdst->u.rt6.dst.rt_uncached);
+> >    93         rt6_uncached_list_add(&xdst->u.rt6);
+> >
+> > My silly explanation is that xfrm6_dst_destroy() can be called before xfrm6_fill_dst().
+> >
+> > Thanks
+> >
+> > >
 > 
->  BUG: spinlock bad magic on CPU#0, fbxhostapd/732
->   lock: 0x890b7668, .magic: 890b7668, .owner: <none>/-1, .owner_cpu: 0
->  CPU: 0 PID: 732 Comm: fbxhostapd Not tainted 6.3.0-rc6-next-20230414-00613-ge8de66369925-dirty #9
->  Hardware name: Marvell Kirkwood (Flattened Device Tree)
->   unwind_backtrace from show_stack+0x10/0x14
->   show_stack from dump_stack_lvl+0x28/0x30
->   dump_stack_lvl from do_raw_spin_lock+0x20/0x80
->   do_raw_spin_lock from rt_del_uncached_list+0x30/0x64
->   rt_del_uncached_list from xfrm4_dst_destroy+0x3c/0xbc
->   xfrm4_dst_destroy from dst_destroy+0x5c/0xb0
->   dst_destroy from rcu_process_callbacks+0xc4/0xec
->   rcu_process_callbacks from __do_softirq+0xb4/0x22c
->   __do_softirq from call_with_stack+0x1c/0x24
->   call_with_stack from do_softirq+0x60/0x6c
->   do_softirq from __local_bh_enable_ip+0xa0/0xcc
+> Please take a look at the fix that was sent yesterday :
 > 
-> Patch "net: dst: Prevent false sharing vs. dst_entry:: __refcnt" moved
-> rt_uncached and rt_uncached_list fields from rtable struct to dst
-> struct, so they are more zeroed by memset_after(xdst, 0, u.dst) in
-> xfrm_alloc_dst().
-> 
-> Note that rt_uncached (list_head) was never properly initialized at
-> alloc time, but xfrm[46]_dst_destroy() is written in such a way that
-> it was not an issue thanks to the memset:
-> 
-> 	if (xdst->u.rt.dst.rt_uncached_list)
-> 		rt_del_uncached_list(&xdst->u.rt);
-> 
-> The route code does it the other way around: rt_uncached_list is
-> assumed to be valid IIF rt_uncached list_head is not empty:
-> 
-> void rt_del_uncached_list(struct rtable *rt)
-> {
->         if (!list_empty(&rt->dst.rt_uncached)) {
->                 struct uncached_list *ul = rt->dst.rt_uncached_list;
-> 
->                 spin_lock_bh(&ul->lock);
->                 list_del_init(&rt->dst.rt_uncached);
->                 spin_unlock_bh(&ul->lock);
->         }
-> }
-> 
-> This patch adds mandatory rt_uncached list_head initialization in
-> generic dst_init(), and adapt xfrm[46]_dst_destroy logic to match the
-> rest of the code.
-> 
-> Fixes: d288a162dd1c ("net: dst: Prevent false sharing vs. dst_entry:: __refcnt")
-> Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
-> ---
->  net/core/dst.c          | 1 +
->  net/ipv4/xfrm4_policy.c | 4 +---
->  net/ipv6/route.c        | 1 -
->  net/ipv6/xfrm6_policy.c | 4 +---
->  4 files changed, 3 insertions(+), 7 deletions(-)
+> https://patchwork.kernel.org/project/netdevbpf/patch/20230418165426.1869051-1-mbizon@freebox.fr/
 
-It should go to net. Right now -rc7 is broken.
+Thanks, I replied there with my comments.
 
-Also the change is not complete, you need to delete INIT_LIST_HEAD(..rt_uncached)
-from rt_dst_alloc and rt_dst_clone too.
-
-Thanks
+> 
+> Thanks.
