@@ -2,62 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C03E6E8453
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 00:01:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C146E852C
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 00:47:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230170AbjDSWBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 18:01:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37912 "EHLO
+        id S231328AbjDSWrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 18:47:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjDSWBT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 18:01:19 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEAC46AB
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 15:01:18 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id z6so1899603ejc.5
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 15:01:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1681941677; x=1684533677;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=jE7wFjUHDEsBd3OPJhV20VpgiyEnucWm25dyji9JD5Q=;
-        b=dZV8QYYO70/evae582p451U0wHAsWrKaFnQKJ6RD0nx3kp2smSKjQjE1+LkhV9vv6x
-         KmQ+EC75AgWAUDkHqW1NgAnGvMQuB5tZnWbIZdiV2PtV6WPaUKmQwa3qmzfmDjCsMXQg
-         7LIzYdIHS67POjQ83/qRjSb70MTQiiJ+7lbug=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681941677; x=1684533677;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jE7wFjUHDEsBd3OPJhV20VpgiyEnucWm25dyji9JD5Q=;
-        b=R56vexIAsWlwaSKxQq/P6RFb+RC/BKFYs2ovuhpQQsb23Kao/IcdrhtTjpIzXEEmAA
-         LRZZ6x3CF9LO5etYgSLVV9OLlh9T/+sXaD1feON9O8e0Twu3bpxHRYCjwmy5Bw+U1f4t
-         rK1B1yICJ+fAoI/yO8Be0RpmixVTNpr77YPP4nhEbCfPQ8a+/M+zXhErhZ5X4KaSCn52
-         ayzaleGMfAFNLB7l7xI6KvTsJ6iQFqkHIowhgLlZvC0DQs2UJD7slAoYuBtWP/YKCUYi
-         GMdtuv4kYfPWCMZOZ9wFod9PnZOBmhp57wX4QKclvG9eP8k+VShD6PtaE+7gySXZEgTk
-         aRkg==
-X-Gm-Message-State: AAQBX9edqwV4/J04ub9ChXD9QlTY20RyJABbhd1EtVSTirASg98kGmVI
-        VZ0UsmnWaQ0AknrzPllq3q1E0nPg+S457qQ+vn8b7A==
-X-Google-Smtp-Source: AKy350YjjT1VoAU95rqQwDYgVp2T0/Z2yknoMw2oeeeLWQgyrP15YKyPRVBF2Xr+fv9QqfsBii7iS0j6cCFfhHpXoJ4=
-X-Received: by 2002:a17:906:e247:b0:94e:4926:7716 with SMTP id
- gq7-20020a170906e24700b0094e49267716mr6943931ejb.0.1681941676728; Wed, 19 Apr
- 2023 15:01:16 -0700 (PDT)
+        with ESMTP id S229583AbjDSWrO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 18:47:14 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F79AB;
+        Wed, 19 Apr 2023 15:47:09 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33JMXOTX088934;
+        Wed, 19 Apr 2023 17:33:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1681943604;
+        bh=qSHxA2JuD9iVuHUIsjmZUVoAD15PhbOU9uLN9c3n25g=;
+        h=From:To:CC:Subject:Date;
+        b=ng6lnJQqlOjY+0biJJDivbVoW2wOfHYT26DJcfg/sbVkwss1AhUTmpuZeQ/i1bqJV
+         3RslBeMDaY2fu+ZDgKtF4j3fFwvsvgocK54/dEP10NUBOM+afMoWBhoPgGISYj+4zg
+         4Gws3A1rawdVHqtXXQI0S+mIKcAqbZSHgOuMHYAI=
+Received: from DLEE101.ent.ti.com (dlee101.ent.ti.com [157.170.170.31])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33JMXOlh059400
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 19 Apr 2023 17:33:24 -0500
+Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 19
+ Apr 2023 17:33:24 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Wed, 19 Apr 2023 17:33:23 -0500
+Received: from a0498204.dal.design.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33JMXNLV015736;
+        Wed, 19 Apr 2023 17:33:23 -0500
+From:   Judith Mendez <jm@ti.com>
+To:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Schuyler Patton <spatton@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Judith Mendez <jm@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: [PATCH 0/4] Enable multiple MCAN on AM62x
+Date:   Wed, 19 Apr 2023 17:33:19 -0500
+Message-ID: <20230419223323.20384-1-jm@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20230418143617.27762-1-magnus.karlsson@gmail.com>
-In-Reply-To: <20230418143617.27762-1-magnus.karlsson@gmail.com>
-From:   Kal Cutter Conley <kal.conley@dectris.com>
-Date:   Thu, 20 Apr 2023 00:06:04 +0200
-Message-ID: <CAHApi-=_=ia8Pa23QRchxdx-ekPTgT5nYj=ktYGO4gRwP0cvCA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/xsk: fix munmap for hugepage allocated umem
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, tirthendu.sarkar@intel.com,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,32 +74,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -1286,16 +1287,19 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
->         u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
->         int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
->         LIBBPF_OPTS(bpf_xdp_query_opts, opts);
-> +       off_t mmap_offset = 0;
->         void *bufs;
->         int ret;
->
-> -       if (ifobject->umem->unaligned_mode)
-> +       if (ifobject->umem->unaligned_mode) {
->                 mmap_flags |= MAP_HUGETLB;
-> +               mmap_offset = MAP_HUGE_2MB;
-> +       }
+On AM62x there is one MCAN in MAIN domain and two in MCU domain.
+The MCANs in MCU domain were not enabled since there is no
+hardware interrupt routed to A53 GIC interrupt controller.
+Therefore A53 Linux cannot be interrupted by MCU MCANs.
 
-MAP_HUGE_2MB should be ORed into mmap_flags. The offset argument
-should be zero for MAP_ANONYMOUS mappings. The tests may still fail if
-the default hugepage size is not 2MB.
+This solution instantiates a hrtimer with 1 ms polling interval
+for a MCAN when there is no hardware interrupt. This hrtimer
+generates a recurring software interrupt which allows to call the
+isr. The isr will check if there is pending transaction by reading
+a register and proceed normally if there is.
 
->
->         if (ifobject->shared_umem)
->                 umem_sz *= 2;
->
-> -       bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, 0);
-> +       bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, mmap_offset);
->         if (bufs == MAP_FAILED)
->                 exit_with_error(errno);
->
+On AM62x this series enables two MCU MCAN which will use the hrtimer
+implementation. MCANs with hardware interrupt routed to A53 Linux
+will continue to use the hardware interrupt as expected.
 
--Kal
+Timer polling method was tested on both classic CAN and CAN-FD
+at 125 KBPS, 250 KBPS, 1 MBPS and 2.5 MBPS with 4 MBPS bitrate
+switching.
+
+Letency and CPU load benchmarks were tested on 3x MCAN on AM62x.
+1 MBPS timer polling interval is the better timer polling interval
+since it has comparable latency to hardware interrupt with the worse
+case being 1ms + CAN frame propagation time and CPU load is not
+substantial. Latency can be improved further with less than 1 ms
+polling intervals, howerver it is at the cost of CPU usage since CPU
+load increases at 0.5 ms and lower polling periods than 1ms.
+
+Note that in terms of power, enabling MCU MCANs with timer-polling
+implementation might have negative impact since we will have to wake
+up every 1 ms whether there are CAN packets pending in the RX FIFO or
+not. This might prevent the CPU from entering into deeper idle states
+for extended periods of time.
+
+This patch series depends on 'Enable CAN PHY transceiver driver':
+https://lore.kernel.org/lkml/775ec9ce-7668-429c-a977-6c8995968d6e@app.fastmail.com/T/
+
+Previously sent an RFC:
+https://lore.kernel.org/linux-can/52a37e51-4143-9017-42ee-8d17c67028e3@ti.com/T/#t
+
+Judith Mendez (4):
+  can: m_can: Add hrtimer to generate software interrupt
+  dt-bindings: net: can: Make interrupt attributes optional for MCAN
+  arm64: dts: ti: Add AM62x MCAN MAIN domain transceiver overlay
+  arm64: dts: ti: Enable MCU MCANs for AM62x
+
+ .../bindings/net/can/bosch,m_can.yaml         |  2 -
+ arch/arm64/boot/dts/ti/Makefile               |  2 +
+ arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi       | 24 ++++++++
+ .../boot/dts/ti/k3-am625-sk-mcan-main.dtso    | 35 ++++++++++++
+ .../boot/dts/ti/k3-am625-sk-mcan-mcu.dtso     | 55 +++++++++++++++++++
+ drivers/net/can/m_can/m_can.c                 | 30 +++++++++-
+ drivers/net/can/m_can/m_can.h                 |  3 +
+ drivers/net/can/m_can/m_can_platform.c        | 13 ++++-
+ 8 files changed, 158 insertions(+), 6 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-mcu.dtso
+
+-- 
+2.17.1
+
