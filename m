@@ -2,51 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C467F6E7230
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 06:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A706E724C
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 06:27:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231355AbjDSEUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 00:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
+        id S231431AbjDSE1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 00:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230500AbjDSEUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 00:20:24 -0400
+        with ESMTP id S230211AbjDSE1u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 00:27:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96DF144B3
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 21:20:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D9961A7;
+        Tue, 18 Apr 2023 21:27:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33E4E63AEF
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 04:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C9E7C4339B;
-        Wed, 19 Apr 2023 04:20:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EFD262F3A;
+        Wed, 19 Apr 2023 04:27:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84120C433EF;
+        Wed, 19 Apr 2023 04:27:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681878018;
-        bh=tpFcUjVuxRuRcBQkp+mSsmyypZfeMIisbHnQItzCWVw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rNmXpOKFMDkYn7jPuwFKjdhnoHRUq+Styg9c+fHO66YU/S15wP8jagAVcUWyK43ag
-         vzDk8W6GFd2JiEeoCM/cpnbVZZPzP0UYwPSwhkHgAGUp6cs8qV/DMaG1E/41Z2eiL4
-         joh3Y9HiW6wtVyRtgVAmbfg6pB41/zYSE5TMPqlet6LCbdquBCMB+1zuzwWY507u+i
-         X93DLHBFNLFIM+IlWUJVmlMwvdpD9+856gmDf5/5F+qhJYSUxeooTg6qpoa821UPt9
-         qmcARj5EL+4ijFM+U+5e/mWyGqB7yF/wAozs1V2HG8AJiCo+mzcIi8o6bJjX4XOSE0
-         Xl9CxC+XL3bJw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6B3C6E3309C;
-        Wed, 19 Apr 2023 04:20:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1681878468;
+        bh=z8Cnl+y8ZhRaFWwRA/tNVWmuFrnUGtE2tQkn1vH03MQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fkdNpsYCFIgLsxaPwHhk+tlApLi0x3z8fn+/RXy3qBRrG8HKTZez0cdG9Q4Tn/zqW
+         pbDuIK7Da13J3SVPnzCq8RxZzzgxK+kf8tZ6dWxM2DMVeSgbb65dPl/5IMaYQFO5JA
+         KP50dxYOK1RDFKc0Y7gZPql9cVf/tMGsfCEMPbyLZOu0DQ2ZHSzYxU2sddWHCPbQOl
+         zzZoCJi5Or1D/qjAUeytjnOtePKUobrfvCVhfdaLSJqEHKsy3omA7a3/vShF6y/rwu
+         WrvBO1Cz20shBfjEi4kU67X8yeUUEdEMLA6ULoUN2Ez2V/Qs3xPheEqlSS5fpqZr8Q
+         bSFubUXxlgcKA==
+Date:   Tue, 18 Apr 2023 21:27:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [net-next PATCH v7 00/16] net: Add basic LED support for
+ switch/phy
+Message-ID: <20230418212746.7db8096e@kernel.org>
+In-Reply-To: <20230417151738.19426-1-ansuelsmth@gmail.com>
+References: <20230417151738.19426-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv5 net-next] bonding: add software tx timestamping support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168187801843.17957.751284024402477787.git-patchwork-notify@kernel.org>
-Date:   Wed, 19 Apr 2023 04:20:18 +0000
-References: <20230418034841.2566262-1-liuhangbin@gmail.com>
-In-Reply-To: <20230418034841.2566262-1-liuhangbin@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        liali@redhat.com, simon.horman@corigine.com, mlichvar@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,30 +73,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 18 Apr 2023 11:48:41 +0800 you wrote:
-> Currently, bonding only obtain the timestamp (ts) information of
-> the active slave, which is available only for modes 1, 5, and 6.
-> For other modes, bonding only has software rx timestamping support.
+On Mon, 17 Apr 2023 17:17:22 +0200 Christian Marangi wrote:
+> This is a continue of [1]. It was decided to take a more gradual
+> approach to implement LEDs support for switch and phy starting with
+> basic support and then implementing the hw control part when we have all
+> the prereq done.
 > 
-> However, some users who use modes such as LACP also want tx timestamp
-> support. To address this issue, let's check the ts information of each
-> slave. If all slaves support tx timestamping, we can enable tx
-> timestamping support for the bond.
+> This series implements only the brightness_set() and blink_set() ops.
+> An example of switch implementation is done with qca8k.
 > 
-> [...]
+> For PHY a more generic approach is used with implementing the LED
+> support in PHY core and with the user (in this case marvell) adding all
+> the required functions.
+> 
+> Currently we set the default-state as "keep" to not change the default
+> configuration of the declared LEDs since almost every switch have a
+> default configuration.
 
-Here is the summary with links:
-  - [PATCHv5,net-next] bonding: add software tx timestamping support
-    https://git.kernel.org/netdev/net-next/c/980f0799a15c
-
-You are awesome, thank you!
+IIRC we were supposed to take these via netdev with acks from Pavel/Lee.
+So we need acks on patches 4/5/16 ? If there is a repost, could you
+take out the arch/arm patches? They should not go via netdev, we'll try
+to filter them out when applying but mistakes happen.
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+pw-bot: need-ack
