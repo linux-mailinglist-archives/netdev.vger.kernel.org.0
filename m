@@ -2,299 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 258CA6E7DBF
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 756216E7DF6
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:16:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233052AbjDSPNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 11:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35024 "EHLO
+        id S233617AbjDSPQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 11:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233061AbjDSPNG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:13:06 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F0B4EC0
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 08:13:01 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id dm2so82701217ejc.8
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 08:13:01 -0700 (PDT)
+        with ESMTP id S233607AbjDSPPu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:15:50 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2136.outbound.protection.outlook.com [40.107.94.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D829ED8;
+        Wed, 19 Apr 2023 08:14:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dSvCdLQ3H6SHC4svEscAI49cM3SyJO6ER6Qs61WA5CYQ+42WUzm4nLpP7MXpWRL24d9oMvRQP7xr13DNGNjiyZd1D51ezhi/JbR1din40xyjMFdDEZY+Vnkc/7lPxwvUN43lp2HBenLLecrYERgZ1UZRMRMjr/RgT4bDinKB2sT+YVmfHrNgTt9R5Natm9hhDUdi1zRQNreTBhuZ5Zx9X3jZwgcZEY5rWJRljKn2Pw/9rEY0u60CtFnDA/7JMLY3WGXY387ky1SuxKVs0MtnOi7rtYqj2SQMKeC7a2w77iUwizcnkl2U5KIpBN9lhb0av5nXTdh3KwnPiGrISLSEJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=S0fVQ4ZQfy7FAMPbiStFU3EFc1OJ7hODWTnGKXJFIi0=;
+ b=iWtkXJr1e5WinGvhv6JQBhG3ANcmgd6l6JJxjDFy4OzQZ7SdJv4Lyay5H3/AyFaJR5hEfF/ZRPPA3OFsauLswA2BXA6MGzljCJp08zswyCpnR0W7rjPBX+KRAmH1SY5ApDXT5nXJ7VbPz6K5wGOU/IqYnUqfKOH/jhVArDg70qgLcBD00Wk5AYP5+Hrjg1uKEqkuJ254rI9jt314XG6ypBU3ozgpGQKbIG0mGuvKPuMVMXxGXkRx57Al4nv5gAupGmHKNhCOHLlTwGGNkS0F7kL1hv68qNdvxVC0K/D6aLFIVVQr0aKOJ4ZI3JKsknwzBqTnpN8+JQxRDElfpI3XOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681917179; x=1684509179;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=W4tAfOyzlo/AiL8XmHFYet50M4kqPgt6dUJ37GoV4eQ=;
-        b=bNJ6cPz+pL9ObBtl1h3mJz/Z2AK/jCPHfjaoBNcL+OO9y24fRNxpqoVeCy/hAAzWKI
-         8ZdEDqo2/WLvRMlEmrH91zo/tCOdpvQnTnjKVPxczUoZ1qicMp7rE6QxDxv+fXrZAH3j
-         4PBhE1yk/Z1L2LBPiHe5k/tVjg4I4AapClNUac3zL/+ZllGUbLYSQjfqk1z2SLOlrMI5
-         7NhECGALvTPivFImsPPaSIC5p+16pgmF3dW/gWOwU5hFWinKbdMUPzE/qEVRywrOK2as
-         GxYkpYhNgmWXUynOM+Lnu9D6n9g7Gb5bsxJ1cwL2OHiX5xCc6tc8Ch5T+sUlYy6PhmDp
-         ZuRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681917179; x=1684509179;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=W4tAfOyzlo/AiL8XmHFYet50M4kqPgt6dUJ37GoV4eQ=;
-        b=jGFPDBN6PtN6LZZKyXZwi63SKjpzqhzXEd4ZGlViKnipzUlwO/4glZXz2NpzMGOWG3
-         NTVUmAztSWjof4iGiZUUJKGkDMy13iNJYnhf30juzNqjypeveS1cXWcQRxGPzO5gK5Is
-         EqhiIO+qocnHGZMppieFvYQJcjkCKHvqHnDJxMnSaCAfbrItJwPzkTAYpNYS7EYShO4x
-         hsBg0lRVyZezb8cYxYtkHy0Y7bjy4M/VREDlezszI67V3qwbzEM9C93E4fFHrG1NIlR/
-         e+NiFw39TqfUsB1y2kaA4h8BmcserMIKofmWOP9NbLvS0reTVnMKBvv1y7sJDQJOuXBR
-         tjzg==
-X-Gm-Message-State: AAQBX9cDxpbMFKEZBrWL7Ex5hat2nPWL2zwu7Ezd0sHP1yv+aIg8QrSG
-        tbKIABms3q4rPdAL56aU1Lg=
-X-Google-Smtp-Source: AKy350YZvxACiHc/JwMKfCPcDUBC5fOFqzJLmydZy9/tjX3XE0tKUCH3M5hkkiBd4qWQoBwvh4KYmQ==
-X-Received: by 2002:a17:906:564e:b0:94e:ec0f:455 with SMTP id v14-20020a170906564e00b0094eec0f0455mr14650400ejr.54.1681917179409;
-        Wed, 19 Apr 2023 08:12:59 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id e16-20020a170906045000b009534603453dsm1153263eja.131.2023.04.19.08.12.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Apr 2023 08:12:59 -0700 (PDT)
-Date:   Wed, 19 Apr 2023 18:12:57 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?UmFtw7Nu?= Nordin Rodriguez 
-        <ramon.nordin.rodriguez@ferroamp.se>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S0fVQ4ZQfy7FAMPbiStFU3EFc1OJ7hODWTnGKXJFIi0=;
+ b=mJ1iwIhJ2bk73UO2dXK6aVas2h1S/nwuDEJarMN9DhqPZMDlp+sT5Gd6miTreqUQJjenUmbhgdBC+1Rpn9kuAELdruT78rExtw4mK/yUKUa7VNgODYgajzk0Fv3LtRE9zjOh9WvAS35YemmZIQtZCJt9YLeqw0mwvfSX8i2gizw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BLAPR13MB4706.namprd13.prod.outlook.com (2603:10b6:208:322::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.20; Wed, 19 Apr
+ 2023 15:14:53 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Wed, 19 Apr 2023
+ 15:14:51 +0000
+Date:   Wed, 19 Apr 2023 17:14:43 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Parthiban.Veerasooran@microchip.com
-Subject: Re: [PATCH v2] drivers/net/phy: add driver for Microchip LAN867x
- 10BASE-T1S PHY
-Message-ID: <20230419151257.etde4jit4pquec6c@skbuf>
-References: <ZD/Nl+4JAmW2VTzh@debian>
- <ZD/Nl+4JAmW2VTzh@debian>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+        Paolo Abeni <pabeni@redhat.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: microchip: ksz8795: Correctly handle huge
+ frame configuration
+Message-ID: <ZEAFYwrReNwcNl+d@corigine.com>
+References: <43107d9e8b5b8b05f0cbd4e1f47a2bb88c8747b2.1681755535.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZD/Nl+4JAmW2VTzh@debian>
- <ZD/Nl+4JAmW2VTzh@debian>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <43107d9e8b5b8b05f0cbd4e1f47a2bb88c8747b2.1681755535.git.christophe.jaillet@wanadoo.fr>
+X-ClientProxiedBy: AM3PR04CA0131.eurprd04.prod.outlook.com (2603:10a6:207::15)
+ To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BLAPR13MB4706:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1ceca81e-e276-4d19-ece8-08db40e8d248
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ii8PRK3S+ToN66klZlVHeN3U8pNQ48cAircTdCJOLq7CyTZ3jGa4/H49Dd0Ad1FL98Pp9fj3YSJP4uyBr1m2aZE6LeYh+/5Avr4sk9nseNKHdZtGa6qHs9jWgjZ58rTs37ypWHtmstEjYzIm4gdGxAUjYBR8K+oSZtlFaVrREUmPW3xSTsBgyGu+daXyYPy+kwihfLXeI/OJEv8tKUfGcPvLeJ552cjobaQ1u8VkDhsItMmQn17x04tzBqOResk3xLRFIYb96ZzIRWG3LPH8cZlCkRn5wYQP/YF31bA+f/vcAOpDcWlGAKUHdLeFFe6j0SD0x89k5xGDVBKKHWTVauxaycWfcnBiE+o06AE7X0eIhz8wmwOPLK4tBMG4fZjxlaqV9/Yc4hKxI++/riRPC/iUgC9348NfWFnLvUYIWdFqNMZjS5BteVo83YX/VwmZkOEut0pIoqp4Bc3VeHzelfxyoKj1vtxWWIhP9tEAM7bHbp0HjckVV7fo/1iayDqY6XDImmSpNNFb4bbn5Zw2+Z2OJpKbElforKccqvlc9yVTdUpIaPRZC1cBzIsR+bhZfG4xHb8OxqpP2OJgdqpORyy1YLPjR05A1eaLiMPxy7yT5hFBdQ9AhKL6lldzpZPHZ6RdbovPYfQeDBmYZj4JMiOjU7NhKcDgRaNfOLl831Y=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(396003)(376002)(366004)(346002)(136003)(451199021)(6666004)(6486002)(478600001)(86362001)(36756003)(2616005)(83380400001)(6512007)(186003)(6506007)(38100700002)(316002)(66946007)(66476007)(66556008)(4744005)(2906002)(6916009)(44832011)(8676002)(5660300002)(8936002)(7416002)(41300700001)(4326008)(54906003)(14583001)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hfDF3/SMBbb1BMMn29FiJosIqhMI3FDRl3tYdfcALo9eLBtitIMsouZ0Jff/?=
+ =?us-ascii?Q?jyqpoJu+kphGp0XPD1ZYKbeqDn+wmQfWVDJA7tHmv1+a4xJq87bxKyRIuhFT?=
+ =?us-ascii?Q?hAJ2Wh3TLKQiEs7WyowihzBjpF+3SotUApnltizSagUgDVdy8eqtjhe3txJB?=
+ =?us-ascii?Q?qZkQ3J2cJHTSWabUBjaquuEaAKELx61yhDQKT4ieRhBcw1k9jZVQ/66OISn5?=
+ =?us-ascii?Q?AaRXuTWlHSjR6YdUWOcMpyhgFUZAnl0iJuF21/lVTGoBZzG0c9HLq1iGPbWV?=
+ =?us-ascii?Q?8F0MCfXSL+ZyUd+p0OsC1JlHTEBoHh0UoF6Nxf14UZiyxOj7oDZtyHEoxB+k?=
+ =?us-ascii?Q?bwwgIjzRFXW4xdRk03nU+ze4tBggt2UjU5VzFoNxT/cTUgWE7DzEjUqh2mzc?=
+ =?us-ascii?Q?5SdLKpqP+yP+NSV2KBhdM4wnH6Sa3qBmkps8jVPwVwbPpwUl6SneiSZuChHn?=
+ =?us-ascii?Q?SNXlD1QB5juI4Isy1vjuPSymmmcoxPRiRzJcIABHByJOSEZy54soNeGDy2wH?=
+ =?us-ascii?Q?dMWo0BlRYj4/QLZQSzESb7K9ZQVSyDXFIRhNQZcTOOMLS2o9CDFPRkG3HknW?=
+ =?us-ascii?Q?xdjXurlXiEH8R12yq4Il6Jdzr/wVzZr7h8DHoOdloWBH4Rts2e3M85ubwpRh?=
+ =?us-ascii?Q?qxqmxSQwFJQwR+bE5seJUCyvlwNqGrBVrWtWa9pkLp3/eKVptsMM3ecRid3r?=
+ =?us-ascii?Q?d4eKnEN2zCuDgjJOJzZ1G+S1sLZvjKNjGYgbQyuV78Mzs4A0JIK7weSoVf1d?=
+ =?us-ascii?Q?Rtyd+/iFJiCYWfoGoFCub+2z+Yso8ODjHyut16DN96GD9EzExrLadJd4N1cr?=
+ =?us-ascii?Q?Ec4yNMeVM0iEaPKZvmQg2IT/mQwj9viEKJQmmObzsz6Eaj7lUshzsZEZ74fi?=
+ =?us-ascii?Q?1GiKZ7g2XUhMtErH8ZgwTgXWPvolmzg9I9LJI7kAXTJL4GcNOCFqRkkgpt2o?=
+ =?us-ascii?Q?9fF6cmXNgo+0aVOTicDBWXzEpjh4c/W25K1tBsmANUofqK8ecF0G62+6M/hq?=
+ =?us-ascii?Q?4hUhwvLEVURJDRVDgVQwi00st0vhAwWGdhELxTOyKdgHqhpELM1h7N7tlf+4?=
+ =?us-ascii?Q?NhP17sjhsHR84Bvllq/GG++HPXMo8MdyVXEaPvguz6Uk+cf1K6X0xNOgamsc?=
+ =?us-ascii?Q?jII3UL9HjEs/WIwkn6J6/TwwSSd9O3ms96whOlBCUy9sY/+/CNyU730WDZj4?=
+ =?us-ascii?Q?DEidT8uQBE3HE9qnbdnWh0LiFRXMPhqSMTxRoh5seUrA+IA99ZD19SkJD5Gr?=
+ =?us-ascii?Q?BnewMtOnlRxMymR4FA5tr+39ZAz+4WLSpRg/rHpW91NuSfkg4Y2/oJPKTE5X?=
+ =?us-ascii?Q?G0eZkK4Qz1a1euCXrj//BNJJozDVHWx0j8ctXHDfSlCLRE/4MLbYTTFML/93?=
+ =?us-ascii?Q?dQUPXzHhcT9P5AfEskEzexaFKTti/XTMSfeU1BYOC037YlencgYimiXLlw54?=
+ =?us-ascii?Q?2VRFSD2UCwAwuu/wf46lhf2M7ttsCnvRTjJZQEHdWNzZrlaHBSoBZetp5pxQ?=
+ =?us-ascii?Q?t09aESZa+k4DuqJabha+WzLzPH/vTMN+sd6gTZCiRFadUfv5F02RLiar8LvQ?=
+ =?us-ascii?Q?eplnJr0N5RsB9om/NyXYpQ2sQdSTfUTuwHsugK2fPwdPjbhoiZPTprBsoZMN?=
+ =?us-ascii?Q?xmJ2/IGfIajAdmWFpN4PmHJfHo1qLKMzp2AIJ23+AOb6Fao6C+Oj58JxubSH?=
+ =?us-ascii?Q?PoC9eg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ceca81e-e276-4d19-ece8-08db40e8d248
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 15:14:51.0763
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OnPLKwjQdupoBfAZJc5r2Tqna14+4W6G2bJod5eo/uIQ1CPMAr5iAJw6iqSycFbp3Sz6xIXDfFUEt5Iuz3+Av00cn98pdK0GsPgCTrYCSsg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR13MB4706
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 01:16:39PM +0200, Ramón Nordin Rodriguez wrote:
-> This patch adds support for the Microchip LAN867x 10BASE-T1S family
-> (LAN8670/1/2). The driver supports P2MP with PLCA.
+On Mon, Apr 17, 2023 at 08:19:33PM +0200, Christophe JAILLET wrote:
+> Because of the logic in place, SW_HUGE_PACKET can never be set.
+> (If the first condition is true, then the 2nd one is also true, but is not
+> executed)
 > 
-> Signed-off-by: Ramón Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
+> Change the logic and update each bit individually.
+> 
+> Fixes: 29d1e85f45e0 ("net: dsa: microchip: ksz8: add MTU configuration support")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > ---
->  drivers/net/phy/Kconfig         |   5 ++
->  drivers/net/phy/Makefile        |   1 +
->  drivers/net/phy/microchip_t1s.c | 136 ++++++++++++++++++++++++++++++++
->  3 files changed, 142 insertions(+)
->  create mode 100644 drivers/net/phy/microchip_t1s.c
-> 
-> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-> index 54874555c921..c12e30f83b4f 100644
-> --- a/drivers/net/phy/Kconfig
-> +++ b/drivers/net/phy/Kconfig
-> @@ -235,6 +235,11 @@ config MICREL_PHY
->  	help
->  	  Supports the KSZ9021, VSC8201, KS8001 PHYs.
->  
-> +config MICROCHIP_T1S_PHY
-> +	tristate "Microchip 10BASE-T1S Ethernet PHY"
-> +	help
-> +		Currently supports the LAN8670, LAN8671, LAN8672
+> Untested.
+> ---
+>  drivers/net/dsa/microchip/ksz8795.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-I believe there is an explicit convention documented somewhere (can't
-remember where, sorry) that help texts are indented with 2 spaces from
-the "help" word. Just like above, basically.
-
-> +
->  config MICROCHIP_PHY
->  	tristate "Microchip PHYs"
->  	help
-> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-> index b5138066ba04..64f649f2f62f 100644
-> --- a/drivers/net/phy/Makefile
-> +++ b/drivers/net/phy/Makefile
-> @@ -74,6 +74,7 @@ obj-$(CONFIG_MICREL_KS8995MA)	+= spi_ks8995.o
->  obj-$(CONFIG_MICREL_PHY)	+= micrel.o
->  obj-$(CONFIG_MICROCHIP_PHY)	+= microchip.o
->  obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
-> +obj-$(CONFIG_MICROCHIP_T1S_PHY) += microchip_t1s.o
->  obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
->  obj-$(CONFIG_MOTORCOMM_PHY)	+= motorcomm.o
->  obj-$(CONFIG_NATIONAL_PHY)	+= national.o
-> diff --git a/drivers/net/phy/microchip_t1s.c b/drivers/net/phy/microchip_t1s.c
-> new file mode 100644
-> index 000000000000..edb50ce63c63
-> --- /dev/null
-> +++ b/drivers/net/phy/microchip_t1s.c
-> @@ -0,0 +1,136 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * Driver for Microchip 10BASE-T1S LAN867X PHY
-> + *
-> + * Support: Microchip Phys:
-
-Supports Microchip PHYs:
-
-> + *  lan8670, lan8671, lan8672
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/phy.h>
-> +
-> +#define PHY_ID_LAN867X 0x0007C160
-> +
-> +#define LAN867X_REG_IRQ_1_CTL 0x001C
-> +#define LAN867X_REG_IRQ_2_CTL 0x001D
-> +
-> +static int lan867x_config_init(struct phy_device *phydev)
-> +{
-> +	/* HW quirk: Microchip states in the application note (AN1699) for the phy
-> +	 * that a set of read-modify-write (rmw) operations has to be performed
-> +	 * on a set of seemingly magic registers.
-> +	 * The result of these operations is just described as 'optimal performance'
-> +	 * Microchip gives no explanation as to what these mmd regs do,
-> +	 * in fact they are marked as reserved in the datasheet.
-> +	 */
-> +
-> +	/* The arrays below are pulled from the following table from AN1699
-> +	 * Access MMD Address Value Mask
-> +	 * RMW 0x1F 0x00D0 0x0002 0x0E03
-> +	 * RMW 0x1F 0x00D1 0x0000 0x0300
-> +	 * RMW 0x1F 0x0084 0x3380 0xFFC0
-> +	 * RMW 0x1F 0x0085 0x0006 0x000F
-> +	 * RMW 0x1F 0x008A 0xC000 0xF800
-> +	 * RMW 0x1F 0x0087 0x801C 0x801C
-> +	 * RMW 0x1F 0x0088 0x033F 0x1FFF
-> +	 * W   0x1F 0x008B 0x0404 ------
-> +	 * RMW 0x1F 0x0080 0x0600 0x0600
-> +	 * RMW 0x1F 0x00F1 0x2400 0x7F00
-> +	 * RMW 0x1F 0x0096 0x2000 0x2000
-> +	 * W   0x1F 0x0099 0x7F80 ------
-> +	 */
-> +
-> +	const int registers[12] = {
-> +		0x00D0, 0x00D1, 0x0084, 0x0085,
-> +		0x008A, 0x0087, 0x0088, 0x008B,
-> +		0x0080, 0x00F1, 0x0096, 0x0099,
-> +	};
-> +
-> +	const int values[12] = {
-> +		0x0002, 0x0000, 0x3380, 0x0006,
-> +		0xC000, 0x801C, 0x033F, 0x0404,
-> +		0x0600, 0x2400, 0x2000, 0x7F80,
-> +	};
-> +
-> +	const int masks[12] = {
-> +		0x0E03, 0x0300, 0xFFC0, 0x000F,
-> +		0xF800, 0x801C, 0x1FFF, 0xFFFF,
-> +		0x0600, 0x7F00, 0x2000, 0xFFFF,
-> +	};
-
-Kernel stack space eventually runs out, and defining large-ish arrays as
-local variables is always a problem. These don't appear to be large
-enough to cause problems, but it is a good practice to make constants go
-to the .rodata section, and that would be achieved by moving them to the
-global scope of this file (don't forget to make them static) and to give
-them more specific names (lan867x_fixup_regs, lan867x_fixup_values,
-lan867x_fixup_masks). Alternatively, if you insist on making them
-visible just to the scope of lan867x_config_init(), there is a way of
-doing that by making the local variables "static". That is essentially
-just syntactic sugar (they aren't put on stack) and is used more rarely.
-
-> +
-> +	int reg_value;
-> +	int err;
-> +	int reg;
-> +
-> +	/* Read-Modified Write Pseudocode (from AN1699)
-> +	 * current_val = read_register(mmd, addr) // Read current register value
-> +	 * new_val = current_val AND (NOT mask) // Clear bit fields to be written
-> +	 * new_val = new_val OR value // Set bits
-> +	 * write_register(mmd, addr, new_val) // Write back updated register value
-> +	 */
-> +	for (int i = 0; i < ARRAY_SIZE(registers); i++) {
-> +		reg = registers[i];
-> +		reg_value = phy_read_mmd(phydev, MDIO_MMD_VEND2, reg);
-> +		reg_value &= ~masks[i];
-> +		reg_value |= values[i];
-> +		err = phy_write_mmd(phydev, MDIO_MMD_VEND2, reg, reg_value);
-> +		if (err != 0)
-> +			return err;
-> +	}
-> +
-> +	/* None of the interrupts in the lan867x phy seem relevant.
-> +	 * Other phys inspect the link status and call phy_trigger_machine
-> +	 * in the interrupt handler.
-> +	 * This phy does not support link status, and thus has no interrupt
-> +	 * for it either.
-> +	 * So we'll just disable all interrupts on the chip.
-> +	 */
-> +	err = phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN867X_REG_IRQ_1_CTL, 0xFFFF);
-> +	if (err != 0)
-> +		return err;
-> +	err = phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN867X_REG_IRQ_2_CTL, 0xFFFF);
-> +
-> +	return err;
-
-return phy_write_mmd()?
-
-> +}
-> +
-> +static int lan867x_read_status(struct phy_device *phydev)
-> +{
-> +	/* The phy has some limitations, namely:
-> +	 *  - always reports link up
-> +	 *  - only supports 10MBit half duplex
-> +	 *  - does not support auto negotiate
-> +	 */
-> +	phydev->link = 1;
-> +	phydev->duplex = DUPLEX_HALF;
-> +	phydev->speed = SPEED_10;
-> +	phydev->autoneg = AUTONEG_DISABLE;
-
-Sounds really suboptimal if phylib has to poll once per second to find
-out static information. Does the PHY have an architectural limitation in
-that it does not report link status? Is it a T1S thing? Something should
-change here, but I'm not really sure what. A PHY that doesn't report
-link status seems... strange?
-
-> +
-> +	return 0;
-> +}
-> +
-> +static struct phy_driver lan867x_driver[] = {
-> +	{
-> +		PHY_ID_MATCH_MODEL(PHY_ID_LAN867X),
-> +		.name               = "LAN867X",
-> +		.features           = PHY_BASIC_T1S_P2MP_FEATURES,
-> +		.config_init        = lan867x_config_init,
-> +		.read_status        = lan867x_read_status,
-> +		.get_plca_cfg	    = genphy_c45_plca_get_cfg,
-> +		.set_plca_cfg	    = genphy_c45_plca_set_cfg,
-> +		.get_plca_status    = genphy_c45_plca_get_status,
-> +	}
-> +};
-> +
-> +module_phy_driver(lan867x_driver);
-> +
-> +static struct mdio_device_id __maybe_unused tbl[] = {
-> +	{ PHY_ID_MATCH_MODEL(PHY_ID_LAN867X) },
-> +	{ }
-> +};
-> +
-> +MODULE_DEVICE_TABLE(mdio, tbl);
-> +
-> +MODULE_DESCRIPTION("Microchip 10BASE-T1S lan867x Phy driver");
-> +MODULE_AUTHOR("Ramón Nordin Rodriguez");
-> +MODULE_LICENSE("GPL");
-> -- 
-> 2.39.2
-> 
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
