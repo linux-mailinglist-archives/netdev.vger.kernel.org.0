@@ -2,131 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 790386E7061
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 02:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24EC36E706A
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 02:22:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbjDSAUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 20:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39468 "EHLO
+        id S231847AbjDSAV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 20:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbjDSAT7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 20:19:59 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085475B9D;
-        Tue, 18 Apr 2023 17:19:58 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-54f6a796bd0so365566557b3.12;
-        Tue, 18 Apr 2023 17:19:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681863597; x=1684455597;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vLuO0FT5ni9AWAkx5yPjYHqfEIyb0XFRqoQb1KsSeWo=;
-        b=S8BVArrwZ18B3H56hONoNjBqSY2GxUdofcqWqzJDOYmkUDgGj9IW9Fss+xIx24ZCkH
-         rWKWKRmOLpsNysUka+G3yQGMXlun/SmG15M859txABUKhY436kINzZCjVnYWXCndLvM4
-         8KHJOYNMZqXDxbtjVZZM4j1GHgZRjuLWqaGnqf9DY6jWHCfIOcFQ0TWDGxJ4w2OBlCG9
-         +JSdnkA9SIGgRIB5iqkgxNZ8A6iA/rheFVlWl6EFk9RcFCmKMMxW30OA4WDvr6Rym5YX
-         IJCZboifMX1RPOAQv9vwqjSmJmFipGblaFwRTXNZ/3pg3QqIN44HhZanluq4/gRMiX6b
-         fR7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681863597; x=1684455597;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vLuO0FT5ni9AWAkx5yPjYHqfEIyb0XFRqoQb1KsSeWo=;
-        b=GxJ24GfShAisU4iWiRoZkUOBl9RbEHnWAhqCQaMB1qA5eSf37ZXVyKRs7KC4fv108L
-         gC7I0uxa2nHe3SSOV3lg8TQIi5zwURkeInuAUsvWJg5sRBepiiSiv65pE8j9Sbxoy/x7
-         jpw5bofUaeT9oD4e/6AFuNbdvqak77qnwz5QssuGRsShQKz9xlTKpZQ24UTchW6Jia37
-         VAdUEEWKDdsaFb/jxh8AzCbUbK8YQyXESYMHdFmhdkXmIYf75Od3zjrDSNMbcnZvgW2b
-         z0Yu7eFYJs4z/wdzX2lCas8Gdm2Yqs6yNAfmvjxt3Uxb/Sbnh11gjlKHNvcjQ5RA3kWF
-         BBgA==
-X-Gm-Message-State: AAQBX9eauiWnToI6D0RxF9iyqluxG/Ixe9O59kyaz9EyYb+ePbsi4fij
-        mJpjMlpsSuBj1vp+Wx0uwLE5ekGmVqfhjPiI6TEes56dCfI=
-X-Google-Smtp-Source: AKy350acuABH35eqRI4cUGE5NLDSP0MyKmWLUWy3oJ4G7KYUoSorueyUHRaoZPEgopF3hbuWqZbe4hQVaXr24b3Qtd0=
-X-Received: by 2002:a81:17d0:0:b0:552:ae41:50a2 with SMTP id
- 199-20020a8117d0000000b00552ae4150a2mr693540ywx.21.1681863596964; Tue, 18 Apr
- 2023 17:19:56 -0700 (PDT)
+        with ESMTP id S231846AbjDSAV5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 20:21:57 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1DEAD0F;
+        Tue, 18 Apr 2023 17:21:41 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 33J0LIEU0020318, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 33J0LIEU0020318
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Wed, 19 Apr 2023 08:21:18 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Wed, 19 Apr 2023 08:21:18 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Wed, 19 Apr 2023 08:21:17 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d]) by
+ RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d%5]) with mapi id
+ 15.01.2375.007; Wed, 19 Apr 2023 08:21:17 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Simon Horman <horms@kernel.org>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] wifi: rtw88: Update spelling in main.h
+Thread-Topic: [PATCH] wifi: rtw88: Update spelling in main.h
+Thread-Index: AQHZcekPzqqRCrN6s0KgDL1BV7vRMa8xxdRg
+Date:   Wed, 19 Apr 2023 00:21:17 +0000
+Message-ID: <a3fb91e421d44c7ea06cff0deea531c5@realtek.com>
+References: <20230418-rtw88-starspell-v1-1-70e52a23979b@kernel.org>
+In-Reply-To: <20230418-rtw88-starspell-v1-1-70e52a23979b@kernel.org>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-antispam-interceptor-info: fallback
+x-kse-antivirus-interceptor-info: fallback
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <1681863018-28006-1-git-send-email-justinpopo6@gmail.com>
-In-Reply-To: <1681863018-28006-1-git-send-email-justinpopo6@gmail.com>
-From:   Justin Chen <justinpopo6@gmail.com>
-Date:   Tue, 18 Apr 2023 17:19:46 -0700
-Message-ID: <CAJx26kUvry0pTKmuqmt4ZK+wFg9-bWpi871jsUJWmVBRw1wuEA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/6] Brcm ASP 2.0 Ethernet controller
-To:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        bcm-kernel-feedback-list@broadcom.com
-Cc:     justin.chen@broadcom.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        richardcochran@gmail.com, sumit.semwal@linaro.org,
-        christian.koenig@amd.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 5:10=E2=80=AFPM Justin Chen <justinpopo6@gmail.com>=
- wrote:
->
-> From: Justin Chen <justin.chen@broadcom.com>
-Woops, looks like I screwed up on some of my email addresses in the
-patch set. Will fix in v2 after first round of reviews.
-
-Justin
->
-> Add support for the Broadcom ASP 2.0 Ethernet controller which is first
-> introduced with 72165.
->
-> Add support for 74165 10/100 integrated Ethernet PHY which also uses
-> the ASP 2.0 Ethernet controller.
->
-> Florian Fainelli (2):
->   dt-bindings: net: Brcm ASP 2.0 Ethernet controller
->   net: phy: bcm7xxx: Add EPHY entry for 74165
->
-> Justin Chen (4):
->   dt-bindings: net: brcm,unimac-mdio: Add asp-v2.0
->   net: bcmasp: Add support for ASP2.0 Ethernet controller
->   net: phy: mdio-bcm-unimac: Add asp v2.0 support
->   MAINTAINERS: ASP 2.0 Ethernet driver maintainers
->
->  .../devicetree/bindings/net/brcm,asp-v2.0.yaml     |  146 ++
->  .../devicetree/bindings/net/brcm,unimac-mdio.yaml  |    2 +
->  MAINTAINERS                                        |    9 +
->  drivers/net/ethernet/broadcom/Kconfig              |   11 +
->  drivers/net/ethernet/broadcom/Makefile             |    1 +
->  drivers/net/ethernet/broadcom/asp2/Makefile        |    2 +
->  drivers/net/ethernet/broadcom/asp2/bcmasp.c        | 1527 ++++++++++++++=
-++++++
->  drivers/net/ethernet/broadcom/asp2/bcmasp.h        |  636 ++++++++
->  .../net/ethernet/broadcom/asp2/bcmasp_ethtool.c    |  620 ++++++++
->  drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c   | 1425 ++++++++++++++=
-++++
->  .../net/ethernet/broadcom/asp2/bcmasp_intf_defs.h  |  238 +++
->  drivers/net/mdio/mdio-bcm-unimac.c                 |    2 +
->  drivers/net/phy/bcm7xxx.c                          |    1 +
->  include/linux/brcmphy.h                            |    1 +
->  14 files changed, 4621 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/brcm,asp-v2.0.y=
-aml
->  create mode 100644 drivers/net/ethernet/broadcom/asp2/Makefile
->  create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp.c
->  create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp.h
->  create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
->  create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
->  create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h
->
-> --
-> 2.7.4
->
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2ltb24gSG9ybWFuIDxo
+b3Jtc0BrZXJuZWwub3JnPg0KPiBTZW50OiBUdWVzZGF5LCBBcHJpbCAxOCwgMjAyMyA3OjI5IFBN
+DQo+IFRvOiBZYW4tSHN1YW4gQ2h1YW5nIDx0b255MDYyMGVtbWFAZ21haWwuY29tPjsgS2FsbGUg
+VmFsbyA8a3ZhbG9Aa2VybmVsLm9yZz4NCj4gQ2M6IERhdmlkIFMuIE1pbGxlciA8ZGF2ZW1AZGF2
+ZW1sb2Z0Lm5ldD47IEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRAZ29vZ2xlLmNvbT47IEpha3ViIEtp
+Y2luc2tpDQo+IDxrdWJhQGtlcm5lbC5vcmc+OyBQYW9sbyBBYmVuaSA8cGFiZW5pQHJlZGhhdC5j
+b20+OyBsaW51eC13aXJlbGVzc0B2Z2VyLmtlcm5lbC5vcmc7DQo+IG5ldGRldkB2Z2VyLmtlcm5l
+bC5vcmcNCj4gU3ViamVjdDogW1BBVENIXSB3aWZpOiBydHc4ODogVXBkYXRlIHNwZWxsaW5nIGlu
+IG1haW4uaA0KPiANCj4gVXBkYXRlIHNwZWxsaW5nIGluIGNvbW1lbnRzIGluIG1haW4uaA0KPiAN
+Cj4gRm91bmQgYnkgaW5zcGVjdGlvbi4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFNpbW9uIEhvcm1h
+biA8aG9ybXNAa2VybmVsLm9yZz4NCg0KUmV2aWV3ZWQtYnk6IFBpbmctS2UgU2hpaCA8cGtzaGlo
+QHJlYWx0ZWsuY29tPg0KDQoNCj4gLS0tDQo+ICBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVr
+L3J0dzg4L21haW4uaCB8IDYgKysrLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25z
+KCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVs
+ZXNzL3JlYWx0ZWsvcnR3ODgvbWFpbi5oIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9y
+dHc4OC9tYWluLmgNCj4gaW5kZXggZDRhNTNkNTU2NzQ1Li42MTEwNjc0MjM5NGEgMTAwNjQ0DQo+
+IC0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvbWFpbi5oDQo+ICsrKyBi
+L2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvbWFpbi5oDQo+IEBAIC04OCw3ICs4
+OCw3IEBAIGVudW0gcnR3X3N1cHBvcnRlZF9iYW5kIHsNCj4gICAgICAgICBSVFdfQkFORF82MEcg
+PSBCSVQoTkw4MDIxMV9CQU5EXzYwR0haKSwNCj4gIH07DQo+IA0KPiAtLyogbm93LCBzdXBwb3J0
+IHVwdG8gODBNIGJ3ICovDQo+ICsvKiBub3csIHN1cHBvcnQgdXAgdG8gODBNIGJ3ICovDQo+ICAj
+ZGVmaW5lIFJUV19NQVhfQ0hBTk5FTF9XSURUSCBSVFdfQ0hBTk5FTF9XSURUSF84MA0KPiANCj4g
+IGVudW0gcnR3X2JhbmR3aWR0aCB7DQo+IEBAIC0xODcxLDcgKzE4NzEsNyBAQCBlbnVtIHJ0d19z
+YXJfYmFuZHMgew0KPiAgICAgICAgIFJUV19TQVJfQkFORF9OUiwNCj4gIH07DQo+IA0KPiAtLyog
+dGhlIHVuaW9uIGlzIHJlc2VydmVkIGZvciBvdGhlciBrbmlkcyBvZiBTQVIgc291cmNlcw0KPiAr
+LyogdGhlIHVuaW9uIGlzIHJlc2VydmVkIGZvciBvdGhlciBraW5kcyBvZiBTQVIgc291cmNlcw0K
+PiAgICogd2hpY2ggbWlnaHQgbm90IHJlLXVzZSBzYW1lIGZvcm1hdCB3aXRoIGFycmF5IGNvbW1v
+bi4NCj4gICAqLw0KPiAgdW5pb24gcnR3X3Nhcl9jZmcgew0KPiBAQCAtMjAyMCw3ICsyMDIwLDcg
+QEAgc3RydWN0IHJ0d19kZXYgew0KPiAgICAgICAgIHN0cnVjdCBydHdfdHhfcmVwb3J0IHR4X3Jl
+cG9ydDsNCj4gDQo+ICAgICAgICAgc3RydWN0IHsNCj4gLSAgICAgICAgICAgICAgIC8qIGluY2lj
+YXRlIHRoZSBtYWlsIGJveCB0byB1c2Ugd2l0aCBmdyAqLw0KPiArICAgICAgICAgICAgICAgLyog
+aW5kaWNhdGUgdGhlIG1haWwgYm94IHRvIHVzZSB3aXRoIGZ3ICovDQo+ICAgICAgICAgICAgICAg
+ICB1OCBsYXN0X2JveF9udW07DQo+ICAgICAgICAgICAgICAgICB1MzIgc2VxOw0KPiAgICAgICAg
+IH0gaDJjOw0KPiANCj4gDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUgZW52aXJvbm1lbnQg
+YmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
