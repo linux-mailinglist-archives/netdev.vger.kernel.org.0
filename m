@@ -2,141 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63A796E81DE
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 21:26:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B93E26E81F2
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 21:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230488AbjDST0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 15:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
+        id S230526AbjDSTeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 15:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbjDSTZ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 15:25:58 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2103.outbound.protection.outlook.com [40.107.94.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9AEF6EA7;
-        Wed, 19 Apr 2023 12:25:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iokWZPZrSN+WFi38Seu4xjKEjAJkWxwgBMj83ms2mYfVgChRBKPtXbvlPhq8mWrVdUhFc8rpPT5NFNPUh1eyHjt5VT5xH10lApEnRxcJNbmU2PVqwOZCNl26sqMcSob/AliS0HV8SVcQZvFXkl9Cucp7ZUXR9MByq68pe0ZMoXhR4OsgVew9/3t5ie7Ybugq4JmDJeRxo0oSn1vTu2F5RJ1/DirlZooazSs9varTWMgy0xUfthtqWDl5pzzrq2/fy2Erd78Wf56CuDIPibVfdpf4dPrfxaDwXiVoxT2f83rWtQQ4z1LbUNTBljAfKDXXhUNrC/sLklqwJNBZYhE2cA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=f53QQ0GaY8O9nn5Ne6zaGgTPznW/39NUV3Ki2pcXd98=;
- b=A3SRpJJ59X4niL6paEOhzs1RMsLCh7CEPmo7rdsbGiQK57tseYE5gOxY7MM6OnPESU0REcXXIDuMQm4G7LN75qMDWGl84+utjZsGM7OWzu5aN21pAVnRDBdxgBV4SSvSm6cadCdAvcAQozxx/Zql87+X0UFlRumOYJqwy8OZXI+6mcH4SSyUUnMtyhz1+u8QCjQJB60cuYsrvfPqSX4lvPRkOz+K/20KaY7LtA/zJZpy6iTzydp40ElHGNqEoQeYmYx1ZjoM4VthNnHQ28Q+zbhiYG9WB3n5aDNhLlAGA2QlzcaJnWDyTDKZvbhFELjb4txe9T1rjiMvPVbqQPmOhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f53QQ0GaY8O9nn5Ne6zaGgTPznW/39NUV3Ki2pcXd98=;
- b=bOAA/NYj5CNt8unVStJy4yaZlogitezlEtau5zUu5ttZ0z0pv7ZZ+uGQP4a58eJDiW9zJ0utGnUeCo/v/xORVSHZ+9Y12LOzJRoN51lyHjHCrZBM1hhzogctARXDU8XeOalBz/v4Ua6rcEMoVULRqaLWkBnZ+4CDHR0BiYpiPvY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH0PR13MB4682.namprd13.prod.outlook.com (2603:10b6:610:de::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Wed, 19 Apr
- 2023 19:25:50 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Wed, 19 Apr 2023
- 19:25:49 +0000
-Date:   Wed, 19 Apr 2023 21:25:41 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saurabh Sengar <ssengar@linux.microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: hyperv: select CONFIG_NLS for mac address setting
-Message-ID: <ZEBANRDxW+yod7yA@corigine.com>
-References: <20230417205553.1910749-1-arnd@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230417205553.1910749-1-arnd@kernel.org>
-X-ClientProxiedBy: AM0PR06CA0127.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::32) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S229816AbjDSTeg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 15:34:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F044C37;
+        Wed, 19 Apr 2023 12:34:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 946B66387D;
+        Wed, 19 Apr 2023 19:34:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B016FC433EF;
+        Wed, 19 Apr 2023 19:34:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681932874;
+        bh=D8f2TK4KWlcGU0rkl/iLAMhKKliIy6rzA32Y1nAl+Rk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=NyPtwHK/o+953FXF80P3Pc4FIIuW0dkMPH7jJbtaLTelB6xJLBWliqw567+XMeMq4
+         YJ4LIAJ0EzJRlSlb2oI3Vr/n6Usxv99DY+d46DnX+IYWjFmXbBj0hYISrraT3usMzl
+         0AB21BnLyt9l+IzFaVHLqPLYZa4PaWO68BI4ExYCOx/ooEbW+0Cjtj00WjHS1rqiaI
+         lvElsNiiQeejDdh0rbulj9gY3fqeJP4EgvH9dPGQA0+CuLsHGbKu7MdqtU2oCsyACr
+         peo3WnLOlnyMtU/LtfsaTL2XXJhF/uZsoWu/gJ/PLQIjfaY3r3i2qeQGGfxDsdSdFg
+         nIdgdnoC+wywQ==
+Date:   Wed, 19 Apr 2023 14:34:32 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Donald Hunter <donald.hunter@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>, netdev@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: Re: [BUG] net, pci: 6.3-rc1-4 hangs during boot on PowerEdge R620
+ with igb
+Message-ID: <20230419193432.GA220432@bhelgaas>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB4682:EE_
-X-MS-Office365-Filtering-Correlation-Id: 11b874f4-5286-4df8-5a37-08db410be1e1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5EhNkA2TElgnpkoRTEpcEg0I47x99hTjdHpVlXKPXBLHsxciztUDAH5caUdZKJQ4Aorw5Wj1k8V+KLAQS96BS8mYdqvtHRlzveNGAsAKOymrct1q+raGYMRtVmPQ61uMK8IOMGkpfC9gyb/sHopKinULVmf8y7uTDLS7Hhz+Clc/HT6VlFDPz7/QOE2QA3Z8p2tDSNz3A84LkQ3ZWpx1ON2zxhPMoMH3Zz3mZzwm/wKbcNFzGYcrOITTMsGIj5JpZehfPQkXWiCYs80D/9rS9JOzmRB/e5bIOQo5jsal4a70yZ6IpdLomhoaqJtsPnI/PXVYhSAtXGdLxsWZzlWJHzyC9YDVHL5Dufp3QHOG1LR3pU5xbC/WCDDFzDaXIXJIsDybB95NMTQDX89T5IiUwzeXE/aE9czTsiwtEUiQQUKeWdzaOFXGDU8octwChgZRVaHLRJyaI/wM7j0+D69gEffUec/3SsOm1hX/Kh7yqmeEBKZk4rylfUSwevn98ixnFJHqNqKT4SpCbcoolIfUFU7yQ1J3L2IPpk+ioOzVaaADOVpTjHKZoS2/LQgHem5J6TWIW/nuQkQqEutMltD+6lcTrzL2s6nKnskqjBNvsJc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(376002)(39840400004)(346002)(366004)(451199021)(6506007)(6512007)(478600001)(86362001)(2616005)(186003)(6666004)(6486002)(4326008)(66946007)(8676002)(6916009)(5660300002)(7416002)(66556008)(8936002)(66476007)(4744005)(2906002)(44832011)(38100700002)(316002)(41300700001)(36756003)(54906003)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZdQrVrwjknTteEEYoiTSONlYUse9de0sBryeL4TdnUdF+kuspWNgzlVW+CMx?=
- =?us-ascii?Q?aonOTe71rji6rq8W6vW9q5Uyj3ZEMrsWRHtGmKftZEHyAtgrUGZVxHTWUd3Q?=
- =?us-ascii?Q?BzqY8I5TvA9IWndHm1EiP1haTmJNcdPERUs8Tuk8Tm2qmbUwO/1dLi34Su4s?=
- =?us-ascii?Q?mUn78a4e3SIYnFExV9EPd5M3DLp3StWCjb5+MMDxuckFLzxmmHmsZW9uabtD?=
- =?us-ascii?Q?ElxgAY5SSo5Cknkx4QlyCcalGn0jsAvlz5uKrP0iCvNz1fmNtB4WxvkTVD8F?=
- =?us-ascii?Q?X9yJDpSOhGEUjhHw3SXhDNTkcfEM+yXvGu8udXaJhbn3Mhao76swA9yxzLkZ?=
- =?us-ascii?Q?bf0jqaVUYeMpCSzfZxRYaZ0NNF2JTwxOIGYuU8ndzXls+RFKFZVH0rEtI2uc?=
- =?us-ascii?Q?E/AfGMpR26Pjv1fuXB3xx5BY/TP8XGMJ7uO97YDbD8pULwj+4AVsQNzSj+wr?=
- =?us-ascii?Q?V17/ry3JNQzH/gNYx0sCtjr5owfpEVOLb1rx6FFLXMTGE1L05ub5V/WfwNoI?=
- =?us-ascii?Q?+S1IzS1Fo+v45p/AaOsjrnsnicO754GacJLKouzOegjT6tlh/1HPCu/sdLcj?=
- =?us-ascii?Q?mhhuj3wj8bm27aqZnZb4mwcnBFit4yzKY4mCaUUcZP2w/rPosHT2fIEnW/RA?=
- =?us-ascii?Q?JjaGCJhQ66NNWWqgJh73W3xBb6IqdaT3QwmECHsurzPScm+RYxn+obk34Zy4?=
- =?us-ascii?Q?/u3TvVlk87rfaW+k77fYJx9Ei1AmR1KbBSeOpa0gM+oFNjt5abEIQFdYADfG?=
- =?us-ascii?Q?tbzzsqA5g2ynhB+zPedUgYga/tSE2NvmDb+nEdjXhVQj2OZMBqSGYFJHlcw+?=
- =?us-ascii?Q?N3xecYacx2MfPvLSig8oemYkuYSXP0EQWoH99jPPuUC12lQESiHgkqEnC0Bb?=
- =?us-ascii?Q?jUEpazMTyx4Djnqz5efWLqeWmtipeepi9bW8IaUiHAEAJDJ9C63lbu64KuOU?=
- =?us-ascii?Q?7STiUi9o00sXJu3RSCilMv7rDoiRCs7RPGyfEfj+6/NB081RnFUWWas15nPq?=
- =?us-ascii?Q?m6qn2zp+v6bMkJheJjzNzMJ0z4ekwEkCQwy2GpFEFZjWSfr50BnuCp+NKTk8?=
- =?us-ascii?Q?C90He7WckTbXI9SYd0Fr9TWYEpIOirnSXvN/aFQsmNU0YxjVyyjBp3QW9KDs?=
- =?us-ascii?Q?5KfRnwocV7aqdT9zkbufnkUReKUQkhpsQHy11+AHeBbqA1WFoAp4Co4ahJyk?=
- =?us-ascii?Q?t8k3aSYhLGVAQbhlNK2OvUTu9oggfbX8EvJMAmQT+rKj8QNoKeOrheNlyxef?=
- =?us-ascii?Q?lZHgZ/lcGfGDOUeL+XxrfIG+3eUTIbcYoIeusovMLzMpZ8DOg2fR3+1nkBSm?=
- =?us-ascii?Q?KY+C28353g7KPwbSXdS5dCajOz0xZ62K3Wk8JOPHKCUT+kNu6Z3S8dJbBxup?=
- =?us-ascii?Q?mj82KsN744oDoD0UaBY2/Vjie9vIaE7z+nXk866iWTEIOyxyx1JFSI3UyhpP?=
- =?us-ascii?Q?yJNVH6wUyFvLENL6NoHD+1+YriSBcqZExBHOjd3bHmMZe5ovf/jNvqOIiw37?=
- =?us-ascii?Q?qTarhqcXL28yMzc93MvwVi5Ff+Jy2ny+qe/ef3QzglpFYjFrbW4XWnQtw9Ra?=
- =?us-ascii?Q?YBh6QPvcmx6Q6R3oK87+dbgK8h9a0jtmDBKKyZpws6v6g1EzLwm6cUmOBFtk?=
- =?us-ascii?Q?fz3ciowCbDGfi3PCZn1ZwOMGxM1k+prEHEPwylvObBZ9MCzqFQCKjp5I/5Wl?=
- =?us-ascii?Q?D0hapw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11b874f4-5286-4df8-5a37-08db410be1e1
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 19:25:49.6610
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1LpBZTATXmmUE7rs40gDS2hvqnqL1OSYy84QotF3XcAvhow+6GJKqSyyrVIShbwDnkBi6tFOnNxd76vb8xvH6Xjeb2f7MwG7arH2w3ZBGnk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB4682
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZDawIXBd7gcA8DCk@smile.fi.intel.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 17, 2023 at 10:55:48PM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Wed, Apr 12, 2023 at 04:20:33PM +0300, Andy Shevchenko wrote:
+> On Tue, Apr 11, 2023 at 02:02:03PM -0500, Rob Herring wrote:
+> > On Tue, Apr 11, 2023 at 7:53 AM Donald Hunter <donald.hunter@gmail.com> wrote:
+> > > Bjorn Helgaas <helgaas@kernel.org> writes:
+> > > > On Mon, Apr 10, 2023 at 04:10:54PM +0100, Donald Hunter wrote:
+> > > >> On Sun, 2 Apr 2023 at 23:55, Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > >> > On Sat, Apr 01, 2023 at 01:52:25PM +0100, Donald Hunter wrote:
+> > > >> > > On Fri, 31 Mar 2023 at 20:42, Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > >> > > >
+> > > >> > > > I assume this igb NIC (07:00.0) must be built-in (not a plug-in card)
+> > > >> > > > because it apparently has an ACPI firmware node, and there's something
+> > > >> > > > we don't expect about its status?
+> > > >> > >
+> > > >> > > Yes they are built-in, to my knowledge.
+> > > >> > >
+> > > >> > > > Hopefully Rob will look at this.  If I were looking, I would be
+> > > >> > > > interested in acpidump to see what's in the DSDT.
+> > > >> > >
+> > > >> > > I can get an acpidump. Is there a preferred way to share the files, or just
+> > > >> > > an email attachment?
+> > > >> >
+> > > >> > I think by default acpidump produces ASCII that can be directly
+> > > >> > included in email.  http://vger.kernel.org/majordomo-info.html says
+> > > >> > 100K is the limit for vger mailing lists.  Or you could open a report
+> > > >> > at https://bugzilla.kernel.org and attach it there, maybe along with a
+> > > >> > complete dmesg log and "sudo lspci -vv" output.
+> > > >>
+> > > >> Apologies for the delay, I was unable to access the machine while travelling.
+> > > >>
+> > > >> https://bugzilla.kernel.org/show_bug.cgi?id=217317
+> > > >
+> > > > Thanks for that!  Can you boot a kernel with 6fffbc7ae137 reverted
+> > > > with this in the kernel parameters:
+> > > >
+> > > >   dyndbg="file drivers/acpi/* +p"
+> > > >
+> > > > and collect the entire dmesg log?
+> > >
+> > > Added to the bugzilla report.
+> > 
+> > Rafael, Andy, Any ideas why fwnode_device_is_available() would return
+> > false for a built-in PCI device with a ACPI device entry? The only
+> > thing I see in the log is it looks like the parent PCI bridge/bus
+> > doesn't have ACPI device entry (based on "[    0.913389] pci_bus
+> > 0000:07: No ACPI support"). For DT, if the parent doesn't have a node,
+> > then the child can't. Not sure on ACPI.
 > 
-> A rare randconfig build error happens when this driver is
-> enabled, but nothing else enables NLS support:
-> 
-> x86_64-linux-ld: drivers/net/hyperv/rndis_filter.o: in function `rndis_filter_set_device_mac':
-> rndis_filter.c:(.text+0x1536): undefined reference to `utf8s_to_utf16s'
-> 
-> This is normally selected by PCI, USB, ACPI, or common file systems.
-> Since the dependency on ACPI is now gone, NLS has to be selected
-> here directly.
-> 
-> Fixes: 38299f300c12 ("Driver: VMBus: Add Devicetree support")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Thanks for the Cc'ing. I haven't checked anything yet, but from the above it
+> sounds like a BIOS issue. If PCI has no ACPI companion tree, then why the heck
+> one of the devices has the entry? I'm not even sure this is allowed by ACPI
+> specification, but as I said, I just solely used the above mail.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+ACPI r6.5, sec 6.3.7, about _STA says:
 
+  - Bit [0] - Set if the device is present.
+  - Bit [1] - Set if the device is enabled and decoding its resources.
+  - Bit [3] - Set if the device is functioning properly (cleared if
+    device failed its diagnostics).
+
+  ...
+
+  If a device is present on an enumerable bus, then _STA must not
+  return 0. In that case, bit[0] must be set and if the status of the
+  device can be determined through a bus-specific enumeration and
+  discovery mechanism, it must be reflected by the values of bit[1]
+  and bit[3], even though the OSPM is not required to take them into
+  account.
+
+Since PCI *is* an enumerable bus, I don't think we can use _STA to
+decide whether a PCI device is present.
+
+We can use _STA to decide whether a host bridge is present, of course,
+but that doesn't help here because the host bridge in question is
+PNP0A08:00 that leads to [bus 00-3d], and it is present.
+
+I don't know exactly what path led to the igb issue, but I don't think
+we need to figure that out.  I think we just need to avoid the use of
+_STA in fwnode_device_is_available().
+
+6fffbc7ae137 ("PCI: Honor firmware's device disabled status") appeared
+in v6.3-rc1, so I think we need to revert or fix it before v6.3, which
+will probably be tagged Sunday (and I'll be on vacation
+Friday-Monday).
+
+Bjorn
