@@ -2,101 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C58086E72CF
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 07:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E71C76E72D3
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 08:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231444AbjDSF7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 01:59:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52110 "EHLO
+        id S231200AbjDSGE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 02:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbjDSF7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 01:59:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8143A90
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 22:59:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C72863A8F
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 05:59:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CA82C433D2;
-        Wed, 19 Apr 2023 05:59:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681883960;
-        bh=uMEP/rLMSuizQenPLrelbZAZmJG14sYh9fm/by6+dFs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fuXRxOIj80rqK2A/dyzSWBRMytGf8o6ZQ3LNriU1TOAMu8iSwoVoiyVLBHq0nf9aJ
-         dzYc0Ll6oKk06ZEQpD6A2VeR3gB8AJFi8bNjFg5UQiXxUdWdeR5vtLacIdbSdsJA/a
-         QMmTfJJW+aKCidmgcd0ODd0T+ztpzcHiQrcRAXeMrSHzveyCau+vTcH/EXoYO3wpdw
-         /ib+QL3+xH7GyHWXATVkUzdjG/gX7gETPzFZu6SNYcHtMvLe8AhjSlV/P1zkGrTZ90
-         Ukish9v2oseVsi1U6VSpaVC1hAuKz+4JVTgJfXFFA0Nj6LQpsVOOAgE8dIQm/ZcraF
-         /r0tmQ+quF9/Q==
-Date:   Wed, 19 Apr 2023 08:59:16 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Wangyang Guo <wangyang.guo@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, oe-lkp@lists.linux.dev,
-        lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
-        Arjan van de Ven <arjan@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        steffen.klassert@secunet.com
-Subject: Re: [linux-next:master] [net] d288a162dd: canonical_address#:#[##]
-Message-ID: <20230419055916.GB44666@unreal>
-References: <202304162125.18b7bcdd-oliver.sang@intel.com>
- <20230418164133.GA44666@unreal>
- <509b08bd-d2bf-eaa8-6c49-c0860d1adbe0@kernel.org>
+        with ESMTP id S230153AbjDSGE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 02:04:28 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C53A59F5
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 23:04:25 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id d9443c01a7336-1a8097c1ccfso11337085ad.1
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 23:04:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681884265; x=1684476265;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=B+H8RhBMogthpmuBbJDww8ooKV/3ijSjF1pDJsm3P10=;
+        b=qHnrSRerkvfZ77SZv7yKoiEsxXD5Uehxu1DQJpSa1Js2YpSZVC/t+ggZKLcXUg5sYU
+         9I3ER9YaZEKdqNK1iKcg+bPcSbdKTvQgp77trL7rb8fa++giOgFSa0400LJnMTz4OV0j
+         85u5iAWvAuzEF0Pt8X7E6tfzdKD2rvRRRmxk6oocKwN8QlDUOaNIy5fd5/s76Tlw+hVP
+         bPCaeuIeA8hVR6kYMLyl6Er2TfC1omicxoVSOpXrUtlh3uaw1U3Xh0DEdqnaUZQ7PXCY
+         Vo4C6USMuFoxntfvEHiaMDY6PG0qpb7PnTk1EavqXoqBivKfi81cRqYSUYlur3falubH
+         AYyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681884265; x=1684476265;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B+H8RhBMogthpmuBbJDww8ooKV/3ijSjF1pDJsm3P10=;
+        b=IDk2qYyPqqaQNC1CmTQvqrIkxUDttAAG8riAeQRauyp7ywTWhRSgG70RRzGTLN4bNU
+         kvJKEJ+CbrrCa4jMJodSGB3LPOiO8CZmLoJFlTY342VDksuPaqxG3ltc+8N+hpK22B4k
+         8c3PZZQo8vrwblkK9zoa/pRUNzZYibBN4iCGRIR6e3vxFuVUVi7ilIw5bznh043uREAr
+         3WeGe9QDcxNdky9pzbUvEHyBJiEVjWE1DpLuURne4BjTbNCwXwRBnpKicTC1vkNElJhP
+         ydRUoMJWHUT1no10UktQQsDsX5MkYyYDZE7RXtCgWMnfGIDz8VHyW7UIyXDz1JeU8hki
+         mYdA==
+X-Gm-Message-State: AAQBX9eGGB8y3ZV1n771TYLLyQ4pL3cEKfqo6ki25cTZTlwx1XL3avbZ
+        nBcvFijY0FaiEBr1Bnrdf6c=
+X-Google-Smtp-Source: AKy350aKzzvX8Q2el2OGBqCAT+kWhawXe7Oxw5pK2ZNcdU5PWKcBVFr+ANEzQtBVzy4t4JheSTseyQ==
+X-Received: by 2002:a17:902:e5c1:b0:19f:a694:6d3c with SMTP id u1-20020a170902e5c100b0019fa6946d3cmr5476218plf.55.1681884264950;
+        Tue, 18 Apr 2023 23:04:24 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id bb7-20020a170902bc8700b001a686578b44sm10357425plb.110.2023.04.18.23.04.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Apr 2023 23:04:24 -0700 (PDT)
+Date:   Wed, 19 Apr 2023 14:04:18 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Liang Li <liali@redhat.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>
+Subject: Re: [PATCHv5 net-next] bonding: add software tx timestamping support
+Message-ID: <ZD+EYi4zKj4qlj8z@Laptop-X1>
+References: <20230418034841.2566262-1-liuhangbin@gmail.com>
+ <20230418205023.414275ab@kernel.org>
+ <ZD9pbffw3s1HVwvE@Laptop-X1>
+ <20230418211746.2aa60760@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <509b08bd-d2bf-eaa8-6c49-c0860d1adbe0@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230418211746.2aa60760@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 02:43:02PM -0600, David Ahern wrote:
-> On 4/18/23 10:41 AM, Leon Romanovsky wrote:
-> > Hi,
+On Tue, Apr 18, 2023 at 09:17:46PM -0700, Jakub Kicinski wrote:
+> On Wed, 19 Apr 2023 12:09:17 +0800 Hangbin Liu wrote:
+> > > I'll apply Jay's ack from v4 since these are not substantial changes.
+> > > Thanks!  
 > > 
-> > I came to the following diff which eliminates the kernel panics,
-> > unfortunately I can explain only second hunk, but first is required
-> > too.
-> > 
-> > diff --git a/net/core/dst.c b/net/core/dst.c
-> > index 3247e84045ca..750c8edfe29a 100644
-> > --- a/net/core/dst.c
-> > +++ b/net/core/dst.c
-> > @@ -72,6 +72,8 @@ void dst_init(struct dst_entry *dst, struct dst_ops *ops,
-> >         dst->flags = flags;
-> >         if (!(flags & DST_NOCOUNT))
-> >                 dst_entries_add(ops, 1);
-> > +
-> > +       INIT_LIST_HEAD(&dst->rt_uncached);
+> > Sorry, not sure if I missed something. bond_ethtool_get_ts_info() could be
+> > called without RTNL. And we have ASSERT_RTNL() in v4.
 > 
-> d288a162dd1c73507da582966f17dd226e34a0c0 moved rt_uncached from rt6_info
-> and rtable to dst_entry. Only ipv4 and ipv6 usages initialize it. Since
-> it is now in dst_entry, dst_init is the better place so it can be
-> removed from rt_dst_alloc and rt6_info_init.
+> Are there any documented best practices on when to keep an ack?
+> I'm not aware of such a doc, it's a bit of a gray zone.
+> IMHO the changes here weren't big enough to drop Jay's tag.
 
-This is why I placed it there, but the rt_uncached list is initialized
-in xfrm6 right before first call to rt6_uncached_list_add().
+I don't know either. Some times I also struggle on whether I should keep the
+ack tag, then I drop the tag just in case the reviewer doesn't agree with my
+change.
 
-   70 static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
-   71                           const struct flowi *fl)
-   72 {
-...
-   92         INIT_LIST_HEAD(&xdst->u.rt6.dst.rt_uncached);
-   93         rt6_uncached_list_add(&xdst->u.rt6);
+Anyway, thanks a lot for your patient review and comments.
 
-My silly explanation is that xfrm6_dst_destroy() can be called before xfrm6_fill_dst().
-
-Thanks
-
-> 
+Regards
+Hangbin
