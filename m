@@ -2,208 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E60B6E80A9
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 19:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 704E46E80FC
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 20:11:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231206AbjDSRxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 13:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
+        id S233480AbjDSSLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 14:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbjDSRxa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 13:53:30 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8972D56
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 10:53:29 -0700 (PDT)
+        with ESMTP id S233448AbjDSSLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 14:11:09 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84D261B9
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 11:11:05 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id a640c23a62f3a-94a34a14a54so6131166b.1
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 11:11:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1681926809; x=1713462809;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gi0RC2VvChywp8mzw9/gXiXs47r0PC8MHAVmyzBBSco=;
-  b=FdwgHm3gLZQc5yK1OsAWInr7935O/9DH9wpoGHvVha/DDqhJuDF5AdgF
-   ZmrKKptXpwrxRbJy7PS/8jzODp30uYeIfIk+XYXULYA8RJ5FaWbI+O03U
-   uq0I05vhkK4gV6yTb+roBvoQhelDd+ruM4EQn6KLfZdUD2SDiSl2wCSir
-   0=;
-X-IronPort-AV: E=Sophos;i="5.99,208,1677542400"; 
-   d="scan'208";a="322343485"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2023 17:53:14 +0000
-Received: from EX19MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com (Postfix) with ESMTPS id 7F06481A9D;
-        Wed, 19 Apr 2023 17:53:10 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Wed, 19 Apr 2023 17:53:09 +0000
-Received: from 88665a182662.ant.amazon.com (10.187.170.33) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Wed, 19 Apr 2023 17:53:06 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <johannes@sipsolutions.net>
-CC:     <bspencer@blackberry.com>, <christophe-h.ricard@st.com>,
-        <davem@davemloft.net>, <dsahern@gmail.com>, <edumazet@google.com>,
-        <kaber@trash.net>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <pablo@netfilter.org>
-Subject: Re: [PATCH v1 net] netlink: Use copy_to_user() for optval in netlink_getsockopt().
-Date:   Wed, 19 Apr 2023 10:52:58 -0700
-Message-ID: <20230419175258.37172-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <d098026456c8393463e6cf33195edc19369c220b.camel@sipsolutions.net>
-References: <d098026456c8393463e6cf33195edc19369c220b.camel@sipsolutions.net>
+        d=linaro.org; s=google; t=1681927864; x=1684519864;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2j1Pkr50g1mSceZHX8SMamWZIYT0Wo0+87cbSXw7e3o=;
+        b=m+cMiZEoVpqxyT/om0k6XXK3bOf3Pnff/VflBJct4TbCkartXBbel29eKfpE9IWZvi
+         S4ZUKSV6EXpHQ8zuORLbeV/u+ni6sq9BlxReFP0ECkw/+0dq7VRxqb3rIB1j5B0/oT25
+         HObV51x2RuIfHa0WVmal7WRUebQo4Kp9KIDgtprIK/DwbA+Nz5es2pWXc5ulhoQbOrYX
+         IHRxkGCj8TlYwdDI44bh8wW7iHPl6mHkK8LvOCKPqHKvVWzpjUD0b+WsjUzilILMFH42
+         9UVXyk8Sn04HGtwNOPR0vij04blgLVO4iVo5jbP8BRClZ/LI99gJA/czjWEHSdLvt7DM
+         xY/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681927864; x=1684519864;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2j1Pkr50g1mSceZHX8SMamWZIYT0Wo0+87cbSXw7e3o=;
+        b=ES7cIHuHtVQb0LwV1jnA5afF4Nx5wjMsmzTLtGYdNCTu5PX/hWhLouk9jDS+2rdIAC
+         7lGlKcx5DF1NEI4dhXmWmq53fSyrUM4WYYLCfGmP2gevjnlyKIbgFEq52RGl+2TzWBUb
+         u97gLeaZiKE+0HNHq2vmH1Ia+e43qx/eiIfrZtwG6oRa3yGt6naLCVGaK8NPoGoF4nnl
+         n8B72F6zKfT0AI0B9vQ6EkGHUYcKzic/5GE+mp4d77lkB+/KIXE1gTWSsCxTUNvccclL
+         n5+dDfkQoC+Qp61Gft7+6Ch/g8/3WgZZzSTzx0u2sG+9GeVZZ9mO8IBUFkymEBv8eXQN
+         LrDA==
+X-Gm-Message-State: AAQBX9ex9DhQVhZmu3vwcD4r5ALiNJoPJupnO/EGoMw+oyTY6joF7ZqF
+        MdLY+xOBUshzTC6Ih8doIQ4zBw==
+X-Google-Smtp-Source: AKy350a8Vdr07kQJG1rigtqy3d4/Y6OrVskqooISmVBchT4XXGJtlyrkQQiZkJt8od8HpD6LxrUw3w==
+X-Received: by 2002:aa7:d6c2:0:b0:505:47a:7ae8 with SMTP id x2-20020aa7d6c2000000b00505047a7ae8mr6638521edr.4.1681927864360;
+        Wed, 19 Apr 2023 11:11:04 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:b7d8:d88b:1fac:c802? ([2a02:810d:15c0:828:b7d8:d88b:1fac:c802])
+        by smtp.gmail.com with ESMTPSA id bo25-20020a0564020b3900b005067d129267sm7397824edb.39.2023.04.19.11.11.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Apr 2023 11:11:03 -0700 (PDT)
+Message-ID: <3b7394e1-1be7-ec38-61bd-708a624070ac@linaro.org>
+Date:   Wed, 19 Apr 2023 20:11:02 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.187.170.33]
-X-ClientProxiedBy: EX19D039UWA002.ant.amazon.com (10.13.139.32) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH 2/4] dt-bindings: clock: Add GCC bindings support for
+ SDX75
+Content-Language: en-US
+To:     Taniya Das <quic_tdas@quicinc.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>
+Cc:     quic_skakitap@quicinc.com, Imran Shaik <quic_imrashai@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_rohiagar@quicinc.com, netdev@vger.kernel.org
+References: <20230419133013.2563-1-quic_tdas@quicinc.com>
+ <20230419133013.2563-3-quic_tdas@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230419133013.2563-3-quic_tdas@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Johannes Berg <johannes@sipsolutions.net>
-Date:   Wed, 19 Apr 2023 09:17:37 +0200
-> On Wed, 2023-04-19 at 00:42 +0000, Kuniyuki Iwashima wrote:
-> > Brad Spencer provided a detailed report that when calling getsockopt()
-> > for AF_NETLINK, some SOL_NETLINK options set only 1 byte even though such
-> > options require more than int as length.
-> > 
-> > The options return a flag value that fits into 1 byte, but such behaviour
-> > confuses users who do not strictly check the value as char.
+On 19/04/2023 15:30, Taniya Das wrote:
+> From: Imran Shaik <quic_imrashai@quicinc.com>
 > 
-> Yeah that's iffy. I guess nobody really leaves it uninitialized.
-> 
-> > Currently, netlink_getsockopt() uses put_user() to copy data to optlen and
-> > optval, but put_user() casts the data based on the pointer, char *optval.
-> > So, only 1 byte is set to optval.
-> 
-> Which also means it only ever sets to "1" on little endian systems, on
-> big endian it would set to "0x0100'0000" (if initialized to 0 first),
-> right?
 
-Yes.
+Thank you for your patch. There is something to discuss/improve.
+
+> Add support for GCC bindings and update documentation for
+> clock rpmh driver for SDX75.
+
+Subject: drop second/last, redundant "bindings support for". The
+"dt-bindings" prefix is already stating that these are bindings.
+But missing vendor name (Qualcomm). Both in subject and commit msg.
+
 
 
 > 
-> > To avoid this behaviour, we need to use copy_to_user() or cast optval for
-> > put_user().
+> Signed-off-by: Imran Shaik <quic_imrashai@quicinc.com>
+> Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
+> ---
+>  .../bindings/clock/qcom,gcc-sdx75.yaml        |  69 +++++++
+>  .../bindings/clock/qcom,rpmhcc.yaml           |   1 +
+>  include/dt-bindings/clock/qcom,gcc-sdx75.h    | 193 ++++++++++++++++++
+>  3 files changed, 263 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/qcom,gcc-sdx75.yaml
+>  create mode 100644 include/dt-bindings/clock/qcom,gcc-sdx75.h
 > 
-> Right.
-> 
-> > Now getsockopt() accepts char as optval as the flags are only 1 byte.
-> 
-> Personally, I don't think we should allow his. We document (*) and check
-> this as taking an int, and while it would _fit_, I don't really think
-> it's a good idea to weaken this and allow different types.
-> I don't see value in it either, certainly not now since nobody can be
-> using it, and not really in the future either since you're not going to
-> pack these things in memory, and having an int vs. char on the stack
-> really makes basically no difference.
-> And when we start seeing code that actually uses this, it'll just be
-> more things to support in the userspace API, be more confusing with
-> socket options that aren't just flags, etc.
-> 
-> IOW, I think you should keep the size checks.
-> 
-> 
-> (*) man 7 netlink:
-> "Unless otherwise noted, optval is a pointer to an int."
+> diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-sdx75.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-sdx75.yaml
+> new file mode 100644
+> index 000000000000..6489d857d5c4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/qcom,gcc-sdx75.yaml
 
-Oh, I didn't know it's documented.
+All new devices come as SoC-IP, so qcom,sdx75-gcc
 
-I tried to follow other SOL_XXX handlers, for example, we can
-get SO_REUSEADDR as char.  But I'm fine to keep the size check.
+> @@ -0,0 +1,69 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/clock/qcom,gcc-sdx75.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm Global Clock & Reset Controller on SDX75
+> +
+> +maintainers:
+> +  - Imran Shaik <quic_imrashai@quicinc.com>
+> +  - Taniya Das <quic_tdas@quicinc.com>
+> +
+> +description: |
+> +  Qualcomm global clock control module provides the clocks, resets and power
+> +  domains on SDX75
+> +
+> +  See also:: include/dt-bindings/clock/qcom,gcc-sdx75.h
+
+Also hee
+
+> +
+> +properties:
+> +  compatible:
+> +    const: qcom,gcc-sdx75
+
+Also here
+
+> +
+> +  clocks:
+> +    items:
+> +      - description: Board XO source
+> +      - description: PCIE20 phy aux clock source
+> +      - description: PCIE_1 Pipe clock source
+> +      - description: PCIE_2 Pipe clock source
+> +      - description: PCIE Pipe clock source
+> +      - description: Sleep clock source
+> +      - description: USB3 phy wrapper pipe clock source
+> +
+> +  clock-names:
+> +    items:
+> +      - const: bi_tcxo
+> +      - const: pcie20_phy_aux_clk
+> +      - const: pcie_1_pipe_clk
+> +      - const: pcie_2_pipe_clk
+> +      - const: pcie_pipe_clk
+> +      - const: sleep_clk
+> +      - const: usb3_phy_wrapper_gcc_usb30_pipe_clk
+
+Drop clock names entirely.
+
+> +
+> +required:
+> +  - compatible
+> +  - clocks
+> +  - clock-names
+> +
+> +allOf:
+> +  - $ref: qcom,gcc.yaml#
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/qcom,rpmh.h>
+> +    clock-controller@80000 {
+> +      compatible = "qcom,gcc-sdx75";
+> +      reg = <0x80000 0x1f7400>;
+> +      clocks = <&rpmhcc RPMH_CXO_CLK>, <&pcie20_phy_aux_clk>, <&pcie_1_pipe_clk>,
+> +               <&pcie_2_pipe_clk>, <&pcie_pipe_clk>, <&sleep_clk>,
+> +               <&usb3_phy_wrapper_gcc_usb30_pipe_clk>;
+> +      clock-names = "bi_tcxo", "pcie20_phy_aux_clk", "pcie_1_pipe_clk",
+> +                    "pcie_2_pipe_clk", "pcie_pipe_clk", "sleep_clk",
+> +                    "usb3_phy_wrapper_gcc_usb30_pipe_clk";
+> +      #clock-cells = <1>;
+> +      #reset-cells = <1>;
+> +      #power-domain-cells = <1>;
+> +    };
+> +...
+> diff --git a/Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml b/Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml
+> index d5a250b7c2af..267cf8c26823 100644
+> --- a/Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml
+> +++ b/Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml
+> @@ -27,6 +27,7 @@ properties:
+>        - qcom,sdm845-rpmh-clk
+>        - qcom,sdx55-rpmh-clk
+>        - qcom,sdx65-rpmh-clk
+> +      - qcom,sdx75-rpmh-clk
+
+Separate patch.
 
 
-> 
-> 
-> > @@ -1754,39 +1754,17 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
-> > 
-> >         switch (optname) {
-> >         case NETLINK_PKTINFO:
-> > -               if (len < sizeof(int))
-> > -                       return -EINVAL;
-> > -               len = sizeof(int);
-> 
-> On the other hand, this is actually accepting say a u64 now, and then
-> sets only 4 bytes of it, though at least it also sets the size to what
-> it wrote out.
-> 
-> So I guess here we can argue either
->  1) keep writing len to 4 and set 4 bytes of the output
->  2) keep the length as is and set all bytes of the output
-> 
-> but (2) gets confusing if you say used 6 bytes buffer as input? I mean,
-> yeah, I'd really hope nobody does that.
-> 
-> If Jakub is feeling adventurous maybe we should attempt to see if we
-> break anything by accepting only == sizeof(int) rather than >= ... :-)
+>        - qcom,sm6350-rpmh-clk
+>        - qcom,sm8150-rpmh-clk
+>        - qcom,sm8250-rpmh-clk
+> diff --git a/include/dt-bindings/clock/qcom,gcc-sdx75.h b/include/dt-bindings/clock/qcom,gcc-sdx75.h
+> new file mode 100644
+> index 000000000000..a470e8c4fd41
+> --- /dev/null
+> +++ b/include/dt-bindings/clock/qcom,gcc-sdx75.h
 
-Yes, this is another thing I concerned.  I thought we would have the
-same report if we didn't clear the high 32 bits when a user passed u64.
+qcom,sdx75-gcc
 
-If we want to avoid it, we have to use u64 as val in netlink_getsockopt().
-This is even broken for a strange user who passes u128 though :P
-
-> 
-> 
-> > +       if (put_user(len, optlen) ||
-> 
-> You never change len now, so there's no point writing it back? Or do we
-> somehow need to make sure this is writable? But what for?
-> 
-> > +           copy_to_user(optval, &val, len))
-> 
-> There's some magic in copy_to_user() now, but I don't think it will save
-> you here - to me this seems really wrong now because 'len' is controlled
-> by the user, and sizeof(val) is only 4 bytes - so wouldn't this overrun
-> even in the case I mentioned above where the user used a u64 and 'len'
-> is actually 8, not 4?
-
-You are right.  I seem to be confused to try to accept char ~ u64 :/
-Yes, at least we have to set upper bound for len based on val's actual
-size as we do in sk_getsockopt().
+> @@ -0,0 +1,193 @@
+> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+> +/*
+> + * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
+> + */
+> +
+> +#ifndef _DT_BINDINGS_CLK_QCOM_GCC_SDX75_H
+> +#define _DT_BINDINGS_CLK_QCOM_GCC_SDX75_H
+> +
+> +/* GCC clocks */
 
 
-> 
-> Also, as Jakub points out, even in the case where len *is* 4, you've now
-> changed the behaviour on big endian.
-> 
-> I think that's probably *fine* since the bug meant you basically had to
-> initialise to 0 and then check the entire value though, but maybe that
-> warrants some discussion in the commit log.
+Best regards,
+Krzysztof
 
-Agreed.
-
-
-> 
-> So my 2 cents:
->  * I wouldn't remove the checks that the size is at least sizeof(int)
->  * I'd - even if it's not strictly backwards compatible - think about
->    restricting to *exactly* sizeof(int), which would make the issue
->    with the copy_to_user() go away as well (**)
->  * if we don't restrict the input length, then need to be much more
->    careful about the copy_to_user() I think, but then what if someone
->    specifies something really huge as the size?
-
-I'm fine either, but I would prefer the latter using u64 for val and
-set limit for len as sizeof(u64).
-
-
-> 
-> 
-> (**) I only worry slightly that today somebody could've used an
-> uninitialised value as the optlen and gotten away with it, but I hope
-> that's not the case, that'd be a strange pattern, and if you ever hit 0
-> it fails anyway. I'm not really worried someone explicitly wanted to use
-> a bigger buffer.
-> 
-> 
-> johannes
