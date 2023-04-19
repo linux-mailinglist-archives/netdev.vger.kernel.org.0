@@ -2,141 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2FA36E7510
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 10:28:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95DAF6E7581
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 10:41:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232558AbjDSI2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 04:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38012 "EHLO
+        id S231963AbjDSIlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 04:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232573AbjDSI2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 04:28:48 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A2C5FFB
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:28:41 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id c9so40694072ejz.1
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:28:41 -0700 (PDT)
+        with ESMTP id S231790AbjDSIlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 04:41:14 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25536A4E
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:41:12 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id ca18e2360f4ac-7606d44dbb5so346233639f.1
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:41:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681892920; x=1684484920;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=9Vjqb/rd6lVFn3DRe0+O/IpF73Y7laVu4D6aYnGz7ts=;
-        b=qpk9ANAaIbhoQIPf/LMA+iuZFVPkunfdRSu33erHc3XTLJHM06eh14bNC3Ugm9oZAF
-         m1WOj3RYr7bfJOvxEC5Vdxq5581QdL9cOjMe5TKob/V37nVSDi2t2QKhskp5WAaaY5zl
-         thjxuFgXyjf83/gWLsOsrsY2X4nmXaqmSxu0WP75qCFQSBwvJRwM7orViHMswF3YIE3v
-         /r98/e4rdBH0KyfW4xo87y2tsMOsPeYLcGEKOexh4mncOK7Xzs9wzvsySwZgopJrKm1i
-         EriYyEkY6WTA6UGgo1GUY12mNYx7cwiU+et/IR0fB2rzDheM1Zsh99EPwbCCD7Wc+sJv
-         3ItA==
+        d=google.com; s=20221208; t=1681893672; x=1684485672;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w5zwwsv1p5D/gRlxt0eU/wzMw2WWxeFb5WeQDYnHVYU=;
+        b=ndg0x1pDT4hSebBTYGx6yd+uiKYB07UmuUuMMHBZ2lgSYxjL8paMi9AJHCLV2aO9Hr
+         6bhgN5OSk5155IdRgMFSdELWjCQt+4M9hCMPUdeVZeEcdc93J+jqHn+1YtJQHp/inMfs
+         aeuNDvZcGrX3mnI5hgStg6sgCaUDqgN6yrX6tVbgmH1msuY8AlqG0l7m9674GH/2e8a2
+         URWunaXK86lgNeVxGwOB/Sghuz0th0LgwG7m2Z4aX5ICauRRsryXfQjqjQz94uQBuyri
+         KGRD7gfybFuEjWBFV5CM+1ChjrJ5scr5Bzkx43Flacm2p4QdG2gRWmi36M0znSGh8J4g
+         N3qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681892920; x=1684484920;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9Vjqb/rd6lVFn3DRe0+O/IpF73Y7laVu4D6aYnGz7ts=;
-        b=JY+/tHVMsK6owl13DVtSVMGpDiDmKVptgAsTUOtsn4asSk35vp8PB+POa9mjWNMWwz
-         xiOmra1pdk2waytZYGeXOpY/ffjnCIYwZDj+YiN00TwMggG7Ougp2sMUwzopVUMlYAlQ
-         hiR75bmbJcgkKw4UhAdkgs/527fhoLmWckRm8wqt4+EZnPP9mfbwiR9xDmNg2A+TPKcS
-         UWMLyYcu724dRQZAb1n8lM6ySt71IqHkG23GivLWs/PkdcS6GBH7QRc59MNIW/7yecLX
-         y4x5UWHDaMO55RLngHOtRV/9U7KdwaidTZlXT7fCy3w+G7+Dewle/Ebdruano6qkMuz7
-         lMsA==
-X-Gm-Message-State: AAQBX9dnsarJ9T4Y8RgsKIMU7Rpj25dvLtup9LXZNxCxnwsCAD7euaB2
-        daVc/87IT92K4vlsfj8RR5n7FQ==
-X-Google-Smtp-Source: AKy350bVuX3PSTH80vxKtyZdHC5T3iOQ7ds02ATBSxRQYlMlXip24RPv3+qNoMkmmvo4gj9jO9oQTg==
-X-Received: by 2002:a17:907:271c:b0:94f:6852:549b with SMTP id w28-20020a170907271c00b0094f6852549bmr9737681ejk.9.1681892919746;
-        Wed, 19 Apr 2023 01:28:39 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:62f5:eb43:f726:5fee? ([2a02:810d:15c0:828:62f5:eb43:f726:5fee])
-        by smtp.gmail.com with ESMTPSA id v25-20020a170906381900b0094f3f222d34sm5166964ejc.56.2023.04.19.01.28.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Apr 2023 01:28:39 -0700 (PDT)
-Message-ID: <76d5df65-c0c9-9702-8037-4c1d3b2255f3@linaro.org>
-Date:   Wed, 19 Apr 2023 10:28:38 +0200
+        d=1e100.net; s=20221208; t=1681893672; x=1684485672;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=w5zwwsv1p5D/gRlxt0eU/wzMw2WWxeFb5WeQDYnHVYU=;
+        b=hyt7zuPl4NcD8uZnsddVsCMocr+VoLoDaYU4yQs79CDN+haKOSGokJrEZn5a9JV6jB
+         5Tuw6TkFwBo4U3s1aWdEj9HUJvJyt7MFJ4fEVyStJ3w9nMKfYjOgDKz1oj2euUL1p4cc
+         TCkXivxmTETb26FB7h5kLEMntw0hjer16wjkRg+EaDzsuFCxthaD1MTscARo2Ppc9FkE
+         IBmlCPkvrKinzcDI0ZyvJVbs3CEzeYcswUbJKvElb+ziNvrBeJ4XKG5xhXn7fmTQzlUJ
+         TzNg86lln2no2Gxwj5WAcD3ryFp6UlZznkCg9Y/oTdiX+psN60qwUIlTKq7NVO5fE3Eq
+         u2cg==
+X-Gm-Message-State: AAQBX9dKbqoo6Y3a+65ESIISyOFzSbPfqMN1S5FUTOTV5xHVdwuiUT0o
+        Cqt2OTIFR35WlAGoi/Hell4DDvJ940zkcyOOLi1LjA==
+X-Google-Smtp-Source: AKy350bnTfsp6ZaN6t74b/ECtx4wPwi+yVhBT4Au3SRjcvGrmJmiEAyFYeXYb03kPd6QJD26k+p1etFw3JQc422u9ZE=
+X-Received: by 2002:a6b:d911:0:b0:745:70d7:4962 with SMTP id
+ r17-20020a6bd911000000b0074570d74962mr3501152ioc.0.1681893672148; Wed, 19 Apr
+ 2023 01:41:12 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH] net: nfc: nci: fix for UBSAN: shift-out-of-bounds in
- nci_activate_target
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Anup Sharma <anupnewsmail@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linma@zju.edu.cn, dvyukov@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <ZD9A5Krm+ZoFEFWZ@yoga>
- <3aeac99f-aef3-ee22-f307-3871b141dc7b@linaro.org>
-In-Reply-To: <3aeac99f-aef3-ee22-f307-3871b141dc7b@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <202304162125.18b7bcdd-oliver.sang@intel.com> <20230418164133.GA44666@unreal>
+ <509b08bd-d2bf-eaa8-6c49-c0860d1adbe0@kernel.org> <20230419055916.GB44666@unreal>
+In-Reply-To: <20230419055916.GB44666@unreal>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 19 Apr 2023 10:41:00 +0200
+Message-ID: <CANn89iLbHDjBZZT1ZOms3Ak0D0V4JTnyeEWZ26Eoc3v9PsGs6g@mail.gmail.com>
+Subject: Re: [linux-next:master] [net] d288a162dd: canonical_address#:#[##]
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        kernel test robot <oliver.sang@intel.com>,
+        Wangyang Guo <wangyang.guo@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, oe-lkp@lists.linux.dev,
+        lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
+        Arjan van de Ven <arjan@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/04/2023 10:26, Krzysztof Kozlowski wrote:
-> On 19/04/2023 03:16, Anup Sharma wrote:
->> syzbot found  UBSAN: shift-out-of-bounds in nci_activate_target [1],
->> when nci_target->supported_protocols is bigger than UNIT_MAX,
-> 
-> UINT_MAX?
-> 
->> where supported_protocols is unsigned 32-bit interger type.
-> 
-> integer?
-> 
->>
->> 32 is the maximum allowed for supported_protocols. Added a check
->> for it. 
->>
->> [1] UBSAN: shift-out-of-bounds in net/nfc/nci/core.c:912:45
->> shift exponent 4294967071 is too large for 32-bit type 'int'
->> Call Trace:
->>  <TASK>
->>  __dump_stack lib/dump_stack.c:88 [inline]
->>  dump_stack_lvl+0x136/0x150 lib/dump_stack.c:106
->>  ubsan_epilogue lib/ubsan.c:217 [inline]
->>  __ubsan_handle_shift_out_of_bounds+0x221/0x5a0 lib/ubsan.c:387
->>  nci_activate_target.cold+0x1a/0x1f net/nfc/nci/core.c:912
->>  nfc_activate_target+0x1f8/0x4c0 net/nfc/core.c:420
->>  nfc_genl_activate_target+0x1f3/0x290 net/nfc/netlink.c:900
->>  genl_family_rcv_msg_doit.isra.0+0x1e6/0x2d0 net/netlink/genetlink.c:968
->>  genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
->>
->> Reported-by: syzbot+0839b78e119aae1fec78@syzkaller.appspotmail.com
->> Link: https://syzkaller.appspot.com/bug?id=19cf2724120ef8c51c8d2566df0cc34617188433
->>
->> Signed-off-by: anupsharma <anupnewsmail@gmail.com>
->> ---
->>  net/nfc/nci/core.c | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->> diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
->> index fff755dde30d..e9d968bd1cd9 100644
->> --- a/net/nfc/nci/core.c
->> +++ b/net/nfc/nci/core.c
->> @@ -908,6 +908,11 @@ static int nci_activate_target(struct nfc_dev *nfc_dev,
->>  		pr_err("unable to find the selected target\n");
->>  		return -EINVAL;
->>  	}
->> +	
->> +	if (nci_target->supported_protocols >= 32) {
-> 
-> I don't think it makes any sense. How do you protect from UBSAN reported
-> shift? Why supported_protocols cannot be 33? You are not shifting the
-> supported_protocols...
-> 
->> +		pr_err("Too many supported protocol by the device\n");
->> +		return -EINVAL;
-> 
-> I am pretty sure that you broke now NFC. Test the patches first and
-> share your test scenario.
+On Wed, Apr 19, 2023 at 7:59=E2=80=AFAM Leon Romanovsky <leon@kernel.org> w=
+rote:
+>
+> On Tue, Apr 18, 2023 at 02:43:02PM -0600, David Ahern wrote:
+> > On 4/18/23 10:41 AM, Leon Romanovsky wrote:
+> > > Hi,
+> > >
+> > > I came to the following diff which eliminates the kernel panics,
+> > > unfortunately I can explain only second hunk, but first is required
+> > > too.
+> > >
+> > > diff --git a/net/core/dst.c b/net/core/dst.c
+> > > index 3247e84045ca..750c8edfe29a 100644
+> > > --- a/net/core/dst.c
+> > > +++ b/net/core/dst.c
+> > > @@ -72,6 +72,8 @@ void dst_init(struct dst_entry *dst, struct dst_ops=
+ *ops,
+> > >         dst->flags =3D flags;
+> > >         if (!(flags & DST_NOCOUNT))
+> > >                 dst_entries_add(ops, 1);
+> > > +
+> > > +       INIT_LIST_HEAD(&dst->rt_uncached);
+> >
+> > d288a162dd1c73507da582966f17dd226e34a0c0 moved rt_uncached from rt6_inf=
+o
+> > and rtable to dst_entry. Only ipv4 and ipv6 usages initialize it. Since
+> > it is now in dst_entry, dst_init is the better place so it can be
+> > removed from rt_dst_alloc and rt6_info_init.
+>
+> This is why I placed it there, but the rt_uncached list is initialized
+> in xfrm6 right before first call to rt6_uncached_list_add().
+>
+>    70 static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device =
+*dev,
+>    71                           const struct flowi *fl)
+>    72 {
+> ...
+>    92         INIT_LIST_HEAD(&xdst->u.rt6.dst.rt_uncached);
+>    93         rt6_uncached_list_add(&xdst->u.rt6);
+>
+> My silly explanation is that xfrm6_dst_destroy() can be called before xfr=
+m6_fill_dst().
+>
+> Thanks
+>
+> >
 
-BTW, ISO15693 is here protocol 128, so definitely more than 32.
+Please take a look at the fix that was sent yesterday :
 
-Best regards,
-Krzysztof
+https://patchwork.kernel.org/project/netdevbpf/patch/20230418165426.1869051=
+-1-mbizon@freebox.fr/
 
+Thanks.
