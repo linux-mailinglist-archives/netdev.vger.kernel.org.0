@@ -2,122 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A2946E7ED9
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:49:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B14636E7EEE
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:55:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233676AbjDSPtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 11:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+        id S232828AbjDSPzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 11:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233674AbjDSPtG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:49:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6982FA256
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 08:48:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D770663733
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 15:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 100D2C433EF;
-        Wed, 19 Apr 2023 15:47:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681919250;
-        bh=zPaYHlCyzBKhGiDqbza2QRzwDKWYkIQvXkPIjTDmtvI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nmdBHXgcZg4tq3UBpMLHJaq7hc0BOK1gqbaNC8XVha/JK9du1knkhwGxoFqOyXS3U
-         RaJv9aFdqpgSXLaKF6L0ob3v1rtYChDhwEdpZ5vQNL7z8MSoDGfXwweRTDHAVFYpHp
-         nDlrIZErWf8fPT3HjMAyzZ1esxyiCFV4uhkwjpk9dc1b5R5t55DGeah3plO194PItX
-         aqPyfpzdFFuCwcNaPZRsZX6YVYNaio3suc4JlNPIUmphKXioQj2aX26+WzTDrN5KEB
-         cz0IUBl7vpNTglfntQxvrC8HlraZ7Ak1QiCHGGFDZFxz8Hc2kSnaKw0y2J/zG1gRnq
-         8WMSWtRj9E2pw==
-Date:   Wed, 19 Apr 2023 09:47:28 -0600
-From:   David Ahern <dsahern@kernel.org>
-To:     Maxime Bizon <mbizon@freebox.fr>
-Cc:     davem@davemloft.net, edumazet@google.com, tglx@linutronix.de,
-        wangyang.guo@intel.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dst: fix missing initialization of
- rt_uncached
-Message-ID: <20230419154728.GA23087@u2004-local>
-References: <20230418165426.1869051-1-mbizon@freebox.fr>
+        with ESMTP id S233605AbjDSPzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:55:12 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFEB08A45;
+        Wed, 19 Apr 2023 08:55:09 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33JFss9r030988;
+        Wed, 19 Apr 2023 10:54:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1681919694;
+        bh=ECtls6r4zEewHNfldLF5yv4pxr43zudpJBOSpDVJGfg=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=JReNgkWpOFq1h7lmPDRvI52P8AbO5xrJCuAqp0aohMJCqKcqwPuetVVe51SNbqwgJ
+         tPlGxLvUYs1YX2PQIbOIFcDg2UANBqSWwIRPokg7aYDpjaXFoLcCZ1SduK1dy21Tfe
+         9kQvqltZIH+b0M+5pTnTbIzdKHEKwsFei/4geHBQ=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33JFssTi062585
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 19 Apr 2023 10:54:54 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 19
+ Apr 2023 10:54:54 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Wed, 19 Apr 2023 10:54:54 -0500
+Received: from [128.247.81.102] (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33JFsrYx113397;
+        Wed, 19 Apr 2023 10:54:53 -0500
+Message-ID: <43daed81-fe38-60c6-bdd6-8ab15869c511@ti.com>
+Date:   Wed, 19 Apr 2023 10:54:53 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230418165426.1869051-1-mbizon@freebox.fr>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [RFC PATCH 4/5] arm64: dts: ti: Enable multiple MCAN for AM62x in
+ MCU MCAN overlay
+Content-Language: en-US
+To:     Nishanth Menon <nm@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Andrew Davis <afd@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-can@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Schuyler Patton <spatton@ti.com>
+References: <20230413223051.24455-1-jm@ti.com>
+ <20230413223051.24455-5-jm@ti.com>
+ <9ab56180-328e-1416-56cb-bbf71af0c26d@linaro.org>
+ <20230414182925.ya3fe2n6mtyuqotb@detached>
+ <342dd9b0-35cd-1715-ee67-6a6628a3a9a6@linaro.org>
+ <20230414221135.vifinqboqndxdxzw@embark>
+From:   "Mendez, Judith" <jm@ti.com>
+In-Reply-To: <20230414221135.vifinqboqndxdxzw@embark>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 06:54:26PM +0200, Maxime Bizon wrote:
-> xfrm_alloc_dst() followed by xfrm4_dst_destroy(), without a
-> xfrm4_fill_dst() call in between, causes the following BUG:
+Hello, all
+
+On 4/14/2023 5:11 PM, Nishanth Menon wrote:
+> On 22:44-20230414, Krzysztof Kozlowski wrote:
+>> On 14/04/2023 20:29, Nishanth Menon wrote:
+>>>>> +
+>>>>> +&cbass_mcu {
+>>>>> +	mcu_mcan1: can@4e00000 {
+>>>>> +		compatible = "bosch,m_can";
+>>>>> +		reg = <0x00 0x4e00000 0x00 0x8000>,
+>>>>> +			  <0x00 0x4e08000 0x00 0x200>;
+>>>>> +		reg-names = "message_ram", "m_can";
+>>>>> +		power-domains = <&k3_pds 188 TI_SCI_PD_EXCLUSIVE>;
+>>>>> +		clocks = <&k3_clks 188 6>, <&k3_clks 188 1>;
+>>>>> +		clock-names = "hclk", "cclk";
+>>>>> +		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
+>>>>> +		pinctrl-names = "default";
+>>>>> +		pinctrl-0 = <&mcu_mcan1_pins_default>;
+>>>>> +		phys = <&transceiver2>;
+>>>>> +		status = "okay";
+>>>>
+>>>> okay is by default. Why do you need it?
+>>>
+>>> mcan is not functional without pinmux, so it has been disabled by
+>>> default in SoC. this overlay is supposed to enable it. But this is done
+>>> entirely wrongly.
+>>
+>> Ah, so this is override of existing node? Why not overriding by
+>> label/phandle?
 > 
->  BUG: spinlock bad magic on CPU#0, fbxhostapd/732
->   lock: 0x890b7668, .magic: 890b7668, .owner: <none>/-1, .owner_cpu: 0
->  CPU: 0 PID: 732 Comm: fbxhostapd Not tainted 6.3.0-rc6-next-20230414-00613-ge8de66369925-dirty #9
->  Hardware name: Marvell Kirkwood (Flattened Device Tree)
->   unwind_backtrace from show_stack+0x10/0x14
->   show_stack from dump_stack_lvl+0x28/0x30
->   dump_stack_lvl from do_raw_spin_lock+0x20/0x80
->   do_raw_spin_lock from rt_del_uncached_list+0x30/0x64
->   rt_del_uncached_list from xfrm4_dst_destroy+0x3c/0xbc
->   xfrm4_dst_destroy from dst_destroy+0x5c/0xb0
->   dst_destroy from rcu_process_callbacks+0xc4/0xec
->   rcu_process_callbacks from __do_softirq+0xb4/0x22c
->   __do_softirq from call_with_stack+0x1c/0x24
->   call_with_stack from do_softirq+0x60/0x6c
->   do_softirq from __local_bh_enable_ip+0xa0/0xcc
+> Yep, that is how it should be done (as every other node is done for
+> mcan):
+> a) SoC.dtsi -> introduce mcu_mcan1, disabled since no transciever or
+> pinmux, set status = "disabled";
+> b) overlay -> use the label and provide the missing properties, set
+> status = "okay";
 > 
-> Patch "net: dst: Prevent false sharing vs. dst_entry:: __refcnt" moved
-> rt_uncached and rt_uncached_list fields from rtable struct to dst
-> struct, so they are more zeroed by memset_after(xdst, 0, u.dst) in
-> xfrm_alloc_dst().
-> 
-> Note that rt_uncached (list_head) was never properly initialized at
-> alloc time, but xfrm[46]_dst_destroy() is written in such a way that
-> it was not an issue thanks to the memset:
-> 
-> 	if (xdst->u.rt.dst.rt_uncached_list)
-> 		rt_del_uncached_list(&xdst->u.rt);
-> 
-> The route code does it the other way around: rt_uncached_list is
-> assumed to be valid IIF rt_uncached list_head is not empty:
-> 
-> void rt_del_uncached_list(struct rtable *rt)
-> {
->         if (!list_empty(&rt->dst.rt_uncached)) {
->                 struct uncached_list *ul = rt->dst.rt_uncached_list;
-> 
->                 spin_lock_bh(&ul->lock);
->                 list_del_init(&rt->dst.rt_uncached);
->                 spin_unlock_bh(&ul->lock);
->         }
-> }
-> 
-> This patch adds mandatory rt_uncached list_head initialization in
-> generic dst_init(), and adapt xfrm[46]_dst_destroy logic to match the
-> rest of the code.
-> 
-> Fixes: d288a162dd1c ("net: dst: Prevent false sharing vs. dst_entry:: __refcnt")
-> Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
-> ---
->  net/core/dst.c          | 1 +
->  net/ipv4/xfrm4_policy.c | 4 +---
->  net/ipv6/route.c        | 1 -
->  net/ipv6/xfrm6_policy.c | 4 +---
->  4 files changed, 3 insertions(+), 7 deletions(-)
+> The series definitely needs a respin.
 > 
 
-This fixes the bug introduced by the Fixes commit, so:
+Thanks for your feedback, I will definitely fix and send out a v2 with 
+this update.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Thanks,
+Judith
 
-uncached_list is defined twice  - net/ipv{4,6}/route.c.
-Since uncached_list was moved from protocol local structs to dst_entry,
-the definition for uncached_list should be moved there as well.
