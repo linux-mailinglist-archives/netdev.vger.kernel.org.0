@@ -2,118 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C7016E83D9
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 23:37:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C03E6E8453
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 00:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbjDSVhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 17:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57752 "EHLO
+        id S230170AbjDSWBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 18:01:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbjDSVhO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 17:37:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A37BC;
-        Wed, 19 Apr 2023 14:37:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95DDE642BA;
-        Wed, 19 Apr 2023 21:37:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBA52C433EF;
-        Wed, 19 Apr 2023 21:37:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681940233;
-        bh=oXbP44FFeom1UFaKGtZXbWp0wlf68kOkYhyhd6aJL3Q=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=RjLTR1zy537E9p1rG6cwCaRYJr/ui6DawDDXijTR5TlVVGT7yw2VNznJz+Ag358MK
-         Ozqx9RqDI+/30epaCdTIvOzAg88ml3LbzNzNaGwa21YjBr9cd6wPPv4D3mUtQ7bnZk
-         +gTIMZT0OkaDVNsgdQjmduI420pi/0FZpnE2JCRqgAaYRYuDAr7wUt2stxSvCTY3FK
-         McvQZOaCpXQGJ3tmVOYciW/HI7PMI3NBHF53iuLILNEtRto+slcLf/+n3FMoudjwrV
-         /nBXdRyfoyPZdcmd7iIfVjfNSJO/HAo1J0GZbhUEJiY8IvPGcs8055zYFsNjTSK84h
-         HGpt+ap81dNuA==
-Message-ID: <0dc457cbd13ea76a3aa3c70b2a31a537.sboyd@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229461AbjDSWBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 18:01:19 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEAC46AB
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 15:01:18 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id z6so1899603ejc.5
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 15:01:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dectris.com; s=google; t=1681941677; x=1684533677;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=jE7wFjUHDEsBd3OPJhV20VpgiyEnucWm25dyji9JD5Q=;
+        b=dZV8QYYO70/evae582p451U0wHAsWrKaFnQKJ6RD0nx3kp2smSKjQjE1+LkhV9vv6x
+         KmQ+EC75AgWAUDkHqW1NgAnGvMQuB5tZnWbIZdiV2PtV6WPaUKmQwa3qmzfmDjCsMXQg
+         7LIzYdIHS67POjQ83/qRjSb70MTQiiJ+7lbug=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681941677; x=1684533677;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jE7wFjUHDEsBd3OPJhV20VpgiyEnucWm25dyji9JD5Q=;
+        b=R56vexIAsWlwaSKxQq/P6RFb+RC/BKFYs2ovuhpQQsb23Kao/IcdrhtTjpIzXEEmAA
+         LRZZ6x3CF9LO5etYgSLVV9OLlh9T/+sXaD1feON9O8e0Twu3bpxHRYCjwmy5Bw+U1f4t
+         rK1B1yICJ+fAoI/yO8Be0RpmixVTNpr77YPP4nhEbCfPQ8a+/M+zXhErhZ5X4KaSCn52
+         ayzaleGMfAFNLB7l7xI6KvTsJ6iQFqkHIowhgLlZvC0DQs2UJD7slAoYuBtWP/YKCUYi
+         GMdtuv4kYfPWCMZOZ9wFod9PnZOBmhp57wX4QKclvG9eP8k+VShD6PtaE+7gySXZEgTk
+         aRkg==
+X-Gm-Message-State: AAQBX9edqwV4/J04ub9ChXD9QlTY20RyJABbhd1EtVSTirASg98kGmVI
+        VZ0UsmnWaQ0AknrzPllq3q1E0nPg+S457qQ+vn8b7A==
+X-Google-Smtp-Source: AKy350YjjT1VoAU95rqQwDYgVp2T0/Z2yknoMw2oeeeLWQgyrP15YKyPRVBF2Xr+fv9QqfsBii7iS0j6cCFfhHpXoJ4=
+X-Received: by 2002:a17:906:e247:b0:94e:4926:7716 with SMTP id
+ gq7-20020a170906e24700b0094e49267716mr6943931ejb.0.1681941676728; Wed, 19 Apr
+ 2023 15:01:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20230419133013.2563-2-quic_tdas@quicinc.com>
-References: <20230419133013.2563-1-quic_tdas@quicinc.com> <20230419133013.2563-2-quic_tdas@quicinc.com>
-Subject: Re: [PATCH 1/4] clk: qcom: branch: Extend the invert logic for branch2 clocks
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     quic_skakitap@quicinc.com, Imran Shaik <quic_imrashai@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Taniya Das <quic_tdas@quicinc.com>, quic_rohiagar@quicinc.com,
-        netdev@vger.kernel.org
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Taniya Das <quic_tdas@quicinc.com>
-Date:   Wed, 19 Apr 2023 14:37:10 -0700
-User-Agent: alot/0.10
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230418143617.27762-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20230418143617.27762-1-magnus.karlsson@gmail.com>
+From:   Kal Cutter Conley <kal.conley@dectris.com>
+Date:   Thu, 20 Apr 2023 00:06:04 +0200
+Message-ID: <CAHApi-=_=ia8Pa23QRchxdx-ekPTgT5nYj=ktYGO4gRwP0cvCA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/xsk: fix munmap for hugepage allocated umem
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, tirthendu.sarkar@intel.com,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Taniya Das (2023-04-19 06:30:10)
-> From: Imran Shaik <quic_imrashai@quicinc.com>
->=20
-> Add support to handle the invert logic for branch2 clocks.
-> Invert branch halt would indicate the clock ON when CLK_OFF
-> bit is '1' and OFF when CLK_OFF bit is '0'.
->=20
-> Signed-off-by: Imran Shaik <quic_imrashai@quicinc.com>
-> Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-> ---
->  drivers/clk/qcom/clk-branch.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->=20
-> diff --git a/drivers/clk/qcom/clk-branch.c b/drivers/clk/qcom/clk-branch.c
-> index f869fc6aaed6..4b24d45be771 100644
-> --- a/drivers/clk/qcom/clk-branch.c
-> +++ b/drivers/clk/qcom/clk-branch.c
-> @@ -48,6 +48,7 @@ static bool clk_branch2_check_halt(const struct clk_bra=
-nch *br, bool enabling)
->  {
->         u32 val;
->         u32 mask;
-> +       bool invert =3D (br->halt_check =3D=3D BRANCH_HALT_ENABLE);
-> =20
->         mask =3D BRANCH_NOC_FSM_STATUS_MASK << BRANCH_NOC_FSM_STATUS_SHIF=
-T;
->         mask |=3D BRANCH_CLK_OFF;
-> @@ -56,9 +57,16 @@ static bool clk_branch2_check_halt(const struct clk_br=
-anch *br, bool enabling)
-> =20
->         if (enabling) {
->                 val &=3D mask;
-> +
-> +               if (invert)
-> +                       return (val & BRANCH_CLK_OFF) =3D=3D BRANCH_CLK_O=
-FF;
-> +
->                 return (val & BRANCH_CLK_OFF) =3D=3D 0 ||
->                         val =3D=3D BRANCH_NOC_FSM_STATUS_ON;
+> @@ -1286,16 +1287,19 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
+>         u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
+>         int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
+>         LIBBPF_OPTS(bpf_xdp_query_opts, opts);
+> +       off_t mmap_offset = 0;
+>         void *bufs;
+>         int ret;
+>
+> -       if (ifobject->umem->unaligned_mode)
+> +       if (ifobject->umem->unaligned_mode) {
+>                 mmap_flags |= MAP_HUGETLB;
+> +               mmap_offset = MAP_HUGE_2MB;
+> +       }
 
-Do these clks have a NOC_FSM_STATUS bit? I think it would be better to
-make a local variable for the val we're looking for, and then test for
-that. We may need a mask as well, but the idea is to not duplicate the
-test and return from multiple places.
+MAP_HUGE_2MB should be ORed into mmap_flags. The offset argument
+should be zero for MAP_ANONYMOUS mappings. The tests may still fail if
+the default hugepage size is not 2MB.
 
->         } else {
-> +               if (invert)
-> +                       return (val & BRANCH_CLK_OFF) =3D=3D 0;
-> +
->                 return val & BRANCH_CLK_OFF;
->         }
+>
+>         if (ifobject->shared_umem)
+>                 umem_sz *= 2;
+>
+> -       bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, 0);
+> +       bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, mmap_offset);
+>         if (bufs == MAP_FAILED)
+>                 exit_with_error(errno);
+>
 
-While at it, I'd get rid of this else and de-indent the code because if
-we're 'enabling' we'll return from the function regardless.
+-Kal
