@@ -2,94 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E11F6E71CD
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 05:48:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC7CC6E71DF
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 05:51:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbjDSDs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 23:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34282 "EHLO
+        id S231309AbjDSDvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 23:51:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbjDSDs2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 23:48:28 -0400
-Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3589F8E;
-        Tue, 18 Apr 2023 20:48:26 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VgTAsnt_1681876102;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgTAsnt_1681876102)
-          by smtp.aliyun-inc.com;
-          Wed, 19 Apr 2023 11:48:23 +0800
-Message-ID: <1681876092.206569-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH] MAINTAINERS: make me a reviewer of VIRTIO CORE AND NET DRIVERS
-Date:   Wed, 19 Apr 2023 11:48:12 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org
-References: <20230413071610.43659-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20230413071610.43659-1-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230514AbjDSDvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 23:51:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393F5BB9E
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 20:50:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D67462F8B
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 03:50:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63D95C433EF;
+        Wed, 19 Apr 2023 03:50:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681876224;
+        bh=a0csmOkPCahehCfVX/g1jfAYHj7ji/i3zkDii2XJY38=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Mi59o02n/hNTXXFraRb2XVVJVQMvqqr8JUlnvAYN5o+PLg82DQ+OQTDEHJTS8DukK
+         LpetHgQ5ygv9OSLtx2nRRRE61aC/mvrdkutWhqzxaA8rRL3MRb7x5QNSWInWdP8Yfc
+         +mQTWJNWsUYBtEntqWu4IsbydiXxt7zvmTigFmp3inbjLpHAsOg9sV5pzwBJzBm0Wu
+         OMDHIhxO/7xWm8OFX1NYcvQy7ea43FrYSJih4V/JE9YPAD000ivkLIv0RJ7udIj6s+
+         4GFKbl9YQmClPsuXzKO796lRWiuthPbwhJ4lgFzNYHmaigBNQQPAEkvv6OByWQ7Udd
+         BFtH0A7p+/EJw==
+Date:   Tue, 18 Apr 2023 20:50:23 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Liang Li <liali@redhat.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>
+Subject: Re: [PATCHv5 net-next] bonding: add software tx timestamping
+ support
+Message-ID: <20230418205023.414275ab@kernel.org>
+In-Reply-To: <20230418034841.2566262-1-liuhangbin@gmail.com>
+References: <20230418034841.2566262-1-liuhangbin@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 13 Apr 2023 15:16:10 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> First of all, I personally love open source, linux and virtio. I have
-> also participated in community work such as virtio for a long time.
->
-> I think I am familiar enough with virtio/virtio-net and is adequate as a
-> reviewer.
->
-> Every time there is some patch/bug, I wish I can get pinged
-> and I will feedback on that.
->
-> For me personally, being a reviewer is an honor and a responsibility,
-> and it also makes it easier for me to participate in virtio-related
-> work. And I will spend more time reviewing virtio patch. Better advance
-> virtio development
->
-> I had some contributions to virtio/virtio-net and some support for it.
->
-> * per-queue reset
-> * virtio-net xdp
-> * some bug fix
-> * ......
->
-> I make a humble request to grant the reviewer role for the virtio core
-> and net drivers.
-
-ping!!
-
->
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+On Tue, 18 Apr 2023 11:48:41 +0800 Hangbin Liu wrote:
+> Currently, bonding only obtain the timestamp (ts) information of
+> the active slave, which is available only for modes 1, 5, and 6.
+> For other modes, bonding only has software rx timestamping support.
+> 
+> However, some users who use modes such as LACP also want tx timestamp
+> support. To address this issue, let's check the ts information of each
+> slave. If all slaves support tx timestamping, we can enable tx
+> timestamping support for the bond.
+> 
+> Add a note that the get_ts_info may be called with RCU, or rtnl or
+> reference on the device in ethtool.h>
+> 
+> Suggested-by: Miroslav Lichvar <mlichvar@redhat.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 > ---
->  MAINTAINERS | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index cacd6074fb89..700b00a9e225 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -22064,6 +22064,7 @@ F:	include/uapi/linux/virtio_console.h
->  VIRTIO CORE AND NET DRIVERS
->  M:	"Michael S. Tsirkin" <mst@redhat.com>
->  M:	Jason Wang <jasowang@redhat.com>
-> +R:	Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->  L:	virtualization@lists.linux-foundation.org
->  S:	Maintained
->  F:	Documentation/ABI/testing/sysfs-bus-vdpa
-> --
-> 2.32.0.3.g01195cf9f
->
+> v5: remove ASSERT_RTNL since bond_ethtool_get_ts_info could be called
+>     without RTNL. Update ethtool kdoc.
+
+I'll apply Jay's ack from v4 since these are not substantial changes.
+Thanks!
