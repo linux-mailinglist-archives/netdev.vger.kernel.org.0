@@ -2,72 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F303D6E70C4
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 03:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9701D6E70F8
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 04:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231600AbjDSBct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 21:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35624 "EHLO
+        id S231675AbjDSCKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 22:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbjDSBcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 21:32:48 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A44AD3F
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 18:32:43 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id 63-20020a250042000000b00b924691cef2so6248484yba.6
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 18:32:43 -0700 (PDT)
+        with ESMTP id S231362AbjDSCKV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 22:10:21 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934376583
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 19:10:20 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-63d4595d60fso3860346b3a.0
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 19:10:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681867963; x=1684459963;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+I6XAACcGb7TjpKpFKYz635SvJuI1w0W+Zshmu9vlkQ=;
-        b=dS526xIGocwS+mcYk2Uiwtyk91p3KsC9cxW2zjqo4VeZMhhf7iAfH3nJM3B92sNKDo
-         m/mEInxst+j+/JBF5dgXOIJ5S4DvqNq6qq9Owul5KrvwY8FBsubthnC1snNDf7tA7ZTA
-         KntnQH5F6x2k/Lc4oNpNClJBLaC8b6UBt1UbiT195p/QVypVV6N/OolP7sVncedKdg2d
-         4P9A7jK69AvrNjFHsGlBo8wlvaNaddunIHeEbYklOoRxeW9bpaR8clkFTwAAyOGQhLqq
-         ZbGbykUO/WTQo90sOprqPMaZUaHh/KpPxmAbElmYdfNGsDOTPbk1Jr6dogSv464UT0MR
-         l5Aw==
+        d=broadcom.com; s=google; t=1681870219; x=1684462219;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=mcxQSc61SiijguSDzGbal4XslprxwnogXkvwvmTxwgU=;
+        b=JcKtyuJ4fNHmgrqfXyUKPCdmD84/+LeLSLmEVw3FwKBhKczJ5nznhufWSgOa0uyZ5k
+         d9bdXHaOP+FPTfXuXDVmDdJvSESpqlxYylk0YOI5+AxUW/D0Vc8i2az5475n52UU0llx
+         tjdlA9wQIpRBMk7GKhMHycgBFGt3aJgB/s0wo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681867963; x=1684459963;
-        h=content-transfer-encoding:cc:to:from:subject:message-id
-         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+I6XAACcGb7TjpKpFKYz635SvJuI1w0W+Zshmu9vlkQ=;
-        b=G5jldGLyda6BoqgQ1t4g/thmevaj+SWWXC97RG0bu/m3+SAQgPhcXp/9x3jOAehQs2
-         RdIGKY7YriqLb5C7bG/LkTTeh4+K4obBb7THHCyAuvvR4hayWqA6IQWP7e1F6hb/C3Rn
-         GofFOqxCoxQO02JYD/Sx/oVgbk+JSgTYNYtnrhGyZL6DUwwUJ8f78moOmwaJTdFZtV6x
-         gNLZNA8YPgCOv8V0YQ9zc+r+jwQ04KthYpaTLr+1gByo9n2MBao+LVgy6b5hN1R9iGRf
-         DdzS39/VGptpZpXYZ0wv97Np64PD6d7IzIFANGD0z15m7uaNPzASHcymvqoEwbipxFqb
-         PsyA==
-X-Gm-Message-State: AAQBX9fknUhnSwEBt9v+NG+aGfWLdS0oqm2e2hpih04c14tTSEKROkQ2
-        S7m4Utbi8WjQqmhD207ri8f3HsuefQlDSQ3kbbJvdO74ibau23Gi9REsInDi66gZ8XZq9lgA9gg
-        IDO6T4tkp/Va/bHo3+3sZECGGJfdIN8iLjDT5sLWlk20TuSBSEjpfOp8l2VOwma6u
-X-Google-Smtp-Source: AKy350a/Jah111IL6lSUdJCuHyRpCrNeVUTOPxPCYlKmIa+nz3iei7+O3DZnqbP7KqNdNc/7r6TwhkUDA6dN
-X-Received: from coldfire.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:b34])
- (user=maheshb job=sendgmr) by 2002:a25:da89:0:b0:b8f:4f1d:be06 with SMTP id
- n131-20020a25da89000000b00b8f4f1dbe06mr13442951ybf.11.1681867963023; Tue, 18
- Apr 2023 18:32:43 -0700 (PDT)
-Date:   Tue, 18 Apr 2023 18:32:38 -0700
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.634.g4ca3ef3211-goog
-Message-ID: <20230419013238.2691167-1-maheshb@google.com>
-Subject: [PATCHv2 next] ipv6: add icmpv6_error_anycast_as_unicast for ICMPv6
-From:   Mahesh Bandewar <maheshb@google.com>
-To:     Netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
-        David Miller <davem@davemloft.net>,
+        d=1e100.net; s=20221208; t=1681870219; x=1684462219;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mcxQSc61SiijguSDzGbal4XslprxwnogXkvwvmTxwgU=;
+        b=F6b/Ne1DinxX8U4OMvHCID7iRnrSdDYPDcuOk3IV9x5qUJLxbwkAjtXIaCeJoNh44L
+         5FF++TmHI+gG5osXuHgZd+HmTZl55/sP7lxklSvX12AUJ3PRKLwKBS9onlwD6+xthGC0
+         +Sdju5odulxCpLTNZ5RbcZ/n++s0Kxmqj2feM9mflBAV+4cSa6PAo+pASYVgLFRymTe0
+         voLN41lbATRSKPgBEOo2zQgLdEbBWmTNLTHXMckyRrprdzuXNLfjSNxe4rK6IEYgX2J7
+         yu/iD4eWyq0wiDCaB/WoJzXhJqawfNf0UGg4KTtDQalj06vUoMHjG/qn9fyRX+v4AN1x
+         CRRA==
+X-Gm-Message-State: AAQBX9foOgyM4DzhcBnJuT7aigc9FZqx1owxSV4pq05LxIqRXWe4gMni
+        ++N55FQBTfb4imW5hAeRV79imG6+8IB74aFrofeAWXtc2im/Vki+g0g=
+X-Google-Smtp-Source: AKy350ZYXHVZtPqjHVvYS9dKBTe8emjQqhOdM+Gf5hQ8L7cpN5zvp6mD4shefReOYOlgq6IEAZZpzjkSzSnzHJt/eCg=
+X-Received: by 2002:a17:90a:ba83:b0:247:4fe5:f09c with SMTP id
+ t3-20020a17090aba8300b002474fe5f09cmr716858pjr.15.1681870219057; Tue, 18 Apr
+ 2023 19:10:19 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230418202511.1544735-1-vadfed@meta.com> <CACKFLikpQ+q20=PMFKoKF4w9q7f2Fhj0t9e24CFuF=fRK0pNoQ@mail.gmail.com>
+In-Reply-To: <CACKFLikpQ+q20=PMFKoKF4w9q7f2Fhj0t9e24CFuF=fRK0pNoQ@mail.gmail.com>
+From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
+Date:   Wed, 19 Apr 2023 07:40:07 +0530
+Message-ID: <CALs4sv1mofgzY64aedWK-UE4v_3aSG9cup2dqK7L01iJcM5R6A@mail.gmail.com>
+Subject: Re: [PATCH net] bnxt_en: fix free-runnig PHC mode
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     Vadim Fedorenko <vadfed@meta.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Mahesh Bandewar <maheshb@google.com>,
-        "=?UTF-8?q?Maciej=20=C5=BBenczykowski?=" <maze@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        netdev@vger.kernel.org
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000001b07205f9a6ed54"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,106 +66,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ICMPv6 error packets are not sent to the anycast destinations and this
-prevents things like traceroute from working. So create a setting similar
-to ECHO when dealing with Anycast sources (icmpv6_echo_ignore_anycast).
+--00000000000001b07205f9a6ed54
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-CC: Maciej =C5=BBenczykowski <maze@google.com>
----
- Documentation/networking/ip-sysctl.rst |  7 +++++++
- include/net/netns/ipv6.h               |  1 +
- net/ipv6/af_inet6.c                    |  1 +
- net/ipv6/icmp.c                        | 15 +++++++++++++--
- 4 files changed, 22 insertions(+), 2 deletions(-)
+On Wed, Apr 19, 2023 at 3:17=E2=80=AFAM Michael Chan <michael.chan@broadcom=
+.com> wrote:
+>
+> On Tue, Apr 18, 2023 at 1:25=E2=80=AFPM Vadim Fedorenko <vadfed@meta.com>=
+ wrote:
+> >
+> > The patch in fixes changed the way real-time mode is chosen for PHC on
+> > the NIC. Apparently there is one more use case of the check outside of
+> > ptp part of the driver which was not converted to the new macro and is
+> > making a lot of noise in free-running mode.
+> >
+> > Fixes: 131db4991622 ("bnxt_en: reset PHC frequency in free-running mode=
+")
+> > Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+>
+> Looks good to me.  Please wait for Pavan to review it also.  Thanks.
+>
+> Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/network=
-ing/ip-sysctl.rst
-index 87dd1c5283e6..b2a563ef0789 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2719,6 +2719,13 @@ echo_ignore_anycast - BOOLEAN
-=20
- 	Default: 0
-=20
-+error_anycast_as_unicast - BOOLEAN
-+	If set to 1, then the kernel will respond with ICMP Errors
-+	resulting from requests sent to it over the IPv6 protocol destined
-+	to anycast address essentially treating anycast as unicast.
-+
-+	Default: 0
-+
- xfrm6_gc_thresh - INTEGER
- 	(Obsolete since linux-4.14)
- 	The threshold at which we will start garbage collecting for IPv6
-diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
-index b4af4837d80b..3cceb3e9320b 100644
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -55,6 +55,7 @@ struct netns_sysctl_ipv6 {
- 	u64 ioam6_id_wide;
- 	bool skip_notify_on_dev_down;
- 	u8 fib_notify_on_flag_change;
-+	u8 icmpv6_error_anycast_as_unicast;
- };
-=20
- struct netns_ipv6 {
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 38689bedfce7..2b7ac752afc2 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -952,6 +952,7 @@ static int __net_init inet6_net_init(struct net *net)
- 	net->ipv6.sysctl.icmpv6_echo_ignore_all =3D 0;
- 	net->ipv6.sysctl.icmpv6_echo_ignore_multicast =3D 0;
- 	net->ipv6.sysctl.icmpv6_echo_ignore_anycast =3D 0;
-+	net->ipv6.sysctl.icmpv6_error_anycast_as_unicast =3D 0;
-=20
- 	/* By default, rate limit error messages.
- 	 * Except for pmtu discovery, it would break it.
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index f32bc98155bf..1465a211e592 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -362,9 +362,10 @@ static struct dst_entry *icmpv6_route_lookup(struct ne=
-t *net,
-=20
- 	/*
- 	 * We won't send icmp if the destination is known
--	 * anycast.
-+	 * anycast unless we need to treat anycast as unicast.
- 	 */
--	if (ipv6_anycast_destination(dst, &fl6->daddr)) {
-+	if (!READ_ONCE(net->ipv6.sysctl.icmpv6_error_anycast_as_unicast) &&
-+	    ipv6_anycast_destination(dst, &fl6->daddr)) {
- 		net_dbg_ratelimited("icmp6_send: acast source\n");
- 		dst_release(dst);
- 		return ERR_PTR(-EINVAL);
-@@ -1192,6 +1193,15 @@ static struct ctl_table ipv6_icmp_table_template[] =
-=3D {
- 		.mode		=3D 0644,
- 		.proc_handler =3D proc_do_large_bitmap,
- 	},
-+	{
-+		.procname	=3D "error_anycast_as_unicast",
-+		.data		=3D &init_net.ipv6.sysctl.icmpv6_error_anycast_as_unicast,
-+		.maxlen		=3D sizeof(u8),
-+		.mode		=3D 0644,
-+		.proc_handler	=3D proc_dou8vec_minmax,
-+		.extra1		=3D SYSCTL_ZERO,
-+		.extra2		=3D SYSCTL_ONE,
-+	},
- 	{ },
- };
-=20
-@@ -1209,6 +1219,7 @@ struct ctl_table * __net_init ipv6_icmp_sysctl_init(s=
-truct net *net)
- 		table[2].data =3D &net->ipv6.sysctl.icmpv6_echo_ignore_multicast;
- 		table[3].data =3D &net->ipv6.sysctl.icmpv6_echo_ignore_anycast;
- 		table[4].data =3D &net->ipv6.sysctl.icmpv6_ratemask_ptr;
-+		table[5].data =3D &net->ipv6.sysctl.icmpv6_error_anycast_as_unicast;
- 	}
- 	return table;
- }
---=20
-2.40.0.634.g4ca3ef3211-goog
+Looks good to me as well. Thanks.
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
+--00000000000001b07205f9a6ed54
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIQbQYJKoZIhvcNAQcCoIIQXjCCEFoCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3EMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBUwwggQ0oAMCAQICDBX9eQgKNWxyfhI1kzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAwODE3NDZaFw0yNTA5MTAwODE3NDZaMIGO
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFTATBgNVBAMTDFBhdmFuIENoZWJiaTEoMCYGCSqGSIb3DQEJ
+ARYZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBAK3X+BRR67FR5+Spki/E25HnHoYhm/cC6VA6qHwC3QqBNhCT13zsi1FLLERdKXPRrtVBM6d0
+mfg/0rQJJ8Ez4C3CcKiO1XHcmESeW6lBKxOo83ZwWhVhyhNbGSwcrytDCKUVYBwwxR3PAyXtIlWn
+kDqifgqn3R9r2vJM7ckge8dtVPS0j9t3CNfDBjGw1DhK91fnoH1s7tLdj3vx9ZnKTmSl7F1psK2P
+OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
+dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
+fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
+9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
+pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
+25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
+Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIC6cTHbJnGGalTxk96H0dNDEabcwhJl5
+KN3KbZhvscvaMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDQx
+OTAyMTAxOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQAjiezexLmV/NI4IVTgFjLf8Cj0xQ+xZgn3HKZGw9j9dzATlM0q
+z2lx53LhUgO2pCcOYtR9rXw41cHsIEYtTOZv7JGpaaarEB/1mmLRMIxqDZdhVrJ1mOTqCjNsX6cU
+2DismOsKzGQvxGed0ec5jSRiBRlP6wXlNgAgx9nX073/x5FKYs34vHhvlzeXPjmQmKLqNrJxhA+V
+8K8bMPAhDo85cDvuCFUGUI4nA25ZFFblOAojlbJimBOgnghhOr//TKWNKWTRCtgPBacje1BMQrBG
+bPOns6LFAMMGoOwMhmY8qZmWQLpuAXrnLHMVfCoaAb5o/QTylDDWHdQU3Caxwz2R
+--00000000000001b07205f9a6ed54--
