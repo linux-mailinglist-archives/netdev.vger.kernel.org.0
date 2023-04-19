@@ -2,219 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12B436E75E2
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 11:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A31A06E75DE
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 11:00:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232845AbjDSJAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 05:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37352 "EHLO
+        id S232840AbjDSJAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 05:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231966AbjDSJAH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 05:00:07 -0400
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0C1113;
-        Wed, 19 Apr 2023 02:00:02 -0700 (PDT)
-Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4Q1ZVm2gSBz8RTWb;
-        Wed, 19 Apr 2023 17:00:00 +0800 (CST)
-Received: from szxlzmapp02.zte.com.cn ([10.5.231.79])
-        by mse-fl2.zte.com.cn with SMTP id 33J8xpBp035307;
-        Wed, 19 Apr 2023 16:59:51 +0800 (+08)
-        (envelope-from yang.yang29@zte.com.cn)
-Received: from mapi (szxlzmapp01[null])
-        by mapi (Zmail) with MAPI id mid14;
-        Wed, 19 Apr 2023 16:59:54 +0800 (CST)
-Date:   Wed, 19 Apr 2023 16:59:54 +0800 (CST)
-X-Zmail-TransId: 2b03643fad8affffffffe42-6b32d
-X-Mailer: Zmail v1.0
-Message-ID: <202304191659543403931@zte.com.cn>
-Mime-Version: 1.0
-From:   <yang.yang29@zte.com.cn>
-To:     <davem@davemloft.net>, <willemdebruijn.kernel@gmail.com>,
-        <edumazet@google.com>
-Cc:     <kuba@kernel.org>, <pabeni@redhat.com>, <shuah@kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <willemdebruijn.kernel@gmail.com>,
-        <zhang.yunkai@zte.com.cn>, <yang.yang29@zte.com.cn>,
-        <xu.xin16@zte.com.cn>
-Subject: =?UTF-8?B?W1BBVENIIGxpbnV4LW5leHQgdjJdIHNlbGZ0ZXN0czogbmV0OiB1ZHBnc29fYmVuY2hfcng6IEZpeCB2ZXJpZnR5IGV4Y2VwdGlvbnM=?=
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl2.zte.com.cn 33J8xpBp035307
-X-Fangmail-Gw-Spam-Type: 0
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 643FAD90.000/4Q1ZVm2gSBz8RTWb
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232808AbjDSJAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 05:00:03 -0400
+Received: from mail-il1-f205.google.com (mail-il1-f205.google.com [209.85.166.205])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE407A93
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:59:58 -0700 (PDT)
+Received: by mail-il1-f205.google.com with SMTP id e9e14a558f8ab-32879a859d8so30914815ab.3
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:59:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681894798; x=1684486798;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=MMkdzP0b48/FfooAPyZtmjuW8LPUSS+nUb/pxSQhWlg=;
+        b=D5YRDpevTfOEx0Uqe2qa9t8p/zgUnH/Zz9k+6BkBKfhdQC626Y2n72NYs3GpY7MsuB
+         5RRoXdqP7gX5B65her4eXhmro2nVHE0rDJkn4u4HGTzi7RETSq2J/vyqlj++CK9aRPgn
+         DMSZALR0BJYnqW4uoH2HPnfoBBQZdXpjnlBidppFV45ENTC1MFwbnCSe0FWPtRjvcUoM
+         ffu4kUF4CJsybwI3yuDCr9JEjWkigAPWHRO0iUdPvotzL3hpmHTZJxkJXJD5ZTqL7ddv
+         CWjWssZK5/XKMPa9zsaYgn/3HWbfM2zHX5FITPu0SfRsCeL+/7/X8itWCa63duLK/KLN
+         NSDA==
+X-Gm-Message-State: AAQBX9dwx94Bt1Hg05zs8kfRTonLmQF2+Px6omx8u9B+5yyrTc5Insqs
+        wed53hWJnoV9fUeZx2ERy1pGr0PJ2Ub5Zy2yokqKo7BEXpOC
+X-Google-Smtp-Source: AKy350YS7UotbFKDn4cXkfgdpzwLgB4VfRkMQdy69IH+g+usQkhflYv2ItYDgPF/EyaTfZTia01joq3s7l4rOq5j4NaAHLLgiYUH
+MIME-Version: 1.0
+X-Received: by 2002:a92:cc05:0:b0:326:d02c:c756 with SMTP id
+ s5-20020a92cc05000000b00326d02cc756mr9976703ilp.4.1681894798045; Wed, 19 Apr
+ 2023 01:59:58 -0700 (PDT)
+Date:   Wed, 19 Apr 2023 01:59:58 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fcbbf805f9aca52b@google.com>
+Subject: [syzbot] [bluetooth?] WARNING: bad unlock balance in l2cap_disconnect_rsp
+From:   syzbot <syzbot+180f35f8e76c7af067d2@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
+Hello,
 
-The verification function of this test case is likely to encounter the
-following error, which may confuse users. The problem is easily
-reproducible in the latest kernel.
+syzbot found the following issue on:
 
-Environment A, the sender:
-bash# udpgso_bench_tx -l 4 -4 -D "$IP_B"
-udpgso_bench_tx: write: Connection refused
+HEAD commit:    327bf9bb94cf Merge branch 'for-next/core' into for-kernelci
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+console output: https://syzkaller.appspot.com/x/log.txt?x=107f83b7c80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=64943844c9bf6c7e
+dashboard link: https://syzkaller.appspot.com/bug?extid=180f35f8e76c7af067d2
+compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm64
 
-Environment B, the receiver:
-bash# udpgso_bench_rx -4 -G -S 1472 -v
-udpgso_bench_rx: data[1472]: len 17664, a(97) != q(113)
+Unfortunately, I don't have any reproducer for this issue yet.
 
-If the packet is captured, you will see:
-Environment A, the sender:
-bash# tcpdump -i eth0 host "$IP_B" &
-IP $IP_A.41025 > $IP_B.8000: UDP, length 1472
-IP $IP_A.41025 > $IP_B.8000: UDP, length 1472
-IP $IP_B > $IP_A: ICMP $IP_B udp port 8000 unreachable, length 556
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/66410afe54f5/disk-327bf9bb.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/2757ce5e2a55/vmlinux-327bf9bb.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/7d54ee97c182/Image-327bf9bb.gz.xz
 
-Environment B, the receiver:
-bash# tcpdump -i eth0 host "$IP_B" &
-IP $IP_A.41025 > $IP_B.8000: UDP, length 7360
-IP $IP_A.41025 > $IP_B.8000: UDP, length 14720
-IP $IP_B > $IP_A: ICMP $IP_B udp port 8000 unreachable, length 556
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+180f35f8e76c7af067d2@syzkaller.appspotmail.com
 
-In one test, the verification data is printed as follows:
-abcd...xyz           | 1...
-..                  |
-abcd...xyz           |
-abcd...opabcd...xyz  | ...1472... Not xyzabcd, messages are merged
-..                  |
+=====================================
+WARNING: bad unlock balance detected!
+6.3.0-rc7-syzkaller-g327bf9bb94cf #0 Not tainted
+-------------------------------------
+kworker/u5:3/6019 is trying to release lock (&conn->chan_lock) at:
+[<ffff80001157e164>] l2cap_disconnect_rsp+0x210/0x30c net/bluetooth/l2cap_core.c:4697
+but there are no more locks to release!
 
-This is because the sending buffer is buf[64K], and its content is a
-loop of A-Z. But maybe only 1472 bytes per send, or more if UDP GSO is
-used. The message content does not necessarily end with XYZ, but GRO
-will merge these packets, and the -v parameter directly verifies the
-entire GRO receive buffer. So we do the validation after the data is split
-at the receiving end, just as the application actually uses this feature.
+other info that might help us debug this:
+2 locks held by kworker/u5:3/6019:
+ #0: ffff0000c0e30938 ((wq_completion)hci0#2){+.+.}-{0:0}, at: process_one_work+0x664/0x12d4 kernel/workqueue.c:2363
+ #1: ffff80001ea87c20 ((work_completion)(&hdev->rx_work)){+.+.}-{0:0}, at: process_one_work+0x6a8/0x12d4 kernel/workqueue.c:2365
 
-If the sender does not use GSO, each individual segment starts at A,
-end at somewhere. Using GSO also has the same problem, and. The data
-between each segment during transmission is continuous, but GRO is merged
-in the order received, which is not necessarily the order of transmission.
+stack backtrace:
+CPU: 1 PID: 6019 Comm: kworker/u5:3 Not tainted 6.3.0-rc7-syzkaller-g327bf9bb94cf #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
+Workqueue: hci0 hci_rx_work
+Call trace:
+ dump_backtrace+0x1b8/0x1e4 arch/arm64/kernel/stacktrace.c:233
+ show_stack+0x2c/0x44 arch/arm64/kernel/stacktrace.c:240
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd0/0x124 lib/dump_stack.c:106
+ dump_stack+0x1c/0x28 lib/dump_stack.c:113
+ print_unlock_imbalance_bug+0x250/0x2a4 kernel/locking/lockdep.c:5109
+ lock_release+0x4ac/0x9ac kernel/locking/lockdep.c:5689
+ __mutex_unlock_slowpath+0xe0/0x6b4 kernel/locking/mutex.c:907
+ mutex_unlock+0x18/0x24 kernel/locking/mutex.c:543
+ l2cap_disconnect_rsp+0x210/0x30c net/bluetooth/l2cap_core.c:4697
+ l2cap_le_sig_cmd net/bluetooth/l2cap_core.c:6426 [inline]
+ l2cap_le_sig_channel net/bluetooth/l2cap_core.c:6464 [inline]
+ l2cap_recv_frame+0x18b4/0x6a14 net/bluetooth/l2cap_core.c:7796
+ l2cap_recv_acldata+0x4f4/0x163c net/bluetooth/l2cap_core.c:8504
+ hci_acldata_packet net/bluetooth/hci_core.c:3828 [inline]
+ hci_rx_work+0x2cc/0x8b8 net/bluetooth/hci_core.c:4063
+ process_one_work+0x788/0x12d4 kernel/workqueue.c:2390
+ worker_thread+0x8e0/0xfe8 kernel/workqueue.c:2537
+ kthread+0x24c/0x2d4 kernel/kthread.c:376
+ ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:870
 
-Execution in the same environment does not cause problems, because the
-lo device is not NAPI, and does not perform GRO processing. Perhaps it
-could be worth supporting to reduce system calls.
-bash# tcpdump -i lo host "$IP_self" &
-bash# echo udp_gro_receive > /sys/kernel/debug/tracing/set_ftrace_filter
-bash# echo function > /sys/kernel/debug/tracing/current_tracer
-bash# udpgso_bench_rx -4 -G -S 1472 -v &
-bash# udpgso_bench_tx -l 4 -4 -D "$IP_self"
 
-The issue still exists when using the GRO with -G, but not using the -S
-to obtain gsosize. Therefore, a print has been added to remind users.
-
-After this issue is resolved, another issue will be encountered and will
-be resolved in the next patch.
-Environment A, the sender:
-bash# udpgso_bench_tx -l 4 -4 -D "$DST"
-udpgso_bench_tx: write: Connection refused
-
-Environment B, the receiver:
-bash# udpgso_bench_rx -4 -G -S 1472
-udp rx:     15 MB/s      256 calls/s
-udp rx:     30 MB/s      512 calls/s
-udpgso_bench_rx: recv: bad gso size, got -1, expected 1472
-(-1 == no gso cmsg))
-
-v2:
-- Fix confusing descriptions
-
-Signed-off-by: Zhang Yunkai (CGEL ZTE) <zhang.yunkai@zte.com.cn>
-Reviewed-by: Xu Xin (CGEL ZTE) <xu.xin16@zte.com.cn>
-Reviewed-by: Yang Yang (CGEL ZTE) <yang.yang29@zte.com.cn>
-Cc: Xuexin Jiang (CGEL ZTE) <jiang.xuexin@zte.com.cn>
 ---
- tools/testing/selftests/net/udpgso_bench_rx.c | 40 +++++++++++++++++++++------
- 1 file changed, 31 insertions(+), 9 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/tools/testing/selftests/net/udpgso_bench_rx.c b/tools/testing/selftests/net/udpgso_bench_rx.c
-index f35a924d4a30..6a2026494cdb 100644
---- a/tools/testing/selftests/net/udpgso_bench_rx.c
-+++ b/tools/testing/selftests/net/udpgso_bench_rx.c
-@@ -189,26 +189,44 @@ static char sanitized_char(char val)
- 	return (val >= 'a' && val <= 'z') ? val : '.';
- }
-
--static void do_verify_udp(const char *data, int len)
-+static void do_verify_udp(const char *data, int start, int len)
- {
--	char cur = data[0];
-+	char cur = data[start];
- 	int i;
-
- 	/* verify contents */
- 	if (cur < 'a' || cur > 'z')
- 		error(1, 0, "data initial byte out of range");
-
--	for (i = 1; i < len; i++) {
-+	for (i = start + 1; i < start + len; i++) {
- 		if (cur == 'z')
- 			cur = 'a';
- 		else
- 			cur++;
-
--		if (data[i] != cur)
-+		if (data[i] != cur) {
-+			if (cfg_gro_segment && !cfg_expected_gso_size)
-+				error(0, 0, "Use -S to obtain gsosize, to %s"
-+					, "help guide split and verification.");
-+
- 			error(1, 0, "data[%d]: len %d, %c(%hhu) != %c(%hhu)\n",
- 			      i, len,
- 			      sanitized_char(data[i]), data[i],
- 			      sanitized_char(cur), cur);
-+		}
-+	}
-+}
-+
-+static void do_verify_udp_gro(const char *data, int len, int gso_size)
-+{
-+	int start = 0;
-+
-+	while (len - start > 0) {
-+		if (len - start > gso_size)
-+			do_verify_udp(data, start, gso_size);
-+		else
-+			do_verify_udp(data, start, len - start);
-+		start += gso_size;
- 	}
- }
-
-@@ -264,16 +282,20 @@ static void do_flush_udp(int fd)
- 		if (cfg_expected_pkt_len && ret != cfg_expected_pkt_len)
- 			error(1, 0, "recv: bad packet len, got %d,"
- 			      " expected %d\n", ret, cfg_expected_pkt_len);
-+		if (cfg_expected_gso_size && cfg_expected_gso_size != gso_size)
-+			error(1, 0, "recv: bad gso size, got %d, expected %d %s",
-+				gso_size, cfg_expected_gso_size, "(-1 == no gso cmsg))\n");
- 		if (len && cfg_verify) {
- 			if (ret == 0)
- 				error(1, errno, "recv: 0 byte datagram\n");
-
--			do_verify_udp(rbuf, ret);
-+			if (!cfg_gro_segment)
-+				do_verify_udp(rbuf, 0, ret);
-+			else if (gso_size > 0)
-+				do_verify_udp_gro(rbuf, ret, gso_size);
-+			else
-+				do_verify_udp_gro(rbuf, ret, ret);
- 		}
--		if (cfg_expected_gso_size && cfg_expected_gso_size != gso_size)
--			error(1, 0, "recv: bad gso size, got %d, expected %d "
--			      "(-1 == no gso cmsg))\n", gso_size,
--			      cfg_expected_gso_size);
-
- 		packets++;
- 		bytes += ret;
--- 
-2.15.2
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
