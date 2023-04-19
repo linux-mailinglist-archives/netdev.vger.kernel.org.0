@@ -2,114 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A896E7293
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 07:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 795D66E72A1
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 07:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231400AbjDSFRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 01:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38984 "EHLO
+        id S231537AbjDSFaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 01:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231204AbjDSFRC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 01:17:02 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31BC30DC;
-        Tue, 18 Apr 2023 22:16:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3TYzjVAO8lFOigoxzvnuNLGE5Ej5y2RKbRN7nPAZnQc=; b=GZsS8wOzLRu165JMIeJQWnqCrJ
-        cFugFrh3LbSdfvJz1Z3udGZWBk+BVAZOz/zaz3027PrNh7I7H8vtfpmNDUwzp+Dek7cHaGoXRxlg+
-        N2vaKfChTbLEndgPdUy55MG7J48x/9JAdhttQ+YlYP5EIe57jWyFZPkVSsBR3YbZU1MMoAi1viRiJ
-        qMXnObMVXkIrqVmv7Dz8s+TWjJ0T6a0/YA2l9Q+WlIXS4cma2t2zwYmGcC1VB3rxY5dDB2IB/iG31
-        o3oeOAJ1e2SBbb++bbW7afi+MeVPZpH/idmWCOwbxgG7ppHdtDxUyY66DaY9ifrVbfFFgZxmPxlbd
-        4uQUixrw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.96 #2 (Red Hat Linux))
-        id 1pp0BZ-0045Qx-0m;
-        Wed, 19 Apr 2023 05:16:53 +0000
-Date:   Tue, 18 Apr 2023 22:16:53 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
-Message-ID: <ZD95RY9PjVRi7qz3@infradead.org>
-References: <ZDzKAD2SNe1q/XA6@infradead.org>
- <1681711081.378984-2-xuanzhuo@linux.alibaba.com>
- <20230417115610.7763a87c@kernel.org>
- <20230417115753.7fb64b68@kernel.org>
- <CACGkMEtPNPXFThHt4aNm4g-fC1DqTLcDnB_iBWb9-cAOHMYV_A@mail.gmail.com>
- <20230417181950.5db68526@kernel.org>
- <1681784379.909136-2-xuanzhuo@linux.alibaba.com>
- <20230417195400.482cfe75@kernel.org>
- <ZD4kMOym15pFcjq+@infradead.org>
- <20230417231947.3972f1a8@kernel.org>
+        with ESMTP id S229633AbjDSFaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 01:30:18 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07954697;
+        Tue, 18 Apr 2023 22:30:16 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-63b4bf2d74aso2443512b3a.2;
+        Tue, 18 Apr 2023 22:30:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681882216; x=1684474216;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2OSQxrSfo9g2PRmFaM8khgvUPSinJ6+/aFBwzvj216c=;
+        b=reV/gURgFVvnY0EcU+e/bKuk2FWHgQw7hdLeo13u0ORgheCdKGB6tX34/Mnj/9VHrp
+         DnEYZIQgvmwq2zSKyc3Z3ABTJAmopgxw5jkcKWTOHSoQdh0yEnhkwn5S0JPoOOKnJxN1
+         g+a7NYaePRNCBi7MDG1kk9qSYYRi2j4w9DWK/LOpY/RIS6DfJY0GuVMrsbn8F6xq3Ofc
+         ucXWdYbyauvbZ3VfFY2pKEpMXSTw7OwihS5RcyNnsE89U9u9M/PlsfRaXfFkVurAbJNr
+         GhhAYRrJf4eDN8vkzYytZ7d+BHALju5zYmab2lvTZCQNtD62ao8LWndELg4G+28z3qHV
+         8nBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681882216; x=1684474216;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2OSQxrSfo9g2PRmFaM8khgvUPSinJ6+/aFBwzvj216c=;
+        b=iJ6o69WwT85TCGoRbyIrS0d+6d4ZvmQwV45tpTTSan6tAWvOdDIRms10ClXMPXIWPc
+         up13z+mop4pYvzKS6AAEjx80ffogFaZXCLi1gVjqCukdba5vHVuWhW4X3dbHCpglJvIK
+         c8xfnubx74uYuYDUZUgp7qoLhmIq8DwNKromYr17U3eovj8LI+sUZ/alXYo+s7vHWO0D
+         Gf1TliBtUdfdl9J3seZKUIxLNhahs4szAVzECDUcA5Lbe/6LFbep6REcOZTQcMpSTLML
+         WGG+VHWzlPXltaZxd+fX/Y9gdsAGU5yMvY+/fw096ArWS8g3SJgGGEbiIPRNN+SvAl0s
+         ZV3g==
+X-Gm-Message-State: AAQBX9dNlMGdVn/QSiv0K1pykFbghya0O0SjVB5T3TDciIgiSumB7/0o
+        4YwqmSZJo8Sb6Y8ECRKZ+7Ucw22SEEFz1BJwCyk=
+X-Google-Smtp-Source: AKy350b5S4mPAHJk106Cu3+gvWK+Mf/tyMH7pgXtlxkOeNgW8Wa0O0oofvog8ZgsISTiZOd18rZjlRJyDWiBvcVpw/c=
+X-Received: by 2002:a17:90a:51e6:b0:233:c301:32b3 with SMTP id
+ u93-20020a17090a51e600b00233c30132b3mr1711226pjh.3.1681882216318; Tue, 18 Apr
+ 2023 22:30:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230417231947.3972f1a8@kernel.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230417013107.360888-1-zyytlz.wz@163.com> <20230418213340.153529d7@kernel.org>
+In-Reply-To: <20230418213340.153529d7@kernel.org>
+From:   Zheng Hacker <hackerzheng666@gmail.com>
+Date:   Wed, 19 Apr 2023 13:30:05 +0800
+Message-ID: <CAJedcCx3B58NaBHYZ_xurKjp=7DjmMgHvSta2axCu5ToQObwMg@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: ethernet: fix use after free bug in
+ ns83820_remove_one due to race condition
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Zheng Wang <zyytlz.wz@163.com>, davem@davemloft.net,
+        horatiu.vultur@microchip.com, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, 1395428693sheep@gmail.com,
+        alex000young@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 17, 2023 at 11:19:47PM -0700, Jakub Kicinski wrote:
-> > You can't just do dma mapping outside the driver, because there are
-> > drivers that do not require DMA mapping at all.  virtio is an example,
-> > but all the classic s390 drivers and some other odd virtualization
-> > ones are others.
-> 
-> What bus are the classic s390 on (in terms of the device model)?
+Jakub Kicinski <kuba@kernel.org> =E4=BA=8E2023=E5=B9=B44=E6=9C=8819=E6=97=
+=A5=E5=91=A8=E4=B8=89 12:33=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Mon, 17 Apr 2023 09:31:07 +0800 Zheng Wang wrote:
+> > +     netif_carrier_off(ndev);
+> > +     netif_tx_disable(ndev);
+> > +
+> >       unregister_netdev(ndev
+>
+> It's not immediately obvious to me why disabling carrier and tx
+> are supposed to help. Please elaborate in the commit message if
+> you're confident that this is right.
+>
 
-I think most of them are based on struct ccw_device, but I'll let the
-s390 maintainers fill in.
+Hi Jakub,
 
-Another interesting case that isn't really relevant for your networking
-guys, but that caused as problems is RDMA.  For hardware RDMA devices
-it wants the ULPs to DMA map, but it turns out we have various software
-drivers that map to network drivers that do their own DMA mapping
-at a much lower layer and after potentially splitting packets or
-even mangling them.
+Thanks for your reply. I'll figure it out to see if it's really necessary.
 
-> 
-> > > I don't think it's reasonable to be bubbling up custom per-subsystem
-> > > DMA ops into all of them for the sake of virtio.  
-> > 
-> > dma addresses and thus dma mappings are completely driver specific.
-> > Upper layers have no business looking at them.
-> 
-> Damn, that's unfortunate. Thinking aloud -- that means that if we want 
-> to continue to pull memory management out of networking drivers to
-> improve it for all, cross-optimize with the rest of the stack and
-> allow various upcoming forms of zero copy -- then we need to add an
-> equivalent of dma_ops and DMA API locally in networking?
+Best regards,
+Zheng
 
-Can you explain what the actual use case is?
-
-From the original patchset I suspect it is dma mapping something very
-long term and then maybe doing syncs on it as needed?
+> --
+> pw-bot: cr
