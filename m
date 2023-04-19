@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3C8C6E74FB
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 10:26:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC636E7505
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 10:27:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232449AbjDSI0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 04:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        id S232513AbjDSI10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 04:27:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232010AbjDSI0e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 04:26:34 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03F110DA
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:26:32 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ud9so79330663ejc.7
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:26:32 -0700 (PDT)
+        with ESMTP id S232493AbjDSI1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 04:27:24 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8586E5FFB
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:27:22 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id kt6so41369535ejb.0
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:27:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681892791; x=1684484791;
+        d=linaro.org; s=google; t=1681892841; x=1684484841;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Cn8sw9IP8LiVn6+N6W0wmYqLVqWZIVaQNaxL7vP2/hY=;
-        b=J1i/i0FgqzTKm7G0QiddqXo6Ri5/9n1aNp1jCQ+jZKrMagLa0Gj1HtFV59bes7i9VZ
-         G83lDzwDi1A7HpHxF9kROzaxgYHN4dpfF7ztMXna/pdwIWRcllZsMJ8HYqtNKKKZJKpS
-         w93rgHqH8IiKjWMa6duvs2JsAQt+9hggM7KR71VvR8Ok1eSji6GuvbLGqVCWXje1Y9ac
-         chpMvoL89Gt5HCkKOmUXrRuU56SOJ6EN7LZLFhFzz1pA7FDcE39zLeUlyCsBWVW5/6IZ
-         bLZoNM7V01Ok6swveYYyirxGp7XnNm+VNvdRETMimsnBRZeBROBjE/RckkLuZrK98KWk
-         Jtsw==
+        bh=JaX87YPsYXJs9yetXS9/VPDsgjTkVIsThQCtlqJLjKI=;
+        b=ojIVeou1T9txfO/m2H/MS+ChlMKIBqR1L3oe4TTFZdG8szGqx3fE1lxn6EwuaoiajA
+         VFV3ALhhhH+c3Kq+sYdqu3aSY8xFurhgwbsgZcrzccwrvznu7gWshGxyO05QFsZnSDCo
+         FASP5q6KatAPgjsabguhCLZUp4yPP1w7R/Ycy1Baydt4c6s7dJmCZpzT5S0nhG2vHglK
+         sqfx1sPKhFtdsZ8CNLZaHHBBt+BgMj4EOIY1on2NlOaD5oEZqF+BGuabV7nMh3XpQa7g
+         WS7xkKIjMHWpj+BmBDgJgp0SIzcSQeE6HYuFWe5pYbmh0IQIsaGylp3rAmBqbzPcwhZI
+         afPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681892791; x=1684484791;
+        d=1e100.net; s=20221208; t=1681892841; x=1684484841;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Cn8sw9IP8LiVn6+N6W0wmYqLVqWZIVaQNaxL7vP2/hY=;
-        b=OAYbaC9gjMR5qe2+8fN0y17z07Nqm7F0TVc/njEDjf2ZgGHY0UvUXah3nVGkHRqpfc
-         xfpQrK6Wk/CSDCBkAtKV+qAynJ3twOqNV0uTsf8coMrT1ceSlOruOaVcatAOICdmn7PV
-         b5Qj6BVxc/A3LMyIt4wpqFfVRSmMIh/iAcaIuts8BhYBxfV6JfCGUZ32u+/GaE8NrHgF
-         3aw00J1wbcm72IfRnHiT414HRWAGP0wLsoT/fua7rMlZOALCxBxfUqiNKH3tsMXvBCxI
-         YfVh3rabqMtYXYQ/KXbj/faCfwvWlIpE8LiJFWvmZLrXV9Ekt2fZroorTq98Hixzlvh/
-         NEaQ==
-X-Gm-Message-State: AAQBX9e0e6hQ2BkIqij73GUw8rPLi+4EENLIJD63hJJBGvgY38Hjf/iF
-        3C4mH6hbSWpqIMm7Q4bU7JFDmQ==
-X-Google-Smtp-Source: AKy350bRJ1WkIkaKqBC4j+0kdeEKhVCv+zX5drbWouRUp1ZA6qztn4VVUu2MljyPUD/o+nvd8267LQ==
-X-Received: by 2002:a17:907:75ca:b0:94f:680d:3437 with SMTP id jl10-20020a17090775ca00b0094f680d3437mr9858125ejc.17.1681892791421;
-        Wed, 19 Apr 2023 01:26:31 -0700 (PDT)
+        bh=JaX87YPsYXJs9yetXS9/VPDsgjTkVIsThQCtlqJLjKI=;
+        b=QEfd7LuzPpESlgsnGbFjfDd260r0ERDtf+/fK2X62r05X06bvDLPaNR21x8rjqM1Pd
+         AAipi+aV1D/Jmsy8mcOFTfXYDQd6gTynZxdLd2Xro3nqqK68Wz8ASflGxaKicFuTkv+W
+         g305U3h4SaakhC0XNipgT0+OtzkDLndia3q8usATXCl4RJg6tsANdL8ikieaoXi8u6PE
+         ME2cEhDEiXvHm9PsoLVO8yRbKij2T9ASz+kweaaAAhTmd/jYuw2XdHNdRh4dmCwpGyhl
+         J5Wm2PjfdYmAxTGPDar+6E4SZsO7XiuVhQupQdkNSj2TlxeMVsUjlQNrogbrMjVzH4Tu
+         IOmQ==
+X-Gm-Message-State: AAQBX9c+LFtglqnhBs+9DMeE1GhfT9Mz4xojvb3mBhlqGOD7fjmOheOi
+        yvkEQISb65SsuVO7c0YEaaAjhA==
+X-Google-Smtp-Source: AKy350ZzTOQ/09tmhw5xoXnB7H32TRrIwfceh3BliiWG7NcpRv7Pqhg0rDMUIp47Oc/gsFG1Ynm/Fw==
+X-Received: by 2002:a17:906:f6c3:b0:94f:17b7:c4b9 with SMTP id jo3-20020a170906f6c300b0094f17b7c4b9mr13707037ejb.42.1681892840852;
+        Wed, 19 Apr 2023 01:27:20 -0700 (PDT)
 Received: from ?IPV6:2a02:810d:15c0:828:62f5:eb43:f726:5fee? ([2a02:810d:15c0:828:62f5:eb43:f726:5fee])
-        by smtp.gmail.com with ESMTPSA id rp26-20020a170906d97a00b0094f3132cb86sm5681596ejb.40.2023.04.19.01.26.30
+        by smtp.gmail.com with ESMTPSA id n25-20020a17090625d900b0094e62aa8bcesm9028400ejb.29.2023.04.19.01.27.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Apr 2023 01:26:31 -0700 (PDT)
-Message-ID: <3aeac99f-aef3-ee22-f307-3871b141dc7b@linaro.org>
-Date:   Wed, 19 Apr 2023 10:26:30 +0200
+        Wed, 19 Apr 2023 01:27:20 -0700 (PDT)
+Message-ID: <3fdcb223-14c0-dd51-bbb8-d6f193482e87@linaro.org>
+Date:   Wed, 19 Apr 2023 10:27:19 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
@@ -69,7 +69,7 @@ Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -79,13 +79,7 @@ X-Mailing-List: netdev@vger.kernel.org
 On 19/04/2023 03:16, Anup Sharma wrote:
 > syzbot found  UBSAN: shift-out-of-bounds in nci_activate_target [1],
 > when nci_target->supported_protocols is bigger than UNIT_MAX,
-
-UINT_MAX?
-
 > where supported_protocols is unsigned 32-bit interger type.
-
-integer?
-
 > 
 > 32 is the maximum allowed for supported_protocols. Added a check
 > for it. 
@@ -108,36 +102,8 @@ integer?
 > Link: https://syzkaller.appspot.com/bug?id=19cf2724120ef8c51c8d2566df0cc34617188433
 > 
 > Signed-off-by: anupsharma <anupnewsmail@gmail.com>
-> ---
->  net/nfc/nci/core.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-> index fff755dde30d..e9d968bd1cd9 100644
-> --- a/net/nfc/nci/core.c
-> +++ b/net/nfc/nci/core.c
-> @@ -908,6 +908,11 @@ static int nci_activate_target(struct nfc_dev *nfc_dev,
->  		pr_err("unable to find the selected target\n");
->  		return -EINVAL;
->  	}
-> +	
-> +	if (nci_target->supported_protocols >= 32) {
 
-I don't think it makes any sense. How do you protect from UBSAN reported
-shift? Why supported_protocols cannot be 33? You are not shifting the
-supported_protocols...
-
-> +		pr_err("Too many supported protocol by the device\n");
-> +		return -EINVAL;
-
-I am pretty sure that you broke now NFC. Test the patches first and
-share your test scenario.
-
-> +	}
->  
->  	if (!(nci_target->supported_protocols & (1 << protocol))) {
-
-
+Also, no blank lines between tags.
 
 Best regards,
 Krzysztof
