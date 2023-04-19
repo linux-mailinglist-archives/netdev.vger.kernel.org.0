@@ -2,136 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8B846E780B
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 13:06:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C84956E7829
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 13:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232613AbjDSLGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 07:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
+        id S232317AbjDSLJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 07:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232849AbjDSLGO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 07:06:14 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2128.outbound.protection.outlook.com [40.107.237.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1925242;
-        Wed, 19 Apr 2023 04:06:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iSIK+np28RjMbu6LHcLHjCaYOa8C+7hinfEAtxvay/pFwu1NEipXAFZuv52nT4owTcRQP8F833+Q0K6ncNUlZzWyDK+/KhwcDNsFiPQTMXeIoVRpof43+9LnSjRe/YPGoylVVgB1Zt56NNGjsah5ZzMK5Gy1nMAIfu0UPSxM5cwlQz8BdfCHQ/qGqI0ZxBZkqo+lIeQpeml0FRHzJnsuZ/OwANBQyQyzcS4TqJ9Q+6jRp1DJVYbD/cek/7hL8JmM2mdZ3HJi5cGU/PQxcK+L4Dce6Xpwo01Y8i5hiLYX1SF7JpiRltDjTd+CW3sN2FT/fi1Bg+tW5i0Tmx/ZIILfdQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nSXoVMugNnI5xHdIxi3peCE1SNA7ZzMUQeMI29T5ybM=;
- b=DXxyb6a5AAeKvOH9ZK3saLvrl+1ZeefYSbmv6qQK8HtJICUV1KBUvsTeazxznjLhgwjw64un1rWaH5tYDJ64Gg4RYH0BpY+sSyWoM7ei162wflL64z9U+tNwIY+c/1Ei6L3QmpBw7ze1I5Hj6XxuBsOWCi6ddyFpg7wzYTcyrmiBx1HW8+ObKQ3zLiQYLAEhMTLTPk/odEgYJu7chj5iEmGu6Wv+QiwnUCYk0xGjwX4UeN4nV2GxIYurfIZ+e1F+xwXv4Wdc8h9vpCwdzzZC096WXZfN0oXR3E1cp9PqUiBg5dSmCnxsxCdRlkhb+LSvYuC+FMp2SVU6ViBfMtCrww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nSXoVMugNnI5xHdIxi3peCE1SNA7ZzMUQeMI29T5ybM=;
- b=uDrEf26OlAK3L13Vnq4JDNPQSYspA3usjzGBGtP2jF/m7KpUDbvWu5XSx0p8dglKEuSvA3NTMX3NASNf3LA2QWPsko+Lj/HAA/o0pGqnVm5JM90A4Ydh8tx5uWfgWs0qwQhW4xuMMRFa+A/azV+ERw36Mg1fNJoDKfTLO1ik+sQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SA1PR13MB5491.namprd13.prod.outlook.com (2603:10b6:806:232::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Wed, 19 Apr
- 2023 11:06:09 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Wed, 19 Apr 2023
- 11:06:09 +0000
-Date:   Wed, 19 Apr 2023 13:06:02 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Sai Krishna <saikrishnag@marvell.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, leon@kernel.org,
-        sgoutham@marvell.com, gakula@marvell.com, lcherian@marvell.com,
-        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com,
-        Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: Re: [net PATCH v3 08/10] octeontx2-af: Fix issues with NPC field
- hash extract
-Message-ID: <ZD/LGvJU/T8MtpGV@corigine.com>
-References: <20230419062018.286136-1-saikrishnag@marvell.com>
- <20230419062018.286136-9-saikrishnag@marvell.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230419062018.286136-9-saikrishnag@marvell.com>
-X-ClientProxiedBy: AM0PR03CA0102.eurprd03.prod.outlook.com
- (2603:10a6:208:69::43) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S231958AbjDSLJq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 07:09:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6456F7686
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 04:08:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681902537;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FhnLDPdJRHHLP6BO6DipeYLm7w/AeXwydv11cK/5DSc=;
+        b=PKGy0oP26qSCnwS+D0WFfjhPQum9J6GQoCzRdjpJUUdXuohtloL3UsRhuC4I28FQH7bw/Z
+        jN+OPYClxwex7T2izobDLCxBHvcp3B7099/ZnNMlm6/nnTrOdnCiqATDoWRT0gBvtQZYkX
+        Y0/BJYH0+KQEnYyX1GPDASf3EFndiU0=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-202-lgUTpxG6PrSecXJFNB9Z6Q-1; Wed, 19 Apr 2023 07:08:37 -0400
+X-MC-Unique: lgUTpxG6PrSecXJFNB9Z6Q-1
+Received: by mail-ed1-f69.google.com with SMTP id v10-20020a50d08a000000b0050675b95c83so9316023edd.4
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 04:08:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681902504; x=1684494504;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FhnLDPdJRHHLP6BO6DipeYLm7w/AeXwydv11cK/5DSc=;
+        b=MACsdVopTYvDXLiFepz++jvgtdN1oFtoMKtmS1yJmsp3NgOr0vQw24JhUe/q8GKwb/
+         yl8RUmyh/M9EQO2LRXGNZR5fXrBuKcmRec2d0tV8BQxqGR6s03esTRFWsbvYMbwfmPIB
+         UFSTT4Xt2dl9boHPV8uRv/HdfCb5BeeVdsq8sI1Kp1cM7pVwJ2sLafaoE6ok8n28uKVz
+         KAqcnbdLEu8U6/3hdw1Q7vERjey1rro7P+vDjl1ZJ5g/kGxj8Qef3Oo43xFXTsk0HCe1
+         BDmpIICcmfNg84R9eEX/6NzBYhYtbjbf9DVbkv/+mShEj7m5D6qqRKRJKyOBXFvQsBPM
+         XuvQ==
+X-Gm-Message-State: AAQBX9fkbHzZa2bKy7mgU8Q+QGk4OGZuVnmk21N6tON59bUMjg1Kl7Uy
+        AtiS/bynNQEgc/qVNkzQlJ9eH4Y8eLKks1X4sGwm4pxenQpc9h5lkm7WDAZrBTuxUxm5m8lXSYH
+        VaZGXhy4i/rOs2+lCSg+u7WLv
+X-Received: by 2002:a17:907:971a:b0:94e:e039:98ca with SMTP id jg26-20020a170907971a00b0094ee03998camr2608478ejc.4.1681902504641;
+        Wed, 19 Apr 2023 04:08:24 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZxYurKYcwxC2g/nwhQKogMILeS0qvVv7QaMkKW7K69isYCk41rIm2DjtcMKv1mpNYA0yCSvA==
+X-Received: by 2002:a17:907:971a:b0:94e:e039:98ca with SMTP id jg26-20020a170907971a00b0094ee03998camr2608452ejc.4.1681902504268;
+        Wed, 19 Apr 2023 04:08:24 -0700 (PDT)
+Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
+        by smtp.gmail.com with ESMTPSA id sd27-20020a1709076e1b00b00953381ea1b7sm1316779ejc.90.2023.04.19.04.08.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Apr 2023 04:08:23 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <3449df3e-1133-3971-06bb-62dd0357de40@redhat.com>
+Date:   Wed, 19 Apr 2023 13:08:22 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB5491:EE_
-X-MS-Office365-Filtering-Correlation-Id: 25cbebfc-d67f-4161-495d-08db40c6148c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: svmldkgbGg6ovjdlaNaZN9Dvo7oNZMTnXZWT3lJhPIrqtQI0g3ucFAOmK0iPV6HuTKG2wko4rImGIFgn+y3OvAd4+eNVnr/lZbAZ0/xliwg92cYvijeLtWkOUhtJ8R3VvtOs0+T39C5MOTxpYUng5aHXCPOJsI1WT60S/KjOz5xKMsZ63XTuM6t/0YiPvgkI7sd/yBXmb43ZcO8VoOGFl1Se5+rSfTQBmh6H0m9II3HSroAPsCxgy6ZocATM2veewtCsNXdFAgYPoWQe6veloXuZCM2m4iVCeggKZOAIPQ+zKF5Bnu+eNww+LUAuUkDZ+eXFidm/gckMMoX9QBMvOD2ZdTo9li9DQr9eAFPi/Fv50rQId43uRHTnrEeO8sDeK6XucCOGIZqJopiTyTn1Wi+SjxLiYMzeYUIcK9LusfRFGKo4QjVHhCPWQH0EZzE5WFlpuKckGHtLObjMiVmfmATWu4o8dgQhmjgAc7nm/iobz+njaWpktFaCwqhNxjds8eQw6novpEBnvSrq9AtohulvMxL04Ff/s+T1algDgKbf3TebPUTsYrD4C9xQ3ZrG
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(39840400004)(136003)(346002)(366004)(451199021)(36756003)(4326008)(316002)(6916009)(66946007)(66556008)(66476007)(6486002)(41300700001)(478600001)(6666004)(5660300002)(8936002)(8676002)(2906002)(7416002)(44832011)(4744005)(86362001)(38100700002)(2616005)(6506007)(186003)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GdzHSf7jk8Miw7tggzRwlPC3QmHwWJaKmFsPAECA2YhTnXYxV0j1pr767wI4?=
- =?us-ascii?Q?9oU6achf0CuA+oyKXJgi8gr42upHwaOAyx7gZagFbLSrfrsFRDDGckKeyS3E?=
- =?us-ascii?Q?gU7iI+1rY29oxZH9C8iUd+tuR7Ih92PJ33sbmNXwmEk+0+iJ+YdQPkqwofDE?=
- =?us-ascii?Q?IhkKPC2atd/6XfWN4dKOT8QtCemPQiEXCi5zpNmIKBxzaqXq7jDrCn03wczF?=
- =?us-ascii?Q?+86vP8fG4qkWz49CSFLN9iySpQVpBELlHPeq/i1Er1A+zJDlenNGI6kB+aN8?=
- =?us-ascii?Q?ZXXXHhzlU/IoTKneTz7q0ooEa3beKThQF1VB5jJ9/Yu8bRosFjVXPtIvgqDc?=
- =?us-ascii?Q?wbT/K9Rzw2cCOSzxDKt/E8COT9xU5M4BAUw5lNk5DXqFDFcsLuEIvwJU+CO3?=
- =?us-ascii?Q?+xK1xbG10LXpWqQ9uSPAb3u/+JRVINXAzHNns5gjtwtX+9iHkiFhO/lxzLn8?=
- =?us-ascii?Q?24By0BtvUeVZikstOJJw07T/wL5rRGaBDHk8VFp1Pz5PVSs7oShcATlrSwo6?=
- =?us-ascii?Q?ZCLZqutwk6tpg1ix/fgZzKxtqrRObUuRX4w4d0kWhMsMOZnDUhdZdvptehcI?=
- =?us-ascii?Q?dCkPweId+a1R+vDEguCwkq8OC3gjZwweQOkfSYXuVWkUhgHc6Xux1qpukDqI?=
- =?us-ascii?Q?hJ0uJO+v7EUizO5W0mzwlE6p16hlqylTTqVUB88mnbMUCne3i9Do6eT6nHlj?=
- =?us-ascii?Q?xM1q9C0J6KYS4ART4iNMk3UtXqaR37eGYQKDJMmcKYxrVUTI9LY2q0dOOegn?=
- =?us-ascii?Q?3BdrjtocKcJWHqy31hoj5ML5vt4qS8tb9L3GmLzG4lbHM3Eqe0F1cZhH5jw0?=
- =?us-ascii?Q?Xo97efFdO4KZFKuX6LNggxlcPUYUa/xgpYq3OrN30fv1I9mAbQeWCHaNf6P2?=
- =?us-ascii?Q?YiKhPpA5ArjikRnTxiVv6B3HIook2z75PTzy06Z6ZuLQu23mJvZPDJMvni4b?=
- =?us-ascii?Q?gsu5NV4NB49mrW52Ok/+Yz2hugyclfE4T7otyedg5NoRugQ+QoBCAJwo9FHG?=
- =?us-ascii?Q?ylB6BBmkkkOThf1VpQBdkj+AE476p9jSPe2PAOmmdPtv6HgeT20WvwhDvZ4t?=
- =?us-ascii?Q?aeg/DLWpoK5Bbyv7DsfWaA0MzdvWqK6/m5SYgZmmWCTU4Mcwulh7Uz/itm3n?=
- =?us-ascii?Q?FrLNxa5yS1Zd8F83cMuzNUHDQflCoBu8+IcI1rq2txo7kNifwrQI+/TYVEqC?=
- =?us-ascii?Q?b3vEkbI5+jrOa8g019Z+Bt2hTMOXoxS8BDmF3tE//1n9d/SQC3IlpTumK6Oo?=
- =?us-ascii?Q?fRj6zIIuE5Yz+aOjqgTjVB/LN4uSWlPJoM4rgFguv2QnR6RYw6tZM4ebeb2Q?=
- =?us-ascii?Q?Ugp5z77AI1CFJpiFVh8upRZ/PN8cunPMPD9etJRJXC/nucMduUHWvJfO2ZCF?=
- =?us-ascii?Q?/0CDwJTxgToXhR/0b3Qy1k5KYSQYBc9VyjE1fSwgGYkRPtasLh83TS2dqTps?=
- =?us-ascii?Q?N1FyEnyJBWfxVcyCOL2myrQK3X/27nePEhSeFxVzw++6SpyaAasfP3tjiHIn?=
- =?us-ascii?Q?NQ/P/J9tGxlR9DSo5T1hbKr2MEd6HW8ObPR48+HvEcddoHsPICVHcQtA5Nu3?=
- =?us-ascii?Q?IdJNbv0/VcOa8v4mJxkUVLknChB1f9r5NibRq7/7IKs49AQX7FJlfpjcF9c5?=
- =?us-ascii?Q?qjHuyxXj9ADlR2EQ7jXY5Cxf3t8MS7FNKy94fmmGVC1F+ATBQByTlaE4BbOU?=
- =?us-ascii?Q?5XTAVQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 25cbebfc-d67f-4161-495d-08db40c6148c
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 11:06:09.7556
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HmM09gSiGhj4JpEcWsmPBLhRavXYybkfMXE2IQCuXQH5IjjwfhXoqf3BLOatHS5v3J3I5N8/ToQZoq1icveRw/PrmlvfGa2jOVzepYHVYHI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5491
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Cc:     brouer@redhat.com, Eric Dumazet <edumazet@google.com>,
+        netdev@vger.kernel.org, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, davem@davemloft.net,
+        pabeni@redhat.com, bpf@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, nbd@nbd.name
+Subject: Re: issue with inflight pages from page_pool
+Content-Language: en-US
+To:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <ZD2HjZZSOjtsnQaf@lore-desk>
+ <CANn89iK7P2aONo0EB9o+YiRG+9VfqqVVra4cd14m_Vo4hcGVnQ@mail.gmail.com>
+ <ZD2NSSYFzNeN68NO@lore-desk> <20230417112346.546dbe57@kernel.org>
+ <ZD2TH4PsmSNayhfs@lore-desk> <20230417120837.6f1e0ef6@kernel.org>
+ <ZD26lb2qdsdX16qa@lore-desk> <20230417163210.2433ae40@kernel.org>
+ <ZD5IcgN5s9lCqIgl@lore-desk>
+In-Reply-To: <ZD5IcgN5s9lCqIgl@lore-desk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 11:50:16AM +0530, Sai Krishna wrote:
-> From: Ratheesh Kannoth <rkannoth@marvell.com>
-> 
-> 1. Allow field hash configuration for both source and destination IPv6.
-> 2. Configure hardware parser based on hash extract feature enable flag
->    for IPv6.
-> 3. Fix IPv6 endianness issue while updating the source/destination IP
->    address via ntuple rule.
-> 
-> Fixes: 56d9f5fd2246 ("octeontx2-af: Use hashed field in MCAM key")
-> Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
-> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+On 18/04/2023 09.36, Lorenzo Bianconi wrote:
+>> On Mon, 17 Apr 2023 23:31:01 +0200 Lorenzo Bianconi wrote:
+>>>> If it's that then I'm with Eric. There are many ways to keep the pages
+>>>> in use, no point working around one of them and not the rest :(
+>>>
+>>> I was not clear here, my fault. What I mean is I can see the returned
+>>> pages counter increasing from time to time, but during most of tests,
+>>> even after 2h the tcp traffic has stopped, page_pool_release_retry()
+>>> still complains not all the pages are returned to the pool and so the
+>>> pool has not been deallocated yet.
+>>> The chunk of code in my first email is just to demonstrate the issue
+>>> and I am completely fine to get a better solution :)
+>>
+>> Your problem is perhaps made worse by threaded NAPI, you have
+>> defer-free skbs sprayed across all cores and no NAPI there to
+>> flush them :(
+> 
+> yes, exactly :)
+> 
+>>
+>>> I guess we just need a way to free the pool in a reasonable amount
+>>> of time. Agree?
+>>
+>> Whether we need to guarantee the release is the real question.
+> 
+> yes, this is the main goal of my email. The defer-free skbs behaviour seems in
+> contrast with the page_pool pending pages monitor mechanism or at least they
+> do not work well together.
+> 
+> @Jesper, Ilias: any input on it?
+> 
+>> Maybe it's more of a false-positive warning.
+>>
+>> Flushing the defer list is probably fine as a hack, but it's not
+>> a full fix as Eric explained. False positive can still happen.
+> 
+> agree, it was just a way to give an idea of the issue, not a proper solution.
+> 
+> Regards,
+> Lorenzo
+> 
+>>
+>> I'm ambivalent. My only real request wold be to make the flushing
+>> a helper in net/core/dev.c rather than open coded in page_pool.c.
+
+I agree. We need a central defer_list flushing helper
+
+It is too easy to say this is a false-positive warning.
+IHMO this expose an issue with the sd->defer_list system.
+
+Lorenzo's test is adding+removing veth devices, which creates and runs
+NAPI processing on random CPUs.  After veth netdevices (+NAPI) are
+removed, nothing will naturally invoking net_rx_softirq on this CPU.
+Thus, we have SKBs waiting on CPUs sd->defer_list.  Further more we will
+not create new SKB with this skb->alloc_cpu, to trigger RX softirq IPI
+call (trigger_rx_softirq), even if this CPU process and frees SKBs.
+
+I see two solutions:
+
+  (1) When netdevice/NAPI unregister happens call defer_list flushing 
+helper.
+
+  (2) Use napi_watchdog to detect if defer_list is (many jiffies) old, 
+and then call defer_list flushing helper.
+
+
+>>
+>> Somewhat related - Eric, do we need to handle defer_list in dev_cpu_dead()?
+
+Looks to me like dev_cpu_dead() also need this flushing helper for
+sd->defer_list, or at least moving the sd->defer_list to an sd that will
+run eventually.
+
+--Jesper
 
