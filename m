@@ -2,92 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7BA6E82FF
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 23:06:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2D506E8382
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 23:21:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229664AbjDSVGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 17:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60006 "EHLO
+        id S232525AbjDSVVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 17:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbjDSVGF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 17:06:05 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1B359D8
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 14:06:05 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id d2e1a72fcca58-63b5c830d77so167006b3a.1
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 14:06:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681938364; x=1684530364;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=jKNaeM2qEEQE2N6l0zhnkw5MRiIWrtYf5MSyVzaJqTw=;
-        b=SKvorINvxWJONgSbsnWoMgRyQzGUxCR+r1/Aie73Hpho0E85lXhICzWoK4hEbUdvae
-         aI70d0MO6hdhTqyxBcFPXR8CZXl+db4CuWwCIbfBFCeDwInWcq37Hk2/YhvqDt8w1fqh
-         xhGAxOofWA3Te2idlgEHI8AAIZ6lPMb0XNQk93wtWWvYWkLAc7/uIOrZ0i1oWWvCG1u5
-         M9w5lv+jAWHNUfqHbTX9Id3xGC6gzxtK/KXv/2uf3J03+T1VRgf8klVApGr+mbAW1rY1
-         nQdqFasWu2H9VM6k7mV8puLUWh805vXPUmuJcUd2cgME3h9Cyys0980loiGUz4EYPC9V
-         eY5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681938364; x=1684530364;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jKNaeM2qEEQE2N6l0zhnkw5MRiIWrtYf5MSyVzaJqTw=;
-        b=icRw6fSehmCVcwWkzBQmeJuSZupliRSXQiVV/RKW8Hh26Wo44N39ue3OtTL5UPB7TX
-         WgdmaYC/9ae6Xya29wH9zCW9efRyDc68Br2XeDUYTfdtDZ/i/CeWZUqgOpnevYm1Len0
-         QW/WVk++ECADEJKYQnn8OY5MIFb1OzG38LGg32yM+6HxIgn5yK8rboyyP8KPLt6wE6i3
-         QOvDO9yCAtQYmOrvZMKuk0JEeruVzMi8kwgjUft1HMv2a/o3F/HK5z1bQmT9va2VWv0U
-         KqGq38Z0jVD6GM2h7r7ofc+vnR+eEjRJ6G/7DpPshGRswIyTPmLal3iTRQafBvUk60no
-         uUEg==
-X-Gm-Message-State: AAQBX9en2GE+08EGva07/54PoOhs5nyEedgE57HKuAVLqGqaIovkrKIp
-        MyZAJQUje8tLlhTnyhlG5E63+CPIBXNxyNj+v1Jd5hb8cqqf+DNMsH2xjwKUY+pMAt9umKagHOh
-        iRVR4zdPj63IuV8X/6ndai0cLSmArETA3TZT+Mis5mBLoZHfjb5q/W73mjzkG4NIg71g=
-X-Google-Smtp-Source: AKy350Y1J63qKf8UwbYIywa7Roo7V3NPwTUDK6T71ASNey/5Wd2J90den3LnR+uZcZgPISUeSbbxw5Txqfqucg==
-X-Received: from jeroendb9128802.sea.corp.google.com ([2620:15c:100:202:597b:54fd:b74:86ff])
- (user=jeroendb job=sendgmr) by 2002:a05:6a00:9a8:b0:63d:3f94:8c3a with SMTP
- id u40-20020a056a0009a800b0063d3f948c3amr2323897pfg.6.1681938364406; Wed, 19
- Apr 2023 14:06:04 -0700 (PDT)
-Date:   Wed, 19 Apr 2023 14:05:58 -0700
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.634.g4ca3ef3211-goog
-Message-ID: <20230419210558.1893400-1-jeroendb@google.com>
-Subject: [PATCH net-next] gve: update MAINTAINERS
-From:   Jeroen de Borst <jeroendb@google.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Jeroen de Borst <jeroendb@google.com>,
-        Praveen Kaligineedi <pkaligineedi@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232649AbjDSVVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 17:21:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26097AD35;
+        Wed, 19 Apr 2023 14:21:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 867056306A;
+        Wed, 19 Apr 2023 21:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E3A8BC433D2;
+        Wed, 19 Apr 2023 21:20:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681939218;
+        bh=IZje+2r+GnRqX9Nu6Qa+XAyYOT6tBOuoqnWCr7UOMjE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=r4LfYUKvfz9Z9fUzoVZtkNVrrxHe793IfAF2rgPvPdg1qc/V7N2EDPzCarj7gglQ8
+         POimW8R3ACtXXIbILzlGRHxJ0ddXvApX7s5lWPXfOl/CZfXW5VF9Vj0o8ORNB7wf58
+         KMrYn8wS7P6hAhhdQJSWcKROZHUhl9kDqU2UPt4oKr4Nwotp/6AxeAszdWR5PwIm2N
+         rSn1yLANPmIR2WONurP693MHh00CF8C2nYzV0eADrruXvq89VDtZ5Bb/kCMlEky2lz
+         J3zAqTdNC7yQxPKK42N88efOWtMQSpMXEgX64788fPSCraGWdwbHPMLkPzTR/NgrP8
+         2mElmz372vHfA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C61F3E4D033;
+        Wed, 19 Apr 2023 21:20:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dsa: microchip: ksz8795: Correctly handle huge frame
+ configuration
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168193921880.10989.3291332705872506866.git-patchwork-notify@kernel.org>
+Date:   Wed, 19 Apr 2023 21:20:18 +0000
+References: <43107d9e8b5b8b05f0cbd4e1f47a2bb88c8747b2.1681755535.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <43107d9e8b5b8b05f0cbd4e1f47a2bb88c8747b2.1681755535.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, arun.ramadoss@microchip.com,
+        linux@rempel-privat.de, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reflects role changes in our team.
+Hello:
 
-Signed-off-by: Jeroen de Borst <jeroendb@google.com>
-Signed-off-by: Praveen Kaligineedi <pkaligineedi@google.com>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch was applied to netdev/net.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2cf9eb43ed8f..d690238df51a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8820,7 +8820,7 @@ F:	drivers/input/touchscreen/goodix*
- 
- GOOGLE ETHERNET DRIVERS
- M:	Jeroen de Borst <jeroendb@google.com>
--M:	Catherine Sullivan <csully@google.com>
-+M:	Praveen Kaligineedi <pkaligineedi@google.com>
- R:	Shailend Chand <shailend@google.com>
- L:	netdev@vger.kernel.org
- S:	Supported
+On Mon, 17 Apr 2023 20:19:33 +0200 you wrote:
+> Because of the logic in place, SW_HUGE_PACKET can never be set.
+> (If the first condition is true, then the 2nd one is also true, but is not
+> executed)
+> 
+> Change the logic and update each bit individually.
+> 
+> Fixes: 29d1e85f45e0 ("net: dsa: microchip: ksz8: add MTU configuration support")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net: dsa: microchip: ksz8795: Correctly handle huge frame configuration
+    https://git.kernel.org/netdev/net/c/3d2f8f1f184c
+
+You are awesome, thank you!
 -- 
-2.40.0.634.g4ca3ef3211-goog
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
