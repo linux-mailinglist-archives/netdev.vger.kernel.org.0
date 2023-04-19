@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 509A36E7D9E
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:08:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72BF26E7DA1
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232789AbjDSPIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 11:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58478 "EHLO
+        id S232817AbjDSPI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 11:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232656AbjDSPIO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:08:14 -0400
+        with ESMTP id S232441AbjDSPIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:08:22 -0400
 Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1B84EF4;
-        Wed, 19 Apr 2023 08:08:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBD15BB9;
+        Wed, 19 Apr 2023 08:08:10 -0700 (PDT)
 Received: from localhost.localdomain (unknown [113.92.156.116])
-        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id 197CD280231;
-        Wed, 19 Apr 2023 23:08:03 +0800 (CST)
+        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id 71210280331;
+        Wed, 19 Apr 2023 23:08:06 +0800 (CST)
 From:   Ding Hui <dinghui@sangfor.com.cn>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
@@ -28,20 +28,20 @@ Cc:     keescook@chromium.org, grzegorzx.szczurek@intel.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-hardening@vger.kernel.org, pengdonglin@sangfor.com.cn,
         huangcun@sangfor.com.cn, Ding Hui <dinghui@sangfor.com.cn>
-Subject: [PATCH net v2 1/2] iavf: Fix use-after-free in free_netdev
-Date:   Wed, 19 Apr 2023 23:07:08 +0800
-Message-Id: <20230419150709.24810-2-dinghui@sangfor.com.cn>
+Subject: [PATCH net v2 2/2] iavf: Fix out-of-bounds when setting channels on remove
+Date:   Wed, 19 Apr 2023 23:07:09 +0800
+Message-Id: <20230419150709.24810-3-dinghui@sangfor.com.cn>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230419150709.24810-1-dinghui@sangfor.com.cn>
 References: <20230419150709.24810-1-dinghui@sangfor.com.cn>
 X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlDGE9PVk8YQh0ZQhoeSk8aT1UTARMWGhIXJBQOD1
-        lXWRgSC1lBWUpKSFVCSVVKTk1VSkpNWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVSktLVUtZBg++
-X-HM-Tid: 0a879a0ef2b22eb1kusn197cd280231
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkaTkkeVkgeSk5MSEpISB9CSVUTARMWGhIXJBQOD1
+        lXWRgSC1lBWUpKSFVCSVVKTk1VSkpNWVdZFhoPEhUdFFlBWU9LSFVKSktISkxVSktLVUtZBg++
+X-HM-Tid: 0a879a0effd02eb1kusn71210280331
 X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OFE6Lio6ET0VEhcJLlYaS0hO
-        PREaCQhVSlVKTUNKQkpNQ0NPSUhKVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-        QVlKSkhVQklVSk5NVUpKTVlXWQgBWUFKS01JSTcG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mgg6KRw6MT0PGhc#PlEdS1Yr
+        Kj0aFBJVSlVKTUNKQkpNQ0NMQ05JVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+        QVlKSkhVQklVSk5NVUpKTVlXWQgBWUFDSEhMNwY+
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
@@ -51,9 +51,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We do netif_napi_add() for all allocated q_vectors[], but potentially
-do netif_napi_del() for part of them, then kfree q_vectors and leave
-invalid pointers at dev->napi_list.
+If we set channels greater when iavf_remove, the waiting reset done
+will be timeout, then returned with error but changed num_active_queues
+directly, that will lead to OOB like the following logs. Because the
+num_active_queues is greater than tx/rx_rings[] allocated actually.
 
 Reproducer:
 
@@ -103,159 +104,113 @@ Reproducer:
 
 Result:
 
-[ 4093.900222] ==================================================================
-[ 4093.900230] BUG: KASAN: use-after-free in free_netdev+0x308/0x390
-[ 4093.900232] Read of size 8 at addr ffff88b4dc145640 by task repro.sh/6699
-[ 4093.900233]
-[ 4093.900236] CPU: 10 PID: 6699 Comm: repro.sh Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
-[ 4093.900238] Hardware name: Powerleader PR2008AL/H12DSi-N6, BIOS 2.0 04/09/2021
-[ 4093.900239] Call Trace:
-[ 4093.900244]  dump_stack+0x71/0xab
-[ 4093.900249]  print_address_description+0x6b/0x290
-[ 4093.900251]  ? free_netdev+0x308/0x390
-[ 4093.900252]  kasan_report+0x14a/0x2b0
-[ 4093.900254]  free_netdev+0x308/0x390
-[ 4093.900261]  iavf_remove+0x825/0xd20 [iavf]
-[ 4093.900265]  pci_device_remove+0xa8/0x1f0
-[ 4093.900268]  device_release_driver_internal+0x1c6/0x460
-[ 4093.900271]  pci_stop_bus_device+0x101/0x150
-[ 4093.900273]  pci_stop_and_remove_bus_device+0xe/0x20
-[ 4093.900275]  pci_iov_remove_virtfn+0x187/0x420
-[ 4093.900277]  ? pci_iov_add_virtfn+0xe10/0xe10
-[ 4093.900278]  ? pci_get_subsys+0x90/0x90
-[ 4093.900280]  sriov_disable+0xed/0x3e0
-[ 4093.900282]  ? bus_find_device+0x12d/0x1a0
-[ 4093.900290]  i40e_free_vfs+0x754/0x1210 [i40e]
-[ 4093.900298]  ? i40e_reset_all_vfs+0x880/0x880 [i40e]
-[ 4093.900299]  ? pci_get_device+0x7c/0x90
-[ 4093.900300]  ? pci_get_subsys+0x90/0x90
-[ 4093.900306]  ? pci_vfs_assigned.part.7+0x144/0x210
-[ 4093.900309]  ? __mutex_lock_slowpath+0x10/0x10
-[ 4093.900315]  i40e_pci_sriov_configure+0x1fa/0x2e0 [i40e]
-[ 4093.900318]  sriov_numvfs_store+0x214/0x290
-[ 4093.900320]  ? sriov_totalvfs_show+0x30/0x30
-[ 4093.900321]  ? __mutex_lock_slowpath+0x10/0x10
-[ 4093.900323]  ? __check_object_size+0x15a/0x350
-[ 4093.900326]  kernfs_fop_write+0x280/0x3f0
-[ 4093.900329]  vfs_write+0x145/0x440
-[ 4093.900330]  ksys_write+0xab/0x160
-[ 4093.900332]  ? __ia32_sys_read+0xb0/0xb0
-[ 4093.900334]  ? fput_many+0x1a/0x120
-[ 4093.900335]  ? filp_close+0xf0/0x130
-[ 4093.900338]  do_syscall_64+0xa0/0x370
-[ 4093.900339]  ? page_fault+0x8/0x30
-[ 4093.900341]  entry_SYSCALL_64_after_hwframe+0x65/0xca
-[ 4093.900357] RIP: 0033:0x7f16ad4d22c0
-[ 4093.900359] Code: 73 01 c3 48 8b 0d d8 cb 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 89 24 2d 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 fe dd 01 00 48 89 04 24
-[ 4093.900360] RSP: 002b:00007ffd6491b7f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-[ 4093.900362] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f16ad4d22c0
-[ 4093.900363] RDX: 0000000000000002 RSI: 0000000001a41408 RDI: 0000000000000001
-[ 4093.900364] RBP: 0000000001a41408 R08: 00007f16ad7a1780 R09: 00007f16ae1f2700
-[ 4093.900364] R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000000002
-[ 4093.900365] R13: 0000000000000001 R14: 00007f16ad7a0620 R15: 0000000000000001
-[ 4093.900367]
-[ 4093.900368] Allocated by task 820:
-[ 4093.900371]  kasan_kmalloc+0xa6/0xd0
-[ 4093.900373]  __kmalloc+0xfb/0x200
-[ 4093.900376]  iavf_init_interrupt_scheme+0x63b/0x1320 [iavf]
-[ 4093.900380]  iavf_watchdog_task+0x3d51/0x52c0 [iavf]
-[ 4093.900382]  process_one_work+0x56a/0x11f0
-[ 4093.900383]  worker_thread+0x8f/0xf40
-[ 4093.900384]  kthread+0x2a0/0x390
-[ 4093.900385]  ret_from_fork+0x1f/0x40
-[ 4093.900387]  0xffffffffffffffff
-[ 4093.900387]
-[ 4093.900388] Freed by task 6699:
-[ 4093.900390]  __kasan_slab_free+0x137/0x190
-[ 4093.900391]  kfree+0x8b/0x1b0
-[ 4093.900394]  iavf_free_q_vectors+0x11d/0x1a0 [iavf]
-[ 4093.900397]  iavf_remove+0x35a/0xd20 [iavf]
-[ 4093.900399]  pci_device_remove+0xa8/0x1f0
-[ 4093.900400]  device_release_driver_internal+0x1c6/0x460
-[ 4093.900401]  pci_stop_bus_device+0x101/0x150
-[ 4093.900402]  pci_stop_and_remove_bus_device+0xe/0x20
-[ 4093.900403]  pci_iov_remove_virtfn+0x187/0x420
-[ 4093.900404]  sriov_disable+0xed/0x3e0
-[ 4093.900409]  i40e_free_vfs+0x754/0x1210 [i40e]
-[ 4093.900415]  i40e_pci_sriov_configure+0x1fa/0x2e0 [i40e]
-[ 4093.900416]  sriov_numvfs_store+0x214/0x290
-[ 4093.900417]  kernfs_fop_write+0x280/0x3f0
-[ 4093.900418]  vfs_write+0x145/0x440
-[ 4093.900419]  ksys_write+0xab/0x160
-[ 4093.900420]  do_syscall_64+0xa0/0x370
-[ 4093.900421]  entry_SYSCALL_64_after_hwframe+0x65/0xca
-[ 4093.900422]  0xffffffffffffffff
-[ 4093.900422]
-[ 4093.900424] The buggy address belongs to the object at ffff88b4dc144200
-                which belongs to the cache kmalloc-8k of size 8192
-[ 4093.900425] The buggy address is located 5184 bytes inside of
-                8192-byte region [ffff88b4dc144200, ffff88b4dc146200)
-[ 4093.900425] The buggy address belongs to the page:
-[ 4093.900427] page:ffffea00d3705000 refcount:1 mapcount:0 mapping:ffff88bf04415c80 index:0x0 compound_mapcount: 0
-[ 4093.900430] flags: 0x10000000008100(slab|head)
-[ 4093.900433] raw: 0010000000008100 dead000000000100 dead000000000200 ffff88bf04415c80
-[ 4093.900434] raw: 0000000000000000 0000000000030003 00000001ffffffff 0000000000000000
-[ 4093.900434] page dumped because: kasan: bad access detected
-[ 4093.900435]
-[ 4093.900435] Memory state around the buggy address:
-[ 4093.900436]  ffff88b4dc145500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 4093.900437]  ffff88b4dc145580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 4093.900438] >ffff88b4dc145600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 4093.900438]                                            ^
-[ 4093.900439]  ffff88b4dc145680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 4093.900440]  ffff88b4dc145700: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[ 4093.900440] ==================================================================
+[ 3506.152887] iavf 0000:41:02.0: Removing device
+[ 3510.400799] ==================================================================
+[ 3510.400820] BUG: KASAN: slab-out-of-bounds in iavf_free_all_tx_resources+0x156/0x160 [iavf]
+[ 3510.400823] Read of size 8 at addr ffff88b6f9311008 by task repro.sh/55536
+[ 3510.400823]
+[ 3510.400830] CPU: 101 PID: 55536 Comm: repro.sh Kdump: loaded Tainted: G           O     --------- -t - 4.18.0 #1
+[ 3510.400832] Hardware name: Powerleader PR2008AL/H12DSi-N6, BIOS 2.0 04/09/2021
+[ 3510.400835] Call Trace:
+[ 3510.400851]  dump_stack+0x71/0xab
+[ 3510.400860]  print_address_description+0x6b/0x290
+[ 3510.400865]  ? iavf_free_all_tx_resources+0x156/0x160 [iavf]
+[ 3510.400868]  kasan_report+0x14a/0x2b0
+[ 3510.400873]  iavf_free_all_tx_resources+0x156/0x160 [iavf]
+[ 3510.400880]  iavf_remove+0x2b6/0xc70 [iavf]
+[ 3510.400884]  ? iavf_free_all_rx_resources+0x160/0x160 [iavf]
+[ 3510.400891]  ? wait_woken+0x1d0/0x1d0
+[ 3510.400895]  ? notifier_call_chain+0xc1/0x130
+[ 3510.400903]  pci_device_remove+0xa8/0x1f0
+[ 3510.400910]  device_release_driver_internal+0x1c6/0x460
+[ 3510.400916]  pci_stop_bus_device+0x101/0x150
+[ 3510.400919]  pci_stop_and_remove_bus_device+0xe/0x20
+[ 3510.400924]  pci_iov_remove_virtfn+0x187/0x420
+[ 3510.400927]  ? pci_iov_add_virtfn+0xe10/0xe10
+[ 3510.400929]  ? pci_get_subsys+0x90/0x90
+[ 3510.400932]  sriov_disable+0xed/0x3e0
+[ 3510.400936]  ? bus_find_device+0x12d/0x1a0
+[ 3510.400953]  i40e_free_vfs+0x754/0x1210 [i40e]
+[ 3510.400966]  ? i40e_reset_all_vfs+0x880/0x880 [i40e]
+[ 3510.400968]  ? pci_get_device+0x7c/0x90
+[ 3510.400970]  ? pci_get_subsys+0x90/0x90
+[ 3510.400982]  ? pci_vfs_assigned.part.7+0x144/0x210
+[ 3510.400987]  ? __mutex_lock_slowpath+0x10/0x10
+[ 3510.400996]  i40e_pci_sriov_configure+0x1fa/0x2e0 [i40e]
+[ 3510.401001]  sriov_numvfs_store+0x214/0x290
+[ 3510.401005]  ? sriov_totalvfs_show+0x30/0x30
+[ 3510.401007]  ? __mutex_lock_slowpath+0x10/0x10
+[ 3510.401011]  ? __check_object_size+0x15a/0x350
+[ 3510.401018]  kernfs_fop_write+0x280/0x3f0
+[ 3510.401022]  vfs_write+0x145/0x440
+[ 3510.401025]  ksys_write+0xab/0x160
+[ 3510.401028]  ? __ia32_sys_read+0xb0/0xb0
+[ 3510.401031]  ? fput_many+0x1a/0x120
+[ 3510.401032]  ? filp_close+0xf0/0x130
+[ 3510.401038]  do_syscall_64+0xa0/0x370
+[ 3510.401041]  ? page_fault+0x8/0x30
+[ 3510.401043]  entry_SYSCALL_64_after_hwframe+0x65/0xca
+[ 3510.401073] RIP: 0033:0x7f3a9bb842c0
+[ 3510.401079] Code: 73 01 c3 48 8b 0d d8 cb 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 89 24 2d 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 fe dd 01 00 48 89 04 24
+[ 3510.401080] RSP: 002b:00007ffc05f1fe18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+[ 3510.401083] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f3a9bb842c0
+[ 3510.401085] RDX: 0000000000000002 RSI: 0000000002327408 RDI: 0000000000000001
+[ 3510.401086] RBP: 0000000002327408 R08: 00007f3a9be53780 R09: 00007f3a9c8a4700
+[ 3510.401086] R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000000002
+[ 3510.401087] R13: 0000000000000001 R14: 00007f3a9be52620 R15: 0000000000000001
+[ 3510.401090]
+[ 3510.401093] Allocated by task 76795:
+[ 3510.401098]  kasan_kmalloc+0xa6/0xd0
+[ 3510.401099]  __kmalloc+0xfb/0x200
+[ 3510.401104]  iavf_init_interrupt_scheme+0x26f/0x1310 [iavf]
+[ 3510.401108]  iavf_watchdog_task+0x1d58/0x4050 [iavf]
+[ 3510.401114]  process_one_work+0x56a/0x11f0
+[ 3510.401115]  worker_thread+0x8f/0xf40
+[ 3510.401117]  kthread+0x2a0/0x390
+[ 3510.401119]  ret_from_fork+0x1f/0x40
+[ 3510.401122]  0xffffffffffffffff
+[ 3510.401123]
 
-Although the patch #2 (of 2) can avoid the issuse triggered by this
-repro.sh, there still are other potential risks that if num_active_queues
-is changed to less than allocated q_vectors[] by unexpected, the
-mismatched netif_napi_add/del() can also casue UAF.
+If we detected removing is in processing, we can avoid unnecessary
+waiting and return error faster.
 
-Since we actually call netif_napi_add() for all allocated q_vectors
-unconditionally in iavf_alloc_q_vectors(), so we should fix it by
-letting netif_napi_del() match to netif_napi_add().
+On the other hand in timeout handling, we should keep the original
+num_active_queues and reset num_req_queues to 0.
 
-Fixes: 5eae00c57f5e ("i40evf: main driver core")
+Fixes: 4e5e6b5d9d13 ("iavf: Fix return of set the new channel count")
 Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
 Cc: Donglin Peng <pengdonglin@sangfor.com.cn>
 Cc: Huang Cun <huangcun@sangfor.com.cn>
 Acked-by: Michal Kubiak <michal.kubiak@intel.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
 v1 to v2:
-  - add Fixes: tag
   - add reproduction script
-  - update commit message
 
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_ethtool.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 095201e83c9d..a57e3425f960 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -1849,19 +1849,15 @@ static int iavf_alloc_q_vectors(struct iavf_adapter *adapter)
- static void iavf_free_q_vectors(struct iavf_adapter *adapter)
- {
- 	int q_idx, num_q_vectors;
--	int napi_vectors;
- 
- 	if (!adapter->q_vectors)
- 		return;
- 
- 	num_q_vectors = adapter->num_msix_vectors - NONQ_VECS;
--	napi_vectors = adapter->num_active_queues;
- 
- 	for (q_idx = 0; q_idx < num_q_vectors; q_idx++) {
- 		struct iavf_q_vector *q_vector = &adapter->q_vectors[q_idx];
--
--		if (q_idx < napi_vectors)
--			netif_napi_del(&q_vector->napi);
-+		netif_napi_del(&q_vector->napi);
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+index 6f171d1d85b7..d8a3c0cfedd0 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_ethtool.c
+@@ -1857,13 +1857,15 @@ static int iavf_set_channels(struct net_device *netdev,
+ 	/* wait for the reset is done */
+ 	for (i = 0; i < IAVF_RESET_WAIT_COMPLETE_COUNT; i++) {
+ 		msleep(IAVF_RESET_WAIT_MS);
++		if (test_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section))
++			return -EOPNOTSUPP;
+ 		if (adapter->flags & IAVF_FLAG_RESET_PENDING)
+ 			continue;
+ 		break;
  	}
- 	kfree(adapter->q_vectors);
- 	adapter->q_vectors = NULL;
+ 	if (i == IAVF_RESET_WAIT_COMPLETE_COUNT) {
+ 		adapter->flags &= ~IAVF_FLAG_REINIT_ITR_NEEDED;
+-		adapter->num_active_queues = num_req;
++		adapter->num_req_queues = 0;
+ 		return -EOPNOTSUPP;
+ 	}
+ 
 -- 
 2.17.1
 
