@@ -2,190 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A8B6E801C
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 19:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CBE6E8020
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 19:09:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233552AbjDSRGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 13:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59258 "EHLO
+        id S233376AbjDSRI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 13:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233581AbjDSRFi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 13:05:38 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2048.outbound.protection.outlook.com [40.107.94.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E25E83E1
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 10:05:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xh8+eSmRtZ0UBSO2hfgOa0tgkLXMwhDn7BcgaiBfo+4YKVuEC988QJKAnoTQO+5R3AAGPVgsMvuTsz3MD6koH4vLVAjhW+ruJ/MmhbrNnN4oeQZP0BctFRagg1a6IghvHL6+yP5xitVp7jFwsorsPyofrGjRhSFfOYBey3WgiGVgNkif0ZEpn0eb+zbcwCbp5dqFH7T5+MBt8f6XtOzKBKCKxQ+isKJHdYSa48dBnbKkoNVUVuj/dDgpD7j79BesGx2GAeVoxOeFSsLfzIkshREl3yeh4y/Krfqyvw3XhjrSXjxcURS8RokJktBP6KY0DF1z2+qc6wffHQTOTwRwIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B6784rB0wVkn5o1sJEtxuxU1XHv4sVYesaBR8fDkmmU=;
- b=JnnzBWBBpWkGrCwDTShhxkvq6m3BUIpdv4SU5AEJY/P0L6ExlY1qhNs/3TN3AcYU3r8fnYzhlz+uYxCpSrRfhhsmKOZd7IOkphFo0kTmWN5w+Tj17AnTdOG3VduLL/2J83rT8PAleFIr5/WidOArsozEY0Nt+4QmOpjRk0Zgjh1Dd5P0QZQW5kmhOsXkjOZ8WoRQPs6Bkst7w4ne288MgkJWUhPbzTN3GQpivYSY4eNgbakyPXdB3ZAGb4pczLlSojKTQtPra7+J0zSt69VHubDhao4ffE2/Q3q70FKnX7dWdZRhFADNiTRYIQUlDOuP6TicE4qaBytRwYn/zgaBxQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B6784rB0wVkn5o1sJEtxuxU1XHv4sVYesaBR8fDkmmU=;
- b=3gTxdvyfcH3zzvZ/lhul4Zg7rN0LFbhJenbjY3Laa9uPqPMzBTs8wYs8RwasgvHnZNiSCcb4vyHGFEI+bpKL+F68j1TdfDDaIiw2YByIX8lcTrh1woUze6ru0YwNhbFtLRPnEJgyTUVnycgcX9DSh1XrrCyOS5cmUPpaX41MWeA=
-Received: from MW2PR16CA0005.namprd16.prod.outlook.com (2603:10b6:907::18) by
- CY8PR12MB7657.namprd12.prod.outlook.com (2603:10b6:930:9d::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6298.45; Wed, 19 Apr 2023 17:05:34 +0000
-Received: from CO1NAM11FT071.eop-nam11.prod.protection.outlook.com
- (2603:10b6:907:0:cafe::5d) by MW2PR16CA0005.outlook.office365.com
- (2603:10b6:907::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22 via Frontend
- Transport; Wed, 19 Apr 2023 17:05:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT071.mail.protection.outlook.com (10.13.175.56) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6319.23 via Frontend Transport; Wed, 19 Apr 2023 17:05:34 +0000
-Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 19 Apr
- 2023 12:05:25 -0500
-From:   Shannon Nelson <shannon.nelson@amd.com>
-To:     <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>
-CC:     <drivers@pensando.io>, <leon@kernel.org>, <jiri@resnulli.us>,
-        <simon.horman@corigine.com>
-Subject: [PATCH v11 net-next 14/14] pds_core: Kconfig and pds_core.rst
-Date:   Wed, 19 Apr 2023 10:04:27 -0700
-Message-ID: <20230419170427.1108-15-shannon.nelson@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230419170427.1108-1-shannon.nelson@amd.com>
-References: <20230419170427.1108-1-shannon.nelson@amd.com>
+        with ESMTP id S230073AbjDSRI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 13:08:56 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67344A247
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 10:07:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1681924069; x=1713460069;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=BIghVi7DSpnnR8kVK+iRLxGDPQRkzIFIplqL99xh65w=;
+  b=a61llMJkzqsgidmAttkaVTvCv0haZ43vDRMqOe9Pjnud3cEhqvWJp5z4
+   CKde9Xjp2YTEYl4ms8bMPvMlf1YkdkRnda0CpmDnjxABNh9TCyt+PvUhl
+   9x168YDNG+i+1Yn1Qh6JBrS/dn2fmqLlwYzSz3nXi5h+Zt4l9WVtMt61L
+   U=;
+X-IronPort-AV: E=Sophos;i="5.99,208,1677542400"; 
+   d="scan'208";a="320258658"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-47cc8a4c.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2023 17:07:45 +0000
+Received: from EX19MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-m6i4x-47cc8a4c.us-east-1.amazon.com (Postfix) with ESMTPS id EC110160A81;
+        Wed, 19 Apr 2023 17:07:42 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Wed, 19 Apr 2023 17:07:39 +0000
+Received: from 88665a182662.ant.amazon.com (10.187.170.33) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Wed, 19 Apr 2023 17:07:36 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <willemdebruijn.kernel@gmail.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <syzkaller@googlegroups.com>, <willemb@google.com>
+Subject: Re: [PATCH v2 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.
+Date:   Wed, 19 Apr 2023 10:07:26 -0700
+Message-ID: <20230419170727.29740-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <643ff7a7a551f_38347529475@willemb.c.googlers.com.notmuch>
+References: <643ff7a7a551f_38347529475@willemb.c.googlers.com.notmuch>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT071:EE_|CY8PR12MB7657:EE_
-X-MS-Office365-Filtering-Correlation-Id: f3b9458a-7341-4fb2-aa4d-08db40f84a4b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bL3kMYZVebg/aknaYQiuzhl50WMm3pZuRAFlJ6PVoUJYzLljhqCieeEB5zZIsVxSwrcUR2yGD97+SjZeAEhJk3gEB0tTMjCMxlQDn0QtPZeWghES+QX4N+zxHh/kmzt5UNFEXLirM+NsE1BRoAdtxZNaUinPKf31FFmJAhx03FpBU67iBDQ6d7G+Sjce2GK3mtJiVfxyl48Lu3Sm/2xaybIDLEmVWXM29/zCkukPIsDUjKhr0R/ECPOoTXBOcQAEjk/FhDJ8N+U2QaeZrWuda8cwIqbdcvcjDFfK6GJQSNXzwEGPEjLfmBYnYOCAX1UEFQkLZIhbTXUE4oFbAn48LoTO01ls5NHRumZG0vCCBd0r52SqSUa5lkgo+aHZYYX9gxtTxrproWBhZFQeI7tYO+i8iSnzXkvLf80h13yLQDITF+ex5v9G7JUawUYTNmI2nGt96+rbD6qKC4WavM0zg/7mHtzgaLVr2HQvavArjCchCqlboY+OUIQYJDwPdp9WtKeyMPfMya0C722hCCZILShNTgx4CNXk8ZUXs2bpET1FQI0GTroRh5zQOjEEluEmxTYHVaSYiqaXklN2Se+/VjNfrVicmjPinlSWlgGoT3PxY8PCQnM4oaOICVvaR0FRamyDwCn0GQodL2S60tOLDEjLRLmmIyeZDLzod7zoiMb7h0uF6eLqycAs3AbJaZ9AfW+g89i6ilKjd2nu3HFYudIf52OC7m6zlNcWzq0TJTo=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(396003)(376002)(136003)(451199021)(40470700004)(46966006)(36840700001)(26005)(47076005)(2616005)(426003)(336012)(36860700001)(1076003)(478600001)(110136005)(54906003)(70206006)(70586007)(4326008)(316002)(44832011)(86362001)(186003)(16526019)(36756003)(41300700001)(8676002)(8936002)(5660300002)(82310400005)(81166007)(2906002)(82740400003)(356005)(40480700001)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 17:05:34.4034
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3b9458a-7341-4fb2-aa4d-08db40f84a4b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT071.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7657
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.187.170.33]
+X-ClientProxiedBy: EX19D040UWB003.ant.amazon.com (10.13.138.8) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remaining documentation and Kconfig hook for building the driver.
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 19 Apr 2023 10:16:07 -0400
+> Eric Dumazet wrote:
+> > On Tue, Apr 18, 2023 at 9:25 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > >
+> > > From:   Eric Dumazet <edumazet@google.com>
+> > > Date:   Tue, 18 Apr 2023 21:04:32 +0200
+> > > > On Tue, Apr 18, 2023 at 8:44 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > > >
+> > > > > From:   Eric Dumazet <edumazet@google.com>
+> > > > > Date:   Tue, 18 Apr 2023 20:33:44 +0200
+> > > > > > On Tue, Apr 18, 2023 at 8:09 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > > > > >
+> > > > > > > syzkaller reported [0] memory leaks of an UDP socket and ZEROCOPY
+> > > > > > > skbs.  We can reproduce the problem with these sequences:
+> > > > > > >
+> > > > > > >   sk = socket(AF_INET, SOCK_DGRAM, 0)
+> > > > > > >   sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING_TX_SOFTWARE)
+> > > > > > >   sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
+> > > > > > >   sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
+> > > > > > >   sk.close()
+> > > > > > >
+> > > > > > > sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, sets
+> > > > > > > skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, struct
+> > > > > > > ubuf_info_msgzc indirectly holds a refcnt of the socket.  When the
+> > > > > > > skb is sent, __skb_tstamp_tx() clones it and puts the clone into
+> > > > > > > the socket's error queue with the TX timestamp.
+> > > > > > >
+> > > > > > > When the original skb is received locally, skb_copy_ubufs() calls
+> > > > > > > skb_unclone(), and pskb_expand_head() increments skb->cb->ubuf.refcnt.
+> > > > > > > This additional count is decremented while freeing the skb, but struct
+> > > > > > > ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callback() is
+> > > > > > > not called.
+> > > > > > >
+> > > > > > > The last refcnt is not released unless we retrieve the TX timestamped
+> > > > > > > skb by recvmsg().  When we close() the socket holding such skb, we
+> > > > > > > never call sock_put() and leak the count, skb, and sk.
+> > > > > > >
+> > > > > > > To avoid this problem, we must (i) call skb_queue_purge() after
+> > > > > > > flagging SOCK_DEAD during close() and (ii) make sure that TX tstamp
+> > > > > > > skb is not queued when SOCK_DEAD is flagged.  UDP lacks (i) and (ii),
+> > > > > > > and TCP lacks (ii).
+> > > > > > >
+> > > > > > > Without (ii), a skb queued in a qdisc or device could be put into
+> > > > > > > the error queue after skb_queue_purge().
+> > > > > > >
+> > > > > > >   sendmsg() /* return immediately, but packets
+> > > > > > >              * are queued in a qdisc or device
+> > > > > > >              */
+> > > > > > >                                     close()
+> > > > > > >                                       skb_queue_purge()
+> > > > > > >   __skb_tstamp_tx()
+> > > > > > >     __skb_complete_tx_timestamp()
+> > > > > > >       sock_queue_err_skb()
+> > > > > > >         skb_queue_tail()
+> > > > > > >
+> > > > > > > Also, we need to check SOCK_DEAD under sk->sk_error_queue.lock
+> > > > > > > in sock_queue_err_skb() to avoid this race.
+> > > > > > >
+> > > > > > >   if (!sock_flag(sk, SOCK_DEAD))
+> > > > > > >                                     sock_set_flag(sk, SOCK_DEAD)
+> > > > > > >                                     skb_queue_purge()
+> > > > > > >
+> > > > > > >     skb_queue_tail()
+> > > > > > >
+> > > > > > > [0]:
+> > > > > >
+> > > > > > > Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
+> > > > > > > Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
+> > > > > > > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > > > > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > > > > > ---
+> > > > > > > v2:
+> > > > > > >   * Move skb_queue_purge() after setting SOCK_DEAD in udp_destroy_sock()
+> > > > > > >   * Check SOCK_DEAD in sock_queue_err_skb() with sk_error_queue.lock
+> > > > > > >   * Add Fixes tag for TCP
+> > > > > > >
+> > > > > > > v1: https://lore.kernel.org/netdev/20230417171155.22916-1-kuniyu@amazon.com/
+> > > > > > > ---
+> > > > > > >  net/core/skbuff.c | 15 ++++++++++++---
+> > > > > > >  net/ipv4/udp.c    |  5 +++++
+> > > > > > >  2 files changed, 17 insertions(+), 3 deletions(-)
+> > > > > > >
+> > > > > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > > > > > index 4c0879798eb8..287b834df9c8 100644
+> > > > > > > --- a/net/core/skbuff.c
+> > > > > > > +++ b/net/core/skbuff.c
+> > > > > > > @@ -4979,6 +4979,8 @@ static void skb_set_err_queue(struct sk_buff *skb)
+> > > > > > >   */
+> > > > > > >  int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
+> > > > > > >  {
+> > > > > > > +       unsigned long flags;
+> > > > > > > +
+> > > > > > >         if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
+> > > > > > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+> > > > > > >                 return -ENOMEM;
+> > > > > > > @@ -4992,9 +4994,16 @@ int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
+> > > > > > >         /* before exiting rcu section, make sure dst is refcounted */
+> > > > > > >         skb_dst_force(skb);
+> > > > > > >
+> > > > > > > -       skb_queue_tail(&sk->sk_error_queue, skb);
+> > > > > > > -       if (!sock_flag(sk, SOCK_DEAD))
+> > > > > > > -               sk_error_report(sk);
+> > > > > > > +       spin_lock_irqsave(&sk->sk_error_queue.lock, flags);
+> > > > > > > +       if (sock_flag(sk, SOCK_DEAD)) {
+> > > > > >
+> > > > > > SOCK_DEAD is set without holding sk_error_queue.lock, so I wonder why you
+> > > > > > want to add a confusing construct.
+> > > > > >
+> > > > > > Just bail early ?
+> > > > > >
+> > > > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > > > > index ef81452759be3fd251faaf76d89cfd002ee79256..fda05cb44f95821e98f8c5c05fba840a9d276abb
+> > > > > > 100644
+> > > > > > --- a/net/core/skbuff.c
+> > > > > > +++ b/net/core/skbuff.c
+> > > > > > @@ -4983,6 +4983,9 @@ int sock_queue_err_skb(struct sock *sk, struct
+> > > > > > sk_buff *skb)
+> > > > > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+> > > > > >                 return -ENOMEM;
+> > > > > >
+> > > > > > +       if (sock_flag(sk, SOCK_DEAD))
+> > > > > > +               return -EINVAL;
+> > > > > > +
+> > > > >
+> > > > > Isn't it possible that these sequences happen
+> > > > >
+> > > > >   close()
+> > > > >     sock_set_flag(sk, SOCK_DEAD);
+> > > > >     skb_queue_purge(&sk->sk_error_queue)
+> > > > >
+> > > > > between the skb_queue_tail() below ? (2nd race mentioned in changelog)
+> > > > >
+> > > > > I thought we can guarantee the ordering by taking the same lock.
+> > > > >
+> > > >
+> > > > This is fragile.
+> > >
+> > > Yes, but I didn't have better idea to avoid the race...
+> > >
+> > > >
+> > > > We could very well rewrite skb_queue_purge() to not acquire the lock
+> > > > in the common case.
+> > > > I had the following in my tree for a while, to avoid many atomic and
+> > > > irq masking operations...
+> > >
+> > > Cool, and it still works with my patch, no ?
+> > >
+> > 
+> > 
+> > Really the only thing that ensures a race is not possible is the
+> > typical sk_refcnt acquisition.
+> > 
+> > But I do not see why an skb stored in error_queue should keep the
+> > refcnt on the socket.
+> > This seems like a chicken and egg problem, and caused various issues
+> > in the past,
+> > see for instance [1]
+> > 
+> > We better make sure error queue is purged at socket dismantle (after
+> > refcnt reached 0)
+> 
+> The problem here is that the timestamp queued on the error queue
+> holds a reference on a ubuf if MSG_ZEROCOPY and that ubuf holds an
+> sk_ref.
+> 
+> The timestamped packet may contain packet contents, so the ubuf
+> ref is not superfluous.
+> 
+> Come to think of it, we've always maintained that zerocopy packets
+> should not be looped to sockets where they can be queued indefinitely,
+> including packet sockets.
+> 
+> If we enforce that for these tx timestamps too, then that also
+> solves this issue.
+> 
+> A process that wants efficient MSG_ZEROCOPY will have to request
+> timestamping with SOF_TIMESTAMPING_OPT_TSONLY to avoid returning the
+> data along with the timestamp.
 
-Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
----
- .../device_drivers/ethernet/amd/pds_core.rst     | 16 ++++++++++++++++
- MAINTAINERS                                      |  9 +++++++++
- drivers/net/ethernet/amd/Kconfig                 | 12 ++++++++++++
- drivers/net/ethernet/amd/Makefile                |  1 +
- 4 files changed, 38 insertions(+)
+Actually, my first attempt was similar to this that avoids skb_clone()
+silently if MSG_ZEROCOPY, but this kind of way could break users who
+were using tstamp and just added MSG_ZEROCOPY logic to their app, so
+I placed skb_queue_purge() during close().
 
-diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-index b9f310de862e..9e8a16c44102 100644
---- a/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-+++ b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-@@ -114,6 +114,22 @@ The driver supports a devlink health reporter for FW status::
-   # devlink health diagnose pci/0000:2b:00.0 reporter fw
-    Status: healthy State: 1 Generation: 0 Recoveries: 0
+---8<---
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index eb7d33b41e71..9318b438888e 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5135,7 +5149,7 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+ 	if (!skb_may_tx_timestamp(sk, tsonly))
+ 		return;
  
-+Enabling the driver
-+===================
-+
-+The driver is enabled via the standard kernel configuration system,
-+using the make command::
-+
-+  make oldconfig/menuconfig/etc.
-+
-+The driver is located in the menu structure at:
-+
-+  -> Device Drivers
-+    -> Network device support (NETDEVICES [=y])
-+      -> Ethernet driver support
-+        -> AMD devices
-+          -> AMD/Pensando Ethernet PDS_CORE Support
-+
- Support
- =======
- 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b8b275e27cdb..2d9a95cffbb3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1041,6 +1041,15 @@ F:	drivers/gpu/drm/amd/include/vi_structs.h
- F:	include/uapi/linux/kfd_ioctl.h
- F:	include/uapi/linux/kfd_sysfs.h
- 
-+AMD PDS CORE DRIVER
-+M:	Shannon Nelson <shannon.nelson@amd.com>
-+M:	Brett Creeley <brett.creeley@amd.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-+F:	drivers/net/ethernet/amd/pds_core/
-+F:	include/linux/pds/
-+
- AMD SPI DRIVER
- M:	Sanjay R Mehta <sanju.mehta@amd.com>
- S:	Maintained
-diff --git a/drivers/net/ethernet/amd/Kconfig b/drivers/net/ethernet/amd/Kconfig
-index ab42f75b9413..235fcacef5c5 100644
---- a/drivers/net/ethernet/amd/Kconfig
-+++ b/drivers/net/ethernet/amd/Kconfig
-@@ -186,4 +186,16 @@ config AMD_XGBE_HAVE_ECC
- 	bool
- 	default n
- 
-+config PDS_CORE
-+	tristate "AMD/Pensando Data Systems Core Device Support"
-+	depends on 64BIT && PCI
-+	help
-+	  This enables the support for the AMD/Pensando Core device family of
-+	  adapters.  More specific information on this driver can be
-+	  found in
-+	  <file:Documentation/networking/device_drivers/ethernet/amd/pds_core.rst>.
-+
-+	  To compile this driver as a module, choose M here. The module
-+	  will be called pds_core.
-+
- endif # NET_VENDOR_AMD
-diff --git a/drivers/net/ethernet/amd/Makefile b/drivers/net/ethernet/amd/Makefile
-index 42742afe9115..2dcfb84731e1 100644
---- a/drivers/net/ethernet/amd/Makefile
-+++ b/drivers/net/ethernet/amd/Makefile
-@@ -17,3 +17,4 @@ obj-$(CONFIG_PCNET32) += pcnet32.o
- obj-$(CONFIG_SUN3LANCE) += sun3lance.o
- obj-$(CONFIG_SUNLANCE) += sunlance.o
- obj-$(CONFIG_AMD_XGBE) += xgbe/
-+obj-$(CONFIG_PDS_CORE) += pds_core/
--- 
-2.17.1
+-	if (tsonly) {
++	if (tsonly || skb_zcopy(orig_skb)) {
+ #ifdef CONFIG_INET
+ 		if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_STATS) &&
+ 		    sk_is_tcp(sk)) {
+---8<---
 
+
+> 
+> > I suggest we generalize fix that went in this patch :
+> > 
+> > dd4f10722aeb10f4f582948839f066bebe44e5fb net: fix socket refcounting
+> > in skb_complete_wifi_ack()
+> > 
+> > Instead of adding yet another rule about a queue lock, and a socket
+> > flag, this would keep things tied to sk_refcnt.
+> > 
+> > Also I do not think TCP has an issue, please take a look at
+> > 
+> > [1]
+> > commit e0c8bccd40fc1c19e1d246c39bcf79e357e1ada3    net: stream: purge
+> > sk_error_queue in sk_stream_kill_queues()
+> > 
+> > (A leak in TCP would be caught in a few hours by syzbot really)
+
+I have tested TCP before posting v1 and found this skb_queue_purge()
+was to prevent the same issue, but Willem's point sounds reasonable
+that packets queued in qdisc or device could be put in the error queue
+after close() completes.  That's why I mentioned TCP since v2.
