@@ -2,254 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23DF66E81AD
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 21:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63A796E81DE
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 21:26:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230427AbjDSTG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 15:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33466 "EHLO
+        id S230488AbjDST0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 15:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbjDSTGZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 15:06:25 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E2D40EC;
-        Wed, 19 Apr 2023 12:06:21 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33JJ658A056800;
-        Wed, 19 Apr 2023 14:06:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1681931165;
-        bh=E+cjoie7RPKxaQf86Kyiqb8pq9K0t0ykgWwdaQ9rxoQ=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=qfIGhe4QdpZA2a4p3EkKA9wO5DkmbgZVQBH4iMoqMyMwCoL+eXmnY0QEHVHC7jYcj
-         GR4UEgDWlCVZ3lbtfo06cI6cB3V+5iS2mVYGcHjQzmZ+hvR+I40ZpqL9bfpW2Fomgr
-         zSfFqCDeMg2NDF71uk6QKI29HM9mn+1Yd9RbldwI=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33JJ65eW057983
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 19 Apr 2023 14:06:05 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 19
- Apr 2023 14:06:05 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Wed, 19 Apr 2023 14:06:04 -0500
-Received: from [128.247.81.102] (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33JJ64lN081689;
-        Wed, 19 Apr 2023 14:06:04 -0500
-Message-ID: <fb137f96-b1a1-30ee-cd92-d52f1f0f76d7@ti.com>
-Date:   Wed, 19 Apr 2023 14:06:04 -0500
+        with ESMTP id S230217AbjDSTZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 15:25:58 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2103.outbound.protection.outlook.com [40.107.94.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9AEF6EA7;
+        Wed, 19 Apr 2023 12:25:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iokWZPZrSN+WFi38Seu4xjKEjAJkWxwgBMj83ms2mYfVgChRBKPtXbvlPhq8mWrVdUhFc8rpPT5NFNPUh1eyHjt5VT5xH10lApEnRxcJNbmU2PVqwOZCNl26sqMcSob/AliS0HV8SVcQZvFXkl9Cucp7ZUXR9MByq68pe0ZMoXhR4OsgVew9/3t5ie7Ybugq4JmDJeRxo0oSn1vTu2F5RJ1/DirlZooazSs9varTWMgy0xUfthtqWDl5pzzrq2/fy2Erd78Wf56CuDIPibVfdpf4dPrfxaDwXiVoxT2f83rWtQQ4z1LbUNTBljAfKDXXhUNrC/sLklqwJNBZYhE2cA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=f53QQ0GaY8O9nn5Ne6zaGgTPznW/39NUV3Ki2pcXd98=;
+ b=A3SRpJJ59X4niL6paEOhzs1RMsLCh7CEPmo7rdsbGiQK57tseYE5gOxY7MM6OnPESU0REcXXIDuMQm4G7LN75qMDWGl84+utjZsGM7OWzu5aN21pAVnRDBdxgBV4SSvSm6cadCdAvcAQozxx/Zql87+X0UFlRumOYJqwy8OZXI+6mcH4SSyUUnMtyhz1+u8QCjQJB60cuYsrvfPqSX4lvPRkOz+K/20KaY7LtA/zJZpy6iTzydp40ElHGNqEoQeYmYx1ZjoM4VthNnHQ28Q+zbhiYG9WB3n5aDNhLlAGA2QlzcaJnWDyTDKZvbhFELjb4txe9T1rjiMvPVbqQPmOhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f53QQ0GaY8O9nn5Ne6zaGgTPznW/39NUV3Ki2pcXd98=;
+ b=bOAA/NYj5CNt8unVStJy4yaZlogitezlEtau5zUu5ttZ0z0pv7ZZ+uGQP4a58eJDiW9zJ0utGnUeCo/v/xORVSHZ+9Y12LOzJRoN51lyHjHCrZBM1hhzogctARXDU8XeOalBz/v4Ua6rcEMoVULRqaLWkBnZ+4CDHR0BiYpiPvY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CH0PR13MB4682.namprd13.prod.outlook.com (2603:10b6:610:de::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Wed, 19 Apr
+ 2023 19:25:50 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Wed, 19 Apr 2023
+ 19:25:49 +0000
+Date:   Wed, 19 Apr 2023 21:25:41 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saurabh Sengar <ssengar@linux.microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Arnd Bergmann <arnd@arndb.de>, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: hyperv: select CONFIG_NLS for mac address setting
+Message-ID: <ZEBANRDxW+yod7yA@corigine.com>
+References: <20230417205553.1910749-1-arnd@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230417205553.1910749-1-arnd@kernel.org>
+X-ClientProxiedBy: AM0PR06CA0127.eurprd06.prod.outlook.com
+ (2603:10a6:208:ab::32) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [RFC PATCH 5/5] can: m_can: Add hrtimer to generate software
- interrupt
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-CC:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Andrew Davis <afd@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-can@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Schuyler Patton <spatton@ti.com>
-References: <20230413223051.24455-1-jm@ti.com>
- <20230413223051.24455-6-jm@ti.com>
- <20230414-bounding-guidance-262dffacd05c-mkl@pengutronix.de>
-Content-Language: en-US
-From:   "Mendez, Judith" <jm@ti.com>
-In-Reply-To: <20230414-bounding-guidance-262dffacd05c-mkl@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB4682:EE_
+X-MS-Office365-Filtering-Correlation-Id: 11b874f4-5286-4df8-5a37-08db410be1e1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5EhNkA2TElgnpkoRTEpcEg0I47x99hTjdHpVlXKPXBLHsxciztUDAH5caUdZKJQ4Aorw5Wj1k8V+KLAQS96BS8mYdqvtHRlzveNGAsAKOymrct1q+raGYMRtVmPQ61uMK8IOMGkpfC9gyb/sHopKinULVmf8y7uTDLS7Hhz+Clc/HT6VlFDPz7/QOE2QA3Z8p2tDSNz3A84LkQ3ZWpx1ON2zxhPMoMH3Zz3mZzwm/wKbcNFzGYcrOITTMsGIj5JpZehfPQkXWiCYs80D/9rS9JOzmRB/e5bIOQo5jsal4a70yZ6IpdLomhoaqJtsPnI/PXVYhSAtXGdLxsWZzlWJHzyC9YDVHL5Dufp3QHOG1LR3pU5xbC/WCDDFzDaXIXJIsDybB95NMTQDX89T5IiUwzeXE/aE9czTsiwtEUiQQUKeWdzaOFXGDU8octwChgZRVaHLRJyaI/wM7j0+D69gEffUec/3SsOm1hX/Kh7yqmeEBKZk4rylfUSwevn98ixnFJHqNqKT4SpCbcoolIfUFU7yQ1J3L2IPpk+ioOzVaaADOVpTjHKZoS2/LQgHem5J6TWIW/nuQkQqEutMltD+6lcTrzL2s6nKnskqjBNvsJc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(376002)(39840400004)(346002)(366004)(451199021)(6506007)(6512007)(478600001)(86362001)(2616005)(186003)(6666004)(6486002)(4326008)(66946007)(8676002)(6916009)(5660300002)(7416002)(66556008)(8936002)(66476007)(4744005)(2906002)(44832011)(38100700002)(316002)(41300700001)(36756003)(54906003)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZdQrVrwjknTteEEYoiTSONlYUse9de0sBryeL4TdnUdF+kuspWNgzlVW+CMx?=
+ =?us-ascii?Q?aonOTe71rji6rq8W6vW9q5Uyj3ZEMrsWRHtGmKftZEHyAtgrUGZVxHTWUd3Q?=
+ =?us-ascii?Q?BzqY8I5TvA9IWndHm1EiP1haTmJNcdPERUs8Tuk8Tm2qmbUwO/1dLi34Su4s?=
+ =?us-ascii?Q?mUn78a4e3SIYnFExV9EPd5M3DLp3StWCjb5+MMDxuckFLzxmmHmsZW9uabtD?=
+ =?us-ascii?Q?ElxgAY5SSo5Cknkx4QlyCcalGn0jsAvlz5uKrP0iCvNz1fmNtB4WxvkTVD8F?=
+ =?us-ascii?Q?X9yJDpSOhGEUjhHw3SXhDNTkcfEM+yXvGu8udXaJhbn3Mhao76swA9yxzLkZ?=
+ =?us-ascii?Q?bf0jqaVUYeMpCSzfZxRYaZ0NNF2JTwxOIGYuU8ndzXls+RFKFZVH0rEtI2uc?=
+ =?us-ascii?Q?E/AfGMpR26Pjv1fuXB3xx5BY/TP8XGMJ7uO97YDbD8pULwj+4AVsQNzSj+wr?=
+ =?us-ascii?Q?V17/ry3JNQzH/gNYx0sCtjr5owfpEVOLb1rx6FFLXMTGE1L05ub5V/WfwNoI?=
+ =?us-ascii?Q?+S1IzS1Fo+v45p/AaOsjrnsnicO754GacJLKouzOegjT6tlh/1HPCu/sdLcj?=
+ =?us-ascii?Q?mhhuj3wj8bm27aqZnZb4mwcnBFit4yzKY4mCaUUcZP2w/rPosHT2fIEnW/RA?=
+ =?us-ascii?Q?JjaGCJhQ66NNWWqgJh73W3xBb6IqdaT3QwmECHsurzPScm+RYxn+obk34Zy4?=
+ =?us-ascii?Q?/u3TvVlk87rfaW+k77fYJx9Ei1AmR1KbBSeOpa0gM+oFNjt5abEIQFdYADfG?=
+ =?us-ascii?Q?tbzzsqA5g2ynhB+zPedUgYga/tSE2NvmDb+nEdjXhVQj2OZMBqSGYFJHlcw+?=
+ =?us-ascii?Q?N3xecYacx2MfPvLSig8oemYkuYSXP0EQWoH99jPPuUC12lQESiHgkqEnC0Bb?=
+ =?us-ascii?Q?jUEpazMTyx4Djnqz5efWLqeWmtipeepi9bW8IaUiHAEAJDJ9C63lbu64KuOU?=
+ =?us-ascii?Q?7STiUi9o00sXJu3RSCilMv7rDoiRCs7RPGyfEfj+6/NB081RnFUWWas15nPq?=
+ =?us-ascii?Q?m6qn2zp+v6bMkJheJjzNzMJ0z4ekwEkCQwy2GpFEFZjWSfr50BnuCp+NKTk8?=
+ =?us-ascii?Q?C90He7WckTbXI9SYd0Fr9TWYEpIOirnSXvN/aFQsmNU0YxjVyyjBp3QW9KDs?=
+ =?us-ascii?Q?5KfRnwocV7aqdT9zkbufnkUReKUQkhpsQHy11+AHeBbqA1WFoAp4Co4ahJyk?=
+ =?us-ascii?Q?t8k3aSYhLGVAQbhlNK2OvUTu9oggfbX8EvJMAmQT+rKj8QNoKeOrheNlyxef?=
+ =?us-ascii?Q?lZHgZ/lcGfGDOUeL+XxrfIG+3eUTIbcYoIeusovMLzMpZ8DOg2fR3+1nkBSm?=
+ =?us-ascii?Q?KY+C28353g7KPwbSXdS5dCajOz0xZ62K3Wk8JOPHKCUT+kNu6Z3S8dJbBxup?=
+ =?us-ascii?Q?mj82KsN744oDoD0UaBY2/Vjie9vIaE7z+nXk866iWTEIOyxyx1JFSI3UyhpP?=
+ =?us-ascii?Q?yJNVH6wUyFvLENL6NoHD+1+YriSBcqZExBHOjd3bHmMZe5ovf/jNvqOIiw37?=
+ =?us-ascii?Q?qTarhqcXL28yMzc93MvwVi5Ff+Jy2ny+qe/ef3QzglpFYjFrbW4XWnQtw9Ra?=
+ =?us-ascii?Q?YBh6QPvcmx6Q6R3oK87+dbgK8h9a0jtmDBKKyZpws6v6g1EzLwm6cUmOBFtk?=
+ =?us-ascii?Q?fz3ciowCbDGfi3PCZn1ZwOMGxM1k+prEHEPwylvObBZ9MCzqFQCKjp5I/5Wl?=
+ =?us-ascii?Q?D0hapw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 11b874f4-5286-4df8-5a37-08db410be1e1
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 19:25:49.6610
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1LpBZTATXmmUE7rs40gDS2hvqnqL1OSYy84QotF3XcAvhow+6GJKqSyyrVIShbwDnkBi6tFOnNxd76vb8xvH6Xjeb2f7MwG7arH2w3ZBGnk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB4682
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marc,
+On Mon, Apr 17, 2023 at 10:55:48PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> A rare randconfig build error happens when this driver is
+> enabled, but nothing else enables NLS support:
+> 
+> x86_64-linux-ld: drivers/net/hyperv/rndis_filter.o: in function `rndis_filter_set_device_mac':
+> rndis_filter.c:(.text+0x1536): undefined reference to `utf8s_to_utf16s'
+> 
+> This is normally selected by PCI, USB, ACPI, or common file systems.
+> Since the dependency on ACPI is now gone, NLS has to be selected
+> here directly.
+> 
+> Fixes: 38299f300c12 ("Driver: VMBus: Add Devicetree support")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-On 4/14/2023 1:20 PM, Marc Kleine-Budde wrote:
-> On 13.04.2023 17:30:51, Judith Mendez wrote:
->> Add a hrtimer to MCAN struct. Each MCAN will have its own
->> hrtimer instantiated if there is no hardware interrupt found.
->>
->> The hrtimer will generate a software interrupt every 1 ms. In
-> 
-> Are you sure about the 1ms?
-> 
->> hrtimer callback, we check if there is a transaction pending by
->> reading a register, then process by calling the isr if there is.
->>
->> Signed-off-by: Judith Mendez <jm@ti.com>
->> ---
->>   drivers/net/can/m_can/m_can.c          | 24 ++++++++++++++++++++++--
->>   drivers/net/can/m_can/m_can.h          |  3 +++
->>   drivers/net/can/m_can/m_can_platform.c |  9 +++++++--
->>   3 files changed, 32 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
->> index 8e83d6963d85..bb9d53f4d3cc 100644
->> --- a/drivers/net/can/m_can/m_can.c
->> +++ b/drivers/net/can/m_can/m_can.c
->> @@ -23,6 +23,7 @@
->>   #include <linux/pinctrl/consumer.h>
->>   #include <linux/platform_device.h>
->>   #include <linux/pm_runtime.h>
->> +#include <linux/hrtimer.h>
->>   
->>   #include "m_can.h"
->>   
->> @@ -1584,6 +1585,11 @@ static int m_can_close(struct net_device *dev)
->>   	if (!cdev->is_peripheral)
->>   		napi_disable(&cdev->napi);
->>   
->> +	if (dev->irq < 0) {
->> +		dev_info(cdev->dev, "Disabling the hrtimer\n");
-> 
-> Make it a dev_dbg() or remove completely.
-> 
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-Will do, thanks.
-
->> +		hrtimer_cancel(&cdev->hrtimer);
->> +	}
->> +
->>   	m_can_stop(dev);
->>   	m_can_clk_stop(cdev);
->>   	free_irq(dev->irq, dev);
->> @@ -1792,6 +1798,19 @@ static netdev_tx_t m_can_start_xmit(struct sk_buff *skb,
->>   	return NETDEV_TX_OK;
->>   }
->>   
->> +enum hrtimer_restart hrtimer_callback(struct hrtimer *timer)
->> +{
->> +	irqreturn_t ret;
-> 
-> never read value?
-> 
-
-I have removed ret completely now.
-
->> +	struct m_can_classdev *cdev =
->> +		container_of(timer, struct m_can_classdev, hrtimer);
->> +
->> +	ret = m_can_isr(0, cdev->net);
->> +
->> +	hrtimer_forward_now(timer, ns_to_ktime(5 * NSEC_PER_MSEC));
-> 
-> There's ms_to_ktime()....and the "5" doesn't match your patch
-> description.
-> 
->> +
->> +	return HRTIMER_RESTART;
->> +}
->> +
->>   static int m_can_open(struct net_device *dev)
->>   {
->>   	struct m_can_classdev *cdev = netdev_priv(dev);
->> @@ -1836,8 +1855,9 @@ static int m_can_open(struct net_device *dev)
->>   	}
->>   
->>   	if (err < 0) {
->> -		netdev_err(dev, "failed to request interrupt\n");
->> -		goto exit_irq_fail;
->> +		dev_info(cdev->dev, "Enabling the hrtimer\n");
->> +		cdev->hrtimer.function = &hrtimer_callback;
->> +		hrtimer_start(&cdev->hrtimer, ns_to_ktime(0), HRTIMER_MODE_REL_PINNED);
-> 
-> IMHO it makes no sense to request an IRQ if the device doesn't have one,
-> and then try to fix up things in the error path. What about this?
-> 
-> --- a/drivers/net/can/m_can/m_can.c
-> +++ b/drivers/net/can/m_can/m_can.c
-> @@ -1831,9 +1831,11 @@ static int m_can_open(struct net_device *dev)
->                   err = request_threaded_irq(dev->irq, NULL, m_can_isr,
->                                              IRQF_ONESHOT,
->                                              dev->name, dev);
-> -        } else {
-> +        } else if (dev->irq) {
->                   err = request_irq(dev->irq, m_can_isr, IRQF_SHARED, dev->name,
->                                     dev);
-> +        } else {
-> +                // polling
->           }
->   
->           if (err < 0) {
-> 
->>   	}
-
-Thanks for the recommendation, I will include in v2.
-
->>   
->>   	/* start the m_can controller */
->> diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
->> index a839dc71dc9b..ed046d77fdb9 100644
->> --- a/drivers/net/can/m_can/m_can.h
->> +++ b/drivers/net/can/m_can/m_can.h
->> @@ -28,6 +28,7 @@
->>   #include <linux/pm_runtime.h>
->>   #include <linux/slab.h>
->>   #include <linux/uaccess.h>
->> +#include <linux/hrtimer.h>
->>   
->>   /* m_can lec values */
->>   enum m_can_lec_type {
->> @@ -93,6 +94,8 @@ struct m_can_classdev {
->>   	int is_peripheral;
->>   
->>   	struct mram_cfg mcfg[MRAM_CFG_NUM];
->> +
->> +	struct hrtimer hrtimer;
->>   };
->>   
->>   struct m_can_classdev *m_can_class_allocate_dev(struct device *dev, int sizeof_priv);
->> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
->> index 9c1dcf838006..53e1648e9dab 100644
->> --- a/drivers/net/can/m_can/m_can_platform.c
->> +++ b/drivers/net/can/m_can/m_can_platform.c
->> @@ -7,6 +7,7 @@
->>   
->>   #include <linux/phy/phy.h>
->>   #include <linux/platform_device.h>
->> +#include <linux/hrtimer.h>
->>   
->>   #include "m_can.h"
->>   
->> @@ -98,8 +99,12 @@ static int m_can_plat_probe(struct platform_device *pdev)
->>   	addr = devm_platform_ioremap_resource_byname(pdev, "m_can");
->>   	irq = platform_get_irq_byname(pdev, "int0");
->>   	if (IS_ERR(addr) || irq < 0) {
-> 
-> What about the IS_ERR(addr) case?
-> 
-
-Added, thanks.
-
->> -		ret = -EINVAL;
->> -		goto probe_fail;
->> +		if (irq == -EPROBE_DEFER) {
->> +			ret = -EPROBE_DEFER;
->> +			goto probe_fail;
->> +		}
->> +		dev_info(mcan_class->dev, "Failed to get irq, initialize hrtimer\n");
->> +		hrtimer_init(&mcan_class->hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
-> 
-> I don't like it when polling is unconditionally set up in case of an irq
-> error. I'm not sure if we need an explicit device tree property....
-
-This is an interesting thought, I would definitely like to look more 
-into this. Though I am thinking it would be part of future optimization 
-patch. Thanks so much for your recommendation.
-
-regards,
-Judith
