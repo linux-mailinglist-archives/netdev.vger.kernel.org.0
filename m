@@ -2,99 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E71C76E72D3
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 08:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4ECA6E72D8
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 08:06:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231200AbjDSGE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 02:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52700 "EHLO
+        id S229791AbjDSGGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 02:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbjDSGE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 02:04:28 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C53A59F5
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 23:04:25 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id d9443c01a7336-1a8097c1ccfso11337085ad.1
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 23:04:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681884265; x=1684476265;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=B+H8RhBMogthpmuBbJDww8ooKV/3ijSjF1pDJsm3P10=;
-        b=qHnrSRerkvfZ77SZv7yKoiEsxXD5Uehxu1DQJpSa1Js2YpSZVC/t+ggZKLcXUg5sYU
-         9I3ER9YaZEKdqNK1iKcg+bPcSbdKTvQgp77trL7rb8fa++giOgFSa0400LJnMTz4OV0j
-         85u5iAWvAuzEF0Pt8X7E6tfzdKD2rvRRRmxk6oocKwN8QlDUOaNIy5fd5/s76Tlw+hVP
-         bPCaeuIeA8hVR6kYMLyl6Er2TfC1omicxoVSOpXrUtlh3uaw1U3Xh0DEdqnaUZQ7PXCY
-         Vo4C6USMuFoxntfvEHiaMDY6PG0qpb7PnTk1EavqXoqBivKfi81cRqYSUYlur3falubH
-         AYyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681884265; x=1684476265;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=B+H8RhBMogthpmuBbJDww8ooKV/3ijSjF1pDJsm3P10=;
-        b=IDk2qYyPqqaQNC1CmTQvqrIkxUDttAAG8riAeQRauyp7ywTWhRSgG70RRzGTLN4bNU
-         kvJKEJ+CbrrCa4jMJodSGB3LPOiO8CZmLoJFlTY342VDksuPaqxG3ltc+8N+hpK22B4k
-         8c3PZZQo8vrwblkK9zoa/pRUNzZYibBN4iCGRIR6e3vxFuVUVi7ilIw5bznh043uREAr
-         3WeGe9QDcxNdky9pzbUvEHyBJiEVjWE1DpLuURne4BjTbNCwXwRBnpKicTC1vkNElJhP
-         ydRUoMJWHUT1no10UktQQsDsX5MkYyYDZE7RXtCgWMnfGIDz8VHyW7UIyXDz1JeU8hki
-         mYdA==
-X-Gm-Message-State: AAQBX9eGGB8y3ZV1n771TYLLyQ4pL3cEKfqo6ki25cTZTlwx1XL3avbZ
-        nBcvFijY0FaiEBr1Bnrdf6c=
-X-Google-Smtp-Source: AKy350aKzzvX8Q2el2OGBqCAT+kWhawXe7Oxw5pK2ZNcdU5PWKcBVFr+ANEzQtBVzy4t4JheSTseyQ==
-X-Received: by 2002:a17:902:e5c1:b0:19f:a694:6d3c with SMTP id u1-20020a170902e5c100b0019fa6946d3cmr5476218plf.55.1681884264950;
-        Tue, 18 Apr 2023 23:04:24 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id bb7-20020a170902bc8700b001a686578b44sm10357425plb.110.2023.04.18.23.04.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Apr 2023 23:04:24 -0700 (PDT)
-Date:   Wed, 19 Apr 2023 14:04:18 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        with ESMTP id S229688AbjDSGGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 02:06:43 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A722F59F5
+        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 23:06:42 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id CD3CF20847;
+        Wed, 19 Apr 2023 08:06:40 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id HwxyE5Ibq8Kw; Wed, 19 Apr 2023 08:06:40 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 649B1207BB;
+        Wed, 19 Apr 2023 08:06:40 +0200 (CEST)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout2.secunet.com (Postfix) with ESMTP id 5F14480004A;
+        Wed, 19 Apr 2023 08:06:40 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Wed, 19 Apr 2023 08:06:40 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Wed, 19 Apr
+ 2023 08:06:39 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 851773182BFB; Wed, 19 Apr 2023 08:06:39 +0200 (CEST)
+Date:   Wed, 19 Apr 2023 08:06:39 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Benedict Wong <benedictwong@google.com>
+CC:     Martin Willi <martin@strongswan.org>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Liang Li <liali@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>
-Subject: Re: [PATCHv5 net-next] bonding: add software tx timestamping support
-Message-ID: <ZD+EYi4zKj4qlj8z@Laptop-X1>
-References: <20230418034841.2566262-1-liuhangbin@gmail.com>
- <20230418205023.414275ab@kernel.org>
- <ZD9pbffw3s1HVwvE@Laptop-X1>
- <20230418211746.2aa60760@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH ipsec v2] xfrm: Preserve xfrm interface secpath for
+ packets forwarded
+Message-ID: <ZD+E78dbXrUWR5mq@gauss3.secunet.de>
+References: <20230412085615.124791-1-martin@strongswan.org>
+ <CANrj0bb6nGzsQMH3eOHHD_fukynFb0NVS6=+xqGrWmAZ+gco1g@mail.gmail.com>
+ <CANrj0bYFzrLsVx=VPY1FR8VpmQ7CYeJWDKv6iE3fPxBFh26qVQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230418211746.2aa60760@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CANrj0bYFzrLsVx=VPY1FR8VpmQ7CYeJWDKv6iE3fPxBFh26qVQ@mail.gmail.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 09:17:46PM -0700, Jakub Kicinski wrote:
-> On Wed, 19 Apr 2023 12:09:17 +0800 Hangbin Liu wrote:
-> > > I'll apply Jay's ack from v4 since these are not substantial changes.
-> > > Thanks!  
-> > 
-> > Sorry, not sure if I missed something. bond_ethtool_get_ts_info() could be
-> > called without RTNL. And we have ASSERT_RTNL() in v4.
+On Mon, Apr 17, 2023 at 03:01:26PM -0700, Benedict Wong wrote:
+> I believe I have a potential solution that caches the policy matches,
+> rather than clearing the secpath, which should allow for repeated
+> matches against a secpath entry, while allowing other already-matched
+> secpath entries to not need to match nested policies. That should
+> solve for the general case where the secpath gets checked against
+> policies multiple times (both in the forwarding case, as well as in
+> the nested transport mode in tunnel mode case.
 > 
-> Are there any documented best practices on when to keep an ack?
-> I'm not aware of such a doc, it's a bit of a gray zone.
-> IMHO the changes here weren't big enough to drop Jay's tag.
+> Forgive my not knowing of convention; should I send that as a separate
+> patch, or append it as a reply to this thread?
 
-I don't know either. Some times I also struggle on whether I should keep the
-ack tag, then I drop the tag just in case the reviewer doesn't agree with my
-change.
+Send it as a separate patch.
 
-Anyway, thanks a lot for your patient review and comments.
-
-Regards
-Hangbin
+Thanks!
