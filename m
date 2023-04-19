@@ -2,143 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE1466E739F
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 09:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC63F6E73AB
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 09:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231264AbjDSHEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 03:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35884 "EHLO
+        id S231628AbjDSHJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 03:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbjDSHEO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 03:04:14 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382AF1985;
-        Wed, 19 Apr 2023 00:04:10 -0700 (PDT)
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DCDC41C0015;
-        Wed, 19 Apr 2023 07:04:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1681887849;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h0B6abn8eVYRAhqcUdwi/N3mg95GJYAXeGF36SP3PmQ=;
-        b=BMjo1e8T7SI0mKvcbi0VZ5kfoUSO8YmF4GXuj+wgnuTGXRIVoe3rf5CsSJO0xF8Rw/HMn4
-        dDhMcjD47apPhcERNZJPBfmCVQdoA2Q1I1l9vIPBMDQ7AlWm3V+5GXTWDdHCdnwk/plt0q
-        isn/+JrqIPkgUjWu73Fg42WZrgaeRRPAMrafcPIc9iNpwVSNZNjRqI1OPS1sdX41rlQ5+5
-        N1Oc9dlljQlXPYNGu7egA5+kP8lPLpCsPur9hvh+Majm77h0oTsSA1L+Va7Hrv4mWU0hiF
-        Echtr04nb0NnRkQqMWpMWXJ9AJ1Xagb9mmrGAEJ4/MRO90nOMAXVdxaNQKcReQ==
-Date:   Wed, 19 Apr 2023 09:04:06 +0200
-From:   Herve Codina <herve.codina@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230153AbjDSHJ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 03:09:29 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1632710;
+        Wed, 19 Apr 2023 00:09:27 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id 5b1f17b1804b1-3f17eb6b10fso2456625e9.3;
+        Wed, 19 Apr 2023 00:09:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681888166; x=1684480166;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gncw5NSYKJdC+oXb5vIMmABpBB/w2kQIQqkwx1G7ip0=;
+        b=jE/02GvCWwsIBkkZC7nqWL71z3VWDSjb0p+VqxANr0zdhwqFx3PMsodzHk6g1kS+sa
+         u1dlw35nt3ABDoU5sCnbd1mF92h+XdLlAM1W+TzPi0OAnazAyN4Lg5l23Ga0Bn8JyCTH
+         EqKuPdfswmFGbTvPYCGrp6MnFf70HKr2lXONtTEyO0c9rhEtYOWACU2vGaSkMg+gM6ML
+         RV8sFwI6oe1E6q9Jh1ZyN4CbSeuABf5114iupLWs+UHvF1FOEixYyvqyIEuVwuEvkoKP
+         JsA1fMr6BevonVOiJGG7hkXTjLC0nggIzQRKPsbHtpt+E7Lc0nzZS47wzFl4cI1+knFU
+         ngKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681888166; x=1684480166;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gncw5NSYKJdC+oXb5vIMmABpBB/w2kQIQqkwx1G7ip0=;
+        b=QLuo7NdP7sfB2vGnXUW1sgY7pJr8BjuMn9vg6XdotTtPI4ZmghECvMeuJuiQUYvywk
+         VaJ7Yz2Lh9l4XUBqDAmgNX5ZdEPs8sH58JoZ0Z/jSCx3O7snyHfj3635na/SAmwkAMe0
+         KA4bJFgmYjsSarx3j6c4RII8KsNWx9+2qSaKiIaFgXL9Txw6lKlqrI9KiaD9Y5Tb9t5r
+         kGcbcd2jWMCSvAUA1DT/MlEgweNMCFKxoWMtX63p8W+prlGQbizv6SCjN8rF2rCBYptj
+         KL4hCvFd9Pof6wzf2cJWDEvbKOmU418qfYWhqIwd6Cv1AkLF2qATZbDKPiciXkf6fKxE
+         mS7Q==
+X-Gm-Message-State: AAQBX9dn1fi5u0d4MEtwsb63wutF6fvsMBDGedndM1vv+ofcj01wtXIu
+        bcXa+Fj/HQyJoDUXh1cfH40=
+X-Google-Smtp-Source: AKy350YV8zET0vM4q6+vXD1E7cJckJiUb0/Ni6CnVlFipLUT0QudslX6e3wYbpWqftH/rcdvPj/pDQ==
+X-Received: by 2002:adf:e58a:0:b0:2ef:1c8c:1113 with SMTP id l10-20020adfe58a000000b002ef1c8c1113mr4361586wrm.9.1681888166283;
+        Wed, 19 Apr 2023 00:09:26 -0700 (PDT)
+Received: from [192.168.0.103] ([77.124.103.108])
+        by smtp.gmail.com with ESMTPSA id f14-20020a5d58ee000000b002f3e1122c1asm14963527wrd.15.2023.04.19.00.09.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Apr 2023 00:09:25 -0700 (PDT)
+Message-ID: <9975669b-27bf-6903-f908-184946960c25@gmail.com>
+Date:   Wed, 19 Apr 2023 10:09:21 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH 2/2] net/mlx4: avoid overloading user/kernel pointers
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@kernel.org>, Yishai Hadas <yishaih@nvidia.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-phy@lists.infradead.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [RFC PATCH 0/4] Add support for QMC HDLC and PHY
-Message-ID: <20230419090406.681e0265@bootlin.com>
-In-Reply-To: <9e7fe32a-8125-41d5-9f8e-d3e5c6c64584@lunn.ch>
-References: <20230323103154.264546-1-herve.codina@bootlin.com>
-        <885e4f20-614a-4b8e-827e-eb978480af87@lunn.ch>
-        <20230414165504.7da4116f@bootlin.com>
-        <c99a99c5-139d-41c5-89a4-0722e0627aea@lunn.ch>
-        <20230417121629.63e97b80@bootlin.com>
-        <a2615755-f009-4a21-b464-88ec5e58f32a@lunn.ch>
-        <20230417173941.0206f696@bootlin.com>
-        <9e7fe32a-8125-41d5-9f8e-d3e5c6c64584@lunn.ch>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-redhat-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20230418114730.3674657-1-arnd@kernel.org>
+ <20230418114730.3674657-2-arnd@kernel.org>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20230418114730.3674657-2-arnd@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
 
-On Mon, 17 Apr 2023 19:22:26 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
 
-> > My application (probably a subset of what we can do with E1 lines) does
-> > not use signaling.
-> > 
-> > I don't expose any channel to the user space but just:
-> > - One hdlc interface using one timeslot.
-> > - One or more dai links (audio channels) that can be used using ALSA library.  
+On 18/04/2023 14:47, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Well, that obviously does what you need for you application, but it
-> does not sound very generic. I don't think you could build a PBX on
-> top of that. I'd think you can build an E1 trunk to VoIP gateway.  So
-> i also have to wounder how generic vs one specific use case your
-> building blocks are.
+> The mlx4_ib_create_cq() and mlx4_init_user_cqes() functions cast
+> between kernel pointers and user pointers, which is confusing
+> and can easily hide bugs.
 > 
-> Looking at the binding, i assume you could in fact instantiate 32 hdlc
-> instances? And that 'transparent' actually means DAI? So you can
-> instantiate as many DAI as you want. If you wanted to implement
-> signalling, a third type could be added?
+> Change the code to use use the correct address spaces consistently
+> and use separate pointer variables in mlx4_cq_alloc() to avoid
+> mixing them.
 > 
-> > I thought I was providing a "standardised" API between the HDLC device
-> > and the framer. Maybe it was not as complete as you could expect but I had
-> > the feeling that it was standardised.  
-> 
-> You are abusing the Generic PHY interface, for something which is not
-> a PHY. Your PHY driver does nothing a PHY driver normally does,
-> because you keep arguing the MFD does it all. So to me this is the
-> wrong abstraction.
-> 
-> You need an abstraction of a framer. You do however want a similar API
-> to generic PHY. devm_of_framer_optional_get() for the consumer of a
-> framer, which looks in DT for a phandle to a device.
-> devm_framer_create() which registers a framer provider, your MFD, with
-> the framer core. The hdlc driver can then get an instance of the
-> framer, and either put a notifier call block on its chain, or register
-> a function to be called when there is change in status.
-> 
-> What i also don't like is you have a very static configuration. You
-> are putting configuration into DT, which i'm surprised Rob Herring and
-> Krzysztof Kozlowski accepted. How you use E1 slots is not a hardware
-> property, it is purely software configuration, so should not be in DT.
-> So there should be a mechanism to configure how slots are used. You
-> can then dynamically instantiate HDLC interfaces and DAI links. This
-> is something which should be in the framer core. But since you have
-> managed to get this binding accepted, you can skip this. But
-> implementing the basic framer abstraction will give a place holder for
-> somebody to implement a much more generic solution in the future.
-> 
-> 	 Andrew
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> I ran into this while fixing the link error in the first
+> patch, and decided it would be useful to clean up.
+> ---
+>   drivers/infiniband/hw/mlx4/cq.c         | 11 +++++++----
+>   drivers/net/ethernet/mellanox/mlx4/cq.c | 17 ++++++++---------
+>   include/linux/mlx4/device.h             |  2 +-
 
-I can move to a basic framer abstraction as you suggested. At least:
-- devm_of_framer_optional_get()
-- devm_framer_create()
-- framer_notifier_register() or something similar.
+missed the mlx4_cq_alloc usage in
+drivers/net/ethernet/mellanox/mlx4/en_cq.c.
 
-Where do you expect to see this framer abstraction and the pef2256
-framer part ?
-driver/net/wan/framer/, other place ?
-I think driver/net/wan/framer/ can be a good place to start as only HDLC
-will use this abstraction.
+>   3 files changed, 16 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/infiniband/hw/mlx4/cq.c b/drivers/infiniband/hw/mlx4/cq.c
+> index 4cd738aae53c..b12713fdde99 100644
+> --- a/drivers/infiniband/hw/mlx4/cq.c
+> +++ b/drivers/infiniband/hw/mlx4/cq.c
+> @@ -180,7 +180,8 @@ int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
+>   	struct mlx4_ib_dev *dev = to_mdev(ibdev);
+>   	struct mlx4_ib_cq *cq = to_mcq(ibcq);
+>   	struct mlx4_uar *uar;
+> -	void *buf_addr;
+> +	void __user *ubuf_addr;
+> +	void *kbuf_addr;
+>   	int err;
+>   	struct mlx4_ib_ucontext *context = rdma_udata_to_drv_context(
+>   		udata, struct mlx4_ib_ucontext, ibucontext);
+> @@ -209,7 +210,8 @@ int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
+>   			goto err_cq;
+>   		}
+>   
+> -		buf_addr = (void *)(unsigned long)ucmd.buf_addr;
+> +		ubuf_addr = u64_to_user_ptr(ucmd.buf_addr);
+> +		kbuf_addr = NULL;
+>   		err = mlx4_ib_get_cq_umem(dev, &cq->buf, &cq->umem,
+>   					  ucmd.buf_addr, entries);
+>   		if (err)
+> @@ -235,7 +237,8 @@ int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
+>   		if (err)
+>   			goto err_db;
+>   
+> -		buf_addr = &cq->buf.buf;
+> +		ubuf_addr = NULL;
+> +		kbuf_addr = &cq->buf.buf;
 
-I can use the framer abstraction from the QMC HDLC driver itself or try
-to move it to the HDLC core. Do you think it will be interesting to have
-it move to the HDLC core ?
+Now we should maintain the values of the two pointers before any call. 
+I'm not sure this is less error-prune. One can mistakenly update 
+kbuf_addr for example without nullifying ubuf_addr.
 
-Best regards,
-Hervé
+Also, I'm not a big fan of passing two pointers when exactly one of them 
+is effectively used.
+We can think maybe of passing a union of both types, and a boolean 
+indicating which pointer type is to be used.
 
--- 
-Hervé Codina, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+>   
+>   		uar = &dev->priv_uar;
+>   		cq->mcq.usage = MLX4_RES_USAGE_DRIVER;
+> @@ -248,7 +251,7 @@ int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
+>   			    &cq->mcq, vector, 0,
+>   			    !!(cq->create_flags &
+>   			       IB_UVERBS_CQ_FLAGS_TIMESTAMP_COMPLETION),
+> -			    buf_addr, !!udata);
+> +			    ubuf_addr, kbuf_addr);
+>   	if (err)
+>   		goto err_dbmap;
+>   
+> diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
+> index 020cb8e2883f..22216f4e409b 100644
+> --- a/drivers/net/ethernet/mellanox/mlx4/cq.c
+> +++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
+> @@ -287,7 +287,7 @@ static void mlx4_cq_free_icm(struct mlx4_dev *dev, int cqn)
+>   		__mlx4_cq_free_icm(dev, cqn);
+>   }
+>   
+> -static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
+> +static int mlx4_init_user_cqes(void __user *buf, int entries, int cqe_size)
+>   {
+>   	int entries_per_copy = PAGE_SIZE / cqe_size;
+>   	size_t copy_size = array_size(entries, cqe_size);
+> @@ -307,7 +307,7 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
+>   
+>   	if (copy_size > PAGE_SIZE) {
+>   		for (i = 0; i < entries / entries_per_copy; i++) {
+> -			err = copy_to_user((void __user *)buf, init_ents, PAGE_SIZE) ?
+> +			err = copy_to_user(buf, init_ents, PAGE_SIZE) ?
+>   				-EFAULT : 0;
+>   			if (err)
+>   				goto out;
+> @@ -315,8 +315,7 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
+>   			buf += PAGE_SIZE;
+>   		}
+>   	} else {
+> -		err = copy_to_user((void __user *)buf, init_ents,
+> -				   copy_size) ?
+> +		err = copy_to_user(buf, init_ents, copy_size) ?
+>   			-EFAULT : 0;
+>   	}
+>   
+> @@ -343,7 +342,7 @@ static void mlx4_init_kernel_cqes(struct mlx4_buf *buf,
+>   int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
+>   		  struct mlx4_mtt *mtt, struct mlx4_uar *uar, u64 db_rec,
+>   		  struct mlx4_cq *cq, unsigned vector, int collapsed,
+> -		  int timestamp_en, void *buf_addr, bool user_cq)
+> +		  int timestamp_en, void __user *ubuf_addr, void *kbuf_addr)
+>   {
+>   	bool sw_cq_init = dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_SW_CQ_INIT;
+>   	struct mlx4_priv *priv = mlx4_priv(dev);
+> @@ -391,13 +390,13 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
+>   	cq_context->db_rec_addr     = cpu_to_be64(db_rec);
+>   
+>   	if (sw_cq_init) {
+> -		if (user_cq) {
+> -			err = mlx4_init_user_cqes(buf_addr, nent,
+> +		if (ubuf_addr) {
+> +			err = mlx4_init_user_cqes(ubuf_addr, nent,
+>   						  dev->caps.cqe_size);
+>   			if (err)
+>   				sw_cq_init = false;
+> -		} else {
+> -			mlx4_init_kernel_cqes(buf_addr, nent,
+> +		} else if (kbuf_addr) {
+> +			mlx4_init_kernel_cqes(kbuf_addr, nent,
+>   					      dev->caps.cqe_size);
+>   		}
+>   	}
+> diff --git a/include/linux/mlx4/device.h b/include/linux/mlx4/device.h
+> index 6646634a0b9d..dd8f3396dcba 100644
+> --- a/include/linux/mlx4/device.h
+> +++ b/include/linux/mlx4/device.h
+> @@ -1126,7 +1126,7 @@ void mlx4_free_hwq_res(struct mlx4_dev *mdev, struct mlx4_hwq_resources *wqres,
+>   int mlx4_cq_alloc(struct mlx4_dev *dev, int nent, struct mlx4_mtt *mtt,
+>   		  struct mlx4_uar *uar, u64 db_rec, struct mlx4_cq *cq,
+>   		  unsigned int vector, int collapsed, int timestamp_en,
+> -		  void *buf_addr, bool user_cq);
+> +		  void __user *ubuf_addr, void *kbuf_addr);
+>   void mlx4_cq_free(struct mlx4_dev *dev, struct mlx4_cq *cq);
+>   int mlx4_qp_reserve_range(struct mlx4_dev *dev, int cnt, int align,
+>   			  int *base, u8 flags, u8 usage);
+
