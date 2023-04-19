@@ -2,69 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97AE06E7CFC
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 16:39:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3F106E7D0C
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 16:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233162AbjDSOjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 10:39:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
+        id S233399AbjDSOkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 10:40:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbjDSOjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 10:39:37 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BDF735A3
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 07:39:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=lqhgkAi2HZk50QHaKlDZ9g9mufk+AaYLxsNDVFBM7DE=; b=yE
-        9/0jUpx0xU6sTi2KXc5UaFassTBNIiT8k92vqRXrJXd8zFjrOANVmbJs4KUe3L5MojlGEhEX9DJii
-        UP6v7YPKJkD3B8wOhgOG2ov+C3ki+3CISpElKgbSP5voSxvv02t374Dp/j8PDBMhWz+KHwF7Osehq
-        19uhERCMOd3M0ns=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pp8xl-00Ahoq-6s; Wed, 19 Apr 2023 16:39:13 +0200
-Date:   Wed, 19 Apr 2023 16:39:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez 
-        <ramon.nordin.rodriguez@ferroamp.se>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] drivers/net/phy: add driver for Microchip LAN867x
- 10BASE-T1S PHY
-Message-ID: <03bd17cf-1763-4913-8249-eda6fbc31440@lunn.ch>
-References: <ZD/Nl+4JAmW2VTzh@debian>
+        with ESMTP id S231822AbjDSOk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 10:40:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BDD961BD;
+        Wed, 19 Apr 2023 07:40:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07C026371E;
+        Wed, 19 Apr 2023 14:40:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 679B3C433D2;
+        Wed, 19 Apr 2023 14:40:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681915219;
+        bh=L3rmvVZzfFOX0gs6NRkifbKhhR41UPWGrCyt1hya6Iw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OhbXDJNmnHv2BcsaGT0H4H6trflzXqzYp61LXriJT9xmSVBmzJuCyYBljVwSS7KGD
+         YE/8LxhP49ks/v9HL7+sl6q1cyGQ6Gfjn3zANvrRMuKjv7Q1aD1g+O7bDJKkH8KL8l
+         KFvbDQrLI7kMNPqIbzexYcA7LE9efEhEEj08ufDhBtR/nT2XcFmNYwTOspc/g38ePo
+         ecF3UqKy4NTj9rCDz8Gi3pUEQmS0z8tHzNEfa8MBc8els0KEbnOjtkMn0Jn1DYsQFg
+         tfXHuhBhnUaDoyIrv9yJE0PjIgRLKGReCyi8WXsVtUphUYmY6oCWGL9Zj+g543hmh8
+         +JEVI6phI6wMA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4BBE4C395EA;
+        Wed, 19 Apr 2023 14:40:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZD/Nl+4JAmW2VTzh@debian>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH bpf-next] selftests/xsk: fix munmap for hugepage allocated
+ umem
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168191521930.31115.14808766624287897927.git-patchwork-notify@kernel.org>
+Date:   Wed, 19 Apr 2023 14:40:19 +0000
+References: <20230418143617.27762-1-magnus.karlsson@gmail.com>
+In-Reply-To: <20230418143617.27762-1-magnus.karlsson@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, tirthendu.sarkar@intel.com,
+        kal.conley@dectris.com, bpf@vger.kernel.org
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 01:16:39PM +0200, Ramón Nordin Rodriguez wrote:
-> This patch adds support for the Microchip LAN867x 10BASE-T1S family
-> (LAN8670/1/2). The driver supports P2MP with PLCA.
+Hello:
 
-It is normal to list here what has changed since the last
-version. That gives reviewers an idea what comments have been address,
-and if any have been missed.
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-> Signed-off-by: Ramón Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
+On Tue, 18 Apr 2023 16:36:17 +0200 you wrote:
+> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> 
+> Fix the unmapping of hugepage allocated umems so that they are
+> properly unmapped. The new test referred to in the fixes label,
+> introduced a test that allocated a umem that is not a multiple of a 2M
+> hugepage size. This is fine for mmap() that rounds the size up the
+> nearest multiple of 2M. But munmap() requires the size to be a
+> multiple of the hugepage size in order for it to unmap the region. The
+> current behaviour of not properly unmapping the umem, was discovered
+> when further additions of tests that require hugepages (unaligned mode
+> tests only) started failing as the system was running out of
+> hugepages.
+> 
+> [...]
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Here is the summary with links:
+  - [bpf-next] selftests/xsk: fix munmap for hugepage allocated umem
+    https://git.kernel.org/bpf/bpf-next/c/2ddade322925
 
-    Andrew
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
