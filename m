@@ -2,69 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 489326E70A7
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 03:06:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E0356E70AA
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 03:12:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbjDSBGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 21:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
+        id S231355AbjDSBMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 21:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbjDSBGc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 21:06:32 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CAA6193;
-        Tue, 18 Apr 2023 18:06:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Lms0C4cT+76fgagWleJqEZcrYl+boMnYrcMJr37IMKM=; b=XU4aeWxty1DBSslTGWkRcU1mrm
-        T0cqHBLDYAbr7oK0uIUwI/s3ejCbybWEj1WbaM2EsGGK7koPF+irsx4ouxGne/f/FxPXILPpHrRcj
-        6H/6VxYeNU3I2FptzANzwq3XyNC6OCxyZUCIwvuN3zuPTCS++SgiFq/lGwcY5BxkjGYQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1powHB-00AebN-CS; Wed, 19 Apr 2023 03:06:25 +0200
-Date:   Wed, 19 Apr 2023 03:06:25 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Justin Chen <justinpopo6@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        bcm-kernel-feedback-list@broadcom.com, justin.chen@broadcom.com,
-        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        richardcochran@gmail.com, sumit.semwal@linaro.org,
-        christian.koenig@amd.com
-Subject: Re: [PATCH net-next 5/6] net: phy: bcm7xxx: Add EPHY entry for 74165
-Message-ID: <c967927d-c9ec-4453-8452-6e90f797bcfc@lunn.ch>
-References: <1681863018-28006-1-git-send-email-justinpopo6@gmail.com>
- <1681863018-28006-6-git-send-email-justinpopo6@gmail.com>
+        with ESMTP id S230033AbjDSBMB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 21:12:01 -0400
+Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADA05FFE;
+        Tue, 18 Apr 2023 18:12:00 -0700 (PDT)
+Received: from [0.0.0.0] (unknown [172.96.223.238])
+        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id ACCD92801F5;
+        Wed, 19 Apr 2023 09:11:49 +0800 (CST)
+Message-ID: <ff2e0a06-abbb-213a-40ed-20c8e8b2f429@sangfor.com.cn>
+Date:   Wed, 19 Apr 2023 09:11:37 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1681863018-28006-6-git-send-email-justinpopo6@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [RESEND PATCH net 1/2] iavf: Fix use-after-free in free_netdev
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        keescook@chromium.org, grzegorzx.szczurek@intel.com,
+        mateusz.palczewski@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
+References: <20230417074016.3920-1-dinghui@sangfor.com.cn>
+ <20230417074016.3920-2-dinghui@sangfor.com.cn>
+ <ZD70DKC3+K6gngTh@corigine.com>
+From:   Ding Hui <dinghui@sangfor.com.cn>
+In-Reply-To: <ZD70DKC3+K6gngTh@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkZTEMaVkJOH00aSBpOT05CGVUTARMWGhIXJBQOD1
+        lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkxVSktLVUtZBg++
+X-HM-Tid: 0a87971175d02eb1kusnaccd92801f5
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mgw6DCo5Tj0JGhESLzEsKkI0
+        TB8aFChVSlVKTUNKQ01NTEpMTU9KVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+        QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFPT0xONwY+
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 05:10:17PM -0700, Justin Chen wrote:
-> From: Florian Fainelli <f.fainelli@gmail.com>
+On 2023/4/19 3:48, Simon Horman wrote:
+> Hi Ding Hui,
 > 
-> 74165 is a 16nm process SoC with a 10/100 integrated Ethernet PHY,
-> utilize the recently defined 16nm EPHY macro to configure that PHY.
+> On Mon, Apr 17, 2023 at 03:40:15PM +0800, Ding Hui wrote:
+>> We do netif_napi_add() for all allocated q_vectors[], but potentially
+>> do netif_napi_del() for part of them, then kfree q_vectors and lefted
 > 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Justin Chen <justin.chen@broadcom.com>
+> nit: lefted -> leave
+> 
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Thanks, I'll update in v2.
 
-    Andrew
+>> invalid pointers at dev->napi_list.
+>>
+>> If num_active_queues is changed to less than allocated q_vectors[] by
+>> unexpected, when iavf_remove, we might see UAF in free_netdev like this:
+>>
+
+...
+
+>>
+>> Fix it by letting netif_napi_del() match to netif_napi_add().
+>>
+>> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+>> Cc: Donglin Peng <pengdonglin@sangfor.com.cn>
+>> CC: Huang Cun <huangcun@sangfor.com.cn>
+> 
+> as this is a fix it probably should have a fixes tag.
+> I wonder if it should be:
+> 
+> Fixes: cc0529271f23 ("i40evf: don't use more queues than CPUs")
+
+I don't think so.
+I searched the git log, and found that the mismatched usage was
+introduced since the beginning of i40evf_main.c, so I'll add
+
+Fixes: 5eae00c57f5e ("i40evf: main driver core")
+
+in v2.
+
+> 
+> Code change looks good to me.
+> 
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> 
+
+Thanks.
+
+And sorry for you confusion since my RESEND.
+
+>> ---
+>>   drivers/net/ethernet/intel/iavf/iavf_main.c | 6 +-----
+>>   1 file changed, 1 insertion(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+>> index 095201e83c9d..a57e3425f960 100644
+>> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
+>> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+>> @@ -1849,19 +1849,15 @@ static int iavf_alloc_q_vectors(struct iavf_adapter *adapter)
+>>   static void iavf_free_q_vectors(struct iavf_adapter *adapter)
+>>   {
+>>   	int q_idx, num_q_vectors;
+>> -	int napi_vectors;
+>>   
+>>   	if (!adapter->q_vectors)
+>>   		return;
+>>   
+>>   	num_q_vectors = adapter->num_msix_vectors - NONQ_VECS;
+>> -	napi_vectors = adapter->num_active_queues;
+>>   
+>>   	for (q_idx = 0; q_idx < num_q_vectors; q_idx++) {
+>>   		struct iavf_q_vector *q_vector = &adapter->q_vectors[q_idx];
+>> -
+>> -		if (q_idx < napi_vectors)
+>> -			netif_napi_del(&q_vector->napi);
+>> +		netif_napi_del(&q_vector->napi);
+>>   	}
+>>   	kfree(adapter->q_vectors);
+>>   	adapter->q_vectors = NULL;
+>> -- 
+>> 2.17.1
+>>
+> 
+
+-- 
+Thanks,
+- Ding Hui
+
