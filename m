@@ -2,67 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95DAF6E7581
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 10:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 600256E758D
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 10:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231963AbjDSIlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 04:41:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
+        id S232422AbjDSInt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 04:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231790AbjDSIlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 04:41:14 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25536A4E
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:41:12 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id ca18e2360f4ac-7606d44dbb5so346233639f.1
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:41:12 -0700 (PDT)
+        with ESMTP id S231902AbjDSIns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 04:43:48 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9295F35B8
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:43:47 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id e9e14a558f8ab-32ad0eb84ffso4989445ab.3
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:43:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681893672; x=1684485672;
+        d=google.com; s=20221208; t=1681893827; x=1684485827;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=w5zwwsv1p5D/gRlxt0eU/wzMw2WWxeFb5WeQDYnHVYU=;
-        b=ndg0x1pDT4hSebBTYGx6yd+uiKYB07UmuUuMMHBZ2lgSYxjL8paMi9AJHCLV2aO9Hr
-         6bhgN5OSk5155IdRgMFSdELWjCQt+4M9hCMPUdeVZeEcdc93J+jqHn+1YtJQHp/inMfs
-         aeuNDvZcGrX3mnI5hgStg6sgCaUDqgN6yrX6tVbgmH1msuY8AlqG0l7m9674GH/2e8a2
-         URWunaXK86lgNeVxGwOB/Sghuz0th0LgwG7m2Z4aX5ICauRRsryXfQjqjQz94uQBuyri
-         KGRD7gfybFuEjWBFV5CM+1ChjrJ5scr5Bzkx43Flacm2p4QdG2gRWmi36M0znSGh8J4g
-         N3qA==
+        bh=/TGsktBgJ1QXbvB8ShgcNEuNzUeJUOnJ3Rk3wwPSSQo=;
+        b=41jEo5IqIKj9iogPeBZ7N768UBpVwx7if8O4nGYOMmENgacrgcdueCYr6W+n9xadS2
+         LhAi+STPpz66EML5gMpKWaT+kfYm6BP0ZF+pwEL9FVvLZquxD90Ikx3ZGsVwFKSi+1xw
+         Nyw8FhZ28D609y22ewNvCMaFOa+XR1PClBlekic31rrWZeqXnkTxtYzDaMZvkUFgrWLy
+         IXGDA1NNbhScyrD+WoFDEYpDa5GWX/SRYHFECNq/CYTzCUtMLJ9X/MJVBTd8N/XhRj3S
+         ogloe6/AnuJUqmTZl/hj76rW/UNsXB418VFcmY9R4hOCCUckKLXDXsrJ6cuqndb7fIer
+         0mww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681893672; x=1684485672;
+        d=1e100.net; s=20221208; t=1681893827; x=1684485827;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=w5zwwsv1p5D/gRlxt0eU/wzMw2WWxeFb5WeQDYnHVYU=;
-        b=hyt7zuPl4NcD8uZnsddVsCMocr+VoLoDaYU4yQs79CDN+haKOSGokJrEZn5a9JV6jB
-         5Tuw6TkFwBo4U3s1aWdEj9HUJvJyt7MFJ4fEVyStJ3w9nMKfYjOgDKz1oj2euUL1p4cc
-         TCkXivxmTETb26FB7h5kLEMntw0hjer16wjkRg+EaDzsuFCxthaD1MTscARo2Ppc9FkE
-         IBmlCPkvrKinzcDI0ZyvJVbs3CEzeYcswUbJKvElb+ziNvrBeJ4XKG5xhXn7fmTQzlUJ
-         TzNg86lln2no2Gxwj5WAcD3ryFp6UlZznkCg9Y/oTdiX+psN60qwUIlTKq7NVO5fE3Eq
-         u2cg==
-X-Gm-Message-State: AAQBX9dKbqoo6Y3a+65ESIISyOFzSbPfqMN1S5FUTOTV5xHVdwuiUT0o
-        Cqt2OTIFR35WlAGoi/Hell4DDvJ940zkcyOOLi1LjA==
-X-Google-Smtp-Source: AKy350bnTfsp6ZaN6t74b/ECtx4wPwi+yVhBT4Au3SRjcvGrmJmiEAyFYeXYb03kPd6QJD26k+p1etFw3JQc422u9ZE=
-X-Received: by 2002:a6b:d911:0:b0:745:70d7:4962 with SMTP id
- r17-20020a6bd911000000b0074570d74962mr3501152ioc.0.1681893672148; Wed, 19 Apr
- 2023 01:41:12 -0700 (PDT)
+        bh=/TGsktBgJ1QXbvB8ShgcNEuNzUeJUOnJ3Rk3wwPSSQo=;
+        b=RxLVDbGcMkQgopNrdS1wj4ndNdFMYz79IRsa8fJtfOp7DBnInrRb3A/Ffvko+kCf5b
+         RuaINApNoM0gFsXmbFL3g/YZs9fuHwhyguvDX+4I8Ase3anWrPqiv2LO03ltR0Rmqp8X
+         eK59efPAIIAowhQazdRNzyhK8G4rMUsdluu/OWprNIVV0yx2aOwtHx8ZyFjlMvNWyS6s
+         /QNltAndSSB16LShQ4NeAgcjv92lLADmpuImPoHi4s885XGv93SUUB7IES7PEL+U8WbD
+         XpLoQfQANggY1Z0GobdG7KGKzaYWdpoJ+FskTwGybhd8vJd4bBai+myDrrrF2Pa6YLHi
+         EqiA==
+X-Gm-Message-State: AAQBX9fyuWwUn2zNAC9WO4OkjzQjR6UNuFVyw39z759WV1yIQandV2DR
+        OFjQdPcWNDswAbh5ODTLBrWoYO9giuec3nyJfC5O0F5DgOnOHV4AdUw=
+X-Google-Smtp-Source: AKy350Y5hNg87qp8du0cB8RCDTg42GONyAbuFf4QmYMRQiuquGjuIvrkia/dh9CnbxE4lupAX0ljoCgHHkqJzTUCkhk=
+X-Received: by 2002:a92:b04:0:b0:326:6e97:8137 with SMTP id
+ b4-20020a920b04000000b003266e978137mr9709279ilf.6.1681893826754; Wed, 19 Apr
+ 2023 01:43:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <202304162125.18b7bcdd-oliver.sang@intel.com> <20230418164133.GA44666@unreal>
- <509b08bd-d2bf-eaa8-6c49-c0860d1adbe0@kernel.org> <20230419055916.GB44666@unreal>
-In-Reply-To: <20230419055916.GB44666@unreal>
+References: <20230418165426.1869051-1-mbizon@freebox.fr>
+In-Reply-To: <20230418165426.1869051-1-mbizon@freebox.fr>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 19 Apr 2023 10:41:00 +0200
-Message-ID: <CANn89iLbHDjBZZT1ZOms3Ak0D0V4JTnyeEWZ26Eoc3v9PsGs6g@mail.gmail.com>
-Subject: Re: [linux-next:master] [net] d288a162dd: canonical_address#:#[##]
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        kernel test robot <oliver.sang@intel.com>,
-        Wangyang Guo <wangyang.guo@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, oe-lkp@lists.linux.dev,
-        lkp@intel.com, Linux Memory Management List <linux-mm@kvack.org>,
-        Arjan van de Ven <arjan@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        steffen.klassert@secunet.com
+Date:   Wed, 19 Apr 2023 10:43:35 +0200
+Message-ID: <CANn89i+pwf1RXprQQ-op+L65bhTRvmhJ25By0jRmhpi72edP_g@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dst: fix missing initialization of rt_uncached
+To:     Maxime Bizon <mbizon@freebox.fr>
+Cc:     davem@davemloft.net, tglx@linutronix.de, wangyang.guo@intel.com,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
@@ -76,56 +69,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 7:59=E2=80=AFAM Leon Romanovsky <leon@kernel.org> w=
-rote:
+On Tue, Apr 18, 2023 at 6:55=E2=80=AFPM Maxime Bizon <mbizon@freebox.fr> wr=
+ote:
 >
-> On Tue, Apr 18, 2023 at 02:43:02PM -0600, David Ahern wrote:
-> > On 4/18/23 10:41 AM, Leon Romanovsky wrote:
-> > > Hi,
-> > >
-> > > I came to the following diff which eliminates the kernel panics,
-> > > unfortunately I can explain only second hunk, but first is required
-> > > too.
-> > >
-> > > diff --git a/net/core/dst.c b/net/core/dst.c
-> > > index 3247e84045ca..750c8edfe29a 100644
-> > > --- a/net/core/dst.c
-> > > +++ b/net/core/dst.c
-> > > @@ -72,6 +72,8 @@ void dst_init(struct dst_entry *dst, struct dst_ops=
- *ops,
-> > >         dst->flags =3D flags;
-> > >         if (!(flags & DST_NOCOUNT))
-> > >                 dst_entries_add(ops, 1);
-> > > +
-> > > +       INIT_LIST_HEAD(&dst->rt_uncached);
-> >
-> > d288a162dd1c73507da582966f17dd226e34a0c0 moved rt_uncached from rt6_inf=
-o
-> > and rtable to dst_entry. Only ipv4 and ipv6 usages initialize it. Since
-> > it is now in dst_entry, dst_init is the better place so it can be
-> > removed from rt_dst_alloc and rt6_info_init.
->
-> This is why I placed it there, but the rt_uncached list is initialized
-> in xfrm6 right before first call to rt6_uncached_list_add().
->
->    70 static int xfrm6_fill_dst(struct xfrm_dst *xdst, struct net_device =
-*dev,
->    71                           const struct flowi *fl)
->    72 {
-> ...
->    92         INIT_LIST_HEAD(&xdst->u.rt6.dst.rt_uncached);
->    93         rt6_uncached_list_add(&xdst->u.rt6);
->
-> My silly explanation is that xfrm6_dst_destroy() can be called before xfr=
-m6_fill_dst().
->
-> Thanks
->
-> >
+> xfrm_alloc_dst() followed by xfrm4_dst_destroy(), without a
+> xfrm4_fill_dst() call in between, causes the following BUG:
 
-Please take a look at the fix that was sent yesterday :
-
-https://patchwork.kernel.org/project/netdevbpf/patch/20230418165426.1869051=
--1-mbizon@freebox.fr/
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
 Thanks.
