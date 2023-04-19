@@ -2,126 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A31A06E75DE
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 11:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3012F6E75F0
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 11:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232840AbjDSJAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 05:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
+        id S232356AbjDSJDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 05:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232808AbjDSJAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 05:00:03 -0400
-Received: from mail-il1-f205.google.com (mail-il1-f205.google.com [209.85.166.205])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE407A93
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:59:58 -0700 (PDT)
-Received: by mail-il1-f205.google.com with SMTP id e9e14a558f8ab-32879a859d8so30914815ab.3
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 01:59:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681894798; x=1684486798;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=MMkdzP0b48/FfooAPyZtmjuW8LPUSS+nUb/pxSQhWlg=;
-        b=D5YRDpevTfOEx0Uqe2qa9t8p/zgUnH/Zz9k+6BkBKfhdQC626Y2n72NYs3GpY7MsuB
-         5RRoXdqP7gX5B65her4eXhmro2nVHE0rDJkn4u4HGTzi7RETSq2J/vyqlj++CK9aRPgn
-         DMSZALR0BJYnqW4uoH2HPnfoBBQZdXpjnlBidppFV45ENTC1MFwbnCSe0FWPtRjvcUoM
-         ffu4kUF4CJsybwI3yuDCr9JEjWkigAPWHRO0iUdPvotzL3hpmHTZJxkJXJD5ZTqL7ddv
-         CWjWssZK5/XKMPa9zsaYgn/3HWbfM2zHX5FITPu0SfRsCeL+/7/X8itWCa63duLK/KLN
-         NSDA==
-X-Gm-Message-State: AAQBX9dwx94Bt1Hg05zs8kfRTonLmQF2+Px6omx8u9B+5yyrTc5Insqs
-        wed53hWJnoV9fUeZx2ERy1pGr0PJ2Ub5Zy2yokqKo7BEXpOC
-X-Google-Smtp-Source: AKy350YS7UotbFKDn4cXkfgdpzwLgB4VfRkMQdy69IH+g+usQkhflYv2ItYDgPF/EyaTfZTia01joq3s7l4rOq5j4NaAHLLgiYUH
+        with ESMTP id S232521AbjDSJDY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 05:03:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF86D7EF5
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 02:03:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4918162C18
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 09:03:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 345C7C433D2;
+        Wed, 19 Apr 2023 09:03:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681894998;
+        bh=nN9yFSz7o9dqWJswzdHWkUxPU2PqfgQESY8tSLDHYmo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aYNOAyBanq0oyilwYSIbhQ6tV3cGUPrnxVuNKmKBrXwbkoRXjNzuVNVttb8mWsYd3
+         6CcuZqncUnpaJpKXSeOBtzAHkUdKE5SQ534Arf6OOfZkIgvm/2y7s7wLXKWht0/vGp
+         /7bOwqeUze+SCt7eTtwtkzr+eRs2S9nlCieITDvc1FcdiWUE/kg8vGwfQWeirgQwfw
+         zXArbyRZeBrGcfNv57u/pk1S2nAxopqJy/0wnD/e/8GotCbLc4tjA7+NChJ1Sxn6Oq
+         gOhO2vsLPh36sFhXGNgJ2XDhrLxzfuUcgutZHbswbqHm5r2igxJWJKJu0uxixVwIij
+         nI5HlQfHYn91w==
+Date:   Wed, 19 Apr 2023 12:03:14 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Maxime Bizon <mbizon@freebox.fr>
+Cc:     davem@davemloft.net, edumazet@google.com, tglx@linutronix.de,
+        wangyang.guo@intel.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dst: fix missing initialization of
+ rt_uncached
+Message-ID: <20230419090314.GF44666@unreal>
+References: <20230418165426.1869051-1-mbizon@freebox.fr>
+ <20230419085802.GD44666@unreal>
 MIME-Version: 1.0
-X-Received: by 2002:a92:cc05:0:b0:326:d02c:c756 with SMTP id
- s5-20020a92cc05000000b00326d02cc756mr9976703ilp.4.1681894798045; Wed, 19 Apr
- 2023 01:59:58 -0700 (PDT)
-Date:   Wed, 19 Apr 2023 01:59:58 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fcbbf805f9aca52b@google.com>
-Subject: [syzbot] [bluetooth?] WARNING: bad unlock balance in l2cap_disconnect_rsp
-From:   syzbot <syzbot+180f35f8e76c7af067d2@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230419085802.GD44666@unreal>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Apr 19, 2023 at 11:58:02AM +0300, Leon Romanovsky wrote:
+> On Tue, Apr 18, 2023 at 06:54:26PM +0200, Maxime Bizon wrote:
+> > xfrm_alloc_dst() followed by xfrm4_dst_destroy(), without a
+> > xfrm4_fill_dst() call in between, causes the following BUG:
+> > 
+> >  BUG: spinlock bad magic on CPU#0, fbxhostapd/732
+> >   lock: 0x890b7668, .magic: 890b7668, .owner: <none>/-1, .owner_cpu: 0
+> >  CPU: 0 PID: 732 Comm: fbxhostapd Not tainted 6.3.0-rc6-next-20230414-00613-ge8de66369925-dirty #9
+> >  Hardware name: Marvell Kirkwood (Flattened Device Tree)
+> >   unwind_backtrace from show_stack+0x10/0x14
+> >   show_stack from dump_stack_lvl+0x28/0x30
+> >   dump_stack_lvl from do_raw_spin_lock+0x20/0x80
+> >   do_raw_spin_lock from rt_del_uncached_list+0x30/0x64
+> >   rt_del_uncached_list from xfrm4_dst_destroy+0x3c/0xbc
+> >   xfrm4_dst_destroy from dst_destroy+0x5c/0xb0
+> >   dst_destroy from rcu_process_callbacks+0xc4/0xec
+> >   rcu_process_callbacks from __do_softirq+0xb4/0x22c
+> >   __do_softirq from call_with_stack+0x1c/0x24
+> >   call_with_stack from do_softirq+0x60/0x6c
+> >   do_softirq from __local_bh_enable_ip+0xa0/0xcc
+> > 
+> > Patch "net: dst: Prevent false sharing vs. dst_entry:: __refcnt" moved
+> > rt_uncached and rt_uncached_list fields from rtable struct to dst
+> > struct, so they are more zeroed by memset_after(xdst, 0, u.dst) in
+> > xfrm_alloc_dst().
+> > 
+> > Note that rt_uncached (list_head) was never properly initialized at
+> > alloc time, but xfrm[46]_dst_destroy() is written in such a way that
+> > it was not an issue thanks to the memset:
+> > 
+> > 	if (xdst->u.rt.dst.rt_uncached_list)
+> > 		rt_del_uncached_list(&xdst->u.rt);
+> > 
+> > The route code does it the other way around: rt_uncached_list is
+> > assumed to be valid IIF rt_uncached list_head is not empty:
+> > 
+> > void rt_del_uncached_list(struct rtable *rt)
+> > {
+> >         if (!list_empty(&rt->dst.rt_uncached)) {
+> >                 struct uncached_list *ul = rt->dst.rt_uncached_list;
+> > 
+> >                 spin_lock_bh(&ul->lock);
+> >                 list_del_init(&rt->dst.rt_uncached);
+> >                 spin_unlock_bh(&ul->lock);
+> >         }
+> > }
+> > 
+> > This patch adds mandatory rt_uncached list_head initialization in
+> > generic dst_init(), and adapt xfrm[46]_dst_destroy logic to match the
+> > rest of the code.
+> > 
+> > Fixes: d288a162dd1c ("net: dst: Prevent false sharing vs. dst_entry:: __refcnt")
+> > Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
+> > ---
+> >  net/core/dst.c          | 1 +
+> >  net/ipv4/xfrm4_policy.c | 4 +---
+> >  net/ipv6/route.c        | 1 -
+> >  net/ipv6/xfrm6_policy.c | 4 +---
+> >  4 files changed, 3 insertions(+), 7 deletions(-)
+> 
+> It should go to net. Right now -rc7 is broken.
+> 
+> Also the change is not complete, you need to delete INIT_LIST_HEAD(..rt_uncached)
+> from rt_dst_alloc and rt_dst_clone too.
 
-syzbot found the following issue on:
+It will be nice to give a credit to kbuild.
+https://lore.kernel.org/all/202304162125.18b7bcdd-oliver.sang@intel.com
 
-HEAD commit:    327bf9bb94cf Merge branch 'for-next/core' into for-kernelci
-git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
-console output: https://syzkaller.appspot.com/x/log.txt?x=107f83b7c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=64943844c9bf6c7e
-dashboard link: https://syzkaller.appspot.com/bug?extid=180f35f8e76c7af067d2
-compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: arm64
+Thanks
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/66410afe54f5/disk-327bf9bb.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/2757ce5e2a55/vmlinux-327bf9bb.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/7d54ee97c182/Image-327bf9bb.gz.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+180f35f8e76c7af067d2@syzkaller.appspotmail.com
-
-=====================================
-WARNING: bad unlock balance detected!
-6.3.0-rc7-syzkaller-g327bf9bb94cf #0 Not tainted
--------------------------------------
-kworker/u5:3/6019 is trying to release lock (&conn->chan_lock) at:
-[<ffff80001157e164>] l2cap_disconnect_rsp+0x210/0x30c net/bluetooth/l2cap_core.c:4697
-but there are no more locks to release!
-
-other info that might help us debug this:
-2 locks held by kworker/u5:3/6019:
- #0: ffff0000c0e30938 ((wq_completion)hci0#2){+.+.}-{0:0}, at: process_one_work+0x664/0x12d4 kernel/workqueue.c:2363
- #1: ffff80001ea87c20 ((work_completion)(&hdev->rx_work)){+.+.}-{0:0}, at: process_one_work+0x6a8/0x12d4 kernel/workqueue.c:2365
-
-stack backtrace:
-CPU: 1 PID: 6019 Comm: kworker/u5:3 Not tainted 6.3.0-rc7-syzkaller-g327bf9bb94cf #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
-Workqueue: hci0 hci_rx_work
-Call trace:
- dump_backtrace+0x1b8/0x1e4 arch/arm64/kernel/stacktrace.c:233
- show_stack+0x2c/0x44 arch/arm64/kernel/stacktrace.c:240
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xd0/0x124 lib/dump_stack.c:106
- dump_stack+0x1c/0x28 lib/dump_stack.c:113
- print_unlock_imbalance_bug+0x250/0x2a4 kernel/locking/lockdep.c:5109
- lock_release+0x4ac/0x9ac kernel/locking/lockdep.c:5689
- __mutex_unlock_slowpath+0xe0/0x6b4 kernel/locking/mutex.c:907
- mutex_unlock+0x18/0x24 kernel/locking/mutex.c:543
- l2cap_disconnect_rsp+0x210/0x30c net/bluetooth/l2cap_core.c:4697
- l2cap_le_sig_cmd net/bluetooth/l2cap_core.c:6426 [inline]
- l2cap_le_sig_channel net/bluetooth/l2cap_core.c:6464 [inline]
- l2cap_recv_frame+0x18b4/0x6a14 net/bluetooth/l2cap_core.c:7796
- l2cap_recv_acldata+0x4f4/0x163c net/bluetooth/l2cap_core.c:8504
- hci_acldata_packet net/bluetooth/hci_core.c:3828 [inline]
- hci_rx_work+0x2cc/0x8b8 net/bluetooth/hci_core.c:4063
- process_one_work+0x788/0x12d4 kernel/workqueue.c:2390
- worker_thread+0x8e0/0xfe8 kernel/workqueue.c:2537
- kthread+0x24c/0x2d4 kernel/kthread.c:376
- ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:870
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> 
+> Thanks
