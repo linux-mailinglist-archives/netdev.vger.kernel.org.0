@@ -2,145 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E0356E70AA
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 03:12:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5513A6E70B0
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 03:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231355AbjDSBMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Apr 2023 21:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
+        id S231537AbjDSBQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Apr 2023 21:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbjDSBMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 21:12:01 -0400
-Received: from mail-m11875.qiye.163.com (mail-m11875.qiye.163.com [115.236.118.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADA05FFE;
-        Tue, 18 Apr 2023 18:12:00 -0700 (PDT)
-Received: from [0.0.0.0] (unknown [172.96.223.238])
-        by mail-m11875.qiye.163.com (Hmail) with ESMTPA id ACCD92801F5;
-        Wed, 19 Apr 2023 09:11:49 +0800 (CST)
-Message-ID: <ff2e0a06-abbb-213a-40ed-20c8e8b2f429@sangfor.com.cn>
-Date:   Wed, 19 Apr 2023 09:11:37 +0800
+        with ESMTP id S229884AbjDSBQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Apr 2023 21:16:29 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39819E4D;
+        Tue, 18 Apr 2023 18:16:28 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-63b5c48ea09so2346223b3a.1;
+        Tue, 18 Apr 2023 18:16:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681866988; x=1684458988;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=l7KcAK1S7DUZq/Db3Jz+q+bCAF609VatxfLnf+LJlvo=;
+        b=UImrKatqY1FwR0yQweibDR4DseukfyBwClwOPcMSYL3LBowh0aaBzIJSwFoWoMpZRx
+         ZSWprAGqMtPABENmu6U6o5rsAqL42xljbObDCdLi6RpQtW6TLxizruD/9K06SRsgLK6s
+         BJvj3ltjBCwGMLO9bjQbpfHPQH8UFr9M1+kbeiylIgLuLpOhWZ5MBOUTSyLFfy6HlYqz
+         IwCO5OogzV7U5Yvaa31THa8mXH0Kj8DLkBLG1CGBXLWDKruXECOmGTkpVZ7gSzycuTCJ
+         9gDXKcTm3dKfe6Ss4wV4g7/JEMCV1dM7fPygD/70/S4oMNXqIrZ0VMD9WKinPLiZSpCH
+         m14A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681866988; x=1684458988;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=l7KcAK1S7DUZq/Db3Jz+q+bCAF609VatxfLnf+LJlvo=;
+        b=eaHxFzCmtI5NFLwRlo8k7o1qW0ToznYDrr7xnOBJSswcmttbrE3vQWbciXRLXHfo5p
+         B+P/gMeQ/GnXigSwU53iZQ+luRtDgMsZ+WZY6DJw5fkiELrfp+kxeXGR4ogGjvg939f0
+         j30u5YwplorxInXrhJtz+Mv89Wy6QTIS7bn9YzOAXhTLEgWOSIXliNWBvZqwxqMwKeh+
+         /5fsUWpnTTlva5gbFVxFXTvewrWdzGbfgmWN0+FhazaLvx9fPnvsZDzmXui+NV6QXJwE
+         pjl6KRDUMDxsnijh31XvIrHnOrXFyu7yLa/SAt2jVWX925yCfZURdUfxs4TWKv/Ovedk
+         Z+dQ==
+X-Gm-Message-State: AAQBX9eD5/cvMp0CEKAfi9paA28KZkBpiiZF33D+HxBKrDA0DFQxxGtO
+        1qlnGOv87asW1ya5PE6e6oitzFK9Wt/gkNxh
+X-Google-Smtp-Source: AKy350YjcaDx5WmdZkF9f2yyCEe57eKJTE93TCYPqXHAZDDTX2kvT5q/9JN9Nvf4osvomTvKY0qU6A==
+X-Received: by 2002:a05:6a00:1493:b0:63b:19e5:a9ec with SMTP id v19-20020a056a00149300b0063b19e5a9ecmr2033968pfu.33.1681866987601;
+        Tue, 18 Apr 2023 18:16:27 -0700 (PDT)
+Received: from yoga ([2400:1f00:13:d56c:e810:608c:4286:179f])
+        by smtp.gmail.com with ESMTPSA id q25-20020a62ae19000000b0063b89300316sm5232157pff.14.2023.04.18.18.16.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Apr 2023 18:16:27 -0700 (PDT)
+Date:   Wed, 19 Apr 2023 06:46:20 +0530
+From:   Anup Sharma <anupnewsmail@gmail.com>
+To:     krzysztof.kozlowski@linaro.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linma@zju.edu.cn, dvyukov@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: nfc: nci: fix for UBSAN: shift-out-of-bounds in
+ nci_activate_target
+Message-ID: <ZD9A5Krm+ZoFEFWZ@yoga>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [RESEND PATCH net 1/2] iavf: Fix use-after-free in free_netdev
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        keescook@chromium.org, grzegorzx.szczurek@intel.com,
-        mateusz.palczewski@intel.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        pengdonglin@sangfor.com.cn, huangcun@sangfor.com.cn
-References: <20230417074016.3920-1-dinghui@sangfor.com.cn>
- <20230417074016.3920-2-dinghui@sangfor.com.cn>
- <ZD70DKC3+K6gngTh@corigine.com>
-From:   Ding Hui <dinghui@sangfor.com.cn>
-In-Reply-To: <ZD70DKC3+K6gngTh@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkZTEMaVkJOH00aSBpOT05CGVUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkxVSktLVUtZBg++
-X-HM-Tid: 0a87971175d02eb1kusnaccd92801f5
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mgw6DCo5Tj0JGhESLzEsKkI0
-        TB8aFChVSlVKTUNKQ01NTEpMTU9KVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-        QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFPT0xONwY+
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/4/19 3:48, Simon Horman wrote:
-> Hi Ding Hui,
-> 
-> On Mon, Apr 17, 2023 at 03:40:15PM +0800, Ding Hui wrote:
->> We do netif_napi_add() for all allocated q_vectors[], but potentially
->> do netif_napi_del() for part of them, then kfree q_vectors and lefted
-> 
-> nit: lefted -> leave
-> 
+syzbot found  UBSAN: shift-out-of-bounds in nci_activate_target [1],
+when nci_target->supported_protocols is bigger than UNIT_MAX,
+where supported_protocols is unsigned 32-bit interger type.
 
-Thanks, I'll update in v2.
+32 is the maximum allowed for supported_protocols. Added a check
+for it. 
 
->> invalid pointers at dev->napi_list.
->>
->> If num_active_queues is changed to less than allocated q_vectors[] by
->> unexpected, when iavf_remove, we might see UAF in free_netdev like this:
->>
+[1] UBSAN: shift-out-of-bounds in net/nfc/nci/core.c:912:45
+shift exponent 4294967071 is too large for 32-bit type 'int'
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x136/0x150 lib/dump_stack.c:106
+ ubsan_epilogue lib/ubsan.c:217 [inline]
+ __ubsan_handle_shift_out_of_bounds+0x221/0x5a0 lib/ubsan.c:387
+ nci_activate_target.cold+0x1a/0x1f net/nfc/nci/core.c:912
+ nfc_activate_target+0x1f8/0x4c0 net/nfc/core.c:420
+ nfc_genl_activate_target+0x1f3/0x290 net/nfc/netlink.c:900
+ genl_family_rcv_msg_doit.isra.0+0x1e6/0x2d0 net/netlink/genetlink.c:968
+ genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
 
-...
+Reported-by: syzbot+0839b78e119aae1fec78@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?id=19cf2724120ef8c51c8d2566df0cc34617188433
 
->>
->> Fix it by letting netif_napi_del() match to netif_napi_add().
->>
->> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
->> Cc: Donglin Peng <pengdonglin@sangfor.com.cn>
->> CC: Huang Cun <huangcun@sangfor.com.cn>
-> 
-> as this is a fix it probably should have a fixes tag.
-> I wonder if it should be:
-> 
-> Fixes: cc0529271f23 ("i40evf: don't use more queues than CPUs")
+Signed-off-by: anupsharma <anupnewsmail@gmail.com>
+---
+ net/nfc/nci/core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-I don't think so.
-I searched the git log, and found that the mismatched usage was
-introduced since the beginning of i40evf_main.c, so I'll add
-
-Fixes: 5eae00c57f5e ("i40evf: main driver core")
-
-in v2.
-
-> 
-> Code change looks good to me.
-> 
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> 
-
-Thanks.
-
-And sorry for you confusion since my RESEND.
-
->> ---
->>   drivers/net/ethernet/intel/iavf/iavf_main.c | 6 +-----
->>   1 file changed, 1 insertion(+), 5 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
->> index 095201e83c9d..a57e3425f960 100644
->> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
->> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
->> @@ -1849,19 +1849,15 @@ static int iavf_alloc_q_vectors(struct iavf_adapter *adapter)
->>   static void iavf_free_q_vectors(struct iavf_adapter *adapter)
->>   {
->>   	int q_idx, num_q_vectors;
->> -	int napi_vectors;
->>   
->>   	if (!adapter->q_vectors)
->>   		return;
->>   
->>   	num_q_vectors = adapter->num_msix_vectors - NONQ_VECS;
->> -	napi_vectors = adapter->num_active_queues;
->>   
->>   	for (q_idx = 0; q_idx < num_q_vectors; q_idx++) {
->>   		struct iavf_q_vector *q_vector = &adapter->q_vectors[q_idx];
->> -
->> -		if (q_idx < napi_vectors)
->> -			netif_napi_del(&q_vector->napi);
->> +		netif_napi_del(&q_vector->napi);
->>   	}
->>   	kfree(adapter->q_vectors);
->>   	adapter->q_vectors = NULL;
->> -- 
->> 2.17.1
->>
-> 
-
+diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+index fff755dde30d..e9d968bd1cd9 100644
+--- a/net/nfc/nci/core.c
++++ b/net/nfc/nci/core.c
+@@ -908,6 +908,11 @@ static int nci_activate_target(struct nfc_dev *nfc_dev,
+ 		pr_err("unable to find the selected target\n");
+ 		return -EINVAL;
+ 	}
++	
++	if (nci_target->supported_protocols >= 32) {
++		pr_err("Too many supported protocol by the device\n");
++		return -EINVAL;
++	}
+ 
+ 	if (!(nci_target->supported_protocols & (1 << protocol))) {
+ 		pr_err("target does not support the requested protocol 0x%x\n",
 -- 
-Thanks,
-- Ding Hui
+2.34.1
 
