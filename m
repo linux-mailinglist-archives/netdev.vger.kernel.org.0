@@ -2,161 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C7776E72EE
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 08:14:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A9D6E730C
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 08:20:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231617AbjDSGON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 02:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
+        id S231892AbjDSGUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 02:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231532AbjDSGOM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 02:14:12 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8A6E5
-        for <netdev@vger.kernel.org>; Tue, 18 Apr 2023 23:14:10 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pp14k-000742-Qv; Wed, 19 Apr 2023 08:13:54 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D371B1B2AA2;
-        Wed, 19 Apr 2023 06:13:53 +0000 (UTC)
-Date:   Wed, 19 Apr 2023 08:13:52 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     "Mendez, Judith" <jm@ti.com>
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Andrew Davis <afd@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Schuyler Patton <spatton@ti.com>
-Subject: Re: [RFC PATCH 5/5] can: m_can: Add hrtimer to generate software
- interrupt
-Message-ID: <20230419-trimmer-fasting-928868e8cb81-mkl@pengutronix.de>
-References: <20230413223051.24455-1-jm@ti.com>
- <20230413223051.24455-6-jm@ti.com>
- <20230414-bounding-guidance-262dffacd05c-mkl@pengutronix.de>
- <4a6c66eb-2ccf-fc42-a6fc-9f411861fcef@hartkopp.net>
- <20230416-failing-washbasin-e4fa5caea267-mkl@pengutronix.de>
- <f58e8dce-898c-8797-5293-1001c9a75381@hartkopp.net>
- <20230417-taking-relieving-f2c8532864c0-mkl@pengutronix.de>
- <25806ec7-64c5-3421-aea1-c0d431e3f27f@hartkopp.net>
- <20230417-unsafe-porridge-0b712d137530-mkl@pengutronix.de>
- <5ece3561-4690-a721-aa83-adf80d0be9f5@ti.com>
+        with ESMTP id S231600AbjDSGUp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 02:20:45 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0410759F8;
+        Tue, 18 Apr 2023 23:20:43 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33J49ZMM013371;
+        Tue, 18 Apr 2023 23:20:28 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=83P7c1LA0JRpo8hPHmlWTWp4ja9G957oE5P2pQdZMp4=;
+ b=SLFchzSqum+m1LuPzoTyzCJs74ME1mnWcWfMGfvqTL130Rz7BREPO+OseOmsaZqHpLJ0
+ /yGJXNVlLc+6kd5o1fuH3nLfS6K3JvJUW4wsN+Ymws+qoUnFU5UEyGqjkWjs+Grex6Fs
+ OTXcRJcTZySFyNcfZmZObyep+oXQIraGNRBfrviM2R+HG3+6L0b04uKGZD7T2uXJGNkX
+ wbxIQjWsU3KCze55C6fDZT4XX3U+QTO24vABAuM2zFbvR1Kqo4zijZYQPp797IF8Gjmh
+ UFyFybmrkaVCZHRGlwsNurWoc3AWCssgp2ITyEsurfnZyikGuUJ943WGj0fUR4PDZGgD Jg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3q2917rjr4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 18 Apr 2023 23:20:28 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Tue, 18 Apr
+ 2023 23:20:26 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Tue, 18 Apr 2023 23:20:26 -0700
+Received: from hyd1425.marvell.com (unknown [10.29.37.83])
+        by maili.marvell.com (Postfix) with ESMTP id 0142F3F7055;
+        Tue, 18 Apr 2023 23:20:21 -0700 (PDT)
+From:   Sai Krishna <saikrishnag@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <simon.horman@corigine.com>,
+        <leon@kernel.org>, <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <lcherian@marvell.com>, <jerinj@marvell.com>, <hkelam@marvell.com>,
+        <sbhatta@marvell.com>
+CC:     Sai Krishna <saikrishnag@marvell.com>
+Subject: [net PATCH v3 00/10] octeontx2: Miscellaneous fixes
+Date:   Wed, 19 Apr 2023 11:50:08 +0530
+Message-ID: <20230419062018.286136-1-saikrishnag@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="cggld5pyystbuhs6"
-Content-Disposition: inline
-In-Reply-To: <5ece3561-4690-a721-aa83-adf80d0be9f5@ti.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: mFaPy7m53JGqrtbC1JmC8GlS7iZQoo9O
+X-Proofpoint-ORIG-GUID: mFaPy7m53JGqrtbC1JmC8GlS7iZQoo9O
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-19_02,2023-04-18_01,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patchset includes following fixes.
 
---cggld5pyystbuhs6
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Patch #1 Fix for the race condition while updating APR table 
+ 
+Patch #2 Fix start and end bit positions in NPC scan config 
 
-On 18.04.2023 15:59:57, Mendez, Judith wrote:
-> > > > > > > The "shortest" 11 bit CAN ID CAN frame is a Classical CAN fra=
-me with DLC =3D 0
-> > > > > > > and 1 Mbit/s (arbitration) bitrate. This should be 48 bits @1=
-Mbit =3D> ~50
-> > > > > > > usecs
-> > > > > > >=20
-> > > > > > > So it should be something about
-> > > > > > >=20
-> > > > > > >        50 usecs * (FIFO queue len - 2)
-> > > > > >=20
-> > > > > > Where does the "2" come from?
-> > > > >=20
-> > > > > I thought about handling the FIFO earlier than it gets completely=
- "full".
-> > > > >=20
-> > > > > The fetching routine would need some time too and the hrtimer cou=
-ld also
-> > > > > jitter to some extend.
-> > > >=20
-> > > > I was assuming something like this.
-> > > >=20
-> > > > I would argue that the polling time should be:
-> > > >=20
-> > > >       50 =C2=B5s * FIFO length - IRQ overhead.
-> > > >=20
-> > > > The max IRQ overhead depends on your SoC and kernel configuration.
-> > >=20
-> > > I just tried an educated guess to prevent the FIFO to be filled up
-> > > completely. How can you estimate the "IRQ overhead"? And how do you c=
-atch
-> > > the CAN frames that are received while the IRQ is handled?
-> >=20
-> > We're talking about polling, better call it "overhead" or "latency from
-> > timer expiration until FIFO has at least one frame room". This value
-> > depends on your system.
-> >=20
-> > It depends on many, many factors, SoC, Kernel configuration (preempt RT,
-> > powersaving, frequency scaling, system load. In your example it's 100
-> > =C2=B5s. I wanted to say there's an overhead (or latency) and we need e=
-nough
-> > space in the FIFO, to cover it.
-> >=20
->=20
-> I am not sure how to estimate IRQ overhead, but FIFO length should be 64
-> elements.
+Patch #3 Fix depth of CAM, MEM table entries
 
-Ok
+Patch #4 Fix in increase the size of DMAC filter flows
 
-> 50 us * 62 is about 3.1 ms and we are using 1 ms timer polling interval.
+Patch #5 Fix driver crash resulting from invalid interface type
+information retrieved from firmware
 
-Sounds good.
+Patch #6 Fix incorrect mask used while installing filters involving
+fragmented packets
 
-> Running a few benchmarks showed that using 0.5 ms timer polling interval
-> starts to take a toll on CPU load, that is why I chose 1 ms polling
-> interval.
+Patch #7 Fixes for NPC field hash extract w.r.t IPV6 hash reduction,
+         IPV6 filed hash configuration.
 
-However in the code you use 5 ms.
+Patch #8 Fix for NPC hardware parser configuration destination 
+         address hash, IPV6 endianness issues.
 
-Marc
+Patch #9 Fix for skipping mbox initialization for PFs disabled by firmware.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+Patch #10 Fix disabling packet I/O in case of mailbox timeout.
 
---cggld5pyystbuhs6
-Content-Type: application/pgp-signature; name="signature.asc"
+Geetha sowjanya (1):
+  octeontx2-af: Secure APR table update with the lock
 
------BEGIN PGP SIGNATURE-----
+Hariprasad Kelam (1):
+  octeontx2-af: Add validation for lmac type
 
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQ/hp0ACgkQvlAcSiqK
-BOjeFwf/UaNEfsSOA9OPls69RXd4P4lR2cQibXWCABAg/B1OHkD9BdLDKqR+mS8S
-G+PG//Ot9k8CwPoFFt+xZ0TrxIj/CakDJzawuMoJvSpToSX84V0eYZgh2oH0JBmd
-m8ocOGnz3dPGaIH+UQ6sUZQN3JxE/oeDV8AgLyD86tE6NDc4BxPARTdiH3oJP1mj
-Wn109juOs0zfj+BftxgtfvfTPcYcDxmR/8Skvy7lWi/6Oir5lpRcyVRuo6zd4wfh
-KfsuBSJ0TgdVwntMN8R/P6UXAkvburMAZZj1p3Nv91DweeiJCX7T4K07B1tGWWpu
-1iKTXZ4x3NzwMww5oizIjKx+Mjhkhg==
-=CtTc
------END PGP SIGNATURE-----
+Ratheesh Kannoth (6):
+  octeontx2-af: Fix start and end bit for scan config
+  octeontx2-af: Fix depth of cam and mem table.
+  octeontx2-pf: Increase the size of dmac filter flows
+  octeontx2-af: Update/Fix NPC field hash extract feature
+  octeontx2-af: Fix issues with NPC field hash extract
+  octeontx2-af: Skip PFs if not enabled
 
---cggld5pyystbuhs6--
+Subbaraya Sundeep (1):
+  octeontx2-pf: Disable packet I/O for graceful exit
+
+Suman Ghosh (1):
+  octeontx2-af: Update correct mask to filter IPv4 fragments
+
+---
+v3 changes:
+	Fixed review comments given by Simon Horman
+        1. Split the patches
+        2. Replaced devm_kcalloc() with kcalloc.
+        3. Remove un-necessary validation before free_percpu
+	4. Modified/Elaborated commit message
+        5. Move the lock to inner function "rvu_get_lmtaddr()" to
+           avoid synchronization issues.
+
+v2 changes:
+	Fixed review comments given by Leon Romanovsky
+	1. Updated lmac_type in case of invalid lmac
+	2. Modified commit message
+
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   |   8 ++
+ .../net/ethernet/marvell/octeontx2/af/mbox.c  |   5 +-
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  19 ++-
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |  40 +++++-
+ .../ethernet/marvell/octeontx2/af/rvu_cn10k.c |  13 +-
+ .../marvell/octeontx2/af/rvu_npc_fs.c         |  28 ++--
+ .../marvell/octeontx2/af/rvu_npc_fs.h         |   4 +
+ .../marvell/octeontx2/af/rvu_npc_hash.c       | 125 ++++++++++--------
+ .../marvell/octeontx2/af/rvu_npc_hash.h       |  10 +-
+ .../marvell/octeontx2/nic/otx2_common.h       |   4 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  11 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_tc.c  |   2 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |   2 +-
+ 13 files changed, 183 insertions(+), 88 deletions(-)
+
+-- 
+2.25.1
+
