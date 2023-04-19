@@ -2,82 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BBAD6E7B0E
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 15:39:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ADE66E7B19
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 15:42:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbjDSNji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 09:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47644 "EHLO
+        id S233180AbjDSNmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 09:42:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232035AbjDSNjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 09:39:37 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8538E60;
-        Wed, 19 Apr 2023 06:39:35 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id vc20so26819504ejc.10;
-        Wed, 19 Apr 2023 06:39:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681911574; x=1684503574;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tJWbp1tfEuIBgO3KjXBgANNDdus3rVnLPSEwlC3kPi4=;
-        b=POiZ82GaBj5KpeYp1zkRXb3HJFZC59lbpVOn94aKhckb0eBs+KHbzuwkC55U8TaHUM
-         GTAp8/li2tq37vQS5tGB1tlnf5n2iCcc+v5SudC3PYwa8K9I9EcmWUiMgCt/LWxCRZZR
-         ybOkNldslhZQWmKU/gMVyF8PDWd6fG1mBbFw66Kz6AvNxMq7fL8TmhTi3VUVDloxwjQo
-         pa2dO+zkye9e+vGxugROHlBiD3AOsh+SaDyA0f8HkXoPgcQYzB8KjJ9IGtLQk1gkgGta
-         052f5zN/cuaD9TBXNcnSI3I6E7JbxZaLYV6NIXeejHfC9ShYDrm7B0vxHmRr4zVjgAmd
-         zdVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681911574; x=1684503574;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tJWbp1tfEuIBgO3KjXBgANNDdus3rVnLPSEwlC3kPi4=;
-        b=cchHKcJI2pWRmfc2/T+VfKg/f+XbjS8GuE16J/c/3VFK2qUQJIeW49z4w1xFkyvDS3
-         xlJJAaKQPua3diva3kouHt1KhUI1sBr+D/bbAZ9R85/6QYgivcwOPM/7cC5V756Z/nrw
-         E24AvO9kZatSMr79+/m4U3zDeV3wAnRJs/H73yZYOS5YFjyF038CP+VKek8S2DeTH36+
-         MFVzb+6nRGE7IudwdtTywNbDBN3YBJA6pnyeA4sT4d0gGZpHuW3S2K7E5ZA88Q0d0xZn
-         oRFAeOZl81r15tfPRlfeUCS8VSxsqZCRwk/dk7PktKqxV0Z39wZO4edqTt/dCJpzDaMI
-         8f2A==
-X-Gm-Message-State: AAQBX9f/L5EAF3LhYvuJ87OY++7y6qkz+5NeZOUWVBroQJWR9TFZz/MG
-        d2n+d0FwFtNYNtg7cswKgxmQ5hDMwbSXsg==
-X-Google-Smtp-Source: AKy350Z3/V908UnVtPmmQpMT4HDcol2ix7w5BeXwbLRUqmzO29i1kEWc6GDZuaNMoZCwiXdAKBna/w==
-X-Received: by 2002:a17:906:dc1:b0:94a:474a:4dd5 with SMTP id p1-20020a1709060dc100b0094a474a4dd5mr14305062eji.9.1681911574271;
-        Wed, 19 Apr 2023 06:39:34 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id nc16-20020a1709071c1000b0095004c87676sm2662199ejc.199.2023.04.19.06.39.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Apr 2023 06:39:33 -0700 (PDT)
-Date:   Wed, 19 Apr 2023 16:39:31 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
-        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        mengyuanlou@net-swift.com
-Subject: Re: [PATCH net-next v3 0/8] TXGBE PHYLINK support
-Message-ID: <20230419133931.mpmjzzolnds4kv6l@skbuf>
-References: <20230419082739.295180-1-jiawenwu@trustnetic.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230419082739.295180-1-jiawenwu@trustnetic.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233017AbjDSNl7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 09:41:59 -0400
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4FD171D;
+        Wed, 19 Apr 2023 06:41:54 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0VgVGQZB_1681911709;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgVGQZB_1681911709)
+          by smtp.aliyun-inc.com;
+          Wed, 19 Apr 2023 21:41:50 +0800
+Message-ID: <1681911643.4417202-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
+Date:   Wed, 19 Apr 2023 21:40:43 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     <netdev@vger.kernel.org>,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <bpf@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
+ <ZDzKAD2SNe1q/XA6@infradead.org>
+ <1681711081.378984-2-xuanzhuo@linux.alibaba.com>
+ <20230417115610.7763a87c@kernel.org>
+ <20230417115753.7fb64b68@kernel.org>
+ <CACGkMEtPNPXFThHt4aNm4g-fC1DqTLcDnB_iBWb9-cAOHMYV_A@mail.gmail.com>
+ <20230417181950.5db68526@kernel.org>
+ <1681784379.909136-2-xuanzhuo@linux.alibaba.com>
+ <20230417195400.482cfe75@kernel.org>
+ <ZD4kMOym15pFcjq+@infradead.org>
+ <20230417231947.3972f1a8@kernel.org>
+ <ZD95RY9PjVRi7qz3@infradead.org>
+ <d18eea7a-a71c-8de0-bde3-7ab000a77539@intel.com>
+In-Reply-To: <d18eea7a-a71c-8de0-bde3-7ab000a77539@intel.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 04:27:31PM +0800, Jiawen Wu wrote:
-> Implement I2C, SFP, GPIO and PHYLINK to setup TXGBE link and switch link
-> rate based on optical module information.
-> 
-> Because our I2C and PCS are based on Synopsys Designware IP-core, extend
-> the i2c-designware and pcs-xpcs driver to realize our functions.
+On Wed, 19 Apr 2023 15:14:48 +0200, Alexander Lobakin <aleksander.lobakin@intel.com> wrote:
+> From: Christoph Hellwig <hch@infradead.org>
+> Date: Tue, 18 Apr 2023 22:16:53 -0700
+>
+> > On Mon, Apr 17, 2023 at 11:19:47PM -0700, Jakub Kicinski wrote:
+> >>> You can't just do dma mapping outside the driver, because there are
+> >>> drivers that do not require DMA mapping at all.  virtio is an example,
+> >>> but all the classic s390 drivers and some other odd virtualization
+> >>> ones are others.
+> >>
+> >> What bus are the classic s390 on (in terms of the device model)?
+> >
+> > I think most of them are based on struct ccw_device, but I'll let the
+> > s390 maintainers fill in.
+> >
+> > Another interesting case that isn't really relevant for your networking
+> > guys, but that caused as problems is RDMA.  For hardware RDMA devices
+> > it wants the ULPs to DMA map, but it turns out we have various software
+> > drivers that map to network drivers that do their own DMA mapping
+> > at a much lower layer and after potentially splitting packets or
+> > even mangling them.
+> >
+> >>
+> >>>> I don't think it's reasonable to be bubbling up custom per-subsystem
+> >>>> DMA ops into all of them for the sake of virtio.
+> >>>
+> >>> dma addresses and thus dma mappings are completely driver specific.
+> >>> Upper layers have no business looking at them.
+>
+> Here it's not an "upper layer". XSk core doesn't look at them or pass
+> them between several drivers. It maps DMA solely via the struct device
+> passed from the driver and then just gets-sets addresses for this driver
+> only. Just like Page Pool does for regular Rx buffers. This got moved to
+> the XSk core to not repeat the same code pattern in each driver.
+>
+> >>
+> >> Damn, that's unfortunate. Thinking aloud -- that means that if we want
+> >> to continue to pull memory management out of networking drivers to
+> >> improve it for all, cross-optimize with the rest of the stack and
+> >> allow various upcoming forms of zero copy -- then we need to add an
+> >> equivalent of dma_ops and DMA API locally in networking?
+>
+> Managing DMA addresses is totally fine as long as you don't try to pass
+> mapped addresses between different drivers :D Page Pool already does
+> that and I don't see a problem in that in general.
+>
+> >
+> > Can you explain what the actual use case is?
+> >
+> >>From the original patchset I suspect it is dma mapping something very
+> > long term and then maybe doing syncs on it as needed?
+>
+> As I mentioned, XSk provides some handy wrappers to map DMA for drivers.
+> Previously, XSk was supported by real hardware drivers only, but here
+> the developer tries to add support to virtio-net. I suspect he needs to
+> use DMA mapping functions different from which the regular driver use.
+> So this is far from dma_map_ops, the author picked wrong name :D
 
-For next patch versions, please copy the maintainers/reviewers listed
-under "SFF/SFP/SFP+ MODULE SUPPORT", "SOFTWARE NODES AND DEVICE PROPERTIES",
-"ETHERNET PHY LIBRARY".
+
+Yes, dma_ops caused some misunderstandings, which is indeed a wrong name.
+
+Thanks.
+
+
+> And correct, for XSk we map one big piece of memory only once and then
+> reuse it for buffers, no inflight map/unmap on hotpath (only syncs when
+> needed). So this mapping is longterm and is stored in XSk core structure
+> assigned to the driver which this mapping was done for.
+> I think Jakub thinks of something similar, but for the "regular" Rx/Tx,
+> not only XDP sockets :)
+>
+> Thanks,
+> Olek
