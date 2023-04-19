@@ -2,133 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F3466E7789
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 12:38:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4B136E778D
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 12:39:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232243AbjDSKiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 06:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
+        id S232063AbjDSKjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 06:39:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231513AbjDSKin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 06:38:43 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2108.outbound.protection.outlook.com [40.107.243.108])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8994BE;
-        Wed, 19 Apr 2023 03:38:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RBpJEavjfPkw5oUQfZdyPOPnA6JMO2JpcByWLP5DQepyvPgcCrrSbLKzI0cdtVfVev0uakMNYLxUFcEy3L7fg3BchDvLbQUh/djOhKQ9fnOJIVBpvAzVPAclueiDpjYynydWttAp0C5NWM52pUOhhwrpgQtSwiKn1MMUhvtmX+Lqs5kuNQUAMzSblRyS4NQYEAGPP73nr963zvt3/li8VnCooOBQg6zJwXY+NuBlmdqJVE3nOzS+DYt/QGIFZt+SSvTOFHh8SOUzWUT5vGG+PTn4mWJNe3kYtU01YnC+SnL8hXzh3C9A/eC+bigEIHNdcHMnLToyINfdA+FZ87Jfqw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VLsnh9EYk8OxLlnD90fU8UuSi30hO9ajVB8DRARWwUk=;
- b=fwoa/nldQpwc2EwT0mObblvFCrf8UHIKgJdw7h0AwPqDoOaOllB52K4eGmwYXpL7h3CG1mpFLUZKQKY6ouCeMdCKiwtxVRLeLMkqQoOX/dw+f0MQXKgaaqqT0rAwhKn06NdTMK8GBbwOXfE2PZ3/0JyWuyYyk+RM9fV++cWhVxH4FcmCUlxI1RxDgeQKsE8+TR4l28EHNITH0l/gcA47kDd1tdEW8qBnC/qikcfrOgGVVU9V/1Ejdwu58XuuTWpIohmknKZ1G7zGWqACkTc2x0ZC/4gqXQan0fyESv/ZLEMlXWPNeOav5uXNMOOFPW348rmCjOC9urr2zr7pz42ekQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S230465AbjDSKjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 06:39:24 -0400
+Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C1BB8
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 03:39:23 -0700 (PDT)
+Received: by mail-ua1-x932.google.com with SMTP id a19so7397402uan.1
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 03:39:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VLsnh9EYk8OxLlnD90fU8UuSi30hO9ajVB8DRARWwUk=;
- b=przM92VNJa1fw/fpEM43mFAWmURzxKiG895I7o5W4Co1am7LTBzyBGJdn/V/0al2qDtYwjwtwqyjDuQNdVNnXzwiAAGHj7vqaQHUICj0mfqgouCgx+5QUqrBb6yYmyYPMBHqcxsU3Ok/VQl8SYDzW9eLAKpAJydNX4sAWVneNuI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SN7PR13MB6303.namprd13.prod.outlook.com (2603:10b6:806:2e0::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Wed, 19 Apr
- 2023 10:38:39 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Wed, 19 Apr 2023
- 10:38:39 +0000
-Date:   Wed, 19 Apr 2023 12:38:31 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Sai Krishna <saikrishnag@marvell.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, leon@kernel.org,
-        sgoutham@marvell.com, gakula@marvell.com, lcherian@marvell.com,
-        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com,
-        Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: Re: [net PATCH v3 04/10] octeontx2-pf: Increase the size of dmac
- filter flows
-Message-ID: <ZD/Ep3oe5LrpRIfd@corigine.com>
-References: <20230419062018.286136-1-saikrishnag@marvell.com>
- <20230419062018.286136-5-saikrishnag@marvell.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230419062018.286136-5-saikrishnag@marvell.com>
-X-ClientProxiedBy: AS4P251CA0001.EURP251.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d2::19) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20221208; t=1681900762; x=1684492762;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=W9BR2Flu4pkd1a4nvfS2bzE5dKgIoEcx7rGGrDf0cD4=;
+        b=MKWBAdrGe29DaBzeRFySjThQhFLYG4+0/wlYgxznySzh7A3HVdCkraoOP8IiPkhFVt
+         6cDxeUQMC2Q8F/ZGKKWBLVodiqoFb6D+tgzX0yzpMW/PprZxZGNaILnrYFsymzpltek7
+         P1shoNcIja/EilAGEykasTaHFZLrWjK4iZJo6XeCxRKcZpEZCXsLzOD2FO+wFHmOlHe/
+         jk/FsZRdO4BRTfBboJ6JWUPOWa9qp3/kBE17Y3qzX8G3EuKs7Ya5b19uSJbigeRYdYCm
+         dFfpwI/4enDQ2ThhoMRew6ZxfRj0gsWRLzdGQqfPMCAHdrt+eP2/FNcwgffngQE28+QE
+         catQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681900762; x=1684492762;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=W9BR2Flu4pkd1a4nvfS2bzE5dKgIoEcx7rGGrDf0cD4=;
+        b=HjVI1DPeI/lSn7wJ5ylr3Wq2qocxoHW57m0jHQYJZ8w+IH3N2r250+yxLq1fX6V89k
+         C5dc/iynv8Ro+iyVm59TxjEOx4vyJ2kKDwMeQBDhCpVk4LRYIdj8fAXBZtwcv4NBTpPd
+         V0q2d7nax4nB+IyFLzXTr7qz8m6IjI3YnlxYpT5NudchGTL7oZpDUrkXAhutwRYDnYjE
+         cHzqzZrkrCgk+275jgP02eZImwaD0Va+0/PyEBLbscJBtmAkKzo9AnAFNPYn0DAff5DZ
+         tfhTSYAko3sh5D6NGTT35ruVYROaE7ubLYcFJRVLvV4vP9A+1ic4JVGo9pok05jzXc9p
+         66IQ==
+X-Gm-Message-State: AAQBX9ezzNOr4qX/NGsnBfk0NgLPfCDpenvRnOwtY/fxCZ4dHVWh51uW
+        K7xwHfe9+9u4cDPY4U5RW2ls4JoBOtl11Cx6R62TaVyI/AwUPA==
+X-Google-Smtp-Source: AKy350asR9TdY1VSXeQKqkzECwcA0e1HLyPgrISB4+PgN0lorNyxZLN5bRVLD6YRBby3Zaed0P4B6ZbCquqkAZiR+ps=
+X-Received: by 2002:a1f:e445:0:b0:43b:ead4:669e with SMTP id
+ b66-20020a1fe445000000b0043bead4669emr6581873vkh.16.1681900762038; Wed, 19
+ Apr 2023 03:39:22 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN7PR13MB6303:EE_
-X-MS-Office365-Filtering-Correlation-Id: adc72532-448d-4340-2d04-08db40c23c85
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6e8l9S+vhOxA7t8rkn8eblIGDPG2Ze+WOuK0TGLbmZnyyJapegaXW8xIMaA7twjgHa1B6egszOhigGPQqoDZu9VL1Zco4MxieZZNvR9/e1x0/ivxH/2jpVLmpgoLbA7AgpJi4bQfj8A4Vs+GxUe+DQhG8c52/Mcr/UaOXnvtgE+GBF8GU4NXHY8ts9s3uW/cA0a9pl8+shcIafilAhu9SOoG8fD9VuAkqLKY3uJoTol+twG6itmL7TI7NHH4WIHNTLiofz5/jrugEPUhZrk38XjCrFv47HXBjUd5hRMJdEIrv9epyjIdag+3sXRl8+TijcClTuJzzZgvN+tdecqkHRPAq1+BLcVvMr0uyUU2F+mC02nTWp/lzPBz0auO6T8SGSsWVRDEDEiNrrbzhHfkKAVPkQmbihDxBQT3Jb9Pvt1znULjJDq64JvW4ZcbmQbYkZiZBAv7e8p2o5U9VeeYe6Y+pQInpC6sFJKUpNsikMkG/ug2z9DaVfjKk4FI/gzJshw5mZIR9tnm4Qkf8W0IvfaJoR+OE6Yzo+iEpLo7AYOK2Xa5/astZX75y1GfQlUZ5XSthzni8DjWWZy/2Tyb0hW/T5o3DY3pTHAU6osVgE4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(39840400004)(136003)(346002)(366004)(451199021)(36756003)(4326008)(316002)(6916009)(66946007)(66556008)(66476007)(6486002)(41300700001)(478600001)(6666004)(5660300002)(8936002)(8676002)(2906002)(7416002)(44832011)(4744005)(86362001)(38100700002)(2616005)(6506007)(186003)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?k9wDcJlE6mEvE+yHnnwUBhfPHM5btznwss0lf/mcG7ACNY1ZMdeIAjRP+Gk+?=
- =?us-ascii?Q?YDOonzjy6fjjt/yeHOcGywbMiA8B6lWKYBgA/so3BFcdO2uRRpkKYhyINRVJ?=
- =?us-ascii?Q?UezfpsVkm6dW+AFf4szwaAdZAYMZ0JpgAOiyulcCrz1ZNP+stLOBEMr03hMB?=
- =?us-ascii?Q?FPaCRoPXrawBj91Ps6hS4/Bz0AkICQ9kyFdFdMCt0ryTppvblsZ+K5xV6aR3?=
- =?us-ascii?Q?kjoIOwfycDSJfdKUUcHPvBUht3gqL+3B+B1lXzhSJoIX5dASFiTHux/mYoNm?=
- =?us-ascii?Q?lFSBR50kN7eWJeq+jldwdEslMcb4iBiua3hP2m7Poc8z747YoZol1LTbmv+3?=
- =?us-ascii?Q?3h+j4TN8IJhoAup6O15umsv/9Rv/QYHUDFWKNR1KRLj53LXWxNNVI9i4Ai9w?=
- =?us-ascii?Q?24M1Z72KOXYa2wpQVSHikzeQi8brUdAyupn3/gGwFek2Sx9UX2lCu7daAems?=
- =?us-ascii?Q?8XuMkYDVa1nBUWVj8k0qeVk4kFJB+uvZgevTlMPR15rjpkuJ9X37DBo+k5lV?=
- =?us-ascii?Q?v/2JCnB/+4MeRpoPEJj1xUJ/WcSF2PHxFCX8r69Uw/aRChOYwmKUi8k3nRVC?=
- =?us-ascii?Q?w7zQ2wUbjI64bkgyv9OIbjows3I0jV6Zhl4nqs2aGYHpAVZ+XBmFLMx9W6Si?=
- =?us-ascii?Q?W2FWNwPFSeNejRI3IVik2PR7mg3V9Bvi4hqU39XosgpVYy8pmevxF1ggY9Wh?=
- =?us-ascii?Q?gbN1rhsSw/k0Bqn9blpwEWAVEhYFJAQsTQvUiqis5f4biNos+3SoAtXjupSV?=
- =?us-ascii?Q?MoqdElwUyFvo0mFT8+5+/4DFTXuXZms05jRNtY517kiKRgNqpbBSn/BgmGdS?=
- =?us-ascii?Q?HbUNMJosDcY+m9eHDIlJ4gjZKxXZloiZ3JHvURZiA1/u2LfwUZw+zZAiWzgP?=
- =?us-ascii?Q?fVfKGGkUWFcm/MfRpakGbeho5Vyb0/rfpeLK2wXoGEHSQ/ucCwhVY5uWR+Z/?=
- =?us-ascii?Q?5VNbNMkKwjInW7QxXrlsyhIrTHzJx7ixdeYhA8j26dyogY/HP1GYFM7n3BPI?=
- =?us-ascii?Q?j2gXnfCc2OHyHx+ZR5rbC3gZ4SBYzMQ5AMzEnjbwNRl3SXrq/3iW0XcWMBBe?=
- =?us-ascii?Q?NQVasqOCJum9QvWth0QlqwQnF3QS50ZY4k6qc5o1P1T6CMJ7ofqdjYFtslgs?=
- =?us-ascii?Q?pq6alv8pTe0NW0S/4nWk1ijk2/AwqXgfAGGGSjYoSJAZqul8fk0H+k89NsbR?=
- =?us-ascii?Q?lWdVzPu+BhNUmLU9O6u3qyUL9emKXQyCET8FjUXGnLWL4XSATo7ysGoJWfJP?=
- =?us-ascii?Q?gq04FUWX/YM4zd7brfLH09CDPcwjYwSMlEqRYV/7SfbmvMJwGg3ePlMs2vJE?=
- =?us-ascii?Q?yQB9y+fw1lLy3Eb1tlxG+Ex/+FaDTKcbtOr+eXFzHHmqsoKxk/O4FBsS2iDy?=
- =?us-ascii?Q?7klWdlph5jFtjaIUkfKk0rakxcrDido4Gkr4C4bSTmgigsTQwha4S9n3q/KG?=
- =?us-ascii?Q?awYtalRWnPJAxbML9l1Y8jdZRPpkZcNv8i/WwKxBWZo8C1dUrVWh7RAKPPyD?=
- =?us-ascii?Q?wdwLrAGRLET4KqpRAVHIdFPgAqxxyYoD85FQoQYKHU//kKxovYf8nrD20xBo?=
- =?us-ascii?Q?qjFVTM0gPk8lC/XVw75bVlDUUw1ou33a1UBJlV3vv5Qlf5q2vOlbpXj728UK?=
- =?us-ascii?Q?+1u9dG9f5eT5CWhjNez4cZUEgvjVc5jVhKOSx4Nt+hTs4a/kYnEQylGCXScA?=
- =?us-ascii?Q?JrLZrA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: adc72532-448d-4340-2d04-08db40c23c85
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 10:38:38.8010
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: R+vgq9gv1nBCNGuuqjMeaQDVNJ7BbdFEaCn1vy8eRJlFH17YqXK7PQb2rEAB4TOXHKf84F6BZWPJRHUkUGDYM+CUQvdCxT3xEtjagEnvCI4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR13MB6303
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a59:cb0c:0:b0:3c4:f0c9:1ad4 with HTTP; Wed, 19 Apr 2023
+ 03:39:21 -0700 (PDT)
+Reply-To: hitnodeby23@yahoo.com
+From:   Hinda Itno Deby <amasylviagh@gmail.com>
+Date:   Wed, 19 Apr 2023 03:39:21 -0700
+Message-ID: <CAPVC9c=B_J5GCzOeVb-4qi_QG0sMdvBssxXm_-CTDPBPDSTbCQ@mail.gmail.com>
+Subject: Reply
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM,UNDISC_MONEY,URG_BIZ autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:932 listed in]
+        [list.dnswl.org]
+        * -1.9 BAYES_00 BODY: Bayes spam probability is 0 to 1%
+        *      [score: 0.0000]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [amasylviagh[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [hitnodeby23[at]yahoo.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.6 URG_BIZ Contains urgent matter
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.0 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+        *  3.2 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 11:50:12AM +0530, Sai Krishna wrote:
-> From: Ratheesh Kannoth <rkannoth@marvell.com>
-> 
-> CN10kb supports large number of dmac filter flows to be
-> inserted. Increase the field size to accommodate the same
-> 
-> Fixes: b747923afff8 ("octeontx2-af: Exact match support")
-> Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
-> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
+-- 
+Hello
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+My name is Hinda Itno Deby Please I want us to discuss Urgent Business
+Proposal  if you are interested kindly reply to me so i can give you
+all the details.
 
+Thanks and God Bless You.
+
+Ms Hinda Itno Deby
