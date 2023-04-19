@@ -2,119 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 992C76E8205
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 21:42:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D69F06E8214
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 21:46:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231237AbjDSTmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 15:42:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48954 "EHLO
+        id S231271AbjDSTq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 15:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbjDSTmp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 15:42:45 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC574C37
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 12:42:43 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-50847469a7fso235766a12.0
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 12:42:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681933362; x=1684525362;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kabpnjTCjqP45slsIo1+rdV4uXUZnlZBAEyWTGefmrU=;
-        b=gq3s9X5ikbqCGzliFi7nIlnmW31Ify5ixO5hPtad1QUB8mqOPEckD2+xG9t4KQ9a05
-         iC8ce3WvsNqQrBIOf/9G+liCWflGly5Bd//qfw9g/ySnfc4loFGCmelwKfYc8zigSslw
-         XqULE6Y0BShT5AEpnMQmzDQPIi0vN6Zv8eT+iUH78EsWdhWeaSu4DQ+C8yCFMytRK67Z
-         3zbec/wPdWd90sUGxE2dLK9O+bguvb2JeKoJkdqUCdOcOJ1Bdfzk/zLn7O3AejJfAaHT
-         3Z1CmL5U+LWtj8WtftgA8vA3Ua3+74D2Fuj2QVpeKDobiNi5Mcu2SjieSg3YzTiofWIY
-         MhIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681933362; x=1684525362;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kabpnjTCjqP45slsIo1+rdV4uXUZnlZBAEyWTGefmrU=;
-        b=abJfJAKMVsMYWRSBAgbFdK7QP2cTaNMVNCNgsYU0yz9Uq6KYZVa5iTqDrkHN+Vtgyu
-         cY6VtO4QG9Vto4gTCQcc7gzkrs5BrR9CgoX8yc/sTxmhpqao1HfUdyFw/jaDnh6njg+/
-         1tqbtrgO0Jd5tVjOikkRl+Mp3oD8vvpCfDFmnho341X1vJeg/q6V1AAMaZFFgKhULzRa
-         CL6kT5ys0kFi44OpNkPUIhm7rPIRoK15JHoHzxz8SKQ1JzDrzktyPtxexJymw+XI7vKI
-         VWE22vufHnZtUuLLWmxwvHIrFlVUeN+zwcsyO7O3wbPABQ7Lo1S+O8NAsU72nEKa1aUx
-         H2SQ==
-X-Gm-Message-State: AAQBX9fYLBevzND8H+msbD7wgAyVkhy7eS0h3YrmoRoLnRBEU+HjETfK
-        vayRDzJb3uP9sO/2vqVmGZl5Zg==
-X-Google-Smtp-Source: AKy350bc3GWY3VPzEuT8jJUkQFSPKSNrIhp44xSKlRK8k+SiL3FGI4ilYR5RzlkLUN29gcUPYIyOSg==
-X-Received: by 2002:a05:6402:342:b0:504:ecfa:fa6c with SMTP id r2-20020a056402034200b00504ecfafa6cmr6323605edw.1.1681933362301;
-        Wed, 19 Apr 2023 12:42:42 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:976c:1d6c:6ed0:8935? ([2a02:810d:15c0:828:976c:1d6c:6ed0:8935])
-        by smtp.gmail.com with ESMTPSA id fl3-20020a1709072a8300b0094f396c7a7asm6021574ejc.214.2023.04.19.12.42.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Apr 2023 12:42:41 -0700 (PDT)
-Message-ID: <ef3fe52f-c6d0-b74d-e37e-0d0129990ef7@linaro.org>
-Date:   Wed, 19 Apr 2023 21:42:39 +0200
+        with ESMTP id S231280AbjDSTqW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 15:46:22 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E7E2735
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 12:46:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=//1tYW5OFMpifX+7K0BVWzqdE/MdauvUsV93Is9MMiE=;
+        t=1681933575; x=1683143175; b=N9E0Oz1SATXgDRFIA//v5PoYfwQWZ2XUZHnOtm6x0CK9SFI
+        x56S5WnrlvyL5FFQFmJ/Biix3sIcTMdHYW0ewXTVIGol79i6AjXHsakGMcNfrUnLXQY4kbORypei/
+        QvE1bM/5MaB7/k96a8LZgLcko1x7fdQznx2JkqN3b44RbKIFtsKOr5lTiaJ9kakCysDRXnfA2ec57
+        gMCKvXIvNM0Newn5Wgcr6k5RnlHTRSP2CqalJC+YHdnu0jGbZW3xzp0SH+8Q+uFXauudQBZbeo9U9
+        R2hmfw+ZgW4Hv7QEhKO24e5k6P3O6FLsNGj+6kys8/Mu/XYfA4x5zgXpCcyxTQIA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1ppDkh-002gE9-0R;
+        Wed, 19 Apr 2023 21:46:03 +0200
+Message-ID: <5bab80687cfc0a641b8110530bc1277e6cbf00e6.camel@sipsolutions.net>
+Subject: Re: [PATCH v1 net] netlink: Use copy_to_user() for optval in
+ netlink_getsockopt().
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     bspencer@blackberry.com, christophe-h.ricard@st.com,
+        davem@davemloft.net, dsahern@gmail.com, edumazet@google.com,
+        kaber@trash.net, kuba@kernel.org, kuni1840@gmail.com,
+        netdev@vger.kernel.org, pabeni@redhat.com, pablo@netfilter.org
+Date:   Wed, 19 Apr 2023 21:46:02 +0200
+In-Reply-To: <20230419175258.37172-1-kuniyu@amazon.com>
+References: <d098026456c8393463e6cf33195edc19369c220b.camel@sipsolutions.net>
+         <20230419175258.37172-1-kuniyu@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH] net: nfc: nci: fix for UBSAN: shift-out-of-bounds in
- nci_activate_target
-To:     Anup Sharma <anupnewsmail@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, linma@zju.edu.cn,
-        dvyukov@google.com, Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <ZD9A5Krm+ZoFEFWZ@yoga>
- <3aeac99f-aef3-ee22-f307-3871b141dc7b@linaro.org>
- <76d5df65-c0c9-9702-8037-4c1d3b2255f3@linaro.org> <ZEA/N5SAFHd2UjS8@yoga>
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <ZEA/N5SAFHd2UjS8@yoga>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/04/2023 21:21, Anup Sharma wrote:
+On Wed, 2023-04-19 at 10:52 -0700, Kuniyuki Iwashima wrote:
 
-> 
->>>> +		pr_err("Too many supported protocol by the device\n");
->>>> +		return -EINVAL;
->>>
->>> I am pretty sure that you broke now NFC. Test the patches first and
->>> share your test scenario.
-> 
-> Since a reproducer for this bug is not available, I am unable to test it locally
-> or through syzbot before submitting the patch. 
+> > So I guess here we can argue either
+> >  1) keep writing len to 4 and set 4 bytes of the output
+> >  2) keep the length as is and set all bytes of the output
+> >=20
+> > but (2) gets confusing if you say used 6 bytes buffer as input? I mean,
+> > yeah, I'd really hope nobody does that.
+> >=20
+> > If Jakub is feeling adventurous maybe we should attempt to see if we
+> > break anything by accepting only =3D=3D sizeof(int) rather than >=3D ..=
+. :-)
+>=20
+> Yes, this is another thing I concerned.  I thought we would have the
+> same report if we didn't clear the high 32 bits when a user passed u64.
+>=20
+> If we want to avoid it, we have to use u64 as val in netlink_getsockopt()=
+.
+> This is even broken for a strange user who passes u128 though :P
 
-Reproducer is only to test the actual issue, not test the code. Code can
-be tested with real device and maybe with virtual NCI driver.
+Yeah ... hence I'm saying we shouldn't bother.
 
-> Are there any other tests that
-> I can perform before submitting the patch, apart from simply compiling the kernel?
+> > So my 2 cents:
+> >  * I wouldn't remove the checks that the size is at least sizeof(int)
+> >  * I'd - even if it's not strictly backwards compatible - think about
+> >    restricting to *exactly* sizeof(int), which would make the issue
+> >    with the copy_to_user() go away as well (**)
+> >  * if we don't restrict the input length, then need to be much more
+> >    careful about the copy_to_user() I think, but then what if someone
+> >    specifies something really huge as the size?
+>=20
+> I'm fine either, but I would prefer the latter using u64 for val and
+> set limit for len as sizeof(u64).
+>=20
 
-Compiling a kernel is not tested. Maybe you can test this part
-successfully with virtual NCI driver, maybe not, I don't know.
+That doesn't actually work on big endian, if you have a u64 value 1
+that's 00 00 00 00 00 00 00 01, now if you just copy_to_user() that to
+an int value (that should've been used) you only get 00 00 00 00 out ...
+I guess with the semantics we could technically set it to ff ... ff, but
+then there's probably _someone_ out there who expects only 0 or 1 in an
+int, or something? So that means to allow a value larger than int
+(smaller isn't allowed now) you'd actually have to write some additional
+tricky code that checks what the size is and writes it accordingly ...
+or just like now writes only the 4 bytes out and sets optlen, but I
+suspects that really only works today anyway because everyone uses an
+int as documented (and smaller won't work).
 
-> 
->>
->> BTW, ISO15693 is here protocol 128, so definitely more than 32.
-> 
-> Thank you for your feedback. I would like to address the UBSAN bug and I have
-> thought of a potential solution which involves adding a check statement for the
-> minimum and maximum values of the protocol before net/nfc/nci/core.c +912:
-> 
-> if (!(nci_target->supported_protocols & (1 << protocol)))
-> 
-> Could you please assist me in determining the correct approach?
+So I still think it's better to at least try to just say it _has_ to be
+exactly an int, and write that out - and failing that, keep the
+behaviour we have today, but hopefully that won't be needed.
 
-I would first propose to check whether the UBSAN report is an actual
-real issue to fix.
-
-
-Best regards,
-Krzysztof
-
+johannes
