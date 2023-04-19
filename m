@@ -2,160 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 011286E7EC9
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:45:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A2946E7ED9
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233158AbjDSPpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 11:45:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
+        id S233676AbjDSPtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 11:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233693AbjDSPo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:44:26 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2078.outbound.protection.outlook.com [40.107.243.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3282A5F0
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 08:44:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RgKE1Tar85qx3iB3SbdB/RJbCwhz/vCre2eJSBq1wNyNSzXk/f5hAM9xB60qh1SmLPrqVrW9gAJ7cNluLV7DPgEjpofvTXqUFKBcBKDGHl20fmIQDK6cbrvMqv+VNeICOZErAe69OA2Bhj+a9wh+RYQTwqG8CZonJlZ9x7LjOelT8I8JZo2OX1Yg+2QLrFlJT6MWJF1gV5GlfQ+/dOFjPex99TCtsRVWgKvnnRIMGclXVysy9U5WH2cSBhlFholzPAemlMbY7fBzaaeB6YIWvPRJOQTRG9YW8BjTZucwD6NWYirwv23FllbsyjyWnjP/aA1othD0aH7tZhZRIDAPdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vi7s0RwPyhqvcDYs8aWPVO2k74KjD0DauGSmUPadOrg=;
- b=By/Yqg640J5+pr2p2hDwVoYbwXvnc1nBfR/KMxjHpqhZRqxAzwSsNaZB7vNNZ1z54RkIQh4bsy5FV7FbE2CVjqU24Fj91ZtJVUixQi3FY4tOo8qHpzx5jBxy+nDwZK/LBIDFCBylPw4l8bm+ipuIYoDlmACwx8s/OuMpG0qv3OTmxnWFsDl9VHAsFVk+G15gk7Um4FlwY/5QX4f60K3o++NgEsu3PvS+kmwg9wd+IDOql7MMzQZ0aOFY+5IvNL/BIqY79bNgqj1RpnQVBVCPvFOyGGTkfBppn16erA2ecYrAKEirr8Z0TmlgLaz9o8/dlPt6W3Gyy70Iyp5n0oA7Ww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vi7s0RwPyhqvcDYs8aWPVO2k74KjD0DauGSmUPadOrg=;
- b=RHAjTM71akKGUK6IW739+yWAGGkUmwLIkk5iR9obkA/WsaOdsCrHDyj5UHUs1ehcBP9eVgxwKQtDPJsT4brnd6L8aBeY8fD0/z94RS6+VqnZUWWwPlbhFX4afh72WTwhXaNa2TSe7q5LpCDJ3UG6L3Ud5+dGYoqZgAeohE8Sko9eoWVoiUQE721OEzROSr+HLpy2C/Smr4BPR9Dbs0NjU6YycewkX2c4bSbHw16gCwFRyA88N6J5/UQww76krJ/VvNT6B3t5bt1UeQ+uE/ajRMWgmk2gz7PS/282FzqiRhe1CIf8dJMhnxY9D/hy/Xqz8aQfTIm5XnfU2pw9NJu5SQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by SA0PR12MB4446.namprd12.prod.outlook.com (2603:10b6:806:71::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.45; Wed, 19 Apr
- 2023 15:44:19 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::66d8:40d2:14ed:7697]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::66d8:40d2:14ed:7697%5]) with mapi id 15.20.6319.022; Wed, 19 Apr 2023
- 15:44:19 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com,
-        netdev@kapio-technology.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH iproute2] ip: bridge_slave: Fix help message indentation
-Date:   Wed, 19 Apr 2023 18:43:59 +0300
-Message-Id: <20230419154359.2656173-1-idosch@nvidia.com>
-X-Mailer: git-send-email 2.37.3
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1P193CA0022.EURP193.PROD.OUTLOOK.COM
- (2603:10a6:800:bd::32) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S233674AbjDSPtG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:49:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6982FA256
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 08:48:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D770663733
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 15:47:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 100D2C433EF;
+        Wed, 19 Apr 2023 15:47:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681919250;
+        bh=zPaYHlCyzBKhGiDqbza2QRzwDKWYkIQvXkPIjTDmtvI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nmdBHXgcZg4tq3UBpMLHJaq7hc0BOK1gqbaNC8XVha/JK9du1knkhwGxoFqOyXS3U
+         RaJv9aFdqpgSXLaKF6L0ob3v1rtYChDhwEdpZ5vQNL7z8MSoDGfXwweRTDHAVFYpHp
+         nDlrIZErWf8fPT3HjMAyzZ1esxyiCFV4uhkwjpk9dc1b5R5t55DGeah3plO194PItX
+         aqPyfpzdFFuCwcNaPZRsZX6YVYNaio3suc4JlNPIUmphKXioQj2aX26+WzTDrN5KEB
+         cz0IUBl7vpNTglfntQxvrC8HlraZ7Ak1QiCHGGFDZFxz8Hc2kSnaKw0y2J/zG1gRnq
+         8WMSWtRj9E2pw==
+Date:   Wed, 19 Apr 2023 09:47:28 -0600
+From:   David Ahern <dsahern@kernel.org>
+To:     Maxime Bizon <mbizon@freebox.fr>
+Cc:     davem@davemloft.net, edumazet@google.com, tglx@linutronix.de,
+        wangyang.guo@intel.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dst: fix missing initialization of
+ rt_uncached
+Message-ID: <20230419154728.GA23087@u2004-local>
+References: <20230418165426.1869051-1-mbizon@freebox.fr>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|SA0PR12MB4446:EE_
-X-MS-Office365-Filtering-Correlation-Id: 86f93b25-f988-468f-27c9-08db40ecf07d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pBLWjddKCKgVFeR7ONZ7ZtF9b+NSRszad0wVKBp8Pdt/C+jQk4fUxxUkI1z3tiefJJrXn5ptwR9KZtvgRFeK4ypD7g4bzZ2SnQWyjpNMI38I/kQXM1zcyeQYBkDJPKwhwfs1AwwmCndhmouqrC7GN9BQRtZfB9He1XW5xzuIeD8d/NfIQueSv7int11pLnx1d36KYg0UbUYaa80aAVPNMYQgWOnDTJxHcbk0v7EHS7cZBjnXR1F+16sLCZSMv3dkwOdI4XXIIdDPTw4wc6zCCl5lmlAijeggL2y/OUpmo+E9oyRwhHmSk/1AF0uVJHC8342uoI2ZkoG2nSlawCUDF25LUxbfWQ1GokE/5cfRrgyfRCPXVo5wVmSKBN7jYP+og0MOzkuuKVgR9g6RIZWmF/IhNB0PLrzlUBZJQU6z3blTPBIf+EQBserXi6F1PEu/vr63tOZNAfiO1tVORPmxhKdm3A0yDRkYaYvKEZddXbGYCmX1wcO6hvetjCyDq4WdwjvrqVI6O6Dj6WA1lTJDuJLXayGbGDABgSYqgjk88zFbgzAVmfrKHEL9jMxnozUh
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(136003)(346002)(376002)(396003)(366004)(451199021)(8936002)(38100700002)(36756003)(8676002)(2906002)(86362001)(5660300002)(478600001)(6486002)(6666004)(186003)(107886003)(2616005)(6506007)(1076003)(66946007)(66476007)(6512007)(26005)(316002)(6916009)(83380400001)(66556008)(41300700001)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SpKYb6Zh5CDmlWLqjd/Br021xbTZPVBqlSsx8ahonLqKHQaQi2PtAxGSEF7d?=
- =?us-ascii?Q?NNNOh9WFR1YmkC2O0y7aCC8WR/U0MBqOSH4GItREGmTJ614HIVv5u0P8oLu4?=
- =?us-ascii?Q?Umk/SLf8sVxXmc4eXTx2ClMGKdWooFK4SqEASWl8Bdybw8qs/z5h+9I16kJY?=
- =?us-ascii?Q?i73JC8O/7Y3obWdFJol4fxXte28yFTt2EktHWpSXwCWCKlsBeStFlUKTnV//?=
- =?us-ascii?Q?7/giaE4YOJdm+/uBI6NR6dVrm27hSWscqSuDgJdoHy/HLo4LIhejlm6wM9OX?=
- =?us-ascii?Q?589AQuRVYfsub6dWgShrj0D8HdyjDSReqAQPx6Z5M0ZJEC1Ib2ywcfsp0SNP?=
- =?us-ascii?Q?KyezaLsh3xWOUHvNPsgrS0044bEAV26YYukm1pzd+LscUXQpa+ePpY93RbRD?=
- =?us-ascii?Q?Jx/PUf5fj8yv0w0BT/9Jshz8BznXilkLE0PQf5KgjE3HhqwvHkixtZgWp23T?=
- =?us-ascii?Q?ojI5fkk0qa2aqilbPYZ8Zcz0TCjAvBVTy9scpb8rkKsVk8JB6SEWeNkCIgQF?=
- =?us-ascii?Q?6SjIIVgqEigExyjyFJPwxhoK0JhB21aIydEi0c7AhLM+8yjsQIJR+Ti+q83e?=
- =?us-ascii?Q?dXPaSs1CqyF1mqthpWKMvbonlOo0iEuP6NBG4tne1RBM9vAdR1ZIsOjuvDg4?=
- =?us-ascii?Q?RqJidn8bQb4ceJ5myOPL2Cl/VkBFTorTSsm049wjiBuowvTHY7tFYBtba7d9?=
- =?us-ascii?Q?+5hVN45OF+a2Ni18Yvl9u3+VYTQAnGvCkbBDqJaFdV0/kMyC7ZibBNm1B15C?=
- =?us-ascii?Q?j5PGf/Bz3cwLtVjYTKzJRL2A1Fn7ydawQE9quELUsAjCWG6j0H8+93bCcOFx?=
- =?us-ascii?Q?isr0X+6BGC7X19PcU8GR61JWPZX4fp8jB5ewJ1cNIZDMVUi/dxjp2Wyx/jaf?=
- =?us-ascii?Q?o92iTpvbEpK5FFgyrdSO/LH3J9wGPBxU62nQAMWirwnwGT51L6lQ/eW2m+5r?=
- =?us-ascii?Q?kvpELQJa3alC1A2WV9LQL98D8le1aePGCuOz2KshpgNK3NTemN2NW8GeIs7e?=
- =?us-ascii?Q?EKafU3+swWjNaIBAVArcsgL/ohmvbCuw7nAu7iIrtdf2jKKMmTKN8aevnbvU?=
- =?us-ascii?Q?vLGUx6zxcGafM/YF+c1DuyTGZCLN844trDQ8sl3/FUGNA9Au+ADwhVwcpyts?=
- =?us-ascii?Q?8IeInLdr7zcSdSXtxcfXdx5ZRRc1IRD4/x24ocoe4CwZDH6GlaBMvVAHQutZ?=
- =?us-ascii?Q?8NL2XwiQL9iqnR53gTT9/O+M+6Ng9Ay/RuUt/7B5X/KRMESxmyJn6e/hvzs3?=
- =?us-ascii?Q?DZtJcOBIdcuXgy/RXYsiNRy+qT5p6q92NqeZpXZsvgfTymsR5lxf/HGcPtv3?=
- =?us-ascii?Q?UqGBQ0yFwb/P0hJDuDUYflRbIErV0lwNnmdmsZe61JwTczu4Di5QgBUHQJSx?=
- =?us-ascii?Q?d63z2JL2C4Ltm9QZfS17WOFHuDhF9BGKh1Z8Mqzde3h2HWQ+G1Ry6Jel+zlM?=
- =?us-ascii?Q?f/0RY1ySPIp2LUtwtz2LQnvUg69pGl3Yrmy8OwUroXkbk3nzhrBHkZc8qSfn?=
- =?us-ascii?Q?TqxQYFexxyTuFWCMQHWja2sStk1ErFrBDXHNgtVR5gUMJK3zpD0b5+P206Ds?=
- =?us-ascii?Q?uxOJpZEyB4XTLmeMasL3xjPQeJLCUKU50gmBN1Pd?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86f93b25-f988-468f-27c9-08db40ecf07d
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 15:44:19.5706
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vU5Q9b4d9hSatU6w/xvvB99qV8plhZvr+cOELOiGzstxKkGh7mxw9l+lc7bE6mEE9n1I/DpUXWZYgZv9JhbJIw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4446
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230418165426.1869051-1-mbizon@freebox.fr>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use tabs instead of spaces to be consistent with the rest of the
-options.
+On Tue, Apr 18, 2023 at 06:54:26PM +0200, Maxime Bizon wrote:
+> xfrm_alloc_dst() followed by xfrm4_dst_destroy(), without a
+> xfrm4_fill_dst() call in between, causes the following BUG:
+> 
+>  BUG: spinlock bad magic on CPU#0, fbxhostapd/732
+>   lock: 0x890b7668, .magic: 890b7668, .owner: <none>/-1, .owner_cpu: 0
+>  CPU: 0 PID: 732 Comm: fbxhostapd Not tainted 6.3.0-rc6-next-20230414-00613-ge8de66369925-dirty #9
+>  Hardware name: Marvell Kirkwood (Flattened Device Tree)
+>   unwind_backtrace from show_stack+0x10/0x14
+>   show_stack from dump_stack_lvl+0x28/0x30
+>   dump_stack_lvl from do_raw_spin_lock+0x20/0x80
+>   do_raw_spin_lock from rt_del_uncached_list+0x30/0x64
+>   rt_del_uncached_list from xfrm4_dst_destroy+0x3c/0xbc
+>   xfrm4_dst_destroy from dst_destroy+0x5c/0xb0
+>   dst_destroy from rcu_process_callbacks+0xc4/0xec
+>   rcu_process_callbacks from __do_softirq+0xb4/0x22c
+>   __do_softirq from call_with_stack+0x1c/0x24
+>   call_with_stack from do_softirq+0x60/0x6c
+>   do_softirq from __local_bh_enable_ip+0xa0/0xcc
+> 
+> Patch "net: dst: Prevent false sharing vs. dst_entry:: __refcnt" moved
+> rt_uncached and rt_uncached_list fields from rtable struct to dst
+> struct, so they are more zeroed by memset_after(xdst, 0, u.dst) in
+> xfrm_alloc_dst().
+> 
+> Note that rt_uncached (list_head) was never properly initialized at
+> alloc time, but xfrm[46]_dst_destroy() is written in such a way that
+> it was not an issue thanks to the memset:
+> 
+> 	if (xdst->u.rt.dst.rt_uncached_list)
+> 		rt_del_uncached_list(&xdst->u.rt);
+> 
+> The route code does it the other way around: rt_uncached_list is
+> assumed to be valid IIF rt_uncached list_head is not empty:
+> 
+> void rt_del_uncached_list(struct rtable *rt)
+> {
+>         if (!list_empty(&rt->dst.rt_uncached)) {
+>                 struct uncached_list *ul = rt->dst.rt_uncached_list;
+> 
+>                 spin_lock_bh(&ul->lock);
+>                 list_del_init(&rt->dst.rt_uncached);
+>                 spin_unlock_bh(&ul->lock);
+>         }
+> }
+> 
+> This patch adds mandatory rt_uncached list_head initialization in
+> generic dst_init(), and adapt xfrm[46]_dst_destroy logic to match the
+> rest of the code.
+> 
+> Fixes: d288a162dd1c ("net: dst: Prevent false sharing vs. dst_entry:: __refcnt")
+> Signed-off-by: Maxime Bizon <mbizon@freebox.fr>
+> ---
+>  net/core/dst.c          | 1 +
+>  net/ipv4/xfrm4_policy.c | 4 +---
+>  net/ipv6/route.c        | 1 -
+>  net/ipv6/xfrm6_policy.c | 4 +---
+>  4 files changed, 3 insertions(+), 7 deletions(-)
+> 
 
-Before:
+This fixes the bug introduced by the Fixes commit, so:
 
-$ ip link help bridge_slave
-Usage: ... bridge_slave [ fdb_flush ]
-[...]
-                        [ vlan_tunnel {on | off} ]
-                        [ isolated {on | off} ]
-                        [ locked {on | off} ]
-                       [ mab {on | off} ]
-                        [ backup_port DEVICE ] [ nobackup_port ]
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-After:
-
-$ ip link help bridge_slave
-Usage: ... bridge_slave [ fdb_flush ]
-[...]
-                        [ vlan_tunnel {on | off} ]
-                        [ isolated {on | off} ]
-                        [ locked {on | off} ]
-                        [ mab {on | off} ]
-                        [ backup_port DEVICE ] [ nobackup_port ]
-
-Fixes: 05f1164fe811 ("bridge: link: Add MAC Authentication Bypass (MAB) support")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- ip/iplink_bridge_slave.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/ip/iplink_bridge_slave.c b/ip/iplink_bridge_slave.c
-index 43b429485502..66a67961957f 100644
---- a/ip/iplink_bridge_slave.c
-+++ b/ip/iplink_bridge_slave.c
-@@ -40,7 +40,7 @@ static void print_explain(FILE *f)
- 		"			[ vlan_tunnel {on | off} ]\n"
- 		"			[ isolated {on | off} ]\n"
- 		"			[ locked {on | off} ]\n"
--		"                       [ mab {on | off} ]\n"
-+		"			[ mab {on | off} ]\n"
- 		"			[ backup_port DEVICE ] [ nobackup_port ]\n"
- 	);
- }
--- 
-2.37.3
-
+uncached_list is defined twice  - net/ipv{4,6}/route.c.
+Since uncached_list was moved from protocol local structs to dst_entry,
+the definition for uncached_list should be moved there as well.
