@@ -2,191 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CAE96E7C1C
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 16:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EE256E7C23
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 16:17:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232812AbjDSOQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 10:16:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
+        id S232389AbjDSOQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 10:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232775AbjDSOPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 10:15:38 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01olkn2017.outbound.protection.outlook.com [40.92.53.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558A416DF3;
-        Wed, 19 Apr 2023 07:15:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mvwwG7EORmzVEJ4aqoqG5SAkDPqm8hSfmxi0PaBN/lj9VBDlSwKhnplMTwuk411EwvR1X+MJp0cN++aqYZ65QXE80la0uV2ZSOBQaPEWmfBa0rDy05HdnDxB9dK35fZnuLPJrLoADYlygjNEmYR43jj05RoYKOaT8ug7RBtDI6XWOnYHTerO7IqqtQvr4Ogug4DC0cRIC0MA4CGUhQ6RX94TlLhw25TXy8HMgKlg/09FPOVUc8k3qpm1vJ4rhVkDzz37Wl2VNoqnWeK3nI0xQ4K+v3Fv6Uof5lu6UM3+p+WgvujrQOtMfXw/w0MnAC40Fd9s/gtOwniZ8rUC5vqfRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EwMex9/vqrxT/pGnN5t0f6wgraxdDhEWXacOVPgSfiM=;
- b=YTpXFCjSpC65rjC8p1lCJ88yqY0DoyblLZDymK5sK0Z7/9B8AM/5G93eOknCo+4C+MFgu2m/QnABedxVCcAHDsNkdAD2KSHhuvScOx9jRQ9NUpc1FBzSevvfvRl0jrmWc7mKuRgXwKaJi6z5ovxNFWwhcHgZh3CYkTiebwO2m5M45OR7fAOcsZB3LY3CKV5UQRz+6TdHP5euvHDxHEB1uxkbBdOliqjOqdLfHWxchkn5gBxWVjslOnOI6RNg1WFjOei6ynjRCUNuJN0c2DEfWRI7fXimGOZV+e5VvvKRPYza0Z9J1p0bUUubRMXnxp5IVbozrFX1Kf6uqn2vbJc4gA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EwMex9/vqrxT/pGnN5t0f6wgraxdDhEWXacOVPgSfiM=;
- b=lvsv37tDOh7oFGFeBVp9pWLryMarpYFUfJFba2tpf/BmMQQ+u5gxYhS3DCSe19UzZEKD5JNhqu7Qu4U6eZe1vETInx8PGtkhLZKkX22Rk+GjGIDg2YVQ6FRQqA8qKsT7FKci0Ey7jZEMZq5/CXkONwJ6C+DgJO1ACtJ5qXAfXI2v75ssaOGS5A6Z0xkkUZddvHQtZHgFeG/WvNLfEcd0Bezpww7DRQejqJRvgZyDLOJ1xLzP1dnsBEbN8DiGIPq1KBm97YnL3BLgDfmuoMYOZVCumeKJZ1X7bQPruaS6GnHv7rbLWW87dTN2PJ2a6PNDNSJh34Ch0pUPNpaez+Bd3Q==
-Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
- (2603:1096:820:9a::12) by PUZPR01MB5311.apcprd01.prod.exchangelabs.com
- (2603:1096:301:106::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.20; Wed, 19 Apr
- 2023 14:14:42 +0000
-Received: from KL1PR01MB5448.apcprd01.prod.exchangelabs.com
- ([fe80::5bff:fd7e:ec7c:e9d3]) by KL1PR01MB5448.apcprd01.prod.exchangelabs.com
- ([fe80::5bff:fd7e:ec7c:e9d3%7]) with mapi id 15.20.6319.021; Wed, 19 Apr 2023
- 14:14:42 +0000
-From:   Yan Wang <rk.code@outlook.com>
-To:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        kuba@kernel.org, mcoquelin.stm32@gmail.com
-Cc:     Yan Wang <rk.code@outlook.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        netdev@vger.kernel.org (open list:STMMAC ETHERNET DRIVER),
-        linux-stm32@st-md-mailman.stormreply.com (moderated list:ARM/STM32
-        ARCHITECTURE),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/STM32
-        ARCHITECTURE), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v6] net: stmmac:fix system hang when setting up tag_8021q VLAN for DSA ports
-Date:   Wed, 19 Apr 2023 22:13:46 +0800
-Message-ID: <KL1PR01MB544874DAEE749710E67727A2E6629@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <KL1PR01MB5448020DE191340AE64530B0E6989@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
-References: <KL1PR01MB5448020DE191340AE64530B0E6989@KL1PR01MB5448.apcprd01.prod.exchangelabs.com>
-Content-Type: text/plain
-X-TMN:  [T5Zz4zhCaaRN6D4NZMgacFsHXk+6xs60]
-X-ClientProxiedBy: SG2PR01CA0120.apcprd01.prod.exchangelabs.com
- (2603:1096:4:40::24) To KL1PR01MB5448.apcprd01.prod.exchangelabs.com
- (2603:1096:820:9a::12)
-X-Microsoft-Original-Message-ID: <20230419141346.10517-1-rk.code@outlook.com>
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: KL1PR01MB5448:EE_|PUZPR01MB5311:EE_
-X-MS-Office365-Filtering-Correlation-Id: 690c8def-c4c0-46ca-609c-08db40e06b78
-X-MS-Exchange-SLBlob-MailProps: YfhX3sd/0TVMxuI8J5UzJ6wcIdkd2x4ktEaID4hDgJNjb+GaNGG+vZlHu3LoU5M6TN/MDJP2IprhMk63hsQGQm6XYPDXbqzoA+TZJYxtNuk9PwFIbLAjEPufhN9+Yr+2FcEGHBWTmWRMjLtniK+1Sp4IRwxLWRGb7OHDPuoRm1krZFYh0w0bmiaZ8HrrKYca40qNfs161G0yWNliKjFZ9GdVjjUqFfV1lI/ehDhFBiYVpqWn+sjolnTVog26BCsIEqH19GONXJxoV0ROk0xMQbCAOz0ypGB7Y7sTHTydF3h0u7U+VyqNd5BjkHsENMT/+EO0wKCrihZKR95k5HtbbXbfZPk0iHmAKR7DSso8sVlLAIYn7oMQggoTIi029KAJwMLHR5XwSTuMqPG+Sw9MMo+FwpY4o2uH712dXgIOa4V5xJRpVEDDJ9k+5M789HTAk1qKOywfYowPRnc4fwvFlNvDqidYcjfafGZhtCAwggkJ7HEVmXo96kuL44C3fa4apOfPD/tpZzTZomwilwxHQZPyfBdLLR2nWBCO5hMzFlbokMVRDwP5rs4oPRzyYni1Y5tWWLQv4ifqwZpY/gT/dLynwRiH/xsLwrVJTNkg/RcCTqeBvOik08SYK6azbZ5COGCDWloZre47Ddg9nTphwn0rA+44oZ9Tl95Sl2IBZafn8AOeCjnunySOmn0QLEbMmFfjVMEKcETuBrw0nkbou+TaH5EkI8hfWk6HxjXk2RFI6sNsCo4W/hXI0LRq0+nZgiHE1+k/fDLXfK5gQepJC+b1bl6XKnHE5s5Fy3edY9A=
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OwZNjkYP+p0BXd04eqbttVf35tLK9NBQm0AEj8+78AKzlr5u3NZAk+GhF0DejVtkRO1vLMczwLt2ddcMLcOW2Em3OtA1D1yqmCbNv4khrGdhzIreGCs13L9HoLehPPESnhKuti1RRl6UZd69k1+ayGExMKp3Hosvi28JWv5XN/oBtAEyBqY+n7J0jjLuqNcT1YKUY/aFg+83dRF1wPKYJizZd+ybCgqqK7EOtHjyH4tKaVGX/z5SmZF3aA3NJylXAKW7FINW2ScHS+R1noY4dxDrhaCjlnGlOsN9vwRk4SC+4xon81mLlr/Lgfh6mp2SH4XlsLgS/METZqUIfLVlOB7QDPB8b9vCirfccURmMwj8hopvoe+InZWzL8Izq4j62TUK9U3J15cgEcFPsg2EmQo5jR0FfmT/Uajfuu1ASPnc0FT/RayojAcJAMylq3rnR3U6seI4BRhWzTiF0LE841TO+UPeuJL/rA37l4nfFS2SNayAPLmj8Sul1db5DIkGnOIyW5kb+IhdsqK55ERnCQs3ZD9bOtMu0a7DKaiyxC3z1d80YSHLOsKlhvrJ8STcLhKWsmDRMgv9LEu9E+FpRDO3hcr19clG8IvBTJwwSQgakOnyHlkiUMSHAQ0zMBQvsWWp6vazY1NJMhas78MkaQ==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gTyLDbLdOO3MzFousNNwvhJuGntd7XKaTu9MG2S3YHa4LkQJI8bQB/nu/4wQ?=
- =?us-ascii?Q?PMvgJMS5uZZ/lGtXFLS9KeCjnewjgPgxI/B0STwUKMkHtJbRwS6GKmpqPuJ/?=
- =?us-ascii?Q?HaBC3ZZYSA07wtBlzC1Efebo7NqMFgoA7Q1PhKO/gs+z+ahVpRejzNjrfkzv?=
- =?us-ascii?Q?+zTRX+3l4DD+lc2+7mbDgtOXuoyABX6EE5FoBl9qGMscbBJMPZ8z9Ujqmzwv?=
- =?us-ascii?Q?vJqzVDpOmMQGYjX4eRtFWlGzLZOpJIcbBSs7FPkLaeLW0ccDK39b5OdoCN9B?=
- =?us-ascii?Q?wYe/KVm+oIHPHSOf8vNF5q+3tBW17eJA43sYYPOyTh8eHxDX4mduhCFE2kIU?=
- =?us-ascii?Q?fBu4GY+mxWhYloWvQnFt702QMxcni5gIRD67Jq9qxKjC2MrfdYB7jN4Fdp+d?=
- =?us-ascii?Q?PCknxJ53YdOiEakP4RTlJqQojr78XNdDD9rG7ZoqwTw62b0YSjLxLQGd1QsY?=
- =?us-ascii?Q?0Xutp8zENrubbY12dver4HcutF4P9NkU+4fZwOZwCcvSu9LpYpRkICQ0ADat?=
- =?us-ascii?Q?20nqANOG+eUAfP7KUOoaJ9zsu/LpVzSJXL+QqR1bwNIn/pSgb+insfargA1R?=
- =?us-ascii?Q?MCp5YJXk9KAknE1itfoN8MZ89jcGYT88DXMijRMUbgThzYSKqMPhBddwgYEH?=
- =?us-ascii?Q?ObHTTiafmZSIOkUb2KtSdNjn/2gjFevp7DFXtIikNG1k0IsxAK5KEwfP3aKu?=
- =?us-ascii?Q?7xehnBfAbT90ciJ7laOITHLmLy3O4chpMHYw05dbYt+foIqFQto6GDRc4Pd1?=
- =?us-ascii?Q?OoNCIIB24AOX+yRjksfV0SKWvQOX9ok2NwJElWbaOUaM/sVJJwqm8N/PjlRC?=
- =?us-ascii?Q?ez2EclMuzww0bUal/kh5iDKTOgkGU3PKo0xBekd9rVh+1uHJyCFg/juBqXeu?=
- =?us-ascii?Q?3x+C70XLq3lujMIkBMJcH20cehagv/47JQJEBsuXsO4UC/IcnQZ+DY4KJymr?=
- =?us-ascii?Q?WzL2aup4z0sW0bFHSD2k5fXhw6fgGg5PBZ2z4OTcJDRsnt6uhZbS4LdrRj4j?=
- =?us-ascii?Q?04BCdl7vJaHiti5kvupDzDxJZEYkDcKlDeYHahavrWoKu2pgH/c+e+KsUai3?=
- =?us-ascii?Q?taUYs8/0Pgs8kYF0LUqKTMFHF5/xbRsDJo6ZXL408+t43XgqNnQcDLjuIwJM?=
- =?us-ascii?Q?gvck4Hp/Rz6xPW42/7F1dz4U91f12ZdxbqeO6w0ODyPIFbJHRhuslSRzk1SH?=
- =?us-ascii?Q?bwhfx8dsy+WhNjUZ3ZyAXn9RfqhBvefE7hyBpw=3D=3D?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 690c8def-c4c0-46ca-609c-08db40e06b78
-X-MS-Exchange-CrossTenant-AuthSource: KL1PR01MB5448.apcprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 14:14:42.6645
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PUZPR01MB5311
+        with ESMTP id S232405AbjDSOQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 10:16:38 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8325E1793E
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 07:16:09 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id a23so28280803qtj.8
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 07:16:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681913768; x=1684505768;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+eQqn8O8PBxwQC//+x27I6ihrALCnpS5EC2jX3A51E8=;
+        b=g++4rzuINJz3OJd+N0SyjG7vOUD0R/rMqQABoKQTRzMW3tBs/bo2tMTcoUYZcgz66F
+         tIKGHszoG5w6nvDBJ+wRsDrAdUehiHY5kI3GHSN5tyWVh2qZFh2jCtmiha89lFnLmUNu
+         PHP97pcEgK7hwZknf0IhHrhncPSMZ6oRwG0gkyXpaNCjULVlsXiMzRSD/pd/YLNmLfFP
+         2MK/qDUQSb/khrDhgk5VU95K+b3i4XO+2L5FeQUybVFBA6YLBs31+WlmVH0oW7rDTisg
+         PePyw3P1tonHTrWZEKw17OxHnF2aCKzO5+U6SaJtSG2uFztbDQTKC0Hf0dxOQWnUiUBB
+         uA6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681913768; x=1684505768;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=+eQqn8O8PBxwQC//+x27I6ihrALCnpS5EC2jX3A51E8=;
+        b=K32qnaMamCz4MD/QVsNcbPE1+9eLS+Om6YSa3uAMCMC1HtvuCmXX1SgacQUYO03P6v
+         w3//54r2KnnVgqttFNCn5vH3PvfYJ0FBnfbVqU8ncSRaJ6Jmo+KPmuFg1GT0PhxqJ4Ga
+         i/fE2ZBY+KaMpfhSR9VQTXPkSQNhPqV1UKNr7zMOcGFY2NjXYgoCCD1MJZT+E+MtHgrJ
+         x9TjgEHQPWH/mcDNSIdMFetCW0/akNgdzMAh4QcCP95CxBZmQsYNicKVYHte7lAeH2O7
+         UGj6ERDCMP3cMpZO3os0yiUgxOMxUftUw3+6R8P7Y8fv0yLCIZQ2b7HhC24g0O6IPK0m
+         Xslg==
+X-Gm-Message-State: AAQBX9dVZxYesBk0Tr3fGgxX8a6g++ecWmFx545KAxnQc/g/gVsbBIi8
+        Gs0sl+lOpu4jXoBU09XXjTo=
+X-Google-Smtp-Source: AKy350a/bB9PfgJ4OTa2qdowyp/WjP/MY11fB/aWiD2dPQ7J8Nd9wBA/WX3RyaSEYXxsLyNVnh/7YQ==
+X-Received: by 2002:a05:622a:201:b0:3e4:488c:9325 with SMTP id b1-20020a05622a020100b003e4488c9325mr6578456qtx.15.1681913768590;
+        Wed, 19 Apr 2023 07:16:08 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id j20-20020a05620a289400b0074a0051fcd4sm4653494qkp.88.2023.04.19.07.16.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Apr 2023 07:16:07 -0700 (PDT)
+Date:   Wed, 19 Apr 2023 10:16:07 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, kuni1840@gmail.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller@googlegroups.com, willemb@google.com
+Message-ID: <643ff7a7a551f_38347529475@willemb.c.googlers.com.notmuch>
+In-Reply-To: <CANn89iJyUrASSCAWxZ5rUnUBrQzrS0KW=mrYUCLvjj+_QVBceg@mail.gmail.com>
+References: <CANn89iJ3MhBYtU3vCNjLLo45tu3eyp4TbJBGP1t8yxarK2Sziw@mail.gmail.com>
+ <20230418192504.98991-1-kuniyu@amazon.com>
+ <CANn89iJyUrASSCAWxZ5rUnUBrQzrS0KW=mrYUCLvjj+_QVBceg@mail.gmail.com>
+Subject: Re: [PATCH v2 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with
+ TX timestamp.
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The system hang because of dsa_tag_8021q_port_setup()->
-				stmmac_vlan_rx_add_vid().
+Eric Dumazet wrote:
+> On Tue, Apr 18, 2023 at 9:25=E2=80=AFPM Kuniyuki Iwashima <kuniyu@amazo=
+n.com> wrote:
+> >
+> > From:   Eric Dumazet <edumazet@google.com>
+> > Date:   Tue, 18 Apr 2023 21:04:32 +0200
+> > > On Tue, Apr 18, 2023 at 8:44=E2=80=AFPM Kuniyuki Iwashima <kuniyu@a=
+mazon.com> wrote:
+> > > >
+> > > > From:   Eric Dumazet <edumazet@google.com>
+> > > > Date:   Tue, 18 Apr 2023 20:33:44 +0200
+> > > > > On Tue, Apr 18, 2023 at 8:09=E2=80=AFPM Kuniyuki Iwashima <kuni=
+yu@amazon.com> wrote:
+> > > > > >
+> > > > > > syzkaller reported [0] memory leaks of an UDP socket and ZERO=
+COPY
+> > > > > > skbs.  We can reproduce the problem with these sequences:
+> > > > > >
+> > > > > >   sk =3D socket(AF_INET, SOCK_DGRAM, 0)
+> > > > > >   sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING=
+_TX_SOFTWARE)
+> > > > > >   sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
+> > > > > >   sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
+> > > > > >   sk.close()
+> > > > > >
+> > > > > > sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, =
+sets
+> > > > > > skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, stru=
+ct
+> > > > > > ubuf_info_msgzc indirectly holds a refcnt of the socket.  Whe=
+n the
+> > > > > > skb is sent, __skb_tstamp_tx() clones it and puts the clone i=
+nto
+> > > > > > the socket's error queue with the TX timestamp.
+> > > > > >
+> > > > > > When the original skb is received locally, skb_copy_ubufs() c=
+alls
+> > > > > > skb_unclone(), and pskb_expand_head() increments skb->cb->ubu=
+f.refcnt.
+> > > > > > This additional count is decremented while freeing the skb, b=
+ut struct
+> > > > > > ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callbac=
+k() is
+> > > > > > not called.
+> > > > > >
+> > > > > > The last refcnt is not released unless we retrieve the TX tim=
+estamped
+> > > > > > skb by recvmsg().  When we close() the socket holding such sk=
+b, we
+> > > > > > never call sock_put() and leak the count, skb, and sk.
+> > > > > >
+> > > > > > To avoid this problem, we must (i) call skb_queue_purge() aft=
+er
+> > > > > > flagging SOCK_DEAD during close() and (ii) make sure that TX =
+tstamp
+> > > > > > skb is not queued when SOCK_DEAD is flagged.  UDP lacks (i) a=
+nd (ii),
+> > > > > > and TCP lacks (ii).
+> > > > > >
+> > > > > > Without (ii), a skb queued in a qdisc or device could be put =
+into
+> > > > > > the error queue after skb_queue_purge().
+> > > > > >
+> > > > > >   sendmsg() /* return immediately, but packets
+> > > > > >              * are queued in a qdisc or device
+> > > > > >              */
+> > > > > >                                     close()
+> > > > > >                                       skb_queue_purge()
+> > > > > >   __skb_tstamp_tx()
+> > > > > >     __skb_complete_tx_timestamp()
+> > > > > >       sock_queue_err_skb()
+> > > > > >         skb_queue_tail()
+> > > > > >
+> > > > > > Also, we need to check SOCK_DEAD under sk->sk_error_queue.loc=
+k
+> > > > > > in sock_queue_err_skb() to avoid this race.
+> > > > > >
+> > > > > >   if (!sock_flag(sk, SOCK_DEAD))
+> > > > > >                                     sock_set_flag(sk, SOCK_DE=
+AD)
+> > > > > >                                     skb_queue_purge()
+> > > > > >
+> > > > > >     skb_queue_tail()
+> > > > > >
+> > > > > > [0]:
+> > > > >
+> > > > > > Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
+> > > > > > Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
+> > > > > > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > > > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > > > > ---
+> > > > > > v2:
+> > > > > >   * Move skb_queue_purge() after setting SOCK_DEAD in udp_des=
+troy_sock()
+> > > > > >   * Check SOCK_DEAD in sock_queue_err_skb() with sk_error_que=
+ue.lock
+> > > > > >   * Add Fixes tag for TCP
+> > > > > >
+> > > > > > v1: https://lore.kernel.org/netdev/20230417171155.22916-1-kun=
+iyu@amazon.com/
+> > > > > > ---
+> > > > > >  net/core/skbuff.c | 15 ++++++++++++---
+> > > > > >  net/ipv4/udp.c    |  5 +++++
+> > > > > >  2 files changed, 17 insertions(+), 3 deletions(-)
+> > > > > >
+> > > > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > > > > index 4c0879798eb8..287b834df9c8 100644
+> > > > > > --- a/net/core/skbuff.c
+> > > > > > +++ b/net/core/skbuff.c
+> > > > > > @@ -4979,6 +4979,8 @@ static void skb_set_err_queue(struct sk=
+_buff *skb)
+> > > > > >   */
+> > > > > >  int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)=
 
-I found in stmmac_drv_probe() that cailing pm_runtime_put()
-disabled the clock.
+> > > > > >  {
+> > > > > > +       unsigned long flags;
+> > > > > > +
+> > > > > >         if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
+=3D
+> > > > > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+> > > > > >                 return -ENOMEM;
+> > > > > > @@ -4992,9 +4994,16 @@ int sock_queue_err_skb(struct sock *sk=
+, struct sk_buff *skb)
+> > > > > >         /* before exiting rcu section, make sure dst is refco=
+unted */
+> > > > > >         skb_dst_force(skb);
+> > > > > >
+> > > > > > -       skb_queue_tail(&sk->sk_error_queue, skb);
+> > > > > > -       if (!sock_flag(sk, SOCK_DEAD))
+> > > > > > -               sk_error_report(sk);
+> > > > > > +       spin_lock_irqsave(&sk->sk_error_queue.lock, flags);
+> > > > > > +       if (sock_flag(sk, SOCK_DEAD)) {
+> > > > >
+> > > > > SOCK_DEAD is set without holding sk_error_queue.lock, so I wond=
+er why you
+> > > > > want to add a confusing construct.
+> > > > >
+> > > > > Just bail early ?
+> > > > >
+> > > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > > > index ef81452759be3fd251faaf76d89cfd002ee79256..fda05cb44f95821=
+e98f8c5c05fba840a9d276abb
+> > > > > 100644
+> > > > > --- a/net/core/skbuff.c
+> > > > > +++ b/net/core/skbuff.c
+> > > > > @@ -4983,6 +4983,9 @@ int sock_queue_err_skb(struct sock *sk, s=
+truct
+> > > > > sk_buff *skb)
+> > > > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+> > > > >                 return -ENOMEM;
+> > > > >
+> > > > > +       if (sock_flag(sk, SOCK_DEAD))
+> > > > > +               return -EINVAL;
+> > > > > +
+> > > >
+> > > > Isn't it possible that these sequences happen
+> > > >
+> > > >   close()
+> > > >     sock_set_flag(sk, SOCK_DEAD);
+> > > >     skb_queue_purge(&sk->sk_error_queue)
+> > > >
+> > > > between the skb_queue_tail() below ? (2nd race mentioned in chang=
+elog)
+> > > >
+> > > > I thought we can guarantee the ordering by taking the same lock.
+> > > >
+> > >
+> > > This is fragile.
+> >
+> > Yes, but I didn't have better idea to avoid the race...
+> >
+> > >
+> > > We could very well rewrite skb_queue_purge() to not acquire the loc=
+k
+> > > in the common case.
+> > > I had the following in my tree for a while, to avoid many atomic an=
+d
+> > > irq masking operations...
+> >
+> > Cool, and it still works with my patch, no ?
+> >
+> =
 
-First, when the kernel is compiled with CONFIG_PM=y,The stmmac's
-resume/suspend is active.
+> =
 
-Secondly,stmmac as DSA master,the dsa_tag_8021q_port_setup() function
-will callback stmmac_vlan_rx_add_vid when DSA dirver starts. However,
-The system is hanged for the stmmac_vlan_rx_add_vid() accesses its
-registers after stmmac's clock is closed.
+> Really the only thing that ensures a race is not possible is the
+> typical sk_refcnt acquisition.
+> =
 
-I would suggest adding the pm_runtime_resume_and_get() to the
-stmmac_vlan_rx_add_vid().This guarantees that resuming clock output
-while in use.
+> But I do not see why an skb stored in error_queue should keep the
+> refcnt on the socket.
+> This seems like a chicken and egg problem, and caused various issues
+> in the past,
+> see for instance [1]
+> =
 
-Fixes: b3dcb3127786 ("net: stmmac: correct clocks enabled in stmmac_vlan_rx_kill_vid()")
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Signed-off-by: Yan Wang <rk.code@outlook.com>
----
-v6:
-  - Add Reviewed Signature
-v5: https://lore.kernel.org/netdev/KL1PR01MB544863D839654F0EC9485894E69C9@KL1PR01MB5448.apcprd01.prod.exchangelabs.com/
-  - Add version tags.
-v4: https://lore.kernel.org/netdev/KL1PR01MB5448C7BF5A7AAC1CBCD5C36AE6989@KL1PR01MB5448.apcprd01.prod.exchangelabs.com/
-  - Fixed email address,but The Version number is wrong.
-v3: https://lore.kernel.org/netdev/KL1PR01MB544872920F00149E3BDDC7ECE6999@KL1PR01MB5448.apcprd01.prod.exchangelabs.com/
-  - Fixed the Fixes tag,but Missing version change log.
-v2: https://lore.kernel.org/netdev/KL1PR01MB54482D50B5C8713A2CA697DFE6999@KL1PR01MB5448.apcprd01.prod.exchangelabs.com/
-  - Add a error fixed tag.
-v1: https://lore.kernel.org/netdev/KL1PR01MB5448020DE191340AE64530B0E6989@KL1PR01MB5448.apcprd01.prod.exchangelabs.com/
-  - the Subject is set incorrectly
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+> We better make sure error queue is purged at socket dismantle (after
+> refcnt reached 0)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index d7fcab057032..f9cd063f1fe3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -6350,6 +6350,10 @@ static int stmmac_vlan_rx_add_vid(struct net_device *ndev, __be16 proto, u16 vid
- 	bool is_double = false;
- 	int ret;
- 
-+	ret = pm_runtime_resume_and_get(priv->device);
-+	if (ret < 0)
-+		return ret;
-+
- 	if (be16_to_cpu(proto) == ETH_P_8021AD)
- 		is_double = true;
- 
-@@ -6357,16 +6361,18 @@ static int stmmac_vlan_rx_add_vid(struct net_device *ndev, __be16 proto, u16 vid
- 	ret = stmmac_vlan_update(priv, is_double);
- 	if (ret) {
- 		clear_bit(vid, priv->active_vlans);
--		return ret;
-+		goto err_pm_put;
- 	}
- 
- 	if (priv->hw->num_vlan) {
- 		ret = stmmac_add_hw_vlan_rx_fltr(priv, ndev, priv->hw, proto, vid);
- 		if (ret)
--			return ret;
-+			goto err_pm_put;
- 	}
-+err_pm_put:
-+	pm_runtime_put(priv->device);
- 
--	return 0;
-+	return ret;
- }
- 
- static int stmmac_vlan_rx_kill_vid(struct net_device *ndev, __be16 proto, u16 vid)
--- 
-2.17.1
+The problem here is that the timestamp queued on the error queue
+holds a reference on a ubuf if MSG_ZEROCOPY and that ubuf holds an
+sk_ref.
+
+The timestamped packet may contain packet contents, so the ubuf
+ref is not superfluous.
+
+Come to think of it, we've always maintained that zerocopy packets
+should not be looped to sockets where they can be queued indefinitely,
+including packet sockets.
+
+If we enforce that for these tx timestamps too, then that also
+solves this issue.
+
+A process that wants efficient MSG_ZEROCOPY will have to request
+timestamping with SOF_TIMESTAMPING_OPT_TSONLY to avoid returning the
+data along with the timestamp.
+
+> I suggest we generalize fix that went in this patch :
+> =
+
+> dd4f10722aeb10f4f582948839f066bebe44e5fb net: fix socket refcounting
+> in skb_complete_wifi_ack()
+> =
+
+> Instead of adding yet another rule about a queue lock, and a socket
+> flag, this would keep things tied to sk_refcnt.
+> =
+
+> Also I do not think TCP has an issue, please take a look at
+> =
+
+> [1]
+> commit e0c8bccd40fc1c19e1d246c39bcf79e357e1ada3    net: stream: purge
+> sk_error_queue in sk_stream_kill_queues()
+> =
+
+> (A leak in TCP would be caught in a few hours by syzbot really)
+
 
