@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACF6C6E7E0B
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C79E6E7E03
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:19:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233559AbjDSPTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 11:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
+        id S232911AbjDSPTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 11:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233549AbjDSPTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:19:16 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423EE7680;
-        Wed, 19 Apr 2023 08:18:47 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id br19so4791598qtb.7;
-        Wed, 19 Apr 2023 08:18:47 -0700 (PDT)
+        with ESMTP id S231719AbjDSPTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:19:02 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39D55276;
+        Wed, 19 Apr 2023 08:18:26 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-187dc84637aso7415837fac.2;
+        Wed, 19 Apr 2023 08:18:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681917396; x=1684509396;
+        d=gmail.com; s=20221208; t=1681917397; x=1684509397;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ACNg3in/pkKi1xmc2bSu1ksz6xcHFFBw+fJlM+8OI8c=;
-        b=RcdPPF7WcBxXdQyvMqfgA/fR3Id/960Gk7WqicmjOiufhpVKMkwokykAuPfvbM575y
-         pMJSk2nqm4fTPI1xZ+f6cbaKedBUvohN6SmAA8llG95tAsoxm+XTja8KOqRk0hAZawKu
-         XSLMkhtqmNWi8DXb+ogUeAjNTGnB92ABOXOVOQoVaewsYcEr2hQmUru/SkknKNfY2mRo
-         tZqNB9kqlcUP/Kq/LOgoKW1GT/qjhnwAM7S59Au34Ms9BHByTo4Nfj3zVnajXHtyGKJL
-         lG3nyEKFW0NpnaNsMSJHNQfiIbbXv836OaFsCxRuYEjU7c6sRqzFBJDUBTZaQ0KIOi9v
-         Qwfg==
+        bh=Gy/aHQhJo3z37sbDf6ajKje4fKZ5wE8Tq3mhw1LqkKc=;
+        b=jX6InRAIyTjD1cOfVFHpDWJt1VEls3KZi/E6astHG2Ys1CjaqPC2qTCDR1cYn0wEXy
+         MtstKn+7qISxdyyktJJpFgv8uo3uoNgD6iKlViQ13jHEGlkLM2sfKx6JOKTXAZGTm8FG
+         GSq1cS2lfjzGFpNYHK/lKGJFNXkwEagqMk0s+Hf6I5ILm/6k2kWpCmLfiV+tKftriLG5
+         m0ubnhzrw6X701oErmo6rr/nBnN8V3RMqJpYcqRNKoME3eEzNXuNi1ipbWTdogcu0ppv
+         UVnVf4aEmnTuzGxUaiZc9JkTiy2a2Fe6bZ23eqE8LmHIyZfV/Zb9v5fAxC+VwRWWoqBU
+         qTWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681917396; x=1684509396;
+        d=1e100.net; s=20221208; t=1681917397; x=1684509397;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ACNg3in/pkKi1xmc2bSu1ksz6xcHFFBw+fJlM+8OI8c=;
-        b=D/X+RzdITuUQUhPOJTbXCiZE2xUOx8PXipRQJhTXro7/vE8yI06tvxJVK5THAVELSp
-         coTvlhz4wk9+WBv/+APyJTawhSZlWJ8Pcv/f6MclY6h8VWSNj7fAuS/vD6AoIERZxn77
-         Qd6khnbDT3C4Kt2PKHHkHJhyIpE7mVMyY4b7QntIq8UA9ogeqb1lBV5YH+0+o4dc5pZv
-         ofzo2WkEtnPi6+l041ch9XTNAWEL+mzViWtbkCih3DxYuZRGqopPgN58wlwqEi2WeFwy
-         2FiwXqOuPgTVsSeJcld0WHyyM9SYB05/CqUWfYs4xWTEJAji3dKW/cN+AQCMrapG1xjB
-         f5jQ==
-X-Gm-Message-State: AAQBX9cc61aAyDRkjNGsLIzbwLU9cRpClBIl9hyHY7Loy5uWS8rfgX4i
-        lPdKjqotcn7tFz+7GenaQBw4vaUiBt/Rug==
-X-Google-Smtp-Source: AKy350b5U8WZ5bNppfqC4HBS7bS2ykF9e3PkxbLDDcARqk7upBy7g9FibDJerofsAtyEA3UD0kAVhg==
-X-Received: by 2002:ac8:5a54:0:b0:3e2:4280:bc56 with SMTP id o20-20020ac85a54000000b003e24280bc56mr6403405qta.41.1681917395847;
-        Wed, 19 Apr 2023 08:16:35 -0700 (PDT)
+        bh=Gy/aHQhJo3z37sbDf6ajKje4fKZ5wE8Tq3mhw1LqkKc=;
+        b=Az4ppt0Ncaa9Ar+t6qWIYPrUy5FFSPl+P5j3UD1QIsT3VdTzNk3rvFX/My3O6553X6
+         fhVo1oNdbS2TeLX6ayW7RtQSv8DAk9RHdD4on1Bi+88sQpboTsTGw1ilMumRK81EQQaW
+         xXbNbqXYkgGAUepCuvUYcBre68AMlsDXqQ0GX6BTAJdE+i8O7M3DLsTqATobH3WAY5Hl
+         uNzyN1iohbynLiZdx+xr9foA5MXfk3Q9uITuXocJE9KrwKwCsU5RvNBS9ieMSQyUnvzw
+         nx1NWQvVqhzbPoGaEDkOfCE9AJkq5G9tD5TTJhwqCvS+IadcIZzBcIj7uQlj21EADRsj
+         /P+Q==
+X-Gm-Message-State: AAQBX9ccXhu228We3Ud6JCcBL1avgCaWu8qd3GV0PGWd8PDVuIeFWtbk
+        SfhIriOQoVEiVYZjA3wPnROQhdBidC2Yyg==
+X-Google-Smtp-Source: AKy350Z+0ei2gpizHYdeBbAlRLc+NVhM7qYrlOBAUDUVod7sMaTG+NaP14YW7O4PcjuUrLkbu1d4ow==
+X-Received: by 2002:a05:6358:c6a5:b0:118:1a32:fcef with SMTP id fe37-20020a056358c6a500b001181a32fcefmr10488rwb.6.1681917396702;
+        Wed, 19 Apr 2023 08:16:36 -0700 (PDT)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
         by smtp.gmail.com with ESMTPSA id v11-20020a05620a0f0b00b007469b5bc2c4sm4753336qkl.13.2023.04.19.08.16.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Apr 2023 08:16:35 -0700 (PDT)
+        Wed, 19 Apr 2023 08:16:36 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCH net-next 1/6] sctp: delete the nested flexible array params
-Date:   Wed, 19 Apr 2023 11:16:28 -0400
-Message-Id: <93430583976e882b25a186ab940ba03a06014097.1681917361.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 2/6] sctp: delete the nested flexible array skip
+Date:   Wed, 19 Apr 2023 11:16:29 -0400
+Message-Id: <48a8d405dd4d81f7be75b7f39685e090867d858b.1681917361.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <cover.1681917361.git.lucien.xin@gmail.com>
 References: <cover.1681917361.git.lucien.xin@gmail.com>
@@ -73,202 +73,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch deletes the flexible-array params[] from the structure
-sctp_inithdr, sctp_addiphdr and sctp_reconf_chunk to avoid some
-sparse warnings:
+This patch deletes the flexible-array skip[] from the structure
+sctp_ifwdtsn/fwdtsn_hdr to avoid some sparse warnings:
 
   # make C=2 CF="-Wflexible-array-nested" M=./net/sctp/
-  net/sctp/input.c: note: in included file (through include/net/sctp/structs.h, include/net/sctp/sctp.h):
-  ./include/linux/sctp.h:278:29: warning: nested flexible array
-  ./include/linux/sctp.h:675:30: warning: nested flexible array
-
-This warning is reported if a structure having a flexible array
-member is included by other structures.
+  net/sctp/stream_interleave.c: note: in included file (through include/net/sctp/structs.h, include/net/sctp/sctp.h):
+  ./include/linux/sctp.h:611:32: warning: nested flexible array
+  ./include/linux/sctp.h:628:33: warning: nested flexible array
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/linux/sctp.h     |  6 +++---
- include/net/sctp/sctp.h  |  8 ++++----
- net/sctp/input.c         |  2 +-
- net/sctp/sm_make_chunk.c | 18 +++++++++---------
- net/sctp/sm_statefuns.c  |  2 +-
- net/sctp/stream.c        |  2 +-
- 6 files changed, 19 insertions(+), 19 deletions(-)
+ include/linux/sctp.h         | 4 ++--
+ include/net/sctp/sctp.h      | 4 ++--
+ net/sctp/stream_interleave.c | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/include/linux/sctp.h b/include/linux/sctp.h
-index 358dc08e0831..0ff36a2737a3 100644
+index 0ff36a2737a3..9815b801fec0 100644
 --- a/include/linux/sctp.h
 +++ b/include/linux/sctp.h
-@@ -270,7 +270,7 @@ struct sctp_inithdr {
- 	__be16 num_outbound_streams;
- 	__be16 num_inbound_streams;
- 	__be32 initial_tsn;
--	__u8  params[];
-+	/* __u8  params[]; */
+@@ -603,7 +603,7 @@ struct sctp_fwdtsn_skip {
+ 
+ struct sctp_fwdtsn_hdr {
+ 	__be32 new_cum_tsn;
+-	struct sctp_fwdtsn_skip skip[];
++	/* struct sctp_fwdtsn_skip skip[]; */
  };
  
- struct sctp_init_chunk {
-@@ -667,7 +667,7 @@ struct sctp_addip_param {
+ struct sctp_fwdtsn_chunk {
+@@ -620,7 +620,7 @@ struct sctp_ifwdtsn_skip {
  
- struct sctp_addiphdr {
- 	__be32	serial;
--	__u8	params[];
-+	/* __u8	params[]; */
+ struct sctp_ifwdtsn_hdr {
+ 	__be32 new_cum_tsn;
+-	struct sctp_ifwdtsn_skip skip[];
++	/* struct sctp_ifwdtsn_skip skip[]; */
  };
  
- struct sctp_addip_chunk {
-@@ -742,7 +742,7 @@ struct sctp_infox {
- 
- struct sctp_reconf_chunk {
- 	struct sctp_chunkhdr chunk_hdr;
--	__u8 params[];
-+	/* __u8 params[]; */
- };
- 
- struct sctp_strreset_outreq {
+ struct sctp_ifwdtsn_chunk {
 diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
-index c335dd01a597..74fae532b944 100644
+index 74fae532b944..2a67100b2a17 100644
 --- a/include/net/sctp/sctp.h
 +++ b/include/net/sctp/sctp.h
-@@ -425,11 +425,11 @@ static inline bool sctp_chunk_pending(const struct sctp_chunk *chunk)
-  * the chunk length to indicate when to stop.  Make sure
-  * there is room for a param header too.
-  */
--#define sctp_walk_params(pos, chunk, member)\
--_sctp_walk_params((pos), (chunk), ntohs((chunk)->chunk_hdr.length), member)
-+#define sctp_walk_params(pos, chunk)\
-+_sctp_walk_params((pos), (chunk), ntohs((chunk)->chunk_hdr.length))
+@@ -452,8 +452,8 @@ for (err = (struct sctp_errhdr *)((void *)chunk_hdr + \
+ _sctp_walk_fwdtsn((pos), (chunk), ntohs((chunk)->chunk_hdr->length) - sizeof(struct sctp_fwdtsn_chunk))
  
--#define _sctp_walk_params(pos, chunk, end, member)\
--for (pos.v = chunk->member;\
-+#define _sctp_walk_params(pos, chunk, end)\
-+for (pos.v = (u8 *)(chunk + 1);\
-      (pos.v + offsetof(struct sctp_paramhdr, length) + sizeof(pos.p->length) <=\
-       (void *)chunk + end) &&\
-      pos.v <= (void *)chunk + end - ntohs(pos.p->length) &&\
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 127bf28a6033..2613c4d74b16 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -1150,7 +1150,7 @@ static struct sctp_association *__sctp_rcv_init_lookup(struct net *net,
- 	init = (struct sctp_init_chunk *)skb->data;
+ #define _sctp_walk_fwdtsn(pos, chunk, end)\
+-for (pos = chunk->subh.fwdtsn_hdr->skip;\
+-     (void *)pos <= (void *)chunk->subh.fwdtsn_hdr->skip + end - sizeof(struct sctp_fwdtsn_skip);\
++for (pos = (void *)(chunk->subh.fwdtsn_hdr + 1);\
++     (void *)pos <= (void *)(chunk->subh.fwdtsn_hdr + 1) + end - sizeof(struct sctp_fwdtsn_skip);\
+      pos++)
  
- 	/* Walk the parameters looking for embedded addresses. */
--	sctp_walk_params(params, init, init_hdr.params) {
-+	sctp_walk_params(params, init) {
- 
- 		/* Note: Ignoring hostname addresses. */
- 		af = sctp_get_af_specific(param_type2af(params.p->type));
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index c8f4ec5d5f98..4dbbbc2a7742 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -2306,7 +2306,7 @@ int sctp_verify_init(struct net *net, const struct sctp_endpoint *ep,
- 	    ntohl(peer_init->init_hdr.a_rwnd) < SCTP_DEFAULT_MINWINDOW)
- 		return sctp_process_inv_mandatory(asoc, chunk, errp);
- 
--	sctp_walk_params(param, peer_init, init_hdr.params) {
-+	sctp_walk_params(param, peer_init) {
- 		if (param.p->type == SCTP_PARAM_STATE_COOKIE)
- 			has_cookie = true;
- 	}
-@@ -2329,7 +2329,7 @@ int sctp_verify_init(struct net *net, const struct sctp_endpoint *ep,
- 						  chunk, errp);
- 
- 	/* Verify all the variable length parameters */
--	sctp_walk_params(param, peer_init, init_hdr.params) {
-+	sctp_walk_params(param, peer_init) {
- 		result = sctp_verify_param(net, ep, asoc, param, cid,
- 					   chunk, errp);
- 		switch (result) {
-@@ -2381,7 +2381,7 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
- 		src_match = 1;
- 
- 	/* Process the initialization parameters.  */
--	sctp_walk_params(param, peer_init, init_hdr.params) {
-+	sctp_walk_params(param, peer_init) {
- 		if (!src_match &&
- 		    (param.p->type == SCTP_PARAM_IPV4_ADDRESS ||
- 		     param.p->type == SCTP_PARAM_IPV6_ADDRESS)) {
-@@ -3202,7 +3202,7 @@ bool sctp_verify_asconf(const struct sctp_association *asoc,
- 	union sctp_params param;
- 
- 	addip = (struct sctp_addip_chunk *)chunk->chunk_hdr;
--	sctp_walk_params(param, addip, addip_hdr.params) {
-+	sctp_walk_params(param, addip) {
- 		size_t length = ntohs(param.p->length);
- 
- 		*errp = param.p;
-@@ -3215,14 +3215,14 @@ bool sctp_verify_asconf(const struct sctp_association *asoc,
- 			/* ensure there is only one addr param and it's in the
- 			 * beginning of addip_hdr params, or we reject it.
- 			 */
--			if (param.v != addip->addip_hdr.params)
-+			if (param.v != (addip + 1))
- 				return false;
- 			addr_param_seen = true;
- 			break;
- 		case SCTP_PARAM_IPV6_ADDRESS:
- 			if (length != sizeof(struct sctp_ipv6addr_param))
- 				return false;
--			if (param.v != addip->addip_hdr.params)
-+			if (param.v != (addip + 1))
- 				return false;
- 			addr_param_seen = true;
- 			break;
-@@ -3302,7 +3302,7 @@ struct sctp_chunk *sctp_process_asconf(struct sctp_association *asoc,
- 		goto done;
- 
- 	/* Process the TLVs contained within the ASCONF chunk. */
--	sctp_walk_params(param, addip, addip_hdr.params) {
-+	sctp_walk_params(param, addip) {
- 		/* Skip preceeding address parameters. */
- 		if (param.p->type == SCTP_PARAM_IPV4_ADDRESS ||
- 		    param.p->type == SCTP_PARAM_IPV6_ADDRESS)
-@@ -3636,7 +3636,7 @@ static struct sctp_chunk *sctp_make_reconf(const struct sctp_association *asoc,
- 		return NULL;
- 
- 	reconf = (struct sctp_reconf_chunk *)retval->chunk_hdr;
--	retval->param_hdr.v = reconf->params;
-+	retval->param_hdr.v = (u8 *)(reconf + 1);
- 
- 	return retval;
+ /* External references. */
+diff --git a/net/sctp/stream_interleave.c b/net/sctp/stream_interleave.c
+index b046b11200c9..840f24045ae2 100644
+--- a/net/sctp/stream_interleave.c
++++ b/net/sctp/stream_interleave.c
+@@ -1153,8 +1153,8 @@ static void sctp_generate_iftsn(struct sctp_outq *q, __u32 ctsn)
  }
-@@ -3878,7 +3878,7 @@ bool sctp_verify_reconf(const struct sctp_association *asoc,
- 	__u16 cnt = 0;
  
- 	hdr = (struct sctp_reconf_chunk *)chunk->chunk_hdr;
--	sctp_walk_params(param, hdr, params) {
-+	sctp_walk_params(param, hdr) {
- 		__u16 length = ntohs(param.p->length);
+ #define _sctp_walk_ifwdtsn(pos, chunk, end) \
+-	for (pos = chunk->subh.ifwdtsn_hdr->skip; \
+-	     (void *)pos <= (void *)chunk->subh.ifwdtsn_hdr->skip + (end) - \
++	for (pos = (void *)(chunk->subh.ifwdtsn_hdr + 1); \
++	     (void *)pos <= (void *)(chunk->subh.ifwdtsn_hdr + 1) + (end) - \
+ 			    sizeof(struct sctp_ifwdtsn_skip); pos++)
  
- 		*errp = param.p;
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index ce5426171206..39d416e7f795 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -4142,7 +4142,7 @@ enum sctp_disposition sctp_sf_do_reconf(struct net *net,
- 						  (void *)err_param, commands);
- 
- 	hdr = (struct sctp_reconf_chunk *)chunk->chunk_hdr;
--	sctp_walk_params(param, hdr, params) {
-+	sctp_walk_params(param, hdr) {
- 		struct sctp_chunk *reply = NULL;
- 		struct sctp_ulpevent *ev = NULL;
- 
-diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-index ee6514af830f..c241cc552e8d 100644
---- a/net/sctp/stream.c
-+++ b/net/sctp/stream.c
-@@ -491,7 +491,7 @@ static struct sctp_paramhdr *sctp_chunk_lookup_strreset_param(
- 		return NULL;
- 
- 	hdr = (struct sctp_reconf_chunk *)chunk->chunk_hdr;
--	sctp_walk_params(param, hdr, params) {
-+	sctp_walk_params(param, hdr) {
- 		/* sctp_strreset_tsnreq is actually the basic structure
- 		 * of all stream reconf params, so it's safe to use it
- 		 * to access request_seq.
+ #define sctp_walk_ifwdtsn(pos, ch) \
 -- 
 2.39.1
 
