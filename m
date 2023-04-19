@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67D7B6E7E04
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:19:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 035BC6E7E0F
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233345AbjDSPTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 11:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41872 "EHLO
+        id S233526AbjDSPTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 11:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232847AbjDSPTD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:19:03 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3A89037;
-        Wed, 19 Apr 2023 08:18:27 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id u37so8474763qtc.10;
-        Wed, 19 Apr 2023 08:18:27 -0700 (PDT)
+        with ESMTP id S233464AbjDSPTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:19:19 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F5E4489;
+        Wed, 19 Apr 2023 08:18:51 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id m21so22345430qtg.0;
+        Wed, 19 Apr 2023 08:18:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681917398; x=1684509398;
+        d=gmail.com; s=20221208; t=1681917418; x=1684509418;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=UL/KNEeyR1A4RYYeedrgo97igGODZqnW3SkGYg2Vrwo=;
-        b=ddxGwC30RarItFP+nn0S7+8+u7X6Q/1ku1eFQbWZp7vNiMDKNOf83tL0qFd8h3eKL3
-         BANYoCsd7l/ozK60P/bMFpQWJ2SE/w0KI6Zx181ieX2aQl0GSyzEYRDJ31pZmO+ESm+Y
-         vexZPPoPqwA8UdHN+tNlsQeGA83ifvvdyUvkJJ/4aA4esv+aa6dgAHP6OhYym7OCiHWM
-         dRIscN/MATMIOexK2VTZ51C4zA/ZV0PooKWufJPbF2Tll9ZG7Ra1BijaAJqO54MHPFfy
-         b5VGla+qs++qun3PJTfla6x9YKZEy7BaGtJ2OoniHBEELuFQoyUGKwYyAKvVX9DcSwuT
-         ab1A==
+        bh=i7bp3sdV7JAVhgQxmlbWl+vFysG/hec405GOyDsGjbQ=;
+        b=GASRW55qbaZfVVXFxmYE/PT1hCZcxw73Ojq8A36359ZQ4rRajuaZeYHu7raJbibRoA
+         E4B12PbOYxofoOqxjhErMCkTFSOjGJ+nMioXUo7Jr6C1EwZqXVoRSs4lJCMuuDHJv9Sy
+         iJ3owTtV8Q57NNcoN0dAWxBTxlFtcMhnbea8LaJzu/S81+CLd/x1vYstgVeEfzpnreBv
+         EwRW37ATYQHe7me/7+0EhqH6XiE3ZK0m9vf0LDRrNZUh1FEov+jjBA5jbw8mRsbhOO5o
+         2z4LleyztkYxjfBQZcUefgKAW+4RgKrQ7JN1945Bastl/Zkh+UNOwOBoct5yyJ/Nrfhw
+         52ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681917398; x=1684509398;
+        d=1e100.net; s=20221208; t=1681917418; x=1684509418;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=UL/KNEeyR1A4RYYeedrgo97igGODZqnW3SkGYg2Vrwo=;
-        b=KI/3NBXX583eMLX7cU6PRE+Jq2bW8i7Y7ud1U0GBvl5gqof5lTmQ7qRKA90psXfXi7
-         Oe/Ut+taqG/fip/7e1hD/T1KYZOrEWPdJIcQpR3/o/+ZH3YGYj7YTQbThAM5EamOs+YL
-         7nIHOi/yNlDadVhJO7KdEONiJCkrxgCW1PqXzrPZhIg7f7XRqJstXEJQOmePMAgcpYKg
-         u/HNY0q49eEujMCe78eWmhgpz3ALd8zuJ8r9rRtH1BL99W6Lz6R6t+dBKsdvzRqh4knB
-         ve6QPuyHnuXZyCsAe2gR8YMgNm9D19CwlUChw+qacILS4cM0b3dMxyT6usJsuT5+Uue1
-         s+Iw==
-X-Gm-Message-State: AAQBX9fWrI0laaPWwfbTIA7HdxqfFHrFe60uns2TxkjjShhB/QPt//BC
-        TJ40RozdXigGbnFXHQfhuoxdSb+M0Nir/Q==
-X-Google-Smtp-Source: AKy350YCtoqxK16MjwkwxtPD7y3QFYbtjeTNKy3J7CC+CGc6w+Xb2GqZfhKt7I61iimOpWO/lYa6kQ==
-X-Received: by 2002:ac8:5816:0:b0:3d7:b045:d38 with SMTP id g22-20020ac85816000000b003d7b0450d38mr7617158qtg.35.1681917398404;
-        Wed, 19 Apr 2023 08:16:38 -0700 (PDT)
+        bh=i7bp3sdV7JAVhgQxmlbWl+vFysG/hec405GOyDsGjbQ=;
+        b=bWpvUWL1kOcQoe4TXcqYtWvhB7Y1rsaTlofFYuIucbv3ZFVUtCzfNjWuDSmD/dZT2p
+         SwY0Otc2YGDf8T6Vsg5i2cWeWMCGJ2FnkYY214d9kPIFO7Ue5Y0tXVlpkEoVBnHzVCsd
+         J4n8PS+Usf+0P/xAsnHkNZM2X+UeIazQHKaHDxWLDC+LwSWpA6AExfB9seCji2rKj56S
+         xABfQLEJsXgy/aN4EKhZCwrHonnaarcgbEOX3ReeAL6SMpQwLwfwUypJOco3sN+G+/sB
+         ESr9pt9IA0w6Fi2vpxMz3UweuwSaw9wa+qJkineCU4xYjNwtccDdDltMwrVSIR1clM3J
+         OJcg==
+X-Gm-Message-State: AAQBX9fkHiNDsHAQzfXgv+RSAZ/trHf/ipXyeCvz0qca5NeRGY/LhQKI
+        3kO0aBwuk0mH51fLTcIHguc6o4IUSYQuTA==
+X-Google-Smtp-Source: AKy350aNKbpQ3sm5HcgzzeebHTIke4J+3KlEeOBXva/H3Us3/bbnOg8wbqmXCAfaBr24nDM5GntZ9w==
+X-Received: by 2002:a25:5945:0:b0:b8e:e032:b654 with SMTP id n66-20020a255945000000b00b8ee032b654mr22860086ybb.56.1681917399416;
+        Wed, 19 Apr 2023 08:16:39 -0700 (PDT)
 Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id v11-20020a05620a0f0b00b007469b5bc2c4sm4753336qkl.13.2023.04.19.08.16.37
+        by smtp.gmail.com with ESMTPSA id v11-20020a05620a0f0b00b007469b5bc2c4sm4753336qkl.13.2023.04.19.08.16.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Apr 2023 08:16:38 -0700 (PDT)
+        Wed, 19 Apr 2023 08:16:39 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCH net-next 4/6] sctp: delete the nested flexible array peer_init
-Date:   Wed, 19 Apr 2023 11:16:31 -0400
-Message-Id: <d5aadadbbe09aa79161b43c08ab5d7b4f29a907f.1681917361.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 5/6] sctp: delete the nested flexible array hmac
+Date:   Wed, 19 Apr 2023 11:16:32 -0400
+Message-Id: <98dc440abe4cb430e3fa65385c1418572b151774.1681917361.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <cover.1681917361.git.lucien.xin@gmail.com>
 References: <cover.1681917361.git.lucien.xin@gmail.com>
@@ -73,103 +73,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch deletes the flexible-array peer_init[] from the structure
-sctp_cookie to avoid some sparse warnings:
+This patch deletes the flexible-array hmac[] from the structure
+sctp_authhdr to avoid some sparse warnings:
 
   # make C=2 CF="-Wflexible-array-nested" M=./net/sctp/
-  net/sctp/sm_make_chunk.c: note: in included file (through include/net/sctp/sctp.h):
-  ./include/net/sctp/structs.h:1588:28: warning: nested flexible array
-  ./include/net/sctp/structs.h:343:28: warning: nested flexible array
+  net/sctp/auth.c: note: in included file (through include/net/sctp/structs.h, include/net/sctp/sctp.h):
+  ./include/linux/sctp.h:735:29: warning: nested flexible array
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/net/sctp/structs.h | 2 +-
- net/sctp/associola.c       | 5 +++--
- net/sctp/sm_make_chunk.c   | 4 ++--
- net/sctp/sm_statefuns.c    | 8 +++-----
- 4 files changed, 9 insertions(+), 10 deletions(-)
+ include/linux/sctp.h    | 2 +-
+ net/sctp/auth.c         | 2 +-
+ net/sctp/sm_statefuns.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index 070c9458fff4..5c72d1864dd6 100644
---- a/include/net/sctp/structs.h
-+++ b/include/net/sctp/structs.h
-@@ -332,7 +332,7 @@ struct sctp_cookie {
- 	 * the association TCB is re-constructed from the cookie.
- 	 */
- 	__u32 raw_addr_list_len;
--	struct sctp_init_chunk peer_init[];
-+	/* struct sctp_init_chunk peer_init[]; */
+diff --git a/include/linux/sctp.h b/include/linux/sctp.h
+index 01a0eb7e9fa1..d182e8c41985 100644
+--- a/include/linux/sctp.h
++++ b/include/linux/sctp.h
+@@ -727,7 +727,7 @@ struct sctp_addip_chunk {
+ struct sctp_authhdr {
+ 	__be16 shkey_id;
+ 	__be16 hmac_id;
+-	__u8   hmac[];
++	/* __u8   hmac[]; */
  };
  
+ struct sctp_auth_chunk {
+diff --git a/net/sctp/auth.c b/net/sctp/auth.c
+index 34964145514e..c58fffc86a0c 100644
+--- a/net/sctp/auth.c
++++ b/net/sctp/auth.c
+@@ -738,7 +738,7 @@ void sctp_auth_calculate_hmac(const struct sctp_association *asoc,
  
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index 63ba5551c13f..796529167e8d 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -1597,9 +1597,10 @@ int sctp_assoc_set_bind_addr_from_cookie(struct sctp_association *asoc,
- 					 struct sctp_cookie *cookie,
- 					 gfp_t gfp)
- {
--	int var_size2 = ntohs(cookie->peer_init->chunk_hdr.length);
-+	struct sctp_init_chunk *peer_init = (struct sctp_init_chunk *)(cookie + 1);
-+	int var_size2 = ntohs(peer_init->chunk_hdr.length);
- 	int var_size3 = cookie->raw_addr_list_len;
--	__u8 *raw = (__u8 *)cookie->peer_init + var_size2;
-+	__u8 *raw = (__u8 *)peer_init + var_size2;
+ 	tfm = asoc->ep->auth_hmacs[hmac_id];
  
- 	return sctp_raw_to_bind_addrs(&asoc->base.bind_addr, raw, var_size3,
- 				      asoc->ep->base.bind_addr.port, gfp);
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index 4dbbbc2a7742..08527d882e56 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -1707,11 +1707,11 @@ static struct sctp_cookie_param *sctp_pack_cookie(
- 					 ktime_get_real());
+-	digest = auth->auth_hdr.hmac;
++	digest = (u8 *)(&auth->auth_hdr + 1);
+ 	if (crypto_shash_setkey(tfm, &asoc_key->data[0], asoc_key->len))
+ 		goto free;
  
- 	/* Copy the peer's init packet.  */
--	memcpy(&cookie->c.peer_init[0], init_chunk->chunk_hdr,
-+	memcpy(cookie + 1, init_chunk->chunk_hdr,
- 	       ntohs(init_chunk->chunk_hdr->length));
- 
- 	/* Copy the raw local address list of the association. */
--	memcpy((__u8 *)&cookie->c.peer_init[0] +
-+	memcpy((__u8 *)(cookie + 1) +
- 	       ntohs(init_chunk->chunk_hdr->length), raw_addrs, addrs_len);
- 
- 	if (sctp_sk(ep->base.sk)->hmac) {
 diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index 8d0cfd689b20..7b8eb735fa88 100644
+index 7b8eb735fa88..97f1155a2045 100644
 --- a/net/sctp/sm_statefuns.c
 +++ b/net/sctp/sm_statefuns.c
-@@ -794,8 +794,7 @@ enum sctp_disposition sctp_sf_do_5_1D_ce(struct net *net,
- 	/* This is a brand-new association, so these are not yet side
- 	 * effects--it is safe to run them here.
+@@ -4391,7 +4391,7 @@ static enum sctp_ierror sctp_sf_authenticate(
+ 	 *  3. Compute the new digest
+ 	 *  4. Compare saved and new digests.
  	 */
--	peer_init = &chunk->subh.cookie_hdr->c.peer_init[0];
--
-+	peer_init = (struct sctp_init_chunk *)(chunk->subh.cookie_hdr + 1);
- 	if (!sctp_process_init(new_asoc, chunk,
- 			       &chunk->subh.cookie_hdr->c.peer_addr,
- 			       peer_init, GFP_ATOMIC))
-@@ -1869,8 +1868,7 @@ static enum sctp_disposition sctp_sf_do_dupcook_a(
- 	/* new_asoc is a brand-new association, so these are not yet
- 	 * side effects--it is safe to run them here.
- 	 */
--	peer_init = &chunk->subh.cookie_hdr->c.peer_init[0];
--
-+	peer_init = (struct sctp_init_chunk *)(chunk->subh.cookie_hdr + 1);
- 	if (!sctp_process_init(new_asoc, chunk, sctp_source(chunk), peer_init,
- 			       GFP_ATOMIC))
- 		goto nomem;
-@@ -1990,7 +1988,7 @@ static enum sctp_disposition sctp_sf_do_dupcook_b(
- 	/* new_asoc is a brand-new association, so these are not yet
- 	 * side effects--it is safe to run them here.
- 	 */
--	peer_init = &chunk->subh.cookie_hdr->c.peer_init[0];
-+	peer_init = (struct sctp_init_chunk *)(chunk->subh.cookie_hdr + 1);
- 	if (!sctp_process_init(new_asoc, chunk, sctp_source(chunk), peer_init,
- 			       GFP_ATOMIC))
- 		goto nomem;
+-	digest = auth_hdr->hmac;
++	digest = (u8 *)(auth_hdr + 1);
+ 	skb_pull(chunk->skb, sig_len);
+ 
+ 	save_digest = kmemdup(digest, sig_len, GFP_ATOMIC);
 -- 
 2.39.1
 
