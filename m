@@ -2,108 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2D836E7E68
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26ED76E7E69
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:36:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233045AbjDSPgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 11:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57768 "EHLO
+        id S232355AbjDSPgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 11:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233140AbjDSPg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:36:27 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2073.outbound.protection.outlook.com [40.107.92.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9944249DB
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 08:36:25 -0700 (PDT)
+        with ESMTP id S233225AbjDSPgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:36:36 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2068.outbound.protection.outlook.com [40.107.212.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E5A5FD2
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 08:36:32 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O+zCu37v8HNrZ+8RNE6CibtLNgduPQ9YpqzTLlh7F4upg9BjZxpZlsKhKXa+isQNzErBbevBBhm71DyXPzZMs0HC759tsdb/mNVmfcI6LlYc3GaNTsUQMd5muts3pbcV4Dc7tvi2yTjNHXixDSECKSJOkFVM4TgyfU8V/qEw0I9q3TQzbbvgzUR80llCnI1nt9OqF8+VF3xjd/VymwIvaQMVwzj7zg3igL8VB7Jd5Vh7Zg9bhSRPMWjvn6XyP6Sg1QN+jWvIH56DlHb9JCMYLDiS6sGMVg6QtezLYh7Bz3oOsuAD3O2h6spnGPsNZTvjkwd/OGyymvJeaT+d31bXdQ==
+ b=KEqvQsdH7wtjacT5hAWTYvn/NteS7GGVnuF/vyDHdI2J++JwfZOlqgt81ynR2I8LTtz7d/KyefPS7xg1WDjWf4puMS1ZWMdcSA3Xz2RV6irKIgPhuwggpxIb0dagraFKFI+gjABx47FLj2EpFbiK3xO7DqiMShHfQFLoAxC5rRM5+yd6CJ9d4PyTaTi/bf2mX3wXJRZN0E8/J9Df19621Ps5vgzIE6TKmddCBdB55kNOs7KyYggLPDanbdyGvmPcABiBlXOGuZjaP+/ILGGx9LR5oNf+7X7+TAvV4qvvADSKVqFX9b7fJxOE/xqrezNO5/Ij8GLpqUFe4jzyqFW9Pg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wUmFijYCPgEX04cPjZN0kCpLZm8abO4duay48UU4ewc=;
- b=KkLUQtTZ+E3BAUrmQs+Op8/823UboEh0yzArE4RoZjmRJ6fAj1jF6BadxNohJJnZKfWH0hbZ4B3XaX6YrPhZYcbcJR7d+jApl+1IZbbz2CiBYgwdpIixL0e5bzS0b0nnqCUxZL5UFJaMolwHJLeEl5hCi0sFCG0Yi8vNvg58GD1bUj/VwZyd3SP7Cj67Mop6bfItt26kYR/Rpom3OIdObK1XsncnuJimBkdfZka2qS5lx0QAmyqLLt3qZ7fub/7XVlpItfc9KcURRVjJzSEN5nOV+x9SEf+g4nH72pYgHwHutebM4l6dUG66QohtQvDTGomWxnZ21GIRCJIX5NxGnA==
+ bh=NmUQ6d6kxYpKJ4DxH+0kxjZ7sAECfUUkXSJAlzBBjXQ=;
+ b=dxvUpkhSkOCyuEACYa5GqkGKg1UHWI4/58v4TSs44OYRwDZO33tLRByvzvPUyAycprPFA/IWMXLW/gT9AZ49E8MGucaOdMPki9O/BvmTcgGHgLkPi5mQ+pg0j8dlkjqb0oqajzKfE5O1Kuxlm+9NePrn3k9nMWu23pJpYisbupMI4JFU2gLpAtbZDu63L2mR6bQOSk1a1wi3/A9j64HRlRGK9KvX7cOkC/lfI/qdOn0gCC4FXUfn8MnYr2ucLng/JPdOCVHGUcTVa/YmKl5pN6rc4u7olNLf/NCHs3QdFsjrkvInQE23z5HYd/8KDHDWYyP7VtROU8Jj8dPxFMKDDA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wUmFijYCPgEX04cPjZN0kCpLZm8abO4duay48UU4ewc=;
- b=hxAIK3wO9ESg8RSoyZ3XL9ggXJ8YR0H2US/ZviO6uJJD6GWcmZaj54avwzt6kvRLqWGvFQXiUe709CtHXX4jpq3sQy4ay9c+cVbvDVAtjyjcp1beCeOcSGThrPdfHfKBc6DAtOkvTBGpt88FswMP1KmAbErx++qaunem9zljp8t7PQDNpoDvrhBT6T9gXGmDgbmQSfIGAHPxPoiwDzEWqIiqYm+IdK53vqmRBYv8wLN3VTBqcrpaKch97sqRDh3sXeslizSSrwx7dC65VmwqA4p0kZolvBk6QWqnlx96E/vFCBjNRSWB/HOyxJlCjont4fMOIqenYaHGehRHPjXOAQ==
+ bh=NmUQ6d6kxYpKJ4DxH+0kxjZ7sAECfUUkXSJAlzBBjXQ=;
+ b=ppgFdrPEsMeCuIxNpQEQv406wZHIWnDhrsxxf6AgmQYz4Z1TOo5WGD1IYA12GgHb+DZChKkskdWLEIA4hBSFWCY07sFwn7Xqi5/KOhxWPxNymDpwkDf+SHBbtbZloNNTyk3jfsUm14NZZFG4DumIPQ+DJ2DaTAUAvWlkJPbtWmiCtwwqf5uaOr3F0FlMn6cp4nr2F8I418teCArY6I/jJAV45UBlLWXSa9puctsYeT0dcnXY0BwxjzWRihQ9f95fKy0P4E3o2L1QatDKCdKXwnTYkT0sP2NsFsuH7zXy7aEQHFfPpJSWUbVaO6+151/eG/GTyvohWEkhXbOP+96V7g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by SN7PR12MB7249.namprd12.prod.outlook.com (2603:10b6:806:2a9::15) with
+ by DM4PR12MB7623.namprd12.prod.outlook.com (2603:10b6:8:108::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6298.30; Wed, 19 Apr
- 2023 15:36:23 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Wed, 19 Apr
+ 2023 15:36:29 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::66d8:40d2:14ed:7697]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::66d8:40d2:14ed:7697%5]) with mapi id 15.20.6319.022; Wed, 19 Apr 2023
- 15:36:23 +0000
+ 15:36:29 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, razor@blackwall.org, roopa@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 6/9] bridge: Add per-{Port, VLAN} neighbor suppression data path support
-Date:   Wed, 19 Apr 2023 18:34:57 +0300
-Message-Id: <20230419153500.2655036-7-idosch@nvidia.com>
+Subject: [PATCH net-next v2 7/9] bridge: vlan: Allow setting VLAN neighbor suppression state
+Date:   Wed, 19 Apr 2023 18:34:58 +0300
+Message-Id: <20230419153500.2655036-8-idosch@nvidia.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20230419153500.2655036-1-idosch@nvidia.com>
 References: <20230419153500.2655036-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR04CA0115.eurprd04.prod.outlook.com
- (2603:10a6:803:f0::13) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VI1PR06CA0182.eurprd06.prod.outlook.com
+ (2603:10a6:803:c8::39) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|SN7PR12MB7249:EE_
-X-MS-Office365-Filtering-Correlation-Id: 135118f9-4159-42e7-7365-08db40ebd482
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|DM4PR12MB7623:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3bb433a5-b357-4642-9ebd-08db40ebd86b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 30zls8PqNSY/5qTzoRZaGzW6hs87c9f+bXuzFQYS+Pv/OA79vV7RDXfQPQfrWlGfwnF8WwXh1RiLSPUN518DXck4z40cwrm48ORSQp8xF7zHAuiT3MJat92RUcOMLl+JPCftP9HT+afNVstBtTJiMOZQbb5Z0tc5pPkJs5xEKDen0U9nMWr+V1+tJWpH6DlDKaeiCOmRrbJ2bAX24zx5IJEoRCFTjtnKqMMNoEbkm9HVnCtd0q13IZ6I6966MH+gbxSAaZcCyIBziU5bs/gr5b+HI5fsh39QqJs5qDqGw+CimXuHoTeNmJOv/7xAsmK3v2ajGeOZg8vBZfz/UIbYWrmxUXxUIzx9uPmeQ6sNYtAAqG9nAd+HkDHaIKF51t5/39ieWbvso5eJmfcD6E29GLG64yZSJZrbcDqamt8fRDMBvH0jE27TWPSyjcHWxO3smsYox8iAGAeTKleF5/3W13Qbt/ClpfLOps7y3vjv68rzhV/v3PrhNHh5LzZOrO5H7cxJ0GeVxXRXBbErV03UCCwYaWvAgFPDcGSRAic/h4808GtVSwVCbsSaqzgj9hTU
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(376002)(396003)(366004)(39860400002)(451199021)(5660300002)(6486002)(478600001)(66556008)(66476007)(2906002)(4326008)(66946007)(36756003)(86362001)(8936002)(41300700001)(6666004)(38100700002)(316002)(8676002)(1076003)(26005)(6506007)(6512007)(107886003)(2616005)(186003)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: /m0ap03qA83zkZVLtoRUC+bV0pSe+xUvM2w4ux7JloRB7G9kaKZj18m57L3IvQoItRkCr67NaQzgXNO4RFXn4y9AHQ8BB7tzxXQ9p8AoxoRQUiHIW6khpTxfGGChWdTL5b//j/z3DRG9kgwSkfnpvR9pIHPiIWGDZ3reMNmTq/vn0T/8PBj7cLiu9rRrRabU9qVwexWcC0CkcZp8qP3OAm2I7mV93cCLCdPJ6szMN5MG15VjicTcQGg98PFEVXQHQ1bnLvDCuKL3MpwG0Y2gG53yd97TegxRB/Yj+HYPoDoBcMU9p4vmRA8lq8MLc1tl9IlVWNGxyRhacHXUJFa/sRCY5OfNOJ8W50fry3OAXk3LRtFiRJsgIC7hh12G5KAlQIHmvE6/XjTZwX0YDZI5WWISAXq1fj0ES6jMv/1P+kszEDqRRqpcJF8AHtVlkPwFf7gF8rxR1KO4UsaL6NHTPchK7mE6GZKD1FjJMxclob0gbOEzLEvgpbnIM0mnwAZ+uKg0HFJvTv8ZlRVmiJtMjpsgl4U/9Uaxxg0D78AI3+ocoHKE6A8iK2A+NtJP+dA1
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(376002)(136003)(39860400002)(451199021)(2906002)(8936002)(38100700002)(8676002)(5660300002)(36756003)(41300700001)(86362001)(6486002)(6666004)(107886003)(6512007)(6506007)(1076003)(26005)(478600001)(2616005)(83380400001)(66574015)(186003)(316002)(66946007)(4326008)(66476007)(66556008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mFSYTAPtZUkgG5RBTlEW4ASUKN4t1yQZguIRv7awBkc9W1jjR5x2gXHl9rX9?=
- =?us-ascii?Q?Dqn7cxI78SdlVt3Mrpo65AdytFGodrtFCkgLAqn6LUS3ug1ezPDHpTw6AUnf?=
- =?us-ascii?Q?ZU2hGNnkX46DaPC7WyADiBKXtPWPCBu1w8m6HHj1C0HNyo/Dx4CuVFQRoHtO?=
- =?us-ascii?Q?x3N6fGCzeZCfbIPGmwnNQuM/kCfX/yPPVpIFLfuOgvZQXmHlc3COtMCSbXKK?=
- =?us-ascii?Q?lu5/SaEsCH94QAkxNGK5YLQSwIWLnVRSX3rYxOLW6OUs9Sv9LyvOTfzCvZp+?=
- =?us-ascii?Q?IV4L0I3FbkOY+bC78069y1IdRKAdLyfpL4F79jKxYuO4WXQSfpSMzNV6lDMV?=
- =?us-ascii?Q?q34guTBhTn86dtQ1voF32kN3RhlxAktWyorwm5NyrcTWsqfJiFZ6dKcj2h21?=
- =?us-ascii?Q?V9x8w7WcFyTA/7nkRAHIEt+YIqYnhFjPgLMGZ+Zqh2Dtp2XuSuAGRblOd2lo?=
- =?us-ascii?Q?X0R/25VazNYzb0qY9cAKIJJsj6VT2lSYb9usNk33hAtUvTBkudvz9OmiH70V?=
- =?us-ascii?Q?XUHg3bT0u0XG22Z9XJkwjcbQRu4srcMSdXZrbdGMBcKMWO88cHTc8SImM2i/?=
- =?us-ascii?Q?UO5w7oUedp3tXbM26GlT8qagrS3af8oO8ZHDF+BxmthhW5BGOS/jnb7aHwnd?=
- =?us-ascii?Q?9Qkj8YV2VSplkt0QcAi5kBOtDs6DCDM0w0Nhw9gwa6KeBH6RSg+/PnEvAMn6?=
- =?us-ascii?Q?6+IlNmvNkqiu+17uxgeGixGR3yQDiQRL6PNi6pbIjHj8a2U/qivvGyPzWnJ/?=
- =?us-ascii?Q?lOaD0uiCn5mD9hgd3C+nE070VbEUa0La0vLE466IH9pse19pKEH/MX5lRtw4?=
- =?us-ascii?Q?AkcXnpnrTIZjisTBCBD6JlqWw08vZJu+HWh2trNQEQPMJlof6SSakFBZ9eso?=
- =?us-ascii?Q?B/scHZfAbtc7ZlpGaYjGhN7s9i5avpXlDp6HMgzcd8+xccKgIg1XBdHio9tK?=
- =?us-ascii?Q?m2/ICo13qYq4Xnvri3c97Zc38lON2j3BaLim48unRQpx0PJMRz/Z0/Yh4AtX?=
- =?us-ascii?Q?SwPuxj3VknjlSJ+8lcTTSQgEZPX/8IxturyrZ7rv37LhVTC6UZfXeyHf0t37?=
- =?us-ascii?Q?952XvAb39JoVMYGO/V8y5ALmlDmWzEiYNvsyBIVmNi/7IeTSlh0Wtb0JbsdJ?=
- =?us-ascii?Q?ONqvsuPUK6P9PFd5L+2yoVYZDjQIwaHgfH/t+K36zWhUCDzMk2UJ6LKsmylr?=
- =?us-ascii?Q?CZA7B1KM13UaG+PT7AwAgbCaiktEX9Zk8wVq1XMiqIiYGIxy3dKG1mjx4REI?=
- =?us-ascii?Q?xJIpmxKV+UxuR/4rhFLsMvBW5jE5U7uWwsOIZxFnfIW43ltsrgCZkdzFg/Zw?=
- =?us-ascii?Q?VvMV5ODCl7CuQYjq5NyM1qkwgCHswYPeuNc4Krso3jciaLxWUGR8ycbw50F/?=
- =?us-ascii?Q?YHurw1dEMff8Cq+ISNq3fBm509tfbmfhLFwmJeEw5ExWB8U/3a1nP1iYLQ3h?=
- =?us-ascii?Q?GQcByiC6tPyyouwdUkNCCUlZMQTfDH2nTOLNTP7TRfWflIElqmtiDzVyZE0N?=
- =?us-ascii?Q?eQuI8HZK5dNE4dg9LBdDTvoea4BRANcbsYhbMrt06k/j0bvqabE1HSk8iXbX?=
- =?us-ascii?Q?aga6W8rgwyakG0+QIk8ss+4TCS6hvjnxwcxtNndG?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sPH12w1MwgYH1rrxbHuL7aVmzgyuXA/xY6qzU/fP426Uf8EahN2gCdEt5tb7?=
+ =?us-ascii?Q?CLepSYKzwR0aOOe5nqnvGaYJ2gO/e8yQ5tS6n40amzxKZpMZVayRXn+d9Kub?=
+ =?us-ascii?Q?Ce4OTrlh4TihZZxkCnuAxDP1ORo22YwMcDIyoqpMH+B80NX3Bl0C3bhQuu2d?=
+ =?us-ascii?Q?5yem7pUNMhXzNXQb/JFzu1Zc/tC4RFkjq4LWUVw0xVtIu+umVoQuhv3GXsTU?=
+ =?us-ascii?Q?e6DHg2sA5lbRm6jBWyfc58WcqaY6ia5XrBjcd6IaPAfHe8WBdyJSk/bZt1vI?=
+ =?us-ascii?Q?UUEVRnthB+2d7OVP9ylACxwzZ6kBJAtFqGJQEpC0a769pJn182qIc/evrGAQ?=
+ =?us-ascii?Q?UCDptS+ZkFJ1us9F3AWuvxB2xfTdk8DVxkWLCsRSZ7b61nMuPW/NcAHCCVq9?=
+ =?us-ascii?Q?9YzdTSW8FrdoC69qOAUREpNu42A3U+itvqELrCXaqlm7exzigpkMaZsJim/B?=
+ =?us-ascii?Q?9K6QvaaQMo4HqbyBi6/n109xgvUuAIr3gAUPiznRcBt1ogEO3yWLSuTUNEtL?=
+ =?us-ascii?Q?q9rVzcX+nh+jD56wBLJfawFUutYui96x0a1Iegd9aX3G+pofoCDeKj2cvRII?=
+ =?us-ascii?Q?C3XeVEY9ux+VrWvTrXL9KGhkN0CZVYD3719JWowYfk3VXjmRMoAnS2jDi5aW?=
+ =?us-ascii?Q?oOgxaCpejTy+KL2sODNgAzbEDQvqKa/Uq5hBgDPl0wTqYCVBdoXgAZHdQm9k?=
+ =?us-ascii?Q?A4RBwIRRN1vnw+JDUOE4B78xK65mvH3uoPOWxhhisNdzcykjLPKrjxmnVEKC?=
+ =?us-ascii?Q?dwDKyW856O2wVx+GgoG6tJ/KL5iIjQ8y6JirwpIxfjGKPLf2DDbYyveDLKAZ?=
+ =?us-ascii?Q?hGaWAasAYjRtcJ0H2W8Y2yPw8ooTY+/aj2z3Fx8Jg/rvM1PYR8deAlf8DsPP?=
+ =?us-ascii?Q?7O/gG693MwfYLI+oa+qPhcvvEpQqgYV7J02DXZYJS8H5A0dg4ukiUDNxNP3p?=
+ =?us-ascii?Q?vhNigklmisTuPmGL4LkI+o0DxpEAZ7X9yGJyJDQgrvD4F2xomXib8xweHZVy?=
+ =?us-ascii?Q?qQ+MrVpg8ilL+Hw5L8ZsM9ORAbzm+FZ5iResoSAfOjTciv0M68pnayyN9SKI?=
+ =?us-ascii?Q?BrJavSYnKowbjrfin4M+XmRSi2bnnTvotU7sQtdCjqK3USdZFBNSRKc9hKjV?=
+ =?us-ascii?Q?6DucRhpuEBCk/PneIU7WomX/mZaFV5KzxuL1J5nv6gNkcm/Jr4rnf1HgL4pp?=
+ =?us-ascii?Q?EpwO08u3Jk5G58QJVQRqYE2JjLA7qp0DB9I0rzMtJxjdp37mxauALZJz2FE7?=
+ =?us-ascii?Q?yXII2hFpgrAb7XA9M13yozANqxmL64Z2vsmZAp/2nXEPfigRFaRziZnLUZXs?=
+ =?us-ascii?Q?Bdqm8QykL8wf61ejT87vYQry2owfgU6YEi/U9T4a7MZ6PJ2fvI2rbmxWM32R?=
+ =?us-ascii?Q?y/oRtsZlSZ4Jz0f8hG7FcaQe2VoS+GwMKcPVPvm1gZ5FsONuggY37/gIbaOB?=
+ =?us-ascii?Q?puVHHb2LiNUNsWtGFMg2GYM8JXbhbyTpoHjy/2C5nXsgrHj6wu+GQQYRH3vs?=
+ =?us-ascii?Q?2wKh0oTnSp3MHzJTmpteTcd3VbVmVmCfABGFyelVZd2M1za/rPwt8e82JvMn?=
+ =?us-ascii?Q?aJAVCzx/hz68GuQNMZkkhZzg3D+y8UaJguConlad?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 135118f9-4159-42e7-7365-08db40ebd482
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3bb433a5-b357-4642-9ebd-08db40ebd86b
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 15:36:23.1126
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2023 15:36:29.6696
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JmQTKQuqiGOc5Dpk1l3xv1z6zt7kmhmBDPibTt7A0ocj2hOLuGW5X6wnFxE2rH8U4/XFK7q+AV/tgUo2fmagcA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7249
+X-MS-Exchange-CrossTenant-UserPrincipalName: Or3Vdp7EtNeuPMIhGI1v4SIQYIdybQ5YWyTpD/lXH4838/IZr8QrVOr4ZQzRINkycjgttxYK9ysOSvX5pxAdPQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7623
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -115,53 +115,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the bridge is not VLAN-aware (i.e., VLAN ID is 0), determine if
-neighbor suppression is enabled on a given bridge port solely based on
-the existing 'BR_NEIGH_SUPPRESS' flag.
+Add a new VLAN attribute that allows user space to set the neighbor
+suppression state of the port VLAN. Example:
 
-Otherwise, if the bridge is VLAN-aware, first check if per-{Port, VLAN}
-neighbor suppression is enabled on the given bridge port using the
-'BR_NEIGH_VLAN_SUPPRESS' flag. If so, look up the VLAN and check whether
-it has neighbor suppression enabled based on the per-VLAN
-'BR_VLFLAG_NEIGH_SUPPRESS_ENABLED' flag.
+ # bridge -d -j -p vlan show dev swp1 vid 10 | jq '.[]["vlans"][]["neigh_suppress"]'
+ false
+ # bridge vlan set vid 10 dev swp1 neigh_suppress on
+ # bridge -d -j -p vlan show dev swp1 vid 10 | jq '.[]["vlans"][]["neigh_suppress"]'
+ true
+ # bridge vlan set vid 10 dev swp1 neigh_suppress off
+ # bridge -d -j -p vlan show dev swp1 vid 10 | jq '.[]["vlans"][]["neigh_suppress"]'
+ false
 
-If the bridge is VLAN-aware, but the bridge port does not have
-per-{Port, VLAN} neighbor suppression enabled, then fallback to
-determine neighbor suppression based on the 'BR_NEIGH_SUPPRESS' flag.
+ # bridge vlan set vid 10 dev br0 neigh_suppress on
+ Error: bridge: Can't set neigh_suppress for non-port vlans.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 ---
- net/bridge/br_arp_nd_proxy.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ include/uapi/linux/if_bridge.h |  1 +
+ net/bridge/br_vlan.c           |  1 +
+ net/bridge/br_vlan_options.c   | 20 +++++++++++++++++++-
+ 3 files changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/net/bridge/br_arp_nd_proxy.c b/net/bridge/br_arp_nd_proxy.c
-index 16c3a1c5d0ae..c7869a286df4 100644
---- a/net/bridge/br_arp_nd_proxy.c
-+++ b/net/bridge/br_arp_nd_proxy.c
-@@ -486,5 +486,21 @@ void br_do_suppress_nd(struct sk_buff *skb, struct net_bridge *br,
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index c9d624f528c5..f95326fce6bb 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -525,6 +525,7 @@ enum {
+ 	BRIDGE_VLANDB_ENTRY_MCAST_ROUTER,
+ 	BRIDGE_VLANDB_ENTRY_MCAST_N_GROUPS,
+ 	BRIDGE_VLANDB_ENTRY_MCAST_MAX_GROUPS,
++	BRIDGE_VLANDB_ENTRY_NEIGH_SUPPRESS,
+ 	__BRIDGE_VLANDB_ENTRY_MAX,
+ };
+ #define BRIDGE_VLANDB_ENTRY_MAX (__BRIDGE_VLANDB_ENTRY_MAX - 1)
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 8a3dbc09ba38..15f44d026e75 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -2134,6 +2134,7 @@ static const struct nla_policy br_vlan_db_policy[BRIDGE_VLANDB_ENTRY_MAX + 1] =
+ 	[BRIDGE_VLANDB_ENTRY_MCAST_ROUTER]	= { .type = NLA_U8 },
+ 	[BRIDGE_VLANDB_ENTRY_MCAST_N_GROUPS]	= { .type = NLA_REJECT },
+ 	[BRIDGE_VLANDB_ENTRY_MCAST_MAX_GROUPS]	= { .type = NLA_U32 },
++	[BRIDGE_VLANDB_ENTRY_NEIGH_SUPPRESS]	= NLA_POLICY_MAX(NLA_U8, 1),
+ };
  
- bool br_is_neigh_suppress_enabled(const struct net_bridge_port *p, u16 vid)
+ static int br_vlan_rtm_process_one(struct net_device *dev,
+diff --git a/net/bridge/br_vlan_options.c b/net/bridge/br_vlan_options.c
+index e378c2f3a9e2..8fa89b04ee94 100644
+--- a/net/bridge/br_vlan_options.c
++++ b/net/bridge/br_vlan_options.c
+@@ -52,7 +52,9 @@ bool br_vlan_opts_fill(struct sk_buff *skb, const struct net_bridge_vlan *v,
+ 		       const struct net_bridge_port *p)
  {
--	return p && (p->flags & BR_NEIGH_SUPPRESS);
-+	if (!p)
-+		return false;
-+
-+	if (!vid)
-+		return !!(p->flags & BR_NEIGH_SUPPRESS);
-+
-+	if (p->flags & BR_NEIGH_VLAN_SUPPRESS) {
-+		struct net_bridge_vlan_group *vg = nbp_vlan_group_rcu(p);
-+		struct net_bridge_vlan *v;
-+
-+		v = br_vlan_find(vg, vid);
-+		if (!v)
-+			return false;
-+		return !!(v->priv_flags & BR_VLFLAG_NEIGH_SUPPRESS_ENABLED);
-+	} else {
-+		return !!(p->flags & BR_NEIGH_SUPPRESS);
-+	}
+ 	if (nla_put_u8(skb, BRIDGE_VLANDB_ENTRY_STATE, br_vlan_get_state(v)) ||
+-	    !__vlan_tun_put(skb, v))
++	    !__vlan_tun_put(skb, v) ||
++	    nla_put_u8(skb, BRIDGE_VLANDB_ENTRY_NEIGH_SUPPRESS,
++		       !!(v->priv_flags & BR_VLFLAG_NEIGH_SUPPRESS_ENABLED)))
+ 		return false;
+ 
+ #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+@@ -80,6 +82,7 @@ size_t br_vlan_opts_nl_size(void)
+ 	       + nla_total_size(sizeof(u32)) /* BRIDGE_VLANDB_ENTRY_MCAST_N_GROUPS */
+ 	       + nla_total_size(sizeof(u32)) /* BRIDGE_VLANDB_ENTRY_MCAST_MAX_GROUPS */
+ #endif
++	       + nla_total_size(sizeof(u8)) /* BRIDGE_VLANDB_ENTRY_NEIGH_SUPPRESS */
+ 	       + 0;
  }
+ 
+@@ -239,6 +242,21 @@ static int br_vlan_process_one_opts(const struct net_bridge *br,
+ 	}
+ #endif
+ 
++	if (tb[BRIDGE_VLANDB_ENTRY_NEIGH_SUPPRESS]) {
++		bool enabled = v->priv_flags & BR_VLFLAG_NEIGH_SUPPRESS_ENABLED;
++		bool val = nla_get_u8(tb[BRIDGE_VLANDB_ENTRY_NEIGH_SUPPRESS]);
++
++		if (!p) {
++			NL_SET_ERR_MSG_MOD(extack, "Can't set neigh_suppress for non-port vlans");
++			return -EINVAL;
++		}
++
++		if (val != enabled) {
++			v->priv_flags ^= BR_VLFLAG_NEIGH_SUPPRESS_ENABLED;
++			*changed = true;
++		}
++	}
++
+ 	return 0;
+ }
+ 
 -- 
 2.37.3
 
