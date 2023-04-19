@@ -2,127 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B14636E7EEE
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 17:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B21206E7F3A
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 18:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232828AbjDSPzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 11:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
+        id S232564AbjDSQLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 12:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233605AbjDSPzM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 11:55:12 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFEB08A45;
-        Wed, 19 Apr 2023 08:55:09 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33JFss9r030988;
-        Wed, 19 Apr 2023 10:54:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1681919694;
-        bh=ECtls6r4zEewHNfldLF5yv4pxr43zudpJBOSpDVJGfg=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=JReNgkWpOFq1h7lmPDRvI52P8AbO5xrJCuAqp0aohMJCqKcqwPuetVVe51SNbqwgJ
-         tPlGxLvUYs1YX2PQIbOIFcDg2UANBqSWwIRPokg7aYDpjaXFoLcCZ1SduK1dy21Tfe
-         9kQvqltZIH+b0M+5pTnTbIzdKHEKwsFei/4geHBQ=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33JFssTi062585
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 19 Apr 2023 10:54:54 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 19
- Apr 2023 10:54:54 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Wed, 19 Apr 2023 10:54:54 -0500
-Received: from [128.247.81.102] (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33JFsrYx113397;
-        Wed, 19 Apr 2023 10:54:53 -0500
-Message-ID: <43daed81-fe38-60c6-bdd6-8ab15869c511@ti.com>
-Date:   Wed, 19 Apr 2023 10:54:53 -0500
+        with ESMTP id S231605AbjDSQLb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 12:11:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10CB30C8
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 09:10:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681920648;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FqblCBfQTxko5DZvP5yTi/xoUokqLe4XMeA4ezezFSA=;
+        b=VDcAVd+uq54eG0fKsTULq8M6ipzoNSr9QPbClaYp+dUiO9cXqpyKxJddheU0OcXUstcnJx
+        1+ecnR0UtBQ2H1ni5TSavxCz1K+r/nRTM4DQFeCom6DAV52b8wvixX1ndEGMjkr2baJ15o
+        sCD/uHUnAbMuhyozNygst1se3SyqM/Y=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-413-Er7_WUqSPG2y5yamBWpLoA-1; Wed, 19 Apr 2023 12:10:47 -0400
+X-MC-Unique: Er7_WUqSPG2y5yamBWpLoA-1
+Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-94a348facbbso464139366b.1
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 09:10:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681920645; x=1684512645;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FqblCBfQTxko5DZvP5yTi/xoUokqLe4XMeA4ezezFSA=;
+        b=letw044+ZVUQFElSZ+xSHUdFoSwE2NXqSx8ArVopd4zT6GmsZRAXb0t346reTiGLbV
+         ec68GuyKrvRR0ok4sESJCoJbVKx9+Bi4uIkTo5YauxoCYsV3irAnb/R0R/BoNhxL5nsX
+         /Wg5oUT3djH5NU04vzOtKoH8zVlOHp6kMU9mNmeg49Ut20ZZwmL93+n2SfygX64/Cm48
+         3uJFui4McM3vNpGaw0j3Y24eIBz4/MrPJs/04jf+tOt2gc+pvC5fKqCUW6aTwThkak0t
+         Yfl2EU7jkvyYiyzevBEmVeYNG19YuatASc6O+wHjSqeCA17KTT4uK0CpWGspyaONa6kh
+         2wag==
+X-Gm-Message-State: AAQBX9eQNLmRgLg75+K33EDfwFjnHu5cPlSK9dEwQf0j8dLy2C1qnwt9
+        /UT2sYeXLuckB43i/S0hzgtwebf1aOE9DCsu2RzTJFsHl1+o0BGWwAlDDKIyk7DfF4rRf1gylRR
+        IJoe4LJa5tY6ecx1HP1jPiTw4
+X-Received: by 2002:aa7:cd95:0:b0:502:61d8:233b with SMTP id x21-20020aa7cd95000000b0050261d8233bmr7349195edv.19.1681920645644;
+        Wed, 19 Apr 2023 09:10:45 -0700 (PDT)
+X-Google-Smtp-Source: AKy350Zq4/RT/2JZGaEc3HOwChNgiJt5M7dDq/2w0V/eHwJYLg5ai4fINLQZ7RBZktfrTz/dwhfqCg==
+X-Received: by 2002:aa7:cd95:0:b0:502:61d8:233b with SMTP id x21-20020aa7cd95000000b0050261d8233bmr7349183edv.19.1681920645325;
+        Wed, 19 Apr 2023 09:10:45 -0700 (PDT)
+Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
+        by smtp.gmail.com with ESMTPSA id 23-20020a508e17000000b0050692cfc24asm5685306edw.16.2023.04.19.09.10.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Apr 2023 09:10:44 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <f1b26313-c377-251d-97f6-b56671f98921@redhat.com>
+Date:   Wed, 19 Apr 2023 18:10:43 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [RFC PATCH 4/5] arm64: dts: ti: Enable multiple MCAN for AM62x in
- MCU MCAN overlay
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Cc:     brouer@redhat.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        hawk@kernel.org, ilias.apalodimas@linaro.org, davem@davemloft.net,
+        pabeni@redhat.com, bpf@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, nbd@nbd.name,
+        Toke Hoiland Jorgensen <toke@redhat.com>
+Subject: Re: issue with inflight pages from page_pool
 Content-Language: en-US
-To:     Nishanth Menon <nm@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Andrew Davis <afd@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-can@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Schuyler Patton <spatton@ti.com>
-References: <20230413223051.24455-1-jm@ti.com>
- <20230413223051.24455-5-jm@ti.com>
- <9ab56180-328e-1416-56cb-bbf71af0c26d@linaro.org>
- <20230414182925.ya3fe2n6mtyuqotb@detached>
- <342dd9b0-35cd-1715-ee67-6a6628a3a9a6@linaro.org>
- <20230414221135.vifinqboqndxdxzw@embark>
-From:   "Mendez, Judith" <jm@ti.com>
-In-Reply-To: <20230414221135.vifinqboqndxdxzw@embark>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+To:     Eric Dumazet <edumazet@google.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+References: <ZD2HjZZSOjtsnQaf@lore-desk>
+ <CANn89iK7P2aONo0EB9o+YiRG+9VfqqVVra4cd14m_Vo4hcGVnQ@mail.gmail.com>
+ <ZD2NSSYFzNeN68NO@lore-desk> <20230417112346.546dbe57@kernel.org>
+ <ZD2TH4PsmSNayhfs@lore-desk> <20230417120837.6f1e0ef6@kernel.org>
+ <ZD26lb2qdsdX16qa@lore-desk> <20230417163210.2433ae40@kernel.org>
+ <ZD5IcgN5s9lCqIgl@lore-desk>
+ <3449df3e-1133-3971-06bb-62dd0357de40@redhat.com>
+ <CANn89iKAVERmJjTyscwjRTjTeWBUgA9COz+8HVH09Q0ehHL9Gw@mail.gmail.com>
+ <ea762132-a6ff-379a-2cc2-6057754425f7@redhat.com>
+ <CANn89iJw==Y9fqhc0Xpau_aH=Uq7kSNv8=MywdUgTGbLZHoisQ@mail.gmail.com>
+In-Reply-To: <CANn89iJw==Y9fqhc0Xpau_aH=Uq7kSNv8=MywdUgTGbLZHoisQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, all
 
-On 4/14/2023 5:11 PM, Nishanth Menon wrote:
-> On 22:44-20230414, Krzysztof Kozlowski wrote:
->> On 14/04/2023 20:29, Nishanth Menon wrote:
->>>>> +
->>>>> +&cbass_mcu {
->>>>> +	mcu_mcan1: can@4e00000 {
->>>>> +		compatible = "bosch,m_can";
->>>>> +		reg = <0x00 0x4e00000 0x00 0x8000>,
->>>>> +			  <0x00 0x4e08000 0x00 0x200>;
->>>>> +		reg-names = "message_ram", "m_can";
->>>>> +		power-domains = <&k3_pds 188 TI_SCI_PD_EXCLUSIVE>;
->>>>> +		clocks = <&k3_clks 188 6>, <&k3_clks 188 1>;
->>>>> +		clock-names = "hclk", "cclk";
->>>>> +		bosch,mram-cfg = <0x0 128 64 64 64 64 32 32>;
->>>>> +		pinctrl-names = "default";
->>>>> +		pinctrl-0 = <&mcu_mcan1_pins_default>;
->>>>> +		phys = <&transceiver2>;
->>>>> +		status = "okay";
->>>>
->>>> okay is by default. Why do you need it?
->>>
->>> mcan is not functional without pinmux, so it has been disabled by
->>> default in SoC. this overlay is supposed to enable it. But this is done
->>> entirely wrongly.
->>
->> Ah, so this is override of existing node? Why not overriding by
->> label/phandle?
+On 19/04/2023 16.18, Eric Dumazet wrote:
+> On Wed, Apr 19, 2023 at 4:02 PM Jesper Dangaard Brouer
+> <jbrouer@redhat.com> wrote:
 > 
-> Yep, that is how it should be done (as every other node is done for
-> mcan):
-> a) SoC.dtsi -> introduce mcu_mcan1, disabled since no transciever or
-> pinmux, set status = "disabled";
-> b) overlay -> use the label and provide the missing properties, set
-> status = "okay";
+>> With TCP sockets (pipes etc) we can take care of closing the sockets
+>> (and programs etc) to free up the SKBs (and perhaps wait for timeouts)
+>> to make sure the page_pool shutdown doesn't hang.
 > 
-> The series definitely needs a respin.
+> This can not happen in many cases, like pages being now mapped to user
+> space programs,
+> or nfsd or whatever.
+> 
+> I think that fundamentally, page pool should handle this case gracefully.
+> 
+> For instance, when a TCP socket is closed(), user space can die, but
+> many resources in the kernel are freed later.
+> 
+> We do not block a close() just because a qdisc decided to hold a
+> buffer for few minutes.
 > 
 
-Thanks for your feedback, I will definitely fix and send out a v2 with 
-this update.
+But page pool does handle this gracefully via scheduling a workqueue.
 
-Thanks,
-Judith
+--Jesper
 
