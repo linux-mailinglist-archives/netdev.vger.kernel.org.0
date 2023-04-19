@@ -2,141 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9657C6E7B20
-	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 15:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B8CE6E7B34
+	for <lists+netdev@lfdr.de>; Wed, 19 Apr 2023 15:45:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233239AbjDSNnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 09:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
+        id S233509AbjDSNoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 09:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231584AbjDSNnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 09:43:22 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B98713C3B;
-        Wed, 19 Apr 2023 06:43:20 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0VgVBGnO_1681911795;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgVBGnO_1681911795)
-          by smtp.aliyun-inc.com;
-          Wed, 19 Apr 2023 21:43:16 +0800
-Message-ID: <1681911760.8853464-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
-Date:   Wed, 19 Apr 2023 21:42:40 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc:     <netdev@vger.kernel.org>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <bpf@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>
-References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
- <88d5a2f6-af43-c3f9-615d-701ef01d923d@intel.com>
-In-Reply-To: <88d5a2f6-af43-c3f9-615d-701ef01d923d@intel.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233342AbjDSNon (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 09:44:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D2415619
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 06:43:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681911833;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MK0UGxGV6JsBO8AYL7soTcS9wXMNV0whUDQXJnSnGMA=;
+        b=E/Z1giyboWmWIUuHyi0+9SARPUavcONUdUx+9/04iV80Lr9ZQg2TLCdUxFhBagYRvReJcB
+        BuQv+ppZQTKgNLT3UivSK+iX9hS8jRE2xiopMEWS+tyTw3jm5FaPMVFdf2kAZp+aLnEKS/
+        +XEUC5z7GfETTB32Rr/VfCacp3SRJo4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-612-4rw8mCRpPNme_IUbRr3wmA-1; Wed, 19 Apr 2023 09:43:50 -0400
+X-MC-Unique: 4rw8mCRpPNme_IUbRr3wmA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CC1B2101A554;
+        Wed, 19 Apr 2023 13:43:49 +0000 (UTC)
+Received: from max-t490s.redhat.com (unknown [10.39.208.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BDAB6492B04;
+        Wed, 19 Apr 2023 13:43:47 +0000 (UTC)
+From:   Maxime Coquelin <maxime.coquelin@redhat.com>
+To:     xieyongji@bytedance.com, jasowang@redhat.com, mst@redhat.com,
+        david.marchand@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        xuanzhuo@linux.alibaba.com, eperezma@redhat.com,
+        Maxime Coquelin <maxime.coquelin@redhat.com>
+Subject: [RFC 0/2] vduse: add support for networking devices
+Date:   Wed, 19 Apr 2023 15:43:27 +0200
+Message-Id: <20230419134329.346825-1-maxime.coquelin@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Apr 2023 15:22:39 +0200, Alexander Lobakin <aleksander.lobakin@intel.com> wrote:
-> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Date: Mon, 17 Apr 2023 11:27:50 +0800
->
-> > The purpose of this patch is to allow driver pass the own dma_ops to
-> > xsk.
-> >
-> > This is to cope with the scene of virtio-net. If virtio does not have
-> > VIRTIO_F_ACCESS_PLATFORM, then virtio cannot use DMA API. In this case,
-> > XSK cannot use DMA API directly to achieve DMA address. Based on this
-> > scene, we must let XSK support driver to use the driver's dma_ops.
-> >
-> > On the other hand, the implementation of XSK as a highlevel code
-> > should put the underlying operation of DMA to the driver layer.
-> > The driver layer determines the implementation of the final DMA. XSK
-> > should not make such assumptions. Everything will be simplified if DMA
-> > is done at the driver level.
-> >
-> > More is here:
-> >     https://lore.kernel.org/virtualization/1681265026.6082013-1-xuanzhuo@linux.alibaba.com/
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->
-> [...]
->
-> >  struct xsk_buff_pool {
-> >  	/* Members only used in the control path first. */
-> >  	struct device *dev;
-> > @@ -85,6 +102,7 @@ struct xsk_buff_pool {
-> >  	 * sockets share a single cq when the same netdev and queue id is shared.
-> >  	 */
-> >  	spinlock_t cq_lock;
-> > +	struct xsk_dma_ops dma_ops;
->
-> Why full struct, not a const pointer? You'll have indirect calls either
-> way, copying the full struct won't reclaim you much performance.
->
-> >  	struct xdp_buff_xsk *free_heads[];
-> >  };
-> >
->
-> [...]
->
-> > @@ -424,18 +426,29 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
-> >  		return 0;
-> >  	}
-> >
-> > +	if (!dma_ops) {
-> > +		pool->dma_ops.map_page = dma_map_page_attrs;
-> > +		pool->dma_ops.mapping_error = dma_mapping_error;
-> > +		pool->dma_ops.need_sync = dma_need_sync;
-> > +		pool->dma_ops.sync_single_range_for_device = dma_sync_single_range_for_device;
-> > +		pool->dma_ops.sync_single_range_for_cpu = dma_sync_single_range_for_cpu;
-> > +		dma_ops = &pool->dma_ops;
-> > +	} else {
-> > +		pool->dma_ops = *dma_ops;
-> > +	}
->
-> If DMA syncs are not needed on your x86_64 DMA-coherent system, it
-> doesn't mean we all don't need it. Instead of filling pointers with
-> "default" callbacks, you could instead avoid indirect calls at all when
-> no custom DMA ops are specified. Pls see how for example Christoph did
-> that for direct DMA. It would cost only one if-else for case without
-> custom DMA ops here instead of an indirect call each time.
->
-> (I *could* suggest using INDIRECT_CALL_WRAPPER(), but I won't, since
->  it's more expensive than direct checking and I feel like it's more
->  appropriate to check directly here)
+This small series enables virtio-net device type in VDUSE.
+With it, basic operation have been tested, both with
+virtio-vdpa and vhost-vdpa using DPDK Vhost library series
+adding VDUSE support [0] using split rings layout.
 
-OK, I will fix it in next version.
+Control queue support (and so multiqueue) has also been
+tested, but require a Kernel series from Jason Wang
+relaxing control queue polling [1] to function reliably.
 
-Thanks.
+Other than that, we have identified a few gaps:
 
+1. Reconnection:
+ a. VDUSE_VQ_GET_INFO ioctl() returns always 0 for avail
+    index, even after the virtqueue has already been
+    processed. Is that expected? I have tried instead to
+    get the driver's avail index directly from the avail
+    ring, but it does not seem reliable as I sometimes get
+    "id %u is not a head!\n" warnings. Also such solution
+    would not be possible with packed ring, as we need to
+    know the wrap counters values.
 
+ b. Missing IOCTLs: it would be handy to have new IOCTLs to
+    query Virtio device status, and retrieve the config
+    space set at VDUSE_CREATE_DEV time.
 
+2. VDUSE application as non-root:
+  We need to run the VDUSE application as non-root. There
+  is some race between the time the UDEV rule is applied
+  and the time the device starts being used. Discussing
+  with Jason, he suggested we may have a VDUSE daemon run
+  as root that would create the VDUSE device, manages its
+  rights and then pass its file descriptor to the VDUSE
+  app. However, with current IOCTLs, it means the VDUSE
+  daemon would need to know several information that
+  belongs to the VDUSE app implementing the device such
+  as supported Virtio features, config space, etc...
+  If we go that route, maybe we should have a control
+  IOCTL to create the device which would just pass the
+  device type. Then another device IOCTL to perform the
+  initialization. Would that make sense?
 
->
-> > +
-> >  	dma_map = xp_create_dma_map(dev, pool->netdev, nr_pages, pool->umem);
-> >  	if (!dma_map)
-> >  		return -ENOMEM;
-> [...]
->
-> Thanks,
-> Olek
+3. Coredump:
+  In order to be able to perform post-mortem analysis, DPDK
+  Vhost library marks pages used for vrings and descriptors
+  buffers as MADV_DODUMP using madvise(). However with
+  VDUSE it fails with -EINVAL. My understanding is that we
+  set VM_DONTEXPAND flag to the VMAs and madvise's
+  MADV_DODUMP fails if it is present. I'm not sure to
+  understand why madvise would prevent MADV_DODUMP if
+  VM_DONTEXPAND is set. Any thoughts?
+
+[0]: https://patchwork.dpdk.org/project/dpdk/list/?series=27594&state=%2A&archive=both
+[1]: https://lore.kernel.org/lkml/CACGkMEtgrxN3PPwsDo4oOsnsSLJfEmBEZ0WvjGRr3whU+QasUg@mail.gmail.com/T/
+
+Maxime Coquelin (2):
+  vduse: validate block features only with block devices
+  vduse: enable Virtio-net device type
+
+ drivers/vdpa/vdpa_user/vduse_dev.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+-- 
+2.39.2
+
