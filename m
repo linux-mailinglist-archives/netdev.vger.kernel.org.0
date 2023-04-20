@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49D386E9248
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 491DE6E924B
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:20:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234703AbjDTLUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 07:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47728 "EHLO
+        id S234769AbjDTLU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 07:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234673AbjDTLT6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:19:58 -0400
+        with ESMTP id S234387AbjDTLUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:20:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CCB4ED4;
-        Thu, 20 Apr 2023 04:17:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5384340DA;
+        Thu, 20 Apr 2023 04:18:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE5C7617E4;
-        Thu, 20 Apr 2023 11:16:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09204C433D2;
-        Thu, 20 Apr 2023 11:16:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E55F46480F;
+        Thu, 20 Apr 2023 11:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F10C2C433EF;
+        Thu, 20 Apr 2023 11:16:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681989407;
-        bh=pOMDMa6JjIw/9qNkfrOhT0++9NHUZznsO4iKbNgctV8=;
+        s=k20201202; t=1681989411;
+        bh=7BZUvLlpDqguRliU5Sg943VTf9SXPILW9ixC+ypfhBw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cs9bgB54WEBdwP8kiWRRbA53flbz/yLuxz/vkgH2BYX5XzoyifrnucV4O/EhMtCLj
-         QKSwpkkvyfTL1YGsf9ABkC3fm568ANeWsUHQncCJ+FauuJVCyzv2zSXqi7VaZ15ZcM
-         fjsF2ub07FW1gLlJTzYcQgN1xfT0Nk79s/WE8F49z0HduDaioOvS/25IyWHCBLKm6S
-         ffsuYgUjcxRKR5S10KBldginW3I0WNMwfIoE7iKQHmed0uoHISKYY8SDhxFmugC8jz
-         kRIGK/a6PS6kb3NPau8eKcVzrQ9biNnEf+k8ilkMZH4H3SwUWrSejfL8h8qmuRzRY6
-         uEYK729zf6nSg==
+        b=S6QrhdoQddJq/6kD6LDvR02SAjUxlI3laSwLxnGQyEJF8RP0svUKKjWw+HN4RTgA1
+         ORnw+eVckVZ4bcR0v9dchKSwcKbWYVqL91g00IXWoo8xe1qV6MYYJjqK0YwFE60fGF
+         ECt8iUOo/hcuWz4m2ZEd0aoq3PWhWXegxbe0LgsgpQijWgo0p3t1gkeQA5mz8qcg6h
+         meEMoVLw6+YJaoFcwAtJO6RuvcsgOfQdqYHN8xhsX7OIahY83xIhrKX0I9qdYqTKiA
+         HRKFqjmAXK4rWWECPFfSfFIbhVuQkP4j8orl/Ps65nxwcYDYGbmFv2LJ4Sw/1jyz2u
+         dsRd680HRXZEw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
         daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
         toke@redhat.com, mtahhan@redhat.com, lorenzo.bianconi@redhat.com
-Subject: [PATCH net-next 1/2] net: veth: add page_pool for page recycling
-Date:   Thu, 20 Apr 2023 13:16:21 +0200
-Message-Id: <b1c7efdc33221fdb588995b385415d68b149aa73.1681987376.git.lorenzo@kernel.org>
+Subject: [PATCH net-next 2/2] net: veth: add page_pool stats
+Date:   Thu, 20 Apr 2023 13:16:22 +0200
+Message-Id: <f9bc73e44d602e299b4b6b8d236acf49f072f41f.1681987376.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <cover.1681987376.git.lorenzo@kernel.org>
 References: <cover.1681987376.git.lorenzo@kernel.org>
@@ -55,183 +55,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce page_pool support in veth driver in order to recycle pages
-in veth_convert_skb_to_xdp_buff routine and avoid reallocating the skb
-through the page allocator.
-The patch has been sending tcp traffic to a veth pair where the remote
-peer is running a simple xdp program just returing xdp_pass:
-
-veth upstream codebase:
-MTU 1500B: ~ 8Gbps
-MTU 8000B: ~ 13.9Gbps
-
-veth upstream codebase + pp support:
-MTU 1500B: ~ 9.2Gbps
-MTU 8000B: ~ 16.2Gbps
+Introduce page_pool stats support to report info about local page_pool
+through ethtool
 
 Tested-by: Maryam Tahhan <mtahhan@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
  drivers/net/Kconfig |  1 +
- drivers/net/veth.c  | 54 ++++++++++++++++++++++++++++++++++++++++-----
- 2 files changed, 50 insertions(+), 5 deletions(-)
+ drivers/net/veth.c  | 20 +++++++++++++++++---
+ 2 files changed, 18 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index c34bd432da27..368c6f5b327e 100644
+index 368c6f5b327e..d0a1ed216d15 100644
 --- a/drivers/net/Kconfig
 +++ b/drivers/net/Kconfig
-@@ -402,6 +402,7 @@ config TUN_VNET_CROSS_LE
- 
+@@ -403,6 +403,7 @@ config TUN_VNET_CROSS_LE
  config VETH
  	tristate "Virtual ethernet pair device"
-+	select PAGE_POOL
+ 	select PAGE_POOL
++	select PAGE_POOL_STATS
  	help
  	  This device is a local ethernet tunnel. Devices are created in pairs.
  	  When one end receives the packet it appears on its pair and vice
 diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index e1b38fbf1dd9..141b7745ba43 100644
+index 141b7745ba43..4e08a4633d25 100644
 --- a/drivers/net/veth.c
 +++ b/drivers/net/veth.c
-@@ -26,6 +26,7 @@
- #include <linux/ptr_ring.h>
- #include <linux/bpf_trace.h>
- #include <linux/net_tstamp.h>
-+#include <net/page_pool.h>
- 
- #define DRV_NAME	"veth"
- #define DRV_VERSION	"1.0"
-@@ -65,6 +66,7 @@ struct veth_rq {
- 	bool			rx_notify_masked;
- 	struct ptr_ring		xdp_ring;
- 	struct xdp_rxq_info	xdp_rxq;
-+	struct page_pool	*page_pool;
- };
- 
- struct veth_priv {
-@@ -711,8 +713,8 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
- 	    skb_shinfo(skb)->nr_frags ||
- 	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
- 		u32 size, len, max_head_size, off;
-+		struct page *page = NULL;
- 		struct sk_buff *nskb;
--		struct page *page;
- 		int i, head_off;
- 
- 		/* We need a private copy of the skb and data buffers since
-@@ -727,17 +729,21 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
- 			goto drop;
- 
- 		/* Allocate skb head */
--		page = alloc_page(GFP_ATOMIC | __GFP_NOWARN);
-+		if (rq->page_pool)
-+			page = page_pool_dev_alloc_pages(rq->page_pool);
- 		if (!page)
- 			goto drop;
- 
- 		nskb = build_skb(page_address(page), PAGE_SIZE);
- 		if (!nskb) {
--			put_page(page);
-+			page_pool_put_full_page(rq->page_pool, page, false);
- 			goto drop;
- 		}
- 
- 		skb_reserve(nskb, VETH_XDP_HEADROOM);
-+		skb_copy_header(nskb, skb);
-+		skb_mark_for_recycle(nskb);
+@@ -157,6 +157,8 @@ static void veth_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
+ 			for (j = 0; j < VETH_TQ_STATS_LEN; j++)
+ 				ethtool_sprintf(&p, "tx_queue_%u_%.18s",
+ 						i, veth_tq_stats_desc[j].desc);
 +
- 		size = min_t(u32, skb->len, max_head_size);
- 		if (skb_copy_bits(skb, 0, nskb->data, size)) {
- 			consume_skb(nskb);
-@@ -745,16 +751,17 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
- 		}
- 		skb_put(nskb, size);
- 
--		skb_copy_header(nskb, skb);
- 		head_off = skb_headroom(nskb) - skb_headroom(skb);
- 		skb_headers_offset_update(nskb, head_off);
- 
- 		/* Allocate paged area of new skb */
- 		off = size;
- 		len = skb->len - off;
-+		page = NULL;
- 
- 		for (i = 0; i < MAX_SKB_FRAGS && off < skb->len; i++) {
--			page = alloc_page(GFP_ATOMIC | __GFP_NOWARN);
-+			if (rq->page_pool)
-+				page = page_pool_dev_alloc_pages(rq->page_pool);
- 			if (!page) {
- 				consume_skb(nskb);
- 				goto drop;
-@@ -770,6 +777,7 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
- 
- 			len -= size;
- 			off += size;
-+			page = NULL;
- 		}
- 
- 		consume_skb(skb);
-@@ -1002,11 +1010,37 @@ static int veth_poll(struct napi_struct *napi, int budget)
- 	return done;
- }
- 
-+static int veth_create_page_pool(struct veth_rq *rq)
-+{
-+	struct page_pool_params pp_params = {
-+		.order = 0,
-+		.pool_size = VETH_RING_SIZE,
-+		.nid = NUMA_NO_NODE,
-+		.dev = &rq->dev->dev,
-+	};
-+
-+	rq->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(rq->page_pool)) {
-+		int err = PTR_ERR(rq->page_pool);
-+
-+		rq->page_pool = NULL;
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
- static int __veth_napi_enable_range(struct net_device *dev, int start, int end)
- {
- 	struct veth_priv *priv = netdev_priv(dev);
- 	int err, i;
- 
-+	for (i = start; i < end; i++) {
-+		err = veth_create_page_pool(&priv->rq[i]);
-+		if (err)
-+			goto err_page_pool;
-+	}
-+
- 	for (i = start; i < end; i++) {
- 		struct veth_rq *rq = &priv->rq[i];
- 
-@@ -1027,6 +1061,11 @@ static int __veth_napi_enable_range(struct net_device *dev, int start, int end)
- err_xdp_ring:
- 	for (i--; i >= start; i--)
- 		ptr_ring_cleanup(&priv->rq[i].xdp_ring, veth_ptr_free);
-+err_page_pool:
-+	for (i = start; i < end; i++) {
-+		page_pool_destroy(priv->rq[i].page_pool);
-+		priv->rq[i].page_pool = NULL;
-+	}
- 
- 	return err;
- }
-@@ -1056,6 +1095,11 @@ static void veth_napi_del_range(struct net_device *dev, int start, int end)
- 		rq->rx_notify_masked = false;
- 		ptr_ring_cleanup(&rq->xdp_ring, veth_ptr_free);
++		page_pool_ethtool_stats_get_strings(p);
+ 		break;
  	}
-+
-+	for (i = start; i < end; i++) {
-+		page_pool_destroy(priv->rq[i].page_pool);
-+		priv->rq[i].page_pool = NULL;
+ }
+@@ -167,7 +169,8 @@ static int veth_get_sset_count(struct net_device *dev, int sset)
+ 	case ETH_SS_STATS:
+ 		return ARRAY_SIZE(ethtool_stats_keys) +
+ 		       VETH_RQ_STATS_LEN * dev->real_num_rx_queues +
+-		       VETH_TQ_STATS_LEN * dev->real_num_tx_queues;
++		       VETH_TQ_STATS_LEN * dev->real_num_tx_queues +
++		       page_pool_ethtool_stats_get_count();
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -178,7 +181,8 @@ static void veth_get_ethtool_stats(struct net_device *dev,
+ {
+ 	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
+ 	struct net_device *peer = rtnl_dereference(priv->peer);
+-	int i, j, idx;
++	struct page_pool_stats pp_stats = {};
++	int i, j, idx, pp_idx;
+ 
+ 	data[0] = peer ? peer->ifindex : 0;
+ 	idx = 1;
+@@ -197,9 +201,10 @@ static void veth_get_ethtool_stats(struct net_device *dev,
+ 		} while (u64_stats_fetch_retry(&rq_stats->syncp, start));
+ 		idx += VETH_RQ_STATS_LEN;
+ 	}
++	pp_idx = idx;
+ 
+ 	if (!peer)
+-		return;
++		goto page_pool_stats;
+ 
+ 	rcv_priv = netdev_priv(peer);
+ 	for (i = 0; i < peer->real_num_rx_queues; i++) {
+@@ -216,7 +221,16 @@ static void veth_get_ethtool_stats(struct net_device *dev,
+ 				data[tx_idx + j] += *(u64 *)(base + offset);
+ 			}
+ 		} while (u64_stats_fetch_retry(&rq_stats->syncp, start));
++		pp_idx = tx_idx + VETH_TQ_STATS_LEN;
 +	}
++
++page_pool_stats:
++	for (i = 0; i < dev->real_num_rx_queues; i++) {
++		if (!priv->rq[i].page_pool)
++			continue;
++		page_pool_get_stats(priv->rq[i].page_pool, &pp_stats);
+ 	}
++	page_pool_ethtool_stats_get(&data[pp_idx], &pp_stats);
  }
  
- static void veth_napi_del(struct net_device *dev)
+ static void veth_get_channels(struct net_device *dev,
 -- 
 2.40.0
 
