@@ -2,145 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16B3E6E99D4
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C2456E99DD
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:48:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbjDTQqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 12:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57076 "EHLO
+        id S229568AbjDTQsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 12:48:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbjDTQqm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:46:42 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4822721
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:46:40 -0700 (PDT)
+        with ESMTP id S229447AbjDTQsc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:48:32 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C69269E;
+        Thu, 20 Apr 2023 09:48:31 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id af79cd13be357-74ab718c344so259452185a.1;
+        Thu, 20 Apr 2023 09:48:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1682009201; x=1713545201;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Vr64tCtLdtnSXfg0hoEYGlTzToFn9hZ2r1HFvTdYpOM=;
-  b=uoCKoQ/dIrXHoC8b6N1aLJqhJWg2Y3SEKB8MVkpLgfH4pwc2Tr0XtIz0
-   gFr9CMtsbD2owpRs6mCFtNRlEYpd1BwQ21Y0s+SYYo8HnkC/UVWSD45Hx
-   pIhlPTYKU0iUHKN3sjuCiBSMk8GYazv2eJcKho378EhDq3uZULP9TWmRn
-   8=;
-X-IronPort-AV: E=Sophos;i="5.99,213,1677542400"; 
-   d="scan'208";a="316364598"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-d2040ec1.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 16:46:38 +0000
-Received: from EX19MTAUWA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-m6i4x-d2040ec1.us-west-2.amazon.com (Postfix) with ESMTPS id 39A3A413E5;
-        Thu, 20 Apr 2023 16:46:36 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Thu, 20 Apr 2023 16:46:35 +0000
-Received: from 88665a182662.ant.amazon.com (10.106.100.17) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.26;
- Thu, 20 Apr 2023 16:46:31 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <willemdebruijn.kernel@gmail.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <syzkaller@googlegroups.com>, <willemb@google.com>
-Subject: Re: [PATCH v2 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.
-Date:   Thu, 20 Apr 2023 09:46:22 -0700
-Message-ID: <20230420164622.98898-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <64413ad24900e_303b5294c8@willemb.c.googlers.com.notmuch>
-References: <64413ad24900e_303b5294c8@willemb.c.googlers.com.notmuch>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.100.17]
-X-ClientProxiedBy: EX19D036UWC004.ant.amazon.com (10.13.139.205) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
-        version=3.4.6
+        d=gmail.com; s=20221208; t=1682009310; x=1684601310;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qkIWak2A4gt4tfUK76u+vQRENb/aYt6+KfdjwfD4yF0=;
+        b=naCNoMt5etsGRGVmZg6X7R9HX4F5UL+J95xplxtF/6rg+GlVFsb3c+mB9NQtQZmG2c
+         G/872gl2i7X2lH580mnM+163SH3hfqVpvFK5gVtgnnEKwIrAVLbmJ+0WURNXqbG6UpX9
+         tfnGuYf6FKhcAUb4ZBWPs/X3FRQwt5xAiQBbrpMFr4No+zTOsLZCGp6M32lzzoO0H60q
+         /yY/79q/1MkajM8addf07UmD9dldIosRpMC3OFH7Ay7r2CcB4MBZSMBx8DYs2sO1Ivo8
+         haIc0SiObCgrIpKH9+WoS7FXIodBRTo8W24N9PA+eUJ9c85K/zt4S/+Hsu5H5kZwgZOp
+         jo/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682009310; x=1684601310;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=qkIWak2A4gt4tfUK76u+vQRENb/aYt6+KfdjwfD4yF0=;
+        b=jUOh/C8QLfggfdS9ZL9cDyMPj9koeTUGnMf+B/7JtlNsjyIO8BqIIxMmAPPd3XPFBO
+         DafWO1Pp7t/CRTsfUihbIJrnP0/sGgqR9H949lsiFina8yZrcoGrVz5q36BYjdH/sDFu
+         3J3eunc39HnSzy7NqUux8dMIxLTsp5ZYNggFSbWrCagFLRNrFTnDr5z9JurJgNWCuPA3
+         tdDLjXGnXwAj/ZleGeQOfSwu2sM7xT46zEkiHbDCASct6VDcLvvZBqoKuEhSKOWPLGDL
+         pTUxfs3zz5U53qfHk5xxRtybsrX2fjJ2473Ojw152osoIaTKJvc7CxoUqG6hq6RxlbT2
+         eG5A==
+X-Gm-Message-State: AAQBX9eod4lDxtUPpX2tYFvvd77pmWZZbth0kMIlMSrP0jiAEtl7K7S+
+        MHuYO7v7zoYn2wopfUR6bIYoF4m4xjs=
+X-Google-Smtp-Source: AKy350YlkQUPXkw0+w8pqF75MAwJsNXWC6VdzJ3PA1NW9zP8sAi4CspV522CwGupOsD71pDWK21OXA==
+X-Received: by 2002:ac8:7f94:0:b0:3e3:9185:cb15 with SMTP id z20-20020ac87f94000000b003e39185cb15mr3563327qtj.7.1682009310119;
+        Thu, 20 Apr 2023 09:48:30 -0700 (PDT)
+Received: from localhost (172.174.245.35.bc.googleusercontent.com. [35.245.174.172])
+        by smtp.gmail.com with ESMTPSA id q1-20020ac87341000000b003e4f1b3ce43sm609145qtp.50.2023.04.20.09.48.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Apr 2023 09:48:29 -0700 (PDT)
+Date:   Thu, 20 Apr 2023 12:48:29 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     Breno Leitao <leitao@debian.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     kuba@kernel.org, Jens Axboe <axboe@kernel.dk>,
+        David Ahern <dsahern@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        io-uring@vger.kernel.org, netdev@vger.kernel.org,
+        asml.silence@gmail.com, leit@fb.com, edumazet@google.com,
+        pabeni@redhat.com, davem@davemloft.net, dccp@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
+        matthieu.baerts@tessares.net, marcelo.leitner@gmail.com
+Message-ID: <64416cdd84a8d_390ce2943b@willemb.c.googlers.com.notmuch>
+In-Reply-To: <ZEFPrGSuDopUwi9V@gmail.com>
+References: <64357608c396d_113ebd294ba@willemb.c.googlers.com.notmuch>
+ <19c69021-dce3-1a4a-00eb-920d1f404cfc@kernel.dk>
+ <64357bb97fb19_114b22294c4@willemb.c.googlers.com.notmuch>
+ <20cb4641-c765-e5ef-41cb-252be7721ce5@kernel.dk>
+ <ZDa32u9RNI4NQ7Ko@gmail.com>
+ <6436c01979c9b_163b6294b4@willemb.c.googlers.com.notmuch>
+ <ZDdGl/JGDoRDL8ja@gmail.com>
+ <6438109fe8733_13361929472@willemb.c.googlers.com.notmuch>
+ <ZD6Zw1GAZR28++3v@gmail.com>
+ <643ef2643f3ce_352b2f2945d@willemb.c.googlers.com.notmuch>
+ <ZEFPrGSuDopUwi9V@gmail.com>
+Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 20 Apr 2023 09:14:58 -0400
-> > > > > Actually, the skb_clone in __skb_tstamp_tx should already release
-> > > > > the reference on the ubuf.
-> > > > > 
-> > > > > With the same mechanism that we rely on for packet sockets, e.g.,
-> > > > > in dev_queue_xmit_nit.
-> > > > > 
-> > > > > skb_clone calls skb_orphan_frags calls skb_copy_ubufs for zerocopy
-> > > > > skbs. Which creates a copy of the data and calls skb_zcopy_clear.
-> > > > > 
-> > > > > The skb that gets queued onto the error queue should not have a
-> > > > > reference on an ubuf: skb_zcopy(skb) should return NULL.
+Breno Leitao wrote:
+> On Tue, Apr 18, 2023 at 03:41:24PM -0400, Willem de Bruijn wrote:
+> > Breno Leitao wrote:
+> > > On Thu, Apr 13, 2023 at 10:24:31AM -0400, Willem de Bruijn wrote:
+> > > > > How to handle these contradictory behaviour ahead of time (at callee
+> > > > > time, where the buffers will be prepared)?
 > > > > 
-> > > > Exactly, so how about this ?
+> > > > Ah you found a counter-example to the simple pattern of put_user.
 > > > > 
-> > > > ---8<---
-> > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > > > index 768f9d04911f..0fa0b2ac7071 100644
-> > > > --- a/net/core/skbuff.c
-> > > > +++ b/net/core/skbuff.c
-> > > > @@ -5166,6 +5166,9 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
-> > > >  	if (!skb)
-> > > >  		return;
-> > > >  
-> > > > +	if (skb_zcopy(skb) && skb_copy_ubufs(skb, GFP_ATOMIC))
-> > > > +		return;
-> > > > +
-> > > >  	if (tsonly) {
-> > > >  		skb_shinfo(skb)->tx_flags |= skb_shinfo(orig_skb)->tx_flags &
-> > > >  					     SKBTX_ANY_TSTAMP;
-> > > > ---8<---
-> > > > 
+> > > > The answer perhaps depends on how many such counter-examples you
+> > > > encounter in the list you gave. If this is the only one, exceptions
+> > > > in the wrapper are reasonable. Not if there are many.
 > > > 
-> > > What I meant was that given this I don't understand how a packet
-> > > with ubuf references gets queued at all.
 > > > 
-> > > __skb_tstamp_tx does not queue orig_skb. It either allocates a new
-> > > skb or calls skb = skb_clone(orig_skb).
+> > > Hello Williem,
 > > > 
-> > > That existing call internally calls skb_orphan_frags and
-> > > skb_copy_ubufs.
-> > 
-> > No, skb_orphan_frags() does not call skb_copy_ubufs() here because
-> > msg_zerocopy_alloc() sets SKBFL_DONT_ORPHAN for orig_skb.
-> > 
-> > So, we need to call skb_copy_ubufs() explicitly if skb_zcopy(skb).
-> > 
+> > > I spend sometime dealing with it, and the best way for me to figure out
+> > > how much work this is, was implementing a PoC. You can find a basic PoC
+> > > in the link below. It is not 100% complete (still need to convert 4
+> > > simple ioctls), but, it deals with the most complicated cases. The
+> > > missing parts are straighforward if we are OK with this approach.
 > > > 
-> > > So the extra test should not be needed. Indeed I would be surprised if
-> > > this triggers:
+> > > 	https://github.com/leitao/linux/commits/ioctl_refactor
+> > > 
+> > > Details
+> > > =======
+> > > 
+> > > 1)  Change the ioctl callback to use kernel memory arguments. This
+> > > changes a lot of files but most of them are trivial. This is the new
+> > > ioctl callback:
+> > > 
+> > > struct proto {
+> > > 
+> > >         int                     (*ioctl)(struct sock *sk, int cmd,
+> > > -                                        unsigned long arg);
+> > > +                                        int *karg);
+> > > 
+> > > 	You can see the full changeset in the following commit (which is
+> > > 	the last in the tree above)
+> > > 	https://github.com/leitao/linux/commit/ad78da14601b078c4b6a9f63a86032467ab59bf7
+> > > 
+> > > 2) Create a wrapper (sock_skprot_ioctl()) that should be called instead
+> > > of sk->sk_prot->ioctl(). For every exception, calls a specific function
+> > > for the exception (basically ipmr_ioctl and ipmr_ioctl) (see more on 3)
+> > > 
+> > > 	This is the commit https://github.com/leitao/linux/commit/511592e549c39ef0de19efa2eb4382cac5786227
+> > > 
+> > > 3) There are two exceptions, they are ip{6}mr_ioctl() and pn_ioctl().
+> > > ip{6}mr is the hardest one, and I implemented the exception flow for it.
+> > > 
+> > > 	You could find ipmr changes here:
+> > > 	https://github.com/leitao/linux/commit/659a76dc0547ab2170023f31e20115520ebe33d9
+> > > 
+> > > Is this what you had in mind?
+> > > 
+> > > Thank you!
 > > 
-> > And this actually triggers.
+> > Thanks for the series, Breno. Yes, this looks very much what I hoped for.
 > 
-> Oh right, I confused skb_orphan_frags and skb_orphan_frags_rx.
+> Awesome. Thanks.
 > 
-> We need to add a call to that, the same approach used for looping in
-> __netif_receive_skb_core and packet sockets in deliver_skb and
-> dev_queue_xmit_nit.
-
-I missed skb_orphan_frags_rx() defined just below skb_orphan_frags(),
-which calls very what I want :)
-
-Will post v3, thanks!
-
+> > The series shows two cases of ioctls: getters that return an int, and
+> > combined getter/setters that take a struct of a certain size and
+> > return the exact same.
+> >
+> > I would deduplicate the four ipmr/ip6mr cases that constitute the second
+> > type, by having a single helper for this type. sock_skprot_ioctl_struct,
+> > which takes an argument for the struct size to copy in/out.
 > 
-> @@ -5160,6 +5160,9 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
->                         skb = alloc_skb(0, GFP_ATOMIC);
->         } else {
->                 skb = skb_clone(orig_skb, GFP_ATOMIC);
-> +
-> +               if (skb_orphan_frags_rx(skb, GFP_ATOMIC))
-> +                       return;
->         }
->         if (!skb)
->                 return;
+> Ok, that is a good advice. Thanks!
+> 
+> > Did this series cover all proto ioctls, or is this still a subset just
+> > for demonstration purposes -- and might there still be other types
+> > lurking elsewhere?
+> 
+> It does not cover all the cases. I would say it cover 80% of the cases,
+> and the hardest cases.  These are the missing cases, and what they do:
+> 
+> * pn_ioctl     (getters/setter that reads/return an int)
+> * l2tp_ioctl   (getters that return an int)
+> * dgram_ioctl  (getters that return an int)
+> * sctp_ioctl   (getters that return an int)
+> * mptcp_ioctl  (getters that return an int)
+> * dccp_ioctl   (getters that return an int)
+> * dgram_ioctl  (getters that return an int)
+> * pep_ioctl    (getters that return an int)
+
+Thanks for the thorough review.
+
+So we have io_struct, io_int and o_int variants only. And the io_int
+can use the proposed io_struct helper that takes an explicit length
+to copy in and out.
+
+ 
+> Here is what I am using to get the full list:
+>  # ag  --no-filename -A 20 "struct proto \w* = {"  | grep .ioctl | cut -d "=" -f 2 | tr -d '\n'
+> 
+>  dccp_ioctl, dccp_ioctl, dgram_ioctl, tcp_ioctl, raw_ioctl, udp_ioctl,
+>  udp_ioctl, udp_ioctl, tcp_ioctl, l2tp_ioctl, rawv6_ioctl, l2tp_ioctl,
+>  mptcp_ioctl, pep_ioctl, pn_ioctl, rds_ioctl, sctp_ioctl, sctp_ioctl,
+>  sock_no_ioctl
+> 
+> > If this is all, this looks like a reasonable amount of code churn to me.
+> 
+> Should I proceed and create a final patch? I don't see a way to break up
+> the last patch, which changes the API , in smaller patches. I.e., the
+> last patch will be huge, right?
+
+Good point. So be it, then.
+ 
+> > Three small points
+> > 
+> > * please keep the __user annotation. Use make C=2 when unsure to warn
+> >   about mismatched annotation
+> 
+> ack!
+> 
+> > * minor: special case the ipmr (type 2) ioctls in sock_skprot_ioctl
+> >   and treat the "return int" (type 1) ioctls as the default case.
+> 
+> ack!
+> 
+> > * introduce code in a patch together with its use-case, so no separate
+> >   patches for sock_skprot_ioctl and sock_skprot_ioctl_ipmr. Either one
+> >   patch, or two, for each type of conversion.
+> 
+> I am not sure how to change the ABI (struct proto) without doing all the
+> protocol changes in the same patch. Otherwise compilation will be broken between
+> the patch that changes the "struct proto" and the patch that changes the
+> _ioctl for protocol X.  I mean, is it possible to break up changing
+> "struct proto" and the affected protocols?
+> 
+> Thank you for the review and suggestions!
+> 
+> PS: I will take some days off next week, and I am planning to send the
+> final patch when I come back.
+
+
