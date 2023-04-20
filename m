@@ -2,250 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FBC96E88AA
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 05:28:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B9886E88C3
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 05:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233384AbjDTD2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 23:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36530 "EHLO
+        id S233398AbjDTDah (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 23:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233141AbjDTD2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 23:28:08 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD844231
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 20:28:04 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id d2e1a72fcca58-63b60366047so503775b3a.1
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 20:28:04 -0700 (PDT)
+        with ESMTP id S233076AbjDTDac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 23:30:32 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DA740D4
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 20:30:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1681961284; x=1684553284;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YDyVsaH4pVJocXiNYxHqnYnlvV9ip3excIUFff8vOpo=;
-        b=bSRgqMnlr0Mkn8uDnOHS9EVNtawNiErGgQ8TMPPeH3fNCfqjgdmHSLBqacH5y2+hjl
-         7+7qYJvFpWiExSjMuHWir+g63IEG3q0vtMbm/Brd3hsIEV93D+pTwjwUgMiyiEASJn8X
-         XdJGYRhLqIGkdcJNy0zEooO+XjsjfV6sD3VDB3WVIBV9H9asO9MaG6KeizaAw6YTl6WR
-         w3aTQQBPA+H5ymbOt9kxjgP33DKA494k0JDkwHoHBp1EN3pitGRKQLCa+BLQRBD85ERj
-         ub6ZsNcBIvLYRZ9gQDBFayBe21LVOlOyYDK/QnoH7rxxetvcRds3Y5FKw3P8bKXWpyAv
-         4dzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681961284; x=1684553284;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YDyVsaH4pVJocXiNYxHqnYnlvV9ip3excIUFff8vOpo=;
-        b=dNnLQLuaPRDAGttaspRtLTHMYhqqV9o85zlxk5frbpjFWQb3NzqlROx8wih8ZkgggI
-         vuvUS/qp4U/9nB3xYOFeyGvrgnW3BK+yiN5mIBfpt1DaxoNUIW4422bLknBRhkmJp7Vf
-         ubnYLzXAkrEQJ9Xw456SWO6R4Sz+ECBzpPP+l18SGqB96lyJyqwHAKYUtCwDruKOc2cT
-         S6o7NQC2ZEJh5VDS/pdnHmJXHeonISuBFCN0m6tThWXpFrWS6BCxaAgmScHKLPZFF8d/
-         xJkTVJi/yffjThRWU4c6Rtr4ci16EhXT3x75FvJA81zgMXnRgWcgrth2IYRFRsVbbZ3z
-         69zQ==
-X-Gm-Message-State: AAQBX9cEHkiiiHuH5vKoFjAy6gmgy7l5HPQaW9Mu0gDBPpmbSdPV8llQ
-        mrdvHQ3GBNBLpvFAGcNHSIYlNg==
-X-Google-Smtp-Source: AKy350ao8p06O+vO1ADPVqJeEMwwoZVuG0RI8jQ8abMA7rOJTOIumxZ2VImkDhIbEssKZPr6IgfoPw==
-X-Received: by 2002:a05:6a20:8f0d:b0:ef:5f:3c15 with SMTP id b13-20020a056a208f0d00b000ef005f3c15mr143865pzk.47.1681961284422;
-        Wed, 19 Apr 2023 20:28:04 -0700 (PDT)
-Received: from C02F52LSML85.bytedance.net ([139.177.225.254])
-        by smtp.gmail.com with ESMTPSA id z15-20020a655a4f000000b00517abaac366sm115231pgs.74.2023.04.19.20.27.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Apr 2023 20:28:04 -0700 (PDT)
-From:   Feng zhou <zhoufeng.zf@bytedance.com>
-To:     martin.lau@linux.dev, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        mykolal@fb.com, shuah@kernel.org
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        yangzhenze@bytedance.com, wangdongdong.6@bytedance.com,
-        zhouchengming@bytedance.com, zhoufeng.zf@bytedance.com
-Subject: [PATCH bpf-next v2 2/2] selftests/bpf: Add test to access integer type of variable array
-Date:   Thu, 20 Apr 2023 11:27:35 +0800
-Message-Id: <20230420032735.27760-3-zhoufeng.zf@bytedance.com>
-X-Mailer: git-send-email 2.39.2 (Apple Git-143)
-In-Reply-To: <20230420032735.27760-1-zhoufeng.zf@bytedance.com>
-References: <20230420032735.27760-1-zhoufeng.zf@bytedance.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1681961431; x=1713497431;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qnlhNfQD67yagxhtpdwnqtsh8YA4vw2SdZcU8Er9pVU=;
+  b=G0pYeWxp1tYdd5obhSH1mme3ZHEvNqESxV6Dd5mgZlP2zXGTgt1YDvwe
+   LSt0A2PrTBya6asEwbnYVun0mrAfAt80+jGHl0Cx62aj14aUC5mAXKd58
+   BO9rC7DdXOkKC1nitJ3FJms3fITd9UyUE/g7/UkzRqm+okKBZGiejQZIC
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.99,211,1677542400"; 
+   d="scan'208";a="320473140"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 03:30:27 +0000
+Received: from EX19MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-m6i4x-f253a3a3.us-west-2.amazon.com (Postfix) with ESMTPS id D245580EF5;
+        Thu, 20 Apr 2023 03:30:25 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Thu, 20 Apr 2023 03:30:25 +0000
+Received: from 88665a182662.ant.amazon.com (10.106.100.17) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.26;
+ Thu, 20 Apr 2023 03:30:22 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <willemdebruijn.kernel@gmail.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <syzkaller@googlegroups.com>, <willemb@google.com>
+Subject: Re: [PATCH v2 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.
+Date:   Wed, 19 Apr 2023 20:30:13 -0700
+Message-ID: <20230420033013.45693-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <6440a157b6113_128322942d@willemb.c.googlers.com.notmuch>
+References: <6440a157b6113_128322942d@willemb.c.googlers.com.notmuch>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Originating-IP: [10.106.100.17]
+X-ClientProxiedBy: EX19D037UWB004.ant.amazon.com (10.13.138.84) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Feng Zhou <zhoufeng.zf@bytedance.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 19 Apr 2023 22:20:07 -0400
+> Kuniyuki Iwashima wrote:
+> > From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> > Date:   Wed, 19 Apr 2023 13:50:47 -0400
+> > > Kuniyuki Iwashima wrote:
+> > > > From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> > > > Date:   Wed, 19 Apr 2023 10:16:07 -0400
+> > > > > Eric Dumazet wrote:
+> > > > > > On Tue, Apr 18, 2023 at 9:25 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > > > > >
+> > > > > > > From:   Eric Dumazet <edumazet@google.com>
+> > > > > > > Date:   Tue, 18 Apr 2023 21:04:32 +0200
+> > > > > > > > On Tue, Apr 18, 2023 at 8:44 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > > > > > > >
+> > > > > > > > > From:   Eric Dumazet <edumazet@google.com>
+> > > > > > > > > Date:   Tue, 18 Apr 2023 20:33:44 +0200
+> > > > > > > > > > On Tue, Apr 18, 2023 at 8:09 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > > > > > > > > >
+> > > > > > > > > > > syzkaller reported [0] memory leaks of an UDP socket and ZEROCOPY
+> > > > > > > > > > > skbs.  We can reproduce the problem with these sequences:
+> > > > > > > > > > >
+> > > > > > > > > > >   sk = socket(AF_INET, SOCK_DGRAM, 0)
+> > > > > > > > > > >   sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING_TX_SOFTWARE)
+> > > > > > > > > > >   sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
+> > > > > > > > > > >   sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
+> > > > > > > > > > >   sk.close()
+> > > > > > > > > > >
+> > > > > > > > > > > sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, sets
+> > > > > > > > > > > skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, struct
+> > > > > > > > > > > ubuf_info_msgzc indirectly holds a refcnt of the socket.  When the
+> > > > > > > > > > > skb is sent, __skb_tstamp_tx() clones it and puts the clone into
+> > > > > > > > > > > the socket's error queue with the TX timestamp.
+> > > > > > > > > > >
+> > > > > > > > > > > When the original skb is received locally, skb_copy_ubufs() calls
+> > > > > > > > > > > skb_unclone(), and pskb_expand_head() increments skb->cb->ubuf.refcnt.
+> > > > > > > > > > > This additional count is decremented while freeing the skb, but struct
+> > > > > > > > > > > ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callback() is
+> > > > > > > > > > > not called.
+> > > > > > > > > > >
+> > > > > > > > > > > The last refcnt is not released unless we retrieve the TX timestamped
+> > > > > > > > > > > skb by recvmsg().  When we close() the socket holding such skb, we
+> > > > > > > > > > > never call sock_put() and leak the count, skb, and sk.
+> > > > > > > > > > >
+> > > > > > > > > > > To avoid this problem, we must (i) call skb_queue_purge() after
+> > > > > > > > > > > flagging SOCK_DEAD during close() and (ii) make sure that TX tstamp
+> > > > > > > > > > > skb is not queued when SOCK_DEAD is flagged.  UDP lacks (i) and (ii),
+> > > > > > > > > > > and TCP lacks (ii).
+> > > > > > > > > > >
+> > > > > > > > > > > Without (ii), a skb queued in a qdisc or device could be put into
+> > > > > > > > > > > the error queue after skb_queue_purge().
+> > > > > > > > > > >
+> > > > > > > > > > >   sendmsg() /* return immediately, but packets
+> > > > > > > > > > >              * are queued in a qdisc or device
+> > > > > > > > > > >              */
+> > > > > > > > > > >                                     close()
+> > > > > > > > > > >                                       skb_queue_purge()
+> > > > > > > > > > >   __skb_tstamp_tx()
+> > > > > > > > > > >     __skb_complete_tx_timestamp()
+> > > > > > > > > > >       sock_queue_err_skb()
+> > > > > > > > > > >         skb_queue_tail()
+> > > > > > > > > > >
+> > > > > > > > > > > Also, we need to check SOCK_DEAD under sk->sk_error_queue.lock
+> > > > > > > > > > > in sock_queue_err_skb() to avoid this race.
+> > > > > > > > > > >
+> > > > > > > > > > >   if (!sock_flag(sk, SOCK_DEAD))
+> > > > > > > > > > >                                     sock_set_flag(sk, SOCK_DEAD)
+> > > > > > > > > > >                                     skb_queue_purge()
+> > > > > > > > > > >
+> > > > > > > > > > >     skb_queue_tail()
+> > > > > > > > > > >
+> > > > > > > > > > > [0]:
+> > > > > > > > > >
+> > > > > > > > > > > Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
+> > > > > > > > > > > Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
+> > > > > > > > > > > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > > > > > > > > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > > > > > > > > > ---
+> > > > > > > > > > > v2:
+> > > > > > > > > > >   * Move skb_queue_purge() after setting SOCK_DEAD in udp_destroy_sock()
+> > > > > > > > > > >   * Check SOCK_DEAD in sock_queue_err_skb() with sk_error_queue.lock
+> > > > > > > > > > >   * Add Fixes tag for TCP
+> > > > > > > > > > >
+> > > > > > > > > > > v1: https://lore.kernel.org/netdev/20230417171155.22916-1-kuniyu@amazon.com/
+> > > > > > > > > > > ---
+> > > > > > > > > > >  net/core/skbuff.c | 15 ++++++++++++---
+> > > > > > > > > > >  net/ipv4/udp.c    |  5 +++++
+> > > > > > > > > > >  2 files changed, 17 insertions(+), 3 deletions(-)
+> > > > > > > > > > >
+> > > > > > > > > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > > > > > > > > > index 4c0879798eb8..287b834df9c8 100644
+> > > > > > > > > > > --- a/net/core/skbuff.c
+> > > > > > > > > > > +++ b/net/core/skbuff.c
+> > > > > > > > > > > @@ -4979,6 +4979,8 @@ static void skb_set_err_queue(struct sk_buff *skb)
+> > > > > > > > > > >   */
+> > > > > > > > > > >  int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
+> > > > > > > > > > >  {
+> > > > > > > > > > > +       unsigned long flags;
+> > > > > > > > > > > +
+> > > > > > > > > > >         if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
+> > > > > > > > > > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+> > > > > > > > > > >                 return -ENOMEM;
+> > > > > > > > > > > @@ -4992,9 +4994,16 @@ int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
+> > > > > > > > > > >         /* before exiting rcu section, make sure dst is refcounted */
+> > > > > > > > > > >         skb_dst_force(skb);
+> > > > > > > > > > >
+> > > > > > > > > > > -       skb_queue_tail(&sk->sk_error_queue, skb);
+> > > > > > > > > > > -       if (!sock_flag(sk, SOCK_DEAD))
+> > > > > > > > > > > -               sk_error_report(sk);
+> > > > > > > > > > > +       spin_lock_irqsave(&sk->sk_error_queue.lock, flags);
+> > > > > > > > > > > +       if (sock_flag(sk, SOCK_DEAD)) {
+> > > > > > > > > >
+> > > > > > > > > > SOCK_DEAD is set without holding sk_error_queue.lock, so I wonder why you
+> > > > > > > > > > want to add a confusing construct.
+> > > > > > > > > >
+> > > > > > > > > > Just bail early ?
+> > > > > > > > > >
+> > > > > > > > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > > > > > > > > index ef81452759be3fd251faaf76d89cfd002ee79256..fda05cb44f95821e98f8c5c05fba840a9d276abb
+> > > > > > > > > > 100644
+> > > > > > > > > > --- a/net/core/skbuff.c
+> > > > > > > > > > +++ b/net/core/skbuff.c
+> > > > > > > > > > @@ -4983,6 +4983,9 @@ int sock_queue_err_skb(struct sock *sk, struct
+> > > > > > > > > > sk_buff *skb)
+> > > > > > > > > >             (unsigned int)READ_ONCE(sk->sk_rcvbuf))
+> > > > > > > > > >                 return -ENOMEM;
+> > > > > > > > > >
+> > > > > > > > > > +       if (sock_flag(sk, SOCK_DEAD))
+> > > > > > > > > > +               return -EINVAL;
+> > > > > > > > > > +
+> > > > > > > > >
+> > > > > > > > > Isn't it possible that these sequences happen
+> > > > > > > > >
+> > > > > > > > >   close()
+> > > > > > > > >     sock_set_flag(sk, SOCK_DEAD);
+> > > > > > > > >     skb_queue_purge(&sk->sk_error_queue)
+> > > > > > > > >
+> > > > > > > > > between the skb_queue_tail() below ? (2nd race mentioned in changelog)
+> > > > > > > > >
+> > > > > > > > > I thought we can guarantee the ordering by taking the same lock.
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > This is fragile.
+> > > > > > >
+> > > > > > > Yes, but I didn't have better idea to avoid the race...
+> > > > > > >
+> > > > > > > >
+> > > > > > > > We could very well rewrite skb_queue_purge() to not acquire the lock
+> > > > > > > > in the common case.
+> > > > > > > > I had the following in my tree for a while, to avoid many atomic and
+> > > > > > > > irq masking operations...
+> > > > > > >
+> > > > > > > Cool, and it still works with my patch, no ?
+> > > > > > >
+> > > > > > 
+> > > > > > 
+> > > > > > Really the only thing that ensures a race is not possible is the
+> > > > > > typical sk_refcnt acquisition.
+> > > > > > 
+> > > > > > But I do not see why an skb stored in error_queue should keep the
+> > > > > > refcnt on the socket.
+> > > > > > This seems like a chicken and egg problem, and caused various issues
+> > > > > > in the past,
+> > > > > > see for instance [1]
+> > > > > > 
+> > > > > > We better make sure error queue is purged at socket dismantle (after
+> > > > > > refcnt reached 0)
+> > > > > 
+> > > > > The problem here is that the timestamp queued on the error queue
+> > > > > holds a reference on a ubuf if MSG_ZEROCOPY and that ubuf holds an
+> > > > > sk_ref.
+> > > > > 
+> > > > > The timestamped packet may contain packet contents, so the ubuf
+> > > > > ref is not superfluous.
+> > > > > 
+> > > > > Come to think of it, we've always maintained that zerocopy packets
+> > > > > should not be looped to sockets where they can be queued indefinitely,
+> > > > > including packet sockets.
+> > > > > 
+> > > > > If we enforce that for these tx timestamps too, then that also
+> > > > > solves this issue.
+> > > > > 
+> > > > > A process that wants efficient MSG_ZEROCOPY will have to request
+> > > > > timestamping with SOF_TIMESTAMPING_OPT_TSONLY to avoid returning the
+> > > > > data along with the timestamp.
+> > > > 
+> > > > Actually, my first attempt was similar to this that avoids skb_clone()
+> > > > silently if MSG_ZEROCOPY, but this kind of way could break users who
+> > > > were using tstamp and just added MSG_ZEROCOPY logic to their app, so
+> > > > I placed skb_queue_purge() during close().
+> > > > 
+> > > > ---8<---
+> > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > > index eb7d33b41e71..9318b438888e 100644
+> > > > --- a/net/core/skbuff.c
+> > > > +++ b/net/core/skbuff.c
+> > > > @@ -5135,7 +5149,7 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+> > > >  	if (!skb_may_tx_timestamp(sk, tsonly))
+> > > >  		return;
+> > > >  
+> > > > -	if (tsonly) {
+> > > > +	if (tsonly || skb_zcopy(orig_skb)) {
+> > > >  #ifdef CONFIG_INET
+> > > >  		if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_STATS) &&
+> > > >  		    sk_is_tcp(sk)) {
+> > > > ---8<---
+> > > 
+> > > Actually, the skb_clone in __skb_tstamp_tx should already release
+> > > the reference on the ubuf.
+> > > 
+> > > With the same mechanism that we rely on for packet sockets, e.g.,
+> > > in dev_queue_xmit_nit.
+> > > 
+> > > skb_clone calls skb_orphan_frags calls skb_copy_ubufs for zerocopy
+> > > skbs. Which creates a copy of the data and calls skb_zcopy_clear.
+> > > 
+> > > The skb that gets queued onto the error queue should not have a
+> > > reference on an ubuf: skb_zcopy(skb) should return NULL.
+> > 
+> > Exactly, so how about this ?
+> > 
+> > ---8<---
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 768f9d04911f..0fa0b2ac7071 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -5166,6 +5166,9 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+> >  	if (!skb)
+> >  		return;
+> >  
+> > +	if (skb_zcopy(skb) && skb_copy_ubufs(skb, GFP_ATOMIC))
+> > +		return;
+> > +
+> >  	if (tsonly) {
+> >  		skb_shinfo(skb)->tx_flags |= skb_shinfo(orig_skb)->tx_flags &
+> >  					     SKBTX_ANY_TSTAMP;
+> > ---8<---
+> > 
+> 
+> What I meant was that given this I don't understand how a packet
+> with ubuf references gets queued at all.
+> 
+> __skb_tstamp_tx does not queue orig_skb. It either allocates a new
+> skb or calls skb = skb_clone(orig_skb).
+> 
+> That existing call internally calls skb_orphan_frags and
+> skb_copy_ubufs.
 
-Add prog test for accessing integer type of variable array in tracing
-program.
-In addition, hook load_balance function to access sd->span[0], only
-to confirm whether the load is successful. Because there is no direct
-way to trigger load_balance call.
+No, skb_orphan_frags() does not call skb_copy_ubufs() here because
+msg_zerocopy_alloc() sets SKBFL_DONT_ORPHAN for orig_skb.
 
-Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
----
- .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 20 +++++++++++++++++++
- .../bpf/prog_tests/access_variable_array.c    | 16 +++++++++++++++
- .../selftests/bpf/prog_tests/tracing_struct.c |  2 ++
- .../bpf/progs/test_access_variable_array.c    | 19 ++++++++++++++++++
- .../selftests/bpf/progs/tracing_struct.c      | 13 ++++++++++++
- 5 files changed, 70 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/access_variable_array.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_access_variable_array.c
+So, we need to call skb_copy_ubufs() explicitly if skb_zcopy(skb).
 
-diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-index fe847ebfb731..52785ba671e6 100644
---- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-+++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-@@ -28,6 +28,11 @@ struct bpf_testmod_struct_arg_2 {
- 	long b;
- };
- 
-+struct bpf_testmod_struct_arg_3 {
-+	int a;
-+	int b[];
-+};
-+
- __diag_push();
- __diag_ignore_all("-Wmissing-prototypes",
- 		  "Global functions as their definitions will be in bpf_testmod.ko BTF");
-@@ -63,6 +68,12 @@ bpf_testmod_test_struct_arg_5(void) {
- 	return bpf_testmod_test_struct_arg_result;
- }
- 
-+noinline int
-+bpf_testmod_test_struct_arg_6(struct bpf_testmod_struct_arg_3 *a) {
-+	bpf_testmod_test_struct_arg_result = a->b[0];
-+	return bpf_testmod_test_struct_arg_result;
-+}
-+
- __bpf_kfunc void
- bpf_testmod_test_mod_kfunc(int i)
- {
-@@ -195,6 +206,7 @@ bpf_testmod_test_read(struct file *file, struct kobject *kobj,
- 	};
- 	struct bpf_testmod_struct_arg_1 struct_arg1 = {10};
- 	struct bpf_testmod_struct_arg_2 struct_arg2 = {2, 3};
-+	struct bpf_testmod_struct_arg_3 *struct_arg3;
- 	int i = 1;
- 
- 	while (bpf_testmod_return_ptr(i))
-@@ -206,6 +218,14 @@ bpf_testmod_test_read(struct file *file, struct kobject *kobj,
- 	(void)bpf_testmod_test_struct_arg_4(struct_arg1, 1, 2, 3, struct_arg2);
- 	(void)bpf_testmod_test_struct_arg_5();
- 
-+	struct_arg3 = kmalloc((sizeof(struct bpf_testmod_struct_arg_3) +
-+				sizeof(int)), GFP_KERNEL);
-+	if (struct_arg3 != NULL) {
-+		struct_arg3->b[0] = 1;
-+		(void)bpf_testmod_test_struct_arg_6(struct_arg3);
-+		kfree(struct_arg3);
-+	}
-+
- 	/* This is always true. Use the check to make sure the compiler
- 	 * doesn't remove bpf_testmod_loop_test.
- 	 */
-diff --git a/tools/testing/selftests/bpf/prog_tests/access_variable_array.c b/tools/testing/selftests/bpf/prog_tests/access_variable_array.c
-new file mode 100644
-index 000000000000..08131782437c
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/access_variable_array.c
-@@ -0,0 +1,16 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Bytedance */
-+
-+#include <test_progs.h>
-+#include "test_access_variable_array.skel.h"
-+
-+void test_access_variable_array(void)
-+{
-+	struct test_access_variable_array *skel;
-+
-+	skel = test_access_variable_array__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "test_access_variable_array__open_and_load"))
-+		return;
-+
-+	test_access_variable_array__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/prog_tests/tracing_struct.c b/tools/testing/selftests/bpf/prog_tests/tracing_struct.c
-index 48dc9472e160..1c75a32186d6 100644
---- a/tools/testing/selftests/bpf/prog_tests/tracing_struct.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tracing_struct.c
-@@ -53,6 +53,8 @@ static void test_fentry(void)
- 
- 	ASSERT_EQ(skel->bss->t5_ret, 1, "t5 ret");
- 
-+	ASSERT_EQ(skel->bss->t6, 1, "t6 ret");
-+
- 	tracing_struct__detach(skel);
- destroy_skel:
- 	tracing_struct__destroy(skel);
-diff --git a/tools/testing/selftests/bpf/progs/test_access_variable_array.c b/tools/testing/selftests/bpf/progs/test_access_variable_array.c
-new file mode 100644
-index 000000000000..808c49b79889
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_access_variable_array.c
-@@ -0,0 +1,19 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2023 Bytedance */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+unsigned long span = 0;
-+
-+SEC("fentry/load_balance")
-+int BPF_PROG(fentry_fentry, int this_cpu, struct rq *this_rq,
-+		struct sched_domain *sd)
-+{
-+	span = sd->span[0];
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/tracing_struct.c b/tools/testing/selftests/bpf/progs/tracing_struct.c
-index e718f0ebee7d..c435a3a8328a 100644
---- a/tools/testing/selftests/bpf/progs/tracing_struct.c
-+++ b/tools/testing/selftests/bpf/progs/tracing_struct.c
-@@ -13,12 +13,18 @@ struct bpf_testmod_struct_arg_2 {
- 	long b;
- };
- 
-+struct bpf_testmod_struct_arg_3 {
-+	int a;
-+	int b[];
-+};
-+
- long t1_a_a, t1_a_b, t1_b, t1_c, t1_ret, t1_nregs;
- __u64 t1_reg0, t1_reg1, t1_reg2, t1_reg3;
- long t2_a, t2_b_a, t2_b_b, t2_c, t2_ret;
- long t3_a, t3_b, t3_c_a, t3_c_b, t3_ret;
- long t4_a_a, t4_b, t4_c, t4_d, t4_e_a, t4_e_b, t4_ret;
- long t5_ret;
-+int t6;
- 
- SEC("fentry/bpf_testmod_test_struct_arg_1")
- int BPF_PROG2(test_struct_arg_1, struct bpf_testmod_struct_arg_2, a, int, b, int, c)
-@@ -117,4 +123,11 @@ int BPF_PROG2(test_struct_arg_10, int, ret)
- 	return 0;
- }
- 
-+SEC("fentry/bpf_testmod_test_struct_arg_6")
-+int BPF_PROG2(test_struct_arg_11, struct bpf_testmod_struct_arg_3 *, a)
-+{
-+	t6 = a->b[0];
-+	return 0;
-+}
-+
- char _license[] SEC("license") = "GPL";
--- 
-2.20.1
+> 
+> So the extra test should not be needed. Indeed I would be surprised if
+> this triggers:
 
+And this actually triggers.
+
+> 
+> @@ -5164,6 +5164,8 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+>         if (!skb)
+>                 return;
+>  
+> +       WARN_ON_ONCE(skb_zcopy(sbk));
+> +
+> 
+>         if (tsonly) {
+>                 skb_shinfo(skb)->tx_flags |= skb_shinfo(orig_skb)->tx_flags &
+>                                              SKBTX_ANY_TSTAMP;
