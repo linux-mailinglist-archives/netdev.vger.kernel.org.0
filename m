@@ -2,254 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E78C86E94E4
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:45:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E746E94F9
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234432AbjDTMpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 08:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38226 "EHLO
+        id S229456AbjDTMqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 08:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234825AbjDTMps (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:45:48 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6BD7A97;
-        Thu, 20 Apr 2023 05:45:34 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1ppTfJ-0002b1-8Y; Thu, 20 Apr 2023 14:45:33 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <bpf@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        dxu@dxuuu.xyz, qde@naccy.de, Florian Westphal <fw@strlen.de>
-Subject: [PATCH bpf-next v4 7/7] selftests/bpf: add missing netfilter return value and ctx access tests
-Date:   Thu, 20 Apr 2023 14:44:55 +0200
-Message-Id: <20230420124455.31099-8-fw@strlen.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230420124455.31099-1-fw@strlen.de>
-References: <20230420124455.31099-1-fw@strlen.de>
+        with ESMTP id S234540AbjDTMqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:46:36 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213CC61B1
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 05:46:29 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id 4fb4d7f45d1cf-5050497df77so784098a12.1
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 05:46:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681994787; x=1684586787;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/Pk+Qd6CawbTTrnrThoEZ+rKcvpmzyvfeT2caixMXgc=;
+        b=pt4CgUgmnJh+NSe0Sg6CpH3AFJLD0T88/IDOQu6XkDZn8bZKvj3uIUrLI3Gx7MycDA
+         vilWwLsIcaDA+6fFiongQoGezPla2uUsq2zaxaBo5b1j2yrm2/ZmpDhgRyJZuIkgtsap
+         4Izh8cAANyyV1C8syere6nbtHrDZOTXifwjApfWSH3a5Oxo2saAm6UAK8s7E4wFrJPN9
+         qC0MlWSKL4UcNn8XbTWUq4n6Ir+HF///NpF1GDtCYM7kytocFqpzV8qd8e6YBFTcYMHI
+         jTBew8BcO6bZuqK6DCTUzToa0NJP/OeTgPiHsoN/nH1oiiMl5fc12m6k0g6eqlRunPE+
+         sOZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681994787; x=1684586787;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/Pk+Qd6CawbTTrnrThoEZ+rKcvpmzyvfeT2caixMXgc=;
+        b=Qnu1G6fCa+ivlZMFxzAWnYe2DLoXILdj/I7uOwnnyNbmSv5Vt5yEcA8Yfdv/dYLTPW
+         FPPBrs45lu00PvG3q/IlUnCgqsvoqktq7ji0B32ocrd1+ZZptpKLrp3vM4C2lcOeRr9D
+         ZnxdCps5wseDhsV9lnqw2vu2TwD9puHfv4pp9qk4DRD8wyEMtqHT1xxCSftnG3D++Ou6
+         HyrhqiIfKw9pJ260mlTg+rI9fmm/ZBamWLAWUg887raKuTAG7ikyVdVeHatt9bkEWKVR
+         huCbua1qpnFlAQN31Yi90jU/68a6BCNaxjtABAlZdsQKzNacCU0RQxcgPZM3Cr5N2akh
+         WUuw==
+X-Gm-Message-State: AAQBX9fNytjQgvhWvDR4ZXdmKco2LCBWWeqcnbGi+udW3PG1tBKmdK5b
+        azutIE2RzcRVNgP+MaVFPsSvghK0fQ8nDZA4ay53jg==
+X-Google-Smtp-Source: AKy350aCSVYHSTuRUbzqbqVKTM/wg1iw4BBaWxYl6hWz5ML/lQxQgFTB3JDFFaFTSk/LwI9FSxHkEA==
+X-Received: by 2002:a05:6402:1807:b0:504:8173:ec8c with SMTP id g7-20020a056402180700b005048173ec8cmr1853289edy.13.1681994787577;
+        Thu, 20 Apr 2023 05:46:27 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:bcb8:77e6:8f45:4771? ([2a02:810d:15c0:828:bcb8:77e6:8f45:4771])
+        by smtp.gmail.com with ESMTPSA id r22-20020aa7cb96000000b0050696c2d2f6sm706788edt.88.2023.04.20.05.46.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Apr 2023 05:46:27 -0700 (PDT)
+Message-ID: <73644f38-8165-f041-f9d7-a2f2bdd69f17@linaro.org>
+Date:   Thu, 20 Apr 2023 14:46:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH 1/2] dt-bindings: pinctrl: qcom: Add SDX75 pinctrl
+ devicetree compatible
+Content-Language: en-US
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
+        andersson@kernel.org, konrad.dybcio@linaro.org,
+        linus.walleij@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, richardcochran@gmail.com,
+        manivannan.sadhasivam@linaro.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <1681966915-15720-1-git-send-email-quic_rohiagar@quicinc.com>
+ <1681966915-15720-2-git-send-email-quic_rohiagar@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1681966915-15720-2-git-send-email-quic_rohiagar@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend prog_tests with two test cases:
+On 20/04/2023 07:01, Rohit Agarwal wrote:
+> Add device tree binding Documentation details for Qualcomm SDX75
+> pinctrl driver.
+> 
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+> ---
+>  .../bindings/pinctrl/qcom,sdx75-tlmm.yaml          | 195 +++++++++++++++++++++
+>  1 file changed, 195 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml
+> new file mode 100644
+> index 0000000..1d03f13
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml
+> @@ -0,0 +1,195 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/bindings/pinctrl/qcom,sdx75-tlmm.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm Technologies, Inc. SDX75 TLMM block
+> +
+> +maintainers:
+> +  - Rohit Agarwal <quic_rohiagar@quicinc.com>
+> +
+> +description: |
+> +  This binding describes the Top Level Mode Multiplexer block and found in
+> +  SDX75 platform.
 
- # ./test_progs --allow=verifier_netfilter_retcode
- #278/1   verifier_netfilter_retcode/bpf_exit with invalid return code. test1:OK
- #278/2   verifier_netfilter_retcode/bpf_exit with valid return code. test2:OK
- #278/3   verifier_netfilter_retcode/bpf_exit with valid return code. test3:OK
- #278/4   verifier_netfilter_retcode/bpf_exit with invalid return code. test4:OK
- #278     verifier_netfilter_retcode:OK
+Please start from some existing bindings to avoid all the issues we
+fixed. This binding does not look like current ones.
 
-This checks that only accept and drop (0,1) are permitted.
-
-NF_QUEUE could be implemented later if we can guarantee that attachment
-of such programs can be rejected if they get attached to a pf/hook that
-doesn't support async reinjection.
-
-NF_STOLEN could be implemented via trusted helpers that can guarantee
-that the skb will eventually be free'd.
-
-v4: test case for bpf_nf_ctx access checks, requested by Alexei Starovoitov.
-
- # ./test_progs --allow=verifier_netfilter_ctx
- #280/1   verifier_netfilter_ctx/netfilter invalid context access, size too short:OK
- #280/2   verifier_netfilter_ctx/netfilter invalid context access, size too short:OK
- #280/3   verifier_netfilter_ctx/netfilter invalid context access, past end of ctx:OK
- #280/4   verifier_netfilter_ctx/netfilter invalid context, write:OK
- #280/5   verifier_netfilter_ctx/netfilter valid context access:OK
- #280/6   verifier_netfilter_ctx/netfilter valid context access @unpriv:OK
- #280     verifier_netfilter_ctx:OK
-Summary: 1/6 PASSED, 0 SKIPPED, 0 FAILED
-
-This checks:
-1/2: partial reads of ctx->{skb,state} are rejected
-3. read access past sizeof(ctx) is rejected
-4. write to ctx content, e.g. 'ctx->skb = NULL;' is rejected
-5. ctx->skb and ctx->state can be read (valid case), but ...
-6. ... same program fails for unpriv (CAP_NET_ADMIN needed).
-
-Link: https://lore.kernel.org/bpf/20230419021152.sjq4gttphzzy6b5f@dhcp-172-26-102-232.dhcp.thefacebook.com/
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- .../selftests/bpf/prog_tests/verifier.c       |  4 +
- .../bpf/progs/verifier_netfilter_ctx.c        | 82 +++++++++++++++++++
- .../bpf/progs/verifier_netfilter_retcode.c    | 49 +++++++++++
- 3 files changed, 135 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/verifier_netfilter_ctx.c
- create mode 100644 tools/testing/selftests/bpf/progs/verifier_netfilter_retcode.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/verifier.c b/tools/testing/selftests/bpf/prog_tests/verifier.c
-index 25bc8958dbfe..2b4ded63ce9f 100644
---- a/tools/testing/selftests/bpf/prog_tests/verifier.c
-+++ b/tools/testing/selftests/bpf/prog_tests/verifier.c
-@@ -29,6 +29,8 @@
- #include "verifier_map_ret_val.skel.h"
- #include "verifier_masking.skel.h"
- #include "verifier_meta_access.skel.h"
-+#include "verifier_netfilter_ctx.skel.h"
-+#include "verifier_netfilter_retcode.skel.h"
- #include "verifier_raw_stack.skel.h"
- #include "verifier_raw_tp_writable.skel.h"
- #include "verifier_reg_equal.skel.h"
-@@ -94,6 +96,8 @@ void test_verifier_map_ptr(void)              { RUN(verifier_map_ptr); }
- void test_verifier_map_ret_val(void)          { RUN(verifier_map_ret_val); }
- void test_verifier_masking(void)              { RUN(verifier_masking); }
- void test_verifier_meta_access(void)          { RUN(verifier_meta_access); }
-+void test_verifier_netfilter_ctx(void)        { RUN(verifier_netfilter_ctx); }
-+void test_verifier_netfilter_retcode(void)    { RUN(verifier_netfilter_retcode); }
- void test_verifier_raw_stack(void)            { RUN(verifier_raw_stack); }
- void test_verifier_raw_tp_writable(void)      { RUN(verifier_raw_tp_writable); }
- void test_verifier_reg_equal(void)            { RUN(verifier_reg_equal); }
-diff --git a/tools/testing/selftests/bpf/progs/verifier_netfilter_ctx.c b/tools/testing/selftests/bpf/progs/verifier_netfilter_ctx.c
-new file mode 100644
-index 000000000000..861b2266179f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/verifier_netfilter_ctx.c
-@@ -0,0 +1,82 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include "vmlinux.h"
-+
-+#include "bpf_misc.h"
-+
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_helpers.h>
-+
-+SEC("netfilter")
-+__description("netfilter invalid context access, size too short")
-+__failure __msg("invalid bpf_context access")
-+__naked void with_invalid_ctx_access_test1(void)
-+{
-+	asm volatile ("					\
-+	r2 = *(u8*)(r1 + %[__bpf_nf_ctx_state]);	\
-+	r0 = 0;						\
-+	exit;						\
-+"	:
-+	: __imm_const(__bpf_nf_ctx_state, offsetof(struct bpf_nf_ctx, state))
-+	: __clobber_all);
-+}
-+
-+SEC("netfilter")
-+__description("netfilter invalid context access, size too short")
-+__failure __msg("invalid bpf_context access")
-+__naked void with_invalid_ctx_access_test2(void)
-+{
-+	asm volatile ("					\
-+	r2 = *(u16*)(r1 + %[__bpf_nf_ctx_skb]);	\
-+	r0 = 0;						\
-+	exit;						\
-+"	:
-+	: __imm_const(__bpf_nf_ctx_skb, offsetof(struct bpf_nf_ctx, skb))
-+	: __clobber_all);
-+}
-+
-+SEC("netfilter")
-+__description("netfilter invalid context access, past end of ctx")
-+__failure __msg("invalid bpf_context access")
-+__naked void with_invalid_ctx_access_test3(void)
-+{
-+	asm volatile ("					\
-+	r2 = *(u64*)(r1 + %[__bpf_nf_ctx_size]);	\
-+	r0 = 0;						\
-+	exit;						\
-+"	:
-+	: __imm_const(__bpf_nf_ctx_size, sizeof(struct bpf_nf_ctx))
-+	: __clobber_all);
-+}
-+
-+SEC("netfilter")
-+__description("netfilter invalid context, write")
-+__failure __msg("invalid bpf_context access")
-+__naked void with_invalid_ctx_access_test4(void)
-+{
-+	asm volatile ("					\
-+	r2 = r1;					\
-+	*(u64*)(r2 + 0) = r1;				\
-+	r0 = 1;						\
-+	exit;						\
-+"	:
-+	: __imm_const(__bpf_nf_ctx_skb, offsetof(struct bpf_nf_ctx, skb))
-+	: __clobber_all);
-+}
-+
-+SEC("netfilter")
-+__description("netfilter valid context access")
-+__success __failure_unpriv
-+__retval(1)
-+__naked void with_invalid_ctx_access_test5(void)
-+{
-+	asm volatile ("					\
-+	r2 = *(u64*)(r1 + %[__bpf_nf_ctx_state]);	\
-+	r1 = *(u64*)(r1 + %[__bpf_nf_ctx_skb]);		\
-+	r0 = 1;						\
-+	exit;						\
-+"	:
-+	: __imm_const(__bpf_nf_ctx_state, offsetof(struct bpf_nf_ctx, state)),
-+	  __imm_const(__bpf_nf_ctx_skb, offsetof(struct bpf_nf_ctx, skb))
-+	: __clobber_all);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/verifier_netfilter_retcode.c b/tools/testing/selftests/bpf/progs/verifier_netfilter_retcode.c
-new file mode 100644
-index 000000000000..353ae6da00e1
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/verifier_netfilter_retcode.c
-@@ -0,0 +1,49 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include "bpf_misc.h"
-+
-+SEC("netfilter")
-+__description("bpf_exit with invalid return code. test1")
-+__failure __msg("R0 is not a known value")
-+__naked void with_invalid_return_code_test1(void)
-+{
-+	asm volatile ("					\
-+	r0 = *(u64*)(r1 + 0);				\
-+	exit;						\
-+"	::: __clobber_all);
-+}
-+
-+SEC("netfilter")
-+__description("bpf_exit with valid return code. test2")
-+__success
-+__naked void with_valid_return_code_test2(void)
-+{
-+	asm volatile ("					\
-+	r0 = 0;						\
-+	exit;						\
-+"	::: __clobber_all);
-+}
-+
-+SEC("netfilter")
-+__description("bpf_exit with valid return code. test3")
-+__success
-+__naked void with_valid_return_code_test3(void)
-+{
-+	asm volatile ("					\
-+	r0 = 1;						\
-+	exit;						\
-+"	::: __clobber_all);
-+}
-+
-+SEC("netfilter")
-+__description("bpf_exit with invalid return code. test4")
-+__failure __msg("R0 has value (0x2; 0x0)")
-+__naked void with_invalid_return_code_test4(void)
-+{
-+	asm volatile ("					\
-+	r0 = 2;						\
-+	exit;						\
-+"	::: __clobber_all);
-+}
--- 
-2.39.2
+Best regards,
+Krzysztof
 
