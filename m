@@ -2,136 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC3D06E9B78
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:20:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 196816E9B7D
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231278AbjDTSU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 14:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
+        id S231190AbjDTSVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 14:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230037AbjDTSU1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:20:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD3714218
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:20:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52F7261143
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 18:20:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 399B7C433D2;
-        Thu, 20 Apr 2023 18:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682014822;
-        bh=/nTndpJPM0yhE1yF/A5Q9XjpDyvDelW6bgesKMV/klA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fCryIz0Mg46LzLpzSUX+UYi4RJOVoBhWAG7i72Y5jCiEhMVUND1s8S0bSv8R6VEmM
-         u57PWUAofzstyj3FW4xRFPoUfJlC+LbF/Kn33HhcfFHzbmm6E1obMrYgcq9xz1iXb4
-         i1AtQ2z8zPJQ3js7Pi8AzRm4CyyPn+SgD2MlFWRkRMPUM84sHduFKwYRCWwN4t3FrA
-         ka6Top+HICdMRlMD+k/tle/IyUrWG3ADa1yD8rkc6+13olwlp3BvxCrnSJwpsG/DEt
-         e5ZA7RzDd2B6yo+0jYWB+6EB9958rxnuMQ9YouDJWRjyPAVZ6mHU3Jdth7PQH8ROy+
-         DWxxfTnboAvbg==
-Date:   Thu, 20 Apr 2023 21:20:18 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "Tantilov, Emil S" <emil.s.tantilov@intel.com>
-Cc:     Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
-        willemb@google.com, pabeni@redhat.com,
-        Shailendra Bhatnagar <shailendra.bhatnagar@intel.com>,
-        netdev@vger.kernel.org, jesse.brandeburg@intel.com,
-        kuba@kernel.org, edumazet@google.com, anthony.l.nguyen@intel.com,
-        intel-wired-lan@lists.osuosl.org,
-        Phani Burra <phani.r.burra@intel.com>, decot@google.com,
-        davem@davemloft.net
-Subject: Re: [Intel-wired-lan] [PATCH net-next v2 02/15] idpf: add module
- register and probe functionality
-Message-ID: <20230420182018.GF4423@unreal>
-References: <20230411011354.2619359-1-pavan.kumar.linga@intel.com>
- <20230411011354.2619359-3-pavan.kumar.linga@intel.com>
- <20230411123653.GW182481@unreal>
- <b6ed7b0b-9262-3578-1d88-4c848d1aea82@intel.com>
- <4640cb7c-faac-d548-b0dd-4519396e9f25@intel.com>
+        with ESMTP id S230037AbjDTSVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:21:13 -0400
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F194205
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:21:12 -0700 (PDT)
+Received: by mail-ot1-x335.google.com with SMTP id 46e09a7af769-6a5f7341850so1053257a34.2
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:21:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682014871; x=1684606871;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=l8aVj5sgReWVnhyaJ2DUsoH6IQ6uZim3OtgpbE5sEkw=;
+        b=BWwDVjWMd2BipQFjAhTnRYDBN6FvvvN8guK4EtPUMIOijijbNcRlW/2YAnFzhHRIx1
+         dylrJi4rqfKLIY/8BlpTj/ch7gaWj32/Ah9q5j+mrKpc75cznRoPMqkEJBQe+LwpinPH
+         ypN6BtUIPbXfS+n6+ctmzjh/5UXbhcvK8q5Ve3XDbqIjGPFIyPyXxQYwQWUdZcTkFdmS
+         I2lPCqO1Gy3JLmPvRv79rn/3FOb6mUtb83g/80cZSFFvZhB+/Q3QBbY/eUhuWn7b0UfG
+         kVzeTjy3fxX6fIaG6OvSKOQZ3vsn1Bx1IJBtA92DOIozsAPjGKNaSg7un/YRrd8XuSW9
+         RLuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682014871; x=1684606871;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=l8aVj5sgReWVnhyaJ2DUsoH6IQ6uZim3OtgpbE5sEkw=;
+        b=dy3JRzxmmKxrPV5XG5hgEorvg5qrdtdUmCP8bQkDVldx9gr5O4bvfaScgqIFNq0sRM
+         eOa9k7J7NfxgTFAlQvHcWlbBjeBeXAQewbnDbT2gOnQy8EaKz3dQF7hwYXdGikIo45SO
+         ui8rMqki5CWBhLDnkeJ86SpCY2I/Mk4K+EdM+/pefMkWz9vmL2FKyEqQrdXxBY4Tghw4
+         bgUgB6nBF4BIzfUf/LLIOyBkyHuTA/6hrbHAK2a1ZjE0wm7vi2kF1mAILjBxTvTAd8nU
+         WnQpVoFrm3eIkORbqPo9RHVb6UZReXv7Vpi5OrYVseKudo+tGk20ey7bcOD8VOhLI5lS
+         7uZw==
+X-Gm-Message-State: AAQBX9cJnuorTgDEjf99AjNSKnebxOUc1ZaAgV+dyiHQ7zxGVbkX4q6w
+        9hMu/kl9eN858HUxf7Vubeg75g==
+X-Google-Smtp-Source: AKy350a4fxn4lwi7pJPT7kHlmDB/6gMxEkSsVX78x89Y3lGiQGmuWjbSnKwTDM0NLHsZSFOvm8E4fQ==
+X-Received: by 2002:a9d:798a:0:b0:6a5:faad:b812 with SMTP id h10-20020a9d798a000000b006a5faadb812mr1299608otm.7.1682014871696;
+        Thu, 20 Apr 2023 11:21:11 -0700 (PDT)
+Received: from ?IPV6:2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75? ([2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75])
+        by smtp.gmail.com with ESMTPSA id s7-20020a056830148700b006a44d90de05sm939837otq.69.2023.04.20.11.21.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Apr 2023 11:21:11 -0700 (PDT)
+Message-ID: <77920a21-96ab-54e5-db3d-5083a11d5691@mojatatu.com>
+Date:   Thu, 20 Apr 2023 15:21:06 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4640cb7c-faac-d548-b0dd-4519396e9f25@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net] net/sched: cls_api: Initialize miss_cookie_node when
+ action miss is not used
+Content-Language: en-US
+To:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Paul Blakey <paulb@nvidia.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20230420175952.1114302-1-ivecera@redhat.com>
+From:   Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <20230420175952.1114302-1-ivecera@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 11:13:09AM -0700, Tantilov, Emil S wrote:
+On 20/04/2023 14:59, Ivan Vecera wrote:
+> Function tcf_exts_init_ex() sets exts->miss_cookie_node ptr only
+> when use_action_miss is true so it assumes in other case that
+> the field is set to NULL by the caller. If not then the field
+> contains garbage and subsequent tcf_exts_destroy() call results
+> in a crash.
+> Initialize .miss_cookie_node pointer to NULL when use_action_miss
+> parameter is false to avoid this potential scenario.
 > 
+> Fixes: 80cd22c35c90 ("net/sched: cls_api: Support hardware miss to tc action")
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> ---
+>   net/sched/cls_api.c | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> On 4/12/2023 4:10 PM, Tantilov, Emil S wrote:
-> > 
-> > 
-> > On 4/11/2023 5:36 AM, Leon Romanovsky wrote:
-> > > On Mon, Apr 10, 2023 at 06:13:41PM -0700, Pavan Kumar Linga wrote:
-> > > > From: Phani Burra <phani.r.burra@intel.com>
-> > > > 
-> > > > Add the required support to register IDPF PCI driver, as well as
-> > > > probe and remove call backs. Enable the PCI device and request
-> > > > the kernel to reserve the memory resources that will be used by the
-> > > > driver. Finally map the BAR0 address space.
-> > > > 
-> > > > PCI IDs table is intentionally left blank to prevent the kernel from
-> > > > probing the device with the incomplete driver. It will be added
-> > > > in the last patch of the series.
-> > > > 
-> > > > Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-> > > > Co-developed-by: Alan Brady <alan.brady@intel.com>
-> > > > Signed-off-by: Alan Brady <alan.brady@intel.com>
-> > > > Co-developed-by: Madhu Chittim <madhu.chittim@intel.com>
-> > > > Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
-> > > > Co-developed-by: Shailendra Bhatnagar <shailendra.bhatnagar@intel.com>
-> > > > Signed-off-by: Shailendra Bhatnagar <shailendra.bhatnagar@intel.com>
-> > > > Co-developed-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-> > > > Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-> > > > Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
-> > > > Reviewed-by: Willem de Bruijn <willemb@google.com>
-> > > > ---
-> > > >   drivers/net/ethernet/intel/Kconfig            | 11 +++
-> > > >   drivers/net/ethernet/intel/Makefile           |  1 +
-> > > >   drivers/net/ethernet/intel/idpf/Makefile      | 10 ++
-> > > >   drivers/net/ethernet/intel/idpf/idpf.h        | 27 ++++++
-> > > >   .../net/ethernet/intel/idpf/idpf_controlq.h   | 14 +++
-> > > >   drivers/net/ethernet/intel/idpf/idpf_lib.c    | 96 +++++++++++++++++++
-> > > >   drivers/net/ethernet/intel/idpf/idpf_main.c   | 70 ++++++++++++++
-> > > >   7 files changed, 229 insertions(+)
-> > > >   create mode 100644 drivers/net/ethernet/intel/idpf/Makefile
-> > > >   create mode 100644 drivers/net/ethernet/intel/idpf/idpf.h
-> > > >   create mode 100644 drivers/net/ethernet/intel/idpf/idpf_controlq.h
-> > > >   create mode 100644 drivers/net/ethernet/intel/idpf/idpf_lib.c
-> > > >   create mode 100644 drivers/net/ethernet/intel/idpf/idpf_main.c
-> > > 
-> > > <...>
-> > > > +}
-> > > > +
-> > > > +/* idpf_pci_tbl - PCI Dev idpf ID Table
-> > > > + */
-> > > > +static const struct pci_device_id idpf_pci_tbl[] = {
-> > > > +    { /* Sentinel */ }
-> > > 
-> > > What does it mean empty pci_device_id table?
-> > 
-> > Device ID's are added later, but it does make sense to be in this patch
-> > instead. Will fix in v3.
-> 
-> On second look, the reason PCI ids are added in the last patch is because
-> none of the modules from the previous patches would result in a functional
-> driver.
+> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> index 35785a36c80298..8bc5b9d6a2916e 100644
+> --- a/net/sched/cls_api.c
+> +++ b/net/sched/cls_api.c
+> @@ -3224,8 +3224,12 @@ int tcf_exts_init_ex(struct tcf_exts *exts, struct net *net, int action,
+>   	exts->action = action;
+>   	exts->police = police;
+>   
+> -	if (!use_action_miss)
+> +	if (!use_action_miss) {
+> +#ifdef CONFIG_NET_CLS_ACT
+> +		exts->miss_cookie_node = NULL;
+> +#endif
+>   		return 0;
+> +	}
+>   
+>   	err = tcf_exts_miss_cookie_base_alloc(exts, tp, handle);
+>   	if (err)
 
-And yet patches should be split to meaningful and logical chunks. If
-you add pci_device_id, please add relevant device at the same patch.
+The problem described here also happens in the case some error happens 
+if the action array allocation fails and before the 'miss_cookie_node' 
+assignment inside 'tcf_exts_miss_cookie_base_alloc()'.
 
-Thanks
+Seems like a better way to solve this issue is to just:
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 35785a36c802..3c3629c9e7b6 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3211,6 +3211,7 @@ int tcf_exts_init_ex(struct tcf_exts *exts, struct 
+net *net, int action,
+  #ifdef CONFIG_NET_CLS_ACT
+         exts->type = 0;
+         exts->nr_actions = 0;
++       exts->miss_cookie_node = NULL;
+         /* Note: we do not own yet a reference on net.
+          * This reference might be taken later from tcf_exts_get_net().
+          */
 
-> 
-> Thanks,
-> Emil
