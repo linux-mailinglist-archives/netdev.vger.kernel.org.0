@@ -2,50 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECBEA6E919B
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:05:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E823D6E91B1
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234718AbjDTLFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 07:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
+        id S235147AbjDTLFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 07:05:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235116AbjDTLEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:04:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A81776BB;
-        Thu, 20 Apr 2023 04:03:14 -0700 (PDT)
+        with ESMTP id S234988AbjDTLEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:04:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408BF7AB8;
+        Thu, 20 Apr 2023 04:03:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 190D6647C3;
-        Thu, 20 Apr 2023 11:02:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 850AFC433D2;
-        Thu, 20 Apr 2023 11:02:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64929647D1;
+        Thu, 20 Apr 2023 11:02:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 781E1C4339B;
+        Thu, 20 Apr 2023 11:02:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681988539;
-        bh=hw4xNWiwp8slyxeG+kC8WnPTYTvoQBMrOBS9+9t7ozY=;
+        s=k20201202; t=1681988544;
+        bh=LXI1v+1r/T7TmPvJ1sPdooU44mF100hAJPtvSYd6UZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e0J8tkYUjcx9zrUeI+yQC7z7JQ00pXcrF7kWoBo9EyUIAmFRSpyJHaQrpSiFET/eE
-         b9OeOlABXdPQLrh7HVA+mkCuGBzHJmqd7kR9TQW7lCavtgOC6nifgjMjbnZW+4407t
-         3oqG1kT/dZoqqvh1hTLoZZlhlnigmZurkFfynfJIfs5FJOpLTxs9D3LOetofozcGDD
-         S+1+enaNoYiC0YnU95M85DdvxB7PCwU/T22kLYR0L3xtSGcB9qpUSNvMcBx6V6qL/z
-         Rb5ueq50DcD4orp2f6fTMgpn1OsqAbjXX8o9U1E3Lh1gGIPJzcNtSRzOaMy1QNHp42
-         MYSlPY7SeZ8MA==
+        b=NXMWA9Yjnbceyi9URwy02Q1VvXnwiU3Dk0fcCq2ESEy9HAMihqTgqjgoKvT/FBYXO
+         xsnhAceQ2lJ3bu228lNDbxM7oPvwUNrsNeeqrTnY2wr18B0xp3vOzplzbIb9N6GNYa
+         8C5G+Fzyla7CdRaUKlDK7TmeTnMWstcWowY4niy/b9I3/bY0ODHQSOFpzdKIq31W+h
+         y6YcGwxMMbg1Wxz5lKsoq+n7gv5+Dd4zRBghKTQbC4WSXOmzPJqkTib5qFKq7FZp4Y
+         KHrW9hhUS2n1LYhq0byfotME2mDiNEnNGIYmuj2vhYpbd00uBCoUc/nVk9Nmb5PAzM
+         T0nvg5ykgFuXw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ben Greear <greearb@candelatech.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, ryder.lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com, deren.wu@mediatek.com,
-        sean.wang@mediatek.com, mingyen.hsieh@mediatek.com,
-        yn.chen@mediatek.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.2 11/17] wifi: mt76: mt7921: Fix use-after-free in fw features query.
-Date:   Thu, 20 Apr 2023 07:01:40 -0400
-Message-Id: <20230420110148.505779-11-sashal@kernel.org>
+Cc:     Daniel Golle <daniel@makrotopia.org>, chowtom <chowtom@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.2 14/17] net: sfp: add quirk enabling 2500Base-x for HG MXPD-483II
+Date:   Thu, 20 Apr 2023 07:01:43 -0400
+Message-Id: <20230420110148.505779-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230420110148.505779-1-sashal@kernel.org>
 References: <20230420110148.505779-1-sashal@kernel.org>
@@ -53,8 +49,8 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -63,66 +59,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ben Greear <greearb@candelatech.com>
+From: Daniel Golle <daniel@makrotopia.org>
 
-[ Upstream commit 2ceb76f734e37833824b7fab6af17c999eb48d2b ]
+[ Upstream commit ad651d68cee75e9ac20002254c4e5d09ee67a84b ]
 
-Stop referencing 'features' memory after release_firmware is called.
+The HG MXPD-483II 1310nm SFP module is meant to operate with 2500Base-X,
+however, in their EEPROM they incorrectly specify:
+    Transceiver type                          : Ethernet: 1000BASE-LX
+    ...
+    BR, Nominal                               : 2600MBd
 
-Fixes this crash:
+Use sfp_quirk_2500basex for this module to allow 2500Base-X mode anyway.
 
-RIP: 0010:mt7921_check_offload_capability+0x17d
-mt7921_pci_probe+0xca/0x4b0
-...
+https://forum.banana-pi.org/t/bpi-r3-sfp-module-compatibility/14573/60
 
-Signed-off-by: Ben Greear <greearb@candelatech.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Acked-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/51fd8f76494348aa9ecbf0abc471ebe47a983dfd.1679502607.git.lorenzo@kernel.org
+Reported-by: chowtom <chowtom@gmail.com>
+Tested-by: chowtom <chowtom@gmail.com>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/init.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/phy/sfp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/init.c b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
-index d4b681d7e1d22..f2c6ec4d8e2ee 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
-@@ -162,12 +162,12 @@ mt7921_mac_init_band(struct mt7921_dev *dev, u8 band)
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 83b99d95b2787..10a5a6f4ec307 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -389,6 +389,10 @@ static const struct sfp_quirk sfp_quirks[] = {
  
- u8 mt7921_check_offload_capability(struct device *dev, const char *fw_wm)
- {
--	struct mt7921_fw_features *features = NULL;
- 	const struct mt76_connac2_fw_trailer *hdr;
- 	struct mt7921_realease_info *rel_info;
- 	const struct firmware *fw;
- 	int ret, i, offset = 0;
- 	const u8 *data, *end;
-+	u8 offload_caps = 0;
+ 	SFP_QUIRK_F("HALNy", "HL-GSFP", sfp_fixup_halny_gsfp),
  
- 	ret = request_firmware(&fw, fw_wm, dev);
- 	if (ret)
-@@ -199,7 +199,10 @@ u8 mt7921_check_offload_capability(struct device *dev, const char *fw_wm)
- 		data += sizeof(*rel_info);
- 
- 		if (rel_info->tag == MT7921_FW_TAG_FEATURE) {
-+			struct mt7921_fw_features *features;
++	// HG MXPD-483II-F 2.5G supports 2500Base-X, but incorrectly reports
++	// 2600MBd in their EERPOM
++	SFP_QUIRK_M("HG GENUINE", "MXPD-483II", sfp_quirk_2500basex),
 +
- 			features = (struct mt7921_fw_features *)data;
-+			offload_caps = features->data;
- 			break;
- 		}
- 
-@@ -209,7 +212,7 @@ u8 mt7921_check_offload_capability(struct device *dev, const char *fw_wm)
- out:
- 	release_firmware(fw);
- 
--	return features ? features->data : 0;
-+	return offload_caps;
- }
- EXPORT_SYMBOL_GPL(mt7921_check_offload_capability);
- 
+ 	// Huawei MA5671A can operate at 2500base-X, but report 1.2GBd NRZ in
+ 	// their EEPROM
+ 	SFP_QUIRK("HUAWEI", "MA5671A", sfp_quirk_2500basex,
 -- 
 2.39.2
 
