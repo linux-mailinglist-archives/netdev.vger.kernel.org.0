@@ -2,55 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E684C6E87A8
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 03:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7FF26E87B3
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 03:57:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232395AbjDTBu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 21:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50350 "EHLO
+        id S230217AbjDTB5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 21:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232274AbjDTBu0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 21:50:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925624C20;
-        Wed, 19 Apr 2023 18:50:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F2A66445C;
-        Thu, 20 Apr 2023 01:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 75F64C4339C;
-        Thu, 20 Apr 2023 01:50:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681955419;
-        bh=kFVavdxI+2ZOP1oeQy5/e4zp+JhWYB1Hgfo/bbpmcPM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sUt7VIJzcL09UoYyigcSuIcq/1/J2O3f4jPQPXJ4qStVYtRpXzz8QciC6z2mFeY8w
-         uDlExF0JZcJNa8loxqMoHgKpfIV4MqfhZn/gR3byXxeLmvUbDIQcQqSLMkYkLksByc
-         PcUK7RPWUTiclPVzXFATjBMw7Mi3ginOaAip8yI174z2+okyXgiOL2r464x2Obj4nj
-         KWKAZ8avwaZ7aXgouUerCH2Ll8Ki/XFtzaxZF/6N1qBnSojFadMPYCGbAHH2jB51C1
-         Qzx7iW+Mp7CQJhXeR/AQ90IfI+W988q6j+m/5inFs8s41KqduEU4W5t4+7zBglQnbi
-         QrmvvfoeyI+Hg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 59E36C561EE;
-        Thu, 20 Apr 2023 01:50:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229547AbjDTB47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 21:56:59 -0400
+Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90C91BF0;
+        Wed, 19 Apr 2023 18:56:53 -0700 (PDT)
+X-QQ-mid: Yeas49t1681955791t631t34113
+Received: from 7082A6556EBF4E69829842272A565F7C (jiawenwu@trustnetic.com [183.129.236.74])
+X-QQ-SSF: 00400000000000F0FL9000000000000
+From:   =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
+X-BIZMAIL-ID: 3731747530147530030
+To:     "'Vladimir Oltean'" <olteanv@gmail.com>
+Cc:     <netdev@vger.kernel.org>, <linux@armlinux.org.uk>,
+        <linux-i2c@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        <mengyuanlou@net-swift.com>,
+        "'Jose Abreu'" <Jose.Abreu@synopsys.com>
+References: <20230419082739.295180-1-jiawenwu@trustnetic.com> <20230419082739.295180-1-jiawenwu@trustnetic.com> <20230419082739.295180-7-jiawenwu@trustnetic.com> <20230419082739.295180-7-jiawenwu@trustnetic.com> <20230419131938.3k4kuqucvuuhxcrc@skbuf>
+In-Reply-To: <20230419131938.3k4kuqucvuuhxcrc@skbuf>
+Subject: RE: [PATCH net-next v3 6/8] net: pcs: Add 10GBASE-R mode for Synopsys Designware XPCS
+Date:   Thu, 20 Apr 2023 09:56:26 +0800
+Message-ID: <037501d9732b$518048d0$f480da70$@trustnetic.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: micrel: Update the list of supported phys
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168195541936.13596.611503428417262220.git-patchwork-notify@kernel.org>
-Date:   Thu, 20 Apr 2023 01:50:19 +0000
-References: <20230418124713.2221451-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20230418124713.2221451-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: zh-cn
+Thread-Index: AQILBR3gZkFBC9g1wrfKT5ke1rRywwILBR3gATpg8oQBOmDyhAIV2gzYrpudPAA=
+X-QQ-SENDSIZE: 520
+Feedback-ID: Yeas:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,28 +48,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 18 Apr 2023 14:47:13 +0200 you wrote:
-> At the beginning of the file micrel.c there is list of supported PHYs.
-> Extend this list with the following PHYs lan8841, lan8814 and lan8804,
-> as these PHYs were added but the list was not updated.
+On Wednesday, April 19, 2023 9:20 PM, Vladimir Oltean wrote:
+> On Wed, Apr 19, 2023 at 04:27:37PM +0800, Jiawen Wu wrote:
+> > Add basic support for XPCS using 10GBASE-R interface. This mode will
+> > be extended to use interrupt, so set pcs.poll false. And avoid soft
+> > reset so that the device using this mode is in the default configuration.
 > 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  drivers/net/phy/micrel.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> I'm not clear why the xpcs_soft_reset() call is avoided. Isn't the
+> out-of-reset configuration the "default" one?
+> 
 
-Here is the summary with links:
-  - [net-next] net: micrel: Update the list of supported phys
-    https://git.kernel.org/netdev/net-next/c/3e9c0700bf42
+Theoretically so, I need to configure 10GBASE-R mode after reset. But this
+configuration involves board info to configure PMA, etc., I'd like to implement
+it in the next patch. Now the "default" configuration refers to the mode in
+which the firmware is configured.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> > +static int xpcs_get_state_10gbaser(struct dw_xpcs *xpcs,
+> > +				   struct phylink_link_state *state)
+> > +{
+> > +	int ret;
+> > +
+> > +	state->link = false;
+> > +
+> > +	ret = xpcs_read(xpcs, MDIO_MMD_PCS, MDIO_STAT1);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	if (ret & MDIO_STAT1_LSTATUS)
+> > +		state->link = true;
+> > +
+> > +	if (state->link) {
+> 
+> It seems pointless to open a new "if" statement when this would have
+> sufficed:
+> 
+> 	if (ret & MDIO_STAT1_LSTATUS) {
+> 		state->link = true;
+> 		state->pause = MLO_PAUSE_TX | MLO_PAUSE_RX;
+> 		...
+> 	}
+> 
+> > +		state->pause = MLO_PAUSE_TX | MLO_PAUSE_RX;
+> > +		state->duplex = DUPLEX_FULL;
+> > +		state->speed = SPEED_10000;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> 
 
