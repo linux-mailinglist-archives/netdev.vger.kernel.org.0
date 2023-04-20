@@ -2,100 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1919D6E88CD
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 05:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6EE16E88D2
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 05:43:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232344AbjDTDlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 23:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
+        id S230507AbjDTDnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 23:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbjDTDlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 23:41:06 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9FEB4495
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 20:41:03 -0700 (PDT)
+        with ESMTP id S229471AbjDTDnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 23:43:51 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1F944A2;
+        Wed, 19 Apr 2023 20:43:50 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-63b781c9787so178511b3a.1;
+        Wed, 19 Apr 2023 20:43:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1681962065; x=1713498065;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BVnlJq76PuLHCsM3+Qe8sNqae2QoHSQrI2F15Nk32Fw=;
-  b=Exp+rWKa/eBdO+5htDF0r9Yps8wF8POMjqqaKT3uTnEKKQGfELKWk36J
-   XlDBW5nX4rJlUnhUU1cTVUX8QTFp/1f5WFDh/++HyguXBAPTkKgRR9KTr
-   yz9DkMpAeRtecs2aY0x0EwMpgSVLKb3sSEhRmoNPpI4QqKkmd4UH1ielp
-   g=;
-X-IronPort-AV: E=Sophos;i="5.99,211,1677542400"; 
-   d="scan'208";a="320474967"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-d8e96288.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 03:41:04 +0000
-Received: from EX19MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-m6i4x-d8e96288.us-east-1.amazon.com (Postfix) with ESMTPS id 5AF00844F2;
-        Thu, 20 Apr 2023 03:41:02 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Thu, 20 Apr 2023 03:41:01 +0000
-Received: from 88665a182662.ant.amazon.com (10.106.100.17) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Thu, 20 Apr 2023 03:40:58 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <kuba@kernel.org>
-CC:     <bspencer@blackberry.com>, <christophe-h.ricard@st.com>,
-        <davem@davemloft.net>, <dsahern@gmail.com>, <edumazet@google.com>,
-        <johannes.berg@intel.com>, <kaber@trash.net>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <pablo@netfilter.org>
-Subject: Re: [PATCH v1 net] netlink: Use copy_to_user() for optval in netlink_getsockopt().
-Date:   Wed, 19 Apr 2023 20:40:50 -0700
-Message-ID: <20230420034050.48415-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230419160908.5469e9bf@kernel.org>
-References: <20230419160908.5469e9bf@kernel.org>
+        d=gmail.com; s=20221208; t=1681962230; x=1684554230;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oGcjJrKVdJthT5jHtVz62KZrTMfTo60gqcHwgky1M9o=;
+        b=FCc/qGm6+G29tUJLe4kGCp99nHizxhCyIoVmVdv9gG1AGgxzNNG0Ym4ElJAPEDwqAf
+         LFSpdcBlvcNC7DAGVSkKaHgmkzBLuBaWbVIk/XqnZ02VsyK9ZHX03FmIpF0D0xtfJ6li
+         kH9kv5pcbl10bjBQvSducRMlhGqisnwu5FB2ZBsUKj/piISeCtlZIhcTItXJLYmLwUYy
+         wf3CgoDrqKIoSUQtORCVopqo2sjQbpr7o79TsZzsWaD/KAHOub1dG9kCFmUI49LcTlUa
+         5rs7GEoftI1tzdf3k2CdgOyxLdKQehsJHOv/010o5a/MBtAHYNZRHfmqEs0qIJmdCfY1
+         8jMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681962230; x=1684554230;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oGcjJrKVdJthT5jHtVz62KZrTMfTo60gqcHwgky1M9o=;
+        b=OtxzCrwdDLG0j9JgqdIXAl/qPIHw03iHjvedLCc1BHHlnDjJOkNxP+lV/SwdAGjmW3
+         SEljFw6eWu5d1ds/YIo2nWE605TUZBYVb5m7iG/F3K1aASrikJJ4y2TYMOxiW8Aat4jk
+         dGKNL2TZu4uOvTbPHyVz765aTuR/4QRxDUqVYqNP0NWcl7deDLWTxzHOTbt45hzJhJaf
+         4IH0xc6nEhvXkuDlIiRQQ2GUk0J3FscxMwVYYrE9b6EF5MwI1Bj1paVlffS2jOvVLgBD
+         lhzl1gPCkdXLYc3vi0VWFfTJMPB5KFwbw+m4ltRx0h9tDMh7bzpdBEQbb/Z+FH3zf6I/
+         ZwTg==
+X-Gm-Message-State: AAQBX9eerQCtJ6Ln8CC6rOLXrVO1rwEtIYVojOf72d9G1aDgR0a07tc1
+        QwlrdkDam+IoXKxrVlYc9cU9Vil/B+g=
+X-Google-Smtp-Source: AKy350YejakM543wXQPxP1eOvxQL1PSZzPWEdgrmCpGun8QQ8D66VT6iXwuH8Yu8e6fnr84gKm4SpA==
+X-Received: by 2002:a05:6a20:914a:b0:f0:38a7:dc71 with SMTP id x10-20020a056a20914a00b000f038a7dc71mr78867pzc.4.1681962229801;
+        Wed, 19 Apr 2023 20:43:49 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id o1-20020a654581000000b0051fa7704c1asm139644pgq.47.2023.04.19.20.43.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Apr 2023 20:43:49 -0700 (PDT)
+Date:   Wed, 19 Apr 2023 20:43:46 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Greenman, Gregory" <gregory.greenman@intel.com>
+Cc:     "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Stern, Avraham" <avraham.stern@intel.com>
+Subject: Re: pull-request: wireless-next-2023-03-30
+Message-ID: <ZEC08ivL3ngWFQBH@hoboy.vegasvil.org>
+References: <20230330205612.921134-1-johannes@sipsolutions.net>
+ <20230331000648.543f2a54@kernel.org>
+ <ZCtXGpqnCUL58Xzu@localhost>
+ <ZDd4Hg6bEv22Pxi9@hoboy.vegasvil.org>
+ <ccc046c7e7db68915447c05726dd90654a7a8ffc.camel@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.100.17]
-X-ClientProxiedBy: EX19D046UWA004.ant.amazon.com (10.13.139.76) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ccc046c7e7db68915447c05726dd90654a7a8ffc.camel@intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Wed, 19 Apr 2023 16:09:08 -0700
-> On Wed, 19 Apr 2023 09:17:37 +0200 Johannes Berg wrote:
-> > > @@ -1754,39 +1754,17 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
-> > >
-> > >         switch (optname) {
-> > >         case NETLINK_PKTINFO:
-> > > -               if (len < sizeof(int))
-> > > -                       return -EINVAL;
-> > > -               len = sizeof(int);
-> >
-> > On the other hand, this is actually accepting say a u64 now, and then
-> > sets only 4 bytes of it, though at least it also sets the size to what
-> > it wrote out.
-> >
-> > So I guess here we can argue either
-> >  1) keep writing len to 4 and set 4 bytes of the output
-> >  2) keep the length as is and set all bytes of the output
-> >
-> > but (2) gets confusing if you say used 6 bytes buffer as input? I mean,
-> > yeah, I'd really hope nobody does that.
-> >
-> > If Jakub is feeling adventurous maybe we should attempt to see if we
-> > break anything by accepting only == sizeof(int) rather than >= ... :-)
-> 
-> Can't think of a strong reason either way, so I'd keep the check
-> and len setting as is.
+On Tue, Apr 18, 2023 at 01:35:50PM +0000, Greenman, Gregory wrote:
 
-Ok, I'll respin v2 with the existing check and len setting.
+> Just a few clarifications. These two notifications are internal to iwlwifi, sent
+> by the firmware to the driver.
 
-Thank you, Johannes and Jakub!
+Obviously.
+
+> Then, the timestamps are added to the rx/tx status
+> via mac80211 api.
+
+Where?  I don't see that in the kernel anywhere.
+
+Your WiFi driver would need to implement get_ts_info, no?
+
+> Actually, we already have a functional implementation of ptp4l
+> over wifi using this driver support.
+
+Why are changes needed to user space at all?
+
+Thanks,
+Richard
