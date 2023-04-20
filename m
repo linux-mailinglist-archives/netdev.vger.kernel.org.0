@@ -2,71 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CD856E8B3E
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 09:17:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D25C6E8B41
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 09:19:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233745AbjDTHRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 03:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33904 "EHLO
+        id S234012AbjDTHS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 03:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjDTHRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 03:17:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E28935BE
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 00:17:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AC3064556
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 07:17:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00562C433EF;
-        Thu, 20 Apr 2023 07:17:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681975021;
-        bh=GLvKieoBphGZGiZJfMqJBiEaCNVIJZNgZ2twytIVJc0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MlBJraL0KiyJb4F/uTbn49kuAjMFWM7k84j3dHNCcXDlIvQ+1u6tRQrFZf0siJwPs
-         kzPEJqKguzi81zhwCUi7pUpCCo8hLIGF7ZCBr9mighhizRW21UjKmWVqEAx7lXLHJa
-         XTVA6CHVCX3FHdr94rZRaL8hGb8lSmwsMQbXev5gjtKFMrkkAzMzwNhgMdJBEczzBb
-         wldZI1D0ASW2pj6UH0ES9I5AYPTql02rDgh9Wa1hf1YO4/D/awTnxPkYixWXTJhKCH
-         03p/0o5f8SOTRvD+2dyfI05BesfRtqwtwVt9tk6DZDgP+JlGSMT7/SfL3mqqcZu8UG
-         gnVAQ7JdDS6aA==
-Date:   Thu, 20 Apr 2023 10:16:57 +0300
-From:   Leon Romanovsky <leon@kernel.org>
+        with ESMTP id S229612AbjDTHS5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 03:18:57 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC37B1713
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 00:18:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1681975135; x=1713511135;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+zH90kNpKLzfeUXhi7S3n8fr7iwj7Y5BIVulhDAzrQE=;
+  b=tZqmNZxjUlO7gAe+Sj6tEHSokMkD4kBX6Esnp0AYwXX766dZX8KUPKWT
+   6MqYtYgfN7cnjD3TivVH+tEIIpBgrVGA9gWjX8+yCOafzdnFRdlDxl3LW
+   gcGXuM3BnFJp0VtDcowY5X3I/yjO2+99Hjfj4NVQx9zY18NpSPDUSCK5E
+   U3mLrNGX1wrS1Gn1evARxfua7FoCo/j9ic1WqKCSu3jivHdgPfLQVjCdD
+   +2XMaHFmwDb5jHnu6d7QFu/yX1YxR34TCJOt+S7HrHRrgXgKQUq9sf7tS
+   pS7zQ0JGk27hwvJoQByFIr+QM9Rb1/w7hPx5oZVy2e4/VyYgrN4tOacFt
+   A==;
+X-IronPort-AV: E=Sophos;i="5.99,211,1677567600"; 
+   d="asc'?scan'208";a="148016186"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2023 00:18:54 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Thu, 20 Apr 2023 00:18:53 -0700
+Received: from wendy (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
+ Transport; Thu, 20 Apr 2023 00:18:52 -0700
+Date:   Thu, 20 Apr 2023 08:18:35 +0100
+From:   Conor Dooley <conor.dooley@microchip.com>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Maxime Bizon <mbizon@freebox.fr>, davem@davemloft.net,
-        edumazet@google.com, tglx@linutronix.de, wangyang.guo@intel.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dst: fix missing initialization of
- rt_uncached
-Message-ID: <20230420071657.GA4423@unreal>
-References: <20230418165426.1869051-1-mbizon@freebox.fr>
- <20230419085802.GD44666@unreal>
- <20230419154123.298941e2@kernel.org>
+CC:     Simon Horman <simon.horman@corigine.com>,
+        <daire.mcnamara@microchip.com>, <nicolas.ferre@microchip.com>,
+        <claudiu.beznea@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 1/1] net: macb: Shorten max_tx_len to 4KiB - 56 on mpfs
+Message-ID: <20230420-absinthe-broiler-b992997c6cc5@wendy>
+References: <20230417140041.2254022-1-daire.mcnamara@microchip.com>
+ <20230417140041.2254022-2-daire.mcnamara@microchip.com>
+ <ZD6pCdvKdGAJsN3x@corigine.com>
+ <20230419180222.07d78b8a@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="fv5Y7vJfpqPhiijh"
 Content-Disposition: inline
-In-Reply-To: <20230419154123.298941e2@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230419180222.07d78b8a@kernel.org>
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 03:41:23PM -0700, Jakub Kicinski wrote:
-> On Wed, 19 Apr 2023 11:58:02 +0300 Leon Romanovsky wrote:
-> > It should go to net. Right now -rc7 is broken.
-> 
-> That's not true, right? The bad commit is in net-next only.
+--fv5Y7vJfpqPhiijh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Sorry, I was wrong, it is net-next.
+Jaukb, Simon,
 
-My mistake was to combine two bugs in the same bucket as they came
-together in our tests. This rt_uncached thing and XFRM fix which I
-sent to ipsec-rc.
+On Wed, Apr 19, 2023 at 06:02:22PM -0700, Jakub Kicinski wrote:
+> On Tue, 18 Apr 2023 16:28:25 +0200 Simon Horman wrote:
 
-Thanks
+[readding the context]
+
+> > > static const struct macb_config sama7g5_gem_config =3D {
+> > > @@ -4986,8 +4985,17 @@ static int macb_probe(struct platform_device *=
+pdev)
+> > >       bp->tx_clk =3D tx_clk;
+> > >       bp->rx_clk =3D rx_clk;
+> > >       bp->tsu_clk =3D tsu_clk;
+> > > -     if (macb_config)
+> > > +     if (macb_config) {
+> > > +             if (hw_is_gem(bp->regs, bp->native_io)) {
+> > > +                     if (macb_config->max_tx_length)
+> > > +                             bp->max_tx_length =3D macb_config->max_=
+tx_length;
+> > > +                     else
+> > > +                             bp->max_tx_length =3D GEM_MAX_TX_LEN;
+> > > +             } else {
+> > > +                     bp->max_tx_length =3D MACB_MAX_TX_LEN;
+> > > +             }
+
+> > no need to refresh the patch on my account.
+> > But can the above be simplified as:
+> >=20
+> >                if (macb_is_gem(bp) && hw_is_gem(bp->regs, bp->native_io=
+))
+> >                        bp->max_tx_length =3D macb_config->max_tx_length;
+> >                else
+> >                        bp->max_tx_length =3D MACB_MAX_TX_LEN;
+>=20
+> I suspect that DaveM agreed, because patch is set to Changes Requested
+> in patchwork :)=20
+>=20
+> Daire, please respin with Simon's suggestion.
+
+I'm feeling a bit stupid reading this suggestion as I am not sure how it
+is supposed to work :(
+
+Firstly, why macb_is_gem() and hw_is_gem()? They both do the same thing,
+except last time around we established that macb_is_gem() cannot return
+anything other than false at this point.
+What have I missed here?
+
+Secondly, is it guaranteed that macb_config::max_tx_length is even
+set?
+
+Also, another question...
+Is it even possible for `if (macb_config)` to be false?
+Isn't it either going to be set to &default_gem_config or to
+match->data, no? The driver is pretty inconsistent about if it checks
+whether macb_config is non-NULL before accessing it, but from reading
+=2Eprobe, it seems to be like it is always set to something valid at this
+point.
+
+(btw Daire, Nicolas' email has no h in it)
+
+Cheers,
+Conor.
+
+--fv5Y7vJfpqPhiijh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZEDnSwAKCRB4tDGHoIJi
+0hGTAP9zlviFlQlp2QgXaprhHDJjHCXPkHkdpc33e0TUxmHRHAEA+SOVWdg1sTe5
+FW0ZfRuaZLJp7j5Ls3z8huxx9EyRDQI=
+=zej9
+-----END PGP SIGNATURE-----
+
+--fv5Y7vJfpqPhiijh--
