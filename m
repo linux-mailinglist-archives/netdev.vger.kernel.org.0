@@ -2,239 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB696EA00A
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 01:34:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 472AC6EA00D
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 01:35:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbjDTXeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 19:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33288 "EHLO
+        id S231234AbjDTXfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 19:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231610AbjDTXeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 19:34:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA26525A;
-        Thu, 20 Apr 2023 16:33:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DE6163FBC;
-        Thu, 20 Apr 2023 23:33:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68C95C433EF;
-        Thu, 20 Apr 2023 23:33:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682033585;
-        bh=44fALB1gyCAVWw/ps3sUDunYe/woUgIEQAkGTnp+U58=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QBoaVwtl/RJ8pFwsutBKHX18kkwVQc5EcLJ6/3XbFNL2gxwogTXN3f+2KCUiIgNtO
-         8CV7z9GIGUAoqE5iwAMACr8RgUrxDbeeMe7Hgjit2eeiliu7mC2KSed+/1cAgHhCdh
-         NQTtD54+EstzcyIvaFNoF4qDLRxBgQ7BUsjizhO/Kk/E3rl21EDotUUZqnyUEqUtNo
-         t0S6AEzE4oclPAVkv4sTZHSTF0fRzqOBgR591ao65YUIjrpcjLs3ElCSHhTWLo1m47
-         j2QMogpavIH20EPE+dCvTD8eouMu3ureZL7HDuRG+gJpG246dMYMWc9XMSjOKYPatm
-         KMIdEfgOE1ang==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        mkubecek@suse.cz, Jakub Kicinski <kuba@kernel.org>, corbet@lwn.net,
-        dnlplm@gmail.com, linux-doc@vger.kernel.org, saeedm@nvidia.com,
-        tariqt@nvidia.com, leonro@nvidia.com
-Subject: [PATCH net-next] net: ethtool: coalesce: try to make user settings stick twice
-Date:   Thu, 20 Apr 2023 16:33:02 -0700
-Message-Id: <20230420233302.944382-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229792AbjDTXfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 19:35:06 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7176E8F
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 16:34:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1682033673; x=1713569673;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YjeBglyvlWywwq8ycN4YQO3Spj8e1az62g5UCwYWwx0=;
+  b=qWMkiUO/3LEezMAScZdlu8sz/Y4DMzzHv2U0x/fgi8yngXF7PICfvcYI
+   BsQRvwdId/f9lio5aYOWoeNrbOMo64VgAZTuhvXe8mCyrQJ8vxdCNYppO
+   GsDqAsb1+IzrVkLSCTXy3B3BWs/bqVGwrE21vJYX0g7sDSdIwJfkwXtau
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.99,214,1677542400"; 
+   d="scan'208";a="316584364"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-25ac6bd5.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 23:34:11 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1d-m6i4x-25ac6bd5.us-east-1.amazon.com (Postfix) with ESMTPS id 359604494A;
+        Thu, 20 Apr 2023 23:34:07 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Thu, 20 Apr 2023 23:34:07 +0000
+Received: from 88665a182662.ant.amazon.com (10.106.101.47) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Thu, 20 Apr 2023 23:34:02 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Patrick McHardy <kaber@trash.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Christophe Ricard <christophe-h.ricard@st.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, Brad Spencer <bspencer@blackberry.com>
+Subject: [PATCH v2 net] netlink: Use copy_to_user() for optval in netlink_getsockopt().
+Date:   Thu, 20 Apr 2023 16:33:51 -0700
+Message-ID: <20230420233351.77166-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.106.101.47]
+X-ClientProxiedBy: EX19D042UWB004.ant.amazon.com (10.13.139.150) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SET_COALESCE may change operation mode and parameters in one call.
-Changing operation mode may cause the driver to reset the parameter
-values to what is a reasonable default for new operation mode.
+Brad Spencer provided a detailed report [0] that when calling getsockopt()
+for AF_NETLINK, some SOL_NETLINK options set only 1 byte even though such
+options require more than int as length.
 
-Since driver does not know which parameters come from user and which
-are echoed back from ->get, driver may ignore the parameters when
-switching operation modes.
+The options return a flag value that fits into 1 byte, but such behaviour
+confuses users who do not initialise the variable before calling
+getsockopt() and do not strictly check the returned value as char.
 
-This used to be inevitable for ioctl() but in netlink we know which
-parameters are actually specified by the user.
+Currently, netlink_getsockopt() uses put_user() to copy data to optlen and
+optval, but put_user() casts the data based on the pointer, char *optval.
+As a result, only 1 byte is set to optval.
 
-We could inform which parameters were set by the user but this would
-lead to a lot of code duplication in the drivers. Instead try to call
-the drivers twice if both mode and params are changed. The set method
-already checks if any params need updating so in case the driver did
-the right thing the first time around - there will be no second call
-to it's ->set method (only an extra call to ->get()).
+To avoid this behaviour, we need to use copy_to_user() or cast optval for
+put_user().
 
-For mlx5 for example before this patch we'd see:
+Note that this changes the behaviour on big-endian systems, but we document
+that the size of optval is int in the man page.
 
- # ethtool -C eth0 adaptive-rx on  adaptive-tx on
- # ethtool -C eth0 adaptive-rx off adaptive-tx off \
-		   tx-usecs 123 rx-usecs 123
- Adaptive RX: off  TX: off
- rx-usecs: 3
- rx-frames: 32
- tx-usecs: 16
- tx-frames: 32
- [...]
+  $ man 7 netlink
+  ...
+  Socket options
+       To set or get a netlink socket option, call getsockopt(2) to read
+       or setsockopt(2) to write the option with the option level argument
+       set to SOL_NETLINK.  Unless otherwise noted, optval is a pointer to
+       an int.
 
-After the change:
-
- # ethtool -C eth0 adaptive-rx on  adaptive-tx on
- # ethtool -C eth0 adaptive-rx off adaptive-tx off \
-		   tx-usecs 123 rx-usecs 123
- Adaptive RX: off  TX: off
- rx-usecs: 123
- rx-frames: 32
- tx-usecs: 123
- tx-frames: 32
- [...]
-
-This only works for netlink, so it's a small discrepancy between
-netlink and ioctl(). Since we anticipate most users to move to
-netlink I believe it's worth making their lives easier.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 9a4595bc7e67 ("[NETLINK]: Add set/getsockopt options to support more than 32 groups")
+Fixes: be0c22a46cfb ("netlink: add NETLINK_BROADCAST_ERROR socket option")
+Fixes: 38938bfe3489 ("netlink: add NETLINK_NO_ENOBUFS socket flag")
+Fixes: 0a6a3a23ea6e ("netlink: add NETLINK_CAP_ACK socket option")
+Fixes: 2d4bc93368f5 ("netlink: extended ACK reporting")
+Fixes: 89d35528d17d ("netlink: Add new socket option to enable strict checking on dumps")
+Reported-by: Brad Spencer <bspencer@blackberry.com>
+Link: https://lore.kernel.org/netdev/ZD7VkNWFfp22kTDt@datsun.rim.net/
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
-mlx5 folks, LMK if you have a good idea of fixing this in the driver
-instead, that may be cleaner, but I can't think of a good way :(
+v2:
+  * Keep the len check and setting
 
-CC: corbet@lwn.net
-CC: dnlplm@gmail.com
-CC: linux-doc@vger.kernel.org
-
-CC: saeedm@nvidia.com
-CC: tariqt@nvidia.com
-CC: leonro@nvidia.com
+v1: https://lore.kernel.org/netdev/20230419004246.25770-1-kuniyu@amazon.com/
 ---
- Documentation/networking/ethtool-netlink.rst |  4 ++
- net/ethtool/coalesce.c                       | 54 ++++++++++++++++----
- 2 files changed, 47 insertions(+), 11 deletions(-)
+ net/netlink/af_netlink.c | 61 +++++++++++-----------------------------
+ 1 file changed, 17 insertions(+), 44 deletions(-)
 
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index cd0973d4ba01..2540c70952ff 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -1099,6 +1099,10 @@ such that the corresponding bit in ``ethtool_ops::supported_coalesce_params``
- is not set), regardless of their values. Driver may impose additional
- constraints on coalescing parameters and their values.
- 
-+Compared to requests issued via the ``ioctl()`` netlink version of this request
-+will try harder to make sure that values specified by the user have been applied
-+and may call the driver twice.
-+
- 
- PAUSE_GET
- =========
-diff --git a/net/ethtool/coalesce.c b/net/ethtool/coalesce.c
-index 443e7e642c96..01a59ce211c8 100644
---- a/net/ethtool/coalesce.c
-+++ b/net/ethtool/coalesce.c
-@@ -254,13 +254,14 @@ ethnl_set_coalesce_validate(struct ethnl_req_info *req_info,
- }
- 
- static int
--ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info)
-+__ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info,
-+		     bool *dual_change)
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index f365dfdd672d..5c0d17b3984c 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1742,7 +1742,7 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
  {
- 	struct kernel_ethtool_coalesce kernel_coalesce = {};
- 	struct net_device *dev = req_info->dev;
- 	struct ethtool_coalesce coalesce = {};
-+	bool mod_mode = false, mod = false;
- 	struct nlattr **tb = info->attrs;
--	bool mod = false;
- 	int ret;
+ 	struct sock *sk = sock->sk;
+ 	struct netlink_sock *nlk = nlk_sk(sk);
+-	int len, val, err;
++	int len, val;
  
- 	ret = dev->ethtool_ops->get_coalesce(dev, &coalesce, &kernel_coalesce,
-@@ -268,6 +269,7 @@ ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info)
- 	if (ret < 0)
- 		return ret;
+ 	if (level != SOL_NETLINK)
+ 		return -ENOPROTOOPT;
+@@ -1753,40 +1753,27 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
+ 		return -EINVAL;
  
-+	/* Update values */
- 	ethnl_update_u32(&coalesce.rx_coalesce_usecs,
- 			 tb[ETHTOOL_A_COALESCE_RX_USECS], &mod);
- 	ethnl_update_u32(&coalesce.rx_max_coalesced_frames,
-@@ -286,10 +288,6 @@ ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info)
- 			 tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_IRQ], &mod);
- 	ethnl_update_u32(&coalesce.stats_block_coalesce_usecs,
- 			 tb[ETHTOOL_A_COALESCE_STATS_BLOCK_USECS], &mod);
--	ethnl_update_bool32(&coalesce.use_adaptive_rx_coalesce,
--			    tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX], &mod);
--	ethnl_update_bool32(&coalesce.use_adaptive_tx_coalesce,
--			    tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_TX], &mod);
- 	ethnl_update_u32(&coalesce.pkt_rate_low,
- 			 tb[ETHTOOL_A_COALESCE_PKT_RATE_LOW], &mod);
- 	ethnl_update_u32(&coalesce.rx_coalesce_usecs_low,
-@@ -312,17 +310,25 @@ ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info)
- 			 tb[ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH], &mod);
- 	ethnl_update_u32(&coalesce.rate_sample_interval,
- 			 tb[ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL], &mod);
--	ethnl_update_u8(&kernel_coalesce.use_cqe_mode_tx,
--			tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX], &mod);
--	ethnl_update_u8(&kernel_coalesce.use_cqe_mode_rx,
--			tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX], &mod);
- 	ethnl_update_u32(&kernel_coalesce.tx_aggr_max_bytes,
- 			 tb[ETHTOOL_A_COALESCE_TX_AGGR_MAX_BYTES], &mod);
- 	ethnl_update_u32(&kernel_coalesce.tx_aggr_max_frames,
- 			 tb[ETHTOOL_A_COALESCE_TX_AGGR_MAX_FRAMES], &mod);
- 	ethnl_update_u32(&kernel_coalesce.tx_aggr_time_usecs,
- 			 tb[ETHTOOL_A_COALESCE_TX_AGGR_TIME_USECS], &mod);
--	if (!mod)
+ 	switch (optname) {
+-	case NETLINK_PKTINFO:
++	case NETLINK_LIST_MEMBERSHIPS:
++		break;
++	default:
+ 		if (len < sizeof(int))
+ 			return -EINVAL;
+ 		len = sizeof(int);
++	}
 +
-+	/* Update operation modes */
-+	ethnl_update_bool32(&coalesce.use_adaptive_rx_coalesce,
-+			    tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX], &mod_mode);
-+	ethnl_update_bool32(&coalesce.use_adaptive_tx_coalesce,
-+			    tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_TX], &mod_mode);
-+	ethnl_update_u8(&kernel_coalesce.use_cqe_mode_tx,
-+			tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_TX], &mod_mode);
-+	ethnl_update_u8(&kernel_coalesce.use_cqe_mode_rx,
-+			tb[ETHTOOL_A_COALESCE_USE_CQE_MODE_RX], &mod_mode);
-+
-+	*dual_change = mod && mod_mode;
-+	if (!mod && !mod_mode)
- 		return 0;
++	switch (optname) {
++	case NETLINK_PKTINFO:
+ 		val = nlk->flags & NETLINK_F_RECV_PKTINFO ? 1 : 0;
+-		if (put_user(len, optlen) ||
+-		    put_user(val, optval))
+-			return -EFAULT;
+-		err = 0;
+ 		break;
+ 	case NETLINK_BROADCAST_ERROR:
+-		if (len < sizeof(int))
+-			return -EINVAL;
+-		len = sizeof(int);
+ 		val = nlk->flags & NETLINK_F_BROADCAST_SEND_ERROR ? 1 : 0;
+-		if (put_user(len, optlen) ||
+-		    put_user(val, optval))
+-			return -EFAULT;
+-		err = 0;
+ 		break;
+ 	case NETLINK_NO_ENOBUFS:
+-		if (len < sizeof(int))
+-			return -EINVAL;
+-		len = sizeof(int);
+ 		val = nlk->flags & NETLINK_F_RECV_NO_ENOBUFS ? 1 : 0;
+-		if (put_user(len, optlen) ||
+-		    put_user(val, optval))
+-			return -EFAULT;
+-		err = 0;
+ 		break;
+ 	case NETLINK_LIST_MEMBERSHIPS: {
+-		int pos, idx, shift;
++		int pos, idx, shift, err = 0;
  
- 	ret = dev->ethtool_ops->set_coalesce(dev, &coalesce, &kernel_coalesce,
-@@ -330,6 +336,32 @@ ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info)
- 	return ret < 0 ? ret : 1;
+-		err = 0;
+ 		netlink_lock_table();
+ 		for (pos = 0; pos * 8 < nlk->ngroups; pos += sizeof(u32)) {
+ 			if (len - pos < sizeof(u32))
+@@ -1803,40 +1790,26 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
+ 		if (put_user(ALIGN(nlk->ngroups / 8, sizeof(u32)), optlen))
+ 			err = -EFAULT;
+ 		netlink_unlock_table();
+-		break;
++		return err;
+ 	}
+ 	case NETLINK_CAP_ACK:
+-		if (len < sizeof(int))
+-			return -EINVAL;
+-		len = sizeof(int);
+ 		val = nlk->flags & NETLINK_F_CAP_ACK ? 1 : 0;
+-		if (put_user(len, optlen) ||
+-		    put_user(val, optval))
+-			return -EFAULT;
+-		err = 0;
+ 		break;
+ 	case NETLINK_EXT_ACK:
+-		if (len < sizeof(int))
+-			return -EINVAL;
+-		len = sizeof(int);
+ 		val = nlk->flags & NETLINK_F_EXT_ACK ? 1 : 0;
+-		if (put_user(len, optlen) || put_user(val, optval))
+-			return -EFAULT;
+-		err = 0;
+ 		break;
+ 	case NETLINK_GET_STRICT_CHK:
+-		if (len < sizeof(int))
+-			return -EINVAL;
+-		len = sizeof(int);
+ 		val = nlk->flags & NETLINK_F_STRICT_CHK ? 1 : 0;
+-		if (put_user(len, optlen) || put_user(val, optval))
+-			return -EFAULT;
+-		err = 0;
+ 		break;
+ 	default:
+-		err = -ENOPROTOOPT;
++		return -ENOPROTOOPT;
+ 	}
+-	return err;
++
++	if (put_user(len, optlen) ||
++	    copy_to_user(optval, &val, len))
++		return -EFAULT;
++
++	return 0;
  }
  
-+static int
-+ethnl_set_coalesce(struct ethnl_req_info *req_info, struct genl_info *info)
-+{
-+	bool dual_change;
-+	int err, ret;
-+
-+	/* SET_COALESCE may change operation mode and parameters in one call.
-+	 * Changing operation mode may cause the driver to reset the parameter
-+	 * values, and therefore ignore user input (driver does not know which
-+	 * parameters come from user and which are echoed back from ->get).
-+	 * To not complicate the drivers if user tries to change both the mode
-+	 * and parameters at once - call the driver twice.
-+	 */
-+	err = __ethnl_set_coalesce(req_info, info, &dual_change);
-+	if (err < 0)
-+		return err;
-+	ret = err;
-+
-+	if (ret && dual_change) {
-+		err = __ethnl_set_coalesce(req_info, info, &dual_change);
-+		if (err < 0)
-+			return err;
-+	}
-+	return ret;
-+}
-+
- const struct ethnl_request_ops ethnl_coalesce_request_ops = {
- 	.request_cmd		= ETHTOOL_MSG_COALESCE_GET,
- 	.reply_cmd		= ETHTOOL_MSG_COALESCE_GET_REPLY,
+ static void netlink_cmsg_recv_pktinfo(struct msghdr *msg, struct sk_buff *skb)
 -- 
-2.39.2
+2.30.2
 
