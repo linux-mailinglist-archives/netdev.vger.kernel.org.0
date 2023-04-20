@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CECA6E872F
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 03:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC9A66E8730
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 03:10:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231846AbjDTBKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 21:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
+        id S230297AbjDTBKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 21:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230297AbjDTBKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 21:10:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBED46B7
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 18:10:20 -0700 (PDT)
+        with ESMTP id S232343AbjDTBK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 21:10:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13906A1
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 18:10:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ABA464444
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:10:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A80EC433A0;
-        Thu, 20 Apr 2023 01:10:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A40AC64433
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:10:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CF9C433EF;
+        Thu, 20 Apr 2023 01:10:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681953019;
-        bh=EkegsSDJVSussE35ZjffduOom+57M9Wr2pAyG3KNo8k=;
+        s=k20201202; t=1681953024;
+        bh=o5IAyXnbDrtMk5vhAYVDPVz5ufRdjLAQ0NhfaGoiJ4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YI/UjlJaXfwpHiz/lDkDoaXU30gFXUDjhayQqC7LzvvlfOC8qNZKkRHQfWVzEYp1l
-         NJh0vtRnWu0kBbwY1Z0PjsCadDuJLSHI/DSkiMZV0XRZ1w0hN7dqgi7mZXifJ1b5Cq
-         y0y/ZPVHgGyePWuTM9vosR/4aRLLV9pEyES3bXIemxWv+dplJqAUaZ6DslsYlViBM/
-         2XQ8yO4dQh93JaEylAn5bwl+C5vqMvX9oDYR8GFkZr8lxj0+W910lKdjKlK9paxB5q
-         NJx/yOS2+D5h7GXjei2WmgpwkfD4Od0l5QdnfCznJeJuRafysmu9ySGTiTyarOXAJk
-         gEdGN8z3RgRdw==
+        b=r9GeUNuENSkgneOs1uEyJIeVIkjFXQHPNQZRE43HiLtZ8eMB6/ssxww6z96zCcPWZ
+         ClrXQHWKj17pcPY7vuaUWf5QLPeg2FrICfLaxIuj97Xs2zpOk/V9CE7cuAStKLvbxd
+         klSDa6KlQyxfnmexcvQgbbUE4l04zfARpj3oldIw2YwE2+T3H2dxYhmalMdRamDXYt
+         eDgYzyoty2c37DjgT19EqMcBsydMaoUQjxM+Y2TXSJbg4H5EJQ3R0r7HL+cuFIc5kR
+         XCBjWPx/BXXDMmwkTYeXTxmZ+HMLjp2UJn+EKqQCpnRQrkkkqxLdNrYGvZQDw1waNA
+         7SoULzdg7Ka7g==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,16 +39,16 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Chris Mi <cmi@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Maor Dickman <maord@nvidia.com>
-Subject: [net 03/10] net/mlx5: E-switch, Create per vport table based on devlink encap mode
-Date:   Wed, 19 Apr 2023 18:09:52 -0700
-Message-Id: <20230420010959.276760-4-saeed@kernel.org>
+Subject: [net 04/10] net/mlx5: E-switch, Don't destroy indirect table in split rule
+Date:   Wed, 19 Apr 2023 18:09:53 -0700
+Message-Id: <20230420010959.276760-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230420010959.276760-1-saeed@kernel.org>
 References: <20230420010959.276760-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -59,109 +59,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Chris Mi <cmi@nvidia.com>
 
-Currently when creating per vport table, create flags are hardcoded.
-Devlink encap mode is set based on user input and HW capability.
-Create per vport table based on devlink encap mode.
+Source port rewrite (forward to ovs internal port or statck device) isn't
+supported in the rule of split action. So there is no indirect table in
+split rule. The cited commit destroyes indirect table in split rule. The
+indirect table for other rules will be destroyed wrongly. It will cause
+traffic loss.
 
-Fixes: c796bb7cd230 ("net/mlx5: E-switch, Generalize per vport table API")
+Fix it by removing the destroy function in split rule. And also remove
+the destroy function in error flow.
+
+Fixes: 10742efc20a4 ("net/mlx5e: VF tunnel TX traffic offloading")
 Signed-off-by: Chris Mi <cmi@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/tc/sample.c   |  4 ++--
- .../net/ethernet/mellanox/mlx5/core/esw/vporttbl.c   | 12 +++++++++++-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h    |  2 +-
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c   |  2 +-
- 4 files changed, 15 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-index 558a776359af..5db239cae814 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-@@ -14,10 +14,10 @@
- 
- #define MLX5_ESW_VPORT_TBL_SIZE_SAMPLE (64 * 1024)
- 
--static const struct esw_vport_tbl_namespace mlx5_esw_vport_tbl_sample_ns = {
-+static struct esw_vport_tbl_namespace mlx5_esw_vport_tbl_sample_ns = {
- 	.max_fte = MLX5_ESW_VPORT_TBL_SIZE_SAMPLE,
- 	.max_num_groups = 0,    /* default num of groups */
--	.flags = MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT | MLX5_FLOW_TABLE_TUNNEL_EN_DECAP,
-+	.flags = 0,
- };
- 
- struct mlx5e_tc_psample {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/vporttbl.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/vporttbl.c
-index 9e72118f2e4c..b3fb3ba2684a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/vporttbl.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/vporttbl.c
-@@ -11,7 +11,7 @@ struct mlx5_vport_key {
- 	u16 prio;
- 	u16 vport;
- 	u16 vhca_id;
--	const struct esw_vport_tbl_namespace *vport_ns;
-+	struct esw_vport_tbl_namespace *vport_ns;
- } __packed;
- 
- struct mlx5_vport_table {
-@@ -21,6 +21,14 @@ struct mlx5_vport_table {
- 	struct mlx5_vport_key key;
- };
- 
-+static inline void
-+esw_vport_tbl_init(struct mlx5_eswitch *esw, struct esw_vport_tbl_namespace *ns)
-+{
-+	if (esw->offloads.encap != DEVLINK_ESWITCH_ENCAP_MODE_NONE)
-+		ns->flags |= (MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
-+			      MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
-+}
-+
- static struct mlx5_flow_table *
- esw_vport_tbl_create(struct mlx5_eswitch *esw, struct mlx5_flow_namespace *ns,
- 		     const struct esw_vport_tbl_namespace *vport_ns)
-@@ -80,6 +88,7 @@ mlx5_esw_vporttbl_get(struct mlx5_eswitch *esw, struct mlx5_vport_tbl_attr *attr
- 	u32 hkey;
- 
- 	mutex_lock(&esw->fdb_table.offloads.vports.lock);
-+	esw_vport_tbl_init(esw, attr->vport_ns);
- 	hkey = flow_attr_to_vport_key(esw, attr, &skey);
- 	e = esw_vport_tbl_lookup(esw, &skey, hkey);
- 	if (e) {
-@@ -127,6 +136,7 @@ mlx5_esw_vporttbl_put(struct mlx5_eswitch *esw, struct mlx5_vport_tbl_attr *attr
- 	u32 hkey;
- 
- 	mutex_lock(&esw->fdb_table.offloads.vports.lock);
-+	esw_vport_tbl_init(esw, attr->vport_ns);
- 	hkey = flow_attr_to_vport_key(esw, attr, &key);
- 	e = esw_vport_tbl_lookup(esw, &key, hkey);
- 	if (!e || --e->num_rules)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index 19e9a77c4633..9d5a5756a15a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -674,7 +674,7 @@ struct mlx5_vport_tbl_attr {
- 	u32 chain;
- 	u16 prio;
- 	u16 vport;
--	const struct esw_vport_tbl_namespace *vport_ns;
-+	struct esw_vport_tbl_namespace *vport_ns;
- };
- 
- struct mlx5_flow_table *
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 25a8076a77bf..706746cd10af 100644
+index 706746cd10af..c99d208722f5 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -73,7 +73,7 @@
- 
- #define MLX5_ESW_FT_OFFLOADS_DROP_RULE (1)
- 
--static const struct esw_vport_tbl_namespace mlx5_esw_vport_tbl_mirror_ns = {
-+static struct esw_vport_tbl_namespace mlx5_esw_vport_tbl_mirror_ns = {
- 	.max_fte = MLX5_ESW_VPORT_TBL_SIZE,
- 	.max_num_groups = MLX5_ESW_VPORT_TBL_NUM_GROUPS,
- 	.flags = 0,
+@@ -760,7 +760,6 @@ mlx5_eswitch_add_fwd_rule(struct mlx5_eswitch *esw,
+ 	kfree(dest);
+ 	return rule;
+ err_chain_src_rewrite:
+-	esw_put_dest_tables_loop(esw, attr, 0, i);
+ 	mlx5_esw_vporttbl_put(esw, &fwd_attr);
+ err_get_fwd:
+ 	mlx5_chains_put_table(chains, attr->chain, attr->prio, 0);
+@@ -803,7 +802,6 @@ __mlx5_eswitch_del_rule(struct mlx5_eswitch *esw,
+ 	if (fwd_rule)  {
+ 		mlx5_esw_vporttbl_put(esw, &fwd_attr);
+ 		mlx5_chains_put_table(chains, attr->chain, attr->prio, 0);
+-		esw_put_dest_tables_loop(esw, attr, 0, esw_attr->split_count);
+ 	} else {
+ 		if (split)
+ 			mlx5_esw_vporttbl_put(esw, &fwd_attr);
 -- 
 2.39.2
 
