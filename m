@@ -2,125 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71CD16E8D78
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 11:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3803F6E8DB2
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 11:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234199AbjDTJEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 05:04:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
+        id S234021AbjDTJM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 05:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234179AbjDTJDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 05:03:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3489ECA
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:57:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681980987;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pY0N+dEzvSEwAValJ3zirlHbOZcRLBGk4H3+IIf9M2s=;
-        b=ZolVapA4s19DZRMYL110x3284v60ptdMrFEjZSQJw4rao+K0wmYnXzqHeJA6L0rAdB5oWM
-        9sS6Rdi4KSYDP7fr5vghT7qmoP1jJCYflXE4OCnWNz2JpoVLSM+tgBg5lSacezkUooAUFq
-        cJ8sP3fMljWo/CdFzRg/PkycogZ0MYo=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-137-cseOUKoJMDej3vDnZjrovw-1; Thu, 20 Apr 2023 04:56:25 -0400
-X-MC-Unique: cseOUKoJMDej3vDnZjrovw-1
-Received: by mail-ed1-f70.google.com with SMTP id 4fb4d7f45d1cf-505070d2502so468874a12.3
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:56:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681980984; x=1684572984;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=pY0N+dEzvSEwAValJ3zirlHbOZcRLBGk4H3+IIf9M2s=;
-        b=No3XLqe7k4GmnG877gRuP9siGQiRFnaZephz/pi3FhUXt4VniE7gL0tJrN++GPWMrp
-         qIozoVxh5n7USMU5n8LYWxft7wy9AAuU7FL6wyl+LNktlPEGcTQfsBAFyuFB4j2CDaMp
-         ZDoLkY4GeDVE2nE6W2KtSHXHYmMZZxLVDFYALVG7H9ip+0WBIm9LNz6v/CYOFPnpc2qQ
-         YANWqnlAw0Q+MRqD/IFhIOAB0eZLxgtRUl7Tn2sQLVihr1V1zRsS+9es8bLoh85DS5zy
-         UZM1Wt/xX38WYsbH6wftEGYKMqmane8bhpEAPndiUJK/uD9hKF3pV//sB7e6cZKkT4dn
-         hsNg==
-X-Gm-Message-State: AAQBX9f+pQSRyK5QQRFbsTpXsCeX+2f4jaRPn9yKiOvXZVWvsZw4/WHI
-        riDAt2WLRCVBt7c6/mM4fI1JSOMaxAz1V7maSO13DogjhwW02PIUJ4eyDKzpkJOw7Trq6SgTRd2
-        HKUCi38VslE2QWD+O
-X-Received: by 2002:a05:6402:1a57:b0:506:94ea:9af1 with SMTP id bf23-20020a0564021a5700b0050694ea9af1mr1447976edb.8.1681980984625;
-        Thu, 20 Apr 2023 01:56:24 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bgpbJJytQP/x1rpI5Ql/6XCAMPEiGCWAUxJmVAH85leWysNc49213UF5VmaokmhvlgmrUG1g==
-X-Received: by 2002:a05:6402:1a57:b0:506:94ea:9af1 with SMTP id bf23-20020a0564021a5700b0050694ea9af1mr1447956edb.8.1681980984283;
-        Thu, 20 Apr 2023 01:56:24 -0700 (PDT)
-Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id k12-20020a05640212cc00b005083db60635sm514712edx.34.2023.04.20.01.56.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Apr 2023 01:56:23 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <66aaf22e-5b0b-b67c-bb71-c61b966c0d5c@redhat.com>
-Date:   Thu, 20 Apr 2023 10:56:22 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        hawk@kernel.org, ilias.apalodimas@linaro.org, tariqt@nvidia.com
-Subject: Re: [PATCH net-next] page_pool: unlink from napi during destroy
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-References: <20230419182006.719923-1-kuba@kernel.org>
-In-Reply-To: <20230419182006.719923-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S234141AbjDTJMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 05:12:18 -0400
+Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D564C05;
+        Thu, 20 Apr 2023 02:11:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VgYINEN_1681981870;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgYINEN_1681981870)
+          by smtp.aliyun-inc.com;
+          Thu, 20 Apr 2023 17:11:11 +0800
+Message-ID: <1681981800.3300662-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next v2 08/14] virtio_net: auto release xdp shinfo
+Date:   Thu, 20 Apr 2023 17:10:00 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <20230418065327.72281-1-xuanzhuo@linux.alibaba.com>
+ <20230418065327.72281-9-xuanzhuo@linux.alibaba.com>
+ <CACGkMEuNxh-YC6A=nyt682ReSbujbgepABgwX0Y+WW30XgFktA@mail.gmail.com>
+In-Reply-To: <CACGkMEuNxh-YC6A=nyt682ReSbujbgepABgwX0Y+WW30XgFktA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 20 Apr 2023 13:59:30 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> On Tue, Apr 18, 2023 at 2:53=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.alibaba=
+.com> wrote:
+> >
+> > virtnet_build_xdp_buff_mrg() and virtnet_xdp_handler() auto
+> > release xdp shinfo then the caller no need to careful the xdp shinfo.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >  drivers/net/virtio_net.c | 29 +++++++++++++++++------------
+> >  1 file changed, 17 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index e2eade87d2d4..266c1670beda 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -834,7 +834,7 @@ static int virtnet_xdp_handler(struct bpf_prog *xdp=
+_prog, struct xdp_buff *xdp,
+> >                 xdpf =3D xdp_convert_buff_to_frame(xdp);
+> >                 if (unlikely(!xdpf)) {
+> >                         netdev_dbg(dev, "convert buff to frame failed f=
+or xdp\n");
+> > -                       return VIRTNET_XDP_RES_DROP;
+> > +                       goto drop;
+> >                 }
+> >
+> >                 err =3D virtnet_xdp_xmit(dev, 1, &xdpf, 0);
+> > @@ -842,7 +842,7 @@ static int virtnet_xdp_handler(struct bpf_prog *xdp=
+_prog, struct xdp_buff *xdp,
+> >                         xdp_return_frame_rx_napi(xdpf);
+> >                 } else if (unlikely(err < 0)) {
+> >                         trace_xdp_exception(dev, xdp_prog, act);
+> > -                       return VIRTNET_XDP_RES_DROP;
+> > +                       goto drop;
+> >                 }
+> >
+> >                 *xdp_xmit |=3D VIRTIO_XDP_TX;
+> > @@ -852,7 +852,7 @@ static int virtnet_xdp_handler(struct bpf_prog *xdp=
+_prog, struct xdp_buff *xdp,
+> >                 stats->xdp_redirects++;
+> >                 err =3D xdp_do_redirect(dev, xdp, xdp_prog);
+> >                 if (err)
+> > -                       return VIRTNET_XDP_RES_DROP;
+> > +                       goto drop;
+> >
+> >                 *xdp_xmit |=3D VIRTIO_XDP_REDIR;
+> >                 return VIRTNET_XDP_RES_CONSUMED;
+> > @@ -864,8 +864,12 @@ static int virtnet_xdp_handler(struct bpf_prog *xd=
+p_prog, struct xdp_buff *xdp,
+> >                 trace_xdp_exception(dev, xdp_prog, act);
+> >                 fallthrough;
+> >         case XDP_DROP:
+> > -               return VIRTNET_XDP_RES_DROP;
+> > +               break;
+> >         }
+> > +
+> > +drop:
+> > +       put_xdp_frags(xdp);
+> > +       return VIRTNET_XDP_RES_DROP;
+> >  }
+>
+> Patch looks correct but we end up some inconsistency here.
+>
+> frags are automatically released.
+>
+> but the page still needs to be freed by the caller?
 
 
-On 19/04/2023 20.20, Jakub Kicinski wrote:
-> Jesper points out that we must prevent recycling into cache
-> after page_pool_destroy() is called, because page_pool_destroy()
-> is not synchronized with recycling (some pages may still be
-> outstanding when destroy() gets called).
-> 
-> I assumed this will not happen because NAPI can't be scheduled
-> if its page pool is being destroyed. But I missed the fact that
-> NAPI may get reused. For instance when user changes ring configuration
-> driver may allocate a new page pool, stop NAPI, swap, start NAPI,
-> and then destroy the old pool. The NAPI is running so old page
-> pool will think it can recycle to the cache, but the consumer
-> at that point is the destroy() path, not NAPI.
-> 
-> To avoid extra synchronization let the drivers do "unlinking"
-> during the "swap" stage while NAPI is indeed disabled.
-> 
-> Fixes: 8c48eea3adf3 ("page_pool: allow caching from safely localized NAPI")
-> Reported-by: Jesper Dangaard Brouer <jbrouer@redhat.com>
-> Link: https://lore.kernel.org/all/e8df2654-6a5b-3c92-489d-2fe5e444135f@redhat.com/
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> bnxt does not do the live swap so no need to change it.
-> But let's export the API, anyway, I'm sure others will
-> need it. And knowing driver authors they will hack some
-> workaround into the driver rather than export the helper.
-> 
-> CC: hawk@kernel.org
-> CC: ilias.apalodimas@linaro.org
-> CC: tariqt@nvidia.com
-> ---
->   include/net/page_pool.h |  5 +++++
->   net/core/page_pool.c    | 18 +++++++++++++++++-
->   2 files changed, 22 insertions(+), 1 deletion(-)
-> 
+Yes.
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Do you want to auto free page?
 
-Thanks for fixing this.
+Thanks.
 
+
+
+>
+> Thanks
+>
+>
+> >
+> >  static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
+> > @@ -1201,7 +1205,7 @@ static int virtnet_build_xdp_buff_mrg(struct net_=
+device *dev,
+> >                                  dev->name, *num_buf,
+> >                                  virtio16_to_cpu(vi->vdev, hdr->num_buf=
+fers));
+> >                         dev->stats.rx_length_errors++;
+> > -                       return -EINVAL;
+> > +                       goto err;
+> >                 }
+> >
+> >                 stats->bytes +=3D len;
+> > @@ -1220,7 +1224,7 @@ static int virtnet_build_xdp_buff_mrg(struct net_=
+device *dev,
+> >                         pr_debug("%s: rx error: len %u exceeds truesize=
+ %lu\n",
+> >                                  dev->name, len, (unsigned long)(truesi=
+ze - room));
+> >                         dev->stats.rx_length_errors++;
+> > -                       return -EINVAL;
+> > +                       goto err;
+> >                 }
+> >
+> >                 frag =3D &shinfo->frags[shinfo->nr_frags++];
+> > @@ -1235,6 +1239,10 @@ static int virtnet_build_xdp_buff_mrg(struct net=
+_device *dev,
+> >
+> >         *xdp_frags_truesize =3D xdp_frags_truesz;
+> >         return 0;
+> > +
+> > +err:
+> > +       put_xdp_frags(xdp);
+> > +       return -EINVAL;
+> >  }
+> >
+> >  static void *mergeable_xdp_prepare(struct virtnet_info *vi,
+> > @@ -1364,7 +1372,7 @@ static struct sk_buff *receive_mergeable(struct n=
+et_device *dev,
+> >                 err =3D virtnet_build_xdp_buff_mrg(dev, vi, rq, &xdp, d=
+ata, len, frame_sz,
+> >                                                  &num_buf, &xdp_frags_t=
+ruesz, stats);
+> >                 if (unlikely(err))
+> > -                       goto err_xdp_frags;
+> > +                       goto err_xdp;
+> >
+> >                 act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xm=
+it, stats);
+> >
+> > @@ -1372,7 +1380,7 @@ static struct sk_buff *receive_mergeable(struct n=
+et_device *dev,
+> >                 case VIRTNET_XDP_RES_PASS:
+> >                         head_skb =3D build_skb_from_xdp_buff(dev, vi, &=
+xdp, xdp_frags_truesz);
+> >                         if (unlikely(!head_skb))
+> > -                               goto err_xdp_frags;
+> > +                               goto err_xdp;
+> >
+> >                         rcu_read_unlock();
+> >                         return head_skb;
+> > @@ -1382,11 +1390,8 @@ static struct sk_buff *receive_mergeable(struct =
+net_device *dev,
+> >                         goto xdp_xmit;
+> >
+> >                 case VIRTNET_XDP_RES_DROP:
+> > -                       break;
+> > +                       goto err_xdp;
+> >                 }
+> > -err_xdp_frags:
+> > -               put_xdp_frags(&xdp);
+> > -               goto err_xdp;
+> >         }
+> >         rcu_read_unlock();
+> >
+> > --
+> > 2.32.0.3.g01195cf9f
+> >
+>
