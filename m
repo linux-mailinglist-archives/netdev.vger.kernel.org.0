@@ -2,100 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BBD76E9B2B
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:00:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 533176E9B2A
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:00:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231293AbjDTSAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 14:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
+        id S231171AbjDTSAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 14:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbjDTSAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:00:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981F4199F
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 10:59:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682013597;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=sYEObKgK9ZsZ163F+qEC5kfelVhULo1SPruXGXXCNIM=;
-        b=T0nWMYWVclMxGY9d6nQNOmDGPLnIF0Y4TdwC6vyY8N4c/ulPSIl7DwwA/xAK8stC0HHSDr
-        U/iT3MK5eZsL7lzTeMWdjpOR1qqYqt20C/skV2hggjK4YZi9KBwLbCQ0vED8iP/UTIyHuQ
-        IdB0Qsg8YAeQuJ8QnhieCpMO6sIClzQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-248-ea5QQMH0NwaenUbQ9iTEtg-1; Thu, 20 Apr 2023 13:59:56 -0400
-X-MC-Unique: ea5QQMH0NwaenUbQ9iTEtg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S230003AbjDTSAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:00:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FCD41BF6
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:00:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3B227296A605;
-        Thu, 20 Apr 2023 17:59:55 +0000 (UTC)
-Received: from p1.luc.cera.cz (unknown [10.45.226.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A6241410F1C;
-        Thu, 20 Apr 2023 17:59:53 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17E64617BF
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 18:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 013C8C433EF;
+        Thu, 20 Apr 2023 18:00:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682013609;
+        bh=LS09uxLJbf9LC+lghJxGrWQzyC2mmc3DRvkV0UgAGrU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aCWYSmgQ+7oh8bjf0gbDhNepTGdoAzsPLigf16Rz7ZCrgrog2X/Cs7KGDzPgCVxCk
+         Elg3b2DcJ1E67L0Ni8pPYT5o5DcBj23vgZ7PHPGj+XbPZ0vzMHExqMbosWRBb65oVy
+         10sjxTIJqwVUunlPVZdiSyZwlquDN8ksJV0APm+NGRXESpwFB+j2O+8+ah1tWFNOHN
+         Hrnp8wj2TMvY5asAce2SSWC45dQGv4yVvXasUWUqZbVrLVjEf3VKBNO7IxDvVj+Nfc
+         Gwo7oEJcY3Cpft212szx6aocWCPrnyagcRxTNnhFqKTYj8JWunOWC4QWf8/sGvCva0
+         4/ZM0Wj/yPNMQ==
+Date:   Thu, 20 Apr 2023 11:00:07 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Chuck Lever III <chuck.lever@oracle.com>
+Cc:     Chuck Lever <cel@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Paul Blakey <paulb@nvidia.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net/sched: cls_api: Initialize miss_cookie_node when action miss is not used
-Date:   Thu, 20 Apr 2023 19:59:52 +0200
-Message-Id: <20230420175952.1114302-1-ivecera@redhat.com>
+        Eric Dumazet <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-tls-handshake@lists.linux.dev" 
+        <kernel-tls-handshake@lists.linux.dev>
+Subject: Re: [PATCH v10 2/4] net/handshake: Create a NETLINK service for
+ handling handshake requests
+Message-ID: <20230420180007.GA2836977@dev-arch.thelio-3990X>
+References: <168174169259.9520.1911007910797225963.stgit@91.116.238.104.host.secureserver.net>
+ <168174194627.9520.9141674093687429487.stgit@91.116.238.104.host.secureserver.net>
+ <20230420175638.GA2835317@dev-arch.thelio-3990X>
+ <7AF72C2D-32CC-4A5E-89BD-07704A6A19D3@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7AF72C2D-32CC-4A5E-89BD-07704A6A19D3@oracle.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function tcf_exts_init_ex() sets exts->miss_cookie_node ptr only
-when use_action_miss is true so it assumes in other case that
-the field is set to NULL by the caller. If not then the field
-contains garbage and subsequent tcf_exts_destroy() call results
-in a crash.
-Initialize .miss_cookie_node pointer to NULL when use_action_miss
-parameter is false to avoid this potential scenario.
+On Thu, Apr 20, 2023 at 05:57:44PM +0000, Chuck Lever III wrote:
+> 
+> 
+> > On Apr 20, 2023, at 1:56 PM, Nathan Chancellor <nathan@kernel.org> wrote:
+> > 
+> > Hi Chuck,
+> > 
+> > On Mon, Apr 17, 2023 at 10:32:26AM -0400, Chuck Lever wrote:
+> >> From: Chuck Lever <chuck.lever@oracle.com>
+> >> 
+> >> When a kernel consumer needs a transport layer security session, it
+> >> first needs a handshake to negotiate and establish a session. This
+> >> negotiation can be done in user space via one of the several
+> >> existing library implementations, or it can be done in the kernel.
+> >> 
+> >> No in-kernel handshake implementations yet exist. In their absence,
+> >> we add a netlink service that can:
+> >> 
+> >> a. Notify a user space daemon that a handshake is needed.
+> >> 
+> >> b. Once notified, the daemon calls the kernel back via this
+> >>   netlink service to get the handshake parameters, including an
+> >>   open socket on which to establish the session.
+> >> 
+> >> c. Once the handshake is complete, the daemon reports the
+> >>   session status and other information via a second netlink
+> >>   operation. This operation marks that it is safe for the
+> >>   kernel to use the open socket and the security session
+> >>   established there.
+> >> 
+> >> The notification service uses a multicast group. Each handshake
+> >> mechanism (eg, tlshd) adopts its own group number so that the
+> >> handshake services are completely independent of one another. The
+> >> kernel can then tell via netlink_has_listeners() whether a handshake
+> >> service is active and prepared to handle a handshake request.
+> >> 
+> >> A new netlink operation, ACCEPT, acts like accept(2) in that it
+> >> instantiates a file descriptor in the user space daemon's fd table.
+> >> If this operation is successful, the reply carries the fd number,
+> >> which can be treated as an open and ready file descriptor.
+> >> 
+> >> While user space is performing the handshake, the kernel keeps its
+> >> muddy paws off the open socket. A second new netlink operation,
+> >> DONE, indicates that the user space daemon is finished with the
+> >> socket and it is safe for the kernel to use again. The operation
+> >> also indicates whether a session was established successfully.
+> >> 
+> >> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+> > ...
+> >> net/handshake/netlink.c                    |  312 ++++++++++++++++++++++++++
+> > ...
+> >> +static struct pernet_operations __net_initdata handshake_genl_net_ops = {
+> >> + .init = handshake_net_init,
+> >> + .exit = handshake_net_exit,
+> >> + .id = &handshake_net_id,
+> >> + .size = sizeof(struct handshake_net),
+> >> +};
+> > ...
+> >> +static void __exit handshake_exit(void)
+> >> +{
+> >> + unregister_pernet_subsys(&handshake_genl_net_ops);
+> >> + handshake_net_id = 0;
+> >> +
+> >> + handshake_req_hash_destroy();
+> >> + genl_unregister_family(&handshake_nl_family);
+> >> +}
+> >> +
+> >> +module_init(handshake_init);
+> >> +module_exit(handshake_exit);
+> > 
+> > I am not sure if this has been reported yet but it appears this
+> > introduces a section mismatch warning in several configurations
+> > according to KernelCI:
+> > 
+> > https://lore.kernel.org/6441748e.170a0220.531bd.8013@mx.google.com/
+> > 
+> >  $ make -skj"$(nproc)" ARCH=mips CROSS_COMPILE=mips-linux- O=build jazz_defconfig all
+> >  ...
+> >  WARNING: modpost: vmlinux.o: section mismatch in reference: handshake_exit (section: .exit.text) -> handshake_genl_net_ops (section: .init.data)
+> > 
+> > I guess '__net_initdata' should be dropped from handshake_genl_net_ops?
+> 
+> Thanks, Geert just sent a patch to fix that.
 
-Fixes: 80cd22c35c90 ("net/sched: cls_api: Support hardware miss to tc action")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- net/sched/cls_api.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Ha, I did check lore for an existing report or patch before I wrote the
+mail but not before I sent it... Sorry for the noise!
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 35785a36c80298..8bc5b9d6a2916e 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3224,8 +3224,12 @@ int tcf_exts_init_ex(struct tcf_exts *exts, struct net *net, int action,
- 	exts->action = action;
- 	exts->police = police;
- 
--	if (!use_action_miss)
-+	if (!use_action_miss) {
-+#ifdef CONFIG_NET_CLS_ACT
-+		exts->miss_cookie_node = NULL;
-+#endif
- 		return 0;
-+	}
- 
- 	err = tcf_exts_miss_cookie_base_alloc(exts, tp, handle);
- 	if (err)
--- 
-2.39.2
-
+Cheers,
+Nathan
