@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44B246E9909
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:04:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB8806E9911
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234048AbjDTQET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 12:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57474 "EHLO
+        id S234214AbjDTQEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 12:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231435AbjDTQER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:04:17 -0400
+        with ESMTP id S234211AbjDTQEg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:04:36 -0400
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94321FE3;
-        Thu, 20 Apr 2023 09:04:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E462713;
+        Thu, 20 Apr 2023 09:04:31 -0700 (PDT)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1ppWlU-0000Ho-2l;
-        Thu, 20 Apr 2023 18:04:09 +0200
-Date:   Thu, 20 Apr 2023 17:04:02 +0100
+        id 1ppWlp-0000IO-2e;
+        Thu, 20 Apr 2023 18:04:29 +0200
+Date:   Thu, 20 Apr 2023 17:04:23 +0100
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
         linux-mediatek@lists.infradead.org,
@@ -38,11 +38,14 @@ To:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
         Matthias Brugger <matthias.bgg@gmail.com>,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2 0/2] net: ethernet: mtk_eth_soc: use WO firmware for MT7981
-Message-ID: <cover.1681994362.git.daniel@makrotopia.org>
+Subject: [PATCH v2 1/2] dt-bindings: net: mediatek: add WED RX binding for
+ MT7981 eth driver
+Message-ID: <b355493ed3d56396af91492b86f77f613485272a.1681994362.git.daniel@makrotopia.org>
+References: <cover.1681994362.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <cover.1681994362.git.daniel@makrotopia.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
@@ -52,22 +55,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to support wireless offloading on MT7981 we need to load the
-appropriate firmware. Recognize MT7981 by introducing a new DT compatible
-and load mt7981_wo.bin if it is set.
+Add compatible string for mediatek,mt7981-wed as MT7981 also supports
+RX WED just like MT7986, but needs a different firmware file.
 
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
 Changes since v1:
- * retain alphabetic order in dt-bindings
+ * maintain alphabetic order
 
-Daniel Golle (2):
-  dt-bindings: net: mediatek: add WED RX binding for MT7981 eth driver
-  net: ethernet: mtk_eth_soc: use WO firmware for MT7981
+ .../devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml    | 1 +
+ 1 file changed, 1 insertion(+)
 
- .../bindings/arm/mediatek/mediatek,mt7622-wed.yaml         | 1 +
- drivers/net/ethernet/mediatek/mtk_wed_mcu.c                | 7 ++++++-
- drivers/net/ethernet/mediatek/mtk_wed_wo.h                 | 1 +
- 3 files changed, 8 insertions(+), 1 deletion(-)
-
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+index 5c223cb063d48..f7d578a171a4f 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+@@ -20,6 +20,7 @@ properties:
+     items:
+       - enum:
+           - mediatek,mt7622-wed
++          - mediatek,mt7981-wed
+           - mediatek,mt7986-wed
+       - const: syscon
+ 
 -- 
 2.40.0
 
