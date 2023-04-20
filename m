@@ -2,94 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E18846E9BC9
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:38:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 126686E9BCC
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbjDTSiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 14:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
+        id S230507AbjDTSkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 14:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230471AbjDTShs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:37:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E9159D8
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:36:41 -0700 (PDT)
+        with ESMTP id S229933AbjDTSkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:40:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D867D8
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:39:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682015800;
+        s=mimecast20190719; t=1682015964;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4qwGp/6dgqHFxVBe4E5Tv6rcAaAWlfJIcD3N6fbbtpE=;
-        b=FNnZ8L1Pv4FOOKV5bCE3ScX9j0NiB8iwPjXI8R2/sOQTHOWCeOO5GRZsW6tavhAXn20gsh
-        +gsLiBdJcbep3aX4qg7JXLYqD+mvnGaTr65XxX/NojmDGoENxkVKa96vLouegnU19pr8ws
-        adyRTZgIPubjCUN6mPqVpP6EnKN4Roo=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-155-eEGeaDn7NISQPTdTicEhKQ-1; Thu, 20 Apr 2023 14:36:37 -0400
-X-MC-Unique: eEGeaDn7NISQPTdTicEhKQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7FD621C0898B;
-        Thu, 20 Apr 2023 18:36:36 +0000 (UTC)
-Received: from p1.luc.cera.cz (unknown [10.45.226.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C48D6492C3E;
-        Thu, 20 Apr 2023 18:36:34 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net v2] net/sched: cls_api: Initialize miss_cookie_node when action miss is not used
-Date:   Thu, 20 Apr 2023 20:36:33 +0200
-Message-Id: <20230420183634.1139391-1-ivecera@redhat.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GXtC/sVk1W7H+fsLDKJXUd2xWw5ZJzD/Qr53ie94Xh4=;
+        b=CMf3EHo9Pk8KqTVpEr/O3D3gs1gy4goyMyNFi56W9QXA4dkPXudxDquJFetqPYM0bpK8ej
+        jLyOU5p7dGM2SDRhb0HO1KIeGz3Xx9vVdlMyISE3bKAa2SBysWAAnME/EIkO2pIhYgUBWk
+        NWVAtr3wt6TVyWJFIcIrHatNVA2tSBg=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-324-U4OJLZuAMFSUb-X-KSCuUQ-1; Thu, 20 Apr 2023 14:39:23 -0400
+X-MC-Unique: U4OJLZuAMFSUb-X-KSCuUQ-1
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-5ef67855124so858586d6.1
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:39:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682015963; x=1684607963;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GXtC/sVk1W7H+fsLDKJXUd2xWw5ZJzD/Qr53ie94Xh4=;
+        b=ehMhwqsLiY4iQVD5vrmboUY/H1AOgKqf/iqV7CBro1z1z/ie5URpbnQN1Fp+JX1ogz
+         k0QhTbw8v4Jt3T+i2TPRYSAkhc9Sog59X1WfxKhNve8MneeG3DFKsKvZPh351kf5ifaT
+         Frv4bQXDo6kxuCFIP8on1Nd3JK65N2dK4HrUpT8lxng069lg8TjqseRz/NMc77RKkiAH
+         IvsE7/mat0OywYngwRtlFTy1IUO5g3f1P4r28HgMGyUcFr5vEUu1ReAN6JPBcoQeoV1G
+         21PgL3KLQ+uauMJGu0QogX0qEO0tPO6mb58CzVqZd/Zmq8G+0cFs9VezP/DrTE36Cpzs
+         ixIA==
+X-Gm-Message-State: AAQBX9d/qgH3oZXD1Fwb0mJ8AWY/LEzO6jyl+QxY9TQdRqKeK50kWfGu
+        3RY6VUk/LbGPlfpb0PFjfObptwQddpf4nG2DRcZ2/RBK5yAfJemoA7+bWLFTwDYmVbvd3QOxTQl
+        olJURrVL32oVEum+v
+X-Received: by 2002:a05:6214:5195:b0:5aa:14b8:e935 with SMTP id kl21-20020a056214519500b005aa14b8e935mr3573718qvb.2.1682015963032;
+        Thu, 20 Apr 2023 11:39:23 -0700 (PDT)
+X-Google-Smtp-Source: AKy350aKi5xgA2plkiWriD1Mvo1IbP57XENG4+e0T19/igecmwtmBejG9uHeDR/BWWRWuuq3iyfbAA==
+X-Received: by 2002:a05:6214:5195:b0:5aa:14b8:e935 with SMTP id kl21-20020a056214519500b005aa14b8e935mr3573691qvb.2.1682015962750;
+        Thu, 20 Apr 2023 11:39:22 -0700 (PDT)
+Received: from x1n (bras-base-aurron9127w-grc-40-70-52-229-124.dsl.bell.ca. [70.52.229.124])
+        by smtp.gmail.com with ESMTPSA id g19-20020a0caad3000000b005dd8b93457csm570316qvb.20.2023.04.20.11.39.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Apr 2023 11:39:21 -0700 (PDT)
+Date:   Thu, 20 Apr 2023 14:39:20 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Maxime Coquelin <maxime.coquelin@redhat.com>,
+        xieyongji@bytedance.com, mst@redhat.com, david.marchand@redhat.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        xuanzhuo@linux.alibaba.com, eperezma@redhat.com
+Subject: Re: [RFC 0/2] vduse: add support for networking devices
+Message-ID: <ZEGG2GJw2DQk689j@x1n>
+References: <20230419134329.346825-1-maxime.coquelin@redhat.com>
+ <CACGkMEuiHqPkqYk1ZG3RZXLjm+EM3bmR0v1T1yH-ADEazOwTMA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CACGkMEuiHqPkqYk1ZG3RZXLjm+EM3bmR0v1T1yH-ADEazOwTMA@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function tcf_exts_init_ex() sets exts->miss_cookie_node ptr only
-when use_action_miss is true so it assumes in other case that
-the field is set to NULL by the caller. If not then the field
-contains garbage and subsequent tcf_exts_destroy() call results
-in a crash.
-Ensure that the field .miss_cookie_node pointer is NULL when
-use_action_miss parameter is false to avoid this potential scenario.
+On Thu, Apr 20, 2023 at 12:34:06PM +0800, Jason Wang wrote:
+> > 3. Coredump:
+> >   In order to be able to perform post-mortem analysis, DPDK
+> >   Vhost library marks pages used for vrings and descriptors
+> >   buffers as MADV_DODUMP using madvise(). However with
+> >   VDUSE it fails with -EINVAL. My understanding is that we
+> >   set VM_DONTEXPAND flag to the VMAs and madvise's
+> >   MADV_DODUMP fails if it is present. I'm not sure to
+> >   understand why madvise would prevent MADV_DODUMP if
+> >   VM_DONTEXPAND is set. Any thoughts?
+> 
+> Adding Peter who may know the answer.
 
-Fixes: 80cd22c35c90 ("net/sched: cls_api: Support hardware miss to tc action")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- net/sched/cls_api.c | 1 +
- 1 file changed, 1 insertion(+)
+I don't.. but I had a quick look, it seems that VM_DONTEXPAND was kind of
+reused (and I'm not sure whether it's an abuse or not so far..) to
+represent device driver pages since removal of VM_RESERVED:
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 35785a36c80298..3c3629c9e7b65c 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3211,6 +3211,7 @@ int tcf_exts_init_ex(struct tcf_exts *exts, struct net *net, int action,
- #ifdef CONFIG_NET_CLS_ACT
- 	exts->type = 0;
- 	exts->nr_actions = 0;
-+	exts->miss_cookie_node = NULL;
- 	/* Note: we do not own yet a reference on net.
- 	 * This reference might be taken later from tcf_exts_get_net().
- 	 */
+https://lore.kernel.org/all/20120731103457.20182.88454.stgit@zurg/
+https://lore.kernel.org/all/20120731103503.20182.94365.stgit@zurg/
+
+But I think that change at least breaks hugetlb once so there's the
+explicit hugetlb check to recover that behavior back:
+
+https://lore.kernel.org/all/20180930054629.29150-1-daniel@linux.ibm.com/
+
+Thanks,
+
 -- 
-2.39.2
+Peter Xu
 
