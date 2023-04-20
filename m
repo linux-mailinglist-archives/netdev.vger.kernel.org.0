@@ -2,57 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D8D56E8D0C
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:46:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5E356E8D27
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:51:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234508AbjDTIql (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 04:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41316 "EHLO
+        id S234532AbjDTIvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 04:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234495AbjDTIqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:46:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74E5448F;
-        Thu, 20 Apr 2023 01:46:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54DF2640BF;
-        Thu, 20 Apr 2023 08:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C34FC433EF;
-        Thu, 20 Apr 2023 08:46:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681980391;
-        bh=jAAc7mhrkz2LrFCwa/9pwGLcpUffUuXN/d4ElfEWUrQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UbVbab3qAMZvdUkmgWLfwm2mXZ7qdcu71nt2dch6jIE16HaRAvAsO7U5nEkW6zCUw
-         S+9wo6Ot7A9KqH2TV/vruJzfT/N7PY5KM25Y70jQvOq0SLV71BncpI54S02tMNJGuh
-         /N2kH6+Ibd/csm+jVRV5EVDbnSejmF3rl5Cr/AQDCDV0f7ikYjucqE85W4aZmsdyFu
-         3Z6CZeKuodwKFV8IqV0DiEoYQIVar2jjadJMTPInP1HhP5lrg4Q0OauATVixND+4fb
-         SyUiVrnYVEH/ereL+kV/dUbdI7uTtYqP9+dMM+mvqa8WKX9Uxm6/cfP1pgCYNoEuzp
-         KqP24Wdzyf3+Q==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Frank Sae <Frank.Sae@motor-comm.com>,
-        Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: phy: fix circular LEDS_CLASS dependencies
-Date:   Thu, 20 Apr 2023 10:45:51 +0200
-Message-Id: <20230420084624.3005701-1-arnd@kernel.org>
+        with ESMTP id S233918AbjDTIub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:50:31 -0400
+Received: from mail-wm1-x361.google.com (mail-wm1-x361.google.com [IPv6:2a00:1450:4864:20::361])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A65649DD
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:48:59 -0700 (PDT)
+Received: by mail-wm1-x361.google.com with SMTP id l31-20020a05600c1d1f00b003f1718d89b2so2721771wms.0
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:48:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google; t=1681980535; x=1684572535;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=yWwc5/4wEw04RjRfJy0rYlUbC4msY88ebG9thDKZdDs=;
+        b=PpOTF4A9+c4Ukr2bhbyPtQFdqoYGdOM45P/yJkDNj/9IjDLRF5AsGJiy3mCKvFwSQ6
+         fkRoJbQFJVtvp+WQ/Oyzp5C1WjM4WTBmwLjBNWePxfW143Y8TXykkbh+Vk59uMMY/XbJ
+         6PYpKoeR8EF4QZxxeGRKMYqbpkmiWnrch/HgiLrAmV7fbQu190BCpmEXoMbPijC38DuS
+         hetk567YzurAVC1kQ8Gi3OzByiKi/4GM2dZyhbnMMfqCnMFeKh5qgS427gxpIL/6Mem1
+         IFxdivnUbPyTyVm6bSjYOVTBaoXscHLe/zEh2IRTT27AQznukvqjBJaaOn4+8Km5nSBp
+         bT7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681980535; x=1684572535;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yWwc5/4wEw04RjRfJy0rYlUbC4msY88ebG9thDKZdDs=;
+        b=e659BtxaDdasUQo33RcHx+brchc3yK7QKN8sEfc5vs/CLyMU9gSnEYK26c23JZeS9K
+         AZn/uUoKQd0Uucp4f0/dzXhHuLEiNkSMykvplpN97tKx97xpurTrpvz+adrQgExPm/Pw
+         wIgrQ+PzdMJeHRbSVAjPeOcXeb9AuRdl/z2ewAMtxGQWBp4eETUqj69ORBVGplGOsbTd
+         sfvV8uQZcuQlIAW/OT7s9u71HgJ3jsxI6bF4oCG2Ffd7qIFms94ZdonSC1Q0tAsjRKWK
+         5zQCn7ncXUuwkoVksxGVwsNiEkypfQPXEyXR1J+zrSRE19vL72TR5mippkgg+rnIwIiO
+         Agqw==
+X-Gm-Message-State: AAQBX9flppNRRJ976sn4Ow7AmJL+2weFPNDANT6HIAm5z9OlD81KJp93
+        NQ/+WC8nl34x+MgkNRcxqUu+sRnPNa9d+HAGqStn2qd4hQ9y+Q==
+X-Google-Smtp-Source: AKy350YN651bdWQt0RIV4PrsRFKw9/ZmbnpM3H9kdRI+pUbDTuhOcZ6gzfMAkVfvDM4m3vuTZ/JQcHAH7qxk
+X-Received: by 2002:a7b:c3d2:0:b0:3f0:7ddf:d8d8 with SMTP id t18-20020a7bc3d2000000b003f07ddfd8d8mr650087wmj.18.1681980535244;
+        Thu, 20 Apr 2023 01:48:55 -0700 (PDT)
+Received: from smtpservice.6wind.com ([185.13.181.2])
+        by smtp-relay.gmail.com with ESMTP id k2-20020a7bc402000000b003f17bbed4dcsm325717wmi.9.2023.04.20.01.48.55;
+        Thu, 20 Apr 2023 01:48:55 -0700 (PDT)
+X-Relaying-Domain: 6wind.com
+Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
+        by smtpservice.6wind.com (Postfix) with ESMTPS id 09686601C5;
+        Thu, 20 Apr 2023 10:48:55 +0200 (CEST)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1ppPyI-0005bi-UU; Thu, 20 Apr 2023 10:48:54 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH iproute2 v2 0/2] iplink: update doc related to the 'netns' arg
+Date:   Thu, 20 Apr 2023 10:48:47 +0200
+Message-Id: <20230420084849.21506-1-nicolas.dichtel@6wind.com>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,69 +74,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+v1 -> v2:
+ - add patch 1/2
+ - s/NETNS_FILE/NETNSFILE
+ - describe NETNSNAME in the DESCRIPTION section of man pages
 
-The CONFIG_PHYLIB symbol is selected by a number of device drivers that
-need PHY support, but it now has a dependency on CONFIG_LEDS_CLASS,
-which may not be enabled, causing build failures.
+ ip/iplink.c           |  4 ++--
+ man/man8/ip-link.8.in | 10 ++++++----
+ 2 files changed, 8 insertions(+), 6 deletions(-)
 
-Avoid the risk of missing and circular dependencies by guarding the
-phylib LED support itself in another Kconfig symbol that can only be
-enabled if the dependency is met.
-
-This could be made a hidden symbol and always enabled when both CONFIG_OF
-and CONFIG_LEDS_CLASS are reachable from the phylib, but there may be an
-advantage in having users see this option when they have a misconfigured
-kernel without built-in LED support.
-
-Fixes: 01e5b728e9e4 ("net: phy: Add a binding for PHY LEDs")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/phy/Kconfig      | 9 ++++++++-
- drivers/net/phy/phy_device.c | 3 ++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index b8cc49820ced..513675ae4dd2 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -18,7 +18,6 @@ menuconfig PHYLIB
- 	depends on NETDEVICES
- 	select MDIO_DEVICE
- 	select MDIO_DEVRES
--	depends on LEDS_CLASS || LEDS_CLASS=n
- 	help
- 	  Ethernet controllers are usually attached to PHY
- 	  devices.  This option provides infrastructure for
-@@ -45,6 +44,14 @@ config LED_TRIGGER_PHY
- 		<Speed in megabits>Mbps OR <Speed in gigabits>Gbps OR link
- 		for any speed known to the PHY.
- 
-+config PHYLIB_LEDS
-+	bool "Support probing LEDs from device tree"
-+	depends on LEDS_CLASS=y || LEDS_CLASS=PHYLIB
-+	depends on OF
-+	default y
-+	help
-+	  When LED class support is enabled, phylib can automatically
-+	  probe LED setting from device tree.
- 
- config FIXED_PHY
- 	tristate "MDIO Bus/PHY emulation with fixed speed/link PHYs"
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 538523a7cd51..d373446ab5ac 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -3284,7 +3284,8 @@ static int phy_probe(struct device *dev)
- 	/* Get the LEDs from the device tree, and instantiate standard
- 	 * LEDs for them.
- 	 */
--	err = of_phy_leds(phydev);
-+	if (IS_ENABLED(CONFIG_PHYLIB_LEDS))
-+		err = of_phy_leds(phydev);
- 
- out:
- 	/* Re-assert the reset signal on error */
--- 
-2.39.2
+Regards,
+Nicolas
 
