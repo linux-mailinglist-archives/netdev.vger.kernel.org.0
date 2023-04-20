@@ -2,105 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C9396E9916
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 207656E991F
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234226AbjDTQFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 12:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58808 "EHLO
+        id S234544AbjDTQFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 12:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231435AbjDTQFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:05:24 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCE335BF;
-        Thu, 20 Apr 2023 09:05:17 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1ppWmZ-0000JE-12;
-        Thu, 20 Apr 2023 18:05:15 +0200
-Date:   Thu, 20 Apr 2023 17:05:05 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2 2/2] net: ethernet: mtk_eth_soc: use WO firmware for MT7981
-Message-ID: <4d6b2807f0878a63991d5fc0937e707a27fa0dd1.1681994362.git.daniel@makrotopia.org>
-References: <cover.1681994362.git.daniel@makrotopia.org>
+        with ESMTP id S234321AbjDTQFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:05:49 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083975B83;
+        Thu, 20 Apr 2023 09:05:39 -0700 (PDT)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Q2Mr82ljTz6J749;
+        Fri, 21 Apr 2023 00:02:48 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Thu, 20 Apr 2023 17:05:36 +0100
+Message-ID: <c9a0d79b-868d-bdc2-c656-d171a2440074@huawei.com>
+Date:   Thu, 20 Apr 2023 19:05:35 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1681994362.git.daniel@makrotopia.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v10 07/13] landlock: Refactor layer helpers
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
+ <20230323085226.1432550-8-konstantin.meskhidze@huawei.com>
+ <25d2a813-4954-5e35-b13b-c48a8ce08c1a@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <25d2a813-4954-5e35-b13b-c48a8ce08c1a@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to support wireless offloading on MT7981 we need to load the
-appropriate firmware. Recognize MT7981 and load mt7981_wo.bin.
 
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
-No changes since v1.
 
- drivers/net/ethernet/mediatek/mtk_wed_mcu.c | 7 ++++++-
- drivers/net/ethernet/mediatek/mtk_wed_wo.h  | 1 +
- 2 files changed, 7 insertions(+), 1 deletion(-)
+4/16/2023 7:11 PM, Mickaël Salaün пишет:
+> 
+> On 23/03/2023 09:52, Konstantin Meskhidze wrote:
+>> Add new key_type argument to the landlock_init_layer_masks() helper.
+>> Add a masks_array_size argument to the landlock_unmask_layers() helper.
+>> These modifications support implementing new rule types in the next
+>> Landlock versions.
+>> 
+>> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>> 
+>> Changes since v9:
+>> * Refactors commit message.
+>> 
+>> Changes since v8:
+>> * None.
+>> 
+>> Changes since v7:
+>> * Refactors commit message, adds a co-developer.
+>> * Minor fixes.
+>> 
+>> Changes since v6:
+>> * Removes masks_size attribute from init_layer_masks().
+>> * Refactors init_layer_masks() with new landlock_key_type.
+>> 
+>> Changes since v5:
+>> * Splits commit.
+>> * Formats code with clang-format-14.
+>> 
+>> Changes since v4:
+>> * Refactors init_layer_masks(), get_handled_accesses()
+>> and unmask_layers() functions to support multiple rule types.
+>> * Refactors landlock_get_fs_access_mask() function with
+>> LANDLOCK_MASK_ACCESS_FS mask.
+>> 
+>> Changes since v3:
+>> * Splits commit.
+>> * Refactors landlock_unmask_layers functions.
+>> 
+>> ---
+>>   security/landlock/fs.c      | 43 +++++++++++++++++--------------
+>>   security/landlock/ruleset.c | 50 +++++++++++++++++++++++++------------
+>>   security/landlock/ruleset.h | 17 +++++++------
+>>   3 files changed, 67 insertions(+), 43 deletions(-)
+>> 
+> 
+> [...]
+> 
+>> @@ -629,7 +629,11 @@ bool landlock_unmask_layers(
+>>   	return false;
+>>   }
+>> 
+>> -/**
+>> +typedef access_mask_t
+>> +get_access_mask_t(const struct landlock_ruleset *const ruleset,
+>> +		  const u16 layer_level);
+>> +
+>> +/*
+> 
+> Please keep the "/**"
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-index 6bad0d262f286..071ed3dea860d 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-+++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-@@ -326,7 +326,11 @@ mtk_wed_mcu_load_firmware(struct mtk_wed_wo *wo)
- 		wo->hw->index + 1);
- 
- 	/* load firmware */
--	fw_name = wo->hw->index ? MT7986_FIRMWARE_WO1 : MT7986_FIRMWARE_WO0;
-+	if (of_device_is_compatible(wo->hw->node, "mediatek,mt7981-wed"))
-+		fw_name = MT7981_FIRMWARE_WO;
-+	else
-+		fw_name = wo->hw->index ? MT7986_FIRMWARE_WO1 : MT7986_FIRMWARE_WO0;
-+
- 	ret = request_firmware(&fw, fw_name, wo->hw->dev);
- 	if (ret)
- 		return ret;
-@@ -386,5 +390,6 @@ int mtk_wed_mcu_init(struct mtk_wed_wo *wo)
- 				  100, MTK_FW_DL_TIMEOUT);
- }
- 
-+MODULE_FIRMWARE(MT7981_FIRMWARE_WO);
- MODULE_FIRMWARE(MT7986_FIRMWARE_WO0);
- MODULE_FIRMWARE(MT7986_FIRMWARE_WO1);
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed_wo.h b/drivers/net/ethernet/mediatek/mtk_wed_wo.h
-index dbcf42ce9173c..7a1a2a28f1acb 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed_wo.h
-+++ b/drivers/net/ethernet/mediatek/mtk_wed_wo.h
-@@ -88,6 +88,7 @@ enum mtk_wed_dummy_cr_idx {
- 	MTK_WED_DUMMY_CR_WO_STATUS,
- };
- 
-+#define MT7981_FIRMWARE_WO	"mediatek/mt7981_wo.bin"
- #define MT7986_FIRMWARE_WO0	"mediatek/mt7986_wo_0.bin"
- #define MT7986_FIRMWARE_WO1	"mediatek/mt7986_wo_1.bin"
- 
--- 
-2.40.0
-
+   Got it. Thanks.
+> 
+> 
+>>    * landlock_init_layer_masks - Initialize layer masks from an access request
+>>    *
+>>    * Populates @layer_masks such that for each access right in @access_request,
+> .
