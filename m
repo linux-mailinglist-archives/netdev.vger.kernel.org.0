@@ -2,71 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 236966E8C08
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:03:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BD0C6E8C59
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:12:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234291AbjDTIDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 04:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38846 "EHLO
+        id S234220AbjDTIMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 04:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234276AbjDTIDX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:03:23 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D6930F4;
-        Thu, 20 Apr 2023 01:03:16 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 5b1f17b1804b1-3f18335a870so2889825e9.0;
-        Thu, 20 Apr 2023 01:03:16 -0700 (PDT)
+        with ESMTP id S234040AbjDTIMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:12:34 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6D22D49;
+        Thu, 20 Apr 2023 01:12:32 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id 3f1490d57ef6-b94d8d530c3so143221276.0;
+        Thu, 20 Apr 2023 01:12:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681977795; x=1684569795;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AAPM6wHW6wrMQGuZrkQafpDkz/TIHrKci31TWrxXAhY=;
-        b=AA0LDbkPDa0l0JeljO+mKYGTIIB+FMIxJdXJIGjxS3vJfntcx620apG8c31g9kgaBi
-         D01S9nFn3tSSqiWimGhH5m6RbCQvaE3fCYRwctHu1ZaR7t3rhGOEaKgMaRbJfv6Z9w9p
-         m+43zsbef3ro93pNnFhwhdomdTcTpqDFDr8K8E8nYpnYMYlLOYwQzpA/iTOOC9GrjwFz
-         TailWTixRvg2Uh6eUKTR4qyrOAtWfqeQbpQ+KqOlN5xIjN8USK2MVdPRHNqRuMcYPEYI
-         7vLDSJjvjPnZqDwmFQ6AAMk5edjWeKbwV6uQCzl69iR3RCHkPJwiVgzWt7FcPC3yuAsp
-         de7Q==
+        d=gmail.com; s=20221208; t=1681978352; x=1684570352;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ufAhAdE0r7c7qaGNcRxtBn4ycIciFiGBaPdCDyt/jC4=;
+        b=Aii4cD7KcxtBNGj6ssDzMwkXLwpZ8acVamSTcN6ZFZ12JVINgOKCVPbXp06SITukmK
+         OgWW6IRFqv8dA0bn4BtD/bHrLomeLYQNjfC9wAkDbDZHtJbeM7eDZEJH9Y1tFmG3FVa5
+         EgxXf6AKfPISj099CUEABAeZxP0Sth1AKwvov6EMbpbS2u9m6Uti9Y3nJP9yrQuJBZgq
+         6Vj0I6mbcbIkAJTfP4dAV2Cl5c75V22LMbBYGz54ImxKyv/2fWSw8FO2nX7b6caquWKI
+         cXs+AoYmVqe225Z60j2piZ5O4kklgBO508a1Nc7jAhdHKeEZmSmy9o9xa2Jq8gmE4SNm
+         g+XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681977795; x=1684569795;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AAPM6wHW6wrMQGuZrkQafpDkz/TIHrKci31TWrxXAhY=;
-        b=RCluBWUM4h0MqjPqJyotpbE5Igb9gCVS8yQSYTS1nvgpojm1iQ8ezn1uWs5afmome9
-         Hkbpd3J5HdwB5AftaiOvC1kvKASNh+HNkXlhlXkJnV8iPBIEndYdTZXFUS6zuUu4xnOy
-         Z3rCo/dihWpZZyBxObs1zImcuS7EClzm7i+t7AfKBjiY0VF6P/2TI/2ty5/S9Kd6Hwqg
-         fpf9pKFZNMmw2emfbZ+pQplfEFC4xaXgtiUz12KtOk18/lpnCwGYnXbyq3To6AL5HyX2
-         zK5aZuTOR1/RQy1Aykg6y42T/H5Qm1KxBPIQFDXw9p0QaZ57rUKZF6GIpLlqsb3TI8R7
-         LQ2g==
-X-Gm-Message-State: AAQBX9d78NIIsFIOAYOSNh2VhLW8XAn2z3h+rt/tHZ48WhVPQirY/okC
-        WwBVHO+tDcVzRN1bc0s9UbY=
-X-Google-Smtp-Source: AKy350ZzE8Ttwf893BSTCEUWg/tRe75hZBnBs8xti+RJSH4ibvFN78htjh6yJARuxKJtPDM/R/vCXw==
-X-Received: by 2002:adf:df8f:0:b0:2c5:3cd2:b8e with SMTP id z15-20020adfdf8f000000b002c53cd20b8emr601641wrl.1.1681977794674;
-        Thu, 20 Apr 2023 01:03:14 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id m7-20020adfe947000000b003011baf89b3sm1261985wrn.40.2023.04.20.01.03.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Apr 2023 01:03:14 -0700 (PDT)
-Date:   Thu, 20 Apr 2023 11:03:12 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
-        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        mengyuanlou@net-swift.com, 'Jose Abreu' <Jose.Abreu@synopsys.com>
-Subject: Re: [PATCH net-next v3 6/8] net: pcs: Add 10GBASE-R mode for
- Synopsys Designware XPCS
-Message-ID: <20230420080312.6ai6yrm6gikljeto@skbuf>
-References: <20230419082739.295180-1-jiawenwu@trustnetic.com>
- <20230419082739.295180-1-jiawenwu@trustnetic.com>
- <20230419082739.295180-7-jiawenwu@trustnetic.com>
- <20230419082739.295180-7-jiawenwu@trustnetic.com>
- <20230419131938.3k4kuqucvuuhxcrc@skbuf>
- <037501d9732b$518048d0$f480da70$@trustnetic.com>
+        d=1e100.net; s=20221208; t=1681978352; x=1684570352;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ufAhAdE0r7c7qaGNcRxtBn4ycIciFiGBaPdCDyt/jC4=;
+        b=Kzw5ggbrNJy4U3UnimiGIeIA1eQalDbceVgg6PeVSrVoI4pmrZc+HHYaEIcLTXWTzL
+         r1lT5z3EV5eDLHY8uWZBoWDgNfDRz+Ke++rrGL6gXlMbKSt/NZMYqGoLYHAEFq/860tR
+         kcM1bm9pcQsVWE/KHjWKMnHnlJVBQEKpNnu3ErB4auja6breOuPJ0l9y5Ztj4ooWpJjG
+         KfBnCVcZAx+5pN+xAzZFyrBaRJXEAjanMvBc3hqnBcDjlFuB464CIoOI4J9UPEAlkqw+
+         R0LkmB/TCfa6W2YWdVLFimHStNFaJWc84Nuzb1IRFwS+7CexC4YrdPiXsQeclQKhi+xQ
+         lUpw==
+X-Gm-Message-State: AAQBX9cqQdeo2Lb52elGLv5n57ZK3/NaTxHOvi11KC0q6yDoJmsRgLxI
+        G2ozHX4wV8AaNts6RVm7Svq9mBM9+F4NWK7vvKisn/x+SnFVmg==
+X-Google-Smtp-Source: AKy350br2VSLJGwe7XMvMryQMIcZde+pUbCFM+MFqX0o/o8o2NN/vN8gBDNkVie6wdkNcSISj1wnMJ/RBsJL/WTmjEw=
+X-Received: by 2002:a81:7857:0:b0:541:664e:b5d4 with SMTP id
+ t84-20020a817857000000b00541664eb5d4mr233169ywc.4.1681978352116; Thu, 20 Apr
+ 2023 01:12:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <037501d9732b$518048d0$f480da70$@trustnetic.com>
+References: <20230418143617.27762-1-magnus.karlsson@gmail.com> <CAHApi-=_=ia8Pa23QRchxdx-ekPTgT5nYj=ktYGO4gRwP0cvCA@mail.gmail.com>
+In-Reply-To: <CAHApi-=_=ia8Pa23QRchxdx-ekPTgT5nYj=ktYGO4gRwP0cvCA@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Thu, 20 Apr 2023 10:12:21 +0200
+Message-ID: <CAJ8uoz3qM04VQF7FRmnVp_AZjGaPw25GJNn0ah-Jd0=eRCRsjg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/xsk: fix munmap for hugepage allocated umem
+To:     Kal Cutter Conley <kal.conley@dectris.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, tirthendu.sarkar@intel.com,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -77,20 +68,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 09:56:26AM +0800, Jiawen Wu wrote:
-> On Wednesday, April 19, 2023 9:20 PM, Vladimir Oltean wrote:
-> > On Wed, Apr 19, 2023 at 04:27:37PM +0800, Jiawen Wu wrote:
-> > > Add basic support for XPCS using 10GBASE-R interface. This mode will
-> > > be extended to use interrupt, so set pcs.poll false. And avoid soft
-> > > reset so that the device using this mode is in the default configuration.
-> > 
-> > I'm not clear why the xpcs_soft_reset() call is avoided. Isn't the
-> > out-of-reset configuration the "default" one?
-> 
-> Theoretically so, I need to configure 10GBASE-R mode after reset. But this
-> configuration involves board info to configure PMA, etc., I'd like to implement
-> it in the next patch. Now the "default" configuration refers to the mode in
-> which the firmware is configured.
+On Thu, 20 Apr 2023 at 00:01, Kal Cutter Conley <kal.conley@dectris.com> wrote:
+>
+> > @@ -1286,16 +1287,19 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
+> >         u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
+> >         int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
+> >         LIBBPF_OPTS(bpf_xdp_query_opts, opts);
+> > +       off_t mmap_offset = 0;
+> >         void *bufs;
+> >         int ret;
+> >
+> > -       if (ifobject->umem->unaligned_mode)
+> > +       if (ifobject->umem->unaligned_mode) {
+> >                 mmap_flags |= MAP_HUGETLB;
+> > +               mmap_offset = MAP_HUGE_2MB;
+> > +       }
+>
+> MAP_HUGE_2MB should be ORed into mmap_flags. The offset argument
+> should be zero for MAP_ANONYMOUS mappings. The tests may still fail if
+> the default hugepage size is not 2MB.
 
-How much extra complexity are we talking about, to not depend on the
-configuration done by the bootloader?
+You are correct that it should go into the flags field. Misread the
+man page so will send a fix.
+
+It was a conscious decision to require a hugepage size of 2M. I want
+it to fail if you do not have it since the rest of the code will not
+work if you are using some other size. Yes, it is possible to discover
+what hugepage sizes exist and act on that, but I want to keep the code
+simple.
+
+> >
+> >         if (ifobject->shared_umem)
+> >                 umem_sz *= 2;
+> >
+> > -       bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, 0);
+> > +       bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, mmap_offset);
+> >         if (bufs == MAP_FAILED)
+> >                 exit_with_error(errno);
+> >
+>
+> -Kal
