@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F95A6E8877
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 05:13:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0786E8879
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 05:13:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233799AbjDTDNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 23:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
+        id S232635AbjDTDNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 23:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233750AbjDTDMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 23:12:53 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3DA4688;
-        Wed, 19 Apr 2023 20:12:45 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Q22fr2BMCzSrxm;
-        Thu, 20 Apr 2023 11:08:36 +0800 (CST)
+        with ESMTP id S233800AbjDTDNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 23:13:22 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CF14691;
+        Wed, 19 Apr 2023 20:12:58 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Q22kr2HFCz8xCX;
+        Thu, 20 Apr 2023 11:12:04 +0800 (CST)
 Received: from localhost.localdomain (10.175.104.82) by
  canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 20 Apr 2023 11:12:43 +0800
+ 15.1.2507.23; Thu, 20 Apr 2023 11:12:55 +0800
 From:   Ziyang Xuan <william.xuanziyang@huawei.com>
 To:     <gregkh@linuxfoundation.org>, <stable@vger.kernel.org>,
         <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
         <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
         <kuniyu@amazon.com>
 CC:     <netdev@vger.kernel.org>
-Subject: [PATCH 4.19 2/5] tcp/udp: Call inet6_destroy_sock() in IPv6 sk->sk_destruct().
-Date:   Thu, 20 Apr 2023 11:12:39 +0800
-Message-ID: <ab8157eb3e3808bdabcc62bf2e239c1b0e600b26.1681893438.git.william.xuanziyang@huawei.com>
+Subject: [PATCH 4.19 3/5] inet6: Remove inet6_destroy_sock() in sk->sk_prot->destroy().
+Date:   Thu, 20 Apr 2023 11:12:52 +0800
+Message-ID: <176cf4b84a47eaf155b4624dd2bd88e1ddd583f1.1681893438.git.william.xuanziyang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1681893438.git.william.xuanziyang@huawei.com>
 References: <cover.1681893438.git.william.xuanziyang@huawei.com>
@@ -37,7 +37,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
  canpemm500006.china.huawei.com (7.192.105.130)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
@@ -51,259 +51,120 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit d38afeec26ed4739c640bf286c270559aab2ba5f upstream.
+commit b5fc29233d28be7a3322848ebe73ac327559cdb9 upstream.
 
-Originally, inet6_sk(sk)->XXX were changed under lock_sock(), so we were
-able to clean them up by calling inet6_destroy_sock() during the IPv6 ->
-IPv4 conversion by IPV6_ADDRFORM.  However, commit 03485f2adcde ("udpv6:
-Add lockless sendmsg() support") added a lockless memory allocation path,
-which could cause a memory leak:
+After commit d38afeec26ed ("tcp/udp: Call inet6_destroy_sock()
+in IPv6 sk->sk_destruct()."), we call inet6_destroy_sock() in
+sk->sk_destruct() by setting inet6_sock_destruct() to it to make
+sure we do not leak inet6-specific resources.
 
-setsockopt(IPV6_ADDRFORM)                 sendmsg()
-+-----------------------+                 +-------+
-- do_ipv6_setsockopt(sk, ...)             - udpv6_sendmsg(sk, ...)
-  - sockopt_lock_sock(sk)                   ^._ called via udpv6_prot
-    - lock_sock(sk)                             before WRITE_ONCE()
-  - WRITE_ONCE(sk->sk_prot, &tcp_prot)
-  - inet6_destroy_sock()                    - if (!corkreq)
-  - sockopt_release_sock(sk)                  - ip6_make_skb(sk, ...)
-    - release_sock(sk)                          ^._ lockless fast path for
-                                                    the non-corking case
+Now we can remove unnecessary inet6_destroy_sock() calls in
+sk->sk_prot->destroy().
 
-                                                - __ip6_append_data(sk, ...)
-                                                  - ipv6_local_rxpmtu(sk, ...)
-                                                    - xchg(&np->rxpmtu, skb)
-                                                      ^._ rxpmtu is never freed.
+DCCP and SCTP have their own sk->sk_destruct() function, so we
+change them separately in the following patches.
 
-                                                - goto out_no_dst;
-
-                                            - lock_sock(sk)
-
-For now, rxpmtu is only the case, but not to miss the future change
-and a similar bug fixed in commit e27326009a3d ("net: ping6: Fix
-memleak in ipv6_renew_options()."), let's set a new function to IPv6
-sk->sk_destruct() and call inet6_cleanup_sock() there.  Since the
-conversion does not change sk->sk_destruct(), we can guarantee that
-we can clean up IPv6 resources finally.
-
-We can now remove all inet6_destroy_sock() calls from IPv6 protocol
-specific ->destroy() functions, but such changes are invasive to
-backport.  So they can be posted as a follow-up later for net-next.
-
-Fixes: 03485f2adcde ("udpv6: Add lockless sendmsg() support")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
 ---
- include/net/ipv6.h    |  1 +
- include/net/udp.h     |  2 +-
- include/net/udplite.h |  8 --------
- net/ipv4/udp.c        |  9 ++++++---
- net/ipv4/udplite.c    |  8 ++++++++
- net/ipv6/af_inet6.c   |  8 +++++++-
- net/ipv6/udp.c        | 15 ++++++++++++++-
- net/ipv6/udp_impl.h   |  1 +
- net/ipv6/udplite.c    |  9 ++++++++-
- 9 files changed, 46 insertions(+), 15 deletions(-)
+ net/ipv6/ping.c     | 6 ------
+ net/ipv6/raw.c      | 2 --
+ net/ipv6/tcp_ipv6.c | 8 +-------
+ net/ipv6/udp.c      | 2 --
+ net/l2tp/l2tp_ip6.c | 2 --
+ 5 files changed, 1 insertion(+), 19 deletions(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index f33be9653aaa..0c883249814c 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1041,6 +1041,7 @@ void ipv6_local_error(struct sock *sk, int err, struct flowi6 *fl6, u32 info);
- void ipv6_local_rxpmtu(struct sock *sk, struct flowi6 *fl6, u32 mtu);
+diff --git a/net/ipv6/ping.c b/net/ipv6/ping.c
+index 23ae01715e7b..5c9be8594483 100644
+--- a/net/ipv6/ping.c
++++ b/net/ipv6/ping.c
+@@ -27,11 +27,6 @@
+ #include <linux/proc_fs.h>
+ #include <net/ping.h>
  
- void inet6_cleanup_sock(struct sock *sk);
-+void inet6_sock_destruct(struct sock *sk);
- int inet6_release(struct socket *sock);
- int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
- int inet6_getname(struct socket *sock, struct sockaddr *uaddr,
-diff --git a/include/net/udp.h b/include/net/udp.h
-index 618c83bea50d..48d881224524 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -254,7 +254,7 @@ static inline int udp_rqueue_get(struct sock *sk)
- }
- 
- /* net/ipv4/udp.c */
--void udp_destruct_sock(struct sock *sk);
-+void udp_destruct_common(struct sock *sk);
- void skb_consume_udp(struct sock *sk, struct sk_buff *skb, int len);
- int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb);
- void udp_skb_destructor(struct sock *sk, struct sk_buff *skb);
-diff --git a/include/net/udplite.h b/include/net/udplite.h
-index 9185e45b997f..c59ba86668af 100644
---- a/include/net/udplite.h
-+++ b/include/net/udplite.h
-@@ -24,14 +24,6 @@ static __inline__ int udplite_getfrag(void *from, char *to, int  offset,
- 	return copy_from_iter_full(to, len, &msg->msg_iter) ? 0 : -EFAULT;
- }
- 
--/* Designate sk as UDP-Lite socket */
--static inline int udplite_sk_init(struct sock *sk)
+-static void ping_v6_destroy(struct sock *sk)
 -{
--	udp_init_sock(sk);
--	udp_sk(sk)->pcflag = UDPLITE_BIT;
--	return 0;
+-	inet6_destroy_sock(sk);
 -}
 -
- /*
-  * 	Checksumming routines
-  */
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index dd3fa0ff84e7..a6048cc7fc35 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1458,7 +1458,7 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
+ /* Compatibility glue so we can support IPv6 when it's compiled as a module */
+ static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
+ 				 int *addr_len)
+@@ -175,7 +170,6 @@ struct proto pingv6_prot = {
+ 	.owner =	THIS_MODULE,
+ 	.init =		ping_init_sock,
+ 	.close =	ping_close,
+-	.destroy =	ping_v6_destroy,
+ 	.connect =	ip6_datagram_connect_v6_only,
+ 	.disconnect =	__udp_disconnect,
+ 	.setsockopt =	ipv6_setsockopt,
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 44e9a240d607..8ed99732e24c 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -1259,8 +1259,6 @@ static void raw6_destroy(struct sock *sk)
+ 	lock_sock(sk);
+ 	ip6_flush_pending_frames(sk);
+ 	release_sock(sk);
+-
+-	inet6_destroy_sock(sk);
  }
- EXPORT_SYMBOL_GPL(__udp_enqueue_schedule_skb);
  
--void udp_destruct_sock(struct sock *sk)
-+void udp_destruct_common(struct sock *sk)
- {
- 	/* reclaim completely the forward allocated memory */
- 	struct udp_sock *up = udp_sk(sk);
-@@ -1471,10 +1471,14 @@ void udp_destruct_sock(struct sock *sk)
- 		kfree_skb(skb);
- 	}
- 	udp_rmem_release(sk, total, 0, true);
-+}
-+EXPORT_SYMBOL_GPL(udp_destruct_common);
- 
-+static void udp_destruct_sock(struct sock *sk)
-+{
-+	udp_destruct_common(sk);
- 	inet_sock_destruct(sk);
- }
--EXPORT_SYMBOL_GPL(udp_destruct_sock);
- 
- int udp_init_sock(struct sock *sk)
- {
-@@ -1482,7 +1486,6 @@ int udp_init_sock(struct sock *sk)
- 	sk->sk_destruct = udp_destruct_sock;
+ static int rawv6_init_sk(struct sock *sk)
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index f69c1b83403b..033cf81f3483 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1792,12 +1792,6 @@ static int tcp_v6_init_sock(struct sock *sk)
  	return 0;
  }
--EXPORT_SYMBOL_GPL(udp_init_sock);
  
- void skb_consume_udp(struct sock *sk, struct sk_buff *skb, int len)
- {
-diff --git a/net/ipv4/udplite.c b/net/ipv4/udplite.c
-index 8545457752fb..6beab353bc8b 100644
---- a/net/ipv4/udplite.c
-+++ b/net/ipv4/udplite.c
-@@ -20,6 +20,14 @@
- struct udp_table 	udplite_table __read_mostly;
- EXPORT_SYMBOL(udplite_table);
- 
-+/* Designate sk as UDP-Lite socket */
-+static int udplite_sk_init(struct sock *sk)
-+{
-+	udp_init_sock(sk);
-+	udp_sk(sk)->pcflag = UDPLITE_BIT;
-+	return 0;
-+}
-+
- static int udplite_rcv(struct sk_buff *skb)
- {
- 	return __udp4_lib_rcv(skb, &udplite_table, IPPROTO_UDPLITE);
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index b46fc19aed4a..5a07d9b7b086 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -107,6 +107,12 @@ static __inline__ struct ipv6_pinfo *inet6_sk_generic(struct sock *sk)
- 	return (struct ipv6_pinfo *)(((u8 *)sk) + offset);
- }
- 
-+void inet6_sock_destruct(struct sock *sk)
-+{
-+	inet6_cleanup_sock(sk);
-+	inet_sock_destruct(sk);
-+}
-+
- static int inet6_create(struct net *net, struct socket *sock, int protocol,
- 			int kern)
- {
-@@ -199,7 +205,7 @@ static int inet6_create(struct net *net, struct socket *sock, int protocol,
- 			inet->hdrincl = 1;
- 	}
- 
--	sk->sk_destruct		= inet_sock_destruct;
-+	sk->sk_destruct		= inet6_sock_destruct;
- 	sk->sk_family		= PF_INET6;
- 	sk->sk_protocol		= protocol;
- 
+-static void tcp_v6_destroy_sock(struct sock *sk)
+-{
+-	tcp_v4_destroy_sock(sk);
+-	inet6_destroy_sock(sk);
+-}
+-
+ #ifdef CONFIG_PROC_FS
+ /* Proc filesystem TCPv6 sock list dumping. */
+ static void get_openreq6(struct seq_file *seq,
+@@ -1990,7 +1984,7 @@ struct proto tcpv6_prot = {
+ 	.accept			= inet_csk_accept,
+ 	.ioctl			= tcp_ioctl,
+ 	.init			= tcp_v6_init_sock,
+-	.destroy		= tcp_v6_destroy_sock,
++	.destroy		= tcp_v4_destroy_sock,
+ 	.shutdown		= tcp_shutdown,
+ 	.setsockopt		= tcp_setsockopt,
+ 	.getsockopt		= tcp_getsockopt,
 diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 9b0cae403027..93c105d0a0c9 100644
+index 93c105d0a0c9..c9522a4fc949 100644
 --- a/net/ipv6/udp.c
 +++ b/net/ipv6/udp.c
-@@ -66,6 +66,19 @@ static bool udp6_lib_exact_dif_match(struct net *net, struct sk_buff *skb)
- 	return false;
+@@ -1501,8 +1501,6 @@ void udpv6_destroy_sock(struct sock *sk)
+ 		if (encap_destroy)
+ 			encap_destroy(sk);
+ 	}
+-
+-	inet6_destroy_sock(sk);
  }
  
-+static void udpv6_destruct_sock(struct sock *sk)
-+{
-+	udp_destruct_common(sk);
-+	inet6_sock_destruct(sk);
-+}
-+
-+int udpv6_init_sock(struct sock *sk)
-+{
-+	skb_queue_head_init(&udp_sk(sk)->reader_queue);
-+	sk->sk_destruct = udpv6_destruct_sock;
-+	return 0;
-+}
-+
- static u32 udp6_ehashfn(const struct net *net,
- 			const struct in6_addr *laddr,
- 			const u16 lport,
-@@ -1593,7 +1606,7 @@ struct proto udpv6_prot = {
- 	.connect		= ip6_datagram_connect,
- 	.disconnect		= udp_disconnect,
- 	.ioctl			= udp_ioctl,
--	.init			= udp_init_sock,
-+	.init			= udpv6_init_sock,
- 	.destroy		= udpv6_destroy_sock,
- 	.setsockopt		= udpv6_setsockopt,
- 	.getsockopt		= udpv6_getsockopt,
-diff --git a/net/ipv6/udp_impl.h b/net/ipv6/udp_impl.h
-index 7903e21c178b..e5d067b09ccf 100644
---- a/net/ipv6/udp_impl.h
-+++ b/net/ipv6/udp_impl.h
-@@ -12,6 +12,7 @@ int __udp6_lib_rcv(struct sk_buff *, struct udp_table *, int);
- void __udp6_lib_err(struct sk_buff *, struct inet6_skb_parm *, u8, u8, int,
- 		    __be32, struct udp_table *);
+ /*
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 9dae10d8880c..f3f0b4b7c386 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -272,8 +272,6 @@ static void l2tp_ip6_destroy_sock(struct sock *sk)
  
-+int udpv6_init_sock(struct sock *sk);
- int udp_v6_get_port(struct sock *sk, unsigned short snum);
+ 	if (tunnel)
+ 		l2tp_tunnel_delete(tunnel);
+-
+-	inet6_destroy_sock(sk);
+ }
  
- int udpv6_getsockopt(struct sock *sk, int level, int optname,
-diff --git a/net/ipv6/udplite.c b/net/ipv6/udplite.c
-index 5000ad6878e6..f15b8305d87b 100644
---- a/net/ipv6/udplite.c
-+++ b/net/ipv6/udplite.c
-@@ -15,6 +15,13 @@
- #include <linux/proc_fs.h>
- #include "udp_impl.h"
- 
-+static int udplitev6_sk_init(struct sock *sk)
-+{
-+	udpv6_init_sock(sk);
-+	udp_sk(sk)->pcflag = UDPLITE_BIT;
-+	return 0;
-+}
-+
- static int udplitev6_rcv(struct sk_buff *skb)
- {
- 	return __udp6_lib_rcv(skb, &udplite_table, IPPROTO_UDPLITE);
-@@ -40,7 +47,7 @@ struct proto udplitev6_prot = {
- 	.connect	   = ip6_datagram_connect,
- 	.disconnect	   = udp_disconnect,
- 	.ioctl		   = udp_ioctl,
--	.init		   = udplite_sk_init,
-+	.init		   = udplitev6_sk_init,
- 	.destroy	   = udpv6_destroy_sock,
- 	.setsockopt	   = udpv6_setsockopt,
- 	.getsockopt	   = udpv6_getsockopt,
+ static int l2tp_ip6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 -- 
 2.25.1
 
