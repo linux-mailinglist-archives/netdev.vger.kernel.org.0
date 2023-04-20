@@ -2,129 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73B836E99E2
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:49:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 394386E99E8
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:50:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbjDTQtj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 12:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
+        id S229724AbjDTQuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 12:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjDTQti (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:49:38 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2134.outbound.protection.outlook.com [40.107.101.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BED2710;
-        Thu, 20 Apr 2023 09:49:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NbtzSP8k4xZskqWqUzA1zAUJkWHkvbdqUwcau7gRJNnZMpqCNM/QnmsuI0tQGEEFLggFE1oV2DEQGFO4/fMvSor2fZZK1l5IvYiLHfOzmzDhnsveF62cM29za+0DWGpnExTEFYh1b0zaG7wtriZZWX0rfibMmW9AsH/pq4VAVVndSA3D3xM4l//SMPXwmw1ZFNKfmoTjCG75nZw/1D//wpqlYOVVmwwf9AbifnKLpHZSMPIsruzQt1c55CaPmxf1TytrOAnY//MmqmGH9DsSHLA1aqBXT1NL93GDih5DAThCgpTIDew7zRuAAsszDQsREsdTrITkfkRL+SvJGa8oNg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yRUGAsTglCAyPaD2qqPp307hRSbH7SQ58At8/WHpiuU=;
- b=HLCJkMVn8vN+vlXhkpxTi3uT5M/L/Wqlewur5pSMNxtUixcfDgnTHKjHRK0nFjcOJ4ZTcfg1ihiOJtSwRhBbi9PFswqqubuM02HE7TP/7AvcWCk98j6h/MA740RS2Z0b2RdTKm7r4EZjuBcXzmOl3DRc1Y2aStrQbfiVsGElTU2hYyfH2YxiakJemJVWnCuFgRDWoadiqZk7GbTrljQKGJkFPfMbqmGpr7IlJrkyjKNw+StVrS1hQxl3eolWiYXFH4JA6hPwycRkaae4TW3tkubOPhWBza19KZCOtCfOX7Xb+BA2MDWC4F9VYTPGmgsI4jsBjn/tLl4eoRlS3r78HQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229707AbjDTQuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:50:15 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587E5421F
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:50:07 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id 46e09a7af769-6a5dd070aa1so456951a34.3
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:50:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yRUGAsTglCAyPaD2qqPp307hRSbH7SQ58At8/WHpiuU=;
- b=YeTxmB0YUW+Iu5W7bfr4wJtU8g75uZMnnJ4bv2F3am0UGfASnUJUI+CzBFhLtSRerMpTKl9iWBDNhEWmCY5GO3JVws0RjD8ZVyQsessdd/WAQgiLrYPsZRrflMD+jEyPakbYSsIF1WPWjBFcrZwwYpx1caENEeeyui9wCPyjA3g=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MN2PR13MB3646.namprd13.prod.outlook.com (2603:10b6:208:1e3::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.20; Thu, 20 Apr
- 2023 16:49:33 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Thu, 20 Apr 2023
- 16:49:32 +0000
-Date:   Thu, 20 Apr 2023 18:49:25 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Danielle Ratson <danieller@nvidia.com>,
-        Pranavi Somisetty <pranavi.somisetty@amd.com>,
-        Harini Katakam <harini.katakam@amd.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Aaron Conole <aconole@redhat.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 3/9] net: enetc: only commit preemptible TCs
- to hardware when MM TX is active
-Message-ID: <ZEFtFX9LXxcc+Umn@corigine.com>
-References: <20230418111459.811553-1-vladimir.oltean@nxp.com>
- <20230418111459.811553-4-vladimir.oltean@nxp.com>
- <ZEFPbNCNDWy0c8eK@corigine.com>
- <20230420163453.4moc7ie327g5rgfn@skbuf>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230420163453.4moc7ie327g5rgfn@skbuf>
-X-ClientProxiedBy: AM8P189CA0025.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:218::30) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682009406; x=1684601406;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6oCjMzDCo666o0o05nA5ZEezvfE07tQGy7QyCkzH2Wo=;
+        b=bhuF95tFnR5BSNbNOU0zibs//tjGPELumgfmxNTyHqKxvPGI3RCHaqGvOdXCJRxgWU
+         izPz8HUJRrI8JaDkYg0IZl7yYGRkbR63iaSV1IQUuWke7xq//3vSQMwsyPXgPpFeliD5
+         i9Kj2V1osRrq6tgLBMcMcGje2Z82z+OiU29+0n5VEVHmrYpp8RVcGfPhyXHyPzS5MWag
+         GW3Ui5H00HzozUDsYIZ4J3R/E36nKN6teBxe+jRPvniLe0fTBCdXSm6Fql5ewigvxg2l
+         3iuoWECEAv6XgJidTqwfKThAI9cLSVW5iNwK/IcTYQwVvFMoln3vN2b0htzs6Xqa6NnX
+         ivLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682009406; x=1684601406;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6oCjMzDCo666o0o05nA5ZEezvfE07tQGy7QyCkzH2Wo=;
+        b=aL1gJ0Ru0myjuNOqW8bK4htwU2xjLaOHva16I6XI1g75eBmwuDMgzEaCIXJvEhxM/c
+         361b69tyU0nZxUwVU7KADoRrJk0MPIuZ//lcqXU+QB64EZsjl5V4AMwWHI1AWDpbJifR
+         Z5WZ7D0EIw4lNFbSQ1PWuQCoxq3H+8Stt/C5P+QQSNjzF4q/C4jjQliKCwWiNi1qodAq
+         L9fqh10NDGxM7xTzoYznAC6UaYGIZ1R74IRd0SPOmzW/3v4Q5dF0/FKYc3qsav9CN+f3
+         ASjIt2lX+ouZ+feQpPJ5CSSzv21DfQZr6lWRWTah7vTPOBEXp6cPyJw7NBzV9koghvB4
+         4vTg==
+X-Gm-Message-State: AAQBX9fm/KC4t5TH6MYIzcS3yD4vDb7JUU7gzcQ9cg6zLtPPhBS2+U0d
+        m/VvFEhMzL+x877up6xKTrCKqs0Kd9CialRMU2g=
+X-Google-Smtp-Source: AKy350aNK2fXWVjT3fB6jMMYG82atp+zAIsHab3GI433oKZjmI1Z0moNzNQ9NXhps14DnWc/ESMM9g==
+X-Received: by 2002:a9d:6c86:0:b0:6a5:d450:1c30 with SMTP id c6-20020a9d6c86000000b006a5d4501c30mr1167207otr.33.1682009406329;
+        Thu, 20 Apr 2023 09:50:06 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75])
+        by smtp.gmail.com with ESMTPSA id p26-20020a9d695a000000b006a13dd5c8a2sm894542oto.5.2023.04.20.09.50.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Apr 2023 09:50:05 -0700 (PDT)
+From:   Pedro Tammela <pctammela@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, simon.horman@corigine.com,
+        Pedro Tammela <pctammela@mojatatu.com>
+Subject: [PATCH net-next v3 3/5] net/sched: sch_qfq: refactor parsing of netlink parameters
+Date:   Thu, 20 Apr 2023 13:49:26 -0300
+Message-Id: <20230420164928.237235-4-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230420164928.237235-1-pctammela@mojatatu.com>
+References: <20230420164928.237235-1-pctammela@mojatatu.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3646:EE_
-X-MS-Office365-Filtering-Correlation-Id: e594725a-ee89-44b1-77a5-08db41bf3749
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JiAzeqESuBZB7xhNctqAaN48lMpH9LBWGJq2tm8yae3wbRR083luN+AxiSb3kOO7QIFgDzTODjeKrS0tf7kZIYoOQ9+KBIYhYxX8+ilMU/SVaKTFakOMgl0JnSD2DOBV7nQptDRqe3pXDgXjJH5z3Um4mULSYHI0IMszgJeesG+1PnuguPHO2Y1FF9EWZv9jDYh37UIPUy2SNRtRvz78Qo+mN1zPpjsGoEuiGrSgq3phpFik/VKzlUgXNcCdmNsEVvgAnx56ZBs1QtnSbBLN4ui0edwtNz7FifF1CvkGRuGPax4Ga27lkGBGmYIH5dy8d9OlE9lpIZz+2/kj4swZqYpBzz49OBxR0oDbLPHK3jN/voJ0vGExXUJgTbbnbsQrOr4pocGXdbfmgSwiFCl/Dyv3dO5+RGyDmqnCW4BW92biKzFHW7Z3emAkdViASw3EdWjFwIPM9WdYsgo3/RsBYA8IbxPiJ9TSRQjRgOD2pzbyNVO3tdZ3s6oCECxqEXorqe0ydTBxtCKJnTAhQTDarQ0Q2wXdknULCCRjpZOhDsvc2Gl1/3MEVyBTDS7CrD1RTimXuVvXaycjTt7+PpTEMnewx07j2KDKZ7UiDKpz4DQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(396003)(376002)(346002)(366004)(136003)(451199021)(36756003)(478600001)(54906003)(6486002)(6666004)(41300700001)(8936002)(8676002)(38100700002)(66476007)(66556008)(66946007)(316002)(4326008)(6916009)(2616005)(83380400001)(186003)(6512007)(6506007)(86362001)(44832011)(2906002)(5660300002)(7416002)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9/T2YwL4heUItZzfgb7stNoKZbME3ASMxXU6ZfTKR92+TtPP/gZ99SaiUue7?=
- =?us-ascii?Q?EensX2PCPmrdETaXXmGun2bTeKl8lTpOLuvY9v1jHlVJCSAHj4qOqrLtIAbr?=
- =?us-ascii?Q?DJS1scNVpdIAI+G1M48nWL1cXxpd4Xc4O6I2hJqEPa9T+A12mEcgdMvEQ6W9?=
- =?us-ascii?Q?MSAmV/z/90fTtcRCFJcBT+jSxOfI0zom+1omYg8eBhwnnTUU4ieDJ8GfmJqZ?=
- =?us-ascii?Q?xeQrW6BSC26VR2xC2QtnQ0oAIEM+CAoJe1MDA0bFyq5Y1DIry1yc8FNVNQ1o?=
- =?us-ascii?Q?okRfswdXophCebtrsbc3qXaO8c+2+k7b0AiVpcfdJ3e2XTVYMm2nDrcZ+nts?=
- =?us-ascii?Q?eOGtxHaexRgUe12rMfQrRoS+f6t6ZMVAxYy9aQpYmcpFmK17q87cGeF4KFpX?=
- =?us-ascii?Q?x4hp38vf8YzhPxNYEsTuGENII5IjQgWJ6cPopywlMyn39VBlCHyNhTczdWrJ?=
- =?us-ascii?Q?yfqMrkcA4JQ86MkTp1u0CekKYTS2vtDMc+1DquEmt0SKA8Oj3EUz/U110EQo?=
- =?us-ascii?Q?4S0Lh7tW6NEA0hRa+SYE3fcush42+UeTQvtvh8IyWDO1l2TRLEQA0X5U7bbs?=
- =?us-ascii?Q?1NX4skve1ZS9w/PIRsDz0RmTpzJcJFObALptQsZQbAC/jbj6KYbiFGj/MpG7?=
- =?us-ascii?Q?ZMRMvBbay9Us0zQIUd30MycYZGpLh/DjBjVGYN9lTcBwgxSvi1/2dJ4w9FXe?=
- =?us-ascii?Q?6thKGns1tqo/urVQUtprJgEjeYpYNfl2UYAK1X2lNr8emNpcrUJrQ2y9iYtN?=
- =?us-ascii?Q?HRiBz56uWla9zLmbbz9wR+L2sKGJYpsmYheWn899HlWENVkpf0fP5Ua63HN4?=
- =?us-ascii?Q?T4StbTrKcA1vuIgRc5QA4nQ8LOuQVmWR5qps9SO53wxy0cFqg74RogbGfqxj?=
- =?us-ascii?Q?sWfWC+O9nRRtFbRkYXnANfLtHXzB/veEmUiW+uJFXlVq0mO/Ffvu2ZRPjDGn?=
- =?us-ascii?Q?Li+kZYlm422bNON5wZO2p6CQ62w3Bxh5aIvDzja94ViAWSrr/4GAeZJ2ZQKs?=
- =?us-ascii?Q?JXUpImpVTTZ9ISN7YWQEYfBDtIS0sn2cGnAVq1uOuSamkIaa9y6IYYP0gAcv?=
- =?us-ascii?Q?nzdPFiOUp82Va9OMi5IUiXDtXklHPSbcjREYDqAZdga0vbP3413yQ6o8q7E9?=
- =?us-ascii?Q?T/HMT/KJ3Z7AHpDNyvtBfqAN7tj/4M2CdgXPCejQg8gHAOG1B4joLh6eURg4?=
- =?us-ascii?Q?iw1PEorExDkX4pEgk4UTPiNOO8UTkJoAydTbOWSO3OPs13onat8ynlard1x4?=
- =?us-ascii?Q?IlEXOf9gnvVEZv7sPVLoT04QkK5ank6J5/QKADPUXdVdmN8bv3nyFcScCi6g?=
- =?us-ascii?Q?hLk7JgZQxKCu2+Ww8qSslh7XnQCtfufNyhxCK6a0lCXoh1Zbt1rADql/Ppea?=
- =?us-ascii?Q?Z+8iU7bdvkqCfKfUf9h7KT0k6ZhYdlZiFNzUORoQ6nXOC2KVxGXFnj164H1Z?=
- =?us-ascii?Q?XH4G09muens9vHtV/mbbpT/1+eQ9zqgP6JeCK84SBBrwNj2tziBvo2KOLxCN?=
- =?us-ascii?Q?LI1zff0l+ndLimuGyo45YMF3hge6jx8WlKvzFCJktQtSnZExHJ3YZLW/jsUA?=
- =?us-ascii?Q?MAxi/ZQFLCshj+DI+qvyrlZgFj55YIJYg8w8kRU8TCvs4vvF6rGX0+g8ojNG?=
- =?us-ascii?Q?c564zbUk4/0srk1Rxe1HLLeoRx8gEJ1MXYx8Z+lEnzq7OTb69CXzsUD4RCpI?=
- =?us-ascii?Q?Lf1m9g=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e594725a-ee89-44b1-77a5-08db41bf3749
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2023 16:49:32.7199
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ea6mWctRDosiPqVshePMQl4+3ABj58JczrLyOxfO4iH2AhDAuIx9GSpFyIFA9dayQMXl35Le6gpFvXS8EzGU2vvEO42+WU8Etxxc5tDH2AM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3646
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -132,79 +72,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 07:34:53PM +0300, Vladimir Oltean wrote:
-> On Thu, Apr 20, 2023 at 04:42:52PM +0200, Simon Horman wrote:
-> > > +	/* This will time out after the standard value of 3 verification
-> > > +	 * attempts. To not sleep forever, it relies on a non-zero verify_time,
-> > > +	 * guarantee which is provided by the ethtool nlattr policy.
-> > > +	 */
-> > > +	return read_poll_timeout(enetc_port_rd, val,
-> > > +				 ENETC_MMCSR_GET_VSTS(val) == 3,
-> > 
-> > nit: 3 is doing a lot of work here.
-> >      As a follow-up, perhaps it could become part of an enum?
-> 
-> IMHO it's easy to abuse enums, when numbers could do just fine. I think
-> that in context (seeing the entire enetc_ethtool.c), this is not as bad
-> as just this patch makes it to be, because the other occurrence of
-> ENETC_MMCSR_GET_VSTS() is:
-> 
-> 	switch (ENETC_MMCSR_GET_VSTS(val)) {
-> 	case 0:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_DISABLED;
-> 		break;
-> 	case 2:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_VERIFYING;
-> 		break;
-> 	case 3:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_SUCCEEDED;
-> 		break;
-> 	case 4:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_FAILED;
-> 		break;
-> 	case 5:
-> 	default:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_UNKNOWN;
-> 		break;
-> 	}
-> 
-> so it's immediately clear what the 3 represents (in vim I just press '*'
-> to see the other occurrences of ENETC_MMCSR_GET_VSTS).
+Two parameters can be transformed into netlink policies and
+validated while parsing the netlink message.
 
-Thanks.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+---
+ net/sched/sch_qfq.c | 28 +++++++++++++---------------
+ 1 file changed, 13 insertions(+), 15 deletions(-)
 
-I did see the code above, and I do agree it is informational
-wrt the meaning of the values.
+diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
+index 323609cfbc67..dfd9a99e6257 100644
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -113,6 +113,7 @@
+ 
+ #define QFQ_MTU_SHIFT		16	/* to support TSO/GSO */
+ #define QFQ_MIN_LMAX		512	/* see qfq_slot_insert */
++#define QFQ_MAX_LMAX		(1UL << QFQ_MTU_SHIFT)
+ 
+ #define QFQ_MAX_AGG_CLASSES	8 /* max num classes per aggregate allowed */
+ 
+@@ -214,9 +215,14 @@ static struct qfq_class *qfq_find_class(struct Qdisc *sch, u32 classid)
+ 	return container_of(clc, struct qfq_class, common);
+ }
+ 
++static struct netlink_range_validation lmax_range = {
++	.min = QFQ_MIN_LMAX,
++	.max = QFQ_MAX_LMAX,
++};
++
+ static const struct nla_policy qfq_policy[TCA_QFQ_MAX + 1] = {
+-	[TCA_QFQ_WEIGHT] = { .type = NLA_U32 },
+-	[TCA_QFQ_LMAX] = { .type = NLA_U32 },
++	[TCA_QFQ_WEIGHT] = NLA_POLICY_RANGE(NLA_U32, 1, QFQ_MAX_WEIGHT),
++	[TCA_QFQ_LMAX] = NLA_POLICY_FULL_RANGE(NLA_U32, &lmax_range),
+ };
+ 
+ /*
+@@ -408,26 +414,18 @@ static int qfq_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
+ 	}
+ 
+ 	err = nla_parse_nested_deprecated(tb, TCA_QFQ_MAX, tca[TCA_OPTIONS],
+-					  qfq_policy, NULL);
++					  qfq_policy, extack);
+ 	if (err < 0)
+ 		return err;
+ 
+-	if (tb[TCA_QFQ_WEIGHT]) {
++	if (tb[TCA_QFQ_WEIGHT])
+ 		weight = nla_get_u32(tb[TCA_QFQ_WEIGHT]);
+-		if (!weight || weight > (1UL << QFQ_MAX_WSHIFT)) {
+-			pr_notice("qfq: invalid weight %u\n", weight);
+-			return -EINVAL;
+-		}
+-	} else
++	else
+ 		weight = 1;
+ 
+-	if (tb[TCA_QFQ_LMAX]) {
++	if (tb[TCA_QFQ_LMAX])
+ 		lmax = nla_get_u32(tb[TCA_QFQ_LMAX]);
+-		if (lmax < QFQ_MIN_LMAX || lmax > (1UL << QFQ_MTU_SHIFT)) {
+-			pr_notice("qfq: invalid max length %u\n", lmax);
+-			return -EINVAL;
+-		}
+-	} else
++	else
+ 		lmax = psched_mtu(qdisc_dev(sch));
+ 
+ 	inv_w = ONE_FP / weight;
+-- 
+2.34.1
 
-> I considered it, but I don't feel an urgent necessity to add an enum here.
-> Doing that would essentially transform the code into:
-> 
-> 	return read_poll_timeout(enetc_port_rd, val,
-> 				 ENETC_MMCSR_GET_VSTS(val) == ENETC_MM_VSTS_SUCCEEDED,
-> 
-> 	switch (ENETC_MMCSR_GET_VSTS(val)) {
-> 	case ENETC_MMCSR_VSTS_DISABLED:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_DISABLED;
-> 		break;
-> 	case ENETC_MMCSR_VSTS_VERIFYING:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_VERIFYING;
-> 		break;
-> 	case ENETC_MMCSR_VSTS_SUCCEEDED:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_SUCCEEDED;
-> 		break;
-> 	case ENETC_MMCSR_VSTS_FAILED:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_FAILED;
-> 		break;
-> 	case ENETC_MMCSR_VSTS_UNKNOWN:
-> 	default:
-> 		state->verify_status = ETHTOOL_MM_VERIFY_STATUS_UNKNOWN;
-> 		break;
-> 	}
-> 
-> which to my eye is more bloated.
-
-I guess it's subjective.
-I certainly don't feel strongly about this.
-And I appreciate you taking the time to respond to my idea.
-
-I have no objections to leaving this patch as is (with '3').
