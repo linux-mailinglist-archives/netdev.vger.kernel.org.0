@@ -2,72 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D4A06E9844
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 17:27:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0F906E984C
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 17:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231320AbjDTP1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 11:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
+        id S231680AbjDTP3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 11:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbjDTP1O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 11:27:14 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1048AE69;
-        Thu, 20 Apr 2023 08:27:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ZIh7X3Hg0zgJSWfk7ukimasZ+fd2z71MtBN7Lri4xSI=; b=VKUEoirwxIGgWesEl68e5P1YPA
-        YzSyskoU4nGativgYNuY7TG5ylFZOANFA1Mfh8wYbrAjlBxV/yQ0oB0j/+oN8tMSI8oGx5trjEGkb
-        H0R7Bm3TicD96ul7Y5sQh48PkJLxh+h17Ci1XV6TdywGLfRt+zsIMRVxkaAKFaeALR/g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ppWBT-00Anmo-1W; Thu, 20 Apr 2023 17:26:55 +0200
-Date:   Thu, 20 Apr 2023 17:26:55 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
-        oe-kbuild-all@lists.linux.dev,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [lunn:v6.3-rc2-net-next-phy-leds 5/15] ld.lld: error: undefined
- symbol: devm_mdiobus_alloc_size
-Message-ID: <2e7f5511-08e2-4ee0-ab3f-481ba6724824@lunn.ch>
-References: <202303241935.xRMa6mc6-lkp@intel.com>
- <f16fb810-f70d-40ac-8e9d-2ada008c446d@app.fastmail.com>
- <758fff85-aefc-4e0a-97b1-fe7179fafac6@lunn.ch>
- <91c716f0-bf7f-4fdf-8cb7-83f1bdc0cbd4@app.fastmail.com>
+        with ESMTP id S231654AbjDTP3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 11:29:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C0840D2
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 08:29:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEFAB6367B
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 15:29:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0F6CC433D2;
+        Thu, 20 Apr 2023 15:29:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682004558;
+        bh=KxF0X0e+6QfOHUz9HdUdkwLD6uZ8PUi+DLFovTpJ5KA=;
+        h=From:Date:Subject:To:Cc:From;
+        b=IXXk49S7dRASllcgODMsq2w5t6kZVausWV2Vo1kR44VlG/bpqPAcEbyFjPSO0R2Ul
+         FKflVdVFpCjyGwCTonIqAvcy4xT2QPwKnatXUYuqEJerbn16SrN4Z6PZSStfWOCUdg
+         Ruo3pnN0BstP2DC+fhgcPMrhb4S9auxkcH0a9K0j+PaoY51JOiDN84UAc+o+Oa8RSC
+         krzUrHeRsD6eFTa5fO02HYXU7C4EnmMUvLQiX/fmN90QMJDB6ycVeM1BUFaaS+ZRtB
+         CYkSAu2+PQVZbncvpHOyiBJs8p8wfLt0piEFXDYeT1dzlYQOcHYN03S0NNuUC4nweV
+         uGDRRAVgmlBew==
+From:   Simon Horman <horms@kernel.org>
+Date:   Thu, 20 Apr 2023 17:29:08 +0200
+Subject: [PATCH] bonding: Always assign be16 value to vlan_proto
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <91c716f0-bf7f-4fdf-8cb7-83f1bdc0cbd4@app.fastmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230420-bonding-be-vlan-proto-v1-1-754399f51d01@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAENaQWQC/x2NSQrDMAwAvxJ0rsBV0oV+pfRgO2oiMHKQ21AI+
+ XtEjzMwzAaNTbjBo9vAeJUmVR3Opw7yHHVilNEZKFAfBgqYqo6iEybGtUTFxeqn4qXPTFficOM
+ 7eJtiY0wWNc9e67cUl4vxW37/2fO17weMZhNEfAAAAA==
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>, netdev@vger.kernel.org
+X-Mailer: b4 0.12.2
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I think the best way is to drop your MDIO_DEVRES patch and instead
-> apply mine (or some variation of that) from
-> 
-> https://lore.kernel.org/lkml/20230420084624.3005701-1-arnd@kernel.org/
-> 
-> Once any missing or recursive dependencies are handled, the devres
-> problem should be fixed as well. I have completed around 150
-> randconfig builds with that patch and have not seen any further
-> problems.
+The type of the vlan_proto field is __be16.
+And most users of the field use it as such.
 
-Hi Arnd
+In the case of setting or testing the field for the
+special VLAN_N_VID value, host byte order is used.
+Which seems incorrect.
 
-Is this on top of my patch? Or does it require mine is reverted?  I
-can send a revert if it is needed.
+Address this issue by converting VLAN_N_VID to __be16.
 
-   Andrew
+I don't believe this is a bug because VLAN_N_VID in
+both little-endian (and big-endian) byte order does
+not conflict with any valid values (0 through VLAN_N_VID - 1)
+in big-endian byte order.
+
+Reported by sparse as:
+
+ .../bond_main.c:2857:26: warning: restricted __be16 degrades to integer
+ .../bond_main.c:2863:20: warning: restricted __be16 degrades to integer
+ .../bond_main.c:2939:40: warning: incorrect type in assignment (different base types)
+ .../bond_main.c:2939:40:    expected restricted __be16 [usertype] vlan_proto
+ .../bond_main.c:2939:40:    got int
+
+No functional changes intended.
+Compile tested only.
+
+Signed-off-by: Simon Horman <horms@kernel.org>
+---
+ drivers/net/bonding/bond_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index db7e650d9ebb..7f4c75fe58e1 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2854,13 +2854,13 @@ static bool bond_handle_vlan(struct slave *slave, struct bond_vlan_tag *tags,
+ 	struct net_device *slave_dev = slave->dev;
+ 	struct bond_vlan_tag *outer_tag = tags;
+ 
+-	if (!tags || tags->vlan_proto == VLAN_N_VID)
++	if (!tags || tags->vlan_proto == cpu_to_be16(VLAN_N_VID))
+ 		return true;
+ 
+ 	tags++;
+ 
+ 	/* Go through all the tags backwards and add them to the packet */
+-	while (tags->vlan_proto != VLAN_N_VID) {
++	while (tags->vlan_proto != cpu_to_be16(VLAN_N_VID)) {
+ 		if (!tags->vlan_id) {
+ 			tags++;
+ 			continue;
+@@ -2936,7 +2936,7 @@ struct bond_vlan_tag *bond_verify_device_path(struct net_device *start_dev,
+ 		tags = kcalloc(level + 1, sizeof(*tags), GFP_ATOMIC);
+ 		if (!tags)
+ 			return ERR_PTR(-ENOMEM);
+-		tags[level].vlan_proto = VLAN_N_VID;
++		tags[level].vlan_proto = cpu_to_be16(VLAN_N_VID);
+ 		return tags;
+ 	}
+ 
+
