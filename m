@@ -2,103 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7132F6E9DAE
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 23:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4166B6E9DCB
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 23:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232429AbjDTVKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 17:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
+        id S231446AbjDTVXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 17:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbjDTVJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 17:09:58 -0400
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0C3D1;
-        Thu, 20 Apr 2023 14:09:56 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1682024993; bh=e/+N2oFyRcFf1leQm0okZY38id+c7Uk4APOwA1A79GA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=ZpN9C5TDA5nNRpPvLpb0I6VQyKze6wtjkuje/bvI+vCVIqOMWRn8uLWtE4cdsbNkh
-         9uJ+QdRCbzTdpymslBNXH8tOuEh47CQuU3MIRfj6Amk/5M3T9ZAvkobSiqp1SjO1a8
-         APtEdFA76SZXsXp4SdOJam2tJiTxEcjcqsOvY5VSagqtk0wH33Y/rMzME++2vuFIqW
-         UbbkGakiUuu6ZND877pnCmwHpKhSjoYKFF0mLwa18/Rw/4CrR056jLHs061Rlrn5nM
-         kaObEyR7xXowlWj5vmHTOFSH+Lh8gfSMvP+2XHsYYcY/cVwXBAWFVTgo5bQ68fuLhM
-         J6tYADf61+F7Q==
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Colin Ian King <colin.i.king@gmail.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Linux kernel regressions list <regressions@lists.linux.dev>
-Subject: One-off regression fix for 6.3 [was: Re: [PATCH] wifi: ath9k: Don't
- mark channelmap stack variable read-only in
- ath9k_mci_update_wlan_channels()]
-In-Reply-To: <20230413214118.153781-1-toke@toke.dk>
-References: <20230413214118.153781-1-toke@toke.dk>
-Date:   Thu, 20 Apr 2023 23:09:52 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87zg72s1jz.fsf@toke.dk>
+        with ESMTP id S229990AbjDTVXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 17:23:42 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CF030C5
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 14:23:39 -0700 (PDT)
+Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com [209.85.210.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 6F1214425C
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 21:23:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1682025815;
+        bh=HBG9VOFtZIMtAywBR/nqNm9aM9egFJsYV2JJSs37XUU=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=r6kxwESNdcs/6zsGx7K4DqLmWlCA0QVKwTizCVi4A/Xb3yVor9m9VdoRGmybUQeDn
+         KGBHP7Ky3ad29UQHa/LfgJRmF7iKzGy5X5qrRHg5KdEdwImawj5PjwAzM/kgmA4Ra6
+         5xoKTHCsyayDTwnvssqn+4cCrOMuN3LoFFIbrH7F+qaSdeGkDlMayYe6CVNE67jobq
+         mYM+fnEq2AxOmrMZ1VsY9ac4auQwD7lBPqxJIr9Tz9tqXruARGCAb7f0+LNhIuKu+i
+         6YOXbDp/57YdpSl4ScDsqnaF4a0VcrHilmUGtzSTQNFYpkxnZg+a8tP/XJHD5U6ZKa
+         ot7L1ppP0YBDw==
+Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-63b27afef94so1727696b3a.1
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 14:23:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682025814; x=1684617814;
+        h=message-id:date:content-id:mime-version:comments:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HBG9VOFtZIMtAywBR/nqNm9aM9egFJsYV2JJSs37XUU=;
+        b=QlzVGkt7URlSFMYMd8/MD/qY4TaP5VnhZdQjoIDN8ZSUm5/8NvodDtw75px3oOd4/n
+         9ORtqEaIDt797+c5/T8a0GeIvcAVV1syXF1T8914u7/FWIRu8RljhcUxTvoOYK0q6Lun
+         qZ7U+UwmKoZgRLr0WWRC1eatTdIUzpw8temr/XpdPFC37Yoln5/2vzY+sC2VQBVqJMvM
+         QDiRDeOKeFBsVp5oUFhX8OgOdHoDcXd6gS6s6HknM4i238+Ejag8NsmBP/QhxsX0bCuY
+         SRTpHevNxVyh7ADvWNk9X2nsnDKSRWglD6Sq0ndkdPKO0qfOWD36/G0XK45p3r4wwlSd
+         O8AQ==
+X-Gm-Message-State: AAQBX9f/7dXBS5+jkZkJDg/O89o+uCpxmCdSG2jfphGoc9ETrvMpBb7a
+        MGIV7awUZ8IBz5eOy04K8lLQMjbcJJvV82fR0b/wuK1mdccUjvHtQxmMFSzLddly/mL1fvM/0q1
+        Tw8+GTqIrOmsJy+/dyOnHhwE+WrNVIMtnRMLycKwYEQ==
+X-Received: by 2002:a05:6a00:1a86:b0:63d:315f:560f with SMTP id e6-20020a056a001a8600b0063d315f560fmr3037986pfv.13.1682025813914;
+        Thu, 20 Apr 2023 14:23:33 -0700 (PDT)
+X-Google-Smtp-Source: AKy350aCVNcZ+fbqx3NmBFIyCbzrVMUcKpV+ZjqAhR2eIojiu3gS59Ek0g53E0q8zA2EULqPf5n97A==
+X-Received: by 2002:a05:6a00:1a86:b0:63d:315f:560f with SMTP id e6-20020a056a001a8600b0063d315f560fmr3037971pfv.13.1682025813643;
+        Thu, 20 Apr 2023 14:23:33 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.253])
+        by smtp.gmail.com with ESMTPSA id d19-20020a056a0024d300b0063b488f3305sm1657958pfv.155.2023.04.20.14.23.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Apr 2023 14:23:33 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id AEF9B607E6; Thu, 20 Apr 2023 14:23:32 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id A72D49FB79;
+        Thu, 20 Apr 2023 14:23:32 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+cc:     Simon Horman <horms@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Gospodarek <andy@greyhouse.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] bonding: Always assign be16 value to vlan_proto
+In-reply-to: <20230420202303.iecl2vnkbdm2qfs7@skbuf>
+References: <20230420-bonding-be-vlan-proto-v1-1-754399f51d01@kernel.org> <9836.1682020053@famine> <20230420202303.iecl2vnkbdm2qfs7@skbuf>
+Comments: In-reply-to Vladimir Oltean <olteanv@gmail.com>
+   message dated "Thu, 20 Apr 2023 23:23:03 +0300."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <16321.1682025812.1@famine>
+Date:   Thu, 20 Apr 2023 14:23:32 -0700
+Message-ID: <16322.1682025812@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk> writes:
+Vladimir Oltean <olteanv@gmail.com> wrote:
 
-> This partially reverts commit e161d4b60ae3a5356e07202e0bfedb5fad82c6aa.
+>On Thu, Apr 20, 2023 at 12:47:33PM -0700, Jay Vosburgh wrote:
+>> Simon Horman <horms@kernel.org> wrote:
+>> 
+>> >The type of the vlan_proto field is __be16.
+>> >And most users of the field use it as such.
+>> >
+>> >In the case of setting or testing the field for the
+>> >special VLAN_N_VID value, host byte order is used.
+>> >Which seems incorrect.
+>> >
+>> >Address this issue by converting VLAN_N_VID to __be16.
+>> >
+>> >I don't believe this is a bug because VLAN_N_VID in
+>> >both little-endian (and big-endian) byte order does
+>> >not conflict with any valid values (0 through VLAN_N_VID - 1)
+>> >in big-endian byte order.
+>> 
+>> 	Is that true for all cases, or am I just confused?  Doesn't VLAN
+>> ID 16 match VLAN_N_VID (which is 4096) if byte swapped?
+>> 
+>> 	I.e., on a little endian host, VLAN_N_VID is 0x1000 natively,
+>> and network byte order (big endian) of VLAN ID 16 is also 0x1000.
+>> 
+>> 	Either way, I think the change is fine; VLAN_N_VID is being used
+>> as a sentinel value here, so the only real requirement is that it not
+>> match an actual VLAN ID in network byte order.
+>> 
+>> 	-J
 >
-> Turns out the channelmap variable is not actually read-only, it's modified
-> through the MCI_GPM_CLR_CHANNEL_BIT() macro further down in the function,
-> so making it read-only causes page faults when that code is hit.
+>In a strange twist of events, VLAN_N_VID is assigned as a sentinel value
+>to a variable which usually holds the output of vlan_dev_vlan_proto(),
+>or i.o.w. values like htons(ETH_P_8021Q), htons(ETH_P_8021AD). It is
+>certainly a confusion of types to assign VLAN_N_VID to it, but at least
+>it's not a valid VLAN protocol.
 >
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D217183
-> Fixes: e161d4b60ae3 ("wifi: ath9k: Make arrays prof_prio and channelmap s=
-tatic const")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
+>To answer your question, tags->vlan_proto is never compared against a
+>VLAN ID.
 
-Hi Linus
+	Yah, looking again I see that now; I was checking the math on
+Simon's statement about "0 through VLAN_N_VID - 1".
 
-Thorsten already pulled you into the thread further down, but I figured
-I'd do this writeup anyway so you have the full context:
+	So, I think the patch is correct, but the commit message should
+really explain the reality.  And, perhaps we should use 0 or 0xffff for
+the sentinel, since neither are valid Ethernet protocol IDs.
 
-The patch quoted above[0] fixes a regression in the ath9k driver that was
-introduced in 6.2, which causes a kernel BUG() whenever the "Bluetooth
-co-existence" feature in the driver is enabled (which seems to be the
-default on at least some systems).
+	-J
 
-Because of unfortunate timing (caused by an impedance mismatch between
-the wireless tree and the -net tree, and my failure to realise this and
-push it directly to -net), this patch did not make it into this week's
-network tree pull request to you. Which means that unless you decide to
-do an -rc8, this regression will also be in the 6.3 release, and it may
-take several more weeks before the fix makes it into a stable release.
-
-So, with a bit of prodding from Thorsten, I'm writing this to ask you if
-you'd be willing to pull this patch directly from the mailing list as a
-one-off? It's a fairly small patch, and since it's a (partial) revert
-the risk of it being the cause of new regressions should be fairly
-small. One of the reporters on the Bugzilla (linked above) confirmed
-that the patch does indeed fix the regression.
-
-In case you *don't* want to take this patch directly, Jakub has agreed
-to pull it directly into -net, in which case it'll land in your tree via
-the next networking pull request. Either way, as indicated by the
-sibling thread Thorsten Cc'ed you on, we'll take your opinion on the
-best way to handle this into account in the future. Just let us know :)
-
-Thanks,
--Toke
-
-
-[0] Direct Lore link: https://lore.kernel.org/r/20230413214118.153781-1-tok=
-e@toke.dk
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
