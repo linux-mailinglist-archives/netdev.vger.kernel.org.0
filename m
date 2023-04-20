@@ -2,47 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0809E6E8736
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 03:10:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5E86E8737
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 03:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232858AbjDTBKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 21:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
+        id S232904AbjDTBLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 21:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232936AbjDTBKt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 21:10:49 -0400
+        with ESMTP id S232966AbjDTBK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 21:10:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E141448E
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 18:10:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC3F49E0
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 18:10:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1344C64433
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:10:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3F2AC433EF;
-        Thu, 20 Apr 2023 01:10:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1517D6444C
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:10:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E267FC433D2;
+        Thu, 20 Apr 2023 01:10:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681953041;
-        bh=U+OtraWVtFjdO48dYGQc7Ln69uaRSvwBJv1iKwyxs5g=;
+        s=k20201202; t=1681953045;
+        bh=ZbNM2BK8ao5yA+3pJv/4/olqqrtkX/RVK48RK+9ixgo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pkblQb9Pbyz0KngHbtA9WvkC+j7zI+Hjvy/np8sm4gYp6BKgoPDexC3M5b13BBaRR
-         ZJVjqcxCF/WOm2KNLWva6Mm554V0236r6Ezy6bnHRVvFjRwyqtCBi4vlYeZtgriMx4
-         5m5jnyl3cTjqoSt4yD0EQPCHuTU60R+Fo0laoPrKjQq3j/i5re2dUi5RAeEOmAfPbQ
-         mz+hivTX7wmXNMTOizXSGTsh99lRv1fkyxW0GdKOBUucIckVBgi2NAMFjBh9GV/QgW
-         UCODxiU0x/26lqp7UujhIllDzP8Ntcy+n1mubF6FjmWkTI19PW6LLdojn6imyjIrNh
-         KFst3bGJvuF3g==
+        b=t21CLmzMKwjAUWXgWgG0ybSx2gepMQUFI9F8F2+7IWl8RpIG/15b0MGSm31FXk/rX
+         VN3jUIw2wcStBBOejxB9ukmxEijLGlsF2WRQ+WKi/Uu16Qj4yTyusLRXyrASHvwiRq
+         0KprxYqUK6CgDtqaEK8i1o/lYoK47NWJ1K595lDZAPPjhpIImOPuQ3dk4Cw0w+TBHo
+         43SBFynQLHkC8oM1QLv2LfCrhc5BaySA46M7Mlz0Cyk54tKf3Cl6cHGOV0sOtXe/In
+         Aa8NvwJ9Z3GOKwpHZU7dGOcn2bMYYoZQcJtvBaFDfq9zHFzvwm909P7XVZr7scZXtr
+         nVELN0z5vYOVw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Maher Sanalla <msanalla@nvidia.com>
-Subject: [net 08/10] net/mlx5: Use recovery timeout on sync reset flow
-Date:   Wed, 19 Apr 2023 18:09:57 -0700
-Message-Id: <20230420010959.276760-9-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>, Aya Levin <ayal@nvidia.com>
+Subject: [net 09/10] net/mlx5e: Nullify table pointer when failing to create
+Date:   Wed, 19 Apr 2023 18:09:58 -0700
+Message-Id: <20230420010959.276760-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230420010959.276760-1-saeed@kernel.org>
 References: <20230420010959.276760-1-saeed@kernel.org>
@@ -58,58 +56,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Aya Levin <ayal@nvidia.com>
 
-Use the same timeout for sync reset flow and health recovery flow, since
-the former involves driver's recovery from firmware reset, which is
-similar to health recovery. Otherwise, in some cases, such as a firmware
-upgrade on the DPU, the firmware pre-init bit may not be ready within
-current timeout and the driver will abort loading back after reset.
+On failing to create promisc flow steering table, the pointer is
+returned with an error. Nullify it so unloading the driver won't try to
+destroy a non existing table.
 
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Fixes: 37ca95e62ee2 ("net/mlx5: Increase FW pre-init timeout for health recovery")
-Reviewed-by: Maher Sanalla <msanalla@nvidia.com>
+Failing to create promisc table may happen over BF devices when the ARM
+side is going through a firmware tear down. The host side start a
+reload flow. While the driver unloads, it tries to remove the promisc
+table. Remove WARN in this state as it is a valid error flow.
+
+Fixes: 1c46d7409f30 ("net/mlx5e: Optimize promiscuous mode")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c  | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index c5d2fdcabd56..e5f03d071a37 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -202,7 +202,7 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
- 			break;
- 		/* On fw_activate action, also driver is reloaded and reinit performed */
- 		*actions_performed |= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
--		ret = mlx5_load_one_devl_locked(dev, false);
-+		ret = mlx5_load_one_devl_locked(dev, true);
- 		break;
- 	default:
- 		/* Unsupported action should not get to this function */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index 289e915def98..50022e7565f1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -167,7 +167,7 @@ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
- 		if (mlx5_health_wait_pci_up(dev))
- 			mlx5_core_err(dev, "reset reload flow aborted, PCI reads still not working\n");
- 		else
--			mlx5_load_one(dev, false);
-+			mlx5_load_one(dev, true);
- 		devlink_remote_reload_actions_performed(priv_to_devlink(dev), 0,
- 							BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
- 							BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE));
-@@ -499,7 +499,7 @@ int mlx5_fw_reset_wait_reset_done(struct mlx5_core_dev *dev)
- 	err = fw_reset->ret;
- 	if (test_and_clear_bit(MLX5_FW_RESET_FLAGS_RELOAD_REQUIRED, &fw_reset->reset_flags)) {
- 		mlx5_unload_one_devl_locked(dev, false);
--		mlx5_load_one_devl_locked(dev, false);
-+		mlx5_load_one_devl_locked(dev, true);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+index f1dac0244958..33bfe4d7338b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+@@ -783,6 +783,7 @@ static int mlx5e_create_promisc_table(struct mlx5e_flow_steering *fs)
+ 	ft->t = mlx5_create_auto_grouped_flow_table(fs->ns, &ft_attr);
+ 	if (IS_ERR(ft->t)) {
+ 		err = PTR_ERR(ft->t);
++		ft->t = NULL;
+ 		fs_err(fs, "fail to create promisc table err=%d\n", err);
+ 		return err;
  	}
- out:
- 	clear_bit(MLX5_FW_RESET_FLAGS_PENDING_COMP, &fw_reset->reset_flags);
+@@ -810,7 +811,7 @@ static void mlx5e_del_promisc_rule(struct mlx5e_flow_steering *fs)
+ 
+ static void mlx5e_destroy_promisc_table(struct mlx5e_flow_steering *fs)
+ {
+-	if (WARN(!fs->promisc.ft.t, "Trying to remove non-existing promiscuous table"))
++	if (!fs->promisc.ft.t)
+ 		return;
+ 	mlx5e_del_promisc_rule(fs);
+ 	mlx5_destroy_flow_table(fs->promisc.ft.t);
 -- 
 2.39.2
 
