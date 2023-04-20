@@ -2,130 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 216296E9B35
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:04:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CADE16E9B36
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbjDTSEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 14:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57154 "EHLO
+        id S229562AbjDTSE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 14:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbjDTSET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:04:19 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B721FE4
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:04:18 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id d9443c01a7336-1a80d827179so12304035ad.3
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:04:18 -0700 (PDT)
+        with ESMTP id S230502AbjDTSE5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:04:57 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2B92D43
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:04:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682013858; x=1684605858;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=R8SDqO0kcGg6FMTWyVsYL0mmJaOaOLxA91lgupQ1gdY=;
-        b=Nyi2njUwpgs4nxYJZ9TGq9Byk4xJGsTLIGigs4WOSIo2UhH6YOmZMIX9OJ7UMQJKP4
-         XlXIhyrfGDuSmzWTbMgssVMHYQKyLQWIkdmyZelugAq1VrF3B0kZVQcQ4jWSSeAs49bw
-         ObL12q+JYqpYe4V/8eNq1b29mWnBvCzitJe3QvKW2jrKnHa1SDA/a4DjvikurcxcGcDW
-         wr2D5HNyAEe1dlcmLTXvt5YqxrKQp9Iq4NMqZad9PVS9N+uiBT9eaXEfdk8svBV+bUqv
-         KozuK5M85FO3xw5jNVC9XNWjQUNjIvKCIqAKbpZSmYvHQEgndw3Q9bL5TcEedYt1bPFv
-         RIoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682013858; x=1684605858;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=R8SDqO0kcGg6FMTWyVsYL0mmJaOaOLxA91lgupQ1gdY=;
-        b=MOuON9N4gfhcNnY8foTV3a09SqN3miQX7WRT7d+4V1g4cL++QHUDM9KYDTkQspOw0z
-         sDUQKP2U3MN4XGtHCfaJQfoxlv1lKYlishl8KwMHPstH71tf++/RLuh5lmuAl0l7iu24
-         GNgFvRUhsZbehWjS1oBNBSx2XGdGqi4FWLql4g7pKCVWfKmiMzKV1k/wEFhk8Io1bbEz
-         BDqnACTzyCKCcVQJb8W8g9PnYA3VU9ip1IT9A8IQfKFhKqeSjZhKnfKl+dadgnRq/WNH
-         GH+9YHwknuIpOcY+lzKdYrrbgsp1a+X4WAoml8wAAqH/9Zx+OosTkx0/DVt3wivfKyES
-         STWw==
-X-Gm-Message-State: AAQBX9diSF2ztbnCWDnKZTc0I/kx6lICMXlCRSracFw/K55xl8ZGporx
-        kxzfxmH5TMs5DhXHEC3XjC4ydOQSvuzEtvH0Cpk=
-X-Google-Smtp-Source: AKy350ZRJ38kvhY577+hYYOGp6CfOzMa/n/5GgqgU8YypUX+RKoENOQQt3zf4lihRgmHeUi+CooND4pxNE5NZGFvSnU=
-X-Received: by 2002:a17:902:c793:b0:19f:87b5:1873 with SMTP id
- w19-20020a170902c79300b0019f87b51873mr1961341pla.62.1682013857711; Thu, 20
- Apr 2023 11:04:17 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1682013896; x=1713549896;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tP8qnYr15ReO0AY5f+9xGn01iukE0IEVcqlh5ErZTQQ=;
+  b=FxksJ74Y3f8vhcEjEu1lABBk5imKlRxpbVPlwJw1WY/EEOt/6YbcSHrP
+   LYtNFITNj+bogbzTtPUjCpI21F0FQpAFH+h94SYTLHxe/6qAkJuhRT+JK
+   oO037k/y3+YslcZpNzuLOlBVaVoQmZENeFi1mcC7p3Ve9MGyim0VacNtF
+   g=;
+X-IronPort-AV: E=Sophos;i="5.99,213,1677542400"; 
+   d="scan'208";a="206568277"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-f7c754c9.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 18:04:53 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-m6i4x-f7c754c9.us-west-2.amazon.com (Postfix) with ESMTPS id 0C6EE40DA1;
+        Thu, 20 Apr 2023 18:04:53 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Thu, 20 Apr 2023 18:04:50 +0000
+Received: from 88665a182662.ant.amazon.com (10.106.100.17) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Thu, 20 Apr 2023 18:04:46 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Willem de Bruijn <willemb@google.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH v3 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.
+Date:   Thu, 20 Apr 2023 11:04:34 -0700
+Message-ID: <20230420180434.10861-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20230405063144.36231-1-glipus@gmail.com> <20230405123130.5wjeiienp5m6odhr@skbuf>
- <CAP5jrPH__dJpGepM6Vs45PH+Pppx6KOVnUDS5f44DGeyseghfQ@mail.gmail.com> <20230420161609.2b65a1ed@kmaincent-XPS-13-7390>
-In-Reply-To: <20230420161609.2b65a1ed@kmaincent-XPS-13-7390>
-From:   Max Georgiev <glipus@gmail.com>
-Date:   Thu, 20 Apr 2023 12:04:06 -0600
-Message-ID: <CAP5jrPFytnMku6TQNFQGBh4-=mL0z3XVq7ofY1z3LPYMP7_G0Q@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 1/5] Add NDOs for hardware timestamp get/set
-To:     =?UTF-8?Q?K=C3=B6ry_Maincent?= <kory.maincent@bootlin.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, kuba@kernel.org,
-        netdev@vger.kernel.org, maxime.chevallier@bootlin.com,
-        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
-        gerhard@engleder-embedded.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.106.100.17]
+X-ClientProxiedBy: EX19D042UWB002.ant.amazon.com (10.13.139.175) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 8:16=E2=80=AFAM K=C3=B6ry Maincent <kory.maincent@b=
-ootlin.com> wrote:
->
-> On Wed, 5 Apr 2023 09:54:27 -0600
-> Max Georgiev <glipus@gmail.com> wrote:
->
-> > On Wed, Apr 5, 2023 at 6:31=E2=80=AFAM Vladimir Oltean <vladimir.oltean=
-@nxp.com>
-> > wrote:
-> > >
-> > > On Wed, Apr 05, 2023 at 12:31:44AM -0600, Maxim Georgiev wrote:
-> > > > Current NIC driver API demands drivers supporting hardware timestam=
-ping
-> > > > to implement handling logic for SIOCGHWTSTAMP/SIOCSHWTSTAMP IOCTLs.
-> > > > Handling these IOCTLs requires dirivers to implement request parame=
-ter
-> > > > structure translation between user and kernel address spaces, handl=
-ing
-> > > > possible translation failures, etc. This translation code is pretty=
- much
-> > > > identical across most of the NIC drivers that support SIOCGHWTSTAMP=
-/
-> > > > SIOCSHWTSTAMP.
-> > > > This patch extends NDO functiuon set with ndo_hwtstamp_get/set
-> > > > functions, implements SIOCGHWTSTAMP/SIOCSHWTSTAMP IOCTL translation
-> > > > to ndo_hwtstamp_get/set function calls including parameter structur=
-e
-> > > > translation and translation error handling.
-> > > >
-> > > > This patch is sent out as RFC.
-> > > > It still pending on basic testing.
->
->
-> Just wondering about the status of this patch series.
-> Do you want hardware testing before v4?
-> As there were several reviews, I was waiting for the next version before =
-doing
-> any testing but if you ask for it to move forward I can deal with it.
-> Also, I have cadence macb MAC which supports time stamping, I can adapt y=
-our
-> last patch on e1000e to macb driver but I would appreciate if you do it
-> beforehand.
+syzkaller reported [0] memory leaks of an UDP socket and ZEROCOPY
+skbs.  We can reproduce the problem with these sequences:
 
-I've updated the patches in the stack based on the feedback you folks
-kindly shared
-for v3. I'm currently testing the combination of the changes in
-dev_ioctl.c and netdevsim
-driver changes - almost done with that. Let me finish this testing,
-then update the patch
-descriptions, and I'll be ready to send it out for review.
+  sk = socket(AF_INET, SOCK_DGRAM, 0)
+  sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING_TX_SOFTWARE)
+  sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
+  sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
+  sk.close()
 
-Regarding e1000e conversion patch: I don't have access to any NICs
-with hw timestamping
-support. I was going to drop the e1000e patch from v4 unless someone volunt=
-eered
-to test it on real hardware. But that will have to wait till the rest
-of the stack is reviewed and
-at least preliminary accepted, right?
+sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, sets
+skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, struct
+ubuf_info_msgzc indirectly holds a refcnt of the socket.  When the
+skb is sent, __skb_tstamp_tx() clones it and puts the clone into
+the socket's error queue with the TX timestamp.
+
+When the original skb is received locally, skb_copy_ubufs() calls
+skb_unclone(), and pskb_expand_head() increments skb->cb->ubuf.refcnt.
+This additional count is decremented while freeing the skb, but struct
+ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callback() is
+not called.
+
+The last refcnt is not released unless we retrieve the TX timestamped
+skb by recvmsg().  Since we clear the error queue in inet_sock_destruct()
+after the socket's refcnt reaches 0, there is a circular dependency.
+If we close() the socket holding such skbs, we never call sock_put()
+and leak the count, sk, and skb.
+
+TCP has the same problem, and commit e0c8bccd40fc ("net: stream:
+purge sk_error_queue in sk_stream_kill_queues()") tried to fix it
+by calling skb_queue_purge() during close().  However, there is a
+small chance that skb queued in a qdisc or device could be put
+into the error queue after the skb_queue_purge() call.
+
+In __skb_tstamp_tx(), the cloned skb should not have a reference
+to the ubuf to remove the circular dependency, but skb_clone() does
+not call skb_copy_ubufs() for zerocopy skb.  So, we need to call
+skb_orphan_frags_rx() for the cloned skb to call skb_copy_ubufs().
+
+[0]:
+BUG: memory leak
+unreferenced object 0xffff88800c6d2d00 (size 1152):
+  comm "syz-executor392", pid 264, jiffies 4294785440 (age 13.044s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 cd af e8 81 00 00 00 00  ................
+    02 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
+  backtrace:
+    [<0000000055636812>] sk_prot_alloc+0x64/0x2a0 net/core/sock.c:2024
+    [<0000000054d77b7a>] sk_alloc+0x3b/0x800 net/core/sock.c:2083
+    [<0000000066f3c7e0>] inet_create net/ipv4/af_inet.c:319 [inline]
+    [<0000000066f3c7e0>] inet_create+0x31e/0xe40 net/ipv4/af_inet.c:245
+    [<000000009b83af97>] __sock_create+0x2ab/0x550 net/socket.c:1515
+    [<00000000b9b11231>] sock_create net/socket.c:1566 [inline]
+    [<00000000b9b11231>] __sys_socket_create net/socket.c:1603 [inline]
+    [<00000000b9b11231>] __sys_socket_create net/socket.c:1588 [inline]
+    [<00000000b9b11231>] __sys_socket+0x138/0x250 net/socket.c:1636
+    [<000000004fb45142>] __do_sys_socket net/socket.c:1649 [inline]
+    [<000000004fb45142>] __se_sys_socket net/socket.c:1647 [inline]
+    [<000000004fb45142>] __x64_sys_socket+0x73/0xb0 net/socket.c:1647
+    [<0000000066999e0e>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<0000000066999e0e>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+    [<0000000017f238c1>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+BUG: memory leak
+unreferenced object 0xffff888017633a00 (size 240):
+  comm "syz-executor392", pid 264, jiffies 4294785440 (age 13.044s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 2d 6d 0c 80 88 ff ff  .........-m.....
+  backtrace:
+    [<000000002b1c4368>] __alloc_skb+0x229/0x320 net/core/skbuff.c:497
+    [<00000000143579a6>] alloc_skb include/linux/skbuff.h:1265 [inline]
+    [<00000000143579a6>] sock_omalloc+0xaa/0x190 net/core/sock.c:2596
+    [<00000000be626478>] msg_zerocopy_alloc net/core/skbuff.c:1294 [inline]
+    [<00000000be626478>] msg_zerocopy_realloc+0x1ce/0x7f0 net/core/skbuff.c:1370
+    [<00000000cbfc9870>] __ip_append_data+0x2adf/0x3b30 net/ipv4/ip_output.c:1037
+    [<0000000089869146>] ip_make_skb+0x26c/0x2e0 net/ipv4/ip_output.c:1652
+    [<00000000098015c2>] udp_sendmsg+0x1bac/0x2390 net/ipv4/udp.c:1253
+    [<0000000045e0e95e>] inet_sendmsg+0x10a/0x150 net/ipv4/af_inet.c:819
+    [<000000008d31bfde>] sock_sendmsg_nosec net/socket.c:714 [inline]
+    [<000000008d31bfde>] sock_sendmsg+0x141/0x190 net/socket.c:734
+    [<0000000021e21aa4>] __sys_sendto+0x243/0x360 net/socket.c:2117
+    [<00000000ac0af00c>] __do_sys_sendto net/socket.c:2129 [inline]
+    [<00000000ac0af00c>] __se_sys_sendto net/socket.c:2125 [inline]
+    [<00000000ac0af00c>] __x64_sys_sendto+0xe1/0x1c0 net/socket.c:2125
+    [<0000000066999e0e>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<0000000066999e0e>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+    [<0000000017f238c1>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
+Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+v3:
+  * Call skb_orphan_frags_rx() instead of adding locking rule and skb_queue_purge()
+
+v2: https://lore.kernel.org/netdev/20230418180832.81430-1-kuniyu@amazon.com/
+  * Move skb_queue_purge() after setting SOCK_DEAD in udp_destroy_sock()
+  * Check SOCK_DEAD in sock_queue_err_skb() with sk_error_queue.lock
+  * Add Fixes tag for TCP
+
+v1: https://lore.kernel.org/netdev/20230417171155.22916-1-kuniyu@amazon.com/
+---
+ net/core/skbuff.c | 3 +++
+ net/core/stream.c | 6 ------
+ 2 files changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 4c0879798eb8..2f9bb98170ab 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5162,6 +5162,9 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+ 			skb = alloc_skb(0, GFP_ATOMIC);
+ 	} else {
+ 		skb = skb_clone(orig_skb, GFP_ATOMIC);
++
++		if (skb_orphan_frags_rx(skb, GFP_ATOMIC))
++			return;
+ 	}
+ 	if (!skb)
+ 		return;
+diff --git a/net/core/stream.c b/net/core/stream.c
+index 434446ab14c5..e6dd1a68545f 100644
+--- a/net/core/stream.c
++++ b/net/core/stream.c
+@@ -196,12 +196,6 @@ void sk_stream_kill_queues(struct sock *sk)
+ 	/* First the read buffer. */
+ 	__skb_queue_purge(&sk->sk_receive_queue);
+ 
+-	/* Next, the error queue.
+-	 * We need to use queue lock, because other threads might
+-	 * add packets to the queue without socket lock being held.
+-	 */
+-	skb_queue_purge(&sk->sk_error_queue);
+-
+ 	/* Next, the write queue. */
+ 	WARN_ON_ONCE(!skb_queue_empty(&sk->sk_write_queue));
+ 
+-- 
+2.30.2
+
