@@ -2,107 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC9216E99EA
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99CE46E99EF
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbjDTQu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 12:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59242 "EHLO
+        id S229791AbjDTQwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 12:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbjDTQuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:50:17 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D362423C
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:50:13 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id 46e09a7af769-6a606135408so950691a34.0
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:50:13 -0700 (PDT)
+        with ESMTP id S229781AbjDTQwF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:52:05 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 203492710
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:52:04 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id e9e14a558f8ab-32abc2e7da8so2925985ab.3
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:52:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682009412; x=1684601412;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=google.com; s=20221208; t=1682009523; x=1684601523;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Cs1rgUVYEUaBUygucR5J5yk/3/ZXB2QN68zo7YB/Jr4=;
-        b=zno2wKqhtyUkUyK+a5wIl5yEklpqUNQ9dKdjQPoBTWI89fChlEmKJ46iqeGCSQ+UhV
-         kSgxKO++PVS/nttb4Fb+80QBudyDHm9MTKXb1vK2yJ6MvWsQEuK+aBpRA+8wb6lTe1sU
-         QVKg1CCslMGqm52vB+EhHj+HtGAN+xLEQX3BQ42pinSqA0NTHOauY8TShh5Z4Z1ARDSF
-         kbX7mzdtDZA26MUuu0tF9u8bm6kqfGDoGFhPywkVsZtUCrjTR+kwCTHSH51WbDonfe5t
-         r9TkLuhsnpTHNarCY26ONe71/gmoXISwkPC4pcd2byFVv1GcE5usJ47zjWTOl+BqTegL
-         wDxQ==
+        bh=ZAJ+43MM6KEvzaABLNFdNF8eDPx+cG7dKXBJJZKWHdo=;
+        b=euqN9UhnPPwR2K6DB36iaouH9aCiBQwKpdJjlSq9XDhKeoRGVZGxZUG1M1hCMa38D6
+         tD064MoAvPgGPH9KtwklUEAK9mX7ZCmCRDn+zbagNp5NEyVVtMuJwtl3k1g7Cw867N74
+         RuvhKME5KfX4wqHWg2Y9FrxWe3WYDrOlRjwYBg1E1gN+uGth0CkTG3IhFhdorbWToztF
+         o/5ImBcvb8YZvfS+Q+jfcIHp5gYIaNJu0At+LO0IhW6a0eHuh41cI1FfeK8AhKZTxAjY
+         xDR9VaszUyK3y63IINmdLZcgxJHMgHuEr3aEaeKqzEImLANtyCYe790TLDxiuTVxNiZ6
+         fU8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682009412; x=1684601412;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1682009523; x=1684601523;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Cs1rgUVYEUaBUygucR5J5yk/3/ZXB2QN68zo7YB/Jr4=;
-        b=WzilExYdQnL9y/Cqge1OFLN330SKg4Fms0ArvuLmchcVv6evxVVeVr72fjHJdjI0QC
-         GfauHGsakLv1d1BoThjYSLrv1Mmo7asAfzvJInlqacbL/Eyg1sDES1VjMqnrMztQ5BS3
-         N73Z7QgjhuxvxzBuGMp05tQvkIAmJAGl2lh1hEFshHEsty1HzU1wlrZOPDBF/JGrCgAC
-         8KSsFh0Ezfy1rC8JWIRyY7qPJxGXqC2p8ez0lrbvjU5IvVZyCFqx6RMWcCze6ynwo0Sj
-         bi2WAQmw+B2meofv4OwCraZKGl4Yr2Mpl/dFTc7uUKYXxW8xaCxwPZGqO9mje76W1cid
-         GSIA==
-X-Gm-Message-State: AAQBX9c/38LAJKQl2ERA6PeYRIX+pSUZ/GJWK32Fxjvx7Qgw4EMhLHHY
-        5DFBOV2qPjsVJoZylvAKqbyHj4GBCmipOaB6lvo=
-X-Google-Smtp-Source: AKy350arIE6PnmoAqenvkRkEPwnVOWcw+HdiDRRGijMSjOXc+C2Iv8X6CmIlpTdKG4tTD7YnEPtkLw==
-X-Received: by 2002:a9d:6251:0:b0:69f:8fe4:38b9 with SMTP id i17-20020a9d6251000000b0069f8fe438b9mr1020373otk.21.1682009412571;
-        Thu, 20 Apr 2023 09:50:12 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75])
-        by smtp.gmail.com with ESMTPSA id p26-20020a9d695a000000b006a13dd5c8a2sm894542oto.5.2023.04.20.09.50.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Apr 2023 09:50:12 -0700 (PDT)
-From:   Pedro Tammela <pctammela@mojatatu.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, simon.horman@corigine.com,
-        Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v3 5/5] net/sched: sch_qfq: BITify two bound definitions
-Date:   Thu, 20 Apr 2023 13:49:28 -0300
-Message-Id: <20230420164928.237235-6-pctammela@mojatatu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230420164928.237235-1-pctammela@mojatatu.com>
-References: <20230420164928.237235-1-pctammela@mojatatu.com>
+        bh=ZAJ+43MM6KEvzaABLNFdNF8eDPx+cG7dKXBJJZKWHdo=;
+        b=BB9s6vzgzCPOwLBKesv+HuJ0/dzOu94l9vf9o8rptIAyTt4JIKkCJqhXWFv2bmktIA
+         DCjoYzJJkSEuFDJi41obrHTmzhBGnZZEeyTtsvs1ktkiQqvReH3ThjdXFcuMCR2mBGPv
+         QR/bshXTcZ63sA+vLPwHJgDwbuToAfqg8Y2UQK96y9amcBp+MqEwguWQDXHnuJw9TzG9
+         7VluUpNnZOCHYVztCPbAQlhvxq5TFEhYkPN+FwM9WsD3vjhz/+V1sHcjsPy+E7n993ec
+         iRRqlkOZxDiVaZr6tR7bKjFP1F8YIpEqqmyT0SOPVXjhe7+PjzKDrSOTZ0l9EP5G2XF2
+         iSqg==
+X-Gm-Message-State: AAQBX9emtgrj3CO4I5oJ1YI5FTT/aVgyuziORc53g6TdZFIVgwq/EGF0
+        5rBFzkJ8fjFM7CM7fVecbm4A+7rPE+A6LweO/3QHPA==
+X-Google-Smtp-Source: AKy350aW6dWXPZYOI+NmVa6dJyKVIvnfM06XB/eMsKXndFPCsDff5V0SmxzZnJA3fkz/ljiahCUHAYErcI2RtnWZXYY=
+X-Received: by 2002:a05:6e02:24b:b0:32b:7258:70f1 with SMTP id
+ w11-20020a056e02024b00b0032b725870f1mr1054618ilr.6.1682009523237; Thu, 20 Apr
+ 2023 09:52:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <cover.1681906552.git.leon@kernel.org> <c84041b660cf6b0f0886488e740cd43b0f21c341.1681906552.git.leon@kernel.org>
+In-Reply-To: <c84041b660cf6b0f0886488e740cd43b0f21c341.1681906552.git.leon@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 20 Apr 2023 18:51:52 +0200
+Message-ID: <CANn89i+3SDjwYb=0CAuGgUyGieCqHKso9cHCf=iSKYhV3rdi=Q@mail.gmail.com>
+Subject: Re: [PATCH xfrm 1/2] xfrm: release all offloaded policy memory
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For the sake of readability, change these two definitions to BIT()
-macros.
+On Wed, Apr 19, 2023 at 2:19=E2=80=AFPM Leon Romanovsky <leon@kernel.org> w=
+rote:
+>
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> Failure to add offloaded policy will cause to the following
+> error once user will try to reload driver.
+>
+> Unregister_netdevice: waiting for eth3 to become free. Usage count =3D 2
+>
+> This was caused by xfrm_dev_policy_add() which increments reference
+> to net_device. That reference was supposed to be decremented
+> in xfrm_dev_policy_free(). However the latter wasn't called.
+>
+>  unregister_netdevice: waiting for eth3 to become free. Usage count =3D 2
+>  leaked reference.
+>   xfrm_dev_policy_add+0xff/0x3d0
+>   xfrm_policy_construct+0x352/0x420
+>   xfrm_add_policy+0x179/0x320
+>   xfrm_user_rcv_msg+0x1d2/0x3d0
+>   netlink_rcv_skb+0xe0/0x210
+>   xfrm_netlink_rcv+0x45/0x50
+>   netlink_unicast+0x346/0x490
+>   netlink_sendmsg+0x3b0/0x6c0
+>   sock_sendmsg+0x73/0xc0
+>   sock_write_iter+0x13b/0x1f0
+>   vfs_write+0x528/0x5d0
+>   ksys_write+0x120/0x150
+>   do_syscall_64+0x3d/0x90
+>   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>
+> Fixes: 919e43fad516 ("xfrm: add an interface to offload policy")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
----
- net/sched/sch_qfq.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-index dfd9a99e6257..4b9cc8a46e2a 100644
---- a/net/sched/sch_qfq.c
-+++ b/net/sched/sch_qfq.c
-@@ -105,7 +105,7 @@
- #define QFQ_MAX_INDEX		24
- #define QFQ_MAX_WSHIFT		10
- 
--#define	QFQ_MAX_WEIGHT		(1<<QFQ_MAX_WSHIFT) /* see qfq_slot_insert */
-+#define	QFQ_MAX_WEIGHT		BIT(QFQ_MAX_WSHIFT) /* see qfq_slot_insert */
- #define QFQ_MAX_WSUM		(64*QFQ_MAX_WEIGHT)
- 
- #define FRAC_BITS		30	/* fixed point arithmetic */
-@@ -113,7 +113,7 @@
- 
- #define QFQ_MTU_SHIFT		16	/* to support TSO/GSO */
- #define QFQ_MIN_LMAX		512	/* see qfq_slot_insert */
--#define QFQ_MAX_LMAX		(1UL << QFQ_MTU_SHIFT)
-+#define QFQ_MAX_LMAX		BIT(QFQ_MTU_SHIFT)
- 
- #define QFQ_MAX_AGG_CLASSES	8 /* max num classes per aggregate allowed */
- 
--- 
-2.34.1
+While reviewing this patch, I also saw xfrm_dev_policy_add() could use
+GFP_KERNEL ?
 
+diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+index bef28c6187ebdd0cfc34c8594aab96ac0b13dd24..508c96c90b3911eb88063ad680c=
+77af2b317c95f
+100644
+--- a/net/xfrm/xfrm_device.c
++++ b/net/xfrm/xfrm_device.c
+@@ -363,7 +363,7 @@ int xfrm_dev_policy_add(struct net *net, struct
+xfrm_policy *xp,
+        }
+
+        xdo->dev =3D dev;
+-       netdev_tracker_alloc(dev, &xdo->dev_tracker, GFP_ATOMIC);
++       netdev_tracker_alloc(dev, &xdo->dev_tracker, GFP_KERNEL);
+        xdo->real_dev =3D dev;
+        xdo->type =3D XFRM_DEV_OFFLOAD_PACKET;
+        switch (dir) {
