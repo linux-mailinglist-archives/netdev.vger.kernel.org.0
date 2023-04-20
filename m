@@ -2,117 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A65F66E9416
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:18:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F7726E9422
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:21:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234810AbjDTMSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 08:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41652 "EHLO
+        id S234587AbjDTMVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 08:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234616AbjDTMSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:18:30 -0400
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43505251;
-        Thu, 20 Apr 2023 05:18:28 -0700 (PDT)
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1a68d61579bso8429745ad.1;
-        Thu, 20 Apr 2023 05:18:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681993108; x=1684585108;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=q7R2ZysSN9yYEd+Sz6xYkgWvSwxaeYaLBilVSEM6AL0=;
-        b=WIxBVRrflKKiAXEfFDt0xSaKhy3scMtUZcYx7Bn7MD5lf0SdFNMbdaknE4WocyzL2I
-         Lya7VtRUAWNQZ+/xMWkFt2CN91GXD1xxIDTH+2i0VzQyWbf0i9yp4Iq1EKq4UIJHlQO2
-         9wnVNmLQ+fPyEphOO80XIAqXKuVF1sxAA2hUAtZcOnmGujk/MdSHUn3NQncq3wfNhwns
-         KC0wS3XGMbQaMwxloi/8RdlxSJZkoA7GZvbZk9SvB7xnQwXifyLWi6AKZG1gdjv2zpW9
-         bJQoYr9v4/9AxUDYlrYbQOOklhWxAEEzPByfr0oo4ZsZJkq2FJ/V6nV2MGP3p0j3vLVw
-         Ah8A==
-X-Gm-Message-State: AAQBX9eAVEl60eBzi4tDpIgItlc6xy5/OCxxO8aq2u7hr2icqkq1+vUG
-        ID03l7ewDArZG4QWK5UoMhTOnmBM3cYC9+BOVak=
-X-Google-Smtp-Source: AKy350YQbjcba2ZO9u1lSqIHWOfUQSZN3jG0QwoI8BFZLBK35vtR11RKrqQhryc+fx09J9hw3UxGuz5EunmwdqIkucM=
-X-Received: by 2002:a17:903:2444:b0:19e:6cb9:4c8f with SMTP id
- l4-20020a170903244400b0019e6cb94c8fmr1812129pls.41.1681993108197; Thu, 20 Apr
- 2023 05:18:28 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230420024403.13830-1-peter_hong@fintek.com.tw> <CAMZ6RqKWrtBMFSD=BzGuCbvj=+3X-A-oW9haJ7=4kyL2AbEuHQ@mail.gmail.com>
-In-Reply-To: <CAMZ6RqKWrtBMFSD=BzGuCbvj=+3X-A-oW9haJ7=4kyL2AbEuHQ@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Thu, 20 Apr 2023 21:18:17 +0900
-Message-ID: <CAMZ6RqKQv1hjPdWNK4NU4TcVjfE-TUZ+yAROXUG0=H5RhDx6iQ@mail.gmail.com>
-Subject: Re: [PATCH V5] can: usb: f81604: add Fintek F81604 support
-To:     "Ji-Ze Hong (Peter Hong)" <peter_hong@fintek.com.tw>
-Cc:     wg@grandegger.com, mkl@pengutronix.de,
-        michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, frank.jungclaus@esd.eu,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S229497AbjDTMVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:21:37 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEC34C37;
+        Thu, 20 Apr 2023 05:21:35 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8C5AA5C017F;
+        Thu, 20 Apr 2023 08:21:32 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Thu, 20 Apr 2023 08:21:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1681993292; x=1682079692; bh=aj
+        j8ckcYRmO7dOoo1JmsRpld7eVArWfG+uH2nIR89dI=; b=T0gxSfg/fhE0/rGhnZ
+        RjHfgwADDlW0YfrFf3O0WfTJZXdSigDoof8ibpiw46qTGigWNagguWzRPPYyTCAk
+        5bGcrIVS/QZ93MECLInizrp9agyWHbQvPQglyQ4MkTsVaXYTPYbSjxcdK45//SwJ
+        oxEZYv9o871fYGWl5Oe/VXwVGwSUEdCLn2hxEYhhTIoC801Fbo5uRPW5R1QtJz6B
+        gY0ErVZEa0ERalJ3XFJb1lIRmrr04ULxU8NifO/HCfz2NoKH13i3mh3xKXHEadq3
+        VCDnAqzVNlK/rrcyYjfOSQ6L/ee0TmdI7ucL5ivGAyk6ocKoamzCWf3Aanvr6ZUz
+        TZ/w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1681993292; x=1682079692; bh=ajj8ckcYRmO7d
+        Ooo1JmsRpld7eVArWfG+uH2nIR89dI=; b=JKKcjIXb3s3D8DdViWBfx1XsCr/mb
+        LRJKz2aUzTifLpx2f/NXUQK2Z/0XGtHiMngLqFgg+Gh0ZHB9WxkF8o+mADK2VMU2
+        XkMUfZY79qb2b7JlC35e38vJbOUqgrjmaWMB+ozX7k+Ce00YP6CC3IvuPD5xYFWR
+        fpwGk2UCBNy7mLcAXG2WzgtWDVC/LHIAWO3Z+PShh0iV43KEYAoVhzfzzJ/eIS2f
+        KY8m7szPTf2RhOIwFwXW5NqLNEaoJfb74yD2XltqGe4fDWsC0mokpaqSUDT3PD79
+        Wy4yeUPqWAPnyf9GHSFsIbIwAq0ovl69MHUhTf7yYFAAP3HOrmVhe3bbw==
+X-ME-Sender: <xms:TC5BZEuLiJgeilkq3pZZJhRmEDewiCR9znuI7wZ26siFN0Fz5Tt4mw>
+    <xme:TC5BZBfNYloNDEK3Il2SjnnRFCwEe1SHbbTnfAauGNMN6SjTkVq7bg09ZEDVETFCw
+    -gf32G9dKCmknDHCBY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfedtvddghedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepvefhffeltdegheeffffhtdegvdehjedtgfekueevgfduffettedtkeekueef
+    hedunecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:TC5BZPxU6DpN3wG4iSxDYPquMWcY9uHDRWxPhrPn3HqQXqi_B2cbEA>
+    <xmx:TC5BZHMDevZwSsCCEmowJ9naB-XCxHbBu_gidtXYjaQ3wq9llbgOiQ>
+    <xmx:TC5BZE-OVLVKVEmfcx9mEueVck_bAhxvEMMCV8XhZVyziHtgrQ7qJQ>
+    <xmx:TC5BZF1Sx18Q_snCEuxjLSjpKmRc68pRkCYyiYmfHBAsfmGHcG8J_A>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 23594B60086; Thu, 20 Apr 2023 08:21:32 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-372-g43825cb665-fm-20230411.003-g43825cb6
+Mime-Version: 1.0
+Message-Id: <a5ed97f2-b3f8-454b-a63a-16e7153003a6@app.fastmail.com>
+In-Reply-To: <CA+G9fYuMEEzTUyF-pCVuZYd+BU53_8MRyXoOmbYEo1O1v=9teg@mail.gmail.com>
+References: <CA+G9fYuMEEzTUyF-pCVuZYd+BU53_8MRyXoOmbYEo1O1v=9teg@mail.gmail.com>
+Date:   Thu, 20 Apr 2023 14:21:10 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Naresh Kamboju" <naresh.kamboju@linaro.org>,
+        Netdev <netdev@vger.kernel.org>,
+        linux-next <linux-next@vger.kernel.org>,
+        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
+        lkft-triage@lists.linaro.org, llvm@lists.linux.dev
+Cc:     "Russell King" <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Ard Biesheuvel" <ardb@kernel.org>,
+        "Anders Roxell" <anders.roxell@linaro.org>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "Jakub Kicinski" <kuba@kernel.org>
+Subject: Re: next: arm: drivers/net/phy/phy_device.o: in function `phy_probe':
+ drivers/net/phy/phy_device.c:3053: undefined reference to
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue. 20 Apr. 2023 at 21:02, Vincent MAILHOL
-<mailhol.vincent@wanadoo.fr> wrote:
-> Hi Peter,
+On Thu, Apr 20, 2023, at 12:51, Naresh Kamboju wrote:
+> [ Please ignore this email if it is already reported ]
 >
-> Here are my comments. Now, it is mostly nitpicks. I guess that this is
-> the final round.
+> Following build failures noticed on Linux next-20230419.
 >
-> On Thu. 20 avr. 2023 at 11:44, Ji-Ze Hong (Peter Hong)
-> <peter_hong@fintek.com.tw> wrote:
-> >
-> > This patch adds support for Fintek USB to 2CAN controller.
-> >
-> > Signed-off-by: Ji-Ze Hong (Peter Hong) <peter_hong@fintek.com.tw>
-> > ---
-(...)
-> > diff --git a/drivers/net/can/usb/f81604.c b/drivers/net/can/usb/f81604.c
-> > new file mode 100644
-> > index 000000000000..ea0ff08ca186
-> > --- /dev/null
-> > +++ b/drivers/net/can/usb/f81604.c
-> > @@ -0,0 +1,1205 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/* Fintek F81604 USB-to-2CAN controller driver.
-> > + *
-> > + * Copyright (C) 2023 Ji-Ze Hong (Peter Hong) <peter_hong@fintek.com.tw>
-> > + */
-> > +#include <linux/bitfield.h>
-> > +#include <linux/netdevice.h>
-> > +#include <linux/units.h>
-> > +#include <linux/usb.h>
-> > +
-> > +#include <linux/can.h>
-> > +#include <linux/can/dev.h>
-> > +#include <linux/can/error.h>
-> > +#include <linux/can/platform/sja1000.h>
-> > +
-> > +#include <asm-generic/unaligned.h>
-> > +
-> > +/* vendor and product id */
-> > +#define F81604_VENDOR_ID 0x2c42
-> > +#define F81604_PRODUCT_ID 0x1709
-> > +#define F81604_CAN_CLOCK (12 * MEGA)
-> > +#define F81604_MAX_DEV 2
-> > +#define F81604_SET_DEVICE_RETRY 10
-> > +
-> > +#define F81604_USB_TIMEOUT 2000
-> > +#define F81604_SET_GET_REGISTER 0xA0
-> > +#define F81604_PORT_OFFSET 0x1000
-> > +
-> > +#define F81604_DATA_SIZE 14
-> > +#define F81604_MAX_RX_URBS 4
-> > +
-> > +#define F81604_CMD_DATA 0x00
-> > +
-> > +#define F81604_DLC_LEN_MASK 0x0f
+> Regressions found on arm:
+>  - build/clang-16-omap2plus_defconfig
+>  - build/clang-16-davinci_all_defconfig
+>  - build/gcc-8-davinci_all_defconfig
+>  - build/clang-nightly-omap2plus_defconfig
+>  - build/gcc-12-omap2plus_defconfig
+>  - build/gcc-12-davinci_all_defconfig
+>  - build/clang-nightly-davinci_all_defconfig
+>  - build/gcc-8-omap2plus_defconfig
+>
+>
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>
+> Build log:
+> ------------
+>
+>  arm-linux-gnueabihf-ld: drivers/net/phy/phy_device.o: in function `phy_probe':
+> drivers/net/phy/phy_device.c:3053: undefined reference to
+> `devm_led_classdev_register_ext'
 
-For consistency with the other definitions also use GENMASK here.
+I sent this patch now:
+
+https://lore.kernel.org/all/20230420084624.3005701-1-arnd@kernel.org/
+
+      Arnd
