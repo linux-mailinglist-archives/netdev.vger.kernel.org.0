@@ -2,109 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD0C6E8C59
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 160776E8C71
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:14:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234220AbjDTIMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 04:12:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
+        id S234365AbjDTIOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 04:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234040AbjDTIMe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:12:34 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6D22D49;
-        Thu, 20 Apr 2023 01:12:32 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id 3f1490d57ef6-b94d8d530c3so143221276.0;
-        Thu, 20 Apr 2023 01:12:32 -0700 (PDT)
+        with ESMTP id S234092AbjDTIOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:14:04 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25FB35B5
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:13:55 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-63b4960b015so632226b3a.3
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:13:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681978352; x=1684570352;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ufAhAdE0r7c7qaGNcRxtBn4ycIciFiGBaPdCDyt/jC4=;
-        b=Aii4cD7KcxtBNGj6ssDzMwkXLwpZ8acVamSTcN6ZFZ12JVINgOKCVPbXp06SITukmK
-         OgWW6IRFqv8dA0bn4BtD/bHrLomeLYQNjfC9wAkDbDZHtJbeM7eDZEJH9Y1tFmG3FVa5
-         EgxXf6AKfPISj099CUEABAeZxP0Sth1AKwvov6EMbpbS2u9m6Uti9Y3nJP9yrQuJBZgq
-         6Vj0I6mbcbIkAJTfP4dAV2Cl5c75V22LMbBYGz54ImxKyv/2fWSw8FO2nX7b6caquWKI
-         cXs+AoYmVqe225Z60j2piZ5O4kklgBO508a1Nc7jAhdHKeEZmSmy9o9xa2Jq8gmE4SNm
-         g+XA==
+        d=bytedance.com; s=google; t=1681978435; x=1684570435;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=X9ATYIUW0VL5jv34KSuydy4tkMajLvSkNKzBXFZEi9c=;
+        b=OGZhHQPc5teD2uiUoyEfyzXHywP8ztNA9qiK5ulhiP9T92wt4chvkk0ixf07oPyYmW
+         Zh0VYFR6CMFYkGmVyTCh3IGDEkGoItnpHewcBsZKTqj+vwqPw+cvgiayMGsKaxSYT95E
+         jz4zpwrFXp3aENZV//XLVwT77yVMxWWRE66w5zUnKoBafAbNvUmFc+hn17T4+a7VDp47
+         i4D81ZIFmyxqFe1AUwnP8cl3sg044RN3tE3TjkVmmQJkr1Gegr60e6l9nB9EoCeYVSTP
+         i6EtFNu+10Uy3YQudBttVWRE2aw0DhuWrqwPDvbH0/UH/uvo0aaVhF006oirARA3ZyWf
+         tYww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681978352; x=1684570352;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ufAhAdE0r7c7qaGNcRxtBn4ycIciFiGBaPdCDyt/jC4=;
-        b=Kzw5ggbrNJy4U3UnimiGIeIA1eQalDbceVgg6PeVSrVoI4pmrZc+HHYaEIcLTXWTzL
-         r1lT5z3EV5eDLHY8uWZBoWDgNfDRz+Ke++rrGL6gXlMbKSt/NZMYqGoLYHAEFq/860tR
-         kcM1bm9pcQsVWE/KHjWKMnHnlJVBQEKpNnu3ErB4auja6breOuPJ0l9y5Ztj4ooWpJjG
-         KfBnCVcZAx+5pN+xAzZFyrBaRJXEAjanMvBc3hqnBcDjlFuB464CIoOI4J9UPEAlkqw+
-         R0LkmB/TCfa6W2YWdVLFimHStNFaJWc84Nuzb1IRFwS+7CexC4YrdPiXsQeclQKhi+xQ
-         lUpw==
-X-Gm-Message-State: AAQBX9cqQdeo2Lb52elGLv5n57ZK3/NaTxHOvi11KC0q6yDoJmsRgLxI
-        G2ozHX4wV8AaNts6RVm7Svq9mBM9+F4NWK7vvKisn/x+SnFVmg==
-X-Google-Smtp-Source: AKy350br2VSLJGwe7XMvMryQMIcZde+pUbCFM+MFqX0o/o8o2NN/vN8gBDNkVie6wdkNcSISj1wnMJ/RBsJL/WTmjEw=
-X-Received: by 2002:a81:7857:0:b0:541:664e:b5d4 with SMTP id
- t84-20020a817857000000b00541664eb5d4mr233169ywc.4.1681978352116; Thu, 20 Apr
- 2023 01:12:32 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1681978435; x=1684570435;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=X9ATYIUW0VL5jv34KSuydy4tkMajLvSkNKzBXFZEi9c=;
+        b=ALaaifH6KaQnFZbRV/0pGm901+FlU8oYVYXFa9EGkJp0rq7FExSbhFKrrxs3x0y/PI
+         PBBpQOCnzTjEL7P762yiR1utCOOpq+HTejy4kKSwj6Wlwt8YA330WkCaTZIemZfuYV9F
+         j+xUokJ6WOhEc9YIp60i2d4oqatFe36Oam1OalFYKjQRJ/ecOc5LX7NMhZWXu6qFlVGK
+         vaNk8pcnK3Pg6zF2D2aSXul5MUibHR6H8yNnP2zkDSsltvWssO0CrAfUZnDak0WtR7Y+
+         s9lQh3sbem5uTTsJCwHUd4t+NfSyuwUT/hvsrKEVH24DAHXURfoula/wItJEf+cJEg0P
+         sh2w==
+X-Gm-Message-State: AAQBX9e9opmronNgCD+L4qVGoKFB1hcDxbBmkXWUocEabosL4a7sc91R
+        IS8OUnlqymCyy/d+JOy9EHAWOj9dfa2xJOQM/vnq
+X-Google-Smtp-Source: AKy350YMFBvd48ME7MOBmbabocXtQnwell8rcwMQhYjmK0urUPQvAFUg5BmSAFi9uHg1A7RpWw6twG3j5gCoZ9GAdgA=
+X-Received: by 2002:a05:6a20:2590:b0:ef:279d:433d with SMTP id
+ k16-20020a056a20259000b000ef279d433dmr999724pzd.61.1681978435184; Thu, 20 Apr
+ 2023 01:13:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230418143617.27762-1-magnus.karlsson@gmail.com> <CAHApi-=_=ia8Pa23QRchxdx-ekPTgT5nYj=ktYGO4gRwP0cvCA@mail.gmail.com>
-In-Reply-To: <CAHApi-=_=ia8Pa23QRchxdx-ekPTgT5nYj=ktYGO4gRwP0cvCA@mail.gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 20 Apr 2023 10:12:21 +0200
-Message-ID: <CAJ8uoz3qM04VQF7FRmnVp_AZjGaPw25GJNn0ah-Jd0=eRCRsjg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/xsk: fix munmap for hugepage allocated umem
-To:     Kal Cutter Conley <kal.conley@dectris.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, tirthendu.sarkar@intel.com,
-        bpf@vger.kernel.org
+References: <20230419134329.346825-1-maxime.coquelin@redhat.com>
+In-Reply-To: <20230419134329.346825-1-maxime.coquelin@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 20 Apr 2023 16:13:42 +0800
+Message-ID: <CACycT3tbQSFdADGiP-ijSj2ZjRctMsPmJQhEBygguzYOjA4Y9Q@mail.gmail.com>
+Subject: Re: [RFC 0/2] vduse: add support for networking devices
+To:     Maxime Coquelin <maxime.coquelin@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        David Marchand <david.marchand@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>, xuanzhuo@linux.alibaba.com,
+        Eugenio Perez Martin <eperezma@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Apr 2023 at 00:01, Kal Cutter Conley <kal.conley@dectris.com> wrote:
+On Wed, Apr 19, 2023 at 9:44=E2=80=AFPM Maxime Coquelin
+<maxime.coquelin@redhat.com> wrote:
 >
-> > @@ -1286,16 +1287,19 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
-> >         u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
-> >         int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
-> >         LIBBPF_OPTS(bpf_xdp_query_opts, opts);
-> > +       off_t mmap_offset = 0;
-> >         void *bufs;
-> >         int ret;
-> >
-> > -       if (ifobject->umem->unaligned_mode)
-> > +       if (ifobject->umem->unaligned_mode) {
-> >                 mmap_flags |= MAP_HUGETLB;
-> > +               mmap_offset = MAP_HUGE_2MB;
-> > +       }
+> This small series enables virtio-net device type in VDUSE.
+> With it, basic operation have been tested, both with
+> virtio-vdpa and vhost-vdpa using DPDK Vhost library series
+> adding VDUSE support [0] using split rings layout.
 >
-> MAP_HUGE_2MB should be ORed into mmap_flags. The offset argument
-> should be zero for MAP_ANONYMOUS mappings. The tests may still fail if
-> the default hugepage size is not 2MB.
-
-You are correct that it should go into the flags field. Misread the
-man page so will send a fix.
-
-It was a conscious decision to require a hugepage size of 2M. I want
-it to fail if you do not have it since the rest of the code will not
-work if you are using some other size. Yes, it is possible to discover
-what hugepage sizes exist and act on that, but I want to keep the code
-simple.
-
-> >
-> >         if (ifobject->shared_umem)
-> >                 umem_sz *= 2;
-> >
-> > -       bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, 0);
-> > +       bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, mmap_offset);
-> >         if (bufs == MAP_FAILED)
-> >                 exit_with_error(errno);
-> >
+> Control queue support (and so multiqueue) has also been
+> tested, but require a Kernel series from Jason Wang
+> relaxing control queue polling [1] to function reliably.
 >
-> -Kal
+> Other than that, we have identified a few gaps:
+>
+> 1. Reconnection:
+>  a. VDUSE_VQ_GET_INFO ioctl() returns always 0 for avail
+>     index, even after the virtqueue has already been
+>     processed. Is that expected? I have tried instead to
+>     get the driver's avail index directly from the avail
+>     ring, but it does not seem reliable as I sometimes get
+>     "id %u is not a head!\n" warnings. Also such solution
+>     would not be possible with packed ring, as we need to
+>     know the wrap counters values.
+>
+
+I'm not sure how to handle the reconnection in the vhost-user-net
+case. Can we use a tmpfs file to track inflight I/O like this [1]
+
+[1] https://qemu-project.gitlab.io/qemu/interop/vhost-user.html#inflight-i-=
+o-tracking
+
+>  b. Missing IOCTLs: it would be handy to have new IOCTLs to
+>     query Virtio device status, and retrieve the config
+>     space set at VDUSE_CREATE_DEV time.
+>
+
+VDUSE_GET_STATUS ioctl might be needed. Or can we use a tmpfs file to
+save/restore that info.
+
+> 2. VDUSE application as non-root:
+>   We need to run the VDUSE application as non-root. There
+>   is some race between the time the UDEV rule is applied
+>   and the time the device starts being used. Discussing
+>   with Jason, he suggested we may have a VDUSE daemon run
+>   as root that would create the VDUSE device, manages its
+>   rights and then pass its file descriptor to the VDUSE
+>   app. However, with current IOCTLs, it means the VDUSE
+>   daemon would need to know several information that
+>   belongs to the VDUSE app implementing the device such
+>   as supported Virtio features, config space, etc...
+>   If we go that route, maybe we should have a control
+>   IOCTL to create the device which would just pass the
+>   device type. Then another device IOCTL to perform the
+>   initialization. Would that make sense?
+>
+
+I think we can reuse the VDUSE_CREATE_DEV ioctl (just use name,
+device_id and vendor_id) for control device here, and add a new ioctl
+VDUSE_DEV_SETUP to do device initialization.
+
+Thanks,
+Yongji
