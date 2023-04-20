@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A5E86E8737
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 03:11:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B156E8738
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 03:11:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232904AbjDTBLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 21:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
+        id S232966AbjDTBLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 21:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232966AbjDTBK6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 21:10:58 -0400
+        with ESMTP id S232846AbjDTBLC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 21:11:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC3F49E0
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 18:10:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA9524C10
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 18:10:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1517D6444C
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:10:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E267FC433D2;
-        Thu, 20 Apr 2023 01:10:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C12A64433
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:10:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699A3C433D2;
+        Thu, 20 Apr 2023 01:10:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681953045;
-        bh=ZbNM2BK8ao5yA+3pJv/4/olqqrtkX/RVK48RK+9ixgo=;
+        s=k20201202; t=1681953050;
+        bh=OO44sk/qI8PkzC1Szvy0pZUGlnA0NkGbSY5aUDWhflQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t21CLmzMKwjAUWXgWgG0ybSx2gepMQUFI9F8F2+7IWl8RpIG/15b0MGSm31FXk/rX
-         VN3jUIw2wcStBBOejxB9ukmxEijLGlsF2WRQ+WKi/Uu16Qj4yTyusLRXyrASHvwiRq
-         0KprxYqUK6CgDtqaEK8i1o/lYoK47NWJ1K595lDZAPPjhpIImOPuQ3dk4Cw0w+TBHo
-         43SBFynQLHkC8oM1QLv2LfCrhc5BaySA46M7Mlz0Cyk54tKf3Cl6cHGOV0sOtXe/In
-         Aa8NvwJ9Z3GOKwpHZU7dGOcn2bMYYoZQcJtvBaFDfq9zHFzvwm909P7XVZr7scZXtr
-         nVELN0z5vYOVw==
+        b=YSawxZyiREIM9T9Jr7e/aOjf77+NCeC+W8R4tYc/bw07I7nliz+USH3YJXhFPvsGb
+         tchSmnx2n58JIYx2b4KJ+udRkTZ26/J+ppAvYlLDS2oafThA2MK9vTIXTR16ufB+4z
+         0+efg7+ipT3Y8resVqt7zm+zg5Nj5xea1lTeUjKBFQgg3wlmkJ0GI494duLErDzs0s
+         3bdHoCImT6x+25NWgouFEIdAj9YsQmh6Yl3Z+2MhNRRl1S9MQ47CX+rWfSZ1/AIMEM
+         sefAw9aWqG/HRZ8UrJxUCgp+W5ILec7momrLVMJ23ZgXntIVPZ2BXWTxd7Tc+JBE7i
+         14FGsnPMlM61A==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Aya Levin <ayal@nvidia.com>
-Subject: [net 09/10] net/mlx5e: Nullify table pointer when failing to create
-Date:   Wed, 19 Apr 2023 18:09:58 -0700
-Message-Id: <20230420010959.276760-10-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>
+Subject: [net 10/10] Revert "net/mlx5e: Don't use termination table when redundant"
+Date:   Wed, 19 Apr 2023 18:09:59 -0700
+Message-Id: <20230420010959.276760-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230420010959.276760-1-saeed@kernel.org>
 References: <20230420010959.276760-1-saeed@kernel.org>
@@ -56,46 +58,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-On failing to create promisc flow steering table, the pointer is
-returned with an error. Nullify it so unloading the driver won't try to
-destroy a non existing table.
+This reverts commit 14624d7247fcd0f3114a6f5f17b3c8d1020fbbb7.
 
-Failing to create promisc table may happen over BF devices when the ARM
-side is going through a firmware tear down. The host side start a
-reload flow. While the driver unloads, it tries to remove the promisc
-table. Remove WARN in this state as it is a valid error flow.
+The termination table usage is requires for DMFS steering mode as firmware
+doesn't support mixed table destinations list which causes following
+syndrome with hairpin rules:
 
-Fixes: 1c46d7409f30 ("net/mlx5e: Optimize promiscuous mode")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+[81922.283225] mlx5_core 0000:08:00.0: mlx5_cmd_out_err:803:(pid 25977): SET_FLOW_TABLE_ENTRY(0x936) op_mod(0x0) failed, status bad parameter(0x3), syndrome (0xaca205), err(-22)
+
+Fixes: 14624d7247fc ("net/mlx5e: Don't use termination table when redundant")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_fs.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../mlx5/core/eswitch_offloads_termtbl.c      | 32 +++----------------
+ 1 file changed, 4 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-index f1dac0244958..33bfe4d7338b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-@@ -783,6 +783,7 @@ static int mlx5e_create_promisc_table(struct mlx5e_flow_steering *fs)
- 	ft->t = mlx5_create_auto_grouped_flow_table(fs->ns, &ft_attr);
- 	if (IS_ERR(ft->t)) {
- 		err = PTR_ERR(ft->t);
-+		ft->t = NULL;
- 		fs_err(fs, "fail to create promisc table err=%d\n", err);
- 		return err;
- 	}
-@@ -810,7 +811,7 @@ static void mlx5e_del_promisc_rule(struct mlx5e_flow_steering *fs)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
+index 3a9a6bb9158d..edd910258314 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c
+@@ -210,18 +210,6 @@ static bool mlx5_eswitch_offload_is_uplink_port(const struct mlx5_eswitch *esw,
+ 	return (port_mask & port_value) == MLX5_VPORT_UPLINK;
+ }
  
- static void mlx5e_destroy_promisc_table(struct mlx5e_flow_steering *fs)
- {
--	if (WARN(!fs->promisc.ft.t, "Trying to remove non-existing promiscuous table"))
-+	if (!fs->promisc.ft.t)
- 		return;
- 	mlx5e_del_promisc_rule(fs);
- 	mlx5_destroy_flow_table(fs->promisc.ft.t);
+-static bool
+-mlx5_eswitch_is_push_vlan_no_cap(struct mlx5_eswitch *esw,
+-				 struct mlx5_flow_act *flow_act)
+-{
+-	if (flow_act->action & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH &&
+-	    !(mlx5_fs_get_capabilities(esw->dev, MLX5_FLOW_NAMESPACE_FDB) &
+-	      MLX5_FLOW_STEERING_CAP_VLAN_PUSH_ON_RX))
+-		return true;
+-
+-	return false;
+-}
+-
+ bool
+ mlx5_eswitch_termtbl_required(struct mlx5_eswitch *esw,
+ 			      struct mlx5_flow_attr *attr,
+@@ -237,7 +225,10 @@ mlx5_eswitch_termtbl_required(struct mlx5_eswitch *esw,
+ 	    (!mlx5_eswitch_offload_is_uplink_port(esw, spec) && !esw_attr->int_port))
+ 		return false;
+ 
+-	if (mlx5_eswitch_is_push_vlan_no_cap(esw, flow_act))
++	/* push vlan on RX */
++	if (flow_act->action & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH &&
++	    !(mlx5_fs_get_capabilities(esw->dev, MLX5_FLOW_NAMESPACE_FDB) &
++	      MLX5_FLOW_STEERING_CAP_VLAN_PUSH_ON_RX))
+ 		return true;
+ 
+ 	/* hairpin */
+@@ -261,31 +252,19 @@ mlx5_eswitch_add_termtbl_rule(struct mlx5_eswitch *esw,
+ 	struct mlx5_flow_act term_tbl_act = {};
+ 	struct mlx5_flow_handle *rule = NULL;
+ 	bool term_table_created = false;
+-	bool is_push_vlan_on_rx;
+ 	int num_vport_dests = 0;
+ 	int i, curr_dest;
+ 
+-	is_push_vlan_on_rx = mlx5_eswitch_is_push_vlan_no_cap(esw, flow_act);
+ 	mlx5_eswitch_termtbl_actions_move(flow_act, &term_tbl_act);
+ 	term_tbl_act.action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
+ 
+ 	for (i = 0; i < num_dest; i++) {
+ 		struct mlx5_termtbl_handle *tt;
+-		bool hairpin = false;
+ 
+ 		/* only vport destinations can be terminated */
+ 		if (dest[i].type != MLX5_FLOW_DESTINATION_TYPE_VPORT)
+ 			continue;
+ 
+-		if (attr->dests[num_vport_dests].rep &&
+-		    attr->dests[num_vport_dests].rep->vport == MLX5_VPORT_UPLINK)
+-			hairpin = true;
+-
+-		if (!is_push_vlan_on_rx && !hairpin) {
+-			num_vport_dests++;
+-			continue;
+-		}
+-
+ 		if (attr->dests[num_vport_dests].flags & MLX5_ESW_DEST_ENCAP) {
+ 			term_tbl_act.action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
+ 			term_tbl_act.pkt_reformat = attr->dests[num_vport_dests].pkt_reformat;
+@@ -333,9 +312,6 @@ mlx5_eswitch_add_termtbl_rule(struct mlx5_eswitch *esw,
+ 	for (curr_dest = 0; curr_dest < num_vport_dests; curr_dest++) {
+ 		struct mlx5_termtbl_handle *tt = attr->dests[curr_dest].termtbl;
+ 
+-		if (!tt)
+-			continue;
+-
+ 		attr->dests[curr_dest].termtbl = NULL;
+ 
+ 		/* search for the destination associated with the
 -- 
 2.39.2
 
