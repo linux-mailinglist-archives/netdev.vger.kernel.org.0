@@ -2,293 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 874556E934A
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF706E936A
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234395AbjDTLqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 07:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46016 "EHLO
+        id S234197AbjDTLwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 07:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233808AbjDTLqn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:46:43 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA75C1FF0;
-        Thu, 20 Apr 2023 04:46:41 -0700 (PDT)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Q2G5M1JTQz6J773;
-        Thu, 20 Apr 2023 19:43:51 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 20 Apr 2023 12:46:38 +0100
-Message-ID: <13792f4e-3df7-9cc0-734a-285f95dbe7ca@huawei.com>
-Date:   Thu, 20 Apr 2023 14:46:38 +0300
+        with ESMTP id S230246AbjDTLwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:52:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B633E69
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 04:52:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACF7063D9B
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:52:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C70FC433EF;
+        Thu, 20 Apr 2023 11:52:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681991568;
+        bh=ozCpAG+ISulou2Zh7SyotCKoU3h5FCbK6fgEN2FikXA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oXFNLcFp6vEhFiYyBCUzpHXwgmTjDlS4kB13+lqgfGQmSxFK1ZH/eqhTvPjuU/TPB
+         P9GJR7mvRA7+UOSHldWmExYjJ8K633tAVDJ+xi+Xbk7fYQWtjWwqiz0swDOVdA+ddT
+         nVj+WywQtrtX+bOS+p/7oi7vpLF6zOvSMyH3uGXZdzFEUbq2hCRIz5atQmT5rHzPfg
+         FsJmsvyD8KkwcxyV/QYPo8pb53EJ/dx8up2uT4ex2/1PTh9wXY9LPXzQ3L1btUYG31
+         TTH+5zFlQqME5DiFuMwfOBYxp9Ov7D9WjOJLRhVT8sRvFhDe+C6TR77XbGu2hYAJ2K
+         8eZYD8qAxRU6w==
+Date:   Thu, 20 Apr 2023 14:52:43 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Emeel Hakim <ehakim@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: Re: [PATCH net-next 3/5] net/mlx5e: Compare all fields in IPv6
+ address
+Message-ID: <20230420115243.GC4423@unreal>
+References: <cover.1681976818.git.leon@kernel.org>
+ <269e24dc9fb30549d4f77895532603734f515650.1681976818.git.leon@kernel.org>
+ <ZEEdY+qtAQQaFbZP@corigine.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v10 05/13] landlock: Refactor merge/inherit_ruleset
- functions
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
- <20230323085226.1432550-6-konstantin.meskhidze@huawei.com>
- <8b2f2e0f-0a95-ef87-7eb2-286e75a62e2c@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <8b2f2e0f-0a95-ef87-7eb2-286e75a62e2c@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml500005.china.huawei.com (7.191.163.240) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZEEdY+qtAQQaFbZP@corigine.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Apr 20, 2023 at 01:09:23PM +0200, Simon Horman wrote:
+> On Thu, Apr 20, 2023 at 11:02:49AM +0300, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Fix size argument in memcmp to compare whole IPv6 address.
+> > 
+> > Fixes: b3beba1fb404 ("net/mlx5e: Allow policies with reqid 0, to support IKE policy holes")
+> > Reviewed-by: Raed Salem <raeds@nvidia.com>
+> > Reviewed-by: Emeel Hakim <ehakim@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+> > index f7f7c09d2b32..4e9887171508 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+> > @@ -287,7 +287,7 @@ static inline bool addr6_all_zero(__be32 *addr6)
+> >  {
+> >  	static const __be32 zaddr6[4] = {};
+> >  
+> > -	return !memcmp(addr6, zaddr6, sizeof(*zaddr6));
+> > +	return !memcmp(addr6, zaddr6, sizeof(zaddr6));
+> 
+> 1. Perhaps array_size() is appropriate here?
+
+It is overkill here, sizeof(zaddr6) is constant and can't overflow.
+
+  238 /**
+  239  * array_size() - Calculate size of 2-dimensional array.
+  240  * @a: dimension one
+  241  * @b: dimension two
+  242  *
+  243  * Calculates size of 2-dimensional array: @a * @b.
+  244  *
+  245  * Returns: number of bytes needed to represent the array or SIZE_MAX on
+  246  * overflow.
+  247  */
+  248 #define array_size(a, b)        size_mul(a, b)
+
+> 2. It's a shame that ipv6_addr_any() or some other common helper
+>    can't be used.
+
+I didn't use ipv6_addr_any() as it required from me to cast "__be32 *addr6"
+to be "struct in6_addr *" just to replace one line memcmp to another one
+line function.
+
+Do you want me to post this code instead?
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index 55b38544422f..a7c8e38658a0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -945,7 +945,8 @@ static int mlx5e_xfrm_validate_policy(struct mlx5_core_dev *mdev,
+ 	}
+ 
+ 	if (!x->xfrm_vec[0].reqid && sel->proto == IPPROTO_IP &&
+-	    addr6_all_zero(sel->saddr.a6) && addr6_all_zero(sel->daddr.a6)) {
++	    ipv6_addr_any((struct in6_addr *)sel->saddr.a6) &&
++	    ipv6_addr_any((struct in6_addr *)sel->daddr.a6)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Unsupported policy with reqid 0 without at least one of upper protocol or ip addr(s) different than 0");
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+index 4e9887171508..097001ce5dc1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+@@ -283,12 +283,6 @@ mlx5e_ipsec_pol2dev(struct mlx5e_ipsec_pol_entry *pol_entry)
+ 	return pol_entry->ipsec->mdev;
+ }
+ 
+-static inline bool addr6_all_zero(__be32 *addr6)
+-{
+-	static const __be32 zaddr6[4] = {};
+-
+-	return !memcmp(addr6, zaddr6, sizeof(zaddr6));
+-}
+ #else
+ static inline void mlx5e_ipsec_init(struct mlx5e_priv *priv)
+ {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+index dbe87bf89c0d..e48113923c12 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+@@ -721,7 +721,8 @@ static void setup_fte_addr4(struct mlx5_flow_spec *spec, __be32 *saddr,
+ static void setup_fte_addr6(struct mlx5_flow_spec *spec, __be32 *saddr,
+ 			    __be32 *daddr)
+ {
+-	if (addr6_all_zero(saddr) && addr6_all_zero(daddr))
++	if (ipv6_addr_any((struct in6_addr *)saddr) &&
++	    ipv6_addr_any((struct in6_addr *)daddr))
+ 		return;
+ 
+ 	spec->match_criteria_enable |= MLX5_MATCH_OUTER_HEADERS;
+@@ -729,14 +730,14 @@ static void setup_fte_addr6(struct mlx5_flow_spec *spec, __be32 *saddr,
+ 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ip_version);
+ 	MLX5_SET(fte_match_param, spec->match_value, outer_headers.ip_version, 6);
+ 
+-	if (!addr6_all_zero(saddr)) {
++	if (!ipv6_addr_any((struct in6_addr *)saddr)) {
+ 		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
+ 				    outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6), saddr, 16);
+ 		memset(MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
+ 				    outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6), 0xff, 16);
+ 	}
+ 
+-	if (!addr6_all_zero(daddr)) {
++	if (!ipv6_addr_any((struct in6_addr *)daddr)) {
+ 		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
+ 				    outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6), daddr, 16);
+ 		memset(MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
 
 
-4/16/2023 7:09 PM, Mickaël Salaün пишет:
-> 
-> On 23/03/2023 09:52, Konstantin Meskhidze wrote:
->> Refactor merge_ruleset() and inherit_ruleset() functions to support
->> new rule types. This patch adds merge_tree() and inherit_tree()
->> helpers. They use a specific ruleset's red-black tree according to
->> a key type argument.
->> 
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->> 
->> Changes since v9:
->> * None
->> 
->> Changes since v8:
->> * Refactors commit message.
->> * Minor fixes.
->> 
->> Changes since v7:
->> * Adds missed lockdep_assert_held it inherit_tree() and merge_tree().
->> * Fixes comment.
->> 
->> Changes since v6:
->> * Refactors merge_ruleset() and inherit_ruleset() functions to support
->>    new rule types.
->> * Renames tree_merge() to merge_tree() (and reorder arguments), and
->>    tree_copy() to inherit_tree().
->> 
->> Changes since v5:
->> * Refactors some logic errors.
->> * Formats code with clang-format-14.
->> 
->> Changes since v4:
->> * None
->> 
->> ---
->>   security/landlock/ruleset.c | 110 ++++++++++++++++++++++++------------
->>   1 file changed, 73 insertions(+), 37 deletions(-)
->> 
->> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
->> index d3859d5e7306..2579c9bbedbc 100644
->> --- a/security/landlock/ruleset.c
->> +++ b/security/landlock/ruleset.c
->> @@ -302,36 +302,22 @@ static void put_hierarchy(struct landlock_hierarchy *hierarchy)
->>   	}
->>   }
->> 
->> -static int merge_ruleset(struct landlock_ruleset *const dst,
->> -			 struct landlock_ruleset *const src)
->> +static int merge_tree(struct landlock_ruleset *const dst,
->> +		      struct landlock_ruleset *const src,
->> +		      const enum landlock_key_type key_type)
->>   {
->>   	struct landlock_rule *walker_rule, *next_rule;
->>   	struct rb_root *src_root;
->>   	int err = 0;
->> 
->>   	might_sleep();
->> -	/* Should already be checked by landlock_merge_ruleset() */
->> -	if (WARN_ON_ONCE(!src))
->> -		return 0;
->> -	/* Only merge into a domain. */
->> -	if (WARN_ON_ONCE(!dst || !dst->hierarchy))
->> -		return -EINVAL;
->> +	lockdep_assert_held(&dst->lock);
->> +	lockdep_assert_held(&src->lock);
->> 
->> -	src_root = get_root(src, LANDLOCK_KEY_INODE);
->> +	src_root = get_root(src, key_type);
->>   	if (IS_ERR(src_root))
->>   		return PTR_ERR(src_root);
->> 
->> -	/* Locks @dst first because we are its only owner. */
->> -	mutex_lock(&dst->lock);
->> -	mutex_lock_nested(&src->lock, SINGLE_DEPTH_NESTING);
->> -
->> -	/* Stacks the new layer. */
->> -	if (WARN_ON_ONCE(src->num_layers != 1 || dst->num_layers < 1)) {
->> -		err = -EINVAL;
->> -		goto out_unlock;
->> -	}
->> -	dst->access_masks[dst->num_layers - 1] = src->access_masks[0];
->> -
->>   	/* Merges the @src tree. */
->>   	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule, src_root,
->>   					     node) {
->> @@ -340,23 +326,52 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
->>   		} };
->>   		const struct landlock_id id = {
->>   			.key = walker_rule->key,
->> -			.type = LANDLOCK_KEY_INODE,
->> +			.type = key_type,
->>   		};
->> 
->>   		if (WARN_ON_ONCE(walker_rule->num_layers != 1)) {
->>   			err = -EINVAL;
->> -			goto out_unlock;
-> 
-> This should be replaced with `return -EINVAL;` and the `{` `}` after the
-> if condition are not needed anymore.
-> 
-   Ok. Will be changed.
-> 
->>   		}
->>   		if (WARN_ON_ONCE(walker_rule->layers[0].level != 0)) {
->>   			err = -EINVAL;
->> -			goto out_unlock;
-> 
-> ditto
+Thanks
 
-   Got it.
 > 
->>   		}
->>   		layers[0].access = walker_rule->layers[0].access;
->> 
->>   		err = insert_rule(dst, id, &layers, ARRAY_SIZE(layers));
->>   		if (err)
->> -			goto out_unlock;
->> +			return err;
->> +	}
->> +	return err;
->> +}
->> +
->> +static int merge_ruleset(struct landlock_ruleset *const dst,
->> +			 struct landlock_ruleset *const src)
->> +{
->> +	int err = 0;
->> +
->> +	might_sleep();
->> +	/* Should already be checked by landlock_merge_ruleset() */
->> +	if (WARN_ON_ONCE(!src))
->> +		return 0;
->> +	/* Only merge into a domain. */
->> +	if (WARN_ON_ONCE(!dst || !dst->hierarchy))
->> +		return -EINVAL;
->> +
->> +	/* Locks @dst first because we are its only owner. */
->> +	mutex_lock(&dst->lock);
->> +	mutex_lock_nested(&src->lock, SINGLE_DEPTH_NESTING);
->> +
->> +	/* Stacks the new layer. */
->> +	if (WARN_ON_ONCE(src->num_layers != 1 || dst->num_layers < 1)) {
->> +		err = -EINVAL;
->> +		goto out_unlock;
->>   	}
->> +	dst->access_masks[dst->num_layers - 1] = src->access_masks[0];
->> +
->> +	/* Merges the @src inode tree. */
->> +	err = merge_tree(dst, src, LANDLOCK_KEY_INODE);
->> +	if (err)
->> +		goto out_unlock;
->> 
->>   out_unlock:
->>   	mutex_unlock(&src->lock);
->> @@ -364,43 +379,64 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
->>   	return err;
->>   }
->> 
->> -static int inherit_ruleset(struct landlock_ruleset *const parent,
->> -			   struct landlock_ruleset *const child)
->> +static int inherit_tree(struct landlock_ruleset *const parent,
->> +			struct landlock_ruleset *const child,
->> +			const enum landlock_key_type key_type)
->>   {
->>   	struct landlock_rule *walker_rule, *next_rule;
->>   	struct rb_root *parent_root;
->>   	int err = 0;
->> 
->>   	might_sleep();
->> -	if (!parent)
->> -		return 0;
->> +	lockdep_assert_held(&parent->lock);
->> +	lockdep_assert_held(&child->lock);
->> 
->> -	parent_root = get_root(parent, LANDLOCK_KEY_INODE);
->> +	parent_root = get_root(parent, key_type);
->>   	if (IS_ERR(parent_root))
->>   		return PTR_ERR(parent_root);
->> 
->> -	/* Locks @child first because we are its only owner. */
->> -	mutex_lock(&child->lock);
->> -	mutex_lock_nested(&parent->lock, SINGLE_DEPTH_NESTING);
->> -
->> -	/* Copies the @parent tree. */
->> +	/* Copies the @parent inode or network tree. */
->>   	rbtree_postorder_for_each_entry_safe(walker_rule, next_rule,
->>   					     parent_root, node) {
->>   		const struct landlock_id id = {
->>   			.key = walker_rule->key,
->> -			.type = LANDLOCK_KEY_INODE,
->> +			.type = key_type,
->>   		};
->> +
->>   		err = insert_rule(child, id, &walker_rule->layers,
->>   				  walker_rule->num_layers);
->>   		if (err)
->> -			goto out_unlock;
->> +			return err;
->>   	}
->> +	return err;
->> +}
->> +
->> +static int inherit_ruleset(struct landlock_ruleset *const parent,
->> +			   struct landlock_ruleset *const child)
->> +{
->> +	int err = 0;
->> +
->> +	might_sleep();
->> +	if (!parent)
->> +		return 0;
->> +
->> +	/* Locks @child first because we are its only owner. */
->> +	mutex_lock(&child->lock);
->> +	mutex_lock_nested(&parent->lock, SINGLE_DEPTH_NESTING);
->> +
->> +	/* Copies the @parent inode tree. */
->> +	err = inherit_tree(parent, child, LANDLOCK_KEY_INODE);
->> +	if (err)
->> +		goto out_unlock;
->> 
->>   	if (WARN_ON_ONCE(child->num_layers <= parent->num_layers)) {
->>   		err = -EINVAL;
->>   		goto out_unlock;
->>   	}
->> -	/* Copies the parent layer stack and leaves a space for the new layer. */
->> +	/*
->> +	 * Copies the parent layer stack and leaves a space
->> +	 * for the new layer.
->> +	 */
->>   	memcpy(child->access_masks, parent->access_masks,
->>   	       flex_array_size(parent, access_masks, parent->num_layers));
->> 
->> --
->> 2.25.1
->> 
-> .
+> >  }
+> >  #else
+> >  static inline void mlx5e_ipsec_init(struct mlx5e_priv *priv)
+> > -- 
+> > 2.40.0
+> > 
