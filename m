@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 210536E8B74
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 09:30:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FBC16E8B7B
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 09:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234085AbjDTHaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 03:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
+        id S234069AbjDTHcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 03:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233940AbjDTHaA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 03:30:00 -0400
+        with ESMTP id S229749AbjDTHct (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 03:32:49 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7EF10D8;
-        Thu, 20 Apr 2023 00:29:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECFA2727;
+        Thu, 20 Apr 2023 00:32:48 -0700 (PDT)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33JLfBj2006410;
-        Thu, 20 Apr 2023 00:29:28 -0700
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33JLfRYs006574;
+        Thu, 20 Apr 2023 00:32:41 -0700
 Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2168.outbound.protection.outlook.com [104.47.58.168])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3q2rebtrqn-1
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3q2rebts4p-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 20 Apr 2023 00:29:28 -0700
+        Thu, 20 Apr 2023 00:32:40 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XOCvq5nAdKStaF21RhbHVU/NWwPrYqt3iFiM8Ad/nDnGNcwjbooaHjmt3xVcBB5o5CccAFeRepJDNPMoEZIvjR9VRpdlXPWCrBeiAimOMD4QesqI38qeFlJ6z2nL/H+Ivh6wyxRk3/QmvyJOk4JWiFSB3JzbYI8DfDn8QjPB+js32ER1PH6vHq9GUPkVkh6iFznEmuW+HdK4JCVBvKLrZFv4mlQyGg3iTSu/bYAYUdetiiiS9buLxw/ScAwPhz8ULxBGju4euOBbEOJTbz+OqbpemyfOOHGfN8fXgfDHkC1lpG32t2vD2DlFgmBix1dEk7XAF8gidXnAs7ZUxADL+g==
+ b=Ns7gZ7qwRtEbIr5xAbGnHb9pwGMJ5oabxeTeHFOl9yZOEVL5YPeP5s4ud3Eh58c/IEUe5I7BDUln+Xh1zy8h8N6SX7KNaMRxuOELl2uqVhAlxI2xxuRMkXqNQg3mNGI1NZGa+eJvDPUdAzkLajIafK3hwUT8bZgXSKVtl3Ftr8B6kGGwsjBGgd4JJ9Tx8WLo7E7rvdNUcYWABa0LB5AGFS3VE2TE5X9SLbKGeY8D6J9LJMi+oauh5IAZ36jEDqd22jGyon3+Rt1HtvRIgtkPz2ZzxZDr01dtktH/Y6+zr9OTZO0Aq7DHwOU6xJK5da1R0j5fnr/O5ar9zQWdZmghxQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T5cygNyktECapxD2v0a6Ro38brwSYm9l7l1OIY49d5M=;
- b=P6ocbHlSiT/Hp8ur48LS92KuX1fer5yxl0M3czB15bL+JvTdKaz5pprDW1IPk8fN/Bm/MjVcnpAAmF/RhogqEADEpYvRIVP6+KoIftDgs9xWehMZCbAFEQyVvszvcRKre1f0qpPOiL7AVtsD1yb3N5vg2/1DJooFWQhE1+VkmxcUsZoLg5ao2XbD5TCsd+WxvtTZHJEE8E2A5AWanzfo7Z7mi7YZ5eT/PILEtitfPQ9ZtcgnBktcpP/0PauPUahAxbmV71snsNZYppF17j3CYsTISLXd3KwVQTVm5lnkCnAD0cymMEwldJ6tIQMI0qOFuyY4PGDPlF3WQWh864xsfw==
+ bh=elp9lDs+SXNJ+F88mUPSMPVRATiyHzKmvGgNjw42MEI=;
+ b=EWIPZXvyNGZsNmeirTr/RkkejnPY4+dgCBYVAhQfsnWcRCSwiqI6Bof/RLo/wP6sR+OsT8SUscCpDeV/wflOiaYeRrALTPnfbcjrNXTjvLT97wKa35sEBAiQ60M3ctHwzjXeoRU4SBKcVcyMk+Wu6lObRXZkNm89dN4k6CupFWWTtvOILMy9E3/tMsO/gsxdOroj1UJoAfDb4ChcMFTFi++Ls2ScWxUUEzbH+fABuNPEAhm5BNP4Qu1e8TKiAbAmXruNd2ChonSsD7ys5/NDNgBh9Xq1a14T1OxdUVAkcWt0sDVotiEtVKkSCk7+7rTJfCwZxttU9HVSxiBEGWYZnQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
  dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T5cygNyktECapxD2v0a6Ro38brwSYm9l7l1OIY49d5M=;
- b=WsVn82B0rHAEG+5QhDLrnw4at9Wv9hZ19p8q2LAG89I6DCG8vHYCNRrEhyy2nRMdiLRnpp2qUYj/LpJhOx3BAzfcdyXER+2DOQpg1h/ZjtKZIaD12a2OoGmsGDNg6bfWS5nzb4LvkpDdEf5tCBoUCNg6eRU+l8CoNgGXuHr1pmY=
+ bh=elp9lDs+SXNJ+F88mUPSMPVRATiyHzKmvGgNjw42MEI=;
+ b=ZpY3D+DNiGuTMxALtGpLsNnEA0LCzoQd+Uvu6lNajiBJBZceWUQLFuD1FT3biw5T23hqR72o7Ly1i0qdZXg0WW9XE00R5U9A0YcSWIa0xzjNqXmbfcfGmFUkao776g/snptNbLnDifPv3qAt8MjElEMUPGcIJmRV0zg9bO39cQU=
 Received: from BY3PR18MB4707.namprd18.prod.outlook.com (2603:10b6:a03:3ca::23)
  by MW4PR18MB5107.namprd18.prod.outlook.com (2603:10b6:303:1b6::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Thu, 20 Apr
- 2023 07:29:24 +0000
+ 2023 07:32:36 +0000
 Received: from BY3PR18MB4707.namprd18.prod.outlook.com
  ([fe80::e907:e8ce:db04:b353]) by BY3PR18MB4707.namprd18.prod.outlook.com
  ([fe80::e907:e8ce:db04:b353%4]) with mapi id 15.20.6319.021; Thu, 20 Apr 2023
- 07:29:24 +0000
+ 07:32:36 +0000
 From:   Sai Krishna Gajula <saikrishnag@marvell.com>
 To:     Simon Horman <simon.horman@corigine.com>
 CC:     "davem@davemloft.net" <davem@davemloft.net>,
@@ -61,27 +61,29 @@ CC:     "davem@davemloft.net" <davem@davemloft.net>,
         Hariprasad Kelam <hkelam@marvell.com>,
         Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
         Ratheesh Kannoth <rkannoth@marvell.com>
-Subject: Re: [net PATCH v3 09/10] octeontx2-af: Skip PFs if not enabled
-Thread-Topic: [net PATCH v3 09/10] octeontx2-af: Skip PFs if not enabled
-Thread-Index: AQHZc1nURZT+4vDPQ0iIr1PWz3hv6Q==
-Date:   Thu, 20 Apr 2023 07:29:24 +0000
-Message-ID: <BY3PR18MB4707F32545AD96485B224A86A0639@BY3PR18MB4707.namprd18.prod.outlook.com>
+Subject: Re: [net PATCH v3 02/10] octeontx2-af: Fix start and end bit for scan
+ config
+Thread-Topic: [net PATCH v3 02/10] octeontx2-af: Fix start and end bit for
+ scan config
+Thread-Index: AQHZc1pH8Fceaq+veUyx9OFpGBUhWA==
+Date:   Thu, 20 Apr 2023 07:32:36 +0000
+Message-ID: <BY3PR18MB470755330B9DF76944DD1493A0639@BY3PR18MB4707.namprd18.prod.outlook.com>
 References: <20230419062018.286136-1-saikrishnag@marvell.com>
- <20230419062018.286136-10-saikrishnag@marvell.com>
- <ZD/HncVvuuDIlHXv@corigine.com>
-In-Reply-To: <ZD/HncVvuuDIlHXv@corigine.com>
+ <20230419062018.286136-3-saikrishnag@marvell.com>
+ <ZD/D7j+LPRIbP80J@corigine.com>
+In-Reply-To: <ZD/D7j+LPRIbP80J@corigine.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcc2Fpa3Jpc2hu?=
  =?us-ascii?Q?YWdcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZi?=
- =?us-ascii?Q?ODRiYTI5ZTM1Ylxtc2dzXG1zZy0xMGUzNTIxMS1kZjRkLTExZWQtYWQxYy0x?=
- =?us-ascii?Q?Y2MxMGM0MGQ5ZTRcYW1lLXRlc3RcMTBlMzUyMTItZGY0ZC0xMWVkLWFkMWMt?=
- =?us-ascii?Q?MWNjMTBjNDBkOWU0Ym9keS50eHQiIHN6PSI0NjY4IiB0PSIxMzMyNjQ0OTM2?=
- =?us-ascii?Q?MjAyMTgxMTkiIGg9Im9TQVkxekxiekZMd0l3QTBGZW1vUmxlVmFXVT0iIGlk?=
+ =?us-ascii?Q?ODRiYTI5ZTM1Ylxtc2dzXG1zZy04NDA0MzA1Ny1kZjRkLTExZWQtYWQxYy0x?=
+ =?us-ascii?Q?Y2MxMGM0MGQ5ZTRcYW1lLXRlc3RcODQwNDMwNTktZGY0ZC0xMWVkLWFkMWMt?=
+ =?us-ascii?Q?MWNjMTBjNDBkOWU0Ym9keS50eHQiIHN6PSIyNjgzIiB0PSIxMzMyNjQ0OTU1?=
+ =?us-ascii?Q?NDg4NTM5OTYiIGg9ImxzQlBKMkRNaEtLRHlqZXpJNUY1dUI3bldMQT0iIGlk?=
  =?us-ascii?Q?PSIiIGJsPSIwIiBibz0iMSIgY2k9ImNBQUFBRVJIVTFSU1JVRk5DZ1VBQUhZ?=
- =?us-ascii?Q?SUFBQUh5V2ZUV1hQWkFSdlBiRXQxenVwL0c4OXNTM1hPNm44TkFBQUFBQUFB?=
+ =?us-ascii?Q?SUFBRHNibHhHV25QWkFjcmNucllwS09pSnl0eWV0aWtvNklrTkFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFIQUFBQUFHQ0FBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFFQUFRQUJBQUFBbzlpamZRQUFBQUFBQUFBQUFBQUFBSjRBQUFCaEFH?=
  =?us-ascii?Q?UUFaQUJ5QUdVQWN3QnpBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
@@ -149,56 +151,56 @@ x-dg-reftwo: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBSjRBQUFCa0
  =?us-ascii?Q?QUFBRUFBQUFBQUFBQUFnQUFBQUFBIi8+PC9tZXRhPg=3D=3D?=
 x-ms-publictraffictype: Email
 x-ms-traffictypediagnostic: BY3PR18MB4707:EE_|MW4PR18MB5107:EE_
-x-ms-office365-filtering-correlation-id: 14b9d0c2-c8a3-403e-e2d2-08db4170f719
+x-ms-office365-filtering-correlation-id: 9f869c04-b893-4588-ba70-08db417169d8
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nlBco9k5pkd/zmUu4NrR8XY+CBxTonwoP/oBV9fc2AypFyMrwhrUJ4nRzVE4zD6EhhzUpizgibWOkTLYCIdD3TpYNOHvr01tS4g4ag2y0360bnyC+suHQdGjB0UqBnXgMyv9LzRfN0q4g3n7K0inDd1I0M6OV1bnpleEJ9wtVX6emBfBzM5qiKPcgRzs3Pif+VcJgTOANE9iwNCYNFpo9ONgn8NwPQSytVyt/5bLGYdTdtsHn3gr37OkP48kv2rmq5On9AjBjYyjhl40ycCKoqBiYRaM+fNTsgvyBi1denpLOth6IFC/jmLRC7Z+W8lVUGgAQTPsBgd51nFS1+nTUpZnfL9YqpxnU0YE+o35WZ8qt1ONRnSmYZUL4eYbACwZ6o5wDGM4OoT9oPn2uoYRvg8cCpe0usxCvoFExmgxb4LaRqIvp3/k3xiL7EuHmTWzDPp5ASDAO5nhwbSBrg+LImFwELmnOGNZ3hFVuKW1rBUNICmYQbo+NmeViB1zOYm/gH0fnvcbxRw14325LSuIYi9zA4RJn+YJnj+kbK30KBmfdSnQVJrJ3yEO+eDdgmFy6bKTUulKhgzpb74JrQ3oboK39ndYw7Iab3PS0ROn7HDIEiZsJjN9E32sqg3UlTuc
+x-microsoft-antispam-message-info: oHgXO+Js++CyXtBpOfk5Vv1EbV0VU+qKx1q5SqF6Hsu06mjdXGqo5d7M7tPvHdGfRDEvBCMO8G4A3NKhz39gGrq8cV2DnItwH5C0XGD5m4md29KbZ+Q3JKDfgsGF19pIJU4RlLBMhQxGbUJoDYzmnWmeWu7RTbDn0Qh8svzR1siVlGZorT8achDNAoZAeqg/HT/Y8WAP1W9ZrzdbE2ZpJn9K26sJatX9GvoiE5fChzjoGAU668O+S5EBRbdEjOEVwKXnyb7T8f6413FErJ1SHQoV/ipKXIdvhXClS8HbXEahA+/8NJBgvGUAIXzJBckxe5oXAwVpYiktkCkFndU7Hrz9bUbPGnsy8txMKGMdXM1b6W+FRNm7ujWEcV0TJ6IM7v92zQ0+vAIog0rcxnaj8QabxtRxcGKvwbreHBgNYF04rrYDPy9uKBD2e9Eo9YCtY5EE8LD0KIPt1zz2ws7TNHE6AvnL9/v4SGlJQ8IRCEAyHC4NhljIhuV98RYawQjuPMW5zWSxE75yNezdim8X/i1TBKGHhAHTLoDAN9wJDLB/wI2YxB+zbhMKo2cqJ+elPSFdeIP5qdF2DXJ9OXmuukG7onH6FR7yMjp/2r4vNZN4kSLm1XZXfqmJVKdKCbOG
 x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR18MB4707.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(39860400002)(376002)(136003)(346002)(451199021)(8676002)(41300700001)(8936002)(55016003)(2906002)(38070700005)(5660300002)(52536014)(83380400001)(54906003)(122000001)(86362001)(478600001)(26005)(6506007)(9686003)(53546011)(7696005)(107886003)(38100700002)(33656002)(186003)(71200400001)(316002)(4326008)(6916009)(66476007)(64756008)(66556008)(66446008)(66946007)(76116006);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ze5XqOnC6WUUQTmE5AuPGpX8x24+DrjpzKnyKgVuSFULVFutA67s02rwWZfn?=
- =?us-ascii?Q?EnElpfc8oGNtLun25SGSWW7p5gKj8kTCJZKgwlHyLvYp0Zjn93UFyR5CF8HH?=
- =?us-ascii?Q?DUL9YYiSdT4Pw1qmDFa0RBQTbOMNK2+FYqin1JlDhjZKKtsNy8Vo2l8rhf7o?=
- =?us-ascii?Q?5sCMuz1YCggY/sgngGIsTtS4oMFoSy0CL6D0I19goJJxeW7ji2eH82V8UwPP?=
- =?us-ascii?Q?j010ckUckEbUkR0bSBUYEFTHbudBADwEQ2WxTmRMUVbUg+7JT+hWLweMNcge?=
- =?us-ascii?Q?HlgOUbu64C0qniCiZdpsF39/j1QPVR7trgrINrlkBfhrRA4p4ZxxY2X1ETOb?=
- =?us-ascii?Q?jJmkIs2xQaukVjditEY6o8WX13Wx2PJLfYIw8MvFf7uNv5k9veQKUqi6nc3C?=
- =?us-ascii?Q?Iapu08nRVqWNHcBI8Pp5/Nm5xQrNIT1m+QKa/MeiERE/xSAdhd2vRImWXwYs?=
- =?us-ascii?Q?B8nPzaeVnA3UCyT2pDnLVqbQa5546xOeBdJOORl+IZovKWv7ljMCNjqV7+op?=
- =?us-ascii?Q?SE8W/17nQB882sYWn/Kqh+7w0p9QUcUwwI32lN2QtA3LBd4zaSGVpwnk2y4L?=
- =?us-ascii?Q?99FJlSXo+vWJMtaYPo8+0TZzIAZfwhd/CsSGZJJ7cR31chrio6tMG+cXBF4A?=
- =?us-ascii?Q?WEV+tFrygmfAR/xUVpPdJg93SuF3BucpAOQCLXtsDppfOyJys1FYA6+w4zKp?=
- =?us-ascii?Q?cMG/hHfnfhaOeiJxu0J6bME5Bb6X94PMgFRqNDnkVGHc+BGLiLdTxFYQ32ar?=
- =?us-ascii?Q?ZNBT4B0gzkPOpM8Hu0KGYWwMfPizz737kfVUvxTBKwYR/3fqnQOx8sTOwG6I?=
- =?us-ascii?Q?o73Zp0EVDorrldgyuFHOgUpX95NWCbsO04Z76c0nFAm+EyWl6aKNrkvfC3Nk?=
- =?us-ascii?Q?J7V85WCoRIBBszMrhd3NatPntQNg1Vqsq8O0vUHFvZ6DZzg0GhZTE6ALM3ZD?=
- =?us-ascii?Q?ZUZKy1Vsq5mKIeUcF78aRXTyfwe9O6jtt+udvA10lb5YK3lZYSpzs7aXSsEZ?=
- =?us-ascii?Q?WG7LuMI7Uhack0zp2h//JphX9nvrolz7uYuW3WRmoD1ZygVUEv4e0kdE5kwT?=
- =?us-ascii?Q?Z03zBlMh6OO6hdzmF/13BusnNGMvfdpESHZXT335RoNt7W3ripgFVkr7hMqm?=
- =?us-ascii?Q?fqbkqxzpRxxaO/MwNVch52zwwH4Dfr7eNaS+LjaEInFwq1HXzXdhoz40H45E?=
- =?us-ascii?Q?enBaENrA/y7VS3en35LoN+bbWJLxAgYyk1uq5t1ET2enFRdvmo5RSq43suzA?=
- =?us-ascii?Q?97M+afKIDCTT7w50dNHHDKugqmecG6WoURcr9dvbnbVx9hvKTlGD82tvhUum?=
- =?us-ascii?Q?LulRpPg2wztRKip+a7qSbEiYTTfMnw6UDvOiVsCubA1ewz4pvqu6eXMhLmPN?=
- =?us-ascii?Q?NsTbyJ2SHVV5WxwbKLpzLhHNESmzNsPQUa7KZl3n4AK/GnxN62kP8LcNwjNr?=
- =?us-ascii?Q?TiFw5IDPvQU02JD2MWxoNu/zBJJ7do9j4d8JRVAzXpFvufWjdvP0IaPloWUV?=
- =?us-ascii?Q?KjAuZ7AoYd7bIMvnEKj0RC83Li1bN4mu5RqlRADmQmXrl9WwA+f7xQw/cXAU?=
- =?us-ascii?Q?G6IN7UJuprIL8rUj9lxER0NoQYTq9Vr3vKSbe3Me?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?12NKMF/5kBKeF+nVR5vPJnX4fbZt4L8dB2fnPGqB/6b2YFE4m1Td++aMi0df?=
+ =?us-ascii?Q?/3PQtjYWLwrYHe6NJeek5EYKymwLowzYKGrWtpwsHbdU14viZPwVTc1rpESg?=
+ =?us-ascii?Q?/oHg/q2LszLPJKiOY3zVr0jZPF6BK571vzZD2xfHMR9OZ9Vwhy6cuQS/p07g?=
+ =?us-ascii?Q?nkgjqfJhoyuO81h9SD0NCSH3SuyyQ2lK5+bQMUg28jG7MfhjnA+1lFnquwgH?=
+ =?us-ascii?Q?EW0BRhzoE2xytR1VcMKWHaEEeHqpoFOFXB5jlkVwo6p2nvfIHJanhgqe5i2n?=
+ =?us-ascii?Q?jdpH0BgDrfRZ7oxj9L7uyviqkI7LsFJGXC60ZLHnms8YXmPJvbLYwFS0MZBD?=
+ =?us-ascii?Q?4uVQerSAYMGV8r5og8P/NNnTTyDRBJXSZH4WzJiD+Of2MQG1tXWsXn6OTOWX?=
+ =?us-ascii?Q?5gktfaX0AY4rP6OAjh7XPGV/C8yOocloPfg026imXKH9oM/z6xyaAuOUT4OH?=
+ =?us-ascii?Q?9b2hOKS53DkXW+juyvm+H7lSqLhzASRlPktke0nU9Wyt78QmM9Q9vCASS+Si?=
+ =?us-ascii?Q?K5ZzfStG64VkfnZvN0Qpfycda5g2T4yAz92PRycA98uMgD0RnZowhg+u3DV8?=
+ =?us-ascii?Q?2Ezu3sy035V61w3cmNGQuIqW6uqKZ/a3sItXiZBd+XgPucggCjzBvZS2RJ1t?=
+ =?us-ascii?Q?OislAuLuNghidO/+5nXxJ5VBHzGhAe522sZuxzhIzHT3sXgvDcdjsy2oU9D9?=
+ =?us-ascii?Q?oi9X9bwbjiyd0eeAU8m847uSKIxvo6fKoUDlVeasyjrXkRa5P03Keb1OAjjp?=
+ =?us-ascii?Q?t86vMW2YXTWxT2kyhnkU2EUwamCFB8v3eC0cq+OLoKDEtYvITmIsDtMun45E?=
+ =?us-ascii?Q?ZuHP3BQj3WaZ7tzWFcFsUFrkQJyR8VKTpTIMa9SMMh+LSxTP1u4mmv2w4XkE?=
+ =?us-ascii?Q?4VD36N2Eo9r1auBhbWrDT8BLFxgFUL7Z3p5OTvl3yqaw5fXFkyVmlKJTVU5h?=
+ =?us-ascii?Q?0o6qj1AAP1rtbqoONickgvPy7e+QYCK/Hdeut7rnluJhGm97kTSsiAw8FnhX?=
+ =?us-ascii?Q?Cgow9WEzrX4puJDtzRFda1/0FczR285OgyB2sk+geUWsOggwaagQRNME+kgc?=
+ =?us-ascii?Q?kV7OrNgyQAHEh+6t+FpDe1+jAUDltPXrd1CsJ3l8O4Up0f5QAmXknN3GbGIb?=
+ =?us-ascii?Q?ixri2kHCQOmLkWit+yUgWYqP+Im6TzGXoSgKzNJ/rQELMjnBxqYTW+vSRHJk?=
+ =?us-ascii?Q?AbuaEl4OcNdQZiSp3VttzizyasCPCBRA1mtuu4mXE4eR3qbc1hY6Ug8AedXK?=
+ =?us-ascii?Q?HqrgNFl9g2q85MtFyGwGWv7ymTtZKsTBF3GSSIYklpdNOhnd14Z+ToHAUspy?=
+ =?us-ascii?Q?yzggwcp0g5lNmg7mfr/+3k+n42/XAjUHTKEDRep3GTCYJwny5/vXYHB3vhFL?=
+ =?us-ascii?Q?IjSTtELNjODpIt0jDZPSdOOu16v8EtWObX3MaveisvYkUbWP0QJhtVNmlNL/?=
+ =?us-ascii?Q?OxfrwfuVmmeXsOqhRGSLzp8lOs2TQWjH9QxiI7UJud735GI3gO2gUIrxbr8K?=
+ =?us-ascii?Q?fFdNfjnA8kK1HbYZYnGhmcqmQ63AWas6wMJEWnl8USGxHBNuexfKB0h8ZLa5?=
+ =?us-ascii?Q?9eDTQRJb+rbfB7fv8HaBbwcBzXWOXVA35yMFWlUd?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: marvell.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BY3PR18MB4707.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 14b9d0c2-c8a3-403e-e2d2-08db4170f719
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2023 07:29:24.0680
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f869c04-b893-4588-ba70-08db417169d8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2023 07:32:36.5773
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: aHx/3Pf8q4V6yh2wcIX3xRkiPm41vjzXRtKnDnA9/C65S2/tFHakRz/jnfTshT4NheSfH5stnpqs5VcFfyfOEA==
+X-MS-Exchange-CrossTenant-userprincipalname: /GtJ9S/LHh6f7dR9/LLz/yzfnyNPl0ilXUD2BDui9y70+syOuM5XYsVby8ofFc9IKjCrOnLvqpcLteh7md8w7A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR18MB5107
-X-Proofpoint-ORIG-GUID: H3tKF2YqZ1PQ3jLP_o4tqv-xpBcNAt7w
-X-Proofpoint-GUID: H3tKF2YqZ1PQ3jLP_o4tqv-xpBcNAt7w
+X-Proofpoint-ORIG-GUID: CaLtHuHAYdp3G06zVaFquHaFXcv6XCqY
+X-Proofpoint-GUID: CaLtHuHAYdp3G06zVaFquHaFXcv6XCqY
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-04-20_04,2023-04-18_01,2023-02-09_01
@@ -214,7 +216,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > -----Original Message-----
 > From: Simon Horman <simon.horman@corigine.com>
-> Sent: Wednesday, April 19, 2023 4:21 PM
+> Sent: Wednesday, April 19, 2023 4:05 PM
 > To: Sai Krishna Gajula <saikrishnag@marvell.com>
 > Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
 > pabeni@redhat.com; netdev@vger.kernel.org; linux-
@@ -224,137 +226,52 @@ X-Mailing-List: netdev@vger.kernel.org
 > <jerinj@marvell.com>; Hariprasad Kelam <hkelam@marvell.com>;
 > Subbaraya Sundeep Bhatta <sbhatta@marvell.com>; Ratheesh Kannoth
 > <rkannoth@marvell.com>
-> Subject: Re: [net PATCH v3 09/10] octeontx2-af: Skip PFs if not enabled
+> Subject: Re: [net PATCH v3 02/10] octeontx2-af: Fix start and end bit for
+> scan config
 >=20
-> On Wed, Apr 19, 2023 at 11:50:17AM +0530, Sai Krishna wrote:
+> On Wed, Apr 19, 2023 at 11:50:10AM +0530, Sai Krishna wrote:
 > > From: Ratheesh Kannoth <rkannoth@marvell.com>
 > >
-> > Skip mbox initialization of disabled PFs. Firmware configures PFs and
-> > allocate mbox resources etc. Linux should configure particular PFs,
-> > which ever are enabled by firmware.
+> > Fix the NPC nibble start and end positions in the bit map.
+> > for_each_set_bit_from() needs start bit as one bit prior and end bit
+> > as one bit post position in the bit map
 > >
-> > Fixes: 9bdc47a6e328 ("octeontx2-af: Mbox communication support btw AF
-> > and it's VFs")
+> > Fixes: b747923afff8 ("octeontx2-af: Exact match support")
 > > Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
 > > Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 > > Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
 >=20
-> ...
+> I think it would be nice to explain why, and what effect this has.
 >=20
-> > @@ -2343,8 +2349,27 @@ static int rvu_mbox_init(struct rvu *rvu, struct
-> mbox_wq_info *mw,
-> >  	int err =3D -EINVAL, i, dir, dir_up;
-> >  	void __iomem *reg_base;
-> >  	struct rvu_work *mwork;
-> > +	unsigned long *pf_bmap;
-> >  	void **mbox_regions;
-> >  	const char *name;
-> > +	u64 cfg;
-> > +
-> > +	pf_bmap =3D kcalloc(BITS_TO_LONGS(num), sizeof(long),
-> GFP_KERNEL);
+> Also, TBH, I'm unsure why the start needs to be one bit prior.
 >=20
-> Sorry for not noticing this earlier, but maybe bitmap_alloc() is appropri=
-ate
-> here.
->=20
-We will provide v4 patch with using bitmap_alloc()/bitmap_zalloc() .
+Will expand the commit message with explanation of why, what effect of fix =
+in v4 patch.
 
-> > +	if (!pf_bmap)
-> > +		return -ENOMEM;
-> > +
-> > +	/* RVU VFs */
-> > +	if (type =3D=3D TYPE_AFVF)
-> > +		bitmap_set(pf_bmap, 0, num);
-> > +
-> > +	if (type =3D=3D TYPE_AFPF) {
-> > +		/* Mark enabled PFs in bitmap */
-> > +		for (i =3D 0; i < num; i++) {
-> > +			cfg =3D rvu_read64(rvu, BLKADDR_RVUM,
-> RVU_PRIV_PFX_CFG(i));
-> > +			if (cfg & BIT_ULL(20))
-> > +				set_bit(i, pf_bmap);
-> > +		}
-> > +	}
+> > ---
+> >  drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c | 5 ++---
+> >  1 file changed, 2 insertions(+), 3 deletions(-)
 > >
-> >  	mbox_regions =3D kcalloc(num, sizeof(void *), GFP_KERNEL);
-> >  	if (!mbox_regions)
->=20
-> 		I think pf_bmap is leaked here.
-
-We will provide v4 patch with fixing pf_bmap leak.
-
->=20
-> > @@ -2356,7 +2381,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct
-> mbox_wq_info *mw,
-> >  		dir =3D MBOX_DIR_AFPF;
-> >  		dir_up =3D MBOX_DIR_AFPF_UP;
-> >  		reg_base =3D rvu->afreg_base;
-> > -		err =3D rvu_get_mbox_regions(rvu, mbox_regions, num,
-> TYPE_AFPF);
-> > +		err =3D rvu_get_mbox_regions(rvu, mbox_regions, num,
-> TYPE_AFPF,
-> > +pf_bmap);
-> >  		if (err)
-> >  			goto free_regions;
-> >  		break;
-> > @@ -2365,7 +2390,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct
-> mbox_wq_info *mw,
-> >  		dir =3D MBOX_DIR_PFVF;
-> >  		dir_up =3D MBOX_DIR_PFVF_UP;
-> >  		reg_base =3D rvu->pfreg_base;
-> > -		err =3D rvu_get_mbox_regions(rvu, mbox_regions, num,
-> TYPE_AFVF);
-> > +		err =3D rvu_get_mbox_regions(rvu, mbox_regions, num,
-> TYPE_AFVF,
-> > +pf_bmap);
-> >  		if (err)
-> >  			goto free_regions;
-> >  		break;
-> > @@ -2396,16 +2421,19 @@ static int rvu_mbox_init(struct rvu *rvu, struc=
-t
-> mbox_wq_info *mw,
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+> > b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+> > index 006beb5cf98d..27603078689a 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c
+> > @@ -593,9 +593,8 @@ static int npc_scan_kex(struct rvu *rvu, int blkadd=
+r,
+> u8 intf)
+> >  	 * exact match code.
+> >  	 */
+> >  	masked_cfg =3D cfg & NPC_EXACT_NIBBLE;
+> > -	bitnr =3D NPC_EXACT_NIBBLE_START;
+> > -	for_each_set_bit_from(bitnr, (unsigned long *)&masked_cfg,
+> > -			      NPC_EXACT_NIBBLE_START) {
+> > +	bitnr =3D NPC_EXACT_NIBBLE_START - 1;
+> > +	for_each_set_bit_from(bitnr, (unsigned long *)&masked_cfg,
+> > +NPC_EXACT_NIBBLE_END + 1) {
+> >  		npc_scan_exact_result(mcam, bitnr, key_nibble, intf);
+> >  		key_nibble++;
 > >  	}
-> >
-> >  	err =3D otx2_mbox_regions_init(&mw->mbox, mbox_regions, rvu-
-> >pdev,
-> > -				     reg_base, dir, num);
-> > +				     reg_base, dir, num, pf_bmap);
-> >  	if (err)
-> >  		goto exit;
-> >
-> >  	err =3D otx2_mbox_regions_init(&mw->mbox_up, mbox_regions, rvu-
-> >pdev,
-> > -				     reg_base, dir_up, num);
-> > +				     reg_base, dir_up, num, pf_bmap);
-> >  	if (err)
-> >  		goto exit;
-> >
-> >  	for (i =3D 0; i < num; i++) {
-> > +		if (!test_bit(i, pf_bmap))
-> > +			continue;
-> > +
-> >  		mwork =3D &mw->mbox_wrk[i];
-> >  		mwork->rvu =3D rvu;
-> >  		INIT_WORK(&mwork->work, mbox_handler); @@ -2415,6
-> +2443,7 @@ static
-> > int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
-> >  		INIT_WORK(&mwork->work, mbox_up_handler);
-> >  	}
-> >  	kfree(mbox_regions);
-> > +	kfree(pf_bmap);
-> >  	return 0;
-> >
-> >  exit:
-> > @@ -2424,6 +2453,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct
-> mbox_wq_info *mw,
-> >  		iounmap((void __iomem *)mbox_regions[num]);
-> >  free_regions:
-> >  	kfree(mbox_regions);
-> > +	kfree(pf_bmap);
-> >  	return err;
-> >  }
-> >
 > > --
 > > 2.25.1
 > >
