@@ -2,117 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 788966E87CF
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 04:05:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 986556E87DF
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 04:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232771AbjDTCFq convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Apr 2023 22:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
+        id S232130AbjDTCPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 22:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232606AbjDTCFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 22:05:45 -0400
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9962F3C31
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 19:05:41 -0700 (PDT)
-X-QQ-mid: bizesmtp74t1681956334tk67uxgo
-Received: from smtpclient.apple ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 20 Apr 2023 10:05:32 +0800 (CST)
-X-QQ-SSF: 00400000000000N0R000000A0000000
-X-QQ-FEAT: V7Dl5UGFBQ9mZPmBCUpVnasHreIW5SxFjloy5ITduhxZg/OfA9DGbZtsUmLF+
-        wgch2egBvtWV+AHDaSpUNI6Q2Q4iso+RVYhnnPPQIv1LHxUXStcT/ri/g42KRhuDSmfkdWM
-        esVELpHqxFydKlAcNZvuK8S7IlTGL/qF76d4Mg/KQRHjN5SQJcrr80C+cPgwua3/fpa0jZf
-        Ixnkk4/QTuUcGSHfYIO8DzA5yzwk8j1mJApxJG1CgRWmGcViHANTHzFBy7n4K3mK7RbtYT3
-        pM/Vmz4Y1MAMeKUSf3aL9izRs8ukVnhAbvdfwwnZ4Tfpl5TEllsrCJZIO12Hu4UesbbdpP1
-        glfdJFa4g5A2E5EzMENvYP4mSe4tJDcze9Ui+1VffRQaJl4X9Xm/tXd0BRXiMsMmk+XsBC5
-        v7VEGburDJA=
-X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 6372937594665590060
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.400.51.1.1\))
-Subject: Re: [PATCH net-next v2 1/5] net: wangxun: libwx add tx offload
- functions
-From:   "mengyuanlou@net-swift.com" <mengyuanlou@net-swift.com>
-In-Reply-To: <a0ea9822-695b-df3f-c95f-766ef5b3f6a9@huawei.com>
-Date:   Thu, 20 Apr 2023 10:05:22 +0800
-Cc:     netdev@vger.kernel.org, Jiawen Wu <jiawenwu@trustnetic.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <E5EED9F4-A094-417A-8CBC-0A1C022263B3@net-swift.com>
-References: <20230417105457.82127-1-mengyuanlou@net-swift.com>
- <20230417105457.82127-2-mengyuanlou@net-swift.com>
- <630e590e-fac3-5f69-688e-ac140ab3464e@huawei.com>
- <4E862584-755D-4EC4-9588-DB0B14D64CD5@net-swift.com>
- <82c37bb4-b2b0-037a-7f63-71324f493e1d@huawei.com>
- <1996D963-EFD9-420E-BEE2-E29B83F3811B@net-swift.com>
- <a0ea9822-695b-df3f-c95f-766ef5b3f6a9@huawei.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-X-Mailer: Apple Mail (2.3731.400.51.1.1)
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:net-swift.com:qybglogicsvrgz:qybglogicsvrgz6a-1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229767AbjDTCPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 22:15:00 -0400
+Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA774492
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 19:14:59 -0700 (PDT)
+Received: by mail-oo1-xc2a.google.com with SMTP id 006d021491bc7-544f2c5730aso200089eaf.2
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 19:14:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1681956898; x=1684548898;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6uFK0OCqFOWirj1P654nbEeN1jK0+zZrRBX4osD4m1U=;
+        b=tIH6v9gPbzBPzRnguKLxBDl7NYGFZ8MyHA6ZDGTLOnqeHtWELSIWjuDiI3A3R5r5vR
+         tudMhO8zf8VWHHwxjmEKcTeruDI//+AEM/aWr8eWxl2d3r4AqnvR/bI71Z9WOofScl9a
+         8V4kq1xlFLOYZtFbJZYPEcOaUPaXydPFZc9d9wAyy2WUCpD8dQJKHu4GRd9iryUZSI9u
+         hn1Z0PUrtvClCQaqW9IbBDsKXXAD852NavetakZky49T0Z1HojgGTD6JVtKkyKKo3TYW
+         nCM9c5UO09SX407oRRAnnXWGLiDPVnRRBbLYWtoHhrQaW69duJY7KWquUUiJT0/PIYg2
+         Z9Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681956898; x=1684548898;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=6uFK0OCqFOWirj1P654nbEeN1jK0+zZrRBX4osD4m1U=;
+        b=B9U8Fr39JyOr5+0zCnqrSiUXgp9D5gyxM7XTRzMfJtdSLPPpkb/50WCBGzlWEA+ix6
+         tkF+L2T3bjO8tg21V92gBxac3DRpib7S1vZOd2RjuAPpzgdM902tOClA+EDJeLpyv7u9
+         g7BXKktqPgq8Svnf7ycqKDuaZXYvXDkt6lLkhuHW41XCa6lnk2AY/MHRs8QteHzzwlsQ
+         6Xlo+xvynsGv5D5uKnExTosursKT2h7RYL3Nmirk3f3gTP2kVQEugaZbU1jYWAe3YvQJ
+         kP9WAGPMyUEy8l8AP8+px40Rn1lzqgRr0xRz/qgeRi8AJFbETyRtiinWxCT8o77kJh5Z
+         k5VA==
+X-Gm-Message-State: AAQBX9ceG1zzGaTLHqe6be8Mn5fQPG+Tbae1u9iTqTvR6CKQGK7SBe6W
+        rW1sMDdqAAoRRIaQv1Fu/pbiDg==
+X-Google-Smtp-Source: AKy350YTLqapwoZdVAcOZuyemDEzhSxkP73+hY89dHGrrV88kX0+731AkZEJffZgw1ECuddjziP9OA==
+X-Received: by 2002:a05:6870:3456:b0:183:f844:5e0a with SMTP id i22-20020a056870345600b00183f8445e0amr39789oah.38.1681956898677;
+        Wed, 19 Apr 2023 19:14:58 -0700 (PDT)
+Received: from ?IPV6:2804:14d:5c5e:44fb:9ee5:4c39:6d56:5391? ([2804:14d:5c5e:44fb:9ee5:4c39:6d56:5391])
+        by smtp.gmail.com with ESMTPSA id ea37-20020a056870072500b00177be9585desm306597oab.1.2023.04.19.19.14.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Apr 2023 19:14:58 -0700 (PDT)
+Message-ID: <d45983a3-6884-d8e9-499e-c9e71c4685d5@mojatatu.com>
+Date:   Wed, 19 Apr 2023 23:14:54 -0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next v2 1/4] net/sched: sch_htb: use extack on errors
+ messages
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com
+References: <20230417171218.333567-1-pctammela@mojatatu.com>
+ <20230417171218.333567-2-pctammela@mojatatu.com>
+ <20230419180832.3f0b7729@kernel.org>
+From:   Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <20230419180832.3f0b7729@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 19/04/2023 22:08, Jakub Kicinski wrote:
+> On Mon, 17 Apr 2023 14:12:15 -0300 Pedro Tammela wrote:
+>> @@ -1917,8 +1917,8 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+>>   			};
+>>   			err = htb_offload(dev, &offload_opt);
+>>   			if (err) {
+>> -				pr_err("htb: TC_HTB_LEAF_ALLOC_QUEUE failed with err = %d\n",
+>> -				       err);
+>> +				NL_SET_ERR_MSG(extack,
+>> +					       "Failed to offload leaf alloc queue");
+>>   				goto err_kill_estimator;
+>>   			}
+>>   			dev_queue = netdev_get_tx_queue(dev, offload_opt.qid);
+>> @@ -1937,8 +1937,8 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+>>   			};
+>>   			err = htb_offload(dev, &offload_opt);
+>>   			if (err) {
+>> -				pr_err("htb: TC_HTB_LEAF_TO_INNER failed with err = %d\n",
+>> -				       err);
+>> +				NL_SET_ERR_MSG(extack,
+>> +					       "Failed to offload leaf to inner");
+> 
+> I missed the message changes on v1, but since the patches are already
+> Changes Requested in patchwork...
+> 
+> IDK what TC_HTB_LEAF_TO_INNER is exactly, neither do I understand
+> "Failed to offload leaf to inner". The first one should be "Failed to
+> alloc offload leaf queue" if anything.
+> 
+> Let's just stick to the existing messages?
 
-
-> 2023年4月19日 20:40，Yunsheng Lin <linyunsheng@huawei.com> 写道：
-> 
-> On 2023/4/19 10:27, mengyuanlou@net-swift.com wrote:
->> 
->> 
->>> 2023年4月18日 20:11，Yunsheng Lin <linyunsheng@huawei.com> 写道：
->>> 
->>> On 2023/4/18 15:00, mengyuanlou@net-swift.com wrote:
->>>>>> + goto exit;
->>>>>> + case htons(ETH_P_ARP):
->>>>>> + ptype = WX_PTYPE_L2_ARP;
->>>>>> + goto exit;
->>>>>> + default:
->>>>>> + ptype = WX_PTYPE_L2_MAC;
->>>>> 
->>>>> Is it ok to set ptype to WX_PTYPE_L2_MAC for first->protocol != ETH_P_IP
->>>>> && first->protocol != ETH_P_IPV6? Does hw need to do checksum/tso or other thing
->>>>> about those packet? if not, setting WX_PTYPE_L2_MAC seems enough?
->>>>> 
->>>>   • The hardware needs to parse these packets with these ptype bits.
->>> 
->>> What does hw do after parsing these packets? Updating some stats according to
->>> the protocol type?
->>> It seems really related to hw implementation, I am just curious if it is worth
->>> the added overhead for driver.
->>> 
->> For ETH_P_1588 hw will add timestamp for packets. 
-> 
-> I am not quite familiar with 1588, but does stack not set the SKBTX_HW_TSTAMP
-> in skb_shinfo(skb)->tx_flags when hw timestamp is required?
-> 
->> The others are used to loopback scene, because hw can not parse l2 type.
-> 
-> I suppose that is for sriov loopback case where one function send packet
-> to another function under the same PF?
-> 
-> For the above case, hw just copy the packet type from tx desc to rx desc
-> without parsing the packet and assuming the driver always put the correct
-> packet type? I am not sure it is safe to assume that driver always put the
-> correct packet type, as the driver can be in a vm which may not be trustworthy?
-> If this happens, I am also not sure if this may cause problem for other
-> vm using different VF under the same PF?
-
-Not for VF/PF scene，I just want to know it cost。
-The others will be removed。
-> 
->> 
->> According to chip designers, the others are not necessary.
->> Does it really cost a a lot for driver? 
->> Thanks.
->> 
->> 
->> .
-
-
+The existing messages omit that the offload operation failed, which I 
+think it would be important to say in these two cases.
+But taking a second look, the driver gets the extack so it should be up 
+to the driver to provide the appropriate context when the offload fails. 
+What do you think about demoting these messages to WEAK and change them 
+to something like:
+"Failed to offload %attribute"
