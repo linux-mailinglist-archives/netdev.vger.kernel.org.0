@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71F176E9161
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF9906E918D
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:04:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234568AbjDTLBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 07:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48546 "EHLO
+        id S232011AbjDTLEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 07:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235248AbjDTLAv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:00:51 -0400
-Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC2F93F8
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 03:58:27 -0700 (PDT)
-Received: by mail-ua1-x934.google.com with SMTP id x8so1843493uau.9
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 03:58:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681988287; x=1684580287;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=OlkpqVPsMGBCHCwPiGXeltlqZgDhFYvIj0YwaJwjXcY=;
-        b=SV6NOe5HXGojj8j858toAmnSCAUSPE+WaKKDGb4VN2CvbQQri0Qft/DJ2/u6BcgzIJ
-         FP9KTi9YL+RDIsLWGjjdaTD+mwNxmS81RD6Kv75eL8QiZqvJ5D/5HnBNXxAXTWpzmD5c
-         ByPMIyHMuAyJ2PH12t3+7r60A68vWdORNBRVkrNLSL1KjQ+L2dlt8PJyFucLhPNQ8EWe
-         tL49nbKGktraXetVBfH1pqPCuS3fH/RauI+qN7JXAzO9XPUTml6aFgFtHD3g0hwqhatJ
-         dvV4v0hO76lzr9KdIbk6DYwHAn2C52Ms8rtGrYA0V4HoCzc5ZL4rLxX9rgRVERyISyUq
-         /CKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681988287; x=1684580287;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=OlkpqVPsMGBCHCwPiGXeltlqZgDhFYvIj0YwaJwjXcY=;
-        b=Q/fZnPgP7Y673h3rHFbQwKneEcxIKhFC2cNoHoUuAeihJobMGm72uaXV6dYmIP//QS
-         NMY3lCc8+jg9g+9DG41EFHv7+R+ySwWf3CTW4GbuypjHcQLfEaqF8UYHzxqD2oIZiSnD
-         goyZbNLZlZojkc/Pp5qTNqQbq/DKjAxKsY3eWvYUakQ0lb4zWielXacO6NhH3KVauzg1
-         Huwr7pIiqXYD+7yIe8Qcet6XK3tRMjlBzPdyJhiJtBw4gOCHe/6JHYuJOh45AA7QaSTq
-         BJwBZHDOm+IKvbXPOWd81yh3a/4rbQJHc+WR9ryiroJTHUZatOOcMcMkJQ/vyfdmpPKa
-         bF+A==
-X-Gm-Message-State: AAQBX9etoby33npyeq1FakztHmUtIWpJDKcPAZbUi0aFhNquTJQpOQn8
-        8iowtL+jm2FZqAxhgSzwUFZaUQbuAlXjybv+5kF4Dw==
-X-Google-Smtp-Source: AKy350b7fx0YW1+BNZLLBmYhRSGLKi7LfzgDknAEsvAl3PAP80GeDmOlnQyMN2RGFNnwI0N5D1wvi1oRdNQ/BUlwORQ=
-X-Received: by 2002:a1f:4114:0:b0:443:e263:2dff with SMTP id
- o20-20020a1f4114000000b00443e2632dffmr377711vka.7.1681988287392; Thu, 20 Apr
- 2023 03:58:07 -0700 (PDT)
-MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 20 Apr 2023 16:27:56 +0530
-Message-ID: <CA+G9fYsdMioe4+DEgeh38aTeaY3YaN_s_c0GFjPHhuPWfxyetA@mail.gmail.com>
-Subject: next: powerpc: gpio_mdio.c:(.text+0x13c): undefined reference to `__of_mdiobus_register'
-To:     linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Cc:     Rob Herring <robh@kernel.org>,
+        with ESMTP id S235303AbjDTLEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:04:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0237A97;
+        Thu, 20 Apr 2023 04:02:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D515A647D3;
+        Thu, 20 Apr 2023 11:02:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CEFEC433D2;
+        Thu, 20 Apr 2023 11:02:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681988535;
+        bh=QlA/nQG7SitaTN/sKCqXnsi2+TBW9xYbBV61Vs+0pRc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TgIIxfSR2kbxtQilCFLL+Y5C8/n4/AbpawIwwez9Z34zKdAAvF8xxBW4mnl3TbaaL
+         M2WrNAINmvxlV+bwQYbybyc4nJSov7PbpjhV82vdo1wFFTfno8dwQzptLX8GmnuEBG
+         B7uuvqVjHd2DC0s2PglXs7jhFNpLdwxHQJjA8XBEHBfcjCN1ijariP0xTcHzpZ56tQ
+         ZkNOMtvW5+/0gvirnesFtoVQLnQq5NtqSXlhLJdQdAaqWSkdx+OdvUKbrvfB7V16Lo
+         BIWBEKUEsW1YsdDh5rBq39wEIwqijZU1/EW5XA/dkb0Lkuu4Qk+GVpWCbJVWAVlQvT
+         IrsBn8gEiie2Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+        Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>,
+        Liu Haijun <haijun.liu@mediatek.com>,
+        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
+        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        ajd@linux.ibm.com, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>, matthias.bgg@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.2 10/17] net: wwan: t7xx: do not compile with -Werror
+Date:   Thu, 20 Apr 2023 07:01:39 -0400
+Message-Id: <20230420110148.505779-10-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230420110148.505779-1-sashal@kernel.org>
+References: <20230420110148.505779-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -73,48 +70,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following build failures noticed on Linux next-20230419 for powerpc.
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 
-Regressions found on powerpc:
- - build/gcc-8-defconfig
- - build/clang-16-defconfig
- - build/gcc-12-defconfig
- - build/clang-nightly-defconfig
+[ Upstream commit 362f0b6678ad1377c322a7dd237ea6785efc7342 ]
 
+When playing with various compilers or their versions, some choke on
+the t7xx code. For example (with gcc 13):
+ In file included from ./arch/s390/include/generated/asm/rwonce.h:1,
+                  from ../include/linux/compiler.h:247,
+                  from ../include/linux/build_bug.h:5,
+                  from ../include/linux/bits.h:22,
+                  from ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:17:
+ In function 'preempt_count',
+     inlined from 't7xx_fsm_append_event' at ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:439:43:
+ ../include/asm-generic/rwonce.h:44:26: error: array subscript 0 is outside array bounds of 'const volatile int[0]' [-Werror=array-bounds=]
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+There is no reason for any code in the kernel to be built with -Werror
+by default. Note that we have generic CONFIG_WERROR. So if anyone wants
+-Werror, they can enable that.
 
-Build log:
---------
-powerpc64le-linux-gnu-ld: arch/powerpc/platforms/pasemi/gpio_mdio.o:
-in function `gpio_mdio_probe':
-gpio_mdio.c:(.text+0x13c): undefined reference to `__of_mdiobus_register'
-powerpc64le-linux-gnu-ld: drivers/net/phy/phy_device.o: in function `phy_probe':
-phy_device.c:(.text+0x56ac): undefined reference to
-`devm_led_classdev_register_ext'
-powerpc64le-linux-gnu-ld: drivers/net/ethernet/pasemi/pasemi_mac.o: in
-function `pasemi_mac_open':
-pasemi_mac.c:(.text+0x19ac): undefined reference to `of_phy_connect'
-make[2]: *** [scripts/Makefile.vmlinux:35: vmlinux] Error 1
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Link: https://lore.kernel.org/all/20230330232717.1f8bf5ea@kernel.org/
+Cc: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+Cc: Intel Corporation <linuxwwan@intel.com>
+Cc: Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>
+Cc: Liu Haijun <haijun.liu@mediatek.com>
+Cc: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Cc: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+Cc: Loic Poulain <loic.poulain@linaro.org>
+Cc: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wwan/t7xx/Makefile | 2 --
+ 1 file changed, 2 deletions(-)
 
-Build details:
----------
-https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20230419/testrun/16369015/suite/build/test/gcc-12-defconfig/details/
-https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20230419/testrun/16369015/suite/build/test/gcc-12-defconfig/log
+diff --git a/drivers/net/wwan/t7xx/Makefile b/drivers/net/wwan/t7xx/Makefile
+index 268ff9e87e5b3..2652cd00504e6 100644
+--- a/drivers/net/wwan/t7xx/Makefile
++++ b/drivers/net/wwan/t7xx/Makefile
+@@ -1,7 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ 
+-ccflags-y += -Werror
+-
+ obj-${CONFIG_MTK_T7XX} := mtk_t7xx.o
+ mtk_t7xx-y:=	t7xx_pci.o \
+ 		t7xx_pcie_mac.o \
+-- 
+2.39.2
 
-
-Steps to reproduce:
-------------
-# To install tuxmake on your system globally:
-# sudo pip3 install -U tuxmake
-#
-# See https://docs.tuxmake.org/ for complete documentation.
-# Original tuxmake command with fragments listed below.
-
-tuxmake --runtime podman --target-arch powerpc --toolchain gcc-12
---kconfig defconfig
-
-
---
-Linaro LKFT
-https://lkft.linaro.org
