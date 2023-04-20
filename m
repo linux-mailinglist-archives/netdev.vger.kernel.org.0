@@ -2,52 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5FEE6E94CA
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:44:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A0566E94CF
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231440AbjDTMoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 08:44:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
+        id S232059AbjDTMpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 08:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbjDTMoD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:44:03 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0161D93
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 05:44:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=cxOAZMCwxd7nzl7PU7dzd/bSP5i8CxvPGUF0wgPolHw=; b=i3
-        J4Gs7BvHbJM6pydCXk5/RvjnWkdtA249FSMFI9IZ6ZzR5ko7ifb8kZGSzRy19vV3ZJGuPwgGNoZAD
-        hhNM0hghoyvjXgMxwTtqyPuh3z2IN2ld/z0LzouXdGnN0pwd8mV3AqK51E7owt7W3lbi6FWW3Ws4r
-        qIk1841zphkCIdg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ppTda-00Amwb-00; Thu, 20 Apr 2023 14:43:46 +0200
-Date:   Thu, 20 Apr 2023 14:43:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez 
-        <ramon.nordin.rodriguez@ferroamp.se>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH v3] drivers/net/phy: add driver for Microchip LAN867x
- 10BASE-T1S PHY
-Message-ID: <b93039ef-a593-4acd-b9c1-3f3e6b79497d@lunn.ch>
-References: <ZEATxeT+g5Bx5ml2@debian>
+        with ESMTP id S231922AbjDTMpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:45:08 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06390E67;
+        Thu, 20 Apr 2023 05:45:06 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1ppTeq-0002Yn-EN; Thu, 20 Apr 2023 14:45:04 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <bpf@vger.kernel.org>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        dxu@dxuuu.xyz, qde@naccy.de, Florian Westphal <fw@strlen.de>
+Subject: [PATCH bpf-next v4 0/7] bpf: add netfilter program type
+Date:   Thu, 20 Apr 2023 14:44:48 +0200
+Message-Id: <20230420124455.31099-1-fw@strlen.de>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZEATxeT+g5Bx5ml2@debian>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,80 +36,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 06:16:05PM +0200, Ramón Nordin Rodriguez wrote:
-> Changes:
->     v2:
-> - Removed mentioning of not supporting auto-negotiation from commit
->   message
-> - Renamed file drivers/net/phy/lan867x.c ->
->   drivers/net/phy/microchip_t1s.c
-> - Renamed Kconfig option to reflect implementation filename (from
->   LAN867X_PHY to MICROCHIP_T1S_PHY)
-> - Moved entry in drivers/net/phy/KConfig to correct sort order
-> - Moved entry in drivers/net/phy/Makefile to correct sort order
-> - Moved variable declarations to conform to reverse christmas tree order
->   (in func lan867x_config_init)
-> - Moved register write to disable chip interrupts to func lan867x_config_init, when omitting the irq disable all togheter I got null pointer dereference, see the call trace below:
-> 
->     Call Trace:
->      <TASK>
->      phy_interrupt+0xa8/0xf0 [libphy]
->      irq_thread_fn+0x1c/0x60
->      irq_thread+0xf7/0x1c0
->      ? __pfx_irq_thread_dtor+0x10/0x10
->      ? __pfx_irq_thread+0x10/0x10
->      kthread+0xe6/0x110
->      ? __pfx_kthread+0x10/0x10
->      ret_from_fork+0x29/0x50
->      </TASK>
-> 
-> - Removed func lan867x_config_interrupt and removed the member
->   .config_intr from the phy_driver struct
-> 
->     v3:
-> - Indentation level in drivers/net/phy/Kconfig
-> - Moved const arrays into global scope and made them static in order to have
->   them placed in the .rodata section
-> - Renamed array variables, since they are no longer as closely scoped as
->   earlier
-> - Added comment about why phy_write_mmd is used over phy_modify_mmd
->   (this should have been addressed in the V2 change since it was brought
->   up in the V1 review)
-> - Return result of last call instead of saving it in a var and then
->   returning the var (in lan867x_config_init)
-> 
-> Testing:
-> This has been tested with ethtool --set/get-plca-cfg and verified on an
-> oscilloscope where it was observed that:
-> - The PLCA beacon was enabled/disabled when setting the node-id to 0/not
->   0
-> - The PLCA beacon is transmitted with the expected frequency when
->   changing max nodes
-> - Two devices using the evaluation board EVB-LAN8670-USB could ping each
->   other
-> 
-> 
-> This patch adds support for the Microchip LAN867x 10BASE-T1S family
-> (LAN8670/1/2). The driver supports P2MP with PLCA.
-> 
-> Signed-off-by: Ramón Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
+Changes since last version:
+- uapi: remove 'reserved' struct member, s/prio/priority (Alexei)
+- add ctx access test cases (Alexei, see last patch)
+- some arm32 can only handle cmpxchg on u32 (build bot)
+- Fix kdoc annotations (Simon Horman)
+- bpftool: prefer p_err, not fprintf (Quentin)
+- add test cases in separate patch
 
-All the above ends up in the commit message, as you see in git log. So
-this last paragraph should really be first. As you have it, the
-history of the patch will also be included in the commit. Most Linux
-subsystems don't want that, although DaveM has argued it maybe should
-be in the commit message. But i personally think we have good archives
-of emails, and search engines for those archives, so i don't see the
-need.
+This still uses runtime btf walk rather than extending
+the btf trace array as Alexei suggested, I would do this later (or someone else can).
 
-Anything you put after the --- will get discarded when the Maintainers
-perform the merge. So i suggest you move most of what you have in the
-commit message below the ---. You can also have two ---, which is how
-i tend to do it, so i can keep the history in my git repo, but it then
-gets removed when merged upstream.
+v1 cover letter:
 
-Additionally, you should add any Reviewed-by:, Acked-by: to your
-patches. Only discard them if you make major changed which invalidates
-any reviews.
+Add minimal support to hook bpf programs to netfilter hooks, e.g.
+PREROUTING or FORWARD.
 
-    Andrew
+For this the most relevant parts for registering a netfilter
+hook via the in-kernel api are exposed to userspace via bpf_link.
+
+The new program type is 'tracing style', i.e. there is no context
+access rewrite done by verifier, the function argument (struct bpf_nf_ctx)
+isn't stable.
+There is no support for direct packet access, dynptr api should be used
+instead.
+
+With this its possible to build a small test program such as:
+
+ #include "vmlinux.h"
+extern int bpf_dynptr_from_skb(struct __sk_buff *skb, __u64 flags,
+                               struct bpf_dynptr *ptr__uninit) __ksym;
+extern void *bpf_dynptr_slice(const struct bpf_dynptr *ptr, uint32_t offset,
+                                   void *buffer, uint32_t buffer__sz) __ksym;
+SEC("netfilter")
+int nf_test(struct bpf_nf_ctx *ctx)
+{
+	struct nf_hook_state *state = ctx->state;
+	struct sk_buff *skb = ctx->skb;
+	const struct iphdr *iph, _iph;
+	const struct tcphdr *th, _th;
+	struct bpf_dynptr ptr;
+
+	if (bpf_dynptr_from_skb(skb, 0, &ptr))
+		return NF_DROP;
+
+	iph = bpf_dynptr_slice(&ptr, 0, &_iph, sizeof(_iph));
+	if (!iph)
+		return NF_DROP;
+
+	th = bpf_dynptr_slice(&ptr, iph->ihl << 2, &_th, sizeof(_th));
+	if (!th)
+		return NF_DROP;
+
+	bpf_printk("accept %x:%d->%x:%d, hook %d ifin %d\n", iph->saddr, bpf_ntohs(th->source), iph->daddr, bpf_ntohs(th->dest), state->hook, state->in->ifindex);
+        return NF_ACCEPT;
+}
+
+Then, tail /sys/kernel/tracing/trace_pipe.
+
+Changes since v2:
+1. don't WARN when user calls 'bpftool loink detach' twice
+   restrict attachment to ip+ip6 families, lets relax this
+   later in case arp/bridge/netdev are needed too.
+2. show netfilter links in 'bpftool net' output as well.
+
+Changes since v1:
+1. Don't fail to link when CONFIG_NETFILTER=n (build bot)
+2. Use test_progs instead of test_verifier (Alexei)
+
+Changes since last RFC version:
+1. extend 'bpftool link show' to print prio/hooknum etc
+2. extend 'nft list hooks' so it can print the bpf program id
+3. Add an extra patch to artificially restrict bpf progs with
+   same priority.  Its fine from a technical pov but it will
+   cause ordering issues (most recent one comes first).
+   Can be removed later.
+4. Add test_run support for netfilter prog type and a small
+   extension to verifier tests to make sure we can't return
+   verdicts like NF_STOLEN.
+5. Alter the netfilter part of the bpf_link uapi struct:
+   - add flags/reserved members.
+  Not used here except returning errors when they are nonzero.
+  Plan is to allow the bpf_link users to enable netfilter
+  defrag or conntrack engine by setting feature flags at
+  link create time in the future.
+
+Florian Westphal (7):
+  bpf: add bpf_link support for BPF_NETFILTER programs
+  bpf: minimal support for programs hooked into netfilter framework
+  netfilter: nfnetlink hook: dump bpf prog id
+  netfilter: disallow bpf hook attachment at same priority
+  tools: bpftool: print netfilter link info
+  bpf: add test_run support for netfilter program type
+  selftests/bpf: add missing netfilter return value and ctx access tests
+
+ include/linux/bpf.h                           |   3 +
+ include/linux/bpf_types.h                     |   4 +
+ include/linux/netfilter.h                     |   1 +
+ include/net/netfilter/nf_bpf_link.h           |  15 ++
+ include/uapi/linux/bpf.h                      |  14 ++
+ include/uapi/linux/netfilter/nfnetlink_hook.h |  24 +-
+ kernel/bpf/btf.c                              |   6 +
+ kernel/bpf/syscall.c                          |   6 +
+ kernel/bpf/verifier.c                         |   3 +
+ net/bpf/test_run.c                            | 158 ++++++++++++
+ net/core/filter.c                             |   1 +
+ net/netfilter/Kconfig                         |   3 +
+ net/netfilter/Makefile                        |   1 +
+ net/netfilter/core.c                          |  12 +
+ net/netfilter/nf_bpf_link.c                   | 228 ++++++++++++++++++
+ net/netfilter/nfnetlink_hook.c                |  81 ++++++-
+ tools/bpf/bpftool/link.c                      |  83 +++++++
+ tools/bpf/bpftool/main.h                      |   3 +
+ tools/bpf/bpftool/net.c                       | 106 ++++++++
+ tools/include/uapi/linux/bpf.h                |  14 ++
+ tools/lib/bpf/libbpf.c                        |   2 +
+ .../selftests/bpf/prog_tests/verifier.c       |   4 +
+ .../bpf/progs/verifier_netfilter_ctx.c        |  82 +++++++
+ .../bpf/progs/verifier_netfilter_retcode.c    |  49 ++++
+ 24 files changed, 887 insertions(+), 16 deletions(-)
+ create mode 100644 include/net/netfilter/nf_bpf_link.h
+ create mode 100644 net/netfilter/nf_bpf_link.c
+ create mode 100644 tools/testing/selftests/bpf/progs/verifier_netfilter_ctx.c
+ create mode 100644 tools/testing/selftests/bpf/progs/verifier_netfilter_retcode.c
+
+-- 
+2.39.2
+
