@@ -2,29 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A0566E94CF
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:45:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F416E94D4
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232059AbjDTMpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 08:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37348 "EHLO
+        id S232385AbjDTMpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 08:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231922AbjDTMpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:45:08 -0400
+        with ESMTP id S232114AbjDTMpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:45:11 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06390E67;
-        Thu, 20 Apr 2023 05:45:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D100C7;
+        Thu, 20 Apr 2023 05:45:10 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1ppTeq-0002Yn-EN; Thu, 20 Apr 2023 14:45:04 +0200
+        id 1ppTeu-0002Z1-IB; Thu, 20 Apr 2023 14:45:08 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <bpf@vger.kernel.org>
 Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
         dxu@dxuuu.xyz, qde@naccy.de, Florian Westphal <fw@strlen.de>
-Subject: [PATCH bpf-next v4 0/7] bpf: add netfilter program type
-Date:   Thu, 20 Apr 2023 14:44:48 +0200
-Message-Id: <20230420124455.31099-1-fw@strlen.de>
+Subject: [PATCH bpf-next v4 1/7] bpf: add bpf_link support for BPF_NETFILTER programs
+Date:   Thu, 20 Apr 2023 14:44:49 +0200
+Message-Id: <20230420124455.31099-2-fw@strlen.de>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230420124455.31099-1-fw@strlen.de>
+References: <20230420124455.31099-1-fw@strlen.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
@@ -36,130 +38,359 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes since last version:
-- uapi: remove 'reserved' struct member, s/prio/priority (Alexei)
-- add ctx access test cases (Alexei, see last patch)
-- some arm32 can only handle cmpxchg on u32 (build bot)
-- Fix kdoc annotations (Simon Horman)
-- bpftool: prefer p_err, not fprintf (Quentin)
-- add test cases in separate patch
+Add bpf_link support skeleton.  To keep this reviewable, no bpf program
+can be invoked yet, if a program is attached only a c-stub is called and
+not the actual bpf program.
 
-This still uses runtime btf walk rather than extending
-the btf trace array as Alexei suggested, I would do this later (or someone else can).
+Defaults to 'y' if both netfilter and bpf syscall are enabled in kconfig.
 
-v1 cover letter:
+Uapi example usage:
+	union bpf_attr attr = { };
 
-Add minimal support to hook bpf programs to netfilter hooks, e.g.
-PREROUTING or FORWARD.
+	attr.link_create.prog_fd = progfd;
+	attr.link_create.attach_type = 0; /* unused */
+	attr.link_create.netfilter.pf = PF_INET;
+	attr.link_create.netfilter.hooknum = NF_INET_LOCAL_IN;
+	attr.link_create.netfilter.priority = -128;
 
-For this the most relevant parts for registering a netfilter
-hook via the in-kernel api are exposed to userspace via bpf_link.
+	err = bpf(BPF_LINK_CREATE, &attr, sizeof(attr));
 
-The new program type is 'tracing style', i.e. there is no context
-access rewrite done by verifier, the function argument (struct bpf_nf_ctx)
-isn't stable.
-There is no support for direct packet access, dynptr api should be used
-instead.
+... this would attach progfd to ipv4:input hook.
 
-With this its possible to build a small test program such as:
+Such hook gets removed automatically if the calling program exits.
 
- #include "vmlinux.h"
-extern int bpf_dynptr_from_skb(struct __sk_buff *skb, __u64 flags,
-                               struct bpf_dynptr *ptr__uninit) __ksym;
-extern void *bpf_dynptr_slice(const struct bpf_dynptr *ptr, uint32_t offset,
-                                   void *buffer, uint32_t buffer__sz) __ksym;
-SEC("netfilter")
-int nf_test(struct bpf_nf_ctx *ctx)
-{
-	struct nf_hook_state *state = ctx->state;
-	struct sk_buff *skb = ctx->skb;
-	const struct iphdr *iph, _iph;
-	const struct tcphdr *th, _th;
-	struct bpf_dynptr ptr;
+BPF_NETFILTER program invocation is added in followup change.
 
-	if (bpf_dynptr_from_skb(skb, 0, &ptr))
-		return NF_DROP;
+NF_HOOK_OP_BPF enum will eventually be read from nfnetlink_hook, it
+allows to tell userspace which program is attached at the given hook
+when user runs 'nft hook list' command rather than just the priority
+and not-very-helpful 'this hook runs a bpf prog but I can't tell which
+one'.
 
-	iph = bpf_dynptr_slice(&ptr, 0, &_iph, sizeof(_iph));
-	if (!iph)
-		return NF_DROP;
+Will also be used to disallow registration of two bpf programs with
+same priority in a followup patch.
 
-	th = bpf_dynptr_slice(&ptr, iph->ihl << 2, &_th, sizeof(_th));
-	if (!th)
-		return NF_DROP;
+v4: arm32 cmpxchg only supports 32bit operand
+    s/prio/priority/
+v3: restrict prog attachment to ip/ip6 for now, lets lift restrictions if
+    more use cases pop up (arptables, ebtables, netdev ingress/egress etc).
 
-	bpf_printk("accept %x:%d->%x:%d, hook %d ifin %d\n", iph->saddr, bpf_ntohs(th->source), iph->daddr, bpf_ntohs(th->dest), state->hook, state->in->ifindex);
-        return NF_ACCEPT;
-}
-
-Then, tail /sys/kernel/tracing/trace_pipe.
-
-Changes since v2:
-1. don't WARN when user calls 'bpftool loink detach' twice
-   restrict attachment to ip+ip6 families, lets relax this
-   later in case arp/bridge/netdev are needed too.
-2. show netfilter links in 'bpftool net' output as well.
-
-Changes since v1:
-1. Don't fail to link when CONFIG_NETFILTER=n (build bot)
-2. Use test_progs instead of test_verifier (Alexei)
-
-Changes since last RFC version:
-1. extend 'bpftool link show' to print prio/hooknum etc
-2. extend 'nft list hooks' so it can print the bpf program id
-3. Add an extra patch to artificially restrict bpf progs with
-   same priority.  Its fine from a technical pov but it will
-   cause ordering issues (most recent one comes first).
-   Can be removed later.
-4. Add test_run support for netfilter prog type and a small
-   extension to verifier tests to make sure we can't return
-   verdicts like NF_STOLEN.
-5. Alter the netfilter part of the bpf_link uapi struct:
-   - add flags/reserved members.
-  Not used here except returning errors when they are nonzero.
-  Plan is to allow the bpf_link users to enable netfilter
-  defrag or conntrack engine by setting feature flags at
-  link create time in the future.
-
-Florian Westphal (7):
-  bpf: add bpf_link support for BPF_NETFILTER programs
-  bpf: minimal support for programs hooked into netfilter framework
-  netfilter: nfnetlink hook: dump bpf prog id
-  netfilter: disallow bpf hook attachment at same priority
-  tools: bpftool: print netfilter link info
-  bpf: add test_run support for netfilter program type
-  selftests/bpf: add missing netfilter return value and ctx access tests
-
- include/linux/bpf.h                           |   3 +
- include/linux/bpf_types.h                     |   4 +
- include/linux/netfilter.h                     |   1 +
- include/net/netfilter/nf_bpf_link.h           |  15 ++
- include/uapi/linux/bpf.h                      |  14 ++
- include/uapi/linux/netfilter/nfnetlink_hook.h |  24 +-
- kernel/bpf/btf.c                              |   6 +
- kernel/bpf/syscall.c                          |   6 +
- kernel/bpf/verifier.c                         |   3 +
- net/bpf/test_run.c                            | 158 ++++++++++++
- net/core/filter.c                             |   1 +
- net/netfilter/Kconfig                         |   3 +
- net/netfilter/Makefile                        |   1 +
- net/netfilter/core.c                          |  12 +
- net/netfilter/nf_bpf_link.c                   | 228 ++++++++++++++++++
- net/netfilter/nfnetlink_hook.c                |  81 ++++++-
- tools/bpf/bpftool/link.c                      |  83 +++++++
- tools/bpf/bpftool/main.h                      |   3 +
- tools/bpf/bpftool/net.c                       | 106 ++++++++
- tools/include/uapi/linux/bpf.h                |  14 ++
- tools/lib/bpf/libbpf.c                        |   2 +
- .../selftests/bpf/prog_tests/verifier.c       |   4 +
- .../bpf/progs/verifier_netfilter_ctx.c        |  82 +++++++
- .../bpf/progs/verifier_netfilter_retcode.c    |  49 ++++
- 24 files changed, 887 insertions(+), 16 deletions(-)
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ include/linux/netfilter.h           |   1 +
+ include/net/netfilter/nf_bpf_link.h |  10 ++
+ include/uapi/linux/bpf.h            |  14 +++
+ kernel/bpf/syscall.c                |   6 ++
+ net/netfilter/Kconfig               |   3 +
+ net/netfilter/Makefile              |   1 +
+ net/netfilter/nf_bpf_link.c         | 159 ++++++++++++++++++++++++++++
+ 7 files changed, 194 insertions(+)
  create mode 100644 include/net/netfilter/nf_bpf_link.h
  create mode 100644 net/netfilter/nf_bpf_link.c
- create mode 100644 tools/testing/selftests/bpf/progs/verifier_netfilter_ctx.c
- create mode 100644 tools/testing/selftests/bpf/progs/verifier_netfilter_retcode.c
 
+diff --git a/include/linux/netfilter.h b/include/linux/netfilter.h
+index c8e03bcaecaa..0762444e3767 100644
+--- a/include/linux/netfilter.h
++++ b/include/linux/netfilter.h
+@@ -80,6 +80,7 @@ typedef unsigned int nf_hookfn(void *priv,
+ enum nf_hook_ops_type {
+ 	NF_HOOK_OP_UNDEFINED,
+ 	NF_HOOK_OP_NF_TABLES,
++	NF_HOOK_OP_BPF,
+ };
+ 
+ struct nf_hook_ops {
+diff --git a/include/net/netfilter/nf_bpf_link.h b/include/net/netfilter/nf_bpf_link.h
+new file mode 100644
+index 000000000000..eeaeaf3d15de
+--- /dev/null
++++ b/include/net/netfilter/nf_bpf_link.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#if IS_ENABLED(CONFIG_NETFILTER_BPF_LINK)
++int bpf_nf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog);
++#else
++static inline int bpf_nf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
++{
++	return -EOPNOTSUPP;
++}
++#endif
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 4b20a7269bee..1bb11a6ee667 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -986,6 +986,7 @@ enum bpf_prog_type {
+ 	BPF_PROG_TYPE_LSM,
+ 	BPF_PROG_TYPE_SK_LOOKUP,
+ 	BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
++	BPF_PROG_TYPE_NETFILTER,
+ };
+ 
+ enum bpf_attach_type {
+@@ -1050,6 +1051,7 @@ enum bpf_link_type {
+ 	BPF_LINK_TYPE_PERF_EVENT = 7,
+ 	BPF_LINK_TYPE_KPROBE_MULTI = 8,
+ 	BPF_LINK_TYPE_STRUCT_OPS = 9,
++	BPF_LINK_TYPE_NETFILTER = 10,
+ 
+ 	MAX_BPF_LINK_TYPE,
+ };
+@@ -1560,6 +1562,12 @@ union bpf_attr {
+ 				 */
+ 				__u64		cookie;
+ 			} tracing;
++			struct {
++				__u32		pf;
++				__u32		hooknum;
++				__s32		priority;
++				__u32		flags;
++			} netfilter;
+ 		};
+ 	} link_create;
+ 
+@@ -6410,6 +6418,12 @@ struct bpf_link_info {
+ 		struct {
+ 			__u32 map_id;
+ 		} struct_ops;
++		struct {
++			__u32 pf;
++			__u32 hooknum;
++			__s32 priority;
++			__u32 flags;
++		} netfilter;
+ 	};
+ } __attribute__((aligned(8)));
+ 
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index bcf1a1920ddd..14f39c1e573e 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -35,6 +35,7 @@
+ #include <linux/rcupdate_trace.h>
+ #include <linux/memcontrol.h>
+ #include <linux/trace_events.h>
++#include <net/netfilter/nf_bpf_link.h>
+ 
+ #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+ 			  (map)->map_type == BPF_MAP_TYPE_CGROUP_ARRAY || \
+@@ -2462,6 +2463,7 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
+ 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
+ 	case BPF_PROG_TYPE_SOCK_OPS:
+ 	case BPF_PROG_TYPE_EXT: /* extends any prog */
++	case BPF_PROG_TYPE_NETFILTER:
+ 		return true;
+ 	case BPF_PROG_TYPE_CGROUP_SKB:
+ 		/* always unpriv */
+@@ -4588,6 +4590,7 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+ 
+ 	switch (prog->type) {
+ 	case BPF_PROG_TYPE_EXT:
++	case BPF_PROG_TYPE_NETFILTER:
+ 		break;
+ 	case BPF_PROG_TYPE_PERF_EVENT:
+ 	case BPF_PROG_TYPE_TRACEPOINT:
+@@ -4654,6 +4657,9 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+ 	case BPF_PROG_TYPE_XDP:
+ 		ret = bpf_xdp_link_attach(attr, prog);
+ 		break;
++	case BPF_PROG_TYPE_NETFILTER:
++		ret = bpf_nf_link_attach(attr, prog);
++		break;
+ #endif
+ 	case BPF_PROG_TYPE_PERF_EVENT:
+ 	case BPF_PROG_TYPE_TRACEPOINT:
+diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
+index d0bf630482c1..441d1f134110 100644
+--- a/net/netfilter/Kconfig
++++ b/net/netfilter/Kconfig
+@@ -30,6 +30,9 @@ config NETFILTER_FAMILY_BRIDGE
+ config NETFILTER_FAMILY_ARP
+ 	bool
+ 
++config NETFILTER_BPF_LINK
++	def_bool BPF_SYSCALL
++
+ config NETFILTER_NETLINK_HOOK
+ 	tristate "Netfilter base hook dump support"
+ 	depends on NETFILTER_ADVANCED
+diff --git a/net/netfilter/Makefile b/net/netfilter/Makefile
+index 5ffef1cd6143..d4958e7e7631 100644
+--- a/net/netfilter/Makefile
++++ b/net/netfilter/Makefile
+@@ -22,6 +22,7 @@ nf_conntrack-$(CONFIG_DEBUG_INFO_BTF) += nf_conntrack_bpf.o
+ endif
+ 
+ obj-$(CONFIG_NETFILTER) = netfilter.o
++obj-$(CONFIG_NETFILTER_BPF_LINK) += nf_bpf_link.o
+ 
+ obj-$(CONFIG_NETFILTER_NETLINK) += nfnetlink.o
+ obj-$(CONFIG_NETFILTER_NETLINK_ACCT) += nfnetlink_acct.o
+diff --git a/net/netfilter/nf_bpf_link.c b/net/netfilter/nf_bpf_link.c
+new file mode 100644
+index 000000000000..efa4f3390742
+--- /dev/null
++++ b/net/netfilter/nf_bpf_link.c
+@@ -0,0 +1,159 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <linux/netfilter.h>
++
++#include <net/netfilter/nf_bpf_link.h>
++#include <uapi/linux/netfilter_ipv4.h>
++
++static unsigned int nf_hook_run_bpf(void *bpf_prog, struct sk_buff *skb,
++				    const struct nf_hook_state *s)
++{
++	return NF_ACCEPT;
++}
++
++struct bpf_nf_link {
++	struct bpf_link link;
++	struct nf_hook_ops hook_ops;
++	struct net *net;
++	u32 dead;
++};
++
++static void bpf_nf_link_release(struct bpf_link *link)
++{
++	struct bpf_nf_link *nf_link = container_of(link, struct bpf_nf_link, link);
++
++	if (nf_link->dead)
++		return;
++
++	/* prevent hook-not-found warning splat from netfilter core when
++	 * .detach was already called
++	 */
++	if (!cmpxchg(&nf_link->dead, 0, 1))
++		nf_unregister_net_hook(nf_link->net, &nf_link->hook_ops);
++}
++
++static void bpf_nf_link_dealloc(struct bpf_link *link)
++{
++	struct bpf_nf_link *nf_link = container_of(link, struct bpf_nf_link, link);
++
++	kfree(nf_link);
++}
++
++static int bpf_nf_link_detach(struct bpf_link *link)
++{
++	bpf_nf_link_release(link);
++	return 0;
++}
++
++static void bpf_nf_link_show_info(const struct bpf_link *link,
++				  struct seq_file *seq)
++{
++	struct bpf_nf_link *nf_link = container_of(link, struct bpf_nf_link, link);
++
++	seq_printf(seq, "pf:\t%u\thooknum:\t%u\tprio:\t%d\n",
++		   nf_link->hook_ops.pf, nf_link->hook_ops.hooknum,
++		   nf_link->hook_ops.priority);
++}
++
++static int bpf_nf_link_fill_link_info(const struct bpf_link *link,
++				      struct bpf_link_info *info)
++{
++	struct bpf_nf_link *nf_link = container_of(link, struct bpf_nf_link, link);
++
++	info->netfilter.pf = nf_link->hook_ops.pf;
++	info->netfilter.hooknum = nf_link->hook_ops.hooknum;
++	info->netfilter.priority = nf_link->hook_ops.priority;
++	info->netfilter.flags = 0;
++
++	return 0;
++}
++
++static int bpf_nf_link_update(struct bpf_link *link, struct bpf_prog *new_prog,
++			      struct bpf_prog *old_prog)
++{
++	return -EOPNOTSUPP;
++}
++
++static const struct bpf_link_ops bpf_nf_link_lops = {
++	.release = bpf_nf_link_release,
++	.dealloc = bpf_nf_link_dealloc,
++	.detach = bpf_nf_link_detach,
++	.show_fdinfo = bpf_nf_link_show_info,
++	.fill_link_info = bpf_nf_link_fill_link_info,
++	.update_prog = bpf_nf_link_update,
++};
++
++static int bpf_nf_check_pf_and_hooks(const union bpf_attr *attr)
++{
++	switch (attr->link_create.netfilter.pf) {
++	case NFPROTO_IPV4:
++	case NFPROTO_IPV6:
++		if (attr->link_create.netfilter.hooknum >= NF_INET_NUMHOOKS)
++			return -EPROTO;
++		break;
++	default:
++		return -EAFNOSUPPORT;
++	}
++
++	if (attr->link_create.netfilter.flags)
++		return -EOPNOTSUPP;
++
++	/* make sure conntrack confirm is always last.
++	 *
++	 * In the future, if userspace can e.g. request defrag, then
++	 * "defrag_requested && prio before NF_IP_PRI_CONNTRACK_DEFRAG"
++	 * should fail.
++	 */
++	switch (attr->link_create.netfilter.priority) {
++	case NF_IP_PRI_FIRST: return -ERANGE; /* sabotage_in and other warts */
++	case NF_IP_PRI_LAST: return -ERANGE; /* e.g. conntrack confirm */
++	}
++
++	return 0;
++}
++
++int bpf_nf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
++{
++	struct net *net = current->nsproxy->net_ns;
++	struct bpf_link_primer link_primer;
++	struct bpf_nf_link *link;
++	int err;
++
++	if (attr->link_create.flags)
++		return -EINVAL;
++
++	err = bpf_nf_check_pf_and_hooks(attr);
++	if (err)
++		return err;
++
++	link = kzalloc(sizeof(*link), GFP_USER);
++	if (!link)
++		return -ENOMEM;
++
++	bpf_link_init(&link->link, BPF_LINK_TYPE_NETFILTER, &bpf_nf_link_lops, prog);
++
++	link->hook_ops.hook = nf_hook_run_bpf;
++	link->hook_ops.hook_ops_type = NF_HOOK_OP_BPF;
++	link->hook_ops.priv = prog;
++
++	link->hook_ops.pf = attr->link_create.netfilter.pf;
++	link->hook_ops.priority = attr->link_create.netfilter.priority;
++	link->hook_ops.hooknum = attr->link_create.netfilter.hooknum;
++
++	link->net = net;
++	link->dead = false;
++
++	err = bpf_link_prime(&link->link, &link_primer);
++	if (err) {
++		kfree(link);
++		return err;
++	}
++
++	err = nf_register_net_hook(net, &link->hook_ops);
++	if (err) {
++		bpf_link_cleanup(&link_primer);
++		return err;
++	}
++
++	return bpf_link_settle(&link_primer);
++}
 -- 
 2.39.2
 
