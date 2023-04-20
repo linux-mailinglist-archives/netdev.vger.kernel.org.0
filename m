@@ -2,68 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E24356E88A1
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 05:25:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A56996E88AD
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 05:28:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231239AbjDTDY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 23:24:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34532 "EHLO
+        id S233304AbjDTD2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 23:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbjDTDYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 23:24:54 -0400
-Received: from m13131.mail.163.com (m13131.mail.163.com [220.181.13.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03C4840CF;
-        Wed, 19 Apr 2023 20:24:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-        Message-ID; bh=hE7fiZj3s4txMs2vS8mzctsLg98BwRhMA64GtdDveFM=; b=N
-        Otw+RzfKKaHELQECPJUnHwYaRXoc5+BTAQ5D1ce9hhSuZ5ebzX5Tlzq0TgaQm1ah
-        K/iqw/xIf3pejr2ZCKp4NRqEdlXzqwUKeAZuCVJZU38x+B1ap5QOyNqiFNR1E69+
-        qSzdnq24eVX4sWstxu8TkEPb7cN/Sc62n/jgGYZaT4=
-Received: from slark_xiao$163.com ( [112.97.49.85] ) by
- ajax-webmail-wmsvr131 (Coremail) ; Thu, 20 Apr 2023 11:23:31 +0800 (CST)
-X-Originating-IP: [112.97.49.85]
-Date:   Thu, 20 Apr 2023 11:23:31 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
-        johannes@sipsolutions.net, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re:Re: [net-next v2] wwan: core: add print for wwan port
- attach/disconnect
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
- Copyright (c) 2002-2023 www.mailtech.cn 163com
-In-Reply-To: <20230419183905.5d290242@kernel.org>
-References: <20230417094617.2927393-1-slark_xiao@163.com>
- <20230419183905.5d290242@kernel.org>
-X-NTES-SC: AL_QuyTA/Wdvkgq5yifbekXnkoShO85W8a1s/0m3INTOZ00hyv80AINQ19FPknE9vyPDRuDkDixQihV8cNKRpFVY6Mw0szE5fE0YJTKSLFMTp49
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        with ESMTP id S233076AbjDTD2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 23:28:18 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB5C40EC
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 20:27:48 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 41be03b00d2f7-51b661097bfso390970a12.0
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 20:27:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1681961268; x=1684553268;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+tV8crDjofyv0750I49wkl0WcXsLL7eDJ+4zb9fuL8U=;
+        b=U+0vKGQyRzTzOtm6Vwg6IvsfLIs8cE/cGzeNtzx/bOizHJ7DmvCcD5SqTWcXZ3lBG2
+         X5Q4SnbgVn3mM3KKXRrcEk+hkuadH13xYkjRW8+NkOOBf4R3tnIG8xP1HK7ZpXcSeSAv
+         KsQh6BDaa92EkVmqCUis//S7ULVq1/T7nJIeAcivnmkYVQlN/PGIxl7rD1yKFrCW+n18
+         u5/CbN/u0PnvTmUZqaaOnDZelKOMiL4snXvUbf1RiKmuhhFvfnGaJu2h48DrkB4ivmRb
+         rYePZSlLBGn0jt7Xp8hRYCw4igd1jgE9zB5dXzu8APxgZpI/+fc5nAJIJvKMZfbbNNJb
+         zjVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681961268; x=1684553268;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+tV8crDjofyv0750I49wkl0WcXsLL7eDJ+4zb9fuL8U=;
+        b=WfNRpSEX8W6N/4rn1mP2fylugJ4QayZCjRmlty59zWHE0wWBZYS8oIF/gVOlFrNtq/
+         qNbiGSdePzLAAmTpqW4z4qUTcgL+FNejBWtDuq/D1L0ic6JS/BKG39LQ3eS3jupjFNIM
+         AVGOx38hn+faEh351YRcnABKjb6mXogXKo/LV8S9rdmo5cCM2T6maPz7Pj/YlJSfue+1
+         q/oKTV2LAd1jBLiaFEVeIZnUTyOxY7WQk3jLdSzWGn2qD4IIAkG8FvXz2H8+G6B/MwNu
+         cQ/fBieiC/ZGuUE0YHSPzsNtWAKauhIGasw4LX5trUgAJw0+UjkE3pLCJCBdxsePd4Mu
+         Qn7g==
+X-Gm-Message-State: AAQBX9fsQjIiVcBLSnHgwuR8zAbt3qncwcUqXC1x7OXfg0OQiNYRX0fM
+        WewuG+qaUI2HPxajpw/1Xa2q7Q==
+X-Google-Smtp-Source: AKy350b11RA/ThCptub+7HGqXeK5nxFLIG8g9zQvW6pVmBjrPR/BPpPduPKtIrxkCPLdy4PmJp7wMQ==
+X-Received: by 2002:a17:90a:5890:b0:246:8497:37c5 with SMTP id j16-20020a17090a589000b00246849737c5mr123367pji.46.1681961268202;
+        Wed, 19 Apr 2023 20:27:48 -0700 (PDT)
+Received: from C02F52LSML85.bytedance.net ([139.177.225.254])
+        by smtp.gmail.com with ESMTPSA id z15-20020a655a4f000000b00517abaac366sm115231pgs.74.2023.04.19.20.27.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Apr 2023 20:27:47 -0700 (PDT)
+From:   Feng zhou <zhoufeng.zf@bytedance.com>
+To:     martin.lau@linux.dev, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        mykolal@fb.com, shuah@kernel.org
+Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        yangzhenze@bytedance.com, wangdongdong.6@bytedance.com,
+        zhouchengming@bytedance.com, zhoufeng.zf@bytedance.com
+Subject: [PATCH bpf-next v2 0/2] Access variable length array relaxed for integer type
+Date:   Thu, 20 Apr 2023 11:27:33 +0800
+Message-Id: <20230420032735.27760-1-zhoufeng.zf@bytedance.com>
+X-Mailer: git-send-email 2.39.2 (Apple Git-143)
 MIME-Version: 1.0
-Message-ID: <336b60ba.ff1.1879cb04aa9.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: g8GowAAnL2czsEBkfAIFAA--.26535W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBDQhXZFaEN4sxyAABsg
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgoKQXQgMjAyMy0wNC0yMCAwOTozOTowNSwgIkpha3ViIEtpY2luc2tpIiA8a3ViYUBrZXJuZWwu
-b3JnPiB3cm90ZToKPk9uIE1vbiwgMTcgQXByIDIwMjMgMTc6NDY6MTcgKzA4MDAgU2xhcmsgWGlh
-byB3cm90ZToKPj4gUmVmZXIgdG8gVVNCIHNlcmlhbCBkZXZpY2Ugb3IgbmV0IGRldmljZSwgdGhl
-cmUgaXMgYSBub3RpY2UgdG8KPj4gbGV0IGVuZCB1c2VyIGtub3cgdGhlIHN0YXR1cyBvZiBkZXZp
-Y2UsIGxpa2UgYXR0YWNoZWQgb3IKPj4gZGlzY29ubmVjdGVkLiBBZGQgYXR0YWNoL2Rpc2Nvbm5l
-Y3QgcHJpbnQgZm9yIHd3YW4gZGV2aWNlIGFzCj4+IHdlbGwuCj4+IAo+PiBTaWduZWQtb2ZmLWJ5
-OiBTbGFyayBYaWFvIDxzbGFya194aWFvQDE2My5jb20+Cj4KPlBhdGNoIG5ldmVyIG1hZGUgaXQg
-dG8gdGhlIGxpc3Q6Cj4KPmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL3IvMjAyMzA0MTcwOTQ2MTcu
-MjkyNzM5My0xLXNsYXJrX3hpYW9AMTYzLmNvbS8KPgo+OiggQ291bGQgeW91IHJlc2VuZD8KU2Vu
-ZCBhZ2Fpbi4gUHJldmlvdXMgZW1haWwgc2VudCB0byBuZXRkZXYgYW5kIGxpbmsta2VybmVsIGZh
-aWxlZCB3aXRoIHVua25vd24gcmVhc29uLg==
+From: Feng Zhou <zhoufeng.zf@bytedance.com>
+
+Add support for integer type of accessing variable length array.
+Add a selftest to check it.
+
+Feng Zhou (2):
+  bpf: support access variable length array of integer type
+  selftests/bpf: Add test to access integer type of variable array
+
+Changelog:
+v1->v2: Addressed comments from Alexei Starovoitov
+- Add one more use case.
+Details in here:
+https://lore.kernel.org/bpf/20230417080749.39074-1-zhoufeng.zf@bytedance.com/
+
+ kernel/bpf/btf.c                              |  8 +++++---
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 20 +++++++++++++++++++
+ .../bpf/prog_tests/access_variable_array.c    | 16 +++++++++++++++
+ .../selftests/bpf/prog_tests/tracing_struct.c |  2 ++
+ .../bpf/progs/test_access_variable_array.c    | 19 ++++++++++++++++++
+ .../selftests/bpf/progs/tracing_struct.c      | 13 ++++++++++++
+ 6 files changed, 75 insertions(+), 3 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/access_variable_array.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_access_variable_array.c
+
+-- 
+2.20.1
+
