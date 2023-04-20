@@ -2,167 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8411C6E9DFD
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 23:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C741F6E9E2A
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 23:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232637AbjDTVjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 17:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54356 "EHLO
+        id S232792AbjDTVym (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 17:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231723AbjDTVjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 17:39:23 -0400
-Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F654EFE
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 14:39:22 -0700 (PDT)
-Received: by mail-ua1-x92f.google.com with SMTP id a1e0cc1a2514c-77380e8f3bcso257687241.2
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 14:39:22 -0700 (PDT)
+        with ESMTP id S232777AbjDTVyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 17:54:36 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D3B30D1
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 14:54:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682026761; x=1684618761;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=9mgjG3VrUbLvqgFO5SBtAbchzJMAlGhBoi2UORAhg30=;
-        b=sVG5kFuiWtaN6DwfBc6zId1gDl+wOb//I4cxLnycZG2GNR5R7zlVRM5G7VEDNBnAU9
-         9Bx2OzccQCxP/xNDGy++h5Fwe0FkcO9/PlTnwIavxDodxfswZ64RNFRSpngrGUQuoP7+
-         uiJoHIrJxZMuQa2b6GzG38HpixPhu2MFVagFnTtPgYiAQRnuI6N8zydd9sRi1rWUlbaP
-         ThpXf5fmt3UVZAZeL0XWvkbg3aww2hH8S1QfbIx3HBfn72LbalJGrXY1BUYET3sUN6wK
-         Yc2reBLx2/sec0YWI2O320jOvpz1MrRp/GhX40jsEU96ibDcPg36nUKj3c3UvKGtahof
-         1gLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682026761; x=1684618761;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9mgjG3VrUbLvqgFO5SBtAbchzJMAlGhBoi2UORAhg30=;
-        b=Q3RqGq4F7vQs2oA1qZc0508FCuBcduKJ9CYOamLzpitTjamj/z2PseWi9wCdp7Bpro
-         C5m2p8pMXmKf5HO7mxVBpNsgC8fmM2YsnDZ4C6th7P//zpV8gVCgIwtEn6N4HsqOiX1y
-         pev6t8KJBccFNGvzW6wU6jq9H8QkNdmix1JEGvspSZoK3sXjG7aX7jDJ/Y56xtQeSedP
-         fatDKuHOg2+zaBuxGFwrgCeJBmQ98NhGDwOrpTmH6Nku9w+UBfkwgkLgt7dNkGCrMGML
-         F6nYxNzk4ECHp5LxOopRdajWVhzKzjmGdv3uP71rpIkIwJt7vM3nIrrfThtRd9nXSk3c
-         PqCw==
-X-Gm-Message-State: AAQBX9eIHiRX1h8QQpWszJ7OplUg8JZ7pfcPTN3scswgK2PFxbLSpm4w
-        Jb9ukIq/ukcp2T6FCpTCvVRcebDz+b1mxBoBQoY=
-X-Google-Smtp-Source: AKy350ZNIOj8tAZ2bsJSUCumegsGwYlQrrK9oD9J4o6vjrptnkLvfj08kUeIrgAgOnUwT3fAR9n+Kqugh+YUIS6jSXw=
-X-Received: by 2002:a67:c18e:0:b0:430:3021:20e3 with SMTP id
- h14-20020a67c18e000000b00430302120e3mr18054vsj.1.1682026761360; Thu, 20 Apr
- 2023 14:39:21 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1682027675; x=1713563675;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=XtztzFQPPjeNX+itiGBcu8ii8Xg6UOSW8PmbfkTx/m0=;
+  b=UkiqbyzYcmdbYxzkwjnspJjUAl9UoIo9DNB5Jga/7HY4dU6FU3JUFRWk
+   AUDyyQ3uOAd8lsmwjxG24KcyIOCTz05OftUTILMUN3qrL0DtMXT8KIR7N
+   FjwI+iSs0pu8CMMBqV5nEvLDb6Rt9fATNUnLyGBJ2xYykk8HhvArjx53g
+   E=;
+X-IronPort-AV: E=Sophos;i="5.99,213,1677542400"; 
+   d="scan'208";a="278835917"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 21:54:26 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com (Postfix) with ESMTPS id 243278120D;
+        Thu, 20 Apr 2023 21:54:24 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Thu, 20 Apr 2023 21:54:23 +0000
+Received: from 88665a182662.ant.amazon.com (10.106.101.47) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Thu, 20 Apr 2023 21:54:19 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <willemdebruijn.kernel@gmail.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <syzkaller@googlegroups.com>, <willemb@google.com>
+Subject: RE: [PATCH v3 net] tcp/udp: Fix memleaks of sk and zerocopy skbs with TX timestamp.
+Date:   Thu, 20 Apr 2023 14:54:07 -0700
+Message-ID: <20230420215407.48720-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <644190af7652e_5eb3529467@willemb.c.googlers.com.notmuch>
+References: <644190af7652e_5eb3529467@willemb.c.googlers.com.notmuch>
 MIME-Version: 1.0
-Received: by 2002:ab0:7e58:0:b0:5e4:9eda:79ee with HTTP; Thu, 20 Apr 2023
- 14:39:20 -0700 (PDT)
-Reply-To: kodjovihegbor4@gmail.com
-From:   kodjovihegbor <blinbelin227@gmail.com>
-Date:   Thu, 20 Apr 2023 21:39:20 +0000
-Message-ID: <CAB2P08oKQcAWuLHe_niv+UYSB=YB95v2MwXADg29Kj3xgX1XqA@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.106.101.47]
+X-ClientProxiedBy: EX19D041UWB004.ant.amazon.com (10.13.139.143) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Oferuj=C4=99 moj=C4=85 przyja=C5=BA=C5=84 i wierz=C4=99, =C5=BCe przyjmiesz=
- mnie z dobrym sercem,
-zosta=C5=82em zmuszony do skontaktowania si=C4=99 z tob=C4=85 i zobaczenia,=
- jak
-najlepiej mo=C5=BCemy sobie pom=C3=B3c. Ja jestem
-Pani Kodjovi Hegbor z Turcji i ja pracujemy jako Division Head of
-Operations w StandardBNP Bank Limited Turcja. Wierz=C4=99, =C5=BCe taka jes=
-t
-wola Bo=C5=BCa wzgl=C4=99dem mnie
-spotka=C4=87 ci=C4=99 teraz. Prowadz=C4=99 wa=C5=BCn=C4=85 rozmow=C4=99 biz=
-nesow=C4=85, kt=C3=B3r=C4=85 chc=C4=99 si=C4=99 z
-Tob=C4=85 podzieli=C4=87 i kt=C3=B3ra, jak s=C4=85dz=C4=99, Ci=C4=99 zainte=
-resuje, poniewa=C5=BC jest
-zwi=C4=85zana z nazw=C4=85 Twojego kraju i odniesiesz z tego korzy=C5=9B=C4=
-=87.
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 20 Apr 2023 15:21:19 -0400
+> Kuniyuki Iwashima wrote:
+> > syzkaller reported [0] memory leaks of an UDP socket and ZEROCOPY
+> > skbs.  We can reproduce the problem with these sequences:
+> > 
+> >   sk = socket(AF_INET, SOCK_DGRAM, 0)
+> >   sk.setsockopt(SOL_SOCKET, SO_TIMESTAMPING, SOF_TIMESTAMPING_TX_SOFTWARE)
+> >   sk.setsockopt(SOL_SOCKET, SO_ZEROCOPY, 1)
+> >   sk.sendto(b'', MSG_ZEROCOPY, ('127.0.0.1', 53))
+> >   sk.close()
+> > 
+> > sendmsg() calls msg_zerocopy_alloc(), which allocates a skb, sets
+> > skb->cb->ubuf.refcnt to 1, and calls sock_hold().  Here, struct
+> > ubuf_info_msgzc indirectly holds a refcnt of the socket.  When the
+> > skb is sent, __skb_tstamp_tx() clones it and puts the clone into
+> > the socket's error queue with the TX timestamp.
+> > 
+> > When the original skb is received locally, skb_copy_ubufs() calls
+> > skb_unclone(), and pskb_expand_head() increments skb->cb->ubuf.refcnt.
+> > This additional count is decremented while freeing the skb, but struct
+> > ubuf_info_msgzc still has a refcnt, so __msg_zerocopy_callback() is
+> > not called.
+> > 
+> > The last refcnt is not released unless we retrieve the TX timestamped
+> > skb by recvmsg().  Since we clear the error queue in inet_sock_destruct()
+> > after the socket's refcnt reaches 0, there is a circular dependency.
+> > If we close() the socket holding such skbs, we never call sock_put()
+> > and leak the count, sk, and skb.
+> > 
+> > TCP has the same problem, and commit e0c8bccd40fc ("net: stream:
+> > purge sk_error_queue in sk_stream_kill_queues()") tried to fix it
+> > by calling skb_queue_purge() during close().  However, there is a
+> > small chance that skb queued in a qdisc or device could be put
+> > into the error queue after the skb_queue_purge() call.
+> 
+> I'd remove this part. If there is an issue in TCP, it is a separate
+> issue and deserves a separate patch.
 
-W 2018 roku obywatel twojego kraju o imieniu Ivan za=C5=82o=C5=BCy=C5=82 w =
-moim banku
-konto nierezydenta na 36 miesi=C4=99cy kalendarza o warto=C5=9Bci 8 400 000=
-,00
-=C2=A3. The
-data wyga=C5=9Bni=C4=99cia tej umowy depozytowej to 16 stycznia 2021 r.
-Niestety, by=C5=82 on jedn=C4=85 z ofiar =C5=9Bmiertelnych w niedawnym wybu=
-chu
-pandemii CoronaVirus (Covid19) 2019-2020, kt=C3=B3ra mia=C5=82a miejsce w
-Chinach, podczas gdy by=C5=82 w podr=C3=B3=C5=BCy s=C5=82u=C5=BCbowej, w kt=
-=C3=B3rej zgin=C4=99=C5=82o co
-najmniej 68 000 os=C3=B3b .
+I don't think it's a separate issue.  The issue resides in the common
+zerocopy infra, and each blamed commit introduces the issue to each
+protocol.
 
-Kierownictwo mojego banku jeszcze nie wie o jego =C5=9Bmierci, wiedzia=C5=
-=82em o
-tym, poniewa=C5=BC by=C5=82 moim przyjacielem, a ja by=C5=82em jego ksi=C4=
-=99gowym, kiedy
-konto by=C5=82o
-otwarte przed moj=C4=85 promocj=C4=85. Pan Ivan nie wymieni=C5=82 jednak =
-=C5=BCadnego
-najbli=C5=BCszego krewnego/spadkobiercy w chwili otwarcia rachunku, nie by=
-=C5=82
-=C5=BConaty i nie mia=C5=82
-dzieci. W zesz=C5=82ym tygodniu kierownictwo mojego banku poprosi=C5=82o mn=
-ie o
-wydanie instrukcji, co zrobi=C4=87 z jego funduszami, je=C5=9Bli chce odnow=
-i=C4=87
-umow=C4=99.
 
-Wiem, =C5=BCe tak si=C4=99 stanie i dlatego szuka=C5=82em sposobu, aby pora=
-dzi=C4=87 sobie
-z t=C4=85 sytuacj=C4=85, poniewa=C5=BC je=C5=9Bli dyrektorzy mojego banku d=
-owiedz=C4=85 si=C4=99, =C5=BCe
-Ivan
-nie =C5=BCyje i nie ma =C5=BCadnego Spadkobiercy, wezm=C4=85 =C5=9Brodki na=
- w=C5=82asny u=C5=BCytek,
-wi=C4=99c nie chc=C4=99, aby tak si=C4=99 sta=C5=82o. Wtedy ci=C4=99 zobacz=
-y=C5=82em, by=C5=82em
-szcz=C4=99=C5=9Bliwy i teraz szukam twojej wsp=C3=B3=C5=82pracy, aby przeds=
-tawi=C4=87 ci=C4=99 jako
-najbli=C5=BCszego krewnego / spadkobierc=C4=99 konta, poniewa=C5=BC masz te=
-n sam kraj
-co on, a centrala mojego banku zwolni ci konto. Nie ma =C5=BCadnego ryzyka
-zaanga=C5=BCowany; transakcja zostanie przeprowadzona na podstawie zgodnego
-z prawem porozumienia, kt=C3=B3re ochroni Ci=C4=99 przed jakimkolwiek
-naruszeniem prawa.
+> 
+> The UDP part looks great to me. Thanks for fixing that.
+> 
+> > In __skb_tstamp_tx(), the cloned skb should not have a reference
+> > to the ubuf to remove the circular dependency, but skb_clone() does
+> > not call skb_copy_ubufs() for zerocopy skb.  So, we need to call
+> > skb_orphan_frags_rx() for the cloned skb to call skb_copy_ubufs().
+> >
+> > [0]:
+> > BUG: memory leak
+> > unreferenced object 0xffff88800c6d2d00 (size 1152):
+> >   comm "syz-executor392", pid 264, jiffies 4294785440 (age 13.044s)
+> >   hex dump (first 32 bytes):
+> >     00 00 00 00 00 00 00 00 cd af e8 81 00 00 00 00  ................
+> >     02 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
+> >   backtrace:
+> >     [<0000000055636812>] sk_prot_alloc+0x64/0x2a0 net/core/sock.c:2024
+> >     [<0000000054d77b7a>] sk_alloc+0x3b/0x800 net/core/sock.c:2083
+> >     [<0000000066f3c7e0>] inet_create net/ipv4/af_inet.c:319 [inline]
+> >     [<0000000066f3c7e0>] inet_create+0x31e/0xe40 net/ipv4/af_inet.c:245
+> >     [<000000009b83af97>] __sock_create+0x2ab/0x550 net/socket.c:1515
+> >     [<00000000b9b11231>] sock_create net/socket.c:1566 [inline]
+> >     [<00000000b9b11231>] __sys_socket_create net/socket.c:1603 [inline]
+> >     [<00000000b9b11231>] __sys_socket_create net/socket.c:1588 [inline]
+> >     [<00000000b9b11231>] __sys_socket+0x138/0x250 net/socket.c:1636
+> >     [<000000004fb45142>] __do_sys_socket net/socket.c:1649 [inline]
+> >     [<000000004fb45142>] __se_sys_socket net/socket.c:1647 [inline]
+> >     [<000000004fb45142>] __x64_sys_socket+0x73/0xb0 net/socket.c:1647
+> >     [<0000000066999e0e>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >     [<0000000066999e0e>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+> >     [<0000000017f238c1>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > 
+> > BUG: memory leak
+> > unreferenced object 0xffff888017633a00 (size 240):
+> >   comm "syz-executor392", pid 264, jiffies 4294785440 (age 13.044s)
+> >   hex dump (first 32 bytes):
+> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> >     00 00 00 00 00 00 00 00 00 2d 6d 0c 80 88 ff ff  .........-m.....
+> >   backtrace:
+> >     [<000000002b1c4368>] __alloc_skb+0x229/0x320 net/core/skbuff.c:497
+> >     [<00000000143579a6>] alloc_skb include/linux/skbuff.h:1265 [inline]
+> >     [<00000000143579a6>] sock_omalloc+0xaa/0x190 net/core/sock.c:2596
+> >     [<00000000be626478>] msg_zerocopy_alloc net/core/skbuff.c:1294 [inline]
+> >     [<00000000be626478>] msg_zerocopy_realloc+0x1ce/0x7f0 net/core/skbuff.c:1370
+> >     [<00000000cbfc9870>] __ip_append_data+0x2adf/0x3b30 net/ipv4/ip_output.c:1037
+> >     [<0000000089869146>] ip_make_skb+0x26c/0x2e0 net/ipv4/ip_output.c:1652
+> >     [<00000000098015c2>] udp_sendmsg+0x1bac/0x2390 net/ipv4/udp.c:1253
+> >     [<0000000045e0e95e>] inet_sendmsg+0x10a/0x150 net/ipv4/af_inet.c:819
+> >     [<000000008d31bfde>] sock_sendmsg_nosec net/socket.c:714 [inline]
+> >     [<000000008d31bfde>] sock_sendmsg+0x141/0x190 net/socket.c:734
+> >     [<0000000021e21aa4>] __sys_sendto+0x243/0x360 net/socket.c:2117
+> >     [<00000000ac0af00c>] __do_sys_sendto net/socket.c:2129 [inline]
+> >     [<00000000ac0af00c>] __se_sys_sendto net/socket.c:2125 [inline]
+> >     [<00000000ac0af00c>] __x64_sys_sendto+0xe1/0x1c0 net/socket.c:2125
+> >     [<0000000066999e0e>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >     [<0000000066999e0e>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+> >     [<0000000017f238c1>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > 
+> > Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
+> > Fixes: b5947e5d1e71 ("udp: msg_zerocopy")
+> > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > ---
+> > v3:
+> >   * Call skb_orphan_frags_rx() instead of adding locking rule and skb_queue_purge()
+> > 
+> > v2: https://lore.kernel.org/netdev/20230418180832.81430-1-kuniyu@amazon.com/
+> >   * Move skb_queue_purge() after setting SOCK_DEAD in udp_destroy_sock()
+> >   * Check SOCK_DEAD in sock_queue_err_skb() with sk_error_queue.lock
+> >   * Add Fixes tag for TCP
+> > 
+> > v1: https://lore.kernel.org/netdev/20230417171155.22916-1-kuniyu@amazon.com/
+> > ---
+> >  net/core/skbuff.c | 3 +++
+> >  net/core/stream.c | 6 ------
+> >  2 files changed, 3 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 4c0879798eb8..2f9bb98170ab 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -5162,6 +5162,9 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+> >  			skb = alloc_skb(0, GFP_ATOMIC);
+> >  	} else {
+> >  		skb = skb_clone(orig_skb, GFP_ATOMIC);
+> > +
+> > +		if (skb_orphan_frags_rx(skb, GFP_ATOMIC))
+> > +			return;
+> >  	}
+> >  	if (!skb)
+> >  		return;
+> > diff --git a/net/core/stream.c b/net/core/stream.c
+> > index 434446ab14c5..e6dd1a68545f 100644
+> > --- a/net/core/stream.c
+> > +++ b/net/core/stream.c
+> > @@ -196,12 +196,6 @@ void sk_stream_kill_queues(struct sock *sk)
+> >  	/* First the read buffer. */
+> >  	__skb_queue_purge(&sk->sk_receive_queue);
+> >  
+> > -	/* Next, the error queue.
+> > -	 * We need to use queue lock, because other threads might
+> > -	 * add packets to the queue without socket lock being held.
+> > -	 */
+> > -	skb_queue_purge(&sk->sk_error_queue);
+> > -
+> 
+> Why include this?
 
-Lepiej, =C5=BCeby=C5=9Bmy za=C5=BC=C4=85dali tych pieni=C4=99dzy, ni=C5=BC =
-pozwolili je zabra=C4=87
-dyrektorom bank=C3=B3w, oni ju=C5=BC s=C4=85 bogaci. Nie jestem chciw=C4=85=
- osob=C4=85, wi=C4=99c
-sugeruj=C4=99, =C5=BCeby=C5=9Bmy
-dzieli=C4=87 fundusze po r=C3=B3wno, 50/50% dla obu stron, m=C3=B3j udzia=
-=C5=82 pomo=C5=BCe mi
-za=C5=82o=C5=BCy=C4=87 w=C5=82asn=C4=85 firm=C4=99 i przeznaczy=C4=87 wp=C5=
-=82ywy na cele charytatywne, kt=C3=B3re
-do tej pory
-marzenie.
+As mentioned in 24bcbe1cc69f ("net: stream: don't purge sk_error_queue in
+sk_stream_kill_queues()"), we don't need this, but e0c8bccd40fc ("net:
+stream: purge sk_error_queue in sk_stream_kill_queues()") added it back
+to avoid the same issue.  It's most likely to remove the issue, but we
+concluded this way was insufficient.
 
-Daj mi zna=C4=87, co my=C5=9Blisz o mojej propozycji, prosz=C4=99, naprawd=
-=C4=99
-potrzebuj=C4=99 twojej pomocy w tej transakcji, wybra=C5=82em ci=C4=99, aby=
-=C5=9B mi
-pomaga=C5=82, a nie sam, wykonuj=C4=85c moje
-kochanie, ale na Boga, czy chc=C4=99, =C5=BCeby=C5=9B wiedzia=C5=82, =C5=BC=
-e po=C5=9Bwi=C4=99ci=C5=82em sw=C3=B3j
-czas na modlitw=C4=99 w sprawie tej komunikacji, zanim kiedykolwiek si=C4=
-=99 z
-tob=C4=85 skontaktowa=C5=82em, daj mi zna=C4=87
-pami=C4=99taj o tym i traktuj te informacje jako =C5=9ACI=C5=9ALE TAJNE. Po
-otrzymaniu odpowiedzi, wy=C5=82=C4=85cznie za po=C5=9Brednictwem mojego oso=
-bistego
-adresu e-mail, kodjovihegbor4@gmail.com
-poda szczeg=C3=B3=C5=82y transakcji. Oraz kopi=C4=99 =C5=9Bwiadectwa depozy=
-towego
-funduszu, a tak=C5=BCe za=C5=9Bwiadczenie o zarejestrowaniu sp=C3=B3=C5=82k=
-i
-wygenerowa=C5=82 fundusz. Szcz=C4=99=C5=9B=C4=87 Bo=C5=BCe, oczekuj=C4=85c =
-pilnej odpowiedzi
-Z wyrazami szacunku
-Pani Kodjovi Hegbor
-kodjovihegbor4@gmail.com
+Now we have the proper fix and should remove the workaround.
+
+
+> 
+> >  	/* Next, the write queue. */
+> >  	WARN_ON_ONCE(!skb_queue_empty(&sk->sk_write_queue));
+> >  
+> > -- 
+> > 2.30.2
