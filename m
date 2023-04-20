@@ -2,85 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D07276E8C8E
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:20:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16BBC6E8C9C
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:22:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234398AbjDTIUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 04:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51286 "EHLO
+        id S234425AbjDTIWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 04:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233947AbjDTIU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:20:29 -0400
-Received: from forwardcorp1c.mail.yandex.net (forwardcorp1c.mail.yandex.net [178.154.239.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B791635BB;
-        Thu, 20 Apr 2023 01:20:26 -0700 (PDT)
-Received: from mail-nwsmtp-smtp-corp-main-26.myt.yp-c.yandex.net (mail-nwsmtp-smtp-corp-main-26.myt.yp-c.yandex.net [IPv6:2a02:6b8:c12:3612:0:640:a8a8:0])
-        by forwardcorp1c.mail.yandex.net (Yandex) with ESMTP id 3AB675FA6A;
-        Thu, 20 Apr 2023 11:20:22 +0300 (MSK)
-Received: from d-tatianin-nix.yandex-team.ru (unknown [2a02:6b8:b081:b409::1:14])
-        by mail-nwsmtp-smtp-corp-main-26.myt.yp-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id GKZned0OrSw0-ZMtL3jQ8;
-        Thu, 20 Apr 2023 11:20:21 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1681978821; bh=9mp+pNldrwYKUsap4NBAwMn7ODY5PLISjDiGq37dX08=;
-        h=Message-Id:Date:Cc:Subject:To:From;
-        b=p+8OjW/Pwu2PIc8vaB50z4dLDff5X4bJ9YWx+S/Hjm711tgn+trXbY+HJlz7JU9Cg
-         o8PzFCM3KY5rPAft0+3aELGcw8lmuNvEgDFIixh0+gCVVTIVM0ztQOyiiqq2aI1eLB
-         4g0XxHDpCXk2kT/4eAepg1G5ZnrbOJfBK8Fithak=
-Authentication-Results: mail-nwsmtp-smtp-corp-main-26.myt.yp-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-From:   Daniil Tatianin <d-tatianin@yandex-team.ru>
-To:     Ariel Elior <aelior@marvell.com>
-Cc:     Daniil Tatianin <d-tatianin@yandex-team.ru>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S234430AbjDTIWs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:22:48 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36C949FF
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:22:39 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id d9443c01a7336-1a6715ee82fso9344565ad.1
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:22:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681978958; x=1684570958;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=RTLl1gibxMFESd2oMZP40Ez/69aWp+mg2khOBy3moc8=;
+        b=JFEsnwOp+XITySHnu76RXCZgmKJGPnnkYTwHnNmfFIxGOVLYSp7UcTMnbKPj8TErRf
+         jxfRcnMjieldktVxaCxe9N3OqiNo5auMvhc08XuleN5oWqSS20Fuq/JHhavFQxFKaZx6
+         Dr6C4st8bu5myJcQjfIc9AHU6/Hno0U6y83+RtqrWDwxei5XZjbD7oE4D0KdPE+wmY6P
+         XiGQiqPM+IuT9mlHNeYBewTZ+Uy5OEFmqjDVwbvO1WDTocFLCUt00I9Zl7sfubInXeBc
+         QoBww2bAX3lovtJpBbiquCoQS12juFjfyqcTwLwbHYrL+bXdWpCZfclRa6zMqnBJzI3A
+         m/Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681978958; x=1684570958;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=RTLl1gibxMFESd2oMZP40Ez/69aWp+mg2khOBy3moc8=;
+        b=T9g+IYIn9VWWDL3o8EoKNAQ7Vd/SK9voXXqFwIP722FeLGAXPjgLOfncUOqyuMF9Fb
+         eGIMsCbeOYTVGG6mkrfCb5vtFw64fEdxwKc66RZXscBxxPtYOw9PeAzR47Kbkf4cNB0p
+         /cJr/JYyawqfmlRjiBDCHG2lVEae4o3BsgkH+Wfk8JBjmT3+eUulgbY0pjzR3MblZuAp
+         xWKSGxqRMAXToEGMT4rNbwuVo0UCadGC9YraIu5XD4hGCFAQVoiVYzi/7FrJrcjcjtaM
+         A0HzaJTtxa4jJfrX2eYwtWGO8Y4lgs/NinLZWVmf5LjFd3KearM7uq4oistx+Vdxy3Ko
+         7M6Q==
+X-Gm-Message-State: AAQBX9fvHxIOn2vd5ypCEL/GU6Zd4H21yEGSfh55iOOhLgrrnsaExst5
+        xM/JYRd8SadPOv4ptpMZCFo7Fo4ef0hEL6CE5O4=
+X-Google-Smtp-Source: AKy350aLAMyDcXLalfXYYnaUeVYHYZUN+74tex+BlPFti7Eqgu2PknpXjunMDIMMp7j8pUhDWvL99A==
+X-Received: by 2002:a17:902:e403:b0:1a6:91f0:f7fd with SMTP id m3-20020a170902e40300b001a691f0f7fdmr515939ple.60.1681978958573;
+        Thu, 20 Apr 2023 01:22:38 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id l11-20020a170902d34b00b001a1ed2fce9asm662175plk.235.2023.04.20.01.22.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Apr 2023 01:22:37 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Yuval Mintz <Yuval.Mintz@qlogic.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] qed/qed_sriov: propagate errors from qed_init_run in enable_vf_access
-Date:   Thu, 20 Apr 2023 11:20:16 +0300
-Message-Id: <20230420082016.335314-1-d-tatianin@yandex-team.ru>
-X-Mailer: git-send-email 2.25.1
+        Eric Dumazet <edumazet@google.com>,
+        Liang Li <liali@redhat.com>,
+        Vincent Bernat <vincent@bernat.ch>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net 0/4] bonding: fix send_peer_notif overflow
+Date:   Thu, 20 Apr 2023 16:22:26 +0800
+Message-Id: <20230420082230.2968883-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The return value was silently ignored, and not propagated to the caller.
+Bonding send_peer_notif was defined as u8. But the value is
+num_peer_notif multiplied by peer_notif_delay, which is u8 * u32.
+This would cause the send_peer_notif overflow.
 
-Found by Linux Verification Center (linuxtesting.org) with the SVACE
-static analysis tool.
+Before the fix:
+TEST: num_grat_arp (active-backup miimon num_grat_arp 10)           [ OK ]
+TEST: num_grat_arp (active-backup miimon num_grat_arp 20)           [ OK ]
+4 garp packets sent on active slave eth1
+TEST: num_grat_arp (active-backup miimon num_grat_arp 30)           [FAIL]
+24 garp packets sent on active slave eth1
+TEST: num_grat_arp (active-backup miimon num_grat_arp 50)           [FAIL]
 
-Fixes: 1408cc1fa48c ("qed: Introduce VFs")
-Signed-off-by: Daniil Tatianin <d-tatianin@yandex-team.ru>
----
-I'm not familiar enough with the code to know if there's anything we
-have to undo here in case qed_init_run returns an error. Any additional
-comments are appreciated.
----
- drivers/net/ethernet/qlogic/qed/qed_sriov.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+After the fix:
+TEST: num_grat_arp (active-backup miimon num_grat_arp 10)           [ OK ]
+TEST: num_grat_arp (active-backup miimon num_grat_arp 20)           [ OK ]
+TEST: num_grat_arp (active-backup miimon num_grat_arp 30)           [ OK ]
+TEST: num_grat_arp (active-backup miimon num_grat_arp 50)           [ OK ]
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-index fa167b1aa019..5244d7208eb4 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-@@ -814,7 +814,7 @@ static int qed_iov_enable_vf_access(struct qed_hwfn *p_hwfn,
- 	SET_FIELD(igu_vf_conf, IGU_VF_CONF_PARENT, p_hwfn->rel_pf_id);
- 	STORE_RT_REG(p_hwfn, IGU_REG_VF_CONFIGURATION_RT_OFFSET, igu_vf_conf);
- 
--	qed_init_run(p_hwfn, p_ptt, PHASE_VF, vf->abs_vf_id,
-+	rc = qed_init_run(p_hwfn, p_ptt, PHASE_VF, vf->abs_vf_id,
- 		     p_hwfn->hw_info.hw_mode);
- 
- 	/* unpretend */
+Hangbin Liu (4):
+  bonding: fix send_peer_notif overflow
+  Documentation: bonding: fix the doc of peer_notif_delay
+  selftests: forwarding: lib: add netns support for tc rule handle stats
+    get
+  kselftest: bonding: add num_grat_arp test
+
+ Documentation/networking/bonding.rst          |  7 ++-
+ include/net/bonding.h                         |  2 +-
+ .../drivers/net/bonding/bond_options.sh       | 50 +++++++++++++++++++
+ .../drivers/net/bonding/bond_topo_3d1c.sh     |  2 +
+ tools/testing/selftests/net/forwarding/lib.sh |  3 +-
+ 5 files changed, 58 insertions(+), 6 deletions(-)
+
 -- 
-2.25.1
+2.38.1
 
