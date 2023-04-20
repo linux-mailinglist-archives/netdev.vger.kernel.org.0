@@ -2,57 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF9906E918D
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:04:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECBEA6E919B
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:05:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbjDTLEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 07:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
+        id S234718AbjDTLFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 07:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235303AbjDTLEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:04:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0237A97;
-        Thu, 20 Apr 2023 04:02:57 -0700 (PDT)
+        with ESMTP id S235116AbjDTLEd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:04:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A81776BB;
+        Thu, 20 Apr 2023 04:03:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D515A647D3;
-        Thu, 20 Apr 2023 11:02:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CEFEC433D2;
-        Thu, 20 Apr 2023 11:02:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 190D6647C3;
+        Thu, 20 Apr 2023 11:02:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 850AFC433D2;
+        Thu, 20 Apr 2023 11:02:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681988535;
-        bh=QlA/nQG7SitaTN/sKCqXnsi2+TBW9xYbBV61Vs+0pRc=;
+        s=k20201202; t=1681988539;
+        bh=hw4xNWiwp8slyxeG+kC8WnPTYTvoQBMrOBS9+9t7ozY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TgIIxfSR2kbxtQilCFLL+Y5C8/n4/AbpawIwwez9Z34zKdAAvF8xxBW4mnl3TbaaL
-         M2WrNAINmvxlV+bwQYbybyc4nJSov7PbpjhV82vdo1wFFTfno8dwQzptLX8GmnuEBG
-         B7uuvqVjHd2DC0s2PglXs7jhFNpLdwxHQJjA8XBEHBfcjCN1ijariP0xTcHzpZ56tQ
-         ZkNOMtvW5+/0gvirnesFtoVQLnQq5NtqSXlhLJdQdAaqWSkdx+OdvUKbrvfB7V16Lo
-         BIWBEKUEsW1YsdDh5rBq39wEIwqijZU1/EW5XA/dkb0Lkuu4Qk+GVpWCbJVWAVlQvT
-         IrsBn8gEiie2Q==
+        b=e0J8tkYUjcx9zrUeI+yQC7z7JQ00pXcrF7kWoBo9EyUIAmFRSpyJHaQrpSiFET/eE
+         b9OeOlABXdPQLrh7HVA+mkCuGBzHJmqd7kR9TQW7lCavtgOC6nifgjMjbnZW+4407t
+         3oqG1kT/dZoqqvh1hTLoZZlhlnigmZurkFfynfJIfs5FJOpLTxs9D3LOetofozcGDD
+         S+1+enaNoYiC0YnU95M85DdvxB7PCwU/T22kLYR0L3xtSGcB9qpUSNvMcBx6V6qL/z
+         Rb5ueq50DcD4orp2f6fTMgpn1OsqAbjXX8o9U1E3Lh1gGIPJzcNtSRzOaMy1QNHp42
+         MYSlPY7SeZ8MA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>,
-        Liu Haijun <haijun.liu@mediatek.com>,
-        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>, matthias.bgg@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
+Cc:     Ben Greear <greearb@candelatech.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, ryder.lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com, deren.wu@mediatek.com,
+        sean.wang@mediatek.com, mingyen.hsieh@mediatek.com,
+        yn.chen@mediatek.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.2 10/17] net: wwan: t7xx: do not compile with -Werror
-Date:   Thu, 20 Apr 2023 07:01:39 -0400
-Message-Id: <20230420110148.505779-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.2 11/17] wifi: mt76: mt7921: Fix use-after-free in fw features query.
+Date:   Thu, 20 Apr 2023 07:01:40 -0400
+Message-Id: <20230420110148.505779-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230420110148.505779-1-sashal@kernel.org>
 References: <20230420110148.505779-1-sashal@kernel.org>
@@ -60,8 +53,8 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -70,59 +63,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+From: Ben Greear <greearb@candelatech.com>
 
-[ Upstream commit 362f0b6678ad1377c322a7dd237ea6785efc7342 ]
+[ Upstream commit 2ceb76f734e37833824b7fab6af17c999eb48d2b ]
 
-When playing with various compilers or their versions, some choke on
-the t7xx code. For example (with gcc 13):
- In file included from ./arch/s390/include/generated/asm/rwonce.h:1,
-                  from ../include/linux/compiler.h:247,
-                  from ../include/linux/build_bug.h:5,
-                  from ../include/linux/bits.h:22,
-                  from ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:17:
- In function 'preempt_count',
-     inlined from 't7xx_fsm_append_event' at ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:439:43:
- ../include/asm-generic/rwonce.h:44:26: error: array subscript 0 is outside array bounds of 'const volatile int[0]' [-Werror=array-bounds=]
+Stop referencing 'features' memory after release_firmware is called.
 
-There is no reason for any code in the kernel to be built with -Werror
-by default. Note that we have generic CONFIG_WERROR. So if anyone wants
--Werror, they can enable that.
+Fixes this crash:
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Link: https://lore.kernel.org/all/20230330232717.1f8bf5ea@kernel.org/
-Cc: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-Cc: Intel Corporation <linuxwwan@intel.com>
-Cc: Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>
-Cc: Liu Haijun <haijun.liu@mediatek.com>
-Cc: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-Cc: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Cc: Loic Poulain <loic.poulain@linaro.org>
-Cc: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
-Signed-off-by: David S. Miller <davem@davemloft.net>
+RIP: 0010:mt7921_check_offload_capability+0x17d
+mt7921_pci_probe+0xca/0x4b0
+...
+
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Acked-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/51fd8f76494348aa9ecbf0abc471ebe47a983dfd.1679502607.git.lorenzo@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wwan/t7xx/Makefile | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/init.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wwan/t7xx/Makefile b/drivers/net/wwan/t7xx/Makefile
-index 268ff9e87e5b3..2652cd00504e6 100644
---- a/drivers/net/wwan/t7xx/Makefile
-+++ b/drivers/net/wwan/t7xx/Makefile
-@@ -1,7 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0-only
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/init.c b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+index d4b681d7e1d22..f2c6ec4d8e2ee 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
+@@ -162,12 +162,12 @@ mt7921_mac_init_band(struct mt7921_dev *dev, u8 band)
  
--ccflags-y += -Werror
--
- obj-${CONFIG_MTK_T7XX} := mtk_t7xx.o
- mtk_t7xx-y:=	t7xx_pci.o \
- 		t7xx_pcie_mac.o \
+ u8 mt7921_check_offload_capability(struct device *dev, const char *fw_wm)
+ {
+-	struct mt7921_fw_features *features = NULL;
+ 	const struct mt76_connac2_fw_trailer *hdr;
+ 	struct mt7921_realease_info *rel_info;
+ 	const struct firmware *fw;
+ 	int ret, i, offset = 0;
+ 	const u8 *data, *end;
++	u8 offload_caps = 0;
+ 
+ 	ret = request_firmware(&fw, fw_wm, dev);
+ 	if (ret)
+@@ -199,7 +199,10 @@ u8 mt7921_check_offload_capability(struct device *dev, const char *fw_wm)
+ 		data += sizeof(*rel_info);
+ 
+ 		if (rel_info->tag == MT7921_FW_TAG_FEATURE) {
++			struct mt7921_fw_features *features;
++
+ 			features = (struct mt7921_fw_features *)data;
++			offload_caps = features->data;
+ 			break;
+ 		}
+ 
+@@ -209,7 +212,7 @@ u8 mt7921_check_offload_capability(struct device *dev, const char *fw_wm)
+ out:
+ 	release_firmware(fw);
+ 
+-	return features ? features->data : 0;
++	return offload_caps;
+ }
+ EXPORT_SYMBOL_GPL(mt7921_check_offload_capability);
+ 
 -- 
 2.39.2
 
