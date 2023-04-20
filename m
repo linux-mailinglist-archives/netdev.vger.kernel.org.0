@@ -2,71 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1072C6E99C2
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:42:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F0306E99C8
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbjDTQmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 12:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55436 "EHLO
+        id S230459AbjDTQnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 12:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230459AbjDTQma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:42:30 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D972D45
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:42:29 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-54f3e30726cso26023297b3.22
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:42:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682008949; x=1684600949;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=T1mmlYQK0Ax84SlhH64ck5bBrkjS+ny32bkCi7XQTZQ=;
-        b=5VtY8k60e5g1tJwzNKEMWu02mAc0iZcoJ60a9EpQjikosZde7KPmrao0fgjSBp74n/
-         EugDFzl2b4y1ruxsaSoE3Rg0rt2f0cauXiIJPhaI9Ez6axZLTH52xVYTyUpfZkWuI5yk
-         fD0GKtdB4TYGYw7Fk+aDHyKvc7cnqGTtKtVHoJGdQ13FvEzI9KFXUd3OXoZZe75zoXli
-         idM3GVswA+9gfPRLDXVw5zzVI+o8deBIOs9XUluU0ArdTRe8dxy5oUr3hEyC9FTCRhzo
-         5zxZQI7ZLVGNVa7GIYMhzlVpyprBy9dbpqv9F3Ood9nO9WdcalWrwTTDeapsc+PU9cMW
-         GdWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682008949; x=1684600949;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=T1mmlYQK0Ax84SlhH64ck5bBrkjS+ny32bkCi7XQTZQ=;
-        b=OlUbT9/D8ckQI4wDQlvuYdcbNZkKdSMAoSwxJp3FeOq0v6QjocpCapbb/j+vHPzVMd
-         5PC6C5QmyucuMrRFMAG2eVcXYgoOwywZc3xyA0IW1y7hsUWNuh7qZJhgZ3aIbSRtmnVV
-         PGYMvUQXVpsgUFoKVKIb40+5uDAkop3vzNu3il6G28qhKipCOma3DUUCzrPrIp5P5Wto
-         8mGEBnmnD9P0JBQO5gCNzO0f/dQiCBxdcnk2A0auUrXKw9q3/m82iczh3iVyKQ/ueqDk
-         eMFsK2NBpSh7kbpbk6aa2yhnSAbvKoQ4Fq31Q0MLHInFJbve8s5eMJljCmXimQL7TRcV
-         oSjA==
-X-Gm-Message-State: AAQBX9cMbmDYoKPZN6BZm2ZSxU/LQMnbJIl5Sg5ZZ0elI2EPMrlKpeEy
-        8TtqfIpspnxWeTwB5KRpaHNO0Xs=
-X-Google-Smtp-Source: AKy350YaSf/EF1hYCH6Qty7yMntO448QhciDS+jiloiJxtMJBinKQuK91dMGqLj50RpYgaccxq0TUbw=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a25:d04c:0:b0:b96:106d:5198 with SMTP id
- h73-20020a25d04c000000b00b96106d5198mr1325874ybg.7.1682008948829; Thu, 20 Apr
- 2023 09:42:28 -0700 (PDT)
-Date:   Thu, 20 Apr 2023 09:42:26 -0700
-In-Reply-To: <20230420145041.508434-1-gilad9366@gmail.com>
-Mime-Version: 1.0
-References: <20230420145041.508434-1-gilad9366@gmail.com>
-Message-ID: <ZEFrcoG+QS/PRbew@google.com>
-Subject: Re: [PATCH bpf,v2 0/4] Socket lookup BPF API from tc/xdp ingress does
- not respect VRF bindings.
-From:   Stanislav Fomichev <sdf@google.com>
-To:     Gilad Sever <gilad9366@gmail.com>
-Cc:     dsahern@kernel.org, martin.lau@linux.dev, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, mykolal@fb.com,
-        shuah@kernel.org, hawk@kernel.org, joe@wand.net.nz,
-        eyal.birger@gmail.com, shmulik.ladkani@gmail.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        with ESMTP id S230357AbjDTQnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:43:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD9A2D6A
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:42:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682008956;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I6fTE8uyJF5qu0Pi8nEHi/Tjr/m72N2RiPgDazf02xk=;
+        b=g2wGdshbUujWgVQlV2MrtmdV8Gr1EaWod+5ppH4DqROR58kBUO5SbUkhF/mb6JAGyw8TGO
+        N/2XBVbguw6L12QIi9xbMzVENej+C4SeUnzrjvq9biIZm9lqmM096FLrjJUf4pB0h3P7iR
+        RGlgwMSMGxCgKZbgmnoeJRYQBmQxCH4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-375-CJwRyV7GMX6wC-bShp44cQ-1; Thu, 20 Apr 2023 12:42:35 -0400
+X-MC-Unique: CJwRyV7GMX6wC-bShp44cQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7E4B6185A78F;
+        Thu, 20 Apr 2023 16:42:34 +0000 (UTC)
+Received: from localhost (unknown [10.2.16.204])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id EB19B2026D16;
+        Thu, 20 Apr 2023 16:42:33 +0000 (UTC)
+Date:   Thu, 20 Apr 2023 09:42:32 -0700
+From:   Chris Leech <cleech@redhat.com>
+To:     Lee Duncan <leeman.duncan@gmail.com>
+Cc:     linux-scsi@vger.kernel.org, open-iscsi@googlegroups.com,
+        netdev@vger.kernel.org, Lee Duncan <lduncan@suse.com>
+Subject: Re: [RFC PATCH 2/9] iscsi: associate endpoints with a host
+Message-ID: <20230420164232.GA27885@localhost>
+Mail-Followup-To: Lee Duncan <leeman.duncan@gmail.com>,
+        linux-scsi@vger.kernel.org, open-iscsi@googlegroups.com,
+        netdev@vger.kernel.org, Lee Duncan <lduncan@suse.com>
+References: <cover.1675876731.git.lduncan@suse.com>
+ <154c7602b3cc59f8af44439249ea5e5eb75f92d3.1675876734.git.lduncan@suse.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <154c7602b3cc59f8af44439249ea5e5eb75f92d3.1675876734.git.lduncan@suse.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,46 +63,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/20, Gilad Sever wrote:
-> When calling socket lookup from L2 (tc, xdp), VRF boundaries aren't
-> respected. This patchset fixes this by regarding the incoming device's
-> VRF attachment when performing the socket lookups from tc/xdp.
+On Wed, Feb 08, 2023 at 09:40:50AM -0800, Lee Duncan wrote:
+> Right now the iscsi_endpoint is only linked to a connection once that
+> connection has been established.  For net namespace filtering of the
+> sysfs objects, associate an endpoint with the host that it was
+> allocated for when it is created.
 > 
-> The first two patches are coding changes which facilitate this fix by
-> factoring out the tc helper's logic which was shared with cg/sk_skb
-> (which operate correctly).
-
-Why is not relevant for cgroup/egress? Is it already running with
-the correct device?
-
-Also, do we really need all this refactoring and separate paths?
-Can we just add that bpf_l2_sdif part to the existing code?
-It will trigger for tc, but I'm assuming it will be a no-op for cgroup
-path?
-
-And regarding bpf_l2_sdif: seems like it's really generic and should
-probably be called something like dev_sdif?
-
-> The third patch contains the actual bugfix.
-> 
-> The fourth patch adds bpf tests for these lookup functions.
+> Signed-off-by: Chris Leech <cleech@redhat.com>
+> Signed-off-by: Lee Duncan <lduncan@suse.com>
 > ---
-> v2: Fixed uninitialized var in test patch (4).
 > 
-> Gilad Sever (4):
->   bpf: factor out socket lookup functions for the TC hookpoint.
->   bpf: Call __bpf_sk_lookup()/__bpf_skc_lookup() directly via TC
->     hookpoint
->   bpf: fix bpf socket lookup from tc/xdp to respect socket VRF bindings
->   selftests/bpf: Add tc_socket_lookup tests
-> 
->  net/core/filter.c                             | 132 +++++--
->  .../bpf/prog_tests/tc_socket_lookup.c         | 341 ++++++++++++++++++
->  .../selftests/bpf/progs/tc_socket_lookup.c    |  73 ++++
->  3 files changed, 525 insertions(+), 21 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_socket_lookup.c
->  create mode 100644 tools/testing/selftests/bpf/progs/tc_socket_lookup.c
-> 
-> -- 
-> 2.34.1
-> 
+> diff --git a/drivers/infiniband/ulp/iser/iscsi_iser.c b/drivers/infiniband/ulp/iser/iscsi_iser.c
+> index 6b7603765383..212fa7aa9810 100644
+> --- a/drivers/infiniband/ulp/iser/iscsi_iser.c
+> +++ b/drivers/infiniband/ulp/iser/iscsi_iser.c
+> @@ -802,7 +802,7 @@ static struct iscsi_endpoint *iscsi_iser_ep_connect(struct Scsi_Host *shost,
+>  	struct iser_conn *iser_conn;
+>  	struct iscsi_endpoint *ep;
+>  
+> -	ep = iscsi_create_endpoint(0);
+> +	ep = iscsi_create_endpoint(shost, 0);
+>  	if (!ep)
+>  		return ERR_PTR(-ENOMEM);
+
+I started trying[1] to look at iSER, and I think this is a problem.
+iSER is the only iSCSI driver that uses endpoint objects, but does not
+require then to be bound to a host.  That means that
+iscsi_iser_ep_connect can be called with a null shost.
+
+So this fails, and not in a new namespace.
+It just breaks iSER entirely.
+
+I think we need to preserve support for the iscsi_endpoint device
+having a virtual device path for iSER.
+
+Also, enabling net namespace support for iSER might require the ability
+to create an endpoint directly in a namespace instead of on a host.
+Kind of like the create_session discussion for iscsi_tcp.
+
+- Chris
+
+[1] I say trying, becuase before going and borrowing an RDMA setup I
+thought I'd give the kernel target and either siw or rxe a try. The
+isert module seems to have issues with siw, and I think maybe any iWARP,
+where setting enable_iser on a port will try and re-use the TCP port
+number and fail due to it being in use.  With rxe my host failed, but
+that's becuase of this create_endpoint issue.
+
