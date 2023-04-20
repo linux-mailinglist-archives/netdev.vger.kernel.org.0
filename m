@@ -2,45 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5805B6E8930
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 06:40:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9239C6E8934
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 06:40:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233656AbjDTEkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 00:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54196 "EHLO
+        id S233512AbjDTEkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 00:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233493AbjDTEkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 00:40:02 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90FE40E5;
-        Wed, 19 Apr 2023 21:39:57 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Q24fS4jGnzsRLw;
-        Thu, 20 Apr 2023 12:38:24 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 20 Apr 2023 12:39:55 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <stable@vger.kernel.org>,
-        <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>,
-        <kuniyu@amazon.com>
-CC:     <netdev@vger.kernel.org>
-Subject: [PATCH 6.1 3/3] sctp: Call inet6_destroy_sock() via sk->sk_destruct().
-Date:   Thu, 20 Apr 2023 12:39:49 +0800
-Message-ID: <7c4e08da445961610e592c41a600a31972f2e04e.1681954729.git.william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1681954729.git.william.xuanziyang@huawei.com>
-References: <cover.1681954729.git.william.xuanziyang@huawei.com>
+        with ESMTP id S233549AbjDTEkk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 00:40:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FC255B7;
+        Wed, 19 Apr 2023 21:40:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC97664282;
+        Thu, 20 Apr 2023 04:40:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 32964C433EF;
+        Thu, 20 Apr 2023 04:40:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1681965620;
+        bh=EVkDgFk+gzSXEfIGqXu2Mh/eirZ1Wt0Isn7WHGFVFuU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Czp+7piA4XvkVhNtzE3DC9SmfDkRbyliWCJstJuwIu6+QPeMdT4EaoIXps1wR0Ozz
+         mV0X1Ljm2Kf/hABKCRYyLzyfDjGAYlscEAdVyae+aeeAUMNNK057YroNeALfKvtFal
+         7Hsn2fqgF8gKhsmEaz84mA6RqFcxOdfAbUEtZ98yzZKUw+f0xb+JJkt/OHO6mqI558
+         XRGLDYmV/4RIV+EmFss6xR+Qk101MvMu5MYC+NPv2169IFcyo6uD7IWKZEbTldardp
+         4v0iHUmiDKryZG9111fmtq1QundV4a07FCvbGPxugWrxOURvjEq/n+dWADgSEDduaN
+         MYYsZEyaYmPXQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 13AECC395C8;
+        Thu, 20 Apr 2023 04:40:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v2 0/2] Access variable length array relaxed for
+ integer type
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168196562006.24751.2408162871776218216.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 Apr 2023 04:40:20 +0000
+References: <20230420032735.27760-1-zhoufeng.zf@bytedance.com>
+In-Reply-To: <20230420032735.27760-1-zhoufeng.zf@bytedance.com>
+To:     Feng zhou <zhoufeng.zf@bytedance.com>
+Cc:     martin.lau@linux.dev, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        mykolal@fb.com, shuah@kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, yangzhenze@bytedance.com,
+        wangdongdong.6@bytedance.com, zhouchengming@bytedance.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -49,96 +64,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+Hello:
 
-commit 6431b0f6ff1633ae598667e4cdd93830074a03e8 upstream.
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-After commit d38afeec26ed ("tcp/udp: Call inet6_destroy_sock()
-in IPv6 sk->sk_destruct()."), we call inet6_destroy_sock() in
-sk->sk_destruct() by setting inet6_sock_destruct() to it to make
-sure we do not leak inet6-specific resources.
+On Thu, 20 Apr 2023 11:27:33 +0800 you wrote:
+> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+> 
+> Add support for integer type of accessing variable length array.
+> Add a selftest to check it.
+> 
+> Feng Zhou (2):
+>   bpf: support access variable length array of integer type
+>   selftests/bpf: Add test to access integer type of variable array
+> 
+> [...]
 
-SCTP sets its own sk->sk_destruct() in the sctp_init_sock(), and
-SCTPv6 socket reuses it as the init function.
+Here is the summary with links:
+  - [bpf-next,v2,1/2] bpf: support access variable length array of integer type
+    https://git.kernel.org/bpf/bpf-next/c/2569c7b8726f
+  - [bpf-next,v2,2/2] selftests/bpf: Add test to access integer type of variable array
+    https://git.kernel.org/bpf/bpf-next/c/5ff54dedf35b
 
-To call inet6_sock_destruct() from SCTPv6 sk->sk_destruct(), we
-set sctp_v6_destruct_sock() in a new init function.
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/sctp/socket.c | 29 +++++++++++++++++++++--------
- 1 file changed, 21 insertions(+), 8 deletions(-)
-
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 507b2ad5ef7c..17185200079d 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -5102,13 +5102,17 @@ static void sctp_destroy_sock(struct sock *sk)
- }
- 
- /* Triggered when there are no references on the socket anymore */
--static void sctp_destruct_sock(struct sock *sk)
-+static void sctp_destruct_common(struct sock *sk)
- {
- 	struct sctp_sock *sp = sctp_sk(sk);
- 
- 	/* Free up the HMAC transform. */
- 	crypto_free_shash(sp->hmac);
-+}
- 
-+static void sctp_destruct_sock(struct sock *sk)
-+{
-+	sctp_destruct_common(sk);
- 	inet_sock_destruct(sk);
- }
- 
-@@ -9431,7 +9435,7 @@ void sctp_copy_sock(struct sock *newsk, struct sock *sk,
- 	sctp_sk(newsk)->reuse = sp->reuse;
- 
- 	newsk->sk_shutdown = sk->sk_shutdown;
--	newsk->sk_destruct = sctp_destruct_sock;
-+	newsk->sk_destruct = sk->sk_destruct;
- 	newsk->sk_family = sk->sk_family;
- 	newsk->sk_protocol = IPPROTO_SCTP;
- 	newsk->sk_backlog_rcv = sk->sk_prot->backlog_rcv;
-@@ -9666,11 +9670,20 @@ struct proto sctp_prot = {
- 
- #if IS_ENABLED(CONFIG_IPV6)
- 
--#include <net/transp_v6.h>
--static void sctp_v6_destroy_sock(struct sock *sk)
-+static void sctp_v6_destruct_sock(struct sock *sk)
-+{
-+	sctp_destruct_common(sk);
-+	inet6_sock_destruct(sk);
-+}
-+
-+static int sctp_v6_init_sock(struct sock *sk)
- {
--	sctp_destroy_sock(sk);
--	inet6_destroy_sock(sk);
-+	int ret = sctp_init_sock(sk);
-+
-+	if (!ret)
-+		sk->sk_destruct = sctp_v6_destruct_sock;
-+
-+	return ret;
- }
- 
- struct proto sctpv6_prot = {
-@@ -9680,8 +9693,8 @@ struct proto sctpv6_prot = {
- 	.disconnect	= sctp_disconnect,
- 	.accept		= sctp_accept,
- 	.ioctl		= sctp_ioctl,
--	.init		= sctp_init_sock,
--	.destroy	= sctp_v6_destroy_sock,
-+	.init		= sctp_v6_init_sock,
-+	.destroy	= sctp_destroy_sock,
- 	.shutdown	= sctp_shutdown,
- 	.setsockopt	= sctp_setsockopt,
- 	.getsockopt	= sctp_getsockopt,
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
