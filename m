@@ -2,216 +2,316 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 106926E99A6
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:36:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD65C6E99A9
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:37:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234646AbjDTQgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 12:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52000 "EHLO
+        id S234616AbjDTQhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 12:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234788AbjDTQf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:35:57 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51EE149E0
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:35:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682008530; x=1713544530;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=wXFc1z1Z6PGPzmTnzdMq4NDgvA2IM0JtANZ07CULi9M=;
-  b=LMsbcKLigNE5mNyMQuMCBCXRn6I+WpgNYX0ZfKiuFOrwEPvlokvKcURB
-   S6sGOsjwOPio6eK/7jRK6Y+qXbzGU8QJlfNpxZsZVbBGjoLjqED+krYLJ
-   MgA0ronkF85On93oqbNczKA3cotaMzFtvVqcTWtwHoXTrf9UMryUI61pG
-   niebi9YHA0syTVO8SZfaqK0h/RO7VHC4wq0dRX0LcFnVNAzU04kBKu+E4
-   T+1j6ROHfrMrFbEr+/Ynu+zMvEV50SaSYn7BIhHmXActk1YxmG4Oof251
-   Bf0p9WTOK/Khzm4j1rZhSlOsFgMe+zE/SL3n0BiW5yqoNc8/mnM8XfOa5
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="325392548"
-X-IronPort-AV: E=Sophos;i="5.99,213,1677571200"; 
-   d="scan'208";a="325392548"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 09:35:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="816084661"
-X-IronPort-AV: E=Sophos;i="5.99,213,1677571200"; 
-   d="scan'208";a="816084661"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga004.jf.intel.com with ESMTP; 20 Apr 2023 09:35:14 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 20 Apr 2023 09:35:12 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 20 Apr 2023 09:35:11 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Thu, 20 Apr 2023 09:35:11 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.104)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Thu, 20 Apr 2023 09:35:11 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D96Z6qDoYK3dPtEIbKifZ2dqctmF3QAatau4IHtBRtSG2VIp8eu1GAxMsVogKVxnAciXopVSdOwWsYELCp0AnuYEhKO1RezJyjWsPRssJ5jervkcqBrRqTD7MPiSWfu4rwuUPE78KK2rpHS28FuPLzqv3qYQLnAc7yO9EJh91YDF9Qrlzv4gC2BwYmjn3+dR2/V224si/68scWrSIRXoCczZumu7o0PuOvUCOohiiHgOHTygmVYRKm/TeLelIo2hFyhlV2XwPsWR8hc9plnEnVk3jb99SNlKySxKWCToSnkD6RbjaXcWcGbx/84DxfGLmiCGfc119OacmquCtSabfg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gUrR3kUDkG+3sENBr6jz+nk0s3sP5gL0x7xI5yP7a3I=;
- b=Eam1l4Dr62bIZcgYI5LBxyceRq7BcPBI78JPiqknyXNZ4ZuhTBNCJ421xeawal+h8h93GWQCl2xfjnDipvynrlmB7KP5eO2oAelREQz6C+8sATf97qhNOpBAwwaESQqeIypsCBuw1/scrrk5H/VGCZAQvcRM2R6lEU3VOqZa8AMq5I6/2eGWxKYc8igZhsJr7qzzlMxjF0fUAk6aQ22s70Xg1kK22N0/fXmPMwgN1NRGqRfKqo2qH/1H54qQn2pJe6aAkotbvye9QZP6QxPMolDrYtn2aqwppTytG4dkThMhv5VIQHKLax6B64Z62lhC6MMOWCAjqtq0PCXZgaCIUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BL0PR11MB3122.namprd11.prod.outlook.com (2603:10b6:208:75::32)
- by DS0PR11MB8017.namprd11.prod.outlook.com (2603:10b6:8:115::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Thu, 20 Apr
- 2023 16:35:09 +0000
-Received: from BL0PR11MB3122.namprd11.prod.outlook.com
- ([fe80::a4e7:9fa1:19f7:6a41]) by BL0PR11MB3122.namprd11.prod.outlook.com
- ([fe80::a4e7:9fa1:19f7:6a41%6]) with mapi id 15.20.6298.045; Thu, 20 Apr 2023
- 16:35:09 +0000
-From:   "Pucha, HimasekharX Reddy" <himasekharx.reddy.pucha@intel.com>
-To:     Joe Damato <jdamato@fastly.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH net v2 1/2] ixgbe: Allow flow hash to be
- set via ethtool
-Thread-Topic: [Intel-wired-lan] [PATCH net v2 1/2] ixgbe: Allow flow hash to
- be set via ethtool
-Thread-Index: AQHZcJd79KuOQA5hdkOwR6kB3m6IGa8u8Q8AgAV13FA=
-Date:   Thu, 20 Apr 2023 16:35:09 +0000
-Message-ID: <BL0PR11MB312230F098215961776D6853BD639@BL0PR11MB3122.namprd11.prod.outlook.com>
-References: <20230416191223.394805-1-jdamato@fastly.com>
- <20230416191223.394805-2-jdamato@fastly.com>
- <20230417045734.GA43796@fastly.com>
-In-Reply-To: <20230417045734.GA43796@fastly.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BL0PR11MB3122:EE_|DS0PR11MB8017:EE_
-x-ms-office365-filtering-correlation-id: 0e53b78d-b596-4252-cae2-08db41bd34d4
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zL35uU76EAdeL9THHC8ZM4IMPDHosUJ543yun7qAKihUVSf8iVF6lynuYu+D1U30ddE5pdvj2kPZT2yRvjAmQfESYmw/oWRYqYZ4H6q1ackykyeu+AulIuxlr0YFTkHbfUjvLvVMyn+J0sDM47Wsv0mKBiF6xMCYU43mTVjGxkcCRBHtYX1yoBsuwbydO8LLBnpZiWS9JJ7d8TmANjd8Ltkd5Z55v5OKjujYh57gRAkNxGM51e6tRUYOk8RhQJOwLJpFz38KxoQE0+EIETLJz6EAI8szueVZr06K4DOztvLcjYNc/AwymEZKja+JjUeygHBNFyhhQhlKLajQffoFoA+140iJKanDf7PItzV7N8kxDnoKdeBJnSK2MKu8LwHF1Y5N0LU7R4jce0kZIG9nGGyxS5rGpmcFe0BvHpdfCQ9DIMeZKAsAIN7VZZYr4Cdx0t5ZXAXvfpzf/YQ/FU0lOzfm+Oxt4DufkzYoeP4Dpnij9FZqF+VYze6DbgBviWcD1b0eQlnnFitRyEkNLeqFsixtD7JLLHcP6hvJtU7aR2fcmLytUKhwQLLL6UoOCeH87Ei1lByQe0W68ET+Jm9OASYCSkvhEIkIm5jy3Gaz13Y3CopIe2qhe28LiGOy7uTz
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR11MB3122.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(346002)(366004)(396003)(39860400002)(376002)(451199021)(53546011)(54906003)(83380400001)(478600001)(7696005)(55016003)(26005)(6506007)(9686003)(71200400001)(64756008)(316002)(82960400001)(4326008)(110136005)(186003)(66446008)(66476007)(66556008)(76116006)(66946007)(5660300002)(52536014)(8936002)(2906002)(8676002)(38100700002)(122000001)(38070700005)(41300700001)(33656002)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zEdtSNHi0O0yLaUQIO9h2rKdlCtDrxs6d3ZlmQARHuMLk4PJxE6XtaK643ki?=
- =?us-ascii?Q?wmD1CFbL0+kpMuo8Na2k4lPbSlSbhZGuA3QESh/BxJhaEqVUZzdCLZkcUdt+?=
- =?us-ascii?Q?UQr+aXVk3U4cL/a3lKgh1d9hycfT3nnhkx00TEVxnzWAeewYP5KyIfKc3EL1?=
- =?us-ascii?Q?LE0/wUYTS8ntm1PuoplTJiMWoUYt1eVtPzLXGG7+V9PuiERfJ29k3kcUUJfO?=
- =?us-ascii?Q?woZHZTIJBwHruwzlEtOfIjA9eVd+7W+J7FJMexX0zJWdVE5dE1r/el/xPFin?=
- =?us-ascii?Q?O/Dc/M6ZSGh7IHx858CNB21yKptycrYDjG9AL9Jt5CenEOYUpLR7NHbqcs6P?=
- =?us-ascii?Q?0ILlFOTJC2bEXIOkelW0CxZvFHwtipSsZ0gjkrZvdO4h+9ojdoHs2dtuoY0O?=
- =?us-ascii?Q?Q9r4XnF67t/WMVBcpDgvr3zORDOKRJTKylKdMUxRhvAew5lFbHNC6+rpW8f8?=
- =?us-ascii?Q?ITN3SG7WXpGMIezFfDJu427Q2fQL1DciEhqtQN8uPme0wx3+SnyECXXMeYkT?=
- =?us-ascii?Q?h7j0EDc8wU2NV+yqjEr9JnrqfjSW/aBZdi6SIUzzkoTJKE4Fv82WCrAg61YQ?=
- =?us-ascii?Q?b207j5+iJBHCxTYTGY2mvqtiXViPIpOiZmsLr8n5pGEQYvyPwBYliUO0NFlp?=
- =?us-ascii?Q?Kc1ViDgjtw8mXN/oDN2kHCffTkK6dULaez0j7y9QDzHYA2Qr9NtQeqCbFyLr?=
- =?us-ascii?Q?cgMIX1w8Zcl1jlD6yL1iycJ45EbpTSqTEYi5bHQzwuxSqmVU0sEbD7B8YbXa?=
- =?us-ascii?Q?/lMnh4M0cEjdXX6x+3LVbAjKXP2vRQjEa7k9JHLBqGBQ4ZhlCmMAsEkNMxrA?=
- =?us-ascii?Q?WF3cT1gJ4JeizebqOiTjfjjs9Qw/s1ObNs0MBzrmNSDQLvaXaUf3CQF3E+N6?=
- =?us-ascii?Q?K7qiiQOcFBpbIvxpU/alOjUyGjvnVSnALh6ljDtfUMnNfOzdewyxBMkwFQF1?=
- =?us-ascii?Q?6pexte9v0VG0qwr2M4BuzhOJufGCfxuUTwAGq69nmctHAPsvUW4MY8t6V820?=
- =?us-ascii?Q?MAZ0f/WPJQ9GPUc10S5SiBVTJLPkfsdT65gHlx1zRheAWoSXZe3wZSwYJSPI?=
- =?us-ascii?Q?C76kFjFvSdxMa29nwDxhHNnl27EkAOVs/4ld5WWLyNlujl7Qm3anQfXJIwF0?=
- =?us-ascii?Q?B5c2/nJKE4kgPNnCTYmx/m2RzBwLz5jTBglYHCC9380MvLJ4KQPIqxRGdOkM?=
- =?us-ascii?Q?zZoFa2ayeMj7zbs3d3nAXA+Ujgijb036s5lR7GDjK9V6znhXoA5dy6nSBMx9?=
- =?us-ascii?Q?H86qPuun7YM2E8AB61slzJQBCRZmy+ezlFSIr0NU73peh5OkWBXG749FYh/M?=
- =?us-ascii?Q?EigF9gS52wi8EH0CxqJrZkSnrMuytCRf/dsvOoyTn+HPOICVRia7iT6tyjQT?=
- =?us-ascii?Q?Y+sff7b3yQU9vLP8z1DqWqu39FtDuKuoTU3H3UAKGEtKV72wtPk5QHvdFBfl?=
- =?us-ascii?Q?SA9pR6rVpKMwDAwmi9u+8oQp98ca35r018yZ95mt0Onc/1JRpq+7NtQDhXF4?=
- =?us-ascii?Q?VXJG11VwMuip30GIvLPVyi/Z5zDTEeJ7MunbwTj0X5TB5eEU9GKZ4GMJaTTW?=
- =?us-ascii?Q?51wTifn7jVuWNdEoXZKcmpqSbvSKRgiQ1WjlW5Z8b3mmXECyEMiiHI+myZg6?=
- =?us-ascii?Q?1g=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S232182AbjDTQhD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:37:03 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6672106
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:36:41 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id 2adb3069b0e04-4ec94eb6dcaso682961e87.3
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:36:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ferroamp-se.20221208.gappssmtp.com; s=20221208; t=1682008600; x=1684600600;
+        h=content-transfer-encoding:content-disposition:mime-version
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m1w0VxsXmyDhlSjAaLbZ2++PVxl0w3f7/mejzPhgRok=;
+        b=Bu4SttX5aTw3VHKxEpVZl4GDd7fhaUoKC8dAqQHjflxRJFEkMeLXp38sN4pysHazeG
+         ndQwwbpbX+b3bOtPrWqbK2F8YpOlUmAFjD2Si9GokP9CzdzzK0hj3BNLAjQ7aywEIMLy
+         DsADNcnoFj8FTGmA2TYZ0cHwocgb6hGnXxgZcnwdia3rrzVbn3+mrnE5i/guzFfYujsb
+         rKrDi9w4GNNwvz40jNu8sLXAV0zZyeZRkB9ixS+lkgC5BDF+AbfnitEO3diG5lzhFF6X
+         aG1Hd6LLxWbEOJiDxiMQJcs+r31om7JyEux2Dx/zH6YFmBZZqtCAmVuIvbzmOZSAy8AE
+         tKEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682008600; x=1684600600;
+        h=content-transfer-encoding:content-disposition:mime-version
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=m1w0VxsXmyDhlSjAaLbZ2++PVxl0w3f7/mejzPhgRok=;
+        b=Y+hoKXk3eoyxJJyzKopJ7L8m0TKaD0cvwePNxRcuCmx7O+x+A5LhUYmrB8Ucp7n4IT
+         5lDufQOemw29q+oIcNr8T5mCIP5xwEcGMH2C1os2a1bb4FYboHViwz3arwtPZjA5zX/9
+         NdG+6DOomRrsJVA/hyE4JDhcJ6EuBL3phyi/dHQ4Bm4sRydzakEimyY9ch+Y4LaBudfy
+         bbsiP8QUCzLAHaRLP9yf3+iDqCu835Ijm6+VcRTptkvK3GQgg5OQWyrKJ0tEhzt8keC7
+         boOIDV9fI2Y6sM13maemockV0lB7AM6jJ/Ji3KPvji3wnKCHQ0UDRBm5tm2nDzrTdn7e
+         r4EQ==
+X-Gm-Message-State: AAQBX9fftFyFjO3B63p4F9KZ/qcoMm1Uhh6U0knzO+2bJCouLqCjvOCP
+        XjJFH0xIwZFkI7uoh+UVfILEcA==
+X-Google-Smtp-Source: AKy350am/d8GPYyuvq3NSo2rnxcEdiMDXT7oUl15gfPUBchgI/JTKQPzdXQW8RFLlAGYdMSwWnwd7g==
+X-Received: by 2002:ac2:5de5:0:b0:4ed:d315:b9ea with SMTP id z5-20020ac25de5000000b004edd315b9eamr678569lfq.38.1682008599793;
+        Thu, 20 Apr 2023 09:36:39 -0700 (PDT)
+Received: from debian (c188-148-248-178.bredband.tele2.se. [188.148.248.178])
+        by smtp.gmail.com with ESMTPSA id j21-20020ac24555000000b004dc4c5149dasm264904lfm.301.2023.04.20.09.36.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Apr 2023 09:36:39 -0700 (PDT)
+Date:   Thu, 20 Apr 2023 18:36:38 +0200
+From:   =?iso-8859-1?Q?Ram=F3n?= Nordin Rodriguez 
+        <ramon.nordin.rodriguez@ferroamp.se>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH v4] drivers/net/phy: add driver for Microchip LAN867x
+ 10BASE-T1S PHY
+Message-ID: <ZEFqFg9RO+Vsj8Kv@debian>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR11MB3122.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e53b78d-b596-4252-cae2-08db41bd34d4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2023 16:35:09.3725
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Rl82d/pf7BEoUXIyA0xwDI0o3Nb13r/gQhr7drb6pSeAA8pGMpzcojIyy2u+Gh+v+O8UFPatmMqs3otAT/+5BrxN2R+L1mXs1HtPGHcl2PmzLtuQSFgZHVB0Eis9gU9H
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB8017
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of J=
-oe Damato
-> Sent: Monday, April 17, 2023 10:28 AM
-> To: intel-wired-lan@lists.osuosl.org
-> Cc: netdev@vger.kernel.org; Nguyen, Anthony L <anthony.l.nguyen@intel.com=
->; Brandeburg, Jesse <jesse.brandeburg@intel.com>; kuba@kernel.org
-> Subject: Re: [Intel-wired-lan] [PATCH net v2 1/2] ixgbe: Allow flow hash =
-to be set via ethtool
->
-> On Sun, Apr 16, 2023 at 07:12:22PM +0000, Joe Damato wrote:
-> ixgbe currently returns `EINVAL` whenever the flowhash it set by=20
-> ethtool because the ethtool code in the kernel passes a non-zero value=20
-> for hfunc that ixgbe should allow.
->=20
-> When ethtool is called with `ETHTOOL_SRXFHINDIR`,=20
-> `ethtool_set_rxfh_indir` will call ixgbe's set_rxfh function with=20
-> `ETH_RSS_HASH_NO_CHANGE`. This value should be accepted.
->=20
-> When ethtool is called with `ETHTOOL_SRSSH`, `ethtool_set_rxfh` will=20
-> call ixgbe's set_rxfh function with `rxfh.hfunc`, which appears to be=20
-> hardcoded in ixgbe to always be `ETH_RSS_HASH_TOP`. This value should=20
-> also be accepted.
->=20
-> Before this patch:
->=20
-> $ sudo ethtool -L eth1 combined 10
-> $ sudo ethtool -X eth1 default
-> Cannot set RX flow hash configuration: Invalid argument
->=20
-> After this patch:
->=20
-> $ sudo ethtool -L eth1 combined 10
-> $ sudo ethtool -X eth1 default
-> $ sudo ethtool -x eth1
-> RX flow hash indirection table for eth1 with 10 RX ring(s):
->     0:      0     1     2     3     4     5     6     7
->     8:      8     9     0     1     2     3     4     5
->    16:      6     7     8     9     0     1     2     3
->    24:      4     5     6     7     8     9     0     1
->    ...
->=20
->
-> Sorry for the noise, forgot the fixes tag.
->=20
-> Fixes: 1c7cf0784e4d ("ixgbe: support for ethtool set_rxfh")
->
-> Signed-off-by: Joe Damato <jdamato@fastly.com>
-> Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
-> ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
+This patch adds support for the Microchip LAN867x 10BASE-T1S family
+(LAN8670/1/2). The driver supports P2MP with PLCA.
 
-Tested-by: Pucha Himasekhar Reddy <himasekharx.reddy.pucha@intel.com> (A Co=
-ntingent worker at Intel)
+Signed-off-by: Ramón Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
+---
+ drivers/net/phy/Kconfig         |   5 ++
+ drivers/net/phy/Makefile        |   1 +
+ drivers/net/phy/microchip_t1s.c | 138 ++++++++++++++++++++++++++++++++
+ 3 files changed, 144 insertions(+)
+ create mode 100644 drivers/net/phy/microchip_t1s.c
 
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 54874555c921..15a0bd95f12c 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -235,6 +235,11 @@ config MICREL_PHY
+ 	help
+ 	  Supports the KSZ9021, VSC8201, KS8001 PHYs.
+ 
++config MICROCHIP_T1S_PHY
++	tristate "Microchip 10BASE-T1S Ethernet PHY"
++	help
++	  Currently supports the LAN8670, LAN8671, LAN8672
++
+ config MICROCHIP_PHY
+ 	tristate "Microchip PHYs"
+ 	help
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index b5138066ba04..64f649f2f62f 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -74,6 +74,7 @@ obj-$(CONFIG_MICREL_KS8995MA)	+= spi_ks8995.o
+ obj-$(CONFIG_MICREL_PHY)	+= micrel.o
+ obj-$(CONFIG_MICROCHIP_PHY)	+= microchip.o
+ obj-$(CONFIG_MICROCHIP_T1_PHY)	+= microchip_t1.o
++obj-$(CONFIG_MICROCHIP_T1S_PHY) += microchip_t1s.o
+ obj-$(CONFIG_MICROSEMI_PHY)	+= mscc/
+ obj-$(CONFIG_MOTORCOMM_PHY)	+= motorcomm.o
+ obj-$(CONFIG_NATIONAL_PHY)	+= national.o
+diff --git a/drivers/net/phy/microchip_t1s.c b/drivers/net/phy/microchip_t1s.c
+new file mode 100644
+index 000000000000..b7fd5141a117
+--- /dev/null
++++ b/drivers/net/phy/microchip_t1s.c
+@@ -0,0 +1,138 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Driver for Microchip 10BASE-T1S LAN867X PHY
++ *
++ * Support: Microchip Phys:
++ *  lan8670, lan8671, lan8672
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/phy.h>
++
++#define PHY_ID_LAN867X 0x0007C160
++
++#define LAN867X_REG_IRQ_1_CTL 0x001C
++#define LAN867X_REG_IRQ_2_CTL 0x001D
++
++/* The arrays below are pulled from the following table from AN1699
++ * Access MMD Address Value Mask
++ * RMW 0x1F 0x00D0 0x0002 0x0E03
++ * RMW 0x1F 0x00D1 0x0000 0x0300
++ * RMW 0x1F 0x0084 0x3380 0xFFC0
++ * RMW 0x1F 0x0085 0x0006 0x000F
++ * RMW 0x1F 0x008A 0xC000 0xF800
++ * RMW 0x1F 0x0087 0x801C 0x801C
++ * RMW 0x1F 0x0088 0x033F 0x1FFF
++ * W   0x1F 0x008B 0x0404 ------
++ * RMW 0x1F 0x0080 0x0600 0x0600
++ * RMW 0x1F 0x00F1 0x2400 0x7F00
++ * RMW 0x1F 0x0096 0x2000 0x2000
++ * W   0x1F 0x0099 0x7F80 ------
++ */
++
++static const int lan867x_fixup_registers[12] = {
++	0x00D0, 0x00D1, 0x0084, 0x0085,
++	0x008A, 0x0087, 0x0088, 0x008B,
++	0x0080, 0x00F1, 0x0096, 0x0099,
++};
++
++static const int lan867x_fixup_values[12] = {
++	0x0002, 0x0000, 0x3380, 0x0006,
++	0xC000, 0x801C, 0x033F, 0x0404,
++	0x0600, 0x2400, 0x2000, 0x7F80,
++};
++
++static const int lan867x_fixup_masks[12] = {
++	0x0E03, 0x0300, 0xFFC0, 0x000F,
++	0xF800, 0x801C, 0x1FFF, 0xFFFF,
++	0x0600, 0x7F00, 0x2000, 0xFFFF,
++};
++
++static int lan867x_config_init(struct phy_device *phydev)
++{
++	/* HW quirk: Microchip states in the application note (AN1699) for the phy
++	 * that a set of read-modify-write (rmw) operations has to be performed
++	 * on a set of seemingly magic registers.
++	 * The result of these operations is just described as 'optimal performance'
++	 * Microchip gives no explanation as to what these mmd regs do,
++	 * in fact they are marked as reserved in the datasheet.
++	 * It is unclear if phy_modify_mmd would be safe to use or if a write
++	 * really has to happen to each register.
++	 * In order to exacly conform to what is stated in the AN phy_write_mmd is
++	 * used, which might then write the same value back as read + modified.
++	 */
++
++	int reg_value;
++	int err;
++	int reg;
++
++	/* Read-Modified Write Pseudocode (from AN1699)
++	 * current_val = read_register(mmd, addr) // Read current register value
++	 * new_val = current_val AND (NOT mask) // Clear bit fields to be written
++	 * new_val = new_val OR value // Set bits
++	 * write_register(mmd, addr, new_val) // Write back updated register value
++	 */
++	for (int i = 0; i < ARRAY_SIZE(lan867x_fixup_registers); i++) {
++		reg = lan867x_fixup_registers[i];
++		reg_value = phy_read_mmd(phydev, MDIO_MMD_VEND2, reg);
++		reg_value &= ~lan867x_fixup_masks[i];
++		reg_value |= lan867x_fixup_values[i];
++		err = phy_write_mmd(phydev, MDIO_MMD_VEND2, reg, reg_value);
++		if (err != 0)
++			return err;
++	}
++
++	/* None of the interrupts in the lan867x phy seem relevant.
++	 * Other phys inspect the link status and call phy_trigger_machine
++	 * in the interrupt handler.
++	 * This phy does not support link status, and thus has no interrupt
++	 * for it either.
++	 * So we'll just disable all interrupts on the chip.
++	 */
++	err = phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN867X_REG_IRQ_1_CTL, 0xFFFF);
++	if (err != 0)
++		return err;
++	return phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN867X_REG_IRQ_2_CTL, 0xFFFF);
++}
++
++static int lan867x_read_status(struct phy_device *phydev)
++{
++	/* The phy has some limitations, namely:
++	 *  - always reports link up
++	 *  - only supports 10MBit half duplex
++	 *  - does not support auto negotiate
++	 */
++	phydev->link = 1;
++	phydev->duplex = DUPLEX_HALF;
++	phydev->speed = SPEED_10;
++	phydev->autoneg = AUTONEG_DISABLE;
++
++	return 0;
++}
++
++static struct phy_driver lan867x_driver[] = {
++	{
++		PHY_ID_MATCH_MODEL(PHY_ID_LAN867X),
++		.name               = "LAN867X",
++		.features           = PHY_BASIC_T1S_P2MP_FEATURES,
++		.config_init        = lan867x_config_init,
++		.read_status        = lan867x_read_status,
++		.get_plca_cfg	    = genphy_c45_plca_get_cfg,
++		.set_plca_cfg	    = genphy_c45_plca_set_cfg,
++		.get_plca_status    = genphy_c45_plca_get_status,
++	}
++};
++
++module_phy_driver(lan867x_driver);
++
++static struct mdio_device_id __maybe_unused tbl[] = {
++	{ PHY_ID_MATCH_MODEL(PHY_ID_LAN867X) },
++	{ }
++};
++
++MODULE_DEVICE_TABLE(mdio, tbl);
++
++MODULE_DESCRIPTION("Microchip 10BASE-T1S lan867x Phy driver");
++MODULE_AUTHOR("Ramón Nordin Rodriguez");
++MODULE_LICENSE("GPL");
+-- 
+2.39.2
+
+Changes:
+    v2:
+- Removed mentioning of not supporting auto-negotiation from commit
+  message
+- Renamed file drivers/net/phy/lan867x.c ->
+  drivers/net/phy/microchip_t1s.c
+- Renamed Kconfig option to reflect implementation filename (from
+  LAN867X_PHY to MICROCHIP_T1S_PHY)
+- Moved entry in drivers/net/phy/KConfig to correct sort order
+- Moved entry in drivers/net/phy/Makefile to correct sort order
+- Moved variable declarations to conform to reverse christmas tree order
+  (in func lan867x_config_init)
+- Moved register write to disable chip interrupts to func lan867x_config_init, when omitting the irq disable all togheter I got null pointer dereference, see the call trace below:
+
+    Call Trace:
+     <TASK>
+     phy_interrupt+0xa8/0xf0 [libphy]
+     irq_thread_fn+0x1c/0x60
+     irq_thread+0xf7/0x1c0
+     ? __pfx_irq_thread_dtor+0x10/0x10
+     ? __pfx_irq_thread+0x10/0x10
+     kthread+0xe6/0x110
+     ? __pfx_kthread+0x10/0x10
+     ret_from_fork+0x29/0x50
+     </TASK>
+
+- Removed func lan867x_config_interrupt and removed the member
+  .config_intr from the phy_driver struct
+
+    v3:
+- Indentation level in drivers/net/phy/Kconfig
+- Moved const arrays into global scope and made them static in order to have
+  them placed in the .rodata section
+- Renamed array variables, since they are no longer as closely scoped as
+  earlier
+- Added comment about why phy_write_mmd is used over phy_modify_mmd
+  (this should have been addressed in the V2 change since it was brought
+  up in the V1 review)
+- Return result of last call instead of saving it in a var and then
+  returning the var (in lan867x_config_init)
+
+    v4:
+- Moved history out of commit message
+
+Testing:
+This has been tested with ethtool --set/get-plca-cfg and verified on an
+oscilloscope where it was observed that:
+- The PLCA beacon was enabled/disabled when setting the node-id to 0/not
+  0
+- The PLCA beacon is transmitted with the expected frequency when
+  changing max nodes
+- Two devices using the evaluation board EVB-LAN8670-USB could ping each
+  other
