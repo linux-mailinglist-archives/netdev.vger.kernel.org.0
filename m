@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0EC76E9F7A
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 00:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F006E9F7B
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 00:57:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233200AbjDTW43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 18:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39332 "EHLO
+        id S233215AbjDTW4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 18:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232762AbjDTW4V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 18:56:21 -0400
+        with ESMTP id S233149AbjDTW4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 18:56:22 -0400
 Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2063.outbound.protection.outlook.com [40.107.21.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4446440F0;
-        Thu, 20 Apr 2023 15:56:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C365B9E;
+        Thu, 20 Apr 2023 15:56:21 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V7ySHTpz8gE3s7DkcG+zNlx+6KlXEkXhX3IQZ+Vz1ncciKB7R/A5p7aM6Zj3ZQmepMnQgVKq8G53fTlABCBXasAcQ59lHBHOwMOyzInrmPp/Xx4bnPMf1Hu+y1oI+Fa2lNkmD78/kcxi/MpqTCqQqYDEtqRSPmss8M/kO8wSaEp0IQ1dSssuL2YdUHgZ4QjAybMPl/ApCQyf6qfS8qIocLvotQ0DkrNJUTaZPRzHLA9IgXTmu1rkaL8gR8IpqgwSMvGJK10vIs1WDXCwTyUrKqNotW82L7rHo3pELrwjp80nxQ94QREwWsYwyOlw8vWLGzJ7biA17QUDBp5y1JXl7Q==
+ b=LOukXD9Rq4D0smXqitOpZ3WIOLEbT3imCAR2EPC9/f+qK1SbliICWOcVe7d3YuPtp4AzRMSzEsHhiQdIZgXNhXyNM9HKevvTpvQCVNeCVw/SWnoO/gHtiqHWg2NyZBsztLncLjGTtCegHoPvZcAE3ScEjlCxoDFu7q0Yf5nd6/p0qa9eJHr6S5c/m2JY7ovngquRcq3DViZucAS+ee3M2vF3CUaPaqWqn1H7Hj8iz/kZWVWw0LM++HXBdUTQ7zZJ5a265sxfu/lYCmlbxgWK8KZTEfK5R6Slll5P1GwPXl3hfWE5ywe1BWMUfMJtT0sKylrOJzSzaQuhkl2wnlSkFw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mTQeTJCWZwm7sfAUThcnyzZsB0nTfOHGcdL/9FT2qZA=;
- b=Nk+Fq+4e9MdOjIzHMlw2DekGy8SDnOecv0XN+PY7P52+Ku0wmMxx1iAy3YgR/ZpjthKlKZwI1I0KSir16mll54csUX9+BPl5ZeCL1OI8eg1/ILYmvq7YCD9gd6rs0LUv1w4PH0t+1aBf2n07V2Pj/ZVpJYDmvhKOVPWm4UdS+boW/5xzQou5jxknowg4WXRxS0FbKJZ3d7hgPYG1LkwlVJl2aGdxAkJwAG8JGH3+qM+n0aoqgnqeMUnsjpdwbkbmg4DrIVmr4C/uaZFFZltfoFbXzxQ28fIFMY9wnkCFVkG4LwxDN2EjyLo32lbtw+e9iiPyTgrn6tUEhdmOEwL21g==
+ bh=4VRDp1sATinR1AEbcXAXCgTevcVxBGIbhFvYTt7Teq4=;
+ b=VgGMFN1YDV7YbwrQylZ8p/bfsjpaxvuBwOzU9meJ8edr4anDGLduQr0dh7lnB6qKmuBYfSqsbPlV4Absd7rGJeRX0TyLFr5c6634D0EBIsU+/7SZXKuoqBwqxuZrKqS3+WAv5Hdgu5BYcqKQwaAeroBS98/IPuW3pANmIvvYbvQj+Ig0UaowSbXL+xwPBFu7JnyELKscnAUfT7fxOZWlM+lmo0Lh9HtkljbqVQuvcyimBmpRpnqYit4akCMiS+8V9H9CxtpXqEB38HWeupiPH5+vS+0AtBxM66n1NFn594k3pm8F3WNbMsxy0jQvMmiLh0jUwCzWMCP6oU4sX3hCUg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mTQeTJCWZwm7sfAUThcnyzZsB0nTfOHGcdL/9FT2qZA=;
- b=DG3idIabPdNXlRJ7hCl0c02LXbnodlY4xJLSMC2XT5fxqu2JWFsX4PPXqA7Z/BwJeAjsHp9Q7FdqTqlseeSv3ID+HsYI3okQXlJkcjyRLxS62s60aWLV/4N6q6+vI3TuZXaCprqXAkkFjhqU/uxJbe4wqOCxlgY3oPZVTtXPHAA=
+ bh=4VRDp1sATinR1AEbcXAXCgTevcVxBGIbhFvYTt7Teq4=;
+ b=JaQJ0hiaZQG4xz8ZAc9vOBOMKiPgwZfnGbiOhUhAJD7yVir4w+o4+/fHUuwL6ISfUYZDuropqeKuGHx7L/njlWx2Idb+QJcj2H/4lxGriianjAaYW8CxDu2Q1HP6b/cZ/dN0mtoq/w1dNCgN5UEkg3gxn7zXLdTJFAswJnWGIVw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
  by GV1PR04MB9213.eurprd04.prod.outlook.com (2603:10a6:150:28::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Thu, 20 Apr
- 2023 22:56:15 +0000
+ 2023 22:56:16 +0000
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::245a:9272:b30a:a21c]) by AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::245a:9272:b30a:a21c%3]) with mapi id 15.20.6319.022; Thu, 20 Apr 2023
- 22:56:15 +0000
+ 22:56:16 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -48,9 +48,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         linux-kernel@vger.kernel.org,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH v2 net-next 4/9] net: dsa: tag_ocelot: do not rely on skb_mac_header() for VLAN xmit
-Date:   Fri, 21 Apr 2023 01:55:56 +0300
-Message-Id: <20230420225601.2358327-5-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 5/9] net: dsa: tag_ksz: do not rely on skb_mac_header() in TX paths
+Date:   Fri, 21 Apr 2023 01:55:57 +0300
+Message-Id: <20230420225601.2358327-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230420225601.2358327-1-vladimir.oltean@nxp.com>
 References: <20230420225601.2358327-1-vladimir.oltean@nxp.com>
@@ -62,51 +62,51 @@ X-ClientProxiedBy: AM0PR03CA0088.eurprd03.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|GV1PR04MB9213:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3c4d2a47-582d-42f7-92af-08db41f271d6
+X-MS-Office365-Filtering-Correlation-Id: 96dde338-b4f8-4fd5-3d78-08db41f27244
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8C0tjBIXb8Mq4C6GFFV336dpjQhj+2WXd1LHZ5HSou27TUrpt7/jvXLrjUj6nzJHNTEhblU3MI4xKH3B/f76PEPu+Rad8X9H6gdNsZ7+QWfCmeDxV/z4DD6e+8RcwnslrXoeFZMLVzvmN6rJFzn1wnUvDWMkDKL+aIapoyRD+s3yY97YAj0hGms/+s/XfOteNaRAnNpjyq7RdObZy1SLgr35CdD+WEWUEwM+vwgApjnWKqCsCtJFCPM9Fi4w0BtpPkn1inRMNOzaJY23ICum1et9D5bROBa05F5ZVR8HVYSZBi0eomGbhjcFzdBG263NZ/UcJNC8I//pvrmjKf4YYlvjTbefUXuQtBrBvsu6NNLd5xiSTLgndLwnX/umYrTfvA0BRDJUOsrtFTZk/80c6Zl0jDJExYfgmq2bWAcPrNqGwu0vN2tKsvg9I2vAQxcX6q/j9cabl7gl+urrokK5VEYzeYxfnkdeZGaJdL6bOF6TIsuOMGgHJ4kHl7FLhQzU2i0bj4A+w0MNKLb1ieMqhvk/lgm+kKTLtRuIDIurhbki9YQ3fsEIyrmqd6rH+v+vTDnBEeu2cfMKzBJ8Sj6xoqwMTyP33jSH7yy7ia/2z/8ZHuR5/HNm/AFJvQ6JVmjN
+X-Microsoft-Antispam-Message-Info: nZTOdUCalSqlbB4iWQBxKDdywmjFWiq92RscyvyWoV9zh4oRS8323x+EvYRSWxTpKIiuTdiAl5RpnCMR6/1IOwY+Fa+ClNvivjovd/F/DvszmdSKGPOCwwgshFqQtFCYYt2N93VwQQY+3QRlhjyBk+qTwVVZnt2ieE3W19ACZz86XPZxiBJ4bL76ScmwUjs0vTcDnAwMT1EgjeYxAvu5V3FbLD3FOiXS/1bReRgmFZEDlDFvD3lerWX2zUHkXBd8ZhJIcK9MJr9k7z4gl6gQC+qMiFvebfq9R7QJCsl9YFz5MtxeSSAcNjKIYZO7Y+yWd0+kzdujXkElhoWayBF+X2G05HJVMhREM6HVEhy61iPvStP2M99nwKhpfDnbnP6cp0e91tmS0IL9gD43HwuYzW5vunErfAWeO6cz5S6SJaaVVdl7V0Ussge/kyXjaXnpMcOa4vOYD9TYioVpgM/9scM/NOxMYHaJ7NnXYz2ILvOfC8zQ+n/h4KjJg6TWZGi2kJkNcJKg2sVfgpfjGBEiam3IuBPAhDqBcIkbhwMWlajdAD0x3jLD5hKu+u2K2i6JktmQ+MjiVOaRFRTcenU8Ik+dRGt8iVuQSVwlMwXsM7AduX7ODjfJGen3WR6w4Q3F
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(396003)(366004)(136003)(39860400002)(451199021)(2906002)(38350700002)(38100700002)(86362001)(478600001)(54906003)(316002)(41300700001)(66476007)(66946007)(66556008)(6916009)(4326008)(26005)(1076003)(6506007)(6512007)(6666004)(6486002)(52116002)(186003)(36756003)(8936002)(8676002)(83380400001)(5660300002)(2616005)(44832011);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MCOgUaLr8EGGY6dxmZhdq8WN7O8t3n9ZWafJm0iqgISDiODWfZRlb+2pRCaj?=
- =?us-ascii?Q?Dk3dYJFDJhTSf11gXr7d+PmLI180LRCOrRatzyoHs3lGJwITLdWOHbpkkN7B?=
- =?us-ascii?Q?6uJN6J80SgZZ05saB/kn/uNkzsj16P3trb6duJhXetlerj4fjBXVtiQ7QWuY?=
- =?us-ascii?Q?aI4pti9YnU1gSYv5I2pa7KMS/6t4ikmngit//S2iCPnUtvzDXqdVZkfPIMXR?=
- =?us-ascii?Q?Kp68Ml1oqjX0sLoYOqVwX0TsSTEvnMtvNDnzWnPu+RopwOb3yV1RzjTToghr?=
- =?us-ascii?Q?DnLsV9JVDsfgFtj2C2bIjN9k3Q+y9c1tG2W44XmNZ1Yk3HJ/Ik2ns5T34XKO?=
- =?us-ascii?Q?V9R46Y6fXSUsNqPX58Z/TmYTy6VLHwIPWEeY6xCaCqttXd/ZeCqArBBoUWfs?=
- =?us-ascii?Q?WQc8wIY70gT1pdzFkOWA7Bm9yV62DgetcRs/MzaaFnUt4nOiT5k8HAohbkVm?=
- =?us-ascii?Q?HpP4l4i6S6thrCsQlhNpEjAOGRghxGK3FPZn2NTaxSrY4yXB9YdSOFYJ37Nn?=
- =?us-ascii?Q?64q7iu76OthkMyMfBqmFgFormgx/QIlMJc8upvzuKUUmVZKCrUTOX9ZJJuxg?=
- =?us-ascii?Q?jxVSSodG/OKcwaKIjz+zKfA3C2n4TWtwLYR7vAdr9ZXG4zn9JUb+EYMtQ2Vf?=
- =?us-ascii?Q?woklbR54EOIwkd/3paZjVsJ6qt16vSHlN10j3Zqqx3GZl+A26NulvYm3Mm28?=
- =?us-ascii?Q?pRp8byix+Jc0v7tBz0w9+WTH58W6cil+kl8YrGogcevGe++Ib1Kj4wOXwDtE?=
- =?us-ascii?Q?q0jSP51P7HC4wh8qwcveRJ0W9+UkzZQvESjdehToHF0LFXPpxwnceRe0uQ92?=
- =?us-ascii?Q?Bico9S+VwjgiAbfjCQrBVAYtmaHDASkOd+c3eLgafcrK/qFbEMASQnTJXTuj?=
- =?us-ascii?Q?i41tOluclzFpipyhS5m3DDhwhrZdph4CcTgf2aHolZf0guAt7iG133odehsk?=
- =?us-ascii?Q?EMrz/F14RjTl64hkE5Oy8LLi0HEPOuBGJobgqUyCw8Oo6LivvUsaHw5K6DfH?=
- =?us-ascii?Q?sRlo+6FiY5enBRlVqJitmg4oFiQEyzU9xFaohZWncxmrQKaWlJen05Kl8RNw?=
- =?us-ascii?Q?gYVQHJDVnAqtUlfrsdj/B8xAq9QFfEiggUA6UIyPc/bfr/aey/PP8wu8tmzX?=
- =?us-ascii?Q?tndYcqZdi3lfiXB3GChAHFzLil+VB6ocZ4h3DUAs7Um6iemXBfCNLSyhShGG?=
- =?us-ascii?Q?tSxf8e5CjMBG2ZCThE3ryy2Xg2VxgsIgXWj3oHU9+O/AAY4ipu+yg1ne7hz9?=
- =?us-ascii?Q?KwNEEoVdsllZc1iErcpwQHSL1tEVFh4R4OGfkotGIDT6ToOsIJy7JrxxYwTb?=
- =?us-ascii?Q?is1EJhMprCCA5tRihSb0swpccLi0hk/aBDtBHj4KggYWMrHmAdNZmkZamdgd?=
- =?us-ascii?Q?Oqd+alH1+jxacjk1EVhUCxzz9blitappwDatyebP8z/O8mTh629DVKikFw8G?=
- =?us-ascii?Q?8UXe2/k0Q2tDa0d7h37gScWt++l9Bx/x6FdYo6ArC+hZ2cMdIf6o5UQmIjed?=
- =?us-ascii?Q?xBSlqw11u5EWqA807poVupbobHeZSjz6SGeTiBngkdhc1rj32wi/Qja5H9z2?=
- =?us-ascii?Q?I9HhnJqw7g3vFCA8Z5t0IUriOWt0yqgVXCSH2s2SRhKHm20x0o+dtH+Ldplp?=
- =?us-ascii?Q?lw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?H1rJMhvxAZm9EEfs0UPy2PhbsHzT0iAr3+lwWO2F109m3mnvP+fi4hTzATwU?=
+ =?us-ascii?Q?daa6eZmTGgFZhJsZF2dHJTMah2mWDUeOKm+HxIhL91hvfYd7LpiG0ruXkjgP?=
+ =?us-ascii?Q?0SdY0SlGfJ0j2DpRmtDeoHU6DPrk8iet6j2zlFhqij4UMKl4VMf+hbZHtgq3?=
+ =?us-ascii?Q?eSwEUTuI3uTv2dt2cV3qth9I6Lsv9g7s8P4aDqgys561rChJQEMEBXL0ydhJ?=
+ =?us-ascii?Q?jiAWWhC69GE/JMkAllN0OSa+mymwMLCxA4PU4xIsiYcFjWwPwaFO4qcACPOH?=
+ =?us-ascii?Q?RfBmuYIfYKNuvm1zqlYoo4NRl3181WKHTX3gmxW0gMRQpy4EMK6NWYg8xSWX?=
+ =?us-ascii?Q?DSxvOG9Qn6nhWvF/pmYugKpdXR+UKxmcrsO7WHteyEXbeuwDDwF2EUIB9dy+?=
+ =?us-ascii?Q?m/7VfbY5c6YWNbgAhR5kAeV/of8YwIktxbIMfKvJawRfVQjmxHLgDXD64E0f?=
+ =?us-ascii?Q?Zar3BCwo2a/D9xqSZcuGtLrOld2IPit/6sIMFu1r7y3zWb3HqWqHMrwj4ZF0?=
+ =?us-ascii?Q?gfOW57GU/NadYhG0Th95tUFeCx0YHh90E4I5ARLFVAdM7xGDvc9NqwKUDTrJ?=
+ =?us-ascii?Q?mT7N/lZJwKk9iVoj6s4BJ/Jl1mMPwlgorgH+3gJOnl9WGPI2TDSWdfG97Y84?=
+ =?us-ascii?Q?xp96ZbolvS1aXEYJlyy/ETKPexFdGPYU+jD6esG4vuSe8XIq2I7lHormNq3z?=
+ =?us-ascii?Q?+yYxYkw/2rRV1IfriHfcNUhh6xT0sqY2hAv9V3ZqIUrEK6rWkLhFh1n2SmGL?=
+ =?us-ascii?Q?kxskXMziItOhSHvmNZzrx8qqcfBi5LTwM/1Ud0Pkz9QXubB/d5iYGZbqkBID?=
+ =?us-ascii?Q?s88yr7YwpB6oCgjhf5i0O2zlkZ967ipRLF6QhzU8NSyWLGdQCeZHMFpGJTIW?=
+ =?us-ascii?Q?LsAIXFh4G5Fh5zlDKwix754yICd/f6uxUBZ76IIT4IwK2OtLtGnlCfSl/kmp?=
+ =?us-ascii?Q?dM2g5zbdp+qTP8ZJ67Lezzhu/RnTtMUPunmalc/5oxwcq/2zyoFMd7feaNOd?=
+ =?us-ascii?Q?SuwJh/nkF5b48w2S25pedUoJyGLwjn8sGNeXKnRn1+Qzij3xleWL3NgxBqv4?=
+ =?us-ascii?Q?rgfFAwDFF9y05OEqZrflncfG/7/V8n5RLkn/gNXWyXCuP2knhmVhms7k8n4Z?=
+ =?us-ascii?Q?a5qagc70N9FPvaJwxLo7m3BqpJL9ibvlAtrFZ4gPy7L+OpZxK2M6W1Ya0cTL?=
+ =?us-ascii?Q?/q1NuDGDcQrLNZ2FLFzob74H1WWmNg2BRRhNkIROB87QNr9siBFFdsPn6cQI?=
+ =?us-ascii?Q?VAHeEkmvqCIrnll2z/aAQGlKmvWZHM1q2ZhPg6YsBvqIximeWaLAbeXrCbrX?=
+ =?us-ascii?Q?15uNbutxeqfG1N/D4TGVGgA7Z6KVfs9ub/onezIa7hldlhZ4HQBBkr394b/0?=
+ =?us-ascii?Q?3FZE+l/kvnJTtBACUOEyVLqATA7IV1xEYkPkEQ95a7vBJuZek8nRPxpEn+Pv?=
+ =?us-ascii?Q?Go4Z9fC5ftD/xzjROqvUlNniUtc8F46/38gkNzmJIg3jByRjJSqRT/PopH5H?=
+ =?us-ascii?Q?tqiiPDCp2bR5585IWHc2hrztiEhGTVtAvn73auoIGK2GejEXPTkIyhFGoq5o?=
+ =?us-ascii?Q?sBlypSCDUGKC9+1PYwVmwirFYT4/rCXzRXi18t7lLh8XTwPdpdLmNP6vlpcz?=
+ =?us-ascii?Q?Uw=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c4d2a47-582d-42f7-92af-08db41f271d6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96dde338-b4f8-4fd5-3d78-08db41f27244
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2023 22:56:15.2209
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2023 22:56:15.9452
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ubkHe86JsH+M8q4cJm2uNutpi5O1zbaSDRpLLrZZz9he2JZOWaa0UyvkNoNIsV38IeMN7LaVETGPBaIyoZiCPA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: MlHW8kGpgNiU7dVGE7xP7hZeRM3Ae32xHOqXvljW/+MTrOwVyrSJx/teHxJxPJtUz/XpUlbaKfsXRU7LqnzBMg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB9213
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -120,31 +120,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 skb_mac_header() will no longer be available in the TX path when
 reverting commit 6d1ccff62780 ("net: reset mac header in
-dev_start_xmit()"). As preparation for that, let's use
-skb_vlan_eth_hdr() to get to the VLAN header instead, which assumes it's
-located at skb->data (assumption which holds true here).
+dev_start_xmit()"). As preparation for that, let's use skb_eth_hdr() to
+get to the Ethernet header's MAC DA instead, helper which assumes this
+header is located at skb->data (assumption which holds true here).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- net/dsa/tag_ocelot.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/dsa/tag_ksz.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
-index 28ebecafdd24..73ee09de1a3a 100644
---- a/net/dsa/tag_ocelot.c
-+++ b/net/dsa/tag_ocelot.c
-@@ -26,7 +26,7 @@ static void ocelot_xmit_get_vlan_info(struct sk_buff *skb, struct dsa_port *dp,
- 		return;
- 	}
+diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+index 0eb1c7784c3d..ea100bd25939 100644
+--- a/net/dsa/tag_ksz.c
++++ b/net/dsa/tag_ksz.c
+@@ -120,18 +120,18 @@ static struct sk_buff *ksz_common_rcv(struct sk_buff *skb,
+ static struct sk_buff *ksz8795_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct ethhdr *hdr;
+ 	u8 *tag;
+-	u8 *addr;
  
--	hdr = (struct vlan_ethhdr *)skb_mac_header(skb);
-+	hdr = skb_vlan_eth_hdr(skb);
- 	br_vlan_get_proto(br, &proto);
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
+ 		return NULL;
  
- 	if (ntohs(hdr->h_vlan_proto) == proto) {
+ 	/* Tag encoding */
+ 	tag = skb_put(skb, KSZ_INGRESS_TAG_LEN);
+-	addr = skb_mac_header(skb);
++	hdr = skb_eth_hdr(skb);
+ 
+ 	*tag = 1 << dp->index;
+-	if (is_link_local_ether_addr(addr))
++	if (is_link_local_ether_addr(hdr->h_dest))
+ 		*tag |= KSZ8795_TAIL_TAG_OVERRIDE;
+ 
+ 	return skb;
+@@ -273,8 +273,8 @@ static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
+ 	u16 queue_mapping = skb_get_queue_mapping(skb);
+ 	u8 prio = netdev_txq_to_tc(dev, queue_mapping);
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct ethhdr *hdr;
+ 	__be16 *tag;
+-	u8 *addr;
+ 	u16 val;
+ 
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
+@@ -284,13 +284,13 @@ static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
+ 	ksz_xmit_timestamp(dp, skb);
+ 
+ 	tag = skb_put(skb, KSZ9477_INGRESS_TAG_LEN);
+-	addr = skb_mac_header(skb);
++	hdr = skb_eth_hdr(skb);
+ 
+ 	val = BIT(dp->index);
+ 
+ 	val |= FIELD_PREP(KSZ9477_TAIL_TAG_PRIO, prio);
+ 
+-	if (is_link_local_ether_addr(addr))
++	if (is_link_local_ether_addr(hdr->h_dest))
+ 		val |= KSZ9477_TAIL_TAG_OVERRIDE;
+ 
+ 	*tag = cpu_to_be16(val);
+@@ -337,7 +337,7 @@ static struct sk_buff *ksz9893_xmit(struct sk_buff *skb,
+ 	u16 queue_mapping = skb_get_queue_mapping(skb);
+ 	u8 prio = netdev_txq_to_tc(dev, queue_mapping);
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+-	u8 *addr;
++	struct ethhdr *hdr;
+ 	u8 *tag;
+ 
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
+@@ -347,13 +347,13 @@ static struct sk_buff *ksz9893_xmit(struct sk_buff *skb,
+ 	ksz_xmit_timestamp(dp, skb);
+ 
+ 	tag = skb_put(skb, KSZ_INGRESS_TAG_LEN);
+-	addr = skb_mac_header(skb);
++	hdr = skb_eth_hdr(skb);
+ 
+ 	*tag = BIT(dp->index);
+ 
+ 	*tag |= FIELD_PREP(KSZ9893_TAIL_TAG_PRIO, prio);
+ 
+-	if (is_link_local_ether_addr(addr))
++	if (is_link_local_ether_addr(hdr->h_dest))
+ 		*tag |= KSZ9893_TAIL_TAG_OVERRIDE;
+ 
+ 	return ksz_defer_xmit(dp, skb);
 -- 
 2.34.1
 
