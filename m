@@ -2,119 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02E746E94F9
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88A9C6E955E
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 15:07:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229456AbjDTMqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 08:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
+        id S230512AbjDTNHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 09:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234540AbjDTMqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:46:36 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213CC61B1
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 05:46:29 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id 4fb4d7f45d1cf-5050497df77so784098a12.1
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 05:46:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1681994787; x=1684586787;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/Pk+Qd6CawbTTrnrThoEZ+rKcvpmzyvfeT2caixMXgc=;
-        b=pt4CgUgmnJh+NSe0Sg6CpH3AFJLD0T88/IDOQu6XkDZn8bZKvj3uIUrLI3Gx7MycDA
-         vilWwLsIcaDA+6fFiongQoGezPla2uUsq2zaxaBo5b1j2yrm2/ZmpDhgRyJZuIkgtsap
-         4Izh8cAANyyV1C8syere6nbtHrDZOTXifwjApfWSH3a5Oxo2saAm6UAK8s7E4wFrJPN9
-         qC0MlWSKL4UcNn8XbTWUq4n6Ir+HF///NpF1GDtCYM7kytocFqpzV8qd8e6YBFTcYMHI
-         jTBew8BcO6bZuqK6DCTUzToa0NJP/OeTgPiHsoN/nH1oiiMl5fc12m6k0g6eqlRunPE+
-         sOZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681994787; x=1684586787;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/Pk+Qd6CawbTTrnrThoEZ+rKcvpmzyvfeT2caixMXgc=;
-        b=Qnu1G6fCa+ivlZMFxzAWnYe2DLoXILdj/I7uOwnnyNbmSv5Vt5yEcA8Yfdv/dYLTPW
-         FPPBrs45lu00PvG3q/IlUnCgqsvoqktq7ji0B32ocrd1+ZZptpKLrp3vM4C2lcOeRr9D
-         ZnxdCps5wseDhsV9lnqw2vu2TwD9puHfv4pp9qk4DRD8wyEMtqHT1xxCSftnG3D++Ou6
-         HyrhqiIfKw9pJ260mlTg+rI9fmm/ZBamWLAWUg887raKuTAG7ikyVdVeHatt9bkEWKVR
-         huCbua1qpnFlAQN31Yi90jU/68a6BCNaxjtABAlZdsQKzNacCU0RQxcgPZM3Cr5N2akh
-         WUuw==
-X-Gm-Message-State: AAQBX9fNytjQgvhWvDR4ZXdmKco2LCBWWeqcnbGi+udW3PG1tBKmdK5b
-        azutIE2RzcRVNgP+MaVFPsSvghK0fQ8nDZA4ay53jg==
-X-Google-Smtp-Source: AKy350aCSVYHSTuRUbzqbqVKTM/wg1iw4BBaWxYl6hWz5ML/lQxQgFTB3JDFFaFTSk/LwI9FSxHkEA==
-X-Received: by 2002:a05:6402:1807:b0:504:8173:ec8c with SMTP id g7-20020a056402180700b005048173ec8cmr1853289edy.13.1681994787577;
-        Thu, 20 Apr 2023 05:46:27 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:bcb8:77e6:8f45:4771? ([2a02:810d:15c0:828:bcb8:77e6:8f45:4771])
-        by smtp.gmail.com with ESMTPSA id r22-20020aa7cb96000000b0050696c2d2f6sm706788edt.88.2023.04.20.05.46.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Apr 2023 05:46:27 -0700 (PDT)
-Message-ID: <73644f38-8165-f041-f9d7-a2f2bdd69f17@linaro.org>
-Date:   Thu, 20 Apr 2023 14:46:25 +0200
+        with ESMTP id S230459AbjDTNHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 09:07:32 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869784497;
+        Thu, 20 Apr 2023 06:07:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=CU43sr26NtEC2kEdchgJlz6VjiMm/CokCw0uExZFsdg=; b=1Zkng9LJPp8Zd1T2fBdmK65iKA
+        OZ3PJUbCx75Sok2QFYbzqSoZg9+IDJac0TXhHj1SFUHJrXyPM7+JdUZjgrVpY7N4F4nTLhtg0gFGv
+        X7dtD7UcXDFF1NVzNwocXmry8MoNCMGT9DbBgCGE1GL8gwv8LbSHDOjWorutcw9UPGfg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ppU0C-00AnCT-4u; Thu, 20 Apr 2023 15:07:08 +0200
+Date:   Thu, 20 Apr 2023 15:07:08 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        oe-kbuild-all@lists.linux.dev,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [lunn:v6.3-rc2-net-next-phy-leds 5/15] ld.lld: error: undefined
+ symbol: devm_mdiobus_alloc_size
+Message-ID: <758fff85-aefc-4e0a-97b1-fe7179fafac6@lunn.ch>
+References: <202303241935.xRMa6mc6-lkp@intel.com>
+ <f16fb810-f70d-40ac-8e9d-2ada008c446d@app.fastmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH 1/2] dt-bindings: pinctrl: qcom: Add SDX75 pinctrl
- devicetree compatible
-Content-Language: en-US
-To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
-        andersson@kernel.org, konrad.dybcio@linaro.org,
-        linus.walleij@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, richardcochran@gmail.com,
-        manivannan.sadhasivam@linaro.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <1681966915-15720-1-git-send-email-quic_rohiagar@quicinc.com>
- <1681966915-15720-2-git-send-email-quic_rohiagar@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1681966915-15720-2-git-send-email-quic_rohiagar@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f16fb810-f70d-40ac-8e9d-2ada008c446d@app.fastmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/04/2023 07:01, Rohit Agarwal wrote:
-> Add device tree binding Documentation details for Qualcomm SDX75
-> pinctrl driver.
+On Thu, Apr 20, 2023 at 08:31:17AM +0200, Arnd Bergmann wrote:
+> On Fri, Mar 24, 2023, at 12:36, kernel test robot wrote:
+> >>> ld.lld: error: undefined symbol: devm_mdiobus_alloc_size
+> >    >>> referenced by phy.h:458 (include/linux/phy.h:458)
+> >    >>>               
+> > drivers/net/ethernet/microchip/lan743x_main.o:(lan743x_pcidev_probe) in 
+> > archive vmlinux.a
+> >    >>> referenced by phy.h:458 (include/linux/phy.h:458)
+> >    >>>               drivers/net/ethernet/ni/nixge.o:(nixge_probe) in 
+> > archive vmlinux.a
+> >
+> > Kconfig warnings: (for reference only)
+> >    WARNING: unmet direct dependencies detected for PHYLIB
 > 
-> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
-> ---
->  .../bindings/pinctrl/qcom,sdx75-tlmm.yaml          | 195 +++++++++++++++++++++
->  1 file changed, 195 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml
+> It looks like this has hit linux-next now, I'm seeing the same problem in
+> my own randconfig builds after Andrew's 01e5b728e9e4 ("net: phy: Add a
+> binding for PHY LEDs").
+
+Hi Arnd
+
+I tried to fix this with:
+
+commit 37f9b2a6c086bb28487a0682b8098f907861c4a1
+Author: Andrew Lunn <andrew@lunn.ch>
+Date:   Thu Mar 30 20:13:29 2023 -0500
+
+    net: ethernet: Add missing depends on MDIO_DEVRES
+    
+    A number of MDIO drivers make use of devm_mdiobus_alloc_size(). This
+    is only available when CONFIG_MDIO_DEVRES is enabled. Add missing
+    depends or selects, depending on if there are circular dependencies or
+    not. This avoids linker errors, especially for randconfig builds.
+
+All the failures i've seen have CONFIG_MDIO_DEVRES set to disabled. So
+i added either depends on, or select to the drivers which use it. I
+missed the LAN743x.
+
+> The problem here is that both PHYLIB and LEDS_CLASS are user-visible
+> tristate symbols that are referenced from other Kconfig symbols with
+> both 'depends on' and 'select'. Having the two interact introduces a
+> number of ways that lead to circular dependencies.
+
+I was getting circular dependencies with first versions of the above
+patch. I initially tried depends on everywhere, and then had to drop
+back to select for a few cases.
+
+> It might be ok to use 'select LEDS_CLASS' from PHYLIB, but I have not
+> tried that yet and I expect this will result in other build failures.
 > 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml
-> new file mode 100644
-> index 0000000..1d03f13
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml
-> @@ -0,0 +1,195 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/bindings/pinctrl/qcom,sdx75-tlmm.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm Technologies, Inc. SDX75 TLMM block
-> +
-> +maintainers:
-> +  - Rohit Agarwal <quic_rohiagar@quicinc.com>
-> +
-> +description: |
-> +  This binding describes the Top Level Mode Multiplexer block and found in
-> +  SDX75 platform.
+> A better solution would be to change all drivers that currently use
+> 'select PHYLIB' to 'depends on PHYLIB' and have PHYLIB itself
+> 'default ETHERNET' to avoid most of the regressions, but doing this
+> for 6.4 is a bit risky and can cause other problems.
 
-Please start from some existing bindings to avoid all the issues we
-fixed. This binding does not look like current ones.
+For 6.4, will adding more depend on/select MDIO_DEVRES help? That
+should be low risk.
 
-Best regards,
-Krzysztof
-
+Thanks
+	Andrew
