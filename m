@@ -2,111 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5256E8D52
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:55:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 938186E8D50
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 10:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234405AbjDTIzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 04:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46920 "EHLO
+        id S234373AbjDTIzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 04:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233832AbjDTIyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:54:14 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EE940EE;
-        Thu, 20 Apr 2023 01:52:22 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0DB755C015E;
-        Thu, 20 Apr 2023 04:52:20 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Thu, 20 Apr 2023 04:52:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1681980740; x=1682067140; bh=q5
-        mxBDhqof2rSAXuDpt7RtRTf5pystlJ8ajZQHMW6yI=; b=nRmTNulWfXtLThuiCz
-        Rm/70Zqjci6zWwWiqnXTOnvsI45xw/aQ5daC63+jt5aS3Rtaftn7zIvrnJzongR6
-        LQ2+PCsuMmGEmQJREWQhkK4ZqlhJWruBLATxFk60fy8JDVGnOYwz40u62YgbOXoV
-        Skitk3wAuAmcrB4P7rEjaw7rQx77vZH7tiwodhigCif2gz8UlGyCiA1sgbfs24YY
-        q7FxV3yPiFbwdeV13+DA2SreM5rrfJ1/QLJSzqATXQggDGvp6XJmOJd81Zmk9zmC
-        JMVbVLWiGnsesQRD8ihBvasIRBP3XXQD6VXLz783qdQ0FDw1PAWGAWERwqtrwDgr
-        lKjw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1681980740; x=1682067140; bh=q5mxBDhqof2rS
-        AXuDpt7RtRTf5pystlJ8ajZQHMW6yI=; b=J60jxsmJM2OrbfaCfqOlbPUNPMK82
-        U/eBAT0eCuaZ2cC2Wn0t9BWWw0dNP83IjyUpwsCMhNT4z1HRF1CyK2/TdcrZnjSJ
-        4byybbl25/Df+QJU6hSfPbbrV4VCfkR8XXthoFP8Np8P+MhxB1ZnGBnPYcGZkyLu
-        OyI4l+Z72PeUOrd0FXuaNuF+KAwewlrAKmSsU7nn1c20rpDP8VJ3LcCS5NC2BZUe
-        1Gp9yap1oST/nYuMIakXx6VQHsDjk9zDwtN26VwWUsrGYPQL9Ms/aQ6XEmkhFExt
-        A4DHaCKOKRN9/IkJLvVqaU17JU/9DTkJVuqTmrCWG4JOsbKuOuPEdA7fw==
-X-ME-Sender: <xms:Q_1AZKmt-4f5f205DB_xXtbNfNJFBW1ismKZIxbuA4mDXnDmq55Ohw>
-    <xme:Q_1AZB3j8PHXnOnSIeT-3RKizcLL9GbIXBzfWu4UPF8kd23vSHj4YqcfQ1o5jlpxK
-    NUshHXYhY5-PXxGzpo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfedtvddgtdejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
-    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:Q_1AZIoZueuvwntS_f9RAgDDIPY3R0SKhXQq_-ehmdjefr9gMmR7tQ>
-    <xmx:Q_1AZOlH3Sb5CNO-e_5xxDtA4yHZgasujBBDlVeKXPEicGVSeio7Pw>
-    <xmx:Q_1AZI244u9QV9m-j6ZC8QJz_8gDo3mVP1C_t3jAiIEw3cKSNZwAHQ>
-    <xmx:RP1AZOw0aKt8xWq1d6aJHRUw6BWvYtbbXV1dVuHkG75MUuGqydd_fw>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 86365B60086; Thu, 20 Apr 2023 04:52:19 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-372-g43825cb665-fm-20230411.003-g43825cb6
-Mime-Version: 1.0
-Message-Id: <b1d02aee-17cb-4461-8f02-b5bd513790ae@app.fastmail.com>
-In-Reply-To: <9975669b-27bf-6903-f908-184946960c25@gmail.com>
-References: <20230418114730.3674657-1-arnd@kernel.org>
- <20230418114730.3674657-2-arnd@kernel.org>
- <9975669b-27bf-6903-f908-184946960c25@gmail.com>
-Date:   Thu, 20 Apr 2023 10:51:58 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Tariq Toukan" <ttoukan.linux@gmail.com>,
-        "Arnd Bergmann" <arnd@kernel.org>,
-        "Yishai Hadas" <yishaih@nvidia.com>,
-        "Jason Gunthorpe" <jgg@ziepe.ca>,
-        "Leon Romanovsky" <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/2] net/mlx4: avoid overloading user/kernel pointers
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233777AbjDTIyK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 04:54:10 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A357C1FFD;
+        Thu, 20 Apr 2023 01:52:15 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id sz19so4770717ejc.2;
+        Thu, 20 Apr 2023 01:52:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1681980734; x=1684572734;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zBLes227ZmGUNlrR4Hrc178F7lyu/NFgEoTkP/9x/pU=;
+        b=kiMgfwaCg3MIrV16uRyfNUX8tZdNDyDTu9PErvTQyII31rpMbX9t8jmWNV8HK89Qfe
+         fP00KNdXTnLEEcDcja2GV/o42VVV4snivWAbIC/IgghD00hJoit8WjBmgXT/J8PwIbi2
+         jD4qgRxRIYzsAbeHVWwJ+8QamMHNU1Xza6H/ujIfBkIxRmwKIxG/Lma4OwuG2poIJqx0
+         P0K/cJmHPUkkpWTCyp0qOQysxAo2Fbw0wQfWrW7oolU+MI5Y8d/U7248ZSkFrzaTTWzD
+         BiRmtUn9KdV1CzCHKgV+Fwh+uppNFrISzfxLMDL6WaeRS/OaW1HYSG96lI+5Kumdacoh
+         0m1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681980734; x=1684572734;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zBLes227ZmGUNlrR4Hrc178F7lyu/NFgEoTkP/9x/pU=;
+        b=Lkye1GXnjpHSOfWjQSMfi+UYVPSRq4jNR+KgbX3J/Ol8x6YiQSbeMy7KiGl/fTzGU8
+         i01loMLZj99Fgsa+lS+4MQVNVMWH/U5jBdSV6z9y8xbHrMT0wKW7+/PwQ8RajVMqRm+B
+         i5IiJRujaBMuLmgB+XMJszlTZpdkeFvdpAz06DnDs3O6eGaSAEZJWZLjOTsUOSZGTxya
+         uUroIGKulvNrKvAnUF9Z+SWijl5y1o6cMLTJNQ7MsRe3NT0IkMkAu2Dvz4zNeTAHwIqe
+         vqcjUedwIE7lOvQkff7ihKQy96H5rO/SeADC7G58xgp0ZWIJax6Rcp14QXxeWP92GqVm
+         6ETQ==
+X-Gm-Message-State: AAQBX9c2ZFtcfWz43tdXvA+VAlYXrs20YdSe+xE+dzSJ6HPSi+yncM6A
+        r0yLWElAKivywvz6x2bVyvI=
+X-Google-Smtp-Source: AKy350Y+6v7kvcANIiWzMVx1OPRQPLrfl4E34LEYrMO66zBxtlFeUYYPBgX/1OLaUlqWxbjEbAnVDg==
+X-Received: by 2002:a17:906:ce2b:b0:94f:6218:191c with SMTP id sd11-20020a170906ce2b00b0094f6218191cmr864048ejb.18.1681980733982;
+        Thu, 20 Apr 2023 01:52:13 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id v8-20020a17090610c800b0093313f4fc3csm484346ejv.70.2023.04.20.01.52.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Apr 2023 01:52:13 -0700 (PDT)
+Date:   Thu, 20 Apr 2023 11:52:11 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        mengyuanlou@net-swift.com, 'Jose Abreu' <Jose.Abreu@synopsys.com>
+Subject: Re: [PATCH net-next v3 6/8] net: pcs: Add 10GBASE-R mode for
+ Synopsys Designware XPCS
+Message-ID: <20230420085211.6kt2oj3k5k54mtuf@skbuf>
+References: <20230420080312.6ai6yrm6gikljeto@skbuf>
+ <20230419082739.295180-1-jiawenwu@trustnetic.com>
+ <20230419082739.295180-1-jiawenwu@trustnetic.com>
+ <20230419082739.295180-7-jiawenwu@trustnetic.com>
+ <20230419082739.295180-7-jiawenwu@trustnetic.com>
+ <20230419131938.3k4kuqucvuuhxcrc@skbuf>
+ <037501d9732b$518048d0$f480da70$@trustnetic.com>
+ <20230420080312.6ai6yrm6gikljeto@skbuf>
+ <03d301d97363$874123d0$95c36b70$@trustnetic.com>
+ <03d301d97363$874123d0$95c36b70$@trustnetic.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <03d301d97363$874123d0$95c36b70$@trustnetic.com>
+ <03d301d97363$874123d0$95c36b70$@trustnetic.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023, at 09:09, Tariq Toukan wrote:
-> On 18/04/2023 14:47, Arnd Bergmann wrote:
->
-> Now we should maintain the values of the two pointers before any call. 
-> I'm not sure this is less error-prune. One can mistakenly update 
-> kbuf_addr for example without nullifying ubuf_addr.
+On Thu, Apr 20, 2023 at 04:38:48PM +0800, Jiawen Wu wrote:
+> It needs to implement compat->pma_config, and add a flag in struct dw_xpcs
+> to indicate board with specific pma configuration. For 10GBASE-R interface, it
+> relatively simple, but a bit more complicate for 1000BASE-X since there are
+> logic conflicts in xpcs_do_config(), I haven't resolved yet.
+> 
+> In addition, reconfiguring XPCS will cause some known issues that I need to
+> workaround in the ethernet driver. So I'd like to add configuration when I
+> implement rate switching.
+> 
+> There is a piece codes for my test:
 
-That would cause a compiler warning about the uninitialized variable.
+The PMA initialization procedure looks pretty clean to me (although I'm
+not clear why it depends upon xpcs->flags & DW_MODEL_WANGXUN_SP when the
+registers seem to be present in the common databook), and having it in
+the XPCS driver seems much preferable to depending on an unknown previous
+initialization stage.
 
-> Also, I'm not a big fan of passing two pointers when exactly one of them 
-> is effectively used.
-> We can think maybe of passing a union of both types, and a boolean 
-> indicating which pointer type is to be used.
-
-This is basically what you have today. I've dropped this patch from
-my randconfig tree and will ignore the problem.
-
-    Arnd
+Could you detail a bit the known issues and the 1000BASE-X conflicts in
+xpcs_do_config()?
