@@ -2,107 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B607C6E8646
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 02:20:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEDF6E8659
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 02:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229511AbjDTAUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 20:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
+        id S229464AbjDTAWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 20:22:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbjDTAUB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 20:20:01 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C4D1738
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 17:20:00 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id b16so2588840ejz.3
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 17:20:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681949998; x=1684541998;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Hqz9HeI/vJVNk82x8juGc4PpO/MP0d9td2E9snrpgyw=;
-        b=MfE/e7hRpqGwQXA37QTXcM47HVrJ/My1Kncr9LOD3IOh0xdwtowwVnLDP5Or+N6irz
-         zZ3aW/kniZcCMj4S8xOHbstUsXd7vQdVM19lWF/D2vp44uZj1d/RSfSPdNoysUEw8ml9
-         tcwm/BKbt6b2QgCZ1cqdZqApi6NBhXUsaRlWGlbKhHzobdzW/Z8ynZlYk2txOIzBNjto
-         hygMBe+nC/0gQKg/rifki2ecDkka8+qjyhV5zuXf5ZzIfN6i24ujE2AA01hqEcg2FnCg
-         k3qS6CmvY0QLTQ5wJIkCoyZ2UpOsiQuL/SSYxizJRuhwk0kHceIalk/fCPicRNmg1MFO
-         QiQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681949998; x=1684541998;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Hqz9HeI/vJVNk82x8juGc4PpO/MP0d9td2E9snrpgyw=;
-        b=DHiBMBAAtxDP9yO8HjZBGU/jQAQt6z7MfuoScnKGMvDcs4+avxU0/5ojYHhzMz14Si
-         J0t24T2gZFp5RfrQba7ZEIDteJ9fLNln+30OrsEmiQYYU38OJLLPAXXQJqmu4MMAA4mV
-         KRrin1zUM5xeu/PcBtNdXeCwsKaDAH1Lwge6x2nm74wIcYLMmox+h1S/EM5fCmwe+yMl
-         1CnxdQ6NVTDCNmk1ZHaXsBCGoPTQzSKKYycscHymgGwJ5aGptH/TYnaQBvAsHo+Qag21
-         G92JHHU6VIvGFEI+f78lJxWGymsuVsNWONmK4V/VhFMpk0X9WA1pt3aua/O1wY4kCcX/
-         FjnQ==
-X-Gm-Message-State: AAQBX9c7PvkUNeUEsOkylD6U60Z04LpnHWGscaaKNcVM/v5pqNxeVDAp
-        Biz2qa+KjbFkmaJs5P3wiBK3gnY/I6y2Bxg/zvY=
-X-Google-Smtp-Source: AKy350Z4a1sDyWXJoDbzLisqUdTmzNrjYT6a8n5c/rD4qw4YByUgaeybHwCH1CAfKwGRAwpI4VWV5lL00RpeipPKop0=
-X-Received: by 2002:a17:907:3f0a:b0:94f:3eca:ab05 with SMTP id
- hq10-20020a1709073f0a00b0094f3ecaab05mr17477498ejc.59.1681949998275; Wed, 19
- Apr 2023 17:19:58 -0700 (PDT)
+        with ESMTP id S230310AbjDTAWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 20:22:32 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460403A82;
+        Wed, 19 Apr 2023 17:22:31 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1ppI47-0006PU-1Z;
+        Thu, 20 Apr 2023 02:22:23 +0200
+Date:   Thu, 20 Apr 2023 01:22:20 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>
+Subject: Re: [PATCH net-next v2] net: dsa: mt7530: fix support for MT7531BE
+Message-ID: <ZECFvFnhW1D3IRxO@makrotopia.org>
+References: <ZDvlLhhqheobUvOK@makrotopia.org>
 MIME-Version: 1.0
-Received: by 2002:a17:907:6295:b0:8e1:534d:ec2d with HTTP; Wed, 19 Apr 2023
- 17:19:57 -0700 (PDT)
-From:   Federal Inland Revenue Service <inlandservice@gmail.com>
-Date:   Wed, 19 Apr 2023 17:19:57 -0700
-Message-ID: <CAMWbD51cK4XPCNQpQZaLP-GHXORKA6o4FScN+ZwXMMHpOkiAAg@mail.gmail.com>
-Subject: Good Business Proposal.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.1 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
-        BAYES_00,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_MONEY_PERCENT,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZDvlLhhqheobUvOK@makrotopia.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-STRICTLY CONFIDENTIAL
+On Sun, Apr 16, 2023 at 01:08:14PM +0100, Daniel Golle wrote:
+> There are two variants of the MT7531 switch IC which got different
+> features (and pins) regarding port 5:
+>  * MT7531AE: SGMII/1000Base-X/2500Base-X SerDes PCS
+>  * MT7531BE: RGMII
+> 
+> Moving the creation of the SerDes PCS from mt753x_setup to mt7530_probe
+> with commit 6de285229773 ("net: dsa: mt7530: move SGMII PCS creation
+> to mt7530_probe function") works fine for MT7531AE which got two
+> instances of mtk-pcs-lynxi, however, MT7531BE requires mt7531_pll_setup
+> to setup clocks before the single PCS on port 6 (usually used as CPU
+> port) starts to work and hence the PCS creation failed on MT7531BE.
+> 
+> Fix this by introducing a pointer to mt7531_create_sgmii function in
+> struct mt7530_priv and call it again at the end of mt753x_setup like it
+> was before commit 6de285229773 ("net: dsa: mt7530: move SGMII PCS
+> creation to mt7530_probe function").
+> 
+> Fixes: 6de285229773 ("net: dsa: mt7530: move SGMII PCS creation to mt7530_probe function")
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> ---
 
-TRANSFER OF US$35,500.000.00
+This v2 submission addresses the comments made by Jesse Brandeburg
+regarding zero-initializing regmap_config as we are now not necessarily
+using both of them. Comments by Arınç ÜNAL have also been discussed
+and resulting in receiving Ack.
 
-We are making this contact with you after satisfactory information
-gathered from the Nigerian Chamber of Commerce. Based on this, we are
-convinced that you will provide us with a solution to effect
-remittance of the sum of $35,500.000.00 resulting from over costing of
-job/services done for the Nigerian National Petroleum Corporation
-(NNPC), by foreign companies.
+However, I can see in patchwork that the patch has been set to
+"Changes Requested".
 
-We are top officials of NNPC. We evaluate and secure approvals for
-payment of contracts executed for NNPC. We have tactfully raised
-values to a foreign company for onward disbursement among ourselves
-the Director of Accounts/Finance and Director of Audit. This
-transaction is 100% safe. We are seeking your assistance and
-permission to remit this amount into your account.
+Can someone please tell me which further changes are needed?
+I don't see any other comments on the mailing list or patchwork.
 
-We have agreed to give you 25% of the total value, while our share
-will be70%. The remaining 5% will be used as refund by both sides to
-off set the cost that must be incurred in the areas of public
-relations, engaging of legal practitioner as attorney, taxation and
-other incidentals in the course of securing the legitimate release of
-the fund into your account.
-
-Please indicate your acceptance to carry out this transaction urgently
-on receipt of this letter. I shall in turn inform you of the
-modalities for a formal application to secure the necessary approvals
-for the immediate legitimate release of this fund into your account.
-
-Please understand that this transaction must be held in absolute
-privacy and confidentiality.Please respond if you are
-
-interested through my alternative address:
-
-
-Thanks for your co-operations.
+Thank you!
 
 
-Yours faithfully,
-Mr.Lambert Gwazo.
+Daniel
