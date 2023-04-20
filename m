@@ -2,56 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 659366E86CA
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 02:47:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FBE46E8700
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 02:51:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232142AbjDTArW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 20:47:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47392 "EHLO
+        id S233170AbjDTAvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 20:51:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231693AbjDTArT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 20:47:19 -0400
+        with ESMTP id S233174AbjDTAvf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 20:51:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDC330FD
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 17:47:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E9176AB
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 17:51:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17F086441C
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 00:47:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED09C433EF;
-        Thu, 20 Apr 2023 00:47:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0742664423
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 00:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6AA0AC4339B;
+        Thu, 20 Apr 2023 00:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681951636;
-        bh=CH2Y4Bz6prK0cj+JvrzukX9ARUiQe952KFaN1us54Jc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bsF/hgGF5x4RhjzzxVJgWd5R/mO8DR+pjVDCzdLjjjHgevTd6OUqev3Xi8QHzXuyh
-         SAM2ItB6ueU+GRUt60ByXNto0tuZbHfLpWVH+UY3UEdIi6jlah+J0G4RaKT3ZDxh/Y
-         QXADfjKol/nXRK1X1LT/cam+tz9kTk+VcPxOsp/Vhwy0uUfd2EuHfo2eCoxB+kEfc4
-         ePwFDRNN0aQ1tlOgMOz2RZ6T/c8VRjr0petJzOr+Sy+NkFUUUFrgGPO22wLAjxlCiB
-         hOdSV9KZo9mw+HlMkn1c/qdcrxVqhqT+WngWgXDZjhUz/K9vUivHO0XeHh21znMTof
-         kJFTKmsXSzB3w==
-Date:   Wed, 19 Apr 2023 17:47:15 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke Hoiland-Jorgensen <toke@redhat.com>,
-        <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Gal Pressman <gal@nvidia.com>,
-        Henning Fehrmann <henning.fehrmann@aei.mpg.de>,
-        "Oliver Behnke" <oliver.behnke@aei.mpg.de>
-Subject: Re: [PATCH net-next 00/15] net/mlx5e: Extend XDP multi-buffer
- capabilities
-Message-ID: <20230419174715.04087083@kernel.org>
-In-Reply-To: <20230417121903.46218-1-tariqt@nvidia.com>
-References: <20230417121903.46218-1-tariqt@nvidia.com>
+        s=k20201202; t=1681951818;
+        bh=FkPl9uCfCWlO1TwEC1RzdopNaoIOk3eU5Xve0pLRJdo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=psvqJ7b2Ab/Flpm4HZg825I3ZtlqPjUJyv1mBY23/eHOLUZ2ueCacoC5iSioCrx1z
+         lsIzTZUrYE9hMoCLR58YpZ6iAH24pezpX9RmcWvtjQzHIjoee6vx6g+4IWZDSQcfsZ
+         ctlET5eov1LTDFtadKcblqT4t67EQZVAoHzw3MNHk49AqK4aqDGyUeVQnkAO+5Z++9
+         lvr+raiQBmVY2Bl0FFTRD5vHOkdKI2VzfRwMHyu4TtHlGbdsAAye0+Fo/xardV+Cw0
+         lX5U0jh80Ot+fh0UnnLy3qQHKi+A8rydsRm+hmsZUzqekYO+9x8tEoIcgiRXJLUyt2
+         CFlLoK37Ms1Gw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4F369C561EE;
+        Thu, 20 Apr 2023 00:50:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] bnxt_en: fix free-runnig PHC mode 
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168195181832.16132.5614757383741623494.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 Apr 2023 00:50:18 +0000
+References: <20230418202511.1544735-1-vadfed@meta.com>
+In-Reply-To: <20230418202511.1544735-1-vadfed@meta.com>
+To:     Vadim Fedorenko <vadfed@meta.com>
+Cc:     pavan.chebbi@broadcom.com, kuba@kernel.org,
+        michael.chan@broadcom.com, vadim.fedorenko@linux.dev,
+        netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,14 +57,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 17 Apr 2023 15:18:48 +0300 Tariq Toukan wrote:
-> This series extends the XDP multi-buffer support in the mlx5e driver.
-> 
-> Patchset breakdown:
-> - Infrastructural changes and preparations.
-> - Add XDP multi-buffer support for XDP redirect-in.
-> - Use TX MPWQE (multi-packet WQE) HW feature for non-linear
->   single-segmented XDP frames.
-> - Add XDP multi-buffer support for striding RQ.
+Hello:
 
-This is cd02a1a24897 in net-next, thanks!
+This patch was applied to netdev/net.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Tue, 18 Apr 2023 13:25:11 -0700 you wrote:
+> The patch in fixes changed the way real-time mode is chosen for PHC on
+> the NIC. Apparently there is one more use case of the check outside of
+> ptp part of the driver which was not converted to the new macro and is
+> making a lot of noise in free-running mode.
+> 
+> Fixes: 131db4991622 ("bnxt_en: reset PHC frequency in free-running mode")
+> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] bnxt_en: fix free-runnig PHC mode
+    https://git.kernel.org/netdev/net/c/8c154d272c3e
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
