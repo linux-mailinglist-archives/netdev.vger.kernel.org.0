@@ -2,185 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5A606E9960
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:20:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C769C6E997C
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 18:25:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232284AbjDTQUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 12:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40854 "EHLO
+        id S230414AbjDTQZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 12:25:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229829AbjDTQUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:20:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEDB2139
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:19:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682007565;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=P6imfKiL+T/hSmG2W1TUbtBQVDF8VHMuJe5BkrlXV4k=;
-        b=Nj1ifKN+ujwZzBUH0H1W+TIFBoLraLR4s5ZfgNRHqCi58/vKoThjpEMkPD6vOz/QERsK7Z
-        QChD8M44eUQb60kr70S2saAVm04c6eLw+z6F43QzN0yt9qDmirZOjxh6ACzQS5wvuZks9L
-        ynNyFF+11KRR2+CZZq59OUTVDxvB1H4=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-629-QynxwgtqPH62N9Mcw4L8jQ-1; Thu, 20 Apr 2023 12:19:24 -0400
-X-MC-Unique: QynxwgtqPH62N9Mcw4L8jQ-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-3f080f46fb1so3291575e9.0
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:19:23 -0700 (PDT)
+        with ESMTP id S229811AbjDTQZm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 12:25:42 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8017119
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:25:40 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id 46e09a7af769-6a5f03551fdso917052a34.0
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 09:25:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682007940; x=1684599940;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=j/oXVgu3K+FRDkiKWsf8XYvbLWkOIkjoYREeAbjP6jE=;
+        b=BY5Z5a9wtOQCw6G2+OjAyzYt+LP2VUUPH3skvJKiljeDAa1y9mI1musT+BwXcBB7mS
+         KetSmBKW3H/gfJjY+ueaiUV0rPRRrnYUQfGDC7OWnuA+XLyhUhTXrH2Ra+5rtKZ4mVZe
+         xSeLGofbDk4Pm6gutgd/qW6UtBReCa4L0Vl6LNRnGYCyedupROA08jXWEE5evpq5Uk8C
+         ooDiFmR+u7+Fw8M8uz04wDxbjJUFcWFwmMGv4cFf61LiyQJ5bwVYIWuyad17j0TaA9hQ
+         M0Zt3KNDL6o+x/qc4yak+6deLtso5fW3BOl/WBwfLlQ/Z0pDAT6tNRzaR5HSj4WVyudp
+         H6bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682007562; x=1684599562;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=P6imfKiL+T/hSmG2W1TUbtBQVDF8VHMuJe5BkrlXV4k=;
-        b=Ecln+SY9hZZiWI3SdScUYPfjUEwUTEm18+7PHT9y2guVZR8/eDtjwRLL3ntGSKaJcE
-         hgrW+IaYzZn5OJdZnFz/vgMfgtN7QvUFJOziX4Lw8h/l80B8hlaUiugeWJdyqCMHOfgc
-         KYuikK574AsONM2G07F4qTZkOH0Rpwpokq5S5Rr7kJ76B1hXRi+kFYbci7ob5DzPegpt
-         0ICQrm6NmGlrIiur+yQepBZrmWcu4txt9x7X+4TbaeESlyKW3NPmDpmhzHpMspBDsf2r
-         xFDgEhlTb/ashJtSf7oQckMvYso0rUY+/c0lOX9YKWIjfwvdfI9VbwffZp8nHzMk3r6o
-         IZqA==
-X-Gm-Message-State: AAQBX9eSZhypyC4qyGfnQ/FyzLjKY5bmJyYzzc7mDNqG9PS1yf3trnWX
-        bwrjOyEf0Y25Q7avm+CFi2zvMak9MIsZRliGYMf2HM/0uvOUCRHNTas+6x6wjEAbibFOuNXxZ6B
-        fTtSBLcOOGQzaivYQbo8CUu52
-X-Received: by 2002:adf:ec02:0:b0:2fb:aa2f:3e50 with SMTP id x2-20020adfec02000000b002fbaa2f3e50mr1674075wrn.59.1682007562750;
-        Thu, 20 Apr 2023 09:19:22 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aUo332bWPjus69lZR3d63MPC/5JqobCxoOwqI0JepTKIt3r46N2l/NcVu5XHj3woxYOU/rLQ==
-X-Received: by 2002:adf:ec02:0:b0:2fb:aa2f:3e50 with SMTP id x2-20020adfec02000000b002fbaa2f3e50mr1674048wrn.59.1682007562357;
-        Thu, 20 Apr 2023 09:19:22 -0700 (PDT)
-Received: from debian ([2001:4649:fcb8:0:bac2:a5a6:5482:8a9e])
-        by smtp.gmail.com with ESMTPSA id m6-20020adfdc46000000b002d45575643esm2337178wrj.43.2023.04.20.09.19.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Apr 2023 09:19:21 -0700 (PDT)
-Date:   Thu, 20 Apr 2023 18:19:19 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Aleksey Shumnik <ashumnik9@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, waltje@uwalt.nl.mugnet.org,
-        gw4pts@gw4pts.ampr.org, xeb@mail.ru, kuznet@ms2.inr.ac.ru,
-        rzsfl@rz.uni-sb.de
-Subject: Re: [BUG] In af_packet.c::dev_parse_header() skb.network_header does
- not point to the network header
-Message-ID: <ZEFmB07IcyhjiqTC@debian>
-References: <CAJGXZLgcH6bjmj7YR-hAWpEQW1CPjEcOdMN01hqsVk18E4ScZQ@mail.gmail.com>
- <64362359316d5_1b9cfb29415@willemb.c.googlers.com.notmuch>
+        d=1e100.net; s=20221208; t=1682007940; x=1684599940;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=j/oXVgu3K+FRDkiKWsf8XYvbLWkOIkjoYREeAbjP6jE=;
+        b=Q7fs/Fh0A1nxTpO4/Sil+c/iG/mPTAEt6Md/17GammuzVa6zhvwfUhaxCnsxHbOq1m
+         JHiezvKpnI+lAOaLVyHneZv/XZfXJNJ+BunLSrv5X/J2qDQmKqUzpfzxtoJ+LRr+SuUK
+         2uTPL9dYpjXjYde1JqnFR4weJHmox7K/hnU0nMjwb2gaeJjG4z6h7t4S9CAf0daWOJKi
+         ShbrWJQPAoyUpZec/iMa2b6S7bymxyvJ0TOBp+DzoR9Eqn1uyyEPUEE7/cDPdDZPuAsI
+         oD58aQkhuL8xJcOz1H+O3+dfv1LA6RBDbQWQok8j68MMwTn4VhA+lvAZhaV+JyEyNhiC
+         GwuQ==
+X-Gm-Message-State: AAQBX9fFmjbwx71kBSbKY2PLNsJ6Bv51bzGdZTSFNGM0SC+NUkn8aV+I
+        aJvMpUWtQKgKwfAPRpjQsYsNGA==
+X-Google-Smtp-Source: AKy350bMyAyA1AXcK2j7mqiAqqJd5UeaD3HbU+3PwhRAxXYF//nKVaJ3ILu4rhQafrpuS4MYt0xNGg==
+X-Received: by 2002:a54:4388:0:b0:38d:fa26:3bc4 with SMTP id u8-20020a544388000000b0038dfa263bc4mr1299899oiv.10.1682007938609;
+        Thu, 20 Apr 2023 09:25:38 -0700 (PDT)
+Received: from ?IPV6:2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75? ([2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75])
+        by smtp.gmail.com with ESMTPSA id x6-20020acae006000000b0037832f60518sm735209oig.14.2023.04.20.09.25.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Apr 2023 09:25:38 -0700 (PDT)
+Message-ID: <4e8324cf-e6de-acff-5e30-373d015a3cb4@mojatatu.com>
+Date:   Thu, 20 Apr 2023 13:25:33 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <64362359316d5_1b9cfb29415@willemb.c.googlers.com.notmuch>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net v2] net/sched: sch_fq: fix integer overflow of
+ "credit"
+Content-Language: en-US
+To:     Davide Caratti <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+References: <7b3a3c7e36d03068707a021760a194a8eb5ad41a.1682002300.git.dcaratti@redhat.com>
+From:   Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <7b3a3c7e36d03068707a021760a194a8eb5ad41a.1682002300.git.dcaratti@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 11, 2023 at 11:19:53PM -0400, Willem de Bruijn wrote:
-> Aleksey Shumnik wrote:
-> > but in ip6_gre.c all
-> > skb_mac_header(), skb_network_header(), skb_tranport_header() returns
-> > a pointer to payload (skb.data).
-> > This function is called when receiving a packet and parsing it in
-> > af_packet.c::packet_rcv() in dev_parse_header().
-> > The problem is that there is no way to accurately determine the
-> > beginning of the ip header.
+On 20/04/2023 11:59, Davide Caratti wrote:
+> if sch_fq is configured with "initial quantum" having values greater than
+> INT_MAX, the first assignment of "credit" does signed integer overflow to
+> a very negative value.
+> In this situation, the syzkaller script provided by Cristoph triggers the
+> CPU soft-lockup warning even with few sockets. It's not an infinite loop,
+> but "credit" wasn't probably meant to be minus 2Gb for each new flow.
+> Capping "initial quantum" to INT_MAX proved to fix the issue.
 > 
-> The issue happens when comparing packet_rcv on an ip_gre tunnel vs an
-> ip6_gre tunnel.
+> v2: validation of "initial quantum" is done in fq_policy, instead of open
+>      coding in fq_change() _ suggested by Jakub Kicinski
 > 
-> The packet_rcv call does the same in both cases, e.g., setting
-> skb->data at mac or network header depending on SOCK_DGRAM or
-> SOCK_RAW.
+> Reported-by: Christoph Paasch <cpaasch@apple.com>
+> Link: https://github.com/multipath-tcp/mptcp_net-next/issues/377
+> Fixes: afe4fd062416 ("pkt_sched: fq: Fair Queue packet scheduler")
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> ---
+>   net/sched/sch_fq.c                            |  6 ++++-
+>   .../tc-testing/tc-tests/qdiscs/fq.json        | 22 +++++++++++++++++++
+>   2 files changed, 27 insertions(+), 1 deletion(-)
 > 
-> The issue then is likely with a difference in tunnel implementations.
-> Both implement header_ops and header_ops.create (which is used on
-> receive by dev_has_header, but on transmit by dev_hard_header). They
-> return different lengths: one with and one without the IP header.
+> diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
+> index 48d14fb90ba0..f59a2cb2c803 100644
+> --- a/net/sched/sch_fq.c
+> +++ b/net/sched/sch_fq.c
+> @@ -779,13 +779,17 @@ static int fq_resize(struct Qdisc *sch, u32 log)
+>   	return 0;
+>   }
+>   
+> +static struct netlink_range_validation iq_range = {
+> +	.max = INT_MAX,
+> +};
+> +
+>   static const struct nla_policy fq_policy[TCA_FQ_MAX + 1] = {
+>   	[TCA_FQ_UNSPEC]			= { .strict_start_type = TCA_FQ_TIMER_SLACK },
+>   
+>   	[TCA_FQ_PLIMIT]			= { .type = NLA_U32 },
+>   	[TCA_FQ_FLOW_PLIMIT]		= { .type = NLA_U32 },
+>   	[TCA_FQ_QUANTUM]		= { .type = NLA_U32 },
+> -	[TCA_FQ_INITIAL_QUANTUM]	= { .type = NLA_U32 },
+> +	[TCA_FQ_INITIAL_QUANTUM]	= NLA_POLICY_FULL_RANGE(NLA_U32, &iq_range),
+>   	[TCA_FQ_RATE_ENABLE]		= { .type = NLA_U32 },
+>   	[TCA_FQ_FLOW_DEFAULT_RATE]	= { .type = NLA_U32 },
+>   	[TCA_FQ_FLOW_MAX_RATE]		= { .type = NLA_U32 },
+> diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
+> index 8acb904d1419..3593fb8f79ad 100644
+> --- a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
+> +++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
+> @@ -114,6 +114,28 @@
+>               "$IP link del dev $DUMMY type dummy"
+>           ]
+>       },
+> +    {
+> +        "id": "10f7",
+> +        "name": "Create FQ with invalid initial_quantum setting",
+> +        "category": [
+> +            "qdisc",
+> +            "fq"
+> +        ],
+> +        "plugins": {
+> +            "requires": "nsPlugin"
+> +        },
+> +        "setup": [
+> +            "$IP link add dev $DUMMY type dummy || /bin/true"
+> +        ],
+> +        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq initial_quantum 0x80000000",
+> +        "expExitCode": "2",
+> +        "verifyCmd": "$TC qdisc show dev $DUMMY",
+> +        "matchPattern": "qdisc fq 1: root.*initial_quantum 2048Mb",
+> +        "matchCount": "0",
+> +        "teardown": [
+> +            "$IP link del dev $DUMMY type dummy"
+> +        ]
+> +    },
+>       {
+>           "id": "9398",
+>           "name": "Create FQ with maxrate setting",
 
-The problem is that, upon reception on an af_packet socket, ip_gre
-wants to set the outer source IP address in sll->sll_addr. That is, it
-considers the outer IP header as the mac header of the gre device.
-
-As far as I know, ip_gre is the only tunnel that does that.
-
-> We've seen inconsistency in this before between tunnels. See also
-> commit aab1e898c26c. ipgre_xmit has special logic to optionally pull
-> the headers, but only if header_ops is set, which it isn't for all
-> variants of GRE tunnels.
-> 
-> Probably particularly relevant is this section in __ipgre_rcv:
-> 
->                 /* Special case for ipgre_header_parse(), which expects the
->                  * mac_header to point to the outer IP header.
->                  */
->                 if (tunnel->dev->header_ops == &ipgre_header_ops)
->                         skb_pop_mac_header(skb);
->                 else
->                         skb_reset_mac_header(skb);
-> 
-> and see this comment in the mentioned commit:
-> 
->     ipgre_header_parse() seems to be the only case that requires mac_header
->     to point to the outer header. We can detect this case accurately by
->     checking ->header_ops. For all other cases, we can reset mac_header.
-
-The problem was about unifying the different ip tunnel behaviours, as
-described in the cover letter of the series (merge commit 8eb517a2a4ae
-("Merge branch 'reset-mac'") has all the details).
-
-The idea is to make all tunnel devices consistently set ->mac_header
-and ->network_header to the corresponding inner headers. For tunnels
-that directly transport network protocols, ->mac_header equals
-->network_header (that is, the mac header length is 0).
-
-But there's a problem with ip_gre, as it wants to access the outer
-headers again, even though it has already pulled them. To do that,
-ip_gre saves the offset of the outer ip header in the ->mac_header, so
-that ipgre_header_parse() can find it again later. That's why ip_gre
-can't properly set ->mac_header to the inner mac header offset, as the
-other tunnels do.
-
-I personally find this use of ->mac_header a bit hacky, but it's used
-to implement a feature that's required for some users (see commit
-0e3da5bb8da4 ("ip_gre: fix msg_name parsing for recvfrom/recvmsg")). We
-could probably store the outer IP header offset elsewhere and reset
-->mac_header the way all other tunnels do. But I didn't find a
-satisfying solution, so I just kept ip_gre as an exception.
-
-> > diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-> > index 90565b8..0d0c37b 100644
-> > --- a/net/ipv6/ip6_gre.c
-> > +++ b/net/ipv6/ip6_gre.c
-> > @@ -1404,8 +1404,16 @@ static int ip6gre_header(struct sk_buff *skb,
-> > struct net_device *dev,
-> >   return -t->hlen;
-> >  }
-> > 
-> > +static int ip6gre_header_parse(const struct sk_buff *skb, unsigned char *haddr)
-> > +{
-> > + const struct ipv6hdr *ipv6h = (const struct ipv6hdr *) skb_mac_header(skb);
-> > + memcpy(haddr, &ipv6h->saddr, 16);
-> > + return 16;
-> > +}
-> > +
-> >  static const struct header_ops ip6gre_header_ops = {
-> >   .create = ip6gre_header,
-> > + .parse = ip6gre_header_parse,
-> >  };
-> > 
-> >  static const struct net_device_ops ip6gre_netdev_ops = {
-> > 
-> > Would you answer whether this behavior is an error and why the
-> > behavior in ip_gre.c and ip6_gre.c differs?
-> > 
-> > Regards,
-> > Aleksey
-> 
-> 
-
+You probably don't want to backport the test as well? If so I would 
+break this patch into two.
