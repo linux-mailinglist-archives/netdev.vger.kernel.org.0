@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 287A36E97A6
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 16:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 305636E97A9
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 16:51:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232742AbjDTOvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 10:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43052 "EHLO
+        id S232849AbjDTOv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 10:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230189AbjDTOvO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 10:51:14 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2EE658B;
-        Thu, 20 Apr 2023 07:51:09 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id ay3-20020a05600c1e0300b003f17289710aso1253580wmb.5;
-        Thu, 20 Apr 2023 07:51:09 -0700 (PDT)
+        with ESMTP id S232889AbjDTOvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 10:51:21 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4F77282;
+        Thu, 20 Apr 2023 07:51:13 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id o29-20020a05600c511d00b003f1739de43cso1256655wms.4;
+        Thu, 20 Apr 2023 07:51:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682002268; x=1684594268;
+        d=gmail.com; s=20221208; t=1682002273; x=1684594273;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=x+CJkctN2B5FsSgvEbq8lrocG4HR+Tm3KsA/CYziZ4Q=;
-        b=KDQBVGWd/pbAAIlG8oKpHQYDXvwJ2mSsScsa/WxRH7GpreI72U8bmYhiir4vA/M/GT
-         5YT1wsc0hZuLlrmxw0Csgwor5RPsdGleWC9kMvbjLlG0ydwEJfyCm1TzsN6G7Ak5X4S1
-         9FQJubcbsTZjqai1mFeoINCVlBpC+DMW3kW6vZYJmK2B61QVk11Cefx+SmtJDe8COsQA
-         BWwDVK99o20ZEIyUDVrL+pXBjg/Qty7Ywp7ogKVWlYG/CqWf33euVK5Ju8FC2Nl1NGJb
-         cp/hBU68V/8R0rY9yu584BKPDayp7nCGe2NoOiNiPFsAmTqRpS/daylTyCk7wHKzJ4fh
-         TmZg==
+        bh=KnyPHhlG14bz6EDEVcoWERsXlhJzJCPorj/CGFgJlCg=;
+        b=b/SYIujKmEBBS7uc5khOPASaikHn90tU41wjBccD6/9T4KIzYeRk97obV+deMvIuod
+         CGsgYUL9x/Zlihr/+56afeCZzIqZ0e0G5VoHKzeBQnrCFzGv/+v7c80Ga4Pu++f5ozAD
+         c1yx8Y7pCKJwOS8RSBFGfLinNB0Si94LqFMilOIMvZ21h0RSOW/t+ZZwpUo/9+znUNki
+         78uNazdHh0kSjciewk7vaf4nJEjo8NZen35uxNuQ/KIYRRIbxHU2XDM8o10NTrdmHEnU
+         czwhfaw+sR3a6uqposj/VAIH28wAitsTK8wEOe5ZLc2otrQxpNm/MWKgqjw+OuqataZN
+         Umzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682002268; x=1684594268;
+        d=1e100.net; s=20221208; t=1682002273; x=1684594273;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=x+CJkctN2B5FsSgvEbq8lrocG4HR+Tm3KsA/CYziZ4Q=;
-        b=LsIqDvoCOgLuxc4r+IqfkkzXtuaEOuWBo/1qy9hMn9CwA5fN761VABg659erNw8YEc
-         6TkU56XVeisp8Xqqm8Gzqj9Q34/7xHxt6WUjkZQTVFAO5ZUmmkhVWwVPmeZ3KTQ3HT8U
-         b0ruGSgdU4GvV0neE9wC+VeySc22/+zl+VIePFjZrWJNYbkdCjOdCoqnP7E+eNIEfc51
-         DOqVS6CQr9hBPy382spkHhHobnfiEgLMUo0gnJLhZb5E9kAXhhUnIb28GHgsSwP1mpSW
-         6d8gqmp6vZA2nPb4UhxY/o2UQmbiWIBp3fCftiPAw56ie+FqkvZhzWLIQx4zwejmMKeb
-         0BIg==
-X-Gm-Message-State: AAQBX9fkmGDOayWCHL68NPgYR/B7LWpYz6IsraMbeMoeKIxabJ2TeGV3
-        SQs1FY86FrBmyZv4wR6Mlqg=
-X-Google-Smtp-Source: AKy350bN6KqubrZDkboMfpLSdIEr9Io5z8lCZnXyRpIT+H4NGDz2Ab+L6OoPfTzDgwmUDp4J5FUMNQ==
-X-Received: by 2002:a05:600c:215:b0:3ef:6819:b2ad with SMTP id 21-20020a05600c021500b003ef6819b2admr1475788wmi.37.1682002268439;
-        Thu, 20 Apr 2023 07:51:08 -0700 (PDT)
+        bh=KnyPHhlG14bz6EDEVcoWERsXlhJzJCPorj/CGFgJlCg=;
+        b=YuPKGtQo+H3ZQ6EasHNhXP+8x1v2cgNLzOFzcQwwi3W4BLnZELXRoFSTzu03LQVicQ
+         C6PNcAh9fD2NRVwZvR3vJj53Q9ZgG9Bq5hO5UNiL2cX/pc4xQZo6/IHmsZHZp+SyQ8+y
+         jejF6vTsupY13CbhTlIYC3TW6CYk5lNXrjCQlpjZwMXsKIFnIK4y0Z7lx9RaBDEPFYr2
+         r/GM6GpfHLee+vxY2JoLtmS45vqUKOoF8Jo6BapIbDCGnnvpaiwU+CzhnH4voqrbNjQF
+         cpZt5tUJG0HBZPrkGXoRE8TsX+YciwraLJH0NErRXI8jQ/sDFgxyEJH0bog8lTrKviGe
+         ME7w==
+X-Gm-Message-State: AAQBX9dgQei3qH6xlvWDa7QGVByv99v/uI2jft043jnRrQOdb/yzW7hj
+        uam6jky4OMCZkUnhEBMQBCE=
+X-Google-Smtp-Source: AKy350Z8tDn2o/xfiXysAFd7WB5i0oHirLEtfCSvAyCvA/jFKHyu0XI2/okQhh9Dwqi08skAkbYbWA==
+X-Received: by 2002:a7b:ce04:0:b0:3f1:6757:6243 with SMTP id m4-20020a7bce04000000b003f167576243mr1369685wmc.35.1682002272513;
+        Thu, 20 Apr 2023 07:51:12 -0700 (PDT)
 Received: from gsever-Latitude-7400.corp.proofpoint.com ([46.120.112.185])
-        by smtp.gmail.com with ESMTPSA id n20-20020a7bc5d4000000b003f17b96793dsm5534619wmk.37.2023.04.20.07.51.06
+        by smtp.gmail.com with ESMTPSA id n20-20020a7bc5d4000000b003f17b96793dsm5534619wmk.37.2023.04.20.07.51.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Apr 2023 07:51:07 -0700 (PDT)
+        Thu, 20 Apr 2023 07:51:12 -0700 (PDT)
 From:   Gilad Sever <gilad9366@gmail.com>
 To:     dsahern@kernel.org, martin.lau@linux.dev, daniel@iogearbox.net,
         john.fastabend@gmail.com, ast@kernel.org, andrii@kernel.org,
@@ -59,9 +59,9 @@ To:     dsahern@kernel.org, martin.lau@linux.dev, daniel@iogearbox.net,
 Cc:     eyal.birger@gmail.com, shmulik.ladkani@gmail.com,
         bpf@vger.kernel.org, netdev@vger.kernel.org,
         linux-kselftest@vger.kernel.org, Gilad Sever <gilad9366@gmail.com>
-Subject: [PATCH bpf,v2 3/4] bpf: fix bpf socket lookup from tc/xdp to respect socket VRF bindings
-Date:   Thu, 20 Apr 2023 17:50:40 +0300
-Message-Id: <20230420145041.508434-4-gilad9366@gmail.com>
+Subject: [PATCH bpf,v2 4/4] selftests/bpf: Add tc_socket_lookup tests
+Date:   Thu, 20 Apr 2023 17:50:41 +0300
+Message-Id: <20230420145041.508434-5-gilad9366@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230420145041.508434-1-gilad9366@gmail.com>
 References: <20230420145041.508434-1-gilad9366@gmail.com>
@@ -77,217 +77,444 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling bpf_sk_lookup_tcp(), bpf_sk_lookup_udp() or
-bpf_skc_lookup_tcp() from tc/xdp ingress, VRF socket bindings aren't
-respoected, i.e. unbound sockets are returned, and bound sockets aren't
-found.
+Verify that socket lookup via TC with all BPF APIs is VRF aware.
 
-VRF binding is determined by the sdif argument to sk_lookup(), however
-when called from tc the IP SKB control block isn't initialized and thus
-inet{,6}_sdif() always returns 0.
-
-Fix by calculating sdif for the tc/xdp flows by observing the device's
-l3 enslaved state.
-
-The cg/sk_skb hooking points which are expected to support
-inet{,6}_sdif() pass sdif=-1 which makes __bpf_skc_lookup() use the
-existing logic.
-
-Fixes: 6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
 Signed-off-by: Gilad Sever <gilad9366@gmail.com>
 ---
- net/core/filter.c | 63 +++++++++++++++++++++++++++++++----------------
- 1 file changed, 42 insertions(+), 21 deletions(-)
+v2: Fix build by initializing vars with -1
+---
+ .../bpf/prog_tests/tc_socket_lookup.c         | 341 ++++++++++++++++++
+ .../selftests/bpf/progs/tc_socket_lookup.c    |  73 ++++
+ 2 files changed, 414 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_socket_lookup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/tc_socket_lookup.c
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index f43f86fc1235..d68e14ff1e55 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6529,12 +6529,11 @@ static struct sock *sk_lookup(struct net *net, struct bpf_sock_tuple *tuple,
- static struct sock *
- __bpf_skc_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
- 		 struct net *caller_net, u32 ifindex, u8 proto, u64 netns_id,
--		 u64 flags)
-+		 u64 flags, int sdif)
- {
- 	struct sock *sk = NULL;
- 	struct net *net;
- 	u8 family;
--	int sdif;
- 
- 	if (len == sizeof(tuple->ipv4))
- 		family = AF_INET;
-@@ -6546,10 +6545,12 @@ __bpf_skc_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
- 	if (unlikely(flags || !((s32)netns_id < 0 || netns_id <= S32_MAX)))
- 		goto out;
- 
--	if (family == AF_INET)
--		sdif = inet_sdif(skb);
--	else
--		sdif = inet6_sdif(skb);
-+	if (sdif < 0) {
-+		if (family == AF_INET)
-+			sdif = inet_sdif(skb);
-+		else
-+			sdif = inet6_sdif(skb);
-+	}
- 
- 	if ((s32)netns_id < 0) {
- 		net = caller_net;
-@@ -6569,10 +6570,11 @@ __bpf_skc_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
- static struct sock *
- __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
- 		struct net *caller_net, u32 ifindex, u8 proto, u64 netns_id,
--		u64 flags)
-+		u64 flags, int sdif)
- {
- 	struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
--					   ifindex, proto, netns_id, flags);
-+					   ifindex, proto, netns_id, flags,
-+					   sdif);
- 
- 	if (sk) {
- 		struct sock *sk2 = sk_to_full_sk(sk);
-@@ -6612,7 +6614,7 @@ bpf_skc_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
- 	}
- 
- 	return __bpf_skc_lookup(skb, tuple, len, caller_net, ifindex, proto,
--				netns_id, flags);
-+				netns_id, flags, -1);
- }
- 
- static struct sock *
-@@ -6701,15 +6703,25 @@ static const struct bpf_func_proto bpf_sk_lookup_udp_proto = {
- 	.arg5_type	= ARG_ANYTHING,
- };
- 
-+static int bpf_l2_sdif(const struct net_device *dev)
+diff --git a/tools/testing/selftests/bpf/prog_tests/tc_socket_lookup.c b/tools/testing/selftests/bpf/prog_tests/tc_socket_lookup.c
+new file mode 100644
+index 000000000000..5dcaf0ea3f8c
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/tc_socket_lookup.c
+@@ -0,0 +1,341 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
++
++/*
++ * Topology:
++ * ---------
++ *     NS1 namespace         |   NS2 namespace
++ *			     |
++ *     +--------------+      |   +--------------+
++ *     |    veth01    |----------|    veth10    |
++ *     | 172.16.1.100 |      |   | 172.16.1.200 |
++ *     |     bpf      |      |   +--------------+
++ *     +--------------+      |
++ *      server(UDP/TCP)      |
++ *  +-------------------+    |
++ *  |        vrf1       |    |
++ *  |  +--------------+ |    |   +--------------+
++ *  |  |    veth02    |----------|    veth20    |
++ *  |  | 172.16.2.100 | |    |   | 172.16.2.200 |
++ *  |  |     bpf      | |    |   +--------------+
++ *  |  +--------------+ |    |
++ *  |   server(UDP/TCP) |    |
++ *  +-------------------+    |
++ *
++ * Test flow
++ * -----------
++ *  The tests verifies that socket lookup via TC is VRF aware:
++ *  1) Creates two veth pairs between NS1 and NS2:
++ *     a) veth01 <-> veth10 outside the VRF
++ *     b) veth02 <-> veth20 in the VRF
++ *  2) Attaches to veth01 and veth02 a program that calls:
++ *     a) bpf_skc_lookup_tcp() with TCP and tcp_skc is true
++ *     b) bpf_sk_lookup_tcp() with TCP and tcp_skc is false
++ *     c) bpf_sk_lookup_udp() with UDP
++ *     The program stores the lookup result in bss->lookup_status.
++ *  3) Creates a socket TCP/UDP server in/outside the VRF.
++ *  4) The test expects lookup_status to be:
++ *     a) 0 from device in VRF to server outside VRF
++ *     b) 0 from device outside VRF to server in VRF
++ *     c) 1 from device in VRF to server in VRF
++ *     d) 1 from device outside VRF to server outside VRF
++ */
++
++#include <net/if.h>
++
++#include "test_progs.h"
++#include "network_helpers.h"
++#include "tc_socket_lookup.skel.h"
++
++#define NS1 "tc_socket_lookup_1"
++#define NS2 "tc_socket_lookup_2"
++
++#define IP4_ADDR_VETH01 "172.16.1.100"
++#define IP4_ADDR_VETH10 "172.16.1.200"
++#define IP4_ADDR_VETH02 "172.16.2.100"
++#define IP4_ADDR_VETH20 "172.16.2.200"
++
++#define NON_VRF_PORT 5000
++#define IN_VRF_PORT 5001
++
++#define IO_TIMEOUT_SEC	3
++
++#define SYS(fmt, ...)						\
++	({							\
++		char cmd[1024];					\
++		snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__);	\
++		if (!ASSERT_OK(system(cmd), cmd))		\
++			goto fail;				\
++	})
++
++#define SYS_NOFAIL(fmt, ...)					\
++	({							\
++		char cmd[1024];					\
++		snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__);	\
++		system(cmd);					\
++	})
++
++static int make_socket(int sotype, const char *ip, int port,
++		       struct sockaddr_storage *addr)
 +{
-+#if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
-+	if (netif_is_l3_slave(dev))
-+		return dev->ifindex;
-+#endif
++	struct timeval timeo = { .tv_sec = IO_TIMEOUT_SEC };
++	int err, fd;
++
++	err = make_sockaddr(AF_INET, ip, port, addr, NULL);
++	if (!ASSERT_OK(err, "make_address"))
++		return -1;
++
++	fd = socket(AF_INET, sotype, 0);
++	if (!ASSERT_OK(fd < 0, "socket"))
++		return -1;
++
++	err = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeo, sizeof(timeo));
++	if (!ASSERT_OK(err, "setsockopt(SO_SNDTIMEO)"))
++		goto fail;
++
++	err = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo));
++	if (!ASSERT_OK(err, "setsockopt(SO_RCVTIMEO)"))
++		goto fail;
++
++	return fd;
++fail:
++	close(fd);
++	return -1;
++}
++
++static int make_server(int sotype, const char *ip, int port, const char *ifname)
++{
++	struct sockaddr_storage addr = {};
++	const int one = 1;
++	int err, fd = -1;
++
++	fd = make_socket(sotype, ip, port, &addr);
++	if (fd < 0)
++		return -1;
++
++	if (sotype == SOCK_STREAM) {
++		err = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one,
++				 sizeof(one));
++		if (!ASSERT_OK(err, "setsockopt(SO_REUSEADDR)"))
++			goto fail;
++	}
++
++	if (ifname) {
++		err = setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE,
++				 ifname, strlen(ifname) + 1);
++		if (!ASSERT_OK(err, "setsockopt(SO_BINDTODEVICE)"))
++			goto fail;
++	}
++
++	err = bind(fd, (void *)&addr, sizeof(struct sockaddr_in));
++	if (!ASSERT_OK(err, "bind"))
++		goto fail;
++
++	if (sotype == SOCK_STREAM) {
++		err = listen(fd, SOMAXCONN);
++		if (!ASSERT_OK(err, "listen"))
++			goto fail;
++	}
++
++	return fd;
++fail:
++	close(fd);
++	return -1;
++}
++
++static int attach_tc_prog(struct bpf_tc_hook *hook, int prog_fd)
++{
++	LIBBPF_OPTS(bpf_tc_opts, opts1, .handle = 1, .priority = 1,
++		    .prog_fd = prog_fd);
++	int ret;
++
++	ret = bpf_tc_hook_create(hook);
++	if (!ASSERT_OK(ret, "create tc hook"))
++		return ret;
++
++	if (prog_fd >= 0) {
++		hook->attach_point = BPF_TC_INGRESS;
++		ret = bpf_tc_attach(hook, &opts1);
++		if (!ASSERT_OK(ret, "bpf_tc_attach")) {
++			bpf_tc_hook_destroy(hook);
++			return ret;
++		}
++	}
 +	return 0;
 +}
 +
- BPF_CALL_5(bpf_tc_skc_lookup_tcp, struct sk_buff *, skb,
- 	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
- {
- 	struct net *caller_net = dev_net(skb->dev);
-+	int sdif = bpf_l2_sdif(skb->dev);
- 	int ifindex = skb->dev->ifindex;
- 
- 	return (unsigned long)__bpf_skc_lookup(skb, tuple, len, caller_net,
- 					       ifindex, IPPROTO_TCP, netns_id,
--					       flags);
-+					       flags, sdif);
- }
- 
- static const struct bpf_func_proto bpf_tc_skc_lookup_tcp_proto = {
-@@ -6728,11 +6740,12 @@ BPF_CALL_5(bpf_tc_sk_lookup_tcp, struct sk_buff *, skb,
- 	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
- {
- 	struct net *caller_net = dev_net(skb->dev);
-+	int sdif = bpf_l2_sdif(skb->dev);
- 	int ifindex = skb->dev->ifindex;
- 
- 	return (unsigned long)__bpf_sk_lookup(skb, tuple, len, caller_net,
- 					      ifindex, IPPROTO_TCP, netns_id,
--					      flags);
-+					      flags, sdif);
- }
- 
- static const struct bpf_func_proto bpf_tc_sk_lookup_tcp_proto = {
-@@ -6751,11 +6764,12 @@ BPF_CALL_5(bpf_tc_sk_lookup_udp, struct sk_buff *, skb,
- 	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
- {
- 	struct net *caller_net = dev_net(skb->dev);
-+	int sdif = bpf_l2_sdif(skb->dev);
- 	int ifindex = skb->dev->ifindex;
- 
- 	return (unsigned long)__bpf_sk_lookup(skb, tuple, len, caller_net,
- 					      ifindex, IPPROTO_UDP, netns_id,
--					      flags);
-+					      flags, sdif);
- }
- 
- static const struct bpf_func_proto bpf_tc_sk_lookup_udp_proto = {
-@@ -6788,11 +6802,13 @@ BPF_CALL_5(bpf_xdp_sk_lookup_udp, struct xdp_buff *, ctx,
- 	   struct bpf_sock_tuple *, tuple, u32, len, u32, netns_id, u64, flags)
- {
- 	struct net *caller_net = dev_net(ctx->rxq->dev);
--	int ifindex = ctx->rxq->dev->ifindex;
-+	struct net_device *dev = ctx->rxq->dev;
-+	int sdif = bpf_l2_sdif(dev);
-+	int ifindex = dev->ifindex;
- 
- 	return (unsigned long)__bpf_sk_lookup(NULL, tuple, len, caller_net,
- 					      ifindex, IPPROTO_UDP, netns_id,
--					      flags);
-+					      flags, sdif);
- }
- 
- static const struct bpf_func_proto bpf_xdp_sk_lookup_udp_proto = {
-@@ -6811,11 +6827,13 @@ BPF_CALL_5(bpf_xdp_skc_lookup_tcp, struct xdp_buff *, ctx,
- 	   struct bpf_sock_tuple *, tuple, u32, len, u32, netns_id, u64, flags)
- {
- 	struct net *caller_net = dev_net(ctx->rxq->dev);
--	int ifindex = ctx->rxq->dev->ifindex;
-+	struct net_device *dev = ctx->rxq->dev;
-+	int sdif = bpf_l2_sdif(dev);
-+	int ifindex = dev->ifindex;
- 
- 	return (unsigned long)__bpf_skc_lookup(NULL, tuple, len, caller_net,
- 					       ifindex, IPPROTO_TCP, netns_id,
--					       flags);
-+					       flags, sdif);
- }
- 
- static const struct bpf_func_proto bpf_xdp_skc_lookup_tcp_proto = {
-@@ -6834,11 +6852,13 @@ BPF_CALL_5(bpf_xdp_sk_lookup_tcp, struct xdp_buff *, ctx,
- 	   struct bpf_sock_tuple *, tuple, u32, len, u32, netns_id, u64, flags)
- {
- 	struct net *caller_net = dev_net(ctx->rxq->dev);
--	int ifindex = ctx->rxq->dev->ifindex;
-+	struct net_device *dev = ctx->rxq->dev;
-+	int sdif = bpf_l2_sdif(dev);
-+	int ifindex = dev->ifindex;
- 
- 	return (unsigned long)__bpf_sk_lookup(NULL, tuple, len, caller_net,
- 					      ifindex, IPPROTO_TCP, netns_id,
--					      flags);
-+					      flags, sdif);
- }
- 
- static const struct bpf_func_proto bpf_xdp_sk_lookup_tcp_proto = {
-@@ -6858,7 +6878,8 @@ BPF_CALL_5(bpf_sock_addr_skc_lookup_tcp, struct bpf_sock_addr_kern *, ctx,
- {
- 	return (unsigned long)__bpf_skc_lookup(NULL, tuple, len,
- 					       sock_net(ctx->sk), 0,
--					       IPPROTO_TCP, netns_id, flags);
-+					       IPPROTO_TCP, netns_id, flags,
-+					       -1);
- }
- 
- static const struct bpf_func_proto bpf_sock_addr_skc_lookup_tcp_proto = {
-@@ -6877,7 +6898,7 @@ BPF_CALL_5(bpf_sock_addr_sk_lookup_tcp, struct bpf_sock_addr_kern *, ctx,
- {
- 	return (unsigned long)__bpf_sk_lookup(NULL, tuple, len,
- 					      sock_net(ctx->sk), 0, IPPROTO_TCP,
--					      netns_id, flags);
-+					      netns_id, flags, -1);
- }
- 
- static const struct bpf_func_proto bpf_sock_addr_sk_lookup_tcp_proto = {
-@@ -6896,7 +6917,7 @@ BPF_CALL_5(bpf_sock_addr_sk_lookup_udp, struct bpf_sock_addr_kern *, ctx,
- {
- 	return (unsigned long)__bpf_sk_lookup(NULL, tuple, len,
- 					      sock_net(ctx->sk), 0, IPPROTO_UDP,
--					      netns_id, flags);
-+					      netns_id, flags, -1);
- }
- 
- static const struct bpf_func_proto bpf_sock_addr_sk_lookup_udp_proto = {
++static void cleanup(void)
++{
++	SYS_NOFAIL("test -f /var/run/netns/" NS1 " && ip netns delete "
++		   NS1);
++	SYS_NOFAIL("test -f /var/run/netns/" NS2 " && ip netns delete "
++		   NS2);
++}
++
++static int setup(struct tc_socket_lookup *skel)
++{
++	LIBBPF_OPTS(bpf_tc_hook, tc_hook, .attach_point = BPF_TC_INGRESS);
++	struct nstoken *nstoken = NULL;
++	int ifindex, prog_fd, ret = 0;
++
++	SYS("ip netns add " NS1);
++	SYS("ip netns add " NS2);
++
++	/* NS1 <-> NS2 [veth01 <-> veth10] */
++	SYS("ip link add veth01 netns " NS1 " type veth peer name veth10 netns "
++	    NS2);
++	SYS("ip -net " NS1 " addr add " IP4_ADDR_VETH01 "/24 dev veth01");
++	SYS("ip -net " NS1 " link set dev veth01 up");
++	SYS("ip -net " NS2 " addr add " IP4_ADDR_VETH10 "/24 dev veth10");
++	SYS("ip -net " NS2 " link set dev veth10 up");
++
++	/* NS1 <-> NS2 [veth02 <-> veth20] */
++	SYS("ip link add veth02 netns " NS1 " type veth peer name veth20 netns "
++	    NS2);
++	SYS("ip -net " NS1 " addr add " IP4_ADDR_VETH02 "/24 dev veth02");
++	SYS("ip -net " NS1 " link set dev veth02 up");
++	SYS("ip -net " NS2 " addr add " IP4_ADDR_VETH20 "/24 dev veth20");
++	SYS("ip -net " NS2 " link set dev veth20 up");
++
++	/* veth02 -> vrf1  */
++	SYS("ip -net " NS1 " link add vrf1 type vrf table 11");
++	SYS("ip -net " NS1 " route add vrf vrf1 unreachable default metric "
++	    "4278198272");
++	SYS("ip -net " NS1 " link set vrf1 alias vrf");
++	SYS("ip -net " NS1 " link set vrf1 up");
++	SYS("ip -net " NS1 " link set veth02 master vrf1");
++
++	/* Attach prog to veth devices in NS1 */
++	nstoken = open_netns(NS1);
++	if (!ASSERT_OK_PTR(nstoken, "setns " NS1))
++		goto fail;
++	prog_fd = bpf_program__fd(skel->progs.test_socket_lookup);
++	if (!ASSERT_GE(prog_fd, 0, "bpf_program__fd"))
++		goto fail;
++
++	ifindex = if_nametoindex("veth01");
++	if (!ASSERT_NEQ(ifindex, 0, "veth01 ifindex"))
++		goto fail;
++	tc_hook.ifindex = ifindex;
++	if (attach_tc_prog(&tc_hook, prog_fd))
++		goto fail;
++
++	ifindex = if_nametoindex("veth02");
++	if (!ASSERT_NEQ(ifindex, 0, "veth02 ifindex"))
++		goto fail;
++	tc_hook.ifindex = ifindex;
++	if (attach_tc_prog(&tc_hook, prog_fd))
++		goto fail;
++	goto close;
++fail:
++	ret = -1;
++close:
++	if (nstoken)
++		close_netns(nstoken);
++	return ret;
++}
++
++static int test_lookup(struct tc_socket_lookup *skel, int sotype,
++		       const char *ip, int port, bool tcp_skc,
++		       int lookup_status_exp)
++{
++	static const char msg[] = "Hello Server";
++	struct sockaddr_storage addr = {};
++	int fd, ret = 0;
++
++	fd = make_socket(sotype, ip, port, &addr);
++	if (fd < 0)
++		return -1;
++
++	skel->bss->tcp_skc = tcp_skc;
++	skel->bss->lookup_status = -1;
++
++	if (sotype == SOCK_STREAM)
++		connect(fd, (void *)&addr, sizeof(struct sockaddr_in));
++	else
++		sendto(fd, msg, sizeof(msg), 0, (void *)&addr,
++		       sizeof(struct sockaddr_in));
++
++	if (!ASSERT_EQ(skel->bss->lookup_status, lookup_status_exp,
++		       "lookup_status"))
++		goto fail;
++
++	goto close;
++
++fail:
++	ret = -1;
++close:
++	close(fd);
++	return ret;
++}
++
++static void _test_tc_socket_lookup(struct tc_socket_lookup *skel, int sotype,
++				   bool tcp_skc)
++{
++	int in_vrf_server = -1, non_vrf_server = -1;
++	struct nstoken *nstoken = NULL;
++
++	nstoken = open_netns(NS1);
++	if (!ASSERT_OK_PTR(nstoken, "setns " NS1))
++		goto done;
++
++	/* Open sockets in and outside VRF */
++	non_vrf_server = make_server(sotype, "0.0.0.0", NON_VRF_PORT, NULL);
++	if (!ASSERT_GE(non_vrf_server, 0, "make_server__outside_vrf_fd"))
++		goto done;
++
++	in_vrf_server = make_server(sotype, "0.0.0.0", IN_VRF_PORT, "veth02");
++	if (!ASSERT_GE(in_vrf_server, 0, "make_server__in_vrf_fd"))
++		goto done;
++
++	/* Perform test from NS2 */
++	close_netns(nstoken);
++	nstoken = open_netns(NS2);
++	if (!ASSERT_OK_PTR(nstoken, "setns " NS2))
++		goto done;
++
++	if (!ASSERT_OK(test_lookup(skel, sotype, IP4_ADDR_VETH02, NON_VRF_PORT,
++				   tcp_skc, 0), "in_to_out"))
++		goto done;
++	if (!ASSERT_OK(test_lookup(skel, sotype, IP4_ADDR_VETH02, IN_VRF_PORT,
++				   tcp_skc, 1), "in_to_in"))
++		goto done;
++	if (!ASSERT_OK(test_lookup(skel, sotype, IP4_ADDR_VETH01, NON_VRF_PORT,
++				   tcp_skc, 1), "out_to_out"))
++		goto done;
++	if (!ASSERT_OK(test_lookup(skel, sotype, IP4_ADDR_VETH01, IN_VRF_PORT,
++				   tcp_skc, 0), "out_to_in"))
++		goto done;
++
++done:
++	if (non_vrf_server >= 0)
++		close(non_vrf_server);
++	if (in_vrf_server >= 0)
++		close(in_vrf_server);
++	if (nstoken)
++		close_netns(nstoken);
++}
++
++void test_tc_socket_lookup(void)
++{
++	struct tc_socket_lookup *skel;
++
++	cleanup();
++
++	skel = tc_socket_lookup__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "tc_socket_lookup__open_and_load"))
++		return;
++
++	if (!ASSERT_OK(setup(skel), "setup"))
++		goto done;
++
++	if (test__start_subtest("tc_socket_lookup_tcp"))
++		_test_tc_socket_lookup(skel, SOCK_STREAM, false);
++	if (test__start_subtest("tc_socket_lookup_tcp_skc"))
++		_test_tc_socket_lookup(skel, SOCK_STREAM, true);
++	if (test__start_subtest("tc_socket_lookup_udp"))
++		_test_tc_socket_lookup(skel, SOCK_DGRAM, false);
++
++done:
++	tc_socket_lookup__destroy(skel);
++	cleanup();
++}
+diff --git a/tools/testing/selftests/bpf/progs/tc_socket_lookup.c b/tools/testing/selftests/bpf/progs/tc_socket_lookup.c
+new file mode 100644
+index 000000000000..06601eb17807
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/tc_socket_lookup.c
+@@ -0,0 +1,73 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <linux/ip.h>
++#include <linux/in.h>
++#include <linux/if_ether.h>
++#include <linux/pkt_cls.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++#include <stdbool.h>
++
++int lookup_status;
++bool tcp_skc;
++
++#define CUR_NS BPF_F_CURRENT_NETNS
++
++SEC("tc")
++int test_socket_lookup(struct __sk_buff *skb)
++{
++	struct bpf_sock_tuple *tp;
++	void *data_end, *data;
++	struct bpf_sock *sk;
++	struct ethhdr *eth;
++	struct iphdr *iph;
++	int tplen;
++
++	if (skb->protocol != bpf_htons(ETH_P_IP))
++		return TC_ACT_UNSPEC;
++
++	tplen = sizeof(tp->ipv4);
++
++	if (bpf_skb_pull_data(skb, sizeof(*eth) + sizeof(*iph) + tplen))
++		return TC_ACT_SHOT;
++
++	data_end = (void *)(long)skb->data_end;
++	data = (void *)(long)skb->data;
++
++	eth = data;
++	if (eth + 1 > data_end)
++		return TC_ACT_SHOT;
++
++	iph = (struct iphdr *)(eth + 1);
++	if (iph + 1 > data_end)
++		return TC_ACT_SHOT;
++
++	tp = (struct bpf_sock_tuple *)&iph->saddr;
++	if ((void *)tp + tplen > data_end)
++		return TC_ACT_SHOT;
++
++	switch (iph->protocol) {
++	case IPPROTO_TCP:
++		if (tcp_skc)
++			sk = bpf_skc_lookup_tcp(skb, tp, tplen, CUR_NS, 0);
++		else
++			sk = bpf_sk_lookup_tcp(skb, tp, tplen, CUR_NS, 0);
++		break;
++	case IPPROTO_UDP:
++		sk = bpf_sk_lookup_udp(skb, tp, tplen, CUR_NS, 0);
++		break;
++	default:
++		return TC_ACT_SHOT;
++	}
++
++	lookup_status = 0;
++
++	if (sk) {
++		bpf_sk_release(sk);
++		lookup_status = 1;
++	}
++
++	return TC_ACT_UNSPEC;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.34.1
 
