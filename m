@@ -2,63 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2335F6E8EC9
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 12:01:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 569646E8EEB
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 12:06:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234347AbjDTKBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 06:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
+        id S234394AbjDTKF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 06:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234296AbjDTKBh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 06:01:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5455C10E3
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 03:01:36 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ppR6F-0003P8-0I; Thu, 20 Apr 2023 12:01:11 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id C903A1B3D36;
-        Thu, 20 Apr 2023 10:01:07 +0000 (UTC)
-Date:   Thu, 20 Apr 2023 12:01:07 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Judith Mendez <jm@ti.com>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Schuyler Patton <spatton@ti.com>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 2/4] dt-bindings: net: can: Make interrupt attributes
- optional for MCAN
-Message-ID: <20230420-zoom-demystify-c31d6bf25295-mkl@pengutronix.de>
-References: <20230419223323.20384-1-jm@ti.com>
- <20230419223323.20384-3-jm@ti.com>
+        with ESMTP id S234445AbjDTKFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 06:05:32 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E421C358A
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 03:05:13 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id 38308e7fff4ca-2a8db10a5d4so4005821fa.1
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 03:05:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1681985112; x=1684577112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4RJXgo9mbZocth7W+W/DHGi5VI0a91D1/aaXffY9umQ=;
+        b=lqclOq7xlrh4i4oA0IR5rQP1xWRPVMmSK35utJZQag/nwUvQGNv6FiEPXi+2jROtAt
+         7lPtJwxfypHnbq18+ge0VMtkmmMjBfOJ710f6BF2zNhq9xMB5kZc04aShJyf/ZU92qgF
+         bWaxly6/XjxNzqmxDrlb1vcFfBZZKLblurYJ2BglxXkP20VGGOVs9vcZ+SzfJOUSuDUr
+         maRUNdq2FBC5lJxWzZyRNPBlNUa/qaK6vsnz7QG4TGTD2b+y58v8n0ZDILRjbVc/Ms0r
+         /8p5nNrcEeSaXQya0jGVsIyfdizF1Sto3MEohQp5IgPON2PIypCcUNryED+QDBpZZB6F
+         7v+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681985112; x=1684577112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4RJXgo9mbZocth7W+W/DHGi5VI0a91D1/aaXffY9umQ=;
+        b=e+MF2VZLw87X2mLYQUUoRL3c0z6fcM8+kEs30Xwf8tTcTqpK6y9CALxvCKLK7xgMCZ
+         S8boqHSyZ0eslQ8LjMUPA7PMJ1YhSzS+K2pkKHFsKDp5nzeMFzNOFwnlxtrti1nwSql1
+         pPX8aK479gNkjFwTaDFEJEu7/b+3OeAxgMo8KkGWVGrzZUgyplhpT1p05jugzqW1/4Ct
+         T/kC/9ou8kfaMBr6AOWgsREYgOwVQeV72TvE0K+7ha/9aXU7gM50xj8jgSstbg4xiu9L
+         TmHoxtOe+we6pUecVy1O1vFojzD8KqBi/ftuKMCqypwCroyL82Drq/AdEyIrbG8iTH6o
+         b/8Q==
+X-Gm-Message-State: AAQBX9drpBEv2cFG0SW6DqvdDAFITHoLfL/6XSHQb7n1kwor8M3MGTLk
+        G8kZ15LQff0hxJnmSi/b1qGPTQ==
+X-Google-Smtp-Source: AKy350a39HBh7R9jgbfr/UIn1pZgwf56M1oanLrDl7HkbyiiLwbA6+p08jkzA66//nGGXiIVdLaZhg==
+X-Received: by 2002:a19:c508:0:b0:4db:4530:2b2d with SMTP id w8-20020a19c508000000b004db45302b2dmr273139lfe.49.1681985112150;
+        Thu, 20 Apr 2023 03:05:12 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:a085:4d00::8a5? (dzccz6yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a085:4d00::8a5])
+        by smtp.gmail.com with ESMTPSA id r24-20020a2e9958000000b002a7af83ca1csm182840ljj.21.2023.04.20.03.05.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Apr 2023 03:05:11 -0700 (PDT)
+Message-ID: <aa547a69-e1d8-1349-bd8c-9265275bb7f1@linaro.org>
+Date:   Thu, 20 Apr 2023 13:05:11 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="o65i4erlcrvj4ggl"
-Content-Disposition: inline
-In-Reply-To: <20230419223323.20384-3-jm@ti.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH 3/4] clk: qcom: rpmh: Add RPMH clocks support for SDX75
+Content-Language: en-GB
+To:     Taniya Das <quic_tdas@quicinc.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>
+Cc:     quic_skakitap@quicinc.com, Imran Shaik <quic_imrashai@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_rohiagar@quicinc.com, netdev@vger.kernel.org
+References: <20230419133013.2563-1-quic_tdas@quicinc.com>
+ <20230419133013.2563-4-quic_tdas@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20230419133013.2563-4-quic_tdas@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -67,111 +84,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---o65i4erlcrvj4ggl
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 19.04.2023 17:33:21, Judith Mendez wrote:
-> For MCAN, remove interrupt and interrupt names from the required
-> section.
->=20
-> On AM62x SoC, MCANs on MCU domain do not have hardware interrupt
-> routed to A53 Linux, instead they will use software interrupt
-> by hrtimer. Make interrupt attributes optional in MCAN node
-> by removing from required section.
->=20
-> Signed-off-by: Judith Mendez <jm@ti.com>
-
-This series basically adds polling support to the driver, which is
-needed due to HW limitations.
-
-The proposed logic in the driver is to use polling if
-platform_get_irq_byname() fails (due to whatever reason) use polling
-with a hard-coded interval.
-
-In the kernel I've found the following properties that describe the
-polling interval:
-
-bindings/input/input.yaml:
-
-|   poll-interval:
-|     description: Poll interval time in milliseconds.
-|     $ref: /schemas/types.yaml#/definitions/uint32
-
-
-bindings/thermal/thermal-zones.yaml:
-
-|       polling-delay:
-|         $ref: /schemas/types.yaml#/definitions/uint32
-|         description:
-|           The maximum number of milliseconds to wait between polls when
-|           checking this thermal zone. Setting this to 0 disables the poll=
-ing
-|           timers setup by the thermal framework and assumes that the ther=
-mal
-|           sensors in this zone support interrupts.
-
-bindings/regulator/dlg,da9121.yaml
-
-|   dlg,irq-polling-delay-passive-ms:
-|     minimum: 1000
-|     maximum: 10000
-|     description: |
-|       Specify the polling period, measured in milliseconds, between inter=
-rupt status
-|       update checks. Range 1000-10000 ms.
-
-=46rom my point of view the poll-interval from the input subsystem looks
-good. Any objections to use it to specify the polling interval for
-IRQ-less devices, too?
-
+On 19/04/2023 16:30, Taniya Das wrote:
+> From: Imran Shaik <quic_imrashai@quicinc.com>
+> 
+> Add support for RPMH clocks for SDX75 platform.
+> 
+> Signed-off-by: Imran Shaik <quic_imrashai@quicinc.com>
+> Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
 > ---
->  Documentation/devicetree/bindings/net/can/bosch,m_can.yaml | 2 --
->  1 file changed, 2 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml b=
-/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-> index 67879aab623b..43f1aa9addc0 100644
-> --- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-> +++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
-> @@ -122,8 +122,6 @@ required:
->    - compatible
->    - reg
->    - reg-names
-> -  - interrupts
-> -  - interrupt-names
->    - clocks
->    - clock-names
->    - bosch,mram-cfg
-> --=20
-> 2.17.1
->=20
->=20
+>   drivers/clk/qcom/clk-rpmh.c | 19 +++++++++++++++++++
+>   1 file changed, 19 insertions(+)
 
-regards,
-Marc
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+-- 
+With best wishes
+Dmitry
 
---o65i4erlcrvj4ggl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRBDWAACgkQvlAcSiqK
-BOgXTQf/a2tgk8HJj9aGY01UCY7qxZI15vq+GQKZTz2NdrdOQvE7dor75W3b4Nsr
-XXfwCNcz+sZYKc4AyM82uELkd1hY9nZ4GDyv2Vy/3+z3lTqY9jU0poapxCxnY4CQ
-zNT05yiZA8THyUWTlAOvLICvCDRw4BswbMigvavw/0uWls6KbegRsP4+aMcs9snd
-vhDNK8Ab/vmpKjVxVo/Vkaf/B8bq7UkmyOXsbwYEeTHqjfTGQwZcWvg0YZ1svvyS
-haxZ3+T5AccASnr2aztH8Ke6UZvHczoQTlRJpByUo3soZGy4BXaOdk18WjT+lzpZ
-vdy5RYmDDQiJ1DK+sQaI/oDEWGAeUQ==
-=LuRH
------END PGP SIGNATURE-----
-
---o65i4erlcrvj4ggl--
