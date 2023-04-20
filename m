@@ -2,164 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39B606E8DAC
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 11:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71CD16E8D78
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 11:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233907AbjDTJLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 05:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58344 "EHLO
+        id S234199AbjDTJEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 05:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234081AbjDTJL3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 05:11:29 -0400
-Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B353C0F;
-        Thu, 20 Apr 2023 02:10:46 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VgYMQcc_1681981746;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgYMQcc_1681981746)
-          by smtp.aliyun-inc.com;
-          Thu, 20 Apr 2023 17:09:07 +0800
-Message-ID: <1681980971.1167793-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next v2 13/14] virtio_net: small: optimize code
-Date:   Thu, 20 Apr 2023 16:56:11 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-References: <20230418065327.72281-1-xuanzhuo@linux.alibaba.com>
- <20230418065327.72281-14-xuanzhuo@linux.alibaba.com>
- <CACGkMEtubJ8ND01J+Arpa4TB5kfdap7t6f9D5qc7-XkeFZYRKQ@mail.gmail.com>
-In-Reply-To: <CACGkMEtubJ8ND01J+Arpa4TB5kfdap7t6f9D5qc7-XkeFZYRKQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S234179AbjDTJDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 05:03:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3489ECA
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:57:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681980987;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pY0N+dEzvSEwAValJ3zirlHbOZcRLBGk4H3+IIf9M2s=;
+        b=ZolVapA4s19DZRMYL110x3284v60ptdMrFEjZSQJw4rao+K0wmYnXzqHeJA6L0rAdB5oWM
+        9sS6Rdi4KSYDP7fr5vghT7qmoP1jJCYflXE4OCnWNz2JpoVLSM+tgBg5lSacezkUooAUFq
+        cJ8sP3fMljWo/CdFzRg/PkycogZ0MYo=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-137-cseOUKoJMDej3vDnZjrovw-1; Thu, 20 Apr 2023 04:56:25 -0400
+X-MC-Unique: cseOUKoJMDej3vDnZjrovw-1
+Received: by mail-ed1-f70.google.com with SMTP id 4fb4d7f45d1cf-505070d2502so468874a12.3
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:56:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681980984; x=1684572984;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pY0N+dEzvSEwAValJ3zirlHbOZcRLBGk4H3+IIf9M2s=;
+        b=No3XLqe7k4GmnG877gRuP9siGQiRFnaZephz/pi3FhUXt4VniE7gL0tJrN++GPWMrp
+         qIozoVxh5n7USMU5n8LYWxft7wy9AAuU7FL6wyl+LNktlPEGcTQfsBAFyuFB4j2CDaMp
+         ZDoLkY4GeDVE2nE6W2KtSHXHYmMZZxLVDFYALVG7H9ip+0WBIm9LNz6v/CYOFPnpc2qQ
+         YANWqnlAw0Q+MRqD/IFhIOAB0eZLxgtRUl7Tn2sQLVihr1V1zRsS+9es8bLoh85DS5zy
+         UZM1Wt/xX38WYsbH6wftEGYKMqmane8bhpEAPndiUJK/uD9hKF3pV//sB7e6cZKkT4dn
+         hsNg==
+X-Gm-Message-State: AAQBX9f+pQSRyK5QQRFbsTpXsCeX+2f4jaRPn9yKiOvXZVWvsZw4/WHI
+        riDAt2WLRCVBt7c6/mM4fI1JSOMaxAz1V7maSO13DogjhwW02PIUJ4eyDKzpkJOw7Trq6SgTRd2
+        HKUCi38VslE2QWD+O
+X-Received: by 2002:a05:6402:1a57:b0:506:94ea:9af1 with SMTP id bf23-20020a0564021a5700b0050694ea9af1mr1447976edb.8.1681980984625;
+        Thu, 20 Apr 2023 01:56:24 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bgpbJJytQP/x1rpI5Ql/6XCAMPEiGCWAUxJmVAH85leWysNc49213UF5VmaokmhvlgmrUG1g==
+X-Received: by 2002:a05:6402:1a57:b0:506:94ea:9af1 with SMTP id bf23-20020a0564021a5700b0050694ea9af1mr1447956edb.8.1681980984283;
+        Thu, 20 Apr 2023 01:56:24 -0700 (PDT)
+Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
+        by smtp.gmail.com with ESMTPSA id k12-20020a05640212cc00b005083db60635sm514712edx.34.2023.04.20.01.56.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Apr 2023 01:56:23 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <66aaf22e-5b0b-b67c-bb71-c61b966c0d5c@redhat.com>
+Date:   Thu, 20 Apr 2023 10:56:22 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        hawk@kernel.org, ilias.apalodimas@linaro.org, tariqt@nvidia.com
+Subject: Re: [PATCH net-next] page_pool: unlink from napi during destroy
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+References: <20230419182006.719923-1-kuba@kernel.org>
+In-Reply-To: <20230419182006.719923-1-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Apr 2023 14:32:37 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Tue, Apr 18, 2023 at 2:53=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.alibaba=
-.com> wrote:
-> >
-> > Avoid the problem that some variables(headroom and so on) will repeat
-> > the calculation when process xdp.
->
-> While at it, if we agree to use separate code paths for building skbs.
->
-> It would be better to have a helper for building skb for non XDP
-> cases, then we can hide those calculation there.
 
 
-Yes, we can introduce one helper, then receive_small will be more simple.
-But these calculation can not shared with xdp case, because xdp case needs =
-to
-get these vars before running xdp.
+On 19/04/2023 20.20, Jakub Kicinski wrote:
+> Jesper points out that we must prevent recycling into cache
+> after page_pool_destroy() is called, because page_pool_destroy()
+> is not synchronized with recycling (some pages may still be
+> outstanding when destroy() gets called).
+> 
+> I assumed this will not happen because NAPI can't be scheduled
+> if its page pool is being destroyed. But I missed the fact that
+> NAPI may get reused. For instance when user changes ring configuration
+> driver may allocate a new page pool, stop NAPI, swap, start NAPI,
+> and then destroy the old pool. The NAPI is running so old page
+> pool will think it can recycle to the cache, but the consumer
+> at that point is the destroy() path, not NAPI.
+> 
+> To avoid extra synchronization let the drivers do "unlinking"
+> during the "swap" stage while NAPI is indeed disabled.
+> 
+> Fixes: 8c48eea3adf3 ("page_pool: allow caching from safely localized NAPI")
+> Reported-by: Jesper Dangaard Brouer <jbrouer@redhat.com>
+> Link: https://lore.kernel.org/all/e8df2654-6a5b-3c92-489d-2fe5e444135f@redhat.com/
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> bnxt does not do the live swap so no need to change it.
+> But let's export the API, anyway, I'm sure others will
+> need it. And knowing driver authors they will hack some
+> workaround into the driver rather than export the helper.
+> 
+> CC: hawk@kernel.org
+> CC: ilias.apalodimas@linaro.org
+> CC: tariqt@nvidia.com
+> ---
+>   include/net/page_pool.h |  5 +++++
+>   net/core/page_pool.c    | 18 +++++++++++++++++-
+>   2 files changed, 22 insertions(+), 1 deletion(-)
+> 
 
-Then the code "copy vnet hdr" and "set metadata" should stay in their own
-function.
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-Only the virtnet_build_skb()[build_skb, skb_reserve, skb_put] can be shared.
+Thanks for fixing this.
 
-static struct sk_buff *virtnet_build_skb(void *buf, unsigned int buflen,
-					 unsigned int headroom,
-					 unsigned int len)
-{
-	struct sk_buff *skb;
-
-	skb =3D build_skb(buf, buflen);
-	if (!skb)
-		return NULL;
-
-	skb_reserve(skb, headroom);
-	skb_put(skb, len);
-
-	return skb;
-}
-
-static struct sk_buff *receive_small_build_skb(struct virtnet_info *vi,
-					       unsigned int xdp_headroom,
-					       void *buf,
-					       unsigned int len)
-{
-	unsigned int header_offset;
-	unsigned int headroom;
-	unsigned int buflen;
-	struct sk_buff *skb;
-
-	header_offset =3D VIRTNET_RX_PAD + xdp_headroom;
-	headroom =3D vi->hdr_len + header_offset;
-	buflen =3D SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
-		SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-
-	skb =3D virtnet_build_skb(buf, buflen, headroom, len);
-	if (unlikely(!skb))
-		return NULL;
-
-	buf +=3D header_offset;
-	memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
-
-	return skb;
-}
-
-Thanks
-
->
-> Thanks
->
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >  drivers/net/virtio_net.c | 12 ++++++++----
-> >  1 file changed, 8 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index f6f5903face2..5a5636178bd3 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -1040,11 +1040,10 @@ static struct sk_buff *receive_small(struct net=
-_device *dev,
-> >         struct sk_buff *skb;
-> >         struct bpf_prog *xdp_prog;
-> >         unsigned int xdp_headroom =3D (unsigned long)ctx;
-> > -       unsigned int header_offset =3D VIRTNET_RX_PAD + xdp_headroom;
-> > -       unsigned int headroom =3D vi->hdr_len + header_offset;
-> > -       unsigned int buflen =3D SKB_DATA_ALIGN(GOOD_PACKET_LEN + headro=
-om) +
-> > -                             SKB_DATA_ALIGN(sizeof(struct skb_shared_i=
-nfo));
-> >         struct page *page =3D virt_to_head_page(buf);
-> > +       unsigned int header_offset;
-> > +       unsigned int headroom;
-> > +       unsigned int buflen;
-> >
-> >         len -=3D vi->hdr_len;
-> >         stats->bytes +=3D len;
-> > @@ -1072,6 +1071,11 @@ static struct sk_buff *receive_small(struct net_=
-device *dev,
-> >         rcu_read_unlock();
-> >
-> >  skip_xdp:
-> > +       header_offset =3D VIRTNET_RX_PAD + xdp_headroom;
-> > +       headroom =3D vi->hdr_len + header_offset;
-> > +       buflen =3D SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
-> > +               SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> > +
-> >         skb =3D build_skb(buf, buflen);
-> >         if (!skb)
-> >                 goto err;
-> > --
-> > 2.32.0.3.g01195cf9f
-> >
->
