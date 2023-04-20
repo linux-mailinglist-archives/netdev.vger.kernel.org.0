@@ -2,29 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E76FB6E94DD
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:45:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D5A96E94E1
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:45:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234367AbjDTMpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 08:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38084 "EHLO
+        id S234610AbjDTMps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 08:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234455AbjDTMph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:45:37 -0400
+        with ESMTP id S234109AbjDTMpm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:45:42 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9CA5B85;
-        Thu, 20 Apr 2023 05:45:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC276C7;
+        Thu, 20 Apr 2023 05:45:30 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1ppTfB-0002aJ-0u; Thu, 20 Apr 2023 14:45:25 +0200
+        id 1ppTfF-0002aW-4j; Thu, 20 Apr 2023 14:45:29 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <bpf@vger.kernel.org>
 Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        dxu@dxuuu.xyz, qde@naccy.de, Florian Westphal <fw@strlen.de>,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next v4 5/7] tools: bpftool: print netfilter link info
-Date:   Thu, 20 Apr 2023 14:44:53 +0200
-Message-Id: <20230420124455.31099-6-fw@strlen.de>
+        dxu@dxuuu.xyz, qde@naccy.de, Florian Westphal <fw@strlen.de>
+Subject: [PATCH bpf-next v4 6/7] bpf: add test_run support for netfilter program type
+Date:   Thu, 20 Apr 2023 14:44:54 +0200
+Message-Id: <20230420124455.31099-7-fw@strlen.de>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230420124455.31099-1-fw@strlen.de>
 References: <20230420124455.31099-1-fw@strlen.de>
@@ -39,381 +38,223 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dump protocol family, hook and priority value:
-$ bpftool link
-2: netfilter  prog 14
-        ip input prio -128
-        pids install(3264)
-5: netfilter  prog 14
-        ip6 forward prio 21
-        pids a.out(3387)
-9: netfilter  prog 14
-        ip prerouting prio 123
-        pids a.out(5700)
-10: netfilter  prog 14
-        ip input prio 21
-        pids test2(5701)
+add glue code so a bpf program can be run using userspace-provided
+netfilter state and packet/skb.
 
-v2: Quentin Monnet suggested to also add 'bpftool net' support:
+Default is to use ipv4:output hook point, but this can be overridden by
+userspace.  Userspace provided netfilter state is restricted, only hook and
+protocol families can be overridden and only to ipv4/ipv6.
 
-$ bpftool net
-xdp:
-
-tc:
-
-flow_dissector:
-
-netfilter:
-
-        ip prerouting prio 21 prog_id 14
-        ip input prio -128 prog_id 14
-        ip input prio 21 prog_id 14
-        ip forward prio 21 prog_id 14
-        ip output prio 21 prog_id 14
-        ip postrouting prio 21 prog_id 14
-
-'bpftool net' only dumps netfilter link type, links are sorted by protocol
-family, hook and priority.
-
-v4: fix bpf.h copy, 'reserved' member was removed (Alexei)
-    use p_err, not fprintf (Quentin)
-
-Suggested-by: Quentin Monnet <quentin@isovalent.com>
-Link: https://lore.kernel.org/bpf/eeeaac99-9053-90c2-aa33-cc1ecb1ae9ca@isovalent.com/
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- tools/bpf/bpftool/link.c       |  83 ++++++++++++++++++++++++++
- tools/bpf/bpftool/main.h       |   3 +
- tools/bpf/bpftool/net.c        | 106 +++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h |  14 +++++
- tools/lib/bpf/libbpf.c         |   2 +
- 5 files changed, 208 insertions(+)
+ include/linux/bpf.h         |   3 +
+ net/bpf/test_run.c          | 158 ++++++++++++++++++++++++++++++++++++
+ net/netfilter/nf_bpf_link.c |   1 +
+ 3 files changed, 162 insertions(+)
 
-diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
-index f985b79cca27..d98dbc50cf4c 100644
---- a/tools/bpf/bpftool/link.c
-+++ b/tools/bpf/bpftool/link.c
-@@ -3,6 +3,8 @@
- 
- #include <errno.h>
- #include <linux/err.h>
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 18b592fde896..e53ceee1df37 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2264,6 +2264,9 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
+ int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
+ 				const union bpf_attr *kattr,
+ 				union bpf_attr __user *uattr);
++int bpf_prog_test_run_nf(struct bpf_prog *prog,
++			 const union bpf_attr *kattr,
++			 union bpf_attr __user *uattr);
+ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		    const struct bpf_prog *prog,
+ 		    struct bpf_insn_access_aux *info);
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index f170e8a17974..e79e3a415ca9 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -19,7 +19,9 @@
+ #include <linux/error-injection.h>
+ #include <linux/smp.h>
+ #include <linux/sock_diag.h>
 +#include <linux/netfilter.h>
-+#include <linux/netfilter_arp.h>
- #include <net/if.h>
- #include <stdio.h>
- #include <unistd.h>
-@@ -135,6 +137,18 @@ static void show_iter_json(struct bpf_link_info *info, json_writer_t *wtr)
- 	}
+ #include <net/xdp.h>
++#include <net/netfilter/nf_bpf_link.h>
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/bpf_test_run.h>
+@@ -1691,6 +1693,162 @@ int bpf_prog_test_run_syscall(struct bpf_prog *prog,
+ 	return err;
  }
  
-+void netfilter_dump_json(const struct bpf_link_info *info, json_writer_t *wtr)
++static int verify_and_copy_hook_state(struct nf_hook_state *state,
++				      const struct nf_hook_state *user,
++				      struct net_device *dev)
 +{
-+	jsonw_uint_field(json_wtr, "pf",
-+			 info->netfilter.pf);
-+	jsonw_uint_field(json_wtr, "hook",
-+			 info->netfilter.hooknum);
-+	jsonw_int_field(json_wtr, "prio",
-+			 info->netfilter.priority);
-+	jsonw_uint_field(json_wtr, "flags",
-+			 info->netfilter.flags);
-+}
++	if (user->in || user->out)
++		return -EINVAL;
 +
- static int get_prog_info(int prog_id, struct bpf_prog_info *info)
- {
- 	__u32 len = sizeof(*info);
-@@ -195,6 +209,10 @@ static int show_link_close_json(int fd, struct bpf_link_info *info)
- 				 info->netns.netns_ino);
- 		show_link_attach_type_json(info->netns.attach_type, json_wtr);
- 		break;
-+	case BPF_LINK_TYPE_NETFILTER:
-+		netfilter_dump_json(info, json_wtr);
-+		break;
++	if (user->net || user->sk || user->okfn)
++		return -EINVAL;
 +
- 	default:
- 		break;
- 	}
-@@ -263,6 +281,68 @@ static void show_iter_plain(struct bpf_link_info *info)
- 	}
- }
- 
-+static const char * const pf2name[] = {
-+	[NFPROTO_INET] = "inet",
-+	[NFPROTO_IPV4] = "ip",
-+	[NFPROTO_ARP] = "arp",
-+	[NFPROTO_NETDEV] = "netdev",
-+	[NFPROTO_BRIDGE] = "bridge",
-+	[NFPROTO_IPV6] = "ip6",
-+};
-+
-+static const char * const inethook2name[] = {
-+	[NF_INET_PRE_ROUTING] = "prerouting",
-+	[NF_INET_LOCAL_IN] = "input",
-+	[NF_INET_FORWARD] = "forward",
-+	[NF_INET_LOCAL_OUT] = "output",
-+	[NF_INET_POST_ROUTING] = "postrouting",
-+};
-+
-+static const char * const arphook2name[] = {
-+	[NF_ARP_IN] = "input",
-+	[NF_ARP_OUT] = "output",
-+};
-+
-+void netfilter_dump_plain(const struct bpf_link_info *info)
-+{
-+	const char *hookname = NULL, *pfname = NULL;
-+	unsigned int hook = info->netfilter.hooknum;
-+	unsigned int pf = info->netfilter.pf;
-+
-+	if (pf < ARRAY_SIZE(pf2name))
-+		pfname = pf2name[pf];
-+
-+	switch (pf) {
-+	case NFPROTO_BRIDGE: /* bridge shares numbers with enum nf_inet_hooks */
++	switch (user->pf) {
 +	case NFPROTO_IPV4:
 +	case NFPROTO_IPV6:
-+	case NFPROTO_INET:
-+		if (hook < ARRAY_SIZE(inethook2name))
-+			hookname = inethook2name[hook];
-+		break;
-+	case NFPROTO_ARP:
-+		if (hook < ARRAY_SIZE(arphook2name))
-+			hookname = arphook2name[hook];
-+	default:
-+		break;
-+	}
-+
-+	if (pfname)
-+		printf("\n\t%s", pfname);
-+	else
-+		printf("\n\tpf: %d", pf);
-+
-+	if (hookname)
-+		printf(" %s", hookname);
-+	else
-+		printf(", hook %u,", hook);
-+
-+	printf(" prio %d", info->netfilter.priority);
-+
-+	if (info->netfilter.flags)
-+		printf(" flags 0x%x", info->netfilter.flags);
-+}
-+
- static int show_link_close_plain(int fd, struct bpf_link_info *info)
- {
- 	struct bpf_prog_info prog_info;
-@@ -301,6 +381,9 @@ static int show_link_close_plain(int fd, struct bpf_link_info *info)
- 		printf("\n\tnetns_ino %u  ", info->netns.netns_ino);
- 		show_link_attach_type_plain(info->netns.attach_type);
- 		break;
-+	case BPF_LINK_TYPE_NETFILTER:
-+		netfilter_dump_plain(info);
-+		break;
- 	default:
- 		break;
- 	}
-diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-index 00d11ca6d3f2..63d9aa1012a9 100644
---- a/tools/bpf/bpftool/main.h
-+++ b/tools/bpf/bpftool/main.h
-@@ -264,4 +264,7 @@ static inline bool hashmap__empty(struct hashmap *map)
- 	return map ? hashmap__size(map) == 0 : true;
- }
- 
-+/* print netfilter bpf_link info */
-+void netfilter_dump_plain(const struct bpf_link_info *info);
-+void netfilter_dump_json(const struct bpf_link_info *info, json_writer_t *wtr);
- #endif
-diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-index c40e44c938ae..26a49965bf71 100644
---- a/tools/bpf/bpftool/net.c
-+++ b/tools/bpf/bpftool/net.c
-@@ -647,6 +647,108 @@ static int do_detach(int argc, char **argv)
- 	return 0;
- }
- 
-+static int netfilter_link_compar(const void *a, const void *b)
-+{
-+	const struct bpf_link_info *nfa = a;
-+	const struct bpf_link_info *nfb = b;
-+	int delta;
-+
-+	delta = nfa->netfilter.pf - nfb->netfilter.pf;
-+	if (delta)
-+		return delta;
-+
-+	delta = nfa->netfilter.hooknum - nfb->netfilter.hooknum;
-+	if (delta)
-+		return delta;
-+
-+	if (nfa->netfilter.priority < nfb->netfilter.priority)
-+		return -1;
-+	if (nfa->netfilter.priority > nfb->netfilter.priority)
-+		return 1;
-+
-+	return nfa->netfilter.flags - nfb->netfilter.flags;
-+}
-+
-+static void show_link_netfilter(void)
-+{
-+	unsigned int nf_link_len = 0, nf_link_count = 0;
-+	struct bpf_link_info *nf_link_info = NULL;
-+	__u32 id = 0;
-+
-+	while (true) {
-+		struct bpf_link_info info;
-+		int fd, err;
-+		__u32 len;
-+
-+		err = bpf_link_get_next_id(id, &id);
-+		if (err) {
-+			if (errno == ENOENT)
-+				break;
-+			p_err("can't get next link: %s (id %d)", strerror(errno), id);
++		switch (state->hook) {
++		case NF_INET_PRE_ROUTING:
++			state->in = dev;
++			break;
++		case NF_INET_LOCAL_IN:
++			state->in = dev;
++			break;
++		case NF_INET_FORWARD:
++			state->in = dev;
++			state->out = dev;
++			break;
++		case NF_INET_LOCAL_OUT:
++			state->out = dev;
++			break;
++		case NF_INET_POST_ROUTING:
++			state->out = dev;
 +			break;
 +		}
 +
-+		fd = bpf_link_get_fd_by_id(id);
-+		if (fd < 0) {
-+			p_err("can't get link by id (%u): %s", id, strerror(errno));
-+			continue;
-+		}
-+
-+		memset(&info, 0, sizeof(info));
-+		len = sizeof(info);
-+
-+		err = bpf_link_get_info_by_fd(fd, &info, &len);
-+
-+		close(fd);
-+
-+		if (err) {
-+			p_err("can't get link info for fd %d: %s", fd, strerror(errno));
-+			continue;
-+		}
-+
-+		if (info.type != BPF_LINK_TYPE_NETFILTER)
-+			continue;
-+
-+		if (nf_link_count >= nf_link_len) {
-+			static const unsigned int max_link_count = INT_MAX / sizeof(info);
-+			struct bpf_link_info *expand;
-+
-+			if (nf_link_count > max_link_count) {
-+				p_err("cannot handle more than %u links\n", max_link_count);
-+				break;
-+			}
-+
-+			nf_link_len += 16;
-+
-+			expand = realloc(nf_link_info, nf_link_len * sizeof(info));
-+			if (!expand) {
-+				p_err("realloc: %s",  strerror(errno));
-+				break;
-+			}
-+
-+			nf_link_info = expand;
-+		}
-+
-+		nf_link_info[nf_link_count] = info;
-+		nf_link_count++;
++		break;
++	default:
++		return -EINVAL;
 +	}
 +
-+	qsort(nf_link_info, nf_link_count, sizeof(*nf_link_info), netfilter_link_compar);
++	state->pf = user->pf;
++	state->hook = user->hook;
 +
-+	for (id = 0; id < nf_link_count; id++) {
-+		NET_START_OBJECT;
-+		if (json_output)
-+			netfilter_dump_json(&nf_link_info[id], json_wtr);
-+		else
-+			netfilter_dump_plain(&nf_link_info[id]);
-+
-+		NET_DUMP_UINT("id", " prog_id %u", nf_link_info[id].prog_id);
-+		NET_END_OBJECT;
-+	}
-+
-+	free(nf_link_info);
++	return 0;
 +}
 +
- static int do_show(int argc, char **argv)
- {
- 	struct bpf_attach_info attach_info = {};
-@@ -701,6 +803,10 @@ static int do_show(int argc, char **argv)
- 		NET_DUMP_UINT("id", "id %u", attach_info.flow_dissector_id);
- 	NET_END_ARRAY("\n");
- 
-+	NET_START_ARRAY("netfilter", "%s:\n");
-+	show_link_netfilter();
-+	NET_END_ARRAY("\n");
++static __be16 nfproto_eth(int nfproto)
++{
++	switch (nfproto) {
++	case NFPROTO_IPV4:
++		return htons(ETH_P_IP);
++	case NFPROTO_IPV6:
++		break;
++	}
 +
- 	NET_END_OBJECT;
- 	if (json_output)
- 		jsonw_end_array(json_wtr);
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 4b20a7269bee..1bb11a6ee667 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -986,6 +986,7 @@ enum bpf_prog_type {
- 	BPF_PROG_TYPE_LSM,
- 	BPF_PROG_TYPE_SK_LOOKUP,
- 	BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
-+	BPF_PROG_TYPE_NETFILTER,
++	return htons(ETH_P_IPV6);
++}
++
++int bpf_prog_test_run_nf(struct bpf_prog *prog,
++			 const union bpf_attr *kattr,
++			 union bpf_attr __user *uattr)
++{
++	struct net *net = current->nsproxy->net_ns;
++	struct net_device *dev = net->loopback_dev;
++	struct nf_hook_state *user_ctx, hook_state = {
++		.pf = NFPROTO_IPV4,
++		.hook = NF_INET_LOCAL_OUT,
++	};
++	u32 size = kattr->test.data_size_in;
++	u32 repeat = kattr->test.repeat;
++	struct bpf_nf_ctx ctx = {
++		.state = &hook_state,
++	};
++	struct sk_buff *skb = NULL;
++	u32 retval, duration;
++	void *data;
++	int ret;
++
++	if (kattr->test.flags || kattr->test.cpu || kattr->test.batch_size)
++		return -EINVAL;
++
++	if (size < sizeof(struct iphdr))
++		return -EINVAL;
++
++	data = bpf_test_init(kattr, kattr->test.data_size_in, size,
++			     NET_SKB_PAD + NET_IP_ALIGN,
++			     SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
++	if (IS_ERR(data))
++		return PTR_ERR(data);
++
++	if (!repeat)
++		repeat = 1;
++
++	user_ctx = bpf_ctx_init(kattr, sizeof(struct nf_hook_state));
++	if (IS_ERR(user_ctx)) {
++		kfree(data);
++		return PTR_ERR(user_ctx);
++	}
++
++	if (user_ctx) {
++		ret = verify_and_copy_hook_state(&hook_state, user_ctx, dev);
++		if (ret)
++			goto out;
++	}
++
++	skb = slab_build_skb(data);
++	if (!skb) {
++		ret = -ENOMEM;
++		goto out;
++	}
++
++	data = NULL; /* data released via kfree_skb */
++
++	skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
++	__skb_put(skb, size);
++
++	ret = -EINVAL;
++
++	if (hook_state.hook != NF_INET_LOCAL_OUT) {
++		if (size < ETH_HLEN + sizeof(struct iphdr))
++			goto out;
++
++		skb->protocol = eth_type_trans(skb, dev);
++		switch (skb->protocol) {
++		case htons(ETH_P_IP):
++			if (hook_state.pf == NFPROTO_IPV4)
++				break;
++			goto out;
++		case htons(ETH_P_IPV6):
++			if (size < ETH_HLEN + sizeof(struct ipv6hdr))
++				goto out;
++			if (hook_state.pf == NFPROTO_IPV6)
++				break;
++			goto out;
++		default:
++			ret = -EPROTO;
++			goto out;
++		}
++
++		skb_reset_network_header(skb);
++	} else {
++		skb->protocol = nfproto_eth(hook_state.pf);
++	}
++
++	ctx.skb = skb;
++
++	ret = bpf_test_run(prog, &ctx, repeat, &retval, &duration, false);
++	if (ret)
++		goto out;
++
++	ret = bpf_test_finish(kattr, uattr, NULL, NULL, 0, retval, duration);
++
++out:
++	kfree(user_ctx);
++	kfree_skb(skb);
++	kfree(data);
++	return ret;
++}
++
+ static const struct btf_kfunc_id_set bpf_prog_test_kfunc_set = {
+ 	.owner = THIS_MODULE,
+ 	.set   = &test_sk_check_kfunc_ids,
+diff --git a/net/netfilter/nf_bpf_link.c b/net/netfilter/nf_bpf_link.c
+index 49cfc5215386..c36da56d756f 100644
+--- a/net/netfilter/nf_bpf_link.c
++++ b/net/netfilter/nf_bpf_link.c
+@@ -166,6 +166,7 @@ int bpf_nf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+ }
+ 
+ const struct bpf_prog_ops netfilter_prog_ops = {
++	.test_run = bpf_prog_test_run_nf,
  };
  
- enum bpf_attach_type {
-@@ -1050,6 +1051,7 @@ enum bpf_link_type {
- 	BPF_LINK_TYPE_PERF_EVENT = 7,
- 	BPF_LINK_TYPE_KPROBE_MULTI = 8,
- 	BPF_LINK_TYPE_STRUCT_OPS = 9,
-+	BPF_LINK_TYPE_NETFILTER = 10,
- 
- 	MAX_BPF_LINK_TYPE,
- };
-@@ -1560,6 +1562,12 @@ union bpf_attr {
- 				 */
- 				__u64		cookie;
- 			} tracing;
-+			struct {
-+				__u32		pf;
-+				__u32		hooknum;
-+				__s32		priority;
-+				__u32		flags;
-+			} netfilter;
- 		};
- 	} link_create;
- 
-@@ -6410,6 +6418,12 @@ struct bpf_link_info {
- 		struct {
- 			__u32 map_id;
- 		} struct_ops;
-+		struct {
-+			__u32 pf;
-+			__u32 hooknum;
-+			__s32 priority;
-+			__u32 flags;
-+		} netfilter;
- 	};
- } __attribute__((aligned(8)));
- 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 2600d8384252..80127d250f81 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -130,6 +130,7 @@ static const char * const link_type_name[] = {
- 	[BPF_LINK_TYPE_PERF_EVENT]		= "perf_event",
- 	[BPF_LINK_TYPE_KPROBE_MULTI]		= "kprobe_multi",
- 	[BPF_LINK_TYPE_STRUCT_OPS]		= "struct_ops",
-+	[BPF_LINK_TYPE_NETFILTER]		= "netfilter",
- };
- 
- static const char * const map_type_name[] = {
-@@ -8710,6 +8711,7 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("struct_ops+",		STRUCT_OPS, 0, SEC_NONE),
- 	SEC_DEF("struct_ops.s+",	STRUCT_OPS, 0, SEC_SLEEPABLE),
- 	SEC_DEF("sk_lookup",		SK_LOOKUP, BPF_SK_LOOKUP, SEC_ATTACHABLE),
-+	SEC_DEF("netfilter",		NETFILTER, 0, SEC_NONE),
- };
- 
- static size_t custom_sec_def_cnt;
+ static bool nf_ptr_to_btf_id(struct bpf_insn_access_aux *info, const char *name)
 -- 
 2.39.2
 
