@@ -2,139 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9CE06E88F9
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 06:07:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 428C66E8999
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 07:25:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232152AbjDTEHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 00:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
+        id S233841AbjDTFZI convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Apr 2023 01:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbjDTEHV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 00:07:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468E8E63
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 21:06:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681963592;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l+PcrQmhA5a7Qy66EfXDRyvtBeGDrU5rKrslFVh6JTc=;
-        b=GuSAyORaSXZyuhLQJAlkdgAqbc4cJCyRwIzZdfKuG7XRDlzx1GEdhtpXpuIGD8BOzmUdn+
-        JkJ7NMmgZ7gwJVmHPPSiUdlrKcZDuKQ5xmbnfASrP5A91Pk1Mxr/XAc/nInExoa9OSHW8w
-        bkYXSYS/9XO8ggOt65mfx4e9/iUIVb0=
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-563-_93Kbrv5Ng-nuOxx4YblAQ-1; Thu, 20 Apr 2023 00:06:30 -0400
-X-MC-Unique: _93Kbrv5Ng-nuOxx4YblAQ-1
-Received: by mail-ot1-f71.google.com with SMTP id a3-20020a9d5c83000000b006a5dd7df178so33115oti.13
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 21:06:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681963589; x=1684555589;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=l+PcrQmhA5a7Qy66EfXDRyvtBeGDrU5rKrslFVh6JTc=;
-        b=k6qCoQLdlauNEPRnQoTmeogYAaFxVyjOJwJHj3TeDalfuYuffHrhNB8wzVcF+JrJG5
-         o2HHWUw3Es6ah7gU8ROnnTsdR+Ip9LQ5qI5f3owsN3kaft1GeVhAh40C6PcBFGgRxqbd
-         kWeJ79m9GALAlED0KJWxiT96KyFxj0xnL4hvHQTqGo3Oo2iETAUFuhBxRiQ+l+7i4XTo
-         KykNhYOkv8bS54yB0w6tzJBGND3jOfYJ2D/ZQGDpLXcibCUbK+I+5V/vUwVuPVbVCB36
-         lR1xT+MiKTqXfb2Xz2ueZf3XjV/wT6Yy4Zy0KN8xHR8aC9/r43REM+wa60JOH4Rq0Buh
-         l4iQ==
-X-Gm-Message-State: AAQBX9cmWStvA4cpJUaa85gvfSVj6Vo0MRtlD9ZjBVlD1qIHSHnUSArD
-        twxcUK0mWVmry+bsZzNgRZm7GdxMf5Fip3XpIK8OeVKYY2QITchD1qpAIgMGwmBMMDYAD5l/9Od
-        pwOMft9o05UYMc32PyXfRezTIMuRNzX3Y
-X-Received: by 2002:a4a:4fc5:0:b0:545:c9f3:3aa7 with SMTP id c188-20020a4a4fc5000000b00545c9f33aa7mr231991oob.3.1681963589488;
-        Wed, 19 Apr 2023 21:06:29 -0700 (PDT)
-X-Google-Smtp-Source: AKy350almE7OZ2hK3i9wG2F1V/HOEwI3f3+Wk4eBkkfDJJpZ3JxHt5qBliBBQkn1VfqZwPfdNNE8xFhWXkirCdQALzI=
-X-Received: by 2002:a4a:4fc5:0:b0:545:c9f3:3aa7 with SMTP id
- c188-20020a4a4fc5000000b00545c9f33aa7mr231983oob.3.1681963589276; Wed, 19 Apr
- 2023 21:06:29 -0700 (PDT)
+        with ESMTP id S233469AbjDTFYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 01:24:51 -0400
+X-Greylist: delayed 1206 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 19 Apr 2023 22:23:47 PDT
+Received: from repostorp.tmes.trendmicro.eu (repostorp.tmes.trendmicro.eu [18.185.115.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F56CE
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 22:23:47 -0700 (PDT)
+Received: from 89.96.76.22_.trendmicro.com (unknown [172.21.196.187])
+        by repostorp.tmes.trendmicro.eu (Postfix) with SMTP id 8D00B1018D0A8;
+        Thu, 20 Apr 2023 05:03:39 +0000 (UTC)
+X-TM-MAIL-RECEIVED-TIME: 1681966990.266000
+X-TM-MAIL-UUID: 75a91af0-9fa4-4ceb-aad9-5dd4239686e9
+Received: from EXCH000EDG.int.milano (unknown [89.96.76.22])
+        by repre01.tmes.trendmicro.eu (Trend Micro Email Security) with ESMTP id 4138610001A6B;
+        Thu, 20 Apr 2023 05:03:10 +0000 (UTC)
+Received: from EXCH000HUB.int.milano (10.4.32.33) by EXCH000EDG.int.milano
+ (89.96.76.22) with Microsoft SMTP Server (TLS) id 8.3.389.2; Thu, 20 Apr 2023
+ 06:06:57 +0200
+Received: from EXCHSRVR04.int.milano ([10.4.32.36]) by EXCH000HUB.int.milano
+ ([10.4.32.33]) with mapi; Thu, 20 Apr 2023 06:16:15 +0200
+From:   Bosco Oriana <Oriana.Bosco@istitutotumori.mi.it>
+To:     "21@hotmail.com" <21@hotmail.com>
+Content-Class: urn:content-classes:message
+Date:   Thu, 20 Apr 2023 06:16:14 +0200
+Subject: Jeg 
+Thread-Topic: Jeg 
+Thread-Index: AQHZcz7Y+D/YDB6WPUO6dYK6Osy30Q==
+Message-ID: <7B51EE6FA3012349999327F45546AD98021B9CEA9B9C@EXCHSRVR04.int.milano>
+Accept-Language: it-IT, en-US
+Content-Language: it-IT
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+acceptlanguage: it-IT, en-US
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20230419134329.346825-1-maxime.coquelin@redhat.com> <20230419134329.346825-2-maxime.coquelin@redhat.com>
-In-Reply-To: <20230419134329.346825-2-maxime.coquelin@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 20 Apr 2023 12:06:18 +0800
-Message-ID: <CACGkMEtooodqB9pSGTQJx4x55-+RqPhNhT5_4zSDMiCSJXyjVg@mail.gmail.com>
-Subject: Re: [RFC 1/2] vduse: validate block features only with block devices
-To:     Maxime Coquelin <maxime.coquelin@redhat.com>
-Cc:     xieyongji@bytedance.com, mst@redhat.com, david.marchand@redhat.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        xuanzhuo@linux.alibaba.com, eperezma@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-TM-AS-ERS: 89.96.76.22-0.0.0.0
+X-TMASE-Version: StarCloud-1.3-9.1.1007-27576.005
+X-TMASE-Result: 10--6.331000-7.000000
+X-TMASE-MatchedRID: +j7oi5AbtmWZ92UT4XKzJASS29DLdmJppZGLWqMQD51l0eYukTIzP63I
+        ABNRAchaLCTmGHfWuIUfuO8LOEscWhWHMmWB85c1nztaxeAiio7vD+8OmQr+5G0TE6Ra8Zd9Fp2
+        VfLOgtOOzWAmIns8X/hFMENCI2j3U0oVO3AWLAUZEUM9t9X0zDzyBWw7A4al4EugnYCBwp1YAab
+        zDWh62ABq64I7t6e1mgfPjQhOfhEpM4a3nIlYwk4cgdj1dKBc47U0aR37W/mbgml3jN8k16ZmP8
+        QkBFjQdQ58BnmF2CFEmMe/Mh9TDYPINkOwop/fghdpg7BAXQcO/Xqm46EcYaiS9VDB50tXrv68B
+        LNX83VnvaiImIHQmtYwG/oMOOmfLYZ0h4vl28DCwGRHWHMQjEzG5+YoUj3/8FYCyxzuqJfU83XG
+        QyBpKb/tFz837O9Wt2OsecfO9LPVbt/edTdUhSCep8iUW76ig5njI4+ZXkWkPBXbOeSavKGjXWV
+        n89qz8Q7yQzesdkQ19U+zhe5S2ffnVY0DWsTq32Sa33ZGXWdY59litkpZCZ8s3mdBBdiYSa6jDE
+        fH9iivMg7h1cCNwqlPJLTL3IKLupQWjB/RIXoJ0+657dxGJGAMUEnxBaOs1myiLZetSf8mXxkCs
+        DPSYDIqH7AnFNgeDC24oEZ6SpSkgbhiVsIMQK2u5XqFPzjITWLAmmsEiLiliCnCdjJwgCSxg8fw
+        jooFbDKlNlN2PhURB/aVRbkpvRn7cGd19dSFd
+X-TMASE-XGENCLOUD: d9021c0e-e7e2-40ef-a65e-bc2ec96a03eb-0-0-200-0
+X-TM-Deliver-Signature: 0E416738919C84670270F1548104433C
+X-TM-Addin-Auth: Z2MqbUDDO3FJCvNWjIu7rw48IDypX2gKcx68iZvz6qAFBebrXJelW5Z+pje
+        UK6QtkZ1vifPyaq+LNxRZdLeGH1nUsXOE6kfjLecUt9lhVG99ndJO55aD0UyzfluFoTCTu1qTN0
+        GM73jfoon2JYS11j+B3OczjqUyUowzIb7KJKKXSOCcbraBQ6TFWAm/CDTmQzrhmf3FO9uptx6aE
+        DFIS0yeeG/X/K+JkrAYLq+Zo9iCwoUGJQKZaI+ARqAtuHHJxPIulpIGzxmWOkI0hMsfj4q8Gzu6
+        wH0tlP7vzsChuZBfDPf97zU1UoFpUmmhQNw5.u3bg+x9JAk4mTBqjdkkJBR7FK+ao/tut9gCsut
+        udy0R6QKKxG2l8G1l+r4dko0GIiADMr5Qm0knMer1bIR2Mu+YJqTBDMPzmHsAisJMzgEJUcjzLj
+        Y6vT1l/iWXQujhRm3N3dRKRBzw8jJvOQz4F6ZBE4ZRjV4PcAFGwQlenVh/qxTNLltU+fkq1SzkR
+        wQ9B88FBg/7byzOVKuU9IEoCRZ67p+p/uys0wk/PfzfdHsVMXDA0Agr8oOOr4+NZDY2ycAU8lJ1
+        4XK8xoqdVrr6jfEQ3XQyDJzeCz3o/Y0yrDHq9nn2+wXGKEeVnS9gY6Po5MCbuq8jQDfDQww7S0C
+        KDwA==
+X-TM-Addin-ProductCode: EMS
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 19, 2023 at 9:43=E2=80=AFPM Maxime Coquelin
-<maxime.coquelin@redhat.com> wrote:
->
-> This patch is preliminary work to enable network device
-> type support to VDUSE.
->
-> As VIRTIO_BLK_F_CONFIG_WCE shares the same value as
-> VIRTIO_NET_F_HOST_TSO4, we need to restrict its check
-> to Virtio-blk device type.
->
-> Signed-off-by: Maxime Coquelin <maxime.coquelin@redhat.com>
-> ---
->  drivers/vdpa/vdpa_user/vduse_dev.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/=
-vduse_dev.c
-> index 0c3b48616a9f..6fa598a03d8e 100644
-> --- a/drivers/vdpa/vdpa_user/vduse_dev.c
-> +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-> @@ -1416,13 +1416,14 @@ static bool device_is_allowed(u32 device_id)
->         return false;
->  }
->
-> -static bool features_is_valid(u64 features)
-> +static bool features_is_valid(struct vduse_dev_config *config)
->  {
-> -       if (!(features & (1ULL << VIRTIO_F_ACCESS_PLATFORM)))
-> +       if (!(config->features & (1ULL << VIRTIO_F_ACCESS_PLATFORM)))
->                 return false;
->
->         /* Now we only support read-only configuration space */
-> -       if (features & (1ULL << VIRTIO_BLK_F_CONFIG_WCE))
-> +       if ((config->device_id =3D=3D VIRTIO_ID_BLOCK) &&
-> +                       (config->features & (1ULL << VIRTIO_BLK_F_CONFIG_=
-WCE)))
+Jeg har en projektdiskussion til dig. Kontakt ( drcc7072@gmail.com ) for mere info.
+Tengo una discusión de proyecto para ti. Póngase en contacto con ( drcc7072@gmail.com ) para obtener más información.
 
-The reason we filter WCE out is to avoid writable config space which
-might block the driver with a buggy userspace.
 
-For networking, I guess we should fail if VERSION_1 is not negotiated,
-then we can avoid setting mac addresses via the config space.
 
-Thanks
 
->                 return false;
->
->         return true;
-> @@ -1446,7 +1447,7 @@ static bool vduse_validate_config(struct vduse_dev_=
-config *config)
->         if (!device_is_allowed(config->device_id))
->                 return false;
->
-> -       if (!features_is_valid(config->features))
-> +       if (!features_is_valid(config))
->                 return false;
->
->         return true;
-> --
-> 2.39.2
->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+======================================
+La presente comunicazione, che potrebbe contenere informazioni riservate e/o protette da segreto professionale, è indirizzata esclusivamente ai destinatari della medesima qui indicati. Ogni informazione qui contenuta, che non sia relativa alla nostra attività caratteristica, deve essere considerata come non inviata. Nel caso in cui abbiate ricevuto per errore la presente comunicazione, vogliate cortesemente darcene immediata notizia, rispondendo a questo stesso indirizzo di e-mail, e poi procedere alla cancellazione di questo messaggio dal Vostro sistema. E' strettamente proibito e potrebbe essere fonte di violazione di legge qualsiasi uso, comunicazione, copia o diffusione dei contenuti di questa comunicazione da parte di chi la abbia ricevuta per errore o in violazione degli scopi della presente. Ricordiamo che la tecnologia di trasmissione utilizzata non consente di garantire l’autenticità del mittente né l’integrità dei dati
+
+This communication, which may contain confidential and/or legally privileged information, is intended solely for the use of the intended addressees. All information or advice contained in this communication is subject to the terms and conditions provided by the agreement governing each particular client engagement. If you have received this communication in error, please notify us immediately by responding to this email; then please delete it from your system. Any use, disclosure, copying or distribution of the contents of this communication by a not-intended recipient or in violation of the purposes of this communication is strictly prohibited and may be unlawful. The transmission technology used to send this mail can grant neither the sender identity nor the data integrity
+
 
