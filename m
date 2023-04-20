@@ -2,174 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA8376E924C
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:21:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05C646E925E
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:24:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234030AbjDTLUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 07:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
+        id S234539AbjDTLYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 07:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234746AbjDTLUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:20:24 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDBFB462
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 04:18:21 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id e9e14a558f8ab-32a7770f7d1so7692105ab.1
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 04:18:21 -0700 (PDT)
+        with ESMTP id S234113AbjDTLYa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:24:30 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on20724.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8d::724])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2D6A5EB
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 04:23:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lXCd2ElUDXxrjDfs4wJR9M2LPD06RXYiTJbgekNAprG22z1HyRyG2u7OM0X92iM1MDyFYXfkpvnlST0FAktkXtEG4FCvNKr+lIhUbF1n+ZJ2nvlUaaVg43lpu24+E2Kc6JXNXJTEJwQ6pQZrHyMegtJjc2xRdPLpmgfkJoMj9TtRgluGaGmS9KfLJX9B+OUwe14tnlHSof5aUgTwP4mQqKfB0X/LQ/sDm5Y+DUN++vWyW89gTXoglYQSD4rUklXmmkaAx6q5M4M5TRuTp3d6YxKsirEmsDO6YgD/mqHh583LSIrFtR+eLpsTSB34tHUEbmffbo6SwZI9q00zoz9kkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NFtEajWJkg+jCXxYCoGKHh+OYwDbh6ZLpgLSoEyEfiY=;
+ b=WFsLn0kDkrip1OKqXqv4IVhc6P2frtqVPWMYpO0MccRwsE4yJiYU/yKpEc8fbsPO7/keK7vud2RYN5YkgCMy7p8qdn5MqzJ32A/B7sYKveY78HU06B8brRt1ZreKVjv2w+m2IVPltrScTRQSW9KYgj3cdsHktiG4TdufcwRuBZBNjtPV2Vr/tMNDNoqpxaU4oe3NTHiJ3zkD3DPGaMo/IGzuxcuyndQwt/JMxi+w/J7DYlKfg5DTszta1d0Dm4TDj7Ar4sFiITvXEAyZ1yPqBfJdVykdg/Tz3DK9Q3d4fQ8Gly0x57SOiQThmS7Cke6ba87FYQ1uU9Hz0WwBbfRXzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1681989426; x=1684581426;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=71XPyFvghrYUg4JlIxRLKYWkY7qzjU28DXhmVVF2TsM=;
-        b=2YJjrcmnEsiWUlbrFQ4MShnMtbFqQGT9zAhuauVqisSI+BhJaS0VC9burZOBsFVVPv
-         tCzzZMZwqzGO7D0gbepepVEVNAFys03NVHVDcdzJbV2nZm+zFwWfET0E0GeAVyYWAS68
-         /qU8+2mDaf76gLIG0JAKiUZ56VjsiH8+CnAfyUr8pUcxBuIPoDsHfoIgV6D3rYSLEB99
-         mt8pRHQNQpSOqCy3VXtCFD7UsW802SD8JmurXj1miN6lP8v6ep869Qd6vd5gEELXmA1z
-         K9kMm4AE4IXTS+bYyRlKc1pQlrb2Xjdid8C7kWDdvHI8iz+pAdTs8LTXcV4Cku2SmemG
-         Gvrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681989426; x=1684581426;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=71XPyFvghrYUg4JlIxRLKYWkY7qzjU28DXhmVVF2TsM=;
-        b=SSlBH4pF6Qrzc7762Nq4H8NII/TESqMeTbbXzIL1XgARpCgMAAINP8I6DiUsWCZJ3z
-         ia3Ij22DIfInl85dL/oWtNj+/ZVNA7BDjfx55CWyU+Hw2uPhxo/Aw0nucMPWxzOgK2C3
-         SV8MB0XKOyUortiaGtrQ2JqzSSjD94WcwaG4Zr9MlTY6HBlZq9TivDojNKU9/8bw+EhG
-         e+9kJ5CEaSkaS2zozU06u0eGOiTLViypUDXG/9OGeaQhIJlTMT6iPgA5nhVVi6JeOS9X
-         ZZIhkDPK31R/RRNHjxz8YAOcqV34hPgHORyqQYd+ISCpbMGs22rSASxbQUtSYPpVh7lY
-         Mszg==
-X-Gm-Message-State: AAQBX9fCivddoLPKye5uoplMA1hGydUl6A5Ya7fRrKobjtHy5WUv09lz
-        Z0JmsWippExn3Z+R2sotb41bmyeP5KWeCLPfMcxV5g==
-X-Google-Smtp-Source: AKy350Ygi0PWL/IHl41WdaOanpGGGBDp0qnN1yJcqXMMLJgBdKADPBX7fji+tcV5Xs6rIm0THleaVuOqLae+Oh5z4Fw=
-X-Received: by 2002:a05:6638:4806:b0:3c2:c1c9:8bca with SMTP id
- cp6-20020a056638480600b003c2c1c98bcamr2042751jab.2.1681989425967; Thu, 20 Apr
- 2023 04:17:05 -0700 (PDT)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NFtEajWJkg+jCXxYCoGKHh+OYwDbh6ZLpgLSoEyEfiY=;
+ b=RsIvcTvxyD1nI8VQPbsIwYPSqBemngR5CyjTkk7ICxIgAc8fNqo8xmgoGZmXZnHGVSAMpw+PkPSb/anY29XpXXbk2szP2hdrLubPzoF19+RG9mhMSgPQppgExqaHh/zDPLiw2QGNf6nDktY/lAI4WLDPUL3EQNyRIsefBR0mv1w=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY5PR13MB3634.namprd13.prod.outlook.com (2603:10b6:a03:226::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Thu, 20 Apr
+ 2023 11:22:42 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Thu, 20 Apr 2023
+ 11:22:42 +0000
+Date:   Thu, 20 Apr 2023 13:22:36 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Emeel Hakim <ehakim@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: Re: [PATCH net-next 5/5] net/mlx5e: Refactor duplicated code in
+ mlx5e_ipsec_init_macs
+Message-ID: <ZEEgfDgZYS75+7Dk@corigine.com>
+References: <cover.1681976818.git.leon@kernel.org>
+ <bac66f9dfa9b72ff606573fdba6f3ad2d28c8c88.1681976818.git.leon@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bac66f9dfa9b72ff606573fdba6f3ad2d28c8c88.1681976818.git.leon@kernel.org>
+X-ClientProxiedBy: AM0PR03CA0037.eurprd03.prod.outlook.com (2603:10a6:208::14)
+ To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <168198515529.808959.12962138073127060724.stgit@firesoul>
-In-Reply-To: <168198515529.808959.12962138073127060724.stgit@firesoul>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 20 Apr 2023 13:16:54 +0200
-Message-ID: <CANn89iJuEVe72bPmEftyEJHLzzN=QNR2yueFjTxYXCEpS5S8HQ@mail.gmail.com>
-Subject: Re: [PATCH net-next V1] net: flush sd->defer_list on unregister_netdevice
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, pabeni@redhat.com, kuba@kernel.org,
-        hawk@kernel.org, davem@davemloft.net, lorenzo@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY5PR13MB3634:EE_
+X-MS-Office365-Filtering-Correlation-Id: c4adbf3e-48d2-4801-7d93-08db41918eb1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HKRKiLcdec4Np7HOc6Dp62QlE8XD7flTViQSHhV1TsHDlOuVD4rxcO8cKL9s2HNnGjlLcAttoatiiulYj1aXXpZLsn+ODU5L22PI4C5fxeQT7nqyYvmfpGLX7L/451Rtz0nTe/3nCd5G8mDzzsX+udhAczYrFiH3xA5U9xyiB6HLZHIUMJ9LQozAC8iZVaeenWcooBs2SFA+PRkDuBShAJOA5jKqfenoEGpx7JJ7bPZCftQ2kOoqbpJM+TUn7P7fSfywtiMkUXK8mmEqpYZGw/kQLgAlkbnzbhgU5xix9rPg+i7/az9a3YPAx25iz7gKxRqWozhUVoQ3vIkjUXvNdiz9QFM32ep1WnQRAm1XInHYcPEy87dIH4pjY+Cq/L2zTeVgnqqopwZFg4fu4RYDDLzqEwq1wLPeRiKQe4ozBOlydFY7oxshktG/mQReo64T99CP7N8guOcJUMnPVGMqAZVIsnXdD0hwqMU9BSgc0RwaWdTdABGk6I7RTEWSMSYUvNzNflwyT+BrGCgVCVNF0Lv9olnAQFO2pjXgG9YM3q+OLjT/woPNj4qNN6kAXzfa/vEtVQVaXdExchc7CuwUR21Mf2FMkCcatwFr3xTO+3o=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(376002)(136003)(346002)(396003)(39830400003)(451199021)(54906003)(478600001)(2616005)(6506007)(6486002)(6512007)(6666004)(66476007)(66556008)(6916009)(41300700001)(66946007)(4326008)(316002)(186003)(7416002)(5660300002)(44832011)(38100700002)(8676002)(2906002)(8936002)(4744005)(86362001)(36756003)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ShXVcYvHGJiYJ5T4ZgbvPXtwZGLr5Xnc3PXaKzl1xnhQczr3QjJhaLCNk3Pe?=
+ =?us-ascii?Q?iuUl1J6O9ZuU4a0C84KEpEcdZOwq8YzbB6mjtirsisCO+4kTBEeZNVmYE/iB?=
+ =?us-ascii?Q?jjfNqWILfGnq0cC/CvVHg54qTn5S/R6A0gXCz7VjCHc5ydjUFVLpjlo77ekJ?=
+ =?us-ascii?Q?i1zTb4cuKrdF1IqsYJwCKfWuq2ijLqBIcG1d7ERC5icyqvarfD/WqVfYtqlG?=
+ =?us-ascii?Q?z8PgZUivbqkVzOXvakM9JZg6CgFb3GSUa7NIAzx6ZzMo3afk/pjt0/cEr1Cg?=
+ =?us-ascii?Q?CvTDRZeS0hU4LnW4q1FS+kV9DfyBqhw3OMoPd0tmT14MH7nkc/OjZjny/jGL?=
+ =?us-ascii?Q?O58nOLxqZrCajCIin2+mMq68fvzACVJK4IYzl57b5DjnKwXZ9JCFDxasq9qI?=
+ =?us-ascii?Q?MDIVKt2xxNkZ3nIu5PsuZUdKqzLm250k0ltWO6e6Mq1dpE1hJOfPCS7fDqhg?=
+ =?us-ascii?Q?F3VKljHYelaJdQDXyxenOovzHSTfWicrI9b4O+iYT2bwrjAWaVvPnSGSMkAR?=
+ =?us-ascii?Q?NlK8lc2YIQRK5rQq07m0BjnNOs+pSiExoD9K065Ps8PRUu1LiqajmI0LuWxu?=
+ =?us-ascii?Q?Fr9/v0xHvMTz8MlkozU5prVQWQ0NCYolOWaCKwjz1lHdCRcOEHpAHum6zC8d?=
+ =?us-ascii?Q?r0e2n5NhaupMmjCYidv3AStsBIjlDGdt1gaclAz38woc4t0c7gGlZO1Xplh1?=
+ =?us-ascii?Q?XpEBWV/w1s3AXPSOAY65UDITVb7ny4iTHlO2KTJ6FLyyidCq8t1QGLh4fbMr?=
+ =?us-ascii?Q?/8Y/1uv/Lgn9OAUOCM0n/3WpSU2YPHWxYgHRQlCUz7Ro8fdUUDlyEeZdgQPC?=
+ =?us-ascii?Q?K9Fj/lOTDsQASLA+/y51w9fL9Vz3LV1+ROu3Tm4xvOIAoS/x38ECZ7hPCDUr?=
+ =?us-ascii?Q?2ASevSjmctjmDjTFsI7mJqAnpWY8EM14NCWsgak30FSAbBBSmq4lNks3528W?=
+ =?us-ascii?Q?2m4ZbjV0DPQVGHhKp8NVNc4+kNtYREDPSQCePwAvR9l1MR4XCjKl2B3aGGiH?=
+ =?us-ascii?Q?z/5Zclpw0J3+KhfN0KrhtYwp4Qmbb2KIjHc8WhHRe3oWXCb9iw1w7qW20+uf?=
+ =?us-ascii?Q?2Pr7elCfCi8/BwnpfuhZ3KOnbguA7UEl3/5Cb6s2bp2DJIAKYtL7VL0i9Zuo?=
+ =?us-ascii?Q?u3mL6N4Mw6iciiobE6Fw82oVr+cGvBD7TGGkFTV9XKalu16VFg0u25Wn9KNe?=
+ =?us-ascii?Q?o1+zJCf1S71RW52GDL3/qnQB2sMJu4rqrkoTKDvQXHcqK4WbTmem5sbGoy2w?=
+ =?us-ascii?Q?mpki8Xcx5FlACGdOdQO9KBLinoW/d71GsvXG+BbUtH2fWFmE1mBP5lU+/OVy?=
+ =?us-ascii?Q?jkKqB3G6WL0Dl3dsKB6AgHew1A+W3zt/4zG8qQgJ26fOiV17e3tnqUiwqsEf?=
+ =?us-ascii?Q?5ZuBu0rmtu8CfJKKOviWL0oKd5qdglQEOG3R+awpvSf7CNaIPF2MwwhMyLsW?=
+ =?us-ascii?Q?+heMsKh8tEN+kmQHalHyXM/q/Mi8u4B+D+87jn3ETPc4ea6lKqHqhpUnoqv5?=
+ =?us-ascii?Q?JOkjKS+Ld1VG/Pink/av7gxDE56vQNPd4ovyhYAd9pbWbKGVfWAdw6PWN+oG?=
+ =?us-ascii?Q?yRxXzPz98mcJAG4UzCFT2FfHpzsKUP6zNnXDlpHNOYp9jCazM91EYKSVDq4C?=
+ =?us-ascii?Q?R93RS9+/qZXBSsMQEc12UMJL9N915YjOVZz+E5RLTW8pfA8YWGGuxwgtbPLm?=
+ =?us-ascii?Q?earbxg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4adbf3e-48d2-4801-7d93-08db41918eb1
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2023 11:22:42.5375
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KsG5zuHLFaXgmkAk4czQmKiJjwBctKFsV6SP5SVkLhFNsOCotyO4ipi2QcEDFvbqLkwZt3M0EngG7iqG/w8ClTk7FbLUd5e6ooXKQXVadwE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB3634
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 12:06=E2=80=AFPM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> When removing a net_device (that use NAPI), the sd->defer_list
+On Thu, Apr 20, 2023 at 11:02:51AM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> ARP discovery code has same logic for RX and TX flows, but with
+> different source and destination fields. Instead of duplicating
+> same code in mlx5e_ipsec_init_macs, let's refactor.
+> 
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-Why "(that use NAPI)" is relevant ?
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-> system can still hold on to SKBs that have a dst_entry which can
-> have a netdev_hold reference.
-
-This would be quite a bug really. What makes you think this ?
-
-In order to validate this please post a stack trace if you get a
-warning from this debug patch.
-
-(make sure to build with CONFIG_DEBUG_NET=3Dy)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 768f9d04911fb16a40e057aec7bfa2381a40d7a7..56c79bf922ab4045984513de13c=
-c946b84fd3675
-100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -6828,6 +6828,7 @@ nodefer:  __kfree_skb(skb);
-                return;
-        }
-
-+       DEBUG_NET_WARN_ON_ONCE(skb_dst(skb));
-        sd =3D &per_cpu(softnet_data, cpu);
-        defer_max =3D READ_ONCE(sysctl_skb_defer_max);
-        if (READ_ONCE(sd->defer_count) >=3D defer_max)
-
-
-
->
-> Choose simple solution of flushing the softnet_data defer_list
-> system as part of unregister_netdevice flush_all_backlogs().
-
-I do not know if adding two conditional tests in the fast path is
-worth the pain.
-
-I was thinking of simplifying rules for defer_lock acquisition anyway [1]
-
-If you plan a V2, I would advise to block BH before calling
-skb_defer_free_flush.
-
-
-[1]
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 3fc4dba71f9dd250c59c0a070566791f0cd27ec4..be68b8f7fe16658f3304696bf3c=
-83df4c8af51c7
-100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6631,11 +6631,11 @@ static void skb_defer_free_flush(struct
-softnet_data *sd)
-        if (!READ_ONCE(sd->defer_list))
-                return;
-
--       spin_lock_irq(&sd->defer_lock);
-+       spin_lock(&sd->defer_lock);
-        skb =3D sd->defer_list;
-        sd->defer_list =3D NULL;
-        sd->defer_count =3D 0;
--       spin_unlock_irq(&sd->defer_lock);
-+       spin_unlock(&sd->defer_lock);
-
-        while (skb !=3D NULL) {
-                next =3D skb->next;
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 768f9d04911fb16a40e057aec7bfa2381a40d7a7..27f6e0042dfe0cbbb362d06b540=
-b3ca1567459af
-100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -6817,7 +6817,6 @@ void skb_attempt_defer_free(struct sk_buff *skb)
- {
-        int cpu =3D skb->alloc_cpu;
-        struct softnet_data *sd;
--       unsigned long flags;
-        unsigned int defer_max;
-        bool kick;
-
-@@ -6833,7 +6832,10 @@ nodefer: __kfree_skb(skb);
-        if (READ_ONCE(sd->defer_count) >=3D defer_max)
-                goto nodefer;
-
--       spin_lock_irqsave(&sd->defer_lock, flags);
-+       /* Strictly speaking, we do not need to block BH to acquire
-+        * this spinlock, but lockdep disagrees (unless we add classes)
-+       */
-+       spin_lock_bh(&sd->defer_lock);
-        /* Send an IPI every time queue reaches half capacity. */
-        kick =3D sd->defer_count =3D=3D (defer_max >> 1);
-        /* Paired with the READ_ONCE() few lines above */
-@@ -6842,7 +6844,7 @@ nodefer:  __kfree_skb(skb);
-        skb->next =3D sd->defer_list;
-        /* Paired with READ_ONCE() in skb_defer_free_flush() */
-        WRITE_ONCE(sd->defer_list, skb);
--       spin_unlock_irqrestore(&sd->defer_lock, flags);
-+       spin_unlock_bh(&sd->defer_lock);
-
-        /* Make sure to trigger NET_RX_SOFTIRQ on the remote CPU
-         * if we are unlucky enough (this seems very unlikely).
