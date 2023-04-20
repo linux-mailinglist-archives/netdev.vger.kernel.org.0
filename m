@@ -2,145 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC3E06E9D77
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 22:53:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEAB86E9D88
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 22:59:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232515AbjDTUxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 16:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
+        id S232290AbjDTU7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 16:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232533AbjDTUxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 16:53:06 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2DA44210;
-        Thu, 20 Apr 2023 13:53:03 -0700 (PDT)
+        with ESMTP id S231223AbjDTU7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 16:59:18 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E18230CA
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 13:59:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682023983; x=1713559983;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=3oKv+MxCwZehqIpjV/4yvDo2yY11Cg21wBOSJVXui/E=;
-  b=CDF0WYd/oA11Slzzpod3SuliARZZlAGnXw8daDQoj+2nf1tQ7douq24N
-   gqrqj0nY9Gohv0OCFakcmRuiPxyQ2jiKiG+G/k9Vw2mDlAg4tL/MkcFb5
-   D1d+ovdp03UYxvYin9YNxy6Zh8R5ZJCRbKbdDSKELUO/1FNUVUiy5YA7R
-   6/0XaYr03cM32LEkqRbD+LMDzeGERL7vKuGn7XoznxKvy5SLObmxLwGpE
-   XcNxy9d29Cx8hWX26QtIRwe11yJ8JhXnAH8CNjaZLCpYFrlH4i9LDwcaa
-   I/Jjvpdhvc10IBD8sV8iaujE7KCnuyu2OPjWzf4ktDAzVBxCtRwG+yhXT
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="347744277"
+  t=1682024357; x=1713560357;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=DA7K9zAdo3eAxau8RqCgBmRWYOyCz23v22YwT6fj0TM=;
+  b=niHyTijQQ6syU5aZx4UDXu91VXYH5Vg0DfW2FChonjXLDKt6g6JPZdH3
+   KshF7KreHsVwdpH6uIa69pI3W5uxv8ln5JxPhYt4KT0qZaFrDGYNQRDf3
+   NkaPTEnZKMhbDpu5CUUMdKRVxU6BeS3dVILYcQhxtk491C/26bV52DTB3
+   0XeSvDNkDGu7VgG3avT77/eims0C613X65c5kOq9524VX7jzg0+8oKHxy
+   CQ399Ij+uG/7pqvk+XHfbRh8Ib6xtXoZburBv7Ja/kgY1gXPjzphmynaV
+   L+VboMENbSsPuyhhryhLfnh3J3oyTVr6WRZ1CIQE0ZVtp8vTFg1pVwOLH
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="334718901"
 X-IronPort-AV: E=Sophos;i="5.99,213,1677571200"; 
-   d="scan'208";a="347744277"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 13:53:02 -0700
+   d="scan'208";a="334718901"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2023 13:59:09 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="835910535"
+X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="724563752"
 X-IronPort-AV: E=Sophos;i="5.99,213,1677571200"; 
-   d="scan'208";a="835910535"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga001.fm.intel.com with ESMTP; 20 Apr 2023 13:53:01 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+   d="scan'208";a="724563752"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga001.jf.intel.com with ESMTP; 20 Apr 2023 13:59:09 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 20 Apr 2023 13:53:01 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.2507.23; Thu, 20 Apr 2023 13:59:09 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 20 Apr 2023 13:53:01 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ 15.1.2507.23; Thu, 20 Apr 2023 13:59:08 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Thu, 20 Apr 2023 13:53:01 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2507.23 via Frontend Transport; Thu, 20 Apr 2023 13:59:08 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Thu, 20 Apr 2023 13:53:00 -0700
+ 15.1.2507.23; Thu, 20 Apr 2023 13:59:08 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FSuCsmvWcqNRx0gYXRp9oD/dORxzU1/2ggQvXJ7HhtNXEp5NTO1BHzf77Jp5JrKzA4ZWXUy1USrg8CBXP2RG0OIbYzHHaV7oc09dcI+a/8vFEKg1ZCHChKpxEQ2AkAZXWcHiqfTBAHFkH4Vb5Zh1BWwZnoDA+Nibazcwwr4aLYq6zLmoVGfaZrdGN9++kx+cGrdPo0xu3cFIxa+VkctH0pp34LlMllYnPO4kLwrx7fbE9RNV0/zplMBu11eqyJJkvPQkrt9P24hT8mpqH0EllfLaMS1VPfxANxhMQDFhbmrec2tATbj2MUtkxCHyhkAsQEorDJ1DYhWbRJVwDYaiIg==
+ b=MGtb9hm6xC6Vn7x/z6wsYh3a0tGi71dfLIEvWeQ53hCk5xcyDg8ZpSvC/ebEAgbhlu27osrsdLJRq8fQYOJLKvt+zZNDPkB3CGCb7aPIYmuwcoeppyCYsc8dOBi5ZL5D5ML6opfTSHcQqIMKL3ZtMWdeqItW0lWCfjXslAD2f6CwEUMPMxieLWbt+Ieb5CgyHKiWiMUG1fLhRib9vchDvPaCa0Z/1aIjvceDY+6NYimnUcj2m5Um8bl5hKba3Q/i3geDgRYJkB6Ep7DK4IbVOy5ccrQKBSgd1CtsbkePCl7aJepViFrHf7trLNW40WKvdo+RP6UMYyJwWRODonFDtg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CLzS7V+qwE000Lo7GtR+uphZlbfNrjPtmGEeWizEnJo=;
- b=UCcVZ4GwqUJi55BGvoSgGDe7Hk9umlE8dlnF7YPXLf23wKwuqLcSYJndot1gEIhF7i88VNXuON4UyLU9Ip7rx/kBWJadhbS2fVArJQSF1QNDceiWuYEJpOzAc4Di/+ltuBG+cUWHh0gi3Pft3TV8FG1wVoSOhsfeqPu++tRnhpKdniYPAWxqRu8lxfXvmAmjKtgGlpNs23sNxe31vqy8SN2bgee8GNCC2JsdPOGGmMCNCZq7ThMXkAlMh/bznkWwZ8oc1d7eNTFzRVc/jX5JRn89KcjqIpew6WVMe30VSAkdTyKoAj7r7W08zV3eapcyaeLOimYtdLyvQcmQiuGQCA==
+ bh=0mbGoO6OOYVJNAe702WWOCwpzT4X1azPjVuu3XO2aDM=;
+ b=MRcZLfVV6iGEi73fuPdDstmwvgpHYNAvIcvzDxYAkhx0xrZLiKXj78y24u0vmRwYE3nFrgnoOVHSHcOaZ0dF6iwbnUdduknw/XyYpqMn9UmgcqTgImvoFiffsfRxZYln7lg9YpnAUtgQ8lcpgCctHUYPb8NVoba6rX4i4dwYFiVpqXw8Ex0MRA4JMRU955nbXhFu60aYRZs6hfiimKzfy/Rp1CwZZjpxP6ll21nvmj/aCfdknYOAuSVecAgxyICndUzIQFSm9Gz5iIU0mHYrgE5BO7EWXw7TlUiiwjG3bLLBTTs1oXb/bqkkpDTRydB8zEW6BdKMtW1WzYIPRUzLMQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
+Received: from CO1PR11MB5028.namprd11.prod.outlook.com (2603:10b6:303:9a::12)
+ by MN2PR11MB4517.namprd11.prod.outlook.com (2603:10b6:208:24e::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.20; Thu, 20 Apr
+ 2023 20:59:06 +0000
+Received: from CO1PR11MB5028.namprd11.prod.outlook.com
+ ([fe80::bf74:c4e3:c731:b8c7]) by CO1PR11MB5028.namprd11.prod.outlook.com
+ ([fe80::bf74:c4e3:c731:b8c7%6]) with mapi id 15.20.6319.020; Thu, 20 Apr 2023
+ 20:59:06 +0000
+From:   "Mekala, SunithaX D" <sunithax.d.mekala@intel.com>
+To:     mschmidt <mschmidt@redhat.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Kolacinski, Karol" <karol.kolacinski@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: RE: [Intel-wired-lan] [PATCH net-next v2 1/6] ice: do not busy-wait
+ to read GNSS data
+Thread-Topic: [Intel-wired-lan] [PATCH net-next v2 1/6] ice: do not busy-wait
+ to read GNSS data
+Thread-Index: AQHZbRemsewlUEPBK0ujknEpJGwj2K80twWQ
+Date:   Thu, 20 Apr 2023 20:59:05 +0000
+Message-ID: <CO1PR11MB50288BD3E8FBB9A924590AAAA0639@CO1PR11MB5028.namprd11.prod.outlook.com>
+References: <20230412081929.173220-1-mschmidt@redhat.com>
+ <20230412081929.173220-2-mschmidt@redhat.com>
+In-Reply-To: <20230412081929.173220-2-mschmidt@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
- CO1PR11MB5027.namprd11.prod.outlook.com (2603:10b6:303:9d::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6319.22; Thu, 20 Apr 2023 20:52:59 +0000
-Received: from DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::9e4f:80cc:e0aa:6809]) by DM4PR11MB6117.namprd11.prod.outlook.com
- ([fe80::9e4f:80cc:e0aa:6809%3]) with mapi id 15.20.6319.021; Thu, 20 Apr 2023
- 20:52:59 +0000
-Date:   Thu, 20 Apr 2023 22:52:45 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>, <richardcochran@gmail.com>,
-        <UNGLinuxDriver@microchip.com>, <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH net-next] net: lan966x: Don't use xdp_frame when action
- is XDP_TX
-Message-ID: <ZEGmHe2pyxwWiYRL@boxer>
-References: <20230420121152.2737625-1-horatiu.vultur@microchip.com>
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO1PR11MB5028:EE_|MN2PR11MB4517:EE_
+x-ms-office365-filtering-correlation-id: 92d1dd16-8b55-4c6e-4ff2-08db41e21434
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: LJUWUE10GKdDF0HjPaTTs9LNt5leq7ek0rL/+91B15kktu67dRtbmc9UX8ZJz9/niECipjQC2LDRswre+RN3RuI8y22Vla9n3H9xdwlAaFZCS5H0XcIzsPKUsh2Njn5KH08l4OQdniNbfMA1mxCbQUjnZoKwbfZOJnUWpYR37i/uhbJv995vfvaRKvXvkmzJTzSOyRfx2fj3Y04Pstsq7cdoae8vrSPKw1gs3j6viXfXgtlpgmhrh7Mb4g/ZYiiWWkUypRawJXrWoH0vE49eWuCxzH8vf8uKwDXPewnCy8bJSjqoR4XfymzGUQXMuurkX1KvG0jzKVfpQ7yJjg7cTnJvXRnWycELybm2vsgR+VM1Y0YTqcGQ4dreY9ycbSuLrQxKnlYAzUwK70h8KfJcuIJIClNt7nn2s6jP6YwnljHY2xO31p1SfC/pqW35UaaqfOdRgI4FV/twUpG/uoi+bwf7lg1UcNUD3DcWsEkphTvXXiPisnwYBzi3BJ25nU1D8yLZqCFnKtq2sFXjfM7XANRig4WoeXasAdbQv8C5Nob+8Xw8dITw1HcrSzImyMwOyjeriEPWPuvvNLj7qmlw40d1Dcsshotcqy/XxnURqy6tCJg3xwb4sKUofRF9zPzo
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5028.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(39860400002)(136003)(376002)(396003)(346002)(451199021)(38100700002)(8936002)(8676002)(54906003)(122000001)(41300700001)(82960400001)(5660300002)(52536014)(4326008)(316002)(66476007)(66556008)(66446008)(64756008)(76116006)(110136005)(83380400001)(66946007)(66899021)(2906002)(38070700005)(186003)(7696005)(55016003)(478600001)(71200400001)(33656002)(26005)(86362001)(53546011)(6506007)(9686003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/IYv8+fM38BFeubztI+Htdrm3IoIfWkcFRZni9VrSgWZemStKtKEresa0r8K?=
+ =?us-ascii?Q?L3ve8hxSlYMF5V2RKh3IPFL1Z/Y/wJTUzb2I1Wkz4TRTOAeyrO6Z380r+tII?=
+ =?us-ascii?Q?CPxxCpr0n9+Jvh0wk689F71XhvL1y93543TVRb6PTd4sV83+6TGHCZ2FkHbA?=
+ =?us-ascii?Q?gR2rBJuYU9QSZzK0Zn6VCbsHoV5ORg8EQNTZc/B8mNXxNsfzgZSdxpjxOnVw?=
+ =?us-ascii?Q?wOiOO7WG8cFpxNWfahRYkCGRMEFSQRE9kYsa6/k9nB0mPUgqtphDUIWNGDLI?=
+ =?us-ascii?Q?DPUPOGg0HYfQUHxGUVMX35KKUXWxXADpaHUqe4Yyh42IMleYS2aehPzBN0Ij?=
+ =?us-ascii?Q?N0ypnt7YrKUV5z1DfEoLB+7hFlxPxdtPSjhZOYPDxQNTLLtlsEngKTZ4thL1?=
+ =?us-ascii?Q?3Ek8QfqNueuUNniHdrVrNhGP+IG7PW+Z35KTq7xr5P6IXxK/H5+excbXzzLh?=
+ =?us-ascii?Q?1hr3IwRtbQ32EqecQMFnJnKypP5jEGI7nSWhMKlzA3RHNSWws/E2Q8b4AduM?=
+ =?us-ascii?Q?4nDU8+Ok+qCL00zzYIKV93GNqqlWXD0sz8Oz/U8QGwwHBoZgWC1ERS1Mr2aV?=
+ =?us-ascii?Q?JO7i2+tJuqYbH8IeUwFbD7NMu4HQBm1DLO/ElxfYnx1bHxntoI6x61SnWnWa?=
+ =?us-ascii?Q?68hd4nGmEj3aPH5AaEWtY7Yze4RxqhtQiObMLZaDLgKsk8a8RwQdoJvMw58A?=
+ =?us-ascii?Q?BPkun9P1BDOMCBmYmaZNSpHlmo07kQ18NllhngWAifslPNU7GTJCyhchXT57?=
+ =?us-ascii?Q?IhcBlvgUpz2wC8hDGKulRok76w+pp2pZcd34HMtT6BA9vGfdASAvTaSnjau0?=
+ =?us-ascii?Q?8gg5srK7zWvrKC7kdiZPjXy7GXKXDKVnISxeWqBBTbpeQjvTCrZ5eMjJuMVE?=
+ =?us-ascii?Q?lCEt3Sz8+NlsK97YexhyowUUDf9UZzWE9qH2p2RujTYF7lWQNyiyhmnkp+QL?=
+ =?us-ascii?Q?tQTbnqzNTqJdKrrAlTlIqzHY9Kv60ABz0vxnFS0OAPaY1/UQZwOonxvhGMJx?=
+ =?us-ascii?Q?gUOlk6B8HARgaGIsTYq26T8BG+AggRIhYjnEOfnsJmm91JIB46zKsKfQ1u4A?=
+ =?us-ascii?Q?3O53u0AEAMgNtD5Js4nGeNM8u8bUWD27D1JaxyD3NF5iMKYOPF0QKqDUKWxq?=
+ =?us-ascii?Q?KLp5cRV1WC8T7DI6uqoS7Xu6yBDjG9Ht/mSmqUUjdxBwyn45cOReYCCZH6nl?=
+ =?us-ascii?Q?beKxPtIfpScTxsD2jI9bfOsrYw9pYJat6X66GtYkEb5j+xr9sfwiM5LpQDaP?=
+ =?us-ascii?Q?+mwbuqQPnX2faHF9ATSjWdQnwKQH6ELiunOTX8BXtV2CVIbj4rFiuHAOtSE8?=
+ =?us-ascii?Q?R0AfCm+Wg7PPW3oKh6qEnukKlVVplMSrrwymlVstVdGRV7T32A2+E6QdyJeG?=
+ =?us-ascii?Q?aCOjVZKGF+BMqbo+j3KkrakF+eaWKcvpPV8um4D4UGGlBWmNjmA7rf5Y6BSs?=
+ =?us-ascii?Q?JFBAbHY2JbY36FUBKF6mI8hFz8TWu25jpSghxIsYs/d9iGpLIA0WoNyey6Gj?=
+ =?us-ascii?Q?C9XzNvBeeV7582jaRAoaxwaBerHzUWVYIg5DEkgtoS0gDZWbT/zn2VchKXfV?=
+ =?us-ascii?Q?yCehrRikSrmuOAXAS26hiVJceUCBuk0/xQQBzrbSMCC/mnzdZV3PHLd+Jc31?=
+ =?us-ascii?Q?xw=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230420121152.2737625-1-horatiu.vultur@microchip.com>
-X-ClientProxiedBy: DU2PR04CA0215.eurprd04.prod.outlook.com
- (2603:10a6:10:2b1::10) To DM4PR11MB6117.namprd11.prod.outlook.com
- (2603:10b6:8:b3::19)
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|CO1PR11MB5027:EE_
-X-MS-Office365-Filtering-Correlation-Id: c6d26caf-bfb1-4bf0-9d90-08db41e13954
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LbhG5xz8/jJ8JAeNNjR0wDOSx31N5kOa7qxcrF+6HsvyKvAGveiSW9BivqXHbMvtZTVG5b0HNxfnBKw+f75YJ1Dp/kW5Y2zY1u14m667RVDVe6vZvWcru7pZcgcVo8SXDXSIiVDxIfeCrh13itGVJ3VyuSd9scVB70VXq9wlog0q9FcHlQkXcimwiNuSytDCjEg+iuDtKV1n+1kZ2mO6T8ngvNKk1Qykf8V1pcrgJD4VxQ72uao9JtygsnzoftKqqyqgflLN85K3uggi4hoTtFsTFtWdFDvxjr1hzPu3ccvAU1Q20UQWS8EUo0ueDhhwLk4hLj8QAJ+b/FyHA6wj2hzspJjPJRPVTo/gMRxjARTo7oeOT+ee3id3XaeNVD3WTDl9aXVXRU03rDws/kuOxk2D/9KWXe7z5ncY57mq1GIcSzw5OlLHu6+LpDjnooEyG4dmtjOSbfggjKHpNVCYT8+t2Bdy4gjLjF9z6KtUQ01EsuOgQMqTn7ln5A+l613Qr/LKxgWGGXrquPOptfHfklz+3egnwx4y4a3JlOysgXk40I9Z/yXXgxRNIetphZ6H
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(376002)(366004)(39860400002)(346002)(396003)(136003)(451199021)(186003)(6506007)(26005)(9686003)(6512007)(6666004)(6486002)(33716001)(86362001)(83380400001)(4326008)(5660300002)(41300700001)(7416002)(8936002)(66946007)(8676002)(6916009)(66476007)(107886003)(66556008)(38100700002)(2906002)(316002)(44832011)(478600001)(82960400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AWM82YGNhHZCK5vNKq5Ezf8bhg8TDRX5B6cTQKNt9s3wL/TLw9vhOdL6lfsn?=
- =?us-ascii?Q?EU41fcQhVz9s/NVNcllR3XiLuK78Glg+xmPjY7Sa7jkXQE59rKihxjKaWRLr?=
- =?us-ascii?Q?bSxcr4ETcIG8w8B1R7oag4mTJ3rwNGhAs54F8BesYEqOn52R0Ikthv8qKzZq?=
- =?us-ascii?Q?e4XDapYwMA4DgLw+tn6Ppqhg8wwtYlx1psf07L33a8FHvcNxBeO0r1HvhSWH?=
- =?us-ascii?Q?9P8dCG6nRKwvvtjSCgdNwexI5Cv22CZMWgvaXL+xRYT8dxYv1Nb19t2U8pn8?=
- =?us-ascii?Q?tc8J50ahT6JV3ekf7UUcDM/CD0GYtgifX3RE+ePtyNzdRoGJmEjrYCFlhjKa?=
- =?us-ascii?Q?H+ad/WXPcsLOZFcWE9xSnEtaO5EtCEqoAoNKUrGvZBK58M7Q3sWGAdjy5uC/?=
- =?us-ascii?Q?wmg860Hsmpgd1HYYBtF6U9HiHiiV0ZvNa6+fwks9v4kAw+HcoMZv/dX9Ku5N?=
- =?us-ascii?Q?d6QvTAbeqzzrc6J2XNbudfraSwbfobBoBpGTlnwPVj5WhSZk4dlzNppK7Qob?=
- =?us-ascii?Q?llKWS2BjABO5l2+kjear6fYR++q/ouQHRsKP6naGvp6HS6bRoaZ4zevsxR+s?=
- =?us-ascii?Q?NXvUBRsRbDWWKf1jXdEHENs3Lqa9DivubIE88NTLbufqR24ijsNjKi42luoi?=
- =?us-ascii?Q?MJBMT3h8izVdOdKZqPuDnY8jTSW8AY4RUzRIvr98kFq4qvLiZMK9034RaBsG?=
- =?us-ascii?Q?dHDPapJmkR4wTx+CNnQ+7acH6LsPQKFw+9iLnoSU7BEASnuB04pNmoSDYxKp?=
- =?us-ascii?Q?xIKSs3lqRisYay4gRqIo5zdrXIU4VXKgelrJWLse8xU+75yaFCJhlLsBymKr?=
- =?us-ascii?Q?7rCnNJfgOFVBrctPnN20e94WIAF+ew5F5JVuWkFEmNlWG+Gbdfwd0NZOC8bK?=
- =?us-ascii?Q?GYV9Ub2b9MDe31PFdcYB2LqFnR3JDYWBTPyFvefho4uuQdccytVeiyHfzQWq?=
- =?us-ascii?Q?Omhe9BbQJ9lB/VeBOY+Ovm5P/7h+TlH0dzJKSEj2wjtHUQP9emK++K4qzlOD?=
- =?us-ascii?Q?OIBODvjF57sMdzDcoCJoIJktjW8lU4EpGnEFqd8TphiMqqlR4knArs3zLhBi?=
- =?us-ascii?Q?HCQ4BWHg5pOg/tvYMuknltCSkqz/96DGeK1zhNy+SEcQFte0p9NqdHpwunR5?=
- =?us-ascii?Q?4Ae5J4u6FD381najs2E5Lmh/gV08nAzJ+aRVwu//rJBFY3M42Sg8VL8II+XR?=
- =?us-ascii?Q?QJ9yyRRaWx2IlzN3KrCKKZep/bsCVxoOtiA8AZ8YiyTcFn6XyaQqsZtGjpD5?=
- =?us-ascii?Q?JtUYkn0gGlD1S8hgkSh+L+EGa91/ArTcjYM3Sr1/H7QQrMcXwT0MipgeNRCu?=
- =?us-ascii?Q?XMgcVNovGE3DRcbuytVM1dLU3R+a8nKnAPTUsAwHxbNrKZ4Ehvg2dIrUC1V4?=
- =?us-ascii?Q?CJcL5ccZjINGSPBwQ2E1Kyl5D7qKA3Vemkgl/dcC8Rs4c4k03hrzJlnR5Lz3?=
- =?us-ascii?Q?HAHQ2mLz4+uMselmr9Ygq54zxryqOK7dJPrMojT/0DO6ZRXS+7OPYOrr3kyZ?=
- =?us-ascii?Q?KGV4YwfBp95C6iUjdCqNh0I8jv5XtqbWfJHHzzX8+6wJd88/LvMcFEXJr72H?=
- =?us-ascii?Q?Z4lOPaKO9hpLKgBe01OHlkPDfpWr8R5qVOUUVzUjA+2JpzZ3+XTmhNVGr/ET?=
- =?us-ascii?Q?DA=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: c6d26caf-bfb1-4bf0-9d90-08db41e13954
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2023 20:52:58.9832
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5028.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92d1dd16-8b55-4c6e-4ff2-08db41e21434
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2023 20:59:06.0019
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rjt+sXYPAn676HtjqAi3Wt3HgYdiBx1P1ycU2xHxQ+GKqJkHDxmQuv9PEGVZEBwL6JtMw6LDE+0d4r5FjC0J7Irv6Znbl+vqclswF0uwPTQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB5027
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9RJrvfmIs/EjhKaYDPXHGzLQMrsdUvtf4EHyDTBLBfqdinbF32PJJmhUT0LPq3unmaC8aM6+reQ2cJxee/Ea//ePsJrNkPE8owMppPb8oDU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4517
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
@@ -152,191 +160,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 02:11:52PM +0200, Horatiu Vultur wrote:
-
-'net: ' in patch subject is excessive to me
-
-> When the action of an xdp program was XDP_TX, lan966x was creating
-> a xdp_frame and use this one to send the frame back. But it is also
-> possible to send back the frame without needing a xdp_frame, because
-> it possible to send it back using the page.
-
-s/it/it is
-
-> And then once the frame is transmitted is possible to use directly
-> page_pool_recycle_direct as lan966x is using page pools.
-> This would save some CPU usage on this path.
-
-i remember this optimization gave me noticeable perf improvement, would
-you mind sharing it in % on your side?
-
-> 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of M=
+ichal Schmidt
+> Sent: Wednesday, April 12, 2023 1:19 AM
+> To: intel-wired-lan@lists.osuosl.org
+> Cc: Andrew Lunn <andrew@lunn.ch>; netdev@vger.kernel.org; Brandeburg, Jes=
+se <jesse.brandeburg@intel.com>; Kolacinski, Karol <karol.kolacinski@intel.=
+com>; Nguyen, Anthony L <anthony.l.nguyen@intel.com>; Simon Horman <simon.h=
+orman@corigine.com>
+> Subject: [Intel-wired-lan] [PATCH net-next v2 1/6] ice: do not busy-wait =
+to read GNSS data
+>
+> The ice-gnss-<dev_name> kernel thread, which reads data from the u-blox G=
+NSS module, keep a CPU core almost 100% busy. The main reason is that it bu=
+sy-waits for data to become available.
+>
+> A simple improvement would be to replace the "mdelay(10);" in
+ice_gnss_read() with sleeping. A better fix is to not do any waiting direct=
+ly in the function and just requeue this delayed work as needed.
+The advantage is that canceling the work from ice_gnss_exit() becomes immed=
+iate, rather than taking up to ~2.5 seconds (ICE_MAX_UBX_READ_TRIES
+* 10 ms).
+>
+> This lowers the CPU usage of the ice-gnss-<dev_name> thread on my system =
+from ~90 % to ~8 %.
+>
+> I am not sure if the larger 0.1 s pause after inserting data into the gns=
+s subsystem is really necessary, but I'm keeping that as it was.
+>=20
+> Of course, ideally the driver would not have to poll at all, but I don't =
+know if the E810 can watch for GNSS data availability over the i2c bus by i=
+tself and notify the driver.
+>
+> Signed-off-by: Michal Schmidt <mschmidt@redhat.com>
 > ---
->  .../ethernet/microchip/lan966x/lan966x_fdma.c | 35 +++++++++++--------
->  .../ethernet/microchip/lan966x/lan966x_main.h |  2 ++
->  .../ethernet/microchip/lan966x/lan966x_xdp.c  | 11 +++---
->  3 files changed, 27 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-> index 2ed76bb61a731..7947259e67e4e 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-> @@ -390,6 +390,7 @@ static void lan966x_fdma_stop_netdev(struct lan966x *lan966x)
->  static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
->  {
->  	struct lan966x_tx *tx = &lan966x->tx;
-> +	struct lan966x_rx *rx = &lan966x->rx;
->  	struct lan966x_tx_dcb_buf *dcb_buf;
->  	struct xdp_frame_bulk bq;
->  	struct lan966x_db *db;
-> @@ -432,7 +433,8 @@ static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
->  			if (dcb_buf->xdp_ndo)
->  				xdp_return_frame_bulk(dcb_buf->data.xdpf, &bq);
->  			else
-> -				xdp_return_frame_rx_napi(dcb_buf->data.xdpf);
-> +				page_pool_recycle_direct(rx->page_pool,
-> +							 dcb_buf->data.page);
->  		}
->  
->  		clear = true;
-> @@ -702,6 +704,7 @@ static void lan966x_fdma_tx_start(struct lan966x_tx *tx, int next_to_use)
->  int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
->  			   struct xdp_frame *xdpf,
->  			   struct page *page,
-> +			   u32 len,
-
-agreed with Olek regarding arguments reduction here
-
->  			   bool dma_map)
->  {
->  	struct lan966x *lan966x = port->lan966x;
-> @@ -722,6 +725,15 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
->  		goto out;
->  	}
->  
-> +	/* Fill up the buffer */
-> +	next_dcb_buf = &tx->dcbs_buf[next_to_use];
-> +	next_dcb_buf->use_skb = false;
-> +	next_dcb_buf->xdp_ndo = dma_map;
-
-a bit misleading that xdp_ndo is a bool :P
-
-> +	next_dcb_buf->len = len + IFH_LEN_BYTES;
-> +	next_dcb_buf->used = true;
-> +	next_dcb_buf->ptp = false;
-> +	next_dcb_buf->dev = port->dev;
-> +
->  	/* Generate new IFH */
->  	if (dma_map) {
->  		if (xdpf->headroom < IFH_LEN_BYTES) {
-> @@ -736,16 +748,18 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
->  
->  		dma_addr = dma_map_single(lan966x->dev,
->  					  xdpf->data - IFH_LEN_BYTES,
-> -					  xdpf->len + IFH_LEN_BYTES,
-> +					  len + IFH_LEN_BYTES,
->  					  DMA_TO_DEVICE);
->  		if (dma_mapping_error(lan966x->dev, dma_addr)) {
->  			ret = NETDEV_TX_OK;
->  			goto out;
->  		}
->  
-> +		next_dcb_buf->data.xdpf = xdpf;
-> +
->  		/* Setup next dcb */
->  		lan966x_fdma_tx_setup_dcb(tx, next_to_use,
-> -					  xdpf->len + IFH_LEN_BYTES,
-> +					  len + IFH_LEN_BYTES,
->  					  dma_addr);
->  	} else {
->  		ifh = page_address(page) + XDP_PACKET_HEADROOM;
-> @@ -756,25 +770,18 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
->  		dma_addr = page_pool_get_dma_addr(page);
->  		dma_sync_single_for_device(lan966x->dev,
->  					   dma_addr + XDP_PACKET_HEADROOM,
-> -					   xdpf->len + IFH_LEN_BYTES,
-> +					   len + IFH_LEN_BYTES,
->  					   DMA_TO_DEVICE);
->  
-> +		next_dcb_buf->data.page = page;
-> +
->  		/* Setup next dcb */
->  		lan966x_fdma_tx_setup_dcb(tx, next_to_use,
-> -					  xdpf->len + IFH_LEN_BYTES,
-> +					  len + IFH_LEN_BYTES,
->  					  dma_addr + XDP_PACKET_HEADROOM);
->  	}
->  
-> -	/* Fill up the buffer */
-> -	next_dcb_buf = &tx->dcbs_buf[next_to_use];
-> -	next_dcb_buf->use_skb = false;
-> -	next_dcb_buf->data.xdpf = xdpf;
-> -	next_dcb_buf->xdp_ndo = dma_map;
-> -	next_dcb_buf->len = xdpf->len + IFH_LEN_BYTES;
->  	next_dcb_buf->dma_addr = dma_addr;
-> -	next_dcb_buf->used = true;
-> -	next_dcb_buf->ptp = false;
-> -	next_dcb_buf->dev = port->dev;
->  
->  	/* Start the transmission */
->  	lan966x_fdma_tx_start(tx, next_to_use);
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-> index 851afb0166b19..59da35a2c93d4 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-> @@ -243,6 +243,7 @@ struct lan966x_tx_dcb_buf {
->  	union {
->  		struct sk_buff *skb;
->  		struct xdp_frame *xdpf;
-> +		struct page *page;
->  	} data;
->  	u32 len;
->  	u32 used : 1;
-> @@ -544,6 +545,7 @@ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev);
->  int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
->  			   struct xdp_frame *frame,
->  			   struct page *page,
-> +			   u32 len,
->  			   bool dma_map);
->  int lan966x_fdma_change_mtu(struct lan966x *lan966x);
->  void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev);
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-> index 2e6f486ec67d7..a8ad1f4e431cb 100644
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-> @@ -62,7 +62,7 @@ int lan966x_xdp_xmit(struct net_device *dev,
->  		struct xdp_frame *xdpf = frames[i];
->  		int err;
->  
-> -		err = lan966x_fdma_xmit_xdpf(port, xdpf, NULL, true);
-> +		err = lan966x_fdma_xmit_xdpf(port, xdpf, NULL, xdpf->len, true);
->  		if (err)
->  			break;
->  
-> @@ -76,7 +76,6 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
->  {
->  	struct bpf_prog *xdp_prog = port->xdp_prog;
->  	struct lan966x *lan966x = port->lan966x;
-> -	struct xdp_frame *xdpf;
->  	struct xdp_buff xdp;
->  	u32 act;
->  
-> @@ -90,11 +89,9 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
->  	case XDP_PASS:
->  		return FDMA_PASS;
->  	case XDP_TX:
-> -		xdpf = xdp_convert_buff_to_frame(&xdp);
-> -		if (!xdpf)
-> -			return FDMA_DROP;
-> -
-> -		return lan966x_fdma_xmit_xdpf(port, xdpf, page, false) ?
-> +		return lan966x_fdma_xmit_xdpf(port, NULL, page,
-> +					      data_len - IFH_LEN_BYTES,
-> +					      false) ?
->  		       FDMA_DROP : FDMA_TX;
->  	case XDP_REDIRECT:
->  		if (xdp_do_redirect(port->dev, &xdp, xdp_prog))
-> -- 
-> 2.38.0
-> 
+> drivers/net/ethernet/intel/ice/ice_gnss.c | 42 ++++++++++-------------  d=
+rivers/net/ethernet/intel/ice/ice_gnss.h |  3 +-
+> 2 files changed, 20 insertions(+), 25 deletions(-)
+>
+Tested-by: Sunitha Mekala <sunithax.d.mekala@intel.com> (A Contingent worke=
+r at Intel)
