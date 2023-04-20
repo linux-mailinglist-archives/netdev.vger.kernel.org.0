@@ -2,143 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 491DE6E924B
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:20:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA8376E924C
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:21:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234769AbjDTLU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 07:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47654 "EHLO
+        id S234030AbjDTLUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 07:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234387AbjDTLUM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:20:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5384340DA;
-        Thu, 20 Apr 2023 04:18:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E55F46480F;
-        Thu, 20 Apr 2023 11:16:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F10C2C433EF;
-        Thu, 20 Apr 2023 11:16:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681989411;
-        bh=7BZUvLlpDqguRliU5Sg943VTf9SXPILW9ixC+ypfhBw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S6QrhdoQddJq/6kD6LDvR02SAjUxlI3laSwLxnGQyEJF8RP0svUKKjWw+HN4RTgA1
-         ORnw+eVckVZ4bcR0v9dchKSwcKbWYVqL91g00IXWoo8xe1qV6MYYJjqK0YwFE60fGF
-         ECt8iUOo/hcuWz4m2ZEd0aoq3PWhWXegxbe0LgsgpQijWgo0p3t1gkeQA5mz8qcg6h
-         meEMoVLw6+YJaoFcwAtJO6RuvcsgOfQdqYHN8xhsX7OIahY83xIhrKX0I9qdYqTKiA
-         HRKFqjmAXK4rWWECPFfSfFIbhVuQkP4j8orl/Ps65nxwcYDYGbmFv2LJ4Sw/1jyz2u
-         dsRd680HRXZEw==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        toke@redhat.com, mtahhan@redhat.com, lorenzo.bianconi@redhat.com
-Subject: [PATCH net-next 2/2] net: veth: add page_pool stats
-Date:   Thu, 20 Apr 2023 13:16:22 +0200
-Message-Id: <f9bc73e44d602e299b4b6b8d236acf49f072f41f.1681987376.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.40.0
-In-Reply-To: <cover.1681987376.git.lorenzo@kernel.org>
-References: <cover.1681987376.git.lorenzo@kernel.org>
+        with ESMTP id S234746AbjDTLUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:20:24 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDBFB462
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 04:18:21 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id e9e14a558f8ab-32a7770f7d1so7692105ab.1
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 04:18:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20221208; t=1681989426; x=1684581426;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=71XPyFvghrYUg4JlIxRLKYWkY7qzjU28DXhmVVF2TsM=;
+        b=2YJjrcmnEsiWUlbrFQ4MShnMtbFqQGT9zAhuauVqisSI+BhJaS0VC9burZOBsFVVPv
+         tCzzZMZwqzGO7D0gbepepVEVNAFys03NVHVDcdzJbV2nZm+zFwWfET0E0GeAVyYWAS68
+         /qU8+2mDaf76gLIG0JAKiUZ56VjsiH8+CnAfyUr8pUcxBuIPoDsHfoIgV6D3rYSLEB99
+         mt8pRHQNQpSOqCy3VXtCFD7UsW802SD8JmurXj1miN6lP8v6ep869Qd6vd5gEELXmA1z
+         K9kMm4AE4IXTS+bYyRlKc1pQlrb2Xjdid8C7kWDdvHI8iz+pAdTs8LTXcV4Cku2SmemG
+         Gvrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1681989426; x=1684581426;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=71XPyFvghrYUg4JlIxRLKYWkY7qzjU28DXhmVVF2TsM=;
+        b=SSlBH4pF6Qrzc7762Nq4H8NII/TESqMeTbbXzIL1XgARpCgMAAINP8I6DiUsWCZJ3z
+         ia3Ij22DIfInl85dL/oWtNj+/ZVNA7BDjfx55CWyU+Hw2uPhxo/Aw0nucMPWxzOgK2C3
+         SV8MB0XKOyUortiaGtrQ2JqzSSjD94WcwaG4Zr9MlTY6HBlZq9TivDojNKU9/8bw+EhG
+         e+9kJ5CEaSkaS2zozU06u0eGOiTLViypUDXG/9OGeaQhIJlTMT6iPgA5nhVVi6JeOS9X
+         ZZIhkDPK31R/RRNHjxz8YAOcqV34hPgHORyqQYd+ISCpbMGs22rSASxbQUtSYPpVh7lY
+         Mszg==
+X-Gm-Message-State: AAQBX9fCivddoLPKye5uoplMA1hGydUl6A5Ya7fRrKobjtHy5WUv09lz
+        Z0JmsWippExn3Z+R2sotb41bmyeP5KWeCLPfMcxV5g==
+X-Google-Smtp-Source: AKy350Ygi0PWL/IHl41WdaOanpGGGBDp0qnN1yJcqXMMLJgBdKADPBX7fji+tcV5Xs6rIm0THleaVuOqLae+Oh5z4Fw=
+X-Received: by 2002:a05:6638:4806:b0:3c2:c1c9:8bca with SMTP id
+ cp6-20020a056638480600b003c2c1c98bcamr2042751jab.2.1681989425967; Thu, 20 Apr
+ 2023 04:17:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <168198515529.808959.12962138073127060724.stgit@firesoul>
+In-Reply-To: <168198515529.808959.12962138073127060724.stgit@firesoul>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 20 Apr 2023 13:16:54 +0200
+Message-ID: <CANn89iJuEVe72bPmEftyEJHLzzN=QNR2yueFjTxYXCEpS5S8HQ@mail.gmail.com>
+Subject: Re: [PATCH net-next V1] net: flush sd->defer_list on unregister_netdevice
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, pabeni@redhat.com, kuba@kernel.org,
+        hawk@kernel.org, davem@davemloft.net, lorenzo@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce page_pool stats support to report info about local page_pool
-through ethtool
+On Thu, Apr 20, 2023 at 12:06=E2=80=AFPM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> When removing a net_device (that use NAPI), the sd->defer_list
 
-Tested-by: Maryam Tahhan <mtahhan@redhat.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/Kconfig |  1 +
- drivers/net/veth.c  | 20 +++++++++++++++++---
- 2 files changed, 18 insertions(+), 3 deletions(-)
+Why "(that use NAPI)" is relevant ?
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 368c6f5b327e..d0a1ed216d15 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -403,6 +403,7 @@ config TUN_VNET_CROSS_LE
- config VETH
- 	tristate "Virtual ethernet pair device"
- 	select PAGE_POOL
-+	select PAGE_POOL_STATS
- 	help
- 	  This device is a local ethernet tunnel. Devices are created in pairs.
- 	  When one end receives the packet it appears on its pair and vice
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 141b7745ba43..4e08a4633d25 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -157,6 +157,8 @@ static void veth_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
- 			for (j = 0; j < VETH_TQ_STATS_LEN; j++)
- 				ethtool_sprintf(&p, "tx_queue_%u_%.18s",
- 						i, veth_tq_stats_desc[j].desc);
-+
-+		page_pool_ethtool_stats_get_strings(p);
- 		break;
- 	}
- }
-@@ -167,7 +169,8 @@ static int veth_get_sset_count(struct net_device *dev, int sset)
- 	case ETH_SS_STATS:
- 		return ARRAY_SIZE(ethtool_stats_keys) +
- 		       VETH_RQ_STATS_LEN * dev->real_num_rx_queues +
--		       VETH_TQ_STATS_LEN * dev->real_num_tx_queues;
-+		       VETH_TQ_STATS_LEN * dev->real_num_tx_queues +
-+		       page_pool_ethtool_stats_get_count();
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -178,7 +181,8 @@ static void veth_get_ethtool_stats(struct net_device *dev,
+> system can still hold on to SKBs that have a dst_entry which can
+> have a netdev_hold reference.
+
+This would be quite a bug really. What makes you think this ?
+
+In order to validate this please post a stack trace if you get a
+warning from this debug patch.
+
+(make sure to build with CONFIG_DEBUG_NET=3Dy)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 768f9d04911fb16a40e057aec7bfa2381a40d7a7..56c79bf922ab4045984513de13c=
+c946b84fd3675
+100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -6828,6 +6828,7 @@ nodefer:  __kfree_skb(skb);
+                return;
+        }
+
++       DEBUG_NET_WARN_ON_ONCE(skb_dst(skb));
+        sd =3D &per_cpu(softnet_data, cpu);
+        defer_max =3D READ_ONCE(sysctl_skb_defer_max);
+        if (READ_ONCE(sd->defer_count) >=3D defer_max)
+
+
+
+>
+> Choose simple solution of flushing the softnet_data defer_list
+> system as part of unregister_netdevice flush_all_backlogs().
+
+I do not know if adding two conditional tests in the fast path is
+worth the pain.
+
+I was thinking of simplifying rules for defer_lock acquisition anyway [1]
+
+If you plan a V2, I would advise to block BH before calling
+skb_defer_free_flush.
+
+
+[1]
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 3fc4dba71f9dd250c59c0a070566791f0cd27ec4..be68b8f7fe16658f3304696bf3c=
+83df4c8af51c7
+100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6631,11 +6631,11 @@ static void skb_defer_free_flush(struct
+softnet_data *sd)
+        if (!READ_ONCE(sd->defer_list))
+                return;
+
+-       spin_lock_irq(&sd->defer_lock);
++       spin_lock(&sd->defer_lock);
+        skb =3D sd->defer_list;
+        sd->defer_list =3D NULL;
+        sd->defer_count =3D 0;
+-       spin_unlock_irq(&sd->defer_lock);
++       spin_unlock(&sd->defer_lock);
+
+        while (skb !=3D NULL) {
+                next =3D skb->next;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 768f9d04911fb16a40e057aec7bfa2381a40d7a7..27f6e0042dfe0cbbb362d06b540=
+b3ca1567459af
+100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -6817,7 +6817,6 @@ void skb_attempt_defer_free(struct sk_buff *skb)
  {
- 	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
- 	struct net_device *peer = rtnl_dereference(priv->peer);
--	int i, j, idx;
-+	struct page_pool_stats pp_stats = {};
-+	int i, j, idx, pp_idx;
- 
- 	data[0] = peer ? peer->ifindex : 0;
- 	idx = 1;
-@@ -197,9 +201,10 @@ static void veth_get_ethtool_stats(struct net_device *dev,
- 		} while (u64_stats_fetch_retry(&rq_stats->syncp, start));
- 		idx += VETH_RQ_STATS_LEN;
- 	}
-+	pp_idx = idx;
- 
- 	if (!peer)
--		return;
-+		goto page_pool_stats;
- 
- 	rcv_priv = netdev_priv(peer);
- 	for (i = 0; i < peer->real_num_rx_queues; i++) {
-@@ -216,7 +221,16 @@ static void veth_get_ethtool_stats(struct net_device *dev,
- 				data[tx_idx + j] += *(u64 *)(base + offset);
- 			}
- 		} while (u64_stats_fetch_retry(&rq_stats->syncp, start));
-+		pp_idx = tx_idx + VETH_TQ_STATS_LEN;
-+	}
-+
-+page_pool_stats:
-+	for (i = 0; i < dev->real_num_rx_queues; i++) {
-+		if (!priv->rq[i].page_pool)
-+			continue;
-+		page_pool_get_stats(priv->rq[i].page_pool, &pp_stats);
- 	}
-+	page_pool_ethtool_stats_get(&data[pp_idx], &pp_stats);
- }
- 
- static void veth_get_channels(struct net_device *dev,
--- 
-2.40.0
+        int cpu =3D skb->alloc_cpu;
+        struct softnet_data *sd;
+-       unsigned long flags;
+        unsigned int defer_max;
+        bool kick;
 
+@@ -6833,7 +6832,10 @@ nodefer: __kfree_skb(skb);
+        if (READ_ONCE(sd->defer_count) >=3D defer_max)
+                goto nodefer;
+
+-       spin_lock_irqsave(&sd->defer_lock, flags);
++       /* Strictly speaking, we do not need to block BH to acquire
++        * this spinlock, but lockdep disagrees (unless we add classes)
++       */
++       spin_lock_bh(&sd->defer_lock);
+        /* Send an IPI every time queue reaches half capacity. */
+        kick =3D sd->defer_count =3D=3D (defer_max >> 1);
+        /* Paired with the READ_ONCE() few lines above */
+@@ -6842,7 +6844,7 @@ nodefer:  __kfree_skb(skb);
+        skb->next =3D sd->defer_list;
+        /* Paired with READ_ONCE() in skb_defer_free_flush() */
+        WRITE_ONCE(sd->defer_list, skb);
+-       spin_unlock_irqrestore(&sd->defer_lock, flags);
++       spin_unlock_bh(&sd->defer_lock);
+
+        /* Make sure to trigger NET_RX_SOFTIRQ on the remote CPU
+         * if we are unlucky enough (this seems very unlikely).
