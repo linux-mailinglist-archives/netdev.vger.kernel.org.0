@@ -2,183 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDF706E936A
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 13:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0A9C6E9392
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:01:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234197AbjDTLwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 07:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51276 "EHLO
+        id S234430AbjDTMBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 08:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbjDTLwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 07:52:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B633E69
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 04:52:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S234046AbjDTMBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:01:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CDB49EB
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 05:00:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1681992056;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZdDs9VSETt9cXg5NQexd8cC6M0i48XD3CttYZINmfEY=;
+        b=GQvh8/rEmac1i54cIzxzfOEdEC/zCBmzP4frQuqCl2OSlL29h3oufCaFOdDYn3q/KUdLs3
+        NB6XqR/DwYMKiCpF4fcGpjbRh91utgRf9XRkLbve1EqVCfbNRG4EJkE4th4eAcaud8WRBu
+        IFcPPDhH/p//i3W0TVVGNsTg1jUbOHk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-496-VMP6XPrZPjCoSttm7buyqw-1; Thu, 20 Apr 2023 08:00:52 -0400
+X-MC-Unique: VMP6XPrZPjCoSttm7buyqw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACF7063D9B
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:52:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C70FC433EF;
-        Thu, 20 Apr 2023 11:52:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681991568;
-        bh=ozCpAG+ISulou2Zh7SyotCKoU3h5FCbK6fgEN2FikXA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oXFNLcFp6vEhFiYyBCUzpHXwgmTjDlS4kB13+lqgfGQmSxFK1ZH/eqhTvPjuU/TPB
-         P9GJR7mvRA7+UOSHldWmExYjJ8K633tAVDJ+xi+Xbk7fYQWtjWwqiz0swDOVdA+ddT
-         nVj+WywQtrtX+bOS+p/7oi7vpLF6zOvSMyH3uGXZdzFEUbq2hCRIz5atQmT5rHzPfg
-         FsJmsvyD8KkwcxyV/QYPo8pb53EJ/dx8up2uT4ex2/1PTh9wXY9LPXzQ3L1btUYG31
-         TTH+5zFlQqME5DiFuMwfOBYxp9Ov7D9WjOJLRhVT8sRvFhDe+C6TR77XbGu2hYAJ2K
-         8eZYD8qAxRU6w==
-Date:   Thu, 20 Apr 2023 14:52:43 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Emeel Hakim <ehakim@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: Re: [PATCH net-next 3/5] net/mlx5e: Compare all fields in IPv6
- address
-Message-ID: <20230420115243.GC4423@unreal>
-References: <cover.1681976818.git.leon@kernel.org>
- <269e24dc9fb30549d4f77895532603734f515650.1681976818.git.leon@kernel.org>
- <ZEEdY+qtAQQaFbZP@corigine.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3B5CF8996F3;
+        Thu, 20 Apr 2023 12:00:52 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.193.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1D6131410F1C;
+        Thu, 20 Apr 2023 12:00:50 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Networking for 6.3-rc8
+Date:   Thu, 20 Apr 2023 14:00:44 +0200
+Message-Id: <20230420120044.288741-1-pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZEEdY+qtAQQaFbZP@corigine.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 01:09:23PM +0200, Simon Horman wrote:
-> On Thu, Apr 20, 2023 at 11:02:49AM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Fix size argument in memcmp to compare whole IPv6 address.
-> > 
-> > Fixes: b3beba1fb404 ("net/mlx5e: Allow policies with reqid 0, to support IKE policy holes")
-> > Reviewed-by: Raed Salem <raeds@nvidia.com>
-> > Reviewed-by: Emeel Hakim <ehakim@nvidia.com>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-> > index f7f7c09d2b32..4e9887171508 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-> > @@ -287,7 +287,7 @@ static inline bool addr6_all_zero(__be32 *addr6)
-> >  {
-> >  	static const __be32 zaddr6[4] = {};
-> >  
-> > -	return !memcmp(addr6, zaddr6, sizeof(*zaddr6));
-> > +	return !memcmp(addr6, zaddr6, sizeof(zaddr6));
-> 
-> 1. Perhaps array_size() is appropriate here?
+Hi Linus!
 
-It is overkill here, sizeof(zaddr6) is constant and can't overflow.
+There are a few fixes for new code bugs, including the Mellanox one
+noted in the last net PR. No known regressions outstanding.
 
-  238 /**
-  239  * array_size() - Calculate size of 2-dimensional array.
-  240  * @a: dimension one
-  241  * @b: dimension two
-  242  *
-  243  * Calculates size of 2-dimensional array: @a * @b.
-  244  *
-  245  * Returns: number of bytes needed to represent the array or SIZE_MAX on
-  246  * overflow.
-  247  */
-  248 #define array_size(a, b)        size_mul(a, b)
+The following changes since commit 829cca4d1783088e43bace57a555044cc937c554:
 
-> 2. It's a shame that ipv6_addr_any() or some other common helper
->    can't be used.
+  Merge tag 'net-6.3-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2023-04-13 15:33:04 -0700)
 
-I didn't use ipv6_addr_any() as it required from me to cast "__be32 *addr6"
-to be "struct in6_addr *" just to replace one line memcmp to another one
-line function.
+are available in the Git repository at:
 
-Do you want me to post this code instead?
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.3-rc8
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index 55b38544422f..a7c8e38658a0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -945,7 +945,8 @@ static int mlx5e_xfrm_validate_policy(struct mlx5_core_dev *mdev,
- 	}
- 
- 	if (!x->xfrm_vec[0].reqid && sel->proto == IPPROTO_IP &&
--	    addr6_all_zero(sel->saddr.a6) && addr6_all_zero(sel->daddr.a6)) {
-+	    ipv6_addr_any((struct in6_addr *)sel->saddr.a6) &&
-+	    ipv6_addr_any((struct in6_addr *)sel->daddr.a6)) {
- 		NL_SET_ERR_MSG_MOD(extack, "Unsupported policy with reqid 0 without at least one of upper protocol or ip addr(s) different than 0");
- 		return -EINVAL;
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index 4e9887171508..097001ce5dc1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -283,12 +283,6 @@ mlx5e_ipsec_pol2dev(struct mlx5e_ipsec_pol_entry *pol_entry)
- 	return pol_entry->ipsec->mdev;
- }
- 
--static inline bool addr6_all_zero(__be32 *addr6)
--{
--	static const __be32 zaddr6[4] = {};
--
--	return !memcmp(addr6, zaddr6, sizeof(zaddr6));
--}
- #else
- static inline void mlx5e_ipsec_init(struct mlx5e_priv *priv)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-index dbe87bf89c0d..e48113923c12 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-@@ -721,7 +721,8 @@ static void setup_fte_addr4(struct mlx5_flow_spec *spec, __be32 *saddr,
- static void setup_fte_addr6(struct mlx5_flow_spec *spec, __be32 *saddr,
- 			    __be32 *daddr)
- {
--	if (addr6_all_zero(saddr) && addr6_all_zero(daddr))
-+	if (ipv6_addr_any((struct in6_addr *)saddr) &&
-+	    ipv6_addr_any((struct in6_addr *)daddr))
- 		return;
- 
- 	spec->match_criteria_enable |= MLX5_MATCH_OUTER_HEADERS;
-@@ -729,14 +730,14 @@ static void setup_fte_addr6(struct mlx5_flow_spec *spec, __be32 *saddr,
- 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ip_version);
- 	MLX5_SET(fte_match_param, spec->match_value, outer_headers.ip_version, 6);
- 
--	if (!addr6_all_zero(saddr)) {
-+	if (!ipv6_addr_any((struct in6_addr *)saddr)) {
- 		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
- 				    outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6), saddr, 16);
- 		memset(MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
- 				    outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6), 0xff, 16);
- 	}
- 
--	if (!addr6_all_zero(daddr)) {
-+	if (!ipv6_addr_any((struct in6_addr *)daddr)) {
- 		memcpy(MLX5_ADDR_OF(fte_match_param, spec->match_value,
- 				    outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6), daddr, 16);
- 		memset(MLX5_ADDR_OF(fte_match_param, spec->match_criteria,
+for you to fetch changes up to 927cdea5d2095287ddd5246e5aa68eb5d68db2be:
 
+  net: bridge: switchdev: don't notify FDB entries with "master dynamic" (2023-04-20 09:20:14 +0200)
 
-Thanks
+----------------------------------------------------------------
+Networking fixes for 6.3-rc8, including fixes from netfilter and bpf
 
-> 
-> >  }
-> >  #else
-> >  static inline void mlx5e_ipsec_init(struct mlx5e_priv *priv)
-> > -- 
-> > 2.40.0
-> > 
+Current release - regressions:
+
+  - sched: clear actions pointer in miss cookie init fail
+
+  - mptcp: fix accept vs worker race
+
+  - bpf: fix bpf_arch_text_poke() with new_addr == NULL on s390
+
+  - eth: bnxt_en: fix a possible NULL pointer dereference in unload path
+
+  - eth: veth: take into account peer device for NETDEV_XDP_ACT_NDO_XMIT xdp_features flag
+
+Current release - new code bugs:
+
+  - eth: revert "net/mlx5: Enable management PF initialization"
+
+Previous releases - regressions:
+
+  - netfilter: fix recent physdev match breakage
+
+  - bpf: fix incorrect verifier pruning due to missing register precision taints
+
+  - eth: virtio_net: fix overflow inside xdp_linearize_page()
+
+  - eth: cxgb4: fix use after free bugs caused by circular dependency problem
+
+  - eth: mlxsw: pci: fix possible crash during initialization
+
+Previous releases - always broken:
+
+  - sched: sch_qfq: prevent slab-out-of-bounds in qfq_activate_agg
+
+  - netfilter: validate catch-all set elements
+
+  - bridge: don't notify FDB entries with "master dynamic"
+
+  - eth: bonding: fix memory leak when changing bond type to ethernet
+
+  - eth: i40e: fix accessing vsi->active_filters without holding lock
+
+Misc:
+
+  - Mat is back as MPTCP co-maintainer
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+
+----------------------------------------------------------------
+Aleksandr Loktionov (2):
+      i40e: fix accessing vsi->active_filters without holding lock
+      i40e: fix i40e_setup_misc_vector() error handling
+
+Alexander Aring (1):
+      net: rpl: fix rpl header size calculation
+
+Arnd Bergmann (1):
+      hamradio: drop ISA_DMA_API dependency
+
+Chen Aotian (1):
+      netfilter: nf_tables: Modify nla_memdup's flag to GFP_KERNEL_ACCOUNT
+
+Christophe JAILLET (1):
+      net: dsa: microchip: ksz8795: Correctly handle huge frame configuration
+
+Daniel Borkmann (1):
+      bpf: Fix incorrect verifier pruning due to missing register precision taints
+
+David S. Miller (1):
+      Merge branch 'mptcp-fixes'
+
+Ding Hui (1):
+      sfc: Fix use-after-free due to selftest_work
+
+Duoming Zhou (1):
+      cxgb4: fix use after free bugs caused by circular dependency problem
+
+Florian Westphal (2):
+      netfilter: br_netfilter: fix recent physdev match breakage
+      netfilter: nf_tables: fix ifdef to also consider nf_tables=m
+
+Gwangun Jung (1):
+      net: sched: sch_qfq: prevent slab-out-of-bounds in qfq_activate_agg
+
+Ido Schimmel (2):
+      bonding: Fix memory leak when changing bond type to Ethernet
+      mlxsw: pci: Fix possible crash during initialization
+
+Ilya Leoshkevich (1):
+      s390/bpf: Fix bpf_arch_text_poke() with new_addr == NULL
+
+Jacob Keller (1):
+      ice: document RDMA devlink parameters
+
+Jakub Kicinski (4):
+      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
+      Merge branch '40GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
+      Merge tag 'for-netdev' of https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
+      Revert "net/mlx5: Enable management PF initialization"
+
+Kalesh AP (1):
+      bnxt_en: Fix a possible NULL pointer dereference in unload path
+
+Lorenzo Bianconi (1):
+      veth: take into account peer device for NETDEV_XDP_ACT_NDO_XMIT xdp_features flag
+
+Mat Martineau (1):
+      MAINTAINERS: Resume MPTCP co-maintainer role
+
+Matthieu Baerts (1):
+      mailmap: add entries for Mat Martineau
+
+Michael Chan (1):
+      bnxt_en: Do not initialize PTP on older P3/P4 chips
+
+Nikita Zhandarovich (1):
+      mlxfw: fix null-ptr-deref in mlxfw_mfa2_tlv_next()
+
+Pablo Neira Ayuso (2):
+      netfilter: nf_tables: validate catch-all set elements
+      netfilter: nf_tables: tighten netlink attribute requirements for catch-all elements
+
+Paolo Abeni (3):
+      Merge branch 'bnxt_en-bug-fixes'
+      mptcp: stops worker on unaccepted sockets at listener close
+      mptcp: fix accept vs worker race
+
+Pedro Tammela (1):
+      net/sched: clear actions pointer in miss cookie init fail
+
+Sebastian Basierski (1):
+      e1000e: Disable TSO on i219-LM card to increase speed
+
+Seiji Nishikawa (1):
+      net: vmxnet3: Fix NULL pointer dereference in vmxnet3_rq_rx_complete()
+
+Vadim Fedorenko (1):
+      bnxt_en: fix free-runnig PHC mode
+
+Vladimir Oltean (1):
+      net: bridge: switchdev: don't notify FDB entries with "master dynamic"
+
+Xuan Zhuo (1):
+      virtio_net: bugfix overflow inside xdp_linearize_page()
+
+ .mailmap                                           |  2 +
+ Documentation/networking/devlink/ice.rst           | 15 ++++
+ MAINTAINERS                                        |  1 +
+ arch/s390/net/bpf_jit_comp.c                       | 11 ++-
+ drivers/net/bonding/bond_main.c                    |  7 +-
+ drivers/net/dsa/microchip/ksz8795.c                |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          |  4 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c      | 19 ++---
+ .../net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c   |  2 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c         | 51 +++++++-------
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |  9 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c      |  6 --
+ drivers/net/ethernet/mellanox/mlx5/core/ecpf.c     |  8 ---
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  2 +-
+ .../ethernet/mellanox/mlxfw/mlxfw_mfa2_tlv_multi.c |  2 +
+ drivers/net/ethernet/mellanox/mlxsw/pci_hw.h       |  2 +-
+ drivers/net/ethernet/sfc/efx.c                     |  1 -
+ drivers/net/ethernet/sfc/efx_common.c              |  2 +
+ drivers/net/hamradio/Kconfig                       |  2 +-
+ drivers/net/veth.c                                 | 17 +++--
+ drivers/net/virtio_net.c                           |  8 ++-
+ drivers/net/vmxnet3/vmxnet3_drv.c                  |  2 +-
+ include/linux/mlx5/driver.h                        |  5 --
+ include/linux/skbuff.h                             |  5 +-
+ include/net/netfilter/nf_tables.h                  |  4 ++
+ kernel/bpf/verifier.c                              | 15 ++++
+ net/bridge/br_netfilter_hooks.c                    | 17 +++--
+ net/bridge/br_switchdev.c                          | 11 +++
+ net/ipv6/rpl.c                                     |  3 +-
+ net/mptcp/protocol.c                               | 74 +++++++++++++-------
+ net/mptcp/protocol.h                               |  2 +
+ net/mptcp/subflow.c                                | 80 +++++++++++++++++++++-
+ net/netfilter/nf_tables_api.c                      | 69 ++++++++++++++++---
+ net/netfilter/nft_lookup.c                         | 36 ++--------
+ net/sched/cls_api.c                                |  3 +
+ net/sched/sch_qfq.c                                | 13 ++--
+ 36 files changed, 351 insertions(+), 161 deletions(-)
+
