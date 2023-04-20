@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FBE46E8700
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 02:51:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64AD16E870F
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 03:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233170AbjDTAvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 20:51:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
+        id S232626AbjDTBAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Apr 2023 21:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233174AbjDTAvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 20:51:35 -0400
+        with ESMTP id S232589AbjDTBAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 21:00:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E9176AB
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 17:51:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582F640CD
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 18:00:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0742664423
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 00:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6AA0AC4339B;
-        Thu, 20 Apr 2023 00:50:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7D326441D
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 01:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 51029C433EF;
+        Thu, 20 Apr 2023 01:00:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681951818;
-        bh=FkPl9uCfCWlO1TwEC1RzdopNaoIOk3eU5Xve0pLRJdo=;
+        s=k20201202; t=1681952419;
+        bh=ptBMnj0B1Q7Rt66ZYDt/KNmvrMvI6LS54DyCcCEC2a4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=psvqJ7b2Ab/Flpm4HZg825I3ZtlqPjUJyv1mBY23/eHOLUZ2ueCacoC5iSioCrx1z
-         lsIzTZUrYE9hMoCLR58YpZ6iAH24pezpX9RmcWvtjQzHIjoee6vx6g+4IWZDSQcfsZ
-         ctlET5eov1LTDFtadKcblqT4t67EQZVAoHzw3MNHk49AqK4aqDGyUeVQnkAO+5Z++9
-         lvr+raiQBmVY2Bl0FFTRD5vHOkdKI2VzfRwMHyu4TtHlGbdsAAye0+Fo/xardV+Cw0
-         lX5U0jh80Ot+fh0UnnLy3qQHKi+A8rydsRm+hmsZUzqekYO+9x8tEoIcgiRXJLUyt2
-         CFlLoK37Ms1Gw==
+        b=otZwEortehNhEHAODuiL9msIrIbGHvAg0rSoEIjpfV1HMsbVvht1uiI+xnDdPgXbS
+         ORr14woa3CdA3ifd74n/fCy4otdpFfjJs8uTIB9ihOn25+xH+aZq8CKx4cvi/DrSKw
+         PJchL9XMRA6lBAJqtLB/Ab7TyfSn0eHCaOgjfVDQQGvrjzbH++EBMuivElqAZKBPr2
+         ebgDGNIMrTTe8rURqhc9LFwSGWg/JqjHQk00Y+epN7rVf/+L47AmJRfasAEuE8o5R8
+         7RW1lKdzTuZKm7npkmo4DZFDrFtLR/MQ5hPu4p5LR9WWUFEVXcUrbVs6fzZVmpnhC0
+         +lGZnn4BDilZA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4F369C561EE;
-        Thu, 20 Apr 2023 00:50:18 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 352D5E4D033;
+        Thu, 20 Apr 2023 01:00:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] bnxt_en: fix free-runnig PHC mode 
+Subject: Re: [PATCH net 1/1] e1000e: Disable TSO on i219-LM card to increase speed
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168195181832.16132.5614757383741623494.git-patchwork-notify@kernel.org>
-Date:   Thu, 20 Apr 2023 00:50:18 +0000
-References: <20230418202511.1544735-1-vadfed@meta.com>
-In-Reply-To: <20230418202511.1544735-1-vadfed@meta.com>
-To:     Vadim Fedorenko <vadfed@meta.com>
-Cc:     pavan.chebbi@broadcom.com, kuba@kernel.org,
-        michael.chan@broadcom.com, vadim.fedorenko@linux.dev,
-        netdev@vger.kernel.org
+Message-Id: <168195241921.21057.13372364812342041906.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 Apr 2023 01:00:19 +0000
+References: <20230417205345.1030801-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20230417205345.1030801-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org,
+        sebastianx.basierski@intel.com, kai.heng.feng@canonical.com,
+        sasha.neftin@intel.com, mateusz.palczewski@intel.com,
+        naamax.meir@linux.intel.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,20 +64,20 @@ Hello:
 This patch was applied to netdev/net.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 18 Apr 2023 13:25:11 -0700 you wrote:
-> The patch in fixes changed the way real-time mode is chosen for PHC on
-> the NIC. Apparently there is one more use case of the check outside of
-> ptp part of the driver which was not converted to the new macro and is
-> making a lot of noise in free-running mode.
+On Mon, 17 Apr 2023 13:53:45 -0700 you wrote:
+> From: Sebastian Basierski <sebastianx.basierski@intel.com>
 > 
-> Fixes: 131db4991622 ("bnxt_en: reset PHC frequency in free-running mode")
-> Signed-off-by: Vadim Fedorenko <vadfed@meta.com>
+> While using i219-LM card currently it was only possible to achieve
+> about 60% of maximum speed due to regression introduced in Linux 5.8.
+> This was caused by TSO not being disabled by default despite commit
+> f29801030ac6 ("e1000e: Disable TSO for buffer overrun workaround").
+> Fix that by disabling TSO during driver probe.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] bnxt_en: fix free-runnig PHC mode
-    https://git.kernel.org/netdev/net/c/8c154d272c3e
+  - [net,1/1] e1000e: Disable TSO on i219-LM card to increase speed
+    https://git.kernel.org/netdev/net/c/67d47b95119a
 
 You are awesome, thank you!
 -- 
