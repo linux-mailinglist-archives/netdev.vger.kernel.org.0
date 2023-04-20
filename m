@@ -2,145 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63DA66E8A67
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 08:30:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0092A6E8A6A
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 08:31:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233910AbjDTGaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 02:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
+        id S233920AbjDTGbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 02:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233900AbjDTG37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 02:29:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DE94234
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 23:29:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1681972153;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LgdnNmMXeh29yiOutomiP5kEsD1QGmIJDroopmJnClM=;
-        b=La+nyW1Zu9XGgdnTmBmEh/K3Dm+kinibzwJ6uJWpkFai4xSfUX8EWFtEDO1pS5VmC3RnWY
-        Ew5fIvQldoN84f6tKBlq7hM75j7oOwcl2Bueuo0ga+g92LIMHUzGr1zf/7PdfwsqqnfRND
-        vpDGjW+JkujVHNa4lvcnWSHwrIq8f38=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-502--FHOACnxMU-tr7A0Jagdww-1; Thu, 20 Apr 2023 02:29:12 -0400
-X-MC-Unique: -FHOACnxMU-tr7A0Jagdww-1
-Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-38bf67eabedso191519b6e.3
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 23:29:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681972151; x=1684564151;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LgdnNmMXeh29yiOutomiP5kEsD1QGmIJDroopmJnClM=;
-        b=IkmsmGCM0dZ/ALSGlPK0yzWNdJTuuBrOCFHNhZrxDCjWs4nVVCti2D8KLM5q6PCnLV
-         tya1/RLskeaB8v4XZL0ABvW6YqZ4lgXzg3ZgbC4C6qj0baZgydyGiylOyRoyJ8ElXpTw
-         VMHPlrelk9OS93WR/E4XP30xwFiEunFAIqzWwSSzhoUwHIlVgq/TBD+QL+8SFAGf5K49
-         aRgiYDmx7SENoya3QNr7Dqa39NyCGhau4deiuOwFg8xv5NSftGrkMbrL4vQWWYEpS+AS
-         xMtkEgUd6wtS605qBc415tDKriCwomvcPFjXEaviO65ifxkrv1M2N7Dyjm0QDFcpXKNg
-         dBfw==
-X-Gm-Message-State: AAQBX9f2IWKx10jVL0rgP4tzJod1a53pQ84WFayQtq4s1TcI+JQZoY52
-        TUKAqe0AvaZci1+9iVv+nN1YG8jdUeX9BANJgGfNYjA5yihzNbue8eY2c8DcnYff1eUxYsjrkp0
-        2Peh3mCFSv2YAkgbb5z8W9INa1Axk/ybt
-X-Received: by 2002:a05:6808:1991:b0:38b:f2d1:db15 with SMTP id bj17-20020a056808199100b0038bf2d1db15mr344443oib.47.1681972151228;
-        Wed, 19 Apr 2023 23:29:11 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YT4AHXQXgwTQRHka9aoNLwtjjr5EAkfqPeNamGyXLmUb3WmrSzik+6jAVvfDtUCTnI5MDVMEL5IUPiyqxatyk=
-X-Received: by 2002:a05:6808:1991:b0:38b:f2d1:db15 with SMTP id
- bj17-20020a056808199100b0038bf2d1db15mr344442oib.47.1681972151022; Wed, 19
- Apr 2023 23:29:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230418065327.72281-1-xuanzhuo@linux.alibaba.com> <20230418065327.72281-13-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20230418065327.72281-13-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 20 Apr 2023 14:28:59 +0800
-Message-ID: <CACGkMEsSR9uu1n7kFZLDxeje=_JWzadVtqcYizwYRypmnR4Wdw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 12/14] virtio_net: small: optimize code
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        with ESMTP id S233915AbjDTGbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 02:31:43 -0400
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496AE46A6;
+        Wed, 19 Apr 2023 23:31:42 -0700 (PDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+        by mailout.west.internal (Postfix) with ESMTP id 5C6F2320069B;
+        Thu, 20 Apr 2023 02:31:39 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Thu, 20 Apr 2023 02:31:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1681972298; x=1682058698; bh=eP
+        zZEj8M7v5T2YSkLJR2yP2qHh01VIHjtDtJNsIPb5Y=; b=i5FL1M32ued+WtcQCq
+        EYl5+KZSaJhuolI+2V6ij3AED0sMCj8lHtz12tziM70JA2SqcdLVv+K7tF7NMbZk
+        GfHm42gFBY8aQIkYBbznsaeM6nlJUxZ1T97+c7vkPk8a3MXMeCwHzgEa57cHp9tA
+        vk3M7NSPWDrqFqWMLV9Hz01ef4bu0FXoFpXDyYWgEZMiKoWBFhFvOp9X2J4hf9aV
+        6Vs0v1Vp2ybMfHjbMVb6c22OvfyQPMJKOLqjNa5wdhNQolfUv3fqi2r97/7VxH5m
+        yjEivOe/OJHD3b5t7FFP+sssOeCTBm7Smwl7jM2oKMGdxObsTfTf5k6muQr6R6nM
+        DUsw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1681972298; x=1682058698; bh=ePzZEj8M7v5T2
+        YSkLJR2yP2qHh01VIHjtDtJNsIPb5Y=; b=KCLwG3l5O3gAA27jXbZzdvHU4EveJ
+        lCQyBp2Svnu9kCNDTJ9LeXY6BxXfHgH5tk7Tw8Lvrq29rzc/FiXQI7/IhSGuwdA/
+        bWuSMBkH1kvm6jxRHB5TY7EXOilIo4xxaO6kL4Ss7yssohKnauKGCllmOv7zhs02
+        6AwFQkAtqK5nhostq50dU7oWyRG1bsE+QQ4dn8A8Qj7ml0x8DzRgEeCfOvKVV5T5
+        Qb8vLUgH8hWikCjtnYFkdAIvRNEaItSub76vjdnBAgWfsxwx8zE9e5fb37bZJL7a
+        mCmrMk5ueZY0qEel6MM2B0FLt9EOM+GNC3M+p8BbT3qF6apu/kZjptY8Q==
+X-ME-Sender: <xms:StxAZCDuJfyQ3_xhcoBV3HQTw8mM8aKD2ry9sFcww3D2FRsPqeaVHw>
+    <xme:StxAZMg_jf0455MvU-PMyGkKSATAUCusSrU3Aonn4Wn-VEXLr7_4KpI6XHLXSZ5qk
+    GrERFhxO5-wNrQN3vk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfedtuddguddutdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrg
+    htthgvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedt
+    keetffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    grrhhnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:StxAZFkwMhANCl37MtN12A_l1FOjIEIawFZ_CA62cvDfmUojxAB_PA>
+    <xmx:StxAZAz4vQGLb68CTLHVztEQzKNGWBEDNfxVmxrRPLyOgKD_mtEREA>
+    <xmx:StxAZHQpEbpFda-6rXtB0SDQ35n8kiVz0Qoj9U9gtNtAzVxYILZXBA>
+    <xmx:StxAZARMZlR-W6hHQDRLJI9ih0wlLNMam6ezYxWXtnhVzELIWXKepA>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 6432FB60086; Thu, 20 Apr 2023 02:31:38 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-372-g43825cb665-fm-20230411.003-g43825cb6
+Mime-Version: 1.0
+Message-Id: <f16fb810-f70d-40ac-8e9d-2ada008c446d@app.fastmail.com>
+In-Reply-To: <202303241935.xRMa6mc6-lkp@intel.com>
+References: <202303241935.xRMa6mc6-lkp@intel.com>
+Date:   Thu, 20 Apr 2023 08:31:17 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "kernel test robot" <lkp@intel.com>, "Andrew Lunn" <andrew@lunn.ch>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        "Christian Marangi" <ansuelsmth@gmail.com>,
+        Netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        "Jakub Kicinski" <kuba@kernel.org>
+Subject: Re: [lunn:v6.3-rc2-net-next-phy-leds 5/15] ld.lld: error: undefined symbol:
+ devm_mdiobus_alloc_size
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 2:53=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.alibaba.c=
-om> wrote:
+On Fri, Mar 24, 2023, at 12:36, kernel test robot wrote:
+>>> ld.lld: error: undefined symbol: devm_mdiobus_alloc_size
+>    >>> referenced by phy.h:458 (include/linux/phy.h:458)
+>    >>>               
+> drivers/net/ethernet/microchip/lan743x_main.o:(lan743x_pcidev_probe) in 
+> archive vmlinux.a
+>    >>> referenced by phy.h:458 (include/linux/phy.h:458)
+>    >>>               drivers/net/ethernet/ni/nixge.o:(nixge_probe) in 
+> archive vmlinux.a
 >
-> In the case of XDP-PASS, skb_reserve uses the delta to compatible
-> non-XDP, now remove this logic.
->
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Kconfig warnings: (for reference only)
+>    WARNING: unmet direct dependencies detected for PHYLIB
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+It looks like this has hit linux-next now, I'm seeing the same problem in
+my own randconfig builds after Andrew's 01e5b728e9e4 ("net: phy: Add a
+binding for PHY LEDs").
 
-Thanks
+>    Depends on [m]: NETDEVICES [=y] && (LEDS_CLASS [=m] || LEDS_CLASS 
+> [=m]=n)
+>    Selected by [y]:
+>    - PHYLINK [=y] && NETDEVICES [=y]
+>    - TIGON3 [=y] && NETDEVICES [=y] && ETHERNET [=y] && 
+> NET_VENDOR_BROADCOM [=y] && PCI [=y] && PTP_1588_CLOCK_OPTIONAL [=y]
+>    - LAN743X [=y] && NETDEVICES [=y] && ETHERNET [=y] && 
+> NET_VENDOR_MICROCHIP [=y] && PCI [=y] && PTP_1588_CLOCK_OPTIONAL [=y]
+>    - NI_XGE_MANAGEMENT_ENET [=y] && NETDEVICES [=y] && ETHERNET [=y] && 
+> NET_VENDOR_NI [=y] && HAS_IOMEM [=y] && HAS_DMA [=y]
+>    - XILINX_EMACLITE [=y] && NETDEVICES [=y] && ETHERNET [=y] && 
+> NET_VENDOR_XILINX [=y] && HAS_IOMEM [=y]
+>    Selected by [m]:
+>    - ALTERA_TSE [=m] && NETDEVICES [=y] && ETHERNET [=y] && HAS_DMA [=y]
+>    - DNET [=m] && NETDEVICES [=y] && ETHERNET [=y] && HAS_IOMEM [=y]
+>    - B44 [=m] && NETDEVICES [=y] && ETHERNET [=y] && 
+> NET_VENDOR_BROADCOM [=y] && SSB_POSSIBLE [=y] && HAS_DMA [=y]
+>    - KS8851_MLL [=m] && NETDEVICES [=y] && ETHERNET [=y] && 
+> NET_VENDOR_MICREL [=y] && HAS_IOMEM [=y] && PTP_1588_CLOCK_OPTIONAL [=y]
+>    - SMSC911X [=m] && NETDEVICES [=y] && ETHERNET [=y] && 
+> NET_VENDOR_SMSC [=y] && HAS_IOMEM [=y]
+>    - SMSC9420 [=m] && NETDEVICES [=y] && ETHERNET [=y] && 
+> NET_VENDOR_SMSC [=y] && PCI [=y]
+>    - XILINX_LL_TEMAC [=m] && NETDEVICES [=y] && ETHERNET [=y] && 
+> NET_VENDOR_XILINX [=y] && HAS_IOMEM [=y]
+>    - USB_NET_AX88179_178A [=m] && NETDEVICES [=y] && USB_NET_DRIVERS 
+> [=m] && USB_USBNET [=m]
 
-> ---
->  drivers/net/virtio_net.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 34220f5f27d1..f6f5903face2 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -959,9 +959,7 @@ static struct sk_buff *receive_small_xdp(struct net_d=
-evice *dev,
->         unsigned int buflen;
->         struct xdp_buff xdp;
->         struct sk_buff *skb;
-> -       unsigned int delta =3D 0;
->         unsigned int metasize =3D 0;
-> -       void *orig_data;
->         u32 act;
->
->         if (unlikely(hdr->hdr.gso_type))
-> @@ -994,14 +992,12 @@ static struct sk_buff *receive_small_xdp(struct net=
-_device *dev,
->         xdp_init_buff(&xdp, buflen, &rq->xdp_rxq);
->         xdp_prepare_buff(&xdp, buf + VIRTNET_RX_PAD + vi->hdr_len,
->                          xdp_headroom, len, true);
-> -       orig_data =3D xdp.data;
->
->         act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats)=
-;
->
->         switch (act) {
->         case VIRTNET_XDP_RES_PASS:
->                 /* Recalculate length in case bpf program changed it */
-> -               delta =3D orig_data - xdp.data;
->                 len =3D xdp.data_end - xdp.data;
->                 metasize =3D xdp.data - xdp.data_meta;
->                 break;
-> @@ -1017,7 +1013,7 @@ static struct sk_buff *receive_small_xdp(struct net=
-_device *dev,
->         if (!skb)
->                 goto err;
->
-> -       skb_reserve(skb, headroom - delta);
-> +       skb_reserve(skb, xdp.data - buf);
->         skb_put(skb, len);
->         if (metasize)
->                 skb_metadata_set(skb, metasize);
-> --
-> 2.32.0.3.g01195cf9f
->
+The problem here is that both PHYLIB and LEDS_CLASS are user-visible
+tristate symbols that are referenced from other Kconfig symbols with
+both 'depends on' and 'select'. Having the two interact introduces a
+number of ways that lead to circular dependencies.
 
+It might be ok to use 'select LEDS_CLASS' from PHYLIB, but I have not
+tried that yet and I expect this will result in other build failures.
+
+A better solution would be to change all drivers that currently use
+'select PHYLIB' to 'depends on PHYLIB' and have PHYLIB itself
+'default ETHERNET' to avoid most of the regressions, but doing this
+for 6.4 is a bit risky and can cause other problems.
+
+     Arnd
