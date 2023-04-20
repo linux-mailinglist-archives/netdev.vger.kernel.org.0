@@ -2,81 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A76A96E9408
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:15:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A65F66E9416
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 14:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234731AbjDTMPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 08:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
+        id S234810AbjDTMSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 08:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234758AbjDTMPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:15:42 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D884695
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 05:15:32 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id 5614622812f47-38e4c98e5ceso264216b6e.1
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 05:15:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681992931; x=1684584931;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=7dCMSjJGAVJYULPoH8k/oYToGR+HAi8zsg4GGXON8+w=;
-        b=BMkmIaXdZhPQXSVJj5SwFQpuc+3JyLc37Ugr8pzxOQR4G/IeOm2e0n5n4CS34jxbPz
-         XXEvR/WYy8/J0G/QerfHtCuKpwG2PHhGG1wjWgdQeNsZU+aMclyKZ44ItbbWzTVLm42r
-         Y6J1SUGZDOcP8dDw25u16knvCR8DCPDHuXAQDFxVFQb7mB4O54a+fX6mHMsGQz80UQhy
-         uj2vpPJnY72a7OJ7IVgjoJ7XM0hzZiBf3HA5tPw3UY4Idh8Ve6i0Eqfszs09ukaOJZ9S
-         dv+0keQdwY7RiXVA0BN1X29BiN/HxUnNint+9ERbUrmflo3aXIKfRUcNrBD2vgaD//R3
-         mJfw==
+        with ESMTP id S234616AbjDTMSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 08:18:30 -0400
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43505251;
+        Thu, 20 Apr 2023 05:18:28 -0700 (PDT)
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1a68d61579bso8429745ad.1;
+        Thu, 20 Apr 2023 05:18:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681992931; x=1684584931;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+        d=1e100.net; s=20221208; t=1681993108; x=1684585108;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=7dCMSjJGAVJYULPoH8k/oYToGR+HAi8zsg4GGXON8+w=;
-        b=XpAa2X8/kj3YkauympvLm7MQFwWvfJ23iCOAHsRntZQLnQ/wPG1aUI0BrY1Gk1Bn5r
-         cjD1SR+PyX3qRNYqqAgekH/mc8TkJcLMtr5hixd1ylV/VX11mEQ8JzPi2lRfrr/Lh6HM
-         w78wHfLFogEXIEIlW8uflXLZkS/2+youS+I8h9L/n2SLuYaE1aiSu2XautVQCeLrI65S
-         97K45uHEi35YFMPx2a2w+ODsUj984G7InfxcX2ccc1yeeuGbvIrh23b8Wl6RddXvlRi9
-         ulhFQlJEHGkFldiyLn59JWRqbE19n/sI9fohpE8THYaVuwJq+6Jz7eZZTGrn+Q3fXt+G
-         RTfw==
-X-Gm-Message-State: AAQBX9fytWPVheECuzWbQaxGYbU54tWoKOKJn0iUS1w/73kX5rnyDC5m
-        w0doRlv6fchTGC43spBcdpBstZ1bBi9POHNBGyc=
-X-Google-Smtp-Source: AKy350Z9Nls3RIT/3HWIZNP8sHpHIMNE+k3Y1wWPlLeeDoiv/Yey1HTfsx1YLBuPOfxsitZoA0EmLJlQv/RXKSxEeck=
-X-Received: by 2002:a05:6808:b12:b0:38c:1651:5815 with SMTP id
- s18-20020a0568080b1200b0038c16515815mr767256oij.0.1681992931644; Thu, 20 Apr
- 2023 05:15:31 -0700 (PDT)
+        bh=q7R2ZysSN9yYEd+Sz6xYkgWvSwxaeYaLBilVSEM6AL0=;
+        b=WIxBVRrflKKiAXEfFDt0xSaKhy3scMtUZcYx7Bn7MD5lf0SdFNMbdaknE4WocyzL2I
+         Lya7VtRUAWNQZ+/xMWkFt2CN91GXD1xxIDTH+2i0VzQyWbf0i9yp4Iq1EKq4UIJHlQO2
+         9wnVNmLQ+fPyEphOO80XIAqXKuVF1sxAA2hUAtZcOnmGujk/MdSHUn3NQncq3wfNhwns
+         KC0wS3XGMbQaMwxloi/8RdlxSJZkoA7GZvbZk9SvB7xnQwXifyLWi6AKZG1gdjv2zpW9
+         bJQoYr9v4/9AxUDYlrYbQOOklhWxAEEzPByfr0oo4ZsZJkq2FJ/V6nV2MGP3p0j3vLVw
+         Ah8A==
+X-Gm-Message-State: AAQBX9eAVEl60eBzi4tDpIgItlc6xy5/OCxxO8aq2u7hr2icqkq1+vUG
+        ID03l7ewDArZG4QWK5UoMhTOnmBM3cYC9+BOVak=
+X-Google-Smtp-Source: AKy350YQbjcba2ZO9u1lSqIHWOfUQSZN3jG0QwoI8BFZLBK35vtR11RKrqQhryc+fx09J9hw3UxGuz5EunmwdqIkucM=
+X-Received: by 2002:a17:903:2444:b0:19e:6cb9:4c8f with SMTP id
+ l4-20020a170903244400b0019e6cb94c8fmr1812129pls.41.1681993108197; Thu, 20 Apr
+ 2023 05:18:28 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6358:59a2:b0:110:dac2:bb50 with HTTP; Thu, 20 Apr 2023
- 05:15:30 -0700 (PDT)
-Reply-To: georgebrown0004@gmail.com
-From:   george brown <gb528796@gmail.com>
-Date:   Thu, 20 Apr 2023 14:15:30 +0200
-Message-ID: <CAD+T2wY1wHzCUVYayEkVQA8CotC_0ZCEiXCqA6=6f1Z=cUeS8g@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
+References: <20230420024403.13830-1-peter_hong@fintek.com.tw> <CAMZ6RqKWrtBMFSD=BzGuCbvj=+3X-A-oW9haJ7=4kyL2AbEuHQ@mail.gmail.com>
+In-Reply-To: <CAMZ6RqKWrtBMFSD=BzGuCbvj=+3X-A-oW9haJ7=4kyL2AbEuHQ@mail.gmail.com>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Thu, 20 Apr 2023 21:18:17 +0900
+Message-ID: <CAMZ6RqKQv1hjPdWNK4NU4TcVjfE-TUZ+yAROXUG0=H5RhDx6iQ@mail.gmail.com>
+Subject: Re: [PATCH V5] can: usb: f81604: add Fintek F81604 support
+To:     "Ji-Ze Hong (Peter Hong)" <peter_hong@fintek.com.tw>
+Cc:     wg@grandegger.com, mkl@pengutronix.de,
+        michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, frank.jungclaus@esd.eu,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: **
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-16nXnNeV150NCg0K16nXnteZINeSJ9eV16jXkicg15HXqNeQ15XXnyDXkNeg15kg16LXldeo15og
-15PXmdefINeR157Xp9em15XXoteZLiDXkNeg15kg16jXldem15Qg15zXlNem15nXoiDXnNeaINeU
-16fXqNeV15Eg15zXnNen15XXlw0K16nXnNeZLiDXkNeq15Qg16rXmdeo16kg15DXqiDXlNeh15vX
-ldedINep15wgKDguNSDXnteZ15zXmdeV158g15PXldec16gpINeT15XXnNeo15nXnSDXqdeU15zX
-p9eV15cg16nXnNeZINeU16nXkNeZ16gNCteR15HXoNenINec16TXoNeZINee15XXqteVLg0KDQrX
-lNec16fXldeXINep15zXmSDXlNeV15Ag15DXlteo15cg15HXnteT15nXoNeq15og16nXnteqINeR
-16rXkNeV16DXqiDXk9eo15vXmdedINei150g15DXqdeq15Ug15XXkdefINeZ15fXmdeTLiDXkNeg
-15kg15DXlNeZ15QNCteW15vXkNeZINei150gNTAlINee16HXmiDXlNen16jXnyDXldeQ15nXnNeV
-IDUwJSDXmdeU15nXlSDXnNeU15nXldeqINeR16nXkdeZ15zXmi4NCteQ16DXkCDXpteV16gg16fX
-qdeoINei150g15TXk9eV15Ai15wg15TXpNeo15jXmSDXqdec15kg15vXkNefINec16TXqNeY15nX
-nSDXoNeV16HXpNeZ1506IGdlb3JnZWJyb3duMDAwNEBnbWFpbC5jb20NCg0K16jXkSDXqteV15PX
-ldeqINee16jXkNepLA0K157XqCDXkifXldeo15InINeR16jXkNeV158sDQo=
+On Tue. 20 Apr. 2023 at 21:02, Vincent MAILHOL
+<mailhol.vincent@wanadoo.fr> wrote:
+> Hi Peter,
+>
+> Here are my comments. Now, it is mostly nitpicks. I guess that this is
+> the final round.
+>
+> On Thu. 20 avr. 2023 at 11:44, Ji-Ze Hong (Peter Hong)
+> <peter_hong@fintek.com.tw> wrote:
+> >
+> > This patch adds support for Fintek USB to 2CAN controller.
+> >
+> > Signed-off-by: Ji-Ze Hong (Peter Hong) <peter_hong@fintek.com.tw>
+> > ---
+(...)
+> > diff --git a/drivers/net/can/usb/f81604.c b/drivers/net/can/usb/f81604.c
+> > new file mode 100644
+> > index 000000000000..ea0ff08ca186
+> > --- /dev/null
+> > +++ b/drivers/net/can/usb/f81604.c
+> > @@ -0,0 +1,1205 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Fintek F81604 USB-to-2CAN controller driver.
+> > + *
+> > + * Copyright (C) 2023 Ji-Ze Hong (Peter Hong) <peter_hong@fintek.com.tw>
+> > + */
+> > +#include <linux/bitfield.h>
+> > +#include <linux/netdevice.h>
+> > +#include <linux/units.h>
+> > +#include <linux/usb.h>
+> > +
+> > +#include <linux/can.h>
+> > +#include <linux/can/dev.h>
+> > +#include <linux/can/error.h>
+> > +#include <linux/can/platform/sja1000.h>
+> > +
+> > +#include <asm-generic/unaligned.h>
+> > +
+> > +/* vendor and product id */
+> > +#define F81604_VENDOR_ID 0x2c42
+> > +#define F81604_PRODUCT_ID 0x1709
+> > +#define F81604_CAN_CLOCK (12 * MEGA)
+> > +#define F81604_MAX_DEV 2
+> > +#define F81604_SET_DEVICE_RETRY 10
+> > +
+> > +#define F81604_USB_TIMEOUT 2000
+> > +#define F81604_SET_GET_REGISTER 0xA0
+> > +#define F81604_PORT_OFFSET 0x1000
+> > +
+> > +#define F81604_DATA_SIZE 14
+> > +#define F81604_MAX_RX_URBS 4
+> > +
+> > +#define F81604_CMD_DATA 0x00
+> > +
+> > +#define F81604_DLC_LEN_MASK 0x0f
+
+For consistency with the other definitions also use GENMASK here.
