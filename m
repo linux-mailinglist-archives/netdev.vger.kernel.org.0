@@ -2,136 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 196816E9B7D
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:21:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFC9F6E9B88
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 20:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231190AbjDTSVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 14:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37640 "EHLO
+        id S231639AbjDTSW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 14:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230037AbjDTSVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:21:13 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F194205
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:21:12 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id 46e09a7af769-6a5f7341850so1053257a34.2
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 11:21:12 -0700 (PDT)
+        with ESMTP id S230002AbjDTSW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 14:22:58 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9206B40FE;
+        Thu, 20 Apr 2023 11:22:55 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id u3so8283153ejj.12;
+        Thu, 20 Apr 2023 11:22:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682014871; x=1684606871;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=l8aVj5sgReWVnhyaJ2DUsoH6IQ6uZim3OtgpbE5sEkw=;
-        b=BWwDVjWMd2BipQFjAhTnRYDBN6FvvvN8guK4EtPUMIOijijbNcRlW/2YAnFzhHRIx1
-         dylrJi4rqfKLIY/8BlpTj/ch7gaWj32/Ah9q5j+mrKpc75cznRoPMqkEJBQe+LwpinPH
-         ypN6BtUIPbXfS+n6+ctmzjh/5UXbhcvK8q5Ve3XDbqIjGPFIyPyXxQYwQWUdZcTkFdmS
-         I2lPCqO1Gy3JLmPvRv79rn/3FOb6mUtb83g/80cZSFFvZhB+/Q3QBbY/eUhuWn7b0UfG
-         kVzeTjy3fxX6fIaG6OvSKOQZ3vsn1Bx1IJBtA92DOIozsAPjGKNaSg7un/YRrd8XuSW9
-         RLuQ==
+        d=gmail.com; s=20221208; t=1682014974; x=1684606974;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4CZVwM4RlbVKeoWvXJRK2+ZkqTGEdyW7G1e+Ai+Xkhg=;
+        b=XOHFvAO5MBVfkTn4XBqOSdVvEIXnsbypbQMtBcR6/41FtApQW4fxFvuKbC56vKg/fq
+         9TBsjgdojXX6EZFZcyzfZoG6W2JZhOnyrH61Y10i0FAwson3VyTnTVUFa9Wch+bMsvqE
+         NDN62y0S1/sAYDk5RR5pThFSF2W3R8QoNu51DzKgqVw9R1OVNusAS9OaPS4K3rVnLIzW
+         y6JFIHJNnPv/vmHpNhz5gvLHCz31RynuK684XBIQdjvCRP5GmnS3iboA2gVO+fpSAU0w
+         9vdoYWXat/ofs3vm4uy0i776EODY9qIZJ5yAgxYB2y32QhwIfv/Gx1vVwUGJ3qWSt5yh
+         JKdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682014871; x=1684606871;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=l8aVj5sgReWVnhyaJ2DUsoH6IQ6uZim3OtgpbE5sEkw=;
-        b=dy3JRzxmmKxrPV5XG5hgEorvg5qrdtdUmCP8bQkDVldx9gr5O4bvfaScgqIFNq0sRM
-         eOa9k7J7NfxgTFAlQvHcWlbBjeBeXAQewbnDbT2gOnQy8EaKz3dQF7hwYXdGikIo45SO
-         ui8rMqki5CWBhLDnkeJ86SpCY2I/Mk4K+EdM+/pefMkWz9vmL2FKyEqQrdXxBY4Tghw4
-         bgUgB6nBF4BIzfUf/LLIOyBkyHuTA/6hrbHAK2a1ZjE0wm7vi2kF1mAILjBxTvTAd8nU
-         WnQpVoFrm3eIkORbqPo9RHVb6UZReXv7Vpi5OrYVseKudo+tGk20ey7bcOD8VOhLI5lS
-         7uZw==
-X-Gm-Message-State: AAQBX9cJnuorTgDEjf99AjNSKnebxOUc1ZaAgV+dyiHQ7zxGVbkX4q6w
-        9hMu/kl9eN858HUxf7Vubeg75g==
-X-Google-Smtp-Source: AKy350a4fxn4lwi7pJPT7kHlmDB/6gMxEkSsVX78x89Y3lGiQGmuWjbSnKwTDM0NLHsZSFOvm8E4fQ==
-X-Received: by 2002:a9d:798a:0:b0:6a5:faad:b812 with SMTP id h10-20020a9d798a000000b006a5faadb812mr1299608otm.7.1682014871696;
-        Thu, 20 Apr 2023 11:21:11 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75? ([2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75])
-        by smtp.gmail.com with ESMTPSA id s7-20020a056830148700b006a44d90de05sm939837otq.69.2023.04.20.11.21.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Apr 2023 11:21:11 -0700 (PDT)
-Message-ID: <77920a21-96ab-54e5-db3d-5083a11d5691@mojatatu.com>
-Date:   Thu, 20 Apr 2023 15:21:06 -0300
+        d=1e100.net; s=20221208; t=1682014974; x=1684606974;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4CZVwM4RlbVKeoWvXJRK2+ZkqTGEdyW7G1e+Ai+Xkhg=;
+        b=Ky88AssaFEcYdBDp0K+OSi9bjSzuqEl7vdaA8Jcv3rjt6+Idjt61ICg0IuHB66DJBw
+         LyVrSUknFFkOEG/B949rSQ+hHRLbpe97AJdocAvAnNzTgAla3B+ay6uwy/kNBmXalPpD
+         IddhT1Spb0dcF9X7+Gq9zOlewHub2gBnKUlBUePtmJLIjttzX39dOIu7i/NFH5Of1lsO
+         EoMklekt4NuBNmrmdMj6nHn7HWSHVpKCRYkgLJ6BcHMeDvmbgrjjmRjiBiWxmjG2gLbJ
+         MM+z/vueGs6pPPtEGrmG+HOb4URcbOc6qq5e4LTrQBr7h2LqWB1o9Q9sOLolK8mQQj1n
+         KhIw==
+X-Gm-Message-State: AAQBX9dRuVlJaIHVK4WyY0KMxbs+l1v7griPhnb0hBAE07TMbtucy8jT
+        6MgBZTjtxeegcV7kpFzs4YuwH7HcVEnLmjaXiN3IIvX2G50=
+X-Google-Smtp-Source: AKy350ayaAnMLUIS7RQGLIM768z8dPY/V6mF3C0n4BNfAf7yOlzroMZz6sbJeazJvG1yJPtPyN6lglvR3UOY3cAnSqA=
+X-Received: by 2002:a17:906:4fc5:b0:93e:739f:b0b8 with SMTP id
+ i5-20020a1709064fc500b0093e739fb0b8mr1023652ejw.3.1682014973801; Thu, 20 Apr
+ 2023 11:22:53 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net] net/sched: cls_api: Initialize miss_cookie_node when
- action miss is not used
-Content-Language: en-US
-To:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+References: <20230420072657.80324-1-zhoufeng.zf@bytedance.com> <20230420072657.80324-2-zhoufeng.zf@bytedance.com>
+In-Reply-To: <20230420072657.80324-2-zhoufeng.zf@bytedance.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 20 Apr 2023 11:22:42 -0700
+Message-ID: <CAADnVQ+ffmrJCMa2R48AtJL3nT93jtKEdRv3RFeJ3Vo2L6ukQA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Add bpf_task_under_cgroup helper
+To:     Feng zhou <zhoufeng.zf@bytedance.com>
+Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Paul Blakey <paulb@nvidia.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20230420175952.1114302-1-ivecera@redhat.com>
-From:   Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <20230420175952.1114302-1-ivecera@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, yangzhenze@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/04/2023 14:59, Ivan Vecera wrote:
-> Function tcf_exts_init_ex() sets exts->miss_cookie_node ptr only
-> when use_action_miss is true so it assumes in other case that
-> the field is set to NULL by the caller. If not then the field
-> contains garbage and subsequent tcf_exts_destroy() call results
-> in a crash.
-> Initialize .miss_cookie_node pointer to NULL when use_action_miss
-> parameter is false to avoid this potential scenario.
-> 
-> Fixes: 80cd22c35c90 ("net/sched: cls_api: Support hardware miss to tc action")
-> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+On Thu, Apr 20, 2023 at 12:27=E2=80=AFAM Feng zhou <zhoufeng.zf@bytedance.c=
+om> wrote:
+>
+> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+>
+> This adds a bpf helper that's similar to the
+> bpf_current_task_under_cgroup. The difference is that it is a
+> designated task.
+>
+> When hook sched related functions, sometimes it is necessary to
+> specify a task instead of the current task.
+>
+> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
 > ---
->   net/sched/cls_api.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> index 35785a36c80298..8bc5b9d6a2916e 100644
-> --- a/net/sched/cls_api.c
-> +++ b/net/sched/cls_api.c
-> @@ -3224,8 +3224,12 @@ int tcf_exts_init_ex(struct tcf_exts *exts, struct net *net, int action,
->   	exts->action = action;
->   	exts->police = police;
->   
-> -	if (!use_action_miss)
-> +	if (!use_action_miss) {
-> +#ifdef CONFIG_NET_CLS_ACT
-> +		exts->miss_cookie_node = NULL;
-> +#endif
->   		return 0;
-> +	}
->   
->   	err = tcf_exts_miss_cookie_base_alloc(exts, tp, handle);
->   	if (err)
+>  include/uapi/linux/bpf.h       | 13 +++++++++++++
+>  kernel/bpf/verifier.c          |  4 +++-
+>  kernel/trace/bpf_trace.c       | 31 +++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h | 13 +++++++++++++
+>  4 files changed, 60 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 4b20a7269bee..3d31ddb39e10 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5550,6 +5550,18 @@ union bpf_attr {
+>   *             0 on success.
+>   *
+>   *             **-ENOENT** if the bpf_local_storage cannot be found.
+> + *
+> + * long bpf_task_under_cgroup(struct bpf_map *map, struct task_struct *t=
+ask, u32 index)
+> + *     Description
+> + *             Check whether the probe is being run is the context of a =
+given
+> + *             subset of the cgroup2 hierarchy. The cgroup2 to test is h=
+eld by
+> + *             *map* of type **BPF_MAP_TYPE_CGROUP_ARRAY**, at *index*.
+> + *     Return
+> + *             The return value depends on the result of the test, and c=
+an be:
+> + *
+> + *             * 1, if assigned task belongs to the cgroup2.
+> + *             * 0, if assigned task does not belong to the cgroup2.
+> + *             * A negative error code, if an error occurred.
+>   */
+>  #define ___BPF_FUNC_MAPPER(FN, ctx...)                 \
+>         FN(unspec, 0, ##ctx)                            \
+> @@ -5764,6 +5776,7 @@ union bpf_attr {
+>         FN(user_ringbuf_drain, 209, ##ctx)              \
+>         FN(cgrp_storage_get, 210, ##ctx)                \
+>         FN(cgrp_storage_delete, 211, ##ctx)             \
+> +       FN(task_under_cgroup, 212, ##ctx)               \
+>         /* */
+>
+>  /* backwards-compatibility macros for users of __BPF_FUNC_MAPPER that do=
+n't
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 1e05355facdc..1e2c3c3e8d5f 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -7771,7 +7771,8 @@ static int check_map_func_compatibility(struct bpf_=
+verifier_env *env,
+>                 break;
+>         case BPF_MAP_TYPE_CGROUP_ARRAY:
+>                 if (func_id !=3D BPF_FUNC_skb_under_cgroup &&
+> -                   func_id !=3D BPF_FUNC_current_task_under_cgroup)
+> +                   func_id !=3D BPF_FUNC_current_task_under_cgroup &&
+> +                   func_id !=3D BPF_FUNC_task_under_cgroup)
+>                         goto error;
+>                 break;
+>         case BPF_MAP_TYPE_CGROUP_STORAGE:
+> @@ -7902,6 +7903,7 @@ static int check_map_func_compatibility(struct bpf_=
+verifier_env *env,
+>                         goto error;
+>                 break;
+>         case BPF_FUNC_current_task_under_cgroup:
+> +       case BPF_FUNC_task_under_cgroup:
+>         case BPF_FUNC_skb_under_cgroup:
+>                 if (map->map_type !=3D BPF_MAP_TYPE_CGROUP_ARRAY)
+>                         goto error;
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index bcf91bc7bf71..b02a04768824 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -814,6 +814,35 @@ static const struct bpf_func_proto bpf_current_task_=
+under_cgroup_proto =3D {
+>         .arg2_type      =3D ARG_ANYTHING,
+>  };
+>
+> +BPF_CALL_3(bpf_task_under_cgroup, struct bpf_map *, map, struct task_str=
+uct *,
+> +          task, u32, idx)
+> +{
+> +       struct bpf_array *array =3D container_of(map, struct bpf_array, m=
+ap);
+> +       struct cgroup *cgrp;
+> +
+> +       if (unlikely(!task))
+> +               return -ENOENT;
+> +
+> +       if (unlikely(idx >=3D array->map.max_entries))
+> +               return -E2BIG;
+> +
+> +       cgrp =3D READ_ONCE(array->ptrs[idx]);
+> +       if (unlikely(!cgrp))
+> +               return -EAGAIN;
+> +
+> +       return task_under_cgroup_hierarchy(task, cgrp);
 
-The problem described here also happens in the case some error happens 
-if the action array allocation fails and before the 'miss_cookie_node' 
-assignment inside 'tcf_exts_miss_cookie_base_alloc()'.
-
-Seems like a better way to solve this issue is to just:
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 35785a36c802..3c3629c9e7b6 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3211,6 +3211,7 @@ int tcf_exts_init_ex(struct tcf_exts *exts, struct 
-net *net, int action,
-  #ifdef CONFIG_NET_CLS_ACT
-         exts->type = 0;
-         exts->nr_actions = 0;
-+       exts->miss_cookie_node = NULL;
-         /* Note: we do not own yet a reference on net.
-          * This reference might be taken later from tcf_exts_get_net().
-          */
-
+We don't add helpers anymore.
+Please wrap task_under_cgroup_hierarchy() as a kfunc
+that takes two TRUSTED pointers task and cgroup.
