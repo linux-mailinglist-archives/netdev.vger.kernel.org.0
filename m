@@ -2,88 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D7536E87C5
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 04:01:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 788966E87CF
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 04:05:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232361AbjDTCBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Apr 2023 22:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
+        id S232771AbjDTCFq convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Apr 2023 22:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232596AbjDTCAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 22:00:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B8D4C0A
-        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 19:00:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7729164478
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 02:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D7499C433EF;
-        Thu, 20 Apr 2023 02:00:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1681956021;
-        bh=9WbromZ7mg8mCUPJ9kLnfc6Cz2r1KJRy7y+/bTCJmgM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WhCTdfzmuHxkI6zRqEuKVplHVVWHCKOceiseOlqCJclgfP2pOBq8VJuzmPY2j+dmf
-         2dB8RNPdpvnef73iXy1AAiTOe0C9dzCrKBALvnisX6vhTG5QuSWZ03Qb7jiEtoKft4
-         gXKF+XXRw040GvE/8Ap5oxi7WMEhw6eJiNiWB3GwM4wdvauWvYBJSBnQYEQkzxb68c
-         iyJOp6Ti9ul1CeRN9PW6NDyvzbq/rMyrjSumpvaggF2yAmt2ezqx2RvnfBPLh0d2Ki
-         qU6RW2nExFZWtq/yWlFc/+HkCYjeAKs46uAUIaXcBv/NOo2O8k95BaFbQb3t79chlm
-         Onp2YrCNQUccQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C35C1C561EE;
-        Thu, 20 Apr 2023 02:00:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v10 0/4] Another crack at a handshake upcall mechanism
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168195602179.17998.18228073558514714292.git-patchwork-notify@kernel.org>
-Date:   Thu, 20 Apr 2023 02:00:21 +0000
-References: <168174169259.9520.1911007910797225963.stgit@91.116.238.104.host.secureserver.net>
-In-Reply-To: <168174169259.9520.1911007910797225963.stgit@91.116.238.104.host.secureserver.net>
-To:     Chuck Lever <cel@kernel.org>
-Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org, kernel-tls-handshake@lists.linux.dev
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S232606AbjDTCFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Apr 2023 22:05:45 -0400
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9962F3C31
+        for <netdev@vger.kernel.org>; Wed, 19 Apr 2023 19:05:41 -0700 (PDT)
+X-QQ-mid: bizesmtp74t1681956334tk67uxgo
+Received: from smtpclient.apple ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 20 Apr 2023 10:05:32 +0800 (CST)
+X-QQ-SSF: 00400000000000N0R000000A0000000
+X-QQ-FEAT: V7Dl5UGFBQ9mZPmBCUpVnasHreIW5SxFjloy5ITduhxZg/OfA9DGbZtsUmLF+
+        wgch2egBvtWV+AHDaSpUNI6Q2Q4iso+RVYhnnPPQIv1LHxUXStcT/ri/g42KRhuDSmfkdWM
+        esVELpHqxFydKlAcNZvuK8S7IlTGL/qF76d4Mg/KQRHjN5SQJcrr80C+cPgwua3/fpa0jZf
+        Ixnkk4/QTuUcGSHfYIO8DzA5yzwk8j1mJApxJG1CgRWmGcViHANTHzFBy7n4K3mK7RbtYT3
+        pM/Vmz4Y1MAMeKUSf3aL9izRs8ukVnhAbvdfwwnZ4Tfpl5TEllsrCJZIO12Hu4UesbbdpP1
+        glfdJFa4g5A2E5EzMENvYP4mSe4tJDcze9Ui+1VffRQaJl4X9Xm/tXd0BRXiMsMmk+XsBC5
+        v7VEGburDJA=
+X-QQ-GoodBg: 2
+X-BIZMAIL-ID: 6372937594665590060
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3731.400.51.1.1\))
+Subject: Re: [PATCH net-next v2 1/5] net: wangxun: libwx add tx offload
+ functions
+From:   "mengyuanlou@net-swift.com" <mengyuanlou@net-swift.com>
+In-Reply-To: <a0ea9822-695b-df3f-c95f-766ef5b3f6a9@huawei.com>
+Date:   Thu, 20 Apr 2023 10:05:22 +0800
+Cc:     netdev@vger.kernel.org, Jiawen Wu <jiawenwu@trustnetic.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <E5EED9F4-A094-417A-8CBC-0A1C022263B3@net-swift.com>
+References: <20230417105457.82127-1-mengyuanlou@net-swift.com>
+ <20230417105457.82127-2-mengyuanlou@net-swift.com>
+ <630e590e-fac3-5f69-688e-ac140ab3464e@huawei.com>
+ <4E862584-755D-4EC4-9588-DB0B14D64CD5@net-swift.com>
+ <82c37bb4-b2b0-037a-7f63-71324f493e1d@huawei.com>
+ <1996D963-EFD9-420E-BEE2-E29B83F3811B@net-swift.com>
+ <a0ea9822-695b-df3f-c95f-766ef5b3f6a9@huawei.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+X-Mailer: Apple Mail (2.3731.400.51.1.1)
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvrgz:qybglogicsvrgz6a-1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 17 Apr 2023 10:32:12 -0400 you wrote:
-> Hi-
+> 2023年4月19日 20:40，Yunsheng Lin <linyunsheng@huawei.com> 写道：
 > 
-> Here is v10 of a series to add generic support for transport layer
-> security handshake on behalf of kernel socket consumers (user space
-> consumers use a security library directly, of course). A summary of
-> the purpose of these patches is archived here:
+> On 2023/4/19 10:27, mengyuanlou@net-swift.com wrote:
+>> 
+>> 
+>>> 2023年4月18日 20:11，Yunsheng Lin <linyunsheng@huawei.com> 写道：
+>>> 
+>>> On 2023/4/18 15:00, mengyuanlou@net-swift.com wrote:
+>>>>>> + goto exit;
+>>>>>> + case htons(ETH_P_ARP):
+>>>>>> + ptype = WX_PTYPE_L2_ARP;
+>>>>>> + goto exit;
+>>>>>> + default:
+>>>>>> + ptype = WX_PTYPE_L2_MAC;
+>>>>> 
+>>>>> Is it ok to set ptype to WX_PTYPE_L2_MAC for first->protocol != ETH_P_IP
+>>>>> && first->protocol != ETH_P_IPV6? Does hw need to do checksum/tso or other thing
+>>>>> about those packet? if not, setting WX_PTYPE_L2_MAC seems enough?
+>>>>> 
+>>>>   • The hardware needs to parse these packets with these ptype bits.
+>>> 
+>>> What does hw do after parsing these packets? Updating some stats according to
+>>> the protocol type?
+>>> It seems really related to hw implementation, I am just curious if it is worth
+>>> the added overhead for driver.
+>>> 
+>> For ETH_P_1588 hw will add timestamp for packets. 
 > 
-> [...]
+> I am not quite familiar with 1588, but does stack not set the SKBTX_HW_TSTAMP
+> in skb_shinfo(skb)->tx_flags when hw timestamp is required?
+> 
+>> The others are used to loopback scene, because hw can not parse l2 type.
+> 
+> I suppose that is for sriov loopback case where one function send packet
+> to another function under the same PF?
+> 
+> For the above case, hw just copy the packet type from tx desc to rx desc
+> without parsing the packet and assuming the driver always put the correct
+> packet type? I am not sure it is safe to assume that driver always put the
+> correct packet type, as the driver can be in a vm which may not be trustworthy?
+> If this happens, I am also not sure if this may cause problem for other
+> vm using different VF under the same PF?
 
-Here is the summary with links:
-  - [v10,1/4] .gitignore: Do not ignore .kunitconfig files
-    https://git.kernel.org/netdev/net-next/c/2bc42f482bed
-  - [v10,2/4] net/handshake: Create a NETLINK service for handling handshake requests
-    https://git.kernel.org/netdev/net-next/c/3b3009ea8abb
-  - [v10,3/4] net/handshake: Add a kernel API for requesting a TLSv1.3 handshake
-    https://git.kernel.org/netdev/net-next/c/2fd5532044a8
-  - [v10,4/4] net/handshake: Add Kunit tests for the handshake consumer API
-    https://git.kernel.org/netdev/net-next/c/88232ec1ec5e
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Not for VF/PF scene，I just want to know it cost。
+The others will be removed。
+> 
+>> 
+>> According to chip designers, the others are not necessary.
+>> Does it really cost a a lot for driver? 
+>> Thanks.
+>> 
+>> 
+>> .
 
 
