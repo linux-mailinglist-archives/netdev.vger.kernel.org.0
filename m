@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D2906E898C
-	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 07:20:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 799B06E898F
+	for <lists+netdev@lfdr.de>; Thu, 20 Apr 2023 07:20:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233840AbjDTFUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 01:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37432 "EHLO
+        id S233803AbjDTFUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 01:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233218AbjDTFUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 01:20:33 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADAA5FC2;
-        Wed, 19 Apr 2023 22:20:01 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id 41be03b00d2f7-517c840f181so347451a12.3;
-        Wed, 19 Apr 2023 22:20:01 -0700 (PDT)
+        with ESMTP id S233806AbjDTFUe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 01:20:34 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D1959E5;
+        Wed, 19 Apr 2023 22:20:03 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id d2e1a72fcca58-63d2ba63dddso546881b3a.2;
+        Wed, 19 Apr 2023 22:20:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1681968000; x=1684560000;
+        d=gmail.com; s=20221208; t=1681968002; x=1684560002;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Nw654FlL6BUkwfjkIWsvpLLmEwiZB7gH0V0i7mwVLn0=;
-        b=caaMCMxW9410Xn3lK3IxjlDtVt0D+8dKey3tlzaenQSmAdpDYe+tGHnk2N6G3E4hSG
-         K0bM8/EQycWefdD8JSBRDuzm1L9PF8GILiLpUQK4DYmEwjouKc/kC6ZU1fmaiRfaosyC
-         41YaUEBWy83LIiEvpkuzG4JVu8J+q3zIf7Rh5l7SNcAnTQ2deX97DOuJX081V7F/BUHk
-         cLgDfvSRNcnBXczVvDlbpXtQusjBiergqrq5KbKUf+TOAK/E0249AFh7BJywCZWu21ko
-         F53i6I4y+M9n9erQbFGlvxdttMZWwqXqQs1vkHc6Mgc+ZzFtngsk4ePBeSmSBfzVGhC/
-         Ielw==
+        bh=5usMpMDqVoc+ecsOtKE0Gtse+UU2DDnssjHsHE2rpV0=;
+        b=EnspSQAPrQqvWP+FClFMlSsz4VeavJqTqfuNfrU+p2/isyACrtZ764pJLdjUFPzs5q
+         UvF3NfeCiJDVsO5DlCEpMzHtuVnGBsOUFvM3TSWzDcJG3RoCMSu3mscfmG8pgNiwknSR
+         KwludEpAlxzeEyNH332D4kslC3vmd1m3vOlhS1WFXmnJvy4oq27/VZ8NkvK9UIgodzvc
+         vNW0Iu/hLrvQY43etyy/Vdb+8Ci7Advv7qfjpaiNxdSeiTdQWgOzAHJWNVg+s9ipU6SX
+         KL5BcnTB7cFk9pO5HTzzUNYwx2YeBsZz0YO3k1rixwFp1S26i3/Za4AQacktEllyzGJH
+         1isg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1681968000; x=1684560000;
+        d=1e100.net; s=20221208; t=1681968002; x=1684560002;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Nw654FlL6BUkwfjkIWsvpLLmEwiZB7gH0V0i7mwVLn0=;
-        b=fNNOA67fnNsuqfd8Osero470TICy7sJ1NKh398JPO5LjfTw6hLvAXi1OoVjNvfVFYl
-         m8t4b8vNkQfRcH1to/6sjkN6Y2k/l6y1Lc4eNep/5+KKbtVs/M4yqtHolr3UJyNrCiuB
-         lMgsOa36VUgqAE7yCeJ2s1eT2eqCEAQcevbRdyCutBbyKc43MsmrVS4ht2es3rpdprdU
-         d7+KqWQLRPhNeVglFB3wlw0kV7qit5Zip3qwt0bj6HNRhwz3W4A7NNTMDseMuBurSHIh
-         Bq5zU9Jhl+TIhwMZxTu54KXaSAJBgQ7EO0rlKovsvvjtEkJQVS5WtDjN8c7XUwDIqgWV
-         CP5Q==
-X-Gm-Message-State: AAQBX9clS9CAXwzE5VW4mig09HD3eR8OpSiGXseUv7AuXtbKBHAkkRQb
-        PageeyvZ5yTMw4q1cWArXOQ=
-X-Google-Smtp-Source: AKy350YobFSql6y5w6aBkEfFAhUb73JVMETAlJE/nTM985uHF9JUmaTDpo3tkrptRNRJu+kg0DYWlQ==
-X-Received: by 2002:a17:90a:f484:b0:249:6fc1:cd76 with SMTP id bx4-20020a17090af48400b002496fc1cd76mr451011pjb.43.1681968000378;
-        Wed, 19 Apr 2023 22:20:00 -0700 (PDT)
+        bh=5usMpMDqVoc+ecsOtKE0Gtse+UU2DDnssjHsHE2rpV0=;
+        b=LkyB3dJ+gj9yx+K78aMVzF2gmjoX9OOrT67a1/lf5rgkRXwOWXyTt6WfRKs5buS6KR
+         6iOB3sG1mQYjyk+8vjhSFmPTNOGyw2O06zi1gJT1il340kGNlSG/eph/wnPqrlBG6v+W
+         tL53n9Fr3z9lFTHi1rcj1vJKCDL8cimQGMDGCa4L4Qg+Dm1dPALjm+hedD4MKJrA1UBB
+         8BzScgre2Xs5Yx97iNbIwUa3kSp0AdpWH0DaB3bcsUG0MlIlijAEpnu3vBipdgGg4/Sf
+         baJcGcQXuZ2XfyqP48Z2ZTek+nruaeEz5yV1snQUXGK42nMQ/NaWGAXFLV46qO90oZnR
+         1Utw==
+X-Gm-Message-State: AAQBX9cbWBaBTuHdIt0gzckPS8wWBRABryNLaJzUuo99l0zDvAyjADLr
+        8sswotkyW2RZXsrYf1PHp8I=
+X-Google-Smtp-Source: AKy350ZLX/cyqSBWzXE4XimpTZQpxiv+d9PhS6FwmYV5K0k7VFzQCqizXvgPPsjRknrgkYMSCpMY5Q==
+X-Received: by 2002:a05:6a20:8e13:b0:f1:bea6:a319 with SMTP id y19-20020a056a208e1300b000f1bea6a319mr548168pzj.25.1681968002080;
+        Wed, 19 Apr 2023 22:20:02 -0700 (PDT)
 Received: from localhost ([2603:3024:e02:8500:653b:861d:e1ca:16ac])
-        by smtp.gmail.com with ESMTPSA id u10-20020a63234a000000b0050be8e0b94csm264166pgm.90.2023.04.19.22.19.59
+        by smtp.gmail.com with ESMTPSA id m11-20020a63580b000000b0051322a5aa64sm295875pgb.3.2023.04.19.22.20.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Apr 2023 22:19:59 -0700 (PDT)
+        Wed, 19 Apr 2023 22:20:01 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -75,9 +75,9 @@ Cc:     Yury Norov <yury.norov@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Heiko Carstens <hca@linux.ibm.com>,
         Barry Song <baohua@kernel.org>
-Subject: [PATCH v2 5/8] lib/cpumask: update comment to cpumask_local_spread()
-Date:   Wed, 19 Apr 2023 22:19:43 -0700
-Message-Id: <20230420051946.7463-6-yury.norov@gmail.com>
+Subject: [PATCH v2 6/8] sched/topology: export sched_domains_numa_levels
+Date:   Wed, 19 Apr 2023 22:19:44 -0700
+Message-Id: <20230420051946.7463-7-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230420051946.7463-1-yury.norov@gmail.com>
 References: <20230420051946.7463-1-yury.norov@gmail.com>
@@ -93,33 +93,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have a for_each_numa_cpu(), which is a more straightforward
-replacement to the cpumask_local_spread() when it comes to enumeration
-of CPUs with respect to NUMA topology, it's worth to update the comment.
+The following patch adds a test for NUMA-aware CPU enumerators, and it
+requires an access to sched_domains_numa_levels.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- lib/cpumask.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ include/linux/topology.h |  7 +++++++
+ kernel/sched/topology.c  | 10 ++++++----
+ 2 files changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/lib/cpumask.c b/lib/cpumask.c
-index e7258836b60b..151d1dc5c593 100644
---- a/lib/cpumask.c
-+++ b/lib/cpumask.c
-@@ -127,11 +127,8 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
-  *
-  * There's a better alternative based on for_each()-like iterators:
-  *
-- *	for_each_numa_hop_mask(mask, node) {
-- *		for_each_cpu_andnot(cpu, mask, prev)
-- *			do_something(cpu);
-- *		prev = mask;
-- *	}
-+ *	for_each_numa_cpu(cpu, hop, node, cpu_online_mask)
-+ *		do_something(cpu);
-  *
-  * It's simpler and more verbose than above. Complexity of iterator-based
-  * enumeration is O(sched_domains_numa_levels * nr_cpu_ids), while
+diff --git a/include/linux/topology.h b/include/linux/topology.h
+index 01fb3a55d7ce..7ebcc886dc76 100644
+--- a/include/linux/topology.h
++++ b/include/linux/topology.h
+@@ -43,6 +43,13 @@
+ 	for_each_online_node(node)			\
+ 		if (nr_cpus_node(node))
+ 
++#ifdef CONFIG_NUMA
++extern int __sched_domains_numa_levels;
++#define sched_domains_numa_levels ((const int)__sched_domains_numa_levels)
++#else
++#define sched_domains_numa_levels (1)
++#endif
++
+ int arch_update_cpu_topology(void);
+ 
+ /* Conform to ACPI 2.0 SLIT distance definitions */
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index fc163e4181e6..56daa279c411 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -1508,7 +1508,9 @@ static void claim_allocations(int cpu, struct sched_domain *sd)
+ #ifdef CONFIG_NUMA
+ enum numa_topology_type sched_numa_topology_type;
+ 
+-static int			sched_domains_numa_levels;
++int				__sched_domains_numa_levels;
++EXPORT_SYMBOL_GPL(__sched_domains_numa_levels);
++
+ static int			sched_domains_curr_level;
+ 
+ int				sched_max_numa_distance;
+@@ -1872,7 +1874,7 @@ void sched_init_numa(int offline_node)
+ 	 *
+ 	 * We reset it to 'nr_levels' at the end of this function.
+ 	 */
+-	sched_domains_numa_levels = 0;
++	__sched_domains_numa_levels = 0;
+ 
+ 	masks = kzalloc(sizeof(void *) * nr_levels, GFP_KERNEL);
+ 	if (!masks)
+@@ -1948,7 +1950,7 @@ void sched_init_numa(int offline_node)
+ 	sched_domain_topology_saved = sched_domain_topology;
+ 	sched_domain_topology = tl;
+ 
+-	sched_domains_numa_levels = nr_levels;
++	__sched_domains_numa_levels = nr_levels;
+ 	WRITE_ONCE(sched_max_numa_distance, sched_domains_numa_distance[nr_levels - 1]);
+ 
+ 	init_numa_topology_type(offline_node);
+@@ -1961,7 +1963,7 @@ static void sched_reset_numa(void)
+ 	struct cpumask ***masks;
+ 
+ 	nr_levels = sched_domains_numa_levels;
+-	sched_domains_numa_levels = 0;
++	__sched_domains_numa_levels = 0;
+ 	sched_max_numa_distance = 0;
+ 	sched_numa_topology_type = NUMA_DIRECT;
+ 	distances = sched_domains_numa_distance;
 -- 
 2.34.1
 
