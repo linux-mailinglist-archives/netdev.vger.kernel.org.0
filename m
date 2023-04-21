@@ -2,115 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3466C6EAE08
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 17:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23FB66EAE1A
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 17:35:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232674AbjDUP1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 11:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59286 "EHLO
+        id S232397AbjDUPfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 11:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232496AbjDUP1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 11:27:49 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD39BB89
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 08:27:46 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id 4fb4d7f45d1cf-5050491cb04so2669410a12.0
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 08:27:46 -0700 (PDT)
+        with ESMTP id S229935AbjDUPfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 11:35:07 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2137.outbound.protection.outlook.com [40.107.93.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00D2527B
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 08:35:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AWbRcvW/r/ccfvSnphS1mhJzyWG3+PQ/oUODnOdXnHXhBbdXDwU0RywR5UWFgyp7o12AVtHy0GoqiUqelM10zHIo9NxUUF2jfeBgEAA8f4RNfdyvsWi2JgUUEtPHrtZT5/hdZx+mFOdFWWrDd9NW7c+aeoTU/PJ7hG6UZ6aqU94VN7+5v1WXX237ONNDj6nqw9wU6JeG7LwuNjOHEtR0K9u1CDUfwlGY21P+mpYpX5FOAu4SMDH51PbeyAPRhNb1Wpkcbw8IjLSAws0DCq9ixn2O62QKA96pSnNiA2C3EeyChv99e+LPfvISXX/wgN44+C7IulZ0GD+NSalyRJvniA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3vOjo2/XWnqzUljGxlmIDZBf2FsVttd65iDat/mrlO0=;
+ b=WacrPMFs6/3j15nJyuqq+4W9KG7pfxeYATkno9CVEi5Igw6LZXxBOIbwvfata9PoRb/WnmmrCZHCRWqo1QLgGZu+W/bIzeTeYEJ+FaL5ksfhSXEUUqFnD5tbweBK/AkVgVWNdqtLdW1yTWsgXFIkKMOkcjLAm0KUvZTgX7trVzat9kPWpgo95vba9UXtRsuLpxzqga20fYA1omJPxFxtmBIgDXvH/QroX8HNEAMgAJ0muH0TF7raWQNY2U2XFgLX9NxVN5MInJTD1w1AJC3ak7Q80IFYnWuHcfPmFBANDgB1WqPbNMwy/dbk/8rrZIcI1uchgim/7g5dmJ8N5edEjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1682090865; x=1684682865;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=gx5GxGtrrjOAGUdwY+1Co2nSlcyUyAY3EIxCkRgyP34=;
-        b=PxSombqCkAsg664VeNNmDxvmdjYf4dVj/5vyCqT9TwatG1st3eDRZnY9a5R4md+08R
-         Wlj29tQkP0zchjP27MtI4tzvWqid3espmDxOLkS0u8O6ChXIbmPMFUBTkEXVXwV9/2rO
-         G2km4+cC+4xjckG50ka0axJFD8eDMEfWiG8fo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682090865; x=1684682865;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gx5GxGtrrjOAGUdwY+1Co2nSlcyUyAY3EIxCkRgyP34=;
-        b=NhaXpJeTNxtcKfMrhEOcIIjwpguyxcMPbv8RdJ6XOjws3mYC1kMxRAR1avne9I+NQP
-         SmUpS3lRAKqJ2oxCSx2lhgoLSEgYzzOxE9e6qh4AH0xUtwb6IMAfol/h9x+sHKXHoMKp
-         xGh89Om2JhTGwrwct1ATg052Aiap69iLVf2qP1PBnSpuBySYpgsiMSNvjHYibbpXp6dH
-         bqzVm+nMp1ZY72GdLurU+fgQFDO+qvOKqKv1orPC+HIjeBZN26ybUr09VlaqzTNB7QEW
-         NT+NvcGtsifm//6TwJoxaoV7WIDRaXuAg9MSXWPACp385D6YxyCu55uagjDxCWb6vnnv
-         onbA==
-X-Gm-Message-State: AAQBX9cnuSbUdhRBE7PH8b3f/VeW7wxKvt7XdEYiF+mdiDX/oySQvtvt
-        SsN47SrgeL9z814t6o9yGlJ9e2yvqJbKYDsKeGnf0Q==
-X-Google-Smtp-Source: AKy350Y68zZjWdPdSC6TpDMd7z4/NcQ7/qcne2yDz4AxGzEmekWkM42mEM6MlU1Eb30cHq26JDtT+nSbORqAIO55DgA=
-X-Received: by 2002:aa7:d81a:0:b0:504:98f1:464c with SMTP id
- v26-20020aa7d81a000000b0050498f1464cmr5176775edq.23.1682090865240; Fri, 21
- Apr 2023 08:27:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230406130205.49996-2-kal.conley@dectris.com>
- <87sfdckgaa.fsf@toke.dk> <ZDBEng1KEEG5lOA6@boxer> <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
- <875ya12phx.fsf@toke.dk> <CAHApi-=rMHt7uR8Sw1Vw+MHDrtkyt=jSvTvwz8XKV7SEb01CmQ@mail.gmail.com>
- <87ile011kz.fsf@toke.dk> <CAHApi-=ODe-WtJ=m6bycQhKoQxb+kk2Yk9Fx5SgBsWUuWT_u-A@mail.gmail.com>
- <874jpdwl45.fsf@toke.dk> <CAHApi-kcaMRPj4mEPs87_4Z6iO5qEpzOOcbVza7vxURqCtpz=Q@mail.gmail.com>
- <ZEJZYa8WT6A9VpOJ@boxer>
-In-Reply-To: <ZEJZYa8WT6A9VpOJ@boxer>
-From:   Kal Cutter Conley <kal.conley@dectris.com>
-Date:   Fri, 21 Apr 2023 17:27:33 +0200
-Message-ID: <CAHApi-ngO=hYTL449hUuV_b4mAa4NVS6eE5Uya1dZM6fEE7rPA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/3] xsk: Support UMEM chunk_size > PAGE_SIZE
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3vOjo2/XWnqzUljGxlmIDZBf2FsVttd65iDat/mrlO0=;
+ b=PWJyfSl7/Up7Uq1twlh85LJAFXUJa+LAYzRYYp0O0CZ8f0oeakzVA24o5BvLuNaLDGlkRilQM9YupHlwWoR1G3s5tyjb3feIk1/s8mEaPu/AQ7r+dwAGoO90pzbZgwvNw0Qaa4en48Cq8Q9zk8c/ZajG/j7jUVCICU5A9QzdcgM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SJ0PR13MB5383.namprd13.prod.outlook.com (2603:10b6:a03:3d7::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Fri, 21 Apr
+ 2023 15:35:01 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%4]) with mapi id 15.20.6319.022; Fri, 21 Apr 2023
+ 15:35:00 +0000
+Date:   Fri, 21 Apr 2023 17:34:53 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     =?utf-8?B?UmFtw7Nu?= Nordin Rodriguez 
+        <ramon.nordin.rodriguez@ferroamp.se>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH v4] drivers/net/phy: add driver for Microchip LAN867x
+ 10BASE-T1S PHY
+Message-ID: <ZEKtHbO+gPcakNur@corigine.com>
+References: <ZEFqFg9RO+Vsj8Kv@debian>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ZEFqFg9RO+Vsj8Kv@debian>
+X-ClientProxiedBy: AM4PR0902CA0001.eurprd09.prod.outlook.com
+ (2603:10a6:200:9b::11) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5383:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2fb78cf4-915d-49ce-c0e9-08db427df817
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dD7dtNZfA/W+RO+ct6cmLuEDrW6lbOfIKelTzkPnKwu/uZaKgpkWXFhovgqOX5HQCq9tYg458R7ousys5w7SXYmigdd6bkfIUG/IKjqfceN+yn8G9ThX3CrhwMprqIrf6a1ZV5VFOT+zgF87sBH/OBqRxKs4DvkHovphjGp63NM+T6wgxB5+gTAUpmoY/H0aoMtp4OC6tVUqtbMAc54uHIsjLVKa2dW7d06QOHrdOPM4V1wAacRxusWbZ0ytoMX7Bl10izWxmyvQOfzts/S8rF45Ev95F9iR8WSMXZOe3ajEseF/DxN0R9k2wZsrbgBcFrfMY4Bx0JXY7raz5Ja3CvuXjjJDHomvYyw8XcGwUZbY97QajUoJzceYmVc/8NxWZb7POerP8ETX/ZH107IT//RnmyleY07bl5iCR+MLmgO/2Mdayod7nInCwhtHeVWr3frfilNV1ACzX5DkYMEC/I92AzSJ/u4hSeXOgjLTqz5OGytH8gj7ZWVM3o7x6tv+GWi0dqvBgRM6ZoF3XjG91liRyGubr93fMvC5mY8zaju99GZNL5dCfMvyICuOgVqaTJkCZQMYFUjKbzjJMBfMp2lvGI6xC6DB/KDTVVLelSVGCOr/GfDVcc6jsa3jwBUCdXx2oQAXbPI413Z6k1zFtCulyFUvK320CPKqE8P+1cE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(396003)(376002)(39840400004)(366004)(136003)(451199021)(38100700002)(66574015)(83380400001)(2906002)(86362001)(2616005)(6512007)(186003)(6506007)(44832011)(6486002)(7416002)(66476007)(66556008)(6916009)(66946007)(478600001)(6666004)(36756003)(316002)(4326008)(5660300002)(54906003)(8936002)(41300700001)(8676002)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZlVtdGtXSDZqRkEvNjJEY2I4MWdNcEhHWVV3ZTY3S2ZhNzZwZWdMWEpKcUE0?=
+ =?utf-8?B?Z0VIeVJKc0Q2aCttSzJ6TUJSbWtvaXYzTW03blBaQVlFQWE0OURaMDFwNlhq?=
+ =?utf-8?B?eG96ZTZCSURLMUdyYnNLcVBhMlNPR3prbGxMUlUyTW9OejRrUnh2UzBQVy9D?=
+ =?utf-8?B?cW5CQ1JWdXF1K1kxNGYxcjQyT2tQNzJDV05xNUdWZk9zZGM0eDN2UCtjblVh?=
+ =?utf-8?B?aE00YXczVDljMUd0T1YvMlY2MzREc3cxOHJTMlhKMW81R3ZUekNnUW5iLzFj?=
+ =?utf-8?B?dm5QZncyRlBGY3Noekt3UmlPdW9tV2szN0NSZ0tqc0UxOUwvLzFjOTZkTUF2?=
+ =?utf-8?B?aGh1K20xRC8xNUc2cjNrRG1vN2Y5RW56ejBTTy93WEw1RDZrZ3crUDdNa2VJ?=
+ =?utf-8?B?UVRhcmxBV0JmNUVwTjlzVkVsUjNIajl2NjRYcm45SlZWdTRNdk12YTEwMVpW?=
+ =?utf-8?B?T3g1ek9IU0M5Y3JSbmNuZlZjL0wxVEUyZHBhb0F6RCtGTjc2YWF0aDMwMkJr?=
+ =?utf-8?B?eGJuL3ArT2VldEc3QlZiYmp2dEJwNjF3UTVmQUpCMmw3UVpRWUVrVitLdzNL?=
+ =?utf-8?B?amlnbUd6R1I3SHBlOHNjSkVvSVM0dG9mRG4zOXJFRDAvSDZrVW5HbFZYR3Ey?=
+ =?utf-8?B?Nk1CenNrVmFYczUzYUl2NDFNeFpIUjdzQ0xtY2RuNmNwRFFrZnFXQis1RXox?=
+ =?utf-8?B?TnYxVGJlR0FWWkJybkJIMnBOOEIvZjBhUkQ2L2lwa1RuWnVZRW1IKy82ZE9R?=
+ =?utf-8?B?YXlBNjFKWXZCb2lEMVpPcTdSSDRZczR4MUJubGJyRlJxK2xCZDBnYkRhVU81?=
+ =?utf-8?B?SVloUE4zR0dSV3dwQ1hpakZnVUU4SUxha2E3bW1VZW9vM0ZoeThHdEVhVG1C?=
+ =?utf-8?B?VGdyTFlLeVNyank2K3NEMXlMMnNYaTRBUHVNMVJXK0FpOVE0dTU4TmNndFY3?=
+ =?utf-8?B?ejJmYUNOcCsrQzhJSXk3OXhLVGlXSk5weEJEK1ljMWJ1RDVNWjBicmQ4K25V?=
+ =?utf-8?B?c29BSGx3VkZmbTRpMVNQdjZ1REhMbU51VnBjY2k4YmYxMDV2anF3TmdrYmJp?=
+ =?utf-8?B?eFVNcGhXR0dIajhpcVVWMVd6U3RYZzJNNFdkdXV5QWNtaTdwcWtLdDFnbFZL?=
+ =?utf-8?B?bXF3M09VYnlYWjlkblJIVk0yMmd1TWdTSlRHUEQzTVR0UVJNcXU5TjVma1Ux?=
+ =?utf-8?B?MHFoL09CVEVUa2psSEN0NWlrZGVFWXN1NFc2T0ZIMXlSdW9IVlZjK1B6L0s2?=
+ =?utf-8?B?SUJjRVJTK3oyd3d6Y05ibUxpdVUxdWFuelJyRC93d0VqOHNEbndEVnNHVkMz?=
+ =?utf-8?B?MHJOUDZNR2xNNlE1L2p4RHYvbzF2Y1YxdFVRcmtBZllEOExCVDQwYW4yUnZH?=
+ =?utf-8?B?VUFUa2hBNUpFSVFtd2JCM0FGSmpMK0NuYkQ2dHFITlV0QU1aZk9DQ1A3MXg2?=
+ =?utf-8?B?SHBuMThrdFVlNXN6YjR0T1RGbHpTQTFRRlZVRFU3NDJPaml2dG5vYklRdjVi?=
+ =?utf-8?B?bjFLUzNmamwva3BqckQ2dG9KbFlacURpUG4xOERudkZEdW92L1loVDhONTBk?=
+ =?utf-8?B?K0QvYksreUVPL2lmY1huWFIzajQ2L2JtWWJweWthS2RvWW1rNDhEOXB6bjd2?=
+ =?utf-8?B?aFFRcFhZOVhYaXF6Q2ZOenF5eGNvbzlrdGN5NTV3YVh0VjhUblZrZUhWVXBK?=
+ =?utf-8?B?ZTFxVGh3ellUU0MyT3hBTm9oVUhIT25YSXphTkhWREtYc1ZhRy9lSzJxNE5N?=
+ =?utf-8?B?ZnExNm4ybG42QmhFTEpCTUg1NTlBZUVFQUlMWG02angrbENwR2FLTmlVTERJ?=
+ =?utf-8?B?YzdCdEowYU9KQTR1RUVMaWhibFAwc2pNcm1IS3VlUytJY083ek1GMWpLUlhw?=
+ =?utf-8?B?VTVIZFU1Y3lVamh0bjhiemxSZWdVR283WVZKQnlUbklTVW9sRWJSYXJwVTRI?=
+ =?utf-8?B?MXhyaTlnYW5DTE1EYUUzZGY2QnBRZ3NXelFuTXNiOFQ1VFNHVEZkSERwbXZL?=
+ =?utf-8?B?Rk1oa3RNdnJCanh1N1FtbEN3UUtNeDFGUTlmTU9CNmdLNjlJV3VkYmxSQnBC?=
+ =?utf-8?B?TjIzbit1MTd4dXFTSE1GS3lkZ2ZBTlN0NlYrMEs2OWdpRit4VThQa01GYkZB?=
+ =?utf-8?B?cXAxY2pUTlZZMUg0NWxXMTNGNVF4bGEvRXB3Z3dqOEIyb2pQblBVLzJzSGJZ?=
+ =?utf-8?B?RUhYTjFYRFYzbklldnR1RFJ2MDZqNU9pYUFKOVdnczJrdE5qRVE4NUZ1OGx4?=
+ =?utf-8?B?SHdGRVFOZzB2cWI4ZkhEVXhuYmlBPT0=?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2fb78cf4-915d-49ce-c0e9-08db427df817
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2023 15:35:00.6879
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6oQ0u5n82xwI4j5OTc/1a2uOPdyZIUFqfQNgeP+7jlzVFul2Hx4DV/2iPsC4+MRRrYt2iwBUeCGGqYWawplRoZ6wd/gKYbsYPdgYDivngmw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5383
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Here is the comparison between multi-buffer and jumbo frames that I did
-> for ZC ice driver. Configured MTU was 8192 as this is the frame size for
-> aligned mode when working with huge pages. I am presenting plain numbers
-> over here from xdpsock.
->
-> Mbuf, packet size = 8192 - XDP_PACKET_HEADROOM
-> 885,705pps - rxdrop frame_size=4096
-> 806,307pps - l2fwd frame_size=4096
-> 877,989pps - rxdrop frame_size=2048
-> 773,331pps - l2fwd frame_size=2048
->
-> Jumbo, packet size = 8192 - XDP_PACKET_HEADROOM
-> 893,530pps - rxdrop frame_size=8192
-> 841,860pps - l2fwd frame_size=8192
+On Thu, Apr 20, 2023 at 06:36:38PM +0200, Ramón Nordin Rodriguez wrote:
+> This patch adds support for the Microchip LAN867x 10BASE-T1S family
+> (LAN8670/1/2). The driver supports P2MP with PLCA.
+> 
+> Signed-off-by: Ramón Nordin Rodriguez <ramon.nordin.rodriguez@ferroamp.se>
 
-Thanks so much for sharing these initial results! Do you have similar
-measurements for ~9000 byte packets in unaligned mode? We typically
-receive packets larger than 8192 bytes.
+...
 
->
-> Kal might say that multi-buffer numbers are imaginary as these patches
-> were never shown to the public ;) but now that we have extensive test
-> suite I am fixing some last issues that stand out, so we are asking for
-> some more patience over here... overall i was expecting that they will be
-> much worse when compared to jumbo frames, but then again i believe this
-> implementation is not ideal and can be improved. Nevertheless, jumbo
-> frames support has its value.
+> +static int lan867x_config_init(struct phy_device *phydev)
+> +{
+> +	/* HW quirk: Microchip states in the application note (AN1699) for the phy
+> +	 * that a set of read-modify-write (rmw) operations has to be performed
+> +	 * on a set of seemingly magic registers.
+> +	 * The result of these operations is just described as 'optimal performance'
+> +	 * Microchip gives no explanation as to what these mmd regs do,
+> +	 * in fact they are marked as reserved in the datasheet.
+> +	 * It is unclear if phy_modify_mmd would be safe to use or if a write
+> +	 * really has to happen to each register.
+> +	 * In order to exacly conform to what is stated in the AN phy_write_mmd is
 
-You made me chuckle ;-) Any measurements people can provide are
-helpful, even if they must be taken with a grain of salt. ;-). How
-much of your test suite can be upstreamed in the future? My assumption
-was the difference should be measurable, at least you have confirmed
-that. :-)
+nit: s/exacly/exactly/
+
+> +	 * used, which might then write the same value back as read + modified.
+> +	 */
+
+...
