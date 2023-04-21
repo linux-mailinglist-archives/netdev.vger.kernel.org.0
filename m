@@ -2,157 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76CED6EA505
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAF856EA51C
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:43:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229451AbjDUHjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 03:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48376 "EHLO
+        id S231320AbjDUHnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 03:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbjDUHjV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:39:21 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919F393C2;
-        Fri, 21 Apr 2023 00:39:07 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id D6E4F1FDDB;
-        Fri, 21 Apr 2023 07:39:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1682062745; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SW/BafQPTgaGXLW01L/Le1hsXVIB2LKcUVfRqpb3Xc8=;
-        b=jH+MV53ySUGWpcyc017NVY4EGdbvHoiylIZ7T0UG/mJR/Zqxq+VAJ+/S4xhM7JVmGz65iv
-        sM/cdTfzCW32JwMzoYOTAJk6xMH7bF1tNFEkXGaur5gLiLvfjZVtnUlIoG58rVDMUton5e
-        9NKjlyAEBFLeZZhImeHfSjCld7/q3e8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1682062745;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SW/BafQPTgaGXLW01L/Le1hsXVIB2LKcUVfRqpb3Xc8=;
-        b=NKeSGXGa/D7a0vlQYkmKcFNoeEedpJvnDVX8ZuXIJGAVLRCRTaUfm1HrloDhRwfrnftOos
-        3iAcpTphvwv8X2Dw==
-Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 4FBEC2C141;
-        Fri, 21 Apr 2023 07:39:05 +0000 (UTC)
-Date:   Fri, 21 Apr 2023 09:39:04 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexander Lobakin <aleksander.lobakin@intel.com>,
-        Alexander Lobakin <alobakin@mailbox.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 bpf 02/11] bpftool: define a local bpf_perf_link to
- fix accessing its fields
-Message-ID: <20230421073904.GJ15906@kitsune.suse.cz>
-References: <20220421003152.339542-1-alobakin@pm.me>
- <20220421003152.339542-3-alobakin@pm.me>
- <20230414095457.GG63923@kunlun.suse.cz>
- <9952dc32-f464-c85a-d812-946d6b0ac734@intel.com>
- <20230414162821.GK63923@kunlun.suse.cz>
- <CAEf4BzYx=dSXp-TkpjzyhSP+9WY71uR4Xq4Um5YzerbfOtJOfA@mail.gmail.com>
+        with ESMTP id S231262AbjDUHnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:43:18 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733C54208
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 00:43:16 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id a640c23a62f3a-95316faa3a8so216466966b.2
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 00:43:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1682062995; x=1684654995;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=IQ6tUNbQr0gBTZA8iuY2w84kK0dZFD9Zeb92jq9bHGQ=;
+        b=ul4pLogaDSm78AOEkl8Y4mu/tlwH26o5ejyYE/ug97QoM6QB3I1ofVBePog+mssOKO
+         5Bgu2Y/pG1i04Mt3a3g1HFK8K0A4+CIcPIHzzxggbu6reKbeSmfxwDvNG8CNOir8mpYJ
+         MePMlIsvW09b5Gdbujr/ViLA6R2JD2/7EnXAQOGDQnLWHRUP9c6h7aWOdjxhRXnjnzQ+
+         InYdNxfoC5cEql5U1FW8vBF4Tt6Fj944dSnrZC8LJwn6yZjQugUWwkTKeLGGaHBkqh3k
+         hByyxBFLjAl72vQuSo2+bi/zkbZg0Oq2OvqAEcVkJLolDiDhR3QE5EcXIZvoTizgqBHi
+         Tvfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682062995; x=1684654995;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=IQ6tUNbQr0gBTZA8iuY2w84kK0dZFD9Zeb92jq9bHGQ=;
+        b=HQJYi4i+YrS/0P0Ab3uA/nxc0gW9w8Lc5CfyHEIWqqiJ2snxgHFb1yO0NJrlPVmAXP
+         P0Sv2d1DBr19mMEQK97jrr3cR1jpkt6+16MKoGxipdlNTq2PrOrYusAw/gJngbiZGq89
+         zHkwEluwe758vRpuWvbL5oO5dhE5dAn/uVu0tanI/LKLnn1g4q6gw0C+AlkeZWZYmHRw
+         /Uj1uc4xFUKVfnoCywKzK80gdN5iaJkPrm9aItfbbfTTBwuJg9xXny1rHyS8jwUiMU2O
+         YnQqW5n2+HVBqSXFT0HN5LdBNsDqDgNqCNamGTc6Bk2eBWX7xeXcyV2S0JuQ9UVoTdN5
+         Z8rw==
+X-Gm-Message-State: AAQBX9c626JFKxjhIQRehkisPcTR6uRZSwMrq3HBj03CnowBo8FeWAN5
+        R9DgVi+CRmco7/OUcASE90KgBQ==
+X-Google-Smtp-Source: AKy350aB4v+mwockIVyi4LYQnDA/uLM4PrpP01lJrsoDu5tBp6jBJgvZthlEM6bEjpFzS2B+3m6Rlw==
+X-Received: by 2002:a17:906:6a16:b0:8aa:c090:a9ef with SMTP id qw22-20020a1709066a1600b008aac090a9efmr1518820ejc.55.1682062994984;
+        Fri, 21 Apr 2023 00:43:14 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:668b:1e57:3caa:4d06? ([2a02:810d:15c0:828:668b:1e57:3caa:4d06])
+        by smtp.gmail.com with ESMTPSA id pv4-20020a170907208400b0094f49f58019sm1720848ejb.27.2023.04.21.00.43.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Apr 2023 00:43:14 -0700 (PDT)
+Message-ID: <fa21a112-5331-7166-32ab-e3d314d80272@linaro.org>
+Date:   Fri, 21 Apr 2023 09:43:13 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAEf4BzYx=dSXp-TkpjzyhSP+9WY71uR4Xq4Um5YzerbfOtJOfA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v3 3/3] dt-bindings: net: marvell,pp2: add extts docs
+Content-Language: en-US
+To:     Shmuel Hazan <shmuel.h@siklu.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Marcin Wojtas <mw@semihalf.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        horatiu.vultur@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org
+References: <20230419151457.22411-1-shmuel.h@siklu.com>
+ <20230419151457.22411-4-shmuel.h@siklu.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230419151457.22411-4-shmuel.h@siklu.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 04:07:38PM -0700, Andrii Nakryiko wrote:
-> On Fri, Apr 14, 2023 at 9:28 AM Michal Suchánek <msuchanek@suse.de> wrote:
-> >
-> > On Fri, Apr 14, 2023 at 05:18:27PM +0200, Alexander Lobakin wrote:
-> > > From: Michal Suchánek <msuchanek@suse.de>
-> > > Date: Fri, 14 Apr 2023 11:54:57 +0200
-> > >
-> > > > Hello,
-> > >
-> > > Hey-hey,
-> > >
-> > > >
-> > > > On Thu, Apr 21, 2022 at 12:38:58AM +0000, Alexander Lobakin wrote:
-> > > >> When building bpftool with !CONFIG_PERF_EVENTS:
-> > > >>
-> > > >> skeleton/pid_iter.bpf.c:47:14: error: incomplete definition of type 'struct bpf_perf_link'
-> > > >>         perf_link = container_of(link, struct bpf_perf_link, link);
-> > > >>                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > >> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:74:22: note: expanded from macro 'container_of'
-> > > >>                 ((type *)(__mptr - offsetof(type, member)));    \
-> > > >>                                    ^~~~~~~~~~~~~~~~~~~~~~
-> > > >> tools/bpf/bpftool/bootstrap/libbpf/include/bpf/bpf_helpers.h:68:60: note: expanded from macro 'offsetof'
-> > > >>  #define offsetof(TYPE, MEMBER)  ((unsigned long)&((TYPE *)0)->MEMBER)
-> > > >>                                                   ~~~~~~~~~~~^
-> > > >> skeleton/pid_iter.bpf.c:44:9: note: forward declaration of 'struct bpf_perf_link'
-> > > >>         struct bpf_perf_link *perf_link;
-> > > >>                ^
-> > > >>
-> > > >> &bpf_perf_link is being defined and used only under the ifdef.
-> > > >> Define struct bpf_perf_link___local with the `preserve_access_index`
-> > > >> attribute inside the pid_iter BPF prog to allow compiling on any
-> > > >> configs. CO-RE will substitute it with the real struct bpf_perf_link
-> > > >> accesses later on.
-> > > >> container_of() is not CO-REd, but it is a noop for
-> > > >> bpf_perf_link <-> bpf_link and the local copy is a full mirror of
-> > > >> the original structure.
-> > > >>
-> > > >> Fixes: cbdaf71f7e65 ("bpftool: Add bpf_cookie to link output")
-> > > >
-> > > > This does not solve the problem completely. Kernels that don't have
-> > > > CONFIG_PERF_EVENTS in the first place are also missing the enum value
-> > > > BPF_LINK_TYPE_PERF_EVENT which is used as the condition for handling the
-> > > > cookie.
-> > >
-> > > Sorry, I haven't been working with my home/private stuff for more than a
-> > > year already. I may get back to it some day when I'm tired of Lua (curse
-> > > words, sorry :D), but for now the series is "a bit" abandoned.
-> >
-> > This part still appllies and works for me with the caveat that
-> > BPF_LINK_TYPE_PERF_EVENT also needs to be defined.
-> >
-> > > I think there was alternative solution proposed there, which promised to
-> > > be more flexible. But IIRC it also doesn't touch the enum (was it added
-> > > recently? Because it was building just fine a year ago on config without
-> > > perf events).
-> >
-> > It was added in 5.15. Not sure there is a kernel.org LTS kernel usable
-> > for CO-RE that does not have it, technically 5.4 would work if it was
-> > built monolithic, it does not have module BTF, only kernel IIRC.
-> >
-> > Nonetheless, the approach to handling features completely missing in the
-> > running kernel should be figured out one way or another. I would be
-> > surprised if this was the last feature to be added that bpftool needs to
-> > know about.
+On 19/04/2023 17:14, Shmuel Hazan wrote:
+> Add some documentation and example for enabling extts on the marvell
+> mvpp2 TAI.
 > 
-> Are we talking about bpftool built from kernel sources or from Github?
-> Kernel source version should have access to latest UAPI headers and so
-> BPF_LINK_TYPE_PERF_EVENT should be available. Github version, if it
-> doesn't do that already, can use UAPI headers distributed (and used
-> for building) with libbpf through submodule.
+> Signed-off-by: Shmuel Hazan <shmuel.h@siklu.com>
+> ---
 
-It does have a copy of the uapi headers but apparently does not use
-them. Using them directly might cause conflict with vmlinux.h, though.
 
-Thanks
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Michal
+Best regards,
+Krzysztof
+
