@@ -2,224 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D77CB6EB18E
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 20:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DD916EB197
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 20:26:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232666AbjDUSYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 14:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40266 "EHLO
+        id S232848AbjDUS00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 14:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbjDUSYY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 14:24:24 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA6519A;
-        Fri, 21 Apr 2023 11:24:23 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-63b5c4c76aaso1901274b3a.2;
-        Fri, 21 Apr 2023 11:24:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682101462; x=1684693462;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OypLJRTEB5SbxLBh9tKcIDiFO23AVAYc9LxzvH6yqzM=;
-        b=WHuV4wkb9Ov9Uf5JAU4CitMPxP7KBxUhJPjwwGriFuvOl6r9AZaphtmjXhvPh0y/yf
-         07OzEem47p4XybvBedFkd8MuzzDwI8WPr8cM7GX2HVSQzNZKKNSEsJmeRrXw8vpwL4ee
-         ZGQQmsRNaix8T88vJcnlEvbL/5B3iXFg2yILvL/ljkao/Liy8fEu2BuGxK90gDY3jLBa
-         VwF6NB7+4YKLrR3K7dvS03tpoSdWTdirOWA5W3hFPwJdKlS3D3HsDHdmHsXl5nE7YnpZ
-         VrNgUkdf7HN19kfNTwcxn3o4EFzRdP2SNT0Ob+RIp9i9atj8bVc1zNlc81/2UYPSJWK0
-         HTjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682101462; x=1684693462;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OypLJRTEB5SbxLBh9tKcIDiFO23AVAYc9LxzvH6yqzM=;
-        b=MIwOjMG42z8C2PXmZ09VrcFZA4HJikwBrx+GLrdNeDgZoEhHBFNXbXMbofivkYn/RE
-         Vdn0hS1BV2ZPHgdw+vMCacEz2UzmxpBOdQg+ovM3Q+g0gMLGfY7Rj7XXdf235drHdy1a
-         Ur9ViQjU/pwnnHjRtEDQhlGjoq+2lIsyBrfAZ1ogr0Q5F8Qx+LO5kt0C6lh1Q20va8Es
-         l35V3D4AvgP03B4ObyBX4ULi0KVTInWop56E6D3jYMA0gw7S/p/TXWtXK0MDOzCrPmCt
-         IhdcxasF7T+UTif+flOw9AUhv9yS9KC6GR16BXYJQ4eQd2lFWze44mKrmQLUNtLcA4cT
-         +/9g==
-X-Gm-Message-State: AAQBX9erfo9geSVB2lh7DTwlFStdH5C+1ScbKrtnAieJpZdZwxGG+YEr
-        c2J1/RMnEVpFJc+Ytyb7p7CjBRX0nTE=
-X-Google-Smtp-Source: AKy350bdqKhKObaXCm3kR3cZk3swBANng8Vxrne2H7FBqk2E7adQc211wBjk6FVGRCZsd+fI+AvV3g==
-X-Received: by 2002:a05:6a00:814:b0:63c:1be4:5086 with SMTP id m20-20020a056a00081400b0063c1be45086mr8028880pfk.6.1682101462459;
-        Fri, 21 Apr 2023 11:24:22 -0700 (PDT)
-Received: from dhcp-172-26-102-232.dhcp.thefacebook.com ([2620:10d:c090:400::5:ef5e])
-        by smtp.gmail.com with ESMTPSA id c192-20020a621cc9000000b0063d44634d8csm3275518pfc.71.2023.04.21.11.24.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 11:24:21 -0700 (PDT)
-Date:   Fri, 21 Apr 2023 11:24:18 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Feng zhou <zhoufeng.zf@bytedance.com>
-Cc:     martin.lau@linux.dev, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        mykolal@fb.com, shuah@kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, yangzhenze@bytedance.com,
-        wangdongdong.6@bytedance.com
-Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: Add testcase for
- bpf_task_under_cgroup
-Message-ID: <20230421182418.5nvj4mp2vfumtmab@dhcp-172-26-102-232.dhcp.thefacebook.com>
-References: <20230421090403.15515-1-zhoufeng.zf@bytedance.com>
- <20230421090403.15515-3-zhoufeng.zf@bytedance.com>
+        with ESMTP id S229578AbjDUS0Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 14:26:25 -0400
+Received: from sender3-op-o18.zoho.com (sender3-op-o18.zoho.com [136.143.184.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC4819A;
+        Fri, 21 Apr 2023 11:26:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1682101549; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=ds5/t7tB/NXM7HvrlG/DEhVQjQSPN9lS2QcmvahcM/5pTa0KmZEjjAFxJiH4WvXUICPoFmLKgF3CHbdT+f8KaQN+G6y+ekdhd4lXd2uN9mmGnuz7ozKbcRvlUGADaddw6/uALn41InwJ6T+1gVIIqXaDIbCZELLkKNu12ljBTxQ=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1682101549; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=gAERKVRg6pqZtkYAZeOg+BzUO9hWZqA/1cyFdbAA+mw=; 
+        b=WN1nZ0Ht8kq0jdrxnnF+EQwbQ/VnQnIWuGNlQNFLE6kyal2Nyqjye0EUT5TyOOlW1+dRR3GWlHwiTpXhbsYvgvaC4ClC2iOnDpIPAmRHGMil2tN6zX75QQOjckKY1kgxN+p3rT1Auxk/K0sCzWdQ7NdBc07+zFU7F4Eg1yJ+irk=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1682101549;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:From:From:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=gAERKVRg6pqZtkYAZeOg+BzUO9hWZqA/1cyFdbAA+mw=;
+        b=Zo4JC4PDTjErNWz6V6pNir51eG6T2A5En1K4G2Ghzj7dUp/oWkZTk+LE+8PsE5vz
+        tSbQ+zxFcKtclizo4FdjOz8SSOIAwgVSmzoajW/ep7HHo7MX7kkGHrQoQ8CRsL94sCA
+        J2qwKMo3AZ2jZfCRi492/xpMwejx2Ew2D3ebxGcg=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1682101548505326.82901676703693; Fri, 21 Apr 2023 11:25:48 -0700 (PDT)
+Message-ID: <235c80fc-3f1b-a9c9-6364-6f50ee45b21b@arinc9.com>
+Date:   Fri, 21 Apr 2023 21:25:39 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230421090403.15515-3-zhoufeng.zf@bytedance.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [RFC PATCH net-next 08/22] net: dsa: mt7530: change
+ p{5,6}_interface to p{5,6}_configured
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20230421143648.87889-1-arinc.unal@arinc9.com>
+ <20230421143648.87889-9-arinc.unal@arinc9.com>
+ <ZELH2RlYLPjJGx6Y@makrotopia.org>
+ <810aa47b-7007-7d53-9a23-c2d17d43d8a8@arinc9.com>
+ <f1c38c13-a1f6-93d8-90ae-4ea3f7e06dc2@arinc9.com>
+In-Reply-To: <f1c38c13-a1f6-93d8-90ae-4ea3f7e06dc2@arinc9.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 21, 2023 at 05:04:03PM +0800, Feng zhou wrote:
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
-> 
-> test_progs:
-> Tests new kfunc bpf_task_under_cgroup().
-> 
-> The bpf program saves the pid which call the getuid syscall within a
-> given cgroup to the remote_pid, which is convenient for the user-mode
-> program to verify the test correctness.
-> 
-> The user-mode program creates its own mount namespace, and mounts the
-> cgroupsv2 hierarchy in there, call the getuid syscall, then check if
-> remote_pid and local_pid are equal.
-> 
-> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
-> ---
->  .../bpf/prog_tests/task_under_cgroup.c        | 46 +++++++++++++++++++
->  .../selftests/bpf/progs/cgrp_kfunc_common.h   |  1 +
->  .../bpf/progs/test_task_under_cgroup.c        | 40 ++++++++++++++++
->  3 files changed, 87 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c b/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
-> new file mode 100644
-> index 000000000000..bd3deb469938
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
-> @@ -0,0 +1,46 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2023 Bytedance */
-> +
-> +#include <test_progs.h>
-> +#include <cgroup_helpers.h>
-> +#include "test_task_under_cgroup.skel.h"
-> +
-> +#define FOO	"/foo"
-> +
-> +void test_task_under_cgroup(void)
-> +{
-> +	struct test_task_under_cgroup *skel;
-> +	int ret, foo = -1;
-> +
-> +	foo = test__join_cgroup(FOO);
-> +	if (!ASSERT_OK(foo < 0, "cgroup_join_foo"))
-> +		return;
-> +
-> +	skel = test_task_under_cgroup__open();
-> +	if (!ASSERT_OK_PTR(skel, "test_task_under_cgroup__open"))
-> +		goto cleanup;
-> +
-> +	skel->rodata->local_pid = getpid();
-> +	skel->rodata->cgid = get_cgroup_id(FOO);
-> +
-> +	ret = test_task_under_cgroup__load(skel);
-> +	if (!ASSERT_OK(ret, "test_task_under_cgroup__load"))
-> +		goto cleanup;
-> +
-> +	ret = test_task_under_cgroup__attach(skel);
-> +	if (!ASSERT_OK(ret, "test_task_under_cgroup__attach"))
-> +		goto cleanup;
-> +
-> +	syscall(__NR_getuid);
-> +
-> +	test_task_under_cgroup__detach(skel);
-> +
-> +	ASSERT_EQ(skel->bss->remote_pid, skel->rodata->local_pid,
-> +		  "test task_under_cgroup");
-> +
-> +cleanup:
-> +	if (foo)
-> +		close(foo);
 
-Looks wrong. should be if (foo >= 0) ?
 
-> +
-> +	test_task_under_cgroup__destroy(skel);
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/cgrp_kfunc_common.h b/tools/testing/selftests/bpf/progs/cgrp_kfunc_common.h
-> index 22914a70db54..41b3ea231698 100644
-> --- a/tools/testing/selftests/bpf/progs/cgrp_kfunc_common.h
-> +++ b/tools/testing/selftests/bpf/progs/cgrp_kfunc_common.h
-> @@ -26,6 +26,7 @@ struct cgroup *bpf_cgroup_ancestor(struct cgroup *cgrp, int level) __ksym;
->  struct cgroup *bpf_cgroup_from_id(u64 cgid) __ksym;
->  void bpf_rcu_read_lock(void) __ksym;
->  void bpf_rcu_read_unlock(void) __ksym;
-> +int bpf_task_under_cgroup(struct cgroup *cgrp, struct task_struct *task) __ksym;
->  
->  static inline struct __cgrps_kfunc_map_value *cgrps_kfunc_map_value_lookup(struct cgroup *cgrp)
->  {
-> diff --git a/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c b/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
-> new file mode 100644
-> index 000000000000..e2740f9b029d
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
-> @@ -0,0 +1,40 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2023 Bytedance */
-> +
-> +#include <vmlinux.h>
-> +#include <asm/unistd.h>
-> +#include <bpf/bpf_tracing.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +#include "cgrp_kfunc_common.h"
-> +
-> +const volatile int local_pid;
-> +const volatile long cgid;
-> +int remote_pid;
-> +
-> +SEC("tp_btf/sys_enter")
-
-pls narrow down to specific syscall. Like you use in user space part: getuid
-
-Also add this test to denylist.s390. See BPF CI failure.
-
-> +int BPF_PROG(sysenter, struct pt_regs *regs, long id)
-> +{
-> +	struct cgroup *cgrp;
-> +
-> +	if (id != __NR_getuid)
-> +		return 0;
-> +
-> +	if (local_pid != (bpf_get_current_pid_tgid() >> 32))
-> +		return 0;
-> +
-> +	cgrp = bpf_cgroup_from_id(cgid);
-> +	if (!cgrp)
-> +		return 0;
-> +
-> +	if (!bpf_task_under_cgroup(cgrp, bpf_get_current_task_btf()))
-> +		goto out;
-> +
-> +	remote_pid = local_pid;
-> +
-> +out:
-> +	bpf_cgroup_release(cgrp);
-> +	return 0;
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
-> -- 
-> 2.20.1
+On 21.04.2023 21:20, Arınç ÜNAL wrote:
+> On 21.04.2023 21:17, Arınç ÜNAL wrote:
+>> On 21.04.2023 20:28, Daniel Golle wrote:
+>>> On Fri, Apr 21, 2023 at 05:36:34PM +0300, arinc9.unal@gmail.com wrote:
+>>>> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>>>
+>>>> The idea of p5_interface and p6_interface pointers is to prevent
+>>>> mt753x_mac_config() from running twice for MT7531, as it's already 
+>>>> run with
+>>>> mt753x_cpu_port_enable() from mt7531_setup_common(), if the port is 
+>>>> used as
+>>>> a CPU port.
+>>>>
+>>>> Change p5_interface and p6_interface to p5_configured and 
+>>>> p6_configured.
+>>>> Make them boolean.
+>>>>
+>>>> Do not set them for any other reason.
+>>>>
+>>>> The priv->p5_intf_sel check is useless as in this code path, it will 
+>>>> always
+>>>> be P5_INTF_SEL_GMAC5.
+>>>>
+>>>> There was also no need to set priv->p5_interface and 
+>>>> priv->p6_interface to
+>>>> PHY_INTERFACE_MODE_NA on mt7530_setup() and mt7531_setup() as they 
+>>>> would
+>>>> already be set to that when "priv" is allocated. The pointers were 
+>>>> of the
+>>>> phy_interface_t enumeration type, and the first element of the enum is
+>>>> PHY_INTERFACE_MODE_NA. There was nothing in between that would 
+>>>> change this
+>>>> beforehand.
+>>>>
+>>>> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>>
+>>> NACK. This assumes that a user port is configured exactly once.
+>>> However, interface mode may change because of mode-changing PHYs (e.g.
+>>> often using Cisco SGMII for 10M/100M/1000M but using 2500Base-X for
+>>> 2500M, ie. depending on actual link speed).
+>>>
+>>> Also when using SFP modules (which can be hotplugged) the interface
+>>> mode may change after initially setting up the driver, e.g. when SFP
+>>> driver is loaded or a module is plugged or replaced.
+>>
+>> I'm not sure I understand. pX_configured would be set to true only 
+>> when the port is used as a CPU port. mt753x_mac_config() should run 
+>> for user or DSA ports more than once, if needed.
 > 
+> Looking at this again, once pX_interface is true, the check will prevent 
+> even user or DSA ports to be configured again. What about setting 
+> pX_interface to false after mt753x_mac_config() is run?
+
+On a third thought, pX_interface will never be true for the port if it's 
+a user or DSA port so this should not be a problem at all.
+
+Arınç
