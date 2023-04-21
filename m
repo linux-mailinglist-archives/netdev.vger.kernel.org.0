@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F58C6EAD1A
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:38:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1BAE6EAD20
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:38:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232501AbjDUOhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 10:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45252 "EHLO
+        id S232825AbjDUOhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 10:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232411AbjDUOhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:37:11 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D42D13C3D;
-        Fri, 21 Apr 2023 07:36:59 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-506b20efd4cso2886999a12.3;
-        Fri, 21 Apr 2023 07:36:58 -0700 (PDT)
+        with ESMTP id S232192AbjDUOhP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:37:15 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E69313FB2;
+        Fri, 21 Apr 2023 07:37:01 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id 4fb4d7f45d1cf-50506111a6eso3063672a12.1;
+        Fri, 21 Apr 2023 07:37:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682087817; x=1684679817;
+        d=gmail.com; s=20221208; t=1682087819; x=1684679819;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Sx7QT+CfbRJuf7ipyvzI9VLyvr32Uv9zIwCFOCdllC4=;
-        b=KqBupMCSod70Y958ehISGx6H0Hk58VkXRikprYBBIiecgLGS2MTLleCo9SvhmvEkKU
-         jz8vsoBNeqrXcrN/Scju08aE8xCnHKNyPIlAli3EUe30khELo6b869qwOPDjJMGW4WSb
-         Ok5wOYo8sXFwMCJsD50BKU1ISbchY0wIMPXyYBM6hn1lAWrZF9oLi24Y3npmGA6fKixt
-         oP0dEmwcIby2+JVIyKO8PB1MREpqZ6FTmn6woSIsssN1H6QdVXY3MirHpdu/heK45XNT
-         MHqCbJpAG+37GRfLIlTGePKQysSzWtbNtOQoec9KNjm5OpmtW43wlpJa3WZCZ85114/Y
-         LxIg==
+        bh=ky+vCKIfIiAses7wm+VhQnJsA7JRQIkV7aT9O8NnSM4=;
+        b=JkNU3RYgFoSLMWgh/VBkhcwU7mLl8IiDCifX8wVnqze/zgB1CeEZGvERps4u1RBZFE
+         M2R2OUPNjjEvXJA3Or//um/W0YjpmqUvwXxpNRpjytT3INQY8bnvf/3ZUe3Lsfu78XHt
+         0mNJXEdZkn3HLmOF+KmUiyEnYe6x9SVznI7dKN3bunN5qweRKS/o+0VQ7LaWs9HI7Raj
+         4TJD7/iRte+KdeyzVWCPvwSfhB28YqkxaJyHGTZzAs9DLFGqWShrI/ZYXCYzGdRij/LS
+         Hx+7I4uLHvYorXR7XYC691xbyxAlqgpNmoY/78A5bmf5Xd7HTSxjS2JMeblqwtxXZDU/
+         5dGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682087817; x=1684679817;
+        d=1e100.net; s=20221208; t=1682087819; x=1684679819;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Sx7QT+CfbRJuf7ipyvzI9VLyvr32Uv9zIwCFOCdllC4=;
-        b=ElVCOlesKgPMjxTzNmsmYFHj2HefTHVBqF38yR+TfZuSGFIviD1mXPPv1XFXWLfWWU
-         OTJWaTBfx9gIwXFuaycj7rJ5j4QE9TgvOOjMP/VJaT4aKSIVve3HO1EdFT31T+ggr76A
-         auuTYAfkj6rqs7WIxtwbXwYZGtc/4SBAoMDKX9AUwjkU3tGY4O3iYoUtxzYFRRjYysKV
-         0Z7zOKXwZAX80CMd2khb2NzexaolpnAhC2KSflB8g/2tmqki3FzybdJhBIkLfO9Glv4K
-         LCNIqmn4svYibN+w9DvbSeRCLtbJqDL/c1a0k4rIwUWBxn7XHC/dSX5PjU/f4H9luWdq
-         yovw==
-X-Gm-Message-State: AAQBX9eoOJ7EjbPKfgDRfbrJAxO3YoO6BpAAnAt7yHpCV6s0BLwMDepD
-        SkQkleWLElNHajNOtIzKx8s=
-X-Google-Smtp-Source: AKy350bB4/HdrT8woCCbxfnAVBekFnXUuEGFqFUKrXHi90jUUFu7MVJKe0mP9T5GsJvC/eqr454dDg==
-X-Received: by 2002:a17:907:9503:b0:92c:8e4a:1a42 with SMTP id ew3-20020a170907950300b0092c8e4a1a42mr2100787ejc.32.1682087817083;
-        Fri, 21 Apr 2023 07:36:57 -0700 (PDT)
+        bh=ky+vCKIfIiAses7wm+VhQnJsA7JRQIkV7aT9O8NnSM4=;
+        b=dYUUd4O1lLTLkEW1eUdYHngbeOuIqjyQNBB/+UsLYZ5QL0rwGRRCtxG0ZSrxl+DlUx
+         RxKK7awKlCAsmjNKmyZS8P6xLE+SmLOca+XuYtJAJ5UJeGtw/Wp/VdmJylJpCWIGw+r/
+         ihd9qtjrU3eQ0SgsqAKqqM5EMRtZZhuAqnqM9R0qhkfdLPsbbGBSVb928qceFiht+fAh
+         +ARBYH/k+cXdnlRv5Rfxsw+ypzGbP5RRKMrjHTHI0bSxInJnD4+9VH4kIBXh8RI1uGeD
+         N5DreY16W6mBpLVgxrbLgUaTzNkFml+cXPRBAymtAGWX+0iyNrCUbMuNGxSPNgP5hDvD
+         y4aw==
+X-Gm-Message-State: AAQBX9eXWFepiXh1cwbGUYAyu35A/2TfagAeNsqol9XJIgKamHhZ3mj8
+        hpVQF/8n+mW3NNRAAi9sBcY=
+X-Google-Smtp-Source: AKy350ZHGVK6DhQPdnGjNA5o+ZJP/s1xmVPUOGC6O2Hiw050NMaMz7fy8HuE7hXWqtji8iXZX9EFwg==
+X-Received: by 2002:a17:906:114c:b0:94f:3312:3daf with SMTP id i12-20020a170906114c00b0094f33123dafmr2160291eja.66.1682087819307;
+        Fri, 21 Apr 2023 07:36:59 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id q27-20020a170906361b00b0094e1026bc66sm2168244ejb.140.2023.04.21.07.36.54
+        by smtp.gmail.com with ESMTPSA id q27-20020a170906361b00b0094e1026bc66sm2168244ejb.140.2023.04.21.07.36.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 07:36:56 -0700 (PDT)
+        Fri, 21 Apr 2023 07:36:59 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -73,9 +73,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [RFC PATCH net-next 01/22] net: dsa: mt7530: add missing @p5_interface to mt7530_priv description
-Date:   Fri, 21 Apr 2023 17:36:27 +0300
-Message-Id: <20230421143648.87889-2-arinc.unal@arinc9.com>
+Subject: [RFC PATCH net-next 02/22] net: dsa: mt7530: use p5_interface_select as data type for p5_intf_sel
+Date:   Fri, 21 Apr 2023 17:36:28 +0300
+Message-Id: <20230421143648.87889-3-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230421143648.87889-1-arinc.unal@arinc9.com>
 References: <20230421143648.87889-1-arinc.unal@arinc9.com>
@@ -94,28 +94,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Add the missing p5_interface field to the mt7530_priv description. Sort out
-the description in the process.
+Use the p5_interface_select enumeration as the data type for the
+p5_intf_sel field. This ensures p5_intf_sel can only take the values
+defined in the p5_interface_select enumeration.
 
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/mt7530.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 5084f48a8869..845f5dd16d83 100644
+index 845f5dd16d83..703f8a528317 100644
 --- a/drivers/net/dsa/mt7530.h
 +++ b/drivers/net/dsa/mt7530.h
-@@ -746,7 +746,8 @@ struct mt753x_info {
-  * @ports:		Holding the state among ports
-  * @reg_mutex:		The lock for protecting among process accessing
-  *			registers
-- * @p6_interface	Holding the current port 6 interface
-+ * @p6_interface:	Holding the current port 6 interface
-+ * @p5_interface:	Holding the current port 5 interface
-  * @p5_intf_sel:	Holding the current port 5 interface select
-  * @irq:		IRQ number of the switch
-  * @irq_domain:		IRQ domain of the switch irq_chip
+@@ -674,13 +674,13 @@ struct mt7530_port {
+ };
+ 
+ /* Port 5 interface select definitions */
+-enum p5_interface_select {
+-	P5_DISABLED = 0,
++typedef enum {
++	P5_DISABLED,
+ 	P5_INTF_SEL_PHY_P0,
+ 	P5_INTF_SEL_PHY_P4,
+ 	P5_INTF_SEL_GMAC5,
+ 	P5_INTF_SEL_GMAC5_SGMII,
+-};
++} p5_interface_select;
+ 
+ struct mt7530_priv;
+ 
+@@ -768,7 +768,7 @@ struct mt7530_priv {
+ 	bool			mcm;
+ 	phy_interface_t		p6_interface;
+ 	phy_interface_t		p5_interface;
+-	unsigned int		p5_intf_sel;
++	p5_interface_select	p5_intf_sel;
+ 	u8			mirror_rx;
+ 	u8			mirror_tx;
+ 	struct mt7530_port	ports[MT7530_NUM_PORTS];
 -- 
 2.37.2
 
