@@ -2,159 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D65D6EAEBA
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 18:09:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6483C6EAEBD
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 18:09:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230424AbjDUQJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 12:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57846 "EHLO
+        id S232229AbjDUQJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 12:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbjDUQJU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 12:09:20 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7719719B6;
-        Fri, 21 Apr 2023 09:09:19 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-504eb1155d3so13575299a12.1;
-        Fri, 21 Apr 2023 09:09:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682093358; x=1684685358;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L6nFZkGAQHDLDKXsLrnKLoGsBBd86+v29OZnbsaAUD4=;
-        b=qS8C1doa/3nAAHuZjTCqd1z7m0xzFS9xmUFWkSISL6zGj4ub+0hkTzvvWobc4r6jCo
-         77a4KH0OeTPeVuqaZ8hhkjGAQoLZ57jIKBHs2667eQPH7Ue0x7VAIEFlTFyjK5d/3LeX
-         +A/UNPLO+1zdE85D6/lHV7DXgoXikVrM7pgXJXpU22fu5/5dHsxgqk625/CUML6fZA41
-         hlRTJsrfA515dlXAsUJd5zAjFRCRvrdsddUBxEZ2HpLXYD33aHSF3lw+QSL0a5X4kuZT
-         tK23I1TAh4KHt/3lNaMuhtSpal/fi7MxUT+PuFv2hEemck09krJ1dZA7jUQ3B8j6taJV
-         PLPA==
+        with ESMTP id S229632AbjDUQJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 12:09:24 -0400
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4530413C0C;
+        Fri, 21 Apr 2023 09:09:23 -0700 (PDT)
+Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-38e692c0918so1314902b6e.1;
+        Fri, 21 Apr 2023 09:09:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682093358; x=1684685358;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=L6nFZkGAQHDLDKXsLrnKLoGsBBd86+v29OZnbsaAUD4=;
-        b=S1HXjRw6o+sz5jyw+Z5564WUDoQRawH6oB7cL/Yx9TzJNszQzqrLYQeZIw8Bsdx1LH
-         f4BpLla53tqGVvaTu2PFnIzEZD9Scyi92/a2vOG5L386anLBpkKqSLylVUThIh1n0PjL
-         8IzQJL1fFeEyqjqht3rr2j4xfM8L7/PWz2Q3PQzDEKNNiS9cNjZyUtpnQkBEgM46d8lr
-         YKzyhydSTh924U2sXO8cm9Lp7nLDMwsIVKyJi4xNU/aAtU7a8H8mVHRKaEcOiJKYICm/
-         tD9J8pogoD7RlEAelv4pBoOW/M7fPIKc71HEgp+MR6Gdggtag8wWrgnt4/t8L6ZqU3uK
-         WMWA==
-X-Gm-Message-State: AAQBX9cbhFo5N9c0Jyw0fkIJsNKXdaoPcplt+dDjCnXP/O54N6P9KWiY
-        PC5J1UPQs/GoR2+ECGTl12n+jvt152q3RjcGNoLSCoIBy0Y=
-X-Google-Smtp-Source: AKy350aBgjE3PSnNXfAEWtlBdeoB+8SnjTBEB6yX1XMnulsiIf2kGx8pV6wpzyw+STDKadG2uRKecbBn67mF52TzeJM=
-X-Received: by 2002:a05:6402:12c2:b0:506:a44c:e213 with SMTP id
- k2-20020a05640212c200b00506a44ce213mr4664284edx.20.1682093357789; Fri, 21 Apr
- 2023 09:09:17 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682093362; x=1684685362;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=aWa6kaN5cW6TvlU0ciwl/60ukAejfrABFigek9/JpSg=;
+        b=hUenIUNLizRit8KWvhGkYbO2R8c1Buq+MeqS7EPshXNEuZbZfiwGBwwjnhaiLTUAC/
+         3JJ70YkXdhnWiYUp+qUdBpdYSCb7QbKMoogwT/nwJQGHYyNAx5d8Ad7SKyZNpwwSDtOe
+         qVCgJajz0Sp/tqfJx0uEwP5SbXq20BKBLv/Mrz4Hk+TLVV19ScaLLEgTDnRaZebuT9JO
+         WOB22erMTxA34PqNRGfp+1TeuGNPRxeRKuC6e/Vgfy7RDKrX8OmEnUqeQtIMfIiZIVaV
+         s071RUvS/dFkCM/YfPlP1Ksu/I9ler6CFogUZvsEoixwz2kiSJUNYcDs0eZbBVLtCDbW
+         pTNg==
+X-Gm-Message-State: AAQBX9fG6K0sqV34BXjRN+Dy3qfGA531zdnFLUNlDlygaem3yxIqjAaX
+        W7LU26InuDn/vUK87Z5eQQ==
+X-Google-Smtp-Source: AKy350aCS2QoM2uykzbhcjmYMWLo55cOpxr9MKaU5gYhpvrKZdevl2tjf51Mr0iRjnQQkvj8CiMXSw==
+X-Received: by 2002:a05:6808:2222:b0:38b:bed1:8a35 with SMTP id bd34-20020a056808222200b0038bbed18a35mr3693108oib.33.1682093362298;
+        Fri, 21 Apr 2023 09:09:22 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r84-20020acada57000000b003895430852dsm1746265oig.54.2023.04.21.09.09.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Apr 2023 09:09:21 -0700 (PDT)
+Received: (nullmailer pid 1412181 invoked by uid 1000);
+        Fri, 21 Apr 2023 16:09:21 -0000
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
-References: <20230420124455.31099-1-fw@strlen.de> <20230420124455.31099-8-fw@strlen.de>
- <20230420201655.77kkgi3dh7fesoll@MacBook-Pro-6.local> <20230421155246.GD12121@breakpoint.cc>
-In-Reply-To: <20230421155246.GD12121@breakpoint.cc>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 21 Apr 2023 09:09:06 -0700
-Message-ID: <CAADnVQLtKtrH-UhaJdn+5d+qObcuQ8TEuVDbpqx2Az=dN1DwWw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 7/7] selftests/bpf: add missing netfilter
- return value and ctx access tests
-To:     Florian Westphal <fw@strlen.de>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Daniel Xu <dxu@dxuuu.xyz>, Quentin Deslandes <qde@naccy.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+From:   Rob Herring <robh@kernel.org>
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>
+Cc:     linux-arm-msm@vger.kernel.org, andersson@kernel.org,
+        manivannan.sadhasivam@linaro.org, linus.walleij@linaro.org,
+        agross@kernel.org, robh+dt@kernel.org, linux-gpio@vger.kernel.org,
+        richardcochran@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        konrad.dybcio@linaro.org, krzysztof.kozlowski+dt@linaro.org
+In-Reply-To: <1682079770-27656-2-git-send-email-quic_rohiagar@quicinc.com>
+References: <1682079770-27656-1-git-send-email-quic_rohiagar@quicinc.com>
+ <1682079770-27656-2-git-send-email-quic_rohiagar@quicinc.com>
+Message-Id: <168209295726.1394246.15430780143130360502.robh@kernel.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: pinctrl: qcom: Add SDX75 pinctrl
+ devicetree compatible
+Date:   Fri, 21 Apr 2023 11:09:21 -0500
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 21, 2023 at 8:52=E2=80=AFAM Florian Westphal <fw@strlen.de> wro=
-te:
->
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > On Thu, Apr 20, 2023 at 02:44:55PM +0200, Florian Westphal wrote:
-> > > +
-> > > +SEC("netfilter")
-> > > +__description("netfilter valid context access")
-> > > +__success __failure_unpriv
-> > > +__retval(1)
-> > > +__naked void with_invalid_ctx_access_test5(void)
-> > > +{
-> > > +   asm volatile ("                                 \
-> > > +   r2 =3D *(u64*)(r1 + %[__bpf_nf_ctx_state]);       \
-> > > +   r1 =3D *(u64*)(r1 + %[__bpf_nf_ctx_skb]);         \
-> > > +   r0 =3D 1;                                         \
-> > > +   exit;                                           \
-> > > +"  :
-> > > +   : __imm_const(__bpf_nf_ctx_state, offsetof(struct bpf_nf_ctx, sta=
-te)),
-> > > +     __imm_const(__bpf_nf_ctx_skb, offsetof(struct bpf_nf_ctx, skb))
-> > > +   : __clobber_all);
-> >
-> > Could you write this one in C instead?
-> >
-> > Also check that skb and state are dereferenceable after that.
->
-> My bad. Added this and that:
->
-> SEC("netfilter")
-> __description("netfilter valid context read and invalid write")
-> __failure __msg("only read is supported")
-> int with_invalid_ctx_access_test5(struct bpf_nf_ctx *ctx)
-> {
->   struct nf_hook_state *state =3D (void *)ctx->state;
->
->   state->sk =3D NULL;
->   return 1;
-> }
->
-> SEC("netfilter")
-> __description("netfilter test prog with skb and state read access")
-> __success __failure_unpriv
-> __retval(0)
-> int with_valid_ctx_access_test6(struct bpf_nf_ctx *ctx)
-> {
->   const struct nf_hook_state *state =3D ctx->state;
->   struct sk_buff *skb =3D ctx->skb;
->   const struct iphdr *iph;
->   const struct tcphdr *th;
->   u8 buffer_iph[20] =3D {};
->   u8 buffer_th[40] =3D {};
->   struct bpf_dynptr ptr;
->   uint8_t ihl;
->
->   if (skb->len <=3D 20 || bpf_dynptr_from_skb(skb, 0, &ptr))
->         return 1;
 
-Use NF_ACCEPT instead of 1 ?
-Sadly it's not an enum yet, so it's not in vmlinux.h
-The prog would need to manually #define it.
+On Fri, 21 Apr 2023 17:52:49 +0530, Rohit Agarwal wrote:
+> Add device tree binding Documentation details for Qualcomm SDX75
+> pinctrl driver.
+> 
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+> ---
+>  .../bindings/pinctrl/qcom,sdx75-tlmm.yaml          | 168 +++++++++++++++++++++
+>  1 file changed, 168 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml
+> 
 
->
->   iph =3D bpf_dynptr_slice(&ptr, 0, buffer_iph, sizeof(buffer_iph));
->   if (!iph)
->     return 1;
->
->    if (state->pf !=3D 2)
->      return 1;
->
->    ihl =3D iph->ihl << 2;
->    th =3D bpf_dynptr_slice(&ptr, ihl, buffer_th, sizeof(buffer_th));
->    if (!th)
->         return 1;
->
->      return th->dest =3D=3D bpf_htons(22) ? 1 : 0;
-> }
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Perfect. That's what I wanted to see.
-Without above example it's hard for people to see how ctx->skb
-can be accessed to parse the packet.
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml:77:52: [warning] too few spaces after comma (commas)
 
-> "Worksforme".  Is there anything else thats missing?
-> If not I'll send v5 on Monday.
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.example.dtb: pinctrl@f100000: uart-w-state: 'oneOf' conditional failed, one must be fixed:
+	'function' is a required property
+	Unevaluated properties are not allowed ('rx-pins', 'tx-pins' were unexpected)
+	'pins' is a required property
+	'qup_se1_l2_mira' is not one of ['gpio', 'eth0_mdc', 'eth0_mdio', 'eth1_mdc', 'eth1_mdio', 'qlink0_wmss_reset', 'qlink1_wmss_reset', 'rgmii_rxc', 'rgmii_rxd0', 'rgmii_rxd1', 'rgmii_rxd2', 'rgmii_rxd3', 'rgmii_rx_ctl', 'rgmii_txc', 'rgmii_txd0', 'rgmii_txd1', 'rgmii_txd2', 'rgmii_txd3', 'rgmii_tx_ctl', 'adsp_ext_vfr', 'atest_char_start', 'atest_char_status0', 'atest_char_status1', 'atest_char_status2', 'atest_char_status3', 'audio_ref_clk', 'bimc_dte_test0', 'bimc_dte_test1', 'char_exec_pending', 'char_exec_release', 'coex_uart2_rx', 'coex_uart2_tx', 'coex_uart_rx', 'coex_uart_tx', 'cri_trng_rosc', 'cri_trng_rosc0', 'cri_trng_rosc1', 'dbg_out_clk', 'ddr_bist_complete', 'ddr_bist_fail', 'ddr_bist_start', 'ddr_bist_stop', 'ddr_pxi0_test', 'ebi0_wrcdc_dq2', 'ebi0_wrcdc_dq3', 'ebi2_a_d', 'ebi2_lcd_cs', 'ebi2_lcd_reset', 'ebi2_lcd_te', 'emac0_mcg_pst0', 'emac0_mcg_pst1', 'emac0_mcg_pst2', 'emac0_mcg_pst3', 'emac0_ptp_aux', 'emac0_ptp_pps', 'emac1_mcg_pst0', 'emac1_mcg_pst1', 'emac1_mcg_ps
+ t2', 'emac1_mcg_pst3', 'emac1_ptp_aux0', 'emac1_ptp_aux1', 'emac1_ptp_aux2', 'emac1_ptp_aux3', 'emac1_ptp_pps0', 'emac1_ptp_pps1', 'emac1_ptp_pps2', 'emac1_ptp_pps3', 'emac_cdc_dtest0', 'emac_cdc_dtest1', 'emac_pps_in', 'ext_dbg_uart', 'gcc_125_clk', 'gcc_gp1_clk', 'gcc_gp2_clk', 'gcc_gp3_clk', 'gcc_plltest_bypassnl', 'gcc_plltest_resetn', 'i2s_mclk', 'jitter_bist_ref', 'ldo_en', 'ldo_update', 'm_voc_ext', 'mgpi_clk_req', 'native0', 'native1', 'native2', 'native3', 'native_char_start', 'native_tsens_osc', 'native_tsense_pwm1', 'nav_dr_sync', 'nav_gpio_0', 'nav_gpio_1', 'nav_gpio_2', 'nav_gpio_3', 'pa_indicator_1', 'pci_e_rst', 'pcie0_clkreq_n', 'pcie1_clkreq_n', 'pcie2_clkreq_n', 'pll_bist_sync', 'pll_clk_aux', 'pll_ref_clk', 'pri_mi2s_data0', 'pri_mi2s_data1', 'pri_mi2s_sck', 'pri_mi2s_ws', 'prng_rosc_test0', 'prng_rosc_test1', 'prng_rosc_test2', 'prng_rosc_test3', 'qdss_cti_trig0', 'qdss_cti_trig1', 'qdss_gpio_traceclk', 'qdss_gpio_tracectl', 'qdss_gpio_tracedata0', 'qdss_gpio_tra
+ cedata1', 'qdss_gpio_tracedata10', 'qdss_gpio_tracedata11', 'qdss_gpio_tracedata12', 'qdss_gpio_tracedata13', 'qdss_gpio_tracedata14', 'qdss_gpio_tracedata15', 'qdss_gpio_tracedata2', 'qdss_gpio_tracedata3', 'qdss_gpio_tracedata4', 'qdss_gpio_tracedata5', 'qdss_gpio_tracedata6', 'qdss_gpio_tracedata7', 'qdss_gpio_tracedata8', 'qdss_gpio_tracedata9', 'qlink0_b_en', 'qlink0_b_req', 'qlink0_l_en', 'qlink0_l_req', 'qlink1_l_en', 'qlink1_l_req', 'qup_se0_l0', 'qup_se0_l1', 'qup_se0_l2', 'qup_se0_l3', 'qup_se1_l2', 'qup_se1_l3', 'qup_se2_l0', 'qup_se2_l1', 'qup_se2_l2', 'qup_se2_l3', 'qup_se3_l0', 'qup_se3_l1', 'qup_se3_l2', 'qup_se3_l3', 'qup_se4_l2', 'qup_se4_l3', 'qup_se5_l0', 'qup_se5_l1', 'qup_se6_l0', 'qup_se6_l1', 'qup_se6_l2', 'qup_se6_l3', 'qup_se7_l0', 'qup_se7_l1', 'qup_se7_l2', 'qup_se7_l3', 'qup_se8_l2', 'qup_se8_l3', 'sdc1_tb_trig', 'sdc2_tb_trig', 'sec_mi2s_data0', 'sec_mi2s_data1', 'sec_mi2s_sck', 'sec_mi2s_ws', 'sgmii_phy_intr0', 'sgmii_phy_intr1', 'spmi_coex_clk', 'spmi_
+ coex_data', 'spmi_vgi_hwevent', 'tgu_ch0_trigout', 'tri_mi2s_data0', 'tri_mi2s_data1', 'tri_mi2s_sck', 'tri_mi2s_ws', 'uim1_clk', 'uim1_data', 'uim1_present', 'uim1_reset', 'uim2_clk', 'uim2_data', 'uim2_present', 'uim2_reset', 'usb2phy_ac_en', 'vsense_trigger_mirnat']
+	'qup_se1_l3_mira' is not one of ['gpio', 'eth0_mdc', 'eth0_mdio', 'eth1_mdc', 'eth1_mdio', 'qlink0_wmss_reset', 'qlink1_wmss_reset', 'rgmii_rxc', 'rgmii_rxd0', 'rgmii_rxd1', 'rgmii_rxd2', 'rgmii_rxd3', 'rgmii_rx_ctl', 'rgmii_txc', 'rgmii_txd0', 'rgmii_txd1', 'rgmii_txd2', 'rgmii_txd3', 'rgmii_tx_ctl', 'adsp_ext_vfr', 'atest_char_start', 'atest_char_status0', 'atest_char_status1', 'atest_char_status2', 'atest_char_status3', 'audio_ref_clk', 'bimc_dte_test0', 'bimc_dte_test1', 'char_exec_pending', 'char_exec_release', 'coex_uart2_rx', 'coex_uart2_tx', 'coex_uart_rx', 'coex_uart_tx', 'cri_trng_rosc', 'cri_trng_rosc0', 'cri_trng_rosc1', 'dbg_out_clk', 'ddr_bist_complete', 'ddr_bist_fail', 'ddr_bist_start', 'ddr_bist_stop', 'ddr_pxi0_test', 'ebi0_wrcdc_dq2', 'ebi0_wrcdc_dq3', 'ebi2_a_d', 'ebi2_lcd_cs', 'ebi2_lcd_reset', 'ebi2_lcd_te', 'emac0_mcg_pst0', 'emac0_mcg_pst1', 'emac0_mcg_pst2', 'emac0_mcg_pst3', 'emac0_ptp_aux', 'emac0_ptp_pps', 'emac1_mcg_pst0', 'emac1_mcg_pst1', 'emac1_mcg_ps
+ t2', 'emac1_mcg_pst3', 'emac1_ptp_aux0', 'emac1_ptp_aux1', 'emac1_ptp_aux2', 'emac1_ptp_aux3', 'emac1_ptp_pps0', 'emac1_ptp_pps1', 'emac1_ptp_pps2', 'emac1_ptp_pps3', 'emac_cdc_dtest0', 'emac_cdc_dtest1', 'emac_pps_in', 'ext_dbg_uart', 'gcc_125_clk', 'gcc_gp1_clk', 'gcc_gp2_clk', 'gcc_gp3_clk', 'gcc_plltest_bypassnl', 'gcc_plltest_resetn', 'i2s_mclk', 'jitter_bist_ref', 'ldo_en', 'ldo_update', 'm_voc_ext', 'mgpi_clk_req', 'native0', 'native1', 'native2', 'native3', 'native_char_start', 'native_tsens_osc', 'native_tsense_pwm1', 'nav_dr_sync', 'nav_gpio_0', 'nav_gpio_1', 'nav_gpio_2', 'nav_gpio_3', 'pa_indicator_1', 'pci_e_rst', 'pcie0_clkreq_n', 'pcie1_clkreq_n', 'pcie2_clkreq_n', 'pll_bist_sync', 'pll_clk_aux', 'pll_ref_clk', 'pri_mi2s_data0', 'pri_mi2s_data1', 'pri_mi2s_sck', 'pri_mi2s_ws', 'prng_rosc_test0', 'prng_rosc_test1', 'prng_rosc_test2', 'prng_rosc_test3', 'qdss_cti_trig0', 'qdss_cti_trig1', 'qdss_gpio_traceclk', 'qdss_gpio_tracectl', 'qdss_gpio_tracedata0', 'qdss_gpio_tra
+ cedata1', 'qdss_gpio_tracedata10', 'qdss_gpio_tracedata11', 'qdss_gpio_tracedata12', 'qdss_gpio_tracedata13', 'qdss_gpio_tracedata14', 'qdss_gpio_tracedata15', 'qdss_gpio_tracedata2', 'qdss_gpio_tracedata3', 'qdss_gpio_tracedata4', 'qdss_gpio_tracedata5', 'qdss_gpio_tracedata6', 'qdss_gpio_tracedata7', 'qdss_gpio_tracedata8', 'qdss_gpio_tracedata9', 'qlink0_b_en', 'qlink0_b_req', 'qlink0_l_en', 'qlink0_l_req', 'qlink1_l_en', 'qlink1_l_req', 'qup_se0_l0', 'qup_se0_l1', 'qup_se0_l2', 'qup_se0_l3', 'qup_se1_l2', 'qup_se1_l3', 'qup_se2_l0', 'qup_se2_l1', 'qup_se2_l2', 'qup_se2_l3', 'qup_se3_l0', 'qup_se3_l1', 'qup_se3_l2', 'qup_se3_l3', 'qup_se4_l2', 'qup_se4_l3', 'qup_se5_l0', 'qup_se5_l1', 'qup_se6_l0', 'qup_se6_l1', 'qup_se6_l2', 'qup_se6_l3', 'qup_se7_l0', 'qup_se7_l1', 'qup_se7_l2', 'qup_se7_l3', 'qup_se8_l2', 'qup_se8_l3', 'sdc1_tb_trig', 'sdc2_tb_trig', 'sec_mi2s_data0', 'sec_mi2s_data1', 'sec_mi2s_sck', 'sec_mi2s_ws', 'sgmii_phy_intr0', 'sgmii_phy_intr1', 'spmi_coex_clk', 'spmi_
+ coex_data', 'spmi_vgi_hwevent', 'tgu_ch0_trigout', 'tri_mi2s_data0', 'tri_mi2s_data1', 'tri_mi2s_sck', 'tri_mi2s_ws', 'uim1_clk', 'uim1_data', 'uim1_present', 'uim1_reset', 'uim2_clk', 'uim2_data', 'uim2_present', 'uim2_reset', 'usb2phy_ac_en', 'vsense_trigger_mirnat']
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/pinctrl/qcom,sdx75-tlmm.yaml
 
-ship it any time. Don't delay.
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/1682079770-27656-2-git-send-email-quic_rohiagar@quicinc.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
