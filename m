@@ -2,144 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A056EA8B9
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 12:57:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1A8E6EA8BD
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 13:00:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231315AbjDUK5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 06:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43192 "EHLO
+        id S230124AbjDULAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 07:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231161AbjDUK5I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 06:57:08 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBD628A69;
-        Fri, 21 Apr 2023 03:57:06 -0700 (PDT)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 2/2] netfilter: conntrack: fix wrong ct->timeout value
-Date:   Fri, 21 Apr 2023 12:57:00 +0200
-Message-Id: <20230421105700.325438-3-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230421105700.325438-1-pablo@netfilter.org>
-References: <20230421105700.325438-1-pablo@netfilter.org>
+        with ESMTP id S229624AbjDULAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 07:00:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCF43A88
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 04:00:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BB7664FE4
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 11:00:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D04FCC433D2;
+        Fri, 21 Apr 2023 11:00:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682074820;
+        bh=Nt9mWJLPYSwdp+VV6ZyhT436uhHVFABEdzG1v8r3cl4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TQ6ryOj4YmFCNCYYvq3TCs/mRb+yk+7/QDGF/V9a0B9Htr/UiCNMZqmzhNm8G9HNt
+         4XzjrS/kAKo8roblckl6o57ZCtjvzY4It/UumFGTHeUjGdiLk1ao3exBuDCt8K78re
+         K8xc3mEkOX1QVzgJCe2FJ6tLA5KtWOy178PCsIJWrlY+Jwx4ZoOJdG6jMnlZWgA+18
+         /a3hk2YSZkJolDlf3KNP+mM5TXSZVQ3XwInyEf5RBhQsgBgxHHaz4QJRIBh249faHB
+         J7fq4c7ChZBvTURnuBlPH636zjh0Y0KWNh66MQMRRWeEjHZcNcsbVqWT2lDjPCpTmQ
+         pgfIdSFkwAuuQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A7C53E270E2;
+        Fri, 21 Apr 2023 11:00:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH net-next 0/5] Fixes to mlx5 IPsec implementation
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168207482068.15708.11405033223948355702.git-patchwork-notify@kernel.org>
+Date:   Fri, 21 Apr 2023 11:00:20 +0000
+References: <cover.1681976818.git.leon@kernel.org>
+In-Reply-To: <cover.1681976818.git.leon@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     kuba@kernel.org, leonro@nvidia.com, ehakim@nvidia.com,
+        edumazet@google.com, netdev@vger.kernel.org, pabeni@redhat.com,
+        raeds@nvidia.com, saeedm@nvidia.com, steffen.klassert@secunet.com,
+        simon.horman@corigine.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tzung-Bi Shih <tzungbi@kernel.org>
+Hello:
 
-(struct nf_conn)->timeout is an interval before the conntrack
-confirmed.  After confirmed, it becomes a timestamp.
+This series was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-It is observed that timeout of an unconfirmed conntrack:
-- Set by calling ctnetlink_change_timeout(). As a result,
-  `nfct_time_stamp` was wrongly added to `ct->timeout` twice.
-- Get by calling ctnetlink_dump_timeout(). As a result,
-  `nfct_time_stamp` was wrongly subtracted.
+On Thu, 20 Apr 2023 11:02:46 +0300 you wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Hi,
+> 
+> This small patchset includes various fixes and one refactoring patch
+> which I collected for the features sent in this cycle, with one exception -
+> first patch.
+> 
+> [...]
 
-Call Trace:
- <TASK>
- dump_stack_lvl
- ctnetlink_dump_timeout
- __ctnetlink_glue_build
- ctnetlink_glue_build
- __nfqnl_enqueue_packet
- nf_queue
- nf_hook_slow
- ip_mc_output
- ? __pfx_ip_finish_output
- ip_send_skb
- ? __pfx_dst_output
- udp_send_skb
- udp_sendmsg
- ? __pfx_ip_generic_getfrag
- sock_sendmsg
+Here is the summary with links:
+  - [net-next,1/5] net/mlx5e: Fix FW error while setting IPsec policy block action
+    https://git.kernel.org/netdev/net-next/c/e239e31ae802
+  - [net-next,2/5] net/mlx5e: Don't overwrite extack message returned from IPsec SA validator
+    https://git.kernel.org/netdev/net-next/c/697b3518ebfd
+  - [net-next,3/5] net/mlx5e: Compare all fields in IPv6 address
+    https://git.kernel.org/netdev/net-next/c/3198ae7d42af
+  - [net-next,4/5] net/mlx5e: Properly release work data structure
+    https://git.kernel.org/netdev/net-next/c/94edec448479
+  - [net-next,5/5] net/mlx5e: Refactor duplicated code in mlx5e_ipsec_init_macs
+    https://git.kernel.org/netdev/net-next/c/45fd01f2fbf1
 
-Separate the 2 cases in:
-- Setting `ct->timeout` in __nf_ct_set_timeout().
-- Getting `ct->timeout` in ctnetlink_dump_timeout().
-
-Pablo appends:
-
-Update ctnetlink to set up the timeout _after_ the IPS_CONFIRMED flag is
-set on, otherwise conntrack creation via ctnetlink breaks.
-
-Note that the problem described in this patch occurs since the
-introduction of the nfnetlink_queue conntrack support, select a
-sufficiently old Fixes: tag for -stable kernel to pick up this fix.
-
-Fixes: a4b4766c3ceb ("netfilter: nfnetlink_queue: rename related to nfqueue attaching conntrack info")
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/net/netfilter/nf_conntrack_core.h |  6 +++++-
- net/netfilter/nf_conntrack_netlink.c      | 13 +++++++++----
- 2 files changed, 14 insertions(+), 5 deletions(-)
-
-diff --git a/include/net/netfilter/nf_conntrack_core.h b/include/net/netfilter/nf_conntrack_core.h
-index 71d1269fe4d4..3384859a8921 100644
---- a/include/net/netfilter/nf_conntrack_core.h
-+++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -89,7 +89,11 @@ static inline void __nf_ct_set_timeout(struct nf_conn *ct, u64 timeout)
- {
- 	if (timeout > INT_MAX)
- 		timeout = INT_MAX;
--	WRITE_ONCE(ct->timeout, nfct_time_stamp + (u32)timeout);
-+
-+	if (nf_ct_is_confirmed(ct))
-+		WRITE_ONCE(ct->timeout, nfct_time_stamp + (u32)timeout);
-+	else
-+		ct->timeout = (u32)timeout;
- }
- 
- int __nf_ct_change_timeout(struct nf_conn *ct, u64 cta_timeout);
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index d3ee18854698..6f3b23a6653c 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -176,7 +176,12 @@ static int ctnetlink_dump_status(struct sk_buff *skb, const struct nf_conn *ct)
- static int ctnetlink_dump_timeout(struct sk_buff *skb, const struct nf_conn *ct,
- 				  bool skip_zero)
- {
--	long timeout = nf_ct_expires(ct) / HZ;
-+	long timeout;
-+
-+	if (nf_ct_is_confirmed(ct))
-+		timeout = nf_ct_expires(ct) / HZ;
-+	else
-+		timeout = ct->timeout / HZ;
- 
- 	if (skip_zero && timeout == 0)
- 		return 0;
-@@ -2253,9 +2258,6 @@ ctnetlink_create_conntrack(struct net *net,
- 	if (!cda[CTA_TIMEOUT])
- 		goto err1;
- 
--	timeout = (u64)ntohl(nla_get_be32(cda[CTA_TIMEOUT])) * HZ;
--	__nf_ct_set_timeout(ct, timeout);
--
- 	rcu_read_lock();
-  	if (cda[CTA_HELP]) {
- 		char *helpname = NULL;
-@@ -2319,6 +2321,9 @@ ctnetlink_create_conntrack(struct net *net,
- 	/* we must add conntrack extensions before confirmation. */
- 	ct->status |= IPS_CONFIRMED;
- 
-+	timeout = (u64)ntohl(nla_get_be32(cda[CTA_TIMEOUT])) * HZ;
-+	__nf_ct_set_timeout(ct, timeout);
-+
- 	if (cda[CTA_STATUS]) {
- 		err = ctnetlink_change_status(ct, cda);
- 		if (err < 0)
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
