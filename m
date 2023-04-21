@@ -2,152 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59EF86EB1E0
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 20:54:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C81AB6EB1E8
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 20:59:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232346AbjDUSyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 14:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55508 "EHLO
+        id S233289AbjDUS7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 14:59:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229916AbjDUSyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 14:54:11 -0400
-Received: from mx06lb.world4you.com (mx06lb.world4you.com [81.19.149.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305681FE3;
-        Fri, 21 Apr 2023 11:54:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=R3sHZfcOzOQymuuD1iMK3qgK1r+J0oJDe00+/EzqdHA=; b=F1fvh/rGpS6sCeNxBIvwLd7hix
-        PUWs+z0xTTN9gtoUbRq6w8hjECqSB52wlc39L9BZMDdKNIUAujObOxM9g4REIOuP/4nSWCk6TOjBv
-        u0VatGDNkzDtmTeaijU7ejdd7kjTeNg9ozzrPn93pDrzd/K03aTbefV/0UNVeDI7m5vQ=;
-Received: from [88.117.57.231] (helo=[10.0.0.160])
-        by mx06lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.96)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1ppvtW-0004om-1b;
-        Fri, 21 Apr 2023 20:54:06 +0200
-Message-ID: <0792956c-c2d3-0102-5d41-8fccc5091b08@engleder-embedded.com>
-Date:   Fri, 21 Apr 2023 20:54:06 +0200
+        with ESMTP id S232311AbjDUS7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 14:59:12 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7BB2D4B;
+        Fri, 21 Apr 2023 11:59:11 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1ppvy8-0002kb-09;
+        Fri, 21 Apr 2023 20:58:52 +0200
+Date:   Fri, 21 Apr 2023 19:58:48 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     arinc9.unal@gmail.com
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [RFC PATCH net-next 21/22] net: dsa: mt7530: get rid of useless
+ error returns on phylink code path
+Message-ID: <ZELc6MjOicjsPGGb@makrotopia.org>
+References: <20230421143648.87889-1-arinc.unal@arinc9.com>
+ <20230421143648.87889-22-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH net-next v3 5/6] tsnep: Add XDP socket zero-copy RX
- support
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        bjorn@kernel.org, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-References: <20230418190459.19326-1-gerhard@engleder-embedded.com>
- <20230418190459.19326-6-gerhard@engleder-embedded.com>
- <ZEGWmYmsM2uV48Lh@boxer>
-Content-Language: en-US
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <ZEGWmYmsM2uV48Lh@boxer>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230421143648.87889-22-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.04.23 21:46, Maciej Fijalkowski wrote:
-> On Tue, Apr 18, 2023 at 09:04:58PM +0200, Gerhard Engleder wrote:
->> Add support for XSK zero-copy to RX path. The setup of the XSK pool can
->> be done at runtime. If the netdev is running, then the queue must be
->> disabled and enabled during reconfiguration. This can be done easily
->> with functions introduced in previous commits.
->>
->> A more important property is that, if the netdev is running, then the
->> setup of the XSK pool shall not stop the netdev in case of errors. A
->> broken netdev after a failed XSK pool setup is bad behavior. Therefore,
->> the allocation and setup of resources during XSK pool setup is done only
->> before any queue is disabled. Additionally, freeing and later allocation
->> of resources is eliminated in some cases. Page pool entries are kept for
->> later use. Two memory models are registered in parallel. As a result,
->> the XSK pool setup cannot fail during queue reconfiguration.
->>
->> In contrast to other drivers, XSK pool setup and XDP BPF program setup
->> are separate actions. XSK pool setup can be done without any XDP BPF
->> program. The XDP BPF program can be added, removed or changed without
->> any reconfiguration of the XSK pool.
->>
->> Test results with A53 1.2GHz:
->>
->> xdpsock rxdrop copy mode:
->>                     pps            pkts           1.00
->> rx                 856,054        10,625,775
->> Two CPUs with both 100% utilization.
->>
->> xdpsock rxdrop zero-copy mode:
->>                     pps            pkts           1.00
->> rx                 889,388        4,615,284
->> Two CPUs with 100% and 20% utilization.
->>
->> xdpsock l2fwd copy mode:
->>                     pps            pkts           1.00
->> rx                 248,985        7,315,885
->> tx                 248,921        7,315,885
->> Two CPUs with 100% and 10% utilization.
->>
->> xdpsock l2fwd zero-copy mode:
->>                     pps            pkts           1.00
->> rx                 254,735        3,039,456
->> tx                 254,735        3,039,456
->> Two CPUs with 100% and 4% utilization.
+On Fri, Apr 21, 2023 at 05:36:47PM +0300, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> Thanks for sharing the numbers. This is for 64 byte frames?
+> Remove error returns on the cases where they are already handled with the
+> function the mac_port_get_caps member points to.
+> 
+> mt7531_mac_config() is also called from mt7531_cpu_port_config() outside of
+> phylink but the port and interface modes are already handled there.
+> 
+> Change the functions and the mac_port_config function pointer to void now
+> that there're no error returns anymore.
+> 
+> Remove mt753x_is_mac_port() that used to help the said error returns.
+> 
+> On mt7531_mac_config(), switch to if statements to simplify the code.
+> 
+> Remove internal phy cases from mt753x_phylink_mac_config() as there is no
+> configuration to be done for them. There's also no need to check the
+> interface mode as that's already handled with the function the
+> mac_port_get_caps member points to.
+> 
+> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Yes. I will add that information.
+Acked-by: Daniel Golle <daniel@makrotopia.org>
+Tested-by: Daniel Golle <daniel@makrotopia.org>
+(on BPi-R3 MT7986A+MT7531AE, BPi-R64 MT7622+MT7531BE and MT7988A rfb)
 
->>
->> Packet rate increases and CPU utilization is reduced in both cases.
->> 100% CPU load seems to the base load. This load is consumed by ksoftirqd
->> just for dropping the generated packets without xdpsock running.
->>
->> Using batch API reduced CPU utilization slightly, but measurements are
->> not stable enough to provide meaningful numbers.
->>
->> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
->> ---
->>   drivers/net/ethernet/engleder/tsnep.h      |  13 +-
->>   drivers/net/ethernet/engleder/tsnep_main.c | 494 ++++++++++++++++++++-
->>   drivers/net/ethernet/engleder/tsnep_xdp.c  |  66 +++
->>   3 files changed, 558 insertions(+), 15 deletions(-)
->>
+> ---
+>  drivers/net/dsa/mt7530.c | 81 ++++++++--------------------------------
+>  drivers/net/dsa/mt7530.h |  2 +-
+>  2 files changed, 17 insertions(+), 66 deletions(-)
 > 
-> (...)
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 8ece3d0d820c..3d19e06061cb 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -2556,7 +2556,7 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
+>  	}
+>  }
+>  
+> -static int
+> +static void
+>  mt7530_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  		  phy_interface_t interface)
+>  {
+> @@ -2567,22 +2567,14 @@ mt7530_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  	} else if (port == 6) {
+>  		mt7530_setup_port6(priv->ds, interface);
+>  	}
+> -
+> -	return 0;
+>  }
+>  
+> -static int mt7531_rgmii_setup(struct mt7530_priv *priv, u32 port,
+> -			      phy_interface_t interface,
+> -			      struct phy_device *phydev)
+> +static void mt7531_rgmii_setup(struct mt7530_priv *priv, u32 port,
+> +			       phy_interface_t interface,
+> +			       struct phy_device *phydev)
+>  {
+>  	u32 val;
+>  
+> -	if (priv->p5_sgmii) {
+> -		dev_err(priv->dev, "RGMII mode is not available for port %d\n",
+> -			port);
+> -		return -EINVAL;
+> -	}
+> -
+>  	val = mt7530_read(priv, MT7531_CLKGEN_CTRL);
+>  	val |= GP_CLK_EN;
+>  	val &= ~GP_MODE_MASK;
+> @@ -2610,20 +2602,14 @@ static int mt7531_rgmii_setup(struct mt7530_priv *priv, u32 port,
+>  		case PHY_INTERFACE_MODE_RGMII_ID:
+>  			break;
+>  		default:
+> -			return -EINVAL;
+> +			break;
+>  		}
+>  	}
+> -	mt7530_write(priv, MT7531_CLKGEN_CTRL, val);
+>  
+> -	return 0;
+> -}
+> -
+> -static bool mt753x_is_mac_port(u32 port)
+> -{
+> -	return (port == 5 || port == 6);
+> +	mt7530_write(priv, MT7531_CLKGEN_CTRL, val);
+>  }
+>  
+> -static int
+> +static void
+>  mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  		  phy_interface_t interface)
+>  {
+> @@ -2631,42 +2617,21 @@ mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  	struct phy_device *phydev;
+>  	struct dsa_port *dp;
+>  
+> -	if (!mt753x_is_mac_port(port)) {
+> -		dev_err(priv->dev, "port %d is not a MAC port\n", port);
+> -		return -EINVAL;
+> -	}
+> -
+> -	switch (interface) {
+> -	case PHY_INTERFACE_MODE_RGMII:
+> -	case PHY_INTERFACE_MODE_RGMII_ID:
+> -	case PHY_INTERFACE_MODE_RGMII_RXID:
+> -	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +	if (phy_interface_mode_is_rgmii(interface)) {
+>  		dp = dsa_to_port(ds, port);
+>  		phydev = dp->slave->phydev;
+> -		return mt7531_rgmii_setup(priv, port, interface, phydev);
+> -	case PHY_INTERFACE_MODE_SGMII:
+> -	case PHY_INTERFACE_MODE_NA:
+> -	case PHY_INTERFACE_MODE_1000BASEX:
+> -	case PHY_INTERFACE_MODE_2500BASEX:
+> -		/* handled in SGMII PCS driver */
+> -		return 0;
+> -	default:
+> -		return -EINVAL;
+> +		mt7531_rgmii_setup(priv, port, interface, phydev);
+>  	}
+> -
+> -	return -EINVAL;
+>  }
+>  
+> -static int
+> +static void
+>  mt753x_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  		  const struct phylink_link_state *state)
+>  {
+>  	struct mt7530_priv *priv = ds->priv;
+>  
+> -	if (!priv->info->mac_port_config)
+> -		return 0;
+> -
+> -	return priv->info->mac_port_config(ds, port, mode, state->interface);
+> +	if (priv->info->mac_port_config)
+> +		priv->info->mac_port_config(ds, port, mode, state->interface);
+>  }
+>  
+>  static struct phylink_pcs *
+> @@ -2695,30 +2660,18 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  	u32 mcr_cur, mcr_new;
+>  
+>  	switch (port) {
+> -	case 0 ... 4: /* Internal phy */
+> -		if (state->interface != PHY_INTERFACE_MODE_GMII &&
+> -		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
+> -			goto unsupported;
+> -		break;
+>  	case 5: /* Port 5, can be used as a CPU port. */
+>  		if (priv->p5_configured)
+>  			break;
+>  
+> -		if (mt753x_mac_config(ds, port, mode, state) < 0)
+> -			goto unsupported;
+> +		mt753x_mac_config(ds, port, mode, state);
+>  		break;
+>  	case 6: /* Port 6, can be used as a CPU port. */
+>  		if (priv->p6_configured)
+>  			break;
+>  
+> -		if (mt753x_mac_config(ds, port, mode, state) < 0)
+> -			goto unsupported;
+> +		mt753x_mac_config(ds, port, mode, state);
+>  		break;
+> -	default:
+> -unsupported:
+> -		dev_err(ds->dev, "%s: unsupported %s port: %i\n",
+> -			__func__, phy_modes(state->interface), port);
+> -		return;
+>  	}
+>  
+>  	mcr_cur = mt7530_read(priv, MT7530_PMCR_P(port));
+> @@ -2811,7 +2764,6 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+>  	struct mt7530_priv *priv = ds->priv;
+>  	phy_interface_t interface;
+>  	int speed;
+> -	int ret;
+>  
+>  	switch (port) {
+>  	case 5:
+> @@ -2836,9 +2788,8 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+>  	else
+>  		speed = SPEED_1000;
+>  
+> -	ret = mt7531_mac_config(ds, port, MLO_AN_FIXED, interface);
+> -	if (ret)
+> -		return ret;
+> +	mt7531_mac_config(ds, port, MLO_AN_FIXED, interface);
+> +
+>  	mt7530_write(priv, MT7530_PMCR_P(port),
+>  		     PMCR_CPU_PORT_SETTING(priv->id));
+>  	mt753x_phylink_pcs_link_up(&priv->pcs[port].pcs, MLO_AN_FIXED,
+> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+> index cad9115de22b..ee2b3d2d6258 100644
+> --- a/drivers/net/dsa/mt7530.h
+> +++ b/drivers/net/dsa/mt7530.h
+> @@ -722,7 +722,7 @@ struct mt753x_info {
+>  	void (*mac_port_validate)(struct dsa_switch *ds, int port,
+>  				  phy_interface_t interface,
+>  				  unsigned long *supported);
+> -	int (*mac_port_config)(struct dsa_switch *ds, int port,
+> +	void (*mac_port_config)(struct dsa_switch *ds, int port,
+>  			       unsigned int mode,
+>  			       phy_interface_t interface);
+>  };
+> -- 
+> 2.37.2
 > 
->>   static const struct net_device_ops tsnep_netdev_ops = {
->>   	.ndo_open = tsnep_netdev_open,
->>   	.ndo_stop = tsnep_netdev_close,
->> @@ -1713,6 +2177,7 @@ static const struct net_device_ops tsnep_netdev_ops = {
->>   	.ndo_setup_tc = tsnep_tc_setup,
->>   	.ndo_bpf = tsnep_netdev_bpf,
->>   	.ndo_xdp_xmit = tsnep_netdev_xdp_xmit,
->> +	.ndo_xsk_wakeup = tsnep_netdev_xsk_wakeup,
->>   };
->>   
->>   static int tsnep_mac_init(struct tsnep_adapter *adapter)
->> @@ -1973,7 +2438,8 @@ static int tsnep_probe(struct platform_device *pdev)
->>   
->>   	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
->>   			       NETDEV_XDP_ACT_NDO_XMIT |
->> -			       NETDEV_XDP_ACT_NDO_XMIT_SG;
->> +			       NETDEV_XDP_ACT_NDO_XMIT_SG |
->> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
-> 
-> In theory enabling this feature here before implementing Tx ZC can expose
-> you to some broken behavior, so just for the sake of completeness, i would
-> move this to Tx ZC patch.
-
-Will be done.
