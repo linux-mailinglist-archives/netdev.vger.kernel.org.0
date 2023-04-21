@@ -2,92 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF3F6EA5C5
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 10:25:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0949F6EA5CB
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 10:26:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbjDUIY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 04:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51574 "EHLO
+        id S229618AbjDUI01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 04:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231625AbjDUIY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 04:24:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353DA10D5;
-        Fri, 21 Apr 2023 01:24:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2CAF618D3;
-        Fri, 21 Apr 2023 08:24:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A8EC433EF;
-        Fri, 21 Apr 2023 08:24:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682065496;
-        bh=lnx9JSZMnAAmgHMt+elXCqGcZ+NDFpyQuPzVgtDnPMs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gPoHk2vGt7f1AqebQOUA7qMS1VF/y2oNIFTTFuPWwRlavGOlcrE/+ziDPr4aEQELP
-         4wCZHQC0yvueCGv84dWQPSNSkqkjZihMmk5qCcFAVsbqDj4lEwB4llIxQOtUJvZS7S
-         3KWqbuAVCpPOr80qzB2ZbVx6BjSzocMOcsFrpCcJbCICNlateEUT/VWMdjxEYO61oU
-         wvppHrkuBmoU2NrRjrxbTIWpilwya53P9wR3wlipHO+ioHKi0LvNTsbWbk3x4LMuTU
-         xy3Rm/mlAIi+XKr+xAk72DZQMJ2UWDWLpE8kyGS+xeuaKCWixfWnAnEPL4Y75EsJad
-         ZJ2SnrwB6COEg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        kernel-tls-handshake@lists.linux.dev, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net/handshake: fix section mismatch error for handshake_genl_net_ops
-Date:   Fri, 21 Apr 2023 10:24:44 +0200
-Message-Id: <20230421082450.2572594-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229565AbjDUI00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 04:26:26 -0400
+Received: from out-23.mta1.migadu.com (out-23.mta1.migadu.com [95.215.58.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7956455B2
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 01:26:24 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1682065582;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=SHe/jzCqewm2DDzl3v2vI3vnMZWQOaTgzDjtGP1hSHE=;
+        b=KC+8xr4DqFayZ9uHezyBxBEJRGhGyHjWU0OIUIuzxlBD+1em15tVTQ39Moa4Ow837/YDR7
+        f5DdKiZiL4S8ASSZTLXT9RZjW5duqYpTvKtqPJ7N//SZiQe9/iiWwY50u0W4AJgccc4sKZ
+        gKAeURTkRp03G56RuSy9CVsqq2MYvDY=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH] net: sched: Print msecs when transmit queue time out
+Date:   Fri, 21 Apr 2023 16:26:06 +0800
+Message-Id: <20230421082606.551411-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+The kernel will print several warnings in a short period of time
+when it stalls. Like this:
 
-The new netlink interface causes a link-time warning about the use of
-a discarded symbol:
+First warning:
+[ 7100.097547] ------------[ cut here ]------------
+[ 7100.097550] NETDEV WATCHDOG: eno2 (xxx): transmit queue 8 timed out
+[ 7100.097571] WARNING: CPU: 8 PID: 0 at net/sched/sch_generic.c:467
+                       dev_watchdog+0x260/0x270
+...
 
-WARNING: modpost: vmlinux.o: section mismatch in reference: handshake_exit (section: .exit.text) -> (unknown) (section: .init.data)
-ERROR: modpost: Section mismatches detected.
+Second warning:
+[ 7147.756952] rcu: INFO: rcu_preempt self-detected stall on CPU
+[ 7147.756958] rcu:   24-....: (59999 ticks this GP) idle=546/1/0x400000000000000
+                      softirq=367      3137/3673146 fqs=13844
+[ 7147.756960]        (t=60001 jiffies g=4322709 q=133381)
+[ 7147.756962] NMI backtrace for cpu 24
+...
 
-There are other instances of pernet_operations that are marked as
-__net_initdata as well, so I'm not sure what the lifetime rules are,
-but it's clear that any discarded symbol cannot be referenced from an
-exitcall, so remove that annotation here.
+We calculate that the transmit queue start stall should occur before
+7095s according to watchdog_timeo, the rcu start stall at 7087s.
+These two times are close together, it is difficult to confirm which
+happened first.
 
-Fixes: 3b3009ea8abb ("net/handshake: Create a NETLINK service for handling handshake requests")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+To let users know the exact time the stall started, print msecs when
+the transmit queue time out.
+
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 ---
- net/handshake/netlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sched/sch_generic.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
-index 8ea0ff993f9f..35c9c445e0b8 100644
---- a/net/handshake/netlink.c
-+++ b/net/handshake/netlink.c
-@@ -249,7 +249,7 @@ static void __net_exit handshake_net_exit(struct net *net)
- 	}
- }
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index a9aadc4e6858..37e41f972f69 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -502,7 +502,7 @@ static void dev_watchdog(struct timer_list *t)
+ 		if (netif_device_present(dev) &&
+ 		    netif_running(dev) &&
+ 		    netif_carrier_ok(dev)) {
+-			int some_queue_timedout = 0;
++			unsigned int timedout_ms = 0;
+ 			unsigned int i;
+ 			unsigned long trans_start;
  
--static struct pernet_operations __net_initdata handshake_genl_net_ops = {
-+static struct pernet_operations handshake_genl_net_ops = {
- 	.init		= handshake_net_init,
- 	.exit		= handshake_net_exit,
- 	.id		= &handshake_net_id,
+@@ -514,16 +514,16 @@ static void dev_watchdog(struct timer_list *t)
+ 				if (netif_xmit_stopped(txq) &&
+ 				    time_after(jiffies, (trans_start +
+ 							 dev->watchdog_timeo))) {
+-					some_queue_timedout = 1;
++					timedout_ms = jiffies_to_msecs(jiffies - trans_start);
+ 					atomic_long_inc(&txq->trans_timeout);
+ 					break;
+ 				}
+ 			}
+ 
+-			if (unlikely(some_queue_timedout)) {
++			if (unlikely(timedout_ms)) {
+ 				trace_net_dev_xmit_timeout(dev, i);
+-				WARN_ONCE(1, KERN_INFO "NETDEV WATCHDOG: %s (%s): transmit queue %u timed out\n",
+-				       dev->name, netdev_drivername(dev), i);
++				WARN_ONCE(1, "NETDEV WATCHDOG: %s (%s): transmit queue %u timed out %u ms\n",
++					  dev->name, netdev_drivername(dev), i, timedout_ms);
+ 				netif_freeze_queues(dev);
+ 				dev->netdev_ops->ndo_tx_timeout(dev, i);
+ 				netif_unfreeze_queues(dev);
 -- 
-2.39.2
+2.25.1
 
