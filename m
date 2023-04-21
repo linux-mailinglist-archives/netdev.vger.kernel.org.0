@@ -2,101 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 546A66EA6C2
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 11:17:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 292996EA6C3
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 11:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230400AbjDUJRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 05:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60676 "EHLO
+        id S230224AbjDUJRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 05:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230390AbjDUJRh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 05:17:37 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43129008
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 02:17:35 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id e9e14a558f8ab-329577952c5so645455ab.1
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 02:17:35 -0700 (PDT)
+        with ESMTP id S230492AbjDUJRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 05:17:45 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83EEF6181
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 02:17:42 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id 4fb4d7f45d1cf-504e232fe47so2496849a12.2
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 02:17:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682068655; x=1684660655;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3xi77l6nFIDq2U6loR3FxGhe3CQWmMa5/qtacXKDF8U=;
-        b=3zpIecJ5nJmmKDpFfC/7W6jp+PgnoDoGHZSB1k/RN+5AiNJOamugg5RVSRGJSqemDw
-         qaQA1e4jWnCI2uHbtD0ETKZagNYi7wiWga3266rFfiSRY1x8LK3icHTKfRRDJ3mjmp5V
-         xJJeLCurB2WhwMsKBXqB51n+zfYvmhTA5q1J1ba269rAAy/GjKvj3YNWgF6vDjNbN7Ra
-         B21i8kzKCq5yP2vGiAqN/qxz9NqmxVIYLne/O4z0/oneVuahJJdmNVRWKNHklgziKIGq
-         OxYdCoIDOwT6JNUedS9Gj9HYrCBePqML9gNYwe3dRTVOc3StQd0czzkvXiw7hM1XqFvE
-         zB6A==
+        d=gmail.com; s=20221208; t=1682068661; x=1684660661;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ho8J7Mo5mHRy1sjeLejouOFCiOdgZ2KgA4dOHyimRTo=;
+        b=kfk6sU5O66izeAsBWUiLNIiqjHohHxPO8HlH6aqua+SIC3dnirYpGBQJUPRdhkxSvI
+         rG2CmuNNHJi4kHymhP30nmiyEj4thamq22a5L7H2dfVQXC4Z4c/rXfSpnlTVIXV6B/he
+         zYnXLSRlvXSjCj2fZXyIYBj5fYKXGZQDrKAu05XYQ6Hg5apdK75Ju9c4VmNSdOjlGvzi
+         /WWmTQCbiyqtjKCXKmYKixVmC0WY4ofUc/UkzKZwo8bElI4M5MnGGaFnDzgqAkBdvvVY
+         YHiZfFEYjvU1jlQ224OuU3C9nGsG8tC5l8LPSeSibSnXxk71htk9ByKSRM2aCOzP/4jZ
+         8ZaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682068655; x=1684660655;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3xi77l6nFIDq2U6loR3FxGhe3CQWmMa5/qtacXKDF8U=;
-        b=ir4scFDi0iTnSYtgzxe/k9xhUfafnTvjmbYm9F0ifMtVjdac2poWfyTuIlWCvrfwXO
-         inOI7O0xJ29v+ulLVGS1UpdqD7t+mLF9XVJTVIATU9ZXDvypaUUZtGf8GsBlZu0UfE5E
-         oLJIHZY4XAon79TrumneqbfFhdN3sbQPz9tA5hYkULDjAam4CyTndwqmmknB9IXtGNym
-         VVqgBMbqlQ7Ndm/utjoxPXIuDBJcdAf3DmBQV+3A1es1h8wElCHmPDCbbU7iOptSTAL+
-         yj7Y1fibzjTgEVmdhrH8WAZn6UaQE++Cp1p6FnGP9Qrm+zv1obs09ubAoq+8UvU62CHI
-         uVVg==
-X-Gm-Message-State: AAQBX9fO0AzNs2i+Ukfor5LokzqI1eCyt91MF9NLBzdV9wvpzy0l6h3l
-        Ijwv1eKghep1I5TObwMNyJS8ClB462G0YLViaYchNA==
-X-Google-Smtp-Source: AKy350YQxMH/5VhuS1k8alvc4+CJ5uJbiZ0RNk66YHCR1FebgmlqvaR9gUvi13xQqnFWATyGPkSnEYu/55A0lmPZP7A=
-X-Received: by 2002:a05:6e02:12e8:b0:32c:a94e:b4b2 with SMTP id
- l8-20020a056e0212e800b0032ca94eb4b2mr149904iln.7.1682068654989; Fri, 21 Apr
- 2023 02:17:34 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682068661; x=1684660661;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ho8J7Mo5mHRy1sjeLejouOFCiOdgZ2KgA4dOHyimRTo=;
+        b=Kc1CHKP0n/bkyI2ZfjMzgTdzfj8YciJEiuQSVNnwzwoLEjBNTw2EyAF2ENXxcAxF4r
+         LKT7FO5IopNvlW0Z7Zt9FlagpegMmSCi0aC7XunozKp+NE57Np9AjjQR+ZxJG8zFiaop
+         4k+eS7uodwau6GHAkvjJM0O/Q1whBbWS3nFSOhdxeTARQ6MsRRgl24Kt2jHQwUcxHDUL
+         BwOMoG6QSZXNaxGHm2umJtk+tdgNJO9RyvWrDHby9EXk3Ypp+p1zBMjTlQzGmgbm0EDQ
+         hmJj5IWfUTZToKLTeC2S5KUb2Rzey27MgLuGme469+/7YCdHieO0+sR7n0Jp57f5d9S1
+         dJ1A==
+X-Gm-Message-State: AAQBX9dKPd6Dg4Xa0Mqdm/szhwAWAOwCDLor9v2GBmK2nlPVlhxl63gi
+        LoV5UAxbnBHW/5kQXSEbziQ=
+X-Google-Smtp-Source: AKy350YjnPS/SpcWc4mIOOU+QL9oxQ55688lDakZi7hl3SdXwCtg2pnLGPYEGm2ZfHz7+26FzqkuzQ==
+X-Received: by 2002:a17:906:3acd:b0:932:7f5c:4bb2 with SMTP id z13-20020a1709063acd00b009327f5c4bb2mr1450002ejd.75.1682068660729;
+        Fri, 21 Apr 2023 02:17:40 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id bf18-20020a0564021a5200b00506b88e4f17sm1635389edb.68.2023.04.21.02.17.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Apr 2023 02:17:40 -0700 (PDT)
+Date:   Fri, 21 Apr 2023 12:17:37 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Simon Horman <horms@kernel.org>
+Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Gospodarek <andy@greyhouse.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] bonding: Always assign be16 value to vlan_proto
+Message-ID: <20230421091737.deetnyj6cakrn3mg@skbuf>
+References: <20230420-bonding-be-vlan-proto-v1-1-754399f51d01@kernel.org>
+ <9836.1682020053@famine>
+ <20230420202303.iecl2vnkbdm2qfs7@skbuf>
+ <16322.1682025812@famine>
+ <ZEI0zpDyJtfogO7s@kernel.org>
 MIME-Version: 1.0
-References: <20230420164928.237235-1-pctammela@mojatatu.com> <20230420164928.237235-6-pctammela@mojatatu.com>
-In-Reply-To: <20230420164928.237235-6-pctammela@mojatatu.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 21 Apr 2023 11:17:23 +0200
-Message-ID: <CANn89iJsn1Xj8Y4tL69FA5a0y21R4-qBjMddH5rGOBD_iQ0qmw@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 5/5] net/sched: sch_qfq: BITify two bound definitions
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, simon.horman@corigine.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZEI0zpDyJtfogO7s@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 6:50=E2=80=AFPM Pedro Tammela <pctammela@mojatatu.c=
-om> wrote:
->
-> For the sake of readability, change these two definitions to BIT()
-> macros.
->
-> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
-> ---
->  net/sched/sch_qfq.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-> index dfd9a99e6257..4b9cc8a46e2a 100644
-> --- a/net/sched/sch_qfq.c
-> +++ b/net/sched/sch_qfq.c
-> @@ -105,7 +105,7 @@
->  #define QFQ_MAX_INDEX          24
->  #define QFQ_MAX_WSHIFT         10
->
-> -#define        QFQ_MAX_WEIGHT          (1<<QFQ_MAX_WSHIFT) /* see qfq_sl=
-ot_insert */
-> +#define        QFQ_MAX_WEIGHT          BIT(QFQ_MAX_WSHIFT) /* see qfq_sl=
-ot_insert */
+On Fri, Apr 21, 2023 at 09:01:34AM +0200, Simon Horman wrote:
+> Hi Jay and Vladimir,
+> 
+> Thanks for your review.
+> 
+> Firstly, sorry for the distraction about the VLAN_N_VID math.  I agree it
+> was incorrect. I had an out by one bug in my thought process which was
+> about 0x0fff instead of 0x1000.
+> 
+> Secondly, sorry for missing the central issue that it is a bit weird
+> to use a VID related value as a sentinel for a protocol field.
+> I agree it would be best to chose a different value.
+> 
+> In reference to the list of EtherTypes [1]. I think 0 might be ok,
+> but perhaps not ideal as technically it means a value of 0 for the
+> IEEE802.3 Length Field (although perhaps it can never mean that in this
+> context).
+> 
+> OTOH, 0xffff, is 'reserved' ([1] references RFC1701 [2]),
+> so perhaps it is a good choice.
+> 
+> In any case, I'm open to suggestions.
+> I'll probably hold off until the v6.5 cycle before reposting,
+> unless -rc8 appears next week. I'd rather not rush this one
+> given that I seem to have already got it wrong once.
+> 
+> [1] https://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xhtml#ieee-802-numbers-1
+> [2] https://www.rfc-editor.org/rfc/rfc1701.html
 
-I am not sure I find BIT(X) more readable in this context.
-
-Say MAX_WEIGHT was 0xF000, should we then use
-
-#define MAX_WEIGHT (BIT(15) | BIT(14) |BIT(13) | BIT(12))
+Any value would work as long as it's not a valid VLAN protocol.
+I would #define BOND_VLAN_PROTO_NONE htons(0xffff) and use that.
