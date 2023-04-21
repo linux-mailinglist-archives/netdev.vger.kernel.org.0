@@ -2,121 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF7846EAB43
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 15:11:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E311B6EAB56
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 15:15:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbjDUNLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 09:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
+        id S232427AbjDUNPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 09:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230042AbjDUNLA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 09:11:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92E5D309
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 06:10:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682082603;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8k2rgBBf1YF+OI88eA6xL7ypQDR8n8grAN8nTHY+8IU=;
-        b=W4FA8V5YLGxezleukF+Huvjt0fhNAf4Ms2Xtxk0Ln9p8DuYb0kM5Onur6fzDL96WAXIouw
-        mR5HdHzdh8OvFoFhqdlxeNlyhW3usHEetsUwm400HT/PSoeLHNMlz6XboERPLuK7ikk/7N
-        FQlL+nRzGyvWRdBcLxUhpNqME1sxo6w=
-Received: from mail-yw1-f197.google.com (mail-yw1-f197.google.com
- [209.85.128.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-35-0j_ckUVuPdOuHH9YcBGaeA-1; Fri, 21 Apr 2023 09:10:02 -0400
-X-MC-Unique: 0j_ckUVuPdOuHH9YcBGaeA-1
-Received: by mail-yw1-f197.google.com with SMTP id 00721157ae682-54fbf53aa09so1696907b3.1
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 06:10:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682082601; x=1684674601;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8k2rgBBf1YF+OI88eA6xL7ypQDR8n8grAN8nTHY+8IU=;
-        b=IvNB/xtnIdHtCPrBXGa0SXrbemozImdVwXWG8Xn/3hmM9aRgE0Xbdx+KZ1EzzYVRFq
-         KgKamBjfbb3OhdsT1vgrn5FlTNBEgFR9grz2Wf8Bli0lD1AszNUMll3JM79WW1ob0W1L
-         k6t+7Yn5ZJOzkgMnRPyp9zUeWMbjqEHafMf1DvOWX2hqYW0uhzzPzG/uRZ83v1UZUPTq
-         uPB5EwyQTqm2loWuUcQgjBw24PobmVgHFY3g6/VqE1+1lr0S7AlUszHBbnq8zLzTA2zm
-         Xs1BdcWCdsmjcX61IK5PoSm2BMxIoTM/hjdJYfbefwPggHkFpPTjyucTZ+Uf5JWHeIfH
-         NE/g==
-X-Gm-Message-State: AAQBX9cVnWkZmPOfdNnElScGfcPhyjpM64+CKzZ2AJN5712Zu+Ypbjhj
-        +kfY17E2Q+Q+Iyz1YKF4F3/LSSRJVpBMZHPO1wg00Zp1iyqsbOgiouEN83ro5F3oEaXLLZDd67u
-        sxJZAqejj3s/saWPDok3cG55Q
-X-Received: by 2002:a81:7895:0:b0:54f:8562:e36 with SMTP id t143-20020a817895000000b0054f85620e36mr3442951ywc.1.1682082601469;
-        Fri, 21 Apr 2023 06:10:01 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZI9exIBD0b/4P9JGwKmvfDkmUctco3MmJPz2tq/9mZCEg1R/oiyVCQZ5Atosl/IXgJjz9v9Q==
-X-Received: by 2002:a81:7895:0:b0:54f:8562:e36 with SMTP id t143-20020a817895000000b0054f85620e36mr3442920ywc.1.1682082601133;
-        Fri, 21 Apr 2023 06:10:01 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-230-170.dyn.eolo.it. [146.241.230.170])
-        by smtp.gmail.com with ESMTPSA id y18-20020a05620a09d200b0074bcf3ac7casm1309076qky.44.2023.04.21.06.09.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 06:10:00 -0700 (PDT)
-Message-ID: <d84e9f5056c4945cb4cfcc68c89986d3094b95b7.camel@redhat.com>
-Subject: Re: [PATCH net-next 5/5] net: optimize napi_threaded_poll() vs
- RPS/RFS
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com
-Date:   Fri, 21 Apr 2023 15:09:58 +0200
-In-Reply-To: <20230421094357.1693410-6-edumazet@google.com>
-References: <20230421094357.1693410-1-edumazet@google.com>
-         <20230421094357.1693410-6-edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        with ESMTP id S232265AbjDUNPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 09:15:39 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D57A5F0;
+        Fri, 21 Apr 2023 06:15:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1682082937; x=1713618937;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=kmiOUVgBvjfIs0p4hj+2OzOGUD9EcJfcUGBRPSb0QWE=;
+  b=GPRVPDMObKteuhX+d5bqVNEmjAz3TQa+p4F1IT3enbCH3SZmxNm1DgJA
+   N7K8HvnY5JCPaK4gDtDTLgsjzUhWUH3P6w8JdOz2wDJuTMfGwZn479wAB
+   a0MyfCRisr10wkW/8W3NQWRFCtu4kM8I8jDXNI+4nI3Liy26f6m+mLH4N
+   uXZKw426FjEEU2i/OJLQAsrfW7VFsmTKZVA7/V11TuJSqzZxw3ZOuxq32
+   78/cnBEgbLcXg4KaoF3FQayJK8QjYW/3KxwjM3O4NIUVpt5hw8XFjGcQo
+   rBQ7N3+DA58KM05rVkGb8aJQRAnmMxlt47OZOyq5qBXJBACiTxDDmNCRf
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.99,214,1677567600"; 
+   d="scan'208";a="148298571"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Apr 2023 06:15:35 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Fri, 21 Apr 2023 06:15:11 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.21 via Frontend Transport; Fri, 21 Apr 2023 06:15:08 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>,
+        <richardcochran@gmail.com>, <UNGLinuxDriver@microchip.com>,
+        <alexandr.lobakin@intel.com>, <maciej.fijalkowski@intel.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2] lan966x: Don't use xdp_frame when action is XDP_TX
+Date:   Fri, 21 Apr 2023 15:14:22 +0200
+Message-ID: <20230421131422.3530159-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.38.0
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+When the action of an xdp program was XDP_TX, lan966x was creating
+a xdp_frame and use this one to send the frame back. But it is also
+possible to send back the frame without needing a xdp_frame, because
+it is possible to send it back using the page.
+And then once the frame is transmitted is possible to use directly
+page_pool_recycle_direct as lan966x is using page pools.
+This would save some CPU usage on this path, which results in higher
+number of transmitted frames. Bellow are the statistics:
+Frame size:    Improvement:
+64                ~8%
+256              ~11%
+512               ~8%
+1000              ~0%
+1500              ~0%
 
-thank you for the extremely fast turnaround!
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+v1->v2:
+- reduce number of arguments for the function lan966x_fdma_xmit_xdpf,
+  as some of them are mutual exclusive, and other can be replaced with
+  deduced from the other ones
+- update commit message and add statistics for the improvement
+---
+ .../ethernet/microchip/lan966x/lan966x_fdma.c | 43 +++++++++++--------
+ .../ethernet/microchip/lan966x/lan966x_main.h |  6 +--
+ .../ethernet/microchip/lan966x/lan966x_xdp.c  | 10 ++---
+ 3 files changed, 31 insertions(+), 28 deletions(-)
 
-On Fri, 2023-04-21 at 09:43 +0000, Eric Dumazet wrote:
-> We use napi_threaded_poll() in order to reduce our softirq dependency.
->=20
-> We can add a followup of 821eba962d95 ("net: optimize napi_schedule_rps()=
-")
-> to further remove the need of firing NET_RX_SOFTIRQ whenever
-> RPS/RFS are used.
->=20
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> ---
->  include/linux/netdevice.h |  3 +++
->  net/core/dev.c            | 12 ++++++++++--
->  2 files changed, 13 insertions(+), 2 deletions(-)
->=20
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index a6a3e9457d6cbc9fcbbde96b43b4b21878495403..08fbd4622ccf731daaee34ad9=
-9773d6dc2e82fa6 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -3194,7 +3194,10 @@ struct softnet_data {
->  #ifdef CONFIG_RPS
->  	struct softnet_data	*rps_ipi_list;
->  #endif
-> +
->  	bool			in_net_rx_action;
-> +	bool			in_napi_threaded_poll;
-
-If I'm correct only one of the above 2 flags can be set to true at any
-give time. I'm wondering if could use a single flag (possibly with a
-rename - say 'in_napi_polling')?
-
-Otherwise LGTM, many thanks!
-
-Paolo
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+index 2ed76bb61a731..85c13231e0176 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
+@@ -390,6 +390,7 @@ static void lan966x_fdma_stop_netdev(struct lan966x *lan966x)
+ static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
+ {
+ 	struct lan966x_tx *tx = &lan966x->tx;
++	struct lan966x_rx *rx = &lan966x->rx;
+ 	struct lan966x_tx_dcb_buf *dcb_buf;
+ 	struct xdp_frame_bulk bq;
+ 	struct lan966x_db *db;
+@@ -432,7 +433,8 @@ static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
+ 			if (dcb_buf->xdp_ndo)
+ 				xdp_return_frame_bulk(dcb_buf->data.xdpf, &bq);
+ 			else
+-				xdp_return_frame_rx_napi(dcb_buf->data.xdpf);
++				page_pool_recycle_direct(rx->page_pool,
++							 dcb_buf->data.page);
+ 		}
+ 
+ 		clear = true;
+@@ -699,15 +701,14 @@ static void lan966x_fdma_tx_start(struct lan966x_tx *tx, int next_to_use)
+ 	tx->last_in_use = next_to_use;
+ }
+ 
+-int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
+-			   struct xdp_frame *xdpf,
+-			   struct page *page,
+-			   bool dma_map)
++int lan966x_fdma_xmit_xdpf(struct lan966x_port *port, void *ptr, u32 len)
+ {
+ 	struct lan966x *lan966x = port->lan966x;
+ 	struct lan966x_tx_dcb_buf *next_dcb_buf;
+ 	struct lan966x_tx *tx = &lan966x->tx;
++	struct xdp_frame *xdpf;
+ 	dma_addr_t dma_addr;
++	struct page *page;
+ 	int next_to_use;
+ 	__be32 *ifh;
+ 	int ret = 0;
+@@ -722,8 +723,19 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
+ 		goto out;
+ 	}
+ 
++	/* Fill up the buffer */
++	next_dcb_buf = &tx->dcbs_buf[next_to_use];
++	next_dcb_buf->use_skb = false;
++	next_dcb_buf->xdp_ndo = !len;
++	next_dcb_buf->len = len + IFH_LEN_BYTES;
++	next_dcb_buf->used = true;
++	next_dcb_buf->ptp = false;
++	next_dcb_buf->dev = port->dev;
++
+ 	/* Generate new IFH */
+-	if (dma_map) {
++	if (!len) {
++		xdpf = ptr;
++
+ 		if (xdpf->headroom < IFH_LEN_BYTES) {
+ 			ret = NETDEV_TX_OK;
+ 			goto out;
+@@ -743,11 +755,15 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
+ 			goto out;
+ 		}
+ 
++		next_dcb_buf->data.xdpf = xdpf;
++
+ 		/* Setup next dcb */
+ 		lan966x_fdma_tx_setup_dcb(tx, next_to_use,
+ 					  xdpf->len + IFH_LEN_BYTES,
+ 					  dma_addr);
+ 	} else {
++		page = ptr;
++
+ 		ifh = page_address(page) + XDP_PACKET_HEADROOM;
+ 		memset(ifh, 0x0, sizeof(__be32) * IFH_LEN);
+ 		lan966x_ifh_set_bypass(ifh, 1);
+@@ -756,25 +772,18 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
+ 		dma_addr = page_pool_get_dma_addr(page);
+ 		dma_sync_single_for_device(lan966x->dev,
+ 					   dma_addr + XDP_PACKET_HEADROOM,
+-					   xdpf->len + IFH_LEN_BYTES,
++					   len + IFH_LEN_BYTES,
+ 					   DMA_TO_DEVICE);
+ 
++		next_dcb_buf->data.page = page;
++
+ 		/* Setup next dcb */
+ 		lan966x_fdma_tx_setup_dcb(tx, next_to_use,
+-					  xdpf->len + IFH_LEN_BYTES,
++					  len + IFH_LEN_BYTES,
+ 					  dma_addr + XDP_PACKET_HEADROOM);
+ 	}
+ 
+-	/* Fill up the buffer */
+-	next_dcb_buf = &tx->dcbs_buf[next_to_use];
+-	next_dcb_buf->use_skb = false;
+-	next_dcb_buf->data.xdpf = xdpf;
+-	next_dcb_buf->xdp_ndo = dma_map;
+-	next_dcb_buf->len = xdpf->len + IFH_LEN_BYTES;
+ 	next_dcb_buf->dma_addr = dma_addr;
+-	next_dcb_buf->used = true;
+-	next_dcb_buf->ptp = false;
+-	next_dcb_buf->dev = port->dev;
+ 
+ 	/* Start the transmission */
+ 	lan966x_fdma_tx_start(tx, next_to_use);
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+index 757378516f1fd..27f272831ea5c 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+@@ -262,6 +262,7 @@ struct lan966x_tx_dcb_buf {
+ 	union {
+ 		struct sk_buff *skb;
+ 		struct xdp_frame *xdpf;
++		struct page *page;
+ 	} data;
+ 	u32 len;
+ 	u32 used : 1;
+@@ -593,10 +594,7 @@ int lan966x_ptp_setup_traps(struct lan966x_port *port, struct ifreq *ifr);
+ int lan966x_ptp_del_traps(struct lan966x_port *port);
+ 
+ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev);
+-int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
+-			   struct xdp_frame *frame,
+-			   struct page *page,
+-			   bool dma_map);
++int lan966x_fdma_xmit_xdpf(struct lan966x_port *port, void *ptr, u32 len);
+ int lan966x_fdma_change_mtu(struct lan966x *lan966x);
+ void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev);
+ void lan966x_fdma_netdev_deinit(struct lan966x *lan966x, struct net_device *dev);
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
+index 2e6f486ec67d7..9ee61db8690b4 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
+@@ -62,7 +62,7 @@ int lan966x_xdp_xmit(struct net_device *dev,
+ 		struct xdp_frame *xdpf = frames[i];
+ 		int err;
+ 
+-		err = lan966x_fdma_xmit_xdpf(port, xdpf, NULL, true);
++		err = lan966x_fdma_xmit_xdpf(port, xdpf, 0);
+ 		if (err)
+ 			break;
+ 
+@@ -76,7 +76,6 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
+ {
+ 	struct bpf_prog *xdp_prog = port->xdp_prog;
+ 	struct lan966x *lan966x = port->lan966x;
+-	struct xdp_frame *xdpf;
+ 	struct xdp_buff xdp;
+ 	u32 act;
+ 
+@@ -90,11 +89,8 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
+ 	case XDP_PASS:
+ 		return FDMA_PASS;
+ 	case XDP_TX:
+-		xdpf = xdp_convert_buff_to_frame(&xdp);
+-		if (!xdpf)
+-			return FDMA_DROP;
+-
+-		return lan966x_fdma_xmit_xdpf(port, xdpf, page, false) ?
++		return lan966x_fdma_xmit_xdpf(port, page,
++					      data_len - IFH_LEN_BYTES) ?
+ 		       FDMA_DROP : FDMA_TX;
+ 	case XDP_REDIRECT:
+ 		if (xdp_do_redirect(port->dev, &xdp, xdp_prog))
+-- 
+2.38.0
 
