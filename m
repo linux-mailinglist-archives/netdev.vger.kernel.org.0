@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A225F6EA13B
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 03:51:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 362AC6EA13C
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 03:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233247AbjDUBvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 21:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46158 "EHLO
+        id S233299AbjDUBvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 21:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231889AbjDUBvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 21:51:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC49444A0
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 18:51:05 -0700 (PDT)
+        with ESMTP id S233309AbjDUBvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 21:51:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFBF6182
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 18:51:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6626564AC6
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 01:51:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE556C433D2;
-        Fri, 21 Apr 2023 01:51:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4910C61D5A
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 01:51:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D96BC433D2;
+        Fri, 21 Apr 2023 01:51:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682041864;
-        bh=fjKgR3N/VbLblLeDQHJlaJkHXkyUX4v4tGzRrO1Ow9c=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AHjRYrEzxsNO12wStKbQNwmrkY80FEL3XpD1etUfomrRU9NHPu4BblIa/Ww+M3T2e
-         dsmJDG7JPrWXzq94gt3ikZimPnZTJZgN1rK+ziXTuNKrwkKtrNriUArP+RYkhv/5gh
-         WjlP+0fQYjKP4Jors0JkAe7lv/EcSazZz3hVcb1z+hFY1mdXIC7Qm2w05e8mJ3Q8UB
-         Oer/S+Ja7LQG0NYT8FTwbpRoEm/zQNQRzM1OwSY0fRH/tEDf9wQiqk5Bs1hqi+W5sT
-         3OiQqmNfxZP5PiDmaPPx2lf6QNB0p7sDtAnwHQs9n+JsXpY7klA8vE9ZcBhK7hSmS4
-         laJRgI+QO4q7Q==
+        s=k20201202; t=1682041868;
+        bh=cW72OyrP7LC6E5ZheoqQPt8yEq+y8jteUV2SRLipE6k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bNFbbbXDSertcPtFJbaSEkb8r/lTgXmNlzqmqH6lYPQCsr2pbDr3HF883xkUq3vl4
+         0zgqWmzBDu3qwxmm1Osfa29/yUsD6q9i9AHSKKXAD94mIHQK4/Z/V8gZ3cj0ICy8jq
+         e8bw7vkXygJfqzoZTZDgNSy8Skr328p2DvA5EvZy4v4RGLruiWGUMIxpM1hQgUQINX
+         UrN4DJBVSsAzFeM6/iMkvkxd4rqnN1iRRuNpYzY4+seU+AyP9/x+4mBq+6UnlmBxVe
+         gb+pjYc8jTuU2OcrsFWDOEUAsmZsS8ADAqBm2vx8CrLwd9xsk3DudJMHBY/pAau/vT
+         JgdTo3c03fBuw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [pull request][net V2 00/10] mlx5 fixes 2023-04-19
-Date:   Thu, 20 Apr 2023 18:50:47 -0700
-Message-Id: <20230421015057.355468-1-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>
+Subject: [net V2 01/10] net/mlx5e: Don't clone flow post action attributes second time
+Date:   Thu, 20 Apr 2023 18:50:48 -0700
+Message-Id: <20230421015057.355468-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230421015057.355468-1-saeed@kernel.org>
+References: <20230421015057.355468-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -54,69 +57,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-V1->v2:
-  - #3, Remove "inline" keyword from a function declaration in c file.
-  - #1, FYI Automation is reporting "author Signed-off-by missing" but
-    it is not ! I manually checked, so nothing was changed in patch 1
+The code already clones post action attributes in
+mlx5e_clone_flow_attr_for_post_act(). Creating another copy in
+mlx5e_tc_post_act_add() is a erroneous leftover from original
+implementation. Instead, assign handle->attribute to post_attr provided by
+the caller. Note that cloning the attribute second time is not just
+wasteful but also causes issues like second copy not being properly updated
+in neigh update code which leads to following use-after-free:
 
-This series provides bug fixes to mlx5 driver.
-Please pull and let me know if there is any problem.
+Feb 21 09:02:00 c-237-177-40-045 kernel: BUG: KASAN: use-after-free in mlx5_cmd_set_fte+0x200d/0x24c0 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_report+0xbb/0x1a0
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_save_stack+0x1e/0x40
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_set_track+0x21/0x30
+Feb 21 09:02:00 c-237-177-40-045 kernel:  __kasan_kmalloc+0x7a/0x90
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_save_stack+0x1e/0x40
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_set_track+0x21/0x30
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_save_free_info+0x2a/0x40
+Feb 21 09:02:00 c-237-177-40-045 kernel:  ____kasan_slab_free+0x11a/0x1b0
+Feb 21 09:02:00 c-237-177-40-045 kernel: page dumped because: kasan: bad access detected
+Feb 21 09:02:00 c-237-177-40-045 kernel: mlx5_core 0000:08:00.0: mlx5_cmd_out_err:803:(pid 8833): SET_FLOW_TABLE_ENTRY(0x936) op_mod(0x0) failed, status bad resource state(0x9), syndrome (0xf2ff71), err(-22)
+Feb 21 09:02:00 c-237-177-40-045 kernel: mlx5_core 0000:08:00.0 enp8s0f0: Failed to add post action rule
+Feb 21 09:02:00 c-237-177-40-045 kernel: mlx5_core 0000:08:00.0: mlx5e_tc_encap_flows_add:190:(pid 8833): Failed to update flow post acts, -22
+Feb 21 09:02:00 c-237-177-40-045 kernel: Call Trace:
+Feb 21 09:02:00 c-237-177-40-045 kernel:  <TASK>
+Feb 21 09:02:00 c-237-177-40-045 kernel:  dump_stack_lvl+0x57/0x7d
+Feb 21 09:02:00 c-237-177-40-045 kernel:  print_report+0x170/0x471
+Feb 21 09:02:00 c-237-177-40-045 kernel:  ? mlx5_cmd_set_fte+0x200d/0x24c0 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_report+0xbb/0x1a0
+Feb 21 09:02:00 c-237-177-40-045 kernel:  ? mlx5_cmd_set_fte+0x200d/0x24c0 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5_cmd_set_fte+0x200d/0x24c0 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  ? __module_address.part.0+0x62/0x200
+Feb 21 09:02:00 c-237-177-40-045 kernel:  ? mlx5_cmd_stub_create_flow_table+0xd0/0xd0 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  ? __raw_spin_lock_init+0x3b/0x110
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5_cmd_create_fte+0x80/0xb0 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  add_rule_fg+0xe80/0x19c0 [mlx5_core]
+--
+Feb 21 09:02:00 c-237-177-40-045 kernel: Allocated by task 13476:
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_save_stack+0x1e/0x40
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_set_track+0x21/0x30
+Feb 21 09:02:00 c-237-177-40-045 kernel:  __kasan_kmalloc+0x7a/0x90
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5_packet_reformat_alloc+0x7b/0x230 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5e_tc_tun_create_header_ipv4+0x977/0xf10 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5e_attach_encap+0x15b4/0x1e10 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  post_process_attr+0x305/0xa30 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5e_tc_add_fdb_flow+0x4c0/0xcf0 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  __mlx5e_add_fdb_flow+0x7cf/0xe90 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5e_configure_flower+0xcaa/0x4b90 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5e_rep_setup_tc_cls_flower+0x99/0x1b0 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5e_rep_setup_tc_cb+0x133/0x1e0 [mlx5_core]
+--
+Feb 21 09:02:00 c-237-177-40-045 kernel: Freed by task 8833:
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_save_stack+0x1e/0x40
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_set_track+0x21/0x30
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kasan_save_free_info+0x2a/0x40
+Feb 21 09:02:00 c-237-177-40-045 kernel:  ____kasan_slab_free+0x11a/0x1b0
+Feb 21 09:02:00 c-237-177-40-045 kernel:  __kmem_cache_free+0x1de/0x400
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5_packet_reformat_dealloc+0xad/0x100 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5e_tc_encap_flows_del+0x3c0/0x500 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5e_rep_update_flows+0x40c/0xa80 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  mlx5e_rep_neigh_update+0x473/0x7a0 [mlx5_core]
+Feb 21 09:02:00 c-237-177-40-045 kernel:  process_one_work+0x7c2/0x1310
+Feb 21 09:02:00 c-237-177-40-045 kernel:  worker_thread+0x59d/0xec0
+Feb 21 09:02:00 c-237-177-40-045 kernel:  kthread+0x28f/0x330
 
-Thanks,
-Saeed.
+Fixes: 8300f225268b ("net/mlx5e: Create new flow attr for multi table actions")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../net/ethernet/mellanox/mlx5/core/en/tc/post_act.c  | 11 ++---------
+ .../net/ethernet/mellanox/mlx5/core/en/tc/post_act.h  |  2 +-
+ 2 files changed, 3 insertions(+), 10 deletions(-)
 
-The following changes since commit 0f2a4af27b649c13ba76431552fe49c60120d0f6:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+index 4e48946c4c2a..0290e0dea539 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.c
+@@ -106,22 +106,17 @@ mlx5e_tc_post_act_offload(struct mlx5e_post_act *post_act,
+ }
+ 
+ struct mlx5e_post_act_handle *
+-mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *attr)
++mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *post_attr)
+ {
+-	u32 attr_sz = ns_to_attr_sz(post_act->ns_type);
+ 	struct mlx5e_post_act_handle *handle;
+-	struct mlx5_flow_attr *post_attr;
+ 	int err;
+ 
+ 	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+-	post_attr = mlx5_alloc_flow_attr(post_act->ns_type);
+-	if (!handle || !post_attr) {
+-		kfree(post_attr);
++	if (!handle) {
+ 		kfree(handle);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 
+-	memcpy(post_attr, attr, attr_sz);
+ 	post_attr->chain = 0;
+ 	post_attr->prio = 0;
+ 	post_attr->ft = post_act->ft;
+@@ -145,7 +140,6 @@ mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *at
+ 	return handle;
+ 
+ err_xarray:
+-	kfree(post_attr);
+ 	kfree(handle);
+ 	return ERR_PTR(err);
+ }
+@@ -164,7 +158,6 @@ mlx5e_tc_post_act_del(struct mlx5e_post_act *post_act, struct mlx5e_post_act_han
+ 	if (!IS_ERR_OR_NULL(handle->rule))
+ 		mlx5e_tc_post_act_unoffload(post_act, handle);
+ 	xa_erase(&post_act->ids, handle->id);
+-	kfree(handle->attr);
+ 	kfree(handle);
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.h
+index f476774c0b75..40b8df184af5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/post_act.h
+@@ -19,7 +19,7 @@ void
+ mlx5e_tc_post_act_destroy(struct mlx5e_post_act *post_act);
+ 
+ struct mlx5e_post_act_handle *
+-mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *attr);
++mlx5e_tc_post_act_add(struct mlx5e_post_act *post_act, struct mlx5_flow_attr *post_attr);
+ 
+ void
+ mlx5e_tc_post_act_del(struct mlx5e_post_act *post_act, struct mlx5e_post_act_handle *handle);
+-- 
+2.39.2
 
-  wifi: ath9k: Don't mark channelmap stack variable read-only in ath9k_mci_update_wlan_channels() (2023-04-20 15:26:37 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2023-04-20
-
-for you to fetch changes up to 081abcacaf0a9505c0d4cc9780b12e6ce5d33630:
-
-  Revert "net/mlx5e: Don't use termination table when redundant" (2023-04-20 18:47:33 -0700)
-
-----------------------------------------------------------------
-mlx5-fixes-2023-04-20
-
-----------------------------------------------------------------
-Aya Levin (1):
-      net/mlx5e: Nullify table pointer when failing to create
-
-Chris Mi (3):
-      net/mlx5: E-switch, Create per vport table based on devlink encap mode
-      net/mlx5: E-switch, Don't destroy indirect table in split rule
-      net/mlx5: Release tunnel device after tc update skb
-
-Moshe Shemesh (2):
-      Revert "net/mlx5: Remove "recovery" arg from mlx5_load_one() function"
-      net/mlx5: Use recovery timeout on sync reset flow
-
-Roi Dayan (1):
-      net/mlx5e: Fix error flow in representor failing to add vport rx rule
-
-Vlad Buslov (3):
-      net/mlx5e: Don't clone flow post action attributes second time
-      net/mlx5e: Release the label when replacing existing ct entry
-      Revert "net/mlx5e: Don't use termination table when redundant"
-
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |  2 +-
- .../net/ethernet/mellanox/mlx5/core/en/rep/tc.c    |  1 +
- .../ethernet/mellanox/mlx5/core/en/tc/post_act.c   | 11 ++------
- .../ethernet/mellanox/mlx5/core/en/tc/post_act.h   |  2 +-
- .../net/ethernet/mellanox/mlx5/core/en/tc/sample.c |  4 +--
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |  1 +
- drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  5 +++-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  1 +
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  2 ++
- .../net/ethernet/mellanox/mlx5/core/esw/vporttbl.c | 12 +++++++-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  2 +-
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  4 +--
- .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  | 32 +++-------------------
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |  4 +--
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  9 +++---
- .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |  2 +-
- 16 files changed, 40 insertions(+), 54 deletions(-)
