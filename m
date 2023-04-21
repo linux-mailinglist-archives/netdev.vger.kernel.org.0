@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66E2F6EA540
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:50:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65E806EA53E
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:50:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231400AbjDUHus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 03:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        id S231451AbjDUHuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 03:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231307AbjDUHum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:50:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0345902B
+        with ESMTP id S231435AbjDUHuk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:50:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1B540C7
         for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 00:50:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3123964E9A
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 143A664E92
         for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 07:50:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 84139C4339E;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6B8BFC4339B;
         Fri, 21 Apr 2023 07:50:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1682063430;
-        bh=Ghb4ujWOL+ptngeA/TuY2Pd/yHbrToTKrKLoD/hDrBU=;
+        bh=6/y8G0ZiqPAifVh+i5PDY7VpETrfy1glOu1IyKXJtnA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=V6L7C6QH3j6FxdnEi8rfB0tJSVJFDUdEujC0yCCbdjb4WmwGu2XvzdkjssW7PkgGI
-         GZuI6FLJLUsQ27umX7E1m0BMFf5AXZeqOtpCOiTzrD8QgsAknj3r5VqMllkoH2xfAN
-         ZJeIfuMIEbhKjCAyYeEwZFI4i1kAdtH1bx1/o7xyjmvrr0oXB6wb4yXZDMsAxfqu9G
-         MX4ZQ4oG5LT1RRe2anj0Y75i/37pc17rz7+yWuoZ/0p5udkd7zsT+2PLvq5BCsjWaJ
-         Qi6zjEZOCdd1kqWjQCroQxJPpEZlIEVZcaO8b11CjnazV498tznb8x6OJRuJLJlhQZ
-         z9oBWqhCsai7w==
+        b=UOgmSicvboaxb7lj0j+c2vpcta80Fwxh3175QxIhJq1cMJj4taQBfY5hcLH50oR4v
+         4bQ9MPXU63G9zLBtVFT1sN0MDJLiw+FAh6QOb3EnVGLA41N10es7RPuAHpWSBDxYsG
+         ygXnTDlKwrWoC09NCADZAJihpsmkgmVkiRlvPIOgl6dx65v8xo+65eYVTa7n3sUxmh
+         1zAXIc6dGzoCMxT2WDeughA+zEg/X4Hor3pUv5RoasA5zp8CFX6BAmcj9NYaDYI8pk
+         /csAwyLvML6J9cmhaZmQ+T/NaBj3FcuYq9DlgDwNkbSmMBpeNeMSSDeCnOzNq5JoqU
+         Eo8sSYW8ZOITg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 660A1E501EA;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4D543E501E2;
         Fri, 21 Apr 2023 07:50:30 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v7 0/5] Support MACsec VLAN
+Subject: Re: [PATCH net-next v2 0/9] bridge: Add per-{Port,
+ VLAN} neighbor suppression
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168206343041.30967.48845527348863788.git-patchwork-notify@kernel.org>
+Message-Id: <168206343031.30967.17590346122475626236.git-patchwork-notify@kernel.org>
 Date:   Fri, 21 Apr 2023 07:50:30 +0000
-References: <20230419142126.9788-1-ehakim@nvidia.com>
-In-Reply-To: <20230419142126.9788-1-ehakim@nvidia.com>
-To:     Emeel Hakim <ehakim@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, sd@queasysnail.net, netdev@vger.kernel.org,
-        leon@kernel.org
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+References: <20230419153500.2655036-1-idosch@nvidia.com>
+In-Reply-To: <20230419153500.2655036-1-idosch@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, razor@blackwall.org, roopa@nvidia.com,
+        mlxsw@nvidia.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -62,28 +64,38 @@ Hello:
 This series was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 19 Apr 2023 17:21:21 +0300 you wrote:
-> Dear maintainers,
+On Wed, 19 Apr 2023 18:34:51 +0300 you wrote:
+> Background
+> ==========
 > 
-> This patch series introduces support for hardware (HW) offload MACsec
-> devices with VLAN configuration. The patches address both scenarios
-> where the VLAN header is both the inner and outer header for MACsec.
-> 
-> The changes include:
+> In order to minimize the flooding of ARP and ND messages in the VXLAN
+> network, EVPN includes provisions [1] that allow participating VTEPs to
+> suppress such messages in case they know the MAC-IP binding and can
+> reply on behalf of the remote host. In Linux, the above is implemented
+> in the bridge driver using a per-port option called "neigh_suppress"
+> that was added in kernel version 4.15 [2].
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v7,1/5] vlan: Add MACsec offload operations for VLAN interface
-    https://git.kernel.org/netdev/net-next/c/abff3e5e2935
-  - [net-next,v7,2/5] net/mlx5: Enable MACsec offload feature for VLAN interface
-    https://git.kernel.org/netdev/net-next/c/339ccec8d43d
-  - [net-next,v7,3/5] net/mlx5: Support MACsec over VLAN
-    https://git.kernel.org/netdev/net-next/c/4bba492b0427
-  - [net-next,v7,4/5] net/mlx5: Consider VLAN interface in MACsec TX steering rules
-    https://git.kernel.org/netdev/net-next/c/765f974c7dfd
-  - [net-next,v7,5/5] macsec: Don't rely solely on the dst MAC address to identify destination MACsec device
-    https://git.kernel.org/netdev/net-next/c/7661351a54ec
+  - [net-next,v2,1/9] bridge: Reorder neighbor suppression check when flooding
+    https://git.kernel.org/netdev/net-next/c/013a7ce81dd8
+  - [net-next,v2,2/9] bridge: Pass VLAN ID to br_flood()
+    https://git.kernel.org/netdev/net-next/c/e408336a693e
+  - [net-next,v2,3/9] bridge: Add internal flags for per-{Port, VLAN} neighbor suppression
+    https://git.kernel.org/netdev/net-next/c/a714e3ec2308
+  - [net-next,v2,4/9] bridge: Take per-{Port, VLAN} neighbor suppression into account
+    https://git.kernel.org/netdev/net-next/c/6be42ed0a5f4
+  - [net-next,v2,5/9] bridge: Encapsulate data path neighbor suppression logic
+    https://git.kernel.org/netdev/net-next/c/3aca683e0654
+  - [net-next,v2,6/9] bridge: Add per-{Port, VLAN} neighbor suppression data path support
+    https://git.kernel.org/netdev/net-next/c/412614b1457a
+  - [net-next,v2,7/9] bridge: vlan: Allow setting VLAN neighbor suppression state
+    https://git.kernel.org/netdev/net-next/c/83f6d600796c
+  - [net-next,v2,8/9] bridge: Allow setting per-{Port, VLAN} neighbor suppression state
+    https://git.kernel.org/netdev/net-next/c/160656d7201d
+  - [net-next,v2,9/9] selftests: net: Add bridge neighbor suppression test
+    https://git.kernel.org/netdev/net-next/c/7648ac72dcd7
 
 You are awesome, thank you!
 -- 
