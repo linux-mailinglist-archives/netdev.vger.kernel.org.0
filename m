@@ -2,54 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D243E6EA190
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 04:20:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6012C6EA1A2
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 04:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233480AbjDUCUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 22:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
+        id S233147AbjDUCaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 22:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233265AbjDUCUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 22:20:22 -0400
+        with ESMTP id S231865AbjDUCaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 22:30:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0CE3C34;
-        Thu, 20 Apr 2023 19:20:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1B1212D
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 19:30:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 970A2647BB;
-        Fri, 21 Apr 2023 02:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E87BBC4339B;
-        Fri, 21 Apr 2023 02:20:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D60D964D1D
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 02:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 330CDC4339B;
+        Fri, 21 Apr 2023 02:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682043620;
-        bh=JA81Mm074MiULwVSpeXVNBbE+9b4mCmFNAJNTDHJN9I=;
+        s=k20201202; t=1682044219;
+        bh=JvvWPhp/8EVV8OL4IkKU4tiY94Ywo92jnz04tUvt5PY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dW0DRZSZa9yvitKhcuvlV6RwfF9ZNN8j6rbGiga/fbj4+skYNHvKPCG2rVDMYVpGL
-         JafzUs/4YVMvE87NhI1SObc+arOWCP65uWSvIRz8BBMy8jkQLakReATecUXCh5/73P
-         eyuExAJ+4aavW2L7Acv7Ux9EaToVMVKRQJzfnigibHgEdgidwWTVEIxlmtCOnRMiab
-         ADkJydS8f0TMsM9TElpghc5R8JBIKYt1ToV1vd3nEAW7XYHvM85eD2OehuNC6uVVZP
-         zmfGdhNiWDIGx/s+uOJsHWMXkKi7GXegJtcx3K8q56GnEDAONjcJ3LSt3qAYOssYaz
-         xzC98vYjntFQg==
+        b=tgWy9sErFWEbe8kmI6LpVHhx1EmPmizKT6fqmmQY2K8hqXj91WYDD6sEBhhfzD317
+         bpDAu9cUjYs1W7wERS+l6RZdgqwepf5Dg1ZvyQ5CE/RswUXfgLQ7jrZzjNgCqpA9Ql
+         niE2nX3QoYnkixYqmx/DOa1B6tZ3CxtGPcU45Dmn2UW5cj4VIMQn44kcETldpIp7jp
+         CnmSDKr2FVElZzd9bszld4hBFNBdeMtRWD+HXRKkk0vec4YQBu55wFA1auy7Wp/T5p
+         wUOYLsaGBXT1+QG2EBzEzDTqWcA0cW3CbSY1sH+DwaHUaiXB99XsbS39G52n04QE+h
+         0KMl+zNS6AiDQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CA5A3E270E1;
-        Fri, 21 Apr 2023 02:20:19 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 15DF1E501E3;
+        Fri, 21 Apr 2023 02:30:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: phy: fix circular LEDS_CLASS dependencies
+Subject: Re: [PATCH net-next] gve: update MAINTAINERS
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168204361982.5507.17481778283181053280.git-patchwork-notify@kernel.org>
-Date:   Fri, 21 Apr 2023 02:20:19 +0000
-References: <20230420084624.3005701-1-arnd@kernel.org>
-In-Reply-To: <20230420084624.3005701-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        f.fainelli@gmail.com, ansuelsmth@gmail.com, arnd@arndb.de,
-        linux@armlinux.org.uk, Frank.Sae@motor-comm.com,
-        rdunlap@infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Message-Id: <168204421908.9555.3095328989706598759.git-patchwork-notify@kernel.org>
+Date:   Fri, 21 Apr 2023 02:30:19 +0000
+References: <20230419210558.1893400-1-jeroendb@google.com>
+In-Reply-To: <20230419210558.1893400-1-jeroendb@google.com>
+To:     Jeroen de Borst <jeroendb@google.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pkaligineedi@google.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,25 +58,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (main)
+This patch was applied to netdev/net.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 20 Apr 2023 10:45:51 +0200 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Wed, 19 Apr 2023 14:05:58 -0700 you wrote:
+> This reflects role changes in our team.
 > 
-> The CONFIG_PHYLIB symbol is selected by a number of device drivers that
-> need PHY support, but it now has a dependency on CONFIG_LEDS_CLASS,
-> which may not be enabled, causing build failures.
-> 
-> Avoid the risk of missing and circular dependencies by guarding the
-> phylib LED support itself in another Kconfig symbol that can only be
-> enabled if the dependency is met.
-> 
-> [...]
+> Signed-off-by: Jeroen de Borst <jeroendb@google.com>
+> Signed-off-by: Praveen Kaligineedi <pkaligineedi@google.com>
+> ---
+>  MAINTAINERS | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Here is the summary with links:
-  - net: phy: fix circular LEDS_CLASS dependencies
-    https://git.kernel.org/netdev/net-next/c/4bb7aac70b5d
+  - [net-next] gve: update MAINTAINERS
+    https://git.kernel.org/netdev/net/c/e375b503943f
 
 You are awesome, thank you!
 -- 
