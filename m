@@ -2,97 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0DAA6EA8A8
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 12:54:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 377C36EA8B2
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 12:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231609AbjDUKyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 06:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
+        id S229820AbjDUK5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 06:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230424AbjDUKyB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 06:54:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606554C0E
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 03:53:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682074395;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UQTtJKG76znlN/1Zi0auyShcmAYFDpdbxiSvi5v0L+o=;
-        b=ZnOrIL3ps+JKfjDDmpG/2tSx2/9ml+8eIGJ2jLem1BlIe9V89rBCZlXe3yyYUWfJ0QQqTP
-        hkQg8FAqrCLbKUDSXeXVQczBHpnEvtg5GSIMnx3l8vECaIskGgS4Rw33fpu5I4wfCd7h8H
-        gxWli8Pfby3X5ty86nuyBkMOB/UVzjI=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-665-xsM4_0BlOAi6WrqBSqYZOw-1; Fri, 21 Apr 2023 06:53:13 -0400
-X-MC-Unique: xsM4_0BlOAi6WrqBSqYZOw-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f16ef3be6eso9706535e9.3
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 03:53:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682074392; x=1684666392;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UQTtJKG76znlN/1Zi0auyShcmAYFDpdbxiSvi5v0L+o=;
-        b=hlf1ocvwqf+LWnwfbGA2WyNQ31MaBObqPIou1fnddRks0bvyxijDIUN+E2P3X6YQTt
-         0gr90ocH6YXcyaSJcFq+7NyjFy9oVyi2uDt4ULwSyoGFDtcsKmChXP5VeSC9fF64eQyz
-         Y6H+CFKNfL6pVeSwsqJWyR29AW/so/GhomdgSdtEGBiRduN65rTuAnQPGAWg0enVFll4
-         oF9IJLyZDb51R1tNxwIuQiuB1QBcm1+zkfWV0IK/M91zbzmCWWDCT/6FgpoOx1INOrVP
-         uCsvkzQ1Bzf9cJ54A2YVwuYzRecUjilWGFc9tDq1WzKx7eGU2Dph2JpiaclRzcAA+sbm
-         mUOQ==
-X-Gm-Message-State: AAQBX9dz2XE8VT6Dd/CrpuqCbB2nqrEkvws1smwIl1m3hiX87zTHQYj3
-        noEAWDtMut6URvAY4uzA/wkRgBB7HpT4ov5Z0c9IzW6VnYqE5kK/BtmLleKiDmDz3NHwyfR7wMv
-        ad9qNQN2hZfMnTCb+
-X-Received: by 2002:a1c:7716:0:b0:3f1:70d5:1bee with SMTP id t22-20020a1c7716000000b003f170d51beemr1493377wmi.29.1682074392428;
-        Fri, 21 Apr 2023 03:53:12 -0700 (PDT)
-X-Google-Smtp-Source: AKy350a07c45dcgGfnrd68VQAlhxr19V3vzigkuXDvXMbII3cSD3lRogv1buV5bfrUwNFi4dyPd3eA==
-X-Received: by 2002:a1c:7716:0:b0:3f1:70d5:1bee with SMTP id t22-20020a1c7716000000b003f170d51beemr1493363wmi.29.1682074392125;
-        Fri, 21 Apr 2023 03:53:12 -0700 (PDT)
-Received: from localhost ([37.163.148.79])
-        by smtp.gmail.com with ESMTPSA id gw19-20020a05600c851300b003f193c1311asm1111707wmb.6.2023.04.21.03.53.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 03:53:11 -0700 (PDT)
-Date:   Fri, 21 Apr 2023 12:53:07 +0200
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
-        dsahern@gmail.com, Simon Horman <simon.horman@corigine.com>
-Subject: Re: [PATCH iproute2 v3 0/2] iplink: update doc related to the
- 'netns' arg
-Message-ID: <ZEJrExLtoSjEq+Vl@renaissance-vector>
-References: <20230421074720.31004-1-nicolas.dichtel@6wind.com>
+        with ESMTP id S229657AbjDUK5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 06:57:05 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88D9183FC;
+        Fri, 21 Apr 2023 03:57:04 -0700 (PDT)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Subject: [PATCH net 0/2] Netfilter fixes for net
+Date:   Fri, 21 Apr 2023 12:56:58 +0200
+Message-Id: <20230421105700.325438-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230421074720.31004-1-nicolas.dichtel@6wind.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 21, 2023 at 09:47:18AM +0200, Nicolas Dichtel wrote:
-> v2 -> v3:
->  - make doc about netns arg consistent between 'add' and 'set'
-> 
-> v1 -> v2:
->  - add patch 1/2
->  - s/NETNS_FILE/NETNSFILE
->  - describe NETNSNAME in the DESCRIPTION section of man pages
-> 
->  ip/iplink.c           |  4 ++--
->  man/man8/ip-link.8.in | 26 +++++++++++++++++++-------
->  2 files changed, 21 insertions(+), 9 deletions(-)
-> 
-> Regards,
-> Nicolas
-> 
+Hi,
 
-Reviewed-by: Andrea Claudi <aclaudi@redhat.com>
+The following patchset contains late Netfilter fixes for net:
 
+1) Set on IPS_CONFIRMED before change_status() otherwise EBUSY is
+   bogusly hit. This bug was introduced in the 6.3 release cycle.
+
+2) Fix nfnetlink_queue conntrack support: Set/dump timeout
+   accordingly for unconfirmed conntrack entries. Make sure this
+   is done after IPS_CONFIRMED is set on. This is an old bug, it
+   happens since the introduction of this feature.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git nf-23-04-21
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 92e8c732d8518588ac34b4cb3feaf37d2cb87555:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf (2023-04-18 20:46:31 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git nf-23-04-21
+
+for you to fetch changes up to 73db1b8f2bb6725b7391e85aab41fdf592b3c0c1:
+
+  netfilter: conntrack: fix wrong ct->timeout value (2023-04-19 12:08:38 +0200)
+
+----------------------------------------------------------------
+netfilter pull request
+
+----------------------------------------------------------------
+Pablo Neira Ayuso (1):
+      netfilter: conntrack: restore IPS_CONFIRMED out of nf_conntrack_hash_check_insert()
+
+Tzung-Bi Shih (1):
+      netfilter: conntrack: fix wrong ct->timeout value
+
+ include/net/netfilter/nf_conntrack_core.h |  6 +++++-
+ net/netfilter/nf_conntrack_bpf.c          |  1 +
+ net/netfilter/nf_conntrack_core.c         |  1 -
+ net/netfilter/nf_conntrack_netlink.c      | 16 ++++++++++++----
+ 4 files changed, 18 insertions(+), 6 deletions(-)
