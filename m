@@ -2,228 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0A076EA436
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95B046EA437
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbjDUHBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 03:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
+        id S230211AbjDUHBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 03:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbjDUHBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:01:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E611BC1
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 00:00:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682060423;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lpiVqfxPDVOVyIcQKLUY3sjIFaYVM+b/8XYAogBT64g=;
-        b=ZDje3k/bSBa2znrhumRD2qwlseq5/w7RL3BG6uSZrQ0Dajy69yFy99QAvh4dRpdrgg4OsG
-        z4+x1oz3+fAnfBOMxq6lExuIGIIa3DAtd8EiTj7q2SrqB/se6Om5faX9bntOqAzBr76623
-        XOon2BaOkxTABYM6AnHQwkRtRm4/Ny0=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-121-mYkO_p3vN5--4LFXzw6vdA-1; Fri, 21 Apr 2023 03:00:22 -0400
-X-MC-Unique: mYkO_p3vN5--4LFXzw6vdA-1
-Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-2fbb99cb2easo435951f8f.1
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 00:00:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682060421; x=1684652421;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lpiVqfxPDVOVyIcQKLUY3sjIFaYVM+b/8XYAogBT64g=;
-        b=jhnWQ4lcrFR0m4gXpo2AWsjk/iXEliwbBNNtZsvAHH0CPu4Sh7DZGq5WnouG38dJNU
-         PkRl+cP2yQ525k+wfqShtvHjItaIyBTctlWdRp7Mg+YNAbyswn6YHmvdLX8At6EJcdYo
-         dvPyHpfZG92tWMPKlpthy7Fkkvlzade5s2bxUkpwxY5N8U7zk18y5PYEj8YAu3WtqyQ3
-         VsnUw7+lUHvJRkC3//ASFDazYwwJsAouigiOqK7iG6ChWsOA1TDZ3tGxmyQEI2bwqIBS
-         5iUR82Wzkec7/R2d+icz4ruM8Ul9ImeFVxZp/f+Vl5m5Ufh4EO9VTGS/0a6T98VbFHOi
-         lhqw==
-X-Gm-Message-State: AAQBX9f80Rj0C8rPyfiynXejNr4+/R05TSxpLEf6xsD1pNntfTT5lOXJ
-        WxfLVu3IqYxf0LkuKratBnxbHzRCYTLjLLAAR1Z/5/fW7jum825/tX77MHo6mYcTCdcVreqvpql
-        J1Qt4TFrLAXTScpA2
-X-Received: by 2002:a5d:508c:0:b0:2f4:bc68:3493 with SMTP id a12-20020a5d508c000000b002f4bc683493mr3137922wrt.34.1682060420655;
-        Fri, 21 Apr 2023 00:00:20 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZscfyWPk0FUaFkFq8X9xGWbsfYMR49h0BahBp10uWnCx5uwQ3l78RWokX6He4VumLzicsf2A==
-X-Received: by 2002:a5d:508c:0:b0:2f4:bc68:3493 with SMTP id a12-20020a5d508c000000b002f4bc683493mr3137896wrt.34.1682060420318;
-        Fri, 21 Apr 2023 00:00:20 -0700 (PDT)
-Received: from redhat.com ([2.55.62.70])
-        by smtp.gmail.com with ESMTPSA id e22-20020a5d5956000000b003012030a0c6sm3732010wri.18.2023.04.21.00.00.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 00:00:19 -0700 (PDT)
-Date:   Fri, 21 Apr 2023 03:00:15 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        with ESMTP id S229548AbjDUHBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:01:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30B819B2
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 00:01:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E70C64E11
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 07:01:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17ED9C433D2;
+        Fri, 21 Apr 2023 07:01:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682060498;
+        bh=WQiAfnXqkhpGaiexK3TsztxrFIXKWhECfXyR7hA/LUo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H5FcjSIDakpxBNfSMec30r+vrRAIb6SxQTvBULl82VOmuvx4MKtCqbf1qePDX5oPh
+         67y3OPkqShaQmBNqnb+6+Bu32pYWD3eAz0+Ex0BPf8n0Xe+ZATQu3Qu06rb5zxpfB0
+         H2gqYnomoWO12LQOVgVL4xNZSCnJmoNTElDOnv1aHu9IeAcRX+JW8FRpDUNtDjRM7N
+         wEKEsVDSQyd7B69Hlsl2GCOtk83drkzznlR5NQVRP6jLh5VhTr2g7Z+IVumxeKpkS7
+         I3gjnOWtDHcDObhr2UdWKqQ0OpfVfhnpgD9Y1xiD9INUBoWtWnOeY2/jKXcXi9nH5c
+         3lx5XR3QIVG7w==
+Date:   Fri, 21 Apr 2023 09:01:34 +0200
+From:   Simon Horman <horms@kernel.org>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next v2 05/14] virtio_net: introduce xdp res enums
-Message-ID: <20230421025931-mutt-send-email-mst@kernel.org>
-References: <20230418065327.72281-1-xuanzhuo@linux.alibaba.com>
- <20230418065327.72281-6-xuanzhuo@linux.alibaba.com>
+        Andy Gospodarek <andy@greyhouse.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] bonding: Always assign be16 value to vlan_proto
+Message-ID: <ZEI0zpDyJtfogO7s@kernel.org>
+References: <20230420-bonding-be-vlan-proto-v1-1-754399f51d01@kernel.org>
+ <9836.1682020053@famine>
+ <20230420202303.iecl2vnkbdm2qfs7@skbuf>
+ <16322.1682025812@famine>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230418065327.72281-6-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <16322.1682025812@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 02:53:18PM +0800, Xuan Zhuo wrote:
-> virtnet_xdp_handler() is to process all the logic related to XDP. The
-> caller only needs to care about how to deal with the buf. So this commit
-> introduces new enums:
+On Thu, Apr 20, 2023 at 02:23:32PM -0700, Jay Vosburgh wrote:
+> Vladimir Oltean <olteanv@gmail.com> wrote:
 > 
-> 1. VIRTNET_XDP_RES_PASS: make skb by the buf
-> 2. VIRTNET_XDP_RES_DROP: xdp return drop action or some error, caller
->    should release the buf
-> 3. VIRTNET_XDP_RES_CONSUMED: xdp consumed the buf, the caller doesnot to
->    do anything
+> >On Thu, Apr 20, 2023 at 12:47:33PM -0700, Jay Vosburgh wrote:
+> >> Simon Horman <horms@kernel.org> wrote:
+> >> 
+> >> >The type of the vlan_proto field is __be16.
+> >> >And most users of the field use it as such.
+> >> >
+> >> >In the case of setting or testing the field for the
+> >> >special VLAN_N_VID value, host byte order is used.
+> >> >Which seems incorrect.
+> >> >
+> >> >Address this issue by converting VLAN_N_VID to __be16.
+> >> >
+> >> >I don't believe this is a bug because VLAN_N_VID in
+> >> >both little-endian (and big-endian) byte order does
+> >> >not conflict with any valid values (0 through VLAN_N_VID - 1)
+> >> >in big-endian byte order.
+> >> 
+> >> 	Is that true for all cases, or am I just confused?  Doesn't VLAN
+> >> ID 16 match VLAN_N_VID (which is 4096) if byte swapped?
+> >> 
+> >> 	I.e., on a little endian host, VLAN_N_VID is 0x1000 natively,
+> >> and network byte order (big endian) of VLAN ID 16 is also 0x1000.
+> >> 
+> >> 	Either way, I think the change is fine; VLAN_N_VID is being used
+> >> as a sentinel value here, so the only real requirement is that it not
+> >> match an actual VLAN ID in network byte order.
+> >> 
+> >> 	-J
+> >
+> >In a strange twist of events, VLAN_N_VID is assigned as a sentinel value
+> >to a variable which usually holds the output of vlan_dev_vlan_proto(),
+> >or i.o.w. values like htons(ETH_P_8021Q), htons(ETH_P_8021AD). It is
+> >certainly a confusion of types to assign VLAN_N_VID to it, but at least
+> >it's not a valid VLAN protocol.
+> >
+> >To answer your question, tags->vlan_proto is never compared against a
+> >VLAN ID.
 > 
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-
-I am not excited about using virtio specific enums then translating
-to standard ones.
-
-> ---
->  drivers/net/virtio_net.c | 42 ++++++++++++++++++++++++++--------------
->  1 file changed, 27 insertions(+), 15 deletions(-)
+> 	Yah, looking again I see that now; I was checking the math on
+> Simon's statement about "0 through VLAN_N_VID - 1".
 > 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 0fa64c314ea7..4dfdc211d355 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -301,6 +301,15 @@ struct padded_vnet_hdr {
->  	char padding[12];
->  };
->  
-> +enum {
-> +	/* xdp pass */
-> +	VIRTNET_XDP_RES_PASS,
-> +	/* drop packet. the caller needs to release the page. */
-> +	VIRTNET_XDP_RES_DROP,
-> +	/* packet is consumed by xdp. the caller needs to do nothing. */
-> +	VIRTNET_XDP_RES_CONSUMED,
-> +};
-> +
->  static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *buf);
->  static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void *buf);
->  
-> @@ -803,14 +812,14 @@ static int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct xdp_buff *xdp,
->  
->  	switch (act) {
->  	case XDP_PASS:
-> -		return act;
-> +		return VIRTNET_XDP_RES_PASS;
->  
->  	case XDP_TX:
->  		stats->xdp_tx++;
->  		xdpf = xdp_convert_buff_to_frame(xdp);
->  		if (unlikely(!xdpf)) {
->  			netdev_dbg(dev, "convert buff to frame failed for xdp\n");
-> -			return XDP_DROP;
-> +			return VIRTNET_XDP_RES_DROP;
->  		}
->  
->  		err = virtnet_xdp_xmit(dev, 1, &xdpf, 0);
-> @@ -818,19 +827,20 @@ static int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct xdp_buff *xdp,
->  			xdp_return_frame_rx_napi(xdpf);
->  		} else if (unlikely(err < 0)) {
->  			trace_xdp_exception(dev, xdp_prog, act);
-> -			return XDP_DROP;
-> +			return VIRTNET_XDP_RES_DROP;
->  		}
-> +
->  		*xdp_xmit |= VIRTIO_XDP_TX;
-> -		return act;
-> +		return VIRTNET_XDP_RES_CONSUMED;
->  
->  	case XDP_REDIRECT:
->  		stats->xdp_redirects++;
->  		err = xdp_do_redirect(dev, xdp, xdp_prog);
->  		if (err)
-> -			return XDP_DROP;
-> +			return VIRTNET_XDP_RES_DROP;
->  
->  		*xdp_xmit |= VIRTIO_XDP_REDIR;
-> -		return act;
-> +		return VIRTNET_XDP_RES_CONSUMED;
->  
->  	default:
->  		bpf_warn_invalid_xdp_action(dev, xdp_prog, act);
-> @@ -839,7 +849,7 @@ static int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct xdp_buff *xdp,
->  		trace_xdp_exception(dev, xdp_prog, act);
->  		fallthrough;
->  	case XDP_DROP:
-> -		return XDP_DROP;
-> +		return VIRTNET_XDP_RES_DROP;
->  	}
->  }
->  
-> @@ -987,17 +997,18 @@ static struct sk_buff *receive_small(struct net_device *dev,
->  		act = virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
->  
->  		switch (act) {
-> -		case XDP_PASS:
-> +		case VIRTNET_XDP_RES_PASS:
->  			/* Recalculate length in case bpf program changed it */
->  			delta = orig_data - xdp.data;
->  			len = xdp.data_end - xdp.data;
->  			metasize = xdp.data - xdp.data_meta;
->  			break;
-> -		case XDP_TX:
-> -		case XDP_REDIRECT:
-> +
-> +		case VIRTNET_XDP_RES_CONSUMED:
->  			rcu_read_unlock();
->  			goto xdp_xmit;
-> -		default:
-> +
-> +		case VIRTNET_XDP_RES_DROP:
->  			goto err_xdp;
->  		}
->  	}
-> @@ -1324,18 +1335,19 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->  		act = virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
->  
->  		switch (act) {
-> -		case XDP_PASS:
-> +		case VIRTNET_XDP_RES_PASS:
->  			head_skb = build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz);
->  			if (unlikely(!head_skb))
->  				goto err_xdp_frags;
->  
->  			rcu_read_unlock();
->  			return head_skb;
-> -		case XDP_TX:
-> -		case XDP_REDIRECT:
-> +
-> +		case VIRTNET_XDP_RES_CONSUMED:
->  			rcu_read_unlock();
->  			goto xdp_xmit;
-> -		default:
-> +
-> +		case VIRTNET_XDP_RES_DROP:
->  			break;
->  		}
->  err_xdp_frags:
-> -- 
-> 2.32.0.3.g01195cf9f
+> 	So, I think the patch is correct, but the commit message should
+> really explain the reality.  And, perhaps we should use 0 or 0xffff for
+> the sentinel, since neither are valid Ethernet protocol IDs.
 
+Hi Jay and Vladimir,
+
+Thanks for your review.
+
+Firstly, sorry for the distraction about the VLAN_N_VID math.  I agree it
+was incorrect. I had an out by one bug in my thought process which was
+about 0x0fff instead of 0x1000.
+
+Secondly, sorry for missing the central issue that it is a bit weird
+to use a VID related value as a sentinel for a protocol field.
+I agree it would be best to chose a different value.
+
+In reference to the list of EtherTypes [1]. I think 0 might be ok,
+but perhaps not ideal as technically it means a value of 0 for the
+IEEE802.3 Length Field (although perhaps it can never mean that in this
+context).
+
+OTOH, 0xffff, is 'reserved' ([1] references RFC1701 [2]),
+so perhaps it is a good choice.
+
+In any case, I'm open to suggestions.
+I'll probably hold off until the v6.5 cycle before reposting,
+unless -rc8 appears next week. I'd rather not rush this one
+given that I seem to have already got it wrong once.
+
+[1] https://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xhtml#ieee-802-numbers-1
+[2] https://www.rfc-editor.org/rfc/rfc1701.html
