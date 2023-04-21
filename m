@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60CF96EAA00
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 14:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28A356EAA1F
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 14:15:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229750AbjDUMIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 08:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
+        id S231905AbjDUMPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 08:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229938AbjDUMIf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 08:08:35 -0400
+        with ESMTP id S231434AbjDUMPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 08:15:52 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD6510268
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 05:08:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8917D9E;
+        Fri, 21 Apr 2023 05:15:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=3/1PcGnSWsQvWFuySlUIVg+dGVEwbKNCOLZVzpij698=; b=FuyUY5xDHBHkpxQ+5jMjW6t84/
-        gaDOqS+hQShIFlCGL8jADL+OSI8gVR18UC04Uc+q9TTgMPQ/ddsdFLrk0zuiBKojlXjTzZBgujsyf
-        92gl1ZaerC7FQP5YBdB/WM9eW3ePZuHGnHJs0X0ceNFn/L20z131r+uSCsU/bBz4UhGQ=;
+        bh=/+HAMTLY1slOoSg5bxA5tskDuARnfGnh1XOqXBWDAu8=; b=Bdvzmpp3kCAYe3vDQWS00VV3zL
+        6xhsBF7qYaPEy+/bVU/AN+i5/yTJsgbHiv0OEReCYnOXsneZ98CYKfmld7ZPc6H66MMuAoOcg74ls
+        WplG7BrIvLhuEc41g2jU440hsniU8+lW6PPQE4pF1uMh7J+PgU43qCuQpfaQWNAr5FSQ=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1pppXw-00Asfx-4q; Fri, 21 Apr 2023 14:07:24 +0200
-Date:   Fri, 21 Apr 2023 14:07:24 +0200
+        id 1pppfz-00AsiX-TT; Fri, 21 Apr 2023 14:15:43 +0200
+Date:   Fri, 21 Apr 2023 14:15:43 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v2 net-next] net: phy: add basic driver for NXP CBTX PHY
-Message-ID: <0f3b2afd-760f-40e2-b570-b9dc9b0fd117@lunn.ch>
-References: <20230418190141.1040562-1-vladimir.oltean@nxp.com>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        olteanv@gmail.com, mengyuanlou@net-swift.com,
+        'Jarkko Nikula' <jarkko.nikula@linux.intel.com>
+Subject: Re: [PATCH net-next v3 2/8] i2c: designware: Add driver support for
+ Wangxun 10Gb NIC
+Message-ID: <4600d755-3bbf-4906-9f23-4e91cfc01c12@lunn.ch>
+References: <20230419082739.295180-1-jiawenwu@trustnetic.com>
+ <20230419082739.295180-3-jiawenwu@trustnetic.com>
+ <ec095b8a-00af-4fb7-be11-f643ea75e924@lunn.ch>
+ <03ef01d97372$f2ee26a0$d8ca73e0$@trustnetic.com>
+ <72703dc2-0ee1-41b2-9618-2a3185869cbf@lunn.ch>
+ <03f501d973f7$d0c889a0$72599ce0$@trustnetic.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230418190141.1040562-1-vladimir.oltean@nxp.com>
+In-Reply-To: <03f501d973f7$d0c889a0$72599ce0$@trustnetic.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
@@ -52,45 +55,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 18, 2023 at 10:01:41PM +0300, Vladimir Oltean wrote:
-> The CBTX PHY is a Fast Ethernet PHY integrated into the SJA1110 A/B/C
-> automotive Ethernet switches.
-> 
-> It was hoped it would work with the Generic PHY driver, but alas, it
-> doesn't. The most important reason why is that the PHY is powered down
-> by default, and it needs a vendor register to power it on.
-> 
-> It has a linear memory map that is accessed over SPI by the SJA1110
-> switch driver, which exposes a fake MDIO controller. It has the
-> following (and only the following) standard clause 22 registers:
-> 
-> 0x0: MII_BMCR
-> 0x1: MII_BMSR
-> 0x2: MII_PHYSID1
-> 0x3: MII_PHYSID2
-> 0x4: MII_ADVERTISE
-> 0x5: MII_LPA
-> 0x6: MII_EXPANSION
-> 0x7: the missing MII_NPAGE for Next Page Transmit Register
-> 
-> Every other register is vendor-defined.
-> 
-> The register map expands the standard clause 22 5-bit address space of
-> 0x20 registers, however the driver does not need to access the extra
-> registers for now (and hopefully never). If it ever needs to do that, it
-> is possible to implement a fake (software) page switching mechanism
-> between the PHY driver and the SJA1110 MDIO controller driver.
-> 
-> Also, Auto-MDIX is turned off by default in hardware, the driver turns
-> it on by default and reports the current status. I've tested this with a
-> VSC8514 link partner and a crossover cable, by forcing the mode on the
-> link partner, and seeing that the CBTX PHY always sees the reverse of
-> the mode forced on the VSC8514 (and that traffic works). The link
-> doesn't come up (as expected) if MDI modes are forced on both ends in
-> the same way (with the cross-over cable, that is).
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Fri, Apr 21, 2023 at 10:20:17AM +0800, Jiawen Wu wrote:
+> On Thursday, April 20, 2023 9:23 PM, Andrew Lunn wrote:
+> > On Thu, Apr 20, 2023 at 06:29:11PM +0800, Jiawen Wu wrote:
+> > > On Thursday, April 20, 2023 4:58 AM, Andrew Lunn wrote:
+> > > > On Wed, Apr 19, 2023 at 04:27:33PM +0800, Jiawen Wu wrote:
+> > > > > Wangxun 10Gb ethernet chip is connected to Designware I2C, to communicate
+> > > > > with SFP.
+> > > > >
+> > > > > Add platform data to pass IOMEM base address, board flag and other
+> > > > > parameters, since resource address was mapped on ethernet driver.
+> > > > >
+> > > > > The exists IP limitations are dealt as workarounds:
+> > > > > - IP does not support interrupt mode, it works on polling mode.
+> > > > > - I2C cannot read continuously, only one byte can at a time.
+> > > >
+> > > > Are you really sure about that?
+> > > >
+> > > > It is a major limitation for SFP devices. It means you cannot access
+> > > > the diagnostics, since you need to perform an atomic 2 byte read.
+> > > >
+> > > > Or maybe i'm understanding you wrong.
+> > > >
+> > > >    Andrew
+> > > >
+> > >
+> > > Maybe I'm a little confused about this. Every time I read a byte info, I have to
+> > > write a 'read command'. It can normally get the information for SFP devices.
+> > > But I'm not sure if this is regular I2C behavior.
+> > 
+> > I don't know this hardware, so i cannot say what a 'read command'
+> > actually does. Can you put a bus pirate or similar sort of device on
+> > the bus and look at the actual I2C signals. Is it performing one I2C
+> > transaction per byte? If so, that is not good.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+....
 
-    Andrew
+> You may have misunderstood. If you want to read a 16-bit message, the
+> size of 'i2c_msg.len' is set to 2 in the array that 'flags = I2C_M_RD'.
+
+The SFP driver uses a mixture of message lengths, due to SFP bugs. But
+in general it will do 16 byte block reads, except for when it needs
+smaller quantity of bytes.
+
+However, your wording was:
+
+> > > Every time I read a byte info, I have to write a 'read command'.
+
+This suggests you are reading one byte at a time with each read
+command. I just want to make sure that is not one I2C transaction per
+byte.
+
+     Andrew.
