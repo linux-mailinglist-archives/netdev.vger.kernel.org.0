@@ -2,129 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22ADC6EACF6
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:30:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 996DF6EACFB
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:32:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232711AbjDUOap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 10:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
+        id S232651AbjDUOcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 10:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232696AbjDUOao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:30:44 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4684E12CB4;
-        Fri, 21 Apr 2023 07:30:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682087441; x=1713623441;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=H8Remee2zEmqfUSIzqd+utYJFsZGQbKHCN0Q/yHbfqI=;
-  b=gjlKxAbwmxIeZu8bBTkdwwLLjuFKr/jrrnCUAdQVrYJQnLFXSfsLV9kC
-   QJej/b8johGBjnBiiWiJvDVlb5pG0eLcP+tI1mBPem8+50F2HdUDcQejT
-   PHwL5+Zma0PS3KUHQHIuIk+fChSJtfZ/GLuG3Iz2/Y2Mn/WaIM7hXo661
-   W3u7P+OvOtNPet161yyKKCtQMIwnsDSY8jJPFjmeGJAgrHhr3WAUPnYow
-   s1VZBGrzUaP4PMqf7bxMSMCRa2MJgrsZVe8LpMULOlsE/Ow5twhcT4Fcc
-   swnkvVjqxo1lPwJNuAMFTYzz0IrK3AhGvRl//EoMcXtiM567YuciXjBCa
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10687"; a="411273232"
-X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="411273232"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 07:30:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10687"; a="836184884"
-X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="836184884"
-Received: from ahajda-mobl.ger.corp.intel.com (HELO [10.213.8.140]) ([10.213.8.140])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 07:30:36 -0700
-Message-ID: <a10480c6-162b-a886-28f6-e95930d4664b@intel.com>
-Date:   Fri, 21 Apr 2023 16:30:34 +0200
+        with ESMTP id S230233AbjDUOce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:32:34 -0400
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58AC314449
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 07:32:01 -0700 (PDT)
+Received: by mail-oo1-xc30.google.com with SMTP id 006d021491bc7-547303fccefso1640035eaf.3
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 07:32:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682087520; x=1684679520;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=v9rhLNghVmxPqeq/HSFt816S91MIyibhWElNZOICunQ=;
+        b=4tLqZh/YWMchsZ87aHeqJnFJlt+n4okm5TFuLOaj+GhgWy4JIxg6U+WzRNf7sgM3qR
+         2uUi0cIYaAcH1tDlg3pxLnJND0beyL9KnUlgbt7X2QTPI2ToIg2ksY1cX58e+1j31hGZ
+         tj6GYSLN+gl4dAZI4I2cjH+ZOGnW/dTJ6kZgyYvuA4QcLXdVUGFeAAl9wDcPeYCzUKXA
+         LvMGGm7wR/vLSeufj4N+vFi6bXLz/lVzPTOEedrCXSVYex1scVgBYcYjM+KH9DcU2boD
+         g/9uqFysaJhPKWClE8sN1q61RvCWRLdb5EoW4E/2DkAagkNX6iAzzWVihD+EdOt9walk
+         YqVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682087520; x=1684679520;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=v9rhLNghVmxPqeq/HSFt816S91MIyibhWElNZOICunQ=;
+        b=BTkpa7gDn9NY/PoB/YY5xO7FzNyLToLfis4ILeRAfiftnXfkhVbAUYTccF3/kGCzpG
+         /eTgd+6L8u5hd7djXu3iSqP6S2ThRYHcaeSRfna5mLesZJEwZI18ljoMdfVUdxt4DyDW
+         pkC3pmF4LRSfmMkSdIzxQ+LfZ5aqT1wB6F4UznR07KpHumB7az8YAIdCaRhzSyh1iETY
+         cJBzMyYkLXLyFyQD4V0hGAw5SvUpqH0rYRPmIA3OvevbE4xApzU68DZ3Zghyp0OSsz/5
+         ezePb4DeXd6u4igTt6FN01s/vTOaWuPMn1IOxe1T1/P7MrWM1QVdjYCnqoN7+SGhBSsd
+         jNgQ==
+X-Gm-Message-State: AAQBX9fRlqa4kC3R+p2A/ZuYwWj7XbJDeF0HYzFJgmD279qc9pQP2g0F
+        J9saylCSevwtNpTN1+blYhBquA==
+X-Google-Smtp-Source: AKy350a0ep3e+NCmkPCl5hxir4zHqtlmWV1AXQK2TX7l5Byjyu9d9i41xPLrpee6appHdgg2CIGsNA==
+X-Received: by 2002:a4a:e910:0:b0:541:fc88:3aac with SMTP id bx16-20020a4ae910000000b00541fc883aacmr1372789oob.5.1682087520555;
+        Fri, 21 Apr 2023 07:32:00 -0700 (PDT)
+Received: from ?IPV6:2804:14d:5c5e:44fb:7380:c348:a30c:7e82? ([2804:14d:5c5e:44fb:7380:c348:a30c:7e82])
+        by smtp.gmail.com with ESMTPSA id i20-20020a4a8d94000000b0052a77e38722sm1796315ook.26.2023.04.21.07.31.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Apr 2023 07:32:00 -0700 (PDT)
+Message-ID: <5785632a-b112-ad84-6355-2febe52f375a@mojatatu.com>
+Date:   Fri, 21 Apr 2023 11:31:56 -0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.10.0
-Subject: Re: [PATCH v7 2/7] lib/ref_tracker: improve printing stats
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next v3 5/5] net/sched: sch_qfq: BITify two bound
+ definitions
 Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andi Shyti <andi.shyti@linux.intel.com>
-References: <20230224-track_gt-v7-0-11f08358c1ec@intel.com>
- <20230224-track_gt-v7-2-11f08358c1ec@intel.com>
- <CANn89iLUDXz9VAtCQ6Gr2Jkxogdu_5g0tN9iCkAB0JD_B_05Gw@mail.gmail.com>
-From:   Andrzej Hajda <andrzej.hajda@intel.com>
-Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298
- Gdansk - KRS 101882 - NIP 957-07-52-316
-In-Reply-To: <CANn89iLUDXz9VAtCQ6Gr2Jkxogdu_5g0tN9iCkAB0JD_B_05Gw@mail.gmail.com>
+To:     Simon Horman <simon.horman@corigine.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+References: <20230420164928.237235-1-pctammela@mojatatu.com>
+ <20230420164928.237235-6-pctammela@mojatatu.com>
+ <CANn89iJsn1Xj8Y4tL69FA5a0y21R4-qBjMddH5rGOBD_iQ0qmw@mail.gmail.com>
+ <ZEJXzN5FtXMUioFF@corigine.com>
+From:   Pedro Tammela <pctammela@mojatatu.com>
+In-Reply-To: <ZEJXzN5FtXMUioFF@corigine.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 21.04.2023 16:21, Eric Dumazet wrote:
-> On Fri, Apr 21, 2023 at 1:35 PM Andrzej Hajda <andrzej.hajda@intel.com> wrote:
->> In case the library is tracking busy subsystem, simply
->> printing stack for every active reference will spam log
->> with long, hard to read, redundant stack traces. To improve
->> readabilty following changes have been made:
->> - reports are printed per stack_handle - log is more compact,
->> - added display name for ref_tracker_dir - it will differentiate
->>    multiple subsystems,
->> - stack trace is printed indented, in the same printk call,
->> - info about dropped references is printed as well.
+On 21/04/2023 06:30, Simon Horman wrote:
+> On Fri, Apr 21, 2023 at 11:17:23AM +0200, Eric Dumazet wrote:
+>> On Thu, Apr 20, 2023 at 6:50 PM Pedro Tammela <pctammela@mojatatu.com> wrote:
+>>>
+>>> For the sake of readability, change these two definitions to BIT()
+>>> macros.
+>>>
+>>> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+>>> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+>>> ---
+>>>   net/sched/sch_qfq.c | 4 ++--
+>>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
+>>> index dfd9a99e6257..4b9cc8a46e2a 100644
+>>> --- a/net/sched/sch_qfq.c
+>>> +++ b/net/sched/sch_qfq.c
+>>> @@ -105,7 +105,7 @@
+>>>   #define QFQ_MAX_INDEX          24
+>>>   #define QFQ_MAX_WSHIFT         10
+>>>
+>>> -#define        QFQ_MAX_WEIGHT          (1<<QFQ_MAX_WSHIFT) /* see qfq_slot_insert */
+>>> +#define        QFQ_MAX_WEIGHT          BIT(QFQ_MAX_WSHIFT) /* see qfq_slot_insert */
 >>
->> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
->> Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
->> ---
->>   include/linux/ref_tracker.h | 15 ++++++--
->>   lib/ref_tracker.c           | 90 +++++++++++++++++++++++++++++++++++++++------
->>   2 files changed, 91 insertions(+), 14 deletions(-)
+>> I am not sure I find BIT(X) more readable in this context.
 >>
->> diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
->> index 87a92f2bec1b88..fc9ef9952f01fd 100644
->> --- a/include/linux/ref_tracker.h
->> +++ b/include/linux/ref_tracker.h
->> @@ -17,12 +17,19 @@ struct ref_tracker_dir {
->>          bool                    dead;
->>          struct list_head        list; /* List of active trackers */
->>          struct list_head        quarantine; /* List of dead trackers */
->> +       char                    name[32];
->>   #endif
->>   };
+>> Say MAX_WEIGHT was 0xF000, should we then use
 >>
->>   #ifdef CONFIG_REF_TRACKER
->> -static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
->> -                                       unsigned int quarantine_count)
->> +
->> +/* Temporary allow two and three arguments, until consumers are converted */
->> +#define ref_tracker_dir_init(_d, _q, args...) _ref_tracker_dir_init(_d, _q, ##args, #_d)
->> +#define _ref_tracker_dir_init(_d, _q, _n, ...) __ref_tracker_dir_init(_d, _q, _n)
->> +
-> We only have four callers of ref_tracker_dir_init() .
->
-> Why not simply add a name on them, and avoid this magic ?
+>> #define MAX_WEIGHT (BIT(15) | BIT(14) |BIT(13) | BIT(12))
+> 
+> Thanks Eric,
+> 
+> I think this is my mistake for suggesting this change.
+> I agree BIT() is not so good here after all.
 
-If this can be done in one patch, that's great.
-
-Regards
-Andrzej
-
+Fair enough,
+Will remove it and repost.
+Thanks for the reviews.
