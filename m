@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F27146EA765
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 11:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AB036EA766
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 11:44:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231894AbjDUJoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 05:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52244 "EHLO
+        id S231815AbjDUJoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 05:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232036AbjDUJoJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 05:44:09 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97CCB465
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 02:44:01 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 3f1490d57ef6-b92309d84c1so5017552276.1
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 02:44:01 -0700 (PDT)
+        with ESMTP id S231826AbjDUJoO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 05:44:14 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92398B76F
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 02:44:03 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 3f1490d57ef6-b96ee51ee20so887587276.3
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 02:44:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682070241; x=1684662241;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=1U89pSXNGpnYYdSVvv0W+iIBJv7ZMFwlAxMGF73Ioxs=;
-        b=RkauWPcgbQy9jSIf4f31dyh2qTZUAhFHhNMR+rPRmtM9f6wokwR6APdgM0WvUTtglY
-         EA04yb783kDyeVAuC97PfX7admbykFEwbr5qq/1mRgoySK12kZWLO3Fex3k18K92mmJF
-         g3g76DDJaTdzovhmXcEhZgnDSwqX0JXU3DgI3xodCr6gJkviFLGeYPgu910E8bVYqeVY
-         RqOSmHu9sMkB+jW4zqJT7KUEI+y3dMGqhtNvBl+Uc/B4IgLluiVKdpZ7oneAzrtI9+Gb
-         f7f++S08p4Zpn0BHho5dNJuUUhk4yHwqYB9cwfDAcemBdTQPa9yq1dB/1Kw2hVjw60wJ
-         JveA==
+        d=google.com; s=20221208; t=1682070242; x=1684662242;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rmluk50Zu7PRRL48KZk1HGCw/Y9JVzhxBTme4bZP35A=;
+        b=iAapxRvcNRvnUpuapN5hzepl9J0gJW4ZONWLQCTARdjEtUPSbx477FA3om8uJWa1GJ
+         gLgld0RYguMCj6aSWOIIt/IgRBm+oRIBWkP1icEcf4GelCL2ETwhn5Al/TLEymVu2lsX
+         YXhkNTL47hEJ2X2jfdTK5rvT48APEqKoBNtCSPcNQlTn4DPIX9JVdl+4Obxhcj2BkVlP
+         h4LKqPBLkwhVUZ5TMAhUk6C9nRSBFmrDmlbi/6yZjApqdmBVCuq8UC+kZ8diO2tevjC9
+         ZIhxjybKWi54v6t1UmFZaV7DYNvgq94NW/mZjIS//QvhDGoppGF4fQ3vNk6yhmx9YWjm
+         HM+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682070241; x=1684662241;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1U89pSXNGpnYYdSVvv0W+iIBJv7ZMFwlAxMGF73Ioxs=;
-        b=QBXfl6dxikTM9IdxNL5e4UqEqZih2zA+ddv/e/3ZSmrI/YBf82ttoq6se1BBS0e05S
-         TbrNfw8WCBhrQeE5ruE+7oiJUoUdWJNCTqjsyfkh6xdLczPXZwnI2MrUujUUF51GCwpi
-         gYQmdvmBLGxKIxjotv1LX4vJ7NsDVHT2eCDMSNhzELySEe7Vwg0atravcMqg2Hkb12mj
-         TDuhpG84DivmzTjP4Vz0//8y1GlFgr4S8ZSJO37iMw//+npiBUsImChtamzgGyI28y74
-         afJN5N04jByZ2CYnITdqvskwTmjpuqm6kv3fGHkAGwet85fAq1JuBPZfNFswMojfLnAG
-         MW0A==
-X-Gm-Message-State: AAQBX9dSjHVpPSl4GW9R+ICUh8OF/RKipwnrAXhJ8KwmbgbY0Bn3HnWz
-        ZvkFIaAYzlqT6hD+TOXa7n1fRuTfA8SLyg==
-X-Google-Smtp-Source: AKy350b9tDY2RrySoBxUqHqXc6onZXlcE3BM/NqdH71a5a5Ea7d3KNBZ3BNqkKk7KUh1INcwBQSRlQbu9iZC1A==
+        d=1e100.net; s=20221208; t=1682070242; x=1684662242;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rmluk50Zu7PRRL48KZk1HGCw/Y9JVzhxBTme4bZP35A=;
+        b=eXiLe0gp8343d7t9Fg8kOY9IWs4liRpI5xwQjTktmgHNn3a0zKZ3oZ+E6dKDlHrWpd
+         ocPw9pZ4XTJX0MbuzlMJGETNMECBhLlp8jvcfUYvI06lP3iBqfQONe9d0glEYL28opMd
+         VkCG5MXD28QS3YUSZN6bwIn/XZAUd5nn5fB6nvAFng1TeiOTZlm9rM9Hg+WWeKU/NXtl
+         QukXy9h1hMkW4/UZrhvQ51UlWQxSXy5i6SFgfbHkcqg5uLMg40Ncgp9o9kp8LwGszWlq
+         MSRKRBLoVVqKBgYZ5ti0/fsR1wV3kiF/Fc2/5+xynWg4LiQFsQJcT75jL+mtyUzS3JfH
+         Iu8A==
+X-Gm-Message-State: AAQBX9dz9dA560+RPyAWRB4XwuF55tlo52nwszEALnNAmtb64fd2P+Vw
+        iRL3XpIVCanssqtkeSZrwcJL74iHCLanUw==
+X-Google-Smtp-Source: AKy350ZrT5EDYpUNG8gRJ/s7jEAutk6Zqd33rT1U8rzWwtUfsiaUI7kmQGfPUWRfRgYV5Rq3cP9aK8LupFJrZg==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:690c:444:b0:54f:dc41:8edf with SMTP
- id bj4-20020a05690c044400b0054fdc418edfmr1373372ywb.2.1682070241211; Fri, 21
- Apr 2023 02:44:01 -0700 (PDT)
-Date:   Fri, 21 Apr 2023 09:43:52 +0000
+ (user=edumazet job=sendgmr) by 2002:a25:d74a:0:b0:b95:de44:ece4 with SMTP id
+ o71-20020a25d74a000000b00b95de44ece4mr1371130ybg.6.1682070242852; Fri, 21 Apr
+ 2023 02:44:02 -0700 (PDT)
+Date:   Fri, 21 Apr 2023 09:43:53 +0000
+In-Reply-To: <20230421094357.1693410-1-edumazet@google.com>
 Mime-Version: 1.0
+References: <20230421094357.1693410-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.0.634.g4ca3ef3211-goog
-Message-ID: <20230421094357.1693410-1-edumazet@google.com>
-Subject: [PATCH net-next 0/5] net: give napi_threaded_poll() some love
+Message-ID: <20230421094357.1693410-2-edumazet@google.com>
+Subject: [PATCH net-next 1/5] net: add debugging checks in skb_attempt_defer_free()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -67,28 +69,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is interest to revert commit 4cd13c21b207
-("softirq: Let ksoftirqd do its job") and use instead the
-napi_threaded_poll() mode.
+Make sure skbs that are stored in softnet_data.defer_list
+do not have a dst attached.
 
-https://lore.kernel.org/netdev/140f61e2e1fcb8cf53619709046e312e343b53ca.camel@redhat.com/T/#m8a8f5b09844adba157ad0d22fc1233d97013de50
+Also make sure the the skb was orphaned.
 
-Before doing so, make sure napi_threaded_poll() benefits
-from recent core stack improvements, to further reduce
-softirq triggers.
+Link: https://lore.kernel.org/netdev/CANn89iJuEVe72bPmEftyEJHLzzN=QNR2yueFjTxYXCEpS5S8HQ@mail.gmail.com/T/
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/skbuff.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Eric Dumazet (5):
-  net: add debugging checks in skb_attempt_defer_free()
-  net: do not provide hard irq safety for sd->defer_lock
-  net: move skb_defer_free_flush() up
-  net: make napi_threaded_poll() aware of sd->defer_list
-  net: optimize napi_threaded_poll() vs RPS/RFS
-
- include/linux/netdevice.h |  3 +++
- net/core/dev.c            | 57 +++++++++++++++++++++++----------------
- net/core/skbuff.c         |  8 +++---
- 3 files changed, 42 insertions(+), 26 deletions(-)
-
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 0d998806b3773577f6fc7ca2bfffd5304ea8b20f..bd815a00d2affae9be4ea6cdba188423e1122164 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -6881,6 +6881,9 @@ nodefer:	__kfree_skb(skb);
+ 		return;
+ 	}
+ 
++	DEBUG_NET_WARN_ON_ONCE(skb_dst(skb));
++	DEBUG_NET_WARN_ON_ONCE(skb->destructor);
++
+ 	sd = &per_cpu(softnet_data, cpu);
+ 	defer_max = READ_ONCE(sysctl_skb_defer_max);
+ 	if (READ_ONCE(sd->defer_count) >= defer_max)
 -- 
 2.40.0.634.g4ca3ef3211-goog
 
