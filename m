@@ -2,72 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D466EA1F0
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 04:51:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D05736EA1F2
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 04:51:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233833AbjDUCvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 22:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43410 "EHLO
+        id S233870AbjDUCvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 22:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233729AbjDUCvN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 22:51:13 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B45576B8;
-        Thu, 20 Apr 2023 19:51:08 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-63b4dfead1bso1584816b3a.3;
-        Thu, 20 Apr 2023 19:51:08 -0700 (PDT)
+        with ESMTP id S233679AbjDUCvO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 22:51:14 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D015E75;
+        Thu, 20 Apr 2023 19:51:10 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 41be03b00d2f7-51f6461af24so1344912a12.2;
+        Thu, 20 Apr 2023 19:51:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682045468; x=1684637468;
+        d=gmail.com; s=20221208; t=1682045470; x=1684637470;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vXy2LlryeqFYuG6VIcWnTi0Y22Hml5WbUl7g3QZBsxI=;
-        b=DNXPUdu3So6Ly099msBkeS7QG2IIR0hElah4MDZwf8MWR1gh2Qq/qQbimHClsh938b
-         823fOETKFYsI5gKPXdc5lvyzkHjWyvJxTZM7XPzbXB8kMGcGMUJpUgIL0LfhkKobISuC
-         OA5UP91DpFYekIyJbBQshJbMEeWYiJhA0onfRS4M+Y8wioMvq6Cx+cres2NEdLWHpDdr
-         8A9XAwa0cIu9GLFDCoRmnhNGnjNQJTgvHNQAAR9V8t1ZQomU3z7aYsnBlQSuk+QFicie
-         YA64dM6wNqV6F4c3hHdtw1bllG2Zwd0XCD3/VoVVN+drc4zNkIsTdTgQXJ03D1fM5dCf
-         usPQ==
+        bh=c3gqGXUpc3KYe5z+gS2RcAbeFyLxMU5SRbpmpf891/c=;
+        b=Yck4T+vntovmXZEumLESoURloMmWy6Y7UkKFCg9sz/cHM75rWCU5t9hODeh8oadjov
+         CKPRpKyymA3SnLOPT/xZuRVKtanfT1Mtz+/EtVwVlDldI92ZgCDt4h9bQ9jMVuCxvVp+
+         tBldXE72UozeUum3r1fb2CUH8xBtBxtoDX5o10FKWTPr9IKmmHmrYDj4otq73vcOrsqf
+         tK3Q6CrE+2cZ9XMOKIz0+A6PRUhD25OgdNVNU2MZbmN8Iwdy9VouZV3PlTyRSmkJWbnv
+         hod3xG7N5Qx4EZ+5j3ASi8ZwaA26ZWVTVyfG2PI1T4E/ceijMpoHnleheZE+SMw1Rfe6
+         4tvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682045468; x=1684637468;
+        d=1e100.net; s=20221208; t=1682045470; x=1684637470;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=vXy2LlryeqFYuG6VIcWnTi0Y22Hml5WbUl7g3QZBsxI=;
-        b=a2+60fq2LfuQvHrJsd3e9WDOhW6wLAdgABo4UVaboNY0IwZvWxZukHtXkgrFWxVbtr
-         oTFgk/JPA3/MbWLEHkxW/YG17dc8biq6IohSRO79BwWqe5CuetfYZkexscuNnX2IIPXx
-         qrpvBJgWx8IrN5Avzy4h2dyMQ65nX0CsKKQQ5MJtMhIL/+lF9pcV7uBMRA1dbqUGvtZX
-         BCGgTopsVSw8wflk0DmP1F+6DPvN+Rb//+8foCORlDbJsyqTtSUZkNPgjmUeqVfPwjjn
-         qI0jHWQyM49UBodvHaD1GyIxLlnDbQcZ7SKQJ7q0Zw9HoKRXkOxwP2cnKYvzg/lorDJJ
-         cHPQ==
-X-Gm-Message-State: AAQBX9dXOgfv4ioUH96EZEcfyMrYwWIJ53j7ievMbYhnoqID7mnx1QOw
-        /LZhndiZeaxDjjyoF40h8CU=
-X-Google-Smtp-Source: AKy350YiGBh1kzca9HUbkPPfun9iKHT605jECnArxYVlQeqJ+qB/AWk8NZ5gxhWAeNluLohvMkKHXw==
-X-Received: by 2002:a05:6a20:a1a0:b0:de:247e:d1fe with SMTP id r32-20020a056a20a1a000b000de247ed1femr3442160pzk.1.1682045467914;
-        Thu, 20 Apr 2023 19:51:07 -0700 (PDT)
+        bh=c3gqGXUpc3KYe5z+gS2RcAbeFyLxMU5SRbpmpf891/c=;
+        b=DITKoWvmLtWLrTsFpPHtNmHHPyxD3KjhfGxj2qK3geRgm37T9gdCizw4mpFP17fcDL
+         2AVLpX0yeVtDDtkFn5qQS91bgbN1rP2f8txX5+wKOFL5p+ZwEYVDP4i1BZKJrv+NXRdd
+         sfPf1SixWRTNvXJS+lzrtSmlnjGnrCFR0U+ptVc698BjMzx7AGrFAS7ZjWI2xq7eBWSx
+         IfBALChL4zeY/y6A6Zb6C3NLCaT9V+Yutw/85ej4DsmLcHgnexngfmsJ5eX06AvCqDx0
+         lIAR2VICup0hmt1lv15DZ9viIBNbF3xqg/6EPngyNdK8he2/P5dl5Qz3b0m8fdPUlUcv
+         ojkw==
+X-Gm-Message-State: AAQBX9dxJmjpxNTvtBtJc+6nN1ta4uDzzEsqemoARXyGUfvkXARqxRNw
+        n9BRZwn+v5wk/a3uQ67VE06BCsQWygI=
+X-Google-Smtp-Source: AKy350Z3JhT4mTro1Ifrc8y8dKWqiYXcJkAZQoBipxpDZ0HYwLQGZ1riYwHUljvTAJgiORv6QSmR1g==
+X-Received: by 2002:a17:902:d2ca:b0:1a2:71c1:c30f with SMTP id n10-20020a170902d2ca00b001a271c1c30fmr4160649plc.7.1682045469766;
+        Thu, 20 Apr 2023 19:51:09 -0700 (PDT)
 Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id o64-20020a62cd43000000b0063d642dcd12sm1972276pfg.16.2023.04.20.19.51.07
+        by smtp.gmail.com with ESMTPSA id j8-20020a170902690800b001a1b66af22fsm1741810plk.62.2023.04.20.19.51.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Apr 2023 19:51:07 -0700 (PDT)
+        Thu, 20 Apr 2023 19:51:09 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
 From:   Tejun Heo <tj@kernel.org>
 To:     jiangshanlai@gmail.com
 Cc:     linux-kernel@vger.kernel.org, kernel-team@meta.com,
-        Tejun Heo <tj@kernel.org>, Kalle Valo <kvalo@kernel.org>,
+        Tejun Heo <tj@kernel.org>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Avraham Stern <avraham.stern@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        "Haim, Dreyfuss" <haim.dreyfuss@intel.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 09/22] wifi: iwlwifi: Use alloc_ordered_workqueue() to create ordered workqueues
-Date:   Thu, 20 Apr 2023 16:50:33 -1000
-Message-Id: <20230421025046.4008499-10-tj@kernel.org>
+Subject: [PATCH 10/22] wifi: mwifiex: Use alloc_ordered_workqueue() to create ordered workqueues
+Date:   Thu, 20 Apr 2023 16:50:34 -1000
+Message-Id: <20230421025046.4008499-11-tj@kernel.org>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230421025046.4008499-1-tj@kernel.org>
 References: <20230421025046.4008499-1-tj@kernel.org>
@@ -137,38 +136,106 @@ As there are follow-up workqueue core changes, I'd really appreciate if the
 patch can be routed through the workqueue tree w/ your acks. Thanks.
 
 Signed-off-by: Tejun Heo <tj@kernel.org>
+Cc: Amitkumar Karwar <amitkarwar@gmail.com>
+Cc: Ganapathi Bhat <ganapathi017@gmail.com>
+Cc: Sharvari Harisangam <sharvari.harisangam@nxp.com>
+Cc: Xinming Hu <huxinming820@gmail.com>
 Cc: Kalle Valo <kvalo@kernel.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Eric Dumazet <edumazet@google.com>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Gregory Greenman <gregory.greenman@intel.com>
-Cc: Johannes Berg <johannes.berg@intel.com>
-Cc: Avraham Stern <avraham.stern@intel.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Mordechay Goodstein <mordechay.goodstein@intel.com>
-Cc: "Haim, Dreyfuss" <haim.dreyfuss@intel.com>
 Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../net/wireless/marvell/mwifiex/cfg80211.c   | 13 +++++------
+ drivers/net/wireless/marvell/mwifiex/main.c   | 22 +++++++++----------
+ 2 files changed, 16 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-index 0a9af1ad1f20..cd17b601b172 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-@@ -3576,8 +3576,8 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
- 	init_waitqueue_head(&trans_pcie->fw_reset_waitq);
- 	init_waitqueue_head(&trans_pcie->imr_waitq);
+diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+index bcd564dc3554..5a7be57ed78a 100644
+--- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+@@ -3124,10 +3124,9 @@ struct wireless_dev *mwifiex_add_virtual_intf(struct wiphy *wiphy,
  
--	trans_pcie->rba.alloc_wq = alloc_workqueue("rb_allocator",
--						   WQ_HIGHPRI | WQ_UNBOUND, 1);
-+	trans_pcie->rba.alloc_wq = alloc_ordered_workqueue("rb_allocator",
-+							   WQ_HIGHPRI);
- 	if (!trans_pcie->rba.alloc_wq) {
+ 	SET_NETDEV_DEV(dev, adapter->dev);
+ 
+-	priv->dfs_cac_workqueue = alloc_workqueue("MWIFIEX_DFS_CAC%s",
+-						  WQ_HIGHPRI |
+-						  WQ_MEM_RECLAIM |
+-						  WQ_UNBOUND, 1, name);
++	priv->dfs_cac_workqueue =
++		alloc_ordered_workqueue("MWIFIEX_DFS_CAC%s",
++					WQ_HIGHPRI | WQ_MEM_RECLAIM, name);
+ 	if (!priv->dfs_cac_workqueue) {
+ 		mwifiex_dbg(adapter, ERROR, "cannot alloc DFS CAC queue\n");
  		ret = -ENOMEM;
- 		goto out_free_trans;
+@@ -3136,9 +3135,9 @@ struct wireless_dev *mwifiex_add_virtual_intf(struct wiphy *wiphy,
+ 
+ 	INIT_DELAYED_WORK(&priv->dfs_cac_work, mwifiex_dfs_cac_work_queue);
+ 
+-	priv->dfs_chan_sw_workqueue = alloc_workqueue("MWIFIEX_DFS_CHSW%s",
+-						      WQ_HIGHPRI | WQ_UNBOUND |
+-						      WQ_MEM_RECLAIM, 1, name);
++	priv->dfs_chan_sw_workqueue =
++		alloc_ordered_workqueue("MWIFIEX_DFS_CHSW%s",
++					WQ_HIGHPRI | WQ_MEM_RECLAIM, name);
+ 	if (!priv->dfs_chan_sw_workqueue) {
+ 		mwifiex_dbg(adapter, ERROR, "cannot alloc DFS channel sw queue\n");
+ 		ret = -ENOMEM;
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
+index ea22a08e6c08..19a6107d115c 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.c
++++ b/drivers/net/wireless/marvell/mwifiex/main.c
+@@ -1546,18 +1546,17 @@ mwifiex_reinit_sw(struct mwifiex_adapter *adapter)
+ 		adapter->rx_work_enabled = true;
+ 
+ 	adapter->workqueue =
+-		alloc_workqueue("MWIFIEX_WORK_QUEUE",
+-				WQ_HIGHPRI | WQ_MEM_RECLAIM | WQ_UNBOUND, 1);
++		alloc_ordered_workqueue("MWIFIEX_WORK_QUEUE",
++					WQ_HIGHPRI | WQ_MEM_RECLAIM);
+ 	if (!adapter->workqueue)
+ 		goto err_kmalloc;
+ 
+ 	INIT_WORK(&adapter->main_work, mwifiex_main_work_queue);
+ 
+ 	if (adapter->rx_work_enabled) {
+-		adapter->rx_workqueue = alloc_workqueue("MWIFIEX_RX_WORK_QUEUE",
+-							WQ_HIGHPRI |
+-							WQ_MEM_RECLAIM |
+-							WQ_UNBOUND, 1);
++		adapter->rx_workqueue =
++			alloc_ordered_workqueue("MWIFIEX_RX_WORK_QUEUE",
++						WQ_HIGHPRI | WQ_MEM_RECLAIM);
+ 		if (!adapter->rx_workqueue)
+ 			goto err_kmalloc;
+ 		INIT_WORK(&adapter->rx_work, mwifiex_rx_work_queue);
+@@ -1701,18 +1700,17 @@ mwifiex_add_card(void *card, struct completion *fw_done,
+ 		adapter->rx_work_enabled = true;
+ 
+ 	adapter->workqueue =
+-		alloc_workqueue("MWIFIEX_WORK_QUEUE",
+-				WQ_HIGHPRI | WQ_MEM_RECLAIM | WQ_UNBOUND, 1);
++		alloc_ordered_workqueue("MWIFIEX_WORK_QUEUE",
++					WQ_HIGHPRI | WQ_MEM_RECLAIM);
+ 	if (!adapter->workqueue)
+ 		goto err_kmalloc;
+ 
+ 	INIT_WORK(&adapter->main_work, mwifiex_main_work_queue);
+ 
+ 	if (adapter->rx_work_enabled) {
+-		adapter->rx_workqueue = alloc_workqueue("MWIFIEX_RX_WORK_QUEUE",
+-							WQ_HIGHPRI |
+-							WQ_MEM_RECLAIM |
+-							WQ_UNBOUND, 1);
++		adapter->rx_workqueue =
++			alloc_ordered_workqueue("MWIFIEX_RX_WORK_QUEUE",
++						WQ_HIGHPRI | WQ_MEM_RECLAIM);
+ 		if (!adapter->rx_workqueue)
+ 			goto err_kmalloc;
+ 
 -- 
 2.40.0
 
