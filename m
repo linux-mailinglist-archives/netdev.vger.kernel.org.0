@@ -2,26 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 377C36EA8B2
+	by mail.lfdr.de (Postfix) with ESMTP id E0AA26EA8B6
 	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 12:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229820AbjDUK5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 06:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43150 "EHLO
+        id S230361AbjDUK5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 06:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbjDUK5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 06:57:05 -0400
+        with ESMTP id S229682AbjDUK5G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 06:57:06 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88D9183FC;
-        Fri, 21 Apr 2023 03:57:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA2FE9016;
+        Fri, 21 Apr 2023 03:57:05 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 0/2] Netfilter fixes for net
-Date:   Fri, 21 Apr 2023 12:56:58 +0200
-Message-Id: <20230421105700.325438-1-pablo@netfilter.org>
+Subject: [PATCH net 1/2] netfilter: conntrack: restore IPS_CONFIRMED out of nf_conntrack_hash_check_insert()
+Date:   Fri, 21 Apr 2023 12:56:59 +0200
+Message-Id: <20230421105700.325438-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230421105700.325438-1-pablo@netfilter.org>
+References: <20230421105700.325438-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -34,50 +36,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+e6d57e9ff0ae ("netfilter: conntrack: fix rmmod double-free race")
+consolidates IPS_CONFIRMED bit set in nf_conntrack_hash_check_insert().
+However, this breaks ctnetlink:
 
-The following patchset contains late Netfilter fixes for net:
+ # conntrack -I -p tcp --timeout 123 --src 1.2.3.4 --dst 5.6.7.8 --state ESTABLISHED --sport 1 --dport 4 -u SEEN_REPLY
+ conntrack v1.4.6 (conntrack-tools): Operation failed: Device or resource busy
 
-1) Set on IPS_CONFIRMED before change_status() otherwise EBUSY is
-   bogusly hit. This bug was introduced in the 6.3 release cycle.
+This is a partial revert of the aforementioned commit to restore
+IPS_CONFIRMED.
 
-2) Fix nfnetlink_queue conntrack support: Set/dump timeout
-   accordingly for unconfirmed conntrack entries. Make sure this
-   is done after IPS_CONFIRMED is set on. This is an old bug, it
-   happens since the introduction of this feature.
+Fixes: e6d57e9ff0ae ("netfilter: conntrack: fix rmmod double-free race")
+Reported-by: Stéphane Graber <stgraber@stgraber.org>
+Tested-by: Stéphane Graber <stgraber@stgraber.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nf_conntrack_bpf.c     | 1 +
+ net/netfilter/nf_conntrack_core.c    | 1 -
+ net/netfilter/nf_conntrack_netlink.c | 3 +++
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
-Please, pull these changes from:
+diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+index cd99e6dc1f35..34913521c385 100644
+--- a/net/netfilter/nf_conntrack_bpf.c
++++ b/net/netfilter/nf_conntrack_bpf.c
+@@ -381,6 +381,7 @@ __bpf_kfunc struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct_i)
+ 	struct nf_conn *nfct = (struct nf_conn *)nfct_i;
+ 	int err;
+ 
++	nfct->status |= IPS_CONFIRMED;
+ 	err = nf_conntrack_hash_check_insert(nfct);
+ 	if (err < 0) {
+ 		nf_conntrack_free(nfct);
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index c6a6a6099b4e..7ba6ab9b54b5 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -932,7 +932,6 @@ nf_conntrack_hash_check_insert(struct nf_conn *ct)
+ 		goto out;
+ 	}
+ 
+-	ct->status |= IPS_CONFIRMED;
+ 	smp_wmb();
+ 	/* The caller holds a reference to this object */
+ 	refcount_set(&ct->ct_general.use, 2);
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index bfc3aaa2c872..d3ee18854698 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -2316,6 +2316,9 @@ ctnetlink_create_conntrack(struct net *net,
+ 	nfct_seqadj_ext_add(ct);
+ 	nfct_synproxy_ext_add(ct);
+ 
++	/* we must add conntrack extensions before confirmation. */
++	ct->status |= IPS_CONFIRMED;
++
+ 	if (cda[CTA_STATUS]) {
+ 		err = ctnetlink_change_status(ct, cda);
+ 		if (err < 0)
+-- 
+2.30.2
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git nf-23-04-21
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit 92e8c732d8518588ac34b4cb3feaf37d2cb87555:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf (2023-04-18 20:46:31 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git nf-23-04-21
-
-for you to fetch changes up to 73db1b8f2bb6725b7391e85aab41fdf592b3c0c1:
-
-  netfilter: conntrack: fix wrong ct->timeout value (2023-04-19 12:08:38 +0200)
-
-----------------------------------------------------------------
-netfilter pull request
-
-----------------------------------------------------------------
-Pablo Neira Ayuso (1):
-      netfilter: conntrack: restore IPS_CONFIRMED out of nf_conntrack_hash_check_insert()
-
-Tzung-Bi Shih (1):
-      netfilter: conntrack: fix wrong ct->timeout value
-
- include/net/netfilter/nf_conntrack_core.h |  6 +++++-
- net/netfilter/nf_conntrack_bpf.c          |  1 +
- net/netfilter/nf_conntrack_core.c         |  1 -
- net/netfilter/nf_conntrack_netlink.c      | 16 ++++++++++++----
- 4 files changed, 18 insertions(+), 6 deletions(-)
