@@ -2,84 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06E4E6EB20D
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 21:05:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C674C6EB210
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 21:06:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbjDUTFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 15:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33534 "EHLO
+        id S233257AbjDUTGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 15:06:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232771AbjDUTFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 15:05:15 -0400
-Received: from mx06lb.world4you.com (mx06lb.world4you.com [81.19.149.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E3DE53;
-        Fri, 21 Apr 2023 12:05:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=pNA0LbEE2V+gZ0EBUCIKt5+WIYL8jdEZURhUGriO9ns=; b=mPXp9QuBwzet9977RfBJUss+v+
-        CmyD5CwG4V2468gvhzMczRGuGvpAvj/efyCHH9eUqCIRe1CawPHFPOH/x/vXvRYw5nbUymbCKscie
-        xaHNWQfG8cYtuKWO75w5SoRL1Gz70nRflOH24Fve9tEpcrwDqDVdfUfWqS8eaiVhTLg4=;
-Received: from [88.117.57.231] (helo=[10.0.0.160])
-        by mx06lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.96)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1ppw4E-0007Dj-35;
-        Fri, 21 Apr 2023 21:05:11 +0200
-Message-ID: <f5d3638a-f1f3-f45f-1b0c-e5de54dd07d1@engleder-embedded.com>
-Date:   Fri, 21 Apr 2023 21:05:10 +0200
+        with ESMTP id S232017AbjDUTGt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 15:06:49 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B477E53;
+        Fri, 21 Apr 2023 12:06:45 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1ppw5N-0002na-2t;
+        Fri, 21 Apr 2023 21:06:22 +0200
+Date:   Fri, 21 Apr 2023 20:06:18 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [RFC PATCH net-next 20/22] net: dsa: mt7530: force link-down on
+ MACs before reset on MT7530
+Message-ID: <ZELeqnUKQApQPxUR@makrotopia.org>
+References: <20230421143648.87889-1-arinc.unal@arinc9.com>
+ <20230421143648.87889-21-arinc.unal@arinc9.com>
+ <ZELZAd4O9SyHLkwn@makrotopia.org>
+ <7982894a-029c-585a-9ab5-3a6295c6abaa@arinc9.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH net-next v3 0/6] tsnep: XDP socket zero-copy support
-Content-Language: en-US
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        bjorn@kernel.org, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-References: <20230418190459.19326-1-gerhard@engleder-embedded.com>
- <ZEGeNYHh+NatBDq+@boxer>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <ZEGeNYHh+NatBDq+@boxer>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7982894a-029c-585a-9ab5-3a6295c6abaa@arinc9.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.04.23 22:19, Maciej Fijalkowski wrote:
-> On Tue, Apr 18, 2023 at 09:04:53PM +0200, Gerhard Engleder wrote:
->> Implement XDP socket zero-copy support for tsnep driver. I tried to
->> follow existing drivers like igc as far as possible. But one main
->> difference is that tsnep does not need any reconfiguration for XDP BPF
->> program setup. So I decided to keep this behavior no matter if a XSK
->> pool is used or not. As a result, tsnep starts using the XSK pool even
->> if no XDP BPF program is available.
->>
->> Another difference is that I tried to prevent potentially failing
->> allocations during XSK pool setup. E.g. both memory models for page pool
->> and XSK pool are registered all the time. Thus, XSK pool setup cannot
->> end up with not working queues.
->>
->> Some prework is done to reduce the last two XSK commits to actual XSK
->> changes.
+On Fri, Apr 21, 2023 at 09:47:16PM +0300, Arınç ÜNAL wrote:
+> On 21.04.2023 21:42, Daniel Golle wrote:
+> > On Fri, Apr 21, 2023 at 05:36:46PM +0300, arinc9.unal@gmail.com wrote:
+> > > From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > 
+> > > Force link-down on all MACs before internal reset. Let's follow suit commit
+> > > 728c2af6ad8c ("net: mt7531: ensure all MACs are powered down before
+> > > reset").
+> > > 
+> > > Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> > > ---
+> > >   drivers/net/dsa/mt7530.c | 4 ++++
+> > >   1 file changed, 4 insertions(+)
+> > > 
+> > > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> > > index ac1e3c58aaac..8ece3d0d820c 100644
+> > > --- a/drivers/net/dsa/mt7530.c
+> > > +++ b/drivers/net/dsa/mt7530.c
+> > > @@ -2203,6 +2203,10 @@ mt7530_setup(struct dsa_switch *ds)
+> > >   		return -EINVAL;
+> > >   	}
+> > > +	/* Force link-down on all MACs before internal reset */
+> > > +	for (i = 0; i < MT7530_NUM_PORTS; i++)
+> > > +		mt7530_write(priv, MT7530_PMCR_P(i), PMCR_FORCE_LNK);
+> > > +
+> > 
+> > Moving this part to mt753x_setup just before calling priv->info->sw_setup(ds);
+> > is probably better. Though it isn't documented I assume that the requirement
+> > to have the ports in force-link-down may also apply to MT7988, and for sure
+> > it doesn't do any harm.
+> > 
+> > Hence I suggest to squash this change:
+> > diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> > index a2cb7e296165e..998c4e8930cd3 100644
+> > --- a/drivers/net/dsa/mt7530.c
+> > +++ b/drivers/net/dsa/mt7530.c
+> > @@ -2203,10 +2203,6 @@ mt7530_setup(struct dsa_switch *ds)
+> >   		return -EINVAL;
+> >   	}
+> > -	/* Force link-down on all MACs before internal reset */
+> > -	for (i = 0; i < MT7530_NUM_PORTS; i++)
+> > -		mt7530_write(priv, MT7530_PMCR_P(i), PMCR_FORCE_LNK);
+> > -
+> >   	/* Reset the switch through internal reset */
+> >   	mt7530_write(priv, MT7530_SYS_CTRL,
+> >   		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
+> > @@ -2423,10 +2419,6 @@ mt7531_setup(struct dsa_switch *ds)
+> >   		dev_info(priv->dev, "found MT7531BE\n");
+> >   	}
+> > -	/* all MACs must be forced link-down before sw reset */
+> > -	for (i = 0; i < MT7530_NUM_PORTS; i++)
+> > -		mt7530_write(priv, MT7530_PMCR_P(i), MT7531_FORCE_LNK);
+> > -
+> >   	/* Reset the switch through internal reset */
+> >   	mt7530_write(priv, MT7530_SYS_CTRL,
+> >   		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
+> > @@ -2907,6 +2899,10 @@ mt753x_setup(struct dsa_switch *ds)
+> >   		priv->pcs[i].port = i;
+> >   	}
+> > +	/* Force link-down on all MACs before setup */
+> > +	for (i = 0; i < MT7530_NUM_PORTS; i++)
+> > +		mt7530_write(priv, MT7530_PMCR_P(i), PMCR_FORCE_LNK);
 > 
-> I had minor comments on two last patches, besides:
-> Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> MT7531 has got a different bit on the register for this, MT7531_FORCE_LNK.
+> Are you sure PMCR_FORCE_LNK would work for MT7531 too?
 
-I will add that tag to all commits.
+No, I had overlooked that. As the effects of not doing the
+force-link-down before the reset are subtle and depend on the
+link-partners I may not have cought them in my tests.
 
-Thank you for the review!
 
-Gerhard
+> 
+> Arınç
