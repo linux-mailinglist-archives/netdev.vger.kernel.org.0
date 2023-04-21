@@ -2,113 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E676EA4CE
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E76CF6EA4EC
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:37:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230364AbjDUHbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 03:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39842 "EHLO
+        id S231187AbjDUHhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 03:37:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231167AbjDUHbC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:31:02 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328B29746
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 00:30:52 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-9505214c47fso207439266b.1
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 00:30:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1682062251; x=1684654251;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=TXD0SvfVpb5ArVlwxwukJNvZ7FQ4i6U8HJTH0x40wOc=;
-        b=jHa4yP8uRXfKtQYslv7gA8gGzGt6bHpcNBBVQkD9GcwARGlxayyqhdRiIBBQY9H1Bb
-         SyZU4yixxQM+XsojFJjtucU3i3wen2yRTp6zX48UroM+P9SpyNM7Goe7igAPHzmRXAec
-         5oYIBMyA43zod8w/yMsgwjaU3x/F93FJSjXiodloLojrzOAMmINH5JkXL5uSsn1Tkikb
-         tBe3WAOiF+rJFvyDRe/d0fYqAQNwa+8nDuoAGBeogng7SGfB6kMOa6BEvIAEsfJAdpmt
-         t5pAhDO4F5E3UKc4ZJ+0e/BrjMttO6ouKWwQ0fMnyy5VbXMympEy2ttY8yJgRLOJO18k
-         0V0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682062251; x=1684654251;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TXD0SvfVpb5ArVlwxwukJNvZ7FQ4i6U8HJTH0x40wOc=;
-        b=Ey6gUy8BTTgUfgpDSBxW5CQe0lyp0u0IFMr/aDUAYJshcsmPcFhrFfDLYVSYPTKqTt
-         Tz4NL2Xj1EFe13fuT5lNKHhTwWcKribVuo1uM8Uu2xubCTzcbXS6VHC3NQngPT8k94uS
-         vER0Y1sru7sG4F5r4ShpBIMBeYZnPuSYgfHixit2fSSJ2Q7LtqbgJeEYEIIms/BYo5Sm
-         jZbw8RNwGBP8LXzFwmTvkmXgI1PBvYcVGb+1sqPvrpzHZShVLjA9+3P3kmORbDVByE1w
-         R2l4nHgiIGtK4/XpyK1Nu29fy+Bej3SwQ40dvBgtsdZJAN7q03fZAW3uAlzyAlgo71tO
-         QNqw==
-X-Gm-Message-State: AAQBX9dQVViMnKaCIkH1eFZgrCMy0XMOxAttjCADv6eFU/V2Pan1NhtM
-        ptR7QdzuM2EcHxabtE0F8eqMzw==
-X-Google-Smtp-Source: AKy350YiW/RgBcdrDWvcsi4/QmLqcZmY+jKO98eibRooGmPHFN7cNE5Nwwltck2kC0aIMnW0VwZMow==
-X-Received: by 2002:a17:907:7851:b0:94f:3b29:e0a5 with SMTP id lb17-20020a170907785100b0094f3b29e0a5mr1216357ejc.20.1682062251073;
-        Fri, 21 Apr 2023 00:30:51 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:668b:1e57:3caa:4d06? ([2a02:810d:15c0:828:668b:1e57:3caa:4d06])
-        by smtp.gmail.com with ESMTPSA id w27-20020a17090633db00b0094ed0370f8fsm1734575eja.147.2023.04.21.00.30.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Apr 2023 00:30:50 -0700 (PDT)
-Message-ID: <3adc1c05-b707-6caf-874e-dfef065c8ab8@linaro.org>
-Date:   Fri, 21 Apr 2023 09:30:49 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net-next 2/6] dt-bindings: net: brcm,unimac-mdio: Add
- asp-v2.0
-Content-Language: en-US
-To:     Justin Chen <justinpopo6@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org,
-        bcm-kernel-feedback-list@broadcom.com
-Cc:     justin.chen@broadcom.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        richardcochran@gmail.com, sumit.semwal@linaro.org,
-        christian.koenig@amd.com
-References: <1681863018-28006-1-git-send-email-justinpopo6@gmail.com>
- <1681863018-28006-3-git-send-email-justinpopo6@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1681863018-28006-3-git-send-email-justinpopo6@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S231169AbjDUHhK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:37:10 -0400
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FD22722;
+        Fri, 21 Apr 2023 00:37:08 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R271e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0VgbyT-R_1682062623;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgbyT-R_1682062623)
+          by smtp.aliyun-inc.com;
+          Fri, 21 Apr 2023 15:37:03 +0800
+Message-ID: <1682062264.418752-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
+Date:   Fri, 21 Apr 2023 15:31:04 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>
+References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
+ <ZDzKAD2SNe1q/XA6@infradead.org>
+ <1681711081.378984-2-xuanzhuo@linux.alibaba.com>
+ <20230417115610.7763a87c@kernel.org>
+ <20230417115753.7fb64b68@kernel.org>
+ <CACGkMEtPNPXFThHt4aNm4g-fC1DqTLcDnB_iBWb9-cAOHMYV_A@mail.gmail.com>
+ <20230417181950.5db68526@kernel.org>
+ <1681784379.909136-2-xuanzhuo@linux.alibaba.com>
+ <20230417195400.482cfe75@kernel.org>
+ <ZD4kMOym15pFcjq+@infradead.org>
+ <20230417231947.3972f1a8@kernel.org>
+ <ZD95RY9PjVRi7qz3@infradead.org>
+ <20230419094506.2658b73f@kernel.org>
+ <ZEDZaitjcX+egzvf@infradead.org>
+ <20230420071349.5e441027@kernel.org>
+In-Reply-To: <20230420071349.5e441027@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/04/2023 02:10, Justin Chen wrote:
-> From: Justin Chen <justin.chen@broadcom.com>
-> 
-> The ASP 2.0 Ethernet controller uses a brcm unimac.
-> 
-> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml b/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
-> index 0be426ee1e44..6684810fcbf0 100644
-> --- a/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
-> +++ b/Documentation/devicetree/bindings/net/brcm,unimac-mdio.yaml
-> @@ -22,6 +22,8 @@ properties:
->        - brcm,genet-mdio-v3
->        - brcm,genet-mdio-v4
->        - brcm,genet-mdio-v5
-> +      - brcm,asp-v2.0-mdio
-> +      - brcm,asp-v2.1-mdio
+On Thu, 20 Apr 2023 07:13:49 -0700, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Wed, 19 Apr 2023 23:19:22 -0700 Christoph Hellwig wrote:
+> > > In this case yes, pinned user memory, it gets sliced up into MTU sized
+> > > chunks, fed into an Rx queue of a device, and user can see packets
+> > > without any copies.
+> >
+> > How long is the life time of these mappings?  Because dma_map_*
+> > assumes a temporary mapping and not one that is pinned bascically
+> > forever.
+>
+> Yeah, this one is "for ever".
+>
+> > > Quite similar use case #2 is upcoming io_uring / "direct placement"
+> > > patches (former from Meta, latter for Google) which will try to receive
+> > > just the TCP data into pinned user memory.
+> >
+> > I don't think we can just long term pin user memory here.  E.g. for
+> > confidential computing cases we can't even ever do DMA straight to
+> > userspace.  I had that conversation with Meta's block folks who
+> > want to do something similar with io_uring and the only option is an
+> > an allocator for memory that is known DMAable, e.g. through dma-bufs.
+> >
+> > You guys really all need to get together and come up with a scheme
+> > that actually works instead of piling these hacks over hacks.
+>
+> Okay, that simplifies various aspects. We'll just used dma-bufs from
+> the start in the new APIs.
 
-Same concerns as on previous patch.
 
-Best regards,
-Krzysztof
+I am not particularly familiar with dma-bufs. I want to know if this mechanism
+can solve the problem of virtio-net.
+
+I saw this framework, allowing the driver do something inside the ops of
+dma-bufs.
+
+If so, is it possible to propose a new patch based on dma-bufs?
+
+Thanks.
+
+
+
 
