@@ -2,67 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A516EA1E9
+	by mail.lfdr.de (Postfix) with ESMTP id 974716EA1E8
 	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 04:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233748AbjDUCvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 22:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
+        id S233721AbjDUCvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 22:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233674AbjDUCvL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 22:51:11 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF9A72B6;
-        Thu, 20 Apr 2023 19:51:02 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id d2e1a72fcca58-63b5c48ea09so1600864b3a.1;
-        Thu, 20 Apr 2023 19:51:02 -0700 (PDT)
+        with ESMTP id S233719AbjDUCvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 22:51:12 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E132D76AA;
+        Thu, 20 Apr 2023 19:51:04 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-63b35789313so1362748b3a.3;
+        Thu, 20 Apr 2023 19:51:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682045462; x=1684637462;
+        d=gmail.com; s=20221208; t=1682045464; x=1684637464;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=34/Qii7FhGNnTA9R8bpTQlpj4RZtJcqmBQ/JN/Zhs64=;
-        b=rloF2mVAYBrDqM/6XuYQZv7gDt2EIV8lhLGgEEJ3aoXgc0Wvlus+anMCNBx6PUd0+k
-         HQ/kOTFvj3/q6z85JtIlfUU1j5z/ZAJb1YnJW+JewjxZYuQ9kGRTHS0ZaV4/9UqSTjKI
-         QLjvN+BgQzSGhKEztoAQ1YtgyBnLS5Wv1sOGtn0cPnlrfmm809JWs4QNV1B/DookEJq6
-         T9ZRYKVAVUELaRb+Bcp/Rx2wIDO8bd210XgXcNEYG9OV/dX2QvYlUyALg25HkejBfB3w
-         bsGYcbipu6KkSio+dJCNrD0lXpUWNTwNW6g5iTJ4+ar3ZmOFXg72Yqbx5uUpF3uQrVEH
-         vY9g==
+        bh=AwtUCKMDpoTm9KXX0yGrXQSd2H3Fgy9ECPbB0fz8oGo=;
+        b=cRJhfKuPjaED++LchZsJzv3xv2rfNzoPZmErb4pfag5q1r7/g5SiDmE5lJmQZdSg0C
+         Y6H3eUOTI/N7cG2u7vHVCwtPtgx76TWwDthHKaUOdDXhqudG4ncOx5I+9HxyuIZoZXUA
+         l5fM8XwbhWUdkztqx8ommuepL9dKuw0aAlRQW1czU4ZdFsz/H4Zw7Tuh5Ku5izmM2d9q
+         Z7969/wHOFjZxsOGYWplKZaPsPhyWaXjQTglVTt1+pL5RbrritkAgmQUq7LLwmquHLnz
+         i4X6DFh92x3Wyahf1P+N6mOzZwxfZUpIpurZWY0cweTU2+OjGoMijp8Qsydoc98mIrsh
+         kt7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682045462; x=1684637462;
+        d=1e100.net; s=20221208; t=1682045464; x=1684637464;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=34/Qii7FhGNnTA9R8bpTQlpj4RZtJcqmBQ/JN/Zhs64=;
-        b=MX1FnsfEI8JOCDxvS0Lggm7r6at/QHp2e1f1jZy8dXeorr9RX3H5CZp2+Dd9wBmRY5
-         Tm9/3tjfi+P5yYvujjIIbGBSIfuaMJnrArXkl/9INbnoVmCrt+tuKawluCxZZgGiIytc
-         ypgzp/jQ9BeWGVJjD2S8EJhPPgtRHWVKbyzC8oBgSjSjEsDIsobaDlQhX+mgTWwBU5gk
-         AFCLnVnzo2wzTR5IkmJD2bWzOZjxYn7wnZO/alAm8iBJCPgHjomQrcSO2TT0t02DXmV3
-         U47arc9tHdQFV1a4qtvznJfOKuqCAX4fEqNI8zu5PAAMrlza5fMzP0CmmX+8uJbnMWb+
-         1T1Q==
-X-Gm-Message-State: AAQBX9dWFeRt+ljUfUyattLGMLiD3yNkevskQfN/toYMIfrjjZlxIGQ7
-        07Gq616o+QrvNPK0mM0FjCE=
-X-Google-Smtp-Source: AKy350Yn90TexflSL5xc7ZrsTa6Anc/kqV6Sh8SIc6wqmavXZKkrA+mOseiosddYVVGPcr8lUAoyRg==
-X-Received: by 2002:a05:6a21:6817:b0:f0:164b:fa5d with SMTP id wr23-20020a056a21681700b000f0164bfa5dmr4235235pzb.15.1682045462096;
-        Thu, 20 Apr 2023 19:51:02 -0700 (PDT)
+        bh=AwtUCKMDpoTm9KXX0yGrXQSd2H3Fgy9ECPbB0fz8oGo=;
+        b=QVi1A6bCmvREN7v5pKkB0br0UliXxXlTLtYKBsT9g11V/U/lOBycP5zcA/bJEIEuCG
+         QhbqR6F2cJSXT0ISLUNLmWfTNOJeIjztxLE92rjAggzf9DUl7B60XTsVJ/YGBAmddTUD
+         I7Vd+fKYAvHgEyyR7rLWD04qiyCGfVAybRf4KoOxOnI0dHVpvPs6l+T/HyNodpr+ThYA
+         MtXPDLEWGfRFmWApQfrG3Rl7HBGLnDYT5dSYwfepf1EqE+we21TlTfDARd6RW1314CRd
+         0/8Xj5+rHh0NTLgtzZH2o60y517wscuvdHhL0M8+VW9nIatvTKGvOSkPUuZ1LeDlW5O2
+         R3+Q==
+X-Gm-Message-State: AAQBX9frGwRCgePWPDYhZ9fNICwlzSmCA2wHIiJdRL0zDogUYhHb8Inh
+        o0v7XYR99Kk6dvUSbfJlEpw=
+X-Google-Smtp-Source: AKy350YsvomD8llNpTPI6MKfV1GUHF1tBZbXiJWJQloLPuSmO9Ene9EfjX1LBH5Zt7qlTvFL5MsGTA==
+X-Received: by 2002:a05:6a21:6da7:b0:f2:6984:b8d with SMTP id wl39-20020a056a216da700b000f269840b8dmr1152992pzb.29.1682045463979;
+        Thu, 20 Apr 2023 19:51:03 -0700 (PDT)
 Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id z12-20020a63c04c000000b0050f74d435e6sm1676172pgi.18.2023.04.20.19.51.01
+        by smtp.gmail.com with ESMTPSA id q10-20020a63d60a000000b0051eff0a70d7sm1647561pgg.94.2023.04.20.19.51.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Apr 2023 19:51:01 -0700 (PDT)
+        Thu, 20 Apr 2023 19:51:03 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
 From:   Tejun Heo <tj@kernel.org>
 To:     jiangshanlai@gmail.com
 Cc:     linux-kernel@vger.kernel.org, kernel-team@meta.com,
         Tejun Heo <tj@kernel.org>,
-        Sunil Goutham <sgoutham@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH 06/22] net: thunderx: Use alloc_ordered_workqueue() to create ordered workqueues
-Date:   Thu, 20 Apr 2023 16:50:30 -1000
-Message-Id: <20230421025046.4008499-7-tj@kernel.org>
+        Sunil Goutham <sgoutham@marvell.com>,
+        Ratheesh Kannoth <rkannoth@marvell.com>,
+        Srujana Challa <schalla@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>, netdev@vger.kernel.org
+Subject: [PATCH 07/22] net: octeontx2: Use alloc_ordered_workqueue() to create ordered workqueues
+Date:   Thu, 20 Apr 2023 16:50:31 -1000
+Message-Id: <20230421025046.4008499-8-tj@kernel.org>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230421025046.4008499-1-tj@kernel.org>
 References: <20230421025046.4008499-1-tj@kernel.org>
@@ -132,31 +134,91 @@ As there are follow-up workqueue core changes, I'd really appreciate if the
 patch can be routed through the workqueue tree w/ your acks. Thanks.
 
 Signed-off-by: Tejun Heo <tj@kernel.org>
-Cc: Sunil Goutham <sgoutham@marvell.com>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Eric Dumazet <edumazet@google.com>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-arm-kernel@lists.infradead.org
+Cc: Sunil Goutham <sgoutham@marvell.com>
+Cc: Ratheesh Kannoth <rkannoth@marvell.com>
+Cc: Srujana Challa <schalla@marvell.com>
+Cc: Geetha sowjanya <gakula@marvell.com>
 Cc: netdev@vger.kernel.org
 ---
- drivers/net/ethernet/cavium/thunder/thunder_bgx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c     |  5 ++---
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c    | 13 +++++--------
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c    |  5 ++---
+ 3 files changed, 9 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-index 7eb2ddbe9bad..a317feb8decb 100644
---- a/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-+++ b/drivers/net/ethernet/cavium/thunder/thunder_bgx.c
-@@ -1126,8 +1126,7 @@ static int bgx_lmac_enable(struct bgx *bgx, u8 lmacid)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index 8683ce57ed3f..207041c81184 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -3013,9 +3013,8 @@ static int rvu_flr_init(struct rvu *rvu)
+ 			    cfg | BIT_ULL(22));
  	}
  
- poll:
--	lmac->check_link = alloc_workqueue("check_link", WQ_UNBOUND |
--					   WQ_MEM_RECLAIM, 1);
-+	lmac->check_link = alloc_ordered_workqueue("check_link", WQ_MEM_RECLAIM);
- 	if (!lmac->check_link)
+-	rvu->flr_wq = alloc_workqueue("rvu_afpf_flr",
+-				      WQ_UNBOUND | WQ_HIGHPRI | WQ_MEM_RECLAIM,
+-				       1);
++	rvu->flr_wq = alloc_ordered_workqueue("rvu_afpf_flr",
++					      WQ_HIGHPRI | WQ_MEM_RECLAIM);
+ 	if (!rvu->flr_wq)
  		return -ENOMEM;
- 	INIT_DELAYED_WORK(&lmac->dwork, bgx_poll_for_link);
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 179433d0a54a..7b3114105757 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -271,8 +271,7 @@ static int otx2_pf_flr_init(struct otx2_nic *pf, int num_vfs)
+ {
+ 	int vf;
+ 
+-	pf->flr_wq = alloc_workqueue("otx2_pf_flr_wq",
+-				     WQ_UNBOUND | WQ_HIGHPRI, 1);
++	pf->flr_wq = alloc_ordered_workqueue("otx2_pf_flr_wq", WQ_HIGHPRI);
+ 	if (!pf->flr_wq)
+ 		return -ENOMEM;
+ 
+@@ -593,9 +592,8 @@ static int otx2_pfvf_mbox_init(struct otx2_nic *pf, int numvfs)
+ 	if (!pf->mbox_pfvf)
+ 		return -ENOMEM;
+ 
+-	pf->mbox_pfvf_wq = alloc_workqueue("otx2_pfvf_mailbox",
+-					   WQ_UNBOUND | WQ_HIGHPRI |
+-					   WQ_MEM_RECLAIM, 1);
++	pf->mbox_pfvf_wq = alloc_ordered_workqueue("otx2_pfvf_mailbox",
++						   WQ_HIGHPRI | WQ_MEM_RECLAIM);
+ 	if (!pf->mbox_pfvf_wq)
+ 		return -ENOMEM;
+ 
+@@ -1063,9 +1061,8 @@ static int otx2_pfaf_mbox_init(struct otx2_nic *pf)
+ 	int err;
+ 
+ 	mbox->pfvf = pf;
+-	pf->mbox_wq = alloc_workqueue("otx2_pfaf_mailbox",
+-				      WQ_UNBOUND | WQ_HIGHPRI |
+-				      WQ_MEM_RECLAIM, 1);
++	pf->mbox_wq = alloc_ordered_workqueue("otx2_pfaf_mailbox",
++					      WQ_HIGHPRI | WQ_MEM_RECLAIM);
+ 	if (!pf->mbox_wq)
+ 		return -ENOMEM;
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index ab126f8706c7..1f16e0dcbb3e 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -297,9 +297,8 @@ static int otx2vf_vfaf_mbox_init(struct otx2_nic *vf)
+ 	int err;
+ 
+ 	mbox->pfvf = vf;
+-	vf->mbox_wq = alloc_workqueue("otx2_vfaf_mailbox",
+-				      WQ_UNBOUND | WQ_HIGHPRI |
+-				      WQ_MEM_RECLAIM, 1);
++	vf->mbox_wq = alloc_ordered_workqueue("otx2_vfaf_mailbox",
++					      WQ_HIGHPRI | WQ_MEM_RECLAIM);
+ 	if (!vf->mbox_wq)
+ 		return -ENOMEM;
+ 
 -- 
 2.40.0
 
