@@ -2,135 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B21886EA53A
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:50:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E2F6EA540
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 09:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbjDUHuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 03:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57134 "EHLO
+        id S231400AbjDUHus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 03:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbjDUHuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:50:11 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B8A3C22;
-        Fri, 21 Apr 2023 00:50:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1682063402; x=1713599402;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Uiroj0n/u+QOES0WHXYHHG/HRX95w83Ff6vjs3Kqv1M=;
-  b=vrJtVz34WfC8Q/hPG76+ayVUkS1sagmctZ7iqujUGCwGJ/9zCfp9T3Eo
-   qQL62HpDruJcS4odPET8JggZ9vZxPyKaRRWgm9dfRlG49/Ntt4Ua0ghQF
-   7dL1Piyzg4hXolVTBho94td7Xz+oZgwxZGmQTGCVwk1RuoUJd2QElKhxp
-   cwJ4FXjPBWkK8VlBL/6VIbM4//77VgyT+xnIeXtU4h+RRiJS8MbzaMqP4
-   A8TeGKLVhJslS+x7wuI7Yx6VurK8KQoikgJvaC+6frKoulmjZJLXGSEaG
-   mQFd6JuWAjQApIKT7ADg9sO/JWcUtA3OZ87M3ogQ5ZcG5jAWm9cUTNzr/
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.99,214,1677567600"; 
-   d="scan'208";a="207640124"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Apr 2023 00:50:01 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 21 Apr 2023 00:50:00 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Fri, 21 Apr 2023 00:50:00 -0700
-Date:   Fri, 21 Apr 2023 09:49:59 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>, <richardcochran@gmail.com>,
-        <UNGLinuxDriver@microchip.com>, <maciej.fijalkowski@intel.com>,
-        <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH net-next] net: lan966x: Don't use xdp_frame when action
- is XDP_TX
-Message-ID: <20230421074959.t2ttsy6qpfjgngcr@soft-dev3-1>
-References: <20230420121152.2737625-1-horatiu.vultur@microchip.com>
- <f79e2dde-6d45-cc97-0cde-05454bdb5077@intel.com>
-MIME-Version: 1.0
+        with ESMTP id S231307AbjDUHum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 03:50:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0345902B
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 00:50:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3123964E9A
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 07:50:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 84139C4339E;
+        Fri, 21 Apr 2023 07:50:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682063430;
+        bh=Ghb4ujWOL+ptngeA/TuY2Pd/yHbrToTKrKLoD/hDrBU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=V6L7C6QH3j6FxdnEi8rfB0tJSVJFDUdEujC0yCCbdjb4WmwGu2XvzdkjssW7PkgGI
+         GZuI6FLJLUsQ27umX7E1m0BMFf5AXZeqOtpCOiTzrD8QgsAknj3r5VqMllkoH2xfAN
+         ZJeIfuMIEbhKjCAyYeEwZFI4i1kAdtH1bx1/o7xyjmvrr0oXB6wb4yXZDMsAxfqu9G
+         MX4ZQ4oG5LT1RRe2anj0Y75i/37pc17rz7+yWuoZ/0p5udkd7zsT+2PLvq5BCsjWaJ
+         Qi6zjEZOCdd1kqWjQCroQxJPpEZlIEVZcaO8b11CjnazV498tznb8x6OJRuJLJlhQZ
+         z9oBWqhCsai7w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 660A1E501EA;
+        Fri, 21 Apr 2023 07:50:30 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <f79e2dde-6d45-cc97-0cde-05454bdb5077@intel.com>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v7 0/5] Support MACsec VLAN
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168206343041.30967.48845527348863788.git-patchwork-notify@kernel.org>
+Date:   Fri, 21 Apr 2023 07:50:30 +0000
+References: <20230419142126.9788-1-ehakim@nvidia.com>
+In-Reply-To: <20230419142126.9788-1-ehakim@nvidia.com>
+To:     Emeel Hakim <ehakim@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, sd@queasysnail.net, netdev@vger.kernel.org,
+        leon@kernel.org
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 04/20/2023 16:49, Alexander Lobakin wrote:
-> 
-> From: Horatiu Vultur <horatiu.vultur@microchip.com>
-> Date: Thu, 20 Apr 2023 14:11:52 +0200
+Hello:
 
-Hi Olek,
+This series was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
 
+On Wed, 19 Apr 2023 17:21:21 +0300 you wrote:
+> Dear maintainers,
 > 
-> > When the action of an xdp program was XDP_TX, lan966x was creating
-> > a xdp_frame and use this one to send the frame back. But it is also
-> > possible to send back the frame without needing a xdp_frame, because
-> > it possible to send it back using the page.
-> > And then once the frame is transmitted is possible to use directly
-> > page_pool_recycle_direct as lan966x is using page pools.
-> > This would save some CPU usage on this path.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> This patch series introduces support for hardware (HW) offload MACsec
+> devices with VLAN configuration. The patches address both scenarios
+> where the VLAN header is both the inner and outer header for MACsec.
+> 
+> The changes include:
 > 
 > [...]
-> 
-> > @@ -702,6 +704,7 @@ static void lan966x_fdma_tx_start(struct lan966x_tx *tx, int next_to_use)
-> >  int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
-> >                          struct xdp_frame *xdpf,
-> >                          struct page *page,
-> > +                        u32 len,
-> >                          bool dma_map)
-> 
-> I think you can cut the number of arguments by almost a half:
-> 
-> int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
->                            void *ptr, u32 len)
-> {
->         if (len) {
->                 /* XDP_TX, ptr is page */
->                 page = ptr;
-> 
->                 dma_sync_here(page, len);
->         } else {
->                 /* XDP_REDIR, ptr is xdp_frame */
->                 xdpf = ptr;
-> 
->                 dma_map_here(xdpf->data, xdpf->len);
->         }
-> 
-> @page and @xdpf are mutually exclusive. When @xdpf is non-null, @len is
-> excessive (xdpf->len is here), so you can use @len as logical
-> `len * !dma_map`, i.e. zero for REDIR and the actual frame length for TX.
 
-Thanks for the review. You are right, I can reduce number of arguments,
-the reason why I have done it like this, I thought it is a little bit more
-clear this way. But I will update as you propose in the next version
+Here is the summary with links:
+  - [net-next,v7,1/5] vlan: Add MACsec offload operations for VLAN interface
+    https://git.kernel.org/netdev/net-next/c/abff3e5e2935
+  - [net-next,v7,2/5] net/mlx5: Enable MACsec offload feature for VLAN interface
+    https://git.kernel.org/netdev/net-next/c/339ccec8d43d
+  - [net-next,v7,3/5] net/mlx5: Support MACsec over VLAN
+    https://git.kernel.org/netdev/net-next/c/4bba492b0427
+  - [net-next,v7,4/5] net/mlx5: Consider VLAN interface in MACsec TX steering rules
+    https://git.kernel.org/netdev/net-next/c/765f974c7dfd
+  - [net-next,v7,5/5] macsec: Don't rely solely on the dst MAC address to identify destination MACsec device
+    https://git.kernel.org/netdev/net-next/c/7661351a54ec
 
-> 
-> I generally enjoy seeing how you constantly improve stuff in your driver :)
-> 
-> >  {
-> >       struct lan966x *lan966x = port->lan966x;
-> > @@ -722,6 +725,15 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
-> >               goto out;
-> >       }
-> [...]
-> 
-> Thanks,
-> Olek
-
+You are awesome, thank you!
 -- 
-/Horatiu
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
