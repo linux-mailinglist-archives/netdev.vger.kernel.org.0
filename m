@@ -2,64 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A2F6EB1AB
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 20:33:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFF126EB1AD
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 20:33:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233200AbjDUSdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 14:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        id S233241AbjDUSdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 14:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230110AbjDUSdI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 14:33:08 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C119B1BCB;
-        Fri, 21 Apr 2023 11:33:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1682101987; x=1713637987;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vUU6tG9KX3iUy8vtArJasd1+iOyl58okWHaGw2zYd4I=;
-  b=UZ8AN2x35EUvclr64obBlaus8D87UiHyIvX4YBP47XmGMeWV6tcK+2o0
-   Dhxdh8Ellb9bq8iYfbL7hi5jAL83lMftSoLoQw13+nGEvbBgssMK3jXve
-   mqKmkQOb0GezUYjvIcyg/B5y3e7qof34bbDMJX0FqlBCYUJ99mlj9WO1i
-   4ZzHkbVLiJWKsbfTrCdiWWjThYZWdQCvN7CG9urzkiA/tKSXMD/N4b9Yo
-   zFU+ISLGOOenG5PbLQuQnkYi8tH0fOT2GdJEHiWS03bNlLl1APte2wDcX
-   rA5crp8nv+L+L/F5x5bIBJiRW+76Y/l+YC1nQg4At1PxEfBhUEIWxiu4O
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.99,216,1677567600"; 
-   d="scan'208";a="210644301"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Apr 2023 11:33:06 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 21 Apr 2023 11:32:49 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Fri, 21 Apr 2023 11:32:48 -0700
-Date:   Fri, 21 Apr 2023 20:32:48 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>, <richardcochran@gmail.com>,
-        <UNGLinuxDriver@microchip.com>, <alexandr.lobakin@intel.com>,
-        <maciej.fijalkowski@intel.com>
-Subject: Re: [PATCH net-next v2] lan966x: Don't use xdp_frame when action is
- XDP_TX
-Message-ID: <20230421183248.n7a2c67umthlm3fg@soft-dev3-1>
-References: <20230421131422.3530159-1-horatiu.vultur@microchip.com>
- <714b6bd0-014f-a5ab-af02-d4d9e4390454@intel.com>
+        with ESMTP id S233227AbjDUSdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 14:33:43 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8C81FF7;
+        Fri, 21 Apr 2023 11:33:33 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1ppvZB-0002bf-2a;
+        Fri, 21 Apr 2023 20:33:06 +0200
+Date:   Fri, 21 Apr 2023 19:32:58 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     arinc9.unal@gmail.com
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [RFC PATCH net-next 19/22] net: dsa: mt7530: set interrupt
+ register only for MT7530
+Message-ID: <ZELW2plBzam0r8EF@makrotopia.org>
+References: <20230421143648.87889-1-arinc.unal@arinc9.com>
+ <20230421143648.87889-20-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <714b6bd0-014f-a5ab-af02-d4d9e4390454@intel.com>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230421143648.87889-20-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,69 +62,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 04/21/2023 15:34, Alexander Lobakin wrote:
+On Fri, Apr 21, 2023 at 05:36:45PM +0300, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> From: Horatiu Vultur <horatiu.vultur@microchip.com>
-> Date: Fri, 21 Apr 2023 15:14:22 +0200
+> Setting this register related to interrupts is only needed for the MT7530
+> switch. Make an exclusive check to ensure this.
 > 
-> [...]
-> 
-> > @@ -699,15 +701,14 @@ static void lan966x_fdma_tx_start(struct lan966x_tx *tx, int next_to_use)
-> >       tx->last_in_use = next_to_use;
-> >  }
-> >
-> > -int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
-> > -                        struct xdp_frame *xdpf,
-> > -                        struct page *page,
-> > -                        bool dma_map)
-> > +int lan966x_fdma_xmit_xdpf(struct lan966x_port *port, void *ptr, u32 len)
-> >  {
-> >       struct lan966x *lan966x = port->lan966x;
-> >       struct lan966x_tx_dcb_buf *next_dcb_buf;
-> >       struct lan966x_tx *tx = &lan966x->tx;
-> > +     struct xdp_frame *xdpf;
-> >       dma_addr_t dma_addr;
-> > +     struct page *page;
-> >       int next_to_use;
-> >       __be32 *ifh;
-> >       int ret = 0;
-> > @@ -722,8 +723,19 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
-> >               goto out;
-> >       }
-> >
-> > +     /* Fill up the buffer */
-> > +     next_dcb_buf = &tx->dcbs_buf[next_to_use];
-> > +     next_dcb_buf->use_skb = false;
-> > +     next_dcb_buf->xdp_ndo = !len;
-> > +     next_dcb_buf->len = len + IFH_LEN_BYTES;
-> 
-> Is it intended that for .ndo_xdp_xmit cases this field will equal just
-> %IFH_LEN_BYTES as @len is zero?
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Argh, no it is a mistake. For that case it should be xdpf->len +
-IFH_LEN_BYTES. As I focus on the XDP_TX, I fogot to test also
-XDP_REDIRECT. :(
-Thanks for the good catch!
+Acked-by: Daniel Golle <daniel@makrotopia.org>
+Tested-by: Daniel Golle <daniel@makrotopia.org>
+(on MT7988 which is the relevant hardware regarding this change,
+interrupts still work fine)
 
-I will fix this in the next version.
 
+> ---
+>  drivers/net/dsa/mt7530.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> > +     next_dcb_buf->used = true;
-> > +     next_dcb_buf->ptp = false;
-> > +     next_dcb_buf->dev = port->dev;
-> > +
-> >       /* Generate new IFH */
-> > -     if (dma_map) {
-> > +     if (!len) {
-> > +             xdpf = ptr;
-> > +
-> >               if (xdpf->headroom < IFH_LEN_BYTES) {
-> >                       ret = NETDEV_TX_OK;
-> >                       goto out;
-> [...]
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index a66a762cb5db..ac1e3c58aaac 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -2034,7 +2034,7 @@ mt7530_setup_irq(struct mt7530_priv *priv)
+>  	}
+>  
+>  	/* This register must be set for MT7530 to properly fire interrupts */
+> -	if (priv->id != ID_MT7531)
+> +	if (priv->id == ID_MT7530 || priv->id == ID_MT7621)
+>  		mt7530_set(priv, MT7530_TOP_SIG_CTRL, TOP_SIG_CTRL_NORMAL);
+>  
+>  	ret = request_threaded_irq(priv->irq, NULL, mt7530_irq_thread_fn,
+> -- 
+> 2.37.2
 > 
-> Thanks,
-> Olek
-
--- 
-/Horatiu
