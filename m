@@ -2,263 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E311B6EAB56
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 15:15:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D5466EAB74
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 15:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232427AbjDUNPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 09:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
+        id S232234AbjDUNZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 09:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232265AbjDUNPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 09:15:39 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D57A5F0;
-        Fri, 21 Apr 2023 06:15:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1682082937; x=1713618937;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kmiOUVgBvjfIs0p4hj+2OzOGUD9EcJfcUGBRPSb0QWE=;
-  b=GPRVPDMObKteuhX+d5bqVNEmjAz3TQa+p4F1IT3enbCH3SZmxNm1DgJA
-   N7K8HvnY5JCPaK4gDtDTLgsjzUhWUH3P6w8JdOz2wDJuTMfGwZn479wAB
-   a0MyfCRisr10wkW/8W3NQWRFCtu4kM8I8jDXNI+4nI3Liy26f6m+mLH4N
-   uXZKw426FjEEU2i/OJLQAsrfW7VFsmTKZVA7/V11TuJSqzZxw3ZOuxq32
-   78/cnBEgbLcXg4KaoF3FQayJK8QjYW/3KxwjM3O4NIUVpt5hw8XFjGcQo
-   rBQ7N3+DA58KM05rVkGb8aJQRAnmMxlt47OZOyq5qBXJBACiTxDDmNCRf
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.99,214,1677567600"; 
-   d="scan'208";a="148298571"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Apr 2023 06:15:35 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 21 Apr 2023 06:15:11 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Fri, 21 Apr 2023 06:15:08 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <hawk@kernel.org>, <john.fastabend@gmail.com>,
-        <richardcochran@gmail.com>, <UNGLinuxDriver@microchip.com>,
-        <alexandr.lobakin@intel.com>, <maciej.fijalkowski@intel.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2] lan966x: Don't use xdp_frame when action is XDP_TX
-Date:   Fri, 21 Apr 2023 15:14:22 +0200
-Message-ID: <20230421131422.3530159-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
+        with ESMTP id S229603AbjDUNZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 09:25:39 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30350C17C;
+        Fri, 21 Apr 2023 06:25:38 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33LCYrV3010159;
+        Fri, 21 Apr 2023 13:25:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2023-03-30;
+ bh=EJJUuraiyU4Az59/yVd+bL07P3RLqlwzEkLdMvnhZqc=;
+ b=ZtZ1+i77AIYiHXaNhDlFnpHYvgoM45Ruv1m0/M9TWFmsj0KczJ84tcsrVxowCSwPvC6h
+ 8F1+lEQG0Ny5PLSvu9Gon5TFJmUSBSuyRaPe56RSNJcxsu26WvXivnbt0XN5lcxq1XtZ
+ NYrCLJuzBSgm/yBlwaVNQBvY4ceFRG5koD7jlWRwEDOSoe8jGZKAe1Mg58DkdePZoobH
+ pIKsvLh0qCB/Vz3qSIahUuE7Ga9MUBJ2nJ3n6hlzBdqkwQJBbZy7o2zFp5tcf+zANZw/
+ dw6k8W5L/k+BQu0Ls+ZJZAIR976h30l/tSKu2RNSvbBeaLGBA8jUyApTGqoyf+ohk06l Uw== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pyktaw5w8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 Apr 2023 13:25:21 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 33LC0BJU015721;
+        Fri, 21 Apr 2023 13:25:19 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2106.outbound.protection.outlook.com [104.47.55.106])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3pyjcfnx0b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 Apr 2023 13:25:19 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O3Uv5RN8O4ybmlWFyNDyFjos1JNu1brjyT2hN1yCmesqKo6s99ucMDaqetydTYKInCFcGzzWygv0dZpOlXizeMy3v6ErvnJ8LaB4Cej5MPYGDYxEh4Iv+vE1/iCXEWoJkE1UHg11rWsSQmB3HtILe/gBBcnzna9DpmbY98m26Aw1rbuAFVeQQSL0DKHXdymG4xZci8Fle2uSHSKBUnUOFB1lKkLb6ab59mUl4dW0O094dFlJo+LMRpnD/k+svZUJ+1dOMkMPvV9Tm9CtwKFnlFiNGVV+95X24O4GkrFHY5WSsVYANb0qIf8aWNJad7fxsDGIqSrir/zlZpUBjdBdTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EJJUuraiyU4Az59/yVd+bL07P3RLqlwzEkLdMvnhZqc=;
+ b=cSPLQHOT4tZNUOsHKl8EPSWnlI1s3NPbRCh3fsy8l3fwFn+wdEGgpGPG4xWDNmfRrppnCx8grShSEMz38xsWBdmgaksqp6xblAxKpLuk34ClXKuhR5TuvuCSXvQMeJrJpMbdMWx1ZPWgOZC6dpG2WVUPro0xZr0y2XL/Ixt9QyZrcN8XnKRAiHv8r28gd/3mkOIEdd1+Apu6lFQxi1DlwZkkreJH9i5Xq7VxMSwUNVAzdm9t0HByHrYpTTuZemq1C0OPjDra5PnrDnFzI85ABP3R2TuZkluic+83IDdoai2pHVhcv7i8d7jkmN+TGTf2NJ5+gwT2EhQTJaYlk5uZGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EJJUuraiyU4Az59/yVd+bL07P3RLqlwzEkLdMvnhZqc=;
+ b=OpgVt6bVdCmOG1zOiwVXcwPXr4dqpHfw4LD/pT5Kgp9JEzeoXgDMNxku0C7gDv3NUr+Bv38c0MnhDxBinhRlZFOLMAJyt7xqF1zRThqvK+0XVf8FqzFtjXQN6nXBcnnljqcCPYixWmMP2onrxHdfltAzNjh+4Fb/1osNP++lgs4=
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
+ by CH3PR10MB6883.namprd10.prod.outlook.com (2603:10b6:610:151::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Fri, 21 Apr
+ 2023 13:25:16 +0000
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::ecbd:fc46:2528:36db]) by BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::ecbd:fc46:2528:36db%6]) with mapi id 15.20.6319.022; Fri, 21 Apr 2023
+ 13:25:16 +0000
+From:   Chuck Lever III <chuck.lever@oracle.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        "kernel-tls-handshake@lists.linux.dev" 
+        <kernel-tls-handshake@lists.linux.dev>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net/handshake: fix section mismatch error for
+ handshake_genl_net_ops
+Thread-Topic: [PATCH] net/handshake: fix section mismatch error for
+ handshake_genl_net_ops
+Thread-Index: AQHZdCrJbFYwZyHCs0+AR8XiNgzQMq81wQoA
+Date:   Fri, 21 Apr 2023 13:25:16 +0000
+Message-ID: <01A42FB6-9391-4E31-AF58-A522F284A893@oracle.com>
+References: <20230421082450.2572594-1-arnd@kernel.org>
+In-Reply-To: <20230421082450.2572594-1-arnd@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3731.500.231)
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN0PR10MB5128:EE_|CH3PR10MB6883:EE_
+x-ms-office365-filtering-correlation-id: dbcde1f6-0d9c-44e2-25cc-08db426bd8b2
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2tkKK6U/d8/JvpUXFs9P4WVlaMlcxCSZrO9giFKbI7hoVwrEAEZ1pcC0K9NmvIyD/HcUQFSxp9J87ffrVboZvrnNcl9FDzyzoIKTU+KNsC7WNboVZfN/KEYlVSmQcMBkP5kc4cPayVAFg2GFto0kQTkiez9o8zF4gWdszxSTZj0dzqMVpGeN17UHOORem54Mi2Qf9Hu/hC7Vc38IjG8hdGbr8w9S3mwhFlCGWouLWIigkHOLizV98FkP8StFLRdW0X6l/PB/n8tbCQCdPs2UqVQCSzySE5llhYpKDO1aPM8tacqMWbasznMvv9VuKcYwWtyjMTNkP5wdFkD77BwF8RadL1sHQKsuatwKc0fodQHsERL+Z9Ypz/uKrwj80CT9tFNCcQQAqAoDcjVzOgx+DgNYRRkLGms4TRNDo+ARQw1U893dSoHzYwnVe6d8KZfshkNLKZglqiJuoVdrAQV8uv/T6JZ8CMwWWTXNiceyIfOUv4m73axSy8VzSWnuLbR9QR/hD9QbsqZQsvHc2FwuRgq68nXT2EfqjnTg5e4ODRK3g37oXg6KwFXS413pULoJwp0N7tgO0qWVvzxiGOcZp8d8OyKhvm+o0Y/UKYPZEUo55y3AQqfKflTtKhKTMukwHXfnptSIGYIhWtfCT/dMcg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(346002)(376002)(366004)(136003)(39860400002)(451199021)(186003)(38100700002)(122000001)(6506007)(6512007)(26005)(71200400001)(38070700005)(53546011)(33656002)(5660300002)(2616005)(8936002)(8676002)(2906002)(83380400001)(478600001)(54906003)(86362001)(6486002)(36756003)(76116006)(66446008)(66476007)(41300700001)(6916009)(66556008)(64756008)(66946007)(316002)(4326008)(91956017)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/l5TisWfkCQEBUApl/ECmPv2PPYQ+V1ZimmNknr87Bc9susGtUfTwmCVLVXl?=
+ =?us-ascii?Q?xL9MTXBnoMCWaeKqT25Pqt+WjKpI03imAn5UZaXzfV046tcdQq8Qf/bSxjAk?=
+ =?us-ascii?Q?/3/V9mVq/BzQWZL5V/SmX7WqgHWB3elMXyl6RPIY1PqLlNlMopl3QKCTFS74?=
+ =?us-ascii?Q?yjr624V5t5coAT6BE9mgnSxT/7Am/FjhTLgZHcYa6TtrpJolhiLhtpaZBxUc?=
+ =?us-ascii?Q?FxkRdNHOYf8d02lUh+A4FVAd0lAcIB3xqHZceDRQTSbNDXMDXIf3yFPFbGVo?=
+ =?us-ascii?Q?zYX7ZHTF1TsnkalpZCTahPSZCf/AXn50jqElbue3H42r/Ba1MpMv2vNEXvMd?=
+ =?us-ascii?Q?F2nFKCmgGaIq502tML2nJ48yfihd3oNnm+ofHopS1Dk/eYPWFpvB/5khzjG4?=
+ =?us-ascii?Q?hTTcPaI86pDMCFBXcCohgZp68r/+SI5Km67LGk6m75Bd6VLpYgm5qzsLWwJS?=
+ =?us-ascii?Q?WuT9ZSiDJfSj+tcRyqiUr30x4aeb/7jWil/m7QbMAtGASTxTWa04cXs+Vk9N?=
+ =?us-ascii?Q?v5RdvM7iJiTw11q/B7+RIdOvjffXk9WI6w/6gfutkrkBuQMTD6wBH5xQdZ31?=
+ =?us-ascii?Q?phnAA/e7jCyTNdWtjFNYbc8hoCuxysIzIp0ubiDEXJInbPkIMcyhOK4H11VE?=
+ =?us-ascii?Q?pFFm0ACl2Nn3Nk+//tvo7nQwPFD+SJD3wDT3BVNhQk6tnoLbhIEY9fh9tX7/?=
+ =?us-ascii?Q?Emw5/DPa5BVT6G8qp5p6XVZKzNEfJ6XLfSro90amuqSxxzsu0x0doruTQ3a5?=
+ =?us-ascii?Q?N41e1IjBa/8IdxLGqzSEPARyKaEMBrDEaAWJjJxHo7WXxtJeCuskpr2gEDUg?=
+ =?us-ascii?Q?Z1PQqg9SsRvo0IN7lL6taa44U9VA7TGl1g+EGj/RE58VIvMdyPxqYQhZODz1?=
+ =?us-ascii?Q?UKpwWcUAqkJay0km19vaPkDd3Ln57sDZxi82CO3l67gmuRRkzvODRDnKi0V6?=
+ =?us-ascii?Q?3Sqn6sfUFU1F5o5nrLO8/dxpj/eCtGbT1+XAvk2Ga7L6wNb00u9CfJf8Jot7?=
+ =?us-ascii?Q?VJsgmGLWhDz1TmTTMMeBlPwTQ/s9896v1DlGhSMjD0vBpfktZVBts4WkbDV5?=
+ =?us-ascii?Q?JhkpqC+dC6v4OqJGv89FxSY28hj6mwPgO4GTFC34+MlL6MlzyuZKLwrQFe60?=
+ =?us-ascii?Q?WmaH+CuXe1rTKVQMdcykbs5FKPutPgjlV33lnhrXXv7JNHZECwBAzfcCvtWG?=
+ =?us-ascii?Q?B7cM0uzDon7L6oFZwgRZyiZTstlZuY8jKEIzzspQn1Ble2XKgQNHsfXLSeuI?=
+ =?us-ascii?Q?Uqr4lvbPu5llKSaPpV6YMaSi92PZhO/b42Zq19xVfmAyfZsAy977LqvN3Pq+?=
+ =?us-ascii?Q?uxNo58pcBqILD38pgldHEWyq/kTetHBLnEEgMjtHsDWBxH403O/cvEkTnD1E?=
+ =?us-ascii?Q?bEtQEh7Ysa6lmxU2RpjHOTb3TeavCYDdGENeRVXUzS19LMIH1sI0ZUDj4Z3h?=
+ =?us-ascii?Q?B9txEl0Qn+doN/w8YHn+FyHH4jN8MbXl6Q+HWaE4ebWqVOlqr+JLWl5XqozW?=
+ =?us-ascii?Q?vB61lrg8BjvkYqwexrddFbQRBCWZfrFT/tD3RDa68gLWZS5DKPgrwHqbK+/p?=
+ =?us-ascii?Q?q5SthmNdxfbRZq17bQqRm1Hwt5mHjPApJYvkWRnxPs3Y+XnHHBmyY8Wxko7+?=
+ =?us-ascii?Q?yg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <0DE7A0AC60064D4393EBAD039B57ED9D@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: =?us-ascii?Q?EISN653DhdJWhSrUeNtrnqllL6iQuAJLqFl2IrkuB/ZUSnKltugkBrHDcm3J?=
+ =?us-ascii?Q?BV/0dnA7eNfsqO8p6XfDFrsZ+ugBQt71etD7PK6TxJBdIZpiOa0xn8BLquUN?=
+ =?us-ascii?Q?d0GPJRfEjX+1LUBvdmqKXwPEmga7143C3nfpT2Jqot/cP4z9VF1prRADkeww?=
+ =?us-ascii?Q?b1+uZ00ETKBurAV6RZ6tDMaLIPDKISMVRKLZnmLXyeXCfxHtuEPkLOcF/kpc?=
+ =?us-ascii?Q?+8B1r0Zi8wc2p3so0wSlwfn1ODaiRhKhOydn+Zye+aRpIvo9nhNES7wIc+I7?=
+ =?us-ascii?Q?/eQW8nAtfck9ijYrKqTx9X8qfrPy963LEJlepDAbUNVkjY9Yx1Acd6Jp1nax?=
+ =?us-ascii?Q?ZqpUHaG3+Fkk7Cs6UL3gTap9iSy0/diAKKlXg6YjTBWVRKAJecIXa7/ywlvC?=
+ =?us-ascii?Q?jbcWGzG7+ftIJQNseF4v8zNW9lR+hFGMNJYQ1HjjlbLg2gDdoddmNLd66KYh?=
+ =?us-ascii?Q?j4xWVt+lHoROnsILYfOIFcqfZoaoAILOtFU9n1YJI1koz105Jt6iq1YzGHht?=
+ =?us-ascii?Q?F4WUf+ZZrakp4/m29Dla6D0XrP1DNjC/DdMxn3bL2WXyY17pnaoQJ+XlUV+5?=
+ =?us-ascii?Q?T0W6tz+krR985Xuq894W8kqqklfOfO0QiYwHwfAh3yyOHMCm8H65eA22DxzR?=
+ =?us-ascii?Q?XXMjEoMcDAyLcFTNbe+nZ4R5955L3NOUjY/xMtBqeBZNH4Zp9eWvMMO7LCRe?=
+ =?us-ascii?Q?2xrX03AM4T/QGLHemhP+YPIp1BNXy/bMeFjvtR4fKE/CEVV0MRGWDo49rUKA?=
+ =?us-ascii?Q?8zWSrmRSKYXGh0RpR4uzVfeRAAMO255jkMrNgpxltrkNJYlZuhknqTd96TCa?=
+ =?us-ascii?Q?8QhWpuxQU5J9CV7nSnIRKj6LlC42b//jgAjRn01cq7ClLbECrRj759mmGBAk?=
+ =?us-ascii?Q?uZS/2MKMeo7HkxLHMtOhBf8ERzZzkB5nLicbPXr7d+i1Nb3JaqXeAgHp/Sy0?=
+ =?us-ascii?Q?PywVlPBisyhi989SvZJeKw=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dbcde1f6-0d9c-44e2-25cc-08db426bd8b2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Apr 2023 13:25:16.7488
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: XD1GkiLTl1h+KObeZO7QRxEjlRpdM+qSoP3MyRO3liaVC1mjFIyETXMGDovIcFSP1hlB/OykrzyL1HLfCLwBBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR10MB6883
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-21_06,2023-04-21_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
+ phishscore=0 malwarescore=0 spamscore=0 bulkscore=0 suspectscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2304210117
+X-Proofpoint-ORIG-GUID: bx2lHGbrpnXkNARhjDJSqEBijwkgakl6
+X-Proofpoint-GUID: bx2lHGbrpnXkNARhjDJSqEBijwkgakl6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the action of an xdp program was XDP_TX, lan966x was creating
-a xdp_frame and use this one to send the frame back. But it is also
-possible to send back the frame without needing a xdp_frame, because
-it is possible to send it back using the page.
-And then once the frame is transmitted is possible to use directly
-page_pool_recycle_direct as lan966x is using page pools.
-This would save some CPU usage on this path, which results in higher
-number of transmitted frames. Bellow are the statistics:
-Frame size:    Improvement:
-64                ~8%
-256              ~11%
-512               ~8%
-1000              ~0%
-1500              ~0%
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
-v1->v2:
-- reduce number of arguments for the function lan966x_fdma_xmit_xdpf,
-  as some of them are mutual exclusive, and other can be replaced with
-  deduced from the other ones
-- update commit message and add statistics for the improvement
----
- .../ethernet/microchip/lan966x/lan966x_fdma.c | 43 +++++++++++--------
- .../ethernet/microchip/lan966x/lan966x_main.h |  6 +--
- .../ethernet/microchip/lan966x/lan966x_xdp.c  | 10 ++---
- 3 files changed, 31 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index 2ed76bb61a731..85c13231e0176 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -390,6 +390,7 @@ static void lan966x_fdma_stop_netdev(struct lan966x *lan966x)
- static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
- {
- 	struct lan966x_tx *tx = &lan966x->tx;
-+	struct lan966x_rx *rx = &lan966x->rx;
- 	struct lan966x_tx_dcb_buf *dcb_buf;
- 	struct xdp_frame_bulk bq;
- 	struct lan966x_db *db;
-@@ -432,7 +433,8 @@ static void lan966x_fdma_tx_clear_buf(struct lan966x *lan966x, int weight)
- 			if (dcb_buf->xdp_ndo)
- 				xdp_return_frame_bulk(dcb_buf->data.xdpf, &bq);
- 			else
--				xdp_return_frame_rx_napi(dcb_buf->data.xdpf);
-+				page_pool_recycle_direct(rx->page_pool,
-+							 dcb_buf->data.page);
- 		}
- 
- 		clear = true;
-@@ -699,15 +701,14 @@ static void lan966x_fdma_tx_start(struct lan966x_tx *tx, int next_to_use)
- 	tx->last_in_use = next_to_use;
- }
- 
--int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
--			   struct xdp_frame *xdpf,
--			   struct page *page,
--			   bool dma_map)
-+int lan966x_fdma_xmit_xdpf(struct lan966x_port *port, void *ptr, u32 len)
- {
- 	struct lan966x *lan966x = port->lan966x;
- 	struct lan966x_tx_dcb_buf *next_dcb_buf;
- 	struct lan966x_tx *tx = &lan966x->tx;
-+	struct xdp_frame *xdpf;
- 	dma_addr_t dma_addr;
-+	struct page *page;
- 	int next_to_use;
- 	__be32 *ifh;
- 	int ret = 0;
-@@ -722,8 +723,19 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
- 		goto out;
- 	}
- 
-+	/* Fill up the buffer */
-+	next_dcb_buf = &tx->dcbs_buf[next_to_use];
-+	next_dcb_buf->use_skb = false;
-+	next_dcb_buf->xdp_ndo = !len;
-+	next_dcb_buf->len = len + IFH_LEN_BYTES;
-+	next_dcb_buf->used = true;
-+	next_dcb_buf->ptp = false;
-+	next_dcb_buf->dev = port->dev;
-+
- 	/* Generate new IFH */
--	if (dma_map) {
-+	if (!len) {
-+		xdpf = ptr;
-+
- 		if (xdpf->headroom < IFH_LEN_BYTES) {
- 			ret = NETDEV_TX_OK;
- 			goto out;
-@@ -743,11 +755,15 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
- 			goto out;
- 		}
- 
-+		next_dcb_buf->data.xdpf = xdpf;
-+
- 		/* Setup next dcb */
- 		lan966x_fdma_tx_setup_dcb(tx, next_to_use,
- 					  xdpf->len + IFH_LEN_BYTES,
- 					  dma_addr);
- 	} else {
-+		page = ptr;
-+
- 		ifh = page_address(page) + XDP_PACKET_HEADROOM;
- 		memset(ifh, 0x0, sizeof(__be32) * IFH_LEN);
- 		lan966x_ifh_set_bypass(ifh, 1);
-@@ -756,25 +772,18 @@ int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
- 		dma_addr = page_pool_get_dma_addr(page);
- 		dma_sync_single_for_device(lan966x->dev,
- 					   dma_addr + XDP_PACKET_HEADROOM,
--					   xdpf->len + IFH_LEN_BYTES,
-+					   len + IFH_LEN_BYTES,
- 					   DMA_TO_DEVICE);
- 
-+		next_dcb_buf->data.page = page;
-+
- 		/* Setup next dcb */
- 		lan966x_fdma_tx_setup_dcb(tx, next_to_use,
--					  xdpf->len + IFH_LEN_BYTES,
-+					  len + IFH_LEN_BYTES,
- 					  dma_addr + XDP_PACKET_HEADROOM);
- 	}
- 
--	/* Fill up the buffer */
--	next_dcb_buf = &tx->dcbs_buf[next_to_use];
--	next_dcb_buf->use_skb = false;
--	next_dcb_buf->data.xdpf = xdpf;
--	next_dcb_buf->xdp_ndo = dma_map;
--	next_dcb_buf->len = xdpf->len + IFH_LEN_BYTES;
- 	next_dcb_buf->dma_addr = dma_addr;
--	next_dcb_buf->used = true;
--	next_dcb_buf->ptp = false;
--	next_dcb_buf->dev = port->dev;
- 
- 	/* Start the transmission */
- 	lan966x_fdma_tx_start(tx, next_to_use);
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 757378516f1fd..27f272831ea5c 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -262,6 +262,7 @@ struct lan966x_tx_dcb_buf {
- 	union {
- 		struct sk_buff *skb;
- 		struct xdp_frame *xdpf;
-+		struct page *page;
- 	} data;
- 	u32 len;
- 	u32 used : 1;
-@@ -593,10 +594,7 @@ int lan966x_ptp_setup_traps(struct lan966x_port *port, struct ifreq *ifr);
- int lan966x_ptp_del_traps(struct lan966x_port *port);
- 
- int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev);
--int lan966x_fdma_xmit_xdpf(struct lan966x_port *port,
--			   struct xdp_frame *frame,
--			   struct page *page,
--			   bool dma_map);
-+int lan966x_fdma_xmit_xdpf(struct lan966x_port *port, void *ptr, u32 len);
- int lan966x_fdma_change_mtu(struct lan966x *lan966x);
- void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev);
- void lan966x_fdma_netdev_deinit(struct lan966x *lan966x, struct net_device *dev);
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-index 2e6f486ec67d7..9ee61db8690b4 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_xdp.c
-@@ -62,7 +62,7 @@ int lan966x_xdp_xmit(struct net_device *dev,
- 		struct xdp_frame *xdpf = frames[i];
- 		int err;
- 
--		err = lan966x_fdma_xmit_xdpf(port, xdpf, NULL, true);
-+		err = lan966x_fdma_xmit_xdpf(port, xdpf, 0);
- 		if (err)
- 			break;
- 
-@@ -76,7 +76,6 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
- {
- 	struct bpf_prog *xdp_prog = port->xdp_prog;
- 	struct lan966x *lan966x = port->lan966x;
--	struct xdp_frame *xdpf;
- 	struct xdp_buff xdp;
- 	u32 act;
- 
-@@ -90,11 +89,8 @@ int lan966x_xdp_run(struct lan966x_port *port, struct page *page, u32 data_len)
- 	case XDP_PASS:
- 		return FDMA_PASS;
- 	case XDP_TX:
--		xdpf = xdp_convert_buff_to_frame(&xdp);
--		if (!xdpf)
--			return FDMA_DROP;
--
--		return lan966x_fdma_xmit_xdpf(port, xdpf, page, false) ?
-+		return lan966x_fdma_xmit_xdpf(port, page,
-+					      data_len - IFH_LEN_BYTES) ?
- 		       FDMA_DROP : FDMA_TX;
- 	case XDP_REDIRECT:
- 		if (xdp_do_redirect(port->dev, &xdp, xdp_prog))
--- 
-2.38.0
+> On Apr 21, 2023, at 4:24 AM, Arnd Bergmann <arnd@kernel.org> wrote:
+>=20
+> From: Arnd Bergmann <arnd@arndb.de>
+>=20
+> The new netlink interface causes a link-time warning about the use of
+> a discarded symbol:
+>=20
+> WARNING: modpost: vmlinux.o: section mismatch in reference: handshake_exi=
+t (section: .exit.text) -> (unknown) (section: .init.data)
+> ERROR: modpost: Section mismatches detected.
+>=20
+> There are other instances of pernet_operations that are marked as
+> __net_initdata as well, so I'm not sure what the lifetime rules are,
+> but it's clear that any discarded symbol cannot be referenced from an
+> exitcall, so remove that annotation here.
+>=20
+> Fixes: 3b3009ea8abb ("net/handshake: Create a NETLINK service for handlin=
+g handshake requests")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+Thank you, Arnd. We received two other patches yesterday
+with the same build error report and suggested fix.
+
+
+> ---
+> net/handshake/netlink.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/net/handshake/netlink.c b/net/handshake/netlink.c
+> index 8ea0ff993f9f..35c9c445e0b8 100644
+> --- a/net/handshake/netlink.c
+> +++ b/net/handshake/netlink.c
+> @@ -249,7 +249,7 @@ static void __net_exit handshake_net_exit(struct net =
+*net)
+> }
+> }
+>=20
+> -static struct pernet_operations __net_initdata handshake_genl_net_ops =
+=3D {
+> +static struct pernet_operations handshake_genl_net_ops =3D {
+> .init =3D handshake_net_init,
+> .exit =3D handshake_net_exit,
+> .id =3D &handshake_net_id,
+> --=20
+> 2.39.2
+>=20
+
+--
+Chuck Lever
+
 
