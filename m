@@ -2,78 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3FB26EB17F
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 20:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0965B6EB17C
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 20:21:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232617AbjDUSVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 14:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
+        id S232494AbjDUSVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 14:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232608AbjDUSVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 14:21:23 -0400
-Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CCCF2737;
-        Fri, 21 Apr 2023 11:21:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1682101240; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=k0bJ8Xx/Gm+nNVRnhuPQm9C5+CrsbRHg+eXpYk2MmRD0gO9iNab8B7NolroNQkd3itfNYdCBP6zxNRZqVbw/EI51kKyyXUpy1yVITCeIt1NNUvYApOlJdZOG+JmaADt9198lpF5HlxodVV0PRfPzQFSM0WRCuD4OeT/Rsl5YhF4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1682101240; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=7QiiPLMA6EN1qebA4TseZQrKhExhrqS7aCZXKTasAII=; 
-        b=fnel47tvWC8l2c9JvGqXJLH9USAeXQ1ykLYIHdfHl0ryPjRjjHMbpnHhUv5qsFFMvTXi4x9cwdaqpmfRIYdiv8OIRp0s/lg5jWrUBcOdyBIA04nnUPn8mf4U3+F5vVgcZam+vhmrlgpajrH54TMtpkk/T4B/Cv87O9dvaiO0+KQ=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1682101240;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:From:From:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=7QiiPLMA6EN1qebA4TseZQrKhExhrqS7aCZXKTasAII=;
-        b=c+o+Ci0lBuGyktLuyGSqFnK/U2Zm9GsMWUP80v3P+BwtvkwlkhpEofYTVQI0p/9g
-        QwXWPs5mBCEccxOI1skKkKZSlmMa/OKjRPM3FTsBU1ort/49+g8SnTgt4PDxdU9Q6fQ
-        IMj8b5e0EGt6P+vCpNhyzYSK5oq/DKTZi/zu5MzA=
-Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 1682101239384601.8860784088002; Fri, 21 Apr 2023 11:20:39 -0700 (PDT)
-Message-ID: <f1c38c13-a1f6-93d8-90ae-4ea3f7e06dc2@arinc9.com>
-Date:   Fri, 21 Apr 2023 21:20:30 +0300
+        with ESMTP id S231639AbjDUSU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 14:20:59 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218A6E5C;
+        Fri, 21 Apr 2023 11:20:59 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-63b7096e2e4so2223917b3a.2;
+        Fri, 21 Apr 2023 11:20:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682101258; x=1684693258;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gYjAZVUAZkx+hJ9DMfGgeXPjn1yZPg0cuZSv04E2x7I=;
+        b=opVL+FyOwnx0VvvEOKDUyxKFCbbWvhICTk0wswSaWXjYPZ9X+mnJ6rIcs3NSJM/pDO
+         OBjfmfsur+3NCjqO5wOmFR7kFDt98teMTtUNydGqavih1WpIwf85M5ewrUqkbDZ+aQVu
+         wZviAhfTqLr+BxhECJC3dVaZO2wWqA1DoaYCM4QL/8oN9/sf1hWAyYjTgSrG1YP/tWGK
+         FmJFfy1/vWSR5ldvwLtEkJ7yu0tecbXXfol7sz0DnBU1INB4DyQ6PAxY6MDJ98CLFlac
+         TQ+xxpRQK9auts/BaCZjzNUDtOHIrK2UTFIwW+UZahIx5D4Fu0/16Ozmg/BNZQljyCJk
+         6WnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682101258; x=1684693258;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gYjAZVUAZkx+hJ9DMfGgeXPjn1yZPg0cuZSv04E2x7I=;
+        b=OTIEFQNa0+Y/GSIT+mkKIIRBCAwSLqw09Kovkqj9yWGlriWyAuYAtuduxcMD9kO7fT
+         6u0sb95JDwNTOYfZNjF9EQYF87ffTX28LeRuyjsQuom389i3HPFHvsqB6x5Fk/0qEpsa
+         SbEN2AQTFY20QDcXb8jH7iYY91Qi4XHHTAYg5CIAiW3HouLe0SB79im/nOB71E2+c1Fp
+         OUL1KVXBoaHzAJ3ApwBYamx351us58X2I6su3lcXydBkcrdMa24lTR4LWwvG8Z8UiZKf
+         OZ+ixm44WAIrNRBjN+DAPlYFA6vfGEzcIfTuK2L82puA6HEDVHVlfWkQevM71SxJEZBa
+         ZTcA==
+X-Gm-Message-State: AAQBX9eLbAF1e6rUVsuVHPVMXQQpTf8JUN9gZkfcKaggxsWvYdMJzZc/
+        Trj3SVeXGM6FTwjfcdvDvDQ=
+X-Google-Smtp-Source: AKy350brB+XC6kH0bv26owrFYJrDFQJiNVzOdTqBi5aNRCmztfTSlv8r6qmfOC7KiXa9XrGSovJ3Jg==
+X-Received: by 2002:a05:6a00:10c9:b0:63b:8b47:453c with SMTP id d9-20020a056a0010c900b0063b8b47453cmr7515216pfu.1.1682101258369;
+        Fri, 21 Apr 2023 11:20:58 -0700 (PDT)
+Received: from dhcp-172-26-102-232.dhcp.thefacebook.com ([2620:10d:c090:400::5:ef5e])
+        by smtp.gmail.com with ESMTPSA id c194-20020a624ecb000000b0062dba4e4706sm3221520pfb.191.2023.04.21.11.20.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Apr 2023 11:20:57 -0700 (PDT)
+Date:   Fri, 21 Apr 2023 11:20:54 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Feng zhou <zhoufeng.zf@bytedance.com>
+Cc:     martin.lau@linux.dev, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        mykolal@fb.com, shuah@kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, yangzhenze@bytedance.com,
+        wangdongdong.6@bytedance.com
+Subject: Re: [PATCH bpf-next v2 1/2] bpf: Add bpf_task_under_cgroup() kfunc
+Message-ID: <20230421182054.fisbe6dowoif3eta@dhcp-172-26-102-232.dhcp.thefacebook.com>
+References: <20230421090403.15515-1-zhoufeng.zf@bytedance.com>
+ <20230421090403.15515-2-zhoufeng.zf@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [RFC PATCH net-next 08/22] net: dsa: mt7530: change
- p{5,6}_interface to p{5,6}_configured
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20230421143648.87889-1-arinc.unal@arinc9.com>
- <20230421143648.87889-9-arinc.unal@arinc9.com>
- <ZELH2RlYLPjJGx6Y@makrotopia.org>
- <810aa47b-7007-7d53-9a23-c2d17d43d8a8@arinc9.com>
-In-Reply-To: <810aa47b-7007-7d53-9a23-c2d17d43d8a8@arinc9.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230421090403.15515-2-zhoufeng.zf@bytedance.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,55 +78,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21.04.2023 21:17, Arınç ÜNAL wrote:
-> On 21.04.2023 20:28, Daniel Golle wrote:
->> On Fri, Apr 21, 2023 at 05:36:34PM +0300, arinc9.unal@gmail.com wrote:
->>> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>>
->>> The idea of p5_interface and p6_interface pointers is to prevent
->>> mt753x_mac_config() from running twice for MT7531, as it's already 
->>> run with
->>> mt753x_cpu_port_enable() from mt7531_setup_common(), if the port is 
->>> used as
->>> a CPU port.
->>>
->>> Change p5_interface and p6_interface to p5_configured and p6_configured.
->>> Make them boolean.
->>>
->>> Do not set them for any other reason.
->>>
->>> The priv->p5_intf_sel check is useless as in this code path, it will 
->>> always
->>> be P5_INTF_SEL_GMAC5.
->>>
->>> There was also no need to set priv->p5_interface and 
->>> priv->p6_interface to
->>> PHY_INTERFACE_MODE_NA on mt7530_setup() and mt7531_setup() as they would
->>> already be set to that when "priv" is allocated. The pointers were of 
->>> the
->>> phy_interface_t enumeration type, and the first element of the enum is
->>> PHY_INTERFACE_MODE_NA. There was nothing in between that would change 
->>> this
->>> beforehand.
->>>
->>> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->>
->> NACK. This assumes that a user port is configured exactly once.
->> However, interface mode may change because of mode-changing PHYs (e.g.
->> often using Cisco SGMII for 10M/100M/1000M but using 2500Base-X for
->> 2500M, ie. depending on actual link speed).
->>
->> Also when using SFP modules (which can be hotplugged) the interface
->> mode may change after initially setting up the driver, e.g. when SFP
->> driver is loaded or a module is plugged or replaced.
+On Fri, Apr 21, 2023 at 05:04:02PM +0800, Feng zhou wrote:
+> From: Feng Zhou <zhoufeng.zf@bytedance.com>
 > 
-> I'm not sure I understand. pX_configured would be set to true only when 
-> the port is used as a CPU port. mt753x_mac_config() should run for user 
-> or DSA ports more than once, if needed.
+> Add a kfunc that's similar to the bpf_current_task_under_cgroup.
+> The difference is that it is a designated task.
+> 
+> When hook sched related functions, sometimes it is necessary to
+> specify a task instead of the current task.
+> 
+> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+> ---
+>  kernel/bpf/helpers.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+> 
+> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> index 00e5fb0682ac..88e3247b5c44 100644
+> --- a/kernel/bpf/helpers.c
+> +++ b/kernel/bpf/helpers.c
+> @@ -2142,6 +2142,24 @@ __bpf_kfunc struct cgroup *bpf_cgroup_from_id(u64 cgid)
+>  		return NULL;
+>  	return cgrp;
+>  }
+> +
+> +/**
+> + * bpf_task_under_cgroup - Check whether the task is a given subset of the
+> + * cgroup2 hierarchy. The cgroup2 to test is assigned by cgrp.
 
-Looking at this again, once pX_interface is true, the check will prevent 
-even user or DSA ports to be configured again. What about setting 
-pX_interface to false after mt753x_mac_config() is run?
+That doesn't read right.
 
-Arınç
+> + * @cgrp: assigned cgrp.
+> + * @task: assigned task.
+
+This is also wrong.
+Please copy paste from task_under_cgroup_hierarchy.
+
+> + */
+> +__bpf_kfunc int bpf_task_under_cgroup(struct cgroup *cgrp,
+> +				      struct task_struct *task)
+
+return type needs to be 'long'. 'int' might have issues.
+Also the args should be task, cgrp to match task_under_cgroup_hierarchy.
+
+> +{
+> +	if (unlikely(!cgrp))
+> +		return -EAGAIN;
+> +
+> +	if (unlikely(!task))
+> +		return -ENOENT;
+
+Please do
+if (unlikely(!cgrp || !task))
+        return -EINVAL;
+
+> +
+> +	return task_under_cgroup_hierarchy(task, cgrp);
+> +}
+>  #endif /* CONFIG_CGROUPS */
+>  
+>  /**
+> @@ -2341,6 +2359,7 @@ BTF_ID_FLAGS(func, bpf_cgroup_acquire, KF_ACQUIRE | KF_RCU | KF_RET_NULL)
+>  BTF_ID_FLAGS(func, bpf_cgroup_release, KF_RELEASE)
+>  BTF_ID_FLAGS(func, bpf_cgroup_ancestor, KF_ACQUIRE | KF_RCU | KF_RET_NULL)
+>  BTF_ID_FLAGS(func, bpf_cgroup_from_id, KF_ACQUIRE | KF_RET_NULL)
+> +BTF_ID_FLAGS(func, bpf_task_under_cgroup, KF_RCU)
+>  #endif
+>  BTF_ID_FLAGS(func, bpf_task_from_pid, KF_ACQUIRE | KF_RET_NULL)
+>  BTF_SET8_END(generic_btf_ids)
+> -- 
+> 2.20.1
+> 
