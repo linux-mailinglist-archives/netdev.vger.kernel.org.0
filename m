@@ -2,75 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF9216EA26A
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 05:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0471E6EA2AD
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 06:24:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231739AbjDUDmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 23:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44048 "EHLO
+        id S232350AbjDUEYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 00:24:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbjDUDmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 23:42:08 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C3830FF
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 20:42:07 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 41be03b00d2f7-51efefe7814so1754308a12.3
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 20:42:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682048527; x=1684640527;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=n/sRJAtEd/uD1OOqv9s/og+8s+YNsRdKo/znPIbylR0=;
-        b=rIUoEBc8XndLuA2ByBWs6ucycfZ9AyZ38X8Z5+iSAquwKaGfXYgA0IQQTjc+c7ZnFJ
-         qm71Dw96maqElUswhvdvCjh/kiFl3Av4RR/gJor8N7QnhgY2RCjwX3ORaAtugDFObD7B
-         YyP9EW7D3ehJUz34pUyCDQt/56b5fQNWz3pXue0LMz1THkUFoNwCie9T28E56gOiZziB
-         AfIwx0ADJxptUUhNqqLAk9G6by4+wGrPM21nldAgWJyFaEx11O/VGx2lXaKJ4EnvLNWM
-         aqrfmD6Xqnfj4DJv5AbL6i4aCn59QfQVLdavzhEmgYuB5tABcfHCFxeVWK76lIlOq8UA
-         +EKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682048527; x=1684640527;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=n/sRJAtEd/uD1OOqv9s/og+8s+YNsRdKo/znPIbylR0=;
-        b=OZutI10Dk6dVd9sRSkNdDSShl6uMtv6xTws/7+9vNKaFHLYF5yyuMOyW7+SDia4PFP
-         BeKDe9AhEd1gaWYW7JZblAROdJBOWdlzE+c41QbKC4IAs5rH1AQyDyCjwezVen91FLy1
-         BnZ5BbjWTyCTWOd0QIMIaDsC5RzVOj651tIT0+IsyUil3xmpP98Sn8iide2JdVSVaUC/
-         ZsCo46voGQq1+DZzLbn15J8Ajfsk9kDbvpqGkQcjxahBxSchLQsm274Zj9DYongF8yIH
-         A3ElhY5T+Gxw6AsobytshwcaOlzJ1kaCBBfTnzEUp4PgYq9RtpPrZWyTxJfQk5p4bjtC
-         Kb/g==
-X-Gm-Message-State: AAQBX9cD3Ahiw1KNubU5hHfIfgQPGMeGyijSh04LvjJ9RuZ+Bxqpn1jx
-        bfnScXQ/TWFBk91xqasNiJs=
-X-Google-Smtp-Source: AKy350a2fOKURicCVwpAoIzbsgabuKHf58wyDxP3sEYVCAwk5j7ErM/0SJZgl5bUzW1LxfDGKYLaEA==
-X-Received: by 2002:a17:902:ec8c:b0:1a6:9f9b:1327 with SMTP id x12-20020a170902ec8c00b001a69f9b1327mr4605882plg.45.1682048527109;
-        Thu, 20 Apr 2023 20:42:07 -0700 (PDT)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id iy1-20020a170903130100b001a65258011bsm1795671plb.26.2023.04.20.20.42.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Apr 2023 20:42:06 -0700 (PDT)
-Date:   Fri, 21 Apr 2023 11:42:01 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
-        kernel test robot <lkp@intel.com>, netdev@vger.kernel.org,
-        oe-kbuild-all@lists.linux.dev,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Liang Li <liali@redhat.com>, Vincent Bernat <vincent@bernat.ch>
-Subject: Re: [PATCH net 1/4] bonding: fix send_peer_notif overflow
-Message-ID: <ZEIGCaLWKIY3lDBo@Laptop-X1>
-References: <20230420082230.2968883-2-liuhangbin@gmail.com>
- <202304202222.eUq4Xfv8-lkp@intel.com>
- <27709.1682006380@famine>
- <20230420162139.3926e85c@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230420162139.3926e85c@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S231208AbjDUEYN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 00:24:13 -0400
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA795FE6;
+        Thu, 20 Apr 2023 21:24:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0VgbJvQl_1682051033;
+Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VgbJvQl_1682051033)
+          by smtp.aliyun-inc.com;
+          Fri, 21 Apr 2023 12:24:06 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, pabeni@redhat.com, song@kernel.org,
+        sdf@google.com, haoluo@google.com, yhs@fb.com, edumazet@google.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [RFC PATCH bpf-next v3 0/5] net/smc: Introduce BPF injection capability 
+Date:   Fri, 21 Apr 2023 12:23:48 +0800
+Message-Id: <1682051033-66125-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,41 +41,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 20, 2023 at 04:21:39PM -0700, Jakub Kicinski wrote:
-> On Thu, 20 Apr 2023 08:59:40 -0700 Jay Vosburgh wrote:
-> > >All errors (new ones prefixed by >>, old ones prefixed by <<):
-> > >  
-> > >>> ERROR: modpost: "__umoddi3" [drivers/net/bonding/bonding.ko] undefined!  
-> > 
-> > 	I assume this is related to send_peer_notif now being u64 in the
-> > modulus at:
-> > 
-> > static bool bond_should_notify_peers(struct bonding *bond)
-> > {
-> > [...]
-> >         if (!slave || !bond->send_peer_notif ||
-> >             bond->send_peer_notif %
-> >             max(1, bond->params.peer_notif_delay) != 0 ||
-> > 
-> > 	but I'm unsure if this is a real coding error, or some issue
-> > with the parisc arch specifically?
-> 
-> Coding error, I think. 
-> An appropriate helper from linux/math64.h should be used.
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-It looks define send_peer_notif to u64 is a bit too large, which introduce
-complex conversion for 32bit arch.
+This patches attempt to introduce BPF injection capability for SMC,
+and add selftest to ensure code stability.
 
-For the remainder operation,
-bond->send_peer_notif % max(1, bond->params.peer_notif_delay). u32 % u32 look OK.
+As we all know that the SMC protocol is not suitable for all scenarios,
+especially for short-lived. However, for most applications, they cannot
+guarantee that there are no such scenarios at all. Therefore, apps
+may need some specific strategies to decide shall we need to use SMC
+or not, for example, apps can limit the scope of the SMC to a specific
+IP address or port.
 
-But for multiplication operation,
-bond->send_peer_notif = bond->params.num_peer_notif * max(1, bond->params.peer_notif_delay);
-It's u8 * u32. How about let's limit the peer_notif_delay to less than max(u32 / u8),
-then we can just use u32 for send_peer_notif. Is there any realistic meaning
-to set peer_notif_delay to max(u32)? I don't think so.
+Based on the consideration of transparent replacement, we hope that apps
+can remain transparent even if they need to formulate some specific
+strategies for SMC using. That is, do not need to recompile their code.
 
-Jay, what do you think?
+On the other hand, we need to ensure the scalability of strategies
+implementation. Although it is simple to use socket options or sysctl,
+it will bring more complexity to subsequent expansion.
 
-Thanks
-Hangbin
+Fortunately, BPF can solve these concerns very well, users can write
+thire own strategies in eBPF to choose whether to use SMC or not.
+And it's quite easy for them to modify their strategies in the future.
+
+This patches implement injection capability for SMC via struct_ops.
+In that way, we can add new injection scenarios in the future.
+
+v3 -> v2:
+
+1. Fix format errors in subject.
+2. Remove unnecessary conditions in Kconfig.
+
+v2 -> v1:
+
+1. Fix complie error if CONFIG_BPF_SYSCALL set while CONFIG_SMC_BPF not.
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/oe-kbuild-all/202304070326.mYVdiX9k-lkp@intel.com/
+
+2. Fix potential reference leaks, smc_destruct may be prematurely retired
+due to pre conditions.
+
+D. Wythe (5):
+  net/smc: move smc_sock related structure definition
+  net/smc: allow smc to negotiate protocols on policies
+  net/smc: allow set or get smc negotiator by sockopt
+  bpf: add smc negotiator support in BPF struct_ops
+  bpf/selftests: add selftest for SMC bpf capability
+
+ include/net/smc.h                                | 268 +++++++++++++++++
+ include/uapi/linux/smc.h                         |   1 +
+ kernel/bpf/bpf_struct_ops_types.h                |   4 +
+ net/Makefile                                     |   1 +
+ net/smc/Kconfig                                  |  11 +
+ net/smc/af_smc.c                                 | 203 ++++++++++---
+ net/smc/bpf_smc.c                                | 360 +++++++++++++++++++++++
+ net/smc/smc.h                                    | 224 --------------
+ tools/testing/selftests/bpf/prog_tests/bpf_smc.c | 107 +++++++
+ tools/testing/selftests/bpf/progs/bpf_smc.c      | 265 +++++++++++++++++
+ 10 files changed, 1185 insertions(+), 259 deletions(-)
+ create mode 100644 net/smc/bpf_smc.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_smc.c
+
+-- 
+1.8.3.1
+
