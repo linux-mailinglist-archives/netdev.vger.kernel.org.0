@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD1D66EA122
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 03:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF676EA123
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 03:40:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233089AbjDUBkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 21:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+        id S233216AbjDUBkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 21:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233086AbjDUBkH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 21:40:07 -0400
+        with ESMTP id S233252AbjDUBkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 21:40:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD23423C
-        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 18:39:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9630E6A60
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 18:39:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78A046436C
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 01:39:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A254C433EF;
-        Fri, 21 Apr 2023 01:39:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D4A964703
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 01:39:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E98B7C433D2;
+        Fri, 21 Apr 2023 01:39:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682041193;
-        bh=37og7yeXz6XB3Z4+nfUmrYasnJb6xL01InFO7WR8zu8=;
+        s=k20201202; t=1682041198;
+        bh=fBSBKdU/6X+NTlcmg8IXxU7+r6a0RYknMVUZj0JlUrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HvCLSnH9+iDk0OmEgWPkHYfvLe0rWsm5k0Jtib/fkNVHUljFqDJ78azzfyHchdtBL
-         5p8B0JSLL65z/GEFtRrjDljQBrdYsh2UAxYtAP1QMcvTkpsM6Zh5LVXphGsM9GFkiS
-         RRdg9NL8e47WlwpgblsJcunWpcxYkVgc/B3GWyDFUVwWsjF4XsNdjGrX+JXBZm9ylG
-         EQ6nwlGqHG7iJnozboxrQnLH70fRcO7Mv92FLKIAkMmjqeAoFKA098rgfHfb1dotV4
-         rZdhuo6fjU2Jmobx3w0U5FgIDabpC5ybNOB753jSE7Woi1d0P1aQTvJ2Di4DowBKzr
-         cfhfB+e3xEQvQ==
+        b=vHIgrw1zrr26Dft5EHG+PxYsT38zu96TUPsOx5GCRbAB1lCe7IFktXzxBe66LHjDJ
+         6U2Egy5yVMqYI0h7qzpEvnSvZ1Qx2zPXUq0seckdadQz5Duktw+pNpq4Tw8vMqBzks
+         QQ/i2aGOj3ZzEquI0A25RwmgqZFnhYlHqlaKfJZSBOLkOPQ/KNB/L+TD0oBm7NG7rR
+         kAQEnQ1SB4JqxVHVAG/iSxKxbDKuhyYBFImCjiyRDkiuIlZ0n499NL1Oy00Ut1Jmli
+         RoHsjny3ggK3Sa3nJn4VNAV65ScxdLdqctNSoFl/5HEku8Pwgg/GwWGgqXNSRfozTN
+         BQm0yc39eVfeg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Maor Dickman <maord@nvidia.com>
-Subject: [net-next 13/15] net/mlx5: E-Switch, Remove redundant dev arg from mlx5_esw_vport_alloc()
-Date:   Thu, 20 Apr 2023 18:38:48 -0700
-Message-Id: <20230421013850.349646-14-saeed@kernel.org>
+Subject: [net-next 14/15] net/mlx5: E-Switch, Remove unused mlx5_esw_offloads_vport_metadata_set()
+Date:   Thu, 20 Apr 2023 18:38:49 -0700
+Message-Id: <20230421013850.349646-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230421013850.349646-1-saeed@kernel.org>
 References: <20230421013850.349646-1-saeed@kernel.org>
@@ -59,80 +59,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-The passded esw->dev is redundant as esw being passed and esw->dev being
-used inside.
+Remove unused function which also seems a duplicate
+of esw_port_metadata_set().
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
 Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  1 -
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 22 -------------------
+ 2 files changed, 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-index 8d63f5df7646..3f25fa2893fc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1506,7 +1506,7 @@ int mlx5_esw_sf_max_hpf_functions(struct mlx5_core_dev *dev, u16 *max_sfs, u16 *
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index f8e25ddc066a..62f01d4600fe 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -354,7 +354,6 @@ mlx5_eswitch_add_send_to_vport_meta_rule(struct mlx5_eswitch *esw, u16 vport_num
+ void mlx5_eswitch_del_send_to_vport_meta_rule(struct mlx5_flow_handle *rule);
+ 
+ bool mlx5_esw_vport_match_metadata_supported(const struct mlx5_eswitch *esw);
+-int mlx5_esw_offloads_vport_metadata_set(struct mlx5_eswitch *esw, bool enable);
+ u32 mlx5_esw_match_metadata_alloc(struct mlx5_eswitch *esw);
+ void mlx5_esw_match_metadata_free(struct mlx5_eswitch *esw, u32 metadata);
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 93ece46a0041..12c07a44aa4f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -2939,28 +2939,6 @@ static int esw_offloads_metadata_init(struct mlx5_eswitch *esw)
  	return err;
  }
  
--static int mlx5_esw_vport_alloc(struct mlx5_eswitch *esw, struct mlx5_core_dev *dev,
-+static int mlx5_esw_vport_alloc(struct mlx5_eswitch *esw,
- 				int index, u16 vport_num)
- {
- 	struct mlx5_vport *vport;
-@@ -1560,7 +1560,7 @@ static int mlx5_esw_vports_init(struct mlx5_eswitch *esw)
- 
- 	xa_init(&esw->vports);
- 
--	err = mlx5_esw_vport_alloc(esw, dev, idx, MLX5_VPORT_PF);
-+	err = mlx5_esw_vport_alloc(esw, idx, MLX5_VPORT_PF);
- 	if (err)
- 		goto err;
- 	if (esw->first_host_vport == MLX5_VPORT_PF)
-@@ -1568,7 +1568,7 @@ static int mlx5_esw_vports_init(struct mlx5_eswitch *esw)
- 	idx++;
- 
- 	for (i = 0; i < mlx5_core_max_vfs(dev); i++) {
--		err = mlx5_esw_vport_alloc(esw, dev, idx, idx);
-+		err = mlx5_esw_vport_alloc(esw, idx, idx);
- 		if (err)
- 			goto err;
- 		xa_set_mark(&esw->vports, idx, MLX5_ESW_VPT_VF);
-@@ -1577,7 +1577,7 @@ static int mlx5_esw_vports_init(struct mlx5_eswitch *esw)
- 	}
- 	base_sf_num = mlx5_sf_start_function_id(dev);
- 	for (i = 0; i < mlx5_sf_max_functions(dev); i++) {
--		err = mlx5_esw_vport_alloc(esw, dev, idx, base_sf_num + i);
-+		err = mlx5_esw_vport_alloc(esw, idx, base_sf_num + i);
- 		if (err)
- 			goto err;
- 		xa_set_mark(&esw->vports, base_sf_num + i, MLX5_ESW_VPT_SF);
-@@ -1588,7 +1588,7 @@ static int mlx5_esw_vports_init(struct mlx5_eswitch *esw)
- 	if (err)
- 		goto err;
- 	for (i = 0; i < max_host_pf_sfs; i++) {
--		err = mlx5_esw_vport_alloc(esw, dev, idx, base_sf_num + i);
-+		err = mlx5_esw_vport_alloc(esw, idx, base_sf_num + i);
- 		if (err)
- 			goto err;
- 		xa_set_mark(&esw->vports, base_sf_num + i, MLX5_ESW_VPT_SF);
-@@ -1596,12 +1596,12 @@ static int mlx5_esw_vports_init(struct mlx5_eswitch *esw)
- 	}
- 
- 	if (mlx5_ecpf_vport_exists(dev)) {
--		err = mlx5_esw_vport_alloc(esw, dev, idx, MLX5_VPORT_ECPF);
-+		err = mlx5_esw_vport_alloc(esw, idx, MLX5_VPORT_ECPF);
- 		if (err)
- 			goto err;
- 		idx++;
- 	}
--	err = mlx5_esw_vport_alloc(esw, dev, idx, MLX5_VPORT_UPLINK);
-+	err = mlx5_esw_vport_alloc(esw, idx, MLX5_VPORT_UPLINK);
- 	if (err)
- 		goto err;
- 	return 0;
+-int mlx5_esw_offloads_vport_metadata_set(struct mlx5_eswitch *esw, bool enable)
+-{
+-	int err = 0;
+-
+-	down_write(&esw->mode_lock);
+-	if (mlx5_esw_is_fdb_created(esw)) {
+-		err = -EBUSY;
+-		goto done;
+-	}
+-	if (!mlx5_esw_vport_match_metadata_supported(esw)) {
+-		err = -EOPNOTSUPP;
+-		goto done;
+-	}
+-	if (enable)
+-		esw->flags |= MLX5_ESWITCH_VPORT_MATCH_METADATA;
+-	else
+-		esw->flags &= ~MLX5_ESWITCH_VPORT_MATCH_METADATA;
+-done:
+-	up_write(&esw->mode_lock);
+-	return err;
+-}
+-
+ int
+ esw_vport_create_offloads_acl_tables(struct mlx5_eswitch *esw,
+ 				     struct mlx5_vport *vport)
 -- 
 2.39.2
 
