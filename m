@@ -2,216 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C7E36EB558
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 01:02:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 360B76EB55B
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 01:02:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233527AbjDUXCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 19:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52618 "EHLO
+        id S233610AbjDUXCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 19:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233239AbjDUXCS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 19:02:18 -0400
+        with ESMTP id S233465AbjDUXCT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 19:02:19 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2CEA1E6E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBDDCE73;
         Fri, 21 Apr 2023 16:02:17 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net-next 01/20] netfilter: nft_exthdr: add boolean DCCP option matching
-Date:   Sat, 22 Apr 2023 01:01:52 +0200
-Message-Id: <20230421230211.214635-2-pablo@netfilter.org>
+Subject: [PATCH net-next 02/20] netfilter: nf_tables: merge nft_rules_old structure and end of ruleblob marker
+Date:   Sat, 22 Apr 2023 01:01:53 +0200
+Message-Id: <20230421230211.214635-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230421230211.214635-1-pablo@netfilter.org>
 References: <20230421230211.214635-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jeremy Sowden <jeremy@azazel.net>
+From: Florian Westphal <fw@strlen.de>
 
-The xt_dccp iptables module supports the matching of DCCP packets based
-on the presence or absence of DCCP options.  Extend nft_exthdr to add
-this functionality to nftables.
+In order to free the rules in a chain via call_rcu, the rule array used
+to stash a rcu_head and space for a pointer at the end of the rule array.
 
-Link: https://bugzilla.netfilter.org/show_bug.cgi?id=930
-Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
+When the current nft_rule_dp blob format got added in
+2c865a8a28a1 ("netfilter: nf_tables: add rule blob layout"), this results
+in a double-trailer:
+
+  size (unsigned long)
+  struct nft_rule_dp
+    struct nft_expr
+         ...
+    struct nft_rule_dp
+     struct nft_expr
+         ...
+    struct nft_rule_dp (is_last=1) // Trailer
+
+The trailer, struct nft_rule_dp (is_last=1), is not accounted for in size,
+so it can be located via start_addr + size.
+
+Because the rcu_head is stored after 'start+size' as well this means the
+is_last trailer is *aliased* to the rcu_head (struct nft_rules_old).
+
+This is harmless, because at this time the nft_do_chain function never
+evaluates/accesses the trailer, it only checks the address boundary:
+
+        for (; rule < last_rule; rule = nft_rule_next(rule)) {
+...
+
+But this way the last_rule address has to be stashed in the jump
+structure to restore it after returning from a chain.
+
+nft_do_chain stack usage has become way too big, so put it on a diet.
+
+Without this patch is impossible to use
+        for (; !rule->is_last; rule = nft_rule_next(rule)) {
+
+... because on free, the needed update of the rcu_head will clobber the
+nft_rule_dp is_last bit.
+
+Furthermore, also stash the chain pointer in the trailer, this allows
+to recover the original chain structure from nf_tables_trace infra
+without a need to place them in the jump struct.
+
+After this patch it is trivial to diet the jump stack structure,
+done in the next two patches.
+
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/uapi/linux/netfilter/nf_tables.h |   2 +
- net/netfilter/nft_exthdr.c               | 105 +++++++++++++++++++++++
- 2 files changed, 107 insertions(+)
+ net/netfilter/nf_tables_api.c | 55 +++++++++++++++++------------------
+ 1 file changed, 27 insertions(+), 28 deletions(-)
 
-diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
-index c4d4d8e42dc8..e059dc2644df 100644
---- a/include/uapi/linux/netfilter/nf_tables.h
-+++ b/include/uapi/linux/netfilter/nf_tables.h
-@@ -859,12 +859,14 @@ enum nft_exthdr_flags {
-  * @NFT_EXTHDR_OP_TCP: match against tcp options
-  * @NFT_EXTHDR_OP_IPV4: match against ipv4 options
-  * @NFT_EXTHDR_OP_SCTP: match against sctp chunks
-+ * @NFT_EXTHDR_OP_DCCP: match against dccp otions
-  */
- enum nft_exthdr_op {
- 	NFT_EXTHDR_OP_IPV6,
- 	NFT_EXTHDR_OP_TCPOPT,
- 	NFT_EXTHDR_OP_IPV4,
- 	NFT_EXTHDR_OP_SCTP,
-+	NFT_EXTHDR_OP_DCCP,
- 	__NFT_EXTHDR_OP_MAX
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index e48ab8dfb541..79848a27e640 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2110,38 +2110,41 @@ static void nft_chain_release_hook(struct nft_chain_hook *hook)
+ 	module_put(hook->type->owner);
+ }
+ 
+-struct nft_rules_old {
++struct nft_rule_dp_last {
++	struct nft_rule_dp end;	/* end of nft_rule_blob marker */
+ 	struct rcu_head h;
+ 	struct nft_rule_blob *blob;
++	const struct nft_chain *chain;	/* for tracing */
  };
- #define NFT_EXTHDR_OP_MAX	(__NFT_EXTHDR_OP_MAX - 1)
-diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
-index a54a7f772cec..09b99a48e5c3 100644
---- a/net/netfilter/nft_exthdr.c
-+++ b/net/netfilter/nft_exthdr.c
-@@ -10,6 +10,7 @@
- #include <linux/netlink.h>
- #include <linux/netfilter.h>
- #include <linux/netfilter/nf_tables.h>
-+#include <linux/dccp.h>
- #include <linux/sctp.h>
- #include <net/netfilter/nf_tables_core.h>
- #include <net/netfilter/nf_tables.h>
-@@ -406,6 +407,81 @@ static void nft_exthdr_sctp_eval(const struct nft_expr *expr,
- 		regs->verdict.code = NFT_BREAK;
- }
  
-+static void nft_exthdr_dccp_eval(const struct nft_expr *expr,
-+				 struct nft_regs *regs,
-+				 const struct nft_pktinfo *pkt)
-+{
-+	struct nft_exthdr *priv = nft_expr_priv(expr);
-+	unsigned int thoff, dataoff, optoff, optlen, i;
-+	u32 *dest = &regs->data[priv->dreg];
-+	const struct dccp_hdr *dh;
-+	struct dccp_hdr _dh;
-+
-+	if (pkt->tprot != IPPROTO_DCCP || pkt->fragoff)
-+		goto err;
-+
-+	thoff = nft_thoff(pkt);
-+
-+	dh = skb_header_pointer(pkt->skb, thoff, sizeof(_dh), &_dh);
-+	if (!dh)
-+		goto err;
-+
-+	dataoff = dh->dccph_doff * sizeof(u32);
-+	optoff = __dccp_hdr_len(dh);
-+	if (dataoff <= optoff)
-+		goto err;
-+
-+	optlen = dataoff - optoff;
-+
-+	for (i = 0; i < optlen; ) {
-+		/* Options 0 (DCCPO_PADDING) - 31 (DCCPO_MAX_RESERVED) are 1B in
-+		 * the length; the remaining options are at least 2B long.  In
-+		 * all cases, the first byte contains the option type.  In
-+		 * multi-byte options, the second byte contains the option
-+		 * length, which must be at least two: 1 for the type plus 1 for
-+		 * the length plus 0-253 for any following option data.  We
-+		 * aren't interested in the option data, only the type and the
-+		 * length, so we don't need to read more than two bytes at a
-+		 * time.
-+		 */
-+		unsigned int buflen;
-+		u8 buf[2], *bufp;
-+		u8 type, len;
-+
-+		buflen = optlen - i < sizeof(buf) ? optlen - i : sizeof(buf);
-+
-+		bufp = skb_header_pointer(pkt->skb, thoff + optoff + i, buflen,
-+					  &buf);
-+		if (!bufp)
-+			goto err;
-+
-+		type = bufp[0];
-+
-+		if (type == priv->type) {
-+			*dest = 1;
-+			return;
-+		}
-+
-+		if (type <= DCCPO_MAX_RESERVED) {
-+			i++;
-+			continue;
-+		}
-+
-+		if (buflen < 2)
-+			goto err;
-+
-+		len = bufp[1];
-+
-+		if (len < 2)
-+			goto err;
-+
-+		i += len;
-+	}
-+
-+err:
-+	*dest = 0;
-+}
-+
- static const struct nla_policy nft_exthdr_policy[NFTA_EXTHDR_MAX + 1] = {
- 	[NFTA_EXTHDR_DREG]		= { .type = NLA_U32 },
- 	[NFTA_EXTHDR_TYPE]		= { .type = NLA_U8 },
-@@ -557,6 +633,22 @@ static int nft_exthdr_ipv4_init(const struct nft_ctx *ctx,
- 	return 0;
- }
- 
-+static int nft_exthdr_dccp_init(const struct nft_ctx *ctx,
-+				const struct nft_expr *expr,
-+				const struct nlattr * const tb[])
-+{
-+	struct nft_exthdr *priv = nft_expr_priv(expr);
-+	int err = nft_exthdr_init(ctx, expr, tb);
-+
-+	if (err < 0)
-+		return err;
-+
-+	if (!(priv->flags & NFT_EXTHDR_F_PRESENT))
-+		return -EOPNOTSUPP;
-+
-+	return 0;
-+}
-+
- static int nft_exthdr_dump_common(struct sk_buff *skb, const struct nft_exthdr *priv)
+-static void nft_last_rule(struct nft_rule_blob *blob, const void *ptr)
++static void nft_last_rule(const struct nft_chain *chain, const void *ptr)
  {
- 	if (nla_put_u8(skb, NFTA_EXTHDR_TYPE, priv->type))
-@@ -686,6 +778,15 @@ static const struct nft_expr_ops nft_exthdr_sctp_ops = {
- 	.reduce		= nft_exthdr_reduce,
- };
- 
-+static const struct nft_expr_ops nft_exthdr_dccp_ops = {
-+	.type		= &nft_exthdr_type,
-+	.size		= NFT_EXPR_SIZE(sizeof(struct nft_exthdr)),
-+	.eval		= nft_exthdr_dccp_eval,
-+	.init		= nft_exthdr_dccp_init,
-+	.dump		= nft_exthdr_dump,
-+	.reduce		= nft_exthdr_reduce,
-+};
+-	struct nft_rule_dp *prule;
++	struct nft_rule_dp_last *lrule;
 +
- static const struct nft_expr_ops *
- nft_exthdr_select_ops(const struct nft_ctx *ctx,
- 		      const struct nlattr * const tb[])
-@@ -720,6 +821,10 @@ nft_exthdr_select_ops(const struct nft_ctx *ctx,
- 		if (tb[NFTA_EXTHDR_DREG])
- 			return &nft_exthdr_sctp_ops;
- 		break;
-+	case NFT_EXTHDR_OP_DCCP:
-+		if (tb[NFTA_EXTHDR_DREG])
-+			return &nft_exthdr_dccp_ops;
-+		break;
++	BUILD_BUG_ON(offsetof(struct nft_rule_dp_last, end) != 0);
+ 
+-	prule = (struct nft_rule_dp *)ptr;
+-	prule->is_last = 1;
++	lrule = (struct nft_rule_dp_last *)ptr;
++	lrule->end.is_last = 1;
++	lrule->chain = chain;
+ 	/* blob size does not include the trailer rule */
+ }
+ 
+-static struct nft_rule_blob *nf_tables_chain_alloc_rules(unsigned int size)
++static struct nft_rule_blob *nf_tables_chain_alloc_rules(const struct nft_chain *chain,
++							 unsigned int size)
+ {
+ 	struct nft_rule_blob *blob;
+ 
+-	/* size must include room for the last rule */
+-	if (size < offsetof(struct nft_rule_dp, data))
+-		return NULL;
+-
+-	size += sizeof(struct nft_rule_blob) + sizeof(struct nft_rules_old);
+ 	if (size > INT_MAX)
+ 		return NULL;
+ 
++	size += sizeof(struct nft_rule_blob) + sizeof(struct nft_rule_dp_last);
++
+ 	blob = kvmalloc(size, GFP_KERNEL_ACCOUNT);
+ 	if (!blob)
+ 		return NULL;
+ 
+ 	blob->size = 0;
+-	nft_last_rule(blob, blob->data);
++	nft_last_rule(chain, blob->data);
+ 
+ 	return blob;
+ }
+@@ -2220,7 +2223,6 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 	struct nft_rule_blob *blob;
+ 	struct nft_trans *trans;
+ 	struct nft_chain *chain;
+-	unsigned int data_size;
+ 	int err;
+ 
+ 	if (table->use == UINT_MAX)
+@@ -2308,8 +2310,7 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 		chain->udlen = nla_len(nla[NFTA_CHAIN_USERDATA]);
  	}
  
- 	return ERR_PTR(-EOPNOTSUPP);
+-	data_size = offsetof(struct nft_rule_dp, data);	/* last rule */
+-	blob = nf_tables_chain_alloc_rules(data_size);
++	blob = nf_tables_chain_alloc_rules(chain, 0);
+ 	if (!blob) {
+ 		err = -ENOMEM;
+ 		goto err_destroy_chain;
+@@ -8817,9 +8818,8 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
+ 				return -ENOMEM;
+ 		}
+ 	}
+-	data_size += offsetof(struct nft_rule_dp, data);	/* last rule */
+ 
+-	chain->blob_next = nf_tables_chain_alloc_rules(data_size);
++	chain->blob_next = nf_tables_chain_alloc_rules(chain, data_size);
+ 	if (!chain->blob_next)
+ 		return -ENOMEM;
+ 
+@@ -8864,12 +8864,11 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
+ 		chain->blob_next->size += (unsigned long)(data - (void *)prule);
+ 	}
+ 
+-	prule = (struct nft_rule_dp *)data;
+-	data += offsetof(struct nft_rule_dp, data);
+ 	if (WARN_ON_ONCE(data > data_boundary))
+ 		return -ENOMEM;
+ 
+-	nft_last_rule(chain->blob_next, prule);
++	prule = (struct nft_rule_dp *)data;
++	nft_last_rule(chain, prule);
+ 
+ 	return 0;
+ }
+@@ -8890,22 +8889,22 @@ static void nf_tables_commit_chain_prepare_cancel(struct net *net)
+ 	}
+ }
+ 
+-static void __nf_tables_commit_chain_free_rules_old(struct rcu_head *h)
++static void __nf_tables_commit_chain_free_rules(struct rcu_head *h)
+ {
+-	struct nft_rules_old *o = container_of(h, struct nft_rules_old, h);
++	struct nft_rule_dp_last *l = container_of(h, struct nft_rule_dp_last, h);
+ 
+-	kvfree(o->blob);
++	kvfree(l->blob);
+ }
+ 
+ static void nf_tables_commit_chain_free_rules_old(struct nft_rule_blob *blob)
+ {
+-	struct nft_rules_old *old;
++	struct nft_rule_dp_last *last;
+ 
+-	/* rcu_head is after end marker */
+-	old = (void *)blob + sizeof(*blob) + blob->size;
+-	old->blob = blob;
++	/* last rule trailer is after end marker */
++	last = (void *)blob + sizeof(*blob) + blob->size;
++	last->blob = blob;
+ 
+-	call_rcu(&old->h, __nf_tables_commit_chain_free_rules_old);
++	call_rcu(&last->h, __nf_tables_commit_chain_free_rules);
+ }
+ 
+ static void nf_tables_commit_chain(struct net *net, struct nft_chain *chain)
 -- 
 2.30.2
 
