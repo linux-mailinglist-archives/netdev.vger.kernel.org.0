@@ -2,51 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2734C6EB279
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 21:48:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E4176EB2E5
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 22:27:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233656AbjDUTrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 15:47:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
+        id S232072AbjDUU0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 16:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233608AbjDUTrG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 15:47:06 -0400
-Received: from mx16lb.world4you.com (mx16lb.world4you.com [81.19.149.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57812706;
-        Fri, 21 Apr 2023 12:47:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=i1FuB3EqbcWTAKrkFb9gVrhtFn6pu0+18IKs7+yoEkk=; b=uwtpK3WhGJN35b9ADZ8ucIbInh
-        e6XE0pBBV7cspZ6THpabMs1OMnbqdjSk522TPqjxZSdI89XE9PLyfnJT346ORuWGWvrV/rSY0mDOr
-        QsJmnauI6r1GvKNyeLcY9qRdI1DWf4EKzDVHoXvsKccouJlepiEP3wI87ugpyx+KbNl8=;
-Received: from 88-117-57-231.adsl.highway.telekom.at ([88.117.57.231] helo=hornet.engleder.at)
-        by mx16lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1ppwik-0006HW-0D; Fri, 21 Apr 2023 21:47:02 +0200
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v4 6/6] tsnep: Add XDP socket zero-copy TX support
-Date:   Fri, 21 Apr 2023 21:46:56 +0200
-Message-Id: <20230421194656.48063-7-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230421194656.48063-1-gerhard@engleder-embedded.com>
-References: <20230421194656.48063-1-gerhard@engleder-embedded.com>
+        with ESMTP id S229591AbjDUU0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 16:26:49 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F397271F;
+        Fri, 21 Apr 2023 13:26:47 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 8F23E3200406;
+        Fri, 21 Apr 2023 16:26:44 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Fri, 21 Apr 2023 16:26:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-type:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1682108804; x=1682195204; bh=aC
+        bgC3XdyqzyDdvGIJajq2TuNCnA+koTs/nAqynb1IQ=; b=MhPkIiIzSwJgaybpv7
+        OOpDVuAEiRZg7ZoaCXoGX88xwSMTbfWBOVOV1zKWEYtiHKenE9ecxX7efWNb1WgP
+        4Sv96+IvIVQbTbkTikm7RgxpMlVvaldKIu/jZ1OGp6fNbfzCL3UNY5YoJbD/vq7L
+        TqAzRjVcMrlDwR0m9wrVgO3kHwvnaUzd3/F1nCJLE8Ve8k3tlkXtQ7gYOgHw+F1L
+        Cn0G0bOS47Q/gCM7RBVzYB5BeFNozpnqzkB0W7bBf/opsQRrK/bQHBbaZsF0XugO
+        KsqJqPGTVQNQmnm2QuvZWaTsg57F0vprSQV3Gtp7jV3MYNZOUebfaAhwnglPHQoZ
+        ZDtQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:content-type:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1682108804; x=1682195204; bh=aCbgC3XdyqzyD
+        dvGIJajq2TuNCnA+koTs/nAqynb1IQ=; b=Zh/pFUZWQf26+vLE6u1BmbSN4c6Xk
+        TUnAQNiKUM8Jqk0u7Jn1OtJgGkuoM0YexovnVpKvR157b9AwbHPjZRv5qAWU9tkO
+        Ix0FCNhNti0ZfsAbfjHm+5EJ8Z5K0oP0CbRNTeOTOLVIlWWrfYtow2Y/PzxL6CKe
+        JGznMEP8wIJ0e5+wZI9BQNJOL0oPi4rbkjSC3pFwSABVgC4tdwZBgqXWI+Af040X
+        DC6Jl9AOOufGK5jm/SZXiqyN8cKTxWN5QVL3jIpl8E9z6crx28kMPCkjFRceocox
+        rDG+GrPJhqr6DIzM/mE56trtEMCkbKbN657Qzm5hfz1/APDxnsEYIN3xQ==
+X-ME-Sender: <xms:g_FCZFf0hAsbKqLmgcXgk6iP_TPQ_MBTgmWOoeSm_H6gaVPthP9j2A>
+    <xme:g_FCZDNPTFW5dUWRysVBFpsniS_WQPdhL3NuS8pFtN1TuNJVd-oupPj8Lzxtjw3xr
+    am9mNXJ1cfbUSCBoA>
+X-ME-Received: <xmr:g_FCZOjiCRWkDOVHPMqf1v0_co-yVLN9p-GCWn0C70Fzp-_CiJ_lSDPXpsrneS0ztaWV12OFR69PtYMU8GiggOG--23H0yGpWtAsffQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfedtgedgudegkecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enfghrlhcuvffnffculdefhedmnecujfgurhepfffhvfevuffkfhggtggujgesthdtsfdt
+    tddtvdenucfhrhhomhepffgrnhhivghlucgiuhcuoegugihusegugihuuhhurdighiiiqe
+    enucggtffrrghtthgvrhhnpedvfeekteduudefieegtdehfeffkeeuudekheduffduffff
+    gfegiedttefgvdfhvdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:g_FCZO941Xkdt2LriAz-YoED4DX2C_y5wiLDiQqxLXn_X934otCfLg>
+    <xmx:g_FCZBv8IqVhPs2e2eG6mh7WTBlYI4thah-EpukzjakIeMGi5InyMw>
+    <xmx:g_FCZNE1MBIqaRoaylZ-bOV_GW5NlHp9l3H7qC2pPEDp5TwZnRMvuQ>
+    <xmx:hPFCZLJdA0oRoMFMNAWc_u-8rhYwzfZRG_W-MCEM13fPMftJbPNE0w>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 21 Apr 2023 16:26:43 -0400 (EDT)
+Date:   Fri, 21 Apr 2023 14:26:41 -0600
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     Florian Westphal <fw@strlen.de>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        qde@naccy.de
+Subject: Re: [PATCH bpf-next v5 0/7] bpf: add netfilter program type
+Message-ID: <bom5rdg6ffwvmwmwpjwd7igpney2t2gimn3xedezviexyy3nbt@oihiwn2uw2rv>
+References: <20230421170300.24115-1-fw@strlen.de>
+ <168210302187.11240.7792947856131351121.git-patchwork-notify@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
-X-ACL-Warn: X-W4Y-Internal
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <168210302187.11240.7792947856131351121.git-patchwork-notify@kernel.org>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,290 +85,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Send and complete XSK pool frames within TX NAPI context. NAPI context
-is triggered by ndo_xsk_wakeup.
+On Fri, Apr 21, 2023 at 06:50:21PM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
+> Hello:
+> 
+> This series was applied to bpf/bpf-next.git (master)
+> by Alexei Starovoitov <ast@kernel.org>:
 
-Test results with A53 1.2GHz:
+Yay!
 
-xdpsock txonly copy mode, 64 byte frames:
-                   pps            pkts           1.00
-tx                 284,409        11,398,144
-Two CPUs with 100% and 10% utilization.
+I'm getting a procedure done on my wrist so I'll be unable to code for a
+week or two. When I recover I'll get on the conntrack stuff + a
+selftest. If anyone has a burning desire to do it before then, feel free
+to go ahead.
 
-xdpsock txonly zero-copy mode, 64 byte frames:
-                   pps            pkts           1.00
-tx                 511,929        5,890,368
-Two CPUs with 100% and 1% utilization.
-
-xdpsock l2fwd copy mode, 64 byte frames:
-                   pps            pkts           1.00
-rx                 248,985        7,315,885
-tx                 248,921        7,315,885
-Two CPUs with 100% and 10% utilization.
-
-xdpsock l2fwd zero-copy mode, 64 byte frames:
-                   pps            pkts           1.00
-rx                 254,735        3,039,456
-tx                 254,735        3,039,456
-Two CPUs with 100% and 4% utilization.
-
-Packet rate increases and CPU utilization is reduced in both cases.
-
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- drivers/net/ethernet/engleder/tsnep.h      |   2 +
- drivers/net/ethernet/engleder/tsnep_main.c | 130 +++++++++++++++++++--
- 2 files changed, 121 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index d0bea605a1d1..11b29f56aaf9 100644
---- a/drivers/net/ethernet/engleder/tsnep.h
-+++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -70,6 +70,7 @@ struct tsnep_tx_entry {
- 	union {
- 		struct sk_buff *skb;
- 		struct xdp_frame *xdpf;
-+		bool zc;
- 	};
- 	size_t len;
- 	DEFINE_DMA_UNMAP_ADDR(dma);
-@@ -88,6 +89,7 @@ struct tsnep_tx {
- 	int read;
- 	u32 owner_counter;
- 	int increment_owner_counter;
-+	struct xsk_buff_pool *xsk_pool;
- 
- 	u32 packets;
- 	u32 bytes;
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index f300e2963667..84751bb303a6 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -54,6 +54,8 @@
- #define TSNEP_TX_TYPE_SKB_FRAG	BIT(1)
- #define TSNEP_TX_TYPE_XDP_TX	BIT(2)
- #define TSNEP_TX_TYPE_XDP_NDO	BIT(3)
-+#define TSNEP_TX_TYPE_XDP	(TSNEP_TX_TYPE_XDP_TX | TSNEP_TX_TYPE_XDP_NDO)
-+#define TSNEP_TX_TYPE_XSK	BIT(4)
- 
- #define TSNEP_XDP_TX		BIT(0)
- #define TSNEP_XDP_REDIRECT	BIT(1)
-@@ -322,13 +324,47 @@ static void tsnep_tx_init(struct tsnep_tx *tx)
- 	tx->increment_owner_counter = TSNEP_RING_SIZE - 1;
- }
- 
-+static void tsnep_tx_enable(struct tsnep_tx *tx)
-+{
-+	struct netdev_queue *nq;
-+
-+	nq = netdev_get_tx_queue(tx->adapter->netdev, tx->queue_index);
-+
-+	__netif_tx_lock_bh(nq);
-+	netif_tx_wake_queue(nq);
-+	__netif_tx_unlock_bh(nq);
-+}
-+
-+static void tsnep_tx_disable(struct tsnep_tx *tx, struct napi_struct *napi)
-+{
-+	struct netdev_queue *nq;
-+	u32 val;
-+
-+	nq = netdev_get_tx_queue(tx->adapter->netdev, tx->queue_index);
-+
-+	__netif_tx_lock_bh(nq);
-+	netif_tx_stop_queue(nq);
-+	__netif_tx_unlock_bh(nq);
-+
-+	/* wait until TX is done in hardware */
-+	readx_poll_timeout(ioread32, tx->addr + TSNEP_CONTROL, val,
-+			   ((val & TSNEP_CONTROL_TX_ENABLE) == 0), 10000,
-+			   1000000);
-+
-+	/* wait until TX is also done in software */
-+	while (READ_ONCE(tx->read) != tx->write) {
-+		napi_schedule(napi);
-+		napi_synchronize(napi);
-+	}
-+}
-+
- static void tsnep_tx_activate(struct tsnep_tx *tx, int index, int length,
- 			      bool last)
- {
- 	struct tsnep_tx_entry *entry = &tx->entry[index];
- 
- 	entry->properties = 0;
--	/* xdpf is union with skb */
-+	/* xdpf and zc are union with skb */
- 	if (entry->skb) {
- 		entry->properties = length & TSNEP_DESC_LENGTH_MASK;
- 		entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
-@@ -646,10 +682,69 @@ static bool tsnep_xdp_xmit_back(struct tsnep_adapter *adapter,
- 	return xmit;
- }
- 
-+static int tsnep_xdp_tx_map_zc(struct xdp_desc *xdpd, struct tsnep_tx *tx)
-+{
-+	struct tsnep_tx_entry *entry;
-+	dma_addr_t dma;
-+
-+	entry = &tx->entry[tx->write];
-+	entry->zc = true;
-+
-+	dma = xsk_buff_raw_get_dma(tx->xsk_pool, xdpd->addr);
-+	xsk_buff_raw_dma_sync_for_device(tx->xsk_pool, dma, xdpd->len);
-+
-+	entry->type = TSNEP_TX_TYPE_XSK;
-+	entry->len = xdpd->len;
-+
-+	entry->desc->tx = __cpu_to_le64(dma);
-+
-+	return xdpd->len;
-+}
-+
-+static void tsnep_xdp_xmit_frame_ring_zc(struct xdp_desc *xdpd,
-+					 struct tsnep_tx *tx)
-+{
-+	int length;
-+
-+	length = tsnep_xdp_tx_map_zc(xdpd, tx);
-+
-+	tsnep_tx_activate(tx, tx->write, length, true);
-+	tx->write = (tx->write + 1) & TSNEP_RING_MASK;
-+}
-+
-+static void tsnep_xdp_xmit_zc(struct tsnep_tx *tx)
-+{
-+	int desc_available = tsnep_tx_desc_available(tx);
-+	struct xdp_desc *descs = tx->xsk_pool->tx_descs;
-+	int batch, i;
-+
-+	/* ensure that TX ring is not filled up by XDP, always MAX_SKB_FRAGS
-+	 * will be available for normal TX path and queue is stopped there if
-+	 * necessary
-+	 */
-+	if (desc_available <= (MAX_SKB_FRAGS + 1))
-+		return;
-+	desc_available -= MAX_SKB_FRAGS + 1;
-+
-+	batch = xsk_tx_peek_release_desc_batch(tx->xsk_pool, desc_available);
-+	for (i = 0; i < batch; i++)
-+		tsnep_xdp_xmit_frame_ring_zc(&descs[i], tx);
-+
-+	if (batch) {
-+		/* descriptor properties shall be valid before hardware is
-+		 * notified
-+		 */
-+		dma_wmb();
-+
-+		tsnep_xdp_xmit_flush(tx);
-+	}
-+}
-+
- static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- {
- 	struct tsnep_tx_entry *entry;
- 	struct netdev_queue *nq;
-+	int xsk_frames = 0;
- 	int budget = 128;
- 	int length;
- 	int count;
-@@ -676,7 +771,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 		if ((entry->type & TSNEP_TX_TYPE_SKB) &&
- 		    skb_shinfo(entry->skb)->nr_frags > 0)
- 			count += skb_shinfo(entry->skb)->nr_frags;
--		else if (!(entry->type & TSNEP_TX_TYPE_SKB) &&
-+		else if ((entry->type & TSNEP_TX_TYPE_XDP) &&
- 			 xdp_frame_has_frags(entry->xdpf))
- 			count += xdp_get_shared_info_from_frame(entry->xdpf)->nr_frags;
- 
-@@ -705,9 +800,11 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 
- 		if (entry->type & TSNEP_TX_TYPE_SKB)
- 			napi_consume_skb(entry->skb, napi_budget);
--		else
-+		else if (entry->type & TSNEP_TX_TYPE_XDP)
- 			xdp_return_frame_rx_napi(entry->xdpf);
--		/* xdpf is union with skb */
-+		else
-+			xsk_frames++;
-+		/* xdpf and zc are union with skb */
- 		entry->skb = NULL;
- 
- 		tx->read = (tx->read + count) & TSNEP_RING_MASK;
-@@ -718,6 +815,14 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 		budget--;
- 	} while (likely(budget));
- 
-+	if (tx->xsk_pool) {
-+		if (xsk_frames)
-+			xsk_tx_completed(tx->xsk_pool, xsk_frames);
-+		if (xsk_uses_need_wakeup(tx->xsk_pool))
-+			xsk_set_tx_need_wakeup(tx->xsk_pool);
-+		tsnep_xdp_xmit_zc(tx);
-+	}
-+
- 	if ((tsnep_tx_desc_available(tx) >= ((MAX_SKB_FRAGS + 1) * 2)) &&
- 	    netif_tx_queue_stopped(nq)) {
- 		netif_tx_wake_queue(nq);
-@@ -765,12 +870,6 @@ static int tsnep_tx_open(struct tsnep_tx *tx)
- 
- static void tsnep_tx_close(struct tsnep_tx *tx)
- {
--	u32 val;
--
--	readx_poll_timeout(ioread32, tx->addr + TSNEP_CONTROL, val,
--			   ((val & TSNEP_CONTROL_TX_ENABLE) == 0), 10000,
--			   1000000);
--
- 	tsnep_tx_ring_cleanup(tx);
- }
- 
-@@ -1786,12 +1885,18 @@ static void tsnep_queue_enable(struct tsnep_queue *queue)
- 	napi_enable(&queue->napi);
- 	tsnep_enable_irq(queue->adapter, queue->irq_mask);
- 
-+	if (queue->tx)
-+		tsnep_tx_enable(queue->tx);
-+
- 	if (queue->rx)
- 		tsnep_rx_enable(queue->rx);
- }
- 
- static void tsnep_queue_disable(struct tsnep_queue *queue)
- {
-+	if (queue->tx)
-+		tsnep_tx_disable(queue->tx, &queue->napi);
-+
- 	napi_disable(&queue->napi);
- 	tsnep_disable_irq(queue->adapter, queue->irq_mask);
- 
-@@ -1908,6 +2013,7 @@ int tsnep_enable_xsk(struct tsnep_queue *queue, struct xsk_buff_pool *pool)
- 	if (running)
- 		tsnep_queue_disable(queue);
- 
-+	queue->tx->xsk_pool = pool;
- 	queue->rx->xsk_pool = pool;
- 
- 	if (running) {
-@@ -1928,6 +2034,7 @@ void tsnep_disable_xsk(struct tsnep_queue *queue)
- 	tsnep_rx_free_zc(queue->rx);
- 
- 	queue->rx->xsk_pool = NULL;
-+	queue->tx->xsk_pool = NULL;
- 
- 	if (running) {
- 		tsnep_rx_reopen(queue->rx);
-@@ -2438,7 +2545,8 @@ static int tsnep_probe(struct platform_device *pdev)
- 
- 	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
- 			       NETDEV_XDP_ACT_NDO_XMIT |
--			       NETDEV_XDP_ACT_NDO_XMIT_SG;
-+			       NETDEV_XDP_ACT_NDO_XMIT_SG |
-+			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
- 
- 	/* carrier off reporting is important to ethtool even BEFORE open */
- 	netif_carrier_off(netdev);
--- 
-2.30.2
-
+Thanks,
+Daniel
