@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 061726EAD14
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EECD6EAD22
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:38:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232842AbjDUOhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 10:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
+        id S232733AbjDUOha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 10:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232781AbjDUOhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:37:18 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1E4313F83;
-        Fri, 21 Apr 2023 07:37:09 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a640c23a62f3a-94ed7e49541so236551866b.1;
-        Fri, 21 Apr 2023 07:37:09 -0700 (PDT)
+        with ESMTP id S232784AbjDUOhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:37:19 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC25C17C;
+        Fri, 21 Apr 2023 07:37:12 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 4fb4d7f45d1cf-506bdf29712so12860929a12.0;
+        Fri, 21 Apr 2023 07:37:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682087828; x=1684679828;
+        d=gmail.com; s=20221208; t=1682087830; x=1684679830;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BEQa4/xHb6zNxlzp+nQz3Th+D0wsYwHJEzOMjCihAA0=;
-        b=ZLiz7VI1LgCRTrl6vuhh0Ya1V50x4rqu6D/kmhJ4UHrdgB/mMJHYQkQYrsg+Y+kID2
-         ZrAzSyHbSBnBngaySNZZz6RJyf3nkcWbaV1Hc6qyoevLGH6nN8tEBZDCBewM0ovE+yTE
-         6vX5eR74L4i7Cvi3wCnjqggrtwXEPVds4Jzz64X2oJY35U+Qm9cf55rGYkPcqu8VXyhY
-         7ruEraMsbDx/1qDhyyzdJgfm4QQghUoPq2PSYtLkEIrzlkHlMk0baKzlgn6bTBh6NvX2
-         YXTq76Vpysm8U32kc8euQkRQS+9SWhtUrkTrjOBxEc9fkGsnKi8StkloxnLZwFM3WWPL
-         ginw==
+        bh=VA0Xuk7MTgGa91dYwTC92d17A98m4rbax3BNrbxXgxg=;
+        b=M4UWnciomcUE4HK+mDFOEhaQpLMON/yMq1egd2eGD0WjqLi+0EO8LKCpuYv/hx30WT
+         nhwfgfnd8DOh+GrNePxRaULnUkLzivdzGvaE8i3r/QtreW8oXp68KJttbMRL/gv+4SqY
+         q9hBwdaSa5lbn1G4FlJ0xKusB6GQET/Lw1o1BTFaSvho5tKvyql2BDBAnn0bj6QcMCDD
+         HQTaxEG0hAMhP7kxEAhW8QOxumCzrHRruAk/Y2nXsU6dVu4zTFPF5e2/pk9wjnTCbdJW
+         qBC0hiFpBRl3zD3KC9ZZVOA+LqLwQF3C1/0qrp2ADUL2DuRyPGWgi3d6hMS8AItrDZ7f
+         thqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682087828; x=1684679828;
+        d=1e100.net; s=20221208; t=1682087830; x=1684679830;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=BEQa4/xHb6zNxlzp+nQz3Th+D0wsYwHJEzOMjCihAA0=;
-        b=jBhCEdX2+T98v7oMkjOLecUEssRBEAwxQtbEA83h1G9keHHGaiOItefkf/rViNmh0s
-         6VU4Oq6UJ/EUB8KVIQ0iYzkBLIe3E6fh9W0yTCIsatXwXcdtcQEt2sRfbB30Cx0WqBSC
-         OFQkC511v/O+ysGpCHlpF8a+Eg2FV6UUKOyFjP4171Us5zuPd/eojWR1O8Truniakd4n
-         aZuVuspN8E4AU2HCg/XFysbqJEA9NYo22U/8VaNmqiWSiOgFPyyKykJ53ILYG3K2suFa
-         k/ws36BHqRmgzGfoovk7Carp3u0bW8nK+/nO9PFTFrAMw/AKxOBUrlfWnlmWYNUbqDQR
-         euEw==
-X-Gm-Message-State: AAQBX9fICvK4hQkWwF5cX4U+Ugu7BQw9ZQpuExsJ2rX86M1sfexjHoGG
-        uFvwAiDDizZoB2pDn2aq2aI=
-X-Google-Smtp-Source: AKy350aYC8vZhVhjqQTuEMfzGSYTGJE29X38itrkcvfN2wPBmLh7N3Xsl7f7jIM8oO1qa+oppffqeA==
-X-Received: by 2002:a17:907:a40e:b0:94f:a292:20cc with SMTP id sg14-20020a170907a40e00b0094fa29220ccmr2834815ejc.41.1682087828142;
-        Fri, 21 Apr 2023 07:37:08 -0700 (PDT)
+        bh=VA0Xuk7MTgGa91dYwTC92d17A98m4rbax3BNrbxXgxg=;
+        b=HsU8wTFEE0AhWD8M/u9/7coTKEV8Fnq+Cim7cC5eQerf79rOzdjqe1cz5sUTqbEP+j
+         35HFJwFpdbslai6jsuprMf2QLDuLjRe+pS1mfD3J1LF9lEuV9SVjA00rFuHY4Te8BCRV
+         WewTpW7kNRL9SP4rhve+Q1HnfQb3oXG9UYdF40JmyiB9D9+mqz5BNwbsA3vnmSCc8aOn
+         2xslbh5IJlzu52hEapSP/CNT5cxItO0AKiHCPWACiElwOFgIublQfXMKf0Two2yjLF5l
+         a1EA3NDp6NMFKGEO2DSE+ZfYo6fT3iWrBI14IjT1qwbkwfqz5y3qIZ+aCwDGa2NbPQb/
+         jy/g==
+X-Gm-Message-State: AAQBX9fTJwwhFz8Y7qnEUXsXTpMI5NcnLEHowla0GwSEJN7fzBiXdAgw
+        JhnF8A4FwlIOJTiayspsWA8=
+X-Google-Smtp-Source: AKy350b1lI/7oYXC7o4YA2rNQhIhx/wnN+4LOaI5v5kCAlbObHDch3hFRAM8039Bj2AeoQ/vDBwLKw==
+X-Received: by 2002:a17:906:4ec5:b0:94e:80b2:51e3 with SMTP id i5-20020a1709064ec500b0094e80b251e3mr2310031ejv.27.1682087830425;
+        Fri, 21 Apr 2023 07:37:10 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id q27-20020a170906361b00b0094e1026bc66sm2168244ejb.140.2023.04.21.07.37.06
+        by smtp.gmail.com with ESMTPSA id q27-20020a170906361b00b0094e1026bc66sm2168244ejb.140.2023.04.21.07.37.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 07:37:07 -0700 (PDT)
+        Fri, 21 Apr 2023 07:37:10 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -73,9 +73,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [RFC PATCH net-next 06/22] net: dsa: mt7530: improve code path for setting up port 5
-Date:   Fri, 21 Apr 2023 17:36:32 +0300
-Message-Id: <20230421143648.87889-7-arinc.unal@arinc9.com>
+Subject: [RFC PATCH net-next 07/22] net: dsa: mt7530: do not run mt7530_setup_port5() if port 5 is disabled
+Date:   Fri, 21 Apr 2023 17:36:33 +0300
+Message-Id: <20230421143648.87889-8-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230421143648.87889-1-arinc.unal@arinc9.com>
 References: <20230421143648.87889-1-arinc.unal@arinc9.com>
@@ -94,106 +94,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-There're two code paths for setting up port 5:
+There's no need to run all the code on mt7530_setup_port5() if port 5 is
+disabled. The only case for calling mt7530_setup_port5() from
+mt7530_setup() is when PHY muxing is enabled. That is because port 5 is not
+defined as a port on the devicetree, therefore, it cannot be controlled by
+phylink.
 
-mt7530_setup()
--> mt7530_setup_port5()
+Because of this, run mt7530_setup_port5() if priv->p5_intf_sel is
+P5_INTF_SEL_PHY_P0 or P5_INTF_SEL_PHY_P4. Remove the P5_DISABLED case from
+mt7530_setup_port5().
 
-mt753x_phylink_mac_config()
--> mt753x_mac_config()
-   -> mt7530_mac_config()
-      -> mt7530_setup_port5()
-
-Currently mt7530_setup_port5() from mt7530_setup() always runs. If port 5
-is used as a CPU, DSA, or user port, mt7530_setup_port5() from
-mt753x_phylink_mac_config() won't run. That is because priv->p5_interface
-set on mt7530_setup_port5() will match state->interface on
-mt753x_phylink_mac_config() which will stop running mt7530_setup_port5()
-again.
-
-mt7530_setup_port5() from mt753x_phylink_mac_config() won't run when port 5
-is disabled or used for PHY muxing as port 5 won't be defined on the
-devicetree.
-
-Therefore, mt7530_setup_port5() will never run from
-mt753x_phylink_mac_config().
-
-Address this by not running mt7530_setup_port5() from mt7530_setup() if
-port 5 is used as a CPU, DSA, or user port. For the cases of PHY muxing or
-the port being disabled, call mt7530_setup_port5() from mt7530_setup().
-
-Do not set priv->p5_interface on mt7530_setup_port5(). There won't be a
-case where mt753x_phylink_mac_config() runs after mt7530_setup_port5()
-anymore.
-
-Do not set priv->p5_intf_sel to P5_DISABLED. It is already set to that when
-"priv" is allocated.
-
-Move setting the interface to a more specific location. It's supposed to be
-overwritten if PHY muxing is detected.
-
-Improve the comment which explain the process.
+Stop initialising the interface variable as the remaining cases will always
+call mt7530_setup_port5() with it initialised.
 
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+ drivers/net/dsa/mt7530.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 30553044d4b7..591df09c8bb5 100644
+index 591df09c8bb5..bac2388319a3 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -968,8 +968,6 @@ static void mt7530_setup_port5(struct dsa_switch *ds, phy_interface_t interface)
- 	dev_dbg(ds->dev, "Setup P5, HWTRAP=0x%x, intf_sel=%s, phy-mode=%s\n",
- 		val, p5_intf_modes(priv->p5_intf_sel), phy_modes(interface));
- 
--	priv->p5_interface = interface;
+@@ -932,9 +932,6 @@ static void mt7530_setup_port5(struct dsa_switch *ds, phy_interface_t interface)
+ 		/* MT7530_P5_MODE_GMAC: P5 -> External phy or 2nd GMAC */
+ 		val &= ~MHWTRAP_P5_DIS;
+ 		break;
+-	case P5_DISABLED:
+-		interface = PHY_INTERFACE_MODE_NA;
+-		break;
+ 	default:
+ 		dev_err(ds->dev, "Unsupported p5_intf_sel %d\n",
+ 			priv->p5_intf_sel);
+@@ -2282,8 +2279,6 @@ mt7530_setup(struct dsa_switch *ds)
+ 		 * Set priv->p5_intf_sel to the appropriate value if PHY muxing
+ 		 * is detected.
+ 		 */
+-		interface = PHY_INTERFACE_MODE_NA;
 -
- unlock_exit:
- 	mutex_unlock(&priv->reg_mutex);
- }
-@@ -2277,16 +2275,15 @@ mt7530_setup(struct dsa_switch *ds)
- 		return ret;
- 
- 	/* Setup port 5 */
--	priv->p5_intf_sel = P5_DISABLED;
--	interface = PHY_INTERFACE_MODE_NA;
--
- 	if (!dsa_is_unused_port(ds, 5)) {
- 		priv->p5_intf_sel = P5_INTF_SEL_GMAC5;
--		ret = of_get_phy_mode(dsa_to_port(ds, 5)->dn, &interface);
--		if (ret && ret != -ENODEV)
--			return ret;
- 	} else {
--		/* Scan the ethernet nodes. look for GMAC1, lookup used phy */
-+		/* Scan the ethernet nodes. Look for GMAC1, lookup the used PHY.
-+		 * Set priv->p5_intf_sel to the appropriate value if PHY muxing
-+		 * is detected.
-+		 */
-+		interface = PHY_INTERFACE_MODE_NA;
-+
  		for_each_child_of_node(dn, mac_np) {
  			if (!of_device_is_compatible(mac_np,
  						     "mediatek,eth-mac"))
-@@ -2317,6 +2314,8 @@ mt7530_setup(struct dsa_switch *ds)
- 			of_node_put(phy_node);
+@@ -2315,7 +2310,9 @@ mt7530_setup(struct dsa_switch *ds)
  			break;
  		}
-+
-+		mt7530_setup_port5(ds, interface);
+ 
+-		mt7530_setup_port5(ds, interface);
++		if (priv->p5_intf_sel == P5_INTF_SEL_PHY_P0 ||
++		    priv->p5_intf_sel == P5_INTF_SEL_PHY_P4)
++			mt7530_setup_port5(ds, interface);
  	}
  
  #ifdef CONFIG_GPIOLIB
-@@ -2327,8 +2326,6 @@ mt7530_setup(struct dsa_switch *ds)
- 	}
- #endif /* CONFIG_GPIOLIB */
- 
--	mt7530_setup_port5(ds, interface);
--
- 	/* Flush the FDB table */
- 	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
- 	if (ret < 0)
 -- 
 2.37.2
 
