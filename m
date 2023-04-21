@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1A8E6EA8BD
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 13:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9F676EA8DF
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 13:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbjDULAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 07:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
+        id S230249AbjDULKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 07:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbjDULAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 07:00:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCF43A88
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 04:00:21 -0700 (PDT)
+        with ESMTP id S229575AbjDULKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 07:10:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E4DA253;
+        Fri, 21 Apr 2023 04:10:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BB7664FE4
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 11:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D04FCC433D2;
-        Fri, 21 Apr 2023 11:00:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B459364FA4;
+        Fri, 21 Apr 2023 11:10:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1C6DAC4339B;
+        Fri, 21 Apr 2023 11:10:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682074820;
-        bh=Nt9mWJLPYSwdp+VV6ZyhT436uhHVFABEdzG1v8r3cl4=;
+        s=k20201202; t=1682075420;
+        bh=GzRtt8+niVYDbAje/9BY1kw/Tle5l8+d6eUWBp+zJjk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TQ6ryOj4YmFCNCYYvq3TCs/mRb+yk+7/QDGF/V9a0B9Htr/UiCNMZqmzhNm8G9HNt
-         4XzjrS/kAKo8roblckl6o57ZCtjvzY4It/UumFGTHeUjGdiLk1ao3exBuDCt8K78re
-         K8xc3mEkOX1QVzgJCe2FJ6tLA5KtWOy178PCsIJWrlY+Jwx4ZoOJdG6jMnlZWgA+18
-         /a3hk2YSZkJolDlf3KNP+mM5TXSZVQ3XwInyEf5RBhQsgBgxHHaz4QJRIBh249faHB
-         J7fq4c7ChZBvTURnuBlPH636zjh0Y0KWNh66MQMRRWeEjHZcNcsbVqWT2lDjPCpTmQ
-         pgfIdSFkwAuuQ==
+        b=XGSy0kUc2IRhz4mlvdvsrvDOTbrRiVYBHqADaAm+PcK6ym03vQLmHj0yXRAV/m+57
+         JuVu5Ipc9YWPohxSSZR7CMxKvJsN92Ivse4w7s2Xp63VcxOJW2vuVyLFW84d/MhgZD
+         UZ8qssquMIjhlnsWwBzEPn/Iw6ZakxjWRVO7/CXOr/5kOKdlXPT8XjqH9hfEqCqYvM
+         fWxe/+vGgvN88eUhLwuSjkDcBGKvxQYRuRTUBZYJ03onl1+RlSJu2HcE3zIc8nfKC+
+         pazhhGOfUX760cssrua/y3iYdbOLxjYiJ6k7ZjNV7+10eWzr6J3maKPN89FmgISTb/
+         5t7FakDlzuU4w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A7C53E270E2;
-        Fri, 21 Apr 2023 11:00:20 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 03ACEC395EA;
+        Fri, 21 Apr 2023 11:10:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] Fixes to mlx5 IPsec implementation
+Subject: Re: [PATCH v9] net/packet: support mergeable feature of virtio
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168207482068.15708.11405033223948355702.git-patchwork-notify@kernel.org>
-Date:   Fri, 21 Apr 2023 11:00:20 +0000
-References: <cover.1681976818.git.leon@kernel.org>
-In-Reply-To: <cover.1681976818.git.leon@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     kuba@kernel.org, leonro@nvidia.com, ehakim@nvidia.com,
-        edumazet@google.com, netdev@vger.kernel.org, pabeni@redhat.com,
-        raeds@nvidia.com, saeedm@nvidia.com, steffen.klassert@secunet.com,
-        simon.horman@corigine.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Message-Id: <168207542000.21404.15938428984944516141.git-patchwork-notify@kernel.org>
+Date:   Fri, 21 Apr 2023 11:10:20 +0000
+References: <20230419072420.315079-1-amy.saq@antgroup.com>
+In-Reply-To: <20230419072420.315079-1-amy.saq@antgroup.com>
+To:     =?utf-8?b?5rKI5a6J55CqKOWHm+eOpSkgPGFteS5zYXFAYW50Z3JvdXAuY29tPg==?=@ci.codeaurora.org
+Cc:     linux-kernel@vger.kernel.org, henry.tjf@antgroup.com,
+        willemdebruijn.kernel@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -60,31 +60,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (main)
+This patch was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 20 Apr 2023 11:02:46 +0300 you wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Wed, 19 Apr 2023 15:24:16 +0800 you wrote:
+> From: Jianfeng Tan <henry.tjf@antgroup.com>
 > 
-> Hi,
-> 
-> This small patchset includes various fixes and one refactoring patch
-> which I collected for the features sent in this cycle, with one exception -
-> first patch.
+> Packet sockets, like tap, can be used as the backend for kernel vhost.
+> In packet sockets, virtio net header size is currently hardcoded to be
+> the size of struct virtio_net_hdr, which is 10 bytes; however, it is not
+> always the case: some virtio features, such as mrg_rxbuf, need virtio
+> net header to be 12-byte long.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/5] net/mlx5e: Fix FW error while setting IPsec policy block action
-    https://git.kernel.org/netdev/net-next/c/e239e31ae802
-  - [net-next,2/5] net/mlx5e: Don't overwrite extack message returned from IPsec SA validator
-    https://git.kernel.org/netdev/net-next/c/697b3518ebfd
-  - [net-next,3/5] net/mlx5e: Compare all fields in IPv6 address
-    https://git.kernel.org/netdev/net-next/c/3198ae7d42af
-  - [net-next,4/5] net/mlx5e: Properly release work data structure
-    https://git.kernel.org/netdev/net-next/c/94edec448479
-  - [net-next,5/5] net/mlx5e: Refactor duplicated code in mlx5e_ipsec_init_macs
-    https://git.kernel.org/netdev/net-next/c/45fd01f2fbf1
+  - [v9] net/packet: support mergeable feature of virtio
+    https://git.kernel.org/netdev/net-next/c/dfc39d4026fb
 
 You are awesome, thank you!
 -- 
