@@ -2,49 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 849506EA24F
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 05:25:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEB6C6EA258
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 05:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbjDUDZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 23:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38880 "EHLO
+        id S233477AbjDUDaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 23:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230038AbjDUDZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 23:25:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB69F10E3;
-        Thu, 20 Apr 2023 20:25:52 -0700 (PDT)
+        with ESMTP id S230050AbjDUDaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 23:30:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D6310C1
+        for <netdev@vger.kernel.org>; Thu, 20 Apr 2023 20:30:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44D8860ACF;
-        Fri, 21 Apr 2023 03:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54A51C4339B;
-        Fri, 21 Apr 2023 03:25:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D006264B89
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 03:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 22397C433D2;
+        Fri, 21 Apr 2023 03:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682047551;
-        bh=YDu3KLe7lykirea3rL8THfo3mJjSppTvOkZadvSlh1k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VhySG3GQ7RyWXIa6FWJOGd51C/GQb6U1cMQUTbWrRe5ZWvCxVaCB/dqLNjUVl9HXr
-         EgOZyZTibq/itlMJ6rWU6Z+sofVuC4tx3XMzgK9u9dihH/N9GQ3DQy1vKMZttQqZje
-         nt/YhDjgVZfsxZi6ua1Kag7uJB5rTbZEDoL9bmy2SLYh+P8wZ1SNI6MzySCwJm9esv
-         +NxN6xGRdH4j4ptd4dqNXvDBK0U2CxwnXfN4wF4bhBtCB4lorv0+rsNLDTAZM8ykv5
-         fVax+vNHU/YeazCOZYI0AF7nexbY0/m3If6tIP0EhAk2WRxIloIzncT1xs3QAHkGUG
-         LgF30Z4nnNpAw==
-Date:   Thu, 20 Apr 2023 20:25:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com
-Subject: Re: [PATCH net 0/2] Netfilter fixes for net
-Message-ID: <20230420202550.1b466802@kernel.org>
-In-Reply-To: <20230420170657.45373-1-pablo@netfilter.org>
-References: <20230420170657.45373-1-pablo@netfilter.org>
+        s=k20201202; t=1682047819;
+        bh=XAYEvGilh7Mmiel+zNVeb/aISPjiDUSrAYIQN7zPnGg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=U20mX/r2l/u5sdry0FB69PvaALsziI6JoE1qa1o/15vkkKHKAv/bfgSyMYlPYOqmX
+         HN5ia7vtfeKN+RIZwqsAsuFEf5Dc+wxiFpN2U3NQX085q9OhOB8Ib8tqSeySwWNZh2
+         6d5RoqF3+hqMLykvf/nO3JR1UKIDKiZZYyha6yctd6f5kEorrDUW63PwbSGOExbQPc
+         D5Z0EOZ3tM063XXNjeuyFP5vvk/LLm53b8tbuybOapWfjGORI9mwQJaahZ/XdqZabf
+         h5wj68TP1WqtPqtTxalfe0h1ORVKc0N9zRoofcn5vO0myA45WFpJDElGJT3c8rHTFp
+         xBqTlZQ9PVmrw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F41C8C395EA;
+        Fri, 21 Apr 2023 03:30:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv2 next] ipv6: add icmpv6_error_anycast_as_unicast for ICMPv6
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168204781899.6790.87891683637213829.git-patchwork-notify@kernel.org>
+Date:   Fri, 21 Apr 2023 03:30:18 +0000
+References: <20230419013238.2691167-1-maheshb@google.com>
+In-Reply-To: <20230419013238.2691167-1-maheshb@google.com>
+To:     =?utf-8?b?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+?=@ci.codeaurora.org,
+        =?utf-8?b?4KSwKSA8bWFoZXNoYkBnb29nbGUuY29tPg==?=@ci.codeaurora.org
+Cc:     netdev@vger.kernel.org, dsahern@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        corbet@lwn.net, mahesh@bandewar.net, kuniyu@amazon.com,
+        maze@google.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -53,13 +59,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Apr 2023 19:06:55 +0200 Pablo Neira Ayuso wrote:
-> 1) Set on IPS_CONFIRMED before change_status() otherwise EBUSY is
->    bogusly hit. This bug was introduced in the 6.3 release cycle.
-> 
-> 2) Fix nfnetlink_queue conntrack support: Set/dump timeout
->    accordingly for unconfirmed conntrack entries. Make sure this
->    is done after IPS_CONFIRMED is set on. This is an old bug, it
->    happens since the introduction of this feature.
+Hello:
 
-It missed our PR anyway so please resend with a signed tag.
+This patch was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Tue, 18 Apr 2023 18:32:38 -0700 you wrote:
+> ICMPv6 error packets are not sent to the anycast destinations and this
+> prevents things like traceroute from working. So create a setting similar
+> to ECHO when dealing with Anycast sources (icmpv6_echo_ignore_anycast).
+> 
+> Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+> CC: Maciej Żenczykowski <maze@google.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [PATCHv2,next] ipv6: add icmpv6_error_anycast_as_unicast for ICMPv6
+    https://git.kernel.org/netdev/net-next/c/7ab75456be14
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
