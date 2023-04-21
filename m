@@ -2,177 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B91006EAF5B
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 18:40:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1D286EB000
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 19:02:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233205AbjDUQkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 12:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
+        id S233397AbjDURAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 13:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233254AbjDUQj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 12:39:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3701992
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 09:39:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26F72651DA
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 16:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 570F9C433EF;
-        Fri, 21 Apr 2023 16:39:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682095197;
-        bh=Iuec1gYcdrepKKZx7h2iVr8WAzkdy6oIQLDlqnfLAuM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jIzrX8W8kb1ThVl+3h54YaR+nEV292SEZyxLFOUZpl38wF6CfwBYn7qIfzAN//Frp
-         Sr77/DZl7R1BB3N8dQd63VrlvTLEVwa2QRdiYKCJTZrJOPs791JpzdxTBZvyGunm4X
-         /ETZhx2zokRX9v+kifqv9++/4ij9F8mUmQ0k18A/Nuq5mpUPXr1etwAZGD+QDNJMo5
-         zQbv4E9VOCo9Ru4HcfEnHXgMljxQNRNnQaJrGNEGVE2xyDQteB+hljGCFXJP3drxgg
-         1O0COD6rnlc6S/mQ1mjR0OuPQf6pJetnYWA6Y4POeNethM+aOku9R7l0es8+OTiQDQ
-         Mu2JSnMwL+dAw==
-Date:   Fri, 21 Apr 2023 17:39:52 +0100
-From:   Conor Dooley <conor@kernel.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>, daire.mcnamara@microchip.com,
-        nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] net: macb: Shorten max_tx_len to 4KiB - 56 on mpfs
-Message-ID: <20230421-gentleman-contrite-bad775caf1c9@spud>
-References: <20230417140041.2254022-1-daire.mcnamara@microchip.com>
- <20230417140041.2254022-2-daire.mcnamara@microchip.com>
- <ZD6pCdvKdGAJsN3x@corigine.com>
- <20230419180222.07d78b8a@kernel.org>
- <20230420-absinthe-broiler-b992997c6cc5@wendy>
- <ZEKYH0FblGmAOkiP@corigine.com>
+        with ESMTP id S232757AbjDURAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 13:00:42 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279941563F
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 10:00:15 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-5069097bac7so3279879a12.0
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 10:00:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kali.org; s=google; t=1682096387; x=1684688387;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QT/YYNidqu3A4BNDZJk8UgJVKfbhp8UpzHeC81fLwQU=;
+        b=D2hM9+BKb4GsOroNx+/2Qf3HuWU7SAKw0AO34XJw8mAFUTQqZpfI7shT/sgx4W5jCj
+         cFTbaR6CN2Q1yTr6s2dj9n8eQEPgiLLssKSGowQJdgtci2hIg/ixyJkJuRov67Zyorw7
+         Jq5+5BFl02Mtae9ZS+g34wWmjDpkXrUETy1LOhKFQPaZGJeQUO03YuATHQkswyLlpRoO
+         YGNowK3cmq7/Vw8J2Np0+vsY0wAc5NGd10BUB+1sz7iH0mI/AxiPDJwONrxf3rB4eTyz
+         dcjWzxXQeABQpGE+Rd5ZPuTRZpaiAcaDDpNGBXk9bF/l6fSKjogZg+YsCmyuqlTjS8Pj
+         rtqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682096387; x=1684688387;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=QT/YYNidqu3A4BNDZJk8UgJVKfbhp8UpzHeC81fLwQU=;
+        b=iph1P/zvlxPRPLETAXedahUtTwMnHZ/nW7u73jATXdH89+tr1g0WfVyuNQVU8UCd/e
+         titrfJsktwi6a7GR6VcAMu+9IbryRdih+3iR8fHEZijgA4mNlP2fkPQkQVGfWMUSsreK
+         LhFsuC2oLjup5B+YFpmWJe9881OmPJFoXKHwjnzx3Pw/AgBf+LqFCTvpv+ZvLcO7UgB0
+         hO+mlL4NzOY78yKKRwDmHMVOtnv16vxb9xccH6GAOesTqGyhvxiKl7brSV4xM9Kqc2eT
+         wY6g9a+4XASQngp5vNhskuwM7Gt90BV5pavtjJPJR2uS1ZLbc/6J5yl4lpiMI1vMZu7Q
+         5qQQ==
+X-Gm-Message-State: AAQBX9fDypgfbE1SkpATjfqzLK329i9PwxTlqO/f7kNvfdLZ46IC4ESz
+        OZ4HKb6rWGZ23l8pyLxrES3grIcqdc/bhNYzW85Zjw==
+X-Google-Smtp-Source: AKy350b9a4jCLi4HJbMPu1T+4q9CM6Y8OH1cDOw94YTZ4Km3f1mfLPfh+N6EitCgpEUZ7xZmQHrta+EW3DOKPuAzovM=
+X-Received: by 2002:a05:6402:ca:b0:506:8884:7f5 with SMTP id
+ i10-20020a05640200ca00b00506888407f5mr5245621edu.41.1682096386944; Fri, 21
+ Apr 2023 09:59:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="8sbplJ0Zql8uItbL"
-Content-Disposition: inline
-In-Reply-To: <ZEKYH0FblGmAOkiP@corigine.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230421-fp4-bluetooth-v1-0-0430e3a7e0a2@fairphone.com> <20230421-fp4-bluetooth-v1-3-0430e3a7e0a2@fairphone.com>
+In-Reply-To: <20230421-fp4-bluetooth-v1-3-0430e3a7e0a2@fairphone.com>
+From:   Steev Klimaszewski <steev@kali.org>
+Date:   Fri, 21 Apr 2023 11:59:35 -0500
+Message-ID: <CAKXuJqgeK1i8pi5Wujy3tJRRk-6yajJtoQvZjs=639Mbid=Q0Q@mail.gmail.com>
+Subject: Re: [PATCH RFC 3/4] arm64: dts: qcom: sm6350: add uart1 node
+To:     Luca Weiss <luca.weiss@fairphone.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Balakrishna Godavarthi <bgodavar@codeaurora.org>,
+        Rocky Liao <rjliao@codeaurora.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Apr 21, 2023 at 9:12=E2=80=AFAM Luca Weiss <luca.weiss@fairphone.co=
+m> wrote:
+>
+> Add the node describing uart1 incl. opp table and pinctrl.
+>
+> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sm6350.dtsi | 63 ++++++++++++++++++++++++++++++=
+++++++
+>  1 file changed, 63 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sm6350.dtsi b/arch/arm64/boot/dts/q=
+com/sm6350.dtsi
+> index 18c4616848ce..16c5e9a6c98a 100644
+> --- a/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm6350.dtsi
+> @@ -378,6 +378,25 @@ opp-2073600000 {
+>                 };
+>         };
+>
+> +       qup_opp_table: opp-table-qup {
+> +               compatible =3D "operating-points-v2";
+> +
+> +               opp-75000000 {
+> +                       opp-hz =3D /bits/ 64 <75000000>;
+> +                       required-opps =3D <&rpmhpd_opp_low_svs>;
+> +               };
+> +
+> +               opp-100000000 {
+> +                       opp-hz =3D /bits/ 64 <100000000>;
+> +                       required-opps =3D <&rpmhpd_opp_svs>;
+> +               };
+> +
+> +               opp-128000000 {
+> +                       opp-hz =3D /bits/ 64 <128000000>;
+> +                       required-opps =3D <&rpmhpd_opp_nom>;
+> +               };
+> +       };
+> +
+>         pmu {
+>                 compatible =3D "arm,armv8-pmuv3";
+>                 interrupts =3D <GIC_PPI 5 IRQ_TYPE_LEVEL_LOW>;
+> @@ -741,6 +760,22 @@ i2c0: i2c@880000 {
+>                                 status =3D "disabled";
+>                         };
+>
+> +                       uart1: serial@884000 {
+> +                               compatible =3D "qcom,geni-uart";
+> +                               reg =3D <0 0x00884000 0 0x4000>;
+> +                               clock-names =3D "se";
+> +                               clocks =3D <&gcc GCC_QUPV3_WRAP0_S1_CLK>;
+> +                               pinctrl-names =3D "default";
+> +                               pinctrl-0 =3D <&qup_uart1_cts>, <&qup_uar=
+t1_rts>, <&qup_uart1_tx>, <&qup_uart1_rx>;
+> +                               interrupts =3D <GIC_SPI 602 IRQ_TYPE_LEVE=
+L_HIGH>;
+> +                               power-domains =3D <&rpmhpd SM6350_CX>;
+> +                               operating-points-v2 =3D <&qup_opp_table>;
+> +                               interconnects =3D <&clk_virt MASTER_QUP_C=
+ORE_0 0 &clk_virt SLAVE_QUP_CORE_0 0>,
+> +                                               <&aggre1_noc MASTER_QUP_0=
+ 0 &clk_virt SLAVE_EBI_CH0 0>;
+> +                               interconnect-names =3D "qup-core", "qup-c=
+onfig";
+> +                               status =3D "disabled";
+> +                       };
+> +
+>                         i2c2: i2c@888000 {
+>                                 compatible =3D "qcom,geni-i2c";
+>                                 reg =3D <0 0x00888000 0 0x4000>;
+> @@ -1726,6 +1761,34 @@ qup_i2c10_default: qup-i2c10-default-state {
+>                                 drive-strength =3D <2>;
+>                                 bias-pull-up;
+>                         };
+> +
+> +                       qup_uart1_cts: qup-uart1-cts-default-state {
+> +                               pins =3D "gpio61";
+> +                               function =3D "qup01";
+> +                               drive-strength =3D <2>;
+> +                               bias-disable;
+> +                       };
+> +
+> +                       qup_uart1_rts: qup-uart1-rts-default-state {
+> +                               pins =3D "gpio62";
+> +                               function =3D "qup01";
+> +                               drive-strength =3D <2>;
+> +                               bias-pull-down;
+> +                       };
+> +
+> +                       qup_uart1_tx: qup-uart1-tx-default-state {
+> +                               pins =3D "gpio63";
+> +                               function =3D "qup01";
+> +                               drive-strength =3D <2>;
+> +                               bias-pull-up;
+> +                       };
+> +
+tx should come after the rx, this caught me too when I was doing my
+bluetooth driver, it goes by name, not gpio#.
 
---8sbplJ0Zql8uItbL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hey Simon,
-
-On Fri, Apr 21, 2023 at 04:05:19PM +0200, Simon Horman wrote:
-> On Thu, Apr 20, 2023 at 08:18:35AM +0100, Conor Dooley wrote:
-> > Jaukb, Simon,
-> >=20
-> > On Wed, Apr 19, 2023 at 06:02:22PM -0700, Jakub Kicinski wrote:
-> > > On Tue, 18 Apr 2023 16:28:25 +0200 Simon Horman wrote:
-> >=20
-> > [readding the context]
-> >=20
-> > > > > static const struct macb_config sama7g5_gem_config =3D {
-> > > > > @@ -4986,8 +4985,17 @@ static int macb_probe(struct platform_devi=
-ce *pdev)
-> > > > >       bp->tx_clk =3D tx_clk;
-> > > > >       bp->rx_clk =3D rx_clk;
-> > > > >       bp->tsu_clk =3D tsu_clk;
-> > > > > -     if (macb_config)
-> > > > > +     if (macb_config) {
-> > > > > +             if (hw_is_gem(bp->regs, bp->native_io)) {
-> > > > > +                     if (macb_config->max_tx_length)
-> > > > > +                             bp->max_tx_length =3D macb_config->=
-max_tx_length;
-> > > > > +                     else
-> > > > > +                             bp->max_tx_length =3D GEM_MAX_TX_LE=
-N;
-> > > > > +             } else {
-> > > > > +                     bp->max_tx_length =3D MACB_MAX_TX_LEN;
-> > > > > +             }
-> >=20
-> > > > no need to refresh the patch on my account.
-> > > > But can the above be simplified as:
-> > > >=20
-> > > >                if (macb_is_gem(bp) && hw_is_gem(bp->regs, bp->nativ=
-e_io))
-> > > >                        bp->max_tx_length =3D macb_config->max_tx_le=
-ngth;
-> > > >                else
-> > > >                        bp->max_tx_length =3D MACB_MAX_TX_LEN;
-> > >=20
-> > > I suspect that DaveM agreed, because patch is set to Changes Requested
-> > > in patchwork :)=20
-> > >=20
-> > > Daire, please respin with Simon's suggestion.
-> >=20
-> > I'm feeling a bit stupid reading this suggestion as I am not sure how it
-> > is supposed to work :(
-
-> just to clarify, my suggestion was at a slightly higher level regarding
-> the arrangement of logic statements:
->=20
-> 	if (a)
-> 		if (b)
->=20
-> 	vs
->=20
-> 	if (a && b)
-
-Ah, I do at least feel less stupid now!
-There are 3 possible conditions though, you'd be left with something
-like:
-	if !hw_is_gem()
-	else if macb_config->max_tx_length
-	else
->=20
-> I think your concerns are deeper and, in my reading of them, ought
-> to be addressed.
->=20
-> > Firstly, why macb_is_gem() and hw_is_gem()? They both do the same thing,
-> > except last time around we established that macb_is_gem() cannot return
-> > anything other than false at this point.
-> > What have I missed here?
-> >=20
-> > Secondly, is it guaranteed that macb_config::max_tx_length is even
-> > set?
-
-These two were concerns about your suggestion, so they can now be
-disregarded as you'd not been seriously suggesting that particular
-if (false && hw_is_gem()) test ;)
-
-> > Also, another question...
-> > Is it even possible for `if (macb_config)` to be false?
-> > Isn't it either going to be set to &default_gem_config or to
-> > match->data, no? The driver is pretty inconsistent about if it checks
-> > whether macb_config is non-NULL before accessing it, but from reading
-> > .probe, it seems to be like it is always set to something valid at this
-> > point.
-
-This one though is more of a question for the drivers's maintainers -
-Daire's only gone and copied what's done about 4 lines above the top of
-the diff. Removing useless NULL checks, assuming they are useless, is
-surely out of scope for sorting out this erratum though, no?
-
-Cheers,
-Conor.
-
---8sbplJ0Zql8uItbL
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZEK8WAAKCRB4tDGHoIJi
-0pyHAP0QHAQ1gIlnUy6++rU29nhuvd33hQ6V0Y3wtURO8ZTZdwD/Z43nm3Mye1Ac
-W+v4DX9cAx5DrZ5lkMC5jfdbIeUwBAw=
-=d2FD
------END PGP SIGNATURE-----
-
---8sbplJ0Zql8uItbL--
+> +                       qup_uart1_rx: qup-uart1-rx-default-state {
+> +                               pins =3D "gpio64";
+> +                               function =3D "qup01";
+> +                               drive-strength =3D <2>;
+> +                               bias-disable;
+> +                       };
+>                 };
+>
+>                 apps_smmu: iommu@15000000 {
+>
+> --
+> 2.40.0
+>
