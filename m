@@ -2,81 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 876006EADA6
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 17:00:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E9516EADF8
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 17:26:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233081AbjDUPAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 11:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
+        id S232335AbjDUP0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 11:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231694AbjDUPAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 11:00:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEC29EF2;
-        Fri, 21 Apr 2023 08:00:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D45A61B9D;
-        Fri, 21 Apr 2023 15:00:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F3072C433EF;
-        Fri, 21 Apr 2023 15:00:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682089242;
-        bh=cAGgKU7Q/1LqHz8wXIS3qEUfihzPCQ+eBotR0hAqZew=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pqQUYkqw5KZ2xh2xQW0UTIyM6rB4gAtEzTO2qdohrVw/XbUNZsPyMemR99h2XI9st
-         gjoYlLWtgoTkngJcYtXPImCp8I8bexM+EZ3bNQTuBaPdoU8WpnBup+SFvS+S/Bx/5Q
-         gApcH9oacN7EDmlmGh0DpNu/0WEcWquu3fGgi4fwfSx4KNzlshaph7Fk8bvPdOigPA
-         aN4RcI5NBjrE1ih4EAUERyEoz5iXLzKMHH0HBXanUNa4oqtXxYVP/nUidB0CjQPZoR
-         TFUd1z13CNhC7UYBKBGCT5hgSlkprqdagFNm8rqSMLecVsnhCGRiy/mHznPPcKGLc1
-         Slky2zA7NHkrg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D69DAC561EE;
-        Fri, 21 Apr 2023 15:00:41 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229543AbjDUP0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 11:26:02 -0400
+Received: from hust.edu.cn (unknown [202.114.0.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB68686A9;
+        Fri, 21 Apr 2023 08:26:00 -0700 (PDT)
+Received: from van1shing-pc.localdomain ([10.12.182.0])
+        (user=silver_code@hust.edu.cn mech=LOGIN bits=0)
+        by mx1.hust.edu.cn  with ESMTP id 33LFAE1Q025521-33LFAE1R025521
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 21 Apr 2023 23:10:16 +0800
+From:   Wang Zhang <silver_code@hust.edu.cn>
+To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     hust-os-kernel-patches@googlegroups.com,
+        Wang Zhang <silver_code@hust.edu.cn>,
+        Dongliang Mu <dzm91@hust.edu.cn>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH] net: ethernet: mediatek: remove return value check of `mtk_wed_hw_add_debugfs`
+Date:   Fri, 21 Apr 2023 23:10:09 +0800
+Message-Id: <20230421151010.130695-1-silver_code@hust.edu.cn>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-next-2023-04-21
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168208924187.15667.11609697303265049571.git-patchwork-notify@kernel.org>
-Date:   Fri, 21 Apr 2023 15:00:41 +0000
-References: <20230421104726.800BCC433D2@smtp.kernel.org>
-In-Reply-To: <20230421104726.800BCC433D2@smtp.kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-FEAS-AUTH-USER: silver_code@hust.edu.cn
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Smatch complains that:
+mtk_wed_hw_add_debugfs() warn: 'dir' is an error pointer or valid
 
-This pull request was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+Debugfs checks are generally not supposed to be checked
+for errors and it is not necessary here.
 
-On Fri, 21 Apr 2023 10:47:26 +0000 (UTC) you wrote:
-> Hi,
-> 
-> here's a pull request to net-next tree, more info below. Please let me know if
-> there are any problems.
-> 
-> Kalle
-> 
-> [...]
+fix it by just deleting the dead code.
 
-Here is the summary with links:
-  - pull-request: wireless-next-2023-04-21
-    https://git.kernel.org/netdev/net-next/c/ca2889658015
+Signed-off-by: Wang Zhang <silver_code@hust.edu.cn>
+Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
+---
+This issue is found by static analyzer. The patched code has passed
+Smatch checker, but remains untested on mediatek soc.
+---
+ drivers/net/ethernet/mediatek/mtk_wed_debugfs.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c b/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
+index 56f663439721..b244c02c5b51 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
+@@ -252,8 +252,6 @@ void mtk_wed_hw_add_debugfs(struct mtk_wed_hw *hw)
+ 
+ 	snprintf(hw->dirname, sizeof(hw->dirname), "wed%d", hw->index);
+ 	dir = debugfs_create_dir(hw->dirname, NULL);
+-	if (!dir)
+-		return;
+ 
+ 	hw->debugfs_dir = dir;
+ 	debugfs_create_u32("regidx", 0600, dir, &hw->debugfs_reg);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
