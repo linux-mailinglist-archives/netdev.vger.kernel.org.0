@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F856EAD2C
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:40:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A5E6EAD2E
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232832AbjDUOjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 10:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
+        id S233007AbjDUOj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 10:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232855AbjDUOiZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:38:25 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D944610DD;
-        Fri, 21 Apr 2023 07:37:33 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id 4fb4d7f45d1cf-5066ce4f725so2508061a12.1;
-        Fri, 21 Apr 2023 07:37:33 -0700 (PDT)
+        with ESMTP id S232926AbjDUOim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:38:42 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174AD6A64;
+        Fri, 21 Apr 2023 07:37:36 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-95316faa3a8so290889866b.2;
+        Fri, 21 Apr 2023 07:37:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682087852; x=1684679852;
+        d=gmail.com; s=20221208; t=1682087854; x=1684679854;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=QL82S92PhjBdYfMxindC7dNu43LqusGvD9gOD5L3A2g=;
-        b=bKD2PiaWlSQ8fki7UcZX0yKrc00KrG55tW4wCF3mwt+64q32ybCgNLbl1ad+5I5avz
-         oGYmtQU12vKk7tUHMxqOgP+rPs0fOnOwCUKUlzVKB5c8FD85wUc0fLnzCwWAXEhIG8ZP
-         USVps0ZH6DAcGtUD1LwBymYbYCWG3nriM0pcCfO2fmSOuzruQ1RaM6bUy1didxjJwPPZ
-         sMclDWOM5wSOo6C14S5eoVBXT+JImitb+GV7pomFNjjcqT8wwH1W5GkgUi2iWgEwENq3
-         e7k6JritmPMtrB/wkStkMxoxklPEmfSzTmEZIFGFUPMBdzoBBJCBnxeIKmoyVpbzoLpE
-         f2sg==
+        bh=jH8yEvnmoXsEC6mwOHxF9ajbBlURmLh7zMT6HCy7q6s=;
+        b=ENF4e5isJoqDkxBVkvDe8GJi2ftvSaFaD9Evi4Dpli45lx1araC/pu5qZV+/ri9OtW
+         aLau62aVwy1AxwQ40Q861kxGjJrGhSrI1L4hqchjhCa90Ei2Ilsgnjfz9Z95jOiSfSYn
+         f6UXow6rBZMOv2mKFxv/FKlTe6VZ2HfQHmnuKMaVE6tKv6oyVGmqx+QH2UQEDTeJSn0p
+         ep5Ni6mPdJFC95jJgJK0wy4PHbT/ixsdvFwW7mRUDeUb7AlmtPDOmfvt236IFJLLXMeH
+         wrDdQUbMEHPFIOhUAAz9tAIca0emd32Y/WkYY/01pNXqm+JlfHzGj/rNQmTURFQWIHMT
+         UKDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682087852; x=1684679852;
+        d=1e100.net; s=20221208; t=1682087854; x=1684679854;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=QL82S92PhjBdYfMxindC7dNu43LqusGvD9gOD5L3A2g=;
-        b=a4PhkpYELgjx2AOvU67Djq2ewOjp33/LCv1T0rjZzrojU2AiQx+zrTaypKI82O+nb5
-         TsSk42EuAwdbTLV5xx9MVJC+yVzSg1+68RQtE2Boz1/EcPhrxB+fSZfj07UQwGDvIf7+
-         5vyyi5Ho/vzmkgmKePe8+1E9Ww0WLkLoq1giJsTS6CZfGpFPdIi7RqzGjCw+2cTs4CRR
-         xDlsSDurZT3Q3b9suvkI7Z//LV4Npd/e6w/8exhFP8SvFq1VV6R0jRFLFq4mwhBQU/81
-         uHsFVTGb6lE7c4QSeoHpBXW5jaQvbscz/c12GYcdTjFw4hvKKfoyh4CR5vVpOnCiFFf4
-         vngw==
-X-Gm-Message-State: AAQBX9cLpE4lIf6PDnr6utUxXhnhkfQ4c9q3w8I3f25OEnNjYb2KJs7h
-        b62nuFaG/EUoMuDPH9m55aQ=
-X-Google-Smtp-Source: AKy350Zz7vHaBqbcCW8whFHVzYvj2/PnK3KBZofM+qOcv70sDcdPH+IJR6ZEBIq25sled6qYWm94nA==
-X-Received: by 2002:a17:906:10ce:b0:94f:5242:a03a with SMTP id v14-20020a17090610ce00b0094f5242a03amr3010132ejv.63.1682087852178;
-        Fri, 21 Apr 2023 07:37:32 -0700 (PDT)
+        bh=jH8yEvnmoXsEC6mwOHxF9ajbBlURmLh7zMT6HCy7q6s=;
+        b=IUulgBCUdvnzRjf/ZxlTQOq0Y3SQN8/ZaxUa7hY9sZvSS7lZPwwfXEvI0r/pIuzHgy
+         BoI8dZZEz+Lrz8zdSD3DjEAZZOa/8ludBnNc6oe2TOchv8f5XYcJQ+BrtF6HPsTdmakQ
+         I0dxg+b/BqjrkMlyxQA++lSGUtZA9LOqTBD7sp7/HIebjh5rRMDchydlkF09EgbvXccs
+         Zu+UTKh77X+yEsSMz5AsZjQDeExdpsaiyjZsyxZm0QJsklJ1t4hFx3tsQkGyzo1k2Ccf
+         mHVKs1omC5h/zq3b5hJT4G6VZvJlZPhXnUuURd0e1JeC7XvXnMVpOfS8b5ixSjWLS0ZY
+         /iHQ==
+X-Gm-Message-State: AAQBX9dm7o1Xxvi3p1fKBeG7FrP0u2j4hc0kzh2wez9Ba5d9KxFclhKx
+        8Ta8FP5dtCZNKoLjgkeC1eQ=
+X-Google-Smtp-Source: AKy350b2NWrqoFCF1UDO3y+zEU6fJrF42fw4MyZhMWLq7M5pUTgsmJD+/3oPcIpL57kyJxjWUvr7Mg==
+X-Received: by 2002:a17:906:9b45:b0:94e:5679:d950 with SMTP id ep5-20020a1709069b4500b0094e5679d950mr2004270ejc.72.1682087854350;
+        Fri, 21 Apr 2023 07:37:34 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id q27-20020a170906361b00b0094e1026bc66sm2168244ejb.140.2023.04.21.07.37.30
+        by smtp.gmail.com with ESMTPSA id q27-20020a170906361b00b0094e1026bc66sm2168244ejb.140.2023.04.21.07.37.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 07:37:31 -0700 (PDT)
+        Fri, 21 Apr 2023 07:37:34 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -73,9 +73,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [RFC PATCH net-next 17/22] net: dsa: mt7530: fix port capabilities for MT7988
-Date:   Fri, 21 Apr 2023 17:36:43 +0300
-Message-Id: <20230421143648.87889-18-arinc.unal@arinc9.com>
+Subject: [RFC PATCH net-next 18/22] net: dsa: mt7530: remove .mac_port_config for MT7988 and make it optional
+Date:   Fri, 21 Apr 2023 17:36:44 +0300
+Message-Id: <20230421143648.87889-19-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230421143648.87889-1-arinc.unal@arinc9.com>
 References: <20230421143648.87889-1-arinc.unal@arinc9.com>
@@ -94,37 +94,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-On the switch on the MT7988 SoC, there are only 4 PHYs. That's port 0 to 3.
-Set the internal phy cases to '0 ... 3'.
+For the switch on the MT7988 SoC, the code in mac_port_config for MT7988 is
+not needed as the interface of the CPU port is already handled on
+mt7988_mac_port_get_caps().
 
-There's no need to clear the config->supported_interfaces bitmap before
-reporting the supported interfaces as all bits in the bitmap will already
-be initialized to zero when the phylink_config structure is allocated.
-There's no code that would change the bitmap beforehand. Remove it.
+Make .mac_port_config optional. Before calling
+priv->info->mac_port_config(), if there's no mac_port_config member in the
+priv->info table, exit mt753x_mac_config() successfully.
 
-Fixes: 110c18bfed41 ("net: dsa: mt7530: introduce driver for MT7988 built-in switch")
+Remove mac_port_config from the sanity check as the sanity check requires a
+pointer to a mac_port_config function to be non-NULL. This will fail for
+MT7988 as mac_port_config won't be a member of its info table.
+
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Acked-by: Daniel Golle <daniel@makrotopia.org>
+Co-authored-by: Daniel Golle <daniel@makrotopia.org>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/dsa/mt7530.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/dsa/mt7530.c | 18 ++++--------------
+ 1 file changed, 4 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 5466259fd99b..899fc52193e1 100644
+index 899fc52193e1..a66a762cb5db 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2538,10 +2538,8 @@ static void mt7531_mac_port_get_caps(struct dsa_switch *ds, int port,
- static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
- 				     struct phylink_config *config)
- {
--	phy_interface_zero(config->supported_interfaces);
+@@ -2619,17 +2619,6 @@ static bool mt753x_is_mac_port(u32 port)
+ 	return (port == 5 || port == 6);
+ }
+ 
+-static int
+-mt7988_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+-		  phy_interface_t interface)
+-{
+-	if (dsa_is_cpu_port(ds, port) &&
+-	    interface == PHY_INTERFACE_MODE_INTERNAL)
+-		return 0;
 -
- 	switch (port) {
--	case 0 ... 4: /* Internal phy */
-+	case 0 ... 3: /* Internal phy */
- 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
- 			  config->supported_interfaces);
- 		break;
+-	return -EINVAL;
+-}
+-
+ static int
+ mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 		  phy_interface_t interface)
+@@ -2670,6 +2659,9 @@ mt753x_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 
++	if (!priv->info->mac_port_config)
++		return 0;
++
+ 	return priv->info->mac_port_config(ds, port, mode, state->interface);
+ }
+ 
+@@ -3113,7 +3105,6 @@ const struct mt753x_info mt753x_table[] = {
+ 		.phy_write_c45 = mt7531_ind_c45_phy_write,
+ 		.cpu_port_config = mt7988_cpu_port_config,
+ 		.mac_port_get_caps = mt7988_mac_port_get_caps,
+-		.mac_port_config = mt7988_mac_config,
+ 	},
+ };
+ EXPORT_SYMBOL_GPL(mt753x_table);
+@@ -3141,8 +3132,7 @@ mt7530_probe_common(struct mt7530_priv *priv)
+ 	 * properly.
+ 	 */
+ 	if (!priv->info->sw_setup || !priv->info->phy_read_c22 ||
+-	    !priv->info->phy_write_c22 || !priv->info->mac_port_get_caps ||
+-	    !priv->info->mac_port_config)
++	    !priv->info->phy_write_c22 || !priv->info->mac_port_get_caps)
+ 		return -EINVAL;
+ 
+ 	priv->id = priv->info->id;
 -- 
 2.37.2
 
