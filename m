@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B026EACD9
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:28:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB04C6EACDD
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231926AbjDUO2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 10:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35848 "EHLO
+        id S232527AbjDUO26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 10:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbjDUO2l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:28:41 -0400
+        with ESMTP id S232190AbjDUO25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:28:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF25030E9;
-        Fri, 21 Apr 2023 07:28:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F9830E9;
+        Fri, 21 Apr 2023 07:28:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 448CD619AC;
-        Fri, 21 Apr 2023 14:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EB40C433D2;
-        Fri, 21 Apr 2023 14:28:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9645665101;
+        Fri, 21 Apr 2023 14:28:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F192C4339C;
+        Fri, 21 Apr 2023 14:28:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682087318;
-        bh=AzfPnAUc3z8qzBjnjgulDz6zl9zCld31PMAUqciQslw=;
+        s=k20201202; t=1682087336;
+        bh=SqeL1ZjkoRfB8AReeHRqh0HINangrhAFQKlYy4oXftg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bHb/jLpHdKFAi1nDJtxWoUBINsBxoBKEeXYcW8nFOxUoG72B1fVizGLgfJgM/0tnV
-         m+YW/jFTmVGnPRg6ggs43pnYlsBL+lWWYgVPET/1NbO6VRTITrFg1CiiOJHcFiGBFH
-         qjw/vAsBaX+okguwAada5Ntlvvkq9V4X7AD3tCo3s3JzlXNUFrl15/mpSd3Wgfu7rS
-         DnGqcitl72wIz+UWJfEqjnlYzHnIAHLgvxH5TzwJOLkxFEpxNK6jnxUDWPXNkDQ7I2
-         U9tiZGmo5SZx5yuNb6Z6RZWqsAYx+DwqzCRwwhWF0zlo62+Yq+6LnTq8XjJW54jhmP
-         UhXcFNC0vr2nQ==
-Date:   Fri, 21 Apr 2023 07:28:37 -0700
+        b=Th0K9geNEH69pqjscKcQfL3qpAFMkpWCc+gR6hBFLwEQ6p3/CtvF5IXgdbe6uhh++
+         rdVFOI00HZ8WgQcDIATtz9KYRKtMsDH6GwroH5aU+EkMsj0ylwzcXMNy15p4T3IHml
+         U4jX2ZlkkGgQy63R46X35rYMZpxQLIz9ablkeEH92233CKEcZmAQ4QC3TqelBQxm57
+         K1u3fVZSLGJ9akkB4ZO2nqoKgbDkBHzCVbV4V4i7cSrpyJ2zxiVx5oabBaSZJNv5g5
+         R5plKo1KeZjncc8dBfeKRe1+j3LM9CR4DJK7IaeR02NIjkplgHCUk/Cg//c2Rzs5X5
+         A9/7AeWW8fgoA==
+Date:   Fri, 21 Apr 2023 07:28:54 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     jiangshanlai@gmail.com, linux-kernel@vger.kernel.org,
-        kernel-team@meta.com, Sunil Goutham <sgoutham@marvell.com>,
+To:     Wang Jikai <wangjikai@hust.edu.cn>
+Cc:     Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 06/22] net: thunderx: Use alloc_ordered_workqueue() to
- create ordered workqueues
-Message-ID: <20230421072837.1495599b@kernel.org>
-In-Reply-To: <ZEKaABXSb-KppyMO@slm.duckdns.org>
-References: <20230421025046.4008499-1-tj@kernel.org>
-        <20230421025046.4008499-7-tj@kernel.org>
-        <20230421070108.638cce01@kernel.org>
-        <ZEKaABXSb-KppyMO@slm.duckdns.org>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        hust-os-kernel-patches@googlegroups.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v2] wifi: mt7601u: delete dead code checking debugfs
+ returns
+Message-ID: <20230421072854.6521ecef@kernel.org>
+In-Reply-To: <20230421092200.24456-1-wangjikai@hust.edu.cn>
+References: <20230421092200.24456-1-wangjikai@hust.edu.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,20 +63,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Apr 2023 04:13:20 -1000 Tejun Heo wrote:
-> On Fri, Apr 21, 2023 at 07:01:08AM -0700, Jakub Kicinski wrote:
-> > On Thu, 20 Apr 2023 16:50:30 -1000 Tejun Heo wrote:  
-> > > Signed-off-by: Tejun Heo <tj@kernel.org>
-> > > Cc: Sunil Goutham <sgoutham@marvell.com>
-> > > Cc: "David S. Miller" <davem@davemloft.net>
-> > > Cc: Eric Dumazet <edumazet@google.com>
-> > > Cc: Jakub Kicinski <kuba@kernel.org>
-> > > Cc: Paolo Abeni <pabeni@redhat.com>
-> > > Cc: linux-arm-kernel@lists.infradead.org
-> > > Cc: netdev@vger.kernel.org  
-> > 
-> > You take this via your tree directly to Linus T?  
+On Fri, 21 Apr 2023 09:22:00 +0000 Wang Jikai wrote:
+> Smatch reports that:
+> drivers/net/wireless/mediatek/mt7601u/debugfs.c:130
+> mt7601u_init_debugfs() warn: 'dir' is an error pointer or valid".
 > 
-> Yeah, that'd be my preference unless someone is really against it.
+> Debugfs code is not supposed to need error checking so instead of
+> changing this to if (IS_ERR()) the correct thing is to just delete
+> the dead code.
+> 
+> Signed-off-by: Wang Jikai <wangjikai@hust.edu.cn>
 
 Acked-by: Jakub Kicinski <kuba@kernel.org>
