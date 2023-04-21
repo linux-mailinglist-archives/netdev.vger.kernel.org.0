@@ -2,108 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28A356EAA1F
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 14:15:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C086F6EAA29
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 14:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231905AbjDUMPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 08:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55888 "EHLO
+        id S231820AbjDUMSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 08:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231434AbjDUMPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 08:15:52 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8917D9E;
-        Fri, 21 Apr 2023 05:15:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/+HAMTLY1slOoSg5bxA5tskDuARnfGnh1XOqXBWDAu8=; b=Bdvzmpp3kCAYe3vDQWS00VV3zL
-        6xhsBF7qYaPEy+/bVU/AN+i5/yTJsgbHiv0OEReCYnOXsneZ98CYKfmld7ZPc6H66MMuAoOcg74ls
-        WplG7BrIvLhuEc41g2jU440hsniU8+lW6PPQE4pF1uMh7J+PgU43qCuQpfaQWNAr5FSQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pppfz-00AsiX-TT; Fri, 21 Apr 2023 14:15:43 +0200
-Date:   Fri, 21 Apr 2023 14:15:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
-        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        olteanv@gmail.com, mengyuanlou@net-swift.com,
-        'Jarkko Nikula' <jarkko.nikula@linux.intel.com>
-Subject: Re: [PATCH net-next v3 2/8] i2c: designware: Add driver support for
- Wangxun 10Gb NIC
-Message-ID: <4600d755-3bbf-4906-9f23-4e91cfc01c12@lunn.ch>
-References: <20230419082739.295180-1-jiawenwu@trustnetic.com>
- <20230419082739.295180-3-jiawenwu@trustnetic.com>
- <ec095b8a-00af-4fb7-be11-f643ea75e924@lunn.ch>
- <03ef01d97372$f2ee26a0$d8ca73e0$@trustnetic.com>
- <72703dc2-0ee1-41b2-9618-2a3185869cbf@lunn.ch>
- <03f501d973f7$d0c889a0$72599ce0$@trustnetic.com>
+        with ESMTP id S231802AbjDUMR7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 08:17:59 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5A38A46;
+        Fri, 21 Apr 2023 05:17:57 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-555f0997639so1999637b3.0;
+        Fri, 21 Apr 2023 05:17:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682079477; x=1684671477;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=PHRVcnws9JLHYb2wrhNrf1jZ5IsjgkEFjyMKPY6FWck=;
+        b=rviAZLkZIV57HNRn+L1+3Dd2eKzJHk7dyKa6l6w+g1oAPe4m1MFkhXteATOMJb2btt
+         Cb/Jr1m00wKeqUM8vt2yOSESakT6DNaUudhpNmkEkAufqEq+mcgEquZ0ZFHKK/zsbotF
+         3GQpLFyJiOv4fM/Erc9+mRJXnvbm6+HHtzeMHqgP8wVQicqZEaggfbzoeXvWaeisrgc9
+         +2/soSCmvBY0SYMKEEsOEBi6rXuoqpveqnsJNs5ZJksBZmXQTNh0Iet62EJKT+2OGFW6
+         l6MnT1MYIgGrg05Y0yqtMeEP2s8wmfs19pSUs3MKigfO8uSrGEi+65aat7kp/ZivcnD6
+         S1+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682079477; x=1684671477;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PHRVcnws9JLHYb2wrhNrf1jZ5IsjgkEFjyMKPY6FWck=;
+        b=Hrp492agKjUIWzTKcAQsmxDezTQZzYJLcy6U+oowkqJUKBuWqFo1JFfvGBbUdAUOm5
+         83s3wCPpv/EYaKUmK2m50A5pvVPar8Xus7uSkyc8KOSrXH6bGN981zsOOFpyuYkId64D
+         IaOS9aHcLcsA4A3RvszrkE/CN4kvXkIGRPpcWMx6zFjGyhIfYataqvap/cfTZ5/vaZz2
+         CPLpV0l5Bb9Taw5MMULTip/pyIi9el6qIam2FuzhunIHcdlSqqc6yPZ5W6gYKEhPc2yc
+         ZpPKUn0X8T64GIBxvuf5zeZBsO40lxUMIhd/WeNmO5HBoZtpIVFaTUcdJOjNFpyX7FrZ
+         DytQ==
+X-Gm-Message-State: AAQBX9fX3llza+IvA2RrAuPAtOtxal4UweEQuBIw1AV3MOqqbvr+O1d/
+        x7YuFpLXQLu5fWng1cvgkfYTj7LWMNSjVHyEn70=
+X-Google-Smtp-Source: AKy350YRasU3Zk7MW/yw6YHwoAeIthS7e/jQyPasXKsvsAp+v5Ko4XsCvFg7t4DmatytjcDgKmc52dVbLHLv0r+m3yA=
+X-Received: by 2002:a81:1710:0:b0:53c:70c5:45d2 with SMTP id
+ 16-20020a811710000000b0053c70c545d2mr3252193ywx.0.1682079476830; Fri, 21 Apr
+ 2023 05:17:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <03f501d973f7$d0c889a0$72599ce0$@trustnetic.com>
+References: <20230406130205.49996-2-kal.conley@dectris.com>
+ <87sfdckgaa.fsf@toke.dk> <ZDBEng1KEEG5lOA6@boxer> <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
+ <875ya12phx.fsf@toke.dk> <CAHApi-=rMHt7uR8Sw1Vw+MHDrtkyt=jSvTvwz8XKV7SEb01CmQ@mail.gmail.com>
+ <87ile011kz.fsf@toke.dk> <CAHApi-=ODe-WtJ=m6bycQhKoQxb+kk2Yk9Fx5SgBsWUuWT_u-A@mail.gmail.com>
+ <874jpdwl45.fsf@toke.dk> <CAHApi-kcaMRPj4mEPs87_4Z6iO5qEpzOOcbVza7vxURqCtpz=Q@mail.gmail.com>
+ <ZEJZYa8WT6A9VpOJ@boxer>
+In-Reply-To: <ZEJZYa8WT6A9VpOJ@boxer>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 21 Apr 2023 14:17:45 +0200
+Message-ID: <CAJ8uoz39jty9S+=Wjh6RuOseZOjCe3oO1mAHEBGbmT3CA5sHiA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/3] xsk: Support UMEM chunk_size > PAGE_SIZE
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Kal Cutter Conley <kal.conley@dectris.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 21, 2023 at 10:20:17AM +0800, Jiawen Wu wrote:
-> On Thursday, April 20, 2023 9:23 PM, Andrew Lunn wrote:
-> > On Thu, Apr 20, 2023 at 06:29:11PM +0800, Jiawen Wu wrote:
-> > > On Thursday, April 20, 2023 4:58 AM, Andrew Lunn wrote:
-> > > > On Wed, Apr 19, 2023 at 04:27:33PM +0800, Jiawen Wu wrote:
-> > > > > Wangxun 10Gb ethernet chip is connected to Designware I2C, to communicate
-> > > > > with SFP.
-> > > > >
-> > > > > Add platform data to pass IOMEM base address, board flag and other
-> > > > > parameters, since resource address was mapped on ethernet driver.
-> > > > >
-> > > > > The exists IP limitations are dealt as workarounds:
-> > > > > - IP does not support interrupt mode, it works on polling mode.
-> > > > > - I2C cannot read continuously, only one byte can at a time.
+On Fri, 21 Apr 2023 at 11:44, Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> On Tue, Apr 18, 2023 at 01:12:00PM +0200, Kal Cutter Conley wrote:
+>
+> Hi there,
+>
+> > > >> In addition, presumably when using this mode, the other XDP actions
+> > > >> (XDP_PASS, XDP_REDIRECT to other targets) would stop working unless we
+> > > >> add special handling for that in the kernel? We'll definitely need to
+> > > >> handle that somehow...
 > > > >
-> > > > Are you really sure about that?
-> > > >
-> > > > It is a major limitation for SFP devices. It means you cannot access
-> > > > the diagnostics, since you need to perform an atomic 2 byte read.
-> > > >
-> > > > Or maybe i'm understanding you wrong.
-> > > >
-> > > >    Andrew
-> > > >
+> > > > I am not familiar with all the details here. Do you know a reason why
+> > > > these cases would stop working / why special handling would be needed?
+> > > > For example, if I have a UMEM that uses hugepages and XDP_PASS is
+> > > > returned, then the data is just copied into an SKB right? SKBs can
+> > > > also be created directly from hugepages AFAIK. So I don't understand
+> > > > what the issue would be. Can someone explain this concern?
 > > >
-> > > Maybe I'm a little confused about this. Every time I read a byte info, I have to
-> > > write a 'read command'. It can normally get the information for SFP devices.
-> > > But I'm not sure if this is regular I2C behavior.
-> > 
-> > I don't know this hardware, so i cannot say what a 'read command'
-> > actually does. Can you put a bus pirate or similar sort of device on
-> > the bus and look at the actual I2C signals. Is it performing one I2C
-> > transaction per byte? If so, that is not good.
+> > > Well, I was asking :) It may well be that the SKB path just works; did
+> > > you test this? Pretty sure XDP_REDIRECT to another device won't, though?
+>
+> for XDP_PASS we have to allocate a new buffer and copy the contents from
+> current xdp_buff that was backed by xsk_buff_pool and give the current one
+> back to pool. I am not sure if __napi_alloc_skb() is always capable of
+> handling len > PAGE_SIZE - i believe there might a particular combination
+> of settings that allows it, but if not we should have a fallback path that
+> would iterate over data and copy this to a certain (linear + frags) parts.
+> This implies non-zero effort that is needed for jumbo frames ZC support.
 
-....
+Thinking aloud, could not our multi-buffer work help with this? Sounds
+quite similar to operations that we have to do in that patch set. And
+if so, would it not be prudent to get the multi-buffer support in
+there first, then implement these things on top of that? What do you
+think?
 
-> You may have misunderstood. If you want to read a 16-bit message, the
-> size of 'i2c_msg.len' is set to 2 in the array that 'flags = I2C_M_RD'.
-
-The SFP driver uses a mixture of message lengths, due to SFP bugs. But
-in general it will do 16 byte block reads, except for when it needs
-smaller quantity of bytes.
-
-However, your wording was:
-
-> > > Every time I read a byte info, I have to write a 'read command'.
-
-This suggests you are reading one byte at a time with each read
-command. I just want to make sure that is not one I2C transaction per
-byte.
-
-     Andrew.
+> I can certainly test this out and play with it - maybe this just works, I
+> didn't check yet. Even if it does, then we need some kind of temporary
+> mechanism that will forbid loading ZC jumbo frames due to what Toke
+> brought up.
+>
+> > >
+> >
+> > I was also asking :-)
+> >
+> > I tested that the SKB path is usable today with this patch.
+> > Specifically, sending and receiving large jumbo packets with AF_XDP
+> > and that a non-multi-buffer XDP program could access the whole packet.
+> > I have not specifically tested XDP_REDIRECT to another device or
+> > anything with ZC since that is not possible without driver support.
+> >
+> > My feeling is, there wouldn't be non-trivial issues here since this
+> > patchset changes nothing except allowing the maximum chunk size to be
+> > larger. The driver either supports larger MTUs with XDP enabled or it
+> > doesn't. If it doesn't, the frames are dropped anyway. Also, chunk
+> > size mismatches between two XSKs (e.g. with XDP_REDIRECT) would be
+> > something supported or not supported irrespective of this patchset.
+>
+> Here is the comparison between multi-buffer and jumbo frames that I did
+> for ZC ice driver. Configured MTU was 8192 as this is the frame size for
+> aligned mode when working with huge pages. I am presenting plain numbers
+> over here from xdpsock.
+>
+> Mbuf, packet size = 8192 - XDP_PACKET_HEADROOM
+> 885,705pps - rxdrop frame_size=4096
+> 806,307pps - l2fwd frame_size=4096
+> 877,989pps - rxdrop frame_size=2048
+> 773,331pps - l2fwd frame_size=2048
+>
+> Jumbo, packet size = 8192 - XDP_PACKET_HEADROOM
+> 893,530pps - rxdrop frame_size=8192
+> 841,860pps - l2fwd frame_size=8192
+>
+> Kal might say that multi-buffer numbers are imaginary as these patches
+> were never shown to the public ;) but now that we have extensive test
+> suite I am fixing some last issues that stand out, so we are asking for
+> some more patience over here... overall i was expecting that they will be
+> much worse when compared to jumbo frames, but then again i believe this
+> implementation is not ideal and can be improved. Nevertheless, jumbo
+> frames support has its value.
