@@ -2,166 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C086F6EAA29
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 14:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6126EAA24
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 14:18:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231820AbjDUMSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 08:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57194 "EHLO
+        id S231879AbjDUMRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 08:17:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231802AbjDUMR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 08:17:59 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5A38A46;
-        Fri, 21 Apr 2023 05:17:57 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-555f0997639so1999637b3.0;
-        Fri, 21 Apr 2023 05:17:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682079477; x=1684671477;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=PHRVcnws9JLHYb2wrhNrf1jZ5IsjgkEFjyMKPY6FWck=;
-        b=rviAZLkZIV57HNRn+L1+3Dd2eKzJHk7dyKa6l6w+g1oAPe4m1MFkhXteATOMJb2btt
-         Cb/Jr1m00wKeqUM8vt2yOSESakT6DNaUudhpNmkEkAufqEq+mcgEquZ0ZFHKK/zsbotF
-         3GQpLFyJiOv4fM/Erc9+mRJXnvbm6+HHtzeMHqgP8wVQicqZEaggfbzoeXvWaeisrgc9
-         +2/soSCmvBY0SYMKEEsOEBi6rXuoqpveqnsJNs5ZJksBZmXQTNh0Iet62EJKT+2OGFW6
-         l6MnT1MYIgGrg05Y0yqtMeEP2s8wmfs19pSUs3MKigfO8uSrGEi+65aat7kp/ZivcnD6
-         S1+A==
+        with ESMTP id S229956AbjDUMRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 08:17:51 -0400
+Received: from mail-io1-f78.google.com (mail-io1-f78.google.com [209.85.166.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF321902E
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 05:17:49 -0700 (PDT)
+Received: by mail-io1-f78.google.com with SMTP id ca18e2360f4ac-763646b324aso329413339f.0
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 05:17:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682079477; x=1684671477;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=PHRVcnws9JLHYb2wrhNrf1jZ5IsjgkEFjyMKPY6FWck=;
-        b=Hrp492agKjUIWzTKcAQsmxDezTQZzYJLcy6U+oowkqJUKBuWqFo1JFfvGBbUdAUOm5
-         83s3wCPpv/EYaKUmK2m50A5pvVPar8Xus7uSkyc8KOSrXH6bGN981zsOOFpyuYkId64D
-         IaOS9aHcLcsA4A3RvszrkE/CN4kvXkIGRPpcWMx6zFjGyhIfYataqvap/cfTZ5/vaZz2
-         CPLpV0l5Bb9Taw5MMULTip/pyIi9el6qIam2FuzhunIHcdlSqqc6yPZ5W6gYKEhPc2yc
-         ZpPKUn0X8T64GIBxvuf5zeZBsO40lxUMIhd/WeNmO5HBoZtpIVFaTUcdJOjNFpyX7FrZ
-         DytQ==
-X-Gm-Message-State: AAQBX9fX3llza+IvA2RrAuPAtOtxal4UweEQuBIw1AV3MOqqbvr+O1d/
-        x7YuFpLXQLu5fWng1cvgkfYTj7LWMNSjVHyEn70=
-X-Google-Smtp-Source: AKy350YRasU3Zk7MW/yw6YHwoAeIthS7e/jQyPasXKsvsAp+v5Ko4XsCvFg7t4DmatytjcDgKmc52dVbLHLv0r+m3yA=
-X-Received: by 2002:a81:1710:0:b0:53c:70c5:45d2 with SMTP id
- 16-20020a811710000000b0053c70c545d2mr3252193ywx.0.1682079476830; Fri, 21 Apr
- 2023 05:17:56 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682079469; x=1684671469;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=czyz4jPXZl6oM7+PF3+JFt1DVnlTxkTrAGRzEaB5Bgk=;
+        b=OJy6Abb0ac0XyVG19BJgI7GZvgghVSXauuWbwKxaWRool3RqNWzMe66nI6ADFmMOnq
+         LP5D1KHe8pWJ9tkzJi6qHxtj6S0it3/IoJu7DE7yZb2zdZ5xzNEywWXeJ7AHSJ1XXa4I
+         9FJaFFWLcEQcN4BW7CN8J7ve3mm0VL6WEXOWSvAPydtZ8potHoB3e85Lnk/VqUaURTUN
+         2WFoDeM4ksnyrUOKgAh7y991Cd1UaOnn1B6zQBVIonWJdCHwm3vRq7ErylHAkOvW3jSK
+         lNDl2GbUjnc2YSeyPaQiKV7pyEe0k0Kv998Ypel21YUuLGY+0XUazoEqNal+WXIojH/u
+         3zHQ==
+X-Gm-Message-State: AAQBX9d302mo7BfjQxkZzD/pPiBnTZesBACMQNZbUAG/nJe68BbiSZxq
+        wnlcIrldGRQCOq0LT5+RIYunDK032t3gLmQK1DYfI7xRW2vr
+X-Google-Smtp-Source: AKy350Z5L9F4MKiEFyqwzMO/3b69TKAPFK23KWq1pLXa3RrBpmt6Op3F0GyqDOTiThXXlsToK2BvgsLZYKFPH37pwP6WSpwcsuqJ
 MIME-Version: 1.0
-References: <20230406130205.49996-2-kal.conley@dectris.com>
- <87sfdckgaa.fsf@toke.dk> <ZDBEng1KEEG5lOA6@boxer> <CAHApi-nuD7iSY7fGPeMYiNf8YX3dG27tJx1=n8b_i=ZQdZGZbw@mail.gmail.com>
- <875ya12phx.fsf@toke.dk> <CAHApi-=rMHt7uR8Sw1Vw+MHDrtkyt=jSvTvwz8XKV7SEb01CmQ@mail.gmail.com>
- <87ile011kz.fsf@toke.dk> <CAHApi-=ODe-WtJ=m6bycQhKoQxb+kk2Yk9Fx5SgBsWUuWT_u-A@mail.gmail.com>
- <874jpdwl45.fsf@toke.dk> <CAHApi-kcaMRPj4mEPs87_4Z6iO5qEpzOOcbVza7vxURqCtpz=Q@mail.gmail.com>
- <ZEJZYa8WT6A9VpOJ@boxer>
-In-Reply-To: <ZEJZYa8WT6A9VpOJ@boxer>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 21 Apr 2023 14:17:45 +0200
-Message-ID: <CAJ8uoz39jty9S+=Wjh6RuOseZOjCe3oO1mAHEBGbmT3CA5sHiA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/3] xsk: Support UMEM chunk_size > PAGE_SIZE
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Kal Cutter Conley <kal.conley@dectris.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Received: by 2002:a5e:a90b:0:b0:760:efd4:9582 with SMTP id
+ c11-20020a5ea90b000000b00760efd49582mr2460102iod.2.1682079469260; Fri, 21 Apr
+ 2023 05:17:49 -0700 (PDT)
+Date:   Fri, 21 Apr 2023 05:17:49 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003fd60705f9d7a53b@google.com>
+Subject: [syzbot] [wireless?] WARNING in cfg80211_bss_update (3)
+From:   syzbot <syzbot+9d593239580fe3639301@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Apr 2023 at 11:44, Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> On Tue, Apr 18, 2023 at 01:12:00PM +0200, Kal Cutter Conley wrote:
->
-> Hi there,
->
-> > > >> In addition, presumably when using this mode, the other XDP actions
-> > > >> (XDP_PASS, XDP_REDIRECT to other targets) would stop working unless we
-> > > >> add special handling for that in the kernel? We'll definitely need to
-> > > >> handle that somehow...
-> > > >
-> > > > I am not familiar with all the details here. Do you know a reason why
-> > > > these cases would stop working / why special handling would be needed?
-> > > > For example, if I have a UMEM that uses hugepages and XDP_PASS is
-> > > > returned, then the data is just copied into an SKB right? SKBs can
-> > > > also be created directly from hugepages AFAIK. So I don't understand
-> > > > what the issue would be. Can someone explain this concern?
-> > >
-> > > Well, I was asking :) It may well be that the SKB path just works; did
-> > > you test this? Pretty sure XDP_REDIRECT to another device won't, though?
->
-> for XDP_PASS we have to allocate a new buffer and copy the contents from
-> current xdp_buff that was backed by xsk_buff_pool and give the current one
-> back to pool. I am not sure if __napi_alloc_skb() is always capable of
-> handling len > PAGE_SIZE - i believe there might a particular combination
-> of settings that allows it, but if not we should have a fallback path that
-> would iterate over data and copy this to a certain (linear + frags) parts.
-> This implies non-zero effort that is needed for jumbo frames ZC support.
+Hello,
 
-Thinking aloud, could not our multi-buffer work help with this? Sounds
-quite similar to operations that we have to do in that patch set. And
-if so, would it not be prudent to get the multi-buffer support in
-there first, then implement these things on top of that? What do you
-think?
+syzbot found the following issue on:
 
-> I can certainly test this out and play with it - maybe this just works, I
-> didn't check yet. Even if it does, then we need some kind of temporary
-> mechanism that will forbid loading ZC jumbo frames due to what Toke
-> brought up.
->
-> > >
-> >
-> > I was also asking :-)
-> >
-> > I tested that the SKB path is usable today with this patch.
-> > Specifically, sending and receiving large jumbo packets with AF_XDP
-> > and that a non-multi-buffer XDP program could access the whole packet.
-> > I have not specifically tested XDP_REDIRECT to another device or
-> > anything with ZC since that is not possible without driver support.
-> >
-> > My feeling is, there wouldn't be non-trivial issues here since this
-> > patchset changes nothing except allowing the maximum chunk size to be
-> > larger. The driver either supports larger MTUs with XDP enabled or it
-> > doesn't. If it doesn't, the frames are dropped anyway. Also, chunk
-> > size mismatches between two XSKs (e.g. with XDP_REDIRECT) would be
-> > something supported or not supported irrespective of this patchset.
->
-> Here is the comparison between multi-buffer and jumbo frames that I did
-> for ZC ice driver. Configured MTU was 8192 as this is the frame size for
-> aligned mode when working with huge pages. I am presenting plain numbers
-> over here from xdpsock.
->
-> Mbuf, packet size = 8192 - XDP_PACKET_HEADROOM
-> 885,705pps - rxdrop frame_size=4096
-> 806,307pps - l2fwd frame_size=4096
-> 877,989pps - rxdrop frame_size=2048
-> 773,331pps - l2fwd frame_size=2048
->
-> Jumbo, packet size = 8192 - XDP_PACKET_HEADROOM
-> 893,530pps - rxdrop frame_size=8192
-> 841,860pps - l2fwd frame_size=8192
->
-> Kal might say that multi-buffer numbers are imaginary as these patches
-> were never shown to the public ;) but now that we have extensive test
-> suite I am fixing some last issues that stand out, so we are asking for
-> some more patience over here... overall i was expecting that they will be
-> much worse when compared to jumbo frames, but then again i believe this
-> implementation is not ideal and can be improved. Nevertheless, jumbo
-> frames support has its value.
+HEAD commit:    6a8f57ae2eb0 Linux 6.3-rc7
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1716e35bc80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=11869c60f54496a7
+dashboard link: https://syzkaller.appspot.com/bug?extid=9d593239580fe3639301
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/beced60615bb/disk-6a8f57ae.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/9ba2bd636062/vmlinux-6a8f57ae.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/1f235faaf4bc/bzImage-6a8f57ae.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9d593239580fe3639301@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 15587 at net/wireless/scan.c:1584 cfg80211_combine_bsses net/wireless/scan.c:1584 [inline]
+WARNING: CPU: 1 PID: 15587 at net/wireless/scan.c:1584 cfg80211_bss_update+0x197d/0x21f0 net/wireless/scan.c:1778
+Modules linked in:
+CPU: 1 PID: 15587 Comm: kworker/u4:21 Not tainted 6.3.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
+Workqueue: phy15 ieee80211_iface_work
+RIP: 0010:cfg80211_combine_bsses net/wireless/scan.c:1584 [inline]
+RIP: 0010:cfg80211_bss_update+0x197d/0x21f0 net/wireless/scan.c:1778
+Code: df 48 c1 ea 03 80 3c 02 00 0f 85 15 06 00 00 49 c7 47 48 00 00 00 00 31 f6 31 ff e8 dd 1e 24 f8 e9 5c f1 ff ff e8 63 22 24 f8 <0f> 0b e9 8a f3 ff ff e8 57 22 24 f8 0f 0b 4c 89 f7 e8 6d 4d b5 fa
+RSP: 0018:ffffc9000637f598 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+RDX: ffff88803b8cd7c0 RSI: ffffffff895ec8fd RDI: 0000000000000000
+RBP: ffff88807d2a8000 R08: 0000000000000000 R09: 0000000000000006
+R10: 0000000000000006 R11: 0000000000094001 R12: ffff8880762a0068
+R13: 0000000000000005 R14: 0000000000000006 R15: ffff8880762a0000
+FS:  0000000000000000(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f1f57b2eff8 CR3: 000000007df78000 CR4: 0000000000350ee0
+Call Trace:
+ <TASK>
+ cfg80211_inform_single_bss_frame_data+0x72c/0x1020 net/wireless/scan.c:2492
+ cfg80211_inform_bss_frame_data+0xc3/0xca0 net/wireless/scan.c:2525
+ ieee80211_bss_info_update+0x35c/0xb50 net/mac80211/scan.c:190
+ ieee80211_rx_bss_info net/mac80211/ibss.c:1120 [inline]
+ ieee80211_rx_mgmt_probe_beacon net/mac80211/ibss.c:1609 [inline]
+ ieee80211_ibss_rx_queued_mgmt+0x19c9/0x3030 net/mac80211/ibss.c:1638
+ ieee80211_iface_process_skb net/mac80211/iface.c:1583 [inline]
+ ieee80211_iface_work+0xa4d/0xd70 net/mac80211/iface.c:1637
+ process_one_work+0x991/0x15c0 kernel/workqueue.c:2390
+ worker_thread+0x669/0x1090 kernel/workqueue.c:2537
+ kthread+0x2e8/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
