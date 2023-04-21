@@ -2,26 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18AE66EB5D3
+	by mail.lfdr.de (Postfix) with ESMTP id BB4986EB5D5
 	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 01:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233722AbjDUXua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 19:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
+        id S233857AbjDUXub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 19:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbjDUXu3 (ORCPT
+        with ESMTP id S232058AbjDUXu3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 19:50:29 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 358161991;
-        Fri, 21 Apr 2023 16:50:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C62D1BFD;
+        Fri, 21 Apr 2023 16:50:27 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net-next 00/19] Netfilter/IPVS updates for net-next
-Date:   Sat, 22 Apr 2023 01:50:02 +0200
-Message-Id: <20230421235021.216950-1-pablo@netfilter.org>
+Subject: [PATCH net-next 01/19] netfilter: nf_tables: merge nft_rules_old structure and end of ruleblob marker
+Date:   Sat, 22 Apr 2023 01:50:03 +0200
+Message-Id: <20230421235021.216950-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230421235021.216950-1-pablo@netfilter.org>
+References: <20230421235021.216950-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -33,114 +35,193 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a v2 pull request.
+From: Florian Westphal <fw@strlen.de>
 
---
+In order to free the rules in a chain via call_rcu, the rule array used
+to stash a rcu_head and space for a pointer at the end of the rule array.
 
-Hi,
+When the current nft_rule_dp blob format got added in
+2c865a8a28a1 ("netfilter: nf_tables: add rule blob layout"), this results
+in a double-trailer:
 
-The following patchset contains Netfilter updates for net-next:
+  size (unsigned long)
+  struct nft_rule_dp
+    struct nft_expr
+         ...
+    struct nft_rule_dp
+     struct nft_expr
+         ...
+    struct nft_rule_dp (is_last=1) // Trailer
 
-1) Reduce jumpstack footprint: Stash chain in last rule marker in blob for
-   tracing. Remove last rule and chain from jumpstack. From Florian Westphal.
+The trailer, struct nft_rule_dp (is_last=1), is not accounted for in size,
+so it can be located via start_addr + size.
 
-2) nf_tables validates all tables before committing the new rules.
-   Unfortunately, this has two drawbacks:
+Because the rcu_head is stored after 'start+size' as well this means the
+is_last trailer is *aliased* to the rcu_head (struct nft_rules_old).
 
-   - Since addition of the transaction mutex pernet state gets written to
-     outside of the locked section from the cleanup callback, this is
-     wrong so do this cleanup directly after table has passed all checks.
+This is harmless, because at this time the nft_do_chain function never
+evaluates/accesses the trailer, it only checks the address boundary:
 
-   - Revalidate tables that saw no changes. This can be avoided by
-     keeping the validation state per table, not per netns.
+        for (; rule < last_rule; rule = nft_rule_next(rule)) {
+...
 
-   From Florian Westphal.
+But this way the last_rule address has to be stashed in the jump
+structure to restore it after returning from a chain.
 
-3) Get rid of a few redundant pointers in the traceinfo structure.
-   The three removed pointers are used in the expression evaluation loop,
-   so gcc keeps them in registers. Passing them to the (inlined) helpers
-   thus doesn't increase nft_do_chain text size, while stack is reduced
-   by another 24 bytes on 64bit arches. From Florian Westphal.
+nft_do_chain stack usage has become way too big, so put it on a diet.
 
-4) IPVS cleanups in several ways without implementing any functional
-   changes, aside from removing some debugging output:
+Without this patch is impossible to use
+        for (; !rule->is_last; rule = nft_rule_next(rule)) {
 
-   - Update width of source for ip_vs_sync_conn_options
-     The operation is safe, use an annotation to describe it properly.
+... because on free, the needed update of the rcu_head will clobber the
+nft_rule_dp is_last bit.
 
-   - Consistently use array_size() in ip_vs_conn_init()
-     It seems better to use helpers consistently.
+Furthermore, also stash the chain pointer in the trailer, this allows
+to recover the original chain structure from nf_tables_trace infra
+without a need to place them in the jump struct.
 
-   - Remove {Enter,Leave}Function. These seem to be well past their
-     use-by date.
+After this patch it is trivial to diet the jump stack structure,
+done in the next two patches.
 
-   - Correct spelling in comments.
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nf_tables_api.c | 55 +++++++++++++++++------------------
+ 1 file changed, 27 insertions(+), 28 deletions(-)
 
-   From Simon Horman.
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index e48ab8dfb541..79848a27e640 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2110,38 +2110,41 @@ static void nft_chain_release_hook(struct nft_chain_hook *hook)
+ 	module_put(hook->type->owner);
+ }
+ 
+-struct nft_rules_old {
++struct nft_rule_dp_last {
++	struct nft_rule_dp end;	/* end of nft_rule_blob marker */
+ 	struct rcu_head h;
+ 	struct nft_rule_blob *blob;
++	const struct nft_chain *chain;	/* for tracing */
+ };
+ 
+-static void nft_last_rule(struct nft_rule_blob *blob, const void *ptr)
++static void nft_last_rule(const struct nft_chain *chain, const void *ptr)
+ {
+-	struct nft_rule_dp *prule;
++	struct nft_rule_dp_last *lrule;
++
++	BUILD_BUG_ON(offsetof(struct nft_rule_dp_last, end) != 0);
+ 
+-	prule = (struct nft_rule_dp *)ptr;
+-	prule->is_last = 1;
++	lrule = (struct nft_rule_dp_last *)ptr;
++	lrule->end.is_last = 1;
++	lrule->chain = chain;
+ 	/* blob size does not include the trailer rule */
+ }
+ 
+-static struct nft_rule_blob *nf_tables_chain_alloc_rules(unsigned int size)
++static struct nft_rule_blob *nf_tables_chain_alloc_rules(const struct nft_chain *chain,
++							 unsigned int size)
+ {
+ 	struct nft_rule_blob *blob;
+ 
+-	/* size must include room for the last rule */
+-	if (size < offsetof(struct nft_rule_dp, data))
+-		return NULL;
+-
+-	size += sizeof(struct nft_rule_blob) + sizeof(struct nft_rules_old);
+ 	if (size > INT_MAX)
+ 		return NULL;
+ 
++	size += sizeof(struct nft_rule_blob) + sizeof(struct nft_rule_dp_last);
++
+ 	blob = kvmalloc(size, GFP_KERNEL_ACCOUNT);
+ 	if (!blob)
+ 		return NULL;
+ 
+ 	blob->size = 0;
+-	nft_last_rule(blob, blob->data);
++	nft_last_rule(chain, blob->data);
+ 
+ 	return blob;
+ }
+@@ -2220,7 +2223,6 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 	struct nft_rule_blob *blob;
+ 	struct nft_trans *trans;
+ 	struct nft_chain *chain;
+-	unsigned int data_size;
+ 	int err;
+ 
+ 	if (table->use == UINT_MAX)
+@@ -2308,8 +2310,7 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 		chain->udlen = nla_len(nla[NFTA_CHAIN_USERDATA]);
+ 	}
+ 
+-	data_size = offsetof(struct nft_rule_dp, data);	/* last rule */
+-	blob = nf_tables_chain_alloc_rules(data_size);
++	blob = nf_tables_chain_alloc_rules(chain, 0);
+ 	if (!blob) {
+ 		err = -ENOMEM;
+ 		goto err_destroy_chain;
+@@ -8817,9 +8818,8 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
+ 				return -ENOMEM;
+ 		}
+ 	}
+-	data_size += offsetof(struct nft_rule_dp, data);	/* last rule */
+ 
+-	chain->blob_next = nf_tables_chain_alloc_rules(data_size);
++	chain->blob_next = nf_tables_chain_alloc_rules(chain, data_size);
+ 	if (!chain->blob_next)
+ 		return -ENOMEM;
+ 
+@@ -8864,12 +8864,11 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
+ 		chain->blob_next->size += (unsigned long)(data - (void *)prule);
+ 	}
+ 
+-	prule = (struct nft_rule_dp *)data;
+-	data += offsetof(struct nft_rule_dp, data);
+ 	if (WARN_ON_ONCE(data > data_boundary))
+ 		return -ENOMEM;
+ 
+-	nft_last_rule(chain->blob_next, prule);
++	prule = (struct nft_rule_dp *)data;
++	nft_last_rule(chain, prule);
+ 
+ 	return 0;
+ }
+@@ -8890,22 +8889,22 @@ static void nf_tables_commit_chain_prepare_cancel(struct net *net)
+ 	}
+ }
+ 
+-static void __nf_tables_commit_chain_free_rules_old(struct rcu_head *h)
++static void __nf_tables_commit_chain_free_rules(struct rcu_head *h)
+ {
+-	struct nft_rules_old *o = container_of(h, struct nft_rules_old, h);
++	struct nft_rule_dp_last *l = container_of(h, struct nft_rule_dp_last, h);
+ 
+-	kvfree(o->blob);
++	kvfree(l->blob);
+ }
+ 
+ static void nf_tables_commit_chain_free_rules_old(struct nft_rule_blob *blob)
+ {
+-	struct nft_rules_old *old;
++	struct nft_rule_dp_last *last;
+ 
+-	/* rcu_head is after end marker */
+-	old = (void *)blob + sizeof(*blob) + blob->size;
+-	old->blob = blob;
++	/* last rule trailer is after end marker */
++	last = (void *)blob + sizeof(*blob) + blob->size;
++	last->blob = blob;
+ 
+-	call_rcu(&old->h, __nf_tables_commit_chain_free_rules_old);
++	call_rcu(&last->h, __nf_tables_commit_chain_free_rules);
+ }
+ 
+ static void nf_tables_commit_chain(struct net *net, struct nft_chain *chain)
+-- 
+2.30.2
 
-5) Extended netlink error report for netdevice in flowtables and
-   netdev/chains. Allow for incrementally add/delete devices to netdev
-   basechain. Allow to create netdev chain without device.
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git nf-next-23-04-22
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit ca288965801572fe41386560d4e6c5cc0e5cc56d:
-
-  Merge tag 'wireless-next-2023-04-21' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next (2023-04-21 07:35:51 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git nf-next-23-04-22
-
-for you to fetch changes up to 207296f1a03bfead0110ffc4f192f242100ce4ff:
-
-  netfilter: nf_tables: allow to create netdev chain without device (2023-04-22 01:39:42 +0200)
-
-----------------------------------------------------------------
-netfilter pull request 23-04-22
-
-----------------------------------------------------------------
-Florian Westphal (9):
-      netfilter: nf_tables: merge nft_rules_old structure and end of ruleblob marker
-      netfilter: nf_tables: don't store address of last rule on jump
-      netfilter: nf_tables: don't store chain address on jump
-      netfilter: nf_tables: don't write table validation state without mutex
-      netfilter: nf_tables: make validation state per table
-      netfilter: nf_tables: remove unneeded conditional
-      netfilter: nf_tables: do not store pktinfo in traceinfo structure
-      netfilter: nf_tables: do not store verdict in traceinfo structure
-      netfilter: nf_tables: do not store rule in traceinfo structure
-
-Pablo Neira Ayuso (6):
-      netfilter: nf_tables: extended netlink error reporting for netdevice
-      netfilter: nf_tables: do not send complete notification of deletions
-      netfilter: nf_tables: rename function to destroy hook list
-      netfilter: nf_tables: support for adding new devices to an existing netdev chain
-      netfilter: nf_tables: support for deleting devices in an existing netdev chain
-      netfilter: nf_tables: allow to create netdev chain without device
-
-Simon Horman (4):
-      ipvs: Update width of source for ip_vs_sync_conn_options
-      ipvs: Consistently use array_size() in ip_vs_conn_init()
-      ipvs: Remove {Enter,Leave}Function
-      ipvs: Correct spelling in comments
-
- include/linux/netfilter/nfnetlink.h |   1 -
- include/net/ip_vs.h                 |  32 +--
- include/net/netfilter/nf_tables.h   |  35 ++-
- net/netfilter/ipvs/ip_vs_conn.c     |  12 +-
- net/netfilter/ipvs/ip_vs_core.c     |   8 -
- net/netfilter/ipvs/ip_vs_ctl.c      |  26 +-
- net/netfilter/ipvs/ip_vs_sync.c     |   7 +-
- net/netfilter/ipvs/ip_vs_xmit.c     |  62 +----
- net/netfilter/nf_tables_api.c       | 539 +++++++++++++++++++++++-------------
- net/netfilter/nf_tables_core.c      |  59 ++--
- net/netfilter/nf_tables_trace.c     |  62 +++--
- net/netfilter/nfnetlink.c           |   2 -
- 12 files changed, 463 insertions(+), 382 deletions(-)
