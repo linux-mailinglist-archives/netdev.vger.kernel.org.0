@@ -2,51 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 724836EA931
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 13:35:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF26A6EA92F
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 13:35:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231656AbjDULfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 07:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58014 "EHLO
+        id S231551AbjDULfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 07:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231285AbjDULfY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 07:35:24 -0400
+        with ESMTP id S231285AbjDULfV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 07:35:21 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D4AAF1A;
-        Fri, 21 Apr 2023 04:35:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBEE44A5;
+        Fri, 21 Apr 2023 04:35:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682076922; x=1713612922;
-  h=from:date:subject:mime-version:content-transfer-encoding:
-   message-id:references:in-reply-to:to:cc;
-  bh=Hgf4GUcvraNUcwP7ECqhlabBrNBOaHjkbk61oEsey4w=;
-  b=Kvbt8uE8F45GPIjvLXBh33mPF2MLlSsW77srm+4kKG1gtA3rgTxyhD8m
-   3Rbz8/SCGlridEDNoO/1lAtg2qcjQP5Qm0tg2V9SQDVinxmj2HAO/aaqs
-   DXZ33HbCT7TLmxYbxSzjUZNxLvZhmxl63RtEJJUKAVJfmNJ52ISseQZIk
-   tmE6ln/OC69KSlIz9WcfBJxb8JCIPKts/tzyRFeg+SahHmR6ldo2q5KDP
-   70y9eyEQU3XRinl4xMSwBxC+gzlIaOouq/INiJudNligRPZMNXW8A6xnB
-   4ccI2PUqKmjR2i9dZFyZt/9DAliv5XtI7KMV2gYmsm6eXoer7h0RgmYge
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="432249850"
+  t=1682076919; x=1713612919;
+  h=from:subject:date:message-id:mime-version:
+   content-transfer-encoding:to:cc;
+  bh=GhMRXRBkzeuO+c7mlyEN6y0EkdAtOsHoEGqibR6xLw8=;
+  b=WI0aOSf4ynMWSYzRvaUfbb1RD0/qwF4ulSjbag4ylXoyzVckbkdsvk9S
+   ZMlY5LQY3Bh1yOy0neuy8JHqvJVN5d0dFyQDOSglkMN+F3YIYNgPao9eo
+   o44FjG6V9/ByD6prWXbM3ccQN0PxVr+im0A9BPRcM1qI3lhTMvw0rFzFd
+   d1T69fpOLHFqHt/RZWh8hp47xDi/pz/9haL7OpKwPeEUqFJLmKLcuI4YZ
+   O71Jvn4lg7hUsWSjb5FbDUpZLv9/oxRdvImML2DHJaTpnhFPP8S/5QWnh
+   StNuuaM2npBlIWAGpZAI/hZOkyjInOkpNr834aFl2ivNSTimzhTYMvzeS
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="432249829"
 X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="432249850"
+   d="scan'208";a="432249829"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 04:35:21 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 04:35:17 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="642489641"
+X-IronPort-AV: E=McAfee;i="6600,9927,10686"; a="642489632"
 X-IronPort-AV: E=Sophos;i="5.99,214,1677571200"; 
-   d="scan'208";a="642489641"
+   d="scan'208";a="642489632"
 Received: from lab-ah.igk.intel.com ([10.102.138.202])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 04:35:17 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2023 04:35:14 -0700
 From:   Andrzej Hajda <andrzej.hajda@intel.com>
+Subject: [PATCH v7 0/7] drm/i915: use ref_tracker library for tracking wakerefs
 Date:   Fri, 21 Apr 2023 13:35:04 +0200
-Subject: [PATCH v7 1/7] lib/ref_tracker: add unlocked leak print helper
+Message-Id: <20230224-track_gt-v7-0-11f08358c1ec@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230224-track_gt-v7-1-11f08358c1ec@intel.com>
-References: <20230224-track_gt-v7-0-11f08358c1ec@intel.com>
-In-Reply-To: <20230224-track_gt-v7-0-11f08358c1ec@intel.com>
+X-B4-Tracking: v=1; b=H4sIAOh0QmQC/3XOTW4DIQwF4KtErEvKEAKkq96jqiJjTAa18yOgo
+ 1bR3D2QVRR1ls/y5+cry5QiZfa2u7JES8xxGmswLzuGPYwX4tHXzKSQByGl4iUBfp0vhXfu4ME6
+ D+gNq+sOMnGXYMS+gZ85l0QwvPo08BLntjInCvH33vbxWXMfc5nS37186dr0n56l44LXkRQnHdC
+ jfo9joe89TgNrRxa1BVWFSiuy4BSewD3D4xY8VmiMI6uDRGvkM9RbULdXPVotuuCFDI9wXdcbyV
+ qVIm4BAAA=
 To:     Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
@@ -73,136 +76,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To have reliable detection of leaks, caller must be able to check under the same
-lock both: tracked counter and the leaks. dir.lock is natural candidate for such
-lock and unlocked print helper can be called with this lock taken.
-As a bonus we can reuse this helper in ref_tracker_dir_exit.
+Gently ping for network developers, could you look at ref_tracker patches,
+as the ref_tracker library was developed for network.
 
+This is revived patchset improving ref_tracker library and converting
+i915 internal tracker to ref_tracker.
+The old thread ended without consensus about small kernel allocations,
+which are performed under spinlock.
+I have tried to solve the problem by splitting the calls, but it results
+in complicated API, so I went back to original solution.
+If there are better solutions I am glad to discuss them.
+Meanwhile I send original patchset with addressed remaining comments.
+
+To: Jani Nikula <jani.nikula@linux.intel.com>
+To: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+To: Rodrigo Vivi <rodrigo.vivi@intel.com>
+To: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+To: David Airlie <airlied@gmail.com>
+To: Daniel Vetter <daniel@ffwll.ch>
+Cc: linux-kernel@vger.kernel.org
+Cc: intel-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: netdev@vger.kernel.org
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Andi Shyti <andi.shyti@linux.intel.com>
+Cc: Das, Nirmoy <nirmoy.das@linux.intel.com>
 Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
-Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+
 ---
- include/linux/ref_tracker.h |  8 ++++++
- lib/ref_tracker.c           | 66 ++++++++++++++++++++++++++-------------------
- 2 files changed, 46 insertions(+), 28 deletions(-)
+Changes in v7:
+- removed 8th patch (hold wakeref), as it was already merged
+- added tags (thx Andi)
+- Link to v6: https://lore.kernel.org/r/20230224-track_gt-v6-0-0dc8601fd02f@intel.com
 
-diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
-index 9ca353ab712b5e..87a92f2bec1b88 100644
---- a/include/linux/ref_tracker.h
-+++ b/include/linux/ref_tracker.h
-@@ -36,6 +36,9 @@ static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
- 
- void ref_tracker_dir_exit(struct ref_tracker_dir *dir);
- 
-+void ref_tracker_dir_print_locked(struct ref_tracker_dir *dir,
-+				  unsigned int display_limit);
-+
- void ref_tracker_dir_print(struct ref_tracker_dir *dir,
- 			   unsigned int display_limit);
- 
-@@ -56,6 +59,11 @@ static inline void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
- {
- }
- 
-+static inline void ref_tracker_dir_print_locked(struct ref_tracker_dir *dir,
-+						unsigned int display_limit)
-+{
-+}
-+
- static inline void ref_tracker_dir_print(struct ref_tracker_dir *dir,
- 					 unsigned int display_limit)
- {
-diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
-index dc7b14aa3431e2..d4eb0929af8f96 100644
---- a/lib/ref_tracker.c
-+++ b/lib/ref_tracker.c
-@@ -14,6 +14,38 @@ struct ref_tracker {
- 	depot_stack_handle_t	free_stack_handle;
- };
- 
-+void ref_tracker_dir_print_locked(struct ref_tracker_dir *dir,
-+				  unsigned int display_limit)
-+{
-+	struct ref_tracker *tracker;
-+	unsigned int i = 0;
-+
-+	lockdep_assert_held(&dir->lock);
-+
-+	list_for_each_entry(tracker, &dir->list, head) {
-+		if (i < display_limit) {
-+			pr_err("leaked reference.\n");
-+			if (tracker->alloc_stack_handle)
-+				stack_depot_print(tracker->alloc_stack_handle);
-+			i++;
-+		} else {
-+			break;
-+		}
-+	}
-+}
-+EXPORT_SYMBOL(ref_tracker_dir_print_locked);
-+
-+void ref_tracker_dir_print(struct ref_tracker_dir *dir,
-+			   unsigned int display_limit)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dir->lock, flags);
-+	ref_tracker_dir_print_locked(dir, display_limit);
-+	spin_unlock_irqrestore(&dir->lock, flags);
-+}
-+EXPORT_SYMBOL(ref_tracker_dir_print);
-+
- void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
- {
- 	struct ref_tracker *tracker, *n;
-@@ -27,13 +59,13 @@ void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
- 		kfree(tracker);
- 		dir->quarantine_avail++;
- 	}
--	list_for_each_entry_safe(tracker, n, &dir->list, head) {
--		pr_err("leaked reference.\n");
--		if (tracker->alloc_stack_handle)
--			stack_depot_print(tracker->alloc_stack_handle);
-+	if (!list_empty(&dir->list)) {
-+		ref_tracker_dir_print_locked(dir, 16);
- 		leak = true;
--		list_del(&tracker->head);
--		kfree(tracker);
-+		list_for_each_entry_safe(tracker, n, &dir->list, head) {
-+			list_del(&tracker->head);
-+			kfree(tracker);
-+		}
- 	}
- 	spin_unlock_irqrestore(&dir->lock, flags);
- 	WARN_ON_ONCE(leak);
-@@ -42,28 +74,6 @@ void ref_tracker_dir_exit(struct ref_tracker_dir *dir)
- }
- EXPORT_SYMBOL(ref_tracker_dir_exit);
- 
--void ref_tracker_dir_print(struct ref_tracker_dir *dir,
--			   unsigned int display_limit)
--{
--	struct ref_tracker *tracker;
--	unsigned long flags;
--	unsigned int i = 0;
--
--	spin_lock_irqsave(&dir->lock, flags);
--	list_for_each_entry(tracker, &dir->list, head) {
--		if (i < display_limit) {
--			pr_err("leaked reference.\n");
--			if (tracker->alloc_stack_handle)
--				stack_depot_print(tracker->alloc_stack_handle);
--			i++;
--		} else {
--			break;
--		}
--	}
--	spin_unlock_irqrestore(&dir->lock, flags);
--}
--EXPORT_SYMBOL(ref_tracker_dir_print);
--
- int ref_tracker_alloc(struct ref_tracker_dir *dir,
- 		      struct ref_tracker **trackerp,
- 		      gfp_t gfp)
+Changes in v6:
+- rebased to solve minor conflict and allow CI testing
+- Link to v5: https://lore.kernel.org/r/20230224-track_gt-v5-0-77be86f2c872@intel.com
 
+Changes in v5 (thx Andi for review):
+- use *_locked convention instead of __*,
+- improved commit messages,
+- re-worked i915 patches, squashed separation and conversion patches,
+- added tags,
+- Link to v4: https://lore.kernel.org/r/20230224-track_gt-v4-0-464e8ab4c9ab@intel.com
+
+Changes in v4:
+- split "Separate wakeref tracking" to smaller parts
+- fixed typos,
+- Link to v1-v3: https://patchwork.freedesktop.org/series/100327/
+
+---
+Andrzej Hajda (7):
+      lib/ref_tracker: add unlocked leak print helper
+      lib/ref_tracker: improve printing stats
+      lib/ref_tracker: add printing to memory buffer
+      lib/ref_tracker: remove warnings in case of allocation failure
+      drm/i915: Correct type of wakeref variable
+      drm/i915: Replace custom intel runtime_pm tracker with ref_tracker library
+      drm/i915: track gt pm wakerefs
+
+ drivers/gpu/drm/i915/Kconfig.debug                 |  19 ++
+ drivers/gpu/drm/i915/display/intel_display_power.c |   2 +-
+ drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c     |   7 +-
+ .../drm/i915/gem/selftests/i915_gem_coherency.c    |  10 +-
+ drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c |  14 +-
+ drivers/gpu/drm/i915/gt/intel_breadcrumbs.c        |  13 +-
+ drivers/gpu/drm/i915/gt/intel_breadcrumbs_types.h  |   3 +-
+ drivers/gpu/drm/i915/gt/intel_context.h            |   4 +-
+ drivers/gpu/drm/i915/gt/intel_context_types.h      |   2 +
+ drivers/gpu/drm/i915/gt/intel_engine_pm.c          |   7 +-
+ drivers/gpu/drm/i915/gt/intel_engine_types.h       |   2 +
+ .../gpu/drm/i915/gt/intel_execlists_submission.c   |   2 +-
+ drivers/gpu/drm/i915/gt/intel_gt_pm.c              |  12 +-
+ drivers/gpu/drm/i915/gt/intel_gt_pm.h              |  38 +++-
+ drivers/gpu/drm/i915/gt/intel_gt_pm_debugfs.c      |   4 +-
+ drivers/gpu/drm/i915/gt/selftest_engine_cs.c       |  20 +-
+ drivers/gpu/drm/i915/gt/selftest_gt_pm.c           |   5 +-
+ drivers/gpu/drm/i915/gt/selftest_reset.c           |  10 +-
+ drivers/gpu/drm/i915/gt/selftest_rps.c             |  17 +-
+ drivers/gpu/drm/i915/gt/selftest_slpc.c            |   5 +-
+ drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c  |  11 +-
+ drivers/gpu/drm/i915/i915_driver.c                 |   2 +-
+ drivers/gpu/drm/i915/i915_pmu.c                    |  16 +-
+ drivers/gpu/drm/i915/intel_runtime_pm.c            | 221 ++-------------------
+ drivers/gpu/drm/i915/intel_runtime_pm.h            |  11 +-
+ drivers/gpu/drm/i915/intel_wakeref.c               |   7 +-
+ drivers/gpu/drm/i915/intel_wakeref.h               |  99 ++++++++-
+ include/linux/ref_tracker.h                        |  31 ++-
+ lib/ref_tracker.c                                  | 179 ++++++++++++++---
+ 29 files changed, 444 insertions(+), 329 deletions(-)
+---
+base-commit: d224485cc77189981322356d4ca6b8c42f7bf9fa
+change-id: 20230224-track_gt-1b3da8bdacd7
+
+Best regards,
 -- 
-2.34.1
+Andrzej Hajda <andrzej.hajda@intel.com>
