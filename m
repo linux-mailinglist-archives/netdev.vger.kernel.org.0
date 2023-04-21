@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37D106EA1EA
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 04:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D466EA1F0
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 04:51:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233774AbjDUCvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Apr 2023 22:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
+        id S233833AbjDUCvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Apr 2023 22:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233728AbjDUCvN (ORCPT
+        with ESMTP id S233729AbjDUCvN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 20 Apr 2023 22:51:13 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C8E7692;
-        Thu, 20 Apr 2023 19:51:07 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id 41be03b00d2f7-51f597c975fso1744062a12.0;
-        Thu, 20 Apr 2023 19:51:07 -0700 (PDT)
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B45576B8;
+        Thu, 20 Apr 2023 19:51:08 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-63b4dfead1bso1584816b3a.3;
+        Thu, 20 Apr 2023 19:51:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682045466; x=1684637466;
+        d=gmail.com; s=20221208; t=1682045468; x=1684637468;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2OMa4H5B7cQ31o0iO4EHjR7g/GmtbQFAxNrqAS+m3rA=;
-        b=ed6rzYNuCkWaolQBt1qf/IaUHcwfXxuC5SbNdlIaF08ctYw+9Z4paHRTmDAW4FtsAi
-         N8RRJRPFzktovjo7fpVlYA/p6AaCY2AgPdiXX26Trrodn72gYdhzSan2w7mBlOMVDpUJ
-         Tr6WoSC7BQ3lAtWHPpOrAcdMolmjkqZdiwhEkvWcfAyx5mxkKHBVpV29sanYgaENW+iB
-         +qOzsE1CiFbnqXwPWFDS3+KT81w7mLwRl1srwhsJW8DNKiJeKXelf8/Y8MuXTaCSEATO
-         1sp3CO6Lcx7iYnFy96NZbqYOjwpuPOb4qGltDAHHFWPwW5qvBsQYFUJnI1/aDJL9yayh
-         unVQ==
+        bh=vXy2LlryeqFYuG6VIcWnTi0Y22Hml5WbUl7g3QZBsxI=;
+        b=DNXPUdu3So6Ly099msBkeS7QG2IIR0hElah4MDZwf8MWR1gh2Qq/qQbimHClsh938b
+         823fOETKFYsI5gKPXdc5lvyzkHjWyvJxTZM7XPzbXB8kMGcGMUJpUgIL0LfhkKobISuC
+         OA5UP91DpFYekIyJbBQshJbMEeWYiJhA0onfRS4M+Y8wioMvq6Cx+cres2NEdLWHpDdr
+         8A9XAwa0cIu9GLFDCoRmnhNGnjNQJTgvHNQAAR9V8t1ZQomU3z7aYsnBlQSuk+QFicie
+         YA64dM6wNqV6F4c3hHdtw1bllG2Zwd0XCD3/VoVVN+drc4zNkIsTdTgQXJ03D1fM5dCf
+         usPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682045466; x=1684637466;
+        d=1e100.net; s=20221208; t=1682045468; x=1684637468;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=2OMa4H5B7cQ31o0iO4EHjR7g/GmtbQFAxNrqAS+m3rA=;
-        b=GEMcwc5ZnkdVqUCwhYmulVUNujuN8xZVGiU06LHJmc9GUc0B2oBYbs5xtgL0gm4QcS
-         U2NIO7O3ZHRA+xFDq0tNwBk8s3xfa0i5mVjTQ82QaKmN53XOQRXJ3/8mxCLAItSwCBuQ
-         16v3jIuHc142Kos3kR7s0a8V/f6Errf2ouevAflZcqBDgMqTI/6lEjBCCnZtWxu4GDph
-         34hU23Xkn9ZQOeN0vFy1pNZXmSPoVgWz7jfThsPOAlLaD5/pUe+3nzL7bGwA/UZesiRs
-         PPdiZMs9+rKmVSq2Vh+WIxBHGTfhYOzu68Tl/Rp8TlplvQRcfImLSixbyV3X8GUDieec
-         tTAw==
-X-Gm-Message-State: AAQBX9cNaWqTcwL6PVXsLpnebGR7mDb47aPDAk8QXjYZE/29ysL6CF/k
-        llvAAKU0GPvb2RQMYf0RRDD8Gs1HXuU=
-X-Google-Smtp-Source: AKy350YTA23CBRwccIcJyFzB9Mc/n2eh72ar0ILix9ZmPuI+GmvdpgvBas6cCJHx++m1HW0Azj8EOg==
-X-Received: by 2002:a17:90a:ea09:b0:23f:7d05:8762 with SMTP id w9-20020a17090aea0900b0023f7d058762mr3389480pjy.23.1682045465785;
-        Thu, 20 Apr 2023 19:51:05 -0700 (PDT)
+        bh=vXy2LlryeqFYuG6VIcWnTi0Y22Hml5WbUl7g3QZBsxI=;
+        b=a2+60fq2LfuQvHrJsd3e9WDOhW6wLAdgABo4UVaboNY0IwZvWxZukHtXkgrFWxVbtr
+         oTFgk/JPA3/MbWLEHkxW/YG17dc8biq6IohSRO79BwWqe5CuetfYZkexscuNnX2IIPXx
+         qrpvBJgWx8IrN5Avzy4h2dyMQ65nX0CsKKQQ5MJtMhIL/+lF9pcV7uBMRA1dbqUGvtZX
+         BCGgTopsVSw8wflk0DmP1F+6DPvN+Rb//+8foCORlDbJsyqTtSUZkNPgjmUeqVfPwjjn
+         qI0jHWQyM49UBodvHaD1GyIxLlnDbQcZ7SKQJ7q0Zw9HoKRXkOxwP2cnKYvzg/lorDJJ
+         cHPQ==
+X-Gm-Message-State: AAQBX9dXOgfv4ioUH96EZEcfyMrYwWIJ53j7ievMbYhnoqID7mnx1QOw
+        /LZhndiZeaxDjjyoF40h8CU=
+X-Google-Smtp-Source: AKy350YiGBh1kzca9HUbkPPfun9iKHT605jECnArxYVlQeqJ+qB/AWk8NZ5gxhWAeNluLohvMkKHXw==
+X-Received: by 2002:a05:6a20:a1a0:b0:de:247e:d1fe with SMTP id r32-20020a056a20a1a000b000de247ed1femr3442160pzk.1.1682045467914;
+        Thu, 20 Apr 2023 19:51:07 -0700 (PDT)
 Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id jj2-20020a170903048200b001a6d08dc847sm1734028plb.173.2023.04.20.19.51.05
+        by smtp.gmail.com with ESMTPSA id o64-20020a62cd43000000b0063d642dcd12sm1972276pfg.16.2023.04.20.19.51.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Apr 2023 19:51:05 -0700 (PDT)
+        Thu, 20 Apr 2023 19:51:07 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
 From:   Tejun Heo <tj@kernel.org>
 To:     jiangshanlai@gmail.com
@@ -58,10 +58,16 @@ Cc:     linux-kernel@vger.kernel.org, kernel-team@meta.com,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Avraham Stern <avraham.stern@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        "Haim, Dreyfuss" <haim.dreyfuss@intel.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 08/22] wifi: ath10/11/12k: Use alloc_ordered_workqueue() to create ordered workqueues
-Date:   Thu, 20 Apr 2023 16:50:32 -1000
-Message-Id: <20230421025046.4008499-9-tj@kernel.org>
+Subject: [PATCH 09/22] wifi: iwlwifi: Use alloc_ordered_workqueue() to create ordered workqueues
+Date:   Thu, 20 Apr 2023 16:50:33 -1000
+Message-Id: <20230421025046.4008499-10-tj@kernel.org>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230421025046.4008499-1-tj@kernel.org>
 References: <20230421025046.4008499-1-tj@kernel.org>
@@ -136,56 +142,33 @@ Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Eric Dumazet <edumazet@google.com>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Gregory Greenman <gregory.greenman@intel.com>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: Avraham Stern <avraham.stern@intel.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Mordechay Goodstein <mordechay.goodstein@intel.com>
+Cc: "Haim, Dreyfuss" <haim.dreyfuss@intel.com>
 Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 ---
- drivers/net/wireless/ath/ath10k/qmi.c | 3 +--
- drivers/net/wireless/ath/ath11k/qmi.c | 3 +--
- drivers/net/wireless/ath/ath12k/qmi.c | 3 +--
- 3 files changed, 3 insertions(+), 6 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
-index 90f457b8e1fe..ebedef8767cd 100644
---- a/drivers/net/wireless/ath/ath10k/qmi.c
-+++ b/drivers/net/wireless/ath/ath10k/qmi.c
-@@ -1082,8 +1082,7 @@ int ath10k_qmi_init(struct ath10k *ar, u32 msa_size)
- 	if (ret)
- 		goto err;
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index 0a9af1ad1f20..cd17b601b172 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -3576,8 +3576,8 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
+ 	init_waitqueue_head(&trans_pcie->fw_reset_waitq);
+ 	init_waitqueue_head(&trans_pcie->imr_waitq);
  
--	qmi->event_wq = alloc_workqueue("ath10k_qmi_driver_event",
--					WQ_UNBOUND, 1);
-+	qmi->event_wq = alloc_ordered_workqueue("ath10k_qmi_driver_event", 0);
- 	if (!qmi->event_wq) {
- 		ath10k_err(ar, "failed to allocate workqueue\n");
- 		ret = -EFAULT;
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index ab923e24b0a9..26b252e62909 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.c
-+++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -3256,8 +3256,7 @@ int ath11k_qmi_init_service(struct ath11k_base *ab)
- 		return ret;
- 	}
- 
--	ab->qmi.event_wq = alloc_workqueue("ath11k_qmi_driver_event",
--					   WQ_UNBOUND, 1);
-+	ab->qmi.event_wq = alloc_ordered_workqueue("ath11k_qmi_driver_event", 0);
- 	if (!ab->qmi.event_wq) {
- 		ath11k_err(ab, "failed to allocate workqueue\n");
- 		return -EFAULT;
-diff --git a/drivers/net/wireless/ath/ath12k/qmi.c b/drivers/net/wireless/ath/ath12k/qmi.c
-index 979a63f2e2ab..471810877eed 100644
---- a/drivers/net/wireless/ath/ath12k/qmi.c
-+++ b/drivers/net/wireless/ath/ath12k/qmi.c
-@@ -3054,8 +3054,7 @@ int ath12k_qmi_init_service(struct ath12k_base *ab)
- 		return ret;
- 	}
- 
--	ab->qmi.event_wq = alloc_workqueue("ath12k_qmi_driver_event",
--					   WQ_UNBOUND, 1);
-+	ab->qmi.event_wq = alloc_ordered_workqueue("ath12k_qmi_driver_event", 0);
- 	if (!ab->qmi.event_wq) {
- 		ath12k_err(ab, "failed to allocate workqueue\n");
- 		return -EFAULT;
+-	trans_pcie->rba.alloc_wq = alloc_workqueue("rb_allocator",
+-						   WQ_HIGHPRI | WQ_UNBOUND, 1);
++	trans_pcie->rba.alloc_wq = alloc_ordered_workqueue("rb_allocator",
++							   WQ_HIGHPRI);
+ 	if (!trans_pcie->rba.alloc_wq) {
+ 		ret = -ENOMEM;
+ 		goto out_free_trans;
 -- 
 2.40.0
 
