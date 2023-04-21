@@ -2,94 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 116416EACC4
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:24:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 158476EACC8
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231799AbjDUOYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 10:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60518 "EHLO
+        id S232380AbjDUOZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 10:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231172AbjDUOYO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:24:14 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710371BD
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 07:24:13 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id 5614622812f47-38dfbbfe474so709394b6e.0
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 07:24:13 -0700 (PDT)
+        with ESMTP id S232569AbjDUOY7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:24:59 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BF919B2
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 07:24:58 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id e9e14a558f8ab-329577952c5so693955ab.1
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 07:24:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682087053; x=1684679053;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=sUvjCbdOR79JVJVKzDyw8N1QBhUOMvVcNvfN5UU4S68=;
-        b=I1jHxcxQUE5fFonGiz7kgSuJvsjMRc4RJzmWhMvflb+xWNWt4VuUtMfPQgu1NyVVSd
-         87pFNysIxMjZ0CHq1y3i8lx1DmFhzzpmVopa2/1YbQ7VCStWI82yRU4xjuIHw7CMuju0
-         5hCNpJ3bd94MWtxcWUZKwIqE67ED3hWjjPDmGsByUHFbglZDoTl3BFWSDMYYizuaNkrC
-         ZS5Xj+8BvNJCyFZgi1cjaVAHohPEzmmYECYE4284cRlpIE+xlpI2+Aw5oF0/deUWq2He
-         HAF/AE6l3MzWUOFXnsPRCJja+ModmX6m+RCYpaJuhCGKdapr4+STkvVeXugCGZqhFQxT
-         QNPQ==
+        d=google.com; s=20221208; t=1682087098; x=1684679098;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Fev/HjWH2B8yyfQiDGZ9D/O2oZYyJ9gGuApag0ZRVwc=;
+        b=TVGpX8Rsft5hzMr9h6Hwyheu0HJYGuHxxs7ojc6Kil4QcUiO/DlWT0in/uLxRo6Cjj
+         k1VQcRlDqVO4SIIb5IVwDa4JdfL4zYLvXGhLV/kB+NM5PH/u+XjBKfnkjEQ9QVQmK60w
+         Vc8FzK6DfY5mi2TbK4uHxCC49bYsU4nxKZJdASBm+oks7LbQ+RxB90HBUI6mYlegxr7U
+         1XR6A+LHNGRyTDAhBVssIxGbpCl6otjWPglcnEPEXNFs1XXpb+XtVA4I/tlXGMqxR+pq
+         8D4T4nbhmC3rl/qw+IT0JwOuDIGlL0G4YOWFtTiFq80UoDYKM6UOS6EJnHjngA/3Jjn6
+         mLOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682087053; x=1684679053;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sUvjCbdOR79JVJVKzDyw8N1QBhUOMvVcNvfN5UU4S68=;
-        b=Tp1KX2eKT0DhPgLs7kneJoWMUIXGGrJ+k4Gs6eQa45CXplyCspCq2hjtdSzGW9Czn6
-         mpkDjFaNE6C79BkFuZQDszaOeLiXZ1aUQ5r/kztmF/+nPcswKiREThsORPhfF+hkhfbS
-         vlxO1MIisQ02iz8K+a39ImdxiHo2m+38xgbc2Y0IDMHEthStpbQn/7p2z/zdWiKJ2gNt
-         EYOhisRMV1z5V+PRrdW6WpwPtHc12guNotCmXYCVuX61P82YoMfDYtRPjHJzEJdWyfx/
-         7AH6nYjM1hrMa6LpQ7Et7xJMDPwe5RBLG/cLL5u5BTqAGaNrg5Ljxmf3R1bdgxsAJ3IO
-         8YdA==
-X-Gm-Message-State: AAQBX9eus5E7yF8UpLfuU1xAmpgVYwKC5Daqo0W0ZOUF0b1t3C8SIisr
-        Vjid690Aiuwkoo7sA+uZTH3YWQ==
-X-Google-Smtp-Source: AKy350YJZ85BjNa54QjuSGAPO9SuTpyd5PeFR7GHJdlT2NKnXEoncbP/3ouJTBBWaDdVsPKTs/nMcw==
-X-Received: by 2002:a05:6870:7026:b0:188:53:a7bd with SMTP id u38-20020a056870702600b001880053a7bdmr3515125oae.49.1682087052810;
-        Fri, 21 Apr 2023 07:24:12 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75? ([2804:14d:5c5e:44fb:7668:3bb3:e9e3:6d75])
-        by smtp.gmail.com with ESMTPSA id q123-20020a4a4b81000000b00546daaf33cfsm1810486ooa.14.2023.04.21.07.24.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Apr 2023 07:24:12 -0700 (PDT)
-Message-ID: <a0acecb6-6af7-9353-e3ed-cef69a88d4f2@mojatatu.com>
-Date:   Fri, 21 Apr 2023 11:24:07 -0300
+        d=1e100.net; s=20221208; t=1682087098; x=1684679098;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Fev/HjWH2B8yyfQiDGZ9D/O2oZYyJ9gGuApag0ZRVwc=;
+        b=E2WRlZU/9AWcHLUt70XBIgGrsFvNqg6gHcUHEPbCk8KANJGn1BxbPIvWi67ZjO7vLu
+         qlkwFcga7Sy4QscnAcWfnIJ+9ykm4u3LvnsYk15VI61DAAkwTSaXCl/THgzs67aLJPaX
+         GHkOR395IjHKszpzLz9A5+hFl4y0zdts5IjLFe1ng1CHpbEFvOvEMv7SrJOwc/AUbdEI
+         jnva8APVC+OstJgA4GNxqV727chr9JXIZ480xp7ZO6B+5+/8FCOP28xugSdFkTJMg4pu
+         2gMfkiQPVPfzUmNGrl4xn/Bz8xkWwdowvV72g5gceMMs8KD8WJRT2bjCkcKhWmyxdfyA
+         GToQ==
+X-Gm-Message-State: AAQBX9erH5dkXHCG8xjtDoS1u+qVbqZPC52flJ/OwbCSrcatQsoZlxLp
+        To4UE3Jn3l7/40CTCUXzjGgOS0QsCG6bbVJat04wHA==
+X-Google-Smtp-Source: AKy350Z0juoPECKlzKlGMdUfKVumXOK21XHMESzNTTUc7EvrFvimwX3M8kvTGyloRw/nYChUw0o5sGJI99iK2oqYk/g=
+X-Received: by 2002:a05:6e02:1a22:b0:32a:b8fd:19be with SMTP id
+ g2-20020a056e021a2200b0032ab8fd19bemr279553ile.18.1682087097600; Fri, 21 Apr
+ 2023 07:24:57 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net v2] net/sched: sch_fq: fix integer overflow of
- "credit"
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Davide Caratti <dcaratti@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-References: <7b3a3c7e36d03068707a021760a194a8eb5ad41a.1682002300.git.dcaratti@redhat.com>
- <4e8324cf-e6de-acff-5e30-373d015a3cb4@mojatatu.com>
- <20230420162435.1d5a79df@kernel.org>
-From:   Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <20230420162435.1d5a79df@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230224-track_gt-v7-0-11f08358c1ec@intel.com> <20230224-track_gt-v7-1-11f08358c1ec@intel.com>
+In-Reply-To: <20230224-track_gt-v7-1-11f08358c1ec@intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 21 Apr 2023 16:24:43 +0200
+Message-ID: <CANn89iL65YYs_+cJs6STTH=7n22VLi-eru2FzFh1rtrxp_a7Aw@mail.gmail.com>
+Subject: Re: [PATCH v7 1/7] lib/ref_tracker: add unlocked leak print helper
+To:     Andrzej Hajda <andrzej.hajda@intel.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andi Shyti <andi.shyti@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/04/2023 20:24, Jakub Kicinski wrote:
-> On Thu, 20 Apr 2023 13:25:33 -0300 Pedro Tammela wrote:
->>>            "id": "9398",
->>>            "name": "Create FQ with maxrate setting",
->>
->> You probably don't want to backport the test as well? If so I would
->> break this patch into two.
-> 
-> IIRC the preference of stable folks is to backport more not fewer
-> selftests. Practicality of that aside, I think the patch is good as is.
+On Fri, Apr 21, 2023 at 1:35=E2=80=AFPM Andrzej Hajda <andrzej.hajda@intel.=
+com> wrote:
+>
+> To have reliable detection of leaks, caller must be able to check under t=
+he same
+> lock both: tracked counter and the leaks. dir.lock is natural candidate f=
+or such
+> lock and unlocked print helper can be called with this lock taken.
+> As a bonus we can reuse this helper in ref_tracker_dir_exit.
+>
+> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
+> Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+> ---
 
-My concern here was mostly due to conflicts with the tdc code base. 
-Davide explained to me privately that he will take care of this so it's 
-all good.
+SGTM, thanks.
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
