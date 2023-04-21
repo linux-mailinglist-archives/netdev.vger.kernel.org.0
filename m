@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D59AF6EAD36
-	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:40:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3150C6EAD3A
+	for <lists+netdev@lfdr.de>; Fri, 21 Apr 2023 16:40:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233011AbjDUOjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 10:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
+        id S233034AbjDUOjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 10:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232976AbjDUOiq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:38:46 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CFC146F1;
-        Fri, 21 Apr 2023 07:37:38 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-506b8c6bbdbso2564776a12.1;
-        Fri, 21 Apr 2023 07:37:38 -0700 (PDT)
+        with ESMTP id S232991AbjDUOjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 10:39:07 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D708014F58;
+        Fri, 21 Apr 2023 07:37:41 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id 4fb4d7f45d1cf-508418b6d59so3056896a12.3;
+        Fri, 21 Apr 2023 07:37:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682087856; x=1684679856;
+        d=gmail.com; s=20221208; t=1682087858; x=1684679858;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=pJixOmbyU63hr3o8Ny5bPEY6KG/MRULhsuG3NEyY2DA=;
-        b=Az8QzgGdCSu60O6ATgA/rltMAPtJHOIM/fNgqvUDwljrF188OKCwkUXZsu9TgceVlb
-         XJkSkwuYk0q0LODKP0Ys/gPMEnMs9C7UjYnIRN2N2nUjxcSEfGJV5UOJaNW14e4cnTYS
-         YYp2rdotxte5IvfGjycuGpQ4F0+Bt1P7PL7yLDSziXrWL+u+6Mhk9Y28soqpLcZy2kyl
-         a7qeOJUJqOqXZDshLZd/zrlM0EyAayg+R+R9eZLdjHd+ki27hhuw/u3u1c3kY2DzOkpQ
-         slACzNFllLRnXORAQTxHP8XqHNQ5mNJVS40wnXF5bfsNVrvW0XRlQPB711YFwXXbW8rJ
-         1lHQ==
+        bh=JzoT/KmMIWGXd84HSAhqqXVj6Wxc4XH+Xw/4O9lmsTc=;
+        b=g2RMVEYoRmsDAMKPmJikqWI/qnDOB9DlBY+ZE8gvCNAJmL69pKinZmG5PGjxPlNaat
+         FTWjOESJcCtRVa42iaqGgREtxXe/2zUwhh26Nt9+tH02uyx8hD8O190M+LojA7xrxD9y
+         OD3L+gKvVz1qDjeAUNtKtbdHmXt10VXP+kq71avQ0r517UivyBICqRNbV03ElgqCMdjT
+         d+1DNJdpNqtywk8N9ID7u+8gE0wt7JTY2osrVaBPH+G8uWrzChl9NB2CKIkgIi7vab4g
+         ELXN93NH4I42ueYQhveL8CZc68I4fI96lU+FV5FMKNXb2u6ZOcEddkK8Qip8v4GEgB0Z
+         pgcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682087856; x=1684679856;
+        d=1e100.net; s=20221208; t=1682087858; x=1684679858;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=pJixOmbyU63hr3o8Ny5bPEY6KG/MRULhsuG3NEyY2DA=;
-        b=KSFeu6suJF2oYKV+JXYTRU41t6eAa0sra7p2HoYAUQC5VKXF8QRK3T2NI4Mz/Y+sUe
-         hvht1Px5j6fUf9acrsaYYXISVxNwlxsive7oRif/rTf6vFcxArQsZia/BoPwnuT7IYMh
-         ltB66TFN/epHQ4aLgB6zF3lF80wM7+bEWOmD/l7X8psPWuof09LGRxDn4GJ/v1vnLMr+
-         M1E+B+DtPwmZViYRp552SNMkyKGDd8sZAkId2glRIO45lK++szi9DTLsgqmFY2PjXpaD
-         iKAJ/VfyWJM6rCa/gGPFccuDVJTzfhCgfGj13+n+UqpIOWe3VPe5HN3OeB1HMrYEJG8M
-         PbGQ==
-X-Gm-Message-State: AAQBX9dpdMjjpuOPDvWvuqQcT4Tp9p+ca8iJHbtoE0PCSUPKKZsNtXyh
-        +1GFguuIiue7t1GAXoqfV0o=
-X-Google-Smtp-Source: AKy350Z4aXH6j521XmbeT5SJQ3g67clUrR3I/0wqCunsH6aDT41k5hSTcXbseqGcd/WUsvruZjAStw==
-X-Received: by 2002:a17:906:250b:b0:94f:a309:67b9 with SMTP id i11-20020a170906250b00b0094fa30967b9mr2483806ejb.6.1682087856476;
-        Fri, 21 Apr 2023 07:37:36 -0700 (PDT)
+        bh=JzoT/KmMIWGXd84HSAhqqXVj6Wxc4XH+Xw/4O9lmsTc=;
+        b=cC5LoGK2CRmBcCxdU91F1xm1OAxG+7uJmjHBOWz82AvDJ5rV9cfR0VUzi9hPTf6G7Y
+         xIlQDoyfsYRfZ+bm6McIN/3vlBzubyyi0YtuobTkglLKeLyPFEorN3gl2RXe/2SjfCJH
+         toQHjhoIIGZwrBHXTJoqHjXosfrV++JpzY5/o8DAQdxEkg1FuBapYcAPQxIyMyaNT09e
+         Ugxuv79e6JGc8vqTDFvIzO3KwhbVEeM6pVOPR1JUCq55yvPg2qunX34DnLVNMIA3fxkL
+         ZZpr3oJ1XiDWoXaG7xy89HGhiHte8LeYKZxr00aFzz9D2HrlpvaMhqn2do5dFOzXMdPj
+         CfPQ==
+X-Gm-Message-State: AAQBX9cOUBB0h+6u4bRCvhfK/IP8JXqQP9pYEMzy3UBfyVd+QVKAwwtv
+        Cu2UC9d6jW4BJmoITBU1NU4=
+X-Google-Smtp-Source: AKy350bvezXZMnE6qY8pddEadrjpfPhij7bGJMvQiC8tz2+VfLMVSEi3Ck1X+2zbazpQV9tGb8ihvQ==
+X-Received: by 2002:a17:906:cb94:b0:94a:826c:df57 with SMTP id mf20-20020a170906cb9400b0094a826cdf57mr2385888ejb.39.1682087858639;
+        Fri, 21 Apr 2023 07:37:38 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id q27-20020a170906361b00b0094e1026bc66sm2168244ejb.140.2023.04.21.07.37.34
+        by smtp.gmail.com with ESMTPSA id q27-20020a170906361b00b0094e1026bc66sm2168244ejb.140.2023.04.21.07.37.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Apr 2023 07:37:36 -0700 (PDT)
+        Fri, 21 Apr 2023 07:37:38 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -73,9 +73,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [RFC PATCH net-next 19/22] net: dsa: mt7530: set interrupt register only for MT7530
-Date:   Fri, 21 Apr 2023 17:36:45 +0300
-Message-Id: <20230421143648.87889-20-arinc.unal@arinc9.com>
+Subject: [RFC PATCH net-next 20/22] net: dsa: mt7530: force link-down on MACs before reset on MT7530
+Date:   Fri, 21 Apr 2023 17:36:46 +0300
+Message-Id: <20230421143648.87889-21-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230421143648.87889-1-arinc.unal@arinc9.com>
 References: <20230421143648.87889-1-arinc.unal@arinc9.com>
@@ -94,27 +94,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Setting this register related to interrupts is only needed for the MT7530
-switch. Make an exclusive check to ensure this.
+Force link-down on all MACs before internal reset. Let's follow suit commit
+728c2af6ad8c ("net: mt7531: ensure all MACs are powered down before
+reset").
 
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mt7530.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index a66a762cb5db..ac1e3c58aaac 100644
+index ac1e3c58aaac..8ece3d0d820c 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2034,7 +2034,7 @@ mt7530_setup_irq(struct mt7530_priv *priv)
+@@ -2203,6 +2203,10 @@ mt7530_setup(struct dsa_switch *ds)
+ 		return -EINVAL;
  	}
  
- 	/* This register must be set for MT7530 to properly fire interrupts */
--	if (priv->id != ID_MT7531)
-+	if (priv->id == ID_MT7530 || priv->id == ID_MT7621)
- 		mt7530_set(priv, MT7530_TOP_SIG_CTRL, TOP_SIG_CTRL_NORMAL);
- 
- 	ret = request_threaded_irq(priv->irq, NULL, mt7530_irq_thread_fn,
++	/* Force link-down on all MACs before internal reset */
++	for (i = 0; i < MT7530_NUM_PORTS; i++)
++		mt7530_write(priv, MT7530_PMCR_P(i), PMCR_FORCE_LNK);
++
+ 	/* Reset the switch through internal reset */
+ 	mt7530_write(priv, MT7530_SYS_CTRL,
+ 		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
 -- 
 2.37.2
 
