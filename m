@@ -2,108 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F01E6EBAAC
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 19:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C30306EBAD0
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 19:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbjDVR3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 13:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
+        id S229587AbjDVR7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 13:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbjDVR3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 13:29:33 -0400
-Received: from bues.ch (bues.ch [IPv6:2a01:138:9005::1:4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842E01BF7;
-        Sat, 22 Apr 2023 10:29:30 -0700 (PDT)
-Received: by bues.ch with esmtpsa (Exim 4.94.2)
-        (envelope-from <m@bues.ch>)
-        id 1pqH2e-0008h1-Tl; Sat, 22 Apr 2023 19:28:54 +0200
-Date:   Sat, 22 Apr 2023 19:28:20 +0200
-From:   Michael =?UTF-8?B?QsO8c2No?= <m@bues.ch>
-To:     Larry Finger <Larry.Finger@lwfinger.net>
-Cc:     Nikita Zhandarovich <n.zhandarovich@fintech.ru>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lvc-project@linuxtesting.org,
-        Natalia Petrova <n.petrova@fintech.ru>
-Subject: Re: [PATCH v2] b43legacy: Add checking for null for
- ssb_get_devtypedata(dev)
-Message-ID: <20230422192820.59e8e423@barney>
-In-Reply-To: <95cff855-cb12-cf66-888f-b296a712d37d@lwfinger.net>
-References: <20230418142918.70510-1-n.zhandarovich@fintech.ru>
- <95cff855-cb12-cf66-888f-b296a712d37d@lwfinger.net>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-pc-linux-gnu)
+        with ESMTP id S229556AbjDVR7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 13:59:37 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49131725
+        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 10:59:36 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id 2adb3069b0e04-4edcc885d8fso3066953e87.1
+        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 10:59:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682186375; x=1684778375;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Ud2Qp+0j+JXG+xzOTKtAs0iVLtO4HhzSJ3v0hgygifc=;
+        b=Ho5ffRtgrumMQEiD5Gj7X96pkf7jmfejxieHDRs8X6ciqb5EFESCR9rC2ZTKZnka4w
+         zAq7K5n0IPeCxRYobNqPQzctsvaWvRfqr9E/gHistMZ1DXkOhbtp1uJRFMVqc1D0mJkt
+         JhJE40loy8sQEmmR73LzRF+ROF2e2silZTxK4+dVe/GAvgnOVYnctIDe5oJcNr+dpFEM
+         8VRqbPlGzR3n71ZNNlMV8MFe8PyJKR37JzYNicSTGBIIop2bm0rirxDQ75mhHSW3zTlQ
+         b6uTKHfQgKpmUpOy0pPJvSfKK68rxhKyxpY2aI+te8wwBh3jhoC1ALkQ+dDC0HdpV9AT
+         sOCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682186375; x=1684778375;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ud2Qp+0j+JXG+xzOTKtAs0iVLtO4HhzSJ3v0hgygifc=;
+        b=UlN8OQsWUPPsCtC0npcS5dRpSLU+MIREW22ToFCFyiombsI+JXFoCv98m3j9kx3x3j
+         fAaPxyA2JDqQtV6EgQixR4AGMZvuJBDF2fTJNOQoOrLYbQ2KWQcT4BQ9pemwPQP+gH3o
+         xlJsOzS/2ELFHgwC8eQ9dyiT/dxpt8jNCmSFvGTZToKYG8BoPqBVyS+5YxQ5hjNdV7MK
+         zCm/8xXXieipIeU7Co9ef4lfS9jLdkqS2n0f0cmmRIJ5PKmUO4gZxKBu05uafK8R3+wQ
+         +vdzcIuhPwKYunKf9vUP5SsluTKK8tTd4FOA2DLz3ht5FRl+hUS8WlzpfwG1tfE2PGtR
+         eSvw==
+X-Gm-Message-State: AAQBX9ejBUnh0xvPHMj5Ky9rPDreyBWgYT/puzmUXnSZPv+VZBLZw74K
+        ntdafBEr5t70eUDAU3uk14ZRoQweOmH5zg5y1j4=
+X-Google-Smtp-Source: AKy350Y8QVLee0g+OaXal/sS+O1sKc4S/7JBhJVgpl0alwdt7R12D5j/IUpxFUaUSb3PhCx5W07odD1o0cSUnn6BZ4k=
+X-Received: by 2002:a05:6402:3ca:b0:506:8da7:fab7 with SMTP id
+ t10-20020a05640203ca00b005068da7fab7mr7759899edw.10.1682185917565; Sat, 22
+ Apr 2023 10:51:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/2UmYtPuo=8I_Omt_ytOLG9A";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+Received: by 2002:a54:2012:0:b0:20b:da13:9ec7 with HTTP; Sat, 22 Apr 2023
+ 10:51:56 -0700 (PDT)
+Reply-To: akiraharuto@yahoo.com
+From:   Abd-Jafaari Maddah <dongy7442@gmail.com>
+Date:   Sat, 22 Apr 2023 10:51:56 -0700
+Message-ID: <CAGnEuTvjzLi61+HVQ+6UT=YaJ44NLsrBqExtdJ39R2FPPK0zJg@mail.gmail.com>
+Subject: Did you get my mail
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM,URIBL_BLOCKED autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/2UmYtPuo=8I_Omt_ytOLG9A
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, 21 Apr 2023 17:14:18 -0500
-Larry Finger <Larry.Finger@lwfinger.net> wrote:
-> > (err) goto out;
-> >   		wl =3D ssb_get_devtypedata(dev);
-> > -		B43legacy_WARN_ON(!wl);
-> > +		if (!wl) {
-> > +			B43legacy_WARN_ON(!wl);
-> > +			err =3D -ENODEV;
-> > +			goto out;
-> > +		}
-> >   	}
-> >   	err =3D b43legacy_one_core_attach(dev, wl);
-> >   	if (err) =20
->=20
-> I do not recall seeing v1. One additional nitpick: The latest
-> convention would have the subject as "wifi: b43legacy:...". Kalle may
-> be able to fix this on merging, but it not, a v3 might be required.
-> Otherwise, the patch is good.
->=20
-> Reviewed-by: Larry Finger <Larry.Finger@lwfinger.net>
-
-No, it's not good. It's wrong. I already replied to it.
-wl can never be NULL here and the goto-out path is wrong (if there
-was a chance for it to trigger).
-
-Please drop this patch, Kalle.
-
---=20
-Michael B=C3=BCsch
-https://bues.ch/
-
---Sig_/2UmYtPuo=8I_Omt_ytOLG9A
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEihRzkKVZOnT2ipsS9TK+HZCNiw4FAmREGTUACgkQ9TK+HZCN
-iw5QnxAAsP4FHvqBSFyCpRPrOwj512Kwf4RtO4TYNO/FC3zv09UAgjzILHDVJFDD
-nPmFfNaPsGiVqDUHTIfuPzBYFMdvDsZyibynDU4Fv24YFNXx9YkrytMAZH+Rzh6t
-4cID7MG82odxIJJP3ERs7vA0MX1HhD2cKR2BA2g6470gf1M1+EEqGt+xiu8Q09ja
-rJNpcZB616jmOd3kCxRtSmEVuksPZfVYFFm3Nj77MIUiO/DlIcn2abkFPDMGYpOf
-9GGCHTLc0DSTlZ2vTxmmnYQW/Jqhe6DAjjdY2v7OAN8Ma87VCKVWsCdjIKEhUSyf
-vKY8uxLK9mG5wE8NSD7MqKNALqBewpEcHJy9FyVsxPdq92FpbqfkQh8sWRZFPDC0
-kOT+Y9YqFaec9Ffe+jrISqN/lflkspnvCv4DJn2616NoaFa97zVMv43Oz+o5DYps
-H5TcuwMr/xGlXxHOTRYlxZUFPNMlarkkv6ZoXrhBJncjgZROTRvwjbzgsEeRSO1+
-OPUzTIIobbScYn3XNmNz85Ag8uBx/LrXqSW7F+N4dKyEhXs/EGXKjx/PnZIxSDNF
-s05UhkHRz6N624hRVSEIOS7R4HuZQxIg83usyAkhTT/o58UsHd9sjrK1Tv63m+wE
-XqbKdiC5cKgaN4Mhoeil2Cz6AZsSizVV4PYsAN7zGuk/iGOhC1Q=
-=vx0A
------END PGP SIGNATURE-----
-
---Sig_/2UmYtPuo=8I_Omt_ytOLG9A--
+-- 
+Dear,
+I had sent you a mail but i don't think you received it that's why am
+writing you again.It is important you get back to me as soon as you can.
+Am waiting,
+Abd-Jafaari Maddah
