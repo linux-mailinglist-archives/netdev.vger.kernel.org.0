@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAD256EB876
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 12:12:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA83C6EB88E
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 12:19:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbjDVKMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 06:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42320 "EHLO
+        id S229769AbjDVKTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 06:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbjDVKMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 06:12:12 -0400
+        with ESMTP id S229907AbjDVKTV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 06:19:21 -0400
 Received: from out203-205-221-249.mail.qq.com (out203-205-221-249.mail.qq.com [203.205.221.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19AA271C;
-        Sat, 22 Apr 2023 03:11:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37FEA1FC0;
+        Sat, 22 Apr 2023 03:19:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1682158308;
-        bh=AiHaweSI9v1B2EKsrPZKFyxUxyDMJ+lDNtxzoXG3z3M=;
+        s=s201512; t=1682158739;
+        bh=z8S0DFiFjCmjZMlMnT7AsuASmakTQv+zP2mNvAbhkDI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Q8sl5ZZPJOS+KLV3bMXaR0lxI1BGXiSd6vwlYmevTTHOOwNxer6PH5lPDSOoKaVcL
-         u+xQ+hsHj5L92Srh96a+OzHBUyqL0fpiOcN91rcs4UxGhv8EONjJK7SnxAHOK4dv8G
-         k3DfmpYWEFSrix2nQDqeH054dk8UFcKoXH4VBmUE=
+        b=DQDIlvGj+k291zGMDr/BTa6A+qH4C6wKfS4EkpINPNVquKfvHMdMuMg5t18SWdnpN
+         HWb/J87/+ObFVhO9dGlfNK7W1kYswTHn6iQtnlgzMzBICGNfGCpXWOqLbFlPqG+EoI
+         sY+cRI3PLhH39ELnm6X22MxSgSmyntEjE3G8oQAc=
 Received: from localhost.localdomain ([49.7.199.72])
         by newxmesmtplogicsvrszb6-0.qq.com (NewEsmtp) with SMTP
         id 1402C0F4; Sat, 22 Apr 2023 18:05:00 +0800
-X-QQ-mid: xmsmtpt1682157926th7ubsyc9
-Message-ID: <tencent_0560341E420A95A81E12CC3712B5305B0508@qq.com>
-X-QQ-XMAILINFO: OUycJhUUya+/p9YnDt4faZAK2QKOb4v+LDStxlHMcQvroFSprUYeyZVfVKi/bd
-         C9bgOAwgE3UGY1RYgsa9yHqX6S82AN6q9JSVnJJuoMdCGLkFUnNpEB+Q1wrdZruvy+s+aphs+QZ0
-         Np/x8sPaW9yo5DX4TMa3Hm/yAIYhsyQUx34C04PqUIHrp9MckNkeUhWGLT0rtGWnRei559pefsdM
-         6ULaQkcoaB46kHR+ClBMO9ol6T6zJu1W9/go9JfASKkyKfVHkAHcuRcvDtQrkrQ837EOOYaQwUI9
-         ZzEterk4XGbSeiuHm5c+Eb3gmoqClDZxocN6C81E7o4PyuPkLm2BL4SzKBXQ96z9fFAtTZL9BlUI
-         dvPHC3NW0yGnfbxokZEeV+I+FEvHpLBmtXLsjFzkXQjURoTFTjTzi//A6WqXQVg49xV7MM04MH69
-         q2VetfKaScahmX73YcpSD1LQFBu7yrdlvPsrcq0fdEKxzPgrWMioddzaIWHEDu7ZgL6THVl7zgG7
-         HQORpAZoX5hipnCnRw9mGJ03Ry94fHGEbEAH7ULvIMU1wZ5b9AXKS/VzOrpDWjvoGiFCdymZU9Ry
-         kg3MIIUTAHZho5HaiYxVFTbYZaMwHTypH0kY8sHrkDPf+9Ltsf3U7mQxmWyrVYfgiIXCKPNWfmAS
-         HwsGZfuulSc1bbZSrUo7AkYbEEkuYmeihEcpPmyC7hpxYsXGTCtNfJUiScLM/Y/1U+jmFsZkPJQx
-         fork2jgxmTIqNAFHdFPKb7foUJwrxFd9r9V+DTynsRIJ0ipjzG5mJfcikQqu6uS32JhmctQQlCuA
-         c9Ju8ndXDhwGbl9XV5qIuAUNSqeX2XgmAxj3bAKhVxSCkE9uGi4JJr13gHE/rD9Q25ugUXnEXtGv
-         pHpt9+uCBMY0w4b07jlOZdwMu5A8Ea+uWsMwTmedIxOJ3V0hmIN5C52pbDF73DIw89qCYSTgxnjT
-         FJf4q5PkjTRNTom/5s5R+d5Fr0e+merkgS+Frj5VacKPBQVBudwreBIPPRdog+6t/h5RLwICDXmV
-         SEUDmm2dipcuRLWGiOTFex4HUAJaHBYOE1L+JCzo8yhFIZHaVf
+X-QQ-mid: xmsmtpt1682157928tfv627lfy
+Message-ID: <tencent_588107D54A02EA06A1D67C6B118CC3A35805@qq.com>
+X-QQ-XMAILINFO: MpSLeT6aCErC+jUWDBvMxzccUdI/jjD4NwtJ4TEOo9iC1GERxc1SIoBgPLOzb1
+         eYZVK8tjnJcAtnFGp+jh71Ub6LDEAue2FU69fnC1yHEnSiPkV3diI4bgrnAW00snShYC3ahuBegP
+         Jgd8avl24nIYPPpMNYy5c/Tys0+qNAUdnNKZXRD69IBfbH8DQnUeHu43m3gH5/mPNwoZkXB75b/H
+         bL1d0gL4lbXbKvqiGBF+lZNL77hsk35BAJsNHdMbcwK7E5T7XHt+W4vuLQaMEZaWQjZ1S/22iGpe
+         ocX5Qvyfi3sf9EA3KbljpcgTxn3MOLx4trU+urrlivq+8tyzQO5j+hNKpFp4m9vdEckHLIoGtUH6
+         679lUgq7gs1c43NVoI7jE+34yvtiDZLK0zNO7mWXC/GVTjV9czGM8sQWutr9M5YAzYCxCjcoB+ze
+         78zIrhj7mzNsgTx2OXOuFDOJLX8V1KC6nUu/mVsAu2B+HglqwpXTr38NNbAxgyRYS+L1yprfb/IR
+         3NzkP4JWOgVkbuxLjebKItwbRMuerQz3WtIUJYMrtpGRNYSiAwnail9afXkss4H+UC7amCod4Y0C
+         60waM7134L98FOzSL6TH5t8QiqcbDUzhac6xo0ApMNCpref6AF/4K/9Q2AnGty7n//hszOpCDFfY
+         ma1Gg9hp9WPMV0KwdAcXXi61qc3QOldIdDk9+LtzvdYdnTdgDReDQHG3Dgu1DkSp5SKN64VYQsOv
+         KJJrbodvI8O9Jf7s+sy7NeXv4LdTiypYuLDaPUXpspknbuB3i4eIiyyvci2pgHBQbxMXm3K+2Aa0
+         eRIiDhz/K+FFN3zj3zJ3bUwmIuSjX44SK1BMDZjaWgcwqwJTaj7A/UnwL2a9SFkyt/99HwRFdLua
+         SKzMLzwlgdBnWpRcLq7EjqGPwF5ovi2fR74fnXsTflEpKPekaK9ZveoMxYX5NvsWrMlZup6lVtjQ
+         uBoyLBCA0gL+dQl6lL3gN+Vmt64E1mnX/J7lVZzjMSZuD+LymUR8AsW9ECDyYguoT6FU1hUUYTj5
+         9q6a5Gylu/qxrlh76haqSaEfyt1jGiCNJRWJBI2w==
 From:   Zhang Shurong <zhang_shurong@foxmail.com>
 To:     tony0620emma@gmail.com
 Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Zhang Shurong <zhang_shurong@foxmail.com>
-Subject: [PATCH 05/10] wifi: rtw88: fix incorrect error codes in rtw_debugfs_set_h2c
-Date:   Sat, 22 Apr 2023 18:04:49 +0800
-X-OQ-MSGID: <71d87586fb8e306ea9ed5ccde7e5a98be52e4c0c.1682156784.git.zhang_shurong@foxmail.com>
+Subject: [PATCH 06/10] wifi: rtw88: fix incorrect error codes in rtw_debugfs_set_rf_write
+Date:   Sat, 22 Apr 2023 18:04:50 +0800
+X-OQ-MSGID: <f2fc025197b5643beee3f7e5fc04ddaa07edcc97.1682156784.git.zhang_shurong@foxmail.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <cover.1682156784.git.zhang_shurong@foxmail.com>
 References: <cover.1682156784.git.zhang_shurong@foxmail.com>
@@ -66,33 +66,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If there is a failure during copy_from_user, rtw_debugfs_set_h2c
-should return negative error code instead of a positive value count.
+If there is a failure during copy_from_user or user-provided data
+buffer is invalid, rtw_debugfs_set_rf_write should return negative
+error code instead of a positive value count.
 
 Fix this bug by returning correct error code.
 
 Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
 ---
- drivers/net/wireless/realtek/rtw88/debug.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/debug.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/wireless/realtek/rtw88/debug.c b/drivers/net/wireless/realtek/rtw88/debug.c
-index f721205185cf..911f0514c497 100644
+index 911f0514c497..259e6c15bc78 100644
 --- a/drivers/net/wireless/realtek/rtw88/debug.c
 +++ b/drivers/net/wireless/realtek/rtw88/debug.c
-@@ -393,8 +393,11 @@ static ssize_t rtw_debugfs_set_h2c(struct file *filp,
+@@ -423,14 +423,17 @@ static ssize_t rtw_debugfs_set_rf_write(struct file *filp,
  	char tmp[32 + 1];
- 	u8 param[8];
+ 	u32 path, addr, mask, val;
  	int num;
 +	int ret;
  
--	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 3);
-+	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 3);
+-	rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 4);
++	ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 4);
 +	if (ret < 0)
 +		return ret;
  
- 	num = sscanf(tmp, "%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx,%hhx",
- 		     &param[0], &param[1], &param[2], &param[3],
+ 	num = sscanf(tmp, "%x %x %x %x", &path, &addr, &mask, &val);
+ 
+ 	if (num !=  4) {
+ 		rtw_warn(rtwdev, "invalid args, [path] [addr] [mask] [val]\n");
+-		return count;
++		return -EINVAL;
+ 	}
+ 
+ 	mutex_lock(&rtwdev->mutex);
 -- 
 2.40.0
 
