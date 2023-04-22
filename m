@@ -2,112 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ED846EB74A
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 06:10:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCAF66EB777
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 06:59:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbjDVEK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 00:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
+        id S229659AbjDVE7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 00:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbjDVEK2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 00:10:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDA71FD8
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 21:10:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBADD60BA1
-        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 04:10:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1B3A8C433D2;
-        Sat, 22 Apr 2023 04:10:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682136626;
-        bh=cZzEqant4alzSXM14bgRrvayZ6czhuF3OCgroj+lbU8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WnCnSGsOz9BDN1ltHRQRyNbMxzeZ6M71I49Lk3UsGTH3LVryWJIjn1HZ4Cewlgyup
-         f3YBeFcS5dSINZG582E2C7x8oTejamhmRu4boq7t+Jvjl3Dmtl96/u+6WBeA7BFdiV
-         UHDAuzTSVroVL5BOYetyiimQe+M6ziwSIfadWpO0R3kW3EhGrsdHtlriC/7PBstBk0
-         rxSWAZ2wynemwYWhOwpWN/HCmx1qrMdYLVqEwib228RTR2V7qVwuFzgGgNaQ9hIkVe
-         YyozixfulCCHFv33js10xBtbdOOsPYaa+OmKuhaK3j/0uUHKl0O21LOF94aNCZq9mU
-         pXP33bItNzyRA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F2ABDE270DB;
-        Sat, 22 Apr 2023 04:10:25 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229554AbjDVE7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 00:59:34 -0400
+Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA7A1BEC;
+        Fri, 21 Apr 2023 21:59:31 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1682139524tohjp0zk
+Received: from wxdbg.localdomain.com ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sat, 22 Apr 2023 12:58:29 +0800 (CST)
+X-QQ-SSF: 01400000000000I0Z000000A0000000
+X-QQ-FEAT: znfcQSa1hKZBDzquBTLLcvy2B4kBgi0XQWJHFjDxgGE2NxVJB3eYYbtyIh8/I
+        z43f4DYEaVGdS8AhwYH4bMA2UdWfBgk8boA0pXHS4p2wIopTEqZbk/jRK7j4rX3qTJqYxmq
+        rvk60aNoMNPTbj0uSVOp+YlFA7cAe8t4I93jwQpoWr9exAn/RlJ2/dQj4IaSOS4z7dAZzRm
+        223jfT6fjB5MrH49GPGa60MXFVyNHSCwD+0dP3+Rn5tv4bv+DWdhKp1OXTgUfzbGb5FKAbw
+        8dFPe+WP5cKXfgemTdXLbjERO2QKs404Jxf2HSxxuPV8vuF+clXbrVBQqlPqm7xVTK/guDm
+        Rqh3oOildHysybgdiYg07a37GwgNRWO6bNk2zPm8xrgMqOQ4sg=
+X-QQ-GoodBg: 2
+X-BIZMAIL-ID: 10421498859572223231
+From:   Jiawen Wu <jiawenwu@trustnetic.com>
+To:     netdev@vger.kernel.org, andrew@lunn.ch, linux@armlinux.org.uk,
+        jarkko.nikula@linux.intel.com, olteanv@gmail.com,
+        andriy.shevchenko@linux.intel.com, hkallweit1@gmail.com
+Cc:     linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: [PATCH net-next v4 0/8] TXGBE PHYLINK support
+Date:   Sat, 22 Apr 2023 12:56:13 +0800
+Message-Id: <20230422045621.360918-1-jiawenwu@trustnetic.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 01/15] net/mlx5: DR,
- Fix dumping of legacy modify_hdr in debug dump
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168213662598.14731.606611570337031161.git-patchwork-notify@kernel.org>
-Date:   Sat, 22 Apr 2023 04:10:25 +0000
-References: <20230421013850.349646-2-saeed@kernel.org>
-In-Reply-To: <20230421013850.349646-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
-        tariqt@nvidia.com, kliteyn@nvidia.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Implement I2C, SFP, GPIO and PHYLINK to setup TXGBE link.
 
-This series was applied to netdev/net-next.git (main)
-by Saeed Mahameed <saeedm@nvidia.com>:
+Because our I2C and PCS are based on Synopsys Designware IP-core, extend
+the i2c-designware and pcs-xpcs driver to realize our functions.
 
-On Thu, 20 Apr 2023 18:38:36 -0700 you wrote:
-> From: Yevgeny Kliteynik <kliteyn@nvidia.com>
-> 
-> The steering dump parser expects to see 0 as rewrite num of actions
-> in case pattern/args aren't supported - parsing of legacy modify header
-> is based on this assumption.
-> Fix this to align to parser's expectation.
-> 
-> [...]
+v3 -> v4:
+- modify I2C transfer to be generic implementation
+- avoid to read DW_IC_COMP_PARAM_1
+- remove redundant "if" statement
+- add specific labels to handle error in txgbe_init_phy(), and remove
+  "if" conditions in txgbe_remove_phy()
 
-Here is the summary with links:
-  - [net-next,01/15] net/mlx5: DR, Fix dumping of legacy modify_hdr in debug dump
-    https://git.kernel.org/netdev/net-next/c/075056005d8c
-  - [net-next,02/15] net/mlx5: DR, Calculate sync threshold of each pool according to its type
-    https://git.kernel.org/netdev/net-next/c/72b2cff68405
-  - [net-next,03/15] net/mlx5: DR, Add more info in domain dbg dump
-    https://git.kernel.org/netdev/net-next/c/cedb6665bc33
-  - [net-next,04/15] net/mlx5: DR, Add memory statistics for domain object
-    https://git.kernel.org/netdev/net-next/c/57295e069cd8
-  - [net-next,05/15] Revert "net/mlx5: Expose steering dropped packets counter"
-    https://git.kernel.org/netdev/net-next/c/e267b8a52ca5
-  - [net-next,06/15] Revert "net/mlx5: Expose vnic diagnostic counters for eswitch managed vports"
-    https://git.kernel.org/netdev/net-next/c/0a431418f685
-  - [net-next,07/15] net/mlx5: Add vnic devlink health reporter to PFs/VFs
-    https://git.kernel.org/netdev/net-next/c/b0bc615df488
-  - [net-next,08/15] net/mlx5e: Add vnic devlink health reporter to representors
-    https://git.kernel.org/netdev/net-next/c/cf14af140a5a
-  - [net-next,09/15] net/mlx5e: RX, Fix releasing page_pool pages twice for striding RQ
-    https://git.kernel.org/netdev/net-next/c/c8e9090233a7
-  - [net-next,10/15] net/mlx5e: RX, Fix XDP_TX page release for legacy rq nonlinear case
-    https://git.kernel.org/netdev/net-next/c/40afb3b14496
-  - [net-next,11/15] net/mlx5e: RX, Hook NAPIs to page pools
-    https://git.kernel.org/netdev/net-next/c/a880f814739c
-  - [net-next,12/15] net/mlx5: Include linux/pci.h for pci_msix_can_alloc_dyn()
-    https://git.kernel.org/netdev/net-next/c/45e261b7b821
-  - [net-next,13/15] net/mlx5: E-Switch, Remove redundant dev arg from mlx5_esw_vport_alloc()
-    https://git.kernel.org/netdev/net-next/c/8ca52ada6267
-  - [net-next,14/15] net/mlx5: E-Switch, Remove unused mlx5_esw_offloads_vport_metadata_set()
-    https://git.kernel.org/netdev/net-next/c/38d9a740f68d
-  - [net-next,15/15] net/mlx5: Update op_mode to op_mod for port selection
-    https://git.kernel.org/netdev/net-next/c/f9c895a72a39
+v2 -> v3:
+- delete own I2C bus master driver, support it in i2c-designware
+- delete own PCS functions, remove pma configuration and 1000BASE-X mode
+- add basic function for 10GBASE-R interface in pcs-xpcs
+- add helper to get txgbe pointer from netdev
 
-You are awesome, thank you!
+v1 -> v2:
+- add comments to indicate GPIO lines
+- add I2C write operation support
+- modify GPIO direction functions
+- rename functions related to PHY interface
+- add condition on interface changing to re-config PCS
+- add to set advertise and fix to get status for 1000BASE-X mode
+- other redundant codes remove
+
+Jiawen Wu (8):
+  net: txgbe: Add software nodes to support phylink
+  i2c: designware: Add driver support for Wangxun 10Gb NIC
+  net: txgbe: Register I2C platform device
+  net: txgbe: Add SFP module identify
+  net: txgbe: Support GPIO to SFP socket
+  net: pcs: Add 10GBASE-R mode for Synopsys Designware XPCS
+  net: txgbe: Implement phylink pcs
+  net: txgbe: Support phylink MAC layer
+
+ drivers/i2c/busses/i2c-designware-common.c    |   8 +
+ drivers/i2c/busses/i2c-designware-core.h      |   1 +
+ drivers/i2c/busses/i2c-designware-master.c    |  84 ++-
+ drivers/i2c/busses/i2c-designware-platdrv.c   |  36 +-
+ drivers/net/ethernet/wangxun/Kconfig          |   6 +
+ drivers/net/ethernet/wangxun/libwx/wx_lib.c   |   3 +-
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  |   3 +
+ drivers/net/ethernet/wangxun/txgbe/Makefile   |   1 +
+ .../ethernet/wangxun/txgbe/txgbe_ethtool.c    |  28 +
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  63 +-
+ .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 570 ++++++++++++++++++
+ .../net/ethernet/wangxun/txgbe/txgbe_phy.h    |  10 +
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  92 +++
+ drivers/net/pcs/pcs-xpcs.c                    |  56 ++
+ include/linux/pcs/pcs-xpcs.h                  |   1 +
+ include/linux/platform_data/i2c-dw.h          |  15 +
+ 16 files changed, 940 insertions(+), 37 deletions(-)
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_phy.h
+ create mode 100644 include/linux/platform_data/i2c-dw.h
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.27.0
 
