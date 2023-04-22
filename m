@@ -2,104 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42B2A6EBA3E
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 18:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D4A6EBA4F
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 18:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229508AbjDVQOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 12:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
+        id S229644AbjDVQ0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 12:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjDVQOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 12:14:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D061995
-        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 09:14:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B5D760F29
-        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 16:14:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9715DC433EF;
-        Sat, 22 Apr 2023 16:14:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682180042;
-        bh=xWizu7LhUpe1TP/x/FJhje2VzDM4xDvcZ1F1bg1GFng=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=tE6hwjlqFj5gjz0buZvbo7Tl62wac9zYakDJpUZqr5Xpyn0PPTrJ+THow3C8TlADe
-         5XGyfXGyXiWWV/BOpruvkmOp86s3IP3+HYigMz6X5SLoJ2exPjsXRa3Hq+Wtq015o+
-         x64nbqgi4HYkmqAJqFAk31dgrslcfCgIQ5K458zl2Yr+e/lB4Ckij7k2dzFrJlymqo
-         lS0FZS8lmB4IxY9NjC7YkhPP116HE5+hzNjyc7w4yJcoPLSMNf01yqct4wG4K9e/7M
-         Y3X59Aw2k4ucOB+djhnCH6n5Sc8EtOJfX+gzquvyI/F9I7cTiYwVlXNKLbpZFNkgC9
-         O9N9hQwqUvKBA==
-Message-ID: <535c37f2-df90-ae4b-5b5a-8bf75916ad22@kernel.org>
-Date:   Sat, 22 Apr 2023 10:14:01 -0600
+        with ESMTP id S229574AbjDVQ0V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 12:26:21 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D24A1717;
+        Sat, 22 Apr 2023 09:26:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1682180780; x=1713716780;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Wd0xk5nKWuCk5lXjfaeBYT1AZ+9GeuONVnRjp/lX5Oc=;
+  b=hvS0kUayzlpv0S5rckL9PxDalTVKf9WutfM8RpKCH9PnLvnBy4oNG1r4
+   aMeGoW6RHiOXyfb3EhbasmMoEpyna+shwBPmXhUpY979z9c2G8gm/4GWI
+   St24E0rIQApv81hvg1+I2Jfk3Mmu67iOkuznqOH9Ba5osaNqkspIubnIy
+   TBfFvjsdZWq3tFkx3islC11cE9EBUZn8J1hfV7pjrKCLqhOvavdf4Fvgg
+   kXSimgsjnIhgDk5vd03TObvxWq5agiu2v129KosoN0qw6aEsRWU8vEiUO
+   QDqZz0tipd8uHQXGQ17aaKNCtZXcXLPIOgXWZzpui16HmkQT2C0Ib4Q0D
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10688"; a="335061487"
+X-IronPort-AV: E=Sophos;i="5.99,218,1677571200"; 
+   d="scan'208";a="335061487"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2023 09:26:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10688"; a="1022201661"
+X-IronPort-AV: E=Sophos;i="5.99,218,1677571200"; 
+   d="scan'208";a="1022201661"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga005.fm.intel.com with ESMTP; 22 Apr 2023 09:25:59 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pqG3i-003fwC-07;
+        Sat, 22 Apr 2023 19:25:58 +0300
+Date:   Sat, 22 Apr 2023 19:25:57 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, linux@armlinux.org.uk,
+        jarkko.nikula@linux.intel.com, olteanv@gmail.com,
+        hkallweit1@gmail.com, linux-i2c@vger.kernel.org,
+        linux-gpio@vger.kernel.org, mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next v4 2/8] i2c: designware: Add driver support for
+ Wangxun 10Gb NIC
+Message-ID: <ZEQKlSIIZi9941Bh@smile.fi.intel.com>
+References: <20230422045621.360918-1-jiawenwu@trustnetic.com>
+ <20230422045621.360918-3-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-Subject: Re: [PATCH v2 iproute2-next 00/10] Add tc-mqprio and tc-taprio
- support for preemptible traffic classes
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-References: <20230418113953.818831-1-vladimir.oltean@nxp.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20230418113953.818831-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230422045621.360918-3-jiawenwu@trustnetic.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/18/23 5:39 AM, Vladimir Oltean wrote:
-> This is the iproute2 support for the tc program to make use of the
-> kernel features added in commit f7d29571ab0a ("Merge branch
-> 'add-kernel-tc-mqprio-and-tc-taprio-support-for-preemptible-traffic-classes'").
+On Sat, Apr 22, 2023 at 12:56:15PM +0800, Jiawen Wu wrote:
+> Wangxun 10Gb ethernet chip is connected to Designware I2C, to communicate
+> with SFP.
 > 
-> The state of the man pages prior to this work was a bit unsatisfactory,
-> so patches 03-07 contain some man page cleanup in tc-taprio(8) and
-> tc-mqprio(8).
-
-Thanks for updating the man pages. These should go through main first; I
-can sync to main after those are applied and before your set if needed.
-
-
+> Add platform data to pass IOMEM base address, board flag since resource
+> address was mapped on ethernet driver. Since there is no device tree to
+> get the clock, the parameters hcnt/lcnt are also set by platform data.
 > 
-> I don't know exactly what's the deal with syncing the main branch
-> between iproute2.git and iproute2-next.git. This patch set applies on
-> top of today's iproute2-next.git main branch, *merged* with today's
-> iproute2.git main branch. If I had formatted it directly on
-> iproute2-next, patch 04 would have conflicted with iproute2 change
-> ce4068f22db4 ("man: tc-mqprio: extend prio-tc-queue mapping with
-> examples"). I would recommend merging the 2 trees before applying this
-> series to iproute2-next.
+> The exists IP limitations are dealt as workarounds:
+> - IP does not support interrupt mode, it works on polling mode.
+> - Additionally set FIFO depth address the chip issue.
+> 
+> Cc: Jarkko Nikula <jarkko.nikula@linux.intel.com>
 
-I merge main from time to time; just did that ...
+Please, use --cc parameter to `git format-patch ...`.
 
-> 
-> It may be desirable for patches 01-06 to go to iproute2.git, so I've
-> sorted those to be first, in order to make that possible.
-> 
-> I also dared to sync the kernel headers and provide a commit (07/10) in
-> the same form as David Ahern does it. The automated script was:
-> 
->   #!/bin/bash
-> 
->   UAPI_FOLDER=include/uapi/
->   # Built with "make -j 8 headers_install O=headers"
->   KERNEL_HEADERS=/opt/net-next/headers/usr/include
-> 
->   for file in $(find ${UAPI_FOLDER} -type f); do
->   	filename="${file##$UAPI_FOLDER}"
->   	rsync -avr "$KERNEL_HEADERS/$filename" "$file"
->   done
+Also for tag block we do not use blank lines.
 
-... and updated headers.
+...
 
-Repost the patches as 2 sets with the man page fixes targeted at main
-and the new preemptible work for -next.
+>  #define MODEL_MSCC_OCELOT			BIT(8)
+>  #define MODEL_BAIKAL_BT1			BIT(9)
+>  #define MODEL_AMD_NAVI_GPU			BIT(10)
+> +#define MODEL_WANGXUN_SP			BIT(11)
+>  #define MODEL_MASK				GENMASK(11, 8)
+
+Yeah, maybe next one will need to transform this from bitfield to plain number.
+
+...
+
+> -static int amd_i2c_adap_quirk(struct dw_i2c_dev *dev)
+> +static int poll_i2c_adap_quirk(struct dw_i2c_dev *dev)
+
+i2c_dw_poll_adap_quirk()
+
+...
+
+> +static bool i2c_is_model_poll(struct dw_i2c_dev *dev)
+
+i2c_dw_is_...
+
+...
+
+> +++ b/include/linux/platform_data/i2c-dw.h
+
+No way we need this in a new code.
+
+> +struct dw_i2c_platform_data {
+> +	void __iomem *base;
+
+You should use regmap.
+
+> +	unsigned int flags;
+> +	unsigned int ss_hcnt;
+> +	unsigned int ss_lcnt;
+> +	unsigned int fs_hcnt;
+> +	unsigned int fs_lcnt;
+
+No, use device properties.
+
+> +};
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
