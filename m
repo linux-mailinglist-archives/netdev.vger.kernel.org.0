@@ -2,56 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D3256EB94E
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 15:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C1336EB951
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 15:20:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbjDVNUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 09:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
+        id S229906AbjDVNU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 09:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbjDVNUW (ORCPT
+        with ESMTP id S229554AbjDVNUW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 09:20:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E76B6;
-        Sat, 22 Apr 2023 06:20:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522561B1
+        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 06:20:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE49360B1B;
-        Sat, 22 Apr 2023 13:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 193C2C4339B;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFF44610D5
+        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 13:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2BEA9C4339C;
         Sat, 22 Apr 2023 13:20:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1682169620;
-        bh=rNqJt/U2DV7UKK5IXLG+r8263C65IuFuKNAfZWXNhuk=;
+        bh=8dTlfJfIPAzyyb6aSdWbBTJpUMrGmwlsH7mStOQB494=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MARTSRX7DCUmlPFHgkUi4Bvzba/MLqwBXnFyqT5hRKrs9o/bn+eHf3iG7h9jI3sN+
-         8ccZTuA2SAuZt/0vIcB6amWZe93lTSfX5zww/Ep1MUO9RPFK8+eLZ5r4U4Jfwp0nP5
-         473Nszs8PSoEML1VCh2Ec9tKUiPau6dcyuUg0H3arDNUClujouVTQKSHKlcaCDwJHV
-         fvHOEELQ0eDtiCwarmibZE3F3eOFhaSjftTpdWyS+t+eMXvk/0Irrtu2xr4aO0uzvZ
-         w4l17hhDORxaYz8xFRdb4G5BX69mv+GjR3wS1R0csYJdM8BLYg8VQjZaOZRF18Dqzz
-         LpFIY53l2ElFQ==
+        b=V+kOBc59e88QRUd2JBM5QZ0eomIaubnouVisq3iPs4ykV6MLJEeaPdcbIs2g9n8IQ
+         z7Y5ZXmo0F7jRgQTRz5kPG25FEAZuUVbZoql8GYpgTN9azywe9kXWPYYceZTaoa2pk
+         AocmfIUe6FdzUg3WnCQCSmmCZm+lsijmbrtN+dYWky3nYets/xby3431mvhTRFx16y
+         bRMMowEZccXf7Lu04D/fzCMyo/BobCIOKc/Jpi1aGwIQgQkk58ukpIcMMdSglCTf4t
+         43atGJ7NCsdkL20oGVeX8KUbAU6L+4sbTiZm3mBmUdzsab+id0w8fHiXcLofycA57U
+         O0huv/wvtYSxg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EAAB6E270DA;
-        Sat, 22 Apr 2023 13:20:19 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0A323E270E2;
+        Sat, 22 Apr 2023 13:20:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 0/2] net: ethernet: mtk_eth_soc: use WO firmware for MT7981
+Subject: Re: [PATCH net v3] ipv4: Fix potential uninit variable access bug in
+ __ip_make_skb()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168216961994.26753.10467952224917211812.git-patchwork-notify@kernel.org>
-Date:   Sat, 22 Apr 2023 13:20:19 +0000
-References: <cover.1681994362.git.daniel@makrotopia.org>
-In-Reply-To: <cover.1681994362.git.daniel@makrotopia.org>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, lorenzo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com
+Message-Id: <168216962003.26753.1306408405089201442.git-patchwork-notify@kernel.org>
+Date:   Sat, 22 Apr 2023 13:20:20 +0000
+References: <20230420124035.2061588-1-william.xuanziyang@huawei.com>
+In-Reply-To: <20230420124035.2061588-1-william.xuanziyang@huawei.com>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        willemdebruijn.kernel@gmail.com, netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -64,24 +60,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (main)
+This patch was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Thu, 20 Apr 2023 17:04:02 +0100 you wrote:
-> In order to support wireless offloading on MT7981 we need to load the
-> appropriate firmware. Recognize MT7981 by introducing a new DT compatible
-> and load mt7981_wo.bin if it is set.
+On Thu, 20 Apr 2023 20:40:35 +0800 you wrote:
+> Like commit ea30388baebc ("ipv6: Fix an uninit variable access bug in
+> __ip6_make_skb()"). icmphdr does not in skb linear region under the
+> scenario of SOCK_RAW socket. Access icmp_hdr(skb)->type directly will
+> trigger the uninit variable access bug.
 > 
-> Changes since v1:
->  * retain alphabetic order in dt-bindings
+> Use a local variable icmp_type to carry the correct value in different
+> scenarios.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,1/2] dt-bindings: net: mediatek: add WED RX binding for MT7981 eth driver
-    https://git.kernel.org/netdev/net/c/cf88231d9739
-  - [v2,2/2] net: ethernet: mtk_eth_soc: use WO firmware for MT7981
-    https://git.kernel.org/netdev/net/c/86ce0d09e424
+  - [net,v3] ipv4: Fix potential uninit variable access bug in __ip_make_skb()
+    https://git.kernel.org/netdev/net/c/99e5acae193e
 
 You are awesome, thank you!
 -- 
