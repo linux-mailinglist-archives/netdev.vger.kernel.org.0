@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C52C46EB6EB
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 04:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AECF6EB70A
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 05:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbjDVC57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 22:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
+        id S229573AbjDVDUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 23:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjDVC56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 22:57:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC0A1FF3
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 19:57:57 -0700 (PDT)
+        with ESMTP id S229468AbjDVDUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 23:20:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 996D919B4
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 20:20:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 041AC6526C
-        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 02:57:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC14EC433EF;
-        Sat, 22 Apr 2023 02:57:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3377863ACC
+        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 03:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 83E77C4339B;
+        Sat, 22 Apr 2023 03:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682132276;
-        bh=3/aeWPR/Z6Wr1zxdytuHA+3aGBTGu8bVrAGRSKr31kU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BeTxiXT+3/CvaR0ttI06GXSRPTYcifa8l8SRwmJ/q0NVSmBzHLVKdgFfqEfwL1RQs
-         KZqztSZFp9wQF4vQ9ehb0z4DCWUPV3cehW7ET16nqVvugoekOeP9PT2IX9RNRpQGIj
-         mTAD31l6hdTvHvJSAzu6nuzfbuvmC8Q6hsxc6cXmuIkiTjHPzKtOARdrbUKFs/upr+
-         AllrPDmOw9tnPaoeyiVogcGJmvBavq+0MKycxBlxYtXFZtJyYXuM9Qd051S66XBmde
-         pp4biuVkYQMyqqOXnN9BC2UeXVVxTBqVSJgc0lL/xvR/ED8UufcFGHy2YB6GNufu29
-         Wn3N9iiBo2ffg==
-Date:   Fri, 21 Apr 2023 19:57:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ingo Rohloff <ingo.rohloff@lauterbach.com>
-Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        robert.hancock@calian.com, Nicolas.Ferre@microchip.com,
-        claudiu.beznea@microchip.com, davem@davemloft.net,
-        netdev@vger.kernel.org, tomas.melin@vaisala.com
-Subject: Re: [PATCH v2 1/1] net: macb: Avoid erroneously stopped TX ring.
-Message-ID: <20230421195755.5e59a164@kernel.org>
-In-Reply-To: <20230421130035.14346-2-ingo.rohloff@lauterbach.com>
-References: <20230421130035.14346-1-ingo.rohloff@lauterbach.com>
-        <20230421130035.14346-2-ingo.rohloff@lauterbach.com>
+        s=k20201202; t=1682133618;
+        bh=xThQTwP3e/rzseXxr8L+2vMStwwkKU58lK7hRy5Ie8Q=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EDJ59VCGTszcOXSDILfa+4/WUQ9RSWsTMs40DyRWzFr6qJ8KNIa8Y2WGIhhdGYNnS
+         +MZUZrY+OSWI3u1RvIdFLFp1omnuOrUWB0vvz8vMu3qiG8Z2+DJt5nmyUGZQ5mujYK
+         m7yCDyaf4ulm4GUcyaqReoZgPxLf7L4lnR32YMasB/ypT/dvn3UT7OZjSF++mTtrlh
+         2KULLptpNT6639+R8LZV8UtsviNomE8xRQUuVlad6kYIojkRdkz+XYtyGvPTcIPfun
+         o6bXFHOJSSGE6ipzWUBQOrVzj0oknVxOBso5f7OFW28jIy+Ob3vbQkyoLezyvka2/c
+         CDIg6hU+CCpNg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 67C6CC395EA;
+        Sat, 22 Apr 2023 03:20:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net-next] net: phy: add basic driver for NXP CBTX PHY
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168213361842.18367.5822261095281572491.git-patchwork-notify@kernel.org>
+Date:   Sat, 22 Apr 2023 03:20:18 +0000
+References: <20230418190141.1040562-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230418190141.1040562-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, f.fainelli@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -57,78 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Apr 2023 15:00:35 +0200 Ingo Rohloff wrote:
-> The SW puts a frame to be transmitted into the TX descriptor ring with
-> macb_start_xmit().
-> The last step of this operation is, that the SW clears the TX_USED bit
-> of the first descriptor it wrote.
-> The HW already reached and read this descriptor with a set TX_USED bit.
-> The SW sets the TSTART bit in the NCR register.
-> This is a race condition:
-> 1) Either the HW already has processed the descriptor and has stopped the
->    transmission, so the TGO bit in the TSR register is cleared.
-> 2) The HW has read, but not yet processed the descriptor.
-> In case 2) the HW ignores the TSTART trigger and stops the
-> transmission a little bit later.
+Hello:
+
+This patch was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Tue, 18 Apr 2023 22:01:41 +0300 you wrote:
+> The CBTX PHY is a Fast Ethernet PHY integrated into the SJA1110 A/B/C
+> automotive Ethernet switches.
 > 
-> You now have got a TX descriptor in the TX ring which is ready (TX_USED
-> bit cleared), but the hardware does not process the fresh descriptor,
-> because it ignored the corresponding TSTART trigger.
+> It was hoped it would work with the Generic PHY driver, but alas, it
+> doesn't. The most important reason why is that the PHY is powered down
+> by default, and it needs a vendor register to power it on.
 > 
-> This patch checks if the hardware is processing the same descriptor, where
-> the TX_USED bit was just cleared.
-> If this is the case this patch ensures that the TSTART trigger is repeated
-> if needed.
+> [...]
 
-Were you able to measure the performance impact of the workaround?
-Doesn't name a difference?
+Here is the summary with links:
+  - [v2,net-next] net: phy: add basic driver for NXP CBTX PHY
+    https://git.kernel.org/netdev/net-next/c/f3b766d98131
 
-> +static void macb_fix_tstart_race(unsigned int tx_head,
-> +				 struct macb *bp, struct macb_queue *queue)
-> +{
-> +	u32 macb_tsr, macb_tbqp, macb_ncr;
-> +
-> +	/* Controller was (probably) active when we wrote TSTART.
-> +	 * This might be a race condition.
-> +	 * Ensure TSTART is not ignored.
-> +	 */
-> +	for (;;) {
-> +		macb_tbqp = queue_readl(queue, TBQP);
-> +		macb_tbqp = macb_tbqp - lower_32_bits(queue->tx_ring_dma);
-> +		macb_tbqp = macb_tbqp / macb_dma_desc_get_size(bp);
-> +		macb_tbqp = macb_tx_ring_wrap(bp, macb_tbqp);
-> +		if (tx_head != macb_tbqp) {
-> +			/* Controller is working on different descriptor.
-> +			 * There should be no problem.
-> +			 */
-> +			break;
-> +		}
-> +
-> +		/* Controller works on the descriptor we just wrote.
-> +		 * TSTART might not have worked. Check for TGO again.
-> +		 */
-> +		macb_tsr = macb_readl(bp, TSR);
-> +		if (!(macb_tsr & MACB_BIT(TGO))) {
-> +			/* Controller stopped... write TSTART again.
-> +			 */
-> +			macb_ncr = macb_readl(bp, NCR);
-> +			macb_ncr = macb_ncr | MACB_BIT(TSTART);
-> +			macb_writel(bp, NCR, macb_ncr);
-> +			break;
-> +		}
-> +		/* Controller might stop or process our descriptor.
-> +		 * Check again.
-> +		 */
-
-We should add (1) cpu_relax(), (2) a statistic which would count that
-the condition was encountered, and (3) some form of limit on the loop,
-so that we don't hang the host with irqs off if the NIC goes bad.
-
-> +	}
-> +}
-
->  	spin_lock_irq(&bp->lock);
-> +	macb_tsr = macb_readl(bp, TSR);
-
+You are awesome, thank you!
 -- 
-pw-bot: cr
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
