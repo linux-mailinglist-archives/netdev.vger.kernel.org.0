@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BCA66EB77E
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 06:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAE796EB781
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 07:00:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbjDVE7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 00:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
+        id S229687AbjDVE77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 00:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbjDVE7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 00:59:42 -0400
-Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDAC1FE3;
-        Fri, 21 Apr 2023 21:59:38 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1682139544tqmfuiz5
+        with ESMTP id S229681AbjDVE7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 00:59:55 -0400
+Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3F62702;
+        Fri, 21 Apr 2023 21:59:48 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1682139548ty0fxbhr
 Received: from wxdbg.localdomain.com ( [183.129.236.74])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sat, 22 Apr 2023 12:59:03 +0800 (CST)
+        id ; Sat, 22 Apr 2023 12:59:07 +0800 (CST)
 X-QQ-SSF: 01400000000000I0Z000000A0000000
-X-QQ-FEAT: Og2xOdt/sESvhv3X9qHskRky8+m2DkbDHCCW+4pG5In0MtTmA+kKykfFN1OvN
-        bnyd6b3fH6iUpG8/Le53xGXhxmBizAOfGJB2C6nnHKBN2z3u6Gq49hBBG6sKiu/gpPxtpXf
-        hl7sPxLy/gIinL6GxIC3g9QS6RrsNXAu4kzUEF3fsncnogYKAeJArrmv4Xjkkkyu+07bkaC
-        g3vbJ4ZVk8iG+eononuuA/Jz8VD2COmGK88cQJaBi17HLR1wks1Je7c1b84RkxLA/FcvuaS
-        /MncRmWXKtrH7Ob6lKIy4p2bo7an9P2+qj8YxH0727E8bymnOdoOhdLsJVz5MDkIAsF5Tzx
-        W0+DTV+9qHDtNNbT0kbqb/ErmrVVtOFWL++1yjfmXwNNnuH5I6fJvExpnGHrPKaZVVKnfFh
-        eBgzc8zOnxQ=
+X-QQ-FEAT: D2GZf6M6C/jsTOe4cSk5yhs/GQ2aXQZrd5tONkSBTvDOaf7Z0rP+K/Tgi90uv
+        Y4MeuJi10pqwbjfaXG5pWxjzscuxFZqjxUcwhdhZ60tYLiOeYQjM5LERPf4e1O8edBw0MA4
+        5uTTYiQvN8NPzEJRpfEfpk3txs6/DTltZWj6exYgDEVGuXqTNdlRRyWk9kM18Uon99RnTEg
+        x2JpwWQD2hknS/e/XP1gpcvTrzflMZPq4+1NF1bHQFLdMtLzA4TaasDvvGxAUJGvjyn5UlM
+        UplfpTOPnWpOAaGEyIXtTI5MyoVs110ehyp5Y927VBH/uHTa/kRgxJkQcj/EqQF4V7Y7xu2
+        4IKcWYj65Ez3NNjWNcyz+Bb4srNH2bxbnBE9Eoe/7be03RwCGgpPAiIXdDQZccDOLqPlLOp
+        Qpxdr2Zk1uk=
 X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 5768916221183516156
+X-BIZMAIL-ID: 281790733503861956
 From:   Jiawen Wu <jiawenwu@trustnetic.com>
 To:     netdev@vger.kernel.org, andrew@lunn.ch, linux@armlinux.org.uk,
         jarkko.nikula@linux.intel.com, olteanv@gmail.com,
         andriy.shevchenko@linux.intel.com, hkallweit1@gmail.com
 Cc:     linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next v4 5/8] net: txgbe: Support GPIO to SFP socket
-Date:   Sat, 22 Apr 2023 12:56:18 +0800
-Message-Id: <20230422045621.360918-6-jiawenwu@trustnetic.com>
+        mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>
+Subject: [PATCH net-next v4 6/8] net: pcs: Add 10GBASE-R mode for Synopsys Designware XPCS
+Date:   Sat, 22 Apr 2023 12:56:19 +0800
+Message-Id: <20230422045621.360918-7-jiawenwu@trustnetic.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20230422045621.360918-1-jiawenwu@trustnetic.com>
 References: <20230422045621.360918-1-jiawenwu@trustnetic.com>
@@ -45,415 +46,161 @@ Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Register GPIO chip and handle GPIO IRQ for SFP socket.
+Add basic support for XPCS using 10GBASE-R interface. This mode will
+be extended to use interrupt, so set pcs.poll false. And avoid soft
+reset so that the device using this mode is in the default configuration.
+
+Cc: Jose Abreu <Jose.Abreu@synopsys.com>
 
 Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
 ---
- drivers/net/ethernet/wangxun/Kconfig          |   2 +
- drivers/net/ethernet/wangxun/libwx/wx_lib.c   |   3 +-
- drivers/net/ethernet/wangxun/libwx/wx_type.h  |   2 +
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  20 +-
- .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 228 ++++++++++++++++++
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  27 +++
- 6 files changed, 263 insertions(+), 19 deletions(-)
+ drivers/net/pcs/pcs-xpcs.c   | 56 ++++++++++++++++++++++++++++++++++++
+ include/linux/pcs/pcs-xpcs.h |  1 +
+ 2 files changed, 57 insertions(+)
 
-diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
-index d2dbaf19e53d..9b69c3d53d65 100644
---- a/drivers/net/ethernet/wangxun/Kconfig
-+++ b/drivers/net/ethernet/wangxun/Kconfig
-@@ -41,6 +41,8 @@ config TXGBE
- 	tristate "Wangxun(R) 10GbE PCI Express adapters support"
- 	depends on PCI
- 	select I2C_DESIGNWARE_PLATFORM
-+	select GPIOLIB_IRQCHIP
-+	select GPIOLIB
- 	select LIBWX
- 	select SFP
- 	help
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.c b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-index eb89a274083e..dff0d573ee33 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-@@ -1348,7 +1348,8 @@ void wx_free_irq(struct wx *wx)
- 		free_irq(entry->vector, q_vector);
- 	}
- 
--	free_irq(wx->msix_entries[vector].vector, wx);
-+	if (wx->mac.type == wx_mac_em)
-+		free_irq(wx->msix_entries[vector].vector, wx);
- }
- EXPORT_SYMBOL(wx_free_irq);
- 
-diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index 97bce855bc60..d151d6f79022 100644
---- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
-+++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -79,7 +79,9 @@
- #define WX_GPIO_INTMASK              0x14834
- #define WX_GPIO_INTTYPE_LEVEL        0x14838
- #define WX_GPIO_POLARITY             0x1483C
-+#define WX_GPIO_INTSTATUS            0x14844
- #define WX_GPIO_EOI                  0x1484C
-+#define WX_GPIO_EXT                  0x14850
- 
- /*********************** Transmit DMA registers **************************/
- /* transmit global control */
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index dbd4d409d93b..b1ede19f4ff8 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -82,6 +82,8 @@ static int txgbe_enumerate_functions(struct wx *wx)
-  **/
- static void txgbe_irq_enable(struct wx *wx, bool queues)
- {
-+	wr32(wx, WX_PX_MISC_IEN, TXGBE_PX_MISC_IEN_MASK);
-+
- 	/* unmask interrupt */
- 	wx_intr_enable(wx, TXGBE_INTR_MISC(wx));
- 	if (queues)
-@@ -129,17 +131,6 @@ static irqreturn_t txgbe_intr(int __always_unused irq, void *data)
- 	return IRQ_HANDLED;
- }
- 
--static irqreturn_t txgbe_msix_other(int __always_unused irq, void *data)
--{
--	struct wx *wx = data;
--
--	/* re-enable the original interrupt state */
--	if (netif_running(wx->netdev))
--		txgbe_irq_enable(wx, false);
--
--	return IRQ_HANDLED;
--}
--
- /**
-  * txgbe_request_msix_irqs - Initialize MSI-X interrupts
-  * @wx: board private structure
-@@ -171,13 +162,6 @@ static int txgbe_request_msix_irqs(struct wx *wx)
- 		}
- 	}
- 
--	err = request_irq(wx->msix_entries[vector].vector,
--			  txgbe_msix_other, 0, netdev->name, wx);
--	if (err) {
--		wx_err(wx, "request_irq for msix_other failed: %d\n", err);
--		goto free_queue_irqs;
--	}
--
- 	return 0;
- 
- free_queue_irqs:
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-index 3fbcfd217079..feafac53f437 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-@@ -3,11 +3,15 @@
- 
- #include <linux/platform_data/i2c-dw.h>
- #include <linux/platform_device.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/gpio/machine.h>
-+#include <linux/gpio/driver.h>
- #include <linux/gpio/property.h>
- #include <linux/i2c.h>
- #include <linux/pci.h>
- 
- #include "../libwx/wx_type.h"
-+#include "../libwx/wx_hw.h"
- #include "txgbe_type.h"
- #include "txgbe_phy.h"
- 
-@@ -71,6 +75,224 @@ static int txgbe_swnodes_register(struct txgbe *txgbe)
- 	return software_node_register_node_group(nodes->group);
- }
- 
-+static int txgbe_gpio_get(struct gpio_chip *chip, unsigned int offset)
-+{
-+	struct wx *wx = gpiochip_get_data(chip);
-+	struct txgbe *txgbe = wx->priv;
-+	int val;
-+
-+	val = rd32m(wx, WX_GPIO_EXT, BIT(offset));
-+
-+	txgbe->gpio_orig &= ~BIT(offset);
-+	txgbe->gpio_orig |= val;
-+
-+	return !!(val & BIT(offset));
-+}
-+
-+static int txgbe_gpio_get_direction(struct gpio_chip *chip, unsigned int offset)
-+{
-+	struct wx *wx = gpiochip_get_data(chip);
-+	u32 val;
-+
-+	val = rd32(wx, WX_GPIO_DDR);
-+	if (BIT(offset) & val)
-+		return GPIO_LINE_DIRECTION_OUT;
-+
-+	return GPIO_LINE_DIRECTION_IN;
-+}
-+
-+static int txgbe_gpio_direction_in(struct gpio_chip *chip, unsigned int offset)
-+{
-+	struct wx *wx = gpiochip_get_data(chip);
-+
-+	wr32m(wx, WX_GPIO_DDR, BIT(offset), 0);
-+
-+	return 0;
-+}
-+
-+static int txgbe_gpio_direction_out(struct gpio_chip *chip, unsigned int offset,
-+				    int val)
-+{
-+	struct wx *wx = gpiochip_get_data(chip);
-+	u32 mask;
-+
-+	mask = BIT(offset) | BIT(offset - 1);
-+	if (val)
-+		wr32m(wx, WX_GPIO_DR, mask, mask);
-+	else
-+		wr32m(wx, WX_GPIO_DR, mask, 0);
-+
-+	wr32m(wx, WX_GPIO_DDR, BIT(offset), BIT(offset));
-+
-+	return 0;
-+}
-+
-+static void txgbe_gpio_irq_ack(struct irq_data *d)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+	irq_hw_number_t hwirq = irqd_to_hwirq(d);
-+	struct wx *wx = gpiochip_get_data(gc);
-+
-+	wr32(wx, WX_GPIO_EOI, BIT(hwirq));
-+}
-+
-+static void txgbe_gpio_irq_mask(struct irq_data *d)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+	irq_hw_number_t hwirq = irqd_to_hwirq(d);
-+	struct wx *wx = gpiochip_get_data(gc);
-+
-+	gpiochip_disable_irq(gc, hwirq);
-+
-+	wr32m(wx, WX_GPIO_INTMASK, BIT(hwirq), BIT(hwirq));
-+}
-+
-+static void txgbe_gpio_irq_unmask(struct irq_data *d)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+	irq_hw_number_t hwirq = irqd_to_hwirq(d);
-+	struct wx *wx = gpiochip_get_data(gc);
-+
-+	gpiochip_enable_irq(gc, hwirq);
-+
-+	wr32m(wx, WX_GPIO_INTMASK, BIT(hwirq), 0);
-+}
-+
-+static int txgbe_gpio_set_type(struct irq_data *d, unsigned int type)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
-+	irq_hw_number_t hwirq = irqd_to_hwirq(d);
-+	struct wx *wx = gpiochip_get_data(gc);
-+	u32 level, polarity;
-+
-+	level = rd32(wx, WX_GPIO_INTTYPE_LEVEL);
-+	polarity = rd32(wx, WX_GPIO_POLARITY);
-+
-+	switch (type) {
-+	case IRQ_TYPE_EDGE_BOTH:
-+		level |= BIT(hwirq);
-+		break;
-+	case IRQ_TYPE_EDGE_RISING:
-+		level |= BIT(hwirq);
-+		polarity |= BIT(hwirq);
-+		break;
-+	case IRQ_TYPE_EDGE_FALLING:
-+		level |= BIT(hwirq);
-+		polarity &= ~BIT(hwirq);
-+		break;
-+	case IRQ_TYPE_LEVEL_HIGH:
-+		level &= ~BIT(hwirq);
-+		polarity |= BIT(hwirq);
-+		break;
-+	case IRQ_TYPE_LEVEL_LOW:
-+		level &= ~BIT(hwirq);
-+		polarity &= ~BIT(hwirq);
-+		break;
-+	}
-+
-+	if (type & IRQ_TYPE_LEVEL_MASK)
-+		irq_set_handler_locked(d, handle_level_irq);
-+	else if (type & IRQ_TYPE_EDGE_BOTH)
-+		irq_set_handler_locked(d, handle_edge_irq);
-+
-+	wr32m(wx, WX_GPIO_INTEN, BIT(hwirq), BIT(hwirq));
-+	wr32(wx, WX_GPIO_INTTYPE_LEVEL, level);
-+	if (type != IRQ_TYPE_EDGE_BOTH)
-+		wr32(wx, WX_GPIO_POLARITY, polarity);
-+
-+	return 0;
-+}
-+
-+static const struct irq_chip txgbe_gpio_irq_chip = {
-+	.name = "txgbe_gpio_irq",
-+	.irq_ack = txgbe_gpio_irq_ack,
-+	.irq_mask = txgbe_gpio_irq_mask,
-+	.irq_unmask = txgbe_gpio_irq_unmask,
-+	.irq_set_type = txgbe_gpio_set_type,
-+	.flags = IRQCHIP_IMMUTABLE,
-+	GPIOCHIP_IRQ_RESOURCE_HELPERS,
-+};
-+
-+static void txgbe_irq_handler(struct irq_desc *desc)
-+{
-+	struct irq_chip *chip = irq_desc_get_chip(desc);
-+	struct wx *wx = irq_desc_get_handler_data(desc);
-+	struct txgbe *txgbe = wx->priv;
-+	irq_hw_number_t hwirq;
-+	unsigned long gpioirq;
-+	struct gpio_chip *gc;
-+	u32 gpio;
-+
-+	chained_irq_enter(chip, desc);
-+
-+	gpioirq = rd32(wx, WX_GPIO_INTSTATUS);
-+
-+	/* workaround for hysteretic gpio interrupts */
-+	gpio = rd32(wx, WX_GPIO_EXT);
-+	if (!gpioirq)
-+		gpioirq = txgbe->gpio_orig ^ gpio;
-+
-+	gc = txgbe->gpio;
-+	for_each_set_bit(hwirq, &gpioirq, gc->ngpio)
-+		generic_handle_domain_irq(gc->irq.domain, hwirq);
-+
-+	chained_irq_exit(chip, desc);
-+
-+	/* unmask interrupt */
-+	if (netif_running(wx->netdev))
-+		wx_intr_enable(wx, TXGBE_INTR_MISC(wx));
-+}
-+
-+static int txgbe_gpio_init(struct txgbe *txgbe)
-+{
-+	struct gpio_irq_chip *girq;
-+	struct wx *wx = txgbe->wx;
-+	struct pci_dev *pdev;
-+	struct gpio_chip *gc;
-+	int ret;
-+
-+	pdev = wx->pdev;
-+	txgbe->gpio_orig = 0;
-+
-+	gc = devm_kzalloc(&pdev->dev, sizeof(*gc), GFP_KERNEL);
-+	if (!gc)
-+		return -ENOMEM;
-+
-+	gc->label = devm_kasprintf(&pdev->dev, GFP_KERNEL, "txgbe_gpio-%x",
-+				   (pdev->bus->number << 8) | pdev->devfn);
-+	gc->base = -1;
-+	gc->ngpio = 6;
-+	gc->owner = THIS_MODULE;
-+	gc->parent = &pdev->dev;
-+	gc->fwnode = software_node_fwnode(txgbe->nodes.group[SWNODE_GPIO]);
-+	gc->get = txgbe_gpio_get;
-+	gc->get_direction = txgbe_gpio_get_direction;
-+	gc->direction_input = txgbe_gpio_direction_in;
-+	gc->direction_output = txgbe_gpio_direction_out;
-+	gc->can_sleep = false;
-+
-+	girq = &gc->irq;
-+	gpio_irq_chip_set_chip(girq, &txgbe_gpio_irq_chip);
-+	girq->parent_handler = txgbe_irq_handler;
-+	girq->parent_handler_data = wx;
-+	girq->num_parents = 1;
-+	girq->parents = devm_kcalloc(&pdev->dev, 1, sizeof(*girq->parents),
-+				     GFP_KERNEL);
-+	if (!girq->parents)
-+		return -ENOMEM;
-+	girq->parents[0] = wx->msix_entries[wx->num_q_vectors].vector;
-+	girq->default_type = IRQ_TYPE_NONE;
-+	girq->handler = handle_bad_irq;
-+
-+	ret = devm_gpiochip_add_data(&pdev->dev, gc, wx);
-+	if (ret)
-+		return ret;
-+
-+	txgbe->gpio = gc;
-+
-+	return 0;
-+}
-+
- static int txgbe_i2c_register(struct txgbe *txgbe)
- {
- 	struct pci_dev *pdev = txgbe->wx->pdev;
-@@ -134,6 +356,12 @@ int txgbe_init_phy(struct txgbe *txgbe)
- 		return ret;
- 	}
- 
-+	ret = txgbe_gpio_init(txgbe);
-+	if (ret) {
-+		wx_err(txgbe->wx, "failed to init gpio\n");
-+		goto err_unregister_swnode;
-+	}
-+
- 	ret = txgbe_i2c_register(txgbe);
- 	if (ret) {
- 		wx_err(txgbe->wx, "failed to init i2c interface: %d\n", ret);
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index aa94c4fce311..334803e6a5de 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -55,6 +55,31 @@
- #define TXGBE_TS_CTL                            0x10300
- #define TXGBE_TS_CTL_EVAL_MD                    BIT(31)
- 
-+/* GPIO register bit */
-+#define TXGBE_GPIOBIT_0                         BIT(0) /* I:tx fault */
-+#define TXGBE_GPIOBIT_1                         BIT(1) /* O:tx disabled */
-+#define TXGBE_GPIOBIT_2                         BIT(2) /* I:sfp module absent */
-+#define TXGBE_GPIOBIT_3                         BIT(3) /* I:rx signal lost */
-+#define TXGBE_GPIOBIT_4                         BIT(4) /* O:rate select, 1G(0) 10G(1) */
-+#define TXGBE_GPIOBIT_5                         BIT(5) /* O:rate select, 1G(0) 10G(1) */
-+
-+/* Extended Interrupt Enable Set */
-+#define TXGBE_PX_MISC_ETH_LKDN                  BIT(8)
-+#define TXGBE_PX_MISC_DEV_RST                   BIT(10)
-+#define TXGBE_PX_MISC_ETH_EVENT                 BIT(17)
-+#define TXGBE_PX_MISC_ETH_LK                    BIT(18)
-+#define TXGBE_PX_MISC_ETH_AN                    BIT(19)
-+#define TXGBE_PX_MISC_INT_ERR                   BIT(20)
-+#define TXGBE_PX_MISC_GPIO                      BIT(26)
-+#define TXGBE_PX_MISC_IEN_MASK ( \
-+				TXGBE_PX_MISC_ETH_LKDN | \
-+				TXGBE_PX_MISC_DEV_RST | \
-+				TXGBE_PX_MISC_ETH_EVENT | \
-+				TXGBE_PX_MISC_ETH_LK | \
-+				TXGBE_PX_MISC_ETH_AN | \
-+				TXGBE_PX_MISC_INT_ERR | \
-+				TXGBE_PX_MISC_GPIO)
-+
- /* I2C registers */
- #define TXGBE_I2C_BASE                          0x14900
- 
-@@ -151,6 +176,8 @@ struct txgbe {
- 	struct txgbe_nodes nodes;
- 	struct platform_device *sfp_dev;
- 	struct platform_device *i2c_dev;
-+	struct gpio_chip *gpio;
-+	u32 gpio_orig;
+diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+index 539cd43eae8d..9ddaceda1fe9 100644
+--- a/drivers/net/pcs/pcs-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -64,6 +64,16 @@ static const int xpcs_xlgmii_features[] = {
+ 	__ETHTOOL_LINK_MODE_MASK_NBITS,
  };
  
- #endif /* _TXGBE_TYPE_H_ */
++static const int xpcs_10gbaser_features[] = {
++	ETHTOOL_LINK_MODE_Pause_BIT,
++	ETHTOOL_LINK_MODE_Asym_Pause_BIT,
++	ETHTOOL_LINK_MODE_10000baseSR_Full_BIT,
++	ETHTOOL_LINK_MODE_10000baseLR_Full_BIT,
++	ETHTOOL_LINK_MODE_10000baseLRM_Full_BIT,
++	ETHTOOL_LINK_MODE_10000baseER_Full_BIT,
++	__ETHTOOL_LINK_MODE_MASK_NBITS,
++};
++
+ static const int xpcs_sgmii_features[] = {
+ 	ETHTOOL_LINK_MODE_Pause_BIT,
+ 	ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+@@ -106,6 +116,10 @@ static const phy_interface_t xpcs_xlgmii_interfaces[] = {
+ 	PHY_INTERFACE_MODE_XLGMII,
+ };
+ 
++static const phy_interface_t xpcs_10gbaser_interfaces[] = {
++	PHY_INTERFACE_MODE_10GBASER,
++};
++
+ static const phy_interface_t xpcs_sgmii_interfaces[] = {
+ 	PHY_INTERFACE_MODE_SGMII,
+ };
+@@ -123,6 +137,7 @@ enum {
+ 	DW_XPCS_USXGMII,
+ 	DW_XPCS_10GKR,
+ 	DW_XPCS_XLGMII,
++	DW_XPCS_10GBASER,
+ 	DW_XPCS_SGMII,
+ 	DW_XPCS_1000BASEX,
+ 	DW_XPCS_2500BASEX,
+@@ -246,6 +261,7 @@ static int xpcs_soft_reset(struct dw_xpcs *xpcs,
+ 
+ 	switch (compat->an_mode) {
+ 	case DW_AN_C73:
++	case DW_10GBASER:
+ 		dev = MDIO_MMD_PCS;
+ 		break;
+ 	case DW_AN_C37_SGMII:
+@@ -872,6 +888,8 @@ int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
+ 		return -ENODEV;
+ 
+ 	switch (compat->an_mode) {
++	case DW_10GBASER:
++		break;
+ 	case DW_AN_C73:
+ 		if (phylink_autoneg_inband(mode)) {
+ 			ret = xpcs_config_aneg_c73(xpcs, compat);
+@@ -919,6 +937,27 @@ static int xpcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 	return xpcs_do_config(xpcs, interface, mode, advertising);
+ }
+ 
++static int xpcs_get_state_10gbaser(struct dw_xpcs *xpcs,
++				   struct phylink_link_state *state)
++{
++	int ret;
++
++	state->link = false;
++
++	ret = xpcs_read(xpcs, MDIO_MMD_PCS, MDIO_STAT1);
++	if (ret < 0)
++		return ret;
++
++	if (ret & MDIO_STAT1_LSTATUS) {
++		state->link = true;
++		state->pause = MLO_PAUSE_TX | MLO_PAUSE_RX;
++		state->duplex = DUPLEX_FULL;
++		state->speed = SPEED_10000;
++	}
++
++	return 0;
++}
++
+ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
+ 			      struct phylink_link_state *state,
+ 			      const struct xpcs_compat *compat)
+@@ -1033,6 +1072,14 @@ static void xpcs_get_state(struct phylink_pcs *pcs,
+ 		return;
+ 
+ 	switch (compat->an_mode) {
++	case DW_10GBASER:
++		ret = xpcs_get_state_10gbaser(xpcs, state);
++		if (ret) {
++			pr_err("xpcs_get_state_10gbaser returned %pe\n",
++			       ERR_PTR(ret));
++			return;
++		}
++		break;
+ 	case DW_AN_C73:
+ 		ret = xpcs_get_state_c73(xpcs, state, compat);
+ 		if (ret) {
+@@ -1188,6 +1235,12 @@ static const struct xpcs_compat synopsys_xpcs_compat[DW_XPCS_INTERFACE_MAX] = {
+ 		.num_interfaces = ARRAY_SIZE(xpcs_xlgmii_interfaces),
+ 		.an_mode = DW_AN_C73,
+ 	},
++	[DW_XPCS_10GBASER] = {
++		.supported = xpcs_10gbaser_features,
++		.interface = xpcs_10gbaser_interfaces,
++		.num_interfaces = ARRAY_SIZE(xpcs_10gbaser_interfaces),
++		.an_mode = DW_10GBASER,
++	},
+ 	[DW_XPCS_SGMII] = {
+ 		.supported = xpcs_sgmii_features,
+ 		.interface = xpcs_sgmii_interfaces,
+@@ -1290,6 +1343,9 @@ struct dw_xpcs *xpcs_create(struct mdio_device *mdiodev,
+ 		}
+ 
+ 		xpcs->pcs.ops = &xpcs_phylink_ops;
++		if (compat->an_mode == DW_10GBASER)
++			return xpcs;
++
+ 		xpcs->pcs.poll = true;
+ 
+ 		ret = xpcs_soft_reset(xpcs, compat);
+diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
+index d2da1e0b4a92..61df0c717a0e 100644
+--- a/include/linux/pcs/pcs-xpcs.h
++++ b/include/linux/pcs/pcs-xpcs.h
+@@ -18,6 +18,7 @@
+ #define DW_AN_C37_SGMII			2
+ #define DW_2500BASEX			3
+ #define DW_AN_C37_1000BASEX		4
++#define DW_10GBASER			5
+ 
+ struct xpcs_id;
+ 
 -- 
 2.27.0
 
