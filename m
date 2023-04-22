@@ -2,52 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5508D6EB888
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 12:18:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B496EB8E3
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 13:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbjDVKSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 06:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47486 "EHLO
+        id S229647AbjDVLsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 07:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbjDVKSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 06:18:16 -0400
-Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9056B1FD6;
-        Sat, 22 Apr 2023 03:18:08 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1682158685; bh=yqiaxdewJrN1/O7q8yubLYta1s4c/hqngkUF7U3apls=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=ohwAnfUVFQ6rIhKYei+EWGQuqNFD18sVNEM43Qdn4/7vF+eWx1RIyso7InCLDuira
-         HLd2lRvqx4S/pfYE3adERhu4yk4GwCo0oeML+/363WG9c949KXTCrCQZm611tb3Zrs
-         an59cJDKIYeH5WoYLaJxIkqAGz6UvV41SE50h6WLaO1KDPcMuRRDtVkBnoqgtM985n
-         6GKNqvGPmKNDu/Z+3IbUx0WNpaCy0LHCdtOVVZvahII3k1gVMLs2r94IvUUgYkF2B/
-         YGLGjCrWLjlfZoPyU2mAyEOZohPZiWMXOhH4wTM94jKEdUvLbe2dS72UNA4saOimGO
-         iwqHAOj7TpoIA==
-To:     Simon Horman <simon.horman@corigine.com>,
-        Peter Seiderer <ps.report@gmx.net>
-Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229508AbjDVLsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 07:48:19 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DA21BF2;
+        Sat, 22 Apr 2023 04:48:17 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pqBis-000840-13;
+        Sat, 22 Apr 2023 13:48:10 +0200
+Date:   Sat, 22 Apr 2023 12:48:06 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sujith Manoharan <c_manoha@qca.qualcomm.com>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Gregg Wonderly <greggwonderly@seqtechllc.com>
-Subject: Re: [PATCH v1] wifi: ath9k: fix AR9003 mac hardware hang check
- register offset calculation
-In-Reply-To: <ZEOf7LXAkdLR0yFI@corigine.com>
-References: <20230420204316.30475-1-ps.report@gmx.net>
- <ZEOf7LXAkdLR0yFI@corigine.com>
-Date:   Sat, 22 Apr 2023 12:18:03 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87bkjgmd9g.fsf@toke.dk>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Chen Minqiang <ptpt52@gmail.com>, Chukun Pan <amadeus@jmu.edu.cn>,
+        Yevhen Kolomeiko <jarvis2709@gmail.com>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: [RFC PATCH net-next 0/8] Improvements for RealTek 2.5G Ethernet PHYs
+Message-ID: <cover.1682163424.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,55 +47,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simon Horman <simon.horman@corigine.com> writes:
+Improve support for RealTek 2.5G Ethernet PHYs (RTL822x series).
+The PHYs can operate with Clause-22 and Clause-45 MDIO.
 
-> On Thu, Apr 20, 2023 at 10:43:16PM +0200, Peter Seiderer wrote:
->> Fix ath9k_hw_verify_hang()/ar9003_hw_detect_mac_hang() register offset
->> calculation (do not overflow the shift for the second register/queues
->> above five, use the register layout described in the comments above
->> ath9k_hw_verify_hang() instead).
->> 
->> Fixes: 222e04830ff0 ("ath9k: Fix MAC HW hang check for AR9003")
->> 
->> Reported-by: Gregg Wonderly <greggwonderly@seqtechllc.com>
->> Link: https://lore.kernel.org/linux-wireless/E3A9C354-0CB7-420C-ADEF-F0177FB722F4@seqtechllc.com/
->> Signed-off-by: Peter Seiderer <ps.report@gmx.net>
->> ---
->> Notes:
->>   - tested with MikroTik R11e-5HnD/Atheros AR9300 Rev:4 (lspci: 168c:0033
->>     Qualcomm Atheros AR958x 802.11abgn Wireless Network Adapter (rev 01))
->>     card
->> ---
->>  drivers/net/wireless/ath/ath9k/ar9003_hw.c | 27 ++++++++++++++--------
->>  1 file changed, 18 insertions(+), 9 deletions(-)
->> 
->> diff --git a/drivers/net/wireless/ath/ath9k/ar9003_hw.c b/drivers/net/wireless/ath/ath9k/ar9003_hw.c
->> index 4f27a9fb1482..0ccf13a35fb4 100644
->> --- a/drivers/net/wireless/ath/ath9k/ar9003_hw.c
->> +++ b/drivers/net/wireless/ath/ath9k/ar9003_hw.c
->> @@ -1099,17 +1099,22 @@ static bool ath9k_hw_verify_hang(struct ath_hw *ah, unsigned int queue)
->>  {
->>  	u32 dma_dbg_chain, dma_dbg_complete;
->>  	u8 dcu_chain_state, dcu_complete_state;
->> +	unsigned int dbg_reg, reg_offset;
->>  	int i;
->>  
->> -	for (i = 0; i < NUM_STATUS_READS; i++) {
->> -		if (queue < 6)
->> -			dma_dbg_chain = REG_READ(ah, AR_DMADBG_4);
->> -		else
->> -			dma_dbg_chain = REG_READ(ah, AR_DMADBG_5);
->> +	if (queue < 6) {
->> +		dbg_reg = AR_DMADBG_4;
->> +		reg_offset = i * 5;
->
-> Hi Peter,
->
-> unless my eyes are deceiving me, i is not initialised here.
+When using Clause-45 it is desireable to avoid rate-adapter mode and
+rather have the MAC interface mode follow the PHY speed. The PHYs
+support 2500Base-X for 2500M, and Cisco SGMII for 1000M/100M/10M.
 
-Nice catch! Hmm, I wonder why my test compile didn't complain about
-that? Or maybe it did and I overlooked it? Anyway, Kalle, I already
-delegated this patch to you in patchwork, so please drop it and I'll try
-to do better on reviewing the next one :)
+Also prepare support for proprietary RealTek HiSGMII mode which will
+be needed for situations when used with RealTek switch or router SoCs
+such as RTL93xx.
 
--Toke
+Add support for Link Down Power Saving Mode (ALDPS) which is already
+supported for older RTL821x series 1GbE PHYs.
+
+Make sure that link-partner advertised modes are only used if the
+advertisement can be considered valid. Otherwise we are seeing
+false-positives warning about downscaling eventhough higher speeds
+are not actually advertised by the link partner.
+
+While at it, improve the driver by using existing macros and inline
+functions which are not actually vendor specific.
+
+Alexander Couzens (1):
+  net: phy: realtek: rtl8221: allow to configure SERDES mode
+
+Chukun Pan (1):
+  net: phy: realtek: switch interface mode for RTL822x series
+
+Daniel Golle (6):
+  net: phy: realtek: use genphy_soft_reset for 2.5G PHYs
+  net: phy: realtek: disable SGMII in-band AN for 2.5G PHYs
+  net: phy: realtek: use phy_read_paged instead of open coding
+  net: phy: realtek: use inline functions for 10GbE advertisement
+  net: phy: realtek: check validity of 10GbE link-partner advertisement
+  net: phy: realtek: setup ALDPS on RTL822x
+
+ drivers/net/phy/realtek.c | 152 ++++++++++++++++++++++++++++++++------
+ 1 file changed, 130 insertions(+), 22 deletions(-)
+
+
+base-commit: fbc1449d385d65be49a8d164dfd3772f2cb049ae
+-- 
+2.40.0
+
