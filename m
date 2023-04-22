@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A03D6EB8E9
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 13:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 047946EB8EB
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 13:49:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229642AbjDVLtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 07:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
+        id S229663AbjDVLtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 07:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbjDVLtE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 07:49:04 -0400
+        with ESMTP id S229782AbjDVLtJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 07:49:09 -0400
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004322116;
-        Sat, 22 Apr 2023 04:48:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4912826AF;
+        Sat, 22 Apr 2023 04:48:54 -0700 (PDT)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1pqBjO-000853-1B;
-        Sat, 22 Apr 2023 13:48:42 +0200
-Date:   Sat, 22 Apr 2023 12:48:38 +0100
+        id 1pqBjY-00085G-2M;
+        Sat, 22 Apr 2023 13:48:52 +0200
+Date:   Sat, 22 Apr 2023 12:48:48 +0100
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Andrew Lunn <andrew@lunn.ch>,
@@ -33,9 +33,9 @@ To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
 Cc:     Chen Minqiang <ptpt52@gmail.com>, Chukun Pan <amadeus@jmu.edu.cn>,
         Yevhen Kolomeiko <jarvis2709@gmail.com>,
         Alexander Couzens <lynxis@fe80.eu>
-Subject: [RFC PATCH net-next 3/8] net: phy: realtek: use genphy_soft_reset
+Subject: [RFC PATCH net-next 4/8] net: phy: realtek: disable SGMII in-band AN
  for 2.5G PHYs
-Message-ID: <3ddae95741d87b94c9d135f3c0acfa1617f91836.1682163424.git.daniel@makrotopia.org>
+Message-ID: <87f666009413e8c6edac1ba30533b8f97a4fee76.1682163424.git.daniel@makrotopia.org>
 References: <cover.1682163424.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -50,68 +50,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some vendor bootloaders do weird things with those PHYs which result in
-link modes being reported wrongly. Start from a clean sheet by resetting
-the PHY.
+MAC drivers don't use SGMII in-band autonegotiation unless told to do so
+in device tree using 'managed = "in-band-status"'. When using MDIO to
+access a PHY, in-band-status is unneeded as we have link-status via
+MDIO. Switch off SGMII in-band autonegotiation using magic values.
 
+Reported-by: Chen Minqiang <ptpt52@gmail.com>
+Reported-by: Chukun Pan <amadeus@jmu.edu.cn>
 Reported-by: Yevhen Kolomeiko <jarvis2709@gmail.com>
+Tested-by: Yevhen Kolomeiko <jarvis2709@gmail.com>
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/phy/realtek.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/phy/realtek.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 34fd86b8ecf7d..9b477dd17fa56 100644
+index 9b477dd17fa56..f97b5e49fae58 100644
 --- a/drivers/net/phy/realtek.c
 +++ b/drivers/net/phy/realtek.c
-@@ -1038,6 +1038,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.write_page	= rtl821x_write_page,
- 		.read_mmd	= rtl822x_read_mmd,
- 		.write_mmd	= rtl822x_write_mmd,
-+		.soft_reset     = genphy_soft_reset,
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc840),
- 		.name		= "RTL8226B_RTL8221B 2.5Gbps PHY",
-@@ -1050,6 +1051,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.write_page	= rtl821x_write_page,
- 		.read_mmd	= rtl822x_read_mmd,
- 		.write_mmd	= rtl822x_write_mmd,
-+		.soft_reset     = genphy_soft_reset,
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc838),
- 		.name           = "RTL8226-CG 2.5Gbps PHY",
-@@ -1060,6 +1062,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.resume         = rtlgen_resume,
- 		.read_page      = rtl821x_read_page,
- 		.write_page     = rtl821x_write_page,
-+		.soft_reset     = genphy_soft_reset,
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc848),
- 		.name           = "RTL8226B-CG_RTL8221B-CG 2.5Gbps PHY",
-@@ -1070,6 +1073,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.resume         = rtlgen_resume,
- 		.read_page      = rtl821x_read_page,
- 		.write_page     = rtl821x_write_page,
-+		.soft_reset     = genphy_soft_reset,
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc849),
- 		.name           = "RTL8221B-VB-CG 2.5Gbps PHY",
-@@ -1081,6 +1085,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.resume         = rtlgen_resume,
- 		.read_page      = rtl821x_read_page,
- 		.write_page     = rtl821x_write_page,
-+		.soft_reset     = genphy_soft_reset,
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc84a),
- 		.name           = "RTL8221B-VM-CG 2.5Gbps PHY",
-@@ -1092,6 +1097,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.resume         = rtlgen_resume,
- 		.read_page      = rtl821x_read_page,
- 		.write_page     = rtl821x_write_page,
-+		.soft_reset     = genphy_soft_reset,
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc961),
- 		.name		= "RTL8366RB Gigabit Ethernet",
+@@ -883,6 +883,7 @@ static irqreturn_t rtl9000a_handle_interrupt(struct phy_device *phydev)
+ static int rtl8221b_config_init(struct phy_device *phydev)
+ {
+ 	u16 option_mode;
++	int val;
+ 
+ 	switch (phydev->interface) {
+ 	case PHY_INTERFACE_MODE_2500BASEX:
+@@ -919,6 +920,13 @@ static int rtl8221b_config_init(struct phy_device *phydev)
+ 		break;
+ 	}
+ 
++	/* Disable SGMII AN */
++	phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x7588, 0x2);
++	phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x7589, 0x71d0);
++	phy_write_mmd(phydev, RTL8221B_MMD_SERDES_CTRL, 0x7587, 0x3);
++	phy_read_mmd_poll_timeout(phydev, RTL8221B_MMD_SERDES_CTRL, 0x7587,
++				  val, !(val & BIT(0)), 500, 100000, false);
++
+ 	return 0;
+ }
+ 
 -- 
 2.40.0
 
