@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A918F6EB63B
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 02:10:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4CA6EB67B
+	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 02:28:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232316AbjDVAKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Apr 2023 20:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49530 "EHLO
+        id S233714AbjDVA2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Apr 2023 20:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233985AbjDVAKA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 20:10:00 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 333A72711
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 17:09:53 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id af79cd13be357-74dd7f52f18so757155185a.0
-        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 17:09:53 -0700 (PDT)
+        with ESMTP id S229543AbjDVA2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Apr 2023 20:28:37 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A511FC8
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 17:28:35 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id d2e1a72fcca58-63b64a32fd2so3773411b3a.2
+        for <netdev@vger.kernel.org>; Fri, 21 Apr 2023 17:28:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682122192; x=1684714192;
+        d=mistywest-com.20221208.gappssmtp.com; s=20221208; t=1682123315; x=1684715315;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=WNjW7f471JL4W1ME4i5jfMUu4UnLz7UzihUF+iDnRmE=;
-        b=bpQ/d9Ojk7k7tTlu4jYG3q7l7e53J7vuJgO+C3W5sUU5tpsBrzkL6oarq/bvFkYC6E
-         xD/I6HqFgR3sZIHYsyJXhhpFbNsfP27XmH61WrPhbAJpyEc+J7cs1U/GXuevtP69bwG4
-         kb6wu732N1DkXAo10RkEZKKFxlJIiSpc2s0kylB2hdq4/AIbc9SvQTiD1KmanhfKptRq
-         LpEr3ipYzefRyiSvqqipas0umiGdQ+HkTv9RlRY4jWA1ulRP+HF+U+r4RKx6kZdUmS+D
-         gF2tJMy3IgZ9qg3YHmf4W2bHDvP5gZU6bC3KhyW4LlIboOTibaueompvEVVdJoc6Rr/K
-         Z/kQ==
+        bh=veilCORcRNSuKxm1iLp9ALxqsCd99IMppDQQT/hGk1w=;
+        b=OK9g40i8cwTTey0FOQjhh2gGZPC81dP662fMQ4/XV9Uiff9SouZqL9Gw3ZVC8vGalL
+         YWTkjZ/bU9QbVFuxBWJLWzRTk5qdIKT/bFIatFDkQa5Z1xC8eM7RIfmSVnhFQgh9icki
+         x3++uy444bbV2WtOtBHEDyK3/RbubjZSMsNGbCRgYajO14RcWM9gB4/bv3vXiky7y8UK
+         YAREPwGqU8Cdtp+AbjsofujjvTdHaE5lt9BnKJYTWvufivixlkY1al6RhCBzn2IyGyAd
+         M80sFZ51plx5CTH1gx1l9LQTUfFxNctXmQMWnoQtxHBKZA4ltb60/RyqzCbhvq3NGpy6
+         980g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682122192; x=1684714192;
+        d=1e100.net; s=20221208; t=1682123315; x=1684715315;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WNjW7f471JL4W1ME4i5jfMUu4UnLz7UzihUF+iDnRmE=;
-        b=Q3f1XVMH5jYcU3uED+6TtFGDQ2xzY5tZrMb9y/Qgy2DdTNHl0+7WPEdO6YSH9cs3C7
-         KlgEmOG13uZT8zpzgqN7zVOUcnKAEpb5a/kT7nVomX6GN8CD3fgRlnrTAwz29Ja6nYzL
-         c2FNEg7PYT1bj89YzYq4eofVMZMeWai0GojGANDSBCYOPwdD5ZZM9Reim8auruifArDS
-         juuPZfTTZ7i+LyS8PEqi8uAXlpE7VLrkuJYqyomFI46Gx3+sawHJRRcd+EJfjSdF88IW
-         B6v5N70374cs5JL8nuB6qjo/1qqxeDsXH3M8aqz0l4ouY3rOGZUK6bzJ9P0Mt59Q2dnG
-         fnKg==
-X-Gm-Message-State: AAQBX9deik4GWVmfWxNjA7kJHXwKCp0nhbpjhGlMwrhvU3tcupVtyvvs
-        1ByNLj1yQvJ+YC2ouCEsSvgOtz+MBmI=
-X-Google-Smtp-Source: AKy350Zl+q6+kwiqP6U+TY7o6ZBmhepPJxp494xMOGZItIhjloiCC4ILBcX7JpX//Jvm3KLhykaT8Q==
-X-Received: by 2002:a05:622a:5d0:b0:3ed:164c:6834 with SMTP id d16-20020a05622a05d000b003ed164c6834mr13150086qtb.27.1682122192197;
-        Fri, 21 Apr 2023 17:09:52 -0700 (PDT)
-Received: from ?IPV6:2607:fb90:584:fcdd:fd95:2484:da72:9562? ([2607:fb90:584:fcdd:fd95:2484:da72:9562])
-        by smtp.gmail.com with ESMTPSA id c17-20020a05620a269100b0074e005d1f2csm1707871qkp.43.2023.04.21.17.09.50
+        bh=veilCORcRNSuKxm1iLp9ALxqsCd99IMppDQQT/hGk1w=;
+        b=VBEF3GB24KuNadB7ue5l6xCKm7foxi9PM999xxEfp2OECHuWigPPFmEqn70Gas/T0Z
+         9ImxxbdVo6vwg5I6Kmw0umlqmXa4IslaEzfrbWHmJxtgAwRJDfn7c0ScDPtC1+a+/8wf
+         T1y22cLs3C+twmksD4z0Eq5/x6jlbl7NFIE4gmPbq9q5TQqAgG3OhKH8MAaoxqUmWmoS
+         MCFZlqIOrwFGPqJ4TVzeSKhsnMQjEUrpppB97o4OzM6Z2ixUtnQMbkCTiQ59huH8Io2E
+         sOmyDRXVNMf94W299My+Z8C0iadA8KeyYSMal3ZHD2AHQwd78yxb89PuH0/DR9N7U+Sp
+         QRlg==
+X-Gm-Message-State: AAQBX9dgLZ/F5qlPg18rKfsSRsjycI6WZulFlhj18wHWjgUIbV1K4cQb
+        vHirakFPFbZGIRg5hv7TlBEBuw==
+X-Google-Smtp-Source: AKy350ZXwg5hCaMZKxkpVP0aZngb3MSY6V2Rpd8FyP7KSgRH02EoFjn1iG3nG1LCHumX4HUbbNz0iQ==
+X-Received: by 2002:a05:6a00:1a8b:b0:623:8592:75c4 with SMTP id e11-20020a056a001a8b00b00623859275c4mr8649660pfv.29.1682123315162;
+        Fri, 21 Apr 2023 17:28:35 -0700 (PDT)
+Received: from [192.168.1.222] (S01061c937c8195ad.vc.shawcable.net. [24.87.33.175])
+        by smtp.gmail.com with ESMTPSA id s18-20020a056a00195200b0063b96574b8bsm3461300pfk.220.2023.04.21.17.28.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Apr 2023 17:09:51 -0700 (PDT)
-Message-ID: <e65a8575-8a76-4b09-c398-aee5272921a7@gmail.com>
-Date:   Fri, 21 Apr 2023 17:09:50 -0700
+        Fri, 21 Apr 2023 17:28:34 -0700 (PDT)
+Message-ID: <340234b8-91d3-3c1e-b985-9a2298b377aa@mistywest.com>
+Date:   Fri, 21 Apr 2023 17:28:32 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
 Subject: Re: issues to bring up two VSC8531 PHYs
 Content-Language: en-US
-To:     Ron Eggler <ron.eggler@mistywest.com>, Andrew Lunn <andrew@lunn.ch>
+To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
         Russell King - ARM Linux <linux@armlinux.org.uk>
 References: <5eb810d7-6765-4de5-4eb0-ad0972bf640d@mistywest.com>
@@ -67,49 +67,135 @@ References: <5eb810d7-6765-4de5-4eb0-ad0972bf640d@mistywest.com>
  <b3776edd-e337-44a4-8196-a6a94b498991@lunn.ch>
  <02b26c6f-f056-cec6-daf1-5e7736363d4e@mistywest.com>
  <7bb09c7c-24fc-4c8d-8068-f163082ab781@lunn.ch>
- <fa806e4a-b706-ce54-b3e0-b95d065e8d4a@mistywest.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <fa806e4a-b706-ce54-b3e0-b95d065e8d4a@mistywest.com>
+From:   Ron Eggler <ron.eggler@mistywest.com>
+In-Reply-To: <7bb09c7c-24fc-4c8d-8068-f163082ab781@lunn.ch>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/21/2023 3:55 PM, Ron Eggler wrote:
-> 
-> On 4/21/23 09:35, Andrew Lunn wrote:
->>>> You can also try:
->>>>
->>>> ethtool --phy-statistics ethX
->>> after appliaction of the above patch, ethtool tells me
+On 4/21/23 09:35, Andrew Lunn wrote:
+>>> You can also try:
 >>>
->>> # ethtool --phy-statistics eth0
->>> PHY statistics:
->>>       phy_receive_errors: 65535
->>>      phy_idle_errors: 255
->> So these have saturated. Often these counters don't wrap, they stop at
->> the maximum value.
+>>> ethtool --phy-statistics ethX
+>> after appliaction of the above patch, ethtool tells me
 >>
->> These errors also indicate your problem is probably not between the
->> MAC and the PHY, but between the PHY and the RJ45 socket. Or maybe how
->> the PHY is clocked. It might not have a stable clock, or the wrong
->> clock frequency.
-> 
-> The man page (https://www.man7.org/linux/man-pages/man8/ethtool.8.html) 
-> does not give any details about what phy_receive_errors or 
-> phy_idle_errors refer to exactly, is there any documentation about it 
-> that I could not find?
+>> # ethtool --phy-statistics eth0
+>> PHY statistics:
+>>       phy_receive_errors: 65535
+>>      phy_idle_errors: 255
+> So these have saturated. Often these counters don't wrap, they stop at
+> the maximum value.
+>
+> These errors also indicate your problem is probably not between the
+> MAC and the PHY, but between the PHY and the RJ45 socket. Or maybe how
+> the PHY is clocked. It might not have a stable clock, or the wrong
+> clock frequency.
 
-The statistics are inherently PHY specific and how a driver writer 
-choses to map a name to a specific PHY counter is backed within the driver.
+Oh and as for the clock, there's a 25MHz, +/- 20ppm  crystal hooked up 
+to XTAL1 & XTAL2 pins which is a supported clock source (per datasheet) 
+but I also see in the following:
+
+For RGMII mode: Configure register 20E2 (to access register 20E2, 
+register 31 must be set to 2).
+Set bit 11 to 0 and set RX_CLK delay and TX_CLK delay accordingly 
+through bit [6:4] and/or bit [2:0]
+respectively.
+
+I figured out that the register 20E2 is in the extended register space 
+which is accessible when register 0x1F is set to 0x0002. I've been able 
+to set and read it, I found a nice loop from David Creger that reads the 
+complete register space and prints it to stdout:
+
+# x=0; while  [ $x -le 31 ]; do printf  "Register 0x%02X = " $x ; 
+phytool read eth0/0/$x  $(( x++ )) ; done
+Register 0x00 = 0x1040
+Register 0x01 = 0x796d
+Register 0x02 = 0x0007
+Register 0x03 = 0x0572
+Register 0x04 = 0x0101
+Register 0x05 = 0x45e1
+Register 0x06 = 0x0005
+Register 0x07 = 0x2801
+Register 0x08 = 0000
+Register 0x09 = 0x0200
+Register 0x0A = 0x4000
+Register 0x0B = 0000
+Register 0x0C = 0000
+Register 0x0D = 0000
+Register 0x0E = 0000
+Register 0x0F = 0x3000
+Register 0x10 = 0x028e
+Register 0x11 = 0x0100
+Register 0x12 = 0x0800
+Register 0x13 = 0000
+Register 0x14 = 0000
+Register 0x15 = 0000
+Register 0x16 = 0000
+Register 0x17 = 0000
+Register 0x18 = 0000
+Register 0x19 = 0000
+Register 0x1A = 0000
+Register 0x1B = 0x0ff0
+Register 0x1C = 0000
+Register 0x1D = 0000
+Register 0x1E = 0x0030
+Register 0x1F = 0x0002
+
+and per the datasheet, the extended registers space maps into the above 
+registers 16 - 30 like:
+
+Address Name
+16E2 Cu PMD Transmit Control
+17E2 EEE Control
+18E2–19E2 Reserved
+20E2 RGMII Control
+21E2 Wake-on-LAN MAC Address [15:0]
+22E2 Wake-on-LAN MAC Address [31:16]
+23E2 Wake-on-LAN MAC Address [47:32]
+24E2 Secure-On Password [15:0]
+25E2 Secure-On Password [31:16]
+26E2 Secure-On Password [47:32]
+27E2 Wake-on-LAN and MAC Interface Control
+28E2 Extended Interrupt Mask
+29E2 Extended Interrupt Status
+30E2 Reserved
+
+So per my calculations:
+
+Register 0x10 = -> 16E2
+Register 0x11 = -> 17E2
+Register 0x12 = -> 18E2
+Register 0x13 = -> 19E2
+Register 0x14 = -> 20E2
+Register 0x15 = -> 21E2
+Register 0x16 = -> 22E2
+Register 0x17 = -> 23E2
+Register 0x18 = -> 24E2
+Register 0x19 = -> 25E2
+Register 0x1A = -> 26E2
+Register 0x1B = -> 27E2
+Register 0x1C = -> 28E2
+Register 0x1D = -> 29E2
+Register 0x1E = -> 30E2
+
+20 (0x14) maps into 20E2 but I'm not fully certain what RX_CLK and 
+TX_CLK should be set to, can anyone help me out, here?
+
+datasheet: 
+https://www.microchip.com/content/dam/mchp/documents/OTH/ProductDocuments/DataSheets/VMDS-10514.pdf
+
+Also, should the above delay configuration not be part of the driver and 
+configurable through the device tree?
+
+https://www.kernel.org/doc/Documentation/devicetree/bindings/net/mscc-phy-vsc8531.txt
+
 -- 
-Florian
+RON EGGLER Firmware Engineer (he/him/his) www.mistywest.com
