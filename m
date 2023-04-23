@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9BFE6EBF14
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 13:09:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80AAD6EBF17
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 13:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbjDWLJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 07:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
+        id S229606AbjDWLK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 07:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjDWLJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 07:09:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE6D10C6
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 04:08:32 -0700 (PDT)
+        with ESMTP id S229478AbjDWLK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 07:10:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492711993
+        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 04:09:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682248112;
+        s=mimecast20190719; t=1682248180;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=YJ86ZVDYRM9CotkEiqPEtZYHk4qaL2Mn/oKfEYumLFI=;
-        b=f5SAWhttc4AiAw759Ji7WL4BpPSZ7VbyQfikV3oYvT3O1euRyjVpZReRgpa5K2vIyk9h17
-        9m5KIC4UOF7qCzjE/eqXcC6EJJzeTQlddoL0JJGQ5s+iBSwaRUCciYRtojIvHw+4cgDErv
-        f8BZoIrYHwUM6SKFAdEDa2isDKQ3SGU=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=qa5an+pMO/z37xFkKNIb5d1qvmQCeDMySUintGMWRFc=;
+        b=hZyAQxig93D7opNlNrGlV4Jhqzaygjfsz6q5Xby9xzIz0d10eqjwoyZnkCxeQIwxp4ITrq
+        8n1uaorOvEwg7zudRvc+OyZH1WhQDHFaQSwFU4jEbQxHGDMKnQj3hipmbPl/T5GR4msyde
+        rjjOq/8imvravYahmDO0o6LzRnZRzfA=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-331-I41Q3m2XNv2kQ1GwBn95fw-1; Sun, 23 Apr 2023 07:08:31 -0400
-X-MC-Unique: I41Q3m2XNv2kQ1GwBn95fw-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f080f53d62so11235425e9.0
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 04:08:30 -0700 (PDT)
+ us-mta-558-83J4ls7cMHm4UQJ4DSZ4Yw-1; Sun, 23 Apr 2023 07:09:39 -0400
+X-MC-Unique: 83J4ls7cMHm4UQJ4DSZ4Yw-1
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f16ef3be6eso19785315e9.3
+        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 04:09:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682248110; x=1684840110;
+        d=1e100.net; s=20221208; t=1682248178; x=1684840178;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YJ86ZVDYRM9CotkEiqPEtZYHk4qaL2Mn/oKfEYumLFI=;
-        b=d9fHC24v62jFPx29Vj0WTtpGOw1FdqPiIkqfGYmCWRF7xNUne5RZ/CgGOaRgWF6AlA
-         K73m4G9FIEw3B9i69nsfuSr+cD5TM+CGKue3+n95ygGjNfKaf3yuOck3BQGn0Ze96xhh
-         zLSSd81qWQlqI1U6UaKE5BQ+yG/7z+kkELGWZsnnzUEcTHrg32qUzlqh7Vz8GHxNt2vs
-         lgnvB5MLLhgSekncX6r2fkuPsoM5tyoyGiJ2L16rEaLcNGKD4xjXJ0nAheaKO91J3Y7H
-         sDbfb/uJgXIeFuBLPBvezCNwVlym5xwklcRm8kLGl7q04PZQ3PCSo/pCw+Y8c3jk+osb
-         /FYw==
-X-Gm-Message-State: AAQBX9f6o4kIs1RLGIYN8Gh8s3jFtB/qF5inMINlJQbDuYy8jn5BTl9c
-        NfG4O5IpH6FaEZ3iXwItrC9W0FJuiZ7/koiSqasBEySRsUUUu6Kpz0TZNmILWfwoQwttC0G1a7Q
-        XpoEoPLjYnLuuP4qz
-X-Received: by 2002:a7b:c393:0:b0:3f1:6458:99a7 with SMTP id s19-20020a7bc393000000b003f1645899a7mr5314659wmj.38.1682248109913;
-        Sun, 23 Apr 2023 04:08:29 -0700 (PDT)
-X-Google-Smtp-Source: AKy350Z/eTtNo8BI6gHMtlywU6k2jFJAtKMz2XjK/PppbaZmNDeKGTzU6hmsHxo9LguBSKtEf649Aw==
-X-Received: by 2002:a7b:c393:0:b0:3f1:6458:99a7 with SMTP id s19-20020a7bc393000000b003f1645899a7mr5314651wmj.38.1682248109608;
-        Sun, 23 Apr 2023 04:08:29 -0700 (PDT)
+        bh=qa5an+pMO/z37xFkKNIb5d1qvmQCeDMySUintGMWRFc=;
+        b=lKYZ/AUGhg5AzG5NiuoMrFaUSLynT4EVxixUd9EL9wrC7I/hSYPOmVwz64tfsh1s+r
+         5dORa5I2g/8sMwaMck7Y99kvdsTETYDTLO7CZEuhINlaVHb1PHSTsjK+EUAfdvH3e0qV
+         oow2OvWXVbM4Hqhw48MhBhap6G/NM+zkp00kPQNnRTrMTX+4/dTTfvYhJLj5ds4sp/3s
+         UxRVB+gVV3VZghCo6QsH+G/l8XYOv5z1SEqSXy25FwmsnuQ6GLq+FMCW5S/en/p7we8S
+         hgqp6j+Kpmjn/smMpRFvaCBosTZvVpd9++Fp+0invyUXXG5aPP7a2qqs+0YVm2gVUaoT
+         GjyQ==
+X-Gm-Message-State: AAQBX9cl1yg/eJ8JNAmca5leE9RTzrbLNFvMDZV4QY3ePqKOCgtx5ttE
+        WJavS6qrhvPpuyfbwyoohBoy4cbY5nBjug5WlNzAj26xU3aG9hrrLq7lggqq7qv37JExjdkiuAl
+        VBECMhSHG9tTeDK+B
+X-Received: by 2002:a05:6000:1091:b0:2fb:1d3a:93ff with SMTP id y17-20020a056000109100b002fb1d3a93ffmr7134586wrw.61.1682248177956;
+        Sun, 23 Apr 2023 04:09:37 -0700 (PDT)
+X-Google-Smtp-Source: AKy350aV4IFxLAe3RJ8HQ8N5xqnVRos1U8Sc00vmSPnpomKazzuEb3lleaW1Py4Fcaqvh482tdyrOA==
+X-Received: by 2002:a05:6000:1091:b0:2fb:1d3a:93ff with SMTP id y17-20020a056000109100b002fb1d3a93ffmr7134574wrw.61.1682248177654;
+        Sun, 23 Apr 2023 04:09:37 -0700 (PDT)
 Received: from redhat.com ([2.55.61.39])
-        by smtp.gmail.com with ESMTPSA id k36-20020a05600c1ca400b003f1733feb3dsm12878417wms.0.2023.04.23.04.08.27
+        by smtp.gmail.com with ESMTPSA id bi26-20020a05600c3d9a00b003eddc6aa5fasm9043356wmb.39.2023.04.23.04.09.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Apr 2023 04:08:29 -0700 (PDT)
-Date:   Sun, 23 Apr 2023 07:08:25 -0400
+        Sun, 23 Apr 2023 04:09:37 -0700 (PDT)
+Date:   Sun, 23 Apr 2023 07:09:33 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
+Cc:     "jasowang@redhat.com" <jasowang@redhat.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "edumazet@google.com" <edumazet@google.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
@@ -67,38 +67,41 @@ Cc:     Jason Wang <jasowang@redhat.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH net] virtio-net: reject small vring sizes
-Message-ID: <20230423070705-mutt-send-email-mst@kernel.org>
-References: <20230417030713-mutt-send-email-mst@kernel.org>
- <AM0PR04MB4723F3E6AE381AEC36D1AEFED49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230417051816-mutt-send-email-mst@kernel.org>
- <AM0PR04MB47237705695AFD873DEE4530D49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230417073830-mutt-send-email-mst@kernel.org>
- <AM0PR04MB4723FA4F0FFEBD25903E3344D49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230417075645-mutt-send-email-mst@kernel.org>
- <AM0PR04MB4723FA90465186B5A8A5C001D4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230423031308-mutt-send-email-mst@kernel.org>
- <AM0PR04MB472392318BC9A36CBA7AF19AD4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
+Message-ID: <20230423070849-mutt-send-email-mst@kernel.org>
+References: <20230416074607.292616-1-alvaro.karsz@solid-run.com>
+ <20230416163751-mutt-send-email-mst@kernel.org>
+ <AM0PR04MB4723F658DCBF66632A74592BD49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <AM0PR04MB472392318BC9A36CBA7AF19AD4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
+In-Reply-To: <AM0PR04MB4723F658DCBF66632A74592BD49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
 X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 23, 2023 at 08:01:35AM +0000, Alvaro Karsz wrote:
-> We could add a new virtio_config_ops: peek_vqs.
-> We can call it during virtnet_validate, and then fixup the features in case of small vrings.
+On Mon, Apr 17, 2023 at 06:43:39AM +0000, Alvaro Karsz wrote:
+> > > +static int virtnet_validate_vqs(struct virtnet_info *vi)
+> > > +{
+> > > +     u32 i, min_size = roundup_pow_of_two(MAX_SKB_FRAGS + 2);
+> > 
+> > why power of two?
 > 
-> If peek_vqs is not implemented by the transport, we can just fail probe later in case of small vrings.
-> 
+> The ring size is always a power of 2,
 
-Nope, we can't. Driver is not supposed to discover vqs before
-FEATURES_OK, the vq size might depend on features.
+Not really, packed rings allow non power of 2.
+Linux had a bug that it required power of 2 for packed, but
+we are fixing that finally.
+
+> so checking against
+> MAX_SKB_FRAGS + 2 or against roundup_pow_of_two will result in the
+> same, and I think that printing the warning with the actual min value
+> is more helpful.  I can check the condition against MAX_SKB_FRAGS + 2,
+> and print the rounded value in case of an error.
+> 
 
