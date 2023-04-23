@@ -2,195 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37C5A6EC055
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 16:21:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ABCE6EC073
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 16:43:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbjDWOVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 10:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41886 "EHLO
+        id S230241AbjDWOnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 10:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbjDWOV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 10:21:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A041702
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 07:20:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682259624;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oalj8UvYCHWtG0w/MWnC3lE9ZP+shcr1ycBlVQbj5bo=;
-        b=TvTRud7Me8UUri1Mq3SvEohde1iFZ2EBmar6qyXGhNSjyoYbjkrEvkX3/YBppmx4Gr2EMJ
-        DbsCTuxJjX2xy4u/6S6JI3czQE/4y18QP6J59X9IDOi5dPAyIHiKS+vrpCcc+kflZWyJwg
-        u05/+SvnbgSdqCMKozR8HR32eIBi6y0=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-546-kil2FYvUP_2QHep2qUPYBg-1; Sun, 23 Apr 2023 10:20:21 -0400
-X-MC-Unique: kil2FYvUP_2QHep2qUPYBg-1
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f171d38db3so20097065e9.0
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 07:20:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682259620; x=1684851620;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oalj8UvYCHWtG0w/MWnC3lE9ZP+shcr1ycBlVQbj5bo=;
-        b=J4UIJHNiveiDTzshFOa3gPaSxhVoxwnES7tcKyLIWZnTgWlPpjx7OzMjlvpIYYgI87
-         bcfBEQA4oghrcdOL/8p9Lbq3GEErK+wQDjAwDjQB7kUhir+5WhUo1lIFbGFPNKmC2N5d
-         VKeplWNg4VV+WnGwbDNec7q45chVkqDi09G2tbF4VFnMoyGRI7NmPK+7Khea+IAYFXZd
-         LwpfT+0xUC1YYsrUnuC1wi7FyaROdFMTqzXJRfARoy20KlmydqjGRf5fF92cUmKV5qFm
-         dzCyKwqdN9guhwKYDcIHGYs3FHa0tecxvDHkLWO01zlIlNwaT1t+QLEwcIulVsUnUK5y
-         T0pA==
-X-Gm-Message-State: AAQBX9fVmdX3GHFCJzmE5L+h5WUzOx84KqoP9rdgdrRyjajx7B7Bk3y/
-        SU0AzhaZbZvd/vOTlSOAEOd/n04WfDCSrZ4hVBqz+7ZY5PmEFe8c4TP7hN34MmubfI7RTIgQ+Ve
-        6V/NZ/hWR7kLATUudZ1cioqlw
-X-Received: by 2002:a7b:cb88:0:b0:3f1:7136:dd45 with SMTP id m8-20020a7bcb88000000b003f17136dd45mr5671744wmi.30.1682259619898;
-        Sun, 23 Apr 2023 07:20:19 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bgLLfhOD7mVreoPPp6Uc2hu+viu2sH3u6/MwfWWGclrxhqLMrwkE7Vsq3laWZZoQGaZ1Xj/Q==
-X-Received: by 2002:a7b:cb88:0:b0:3f1:7136:dd45 with SMTP id m8-20020a7bcb88000000b003f17136dd45mr5671727wmi.30.1682259619434;
-        Sun, 23 Apr 2023 07:20:19 -0700 (PDT)
-Received: from localhost (77-32-99-124.dyn.eolo.it. [77.32.99.124])
-        by smtp.gmail.com with ESMTPSA id t13-20020a7bc3cd000000b003f173c566b5sm9802698wmj.5.2023.04.23.07.20.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Apr 2023 07:20:18 -0700 (PDT)
-Date:   Sun, 23 Apr 2023 16:20:46 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, hawk@kernel.org,
-        john.fastabend@gmail.com, ast@kernel.org, daniel@iogearbox.net
-Subject: Re: [PATCH v2 net-next 1/2] net: veth: add page_pool for page
- recycling
-Message-ID: <ZEU+vospFdm08IeE@localhost.localdomain>
-References: <cover.1682188837.git.lorenzo@kernel.org>
- <6298f73f7cc7391c7c4a52a6a89b1ae21488bda1.1682188837.git.lorenzo@kernel.org>
- <4f008243-49d0-77aa-0e7f-d20be3a68f3c@huawei.com>
+        with ESMTP id S229501AbjDWOnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 10:43:19 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90926E7C;
+        Sun, 23 Apr 2023 07:43:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1682260995; x=1713796995;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3QtnzNmns+7h47kKgvPijo0mqZY/g9XoH+gSY1VEEcg=;
+  b=WNG94l1VzzUJ5imk65/ppU5ro/1RC9My0RwLGBO2NgGVsNeuA3M/6rvR
+   LC6BTNcUWEOzvh9UjfRjsIRiHiSwK6apAfguRXjAMyIiR+fo4KJbbVCGZ
+   cF/TeWl+IyQDoslL/Iv2vG0IAI2VjkhMGaaVW5EGi8d3UC19thgC5+MDj
+   Q1y5I1llA48qmshkgg0Ce86hMRC6VolSUgEP/bWty2h0uu99sbhbzwxMY
+   KtsKf1VL45tNZMTDFeWJlovEFBMRxdsb8URgXQhZCEYBW2BSiUOlXA5L+
+   TNBrjxfrgpTVAnMoEu8pfo6pOrBQte+ghlzEGTyrzx+NXO0B3L0MWux9P
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10689"; a="348197433"
+X-IronPort-AV: E=Sophos;i="5.99,220,1677571200"; 
+   d="scan'208";a="348197433"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2023 07:43:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10689"; a="725402610"
+X-IronPort-AV: E=Sophos;i="5.99,220,1677571200"; 
+   d="scan'208";a="725402610"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 23 Apr 2023 07:43:11 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pqavm-000hvg-1U;
+        Sun, 23 Apr 2023 14:43:10 +0000
+Date:   Sun, 23 Apr 2023 22:42:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@kernel.org>, Yishai Hadas <yishaih@nvidia.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>
+Cc:     oe-kbuild-all@lists.linux.dev, Arnd Bergmann <arnd@arndb.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 2/2] net/mlx4: avoid overloading user/kernel pointers
+Message-ID: <202304232230.hFVK5ix1-lkp@intel.com>
+References: <20230418114730.3674657-2-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mkr+ZXA+8ovhJ2bC"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4f008243-49d0-77aa-0e7f-d20be3a68f3c@huawei.com>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230418114730.3674657-2-arnd@kernel.org>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Arnd,
 
---mkr+ZXA+8ovhJ2bC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+kernel test robot noticed the following build warnings:
 
-> On 2023/4/23 2:54, Lorenzo Bianconi wrote:
-> >  struct veth_priv {
-> > @@ -727,17 +729,20 @@ static int veth_convert_skb_to_xdp_buff(struct ve=
-th_rq *rq,
-> >  			goto drop;
-> > =20
-> >  		/* Allocate skb head */
-> > -		page =3D alloc_page(GFP_ATOMIC | __GFP_NOWARN);
-> > +		page =3D page_pool_dev_alloc_pages(rq->page_pool);
-> >  		if (!page)
-> >  			goto drop;
-> > =20
-> >  		nskb =3D build_skb(page_address(page), PAGE_SIZE);
->=20
-> If page pool is used with PP_FLAG_PAGE_FRAG, maybe there is some addition=
-al
-> improvement for the MTU 1500B case, it seem a 4K page is able to hold two=
- skb.
-> And we can reduce the memory usage too, which is a significant saving if =
-page
-> size is 64K.
+[auto build test WARNING on soc/for-next]
+[also build test WARNING on linus/master v6.3-rc7 next-20230421]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-please correct if I am wrong but I think the 1500B MTU case does not fit in=
- the
-half-page buffer size since we need to take into account VETH_XDP_HEADROOM.
-In particular:
+url:    https://github.com/intel-lab-lkp/linux/commits/Arnd-Bergmann/net-mlx4-avoid-overloading-user-kernel-pointers/20230418-195238
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
+patch link:    https://lore.kernel.org/r/20230418114730.3674657-2-arnd%40kernel.org
+patch subject: [PATCH 2/2] net/mlx4: avoid overloading user/kernel pointers
+config: sparc-randconfig-s052-20230423 (https://download.01.org/0day-ci/archive/20230423/202304232230.hFVK5ix1-lkp@intel.com/config)
+compiler: sparc-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/1389cdaec07839abb7b8aacb2b16f37d4affd8d3
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Arnd-Bergmann/net-mlx4-avoid-overloading-user-kernel-pointers/20230418-195238
+        git checkout 1389cdaec07839abb7b8aacb2b16f37d4affd8d3
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sparc olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sparc SHELL=/bin/bash drivers/net/ethernet/mellanox/mlx4/
 
-- VETH_BUF_SIZE =3D 2048
-- VETH_XDP_HEADROOM =3D 256 + 2 =3D 258
-- max_headsize =3D SKB_WITH_OVERHEAD(VETH_BUF_SIZE - VETH_XDP_HEADROOM) =3D=
- 1470
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202304232230.hFVK5ix1-lkp@intel.com/
 
-Even in this case we will need the consume a full page. In fact, performanc=
-es
-are a little bit worse:
+sparse warnings: (new ones prefixed by >>)
+>> drivers/net/ethernet/mellanox/mlx4/en_cq.c:141:59: sparse: sparse: incorrect type in argument 10 (different address spaces) @@     expected void [noderef] __user *ubuf_addr @@     got struct mlx4_buf * @@
+   drivers/net/ethernet/mellanox/mlx4/en_cq.c:141:59: sparse:     expected void [noderef] __user *ubuf_addr
+   drivers/net/ethernet/mellanox/mlx4/en_cq.c:141:59: sparse:     got struct mlx4_buf *
+>> drivers/net/ethernet/mellanox/mlx4/en_cq.c:141:74: sparse: sparse: Using plain integer as NULL pointer
 
-MTU 1500: tcp throughput ~ 8.3Gbps
+vim +141 drivers/net/ethernet/mellanox/mlx4/en_cq.c
 
-Do you agree or am I missing something?
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   88  
+76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09   89  int mlx4_en_activate_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq,
+76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09   90  			int cq_idx)
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   91  {
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   92  	struct mlx4_en_dev *mdev = priv->mdev;
+80a62deedf9d44 drivers/net/ethernet/mellanox/mlx4/en_cq.c Thomas Gleixner   2020-12-10   93  	int irq, err = 0;
+ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23   94  	int timestamp_en = 0;
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31   95  	bool assigned_eq = false;
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   96  
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   97  	cq->dev = mdev->pndev[priv->port];
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   98  	cq->mcq.set_ci_db  = cq->wqres.db.db;
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   99  	cq->mcq.arm_db     = cq->wqres.db.db + 1;
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  100  	*cq->mcq.set_ci_db = 0;
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  101  	*cq->mcq.arm_db    = 0;
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  102  	memset(cq->buf, 0, cq->buf_size);
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  103  
+ccc109b8ed24c6 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  104  	if (cq->type == RX) {
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  105  		if (!mlx4_is_eq_vector_valid(mdev->dev, priv->port,
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  106  					     cq->vector)) {
+de1618034ae570 drivers/net/ethernet/mellanox/mlx4/en_cq.c Ido Shamay        2015-05-31  107  			cq->vector = cpumask_first(priv->rx_ring[cq->ring]->affinity_mask);
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  108  
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  109  			err = mlx4_assign_eq(mdev->dev, priv->port,
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  110  					     &cq->vector);
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  111  			if (err) {
+b0f6446377e72b drivers/net/ethernet/mellanox/mlx4/en_cq.c Carol L Soto      2015-08-27  112  				mlx4_err(mdev, "Failed assigning an EQ to CQ vector %d\n",
+b0f6446377e72b drivers/net/ethernet/mellanox/mlx4/en_cq.c Carol L Soto      2015-08-27  113  					 cq->vector);
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  114  				goto free_eq;
+1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  115  			}
+35f6f45368632f drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2014-06-29  116  
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  117  			assigned_eq = true;
+1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  118  		}
+80a62deedf9d44 drivers/net/ethernet/mellanox/mlx4/en_cq.c Thomas Gleixner   2020-12-10  119  		irq = mlx4_eq_get_irq(mdev->dev, cq->vector);
+197d2370772957 drivers/net/ethernet/mellanox/mlx4/en_cq.c Thomas Gleixner   2020-12-10  120  		cq->aff_mask = irq_get_effective_affinity_mask(irq);
+1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  121  	} else {
+76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  122  		/* For TX we use the same irq per
+76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  123  		ring we assigned for the RX    */
+76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  124  		struct mlx4_en_cq *rx_cq;
+76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  125  
+76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  126  		cq_idx = cq_idx % priv->rx_ring_num;
+41d942d56cfd21 drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-11-07  127  		rx_cq = priv->rx_cq[cq_idx];
+76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  128  		cq->vector = rx_cq->vector;
+1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  129  	}
+1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  130  
+ccc109b8ed24c6 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  131  	if (cq->type == RX)
+41d942d56cfd21 drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-11-07  132  		cq->size = priv->rx_ring[cq->ring]->actual_size;
+38aab07c14adbf drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2009-05-24  133  
+ccc109b8ed24c6 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  134  	if ((cq->type != RX && priv->hwtstamp_config.tx_type) ||
+ccc109b8ed24c6 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  135  	    (cq->type == RX && priv->hwtstamp_config.rx_filter))
+ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  136  		timestamp_en = 1;
+ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  137  
+f3301870161ca2 drivers/net/ethernet/mellanox/mlx4/en_cq.c Moshe Shemesh     2017-06-21  138  	cq->mcq.usage = MLX4_RES_USAGE_DRIVER;
+ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  139  	err = mlx4_cq_alloc(mdev->dev, cq->size, &cq->wqres.mtt,
+ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  140  			    &mdev->priv_uar, cq->wqres.db.dma, &cq->mcq,
+e45678973dcbb1 drivers/net/ethernet/mellanox/mlx4/en_cq.c Daniel Jurgens    2018-11-21 @141  			    cq->vector, 0, timestamp_en, &cq->wqres.buf, false);
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  142  	if (err)
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  143  		goto free_eq;
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  144  
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  145  	cq->mcq.event = mlx4_en_cq_event;
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  146  
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  147  	switch (cq->type) {
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  148  	case TX:
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  149  		cq->mcq.comp = mlx4_en_tx_irq;
+16d083e28f1a4f drivers/net/ethernet/mellanox/mlx4/en_cq.c Jakub Kicinski    2022-05-04  150  		netif_napi_add_tx(cq->dev, &cq->napi, mlx4_en_poll_tx_cq);
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  151  		napi_enable(&cq->napi);
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  152  		break;
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  153  	case RX:
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  154  		cq->mcq.comp = mlx4_en_rx_irq;
+b48b89f9c189d2 drivers/net/ethernet/mellanox/mlx4/en_cq.c Jakub Kicinski    2022-09-27  155  		netif_napi_add(cq->dev, &cq->napi, mlx4_en_poll_rx_cq);
+0276a330617a0c drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-12-19  156  		napi_enable(&cq->napi);
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  157  		break;
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  158  	case TX_XDP:
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  159  		/* nothing regarding napi, it's shared with rx ring */
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  160  		cq->xdp_busy = false;
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  161  		break;
+6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  162  	}
+0276a330617a0c drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-12-19  163  
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  164  	return 0;
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  165  
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  166  free_eq:
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  167  	if (assigned_eq)
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  168  		mlx4_release_eq(mdev->dev, cq->vector);
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  169  	cq->vector = mdev->dev->caps.num_comp_vectors;
+c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  170  	return err;
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  171  }
+c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  172  
 
-Regards,
-Lorenzo
-
->=20
->=20
-> >  		if (!nskb) {
-> > -			put_page(page);
-> > +			page_pool_put_full_page(rq->page_pool, page, true);
-> >  			goto drop;
-> >  		}
-> > =20
-> >  		skb_reserve(nskb, VETH_XDP_HEADROOM);
-> > +		skb_copy_header(nskb, skb);
-> > +		skb_mark_for_recycle(nskb);
-> > +
-> >  		size =3D min_t(u32, skb->len, max_head_size);
-> >  		if (skb_copy_bits(skb, 0, nskb->data, size)) {
-> >  			consume_skb(nskb);
-> > @@ -745,7 +750,6 @@ static int veth_convert_skb_to_xdp_buff(struct veth=
-_rq *rq,
-> >  		}
-> >  		skb_put(nskb, size);
-> > =20
-> > -		skb_copy_header(nskb, skb);
-> >  		head_off =3D skb_headroom(nskb) - skb_headroom(skb);
-> >  		skb_headers_offset_update(nskb, head_off);
-> > =20
-> > @@ -754,7 +758,7 @@ static int veth_convert_skb_to_xdp_buff(struct veth=
-_rq *rq,
-> >  		len =3D skb->len - off;
-> > =20
-> >  		for (i =3D 0; i < MAX_SKB_FRAGS && off < skb->len; i++) {
-> > -			page =3D alloc_page(GFP_ATOMIC | __GFP_NOWARN);
-> > +			page =3D page_pool_dev_alloc_pages(rq->page_pool);
-> >  			if (!page) {
-> >  				consume_skb(nskb);
-> >  				goto drop;
-> > @@ -1002,11 +1006,37 @@ static int veth_poll(struct napi_struct *napi, =
-int budget)
-> >  	return done;
-> >  }
-> > =20
-> > +static int veth_create_page_pool(struct veth_rq *rq)
-> > +{
-> > +	struct page_pool_params pp_params =3D {
-> > +		.order =3D 0,
-> > +		.pool_size =3D VETH_RING_SIZE,
->=20
-> It seems better to allocate different poo_size according to
-> the mtu, so that the best proformance is achiced using the
-> least memory?
->=20
-
---mkr+ZXA+8ovhJ2bC
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZEU+uwAKCRA6cBh0uS2t
-rPCEAQCdvP7xMeAT6EECHwKs4KNQFTb8o9qQ6OBWBVOjCOajWQD+Ncp/sgeLiXYE
-txzpeg0mM8IXqWgXWQMxpc3dfmP7CgU=
-=LBJp
------END PGP SIGNATURE-----
-
---mkr+ZXA+8ovhJ2bC--
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
