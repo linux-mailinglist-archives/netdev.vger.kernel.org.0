@@ -2,128 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65C056EBB7A
-	for <lists+netdev@lfdr.de>; Sat, 22 Apr 2023 23:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C1446EBBE8
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 00:02:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbjDVVZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 17:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58116 "EHLO
+        id S229689AbjDVWCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 18:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbjDVVZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 17:25:22 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D58B19BD;
-        Sat, 22 Apr 2023 14:25:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net; s=s31663417;
-        t=1682198669; i=ps.report@gmx.net;
-        bh=CKleXDjojnUys/EN2562bwv+uQ9gPgoHRl6X6zTBatI=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=Ikt9vyDBnkMF3kOLCA2mBfIh4qNPWurVhq1wy2Y61A9fpfNXeojEc3jEcXFsapCTr
-         c6dOnVyWkbCQ9emiEsbsa9i8af30jeDlC7q9z93ckoOyc2KH98cJqm0d1ItqfDCCmf
-         e6yTejnsc0mn3RIzghcDopivSr4jqQnIh4Dq546KacFPAdPCya9UsIS8kDG1iz8ozv
-         Zt3HnekTT7deFxuFEJfBDKkYntbMAnOQNHz1uH0wr+lex+ejSGX9I7mRGabe5vEEmr
-         WHwf6rIeJKZj/8wg9FHYp3j2So/0nJwAsInqVMY9JLxvkissfPzfD9p0F5OjT0quPS
-         8IjUkVeKKDpAg==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from localhost.fritz.box ([62.216.209.208]) by mail.gmx.net
- (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1MQ5rU-1pd341049I-00M0eA; Sat, 22 Apr 2023 23:24:29 +0200
-From:   Peter Seiderer <ps.report@gmx.net>
-To:     linux-wireless@vger.kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>,
+        with ESMTP id S229500AbjDVWCX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 18:02:23 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB52A268B;
+        Sat, 22 Apr 2023 15:02:22 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id 2adb3069b0e04-4eed6ddcae1so13075226e87.0;
+        Sat, 22 Apr 2023 15:02:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682200941; x=1684792941;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=2dGkZFDJrBb5dcOlpUDOnjcit/4DMIiT8lgxh76O1Fc=;
+        b=kTHd1OPTWLjdiO0sjUTsgDsPQL1IkmIscMklw6ifSCdcLo6jz6HVZaCkehqdfFJxFG
+         AMPUWA+Epr+9/Ql6jnMBEwtlZG4pSii5meYGrWbjBv3tIST/7gX3zedg71xp+iISH/sI
+         rIoBSs5bgzPGM5ZbfKj+DQrJbNyUlRAWwke104suSNtsyLWOJ0OnNVr3RawaLQWusvHZ
+         MWrUDGHh+tSEqTwgGxF5i4ws48OkYKGldUM1TCUjCCSMbvc2OYbTybjHZgCpq6mzmGyY
+         z+EZ3ZvNB3RGi+bCARx83XrUneR4kSh2a4wwdBsl7+tAr16G72fzh9DlVQIG5k7pwxig
+         eHHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682200941; x=1684792941;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2dGkZFDJrBb5dcOlpUDOnjcit/4DMIiT8lgxh76O1Fc=;
+        b=H6j/g4rlNJ1nfqhm/D9DfV4Kk26xx5dflIaDS4hOuiOSkaTHswvhJTPy1Jl6WiQX9R
+         MImXu5n9Lm+t2Bbj6Zf+fcN+I4G7+m25sWO0hxPvAl3aSKEFMPemCbrecIv1C+II0GoR
+         BjZiJ9KdS4m7BHyPyHiNvc92oAb98gFct6q6mbuSZCtcdZX57beOR7q1noLQ0gESqyRh
+         orajGTIAluVHA1JLDqRnWZTJ5JouKihaT47E6WDGZ5uvWn+A/H5M5nKEG4HwYJx2xwrc
+         UiWdSuEELi+4++u4CIRB74xwI7TrQyE9ezKPLYxGaYZZNVhlgM+9qyPnQuRwZbxIEIVZ
+         vk1w==
+X-Gm-Message-State: AAQBX9fxxMw++JvBmEKJll56ZpvBtUwP3GhzT6xDxnA+wYdHEa7FYLmL
+        sswkXwgVtFnNz9lKPHiPvq5bjimTUibybWGq
+X-Google-Smtp-Source: AKy350YyP9Mx6PKHYDySzsYS4Kng3481t/YYrpHXjc3ubrI6JKgUZryv6iZz/w3Cd/K9xjSzXPQgvA==
+X-Received: by 2002:ac2:4c54:0:b0:4d8:86c1:4782 with SMTP id o20-20020ac24c54000000b004d886c14782mr4428578lfk.23.1682200940808;
+        Sat, 22 Apr 2023 15:02:20 -0700 (PDT)
+Received: from [100.119.4.164] (93-80-67-109.broadband.corbina.ru. [93.80.67.109])
+        by smtp.gmail.com with ESMTPSA id w4-20020ac25d44000000b004eb0c51780bsm1043563lfd.29.2023.04.22.15.02.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Apr 2023 15:02:20 -0700 (PDT)
+Message-ID: <38eff1f50343a576edd115be9283f6bd28bd2008.camel@gmail.com>
+Subject: Re: [PATCH 3/4] net/ftgmac100: add mac-address-increment option for
+ GMA command from NC-SI
+From:   Ivan Mikhaylov <fr0st61te@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Sujith Manoharan <c_manoha@qca.qualcomm.com>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Gregg Wonderly <greggwonderly@seqtechllc.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Peter Seiderer <ps.report@gmx.net>
-Subject: [PATCH v2] wifi: ath9k: fix AR9003 mac hardware hang check register offset calculation
-Date:   Sat, 22 Apr 2023 23:24:23 +0200
-Message-Id: <20230422212423.26065-1-ps.report@gmx.net>
-X-Mailer: git-send-email 2.40.0
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paul Fertser <fercerpav@gmail.com>,
+        openbmc@lists.ozlabs.org
+Date:   Sun, 23 Apr 2023 01:02:17 +0000
+In-Reply-To: <20230418185445.GA2111443-robh@kernel.org>
+References: <20230413002905.5513-1-fr0st61te@gmail.com>
+         <20230413002905.5513-4-fr0st61te@gmail.com>
+         <20230418185445.GA2111443-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.3 
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:MWRn4Naaur756elw6S7aPNR3FXkqQmr1CmWuvHm3qoLXSoDxiwQ
- NUr9zv4ex4UpY0z6ePltBP0qqQQXQZ9NJDq4xDuaHqp47hwzSZuvvkp5a8aJhzw6FfT1do8
- Gx9/kmyhenxhNaKlxvcRUlACPwa+abOWwG8gPJxyiWDvfZMVct70w9GX5Vrp7FuXXDvKLE/
- mS1LHkG4FY5tUhb+eESbw==
-UI-OutboundReport: notjunk:1;M01:P0:h7xOhIpkgCs=;txeLScRw9U49r2KaX2fX75E6MWC
- 7d9DRRbUOktExE9V2Y5x3BEpX/gi7EI/OAZfIiN/nihj20OQCUUc3udnWPk0Iq1ryGFt0ObJ7
- vYPUkdiarBGni8zfqBHPDzGz+l9tUp8rKvqbq3CLhH/mAQmIYDC7S8wWocYc5dnXcHvuRPHMT
- eAtB58h5e/I5welvFkhvAZ3GK74e1/BZzOfXzvrojCj0Bp8Ff5jQ37tvEKAONE3QVJHD7zd+Y
- f7FV83Qo6qxdDvj310Z6ZI4gvLXKNzqYG1Fc39z3zPPr8B96hS5AI+dKuqS5WJ5IkMAKPXR72
- XKxzb5zY27eOLzPV/jzvtet6MiOVo/7NE5eYIsnMQDggcrBSMTwGv/Wpms/eTUOlJb9BIhW9F
- cPmD+lner8vd33WfSLID6w2Nqqlo3sZMrgzlbFTjvmYE8RQHlD22b1GqO1Gf0imqkIgWtyhsp
- mrIQRwmeSp5r7f0Wea4Gf1z6qDFE1hF8q38FnjFD5wdPJ2LFt4Mi9bGLNKUcQSARnFfqk1KPe
- /KOQyYqL9AEiEjftOtsQ5j7Zu4Vj4348UogPvAJuOBzMWSJnUNXoPfZ697wSMbSFXzHLjuT1h
- 1bvwuv922jUTjcpEaiHnbfY7xshhdNo1N+NSPrlxL5ITnY1NpqvvGOCp47PVabqWVdmp/s9lD
- diHB8/AbqBjhW4lW/GmqYdq74PZWu4+1e1tPll+6UPqJyEKAJJ95TnqnN5HMGrOnYAy+cZuCm
- lNAUA0cLFkkvKGllVl6/van+o+KyCcgDq3mUV4RnpyHpF5g2U4Nl/ukZS8ruKNyn904tS8Ooe
- M0IAQBo9s2mOLRwQT5UDZA/FwTVJeIx5JEQhcAxYT89hnbAm9cjIYYFLPOO8y/X/2TuTWVz9c
- fA+sS4jFK9PjQbSnXMldAxGsOfnCgLgedh6d9BO7NkKa/rh5dCzWO5i2EKERUW5nKW49w5PHo
- l/2LuZPTS3wjd9BYfHyEiSFAohw=
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,MIME_BASE64_TEXT,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rml4IGF0aDlrX2h3X3ZlcmlmeV9oYW5nKCkvYXI5MDAzX2h3X2RldGVjdF9tYWNfaGFuZygpIHJl
-Z2lzdGVyIG9mZnNldApjYWxjdWxhdGlvbiAoZG8gbm90IG92ZXJmbG93IHRoZSBzaGlmdCBmb3Ig
-dGhlIHNlY29uZCByZWdpc3Rlci9xdWV1ZXMKYWJvdmUgZml2ZSwgdXNlIHRoZSByZWdpc3RlciBs
-YXlvdXQgZGVzY3JpYmVkIGluIHRoZSBjb21tZW50cyBhYm92ZQphdGg5a19od192ZXJpZnlfaGFu
-ZygpIGluc3RlYWQpLgoKRml4ZXM6IDIyMmUwNDgzMGZmMCAoImF0aDlrOiBGaXggTUFDIEhXIGhh
-bmcgY2hlY2sgZm9yIEFSOTAwMyIpCgpSZXBvcnRlZC1ieTogR3JlZ2cgV29uZGVybHkgPGdyZWdn
-d29uZGVybHlAc2VxdGVjaGxsYy5jb20+Ckxpbms6IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xp
-bnV4LXdpcmVsZXNzL0UzQTlDMzU0LTBDQjctNDIwQy1BREVGLUYwMTc3RkI3MjJGNEBzZXF0ZWNo
-bGxjLmNvbS8KU2lnbmVkLW9mZi1ieTogUGV0ZXIgU2VpZGVyZXIgPHBzLnJlcG9ydEBnbXgubmV0
-PgotLS0KQ2hhbmdlcyB2MSAtPiB2MjoKICAtIGZpeCBjJnAgZXJyb3IgaW4gYXRoOWtfaHdfdmVy
-aWZ5X2hhbmcgKGkgdnMuIHF1ZXVlKSwgdGhhbmtzCiAgICB0byBTaW1vbiBIb3JtYW4gZm9yIHJl
-dmlldwoKTm90ZXM6CiAgLSB0ZXN0ZWQgd2l0aCBNaWtyb1RpayBSMTFlLTVIbkQvQXRoZXJvcyBB
-UjkzMDAgUmV2OjQgKGxzcGNpOiAxNjhjOjAwMzMKICAgIFF1YWxjb21tIEF0aGVyb3MgQVI5NTh4
-IDgwMi4xMWFiZ24gV2lyZWxlc3MgTmV0d29yayBBZGFwdGVyIChyZXYgMDEpKQogICAgY2FyZAot
-LS0KIGRyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay9hcjkwMDNfaHcuYyB8IDI3ICsrKysr
-KysrKysrKysrLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCspLCA5IGRl
-bGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay9h
-cjkwMDNfaHcuYyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay9hcjkwMDNfaHcuYwpp
-bmRleCA0ZjI3YTlmYjE0ODIuLmU5YmQxM2VlZWU5MiAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQv
-d2lyZWxlc3MvYXRoL2F0aDlrL2FyOTAwM19ody5jCisrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNz
-L2F0aC9hdGg5ay9hcjkwMDNfaHcuYwpAQCAtMTA5OSwxNyArMTA5OSwyMiBAQCBzdGF0aWMgYm9v
-bCBhdGg5a19od192ZXJpZnlfaGFuZyhzdHJ1Y3QgYXRoX2h3ICphaCwgdW5zaWduZWQgaW50IHF1
-ZXVlKQogewogCXUzMiBkbWFfZGJnX2NoYWluLCBkbWFfZGJnX2NvbXBsZXRlOwogCXU4IGRjdV9j
-aGFpbl9zdGF0ZSwgZGN1X2NvbXBsZXRlX3N0YXRlOworCXVuc2lnbmVkIGludCBkYmdfcmVnLCBy
-ZWdfb2Zmc2V0OwogCWludCBpOwogCi0JZm9yIChpID0gMDsgaSA8IE5VTV9TVEFUVVNfUkVBRFM7
-IGkrKykgewotCQlpZiAocXVldWUgPCA2KQotCQkJZG1hX2RiZ19jaGFpbiA9IFJFR19SRUFEKGFo
-LCBBUl9ETUFEQkdfNCk7Ci0JCWVsc2UKLQkJCWRtYV9kYmdfY2hhaW4gPSBSRUdfUkVBRChhaCwg
-QVJfRE1BREJHXzUpOworCWlmIChxdWV1ZSA8IDYpIHsKKwkJZGJnX3JlZyA9IEFSX0RNQURCR180
-OworCQlyZWdfb2Zmc2V0ID0gcXVldWUgKiA1OworCX0gZWxzZSB7CisJCWRiZ19yZWcgPSBBUl9E
-TUFEQkdfNTsKKwkJcmVnX29mZnNldCA9IChxdWV1ZSAtIDYpICogNTsKKwl9CiAKKwlmb3IgKGkg
-PSAwOyBpIDwgTlVNX1NUQVRVU19SRUFEUzsgaSsrKSB7CisJCWRtYV9kYmdfY2hhaW4gPSBSRUdf
-UkVBRChhaCwgZGJnX3JlZyk7CiAJCWRtYV9kYmdfY29tcGxldGUgPSBSRUdfUkVBRChhaCwgQVJf
-RE1BREJHXzYpOwogCi0JCWRjdV9jaGFpbl9zdGF0ZSA9IChkbWFfZGJnX2NoYWluID4+ICg1ICog
-cXVldWUpKSAmIDB4MWY7CisJCWRjdV9jaGFpbl9zdGF0ZSA9IChkbWFfZGJnX2NoYWluID4+IHJl
-Z19vZmZzZXQpICYgMHgxZjsKIAkJZGN1X2NvbXBsZXRlX3N0YXRlID0gZG1hX2RiZ19jb21wbGV0
-ZSAmIDB4MzsKIAogCQlpZiAoKGRjdV9jaGFpbl9zdGF0ZSAhPSAweDYpIHx8IChkY3VfY29tcGxl
-dGVfc3RhdGUgIT0gMHgxKSkKQEAgLTExMjgsNiArMTEzMyw3IEBAIHN0YXRpYyBib29sIGFyOTAw
-M19od19kZXRlY3RfbWFjX2hhbmcoc3RydWN0IGF0aF9odyAqYWgpCiAJdTggZGN1X2NoYWluX3N0
-YXRlLCBkY3VfY29tcGxldGVfc3RhdGU7CiAJYm9vbCBkY3Vfd2FpdF9mcmRvbmUgPSBmYWxzZTsK
-IAl1bnNpZ25lZCBsb25nIGNoa19kY3UgPSAwOworCXVuc2lnbmVkIGludCByZWdfb2Zmc2V0Owog
-CXVuc2lnbmVkIGludCBpID0gMDsKIAogCWRtYV9kYmdfNCA9IFJFR19SRUFEKGFoLCBBUl9ETUFE
-QkdfNCk7CkBAIC0xMTM5LDEyICsxMTQ1LDE1IEBAIHN0YXRpYyBib29sIGFyOTAwM19od19kZXRl
-Y3RfbWFjX2hhbmcoc3RydWN0IGF0aF9odyAqYWgpCiAJCWdvdG8gZXhpdDsKIAogCWZvciAoaSA9
-IDA7IGkgPCBBVEg5S19OVU1fVFhfUVVFVUVTOyBpKyspIHsKLQkJaWYgKGkgPCA2KQorCQlpZiAo
-aSA8IDYpIHsKIAkJCWNoa19kYmcgPSBkbWFfZGJnXzQ7Ci0JCWVsc2UKKwkJCXJlZ19vZmZzZXQg
-PSBpICogNTsKKwkJfSBlbHNlIHsKIAkJCWNoa19kYmcgPSBkbWFfZGJnXzU7CisJCQlyZWdfb2Zm
-c2V0ID0gKGkgLSA2KSAqIDU7CisJCX0KIAotCQlkY3VfY2hhaW5fc3RhdGUgPSAoY2hrX2RiZyA+
-PiAoNSAqIGkpKSAmIDB4MWY7CisJCWRjdV9jaGFpbl9zdGF0ZSA9IChjaGtfZGJnID4+IHJlZ19v
-ZmZzZXQpICYgMHgxZjsKIAkJaWYgKGRjdV9jaGFpbl9zdGF0ZSA9PSAweDYpIHsKIAkJCWRjdV93
-YWl0X2ZyZG9uZSA9IHRydWU7CiAJCQljaGtfZGN1IHw9IEJJVChpKTsKLS0gCjIuNDAuMAoK
+On Tue, 2023-04-18 at 13:54 -0500, Rob Herring wrote:
+> On Thu, Apr 13, 2023 at 12:29:04AM +0000, Ivan Mikhaylov wrote:
+> > Add s32 mac-address-increment option for Get MAC Address command
+> > from
+> > NC-SI.
+> >=20
+> > Signed-off-by: Paul Fertser <fercerpav@gmail.com>
+> > Signed-off-by: Ivan Mikhaylov <fr0st61te@gmail.com>
+> > ---
+> > =C2=A0Documentation/devicetree/bindings/net/ftgmac100.txt | 4 ++++
+> > =C2=A01 file changed, 4 insertions(+)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/net/ftgmac100.txt
+> > b/Documentation/devicetree/bindings/net/ftgmac100.txt
+> > index 29234021f601..7ef5329d888d 100644
+> > --- a/Documentation/devicetree/bindings/net/ftgmac100.txt
+> > +++ b/Documentation/devicetree/bindings/net/ftgmac100.txt
+> > @@ -22,6 +22,10 @@ Optional properties:
+> > =C2=A0- use-ncsi: Use the NC-SI stack instead of an MDIO PHY. Currently
+> > assumes
+> > =C2=A0=C2=A0 rmii (100bT) but kept as a separate property in case NC-SI=
+ grows
+> > support
+> > =C2=A0=C2=A0 for a gigabit link.
+> > +- mac-address-increment: Increment the MAC address taken by GMA
+> > command via
+> > +=C2=A0 NC-SI. Specifies a signed number to be added to the host MAC
+> > address as
+> > +=C2=A0 obtained by the OEM GMA command. If not specified, 1 is used by
+> > default
+> > +=C2=A0 for Broadcom and Intel network cards, 0 otherwise.
+>=20
+> This would need to be common. There's been some attempts around how
+> to=20
+> support a base MAC address with a transform per instance. So far it's
+> not clear that something in DT works for everyone. Until there's=20
+> something common (if ever), you need platform specific code somewhere
+> to=20
+> handle this. The nvmem binding has had some extensions to support
+> that.
+>=20
+> Rob
+
+Rob, I agree but unfortunately there isn't a generic option for such
+case, maybe something should be added into net/ethernet-
+controller.yaml? As example, `mac-address-increment` option using
+widely in openwrt project. About nvmem, are we talking `nvmem-cell-
+names` option or reverse_mac_address in drivers/nvmem/imx-ocotp.c?
+
+I'll do the transfer into DT schema, that's not a problem but after
+naming resolve.
+
+Adding openbmc community, maybe they have some ideas about this one.
+
+Thanks.
