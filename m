@@ -2,202 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ABCE6EC073
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 16:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55CD06EC076
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 16:46:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbjDWOnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 10:43:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50802 "EHLO
+        id S230309AbjDWOqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 10:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbjDWOnT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 10:43:19 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90926E7C;
-        Sun, 23 Apr 2023 07:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682260995; x=1713796995;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3QtnzNmns+7h47kKgvPijo0mqZY/g9XoH+gSY1VEEcg=;
-  b=WNG94l1VzzUJ5imk65/ppU5ro/1RC9My0RwLGBO2NgGVsNeuA3M/6rvR
-   LC6BTNcUWEOzvh9UjfRjsIRiHiSwK6apAfguRXjAMyIiR+fo4KJbbVCGZ
-   cF/TeWl+IyQDoslL/Iv2vG0IAI2VjkhMGaaVW5EGi8d3UC19thgC5+MDj
-   Q1y5I1llA48qmshkgg0Ce86hMRC6VolSUgEP/bWty2h0uu99sbhbzwxMY
-   KtsKf1VL45tNZMTDFeWJlovEFBMRxdsb8URgXQhZCEYBW2BSiUOlXA5L+
-   TNBrjxfrgpTVAnMoEu8pfo6pOrBQte+ghlzEGTyrzx+NXO0B3L0MWux9P
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10689"; a="348197433"
-X-IronPort-AV: E=Sophos;i="5.99,220,1677571200"; 
-   d="scan'208";a="348197433"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2023 07:43:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10689"; a="725402610"
-X-IronPort-AV: E=Sophos;i="5.99,220,1677571200"; 
-   d="scan'208";a="725402610"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 23 Apr 2023 07:43:11 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pqavm-000hvg-1U;
-        Sun, 23 Apr 2023 14:43:10 +0000
-Date:   Sun, 23 Apr 2023 22:42:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@kernel.org>, Yishai Hadas <yishaih@nvidia.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>
-Cc:     oe-kbuild-all@lists.linux.dev, Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 2/2] net/mlx4: avoid overloading user/kernel pointers
-Message-ID: <202304232230.hFVK5ix1-lkp@intel.com>
-References: <20230418114730.3674657-2-arnd@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230418114730.3674657-2-arnd@kernel.org>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229501AbjDWOqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 10:46:14 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544E0E77;
+        Sun, 23 Apr 2023 07:46:13 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-63b5c4c76aaso2673125b3a.2;
+        Sun, 23 Apr 2023 07:46:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682261173; x=1684853173;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=O7SnPoFD3za4rwhlM2qxf5xphltNXOfgSLCqny9xzIU=;
+        b=sVtFY/9syhTlTCGR2dtCDFX8VAYpI+CVfAox7WSRIm9j6Ar8zj6hb0yt6hxewzy7CG
+         QBuxte569S2NINLOo/yP8YQh81EICibR5PHYk14H/Bz4ONXYhcEYXU2QmAm92yRSY7sJ
+         OsediVyXbqqSGtWVIRc0s64zdao2Hv3pEOEwngSx5jKDrTpEdtKiSysddD1Ho7ZPV1Er
+         k14llHCqo5EyPyjGovc5cYJXNuazDI45QXcEjd/mGLE8J6Zz4vO+oO78LCQtGdvPGat/
+         L8W8x4+/xf9LcrySzzwkq58hYLcZWm271TkdYIPJssNibPxSmXFQKRSZK2MwED6KiRki
+         dz9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682261173; x=1684853173;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=O7SnPoFD3za4rwhlM2qxf5xphltNXOfgSLCqny9xzIU=;
+        b=eCpPypOyu+V0Vjm8NoQl+VLlMqPv8OVllx7Cw9WVOocyHz/BJFEYgFhD/5oL1HQX5C
+         tu7SLoqp4J/yZSSN+4H+gsQijdPw0X6f3BV6Kl54pMe3vNA9gGtKXEJDIY1mI7DCn3rJ
+         VcjOk/bxbdVGaSny8d1zf39nO5xJgRyyuCZOs/U8TKBejg3Wdw08y6kfNMtVp06gKKfE
+         HSsv3d4KMHrDWSfg8Nf5wJqQ4UVK62Z+PPYCKvoxUVq0v+o2QzH9zoslJKdUmjErlcDH
+         tRPR6BcWjHpGnHUfOmwWzJJi6/+RYucE15cS9IHFp19+1A6/BkObY1hztCkXHd8PNtkb
+         5kAg==
+X-Gm-Message-State: AAQBX9cj06SHiRTtvX6SMHQ1kX3DGtb5FeMfZfTIaU/lu/RgoJVHANq7
+        OYKmZzKWPXaxtNWO9Qi/2HY=
+X-Google-Smtp-Source: AKy350aSBzzoQCWcefxtSb/yUnhgCy6a8kAqBJ8ex4WwueTJPZxIgqpDVbfkSHrcWnK3eBkIJRvbng==
+X-Received: by 2002:a17:902:c94c:b0:1a9:75a4:66c1 with SMTP id i12-20020a170902c94c00b001a975a466c1mr1024337pla.46.1682261172701;
+        Sun, 23 Apr 2023 07:46:12 -0700 (PDT)
+Received: from localhost ([2605:59c8:148:ba10:5905:623a:c41:59e1])
+        by smtp.gmail.com with ESMTPSA id i6-20020a170902eb4600b001a69c759af3sm5189929pli.35.2023.04.23.07.46.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Apr 2023 07:46:12 -0700 (PDT)
+Date:   Sun, 23 Apr 2023 07:46:11 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        alexandr.lobakin@intel.com, larysa.zaremba@intel.com,
+        xdp-hints@xdp-project.net, yoong.siang.song@intel.com,
+        intel-wired-lan@lists.osuosl.org, pabeni@redhat.com,
+        jesse.brandeburg@intel.com, kuba@kernel.org, edumazet@google.com,
+        john.fastabend@gmail.com, hawk@kernel.org, davem@davemloft.net
+Message-ID: <644544b3206f0_19af02085e@john.notmuch>
+In-Reply-To: <168182464270.616355.11391652654430626584.stgit@firesoul>
+References: <168182460362.616355.14591423386485175723.stgit@firesoul>
+ <168182464270.616355.11391652654430626584.stgit@firesoul>
+Subject: RE: [PATCH bpf-next V2 1/5] igc: enable and fix RX hash usage by
+ netstack
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnd,
+Jesper Dangaard Brouer wrote:
+> When function igc_rx_hash() was introduced in v4.20 via commit 0507ef8a0372
+> ("igc: Add transmit and receive fastpath and interrupt handlers"), the
+> hardware wasn't configured to provide RSS hash, thus it made sense to not
+> enable net_device NETIF_F_RXHASH feature bit.
+> 
+> The NIC hardware was configured to enable RSS hash info in v5.2 via commit
+> 2121c2712f82 ("igc: Add multiple receive queues control supporting"), but
+> forgot to set the NETIF_F_RXHASH feature bit.
+> 
+> The original implementation of igc_rx_hash() didn't extract the associated
+> pkt_hash_type, but statically set PKT_HASH_TYPE_L3. The largest portions of
+> this patch are about extracting the RSS Type from the hardware and mapping
+> this to enum pkt_hash_types. This was based on Foxville i225 software user
+> manual rev-1.3.1 and tested on Intel Ethernet Controller I225-LM (rev 03).
+> 
+> For UDP it's worth noting that RSS (type) hashing have been disabled both for
+> IPv4 and IPv6 (see IGC_MRQC_RSS_FIELD_IPV4_UDP + IGC_MRQC_RSS_FIELD_IPV6_UDP)
+> because hardware RSS doesn't handle fragmented pkts well when enabled (can
+> cause out-of-order). This results in PKT_HASH_TYPE_L3 for UDP packets, and
+> hash value doesn't include UDP port numbers. Not being PKT_HASH_TYPE_L4, have
+> the effect that netstack will do a software based hash calc calling into
+> flow_dissect, but only when code calls skb_get_hash(), which doesn't
+> necessary happen for local delivery.
+> 
+> For QA verification testing I wrote a small bpftrace prog:
+>  [0] https://github.com/xdp-project/xdp-project/blob/master/areas/hints/monitor_skb_hash_on_dev.bt
+> 
+> Fixes: 2121c2712f82 ("igc: Add multiple receive queues control supporting")
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  drivers/net/ethernet/intel/igc/igc.h      |   28 ++++++++++++++++++++++++++
+>  drivers/net/ethernet/intel/igc/igc_main.c |   31 +++++++++++++++++++++++++----
+>  2 files changed, 55 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+> index 34aebf00a512..f7f9e217e7b4 100644
+> --- a/drivers/net/ethernet/intel/igc/igc.h
+> +++ b/drivers/net/ethernet/intel/igc/igc.h
+> @@ -13,6 +13,7 @@
+>  #include <linux/ptp_clock_kernel.h>
+>  #include <linux/timecounter.h>
+>  #include <linux/net_tstamp.h>
+> +#include <linux/bitfield.h>
+>  
+>  #include "igc_hw.h"
+>  
+> @@ -311,6 +312,33 @@ extern char igc_driver_name[];
+>  #define IGC_MRQC_RSS_FIELD_IPV4_UDP	0x00400000
+>  #define IGC_MRQC_RSS_FIELD_IPV6_UDP	0x00800000
+>  
+> +/* RX-desc Write-Back format RSS Type's */
+> +enum igc_rss_type_num {
+> +	IGC_RSS_TYPE_NO_HASH		= 0,
+> +	IGC_RSS_TYPE_HASH_TCP_IPV4	= 1,
+> +	IGC_RSS_TYPE_HASH_IPV4		= 2,
+> +	IGC_RSS_TYPE_HASH_TCP_IPV6	= 3,
+> +	IGC_RSS_TYPE_HASH_IPV6_EX	= 4,
+> +	IGC_RSS_TYPE_HASH_IPV6		= 5,
+> +	IGC_RSS_TYPE_HASH_TCP_IPV6_EX	= 6,
+> +	IGC_RSS_TYPE_HASH_UDP_IPV4	= 7,
+> +	IGC_RSS_TYPE_HASH_UDP_IPV6	= 8,
+> +	IGC_RSS_TYPE_HASH_UDP_IPV6_EX	= 9,
+> +	IGC_RSS_TYPE_MAX		= 10,
+> +};
+> +#define IGC_RSS_TYPE_MAX_TABLE		16
+> +#define IGC_RSS_TYPE_MASK		GENMASK(3,0) /* 4-bits (3:0) = mask 0x0F */
+> +
+> +/* igc_rss_type - Rx descriptor RSS type field */
+> +static inline u32 igc_rss_type(const union igc_adv_rx_desc *rx_desc)
+> +{
+> +	/* RSS Type 4-bits (3:0) number: 0-9 (above 9 is reserved)
+> +	 * Accessing the same bits via u16 (wb.lower.lo_dword.hs_rss.pkt_info)
+> +	 * is slightly slower than via u32 (wb.lower.lo_dword.data)
+> +	 */
+> +	return le32_get_bits(rx_desc->wb.lower.lo_dword.data, IGC_RSS_TYPE_MASK);
+> +}
+> +
+>  /* Interrupt defines */
+>  #define IGC_START_ITR			648 /* ~6000 ints/sec */
+>  #define IGC_4K_ITR			980
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index 1c4676882082..bfa9768d447f 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -1690,14 +1690,36 @@ static void igc_rx_checksum(struct igc_ring *ring,
+>  		   le32_to_cpu(rx_desc->wb.upper.status_error));
+>  }
+>  
+> +/* Mapping HW RSS Type to enum pkt_hash_types */
+> +static const enum pkt_hash_types igc_rss_type_table[IGC_RSS_TYPE_MAX_TABLE] = {
+> +	[IGC_RSS_TYPE_NO_HASH]		= PKT_HASH_TYPE_L2,
+> +	[IGC_RSS_TYPE_HASH_TCP_IPV4]	= PKT_HASH_TYPE_L4,
+> +	[IGC_RSS_TYPE_HASH_IPV4]	= PKT_HASH_TYPE_L3,
+> +	[IGC_RSS_TYPE_HASH_TCP_IPV6]	= PKT_HASH_TYPE_L4,
+> +	[IGC_RSS_TYPE_HASH_IPV6_EX]	= PKT_HASH_TYPE_L3,
+> +	[IGC_RSS_TYPE_HASH_IPV6]	= PKT_HASH_TYPE_L3,
+> +	[IGC_RSS_TYPE_HASH_TCP_IPV6_EX] = PKT_HASH_TYPE_L4,
+> +	[IGC_RSS_TYPE_HASH_UDP_IPV4]	= PKT_HASH_TYPE_L4,
+> +	[IGC_RSS_TYPE_HASH_UDP_IPV6]	= PKT_HASH_TYPE_L4,
+> +	[IGC_RSS_TYPE_HASH_UDP_IPV6_EX] = PKT_HASH_TYPE_L4,
+> +	[10] = PKT_HASH_TYPE_NONE, /* RSS Type above 9 "Reserved" by HW  */
+> +	[11] = PKT_HASH_TYPE_NONE, /* keep array sized for SW bit-mask   */
+> +	[12] = PKT_HASH_TYPE_NONE, /* to handle future HW revisons       */
+> +	[13] = PKT_HASH_TYPE_NONE,
+> +	[14] = PKT_HASH_TYPE_NONE,
+> +	[15] = PKT_HASH_TYPE_NONE,
+> +};
+> +
+>  static inline void igc_rx_hash(struct igc_ring *ring,
+>  			       union igc_adv_rx_desc *rx_desc,
+>  			       struct sk_buff *skb)
+>  {
+> -	if (ring->netdev->features & NETIF_F_RXHASH)
+> -		skb_set_hash(skb,
+> -			     le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
+> -			     PKT_HASH_TYPE_L3);
+> +	if (ring->netdev->features & NETIF_F_RXHASH) {
+> +		u32 rss_hash = le32_to_cpu(rx_desc->wb.lower.hi_dword.rss);
+> +		u32 rss_type = igc_rss_type(rx_desc);
+> +
+> +		skb_set_hash(skb, rss_hash, igc_rss_type_table[rss_type]);
 
-kernel test robot noticed the following build warnings:
+Just curious why not copy the logic from the other driver fms10k, ice, ect.
 
-[auto build test WARNING on soc/for-next]
-[also build test WARNING on linus/master v6.3-rc7 next-20230421]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+	skb_set_hash(skb, le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
+		     (IXGBE_RSS_L4_TYPES_MASK & (1ul << rss_type)) ?
+		     PKT_HASH_TYPE_L4 : PKT_HASH_TYPE_L3);
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Arnd-Bergmann/net-mlx4-avoid-overloading-user-kernel-pointers/20230418-195238
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-patch link:    https://lore.kernel.org/r/20230418114730.3674657-2-arnd%40kernel.org
-patch subject: [PATCH 2/2] net/mlx4: avoid overloading user/kernel pointers
-config: sparc-randconfig-s052-20230423 (https://download.01.org/0day-ci/archive/20230423/202304232230.hFVK5ix1-lkp@intel.com/config)
-compiler: sparc-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/1389cdaec07839abb7b8aacb2b16f37d4affd8d3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Arnd-Bergmann/net-mlx4-avoid-overloading-user-kernel-pointers/20230418-195238
-        git checkout 1389cdaec07839abb7b8aacb2b16f37d4affd8d3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sparc olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sparc SHELL=/bin/bash drivers/net/ethernet/mellanox/mlx4/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304232230.hFVK5ix1-lkp@intel.com/
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/net/ethernet/mellanox/mlx4/en_cq.c:141:59: sparse: sparse: incorrect type in argument 10 (different address spaces) @@     expected void [noderef] __user *ubuf_addr @@     got struct mlx4_buf * @@
-   drivers/net/ethernet/mellanox/mlx4/en_cq.c:141:59: sparse:     expected void [noderef] __user *ubuf_addr
-   drivers/net/ethernet/mellanox/mlx4/en_cq.c:141:59: sparse:     got struct mlx4_buf *
->> drivers/net/ethernet/mellanox/mlx4/en_cq.c:141:74: sparse: sparse: Using plain integer as NULL pointer
-
-vim +141 drivers/net/ethernet/mellanox/mlx4/en_cq.c
-
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   88  
-76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09   89  int mlx4_en_activate_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq,
-76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09   90  			int cq_idx)
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   91  {
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   92  	struct mlx4_en_dev *mdev = priv->mdev;
-80a62deedf9d44 drivers/net/ethernet/mellanox/mlx4/en_cq.c Thomas Gleixner   2020-12-10   93  	int irq, err = 0;
-ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23   94  	int timestamp_en = 0;
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31   95  	bool assigned_eq = false;
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   96  
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   97  	cq->dev = mdev->pndev[priv->port];
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   98  	cq->mcq.set_ci_db  = cq->wqres.db.db;
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22   99  	cq->mcq.arm_db     = cq->wqres.db.db + 1;
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  100  	*cq->mcq.set_ci_db = 0;
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  101  	*cq->mcq.arm_db    = 0;
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  102  	memset(cq->buf, 0, cq->buf_size);
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  103  
-ccc109b8ed24c6 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  104  	if (cq->type == RX) {
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  105  		if (!mlx4_is_eq_vector_valid(mdev->dev, priv->port,
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  106  					     cq->vector)) {
-de1618034ae570 drivers/net/ethernet/mellanox/mlx4/en_cq.c Ido Shamay        2015-05-31  107  			cq->vector = cpumask_first(priv->rx_ring[cq->ring]->affinity_mask);
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  108  
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  109  			err = mlx4_assign_eq(mdev->dev, priv->port,
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  110  					     &cq->vector);
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  111  			if (err) {
-b0f6446377e72b drivers/net/ethernet/mellanox/mlx4/en_cq.c Carol L Soto      2015-08-27  112  				mlx4_err(mdev, "Failed assigning an EQ to CQ vector %d\n",
-b0f6446377e72b drivers/net/ethernet/mellanox/mlx4/en_cq.c Carol L Soto      2015-08-27  113  					 cq->vector);
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  114  				goto free_eq;
-1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  115  			}
-35f6f45368632f drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2014-06-29  116  
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  117  			assigned_eq = true;
-1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  118  		}
-80a62deedf9d44 drivers/net/ethernet/mellanox/mlx4/en_cq.c Thomas Gleixner   2020-12-10  119  		irq = mlx4_eq_get_irq(mdev->dev, cq->vector);
-197d2370772957 drivers/net/ethernet/mellanox/mlx4/en_cq.c Thomas Gleixner   2020-12-10  120  		cq->aff_mask = irq_get_effective_affinity_mask(irq);
-1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  121  	} else {
-76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  122  		/* For TX we use the same irq per
-76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  123  		ring we assigned for the RX    */
-76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  124  		struct mlx4_en_cq *rx_cq;
-76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  125  
-76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  126  		cq_idx = cq_idx % priv->rx_ring_num;
-41d942d56cfd21 drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-11-07  127  		rx_cq = priv->rx_cq[cq_idx];
-76532d0c7e7424 drivers/net/ethernet/mellanox/mlx4/en_cq.c Alexander Guller  2011-10-09  128  		cq->vector = rx_cq->vector;
-1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  129  	}
-1fb9876e9bf895 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2011-03-22  130  
-ccc109b8ed24c6 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  131  	if (cq->type == RX)
-41d942d56cfd21 drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-11-07  132  		cq->size = priv->rx_ring[cq->ring]->actual_size;
-38aab07c14adbf drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2009-05-24  133  
-ccc109b8ed24c6 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  134  	if ((cq->type != RX && priv->hwtstamp_config.tx_type) ||
-ccc109b8ed24c6 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2016-11-02  135  	    (cq->type == RX && priv->hwtstamp_config.rx_filter))
-ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  136  		timestamp_en = 1;
-ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  137  
-f3301870161ca2 drivers/net/ethernet/mellanox/mlx4/en_cq.c Moshe Shemesh     2017-06-21  138  	cq->mcq.usage = MLX4_RES_USAGE_DRIVER;
-ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  139  	err = mlx4_cq_alloc(mdev->dev, cq->size, &cq->wqres.mtt,
-ec693d47010e83 drivers/net/ethernet/mellanox/mlx4/en_cq.c Amir Vadai        2013-04-23  140  			    &mdev->priv_uar, cq->wqres.db.dma, &cq->mcq,
-e45678973dcbb1 drivers/net/ethernet/mellanox/mlx4/en_cq.c Daniel Jurgens    2018-11-21 @141  			    cq->vector, 0, timestamp_en, &cq->wqres.buf, false);
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  142  	if (err)
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  143  		goto free_eq;
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  144  
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  145  	cq->mcq.event = mlx4_en_cq_event;
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  146  
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  147  	switch (cq->type) {
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  148  	case TX:
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  149  		cq->mcq.comp = mlx4_en_tx_irq;
-16d083e28f1a4f drivers/net/ethernet/mellanox/mlx4/en_cq.c Jakub Kicinski    2022-05-04  150  		netif_napi_add_tx(cq->dev, &cq->napi, mlx4_en_poll_tx_cq);
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  151  		napi_enable(&cq->napi);
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  152  		break;
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  153  	case RX:
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  154  		cq->mcq.comp = mlx4_en_rx_irq;
-b48b89f9c189d2 drivers/net/ethernet/mellanox/mlx4/en_cq.c Jakub Kicinski    2022-09-27  155  		netif_napi_add(cq->dev, &cq->napi, mlx4_en_poll_rx_cq);
-0276a330617a0c drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-12-19  156  		napi_enable(&cq->napi);
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  157  		break;
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  158  	case TX_XDP:
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  159  		/* nothing regarding napi, it's shared with rx ring */
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  160  		cq->xdp_busy = false;
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  161  		break;
-6c78511b0503c9 drivers/net/ethernet/mellanox/mlx4/en_cq.c Tariq Toukan      2017-06-15  162  	}
-0276a330617a0c drivers/net/ethernet/mellanox/mlx4/en_cq.c Eugenia Emantayev 2013-12-19  163  
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  164  	return 0;
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  165  
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  166  free_eq:
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  167  	if (assigned_eq)
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  168  		mlx4_release_eq(mdev->dev, cq->vector);
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  169  	cq->vector = mdev->dev->caps.num_comp_vectors;
-c66fa19c405a36 drivers/net/ethernet/mellanox/mlx4/en_cq.c Matan Barak       2015-05-31  170  	return err;
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  171  }
-c27a02cd94d669 drivers/net/mlx4/en_cq.c                   Yevgeny Petrilin  2008-10-22  172  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+avoiding the table logic. Do the driver folks care?
