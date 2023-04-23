@@ -2,136 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B27046EC189
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 20:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F18E56EC187
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 20:02:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbjDWSDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 14:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45396 "EHLO
+        id S229839AbjDWSCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 14:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbjDWSDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 14:03:49 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C93410E5;
-        Sun, 23 Apr 2023 11:03:48 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1pqe3p-0003GQ-1l;
-        Sun, 23 Apr 2023 20:03:41 +0200
-Date:   Sun, 23 Apr 2023 19:01:55 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S229572AbjDWSCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 14:02:17 -0400
+Received: from mail-lf1-x164.google.com (mail-lf1-x164.google.com [IPv6:2a00:1450:4864:20::164])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B9410DB
+        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 11:02:15 -0700 (PDT)
+Received: by mail-lf1-x164.google.com with SMTP id 2adb3069b0e04-4edbd6cc46bso3755259e87.2
+        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 11:02:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dectris.com; s=google; t=1682272933; x=1684864933;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8eN7Be/85uzfpyW2w/rr50iULiGv8D2Gnkfs37ktaYM=;
+        b=c2wxVnoG53hNbe0ViANaExeN/65EyuES4Yep1AGJBc1vpRXVc5Wy/LOFKaAbQ0AfWM
+         9vHNPxqv1gTPcYjEGfCpPTycR5jlCPCc0RxnyKTvg2b5+NJGmgM+rZRwl3ynD4kns4a7
+         /SWgpiKzwCVQKXSqyAHvsazcpUlkE5ErifHw0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682272933; x=1684864933;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8eN7Be/85uzfpyW2w/rr50iULiGv8D2Gnkfs37ktaYM=;
+        b=VceveXwMK3T7DYmc9ZAqk17cUeBWf9KH+Wofy21H/FWKL1TPUIuE/ELzevCDGsgWkI
+         BeTHEpfg3ovFnS/k1GnAaxuNgFS9zyXhrhiej547v5Sv+4ajrixZ5LdPTfBvj7cI8eLc
+         jgW9Syl7O3IhhN+VoFCe/eAhl6JkE6fohzbB0ci/QDcwwfvSP8axyCI6CAfKCA9V75KM
+         lk8ma95lKhPbOae3fvFAEsza/GyHanPA7H2WCI5Ancvc+UqVpRtrD0Y9WDkgE5OaL9UJ
+         0PCRdG7le2BtRP/hFSMRP8Hdqm7QkwELOMSV+2PDjQq4WYJbTYpcEtpzlL5k76QznaKA
+         uPNw==
+X-Gm-Message-State: AAQBX9fy/Us7YFAtvEHXrWcZKAo4HVLpodlyTwtl8i0zdyYi+6pBAI2/
+        dPlxOIweyxShUYofCibVD1+EJBluVdQgzqWTcKIQsvClsJLs
+X-Google-Smtp-Source: AKy350biATVx20XIrJwVnZCBI3rne8bnweoDWn/Zxy4tiR/Umw3RnVZGAC+ZNl4ggSUdBLjV+r/IbRBuMi1O
+X-Received: by 2002:ac2:53bb:0:b0:4ec:9e01:71e with SMTP id j27-20020ac253bb000000b004ec9e01071emr2608921lfh.4.1682272933293;
+        Sun, 23 Apr 2023 11:02:13 -0700 (PDT)
+Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
+        by smtp-relay.gmail.com with ESMTPS id b4-20020ac25e84000000b004eb0f3d92cdsm734213lfq.63.2023.04.23.11.02.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Apr 2023 11:02:13 -0700 (PDT)
+X-Relaying-Domain: dectris.com
+From:   Kal Conley <kal.conley@dectris.com>
+To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Chen Minqiang <ptpt52@gmail.com>,
-        Chukun Pan <amadeus@jmu.edu.cn>,
-        Yevhen Kolomeiko <jarvis2709@gmail.com>,
-        Alexander Couzens <lynxis@fe80.eu>
-Subject: Re: [RFC PATCH net-next 5/8] net: phy: realtek: use phy_read_paged
- instead of open coding
-Message-ID: <ZEVyk71pBcQZ_NH_@makrotopia.org>
-References: <cover.1682163424.git.daniel@makrotopia.org>
- <85eb0791bd614ccfdeccdc6fe39be55e602c521c.1682163424.git.daniel@makrotopia.org>
- <d7eaf73b-282a-df7d-d9a5-530e431701a1@gmail.com>
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next] xsk: Use pool->dma_pages to check for DMA
+Date:   Sun, 23 Apr 2023 20:01:56 +0200
+Message-Id: <20230423180157.93559-1-kal.conley@dectris.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d7eaf73b-282a-df7d-d9a5-530e431701a1@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 22, 2023 at 05:11:57PM +0200, Heiner Kallweit wrote:
-> On 22.04.2023 13:48, Daniel Golle wrote:
-> > Instead of open coding a paged read, use the phy_read_paged function
-> > in rtlgen_supports_2_5gbps.
-> > 
-> > Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> > ---
-> >  drivers/net/phy/realtek.c | 4 +---
-> >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-> > index f97b5e49fae58..62fb965b6d338 100644
-> > --- a/drivers/net/phy/realtek.c
-> > +++ b/drivers/net/phy/realtek.c
-> > @@ -735,9 +735,7 @@ static bool rtlgen_supports_2_5gbps(struct phy_device *phydev)
-> >  {
-> >  	int val;
-> >  
-> > -	phy_write(phydev, RTL821x_PAGE_SELECT, 0xa61);
-> > -	val = phy_read(phydev, 0x13);
-> > -	phy_write(phydev, RTL821x_PAGE_SELECT, 0);
-> > +	val = phy_read_paged(phydev, 0xa61, 0x13);
-> >  
-> >  	return val >= 0 && val & RTL_SUPPORTS_2500FULL;
-> >  }
-> 
-> I remember I had a reason to open-code it, it took me some minutes
-> to recall it.
-> phy_read_paged() calls __phy_read_page() that relies on phydev->drv
-> being set. phydev->drv is set in phy_probe(). And probing is done
-> after matching. __phy_read_paged() should have given you a warning.
-> Did you test this patch? If yes and you didn't get the warning,
-> then apparently I miss something.
->
+Compare pool->dma_pages instead of pool->dma_pages_cnt to check for an
+active DMA mapping. pool->dma_pages needs to be read anyway to access
+the map so this compiles to more efficient code.
 
-Yes, you are right, this change was a bit too naive and causes a
-NULL pointer dereference e.g. for the r8169 driver which also uses
-the RealTek Ethernet PHY driver.
-My main concern and original motivation was the lack of mutex protection
-for the paged read operation. I suggest to rather make this change
-instead:
-
-From 4dd2cc9b91ecb25f278a2c55e07e6455e9000e6b Mon Sep 17 00:00:00 2001
-From: Daniel Golle <daniel@makrotopia.org>
-Date: Sun, 23 Apr 2023 18:47:45 +0100
-Subject: [PATCH] net: phy: realtek: make sure paged read is protected by mutex
-
-As we cannot rely on phy_read_paged function before the PHY is
-identified, the paged read in rtlgen_supports_2_5gbps needs to be open
-coded as it is being called by the match_phy_device function, ie. before
-.read_page and .write_page have been populated.
-
-Make sure it is also protected by the MDIO bus mutex and use
-rtl821x_write_page instead of 3 individually locked MDIO bus operations.
-
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+Signed-off-by: Kal Conley <kal.conley@dectris.com>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- drivers/net/phy/realtek.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ include/net/xsk_buff_pool.h | 2 +-
+ net/xdp/xsk_buff_pool.c     | 7 ++++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index f97b5e49fae5..c27ec4e99fc2 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -735,9 +735,11 @@ static bool rtlgen_supports_2_5gbps(struct phy_device *phydev)
- {
- 	int val;
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index d318c769b445..a8d7b8a3688a 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -180,7 +180,7 @@ static inline bool xp_desc_crosses_non_contig_pg(struct xsk_buff_pool *pool,
+ 	if (likely(!cross_pg))
+ 		return false;
  
--	phy_write(phydev, RTL821x_PAGE_SELECT, 0xa61);
--	val = phy_read(phydev, 0x13);
--	phy_write(phydev, RTL821x_PAGE_SELECT, 0);
-+	mutex_lock(&phydev->mdio.bus->mdio_lock);
-+	rtl821x_write_page(phydev, 0xa61);
-+	val = __phy_read(phydev, 0x13);
-+	rtl821x_write_page(phydev, 0);
-+	mutex_unlock(&phydev->mdio.bus->mdio_lock);
- 
- 	return val >= 0 && val & RTL_SUPPORTS_2500FULL;
+-	return pool->dma_pages_cnt &&
++	return pool->dma_pages &&
+ 	       !(pool->dma_pages[addr >> PAGE_SHIFT] & XSK_NEXT_PG_CONTIG_MASK);
  }
+ 
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index b2df1e0f8153..26f6d304451e 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -350,7 +350,7 @@ void xp_dma_unmap(struct xsk_buff_pool *pool, unsigned long attrs)
+ {
+ 	struct xsk_dma_map *dma_map;
+ 
+-	if (pool->dma_pages_cnt == 0)
++	if (!pool->dma_pages)
+ 		return;
+ 
+ 	dma_map = xp_find_dma_map(pool);
+@@ -364,6 +364,7 @@ void xp_dma_unmap(struct xsk_buff_pool *pool, unsigned long attrs)
+ 
+ 	__xp_dma_unmap(dma_map, attrs);
+ 	kvfree(pool->dma_pages);
++	pool->dma_pages = NULL;
+ 	pool->dma_pages_cnt = 0;
+ 	pool->dev = NULL;
+ }
+@@ -503,7 +504,7 @@ static struct xdp_buff_xsk *__xp_alloc(struct xsk_buff_pool *pool)
+ 	if (pool->unaligned) {
+ 		xskb = pool->free_heads[--pool->free_heads_cnt];
+ 		xp_init_xskb_addr(xskb, pool, addr);
+-		if (pool->dma_pages_cnt)
++		if (pool->dma_pages)
+ 			xp_init_xskb_dma(xskb, pool, pool->dma_pages, addr);
+ 	} else {
+ 		xskb = &pool->heads[xp_aligned_extract_idx(pool, addr)];
+@@ -569,7 +570,7 @@ static u32 xp_alloc_new_from_fq(struct xsk_buff_pool *pool, struct xdp_buff **xd
+ 		if (pool->unaligned) {
+ 			xskb = pool->free_heads[--pool->free_heads_cnt];
+ 			xp_init_xskb_addr(xskb, pool, addr);
+-			if (pool->dma_pages_cnt)
++			if (pool->dma_pages)
+ 				xp_init_xskb_dma(xskb, pool, pool->dma_pages, addr);
+ 		} else {
+ 			xskb = &pool->heads[xp_aligned_extract_idx(pool, addr)];
 -- 
-2.40.0
+2.39.2
 
