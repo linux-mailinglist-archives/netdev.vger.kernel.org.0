@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 794AA6EBCA1
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 05:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5E36EBCA2
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 05:28:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229745AbjDWD2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 23:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
+        id S229819AbjDWD2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 23:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbjDWD2V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 23:28:21 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80FF81FCC
-        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 20:28:19 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id ca18e2360f4ac-7606d44dbb5so322253839f.1
-        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 20:28:19 -0700 (PDT)
+        with ESMTP id S229806AbjDWD2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 23:28:39 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C433268C
+        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 20:28:37 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id e9e14a558f8ab-3294eacb2f6so8249045ab.3
+        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 20:28:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682220499; x=1684812499;
+        d=gmail.com; s=20221208; t=1682220516; x=1684812516;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=3GgoE2aOQOI5zItubNE1qgEZS1ikxgaHXPxaumgsPxE=;
-        b=n/5DV0ulQhMkbgG1W6ufUeXLvXKMrs6M2IQ4iOHvYm0/YftlLaH2bfJVgqSe9Kd5gR
-         7oNmDuT/Fkw6Ayh6gwCRferNnOQFWVjEGGqF8bKKiwVV685TWhkEJcomsqxITBMAmZMp
-         jdSPFhraDbDE77WC/zx1PjnJCYFujclXlsPCDRzv2SpeDsVJMQBzKIF3oL6JWPq32cgI
-         SDZ5sK0WLSgeyaoMGvPszI/elESJ/9mtI9fFObvGrYGwOFHgL5H8TDfdsn4Ovh6KOuvP
-         YPIB2gcalXDQUcO1j4dyFdkwQKDcYrYoJHSYwbi4CuhxbuOEEtrF+ScU5iRRIWBXDXFX
-         bwNA==
+        bh=X6ncj33axFGuFSNqzwi02ap0pe4Ng+6vF3DosaLcrFo=;
+        b=fQy9CTKUG0L22usws+M5ZVn3UxJXTMl6i//ATEDOmL5kiiN+0VjPPBbj8lLVK1jzgg
+         Vbu8AS5V3He6EUg0DsXZJq38hVRBkC7NT+pjn2dpnINnbQ8rEjI9TMPxkMrrK8YdPLdh
+         p80QyTLJkPbYhTZrTDBwFJ+2wEHTsCs9GZClT6YMHZHGJSslrNWvUr6lvrFzpDwnzAHp
+         v2df5P86NHRAMbRE9ckeGIfnBzWb/YyhBxsoc1/rHs+Ys0zH9dnmIOZsnGVu1B9SU+Xg
+         6g9ou1lgFe2GZ1iIWsvuCY4+Y5ZgHh3I0Sy7r0GTxpW0zdL/1FaXcEqkWtWl8o0aw7wI
+         gsMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682220499; x=1684812499;
+        d=1e100.net; s=20221208; t=1682220516; x=1684812516;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=3GgoE2aOQOI5zItubNE1qgEZS1ikxgaHXPxaumgsPxE=;
-        b=SN/3q1lcqYLAk0/ipI6TboAjwwYUnuqEddQ11yWpghQIPqgLH8XLWQ69qRYF51I3st
-         JhFO6K46FPx79SmHxjcpDSZLTEZPdm/Wtf17A5sLHx3diofqR9oOgAmnW/nQuzIS1khW
-         /h1e8VnyhWR5BASG3n95BiIS7RgTS/My9sF2Dx8jMq/7zKB+lLq1FUifwEaxiyo0micD
-         flVwp4HwBd8pmynJCPrfgmHHtx5dkqphtfhk/OOnnbqQ6kutiKbLUTSLAkVds+ledwZ/
-         JYtDcIMJI6KsMQ/8HTG0k0nnTCJHWWlW7WqlZ9sBqCZwN4RhqTmM3EJLevsEKBSL2amZ
-         OhGw==
-X-Gm-Message-State: AAQBX9cYUsqDrJpprkJsn8kfZkBA3aOfUuiTfL/oVhhvZPHlSQyippjE
-        8Tk1pH4HkxhQaK517t46URU=
-X-Google-Smtp-Source: AKy350ZhkZnXPMOu3Z5ALAOuHuTcE6+V0V/EoWGq9TgUkaY/ARfJpVAZnNRNXjUbdnABUk+V9mZPTQ==
-X-Received: by 2002:a6b:f315:0:b0:74c:ae72:dc16 with SMTP id m21-20020a6bf315000000b0074cae72dc16mr2983099ioh.5.1682220498817;
-        Sat, 22 Apr 2023 20:28:18 -0700 (PDT)
+        bh=X6ncj33axFGuFSNqzwi02ap0pe4Ng+6vF3DosaLcrFo=;
+        b=ErlFLUam3tAF221G4KALZaGzIN86BWRwk/7Ex+A04R7IWMpsL2P+u7RYxnV6PBQFx6
+         wb1I//ORz6I6XjiV5NtrfBpe8wzdR00HyVJm2zh5XWNQBWRoZ6RRb5B88Sc832woQr+Z
+         KD8HmGtliTWrS3amUUGlcLbLbbgnBvnXIpe5e2O7KoaSf6uJfVGUadz0wSmI7BsyGVCV
+         +KvPFFh5vtco/TqXNj6gaFLhtJUZ9mFVraT0HQynw2KojbXdX+B1a6D71XVNfoWVWLpK
+         w0rcU9imEPg1l+dBQAJU4+FQuJQEkrLc2ZKMTKW/E5ryaHda9thb8oRp0zMlxDry4ZG9
+         MUFA==
+X-Gm-Message-State: AAQBX9fJI+sqzjyueQ1gGgHCccXRBIz6mwIwIoqkotjDmtS1YTEHYAWV
+        wCOnfrOFLFUiPtLklsni/Uk=
+X-Google-Smtp-Source: AKy350YJCkf41Lbqop9xRXTdObTDu1KgSo4jSsAVqxIKfB2+YcVvTF3sdIkqyscsr5NRf2d4BGjHsg==
+X-Received: by 2002:a6b:e50a:0:b0:763:5ead:f20b with SMTP id y10-20020a6be50a000000b007635eadf20bmr2857912ioc.16.1682220516304;
+        Sat, 22 Apr 2023 20:28:36 -0700 (PDT)
 Received: from lenovot480s.. (c-73-78-138-46.hsd1.co.comcast.net. [73.78.138.46])
-        by smtp.gmail.com with ESMTPSA id 18-20020a5d9c52000000b0076350d7c4b6sm1275122iof.36.2023.04.22.20.28.18
+        by smtp.gmail.com with ESMTPSA id t14-20020a5d884e000000b00760a612675dsm2158330ios.16.2023.04.22.20.28.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Apr 2023 20:28:18 -0700 (PDT)
+        Sat, 22 Apr 2023 20:28:35 -0700 (PDT)
 From:   Maxim Georgiev <glipus@gmail.com>
 To:     kory.maincent@bootlin.com
 Cc:     kuba@kernel.org, netdev@vger.kernel.org, glipus@gmail.com,
         maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com,
         vadim.fedorenko@linux.dev, richardcochran@gmail.com,
         gerhard@engleder-embedded.com
-Subject: [RFC PATCH v4 2/5] Add ifreq pointer field to kernel_hwtstamp_config structure
-Date:   Sat, 22 Apr 2023 21:28:17 -0600
-Message-Id: <20230423032817.285371-1-glipus@gmail.com>
+Subject: [RFC PATCH v4 3/5] Add ndo_hwtstamp_get/set support to vlan/maxvlan code path
+Date:   Sat, 22 Apr 2023 21:28:35 -0600
+Message-Id: <20230423032835.285406-1-glipus@gmail.com>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -70,184 +70,144 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Considering the stackable nature of drivers there will be situations
-where a driver implementing ndo_hwtstamp_get/set functions will have
-to translate requests back to SIOCGHWTSTAMP/SIOCSHWTSTAMP IOCTLs
-to pass them to lower level drivers that do not provide
-ndo_hwtstamp_get/set callbacks. To simplify request translation in
-such scenarios let's include a pointer to the original struct ifreq
-to kernel_hwtstamp_config structure.
+This patch makes VLAN and MAXVLAN drivers to use the newly
+introduced ndo_hwtstamp_get/set API to pass hw timestamp
+requests to underlying NIC drivers in case if these drivers
+implement ndo_hwtstamp_get/set functions. Otherwise VLAN
+subsystems falls back to calling ndo_eth_ioctl.
 
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Maxim Georgiev <glipus@gmail.com>
-
-Notes:
-
-  Changes in V4:
-  - Introducing KERNEL_HWTSTAMP_FLAG_IFR_RESULT flag indicating that
-    the operation results are returned in the ifr referred by
-    struct kernel_hwtstamp_config instead of kernel_hwtstamp_config
-    glags/tx_type/rx_filter fields.
-  - Implementing generic_hwtstamp_set/set_lower() functions
-    which will be used by vlan, maxvlan, bond and potentially
-    other drivers translating ndo_hwtstamp_set/set calls to
-    lower level drivers.
 ---
- include/linux/net_tstamp.h |  7 ++++
- include/linux/netdevice.h  |  6 +++
- net/core/dev_ioctl.c       | 80 +++++++++++++++++++++++++++++++++++---
- 3 files changed, 87 insertions(+), 6 deletions(-)
+Notes:
+  Changes in v4:
+  - Moved hw timestamp get/set request processing logic
+    from vlan_dev_ioctl() to .ndo_hwtstamp_get/set callbacks.
+  - Use the shared generic_hwtstamp_get/set_lower() functions
+    to handle ndo_hwtstamp_get/set requests.
+  - Applay the same changes to macvlan driver.
+---
+ drivers/net/macvlan.c | 34 +++++++++++++---------------------
+ net/8021q/vlan_dev.c  | 25 ++++++++++++++++++++-----
+ 2 files changed, 33 insertions(+), 26 deletions(-)
 
-diff --git a/include/linux/net_tstamp.h b/include/linux/net_tstamp.h
-index 7c59824f43f5..5164dce3f9a0 100644
---- a/include/linux/net_tstamp.h
-+++ b/include/linux/net_tstamp.h
-@@ -20,6 +20,13 @@ struct kernel_hwtstamp_config {
- 	int flags;
- 	int tx_type;
- 	int rx_filter;
-+	struct ifreq *ifr;
-+	int kernel_flags;
-+};
-+
-+/* possible values for kernel_hwtstamp_config->kernel_flags */
-+enum kernel_hwtstamp_flags {
-+	KERNEL_HWTSTAMP_FLAG_IFR_RESULT = (1 << 0),
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 4a53debf9d7c..32683d859f5f 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -868,31 +868,22 @@ static int macvlan_change_mtu(struct net_device *dev, int new_mtu)
+ 	return 0;
+ }
+ 
+-static int macvlan_eth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++static int macvlan_hwtstamp_get(struct net_device *dev,
++				struct kernel_hwtstamp_config *cfg,
++				struct netlink_ext_ack *extack)
+ {
+ 	struct net_device *real_dev = macvlan_dev_real_dev(dev);
+-	const struct net_device_ops *ops = real_dev->netdev_ops;
+-	struct ifreq ifrr;
+-	int err = -EOPNOTSUPP;
+ 
+-	strscpy(ifrr.ifr_name, real_dev->name, IFNAMSIZ);
+-	ifrr.ifr_ifru = ifr->ifr_ifru;
+-
+-	switch (cmd) {
+-	case SIOCSHWTSTAMP:
+-		if (!net_eq(dev_net(dev), &init_net))
+-			break;
+-		fallthrough;
+-	case SIOCGHWTSTAMP:
+-		if (netif_device_present(real_dev) && ops->ndo_eth_ioctl)
+-			err = ops->ndo_eth_ioctl(real_dev, &ifrr, cmd);
+-		break;
+-	}
++	return generic_hwtstamp_get_lower(real_dev, cfg, extack);
++}
+ 
+-	if (!err)
+-		ifr->ifr_ifru = ifrr.ifr_ifru;
++static int macvlan_hwtstamp_set(struct net_device *dev,
++				struct kernel_hwtstamp_config *cfg,
++				struct netlink_ext_ack *extack)
++{
++	struct net_device *real_dev = macvlan_dev_real_dev(dev);
+ 
+-	return err;
++	return generic_hwtstamp_set_lower(real_dev, cfg, extack);
+ }
+ 
+ /*
+@@ -1193,7 +1184,6 @@ static const struct net_device_ops macvlan_netdev_ops = {
+ 	.ndo_stop		= macvlan_stop,
+ 	.ndo_start_xmit		= macvlan_start_xmit,
+ 	.ndo_change_mtu		= macvlan_change_mtu,
+-	.ndo_eth_ioctl		= macvlan_eth_ioctl,
+ 	.ndo_fix_features	= macvlan_fix_features,
+ 	.ndo_change_rx_flags	= macvlan_change_rx_flags,
+ 	.ndo_set_mac_address	= macvlan_set_mac_address,
+@@ -1212,6 +1202,8 @@ static const struct net_device_ops macvlan_netdev_ops = {
+ #endif
+ 	.ndo_get_iflink		= macvlan_dev_get_iflink,
+ 	.ndo_features_check	= passthru_features_check,
++	.ndo_hwtstamp_get	= macvlan_hwtstamp_get,
++	.ndo_hwtstamp_set	= macvlan_hwtstamp_set,
  };
  
- static inline void hwtstamp_config_to_kernel(struct kernel_hwtstamp_config *kernel_cfg,
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ea10fb1dd6fc..40f4018b13f2 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3939,6 +3939,12 @@ int put_user_ifreq(struct ifreq *ifr, void __user *arg);
- int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
- 		void __user *data, bool *need_copyout);
- int dev_ifconf(struct net *net, struct ifconf __user *ifc);
-+int generic_hwtstamp_set_lower(struct net_device *dev,
-+			       struct kernel_hwtstamp_config *kernel_cfg,
-+			       struct netlink_ext_ack *extack);
-+int generic_hwtstamp_get_lower(struct net_device *dev,
-+			       struct kernel_hwtstamp_config *kernel_cfg,
-+			       struct netlink_ext_ack *extack);
- int dev_ethtool(struct net *net, struct ifreq *ifr, void __user *userdata);
- unsigned int dev_get_flags(const struct net_device *);
- int __dev_change_flags(struct net_device *dev, unsigned int flags,
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index a157b9ab5237..da1d2391822f 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -265,14 +265,17 @@ static int dev_get_hwtstamp(struct net_device *dev, struct ifreq *ifr)
- 	if (!netif_device_present(dev))
- 		return -ENODEV;
- 
-+	kernel_cfg.ifr = ifr;
- 	err = ops->ndo_hwtstamp_get(dev, &kernel_cfg, NULL);
- 	if (err)
- 		return err;
- 
--	hwtstamp_config_from_kernel(&config, &kernel_cfg);
-+	if (!(kernel_cfg.kernel_flags & KERNEL_HWTSTAMP_FLAG_IFR_RESULT)) {
-+		hwtstamp_config_from_kernel(&config, &kernel_cfg);
- 
--	if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
--		return -EFAULT;
-+		if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
-+			return -EFAULT;
-+	}
- 
- 	return 0;
- }
-@@ -289,6 +292,7 @@ static int dev_set_hwtstamp(struct net_device *dev, struct ifreq *ifr)
- 		return -EFAULT;
- 
- 	hwtstamp_config_to_kernel(&kernel_cfg, &cfg);
-+	kernel_cfg.ifr = ifr;
- 
- 	err = net_hwtstamp_validate(&kernel_cfg);
- 	if (err)
-@@ -311,14 +315,78 @@ static int dev_set_hwtstamp(struct net_device *dev, struct ifreq *ifr)
- 	if (err)
- 		return err;
- 
--	hwtstamp_config_from_kernel(&cfg, &kernel_cfg);
-+	if (!(kernel_cfg.kernel_flags & KERNEL_HWTSTAMP_FLAG_IFR_RESULT)) {
-+		hwtstamp_config_from_kernel(&cfg, &kernel_cfg);
- 
--	if (copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)))
--		return -EFAULT;
-+		if (copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)))
-+			return -EFAULT;
-+	}
- 
+ static void macvlan_dev_free(struct net_device *dev)
+diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+index 5920544e93e8..38a31dca3bb9 100644
+--- a/net/8021q/vlan_dev.c
++++ b/net/8021q/vlan_dev.c
+@@ -353,6 +353,24 @@ static int vlan_dev_set_mac_address(struct net_device *dev, void *p)
  	return 0;
  }
  
-+int generic_hwtstamp_set_lower(struct net_device *dev,
-+			       struct kernel_hwtstamp_config *kernel_cfg,
-+			       struct netlink_ext_ack *extack)
++static int vlan_hwtstamp_get(struct net_device *dev,
++			     struct kernel_hwtstamp_config *cfg,
++			     struct netlink_ext_ack *extack)
 +{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	struct ifreq ifrr;
-+	int err;
++	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
 +
-+	if (!netif_device_present(dev))
-+		return -ENODEV;
-+
-+	if (ops->ndo_hwtstamp_set) {
-+		kernel_cfg->kernel_flags &= ~KERNEL_HWTSTAMP_FLAG_IFR_RESULT;
-+		err = ops->ndo_hwtstamp_set(dev, kernel_cfg, extack);
-+		return err;
-+	}
-+
-+	if (!kernel_cfg->ifr)
-+		return -EOPNOTSUPP;
-+
-+	strscpy_pad(ifrr.ifr_name, dev->name, IFNAMSIZ);
-+	ifrr.ifr_ifru = kernel_cfg->ifr->ifr_ifru;
-+	err = dev_eth_ioctl(dev, &ifrr, SIOCSHWTSTAMP);
-+	if (!err) {
-+		kernel_cfg->ifr->ifr_ifru = ifrr.ifr_ifru;
-+		kernel_cfg->kernel_flags |= KERNEL_HWTSTAMP_FLAG_IFR_RESULT;
-+	}
-+	return err;
++	return generic_hwtstamp_get_lower(real_dev, cfg, extack);
 +}
-+EXPORT_SYMBOL(generic_hwtstamp_set_lower);
 +
-+int generic_hwtstamp_get_lower(struct net_device *dev,
-+			       struct kernel_hwtstamp_config *kernel_cfg,
-+			       struct netlink_ext_ack *extack)
++static int vlan_hwtstamp_set(struct net_device *dev,
++			     struct kernel_hwtstamp_config *cfg,
++			     struct netlink_ext_ack *extack)
 +{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	struct ifreq ifrr;
-+	int err;
++	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
 +
-+	if (!netif_device_present(dev))
-+		return -ENODEV;
-+
-+	if (ops->ndo_hwtstamp_get) {
-+		kernel_cfg->kernel_flags &= ~KERNEL_HWTSTAMP_FLAG_IFR_RESULT;
-+		err = ops->ndo_hwtstamp_get(dev, kernel_cfg, extack);
-+		return err;
-+	}
-+
-+	if (!kernel_cfg->ifr)
-+		return -EOPNOTSUPP;
-+
-+	strscpy_pad(ifrr.ifr_name, dev->name, IFNAMSIZ);
-+	ifrr.ifr_ifru = kernel_cfg->ifr->ifr_ifru;
-+	err = dev_eth_ioctl(dev, &ifrr, SIOCGHWTSTAMP);
-+	if (!err) {
-+		kernel_cfg->ifr->ifr_ifru = ifrr.ifr_ifru;
-+		kernel_cfg->kernel_flags |= KERNEL_HWTSTAMP_FLAG_IFR_RESULT;
-+	}
-+	return err;
++	return generic_hwtstamp_set_lower(real_dev, cfg, extack);
 +}
-+EXPORT_SYMBOL(generic_hwtstamp_get_lower);
 +
- static int dev_siocbond(struct net_device *dev,
- 			struct ifreq *ifr, unsigned int cmd)
+ static int vlan_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
  {
+ 	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
+@@ -364,14 +382,9 @@ static int vlan_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	ifrr.ifr_ifru = ifr->ifr_ifru;
+ 
+ 	switch (cmd) {
+-	case SIOCSHWTSTAMP:
+-		if (!net_eq(dev_net(dev), dev_net(real_dev)))
+-			break;
+-		fallthrough;
+ 	case SIOCGMIIPHY:
+ 	case SIOCGMIIREG:
+ 	case SIOCSMIIREG:
+-	case SIOCGHWTSTAMP:
+ 		if (netif_device_present(real_dev) && ops->ndo_eth_ioctl)
+ 			err = ops->ndo_eth_ioctl(real_dev, &ifrr, cmd);
+ 		break;
+@@ -842,6 +855,8 @@ static const struct net_device_ops vlan_netdev_ops = {
+ 	.ndo_fix_features	= vlan_dev_fix_features,
+ 	.ndo_get_iflink		= vlan_dev_get_iflink,
+ 	.ndo_fill_forward_path	= vlan_dev_fill_forward_path,
++	.ndo_hwtstamp_get	= vlan_hwtstamp_get,
++	.ndo_hwtstamp_set	= vlan_hwtstamp_set,
+ };
+ 
+ static void vlan_dev_free(struct net_device *dev)
 -- 
 2.39.2
 
