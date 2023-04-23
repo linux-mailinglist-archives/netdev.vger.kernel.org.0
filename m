@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D4706EBCA3
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 05:28:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E36F86EBCA4
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 05:29:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbjDWD2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 23:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55808 "EHLO
+        id S229848AbjDWD3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 23:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbjDWD2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 23:28:52 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D40268C
-        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 20:28:51 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id e9e14a558f8ab-32b1c8ff598so29320575ab.3
-        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 20:28:51 -0700 (PDT)
+        with ESMTP id S229643AbjDWD3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 23:29:12 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CD0210E
+        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 20:29:10 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id ca18e2360f4ac-7606ce89ebcso99031139f.0
+        for <netdev@vger.kernel.org>; Sat, 22 Apr 2023 20:29:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682220531; x=1684812531;
+        d=gmail.com; s=20221208; t=1682220550; x=1684812550;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=p2zQDhkK5lKaWRelWoXh0mPSTQhbApTm4KvEZpVaTCM=;
-        b=Gcos/7Gp4huSTIB/us95wVt+1ewWc/oBcO2HoJliiwTkRK6zrdd7zYp0jPL9hLhZqu
-         VOBpQXsVf/0u/Sa3flVhRlzQMmTDZ5UBaKwBzdqEO38dgfwVsyVl/Ezqh8aLC4Z/LuE2
-         FBODO8RAGt7MjJDrCOt/Dqh34ldMISQdPavY1afZsJWKvqGebJxq3ZjKPbPMm8sMsBZ5
-         sUoDJleDONHkJ8jE1RKp+Uu+tsmlLAxHovGTb52YV54VVkwEaOjqVp3n7TuAHt/54Dk+
-         p8yD/eGPb6roZpDJwcQBy0wIaCRDXC0g1FLNByDVJrZ7zwPnKwNoDzzc9NCX8frNpbRl
-         e3Cw==
+        bh=hP8bu5KOGUVN1Wbdd5TILgIDJzXdQwhiwCS7uGeLOsE=;
+        b=m3yuMWdg9ldpkx0UEOT4e2xZole3qgCHBSLuqnC+E497JhhQRFh5Owuu1ateZ8plYk
+         jv+l6Tae8J7p6TrKyg9zdtzU38jYzD0IZ+1lt7WJU+kCksxEF3YQZ7QSS8qkce3Qmu+C
+         ZBSoZcCtpDJhBu7nwhPHbAmwIW/qcikMz/Vjgtu8cbLW/08X+ajvP7dHasADe4+77kIc
+         F9Qk1POQnoFIgDXa2oJYJcZqaUX0nMtzhLUugeAWzlFvOebquCQanLUBj12MSCVemVTN
+         e6baY6OXR1PxIgQDWjEBG0We0CkTYD8wtV9/eEKJ48qkOruNij2qT3Q57lh877vnck6F
+         kwXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682220531; x=1684812531;
+        d=1e100.net; s=20221208; t=1682220550; x=1684812550;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=p2zQDhkK5lKaWRelWoXh0mPSTQhbApTm4KvEZpVaTCM=;
-        b=gtnTqBEtLIqW2frrMXNA1tLUxV4fdKDTrmYTf7Hf/n1Aiw+dVE+sQ1PVIfRDsagyHA
-         MJzMPWWv2nh0dZz3J6AOEm+phDCrf8B8dpwui0ig5GOeVnTP/YXfUIghjynmd1HYuxIT
-         G+owmP9liqV4mTi20gMR3Gvsfc4Ljv+Vy83Fs9+OFNp0neYf1oh7yNoiCL2obRbFhRw0
-         4sD++3nLP6pt8lbeVoL2ZdWq2hxPu34pRG1GQ3JVdhhkz8dOwLPukVzcLaGxh2FgMuVi
-         TBPEhqV6i5shbogFjawqD1Aww/rGqiTQ9semZw3n0LcG00BY5Qy3UShhYFcE4xYF+mgp
-         Fs9Q==
-X-Gm-Message-State: AAQBX9dtpsFiYNscvexcDR8NGnDZYQfaawgpuvlf8Eep9YO99b2UIxZG
-        aprHdcAJ1sOL2VUVXEGR41o=
-X-Google-Smtp-Source: AKy350bdEYGE3/kxoQJeOoK4GCIYKOnh0diW7zH7tuiLqIplXSGXyqVGB0nzN+W+tMVuR2sEznL3tA==
-X-Received: by 2002:a92:da86:0:b0:325:eb13:1045 with SMTP id u6-20020a92da86000000b00325eb131045mr2973988iln.2.1682220531055;
-        Sat, 22 Apr 2023 20:28:51 -0700 (PDT)
+        bh=hP8bu5KOGUVN1Wbdd5TILgIDJzXdQwhiwCS7uGeLOsE=;
+        b=Rd4Huq8EHI4bRvfwhb73e7BzeOYVWXgEMIZvhniXskfb8/VFSHIhWgjkqR4wKuvKMf
+         dnzR5iIWuNLMsjAEnvolEgAk94sX3GBkxIO9Ak88wr0TE7V4XIzj95Ag0sxX30jS5vQx
+         GM3MYhEDTkH9UGIBS/viHL1sBgjrCwNVJUNn6weYVZTaIGjwSvgYr0lSOWGxLpWgl0be
+         V0T9igWcjDEWfiyUxGaHNR6UZ2eVvDnO34Q3iYZQkDi4dMLGXyWDACByfq5D45WFeVu7
+         faqQSynNL/cBZoRi9VFSqKnd1xunIBh2rP6DjZ2RjOsXJjZ5tmWG4lFoTNj0YXwv1+DH
+         zsAg==
+X-Gm-Message-State: AAQBX9d0cmb+fajV1StjajRaBz8HcxL2pGYnE1g/okjxINqiVCCQiPcC
+        Jm6uqMhlTcOF1iMwmBCPBVE=
+X-Google-Smtp-Source: AKy350ae5i5mVNWfg/T4rv6HIo+7HqCOrAr4q9tdxQpm7U+oIeeS9Hzg8bNZgJbmebJaHfW3JhgxqQ==
+X-Received: by 2002:a92:cc12:0:b0:328:18af:df0 with SMTP id s18-20020a92cc12000000b0032818af0df0mr2896816ilp.23.1682220550106;
+        Sat, 22 Apr 2023 20:29:10 -0700 (PDT)
 Received: from lenovot480s.. (c-73-78-138-46.hsd1.co.comcast.net. [73.78.138.46])
-        by smtp.gmail.com with ESMTPSA id cx27-20020a056638491b00b0040fa19472bcsm2384977jab.92.2023.04.22.20.28.50
+        by smtp.gmail.com with ESMTPSA id v4-20020a056e0213c400b0031796c6d735sm2134561ilj.41.2023.04.22.20.29.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Apr 2023 20:28:50 -0700 (PDT)
+        Sat, 22 Apr 2023 20:29:09 -0700 (PDT)
 From:   Maxim Georgiev <glipus@gmail.com>
 To:     kory.maincent@bootlin.com
 Cc:     kuba@kernel.org, netdev@vger.kernel.org, glipus@gmail.com,
         maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com,
         vadim.fedorenko@linux.dev, richardcochran@gmail.com,
         gerhard@engleder-embedded.com
-Subject: [RFC PATCH v4 4/5] Add ndo_hwtstamp_get/set support to bond driver
-Date:   Sat, 22 Apr 2023 21:28:49 -0600
-Message-Id: <20230423032849.285441-1-glipus@gmail.com>
+Subject: [RFC PATCH v4 5/5] Implement ndo_hwtstamp_get/set methods in netdevsim driver
+Date:   Sat, 22 Apr 2023 21:29:08 -0600
+Message-Id: <20230423032908.285475-1-glipus@gmail.com>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -70,159 +71,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch changes bonding net driver to use the newly
-introduced ndo_hwtstamp_get/set API to pass hw timestamp
-requests to underlying NIC drivers in case if these drivers
-implement ndo_hwtstamp_get/set functions. Otherwise VLAN subsystem
-falls back to calling ndo_eth_ioctl.
+Implementing ndo_hwtstamp_get/set methods in  netdevsim driver
+to use the newly introduced ndo_hwtstamp_get/setmake it respond to
+ SIOCGHWTSTAMP/SIOCSHWTSTAMP IOCTLs.
+ Also adding .get_ts_info ethtool method allowing to monitor
+ HW timestamp configuration values set using SIOCSHWTSTAMP·IOCTL.
 
-Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Maxim Georgiev <glipus@gmail.com>
 ---
- drivers/net/bonding/bond_main.c | 106 ++++++++++++++++++++------------
- 1 file changed, 66 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 710548dbd0c1..21969afff2a9 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4408,11 +4408,6 @@ static int bond_eth_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cm
- {
- 	struct bonding *bond = netdev_priv(bond_dev);
- 	struct mii_ioctl_data *mii = NULL;
--	const struct net_device_ops *ops;
--	struct net_device *real_dev;
--	struct hwtstamp_config cfg;
--	struct ifreq ifrr;
--	int res = 0;
- 
- 	netdev_dbg(bond_dev, "bond_eth_ioctl: cmd=%d\n", cmd);
- 
-@@ -4439,44 +4434,11 @@ static int bond_eth_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cm
- 		}
- 
- 		break;
--	case SIOCSHWTSTAMP:
--		if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
--			return -EFAULT;
--
--		if (!(cfg.flags & HWTSTAMP_FLAG_BONDED_PHC_INDEX))
--			return -EOPNOTSUPP;
--
--		fallthrough;
--	case SIOCGHWTSTAMP:
--		real_dev = bond_option_active_slave_get_rcu(bond);
--		if (!real_dev)
--			return -EOPNOTSUPP;
--
--		strscpy_pad(ifrr.ifr_name, real_dev->name, IFNAMSIZ);
--		ifrr.ifr_ifru = ifr->ifr_ifru;
--
--		ops = real_dev->netdev_ops;
--		if (netif_device_present(real_dev) && ops->ndo_eth_ioctl) {
--			res = ops->ndo_eth_ioctl(real_dev, &ifrr, cmd);
--			if (res)
--				return res;
--
--			ifr->ifr_ifru = ifrr.ifr_ifru;
--			if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
--				return -EFAULT;
--
--			/* Set the BOND_PHC_INDEX flag to notify user space */
--			cfg.flags |= HWTSTAMP_FLAG_BONDED_PHC_INDEX;
--
--			return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ?
--				-EFAULT : 0;
--		}
--		fallthrough;
- 	default:
--		res = -EOPNOTSUPP;
-+		return -EOPNOTSUPP;
- 	}
- 
--	return res;
-+	return 0;
+Notes:
+  Changes in V4:
+  - Implemented .get_ts_info·ethtool·method.
+  - Tested the patch using  hwstamp_ctl and ethtool:
+
+[root@centosvm kernel-net-next]# ethtool -T eni0np1
+Time stamping parameters for eni0np1:
+Capabilities:
+        software-transmit
+        software-receive
+        software-system-clock
+PTP Hardware Clock: none
+Hardware Transmit Timestamp Modes: none
+Hardware Receive Filter Modes: none
+[root@centosvm kernel-net-next]# hwstamp_ctl -i eni0np1 -t 1 -r 0
+current settings:
+tx_type 0
+rx_filter 0
+new settings:
+tx_type 1
+rx_filter 0
+[root@centosvm kernel-net-next]# ethtool -T eni0np1
+Time stamping parameters for eni0np1:
+Capabilities:
+        software-transmit
+        software-receive
+        software-system-clock
+PTP Hardware Clock: none
+Hardware Transmit Timestamp Modes:
+        off
+Hardware Receive Filter Modes: none
+[root@centosvm kernel-net-next]# hwstamp_ctl -i eni0np1 -t 1 -r 14
+current settings:
+tx_type 1
+rx_filter 0
+new settings:
+tx_type 1
+rx_filter 14
+[root@centosvm kernel-net-next]# ethtool -T eni0np1
+Time stamping parameters for eni0np1:
+Capabilities:
+        software-transmit
+        software-receive
+        software-system-clock
+PTP Hardware Clock: none
+Hardware Transmit Timestamp Modes:
+        off
+Hardware Receive Filter Modes:
+        all
+        some
+        ptpv1-l4-event
+---
+ drivers/net/netdevsim/ethtool.c   | 11 +++++++++++
+ drivers/net/netdevsim/netdev.c    | 24 ++++++++++++++++++++++++
+ drivers/net/netdevsim/netdevsim.h |  1 +
+ 3 files changed, 36 insertions(+)
+
+diff --git a/drivers/net/netdevsim/ethtool.c b/drivers/net/netdevsim/ethtool.c
+index ffd9f84b6644..cbb8e261b759 100644
+--- a/drivers/net/netdevsim/ethtool.c
++++ b/drivers/net/netdevsim/ethtool.c
+@@ -140,6 +140,16 @@ nsim_set_fecparam(struct net_device *dev, struct ethtool_fecparam *fecparam)
+ 	return 0;
  }
  
- static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd)
-@@ -5650,6 +5612,68 @@ static u32 bond_mode_bcast_speed(struct slave *slave, u32 speed)
- 	return speed;
- }
- 
-+static int bond_set_phc_index_flag(struct kernel_hwtstamp_config *kernel_cfg)
++static int nsim_get_ts_info(struct net_device *netdev,
++			    struct ethtool_ts_info *info)
 +{
-+	struct ifreq *ifr = kernel_cfg->ifr;
-+	struct hwtstamp_config cfg;
++	struct netdevsim *ns = netdev_priv(netdev);
 +
-+	if (kernel_cfg->kernel_flags & KERNEL_HWTSTAMP_FLAG_IFR_RESULT) {
-+		if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
-+			return -EFAULT;
-+
-+		cfg.flags |= HWTSTAMP_FLAG_BONDED_PHC_INDEX;
-+		if (copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)))
-+			return -EFAULT;
-+	} else {
-+		kernel_cfg->flags |= HWTSTAMP_FLAG_BONDED_PHC_INDEX;
-+	}
-+
-+	return 0;
++	info->tx_types = ns->hw_tstamp_config.tx_type;
++	info->rx_filters = ns->hw_tstamp_config.rx_filter;
++	return ethtool_op_get_ts_info(netdev, info);
 +}
 +
-+static int bond_hwtstamp_get(struct net_device *dev,
-+			     struct kernel_hwtstamp_config *cfg,
-+			     struct netlink_ext_ack *extack)
-+{
-+	struct bonding *bond = netdev_priv(dev);
-+	struct net_device *real_dev;
-+	int err;
-+
-+	real_dev = bond_option_active_slave_get_rcu(bond);
-+	if (!real_dev)
-+		return -EOPNOTSUPP;
-+
-+	err = generic_hwtstamp_get_lower(real_dev, cfg, extack);
-+	if (err)
-+		return err;
-+
-+	/* Set the BOND_PHC_INDEX flag to notify user space */
-+	return bond_set_phc_index_flag(cfg);
-+}
-+
-+static int bond_hwtstamp_set(struct net_device *dev,
-+			     struct kernel_hwtstamp_config *kernel_cfg,
-+			     struct netlink_ext_ack *extack)
-+{
-+	struct bonding *bond = netdev_priv(dev);
-+	struct net_device *real_dev;
-+	int err;
-+
-+	if (!(kernel_cfg->flags & HWTSTAMP_FLAG_BONDED_PHC_INDEX))
-+		return -EOPNOTSUPP;
-+
-+	real_dev = bond_option_active_slave_get_rcu(bond);
-+	if (!real_dev)
-+		return -EOPNOTSUPP;
-+
-+	err = generic_hwtstamp_set_lower(real_dev, kernel_cfg, extack);
-+	if (err)
-+		return err;
-+
-+	/* Set the BOND_PHC_INDEX flag to notify user space */
-+	return bond_set_phc_index_flag(kernel_cfg);
-+}
-+
- static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
- 					   struct ethtool_link_ksettings *cmd)
- {
-@@ -5798,6 +5822,8 @@ static const struct net_device_ops bond_netdev_ops = {
- 	.ndo_bpf		= bond_xdp,
- 	.ndo_xdp_xmit           = bond_xdp_xmit,
- 	.ndo_xdp_get_xmit_slave = bond_xdp_get_xmit_slave,
-+	.ndo_hwtstamp_get	= bond_hwtstamp_get,
-+	.ndo_hwtstamp_set	= bond_hwtstamp_set,
+ static const struct ethtool_ops nsim_ethtool_ops = {
+ 	.supported_coalesce_params	= ETHTOOL_COALESCE_ALL_PARAMS,
+ 	.get_pause_stats	        = nsim_get_pause_stats,
+@@ -153,6 +163,7 @@ static const struct ethtool_ops nsim_ethtool_ops = {
+ 	.set_channels			= nsim_set_channels,
+ 	.get_fecparam			= nsim_get_fecparam,
+ 	.set_fecparam			= nsim_set_fecparam,
++	.get_ts_info			= nsim_get_ts_info,
  };
  
- static const struct device_type bond_type = {
+ static void nsim_ethtool_ring_init(struct netdevsim *ns)
+diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
+index 35fa1ca98671..6c29dfa3bb4e 100644
+--- a/drivers/net/netdevsim/netdev.c
++++ b/drivers/net/netdevsim/netdev.c
+@@ -238,6 +238,28 @@ nsim_set_features(struct net_device *dev, netdev_features_t features)
+ 	return 0;
+ }
+ 
++static int
++nsim_hwtstamp_get(struct net_device *dev,
++		  struct kernel_hwtstamp_config *kernel_config,
++		  struct netlink_ext_ack *extack)
++{
++	struct netdevsim *ns = netdev_priv(dev);
++
++	*kernel_config = ns->hw_tstamp_config;
++	return 0;
++}
++
++static int
++nsim_hwtstamp_set(struct net_device *dev,
++		  struct kernel_hwtstamp_config *kernel_config,
++		  struct netlink_ext_ack *extack)
++{
++	struct netdevsim *ns = netdev_priv(dev);
++
++	ns->hw_tstamp_config = *kernel_config;
++	return 0;
++}
++
+ static const struct net_device_ops nsim_netdev_ops = {
+ 	.ndo_start_xmit		= nsim_start_xmit,
+ 	.ndo_set_rx_mode	= nsim_set_rx_mode,
+@@ -256,6 +278,8 @@ static const struct net_device_ops nsim_netdev_ops = {
+ 	.ndo_setup_tc		= nsim_setup_tc,
+ 	.ndo_set_features	= nsim_set_features,
+ 	.ndo_bpf		= nsim_bpf,
++	.ndo_hwtstamp_get	= nsim_hwtstamp_get,
++	.ndo_hwtstamp_set	= nsim_hwtstamp_set,
+ };
+ 
+ static const struct net_device_ops nsim_vf_netdev_ops = {
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index 7d8ed8d8df5c..e78e88a0baa1 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -102,6 +102,7 @@ struct netdevsim {
+ 	} udp_ports;
+ 
+ 	struct nsim_ethtool ethtool;
++	struct kernel_hwtstamp_config hw_tstamp_config;
+ };
+ 
+ struct netdevsim *
 -- 
 2.39.2
 
