@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 623D36EC1F2
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 21:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A40896EC1F6
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 21:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbjDWTbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 15:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
+        id S230325AbjDWTby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 15:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230051AbjDWTb3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 15:31:29 -0400
+        with ESMTP id S230107AbjDWTbb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 15:31:31 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DC9E52;
-        Sun, 23 Apr 2023 12:31:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA864E5D;
+        Sun, 23 Apr 2023 12:31:30 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 9D4F95FD16;
-        Sun, 23 Apr 2023 22:31:26 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id F30245FD17;
+        Sun, 23 Apr 2023 22:31:28 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1682278286;
-        bh=qGsMRA60tSQDR+BPleHY9nYAYvbNU1tckKrhNTP0SDo=;
+        s=mail; t=1682278289;
+        bh=DOvMiyMl9T/2K7i2my/swBI2rgDyc1aBJR26UiP7x5o=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=hTeHw7Gyig17Rh0mpISZGE99kkYSORIyjUQU/oxAJL+ZMm2iUbWYadLUbtgblaGD2
-         iW2oxzo1xGBN6GvcHN8vyMaHyhd2GEtUbLbiNTo4hKxAavjPDrs+6R1scaGhA88ytf
-         /wUrqdztc9E2Y09icc80u1iO6H5DdE2NhkJs5U8p425iDkIJRVhBuBOcMqceo/OkUW
-         K+pRiQZEzMVe1Lrgo93JKhs28D/DjqpXnywFXHIXnvurDDr1i0dz0hSoAtXRqETxmS
-         7ChMq2g2217N58ROTQ8IGbVFamr9bXsGkwUkavSg+p24hou/6HC64ePqZzaUPoUn4R
-         lTdysUiI2h2Tw==
+        b=auT+o/tP2A15cToEEKYnRmS6p89PBmSxxoNkCqqy/pfLfuQm1n+5C0ErRkET2f8V+
+         eVlCQgwsymUWz/ckTl53hj5S1Xqk67lgvwffW4s2t2KiCLQVPcK/dyiXfcKHjm2a7s
+         cD0RSajJpZPU8baow1lhPGQJK+0PD7UBF9TPiP7n0WVrdE1gpXtmFxpUndloNR42FU
+         dCD+aC9Mx7/KHyyqPxLi8y/yBBK2W6lQB4S9MX51u57GyZTUMu97omMSZIH9yFReNA
+         rSCXAcj/ied3rx9aDgsGrmrGiuS8BA7AOxGxK8Nq/L3BZbzljNV3zprHSZ7ow/yHvU
+         5x68HWXO7FXZg==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Sun, 23 Apr 2023 22:31:26 +0300 (MSK)
+        Sun, 23 Apr 2023 22:31:28 +0300 (MSK)
 From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -45,9 +45,9 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>,
         Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v2 11/15] vsock/loopback: support MSG_ZEROCOPY for transport
-Date:   Sun, 23 Apr 2023 22:26:39 +0300
-Message-ID: <20230423192643.1537470-12-AVKrasnov@sberdevices.ru>
+Subject: [RFC PATCH v2 12/15] net/sock: enable setting SO_ZEROCOPY for PF_VSOCK
+Date:   Sun, 23 Apr 2023 22:26:40 +0300
+Message-ID: <20230423192643.1537470-13-AVKrasnov@sberdevices.ru>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20230423192643.1537470-1-AVKrasnov@sberdevices.ru>
 References: <20230423192643.1537470-1-AVKrasnov@sberdevices.ru>
@@ -73,44 +73,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add 'msgzerocopy_allow()' callback for loopback transport.
+PF_VSOCK supports MSG_ZEROCOPY transmission, so SO_ZEROCOPY could
+be enabled.
 
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 ---
- net/vmw_vsock/vsock_loopback.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/core/sock.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/vmw_vsock/vsock_loopback.c b/net/vmw_vsock/vsock_loopback.c
-index e3afc0c866f5..0de1436c7d4f 100644
---- a/net/vmw_vsock/vsock_loopback.c
-+++ b/net/vmw_vsock/vsock_loopback.c
-@@ -48,6 +48,7 @@ static int vsock_loopback_cancel_pkt(struct vsock_sock *vsk)
- }
- 
- static bool vsock_loopback_seqpacket_allow(u32 remote_cid);
-+static bool vsock_loopback_msgzerocopy_allow(void);
- 
- static struct virtio_transport loopback_transport = {
- 	.transport = {
-@@ -93,11 +94,18 @@ static struct virtio_transport loopback_transport = {
- 		.notify_buffer_size       = virtio_transport_notify_buffer_size,
- 
- 		.read_skb = virtio_transport_read_skb,
+diff --git a/net/core/sock.c b/net/core/sock.c
+index c25888795390..13a89c6cbfb8 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1457,9 +1457,11 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
+ 			      (sk->sk_type == SOCK_DGRAM &&
+ 			       sk->sk_protocol == IPPROTO_UDP)))
+ 				ret = -EOPNOTSUPP;
+-		} else if (sk->sk_family != PF_RDS) {
++		} else if (sk->sk_family != PF_RDS &&
++			   sk->sk_family != PF_VSOCK) {
+ 			ret = -EOPNOTSUPP;
+ 		}
 +
-+		.msgzerocopy_allow        = vsock_loopback_msgzerocopy_allow,
- 	},
- 
- 	.send_pkt = vsock_loopback_send_pkt,
- };
- 
-+static bool vsock_loopback_msgzerocopy_allow(void)
-+{
-+	return true;
-+}
-+
- static bool vsock_loopback_seqpacket_allow(u32 remote_cid)
- {
- 	return true;
+ 		if (!ret) {
+ 			if (val < 0 || val > 1)
+ 				ret = -EINVAL;
 -- 
 2.25.1
 
