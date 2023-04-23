@@ -2,63 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DC0F6EBD9B
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 09:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 745AF6EBDC7
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 09:52:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230204AbjDWHUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 03:20:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
+        id S230095AbjDWHwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 03:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230188AbjDWHUM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 03:20:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DCCE1BE6
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 00:19:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682234362;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nOfk5KVt03Kw/nxPJuFXIUc7M+oFb5UuYNKx4WZp95g=;
-        b=BayY7JgwPUKoTnFHruRBrkOD49yx/0BNTo5kuPOwnef+ecOQI7Zs18AxRe4q+X9RCNDWwe
-        P1+ObnC6vjR6TW9xRzAVABEoJJzCoE45iIKtSZaxwxBs62LqHQVrMj5kw3KoJ6X1mBU3cF
-        2aeQJ0bfBNv/pRyV/gUPR+NtXwoHkFw=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-583-m7NRMmIJN7mPvp1hsd4oWw-1; Sun, 23 Apr 2023 03:19:20 -0400
-X-MC-Unique: m7NRMmIJN7mPvp1hsd4oWw-1
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f080f9ea3eso11541095e9.1
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 00:19:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682234359; x=1684826359;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nOfk5KVt03Kw/nxPJuFXIUc7M+oFb5UuYNKx4WZp95g=;
-        b=ObwdjYtsIKimxmmsiiInUfYKwIna6PeeVu6CnZm4Juex5C1TFZMop7z6IZJOJ3rvXV
-         wo7v8p1440Ed9cagZh4TraKhEyKErq+CRCUg5bFFS8eFQLCk6YO49QctJSscnBbU2P1i
-         RaS1+ifugA/pDd6mtNeHOjMexm/8pZ9x0xdZPWndtJOXyD2G32rY153JafcPPs6IVhi/
-         EoCPYUlFG4v/L+oaTG+ND6oAwGiS181xSygpeb1D6QhP5Y+Fyu3ZxwidoyUA6dCQgCOO
-         cIA/n+MMj4Eu+KWEBoL66U8XzNLAM64lnWSY+rVhCJCOzVy8OAIBkpbs8k+tNAh9BD6s
-         7liQ==
-X-Gm-Message-State: AAQBX9cu58ELxY2wgNTIjOm7h33BlQUsUBMXUPAZobUvL9XubWCo78Nw
-        /ZesqF2fqi6ncSPkCWMbCpmgBrPg0V2BzMvesm/4uLbKkTpo2nHaUcT2lj3MrqBsJgW6T3fMNtR
-        FAzQbnHAPN/HqjfsS
-X-Received: by 2002:a1c:790e:0:b0:3f1:7288:1912 with SMTP id l14-20020a1c790e000000b003f172881912mr5053869wme.33.1682234359573;
-        Sun, 23 Apr 2023 00:19:19 -0700 (PDT)
-X-Google-Smtp-Source: AKy350al0K0IJpL8RrXHGcCmLxmGOjejEQPiJFsouPKi82zaCtJVKp95uN3hEitLPfT62TTH3eSRFw==
-X-Received: by 2002:a1c:790e:0:b0:3f1:7288:1912 with SMTP id l14-20020a1c790e000000b003f172881912mr5053855wme.33.1682234359214;
-        Sun, 23 Apr 2023 00:19:19 -0700 (PDT)
-Received: from redhat.com ([2.55.61.39])
-        by smtp.gmail.com with ESMTPSA id z4-20020a05600c0a0400b003ef4cd057f5sm12633650wmp.4.2023.04.23.00.19.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Apr 2023 00:19:18 -0700 (PDT)
-Date:   Sun, 23 Apr 2023 03:19:15 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
+        with ESMTP id S229524AbjDWHwO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 03:52:14 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2045.outbound.protection.outlook.com [40.107.6.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DC3F0;
+        Sun, 23 Apr 2023 00:52:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=g+0P6iAgWbr0oRgiQ4bejXX2wJ1gL4dxbw+pJCJb3WFkzQZ1j2cJnVWb3NcLxmZHZHEx3Qn2QSu4m8RN9VlHimERq0kf/gcGtE+qhfqLQYEV4WxWK8H2SThiiaFKm3aKa6I8KeCv3Bp3cUuc1nCBLTrQ/vZXGR9JThNyi9SwqVJXEFzzL3wkysrlTouhgpT1686OY26O6fZ5Yi7H9V1iOpXu186Cg+IxhNBu9KQOf1cJXkx7NYqKrV4CQErfuVsBmErVjzyx4Fq37V/EDIJfZnVMjEvvRMg1K0Qv3BpvllI609zuhZA1o3DPgnXg/pHel84dful15jK02ElyaECpPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jQZhrbnw7bQwmCYnszzgXTOf3bt/bWcGOXbXD87AosA=;
+ b=C466GFyY1yz0smKG62c/NMl5kQ5tLiXThP5th5mkeu0rfzp4VwVka6hlAulyd2EfgVPWvDK4KQbiXAScUWc9Sn96LfTGtube+M/WOFVcTetCeSr/L8TN784VRAjb/Yr/PqhvvA5ZiFDE3eUdxdRwCEw1R7Z/aMtFxoVR3m+ZpUbo9bPXsnZdYsXRCrTX7SW4fsGWfloOsA2poPGyr4Qi1Hj00ZLwOZNgVhz9IDCUlVL07jaJOVCsEB2+K3PkV7ij+jvPQj1wXOrAp/7vAUs0hQoYShWZmuOnimV58DduiYrePHZRR4/OzBBS31x7UpGBMRh5cRBRw/8J+6QnznHkqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=solid-run.com; dmarc=pass action=none
+ header.from=solid-run.com; dkim=pass header.d=solid-run.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=solidrn.onmicrosoft.com; s=selector1-solidrn-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jQZhrbnw7bQwmCYnszzgXTOf3bt/bWcGOXbXD87AosA=;
+ b=gPsQzAYzTEhnjFhN7bjDIB7wg9yEKzV2vKqt+aUkVJz6AQjk0q3An91e5ehVpp0cUnO9iiuqjaRR8QAj7bFuD/S5eciCWl7T+6SSGRuAl1yTOnN7e5bt933QIeSgAowRVI0U7LwifbjmbfErPnLkEHUpSZ1nvcCfAYDT5kXkgwc=
+Received: from AM0PR04MB4723.eurprd04.prod.outlook.com (2603:10a6:208:c0::20)
+ by AS8PR04MB8435.eurprd04.prod.outlook.com (2603:10a6:20b:346::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.21; Sun, 23 Apr
+ 2023 07:52:10 +0000
+Received: from AM0PR04MB4723.eurprd04.prod.outlook.com
+ ([fe80::d2fd:ad65:a6e0:a30a]) by AM0PR04MB4723.eurprd04.prod.outlook.com
+ ([fe80::d2fd:ad65:a6e0:a30a%5]) with mapi id 15.20.6319.032; Sun, 23 Apr 2023
+ 07:52:10 +0000
+From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Jason Wang <jasowang@redhat.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "edumazet@google.com" <edumazet@google.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
@@ -68,7 +50,10 @@ Cc:     Jason Wang <jasowang@redhat.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH net] virtio-net: reject small vring sizes
-Message-ID: <20230423031308-mutt-send-email-mst@kernel.org>
+Thread-Topic: [PATCH net] virtio-net: reject small vring sizes
+Thread-Index: AQHZcDeGnH5xR2OGlkuo4s6jvhNMC68uIjT9gABGFgCAAG90AIAAMSwAgAABjzCAAARBAIAABATIgAAENICAAAM4M4AAIQOAgAALfyGAABuqgIAAAQKHgAADxACACRVQMYAACvaAgAAGduU=
+Date:   Sun, 23 Apr 2023 07:52:10 +0000
+Message-ID: <AM0PR04MB47233B680283E892C45430BCD4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
 References: <20230417023911-mutt-send-email-mst@kernel.org>
  <AM0PR04MB47237BFB8BB3A3606CE6A408D49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
  <20230417030713-mutt-send-email-mst@kernel.org>
@@ -79,61 +64,110 @@ References: <20230417023911-mutt-send-email-mst@kernel.org>
  <AM0PR04MB4723FA4F0FFEBD25903E3344D49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
  <20230417075645-mutt-send-email-mst@kernel.org>
  <AM0PR04MB4723FA90465186B5A8A5C001D4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
+ <20230423031308-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230423031308-mutt-send-email-mst@kernel.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=solid-run.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM0PR04MB4723:EE_|AS8PR04MB8435:EE_
+x-ms-office365-filtering-correlation-id: dd6799c0-a723-4d2c-fdee-08db43cfa4a6
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: EGZ64EhSbtX/rfkESCi3eLsFrZ8Cch35ZzqfPHplw1EJtIpqgTZbpFgCOw+IB7hWRc9oZn9qlNhBk5WiglojACMVkMMA7ocjX46Gz7LFkn1UhG6SmUUU9Ep243DIt64UnvxLWnt30lYAoG5z8f/YpHg4ffr2BFypQC1tZDVEvZ3BAygWrEwUd0vRDgSTgBn3MCO5WWAAUGF0YXNII4DhRSeRDNT5fOI2oiPMI4F4060rCrTxlXI+04PmCKkhboNBFYiNDca4VvwmP5+uUIwCvzffPhEbmW4ckIzIH54QQBfp+Qrts6WqZKNLfu7qLTRozub5bbqKH2LP78D1cXZFifRhkrRJwcGZTnm9qT6tKkQ02xC607Lj348GIyh+oyYizt0125M4HaRl3ULd8fh01oK6Ow4p6FUahM+SuA6u5IznX23AxaAgDXtijuTWbLMj6rzBMYXMY2PO+z/etlF8cFHiLpGBm8gmz6Q7AiUabRqVH9dvXO283img3kLKihjCF6zRcfqSTR7OLC/RjiLtOyGiEjNtotrp19EzvxLK71RPfxAuZYQuDCo7t4c2cLpjqn4CLjN/zUN493cnNSZkdH57xPdRPtIDWqMyTvC5A8N+rWGqfEwsFoKz7TiYHhJo
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB4723.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(376002)(39830400003)(396003)(346002)(136003)(451199021)(41300700001)(122000001)(83380400001)(55016003)(66476007)(66556008)(66946007)(66446008)(4326008)(64756008)(91956017)(76116006)(86362001)(316002)(38100700002)(6916009)(33656002)(52536014)(54906003)(2906002)(71200400001)(478600001)(6506007)(44832011)(8676002)(186003)(8936002)(26005)(38070700005)(5660300002)(9686003)(7696005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?Windows-1252?Q?uGNt4ivoIdBuSmkENNh7KiELX7CCmvidOX4PGXdW9Wj5rpOv1Qe05i5K?=
+ =?Windows-1252?Q?s8rGu+vRGI2VLIOe0BmiXLYISwe851GaECNtKM4LUkWn5N7L3CdE5fNX?=
+ =?Windows-1252?Q?sk3YxBWs5ypQM4inUAe+8/2wn82buC18xP85Kx1LI/qab1jzfVZf10m1?=
+ =?Windows-1252?Q?VR66WENLFU7yyrnTYgdmouv3IPXMsMxXVXYUD+CpvJBmoj2UEB83pJ6S?=
+ =?Windows-1252?Q?91AHxM3s3oYDbKeWutRpewNfq78TJytAMZSQa5WCrGyLQf4K0q1EfJLW?=
+ =?Windows-1252?Q?r7vs22mZipfCv8kfPjMWDNiqGfaJuufkuV8Ja37K65Q/UxLmdbwSVRSV?=
+ =?Windows-1252?Q?7a3/oP4DL7FZFngkg0mfxwbd8MK/fmY0jyXJ1ltWhoVhZtrtz63NWZV8?=
+ =?Windows-1252?Q?gG39puYYRfLsOl24BHXJbYO4nmIeLqiANiYzAzCtV5XJh9y1NydXDoGZ?=
+ =?Windows-1252?Q?bcNRjHM3PDRnxDNPVCTRVP5Pmj39B321itAhpuYRs5NAOqyayY9ekpLN?=
+ =?Windows-1252?Q?vN46+p38aZDmJojcU378edwQHXakEgubY5ky7GB/448UlmVUM8YmjoEQ?=
+ =?Windows-1252?Q?LLGfBUm8EVBN1q/x62QUxvEZQVq6w+VJyh36iF6RKCjS+KK3SSkMaPWx?=
+ =?Windows-1252?Q?KqG3nhmYaaoNDbja7KpoXD7/gO+gvVVQk9JAZTULHSGRTSAV5FSs9QfT?=
+ =?Windows-1252?Q?+iE4v0Prn4mzj0JYURnB4UD3BTTyJc95PxIHtp6BVLb8MFBWGH7mgcIQ?=
+ =?Windows-1252?Q?BB0RK+eje3KlkrnUdpOsxaSqzfyAKbZNwBzRN4EaGeeuP0wnzkH4n/9A?=
+ =?Windows-1252?Q?rTQjNOeY7D1oH/spOfArX9lioAo3lTDxRFkg4xeM1rM00uNw2NzfOzag?=
+ =?Windows-1252?Q?P7R2z49ZgFNg2LvEC1IDxAeSvIoBPjdE4PyFIDf/nynpJf9ln5sQW1Tl?=
+ =?Windows-1252?Q?UdwNFtm0ssrxAixyaUXamKFSMlS9KgDizfcq38y6x8EiUj4bieOznaU9?=
+ =?Windows-1252?Q?3JnSJ/RW/K7J1jinF/yjAeaTrhMxzRmZbtdz6/kEzlT4Irf5PDnM59qD?=
+ =?Windows-1252?Q?ealv3tDfTZNBokltrXDvGO15zyp4dtJVOA2tSKqeOnQs/ti+ZDVPBj5/?=
+ =?Windows-1252?Q?xT08+X9zVdb6CekABkU4HKIEJdxTOue/7P9yyCMYnFskXoLtMCwHgUSE?=
+ =?Windows-1252?Q?Pa0fFDwJsflY6JxuBpTX/evLDQ690trfsJHbbci0DKs1izvh+1nJyWUs?=
+ =?Windows-1252?Q?N5tA3J53sWl2i+CaAfLwQOPcgGX67GSRBvy15kooJ7LQj53u3g90Nngx?=
+ =?Windows-1252?Q?iQvRVWjd5L9uyDMIFKsZ0MciNNNeuT47OIXWogkSEvP1Vx6BjmUuIA/r?=
+ =?Windows-1252?Q?K1yQgvP7ctnlmgsi9j36Z8NmUTb9HzjnRWwPfyafUbnuCkENKDXC0qo8?=
+ =?Windows-1252?Q?EIc+FN3wTxFYDk7GN/iIpzGop5q8cB6KFrmyrlXoOskd1zwndL7GlDVj?=
+ =?Windows-1252?Q?cJ51cMScYpvbwxBnb+3A2rJYSxZtRohzgCb5gXYsAUWY+2AesnatR65n?=
+ =?Windows-1252?Q?Zl5sWJdordLRAw205RSpaw40y9vQKyzJEf7QeA/kLSKXloXPo3oTvJJV?=
+ =?Windows-1252?Q?DKYYrfJY8FHLhAviPSYzoOH7QFUNbe2zfdpIkrtz1aPZwSEc5Ci+3tvk?=
+ =?Windows-1252?Q?A1cDYoT/PxRRBRnXcNszfWITJoxfIt5V?=
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <AM0PR04MB4723FA90465186B5A8A5C001D4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-OriginatorOrg: solid-run.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB4723.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd6799c0-a723-4d2c-fdee-08db43cfa4a6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Apr 2023 07:52:10.2379
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a4a8aaf3-fd27-4e27-add2-604707ce5b82
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YFfRiMHHR9/OOv+Eximi+/LoxYMGmDu+4xNTSHwPGYIci9aD5muvmG46w7l9sPouXLePzh1Sr7jX3Mf57g4Mbm+f5yl2yHOLv8BWUpvHoUU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8435
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 23, 2023 at 06:51:46AM +0000, Alvaro Karsz wrote:
-> > Yes that makes sense, it's architetural. We can disable ctrl vq though.
-> 
-> The problem here is that we know the vring size after calling virtnet_find_vqs, so the number of VQs already includes the control VQ.
-> 
-> Actually, many variables/settings that are initialized before we call virtnet_find_vqs may need modifications if we use small vrings.
-> For example has_rss_hash_report, has_rss, hdr_len etc..
-> 
-> We could have a fixup function to fix everything after we discover that we are using small vrings, but, honestly, I think that this will be hard to maintain in the future, and I don't like this approach much.
-> 
-> The ideal thing will be to discover if we use small vrings in probe's beginning.
-> 
-> I'm looking for a way at the moment.
-
-Hmm. I was wrong. There is no way to disable CVQ feature bit.
-
-1. Reset the device.
-2. Set the ACKNOWLEDGE status bit: the guest OS has notice the device.
-3. Set the DRIVER status bit: the guest OS knows how to drive the device.
-4. Read device feature bits, and write the subset of feature bits understood by the OS and driver to the
-device. During this step the driver MAY read (but MUST NOT write) the device-specific configuration
-fields to check that it can support the device before accepting it.
-5. Set the FEATURES_OK status bit. The driver MUST NOT accept new feature bits after this step.
-6. Re-read device status to ensure the FEATURES_OK bit is still set: otherwise, the device does not
-support our subset of features and the device is unusable.
-7. Perform device-specific setup, including discovery of virtqueues for the device, optional per-bus setup,
-reading and possibly writing the device’s virtio configuration space, and population of virtqueues.
-8. Set the DRIVER_OK status bit. At this point the device is “live”.
-
-
-So features are confirmed before find vqs.
-
-The rest of stuff can probably just be moved to after find_vqs without
-much pain.
-
-So if cvq is too small we can either
-- probe but avoid using cvq
-or
-- fail probe
-
--- 
-MST
-
+> Hmm. I was wrong. There is no way to disable CVQ feature bit.=0A=
+> =0A=
+> 1. Reset the device.=0A=
+> 2. Set the ACKNOWLEDGE status bit: the guest OS has notice the device.=0A=
+> 3. Set the DRIVER status bit: the guest OS knows how to drive the device.=
+=0A=
+> 4. Read device feature bits, and write the subset of feature bits underst=
+ood by the OS and driver to the=0A=
+> device. During this step the driver MAY read (but MUST NOT write) the dev=
+ice-specific configuration=0A=
+> fields to check that it can support the device before accepting it.=0A=
+> 5. Set the FEATURES_OK status bit. The driver MUST NOT accept new feature=
+ bits after this step.=0A=
+> 6. Re-read device status to ensure the FEATURES_OK bit is still set: othe=
+rwise, the device does not=0A=
+> support our subset of features and the device is unusable.=0A=
+> 7. Perform device-specific setup, including discovery of virtqueues for t=
+he device, optional per-> bus setup,=0A=
+> reading and possibly writing the device=92s virtio configuration space, a=
+nd population of virtqueues.=0A=
+> 8. Set the DRIVER_OK status bit. At this point the device is =93live=94.=
+=0A=
+> =0A=
+> =0A=
+> So features are confirmed before find vqs.=0A=
+> =0A=
+> The rest of stuff can probably just be moved to after find_vqs without=0A=
+> much pain.=0A=
+> =0A=
+Actually, I think that with a little bit of pain :)=0A=
+If we use small vrings and a GRO feature bit is set, Linux will need to all=
+ocate 64KB of continuous memory for every receive descriptor..=0A=
+=0A=
+Instead of failing probe if GRO/CVQ are set, can we just reset the device i=
+f we discover small vrings and start over?=0A=
+Can we remember that this device uses small vrings, and then just avoid neg=
+otiating the features that we cannot support?=
