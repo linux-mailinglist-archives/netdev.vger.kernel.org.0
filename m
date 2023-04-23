@@ -2,213 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A186EC0F9
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 18:06:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 672876EC10E
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 18:22:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbjDWQGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 12:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48454 "EHLO
+        id S229674AbjDWQWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 12:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbjDWQGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 12:06:37 -0400
-X-Greylist: delayed 487 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 23 Apr 2023 09:06:33 PDT
-Received: from out-7.mta0.migadu.com (out-7.mta0.migadu.com [91.218.175.7])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6626170A
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 09:06:33 -0700 (PDT)
-Message-ID: <53a90551-cc5b-57a7-5805-7063d5da1cbb@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1682265502;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sRyBqNsBMjzPsyXKl91pVj7PIcLWEUBz0lmmO1CDnnw=;
-        b=ZOo5Mwe/V5oqa1F6hOFOxH5TQYnzORJrzA7Dn7XMxdzuMdjfr/M/sBrNc0XfdYbLeR7xHK
-        yzTF9B582R25sugM3die0bHtw0cAvDZMdoZjxEUDGnUXk57V72PzNXAfWDrsWhfPPYlBZV
-        PV+A6frBEO9J7VJ9Zu2NWAq7ral1pkE=
-Date:   Sun, 23 Apr 2023 23:58:14 +0800
+        with ESMTP id S229493AbjDWQWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 12:22:15 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92234CE;
+        Sun, 23 Apr 2023 09:22:13 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-94f910ea993so497315166b.3;
+        Sun, 23 Apr 2023 09:22:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682266932; x=1684858932;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yidjVPwBHqcdYdJ/nDtM+sw6Z71xxnPo4Jwo9jCDNjU=;
+        b=G6kLdcKGxeCz6DcGFzpTWux076wIQgnE2Z9Vo5K9/gNBEVyI3+WJTexdvRiFHmlzm3
+         iDpwsdvId/rxbuiRy5lOKRlEn0lcT1N7YqUocmO+jEt9btjrxNsKfynIiRvjuPMjOxjp
+         tCLQZ8k8mIOi5zK7D8ocIuB0i6bj4eg2gSxCSjPAoGF9BZe16pLi6SvEFfF4VGyYTQ62
+         PAepNIRHawMbhTpwHooXJdhRzFIQ+fi6yb6keiQFazY5/QIzWN2DRwEbJvRZpF00P5jy
+         qtZgXJgtlA6nNFSArM4PxIBPbfn5rKzgoX/F2NZbFSi7SEMwO5+g4MNwpHWbHjcfdcbZ
+         dwQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682266932; x=1684858932;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yidjVPwBHqcdYdJ/nDtM+sw6Z71xxnPo4Jwo9jCDNjU=;
+        b=k1gizqIBBcP0t2VDQz2vWmjcX6JO0Xdn8+DWnEYt7npPYDj2n0TUo3DYSXKLOS3zxb
+         1Dn0SC97W3xi1GWdeTA6DQ/sck5vgcQXJbHIEMHvqPIieVQiQNTgHtBJJeQdi7kpQbRD
+         CBE6m0zbxbRQ0hWfA8VI7IAiTFy3nNTVdNHuThKWGVQ6g5WoW8YoCZW+PfkK+R5r6QT/
+         uRbxnpKOfovujZZ+p3iy+JiCoo9DBKAwUDXCEWESo4KxrxeWRDA+3kbATx789vGHDzN9
+         5NFD9YGcxXE3KhKLNf6UiDKHhXjObJwfjZusbN1HC3E22cjckoXH3zoB4SaorKYnet8s
+         EAVQ==
+X-Gm-Message-State: AAQBX9cyM6QCYdNrP9wbNni+HhC/6TpMNR8oa4SqwTuaoYfs+g2jeU0y
+        zdbMlFb7U4jw1fNxp4g8T6/oE4mNK81eAERxLWGc0VyG
+X-Google-Smtp-Source: AKy350a4rUgBSyIHTYULi35CKzsB9o1sg5MJbqUP+kpNDhOsbDgEjPRUj3iylNQxQ1L65jAX0sjIz3oBnLo6zZgJ/ZI=
+X-Received: by 2002:a17:907:b01d:b0:94f:6c6c:e17c with SMTP id
+ fu29-20020a170907b01d00b0094f6c6ce17cmr6835618ejc.60.1682266931867; Sun, 23
+ Apr 2023 09:22:11 -0700 (PDT)
 MIME-Version: 1.0
-Subject: Re: [PATCH rdma-next v4 0/8] Fix the problem that rxe can not work in
- net namespace
-To:     Zhu Yanjun <yanjun.zhu@intel.com>, jgg@ziepe.ca, leon@kernel.org,
-        zyjzyj2000@gmail.com, linux-rdma@vger.kernel.org, parav@nvidia.com,
-        netdev@vger.kernel.org, rain.1986.08.12@gmail.com
-References: <20230423144822.1797465-1-yanjun.zhu@intel.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Zhu Yanjun <yanjun.zhu@linux.dev>
-In-Reply-To: <20230423144822.1797465-1-yanjun.zhu@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+References: <20230421090403.15515-1-zhoufeng.zf@bytedance.com>
+ <20230421090403.15515-3-zhoufeng.zf@bytedance.com> <20230421182418.5nvj4mp2vfumtmab@dhcp-172-26-102-232.dhcp.thefacebook.com>
+ <f860cf89-74b2-9102-d28b-abec7d51f349@bytedance.com>
+In-Reply-To: <f860cf89-74b2-9102-d28b-abec7d51f349@bytedance.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 23 Apr 2023 09:22:00 -0700
+Message-ID: <CAADnVQKks_tWKRMTr6k3pBzYYXrnzWTAP6h6F_AN4m0uLCJfkw@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH bpf-next v2 2/2] selftests/bpf: Add
+ testcase for bpf_task_under_cgroup
+To:     Feng Zhou <zhoufeng.zf@bytedance.com>
+Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, yangzhenze@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Apr 22, 2023 at 8:51=E2=80=AFPM Feng Zhou <zhoufeng.zf@bytedance.co=
+m> wrote:
+>
+> =E5=9C=A8 2023/4/22 02:24, Alexei Starovoitov =E5=86=99=E9=81=93:
+>
+> On Fri, Apr 21, 2023 at 05:04:03PM +0800, Feng zhou wrote:
+>
+> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+>
+> test_progs:
+> Tests new kfunc bpf_task_under_cgroup().
+>
+> The bpf program saves the pid which call the getuid syscall within a
+> given cgroup to the remote_pid, which is convenient for the user-mode
+> program to verify the test correctness.
+>
+> The user-mode program creates its own mount namespace, and mounts the
+> cgroupsv2 hierarchy in there, call the getuid syscall, then check if
+> remote_pid and local_pid are equal.
+>
+> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+> ---
+>  .../bpf/prog_tests/task_under_cgroup.c        | 46 +++++++++++++++++++
+>  .../selftests/bpf/progs/cgrp_kfunc_common.h   |  1 +
+>  .../bpf/progs/test_task_under_cgroup.c        | 40 ++++++++++++++++
+>  3 files changed, 87 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/task_under_cgr=
+oup.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_task_under_cgr=
+oup.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c b=
+/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
+> new file mode 100644
+> index 000000000000..bd3deb469938
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
+> @@ -0,0 +1,46 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2023 Bytedance */
+> +
+> +#include <test_progs.h>
+> +#include <cgroup_helpers.h>
+> +#include "test_task_under_cgroup.skel.h"
+> +
+> +#define FOO "/foo"
+> +
+> +void test_task_under_cgroup(void)
+> +{
+> + struct test_task_under_cgroup *skel;
+> + int ret, foo =3D -1;
+> +
+> + foo =3D test__join_cgroup(FOO);
+> + if (!ASSERT_OK(foo < 0, "cgroup_join_foo"))
+> + return;
+> +
+> + skel =3D test_task_under_cgroup__open();
+> + if (!ASSERT_OK_PTR(skel, "test_task_under_cgroup__open"))
+> + goto cleanup;
+> +
+> + skel->rodata->local_pid =3D getpid();
+> + skel->rodata->cgid =3D get_cgroup_id(FOO);
+> +
+> + ret =3D test_task_under_cgroup__load(skel);
+> + if (!ASSERT_OK(ret, "test_task_under_cgroup__load"))
+> + goto cleanup;
+> +
+> + ret =3D test_task_under_cgroup__attach(skel);
+> + if (!ASSERT_OK(ret, "test_task_under_cgroup__attach"))
+> + goto cleanup;
+> +
+> + syscall(__NR_getuid);
+> +
+> + test_task_under_cgroup__detach(skel);
+> +
+> + ASSERT_EQ(skel->bss->remote_pid, skel->rodata->local_pid,
+> +  "test task_under_cgroup");
+> +
+> +cleanup:
+> + if (foo)
+> + close(foo);
+>
+> Looks wrong. should be if (foo >=3D 0) ?
+>
+> Yes.
+>
+> +
+> + test_task_under_cgroup__destroy(skel);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/cgrp_kfunc_common.h b/tool=
+s/testing/selftests/bpf/progs/cgrp_kfunc_common.h
+> index 22914a70db54..41b3ea231698 100644
+> --- a/tools/testing/selftests/bpf/progs/cgrp_kfunc_common.h
+> +++ b/tools/testing/selftests/bpf/progs/cgrp_kfunc_common.h
+> @@ -26,6 +26,7 @@ struct cgroup *bpf_cgroup_ancestor(struct cgroup *cgrp,=
+ int level) __ksym;
+>  struct cgroup *bpf_cgroup_from_id(u64 cgid) __ksym;
+>  void bpf_rcu_read_lock(void) __ksym;
+>  void bpf_rcu_read_unlock(void) __ksym;
+> +int bpf_task_under_cgroup(struct cgroup *cgrp, struct task_struct *task)=
+ __ksym;
+>
+>  static inline struct __cgrps_kfunc_map_value *cgrps_kfunc_map_value_look=
+up(struct cgroup *cgrp)
+>  {
+> diff --git a/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c b=
+/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
+> new file mode 100644
+> index 000000000000..e2740f9b029d
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
+> @@ -0,0 +1,40 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2023 Bytedance */
+> +
+> +#include <vmlinux.h>
+> +#include <asm/unistd.h>
+> +#include <bpf/bpf_tracing.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#include "cgrp_kfunc_common.h"
+> +
+> +const volatile int local_pid;
+> +const volatile long cgid;
+> +int remote_pid;
+> +
+> +SEC("tp_btf/sys_enter")
+>
+> pls narrow down to specific syscall. Like you use in user space part: get=
+uid
+>
+> Also add this test to denylist.s390. See BPF CI failure.
+>
+> bpf_task_under_cgroup is placed in generic_btf_ids, belongs to BPF_PROG_T=
+YPE_TRACING,
+>
+> if narrow down to specific syscall and uses SEC ("tp/syscalls/sys_enter_g=
+etuid"),
+>
+> bpf prog type is TRACEPOINT, kfunc cannot be used, and reports
+>
+> "calls kernel function bpf_cgroup_from_id is not allowed".
 
-在 2023/4/23 22:48, Zhu Yanjun 写道:
-> From: Zhu Yanjun <yanjun.zhu@linux.dev>
->
-> When run "ip link add" command to add a rxe rdma link in a net
-> namespace, normally this rxe rdma link can not work in a net
-> name space.
->
-> The root cause is that a sock listening on udp port 4791 is created
-> in init_net when the rdma_rxe module is loaded into kernel. That is,
-> the sock listening on udp port 4791 is created in init_net. Other net
-> namespace is difficult to use this sock.
->
-> The following commits will solve this problem.
->
-> In the first commit, move the creating sock listening on udp port 4791
-> from module_init function to rdma link creating functions. That is,
-> after the module rdma_rxe is loaded, the sock will not be created.
-> When run "rdma link add ..." command, the sock will be created. So
-> when creating a rdma link in the net namespace, the sock will be
-> created in this net namespace.
->
-> In the second commit, the functions udp4_lib_lookup and udp6_lib_lookup
-> will check the sock exists in the net namespace or not. If yes, rdma
-> link will increase the reference count of this sock, then continue other
-> jobs instead of creating a new sock to listen on udp port 4791. Since the
-> network notifier is global, when the module rdma_rxe is loaded, this
-> notifier will be registered.
->
-> After the rdma link is created, the command "rdma link del" is to
-> delete rdma link at the same time the sock is checked. If the reference
-> count of this sock is greater than the sock reference count needed by
-> udp tunnel, the sock reference count is decreased by one. If equal, it
-> indicates that this rdma link is the last one. As such, the udp tunnel
-> is shut down and the sock is closed. The above work should be
-> implemented in linkdel function. But currently no dellink function in
-> rxe. So the 3rd commit addes dellink function pointer. And the 4th
-> commit implements the dellink function in rxe.
->
-> To now, it is not necessary to keep a global variable to store the sock
-> listening udp port 4791. This global variable can be replaced by the
-> functions udp4_lib_lookup and udp6_lib_lookup totally. Because the
-> function udp6_lib_lookup is in the fast path, a member variable l_sk6
-> is added to store the sock. If l_sk6 is NULL, udp6_lib_lookup is called
-> to lookup the sock, then the sock is stored in l_sk6, in the future,it
-> can be used directly.
->
-> All the above work has been done in init_net. And it can also work in
-> the net namespace. So the init_net is replaced by the individual net
-> namespace. This is what the 6th commit does. Because rxe device is
-> dependent on the net device and the sock listening on udp port 4791,
-> every rxe device is in exclusive mode in the individual net namespace.
-> Other rdma netns operations will be considerred in the future.
->
-> In the 7th commit, the register_pernet_subsys/unregister_pernet_subsys
-> functions are added. When a new net namespace is created, the init
-> function will initialize the sk4 and sk6 socks. Then the 2 socks will
-> be released when the net namespace is destroyed. The functions
-> rxe_ns_pernet_sk4/rxe_ns_pernet_set_sk4 will get and set sk4 in the net
-> namespace. The functions rxe_ns_pernet_sk6/rxe_ns_pernet_set_sk6 will
-> handle sk6. Then sk4 and sk6 are used in the previous commits.
->
-> As the sk4 and sk6 in pernet namespace can be accessed, it is not
-> necessary to add a new l_sk6. As such, in the 8th commit, the l_sk6 is
-> replaced with the sk6 in pernet namespace.
->
-> Test steps:
-> 1) Suppose that 2 NICs are in 2 different net namespaces.
->
->    # ip netns exec net0 ip link
->    3: eno2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP
->       link/ether 00:1e:67:a0:22:3f brd ff:ff:ff:ff:ff:ff
->       altname enp5s0
->
->    # ip netns exec net1 ip link
->    4: eno3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel
->       link/ether f8:e4:3b:3b:e4:10 brd ff:ff:ff:ff:ff:ff
->
-> 2) Add rdma link in the different net namespace
->      net0:
->      # ip netns exec net0 rdma link add rxe0 type rxe netdev eno2
->
->      net1:
->      # ip netns exec net1 rdma link add rxe1 type rxe netdev eno3
->
-> 3) Run rping test.
->      net0
->      # ip netns exec net0 rping -s -a 192.168.2.1 -C 1&
->      [1] 1737
->      # ip netns exec net1 rping -c -a 192.168.2.1 -d -v -C 1
->      verbose
->      count 1
->      ...
->      ping data: rdma-ping-0: ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqr
->      ...
->
-> 4) Remove the rdma links from the net namespaces.
->      net0:
->      # ip netns exec net0 ss -lu
->      State     Recv-Q    Send-Q    Local Address:Port    Peer Address:Port    Process
->      UNCONN    0         0         0.0.0.0:4791          0.0.0.0:*
->      UNCONN    0         0         [::]:4791             [::]:*
->
->      # ip netns exec net0 rdma link del rxe0
->
->      # ip netns exec net0 ss -lu
->      State     Recv-Q    Send-Q    Local Address:Port    Peer Address:Port    Process
->
->      net1:
->      # ip netns exec net0 ss -lu
->      State     Recv-Q    Send-Q    Local Address:Port    Peer Address:Port    Process
->      UNCONN    0         0         0.0.0.0:4791          0.0.0.0:*
->      UNCONN    0         0         [::]:4791             [::]:*
->
->      # ip netns exec net1 rdma link del rxe1
->
->      # ip netns exec net0 ss -lu
->      State     Recv-Q    Send-Q    Local Address:Port    Peer Address:Port    Process
->
-> V3->V4: Rebase the commits to rdma-next;
->
-> V2->V3: 1) Add "rdma link del" example in the cover letter, and use "ss -lu" to
->             verify rdma link is removed.
->          2) Add register_pernet_subsys/unregister_pernet_subsys net namespace
->          3) Replace l_sk6 with sk6 of pernet_name_space
->
-> V1->V2: Add the explicit initialization of sk6.
-
-These commits are based on rdma-next. After Kernel 6.3 are released, it 
-will rebase and
-
-repost on the next rc1.
-
-Zhu Yanjun
-
-
->
->
->
->
-> Zhu Yanjun (8):
->    RDMA/rxe: Creating listening sock in newlink function
->    RDMA/rxe: Support more rdma links in init_net
->    RDMA/nldev: Add dellink function pointer
->    RDMA/rxe: Implement dellink in rxe
->    RDMA/rxe: Replace global variable with sock lookup functions
->    RDMA/rxe: add the support of net namespace
->    RDMA/rxe: Add the support of net namespace notifier
->    RDMA/rxe: Replace l_sk6 with sk6 in net namespace
->
->   drivers/infiniband/core/nldev.c     |   6 ++
->   drivers/infiniband/sw/rxe/Makefile  |   3 +-
->   drivers/infiniband/sw/rxe/rxe.c     |  35 +++++++-
->   drivers/infiniband/sw/rxe/rxe_net.c | 113 +++++++++++++++++------
->   drivers/infiniband/sw/rxe/rxe_net.h |   9 +-
->   drivers/infiniband/sw/rxe/rxe_ns.c  | 134 ++++++++++++++++++++++++++++
->   drivers/infiniband/sw/rxe/rxe_ns.h  |  17 ++++
->   include/rdma/rdma_netlink.h         |   2 +
->   8 files changed, 279 insertions(+), 40 deletions(-)
->   create mode 100644 drivers/infiniband/sw/rxe/rxe_ns.c
->   create mode 100644 drivers/infiniband/sw/rxe/rxe_ns.h
->
+sure, pls narrow it down. sys_enter is too broad.
+In parallel test_progs the bpf prog will be way too many times.
