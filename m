@@ -2,193 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79C536EC2F0
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 00:30:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B41A6EC302
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 00:53:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229458AbjDWW3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 18:29:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60566 "EHLO
+        id S230005AbjDWWxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 18:53:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbjDWW3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 18:29:46 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7EB10D2
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 15:29:45 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d9443c01a7336-1a667067275so31945005ad.1
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 15:29:45 -0700 (PDT)
+        with ESMTP id S229509AbjDWWx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 18:53:28 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3FF51702
+        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 15:53:14 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-63d4595d60fso24042141b3a.0
+        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 15:53:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fromorbit-com.20221208.gappssmtp.com; s=20221208; t=1682288984; x=1684880984;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WCA3zsna6vFeV798erY3+vSi/BvHgoXGHGGpFGJHBjM=;
-        b=CSv4RH6SXo/8LhDuQi8y+f+aMDFvLryZeZLhrGCIHJ76AP0hsBy9FXFG82OCSDXpdw
-         w8F2b+EujbdmHkHGv/Yp2eXHQ1Q2MYfO8Vu1ERFY1LXyjQpIg0lB+5VlMI/ocJwxnhdc
-         Xr7ocs5kYhWzgrbsToVMuFqmxnhx9PMp/1Es7VJKZagcRT2c06hsYHc4SKreGkyREEPk
-         mCg+asSla1YXUzn1ZIV7XG9Mcyje8X207NucVVd2pMhQOzQUptnWXdlOsGXi/9ALcAP/
-         iq+8gIFu9tNpqRG1e620R+RCQL23t/f9n43Ntbw7lzsRcOiSQ4oQmZOQImEBwjpawJpm
-         dy5w==
+        d=mistywest-com.20221208.gappssmtp.com; s=20221208; t=1682290394; x=1684882394;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fHwNbkYjD+ypkCqANZwaqJi/1Ie+hSyzgeXLRJJskyw=;
+        b=2s5NAYlSlw6dQnk8hBZLBWEBWdO3MKsYyVK0Z8DqUaPSsqEGJH7flc5wNVDMRYR6T6
+         YJCv4TbqhOHwRhPNoHzJ/sgP0s7ztptecT0L51z1SUujkjcrOW3Cytqt6yc05Rmu0cHx
+         adnM4H6TrATkLHCznw54KAzoodPwhM1mcuGxtbWl2xhJY5rNmUMXpbyDMlzA/igqNpYb
+         Ki7ZF3Zny88cjBw4lYof6DjuASPGBBlk4dN7hWIDW7byK2IA6yc8kNdGkx1baoQEbelL
+         Hq4TKWadH2NAYoYRzGWAW6oCCV3Pf6MRmITHqmmMecRwlbm5hEqAenq1ad5W7D+eeZMH
+         4Gsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682288984; x=1684880984;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WCA3zsna6vFeV798erY3+vSi/BvHgoXGHGGpFGJHBjM=;
-        b=VZ1IgLbr6oNDyr4LRMG/s6I5jg/ShCQk2Axkwq7Rgz4W3Ob5JcmDCLPnXJH03OAe6y
-         ZVHy1dDoZYPpaKKXkiHxVPhWBjUMS4AbZoXma+PMR8WBa0svJgzcsdn86Q2phDgqGt6W
-         fIpAHNNfW9iR3LGlO8ddRzY7/e2EPrFjl19H5fFLPBqynpdX/879vJaQxe2kXkuCQznV
-         evJPeS9+kfL6SaNeq1j8vCeNztGzww2sWkLe+d+R5LbItUqnWY9IU8UbxSLCbOleR53w
-         I3cakgdZZnCxm3DFcmoVz7Ryw9f1ncQFOlSjM7Bpv+bLd4mrWnnW6oYmZXMBSHoCIEVT
-         i6ZQ==
-X-Gm-Message-State: AAQBX9crMRGFbxdSgjIcA3vFKhIa9nabpKpcZwVtXEImAU8qUBqLSN9R
-        coPPfdxt+WUUuUYlnbvEuKcF3w==
-X-Google-Smtp-Source: AKy350ZR4n3yiJ8OSE0TQKFE8uJrXQJX3r2CnA0Tf9NWbUzvYbwag62F1wj/UfIK9SSx06miuG3AKw==
-X-Received: by 2002:a17:902:e849:b0:1a6:dba5:2e3e with SMTP id t9-20020a170902e84900b001a6dba52e3emr14801275plg.25.1682288984544;
-        Sun, 23 Apr 2023 15:29:44 -0700 (PDT)
-Received: from dread.disaster.area (pa49-180-41-174.pa.nsw.optusnet.com.au. [49.180.41.174])
-        by smtp.gmail.com with ESMTPSA id bh8-20020a170902a98800b001a641ea111fsm5444609plb.112.2023.04.23.15.29.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Apr 2023 15:29:44 -0700 (PDT)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1pqiDF-0074Ij-4U; Mon, 24 Apr 2023 08:29:41 +1000
-Date:   Mon, 24 Apr 2023 08:29:41 +1000
-From:   Dave Chinner <david@fromorbit.com>
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] mm/gup: disallow GUP writing to file-backed mappings by
- default
-Message-ID: <20230423222941.GR447837@dread.disaster.area>
-References: <f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com>
+        d=1e100.net; s=20221208; t=1682290394; x=1684882394;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fHwNbkYjD+ypkCqANZwaqJi/1Ie+hSyzgeXLRJJskyw=;
+        b=Z3J3/sruLv7a3NtUo/eAbYEhqiBhb/71VhbPra0jIUIBDfByn64/hwOUncjxwRUWx7
+         4bBH/AsCsqgHNdkMgOdDpcGHM3681oFCZ26fI3GfmMy2uNFodrMHBIKfI7H4hoIr+3s0
+         +3sDbGvGr9EOD9HUVYYAQTnRB5n8Uk2SdcFjRNr/aFf1LLg0T2/aR949+wp2sRuMgY3b
+         aIwxay2PE9OepBz7lN6VaCDvbS1Syuzlp5hjOnAaE6LI3SKSsuI7S55GMGhqG+mhE60T
+         JcLNnGntZze8yBAqA9d94cXoJb5S+IhVzdPDG7TnHy+Iu3uyXE5TC2Rckde4GbQDOg3J
+         cVlQ==
+X-Gm-Message-State: AAQBX9eMkKuByxLrPwHwfXDKydTp/KBJRIYy2HceIj44sCMArGDt/FfL
+        tCnGhS8/ua7hbz4WjhIdnFkBtA==
+X-Google-Smtp-Source: AKy350YY3b816x/MvKefrOUEauaHFzkbfpvm9FKCK/gc9rMA66X/ZYUpPOBnwV4IZopTS8oXcXYpVw==
+X-Received: by 2002:a17:902:e80d:b0:1a6:46d7:77f0 with SMTP id u13-20020a170902e80d00b001a646d777f0mr20399416plg.0.1682290394371;
+        Sun, 23 Apr 2023 15:53:14 -0700 (PDT)
+Received: from [192.168.1.222] (S01061c937c8195ad.vc.shawcable.net. [24.87.33.175])
+        by smtp.gmail.com with ESMTPSA id k91-20020a17090a14e400b0024bb5fb51fcsm790083pja.34.2023.04.23.15.53.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 23 Apr 2023 15:53:13 -0700 (PDT)
+Message-ID: <06e3c69c-2792-66f1-13b4-ddc894787d09@mistywest.com>
+Date:   Sun, 23 Apr 2023 15:53:11 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: issues to bring up two VSC8531 PHYs
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+References: <5eb810d7-6765-4de5-4eb0-ad0972bf640d@mistywest.com>
+ <bb62e044-034e-771e-e3a9-a4b274e3dec9@gmail.com>
+ <46e4d167-5c96-41a0-8823-a6a97a9fa45f@lunn.ch>
+ <ba56f0a4-b8af-a478-7c1d-e6532144b820@gmail.com>
+ <59fc6f98-0f67-f4a3-23c9-cd589aaa6af8@mistywest.com>
+ <b3776edd-e337-44a4-8196-a6a94b498991@lunn.ch>
+ <02b26c6f-f056-cec6-daf1-5e7736363d4e@mistywest.com>
+ <7bb09c7c-24fc-4c8d-8068-f163082ab781@lunn.ch>
+ <fa806e4a-b706-ce54-b3e0-b95d065e8d4a@mistywest.com>
+ <e65a8575-8a76-4b09-c398-aee5272921a7@gmail.com>
+From:   Ron Eggler <ron.eggler@mistywest.com>
+In-Reply-To: <e65a8575-8a76-4b09-c398-aee5272921a7@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 22, 2023 at 02:37:05PM +0100, Lorenzo Stoakes wrote:
-> +/*
-> + * Writing to file-backed mappings using GUP is a fundamentally broken operation
-> + * as kernel write access to GUP mappings may not adhere to the semantics
-> + * expected by a file system.
-> + *
-> + * In most instances we disallow this broken behaviour, however there are some
-> + * exceptions to this enforced here.
-> + */
-> +static inline bool can_write_file_mapping(struct vm_area_struct *vma,
-> +					  unsigned long gup_flags)
-> +{
-> +	struct file *file = vma->vm_file;
-> +
-> +	/* If we aren't pinning then no problematic write can occur. */
-> +	if (!(gup_flags & (FOLL_GET | FOLL_PIN)))
-> +		return true;
-> +
-> +	/* Special mappings should pose no problem. */
-> +	if (!file)
-> +		return true;
 
-Ok...
+On 4/21/23 17:09, Florian Fainelli wrote:
+>
+>
+> On 4/21/2023 3:55 PM, Ron Eggler wrote:
+>>
+>> On 4/21/23 09:35, Andrew Lunn wrote:
+>>>>> You can also try:
+>>>>>
+>>>>> ethtool --phy-statistics ethX
+>>>> after appliaction of the above patch, ethtool tells me
+>>>>
+>>>> # ethtool --phy-statistics eth0
+>>>> PHY statistics:
+>>>>       phy_receive_errors: 65535
+>>>>      phy_idle_errors: 255
+>>> So these have saturated. Often these counters don't wrap, they stop at
+>>> the maximum value.
+>>>
+>>> These errors also indicate your problem is probably not between the
+>>> MAC and the PHY, but between the PHY and the RJ45 socket. Or maybe how
+>>> the PHY is clocked. It might not have a stable clock, or the wrong
+>>> clock frequency.
+>>
+>> The man page 
+>> (https://www.man7.org/linux/man-pages/man8/ethtool.8.html) does not 
+>> give any details about what phy_receive_errors or phy_idle_errors 
+>> refer to exactly, is there any documentation about it that I could 
+>> not find?
+>
+> The statistics are inherently PHY specific and how a driver writer 
+> choses to map a name to a specific PHY counter is backed within the 
+> driver.
+Thank you, I think I have moved past this now:
+When I reboot, both RX & TX_CLK delay values are set to 0x0044 which 
+equates 2.0ns delay and this actually lets me monitor traffic on the 
+local network with tcpdump but still, my arp address doesn't go out and 
+while my arp table gets populated, I'm not able to get any ping responses:
+My interface in question:
+# ifconfig eth0
+eth0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500  metric 1
+         inet 192.168.1.123  netmask 255.255.255.0  broadcast 192.168.1.255
+         ether 92:95:1c:76:8c:3e  txqueuelen 1000  (Ethernet)
+         RX packets 94  bytes 22123 (21.6 KiB)
+         RX errors 0  dropped 36  overruns 0  frame 0
+         TX packets 0  bytes 0 (0.0 B)
+         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+         device interrupt 170
+arp table:
+# arp
+Address                  HWtype  HWaddress           Flags 
+Mask            Iface
+192.168.1.222            ether   54:04:a6:f3:19:db C                     
+eth0
+192.168.1.223            ether   68:ec:c5:ca:13:9f C                     
+eth0
+none of these hosts would reply to pings though but
+# tcpdump -i eth0 ip
+shows me traffic on the local network
+the phy statistics now look like:
+# ethtool --phy-statistics eth0
+PHY statistics:
+      phy_receive_errors: 0
+      phy_false_carrier: 0
+      phy_cu_media_link_disconnect: 0
+      phy_cu_media_crc_good_count: 9667
+      phy_cu_media_crc_error_count: 0
+It appears like RX packets are getting dropped but interestingly the TX 
+packets are showing 0 even though the ping command should send out some 
+data:
+# ifconfig eth0
+eth0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500  metric 1
+         inet 192.168.1.123  netmask 255.255.255.0  broadcast 192.168.1.255
+         ether 92:95:1c:76:8c:3e  txqueuelen 1000  (Ethernet)
+         RX packets 9885  bytes 2202753 (2.1 MiB)
+         RX errors 0  dropped 3916  overruns 0  frame 0
+         TX packets 0  bytes 0 (0.0 B)
+         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+         device interrupt 170
 
-> +
-> +	/* Has the caller explicitly indicated this case is acceptable? */
-> +	if (gup_flags & FOLL_ALLOW_BROKEN_FILE_MAPPING)
-> +		return true;
-> +
-> +	/* shmem and hugetlb mappings do not have problematic semantics. */
-> +	return vma_is_shmem(vma) || is_file_hugepages(file);
-> +}
+what could be going on here and how can I trouble shoot this further?
 
-This looks backwards. We only want the override to occur when the
-target won't otherwise allow it. i.e.  This should be:
+Thank you!
 
-	if (vma_is_shmem(vma))
-		return true;
-	if (is_file_hugepages(vma)
-		return true;
 
-	/*
-	 * Issue a warning only if we are allowing a write to a mapping
-	 * that does not support what we are attempting to do functionality.
-	 */
-	if (WARN_ON_ONCE(gup_flags & FOLL_ALLOW_BROKEN_FILE_MAPPING))
-		return true;
-	return false;
-
-i.e. we only want the warning to fire when the override is
-triggered - indicating that the caller is actually using a file
-mapping in a broken way, not when it is being used on
-file/filesystem that actually supports file mappings in this way.
-
->  static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
->  {
->  	vm_flags_t vm_flags = vma->vm_flags;
->  	int write = (gup_flags & FOLL_WRITE);
->  	int foreign = (gup_flags & FOLL_REMOTE);
-> +	bool vma_anon = vma_is_anonymous(vma);
->  
->  	if (vm_flags & (VM_IO | VM_PFNMAP))
->  		return -EFAULT;
->  
-> -	if (gup_flags & FOLL_ANON && !vma_is_anonymous(vma))
-> +	if ((gup_flags & FOLL_ANON) && !vma_anon)
->  		return -EFAULT;
->  
->  	if ((gup_flags & FOLL_LONGTERM) && vma_is_fsdax(vma))
-> @@ -978,6 +1008,10 @@ static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
->  		return -EFAULT;
->  
->  	if (write) {
-> +		if (!vma_anon &&
-> +		    WARN_ON_ONCE(!can_write_file_mapping(vma, gup_flags)))
-> +			return -EFAULT;
-
-Yeah, the warning definitely belongs in the check function when the
-override triggers allow broken behaviour to proceed, not when we
-disallow a write fault because the underlying file/filesystem does
-not support the operation being attempted.
-
--Dave.
 -- 
-Dave Chinner
-david@fromorbit.com
+RON EGGLER Firmware Engineer (he/him/his) www.mistywest.com
