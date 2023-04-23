@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A94A36EC12A
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 18:48:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31E986EC12C
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 18:49:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbjDWQss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 12:48:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        id S229648AbjDWQtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 12:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbjDWQsp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 12:48:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02ACC10F0;
-        Sun, 23 Apr 2023 09:48:42 -0700 (PDT)
+        with ESMTP id S229507AbjDWQtp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 12:49:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8C210E6;
+        Sun, 23 Apr 2023 09:49:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 885BC61B5C;
-        Sun, 23 Apr 2023 16:48:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25641C4339B;
-        Sun, 23 Apr 2023 16:48:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96CA460F71;
+        Sun, 23 Apr 2023 16:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36A48C433EF;
+        Sun, 23 Apr 2023 16:49:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682268521;
-        bh=ddToxb9gkHG/FkTnr9/E04yp93nvcB9vGAz/CWipWRo=;
+        s=k20201202; t=1682268584;
+        bh=kASU+/mrkQ9A/jChgnrK2HkPgNiJvc5j5hmvbvjQBSI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=meiIehMSXFmw8QLgP3JYfJI44hllJ52uMpKkWBXS5bnXXjfEx5VibSwadR2Bb/JFw
-         HeVzWjbDnF5D5TR21KiJWwlq7M3hX+D+i+dF85LEceh+b44+EFg2ve0FREDHXQlPOb
-         8dWxyPwhCa6BiLQh0MY6HaA4hLA0vHEzgxDGPBY4CqRcNdjtTwM0VVNAGdZYtUJtlB
-         X+AmsrxIeCnaVAYMfBt7Xmo7U5M/QI/dxegtjbBI2vMSq2V6Nn94P5x8fzbRK70g6O
-         fgBGGwVNlRi2+b+8Sec1ZtxHEjFKBKtRfXlouoKXPdUiT+Dd/mYP87KVh1I/H4AGyg
-         sofC8ln57dDYg==
-Date:   Sun, 23 Apr 2023 19:48:37 +0300
+        b=rLrN6P3EcBcwFjY6CU+aq/3XCW/jhm4O4KkYOCwuBhwMIl46NJXqojyzqm3aCik7O
+         j0HOST/tvjLKi4/PZqLZCsd6PzSkfqFcXYjsf8kThEE65IQCTvpk0u4B93eh1rJIGz
+         v7XuuHqihMQOx+e/dBSJIcJpAsmIkiZppR0tABJdDReD2rRlEKROcU9YYHI/k4vpxf
+         Hgfd3itOeppQrJVSe7nIfA2grRtjYu5qFTfkidl3Dwu8rPK4hZjunqXjeLjVV4gy+4
+         NuD2rIGfIRY7dd8g/dqncOvnc7Ts5RA6Icg+LXoR81hZxlourSbx1rDRKzFVqfSn6z
+         a+RnLmuCZoV/w==
+Date:   Sun, 23 Apr 2023 19:49:39 +0300
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Geetha sowjanya <gakula@marvell.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
         pabeni@redhat.com, richardcochran@gmail.com, sgoutham@marvell.com,
         sbhatta@marvell.com, hkelam@marvell.com
-Subject: Re: [net PATCH 1/9] octeonxt2-af: mcs: Fix per port bypass config
-Message-ID: <20230423164837.GF4782@unreal>
+Subject: Re: [net PATCH 4/9] octeontx2-af: mcs: Fix MCS block interrupt
+Message-ID: <20230423164939.GG4782@unreal>
 References: <20230423095454.21049-1-gakula@marvell.com>
- <20230423095454.21049-2-gakula@marvell.com>
+ <20230423095454.21049-5-gakula@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230423095454.21049-2-gakula@marvell.com>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+In-Reply-To: <20230423095454.21049-5-gakula@marvell.com>
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -56,20 +56,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 23, 2023 at 03:24:46PM +0530, Geetha sowjanya wrote:
-> For each lmac port, MCS has two MCS_TOP_SLAVE_CHANNEL_CONFIGX
-> registers. For CN10KB both register need to be configured for the
-> port level mcs bypass to work. This patch also sets bitmap
-> of flowid/secy entry reserved for default bypass so that these
-> entries can be shown in debugfs.
+On Sun, Apr 23, 2023 at 03:24:49PM +0530, Geetha sowjanya wrote:
+> On CN10KB, MCS IP vector number, BBE and PAB interrupt mask
+> got changed to support more block level interrupts.
+> To address this changes, this patch fixes the bbe and pab
+> interrupt handlers.
 > 
-> Fixes: bd69476e86fc ("octeontx2-af: cn10k: mcs: Install a default TCAM for normal traffic")
-> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+> Fixes: 6c635f78c474 ("octeontx2-af: cn10k: mcs: Handle MCS block interrupts")
 > Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 > ---
->  drivers/net/ethernet/marvell/octeontx2/af/mcs.c       | 11 ++++++++++-
->  .../net/ethernet/marvell/octeontx2/af/rvu_debugfs.c   |  5 +++--
->  2 files changed, 13 insertions(+), 3 deletions(-)
+>  .../net/ethernet/marvell/octeontx2/af/mcs.c   | 95 ++++++++-----------
+>  .../net/ethernet/marvell/octeontx2/af/mcs.h   | 26 +++--
+>  .../marvell/octeontx2/af/mcs_cnf10kb.c        | 63 ++++++++++++
+>  .../ethernet/marvell/octeontx2/af/mcs_reg.h   |  5 +-
+>  4 files changed, 119 insertions(+), 70 deletions(-)
 > 
 
 Thanks,
