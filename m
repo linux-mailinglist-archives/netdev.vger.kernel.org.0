@@ -2,79 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E2A6EBC77
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 04:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37E6F6EBC6C
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 04:32:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230062AbjDWCif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Apr 2023 22:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
+        id S229933AbjDWCcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Apr 2023 22:32:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbjDWCie (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 22:38:34 -0400
-X-Greylist: delayed 438 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 22 Apr 2023 19:38:32 PDT
-Received: from mail-m2849.qiye.163.com (mail-m2849.qiye.163.com [103.74.28.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F612109;
-        Sat, 22 Apr 2023 19:38:32 -0700 (PDT)
-Received: from localhost.localdomain (unknown [106.75.220.2])
-        by mail-m2839.qiye.163.com (Hmail) with ESMTPA id 0E826C028F;
-        Sun, 23 Apr 2023 10:31:04 +0800 (CST)
-From:   Faicker Mo <faicker.mo@ucloud.cn>
-To:     faicker.mo@ucloud.cn
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] netfilter: conntrack: allow insertion clash of gre protocol
-Date:   Sun, 23 Apr 2023 10:29:57 +0800
-Message-Id: <20230423022958.1770634-1-faicker.mo@ucloud.cn>
-X-Mailer: git-send-email 2.39.1
+        with ESMTP id S229580AbjDWCb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Apr 2023 22:31:59 -0400
+X-Greylist: delayed 77423 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 22 Apr 2023 19:31:53 PDT
+Received: from smtpbgeu1.qq.com (smtpbgeu1.qq.com [52.59.177.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3ED1717;
+        Sat, 22 Apr 2023 19:31:52 -0700 (PDT)
+X-QQ-mid: Yeas5t1682217071t196t32057
+Received: from 7082A6556EBF4E69829842272A565F7C (jiawenwu@trustnetic.com [183.129.236.74])
+X-QQ-SSF: 00400000000000F0FM9000000000000
+From:   =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
+X-BIZMAIL-ID: 1302647852042328395
+To:     "'Andy Shevchenko'" <andriy.shevchenko@linux.intel.com>
+Cc:     <netdev@vger.kernel.org>, <andrew@lunn.ch>,
+        <linux@armlinux.org.uk>, <jarkko.nikula@linux.intel.com>,
+        <olteanv@gmail.com>, <hkallweit1@gmail.com>,
+        <linux-i2c@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        <mengyuanlou@net-swift.com>
+References: <20230422045621.360918-1-jiawenwu@trustnetic.com> <20230422045621.360918-3-jiawenwu@trustnetic.com> <ZEQKlSIIZi9941Bh@smile.fi.intel.com>
+In-Reply-To: <ZEQKlSIIZi9941Bh@smile.fi.intel.com>
+Subject: RE: [PATCH net-next v4 2/8] i2c: designware: Add driver support for Wangxun 10Gb NIC
+Date:   Sun, 23 Apr 2023 10:31:09 +0800
+Message-ID: <000201d9758b$aa3193a0$fe94bae0$@trustnetic.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUhXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkZHh1MVktOQ0MZTUlJQkoeGFUZERMWGhIXJBQOD1
-        lXWRgSC1lBWUpLTVVMTlVJSUtVSVlXWRYaDxIVHRRZQVlPS0hVSkhCQk1KVU9VSk9ZBg++
-X-HM-Tid: 0a87abf357f88421kuqw0e826c028f
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6KzI6Ayo4LjJCPz0RIQJITEwR
-        HTcaCxVVSlVKTUNJSUpMS01OSkNLVTMWGhIXVR0aEhgQHglVFhQ7DhgXFA4fVRgVRVlXWRILWUFZ
-        SktNVUxOVUlJS1VJWVdZCAFZQUlISks3Bg++
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQLYcl6q9PfLE2IPpEOvRSb72esQRAIu4J5yAbvC5R+tGtF3kA==
+Content-Language: zh-cn
+X-QQ-SENDSIZE: 520
+Feedback-ID: Yeas:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        T_SPF_HELO_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NVGRE tunnel is used in the VM-to-VM communications. The VM packets
-are encapsulated in NVGRE and sent from the host. For NVGRE
-there are two tuples(outer sip and outer dip) in the host conntrack item.
-Insertion clashes are more likely to happen if the concurrent connections
-are sent from the VM.
+> > +++ b/include/linux/platform_data/i2c-dw.h
+> 
+> No way we need this in a new code.
 
-Signed-off-by: Faicker Mo <faicker.mo@ucloud.cn>
----
- net/netfilter/nf_conntrack_proto_gre.c | 1 +
- 1 file changed, 1 insertion(+)
+Do I have to rely on OF or ACPI if I need these parameters?
 
-diff --git a/net/netfilter/nf_conntrack_proto_gre.c b/net/netfilter/nf_conntrack_proto_gre.c
-index 728eeb0aea87..ad6f0ca40cd2 100644
---- a/net/netfilter/nf_conntrack_proto_gre.c
-+++ b/net/netfilter/nf_conntrack_proto_gre.c
-@@ -296,6 +296,7 @@ void nf_conntrack_gre_init_net(struct net *net)
- /* protocol helper struct */
- const struct nf_conntrack_l4proto nf_conntrack_l4proto_gre = {
- 	.l4proto	 = IPPROTO_GRE,
-+	.allow_clash	 = true,
- #ifdef CONFIG_NF_CONNTRACK_PROCFS
- 	.print_conntrack = gre_print_conntrack,
- #endif
--- 
-2.39.1
+> 
+> > +struct dw_i2c_platform_data {
+> > +	void __iomem *base;
+> 
+> You should use regmap.
+
+The resource was mapped on the ethernet driver. How do I map it again
+with I2C offset?
+
+> 
+> > +	unsigned int flags;
+> > +	unsigned int ss_hcnt;
+> > +	unsigned int ss_lcnt;
+> > +	unsigned int fs_hcnt;
+> > +	unsigned int fs_lcnt;
+> 
+> No, use device properties.
+> 
+> > +};
+> 
+> --
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+> 
 
