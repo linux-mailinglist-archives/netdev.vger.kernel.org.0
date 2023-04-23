@@ -2,134 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF54C6EC229
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 22:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF1416EC231
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 22:18:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbjDWUCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 16:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
+        id S229800AbjDWUSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 16:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjDWUCY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 16:02:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C098E63;
-        Sun, 23 Apr 2023 13:02:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28D4D60F77;
-        Sun, 23 Apr 2023 20:02:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD654C433D2;
-        Sun, 23 Apr 2023 20:02:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682280142;
-        bh=MXq/43kCze2RO9lP4ptWyt16cAC97gbSKdjUyiZkGe0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TeydC14vXjAcezSvOpLJ6lAgoD7kv4M6u2qpkMik63uNVRdyPydMRXOgOZl8horI+
-         dPMUTeoPcKNY3usBHvTn9wt3MN+OugsRnGr0IsC1oFmhWdpfSaV1Z2ZOlTUucNyFnI
-         Dc7xJ3MsVgfv/9IzUKl8JIOxIGjmFLwo53Sw9q11W9QUhGzAN8aJtxFQ6cy32G+/6J
-         sPWBqLbzeBzmMfJt637Yg3UjirQwtj3SDotLldKjhF9Q47+El15XA9ePt5cvIKvHTl
-         ZLtLr/8hQ5GEStE0bg3XDleDq07tryjP50bYayKFt8JtmZOdkh1eS+Qu0bUY77irUf
-         0LMKZJajGU/pQ==
-Date:   Sun, 23 Apr 2023 22:02:11 +0200
-From:   Simon Horman <horms@kernel.org>
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     Simon Horman <simon.horman@corigine.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] mm/gup: disallow GUP writing to file-backed mappings by
- default
-Message-ID: <ZEWOwz/82AKHGrXW@kernel.org>
-References: <f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com>
- <ZEWHsbxhQlrSqnSC@corigine.com>
- <a6ceb82a-1766-4229-ba33-b6f25e111561@lucifer.local>
+        with ESMTP id S229696AbjDWUSb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 16:18:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B24E70
+        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 13:17:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682281062;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b5ejvIIx/RJ7eYanc2DeN6LKkOul5lY8GnPOGLq5m+0=;
+        b=dkJQsWm5kU8xdjiueJcB1na8+LovmB6bKDobXr5eDBLspDyYXmYzgKgpZNC8Ivfgf5LC7J
+        KNw+JpcGqrtcsSEvTwmaOkMbve9YpkZwTKQr77CsGUFZL0Dah5RZSMh+xC43lZbepF1iYj
+        rQr2wDb85DCOU+z+087iBJ9b53eOnwc=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-609-iSrVg3u5PE6Pa697aXWjvw-1; Sun, 23 Apr 2023 16:17:40 -0400
+X-MC-Unique: iSrVg3u5PE6Pa697aXWjvw-1
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f21e35dc08so1978555e9.2
+        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 13:17:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682281059; x=1684873059;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=b5ejvIIx/RJ7eYanc2DeN6LKkOul5lY8GnPOGLq5m+0=;
+        b=XP4OvxbG/FmPhGoLioH8ZaARDRyC5piP8EFOCA9qMpXXV0STvqCv3JughkcvTV9Wfi
+         ZHsg0SkrLS7AwKdYeLxcpkeL2JflXuqfZrCJ/yeL8WfhaRJ/7We7LG5nQI7Tb2pPGx/5
+         tWyYqeom725pKJu+D/L/PYG2Hq3XIWKR6kIfYeWuxdIuAc3z3RPg0QoLLNS3kjasNVmf
+         raSW0goIyedbXSAwaiz/vGdQHwMKWrngJgGyY4c8bQ5PCPfmQUGe5kK4rxTIbGi+7FWD
+         cePSdWpiAlzlxCOJEhWWyLjh8SRRrjyI2pMueTnxksmo2c+CNt9dWwNEK3Wp9n8xYUH7
+         CwGQ==
+X-Gm-Message-State: AAQBX9eG1lFcNKNdibpVlYMk4TykONNqBMQW6dkjHwmw4jQ+pvJSxdHu
+        8PHj3Nwitv+QbCH+sTDJvCLAj1v7ZVEF8Ct/NO8Nb5Zs45RMybVVnJZzrXQmnm8LutSLv9BFLb1
+        xKaw1niuUndpfjZyg
+X-Received: by 2002:a7b:c008:0:b0:3f1:7440:f21d with SMTP id c8-20020a7bc008000000b003f17440f21dmr5959106wmb.33.1682281059807;
+        Sun, 23 Apr 2023 13:17:39 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZVUD7fuAvXZZNUn5Xb6tdyv5ONlZ2mzUgnHxdl0RaH2ytQnY0R7FH9hzI+EcGWub/tnAP+6A==
+X-Received: by 2002:a7b:c008:0:b0:3f1:7440:f21d with SMTP id c8-20020a7bc008000000b003f17440f21dmr5959093wmb.33.1682281059474;
+        Sun, 23 Apr 2023 13:17:39 -0700 (PDT)
+Received: from redhat.com ([2.55.61.39])
+        by smtp.gmail.com with ESMTPSA id p1-20020a5d48c1000000b002f27dd92643sm2357771wrs.99.2023.04.23.13.17.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Apr 2023 13:17:38 -0700 (PDT)
+Date:   Sun, 23 Apr 2023 16:17:35 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] virtio-net: reject small vring sizes
+Message-ID: <20230423161644-mutt-send-email-mst@kernel.org>
+References: <20230417051816-mutt-send-email-mst@kernel.org>
+ <AM0PR04MB47237705695AFD873DEE4530D49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
+ <20230417073830-mutt-send-email-mst@kernel.org>
+ <AM0PR04MB4723FA4F0FFEBD25903E3344D49C9@AM0PR04MB4723.eurprd04.prod.outlook.com>
+ <20230417075645-mutt-send-email-mst@kernel.org>
+ <AM0PR04MB4723FA90465186B5A8A5C001D4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
+ <20230423031308-mutt-send-email-mst@kernel.org>
+ <AM0PR04MB47233B680283E892C45430BCD4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
+ <20230423065132-mutt-send-email-mst@kernel.org>
+ <AM0PR04MB47237D46ADE7954289025B66D4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a6ceb82a-1766-4229-ba33-b6f25e111561@lucifer.local>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <AM0PR04MB47237D46ADE7954289025B66D4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 23, 2023 at 08:40:53PM +0100, Lorenzo Stoakes wrote:
-> On Sun, Apr 23, 2023 at 09:32:01PM +0200, Simon Horman wrote:
-> > On Sat, Apr 22, 2023 at 02:37:05PM +0100, Lorenzo Stoakes wrote:
-> > > It isn't safe to write to file-backed mappings as GUP does not ensure that
-> > > the semantics associated with such a write are performed correctly, for
-> > > instance filesystems which rely upon write-notify will not be correctly
-> > > notified.
-> > >
-> > > There are exceptions to this - shmem and hugetlb mappings are (in effect)
-> > > anonymous mappings by other names so we do permit this operation in these
-> > > cases.
-> > >
-> > > In addition, if no pinning takes place (neither FOLL_GET nor FOLL_PIN is
-> > > specified and neither flags gets implicitly set) then no writing can occur
-> > > so we do not perform the check in this instance.
-> > >
-> > > This is an important exception, as populate_vma_page_range() invokes
-> > > __get_user_pages() in this way (and thus so does __mm_populate(), used by
-> > > MAP_POPULATE mmap() and mlock() invocations).
-> > >
-> > > There are GUP users within the kernel that do nevertheless rely upon this
-> > > behaviour, so we introduce the FOLL_ALLOW_BROKEN_FILE_MAPPING flag to
-> > > explicitly permit this kind of GUP access.
-> > >
-> > > This is required in order to not break userspace in instances where the
-> > > uAPI might permit file-mapped addresses - a number of RDMA users require
-> > > this for instance, as do the process_vm_[read/write]v() system calls,
-> > > /proc/$pid/mem, ptrace and SDT uprobes. Each of these callers have been
-> > > updated to use this flag.
-> > >
-> > > Making this change is an important step towards a more reliable GUP, and
-> > > explicitly indicates which callers might encouter issues moving forward.
-> >
-> > nit: s/encouter/encounter/
-> >
+On Sun, Apr 23, 2023 at 12:28:49PM +0000, Alvaro Karsz wrote:
 > 
-> Ack, I always seem to leave at least one or two easter egg spelling
-> mistakes in :)
-
-:)
-
-> Will fix up on next respin (in unlikely event of no further review,
-> hopefully Andrew would pick up!)
+> > > > The rest of stuff can probably just be moved to after find_vqs without
+> > > > much pain.
+> > > >
+> > > Actually, I think that with a little bit of pain :)
+> > > If we use small vrings and a GRO feature bit is set, Linux will need to allocate 64KB of continuous memory for every receive descriptor..
+> > 
+> > Oh right. Hmm. Well this is same as big packets though, isn't it?
+> > 
 > 
+> Well, when VIRTIO_NET_F_MRG_RXBUF is not negotiated and one of the GRO features is, the receive buffers are page size buffers chained together to form a 64K buffer.
+> In this case, do all the chained descriptors actually point to a single block of continuous memory, or is it possible for the descriptors to point to pages spread all over?
+> 
+> > 
+> > > Instead of failing probe if GRO/CVQ are set, can we just reset the device if we discover small vrings and start over?
+> > > Can we remember that this device uses small vrings, and then just avoid negotiating the features that we cannot support?
+> > 
+> > 
+> > We technically can of course. I am just not sure supporting CVQ with just 1 s/g entry will
+> > ever be viable.
+> 
+> Even if we won't support 1 s/g entry, do we want to fail probe in such cases?
+> We could just disable the CVQ feature (with reset, as suggested before).
+> I'm not saying that we should, just raising the option.
+> 
+
+OK I'm convinced, reset and re-negotiate seems cleaner.
+
+-- 
+MST
+
