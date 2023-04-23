@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1DDF6EC08B
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 16:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B3A6EC08C
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 16:51:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230300AbjDWOuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 10:50:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
+        id S230498AbjDWOvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 10:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbjDWOug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 10:50:36 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C99F211F
-        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 07:50:21 -0700 (PDT)
+        with ESMTP id S230467AbjDWOu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 10:50:58 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AF410F6
+        for <netdev@vger.kernel.org>; Sun, 23 Apr 2023 07:50:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1682261421; x=1713797421;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=A6XFtcofHS7tKM37d7nVtxPshh0Wzc2zk8UjVdCaqqs=;
-  b=R3V3iDwIvTdmsyHKLBmbDMf2q7rOOjlpL1iDsZMIsAkVV1hrmHYY8gSB
-   wiemt53Z3pgGnXtyXEXoPf0u91YEdt4pK2jK2RC2EHhcxxkC4TtTZQMg8
-   r+skafJVXcNayvntjCrinVwtft23v+7wu8fZcwpXw1xoGCx2F0dA9U7rp
-   s=;
+  t=1682261438; x=1713797438;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=BzY/r84BdOkLR5Laf3VUtZw1v9+VIlzY1nbaORIv4do=;
+  b=Ft+bz1ZYpTYwc4ZZayec+Y/KR0jzm7Mw90wbGdWcAXregI9OD0zhx9w2
+   CawEcbQiaPyOHeZmES46Eqwtrd2mEInEY8S2SDoLMKxReOf/vc7TBKpHK
+   v32aTndR7x4kBhCQU33Cai7LiKHmTzLEug6KKjweiKo9JPowdKnHkwi6d
+   8=;
 X-IronPort-AV: E=Sophos;i="5.99,220,1677542400"; 
-   d="scan'208";a="321808425"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-9694bb9e.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2023 14:50:20 +0000
-Received: from EX19D019EUA003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-m6i4x-9694bb9e.us-east-1.amazon.com (Postfix) with ESMTPS id A629080D3D;
-        Sun, 23 Apr 2023 14:50:16 +0000 (UTC)
+   d="scan'208";a="323881024"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-dc7c3f8b.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2023 14:50:34 +0000
+Received: from EX19D019EUA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-m6i4x-dc7c3f8b.us-west-2.amazon.com (Postfix) with ESMTPS id CD5ACA09C2;
+        Sun, 23 Apr 2023 14:50:32 +0000 (UTC)
 Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX19D019EUA003.ant.amazon.com (10.252.50.35) with Microsoft SMTP Server
+ EX19D019EUA002.ant.amazon.com (10.252.50.84) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Sun, 23 Apr 2023 14:50:16 +0000
+ 15.2.1118.26; Sun, 23 Apr 2023 14:50:31 +0000
 Received: from u570694869fb251.ant.amazon.com (10.85.143.178) by
  EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Sun, 23 Apr 2023 14:50:05 +0000
+ 15.2.1118.26; Sun, 23 Apr 2023 14:50:21 +0000
 From:   Shay Agroskin <shayagr@amazon.com>
 To:     Michal Kubecek <mkubecek@suse.cz>,
         David Miller <davem@davemloft.net>,
@@ -66,10 +66,12 @@ CC:     Shay Agroskin <shayagr@amazon.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         Edward Cree <ecree.xilinx@gmail.com>,
         Florian Westphal <fw@strlen.de>
-Subject: [PATCH v2 ethtool-next 0/2] Add tx push buf len param to ethtool
-Date:   Sun, 23 Apr 2023 17:49:46 +0300
-Message-ID: <20230423144948.650717-1-shayagr@amazon.com>
+Subject: [PATCH v2 ethtool-next 1/2] update UAPI header copies
+Date:   Sun, 23 Apr 2023 17:49:47 +0300
+Message-ID: <20230423144948.650717-2-shayagr@amazon.com>
 X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20230423144948.650717-1-shayagr@amazon.com>
+References: <20230423144948.650717-1-shayagr@amazon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -86,44 +88,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset adds a new sub-configuration to ethtool get/set queue
-params (ethtool -g) called 'tx-push-buf-len'.
+Update to kernel commit 233eb4e786b5.
 
-This configuration specifies the maximum number of bytes of a
-transmitted packet a driver can push directly to the underlying
-device ('push' mode). The motivation for pushing some of the bytes to
-the device has the advantages of
+Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+---
+ uapi/linux/ethtool_netlink.h | 2 ++
+ uapi/linux/rtnetlink.h       | 1 +
+ 2 files changed, 3 insertions(+)
 
-- Allowing a smart device to take fast actions based on the packet's
-  header
-- Reducing latency for small packets that can be copied completely into
-  the device
-
-This new param is practically similar to tx-copybreak value that can be
-set using ethtool's tunable but conceptually serves a different purpose.
-While tx-copybreak is used to reduce the overhead of DMA mapping and
-makes no sense to use if less than the whole segment gets copied,
-tx-push-buf-len allows to improve performance by analyzing the packet's
-data (usually headers) before performing the DMA operation.
-
-The configuration can be queried and set using the commands:
-
-    $ ethtool -g [interface]
-
-    # ethtool -G [interface] tx-push-buf-len [number of bytes]
-
-Shay Agroskin (2):
-  update UAPI header copies
-  ethtool: Add support for configuring tx-push-buf-len
-
- ethtool.8.in                 |  5 +++++
- ethtool.c                    |  1 +
- netlink/desc-ethtool.c       |  2 ++
- netlink/rings.c              | 38 +++++++++++++++++++++++-------------
- uapi/linux/ethtool_netlink.h |  2 ++
- uapi/linux/rtnetlink.h       |  1 +
- 6 files changed, 35 insertions(+), 14 deletions(-)
-
+diff --git a/uapi/linux/ethtool_netlink.h b/uapi/linux/ethtool_netlink.h
+index 13493c9..cd85de1 100644
+--- a/uapi/linux/ethtool_netlink.h
++++ b/uapi/linux/ethtool_netlink.h
+@@ -357,6 +357,8 @@ enum {
+ 	ETHTOOL_A_RINGS_CQE_SIZE,			/* u32 */
+ 	ETHTOOL_A_RINGS_TX_PUSH,			/* u8 */
+ 	ETHTOOL_A_RINGS_RX_PUSH,			/* u8 */
++	ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN,		/* u32 */
++	ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX,		/* u32 */
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_A_RINGS_CNT,
+diff --git a/uapi/linux/rtnetlink.h b/uapi/linux/rtnetlink.h
+index 217b25b..2132e94 100644
+--- a/uapi/linux/rtnetlink.h
++++ b/uapi/linux/rtnetlink.h
+@@ -787,6 +787,7 @@ enum {
+ 	TCA_ROOT_FLAGS,
+ 	TCA_ROOT_COUNT,
+ 	TCA_ROOT_TIME_DELTA, /* in msecs */
++	TCA_ROOT_EXT_WARN_MSG,
+ 	__TCA_ROOT_MAX,
+ #define	TCA_ROOT_MAX (__TCA_ROOT_MAX - 1)
+ };
 -- 
 2.25.1
 
