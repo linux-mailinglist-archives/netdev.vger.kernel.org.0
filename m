@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B982D6EC1EA
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 21:34:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0C226EC1FA
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 21:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230316AbjDWTbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 15:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56254 "EHLO
+        id S230237AbjDWTbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 15:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbjDWTb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 15:31:27 -0400
+        with ESMTP id S229994AbjDWTb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 15:31:28 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD59E10E3;
-        Sun, 23 Apr 2023 12:31:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CEEE63;
+        Sun, 23 Apr 2023 12:31:27 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 845135FD11;
-        Sun, 23 Apr 2023 22:31:20 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 639DD5FD12;
+        Sun, 23 Apr 2023 22:31:21 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1682278280;
-        bh=92TjpAFzgN19cdeV3DB5ob03wq+mklevZg38Rj0IMpE=;
+        s=mail; t=1682278281;
+        bh=dnEZbD4yrTqC14p1P2CFEotu3kmN6tK9cyCJAJm4wDc=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=Mng9PSOvlrxvx5X/lA8GlGv+KKcbYKMDrsWhqZzW/HNfBLp1wasviZQwRM4f6Q7eG
-         0U0mIPJ2/rUrBhRf0NueNKj9bNnR9jTVb0c/HaG89B2FGYkI23Ax/XhcPq0EAAhaxD
-         q5gceOhOxvJmuBrEr10WX1yMjKRmchmucWX4w0zShfGACUvI9dsqzdPT5iMjCkGrgn
-         eule7pCMmBOedTnBw4/ljqYCZsF1lv6u4lg/pqxvEQGZFhHLm/5Ar5OdhcFPDnnfax
-         Q1xB4wlEKLQz7oQ444+Z1OqPw9fy6lXqVgBWDEmK8F3Rox4PwAyB5jWaNhH22jsAgg
-         sHvwA9O0Pz06Q==
+        b=jQXpFIwQCXOjyCIt0VXPV/8YCiHqow3hUlSjenrDP5aaB6A1mjdXcGsk59qe3yNMX
+         T5rBLrYzGhygTEOrYoXMDIKPuOwvWfHS4dZ2ToSzchl93UL+f1B9FSTZnCuVVzkdiB
+         vhaXzmxFcz2Tu2I8yYF9jgRVNLLCt4In2FRE3eumShb36Fv1xIH350eI74YIJcbAKD
+         0lTJl1tUFSP1mX2lCeDyr6sz6H7NI23CV2ZpvsxGiWjlA2hXVC0Fg0HaVtdmQ8OYaz
+         Tl9QjX6ADDmcvbFSSdQoUykRNNdZrSopwjpcvHNCGk/oK8q/6fozOimeI8dwbKh5UT
+         Hp/Efnh/iaySg==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Sun, 23 Apr 2023 22:31:20 +0300 (MSK)
+        Sun, 23 Apr 2023 22:31:21 +0300 (MSK)
 From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -45,9 +45,9 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>,
         Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v2 06/15] vsock: check error queue to set EPOLLERR
-Date:   Sun, 23 Apr 2023 22:26:34 +0300
-Message-ID: <20230423192643.1537470-7-AVKrasnov@sberdevices.ru>
+Subject: [RFC PATCH v2 07/15] vsock: read from socket's error queue
+Date:   Sun, 23 Apr 2023 22:26:35 +0300
+Message-ID: <20230423192643.1537470-8-AVKrasnov@sberdevices.ru>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20230423192643.1537470-1-AVKrasnov@sberdevices.ru>
 References: <20230423192643.1537470-1-AVKrasnov@sberdevices.ru>
@@ -73,28 +73,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If socket's error queue is not empty, EPOLLERR must be set.
+This adds handling of MSG_ERRQUEUE input flag for receive call, thus
+skb from socket's error queue is read.
 
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 ---
- net/vmw_vsock/af_vsock.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/socket.h   | 1 +
+ net/vmw_vsock/af_vsock.c | 5 +++++
+ 2 files changed, 6 insertions(+)
 
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 13c3a237b9c9..19a6f39fa014 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -379,6 +379,7 @@ struct ucred {
+ #define SOL_MPTCP	284
+ #define SOL_MCTP	285
+ #define SOL_SMC		286
++#define SOL_VSOCK	287
+ 
+ /* IPX options */
+ #define IPX_TYPE	1
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 413407bb646c..137a0db6eaac 100644
+index 137a0db6eaac..c50d2632a75f 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -1030,8 +1030,8 @@ static __poll_t vsock_poll(struct file *file, struct socket *sock,
- 	poll_wait(file, sk_sleep(sk), wait);
- 	mask = 0;
+@@ -110,6 +110,7 @@
+ #include <linux/workqueue.h>
+ #include <net/sock.h>
+ #include <net/af_vsock.h>
++#include <linux/errqueue.h>
  
--	if (sk->sk_err)
--		/* Signify that there has been an error on this socket. */
-+	/* Signify that there has been an error on this socket. */
-+	if (sk->sk_err || !skb_queue_empty_lockless(&sk->sk_error_queue))
- 		mask |= EPOLLERR;
+ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr);
+ static void vsock_sk_destruct(struct sock *sk);
+@@ -2135,6 +2136,10 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 	int err;
  
- 	/* INET sockets treat local write shutdown and peer write shutdown as a
+ 	sk = sock->sk;
++
++	if (unlikely(flags & MSG_ERRQUEUE))
++		return sock_recv_errqueue(sk, msg, len, SOL_VSOCK, 0);
++
+ 	vsk = vsock_sk(sk);
+ 	err = 0;
+ 
 -- 
 2.25.1
 
