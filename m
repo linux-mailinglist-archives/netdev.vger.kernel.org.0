@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89DC56EC1FF
-	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 21:34:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D82456EC203
+	for <lists+netdev@lfdr.de>; Sun, 23 Apr 2023 21:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230216AbjDWTbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Apr 2023 15:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
+        id S230287AbjDWTbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Apr 2023 15:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbjDWTb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 15:31:28 -0400
+        with ESMTP id S230034AbjDWTb3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Apr 2023 15:31:29 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FDFE52;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38EB10DB;
         Sun, 23 Apr 2023 12:31:27 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 4CF2A5FD13;
-        Sun, 23 Apr 2023 22:31:22 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 3154C5FD14;
+        Sun, 23 Apr 2023 22:31:23 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1682278282;
-        bh=8MkOLhUem8zje6YCZe3k8/M7+vTx+mrb7f0DcsdGdpY=;
+        s=mail; t=1682278283;
+        bh=I6s5f+VVEU4mKHhe9+5VqHMuX1hjVKhfruoOIGVs/SQ=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=KoO6dzXSzca3ttXVlKbvpwC3NwC5pb5eblm52zMokNdxh1SlYEEMB5LTkTdBoPwhd
-         LKrrWG1ggHFLSx28sULqj7Fv7R2u36fHrcRfT7KWZXODEV/uujk9ikrmVrobYOZy/X
-         h3KvORYZ3TyrHc9hiM1Klf/YJNRJq50O2R7uLL9t+k8uINNLiPz+6fUkRpwWUZ31fn
-         m7TIlwljA/lnsHZaVQ3CgPLktq1gunvZJE+0SxvPQbHAso7iNSfkD2cmvRZniGyRbm
-         AZKz3FwsuMvL+kmXyIdYB/LVJMqm9S2ltOGpSki/TL9iqwRbFHwO2T/6bRHqvczvGd
-         AgBDybI60Gzfg==
+        b=lg8IECuEd4AdXNXlmfSFk/lwSrSIW9NV7ikX3i5WjR0bXNc99qZGI22kPh7CmGrFa
+         5v6VDUX9GHXHLqO1eCh1ZIo8OV/5fQU55STHIy0jdTEd98UXKDacNXuPbSpxNarrK3
+         R1Si42FZjWRIg+bAOm77sTJmW0WMFzb4lHAy/dSCI3RL40irScDxddAdMroruV8ojK
+         tjSqJ6XFiyI+sEO1AVrBzk5mJgJIBamF+dG8SNFNhb0lThzSknyiz0Xs2mlA8biGFA
+         zaCdRBB8v1+IZhj7BMOqssJ0Taxvo1nK1xW2Xa0xRCe/ZivNvHq8tdcqAPOhExJtqy
+         LPaXPel3vJebw==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Sun, 23 Apr 2023 22:31:22 +0300 (MSK)
+        Sun, 23 Apr 2023 22:31:23 +0300 (MSK)
 From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -45,9 +45,9 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>,
         Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v2 08/15] vsock: check for MSG_ZEROCOPY support
-Date:   Sun, 23 Apr 2023 22:26:36 +0300
-Message-ID: <20230423192643.1537470-9-AVKrasnov@sberdevices.ru>
+Subject: [RFC PATCH v2 09/15] vhost/vsock: support MSG_ZEROCOPY for transport
+Date:   Sun, 23 Apr 2023 22:26:37 +0300
+Message-ID: <20230423192643.1537470-10-AVKrasnov@sberdevices.ru>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20230423192643.1537470-1-AVKrasnov@sberdevices.ru>
 References: <20230423192643.1537470-1-AVKrasnov@sberdevices.ru>
@@ -73,47 +73,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This feature totally depends on transport, so if transport doesn't
-support it, return error.
+Add 'msgzerocopy_allow()' callback for vhost transport.
 
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 ---
- include/net/af_vsock.h   | 3 +++
- net/vmw_vsock/af_vsock.c | 7 +++++++
- 2 files changed, 10 insertions(+)
+ drivers/vhost/vsock.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index 0e7504a42925..270ca54cfab8 100644
---- a/include/net/af_vsock.h
-+++ b/include/net/af_vsock.h
-@@ -177,6 +177,9 @@ struct vsock_transport {
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 1e70aa390e44..4a33940a6020 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -405,6 +405,11 @@ static bool vhost_vsock_more_replies(struct vhost_vsock *vsock)
+ 	return val < vq->num;
+ }
  
- 	/* Read a single skb */
- 	int (*read_skb)(struct vsock_sock *, skb_read_actor_t);
++static bool vhost_transport_msgzerocopy_allow(void)
++{
++	return true;
++}
 +
-+	/* Zero-copy. */
-+	bool (*msgzerocopy_allow)(void);
- };
+ static bool vhost_transport_seqpacket_allow(u32 remote_cid);
  
- /**** CORE ****/
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index c50d2632a75f..eac8c1affd6a 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1824,6 +1824,13 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
- 		goto out;
- 	}
+ static struct virtio_transport vhost_transport = {
+@@ -451,6 +456,7 @@ static struct virtio_transport vhost_transport = {
+ 		.notify_buffer_size       = virtio_transport_notify_buffer_size,
  
-+	if (msg->msg_flags & MSG_ZEROCOPY &&
-+	    (!transport->msgzerocopy_allow ||
-+	     !transport->msgzerocopy_allow())) {
-+		err = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
- 	/* Wait for room in the produce queue to enqueue our user's data. */
- 	timeout = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+ 		.read_skb = virtio_transport_read_skb,
++		.msgzerocopy_allow        = vhost_transport_msgzerocopy_allow,
+ 	},
  
+ 	.send_pkt = vhost_transport_send_pkt,
 -- 
 2.25.1
 
