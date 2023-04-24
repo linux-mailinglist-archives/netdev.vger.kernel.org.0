@@ -2,100 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48D596ED703
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 23:53:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D87936ED765
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 00:04:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbjDXVxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 17:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
+        id S232908AbjDXWEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 18:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbjDXVxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 17:53:17 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C7F55B2
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 14:53:16 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-54fb9384c2dso59315457b3.2
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 14:53:16 -0700 (PDT)
+        with ESMTP id S231134AbjDXWEJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 18:04:09 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE1A1B9;
+        Mon, 24 Apr 2023 15:04:08 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-63f167e4be1so1121817b3a.1;
+        Mon, 24 Apr 2023 15:04:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682373195; x=1684965195;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EMBze88YlKmcCWtwKJfLIKwFr2v3/4J4XaQCXWpL9iM=;
-        b=okUMlqI0vRhMJwBg5WlXSpK8r6W75vCbvIJCbPe987QHMJPJ8yzjQkXFEPWieEtQ0K
-         FscVopns9CtLGZ2V/cT06FEkn1S7VOZ9ixZK/eY94AckIZecbNtVKxj/NdH2s/sjnfSF
-         KdC2jdD0B2tFbY/dGsd8a7ySU/yFu4h4SsVhwpMZYaCnxG0tyIaK71TrmlU8nyS4HBIT
-         1RKuq3Zn2DQ1hVKfWHot9xVEGzzPswSR6FodLadbWvKNt5GQQKfoaSMVvQWvTsWpPFHq
-         KuAHkuIm8F0pR7NTHPRqMPfUv8tDzhMKt2JUk1n+JtkfIY2vr7XHpVKb5r3vrIFsY6VL
-         vSkg==
+        d=gmail.com; s=20221208; t=1682373847; x=1684965847;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=F7BMzd9IGTXbAkWoDgqMr1C1t+RDvyDeCnFQaVFy2Ic=;
+        b=jE7BTGeekyPv5R4gNSfcoGJYsOZ+dScFrqIhkNA1U7N8o1rHAG4jEuUevD27WycQ4a
+         JXgHKYxSYZO28Th4cVqL3g6RLS0d004ffykbTpbo06eYrWlvphtSGvcp8ESaBizWWntn
+         fGpZjhLEEMW+fmowANPjDP5L2W9iDbd2UPnmIZ1k+4zALIy/DvcDA0wNniuxIpgHPd64
+         YvKyaOa5/fUV+aSBxmC+IZPfbtozML0gAJ1OaMKcaU+o07UV/gRWCqESxnmu4ZW1mHq7
+         MyLSlVUQUy64qgWPQKAvNKxgaM14GrkWgNjPF7hPky5DyEN+c2UHjfE4UEukTga1X0Jr
+         7iuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682373195; x=1684965195;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EMBze88YlKmcCWtwKJfLIKwFr2v3/4J4XaQCXWpL9iM=;
-        b=aNbtcpkUXqoSHz4N5z6hZUHB7tnXKrdOmGC67ok5J4VxC6ju3jA9qNN/HWNkamRvCr
-         PsJAm6os4rhOEJNTc0shkfIYKg6Hn6ETlxfExZD7KzomCZhijAEJr2EBRUgrxuq3hzL3
-         JmUVjqhA7EniA55JrEQbgKef0kGmBubH1evi6B3AcJxLDFlzg5t3fFAKXW3pyv6QZHmq
-         /ikPeAtQL+GeQ0VTVswUiGKmKNPFfIs1Atr9/nKLR+yPiExungPNbk5yJI5XO9hV11n8
-         mnE+xsBB+sv19MnDosTlTEs7TmFrnd1Vr29KLg0qIqBeg0G+WxcTtyqVtD+xS+XJ0KGg
-         WfCA==
-X-Gm-Message-State: AAQBX9dZmH8XEaUgBFOfTJ5sRHgMyUsyekmYZbJAZ3XBMxTalvrMd86k
-        vtwt/YlefEXgtLktnpojqrbFBaao5yo1RXrePmW2YA==
-X-Google-Smtp-Source: AKy350bYvTzKz8N96fzkAhPQPKrW6VeAhAZHq1ltQYtTAnIYL67F4V6Ju8Su232MY/xC75IAnD29dZUx8WACc9GUL8o=
-X-Received: by 2002:a0d:e80e:0:b0:552:9fae:d0b with SMTP id
- r14-20020a0de80e000000b005529fae0d0bmr8755385ywe.16.1682373194622; Mon, 24
- Apr 2023 14:53:14 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682373847; x=1684965847;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=F7BMzd9IGTXbAkWoDgqMr1C1t+RDvyDeCnFQaVFy2Ic=;
+        b=N0iC/SvX9awz2BM1kFN3FLrLU4EZjqGSFKfqu2KdzOH1c2YXRY0T7J8rarVk5C7QJl
+         HSsXkSUs4IXVhZIVV90vNCzanAk4URK8o/mu6CgPgI06Lkjc5uBMi2yNCkJtdfJ41bg6
+         3x5xnHLt3hvvf5VtNwa5ccYxS0qq5HqotVy75/nAPJOtNH9zwaqf5lQvJ/coMA+losxa
+         G/JDg/jAbfXrtWCU8kvzPQPnxbREw4Z6ZFrqzOXvqU4bhnft97/qnE8BZ8ZXC0LEHpsN
+         RXcqfloVGG/F/Y654Z68FkJUMtY43Pa8r6zpmwiBLYxdNg2EltsQSL5RoRgLDEL3XgKf
+         ap1w==
+X-Gm-Message-State: AAQBX9cuh5on+GEXB2jXLN2irSJ1ss76I9Xtt/ck1ii7nBrFAOT6oXp3
+        n9lCLms62jkVOC8Yti2JMti4gGaG08c=
+X-Google-Smtp-Source: AKy350agqemkF0lxJRRKAYXow70Y8BGpPgVhAvsUd/v4KcBZ5t6x7tham8zgVLVQE1TpUAphrEr8UQ==
+X-Received: by 2002:a05:6a20:394f:b0:f1:1ab5:5076 with SMTP id r15-20020a056a20394f00b000f11ab55076mr352775pzg.2.1682373847531;
+        Mon, 24 Apr 2023 15:04:07 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id g7-20020aa78747000000b0063f15cc9c38sm6581463pfo.99.2023.04.24.15.04.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Apr 2023 15:04:06 -0700 (PDT)
+Date:   Mon, 24 Apr 2023 15:04:05 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Stern, Avraham" <avraham.stern@intel.com>
+Cc:     "Greenman, Gregory" <gregory.greenman@intel.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: pull-request: wireless-next-2023-03-30
+Message-ID: <ZEb81aNUlmpKsJ6C@hoboy.vegasvil.org>
+References: <20230330205612.921134-1-johannes@sipsolutions.net>
+ <20230331000648.543f2a54@kernel.org>
+ <ZCtXGpqnCUL58Xzu@localhost>
+ <ZDd4Hg6bEv22Pxi9@hoboy.vegasvil.org>
+ <ccc046c7e7db68915447c05726dd90654a7a8ffc.camel@intel.com>
+ <ZEC08ivL3ngWFQBH@hoboy.vegasvil.org>
+ <SN7PR11MB6996329FFC32ECCBE4509531FF669@SN7PR11MB6996.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <20230424170832.549298-1-victor@mojatatu.com> <20230424173602.GA27649@unreal>
- <20230424104408.63ba1159@hermes.local> <CAM0EoMnM-s4M4HFpK1MVr+ey6PkU=uzwYsUipc1zBA5RPhzt-A@mail.gmail.com>
- <20230424143651.53137be4@kernel.org>
-In-Reply-To: <20230424143651.53137be4@kernel.org>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Mon, 24 Apr 2023 17:53:03 -0400
-Message-ID: <CAM0EoM==4T=64FH7t4taURugM4d0Stv2oXFgr5+qNBNEe9bjwQ@mail.gmail.com>
-Subject: Re: [PATCH net v2] net/sched: act_mirred: Add carrier check
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Victor Nogueira <victor@mojatatu.com>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, kernel@mojatatu.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN7PR11MB6996329FFC32ECCBE4509531FF669@SN7PR11MB6996.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 24, 2023 at 5:36=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> On Mon, 24 Apr 2023 13:59:15 -0400 Jamal Hadi Salim wrote:
-> > > Then fix the driver. It shouldn't hang.
-> > > Other drivers just drop packets if link is down.
-> >
-> > We didnt do extensive testing of drivers but consider this a safeguard
-> > against buggy driver (its a huge process upgrading drivers in some
-> > environments). It may even make sense to move this to dev_queue_xmit()
-> > i.e the arguement is: why is the core sending a packet to hardware
-> > that has link down to begin with? BTW, I believe the bridge behaves
-> > this way ...
->
-> I'm with Stephen, even if the check makes sense in general we should
-> first drill down into the real bug, and squash it.
+On Sun, Apr 23, 2023 at 01:33:19PM +0000, Stern, Avraham wrote:
+> hi Richard,
+> 
+> I will try to clarify.
+> 
+> 
+> > > Then, the timestamps are added to the rx/tx status
+> >> via mac80211 api.
+> 
+> > Where?  I don't see that in the kernel anywhere.
+> 
+> > Your WiFi driver would need to implement get_ts_info, no?
+> 
+> so, the rx/tx timestamp is put in the skb hwstamps field, and the ack (tx/rx) timestamp is put in the mac80211 rx/tx status.
+> if you follow mac80211/cfg80211 patches sent earlier, you'll see that mac80211 uses these to fill cfg80211_rx_info and cfg80211_tx_status with
+> the timestamps.
 
-Ok then, I guess in keeping up with the spirit of trivial patches
-generating the most discussion, these are two separate issues in my
-opinion: IOW, the driver bug should be fixed (we have reached out to
-the  vendor) - but the patch stands on its own.
+Um, no, I haven't seen those.
 
-cheers,
-jamal
+> eventually, these are sent to userspace in nl80211_send_mgmt() and nl80211_frame_tx_status() as part of the frame's meta data.
+> 
+> since wifi uses management frames for time sync, the timestamping capability is also advertised using nl80211 capability (NL80211_ATTR_MAX_HW_TIMESTAMP_PEERS).
+> implementing get_ts_info() doesn't seem right since it's usually queried over a data socket, and the wifi driver doesn't timestamp data frames (since these are not used
+> for time sync over wifi).
 
-> --
-> pw-bot: cr
+Okay, so you are creatively making some kind of back door for wifi.  Whatever.
+
+> >> Actually, we already have a functional implementation of ptp4l
+> >> over wifi using this driver support.
+> 
+> > Why are changes needed to user space at all?
+> 
+> As you mentioned, time sync over wifi leverages the existing FTM protocol, which is different from the protocols used over ethernet.
+> In particular, FTM uses management frames unlike the ethernet protocols that use data frames.
+> So obviously for ptp4l to support time sync over wifi, it will need to implement the FTM protocol (sending FTM frames via nl80211 socket) and use the kernel APIs added here
+
+ptp4l isn't doing to implement anything without my ok.
+
+Thanks,
+Richard
