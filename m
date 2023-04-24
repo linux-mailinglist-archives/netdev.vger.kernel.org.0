@@ -2,188 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E8D06ED447
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 20:22:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 646EF6ED44E
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 20:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232138AbjDXSWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 14:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
+        id S232327AbjDXSX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 14:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbjDXSWN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 14:22:13 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92467123;
-        Mon, 24 Apr 2023 11:22:07 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id ffacd0b85a97d-2fe3fb8e25fso2894026f8f.0;
-        Mon, 24 Apr 2023 11:22:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682360526; x=1684952526;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=GNWb62e8CZIjs8fCUmW4pdVL9gTqXJEWDD+orJ1zuz0=;
-        b=H5waO2lVV3WBPBob6qcwDjzXxuUC5G8iugaCsakCau25e2nQVZkCEflYqfjCA79/+y
-         NPM55qPl5re3i0yMT/YrYCQH9VeeIYZQYU8OJJtaglvYTDa5raa6jLqgPkNeeN3oT7wa
-         P14wmAxZ2C2upU4ckUa+UiOKhgQv5ylRFql5AedoiuiJpk3cvv3kthNbfSPcBzdfOjLw
-         LFUmc0hsGAouMZd5Bq+mYaqFJspu6z4HesNUuf0ImsN7FEwgKhYb0QjwGwbr13jrAg9B
-         GAHkLUSMmAK1tNQwgf0vGKwQWwvZdAKrZS+YsNwcA/7TxUctioZnm0lMHRwQdhNuulVT
-         sJDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682360526; x=1684952526;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GNWb62e8CZIjs8fCUmW4pdVL9gTqXJEWDD+orJ1zuz0=;
-        b=CAlNRDerE+Dgjs3BLFDp/kxmeepcAywH5cm8ZFzosLuuWt+EAJmXyEqDTaUg4DB1CM
-         /NH26WbpA4i41hS0WYO0VTIVcuYdPTEo6hce+JbhTNjP/qkY5TmAQb3jSuJtdGnQOwN+
-         1cXacfzBtaPhMg4hvCYAQwAWpgf5b+6frp35ZtSQi5gWT5RPArUmQB5EcfhSsdb8Duqv
-         APCip29aQRdhCVfv/2uRN3fhIN+xMUz0m842bidR7vyw/aI1ttkZs78mxPoCLnoRDRVW
-         DfJDetgbYm0X/j4LlTDSkLwS/4l/yt31gqVx3EkwMafeHFvD9IQ+zUjiCtzsw81TZ1wS
-         6XoA==
-X-Gm-Message-State: AAQBX9dQXqvCrPykzbtgNmaV2mxlf9sZT4ynkhk6ujDMMEZcdzLJGuq5
-        B+1ynsXriPiEbhWZTCEj6VE=
-X-Google-Smtp-Source: AKy350axh1bla12sBBL0jXPnMeWce8zQbehX+yTZ5r+1QdjTUe4lwDcOG4wov94gQPDhdmEZFp/48w==
-X-Received: by 2002:adf:f983:0:b0:2ef:ba4f:c821 with SMTP id f3-20020adff983000000b002efba4fc821mr8354283wrr.36.1682360525728;
-        Mon, 24 Apr 2023 11:22:05 -0700 (PDT)
-Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
-        by smtp.gmail.com with ESMTPSA id z18-20020adfe552000000b002f3e1122c1asm11316412wrm.15.2023.04.24.11.22.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Apr 2023 11:22:05 -0700 (PDT)
-Date:   Mon, 24 Apr 2023 19:22:03 +0100
-From:   Lorenzo Stoakes <lstoakes@gmail.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Christoph Hellwig <hch@infradead.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S232316AbjDXSXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 14:23:25 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0AB40C3;
+        Mon, 24 Apr 2023 11:23:13 -0700 (PDT)
+Received: from fpc (unknown [46.242.14.200])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 19D1D4076265;
+        Mon, 24 Apr 2023 18:23:07 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 19D1D4076265
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+        s=default; t=1682360587;
+        bh=GyggWapQ7n25mm1QU3MnwVH+BHKhrUUHO03Z5ncsQvo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RPI3VjtbMRea/xqZF287oM+4KjFTF0ROL2Gs++CJwhVJCTEl9XHQhGy9q//ZRF3Ex
+         WALuEQXPL3S1t1OsLVG80mAnnBInlPXjSWcEhzmqPOYzOI0jyvn25pSYYI7lIMe0E9
+         KfcoQJTb1FBjiqojVRTYqvXKNayRwxUVgG8zWtZU=
+Date:   Mon, 24 Apr 2023 21:23:00 +0300
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Vallo <kvalo@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>
-Subject: Re: [PATCH v2] mm/gup: disallow GUP writing to file-backed mappings
- by default
-Message-ID: <cfb5afaa-8636-4c7d-a1a2-2e0a85f9f3d3@lucifer.local>
-References: <c8ee7e02d3d4f50bb3e40855c53bda39eec85b7d.1682321768.git.lstoakes@gmail.com>
- <ZEZPXHN4OXIYhP+V@infradead.org>
- <90a54439-5d30-4711-8a86-eba816782a66@lucifer.local>
- <ZEZ117OMCi0dFXqY@nvidia.com>
- <c8fff8b3-ead6-4f52-bf17-f2ef2e752b57@lucifer.local>
- <ZEaGjad50lqRNTWD@nvidia.com>
- <cd488979-d257-42b9-937f-470cc3c57f5e@lucifer.local>
- <ZEa+L5ivNDhCmgj4@nvidia.com>
+        Senthil Balasubramanian <senthilkumar@atheros.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
+        Sujith <Sujith.Manoharan@atheros.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org,
+        syzbot+f2cb6e0ffdb961921e4d@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/3] wifi: ath9k: avoid referencing uninit memory in
+ ath9k_wmi_ctrl_rx
+Message-ID: <20230424182300.sw5ogmcst5suf2ab@fpc>
+References: <20230315202112.163012-1-pchelkin@ispras.ru>
+ <20230315202112.163012-2-pchelkin@ispras.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZEa+L5ivNDhCmgj4@nvidia.com>
+In-Reply-To: <20230315202112.163012-2-pchelkin@ispras.ru>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 24, 2023 at 02:36:47PM -0300, Jason Gunthorpe wrote:
-> On Mon, Apr 24, 2023 at 03:29:57PM +0100, Lorenzo Stoakes wrote:
-> > On Mon, Apr 24, 2023 at 10:39:25AM -0300, Jason Gunthorpe wrote:
-> > > On Mon, Apr 24, 2023 at 01:38:49PM +0100, Lorenzo Stoakes wrote:
-> > >
-> > > > I was being fairly conservative in that list, though we certainly need to
-> > > > set the flag for /proc/$pid/mem and ptrace to avoid breaking this
-> > > > functionality (I observed breakpoints breaking without it which obviously
-> > > > is a no go :). I'm not sure if there's a more general way we could check
-> > > > for this though?
-> > >
-> > > More broadly we should make sure these usages of GUP safe somehow so
-> > > that it can reliably write to those types of pages without breaking
-> > > the current FS contract..
-> > >
-> > > I forget exactly, but IIRC, don't you have to hold some kind of page
-> > > spinlock while writing to the page memory?
-> > >
-> >
-> > I think perhaps you're thinking of the mm->mmap_lock? Which will be held
-> > for the FOLL_GET cases and simply prevent the VMA from disappearing below
-> > us but not do much else.
+On Wed, Mar 15, 2023 at 11:21:10PM +0300, Fedor Pchelkin wrote:
+> For the reasons described in commit b383e8abed41 ("wifi: ath9k: avoid
+> uninit memory read in ath9k_htc_rx_msg()"), ath9k_htc_rx_msg() should
+> validate pkt_len before accessing the SKB. For example, the obtained SKB
+> may have uninitialized memory in the case of
+> ioctl(USB_RAW_IOCTL_EP_WRITE).
+> 
+> Implement sanity checking inside the corresponding endpoint RX handlers:
+> ath9k_wmi_ctrl_rx() and ath9k_htc_rxep(). Otherwise, uninit memory can
+> be referenced.
+> 
+> Add comments briefly describing the issue.
+> 
+> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
+> 
+> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+> Reported-and-tested-by: syzbot+f2cb6e0ffdb961921e4d@syzkaller.appspotmail.com
+> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+> ---
+
+Apologies for the delay.
+
+I've been able to test the patches in some way on 0cf3:9271 Qualcomm
+Atheros Communications AR9271 802.11n .
+
+>  drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 6 ++++++
+>  drivers/net/wireless/ath/ath9k/htc_hst.c      | 4 ++++
+>  drivers/net/wireless/ath/ath9k/wmi.c          | 8 ++++++++
+>  3 files changed, 18 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+> index 672789e3c55d..957efb26019d 100644
+> --- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+> +++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+> @@ -1147,6 +1147,12 @@ void ath9k_htc_rxep(void *drv_priv, struct sk_buff *skb,
+>  	if (!data_race(priv->rx.initialized))
+>  		goto err;
+>  
+> +	/* Validate the obtained SKB so that it is handled without error
+> +	 * inside rx_tasklet handler.
+> +	 */
+> +	if (unlikely(skb->len < sizeof(struct ieee80211_hdr)))
+> +		goto err;
+> +
+>  	spin_lock_irqsave(&priv->rx.rxbuflock, flags);
+>  	list_for_each_entry(tmp_buf, &priv->rx.rxbuf, list) {
+>  		if (!tmp_buf->in_process) {
+
+This check above seems to be redundant: SKB is properly checked inside
+ath9k_rx_prepare() in rx_tasklet handler.
+
+> diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+> index fe62ff668f75..9d0d9d0e1aa8 100644
+> --- a/drivers/net/wireless/ath/ath9k/htc_hst.c
+> +++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+> @@ -475,6 +475,10 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+>  		skb_pull(skb, sizeof(struct htc_frame_hdr));
+>  
+>  		endpoint = &htc_handle->endpoint[epid];
+> +
+> +		/* The endpoint RX handlers should implement their own
+> +		 * additional SKB sanity checking
+> +		 */
+>  		if (endpoint->ep_callbacks.rx)
+>  			endpoint->ep_callbacks.rx(endpoint->ep_callbacks.priv,
+>  						  skb, epid);
+> diff --git a/drivers/net/wireless/ath/ath9k/wmi.c b/drivers/net/wireless/ath/ath9k/wmi.c
+> index 19345b8f7bfd..2e7c361b62f5 100644
+> --- a/drivers/net/wireless/ath/ath9k/wmi.c
+> +++ b/drivers/net/wireless/ath/ath9k/wmi.c
+> @@ -204,6 +204,10 @@ static void ath9k_wmi_rsp_callback(struct wmi *wmi, struct sk_buff *skb)
+>  {
+>  	skb_pull(skb, sizeof(struct wmi_cmd_hdr));
+>  
+> +	/* Once again validate the SKB. */
+> +	if (unlikely(skb->len < wmi->cmd_rsp_len))
+> +		return;
+> +
+>  	if (wmi->cmd_rsp_buf != NULL && wmi->cmd_rsp_len != 0)
+>  		memcpy(wmi->cmd_rsp_buf, skb->data, wmi->cmd_rsp_len);
 >
-> No not mmap_lock, I want to say there is a per-page lock that
-> interacts with the write protect, or at worst this needs to use the
-> page table spinlocks.
->
-> > I wonder whether we should do this check purely for FOLL_PIN to be honest?
-> > As this indicates medium to long-term access without mmap_lock held. This
-> > would exclude the /proc/$pid/mem and ptrace paths which use gup_remote().
->
-> Everything is buggy. FOLL_PIN is part of a someday solution to solve
-> it.
->
-> > That and a very specific use of uprobes are the only places that use
-> > FOLL_GET in this instance and each of them are careful in any case to
-> > handle setting the dirty page flag.
->
-> That is actually the bug :) Broadly the bug is to make a page dirty
-> without holding the right locks to actually dirty it.
->
-> Jason
 
-OK I guess you mean the folio lock :) Well there is
-unpin_user_pages_dirty_lock() and unpin_user_page_range_dirty_lock() and
-also set_page_dirty_lock() (used by __access_remote_vm()) which should
-avoid this.
+The change above is very very wrong. Looking at the firmware code and
+debugging driver with real device, I realized the command response is
+located in the tailroom of an SKB: skb->len (SKB data length) is zero in
+such packets while skb->data and skb->tail pointers are equal. So a new
+skb->len and cmd_rsp_len check resulted in driver denying all WMI command
+responses. My bad for proposing such a mistake.
 
-Also __access_remote_vm() which all the ptrace and /proc/$pid/mem use does
-set_page_dirty_lock() and only after the user actually writes to it (and
-with FOLL_FORCE of course).
+> @@ -221,6 +225,10 @@ static void ath9k_wmi_ctrl_rx(void *priv, struct sk_buff *skb,
+>  	if (unlikely(wmi->stopped))
+>  		goto free_skb;
+>  
+> +	/* Validate the obtained SKB. */
+> +	if (unlikely(skb->len < sizeof(struct wmi_cmd_hdr)))
+> +		goto free_skb;
+> +
+>  	hdr = (struct wmi_cmd_hdr *) skb->data;
+>  	cmd_id = be16_to_cpu(hdr->command_id);
+>  
 
-None of these are correctly telling a write notify filesystem about the
-change, however.
+This check above is actually good. A packet can be obtained constructed
+something like this (taken from Syzkaller reproducer):
 
-We definitely need to keep ptrace and /proc/$pid/mem functioning correctly,
-and I given the privilege levels required I don't think there's a security
-issue there?
+  *(uint16_t*)0x20000500 = 8; // pkt_len
+  *(uint16_t*)0x20000502 = 0x4e00; // ATH_USB_RX_STREAM_MODE_TAG
+  memcpy((void*)0x20000504, "\x15\xa7\xd5\x61\xb9\xb3\xb0\x7c", 8);
+  syz_usb_ep_write(r[0], 0x82, 0xc, 0x20000500);
 
-I do think the mkwrite/write notify file system check is the correct one as
-these are the only ones to whom the page being dirty would matter to.
+pkt_len is 8, so that it can contain an htc_frame_hdr, but when the SKB is
+processed in ath9k_htc_rx_msg() and passed to the endpoint RX handler,
+ath9k_wmi_ctrl_rx() specifically, the problem arises as there are no other
+corresponding headers in the buffer.
 
-So perhaps we can move forward with:-
+wmi_cmd_hdr is pulled later so there are no problems with checking
+skb->len. There are no issues arised with the patch on a real device, too.
 
-- Use mkwrite check rather than shmem/hugetlb.
-- ALWAYS enforce not write notify file system if FOLL_LONGTERM (that
-  removes a lot of the changes here).
-- If FOLL_FORCE, then allow this to override the check. This is required
-  for /proc/$pid/mem and ptrace and is a privileged operation anyway, so
-  can not cause a security issue.
-- Add a FOLL_WILL_UNPIN_DIRTY flag to indicate that the caller will
-  actually do so (required for process_vm_access cases).
+Not sure if this can happen on an ath9k device with common firmware
+(probably can't happen), but that is real with some bad USB device which
+Syzkaller emulates.
 
-Alternatively we could implement something very cautious and opt-in, like a
-FOLL_CHECK_SANITY flag? (starting to feel like I need one of those myself :)
+I'll send the v2 versions for further discussions.
+
+> -- 
+> 2.34.1
+> 
