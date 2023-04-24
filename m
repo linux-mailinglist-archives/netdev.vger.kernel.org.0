@@ -2,145 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 504066ED366
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:19:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 903AB6ED36B
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:19:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232064AbjDXRTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 13:19:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48610 "EHLO
+        id S232193AbjDXRTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 13:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232085AbjDXRTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:19:04 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0654C6187
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:19:03 -0700 (PDT)
+        with ESMTP id S231794AbjDXRTP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:19:15 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34A17D84;
+        Mon, 24 Apr 2023 10:19:11 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-3f193ca059bso22638325e9.3;
+        Mon, 24 Apr 2023 10:19:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1682356744; x=1713892744;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FzwNieiz7tJOpbcPXWnRfCYmAPQzcEupQEmpSgjJLHU=;
-  b=QaTCU7LYjAUNIh8eDsOjkjF51nmodDjiucJ7m6Yvjf104WUl/64QkLlz
-   mJqy/cEHKPClJswp7vqZAZw3CxkiTFDmIk3fDufR9k+96MBW3pqf1coZX
-   2C0H2/Trb6SI7o8/hRRAiriyrUHsdl1Bn3/ERDUjtpDodCTJWsiRkmn8L
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.99,223,1677542400"; 
-   d="scan'208";a="207730173"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-153b24bc.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2023 17:19:01 +0000
-Received: from EX19MTAUWB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-m6i4x-153b24bc.us-east-1.amazon.com (Postfix) with ESMTPS id B3D6CC1CE5;
-        Mon, 24 Apr 2023 17:18:59 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Mon, 24 Apr 2023 17:18:44 +0000
-Received: from 88665a182662.ant.amazon.com (10.106.101.42) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Mon, 24 Apr 2023 17:18:42 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <xiyou.wangcong@gmail.com>
-CC:     <cong.wang@bytedance.com>, <edumazet@google.com>,
-        <kuniyu@amazon.com>, <netdev@vger.kernel.org>,
-        <oswalpalash@gmail.com>
-Subject: Re: [Patch net] sit: update dev->needed_headroom in ipip6_tunnel_bind_dev()
-Date:   Mon, 24 Apr 2023 10:18:31 -0700
-Message-ID: <20230424171831.89283-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230424003414.630339-1-xiyou.wangcong@gmail.com>
-References: <20230424003414.630339-1-xiyou.wangcong@gmail.com>
+        d=gmail.com; s=20221208; t=1682356749; x=1684948749;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=q5ffUKulywUVWsUyD54zTOn22OGaFxg4joquRNd4FgQ=;
+        b=WUz8je7TAP9X0ZWTXN/DcIyVw3PSqQ6c+xZTy4D0RLal25VJ7IsPKmZdWbLw3jz7/K
+         KVlkJcMB3+qjXl8qVGPpaChDawz7eLxlQnFKgYMc3g08s+N0nY4+q6TNXc2rli8wuJHf
+         gcYnXs9U8/XouCegDQatfFV1D32O4Ui/ia3LrDFjUqR13p0pb0iEoTSkV9HrmAIC0DQo
+         1WEX2Vlu2Yho7dNkddLYnS4CcmcC/Ts+qaCzq0/pt00EcYBTQajLEBRbiURDAK9YXx90
+         439jUXDRabDTH9xDYyaHCEaAGhJJl2Fnclqag4G+/3vhHEyvO2IDXHin3qWrozA5ak49
+         nQ6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682356749; x=1684948749;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=q5ffUKulywUVWsUyD54zTOn22OGaFxg4joquRNd4FgQ=;
+        b=EWgHU/CryEjsX86WOx2Vvle9K3Zudf3wuaWRat8cz6/siSX0tQfmjU5hGwHWas84bs
+         /t57bgL/X4GlSvfZDKpITTOuqi57O9ZDbTVaPLFm1n6+kzpPu5BOYkX2cpPRxIULXgYm
+         Em/n1oxxIdYeROpYdsWUgv16HEcSu6VePHY3IZXeYgTDKzEYR3WKQFuWdxdwxLOVc8Eu
+         UYGxPxmmICYreGfyf/CPQiP7LarnsVT4QPGDcaXisltiEqoZi0p5OBikokK4GpFYKtc8
+         f8n8N59yylMoZpy2ovuYCp8VTzQXVc6iZoh6m7P/4VMsDsu4vwec5AEyS8G31r8r+avX
+         nSAg==
+X-Gm-Message-State: AAQBX9fph4omxg9WFHi6LtlfijD9mGFgy6F+oeTkWtGjHQ3mCyElCUfx
+        LLiivvATTp+rc6zUCSseOEM=
+X-Google-Smtp-Source: AKy350Ywom400cz3IyOOqt4vzhP+ONiCCOrenGpF0cgItGHbLrhWmKEBovxp3ORq5wPXvjxIpaC9iw==
+X-Received: by 2002:a05:600c:22d4:b0:3f1:82c6:2d80 with SMTP id 20-20020a05600c22d400b003f182c62d80mr8679594wmg.5.1682356749143;
+        Mon, 24 Apr 2023 10:19:09 -0700 (PDT)
+Received: from suse.localnet (host-79-36-111-57.retail.telecomitalia.it. [79.36.111.57])
+        by smtp.gmail.com with ESMTPSA id m18-20020a7bcb92000000b003f24f245f57sm3884154wmi.42.2023.04.24.10.19.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Apr 2023 10:19:08 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Howells <dhowells@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
+Subject: Re: [PATCH v3 41/55] iscsi: Assume "sendpage" is okay in
+ iscsi_tcp_segment_map()
+Date:   Mon, 24 Apr 2023 19:19:04 +0200
+Message-ID: <1957131.PYKUYFuaPT@suse>
+In-Reply-To: <20230331160914.1608208-42-dhowells@redhat.com>
+References: <20230331160914.1608208-1-dhowells@redhat.com>
+ <20230331160914.1608208-42-dhowells@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.101.42]
-X-ClientProxiedBy: EX19D038UWC004.ant.amazon.com (10.13.139.229) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 23 Apr 2023 17:34:14 -0700
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> When a tunnel device is bound with the underlying device, its
-> dev->needed_headroom needs to be updated properly. IPv4 tunnels
-> already do the same in ip_tunnel_bind_dev().
-> 
-> Note, this is targeting for -net and -table, so I'd keep the fix
-> small. We can refactor and reuse ip_tunnel_bind_dev() for -net-next.
-> 
-> Fixes: 32b8a8e59c9c ("sit: add IPv4 over IPv4 support")
-> Reported-by: Palash Oswal <oswalpalash@gmail.com>
-> Link: https://lore.kernel.org/netdev/CAGyP=7fDcSPKu6nttbGwt7RXzE3uyYxLjCSE97J64pRxJP8jPA@mail.gmail.com/
-
-I was about to post almost same patch today :)
-
-Just for record, the repro was doing like this and with encap-remcsum,
-encap_hlen included in hlen overflows the headroom.
-
-  # ip link add sit1 type sit encap gue encap-remcsum mode any dev sit0
-  # ip link set sit1 up
-  # 
-  # python3
-  >>> from socket import *
-  >>> s = socket(AF_INET, SOCK_DGRAM, 0)
-  >>> s.setsockopt(SOL_SOCKET, SO_BINDTODEVICE, b'sit1')
-  >>> s.sendto(b'hello', ('192.168.0.1', 10000))
-
-So, I think it's worth mentioning b17f709a2401 ("gue: TX support for
-using remote checksum offload option").
-
-
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+On venerd=EC 31 marzo 2023 18:09:00 CEST David Howells wrote:
+> As iscsi is now using sendmsg() with MSG_SPLICE_PAGES rather than sendpag=
+e,
+> assume that sendpage_ok() will return true in iscsi_tcp_segment_map() and
+> leave it to TCP to copy the data if not.
+>=20
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+> cc: "David S. Miller" <davem@davemloft.net>
+> cc: Eric Dumazet <edumazet@google.com>
+> cc: Jakub Kicinski <kuba@kernel.org>
+> cc: Paolo Abeni <pabeni@redhat.com>
+> cc: Jens Axboe <axboe@kernel.dk>
+> cc: Matthew Wilcox <willy@infradead.org>
+> cc: linux-scsi@vger.kernel.org
+> cc: target-devel@vger.kernel.org
+> cc: netdev@vger.kernel.org
 > ---
->  net/ipv6/sit.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-> index 70d81bba5093..3a8f04ba4947 100644
-> --- a/net/ipv6/sit.c
-> +++ b/net/ipv6/sit.c
-> @@ -1096,11 +1096,12 @@ static netdev_tx_t sit_tunnel_xmit(struct sk_buff *skb,
->  static void ipip6_tunnel_bind_dev(struct net_device *dev)
->  {
->  	struct net_device *tdev = NULL;
-> -	struct ip_tunnel *tunnel;
-> +	struct ip_tunnel *tunnel = netdev_priv(dev);
->  	const struct iphdr *iph;
->  	struct flowi4 fl4;
-> +	int t_hlen = tunnel->hlen + sizeof(struct iphdr);
-> +	int hlen = LL_MAX_HEADER;
->  
-> -	tunnel = netdev_priv(dev);
->  	iph = &tunnel->parms.iph;
->  
->  	if (iph->daddr) {
-> @@ -1123,14 +1124,15 @@ static void ipip6_tunnel_bind_dev(struct net_device *dev)
->  		tdev = __dev_get_by_index(tunnel->net, tunnel->parms.link);
->  
->  	if (tdev && !netif_is_l3_master(tdev)) {
-> -		int t_hlen = tunnel->hlen + sizeof(struct iphdr);
->  		int mtu;
->  
->  		mtu = tdev->mtu - t_hlen;
->  		if (mtu < IPV6_MIN_MTU)
->  			mtu = IPV6_MIN_MTU;
->  		WRITE_ONCE(dev->mtu, mtu);
-> +		hlen = tdev->hard_header_len + tdev->needed_headroom;
->  	}
-> +	dev->needed_headroom = t_hlen + hlen;
+>  drivers/scsi/libiscsi_tcp.c | 13 +++----------
+>  1 file changed, 3 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/drivers/scsi/libiscsi_tcp.c b/drivers/scsi/libiscsi_tcp.c
+> index c182aa83f2c9..07ba0d864820 100644
+> --- a/drivers/scsi/libiscsi_tcp.c
+> +++ b/drivers/scsi/libiscsi_tcp.c
+> @@ -128,18 +128,11 @@ static void iscsi_tcp_segment_map(struct iscsi_segm=
+ent
+> *segment, int recv) * coalescing neighboring slab objects into a single f=
+rag
+> which
+>  	 * triggers one of hardened usercopy checks.
+>  	 */
+> -	if (!recv && sendpage_ok(sg_page(sg)))
+> +	if (!recv)
+>  		return;
+>=20
+> -	if (recv) {
+> -		segment->atomic_mapped =3D true;
+> -		segment->sg_mapped =3D kmap_atomic(sg_page(sg));
+> -	} else {
+> -		segment->atomic_mapped =3D false;
+> -		/* the xmit path can sleep with the page mapped so use=20
+kmap */
+> -		segment->sg_mapped =3D kmap(sg_page(sg));
+> -	}
+> -
+> +	segment->atomic_mapped =3D true;
+> +	segment->sg_mapped =3D kmap_atomic(sg_page(sg));
+
+As you probably know, kmap_atomic() is deprecated.
+
+I must admit that I'm not an expert of this code, however, it looks like th=
+e=20
+mapping has no need to rely on the side effects of kmap_atomic() (i.e.,=20
+pagefault_disable() and preempt_disable() - but I'm not entirely sure about=
+=20
+the possibility that preemption should be explicitly disabled along with th=
+e=20
+replacement with kmap_local_page()).=20
+
+Last year I've been working on several conversions from kmap{,_atomic}() to=
+=20
+kmap_local_page(), however I'm still not sure to understand what's happenin=
+g=20
+here...
+
+Am I missing any important details? Can you please explain why we still nee=
+d=20
+that kmap_atomic() instead of kmap_local_page()?=20
+
+Thanks in advance,
+
+=46abio
+
+>  	segment->data =3D segment->sg_mapped + sg->offset + segment-
+>sg_offset;
 >  }
->  
->  static void ipip6_tunnel_update(struct ip_tunnel *t, struct ip_tunnel_parm *p,
-> -- 
-> 2.34.1
+
+
+
+
