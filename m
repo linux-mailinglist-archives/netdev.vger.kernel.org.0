@@ -2,74 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 283D66ED430
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 20:15:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C38D6ED433
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 20:16:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232053AbjDXSPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 14:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
+        id S232316AbjDXSPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 14:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230500AbjDXSPs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 14:15:48 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9064EE3;
-        Mon, 24 Apr 2023 11:14:59 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-54f6f0dae19so32748507b3.0;
-        Mon, 24 Apr 2023 11:14:59 -0700 (PDT)
+        with ESMTP id S231804AbjDXSPt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 14:15:49 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2106.outbound.protection.outlook.com [40.107.243.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2724C35;
+        Mon, 24 Apr 2023 11:15:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GnQAJQDpgAc0SF0QZ3sH/bp6ZmEfSc04FDQE8Oetsci9Qj5hENEEjo//ZjHYWT8biZxhNcrxhmkktUmk3W/G+QeRZO7Jt/xuUDS01dXrv4C4atazpHNdqVMpeARyJIKfoRpN3eLeRsqHJeOE6Dobf5GzpVdc2MEDGiOfaVZ4foPKC5L42UQ0LMuCCoRxQBLMKQA+6X60wFeTm6EATcsRJ/x5yTgwGCHBOgmMTUjkN7ZnsT7iemrW76QubyiCecBpSTJAne/4ScmV9Nmr1q8jA9zeo6aolsWjllNn+eqdqZ/+1bOi60fI4Jyd6eaJ7RE8ri3W71jjM2bUsM2b4s3nDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HT6pfiFB+DGGob8o8h1khAjBoY6GLZoCQ/SroPHsLtA=;
+ b=iD0m4kOi+MHFJ5me01U5qbDhSCVCsgb5BRNGu3mdQR/ZED8LmdJYHDTpd1NNPct/gR5IErysZn3ZqV+59Zl/Bg7Bx105lbQ8gRZn8aPm5rl9LgpOQPhVBzv6VrDNBVBxI56fHhM3VpUN8pwtgRIWA/b3hs/88cba94gB9Fawhv4RgsjdyoVLC4OwUVuM+buBuvfKpMY6kOj21KmcSZ5NqVM6QF6sTa08s5P2PGq07zwJ1SXv9PZbShgn3bXG36D1hdqd7cOwfd3DZLxT76M342J+JYl7to06Pg3FiOWT85uEPJZZravzOVWOGv5S2eiaALgYDoi/S8CFSPksiZY9Ww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682360098; x=1684952098;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XzUuV71xlywRhSGB5NsLHjJvYQxnpMeaPTWJLwb1hAI=;
-        b=Zl71GsOyhmESY9jYgO6iLjOhVx8eC/OnUROmISnQJgtnd6t8SrEAoeKB1skTRAJZ7P
-         ePvZFuRfi6UFS1eNCGgh+Hz/lxanx2rGRxOtJL9j5NITb0843Fl1kquIpWw01tPtgXx8
-         FlfRYVrDzoZliMPkOPnwOwle4WqWhGhTIURsnbulH82eplNycxUYgbu3Mrf1lE0dNEy6
-         5gsGihJv8xkgNWQ3oJPxDRIyheeCqmlxFDMaAJlFoHMFD0/8Ib0feRBnSMVVTb6WPwdI
-         uLKhW2KCuIwXlCTO49s8wPxc+339MnEDbvbBQ2viPW4gt23Y7oCrqAvWMJ3YyESJeeh7
-         a1Rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682360098; x=1684952098;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XzUuV71xlywRhSGB5NsLHjJvYQxnpMeaPTWJLwb1hAI=;
-        b=dDdG/GtfjXMvnSH6mivAQiV1oy9eaNokubv7HWj8IQSLYpTuWXgJISDAddcTl0c18/
-         +ullU3WKhgA0XUGzq2uif5MZlv7QVdyXNbJlntPwYq83UiPzRMyta4TCJKN+4yEgDxGf
-         DXujj98LwPSsxlJi0aQ1qP8nkYIoOsT9O9kDm+8fvQf0cqiZqi/m4q7TxJQFo6MebfR8
-         gcgx8Gz16bdnSisswYc/EJhXEv0/Hise2RUXBGWB7ACwjjsO2CdUE+psvX7mYkLyCJFr
-         z/mej/xPNYrtD38TcZiQnu7MbYjTgqhs31661281rq0UFcsLZzgur+SlOI1wPIYregMd
-         emmw==
-X-Gm-Message-State: AAQBX9fEiMwOmmS8Lgc+bw3ivRHZp2AXIKfXr6aMTWmqyezWA7dsP6i4
-        JyQyFnzyVzssktZGACe5iC0e6d6aazqtVeYhHyY=
-X-Google-Smtp-Source: AKy350apcZVtlQedv1SFzob/DDZM7LIKQflG72XIzIVjRiOTTQzsTPOrG6AamPjIXZAD9v+Aoargnxls9GL6gjVxnp4=
-X-Received: by 2002:a81:5a05:0:b0:556:2699:f3cf with SMTP id
- o5-20020a815a05000000b005562699f3cfmr6537955ywb.40.1682360098243; Mon, 24 Apr
- 2023 11:14:58 -0700 (PDT)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HT6pfiFB+DGGob8o8h1khAjBoY6GLZoCQ/SroPHsLtA=;
+ b=NzMHJpzKR5URtYJc+gv3QF6M5oFFDra173AM9oBgax60wTZhdbW0AyyHYp28JeQdwskVUg8kNnKSW3+1g2BiD2ILyK6YtJveGls8rnzwYjYlWYbwYWftvOGmAcqkWb0EZJP1qC0LnnUGy6fyw8ePn2sSQP1pmrv+/yyTNHUsJGo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO1PR13MB4984.namprd13.prod.outlook.com (2603:10b6:303:f8::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.33; Mon, 24 Apr
+ 2023 18:14:58 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6319.033; Mon, 24 Apr 2023
+ 18:14:57 +0000
+Date:   Mon, 24 Apr 2023 20:14:50 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Aloka Dixit <quic_alokad@quicinc.com>,
+        Muna Sinada <quic_msinada@quicinc.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net] wifi: mac80211: Fix puncturing bitmap handling in
+ __ieee80211_csa_finalize()
+Message-ID: <ZEbHGv/EwlaBUpGN@corigine.com>
+References: <e84a3f80fe536787f7a2c7180507efc36cd14f95.1682358088.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e84a3f80fe536787f7a2c7180507efc36cd14f95.1682358088.git.christophe.jaillet@wanadoo.fr>
+X-ClientProxiedBy: AS4P190CA0028.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d0::17) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <1681863018-28006-1-git-send-email-justinpopo6@gmail.com>
- <1681863018-28006-2-git-send-email-justinpopo6@gmail.com> <e2069707-3f09-f1e7-6973-a2e115af7536@linaro.org>
-In-Reply-To: <e2069707-3f09-f1e7-6973-a2e115af7536@linaro.org>
-From:   Justin Chen <justinpopo6@gmail.com>
-Date:   Mon, 24 Apr 2023 11:14:47 -0700
-Message-ID: <CAJx26kXnYy9oQiXZ+dbAbzf-jAO9M6ggWL164_67MDS_3cfNnA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/6] dt-bindings: net: Brcm ASP 2.0 Ethernet controller
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        bcm-kernel-feedback-list@broadcom.com, justin.chen@broadcom.com,
-        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        richardcochran@gmail.com, sumit.semwal@linaro.org,
-        christian.koenig@amd.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO1PR13MB4984:EE_
+X-MS-Office365-Filtering-Correlation-Id: 03595e77-1d18-4a25-27ad-08db44efcf90
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 15HRRzuYl//W2OL/iuBPUqw4mns+V4R8VjLICQkY7zOYo13SHWIDdrPCxNn9CGM+0ZGNk15U/JqwWfWsmZnnny7zPQSDugiX4ZuI8UuEo5mBOvG7F+vSZnechArPRV2PamrF6nc1PRulQyo4AngxiphxXt1YyEE4fYavfEVQD03DHvvWrClzYeCZrXWEzxdHYjEkLH5Nxl32OHC2cLyA2Ox9h6WfQOx1Ks7xe8BcA4s5yV1O779dwgj/nZFQ4ZV49sa4037PKhiK1D26m4pFizH6odivd3l8vF5I4rALoPWGZvUDr9dM7MZxEwYVPZRywu/QxrFZAaqIZCQfH0GAbkvdXThvADRAcT0UXAeVDNHwTIJJJ2PO8jSVZB3DOAg4qo716JTM/iJX9+lgS1CHG9sQW64T57TYRq4E1pbkqIjN4B76pTVAu6bcbrG+7xv62niMRdSBIynsDLX1WbZSxTOSfN15R6csVyiM4UHCyC2CCRILIekVjUHorwtN8Q8q3nzLR04oKWB52w4vqJeCncFjbi6S0TysxQVEF3NPlfNnIedOpsZKMpA4RF88lvzjpjXaMRzh393ykEMgg2Cm2e85XMU2QZgICUNkc2F+o4E=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(366004)(396003)(376002)(39840400004)(451199021)(38100700002)(6506007)(6512007)(2616005)(186003)(83380400001)(8936002)(44832011)(2906002)(4744005)(8676002)(7416002)(5660300002)(36756003)(478600001)(54906003)(6486002)(6666004)(316002)(4326008)(6916009)(41300700001)(66556008)(66946007)(86362001)(66476007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hEj2eGqX1ktwmhQzpSWf4uC3ucgQACq/5sNhwrlC+tzbbep2HuDfHOEusb4w?=
+ =?us-ascii?Q?yMLC1cdChrhoiCZSar/ghR98ZY0A/9TJiklLg+9vm3F6wE2cfEhE8s7Irle0?=
+ =?us-ascii?Q?bup3E1K7c9utXWDpSTEzGcBvmARwAvWTNB2aBBVb7Y2SOoHo/BWUC8ksj6P2?=
+ =?us-ascii?Q?ZBHh6j/u+Cb0X/5/pL9bGY4hkr1vD59Sp7T1wAH6qNczzVrm3AqdLPTVxi9G?=
+ =?us-ascii?Q?3IZaeiqxRAsPJlt67fTJlQ4ZM9KDlssdMD3xnr3XSIW+ldqhIEC2nUaAly2z?=
+ =?us-ascii?Q?pjOg7kks8XcwBejSvd+GfN2lLZwZQa16IHGIizvJuzd66mZEYavTkzNIRxdQ?=
+ =?us-ascii?Q?dIzIZlRTJcibwbgDQ+Yv5S3Rvqm/6PRTTqZgOKDmKe7uqf7hgbqopjPdp3Zs?=
+ =?us-ascii?Q?XQdSE8qIUslrSssM0qLaJs8sLALvWPBs2bgXQITKUhM248cisfTvI8cDFmoF?=
+ =?us-ascii?Q?fhMZ7ZOe9uNb8l4Yb17kaj+AfKeNwYz2mreNMu75ZcuXKp4W5Uqd+9ejTip2?=
+ =?us-ascii?Q?E5P//Xy/ks+uwHQcjah+8Y2NabhbTHtGcT339Qn/zyHG+r47AYg2VsmR2+5+?=
+ =?us-ascii?Q?uPGT5zTMx0vKOcHyO3MXU7lYxlj4p9kK6EBxAC84D2Kv74MWhz4nTpMkQBF6?=
+ =?us-ascii?Q?FqucUa+QQSnQZhNH7jG8XfEicGlHytPX+wLObhomqU5JzZRO6YNZt0w7Bcxv?=
+ =?us-ascii?Q?BZzd9n1M5cNd0K7JuYZ/klVOgFkJRjoz6Vjtm4oG3928WMgV/MAAvnku/BUJ?=
+ =?us-ascii?Q?8v8OcvX/F78kVkFzj9KOy8WHk+uFq57Mmgr33dBrt/JmbCP7+RubffWDngtt?=
+ =?us-ascii?Q?QKDQFxme0XPaVtKKZetidA0w5Rkwl+5rz/hxfezrbfjxCHj7/Lu4ycNoz5aw?=
+ =?us-ascii?Q?cgY89bKUiIZanC1jK+CDyL8UFc7w1LXhvXA9qM0Nfgunxg7H8eWQtgCLr7Rl?=
+ =?us-ascii?Q?PAifdknu7N4iN52TEOnrgjiJPalZZuCcoLtgpvVlWjmEgErzHmodB1moJ5/4?=
+ =?us-ascii?Q?hZ0ivkYEuYcEK3obZtJqRmXJexYnyRXVj8dx7dWBTERS9H1E0TnZ6md4l3c2?=
+ =?us-ascii?Q?GiT6NAWJ0DkCmS1ojpv/AqxmWkVqSxLpCpY1HdMdJW9LAUtx7Vsy8SgMi5px?=
+ =?us-ascii?Q?P6QIGIuSsVm0Z5bSMeNox/2hlbqK5hGfHbWTiIgS8bN9N2TYlgqwntp2IL+k?=
+ =?us-ascii?Q?G3OwiWDysZexm7N2XJGx6aKyvTrbWnOPsYKCCm8V9hSPRjHQUsJ8XZ1PyyEr?=
+ =?us-ascii?Q?zWYIM6n8ry7pRWOdFe2ivaCCHcvNGB2YWMIAB3eCfvAgIo0T7r8v96rkwWoi?=
+ =?us-ascii?Q?ub5/PzwIu6a5WVQL1ShM52N6Kw7LkA8mNPpXt79YZfw76ajjGSusfvaQsrwH?=
+ =?us-ascii?Q?bLhF7b9GvVDjjF4qxwtSbm5133PN4OcTDaN9rDEU/LFDrghSxJeicTEFE5Ge?=
+ =?us-ascii?Q?dxrZ15iSGCrxCJEl+B3LKa76N3T8cw+7tf7fJNiZ3gG03ZS6pymewIKtsMUe?=
+ =?us-ascii?Q?kWzaNDBCGOdO8DU8emRU+kcdaQx0F+pdIiI3wVfse1DFe2hp590VYHdXeLng?=
+ =?us-ascii?Q?dIR01zsF72KF5cjQUTaZZkPScyviImKNYGne0dGEAK+4CyOqplfw5KkXyyJU?=
+ =?us-ascii?Q?Rxu1KOXcm5qnSorCLTFD3Ia46Ld8D+zqCaxM0Pow1Heib6PZZkdrxV1I5Ar3?=
+ =?us-ascii?Q?+xTIKw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 03595e77-1d18-4a25-27ad-08db44efcf90
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2023 18:14:57.7672
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dZx5ELsZ9qohbaJQ4DbX/tyrxvdsi30XswH77aMqSJozD+5nwndTSrlzlRqAXc1/gSMrIHT1EkPcFemCcdXHkwrosAY0WzyeEeh0EeW1+Ig=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4984
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,175 +122,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 21, 2023 at 12:29=E2=80=AFAM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 19/04/2023 02:10, Justin Chen wrote:
-> > From: Florian Fainelli <f.fainelli@gmail.com>
-> >
-> > Add a binding document for the Broadcom ASP 2.0 Ethernet
-> > controller.
-> >
-> > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> > Signed-off-by: Justin Chen <justinpopo6@gmail.com>
-> > ---
-> >  .../devicetree/bindings/net/brcm,asp-v2.0.yaml     | 146 +++++++++++++=
-++++++++
-> >  1 file changed, 146 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/brcm,asp-v2.0=
-.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml b=
-/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
-> > new file mode 100644
-> > index 000000000000..3817d722244f
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
-> > @@ -0,0 +1,146 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: "http://devicetree.org/schemas/net/brcm,asp-v2.0.yaml#"
-> > +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
->
-> Drop quotes.
->
-> > +
-> > +title: Broadcom ASP 2.0 Ethernet controller
-> > +
-> > +maintainers:
-> > +  - Justin Chen <justinpopo6@gmail.com>
-> > +  - Florian Fainelli <f.fainelli@gmail.com>
-> > +
-> > +description: Broadcom Ethernet controller first introduced with 72165
-> > +
-> > +properties:
-> > +  '#address-cells':
-> > +    const: 1
-> > +  '#size-cells':
-> > +    const: 1
-> > +
-> > +  compatible:
-> > +    enum:
-> > +      - brcm,bcm72165-asp-v2.0
-> > +      - brcm,asp-v2.0
-> > +      - brcm,asp-v2.1
->
-> Is this part of SoC? If so, then SoC compatibles are preferred, not IP
-> block versions.
-We have the same IP on different chips. So no, it isn't tied to a specific =
-SoC.
+On Mon, Apr 24, 2023 at 07:42:04PM +0200, Christophe JAILLET wrote:
+> 'changed' can be OR'ed with BSS_CHANGED_EHT_PUNCTURING which is larger than
+> an u32.
+> So, turn 'changed' into an u64 and update ieee80211_set_after_csa_beacon()
+> accordingly.
+> 
+> In the commit in Fixes, only ieee80211_start_ap() was updated.
+> 
+> Fixes: 2cc25e4b2a04 ("wifi: mac80211: configure puncturing bitmap")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> Compile tested only.
+> ---
+>  net/mac80211/cfg.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
->
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +    description: ASP registers
->
-> Drop description.
->
-> > +
-> > +  ranges: true
-> > +
-> > +  interrupts:
-> > +    minItems: 1
-> > +    items:
-> > +      - description: RX/TX interrupt
-> > +      - description: Port 0 Wake-on-LAN
-> > +      - description: Port 1 Wake-on-LAN
-> > +
-> > +  clocks:
-> > +    $ref: /schemas/types.yaml#/definitions/phandle-array
->
-> Drop.
->
-> > +    description: Phandle to clock controller
->
-> Drop.
->
-> Instead maxItems.
->
-> > +
-> > +  clock-names:
-> > +    const: sw_asp
->
-> Drop entire property.
->
-> > +
-> > +  ethernet-ports:
-> > +    type: object
-> > +    properties:
-> > +      '#address-cells':
-> > +        const: 1
-> > +      '#size-cells':
-> > +        const: 0
->
-> Missing additionalProperties:false. Look at existing bindings how it is
-> done.
->
-> > +
-> > +    patternProperties:
-> > +      "^port@[0-9]+$":
-> > +        type: object
-> > +
-> > +        $ref: ethernet-controller.yaml#
-> > +
-> > +        properties:
-> > +          reg:
-> > +            maxItems: 1
-> > +            description: Port number
-> > +
-> > +          channel:
-> > +            maxItems: 1
-> > +            description: ASP channel number
-> > +
-> > +        required:
-> > +          - reg
-> > +          - channel
-> > +
-> > +patternProperties:
-> > +  "^mdio@[0-9a-f]+$":
-> > +    type: object
-> > +    $ref: "brcm,unimac-mdio.yaml"
-> > +
-> > +    description:
-> > +      ASP internal UniMAC MDIO bus
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +  - clocks
-> > +  - clock-names
-> > +  - ranges
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    asp@9c00000 {
->
-> Node names should be generic.
-> https://devicetree-specification.readthedocs.io/en/latest/chapter2-device=
-tree-basics.html#generic-names-recommendation
->
-> > +        compatible =3D "brcm,asp-v2.0";
-> > +        reg =3D <0x9c00000 0x1fff14>;
-> > +        interrupts =3D <0x0 0x33 0x4>;
->
-> Use proper defines for flags.
-Not understanding this comment. Can you elaborate?
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-Thanks,
-Justin
->
-> > +        ranges;
-> > +        clocks =3D <&scmi 14>;
-> > +        clock-names =3D "sw_asp";
-> > +        #address-cells =3D <1>;
-> > +        #size-cells =3D <1>;
->
->
-> Best regards,
-> Krzysztof
->
