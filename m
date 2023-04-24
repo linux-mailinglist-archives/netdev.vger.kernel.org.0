@@ -2,160 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C45D36ED4A0
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 20:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87D0C6ED4E0
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 20:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbjDXSkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 14:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41364 "EHLO
+        id S232484AbjDXSy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 14:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232421AbjDXSkp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 14:40:45 -0400
-Received: from mx05lb.world4you.com (mx05lb.world4you.com [81.19.149.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E3065A8;
-        Mon, 24 Apr 2023 11:40:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rZSvYRJCm1YwId/r2d17sDWM7tvYTeySLkDdNhdkAJE=; b=uQHFyDAGc6z2qS3ECawbp0LyOf
-        36e8Ka3Fu5xSPAaTMoOV8OQlIKtuunQ3yS2nBDGSBMAn/e3SnhOnmUmCodULfL4hjj2tkw2HTIFJ+
-        1oeTDgt1Xv/yytVvGajtt0Ol0Yityytrx0wVD1qORUEk85VnxQsKkym3iLYNf8P+qMxk=;
-Received: from [88.117.57.231] (helo=[10.0.0.160])
-        by mx05lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pr178-0002J8-EK; Mon, 24 Apr 2023 20:40:38 +0200
-Message-ID: <f9442f99-783d-a227-df85-c602e6bdd752@engleder-embedded.com>
-Date:   Mon, 24 Apr 2023 20:40:37 +0200
+        with ESMTP id S232565AbjDXSy4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 14:54:56 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2040.outbound.protection.outlook.com [40.107.100.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4CE8F;
+        Mon, 24 Apr 2023 11:54:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jEe5aFltVsp2COL1K0EkADI5g9ugkr3YTXgoc07Jxeke6VtyijF47QLDVCwZ9Et4q8dUwDEtRNQIqUyHB3d9ezr/CF+2MGNnFKm5afhMes/DAUc90R7c5tuffL8XuYC9XC8omGi/QSe3uvMVwn6kcupjTom7gz2vCb3ZXM7kaXlhl6GOgVRXBo/98vr8L+kfgkOA0G8kL0eo+hHkG2fNQh43jPett1GLq3o5R/JwWUdg5Pw8QkfRdeTRmbTjLLpHU/X3sdP6p+tbf7B5eazwKdU7tGVkp1HvP/LnqIzB1a6IabeCCtOn0NK+TcG+FXmgksS18wAB9sjv01HaSsDjgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1pQa4whavOwoZPSDdx4Xp+6qjNXFXSS2p7+NybRM4NI=;
+ b=dliudlGwFoop2zTGnqFhuJZtXIhnLJTx7huzhID0rhtxoLhk4704wNVXQUwD7V+ZeqFHzHN/TFlgjE/HLcrtZ0VKPdbKx5NLogCcZrJOZb4je17sEr7AJfiMZGGaUWj7tY1DYPGtFugfX8lM2qhBKjQkYpjcaUKHoSN6jWfHbR8zTMlvcSsb+kSQkUd3wtRVltM5CMXZ9ZyPNCdd//fvjwrgU6rbBXjd00W6ntFjwShszCyGjOdtihkQ6Ox0bUsvEWmjuCwCJNsTwwDynjZiVHEeQTETVhJVfuIRO0PLvm6T4M3Rk3X7RXi8J+fw0OHa3uEN2yQE3hrdOyP4qqoCwg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1pQa4whavOwoZPSDdx4Xp+6qjNXFXSS2p7+NybRM4NI=;
+ b=ETkHU9iWp3DNqSFPoJziaAF6jJd0YIoLhtJHCrPQoUfgLDEkFwrKc6/UB6BotLCzRt19928Y77jI2BNGg3FQM5mN7EaCGPD2RtW0F8cuhroBuMXwzP935ldb5ZfmcB72DCUJv34GPKRQJwc0FEvBmGxFEAbdvLWJ8MF8SQkP6vKenz3koD9pj7/2TmGwYCvXf8pV6AJwavIgPdbLgXagZi9mJKENzIXbm75ePk8IteEsvg7OZY6SPKezDT3qsb0jEXyISLMbZpWn8/PVorXrddzq8zT/px9IvZYY+Jsxjjzp5mssbE1QzsLE+N8w8ZxjUap+9IJCXVSnnIIhw83VZg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SA1PR12MB7319.namprd12.prod.outlook.com (2603:10b6:806:2b5::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.32; Mon, 24 Apr
+ 2023 18:54:52 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%5]) with mapi id 15.20.6319.033; Mon, 24 Apr 2023
+ 18:54:52 +0000
+Date:   Mon, 24 Apr 2023 15:54:48 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lorenzo Stoakes <lstoakes@gmail.com>
+Cc:     Christoph Hellwig <hch@infradead.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>
+Subject: Re: [PATCH v2] mm/gup: disallow GUP writing to file-backed mappings
+ by default
+Message-ID: <ZEbQeImOiaXrydBE@nvidia.com>
+References: <c8ee7e02d3d4f50bb3e40855c53bda39eec85b7d.1682321768.git.lstoakes@gmail.com>
+ <ZEZPXHN4OXIYhP+V@infradead.org>
+ <90a54439-5d30-4711-8a86-eba816782a66@lucifer.local>
+ <ZEZ117OMCi0dFXqY@nvidia.com>
+ <c8fff8b3-ead6-4f52-bf17-f2ef2e752b57@lucifer.local>
+ <ZEaGjad50lqRNTWD@nvidia.com>
+ <cd488979-d257-42b9-937f-470cc3c57f5e@lucifer.local>
+ <ZEa+L5ivNDhCmgj4@nvidia.com>
+ <cfb5afaa-8636-4c7d-a1a2-2e0a85f9f3d3@lucifer.local>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cfb5afaa-8636-4c7d-a1a2-2e0a85f9f3d3@lucifer.local>
+X-ClientProxiedBy: BYAPR03CA0035.namprd03.prod.outlook.com
+ (2603:10b6:a02:a8::48) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH net-next v3 6/6] tsnep: Add XDP socket zero-copy TX
- support
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        bjorn@kernel.org, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-References: <20230418190459.19326-1-gerhard@engleder-embedded.com>
- <20230418190459.19326-7-gerhard@engleder-embedded.com>
- <ZEGd5QHTInP8WRlZ@boxer>
- <fddf3dd3-2d75-3969-7a62-a4eeeb6ef553@engleder-embedded.com>
- <ZEZv+5DJbEzn28+M@boxer>
-Content-Language: en-US
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <ZEZv+5DJbEzn28+M@boxer>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB7319:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0a35ea9e-a4c2-45ef-d7c8-08db44f562b8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tye3Rymzx19k52M7QztE/t1c5gy5TizJHATpSF7nd4vv+ziMEV8/Lxm+K8nbWtSU8j1JPPoVcbE/8NlWZk07T3qWPWXKhPr1Ca5KY8WV3IMYK1tBCtMDSkO0HL0BrPtc0JzfF+ihDjHpfFKSLy04TTGzJq7jMd5lovyTPQk6yBmlujumYy5T8TbuvcXjNesJyjjK7xueFgKqTj0dmfdw3RX44y5I49E/q1DCFW/ZBecYhCopXR1t37E9LvqFO0iA+pFQqrA9Hu/D3iULxS3R3KcPY02dJliRBspGoLj4fDsqWf89jDOVeLkyWN7JnCjBLY9ex/T4+JNWxCytQpSWy3t4T404AFF9evISarWSG9AgppXhoJsprNu/Z9y98PBjhGhFLZEyX58vpyZRN2hPWm5f5LSHy9Zoqtr9jNrrmqgqgBj5DRVsFVQJRdVfR01BSJZh2MPUxFIHMGITRJV7tVrzWs4nzyJ/tUwBKsq9xLRfVZWmCl6/sKcyJ/SUFOhnNfy4LsqJ9sHWSsLRVor+kNQd7WZJTV8bt5qSXPQ4bjhzYmBtW3awXm1AsrptLK4q
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39860400002)(136003)(346002)(366004)(396003)(451199021)(5660300002)(7416002)(54906003)(7406005)(478600001)(8676002)(8936002)(86362001)(38100700002)(2906002)(316002)(6666004)(66946007)(6486002)(6916009)(41300700001)(4326008)(66556008)(66476007)(6506007)(6512007)(26005)(186003)(2616005)(83380400001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+1apgD1K7jIYt83DaeH2MqgglOy2Q/TnaTwXek35RSGUKWKuIVaKKGPSqSkb?=
+ =?us-ascii?Q?sSgYOll1R+xCOMkmbSMEbXgLFHKO5+BMD1Oh/+UkFAoZYXUFy1RdkEM6onof?=
+ =?us-ascii?Q?kPePq2sm7wElYKrwfrMLokj8Bjh5IY33wNex9SjoxsH1WsUFhojMh8B1ry5X?=
+ =?us-ascii?Q?KBPRuOTTomFbztjGgzQ0iG5nA+6vFuPEMZWCm5e/mrWwio88cFqdx8JF8aDr?=
+ =?us-ascii?Q?b9aSGWXUoMthfyzHSHV67aQpMsI184vF+MGma56ssfLfkwF+YxudDBi8Cka4?=
+ =?us-ascii?Q?y7l0drysOnX2JJg0KYc+DfNyn4/MBnD4Bwmt8biDTQiqHkDFP3AmpbhzU2L5?=
+ =?us-ascii?Q?kDaHlsYU1oItUClKAU5eZZUCvxFksctCdEtu32E9YhLCBiWAva0Qm3QLYUtI?=
+ =?us-ascii?Q?h5UcSVUT0IrO7eWkvtBe095rBox6F5mQ7ihQzFrWpI5GC3bU3m8IRIOoCmcm?=
+ =?us-ascii?Q?kMPsGYlmBXVBUSEfGFgLJX2drvTXVCaXqplIdw5kWZ4s3vzM4ODgbOoh1XD5?=
+ =?us-ascii?Q?U1fxNLsjqW7yiWWHWGdH2safVUBbqq4xYvT8c9qaoG+hX2MUJPgW+hnlxY0n?=
+ =?us-ascii?Q?FxVu9hxrhHldduStoxLwUc7FuDtUUFANxgJQq90HJ8P9EDKwx2ldiIkbjmLO?=
+ =?us-ascii?Q?bqcl/xduoPlQcjHrJOxxb0xKYAqDFevxHMq14VtYdgN+0nsB8Wq6UQ9asirp?=
+ =?us-ascii?Q?G6AKFQvYBGknGyYLI2dFr5EClFDNiqF5tdaFnJrcoFwOuTo0zag1162qNZ01?=
+ =?us-ascii?Q?ACWuKwDAPzZQhddeiJgz6giag00L8ooCMA2e/jez9dn+fUy9x29ewRtsB7qw?=
+ =?us-ascii?Q?YyzAFfgLPpfbdMFoV/QWsg89FisD1PJB/X5BHWlFfK3honLhOxvl4gWq8wCE?=
+ =?us-ascii?Q?t/q4JgAawPxr4JeVCU0Ghx/jMhl+zqs5YdwjCrqHYx3qEMV76F+D9iOOhjjW?=
+ =?us-ascii?Q?WvipkxAIeEreF7gNXko4aAmWnI4q0a5g4pSOzq5KZX92XNk23FbgcMlBQZGt?=
+ =?us-ascii?Q?VFmRqWQqyPqIBsbuXxAHbvK2uPDAtN6W4lbQMpw1P0jXoAdoRrg3LrhdBMda?=
+ =?us-ascii?Q?4+VZOdblNWD9kPgiF8wksn38B0zQfp775wsxL2SoOfIuYRYgNPLGLOw/liPy?=
+ =?us-ascii?Q?lUaeBIBnC+phjgWxcjy25JP+gC+AiwWIIUzagVoud9qig3nkB/yaVdd6idMg?=
+ =?us-ascii?Q?GtPXiOE1nHiAOwXGat9cUFRHNM6w2sF1wnAF4W6901SYYPk5Cr8Z+Zy7zS+V?=
+ =?us-ascii?Q?JM0oRS66XW9Xna8JB+bKuzGIJAjcvZSujoQLTdWJiGwh4kQ8gcx1kRNJMzJA?=
+ =?us-ascii?Q?0if7o0ZaUXVmDxnyRWaDYwdLYwJ8+D5X0AqPrC1aOYBAHm7gUDR4Xet6MNTf?=
+ =?us-ascii?Q?dROaEc5Nc81KKldPWt04t2C/+fDMzMjtoXHvCpZg3rI0g9dhlich6jsbzwTd?=
+ =?us-ascii?Q?Gof5wB5hdwbT0STfUDXisQuJyjGH164aoNvkGXwYDVjLaC/W+eEEbsujjpfy?=
+ =?us-ascii?Q?0t1bfFd5Bj2iXaWPZBOzEwaOlaFFO12yVB89DwZdGOfhWUFfGhta4X+wr51M?=
+ =?us-ascii?Q?Jbzd5OXvi7alYzBFUbTNvt/5E+Ha3TuM0Rb1YwfX?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a35ea9e-a4c2-45ef-d7c8-08db44f562b8
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2023 18:54:51.8841
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dLmUrYCJVqEh+V5g5yCzgAdGd6rbJMDTUkGITinp6FFj9D4YdrUDJWDaeO1nANDo
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7319
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Apr 24, 2023 at 07:22:03PM +0100, Lorenzo Stoakes wrote:
 
+> OK I guess you mean the folio lock :) Well there is
+> unpin_user_pages_dirty_lock() and unpin_user_page_range_dirty_lock() and
+> also set_page_dirty_lock() (used by __access_remote_vm()) which should
+> avoid this.
 
-On 24.04.23 14:03, Maciej Fijalkowski wrote:
-> On Fri, Apr 21, 2023 at 09:02:56PM +0200, Gerhard Engleder wrote:
->> On 20.04.23 22:17, Maciej Fijalkowski wrote:
->>> On Tue, Apr 18, 2023 at 09:04:59PM +0200, Gerhard Engleder wrote:
->>>> Send and complete XSK pool frames within TX NAPI context. NAPI context
->>>> is triggered by ndo_xsk_wakeup.
->>>>
->>>> Test results with A53 1.2GHz:
->>>>
->>>> xdpsock txonly copy mode:
->>>>                      pps            pkts           1.00
->>>> tx                 284,409        11,398,144
->>>> Two CPUs with 100% and 10% utilization.
->>>>
->>>> xdpsock txonly zero-copy mode:
->>>>                      pps            pkts           1.00
->>>> tx                 511,929        5,890,368
->>>> Two CPUs with 100% and 1% utilization.
->>>
->>> Hmm, I think l2fwd ZC numbers should be included here not in the previous
->>> patch?
->>
->> Will be done.
->>
->>>>
->>>> Packet rate increases and CPU utilization is reduced.
->>>>
->>>> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
->>>> ---
->>>>    drivers/net/ethernet/engleder/tsnep.h      |   2 +
->>>>    drivers/net/ethernet/engleder/tsnep_main.c | 127 +++++++++++++++++++--
->>>>    2 files changed, 119 insertions(+), 10 deletions(-)
->>>>
->>
->> (...)
->>
->>>>    static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
->>>>    {
->>>>    	struct tsnep_tx_entry *entry;
->>>>    	struct netdev_queue *nq;
->>>> +	int xsk_frames = 0;
->>>>    	int budget = 128;
->>>>    	int length;
->>>>    	int count;
->>>> @@ -676,7 +771,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
->>>>    		if ((entry->type & TSNEP_TX_TYPE_SKB) &&
->>>>    		    skb_shinfo(entry->skb)->nr_frags > 0)
->>>>    			count += skb_shinfo(entry->skb)->nr_frags;
->>>> -		else if (!(entry->type & TSNEP_TX_TYPE_SKB) &&
->>>> +		else if ((entry->type & TSNEP_TX_TYPE_XDP) &&
->>>>    			 xdp_frame_has_frags(entry->xdpf))
->>>>    			count += xdp_get_shared_info_from_frame(entry->xdpf)->nr_frags;
->>>> @@ -705,9 +800,11 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
->>>>    		if (entry->type & TSNEP_TX_TYPE_SKB)
->>>>    			napi_consume_skb(entry->skb, napi_budget);
->>>> -		else
->>>> +		else if (entry->type & TSNEP_TX_TYPE_XDP)
->>>>    			xdp_return_frame_rx_napi(entry->xdpf);
->>>> -		/* xdpf is union with skb */
->>>> +		else
->>>> +			xsk_frames++;
->>>> +		/* xdpf and zc are union with skb */
->>>>    		entry->skb = NULL;
->>>>    		tx->read = (tx->read + count) & TSNEP_RING_MASK;
->>>> @@ -718,6 +815,14 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
->>>>    		budget--;
->>>>    	} while (likely(budget));
->>>> +	if (tx->xsk_pool) {
->>>> +		if (xsk_frames)
->>>> +			xsk_tx_completed(tx->xsk_pool, xsk_frames);
->>>> +		if (xsk_uses_need_wakeup(tx->xsk_pool))
->>>> +			xsk_set_tx_need_wakeup(tx->xsk_pool);
->>>> +		tsnep_xdp_xmit_zc(tx);
->>>
->>> would be good to signal to NAPI if we are done with the work or is there a
->>> need to be rescheduled (when you didn't manage to consume all of the descs
->>> from XSK Tx ring).
->>
->> In my opinion this is already done. If some budget is left, then we are
->> done and tsnep_tx_poll() returns true to signal work is complete. If
->> buget gets zero, then tsnep_tx_poll() returns false to signal work is
->> not complete. This return value is considered for the NAPI signaling
->> by tsnep_poll().
-> 
-> i was only referring to tsnep_xdp_xmit_zc() being void on return. Thing is
-> that there is currently no way you would tell to napi there is more work
-> to be done. you should do so if desc_available == batch. That would mean
-> there might be still descriptors on XSK Tx ring ready to be consumed. NAPI
-> budget is out of the picture here.
+It has been a while, but IIRC, these are all basically racy, the
+comment in front of set_page_dirty_lock() even says it is racy..
 
-Now I got it. Pending zero-copy work shall be signaled to napi directly.
-In current implementation it would be processed if TX interrupt signals
-completed descriptors. By signaling napi directly, the TX interrupt
-could be prevented. In my opinion both options are possible, but the
-performance may differ. I will check if telling napi that there is more
-work to be done would improve performance.
+The race is that a FS cleans a page and thinks it cannot become dirty,
+and then it becomes dirty - and all variations of that..
+
+Looking around a bit, I suppose what I'd expect to see is a sequence
+sort of like what do_page_mkwrite() does:
+
+        /* Synchronize with the FS and get the page locked */
+     	ret = vmf->vma->vm_ops->page_mkwrite(vmf);
+	if (unlikely(ret & (VM_FAULT_ERROR | VM_FAULT_NOPAGE)))
+		return ret;
+	if (unlikely(!(ret & VM_FAULT_LOCKED))) {
+		lock_page(page);
+		if (!page->mapping) {
+			unlock_page(page);
+			return 0; /* retry */
+		}
+		ret |= VM_FAULT_LOCKED;
+	} else
+		VM_BUG_ON_PAGE(!PageLocked(page), page);
+
+	/* Write to the page with the CPU */
+	va = kmap_local_atomic(page);
+	memcpy(va, ....);
+	kunmap_local_atomic(page);
+
+	/* Tell the FS and unlock it. */
+	set_page_dirty(page);	
+	unlock_page(page);
+
+I don't know if this is is exactly right, but it seems closerish
+
+So maybe some kind of GUP interfaces that returns single locked pages
+is the right direction? IDK
+
+Or maybe we just need to make a memcpy primitive that works while
+holding the PTLs?
+
+> We definitely need to keep ptrace and /proc/$pid/mem functioning correctly,
+> and I given the privilege levels required I don't think there's a security
+> issue there?
+
+Even root is not allowed to trigger data corruption or oops inside the
+kernel.
+
+Jason
