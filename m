@@ -2,126 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FB636ED3ED
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:53:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 986BD6ED404
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:59:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232060AbjDXRxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 13:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
+        id S230526AbjDXR73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 13:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbjDXRxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:53:04 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EE86A78
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:53:03 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id 98e67ed59e1d1-24b29812c42so3508354a91.0
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:53:03 -0700 (PDT)
+        with ESMTP id S229625AbjDXR72 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:59:28 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C286193
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:59:27 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id 3f1490d57ef6-b99e10f1c4cso466181276.2
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:59:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1682358783; x=1684950783;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0MKUvioDFym51E51dk6ySi5zEPkblTDJdgaK3QIKchw=;
-        b=pU0zLUiEMqXNhNeDmdJkzerLQjfaVU6ziVMZ5aBW6/8vN8a4a4aaz0CGYe1VWpkXdS
-         E3TAxastF2Qi8dfdy3CivEZaZAyEEqPau4V5u7GLpGIWazqDGhMvtqXwcOJk/18GWq9l
-         NfYdflAXc2r5Pfs/8SKAQovKxj0V372VR5uqG12EHP3WUXy+vP1g+SEh7+pO/YgPVrGQ
-         dPeNBCPwbJ55mq/jXw1ApR+87m2LRk772pjV+8HKvXMpUlsBub3G6yz+igtpk6UZgAfP
-         g8+ZGHmlL+iVDIoopHyR1q0mzoLuVMgm6DEf8g3nyX83DG+CllSTCU7ZAFrebqwbyNCa
-         gjZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682358783; x=1684950783;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682359167; x=1684951167;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0MKUvioDFym51E51dk6ySi5zEPkblTDJdgaK3QIKchw=;
-        b=Lf+LdTv152IoRApreIfhBzzGNrUyn1DcdW/OyjhPDar7dPkI8xbsK76THpbNEa8v7x
-         mcs4M0rL7c6rbLN25PeVi6eloZuiHLDRXdSv0Hkz17YwcsOPzg6AaDvsam/CUXVy3OMA
-         DMtZJdwLQLQagUQXv1wmgJ/g3dSyHFwqlKtpzOARTDiyYYdh/722XPm3h/dJrx5NpUUs
-         46q0uAzgkSM1HsaBugLg0SZ155lIOp5Jh+gvhUfBOzae4kjnNORkGh+nUs8UlROiMzV1
-         MVnGYWhpqXgmYTLZ8Rj7wp5j9ZV7ekFCdtqOX3cH85+0cJlHxeMzndsc+u1FopAbcSuU
-         mrBA==
-X-Gm-Message-State: AAQBX9cKgQXk+fIv8yR3dqmankG1QY8eldwVVDLrEpG6EKVK/2YUpfqO
-        BzWtgn49AzU0ueZDUFVIguKP6A==
-X-Google-Smtp-Source: AKy350b8QftlmzAgdTpofeaGKzAiPoEQxlMD0oxWHc4aD9JJLcqXlXiU+XTwREVgYXPzaSKrvzQzlA==
-X-Received: by 2002:a17:90b:1c87:b0:24b:2b9a:7fd2 with SMTP id oo7-20020a17090b1c8700b0024b2b9a7fd2mr13857171pjb.9.1682358782987;
-        Mon, 24 Apr 2023 10:53:02 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id fs21-20020a17090af29500b002470e095920sm6824171pjb.40.2023.04.24.10.53.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Apr 2023 10:53:02 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1pr0N2-001Vs1-FA;
-        Mon, 24 Apr 2023 14:53:00 -0300
-Date:   Mon, 24 Apr 2023 14:53:00 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jan Kara <jack@suse.cz>
-Cc:     Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: Re: [PATCH] mm/gup: disallow GUP writing to file-backed mappings by
- default
-Message-ID: <ZEbB/LGw8UoSKJiX@ziepe.ca>
-References: <f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com>
- <20230424160952.bvii2ahgxss2chev@quack3>
+        bh=qNseKmFPhAPMzI1fZJXPkf2S/EZ/leAjrK8BAbXzzpY=;
+        b=S1YsVL26ziI9kqT+BcFpZcw1ekYU6FaQQiugMmo0Fm0pQb8LVmszNVVajBcKZ3Tfft
+         1f+poy+0w77lvtVW/3kxdKM8AfYIWmA6F/2EZvnNXTCNz2YTZkwaR72qmyfcgLROGyx7
+         ylMgxriWg6n/B80xSgCUf4p8nttmxJlOPBQj+RY77vVQdvKKnFfzD8se4Xg8i4IIGyNc
+         bz6HmJ5agevNluPbtOUxjm5mhRAH/kA/gbwkHm7y3nHmWREJiBwGWaamrE+NiTAPpX29
+         hLRrOXjPqVhsHxeVRUlkamvEGNX15AOvdayefr/+SQzY8qhI1l0YMSS8e5wVOJ4jGooA
+         sffg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682359167; x=1684951167;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qNseKmFPhAPMzI1fZJXPkf2S/EZ/leAjrK8BAbXzzpY=;
+        b=SSiiZC5NrUj7hLsAu15hz3Yr0qBPRsA57BNRbcKjfbTu4czgHrPvZW8A2esBvk/vj9
+         ZMQi7U+NbTDXsvC4OvjtsyFEfIG9Rthq1zp0fKbgB61QnTNC9hQ25ndH+IEOPS6I45sT
+         19U+dDZ8WwTEDTqwpzkwmKERk0gLmBm8nUeppV49itNnE/pJlblOwk9ldnp2gJOTiUGW
+         DT8a9QorKcD0MztdGsorFl01tQQwfw868aQpyS9SfC+iEf+/w0l9a8p9YXp+ZMMEj3k4
+         Z8JZhj4+bSXWTPR/77PXUosa+BGVfS+FBZ5iuiEOUIQJ8DxjtK1bfXTIMzb2vVGXUAtS
+         30nA==
+X-Gm-Message-State: AAQBX9cotZJVg7lr/uGoHwOa1w9mAMuLhnfPbYa6PlnAczD1BWQOpe6x
+        iE2C78x+8hnJedIg6scZTuWWC/3TzzzuxeCiIYYtxA==
+X-Google-Smtp-Source: AKy350auCruekp+RCQhdIQuQVB3yWZZCy5mC2Oh+fA3TlXlW41LaMBo5RMFAveR1azh2pUnHXkINYvaaShUzVgbOfgs=
+X-Received: by 2002:a25:37c8:0:b0:b8f:31c2:7b09 with SMTP id
+ e191-20020a2537c8000000b00b8f31c27b09mr10277290yba.54.1682359166671; Mon, 24
+ Apr 2023 10:59:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230424160952.bvii2ahgxss2chev@quack3>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230424170832.549298-1-victor@mojatatu.com> <20230424173602.GA27649@unreal>
+ <20230424104408.63ba1159@hermes.local>
+In-Reply-To: <20230424104408.63ba1159@hermes.local>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Mon, 24 Apr 2023 13:59:15 -0400
+Message-ID: <CAM0EoMnM-s4M4HFpK1MVr+ey6PkU=uzwYsUipc1zBA5RPhzt-A@mail.gmail.com>
+Subject: Re: [PATCH net v2] net/sched: act_mirred: Add carrier check
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Victor Nogueira <victor@mojatatu.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        kernel@mojatatu.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 24, 2023 at 06:09:52PM +0200, Jan Kara wrote:
+On Mon, Apr 24, 2023 at 1:44=E2=80=AFPM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Mon, 24 Apr 2023 20:36:02 +0300
+> Leon Romanovsky <leon@kernel.org> wrote:
+>
+> > > There are cases where the device is adminstratively UP, but operation=
+ally
+> > > down. For example, we have a physical device (Nvidia ConnectX-6 Dx, 2=
+5Gbps)
+> > > who's cable was pulled out, here is its ip link output:
+> > >
+> > > 5: ens2f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq stat=
+e DOWN mode DEFAULT group default qlen 1000
+> > >     link/ether b8:ce:f6:4b:68:35 brd ff:ff:ff:ff:ff:ff
+> > >     altname enp179s0f1np1
+> > >
+> > > As you can see, it's administratively UP but operationally down.
+> > > In this case, sending a packet to this port caused a nasty kernel han=
+g (so
+> > > nasty that we were unable to capture it). Aborting a transmit based o=
+n
+> > > operational status (in addition to administrative status) fixes the i=
+ssue.
+> > >
+>
+> Then fix the driver. It shouldn't hang.
+> Other drivers just drop packets if link is down.
 
-> So I'm maybe missing a bigger picture why we would like a change like this.
-> Because we still need to teach filesystems to handle pinned pages for the
-> usecases you don't forbid and for which we know there are users and then
-> what's the benefit of this patch?
 
-It immediately closes a security hole we have been talking about
-fixing for years already and still don't have a full fix for.
+We didnt do extensive testing of drivers but consider this a safeguard
+against buggy driver (its a huge process upgrading drivers in some
+environments). It may even make sense to move this to dev_queue_xmit()
+i.e the arguement is: why is the core sending a packet to hardware
+that has link down to begin with? BTW, I believe the bridge behaves
+this way ...
 
-An acknowledgment that this is not going to go away and starting to
-clamp down on the insecurity may motivate some investment in the
-proper fix. :)
-
-Jason
+cheers,
+jamal
