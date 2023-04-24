@@ -2,47 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97FDC6ECE9C
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 15:33:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 506F26ECEDE
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 15:36:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232592AbjDXNdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 09:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59600 "EHLO
+        id S232607AbjDXNgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 09:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232484AbjDXNdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 09:33:33 -0400
-Received: from hust.edu.cn (unknown [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 385E686B9;
-        Mon, 24 Apr 2023 06:33:14 -0700 (PDT)
-Received: from [IPV6:2001:250:4000:5122:ef2c:4d0d:eb7f:c1d2] ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=PLAIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 33ODVp3C013119-33ODVp3D013119
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Mon, 24 Apr 2023 21:31:51 +0800
-Message-ID: <6df17c8d-1ed3-6059-e821-bd58e370c641@hust.edu.cn>
-Date:   Mon, 24 Apr 2023 21:28:59 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v4] net: amd: Fix link leak when verifying config failed
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>,
-        Gencen Gan <gangecen@hust.edu.cn>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232613AbjDXNfp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 09:35:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF1C86A9;
+        Mon, 24 Apr 2023 06:35:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29EB5623DF;
+        Mon, 24 Apr 2023 13:35:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82BC0C433A7;
+        Mon, 24 Apr 2023 13:35:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682343335;
+        bh=y75lIJf876GxKiQkHIBiRfNRr/Wh0exyC294HWMMYSY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=c63FNuRh+ltANDc9x1c2RV4jMvPfo8O4kXdC8p/oHFQtXWMmmBTdsV+i1QB2weBhs
+         y3SNmnOoaww2SMmteRuoOGkdquo4UWnhvUd7SJa0OqjocVFJeDqsELAR5AEDYFQbbR
+         aqcCqgaY1AmwCSnSo3qnSdE7y9mzWeVcZc1lq8J2rOoyfFof6WRn8gclL59ibAUbuU
+         sRy8HwSdYGEc2fRqD25vYpzOi0wKMq1BxUbi2dy/WkGv6QTTja8LK5asLZbhUiIIwi
+         5mEt+540mtlNEL8FG8E+6rEpXNLu7frMwAhubw8MhiuB4pwt4Aa1oYOZGrlT017+UK
+         seWfrKpO9w6qA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1pqwMB-0003kG-EN; Mon, 24 Apr 2023 15:35:52 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        hust-os-kernel-patches@googlegroups.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230424104643.182296-1-gangecen@hust.edu.cn>
- <ZEZ9m4Q7qO0UTx1B@corigine.com>
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-In-Reply-To: <ZEZ9m4Q7qO0UTx1B@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH 0/2] Bluetooth: fix bdaddr quirks
+Date:   Mon, 24 Apr 2023 15:35:40 +0200
+Message-Id: <20230424133542.14383-1-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.39.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,66 +61,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+These patches fixes a couple of issues with the two bdaddr quirks:
+
+The first one allows HCI_QUIRK_INVALID_BDADDR to be used with
+HCI_QUIRK_NON_PERSISTENT_SETUP.
+
+The second patch restores the original semantics of the
+HCI_QUIRK_USE_BDADDR_PROPERTY so that the controller is marked as
+unconfigured when no device address is specified in the devicetree (as
+the quirk is documented to work).
+
+This specifically makes sure that Qualcomm HCI controllers such as
+wcn6855 found on the Lenovo X13s are marked as unconfigured until user
+space has provided a valid address.
+
+Long term, the HCI_QUIRK_USE_BDADDR_PROPERTY should probably be dropped
+in favour of HCI_QUIRK_INVALID_BDADDR and always checking the devicetree
+property.
+
+Johan
 
 
-On 4/24/23 21:01, Simon Horman wrote:
-> On Mon, Apr 24, 2023 at 06:46:43PM +0800, Gencen Gan wrote:
->> After failing to verify configuration, it returns directly without
->> releasing link, which may cause memory leak.
->>
->> Paolo Abeni thinks that the whole code of this driver is quite
->> "suboptimal" and looks unmainatained since at least ~15y, so he
->> suggests that we could simply remove the whole driver, please
->> take it into consideration.
->>
->> Simon Horman suggests that the fix label should be set to
->> "Linux-2.6.12-rc2" considering that the problem has existed
->> since the driver was introduced and the commit above doesn't
->> seem to exist in net/net-next.
->>
->> Fixes: 99c3b0265649 ("Linux-2.6.12-rc2")
-> 
-> Unless I'm mistaken, this should be:
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> 
->> Signed-off-by: Gan Gecen <gangecen@hust.edu.cn>
->> Reviewed-by: Paolo Abeni <pabeni@redhat.com>
->> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> 
-> I think that tags such as Reviewed-by need to be given explicitly.
-> And as the above two Reviewed-by tags were not, so it is a bit
-> odd for them to appear above.
+Johan Hovold (2):
+  Bluetooth: fix invalid-bdaddr quirk for non-persistent setup
+  Bluetooth: fix use-bdaddr-property quirk
 
-Hi Semon,
+ net/bluetooth/hci_sync.c | 30 +++++++++++-------------------
+ 1 file changed, 11 insertions(+), 19 deletions(-)
 
-Sorry about the naive mistakes made by Gan Gecen. Our team had 
-repeatedly talked about this issue and written it in our kernel 
-contribution guidance.
+-- 
+2.39.2
 
-[1] 
-https://groups.google.com/g/hust-os-kernel-patches/c/GThhx08kecg/m/5p61iz6KAQAJ
-
-> 
->> ---
->> v3->v4: modify the 'Fixes:' tag to make it more accurate.
->>   drivers/net/ethernet/amd/nmclan_cs.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/amd/nmclan_cs.c b/drivers/net/ethernet/amd/nmclan_cs.c
->> index 823a329a921f..0dd391c84c13 100644
->> --- a/drivers/net/ethernet/amd/nmclan_cs.c
->> +++ b/drivers/net/ethernet/amd/nmclan_cs.c
->> @@ -651,7 +651,7 @@ static int nmclan_config(struct pcmcia_device *link)
->>       } else {
->>         pr_notice("mace id not found: %x %x should be 0x40 0x?9\n",
->>   		sig[0], sig[1]);
->> -      return -ENODEV;
->> +      goto failed;
->>       }
->>     }
->>   
->> -- 
->> 2.34.1
->>
-> 
