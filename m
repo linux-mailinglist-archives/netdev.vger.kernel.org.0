@@ -2,51 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97EBF6ECBFC
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 14:28:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 978E46ECC13
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 14:32:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231635AbjDXM2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 08:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
+        id S231659AbjDXMcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 08:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbjDXM2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 08:28:13 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2075.outbound.protection.outlook.com [40.107.237.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDFDC5;
-        Mon, 24 Apr 2023 05:28:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iLwT8ouulF/tPAm6209wUXHekVdE9w+n8mV98cMBq1kXdvgwQTvmG2Dj1CDlMvFOLjEw7yyY7A+BQd/x15vHkIFGz6oWUdox3GrEwTGdUnoxT1zIas9W2Os3mpB7h2fsEB991tPBOh5OUcodf8L2LSUtEdK1OH1jRQXFS7aZS/TAZEkHu8xOOrrB6KfrrkkUchW9dycIq9sc87NnsqiIpSwfXDlkEEoR+87SNR33/uoltnVrmQor9+9A92jKFvHNko+VjO5xoVOUUgP9SM5PH1pyeCwJ3AhxUVGt1dAsugKkCnuT91ra1NL2RELqkDpRa+evgVxZt+ghmOzs4QW1uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3Yywi1v4yxEyvAeodHfSd7JjtRF1MOcdgR30iZgKri8=;
- b=kbWIiFakVqSwZAM8z9j/GE0sms8OkCflcYL+wkTcC4/JEOKIAnMkdrcMyda3s0Su4XoWe7Oi8jaWN/3wD844G4pMjMMIrflrBSW1/AAmHvxKdUULA94UvXd2uX97wGhH9c8FOSBlvdGqD1PivTmC+WNEs9q8eYDDFzgzSFTTNe/C1bw7qWuCbw4ao8N0H6o4YC1DYDAK3LPofTerYCVB49CxUZZj5mf9LkE2UMZ0hL4U9HrUl/nu/taiCdHLMVwY7LVBQfhPG1CvbKtgujG1nc320fcyvlIxeA3A0RQ8egPIUXaZnSLx8PM6Bslrx0I4rd//cPZ9d9zsl32caqzyLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3Yywi1v4yxEyvAeodHfSd7JjtRF1MOcdgR30iZgKri8=;
- b=rdDgs3HaB/Pn/fW5jYI+rH7bfX3pR99hSYjMe7qd/ccrCFUi1OgPL5uVCigaWSRcmdgqb8WcaYjIzfvaftb8Yk4H/l8JplBzhXozpgO9R7g8bdGH7LLgdBIda0TsL8Uc4x6nVtO7MTEgLws1NO3TrG7wwGHfPi2fObDQUkVCkKafDNjvcwR7C5fkr6vEDjSzLrq/Mp8Rq8OrEaIz8RCBU52FXfjI4jQW52F46/u0i8jqRe/YWjAz7JNKIoZkYWJ62k3eP8apxrWWgAaMiHy20qtyD26a2/+dovQnptZ1gi4z6Dz2awVXKbVcIrQKB4lZq7TjlL66hidBE452JOrMAg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SN7PR12MB7323.namprd12.prod.outlook.com (2603:10b6:806:29a::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.33; Mon, 24 Apr
- 2023 12:28:09 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%5]) with mapi id 15.20.6319.033; Mon, 24 Apr 2023
- 12:28:09 +0000
-Date:   Mon, 24 Apr 2023 09:28:07 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     Christoph Hellwig <hch@infradead.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
+        with ESMTP id S230255AbjDXMcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 08:32:01 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA58C5;
+        Mon, 24 Apr 2023 05:31:59 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id 5b1f17b1804b1-3f195b164c4so18055555e9.1;
+        Mon, 24 Apr 2023 05:31:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682339518; x=1684931518;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=E+9tG9/EzyZBijt6lC6jWfZSLjYD4vx+59W+aZZkyIo=;
+        b=C5V0foNvh3vz2bZmAcmn7rxPK1cb2LCMUj8MB0CyqWHsZ8tSTdIEXUKNViuB+5YuVW
+         gPT5utMBxCLPTr+qlEsN3NcwQ4qVcIiTsPQ26yO47rL2gugChaazEsVzahUEh+Xybdfg
+         rvx5oY//oi6zrdzS5n5xlQj0KZwFa9DJMB1zySKWAlXGuhE7LNOrth4eXEX3Befp6Hhk
+         OfKDPv4jlt/uCh99yFEDJZ5sGYv6DuMYxu7DMURoQFzDXcCWy4y0XtJWRsANviCGso0h
+         T7jpblG4VmcnMF2zDDEKYS0w9UswI4ubo/sK+DU3u0FAobS/sTrXO9JM26Kyrbt8LSZ9
+         bJlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682339518; x=1684931518;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=E+9tG9/EzyZBijt6lC6jWfZSLjYD4vx+59W+aZZkyIo=;
+        b=HvxQ3CDmgaxETzscREecdPtU2CQx4WFvLyprGvURlibPNXTYf63df1on4MvvX5XG+z
+         xWMTMmdimmyVI7DBdBVmUHpoM2nV6PakzDcUZkVg23GEcYqt9kXJ1CrgIIualISahPog
+         W19jvHeC1sIwkUy20M/d23d7czUwBYFMNp5+BzIi4OluzjNS7r0Klu+NRDpf2VQm/Vxl
+         IAv/zs5nGsg/Ud5QvuoZuNxg9PbJWCV9geaNR5IdFfX5bgoLy0hmTIZFCQ6vzklk0lYL
+         I4vHVIklFoyJB3ZYRZFAwgz/QASuFd2b1RxWMGs1rlORBvEflC6625PbUjOZOIEectAy
+         h9/g==
+X-Gm-Message-State: AAQBX9cZ1bB0AcQ7+6bR7kiKhW1GxZi4X3+MUcaV4usK3sM4XTATWpYW
+        IaJKqtOLBw3/zC66F8VfIrs=
+X-Google-Smtp-Source: AKy350aJGl3Ap51xHWyxEtalSo0tkfykfYvDkmohzXzrBI/PGmieCgcfIbaVFxVI6X2fWNblU2x2/A==
+X-Received: by 2002:a05:600c:21d7:b0:3f1:7a57:45cd with SMTP id x23-20020a05600c21d700b003f17a5745cdmr7792795wmj.28.1682339518121;
+        Mon, 24 Apr 2023 05:31:58 -0700 (PDT)
+Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
+        by smtp.gmail.com with ESMTPSA id j32-20020a05600c1c2000b003f173987ec2sm15478354wms.22.2023.04.24.05.31.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Apr 2023 05:31:57 -0700 (PDT)
+Date:   Mon, 24 Apr 2023 13:31:56 +0100
+From:   Lorenzo Stoakes <lstoakes@gmail.com>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
         Matthew Wilcox <willy@infradead.org>,
         Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         Leon Romanovsky <leon@kernel.org>,
@@ -77,109 +84,69 @@ Cc:     Christoph Hellwig <hch@infradead.org>, linux-mm@kvack.org,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>
-Subject: Re: [PATCH v2] mm/gup: disallow GUP writing to file-backed mappings
- by default
-Message-ID: <ZEZ117OMCi0dFXqY@nvidia.com>
-References: <c8ee7e02d3d4f50bb3e40855c53bda39eec85b7d.1682321768.git.lstoakes@gmail.com>
- <ZEZPXHN4OXIYhP+V@infradead.org>
- <90a54439-5d30-4711-8a86-eba816782a66@lucifer.local>
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] mm/gup: disallow GUP writing to file-backed mappings by
+ default
+Message-ID: <3273f5f3-65d9-4366-9424-c688264992f9@lucifer.local>
+References: <f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com>
+ <20230424120247.k7cjmncmov32yv5r@box.shutemov.name>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <90a54439-5d30-4711-8a86-eba816782a66@lucifer.local>
-X-ClientProxiedBy: MN2PR01CA0032.prod.exchangelabs.com (2603:10b6:208:10c::45)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SN7PR12MB7323:EE_
-X-MS-Office365-Filtering-Correlation-Id: d3f43c0a-5527-469d-bb84-08db44bf5cd6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wf7gcm6tA5NbF+SAUsUeLCOl8p9tspDKE7TeWv2z3iyliupkH4mMahFAmzKP0sWj/jUbZ1znRaqFKMiU2VZMCcDWMS+cdyVaFciLyY+FDLO+TYVdeg9+yooE9LwLUXKakUVe+bx2PbFWkwm90XWN47maHZQayqkiXMmQItuOYMdKCLSXjkZ4sSLQwUeHhlvyFoQhVe+cVCn6hFMXC/nikmxeghRmXwe9LbnQFvBB0j19/FymIusDnMQKAb4I3PNqrnMvNqkwZFDoUjyqi+lxi1TdbfaDL/HuP/eIKxZFKv+7tVDQWQEm6XOmSb7gQtKJGy06zVQdaDgCiloSyecYN79l4GOrB07M7/qSyf1jLDZx+hvOd5ayeSeCHcfpHIWPQjyqCG8C0zhcSPKeTIfoccwAMiXFWV300u1t7IeVnkr43LYzig8LytKbW9ygaaK3gzxnUQ/ETGhYrYmF6ynM5znkyVizkGS6eGKyCg5FTUL4jq9+j2/LSioVshVoEz9uDJed6C2zx7yWCLUynVBchcRqINvPhJf/D5/iH6lzSVlyuTFTHqxfIZuW+2c6v76n
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(136003)(39860400002)(376002)(396003)(451199021)(6486002)(66556008)(66476007)(66946007)(6916009)(2906002)(6506007)(8936002)(83380400001)(186003)(8676002)(2616005)(41300700001)(26005)(6512007)(5660300002)(316002)(7406005)(7416002)(86362001)(54906003)(36756003)(38100700002)(4326008)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?j174vHmSMr+YHea+C1ouuWHGwxBl3a3p+cxK1v2QKinaIDzLRQHJbfVNiahu?=
- =?us-ascii?Q?njtpR5R9zJLW1Ki9R0J65DljOVRWZ4OzFGRC10wqaTK2Yj0mFG7/SWS0kVer?=
- =?us-ascii?Q?QZNbdm9UOV/nR7ni3tPj5LHBjFUsw12n2oZm8OsyXyIN+tmBP5CykqbiWuS0?=
- =?us-ascii?Q?+jVYRRvwg0p31JxHcczmWaErFTNmeYZsf/3/W+YpopVnaXn14JEN3uBPKQPc?=
- =?us-ascii?Q?EOqa6WBAwWwEPdoiDYE5n3zk9MM2FwIY8nNZDjZXteVeGAwUFiAWx16XYh04?=
- =?us-ascii?Q?UvWRRyI8tOT9bcYcGpGUv6IMQSGbMIcxtosaF6Y6ejyv4yr8NR1SoJ8jeMGH?=
- =?us-ascii?Q?hZ/YfQH5SY/NNStJpgowmdbWT1aLh3egn5DcUQyRYfXxG0jiK1WUYHsScI5F?=
- =?us-ascii?Q?TSAjyg6AGLDh0jtj2w5oz4XuYw6XOS0a7sO/Ui05677mqYh4rBasNXC9MXET?=
- =?us-ascii?Q?mlx/dex+lF9HVYgT/NpMd9Y1F2Lw/eEVw3DWdw+tYTNF45YAENd5rXwAj8gg?=
- =?us-ascii?Q?9yOhgmQPe8VDidaHrfcXqqbv3aWzNm8AmT8dswdH6Heuc8TBYLTmh79933DG?=
- =?us-ascii?Q?dlIoM20A15wYSPT5T1Df+Of9OkR11ytzXCkyKHFVYBoeaK964DSF+CSW3ewi?=
- =?us-ascii?Q?tYE7mWqbye0nsax0p3B8//U7WN1Xig1Unr1mOAqIQ0j5n+viEppjVUKklIEf?=
- =?us-ascii?Q?IdkcuOvlWtO1aUoWa3qdNoHyv+sYsbDrGdvuRmb3m8Ds0cpvfJt49Q7MIhtn?=
- =?us-ascii?Q?o27Y+siSvNeSWYelOmgId18XLE0ItVT2QoTwLfrEUAV0PV2OiCP93TYYKlnE?=
- =?us-ascii?Q?x4pYA6Ygs7NVzoiQnxd8ZJCBqiftebsOhqznssEBc1UugzPU6YjlF/aTZ4nb?=
- =?us-ascii?Q?RetgkwQdHcV9+l7h1yaKkCNcNPD2jord8CLflmO/v/w3/Be31yGhb5RbAG8J?=
- =?us-ascii?Q?8gT+AuiUNXfpRYAFs6uDBdMgmoAsAzXgso/KSxAm2ICTomAPxJ96h8cTynso?=
- =?us-ascii?Q?D3tvGq4QOZnfEpaX81gPr5RfSlrdAILsj3Ola41uHU3DBz0Aro6FYDUvRW6C?=
- =?us-ascii?Q?eD0f1RS9DzNSx12TQVoxkaiXimiYrkiEw5rbRp+RlhkRDeP0lJNhpxTpCeza?=
- =?us-ascii?Q?AkFVni10KinokSuA2hWjR3dbEbCPrGpYzCA6W23U49G7EBTfLdveKF3spnId?=
- =?us-ascii?Q?oLzxtIUGaHnhB+zOhfVnIR+NPkdIPzWU5ysC6VuAGuXa+ayz0shiyMT5tvfQ?=
- =?us-ascii?Q?RI/xvNgALI4e+qOWXKJF6/g8gcYDSQ83mxLpLZcABKh1swngkwpwa+oYW18x?=
- =?us-ascii?Q?M46taJR68G0D6oBfGYvP0TN2jJlj7zRBkQrr+QJKghrMLI2KZw9Z6Zdpp5wx?=
- =?us-ascii?Q?Q8UWtYcAG4l+c9uImn2GF7bCCBnkjuYtEjEpSzpIAsB6NGR+eNXgXub3LWxM?=
- =?us-ascii?Q?MMM11MfT5bHfzmkq2uZI4PM91Hr01B5eLETqNBIt1SqcP52txLClMuSMBw+b?=
- =?us-ascii?Q?cTfYiCpWq/D9ubIrZytcfdMFYkW2zb3QSnlmJqu5a+3MThEla5T1bpaRt3eR?=
- =?us-ascii?Q?2vVbd9wrEmya/uJjQX8=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3f43c0a-5527-469d-bb84-08db44bf5cd6
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2023 12:28:09.2049
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KKRODEFt0zDz2AFUpABDX0IKQuqU3lU5UpVwX9KwKM2jUfy+BXGxn9rxcj4tPMIK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7323
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20230424120247.k7cjmncmov32yv5r@box.shutemov.name>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 24, 2023 at 11:17:55AM +0100, Lorenzo Stoakes wrote:
-> On Mon, Apr 24, 2023 at 02:43:56AM -0700, Christoph Hellwig wrote:
-> > I'm pretty sure DIRECT I/O reads that write into file backed mappings
-> > are out there in the wild.
+On Mon, Apr 24, 2023 at 03:02:47PM +0300, Kirill A. Shutemov wrote:
+> On Sat, Apr 22, 2023 at 02:37:05PM +0100, Lorenzo Stoakes wrote:
+> > @@ -959,16 +959,46 @@ static int faultin_page(struct vm_area_struct *vma,
+> >  	return 0;
+> >  }
+> >
+> > +/*
+> > + * Writing to file-backed mappings using GUP is a fundamentally broken operation
+> > + * as kernel write access to GUP mappings may not adhere to the semantics
+> > + * expected by a file system.
+> > + *
+> > + * In most instances we disallow this broken behaviour, however there are some
+> > + * exceptions to this enforced here.
+> > + */
+> > +static inline bool can_write_file_mapping(struct vm_area_struct *vma,
+> > +					  unsigned long gup_flags)
+> > +{
+> > +	struct file *file = vma->vm_file;
+> > +
+> > +	/* If we aren't pinning then no problematic write can occur. */
+> > +	if (!(gup_flags & (FOLL_GET | FOLL_PIN)))
+> > +		return true;
+> > +
+> > +	/* Special mappings should pose no problem. */
+> > +	if (!file)
+> > +		return true;
+> > +
+> > +	/* Has the caller explicitly indicated this case is acceptable? */
+> > +	if (gup_flags & FOLL_ALLOW_BROKEN_FILE_MAPPING)
+> > +		return true;
+> > +
+> > +	/* shmem and hugetlb mappings do not have problematic semantics. */
+> > +	return vma_is_shmem(vma) || is_file_hugepages(file);
+>
+> Can this be generalized to any fs that doesn't have vm_ops->page_mkwrite()?
+>
 
-I wonder if that is really the case? I know people tried this with
-RDMA and it didn't get very far before testing uncovered data
-corruption and kernel crashes.. Maybe O_DIRECT has a much smaller race
-window so people can get away with it?
+Something more general would be preferable, however I believe there were
+concerns broader than write notify, for instance not correctly marking the
+folio dirty after writing to it, though arguably the caller should
+certainly be ensuring that (and in many cases, do).
 
-> I know Jason is keen on fixing this at a fundamental level and this flag is
-> ultimately his suggestion, so it certainly doesn't stand in the way of this
-> work moving forward.
+Jason will have more of a sense of this I think!
 
-Yeah, the point is to close it off, because while we wish it was
-fixed properly, it isn't. We are still who knows how far away from it.
-
-In the mean time this is a fairly simple way to oops the kernel,
-especially with cases like io_uring and RDMA. So, I view it as a
-security problem.
-
-My general dislike was that io_uring protected itself from the
-security problem and we left all the rest of the GUP users out to dry.
-
-So, my suggestion was to mark the places where we want to allow this,
-eg O_DIRECT, and block everwhere else. Lorenzo, I would significantly
-par back the list you have.
-
-I also suggest we force block it at some kernel lockdown level..
-
-Alternatively, perhaps we abuse FOLL_LONGTERM and prevent it from
-working with filebacked pages since, I think, the ease of triggering a
-bug goes up the longer the pages are pinned.
-
-Jason
+> --
+>   Kiryl Shutsemau / Kirill A. Shutemov
