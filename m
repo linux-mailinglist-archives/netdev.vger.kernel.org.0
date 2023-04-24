@@ -2,260 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE17F6ED31E
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:06:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83C8F6ED32E
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:09:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229625AbjDXRGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 13:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
+        id S231726AbjDXRJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 13:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232053AbjDXRGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:06:38 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B477C4EDF
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:06:36 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id 98e67ed59e1d1-24b9e5a9a68so1206676a91.3
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:06:36 -0700 (PDT)
+        with ESMTP id S229625AbjDXRJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:09:38 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44FAC59FD
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:09:37 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id d75a77b69052e-3ef38bea86aso23153261cf.3
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:09:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682355996; x=1684947996;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5EEWS79TKEuhbit6OUpFdqDeF72y6fox6I/RJUsHISU=;
-        b=nYjtIykyAI+1fziZyYa0yifeT2qLuD3amhV7ZMtBZY8aNu7bxYIU/DC5vI1qbIh5we
-         rDjDRQdzXGu4tZSxfoJJKGJKgFzpL8XN8fnZkH4m3hnkHeRgPROodPtHCqtmINs4ESoj
-         anbjxDN5yDGre3E/7IGeDFD4EPfr+mwDYeQgvn/xHgGgbGE4z3TzLv0z2Ft4s4/PKULM
-         t2BFoHqQC8euq9cH7R1TFV9rQB61o8s3pCWW5HYDZVrBF/1IINRdWntDuNngvGuL+VGR
-         Ke2mQQ9dOvfULt9QwUXWrC8Ylu6S1dmIIpmoQi6yOUWfaXYlKR+WV52l3Ix6ihOSqIo7
-         cPgw==
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682356176; x=1684948176;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=yqqIhPpCZwfRJ5UBul5epz4xPcbVhRDVWkoAPPyrcMg=;
+        b=HQv0BDUCEKXac/yuNjUV32Ksi7VgYa3hP1zuIntMp33+SYHZwTiK42Tj9+shhBT5jh
+         cwVpWjs6140kraDj2gtjoADd4wodtz/ciwana1BohyXqQkrBE5fYjYACT9COtz7T1xj2
+         z1PYOwQV517nrzTNHYlGg5ptRsiH81o/zUUMt9S/6V4jZ2ygjhazlrZladplxkD3+l+K
+         agNsNO4+w/Hgw9XEi8SGkhPg1UrpnikdWK1o94XwyY243GTrHycfu2BC+vKXeoKsOzf8
+         QOJ5/ftG3BgDKDdsRdwjKcyKyy9R/Iu030nFhtN8Iy0NZhM3tigY/uTSkNUv3vSoNTrH
+         ex7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682355996; x=1684947996;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=5EEWS79TKEuhbit6OUpFdqDeF72y6fox6I/RJUsHISU=;
-        b=MG9glIOAEFq3LTXxT5mugkAY1dFb8NwVDzUa8MJkt+B2UYL1k71fO4+tOtYXnaGR+d
-         1p2XMrvN8Dr5ZOFdihFc+C8VO50tnb0dq5V1UR37IbEoL8svg9lPwgVhNpeh3fj9OTNn
-         P4NLtGM5rDMapFNz4/nu4WQLJZx/5rlIi+9/mUxFgbZihW4kY6gZT3JeRj4dYc4mfOP3
-         /Pg40mnqzJg3gHitSt5Vo2IMUFAHnI7ynpihg9Q1JRFvAxoQPaCPsMOp5k1njlurfAb+
-         8uaFTEDow6wwBygTfcc+kt0lsSPGPhZZp80pCLEr5ixE2sDqSDU07CBeugA+tHDMDqDs
-         XkQw==
-X-Gm-Message-State: AAQBX9e5fGcJijy+wuwDDMI/YDOY+mGI1waEinNvLvbfefVtohBIhiNk
-        s7FU030KaBOGduHmYnib0WEdQG9iE2tXt/xyF63gXA==
-X-Google-Smtp-Source: AKy350Zc5CiL2onGifwnLM4pfmBPls37fOJGhYMfUtixpmHeBYyhKl9G+x8iv8PS4jllJFSREAFMCnVvKRPi95cHqCY=
-X-Received: by 2002:a17:90b:297:b0:234:f77:d6d2 with SMTP id
- az23-20020a17090b029700b002340f77d6d2mr13966476pjb.45.1682355995966; Mon, 24
- Apr 2023 10:06:35 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682356176; x=1684948176;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yqqIhPpCZwfRJ5UBul5epz4xPcbVhRDVWkoAPPyrcMg=;
+        b=TC+2N+BuDs4nvmri+a1AL9ygEHVwMH2E32t3diP+qq6MQbl2IKBbYiFUDgguJuSIo5
+         KHb0yiW0iQllVy0j9Gs+jzWN7WGUWpVP2eOuL8vi64qJrH6/wYhBcHjFIasMlte5tiyc
+         2zecfG2ltDswAcNWWID6Q4Gl18Ku6ndwi3viH3xMVC7xbfOIMBbnyOZa74qZXoP6mGPZ
+         WI1wVY62f0uBdhI9YjzBp9iG4wyGhGy1RW+XVsZLB2QmHebpSkEPkpBDEsztIbaUarza
+         kfw2e9+YtzCWxhSWEqT6qKu7V4oN67Fqw0uf9yKrpuRhLKvyySrtrUdH94EsJFecqd57
+         QIvQ==
+X-Gm-Message-State: AAQBX9fJPCZBczfVVpd43CyaH/G/BealyniFeALCH7Sc4pnh5fPyKJn/
+        SSJr6B/+B8ektcQH/M/ETg4KqQ==
+X-Google-Smtp-Source: AKy350b+uuZiQ+B/iIAUlerUO4HYqpI0MQvlQu0b+IC5kwEAIJ40R7lkM5zckRZuPvcXpnjxCscKTg==
+X-Received: by 2002:ac8:5a84:0:b0:3ef:31c4:c8da with SMTP id c4-20020ac85a84000000b003ef31c4c8damr24481752qtc.50.1682356176434;
+        Mon, 24 Apr 2023 10:09:36 -0700 (PDT)
+Received: from localhost.localdomain (bras-base-kntaon1618w-grc-29-174-95-194-35.dsl.bell.ca. [174.95.194.35])
+        by smtp.gmail.com with ESMTPSA id r7-20020ac87ee7000000b003edfb5d7637sm3761509qtc.73.2023.04.24.10.09.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Apr 2023 10:09:35 -0700 (PDT)
+From:   Victor Nogueira <victor@mojatatu.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, kernel@mojatatu.com,
+        Victor Nogueira <victor@mojatatu.com>
+Subject: [PATCH net v2] net/sched: act_mirred: Add carrier check
+Date:   Mon, 24 Apr 2023 17:08:32 +0000
+Message-Id: <20230424170832.549298-1-victor@mojatatu.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20230420145041.508434-1-gilad9366@gmail.com> <20230420145041.508434-5-gilad9366@gmail.com>
- <ZEFr1M0PDziB2c9g@google.com> <da23eb41-f3b6-16cb-def7-c87388c55423@gmail.com>
-In-Reply-To: <da23eb41-f3b6-16cb-def7-c87388c55423@gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Mon, 24 Apr 2023 10:06:24 -0700
-Message-ID: <CAKH8qBtQepoFJxYKJCm7GxxLpK8C7ghPdghSyTmo+4pnL2jn2w@mail.gmail.com>
-Subject: Re: [PATCH bpf,v2 4/4] selftests/bpf: Add tc_socket_lookup tests
-To:     Gilad Sever <gilad9366@gmail.com>
-Cc:     dsahern@kernel.org, martin.lau@linux.dev, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, mykolal@fb.com,
-        shuah@kernel.org, hawk@kernel.org, joe@wand.net.nz,
-        eyal.birger@gmail.com, shmulik.ladkani@gmail.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 23, 2023 at 2:31=E2=80=AFAM Gilad Sever <gilad9366@gmail.com> w=
-rote:
->
->
-> On 20/04/2023 19:44, Stanislav Fomichev wrote:
-> > On 04/20, Gilad Sever wrote:
-> >> Verify that socket lookup via TC with all BPF APIs is VRF aware.
-> >>
-> >> Signed-off-by: Gilad Sever <gilad9366@gmail.com>
-> >> ---
-> >> v2: Fix build by initializing vars with -1
-> >> ---
-> >>   .../bpf/prog_tests/tc_socket_lookup.c         | 341 ++++++++++++++++=
-++
-> >>   .../selftests/bpf/progs/tc_socket_lookup.c    |  73 ++++
-> >>   2 files changed, 414 insertions(+)
-> >>   create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_socket_=
-lookup.c
-> >>   create mode 100644 tools/testing/selftests/bpf/progs/tc_socket_looku=
-p.c
-> >>
-> >> diff --git a/tools/testing/selftests/bpf/prog_tests/tc_socket_lookup.c=
- b/tools/testing/selftests/bpf/prog_tests/tc_socket_lookup.c
-> >> new file mode 100644
-> >> index 000000000000..5dcaf0ea3f8c
-> >> --- /dev/null
-> >> +++ b/tools/testing/selftests/bpf/prog_tests/tc_socket_lookup.c
-> >> @@ -0,0 +1,341 @@
-> >> +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-> >> +
-> >> +/*
-> >> + * Topology:
-> >> + * ---------
-> >> + *     NS1 namespace         |   NS2 namespace
-> >> + *                       |
-> >> + *     +--------------+      |   +--------------+
-> >> + *     |    veth01    |----------|    veth10    |
-> >> + *     | 172.16.1.100 |      |   | 172.16.1.200 |
-> >> + *     |     bpf      |      |   +--------------+
-> >> + *     +--------------+      |
-> >> + *      server(UDP/TCP)      |
-> >> + *  +-------------------+    |
-> >> + *  |        vrf1       |    |
-> >> + *  |  +--------------+ |    |   +--------------+
-> >> + *  |  |    veth02    |----------|    veth20    |
-> >> + *  |  | 172.16.2.100 | |    |   | 172.16.2.200 |
-> >> + *  |  |     bpf      | |    |   +--------------+
-> >> + *  |  +--------------+ |    |
-> >> + *  |   server(UDP/TCP) |    |
-> >> + *  +-------------------+    |
-> >> + *
-> >> + * Test flow
-> >> + * -----------
-> >> + *  The tests verifies that socket lookup via TC is VRF aware:
-> >> + *  1) Creates two veth pairs between NS1 and NS2:
-> >> + *     a) veth01 <-> veth10 outside the VRF
-> >> + *     b) veth02 <-> veth20 in the VRF
-> >> + *  2) Attaches to veth01 and veth02 a program that calls:
-> >> + *     a) bpf_skc_lookup_tcp() with TCP and tcp_skc is true
-> >> + *     b) bpf_sk_lookup_tcp() with TCP and tcp_skc is false
-> >> + *     c) bpf_sk_lookup_udp() with UDP
-> >> + *     The program stores the lookup result in bss->lookup_status.
-> >> + *  3) Creates a socket TCP/UDP server in/outside the VRF.
-> >> + *  4) The test expects lookup_status to be:
-> >> + *     a) 0 from device in VRF to server outside VRF
-> >> + *     b) 0 from device outside VRF to server in VRF
-> >> + *     c) 1 from device in VRF to server in VRF
-> >> + *     d) 1 from device outside VRF to server outside VRF
-> >> + */
-> >> +
-> >> +#include <net/if.h>
-> >> +
-> >> +#include "test_progs.h"
-> >> +#include "network_helpers.h"
-> >> +#include "tc_socket_lookup.skel.h"
-> >> +
-> >> +#define NS1 "tc_socket_lookup_1"
-> >> +#define NS2 "tc_socket_lookup_2"
-> >> +
-> >> +#define IP4_ADDR_VETH01 "172.16.1.100"
-> >> +#define IP4_ADDR_VETH10 "172.16.1.200"
-> >> +#define IP4_ADDR_VETH02 "172.16.2.100"
-> >> +#define IP4_ADDR_VETH20 "172.16.2.200"
-> >> +
-> >> +#define NON_VRF_PORT 5000
-> >> +#define IN_VRF_PORT 5001
-> >> +
-> >> +#define IO_TIMEOUT_SEC      3
-> >> +
-> >> +#define SYS(fmt, ...)                                               \
-> >> +    ({                                                      \
-> >> +            char cmd[1024];                                 \
-> >> +            snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__); \
-> >> +            if (!ASSERT_OK(system(cmd), cmd))               \
-> >> +                    goto fail;                              \
-> >> +    })
-> >> +
-> >> +#define SYS_NOFAIL(fmt, ...)                                        \
-> >> +    ({                                                      \
-> >> +            char cmd[1024];                                 \
-> >> +            snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__); \
-> >> +            system(cmd);                                    \
-> >> +    })
-> > [..]
-> >
-> >> +static int make_socket(int sotype, const char *ip, int port,
-> >> +                   struct sockaddr_storage *addr)
-> >> +{
-> >> +    struct timeval timeo =3D { .tv_sec =3D IO_TIMEOUT_SEC };
-> >> +    int err, fd;
-> >> +
-> >> +    err =3D make_sockaddr(AF_INET, ip, port, addr, NULL);
-> >> +    if (!ASSERT_OK(err, "make_address"))
-> >> +            return -1;
-> >> +
-> >> +    fd =3D socket(AF_INET, sotype, 0);
-> >> +    if (!ASSERT_OK(fd < 0, "socket"))
-> >> +            return -1;
-> >> +
-> >> +    err =3D setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeo, sizeof(ti=
-meo));
-> >> +    if (!ASSERT_OK(err, "setsockopt(SO_SNDTIMEO)"))
-> >> +            goto fail;
-> >> +
-> >> +    err =3D setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(ti=
-meo));
-> >> +    if (!ASSERT_OK(err, "setsockopt(SO_RCVTIMEO)"))
-> >> +            goto fail;
-> >> +
-> >> +    return fd;
-> >> +fail:
-> >> +    close(fd);
-> >> +    return -1;
-> >> +}
-> >> +
-> >> +static int make_server(int sotype, const char *ip, int port, const ch=
-ar *ifname)
-> >> +{
-> >> +    struct sockaddr_storage addr =3D {};
-> >> +    const int one =3D 1;
-> >> +    int err, fd =3D -1;
-> >> +
-> >> +    fd =3D make_socket(sotype, ip, port, &addr);
-> >> +    if (fd < 0)
-> >> +            return -1;
-> >> +
-> >> +    if (sotype =3D=3D SOCK_STREAM) {
-> >> +            err =3D setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one,
-> >> +                             sizeof(one));
-> >> +            if (!ASSERT_OK(err, "setsockopt(SO_REUSEADDR)"))
-> >> +                    goto fail;
-> >> +    }
-> >> +
-> >> +    if (ifname) {
-> >> +            err =3D setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE,
-> >> +                             ifname, strlen(ifname) + 1);
-> >> +            if (!ASSERT_OK(err, "setsockopt(SO_BINDTODEVICE)"))
-> >> +                    goto fail;
-> >> +    }
-> >> +
-> >> +    err =3D bind(fd, (void *)&addr, sizeof(struct sockaddr_in));
-> >> +    if (!ASSERT_OK(err, "bind"))
-> >> +            goto fail;
-> >> +
-> >> +    if (sotype =3D=3D SOCK_STREAM) {
-> >> +            err =3D listen(fd, SOMAXCONN);
-> >> +            if (!ASSERT_OK(err, "listen"))
-> >> +                    goto fail;
-> >> +    }
-> >> +
-> >> +    return fd;
-> >> +fail:
-> >> +    close(fd);
-> >> +    return -1;
-> >> +}
-> > Any reason you're not using start_server from network_helpers.h?
-> > It's because I need to bind the server socket to the VRF device.
+There are cases where the device is adminstratively UP, but operationally 
+down. For example, we have a physical device (Nvidia ConnectX-6 Dx, 25Gbps)
+who's cable was pulled out, here is its ip link output:
 
-I see, thanks, so it's the SO_BINDTODEVICE part. Looks generic enough
-to belong to network_helpers.h. WDYT?
-Does it make sense to extend __start_server to support it? Or have a
-new separate network_helper for this?
+5: ens2f1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether b8:ce:f6:4b:68:35 brd ff:ff:ff:ff:ff:ff
+    altname enp179s0f1np1
+
+As you can see, it's administratively UP but operationally down.
+In this case, sending a packet to this port caused a nasty kernel hang (so
+nasty that we were unable to capture it). Aborting a transmit based on
+operational status (in addition to administrative status) fixes the issue.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+---
+ net/sched/act_mirred.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index ec43764e92e7..0a711c184c29 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -264,7 +264,7 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
+ 		goto out;
+ 	}
+ 
+-	if (unlikely(!(dev->flags & IFF_UP))) {
++	if (unlikely(!(dev->flags & IFF_UP)) || !netif_carrier_ok(dev)) {
+ 		net_notice_ratelimited("tc mirred to Houston: device %s is down\n",
+ 				       dev->name);
+ 		goto out;
+-- 
+2.25.1
+
