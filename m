@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C11326ED603
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 22:15:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50ADF6ED60A
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 22:17:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232537AbjDXUPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 16:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
+        id S232587AbjDXURe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 16:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbjDXUP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 16:15:29 -0400
+        with ESMTP id S232494AbjDXURd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 16:17:33 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5BC5FDC
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 13:15:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2D0526F
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 13:17:32 -0700 (PDT)
 Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1pr2aS-00019X-Ix; Mon, 24 Apr 2023 22:15:00 +0200
+        id 1pr2cX-0001Uq-2a; Mon, 24 Apr 2023 22:17:09 +0200
 Received: from pengutronix.de (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id AF43F1B662C;
-        Mon, 24 Apr 2023 20:14:54 +0000 (UTC)
-Date:   Mon, 24 Apr 2023 22:14:53 +0200
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 263201B6632;
+        Mon, 24 Apr 2023 20:17:07 +0000 (UTC)
+Date:   Mon, 24 Apr 2023 22:17:06 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     Judith Mendez <jm@ti.com>
 Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
@@ -43,16 +43,15 @@ Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
         Rob Herring <robh+dt@kernel.org>,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: Re: [PATCH v2 1/4] can: m_can: Add hrtimer to generate software
- interrupt
-Message-ID: <20230424-canon-primal-ece722b184d4-mkl@pengutronix.de>
+Subject: Re: [PATCH v2 2/4] dt-bindings: net: can: Add poll-interval for MCAN
+Message-ID: <20230424-pessimist-stability-0b86683e469e-mkl@pengutronix.de>
 References: <20230424195402.516-1-jm@ti.com>
- <20230424195402.516-2-jm@ti.com>
+ <20230424195402.516-3-jm@ti.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gzyhhear7eocopqn"
+        protocol="application/pgp-signature"; boundary="4nll47yvmo6txgb2"
 Content-Disposition: inline
-In-Reply-To: <20230424195402.516-2-jm@ti.com>
+In-Reply-To: <20230424195402.516-3-jm@ti.com>
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -67,225 +66,95 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---gzyhhear7eocopqn
+--4nll47yvmo6txgb2
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 24.04.2023 14:53:59, Judith Mendez wrote:
-> Add an hrtimer to MCAN class device. Each MCAN will have its own
-> hrtimer instantiated if there is no hardware interrupt found and
-> poll-interval property is defined in device tree M_CAN node.
->=20
-> The hrtimer will generate a software interrupt every 1 ms. In
-> hrtimer callback, we check if there is a transaction pending by
-> reading a register, then process by calling the isr if there is.
+On 24.04.2023 14:54:00, Judith Mendez wrote:
+> On AM62x SoC, MCANs on MCU domain do not have hardware interrupt
+> routed to A53 Linux, instead they will use software interrupt by
+> hrtimer. To enable timer method, interrupts should be optional so
+> remove interrupts property from required section and introduce
+> poll-interval property.
 >=20
 > Signed-off-by: Judith Mendez <jm@ti.com>
+
+The bindings update should go in before the patch.
+
 > ---
 > Changelog:
 > v2:
-> 	1. Add poll-interval to MCAN class device to check if poll-interval prop=
-ery is
-> 	present in MCAN node, this enables timer polling method.
-> 	2. Add 'polling' flag to MCAN class device to check if a device is using=
- timer
-> 	polling method
-> 	3. Check if both timer polling and hardware interrupt are enabled for a =
-MCAN
-> 	device, default to hardware interrupt mode if both are enabled.
-> 	4. Changed ms_to_ktime() to ns_to_ktime()
-> 	5. Removed newlines, tabs, and restructure if/else section.
+>   1. Add poll-interval property to enable timer polling method
+>   2. Add example using poll-interval property
+>  =20
+>  .../bindings/net/can/bosch,m_can.yaml         | 26 ++++++++++++++++---
+>  1 file changed, 23 insertions(+), 3 deletions(-)
 >=20
->  drivers/net/can/m_can/m_can.c          | 30 ++++++++++++++++++++-----
->  drivers/net/can/m_can/m_can.h          |  5 +++++
->  drivers/net/can/m_can/m_can_platform.c | 31 ++++++++++++++++++++++++--
->  3 files changed, 59 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-> index a5003435802b..33e094f88da1 100644
-> --- a/drivers/net/can/m_can/m_can.c
-> +++ b/drivers/net/can/m_can/m_can.c
-> @@ -23,6 +23,7 @@
->  #include <linux/pinctrl/consumer.h>
->  #include <linux/platform_device.h>
->  #include <linux/pm_runtime.h>
-> +#include <linux/hrtimer.h>
+> diff --git a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml b=
+/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+> index 67879aab623b..1c64c7a0c3df 100644
+> --- a/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+> +++ b/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+> @@ -40,6 +40,10 @@ properties:
+>        - const: int1
+>      minItems: 1
+> =20
+> +  poll-interval:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: Poll interval time in milliseconds.
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-keep the list of includes sorted
-
-> =20
->  #include "m_can.h"
-> =20
-> @@ -1587,6 +1588,11 @@ static int m_can_close(struct net_device *dev)
->  	if (!cdev->is_peripheral)
->  		napi_disable(&cdev->napi);
-> =20
-> +	if (cdev->polling) {
-> +		dev_dbg(cdev->dev, "Disabling the hrtimer\n");
-> +		hrtimer_cancel(&cdev->hrtimer);
-> +	}
-> +
->  	m_can_stop(dev);
->  	m_can_clk_stop(cdev);
->  	free_irq(dev->irq, dev);
-> @@ -1793,6 +1799,18 @@ static netdev_tx_t m_can_start_xmit(struct sk_buff=
- *skb,
->  	return NETDEV_TX_OK;
->  }
-> =20
-> +enum hrtimer_restart hrtimer_callback(struct hrtimer *timer)
-> +{
-> +	struct m_can_classdev *cdev =3D
-> +		container_of(timer, struct m_can_classdev, hrtimer);
-> +
-> +	m_can_isr(0, cdev->net);
-> +
-> +	hrtimer_forward_now(timer, ms_to_ktime(1));
-
-Please create a define for this
+That's not what the code does.
 
 > +
-> +	return HRTIMER_RESTART;
-> +}
+>    clocks:
+>      items:
+>        - description: peripheral clock
+> @@ -122,15 +126,13 @@ required:
+>    - compatible
+>    - reg
+>    - reg-names
+> -  - interrupts
+> -  - interrupt-names
+>    - clocks
+>    - clock-names
+>    - bosch,mram-cfg
+
+Is it possible to specify that you either need "interrupts" and
+"interrupt-names" or "poll-interval"?
+
+> =20
+>  additionalProperties: false
+> =20
+> -examples:
+> +example with interrupts:
+>    - |
+>      #include <dt-bindings/clock/imx6sx-clock.h>
+>      can@20e8000 {
+> @@ -149,4 +151,22 @@ examples:
+>        };
+>      };
+> =20
+> +example with timer polling:
+> +  - |
+> +    #include <dt-bindings/clock/imx6sx-clock.h>
+> +    can@20e8000 {
+> +      compatible =3D "bosch,m_can";
+> +      reg =3D <0x020e8000 0x4000>, <0x02298000 0x4000>;
+> +      reg-names =3D "m_can", "message_ram";
+> +      poll-interval;
+> +      clocks =3D <&clks IMX6SX_CLK_CANFD>,
+> +               <&clks IMX6SX_CLK_CANFD>;
+> +      clock-names =3D "hclk", "cclk";
+> +      bosch,mram-cfg =3D <0x0 0 0 32 0 0 0 1>;
 > +
->  static int m_can_open(struct net_device *dev)
->  {
->  	struct m_can_classdev *cdev =3D netdev_priv(dev);
-> @@ -1827,13 +1845,15 @@ static int m_can_open(struct net_device *dev)
->  		}
-> =20
->  		INIT_WORK(&cdev->tx_work, m_can_tx_work_queue);
-> -
->  		err =3D request_threaded_irq(dev->irq, NULL, m_can_isr,
-> -					   IRQF_ONESHOT,
-> -					   dev->name, dev);
-> -	} else {
-> -		err =3D request_irq(dev->irq, m_can_isr, IRQF_SHARED, dev->name,
-> +					   IRQF_ONESHOT, dev->name, dev);
-> +	} else if (!cdev->polling) {
-> +			err =3D request_irq(dev->irq, m_can_isr, IRQF_SHARED, dev->name,
->  				  dev);
-
-No need to change the indention
-
-> +	} else {
-> +		dev_dbg(cdev->dev, "Start hrtimer\n");
-> +		cdev->hrtimer.function =3D &hrtimer_callback;
-> +		hrtimer_start(&cdev->hrtimer, ms_to_ktime(cdev->poll_interval), HRTIME=
-R_MODE_REL_PINNED);
->  	}
-> =20
->  	if (err < 0) {
-> diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-> index a839dc71dc9b..1ba87eb23f8e 100644
-> --- a/drivers/net/can/m_can/m_can.h
-> +++ b/drivers/net/can/m_can/m_can.h
-> @@ -28,6 +28,7 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/slab.h>
->  #include <linux/uaccess.h>
-> +#include <linux/hrtimer.h>
-
-keep the list of includes sorted
-
-> =20
->  /* m_can lec values */
->  enum m_can_lec_type {
-> @@ -93,6 +94,10 @@ struct m_can_classdev {
->  	int is_peripheral;
-> =20
->  	struct mram_cfg mcfg[MRAM_CFG_NUM];
+> +      can-transceiver {
+> +        max-bitrate =3D <5000000>;
+> +      };
+> +    };
 > +
-> +	struct hrtimer hrtimer;
-> +	u32 poll_interval;
-> +	u8 polling;
-
-bool
-
->  };
-> =20
->  struct m_can_classdev *m_can_class_allocate_dev(struct device *dev, int =
-sizeof_priv);
-> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_c=
-an/m_can_platform.c
-> index 9c1dcf838006..e899c04edc01 100644
-> --- a/drivers/net/can/m_can/m_can_platform.c
-> +++ b/drivers/net/can/m_can/m_can_platform.c
-> @@ -7,6 +7,7 @@
-> =20
->  #include <linux/phy/phy.h>
->  #include <linux/platform_device.h>
-> +#include <linux/hrtimer.h>
-> =20
->  #include "m_can.h"
-> =20
-> @@ -97,11 +98,37 @@ static int m_can_plat_probe(struct platform_device *p=
-dev)
-> =20
->  	addr =3D devm_platform_ioremap_resource_byname(pdev, "m_can");
->  	irq =3D platform_get_irq_byname(pdev, "int0");
-
-use platform_get_irq_byname_optional(), it doesn't print an error
-message.
-
-> -	if (IS_ERR(addr) || irq < 0) {
-> -		ret =3D -EINVAL;
-> +	if (irq =3D=3D -EPROBE_DEFER) {
-> +		ret =3D -EPROBE_DEFER;
->  		goto probe_fail;
->  	}
-> =20
-> +	if (IS_ERR(addr)) {
-> +		ret =3D PTR_ERR(addr);
-> +		goto probe_fail;
-> +	}
-
-please move the error check for "addr" directly after the "addr =3D "
-assignment.
-
-> +
-> +	mcan_class->polling =3D 0;
-
-No need to init as "0"
-
-> +	if (device_property_present(mcan_class->dev, "poll-interval")) {
-> +		mcan_class->polling =3D 1;
-> +	}
-
-No need for the { } here.
-
-> +
-> +	if (!mcan_class->polling && irq < 0) {
-> +		ret =3D -ENODATA;
--ENXIO
-> +		dev_dbg(mcan_class->dev, "Polling not enabled\n");
-
-print a proper error message using dev_err_probe("IRQ %s not found and
-polling not activated\n")
-
-> +		goto probe_fail;
-> +	}
-> +
-> +	if (mcan_class->polling && irq > 0) {
-> +		mcan_class->polling =3D 0;
-> +		dev_dbg(mcan_class->dev, "Polling not enabled, hardware interrupt exis=
-ts\n");
-> +	}
-> +
-> +	if (mcan_class->polling && irq < 0) {
-> +		dev_dbg(mcan_class->dev, "Polling enabled, initialize hrtimer");
-> +		hrtimer_init(&mcan_class->hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_P=
-INNED);
-> +	}
-
-combine both if (mcan_class->polling) into one.
-
-> +
->  	/* message ram could be shared */
->  	res =3D platform_get_resource_byname(pdev, IORESOURCE_MEM, "message_ram=
-");
->  	if (!res) {
+>  ...
 > --=20
 > 2.17.1
 >=20
@@ -299,19 +168,19 @@ Embedded Linux                   | https://www.pengutronix.de |
 Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
 
---gzyhhear7eocopqn
+--4nll47yvmo6txgb2
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRG4zoACgkQvlAcSiqK
-BOilJQf/VuO4TbAJn3uvF6rlMhtngv3OcHQd3ea4G/HmeGBpR74du9qfRRvQDofD
-Q9cmIgxMCC8Iw4UsRbWWgF4044zOOKhO2J9EsCnAEA2qce1n4FwyrBFxVKG6AFCE
-9mbdbLDgxaevO6oMZlfj2ztGLPcg7MjAJFxkV6GBxZ250S+fy7felidJ7VbYVD/3
-QOTb2lS2oTL++qNgTrN5jasRjwAR3b1W6Pm58CyRcviAZv0sfZ6qqOdm0sFhkuzr
-Oya9y76BTSORjyzRVDzsyKk4cD0Mrw58TppNVEH43vY+x/qKUyf6bQRjm1Dsxvkz
-ygLUMeJNMrXajkr9F/LLchFYWA2Ryw==
-=wS/Z
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRG478ACgkQvlAcSiqK
+BOh3iQgAhiH/Oo1tJ2SG+P1STaBF17i+tU9zbvB8eHpMdMUAM9LG9a04Mxe67Mi/
+Wn93/J3l4VZvFt/Xv9Jn7zGbh8mraj2xhrtrsIjjjDsmuvEHMy2nDSEduZ162hfg
+aMYku2xpo0znEwL4sZT9egnDgwI55t770t4kLIjGhrojc3//QH7pxDsXNl+oczIl
+82RV/kJd5eWGHDW/zxIS9lq7jevPt6x05lAXe1jINL5uLgzmcyJf3q8h/1znOlH9
+KJo6rhQ7pyM8z3rqkNz+Ro3HB5O92QHAI4uGpHqR5Y4CJ5pozk+3SRg1Vbiq6tdc
+VVGxrT4kHRnjlx+yCDnW1vwAYMgL4g==
+=lyyE
 -----END PGP SIGNATURE-----
 
---gzyhhear7eocopqn--
+--4nll47yvmo6txgb2--
