@@ -2,240 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ACDB6ED037
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 16:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3296ED058
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 16:30:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231687AbjDXOVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 10:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
+        id S231250AbjDXOaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 10:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbjDXOVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 10:21:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368191FEF
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 07:20:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682346057;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=//jrELvgx6BR5HUm/M7sZNnl5oKgho21nLGL8LRITlQ=;
-        b=DREqNyNFMMXnrlfxybCQO4bIGerozNhrbeO2wbswFUq2GhaznPTEB3794AB5NUC6GknsCj
-        gXgze/MgDK72iKsFKgO/FJBMHImb25YSxDkJDqTxLAR5WqEApHxFrsYeoqMf6YyMVPa7wd
-        m+fkt7oBKPb7OJhi7xnoPiX85+BXCM8=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-653-fYHa7EMbNBKuxbuk6st1tA-1; Mon, 24 Apr 2023 10:20:56 -0400
-X-MC-Unique: fYHa7EMbNBKuxbuk6st1tA-1
-Received: by mail-ed1-f72.google.com with SMTP id 4fb4d7f45d1cf-50670cfe17eso5184414a12.0
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 07:20:55 -0700 (PDT)
+        with ESMTP id S229907AbjDXOaC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 10:30:02 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB66D1708;
+        Mon, 24 Apr 2023 07:30:00 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id 5b1f17b1804b1-3f19323259dso34206845e9.3;
+        Mon, 24 Apr 2023 07:30:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682346599; x=1684938599;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ALXzGJ5JvLTy0+4F2uq1xRRPXqqALEamM+dBHIwr4DU=;
+        b=jN6OPjaHPR+35RVu5HjWm806ZMgHf01oApnLVzOoITrD4+H3+33xZ6dZ5oRf6qOZUP
+         D8hA3Wt44+/uTDeVRl8Ov5vr+CJfATx0OLo0X1EW5HpwpfUNG+UJik3wBieB7KEjsimQ
+         y1HCZNLKGyA7om63+beqZU93mzJXtP5mOtlZ6xytdf2q3oM+pAkAGAUnopDzvWh322W1
+         4P+KbO6x4luVrUwPFIY3Kz+NJFvZi9mRoQERFsgyWpa7xNiB+Kl9hiYh2UGYR8newEsb
+         nNPRnYDg7clTomT3WnhQfQKHmrFMU6VtI4ds5fP3IX5FZTm3u1VX+ZmjErAMXFNfLvTc
+         Gtzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682346053; x=1684938053;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=//jrELvgx6BR5HUm/M7sZNnl5oKgho21nLGL8LRITlQ=;
-        b=OO9rDuBvjbFNY278G8YtIQBf4u2kphj57w3uXWVC7XGLgV9TU6JqCt0s9bD42cJ0f6
-         KELyZ94t47Io0l9Wgntkp7w5o5Z+YihumZ+IsUy6Ma9slBPBRNri0CF7lJQW0IYLi3Su
-         Iwmq+UJa8MRFApXsv0Qr0o3P699eu05Li6Wvcm7rilvoD1ENCxkbqpuYzuRuT53eaMxY
-         /Uq++3vqREymvc9DVkhwVrxx7Lspjsj/PMOFn0FzYnCbiaIS7gDx69P4rsGZI3j2VuM8
-         JtINNPzQf91F1TAf2VX7EX9zklFAqAbaqkkaAInqaBDWEBqVPfIdSAiQxTU7fBDPhYas
-         08Bw==
-X-Gm-Message-State: AAQBX9cTP6vSYYKlOOKhIta62nhwd1oMN7l07akrcVAOLPL9nnNvJ83T
-        1mtsU+flSUEDXt0hq4eT27pnHPDPI8VP1GSgmK7wPDT6LaJ8a9WaT67ZYfqlbB7F8Pb+7tyxmvV
-        Njp1NC8+f0ZOUkgK3
-X-Received: by 2002:a50:fa89:0:b0:4fa:b302:84d4 with SMTP id w9-20020a50fa89000000b004fab30284d4mr12483369edr.13.1682346053664;
-        Mon, 24 Apr 2023 07:20:53 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bc5OYEjhC9pT6b8xkC8b7wpOhe6MoG/ZhEbFBzK8m6qHfqOd6kL4Ojs2bU7cUsC459jN59kg==
-X-Received: by 2002:a50:fa89:0:b0:4fa:b302:84d4 with SMTP id w9-20020a50fa89000000b004fab30284d4mr12483342edr.13.1682346053356;
-        Mon, 24 Apr 2023 07:20:53 -0700 (PDT)
-Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id o25-20020aa7d3d9000000b00509bd19b869sm3666008edr.48.2023.04.24.07.20.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Apr 2023 07:20:52 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <622a8fa6-ec07-c150-250b-5467b0cddb0c@redhat.com>
-Date:   Mon, 24 Apr 2023 16:20:51 +0200
+        d=1e100.net; s=20221208; t=1682346599; x=1684938599;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ALXzGJ5JvLTy0+4F2uq1xRRPXqqALEamM+dBHIwr4DU=;
+        b=ByQe8uW8hNfq7uYCLF8fGjkAL/ZJDy4u+j4MsyP69zgWvp8O/uctIleoMvcck6KEYf
+         x5/OxMB1BHdjGkrf4wqgA2sTYbVnYU4s+a22oil/ju15f3xqK2L0d35ZNn0ttQpsuCAo
+         O2iuVRWz1Jow+fNgWMX5flycrvOuzYsLBdgW7tpH5yHAekE8y55LRxRAGH72cSYOhcqM
+         fnlgwNNJeugjOKZaRTCzxcTEPkpzBLsESyJVViweI57B2WpDPAsTE8R9wIsIzSkhffci
+         aTCoq0Huo8zhg93b95jOSRuvZGVNtiMxIrnGcKkxzM7eLhMbZHPlVf8CUqJ04nSOAxSy
+         ixRg==
+X-Gm-Message-State: AAQBX9fPmuFe46T++835Srvcs1VLtQ4zu1hGPLX8wcBSYme8/IdzLwZG
+        nsNlvPkDEjwpXyd2OtoAZyw=
+X-Google-Smtp-Source: AKy350b0rBDMlMKwXgslvzplbT1eTTOv7dxTLMhpCvOuA79NqOaO/7KznoKPY9xRsZr4W2xUpEdJIw==
+X-Received: by 2002:a05:600c:2214:b0:3f1:98bd:acec with SMTP id z20-20020a05600c221400b003f198bdacecmr5257735wml.11.1682346598884;
+        Mon, 24 Apr 2023 07:29:58 -0700 (PDT)
+Received: from localhost (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
+        by smtp.gmail.com with ESMTPSA id y21-20020a05600c365500b003f182a10106sm12424385wmq.8.2023.04.24.07.29.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Apr 2023 07:29:57 -0700 (PDT)
+Date:   Mon, 24 Apr 2023 15:29:57 +0100
+From:   Lorenzo Stoakes <lstoakes@gmail.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Christoph Hellwig <hch@infradead.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>
+Subject: Re: [PATCH v2] mm/gup: disallow GUP writing to file-backed mappings
+ by default
+Message-ID: <cd488979-d257-42b9-937f-470cc3c57f5e@lucifer.local>
+References: <c8ee7e02d3d4f50bb3e40855c53bda39eec85b7d.1682321768.git.lstoakes@gmail.com>
+ <ZEZPXHN4OXIYhP+V@infradead.org>
+ <90a54439-5d30-4711-8a86-eba816782a66@lucifer.local>
+ <ZEZ117OMCi0dFXqY@nvidia.com>
+ <c8fff8b3-ead6-4f52-bf17-f2ef2e752b57@lucifer.local>
+ <ZEaGjad50lqRNTWD@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        yoong.siang.song@intel.com, intel-wired-lan@lists.osuosl.org,
-        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
-        edumazet@google.com, hawk@kernel.org, davem@davemloft.net
-Subject: Re: [PATCH bpf-next V2 1/5] igc: enable and fix RX hash usage by
- netstack
-Content-Language: en-US
-To:     John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
-        <toke@redhat.com>, Tony Nguyen <anthony.l.nguyen@intel.com>
-References: <168182460362.616355.14591423386485175723.stgit@firesoul>
- <168182464270.616355.11391652654430626584.stgit@firesoul>
- <644544b3206f0_19af02085e@john.notmuch>
-In-Reply-To: <644544b3206f0_19af02085e@john.notmuch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZEaGjad50lqRNTWD@nvidia.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Apr 24, 2023 at 10:39:25AM -0300, Jason Gunthorpe wrote:
+> On Mon, Apr 24, 2023 at 01:38:49PM +0100, Lorenzo Stoakes wrote:
+>
+> > I was being fairly conservative in that list, though we certainly need to
+> > set the flag for /proc/$pid/mem and ptrace to avoid breaking this
+> > functionality (I observed breakpoints breaking without it which obviously
+> > is a no go :). I'm not sure if there's a more general way we could check
+> > for this though?
+>
+> More broadly we should make sure these usages of GUP safe somehow so
+> that it can reliably write to those types of pages without breaking
+> the current FS contract..
+>
+> I forget exactly, but IIRC, don't you have to hold some kind of page
+> spinlock while writing to the page memory?
+>
 
+I think perhaps you're thinking of the mm->mmap_lock? Which will be held
+for the FOLL_GET cases and simply prevent the VMA from disappearing below
+us but not do much else.
 
-On 23/04/2023 16.46, John Fastabend wrote:
-> Jesper Dangaard Brouer wrote:
->> When function igc_rx_hash() was introduced in v4.20 via commit 0507ef8a0372
->> ("igc: Add transmit and receive fastpath and interrupt handlers"), the
->> hardware wasn't configured to provide RSS hash, thus it made sense to not
->> enable net_device NETIF_F_RXHASH feature bit.
->>
->> The NIC hardware was configured to enable RSS hash info in v5.2 via commit
->> 2121c2712f82 ("igc: Add multiple receive queues control supporting"), but
->> forgot to set the NETIF_F_RXHASH feature bit.
->>
->> The original implementation of igc_rx_hash() didn't extract the associated
->> pkt_hash_type, but statically set PKT_HASH_TYPE_L3. The largest portions of
->> this patch are about extracting the RSS Type from the hardware and mapping
->> this to enum pkt_hash_types. This was based on Foxville i225 software user
->> manual rev-1.3.1 and tested on Intel Ethernet Controller I225-LM (rev 03).
->>
->> For UDP it's worth noting that RSS (type) hashing have been disabled both for
->> IPv4 and IPv6 (see IGC_MRQC_RSS_FIELD_IPV4_UDP + IGC_MRQC_RSS_FIELD_IPV6_UDP)
->> because hardware RSS doesn't handle fragmented pkts well when enabled (can
->> cause out-of-order). This results in PKT_HASH_TYPE_L3 for UDP packets, and
->> hash value doesn't include UDP port numbers. Not being PKT_HASH_TYPE_L4, have
->> the effect that netstack will do a software based hash calc calling into
->> flow_dissect, but only when code calls skb_get_hash(), which doesn't
->> necessary happen for local delivery.
->>
->> For QA verification testing I wrote a small bpftrace prog:
->>   [0] https://github.com/xdp-project/xdp-project/blob/master/areas/hints/monitor_skb_hash_on_dev.bt
->>
->> Fixes: 2121c2712f82 ("igc: Add multiple receive queues control supporting")
->> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->> ---
->>   drivers/net/ethernet/intel/igc/igc.h      |   28 ++++++++++++++++++++++++++
->>   drivers/net/ethernet/intel/igc/igc_main.c |   31 +++++++++++++++++++++++++----
->>   2 files changed, 55 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
->> index 34aebf00a512..f7f9e217e7b4 100644
->> --- a/drivers/net/ethernet/intel/igc/igc.h
->> +++ b/drivers/net/ethernet/intel/igc/igc.h
->> @@ -13,6 +13,7 @@
->>   #include <linux/ptp_clock_kernel.h>
->>   #include <linux/timecounter.h>
->>   #include <linux/net_tstamp.h>
->> +#include <linux/bitfield.h>
->>   
->>   #include "igc_hw.h"
->>   
->> @@ -311,6 +312,33 @@ extern char igc_driver_name[];
->>   #define IGC_MRQC_RSS_FIELD_IPV4_UDP	0x00400000
->>   #define IGC_MRQC_RSS_FIELD_IPV6_UDP	0x00800000
->>   
->> +/* RX-desc Write-Back format RSS Type's */
->> +enum igc_rss_type_num {
->> +	IGC_RSS_TYPE_NO_HASH		= 0,
->> +	IGC_RSS_TYPE_HASH_TCP_IPV4	= 1,
->> +	IGC_RSS_TYPE_HASH_IPV4		= 2,
->> +	IGC_RSS_TYPE_HASH_TCP_IPV6	= 3,
->> +	IGC_RSS_TYPE_HASH_IPV6_EX	= 4,
->> +	IGC_RSS_TYPE_HASH_IPV6		= 5,
->> +	IGC_RSS_TYPE_HASH_TCP_IPV6_EX	= 6,
->> +	IGC_RSS_TYPE_HASH_UDP_IPV4	= 7,
->> +	IGC_RSS_TYPE_HASH_UDP_IPV6	= 8,
->> +	IGC_RSS_TYPE_HASH_UDP_IPV6_EX	= 9,
->> +	IGC_RSS_TYPE_MAX		= 10,
->> +};
->> +#define IGC_RSS_TYPE_MAX_TABLE		16
->> +#define IGC_RSS_TYPE_MASK		GENMASK(3,0) /* 4-bits (3:0) = mask 0x0F */
->> +
->> +/* igc_rss_type - Rx descriptor RSS type field */
->> +static inline u32 igc_rss_type(const union igc_adv_rx_desc *rx_desc)
->> +{
->> +	/* RSS Type 4-bits (3:0) number: 0-9 (above 9 is reserved)
->> +	 * Accessing the same bits via u16 (wb.lower.lo_dword.hs_rss.pkt_info)
->> +	 * is slightly slower than via u32 (wb.lower.lo_dword.data)
->> +	 */
->> +	return le32_get_bits(rx_desc->wb.lower.lo_dword.data, IGC_RSS_TYPE_MASK);
->> +}
->> +
->>   /* Interrupt defines */
->>   #define IGC_START_ITR			648 /* ~6000 ints/sec */
->>   #define IGC_4K_ITR			980
->> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
->> index 1c4676882082..bfa9768d447f 100644
->> --- a/drivers/net/ethernet/intel/igc/igc_main.c
->> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
->> @@ -1690,14 +1690,36 @@ static void igc_rx_checksum(struct igc_ring *ring,
->>   		   le32_to_cpu(rx_desc->wb.upper.status_error));
->>   }
->>   
->> +/* Mapping HW RSS Type to enum pkt_hash_types */
->> +static const enum pkt_hash_types igc_rss_type_table[IGC_RSS_TYPE_MAX_TABLE] = {
->> +	[IGC_RSS_TYPE_NO_HASH]		= PKT_HASH_TYPE_L2,
->> +	[IGC_RSS_TYPE_HASH_TCP_IPV4]	= PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_IPV4]	= PKT_HASH_TYPE_L3,
->> +	[IGC_RSS_TYPE_HASH_TCP_IPV6]	= PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_IPV6_EX]	= PKT_HASH_TYPE_L3,
->> +	[IGC_RSS_TYPE_HASH_IPV6]	= PKT_HASH_TYPE_L3,
->> +	[IGC_RSS_TYPE_HASH_TCP_IPV6_EX] = PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_UDP_IPV4]	= PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_UDP_IPV6]	= PKT_HASH_TYPE_L4,
->> +	[IGC_RSS_TYPE_HASH_UDP_IPV6_EX] = PKT_HASH_TYPE_L4,
->> +	[10] = PKT_HASH_TYPE_NONE, /* RSS Type above 9 "Reserved" by HW  */
->> +	[11] = PKT_HASH_TYPE_NONE, /* keep array sized for SW bit-mask   */
->> +	[12] = PKT_HASH_TYPE_NONE, /* to handle future HW revisons       */
->> +	[13] = PKT_HASH_TYPE_NONE,
->> +	[14] = PKT_HASH_TYPE_NONE,
->> +	[15] = PKT_HASH_TYPE_NONE,
->> +};
->> +
->>   static inline void igc_rx_hash(struct igc_ring *ring,
->>   			       union igc_adv_rx_desc *rx_desc,
->>   			       struct sk_buff *skb)
->>   {
->> -	if (ring->netdev->features & NETIF_F_RXHASH)
->> -		skb_set_hash(skb,
->> -			     le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
->> -			     PKT_HASH_TYPE_L3);
->> +	if (ring->netdev->features & NETIF_F_RXHASH) {
->> +		u32 rss_hash = le32_to_cpu(rx_desc->wb.lower.hi_dword.rss);
->> +		u32 rss_type = igc_rss_type(rx_desc);
->> +
->> +		skb_set_hash(skb, rss_hash, igc_rss_type_table[rss_type]);
-> 
-> Just curious why not copy the logic from the other driver fms10k, ice, ect.
-> 
-> 	skb_set_hash(skb, le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
-> 		     (IXGBE_RSS_L4_TYPES_MASK & (1ul << rss_type)) ?
-> 		     PKT_HASH_TYPE_L4 : PKT_HASH_TYPE_L3);
+> So, users that do this, or can be fixed to do this, can get file
+> backed pages. It suggests that a flag name is more like
+> FOLL_CALLER_USES_FILE_WRITE_LOCKING
+>
 
-Detail: This code mis-categorize (e.g. ARP) PKT_HASH_TYPE_L2 as
-PKT_HASH_TYPE_L3, but as core reduces this further to one SKB bit, it
-doesn't really matter.
+As stated above, I'm not sure what locking you're referring to, but seems
+to me that FOLL_GET already implies what you're thinking?
 
-> avoiding the table logic. Do the driver folks care?
+I wonder whether we should do this check purely for FOLL_PIN to be honest?
+As this indicates medium to long-term access without mmap_lock held. This
+would exclude the /proc/$pid/mem and ptrace paths which use gup_remote().
 
-The define IXGBE_RSS_L4_TYPES_MASK becomes the "table" logic as a 1-bit
-true/false table.  It is a more compact table, let me know if this is
-preferred.
+That and a very specific use of uprobes are the only places that use
+FOLL_GET in this instance and each of them are careful in any case to
+handle setting the dirty page flag.
 
-Yes, it is really upto driver maintainer people to decide, what code is
-preferred ?
+All PUP cases that do not specify FOLL_LONGTERM also do this, so we could
+atually go so far as to reduce the patch to simply performing the
+vma_wants_writenotify() check if (FOLL_PIN | FOLL_LONGTERM) is specified,
+which covers the io_uring case.
 
---Jesper
+Alternatively if we wanted to be safer, we could add a FOLL_ALLOW_FILE_PIN
+that is checked on FOLL_PIN and ignored on FOLL_LONGTERM?
 
+> > I wouldn't be totally opposed to dropping it for RDMA too, because I
+> > suspect accessing file-backed mappings for that is pretty iffy.
+> >
+> > Do you have a sense of which in the list you feel could be pared back?
+>
+> Anything using FOLL_LONGTERM should not set the flag, GUP should even
+> block the combination.
+
+OK
+
+>
+> And we need to have in mind that the flag indicates the code is
+> buggy, so if you set it then we should understand how is that caller
+> expected to be fixed.
+>
+> Jason
+
+I think we are working towards a much simpler solution in any case!
