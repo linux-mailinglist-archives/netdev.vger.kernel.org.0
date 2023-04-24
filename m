@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D25516EC6A5
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 09:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A74376EC6AC
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 09:01:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230431AbjDXHAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 03:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33018 "EHLO
+        id S231127AbjDXHBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 03:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbjDXHAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 03:00:11 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A2410C
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 00:00:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=Gc0hEj1SHp5x4qDYLRuYO18kIcpmAupIcPP+XWlqNMA=;
-        t=1682319610; x=1683529210; b=JJUhDRymsfMdZRMOYcfM8V1bFtt0BGHbHKn3q7q1XikHIYo
-        nWshVfY1gCQ5gkaLMth3QCRbun5/4NwS7J/4WjtxQQHKUC26IzvfLalCdfhP7zv248zsb7OPM5OFO
-        k/TVBVCeT1ug0N6yJNgfMZuf839v9MSPOB/rJEfyeYnoCk9isy+oLZX4i7hAtsSsScRHD/WnSQb7A
-        Pohutw+Zp6p7zA3rT1FcMdU3R2Svz4tyxmY/To8sN7AAf29yAN/NmAjaC5jbzKwpHPijkbWMFKBvd
-        NPb0R6sDPnvqIlKMk7t8eSBQa/eGPIb7k6pseyUN01ZSqYDMEa84rscZa9fKLDvw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1pqqB0-0078Hx-32;
-        Mon, 24 Apr 2023 08:59:55 +0200
-Message-ID: <030b67dad5a96685f984082fd8fda08dfe0be985.camel@sipsolutions.net>
-Subject: Re: [PATCH v3 net] netlink: Use copy_to_user() for optval in
- netlink_getsockopt().
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     David Ahern <dsahern@gmail.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Patrick McHardy <kaber@trash.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Christophe Ricard <christophe-h.ricard@st.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Brad Spencer <bspencer@blackberry.com>
-Date:   Mon, 24 Apr 2023 08:59:53 +0200
-In-Reply-To: <226bfa8b-afe1-179a-5763-376e80ebe038@gmail.com>
-References: <20230421185255.94606-1-kuniyu@amazon.com>
-         <226bfa8b-afe1-179a-5763-376e80ebe038@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        with ESMTP id S231164AbjDXHBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 03:01:42 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21D7610C
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 00:01:41 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id a640c23a62f3a-94f3cd32799so732517766b.0
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 00:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1682319699; x=1684911699;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cAMolMF/0A91B5GkAOKhgDLGZThujf5CyOxv40ltXw0=;
+        b=J5lj6XRZGCkvCTcF7VnaYV56c40TbbkAkmFxrRXNDwdfZPsZuisqBUZWPmwZD6af3B
+         Y8pe+xTQ2L2nYJrYpAzJ4ZZlWHEWlWHtGUUhe3g3mLjohIUfDEpieOkWGk+WrqpYnvbR
+         uaf0M2ON09K6KIbkhzo4NJ7C9KQKaPB984mpJpUI+uLiQu7qFdadX3uij+4ktKkWs7Sq
+         FhxILPn7Tcx28lko6wnyYKkO4r6Zb0JLLpcqwsjVoCdPbdG4x8UbV7eLy11Ty6KUnDv7
+         +rq8q6NTyiyUGMdECysXQrhuGip8YzkeAgzZGf4nrHd9rgEDPdaSDTLTS5SCiTdAp+dZ
+         e+hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682319699; x=1684911699;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cAMolMF/0A91B5GkAOKhgDLGZThujf5CyOxv40ltXw0=;
+        b=EGC7ZsqPwWvwYiIzw48x9O8DU4Pnjb6qG74bGPooYzj+7lLAEijowZVteQvdgucELR
+         RaMNW+gAikNlKoh+7V6qSypfSgKQGkyLz04y1lZ2/k1GkaTXRd2Rl+dxPlsvLkCd4/ma
+         Pa4fGRenN3ibxb7FQWbsXZ4GHlQdf3VZl0cSQ9S2CWu/vYazn6svlc1CjGCyqTz1JUaS
+         p51BcNXhqXnR/Eur2LKoXWfGVt0QZgyrZB7/3onB8b8OpWsoxPgC6wGiJkSM32xLDWyh
+         uJZ4xIQysDWrlT924EqduIcQ3u+aJGrNrVzUV8KA+pqDTua5KckP8uWjBnlpBUugvdTr
+         gTAg==
+X-Gm-Message-State: AAQBX9e3IcKiWtEEzz3o6L310XaFE2ahzSN7fsNpA95/62ZzmCM7Iumd
+        VJaZJVGoDTjpemOZ5EYou28/NmY+d5QLLTnXn2w=
+X-Google-Smtp-Source: AKy350aDLD/mZWyW4UWiZOr+Tv9jOTXgUlnhG5JdEneUkzO4rI9t9amSpsZLJGzNXSZ6V4sTbrorkw==
+X-Received: by 2002:a17:906:5904:b0:94f:928a:af0f with SMTP id h4-20020a170906590400b0094f928aaf0fmr8529727ejq.47.1682319699600;
+        Mon, 24 Apr 2023 00:01:39 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:fcdb:bf53:d053:3a52? ([2a02:810d:15c0:828:fcdb:bf53:d053:3a52])
+        by smtp.gmail.com with ESMTPSA id qp24-20020a170907207800b00882f9130eafsm5159020ejb.26.2023.04.24.00.01.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Apr 2023 00:01:39 -0700 (PDT)
+Message-ID: <47e8113d-39ad-cf18-a763-89ee883da233@linaro.org>
+Date:   Mon, 24 Apr 2023 09:01:38 +0200
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH] drivers: nfc: nfcsim: remove return value check of
+ `dev_dir`
+Content-Language: en-US
+To:     Jianuo Kuang <u202110722@hust.edu.cn>,
+        Thierry Escande <thierry.escande@collabora.com>,
+        Samuel Ortiz <sameo@linux.intel.com>
+Cc:     hust-os-kernel-patches@googlegroups.com,
+        Dongliang Mu <dzm91@hust.edu.cn>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230424024140.34607-1-u202110722@hust.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230424024140.34607-1-u202110722@hust.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2023-04-22 at 15:57 +0000, David Ahern wrote:
-> On 4/21/23 12:52 PM, Kuniyuki Iwashima wrote:
-> > diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-> > index f365dfdd672d..9b6eb28e6e94 100644
-> > --- a/net/netlink/af_netlink.c
-> > +++ b/net/netlink/af_netlink.c
-> > @@ -1742,7 +1742,8 @@ static int netlink_getsockopt(struct socket *sock=
-, int level, int optname,
-> >  {
-> >       struct sock *sk =3D sock->sk;
-> >       struct netlink_sock *nlk =3D nlk_sk(sk);
-> > -     int len, val, err;
-> > +     unsigned int flag;
-> > +     int len, val;
->=20
-> len is not initialized here ...
->=20
-> >=20
-> >       if (level !=3D SOL_NETLINK)
-> >               return -ENOPROTOOPT;
-> > @@ -1754,39 +1755,17 @@ static int netlink_getsockopt(struct socket *so=
-ck, int level, int optname,
-> >=20
-> >       switch (optname) {
+On 24/04/2023 04:41, Jianuo Kuang wrote:
+> Smatch complains that:
+> nfcsim_debugfs_init_dev() warn: 'dev_dir' is an error pointer or valid
+> 
+> According to the documentation of the debugfs_create_dir() function,
+> there is no need to check the return value of this function.
+> Just delete the dead code.
+> 
+> Fixes: f9ac6273e5b8 ("NFC: nfcsim: Add support for sysfs control entry")
+> Signed-off-by: Jianuo Kuang <u202110722@hust.edu.cn>
+> Reviewed-by: Dongliang Mu <dzm91@hust.edu.cn>
+> ---
 
-It's initialized in the context here:
 
-        if (get_user(len, optlen))
-                return -EFAULT;
-        if (len < 0)
-                return -EINVAL;
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> >       default:
-> > -             err =3D -ENOPROTOOPT;
-> > +             return -ENOPROTOOPT;
-> >       }
-> > -     return err;
-> > +
-> > +     if (len < sizeof(int))
->=20
-> and then check len here.
+Best regards,
+Krzysztof
 
-so that's OK. Note how the checks that were there before also were
-before the len assignments :)
-
-> > +             return -EINVAL;
->=20
-> seems like this chunk (len < sizeof(int)) is not needed.
-
-It is, if we get here we need at least the int size for the flags.
-
-johannes
