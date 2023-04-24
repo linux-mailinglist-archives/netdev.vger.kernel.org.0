@@ -2,77 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23EDA6EC953
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 11:46:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86A576EC9C4
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 12:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231329AbjDXJqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 05:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43768 "EHLO
+        id S231325AbjDXKGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 06:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231156AbjDXJqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 05:46:30 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26F93C2D
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 02:45:52 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id a640c23a62f3a-94f0dd117dcso584107666b.3
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 02:45:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1682329549; x=1684921549;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6MFXkgVpCP/1bbpvk371W/p2qFNZ62l76LxqdbpjYPw=;
-        b=pexz5snrTLVLUJy9+1Rkx5LnVnA8IFqCUFnbiAaGiUem0VZX6DCBXEKWlPuZgbn2Jh
-         AgeZpyprm5FqCGnZmORSIyuzmjohn50cupUPdxbAp5RqpcjFm4a5Pl8SYa6zaG1Ehp5x
-         G0ynkphF5Hi1KrltzR+1/uQOEO+AqlKWuvnBvNaFhKX76GdVMyRtJxVnNXETemUOU6rY
-         XBvT5qgmEMrr2QMT0JWpHQznbtvrF87rkakUNOfv624N9Wc7r6ss+hGNkV+qAd2Vgtyx
-         58xJaXQJTtdWTlbx88QdRpew+LISMVQqhZiKjYGJOZDtFrRqTfuTEPc+a+PS61K7Vs38
-         4cog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682329549; x=1684921549;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6MFXkgVpCP/1bbpvk371W/p2qFNZ62l76LxqdbpjYPw=;
-        b=IHJBtZwGp9fwhxKd0Sv3XojcjJ01ZmkBC1b3uF1DvIRSFFxQPHeATfdCc5yfqO7q0u
-         YkVS8VggsazIflrQ0bTbExBeMm4tAKiSLpNIUnCjV0ZGarbyjQULxv6/K1BgYQddGyrt
-         KxiQZh3RK2m6fVvkvfjnwL2X09CXUIL10RX/ReE71mpVN7gODvDhNqJBvNn/++1tCVJA
-         T3/TilN3mLdkR33idJAu/THLXKpjo66gwyap/oYZDjFs43UxMdpuZqVh/0uh2wfr8QCF
-         dAlM+A9BlXUavOiOGvPiaFDYvvz19VxTlCk5CUHDWEpeHrB0E3Ap8wruTLYR8V11vYUt
-         caVQ==
-X-Gm-Message-State: AAQBX9c3K9cxX7OpUsrnOGYTf8GXydjEQqEp87SfhXNiEAhCIvgs6cwR
-        MRVFPH8xfGTs6GAgKw3SkcCbiw==
-X-Google-Smtp-Source: AKy350b7bES42d04i6D4v9CMoAzS13SI/cWDLB3UEV3BDuDus8hRcUfX0GD2TekhgGNZhKhzpwNQGw==
-X-Received: by 2002:a17:906:a103:b0:8aa:a9fe:a3fc with SMTP id t3-20020a170906a10300b008aaa9fea3fcmr10033847ejy.8.1682329549394;
-        Mon, 24 Apr 2023 02:45:49 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:fcdb:bf53:d053:3a52? ([2a02:810d:15c0:828:fcdb:bf53:d053:3a52])
-        by smtp.gmail.com with ESMTPSA id w17-20020a17090649d100b009537ef8eb17sm5289845ejv.217.2023.04.24.02.45.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Apr 2023 02:45:48 -0700 (PDT)
-Message-ID: <f863aca5-0acd-2eae-7127-819136cd78dc@linaro.org>
-Date:   Mon, 24 Apr 2023 11:45:47 +0200
+        with ESMTP id S229603AbjDXKGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 06:06:51 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C7D270B
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 03:06:50 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pqt5c-0004Gj-FR; Mon, 24 Apr 2023 12:06:32 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id BEF441B60C8;
+        Mon, 24 Apr 2023 10:06:29 +0000 (UTC)
+Date:   Mon, 24 Apr 2023 12:06:28 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 4/4] can: bxcan: add support for single peripheral
+ configuration
+Message-ID: <20230424-fracture-going-5dcaf06a9e6c-mkl@pengutronix.de>
+References: <20230423172528.1398158-1-dario.binacchi@amarulasolutions.com>
+ <20230423172528.1398158-5-dario.binacchi@amarulasolutions.com>
+ <20230423-surplus-spoon-4e8194434663-mkl@pengutronix.de>
+ <CABGWkvqA2hwgfGvVWS08Qu-2ZUbwc82ynhvq8-FqFuhHoV-vhw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v4 1/2] dt-bindings: pinctrl: qcom: Add SDX75 pinctrl
- devicetree compatible
-Content-Language: en-US
-To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
-        andersson@kernel.org, konrad.dybcio@linaro.org,
-        linus.walleij@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, richardcochran@gmail.com,
-        manivannan.sadhasivam@linaro.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <1682327030-25535-1-git-send-email-quic_rohiagar@quicinc.com>
- <1682327030-25535-2-git-send-email-quic_rohiagar@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1682327030-25535-2-git-send-email-quic_rohiagar@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nlfwcmgjkz5caxu3"
+Content-Disposition: inline
+In-Reply-To: <CABGWkvqA2hwgfGvVWS08Qu-2ZUbwc82ynhvq8-FqFuhHoV-vhw@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -81,15 +63,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/04/2023 11:03, Rohit Agarwal wrote:
-> Add device tree binding Documentation details for Qualcomm SDX75
-> pinctrl driver.
-> 
-> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
-> ---
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+--nlfwcmgjkz5caxu3
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-Krzysztof
+On 24.04.2023 08:56:03, Dario Binacchi wrote:
+> > This probably works. Can we do better, i.e. without this additional cod=
+e?
+> >
+> > If you add a syscon node for the single instance CAN, too, you don't
+> > need a code change here, right?
+>=20
+> I think so.
+>=20
+> I have only one doubt about it. This implementation allows,
+> implicitly, to distinguish if the peripheral is in single
+> configuration (without handle to the gcan node) or in double
+> configuration (with handle to the gcan node). For example, in single
+> configuration the peripheral has 14 filter banks, while in double
+> configuration there are 26 shared banks. Without code changes, this
+> kind of information is lost. Is it better then, for future
+> developments, to add a new boolean property to the can node of the dts
+> (e.g. single-conf)?
 
+The DT ist not yet mainline, so we can still change it. Another option
+is to have "st,can-primary" and "st,can-secondary" for the shared
+peripherals and nothing for the single instance.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--nlfwcmgjkz5caxu3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRGVKIACgkQvlAcSiqK
+BOhkmwf/fVsu1OGCtagGs762m2UGMM/F1PtRokDn3Tcnq/TQBj4sCNJ6zYtz9sfX
+kk1N7j3IpnOzDGeoR4UaeTzxg3Eu5dHoLsFGoka0mHd3RsOvbL4PO0UFAWAjv8lQ
+ys32uN6DHtSPHCOWhCWbDxaO+7ebiEXoyCmf8NGYwYBMzOnTSDl13uPTKgo/l60t
+2JJFQwbFbmhE9BBxkRKfWuN6VuyO5X0XdQl880tUiWZ8PkUQDwYrTnKYnNE8MIxC
+xGoAmo1WKnPGCA8HB+878bgQ/Vf8/fMsUZJezFCN8sZ0QGGwo6HKq4MRSJ+Dse40
+d/tLDEVGvEa0iVfBmaswhHr+jLd0lg==
+=Ifbf
+-----END PGP SIGNATURE-----
+
+--nlfwcmgjkz5caxu3--
