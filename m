@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E506ED388
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:33:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 434A66ED38D
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:34:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbjDXRdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 13:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55200 "EHLO
+        id S231921AbjDXReX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 13:34:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231319AbjDXRdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:33:50 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9B06599
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:33:43 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-763da06540aso89640539f.3
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:33:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682357623; x=1684949623;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=l7xMk9SBOyp+I3icJY6amD5jkR7wUoKwtCs5nuOfK7o=;
-        b=T3MedW2HvXMK7xsYIkzynGQUHeN1hOanPsLcSlWeQjVupw3JO4FGdKZ2NJqpcc3hL2
-         tHhV7/4ZGF1FS4hFx2aookvXo+wrBaVx2Hv1YugON4o3b6KYG60/pKKX0bEQ22qEyrl9
-         MJDStfCZ8vurCfRefS2ltdnTvKmVNYYNRYXVnGXki7gm7FhbowO1xXXIZJ/r9hosI1YO
-         JYZ46h2ymSMjVqpRvbiE14/EsQPgTrEuLHtfF+UqmCm4uVccth4JG9wPV3xG14ieIZju
-         i5VPHFyyC1wCJJxrl4iKisDMYuKVEJXB0KgyEQc3WeySR9E9BX1UbDCytmTWNHl/JDqM
-         5EzQ==
-X-Gm-Message-State: AAQBX9eGIoGIATNnnyNyFt43MI7CooST41qiNrgV0E0YSP9psm4CHnum
-        yj/tbnEdmi1+rdh6sFTJN8frwSgewgYWGPvdzSzi/4RP9YQU
-X-Google-Smtp-Source: AKy350Z2E1p0Tcjtba0WE5yKa8Oh25OghkiAt8B7o7zqzEpXUWTPhqX58dVcVdWUK14iqAI9baGz/+5/dYVCRFEAXrF/83zxz09j
+        with ESMTP id S231751AbjDXReV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:34:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C64729E;
+        Mon, 24 Apr 2023 10:34:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA91561838;
+        Mon, 24 Apr 2023 17:34:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC2BAC433EF;
+        Mon, 24 Apr 2023 17:34:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682357651;
+        bh=fxBO3odpLRkRZu6k/tfRcxy+1TN9rB/OpQCKH9+JWHQ=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=YqzUTY7pD3P2QLzp+UqRi/7mPLOJNMQI5Bn4m4ufoyIpmE0/J328T4EEs8vssgm4y
+         wwUX5BLwsDPvpyoFwxUUHshjrk+nx5uzM3o4Lq+qZSkddibZBGeSGGklZjFF7zAL09
+         CRCEBRWbf2Ui4aA2t5W3wwxV/8jzrgVOURe5NlgTfaXzYZzFZgyrTXoLg8SUb0pyL1
+         MNwPJilQqUgqYSoytw2TRZDGktiBD7jW+YsNG1SvbAi3XA2Abmawtu5etKRf7b6ZAz
+         5hH9f/mgipPNtJsUHIVDogeXyFytknJ9YbXABFGoFaJeI0oiH/csgzVeimBxykGXTo
+         kUVffG6MsXvbQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>
+Subject: Re: pull-request: wireless-next-2023-04-21
+References: <20230421104726.800BCC433D2@smtp.kernel.org>
+        <20230421073934.1e4bc30c@kernel.org>
+Date:   Mon, 24 Apr 2023 20:34:06 +0300
+In-Reply-To: <20230421073934.1e4bc30c@kernel.org> (Jakub Kicinski's message of
+        "Fri, 21 Apr 2023 07:39:34 -0700")
+Message-ID: <87zg6xtca9.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9cd8:0:b0:760:ec21:a8ab with SMTP id
- w24-20020a5d9cd8000000b00760ec21a8abmr4995456iow.0.1682357623224; Mon, 24 Apr
- 2023 10:33:43 -0700 (PDT)
-Date:   Mon, 24 Apr 2023 10:33:43 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000084816805fa1868e4@google.com>
-Subject: [syzbot] Monthly wireless report
-From:   syzbot <syzbot+list9f4a29a9c608b1bb6d72@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,40 +56,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello wireless maintainers/developers,
+Jakub Kicinski <kuba@kernel.org> writes:
 
-This is a 31-day syzbot report for the wireless subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/wireless
+> On Fri, 21 Apr 2023 10:47:26 +0000 (UTC) Kalle Valo wrote:
+>> Hi,
+>> 
+>> here's a pull request to net-next tree, more info below. Please let me know if
+>> there are any problems.
+>
+> Sparse warning to follow up on:
+>
+> drivers/net/wireless/mediatek/mt76/mt7996/mac.c:1091:25: warning:
+> invalid assignment: |=
+> drivers/net/wireless/mediatek/mt76/mt7996/mac.c:1091:25: left side has
+> type restricted __le32
+> drivers/net/wireless/mediatek/mt76/mt7996/mac.c:1091:25: right side
+> has type unsigned long
 
-During the period, 1 new issues were detected and 0 were fixed.
-In total, 34 issues are still open and 102 have been fixed so far.
+Ah, sorry about that. We still have some sparse warnings left so I don't
+check them for each pull request. We should fix all the remaining sparse
+warnings in drivers/net/wireless, any volunteers? :) Would be a good
+task for a newcomer.
 
-Some of the still happening issues:
+Felix, could you submit a fix for this? I can then apply it to wireless
+tree and send a pull request to net tree in two weeks or so.
 
-Crashes Repro Title
-6997    Yes   KMSAN: uninit-value in hwsim_cloned_frame_received_nl
-              https://syzkaller.appspot.com/bug?extid=b2645b5bf1512b81fa22
-4553    Yes   WARNING in ieee80211_bss_info_change_notify
-              https://syzkaller.appspot.com/bug?extid=09d1cd2f71e6dd3bfd2c
-4131    Yes   WARNING in __cfg80211_ibss_joined (2)
-              https://syzkaller.appspot.com/bug?extid=7f064ba1704c2466e36d
-3464    Yes   WARNING in __ieee80211_beacon_get
-              https://syzkaller.appspot.com/bug?extid=18c783c5cf6a781e3e2c
-590     No    WARNING in ieee80211_ibss_csa_beacon (2)
-              https://syzkaller.appspot.com/bug?extid=b10a54cb0355d83fd75c
-565     Yes   WARNING in ieee80211_start_next_roc
-              https://syzkaller.appspot.com/bug?extid=c3a167b5615df4ccd7fb
-413     Yes   WARNING in ieee80211_link_info_change_notify (2)
-              https://syzkaller.appspot.com/bug?extid=de87c09cc7b964ea2e23
-309     Yes   INFO: task hung in rfkill_global_led_trigger_worker (2)
-              https://syzkaller.appspot.com/bug?extid=2e39bc6569d281acbcfb
-166     Yes   INFO: trying to register non-static key in skb_queue_tail
-              https://syzkaller.appspot.com/bug?extid=743547b2a7fd655ffb6d
-37      Yes   WARNING in ieee80211_free_ack_frame (2)
-              https://syzkaller.appspot.com/bug?extid=ac648b0525be1feba506
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
