@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A19246ECFE0
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 16:02:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB2F06ECFEA
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 16:07:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231295AbjDXOCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 10:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40832 "EHLO
+        id S231663AbjDXOHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 10:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231351AbjDXOCd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 10:02:33 -0400
+        with ESMTP id S231249AbjDXOHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 10:07:02 -0400
 Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E065126
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 07:02:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E7549D1
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 07:07:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1682344946; x=1713880946;
+  t=1682345220; x=1713881220;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XdVEpOJ8DXH/Xn0i2AdvIAQCPkOrHWKidE+dsfL4LEk=;
-  b=lkJRMJ8Hct3aI5cKWF7x+vc0nOt1o4deCYkYTeZ3JWHr+VrSM4Yfkwkm
-   b/6PBfVFA6mw9yrIdI0dO4kjiojh4zzQgelwQ7HeoQbE80UCD/NcBucJT
-   vX1aZBjRQEhlb6tAw4T2EjaemNL1uML5GZS3FrjgSzfnpFm5cgyZraywU
-   A77w9bRxCnHi8nSuE0FYuruabeO/pdejl50iXcH6SfyG4jZV3tu7Sf+/A
-   sPkmQEPPVVzSkSD91E8LLPrYfJwaF1SKMP4+x4OTketTzLPNSjdxIyVQ2
-   o9KScUeUAcjd5TV6pD9HeW5+b5wESSJAdvhfjJHZrP5IU/IsgWFMJJF5e
-   w==;
+  bh=Pp9C0mULVgRTc7siUjzj93S1hbhCi4vRzlDcyKUiAzY=;
+  b=FbwyxckiijpH1efbn3TVgiTLgmSzQIHXf/xQKMfq0rXGjt5Owp+xW9ZS
+   fMFBvLuOEL5uQQ9OW68kjsvA+HezduBcXhELNdHIqCy7Nv+bpyKx8KbmI
+   AphF3pH1tXf/qX6N411zKwXWrIy7nUrQhV/IUKe/tRpxIh4lrNFIFGxk2
+   3BvSs5l//M2ErUXwIamk7FSKYz+GNTLruosd6OYVxlVrLPAkOAVmy/nf2
+   QRFGS0RgKqPk9bkwA8Indk5vxZ/oedN8i1Ad5xV6joy3qeQ3uYAHqDT7C
+   rQWC0IvxYsApqzTh4Ca9YwBojUTkp17VEGNNMTarqfEhssH5xrSrLjO8y
+   g==;
 X-IronPort-AV: E=Sophos;i="5.99,222,1677538800"; 
-   d="scan'208";a="30520438"
+   d="scan'208";a="30520649"
 Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 24 Apr 2023 16:02:24 +0200
+  by mx1-pgp.tq-group.com with ESMTP; 24 Apr 2023 16:06:59 +0200
 Received: from mx1.tq-group.com ([192.168.6.7])
   by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 24 Apr 2023 16:02:24 +0200
+  Mon, 24 Apr 2023 16:06:59 +0200
 X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 24 Apr 2023 16:02:24 +0200
+        by tq-pgp-pr1.tq-net.de on Mon, 24 Apr 2023 16:06:59 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1682344944; x=1713880944;
+  t=1682345219; x=1713881219;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=XdVEpOJ8DXH/Xn0i2AdvIAQCPkOrHWKidE+dsfL4LEk=;
-  b=bgTc5Hh/HVY0O5Z5bwgktQk+XWq71m4cQP98QKRwi93qbk/2og6CLh8m
-   uUvy517/vfspvHIkBTtPPd69FJhNYHXYEwFLAVr+2xgH+6s6CSSpDw5cs
-   Feg1R47mST6cgx1O8b3J5e5YmZY+8gIhbME7QtDuh7eLWwfKeP6rR2Rmd
-   bcDJhqC3RNGrTn+0Gs3eIGLQGR4D0oYm05g39MHgESYTPuG3s9S+tlRkS
-   sIFXhdGcaoEe3lzfnKNbvDHFCfcDnKP+fPFaTFUziCvBGV05Z3ZJlsYbJ
-   F/6hvBC6g8f7/N+gpkNjV2qKzXTWCvaIDx3R5BjUO/Q21tXk30/8bXvzr
+  bh=Pp9C0mULVgRTc7siUjzj93S1hbhCi4vRzlDcyKUiAzY=;
+  b=FQI8nNGeUQ2giareVClm4EvD84dDQiOZRzWNIbgGXSXhSEVYBvBIr7cA
+   xSH0SXyisWIHPt7dNXSRxtQZT2o4kac6RsyVt5KbxqRD+cf5LQi29OkZT
+   PZXMCgekStpWnCSrD6OW1nW0rG6xvFUYmAZL6xMT9920KumiSIFYe54qq
+   9UCfSK/FsQjWZqgbzZxT216UbT6f1dD7ymV0J6FDVG/VNX3UE5lhgYURc
+   /vY0BTasG+Vio4BgU2JvAS9+9g0DiINg54KQ8U40HOpWkYUE1nu66DpKJ
+   GpAun19vlTUrrSrvW0V+vfHff175ktFxDmJUkaWjN42k4l1Zoaf2XCy5E
    Q==;
 X-IronPort-AV: E=Sophos;i="5.99,222,1677538800"; 
-   d="scan'208";a="30520437"
+   d="scan'208";a="30520648"
 Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 24 Apr 2023 16:02:24 +0200
+  by mx1.tq-group.com with ESMTP; 24 Apr 2023 16:06:58 +0200
 Received: from steina-w.localnet (unknown [10.123.53.21])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 1CB0C280056;
-        Mon, 24 Apr 2023 16:02:24 +0200 (CEST)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id C4408280056;
+        Mon, 24 Apr 2023 16:06:58 +0200 (CEST)
 From:   Alexander Stein <alexander.stein@ew.tq-group.com>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -65,16 +65,13 @@ Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] net: phy: Fix reading LED reg property
-Date:   Mon, 24 Apr 2023 16:02:23 +0200
-Message-ID: <4797433.GXAFRqVoOG@steina-w>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/1] net: phy: dp83867: Add led_brightness_set support
+Date:   Mon, 24 Apr 2023 16:06:58 +0200
+Message-ID: <2142096.irdbgypaU6@steina-w>
 Organization: TQ-Systems GmbH
-In-Reply-To: <c01a4c59-6668-4ae7-b7cf-54d5a5a7e897@lunn.ch>
-References: <20230424134003.297827-1-alexander.stein@ew.tq-group.com> <c01a4c59-6668-4ae7-b7cf-54d5a5a7e897@lunn.ch>
+In-Reply-To: <82043096-636a-41ec-bf97-94f22f1920ce@lunn.ch>
+References: <20230424134625.303957-1-alexander.stein@ew.tq-group.com> <82043096-636a-41ec-bf97-94f22f1920ce@lunn.ch>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="iso-8859-1"
@@ -89,37 +86,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Andrew,
 
-Am Montag, 24. April 2023, 15:47:14 CEST schrieb Andrew Lunn:
-> On Mon, Apr 24, 2023 at 03:40:02PM +0200, Alexander Stein wrote:
-> > 'reg' is always encoded in 32 bits, thus it has to be read using the
-> > function with the corresponding bit width.
+Am Montag, 24. April 2023, 15:51:32 CEST schrieb Andrew Lunn:
+> On Mon, Apr 24, 2023 at 03:46:25PM +0200, Alexander Stein wrote:
+> > Up to 4 LEDs can be attached to the PHY, add support for setting
+> > brightness manually.
 >=20
 > Hi Alexander
 >=20
-> Is this an endian thing? Does it return the wrong value on big endian
-> systems?
+> Please see
+> https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
+>=20
+> You should put in the subject line which network tree this is for.
 
-It is an endian issue, but the platform's endianess doesn't matter here. Th=
-e=20
-encoding for device properties is (always) big-endian, so a 32-bit 'reg' va=
-lue=20
-of '2' looks like this:
+Ah, sorry wasn't aware of that.
 
-$ hexdump -C /sys/firmware/devicetree/base/soc@0/bus@30800000/
-ethernet@30bf0000/mdio/ethernet-phy@3/leds/led@2/reg
-00000000  00 00 00 02                                       |....|
-00000004
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Using of_property_read_u8 will only read the first byte, thus all values of=
-=20
-reg result in 0.
-
-> I deliberately used of_property_read_u8() because it will perform a
-> range check, and if the value is bigger or smaller than 0-256 it will
-> return an error. Your change does not include such range checks, which
-> i don't like.
-
-Sure, I can added this check.
+Thanks, you want me to resend a v2 with the subject fixed and your tag adde=
+d?
 
 Best regards,
 Alexander
