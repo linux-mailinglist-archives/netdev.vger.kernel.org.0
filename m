@@ -2,174 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9646ECF62
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 15:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDCDC6ECF66
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 15:41:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232782AbjDXNlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 09:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
+        id S232761AbjDXNl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 09:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232791AbjDXNkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 09:40:52 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D686902E;
+        with ESMTP id S232759AbjDXNll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 09:41:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767968A6E
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 06:40:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682343635;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q3oVwJNzTFkgSQFuAMtj6ntCf48bt9Cidl8iSc0WSxY=;
+        b=KVrh/uT25fIYz5umv6wKz+NJ1yKbDA3hGRXzhk6N6VpdZYwFH97ORB31uBJ8qysAcLfpaO
+        crRTjky4wpfaAsj0f5nArwYPm3OFOMvNzP1UusBQ32iNaXZE7uQEtvBnniRCTT3XGxGpUz
+        NASioUs8fGlhG3WDQGWg4DNwYf8MxD0=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-433-tTxTTkTEMCyk-gOVOA_lMw-1; Mon, 24 Apr 2023 09:40:34 -0400
+X-MC-Unique: tTxTTkTEMCyk-gOVOA_lMw-1
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-5ef5fe13973so27820296d6.0
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 06:40:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682343633; x=1684935633;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=q3oVwJNzTFkgSQFuAMtj6ntCf48bt9Cidl8iSc0WSxY=;
+        b=h+O8/Whxr8vp48N94EqA1ZnAFCuARpy/QEfgvxQmbqu/4WvXyN01tEjLhZMST7fs7e
+         glqBFaqAO1G0ntD7JPkOsigfxKZkok6zOskcz5VLo03WCfr5g5bfXRpNK0no3ii6vNWe
+         yG8t8hGScl5IgpZV9v/yLNmWB0uTLVjeaO5pxDDSaev5L9D2rLQOISqcS7t776iTSfbI
+         PjL20M81zm9t4wei7Xz4OaqDMWA3rCFcnSMR+fR/FEUYU2lS6jvmCkoNycoql2/qStJL
+         aVwSkzRTuct+Em0aJxsoGEyuaqm1lvjaVKG7nhvPLGlCuWaJe7ca01hSVPoC3RsPi8V5
+         wJGA==
+X-Gm-Message-State: AAQBX9dg3yoAnfMQ6HnAoEYwokCbO3YNgHR+eBaDxnTio7FqlWus5nh8
+        +d0wModFwcci22a7t53HE5SjCj2kfuBS9vHRXuKG/b7KRCDTSe1RiEF5djSBcNeUw8Lm5O7YDnq
+        3aFv1hVkILcXstFTD
+X-Received: by 2002:a05:6214:411b:b0:5ef:41bf:d567 with SMTP id kc27-20020a056214411b00b005ef41bfd567mr20824274qvb.43.1682343633606;
         Mon, 24 Apr 2023 06:40:33 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2A7675C0109;
-        Mon, 24 Apr 2023 09:40:31 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Mon, 24 Apr 2023 09:40:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
-         h=cc:cc:content-type:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1682343631; x=
-        1682430031; bh=Ae/BNl3LeeeGteor4m6cLa4HqXB1SG9Nq2ztdS5OqH8=; b=Z
-        IEUFOnDXaFpaAbVZW/zEe8y7Z/TuozWTuA3mFbj46/Ot5wmR6YkgHbgZG56Qe3Ja
-        91zRF2Y9tzrsHu48HVkhD0ofMy4iuFHuNGFNpHddSyHSz7SzEbKj5QsxdAC/qB+A
-        T5vwPSPeLnuhBSbM5ZeXZfcgxO0UW1HiROj+8rwdh2T3gb4CTr1714mKBZoA/RlQ
-        5uLbkxe8wYOABGzZofN1kQ4vHVum2IiwDhFe64bjDk89dsaSdGVW3M+gysx/y/aj
-        /yAV85ZruGyscTM6RRz9v5IUAIh37rFUJBBSCzBFOoErcMYcjobfwKZVLPcs6IDh
-        oe1uQRj3DLmJOXEc2L89w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1682343631; x=1682430031; bh=Ae/BNl3LeeeGt
-        eor4m6cLa4HqXB1SG9Nq2ztdS5OqH8=; b=gOOdk0uBtKcnNXlTtdMxOXqPxiRJo
-        TprOv1B+Vjm071ggSgIPpTomPFhjjWCJ3b95faKZ0ZzQQT7NqWPhWwRBm2trenyd
-        slmophLu7fzj2SYyI9b6X/MgKe8lpSBfoAjthMIqa4XewrP6squLQJD2NcNhpgGr
-        ceMq9mz6YyLe+sPiJAMlEa0kUmhrAhNrii0+MYEQQfyKWtH4FyIzfeWeCQegdPnh
-        CatvVjKKk707PQGAXqIqOlex23j4OnzwbrMzgjDDU+vK6on1/ZbY8LwW8J6UtJmG
-        g7Xl3Yb2BHPt6sAEOqtTMT0q7fOglrViLtupF14NahGJILW2V12WoruFA==
-X-ME-Sender: <xms:zoZGZMJWEHh-xWSXHgqgWJR8qSmtAqGxIW1pA66PxTh1RamsCD62Fw>
-    <xme:zoZGZMJYtUscyz1-oYVGniu6HFZbM9X_wyhmY40ipdYl7nt3C89Xee0Lx5M4Ws8kT
-    tWKlkWsTfFOMaVNaLM>
-X-ME-Received: <xmr:zoZGZMtuLTBIcVPNeJbbHcmH22HpqB_QNeAz-JgAVJ9vEfQDRDQJaIYP2J0rK92L-SvXDA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfedutddgieejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdttddttddtvdenucfhrhhomhepfdfmihhr
-    ihhllhcutedrucfuhhhuthgvmhhovhdfuceokhhirhhilhhlsehshhhuthgvmhhovhdrnh
-    grmhgvqeenucggtffrrghtthgvrhhnpefhieeghfdtfeehtdeftdehgfehuddtvdeuheet
-    tddtheejueekjeegueeivdektdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehkihhrihhllhesshhhuhhtvghmohhvrdhnrghmvg
-X-ME-Proxy: <xmx:zoZGZJb66cZrEaOcrtCgEniVhsaTFRGXGMw7YoiKtOruJ1s28m-FZw>
-    <xmx:zoZGZDY6TjvTwCGtb2BC7PwTQL8fRgq7rSJeM8-d1lZ6wkWlREMVbw>
-    <xmx:zoZGZFDpSYfJ2B1m-OTha04bM7EYrEQ7v0BmbiFyRjoJaWZufIRVpQ>
-    <xmx:z4ZGZJsXMJX1gE76TFCnD77NSSxjjS78xpvd3XUZxV6wS3DHMDmctw>
-Feedback-ID: ie3994620:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 24 Apr 2023 09:40:29 -0400 (EDT)
-Received: by box.shutemov.name (Postfix, from userid 1000)
-        id E05E310A0FA; Mon, 24 Apr 2023 16:40:26 +0300 (+03)
-Date:   Mon, 24 Apr 2023 16:40:26 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] mm/gup: disallow GUP writing to file-backed mappings by
- default
-Message-ID: <20230424134026.di6nf2an3a2g63a6@box.shutemov.name>
-References: <f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com>
- <20230424120247.k7cjmncmov32yv5r@box.shutemov.name>
- <3273f5f3-65d9-4366-9424-c688264992f9@lucifer.local>
+X-Google-Smtp-Source: AKy350YtgNDotzzCOd443mQYO9c5msFuvp6PLZgsNhOVAVwbUEJ9ISFLesnZE6Db6c6+OAEha1fJsQ==
+X-Received: by 2002:a05:6214:411b:b0:5ef:41bf:d567 with SMTP id kc27-20020a056214411b00b005ef41bfd567mr20824244qvb.43.1682343633314;
+        Mon, 24 Apr 2023 06:40:33 -0700 (PDT)
+Received: from localhost (77-32-99-124.dyn.eolo.it. [77.32.99.124])
+        by smtp.gmail.com with ESMTPSA id p3-20020a0ccb83000000b0060270619bfesm2809730qvk.24.2023.04.24.06.40.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Apr 2023 06:40:32 -0700 (PDT)
+Date:   Mon, 24 Apr 2023 15:41:00 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, hawk@kernel.org,
+        john.fastabend@gmail.com, ast@kernel.org, daniel@iogearbox.net
+Subject: Re: [PATCH v2 net-next 1/2] net: veth: add page_pool for page
+ recycling
+Message-ID: <ZEaG7Dad0FV9SVXJ@localhost.localdomain>
+References: <cover.1682188837.git.lorenzo@kernel.org>
+ <6298f73f7cc7391c7c4a52a6a89b1ae21488bda1.1682188837.git.lorenzo@kernel.org>
+ <4f008243-49d0-77aa-0e7f-d20be3a68f3c@huawei.com>
+ <ZEU+vospFdm08IeE@localhost.localdomain>
+ <3c78f045-aa8e-22a5-4b38-ab271122a79e@huawei.com>
+ <ZEZJHCRsBVQwd9ie@localhost.localdomain>
+ <0c1790dc-dbeb-8664-64ca-1f71e6c4f3a9@huawei.com>
+ <ZEZ/xXcOv9Co5Vif@boxer>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="HHebbjvWlzqbQ2y5"
 Content-Disposition: inline
-In-Reply-To: <3273f5f3-65d9-4366-9424-c688264992f9@lucifer.local>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <ZEZ/xXcOv9Co5Vif@boxer>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 24, 2023 at 01:31:56PM +0100, Lorenzo Stoakes wrote:
-> On Mon, Apr 24, 2023 at 03:02:47PM +0300, Kirill A. Shutemov wrote:
-> > On Sat, Apr 22, 2023 at 02:37:05PM +0100, Lorenzo Stoakes wrote:
-> > > @@ -959,16 +959,46 @@ static int faultin_page(struct vm_area_struct *vma,
-> > >  	return 0;
-> > >  }
-> > >
-> > > +/*
-> > > + * Writing to file-backed mappings using GUP is a fundamentally broken operation
-> > > + * as kernel write access to GUP mappings may not adhere to the semantics
-> > > + * expected by a file system.
-> > > + *
-> > > + * In most instances we disallow this broken behaviour, however there are some
-> > > + * exceptions to this enforced here.
-> > > + */
-> > > +static inline bool can_write_file_mapping(struct vm_area_struct *vma,
-> > > +					  unsigned long gup_flags)
-> > > +{
-> > > +	struct file *file = vma->vm_file;
-> > > +
-> > > +	/* If we aren't pinning then no problematic write can occur. */
-> > > +	if (!(gup_flags & (FOLL_GET | FOLL_PIN)))
-> > > +		return true;
-> > > +
-> > > +	/* Special mappings should pose no problem. */
-> > > +	if (!file)
-> > > +		return true;
-> > > +
-> > > +	/* Has the caller explicitly indicated this case is acceptable? */
-> > > +	if (gup_flags & FOLL_ALLOW_BROKEN_FILE_MAPPING)
-> > > +		return true;
-> > > +
-> > > +	/* shmem and hugetlb mappings do not have problematic semantics. */
-> > > +	return vma_is_shmem(vma) || is_file_hugepages(file);
-> >
-> > Can this be generalized to any fs that doesn't have vm_ops->page_mkwrite()?
-> >
-> 
-> Something more general would be preferable, however I believe there were
-> concerns broader than write notify, for instance not correctly marking the
-> folio dirty after writing to it, though arguably the caller should
-> certainly be ensuring that (and in many cases, do).
 
-It doesn't make much sense to me.
+--HHebbjvWlzqbQ2y5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Shared writable mapping without page_mkwrite (or pfn_write) will setup
-writeable PTE even on read faults[1], so you will not get the page dirty,
-unless you scan page table entries for dirty bit.
+> On Mon, Apr 24, 2023 at 07:58:07PM +0800, Yunsheng Lin wrote:
+> > On 2023/4/24 17:17, Lorenzo Bianconi wrote:
+> > >> On 2023/4/23 22:20, Lorenzo Bianconi wrote:
+> > >>>> On 2023/4/23 2:54, Lorenzo Bianconi wrote:
+> > >>>>>  struct veth_priv {
+> > >>>>> @@ -727,17 +729,20 @@ static int veth_convert_skb_to_xdp_buff(str=
+uct veth_rq *rq,
+> > >>>>>  			goto drop;
+> > >>>>> =20
+> > >>>>>  		/* Allocate skb head */
+> > >>>>> -		page =3D alloc_page(GFP_ATOMIC | __GFP_NOWARN);
+> > >>>>> +		page =3D page_pool_dev_alloc_pages(rq->page_pool);
+> > >>>>>  		if (!page)
+> > >>>>>  			goto drop;
+> > >>>>> =20
+> > >>>>>  		nskb =3D build_skb(page_address(page), PAGE_SIZE);
+> > >>>>
+> > >>>> If page pool is used with PP_FLAG_PAGE_FRAG, maybe there is some a=
+dditional
+> > >>>> improvement for the MTU 1500B case, it seem a 4K page is able to h=
+old two skb.
+> > >>>> And we can reduce the memory usage too, which is a significant sav=
+ing if page
+> > >>>> size is 64K.
+> > >>>
+> > >>> please correct if I am wrong but I think the 1500B MTU case does no=
+t fit in the
+> > >>> half-page buffer size since we need to take into account VETH_XDP_H=
+EADROOM.
+> > >>> In particular:
+> > >>>
+> > >>> - VETH_BUF_SIZE =3D 2048
+> > >>> - VETH_XDP_HEADROOM =3D 256 + 2 =3D 258
+> > >>
+> > >> On some arch the NET_IP_ALIGN is zero.
+> > >>
+> > >> I suppose XDP_PACKET_HEADROOM are for xdp_frame and data_meta, it se=
+ems
+> > >> xdp_frame is only 40 bytes for 64 bit arch and max size of metalen i=
+s 32
+> > >> as xdp_metalen_invalid() suggest, is there any other reason why we n=
+eed
+> > >> 256 bytes here?
+> > >=20
+> > > XDP_PACKET_HEADROOM must be greater than (40 + 32)B because you may w=
+ant push
+> > > new data at the beginning of the xdp_buffer/xdp_frame running
+> > > bpf_xdp_adjust_head() helper.
+> > > I think 256B has been selected for XDP_PACKET_HEADROOM since it is 4 =
+cachelines
+> > > (but I can be wrong).
+> > > There was a discussion in the past to reduce XDP_PACKET_HEADROOM to 1=
+92B but
+> > > this is not merged yet and it is not related to this series. We can a=
+ddress
+> > > your comments in a follow-up patch when XDP_PACKET_HEADROOM series is=
+ merged.
+>=20
+> Intel drivers still work just fine at 192 headroom and split the page but
+> it makes it problematic for BIG TCP where MAX_SKB_FRAGS from shinfo needs
+> to be increased. So it's the tailroom that becomes the bottleneck, not the
+> headroom. I believe at some point we will convert our drivers to page_pool
+> with full 4k page dedicated for a single frame.
+>=20
+> >=20
+> > It worth mentioning that the performance gain in this patch is at the c=
+ost of
+> > more memory usage, at most of VETH_RING_SIZE(256) + PP_ALLOC_CACHE_SIZE=
+(128)
+> > pages is used.
+> >=20
+> > IMHO, it seems better to limit the memory usage as much as possible, or=
+ provide a
+> > way to disable/enable page pool for user.
+>=20
+> I think that this argument is valuable due to the purpose that veth can
+> serve, IMHO it wouldn't be an argument for a standard PF driver. It would
+> be interesting to see how veth would work with PP_FLAG_PAGE_FRAG.
 
-[1] See logic around vm_page_prot vs. vma_wants_writenotify().
+actually I already have a PoC for using page_pool with PP_FLAG_PAGE_FRAG
+flag in veth driver but if we do not reduce XDP_PACKET_HEADROOM size there
+will not be any difference in the memory footprint since we will need two
+fragments (so a full-page) for a 1500B frame. Moreover, we will have lower
+performance since we will need to spread the data on two skb buffers
+(linear area and frag0 in this case).
 
--- 
-  Kiryl Shutsemau / Kirill A. Shutemov
+Regards,
+Lorenzo
+
+>=20
+
+--HHebbjvWlzqbQ2y5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZEaG6gAKCRA6cBh0uS2t
+rMZoAP9BQYbVLWuKe1Qfw4fp/jVBp2fiV3XHyioCHSxcIagNugD+JokxIUkrA/QL
+qTFNNF1+63Av28u/VjWQEoiNX4C70Qg=
+=8vPz
+-----END PGP SIGNATURE-----
+
+--HHebbjvWlzqbQ2y5--
+
