@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0AD06ED3E0
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:49:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB636ED3ED
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 19:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231781AbjDXRtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 13:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
+        id S232060AbjDXRxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 13:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbjDXRtj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:49:39 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEBC6E8C
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:49:38 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id d2e1a72fcca58-63b5fca48bcso4086800b3a.0
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:49:38 -0700 (PDT)
+        with ESMTP id S229625AbjDXRxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 13:53:04 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EE86A78
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:53:03 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id 98e67ed59e1d1-24b29812c42so3508354a91.0
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 10:53:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1682358578; x=1684950578;
+        d=ziepe.ca; s=google; t=1682358783; x=1684950783;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=edIyrpOkZxkR7qQPvMEjMBtYXDIPtOhEQ7kSltA2Y7E=;
-        b=B0RGu9bSAOqeQFKM2kCfJoKnl08Vl+oe+fwmnFVAivzg30GMkKXPEJIoCB0NsHbaMh
-         y1QOEsnnYJO/COyfiUTW2dtgpEZrqz2vLI1HRdIkW9hABd7zQuI3eeVtbR5A2iA6mCaV
-         5QBQkDfq+xdn7BOEA9dEj6QIjjHMU11j/zgdaVZsVhi8C2oRl6bFxT6thxHV49P2U8UL
-         zYC+DjT2f/NHcPLoSAHdcnqWWaY/yPWwMTsi+NOz2XxNjs9qrmO2DZcxaSVTMPKUaaw8
-         WFfpAud6lL6IcXM5+aRHmp/yuX4VH+U0aJ4N7MhsIExmp9g+j5ts12kN96no48OTOYsl
-         BwRQ==
+        bh=0MKUvioDFym51E51dk6ySi5zEPkblTDJdgaK3QIKchw=;
+        b=pU0zLUiEMqXNhNeDmdJkzerLQjfaVU6ziVMZ5aBW6/8vN8a4a4aaz0CGYe1VWpkXdS
+         E3TAxastF2Qi8dfdy3CivEZaZAyEEqPau4V5u7GLpGIWazqDGhMvtqXwcOJk/18GWq9l
+         NfYdflAXc2r5Pfs/8SKAQovKxj0V372VR5uqG12EHP3WUXy+vP1g+SEh7+pO/YgPVrGQ
+         dPeNBCPwbJ55mq/jXw1ApR+87m2LRk772pjV+8HKvXMpUlsBub3G6yz+igtpk6UZgAfP
+         g8+ZGHmlL+iVDIoopHyR1q0mzoLuVMgm6DEf8g3nyX83DG+CllSTCU7ZAFrebqwbyNCa
+         gjZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682358578; x=1684950578;
+        d=1e100.net; s=20221208; t=1682358783; x=1684950783;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=edIyrpOkZxkR7qQPvMEjMBtYXDIPtOhEQ7kSltA2Y7E=;
-        b=XU+2S0234WAkcMIckz4RgH9weqcT62zQ/Vq14x03tDoxVpB7cfsVjsqQQy2jIS95zS
-         7vECMZ9fqNhkTeeBIPZNuMZ4RqqN0fiw+PRNbUYeyXaciagSFLmzwU715AzFZC1T/XrX
-         VkadNUDbcqL9B+9sB44lW+h0OANpCEYLfgtOWkNNTkHi/IUGK+kxsC7B0znHW5zSH7Ac
-         lYtg/eXu1eQxBgRTa1awHOgQDFhtSky+NGmxcvAhaLdDxIj+RGR0OyZ95OEwhIt4Djsb
-         +IGK5BMfiSZRQNUscsInkSdA1WTzUSfhXDXRfTABPD5LukOp1+gifNhL+UBm3cQjOLfI
-         0Hcw==
-X-Gm-Message-State: AAQBX9dnXv3ln1HQiwQczIugP2kqbRKJ5opR6uGdcGb7hsQEDMZSpIM9
-        czDQhPNfvSiiqYEXCH3Zt8eEsg==
-X-Google-Smtp-Source: AKy350a+fQ5RH2pzme3FmdqfnV6Q9HMfXN8/2YLOzRVV6aO9E2YFNfCF27d33yNs3+ss0MWXL38FXg==
-X-Received: by 2002:a05:6a20:269f:b0:f0:7b8:c77b with SMTP id h31-20020a056a20269f00b000f007b8c77bmr14185926pze.59.1682358578033;
-        Mon, 24 Apr 2023 10:49:38 -0700 (PDT)
+        bh=0MKUvioDFym51E51dk6ySi5zEPkblTDJdgaK3QIKchw=;
+        b=Lf+LdTv152IoRApreIfhBzzGNrUyn1DcdW/OyjhPDar7dPkI8xbsK76THpbNEa8v7x
+         mcs4M0rL7c6rbLN25PeVi6eloZuiHLDRXdSv0Hkz17YwcsOPzg6AaDvsam/CUXVy3OMA
+         DMtZJdwLQLQagUQXv1wmgJ/g3dSyHFwqlKtpzOARTDiyYYdh/722XPm3h/dJrx5NpUUs
+         46q0uAzgkSM1HsaBugLg0SZ155lIOp5Jh+gvhUfBOzae4kjnNORkGh+nUs8UlROiMzV1
+         MVnGYWhpqXgmYTLZ8Rj7wp5j9ZV7ekFCdtqOX3cH85+0cJlHxeMzndsc+u1FopAbcSuU
+         mrBA==
+X-Gm-Message-State: AAQBX9cKgQXk+fIv8yR3dqmankG1QY8eldwVVDLrEpG6EKVK/2YUpfqO
+        BzWtgn49AzU0ueZDUFVIguKP6A==
+X-Google-Smtp-Source: AKy350b8QftlmzAgdTpofeaGKzAiPoEQxlMD0oxWHc4aD9JJLcqXlXiU+XTwREVgYXPzaSKrvzQzlA==
+X-Received: by 2002:a17:90b:1c87:b0:24b:2b9a:7fd2 with SMTP id oo7-20020a17090b1c8700b0024b2b9a7fd2mr13857171pjb.9.1682358782987;
+        Mon, 24 Apr 2023 10:53:02 -0700 (PDT)
 Received: from ziepe.ca ([206.223.160.26])
-        by smtp.gmail.com with ESMTPSA id b6-20020a63d806000000b005143d3fa0e0sm6814788pgh.2.2023.04.24.10.49.36
+        by smtp.gmail.com with ESMTPSA id fs21-20020a17090af29500b002470e095920sm6824171pjb.40.2023.04.24.10.53.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Apr 2023 10:49:37 -0700 (PDT)
+        Mon, 24 Apr 2023 10:53:02 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
         (envelope-from <jgg@ziepe.ca>)
-        id 1pr0Jj-001Vpp-HL;
-        Mon, 24 Apr 2023 14:49:35 -0300
-Date:   Mon, 24 Apr 2023 14:49:35 -0300
+        id 1pr0N2-001Vs1-FA;
+        Mon, 24 Apr 2023 14:53:00 -0300
+Date:   Mon, 24 Apr 2023 14:53:00 -0300
 From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     Dave Chinner <david@fromorbit.com>, linux-mm@kvack.org,
+To:     Jan Kara <jack@suse.cz>
+Cc:     Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
         Jens Axboe <axboe@kernel.dk>,
@@ -89,17 +89,17 @@ Cc:     Dave Chinner <david@fromorbit.com>, linux-mm@kvack.org,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        John Hubbard <jhubbard@nvidia.com>
 Subject: Re: [PATCH] mm/gup: disallow GUP writing to file-backed mappings by
  default
-Message-ID: <ZEbBLzy4SU8IZR68@ziepe.ca>
+Message-ID: <ZEbB/LGw8UoSKJiX@ziepe.ca>
 References: <f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com>
- <20230423222941.GR447837@dread.disaster.area>
- <14c6f0f3-0747-4800-8718-4f109f7321ea@lucifer.local>
+ <20230424160952.bvii2ahgxss2chev@quack3>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <14c6f0f3-0747-4800-8718-4f109f7321ea@lucifer.local>
+In-Reply-To: <20230424160952.bvii2ahgxss2chev@quack3>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -110,19 +110,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 23, 2023 at 11:56:48PM +0100, Lorenzo Stoakes wrote:
+On Mon, Apr 24, 2023 at 06:09:52PM +0200, Jan Kara wrote:
 
-> This warned upon check should in reality not occur, because it implies the
-> GUP user is trying to do something broken and is _not_ explicitly telling
-> GUP that it knows it's doing it and can live with the consequences. And on
-> that basis, is worthy of a warning so we know we have to go put this flag
-> in that place (and know it is a source of problematic GUP usage), or fix
-> the caller.
+> So I'm maybe missing a bigger picture why we would like a change like this.
+> Because we still need to teach filesystems to handle pinned pages for the
+> usecases you don't forbid and for which we know there are users and then
+> what's the benefit of this patch?
 
-It is fine for debugging, but we can't merge user triggerable
-WARN_ONs..
+It immediately closes a security hole we have been talking about
+fixing for years already and still don't have a full fix for.
 
-Since the GUP caller has no idea if userspace might be maliciously
-passing in a file VMA we can't throw warnings.
+An acknowledgment that this is not going to go away and starting to
+clamp down on the insecurity may motivate some investment in the
+proper fix. :)
 
 Jason
