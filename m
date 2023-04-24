@@ -2,340 +2,361 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86F406ED229
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 18:10:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AE276ED21D
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 18:10:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231916AbjDXQKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 12:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38444 "EHLO
+        id S232152AbjDXQJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 12:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbjDXQKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 12:10:36 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2062.outbound.protection.outlook.com [40.107.212.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F67E83DB
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 09:10:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=COMhF3b1m8/xnBkEXCJMBWl70cD4g5aB8uOmkoy28+DounZhGEeSktxGHmyKero/iMYSBgBXqcfohFKRCnmHKy8ECISw3otfPM6NVisv2IWu9g6n9+xYRJjKeP4gHcw02yeKqBMHbyPNPJhDm4iAlLfHQKsO1d8SiN8MGdC8IVcGCDIJLfe32n2k+2hgOuj7Bth0sXMHGJcU3wouRRdtOWYo/41nhK9PfGuFKiuS6C5uiWk+t6DRoOGTXlytt8adr+nOTJqItAWvnMoggwE7oNiDfu1lusoN1YaLPdIy6u4NMcUNt9zeglR5wXdoTn/5UcuUGU/AUKmu/0R0KMVaAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dR4cYxxiMXrkAP8z+JS5WavRAs6c640bwFJzA0kxt9E=;
- b=EzosKGiUz/rlefAS/oxLlpX7S4dY2e55xmER+7niFv21waiS79C/HbMDAC4ld5+mx6AIsSttZnMx44mZg1npfq8zjuE3L9f7d+tDYDTnGlR1JWLSFANd8hhDmM2PLJlGJd1mX5uhzIzN+HZZ5dp9BW7ABlBW3rsW/otDFt8IHsvWK/XMqDscslrvukBZk9ZyC0rgMtH9uVJHYNJtefWCV4HGyQoxntcQeVo1Rg3mYmRT4aBneVDCS+XURrZhrn2YBjGHBUtPDMr2TmvDzTXOPq8XqSdALeXX8G/Y7rEM5UgrYP43CEsAiLUuXI1rseatsJ/LfW70kFyGhWiWUldumQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dR4cYxxiMXrkAP8z+JS5WavRAs6c640bwFJzA0kxt9E=;
- b=DRpg0zLU+Go7PwCsjkJIwI25op/UxyAcM4XqSxTXb1WpJnNUo7yYcppiHA397aleQmxj9Hx3/o5utecdo6kiUY2WHHorwrn5qb6dnGPF9QUi/Tn1PYYJqo3NXUv+r68qXOrJVVcpHR+wuQFAj4gb5t6Njo+yZm6Q+ggB+1E9TOeHezD+ieCZ2/WbHRDfzlav5CxLo77CYBBA2muedtafv6ZW+f4Cb81R/0z8IJZQgazjeOP1OVwssH71t/iJn0ZUXfIYYrCMSbOwqD968hQr8xL5WTU0O8Jff2NmsOiCZR0YvFXO/JHQ/MMp+P3xGghOjeEOeNixJURNLcdgiHtJ/A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by DS0PR12MB8218.namprd12.prod.outlook.com (2603:10b6:8:f2::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.33; Mon, 24 Apr
- 2023 16:10:30 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::66d8:40d2:14ed:7697]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::66d8:40d2:14ed:7697%3]) with mapi id 15.20.6319.033; Mon, 24 Apr 2023
- 16:10:30 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, razor@blackwall.org,
-        liuhangbin@gmail.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH iproute2-next 2/2] bridge: link: Add support for neigh_vlan_suppress option
-Date:   Mon, 24 Apr 2023 19:09:51 +0300
-Message-Id: <20230424160951.232878-3-idosch@nvidia.com>
-X-Mailer: git-send-email 2.40.0
-In-Reply-To: <20230424160951.232878-1-idosch@nvidia.com>
-References: <20230424160951.232878-1-idosch@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: FR3P281CA0085.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1f::22) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S232171AbjDXQJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 12:09:56 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F98E6E8A;
+        Mon, 24 Apr 2023 09:09:54 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 0253B1FD93;
+        Mon, 24 Apr 2023 16:09:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1682352593; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=G2ImUS04APy2MAgMawbg8Ib6n8F1sIQ15789HFafhkA=;
+        b=NqUEPwjREOyz9qmyUmpZGNIEi2xV23u/XMYIMhhx5hx9GpSoIZgdTAQosjnZ5BrFfnagd2
+        g/YxJrAD2RujH4F6/YC8BAHHa5DWq9MzLEFvcfKImvUXLJZK7KV+41rkd8v6RBVgnqQew1
+        yuwraYu6Q+raScqoE1vm2RMDk1wpc0g=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1682352593;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=G2ImUS04APy2MAgMawbg8Ib6n8F1sIQ15789HFafhkA=;
+        b=OkKOuLfxehkKOWUP3CnI5jOhdU/BTHi3RVidNC2ezZjy63WrefGIsxWpLEJs7Hlq+4/rcZ
+        de8HjSU8zJLB5EDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D87C513780;
+        Mon, 24 Apr 2023 16:09:52 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id UUzQNNCpRmRjfgAAMHmgww
+        (envelope-from <jack@suse.cz>); Mon, 24 Apr 2023 16:09:52 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 20932A0729; Mon, 24 Apr 2023 18:09:52 +0200 (CEST)
+Date:   Mon, 24 Apr 2023 18:09:52 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Lorenzo Stoakes <lstoakes@gmail.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        John Hubbard <jhubbard@nvidia.com>
+Subject: Re: [PATCH] mm/gup: disallow GUP writing to file-backed mappings by
+ default
+Message-ID: <20230424160952.bvii2ahgxss2chev@quack3>
+References: <f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|DS0PR12MB8218:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2b7d63d2-2a8f-45ed-e41e-08db44de6cd2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9HbQTxHX0cZ+rCxAFMf7adD/2DGt/rS5kmXec1ipxxFcQ3VfnHDIuuDsfrdFEpjprXB7rAGQvk+RoAbyYTSIcL8fGpxyGefbcCins36Ofl0O06ryEjfpF81v8uXwoYPE+qSIHfcFcib4IZ6IgZ/xZ5F+OVGbMUuIIfQ4xFRy/5DB0EEuB3027+9+HTYjp3QvpKkZzA3l1Wd+QGTQB8J7DeIby7Jo5qHo/ULopIeyZ47JWVmQaqrccCqNkhmjkfBw+TDJs2jki/T3Q3SKwiyYg4r2+2zynjO2vwe+PoljYiR6QGmNtA3Kg5rFepGfzYgc5j9FBMmBQ8IW7ceUhLeEAqfB25qqt0s6sjgKMHSGb41hZK46atcANv3iCbDT3jUH5tEHGNKTwYef9fM8KkPFX7izEMZEvEl/JZ3Hk3MwC+5zz7l3E0xHsftUH3SUSIWyNdpgtrdPGlWzLnmkIWKRL+Xt7kmTC0y7CsrBWhTAFpuadJaiCQUdTJMju13CumF9PuqO+Hd0tf+JEPxvacVsBu4vcCyToURhMrhyN7DkKvl5ESyukCMskaRDXWt1i4I5
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(136003)(396003)(39860400002)(366004)(451199021)(36756003)(478600001)(316002)(4326008)(6916009)(66476007)(66556008)(66946007)(41300700001)(2906002)(8936002)(8676002)(5660300002)(38100700002)(2616005)(6512007)(6506007)(1076003)(26005)(86362001)(186003)(107886003)(6666004)(83380400001)(66574015)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zIRjH8plfYvikP8BxPGkGbR9z8N/fN2k1ERbCocHL57fZbABe0FJIT+Uu7zh?=
- =?us-ascii?Q?YaRB5ZiAb+kDLoWhki+Iv0yqGiLzqoVbnsPwGu13j35D6hcRADSKs2v5tr2l?=
- =?us-ascii?Q?91TeQoV/Fd3NoZSubza9sBvBIayG3lpeTZWza5Br86SkLxtnMRguCkdS77tN?=
- =?us-ascii?Q?If1ui65ecTJgkWT0wAtUmBrva3CLHJkPDfqxN92wQJuxhSnWCz4SjX2uSAZA?=
- =?us-ascii?Q?f19ce4vbisKENWKNN6pwjSAqrdrJhQN6gkjjJooL2zPWI4ZA8nj8j07uDYqj?=
- =?us-ascii?Q?s40cJvHK8d+dCM0S8cMtq0emXWZ8iBxI/1MCFdI48T2IhQTRVcf4bpFCBb9X?=
- =?us-ascii?Q?lrMrV3EhfRb3YrGuaWK2YcaZH0vH3j8dh1fOaxXnHMA0Wi/0WZB1EGpvfxnw?=
- =?us-ascii?Q?ecxVWv+bzmzaRX5FFrJprCJRjHS7C5cZaPmrBlPBwSvmqHb2KsFri1/EU9I1?=
- =?us-ascii?Q?dBR1hLYHRADP0dzmrwPUv6BCrNWEqKyZiZbJ6OulwS3Z7VLiF3IoQQ4/cHkz?=
- =?us-ascii?Q?SztwR0japxjzGlxdSGZCFVD000cOUteig6NTUTmPBLqWn23h8fDPom0TH6+Q?=
- =?us-ascii?Q?bespQGrQ0yCfxEdmyNctbLRIhmpE3brN9pRDHqiynMFf8mZr5IRwlrulOKHl?=
- =?us-ascii?Q?Y02IUEAGlERvfYF4MagtdLkioBWkILchY25jwPtCfZxYBC0IKTDQsOMFMKy5?=
- =?us-ascii?Q?vG/NjsErFgEvgjE78nMsaIiKFilP1Rg4TfE9LRSScnzA7p0dhD+a9Azna6Ft?=
- =?us-ascii?Q?3Ue1/XrErN8ZS//WdKC5CKGtPp0ezScQhnDyk9/yo3zWSNtby6eUZWdXU9uJ?=
- =?us-ascii?Q?StrbnUwqltn356u0CZiZMHjKMUThSDXrY356z1zoebH4zJRYXE636fri5NY9?=
- =?us-ascii?Q?zpy66FwbYK6/ED3GbdLt8YP825P/sqmNi0RvJPPWhUccZL8Jx8lIwIsHlM1N?=
- =?us-ascii?Q?te+F6oubmBvJCnwIvT5PKpHkU50U/oxurBtVY9/TKpDlDmyPnsYwuO4zeH0Q?=
- =?us-ascii?Q?OhTYBk9+btimyM1XTX8qzyDHYC3TF3CVP331RVLkNpOkx8y/UHJVm7JH9IP4?=
- =?us-ascii?Q?jarfGIMbxk7iXCbS2HUzRpISuX3SAtPD3Xmt2eTrJJRXmU0k3bQr7X6BWaN7?=
- =?us-ascii?Q?kDCBiEzEngco4d9YBQhhrsqzX6aqb+7YPlNf3bqN2/ldDBlUflyNqCvVCR+K?=
- =?us-ascii?Q?TQU7uF6LMKh3Wvm6tX07aaP0atwUZncULoo/2GgDO8K1G0hg/VX/tCuaMonv?=
- =?us-ascii?Q?Kv4H8kdsPuRdNHoKMkLk6d8mgcVzdQFNTFrLx50tExaXO6fuKlF0tYAd1S+5?=
- =?us-ascii?Q?kcYiOhOU903HmvS+XfPm+B1FlGdkYd8i1sJtNpbI0rohY9eSyDH4djj9nwh8?=
- =?us-ascii?Q?vxzb9TUmEcfv5vTReQaaxZz5NtZCUU/htdV/oFRWAOhelpZB46MClWrabAZB?=
- =?us-ascii?Q?Ps5qwB6kYGLSscSswPLCB6oLwyHWpGk2T2e8aof7EZqWUm21Qz4ZpDgRgM2A?=
- =?us-ascii?Q?QJHYJjCp5ZwR4qqfVl+hmmo+QvbCwozlPcaUgfoXIyhiupGTKzvWIqkDK+kg?=
- =?us-ascii?Q?mEvQlGlgCZUpidVelp4KneKlaS8aWU1YDtV4YSKm?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b7d63d2-2a8f-45ed-e41e-08db44de6cd2
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2023 16:10:30.4821
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cuzPDCU6uB6EMjNAMbxUTDpva3ja+tJ+UdhHkJ0R3wnpqki6yD0x+5mpVmlT6yXd6SBjDiRdy2pfhankyQEGRQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8218
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the per-port neigh_vlan_suppress option. Example:
+On Sat 22-04-23 14:37:05, Lorenzo Stoakes wrote:
+> It isn't safe to write to file-backed mappings as GUP does not ensure that
+> the semantics associated with such a write are performed correctly, for
+> instance filesystems which rely upon write-notify will not be correctly
+> notified.
 
- # bridge link set dev swp1 neigh_vlan_suppress on
- # bridge -d -j -p link show dev swp1
- [ {
-         "ifindex": 62,
-         "ifname": "swp1",
-         "flags": [ "BROADCAST","NOARP","UP","LOWER_UP" ],
-         "mtu": 1500,
-         "master": "br0",
-         "state": "forwarding",
-         "priority": 32,
-         "cost": 100,
-         "hairpin": false,
-         "guard": false,
-         "root_block": false,
-         "fastleave": false,
-         "learning": true,
-         "flood": true,
-         "mcast_flood": true,
-         "bcast_flood": true,
-         "mcast_router": 1,
-         "mcast_to_unicast": false,
-         "neigh_suppress": false,
-         "neigh_vlan_suppress": true,
-         "vlan_tunnel": false,
-         "isolated": false,
-         "locked": false,
-         "mab": false,
-         "mcast_n_groups": 0,
-         "mcast_max_groups": 0
-     } ]
- # bridge -d link show dev swp1
- 62: swp1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 master br0 state forwarding priority 32 cost 100
-     hairpin off guard off root_block off fastleave off learning on flood on mcast_flood on bcast_flood on mcast_router 1 mcast_to_unicast off neigh_suppress off neigh_vlan_suppress on vlan_tunnel off isolated off locked off mab off mcast_n_groups 0 mcast_max_groups 0
+I agree that this is currently subtly broken. But we also know from the bug
+reports there are definitely users of this functionality out in the wild.
+After all that was the reason why John Hubbard (added to CC) added
+FOLL_PIN functionality to the kernel - so that filesystems can recognize
+the pages may be modified behind their back and act accordingly.
 
- # bridge link set dev swp1 neigh_vlan_suppress off
- # bridge -d -j -p link show dev swp1
- [ {
-         "ifindex": 62,
-         "ifname": "swp1",
-         "flags": [ "BROADCAST","NOARP","UP","LOWER_UP" ],
-         "mtu": 1500,
-         "master": "br0",
-         "state": "forwarding",
-         "priority": 32,
-         "cost": 100,
-         "hairpin": false,
-         "guard": false,
-         "root_block": false,
-         "fastleave": false,
-         "learning": true,
-         "flood": true,
-         "mcast_flood": true,
-         "bcast_flood": true,
-         "mcast_router": 1,
-         "mcast_to_unicast": false,
-         "neigh_suppress": false,
-         "neigh_vlan_suppress": false,
-         "vlan_tunnel": false,
-         "isolated": false,
-         "locked": false,
-         "mab": false,
-         "mcast_n_groups": 0,
-         "mcast_max_groups": 0
-     } ]
- # bridge -d link show dev swp1
- 62: swp1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 master br0 state forwarding priority 32 cost 100
-     hairpin off guard off root_block off fastleave off learning on flood on mcast_flood on bcast_flood on mcast_router 1 mcast_to_unicast off neigh_suppress off neigh_vlan_suppress off vlan_tunnel off isolated off locked off mab off mcast_n_groups 0 mcast_max_groups 0
+So I'm maybe missing a bigger picture why we would like a change like this.
+Because we still need to teach filesystems to handle pinned pages for the
+usecases you don't forbid and for which we know there are users and then
+what's the benefit of this patch?
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- bridge/link.c            | 19 +++++++++++++++++++
- ip/iplink_bridge_slave.c | 10 ++++++++++
- man/man8/bridge.8        |  8 ++++++++
- man/man8/ip-link.8.in    |  8 ++++++++
- 4 files changed, 45 insertions(+)
+								Honza
 
-diff --git a/bridge/link.c b/bridge/link.c
-index 9dd7475d6e4a..b35429866f52 100644
---- a/bridge/link.c
-+++ b/bridge/link.c
-@@ -165,6 +165,14 @@ static void print_protinfo(FILE *fp, struct rtattr *attr)
- 		if (prtb[IFLA_BRPORT_NEIGH_SUPPRESS])
- 			print_on_off(PRINT_ANY, "neigh_suppress", "neigh_suppress %s ",
- 				     rta_getattr_u8(prtb[IFLA_BRPORT_NEIGH_SUPPRESS]));
-+		if (prtb[IFLA_BRPORT_NEIGH_VLAN_SUPPRESS]) {
-+			struct rtattr *at;
-+
-+			at = prtb[IFLA_BRPORT_NEIGH_VLAN_SUPPRESS];
-+			print_on_off(PRINT_ANY, "neigh_vlan_suppress",
-+				     "neigh_vlan_suppress %s ",
-+				     rta_getattr_u8(at));
-+		}
- 		if (prtb[IFLA_BRPORT_VLAN_TUNNEL])
- 			print_on_off(PRINT_ANY, "vlan_tunnel", "vlan_tunnel %s ",
- 				     rta_getattr_u8(prtb[IFLA_BRPORT_VLAN_TUNNEL]));
-@@ -296,6 +304,7 @@ static void usage(void)
- 		"                               [ mcast_to_unicast {on | off} ]\n"
- 		"                               [ mcast_max_groups MAX_GROUPS ]\n"
- 		"                               [ neigh_suppress {on | off} ]\n"
-+		"                               [ neigh_vlan_suppress {on | off} ]\n"
- 		"                               [ vlan_tunnel {on | off} ]\n"
- 		"                               [ isolated {on | off} ]\n"
- 		"                               [ locked {on | off} ]\n"
-@@ -322,6 +331,7 @@ static int brlink_modify(int argc, char **argv)
- 	char *d = NULL;
- 	int backup_port_idx = -1;
- 	__s8 neigh_suppress = -1;
-+	__s8 neigh_vlan_suppress = -1;
- 	__s8 learning = -1;
- 	__s8 learning_sync = -1;
- 	__s8 flood = -1;
-@@ -447,6 +457,12 @@ static int brlink_modify(int argc, char **argv)
- 			neigh_suppress = parse_on_off("neigh_suppress", *argv, &ret);
- 			if (ret)
- 				return ret;
-+		} else if (strcmp(*argv, "neigh_vlan_suppress") == 0) {
-+			NEXT_ARG();
-+			neigh_vlan_suppress = parse_on_off("neigh_vlan_suppress",
-+							   *argv, &ret);
-+			if (ret)
-+				return ret;
- 		} else if (strcmp(*argv, "vlan_tunnel") == 0) {
- 			NEXT_ARG();
- 			vlan_tunnel = parse_on_off("vlan_tunnel", *argv, &ret);
-@@ -544,6 +560,9 @@ static int brlink_modify(int argc, char **argv)
- 	if (neigh_suppress != -1)
- 		addattr8(&req.n, sizeof(req), IFLA_BRPORT_NEIGH_SUPPRESS,
- 			 neigh_suppress);
-+	if (neigh_vlan_suppress != -1)
-+		addattr8(&req.n, sizeof(req), IFLA_BRPORT_NEIGH_VLAN_SUPPRESS,
-+			 neigh_vlan_suppress);
- 	if (vlan_tunnel != -1)
- 		addattr8(&req.n, sizeof(req), IFLA_BRPORT_VLAN_TUNNEL,
- 			 vlan_tunnel);
-diff --git a/ip/iplink_bridge_slave.c b/ip/iplink_bridge_slave.c
-index 66a67961957f..11ab2113fe96 100644
---- a/ip/iplink_bridge_slave.c
-+++ b/ip/iplink_bridge_slave.c
-@@ -37,6 +37,7 @@ static void print_explain(FILE *f)
- 		"			[ mcast_to_unicast {on | off} ]\n"
- 		"			[ group_fwd_mask MASK ]\n"
- 		"			[ neigh_suppress {on | off} ]\n"
-+		"			[ neigh_vlan_suppress {on | off} ]\n"
- 		"			[ vlan_tunnel {on | off} ]\n"
- 		"			[ isolated {on | off} ]\n"
- 		"			[ locked {on | off} ]\n"
-@@ -261,6 +262,11 @@ static void bridge_slave_print_opt(struct link_util *lu, FILE *f,
- 		print_on_off(PRINT_ANY, "neigh_suppress", "neigh_suppress %s ",
- 			     rta_getattr_u8(tb[IFLA_BRPORT_NEIGH_SUPPRESS]));
- 
-+	if (tb[IFLA_BRPORT_NEIGH_VLAN_SUPPRESS])
-+		print_on_off(PRINT_ANY, "neigh_vlan_suppress",
-+			     "neigh_vlan_suppress %s ",
-+			     rta_getattr_u8(tb[IFLA_BRPORT_NEIGH_VLAN_SUPPRESS]));
-+
- 	if (tb[IFLA_BRPORT_GROUP_FWD_MASK]) {
- 		char convbuf[256];
- 		__u16 fwd_mask;
-@@ -393,6 +399,10 @@ static int bridge_slave_parse_opt(struct link_util *lu, int argc, char **argv,
- 			NEXT_ARG();
- 			bridge_slave_parse_on_off("neigh_suppress", *argv, n,
- 						  IFLA_BRPORT_NEIGH_SUPPRESS);
-+		} else if (strcmp(*argv, "neigh_vlan_suppress") == 0) {
-+			NEXT_ARG();
-+			bridge_slave_parse_on_off("neigh_vlan_suppress", *argv,
-+						  n, IFLA_BRPORT_NEIGH_VLAN_SUPPRESS);
- 		} else if (matches(*argv, "group_fwd_mask") == 0) {
- 			__u16 mask;
- 
-diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-index 3bda6dbd61d0..e05528199eab 100644
---- a/man/man8/bridge.8
-+++ b/man/man8/bridge.8
-@@ -53,6 +53,7 @@ bridge \- show / manipulate bridge addresses and devices
- .IR MULTICAST_ROUTER " ] ["
- .BR mcast_to_unicast " { " on " | " off " } ] [ "
- .BR neigh_suppress " { " on " | " off " } ] [ "
-+.BR neigh_vlan_suppress " { " on " | " off " } ] [ "
- .BR vlan_tunnel " { " on " | " off " } ] [ "
- .BR isolated " { " on " | " off " } ] [ "
- .BR locked " { " on " | " off " } ] [ "
-@@ -590,6 +591,13 @@ only deliver reports to STAs running a multicast router.
- Controls whether neigh discovery (arp and nd) proxy and suppression is
- enabled on the port. By default this flag is off.
- 
-+.TP
-+.BR "neigh_vlan_suppress on " or " neigh_vlan_suppress off "
-+Controls whether per-VLAN neigh discovery (arp and nd) proxy and suppression is
-+enabled on the port. When on, the \fBbridge link\fR option \fBneigh_suppress\fR
-+has no effect and the per-VLAN state is set using the \fBbridge vlan\fR option
-+\fBneigh_suppress\fR. By default this flag is off.
-+
- .TP
- .BR "vlan_tunnel on " or " vlan_tunnel off "
- Controls whether vlan to tunnel mapping is enabled on the port. By
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index 8cec5fe36761..bf3605a9fa2e 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -2517,6 +2517,8 @@ the following additional arguments are supported:
- ] [
- .BR neigh_suppress " { " on " | " off " }"
- ] [
-+.BR neigh_vlan_suppress " { " on " | " off " }"
-+] [
- .BR vlan_tunnel " { " on " | " off " }"
- ] [
- .BR isolated " { " on " | " off " }"
-@@ -2622,6 +2624,12 @@ this port).
- - controls whether neigh discovery (arp and nd) proxy and suppression
- is enabled on the port. By default this flag is off.
- 
-+.BR neigh_vlan_suppress " { " on " | " off " }"
-+- controls whether per-VLAN neigh discovery (arp and nd) proxy and suppression
-+is enabled on the port. When on, the \fBbridge link\fR option
-+\fBneigh_suppress\fR has no effect and the per-VLAN state is set using the
-+\fBbridge vlan\fR option \fBneigh_suppress\fR. By default this flag is off.
-+
- .BR vlan_tunnel " { " on " | " off " }"
- - controls whether vlan to tunnel mapping is enabled on the port. By
- default this flag is off.
+> There are exceptions to this - shmem and hugetlb mappings are (in effect)
+> anonymous mappings by other names so we do permit this operation in these
+> cases.
+> 
+> In addition, if no pinning takes place (neither FOLL_GET nor FOLL_PIN is
+> specified and neither flags gets implicitly set) then no writing can occur
+> so we do not perform the check in this instance.
+> 
+> This is an important exception, as populate_vma_page_range() invokes
+> __get_user_pages() in this way (and thus so does __mm_populate(), used by
+> MAP_POPULATE mmap() and mlock() invocations).
+> 
+> There are GUP users within the kernel that do nevertheless rely upon this
+> behaviour, so we introduce the FOLL_ALLOW_BROKEN_FILE_MAPPING flag to
+> explicitly permit this kind of GUP access.
+> 
+> This is required in order to not break userspace in instances where the
+> uAPI might permit file-mapped addresses - a number of RDMA users require
+> this for instance, as do the process_vm_[read/write]v() system calls,
+> /proc/$pid/mem, ptrace and SDT uprobes. Each of these callers have been
+> updated to use this flag.
+> 
+> Making this change is an important step towards a more reliable GUP, and
+> explicitly indicates which callers might encouter issues moving forward.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
+> ---
+>  drivers/infiniband/hw/qib/qib_user_pages.c |  3 +-
+>  drivers/infiniband/hw/usnic/usnic_uiom.c   |  2 +-
+>  drivers/infiniband/sw/siw/siw_mem.c        |  3 +-
+>  fs/proc/base.c                             |  3 +-
+>  include/linux/mm_types.h                   |  8 +++++
+>  kernel/events/uprobes.c                    |  3 +-
+>  mm/gup.c                                   | 36 +++++++++++++++++++++-
+>  mm/memory.c                                |  3 +-
+>  mm/process_vm_access.c                     |  2 +-
+>  net/xdp/xdp_umem.c                         |  2 +-
+>  10 files changed, 56 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/infiniband/hw/qib/qib_user_pages.c b/drivers/infiniband/hw/qib/qib_user_pages.c
+> index f693bc753b6b..b9019dad8008 100644
+> --- a/drivers/infiniband/hw/qib/qib_user_pages.c
+> +++ b/drivers/infiniband/hw/qib/qib_user_pages.c
+> @@ -110,7 +110,8 @@ int qib_get_user_pages(unsigned long start_page, size_t num_pages,
+>  	for (got = 0; got < num_pages; got += ret) {
+>  		ret = pin_user_pages(start_page + got * PAGE_SIZE,
+>  				     num_pages - got,
+> -				     FOLL_LONGTERM | FOLL_WRITE,
+> +				     FOLL_LONGTERM | FOLL_WRITE |
+> +				     FOLL_ALLOW_BROKEN_FILE_MAPPING,
+>  				     p + got, NULL);
+>  		if (ret < 0) {
+>  			mmap_read_unlock(current->mm);
+> diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/hw/usnic/usnic_uiom.c
+> index 2a5cac2658ec..33cf79b248a9 100644
+> --- a/drivers/infiniband/hw/usnic/usnic_uiom.c
+> +++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
+> @@ -85,7 +85,7 @@ static int usnic_uiom_get_pages(unsigned long addr, size_t size, int writable,
+>  				int dmasync, struct usnic_uiom_reg *uiomr)
+>  {
+>  	struct list_head *chunk_list = &uiomr->chunk_list;
+> -	unsigned int gup_flags = FOLL_LONGTERM;
+> +	unsigned int gup_flags = FOLL_LONGTERM | FOLL_ALLOW_BROKEN_FILE_MAPPING;
+>  	struct page **page_list;
+>  	struct scatterlist *sg;
+>  	struct usnic_uiom_chunk *chunk;
+> diff --git a/drivers/infiniband/sw/siw/siw_mem.c b/drivers/infiniband/sw/siw/siw_mem.c
+> index f51ab2ccf151..bc3e8c0898e5 100644
+> --- a/drivers/infiniband/sw/siw/siw_mem.c
+> +++ b/drivers/infiniband/sw/siw/siw_mem.c
+> @@ -368,7 +368,8 @@ struct siw_umem *siw_umem_get(u64 start, u64 len, bool writable)
+>  	struct mm_struct *mm_s;
+>  	u64 first_page_va;
+>  	unsigned long mlock_limit;
+> -	unsigned int foll_flags = FOLL_LONGTERM;
+> +	unsigned int foll_flags =
+> +		FOLL_LONGTERM | FOLL_ALLOW_BROKEN_FILE_MAPPING;
+>  	int num_pages, num_chunks, i, rv = 0;
+>  
+>  	if (!can_do_mlock())
+> diff --git a/fs/proc/base.c b/fs/proc/base.c
+> index 96a6a08c8235..3e3f5ea9849f 100644
+> --- a/fs/proc/base.c
+> +++ b/fs/proc/base.c
+> @@ -855,7 +855,8 @@ static ssize_t mem_rw(struct file *file, char __user *buf,
+>  	if (!mmget_not_zero(mm))
+>  		goto free;
+>  
+> -	flags = FOLL_FORCE | (write ? FOLL_WRITE : 0);
+> +	flags = FOLL_FORCE | FOLL_ALLOW_BROKEN_FILE_MAPPING |
+> +		(write ? FOLL_WRITE : 0);
+>  
+>  	while (count > 0) {
+>  		size_t this_len = min_t(size_t, count, PAGE_SIZE);
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 3fc9e680f174..e76637b4c78f 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -1185,6 +1185,14 @@ enum {
+>  	FOLL_PCI_P2PDMA = 1 << 10,
+>  	/* allow interrupts from generic signals */
+>  	FOLL_INTERRUPTIBLE = 1 << 11,
+> +	/*
+> +	 * By default we disallow write access to known broken file-backed
+> +	 * memory mappings (i.e. anything other than hugetlb/shmem
+> +	 * mappings). Some code may rely upon being able to access this
+> +	 * regardless for legacy reasons, thus we provide a flag to indicate
+> +	 * this.
+> +	 */
+> +	FOLL_ALLOW_BROKEN_FILE_MAPPING = 1 << 12,
+>  
+>  	/* See also internal only FOLL flags in mm/internal.h */
+>  };
+> diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
+> index 59887c69d54c..ec330d3b0218 100644
+> --- a/kernel/events/uprobes.c
+> +++ b/kernel/events/uprobes.c
+> @@ -373,7 +373,8 @@ __update_ref_ctr(struct mm_struct *mm, unsigned long vaddr, short d)
+>  		return -EINVAL;
+>  
+>  	ret = get_user_pages_remote(mm, vaddr, 1,
+> -			FOLL_WRITE, &page, &vma, NULL);
+> +				    FOLL_WRITE | FOLL_ALLOW_BROKEN_FILE_MAPPING,
+> +				    &page, &vma, NULL);
+>  	if (unlikely(ret <= 0)) {
+>  		/*
+>  		 * We are asking for 1 page. If get_user_pages_remote() fails,
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 1f72a717232b..68d5570c0bae 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -959,16 +959,46 @@ static int faultin_page(struct vm_area_struct *vma,
+>  	return 0;
+>  }
+>  
+> +/*
+> + * Writing to file-backed mappings using GUP is a fundamentally broken operation
+> + * as kernel write access to GUP mappings may not adhere to the semantics
+> + * expected by a file system.
+> + *
+> + * In most instances we disallow this broken behaviour, however there are some
+> + * exceptions to this enforced here.
+> + */
+> +static inline bool can_write_file_mapping(struct vm_area_struct *vma,
+> +					  unsigned long gup_flags)
+> +{
+> +	struct file *file = vma->vm_file;
+> +
+> +	/* If we aren't pinning then no problematic write can occur. */
+> +	if (!(gup_flags & (FOLL_GET | FOLL_PIN)))
+> +		return true;
+> +
+> +	/* Special mappings should pose no problem. */
+> +	if (!file)
+> +		return true;
+> +
+> +	/* Has the caller explicitly indicated this case is acceptable? */
+> +	if (gup_flags & FOLL_ALLOW_BROKEN_FILE_MAPPING)
+> +		return true;
+> +
+> +	/* shmem and hugetlb mappings do not have problematic semantics. */
+> +	return vma_is_shmem(vma) || is_file_hugepages(file);
+> +}
+> +
+>  static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
+>  {
+>  	vm_flags_t vm_flags = vma->vm_flags;
+>  	int write = (gup_flags & FOLL_WRITE);
+>  	int foreign = (gup_flags & FOLL_REMOTE);
+> +	bool vma_anon = vma_is_anonymous(vma);
+>  
+>  	if (vm_flags & (VM_IO | VM_PFNMAP))
+>  		return -EFAULT;
+>  
+> -	if (gup_flags & FOLL_ANON && !vma_is_anonymous(vma))
+> +	if ((gup_flags & FOLL_ANON) && !vma_anon)
+>  		return -EFAULT;
+>  
+>  	if ((gup_flags & FOLL_LONGTERM) && vma_is_fsdax(vma))
+> @@ -978,6 +1008,10 @@ static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
+>  		return -EFAULT;
+>  
+>  	if (write) {
+> +		if (!vma_anon &&
+> +		    WARN_ON_ONCE(!can_write_file_mapping(vma, gup_flags)))
+> +			return -EFAULT;
+> +
+>  		if (!(vm_flags & VM_WRITE)) {
+>  			if (!(gup_flags & FOLL_FORCE))
+>  				return -EFAULT;
+> diff --git a/mm/memory.c b/mm/memory.c
+> index 146bb94764f8..e3d535991548 100644
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -5683,7 +5683,8 @@ int access_process_vm(struct task_struct *tsk, unsigned long addr,
+>  	if (!mm)
+>  		return 0;
+>  
+> -	ret = __access_remote_vm(mm, addr, buf, len, gup_flags);
+> +	ret = __access_remote_vm(mm, addr, buf, len,
+> +				 gup_flags | FOLL_ALLOW_BROKEN_FILE_MAPPING);
+>  
+>  	mmput(mm);
+>  
+> diff --git a/mm/process_vm_access.c b/mm/process_vm_access.c
+> index 78dfaf9e8990..ef126c08e89c 100644
+> --- a/mm/process_vm_access.c
+> +++ b/mm/process_vm_access.c
+> @@ -81,7 +81,7 @@ static int process_vm_rw_single_vec(unsigned long addr,
+>  	ssize_t rc = 0;
+>  	unsigned long max_pages_per_loop = PVM_MAX_KMALLOC_PAGES
+>  		/ sizeof(struct pages *);
+> -	unsigned int flags = 0;
+> +	unsigned int flags = FOLL_ALLOW_BROKEN_FILE_MAPPING;
+>  
+>  	/* Work out address and page range required */
+>  	if (len == 0)
+> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+> index 02207e852d79..b93cfcaccb0d 100644
+> --- a/net/xdp/xdp_umem.c
+> +++ b/net/xdp/xdp_umem.c
+> @@ -93,7 +93,7 @@ void xdp_put_umem(struct xdp_umem *umem, bool defer_cleanup)
+>  
+>  static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
+>  {
+> -	unsigned int gup_flags = FOLL_WRITE;
+> +	unsigned int gup_flags = FOLL_WRITE | FOLL_ALLOW_BROKEN_FILE_MAPPING;
+>  	long npgs;
+>  	int err;
+>  
+> -- 
+> 2.40.0
+> 
 -- 
-2.40.0
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
