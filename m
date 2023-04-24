@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A006ECEE3
-	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 15:36:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 057236ECEE0
+	for <lists+netdev@lfdr.de>; Mon, 24 Apr 2023 15:36:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbjDXNgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 09:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37930 "EHLO
+        id S232650AbjDXNgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 09:36:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232426AbjDXNfr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 09:35:47 -0400
+        with ESMTP id S232618AbjDXNfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 09:35:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCA68A69;
-        Mon, 24 Apr 2023 06:35:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5AD196;
+        Mon, 24 Apr 2023 06:35:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31A56623E2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2261F62332;
         Mon, 24 Apr 2023 13:35:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D9EC433A8;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E89BC433EF;
         Mon, 24 Apr 2023 13:35:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1682343335;
-        bh=6QodnrciojxglL0zQGk0v0AqbE8UmmLAXDHHgyq63Us=;
+        bh=HMtBQELFN9fhTXYtgqc3NqK66rbPQYn9IisD7ItTMJQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cblEhHml42NOB7BxU1wxTznX+PWdsNzxQA50FF9CxEUN5jyRM+VXzU4Cqxnm3DgfJ
-         4zg0L2fmt3ttvm8IZ4YfZW0TjsInkEpQmKJkzZ3cWhiEqtutW8GOQFeEGoMeLHQJas
-         Z1CetNq0w4LXkXYoV3z+/CBsi3glZzFd3Rq1S4B6zEUyUseEI6pXVnKqFEjiYMn/4C
-         qpHDwST6zE7EJedGXFBfpBAOHaK6jgixlVqL7EXjJpRYWHYpqbOBQenlpAFbPVvoot
-         qL/JMkuBMNL27QUV+zj7N43DB63ScEmurslQdt0HWcplzmqMlWDfIghf6P7f8VrX/y
-         ORe3LQmdgG1aQ==
+        b=NM031X7OQ1oQl17XIpcIdy+hf7ZonNI+EzmBBgUzCBQ0S74xtwh/Ymixk+XDsQUAF
+         fJkfHmV9k4Lgrca7VvZgiWCDBHJKxrKaFZuKmb+rqmQL+3z7G2wCtqTbyHdhF2/Eke
+         I2c910Juoo+Y1tsSSgqNiDaAJcvCFJhUHzlmPXNtduPcWLltv4hcx1+MNE+LRKdTlR
+         TFjP7QKY9mkpfSBgQ/5yBHrQeF3kcSoxxM4YCD/Ph5RGyBISko70DffBHtjZCydxdi
+         lBsEUexSd3NKLgxZ1Wp1ffBIDwSCqw2LtLgWmFZGORbFHioN0WrHnw9sllFif/6cWA
+         L7HqHO6O6VmXQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1pqwMC-0003kK-7G; Mon, 24 Apr 2023 15:35:52 +0200
+        id 1pqwMC-0003kM-A7; Mon, 24 Apr 2023 15:35:52 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -45,9 +45,9 @@ Cc:     Matthias Kaehlcke <mka@chromium.org>,
         Paolo Abeni <pabeni@redhat.com>,
         linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 1/2] Bluetooth: fix invalid-bdaddr quirk for non-persistent setup
-Date:   Mon, 24 Apr 2023 15:35:41 +0200
-Message-Id: <20230424133542.14383-2-johan+linaro@kernel.org>
+Subject: [PATCH 2/2] Bluetooth: fix use-bdaddr-property quirk
+Date:   Mon, 24 Apr 2023 15:35:42 +0200
+Message-Id: <20230424133542.14383-3-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230424133542.14383-1-johan+linaro@kernel.org>
 References: <20230424133542.14383-1-johan+linaro@kernel.org>
@@ -67,55 +67,54 @@ Devices that lack persistent storage for the device address can indicate
 this by setting the HCI_QUIRK_INVALID_BDADDR which causes the controller
 to be marked as unconfigured until user space has set a valid address.
 
-Once configured, the device address must be set on every setup for
-controllers with HCI_QUIRK_NON_PERSISTENT_SETUP to avoid marking the
-controller as unconfigured and requiring the address to be set again.
+The related HCI_QUIRK_USE_BDADDR_PROPERTY was later added to similarly
+indicate that the device lacks a valid address but that one may be
+specified in the devicetree.
 
-Fixes: 740011cfe948 ("Bluetooth: Add new quirk for non-persistent setup settings")
+As is clear from commit 7a0e5b15ca45 ("Bluetooth: Add quirk for reading
+BD_ADDR from fwnode property") that added and documented this quirk and
+commits like de79a9df1692 ("Bluetooth: btqcomsmd: use
+HCI_QUIRK_USE_BDADDR_PROPERTY"), the device address of controllers with
+this flag should be treated as invalid until user space has had a chance
+to configure the controller in case the devicetree property is missing.
+
+As it does not make sense to allow controllers with invalid addresses,
+restore the original semantics, which also makes sure that the
+implementation is consistent (e.g. get_missing_options() indicates that
+the address must be set) and matches the documentation (including
+comments in the code, such as, "In case any of them is set, the
+controller has to start up as unconfigured.").
+
+Fixes: e668eb1e1578 ("Bluetooth: hci_core: Don't stop BT if the BD address missing in dts")
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- net/bluetooth/hci_sync.c | 28 +++++++++++-----------------
- 1 file changed, 11 insertions(+), 17 deletions(-)
+ net/bluetooth/hci_sync.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
 diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index a8785126df75..f45598b5a532 100644
+index f45598b5a532..cc925a240f3b 100644
 --- a/net/bluetooth/hci_sync.c
 +++ b/net/bluetooth/hci_sync.c
-@@ -4573,23 +4573,17 @@ static int hci_dev_setup_sync(struct hci_dev *hdev)
- 	invalid_bdaddr = test_bit(HCI_QUIRK_INVALID_BDADDR, &hdev->quirks);
- 
+@@ -4570,16 +4570,14 @@ static int hci_dev_setup_sync(struct hci_dev *hdev)
+ 	 * BD_ADDR invalid before creating the HCI device or in
+ 	 * its setup callback.
+ 	 */
+-	invalid_bdaddr = test_bit(HCI_QUIRK_INVALID_BDADDR, &hdev->quirks);
+-
++	invalid_bdaddr = test_bit(HCI_QUIRK_INVALID_BDADDR, &hdev->quirks) ||
++			 test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks);
  	if (!ret) {
--		if (test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks)) {
--			if (!bacmp(&hdev->public_addr, BDADDR_ANY))
--				hci_dev_get_bd_addr_from_property(hdev);
--
--			if (bacmp(&hdev->public_addr, BDADDR_ANY) &&
--			    hdev->set_bdaddr) {
--				ret = hdev->set_bdaddr(hdev,
--						       &hdev->public_addr);
--
--				/* If setting of the BD_ADDR from the device
--				 * property succeeds, then treat the address
--				 * as valid even if the invalid BD_ADDR
--				 * quirk indicates otherwise.
--				 */
--				if (!ret)
--					invalid_bdaddr = false;
--			}
-+		if (test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks) &&
-+		    !bacmp(&hdev->public_addr, BDADDR_ANY))
-+			hci_dev_get_bd_addr_from_property(hdev);
-+
-+		if ((invalid_bdaddr ||
-+		     test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks)) &&
-+		    bacmp(&hdev->public_addr, BDADDR_ANY) &&
-+		    hdev->set_bdaddr) {
-+			ret = hdev->set_bdaddr(hdev, &hdev->public_addr);
-+			if (!ret)
-+				invalid_bdaddr = false;
- 		}
- 	}
+ 		if (test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks) &&
+ 		    !bacmp(&hdev->public_addr, BDADDR_ANY))
+ 			hci_dev_get_bd_addr_from_property(hdev);
  
+-		if ((invalid_bdaddr ||
+-		     test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks)) &&
+-		    bacmp(&hdev->public_addr, BDADDR_ANY) &&
++		if (invalid_bdaddr && bacmp(&hdev->public_addr, BDADDR_ANY) &&
+ 		    hdev->set_bdaddr) {
+ 			ret = hdev->set_bdaddr(hdev, &hdev->public_addr);
+ 			if (!ret)
 -- 
 2.39.2
 
