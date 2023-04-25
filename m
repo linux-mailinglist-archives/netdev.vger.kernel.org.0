@@ -2,193 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C2AB6EDD3A
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 09:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BAC26EDD41
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 09:54:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233042AbjDYHwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 03:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
+        id S233300AbjDYHyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 03:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231189AbjDYHwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 03:52:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9495193
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 00:51:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682409116;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LN+Qupnqrx3nxABl/NIAu7chVBT65o1KteV7K9jKs8k=;
-        b=PRCMeDD1B64GmOMAtJEXqz13X7qgNx6kElg+cTyYQC9T38VouWsKwkP8s9bVT9yRmTMjC3
-        2FS/vumxgkQxwggMKK+JmQLWQ4CoTvwZBq6/hBt4t1lY3vc5aY79Js3BQTWOmuadVvAktj
-        vHE062kuGO5gd7ensh96MkEaRVwwyJA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-138-mostlS1KMtGht0QQtVoXbg-1; Tue, 25 Apr 2023 03:51:53 -0400
-X-MC-Unique: mostlS1KMtGht0QQtVoXbg-1
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-3f168827701so20567085e9.0
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 00:51:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682409112; x=1685001112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LN+Qupnqrx3nxABl/NIAu7chVBT65o1KteV7K9jKs8k=;
-        b=cJnLicLK6rJJl+DlLz5OzYCGwkSYQYbVrS0Y2R+UIJiQo4PMweqvyS/CZnojC3jHIr
-         ovKO8+Mralu18Yt9DFkxJHcrSVbxOeoQbf/ET7f4YfDQwVLL09hOI2DRRksKd6mj72RW
-         RvJPlWV/nPEFDhgCb7GDmy6AyQrkvvFcqyTMaGrFtlbAcjnNx1yAhsIVRsiVg6osu5ds
-         stx57ibnAWK2Qyu6uvh8pYqZu80RXo+P+U5ub4ppj17F3IVv5N648EWtKhhETVYcrcTM
-         CFqFE3aP8Lc2D0o9ID7Gzb+Lj2DG2H3o3KV55TQ5AqltjZgikyy50u+PV6mdU0OCQwNr
-         IYpg==
-X-Gm-Message-State: AAQBX9ekpImqN7VzIglML+ee2BzgiTV2AKImbakXLReMk5cDfl9nwKxv
-        Ymen1cTnxGujvgyU2erzl44BFT+tdeQ7q9F38EEB5nfvLTVsZPrAM9oFPLbMq3ysy6QJIYc08Sg
-        efoEHUAJVhHHJW1+b
-X-Received: by 2002:a05:600c:3649:b0:3f1:e5f2:5e86 with SMTP id y9-20020a05600c364900b003f1e5f25e86mr4762889wmq.23.1682409112470;
-        Tue, 25 Apr 2023 00:51:52 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZvYSm0BmOXto3eV5uDy4ezuJbU7lrOsrd6Ji2Rlo2HbihXXA127mPR01nyk9gbKectoF7/Aw==
-X-Received: by 2002:a05:600c:3649:b0:3f1:e5f2:5e86 with SMTP id y9-20020a05600c364900b003f1e5f25e86mr4762869wmq.23.1682409112085;
-        Tue, 25 Apr 2023 00:51:52 -0700 (PDT)
-Received: from redhat.com ([2.55.61.39])
-        by smtp.gmail.com with ESMTPSA id b5-20020a056000054500b002e5ff05765esm12545401wrf.73.2023.04.25.00.51.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 00:51:51 -0700 (PDT)
-Date:   Tue, 25 Apr 2023 03:51:47 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Christoph Hellwig <hch@infradead.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Lobakin <aleksander.lobakin@intel.com>
-Subject: Re: [PATCH vhost v7 00/11] virtio core prepares for AF_XDP
-Message-ID: <20230425034700-mutt-send-email-mst@kernel.org>
-References: <20230425073613.8839-1-xuanzhuo@linux.alibaba.com>
+        with ESMTP id S231137AbjDYHyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 03:54:40 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC44A93;
+        Tue, 25 Apr 2023 00:54:38 -0700 (PDT)
+Received: from fpc (unknown [10.10.165.13])
+        by mail.ispras.ru (Postfix) with ESMTPSA id B178F4076B3E;
+        Tue, 25 Apr 2023 07:54:33 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru B178F4076B3E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+        s=default; t=1682409273;
+        bh=x/dcm2H+pi6gUOqFCVOxGTCuLDZsjOAvdeX9hDCiq50=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ha5x9mUs3UEtB19J1XCR4MRHoL6FR6LT2yNTo2JYsvcMVjPHA/bq8OmLTktyraXoP
+         4/NlJ+NtnRg2/Kn+PNV3/5ADOUAnJwDLm9OT+nhQsXJColKxExzaplOSPtM7HygpfJ
+         +ysErXCQ/eOuCMgonfLq9PWYyVCbcoQv3zfUOLYU=
+Date:   Tue, 25 Apr 2023 10:54:26 +0300
+From:   Fedor Pchelkin <pchelkin@ispras.ru>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>, linux-kernel@vger.kernel.org,
+        syzbot+f2cb6e0ffdb961921e4d@syzkaller.appspotmail.com,
+        syzbot+df61b36319e045c00a08@syzkaller.appspotmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        lvc-project@linuxtesting.org
+Subject: Re: [PATCH v2] wifi: ath9k: fix races between ath9k_wmi_cmd and
+ ath9k_wmi_ctrl_rx
+Message-ID: <20230425075426.ubfnohsqe3c2cjdq@fpc>
+References: <20230424191826.117354-1-pchelkin@ispras.ru>
+ <20230425033832.2041-1-hdanton@sina.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230425073613.8839-1-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230425033832.2041-1-hdanton@sina.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 03:36:02PM +0800, Xuan Zhuo wrote:
-> ## About DMA APIs
+On Tue, Apr 25, 2023 at 11:38:32AM +0800, Hillf Danton wrote:
+> On 24 Apr 2023 22:18:26 +0300 Fedor Pchelkin <pchelkin@ispras.ru>
+> > Currently, the synchronization between ath9k_wmi_cmd() and
+> > ath9k_wmi_ctrl_rx() is exposed to a race condition which, although being
+> > rather unlikely, can lead to invalid behaviour of ath9k_wmi_cmd().
+> > 
+> > Consider the following scenario:
+> > 
+> > CPU0					CPU1
+> > 
+> > ath9k_wmi_cmd(...)
+> >   mutex_lock(&wmi->op_mutex)
+> >   ath9k_wmi_cmd_issue(...)
+> >   wait_for_completion_timeout(...)
+> >   ---
+> >   timeout
+> >   ---
+> > 					/* the callback is being processed
+> > 					 * before last_seq_id became zero
+> > 					 */
+> > 					ath9k_wmi_ctrl_rx(...)
+> > 					  spin_lock_irqsave(...)
+> > 					  /* wmi->last_seq_id check here
+> > 					   * doesn't detect timeout yet
+> > 					   */
+> > 					  spin_unlock_irqrestore(...)
+> >   /* last_seq_id is zeroed to
+> >    * indicate there was a timeout
+> >    */
+> >   wmi->last_seq_id = 0
 > 
-> Now, virtio may can not work with DMA APIs when virtio features do not have
-> VIRTIO_F_ACCESS_PLATFORM.
+> Without	wmi->wmi_lock held, updating last_seq_id on the waiter side
+> means it is random on the waker side, so the fix below is incorrect.
 > 
-> 1. I tried to let DMA APIs return phy address by virtio-device. But DMA APIs just
->    work with the "real" devices.
-> 2. I tried to let xsk support callballs to get phy address from virtio-net
->    driver as the dma address. But the maintainers of xsk may want to use dma-buf
->    to replace the DMA APIs. I think that may be a larger effort. We will wait
->    too long.
-> 
-> So rethinking this, firstly, we can support premapped-dma only for devices with
-> VIRTIO_F_ACCESS_PLATFORM. In the case of af-xdp, if the users want to use it,
-> they have to update the device to support VIRTIO_F_RING_RESET, and they can also
-> enable the device's VIRTIO_F_ACCESS_PLATFORM feature by the way.
 
-I don't understand this last sentence. If you think ring
-reset can change device features then the answer is no, it can't.
+Thank you for noticing! Of course that should be done.
 
-If you are saying device has to set VIRTIO_F_ACCESS_PLATFORM to
-benefit from this work, that's fine at least as a first approach.
-Note that setting VIRTIO_F_ACCESS_PLATFORM breaks old guests
-(it's a secirity boundary), e.g. it is not available for
-transitional devices.
-So to support transitional devices, we might want to find another way to
-address this down the road, but as a first step, I agree just going with
-DMA is fine.
+> >   mutex_unlock(&wmi->op_mutex)
+> >   return -ETIMEDOUT
+> > 
+> > ath9k_wmi_cmd(...)
+> >   mutex_lock(&wmi->op_mutex)
+> >   /* the buffer is replaced with
+> >    * another one
+> >    */
+> >   wmi->cmd_rsp_buf = rsp_buf
+> >   wmi->cmd_rsp_len = rsp_len
+> >   ath9k_wmi_cmd_issue(...)
+> >     spin_lock_irqsave(...)
+> >     spin_unlock_irqrestore(...)
+> >   wait_for_completion_timeout(...)
+> > 					/* the continuation of the
+> > 					 * callback left after the first
+> > 					 * ath9k_wmi_cmd call
+> > 					 */
+> > 					  ath9k_wmi_rsp_callback(...)
+> > 					    /* copying data designated
+> > 					     * to already timeouted
+> > 					     * WMI command into an
+> > 					     * inappropriate wmi_cmd_buf
+> > 					     */
+> > 					    memcpy(...)
+> > 					    complete(&wmi->cmd_wait)
+> >   /* awakened by the bogus callback
+> >    * => invalid return result
+> >    */
+> >   mutex_unlock(&wmi->op_mutex)
+> >   return 0
+> > 
+> > To fix this, move ath9k_wmi_rsp_callback() under wmi_lock inside
+> > ath9k_wmi_ctrl_rx() so that the wmi->cmd_wait can be completed only for
+> > initially designated wmi_cmd call, otherwise the path would be rejected
+> > with last_seq_id check.
+> > 
+> > Also move recording the rsp buffer and length into ath9k_wmi_cmd_issue()
+> > under the same wmi_lock with last_seq_id update to avoid their racy
+> > changes.
+> 
+> Better in a seperate one.
 
-
-> Thanks for the help from Christoph.
-> 
-> =================
-> 
-> XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
-> copy feature of xsk (XDP socket) needs to be supported by the driver. The
-> performance of zero copy is very good.
-> 
-> ENV: Qemu with vhost.
-> 
->                    vhost cpu | Guest APP CPU |Guest Softirq CPU | PPS
-> -----------------------------|---------------|------------------|------------
-> xmit by sockperf:     90%    |   100%        |                  |  318967
-> xmit by xsk:          100%   |   30%         |   33%            | 1192064
-> recv by sockperf:     100%   |   68%         |   100%           |  692288
-> recv by xsk:          100%   |   33%         |   43%            |  771670
-> 
-> Before achieving the function of Virtio-Net, we also have to let virtio core
-> support these features:
-> 
-> 1. virtio core support premapped
-> 2. virtio core support reset per-queue
-> 3. introduce DMA APIs to virtio core
-> 
-> Please review.
-> 
-> Thanks.
-> 
-> v7:
->  1. virtqueue_dma_dev() return NULL when virtio is without DMA API.
-> 
-> v6:
->  1. change the size of the flags to u32.
-> 
-> v5:
->  1. fix for error handler
->  2. add flags to record internal dma mapping
-> 
-> v4:
->  1. rename map_inter to dma_map_internal
->  2. fix: Excess function parameter 'vq' description in 'virtqueue_dma_dev'
-> 
-> v3:
->  1. add map_inter to struct desc state to reocrd whether virtio core do dma map
-> 
-> v2:
->  1. based on sgs[0]->dma_address to judgment is premapped
->  2. based on extra.addr to judgment to do unmap for no-indirect desc
->  3. based on indir_desc to judgment to do unmap for indirect desc
->  4. rename virtqueue_get_dma_dev to virtqueue_dma_dev
-> 
-> v1:
->  1. expose dma device. NO introduce the api for dma and sync
->  2. split some commit for review.
-> 
-> Xuan Zhuo (11):
->   virtio_ring: split: separate dma codes
->   virtio_ring: packed: separate dma codes
->   virtio_ring: packed-indirect: separate dma codes
->   virtio_ring: split: support premapped
->   virtio_ring: packed: support premapped
->   virtio_ring: packed-indirect: support premapped
->   virtio_ring: update document for virtqueue_add_*
->   virtio_ring: introduce virtqueue_dma_dev()
->   virtio_ring: correct the expression of the description of
->     virtqueue_resize()
->   virtio_ring: separate the logic of reset/enable from virtqueue_resize
->   virtio_ring: introduce virtqueue_reset()
-> 
->  drivers/virtio/virtio_ring.c | 352 +++++++++++++++++++++++++----------
->  include/linux/virtio.h       |   4 +
->  2 files changed, 259 insertions(+), 97 deletions(-)
-> 
-> --
-> 2.32.0.3.g01195cf9f
-
+Well, they are parts of the same problem but now it seems more relevant
+to divide the patch in two: the first one for incorrect last_seq_id
+synchronization and the second one for recording rsp buffer under the
+lock. Thanks!
