@@ -2,249 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BFC56EE9A4
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 23:27:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CE206EE9B0
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 23:28:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236428AbjDYV0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 17:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
+        id S236386AbjDYV2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 17:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236408AbjDYV0i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 17:26:38 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2075.outbound.protection.outlook.com [40.107.223.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD2118EA0
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 14:26:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JLFObvA8kC/3iGXNPRbKcipwuanZVnS9MxfHJ+BuvTzrlInAykjHyJJ7SCqiURXjBjGMp0TDBFv9fM6wQQSTd3JBlo9cuJBOLDrWrRtsJO6fynxSI8elzLVBCvYD6icXWR7sHDpiNw1az6wLDCPJfddaXEcjN2P3EhTXaAhbPjqkAeXn7ctCgLzG0didLqNjJe52Fy9I/cAzTTOB8K3SgXa1BBrzEBv7BV+PHywlmnK0iZx5okjArYc8wYH5Obkvjv+u+XSjVDAZqLddv+4R4HKVrbntcXM/0qVDCVtw9Kj0AOoI4B58GWBZllSq/3S44YrcGVzD9HZV8m7hXW1T+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pmuXS7KEPYAbdJs8mafOcT/FUJr8S5yde8ZUjOZjYD8=;
- b=nyQb7KYo2MzLqsQe27PFScVswMNzQ6MWEbds+g0tbH4g3tfyZssHqLDU9DJKTwHz6abAvmdm/Tvl5BZ5m0Ku0Syp9nv/UfpsvhYyrGQMQ0FUsKZ+QY5XMYXAV3bfrgtpDWncMqNtMg3BGYg3hqROMBT5bKXIXuJPyfzu8fIJyq7jGH2NmAX9U+c3oOa4NWZ36WUg24ac2BnlpBDF06nyDeoU2X/nDkRXAOvRsuk0fBBl6A63l2IkK97FNzUpNG8aTHw9U3G/kIF7U44ADVyoDDF3d8SHVCVDpfW0oLPxQqQDKfNTc/fWLGH6TFqN4l5BXmZi8QxdtwxXGQ95M9zHdg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pmuXS7KEPYAbdJs8mafOcT/FUJr8S5yde8ZUjOZjYD8=;
- b=J7XJkwDXnR8X9oWMXdcZ2ov+U4LsL1KF34pxBJV7pwfd3KmPDZV3+4eFRXjHhVDwD9NiaGqswbyX426zPcKVR/hRaXp1SAe8PoqGnCaMHJuADZMvMm7wFCfTmFXzaFj80tpfjUi8fIDlO8igcHtsiJlzkcVytb5Ytxr0ULgXP3A=
-Received: from DM6PR03CA0002.namprd03.prod.outlook.com (2603:10b6:5:40::15) by
- IA1PR12MB8539.namprd12.prod.outlook.com (2603:10b6:208:446::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6319.33; Tue, 25 Apr 2023 21:26:27 +0000
-Received: from DM6NAM11FT105.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:40:cafe::70) by DM6PR03CA0002.outlook.office365.com
- (2603:10b6:5:40::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.33 via Frontend
- Transport; Tue, 25 Apr 2023 21:26:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT105.mail.protection.outlook.com (10.13.173.164) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6340.20 via Frontend Transport; Tue, 25 Apr 2023 21:26:27 +0000
-Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 25 Apr
- 2023 16:26:26 -0500
-From:   Shannon Nelson <shannon.nelson@amd.com>
-To:     <jasowang@redhat.com>, <mst@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
-        <netdev@vger.kernel.org>
-CC:     <drivers@pensando.io>
-Subject: [PATCH v4 virtio 10/10] pds_vdpa: pds_vdps.rst and Kconfig
-Date:   Tue, 25 Apr 2023 14:26:02 -0700
-Message-ID: <20230425212602.1157-11-shannon.nelson@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230425212602.1157-1-shannon.nelson@amd.com>
-References: <20230425212602.1157-1-shannon.nelson@amd.com>
+        with ESMTP id S236287AbjDYV2f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 17:28:35 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADFD729A;
+        Tue, 25 Apr 2023 14:28:27 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id 3f1490d57ef6-b99f374179bso1896036276.3;
+        Tue, 25 Apr 2023 14:28:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682458106; x=1685050106;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KN4OwG7Q8S0Ej2HKI/K8Bzq4Vn4sob6zcbuKi/+SBdk=;
+        b=Oz4UbWpnj6Eh8d8V1VZ88IAXj/GUdzOFDQ7w7bab738unz4j94g2KIoScKa+JBOCee
+         6AnhR9ro+G/dg6bIlF2wDf9EwKsttEkhVZE4qfSu1PAFYXABo2gReoNJ9t29CBk03uNK
+         WIzhAM11FzK7JQ6v7Dg6EJm6hIrI0Ya4Wmn/Rji2zbxmmJXSTWwOKuszPUH6UmJy61do
+         I16qnR2ojZu0deWpR74s3SB0w9bl8DfCbf/z0dnpeQclzEMH4Srg6RnMUQK9E8ud6W4b
+         TEylmunEnL3QI+CN6gagBCfpGDHnuxJpIC9iHTZv69VdTqdBgfItR3wsUuyqYHmjR+9Z
+         axBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682458106; x=1685050106;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KN4OwG7Q8S0Ej2HKI/K8Bzq4Vn4sob6zcbuKi/+SBdk=;
+        b=RX+z1QSUhFzsvtf9CiKILQAyLWJRsJgJmKHlO7qlDhqCLoJT7Ny1H3Gcim0WcPODxE
+         kvFgXTWPFK2ovF46NlCwTvHWUzppRfZymaE/eo4dOsnObxEayAuQ2XrRBws4rMnFQwLs
+         k9sCCeM5WRVMTwCdfcsBir6HFd1ofjsvgMmEjuiUd28fF9F+1oGkl0UlcPgEholimjlt
+         E12M0NV2qsRIxx5x63w8dnrkJ/h/LTC/wxGtEXPmtbEEcTajcq9g/g7EoOwcY9kmPoF7
+         GvPCX1IzE0Z4tLJgvJFzYir3+/L7r/N89JzsDPVvbmbqklxVSMzgKUUSci3l9c7U72le
+         wZvw==
+X-Gm-Message-State: AAQBX9evgEDI+8da7VbesvOM8wgPn/jDzQGSdQ/N9FmW6zsHHSsAa5eL
+        PImpV5utL6mnpqIQsvadKmk=
+X-Google-Smtp-Source: AKy350ZVCFaWXkFzYXnWip3LB4JLnKNxWp2+EpTCsvVEqE0yp6pu7FPsDxWtnMNKoFBSatYHM/lYuw==
+X-Received: by 2002:a25:4243:0:b0:b75:9a44:5342 with SMTP id p64-20020a254243000000b00b759a445342mr13550844yba.4.1682458106526;
+        Tue, 25 Apr 2023 14:28:26 -0700 (PDT)
+Received: from ?IPV6:2600:1700:6cf8:1240:ba8:150e:68:30f0? ([2600:1700:6cf8:1240:ba8:150e:68:30f0])
+        by smtp.gmail.com with ESMTPSA id d134-20020a25e68c000000b00b9949799ce3sm2639289ybh.32.2023.04.25.14.28.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Apr 2023 14:28:26 -0700 (PDT)
+Message-ID: <927ddd10-ae5b-886c-6725-3daf04456e52@gmail.com>
+Date:   Tue, 25 Apr 2023 14:28:19 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT105:EE_|IA1PR12MB8539:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8a92ab5c-04f5-45ae-882c-08db45d3ba6d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c4dNz4T7DCOn2n/92Ug0+VCJOsSuqu8/B7St+CrihCpOANUVc+YB3hAwYhyNdLj3WAs9N/OmPFmZdZ+f0rhGY9VNrF6etrzQsTwP25X1WO36DEZleDP4021AnH74jBXEdBEKJVtdxkEKUAq9jDMJcB+LcjTZ5Kt7/DUhveenWD5/1iayIIeeoN6tYrh1PQHF0DBRPr95vTKfRcaEKc73Wi/ctnOqNLu3SJ08G5PRDjwIjMvF569zLxLrB2XV502KuR+q4p5idAlZeAhEv1GQxJS6EDC425b7FKHLpB2gsvkhk/F7CF2DIJNjKEM+zxIWxkuXtwMTsYnn6x+jjGAHy5Ned+Qla8tpAoQhmKFL9N2RC7VDa//XAPz9WGC224ak97qqDJcrvtas4y7JhDZGLmCgyNFG4fvbdDoXpJC05yal5CmwNyirsqJJsD+afDxp7Hm04RHw4Ok+1ogQudOfSzsLmcKI/RykZzRkASYkQW4M9vv6TZuXHSi45ZMSwB47NmjgjIRDXxtVT2B8jawoC/5C/jiDHIzR6couQb4o3u+ezUnBdp2ZhZSS/F1HuL7ybBxWZt65PFUNK+1L5L8AwYDKvYrjfhfV//Tq+i3nIPlaHC94xnQHAN8rRMoEfrMtt9LLWJe0nJAwLp4y+BlFuy3J0bBCfQu366uvcTCJDdOUkpRGZnIuvHrvBsy8NRgqe1RMcrduDX9Wuum/7hCuPvOznflBJxRZc2S97lXdW6UNFyGSO3HfIsZ5BUZDp9TpmMHDsnjnasxGSdEt0zjx9Q==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(39860400002)(376002)(346002)(451199021)(40470700004)(36840700001)(46966006)(1076003)(26005)(40480700001)(426003)(336012)(2616005)(36756003)(83380400001)(36860700001)(43170500006)(47076005)(82740400003)(186003)(16526019)(40460700003)(356005)(81166007)(70206006)(86362001)(70586007)(478600001)(8676002)(8936002)(44832011)(110136005)(5660300002)(66899021)(41300700001)(2906002)(82310400005)(4326008)(6666004)(316002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2023 21:26:27.0276
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a92ab5c-04f5-45ae-882c-08db45d3ba6d
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT105.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8539
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: handling unsupported optlen in cgroup bpf getsockopt: (was [PATCH
+ net-next v4 2/4] net: socket: add sockopts blacklist for BPF cgroup hook)
+Content-Language: en-US
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Martin KaFai Lau <martin.lau@linux.dev>,
+        Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        linux-arch@vger.kernel.org,
+        Aleksandr Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
+        bpf <bpf@vger.kernel.org>
+References: <20230413133355.350571-1-aleksandr.mikhalitsyn@canonical.com>
+ <20230413133355.350571-3-aleksandr.mikhalitsyn@canonical.com>
+ <CANn89iLuLkUvX-dDC=rJhtFcxjnVmfn_-crOevbQe+EjaEDGbg@mail.gmail.com>
+ <CAEivzxcEhfLttf0VK=NmHdQxF7CRYXNm6NwUVx6jx=-u2k-T6w@mail.gmail.com>
+ <CAKH8qBt+xPygUVPMUuzbi1HCJuxc4gYOdU6JkrFmSouRQgoG6g@mail.gmail.com>
+ <ZDoEG0VF6fb9y0EC@google.com>
+ <a4591e85-d58b-0efd-c8a4-2652dc69ff68@linux.dev>
+ <ZD7Js4fj5YyI2oLd@google.com>
+ <b453462a-3d98-8d0f-9cc0-543032de5a5f@gmail.com>
+ <CAKH8qBusi0AWpo_iDaFkLFPUhgZy7-p6JwhimCkpYMhWnToE7g@mail.gmail.com>
+From:   Kui-Feng Lee <sinquersw@gmail.com>
+In-Reply-To: <CAKH8qBusi0AWpo_iDaFkLFPUhgZy7-p6JwhimCkpYMhWnToE7g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the documentation and Kconfig entry for pds_vdpa driver.
 
-Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
----
- .../device_drivers/ethernet/amd/pds_vdpa.rst  | 85 +++++++++++++++++++
- .../device_drivers/ethernet/index.rst         |  1 +
- MAINTAINERS                                   |  4 +
- drivers/vdpa/Kconfig                          |  8 ++
- 4 files changed, 98 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_vdpa.rst
 
-diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_vdpa.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_vdpa.rst
-new file mode 100644
-index 000000000000..587927d3de92
---- /dev/null
-+++ b/Documentation/networking/device_drivers/ethernet/amd/pds_vdpa.rst
-@@ -0,0 +1,85 @@
-+.. SPDX-License-Identifier: GPL-2.0+
-+.. note: can be edited and viewed with /usr/bin/formiko-vim
-+
-+==========================================================
-+PCI vDPA driver for the AMD/Pensando(R) DSC adapter family
-+==========================================================
-+
-+AMD/Pensando vDPA VF Device Driver
-+
-+Copyright(c) 2023 Advanced Micro Devices, Inc
-+
-+Overview
-+========
-+
-+The ``pds_vdpa`` driver is an auxiliary bus driver that supplies
-+a vDPA device for use by the virtio network stack.  It is used with
-+the Pensando Virtual Function devices that offer vDPA and virtio queue
-+services.  It depends on the ``pds_core`` driver and hardware for the PF
-+and VF PCI handling as well as for device configuration services.
-+
-+Using the device
-+================
-+
-+The ``pds_vdpa`` device is enabled via multiple configuration steps and
-+depends on the ``pds_core`` driver to create and enable SR-IOV Virtual
-+Function devices.  After the VFs are enabled, we enable the vDPA service
-+in the ``pds_core`` device to create the auxiliary devices used by pds_vdpa.
-+
-+Example steps:
-+
-+.. code-block:: bash
-+
-+  #!/bin/bash
-+
-+  modprobe pds_core
-+  modprobe vdpa
-+  modprobe pds_vdpa
-+
-+  PF_BDF=`ls /sys/module/pds_core/drivers/pci\:pds_core/*/sriov_numvfs | awk -F / '{print $7}'`
-+
-+  # Enable vDPA VF auxiliary device(s) in the PF
-+  devlink dev param set pci/$PF_BDF name enable_vnet cmode runtime value true
-+
-+  # Create a VF for vDPA use
-+  echo 1 > /sys/bus/pci/drivers/pds_core/$PF_BDF/sriov_numvfs
-+
-+  # Find the vDPA services/devices available
-+  PDS_VDPA_MGMT=`vdpa mgmtdev show | grep vDPA | head -1 | cut -d: -f1`
-+
-+  # Create a vDPA device for use in virtio network configurations
-+  vdpa dev add name vdpa1 mgmtdev $PDS_VDPA_MGMT mac 00:11:22:33:44:55
-+
-+  # Set up an ethernet interface on the vdpa device
-+  modprobe virtio_vdpa
-+
-+
-+
-+Enabling the driver
-+===================
-+
-+The driver is enabled via the standard kernel configuration system,
-+using the make command::
-+
-+  make oldconfig/menuconfig/etc.
-+
-+The driver is located in the menu structure at:
-+
-+  -> Device Drivers
-+    -> Network device support (NETDEVICES [=y])
-+      -> Ethernet driver support
-+        -> Pensando devices
-+          -> Pensando Ethernet PDS_VDPA Support
-+
-+Support
-+=======
-+
-+For general Linux networking support, please use the netdev mailing
-+list, which is monitored by Pensando personnel::
-+
-+  netdev@vger.kernel.org
-+
-+For more specific support needs, please use the Pensando driver support
-+email::
-+
-+  drivers@pensando.io
-diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
-index 417ca514a4d0..94ecb67c0885 100644
---- a/Documentation/networking/device_drivers/ethernet/index.rst
-+++ b/Documentation/networking/device_drivers/ethernet/index.rst
-@@ -15,6 +15,7 @@ Contents:
-    amazon/ena
-    altera/altera_tse
-    amd/pds_core
-+   amd/pds_vdpa
-    aquantia/atlantic
-    chelsio/cxgb
-    cirrus/cs89x0
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6ac562e0381e..93210a8ac74f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -22148,6 +22148,10 @@ SNET DPU VIRTIO DATA PATH ACCELERATOR
- R:	Alvaro Karsz <alvaro.karsz@solid-run.com>
- F:	drivers/vdpa/solidrun/
- 
-+PDS DSC VIRTIO DATA PATH ACCELERATOR
-+R:	Shannon Nelson <shannon.nelson@amd.com>
-+F:	drivers/vdpa/pds/
-+
- VIRTIO BALLOON
- M:	"Michael S. Tsirkin" <mst@redhat.com>
- M:	David Hildenbrand <david@redhat.com>
-diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
-index cd6ad92f3f05..2ee1b288691d 100644
---- a/drivers/vdpa/Kconfig
-+++ b/drivers/vdpa/Kconfig
-@@ -116,4 +116,12 @@ config ALIBABA_ENI_VDPA
- 	  This driver includes a HW monitor device that
- 	  reads health values from the DPU.
- 
-+config PDS_VDPA
-+	tristate "vDPA driver for AMD/Pensando DSC devices"
-+	depends on PDS_CORE
-+	help
-+	  vDPA network driver for AMD/Pensando's PDS Core devices.
-+	  With this driver, the VirtIO dataplane can be
-+	  offloaded to an AMD/Pensando DSC device.
-+
- endif # VDPA
--- 
-2.17.1
+On 4/25/23 11:42, Stanislav Fomichev wrote:
+> On Tue, Apr 25, 2023 at 10:59 AM Kui-Feng Lee <sinquersw@gmail.com> wrote:
+>>
+>>
+>>
+>> On 4/18/23 09:47, Stanislav Fomichev wrote:
+>>> On 04/17, Martin KaFai Lau wrote:
+>>>> On 4/14/23 6:55 PM, Stanislav Fomichev wrote:
+>>>>> On 04/13, Stanislav Fomichev wrote:
+>>>>>> On Thu, Apr 13, 2023 at 7:38 AM Aleksandr Mikhalitsyn
+>>>>>> <aleksandr.mikhalitsyn@canonical.com> wrote:
+>>>>>>>
+>>>>>>> On Thu, Apr 13, 2023 at 4:22 PM Eric Dumazet <edumazet@google.com> wrote:
+>>>>>>>>
+>>>>>>>> On Thu, Apr 13, 2023 at 3:35 PM Alexander Mikhalitsyn
+>>>>>>>> <aleksandr.mikhalitsyn@canonical.com> wrote:
+>>>>>>>>>
+>>>>>>>>> During work on SO_PEERPIDFD, it was discovered (thanks to Christian),
+>>>>>>>>> that bpf cgroup hook can cause FD leaks when used with sockopts which
+>>>>>>>>> install FDs into the process fdtable.
+>>>>>>>>>
+>>>>>>>>> After some offlist discussion it was proposed to add a blacklist of
+>>>>>>>>
+>>>>>>>> We try to replace this word by either denylist or blocklist, even in changelogs.
+>>>>>>>
+>>>>>>> Hi Eric,
+>>>>>>>
+>>>>>>> Oh, I'm sorry about that. :( Sure.
+>>>>>>>
+>>>>>>>>
+>>>>>>>>> socket options those can cause troubles when BPF cgroup hook is enabled.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Can we find the appropriate Fixes: tag to help stable teams ?
+>>>>>>>
+>>>>>>> Sure, I will add next time.
+>>>>>>>
+>>>>>>> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+>>>>>>>
+>>>>>>> I think it's better to add Stanislav Fomichev to CC.
+>>>>>>
+>>>>>> Can we use 'struct proto' bpf_bypass_getsockopt instead? We already
+>>>>>> use it for tcp zerocopy, I'm assuming it should work in this case as
+>>>>>> well?
+>>>>>
+>>>>> Jakub reminded me of the other things I wanted to ask here bug forgot:
+>>>>>
+>>>>> - setsockopt is probably not needed, right? setsockopt hook triggers
+>>>>>      before the kernel and shouldn't leak anything
+>>>>> - for getsockopt, instead of bypassing bpf completely, should we instead
+>>>>>      ignore the error from the bpf program? that would still preserve
+>>>>>      the observability aspect
+>>>>
+>>>> stealing this thread to discuss the optlen issue which may make sense to
+>>>> bypass also.
+>>>>
+>>>> There has been issue with optlen. Other than this older post related to
+>>>> optlen > PAGE_SIZE:
+>>>> https://lore.kernel.org/bpf/5c8b7d59-1f28-2284-f7b9-49d946f2e982@linux.dev/,
+>>>> the recent one related to optlen that we have seen is
+>>>> NETLINK_LIST_MEMBERSHIPS. The userspace passed in optlen == 0 and the kernel
+>>>> put the expected optlen (> 0) and 'return 0;' to userspace. The userspace
+>>>> intention is to learn the expected optlen. This makes 'ctx.optlen >
+>>>> max_optlen' and __cgroup_bpf_run_filter_getsockopt() ends up returning
+>>>> -EFAULT to the userspace even the bpf prog has not changed anything.
+>>>
+>>> (ignoring -EFAULT issue) this seems like it needs to be
+>>>
+>>>        if (optval && (ctx.optlen > max_optlen || ctx.optlen < 0)) {
+>>>                /* error */
+>>>        }
+>>>
+>>> ?
+>>>
+>>>> Does it make sense to also bypass the bpf prog when 'ctx.optlen >
+>>>> max_optlen' for now (and this can use a separate patch which as usual
+>>>> requires a bpf selftests)?
+>>>
+>>> Yeah, makes sense. Replacing this -EFAULT with WARN_ON_ONCE or something
+>>> seems like the way to go. It caused too much trouble already :-(
+>>>
+>>> Should I prepare a patch or do you want to take a stab at it?
+>>>
+>>>> In the future, does it make sense to have a specific cgroup-bpf-prog (a
+>>>> specific attach type?) that only uses bpf_dynptr kfunc to access the optval
+>>>> such that it can enforce read-only for some optname and potentially also
+>>>> track if bpf-prog has written a new optval? The bpf-prog can only return 1
+>>>> (OK) and only allows using bpf_set_retval() instead. Likely there is still
+>>>> holes but could be a seed of thought to continue polishing the idea.
+>>>
+>>> Ack, let's think about it.
+>>>
+>>> Maybe we should re-evaluate 'getsockopt-happens-after-the-kernel' idea
+>>> as well? If we can have a sleepable hook that can copy_from_user/copy_to_user,
+>>> and we have a mostly working bpf_getsockopt (after your refactoring),
+>>> I don't see why we need to continue the current scheme of triggering
+>>> after the kernel?
+>>
+>> Since a sleepable hook would cause some restrictions, perhaps, we could
+>> introduce something like the promise pattern.  In our case here, BPF
+>> program call an async version of copy_from_user()/copy_to_user() to
+>> return a promise.
+> 
+> Having a promise might work. This is essentially what we already do
+> with sockets/etc with acquire/release pattern.
 
+Would you mind to give me some context of the socket things?
+
+> 
+> What are the sleepable restrictions you're hinting about? I feel like
+> with the sleepable bpf, we can also remove all the temporary buffer
+> management / extra copies which sounds like a win to me. (we have this
+> ugly heuristics with BPF_SOCKOPT_KERN_BUF_SIZE) The program can
+> allocate temporary buffers if needed..
+> 
+>>>>> - or maybe we can even have a per-proto bpf_getsockopt_cleanup call that
+>>>>>      gets called whenever bpf returns an error to make sure protocols have
+>>>>>      a chance to handle that condition (and free the fd)
+>>>>>
+>>>>
+>>>>
