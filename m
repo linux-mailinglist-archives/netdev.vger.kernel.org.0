@@ -2,103 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E10D66EDBDA
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 08:47:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B5EA6EDBE1
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 08:48:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233407AbjDYGrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 02:47:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51610 "EHLO
+        id S233510AbjDYGsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 02:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232617AbjDYGrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 02:47:21 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26725FF0
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 23:47:19 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id BF5BE20826;
-        Tue, 25 Apr 2023 08:47:17 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id oQ_w2QYaMTCZ; Tue, 25 Apr 2023 08:47:16 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id E956B20547;
-        Tue, 25 Apr 2023 08:47:16 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id DB14280004A;
-        Tue, 25 Apr 2023 08:47:16 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 25 Apr 2023 08:47:16 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Tue, 25 Apr
- 2023 08:47:16 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id D11083182BD0; Tue, 25 Apr 2023 08:47:15 +0200 (CEST)
-Date:   Tue, 25 Apr 2023 08:47:15 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-CC:     Tobias Brunner <tobias@strongswan.org>, <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH ipsec] xfrm: Ensure consistent address families when
- resolving templates
-Message-ID: <ZEd3c8j+ceBvObeM@gauss3.secunet.de>
-References: <6dcb6a58-2699-9cde-3e34-57c142dbcf14@strongswan.org>
- <ZEdmdDAwnuslrdvA@gondor.apana.org.au>
+        with ESMTP id S233523AbjDYGsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 02:48:11 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C58CC01
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 23:47:53 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id a640c23a62f3a-94f3df30043so839105266b.2
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 23:47:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1682405272; x=1684997272;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=r4WWE8HXKFBPnGoE2eacPBmcXTye9ANIzC/BWWDQXRk=;
+        b=Jvrzt64LKKSfbWqlyZHET+VwucFJkya9K1SuR18k0jMRyNg9tfKe5vA11oLb7I/U4L
+         hhIE92Pt14tICiJ773YhRdPYd/MbL+3MfZSYF6fM/XK8T3Yu6W/fPk9F3GNuIHmPghM3
+         06NmBMPRvp46Aq12xg2eei2wL/WGCIU71yipPHJRn+p+J3er0kF94AOXz6mFG61oUYLP
+         Hn5/9Zyf9QOQx+oANGcBGms2NSIVkWy1OKAevsCwED+4NrbPHoQgf65BVwqZlImRrvMv
+         ta/dMNPWzCNOMIMxuAvipnIyUc8igj9Z60LD5mjVF+N9t3iOzGQTD8K7ZCLqUWZVqpfm
+         QQTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682405272; x=1684997272;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=r4WWE8HXKFBPnGoE2eacPBmcXTye9ANIzC/BWWDQXRk=;
+        b=Ekdco7JV+zA9q/rRdZfjazclpytMXfrNmsYbQ7/SHV9dPwTD8WFy7ODOiFirgH0Stq
+         EFeicCb0nZaxRoUZF9ly/pU3nCcP9N+KlUrmOxPcr1Te1CSlRTUmskLAKbJxspO4/BQI
+         gC02E960vBgqiAM6mQJHqJ3hfGIYPe1LPf/Y7WWEPIkZUrQRIqlmc8EpvCdQn9s0HTnk
+         zbpra54V8YaemX11Td36RgGiUffVL3FkpB8OgmxuiD3+MGwprJjSzSv6L1CVaU/WmpOU
+         2RTpZ7S1Q5X7MqCRLULFY5KmKqHZEhLH/nqQfMC6nAUIfGNUIffjTdXKM5I6X5MM4Rve
+         KWcA==
+X-Gm-Message-State: AAQBX9eVIeoJRTLEnYlA7DTWIFnlzgyxP8q4Lbgn860pPRmb2SEPiIqv
+        hxVs7tMgjtdFqEg2LAg2Ghkb8Q==
+X-Google-Smtp-Source: AKy350alP7zD6AD9rm5XvnUanxw5IQ7ejFu7stfkQWNIZ+pRKR2AzYjVrjGtQZXsp3bX9Ii43ZpCMw==
+X-Received: by 2002:a17:906:cd07:b0:94a:4499:ec30 with SMTP id oz7-20020a170906cd0700b0094a4499ec30mr11958493ejb.15.1682405271583;
+        Mon, 24 Apr 2023 23:47:51 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id qf22-20020a1709077f1600b0094a8aa6338dsm6467953ejc.14.2023.04.24.23.47.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Apr 2023 23:47:50 -0700 (PDT)
+Message-ID: <68a2e74c-9dfc-27f0-fd3a-360e88e8b023@blackwall.org>
+Date:   Tue, 25 Apr 2023 09:47:49 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ZEdmdDAwnuslrdvA@gondor.apana.org.au>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH iproute2-next 1/2] bridge: vlan: Add support for
+ neigh_suppress option
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org, liuhangbin@gmail.com
+References: <20230424160951.232878-1-idosch@nvidia.com>
+ <20230424160951.232878-2-idosch@nvidia.com>
+Content-Language: en-US
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230424160951.232878-2-idosch@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 01:34:44PM +0800, Herbert Xu wrote:
-> On Mon, Apr 24, 2023 at 03:23:02PM +0200, Tobias Brunner wrote:
-> > xfrm_state_find() uses `encap_family` of the current template with
-> > the passed local and remote addresses to find a matching state.
-> > This check makes sure that there is no mismatch and out-of-bounds
-> > read in mixed-family scenarios where optional tunnel or BEET mode
-> > templates were skipped that would have changed the addresses to
-> > match the current template's family.
-> > 
-> > This basically enforces the same check as validate_tmpl(), just at
-> > runtime when one or more optional templates might have been skipped.
-> > 
-> > Signed-off-by: Tobias Brunner <tobias@strongswan.org>
-> > ---
-> >  net/xfrm/xfrm_policy.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
+On 24/04/2023 19:09, Ido Schimmel wrote:
+> Add support for the per-VLAN neigh_suppress option. Example:
 > 
-> I'm confused.  By skipping, you're presumably referring to IPcomp.
+>  # bridge vlan set vid 10 dev swp1 neigh_suppress on
+>  # bridge -d -j -p vlan show dev swp1 vid 10
+>  [ {
+>          "ifname": "swp1",
+>          "vlans": [ {
+>                  "vlan": 10,
+>                  "state": "forwarding",
+>                  "mcast_router": 1,
+>                  "neigh_suppress": true
+>              } ]
+>      } ]
+>  # bridge -d vlan show dev swp1 vid 10
+>  port              vlan-id
+>  swp1              10
+>                      state forwarding mcast_router 1 neigh_suppress on
 > 
-> For IPcomp, skipping should only occur on inbound, but your patch
-> is changing a code path that's only invoked for outbound.  What's
-> going on?
+>  # bridge vlan set vid 10 dev swp1 neigh_suppress off
+>  # bridge -d -j -p vlan show dev swp1 vid 10
+>  [ {
+>          "ifname": "swp1",
+>          "vlans": [ {
+>                  "vlan": 10,
+>                  "state": "forwarding",
+>                  "mcast_router": 1,
+>                  "neigh_suppress": false
+>              } ]
+>      } ]
+>  # bridge -d vlan show dev swp1 vid 10
+>  port              vlan-id
+>  swp1              10
+>                      state forwarding mcast_router 1 neigh_suppress off
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  bridge/vlan.c     | 18 ++++++++++++++++++
+>  man/man8/bridge.8 | 11 ++++++++++-
+>  2 files changed, 28 insertions(+), 1 deletion(-)
+> 
 
-The problem is, that you can configure it for outbound too.
-Even though, it does not make much sense. syzbot reported
-a stack-out-of-bounds issue with intermediate optional
-templates that change the address family:
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
 
-https://www.spinics.net/lists/netdev/msg890567.html
 
-I tried to fix this by rejecting such a configuration:
-
-https://lore.kernel.org/netdev/ZCZ79IlUW53XxaVr@gauss3.secunet.de/T/
-
-This broke some strongswan configurations.
-
-Tobias patch is the next attempt to fix that.
