@@ -2,165 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 159B96EDF10
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 11:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3714D6EDFAA
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 11:48:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233271AbjDYJU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 05:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
+        id S233255AbjDYJsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 05:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232274AbjDYJU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 05:20:57 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BAF64EF3
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 02:20:51 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50685f1b6e0so10108709a12.0
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 02:20:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1682414449; x=1685006449;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WsdCNQzIoPz+lH63xj1YaKKNKo3iDm5pfw23qiYoBOQ=;
-        b=wOvkX2oC5ZHyFMdylx8IkrryNZeg23DU/Ch9AChLKbcB/sx0DFV8Yb/H7vUSsHm/ay
-         6vKeAhZHqi4KvKzBL9RsojhjUK4oU8lb+V+mupjRsr3d4Ozv9ezhvySx+DHEhqR+hjMA
-         gaiJOqLYT51c8eBo6o+cG8x82KOH/6WDLxVffZqZup0JrvMaRV4XDFiPQxHmTy81GMpM
-         QIfjcv/pPcyMi1TiLUVU+h31xU2FfOzqmTSR6PnZ45uP7vvaFC3j0EA3bBbvXBOdzaR3
-         fHRbyuMSy1Dp046zUXSSm/0Gjosdxp/aEC/NPYM4X7lNjpFDITb7o57bkR9W209v9XtR
-         w4rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682414449; x=1685006449;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WsdCNQzIoPz+lH63xj1YaKKNKo3iDm5pfw23qiYoBOQ=;
-        b=EsJq/ZEx7RoZ9KltjJnTeNs5UAls9Ce1F30+CeLTMWodo102jKngModC9GKUueUnZz
-         xrPaUyrDLAgyMyO/DMpZomCic2Qa6luQtw5etlM5Cv1wJT+KXlz6TOhlUJrWIpfZBev/
-         z+PMH65xOUGkUOI3kqhEMjXlNk68Ct13eQrtBM/A8x5h107my1uix/GOrNYPFW9Jnyz5
-         X/E5P9ZMncJbuP28sbQlHbS0SOC7KU8dTuhT4buBiqguCHBu8w+HCfq+SxBW7hdYwT9l
-         NAj2FfmbdU57J9qLl6/oKFbc7TMt6tlxQzqfh6/Xrm1+1ku4x94KJobFpWfVf2xt4gtW
-         WRZA==
-X-Gm-Message-State: AAQBX9eWnXXbutikkUfYKlvNY8idqxHEvZU2ebB3C+WpyflcyuP6ji34
-        fTGVDMkaRrp7CHsV4qP4emmJfg==
-X-Google-Smtp-Source: AKy350YuXymrw7So4UOjZjef+iEPyi/CshywTQ5AjTJZJr/4WaSMcccmVMSSXrgcRBO0CsBCTlwDVg==
-X-Received: by 2002:a17:907:b9d9:b0:94f:1a23:2f1c with SMTP id xa25-20020a170907b9d900b0094f1a232f1cmr14815686ejc.50.1682414449568;
-        Tue, 25 Apr 2023 02:20:49 -0700 (PDT)
-Received: from [192.168.9.102] ([195.167.132.10])
-        by smtp.gmail.com with ESMTPSA id h11-20020a170906828b00b0094f23480619sm6620286ejx.172.2023.04.25.02.20.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Apr 2023 02:20:48 -0700 (PDT)
-Message-ID: <0210316b-9e21-347c-ed15-ce8200aeeb94@linaro.org>
-Date:   Tue, 25 Apr 2023 11:20:46 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH 00/43] ep93xx device tree conversion
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Nikita Shubin <nikita.shubin@maquefel.me>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Linus Walleij <linusw@kernel.org>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Brian Norris <briannorris@chromium.org>,
-        Chuanhong Guo <gch981213@gmail.com>,
-        "Conor.Dooley" <conor.dooley@microchip.com>,
-        Damien Le Moal <dlemoal@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
+        with ESMTP id S232430AbjDYJsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 05:48:17 -0400
+Received: from domac.alu.hr (domac.alu.unizg.hr [IPv6:2001:b68:2:2800::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CCA12CB5;
+        Tue, 25 Apr 2023 02:47:31 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id CE1ED6015F;
+        Tue, 25 Apr 2023 11:47:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1682416047; bh=7yxZu0Emw84OkpuQ1sf7+2iZskuUnjHQc2X91hkquQk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lDwrjC9y6XA+afif1yRsJfJyDjHdXFCI3Dm/AQhg0VQZZtQHpTvyiBK42GVO+Yiv3
+         JBpl7TEa72NPqEYnfBdm/svg/pWCsb2FhBX4Ntx6mLeoq7tigAMdQ+5rwvy4q8rmih
+         GDBLuq3+37SkjpG2RYX8HkaRHkGR+V1i55KF+Afn9GMQManB6uLk2MiNm/6QWChTgv
+         cf9RWn7k8lViMmykbOHt7Pz/gKkCzgG2SuqkwhBcawq5uDJkOwjR8FacBhv4TAaBIt
+         1HKhhvwRokEIxxcZoTheO5IReWmQZxlXFszJHEKBkjlbEULjGld9f1nHUo1pcH2NDU
+         g7AMePdnl7VZA==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id b8MUtoYMLe1w; Tue, 25 Apr 2023 11:47:23 +0200 (CEST)
+Received: by domac.alu.hr (Postfix, from userid 1014)
+        id 3740E60161; Tue, 25 Apr 2023 11:47:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1682416043; bh=7yxZu0Emw84OkpuQ1sf7+2iZskuUnjHQc2X91hkquQk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=0EKZlnKR9EENnvvgBisYAiHjccl97DjOFMDo+IabYY33VrmZO3GXb60JDOGIROqlE
+         +2mT+7CVlbEkSQKVT4reqcZy7CB+usY5Xtk/5tox2oyIz5/ebIoaSn35MELBDJzDno
+         Ps10tb1UIu2nLrYmZA43QuNSPBQHMC6ujD7ANFJ+SkSujt2+N4WbZ59FZ5xcobG/eM
+         7uxLOxUHxonJrlhC+hIRU208KHWU5PVF6u7KMV6L4lydNjwNkS21UUb0FzHtfFtZZx
+         OUnLwn2PrrlOeczdzG38ipG1S75Bm6UQXsYsz5TQN74LI4fedNyfy30tMBAaYUJvWe
+         wR/38vLKq8SyA==
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+To:     Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Hartley Sweeten <hsweeten@visionengravers.com>,
-        =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
-        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jean Delvare <jdelvare@suse.de>, Joel Stanley <joel@jms.id.au>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Liang Yang <liang.yang@amlogic.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lukasz Majewski <lukma@denx.de>, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Qin Jian <qinjian@cqplus1.com>,
-        Richard Weinberger <richard@nod.at>,
-        Rob Herring <robh+dt@kernel.org>,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Russell King <linux@armlinux.org.uk>,
-        Sebastian Reichel <sre@kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Sven Peter <sven@svenpeter.dev>, Takashi Iwai <tiwai@suse.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Walker Chen <walker.chen@starfivetech.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Yinbo Zhu <zhuyinbo@loongson.cn>, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-ide@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        soc@kernel.org
-References: <20230424123522.18302-1-nikita.shubin@maquefel.me>
- <8101c53e-e682-4dc3-95cc-a332b1822b8b@app.fastmail.com>
- <20230424152933.48b2ede1@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230424152933.48b2ede1@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Alexander Wetzel <alexander@wetzel-home.de>
+Subject: [PATCH v3 1/1] wifi: mac80211: fortify the spinlock against deadlock by interrupt
+Date:   Tue, 25 Apr 2023 11:35:48 +0200
+Message-Id: <20230425093547.1131-1-mirsad.todorovac@alu.unizg.hr>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/04/2023 00:29, Jakub Kicinski wrote:
-> On Mon, 24 Apr 2023 13:31:25 +0200 Arnd Bergmann wrote:
->> Thanks a lot for your continued work. I can't merge any of this at
->> the moment since the upstream merge window just opened, but I'm
->> happy to take this all through the soc tree for 6.5, provided we
->> get the sufficient Acks from the subsystem maintainers. Merging
->> it through each individual tree would take a lot longer, so I
->> hope we can avoid that.
-> 
-> Is there a dependency between the patches?
+In the function ieee80211_tx_dequeue() there is a particular locking
+sequence:
 
-I didn't get entire patchset and cover letter does not mention
-dependencies, but usually there shouldn't be such. Maybe for the next
-versions this should be split per subsystem?
+begin:
+	spin_lock(&local->queue_stop_reason_lock);
+	q_stopped = local->queue_stop_reasons[q];
+	spin_unlock(&local->queue_stop_reason_lock);
 
-Best regards,
-Krzysztof
+However small the chance (increased by ftracetest), an asynchronous
+interrupt can occur in between of spin_lock() and spin_unlock(),
+and the interrupt routine will attempt to lock the same
+&local->queue_stop_reason_lock again.
+
+This will cause a costly reset of the CPU and the wifi device or an
+altogether hang in the single CPU and single core scenario.
+
+This is the probable trace of the deadlock:
+
+Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  Possible unsafe locking scenario:
+Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:        CPU0
+Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:        ----
+Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:   lock(&local->queue_stop_reason_lock);
+Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:   <Interrupt>
+Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:     lock(&local->queue_stop_reason_lock);
+Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:
+                                                 *** DEADLOCK ***
+
+Fixes: 4444bc2116ae ("wifi: mac80211: Proper mark iTXQs for resumption")
+Link: https://lore.kernel.org/all/1f58a0d1-d2b9-d851-73c3-93fcc607501c@alu.unizg.hr/
+Reported-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+Cc: Gregory Greenman <gregory.greenman@intel.com>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/all/cdc80531-f25f-6f9d-b15f-25e16130b53a@alu.unizg.hr/
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Alexander Wetzel <alexander@wetzel-home.de>
+Signed-off-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+---
+v2 -> v3:
+- Fix the Fixes: tag as advised.
+- change the net: to wifi: to comply with the original patch that
+  is being fixed.
+v1 -> v2:
+- Minor rewording and clarification.
+- Cc:-ed people that replied to the original bug report (forgotten
+  in v1 by omission).
+
+ net/mac80211/tx.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 7699fb410670..45cb8e7bcc61 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -3781,6 +3781,7 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
+ 	ieee80211_tx_result r;
+ 	struct ieee80211_vif *vif = txq->vif;
+ 	int q = vif->hw_queue[txq->ac];
++	unsigned long flags;
+ 	bool q_stopped;
+ 
+ 	WARN_ON_ONCE(softirq_count() == 0);
+@@ -3789,9 +3790,9 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
+ 		return NULL;
+ 
+ begin:
+-	spin_lock(&local->queue_stop_reason_lock);
++	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
+ 	q_stopped = local->queue_stop_reasons[q];
+-	spin_unlock(&local->queue_stop_reason_lock);
++	spin_unlock_irqrestore(&local->queue_stop_reason_lock, flags);
+ 
+ 	if (unlikely(q_stopped)) {
+ 		/* mark for waking later */
+-- 
+2.30.2
 
