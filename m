@@ -2,87 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D1CE6EEA29
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 00:01:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8711F6EEA60
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 00:45:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231978AbjDYWBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 18:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46204 "EHLO
+        id S231998AbjDYWpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 18:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbjDYWBO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 18:01:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F75AA7
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 15:01:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE48662FF8
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 22:01:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE330C433EF;
-        Tue, 25 Apr 2023 22:01:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682460072;
-        bh=l0Zpbnqe1RRbJ72PnlWCBmP2XYR0o1BmKtk3lY2cNWk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=td0/oucEbjV2MfDPmOjq2RZAD11z6N2eDFpUyW2h6qxgNkb15pZILT3MIB5m+hUjr
-         1+19VfpH0QMXcQlY9QV4IhIXGRSvJNDoq0yt0RMEUHWiSCBZeCDECF0fB1DslfJY5+
-         j8LfxLolgdNufag5x6DNvriZCS/cZWMhSjPkPH3WD4myUdu4DZeeoIM9rBLIGs8ed+
-         qz9G8Q7L8Fz8V7QkMKaahWJLEt7282jUYBC762cf3ZmcuKp86+2i5b2d3a6FKKGKri
-         oKYwO5K8BWsjErFnH88AVISaUznANsQM46NcA/e4qd05/byZfIieJnC9QOI7qI0/p3
-         rhyIT2gVo44lA==
-Date:   Tue, 25 Apr 2023 15:01:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Arnd Bergmann" <arnd@arndb.de>
-Cc:     "Andrew Lunn" <andrew@lunn.ch>, "Paolo Abeni" <pabeni@redhat.com>,
+        with ESMTP id S231834AbjDYWpm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 18:45:42 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C5714468
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 15:45:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=76fKLmrJHJNMXeN3DOO0CMsg+5iQ2AsESyo1fCvEls4=; b=S3TeXmQpIl/fq6yPVtXf3k0cZ2
+        kp4GXRkg83vQKmHnyHQwwf/YCqWdHopFhkCG7qQNYPgk9nB6sSjqDhUiUlcpZNal24yTZ5zjgaMAH
+        pLGuh9qg2HY2TZQ+MtO7Fz4Z5PHbLneUhhkj5KRtsubk2mqZdvdd1DWm+tIAoF7I4EGY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1prRPc-00BEFR-OW; Wed, 26 Apr 2023 00:45:28 +0200
+Date:   Wed, 26 Apr 2023 00:45:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Paolo Abeni <pabeni@redhat.com>,
         Netdev <netdev@vger.kernel.org>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
-        "Russell King" <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S . Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>
+        Eric Dumazet <edumazet@google.com>
 Subject: Re: [PATCH net-next] net: phy: drop PHYLIB_LEDS knob
-Message-ID: <20230425150111.1b17b17b@kernel.org>
-In-Reply-To: <e1e1022a-da6e-4267-bca9-18cd76e0d218@app.fastmail.com>
+Message-ID: <ce193e89-0e20-4d9d-bdf5-e5151bee88e1@lunn.ch>
 References: <c783f6b8d8cc08100b13ce50a1330913dd95dbce.1682457539.git.pabeni@redhat.com>
-        <ce81b985-ebcf-46f7-b773-50e42d2d10e7@lunn.ch>
-        <e1e1022a-da6e-4267-bca9-18cd76e0d218@app.fastmail.com>
+ <ce81b985-ebcf-46f7-b773-50e42d2d10e7@lunn.ch>
+ <e1e1022a-da6e-4267-bca9-18cd76e0d218@app.fastmail.com>
+ <20230425150111.1b17b17b@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230425150111.1b17b17b@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Apr 2023 22:44:34 +0100 Arnd Bergmann wrote:
-> On Tue, Apr 25, 2023, at 22:38, Andrew Lunn wrote:
-> >>  
-> >> -config PHYLIB_LEDS
-> >> -	bool "Support probing LEDs from device tree"  
-> >
-> > I don't know Kconfig to well, but i think you just need to remove the
-> > text, just keep the bool.
-> >
-> > -       bool "Support probing LEDs from device tree"
-> > +       bool  
+On Tue, Apr 25, 2023 at 03:01:11PM -0700, Jakub Kicinski wrote:
+> On Tue, 25 Apr 2023 22:44:34 +0100 Arnd Bergmann wrote:
+> > On Tue, Apr 25, 2023, at 22:38, Andrew Lunn wrote:
+> > >>  
+> > >> -config PHYLIB_LEDS
+> > >> -	bool "Support probing LEDs from device tree"  
+> > >
+> > > I don't know Kconfig to well, but i think you just need to remove the
+> > > text, just keep the bool.
+> > >
+> > > -       bool "Support probing LEDs from device tree"
+> > > +       bool  
+> > 
+> > Right, that should work, or it can become
+> > 
+> >         def_bool y
+> > 
+> > or even
+> > 
+> >         def_bool OF
+> > 
+> > for brevity.
 > 
-> Right, that should work, or it can become
+> Hm, I think Paolo was concerned that we'd get PHYLIB_LEDS=y if PHYLIB=n
+> and LEDS_CLASS=n. But that's not possible because the option is in the
+> "if PHYLIB" section.
 > 
->         def_bool y
-> 
-> or even
-> 
->         def_bool OF
-> 
-> for brevity.
+> Is that right?
 
-Hm, I think Paolo was concerned that we'd get PHYLIB_LEDS=y if PHYLIB=n
-and LEDS_CLASS=n. But that's not possible because the option is in the
-"if PHYLIB" section.
+Seems correct to me.
 
-Is that right?
+But a randconfig test bot is who you really want conformation from.
+The bot is probably harder to keep happy then Linus.
+
+    Andrew
+
