@@ -2,86 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2176EE0F9
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 13:15:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9336B6EE101
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 13:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233928AbjDYLO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 07:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35610 "EHLO
+        id S233708AbjDYLTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 07:19:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233877AbjDYLOt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 07:14:49 -0400
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B395A9;
-        Tue, 25 Apr 2023 04:14:46 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1682421284; bh=vrTSialJD2Li5vjQDpn9fTzt12D3cKs5drm5QZYYqCY=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=OrJABxrUwNHh6hEAw5k6Y80NDr8Y6rSn1mDeNMtSZmK65oiBYVB6RNr6fmpzYw8PV
-         NT32YOiek5iwEUoqbIAwkT3EsBROUL9aZFcwcjh+Mqmb3YmfmebnI4hbZlklYE0HLq
-         oTl4+NbXXMelRk8u+tVOcpCQM/jZG06MMFc+FZXW4WzD3n37mK8p9IbPFPN78txUxn
-         MuH2zDuAjmWidmU7lY4QJmP2c5h0wbXkS4HkFFthaX5y/JMceqfs+FqP7c2pYFynil
-         NkImXfAXBR6eg7oFkiKHbIZrZVw4AZ+/QkiuHEHWJ0Wxd+8LQ0QA2nbxtX69C+MMuZ
-         OE23MS4NTyK0g==
-To:     Fedor Pchelkin <pchelkin@ispras.ru>, Kalle Vallo <kvalo@kernel.org>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Senthil Balasubramanian <senthilkumar@atheros.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
-        Sujith <Sujith.Manoharan@atheros.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org,
-        syzbot+f2cb6e0ffdb961921e4d@syzkaller.appspotmail.com
-Subject: Re: [PATCH v2] wifi: ath9k: avoid referencing uninit memory in
- ath9k_wmi_ctrl_rx
-In-Reply-To: <20230424183348.111355-1-pchelkin@ispras.ru>
-References: <20230424183348.111355-1-pchelkin@ispras.ru>
-Date:   Tue, 25 Apr 2023 13:14:43 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87sfcojjrw.fsf@toke.dk>
+        with ESMTP id S233451AbjDYLTQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 07:19:16 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8279B1707;
+        Tue, 25 Apr 2023 04:19:14 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Q5KD93cVDz17XFB;
+        Tue, 25 Apr 2023 19:15:21 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Tue, 25 Apr
+ 2023 19:19:12 +0800
+Subject: Re: [PATCH v2 net-next 1/2] net: veth: add page_pool for page
+ recycling
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+CC:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <hawk@kernel.org>, <john.fastabend@gmail.com>,
+        <ast@kernel.org>, <daniel@iogearbox.net>
+References: <cover.1682188837.git.lorenzo@kernel.org>
+ <6298f73f7cc7391c7c4a52a6a89b1ae21488bda1.1682188837.git.lorenzo@kernel.org>
+ <4f008243-49d0-77aa-0e7f-d20be3a68f3c@huawei.com>
+ <ZEU+vospFdm08IeE@localhost.localdomain>
+ <3c78f045-aa8e-22a5-4b38-ab271122a79e@huawei.com>
+ <ZEZJHCRsBVQwd9ie@localhost.localdomain>
+ <0c1790dc-dbeb-8664-64ca-1f71e6c4f3a9@huawei.com> <ZEZ/xXcOv9Co5Vif@boxer>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <99890c72-eb61-e032-944a-6671d6494c23@huawei.com>
+Date:   Tue, 25 Apr 2023 19:19:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <ZEZ/xXcOv9Co5Vif@boxer>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fedor Pchelkin <pchelkin@ispras.ru> writes:
+On 2023/4/24 21:10, Maciej Fijalkowski wrote:
+>>> There was a discussion in the past to reduce XDP_PACKET_HEADROOM to 192B but
+>>> this is not merged yet and it is not related to this series. We can address
+>>> your comments in a follow-up patch when XDP_PACKET_HEADROOM series is merged.
+> 
+> Intel drivers still work just fine at 192 headroom and split the page but
+> it makes it problematic for BIG TCP where MAX_SKB_FRAGS from shinfo needs
 
-> For the reasons also described in commit b383e8abed41 ("wifi: ath9k: avoid
-> uninit memory read in ath9k_htc_rx_msg()"), ath9k_htc_rx_msg() should
-> validate pkt_len before accessing the SKB.
->
-> For example, the obtained SKB may have been badly constructed with
-> pkt_len =3D 8. In this case, the SKB can only contain a valid htc_frame_h=
-dr
-> but after being processed in ath9k_htc_rx_msg() and passed to
-> ath9k_wmi_ctrl_rx() endpoint RX handler, it is expected to have a WMI
-> command header which should be located inside its data payload.=20
->
-> Implement sanity checking inside ath9k_wmi_ctrl_rx(). Otherwise, uninit
-> memory can be referenced.
->
-> Tested on Qualcomm Atheros Communications AR9271 802.11n .
->
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
->
-> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-> Reported-and-tested-by: syzbot+f2cb6e0ffdb961921e4d@syzkaller.appspotmail=
-.com
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+I am not sure why we are not enabling skb_shinfo(skb)->frag_list to support
+BIG TCP instead of increasing MAX_SKB_FRAGS, perhaps there was some disscution
+about this in the past I am not aware of?
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
+> to be increased. So it's the tailroom that becomes the bottleneck, not the
+> headroom. I believe at some point we will convert our drivers to page_pool
+> with full 4k page dedicated for a single frame.
+
+Can we use header splitting to ensure there is enough tailroom for
+napi_build_skb() or xdp_frame with shinfo?
+
