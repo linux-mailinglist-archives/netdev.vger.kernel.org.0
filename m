@@ -2,179 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04C296EE28D
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 15:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 382B16EE2A8
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 15:16:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234058AbjDYNNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 09:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
+        id S233789AbjDYNQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 09:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234080AbjDYNNj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 09:13:39 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BD32D54;
-        Tue, 25 Apr 2023 06:13:38 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3f19c473b9eso81762685e9.0;
-        Tue, 25 Apr 2023 06:13:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682428416; x=1685020416;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Fw45IBooJRHvDJP+m4fpf4zEkBLCSMIA1zdZRImyULk=;
-        b=ZFeQwY+mbxyNnRrEcmbP0LbvvvP/dsWeQIgdx1wq33ZQUes3ma9nFUCuBK4hm9D8t9
-         2vSSeOMEyQ0LiP9Ea/aEulIGGvevMxeLnyX30c2Z5/j52tRL1eu/G6MO48aSwKCZDfpC
-         M0NVlp9ax8nlQDdqPDKR/yoGIZCdMkr6QVhAm8ZAcoC5L6Yij/fAwxda3Z4Rxsvayym3
-         ZIS0XIf5s1yauv4Dgt35c/+032/XoKewUsehNTRpykyaCw6+7fnF3R558UUePAloGEGs
-         PwcryNMTI0ukCsjuIH+CmyQDVcehbv3oFZAOXlwjAyW81xxSy/RdsbbTFIF30oHWwQ0e
-         mFpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682428416; x=1685020416;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Fw45IBooJRHvDJP+m4fpf4zEkBLCSMIA1zdZRImyULk=;
-        b=RyoJgrdyvOvZVONejWGV16t0bYoRNJ5BgrK9dfF44ZMliyPtASmNeLiYsG4M5HyMJI
-         wY+2JT3zgBMR9WVd9RJdoO05smisnaelV6lY9+hYscvXl5qAnym1TeGzVlll7LIdUPEv
-         XaQPXs4jz/VFvUGQl8AaVNVK+t4+t7FT5+reFcYMG37rc4QwqIp6CQ6kdzh6K8V0aaKZ
-         xEmU91GTreTGCWPYPywFDTjGJ0ipr+TemPLJvapKW4jFsiqFbT1Dvh89C/1ZNgmc8loE
-         5E7k/5XeJvSv5Ylx2ked7JmZipkgt5SjaIBjRO2+2AQj8qx6dPgFIM1pfPha+u58xHBv
-         zbqw==
-X-Gm-Message-State: AAQBX9fNaIiMCEk2oiRK/VoavQ3c05raDbq1wDvItdNfp8eh7LxWdGwX
-        Ivp8zOJsApAZWgaUQb8SZD9h9y4JsdY=
-X-Google-Smtp-Source: AKy350Z8ytvRYve3cZYjp0OE8W8Wzr1SScE5AHXMmPrw8AtAgr1i/+uLqhz9f/CdQgqVBDusJJLr4Q==
-X-Received: by 2002:a7b:cc15:0:b0:3f1:65cb:8156 with SMTP id f21-20020a7bcc15000000b003f165cb8156mr10532957wmh.0.1682428416163;
-        Tue, 25 Apr 2023 06:13:36 -0700 (PDT)
-Received: from suse.localnet (host-95-245-6-24.retail.telecomitalia.it. [95.245.6.24])
-        by smtp.gmail.com with ESMTPSA id d3-20020a05600c3ac300b003f19b3d89e9sm8697700wms.33.2023.04.25.06.13.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 06:13:35 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
-Subject: Re: [PATCH v3 41/55] iscsi: Assume "sendpage" is okay in
- iscsi_tcp_segment_map()
-Date:   Tue, 25 Apr 2023 15:13:33 +0200
-Message-ID: <16526634.geO5KgaWL5@suse>
-In-Reply-To: <494037.1682411430@warthog.procyon.org.uk>
-References: <1957131.PYKUYFuaPT@suse> <20230331160914.1608208-42-dhowells@redhat.com>
- <494037.1682411430@warthog.procyon.org.uk>
+        with ESMTP id S234117AbjDYNQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 09:16:42 -0400
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2081.outbound.protection.outlook.com [40.107.241.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3011C14447;
+        Tue, 25 Apr 2023 06:16:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=haW8GZBw/zTC9YRht+rZ4u5xWujsB9/d2HAV2BhN/4PQjEQTzwMSbyWbjrcA/ilPgE016r6s8xwS2ji5g+RKYl169TV+D82fe/YtNg1m9e+7QmiAZ+JQ8sPxxWve8pIykck2LFrZCaLlv2VBwpsQbikDUXVsD6lJbOQlbNOpxh6XoIk+xGIQI29Soe33ke2Ym7iBGW8f0I0FwGEYiz+vX6+cS4aFCZMQHfkoe6dEeyDGMZMwn9tGlg3LbSyCDnw4XJMY7OQoQByrV1XbIOYSkPneR5IIJYz9M6AOHx9uDw5mhEJ5iGeVEumrQukTnwMcHZoGACp8o0p/cnnl6/7fxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lqhGZXrFEE9u/scI3abIICUsC7OHqQmjIZ+GqxgrOk4=;
+ b=cXfcjNAZa7apN4D0FnkAnRth9pR/ym3x6KsSapWEuKgOP65sTrHigEqcqcqoenatDpRF4bc2H/IBsOiyR7mY+hFFtt9yHwzB/fDuvDmLmB1o72XkvWlZDJwC1QdSKAzr2YcEJt96EYXw4BoI002mTtr20hHk4+iHHDuzs9lUyT+l7RepcGEnRT2P51KV+1SF/UCvh9KzlPHz8mY85kGvtulhXnCMEwVJ/pIGteN7UsGDdm9kNk+pujfVNAPx3ZE1LlkCRShIpDKWbAYQiv0CAsSvD9+Yw94UD+BNz0n9XywXIibqwdQuLjIJn+8HNpERj2oOGp1AaV6tFiAX0LQIIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lqhGZXrFEE9u/scI3abIICUsC7OHqQmjIZ+GqxgrOk4=;
+ b=oqrnzIa67p1wPN4OwUXFhBuOLOA0tnC1AdvSNyIHOgWysUYoxXcth489SXxdoUHWKwwH/IprEGYj/RDtP/9gcTCb+a0dj0sykS6MjROqK5RrhMj6q5bc7cQXN9J2JjMbcLGb1wZpV5pyMHDWQ7N0GT6BiAs9Y8nmgiIANmy563c=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB9648.eurprd04.prod.outlook.com (2603:10a6:10:30c::10)
+ by AM7PR04MB6901.eurprd04.prod.outlook.com (2603:10a6:20b:10b::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.34; Tue, 25 Apr
+ 2023 13:16:32 +0000
+Received: from DB9PR04MB9648.eurprd04.prod.outlook.com
+ ([fe80::762c:3b53:2350:dd71]) by DB9PR04MB9648.eurprd04.prod.outlook.com
+ ([fe80::762c:3b53:2350:dd71%5]) with mapi id 15.20.6319.033; Tue, 25 Apr 2023
+ 13:16:32 +0000
+From:   Madhu Koriginja <madhu.koriginja@nxp.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        edumazet@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     vani.namala@nxp.com, Madhu Koriginja <madhu.koriginja@nxp.com>
+Subject: [PATCH 4.19] net: netfilter: Keep conntrack reference until IPsecv6 policy checks are done
+Date:   Tue, 25 Apr 2023 18:46:05 +0530
+Message-Id: <20230425131605.2576011-1-madhu.koriginja@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0049.apcprd02.prod.outlook.com
+ (2603:1096:4:196::7) To DB9PR04MB9648.eurprd04.prod.outlook.com
+ (2603:10a6:10:30c::10)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR04MB9648:EE_|AM7PR04MB6901:EE_
+X-MS-Office365-Filtering-Correlation-Id: fa90b2a5-1236-488a-a4d9-08db458f4999
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: W0XQeTRmVsZwSyr1GDZbh06HfTln8hGJbhLpYDOFu3Vfwb7ktG8lGYNbUArQJFEUSShxPuEMnEp0uf0sffNlBvV2ZurgXDsgYTQ5BkWSIdgaG3hXjouABFN4zYjcdtaAKsALo045D5i/a860nLnbJPanM3PAONmd3N7NhyAUvHIKomzCKOUUTWTY33eVNZUQbvvYUVroo5QdOYn3Mfz3aXNiHbPWmHiJsEEqtVaEBeVhiEiBrojPBnm6EL+LKEPBNFxwr/gql4tv+RUV7G9pC6TIUaYwVGoCqTXKU37pgkIJwWDHKAW338tuRe5VPODXpouqgHTfpST8AMSy/qaocBUE51AhqwFMDblgjY6C1UtxYviysYj4YPz6Q4U6z9OWpGaqA52Rcpl7CbrByzhwKjfSnZvHVyA17b/PIpHXmQRaxfFlamJV4EzkHYZAOdvctHYZqWEcpTmf2BxB4tJ7h5r4+w2pLbvnlAFGZldQBU28iuwZ5RsswHLoe6fBzhXWaRYqw73PI0Sfr4LMDhOs3rYWHYWxrnGBXQkyPGLL+sdKyFKiEN7NhBcR/n0+nFJJzghloAhw8Rx0udSzpJbeue0A6ulxcLb+fbtbgWG+3Eh3wzMatPdVsSXrv3dUw5v0
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB9648.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(366004)(376002)(396003)(39860400002)(346002)(451199021)(316002)(44832011)(4326008)(38100700002)(38350700002)(41300700001)(5660300002)(8936002)(8676002)(36756003)(86362001)(2906002)(66476007)(66556008)(6486002)(6666004)(52116002)(6512007)(6506007)(1076003)(26005)(478600001)(2616005)(83380400001)(186003)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5263tvSAFpygdA028+Npciqsuj8K9m6skes+KH3Mba9jD4Yf9tx5kcfoLjxc?=
+ =?us-ascii?Q?WzW2llqMJB7X4QQ6WNA93lNaoYg9aEioB0G4uXheZSocaLzG2zzuNDE63K6n?=
+ =?us-ascii?Q?jY5QDqy3fc3p8uMYfH+VL1AslG0fAmZcf1kk6d/sgK1vSv8fYaTjXJCdXkLu?=
+ =?us-ascii?Q?VlZIwGn/SiLy8CQg1TklBhTNdP84KGd31cGHXJegcDB5nAeJ8WUhJR76Ergd?=
+ =?us-ascii?Q?Xy6sVTrx5ADu/9fqbtqt+l2sxmf7EkhSnB7QMzDP03AesagIWAttgEVn67mE?=
+ =?us-ascii?Q?Z+SnxiPx2WqEzxN4eKTINYFdY0THJ4FU4H0VYRpVZYoTLMzRWFK5KPUYMUpk?=
+ =?us-ascii?Q?BVeQGP4WuMcQkreCvrA8Da5xx50NUwfUjMggTKUHZ0ovz6qk+7Vc6vFnUtcu?=
+ =?us-ascii?Q?wWZCKrc+JST8R2XEOq+vHkJsSYhYVRrMF6hJa17TnruiMaBTAIEbFk1hfggo?=
+ =?us-ascii?Q?SsWqZggeRnZMZCUGTwlECVVAEjoDni/N+/oibTOF1o0zY2RTaeXoYJ4irqde?=
+ =?us-ascii?Q?6nFiRqDyMvj4Cp2MTy0qMqajboeL1uwyVQe2uo9ZSbo9Djr04K9AOj6Y6W4l?=
+ =?us-ascii?Q?Q6iRwKNMlzUj8gO2j9L4CrD/zeu4y86opnyNbXU1DT92EWa4wziTnS+EIrWa?=
+ =?us-ascii?Q?EgbyNLBUBc7A9Dx9C4GhgCzCRY9GAVlINGbTO/5VtzGmVskhcgd/uGXDYOi7?=
+ =?us-ascii?Q?3KqeGPwCKvi0L2otSUSi7uJ/FhkPqZPTGxWFbcu4RsdOBNmmy3eGRgA6XjZf?=
+ =?us-ascii?Q?XZpVTBgAH9QselN10+o/HqUbb6PuK93sDZPgg/6ja1Bdr1SDA2IFB8VLNzua?=
+ =?us-ascii?Q?W2sBtqv5r+vI16JdxStZa25R+Stm76U0KqP2ZqUpe1ZaovshDiG8ktP+Xx41?=
+ =?us-ascii?Q?5K7/ma2Wc+1mmJbhPim/e8BJzf7NQjUz0nwm+CaWQOUK57/HWUDlBwt0AUU5?=
+ =?us-ascii?Q?n3knO8rRSnLgamCHWAuRZsge0AsmZmFDC838+cm8sjHijagP7CyesmH/jbzX?=
+ =?us-ascii?Q?LE/wVC9EXxODQnECzRi/yp4tEmDDXljri3lLMGhmL40xzY6J66+UlEjWdsIp?=
+ =?us-ascii?Q?ZT4i8pOWt3+MOzVeOR8IhsWtRhOgSG0pBUnHvARbe58tDBCT0TFBLGc3jPQY?=
+ =?us-ascii?Q?M7yQxxIp+Kc1tbuDfb0XH92GvcRO6+4L0yBe5RJS5vv+LW6u+6cgSDF83YPK?=
+ =?us-ascii?Q?2SkFMZDV0nVgPtSaQbNFCfpe1I1h+07KmgTSD4WMPTrbW7KMGdkGjE4vVfxK?=
+ =?us-ascii?Q?236/Gc/Q5ZatfZllcLkBGrERJauItidUMc+s+tepTwbl/XZcOrltpWE18+gp?=
+ =?us-ascii?Q?xtdLREr5RUAzxwx5rVuL5KYUvYh1clb0rUS7GjzESfGLwhvSx1XGA3cXGIfp?=
+ =?us-ascii?Q?LJHbh8A2zahVjsYe04iAijLb/cXXG28qikG5Yv/Xg1NKU8UdhlYIUsNZ6Uzz?=
+ =?us-ascii?Q?f25AbOJ8O6Qf2zXJkJqlZ4aXt6/lh6PnL2HleXsVDg76V2K7bKaUzl7XsAsr?=
+ =?us-ascii?Q?7GGVSJSaDIbo6NJZb7x9BQj7yWDEkBHlJM5NqTxCEbGWVjRGrqpFe/gtDTVu?=
+ =?us-ascii?Q?SICsmOUVzZp36RGKL50mAfDWGn3pNIcR6heCVig6L7TJX9BSZO2hJl7aApxW?=
+ =?us-ascii?Q?lA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa90b2a5-1236-488a-a4d9-08db458f4999
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB9648.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2023 13:16:32.1914
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yna3RGUff0Zno2WcNOIwIM+VdkUaY//6kuNiLu0OAxKy7wruac61L83uIdwBzJfexa7Y0SRTapytF95+212mFA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6901
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On marted=EC 25 aprile 2023 10:30:30 CEST David Howells wrote:
-> Fabio M. De Francesco <fmdefrancesco@gmail.com> wrote:
-> > > -	if (recv) {
-> > > -		segment->atomic_mapped =3D true;
-> > > -		segment->sg_mapped =3D kmap_atomic(sg_page(sg));
-> > > -	} else {
-> > > -		segment->atomic_mapped =3D false;
-> > > -		/* the xmit path can sleep with the page mapped so use
-> >=20
-> > kmap */
-> >=20
-> > > -		segment->sg_mapped =3D kmap(sg_page(sg));
-> > > -	}
-> > > -
-> > > +	segment->atomic_mapped =3D true;
-> > > +	segment->sg_mapped =3D kmap_atomic(sg_page(sg));
-> >=20
-> > As you probably know, kmap_atomic() is deprecated.
-> >=20
-> > I must admit that I'm not an expert of this code, however, it looks lik=
-e=20
-the
-> > mapping has no need to rely on the side effects of kmap_atomic() (i.e.,
-> > pagefault_disable() and preempt_disable() - but I'm not entirely sure=20
-about
-> > the possibility that preemption should be explicitly disabled along wit=
-h=20
-the
-> > replacement with kmap_local_page()).
-> >=20
-> > Last year I've been working on several conversions from kmap{,_atomic}(=
-)=20
-to
-> > kmap_local_page(), however I'm still not sure to understand what's=20
-happening
-> > here...
-> >=20
-> > Am I missing any important details? Can you please explain why we still=
-=20
-need
-> > that kmap_atomic() instead of kmap_local_page()?
->=20
-> Actually, it might be worth dropping segment->sg_mapped and segment->data=
-=20
-and
-> only doing the kmap_local when necessary.
->=20
-> And this:
->=20
-> 			struct msghdr msg =3D { .msg_flags =3D flags };
-> 			struct kvec iov =3D {
-> 				.iov_base =3D segment->data + offset,
-> 				.iov_len =3D copy
-> 			};
->=20
-> 			r =3D kernel_sendmsg(sk, &msg, &iov, 1, copy);
->=20
-> should really be using struct bvec, not struct kvec - then the mapping is=
-n't
-> necessary.
+Keep the conntrack reference until policy checks have been performed for
+IPsec V6 NAT support. The reference needs to be dropped before a packet is
+queued to avoid having the conntrack module unloadable.
 
-=46WIW, struct bvec looks better suited (despite I have very little knowled=
-ge of=20
-this code).
+Signed-off-by: Madhu Koriginja <madhu.koriginja@nxp.com>
+---
+ net/dccp/ipv6.c      |  1 +
+ net/ipv6/ip6_input.c | 14 +++++++-------
+ net/ipv6/raw.c       |  2 +-
+ net/ipv6/tcp_ipv6.c  |  2 ++
+ net/ipv6/udp.c       |  2 ++
+ 5 files changed, 13 insertions(+), 8 deletions(-)
 
-I assume that you noticed that we also have the unmapping counterpart=20
-(iscsi_tcp_segment_unmap()) which should also be addressed accordingly.
-
-> It looks like this might be the only place the mapping is used,
-> but I'm not 100% certain.
-
-It seems that kmap_atomic() (as well as kmap(), which you deleted) is only=
-=20
-called by iscsi_tcp_segment_map(), which in turn is called only by =20
-iscsi_tcp_segment_done(). I can't see any other places where the mapping is=
-=20
-used.
-
-I hope that this dialogue may help you somehow to choose the best suited wa=
-y=20
-to get rid of that deprecated kmap_atomic().
-
-Thanks for taking time to address questions from newcomers :-)=20
-
-=46abio
-
->=20
-> David
-
-
-
+diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+index b2a26e41f932..f953b5b5613d 100644
+--- a/net/dccp/ipv6.c
++++ b/net/dccp/ipv6.c
+@@ -773,6 +773,7 @@ static int dccp_v6_rcv(struct sk_buff *skb)
+ 
+ 	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb))
+ 		goto discard_and_relse;
++	nf_reset(skb);
+ 
+ 	return __sk_receive_skb(sk, skb, 1, dh->dccph_doff * 4,
+ 				refcounted) ? -1 : 0;
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 2bdb03a45baf..6a9a1e637506 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -371,10 +371,6 @@ static int ip6_input_finish(struct net *net, struct sock *sk, struct sk_buff *sk
+ 			/* Only do this once for first final protocol */
+ 			have_final = true;
+ 
+-			/* Free reference early: we don't need it any more,
+-			   and it may hold ip_conntrack module loaded
+-			   indefinitely. */
+-			nf_reset(skb);
+ 
+ 			skb_postpull_rcsum(skb, skb_network_header(skb),
+ 					   skb_network_header_len(skb));
+@@ -385,9 +381,13 @@ static int ip6_input_finish(struct net *net, struct sock *sk, struct sk_buff *sk
+ 			    !ipv6_is_mld(skb, nexthdr, skb_network_header_len(skb)))
+ 				goto discard;
+ 		}
+-		if (!(ipprot->flags & INET6_PROTO_NOPOLICY) &&
+-		    !xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
+-			goto discard;
++
++		if (!(ipprot->flags & INET6_PROTO_NOPOLICY)) {
++			if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
++				goto discard;
++
++			nf_reset(skb);
++		}
+ 
+ 		ret = ipprot->handler(skb);
+ 		if (ret > 0) {
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 44e9a240d607..e7180cd8ac70 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -220,7 +220,6 @@ static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
+ 
+ 			/* Not releasing hash table! */
+ 			if (clone) {
+-				nf_reset(clone);
+ 				rawv6_rcv(sk, clone);
+ 			}
+ 		}
+@@ -428,6 +427,7 @@ int rawv6_rcv(struct sock *sk, struct sk_buff *skb)
+ 		kfree_skb(skb);
+ 		return NET_RX_DROP;
+ 	}
++	nf_reset(skb);
+ 
+ 	if (!rp->checksum)
+ 		skb->ip_summed = CHECKSUM_UNNECESSARY;
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index f69c1b83403b..2b5b6e208947 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1568,6 +1568,8 @@ static int tcp_v6_rcv(struct sk_buff *skb)
+ 	if (tcp_v6_inbound_md5_hash(sk, skb))
+ 		goto discard_and_relse;
+ 
++	nf_reset(skb);
++
+ 	if (tcp_filter(sk, skb))
+ 		goto discard_and_relse;
+ 	th = (const struct tcphdr *)skb->data;
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 16c98a2a5c36..59c5ee9d9d32 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -570,6 +570,7 @@ static int udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ 
+ 	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb))
+ 		goto drop;
++	nf_reset(skb);
+ 
+ 	if (static_branch_unlikely(&udpv6_encap_needed_key) && up->encap_type) {
+ 		int (*encap_rcv)(struct sock *sk, struct sk_buff *skb);
+@@ -861,6 +862,7 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 
+ 	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
+ 		goto discard;
++	nf_reset(skb);
+ 
+ 	if (udp_lib_checksum_complete(skb))
+ 		goto csum_error;
+-- 
+2.25.1
 
