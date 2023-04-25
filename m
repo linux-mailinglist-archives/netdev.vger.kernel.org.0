@@ -2,118 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5E096EDA2C
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 04:12:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DB286EDA44
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 04:42:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232615AbjDYCMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 22:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55208 "EHLO
+        id S232617AbjDYCmG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 24 Apr 2023 22:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231189AbjDYCMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 22:12:53 -0400
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7F4A253;
-        Mon, 24 Apr 2023 19:12:51 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R371e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0VgxqdjV_1682388766;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgxqdjV_1682388766)
-          by smtp.aliyun-inc.com;
-          Tue, 25 Apr 2023 10:12:47 +0800
-Message-ID: <1682388702.2032197-3-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next] xsk: introduce xsk_dma_ops
-Date:   Tue, 25 Apr 2023 10:11:42 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc:     <netdev@vger.kernel.org>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <bpf@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20230417032750.7086-1-xuanzhuo@linux.alibaba.com>
- <ZDzKAD2SNe1q/XA6@infradead.org>
- <1681711081.378984-2-xuanzhuo@linux.alibaba.com>
- <20230417115610.7763a87c@kernel.org>
- <20230417115753.7fb64b68@kernel.org>
- <CACGkMEtPNPXFThHt4aNm4g-fC1DqTLcDnB_iBWb9-cAOHMYV_A@mail.gmail.com>
- <20230417181950.5db68526@kernel.org>
- <1681784379.909136-2-xuanzhuo@linux.alibaba.com>
- <20230417195400.482cfe75@kernel.org>
- <ZD4kMOym15pFcjq+@infradead.org>
- <20230417231947.3972f1a8@kernel.org>
- <ZD95RY9PjVRi7qz3@infradead.org>
- <20230419094506.2658b73f@kernel.org>
- <ZEDZaitjcX+egzvf@infradead.org>
- <20230420071349.5e441027@kernel.org>
- <1682062264.418752-2-xuanzhuo@linux.alibaba.com>
- <20230421065059.1bc78133@kernel.org>
- <5ec6f5e4-7b6a-17b3-492c-44364644f155@intel.com>
-In-Reply-To: <5ec6f5e4-7b6a-17b3-492c-44364644f155@intel.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229637AbjDYCmF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 22:42:05 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86149EE3;
+        Mon, 24 Apr 2023 19:42:01 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 33P2fiaN7000833, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 33P2fiaN7000833
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Tue, 25 Apr 2023 10:41:44 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.17; Tue, 25 Apr 2023 10:41:46 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 25 Apr 2023 10:41:46 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d]) by
+ RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d%5]) with mapi id
+ 15.01.2375.007; Tue, 25 Apr 2023 10:41:46 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Jakub Kicinski <kuba@kernel.org>, Kalle Valo <kvalo@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: RE: pull-request: wireless-next-2023-04-21
+Thread-Topic: pull-request: wireless-next-2023-04-21
+Thread-Index: AQHZdD60u8zT35eBqkOmWCVcBjPBJa81U6EAgAX6SUA=
+Date:   Tue, 25 Apr 2023 02:41:46 +0000
+Message-ID: <e31dae6daa6640859d12bf4c4fc41599@realtek.com>
+References: <20230421104726.800BCC433D2@smtp.kernel.org>
+ <20230421075404.63c04bca@kernel.org>
+In-Reply-To: <20230421075404.63c04bca@kernel.org>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-antispam-interceptor-info: fallback
+x-kse-antivirus-interceptor-info: fallback
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Apr 2023 17:28:01 +0200, Alexander Lobakin <aleksander.lobakin@intel.com> wrote:
+
+
+> -----Original Message-----
 > From: Jakub Kicinski <kuba@kernel.org>
-> Date: Fri, 21 Apr 2023 06:50:59 -0700
->
-> > On Fri, 21 Apr 2023 15:31:04 +0800 Xuan Zhuo wrote:
-> >> I am not particularly familiar with dma-bufs. I want to know if this mechanism
-> >> can solve the problem of virtio-net.
-> >>
-> >> I saw this framework, allowing the driver do something inside the ops of
-> >> dma-bufs.
-> >>
-> >> If so, is it possible to propose a new patch based on dma-bufs?
-> >
-> > I haven't looked in detail, maybe Olek has? AFAIU you'd need to rework
->
-> Oh no, not me. I suck at dma-bufs, tried to understand them several
-> times with no progress :D My knowledge is limited to "ok, if it's
-> DMA + userspace, then it's likely dma-buf" :smile_with_tear:
->
-> > uAPI of XSK to allow user to pass in a dma-buf region rather than just
-> > a user VA. So it may be a larger effort but architecturally it may be
-> > the right solution.
-> >
->
-> I'm curious whether this could be done without tons of work. Switching
-> Page Pool to dma_alloc_noncoherent() is simpler :D But, as I wrote
-> above, we need to extend DMA API first to provide bulk allocations and
-> NUMA-aware allocations.
-> Can't we provide a shim for back-compat, i.e. if a program passes just a
-> user VA, create a dma-buf in the kernel already?
+> Sent: Friday, April 21, 2023 10:54 PM
+> To: Kalle Valo <kvalo@kernel.org>
+> Cc: netdev@vger.kernel.org; linux-wireless@vger.kernel.org
+> Subject: Re: pull-request: wireless-next-2023-04-21
+> 
+> On Fri, 21 Apr 2023 10:47:26 +0000 (UTC) Kalle Valo wrote:
+> >  .../net/wireless/realtek/rtw89/rtw8851b_table.c    | 14824 +++++++++++++++++++
+> >  .../net/wireless/realtek/rtw89/rtw8851b_table.h    |    21 +
+> 
+> We should load these like FW, see the proposal outlined in
+> https://lore.kernel.org/all/20221116222339.54052a83@kernel.org/
+> for example. Would that not work?
+> 
 
+That would work, and I think struct fields addr and val should be __le32.
+And, I have some draft ideas to handle some situations we will face:
 
-Yes
+1. upgrading to newer driver without built-in tables will break user space
+   if people don't download table file from linux-firmware.git.
+   Maybe, we can keep the built-in tables and support loading from files
+   for couple years at least.
 
-I think so too. If this is the case, will the workload be much smaller? Let me
-try it.
+2. c code can do changes along with these tables, so driver should do some
+   compatibility things for register version. 
 
-Thanks.
+3. The file contains not only simple registers tables but also TX power tables
+   and power tracking tables. These tables are multiple dimensions, and
+   dimensions can be changed due to more channels are supported, for example.
+   To be backward compatible, we need to add conversion function from
+   v1, v2 ... to current.
 
+I will think further to make this change smooth. 
 
->
-> Thanks,
-> Olek
+Ping-Ke
+
