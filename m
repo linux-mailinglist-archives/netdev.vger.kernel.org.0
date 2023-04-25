@@ -2,89 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA80D6EE27C
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 15:09:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04C296EE28D
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 15:13:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233454AbjDYNJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 09:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39084 "EHLO
+        id S234058AbjDYNNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 09:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233322AbjDYNJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 09:09:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A42DF2
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 06:08:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682428137;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+fKc7C0hTjXYruI3suD5rQvaDU7fCvCV7e+LIaqkh9A=;
-        b=DMuB2jGPf2JZ5DUPgXFOe/rzQ/fTgpc8MUzAwjHEkg39fz7noqFnNHKNC4OeA+7EGUmjqN
-        T3DSNOSB4vUc0kU24jtvJPI4idSWKtAm4msxpiRzwwYOaGXT8oLJvRDzEnhx2DYKjDmSV3
-        +kqwsZvizHM3BsRcMmhEmLB5v7J0cNg=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-27-cnsg8MOkO8S8k-DpZkVzGA-1; Tue, 25 Apr 2023 09:08:56 -0400
-X-MC-Unique: cnsg8MOkO8S8k-DpZkVzGA-1
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-2fe3fb8e32aso2085970f8f.1
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 06:08:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682428135; x=1685020135;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        with ESMTP id S234080AbjDYNNj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 09:13:39 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BD32D54;
+        Tue, 25 Apr 2023 06:13:38 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id 5b1f17b1804b1-3f19c473b9eso81762685e9.0;
+        Tue, 25 Apr 2023 06:13:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682428416; x=1685020416;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+fKc7C0hTjXYruI3suD5rQvaDU7fCvCV7e+LIaqkh9A=;
-        b=PsjnEaxvKl3j4T6q/AwG9ywgHBLtn/Iqc1r1ZPzFHSrA6X2VAKusdGs8yt17uPvRg4
-         YYZotvt9rK+zkzwCE9gE7Hilv89V6l59JpxNhLrbtLU90ncdmj2cN2gR6RRW9js0osLj
-         i3chfDy1BG9G5fH4fpbYDnL4NqK7A7eJKyyw+nYB6WUMULeFC9IbEZFza5JzIXkWRfF9
-         2rcBt7HE/soOh5W9mGTJXPOtSmSbwRnKlb1FT7Ufnm+5Wmg6rzxu69YOrFSKIVquRc3f
-         zjMQY28cQjopnxnJ3rZQri+PfYAJFZRj2osM/RiK92FEdzizU/CWdwJcqLtaAFaSnFIp
-         T6yQ==
-X-Gm-Message-State: AAQBX9daIoRG7qVl6TopH7+gVAbyy/Jaq05NXDkLH65gzgbP0iR55dzQ
-        7igP+P9fcUcQGzSeV8aqgMMayW7P4PzG8CcNuUO3DHL19PWCALLh/0XTjVzfJbTie1yuAjQXb8z
-        dk9KgdB5++jvKGj3s
-X-Received: by 2002:a5d:6a85:0:b0:303:a2e4:e652 with SMTP id s5-20020a5d6a85000000b00303a2e4e652mr10068938wru.14.1682428135278;
-        Tue, 25 Apr 2023 06:08:55 -0700 (PDT)
-X-Google-Smtp-Source: AKy350Z/5PjVU1BDfVWhe5ZogmeG2QujfzTYbkQm7cIQds9gnOnNL45pBPkNdHk963LSlI0oVKLjJQ==
-X-Received: by 2002:a5d:6a85:0:b0:303:a2e4:e652 with SMTP id s5-20020a5d6a85000000b00303a2e4e652mr10068917wru.14.1682428134946;
-        Tue, 25 Apr 2023 06:08:54 -0700 (PDT)
-Received: from redhat.com ([2.55.17.255])
-        by smtp.gmail.com with ESMTPSA id o4-20020a056000010400b002fa67f77c16sm13024173wrx.57.2023.04.25.06.08.52
+        bh=Fw45IBooJRHvDJP+m4fpf4zEkBLCSMIA1zdZRImyULk=;
+        b=ZFeQwY+mbxyNnRrEcmbP0LbvvvP/dsWeQIgdx1wq33ZQUes3ma9nFUCuBK4hm9D8t9
+         2vSSeOMEyQ0LiP9Ea/aEulIGGvevMxeLnyX30c2Z5/j52tRL1eu/G6MO48aSwKCZDfpC
+         M0NVlp9ax8nlQDdqPDKR/yoGIZCdMkr6QVhAm8ZAcoC5L6Yij/fAwxda3Z4Rxsvayym3
+         ZIS0XIf5s1yauv4Dgt35c/+032/XoKewUsehNTRpykyaCw6+7fnF3R558UUePAloGEGs
+         PwcryNMTI0ukCsjuIH+CmyQDVcehbv3oFZAOXlwjAyW81xxSy/RdsbbTFIF30oHWwQ0e
+         mFpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682428416; x=1685020416;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Fw45IBooJRHvDJP+m4fpf4zEkBLCSMIA1zdZRImyULk=;
+        b=RyoJgrdyvOvZVONejWGV16t0bYoRNJ5BgrK9dfF44ZMliyPtASmNeLiYsG4M5HyMJI
+         wY+2JT3zgBMR9WVd9RJdoO05smisnaelV6lY9+hYscvXl5qAnym1TeGzVlll7LIdUPEv
+         XaQPXs4jz/VFvUGQl8AaVNVK+t4+t7FT5+reFcYMG37rc4QwqIp6CQ6kdzh6K8V0aaKZ
+         xEmU91GTreTGCWPYPywFDTjGJ0ipr+TemPLJvapKW4jFsiqFbT1Dvh89C/1ZNgmc8loE
+         5E7k/5XeJvSv5Ylx2ked7JmZipkgt5SjaIBjRO2+2AQj8qx6dPgFIM1pfPha+u58xHBv
+         zbqw==
+X-Gm-Message-State: AAQBX9fNaIiMCEk2oiRK/VoavQ3c05raDbq1wDvItdNfp8eh7LxWdGwX
+        Ivp8zOJsApAZWgaUQb8SZD9h9y4JsdY=
+X-Google-Smtp-Source: AKy350Z8ytvRYve3cZYjp0OE8W8Wzr1SScE5AHXMmPrw8AtAgr1i/+uLqhz9f/CdQgqVBDusJJLr4Q==
+X-Received: by 2002:a7b:cc15:0:b0:3f1:65cb:8156 with SMTP id f21-20020a7bcc15000000b003f165cb8156mr10532957wmh.0.1682428416163;
+        Tue, 25 Apr 2023 06:13:36 -0700 (PDT)
+Received: from suse.localnet (host-95-245-6-24.retail.telecomitalia.it. [95.245.6.24])
+        by smtp.gmail.com with ESMTPSA id d3-20020a05600c3ac300b003f19b3d89e9sm8697700wms.33.2023.04.25.06.13.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 06:08:54 -0700 (PDT)
-Date:   Tue, 25 Apr 2023 09:08:50 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] virtio-net: reject small vring sizes
-Message-ID: <20230425090723-mutt-send-email-mst@kernel.org>
-References: <20230417075645-mutt-send-email-mst@kernel.org>
- <AM0PR04MB4723FA90465186B5A8A5C001D4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230423031308-mutt-send-email-mst@kernel.org>
- <AM0PR04MB47233B680283E892C45430BCD4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230423065132-mutt-send-email-mst@kernel.org>
- <AM0PR04MB47237D46ADE7954289025B66D4669@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230425041352-mutt-send-email-mst@kernel.org>
- <AM0PR04MB4723CE2A9B8BFA7963A66A98D4649@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230425082150-mutt-send-email-mst@kernel.org>
- <AM0PR04MB4723E38859953B6C531D3E5CD4649@AM0PR04MB4723.eurprd04.prod.outlook.com>
+        Tue, 25 Apr 2023 06:13:35 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
+Subject: Re: [PATCH v3 41/55] iscsi: Assume "sendpage" is okay in
+ iscsi_tcp_segment_map()
+Date:   Tue, 25 Apr 2023 15:13:33 +0200
+Message-ID: <16526634.geO5KgaWL5@suse>
+In-Reply-To: <494037.1682411430@warthog.procyon.org.uk>
+References: <1957131.PYKUYFuaPT@suse> <20230331160914.1608208-42-dhowells@redhat.com>
+ <494037.1682411430@warthog.procyon.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR04MB4723E38859953B6C531D3E5CD4649@AM0PR04MB4723.eurprd04.prod.outlook.com>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -92,100 +86,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 01:02:38PM +0000, Alvaro Karsz wrote:
-> > > In the virtnet case, we'll decide which features to block based on the ring size.
-> > > 2 < ring < MAX_FRAGS + 2  -> BLOCK GRO + MRG_RXBUF
-> > > ring < 2  -> BLOCK GRO + MRG_RXBUF + CTRL_VQ
-> > 
-> > why MRG_RXBUF? what does it matter?
-> > 
-> 
-> You're right, it should be blocked only when ring < 2.
-> Or we should let this pass, and let the device figure out that MRG_RXBUF is meaningless with 1 entry..
+On marted=EC 25 aprile 2023 10:30:30 CEST David Howells wrote:
+> Fabio M. De Francesco <fmdefrancesco@gmail.com> wrote:
+> > > -	if (recv) {
+> > > -		segment->atomic_mapped =3D true;
+> > > -		segment->sg_mapped =3D kmap_atomic(sg_page(sg));
+> > > -	} else {
+> > > -		segment->atomic_mapped =3D false;
+> > > -		/* the xmit path can sleep with the page mapped so use
+> >=20
+> > kmap */
+> >=20
+> > > -		segment->sg_mapped =3D kmap(sg_page(sg));
+> > > -	}
+> > > -
+> > > +	segment->atomic_mapped =3D true;
+> > > +	segment->sg_mapped =3D kmap_atomic(sg_page(sg));
+> >=20
+> > As you probably know, kmap_atomic() is deprecated.
+> >=20
+> > I must admit that I'm not an expert of this code, however, it looks lik=
+e=20
+the
+> > mapping has no need to rely on the side effects of kmap_atomic() (i.e.,
+> > pagefault_disable() and preempt_disable() - but I'm not entirely sure=20
+about
+> > the possibility that preemption should be explicitly disabled along wit=
+h=20
+the
+> > replacement with kmap_local_page()).
+> >=20
+> > Last year I've been working on several conversions from kmap{,_atomic}(=
+)=20
+to
+> > kmap_local_page(), however I'm still not sure to understand what's=20
+happening
+> > here...
+> >=20
+> > Am I missing any important details? Can you please explain why we still=
+=20
+need
+> > that kmap_atomic() instead of kmap_local_page()?
+>=20
+> Actually, it might be worth dropping segment->sg_mapped and segment->data=
+=20
+and
+> only doing the kmap_local when necessary.
+>=20
+> And this:
+>=20
+> 			struct msghdr msg =3D { .msg_flags =3D flags };
+> 			struct kvec iov =3D {
+> 				.iov_base =3D segment->data + offset,
+> 				.iov_len =3D copy
+> 			};
+>=20
+> 			r =3D kernel_sendmsg(sk, &msg, &iov, 1, copy);
+>=20
+> should really be using struct bvec, not struct kvec - then the mapping is=
+n't
+> necessary.
 
-yep, later I think.
+=46WIW, struct bvec looks better suited (despite I have very little knowled=
+ge of=20
+this code).
 
-> > > So we'll need a new virtio callback instead of flags.
-> > > Furthermore, other virtio drivers may decide which features to block based on parameters different than ring size (I don't have a good example at the moment).
-> > > So maybe we should leave it to the driver to handle (during probe), and offer a virtio core function to re-negotiate the features?
-> > >
-> > > In the solution I'm working on, I expose a new virtio core function that resets the device and renegotiates the received features.
-> > > + A new virtio_config_ops callback peek_vqs_len to peek at the VQ lengths before calling find_vqs. (The callback must be called after the features negotiation)
-> > >
-> > > So, the flow is something like:
-> > >
-> > > * Super early in virtnet probe, we peek at the VQ lengths and decide if we are
-> > >    using small vrings, if so, we reset and renegotiate the features.
-> > 
-> > Using which APIs? What does peek_vqs_len do and why does it matter that
-> > it is super early?
-> > 
-> 
-> We peek at the lengths using a new virtio_config.h function that calls a transport specific callback.
-> We renegotiate calling the new, exported virtio core function.
-> 
-> peek_vqs_len fills an array of u16 variables with the max length of every VQ.
-> 
-> The idea here is not to fail probe.
-> So we start probe, check if the ring is small, renegotiate the features and then continue with the new features.
-> This needs to be super early because otherwise, some virtio_has_feature calls before re-negotiating may be invalid, meaning a lot of reconfigurations.
-> 
-> > > * We continue normally and create the VQs.
-> > > * We check if the created rings are small.
-> > >    If they are and some blocked features were negotiated anyway (may occur if
-> > >    the re-negotiation fails, or if the transport has no implementation for
-> > >    peek_vqs_len), we fail probe.
-> > >    If the ring is small and the features are ok, we mark the virtnet device as
-> > >    vring_small and fixup some variables.
-> > >
-> > >
-> > > peek_vqs_len is needed because we must know the VQ length before calling init_vqs.
-> > >
-> > > During virtnet_find_vqs we check the following:
-> > > vi->has_cvq
-> > > vi->big_packets
-> > > vi->mergeable_rx_bufs
-> > >
-> > > But these will change if the ring is small..
-> > >
-> > > (Of course, another solution will be to re-negotiate features after init_vqs, but this will make a big mess, tons of things to clean and reconfigure)
-> > >
-> > >
-> > > The 2 < ring < MAX_FRAGS + 2 part is ready, I have tested a few cases and it is working.
-> > >
-> > > I'm considering splitting the effort into 2 series.
-> > > A 2 < ring < MAX_FRAGS + 2  series, and a follow up series with the ring < 2 case.
-> > >
-> > > I'm also thinking about sending the first series as an RFC soon, so it will be more broadly tested.
-> > >
-> > > What do you think?
-> > 
-> > Lots of work spilling over to transports.
-> > 
-> > And I especially don't like that it slows down boot on good path.
-> 
-> Yes, but I don't think that this is really significant.
-> It's just a call to the transport to get the length of the VQs.
+I assume that you noticed that we also have the unmapping counterpart=20
+(iscsi_tcp_segment_unmap()) which should also be addressed accordingly.
 
-With lots of VQs that is lots of exits.
+> It looks like this might be the only place the mapping is used,
+> but I'm not 100% certain.
 
-> If ring is not small, we continue as normal.
-> If ring is small, we renegotiate and continue, without failing probe.
-> 
-> > 
-> > I have the following idea:
-> > - add a blocked features value in virtio_device
-> > - before calling probe, core saves blocked features
-> > - if probe fails, checks blocked features.
-> >   if any were added, reset, negotiate all features
-> >   except blocked ones and do the validate/probe dance again
-> > 
-> > 
-> > This will mean mostly no changes to drivers: just check condition,
-> > block feature and fail probe.
-> > 
-> 
-> I like the idea, will try to implement it.
-> 
-> Thanks,
+It seems that kmap_atomic() (as well as kmap(), which you deleted) is only=
+=20
+called by iscsi_tcp_segment_map(), which in turn is called only by =20
+iscsi_tcp_segment_done(). I can't see any other places where the mapping is=
+=20
+used.
+
+I hope that this dialogue may help you somehow to choose the best suited wa=
+y=20
+to get rid of that deprecated kmap_atomic().
+
+Thanks for taking time to address questions from newcomers :-)=20
+
+=46abio
+
+>=20
+> David
+
+
+
 
