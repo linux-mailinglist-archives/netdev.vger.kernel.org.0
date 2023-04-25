@@ -2,160 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCD526EDBE5
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 08:48:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 329676EDBE7
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 08:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233523AbjDYGsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 02:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53204 "EHLO
+        id S233583AbjDYGsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 02:48:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233214AbjDYGsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 02:48:33 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E958FC142
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 23:48:12 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-94f3cd32799so992998866b.0
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 23:48:12 -0700 (PDT)
+        with ESMTP id S233559AbjDYGst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 02:48:49 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C561AF32
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 23:48:24 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id a640c23a62f3a-94a34a0b9e2so770180366b.1
+        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 23:48:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1682405291; x=1684997291;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=M1ZE7zkQJkA5e8pU4DAT31Q8ZdOD3Fw5YHswnvzUZmg=;
-        b=olsY2tC3Gx43o+1zlMobkyWpvjqynYcSpBNJpha9GJ236pWS48I5T6fRMsjnEXvXW6
-         nPi0bqOs+1TlaWLvYdtK05Phwd64bnf8h8lpwCoavOQKecIrT39b+c9OXon5xQQ/G8v5
-         C9ljuQugTDRKMyiQ5qglbXWyDGR5BHf2xgBOnY4Ic4pvsZ2wdQd/paK4gDRXz5hVaFo1
-         4sGV2PZjTYKCVn15Pw/Akl3g3hkRNCNsRHG7vFd0Yq0YJiWgig0JZOf8yfF87vpttcMF
-         HG7HPRei4vraUYDcnXZreqsqGm02uputbga0Nei8umyDLFxVgq8OAfyloV/3rrSUMB2q
-         yv+g==
+        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1682405303; x=1684997303;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=frqIWmuMsnJvpTcv8b277P5yYXqZQL8XU5GL+4yig8s=;
+        b=LCS5VEalN6bq7xzObS8UVm99RhpRCrT0NgpHR3OL+yR0lZIk3Ai4NIpfb84J7nehef
+         FyXq9ldzgZfHsJ2zEpcYIx+pXo9wow27yZnpJgaM/AuX/gaMimoEH5quDNe7rtY1DkUH
+         BjzNz+QYjV5FPoDPQMvTGna9oSX/yIO74qp86pxtjtp/W4ISJA2gjXb1fa+NUTlxoMpr
+         +UerD8eWsOwhvwHfpW4X3RNiYJ+GXq0rizEVkusgoo1Sp+f0MOzAwRXY9vZtWDZ9gMcz
+         QcNZbHEHhWeo8wQUs6i4Pr/8lTOrdYawCGFw/b6hN4dwtQ/uLam3FnB5CJ65WmIzUMbp
+         lnQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682405291; x=1684997291;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=M1ZE7zkQJkA5e8pU4DAT31Q8ZdOD3Fw5YHswnvzUZmg=;
-        b=WFEM3XvyKCG6x6heigERX8RKTYo7PN7uMhHdgLMBeu025MjR08aLLdYo0O+IZRWWGT
-         HeWXrq6qoA+MMCOkilrayEIrzVwlLI+rfsSjq/3GjmEgJ/e16x76rgjMgUun0TZSuXMM
-         ebSSsfuvZqvkmAdXBhFHeLri88nXxQb0BG+yVmGvaL6z+3GlSoZjoQ/0eBwwIe/1Zmdo
-         n7L1r6u+ZvL4Q9ECPD75vFdkwW5CMXJJ4IxY+BjF2MZkULV2irEtfvLLatYkG2610lkN
-         NnxSsgUrhOV8XBYSWTkehdZnMJvb0kMjGW+GkQwPyWri+Fjq0eKB4bmPxvO6P6KH9JY9
-         ueXg==
-X-Gm-Message-State: AAQBX9fe5z3N2oigkTvlsD02WO9x9Idzr5z+dztIHUxohyqBT5aKR+ul
-        b1h0P0LRViGI9uHVhtEpOGqgTg==
-X-Google-Smtp-Source: AKy350Z1GFt6IUApk1g0YPdKIdF8wPBWzQ1iG4DdhA44udPMwwV1bqNKEmVs8J1NANW0v9bSPKkIgg==
-X-Received: by 2002:a17:907:38c:b0:94e:fdec:67e2 with SMTP id ss12-20020a170907038c00b0094efdec67e2mr12906256ejb.77.1682405291266;
-        Mon, 24 Apr 2023 23:48:11 -0700 (PDT)
-Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id sd14-20020a170906ce2e00b0094f5d1bbb21sm6340135ejb.102.2023.04.24.23.48.10
+        d=1e100.net; s=20221208; t=1682405303; x=1684997303;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=frqIWmuMsnJvpTcv8b277P5yYXqZQL8XU5GL+4yig8s=;
+        b=FXivuMFrzTNHd8gXCXegsVj77O7uUgNG4ap3QeMo9bjSBhXSzM2EEP9RiMPmGSKyJZ
+         o3TX3V+YxZNM9BmczzYfcPj5KLSANqvJnySZNqHgmQ+LzfodENnD1aVTeXmXhr7n1nQh
+         MNBHG3td9WPpvGJtBCd2AWFBG04RswOr0kjmV7Rz0bVfdFzBIQgd2xT5WEtzhz8isqTi
+         +UUiwIGz5Kq9xLfUR0IxW1ChV3Hdq/z0RrxmyhRXT3EY7pulaL3kiRS9MyArb/Voj1xz
+         bkaYFqIyjDnW1EBlGAfgN+iX0dbPZ4jwTP181yOe3OurPWLl3DyS0pmwAvnmlS8RQiSE
+         LJZw==
+X-Gm-Message-State: AAQBX9cFpZXocvd/AXfYaubhG6PvpxufwZuweD1XRo2I8iN3/Y7E4nBc
+        aIAzQF0Gf79TrZtuwouwj9Yw2w==
+X-Google-Smtp-Source: AKy350bH4REkDOHjXNQ7QqnNigt9XyYoDlqKghWZnmgdiOezt4XtLGqtUtOGNizyVjqi+p5T4hZsuA==
+X-Received: by 2002:a17:906:ad81:b0:94f:2eb1:ffd2 with SMTP id la1-20020a170906ad8100b0094f2eb1ffd2mr11946449ejb.40.1682405302777;
+        Mon, 24 Apr 2023 23:48:22 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id v8-20020a17090610c800b0093313f4fc3csm6381106ejv.70.2023.04.24.23.48.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Apr 2023 23:48:10 -0700 (PDT)
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+        Mon, 24 Apr 2023 23:48:21 -0700 (PDT)
+Message-ID: <32d0ce60-f79d-82d9-783f-89e190986ec6@blackwall.org>
+Date:   Tue, 25 Apr 2023 09:48:20 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH iproute2-next 2/2] bridge: link: Add support for
+ neigh_vlan_suppress option
+Content-Language: en-US
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org, liuhangbin@gmail.com
+References: <20230424160951.232878-1-idosch@nvidia.com>
+ <20230424160951.232878-3-idosch@nvidia.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230424160951.232878-3-idosch@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 25 Apr 2023 08:48:10 +0200
-Message-Id: <CS5MWGNURMH4.2VD8BIIJ3V3Q4@otso>
-Subject: Re: [PATCH RFC 0/4] Add WCN3988 Bluetooth support for Fairphone 4
-From:   "Luca Weiss" <luca.weiss@fairphone.com>
-To:     "Konrad Dybcio" <konrad.dybcio@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        "Balakrishna Godavarthi" <bgodavar@codeaurora.org>,
-        "Rocky Liao" <rjliao@codeaurora.org>,
-        "Marcel Holtmann" <marcel@holtmann.org>,
-        "Johan Hedberg" <johan.hedberg@gmail.com>,
-        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
-        "Andy Gross" <agross@kernel.org>,
-        "Bjorn Andersson" <andersson@kernel.org>
-Cc:     <~postmarketos/upstreaming@lists.sr.ht>,
-        <phone-devel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-bluetooth@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>
-X-Mailer: aerc 0.14.0
-References: <20230421-fp4-bluetooth-v1-0-0430e3a7e0a2@fairphone.com>
- <0f2af683-07f9-7fc7-a043-ee55e41d65c3@linaro.org>
-In-Reply-To: <0f2af683-07f9-7fc7-a043-ee55e41d65c3@linaro.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat Apr 22, 2023 at 2:03 PM CEST, Konrad Dybcio wrote:
->
->
-> On 21.04.2023 16:11, Luca Weiss wrote:
-> > Just to start with the important part why this is an RFC:
-> >=20
-> > While Bluetooth chip init works totally fine and bluez seems to be
-> > fairly happy with it, there's a (major) problem with scanning, as shown
-> > with this bluetoothctl snippet and dmesg snippet:
-> >=20
-> >   [bluetooth]# scan on
-> >   Failed to start discovery: org.bluez.Error.InProgress
-> >=20
-> >   [  202.371374] Bluetooth: hci0: Opcode 0x200b failed: -16
-> >=20
-> > This opcode should be the following:
-> >=20
-> >   include/net/bluetooth/hci.h:#define HCI_OP_LE_SET_SCAN_PARAM    0x200=
-b
-> Not a bluetooth expert or anything, but does that thing support
-> bluetooth LE?
+On 24/04/2023 19:09, Ido Schimmel wrote:
+> Add support for the per-port neigh_vlan_suppress option. Example:
+> 
+>  # bridge link set dev swp1 neigh_vlan_suppress on
+>  # bridge -d -j -p link show dev swp1
+>  [ {
+>          "ifindex": 62,
+>          "ifname": "swp1",
+>          "flags": [ "BROADCAST","NOARP","UP","LOWER_UP" ],
+>          "mtu": 1500,
+>          "master": "br0",
+>          "state": "forwarding",
+>          "priority": 32,
+>          "cost": 100,
+>          "hairpin": false,
+>          "guard": false,
+>          "root_block": false,
+>          "fastleave": false,
+>          "learning": true,
+>          "flood": true,
+>          "mcast_flood": true,
+>          "bcast_flood": true,
+>          "mcast_router": 1,
+>          "mcast_to_unicast": false,
+>          "neigh_suppress": false,
+>          "neigh_vlan_suppress": true,
+>          "vlan_tunnel": false,
+>          "isolated": false,
+>          "locked": false,
+>          "mab": false,
+>          "mcast_n_groups": 0,
+>          "mcast_max_groups": 0
+>      } ]
+>  # bridge -d link show dev swp1
+>  62: swp1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 master br0 state forwarding priority 32 cost 100
+>      hairpin off guard off root_block off fastleave off learning on flood on mcast_flood on bcast_flood on mcast_router 1 mcast_to_unicast off neigh_suppress off neigh_vlan_suppress on vlan_tunnel off isolated off locked off mab off mcast_n_groups 0 mcast_max_groups 0
+> 
+>  # bridge link set dev swp1 neigh_vlan_suppress off
+>  # bridge -d -j -p link show dev swp1
+>  [ {
+>          "ifindex": 62,
+>          "ifname": "swp1",
+>          "flags": [ "BROADCAST","NOARP","UP","LOWER_UP" ],
+>          "mtu": 1500,
+>          "master": "br0",
+>          "state": "forwarding",
+>          "priority": 32,
+>          "cost": 100,
+>          "hairpin": false,
+>          "guard": false,
+>          "root_block": false,
+>          "fastleave": false,
+>          "learning": true,
+>          "flood": true,
+>          "mcast_flood": true,
+>          "bcast_flood": true,
+>          "mcast_router": 1,
+>          "mcast_to_unicast": false,
+>          "neigh_suppress": false,
+>          "neigh_vlan_suppress": false,
+>          "vlan_tunnel": false,
+>          "isolated": false,
+>          "locked": false,
+>          "mab": false,
+>          "mcast_n_groups": 0,
+>          "mcast_max_groups": 0
+>      } ]
+>  # bridge -d link show dev swp1
+>  62: swp1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 master br0 state forwarding priority 32 cost 100
+>      hairpin off guard off root_block off fastleave off learning on flood on mcast_flood on bcast_flood on mcast_router 1 mcast_to_unicast off neigh_suppress off neigh_vlan_suppress off vlan_tunnel off isolated off locked off mab off mcast_n_groups 0 mcast_max_groups 0
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  bridge/link.c            | 19 +++++++++++++++++++
+>  ip/iplink_bridge_slave.c | 10 ++++++++++
+>  man/man8/bridge.8        |  8 ++++++++
+>  man/man8/ip-link.8.in    |  8 ++++++++
+>  4 files changed, 45 insertions(+)
+> 
 
-I don't know too much about Bluetooth details either, but hasn't
-Bluetooth LE been a consistently supported thing since like 10 years?
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
 
-All the info I can easily find just states SM7225 SoC supports
-"Bluetooth 5.1".
-
-Regards
-Luca
-
->
-> Konrad
-> >=20
-> > Unfortunately trying various existing code branches in the Bluetooth
-> > driver doesn't show any sign of making this work and I don't really kno=
-w
-> > where to look to debug this further.
-> >=20
-> > On the other hand "discoverable on" makes the device show up on other
-> > devices during scanning , so the RF parts of the Bluetooth chip are
-> > generally functional for sure.
-> >=20
-> > Any ideas are welcome.
-> >=20
-> > @Bjorn: Patch "arm64: dts: qcom: sm6350: add uart1 node" should be fine
-> > to take regardless the RFC status, I don't think the problem is caused
-> > there.
-> >=20
-> > Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> > ---
-> > Luca Weiss (4):
-> >       dt-bindings: net: qualcomm: Add WCN3988
-> >       Bluetooth: btqca: Add WCN3988 support
-> >       arm64: dts: qcom: sm6350: add uart1 node
-> >       arm64: dts: qcom: sm7225-fairphone-fp4: Add Bluetooth
-> >=20
-> >  .../bindings/net/bluetooth/qualcomm-bluetooth.yaml |  2 +
-> >  arch/arm64/boot/dts/qcom/sm6350.dtsi               | 63 ++++++++++++++=
-++++++++
-> >  arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts  | 17 ++++++
-> >  drivers/bluetooth/btqca.c                          | 13 ++++-
-> >  drivers/bluetooth/btqca.h                          | 12 ++++-
-> >  drivers/bluetooth/hci_qca.c                        | 12 +++++
-> >  6 files changed, 115 insertions(+), 4 deletions(-)
-> > ---
-> > base-commit: cf4c0112a0350cfe8a63b5eb3377e2366f57545b
-> > change-id: 20230421-fp4-bluetooth-b36a0e87b9c8
-> >=20
-> > Best regards,
 
