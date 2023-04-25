@@ -2,111 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF0EA6EE21D
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 14:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95D336EE223
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 14:47:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234072AbjDYMq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 08:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55668 "EHLO
+        id S234156AbjDYMrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 08:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233424AbjDYMqT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 08:46:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF17D333
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 05:45:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682426732;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=krc+SiJhBUwO2ug/XwTx3KTJqkkR2CFS+eg5Dz5ylJc=;
-        b=CgCU3XBoShcQmruR1d+CCdinhapd2mFzXbwbRt1A5MY8MPKF44WNeUxRfe8+bqHwoILl3t
-        1bD1g21OURwsQHaq4J94ud9fYTXHijNlSga0ZBgPTdqjnFSDqmG6pzSOfnd0Gnc+vlSdFI
-        3JGMO23C+ZQPMuw1lyyaNawXWuTVHMo=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-252-oF28UJl-M6e5rDjJ401otg-1; Tue, 25 Apr 2023 08:45:30 -0400
-X-MC-Unique: oF28UJl-M6e5rDjJ401otg-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f17afcf99cso21003345e9.2
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 05:45:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682426728; x=1685018728;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=krc+SiJhBUwO2ug/XwTx3KTJqkkR2CFS+eg5Dz5ylJc=;
-        b=fXP1Wpkw/ioB4ofe5onczrZQvKsnsLQcNmWN1Tn66ceLflLh+cjwFPtEEN9lpEX5xq
-         FqvuvIhf7R4AvKdRBbcwH5/matdXJZum4S46NbBsuZSzRTZB2VWPt/00TI3EsvwA6zr+
-         iAqoPnZQLVABcQZZFscBNsqsqj8aOEpezS8acTBxqldkW2MUNSMlKmTri2rPmPY2PFhr
-         LZTFl8nfkrGHYxsuvOD7FYaZlIvlX3mi68PbiQhCIX9NYh/koDoVWhJ2UFtrSgiAfL08
-         g6SkDCoAnutumBTDBkuf80KHXNvaC+mv7kjE3hLkn5CLwOPJG/n51vM2ncJ8/9ctesdH
-         O3RQ==
-X-Gm-Message-State: AAQBX9eQoRdWHVgz9o6LbNDtE7IO+yYfiOnxjbrqs31aEyk9Pc8RPKZj
-        T8ZdiEpiOjwaW/azBAJ06MyD6agcwqLC/Q0xa4WDVe8F85oR2fGK0IuB7S9L9Fs23d+8Nwu2pWj
-        XTetO0XF2kxF8ZQ20
-X-Received: by 2002:a05:600c:2214:b0:3f1:987b:7a28 with SMTP id z20-20020a05600c221400b003f1987b7a28mr7195376wml.29.1682426728235;
-        Tue, 25 Apr 2023 05:45:28 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bIPgn166ZA/wJ8PFmg9nFmKKBjNCYwRGQ/sI+aE3t+loxoVTTzjiSf9BdLyfiT4aA9pr1zIA==
-X-Received: by 2002:a05:600c:2214:b0:3f1:987b:7a28 with SMTP id z20-20020a05600c221400b003f1987b7a28mr7195359wml.29.1682426727867;
-        Tue, 25 Apr 2023 05:45:27 -0700 (PDT)
-Received: from redhat.com ([2.55.17.255])
-        by smtp.gmail.com with ESMTPSA id o2-20020a05600c4fc200b003f1738e64c0sm18301465wmq.20.2023.04.25.05.45.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 05:45:27 -0700 (PDT)
-Date:   Tue, 25 Apr 2023 08:45:23 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Mikhail Golubev-Ciuchea <Mikhail.Golubev-Ciuchea@opensynergy.com>,
-        virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
+        with ESMTP id S233862AbjDYMru (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 08:47:50 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743F3BB8D;
+        Tue, 25 Apr 2023 05:47:49 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33PClMng069057;
+        Tue, 25 Apr 2023 07:47:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1682426842;
+        bh=OwWheics6M72Ry4e2WdjO4f48sALqJDkHHsdbEnwqD0=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=jYq4VmqRZ9uiIsPFJcHfbk4se0j+PpR19reqO0nuPYXVYI5ZUiZ6pMG2/fIcvQ8hR
+         25MLE4KM84v5D7CIWdpTthK9nCvcmYRAsCquHGPOBaqQ+EqcKnouquy+YS0ncIX9q9
+         MNeYeXcdv0I5EnxgEoULMpCB/IY2Nh3JYMUss1pQ=
+Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33PClMqN035520
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 25 Apr 2023 07:47:22 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 25
+ Apr 2023 07:47:22 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Tue, 25 Apr 2023 07:47:22 -0500
+Received: from localhost (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33PClMYT001603;
+        Tue, 25 Apr 2023 07:47:22 -0500
+Date:   Tue, 25 Apr 2023 07:47:22 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Judith Mendez <jm@ti.com>
+CC:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Harald Mommer <harald.mommer@opensynergy.com>
-Subject: Re: [PATCH] can: virtio-can: cleanups
-Message-ID: <20230425084503-mutt-send-email-mst@kernel.org>
-References: <20230424-modular-rebate-e54ac16374c8-mkl@pengutronix.de>
- <20230424170901-mutt-send-email-mst@kernel.org>
- <20230425-oxidizing-blandness-ca9cc2cf114e-mkl@pengutronix.de>
+        Paolo Abeni <pabeni@redhat.com>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Schuyler Patton <spatton@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Subject: Re: [PATCH v2 3/4] DO_NOT_MERGE arm64: dts: ti: Add AM62x MCAN MAIN
+ domain transceiver overlay
+Message-ID: <20230425124722.pnp7rkuanoml2zvj@nanny>
+References: <20230424195402.516-1-jm@ti.com>
+ <20230424195402.516-4-jm@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20230425-oxidizing-blandness-ca9cc2cf114e-mkl@pengutronix.de>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230424195402.516-4-jm@ti.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 11:17:20AM +0200, Marc Kleine-Budde wrote:
-> On 24.04.2023 17:09:23, Michael S. Tsirkin wrote:
-> > On Mon, Apr 24, 2023 at 09:47:58PM +0200, Marc Kleine-Budde wrote:
-> > > Address the topics raised in
-> > > 
-> > > https://lore.kernel.org/20230424-footwear-daily-9339bd0ec428-mkl@pengutronix.de
-> > > 
-> > > Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> > 
-> > given base patch is rfc this should be too?
+On 14:54-20230424, Judith Mendez wrote:
+> Add an overlay for main domain MCAN on AM62x SK. The AM62x
+> SK board does not have on-board CAN transceiver so instead
+> of changing the DTB permanently, add an overlay to enable
+> MAIN domain MCAN and support for 1 CAN transceiver.
 > 
-> This is an incremental patch that fixes the topics I raised in the
-> review of "[RFC PATCH v2] can: virtio: Initial virtio CAN driver.", see
-> linked discussion thread.
+> Signed-off-by: Judith Mendez <jm@ti.com>
+> ---
+>  arch/arm64/boot/dts/ti/Makefile               |  2 ++
+>  .../boot/dts/ti/k3-am625-sk-mcan-main.dtso    | 35 +++++++++++++++++++
+>  2 files changed, 37 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso
 > 
-> regards,
-> Marc
 
-and that's fine, just pls put RFC in the subject.
+Just a headsup - for a formal patch, for the overlay, please ensure we
+provide link to the specific board. I dont want to end up with 1000s
+of overlay files, each enabling one specific peripheral instance of a
+small subgroup of peripheral instance. Overlays should be describing a
+real platform with product link.
+
+> diff --git a/arch/arm64/boot/dts/ti/Makefile b/arch/arm64/boot/dts/ti/Makefile
+> index c83c9d772b81..abe15e76b614 100644
+> --- a/arch/arm64/boot/dts/ti/Makefile
+> +++ b/arch/arm64/boot/dts/ti/Makefile
+> @@ -9,8 +9,10 @@
+>  # alphabetically.
+>  
+>  # Boards with AM62x SoC
+> +k3-am625-sk-mcan-dtbs := k3-am625-sk.dtb k3-am625-sk-mcan-main.dtbo
+>  dtb-$(CONFIG_ARCH_K3) += k3-am625-beagleplay.dtb
+>  dtb-$(CONFIG_ARCH_K3) += k3-am625-sk.dtb
+> +dtb-$(CONFIG_ARCH_K3) += k3-am625-sk-mcan.dtb
+>  dtb-$(CONFIG_ARCH_K3) += k3-am62-lp-sk.dtb
+>  
+>  # Boards with AM62Ax SoC
+> diff --git a/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso
+> new file mode 100644
+> index 000000000000..0a7b2f394f87
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/ti/k3-am625-sk-mcan-main.dtso
+> @@ -0,0 +1,35 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/**
+> + * DT overlay for MCAN transceiver in main domain on AM625 SK
+> + *
+> + * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com/
+> + */
+> +
+> +/dts-v1/;
+> +/plugin/;
+> +
+> +#include "k3-pinctrl.h"
+> +
+> +&{/} {
+> +	transceiver1: can-phy0 {
+> +		compatible = "ti,tcan1042";
+> +		#phy-cells = <0>;
+> +		max-bitrate = <5000000>;
+> +	};
+> +};
+> +
+> +&main_pmx0 {
+> +	main_mcan0_pins_default: main-mcan0-pins-default {
+> +		pinctrl-single,pins = <
+> +			AM62X_IOPAD(0x1dc, PIN_INPUT, 0) /* (E15) MCAN0_RX */
+> +			AM62X_IOPAD(0x1d8, PIN_OUTPUT, 0) /* (C15) MCAN0_TX */
+> +		>;
+> +	};
+> +};
+> +
+> +&main_mcan0 {
+> +	status = "okay";
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&main_mcan0_pins_default>;
+> +	phys = <&transceiver1>;
+> +};
+> -- 
+> 2.17.1
+> 
 
 -- 
-MST
-
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
