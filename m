@@ -2,48 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E1776ED923
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 02:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD35E6ED93E
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 02:13:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231985AbjDYAHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 20:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37484 "EHLO
+        id S232112AbjDYANV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 20:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230355AbjDYAHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 20:07:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859674EC9
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 17:07:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2122362A05
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 00:07:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C631C433D2;
-        Tue, 25 Apr 2023 00:07:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682381265;
-        bh=aS2tmXHin7i+CMIo2ud/q2WvxR7xHhFqlbPoxzgG1y4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hHLrB/i0AYdhtflgwTxasOC8/jUmdxQIscXeWvev25YCaVuTczTN+6pcuoo49Apqk
-         8HSEiihZV79apay1cSGRO5VtKpCfffL/NAj+aAfCtwv7pVsfKrwrNvWrhHVgVyY6zi
-         4OS1eSePpDGzcgxrqviyclkd3dsExIQriRuJzWhmeJ4z9BEeiMqE1eGJhMEY6Rt2Np
-         VC6XjlMRaejl1uO7Gj9/66epDhJcaS52O8VhL7hmmlM+OFxsL0qm1bwsWkFIbLDc2k
-         +pTC3NXgk3oPGpzIHzcQ4uKiBlLKgbdUx30RdHLWRH2gv4uyPhkDGeU9x0ZdfLgses
-         HSnodsMmhnTWA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     mkubecek@suse.cz
-Cc:     netdev@vger.kernel.org, piergiorgio.beruto@gmail.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH ethtool] netlink: settings: fix netlink support when PLCA is not present
-Date:   Mon, 24 Apr 2023 17:07:42 -0700
-Message-Id: <20230425000742.130480-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.40.0
+        with ESMTP id S231189AbjDYANU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 20:13:20 -0400
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3883B4C16;
+        Mon, 24 Apr 2023 17:13:19 -0700 (PDT)
+Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-38e4c98e5ceso1738347b6e.1;
+        Mon, 24 Apr 2023 17:13:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682381598; x=1684973598;
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=pFwtgW0wvfFjibNHY+PyADwbRVqhSb57mZWqoTJnZz4=;
+        b=NtQ83Wkc0rMiMEIdF7D5L1qpsogTz9NbZR4moigHipQhtkKpIxF2lmkqwlvxkpsiPb
+         CsRu0nSA2Q2Ce+81W++eJfAZU8ZY0/c2iDeGkaUawYOKaMRX86fetaP38HLUqFTIlsOJ
+         lBdXTe+2A2QgzMxVGG962NRacgqoUE4d/k3O/t9vayN5lNLMB66k1LTAxwa2eAopcR7K
+         8laTmKU4AB/WS/tpR2GBueO0wPSGfSUtwy5QpIyxQ4EiDkcqP5QAaL0skCRvDmdriwvy
+         MrwrNCPv2YT8nHadBVJXJ5yL4Om3WsIiZbihGXj0jCg7iXy7f4cRLCpvbnV//RAMzbTW
+         NPgQ==
+X-Gm-Message-State: AAQBX9cMLyRo6Jd2MU4TZ4SxK3rGeKLrS3SeTwrurzLPD0iysUOAwDHD
+        I7GOWhD79BZR30Tln/Ku5Q==
+X-Google-Smtp-Source: AKy350ZBoEkCK7vqTj0PueqwGaZpxLzKNT2QhoPIdll+DNVILUuxcLSXtlVd1pmbxqFa/wSrqUeXjg==
+X-Received: by 2002:a05:6870:a706:b0:17e:dc2b:f4b4 with SMTP id g6-20020a056870a70600b0017edc2bf4b4mr11693226oam.15.1682381598317;
+        Mon, 24 Apr 2023 17:13:18 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n3-20020a056870e40300b00172ac40356csm4963304oag.50.2023.04.24.17.13.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Apr 2023 17:13:17 -0700 (PDT)
+Received: (nullmailer pid 4124744 invoked by uid 1000);
+        Tue, 25 Apr 2023 00:13:16 -0000
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+From:   Rob Herring <robh@kernel.org>
+To:     Judith Mendez <jm@ti.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        devicetree@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-can@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Eric Dumazet <edumazet@google.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Schuyler Patton <spatton@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20230424195402.516-3-jm@ti.com>
+References: <20230424195402.516-1-jm@ti.com>
+ <20230424195402.516-3-jm@ti.com>
+Message-Id: <168238155801.4123790.14706903991436332296.robh@kernel.org>
+Subject: Re: [PATCH v2 2/4] dt-bindings: net: can: Add poll-interval for
+ MCAN
+Date:   Mon, 24 Apr 2023 19:13:16 -0500
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,127 +78,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PLCA support threw the PLCA commands as required into the initial
-support check at the start of nl_gset(). That's not correct.
-The initial check (AFAIU) queries for the base support in the kernel
-i.e. support for the commands which correspond to ioctls.
-If those are not available (presumably very old kernel or kernel
-without ethtool-netlink) we're better off using the ioctl.
 
-For new functionality, however, falling back to ioctl
-is counterproductive. New functionality (like PLCA) isn't
-supported via the ioctl, anyway, and we're losing all the other
-netlink-only functionality (I noticed that the link down statistics
-are gone).
+On Mon, 24 Apr 2023 14:54:00 -0500, Judith Mendez wrote:
+> On AM62x SoC, MCANs on MCU domain do not have hardware interrupt
+> routed to A53 Linux, instead they will use software interrupt by
+> hrtimer. To enable timer method, interrupts should be optional so
+> remove interrupts property from required section and introduce
+> poll-interval property.
+> 
+> Signed-off-by: Judith Mendez <jm@ti.com>
+> ---
+> Changelog:
+> v2:
+>   1. Add poll-interval property to enable timer polling method
+>   2. Add example using poll-interval property
+> 
+>  .../bindings/net/can/bosch,m_can.yaml         | 26 ++++++++++++++++---
+>  1 file changed, 23 insertions(+), 3 deletions(-)
+> 
 
-After much deliberation I decided to add a second check for
-command support in gset_request(). Seems cleanest and if any
-of the non-required commands narrows the capabilities (e.g.
-does not support dump) we should just skip it too. Falling
-back to ioctl would again be a regression.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Fixes: cf02fc1b1095 ("add support for IEEE 802.3cg-2019 Clause 148")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- netlink/settings.c | 31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+yamllint warnings/errors:
 
-diff --git a/netlink/settings.c b/netlink/settings.c
-index 168b182530a2..4fd75d2e0a5a 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -963,13 +963,17 @@ int plca_status_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 	return MNL_CB_OK;
- }
- 
--static int gset_request(struct nl_context *nlctx, uint8_t msg_type,
-+static int gset_request(struct cmd_context *ctx, uint8_t msg_type,
- 			uint16_t hdr_attr, mnl_cb_t cb)
- {
-+	struct nl_context *nlctx = ctx->nlctx;
- 	struct nl_socket *nlsk = nlctx->ethnl_socket;
- 	u32 flags;
- 	int ret;
- 
-+	if (netlink_cmd_check(ctx, msg_type, true))
-+		return 0;
-+
- 	flags = get_stats_flag(nlctx, msg_type, hdr_attr);
- 
- 	ret = nlsock_prep_get_request(nlsk, msg_type, hdr_attr, flags);
-@@ -980,61 +984,58 @@ static int gset_request(struct nl_context *nlctx, uint8_t msg_type,
- 
- int nl_gset(struct cmd_context *ctx)
- {
--	struct nl_context *nlctx = ctx->nlctx;
- 	int ret;
- 
-+	/* Check for the base set of commands */
- 	if (netlink_cmd_check(ctx, ETHTOOL_MSG_LINKMODES_GET, true) ||
- 	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKINFO_GET, true) ||
- 	    netlink_cmd_check(ctx, ETHTOOL_MSG_WOL_GET, true) ||
- 	    netlink_cmd_check(ctx, ETHTOOL_MSG_DEBUG_GET, true) ||
--	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKSTATE_GET, true) ||
--	    netlink_cmd_check(ctx, ETHTOOL_MSG_PLCA_GET_CFG, true) ||
--	    netlink_cmd_check(ctx, ETHTOOL_MSG_PLCA_GET_STATUS, true))
-+	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKSTATE_GET, true))
- 		return -EOPNOTSUPP;
- 
--	nlctx->suppress_nlerr = 1;
-+	ctx->nlctx->suppress_nlerr = 1;
- 
--	ret = gset_request(nlctx, ETHTOOL_MSG_LINKMODES_GET,
-+	ret = gset_request(ctx, ETHTOOL_MSG_LINKMODES_GET,
- 			   ETHTOOL_A_LINKMODES_HEADER, linkmodes_reply_cb);
- 	if (ret == -ENODEV)
- 		return ret;
- 
--	ret = gset_request(nlctx, ETHTOOL_MSG_LINKINFO_GET,
-+	ret = gset_request(ctx, ETHTOOL_MSG_LINKINFO_GET,
- 			   ETHTOOL_A_LINKINFO_HEADER, linkinfo_reply_cb);
- 	if (ret == -ENODEV)
- 		return ret;
- 
--	ret = gset_request(nlctx, ETHTOOL_MSG_WOL_GET, ETHTOOL_A_WOL_HEADER,
-+	ret = gset_request(ctx, ETHTOOL_MSG_WOL_GET, ETHTOOL_A_WOL_HEADER,
- 			   wol_reply_cb);
- 	if (ret == -ENODEV)
- 		return ret;
- 
--	ret = gset_request(nlctx, ETHTOOL_MSG_PLCA_GET_CFG,
-+	ret = gset_request(ctx, ETHTOOL_MSG_PLCA_GET_CFG,
- 			   ETHTOOL_A_PLCA_HEADER, plca_cfg_reply_cb);
- 	if (ret == -ENODEV)
- 		return ret;
- 
--	ret = gset_request(nlctx, ETHTOOL_MSG_DEBUG_GET, ETHTOOL_A_DEBUG_HEADER,
-+	ret = gset_request(ctx, ETHTOOL_MSG_DEBUG_GET, ETHTOOL_A_DEBUG_HEADER,
- 			   debug_reply_cb);
- 	if (ret == -ENODEV)
- 		return ret;
- 
--	ret = gset_request(nlctx, ETHTOOL_MSG_LINKSTATE_GET,
-+	ret = gset_request(ctx, ETHTOOL_MSG_LINKSTATE_GET,
- 			   ETHTOOL_A_LINKSTATE_HEADER, linkstate_reply_cb);
- 	if (ret == -ENODEV)
- 		return ret;
- 
--	ret = gset_request(nlctx, ETHTOOL_MSG_PLCA_GET_STATUS,
-+	ret = gset_request(ctx, ETHTOOL_MSG_PLCA_GET_STATUS,
- 			   ETHTOOL_A_PLCA_HEADER, plca_status_reply_cb);
- 	if (ret == -ENODEV)
- 		return ret;
- 
--	if (!nlctx->no_banner) {
-+	if (!ctx->nlctx->no_banner) {
- 		printf("No data available\n");
- 		return 75;
- 	}
- 
--
- 	return 0;
- }
- 
--- 
-2.40.0
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml: 'example with interrupts' is not one of ['$id', '$schema', 'title', 'description', 'examples', 'required', 'allOf', 'anyOf', 'oneOf', 'definitions', '$defs', 'additionalProperties', 'dependencies', 'dependentRequired', 'dependentSchemas', 'patternProperties', 'properties', 'not', 'if', 'then', 'else', 'unevaluatedProperties', 'deprecated', 'maintainers', 'select', '$ref']
+	from schema $id: http://devicetree.org/meta-schemas/base.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/can/bosch,m_can.yaml: 'example with timer polling' is not one of ['$id', '$schema', 'title', 'description', 'examples', 'required', 'allOf', 'anyOf', 'oneOf', 'definitions', '$defs', 'additionalProperties', 'dependencies', 'dependentRequired', 'dependentSchemas', 'patternProperties', 'properties', 'not', 'if', 'then', 'else', 'unevaluatedProperties', 'deprecated', 'maintainers', 'select', '$ref']
+	from schema $id: http://devicetree.org/meta-schemas/base.yaml#
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20230424195402.516-3-jm@ti.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
