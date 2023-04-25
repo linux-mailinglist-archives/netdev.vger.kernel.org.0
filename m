@@ -2,76 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3CE96EE20D
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 14:44:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF0EA6EE21D
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 14:46:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234072AbjDYMoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 08:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54506 "EHLO
+        id S234072AbjDYMq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 08:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233676AbjDYMoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 08:44:20 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA693BB8D
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 05:44:18 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id e9e14a558f8ab-325f728402cso65965ab.1
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 05:44:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682426658; x=1685018658;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=te/AU6YD3Nrp06W+/L24htOInvAS1q7FQ+X/iKWkuds=;
-        b=K1ZWUUchq0Erw5U3Nvwwr6Mo6pQI0pLwySLG1iZlTS2NlkiPcqJL6ZJGTahZwp2eQL
-         /fH5bojhLzWVrV5CCJg0gCzeyrpiaOiezhLx5FwHPvf5uARnYifDwuR2i54acxR2k9hg
-         nfpIzgS+HrrFFAdD6nCGFJQXjJp9C//n46xY6fUNcuh8TXGFbjHw+O1v9F8NGO1xdXtw
-         rrqR50Cf3+cRIVwbCVQtuAKHYwlfdtvhwG7yHD8loc3QydQOS3HSokGELGvZ5RO2ijuq
-         lvKUiasZ9Iei9+KGhP9vcZaopFFCpvWhg3RuFBfr12ca4l6sfB7Mq+seYpX2lm48sA+d
-         eAmw==
+        with ESMTP id S233424AbjDYMqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 08:46:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF17D333
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 05:45:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682426732;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=krc+SiJhBUwO2ug/XwTx3KTJqkkR2CFS+eg5Dz5ylJc=;
+        b=CgCU3XBoShcQmruR1d+CCdinhapd2mFzXbwbRt1A5MY8MPKF44WNeUxRfe8+bqHwoILl3t
+        1bD1g21OURwsQHaq4J94ud9fYTXHijNlSga0ZBgPTdqjnFSDqmG6pzSOfnd0Gnc+vlSdFI
+        3JGMO23C+ZQPMuw1lyyaNawXWuTVHMo=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-252-oF28UJl-M6e5rDjJ401otg-1; Tue, 25 Apr 2023 08:45:30 -0400
+X-MC-Unique: oF28UJl-M6e5rDjJ401otg-1
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f17afcf99cso21003345e9.2
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 05:45:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682426658; x=1685018658;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=te/AU6YD3Nrp06W+/L24htOInvAS1q7FQ+X/iKWkuds=;
-        b=WRZpBQOzp3/vMnukm3ZUlcLhTiTShfTtO1gObef79YjE8POPD49hel7/YOqhTXXLV3
-         t0Sr2WIREUpEhl9GkWIcRm7h01Gg7KlgK6SRdFSSfBbC5Jmhefb9xvk5mtxfLFHxxsQq
-         hMRozu0RasxK+00beUy8AXpA6CghcmsG8AU9gsPT1y+7gurXTTJGCaMW6DpqaRJAgX+Y
-         FYHXnl7pB/zcYDbxK12XtiDRPJkC2V4EN0qe720De7Iw+qhCh8xT4VPRPHviWVpbnrJm
-         T0F+PTJKsInJajYqJUOV9zybvfgZ3uO+6Tv67qASVyMISDz+HAMdrxcR/3yoQqlagt9T
-         E40w==
-X-Gm-Message-State: AC+VfDyxFCMrRFRXnwGi1D7skj4e2o9PqMOM1DfAX7Lm3HJ+sGBrz9O5
-        QTdS54Gi8p0xA4pHf08t5T7XE28km4jdz2H/qRHcTw==
-X-Google-Smtp-Source: ACHHUZ74AQK+Hh0UHK0Buv7tEFBp2Kr/Sz+rPOmb/ycOMlzaR8VN8UEyIksEFlfuHPAoisNNupP/MT4jPxfZHdEgMuk=
-X-Received: by 2002:a05:6e02:1aaf:b0:313:93c8:e71f with SMTP id
- l15-20020a056e021aaf00b0031393c8e71fmr174663ilv.19.1682426657965; Tue, 25 Apr
- 2023 05:44:17 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682426728; x=1685018728;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=krc+SiJhBUwO2ug/XwTx3KTJqkkR2CFS+eg5Dz5ylJc=;
+        b=fXP1Wpkw/ioB4ofe5onczrZQvKsnsLQcNmWN1Tn66ceLflLh+cjwFPtEEN9lpEX5xq
+         FqvuvIhf7R4AvKdRBbcwH5/matdXJZum4S46NbBsuZSzRTZB2VWPt/00TI3EsvwA6zr+
+         iAqoPnZQLVABcQZZFscBNsqsqj8aOEpezS8acTBxqldkW2MUNSMlKmTri2rPmPY2PFhr
+         LZTFl8nfkrGHYxsuvOD7FYaZlIvlX3mi68PbiQhCIX9NYh/koDoVWhJ2UFtrSgiAfL08
+         g6SkDCoAnutumBTDBkuf80KHXNvaC+mv7kjE3hLkn5CLwOPJG/n51vM2ncJ8/9ctesdH
+         O3RQ==
+X-Gm-Message-State: AAQBX9eQoRdWHVgz9o6LbNDtE7IO+yYfiOnxjbrqs31aEyk9Pc8RPKZj
+        T8ZdiEpiOjwaW/azBAJ06MyD6agcwqLC/Q0xa4WDVe8F85oR2fGK0IuB7S9L9Fs23d+8Nwu2pWj
+        XTetO0XF2kxF8ZQ20
+X-Received: by 2002:a05:600c:2214:b0:3f1:987b:7a28 with SMTP id z20-20020a05600c221400b003f1987b7a28mr7195376wml.29.1682426728235;
+        Tue, 25 Apr 2023 05:45:28 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bIPgn166ZA/wJ8PFmg9nFmKKBjNCYwRGQ/sI+aE3t+loxoVTTzjiSf9BdLyfiT4aA9pr1zIA==
+X-Received: by 2002:a05:600c:2214:b0:3f1:987b:7a28 with SMTP id z20-20020a05600c221400b003f1987b7a28mr7195359wml.29.1682426727867;
+        Tue, 25 Apr 2023 05:45:27 -0700 (PDT)
+Received: from redhat.com ([2.55.17.255])
+        by smtp.gmail.com with ESMTPSA id o2-20020a05600c4fc200b003f1738e64c0sm18301465wmq.20.2023.04.25.05.45.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Apr 2023 05:45:27 -0700 (PDT)
+Date:   Tue, 25 Apr 2023 08:45:23 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Mikhail Golubev-Ciuchea <Mikhail.Golubev-Ciuchea@opensynergy.com>,
+        virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Harald Mommer <harald.mommer@opensynergy.com>
+Subject: Re: [PATCH] can: virtio-can: cleanups
+Message-ID: <20230425084503-mutt-send-email-mst@kernel.org>
+References: <20230424-modular-rebate-e54ac16374c8-mkl@pengutronix.de>
+ <20230424170901-mutt-send-email-mst@kernel.org>
+ <20230425-oxidizing-blandness-ca9cc2cf114e-mkl@pengutronix.de>
 MIME-Version: 1.0
-References: <20230224-track_gt-v8-0-4b6517e61be6@intel.com> <20230224-track_gt-v8-3-4b6517e61be6@intel.com>
-In-Reply-To: <20230224-track_gt-v8-3-4b6517e61be6@intel.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 25 Apr 2023 14:44:06 +0200
-Message-ID: <CANn89iLE5fVEom+VgcOtc4DdceYDNj0ftfkd4NjjmTi1LpaDzQ@mail.gmail.com>
-Subject: Re: [PATCH v8 3/7] lib/ref_tracker: add printing to memory buffer
-To:     Andrzej Hajda <andrzej.hajda@intel.com>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andi Shyti <andi.shyti@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230425-oxidizing-blandness-ca9cc2cf114e-mkl@pengutronix.de>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,14 +87,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 12:06=E2=80=AFAM Andrzej Hajda <andrzej.hajda@intel=
-.com> wrote:
->
-> Similar to stack_(depot|trace)_snprint the patch
-> adds helper to printing stats to memory buffer.
-> It will be helpful in case of debugfs.
->
-> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
-> Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
+On Tue, Apr 25, 2023 at 11:17:20AM +0200, Marc Kleine-Budde wrote:
+> On 24.04.2023 17:09:23, Michael S. Tsirkin wrote:
+> > On Mon, Apr 24, 2023 at 09:47:58PM +0200, Marc Kleine-Budde wrote:
+> > > Address the topics raised in
+> > > 
+> > > https://lore.kernel.org/20230424-footwear-daily-9339bd0ec428-mkl@pengutronix.de
+> > > 
+> > > Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> > 
+> > given base patch is rfc this should be too?
+> 
+> This is an incremental patch that fixes the topics I raised in the
+> review of "[RFC PATCH v2] can: virtio: Initial virtio CAN driver.", see
+> linked discussion thread.
+> 
+> regards,
+> Marc
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+and that's fine, just pls put RFC in the subject.
+
+-- 
+MST
+
