@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E4C6EE9A8
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 23:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BFC56EE9A4
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 23:27:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236409AbjDYV0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 17:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33970 "EHLO
+        id S236428AbjDYV0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 17:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236406AbjDYV0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 17:26:35 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2068.outbound.protection.outlook.com [40.107.243.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE28C18BBB
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 14:26:28 -0700 (PDT)
+        with ESMTP id S236408AbjDYV0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 17:26:38 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2075.outbound.protection.outlook.com [40.107.223.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD2118EA0
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 14:26:29 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QY3FtrH4LZvmBh08iQ/HopNX/hoVOxgNGR24hAORWkQJURo1euwoHPQyqxF2NoU3/Q9KWDpIYiT9X7FLHW/dt+nY9AwAgrmOHzrZspyDrRDTajnmyfURfxfn4lxz4R5D8GvZitq/Z+69mIghJ6GfxPpAtKJWad1a5SZqwnWel1RunZoqMsRMWOI5ypdUMpS9EOe0n8DSi6y8O0AeTkkhuGrMKfhKGRpGGM13lkOTVosS8akIJXPX4zZ6S3VsspcvafrYBe+9/ZnzLXdu3o8auAdxX712cX8YPUTjxZm4oQQZMmeba7zQSJV+Eqqu8mYWInJq1n4vS7EHeTyUlQLl3Q==
+ b=JLFObvA8kC/3iGXNPRbKcipwuanZVnS9MxfHJ+BuvTzrlInAykjHyJJ7SCqiURXjBjGMp0TDBFv9fM6wQQSTd3JBlo9cuJBOLDrWrRtsJO6fynxSI8elzLVBCvYD6icXWR7sHDpiNw1az6wLDCPJfddaXEcjN2P3EhTXaAhbPjqkAeXn7ctCgLzG0didLqNjJe52Fy9I/cAzTTOB8K3SgXa1BBrzEBv7BV+PHywlmnK0iZx5okjArYc8wYH5Obkvjv+u+XSjVDAZqLddv+4R4HKVrbntcXM/0qVDCVtw9Kj0AOoI4B58GWBZllSq/3S44YrcGVzD9HZV8m7hXW1T+w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+os29DzI+TyQA5cAGcv14DloWoQSEdoybpQFbpkGOiU=;
- b=lfSBTg8BqG46Uvp0UPXPR9y+tPwS+3Yt7+q4FSCVIEJWGvs9W/QfZxSpm2c+dZWJFlBjYkDlwYXmoKMBX3TSiwpF76bvvxgBYmsoad4r78ewX8c9o6JT9yzdfnc23lTPy4G5HcbB2ACvyN8Na36GNaMdnVKJhOXiwuw4O59jYmbuQojPTkaJKr/a/WdQtLKLUX+W6oo0h4dzSw9bTg7elGpyBKE4jmSRm6doMDcG287zHtzkCjzIR7ogWoTZSQZB8nuKOn0r8cK3ug5/52JPm3DqJGnTq7+VtjdUbGckuYfASigNehyXDAZ7XICrmjClbcCQICjak6I17eis8reohA==
+ bh=pmuXS7KEPYAbdJs8mafOcT/FUJr8S5yde8ZUjOZjYD8=;
+ b=nyQb7KYo2MzLqsQe27PFScVswMNzQ6MWEbds+g0tbH4g3tfyZssHqLDU9DJKTwHz6abAvmdm/Tvl5BZ5m0Ku0Syp9nv/UfpsvhYyrGQMQ0FUsKZ+QY5XMYXAV3bfrgtpDWncMqNtMg3BGYg3hqROMBT5bKXIXuJPyfzu8fIJyq7jGH2NmAX9U+c3oOa4NWZ36WUg24ac2BnlpBDF06nyDeoU2X/nDkRXAOvRsuk0fBBl6A63l2IkK97FNzUpNG8aTHw9U3G/kIF7U44ADVyoDDF3d8SHVCVDpfW0oLPxQqQDKfNTc/fWLGH6TFqN4l5BXmZi8QxdtwxXGQ95M9zHdg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+os29DzI+TyQA5cAGcv14DloWoQSEdoybpQFbpkGOiU=;
- b=viep7Pz1PTfka82WuE75eTYCsLbAMwH1iYBUTy6HtZKWzdNaW/3myNay77PNV3lXkmDHjeavYZ9QMnrTaX7bKfJ4FT+6TP4TSL/2dlSV2MdFdZWGlMtNbwEHk17VX5W6BK2lJ9z6TITWd4hERa/PtCFaDc2WJb3KJ4z4t4Sywew=
-Received: from DM6PR03CA0027.namprd03.prod.outlook.com (2603:10b6:5:40::40) by
- DM4PR12MB5232.namprd12.prod.outlook.com (2603:10b6:5:39c::16) with Microsoft
+ bh=pmuXS7KEPYAbdJs8mafOcT/FUJr8S5yde8ZUjOZjYD8=;
+ b=J7XJkwDXnR8X9oWMXdcZ2ov+U4LsL1KF34pxBJV7pwfd3KmPDZV3+4eFRXjHhVDwD9NiaGqswbyX426zPcKVR/hRaXp1SAe8PoqGnCaMHJuADZMvMm7wFCfTmFXzaFj80tpfjUi8fIDlO8igcHtsiJlzkcVytb5Ytxr0ULgXP3A=
+Received: from DM6PR03CA0002.namprd03.prod.outlook.com (2603:10b6:5:40::15) by
+ IA1PR12MB8539.namprd12.prod.outlook.com (2603:10b6:208:446::6) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6319.33; Tue, 25 Apr 2023 21:26:26 +0000
+ 15.20.6319.33; Tue, 25 Apr 2023 21:26:27 +0000
 Received: from DM6NAM11FT105.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:40:cafe::62) by DM6PR03CA0027.outlook.office365.com
- (2603:10b6:5:40::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.34 via Frontend
- Transport; Tue, 25 Apr 2023 21:26:26 +0000
+ (2603:10b6:5:40:cafe::70) by DM6PR03CA0002.outlook.office365.com
+ (2603:10b6:5:40::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.33 via Frontend
+ Transport; Tue, 25 Apr 2023 21:26:27 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,20 +47,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  DM6NAM11FT105.mail.protection.outlook.com (10.13.173.164) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6340.20 via Frontend Transport; Tue, 25 Apr 2023 21:26:26 +0000
+ 15.20.6340.20 via Frontend Transport; Tue, 25 Apr 2023 21:26:27 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 25 Apr
- 2023 16:26:25 -0500
+ 2023 16:26:26 -0500
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <jasowang@redhat.com>, <mst@redhat.com>,
         <virtualization@lists.linux-foundation.org>,
         <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
         <netdev@vger.kernel.org>
 CC:     <drivers@pensando.io>
-Subject: [PATCH v4 virtio 09/10] pds_vdpa: subscribe to the pds_core events
-Date:   Tue, 25 Apr 2023 14:26:01 -0700
-Message-ID: <20230425212602.1157-10-shannon.nelson@amd.com>
+Subject: [PATCH v4 virtio 10/10] pds_vdpa: pds_vdps.rst and Kconfig
+Date:   Tue, 25 Apr 2023 14:26:02 -0700
+Message-ID: <20230425212602.1157-11-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230425212602.1157-1-shannon.nelson@amd.com>
 References: <20230425212602.1157-1-shannon.nelson@amd.com>
@@ -71,23 +71,23 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT105:EE_|DM4PR12MB5232:EE_
-X-MS-Office365-Filtering-Correlation-Id: b779bb73-bcdd-4807-b2f7-08db45d3ba36
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT105:EE_|IA1PR12MB8539:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8a92ab5c-04f5-45ae-882c-08db45d3ba6d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nKqoFDBUBJc4EfSjtZ+i4z8z6TIAra2n+0JxKmBKTyUwQXlqSuVtSwhWZT1ni3X6DtNn67p99HxerI11VYlOCvOAvJC1ywMBb8Oh8Qu8zh46W1wb9mKyBATUZZ5gGK9CT9EzHJ7bcEA09Ta3HeYlXVfM96RSaUho65cT8J9sluWZXf5HIWNOY4JXEYHS911abBJenSTZaXZFtWho7slikplxJWOIaJw7cRPeRC5JRNlOgkJSett4RSBVkZA1ePtVBwEMCXiQRTFJy82pRMOS2NsI/chYwVYB3ov9OXZcqaAvfhL3Jvvd1RmtLRKuC42XOnOzIB1XnOANO8cKgeNG3VA5XFZZhsDQctqLLShro63OZBGb2cqICF2ztG92pi/mfpUwrhYMC1mANjvtArcIIyey0+wxjZfVql26LdPkNmXk3LX+7GsRevXoDThwWnEg2unS+wh9td8aSMh0FArTuyiFMT1NjYycqZg/tBg7zZTxdBPO+S7fcUQ8/C3b+Wd3fwpYsGl+kHURh5U6VhV7wpH+AilZQVaPvAptb0YTZRFxiVo7rjO7of7ZYm7gur6YPa3KI+xwhkL54oLd17+Kf1F+iFXq/b45J6aiPbk/klXurxJk+XWpNdY75QU68EPYetcskfdUprpgTwkGGNToECVQPVTR6VUNRO+a5NvhBOp0EaWskJ93/F1oF39LkgC7ey0PJxc9DvmYWyvRWUDZnmeEtWMsTEP+otzxFn8US5s=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(396003)(346002)(376002)(451199021)(46966006)(36840700001)(40470700004)(2906002)(426003)(2616005)(16526019)(186003)(40480700001)(6666004)(1076003)(70206006)(41300700001)(70586007)(8936002)(4326008)(316002)(26005)(478600001)(44832011)(5660300002)(8676002)(110136005)(82740400003)(356005)(81166007)(82310400005)(86362001)(36756003)(40460700003)(36860700001)(47076005)(336012)(83380400001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: c4dNz4T7DCOn2n/92Ug0+VCJOsSuqu8/B7St+CrihCpOANUVc+YB3hAwYhyNdLj3WAs9N/OmPFmZdZ+f0rhGY9VNrF6etrzQsTwP25X1WO36DEZleDP4021AnH74jBXEdBEKJVtdxkEKUAq9jDMJcB+LcjTZ5Kt7/DUhveenWD5/1iayIIeeoN6tYrh1PQHF0DBRPr95vTKfRcaEKc73Wi/ctnOqNLu3SJ08G5PRDjwIjMvF569zLxLrB2XV502KuR+q4p5idAlZeAhEv1GQxJS6EDC425b7FKHLpB2gsvkhk/F7CF2DIJNjKEM+zxIWxkuXtwMTsYnn6x+jjGAHy5Ned+Qla8tpAoQhmKFL9N2RC7VDa//XAPz9WGC224ak97qqDJcrvtas4y7JhDZGLmCgyNFG4fvbdDoXpJC05yal5CmwNyirsqJJsD+afDxp7Hm04RHw4Ok+1ogQudOfSzsLmcKI/RykZzRkASYkQW4M9vv6TZuXHSi45ZMSwB47NmjgjIRDXxtVT2B8jawoC/5C/jiDHIzR6couQb4o3u+ezUnBdp2ZhZSS/F1HuL7ybBxWZt65PFUNK+1L5L8AwYDKvYrjfhfV//Tq+i3nIPlaHC94xnQHAN8rRMoEfrMtt9LLWJe0nJAwLp4y+BlFuy3J0bBCfQu366uvcTCJDdOUkpRGZnIuvHrvBsy8NRgqe1RMcrduDX9Wuum/7hCuPvOznflBJxRZc2S97lXdW6UNFyGSO3HfIsZ5BUZDp9TpmMHDsnjnasxGSdEt0zjx9Q==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(39860400002)(376002)(346002)(451199021)(40470700004)(36840700001)(46966006)(1076003)(26005)(40480700001)(426003)(336012)(2616005)(36756003)(83380400001)(36860700001)(43170500006)(47076005)(82740400003)(186003)(16526019)(40460700003)(356005)(81166007)(70206006)(86362001)(70586007)(478600001)(8676002)(8936002)(44832011)(110136005)(5660300002)(66899021)(41300700001)(2906002)(82310400005)(4326008)(6666004)(316002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2023 21:26:26.6838
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2023 21:26:27.0276
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b779bb73-bcdd-4807-b2f7-08db45d3ba36
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a92ab5c-04f5-45ae-882c-08db45d3ba6d
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT105.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5232
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8539
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -99,136 +99,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Register for the pds_core's notification events, primarily to
-find out when the FW has been reset so we can pass this on
-back up the chain.
+Add the documentation and Kconfig entry for pds_vdpa driver.
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- drivers/vdpa/pds/vdpa_dev.c | 68 ++++++++++++++++++++++++++++++++++++-
- drivers/vdpa/pds/vdpa_dev.h |  1 +
- 2 files changed, 68 insertions(+), 1 deletion(-)
+ .../device_drivers/ethernet/amd/pds_vdpa.rst  | 85 +++++++++++++++++++
+ .../device_drivers/ethernet/index.rst         |  1 +
+ MAINTAINERS                                   |  4 +
+ drivers/vdpa/Kconfig                          |  8 ++
+ 4 files changed, 98 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_vdpa.rst
 
-diff --git a/drivers/vdpa/pds/vdpa_dev.c b/drivers/vdpa/pds/vdpa_dev.c
-index c3316f0faa0c..93b12f73423f 100644
---- a/drivers/vdpa/pds/vdpa_dev.c
-+++ b/drivers/vdpa/pds/vdpa_dev.c
-@@ -21,6 +21,61 @@ static struct pds_vdpa_device *vdpa_to_pdsv(struct vdpa_device *vdpa_dev)
- 	return container_of(vdpa_dev, struct pds_vdpa_device, vdpa_dev);
- }
+diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_vdpa.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_vdpa.rst
+new file mode 100644
+index 000000000000..587927d3de92
+--- /dev/null
++++ b/Documentation/networking/device_drivers/ethernet/amd/pds_vdpa.rst
+@@ -0,0 +1,85 @@
++.. SPDX-License-Identifier: GPL-2.0+
++.. note: can be edited and viewed with /usr/bin/formiko-vim
++
++==========================================================
++PCI vDPA driver for the AMD/Pensando(R) DSC adapter family
++==========================================================
++
++AMD/Pensando vDPA VF Device Driver
++
++Copyright(c) 2023 Advanced Micro Devices, Inc
++
++Overview
++========
++
++The ``pds_vdpa`` driver is an auxiliary bus driver that supplies
++a vDPA device for use by the virtio network stack.  It is used with
++the Pensando Virtual Function devices that offer vDPA and virtio queue
++services.  It depends on the ``pds_core`` driver and hardware for the PF
++and VF PCI handling as well as for device configuration services.
++
++Using the device
++================
++
++The ``pds_vdpa`` device is enabled via multiple configuration steps and
++depends on the ``pds_core`` driver to create and enable SR-IOV Virtual
++Function devices.  After the VFs are enabled, we enable the vDPA service
++in the ``pds_core`` device to create the auxiliary devices used by pds_vdpa.
++
++Example steps:
++
++.. code-block:: bash
++
++  #!/bin/bash
++
++  modprobe pds_core
++  modprobe vdpa
++  modprobe pds_vdpa
++
++  PF_BDF=`ls /sys/module/pds_core/drivers/pci\:pds_core/*/sriov_numvfs | awk -F / '{print $7}'`
++
++  # Enable vDPA VF auxiliary device(s) in the PF
++  devlink dev param set pci/$PF_BDF name enable_vnet cmode runtime value true
++
++  # Create a VF for vDPA use
++  echo 1 > /sys/bus/pci/drivers/pds_core/$PF_BDF/sriov_numvfs
++
++  # Find the vDPA services/devices available
++  PDS_VDPA_MGMT=`vdpa mgmtdev show | grep vDPA | head -1 | cut -d: -f1`
++
++  # Create a vDPA device for use in virtio network configurations
++  vdpa dev add name vdpa1 mgmtdev $PDS_VDPA_MGMT mac 00:11:22:33:44:55
++
++  # Set up an ethernet interface on the vdpa device
++  modprobe virtio_vdpa
++
++
++
++Enabling the driver
++===================
++
++The driver is enabled via the standard kernel configuration system,
++using the make command::
++
++  make oldconfig/menuconfig/etc.
++
++The driver is located in the menu structure at:
++
++  -> Device Drivers
++    -> Network device support (NETDEVICES [=y])
++      -> Ethernet driver support
++        -> Pensando devices
++          -> Pensando Ethernet PDS_VDPA Support
++
++Support
++=======
++
++For general Linux networking support, please use the netdev mailing
++list, which is monitored by Pensando personnel::
++
++  netdev@vger.kernel.org
++
++For more specific support needs, please use the Pensando driver support
++email::
++
++  drivers@pensando.io
+diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
+index 417ca514a4d0..94ecb67c0885 100644
+--- a/Documentation/networking/device_drivers/ethernet/index.rst
++++ b/Documentation/networking/device_drivers/ethernet/index.rst
+@@ -15,6 +15,7 @@ Contents:
+    amazon/ena
+    altera/altera_tse
+    amd/pds_core
++   amd/pds_vdpa
+    aquantia/atlantic
+    chelsio/cxgb
+    cirrus/cs89x0
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6ac562e0381e..93210a8ac74f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -22148,6 +22148,10 @@ SNET DPU VIRTIO DATA PATH ACCELERATOR
+ R:	Alvaro Karsz <alvaro.karsz@solid-run.com>
+ F:	drivers/vdpa/solidrun/
  
-+static int pds_vdpa_notify_handler(struct notifier_block *nb,
-+				   unsigned long ecode,
-+				   void *data)
-+{
-+	struct pds_vdpa_device *pdsv = container_of(nb, struct pds_vdpa_device, nb);
-+	struct device *dev = &pdsv->vdpa_aux->padev->aux_dev.dev;
++PDS DSC VIRTIO DATA PATH ACCELERATOR
++R:	Shannon Nelson <shannon.nelson@amd.com>
++F:	drivers/vdpa/pds/
 +
-+	dev_dbg(dev, "%s: event code %lu\n", __func__, ecode);
-+
-+	/* Give the upper layers a hint that something interesting
-+	 * may have happened.  It seems that the only thing this
-+	 * triggers in the virtio-net drivers above us is a check
-+	 * of link status.
-+	 *
-+	 * We don't set the NEEDS_RESET flag for EVENT_RESET
-+	 * because we're likely going through a recovery or
-+	 * fw_update and will be back up and running soon.
-+	 */
-+	if (ecode == PDS_EVENT_RESET || ecode == PDS_EVENT_LINK_CHANGE) {
-+		if (pdsv->config_cb.callback)
-+			pdsv->config_cb.callback(pdsv->config_cb.private);
-+	}
-+
-+	return 0;
-+}
-+
-+static int pds_vdpa_register_event_handler(struct pds_vdpa_device *pdsv)
-+{
-+	struct device *dev = &pdsv->vdpa_aux->padev->aux_dev.dev;
-+	struct notifier_block *nb = &pdsv->nb;
-+	int err;
-+
-+	if (!nb->notifier_call) {
-+		nb->notifier_call = pds_vdpa_notify_handler;
-+		err = pdsc_register_notify(nb);
-+		if (err) {
-+			nb->notifier_call = NULL;
-+			dev_err(dev, "failed to register pds event handler: %ps\n",
-+				ERR_PTR(err));
-+			return -EINVAL;
-+		}
-+		dev_dbg(dev, "pds event handler registered\n");
-+	}
-+
-+	return 0;
-+}
-+
-+static void pds_vdpa_unregister_event_handler(struct pds_vdpa_device *pdsv)
-+{
-+	if (pdsv->nb.notifier_call) {
-+		pdsc_unregister_notify(&pdsv->nb);
-+		pdsv->nb.notifier_call = NULL;
-+	}
-+}
-+
- static int pds_vdpa_set_vq_address(struct vdpa_device *vdpa_dev, u16 qid,
- 				   u64 desc_addr, u64 driver_addr, u64 device_addr)
- {
-@@ -522,6 +577,12 @@ static int pds_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
+ VIRTIO BALLOON
+ M:	"Michael S. Tsirkin" <mst@redhat.com>
+ M:	David Hildenbrand <david@redhat.com>
+diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
+index cd6ad92f3f05..2ee1b288691d 100644
+--- a/drivers/vdpa/Kconfig
++++ b/drivers/vdpa/Kconfig
+@@ -116,4 +116,12 @@ config ALIBABA_ENI_VDPA
+ 	  This driver includes a HW monitor device that
+ 	  reads health values from the DPU.
  
- 	pdsv->vdpa_dev.mdev = &vdpa_aux->vdpa_mdev;
- 
-+	err = pds_vdpa_register_event_handler(pdsv);
-+	if (err) {
-+		dev_err(dev, "Failed to register for PDS events: %pe\n", ERR_PTR(err));
-+		goto err_unmap;
-+	}
++config PDS_VDPA
++	tristate "vDPA driver for AMD/Pensando DSC devices"
++	depends on PDS_CORE
++	help
++	  vDPA network driver for AMD/Pensando's PDS Core devices.
++	  With this driver, the VirtIO dataplane can be
++	  offloaded to an AMD/Pensando DSC device.
 +
- 	/* We use the _vdpa_register_device() call rather than the
- 	 * vdpa_register_device() to avoid a deadlock because our
- 	 * dev_add() is called with the vdpa_dev_lock already set
-@@ -530,13 +591,15 @@ static int pds_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
- 	err = _vdpa_register_device(&pdsv->vdpa_dev, pdsv->num_vqs);
- 	if (err) {
- 		dev_err(dev, "Failed to register to vDPA bus: %pe\n", ERR_PTR(err));
--		goto err_unmap;
-+		goto err_unevent;
- 	}
- 
- 	pds_vdpa_debugfs_add_vdpadev(vdpa_aux);
- 
- 	return 0;
- 
-+err_unevent:
-+	pds_vdpa_unregister_event_handler(pdsv);
- err_unmap:
- 	put_device(&pdsv->vdpa_dev.dev);
- 	vdpa_aux->pdsv = NULL;
-@@ -546,8 +609,11 @@ static int pds_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
- static void pds_vdpa_dev_del(struct vdpa_mgmt_dev *mdev,
- 			     struct vdpa_device *vdpa_dev)
- {
-+	struct pds_vdpa_device *pdsv = vdpa_to_pdsv(vdpa_dev);
- 	struct pds_vdpa_aux *vdpa_aux;
- 
-+	pds_vdpa_unregister_event_handler(pdsv);
-+
- 	vdpa_aux = container_of(mdev, struct pds_vdpa_aux, vdpa_mdev);
- 	_vdpa_unregister_device(vdpa_dev);
- 
-diff --git a/drivers/vdpa/pds/vdpa_dev.h b/drivers/vdpa/pds/vdpa_dev.h
-index a21596f438c1..1650a2b08845 100644
---- a/drivers/vdpa/pds/vdpa_dev.h
-+++ b/drivers/vdpa/pds/vdpa_dev.h
-@@ -40,6 +40,7 @@ struct pds_vdpa_device {
- 	u8 vdpa_index;			/* rsvd for future subdevice use */
- 	u8 num_vqs;			/* num vqs in use */
- 	struct vdpa_callback config_cb;
-+	struct notifier_block nb;
- };
- 
- int pds_vdpa_get_mgmt_info(struct pds_vdpa_aux *vdpa_aux);
+ endif # VDPA
 -- 
 2.17.1
 
