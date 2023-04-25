@@ -2,104 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3162F6EDB48
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 07:45:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0564C6EDB59
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 07:50:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233330AbjDYFpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 01:45:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55780 "EHLO
+        id S233013AbjDYFuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 01:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233167AbjDYFpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 01:45:03 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F4F83EC;
-        Mon, 24 Apr 2023 22:45:00 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33P5ifmp104119;
-        Tue, 25 Apr 2023 00:44:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1682401481;
-        bh=3wDxwAR+CCOnwWR6upvy6Zihsi8yqla39FCimDo+1BM=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=BV74RoKdPWYIXkTDAic5TBueevO2QWIMX8XZ6Bagx8t6RJ8jpKD88H9U+d9PcdMtx
-         c1Xgp40xzaq7Mzsg1HOH+2ipGSi8w7BgLK6LVNdO+bMd9xABEJHUa9faV3v3r5A/dP
-         2vFPp3l8XcP+jE73IOwxCvj9uF/8Ulg9lv0kszmM=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33P5if1g112335
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 25 Apr 2023 00:44:41 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 25
- Apr 2023 00:44:41 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Tue, 25 Apr 2023 00:44:41 -0500
-Received: from uda0492258.dhcp.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33P5iURp124283;
-        Tue, 25 Apr 2023 00:44:38 -0500
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: [RFC PATCH 2/2] net: phy: dp83869: fix mii mode when rgmii strap cfg is used
-Date:   Tue, 25 Apr 2023 11:14:29 +0530
-Message-ID: <20230425054429.3956535-3-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230425054429.3956535-1-s-vadapalli@ti.com>
-References: <20230425054429.3956535-1-s-vadapalli@ti.com>
+        with ESMTP id S232203AbjDYFuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 01:50:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107077AA8;
+        Mon, 24 Apr 2023 22:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87CA4627EB;
+        Tue, 25 Apr 2023 05:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C301FC433D2;
+        Tue, 25 Apr 2023 05:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682401813;
+        bh=i1KJx66tie8E/QmmcYEegruNbhZnQ6ejhZnZzsHL7UA=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=TgbqspZwjxalduzfuBR8kd0JK0l1gycFe69A/YzTLna7sDqyZ3+Z8N3XADPpyiPXb
+         3sVKC98nsmt6lQTxohvDEPttqQM2WVSfxiZtTIWeypVFRApCW0QD/PZlqa/P0X690x
+         qQF9wSNfSdequUg6734WLa/nnWrwzKbyUIlXSher+xmrPzjkuppDLmaUX99R9SKksy
+         pF71T0dMW9NLNsE8KoO7FXywphtpE63UZc02p/8X0GqcXcYvEaOigBeppNKUNsPQMO
+         qX3CrkEvbSj8d7az3WA2pWwPPp847NcYQysrtD3kFv9u+YyXqydoP31eiFaIN90FgQ
+         R7+7l6SGiKbug==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        Peter Seiderer <ps.report@gmx.net>,
+        linux-wireless@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Gregg Wonderly <greggwonderly@seqtechllc.com>
+Subject: Re: [PATCH v1] wifi: ath9k: fix AR9003 mac hardware hang check register offset calculation
+References: <20230420204316.30475-1-ps.report@gmx.net>
+        <ZEOf7LXAkdLR0yFI@corigine.com> <87bkjgmd9g.fsf@toke.dk>
+Date:   Tue, 25 Apr 2023 08:50:08 +0300
+In-Reply-To: <87bkjgmd9g.fsf@toke.dk> ("Toke \=\?utf-8\?Q\?H\=C3\=B8iland-J\?\=
+ \=\?utf-8\?Q\?\=C3\=B8rgensen\=22's\?\= message of
+        "Sat, 22 Apr 2023 12:18:03 +0200")
+Message-ID: <87a5ywqzn3.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grygorii Strashko <grygorii.strashko@ti.com>
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk> writes:
 
-The DP83869 PHY on TI's k3-am642-evm supports both MII and RGMII
-interfaces and is configured by default to use RGMII interface (strap).
-However, the board design allows switching dynamically to MII interface
-for testing purposes by applying different set of pinmuxes.
+> Simon Horman <simon.horman@corigine.com> writes:
+>
+>>> -	for (i =3D 0; i < NUM_STATUS_READS; i++) {
+>>> -		if (queue < 6)
+>>> -			dma_dbg_chain =3D REG_READ(ah, AR_DMADBG_4);
+>>> -		else
+>>> -			dma_dbg_chain =3D REG_READ(ah, AR_DMADBG_5);
+>>> +	if (queue < 6) {
+>>> +		dbg_reg =3D AR_DMADBG_4;
+>>> +		reg_offset =3D i * 5;
+>>
+>> Hi Peter,
+>>
+>> unless my eyes are deceiving me, i is not initialised here.
+>
+> Nice catch! Hmm, I wonder why my test compile didn't complain about
+> that? Or maybe it did and I overlooked it? Anyway, Kalle, I already
+> delegated this patch to you in patchwork, so please drop it=20
 
-To support switching to MII interface, update the DP83869 PHY driver to
-configure OP_MODE_DECODE.RGMII_MII_SEL(bit 5) properly when MII PHY
-interface mode is requested.
+Ok, will drop.
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
----
- drivers/net/phy/dp83869.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> and I'll try to do better on reviewing the next one :)
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index 9ab5eff502b7..8dbc502bcd9e 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -692,8 +692,11 @@ static int dp83869_configure_mode(struct phy_device *phydev,
- 	/* Below init sequence for each operational mode is defined in
- 	 * section 9.4.8 of the datasheet.
- 	 */
-+	phy_ctrl_val = dp83869->mode;
-+	if (phydev->interface == PHY_INTERFACE_MODE_MII)
-+		phy_ctrl_val |= DP83869_OP_MODE_MII;
- 	ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_OP_MODE,
--			    dp83869->mode);
-+			    phy_ctrl_val);
- 	if (ret)
- 		return ret;
- 
--- 
-2.25.1
+No worries, reviewing is hard and things always slip past. But great
+that we now have more people reviewing, thanks Simon for catching this.
 
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
