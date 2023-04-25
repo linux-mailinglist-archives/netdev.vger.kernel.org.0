@@ -2,86 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B7D6EE498
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 17:16:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46E976EE4C0
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 17:28:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234197AbjDYPQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 11:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
+        id S234547AbjDYP2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 11:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233442AbjDYPQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 11:16:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D7349CD;
-        Tue, 25 Apr 2023 08:16:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 414F5616C3;
-        Tue, 25 Apr 2023 15:16:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18805C433EF;
-        Tue, 25 Apr 2023 15:16:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682435807;
-        bh=bAXyJ55uGyr4o6x1+TCcIcpy53ynNX5P/NlJkIf4cdM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FHcg7mEafbVu64JRX4tHHh2VqSTTlC5YijN65eYFfHpF9FiaZXlsjgfOXCcUl9R0V
-         gY5OBJ8d8csE7FHsyF02OC7w0Iyfwon0qxpbP1iYmH7YTPqCjYm5tgQEO7MoOO6xa0
-         P2asA+lSeY8q0sfWzh/D6txLFRhP7r9vgIRRTyl46FOLXbvAHi/skk+aYJVfRRnjON
-         0ciF+JbbLwNYKwAYhnCPqfpav07uK3yfH6nUdHDmIc1xO7bpcZQinp+hmhQcPmxHV4
-         iZl8Hn5w3m3wD/3JTj5yUT2OAeAFg/NZpOOajGIZhkSfXTuhhiDf95I3Kl1kzImTCa
-         nZRpnge3NrrGA==
-Date:   Tue, 25 Apr 2023 17:16:44 +0200
-From:   Andi Shyti <andi.shyti@kernel.org>
-To:     Andi Shyti <andi.shyti@kernel.org>
-Cc:     Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org,
-        andrew@lunn.ch, linux@armlinux.org.uk,
-        jarkko.nikula@linux.intel.com, olteanv@gmail.com,
-        andriy.shevchenko@linux.intel.com, hkallweit1@gmail.com,
-        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
-        mengyuanlou@net-swift.com
-Subject: Re: [PATCH net-next v4 3/8] net: txgbe: Register I2C platform device
-Message-ID: <20230425151644.szqnyqvxpdkoqqb3@intel.intel>
-References: <20230422045621.360918-1-jiawenwu@trustnetic.com>
- <20230422045621.360918-4-jiawenwu@trustnetic.com>
- <20230425150619.cj7ed2efnbvjk5mm@intel.intel>
+        with ESMTP id S233799AbjDYP2e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 11:28:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4CC414474
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 08:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682436417;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5fNJCEabiLtGfgYw9tXVC70Fuu6erYNndNresacEPBw=;
+        b=PFs1UBQjSjfRWOSQdB6FV5UXPRAShdF/j/iIFAlCW10UXmA5xFsfRYAbetGbIa9P2udd3z
+        mRiQUebixfpvWApPPTnFqeVUXSJSlGnBDv0L5ZQcqxuMSzyT5mN6IbQB4t7BsqzvvQx96b
+        G3PVIpY6mJKcB4AFI03EiR87ISdkHmg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-647-8XZCnvROMa6qlNMUwNktHg-1; Tue, 25 Apr 2023 11:26:55 -0400
+X-MC-Unique: 8XZCnvROMa6qlNMUwNktHg-1
+Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-50470d68f1eso5541682a12.0
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 08:26:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682436414; x=1685028414;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5fNJCEabiLtGfgYw9tXVC70Fuu6erYNndNresacEPBw=;
+        b=dFSyQPpDtHYHJ1E+fMKTiEcfyYbl3FLjyC8ZgJF8XEShm4MDe+h1xBiZcm6837H/N+
+         X4ZiXI7fTakOsFsrYincrijBBVjbHYETyuUYwGaYLd5qFb6gryaLxxMaNB3hKR3GnNur
+         QBawWe60chiYRRGiT76Cr9n6tx/599+Mv/2G6cuqzXPoqKoUOKfdBei24JOQZKOvVicX
+         2fft7t0EhBEmJhMrnfehasQPlZKqt9+JJ58M6hDa7IPfkVYyuHAsHMISGrWYlr9TckuF
+         nBAm+4Z223ZL72bxwn1qVyeVXM9BEnfsmU+kbG1/LQGcZS1tJVqmn3lMGyo07QNIKDMj
+         3JDg==
+X-Gm-Message-State: AAQBX9cxK5VvAC16ZP1Xucx+drkqfzXpE0M/5xRs3sRW043YSGaFkfgC
+        Tv1UVV4hyPAn4JtNtNqJ7buLTxdTSZHFx4d6mL9HW/ZKeDENvEcyXOHUQOF2tqNbLwr23zLKGYB
+        FjCT6/72mI4vr8GW+WynlTV/ld+lgI07VsL48sHqzGpQ=
+X-Received: by 2002:a05:6402:10cb:b0:506:9f0f:dcaf with SMTP id p11-20020a05640210cb00b005069f0fdcafmr13935919edu.37.1682436414208;
+        Tue, 25 Apr 2023 08:26:54 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YvKH6fTZE4WMgQyG5NYzx5UK0EANnycRA8tgUlK0TN/48kCUPIhh0Lfy4giK4QSpupOa1Cnb4D8ScVXomi8V0=
+X-Received: by 2002:a05:6402:10cb:b0:506:9f0f:dcaf with SMTP id
+ p11-20020a05640210cb00b005069f0fdcafmr13935902edu.37.1682436413929; Tue, 25
+ Apr 2023 08:26:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230425150619.cj7ed2efnbvjk5mm@intel.intel>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20230417093412.12161-1-wojciech.drewek@intel.com> <20230417093412.12161-3-wojciech.drewek@intel.com>
+In-Reply-To: <20230417093412.12161-3-wojciech.drewek@intel.com>
+From:   Michal Schmidt <mschmidt@redhat.com>
+Date:   Tue, 25 Apr 2023 17:26:42 +0200
+Message-ID: <CADEbmW1Tey8dHN4M-xBsgHBOsQZX_aT9k1=FcL=skT_10GYiWg@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH net-next 02/12] ice: Remove exclusion
+ code for RDMA+SRIOV
+To:     Wojciech Drewek <wojciech.drewek@intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>
+Cc:     "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 05:06:19PM +0200, Andi Shyti wrote:
-> Hi Jiawen,
-> 
-> [...]
-> 
-> > +	ret = txgbe_i2c_register(txgbe);
-> > +	if (ret) {
-> > +		wx_err(txgbe->wx, "failed to init i2c interface: %d\n", ret);
-> > +		goto err_unregister_swnode;
-> > +	}
-> > +
-> >  	return 0;
-> > +
-> > +err_unregister_swnode:
-> > +	software_node_unregister_node_group(txgbe->nodes.group);
-> > +
-> > +	return ret;
-> 
-> no need for the goto here... in my opinion it's easier if you put
-> software_node_unregister_node_group() under the if and return
-> ret.
+On Mon, Apr 17, 2023 at 11:35=E2=80=AFAM Wojciech Drewek
+<wojciech.drewek@intel.com> wrote:
+>
+> From: Dave Ertman <david.m.ertman@intel.com>
+>
+> There was a change previously to stop SR-IOV and LAG from existing on the
+> same interface.  [...]
 
-please... ignore, I see that there are more goto's added in the
-next patches.
+Why does the subject mention RDMA? The patch does not change the calls
+to ice_{set,clear}_rdma_cap.
+Did you mean to call it "ice: Remove exclusion code for LAG+SRIOV" ?
 
-Andi
+Michal
+
