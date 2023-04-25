@@ -2,100 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CD496EE417
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 16:41:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 357366EE426
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 16:46:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233983AbjDYOlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 10:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
+        id S234307AbjDYOqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 10:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233704AbjDYOlS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 10:41:18 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA4740EC
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 07:41:00 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-506b2a08877so10116586a12.2
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 07:41:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682433659; x=1685025659;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=g/aUo41spGkQIfQe1YL9i8hALGxoj0cii7JIOMlBmec=;
-        b=GupKDRWMY1HZ1RdENYiWrMXVT57kW5X0ThFLX2hrncxxxW4BNNiYuhjE/cSGgjdMSS
-         Ts0E/bPxbPTDnHE9G6F0yfaMwT/9jwkmM1nESGUfXukfqKjJj+PT5JRCMCdvzbghfoNe
-         6edkojFJEEVypCCqOfiPhcLHN8tAUDI5x5FG1L0AnwRKAzjidOq07PDyVJQLySLLljMm
-         NrAhrc86D9k8UvmnhaYilj/pKsGUeRBDD6IZML4xKHqcYExvIqWYdS6GYGR9ll2F9sm+
-         YBA58SPqCHGvmMVLG0qTYBD0eJGqxkJJkaS6uP+MOJTZd6xX5yuI90yuTQ0y5LeqkNLV
-         6rHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682433659; x=1685025659;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=g/aUo41spGkQIfQe1YL9i8hALGxoj0cii7JIOMlBmec=;
-        b=d0Z+9Vs1vJdr3z/TqG9E10RBfX7k0RLRpAZUbqRKV4XVy7EQxsWodAJV5ALoWNxfwu
-         KSlJi2SZOEM/eUmbvx8444K/Rotg54h67h7js7B4u1KiDBVzoZgZtyIviybHQNtF1lxO
-         jl58dhQlgJU0E4oxWciYwBD1pLetyZ2K6HDWxdqFPggf3MkAqDlubtsubIbtG1cODVx5
-         4FFvN/w+vbF83sqO3IOvxp3+nXC6WLllj0gZ7Yz/VhksetKP00hTyQOX/IUJMIiGGP2w
-         jtthtct1pFxDUOKbAtTZv5BD0GIaBpGsF/lcvbDQNqf6o4NTbpZeK9Q2B7/5RycIyo/N
-         2CHg==
-X-Gm-Message-State: AAQBX9cKStRlqhkEEZ6adIxxbhUaeiwVXplI4pmWmmBjtErXo6FHFiy0
-        RjwM/ccX9iAcXD0vIf+VmnL2MJm2OYeSt/nCfgA=
-X-Google-Smtp-Source: AKy350Z0WNqeL4BZmPbe+j5EoXeCwB7TZ2vn7b0309zekX04y+T7aTAMhu9R2U4buqQ+lyjpg5Vk6A==
-X-Received: by 2002:aa7:d054:0:b0:504:77ed:ac87 with SMTP id n20-20020aa7d054000000b0050477edac87mr15182312edo.5.1682433659137;
-        Tue, 25 Apr 2023 07:40:59 -0700 (PDT)
-Received: from gvm01 (net-93-146-11-7.cust.vodafonedsl.it. [93.146.11.7])
-        by smtp.gmail.com with ESMTPSA id be9-20020a0564021a2900b00506a2e645f6sm5720442edb.71.2023.04.25.07.40.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 07:40:58 -0700 (PDT)
-Date:   Tue, 25 Apr 2023 16:40:57 +0200
-From:   Piergiorgio Beruto <piergiorgio.beruto@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     mkubecek@suse.cz, netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool] netlink: settings: fix netlink support when PLCA
- is not present
-Message-ID: <ZEfmecrilOyvyGi2@gvm01>
-References: <20230425000742.130480-1-kuba@kernel.org>
+        with ESMTP id S233983AbjDYOqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 10:46:03 -0400
+Received: from out-41.mta1.migadu.com (out-41.mta1.migadu.com [IPv6:2001:41d0:203:375::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91781BF4
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 07:46:01 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1682433959;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=M+Kciq4hJIDYLEDnU0UIcGmZY1J3YxtbOm5Cg6g5pVg=;
+        b=LFw5nBu2KadgbWyvmbsRvjD/6sieiKQWyAp/6dVO1crcGazdwQhfgdXbhOZk1yTjMbgyaG
+        soH4NCIHENOdI3mja/k8Huvvl4hHtlOEtbyXjsbst+WYb4FHE+GB4wJNbVdxd5urcBs6ej
+        61RhANkSFbxulmIRXoVcDrUEEDyWojY=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     cai.huoqing@linux.dev
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] netdevsim: fib: Make use of rhashtable_iter
+Date:   Tue, 25 Apr 2023 22:45:55 +0800
+Message-Id: <20230425144556.98799-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230425000742.130480-1-kuba@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        TO_EQ_FM_DIRECT_MX,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 24, 2023 at 05:07:42PM -0700, Jakub Kicinski wrote:
-> PLCA support threw the PLCA commands as required into the initial
-> support check at the start of nl_gset(). That's not correct.
-> The initial check (AFAIU) queries for the base support in the kernel
-> i.e. support for the commands which correspond to ioctls.
-> If those are not available (presumably very old kernel or kernel
-> without ethtool-netlink) we're better off using the ioctl.
-> 
-> For new functionality, however, falling back to ioctl
-> is counterproductive. New functionality (like PLCA) isn't
-> supported via the ioctl, anyway, and we're losing all the other
-> netlink-only functionality (I noticed that the link down statistics
-> are gone).
-> 
-> After much deliberation I decided to add a second check for
-> command support in gset_request(). Seems cleanest and if any
-> of the non-required commands narrows the capabilities (e.g.
-> does not support dump) we should just skip it too. Falling
-> back to ioctl would again be a regression.
-Hi Jackub,
-please ignore my previous reply, the segmentation fault I saw was
-actually triggered by a different problem I had on my reference
-platform.
+Iterating 'fib_rt_ht' by rhashtable_walk_next and rhashtable_iter directly
+instead of using list_for_each, because each entry of fib_rt_ht can be
+found by rhashtable API. And remove fib_rt_list.
 
-I've successfully tested this patch with and without netlink.
-Please, add me as reviewer and tester.
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+---
+ drivers/net/netdevsim/fib.c | 37 ++++++++++++++++++-------------------
+ 1 file changed, 18 insertions(+), 19 deletions(-)
 
-Kind Regards,
-Piergiorgio
+diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
+index a1f91ff8ec56..1a50c8e14665 100644
+--- a/drivers/net/netdevsim/fib.c
++++ b/drivers/net/netdevsim/fib.c
+@@ -48,7 +48,6 @@ struct nsim_fib_data {
+ 	struct nsim_per_fib_data ipv6;
+ 	struct nsim_fib_entry nexthops;
+ 	struct rhashtable fib_rt_ht;
+-	struct list_head fib_rt_list;
+ 	struct mutex fib_lock; /* Protects FIB HT and list */
+ 	struct notifier_block nexthop_nb;
+ 	struct rhashtable nexthop_ht;
+@@ -75,7 +74,6 @@ struct nsim_fib_rt_key {
+ struct nsim_fib_rt {
+ 	struct nsim_fib_rt_key key;
+ 	struct rhash_head ht_node;
+-	struct list_head list;	/* Member of fib_rt_list */
+ };
+ 
+ struct nsim_fib4_rt {
+@@ -247,12 +245,6 @@ static void nsim_fib_rt_init(struct nsim_fib_data *data,
+ 	fib_rt->key.prefix_len = prefix_len;
+ 	fib_rt->key.family = family;
+ 	fib_rt->key.tb_id = tb_id;
+-	list_add(&fib_rt->list, &data->fib_rt_list);
+-}
+-
+-static void nsim_fib_rt_fini(struct nsim_fib_rt *fib_rt)
+-{
+-	list_del(&fib_rt->list);
+ }
+ 
+ static struct nsim_fib_rt *nsim_fib_rt_lookup(struct rhashtable *fib_rt_ht,
+@@ -295,7 +287,6 @@ nsim_fib4_rt_create(struct nsim_fib_data *data,
+ static void nsim_fib4_rt_destroy(struct nsim_fib4_rt *fib4_rt)
+ {
+ 	fib_info_put(fib4_rt->fi);
+-	nsim_fib_rt_fini(&fib4_rt->common);
+ 	kfree(fib4_rt);
+ }
+ 
+@@ -570,7 +561,6 @@ nsim_fib6_rt_create(struct nsim_fib_data *data,
+ 	for (i--; i >= 0; i--) {
+ 		nsim_fib6_rt_nh_del(fib6_rt, rt_arr[i]);
+ 	}
+-	nsim_fib_rt_fini(&fib6_rt->common);
+ 	kfree(fib6_rt);
+ 	return ERR_PTR(err);
+ }
+@@ -582,7 +572,6 @@ static void nsim_fib6_rt_destroy(struct nsim_fib6_rt *fib6_rt)
+ 	list_for_each_entry_safe(iter, tmp, &fib6_rt->nh_list, list)
+ 		nsim_fib6_rt_nh_del(fib6_rt, iter->rt);
+ 	WARN_ON_ONCE(!list_empty(&fib6_rt->nh_list));
+-	nsim_fib_rt_fini(&fib6_rt->common);
+ 	kfree(fib6_rt);
+ }
+ 
+@@ -1091,7 +1080,9 @@ static void nsim_fib_dump_inconsistent(struct notifier_block *nb)
+ {
+ 	struct nsim_fib_data *data = container_of(nb, struct nsim_fib_data,
+ 						  fib_nb);
+-	struct nsim_fib_rt *fib_rt, *fib_rt_tmp;
++	struct nsim_fib_rt *fib_rt;
++	struct rhashtable_iter hti;
++	struct rhash_head *pos;
+ 
+ 	/* Flush the work to make sure there is no race with notifications. */
+ 	flush_work(&data->fib_event_work);
+@@ -1099,9 +1090,12 @@ static void nsim_fib_dump_inconsistent(struct notifier_block *nb)
+ 	/* The notifier block is still not registered, so we do not need to
+ 	 * take any locks here.
+ 	 */
+-	list_for_each_entry_safe(fib_rt, fib_rt_tmp, &data->fib_rt_list, list) {
+-		rhashtable_remove_fast(&data->fib_rt_ht, &fib_rt->ht_node,
++	rhashtable_walk_enter(&data->fib_rt_ht, &hti);
++	rhashtable_walk_start(&hti);
++	while ((pos = rhashtable_walk_next(&hti))) {
++		rhashtable_remove_fast(&data->fib_rt_ht, hti.p,
+ 				       nsim_fib_rt_ht_params);
++		fib_rt = rhashtable_walk_peek(&hti);
+ 		nsim_fib_rt_free(fib_rt, data);
+ 	}
+ 
+@@ -1501,17 +1495,24 @@ static void nsim_fib_flush_work(struct work_struct *work)
+ {
+ 	struct nsim_fib_data *data = container_of(work, struct nsim_fib_data,
+ 						  fib_flush_work);
+-	struct nsim_fib_rt *fib_rt, *fib_rt_tmp;
++	struct nsim_fib_rt *fib_rt;
++	struct rhashtable_iter hti;
++	struct rhash_head *pos;
++
+ 
+ 	/* Process pending work. */
+ 	flush_work(&data->fib_event_work);
+ 
+ 	mutex_lock(&data->fib_lock);
+-	list_for_each_entry_safe(fib_rt, fib_rt_tmp, &data->fib_rt_list, list) {
+-		rhashtable_remove_fast(&data->fib_rt_ht, &fib_rt->ht_node,
++	rhashtable_walk_enter(&data->fib_rt_ht, &hti);
++	rhashtable_walk_start(&hti);
++	while ((pos = rhashtable_walk_next(&hti))) {
++		rhashtable_remove_fast(&data->fib_rt_ht, hti.p,
+ 				       nsim_fib_rt_ht_params);
++		fib_rt = rhashtable_walk_peek(&hti);
+ 		nsim_fib_rt_free(fib_rt, data);
+ 	}
++
+ 	mutex_unlock(&data->fib_lock);
+ }
+ 
+@@ -1571,7 +1572,6 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
+ 		goto err_debugfs_exit;
+ 
+ 	mutex_init(&data->fib_lock);
+-	INIT_LIST_HEAD(&data->fib_rt_list);
+ 	err = rhashtable_init(&data->fib_rt_ht, &nsim_fib_rt_ht_params);
+ 	if (err)
+ 		goto err_rhashtable_nexthop_destroy;
+@@ -1661,7 +1661,6 @@ void nsim_fib_destroy(struct devlink *devlink, struct nsim_fib_data *data)
+ 	rhashtable_free_and_destroy(&data->nexthop_ht, nsim_nexthop_free,
+ 				    data);
+ 	WARN_ON_ONCE(!list_empty(&data->fib_event_queue));
+-	WARN_ON_ONCE(!list_empty(&data->fib_rt_list));
+ 	mutex_destroy(&data->fib_lock);
+ 	mutex_destroy(&data->nh_lock);
+ 	nsim_fib_debugfs_exit(data);
+-- 
+2.34.1
+
