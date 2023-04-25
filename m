@@ -2,175 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3D8B6EDE47
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 10:40:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F7C6EDE74
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 10:47:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233073AbjDYIkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 04:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57618 "EHLO
+        id S233416AbjDYIrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 04:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233944AbjDYIjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 04:39:53 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EC7C161
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 01:37:59 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id 2adb3069b0e04-4ecb7fe8fb8so1040e87.0
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 01:37:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682411823; x=1685003823;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=XXW/aseN5mXuotIa/yEkh2bdTo682NvMfHu/VUn7fZ4=;
-        b=XmgtDHUuBipVTZPUOiFntnaV3plFHTBEUMVX6ZzTveiI5RNHzhbJAS4owqd5Uf2wdn
-         LjSPgp8P/AjOCVqQ4+KDy8PQz8x4RdUBEuE0+g57YZ6FHmT9UDb+GW1Lk1ufgDXCLvzQ
-         qWUcl1Skk1nk80BbsQg0k+VxjT/IihbMtTcn5bIUVqybGx+D36N/C6ESx8tSWvRJLnoX
-         HY1uEjN5nF4WDQwLN/BUDaZDLJdhL8q4gs+tbq9+2u2HweRVgD9MhhF7Fp8Z1NoM7OmQ
-         wxlsn04NTFHfFINdrNryFOjrXFFOx00CtfMs0zXW5Mkf8UQuzpVEk7GH6Xb5wQikgDRz
-         Qifg==
+        with ESMTP id S233371AbjDYIqn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 04:46:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DCC14458
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 01:43:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682412197;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z0zVDpGNPOtgS6OZt5Y/hC+DSyVwR0iNEJU4rcM7cZw=;
+        b=L2Ky8ofjQIqadlMEBOTwC+MqXOR2Jkyecf0zsIqDBcdoN2RNaoLs2mTft5d4QGL1jzNamP
+        5yuGmWr8xrXYgB6xfsU/4QJJ0ZEO1prnZDTUU7+DsiPnQYQwqbyj3ezzJWfyUrGfzxeB68
+        Q3CsDA+WUi443XaF8P0UlF25ZZO19xY=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-389-vUhRz2lzMwuzsPkP8CeLCQ-1; Tue, 25 Apr 2023 04:43:14 -0400
+X-MC-Unique: vUhRz2lzMwuzsPkP8CeLCQ-1
+Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-95707df1f05so559579566b.3
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 01:43:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682411823; x=1685003823;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XXW/aseN5mXuotIa/yEkh2bdTo682NvMfHu/VUn7fZ4=;
-        b=MPemxc60qcxR+cFKJQ2S16P58u3PZCKPzgKFsLHywdBvreoaepARDtWflyMXdvwxQo
-         CS3IBTZ0lFHWO6mVtqIM2ZitsFFFDW0Mv4WR1m3WHOdQCPe8yeLDvAYFQFS+sElWaAkv
-         ioVyqeGAxuApZD8EK9asJRFAOPKfEVp0F5+O8cugdnUryR4CPU8qrwzZ/NCNnRQpYiN1
-         PegbaVYtjrEPX2la8QCOmDMmAQjOcDShCmVrwCZCk1sEasaazDBxC9v668jCK3hev4NV
-         qudkldKqm2bIh2I9Yu0P2Nr/mcuwvY+F0E22I6vjuY16931nXj8ZFZhqygquAf5Cmx9l
-         AbIg==
-X-Gm-Message-State: AC+VfDz6vknd52d2wwgu5Rn9w6YzeecjccxE6aSF7olHJSa54ftJd/9x
-        yES37GdMUQIjGNUL5H2vUONpheb16XAAGAL+yHgD1Q==
-X-Google-Smtp-Source: ACHHUZ4ZQVitrq0MqOhQ4d7dv8Gnc3ryLTlv8xLgz1rnFURT2OfEFSn0WQ5z358EeBKQM+qPXMw0XCAFzTwwaiWgez8=
-X-Received: by 2002:a05:6512:3e17:b0:4ed:af48:f8bb with SMTP id
- i23-20020a0565123e1700b004edaf48f8bbmr96406lfv.5.1682411823172; Tue, 25 Apr
- 2023 01:37:03 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682412193; x=1685004193;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z0zVDpGNPOtgS6OZt5Y/hC+DSyVwR0iNEJU4rcM7cZw=;
+        b=bgs7rX1E7HR/CuKr9S/3WcF/if2E7pD1rAPQ/pH/ILx4+Zy7/XbFel+M5ZZWSLNRz1
+         oNH/oF1mEMWq547Y9jE3SGBj5PhCGiJePHwcFxCvm/rfMasxJRt1m2lQkktIzrFw1qFy
+         iBev+l1dccFIxTTjDfopft/oJ8F2QBtkDqM3tcKpU6eVrBlvSyxq4kPEPX8dwOr1RaPT
+         3e+pLwoI70c8vMdorDC3hBPdlCl5v/ACqvejkfDLLNO6awh+1WuQgAWAdGAh30No8VF1
+         11aNM0fDL5dWfETuVcaWaCs52+46k/vIXeDFilvCwAVDmoNaFHNjDdX6amFiybNRXeki
+         32PA==
+X-Gm-Message-State: AAQBX9ffG0Aax+zPwMm1LmF74/lFJgaQYyMkGPx8z1r8s+dcL4VWkcf2
+        mFgN2sw3KBGAlSeGFBN8s56ncYO/pfkX7ku4YYLg5kyC4/Yekdn5Xx2Jgge7mULkvj9LqmtxGLQ
+        WdF8+o5JoIxky0n2B
+X-Received: by 2002:a17:907:a688:b0:953:4d9e:4dc5 with SMTP id vv8-20020a170907a68800b009534d9e4dc5mr11371456ejc.22.1682412193247;
+        Tue, 25 Apr 2023 01:43:13 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bMzEkeOJ+lrxIh0zBcCHx4TX83ikBmu1uOT+zXFM5ixyoq1CeTkKqu+M7H2eyoLrpcS9oLHw==
+X-Received: by 2002:a17:907:a688:b0:953:4d9e:4dc5 with SMTP id vv8-20020a170907a68800b009534d9e4dc5mr11371436ejc.22.1682412192893;
+        Tue, 25 Apr 2023 01:43:12 -0700 (PDT)
+Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
+        by smtp.gmail.com with ESMTPSA id bh20-20020a170906a0d400b0094fbb76f49esm6589052ejb.17.2023.04.25.01.43.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 25 Apr 2023 01:43:12 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <e6bc2340-9cb5-def1-b347-af25ce2f8225@redhat.com>
+Date:   Tue, 25 Apr 2023 10:43:02 +0200
 MIME-Version: 1.0
-References: <00000000000059e1b705fa2494e4@google.com>
-In-Reply-To: <00000000000059e1b705fa2494e4@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 25 Apr 2023 10:36:51 +0200
-Message-ID: <CACT4Y+YDzXb6WoMtBu5O-dpWOkVYwhUNKM7szC5gJ9ewtMUPDQ@mail.gmail.com>
-Subject: Re: [syzbot] [can?] KCSAN: data-race in bcm_can_tx / bcm_tx_setup (3)
-To:     syzbot <syzbot+e1786f049e71693263bf@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mkl@pengutronix.de, netdev@vger.kernel.org, pabeni@redhat.com,
-        socketcan@hartkopp.net, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, martin.lau@kernel.org,
+        ast@kernel.org, alexandr.lobakin@intel.com,
+        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
+        John Fastabend <john.fastabend@gmail.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        yoong.siang.song@intel.com, intel-wired-lan@lists.osuosl.org,
+        pabeni@redhat.com, jesse.brandeburg@intel.com,
+        Stanislav Fomichev <sdf@google.com>, kuba@kernel.org,
+        edumazet@google.com, hawk@kernel.org,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH bpf-next V2 1/5] igc: enable and fix RX hash usage by
+ netstack
+Content-Language: en-US
+To:     davem@davemloft.net, bpf@vger.kernel.org, daniel@iogearbox.net
+References: <168182460362.616355.14591423386485175723.stgit@firesoul>
+ <168182464270.616355.11391652654430626584.stgit@firesoul>
+ <644544b3206f0_19af02085e@john.notmuch>
+ <622a8fa6-ec07-c150-250b-5467b0cddb0c@redhat.com>
+ <6446d5af80e06_338f220820@john.notmuch>
+In-Reply-To: <6446d5af80e06_338f220820@john.notmuch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Apr 2023 at 10:05, syzbot
-<syzbot+e1786f049e71693263bf@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    1a0beef98b58 Merge tag 'tpmdd-v6.4-rc1' of git://git.kerne..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1485f1dbc80000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=501f7c86f7a05a13
-> dashboard link: https://syzkaller.appspot.com/bug?extid=e1786f049e71693263bf
-> compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/f06c11683242/disk-1a0beef9.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/5c0a1cd5a059/vmlinux-1a0beef9.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/e4c318183ce3/bzImage-1a0beef9.xz
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+e1786f049e71693263bf@syzkaller.appspotmail.com
 
-op->currframe and probably other op fields are concurrently
-read/modified by both bcm_tx_setup() and bcm_can_tx().
-If I am reading the code correctly, it can lead to a wide range of
-misbehavior, e.g. sending wrong/uninit data, reading/writing data
-out-of-bounds, etc.
-I think these functions need to be somehow serialized (stopping timers
-before doing any modifications to op?).
+On 24/04/2023 21.17, John Fastabend wrote:
+>>> Just curious why not copy the logic from the other driver fms10k, ice, ect.
+>>>
+>>> 	skb_set_hash(skb, le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
+>>> 		     (IXGBE_RSS_L4_TYPES_MASK & (1ul << rss_type)) ?
+>>> 		     PKT_HASH_TYPE_L4 : PKT_HASH_TYPE_L3);
+>> Detail: This code mis-categorize (e.g. ARP) PKT_HASH_TYPE_L2 as
+>> PKT_HASH_TYPE_L3, but as core reduces this further to one SKB bit, it
+>> doesn't really matter.
+>>
+>>> avoiding the table logic. Do the driver folks care?
+>> The define IXGBE_RSS_L4_TYPES_MASK becomes the "table" logic as a 1-bit
+>> true/false table.  It is a more compact table, let me know if this is
+>> preferred.
+>>
+>> Yes, it is really upto driver maintainer people to decide, what code is
+>> preferred ?
+ >
+> Yeah doesn't matter much to me either way. I was just looking at code
+> compared to ice driver while reviewing.
 
-> ==================================================================
-> BUG: KCSAN: data-race in bcm_can_tx / bcm_tx_setup
->
-> write to 0xffff888137fcff10 of 4 bytes by task 10792 on cpu 0:
->  bcm_tx_setup+0x698/0xd30 net/can/bcm.c:995
->  bcm_sendmsg+0x38b/0x470 net/can/bcm.c:1355
->  sock_sendmsg_nosec net/socket.c:724 [inline]
->  sock_sendmsg net/socket.c:747 [inline]
->  ____sys_sendmsg+0x375/0x4c0 net/socket.c:2501
->  ___sys_sendmsg net/socket.c:2555 [inline]
->  __sys_sendmsg+0x1e3/0x270 net/socket.c:2584
->  __do_sys_sendmsg net/socket.c:2593 [inline]
->  __se_sys_sendmsg net/socket.c:2591 [inline]
->  __x64_sys_sendmsg+0x46/0x50 net/socket.c:2591
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
->
-> write to 0xffff888137fcff10 of 4 bytes by interrupt on cpu 1:
->  bcm_can_tx+0x38a/0x410
->  bcm_tx_timeout_handler+0xdb/0x260
->  __run_hrtimer kernel/time/hrtimer.c:1685 [inline]
->  __hrtimer_run_queues+0x217/0x700 kernel/time/hrtimer.c:1749
->  hrtimer_run_softirq+0xd6/0x120 kernel/time/hrtimer.c:1766
->  __do_softirq+0xc1/0x265 kernel/softirq.c:571
->  invoke_softirq kernel/softirq.c:445 [inline]
->  __irq_exit_rcu+0x57/0xa0 kernel/softirq.c:650
->  sysvec_apic_timer_interrupt+0x6d/0x80 arch/x86/kernel/apic/apic.c:1107
->  asm_sysvec_apic_timer_interrupt+0x1a/0x20 arch/x86/include/asm/idtentry.h:645
->  kcsan_setup_watchpoint+0x3fe/0x410 kernel/kcsan/core.c:696
->  string_nocheck lib/vsprintf.c:648 [inline]
->  string+0x16c/0x200 lib/vsprintf.c:726
->  vsnprintf+0xa09/0xe20 lib/vsprintf.c:2796
->  add_uevent_var+0xf0/0x1c0 lib/kobject_uevent.c:665
->  kobject_uevent_env+0x225/0x5b0 lib/kobject_uevent.c:539
->  kobject_uevent+0x1c/0x20 lib/kobject_uevent.c:642
->  __loop_clr_fd+0x1e0/0x3b0 drivers/block/loop.c:1167
->  lo_release+0xe4/0xf0 drivers/block/loop.c:1745
->  blkdev_put+0x3fb/0x470
->  kill_block_super+0x83/0xa0 fs/super.c:1410
->  deactivate_locked_super+0x6b/0xd0 fs/super.c:331
->  deactivate_super+0x9b/0xb0 fs/super.c:362
->  cleanup_mnt+0x272/0x2e0 fs/namespace.c:1177
->  __cleanup_mnt+0x19/0x20 fs/namespace.c:1184
->  task_work_run+0x123/0x160 kernel/task_work.c:179
->  resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
->  exit_to_user_mode_loop+0xd1/0xe0 kernel/entry/common.c:171
->  exit_to_user_mode_prepare+0x6c/0xb0 kernel/entry/common.c:204
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:286 [inline]
->  syscall_exit_to_user_mode+0x26/0x140 kernel/entry/common.c:297
->  do_syscall_64+0x4d/0xc0 arch/x86/entry/common.c:86
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
->
-> value changed: 0x00000059 -> 0x00000000
->
-> Reported by Kernel Concurrency Sanitizer on:
-> CPU: 1 PID: 3096 Comm: syz-executor.5 Not tainted 6.3.0-syzkaller-00113-g1a0beef98b58 #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 04/14/2023
-> ==================================================================
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/00000000000059e1b705fa2494e4%40google.com.
+My preference is to apply this patchset. We/I can easily followup and
+change this to use the more compact approach later (if someone prefers).
+
+I know net-next is "closed", but this patchset was posted prior to the
+close.  Plus, a number of companies are waiting for the XDP-hint for HW
+RX timestamp.  The support for driver stmmac is already in net-next
+(commit e3f9c3e34840 ("net: stmmac: add Rx HWTS metadata to XDP receive
+pkt")). Thus, it would be a help if both igc+stmmac changes land in same
+kernel version, as both drivers are being evaluated by these companies.
+
+Pretty please,
+--Jesper
+
