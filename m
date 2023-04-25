@@ -2,104 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4AF76EDA10
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 03:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E18456EDA09
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 03:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233216AbjDYBvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 21:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
+        id S231350AbjDYBuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 21:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232858AbjDYBvO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 21:51:14 -0400
-Received: from smtpbg156.qq.com (smtpbg156.qq.com [15.184.82.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31DDAD25
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 18:51:07 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1682387459tv6m2ydj
-Received: from localhost.localdomain ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 25 Apr 2023 09:50:58 +0800 (CST)
-X-QQ-SSF: 01400000000000N0S000000A0000000
-X-QQ-FEAT: QityeSR92A0VkX3RufWepp91kHhsUXsJ0P2hlCu3tSjudbnsEdZtTiBiDYOrU
-        ZeZ8llT3otCjxhuNzyYu3rVJyV3p6p5IwD9MeXvc7HXEt3LjnWfHkgC/8DAZs0o53hEgrJk
-        tjFqpj6zwDRl14wnShZ1Y7jnhhda1YTfF0mp9Kbf5z9ZFuYfzZnt6vF65o4NO1JKv5aQ4oP
-        9BRe4FBF8MpfcxPEItFdqFgjENtsJ0IFbmCKD3smp2FUNP1+psC6OnmAFtSN/z3/CH5xfUo
-        uZebHdorq8lNaQ3keQU8cKdrPP5+2mrNcG0acxSArQdnw0/eXttUlTdkUA7NRkUI+9N77k7
-        hD56flBY5qFf6w1xaMbENeRqg5596dwU+NsvI8DWrlH/PFtVXf6eZgCNMPJ2MHdQbO0xnue
-        W5CBCW1/EDY=
-X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 3015573418642143950
-From:   Mengyuan Lou <mengyuanlou@net-swift.com>
-To:     netdev@vger.kernel.org
-Cc:     jiawenwu@trustnetic.com, linyunsheng@huawei.com,
-        Mengyuan Lou <mengyuanlou@net-swift.com>
-Subject: [PATCH net-next 7/7] net: txgbe: Implement vlan add and remove ops
-Date:   Tue, 25 Apr 2023 09:50:11 +0800
-Message-Id: <20230425015011.19980-8-mengyuanlou@net-swift.com>
-X-Mailer: git-send-email 2.40.0
-In-Reply-To: <20230425015011.19980-1-mengyuanlou@net-swift.com>
-References: <20230425015011.19980-1-mengyuanlou@net-swift.com>
+        with ESMTP id S229872AbjDYBuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 21:50:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8983A9ED1;
+        Mon, 24 Apr 2023 18:50:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 219DC62AE9;
+        Tue, 25 Apr 2023 01:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 78626C433EF;
+        Tue, 25 Apr 2023 01:50:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682387420;
+        bh=1uW7/zKMfdIEGeOS4OK5rft0JIk45QU2wNABsTDJdnU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Zzww72QXSZ6E3K8SLV2/Zqqlt+BF6voJHEd+JCA99uusIxwJO1W1aMAtbUScVRqaA
+         OD6i+4C+ksO8TF/UECN3UqXuC5trMv7oCnnaPoFUcXD/rgNQj96WvDnBLKcei+Exu3
+         oACfpPe+5jmHFdlEb0qRBSKgLieud556OsQbe3wKLPueKg0PSV4foMYz3KiS6e302D
+         5Ur6uXNJkCDoDUv83G9RsEywMhA2CyT4P2W4/y7UwmjsMJCHT9kMXy3FbdN0z96cDt
+         44R0YDIpD2vYajWJWvAH/iT8eJqiXXtXYaU/P94SpAvfX6dKOLE3q8ihBsKL+tQjv5
+         m1gQYEUBcJdHQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 55EC1C395D8;
+        Tue, 25 Apr 2023 01:50:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:net-swift.com:qybglogicsvrgz:qybglogicsvrgz6a-1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next v4 0/6] tsnep: XDP socket zero-copy support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168238742034.25988.7042719252736011480.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 Apr 2023 01:50:20 +0000
+References: <20230421194656.48063-1-gerhard@engleder-embedded.com>
+In-Reply-To: <20230421194656.48063-1-gerhard@engleder-embedded.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        bjorn@kernel.org, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-txgbe add ndo_vlan_rx_add_vid and ndo_vlan_rx_kill_vid.
+Hello:
 
-Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
----
- drivers/net/ethernet/wangxun/txgbe/txgbe_main.c | 4 ++++
- drivers/net/ethernet/wangxun/txgbe/txgbe_type.h | 1 +
- 2 files changed, 5 insertions(+)
+This series was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index be795d175aed..00b8a43a87e1 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -258,6 +258,7 @@ static void txgbe_reset(struct wx *wx)
- 	if (err != 0)
- 		wx_err(wx, "Hardware Error: %d\n", err);
- 
-+	wx_start_hw(wx);
- 	/* do not flush user set addresses */
- 	memcpy(old_addr, &wx->mac_table[0].addr, netdev->addr_len);
- 	wx_flush_sw_mac_table(wx);
-@@ -330,6 +331,7 @@ static int txgbe_sw_init(struct wx *wx)
- 	wx->mac.max_tx_queues = TXGBE_SP_MAX_TX_QUEUES;
- 	wx->mac.max_rx_queues = TXGBE_SP_MAX_RX_QUEUES;
- 	wx->mac.mcft_size = TXGBE_SP_MC_TBL_SIZE;
-+	wx->mac.vft_size = TXGBE_SP_VFT_TBL_SIZE;
- 	wx->mac.rx_pb_size = TXGBE_SP_RX_PB_SIZE;
- 	wx->mac.tx_pb_size = TXGBE_SP_TDB_PB_SZ;
- 
-@@ -494,6 +496,8 @@ static const struct net_device_ops txgbe_netdev_ops = {
- 	.ndo_validate_addr      = eth_validate_addr,
- 	.ndo_set_mac_address    = wx_set_mac,
- 	.ndo_get_stats64        = wx_get_stats64,
-+	.ndo_vlan_rx_add_vid    = wx_vlan_rx_add_vid,
-+	.ndo_vlan_rx_kill_vid   = wx_vlan_rx_kill_vid,
- };
- 
- /**
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index 63a1c733718d..032972369965 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -77,6 +77,7 @@
- #define TXGBE_SP_MAX_RX_QUEUES  128
- #define TXGBE_SP_RAR_ENTRIES    128
- #define TXGBE_SP_MC_TBL_SIZE    128
-+#define TXGBE_SP_VFT_TBL_SIZE   128
- #define TXGBE_SP_RX_PB_SIZE     512
- #define TXGBE_SP_TDB_PB_SZ      (160 * 1024) /* 160KB Packet Buffer */
- 
+On Fri, 21 Apr 2023 21:46:50 +0200 you wrote:
+> Implement XDP socket zero-copy support for tsnep driver. I tried to
+> follow existing drivers like igc as far as possible. But one main
+> difference is that tsnep does not need any reconfiguration for XDP BPF
+> program setup. So I decided to keep this behavior no matter if a XSK
+> pool is used or not. As a result, tsnep starts using the XSK pool even
+> if no XDP BPF program is available.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v4,1/6] tsnep: Replace modulo operation with mask
+    https://git.kernel.org/netdev/net-next/c/42fb2962b4a6
+  - [net-next,v4,2/6] tsnep: Rework TX/RX queue initialization
+    https://git.kernel.org/netdev/net-next/c/33b0ee02c84c
+  - [net-next,v4,3/6] tsnep: Add functions for queue enable/disable
+    https://git.kernel.org/netdev/net-next/c/2ea0a282ba09
+  - [net-next,v4,4/6] tsnep: Move skb receive action to separate function
+    https://git.kernel.org/netdev/net-next/c/c2d64697f41b
+  - [net-next,v4,5/6] tsnep: Add XDP socket zero-copy RX support
+    https://git.kernel.org/netdev/net-next/c/3fc2333933fd
+  - [net-next,v4,6/6] tsnep: Add XDP socket zero-copy TX support
+    https://git.kernel.org/netdev/net-next/c/cd275c236b3f
+
+You are awesome, thank you!
 -- 
-2.40.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
