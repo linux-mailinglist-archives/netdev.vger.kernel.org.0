@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DE996EDCD2
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 09:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4095A6EDCD6
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 09:37:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233581AbjDYHhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 03:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44504 "EHLO
+        id S233673AbjDYHhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 03:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233585AbjDYHgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 03:36:35 -0400
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050D2C149;
-        Tue, 25 Apr 2023 00:36:24 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R431e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VgzD01p_1682408179;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgzD01p_1682408179)
+        with ESMTP id S233567AbjDYHgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 03:36:36 -0400
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6F5C157;
+        Tue, 25 Apr 2023 00:36:25 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R641e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VgzCnlW_1682408181;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgzCnlW_1682408181)
           by smtp.aliyun-inc.com;
-          Tue, 25 Apr 2023 15:36:20 +0800
+          Tue, 25 Apr 2023 15:36:21 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -32,9 +32,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Christoph Hellwig <hch@infradead.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Alexander Lobakin <aleksander.lobakin@intel.com>
-Subject: [PATCH vhost v7 05/11] virtio_ring: packed: support premapped
-Date:   Tue, 25 Apr 2023 15:36:07 +0800
-Message-Id: <20230425073613.8839-6-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH vhost v7 06/11] virtio_ring: packed-indirect: support premapped
+Date:   Tue, 25 Apr 2023 15:36:08 +0800
+Message-Id: <20230425073613.8839-7-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 In-Reply-To: <20230425073613.8839-1-xuanzhuo@linux.alibaba.com>
 References: <20230425073613.8839-1-xuanzhuo@linux.alibaba.com>
@@ -42,9 +42,9 @@ MIME-Version: 1.0
 X-Git-Hash: c518d34a1cf7
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -59,94 +59,65 @@ and DMA mapping is completed in advance, so it is necessary for us to
 support passing the DMA address to virtio core.
 
 Drives can use sg->dma_address to pass the mapped dma address to virtio
-core. If one sg->dma_address is used then all sgs must use
-sg->dma_address, otherwise all must be null when passing it to the APIs
-of virtio.
+core. If one sg->dma_address is used then all sgs must use sg->dma_address,
+otherwise all dma_address must be null when passing it to the APIs of
+virtio.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ drivers/virtio/virtio_ring.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 055c1c069fff..4b6c6da4cdb4 100644
+index 4b6c6da4cdb4..0bc011e6e96e 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -81,6 +81,7 @@ struct vring_desc_state_packed {
- 	struct vring_packed_desc *indir_desc; /* Indirect descriptor, if any. */
- 	u16 num;			/* Descriptor list length. */
- 	u16 last;			/* The last desc state in a list. */
-+	u32 flags;			/* State flags. */
- };
- 
- struct vring_desc_extra {
-@@ -1272,7 +1273,8 @@ static u16 packed_last_used(u16 last_used_idx)
- }
- 
- static void vring_unmap_extra_packed(const struct vring_virtqueue *vq,
--				     const struct vring_desc_extra *extra)
-+				     const struct vring_desc_extra *extra,
-+				     bool dma_map_internal)
- {
- 	u16 flags;
- 
-@@ -1287,6 +1289,9 @@ static void vring_unmap_extra_packed(const struct vring_virtqueue *vq,
- 				 (flags & VRING_DESC_F_WRITE) ?
- 				 DMA_FROM_DEVICE : DMA_TO_DEVICE);
- 	} else {
-+		if (!dma_map_internal)
-+			return;
-+
- 		dma_unmap_page(vring_dma_dev(vq),
- 			       extra->addr, extra->len,
- 			       (flags & VRING_DESC_F_WRITE) ?
-@@ -1453,6 +1458,7 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
- 	unsigned int i, n, c, descs_used;
- 	__le16 head_flags, flags;
- 	u16 head, id, prev, curr;
+@@ -1346,6 +1346,7 @@ static int virtqueue_add_indirect_packed(struct vring_virtqueue *vq,
+ 	unsigned int i, n;
+ 	u16 head, id;
+ 	dma_addr_t addr;
 +	bool dma_map_internal;
- 	int err;
  
- 	START_USE(vq);
-@@ -1498,7 +1504,8 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
+ 	head = vq->packed.next_avail_idx;
+ 	desc = alloc_indirect_packed(total_sg, gfp);
+@@ -1363,7 +1364,8 @@ static int virtqueue_add_indirect_packed(struct vring_virtqueue *vq,
  	id = vq->free_head;
  	BUG_ON(id == vq->packed.vring.num);
  
--	if (virtqueue_map_sgs(vq, sgs, total_sg, out_sgs, in_sgs)) {
+-	if (virtqueue_map_sgs(vq, sgs, total_sg, out_sgs, in_sgs))
 +	dma_map_internal = !sgs[0]->dma_address;
-+	if (dma_map_internal && virtqueue_map_sgs(vq, sgs, total_sg, out_sgs, in_sgs)) {
- 		END_USE(vq);
- 		return -EIO;
- 	}
-@@ -1552,6 +1559,7 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
++	if (dma_map_internal && virtqueue_map_sgs(vq, sgs, total_sg, out_sgs, in_sgs))
+ 		goto err_map;
+ 
+ 	for (n = 0; n < out_sgs + in_sgs; n++) {
+@@ -1425,6 +1427,8 @@ static int virtqueue_add_indirect_packed(struct vring_virtqueue *vq,
  	vq->packed.desc_state[id].data = data;
- 	vq->packed.desc_state[id].indir_desc = ctx;
- 	vq->packed.desc_state[id].last = prev;
+ 	vq->packed.desc_state[id].indir_desc = desc;
+ 	vq->packed.desc_state[id].last = id;
 +	vq->packed.desc_state[id].flags = dma_map_internal ? VRING_STATE_F_MAP_INTERNAL : 0;
++
  
- 	/*
- 	 * A driver MUST NOT make the first descriptor in the list
-@@ -1623,8 +1631,10 @@ static void detach_buf_packed(struct vring_virtqueue *vq,
- 	struct vring_desc_state_packed *state = NULL;
- 	struct vring_packed_desc *desc;
- 	unsigned int i, curr;
-+	bool dma_map_internal;
+ 	vq->num_added += 1;
  
- 	state = &vq->packed.desc_state[id];
-+	dma_map_internal = !!(state->flags & VRING_STATE_F_MAP_INTERNAL);
+@@ -1434,7 +1438,8 @@ static int virtqueue_add_indirect_packed(struct vring_virtqueue *vq,
+ 	return 0;
  
- 	/* Clear data ptr. */
- 	state->data = NULL;
-@@ -1637,7 +1647,8 @@ static void detach_buf_packed(struct vring_virtqueue *vq,
- 		curr = id;
- 		for (i = 0; i < state->num; i++) {
- 			vring_unmap_extra_packed(vq,
--						 &vq->packed.desc_extra[curr]);
-+						 &vq->packed.desc_extra[curr],
-+						 dma_map_internal);
- 			curr = vq->packed.desc_extra[curr].next;
- 		}
- 	}
+ unmap_release:
+-	virtqueue_unmap_sgs(vq, sgs, total_sg, out_sgs, in_sgs);
++	if (dma_map_internal)
++		virtqueue_unmap_sgs(vq, sgs, total_sg, out_sgs, in_sgs);
+ 
+ err_map:
+ 	kfree(desc);
+@@ -1661,7 +1666,7 @@ static void detach_buf_packed(struct vring_virtqueue *vq,
+ 		if (!desc)
+ 			return;
+ 
+-		if (vq->use_dma_api) {
++		if (vq->use_dma_api && dma_map_internal) {
+ 			len = vq->packed.desc_extra[id].len;
+ 			for (i = 0; i < len / sizeof(struct vring_packed_desc);
+ 					i++)
 -- 
 2.32.0.3.g01195cf9f
 
