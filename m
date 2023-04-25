@@ -2,234 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 667D36EDC4F
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 09:14:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 597F86EDCC8
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 09:37:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233521AbjDYHOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 03:14:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
+        id S232831AbjDYHhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 03:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233311AbjDYHOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 03:14:21 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748A69001;
-        Tue, 25 Apr 2023 00:14:20 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-3f178da21afso35364495e9.1;
-        Tue, 25 Apr 2023 00:14:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682406859; x=1684998859;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=yjgzdqrbPo7+Td+Wlne0g57m41H7q9g5vLYpPDzT+qw=;
-        b=H6uBR9WAiN3nmtRogzKnpHyF+tj7CFYbFApxatJP1VLKGlPzsCJ25finM3hrSD0TEB
-         XfOldeEJUhs/ALeP7EP6+mTWtQrLcql/7gRagSd2UsEVk6dOtOVqwu+fHLSYibPjJ6sb
-         lfh1f+YYWcf4GP7VXXXzEejq9r0Co3wq2ip3LqUMigGlznjo31/lUKWLuIIc0IlTJIDb
-         dL+v/hGG5bbSSG9J0HDhLj+KsUrvRopsq2vI0ls5gl/cgjerlsF9u86OWWWjJDtKmUdV
-         IFPEkfr3t8/hkfk2cywUJTNAy1Ngjcu0MDpEQ4OwgZG18kbtqh1YdMWEM5VVO0i0Srmw
-         cGGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682406859; x=1684998859;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yjgzdqrbPo7+Td+Wlne0g57m41H7q9g5vLYpPDzT+qw=;
-        b=HgSjYlBjnf3j6bjUP3fCF7i4Lte/biafaYzP5t/Druz1cGsIOijX84BW13D10JDqob
-         fiiaT3F5gUAUGQZROeVRR3/3qA2zWRuNh7mHOrgttYh49nsqIUyUpEFR6941Bval7dIi
-         N4h3o2EvCQGDcB/qIGZLhltiigVzlcXWt5sS726TQkdM6Aj7DrwJ5nE5zJeEREge+62Y
-         Qq7iIe9hq5MYMgc/JfqL+Xl5H0IAgFI73XxPJSKbCz84cCVTEaLF/LD+btyubVJXs7lF
-         ZJoSJ4tJuT9hS+v/L3Dl9NI7F/tZ3GaKS1h+7vdBnZnd55VuXzH1DWQej/dMfdggNiRa
-         zwbQ==
-X-Gm-Message-State: AAQBX9f5st0yzFymCtCwCnLx9uGHXzTWQoV6HrEAlDp+/0oEWtU0FxGN
-        GdS4RufH3Nb9gLfEjnuhfT0=
-X-Google-Smtp-Source: AKy350aSZ0ogFp8y55zCmLsghq92v+eab4GmjRhmzl2lUP7Ai4SILM+68B2FMmp0r+I/N2CUHcFWng==
-X-Received: by 2002:a7b:cd09:0:b0:3f1:6980:2d2e with SMTP id f9-20020a7bcd09000000b003f169802d2emr9984982wmj.22.1682406858687;
-        Tue, 25 Apr 2023 00:14:18 -0700 (PDT)
-Received: from lucifer.home (host86-156-84-164.range86-156.btcentralplus.com. [86.156.84.164])
-        by smtp.googlemail.com with ESMTPSA id c16-20020a05600c0ad000b003f198dfbbfcsm8382138wmr.19.2023.04.25.00.14.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 00:14:17 -0700 (PDT)
-From:   Lorenzo Stoakes <lstoakes@gmail.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
+        with ESMTP id S232430AbjDYHgZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 03:36:25 -0400
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E07FC168;
+        Tue, 25 Apr 2023 00:36:17 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R561e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VgzCndC_1682408173;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VgzCndC_1682408173)
+          by smtp.aliyun-inc.com;
+          Tue, 25 Apr 2023 15:36:14 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Lorenzo Stoakes <lstoakes@gmail.com>
-Subject: [PATCH v3] mm/gup: disallow GUP writing to file-backed mappings by default
-Date:   Tue, 25 Apr 2023 08:14:14 +0100
-Message-Id: <23c19e27ef0745f6d3125976e047ee0da62569d4.1682406295.git.lstoakes@gmail.com>
-X-Mailer: git-send-email 2.40.0
+        Christoph Hellwig <hch@infradead.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Lobakin <aleksander.lobakin@intel.com>
+Subject: [PATCH vhost v7 00/11] virtio core prepares for AF_XDP
+Date:   Tue, 25 Apr 2023 15:36:02 +0800
+Message-Id: <20230425073613.8839-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 MIME-Version: 1.0
+X-Git-Hash: c518d34a1cf7
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GUP does not correctly implement write-notify semantics, nor does it
-guarantee that the underlying pages are correctly dirtied, which could lead
-to a kernel oops or data corruption when writing to file-backed mappings.
+## About DMA APIs
 
-This is only relevant when the mappings are file-backed and the underlying
-file system requires folio dirty tracking. File systems which do not, such
-as shmem or hugetlb, are not at risk and therefore can be written to
-without issue.
+Now, virtio may can not work with DMA APIs when virtio features do not have
+VIRTIO_F_ACCESS_PLATFORM.
 
-Unfortunately this limitation of GUP has been present for some time and
-requires future rework of the GUP API in order to provide correct write
-access to such mappings.
+1. I tried to let DMA APIs return phy address by virtio-device. But DMA APIs just
+   work with the "real" devices.
+2. I tried to let xsk support callballs to get phy address from virtio-net
+   driver as the dma address. But the maintainers of xsk may want to use dma-buf
+   to replace the DMA APIs. I think that may be a larger effort. We will wait
+   too long.
 
-In the meantime, we add a check for the most broken GUP case -
-FOLL_LONGTERM - which really under no circumstances can safely access
-dirty-tracked file mappings.
+So rethinking this, firstly, we can support premapped-dma only for devices with
+VIRTIO_F_ACCESS_PLATFORM. In the case of af-xdp, if the users want to use it,
+they have to update the device to support VIRTIO_F_RING_RESET, and they can also
+enable the device's VIRTIO_F_ACCESS_PLATFORM feature by the way.
 
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
----
+Thanks for the help from Christoph.
+
+=================
+
+XDP socket(AF_XDP) is an excellent bypass kernel network framework. The zero
+copy feature of xsk (XDP socket) needs to be supported by the driver. The
+performance of zero copy is very good.
+
+ENV: Qemu with vhost.
+
+                   vhost cpu | Guest APP CPU |Guest Softirq CPU | PPS
+-----------------------------|---------------|------------------|------------
+xmit by sockperf:     90%    |   100%        |                  |  318967
+xmit by xsk:          100%   |   30%         |   33%            | 1192064
+recv by sockperf:     100%   |   68%         |   100%           |  692288
+recv by xsk:          100%   |   33%         |   43%            |  771670
+
+Before achieving the function of Virtio-Net, we also have to let virtio core
+support these features:
+
+1. virtio core support premapped
+2. virtio core support reset per-queue
+3. introduce DMA APIs to virtio core
+
+Please review.
+
+Thanks.
+
+v7:
+ 1. virtqueue_dma_dev() return NULL when virtio is without DMA API.
+
+v6:
+ 1. change the size of the flags to u32.
+
+v5:
+ 1. fix for error handler
+ 2. add flags to record internal dma mapping
+
+v4:
+ 1. rename map_inter to dma_map_internal
+ 2. fix: Excess function parameter 'vq' description in 'virtqueue_dma_dev'
+
 v3:
-- Rebased on latest mm-unstable as of 24th April 2023.
-- Explicitly check whether file system requires folio dirtying. Note that
-  vma_wants_writenotify() could not be used directly as it is very much focused
-  on determining if the PTE r/w should be set (e.g. assuming private mapping
-  does not require it as already set, soft dirty considerations).
-- Tested code against shmem and hugetlb mappings - confirmed that these are not
-  disallowed by the check.
-- Eliminate FOLL_ALLOW_BROKEN_FILE_MAPPING flag and instead perform check only
-  for FOLL_LONGTERM pins.
-- As a result, limit check to internal GUP code.
+ 1. add map_inter to struct desc state to reocrd whether virtio core do dma map
 
 v2:
-- Add accidentally excluded ptrace_access_vm() use of
-  FOLL_ALLOW_BROKEN_FILE_MAPPING.
-- Tweak commit message.
-https://lore.kernel.org/all/c8ee7e02d3d4f50bb3e40855c53bda39eec85b7d.1682321768.git.lstoakes@gmail.com/
+ 1. based on sgs[0]->dma_address to judgment is premapped
+ 2. based on extra.addr to judgment to do unmap for no-indirect desc
+ 3. based on indir_desc to judgment to do unmap for indirect desc
+ 4. rename virtqueue_get_dma_dev to virtqueue_dma_dev
 
 v1:
-https://lore.kernel.org/all/f86dc089b460c80805e321747b0898fd1efe93d7.1682168199.git.lstoakes@gmail.com/
+ 1. expose dma device. NO introduce the api for dma and sync
+ 2. split some commit for review.
 
- mm/gup.c | 48 +++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 47 insertions(+), 1 deletion(-)
+Xuan Zhuo (11):
+  virtio_ring: split: separate dma codes
+  virtio_ring: packed: separate dma codes
+  virtio_ring: packed-indirect: separate dma codes
+  virtio_ring: split: support premapped
+  virtio_ring: packed: support premapped
+  virtio_ring: packed-indirect: support premapped
+  virtio_ring: update document for virtqueue_add_*
+  virtio_ring: introduce virtqueue_dma_dev()
+  virtio_ring: correct the expression of the description of
+    virtqueue_resize()
+  virtio_ring: separate the logic of reset/enable from virtqueue_resize
+  virtio_ring: introduce virtqueue_reset()
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 1f72a717232b..f77810ee8a9f 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -4,6 +4,7 @@
- #include <linux/err.h>
- #include <linux/spinlock.h>
+ drivers/virtio/virtio_ring.c | 352 +++++++++++++++++++++++++----------
+ include/linux/virtio.h       |   4 +
+ 2 files changed, 259 insertions(+), 97 deletions(-)
 
-+#include <linux/backing-dev.h>
- #include <linux/mm.h>
- #include <linux/memremap.h>
- #include <linux/pagemap.h>
-@@ -959,16 +960,58 @@ static int faultin_page(struct vm_area_struct *vma,
- 	return 0;
- }
-
-+/*
-+ * Writing to file-backed mappings which require folio dirty tracking using GUP
-+ * is a fundamentally broken operation as kernel write access to GUP mappings
-+ * may not adhere to the semantics expected by a file system.
-+ */
-+static inline bool can_write_file_mapping(struct vm_area_struct *vma,
-+					  unsigned long gup_flags)
-+{
-+	const struct vm_operations_struct *vm_ops = vma->vm_ops;
-+	const struct file *file = vma->vm_file;
-+
-+	/* If we aren't pinning then no problematic write can occur. */
-+	if (!(gup_flags & (FOLL_GET | FOLL_PIN)))
-+		return true;
-+
-+	/* We limit this check to the most egregious case - a long term pin. */
-+	if (!(gup_flags & FOLL_LONGTERM))
-+		return true;
-+
-+	/*
-+	 * If the underlying file system needs to be notified of writes, then it
-+	 * requires correct dirty tracking which we cannot guarantee.
-+	 */
-+	if (vm_ops && (vm_ops->page_mkwrite || vm_ops->pfn_mkwrite))
-+		return false;
-+
-+	/*
-+	 * If no pfn_mkwrite() is specified, no dirty tracking is required for a
-+	 * PFN map.
-+	 */
-+	if (vma->vm_flags & VM_PFNMAP)
-+		return true;
-+
-+	/*
-+	 * Even if the file system does not require write notification, if its
-+	 * underlying mapping can writeback, dirty tracking will be required.
-+	 */
-+	return !file || !file->f_mapping ||
-+		!mapping_can_writeback(file->f_mapping);
-+}
-+
- static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
- {
- 	vm_flags_t vm_flags = vma->vm_flags;
- 	int write = (gup_flags & FOLL_WRITE);
- 	int foreign = (gup_flags & FOLL_REMOTE);
-+	bool vma_anon = vma_is_anonymous(vma);
-
- 	if (vm_flags & (VM_IO | VM_PFNMAP))
- 		return -EFAULT;
-
--	if (gup_flags & FOLL_ANON && !vma_is_anonymous(vma))
-+	if ((gup_flags & FOLL_ANON) && !vma_anon)
- 		return -EFAULT;
-
- 	if ((gup_flags & FOLL_LONGTERM) && vma_is_fsdax(vma))
-@@ -978,6 +1021,9 @@ static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
- 		return -EFAULT;
-
- 	if (write) {
-+		if (!vma_anon && !can_write_file_mapping(vma, gup_flags))
-+			return -EFAULT;
-+
- 		if (!(vm_flags & VM_WRITE)) {
- 			if (!(gup_flags & FOLL_FORCE))
- 				return -EFAULT;
 --
-2.40.0
+2.32.0.3.g01195cf9f
+
