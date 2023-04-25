@@ -2,122 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 169FB6ED94A
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 02:20:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 039826ED96F
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 02:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231784AbjDYAU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 20:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
+        id S231276AbjDYA44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 20:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229755AbjDYAUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 20:20:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A00E5585;
-        Mon, 24 Apr 2023 17:20:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A70662005;
-        Tue, 25 Apr 2023 00:20:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8215FC4339B;
-        Tue, 25 Apr 2023 00:20:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682382023;
-        bh=c8BupQSu+EGB9AJDFgvpVtU7tG+b4PHYDhjVTVKKGFs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZennQLRa+8UWMQ1td49BSe+Ui89L0lhZkEe+YxCrFrPtIAQNYpeZjszoHK3PwNcaM
-         plY8md8rE+X0to8W1TuOc3YvYvq1kxNunF4n2t/LDUIPIsXY/viiyvWBrAV/hsYX1e
-         Op1ztjrH0D8BU8C2nLDn5Z/sVrqnWOvxA9uljNifASXkTtGPBP3ag+5JxoiZSYWDF0
-         v6NPLjsHG0zBW9fFYHkRxXfXgqF4oNpCqBI4qm/9BlCfpe/a2l42cWi8r7HZsR9M1V
-         yOsqCdNmsGUOGSyRjiG/wyS2SzLg6lron/2bwc88ED8ZOExPpMxgR79kjnkNbIYQDG
-         WYp+9ggsfBFIw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 65F90E5FFC9;
-        Tue, 25 Apr 2023 00:20:23 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229755AbjDYA4x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 20:56:53 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDD093E6;
+        Mon, 24 Apr 2023 17:56:53 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id d9443c01a7336-1a68d61579bso40353345ad.1;
+        Mon, 24 Apr 2023 17:56:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682384212; x=1684976212;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=78zWz/KC0FCPe2qtqqD+OW8qMX2mw8v6vhXxial7wKs=;
+        b=cdT/4/czT3DaBdNk9JxvkZSbsgAqrSAIKh+gB04r0QpKndnkk2xEbOmpWRsBFnQwRi
+         pbOxnlJdtYqrdi8iQK0ljU6y8g1377eVyEJ7M2NBBK0rLiVngVAWCtp+5y2+DBsJpDnc
+         /LJqhV/sbefKxzpIBSfw/cyqmvqtZ1ZjTEs5BtUdD1A9UfkEvJ85OnyOwxUF63JVIIuM
+         ZXzlWdAW3og+gJ3doNZpCMOKdI2i62c90WC9KIsfWOloFSMqrGHq080/MpMcTSspjJtb
+         Q/pvD6qS4XnoAjAmqvKZBbrEtq0qwGWhMxTtdtNCPr6ypoLtxCjTQNguRb/7vdIG6Kcy
+         A+7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682384212; x=1684976212;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=78zWz/KC0FCPe2qtqqD+OW8qMX2mw8v6vhXxial7wKs=;
+        b=d+tbR7o6luDCe/klIqEVZdSOzPdxMhiGBh3ll+BqePLXy3z8uXSmr185QP2+lpFHW6
+         ytqKRXi78Wc/aNuLf3CP2JXLQOkLLiOZNncsEn/6CyClDtpgU5KiS5L7YMwwkYmo2jHG
+         aV/qb+5GvYGKgPi+EDgYlwC0IHyQAAubU9Q9dxv1MENIQ2cltLhml9kikyjCMLxDS2IA
+         fnWVvTkxpasskptl4xs1Wt/2MmbLlHz2XYjy14Pje09kaP8bNw7IN5kr4aINSqP6m65L
+         gY+zhMjMnoJs2cjgTxtZJd6RuOQBP99wW9Gkko9Ttul81WQKcz00k36nN69fnhBvxxeE
+         CJxw==
+X-Gm-Message-State: AAQBX9dOMOaFI05N0WRLAn/z1ybwHD3vcLYPc1eHwQaChrFJ71nISFvm
+        w0CDB+7UKR0EUuxS8/F6evI=
+X-Google-Smtp-Source: AKy350ZPpWs9v4C7cfbLEXBRqD/ibA3L4JXDcNy8oxuE+wAvUTlTT9SwJdQyxbEVBwYUESVvtgkd4A==
+X-Received: by 2002:a17:903:230d:b0:1a8:5083:21ed with SMTP id d13-20020a170903230d00b001a8508321edmr19536559plh.51.1682384212344;
+        Mon, 24 Apr 2023 17:56:52 -0700 (PDT)
+Received: from dhcp-172-26-102-232.DHCP.thefacebook.com ([2620:10d:c090:400::5:ef5e])
+        by smtp.gmail.com with ESMTPSA id p4-20020a1709026b8400b001a6e5c2ebfesm7116950plk.152.2023.04.24.17.56.50
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Mon, 24 Apr 2023 17:56:51 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, andrii@kernel.org, martin.lau@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: pull-request: bpf-next 2023-04-24
+Date:   Mon, 24 Apr 2023 17:56:48 -0700
+Message-Id: <20230425005648.86714-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.39.2 (Apple Git-143)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 01/19] netfilter: nf_tables: merge nft_rules_old
- structure and end of ruleblob marker
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168238202341.15505.3012924229620032855.git-patchwork-notify@kernel.org>
-Date:   Tue, 25 Apr 2023 00:20:23 +0000
-References: <20230421235021.216950-2-pablo@netfilter.org>
-In-Reply-To: <20230421235021.216950-2-pablo@netfilter.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi David, hi Jakub, hi Paolo, hi Eric,
 
-This series was applied to netdev/net-next.git (main)
-by Pablo Neira Ayuso <pablo@netfilter.org>:
+The following pull-request contains BPF updates for your *net-next* tree.
 
-On Sat, 22 Apr 2023 01:50:03 +0200 you wrote:
-> From: Florian Westphal <fw@strlen.de>
-> 
-> In order to free the rules in a chain via call_rcu, the rule array used
-> to stash a rcu_head and space for a pointer at the end of the rule array.
-> 
-> When the current nft_rule_dp blob format got added in
-> 2c865a8a28a1 ("netfilter: nf_tables: add rule blob layout"), this results
-> in a double-trailer:
-> 
-> [...]
+We've added 5 non-merge commits during the last 3 day(s) which contain
+a total of 7 files changed, 87 insertions(+), 44 deletions(-).
 
-Here is the summary with links:
-  - [net-next,01/19] netfilter: nf_tables: merge nft_rules_old structure and end of ruleblob marker
-    https://git.kernel.org/netdev/net-next/c/e38fbfa972eb
-  - [net-next,02/19] netfilter: nf_tables: don't store address of last rule on jump
-    https://git.kernel.org/netdev/net-next/c/d4d89e6546e0
-  - [net-next,03/19] netfilter: nf_tables: don't store chain address on jump
-    https://git.kernel.org/netdev/net-next/c/63e9bbbcca60
-  - [net-next,04/19] netfilter: nf_tables: don't write table validation state without mutex
-    https://git.kernel.org/netdev/net-next/c/9a32e9850686
-  - [net-next,05/19] netfilter: nf_tables: make validation state per table
-    https://git.kernel.org/netdev/net-next/c/00c320f9b755
-  - [net-next,06/19] netfilter: nf_tables: remove unneeded conditional
-    https://git.kernel.org/netdev/net-next/c/2a1d6abd7ebe
-  - [net-next,07/19] netfilter: nf_tables: do not store pktinfo in traceinfo structure
-    https://git.kernel.org/netdev/net-next/c/698bb828a6c2
-  - [net-next,08/19] netfilter: nf_tables: do not store verdict in traceinfo structure
-    https://git.kernel.org/netdev/net-next/c/0a202145d5f9
-  - [net-next,09/19] netfilter: nf_tables: do not store rule in traceinfo structure
-    https://git.kernel.org/netdev/net-next/c/46df417544f4
-  - [net-next,10/19] ipvs: Update width of source for ip_vs_sync_conn_options
-    https://git.kernel.org/netdev/net-next/c/e3478c68f670
-  - [net-next,11/19] ipvs: Consistently use array_size() in ip_vs_conn_init()
-    https://git.kernel.org/netdev/net-next/c/280654932e34
-  - [net-next,12/19] ipvs: Remove {Enter,Leave}Function
-    https://git.kernel.org/netdev/net-next/c/210ffe4a74ca
-  - [net-next,13/19] ipvs: Correct spelling in comments
-    https://git.kernel.org/netdev/net-next/c/c7d15aaa105a
-  - [net-next,14/19] netfilter: nf_tables: extended netlink error reporting for netdevice
-    https://git.kernel.org/netdev/net-next/c/c3c060adc024
-  - [net-next,15/19] netfilter: nf_tables: do not send complete notification of deletions
-    https://git.kernel.org/netdev/net-next/c/28339b21a365
-  - [net-next,16/19] netfilter: nf_tables: rename function to destroy hook list
-    https://git.kernel.org/netdev/net-next/c/cdc325466323
-  - [net-next,17/19] netfilter: nf_tables: support for adding new devices to an existing netdev chain
-    https://git.kernel.org/netdev/net-next/c/b9703ed44ffb
-  - [net-next,18/19] netfilter: nf_tables: support for deleting devices in an existing netdev chain
-    https://git.kernel.org/netdev/net-next/c/7d937b107108
-  - [net-next,19/19] netfilter: nf_tables: allow to create netdev chain without device
-    https://git.kernel.org/netdev/net-next/c/207296f1a03b
+The main changes are:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+1) Workaround for bpf iter selftest due to lack of subprog support in precision tracking, from Andrii.
 
+2) Disable bpf_refcount_acquire kfunc until races are fixed, from Dave.
 
+3) One more test_verifier test converted from asm macro to asm in C, from Eduard.
+
+4) Fix build with NETFILTER=y INET=n config, from Florian.
+
+5) Add __rcu_read_{lock,unlock} into deny list, from Yafang.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git tags/for-netdev
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+kernel test robot, Kumar Kartikeya Dwivedi
+
+----------------------------------------------------------------
+
+The following changes since commit fbc1449d385d65be49a8d164dfd3772f2cb049ae:
+
+  Merge tag 'mlx5-updates-2023-04-20' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux (2023-04-21 20:47:05 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git tags/for-netdev
+
+for you to fetch changes up to be7dbd275dc6b911a5b9a22c4f9cb71b2c7fd847:
+
+  selftests/bpf: avoid mark_all_scalars_precise() trigger in one of iter tests (2023-04-24 17:46:44 -0700)
+
+----------------------------------------------------------------
+for-netdev
+
+----------------------------------------------------------------
+Andrii Nakryiko (1):
+      selftests/bpf: avoid mark_all_scalars_precise() trigger in one of iter tests
+
+Dave Marchevsky (1):
+      bpf: Disable bpf_refcount_acquire kfunc calls until race conditions are fixed
+
+Eduard Zingerman (1):
+      selftests/bpf: verifier/prevent_map_lookup converted to inline assembly
+
+Florian Westphal (1):
+      bpf: fix link failure with NETFILTER=y INET=n
+
+Yafang Shao (1):
+      bpf: Add __rcu_read_{lock,unlock} into btf id deny list
+
+ include/linux/bpf_types.h                          |  2 +-
+ kernel/bpf/verifier.c                              |  9 +++-
+ .../selftests/bpf/prog_tests/refcounted_kptr.c     |  2 -
+ tools/testing/selftests/bpf/prog_tests/verifier.c  |  2 +
+ tools/testing/selftests/bpf/progs/iters.c          | 26 +++++----
+ .../bpf/progs/verifier_prevent_map_lookup.c        | 61 ++++++++++++++++++++++
+ .../selftests/bpf/verifier/prevent_map_lookup.c    | 29 ----------
+ 7 files changed, 87 insertions(+), 44 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/verifier_prevent_map_lookup.c
+ delete mode 100644 tools/testing/selftests/bpf/verifier/prevent_map_lookup.c
