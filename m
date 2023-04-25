@@ -2,104 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A3926EE47A
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 17:08:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A36056EE46C
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 17:06:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234391AbjDYPI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 11:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40266 "EHLO
+        id S233952AbjDYPG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 11:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234299AbjDYPIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 11:08:25 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06909EEF;
-        Tue, 25 Apr 2023 08:08:22 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1prKGx-0004W6-1Y;
-        Tue, 25 Apr 2023 17:08:03 +0200
-Date:   Tue, 25 Apr 2023 16:06:13 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     arinc9.unal@gmail.com
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net-next 03/24] net: dsa: mt7530: use p5_interface_select
- as data type for p5_intf_sel
-Message-ID: <ZEfsZY0crdV2qryM@makrotopia.org>
-References: <20230425082933.84654-1-arinc.unal@arinc9.com>
- <20230425082933.84654-4-arinc.unal@arinc9.com>
+        with ESMTP id S233875AbjDYPGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 11:06:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F3A4EFD;
+        Tue, 25 Apr 2023 08:06:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 766A8629B0;
+        Tue, 25 Apr 2023 15:06:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64F0FC433A0;
+        Tue, 25 Apr 2023 15:06:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682435182;
+        bh=ATmjq8pD+3SUwYW+NN9xgGSe8qmNsZwoS5t6pbkMpN8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iVhJLcD0QZWSM0conN4OHm+hUY+XyWSrhLF/K71o/aCmxz1nzmZVOdj/OwKaYEVfN
+         COfxhhXpnZhkjDihEivVudPUKO9HuKhY1UTFZuiurCD52issEfnlXulmcUYmPs4P34
+         mVtj8/FmTaaXdAbN1gwAMfDQBnLV9gvm/R4pIMMRLGow+ODVhxYebKBxDahJDs/U0s
+         8BkXQjcdy4KMasJ/dIVtuExCX4b4QBxa1MRzfBsAqfWfvdsW2FjE7w+Y1qSKrWMbOl
+         RI9pKJ7+gHPkfew9mY4AlYgsW0nl4hkhVKF75DJHaG/XKGaJ1S+qyvn0FtfCIoYRqK
+         zIG+aFZZkiePw==
+Date:   Tue, 25 Apr 2023 17:06:19 +0200
+From:   Andi Shyti <andi.shyti@kernel.org>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, linux@armlinux.org.uk,
+        jarkko.nikula@linux.intel.com, olteanv@gmail.com,
+        andriy.shevchenko@linux.intel.com, hkallweit1@gmail.com,
+        linux-i2c@vger.kernel.org, linux-gpio@vger.kernel.org,
+        mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next v4 3/8] net: txgbe: Register I2C platform device
+Message-ID: <20230425150619.cj7ed2efnbvjk5mm@intel.intel>
+References: <20230422045621.360918-1-jiawenwu@trustnetic.com>
+ <20230422045621.360918-4-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230425082933.84654-4-arinc.unal@arinc9.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230422045621.360918-4-jiawenwu@trustnetic.com>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 11:29:12AM +0300, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> 
-> Use the p5_interface_select enumeration as the data type for the
-> p5_intf_sel field. This ensures p5_intf_sel can only take the values
-> defined in the p5_interface_select enumeration.
-> 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Hi Jiawen,
 
-Acked-by: Daniel Golle <daniel@makrotopia.org>
+[...]
 
-> ---
->  drivers/net/dsa/mt7530.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-> index 845f5dd16d83..415d8ea07472 100644
-> --- a/drivers/net/dsa/mt7530.h
-> +++ b/drivers/net/dsa/mt7530.h
-> @@ -675,7 +675,7 @@ struct mt7530_port {
->  
->  /* Port 5 interface select definitions */
->  enum p5_interface_select {
-> -	P5_DISABLED = 0,
-> +	P5_DISABLED,
->  	P5_INTF_SEL_PHY_P0,
->  	P5_INTF_SEL_PHY_P4,
->  	P5_INTF_SEL_GMAC5,
-> @@ -768,7 +768,7 @@ struct mt7530_priv {
->  	bool			mcm;
->  	phy_interface_t		p6_interface;
->  	phy_interface_t		p5_interface;
-> -	unsigned int		p5_intf_sel;
-> +	enum p5_interface_select p5_intf_sel;
->  	u8			mirror_rx;
->  	u8			mirror_tx;
->  	struct mt7530_port	ports[MT7530_NUM_PORTS];
-> -- 
-> 2.37.2
-> 
+> +	ret = txgbe_i2c_register(txgbe);
+> +	if (ret) {
+> +		wx_err(txgbe->wx, "failed to init i2c interface: %d\n", ret);
+> +		goto err_unregister_swnode;
+> +	}
+> +
+>  	return 0;
+> +
+> +err_unregister_swnode:
+> +	software_node_unregister_node_group(txgbe->nodes.group);
+> +
+> +	return ret;
+
+no need for the goto here... in my opinion it's easier if you put
+software_node_unregister_node_group() under the if and return
+ret.
+
+Andi
