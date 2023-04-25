@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E45A6EE835
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 21:26:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7A76EE833
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 21:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236031AbjDYT0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 15:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47340 "EHLO
+        id S236019AbjDYT0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 15:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236006AbjDYT0b (ORCPT
+        with ESMTP id S236009AbjDYT0b (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 15:26:31 -0400
 Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B60516181;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7D217DDF;
         Tue, 25 Apr 2023 12:26:21 -0700 (PDT)
 Received: from fpc.intra.ispras.ru (unknown [10.10.165.4])
-        by mail.ispras.ru (Postfix) with ESMTPSA id AA7D440737A1;
-        Tue, 25 Apr 2023 19:26:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru AA7D440737A1
+        by mail.ispras.ru (Postfix) with ESMTPSA id C1ADC40737C6;
+        Tue, 25 Apr 2023 19:26:19 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru C1ADC40737C6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-        s=default; t=1682450776;
-        bh=vtxoNftItfp9sdIuiR6TC+lugMM08soTNMG6xlHTUHY=;
+        s=default; t=1682450779;
+        bh=elNBmHMXHbOyemTHL7bhh7PqCcdux0Jfn0kEsJT4fzU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hHs4+//l7vV8UdP9DwaVLuG8XDv+uZPdvuzCG+8MFti52uZty2gE84aRweqUZIFAQ
-         b9RaIWs3ZkeIvOxVPB2gQ0Jjg2bCUCR5H5xy/LSRYOjFs1v4DeYERpO7JyRMgwnn9D
-         6nKCZLV/BySqjQd6RgrrvgrIklMSytHd5zxKyGLc=
+        b=BYEZNmtjDpJENcCCfwHWpZvY5ouS159P94EXKKrZQ4bfMaAx0hiSpDrUVGl7XWDKF
+         t19EbC8tRVUvo5YQ3wYnyG7ZcXxbH786i4LtH8byn3p8DNCQgEpNBkXXjuF50cY1vd
+         N7JmaYElz8QmtJroukWSYSK+2ffg8Rf+2ZOHOb1U=
 From:   Fedor Pchelkin <pchelkin@ispras.ru>
 To:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
         Kalle Vallo <kvalo@kernel.org>
@@ -43,12 +43,12 @@ Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
         lvc-project@linuxtesting.org,
         syzbot+f2cb6e0ffdb961921e4d@syzkaller.appspotmail.com,
         Hillf Danton <hdanton@sina.com>
-Subject: [PATCH v3 1/2] wifi: ath9k: fix races between ath9k_wmi_cmd and ath9k_wmi_ctrl_rx
-Date:   Tue, 25 Apr 2023 22:26:06 +0300
-Message-Id: <20230425192607.18015-1-pchelkin@ispras.ru>
+Subject: [PATCH v3 2/2] wifi: ath9k: protect WMI command response buffer replacement with a lock
+Date:   Tue, 25 Apr 2023 22:26:07 +0300
+Message-Id: <20230425192607.18015-2-pchelkin@ispras.ru>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230425033832.2041-1-hdanton@sina.com>
-References: 
+In-Reply-To: <20230425192607.18015-1-pchelkin@ispras.ru>
+References: <20230425192607.18015-1-pchelkin@ispras.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -61,71 +61,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the synchronization between ath9k_wmi_cmd() and
-ath9k_wmi_ctrl_rx() is exposed to a race condition which, although being
-rather unlikely, can lead to invalid behaviour of ath9k_wmi_cmd().
+If ath9k_wmi_cmd() has exited with a timeout, it is possible that during
+next ath9k_wmi_cmd() call the wmi_rsp callback for previous wmi command
+writes to new wmi->cmd_rsp_buf and makes a completion. This results in an
+invalid ath9k_wmi_cmd() return value.
 
-Consider the following scenario:
+Move the replacement of WMI command response buffer and length under
+wmi_lock. Note that last_seq_id value is updated there, too.
 
-CPU0					CPU1
-
-ath9k_wmi_cmd(...)
-  mutex_lock(&wmi->op_mutex)
-  ath9k_wmi_cmd_issue(...)
-  wait_for_completion_timeout(...)
-  ---
-  timeout
-  ---
-					/* the callback is being processed
-					 * before last_seq_id became zero
-					 */
-					ath9k_wmi_ctrl_rx(...)
-					  spin_lock_irqsave(...)
-					  /* wmi->last_seq_id check here
-					   * doesn't detect timeout yet
-					   */
-					  spin_unlock_irqrestore(...)
-  /* last_seq_id is zeroed to
-   * indicate there was a timeout
-   */
-  wmi->last_seq_id = 0
-  mutex_unlock(&wmi->op_mutex)
-  return -ETIMEDOUT
-
-ath9k_wmi_cmd(...)
-  mutex_lock(&wmi->op_mutex)
-  /* the buffer is replaced with
-   * another one
-   */
-  wmi->cmd_rsp_buf = rsp_buf
-  wmi->cmd_rsp_len = rsp_len
-  ath9k_wmi_cmd_issue(...)
-    spin_lock_irqsave(...)
-    spin_unlock_irqrestore(...)
-  wait_for_completion_timeout(...)
-					/* the continuation of the
-					 * callback left after the first
-					 * ath9k_wmi_cmd call
-					 */
-					  ath9k_wmi_rsp_callback(...)
-					    /* copying data designated
-					     * to already timeouted
-					     * WMI command into an
-					     * inappropriate wmi_cmd_buf
-					     */
-					    memcpy(...)
-					    complete(&wmi->cmd_wait)
-  /* awakened by the bogus callback
-   * => invalid return result
-   */
-  mutex_unlock(&wmi->op_mutex)
-  return 0
-
-To fix this, update last_seq_id on timeout path inside ath9k_wmi_cmd()
-under the wmi_lock. Move ath9k_wmi_rsp_callback() under wmi_lock inside
-ath9k_wmi_ctrl_rx() so that the wmi->cmd_wait can be completed only for
-initially designated wmi_cmd call, otherwise the path would be rejected
-with last_seq_id check.
+Thus, the buffer cannot be written to by a belated wmi_rsp callback
+because that path is properly rejected by the last_seq_id check.
 
 Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 
@@ -141,45 +86,48 @@ second one is for moving rsp buffer and length recording under wmi lock.
 Note that it's been only tested with Syzkaller and on basic driver
 scenarios with real hardware.
 
- drivers/net/wireless/ath/ath9k/wmi.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath9k/wmi.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/wireless/ath/ath9k/wmi.c b/drivers/net/wireless/ath/ath9k/wmi.c
-index d652c647d56b..04f363cb90fe 100644
+index 04f363cb90fe..1476b42b52a9 100644
 --- a/drivers/net/wireless/ath/ath9k/wmi.c
 +++ b/drivers/net/wireless/ath/ath9k/wmi.c
-@@ -242,10 +242,10 @@ static void ath9k_wmi_ctrl_rx(void *priv, struct sk_buff *skb,
- 		spin_unlock_irqrestore(&wmi->wmi_lock, flags);
- 		goto free_skb;
+@@ -283,7 +283,8 @@ int ath9k_wmi_connect(struct htc_target *htc, struct wmi *wmi,
+ 
+ static int ath9k_wmi_cmd_issue(struct wmi *wmi,
+ 			       struct sk_buff *skb,
+-			       enum wmi_cmd_id cmd, u16 len)
++			       enum wmi_cmd_id cmd, u16 len,
++			       u8 *rsp_buf, u32 rsp_len)
+ {
+ 	struct wmi_cmd_hdr *hdr;
+ 	unsigned long flags;
+@@ -293,6 +294,11 @@ static int ath9k_wmi_cmd_issue(struct wmi *wmi,
+ 	hdr->seq_no = cpu_to_be16(++wmi->tx_seq_id);
+ 
+ 	spin_lock_irqsave(&wmi->wmi_lock, flags);
++
++	/* record the rsp buffer and length */
++	wmi->cmd_rsp_buf = rsp_buf;
++	wmi->cmd_rsp_len = rsp_len;
++
+ 	wmi->last_seq_id = wmi->tx_seq_id;
+ 	spin_unlock_irqrestore(&wmi->wmi_lock, flags);
+ 
+@@ -333,11 +339,7 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
+ 		goto out;
  	}
--	spin_unlock_irqrestore(&wmi->wmi_lock, flags);
  
- 	/* WMI command response */
- 	ath9k_wmi_rsp_callback(wmi, skb);
-+	spin_unlock_irqrestore(&wmi->wmi_lock, flags);
+-	/* record the rsp buffer and length */
+-	wmi->cmd_rsp_buf = rsp_buf;
+-	wmi->cmd_rsp_len = rsp_len;
+-
+-	ret = ath9k_wmi_cmd_issue(wmi, skb, cmd_id, cmd_len);
++	ret = ath9k_wmi_cmd_issue(wmi, skb, cmd_id, cmd_len, rsp_buf, rsp_len);
+ 	if (ret)
+ 		goto out;
  
- free_skb:
- 	kfree_skb(skb);
-@@ -308,8 +308,8 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
- 	struct ath_common *common = ath9k_hw_common(ah);
- 	u16 headroom = sizeof(struct htc_frame_hdr) +
- 		       sizeof(struct wmi_cmd_hdr);
-+	unsigned long time_left, flags;
- 	struct sk_buff *skb;
--	unsigned long time_left;
- 	int ret = 0;
- 
- 	if (ah->ah_flags & AH_UNPLUGGED)
-@@ -345,7 +345,9 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
- 	if (!time_left) {
- 		ath_dbg(common, WMI, "Timeout waiting for WMI command: %s\n",
- 			wmi_cmd_to_name(cmd_id));
-+		spin_lock_irqsave(&wmi->wmi_lock, flags);
- 		wmi->last_seq_id = 0;
-+		spin_unlock_irqrestore(&wmi->wmi_lock, flags);
- 		mutex_unlock(&wmi->op_mutex);
- 		return -ETIMEDOUT;
- 	}
 -- 
 2.34.1
 
