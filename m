@@ -2,123 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F6D56EDE35
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 10:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F8286EDDFE
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 10:29:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233739AbjDYIdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 04:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50726 "EHLO
+        id S233529AbjDYI3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 04:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233741AbjDYIb5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 04:31:57 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7498F7ECE;
-        Tue, 25 Apr 2023 01:30:53 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id a640c23a62f3a-94f4b911570so816954166b.0;
-        Tue, 25 Apr 2023 01:30:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682411451; x=1685003451;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zhSDmARWK3jKhREdryVEpo1kzcrG/J9lPlnEWmEYZtA=;
-        b=b0Cn9iBrAx9Y/MQc9dApT/Mb+Khuke3PLQx+DLda2w7yO7TrHfxjKosXEJIZq3udq2
-         Y3Xu4lTFlFaf2s9fJUESiELrqMoSC1H6nLhsuk+KSN/SUSh36qMk90ABwu5MBOGzgjRW
-         GA8TINC8OSr7Frby9GwROuBWoeQC9KQjDldpU1ZGNHn161Y4KVh9EuRwZ0pOX7rD2fdS
-         L7bxsHZNkr2nL4Xa1JB20lkb3qeEVrc2IqcUw9vglud9IHnWwH0jby6lLWvhHyJ+2hdZ
-         sIKcw+81v8PwSoHbKQkdkCXjx2okk2zNngQP0gcBbW+NvNMHP3GbR1gAPHgoAl1IxBQw
-         glQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682411451; x=1685003451;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zhSDmARWK3jKhREdryVEpo1kzcrG/J9lPlnEWmEYZtA=;
-        b=bJckyGrE/EHiF4t1AqOHGHQmXtJPTk7mZNenxkcmcp+47BIzmd+ZhEgkZMVKUR+VDw
-         EZWDbuLqSAGU08TwB8DVSFl8ZYEoyPpC3S7WQAqk4GGCbFUEtBIB7Tzf5k3HgXFREVrG
-         SuZy0ehHB4tbtE8khPXIjiX/vDHNtor6F9zkaqdyRw0OFsxIo3x4cyvA5BHWM9Te8kpE
-         pWrNqC2dT2B8NYCXvUoF1F55SnsZUJ21fB/GEUlySxFN0NIq2jt7AcLNJVz/9LXkVH7S
-         AnWeI3O5hfYklYRHA0yGek+7e01ieOrhNfORQovKT8YlIKGPe3ShzEHkP7E3h1HqpWcB
-         WBSA==
-X-Gm-Message-State: AAQBX9e49qdl+u+F02xNBfe7C7BwpweYneBuQrU1bxDq1zTl/sYNRY+N
-        1esnPw4ySfrrKJEK33KOhXI=
-X-Google-Smtp-Source: AKy350avauxmrnYt7UbqavTFPzSEGaHeYx46xHxOTFeoHvbIj67bh5ZnlSK6IQpI8XT4eqilpC/oCA==
-X-Received: by 2002:a17:906:8687:b0:94e:e1c7:31b4 with SMTP id g7-20020a170906868700b0094ee1c731b4mr12182480ejx.48.1682411451338;
-        Tue, 25 Apr 2023 01:30:51 -0700 (PDT)
-Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id mc2-20020a170906eb4200b0094ca077c985sm6439028ejb.213.2023.04.25.01.30.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 01:30:50 -0700 (PDT)
-From:   arinc9.unal@gmail.com
-X-Google-Original-From: arinc.unal@arinc9.com
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233247AbjDYI3u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 04:29:50 -0400
+Received: from domac.alu.hr (domac.alu.unizg.hr [IPv6:2001:b68:2:2800::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79DF49C3;
+        Tue, 25 Apr 2023 01:29:48 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id 789D960161;
+        Tue, 25 Apr 2023 10:29:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1682411385; bh=KyqatyXSmiybBdZf8kL0kB6Fpz4lArIKu5YaNvuHwlQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ZruPUvK1iStW/J9EvlGBEHLp2qkXOYERHLn5Q5RZHvY0eLMVyR1RvEmftLCFu/ObQ
+         Ri5JvyaHWhY4svBF2PKc+WQusIJ3RiAU3rQYh6V1lpsB21AE6YpvrrtIZm//ED9XT7
+         F7n9h4DF/5DUqSLfsobB8vryUHOY62/M7+wEe3jht7/ED7pjOfWcPSD/jIuOGqTfEL
+         sedkUKq/Qbn6GmVwJrfiXoVnrr5GG6LEaWsshHHPeR9LFDZplEoGS3PzhdqOfXjMn6
+         WiSs6AnkGCDVbZ7jlkUmRH9cvTjyrGrMSllBNctV2gzNsJvTtgHtSiLlEIyFz3tJ//
+         OhLaYDRY7e2GQ==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Z3y7YojNxraQ; Tue, 25 Apr 2023 10:29:43 +0200 (CEST)
+Received: from [10.0.1.134] (grf-nat.grf.hr [161.53.83.23])
+        by domac.alu.hr (Postfix) with ESMTPSA id 65B466015F;
+        Tue, 25 Apr 2023 10:29:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1682411383; bh=KyqatyXSmiybBdZf8kL0kB6Fpz4lArIKu5YaNvuHwlQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=DxIJt7QNEXgwt5QgcyC1tuJnXD2hvUZmpDdZDFc/ZzIj/WGRRT6FTe/35h4k5F9hV
+         xr8GbDc62pmr2wHiNaXwiTLmo6oV17XzyTNXA0G+PBhWwNR4tbHxuZOS28g+IzJmkx
+         FvPxW8TDtHwYr+aiXRxh5AkHqNdzvXvxzgRK54Fsl21TzaqcbkQqbiVM3JjZ9+ryfX
+         PnUh6fKrjHat+k77Y2TosQgtYaRiAXDTbDuwdwehqttJN9DErfF+FEz+IXS0WbPyBN
+         VU5jm5+K+z0eV5ACZDEB3Ecaj6X+KWNZO1SDGjOt1nYUdXppb5KM0bbMAs/ZiydoHo
+         F7YW8Bn2lwNlQ==
+Message-ID: <cdc80531-f25f-6f9d-b15f-25e16130b53a@alu.unizg.hr>
+Date:   Tue, 25 Apr 2023 10:29:35 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH RFC v1 1/1] net: mac80211: fortify the spinlock against
+ deadlock in interrupt
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Bartel Eerdekens <bartel.eerdekens@constell8.be>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH net-next 24/24] net: dsa: mt7530: run mt7530_pll_setup() only with 40 MHz XTAL
-Date:   Tue, 25 Apr 2023 11:29:33 +0300
-Message-Id: <20230425082933.84654-25-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20230425082933.84654-1-arinc.unal@arinc9.com>
-References: <20230425082933.84654-1-arinc.unal@arinc9.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Alexander Wetzel <alexander@wetzel-home.de>
+References: <20230423082403.49143-1-mirsad.todorovac@alu.unizg.hr>
+ <017c5178594e2df6ca02f2d7ffa9109755315c56.camel@sipsolutions.net>
+Content-Language: en-US, hr
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <017c5178594e2df6ca02f2d7ffa9109755315c56.camel@sipsolutions.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arınç ÜNAL <arinc.unal@arinc9.com>
+On 24.4.2023. 19:27, Johannes Berg wrote:
+> On Sun, 2023-04-23 at 10:24 +0200, Mirsad Goran Todorovac wrote:
+>> In the function ieee80211_tx_dequeue() there is a locking sequence:
+>>
+>> begin:
+>> 	spin_lock(&local->queue_stop_reason_lock);
+>> 	q_stopped = local->queue_stop_reasons[q];
+>> 	spin_unlock(&local->queue_stop_reason_lock);
+>>
+>> However small the chance (increased by ftracetest), an asynchronous
+>> interrupt can occur in between of spin_lock() and spin_unlock(),
+>> and the interrupt routine will attempt to lock the same
+>> &local->queue_stop_reason_lock again.
+>>
+>> This is the only remaining spin_lock() on local->queue_stop_reason_lock
+>> that did not disable interrupts and could have possibly caused the deadlock
+>> on the same CPU (core).
+>>
+>> This will cause a costly reset of the CPU and wifi device or an
+>> altogether hang in the single CPU and single core scenario.
+>>
+>> This is the probable reproduce of the deadlock:
+>>
+>> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:  Possible unsafe locking scenario:
+>> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:        CPU0
+>> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:        ----
+>> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:   lock(&local->queue_stop_reason_lock);
+>> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:   <Interrupt>
+>> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:     lock(&local->queue_stop_reason_lock);
+>> Apr 10 00:58:33 marvin-IdeaPad-3-15ITL6 kernel:
+>>                                                   *** DEADLOCK ***
+>>
+>> Fixes: 4444bc2116ae
+> 
+> That fixes tag is wrong, should be
+> 
+> Fixes: 4444bc2116ae ("wifi: mac80211: Proper mark iTXQs for resumption")
+> 
+> Otherwise seems fine to me, submit it properly?
+> 
+> johannes
 
-The code on mt7530_pll_setup() needs to be run only on the MT7530 switch
-with a 40 MHz oscillator. Introduce a check to do this.
+Will do, Sir. Do I have an Acked-by: ?
 
-Link: https://github.com/BPI-SINOVOIP/BPI-R2-bsp/blob/4a5dd143f2172ec97a2872fa29c7c4cd520f45b5/linux-mt/drivers/net/ethernet/mediatek/gsw_mt7623.c#L1039
-Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
- drivers/net/dsa/mt7530.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thank you.
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 62e55df273cc..e079b45fad07 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2206,7 +2206,8 @@ mt7530_setup(struct dsa_switch *ds)
- 		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
- 		     SYS_CTRL_REG_RST);
- 
--	mt7530_pll_setup(priv);
-+	if (xtal == HWTRAP_XTAL_40MHZ)
-+		mt7530_pll_setup(priv);
- 
- 	/* Lower P5 RGMII Tx driving, 8mA */
- 	mt7530_write(priv, MT7530_IO_DRV_CR,
+Mirsad
+
 -- 
-2.37.2
+Mirsad Todorovac
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb
+Republic of Croatia, the European Union
+
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
 
