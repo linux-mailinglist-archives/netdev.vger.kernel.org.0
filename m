@@ -2,47 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4EC56EDA18
-	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 03:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DE876EDA1D
+	for <lists+netdev@lfdr.de>; Tue, 25 Apr 2023 04:00:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233220AbjDYB5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Apr 2023 21:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
+        id S233224AbjDYCAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Apr 2023 22:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231350AbjDYB5K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 21:57:10 -0400
+        with ESMTP id S232950AbjDYCAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Apr 2023 22:00:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628C119BF
-        for <netdev@vger.kernel.org>; Mon, 24 Apr 2023 18:57:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321535FFD;
+        Mon, 24 Apr 2023 19:00:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F06BF62AE6
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 01:57:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB6BC433EF;
-        Tue, 25 Apr 2023 01:57:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C095662AE6;
+        Tue, 25 Apr 2023 02:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 219ADC433EF;
+        Tue, 25 Apr 2023 02:00:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682387828;
-        bh=Qvf2WKyuzrdMLiVE0vN8W8R9KBvVkblnjRQ5igMNM/g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MW60PkB29+zzCerNSvPwc+MiPnuhMGm6H7JGmGt1xz9ADHY3Lj5ozXbaqOi54bzoB
-         YM+izLIVmzAp2YfZWnb3ji7NIkTHt0ftS9eFHmA+gFtUHBznroeKtZYr20aTOXKAtW
-         jY/pMjgw5Xf0VJmiWDXHQAF09FFmhDSUnuK9uzo1B/tDGOxoFU57UL6UuEymb+eftB
-         rWQVHk6zOyN7GIUrOR8fQcmGnUwzU2y3jMf7sybFjDU7aKvOeq8gw4X7FU6t9H8HVO
-         XY7+W9ABcUwDQrfRyt5h4hNHEwtyOzJD6YdSUqkqpSXsjsn7gbVGufxr9a0pCVRvbt
-         kRROMo11zd2kA==
-Date:   Mon, 24 Apr 2023 18:57:07 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Mengyuan Lou <mengyuanlou@net-swift.com>
-Cc:     netdev@vger.kernel.org, jiawenwu@trustnetic.com,
-        linyunsheng@huawei.com
-Subject: Re: [PATCH net-next 0/7] Wangxun netdev features support
-Message-ID: <20230424185707.73b1dbc1@kernel.org>
-In-Reply-To: <20230425015011.19980-1-mengyuanlou@net-swift.com>
-References: <20230425015011.19980-1-mengyuanlou@net-swift.com>
+        s=k20201202; t=1682388019;
+        bh=u9KsuYpPH1hP1pH4Xf5L9xtgjgGu8HtuAHRBT4oovKc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Xj4FYJ7znUz25og8bvzl1amvxfV8cw5doizDEdk7c93yTQSOQhUdgF2Vl2nKWNQ8z
+         eV7CYa/YHvEAtKLTUblafWU9JeP+AWGv14D36AGOoWsLS6ijL3uGX8UKvXueZVq1st
+         iF3dR1UZdoIbwNHG72aHwGJdi7gO5fV06DzxLwU5I8Krjt5TBlZYc1Bxl6tuQni2cQ
+         fBiurQdJb1ck0Q6rHtecNl/pJ2rGKCXvpFFaSgJQxGEGW5s4Sdg1KUmeDKaIQSFVYH
+         EtQPItNfCnGzTfa0Jo0r3xOVe3zUY57Anpz7Q/t5kxhCCRqcog6fXYlvM2Fg0hKrJR
+         fKd+IefKnoiSw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EE0D0C395D8;
+        Tue, 25 Apr 2023 02:00:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: bpf-next 2023-04-24
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168238801897.30299.17302345904252825144.git-patchwork-notify@kernel.org>
+Date:   Tue, 25 Apr 2023 02:00:18 +0000
+References: <20230425005648.86714-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20230425005648.86714-1-alexei.starovoitov@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, andrii@kernel.org,
+        martin.lau@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
 X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -53,19 +58,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Apr 2023 09:50:04 +0800 Mengyuan Lou wrote:
-> Implement tx_csum and rx_csum to support hardware checksum offload.
-> Implement ndo_vlan_rx_add_vid and ndo_vlan_rx_kill_vid.
-> Enable macros in netdev features which wangxun can support.
+Hello:
 
-# Form letter - net-next is closed
+This pull request was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-The merge window for v6.3 has begun and therefore net-next is closed
-for new drivers, features, code refactoring and optimizations.
-We are currently accepting bug fixes only.
+On Mon, 24 Apr 2023 17:56:48 -0700 you wrote:
+> Hi David, hi Jakub, hi Paolo, hi Eric,
+> 
+> The following pull-request contains BPF updates for your *net-next* tree.
+> 
+> We've added 5 non-merge commits during the last 3 day(s) which contain
+> a total of 7 files changed, 87 insertions(+), 44 deletions(-).
+> 
+> [...]
 
-Please repost when net-next reopens after May 8th.
+Here is the summary with links:
+  - pull-request: bpf-next 2023-04-24
+    https://git.kernel.org/netdev/net-next/c/ee3392ed16b0
 
-RFC patches sent for review only are obviously welcome at any time.
+You are awesome, thank you!
 -- 
-pw-bot: defer
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
