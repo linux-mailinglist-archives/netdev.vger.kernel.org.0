@@ -2,73 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B023B6EF661
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 16:27:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41E5F6EF66C
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 16:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241060AbjDZO1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 10:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
+        id S241176AbjDZO3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 10:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240591AbjDZO13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 10:27:29 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7655BBA
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 07:27:27 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id 5614622812f47-38dfdc1daa9so4065723b6e.1
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 07:27:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682519247; x=1685111247;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kHlWMoEAejv0+98kkJcOIY9PQ9ydV8qtjay1VaAdCnA=;
-        b=qphmaihhRmU1xiZHMu2ocDoKMPWu8cj5hGA852SJVCZMAxM8mMY43dyCJenUm+Nu0Y
-         I3TzSwbEgs1cvhyY9jRPGSUulrc+9CQKXiFXGPE4RDRCXJIAgUBX2CwtrYSIw790Sv2s
-         mYKJYJotBDavveV5PnzorelL5548Es3aHz3gdwuXM8Af7PiuvPLfG1M/W/f+B1ORxaC6
-         Muj6o6Vx7XJfvNZvDn51cELfQRQsnXM5Ed9dbyYU33htcWyk4jmpD5IXkELs87SU5AxJ
-         +yAGlu2O1KhFqFXw+MbcOV98WwewA8ob6UvlKioUCdSRawlT7VOVtj3nPiyj2/bhcJzA
-         IvkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682519247; x=1685111247;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kHlWMoEAejv0+98kkJcOIY9PQ9ydV8qtjay1VaAdCnA=;
-        b=I81RV2YmQkGKsc1zwO06QHyvOOMBSxrVNKGmv+G4quW7OYs2okeFYaSYaSrBXPtHu/
-         bmM+1dCSjoa9rgcxw0sezDG64v9of3ys7Pi3NZ3F+SRRBFB1MRR9/lq5qZTtvXwFlWUi
-         SkHhIjkwzHlSgMWCJOGsOIcrdE5/R/UWIeXFW1Chgzlvk7kWtW/1JKspoeQoJmt25s6C
-         rBRZ8zJ+cASLiIs8SpXj5Az8+/l/22IDAk5RDA/MARN/ZxYuEjG/4b/NC1BOD7KdQ9pt
-         uXXr0+fQNud8k6XkcRHSFnx4mJKwKykRNZ9VBfpjbHu02q/g3PAYU0Z0fuPJP/CfIwIJ
-         +Mdw==
-X-Gm-Message-State: AAQBX9fmJLo8Yg9yNSIE6YpfdV2qA/7IH2x3OXrRA+EI58s1HFoQf1bf
-        rWaYd+Dyi8fVzi8XDdsgEwLzCQ==
-X-Google-Smtp-Source: AKy350aXgCnT/HcrOVfa6t5sKOiioA2PHm8Wf1uYJd5LEVXFbsj8kGF+24hy82mzfRuloYJCKOcj8Q==
-X-Received: by 2002:a05:6808:21a2:b0:38e:6a24:8883 with SMTP id be34-20020a05680821a200b0038e6a248883mr11776427oib.53.1682519247190;
-        Wed, 26 Apr 2023 07:27:27 -0700 (PDT)
-Received: from ?IPV6:2804:14d:5c5e:44fb:fb2a:b3eb:47f1:343a? ([2804:14d:5c5e:44fb:fb2a:b3eb:47f1:343a])
-        by smtp.gmail.com with ESMTPSA id g7-20020a9d6c47000000b006a64043ed69sm5287541otq.56.2023.04.26.07.27.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Apr 2023 07:27:26 -0700 (PDT)
-Message-ID: <df5ad08f-e91b-4501-00d9-c6cccf149f93@mojatatu.com>
-Date:   Wed, 26 Apr 2023 11:27:22 -0300
+        with ESMTP id S241092AbjDZO3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 10:29:30 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984774EE8;
+        Wed, 26 Apr 2023 07:29:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=eJ6kU9377LEtzb94GNpF+uPP087SBNoxlzn9ZJOuDwY=; b=OwvBcSq65JERkQeqoL6gcvtSJF
+        C+DbcZyLHGx50klrTZiKhqU6EqBBNih9g6DU3v/6vlVoIlF2X4PWNDGbVYYip+Cm78KJsj3BwITxJ
+        Z28nUHAXj2hODT1zLA4subiFl6ILSqQPGdMGdkZ1OZoOGUpi+u6ReQmvgNrK/Sbpn6DA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1prg95-00BHWN-ED; Wed, 26 Apr 2023 16:29:23 +0200
+Date:   Wed, 26 Apr 2023 16:29:23 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Samin Guo <samin.guo@starfivetech.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Peter Geis <pgwipeout@gmail.com>,
+        Frank <Frank.Sae@motor-comm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+Subject: Re: [PATCH v1 1/2] dt-bindings: net: motorcomm: Add pad driver
+ strength cfg
+Message-ID: <fef3aed8-b664-4d36-94f5-266cea4c57a7@lunn.ch>
+References: <20230426063541.15378-1-samin.guo@starfivetech.com>
+ <20230426063541.15378-2-samin.guo@starfivetech.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net 1/2] net/sched: flower: fix filter idr initialization
-Content-Language: en-US
-To:     Vlad Buslov <vladbu@nvidia.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, marcelo.leitner@gmail.com, paulb@nvidia.com,
-        simon.horman@corigine.com
-References: <20230426121415.2149732-1-vladbu@nvidia.com>
- <20230426121415.2149732-2-vladbu@nvidia.com>
-From:   Pedro Tammela <pctammela@mojatatu.com>
-In-Reply-To: <20230426121415.2149732-2-vladbu@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230426063541.15378-2-samin.guo@starfivetech.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -77,159 +59,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/04/2023 09:14, Vlad Buslov wrote:
-> The cited commit moved idr initialization too early in fl_change() which
-> allows concurrent users to access the filter that is still being
-> initialized and is in inconsistent state, which, in turn, can cause NULL
-> pointer dereference [0]. Since there is no obvious way to fix the ordering
-> without reverting the whole cited commit, alternative approach taken to
-> first insert NULL pointer into idr in order to allocate the handle but
-> still cause fl_get() to return NULL and prevent concurrent users from
-> seeing the filter while providing miss-to-action infrastructure with valid
-> handle id early in fl_change().
+On Wed, Apr 26, 2023 at 02:35:40PM +0800, Samin Guo wrote:
+> The motorcomm phy (YT8531) supports the ability to adjust the drive
+> strength of the rx_clk/rx_data, the value range of pad driver
+> strength is 0 to 7.
 > 
-> [  152.434728] general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] SMP KASAN
-> [  152.436163] KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-> [  152.437269] CPU: 4 PID: 3877 Comm: tc Not tainted 6.3.0-rc4+ #5
-> [  152.438110] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-> [  152.439644] RIP: 0010:fl_dump_key+0x8b/0x1d10 [cls_flower]
-> [  152.440461] Code: 01 f2 02 f2 c7 40 08 04 f2 04 f2 c7 40 0c 04 f3 f3 f3 65 48 8b 04 25 28 00 00 00 48 89 84 24 00 01 00 00 48 89 c8 48 c1 e8 03 <0f> b6 04 10 84 c0 74 08 3c 03 0f 8e 98 19 00 00 8b 13 85 d2 74 57
-> [  152.442885] RSP: 0018:ffff88817a28f158 EFLAGS: 00010246
-> [  152.443851] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> [  152.444826] RDX: dffffc0000000000 RSI: ffffffff8500ae80 RDI: ffff88810a987900
-> [  152.445791] RBP: ffff888179d88240 R08: ffff888179d8845c R09: ffff888179d88240
-> [  152.446780] R10: ffffed102f451e48 R11: 00000000fffffff2 R12: ffff88810a987900
-> [  152.447741] R13: ffffffff8500ae80 R14: ffff88810a987900 R15: ffff888149b3c738
-> [  152.448756] FS:  00007f5eb2a34800(0000) GS:ffff88881ec00000(0000) knlGS:0000000000000000
-> [  152.449888] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  152.450685] CR2: 000000000046ad19 CR3: 000000010b0bd006 CR4: 0000000000370ea0
-> [  152.451641] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [  152.452628] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [  152.453588] Call Trace:
-> [  152.454032]  <TASK>
-> [  152.454447]  ? netlink_sendmsg+0x7a1/0xcb0
-> [  152.455109]  ? sock_sendmsg+0xc5/0x190
-> [  152.455689]  ? ____sys_sendmsg+0x535/0x6b0
-> [  152.456320]  ? ___sys_sendmsg+0xeb/0x170
-> [  152.456916]  ? do_syscall_64+0x3d/0x90
-> [  152.457529]  ? entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  152.458321]  ? ___sys_sendmsg+0xeb/0x170
-> [  152.458958]  ? __sys_sendmsg+0xb5/0x140
-> [  152.459564]  ? do_syscall_64+0x3d/0x90
-> [  152.460122]  ? entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  152.460852]  ? fl_dump_key_options.part.0+0xea0/0xea0 [cls_flower]
-> [  152.461710]  ? _raw_spin_lock+0x7a/0xd0
-> [  152.462299]  ? _raw_read_lock_irq+0x30/0x30
-> [  152.462924]  ? nla_put+0x15e/0x1c0
-> [  152.463480]  fl_dump+0x228/0x650 [cls_flower]
-> [  152.464112]  ? fl_tmplt_dump+0x210/0x210 [cls_flower]
-> [  152.464854]  ? __kmem_cache_alloc_node+0x1a7/0x330
-> [  152.465592]  ? nla_put+0x15e/0x1c0
-> [  152.466160]  tcf_fill_node+0x515/0x9a0
-> [  152.466766]  ? tc_setup_offload_action+0xf0/0xf0
-> [  152.467463]  ? __alloc_skb+0x13c/0x2a0
-> [  152.468067]  ? __build_skb_around+0x330/0x330
-> [  152.468814]  ? fl_get+0x107/0x1a0 [cls_flower]
-> [  152.469503]  tc_del_tfilter+0x718/0x1330
-> [  152.470115]  ? is_bpf_text_address+0xa/0x20
-> [  152.470765]  ? tc_ctl_chain+0xee0/0xee0
-> [  152.471335]  ? __kernel_text_address+0xe/0x30
-> [  152.471948]  ? unwind_get_return_address+0x56/0xa0
-> [  152.472639]  ? __thaw_task+0x150/0x150
-> [  152.473218]  ? arch_stack_walk+0x98/0xf0
-> [  152.473839]  ? __stack_depot_save+0x35/0x4c0
-> [  152.474501]  ? stack_trace_save+0x91/0xc0
-> [  152.475119]  ? security_capable+0x51/0x90
-> [  152.475741]  rtnetlink_rcv_msg+0x2c1/0x9d0
-> [  152.476387]  ? rtnl_calcit.isra.0+0x2b0/0x2b0
-> [  152.477042]  ? __sys_sendmsg+0xb5/0x140
-> [  152.477664]  ? do_syscall_64+0x3d/0x90
-> [  152.478255]  ? entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  152.479010]  ? __stack_depot_save+0x35/0x4c0
-> [  152.479679]  ? __stack_depot_save+0x35/0x4c0
-> [  152.480346]  netlink_rcv_skb+0x12c/0x360
-> [  152.480929]  ? rtnl_calcit.isra.0+0x2b0/0x2b0
-> [  152.481517]  ? do_syscall_64+0x3d/0x90
-> [  152.482061]  ? netlink_ack+0x1550/0x1550
-> [  152.482612]  ? rhashtable_walk_peek+0x170/0x170
-> [  152.483262]  ? kmem_cache_alloc_node+0x1af/0x390
-> [  152.483875]  ? _copy_from_iter+0x3d6/0xc70
-> [  152.484528]  netlink_unicast+0x553/0x790
-> [  152.485168]  ? netlink_attachskb+0x6a0/0x6a0
-> [  152.485848]  ? unwind_next_frame+0x11cc/0x1a10
-> [  152.486538]  ? arch_stack_walk+0x61/0xf0
-> [  152.487169]  netlink_sendmsg+0x7a1/0xcb0
-> [  152.487799]  ? netlink_unicast+0x790/0x790
-> [  152.488355]  ? iovec_from_user.part.0+0x4d/0x220
-> [  152.488990]  ? _raw_spin_lock+0x7a/0xd0
-> [  152.489598]  ? netlink_unicast+0x790/0x790
-> [  152.490236]  sock_sendmsg+0xc5/0x190
-> [  152.490796]  ____sys_sendmsg+0x535/0x6b0
-> [  152.491394]  ? import_iovec+0x7/0x10
-> [  152.491964]  ? kernel_sendmsg+0x30/0x30
-> [  152.492561]  ? __copy_msghdr+0x3c0/0x3c0
-> [  152.493160]  ? do_syscall_64+0x3d/0x90
-> [  152.493706]  ___sys_sendmsg+0xeb/0x170
-> [  152.494283]  ? may_open_dev+0xd0/0xd0
-> [  152.494858]  ? copy_msghdr_from_user+0x110/0x110
-> [  152.495541]  ? __handle_mm_fault+0x2678/0x4ad0
-> [  152.496205]  ? copy_page_range+0x2360/0x2360
-> [  152.496862]  ? __fget_light+0x57/0x520
-> [  152.497449]  ? mas_find+0x1c0/0x1c0
-> [  152.498026]  ? sockfd_lookup_light+0x1a/0x140
-> [  152.498703]  __sys_sendmsg+0xb5/0x140
-> [  152.499306]  ? __sys_sendmsg_sock+0x20/0x20
-> [  152.499951]  ? do_user_addr_fault+0x369/0xd80
-> [  152.500595]  do_syscall_64+0x3d/0x90
-> [  152.501185]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  152.501917] RIP: 0033:0x7f5eb294f887
-> [  152.502494] Code: 0a 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
-> [  152.505008] RSP: 002b:00007ffd2c708f78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> [  152.506152] RAX: ffffffffffffffda RBX: 00000000642d9472 RCX: 00007f5eb294f887
-> [  152.507134] RDX: 0000000000000000 RSI: 00007ffd2c708fe0 RDI: 0000000000000003
-> [  152.508113] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
-> [  152.509119] R10: 00007f5eb2808708 R11: 0000000000000246 R12: 0000000000000001
-> [  152.510068] R13: 0000000000000000 R14: 00007ffd2c70d1b8 R15: 0000000000485400
-> [  152.511031]  </TASK>
-> [  152.511444] Modules linked in: cls_flower sch_ingress openvswitch nsh mlx5_vdpa vringh vhost_iotlb vdpa mlx5_ib mlx5_core rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi ib_umad rdma_cm ib_ipoib iw_cm ib_cm ib_uverbs ib_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter overlay zram zsmalloc fuse [last unloaded: mlx5_core]
-> [  152.515720] ---[ end trace 0000000000000000 ]---
-> 
-> Fixes: 08a0063df3ae ("net/sched: flower: Move filter handle initialization earlier")
-> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>|
-
-LGTM,
-
-Reviewed-by: Pedro Tammela <pctammela@mojatatu.com>
-
-
+> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
 > ---
->   net/sched/cls_flower.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
+>  .../devicetree/bindings/net/motorcomm,yt8xxx.yaml      | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
-> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> index 475fe222a855..1844545bef37 100644
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -2210,10 +2210,10 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
->   		spin_lock(&tp->lock);
->   		if (!handle) {
->   			handle = 1;
-> -			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
-> +			err = idr_alloc_u32(&head->handle_idr, NULL, &handle,
->   					    INT_MAX, GFP_ATOMIC);
->   		} else {
-> -			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
-> +			err = idr_alloc_u32(&head->handle_idr, NULL, &handle,
->   					    handle, GFP_ATOMIC);
->   
->   			/* Filter with specified handle was concurrently
-> @@ -2378,7 +2378,7 @@ static void fl_walk(struct tcf_proto *tp, struct tcf_walker *arg,
->   	rcu_read_lock();
->   	idr_for_each_entry_continue_ul(&head->handle_idr, f, tmp, id) {
->   		/* don't return filters that are being deleted */
-> -		if (!refcount_inc_not_zero(&f->refcnt))
-> +		if (!f || !refcount_inc_not_zero(&f->refcnt))
->   			continue;
->   		rcu_read_unlock();
->   
+> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> index 157e3bbcaf6f..e648e486b6d8 100644
+> --- a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+> @@ -18,6 +18,16 @@ properties:
+>        - ethernet-phy-id4f51.e91a
+>        - ethernet-phy-id4f51.e91b
+>  
+> +  rx-clk-driver-strength:
+> +    description: drive strength of rx_clk pad.
+> +    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+> +    default: 3
 
+What do the numbers mean? What are the units? mA?
+
+     Andrew
