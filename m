@@ -2,113 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 387746EF5D6
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 15:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC4226EF5D7
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 15:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240555AbjDZNwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 09:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43572 "EHLO
+        id S240732AbjDZNxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 09:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240471AbjDZNwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 09:52:50 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AE65BA1
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 06:52:49 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id 41be03b00d2f7-524db748169so888282a12.1
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 06:52:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682517169; x=1685109169;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4gSM07DoDWfFt89LgxkFwiUUObh6+nWrAZQMGG1Q19c=;
-        b=MV0lUcPiV7HHeLvcxwPApEvBZkMiY113+czy++oE9g+V6EsgmaEJlpPGVPq2HlcKly
-         JagcvVG25sVnn5rQoyZj4JnDdF+OhRX8tdkvl4sYr8+6IGjPc2iZ/eBM34n3maYfT47/
-         Jz95vCYPtAYMT2CguLaRnmCUGZBefLFKKnI7repMgyBG4WlnrXVkSYarPo+isE59m/OL
-         AyCiyl44Dit8isNVk2kQZmQSjqLYeLss452vh1JQmciUdKm5veuvzGNHKwdy7+Y8qzXZ
-         /99ilB4SeKmY/mGUbRlcmR7j9y8rnSYnbCRHv0K87TZL7DVWFCzCqn3PdCwBYeLE2Ewc
-         +bQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682517169; x=1685109169;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4gSM07DoDWfFt89LgxkFwiUUObh6+nWrAZQMGG1Q19c=;
-        b=aRxQNoXJZWykSdlLZuAsuH1Sx1bUU1D4SaiSGop9AReq+jpQuN4FntzJeTVFlty/tc
-         tob2u0CMOw3jmAhps5pJWDrh1cMN1iu3vFt42B3GiyUjYAnUXCZ9bkYAsb4ToBY9bT7T
-         a3Ei4AoKD7PyopwOxH/NkzBTCF9Qwptj0ohRgz7PiiRfd7rMXJhJuO9x0n/xFXv2CWPH
-         fw8sswmCNpAqc9ryV0/qfa0XeEz0uRyX0iDFoeEEUXO8Ip62LaapIWnsFk6SNK6y++w9
-         XgNAdokTv/W5H3W7I0Vd5kalSit0IbikRcNzk2QKNfnOYXDGcDoiFC3TukKmSw4Kntto
-         /EMA==
-X-Gm-Message-State: AAQBX9c2REW5rO5XLz79uCBW5wDiE5hJemxWqLMX0MxyfCiC2lGNcU2M
-        oAJXpGf0hQjq4df+zCjE2/A=
-X-Google-Smtp-Source: ACHHUZ77Al+lKig7GuKc4tR6J9shcz1XPaBN+LycYEyX7+ypOhHKyKqvm5+rS+DWsTnHvmQxFV+zmw==
-X-Received: by 2002:a17:90a:34c:b0:249:78db:2635 with SMTP id 12-20020a17090a034c00b0024978db2635mr5197670pjf.0.1682517169116;
-        Wed, 26 Apr 2023 06:52:49 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id d12-20020a17090abf8c00b00230b8431323sm9724187pjs.30.2023.04.26.06.52.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Apr 2023 06:52:48 -0700 (PDT)
-Date:   Wed, 26 Apr 2023 06:52:46 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org, Andrii Staikov <andrii.staikov@intel.com>,
-        Sunitha Mekala <sunithax.d.mekala@intel.com>
-Subject: Re: [PATCH net 1/1] i40e: fix PTP pins verification
-Message-ID: <ZEksrgKGRAS0zbgO@hoboy.vegasvil.org>
-References: <20230425170406.2522523-1-anthony.l.nguyen@intel.com>
- <20230426071812.GK27649@unreal>
+        with ESMTP id S240717AbjDZNxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 09:53:07 -0400
+Received: from mail.kernel-space.org (unknown [IPv6:2a01:4f8:c2c:5a84::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C245C618E
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 06:53:05 -0700 (PDT)
+Received: from ziongate (localhost [127.0.0.1])
+        by ziongate (OpenSMTPD) with ESMTP id bfbef1af;
+        Wed, 26 Apr 2023 13:53:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=simple; d=kernel-space.org; h=from:to
+        :cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=default; bh=Pja+rsDrK/Brucf6FsHyaK
+        Bn+Wo=; b=gEfwxuKO1R9ZxrUUerh7WfJkWlzcQIxWlYQmv6Z3qeeD1YHLyQU2KX
+        EVjkQX2P0KpxARPLUB4pUD3RRA5XuUjeGxFYEy9+Vb3X6vwekaqX1XiogWJmNMdV
+        C5+QK/rK9gpTG/MLpw+n2FuWtmz7xc8ANaRYRw0GgMc0X0L9/1EB4=
+DomainKey-Signature: a=rsa-sha1; c=simple; d=kernel-space.org; h=from:to
+        :cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; q=dns; s=default; b=e184LtQX/h/Nq1N9
+        BAoWFwNe3mcchtBPi2QaYzgv7H7YJv8V7Y3gd93L9CCOoDmPphBwov82UCXxwv0J
+        V6fLV7LErCpKov6YJNM61fCtxmVL5X4sqIk97PyvPO307FaeoRoqTuOWsOISBGpo
+        XoFdYPLbxOFNUQ1RvhReDf+7xPY=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel-space.org;
+        s=20190913; t=1682517183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=RZREPLAl1Zrn6/gKPwpdPVztdckQURJNkXSzYZvM4CA=;
+        b=pOpH2wEm6LICMwB/Fb2DzfvEZMlNlDaMtLEaKVw3dNUPb0pLeRDKkWjDmCxpCbZV4A2702
+        5UeAmZV9Vifz3jvRx0vYR74fp0Y6ehkg4YxQArnebpe5fsSO1/jRTgFPIynk3P0zNLIHlc
+        hBBizi3izpGgJKMZM9T6bYu8b+DZzp0=
+X-Spam: yes
+X-Spam-Score: 6.4 / 15
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RDNS_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
+Received: from localhost.localdomain (host-79-40-239-218.business.telecomitalia.it [79.40.239.218])
+        by ziongate (OpenSMTPD) with ESMTPSA id 10798f21 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 26 Apr 2023 13:53:03 +0000 (UTC)
+From:   Angelo Dureghello <angelo@kernel-space.org>
+To:     andrew@lunn.ch, vivien.didelot@gmail.com
+Cc:     netdev@vger.kernel.org,
+        Angelo Dureghello <angelo.dureghello@timesys.com>
+Subject: [PATCH] net: dsa: mv88e6xxx: add mv88e6321 rsvd2cpu
+Date:   Wed, 26 Apr 2023 15:52:59 +0200
+Message-Id: <20230426135259.2486610-1-angelo@kernel-space.org>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230426071812.GK27649@unreal>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 26, 2023 at 10:18:12AM +0300, Leon Romanovsky wrote:
-> On Tue, Apr 25, 2023 at 10:04:06AM -0700, Tony Nguyen wrote:
-> > From: Andrii Staikov <andrii.staikov@intel.com>
-> > 
-> > Fix PTP pins verification not to contain tainted arguments. As a new PTP
-> > pins configuration is provided by a user, it may contain tainted
-> > arguments that are out of bounds for the list of possible values that can
-> > lead to a potential security threat. Change pin's state name from 'invalid'
-> > to 'empty' for more clarification.
-> 
-> And why isn't this handled in upper layer which responsible to get
-> user input?
+From: Angelo Dureghello <angelo.dureghello@timesys.com>
 
-It is.
+Add rsvd2cpu capability for mv88e6321 model, to allow proper bpdu
+processing.
 
-long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
-{
-	...
+Signed-off-by: Angelo Dureghello <angelo.dureghello@timesys.com>
+---
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-	switch (cmd) {
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 7108f745fbf0..75741ff922b4 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -5182,6 +5182,7 @@ static const struct mv88e6xxx_ops mv88e6321_ops = {
+ 	.set_cpu_port = mv88e6095_g1_set_cpu_port,
+ 	.set_egress_port = mv88e6095_g1_set_egress_port,
+ 	.watchdog_ops = &mv88e6390_watchdog_ops,
++	.mgmt_rsvd2cpu = mv88e6185_g2_mgmt_rsvd2cpu,
+ 	.reset = mv88e6352_g1_reset,
+ 	.vtu_getnext = mv88e6185_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6185_g1_vtu_loadpurge,
+-- 
+2.40.0
 
-	case PTP_PIN_SETFUNC:
-	case PTP_PIN_SETFUNC2:
-		if (copy_from_user(&pd, (void __user *)arg, sizeof(pd))) {
-			err = -EFAULT;
-			break;
-		}
-		...
-
-		pin_index = pd.index;
-		if (pin_index >= ops->n_pins) {
-			err = -EINVAL;
-			break;
-		}
-
-		...
-	}
-	...
-}
