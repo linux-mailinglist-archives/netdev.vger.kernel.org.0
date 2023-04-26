@@ -2,124 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A81026EEDB3
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 07:52:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C06736EEDB1
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 07:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239446AbjDZFwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 01:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
+        id S239400AbjDZFvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 01:51:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239398AbjDZFv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 01:51:59 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABBE273C;
-        Tue, 25 Apr 2023 22:51:12 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 33Q5ntgs029373;
-        Wed, 26 Apr 2023 00:49:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1682488195;
-        bh=OoC9MWwrdE8UzFkXZkLmaX88mbpfdUSP+bjvTP1SP1c=;
-        h=Date:CC:Subject:To:References:From:In-Reply-To;
-        b=S61NcwhTbYqH193vzyQHYRrtFCjlPYdeSSDRxF4oeQ52nnZ73vKtiySDgB4z2gL80
-         jcj0/Xxtk4XaeqRcF1UbRQ86Xkpt4xZClSW5uTZbE1nhWKHWXFxZVlV8K6XsdIRC3D
-         XItobHj6LUZV6URSRcW6VgoRWX6rmoK5ln5Kd9NI=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 33Q5ntXv065180
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 26 Apr 2023 00:49:55 -0500
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Wed, 26
- Apr 2023 00:49:54 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Wed, 26 Apr 2023 00:49:54 -0500
-Received: from [172.24.145.61] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 33Q5noAE008767;
-        Wed, 26 Apr 2023 00:49:51 -0500
-Message-ID: <99932a4f-4573-b80b-080b-7d9d3f57bef0@ti.com>
-Date:   Wed, 26 Apr 2023 11:19:50 +0530
+        with ESMTP id S239398AbjDZFvY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 01:51:24 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E615A269E;
+        Tue, 25 Apr 2023 22:50:35 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id d9443c01a7336-1a92369761cso53035745ad.3;
+        Tue, 25 Apr 2023 22:50:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682488226; x=1685080226;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tyDHg+l/CBccPJ14EzoCxdO4UR3Mn/BrOLjjC6CJ+24=;
+        b=TWCKU5UAu/a2FrtqYY01I+hpJZonvSm2uJk02JhZix4nco8ktd2qV5uN+suv+mgBKE
+         MCMDikcNTvZs3jXWH3U6H+cpaQaF5ZKfb/ON70gbUyyCp0z6uyt4lLKWF7VXPRrI0OGp
+         c3RVULlufKmgji1SXgMx2WuxLaubQd660tT41FUEvWDm0bYnEbhf4BmQWjNO5ox3CEfH
+         0v0iWYz+8rb9Q/rgxeh3fHZouICJFq1SybYaLaBZpQfVd9FRPNc+Jd7BROKTSSjANRLe
+         uLj9c7Qzi1iSlLCUCuhRuW9+ywKeCCFtegGDLwEyHjs9r60MSOMVCaJc3nLfGMbfVZwS
+         UFxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682488226; x=1685080226;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tyDHg+l/CBccPJ14EzoCxdO4UR3Mn/BrOLjjC6CJ+24=;
+        b=ktAtZ48AtJbi4YhniiB9CPWwsxm212yRgAdDtTVNkI5WRx+HYMZ2bStJKdLPNFRLXN
+         XCCz4QT60UyV9rxlsKx/IUhoYydZTrKcuHREyFB5scp25LDE9YDJq9cTUktHyCFVrVMY
+         NAjE2FHvxGDHPgPirs/2uwjbjogLySn5hLfEJ4muMRgLlKeXfgACQmc5FklHEspcjQVW
+         F+BAX9JBaQKcZiezosPp6txxCGFihtL2qygIytuIU9X1IxR52H7sP7aT9MwMo/3J5iu3
+         JHOG/i7RKLSw/NvdJxAzxL8rWFyJI/bEIYoTRdNAlqtwrg6dpkdvgJTuXaE393gnfVm1
+         4ntg==
+X-Gm-Message-State: AAQBX9fk3FnoCX/uQlNsNTsHxhngDR+5UGAUTtkLuubPTHjfbL3tvsQh
+        bHzkwfapPa0SWGZdU7MmKsM=
+X-Google-Smtp-Source: AKy350axHObaPbqnDo4sJmE58+P6WyJ8EC4Q/mzVqNZJwg6EQKnCWKCFzkgatUEhAYDneB7uPaPhoQ==
+X-Received: by 2002:a17:903:8c7:b0:1a0:5349:6606 with SMTP id lk7-20020a17090308c700b001a053496606mr20348126plb.56.1682488226283;
+        Tue, 25 Apr 2023 22:50:26 -0700 (PDT)
+Received: from localhost ([216.228.127.128])
+        by smtp.gmail.com with ESMTPSA id d2-20020a170902654200b00192aa53a7d5sm9158834pln.8.2023.04.25.22.50.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Apr 2023 22:50:25 -0700 (PDT)
+Date:   Tue, 25 Apr 2023 22:50:23 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Pawel Chmielewski <pawel.chmielewski@intel.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Barry Song <baohua@kernel.org>
+Subject: Re: [PATCH v2 7/8] lib: add test for for_each_numa_{cpu,hop_mask}()
+Message-ID: <ZEi7n4ZJgF2o8Ps9@yury-ThinkPad>
+References: <20230420051946.7463-1-yury.norov@gmail.com>
+ <20230420051946.7463-8-yury.norov@gmail.com>
+ <xhsmh8rehkxzz.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-CC:     <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: Re: [RFC PATCH 2/2] net: phy: dp83869: fix mii mode when rgmii strap
- cfg is used
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-References: <20230425054429.3956535-1-s-vadapalli@ti.com>
- <20230425054429.3956535-3-s-vadapalli@ti.com>
- <cbbedaab-b2bf-4a37-88ed-c1a8211920e9@lunn.ch>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <cbbedaab-b2bf-4a37-88ed-c1a8211920e9@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <xhsmh8rehkxzz.mognet@vschneid.remote.csb>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Valentin,
 
+Thanks for review!
 
-On 25/04/23 17:48, Andrew Lunn wrote:
-> On Tue, Apr 25, 2023 at 11:14:29AM +0530, Siddharth Vadapalli wrote:
->> From: Grygorii Strashko <grygorii.strashko@ti.com>
->>
->> The DP83869 PHY on TI's k3-am642-evm supports both MII and RGMII
->> interfaces and is configured by default to use RGMII interface (strap).
->> However, the board design allows switching dynamically to MII interface
->> for testing purposes by applying different set of pinmuxes.
+On Mon, Apr 24, 2023 at 06:09:52PM +0100, Valentin Schneider wrote:
+> On 19/04/23 22:19, Yury Norov wrote:
+> > +	for (node = 0; node < sched_domains_numa_levels; node++) {
+> > +		unsigned int hop, c = 0;
+> > +
+> > +		rcu_read_lock();
+> > +		for_each_numa_cpu(cpu, hop, node, cpu_online_mask)
+> > +			expect_eq_uint(cpumask_local_spread(c++, node), cpu);
+> > +		rcu_read_unlock();
+> > +	}
 > 
-> Only for testing? So nobody should actually design a board to use MII
-> and use software to change the interface from RGMII to MII?
+> I'm not fond of the export of sched_domains_numa_levels, especially
+> considering it's just there for tests.
 > 
-> This does not seem to be a fix, it is a new feature. So please submit
-> to net-next, in two weeks time when it opens again.
+> Furthermore, is there any value is testing parity with
+> cpumask_local_spread()?
 
-Sure. I will split this patch from the series and post the v2 of this patch with
-the subject "RFC PATCH net-next" for requesting further feedback on this patch
-if needed. Following that, I will post it to net-next as a new patch.
+I wanted to emphasize that new NUMA-aware functions are coherent with
+each other, just like find_nth_bit() is coherent with find_next_bit().
 
+But all that coherence looks important only in non-NUMA case, because
+client code may depend on fact that next CPU is never less than current.
+This doesn't hold for NUMA iterators anyways...
+
+> Rather, shouldn't we check that using this API does
+> yield CPUs of increasing NUMA distance?
 > 
->> @@ -692,8 +692,11 @@ static int dp83869_configure_mode(struct phy_device *phydev,
->>  	/* Below init sequence for each operational mode is defined in
->>  	 * section 9.4.8 of the datasheet.
->>  	 */
->> +	phy_ctrl_val = dp83869->mode;
->> +	if (phydev->interface == PHY_INTERFACE_MODE_MII)
->> +		phy_ctrl_val |= DP83869_OP_MODE_MII;
+> Something like
 > 
-> Should there be some validation here with dp83869->mode?
+>         for_each_node(node) {
+>                 unsigned int prev_cpu, hop = 0;
 > 
-> DP83869_RGMII_COPPER_ETHERNET, DP83869_RGMII_SGMII_BRIDGE etc don't
-> make sense if MII is being used. DP83869_100M_MEDIA_CONVERT and maybe
-> DP83869_RGMII_100_BASE seem to be the only valid modes with MII?
-
-The DP83869_OP_MODE_MII macro corresponds to BIT(5) which is the RGMII_MII_SEL
-bit in the OP_MODE_DECODE register. If the RGMII_MII_SEL bit is set, MII mode is
-selected. If the bit is cleared, which is the default value, RGMII mode is
-selected. As pointed out by you, there are modes which aren't valid with MII
-mode. However, a mode which isn't valid with RGMII mode (default value of the
-RGMII_MII_SEL bit) also exists: DP83869_SGMII_COPPER_ETHERNET. For this reason,
-I believe that setting the bit when MII mode is requested shouldn't cause any
-issues.
-
+>                 cpu = cpumask_first(cpumask_of_node(node));
+>                 prev_cpu = cpu;
 > 
-> 	Andrew
+>                 rcu_read_lock();
+> 
+>                 /* Assert distance is monotonically increasing */
+>                 for_each_numa_cpu(cpu, hop, node, cpu_online_mask) {
+>                         expect_ge_uint(cpu_to_node(cpu), cpu_to_node(prev_cpu));
+>                         prev_cpu = cpu;
+>                 }
+> 
+>                 rcu_read_unlock();
+>         }
 
--- 
-Regards,
-Siddharth.
+Your version of the test looks more straightforward. I need to think
+for more, but it looks like I can take it in v3.
+
+Thanks,
+Yury
