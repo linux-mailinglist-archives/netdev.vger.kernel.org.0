@@ -2,339 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA1AA6EF39F
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 13:46:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C908F6EF419
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 14:14:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240579AbjDZLqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 07:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
+        id S240670AbjDZMOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 08:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240422AbjDZLqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 07:46:18 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAFC49E1
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 04:46:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1682509577; x=1714045577;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=a6mOPezioK3go7z7Pd63E0ERcqekT30pCSfT1pZTASI=;
-  b=bClx8R3KlgKWyaOdis5uVosC8T8AQDb4WVaxDOAt75VGGEDVWpNHXiTR
-   MAAZKtyFvLvED6Npog/V+kHyZIjgshB5ivsekMtyUM3yee9qYlOxGC1p0
-   qVjapVkQS19baf/UWWRp/W5bsLubt+J16HCJOrq8fW5EiII3cR58nyHvT
-   1AdOoB2UFbXyAucHIdUX1i1jgCdTO+XvRAlzy/DPi6/s8KW8hqCofGiIG
-   VJQnWe/pA1jMOFLw6lYz6fASdQcNdfpc/p1fwqMKyp6ADbZ0bMRzbkEjr
-   5+brTL0R2hHAWKpAmoCNZlMf93JfeyLfZulmygdjfmxVeXzuQq3H8b8gl
-   w==;
-X-IronPort-AV: E=Sophos;i="5.99,227,1677567600"; 
-   d="scan'208";a="149009051"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2023 04:46:17 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 26 Apr 2023 04:46:16 -0700
-Received: from CHE-LT-I17164LX.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Wed, 26 Apr 2023 04:46:14 -0700
-From:   Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
-To:     <netdev@vger.kernel.org>, <andrew@lunn.ch>, <davem@davemloft.net>
-CC:     <jan.huber@microchip.com>, <thorsten.kummermehr@microchip.com>,
-        <ramon.nordin.rodriguez@ferroamp.se>,
-        Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
-Subject: [PATCH net-next 2/2] net: phy: microchip_t1s: add support for Microchip LAN865x Rev.B0 PHYs
-Date:   Wed, 26 Apr 2023 17:16:55 +0530
-Message-ID: <20230426114655.93672-3-Parthiban.Veerasooran@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230426114655.93672-1-Parthiban.Veerasooran@microchip.com>
-References: <20230426114655.93672-1-Parthiban.Veerasooran@microchip.com>
+        with ESMTP id S231161AbjDZMOn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 08:14:43 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10hn2204.outbound.protection.outlook.com [52.100.156.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1A82121
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 05:14:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nQsYXhNmraXWVqJRzhwiunn2r48HNxYOqHxDO4OhM5fc06TziczxjmXE3w+mN5lVd87lwdf6gzJEj0DU5C8/uqlUkbU9PFyYFEmElxKm2g6l6YikBKXgn/jvDTxZR/bhIcLZFP+ALyy+n4pE451Gqilqy5ToB9OfeKrhoLSM4cMy9SVmrb9Xu6ZRpySJu7K4LPwa3ZEzAWiRE5L+NmBNGCCh9wQ34WDDLC7L2n/d522Ub6QXNXyu9QYNhfXKFG7AYQx7+qyjdLQBCUBayirHM/gNPgNQWCWZFJZNczz4WpNXBMgsSitkRh1MM38y3sF8qaKvBOYGDrNyZ6k7MRejVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+bitLQkMfAzTdtdmZFlkUrzxoGOFLpcAyaOUUHZDWrE=;
+ b=jOz4y966hHFGIlr4AdTB1J3Nx2Vo2RQZ4tu79q70CfdwmNoXuOwoGogfGxzQIndubH4WazcgKqLt4NJZAtcRzIZhF5ix0EbOwUYgEry00EYk+GLZCSiWsqRrEJXoqSmxKhZ7260uoSEE943UcMjEykCOKq8D5rmkFZkkeoxWp26oep5wzpC/+AQ/iPxy3CLpz/R2NBC1sSOwXVNjHCPd2+fgt2dT9fu1Gx/CWLVcU1wkcX/b7k0LA7ncLmtw/hzFyJFKmf8uHOFq1o+YKYJ0AALgYbSl38srsQO7UwR7RqNdNn5SH7OcuZVJPo1W2AvdK8mF8Hclpg7tprIM5g+nVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+bitLQkMfAzTdtdmZFlkUrzxoGOFLpcAyaOUUHZDWrE=;
+ b=QqldeNVyOId7yeIXBdcVPeiKjWuqupF75DuwhC7IDzQ5qzX26mD95B/HdMxOTMzox2MLhxQJN7zCYk7TiPnD3QvM/tZ1ap5Cnrz/muj8fLUvUoSeIn0BUong7VIBfEojbqNROhlw+T3Vi56NTEzcHngydqeRh5iZBHjK2KpZ/iFoFp12Usrbx/cDClgg5FULHNd9S1dKQiwkqbUsybb11PV4Eu72yhE/Y+a2mDobnCMRilZNA52Hi/JeRZO/1EA/F2bNJHCaGu7X+ScC2nXlsdI9q8Mq1BtO9ETbYG6s1Si1JmuOoI3f221Z9KNXIyAC2bjMGIS6A/W5r2ThPXUGKg==
+Received: from BN8PR07CA0002.namprd07.prod.outlook.com (2603:10b6:408:ac::15)
+ by BL1PR12MB5971.namprd12.prod.outlook.com (2603:10b6:208:39a::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.34; Wed, 26 Apr
+ 2023 12:14:40 +0000
+Received: from BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ac:cafe::5c) by BN8PR07CA0002.outlook.office365.com
+ (2603:10b6:408:ac::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21 via Frontend
+ Transport; Wed, 26 Apr 2023 12:14:40 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT068.mail.protection.outlook.com (10.13.177.69) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6340.21 via Frontend Transport; Wed, 26 Apr 2023 12:14:39 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 26 Apr 2023
+ 05:14:28 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 26 Apr
+ 2023 05:14:28 -0700
+Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server id 15.2.986.37 via Frontend Transport; Wed, 26 Apr
+ 2023 05:14:25 -0700
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <marcelo.leitner@gmail.com>, <paulb@nvidia.com>,
+        <simon.horman@corigine.com>, Vlad Buslov <vladbu@nvidia.com>
+Subject: [PATCH net 0/2] Fixes for miss to tc action series
+Date:   Wed, 26 Apr 2023 14:14:13 +0200
+Message-ID: <20230426121415.2149732-1-vladbu@nvidia.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT068:EE_|BL1PR12MB5971:EE_
+X-MS-Office365-Filtering-Correlation-Id: fd26df08-d148-4020-f6f2-08db464fcf5e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2oqhYcmtznZZ5icPHeaveWZJeaMlyzSjRtBU0oAVC4cCwiUzhoOJlqOebNiSf+kiCfof6el2F5d+IZXIJdiu8SA/mW0P8C8gpE603lJ/G1i83qzWh1QjlxJqYaSYjJjV1aOvQMVx9esjMymIqu4mTMoZGFib79aWquS8w2S4tOaXsLssIL59M3srxZW1OVLps1wwV0ZWR50Xer/883H8Ol2BaYuICJTSgLwbf+AlSVeX+WfZmb7YY7tqB9e6QHl6c0MUgorYpo+PHKLzO0Hck+FenwWGO0MT6/8ZrmAhcK0Uz40O5BSNLfToNAciuDJad+iJVPEp9EhSGmJ9U7EDzvdLyXb+ANJYv6/TNOOywiGFnt/qrOZP+S26Oz1FNX84gsESnpgb4fLcBuyS6bkTLjEVTVY+pIYYMXkFaGkfMtkToxPNsClc9Od6CxZhyYa4ddj3qW33qBr3a1KjJN24bYQfNudsjeu2medT+yqdJEOKYR3DOKq3y8Awn/8Pa3QQwHHwgGXSj9YeFLJo+bzXWOCu5oQtxkeKpL34P81gj/xUUQZuhwaJphyWTzPjGIB3S/cflBOhVlR8yf8Fgsx/Mc7zVUiU7shMps4GNm9rSWbpAS2rDzvdWwi7NS1tYIejMHnT0bLwj6oUsMsY4AlAkH9Gkzv9IkkCihZ4jdfXHIZL//ApJwYzjW4dKIZpszgSE7SdKmr0I3leiQT9zyBVlfjbm9W0gYTVPVCQkVrxQ2nT9S+b+nQ4muBjOHtUAyLG00vPvpr0EWF8vg8SI/zJYQ==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(136003)(39860400002)(396003)(5400799015)(451199021)(36840700001)(40470700004)(46966006)(40460700003)(110136005)(36756003)(54906003)(34020700004)(558084003)(82310400005)(478600001)(86362001)(8676002)(8936002)(7636003)(2906002)(41300700001)(4326008)(40480700001)(82740400003)(356005)(70586007)(70206006)(316002)(107886003)(5660300002)(1076003)(186003)(26005)(426003)(83380400001)(47076005)(336012)(2616005)(36860700001)(7696005)(6666004)(12100799030);DIR:OUT;SFP:1501;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2023 12:14:39.6650
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: fd26df08-d148-4020-f6f2-08db464fcf5e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5971
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for the Microchip LAN865x Rev.B0 10BASE-T1S
-Internal PHYs (LAN8650/1). The LAN865x combines a Media Access Controller
-(MAC) and an internal 10BASE-T1S Ethernet PHY to access 10BASE‑T1S
-networks.
+Vlad Buslov (2):
+  net/sched: flower: fix filter idr initialization
+  net/sched: flower: fix error handler on replace
 
-Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
----
- drivers/net/phy/microchip_t1s.c | 200 ++++++++++++++++++++++++++++++--
- 1 file changed, 191 insertions(+), 9 deletions(-)
+ net/sched/cls_flower.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/microchip_t1s.c b/drivers/net/phy/microchip_t1s.c
-index 793fb0210605..3d8d285b3c34 100644
---- a/drivers/net/phy/microchip_t1s.c
-+++ b/drivers/net/phy/microchip_t1s.c
-@@ -4,6 +4,7 @@
-  *
-  * Support: Microchip Phys:
-  *  lan8670/1/2 Rev.B1
-+ *  lan8650/1 Rev.B0 Internal PHYs
-  */
- 
- #include <linux/kernel.h>
-@@ -11,9 +12,10 @@
- #include <linux/phy.h>
- 
- #define PHY_ID_LAN867X_REVB1 0x0007C162
-+#define PHY_ID_LAN865X_REVB0 0x0007C1B3
- 
--#define LAN867X_REG_IRQ_1_CTL 0x001C
--#define LAN867X_REG_IRQ_2_CTL 0x001D
-+#define LAN86XX_REG_IRQ_1_CTL 0x001C
-+#define LAN86XX_REG_IRQ_2_CTL 0x001D
- 
- /* The arrays below are pulled from the following table from AN1699
-  * Access MMD Address Value Mask
-@@ -49,6 +51,174 @@ static const int lan867x_revb1_fixup_masks[12] = {
- 	0x0600, 0x7F00, 0x2000, 0xFFFF,
- };
- 
-+/* LAN865x Rev.B0 configuration parameters from AN1760
-+ */
-+static const int lan865x_revb0_fixup_registers[28] = {
-+	0x0091, 0x0081, 0x0043, 0x0044,
-+	0x0045, 0x0053, 0x0054, 0x0055,
-+	0x0040, 0x0050, 0x00D0, 0x00E9,
-+	0x00F5, 0x00F4, 0x00F8, 0x00F9,
-+	0x00B0, 0x00B1, 0x00B2, 0x00B3,
-+	0x00B4, 0x00B5, 0x00B6, 0x00B7,
-+	0x00B8, 0x00B9, 0x00BA, 0x00BB,
-+};
-+
-+static const int lan865x_revb0_fixup_values[28] = {
-+	0x9660, 0x00C0, 0x00FF, 0xFFFF,
-+	0x0000, 0x00FF, 0xFFFF, 0x0000,
-+	0x0002, 0x0002, 0x5F21, 0x9E50,
-+	0x1CF8, 0xC020, 0x9B00, 0x4E53,
-+	0x0103, 0x0910, 0x1D26, 0x002A,
-+	0x0103, 0x070D, 0x1720, 0x0027,
-+	0x0509, 0x0E13, 0x1C25, 0x002B,
-+};
-+
-+/* indirect read pseudocode from AN1760
-+ * write_register(0x4, 0x00D8, addr)
-+ * write_register(0x4, 0x00DA, 0x2)
-+ * return (int8)(read_register(0x4, 0x00D9))
-+ */
-+static int lan865x_revb0_indirect_read(struct phy_device *phydev, u16 addr)
-+{
-+	int ret;
-+
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, 0xD8, addr);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, 0xDA, 0x0002);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, 0xD9);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ret;
-+}
-+
-+static int lan865x_setup_cfgparam(struct phy_device *phydev)
-+{
-+	s8 offset1;
-+	s8 offset2;
-+	s8 value;
-+	u16 cfgparam;
-+	int ret;
-+
-+	ret = lan865x_revb0_indirect_read(phydev, 0x0004);
-+	if (ret < 0)
-+		return ret;
-+	value = (s8)ret;
-+	/* Calculation of configuration offset 1 from AN1760
-+	 */
-+	if ((value & 0x10) != 0)
-+		offset1 = value | 0xE0;
-+	else
-+		offset1 = value;
-+
-+	ret = lan865x_revb0_indirect_read(phydev, 0x0008);
-+	if (ret < 0)
-+		return ret;
-+	value = (s8)ret;
-+	/* Calculation of configuration offset 2 from AN1760
-+	 */
-+	if ((value & 0x10) != 0)
-+		offset2 = value | 0xE0;
-+	else
-+		offset2 = value;
-+
-+	/* calculate and write the configuration parameters in the
-+	 * 0x0084, 0x008A, 0x00AD, 0x00AE and 0x00AF registers (from AN1760)
-+	 */
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, 0x0084);
-+	if (ret < 0)
-+		return ret;
-+	cfgparam = (ret & 0xF) | (((9 + offset1) << 10) |
-+		    ((14 + offset1) << 4));
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, 0x84, cfgparam);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, 0x008A);
-+	if (ret < 0)
-+		return ret;
-+	cfgparam = (ret & 0x3FF) | ((40 + offset2) << 10);
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, 0x8A, cfgparam);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, 0x00AD);
-+	if (ret < 0)
-+		return ret;
-+	cfgparam = (ret & 0xC0C0) | (((5 + offset1) << 8) | (9 + offset1));
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, 0xAD, cfgparam);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, 0x00AE);
-+	if (ret < 0)
-+		return ret;
-+	cfgparam = (ret & 0xC0C0) | (((9 + offset1) << 8) | (14 + offset1));
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, 0xAE, cfgparam);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, 0x00AF);
-+	if (ret < 0)
-+		return ret;
-+	cfgparam = (ret & 0xC0C0) | (((17 + offset1) << 8) | (22 + offset1));
-+	return phy_write_mmd(phydev, MDIO_MMD_VEND2, 0xAF, cfgparam);
-+}
-+
-+static int lan865x_revb0_config_init(struct phy_device *phydev)
-+{
-+	int addr;
-+	int value;
-+	int ret;
-+
-+	/* As per AN1760, the below configuration applies only to the LAN8650/1
-+	 * hardware revision Rev.B0.
-+	 */
-+	for (int i = 0; i < ARRAY_SIZE(lan865x_revb0_fixup_registers); i++) {
-+		addr = lan865x_revb0_fixup_registers[i];
-+		value = lan865x_revb0_fixup_values[i];
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, addr, value);
-+		if (ret)
-+			return ret;
-+	}
-+	/* function to calculate and write the configuration parameters in the
-+	 * 0x0084, 0x008A, 0x00AD, 0x00AE and 0x00AF registers (from AN1760)
-+	 */
-+	ret = lan865x_setup_cfgparam(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* disable all the interrupts
-+	 */
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN86XX_REG_IRQ_1_CTL, 0xFFFF);
-+	if (ret)
-+		return ret;
-+	return phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN86XX_REG_IRQ_2_CTL, 0xFFFF);
-+}
-+
-+static int lan865x_revb0_plca_set_cfg(struct phy_device *phydev,
-+				      const struct phy_plca_cfg *plca_cfg)
-+{
-+	int ret;
-+
-+	ret = genphy_c45_plca_set_cfg(phydev, plca_cfg);
-+	if (ret)
-+		return ret;
-+
-+	/* Disable the collision detection when PLCA is enabled and enable
-+	 * collision detection when CSMA/CD mode is enabled.
-+	 */
-+	if (plca_cfg->enabled)
-+		return phy_write_mmd(phydev, MDIO_MMD_VEND2, 0x0087, 0x0000);
-+	else
-+		return phy_write_mmd(phydev, MDIO_MMD_VEND2, 0x0087, 0x0083);
-+}
-+
- static int lan867x_revb1_config_init(struct phy_device *phydev)
- {
- 	/* HW quirk: Microchip states in the application note (AN1699) for the phy
-@@ -90,13 +260,13 @@ static int lan867x_revb1_config_init(struct phy_device *phydev)
- 	 * for it either.
- 	 * So we'll just disable all interrupts on the chip.
- 	 */
--	err = phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN867X_REG_IRQ_1_CTL, 0xFFFF);
-+	err = phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN86XX_REG_IRQ_1_CTL, 0xFFFF);
- 	if (err != 0)
- 		return err;
--	return phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN867X_REG_IRQ_2_CTL, 0xFFFF);
-+	return phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN86XX_REG_IRQ_2_CTL, 0xFFFF);
- }
- 
--static int lan867x_read_status(struct phy_device *phydev)
-+static int lan86xx_read_status(struct phy_device *phydev)
- {
- 	/* The phy has some limitations, namely:
- 	 *  - always reports link up
-@@ -111,23 +281,34 @@ static int lan867x_read_status(struct phy_device *phydev)
- 	return 0;
- }
- 
--static struct phy_driver lan867x_revb1_driver[] = {
-+static struct phy_driver lan86xx_driver[] = {
- 	{
- 		PHY_ID_MATCH_EXACT(PHY_ID_LAN867X_REVB1),
- 		.name               = "LAN867X Rev.B1",
- 		.features           = PHY_BASIC_T1S_P2MP_FEATURES,
- 		.config_init        = lan867x_revb1_config_init,
--		.read_status        = lan867x_read_status,
-+		.read_status        = lan86xx_read_status,
- 		.get_plca_cfg	    = genphy_c45_plca_get_cfg,
- 		.set_plca_cfg	    = genphy_c45_plca_set_cfg,
- 		.get_plca_status    = genphy_c45_plca_get_status,
--	}
-+	},
-+	{
-+		PHY_ID_MATCH_EXACT(PHY_ID_LAN865X_REVB0),
-+		.name               = "LAN865X Rev.B0 Internal Phy",
-+		.features           = PHY_BASIC_T1S_P2MP_FEATURES,
-+		.config_init        = lan865x_revb0_config_init,
-+		.read_status        = lan86xx_read_status,
-+		.get_plca_cfg	    = genphy_c45_plca_get_cfg,
-+		.set_plca_cfg	    = lan865x_revb0_plca_set_cfg,
-+		.get_plca_status    = genphy_c45_plca_get_status,
-+	},
- };
- 
--module_phy_driver(lan867x_revb1_driver);
-+module_phy_driver(lan86xx_driver);
- 
- static struct mdio_device_id __maybe_unused tbl[] = {
- 	{ PHY_ID_MATCH_EXACT(PHY_ID_LAN867X_REVB1) },
-+	{ PHY_ID_MATCH_EXACT(PHY_ID_LAN865X_REVB0) },
- 	{ }
- };
- 
-@@ -135,4 +316,5 @@ MODULE_DEVICE_TABLE(mdio, tbl);
- 
- MODULE_DESCRIPTION("Microchip 10BASE-T1S Phy driver");
- MODULE_AUTHOR("Ramón Nordin Rodriguez");
-+MODULE_AUTHOR("Parthiban Veerasooran <parthiban.veerasooran@microchip.com>");
- MODULE_LICENSE("GPL");
 -- 
-2.34.1
+2.39.2
 
