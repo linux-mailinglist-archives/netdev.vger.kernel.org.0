@@ -2,133 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 215896EF702
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 17:01:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AFD56EF7D5
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 17:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241098AbjDZPBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 11:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
+        id S241375AbjDZPkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 11:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240905AbjDZPBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 11:01:10 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2096.outbound.protection.outlook.com [40.107.92.96])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D3319BF;
-        Wed, 26 Apr 2023 08:01:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nDnzmEpWSSk2qHqZPKaDI29AavAzApjw5qbbnkFRl3WVH/G84Vy2hElPASzFwaPSulYP0NpV9q+LK9BnuvFnfoe9r/bwVckTeZeuq3QhXaH7LZ4t5lTxvZPr2YTA5ui7D7Gezy/5Vmil08zBMX2eB9KxJaWYarfAuuP7UjR7sTcYaZX5D29TlAW15s+q3H8HTTPkfIvfYIkfXKhcEtnZq5qd0XYBdwaEWLznUo3v8Vx6siZxyjGMfUzKeJ5YXRxad8wh8eZdbJKVgPRSl5wjoU+5dai+FrEcPJmW6CKGPCR4Hk7V+6YPdGa3sOIEdMWHUEDSncaWU4LxgkOwT0JO5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vZ0IAAgHv+vPO1aVMNqUvoysAnTPAbJVHrBQtH567Io=;
- b=QD4qfyaSI9gtuvu4UKgmstzWk71deQY8j/f27Z1evupi3yqqsMN1rxsVI1fPbTG/1m2yOSxbeUQcMGpEJM3ovRg0oWBxb0/gTxUgZr+BlJo7oQzNdEkImk1PAI4B67g/K6rjQMpVruoICsHh9cjoAjLHFr56rZqpAN+soBp/JkcK4uoMgZx1Xz6Z2TvpWLAsE53oOr+J05byFLLsDb1I8dNpv4ZtEOHIJb7PB087809csLCNJ29N33WTCLlGT7D6bc9DepadvSjsA5nTmpNHS6snfOZJY969+5F8qH9Td0XLZhq3oiSp3k+UZGgWeYflg97SvMoh1NxEMmmFRjCx2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vZ0IAAgHv+vPO1aVMNqUvoysAnTPAbJVHrBQtH567Io=;
- b=k53aog4k4k/v6ELG49pNeh8T95v3/qZG/K6BP5Ml7r19wyEWGTF/atlxpPzw4nSuCulk6URc5d+eGAmntyS9xpPFR/rRCkqEGjIrikUuJDbumRZiiZQ7LLAscUNvvX3wDktMWsEB3MmoNXK9QD/Ca5yEBnVNhiiCyuC9g9+RR/E=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB5493.namprd13.prod.outlook.com (2603:10b6:510:142::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.22; Wed, 26 Apr
- 2023 15:01:05 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6319.033; Wed, 26 Apr 2023
- 15:01:05 +0000
-Date:   Wed, 26 Apr 2023 17:00:57 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Harini Katakam <harini.katakam@amd.com>
-Cc:     robh+dt@kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, vladimir.oltean@nxp.com,
-        wsa+renesas@sang-engineering.com,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        harinikatakamlinux@gmail.com, michal.simek@amd.com,
-        radhey.shyam.pandey@amd.com
-Subject: Re: [PATCH net-next v2 3/3] phy: mscc: Add support for VSC8531_02
- with RGMII tuning
-Message-ID: <ZEk8qU6QYI3xDGzd@corigine.com>
-References: <20230426104313.28950-1-harini.katakam@amd.com>
- <20230426104313.28950-4-harini.katakam@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230426104313.28950-4-harini.katakam@amd.com>
-X-ClientProxiedBy: AM3PR05CA0131.eurprd05.prod.outlook.com
- (2603:10a6:207:2::33) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S241140AbjDZPkV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 11:40:21 -0400
+X-Greylist: delayed 1201 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 26 Apr 2023 08:40:18 PDT
+Received: from mx0.infotecs.ru (mx0.infotecs.ru [91.244.183.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199EF423C;
+        Wed, 26 Apr 2023 08:40:17 -0700 (PDT)
+Received: from mx0.infotecs-nt (localhost [127.0.0.1])
+        by mx0.infotecs.ru (Postfix) with ESMTP id 7B92A1085789;
+        Wed, 26 Apr 2023 18:04:31 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mx0.infotecs.ru 7B92A1085789
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infotecs.ru; s=mx;
+        t=1682521472; bh=MedIm+CRBEd4wBFXItt1kJMETQQkrwjcl8xl77kiovM=;
+        h=From:To:CC:Subject:Date:From;
+        b=HPLnLR4ts/3Y8SbFjB0Xawyp50TRlwaIt4fceP1t8BbvQc4lgJQTqtFLVJozsO5Ij
+         VKwm55CT0gqEPbRGtPFD/DevevAQJ4l2OrJI+CZFIC0VIPXp4rEzoSX/Z1tj10yAJ9
+         +cgB2C/GewAMwc9RQ2DAVXqp7dFsFtsLBt6mcWEc=
+Received: from msk-exch-02.infotecs-nt (msk-exch-02.infotecs-nt [10.0.7.192])
+        by mx0.infotecs-nt (Postfix) with ESMTP id 754A4305F450;
+        Wed, 26 Apr 2023 18:04:31 +0300 (MSK)
+From:   Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Patrick McHardy" <kaber@trash.net>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "lvc-project@linuxtesting.org" <lvc-project@linuxtesting.org>
+Subject: [PATCH] netfilter: nf_conntrack_sip: fix the
+ ct_sip_parse_numerical_param() return value.
+Thread-Topic: [PATCH] netfilter: nf_conntrack_sip: fix the
+ ct_sip_parse_numerical_param() return value.
+Thread-Index: AQHZeFBn+k9SKA6Ie0ib54vOLuLARQ==
+Date:   Wed, 26 Apr 2023 15:04:31 +0000
+Message-ID: <20230426150414.2768070-1-Ilia.Gavrilov@infotecs.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.17.0.10]
+x-exclaimer-md-config: 208ac3cd-1ed4-4982-a353-bdefac89ac0a
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5493:EE_
-X-MS-Office365-Filtering-Correlation-Id: 096d83bd-0569-4892-51d2-08db46670ed8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZNcwnoLu3eFeP7yUqY8/PixnkMTXw6tObwoZCjsauyA637ZKFBt6EhJakIENTqx+jS/vBXs0kkLDEDVkJGY8vZ7jW7xjcwg1g9yiyzV/iR5MrMQv4TAhjDHXRmq1Mu7h8LU0OFRn0MbLQEpArIxoH3WWtPvGqS+3euHCutRrjoPxM8zQLoqaJoUbizBTpo7PnFHRQjBzLx0mzzLWDGBZD8px77sWAoyN/WFxjYGb3EFbff9kYrUKeqjnDon3xTYL5w+wrQTLhAuVeVxjBEy8cctvCZb8sfx62EyGA38xprstpIy4NjsqFtDlxuEcO88X8fC0OGo+idKEXtTYrVEGAXWB6axi/aj7pPR2cMCwAmBZxPP7sW8Goo1+LqryERNj3oxdg4WVsL6KKpsG7PARdz51l+9LM/a037Gkoh58X7GG2vy+JnfvQH9kbgVAE2ACuDmXsRm3Z89/V71A42PKzMOfQbLxQit3y7mPLtoIAiUeQYlVGdwcR2EpisjYyNFhfZYiuUCtNWZrd3LqfVdrgdz+UyHf8/auYh9JAjmswDC0JwWfeTrQEE2+dT3PDk7u
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(396003)(376002)(346002)(366004)(136003)(451199021)(44832011)(6512007)(4744005)(186003)(6506007)(316002)(36756003)(66556008)(66946007)(6666004)(6916009)(66476007)(478600001)(41300700001)(8676002)(4326008)(8936002)(5660300002)(7416002)(6486002)(38100700002)(2906002)(2616005)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?umB47U20eEpUfGhMWq79ldEgRRx3ruQsiblryBt4K0iqkTuW1uS90bLiXGgw?=
- =?us-ascii?Q?o7XRryeso7zyDNtyh5JF461L9Eah22rVqDp6QNg21Jrpkshr4NKskFXk1ykg?=
- =?us-ascii?Q?y4v6kfrb0QBQw5DD7uX75fR/hwt+nOdzONSt5eRQheeQKDaTrr0+Ak2YcyAl?=
- =?us-ascii?Q?FkbnEFdQb1JW3cOvuMjzQuB50SARgXfLMtz1MeS/G/38/zpTXI3tZePdDbMy?=
- =?us-ascii?Q?wS1K8hnRuTqlasNFVcILg+7Vv87qjkvDo5hz8TnMd4M7DL5O9CUILtNb35kA?=
- =?us-ascii?Q?wpYRrwy1XuYLRMRLK4YsLTr+FAXB+c6yxcBdKBl7eW12aO89MjmsexNUq1KM?=
- =?us-ascii?Q?Q3rTiPnp5r6bsLPfRefnJ32z/lqihGDYEeO8zaGjangtWpCVlry23xEPtRWU?=
- =?us-ascii?Q?NdFPMHGSiFPXqaBQSePKiKuWQxp1KtEsDH8l7fN2mI4B0hBRVecPIBT1zYgk?=
- =?us-ascii?Q?uZg8wEr1yFCtx0uDxaSdYGGdZ9bteMUHXndmQkr1OtUtiSf4tcoXAyOW/59c?=
- =?us-ascii?Q?ZBwKvES1b0J9ZYhzRQzVhmwVNeoaQxPlr7Ep/MDBDskwmqHjmIJnpRjlyknt?=
- =?us-ascii?Q?pe/d3amsN03t07LcQjnfLgG8uk5vybsNh28lbzLkq+nSFzdhxsKhR88kA3Y8?=
- =?us-ascii?Q?89CplJEoLmMGFzOwOqhxz1C7KjlMv3TuuBWtMe2mqS+6n7lpV1gTxkR2YtBm?=
- =?us-ascii?Q?kAPUU0U+lOjDABEGt2cvwvY26ri3AFEIo9opQkEGJ66cdhs8DxM8F7Kfz6pc?=
- =?us-ascii?Q?WP6vGT5nAT5C1Ks8gpd6QZpVvNPbrRLSsWW3TwouzHCyfXPWylcZvJp4SGJL?=
- =?us-ascii?Q?V562woZH8mxgiULmzn2mOmr2tCGUffpdvf9v5ipDKGFB9oZI1zxCRNU7DtC5?=
- =?us-ascii?Q?NcdZNS8nktUnULUcSVrCbo3Rg//mi6B5Dffodo4V65HaFvGKV+D1xTq+Y1q2?=
- =?us-ascii?Q?ar0+mvWz5UGnAxIyGCd4dUqEP925T7YBNF9/e4hUhCyEq9GckH0Yxpn8/WHH?=
- =?us-ascii?Q?AELE0KsVnBy9S5IBGKd0ZUx8Q7z9avIzAOi6l8PuZfb+2hDJI224nscTQ40y?=
- =?us-ascii?Q?uktoKDPnQMEnLSfCz5lDrRNXdofC+1N7Glvwn9p9KQBvuzN9Z0FhgzIS9cMI?=
- =?us-ascii?Q?RZYk/10zYdOCrfospUrV2siBmZetWUkSsSXKujjDmU7YRIzAYkI0O9imatCU?=
- =?us-ascii?Q?xnQnRQBOclsMCoTLYpQ5K+uIBzFzJKKCKd1IJHqztBgtvRhQ+qd/Xb63zcYx?=
- =?us-ascii?Q?jwRw0yEVgAOb8XEXW2hBj4eGV5LoNy+t9s5BskiKuABMc3CvVBqYo1jX/3Jl?=
- =?us-ascii?Q?uijHdfOQvTGUM8vqOaKndIKMxMePtUAFdrtE0x6mC9YctZdolJo+lQUmA6Ym?=
- =?us-ascii?Q?F4i57w4zQ/3BXqK22VQYQfdsWBXjJbusGy/3xYM8slmAfnGoHv3+CmlOCSYp?=
- =?us-ascii?Q?w5Nq8TUcZjKKmnfRfkGk7BnYZInerwUjm06jQudHldKGREEWe9d5rpzmSpfQ?=
- =?us-ascii?Q?SYnchyP1JmVHi2HaOk1RmGgi94U0Og3DQtg+gIfJTMtZ7hoplCxv7cfARCH4?=
- =?us-ascii?Q?kfFO1gQAmJaPAJ7SK3xJivavMtpy5iRzZ97ezUAB1vGvNSVykMgTTE2xOxfE?=
- =?us-ascii?Q?h2tAYaHGNSDJpRAlbFn0RCl7m+4SSTLTWrCHM3x5QK6C9LtFOVBadI5Ji+AV?=
- =?us-ascii?Q?I7I7rA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 096d83bd-0569-4892-51d2-08db46670ed8
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2023 15:01:04.9845
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rNX2qwGg0G6twJjXcUPJt14P+1ln6FSDBupO/1R52edHg3Lz/3Pb/dig9CIDSN3lGYDEhPSu4bgdBZ1+V/OWqP6rrnsWc5sqddwCncJxgUo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5493
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-KLMS-Rule-ID: 1
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Lua-Profiles: 177015 [Apr 26 2023]
+X-KLMS-AntiSpam-Version: 5.9.59.0
+X-KLMS-AntiSpam-Envelope-From: Ilia.Gavrilov@infotecs.ru
+X-KLMS-AntiSpam-Rate: 0
+X-KLMS-AntiSpam-Status: not_detected
+X-KLMS-AntiSpam-Method: none
+X-KLMS-AntiSpam-Auth: dkim=none
+X-KLMS-AntiSpam-Info: LuaCore: 510 510 bc345371020d3ce827abc4c710f5f0ecf15eaf2e, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;infotecs.ru:7.1.1
+X-MS-Exchange-Organization-SCL: -1
+X-KLMS-AntiSpam-Interceptor-Info: scan successful
+X-KLMS-AntiPhishing: Clean, bases: 2023/04/26 03:46:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2023/04/26 04:45:00 #21166225
+X-KLMS-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 26, 2023 at 04:13:13PM +0530, Harini Katakam wrote:
-> From: Harini Katakam <harini.katakam@xilinx.com>
-> 
-> Add support for VSC8531_02 (Rev 2) device.
-> Add support for optional RGMII RX and TX delay tuning via devicetree.
-> The hierarchy is:
-> - Retain the defaul 0.2ns delay when RGMII tuning is not set.
+ct_sip_parse_numerical_param() returns only 0 or 1 now.
+But process_register_request() and process_register_response() imply
+checking for a negative value if parsing of a numerical header parameter
+failed. Let's fix it.
 
-nit: s/defaul/default/
+Found by InfoTeCS on behalf of Linux Verification Center
+(linuxtesting.org) with SVACE.
 
-...
+Fixes: 0f32a40fc91a ("[NETFILTER]: nf_conntrack_sip: create signalling expe=
+ctations")
+Signed-off-by: Ilia.Gavrilov <Ilia.Gavrilov@infotecs.ru>
+---
+ net/netfilter/nf_conntrack_sip.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/netfilter/nf_conntrack_sip.c b/net/netfilter/nf_conntrack_=
+sip.c
+index 77f5e82d8e3f..d0eac27f6ba0 100644
+--- a/net/netfilter/nf_conntrack_sip.c
++++ b/net/netfilter/nf_conntrack_sip.c
+@@ -611,7 +611,7 @@ int ct_sip_parse_numerical_param(const struct nf_conn *=
+ct, const char *dptr,
+ 	start +=3D strlen(name);
+ 	*val =3D simple_strtoul(start, &end, 0);
+ 	if (start =3D=3D end)
+-		return 0;
++		return -1;
+ 	if (matchoff && matchlen) {
+ 		*matchoff =3D start - dptr;
+ 		*matchlen =3D end - start;
+--=20
+2.30.2
