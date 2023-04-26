@@ -2,107 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFC706EF9A6
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 19:53:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5128C6EF9B4
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 19:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239201AbjDZRxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 13:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
+        id S234631AbjDZR7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 13:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233428AbjDZRxL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 13:53:11 -0400
-Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887CB61AB;
-        Wed, 26 Apr 2023 10:53:05 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by domac.alu.hr (Postfix) with ESMTP id 63E196017E;
-        Wed, 26 Apr 2023 19:53:03 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1682531583; bh=ix3yZfX9qAGGSCgGBfddgoc3bJRhu281Z1JgEWmvIZQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=E8C8VEInskBWRChFkZ4Vz+TJY2EBceb+E1AZgguFg42BRujK74/XKdmuKbD/fp54A
-         uLEGaQh13KalmQ4k54AvDMC0MKmpbhdaumc6TTNlUSpmfkg1Q0rtDuAgmbtZmI0RZP
-         J8Mnan9OaMw7b4ejwDeHcPVkSrmQBSZMP6Zk8oGGjGetdiYCF4SukB4vmQy66vWvF9
-         KHQJd48ou/TTwAP5CDQBo8UabFO8OSu4gRiZW4V60+coPrLfDzVMt0B8joYwBWM5WT
-         NzPoJ347+fNK31vc/4RzDVFOgW3Uv/Erx5ByOfqnV+w06xFx3/HbQPFZi2lM5E9YvH
-         RvO2Ys3jVnm6A==
-X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
-Received: from domac.alu.hr ([127.0.0.1])
-        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id nsmIIG9q5Hnn; Wed, 26 Apr 2023 19:53:01 +0200 (CEST)
-Received: from [192.168.1.4] (unknown [94.250.188.177])
-        by domac.alu.hr (Postfix) with ESMTPSA id ADFF16017C;
-        Wed, 26 Apr 2023 19:52:46 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1682531581; bh=ix3yZfX9qAGGSCgGBfddgoc3bJRhu281Z1JgEWmvIZQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=lqhmVaopu7TtdZ3rBlQR6ffhkNbIlIDzcOoATDn25HmXEsTsAZAHPqvrpZ+cKHgxy
-         RSijHFO+c2PfdtBBF1VP+GlB0wiqb+rDOrnURqUjp6Hm/ydagtzjejuGL2+QiWP+gf
-         IvN83FycjwQkDe0ZijHG1LI2rfscvT6LuEQI+Xj1jacqwzzTjwkZFCUjC6i90OZKsT
-         DsnaGc+Jl3hoMceEFxhrnBhVRzhI8lvr0EhEePwoJxoxtBY5gpgdCl46S1CExHkdUh
-         7RBqOwXnzr/I8cGZKg3BZ8F/UGb9pt51LgoYrWVYd5hph9y1nXh5LOmTi8h7O0Huv0
-         O8xfhiU3h092w==
-Message-ID: <e6f97703-58a2-befb-d09b-cee7e946a8a4@alu.unizg.hr>
-Date:   Wed, 26 Apr 2023 19:52:45 +0200
+        with ESMTP id S233479AbjDZR7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 13:59:52 -0400
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0226C618B;
+        Wed, 26 Apr 2023 10:59:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1682531954; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=QTP1nSuy3stytDdseimcCoXtiORzUrZ/QMDABvyPNc3fsSlqJRU3MkxrOKj/yGggz+FNvBuxBKlq+O6XuU4mQN6bpmnasCaNVy9YaOuWaa2GorthIuQhUPRQRsZl0uk3pBBW7RzwVaSOwMSONrefoMy3NvvFmv2PRDG2/qDGtZ0=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1682531954; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=9Wi/8nMN9gJCaCyCSAg2V0pWF7JRystcZiffV/EP5n4=; 
+        b=LNUxwyTGv7+KwRZV9M+mdnj4lKHJa7NJiPEtbzen7rgs1UGmTzFcbnFoB1P/L4RCAuzrAPXgBRpojcRBKJppx5woFLZD7b7qdGHao5X1xo4MTFHjokrHG4vOsG5lc+In3V2YGSbi+8HHrtoji7AeQyunbDfRObpHrc++QQVGyew=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1682531954;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=9Wi/8nMN9gJCaCyCSAg2V0pWF7JRystcZiffV/EP5n4=;
+        b=ExP8dtkFjqQUa+eyrv7X5/ci8YBpV10iB0bdZMsomOUbcJBbHTcrZm3ZmL67sJAT
+        g/4uKOvIlxi+e/9yzFgKC+dYoMtqoHl6AGmkmRNyjx2iW7pX4FJ2Z2uIFAs8BSh/M4w
+        7bi2vLliB9tmoEMes2bbBFEATUKpcc2bqOdc7daI=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 16825319531255.417524925558041; Wed, 26 Apr 2023 10:59:13 -0700 (PDT)
+Message-ID: <d4ebfe62-f951-1646-f3e2-66f419b6ecd4@arinc9.com>
+Date:   Wed, 26 Apr 2023 20:58:58 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH v4 1/1] wifi: mac80211: fortify the spinlock against
- deadlock by interrupt
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Leon Romanovsky <leon@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+Subject: Re: Aw: Re: [net v2] net: ethernet: mtk_eth_soc: drop generic vlan rx
+ offload, only use DSA untagging
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
+        John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Alexander Wetzel <alexander@wetzel-home.de>
-References: <20230425164005.25272-1-mirsad.todorovac@alu.unizg.hr>
- <20230426064145.GE27649@unreal>
- <074cf5ed-c39d-1c16-12e7-4b14bbe0cac4@alu.unizg.hr>
- <d1e8fff25b49f8ee8d3e38f7b072d6e1911759bb.camel@sipsolutions.net>
-Content-Language: en-US, hr
-From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-In-Reply-To: <d1e8fff25b49f8ee8d3e38f7b072d6e1911759bb.camel@sipsolutions.net>
-Content-Type: text/plain; charset=UTF-8
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        stable@vger.kernel.org
+References: <20230426172153.8352-1-linux@fw-web.de>
+ <61ea49b7-8a04-214d-ef02-3ef6181619e9@arinc9.com>
+ <trinity-a7837941-a0d2-4f38-aa65-0f0bd4759624-1682531537098@3c-app-gmx-bs05>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <trinity-a7837941-a0d2-4f38-aa65-0f0bd4759624-1682531537098@3c-app-gmx-bs05>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26. 04. 2023. 17:05, Johannes Berg wrote:
-> On Wed, 2023-04-26 at 16:02 +0200, Mirsad Todorovac wrote:
->>
->> That's awesome! Just to ask, do I need to send the PATCH v5 with the
->> Reviewed-by: tag, or it goes automatically?
->>
+On 26/04/2023 20:52, Frank Wunderlich wrote:
+> Hi
+>> Gesendet: Mittwoch, 26. April 2023 um 19:25 Uhr
+>> Von: "Arınç ÜNAL" <arinc.unal@arinc9.com>
 > 
-> Patchwork will be pick it up automatically.
+>>> tested this on bananapi-r3 on non-dsa gmac1 and dsa eth0 (wan).
+>>> on both vlan is working, but maybe it breaks HW-vlan-untagging
+>>
+>> I'm confused by this. What is HW-vlan-untagging, and which SoCs do you
+>> think this patch would break this feature? How can I utilise this
+>> feature on Linux so I can confirm whether it works or not?
 > 
-> johannes
+> oh, you mean my wording about "hw-vlan-untagging"...i mean the hw vlan offload feature which may
+> not be working on non-mt7621/7622 devices as i have no idea how to check this. i hope felix can
+> answer this. at least the feature activeated on mt7986 breaks sw-vlan on the gmac1 (without
+> switch).
 
-That's awesome, thank you for the update.
+The "hw vlan offload" feature being broken on non-mt7621/7622 devices is 
+already established, hence this patch disabling it for the 
+non-mt7621/7622 devices. I still don't understand why you're mentioning 
+it in this way, unless you're trying to say something else?
 
-Mirsad
+Could you also not trim the relevant parts of the mail on your response. 
+It's getting hard to keep track of the conversation.
 
--- 
-Mirsad Goran Todorovac
-Sistem inženjer
-Grafički fakultet | Akademija likovnih umjetnosti
-Sveučilište u Zagrebu
- 
-System engineer
-Faculty of Graphic Arts | Academy of Fine Arts
-University of Zagreb, Republic of Croatia
-The European Union
-
-"I see something approaching fast ... Will it be friends with me?"
-
+Arınç
