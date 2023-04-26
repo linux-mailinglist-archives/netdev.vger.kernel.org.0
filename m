@@ -2,88 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF7A6EEB89
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 02:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B65416EEC40
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 04:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238364AbjDZAmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 20:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
+        id S239070AbjDZCMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 22:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbjDZAmP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 20:42:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED16AF22
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 17:42:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AD2362E3B
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 00:42:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 523FDC433D2;
-        Wed, 26 Apr 2023 00:42:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682469732;
-        bh=CPNVA3FH9DGh7I+5aVr2P0I5quFJ4wC4GLXyO0CBLEI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Xf9ygwaTJ8HLAaTM6HhQkbuDdvT10c/B0t8Yj9DZrw1SBXJbEBFEKLNN8L3sHWI69
-         chJlLsGB94Lccy1MM7yOsroJV9BK4FXzWttL/zR9zwN3e9fNQpGCXm8UqWpDO0aFum
-         6N0HkspIrn6dvuOOsoMy0LxLEDCsMhdaeG05XLQn4biCuzAgYK7hVFEtiWkgydkhZO
-         vKyTS/7hKOTItbodNelC2JibgCTMqstARkj+T3hRt6aUFGqnwA4CmhUXQx5mT32Cm2
-         1IC4FslkK5aN2bzjEHpjkJMd8nRcvmgOweiUqgnRNsJye3dNZEgnKWhIfXZt7PGxms
-         U368tfghiKKQg==
-Message-ID: <28816788-3499-adca-b792-a5eafa2e2b14@kernel.org>
-Date:   Tue, 25 Apr 2023 18:42:11 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-Subject: Re: [PATCH v2 iproute2-next 00/10] Add tc-mqprio and tc-taprio
- support for preemptible traffic classes
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-References: <20230418113953.818831-1-vladimir.oltean@nxp.com>
- <535c37f2-df90-ae4b-5b5a-8bf75916ad22@kernel.org>
- <20230422165945.7df2xbpeg3llgt7x@skbuf>
- <5575810d-ceee-7b7b-fba4-e14e5ca6e412@kernel.org>
- <20230425125511.qro3vql5aivxnxlh@skbuf>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20230425125511.qro3vql5aivxnxlh@skbuf>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S238420AbjDZCMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 22:12:39 -0400
+Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F1746A1
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 19:12:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R671e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Vh0mqr._1682475153;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vh0mqr._1682475153)
+          by smtp.aliyun-inc.com;
+          Wed, 26 Apr 2023 10:12:34 +0800
+Message-ID: <1682474997.6771185-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v4 virtio 01/10] virtio: allow caller to override device id and DMA mask
+Date:   Wed, 26 Apr 2023 10:09:57 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Shannon Nelson <shannon.nelson@amd.com>
+Cc:     <drivers@pensando.io>, <jasowang@redhat.com>, <mst@redhat.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
+        <netdev@vger.kernel.org>
+References: <20230425212602.1157-1-shannon.nelson@amd.com>
+ <20230425212602.1157-2-shannon.nelson@amd.com>
+In-Reply-To: <20230425212602.1157-2-shannon.nelson@amd.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/25/23 6:55 AM, Vladimir Oltean wrote:
-> On Mon, Apr 24, 2023 at 07:47:31PM -0600, David Ahern wrote:
->> On 4/22/23 10:59 AM, Vladimir Oltean wrote:
->>> Unless there are changes I need to make to the contents of the patches,
->>> could you take these from the lists, or is that a no-no?
->>
->> iproute2 follows the netdev dev model with a main tree for bug fixes and
->> -next tree for features. In the future please separate out the patches
->> and send with proper targets. If a merge is needed you can state that in
->> the cover letter of the set for -next.
-> 
-> I know that the trees are split and it is no coincidence that my patches
-> were sorted in the correct order. I've been working for 10 months on
-> this small feature and I was impatient to get it over with, so I wanted
-> to eliminate one round-trip time if possible (send to "iproute2", ask
-> for merge, send to "iproute2-next"). I requested this honestly thinking
-> that there would be no difference to the end result, only less pretentious
-> in terms of the process. If there is any automation (I didn't see any in
-> Patchwork at least) or any other reason that would justify the more
-> pretentious process, then again, my excuses, I plead ignorance and I
-> will follow it more strictly next time, but I'd also like to know it :)
+On Tue, 25 Apr 2023 14:25:53 -0700, Shannon Nelson <shannon.nelson@amd.com> wrote:
+> To add a bit of flexibility with various virtio based devices, allow
+> the caller to specify a different device id and DMA mask.  This adds
+> fields to struct virtio_pci_modern_device to specify an override device
+> id check and a DMA mask.
+>
+> int (*device_id_check)(struct pci_dev *pdev);
+> 	If defined by the driver, this function will be called to check
+> 	that the PCI device is the vendor's expected device, and will
+> 	return the found device id to be stored in mdev->id.device.
+> 	This allows vendors with alternative vendor device ids to use
+> 	this library on their own device BAR.
+>
+> u64 dma_mask;
+> 	If defined by the driver, this mask will be used in a call to
+> 	dma_set_mask_and_coherent() instead of the traditional
+> 	DMA_BIT_MASK(64).  This allows limiting the DMA space on
+> 	vendor devices with address limitations.
+>
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+> ---
+>  drivers/virtio/virtio_pci_modern_dev.c | 37 +++++++++++++++++---------
+>  include/linux/virtio_pci_modern.h      |  6 +++++
+>  2 files changed, 31 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
+> index 869cb46bef96..1f2db76e8f91 100644
+> --- a/drivers/virtio/virtio_pci_modern_dev.c
+> +++ b/drivers/virtio/virtio_pci_modern_dev.c
+> @@ -218,21 +218,29 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
+>  	int err, common, isr, notify, device;
+>  	u32 notify_length;
+>  	u32 notify_offset;
+> +	int devid;
+>
+>  	check_offsets();
+>
+> -	/* We only own devices >= 0x1000 and <= 0x107f: leave the rest. */
+> -	if (pci_dev->device < 0x1000 || pci_dev->device > 0x107f)
+> -		return -ENODEV;
+> -
+> -	if (pci_dev->device < 0x1040) {
+> -		/* Transitional devices: use the PCI subsystem device id as
+> -		 * virtio device id, same as legacy driver always did.
+> -		 */
+> -		mdev->id.device = pci_dev->subsystem_device;
+> +	if (mdev->device_id_check) {
+> +		devid = mdev->device_id_check(pci_dev);
+> +		if (devid < 0)
+> +			return devid;
 
-Maybe the word choice here is a language issue, but it is not a
-'pretentious' process, it is "the" process for submitting patches to
-both networking trees and iproute2 trees. You would not send a mixed
-patch set to the netdev maintainers, so don't do it for iproute2.
+I would want to know is there any other reason to return the errno?
+How about return -ENODEV directly?
+
+Thanks.
+
+
+> +		mdev->id.device = devid;
+>  	} else {
+> -		/* Modern devices: simply use PCI device id, but start from 0x1040. */
+> -		mdev->id.device = pci_dev->device - 0x1040;
+> +		/* We only own devices >= 0x1000 and <= 0x107f: leave the rest. */
+> +		if (pci_dev->device < 0x1000 || pci_dev->device > 0x107f)
+> +			return -ENODEV;
+> +
+> +		if (pci_dev->device < 0x1040) {
+> +			/* Transitional devices: use the PCI subsystem device id as
+> +			 * virtio device id, same as legacy driver always did.
+> +			 */
+> +			mdev->id.device = pci_dev->subsystem_device;
+> +		} else {
+> +			/* Modern devices: simply use PCI device id, but start from 0x1040. */
+> +			mdev->id.device = pci_dev->device - 0x1040;
+> +		}
+>  	}
+>  	mdev->id.vendor = pci_dev->subsystem_vendor;
+>
+> @@ -260,7 +268,12 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
+>  		return -EINVAL;
+>  	}
+>
+> -	err = dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(64));
+> +	if (mdev->dma_mask)
+> +		err = dma_set_mask_and_coherent(&pci_dev->dev,
+> +						mdev->dma_mask);
+> +	else
+> +		err = dma_set_mask_and_coherent(&pci_dev->dev,
+> +						DMA_BIT_MASK(64));
+>  	if (err)
+>  		err = dma_set_mask_and_coherent(&pci_dev->dev,
+>  						DMA_BIT_MASK(32));
+> diff --git a/include/linux/virtio_pci_modern.h b/include/linux/virtio_pci_modern.h
+> index c4eeb79b0139..067ac1d789bc 100644
+> --- a/include/linux/virtio_pci_modern.h
+> +++ b/include/linux/virtio_pci_modern.h
+> @@ -38,6 +38,12 @@ struct virtio_pci_modern_device {
+>  	int modern_bars;
+>
+>  	struct virtio_device_id id;
+> +
+> +	/* optional check for vendor virtio device, returns dev_id or -ERRNO */
+> +	int (*device_id_check)(struct pci_dev *pdev);
+> +
+> +	/* optional mask for devices with limited DMA space */
+> +	u64 dma_mask;
+>  };
+>
+>  /*
+> --
+> 2.17.1
+>
