@@ -2,74 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3519E6EF571
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 15:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED1786EF590
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 15:35:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241078AbjDZNXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 09:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
+        id S240627AbjDZNfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 09:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240655AbjDZNXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 09:23:17 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B64525E
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 06:23:07 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-94eff00bcdaso1307520766b.1
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 06:23:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682515386; x=1685107386;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=94RFcobVU2BOSXI+w3jlybnQelL4xN9yEFnF/tEpk9A=;
-        b=FRjDTroVDwdesWheLsuhy1ypAm1WkDWFN83U/+0uLnb4ERSBf8vbR4gtoh8bUk/F8L
-         RAC4Q4bUAwMRJXRRwSFixircev+aOrNhQfQwMFLtJjiCRBmFgzT+RfoBU8BSVCRkGr+Q
-         hsL3wOJbKNDCRPWHacoG0M9ycn7VAWEPkfGDEpaqgtzmbdd7JBYBY6WuUJD3PC4cg769
-         6qPfFszA131wi2Urb4v7OwSI957V/UeI19SaGRc7rIgTCe6C6aomGyHEkxzI0MYEVdfA
-         weNvTgkdobmfWWQNYe2lOvZlcpA735arCFPUWNnud6KYQXSrzCmg8j/zKwfocc39sfk4
-         A4FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682515386; x=1685107386;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=94RFcobVU2BOSXI+w3jlybnQelL4xN9yEFnF/tEpk9A=;
-        b=R+26RY9LLRRmsNjw3x6+MbPRO77rGDsfd9SF1/0PxvQrR72KjWcPS/ykiScVdyKkFa
-         Oj5FiMDe+cAteGYzyHnoel9jHIzvkqxNsm8oODxcDMN/bRogMFZXejQjmFoJaACE6MQf
-         slA+auVqgjAK9yvUk1b8HCoVTmdT1juhnxm9UCknzpC6MN1oGiKVbGM+EdKVoGgz+IlQ
-         cQyY60Nct6E2zWIyr4xYQlJ1Ga95ZI5oZFhZ7acOrH308tpM1cO/VUhNFxCRoHkgb6RE
-         UcB6tMwTs+lKxlMyxm1kvPkQYpdMZez9Rq6ykBb94PPhe/5KdUxzuv9J7Pgepx9TfUFD
-         Pb4Q==
-X-Gm-Message-State: AAQBX9cBprbIquoJfHZ/57sO0aWqYWMtZuVwHm177WpaaDfNNe9NKPJZ
-        w/ilGnQxkqL5fjn25B7jQ+w=
-X-Google-Smtp-Source: AKy350a5/E5I6mAZ3pM7Xu0E0lPf0Yj0mliHV1SrucNCKpeAysNoq9aMfGezGucjfQ3nDwxcg6wZdA==
-X-Received: by 2002:a17:906:4a99:b0:959:af74:4cf7 with SMTP id x25-20020a1709064a9900b00959af744cf7mr9703292eju.70.1682515385986;
-        Wed, 26 Apr 2023 06:23:05 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id i17-20020a056402055100b0050685927971sm6778588edx.30.2023.04.26.06.23.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Apr 2023 06:23:05 -0700 (PDT)
-Date:   Wed, 26 Apr 2023 16:23:03 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
+        with ESMTP id S239947AbjDZNfv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 09:35:51 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1AE330F3
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 06:35:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ay6WQ93CNPZkwAsidUP9pr6j43gPl8WP8n6eNfGIhMw=; b=r6algxchZoz88T7rbSCA7U14jD
+        jmq6e5DiLaHIOZ35u2nM7QHP9UFJh9bAOuzyT4LssXhIzqDffEjP2Zs2O6opnz9SY6FfLo8zk4gj/
+        tBWa5nRTzgn9BtNAr1V8S3iYY7e0ibIa09oGIyMlJ7/3I8U9RmA7fzjyYtVqF+tz5tWk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1prfJE-00BH8y-WB; Wed, 26 Apr 2023 15:35:49 +0200
+Date:   Wed, 26 Apr 2023 15:35:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Angelo Dureghello <angelo@kernel-space.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
 Subject: Re: dsa: mv88e6xxx: mv88e6321 rsvd2cpu
-Message-ID: <20230426132303.frxluy56dxi7ofbv@skbuf>
+Message-ID: <5056756b-5371-4e7c-9016-8234352f9033@lunn.ch>
 References: <1c798e9d-9a48-0671-b602-613cde9585cc@kernel-space.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <1c798e9d-9a48-0671-b602-613cde9585cc@kernel-space.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
-
-Hi Angelo,
 
 On Wed, Apr 26, 2023 at 10:12:28AM +0200, Angelo Dureghello wrote:
 > Hi all,
@@ -85,5 +60,10 @@ On Wed, Apr 26, 2023 at 10:12:28AM +0200, Angelo Dureghello wrote:
 > rsvd2cpu was not implemented for my 6321 ?
 > I can send the patch i am using actually. in case.
 
-I don't know why mv88e6321_ops doesn't define a mgmt_rsvd2cpu()
-implementation. I would agree that it is necessary, if available.
+Should it be mv88e6185_g2_mgmt_rsvd2cpu() or
+mv88e6352_g2_mgmt_rsvd2cpu()? Does the 6321 only support
+01:80:c2:00:00:0x or does it have 01:80:c2:00:00:2x as well?
+
+Please do send a patch, and include a Fixes: tag.
+
+       Andrew
