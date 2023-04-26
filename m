@@ -2,77 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D4936EEAFD
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 01:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AF7A6EEB89
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 02:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236468AbjDYXaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 19:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
+        id S238364AbjDZAmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 20:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231391AbjDYXae (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 19:30:34 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DA4C156;
-        Tue, 25 Apr 2023 16:30:32 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id d2e1a72fcca58-63b5465fb99so5348291b3a.1;
-        Tue, 25 Apr 2023 16:30:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682465432; x=1685057432;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5RfZ8RVW96CnZSnLPllki9oYfv4BEcxnSUlFKYRwQXQ=;
-        b=HBZhB5Pr+baxkN4KvfeOVnht6oYi4lYBsoyZTtXcyoQ3zJ7Ttsb2Iq5I90h983cpKj
-         0whpEIArc8Y0d9qx4cx2k49Su4k0xoaOIgNolgcA1mSX9AIg7f1gvn6kYGmHqchJnND3
-         E4OSfGTw2GSFuOrtqMkPzD7cN2CkCRiRN4Iv5FXbXSqTodNJNSb5EikZd4O2EqoiTDkA
-         T7kez73STABeWE5VDgZPXZ0x30rYAeh5MutQYDOX20W+fIl8OewyweT8mZ9njvxrVmQt
-         PJFS4I5VRvAHcwCkdbbU4oO/qORe6N8XPv9FTl2fefRGbknPJN20K0VMEZtizluevRTM
-         I6MA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682465432; x=1685057432;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5RfZ8RVW96CnZSnLPllki9oYfv4BEcxnSUlFKYRwQXQ=;
-        b=AgMQSiNmv+4zqoeKBsyR5iKo9MXl+1A7DsyMdFP/a/UiANYBo81zndLVpX7vYFOYm+
-         tfWqwFyQxzys8+QjJQnO5nGzpO8uEo1JVJ+WedRBUN4MqnpSKPzIxT+6AyjHOKPDtuOw
-         HeR0GkAUb3UhPkq2vQsIRNQyZZqdLW8Y35wuqWt1xOPjRWzhnTIKhrK/BUg4qzUYmGJw
-         hU3jppHPwHL/LRwCRmO57Zf9t4L8kbj0P1O6KpNKIhpGvLA2qCC7HqXYZKQIpjz0SoVC
-         7NBcxcte9m/DAaFUPDe2qvNEKT1mzuD/ALPmXZWst4M2gPIx/AVwNDeAPe53S9k2NxZT
-         QsXw==
-X-Gm-Message-State: AAQBX9evx+JPV3+HqIp3hbz8wPqfBTcvt2R+SivtnsY7BHcKSQdy/BfT
-        PfpM4i2NnkMXw15vBp53Jj4=
-X-Google-Smtp-Source: AKy350YBdJX5mH2MZXB4lJU8kHJHun1b9ZDPyuxnDLY9ewHVcAuM0DPP0GxDqkjGq7J1xfM/R828Uw==
-X-Received: by 2002:a05:6a00:2d20:b0:634:7ba3:d142 with SMTP id fa32-20020a056a002d2000b006347ba3d142mr27631275pfb.10.1682465431903;
-        Tue, 25 Apr 2023 16:30:31 -0700 (PDT)
-Received: from dhcp-172-26-102-232.dhcp.thefacebook.com ([2620:10d:c090:400::5:f9d6])
-        by smtp.gmail.com with ESMTPSA id a11-20020a634d0b000000b004e28be19d1csm8332541pgb.32.2023.04.25.16.30.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 16:30:31 -0700 (PDT)
-Date:   Tue, 25 Apr 2023 16:30:27 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        linux-mm@kvack.org, Mel Gorman <mgorman@techsingularity.net>,
-        lorenzo@kernel.org,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        linyunsheng@huawei.com, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, willy@infradead.org
-Subject: Re: [PATCH RFC net-next/mm V1 2/3] page_pool: Use static_key for
- shutdown phase
-Message-ID: <20230425233027.w3olphld4nkcdvry@dhcp-172-26-102-232.dhcp.thefacebook.com>
-References: <168244288038.1741095.1092368365531131826.stgit@firesoul>
- <168244294384.1741095.6037010854411310099.stgit@firesoul>
+        with ESMTP id S229772AbjDZAmP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 20:42:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED16AF22
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 17:42:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AD2362E3B
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 00:42:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 523FDC433D2;
+        Wed, 26 Apr 2023 00:42:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682469732;
+        bh=CPNVA3FH9DGh7I+5aVr2P0I5quFJ4wC4GLXyO0CBLEI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Xf9ygwaTJ8HLAaTM6HhQkbuDdvT10c/B0t8Yj9DZrw1SBXJbEBFEKLNN8L3sHWI69
+         chJlLsGB94Lccy1MM7yOsroJV9BK4FXzWttL/zR9zwN3e9fNQpGCXm8UqWpDO0aFum
+         6N0HkspIrn6dvuOOsoMy0LxLEDCsMhdaeG05XLQn4biCuzAgYK7hVFEtiWkgydkhZO
+         vKyTS/7hKOTItbodNelC2JibgCTMqstARkj+T3hRt6aUFGqnwA4CmhUXQx5mT32Cm2
+         1IC4FslkK5aN2bzjEHpjkJMd8nRcvmgOweiUqgnRNsJye3dNZEgnKWhIfXZt7PGxms
+         U368tfghiKKQg==
+Message-ID: <28816788-3499-adca-b792-a5eafa2e2b14@kernel.org>
+Date:   Tue, 25 Apr 2023 18:42:11 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <168244294384.1741095.6037010854411310099.stgit@firesoul>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+Subject: Re: [PATCH v2 iproute2-next 00/10] Add tc-mqprio and tc-taprio
+ support for preemptible traffic classes
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+References: <20230418113953.818831-1-vladimir.oltean@nxp.com>
+ <535c37f2-df90-ae4b-5b5a-8bf75916ad22@kernel.org>
+ <20230422165945.7df2xbpeg3llgt7x@skbuf>
+ <5575810d-ceee-7b7b-fba4-e14e5ca6e412@kernel.org>
+ <20230425125511.qro3vql5aivxnxlh@skbuf>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20230425125511.qro3vql5aivxnxlh@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,16 +61,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 07:15:43PM +0200, Jesper Dangaard Brouer wrote:
-> Performance is very important for page pool (PP). This add the use of
-> static_key APIs for regaining a single instruction, which makes the
-> new PP shutdown scheme zero impact.
+On 4/25/23 6:55 AM, Vladimir Oltean wrote:
+> On Mon, Apr 24, 2023 at 07:47:31PM -0600, David Ahern wrote:
+>> On 4/22/23 10:59 AM, Vladimir Oltean wrote:
+>>> Unless there are changes I need to make to the contents of the patches,
+>>> could you take these from the lists, or is that a no-no?
+>>
+>> iproute2 follows the netdev dev model with a main tree for bug fixes and
+>> -next tree for features. In the future please separate out the patches
+>> and send with proper targets. If a merge is needed you can state that in
+>> the cover letter of the set for -next.
 > 
-> We are uncertain if this is 100% correct, because static_key APIs uses
-> a mutex lock and it is uncertain if all contexts that can return pages
-> can support this. We could spawn a workqueue (like we just removed) to
-> workaround this issue.
+> I know that the trees are split and it is no coincidence that my patches
+> were sorted in the correct order. I've been working for 10 months on
+> this small feature and I was impatient to get it over with, so I wanted
+> to eliminate one round-trip time if possible (send to "iproute2", ask
+> for merge, send to "iproute2-next"). I requested this honestly thinking
+> that there would be no difference to the end result, only less pretentious
+> in terms of the process. If there is any automation (I didn't see any in
+> Patchwork at least) or any other reason that would justify the more
+> pretentious process, then again, my excuses, I plead ignorance and I
+> will follow it more strictly next time, but I'd also like to know it :)
 
-With debug atomic sleep the issue should be trivial to see.
-iirc the callers of xdp_flush_frame_bulk() need to do it under rcu_read_lock equivalent,
-which is not sleepable and mutex-es should warn.
+Maybe the word choice here is a language issue, but it is not a
+'pretentious' process, it is "the" process for submitting patches to
+both networking trees and iproute2 trees. You would not send a mixed
+patch set to the netdev maintainers, so don't do it for iproute2.
