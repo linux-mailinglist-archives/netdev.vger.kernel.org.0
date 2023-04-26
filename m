@@ -2,133 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CBB76EF1E1
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 12:26:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBEA86EF1DF
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 12:25:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240309AbjDZK0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 06:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
+        id S240036AbjDZKZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 06:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239853AbjDZK0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 06:26:01 -0400
-Received: from out28-101.mail.aliyun.com (out28-101.mail.aliyun.com [115.124.28.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D9A3C0C;
-        Wed, 26 Apr 2023 03:25:59 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1189686|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0275812-0.000346042-0.972073;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047198;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=15;RT=15;SR=0;TI=SMTPD_---.SRCgG.0_1682504752;
-Received: from 10.0.2.15(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.SRCgG.0_1682504752)
-          by smtp.aliyun-inc.com;
-          Wed, 26 Apr 2023 18:25:53 +0800
-Message-ID: <11f0641a-ef6c-eee8-79f3-45654ae006d5@motor-comm.com>
-Date:   Wed, 26 Apr 2023 18:24:43 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH v1 2/2] net: phy: motorcomm: Add pad drive strength cfg
- support
-Content-Language: en-US
-To:     Samin Guo <samin.guo@starfivetech.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, Peter Geis <pgwipeout@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S229627AbjDZKZp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 06:25:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E77C2709
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 03:25:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682504699;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q6T5nKRf+tLxwFxW8VyBeziXqKPsyv0cvge4JMWu6WE=;
+        b=H1CQD98/CqnetQAiKAKQunoU1DIFtlCbCMKBdNwUPHAsICLyuslpz9xcQlEO8axgG6fFfl
+        IeIBHaOLolGw3Acz0P0H0QSK1HZBqcfGlDNcGxqGJWe5c4GoMcgjPPYjUBuWGjHs++wEAn
+        9yWzhGMjyg6IFq5UJ4yntm+Vb81Wd8E=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-539-jPUI7qm7P7WGr0epTEQHOA-1; Wed, 26 Apr 2023 06:24:55 -0400
+X-MC-Unique: jPUI7qm7P7WGr0epTEQHOA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B262F185A78F;
+        Wed, 26 Apr 2023 10:24:54 +0000 (UTC)
+Received: from calimero.vinschen.de (unknown [10.39.194.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 142DA40C6E67;
+        Wed, 26 Apr 2023 10:24:53 +0000 (UTC)
+Received: by calimero.vinschen.de (Postfix, from userid 500)
+        id 86AEBA80C97; Wed, 26 Apr 2023 12:24:52 +0200 (CEST)
+Date:   Wed, 26 Apr 2023 12:24:52 +0200
+From:   Corinna Vinschen <vinschen@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: stmmac: allow ethtool action on PCI
+ devices if device is down
+Message-ID: <ZEj79PLEcn7Q78T5@calimero.vinschen.de>
+Mail-Followup-To: Jakub Kicinski <kuba@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>
-References: <20230426063541.15378-1-samin.guo@starfivetech.com>
- <20230426063541.15378-3-samin.guo@starfivetech.com>
-From:   Frank Sae <Frank.Sae@motor-comm.com>
-In-Reply-To: <20230426063541.15378-3-samin.guo@starfivetech.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org
+References: <20230331092341.268964-1-vinschen@redhat.com>
+ <45c43618-3368-f780-c8bb-68db4ed5760f@gmail.com>
+ <ZCqfwxr2I7xt6zon@calimero.vinschen.de>
+ <ZEeLyVNgsFmRvour@calimero.vinschen.de>
+ <20230425065441.1bc15b29@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230425065441.1bc15b29@kernel.org>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2023/4/26 14:35, Samin Guo wrote:
-> The motorcomm phy (YT8531) supports the ability to adjust the drive
-> strength of the rx_clk/rx_data, and the default strength may not be
-> suitable for all boards. So add configurable options to better match
-> the boards.(e.g. StarFive VisionFive 2)
+On Apr 25 06:54, Jakub Kicinski wrote:
+> On Tue, 25 Apr 2023 10:14:01 +0200 Corinna Vinschen wrote:
+> > is that patch still under review or is it refused, given the
+> > current behaviour is not actually incorrect?
 > 
-> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
-> ---
->  drivers/net/phy/motorcomm.c | 32 ++++++++++++++++++++++++++++++++
->  1 file changed, 32 insertions(+)
-> 
-> diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
-> index 2fa5a90e073b..08f28ed83e60 100644
-> --- a/drivers/net/phy/motorcomm.c
-> +++ b/drivers/net/phy/motorcomm.c
-> @@ -236,6 +236,11 @@
->   */
->  #define YTPHY_WCR_TYPE_PULSE			BIT(0)
->  
-> +#define YTPHY_PAD_DRIVE_STRENGTH_REG		0xA010
-> +#define YTPHY_RGMII_RXC_DS			GENMASK(15, 13)
-> +#define YTPHY_RGMII_RXD_DS			GENMASK(5, 4)	/* Bit 1 and 0 of rgmii_rxd_ds */
-> +#define YTPHY_RGMII_RXD_DS2			BIT(12) 	/* Bit 2 of rgmii_rxd_ds */
-> +
+> That's not what Heiner said. Does the device not link the netdev
+> correctly to the bus device?
 
-Please  change YTPHY_RGMII_XXX  to YT8531_RGMII_XXX. YT8521's reg (0xA010) is not same as this.
-Keep bit order.
+No, that's not the problem.
 
->  #define YTPHY_SYNCE_CFG_REG			0xA012
->  #define YT8521_SCR_SYNCE_ENABLE			BIT(5)
->  /* 1b0 output 25m clock
-> @@ -1495,6 +1500,7 @@ static int yt8531_config_init(struct phy_device *phydev)
->  {
->  	struct device_node *node = phydev->mdio.dev.of_node;
->  	int ret;
-> +	u32 val;
->  
->  	ret = ytphy_rgmii_clk_delay_config_with_lock(phydev);
->  	if (ret < 0)
-> @@ -1518,6 +1524,32 @@ static int yt8531_config_init(struct phy_device *phydev)
->  			return ret;
->  	}
->  
-> +	if (!of_property_read_u32(node, "rx-clk-driver-strength", &val)) {
+> Core already does pm_get/pm_put
+> around ethtool calls.
 
-Please check the val of "val", add the handle of default value.
+Yeah, right.  I made a more thorough test now and it appears that
+the calls don't even have any effect.
 
-> +		ret = ytphy_modify_ext_with_lock(phydev,
-> +						 YTPHY_PAD_DRIVE_STRENGTH_REG,
-> +						 YTPHY_RGMII_RXC_DS,
-> +						 FIELD_PREP(YTPHY_RGMII_RXC_DS, val));
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	if (!of_property_read_u32(node, "rx-data-driver-strength", &val)) {
-> +		if (val > FIELD_MAX(YTPHY_RGMII_RXD_DS)) {
-> +			val &= FIELD_MAX(YTPHY_RGMII_RXD_DS);
-> +			val = FIELD_PREP(YTPHY_RGMII_RXD_DS, val);
-> +			val |= YTPHY_RGMII_RXD_DS2;
-> +		} else {
-> +			val = FIELD_PREP(YTPHY_RGMII_RXD_DS, val);
-> +		}
-> +
-> +		ret = ytphy_modify_ext_with_lock(phydev,
-> +						 YTPHY_PAD_DRIVE_STRENGTH_REG,
-> +						 YTPHY_RGMII_RXD_DS | YTPHY_RGMII_RXD_DS2,
-> +						 val);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
->  	return 0;
->  }
->  
+For testing I created a driver which simply skips the check for
+netdev_running() and compared with the driver including my patch.
+I tested almost all ethtool calls fetching and setting values and
+there's no difference in behaviour.
+
+Worse, while it's possible to change a lot of settings when skipping the
+netdev_running() check, , some really basic stuff doesn't work as
+desired.  I. e., setting autoneg or a fixed speed while the interface is
+down is taken without complaints, but it has no effect when the
+interface goes up again.
+
+So we can just scratch my patch.  Sorry wasting your time.
+
+
+Corinna
+
