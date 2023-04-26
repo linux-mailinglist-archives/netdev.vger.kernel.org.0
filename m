@@ -2,162 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B38A6EF260
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 12:43:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 107C86EF266
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 12:43:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240479AbjDZKnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 06:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38306 "EHLO
+        id S240511AbjDZKnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 06:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240525AbjDZKmy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 06:42:54 -0400
-Received: from mail-io1-f79.google.com (mail-io1-f79.google.com [209.85.166.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED635C3
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 03:42:52 -0700 (PDT)
-Received: by mail-io1-f79.google.com with SMTP id ca18e2360f4ac-7664be0eb9cso38083039f.3
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 03:42:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682505772; x=1685097772;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=I/MUlpUbp43WSfh7jyzDWWiZrAUNyRkJnvIcp0JJ3fU=;
-        b=NXmyZxGg6mzZoST5umDViL/yx0berCXT25K//Xjvjg5zd/XOAgPp9xcOX3XiYVeobX
-         o6GaQc2Q9w4Eh4ecY9W67idBh9wHIvwtyu8Qoj1aGkpQ4JPF2QyRrA7NpjnBdfFdWqAC
-         QnR69ZF9+NZrYQ9qzZDKrUdjuMYHQKbnUpYcSS3EH0R6EK6ILx/no+3u+QOejxAQ5bla
-         IRp72IHPERIFM1ZNQw4mRI9fgs4blh627k6NMZlFI3PWDJtDexYkzPt17yuZ6cc9lXLO
-         W+lUthZ4DV0+gp03rButgB/OvUb31ixG/Cg3dyvy7T78EAQ4/F/OqXvFlpQ92c+2guRd
-         flAA==
-X-Gm-Message-State: AAQBX9c/PrMaRW6mn75QCM2ClAJK3NFj7pJtkJFWSmR5Qn4Yd2MUTqJN
-        KxqhIlYZXZ+M/KX4ayeAS9GW6G/T41wzUMpI1bcFYHUeDwfg
-X-Google-Smtp-Source: AKy350bi/inY7tXO3A/YXlv/rCgW0VdwnLoP8pDC7PfbX6BLM7vZxZcbvhhwBlvc/kDC5gfT3AHXBy63Z7+IneDTrE74wIPUOHnp
+        with ESMTP id S240505AbjDZKn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 06:43:27 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A93D46B0;
+        Wed, 26 Apr 2023 03:43:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZeBamfcYDRumuIfoNEOa3Te5UIWMNycWlKMZhiYE/Hpwk+MlmwRvu6BG6xJh9cc5gmTCf6DnLbd7aLSCzBywuaT0PgEnaFSoxwxSaxYOAIGTIg0IzgeMwasuU52isikfvAn/OJsokGDBwBp9nyDcK3WpEYjyrmWB+enmnh47fLB0ybThy1Y02A5zY++yLB0pjI7eGPGlkjgX7JHfmQMuaMcwAo7/3H3SDKjHCRw44UbCTc+n3PBwF3YSH9Sgzkil8XlqxMSNxSH/vPhLIKG28vlQJISxI4U6ehVy1YFrkngGJ948ZETkDW5bGyAoqIBnju5Cxvmh2mKLDHQgw+7vEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ByTvEJDJotuFtMm6dMGhfHsXAr3pTFCdIxACb2MfSKU=;
+ b=mc+fAzj1knenaSebrwRoTz4fxFd+ujpbTpXVZmte/CwiLnhk2VxiSJpR6Nx4STpzinDKWfF3IG1MLC68vjf8XziDxysbvdqSgw+OjrtojiHkvuLrSv6Ssj/iEioHu01YcXrgSZdMXYJSycYUKEfy+HuDKulN02UDGseTaQI5Kz5eVnLtS2XMPUvXZbJ1lLcxXxieD5N9TsVQ1soxPUTEdFFW6ZgChAchFkEcbmokRojnkP780Eh0Y8j8WHPMOzntSx7L6IMDxDpqFZZcyPR5nh05FfTwnZmz6goAZeegB4nVHUdelxHDT88E1WJ6dvCqTL2lk6okHyYASgmekApGaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ByTvEJDJotuFtMm6dMGhfHsXAr3pTFCdIxACb2MfSKU=;
+ b=2GhFbXS5SZxztxSxgb569KyLgrFmgBZDeCEsD40nZBgRsLZKKW1BJRrJQVtSybH/A8CBfQvnp2l0qpXwRtwk/B0mR4Oir3WVVXjB1DnNE8yXJYpRx7ucI4gClPwco5D05R8mO1gBzGltDssWwPfKotFI+RRSus5jQap9boYxHqI=
+Received: from MW4PR04CA0205.namprd04.prod.outlook.com (2603:10b6:303:86::30)
+ by DM6PR12MB4385.namprd12.prod.outlook.com (2603:10b6:5:2a6::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.20; Wed, 26 Apr
+ 2023 10:43:20 +0000
+Received: from CO1NAM11FT088.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:86:cafe::21) by MW4PR04CA0205.outlook.office365.com
+ (2603:10b6:303:86::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21 via Frontend
+ Transport; Wed, 26 Apr 2023 10:43:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ CO1NAM11FT088.mail.protection.outlook.com (10.13.175.131) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6340.21 via Frontend Transport; Wed, 26 Apr 2023 10:43:19 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Wed, 26 Apr
+ 2023 05:43:18 -0500
+Received: from xhdharinik40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
+ Transport; Wed, 26 Apr 2023 05:43:14 -0500
+From:   Harini Katakam <harini.katakam@amd.com>
+To:     <robh+dt@kernel.org>, <andrew@lunn.ch>, <hkallweit1@gmail.com>,
+        <linux@armlinux.org.uk>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <vladimir.oltean@nxp.com>, <wsa+renesas@sang-engineering.com>,
+        <krzysztof.kozlowski+dt@linaro.org>, <simon.horman@corigine.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <harinikatakamlinux@gmail.com>,
+        <michal.simek@amd.com>, <harini.katakam@amd.com>,
+        <radhey.shyam.pandey@amd.com>
+Subject: [PATCH net-next v2 0/3] Add support for VSC8531_02 PHY and DT RGMII tuning
+Date:   Wed, 26 Apr 2023 16:13:10 +0530
+Message-ID: <20230426104313.28950-1-harini.katakam@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-Received: by 2002:a5e:de05:0:b0:760:d92a:2f4a with SMTP id
- e5-20020a5ede05000000b00760d92a2f4amr8815766iok.2.1682505772236; Wed, 26 Apr
- 2023 03:42:52 -0700 (PDT)
-Date:   Wed, 26 Apr 2023 03:42:52 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e3087b05fa3ae6c6@google.com>
-Subject: [syzbot] [net?] kernel BUG in __phys_addr
-From:   syzbot <syzbot+54744699b2023abde712@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT088:EE_|DM6PR12MB4385:EE_
+X-MS-Office365-Filtering-Correlation-Id: 794d96e7-1c76-4c91-a210-08db46430d11
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7V5qKhrCdyMIWeXAVemwEowFo6GW+rhCKOVsJR9FeVOXBxt5mfsemvd2GFUHRnzNi+03XzrFAo6dQ4VO83Ml3ev6d3mXYnOQ9SXOFTCpm6C6yEAPxojK9Nl0eDdH75C8mYfz1f4pArPkOXOfzIo0I1dSO/RGo6UYHQMMYeBGgunsDVp9ErIineFLDR0EvoighlQSc1+eSvwPY/D0t3wOH9DIxmfVgYUkRo+MB1yvw9PM003tObARGTjAiwBPmFsbK/tXKEeYdnCbq6EdGOZqQ/0dMbXOteDlRq+HPON+H0vd53zpdS3INMX5g8Ot+EnL0C/WbZretTWvt68ww7+chkQfKlQW+/1U/fYuRvgSbsRQIBju+BLGWRJentV80ufBCuD4rl2bjyGgiCZQB6NgoUPe1GRm2tnS/Dm6e6ksW5l8NNmpDO+nq4J/kOfPzQkfvAg+8RxFL4Pt8zwUzwRb4Z68wlN2m3A/239LT2XP8m45qvHVV6O09m4QON5QPW5+lpuP7eHjOBCj7M3GS+uFzDr/Lw5o0i7rm33ribSN9IbR9/6ApMX2oO0HpQAw1j8w37w7xiMiZVWAAQuJpOtffZhOilcZYdSF6TND+r6lVh6YiE40cNJGtHMm0iEBchlLlkZSzUSH+XieaorrduE9ds3EHoe2rB152mzRgOZj4KeiOU80B3Umgeavg34nyJogW/4WZjWiuDWO78gHdY7qzmU+54cus+lGXJ8MuGF3ivMWZR2yB+tItZbSxvyT7k50
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(346002)(376002)(136003)(396003)(451199021)(36840700001)(40470700004)(46966006)(2616005)(110136005)(26005)(1076003)(186003)(70206006)(40480700001)(54906003)(36860700001)(47076005)(4326008)(316002)(6666004)(83380400001)(966005)(336012)(86362001)(478600001)(426003)(82310400005)(70586007)(356005)(7416002)(82740400003)(41300700001)(44832011)(5660300002)(40460700003)(2906002)(8676002)(8936002)(81166007)(921005)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2023 10:43:19.7507
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 794d96e7-1c76-4c91-a210-08db46430d11
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT088.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4385
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Add support for VSC8531_02 PHY ID.
+Also provide an option to tune RGMII delay value via devicetree.
+The default delays are retained in the driver.
 
-syzbot found the following issue on:
+v2 changes:
+- Added patch to use a common vendor phy id match
+- Removed dt include header patch because delays should be specied in
+ps, not register values
+- Updated DT binding description and commit for optional delay tuning to
+be clearer on the precedence
+- Updated dt property name to include vendor instead of phy device name
+- Switch both VSC8531 and VSC8531-02 to use exact phy id match as they
+share the same model number
+- Ensure RCT
+- Improve optional property read
 
-HEAD commit:    d3e1ee0e67e7 Add linux-next specific files for 20230421
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=135fa39fc80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=53c789efbcc06cf6
-dashboard link: https://syzkaller.appspot.com/bug?extid=54744699b2023abde712
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+RFC link: https://lore.kernel.org/all/20210629094038.18610-1-harini.katakam@xilinx.com/
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Harini Katakam (3):
+  phy: mscc: Use PHY_ID_MATCH_VENDOR to minimize PHY ID table
+  dt-bindings: mscc: Add RGMII RX and TX delay tuning
+  phy: mscc: Add support for VSC8531_02 with RGMII tuning
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/c558a9e1fe6a/disk-d3e1ee0e.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/2ec100a34c4c/vmlinux-d3e1ee0e.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/1afcd9936dc1/bzImage-d3e1ee0e.xz
+ .../bindings/net/mscc-phy-vsc8531.txt         |  2 +
+ drivers/net/phy/mscc/mscc.h                   |  3 ++
+ drivers/net/phy/mscc/mscc_main.c              | 54 +++++++++++++------
+ 3 files changed, 42 insertions(+), 17 deletions(-)
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+54744699b2023abde712@syzkaller.appspotmail.com
+-- 
+2.17.1
 
-------------[ cut here ]------------
-kernel BUG at arch/x86/mm/physaddr.c:28!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 12783 Comm: kworker/u4:15 Not tainted 6.3.0-rc7-next-20230421-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 04/14/2023
-Workqueue: netns cleanup_net
-RIP: 0010:__phys_addr+0xd7/0x140 arch/x86/mm/physaddr.c:28
-Code: e3 44 89 e9 31 ff 48 d3 eb 48 89 de e8 e2 34 4a 00 48 85 db 75 0f e8 98 38 4a 00 4c 89 e0 5b 5d 41 5c 41 5d c3 e8 89 38 4a 00 <0f> 0b e8 82 38 4a 00 48 c7 c0 10 80 59 8c 48 ba 00 00 00 00 00 fc
-RSP: 0018:ffffc9000bdbf410 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000200000001 RCX: 0000000000000000
-RDX: ffff88807e553a80 RSI: ffffffff8139acc7 RDI: 0000000000000006
-RBP: 0000000280000001 R08: 0000000000000006 R09: 0000000280000001
-R10: 0000778200000001 R11: 0000000000000000 R12: 0000778200000001
-R13: ffffc9000bdbf478 R14: 0000000200000001 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fd3aa188fb8 CR3: 0000000022a15000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- virt_to_folio include/linux/mm.h:1215 [inline]
- virt_to_slab mm/kasan/../slab.h:174 [inline]
- qlink_to_cache mm/kasan/quarantine.c:129 [inline]
- qlist_free_all+0x86/0x170 mm/kasan/quarantine.c:182
- kasan_quarantine_reduce+0x195/0x220 mm/kasan/quarantine.c:292
- __kasan_slab_alloc+0x63/0x90 mm/kasan/common.c:305
- kasan_slab_alloc include/linux/kasan.h:186 [inline]
- slab_post_alloc_hook mm/slab.h:711 [inline]
- slab_alloc_node mm/slub.c:3451 [inline]
- kmem_cache_alloc_node+0x185/0x3e0 mm/slub.c:3496
- __alloc_skb+0x288/0x330 net/core/skbuff.c:644
- alloc_skb include/linux/skbuff.h:1288 [inline]
- nlmsg_new include/net/netlink.h:1003 [inline]
- inet6_netconf_notify_devconf+0xa4/0x1f0 net/ipv6/addrconf.c:581
- __addrconf_sysctl_unregister net/ipv6/addrconf.c:7122 [inline]
- addrconf_sysctl_unregister+0x131/0x1c0 net/ipv6/addrconf.c:7146
- addrconf_ifdown.isra.0+0x1350/0x1940 net/ipv6/addrconf.c:3908
- addrconf_notify+0x106/0x19f0 net/ipv6/addrconf.c:3678
- notifier_call_chain+0xb6/0x3c0 kernel/notifier.c:93
- call_netdevice_notifiers_info+0xb9/0x130 net/core/dev.c:1935
- call_netdevice_notifiers_extack net/core/dev.c:1973 [inline]
- call_netdevice_notifiers net/core/dev.c:1987 [inline]
- unregister_netdevice_many_notify+0x75f/0x18c0 net/core/dev.c:10871
- unregister_netdevice_many net/core/dev.c:10927 [inline]
- unregister_netdevice_queue+0x2e5/0x3c0 net/core/dev.c:10807
- unregister_netdevice include/linux/netdevice.h:3109 [inline]
- nsim_destroy+0x43/0x190 drivers/net/netdevsim/netdev.c:375
- __nsim_dev_port_del+0x189/0x240 drivers/net/netdevsim/dev.c:1428
- nsim_dev_port_del_all drivers/net/netdevsim/dev.c:1440 [inline]
- nsim_dev_reload_destroy+0x171/0x510 drivers/net/netdevsim/dev.c:1661
- nsim_dev_reload_down+0x6f/0xe0 drivers/net/netdevsim/dev.c:968
- devlink_reload+0x105/0x460 net/devlink/dev.c:362
- devlink_pernet_pre_exit+0x1b6/0x280 net/devlink/core.c:291
- ops_pre_exit_list net/core/net_namespace.c:160 [inline]
- cleanup_net+0x455/0xb10 net/core/net_namespace.c:602
- process_one_work+0x99a/0x15e0 kernel/workqueue.c:2405
- worker_thread+0x67d/0x10c0 kernel/workqueue.c:2552
- kthread+0x33e/0x440 kernel/kthread.c:379
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:__phys_addr+0xd7/0x140 arch/x86/mm/physaddr.c:28
-Code: e3 44 89 e9 31 ff 48 d3 eb 48 89 de e8 e2 34 4a 00 48 85 db 75 0f e8 98 38 4a 00 4c 89 e0 5b 5d 41 5c 41 5d c3 e8 89 38 4a 00 <0f> 0b e8 82 38 4a 00 48 c7 c0 10 80 59 8c 48 ba 00 00 00 00 00 fc
-RSP: 0018:ffffc9000bdbf410 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000200000001 RCX: 0000000000000000
-RDX: ffff88807e553a80 RSI: ffffffff8139acc7 RDI: 0000000000000006
-RBP: 0000000280000001 R08: 0000000000000006 R09: 0000000280000001
-R10: 0000778200000001 R11: 0000000000000000 R12: 0000778200000001
-R13: ffffc9000bdbf478 R14: 0000000200000001 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000c000a97fc0 CR3: 0000000022a15000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
