@@ -2,46 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D68706EF9A0
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 19:52:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EA4D6EF9A3
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 19:52:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233146AbjDZRwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 13:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
+        id S233540AbjDZRwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 13:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232163AbjDZRwT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 13:52:19 -0400
-Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D601635AD;
-        Wed, 26 Apr 2023 10:52:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1682531500; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=UCY20pq6hBUDq0BErUNSiq1JHZ08krIPzKXZK7mW/4B2BuIcCj66ICA2dghtnCRJLxvc86ynDnyizCk9nZEmARNqW//E5+jIQmg1fAsZGPBs9iX7xumDZ2hFuNmWAEK4FQLG/uLYfURSCKeVZ8LDoLgmmlOrVp0WgPQyY0mmmfs=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1682531500; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=4lj3hzEx9aj2YGe6xhhebIwqwsB+duLc+uUUaIkR490=; 
-        b=eEAM0y2k8X1ksxQ1DnRUJZAXbzmGMjrE5+W7xFSfZZ9VkYEzgI66FFRxWKa+lBIMv28a3crOWsqmctGkH4JgR+gFLwH9htoLXLFwnLhCSI8jlwbnwhhE8aFYGolb24L55L/+tk6IGiVpUnvCbbSVaddLyC584ZpRDJZWllVDlho=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1682531500;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=4lj3hzEx9aj2YGe6xhhebIwqwsB+duLc+uUUaIkR490=;
-        b=ddav/KHAVz77stAmuPr8bcAfjb9xzsS2PNTT5Nz2hBTOS/cS/e3T52npvHN6oOs/
-        qFAtunt4wBYth5yPzcTQ4+R2q2PogL1gEtQFxbG5mTedydRWpGERdZdvaDBocb+wk+k
-        9G6wWw4ba44fRRB630eg6Rwiik3QgGFfEQZ27b6I=
-Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 1682531497603365.41163959637413; Wed, 26 Apr 2023 10:51:37 -0700 (PDT)
-Message-ID: <9f8f082d-7bc7-2271-9b6c-cd7bf96c755b@arinc9.com>
-Date:   Wed, 26 Apr 2023 20:51:22 +0300
+        with ESMTP id S233418AbjDZRwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 13:52:49 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB757DAF;
+        Wed, 26 Apr 2023 10:52:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1682531537; i=frank-w@public-files.de;
+        bh=YSXHnTZzWxnUCfTtKsu0J9OA2BMeOKUP3P1my0EJ+3c=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Wc/98jMO0/+y7MaO54jCWMwvYzpioSbvBDJiAlt9FANgCn/bkpbRnaKVc8dcJBqBX
+         GG53WEFbRTn8R36obSXdVfSP4jhll7xuJO7SONgt1m7JLQj7ogSsIckFbVu9kP23zL
+         vC5v8X+t/+PqETjVsBfFbi6hxrNRP2mxxsSoJVgtw901Zm+46KA4olf37ToFKpby8u
+         2ScTs6vUPwHcNH1UoFAK0R6SKFd5zEEnfOcUZXv5AyfsiHj5Gk5D7EP1nWlmLSdz8R
+         W/rzgAqJjLfTehvax2LmmZdRdOAsq1rD2NVr5GFl2P4elTc4+cNwpzYHa/hKVLHr7m
+         51AearMfwClxA==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [217.61.146.19] ([217.61.146.19]) by web-mail.gmx.net
+ (3c-app-gmx-bs05.server.lan [172.19.170.54]) (via HTTP); Wed, 26 Apr 2023
+ 19:52:17 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: Aw: Re: [net v2] net: ethernet: mtk_eth_soc: drop generic vlan rx
- offload, only use DSA untagging
-To:     Frank Wunderlich <frank-w@public-files.de>
+Message-ID: <trinity-a7837941-a0d2-4f38-aa65-0f0bd4759624-1682531537098@3c-app-gmx-bs05>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     =?UTF-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>
 Cc:     Frank Wunderlich <linux@fw-web.de>,
         linux-mediatek@lists.infradead.org, Felix Fietkau <nbd@nbd.name>,
         John Crispin <john@phrozen.org>,
@@ -58,17 +48,38 @@ Cc:     Frank Wunderlich <linux@fw-web.de>,
         Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         stable@vger.kernel.org
+Subject: Aw: Re: [net v2] net: ethernet: mtk_eth_soc: drop generic vlan rx
+ offload, only use DSA untagging
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 26 Apr 2023 19:52:17 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <61ea49b7-8a04-214d-ef02-3ef6181619e9@arinc9.com>
 References: <20230426172153.8352-1-linux@fw-web.de>
  <61ea49b7-8a04-214d-ef02-3ef6181619e9@arinc9.com>
- <trinity-bb65fd35-fe52-45d2-975c-230e504cc93f-1682530288982@3c-app-gmx-bs05>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <trinity-bb65fd35-fe52-45d2-975c-230e504cc93f-1682530288982@3c-app-gmx-bs05>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: quoted-printable
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:m4OLvO2aGfpIPh1kNegtBhLwbWWrwPKhw5jaBky6DTbTjIL8iU/9nCzT6in+N2xsvI+Ds
+ /3WbIowJLyskcLJlw5Av77vSAEHyRpHuUJhb4mmvNHbNFUWHGGugfnL95HFeFwbsKu3i/h3qrK8f
+ x96Pe7xebX75skDhOsngadfjHoWL3Hu+midtv2HOaCQ1BWgbtE/s3X18rB9RXQuBZaNhl7LFnoLK
+ UNO6SUdeHM847TznfMX7LlqaaS2PTqznByv/0ZF03zLFlviZJ2Mx+PZXySbCPxzSqnPm+t16b1Pt
+ XE=
+UI-OutboundReport: notjunk:1;M01:P0:oZmXxWVFW/M=;/m8bA08ftBuXup6g9QipcJDbYVR
+ mUgKaInR5ce2Af58dfc9nqC/Cv0P59JQZ2hi5FMU5UAXSH1dxjjMdCfSX7P9T+esNRACuhQ0k
+ R6iJma/JcYDbnIyuNh6BI0u9ebFDbMBZSE+piTnzMvb1RJi8RbOrJZvX7o5+mV9lOeCjxNeE/
+ qvPrbWUF4gcikV4ODz5Pjb2rdPFOC0filGeWqvYQn84m9quZAxX6Jy+w19gGbng4X+AjkOPAe
+ hQNAeua91Bmjtbehj9hks6rnlNw2Ld4dgNHaZvO25u0uQJ+sFsaja0ts3ksCkx53mzsDaOAfW
+ ybRWPdC/J6iQyDgWZRm9fxnKRaPDZmJRCxVYHw3gp0uNGsQmO733nBASHffS4QWDYAzn5k6ES
+ r2CpHfnYOG87WziymO4iAK6/RGvNcIDy67I756a9nnag5nCDElk/pRigjUGGfBlFLq/VEJCN7
+ 5zJ9w5cffm6sQGd6xgVG7so1I9NJvMKMuXIifbmEinNQatBDHUIMnzLTkiE9uo8j+FoEIPjHW
+ k/BhEee9BYCb6WhPHUlfyIVE5QQxDscNU5OLnwapDirQbmjidKCi15aEdhtqwxpIsFwABi6j8
+ 6/hR11iOtMR2/+LUAOBFcJZ9IFcKlLB9qZ2u9DLQvq+rWyFzBT7eiiaqQinECLkM5YXl+lv6u
+ dH8EoVEKXrspDPqOkEAPnwaNDcIcc5uzAIGKy8d7GRw1txko8S1B86FQsM95OXTZAnWzcoJfy
+ vTlv5Gk0y0Iyn9gUc277ELYljC+U85M/ZgC8lpTYlKUPUug67nfmJ1CYSEvXGTveZAd0RHP/o
+ k4z+RwdZF0g033BGcC0QewuQ==
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -77,46 +88,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/04/2023 20:31, Frank Wunderlich wrote:
-> 
->> Gesendet: Mittwoch, 26. April 2023 um 19:25 Uhr
->> Von: "Arınç ÜNAL" <arinc.unal@arinc9.com>
->> On 26/04/2023 20:21, Frank Wunderlich wrote:
->>> From: Felix Fietkau <nbd@nbd.name>
->>>
->>> Through testing I found out that hardware vlan rx offload support seems to
->>> have some hardware issues. At least when using multiple MACs and when
->>> receiving tagged packets on the secondary MAC, the hardware can sometimes
->>> start to emit wrong tags on the first MAC as well.
->>>
->>> In order to avoid such issues, drop the feature configuration and use
->>> the offload feature only for DSA hardware untagging on MT7621/MT7622
->>> devices where this feature works properly.
->>>
->>> Fixes: 08666cbb7dd5 ("net: ethernet: mtk_eth_soc: add support for configuring vlan rx offload")
->>> Tested-by: Frank Wunderlich <frank-w@public-files.de>
->>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
->>> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
->>> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->>
->> I'm confused by this. What is HW-vlan-untagging, and which SoCs do you
->> think this patch would break this feature? How can I utilise this
->> feature on Linux so I can confirm whether it works or not?
-> 
-> the feature itself breaks vlan on mac of bpi-r3
-> 
-> 1 mac is connected to switch and uses dsa tags, the other mac is directly accessible and vlan-tag
-> there is stripped by this feature.
-> 
-> with this patch i can use vlans on the "standalone" mac again (see tagged packets incoming).
+Hi
+> Gesendet: Mittwoch, 26=2E April 2023 um 19:25 Uhr
+> Von: "Ar=C4=B1n=C3=A7 =C3=9CNAL" <arinc=2Eunal@arinc9=2Ecom>
 
-Ok, since this patch is disabling the feature, the patch cannot possibly 
-break the feature. That's why I was confused as to why you mentioned 
-this in a way that gives the impression that this patch may break the 
-said feature.
+> > tested this on bananapi-r3 on non-dsa gmac1 and dsa eth0 (wan)=2E
+> > on both vlan is working, but maybe it breaks HW-vlan-untagging
+>=20
+> I'm confused by this=2E What is HW-vlan-untagging, and which SoCs do you=
+=20
+> think this patch would break this feature? How can I utilise this=20
+> feature on Linux so I can confirm whether it works or not?
 
-Anyhow:
+oh, you mean my wording about "hw-vlan-untagging"=2E=2E=2Ei mean the hw vl=
+an offload feature which may
+not be working on non-mt7621/7622 devices as i have no idea how to check t=
+his=2E i hope felix can
+answer this=2E at least the feature activeated on mt7986 breaks sw-vlan on=
+ the gmac1 (without
+switch)=2E
 
-Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-
-Arınç
+regards Frank
