@@ -2,48 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 135DD6EEE6E
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 08:36:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EF2C6EEE7B
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 08:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239435AbjDZGgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 02:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
+        id S239528AbjDZGmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 02:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239309AbjDZGgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 02:36:48 -0400
+        with ESMTP id S239408AbjDZGlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 02:41:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EE72D5E
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 23:36:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9201F270B;
+        Tue, 25 Apr 2023 23:41:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72C4D60D57
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 06:36:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1256EC433EF;
-        Wed, 26 Apr 2023 06:36:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BE8663225;
+        Wed, 26 Apr 2023 06:41:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C7B5C433EF;
+        Wed, 26 Apr 2023 06:41:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682490971;
-        bh=WLS3ReiveyEqPfTjDyHFkwFITS+NRws/qzzxUu5LHsk=;
+        s=k20201202; t=1682491309;
+        bh=33xG/M/NBRJczmm4X8iDO3HtDmQq6ILZHrp/h2howPo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NAyb2TFW1jLoISd76P9k0+A8/WUQMZbcVc5SVxNoX7IMsl0/GJ8/bDNLkOVPoSiy+
-         DUGUe2mUTgevpwPPXokiBnxLMdcxVaDdmCEmDp667YXct+nXOqYBSS5XuUua4FxTJs
-         kT/5WWruyI3XLEgOBykYNSCJfTzUEh3IgDaz+cldwQX7WW7Un38CsTCvo3GVVzKYQU
-         64iK+gP85Q4lAqNlpubhbAOebMwUnmLoTjuPWnoAR25CcRdabiARDDw66jd3uoBvEJ
-         cqW4rrzk3Ca90QbC8KJjHsIXZ3I1gx29ibq4A7kAkXd2xMAL1sFK2s8MAdRvTdQiiK
-         Ag+JLFS5EfQng==
-Date:   Wed, 26 Apr 2023 09:36:07 +0300
+        b=dhZLYNZb5OlgY2Dkmwt2JWngNzdJtJNY2OogDAG7OFmxDZsA9SgNiGxff17Ug+895
+         MGO9gKp8Lciw0PD/fqxZv6hVOAzRPW/AXVKSQ+ist12vspGYmJSPBO5QOpkpH6bRcB
+         3EmEZ5ctV+WW3D5kZONuSmj63Rijv46DHqTg/NZRtOBHoYlMIiXi4/1PB0Y2/mltg5
+         V47oo+zs4Ki4q7jfqKj0Cna+1hD02FmKfzSDJQdQxFU7nWul+Nw3RBhAC0lH6cQ3MK
+         EaNVVNTCDBu7tgqiatKWUeG8lc3Ms5zgdhFDMdQLkWAl87cGZGy9zIHTlz6WZW85kg
+         WH+RYX/VFNDhA==
+Date:   Wed, 26 Apr 2023 09:41:45 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, aelior@marvell.com,
-        palok@marvell.com, Sudarsana Kalluru <skalluru@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] qed/qede: Fix scheduling while atomic
-Message-ID: <20230426063607.GD27649@unreal>
-References: <20230425122548.32691-1-manishc@marvell.com>
+To:     Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Alexander Wetzel <alexander@wetzel-home.de>
+Subject: Re: [PATCH v4 1/1] wifi: mac80211: fortify the spinlock against
+ deadlock by interrupt
+Message-ID: <20230426064145.GE27649@unreal>
+References: <20230425164005.25272-1-mirsad.todorovac@alu.unizg.hr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230425122548.32691-1-manishc@marvell.com>
+In-Reply-To: <20230425164005.25272-1-mirsad.todorovac@alu.unizg.hr>
 X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -54,323 +62,199 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 05:25:48AM -0700, Manish Chopra wrote:
-> Bonding module collects the statistics while holding
-> the spinlock, beneath that qede->qed driver statistics
-> flow gets scheduled out due to usleep_range() used in PTT
-> acquire logic which results into below bug and traces -
+On Tue, Apr 25, 2023 at 06:40:08PM +0200, Mirsad Goran Todorovac wrote:
+> In the function ieee80211_tx_dequeue() there is a particular locking
+> sequence:
 > 
-> [ 3673.988874] Hardware name: HPE ProLiant DL365 Gen10 Plus/ProLiant DL365 Gen10 Plus, BIOS A42 10/29/2021
-> [ 3673.988878] Call Trace:
-> [ 3673.988891]  dump_stack_lvl+0x34/0x44
-> [ 3673.988908]  __schedule_bug.cold+0x47/0x53
-> [ 3673.988918]  __schedule+0x3fb/0x560
-> [ 3673.988929]  schedule+0x43/0xb0
-> [ 3673.988932]  schedule_hrtimeout_range_clock+0xbf/0x1b0
-> [ 3673.988937]  ? __hrtimer_init+0xc0/0xc0
-> [ 3673.988950]  usleep_range+0x5e/0x80
-> [ 3673.988955]  qed_ptt_acquire+0x2b/0xd0 [qed]
-> [ 3673.988981]  _qed_get_vport_stats+0x141/0x240 [qed]
-> [ 3673.989001]  qed_get_vport_stats+0x18/0x80 [qed]
-> [ 3673.989016]  qede_fill_by_demand_stats+0x37/0x400 [qede]
-> [ 3673.989028]  qede_get_stats64+0x19/0xe0 [qede]
-> [ 3673.989034]  dev_get_stats+0x5c/0xc0
-> [ 3673.989045]  netstat_show.constprop.0+0x52/0xb0
-> [ 3673.989055]  dev_attr_show+0x19/0x40
-> [ 3673.989065]  sysfs_kf_seq_show+0x9b/0xf0
-> [ 3673.989076]  seq_read_iter+0x120/0x4b0
-> [ 3673.989087]  new_sync_read+0x118/0x1a0
-> [ 3673.989095]  vfs_read+0xf3/0x180
-> [ 3673.989099]  ksys_read+0x5f/0xe0
-> [ 3673.989102]  do_syscall_64+0x3b/0x90
-> [ 3673.989109]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [ 3673.989115] RIP: 0033:0x7f8467d0b082
-> [ 3673.989119] Code: c0 e9 b2 fe ff ff 50 48 8d 3d ca 05 08 00 e8 35 e7 01 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24
-> [ 3673.989121] RSP: 002b:00007ffffb21fd08 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-> [ 3673.989127] RAX: ffffffffffffffda RBX: 000000000100eca0 RCX: 00007f8467d0b082
-> [ 3673.989128] RDX: 00000000000003ff RSI: 00007ffffb21fdc0 RDI: 0000000000000003
-> [ 3673.989130] RBP: 00007f8467b96028 R08: 0000000000000010 R09: 00007ffffb21ec00
-> [ 3673.989132] R10: 00007ffffb27b170 R11: 0000000000000246 R12: 00000000000000f0
-> [ 3673.989134] R13: 0000000000000003 R14: 00007f8467b92000 R15: 0000000000045a05
-> [ 3673.989139] CPU: 30 PID: 285188 Comm: read_all Kdump: loaded Tainted: G        W  OE
+> begin:
+> 	spin_lock(&local->queue_stop_reason_lock);
+> 	q_stopped = local->queue_stop_reasons[q];
+> 	spin_unlock(&local->queue_stop_reason_lock);
 > 
-> Fix this by having caller (QEDE driver flows) to provide the context whether
-> it could be in atomic context flow or not when getting the vport stats from
-> QED driver. QED driver based on the context provided decide to schedule out
-> or not when acquiring the PTT BAR window.
-
-And why don't you implement qed_ptt_acquire() to be atomic only?
-
-It will be much easier to do so instead of adding is_atomic in all the
-places.
-
-Thanks
-
+> However small the chance (increased by ftracetest), an asynchronous
+> interrupt can occur in between of spin_lock() and spin_unlock(),
+> and the interrupt routine will attempt to lock the same
+> &local->queue_stop_reason_lock again.
 > 
-> Fixes: 133fac0eedc3 ("qede: Add basic ethtool support")
-> Cc: Sudarsana Kalluru <skalluru@marvell.com>
+> This will cause a costly reset of the CPU and the wifi device or an
+> altogether hang in the single CPU and single core scenario.
+> 
+> The only remaining spin_lock(&local->queue_stop_reason_lock) that
+> did not disable interrupts was patched, which should prevent any
+> deadlocks on the same CPU/core and the same wifi device.
+> 
+> This is the probable trace of the deadlock:
+> 
+> kernel: ================================
+> kernel: WARNING: inconsistent lock state
+> kernel: 6.3.0-rc6-mt-20230401-00001-gf86822a1170f #4 Tainted: G        W
+> kernel: --------------------------------
+> kernel: inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
+> kernel: kworker/5:0/25656 [HC0[0]:SC0[0]:HE1:SE1] takes:
+> kernel: ffff9d6190779478 (&local->queue_stop_reason_lock){+.?.}-{2:2}, at: return_to_handler+0x0/0x40
+> kernel: {IN-SOFTIRQ-W} state was registered at:
+> kernel:   lock_acquire+0xc7/0x2d0
+> kernel:   _raw_spin_lock+0x36/0x50
+> kernel:   ieee80211_tx_dequeue+0xb4/0x1330 [mac80211]
+> kernel:   iwl_mvm_mac_itxq_xmit+0xae/0x210 [iwlmvm]
+> kernel:   iwl_mvm_mac_wake_tx_queue+0x2d/0xd0 [iwlmvm]
+> kernel:   ieee80211_queue_skb+0x450/0x730 [mac80211]
+> kernel:   __ieee80211_xmit_fast.constprop.66+0x834/0xa50 [mac80211]
+> kernel:   __ieee80211_subif_start_xmit+0x217/0x530 [mac80211]
+> kernel:   ieee80211_subif_start_xmit+0x60/0x580 [mac80211]
+> kernel:   dev_hard_start_xmit+0xb5/0x260
+> kernel:   __dev_queue_xmit+0xdbe/0x1200
+> kernel:   neigh_resolve_output+0x166/0x260
+> kernel:   ip_finish_output2+0x216/0xb80
+> kernel:   __ip_finish_output+0x2a4/0x4d0
+> kernel:   ip_finish_output+0x2d/0xd0
+> kernel:   ip_output+0x82/0x2b0
+> kernel:   ip_local_out+0xec/0x110
+> kernel:   igmpv3_sendpack+0x5c/0x90
+> kernel:   igmp_ifc_timer_expire+0x26e/0x4e0
+> kernel:   call_timer_fn+0xa5/0x230
+> kernel:   run_timer_softirq+0x27f/0x550
+> kernel:   __do_softirq+0xb4/0x3a4
+> kernel:   irq_exit_rcu+0x9b/0xc0
+> kernel:   sysvec_apic_timer_interrupt+0x80/0xa0
+> kernel:   asm_sysvec_apic_timer_interrupt+0x1f/0x30
+> kernel:   _raw_spin_unlock_irqrestore+0x3f/0x70
+> kernel:   free_to_partial_list+0x3d6/0x590
+> kernel:   __slab_free+0x1b7/0x310
+> kernel:   kmem_cache_free+0x52d/0x550
+> kernel:   putname+0x5d/0x70
+> kernel:   do_sys_openat2+0x1d7/0x310
+> kernel:   do_sys_open+0x51/0x80
+> kernel:   __x64_sys_openat+0x24/0x30
+> kernel:   do_syscall_64+0x5c/0x90
+> kernel:   entry_SYSCALL_64_after_hwframe+0x72/0xdc
+> kernel: irq event stamp: 5120729
+> kernel: hardirqs last  enabled at (5120729): [<ffffffff9d149936>] trace_graph_return+0xd6/0x120
+> kernel: hardirqs last disabled at (5120728): [<ffffffff9d149950>] trace_graph_return+0xf0/0x120
+> kernel: softirqs last  enabled at (5069900): [<ffffffff9cf65b60>] return_to_handler+0x0/0x40
+> kernel: softirqs last disabled at (5067555): [<ffffffff9cf65b60>] return_to_handler+0x0/0x40
+> kernel:
+>         other info that might help us debug this:
+> kernel:  Possible unsafe locking scenario:
+> kernel:        CPU0
+> kernel:        ----
+> kernel:   lock(&local->queue_stop_reason_lock);
+> kernel:   <Interrupt>
+> kernel:     lock(&local->queue_stop_reason_lock);
+> kernel:
+>          *** DEADLOCK ***
+> kernel: 8 locks held by kworker/5:0/25656:
+> kernel:  #0: ffff9d618009d138 ((wq_completion)events_freezable){+.+.}-{0:0}, at: process_one_work+0x1ca/0x530
+> kernel:  #1: ffffb1ef4637fe68 ((work_completion)(&local->restart_work)){+.+.}-{0:0}, at: process_one_work+0x1ce/0x530
+> kernel:  #2: ffffffff9f166548 (rtnl_mutex){+.+.}-{3:3}, at: return_to_handler+0x0/0x40
+> kernel:  #3: ffff9d6190778728 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: return_to_handler+0x0/0x40
+> kernel:  #4: ffff9d619077b480 (&mvm->mutex){+.+.}-{3:3}, at: return_to_handler+0x0/0x40
+> kernel:  #5: ffff9d61907bacd8 (&trans_pcie->mutex){+.+.}-{3:3}, at: return_to_handler+0x0/0x40
+> kernel:  #6: ffffffff9ef9cda0 (rcu_read_lock){....}-{1:2}, at: iwl_mvm_queue_state_change+0x59/0x3a0 [iwlmvm]
+> kernel:  #7: ffffffff9ef9cda0 (rcu_read_lock){....}-{1:2}, at: iwl_mvm_mac_itxq_xmit+0x42/0x210 [iwlmvm]
+> kernel:
+>         stack backtrace:
+> kernel: CPU: 5 PID: 25656 Comm: kworker/5:0 Tainted: G        W          6.3.0-rc6-mt-20230401-00001-gf86822a1170f #4
+> kernel: Hardware name: LENOVO 82H8/LNVNB161216, BIOS GGCN51WW 11/16/2022
+> kernel: Workqueue: events_freezable ieee80211_restart_work [mac80211]
+> kernel: Call Trace:
+> kernel:  <TASK>
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  dump_stack_lvl+0x5f/0xa0
+> kernel:  dump_stack+0x14/0x20
+> kernel:  print_usage_bug.part.46+0x208/0x2a0
+> kernel:  mark_lock.part.47+0x605/0x630
+> kernel:  ? sched_clock+0xd/0x20
+> kernel:  ? trace_clock_local+0x14/0x30
+> kernel:  ? __rb_reserve_next+0x5f/0x490
+> kernel:  ? _raw_spin_lock+0x1b/0x50
+> kernel:  __lock_acquire+0x464/0x1990
+> kernel:  ? mark_held_locks+0x4e/0x80
+> kernel:  lock_acquire+0xc7/0x2d0
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  ? ftrace_return_to_handler+0x8b/0x100
+> kernel:  ? preempt_count_add+0x4/0x70
+> kernel:  _raw_spin_lock+0x36/0x50
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  ieee80211_tx_dequeue+0xb4/0x1330 [mac80211]
+> kernel:  ? prepare_ftrace_return+0xc5/0x190
+> kernel:  ? ftrace_graph_func+0x16/0x20
+> kernel:  ? 0xffffffffc02ab0b1
+> kernel:  ? lock_acquire+0xc7/0x2d0
+> kernel:  ? iwl_mvm_mac_itxq_xmit+0x42/0x210 [iwlmvm]
+> kernel:  ? ieee80211_tx_dequeue+0x9/0x1330 [mac80211]
+> kernel:  ? __rcu_read_lock+0x4/0x40
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  iwl_mvm_mac_itxq_xmit+0xae/0x210 [iwlmvm]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  iwl_mvm_queue_state_change+0x311/0x3a0 [iwlmvm]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  iwl_mvm_wake_sw_queue+0x17/0x20 [iwlmvm]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  iwl_txq_gen2_unmap+0x1c9/0x1f0 [iwlwifi]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  iwl_txq_gen2_free+0x55/0x130 [iwlwifi]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  iwl_txq_gen2_tx_free+0x63/0x80 [iwlwifi]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  _iwl_trans_pcie_gen2_stop_device+0x3f3/0x5b0 [iwlwifi]
+> kernel:  ? _iwl_trans_pcie_gen2_stop_device+0x9/0x5b0 [iwlwifi]
+> kernel:  ? mutex_lock_nested+0x4/0x30
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  iwl_trans_pcie_gen2_stop_device+0x5f/0x90 [iwlwifi]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  iwl_mvm_stop_device+0x78/0xd0 [iwlmvm]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  __iwl_mvm_mac_start+0x114/0x210 [iwlmvm]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  iwl_mvm_mac_start+0x76/0x150 [iwlmvm]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  drv_start+0x79/0x180 [mac80211]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  ieee80211_reconfig+0x1523/0x1ce0 [mac80211]
+> kernel:  ? synchronize_net+0x4/0x50
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  ieee80211_restart_work+0x108/0x170 [mac80211]
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  process_one_work+0x250/0x530
+> kernel:  ? ftrace_regs_caller_end+0x66/0x66
+> kernel:  worker_thread+0x48/0x3a0
+> kernel:  ? __pfx_worker_thread+0x10/0x10
+> kernel:  kthread+0x10f/0x140
+> kernel:  ? __pfx_kthread+0x10/0x10
+> kernel:  ret_from_fork+0x29/0x50
+> kernel:  </TASK>
+> 
+> Fixes: 4444bc2116ae ("wifi: mac80211: Proper mark iTXQs for resumption")
+> Link: https://lore.kernel.org/all/1f58a0d1-d2b9-d851-73c3-93fcc607501c@alu.unizg.hr/
+> Reported-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+> Cc: Gregory Greenman <gregory.greenman@intel.com>
+> Cc: Johannes Berg <johannes.berg@intel.com>
+> Link: https://lore.kernel.org/all/cdc80531-f25f-6f9d-b15f-25e16130b53a@alu.unizg.hr/
 > Cc: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Manish Chopra <manishc@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> Signed-off-by: Alok Prasad <palok@marvell.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: Alexander Wetzel <alexander@wetzel-home.de>
+> Signed-off-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
 > ---
->  drivers/net/ethernet/qlogic/qed/qed_dev_api.h | 12 +++++++-
->  drivers/net/ethernet/qlogic/qed/qed_hw.c      | 28 +++++++++++++++----
->  drivers/net/ethernet/qlogic/qed/qed_l2.c      | 11 ++++----
->  drivers/net/ethernet/qlogic/qed/qed_l2.h      |  3 +-
->  drivers/net/ethernet/qlogic/qed/qed_main.c    |  4 +--
->  drivers/net/ethernet/qlogic/qede/qede.h       |  2 +-
->  .../net/ethernet/qlogic/qede/qede_ethtool.c   |  2 +-
->  drivers/net/ethernet/qlogic/qede/qede_main.c  |  6 ++--
->  include/linux/qed/qed_eth_if.h                |  2 +-
->  9 files changed, 50 insertions(+), 20 deletions(-)
+> v3 -> v4:
+> - Added whole lockdep trace as advised.
+> - Trimmed irrelevant line prefix.
+> v2 -> v3:
+> - Fix the Fixes: tag as advised.
+> - Change the net: to wifi: to comply with the original patch that
+>   is being fixed.
+> v1 -> v2:
+> - Minor rewording and clarification.
+> - Cc:-ed people that replied to the original bug report (forgotten
+>   in v1 by omission).
 > 
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-> index f8682356d0cf..5e15a6a506c8 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-> @@ -182,7 +182,7 @@ int qed_hw_prepare(struct qed_dev *cdev,
->  void qed_hw_remove(struct qed_dev *cdev);
->  
->  /**
-> - * qed_ptt_acquire(): Allocate a PTT window.
-> + * qed_ptt_acquire(): Allocate a PTT window in sleepable context.
->   *
->   * @p_hwfn: HW device data.
->   *
-> @@ -193,6 +193,16 @@ void qed_hw_remove(struct qed_dev *cdev);
->   */
->  struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn);
->  
-> +/**
-> + *  @brief _qed_ptt_acquire - Allocate a PTT window based on the context
-> + *
-> + *  @param p_hwfn
-> + *  @param is_atomic - acquire ptt based on this context (sleepable or unsleepable)
-> + *
-> + *  @return struct qed_ptt
-> + */
-> +struct qed_ptt *_qed_ptt_acquire(struct qed_hwfn *p_hwfn, bool is_atomic);
-> +
->  /**
->   * qed_ptt_release(): Release PTT Window.
->   *
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_hw.c b/drivers/net/ethernet/qlogic/qed/qed_hw.c
-> index 554f30b0cfd5..4e8bfa0194e7 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_hw.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_hw.c
-> @@ -23,7 +23,10 @@
->  #include "qed_reg_addr.h"
->  #include "qed_sriov.h"
->  
-> -#define QED_BAR_ACQUIRE_TIMEOUT 1000
-> +#define QED_BAR_ACQUIRE_TIMEOUT_USLEEP_CNT	1000
-> +#define QED_BAR_ACQUIRE_TIMEOUT_USLEEP		1000
-> +#define QED_BAR_ACQUIRE_TIMEOUT_UDELAY_CNT	100000
-> +#define QED_BAR_ACQUIRE_TIMEOUT_UDELAY		10
->  
->  /* Invalid values */
->  #define QED_BAR_INVALID_OFFSET          (cpu_to_le32(-1))
-> @@ -83,13 +86,18 @@ void qed_ptt_pool_free(struct qed_hwfn *p_hwfn)
->  	p_hwfn->p_ptt_pool = NULL;
->  }
->  
-> -struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn)
-> +struct qed_ptt *_qed_ptt_acquire(struct qed_hwfn *p_hwfn, bool is_atomic)
->  {
->  	struct qed_ptt *p_ptt;
-> -	unsigned int i;
-> +	unsigned int i, count;
-> +
-> +	if (is_atomic)
-> +		count = QED_BAR_ACQUIRE_TIMEOUT_UDELAY_CNT;
-> +	else
-> +		count = QED_BAR_ACQUIRE_TIMEOUT_USLEEP_CNT;
->  
->  	/* Take the free PTT from the list */
-> -	for (i = 0; i < QED_BAR_ACQUIRE_TIMEOUT; i++) {
-> +	for (i = 0; i < count; i++) {
->  		spin_lock_bh(&p_hwfn->p_ptt_pool->lock);
->  
->  		if (!list_empty(&p_hwfn->p_ptt_pool->free_list)) {
-> @@ -105,13 +113,23 @@ struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn)
->  		}
->  
->  		spin_unlock_bh(&p_hwfn->p_ptt_pool->lock);
-> -		usleep_range(1000, 2000);
-> +
-> +		if (is_atomic)
-> +			udelay(QED_BAR_ACQUIRE_TIMEOUT_UDELAY);
-> +		else
-> +			usleep_range(QED_BAR_ACQUIRE_TIMEOUT_USLEEP,
-> +				     QED_BAR_ACQUIRE_TIMEOUT_USLEEP * 2);
->  	}
->  
->  	DP_NOTICE(p_hwfn, "PTT acquire timeout - failed to allocate PTT\n");
->  	return NULL;
->  }
->  
-> +struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn)
-> +{
-> +	return _qed_ptt_acquire(p_hwfn, false);
-> +}
-> +
->  void qed_ptt_release(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
->  {
->  	spin_lock_bh(&p_hwfn->p_ptt_pool->lock);
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.c b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-> index 2edd6bf64a3c..46d8d35dc7ac 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_l2.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-> @@ -1863,7 +1863,7 @@ static void __qed_get_vport_stats(struct qed_hwfn *p_hwfn,
->  }
->  
->  static void _qed_get_vport_stats(struct qed_dev *cdev,
-> -				 struct qed_eth_stats *stats)
-> +				 struct qed_eth_stats *stats, bool is_atomic)
->  {
->  	u8 fw_vport = 0;
->  	int i;
-> @@ -1872,7 +1872,7 @@ static void _qed_get_vport_stats(struct qed_dev *cdev,
->  
->  	for_each_hwfn(cdev, i) {
->  		struct qed_hwfn *p_hwfn = &cdev->hwfns[i];
-> -		struct qed_ptt *p_ptt = IS_PF(cdev) ? qed_ptt_acquire(p_hwfn)
-> +		struct qed_ptt *p_ptt = IS_PF(cdev) ? _qed_ptt_acquire(p_hwfn, is_atomic)
->  						    :  NULL;
->  		bool b_get_port_stats;
->  
-> @@ -1899,7 +1899,8 @@ static void _qed_get_vport_stats(struct qed_dev *cdev,
->  	}
->  }
->  
-> -void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats)
-> +void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats,
-> +			 bool is_atomic)
->  {
->  	u32 i;
->  
-> @@ -1908,7 +1909,7 @@ void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats)
->  		return;
->  	}
->  
-> -	_qed_get_vport_stats(cdev, stats);
-> +	_qed_get_vport_stats(cdev, stats, is_atomic);
->  
->  	if (!cdev->reset_stats)
->  		return;
-> @@ -1960,7 +1961,7 @@ void qed_reset_vport_stats(struct qed_dev *cdev)
->  	if (!cdev->reset_stats) {
->  		DP_INFO(cdev, "Reset stats not allocated\n");
->  	} else {
-> -		_qed_get_vport_stats(cdev, cdev->reset_stats);
-> +		_qed_get_vport_stats(cdev, cdev->reset_stats, false);
->  		cdev->reset_stats->common.link_change_count = 0;
->  	}
->  }
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.h b/drivers/net/ethernet/qlogic/qed/qed_l2.h
-> index a538cf478c14..2bb93c50a2e4 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_l2.h
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_l2.h
-> @@ -249,7 +249,8 @@ qed_sp_eth_rx_queues_update(struct qed_hwfn *p_hwfn,
->  			    enum spq_mode comp_mode,
->  			    struct qed_spq_comp_cb *p_comp_data);
->  
-> -void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats);
-> +void qed_get_vport_stats(struct qed_dev *cdev,
-> +			 struct qed_eth_stats *stats, bool is_atomic);
->  
->  void qed_reset_vport_stats(struct qed_dev *cdev);
->  
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-> index c91898be7c03..307856c4ed22 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-> @@ -3101,7 +3101,7 @@ void qed_get_protocol_stats(struct qed_dev *cdev,
->  
->  	switch (type) {
->  	case QED_MCP_LAN_STATS:
-> -		qed_get_vport_stats(cdev, &eth_stats);
-> +		qed_get_vport_stats(cdev, &eth_stats, false);
->  		stats->lan_stats.ucast_rx_pkts =
->  					eth_stats.common.rx_ucast_pkts;
->  		stats->lan_stats.ucast_tx_pkts =
-> @@ -3161,7 +3161,7 @@ qed_fill_generic_tlv_data(struct qed_dev *cdev, struct qed_mfw_tlv_generic *tlv)
->  		}
->  	}
->  
-> -	qed_get_vport_stats(cdev, &stats);
-> +	qed_get_vport_stats(cdev, &stats, false);
->  	p_common = &stats.common;
->  	tlv->rx_frames = p_common->rx_ucast_pkts + p_common->rx_mcast_pkts +
->  			 p_common->rx_bcast_pkts;
-> diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-> index f90dcfe9ee68..312b1c2484fe 100644
-> --- a/drivers/net/ethernet/qlogic/qede/qede.h
-> +++ b/drivers/net/ethernet/qlogic/qede/qede.h
-> @@ -569,7 +569,7 @@ void qede_set_udp_tunnels(struct qede_dev *edev);
->  void qede_reload(struct qede_dev *edev,
->  		 struct qede_reload_args *args, bool is_locked);
->  int qede_change_mtu(struct net_device *dev, int new_mtu);
-> -void qede_fill_by_demand_stats(struct qede_dev *edev);
-> +void qede_fill_by_demand_stats(struct qede_dev *edev, bool is_atomic);
->  void __qede_lock(struct qede_dev *edev);
->  void __qede_unlock(struct qede_dev *edev);
->  bool qede_has_rx_work(struct qede_rx_queue *rxq);
-> diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-> index 8034d812d5a0..7e40e35d990c 100644
-> --- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-> +++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-> @@ -408,7 +408,7 @@ static void qede_get_ethtool_stats(struct net_device *dev,
->  	struct qede_fastpath *fp;
->  	int i;
->  
-> -	qede_fill_by_demand_stats(edev);
-> +	qede_fill_by_demand_stats(edev, false);
->  
->  	/* Need to protect the access to the fastpath array */
->  	__qede_lock(edev);
-> diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-> index 953f304b8588..6c4187e5faa5 100644
-> --- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-> +++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-> @@ -301,12 +301,12 @@ module_exit(qede_cleanup);
->  static int qede_open(struct net_device *ndev);
->  static int qede_close(struct net_device *ndev);
->  
-> -void qede_fill_by_demand_stats(struct qede_dev *edev)
-> +void qede_fill_by_demand_stats(struct qede_dev *edev, bool is_atomic)
->  {
->  	struct qede_stats_common *p_common = &edev->stats.common;
->  	struct qed_eth_stats stats;
->  
-> -	edev->ops->get_vport_stats(edev->cdev, &stats);
-> +	edev->ops->get_vport_stats(edev->cdev, &stats, is_atomic);
->  
->  	p_common->no_buff_discards = stats.common.no_buff_discards;
->  	p_common->packet_too_big_discard = stats.common.packet_too_big_discard;
-> @@ -413,7 +413,7 @@ static void qede_get_stats64(struct net_device *dev,
->  	struct qede_dev *edev = netdev_priv(dev);
->  	struct qede_stats_common *p_common;
->  
-> -	qede_fill_by_demand_stats(edev);
-> +	qede_fill_by_demand_stats(edev, true);
->  	p_common = &edev->stats.common;
->  
->  	stats->rx_packets = p_common->rx_ucast_pkts + p_common->rx_mcast_pkts +
-> diff --git a/include/linux/qed/qed_eth_if.h b/include/linux/qed/qed_eth_if.h
-> index e1bf3219b4e6..f2893b6b4cb3 100644
-> --- a/include/linux/qed/qed_eth_if.h
-> +++ b/include/linux/qed/qed_eth_if.h
-> @@ -319,7 +319,7 @@ struct qed_eth_ops {
->  				  struct eth_slow_path_rx_cqe *cqe);
->  
->  	void (*get_vport_stats)(struct qed_dev *cdev,
-> -				struct qed_eth_stats *stats);
-> +				struct qed_eth_stats *stats, bool is_atomic);
->  
->  	int (*tunn_config)(struct qed_dev *cdev,
->  			   struct qed_tunn_params *params);
-> -- 
-> 2.27.0
+>  net/mac80211/tx.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
+
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
