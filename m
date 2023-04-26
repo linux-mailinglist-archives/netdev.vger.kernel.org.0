@@ -2,207 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30F986EF1DC
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 12:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CBB76EF1E1
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 12:26:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240293AbjDZKYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 06:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54988 "EHLO
+        id S240309AbjDZK0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 06:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240083AbjDZKYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 06:24:31 -0400
-Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4AB93C31
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 03:24:29 -0700 (PDT)
-Received: from pecola.lan (unknown [159.196.93.152])
-        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 7EF7F20034;
-        Wed, 26 Apr 2023 18:24:23 +0800 (AWST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=codeconstruct.com.au; s=2022a; t=1682504664;
-        bh=7i/m5vPEyAJIjh73TnD53A+XVyXoIiDAr0En3yFs4AM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References;
-        b=W4hhLwpnlEL3R9MOHUDF4aoVsf8uuz0VdpeWE5KJzGHPuHQsixfk1hAiczV/MTax9
-         ibCZb2H1rBmhAaSkLgAXffuuno8YSXpqT1A7X0Hbc6oPn4R6u2Lg2YAc9LRxIWefV/
-         37ioIqijJIFsL572TRIpEF9pDI5vOAiR+h0cMhgFeEFxvTpNUMCCoOTYIwcjyd3LzZ
-         l+Dl3l563UksUCcsfFn9r5pepW6212TUVvBiyVlcpDUk3UwyYnoUcZh90LnnUi1W1g
-         kvC2Hr/hMKNPgbqu3k7YMLQ2GW26tlWjBaB0qyTDWsUg2h9jnULs198jV+9AgjvKAA
-         vgc5ep4fPA4NA==
-Message-ID: <aceee8aa24b33f99ebf22cf02d2063b9e3b17bb3.camel@codeconstruct.com.au>
-Subject: Re: [RFC PATCH v1 0/1] net: mctp: MCTP VDM extension
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     Krzysztof Richert <krzysztof.richert@intel.com>,
-        matt@codeconstruct.com.au
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Date:   Wed, 26 Apr 2023 18:24:23 +0800
-In-Reply-To: <20230425090748.2380222-1-krzysztof.richert@intel.com>
-References: <20230425090748.2380222-1-krzysztof.richert@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3-1 
+        with ESMTP id S239853AbjDZK0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 06:26:01 -0400
+Received: from out28-101.mail.aliyun.com (out28-101.mail.aliyun.com [115.124.28.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D9A3C0C;
+        Wed, 26 Apr 2023 03:25:59 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1189686|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0275812-0.000346042-0.972073;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047198;MF=frank.sae@motor-comm.com;NM=1;PH=DS;RN=15;RT=15;SR=0;TI=SMTPD_---.SRCgG.0_1682504752;
+Received: from 10.0.2.15(mailfrom:Frank.Sae@motor-comm.com fp:SMTPD_---.SRCgG.0_1682504752)
+          by smtp.aliyun-inc.com;
+          Wed, 26 Apr 2023 18:25:53 +0800
+Message-ID: <11f0641a-ef6c-eee8-79f3-45654ae006d5@motor-comm.com>
+Date:   Wed, 26 Apr 2023 18:24:43 +0800
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH v1 2/2] net: phy: motorcomm: Add pad drive strength cfg
+ support
+Content-Language: en-US
+To:     Samin Guo <samin.guo@starfivetech.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Peter Geis <pgwipeout@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+References: <20230426063541.15378-1-samin.guo@starfivetech.com>
+ <20230426063541.15378-3-samin.guo@starfivetech.com>
+From:   Frank Sae <Frank.Sae@motor-comm.com>
+In-Reply-To: <20230426063541.15378-3-samin.guo@starfivetech.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
-
-> According to vendor needs it seems that supporting Vendor Define
-> Messages based on=C2=A0 PCI vendor ID (0x7e) or based on IANA number (0x7=
-f)
-> which are described in DSP0236 will bring additional value to existing
-> MCTP susbsystem. Currently MCTP subsystem allows to register one
-> specific client for each MCTP message type.
-
-Excellent, thanks for taking a look at this.
-
-I have some comments on the general structure though. I'll discuss those
-here, and we can cover the implementation details once that's sorted.
-
-> Under MCTP type=3D0x7e we handle two different messages, one is handle
-> by user-space application and the other is handle by kernel-space
-> driver.
-
-OK, but the kernel vs. user distinction has no influence on the
-addressing, right?
-
-> Because each vendor may define, own, internal message format=C2=A0
-> that's why we considered to extend sockaddr_mctp and allow for
-> registration on MCTP message types =3D 0x7e/0x7f with additional
-> sub-type (up to 8 bytes), which can be defined and use by each vendor
-> to distinguish MCTP VDM packages.
-
-So there are really three components here:
-
- 1) the existing type byte; in this case, either 0x7e/0x7f for
-    indicating PCI/IANA vendor types
-
- 2) the PCI (2-byte) or IANA (4-byte) vendor identifier
-
- 3) an additional sub-type identifier
-
-While (1) and (2) are well-defined by DSP0236, my concern is that (3) is
-not specified anywhere, and seems to be an entirely Intel-specific
-construct. Or is there something in the pipeline for the spec here?
-
-Given you're proposing special handling for Intel vendor types, this
-implies that we're going to be changing the addressing mechanism for
-every new vendor-based type.
-
-So - a couple of questions to shape the design:
-
- - do you *really* need the sub-type decoding in the kernel? (could it be
-   possible for one bind() to handle all of a specific vendor type
-   instead? or is this related to the kernel vs. user statement above?)
-
-   if you do need it:
-
- - could we turn this into a non-vendor-specific (length, data) match
-   instead? If the length is zero, this falls back to exactly as
-   specified in DSP0236.
-
-   or:
-
- - is there a better way of filtering the subtypes into each bound
-   socket?
-
-on the uapi:
-
-> union mctp_vendor_id {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0__u32=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0resvd=C2=A0=C2=A0=C2=A0: 16,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0data=C2=A0=C2=A0=C2=A0=C2=A0: 16;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0} pci_vendor_id;
-
-no bitfields please - just two __u16 fields instead.
-
->=20
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0__u32=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0data;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0} iana_number;
-> };
->=20
->=20
-> struct mctp_vdm_data {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0union mctp_vendor_id=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0smctp_=
-vendor;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0__u64=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0__smctp_pad0;
-
-This padding is a bit mysterious - what are you trying to pad here?
-
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0__u64=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0smctp_sub_type;
-
-As above: if we can turn this into separate length & value fields, we
-can avoid having to code every vendor format into the kernel.
-
-Also, do we really need 8 bytes of type for this? Is some vendor
-planning to support more than 4.3 billion MCTP subtypes? :)
-
-> };
->=20
-> struct sockaddr_mctp_vendor_ext {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct sockaddr_mctp_ext=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0smctp_ext;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct mctp_vdm_data smct=
-p_vdm_data;
-> };
-
-You could avoid a bit of wrapping by including the ext fields directly
-into the vendor-enabled sockaddr:
-
-    struct sockaddr_mctp_vendor_ext {
-    	struct sockaddr_mctp	smctp_base;
-    	int			smctp_ifindex;
-    	__u8			smctp_halen;
-    	__u8			__smctp_pad0[3];
-    	__u8			smctp_haddr[MAX_ADDR_LEN];
-     =C2=A0=C2=A0=C2=A0struct mctp_vdm_data	smctp_vdm_data;
-    };
-
-- but we would need to ensure that we're exactly matching the layout of
-sockaddr_mctp_ext; we could do that through a few build-time asserts
-though.
-
-We would probably simplify this a little too, by flattening into:
-
-    struct sockaddr_mctp_vendor_ext {
-    	struct sockaddr_mctp	smctp_base;
-    	int			smctp_ifindex;
-    	__u8			smctp_halen;
-    	__u8			__smctp_pad0[3];
-    	__u8			smctp_haddr[MAX_ADDR_LEN];
-     =C2=A0=C2=A0=C2=A0__u32			smctp_vdm_vendor;
-     =C2=A0=C2=A0=C2=A0__u32			smctp_vdm_type;
-     =C2=A0=C2=A0=C2=A0__u32			smctp_vdm_len;
-    };
-
-but it's worthwhile working out the actual addressing semantics before
-defining this.
-
-We'll also have to be very explicit about the endianness here.
-
-This is also under the assumption that we want to be able to support
-both extended addressing *and* vendor addressing at the same time. I
-don't think there's any reason not to, but any thoughts on that?
-
-Cheers,
 
 
-Jeremy
+On 2023/4/26 14:35, Samin Guo wrote:
+> The motorcomm phy (YT8531) supports the ability to adjust the drive
+> strength of the rx_clk/rx_data, and the default strength may not be
+> suitable for all boards. So add configurable options to better match
+> the boards.(e.g. StarFive VisionFive 2)
+> 
+> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+> ---
+>  drivers/net/phy/motorcomm.c | 32 ++++++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+> 
+> diff --git a/drivers/net/phy/motorcomm.c b/drivers/net/phy/motorcomm.c
+> index 2fa5a90e073b..08f28ed83e60 100644
+> --- a/drivers/net/phy/motorcomm.c
+> +++ b/drivers/net/phy/motorcomm.c
+> @@ -236,6 +236,11 @@
+>   */
+>  #define YTPHY_WCR_TYPE_PULSE			BIT(0)
+>  
+> +#define YTPHY_PAD_DRIVE_STRENGTH_REG		0xA010
+> +#define YTPHY_RGMII_RXC_DS			GENMASK(15, 13)
+> +#define YTPHY_RGMII_RXD_DS			GENMASK(5, 4)	/* Bit 1 and 0 of rgmii_rxd_ds */
+> +#define YTPHY_RGMII_RXD_DS2			BIT(12) 	/* Bit 2 of rgmii_rxd_ds */
+> +
+
+Please  change YTPHY_RGMII_XXX  to YT8531_RGMII_XXX. YT8521's reg (0xA010) is not same as this.
+Keep bit order.
+
+>  #define YTPHY_SYNCE_CFG_REG			0xA012
+>  #define YT8521_SCR_SYNCE_ENABLE			BIT(5)
+>  /* 1b0 output 25m clock
+> @@ -1495,6 +1500,7 @@ static int yt8531_config_init(struct phy_device *phydev)
+>  {
+>  	struct device_node *node = phydev->mdio.dev.of_node;
+>  	int ret;
+> +	u32 val;
+>  
+>  	ret = ytphy_rgmii_clk_delay_config_with_lock(phydev);
+>  	if (ret < 0)
+> @@ -1518,6 +1524,32 @@ static int yt8531_config_init(struct phy_device *phydev)
+>  			return ret;
+>  	}
+>  
+> +	if (!of_property_read_u32(node, "rx-clk-driver-strength", &val)) {
+
+Please check the val of "val", add the handle of default value.
+
+> +		ret = ytphy_modify_ext_with_lock(phydev,
+> +						 YTPHY_PAD_DRIVE_STRENGTH_REG,
+> +						 YTPHY_RGMII_RXC_DS,
+> +						 FIELD_PREP(YTPHY_RGMII_RXC_DS, val));
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	if (!of_property_read_u32(node, "rx-data-driver-strength", &val)) {
+> +		if (val > FIELD_MAX(YTPHY_RGMII_RXD_DS)) {
+> +			val &= FIELD_MAX(YTPHY_RGMII_RXD_DS);
+> +			val = FIELD_PREP(YTPHY_RGMII_RXD_DS, val);
+> +			val |= YTPHY_RGMII_RXD_DS2;
+> +		} else {
+> +			val = FIELD_PREP(YTPHY_RGMII_RXD_DS, val);
+> +		}
+> +
+> +		ret = ytphy_modify_ext_with_lock(phydev,
+> +						 YTPHY_PAD_DRIVE_STRENGTH_REG,
+> +						 YTPHY_RGMII_RXD_DS | YTPHY_RGMII_RXD_DS2,
+> +						 val);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+>  	return 0;
+>  }
+>  
