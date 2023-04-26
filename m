@@ -2,166 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED0F06EEC99
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 05:14:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA5526EEC9E
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 05:16:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234044AbjDZDOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 23:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
+        id S238440AbjDZDQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 23:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233352AbjDZDOe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 23:14:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D6F10C
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 20:13:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682478825;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xBu915H8CYkTjrtvIiCsbssLWyRdiWGP5IQleYTqxXw=;
-        b=bAxz74bhVfejzFzwaNO/OoaTijmC6aVMrql6ZCuE7MN41RXSV1RZxF6DiZkniQ9afRMC85
-        BiZtbqvFPQF/jJgOJ+or4loyez3Z44HyRBjuwK5eihBT9XYwvA+ZdbbdHE5+HtbpzK9X9V
-        iEEvhgTejE0SKCfG6WHx7OkzKEbS+Jw=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-235-EYs91BiQPJSRcRZGIVkKDw-1; Tue, 25 Apr 2023 23:13:44 -0400
-X-MC-Unique: EYs91BiQPJSRcRZGIVkKDw-1
-Received: by mail-lf1-f70.google.com with SMTP id 2adb3069b0e04-4ec9e0761c6so7915041e87.1
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 20:13:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682478822; x=1685070822;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xBu915H8CYkTjrtvIiCsbssLWyRdiWGP5IQleYTqxXw=;
-        b=iCe8BJCrTNbD6MIviXS6EAfNimbdO0rWuWBOerRmf3dcXz3jriYUnKrqAE9Ymde6/U
-         RxTnnwq8aI9LTElj5iVcO0JzkJ9mJAB94WUei9iSq4vNdaoGsmx/VIGcCeE14QQHHonx
-         UAfV9sol/sf2KcsmoxaaqobcWK75Tyz5TlRb9o1fJxmnNctI751pOJjuFeKMDfNr9DpA
-         4GM0ImnD8zSYI7momfHoI621jXXA0Gbp52CCa5J3psjqNIGw+KP1Utj8Ke1EnjYxFNmr
-         /i4sZbUjjzxqKFYKhouROH3Whth80Ug3WNfCHxeMBWo/+9aLTLROiiBQcnru2E6Zai7b
-         zUhg==
-X-Gm-Message-State: AC+VfDwrua8C8laxy6GhvrLUuJ2aOL1AKPSoXhgsUbc3A6XMKFuDcm5b
-        P2QWe0ShCPqkqirJ1+jxTBkW0beXEl4RZ8DA08dI/h9hN2Samo6MGWb0leot48meNE9kPZVwXCG
-        VLdgl9jApest/93RtxkIz9Or30ZmaIp/T
-X-Received: by 2002:ac2:4f01:0:b0:4ed:c758:6b5a with SMTP id k1-20020ac24f01000000b004edc7586b5amr221579lfr.4.1682478822792;
-        Tue, 25 Apr 2023 20:13:42 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4bzDuPAoLkRvJ6hXcx6xfJgVJ4CQKsoGORFUb4ySVnfNMcZWlRncRle3bnaBr2mCupDi+qJ0ruKkuAQvpkksQ=
-X-Received: by 2002:ac2:4f01:0:b0:4ed:c758:6b5a with SMTP id
- k1-20020ac24f01000000b004edc7586b5amr221565lfr.4.1682478822513; Tue, 25 Apr
- 2023 20:13:42 -0700 (PDT)
+        with ESMTP id S232378AbjDZDQI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 23:16:08 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54F826BD;
+        Tue, 25 Apr 2023 20:16:04 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 33Q3FekeE015030, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 33Q3FekeE015030
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Wed, 26 Apr 2023 11:15:40 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.32; Wed, 26 Apr 2023 11:15:42 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Wed, 26 Apr 2023 11:15:42 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d]) by
+ RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d%5]) with mapi id
+ 15.01.2375.007; Wed, 26 Apr 2023 11:15:42 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>, Kalle Valo <kvalo@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: RE: pull-request: wireless-next-2023-04-21
+Thread-Topic: pull-request: wireless-next-2023-04-21
+Thread-Index: AQHZdD60u8zT35eBqkOmWCVcBjPBJa81U6EAgAX6SUCAADntO4AAC0MAgAAvgQCAASv6AA==
+Date:   Wed, 26 Apr 2023 03:15:41 +0000
+Message-ID: <c69f151c77f34ae594dc2106bc68f2ac@realtek.com>
+References: <20230421104726.800BCC433D2@smtp.kernel.org>
+         <20230421075404.63c04bca@kernel.org>
+         <e31dae6daa6640859d12bf4c4fc41599@realtek.com> <87leigr06u.fsf@kernel.org>
+         <20230425071848.6156c0a0@kernel.org>
+ <77cf7fa9de20be55d50f03ccbdd52e3c8682b2b3.camel@sipsolutions.net>
+In-Reply-To: <77cf7fa9de20be55d50f03ccbdd52e3c8682b2b3.camel@sipsolutions.net>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-antispam-interceptor-info: fallback
+x-kse-antivirus-interceptor-info: fallback
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20230423105736.56918-1-xuanzhuo@linux.alibaba.com> <20230423105736.56918-14-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20230423105736.56918-14-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 26 Apr 2023 11:13:31 +0800
-Message-ID: <CACGkMEuL8nACFdFQamOm-u+iDiMPHL9X8Dta86OtVvOV-u0P0A@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 13/15] virtio_net: small: remove skip_xdp
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 23, 2023 at 6:58=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.alibaba.c=
-om> wrote:
->
-> now, the process of xdp is simple, we can remove the skip_xdp.
-
-I would say the reason why xdp is simple, I think it is because the
-skb build path is not shared between XDP and non-XDP case.
-
-Other than this
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-Thanks
-
-
->
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> ---
->  drivers/net/virtio_net.c | 26 ++++++++++++--------------
->  1 file changed, 12 insertions(+), 14 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 601c0e7fc32b..d2973c8fa48c 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1028,13 +1028,12 @@ static struct sk_buff *receive_small(struct net_d=
-evice *dev,
->                                      unsigned int *xdp_xmit,
->                                      struct virtnet_rq_stats *stats)
->  {
-> -       struct sk_buff *skb;
-> -       struct bpf_prog *xdp_prog;
->         unsigned int xdp_headroom =3D (unsigned long)ctx;
->         struct page *page =3D virt_to_head_page(buf);
->         unsigned int header_offset;
->         unsigned int headroom;
->         unsigned int buflen;
-> +       struct sk_buff *skb;
->
->         len -=3D vi->hdr_len;
->         stats->bytes +=3D len;
-> @@ -1046,22 +1045,21 @@ static struct sk_buff *receive_small(struct net_d=
-evice *dev,
->                 goto err;
->         }
->
-> -       if (likely(!vi->xdp_enabled)) {
-> -               xdp_prog =3D NULL;
-> -               goto skip_xdp;
-> -       }
-> +       if (unlikely(vi->xdp_enabled)) {
-> +               struct bpf_prog *xdp_prog;
->
-> -       rcu_read_lock();
-> -       xdp_prog =3D rcu_dereference(rq->xdp_prog);
-> -       if (xdp_prog) {
-> -               skb =3D receive_small_xdp(dev, vi, rq, xdp_prog, buf, xdp=
-_headroom,
-> -                                       len, xdp_xmit, stats);
-> +               rcu_read_lock();
-> +               xdp_prog =3D rcu_dereference(rq->xdp_prog);
-> +               if (xdp_prog) {
-> +                       skb =3D receive_small_xdp(dev, vi, rq, xdp_prog, =
-buf,
-> +                                               xdp_headroom, len, xdp_xm=
-it,
-> +                                               stats);
-> +                       rcu_read_unlock();
-> +                       return skb;
-> +               }
->                 rcu_read_unlock();
-> -               return skb;
->         }
-> -       rcu_read_unlock();
->
-> -skip_xdp:
->         header_offset =3D VIRTNET_RX_PAD + xdp_headroom;
->         headroom =3D vi->hdr_len + header_offset;
->         buflen =3D SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
-> --
-> 2.32.0.3.g01195cf9f
->
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9oYW5uZXMgQmVyZyA8
+am9oYW5uZXNAc2lwc29sdXRpb25zLm5ldD4NCj4gU2VudDogV2VkbmVzZGF5LCBBcHJpbCAyNiwg
+MjAyMyAxOjA5IEFNDQo+IFRvOiBKYWt1YiBLaWNpbnNraSA8a3ViYUBrZXJuZWwub3JnPjsgS2Fs
+bGUgVmFsbyA8a3ZhbG9Aa2VybmVsLm9yZz4NCj4gQ2M6IFBpbmctS2UgU2hpaCA8cGtzaGloQHJl
+YWx0ZWsuY29tPjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgtd2lyZWxlc3NAdmdlci5r
+ZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBwdWxsLXJlcXVlc3Q6IHdpcmVsZXNzLW5leHQtMjAy
+My0wNC0yMQ0KPiANCj4gT24gVHVlLCAyMDIzLTA0LTI1IGF0IDA3OjE4IC0wNzAwLCBKYWt1YiBL
+aWNpbnNraSB3cm90ZToNCj4gPiBPbiBUdWUsIDI1IEFwciAyMDIzIDA4OjM4OjE3ICswMzAwIEth
+bGxlIFZhbG8gd3JvdGU6DQo+ID4gPiBJSVJDIHdlIGRpc2N1c3NlZCB0aGlzIGJhY2sgaW4gaW5p
+dGlhbCBydHc4OCBvciBydHc4OSBkcml2ZXIgcmV2aWV3IChub3QNCj4gPiA+IHN1cmUgd2hpY2gg
+b25lKS4gQXQgdGhlIHRpbWUgSSBwdXNoZWQgZm9yIHRoZSBjdXJyZW50IHNvbHV0aW9uIHRvIGhh
+dmUNCj4gPiA+IHRoZSBpbml0dmFscyBpbiBzdGF0aWMgdmFyaWFibGVzIGp1c3QgdG8gYXZvaWQg
+YW55IGJhY2t3YXJkcw0KPiA+ID4gY29tcGF0aWJpbGl0eSBpc3N1ZXMuIEkgYWdyZWUgdGhhdCB0
+aGUgaW5pdHZhbHMgaW4gLmMgZmlsZXMgYXJlIHVnbHkgYnV0DQo+ID4gPiBpcyBpdCB3b3J0aCBh
+bGwgdGhlIGV4dHJhIGVmZm9ydCBhbmQgY29tcGxleGl0eSB0byBtb3ZlIHRoZW0gb3V0c2lkZSB0
+aGUNCj4gPiA+IGtlcm5lbD8gSSdtIHN0YXJ0aW5nIHRvIGxlYW4gdG93YXJkcyBpdCdzIG5vdCB3
+b3J0aCBhbGwgdGhlIGV4dHJhIHdvcmsuDQo+ID4NCj4gPiBJIGRvbid0IHRoaW5rIGl0J3MgdGhh
+dCBtdWNoIGV4dHJhIHdvcmssIHRoZSBkcml2ZXIgcmVxdWlyZXMgRlcNCj4gPiBhY2NvcmRpbmcg
+dG8gbW9kaW5mbywgYW55d2F5LCBzbyAvbGliL2Zpcm13YXJlIGlzIGFscmVhZHkgcmVxdWlyZWQu
+DQo+IA0KPiBJZiB0aGUgZmlybXdhcmUgaXMgc3VmZmljaWVudGx5IHVuaXF1ZSB0byBhIGRldmlj
+ZSAod2hpY2ggaXMgbGlrZWx5KSBpdA0KPiBjb3VsZCBldmVuIGp1c3QgYmUgYXBwZW5kZWQgdG8g
+dGhhdCBzYW1lIGZpbGUsIGFzc3VtaW5nIHRoZSBmaWxlIGZvcm1hdA0KPiBoYXMgYW55IGtpbmQg
+b2YgY29udGFpbmVyIGxheW91dC4gQnV0IGV2ZW4gdGhhdCBjb3VsZCBiZSBkb25lIGZhaXJseQ0K
+PiBlYXNpbHkuDQo+IA0KDQpJIHRoaW5rIHRoZSBleHRyYSB3b3JrIEthbGxlIG1lYW50IGlzIHdo
+YXQgSSBtZW50aW9uZWQgcHJldmlvdXNseSAtLQ0KbmVlZCBmdW5jdGlvbnMgdG8gY29udmVydCBv
+bGQgdGFibGVzIHYxLCB2MiwgLi4uIHRvIGN1cnJlbnQuIExpa2UsDQoNCnN0cnVjdCB0YWJsZV92
+MSB7IC8vIGZyb20gZmlsZQ0KICAgX19sZTMyIGRhdGFbMTBdOw0KfTsNCg0Kc3RydWN0IHRhYmxl
+X3YyIHsgLy8gZnJvbSBmaWxlDQogICBfX2xlMzIgZGF0YVsyMF07DQp9Ow0KDQpzdHJ1Y3QgdGFi
+bGUgeyAgICAvLyBmcm9tIGZpbGUsIHRoZSBsYXRlc3QgdmVyc2lvbiBvZiBjdXJyZW50IHVzZQ0K
+ICAgX19sZTMyIGRhdGFbMzBdOw0KfTsNCg0Kc3RydWN0IHRhYmxlX2NwdSB7ICAvLyBjdXJyZW50
+IHRhYmxlIGluIGNwdSBvcmRlcg0KICAgdTMyIGRhdGFbMzBdOw0KfTsNCg0KSWYgbG9hZGluZyBh
+IHRhYmxlX3YxIHRhYmxlLCBmb3IgZXhhbXBsZSwgd2UgbmVlZCB0byBjb252ZXJ0IHRvIHRhYmxl
+X2NwdSBieQ0Kc29tZSBydWxlcy4gQWxzbywgbWF5YmUgd2UgbmVlZCB0byBkaXNhYmxlIHNvbWUg
+ZmVhdHVyZXMgcmVsYXkgb24gdGhlIHZhbHVlcw0KaW50cm9kdWNlZCBieSB0YWJsZV9jcHUuIEkg
+dGhpbmsgaXQgd2lsbCB3b3JrLCBidXQganVzdCBhZGQgc29tZSBmbGFncyBhbmQNCnJ1bGVzIHRv
+IGhhbmRsZSB0aGVtLg0KDQoNCkFub3RoZXIgcXVlc3Rpb24gaXMgYWJvdXQgbnVtYmVyIG9mIGZp
+bGVzIGZvciBzaW5nbGUgZGV2aWNlLiBTaW5jZSBmaXJtd2FyZSBhbmQNCnRhYmxlcyAoZS5nLiBU
+WCBwb3dlciwgcmVnaXN0ZXJzKSBhcmUgcmVsZWFzZWQgYnkgZGlmZmVyZW50IHBlb3BsZSwgYW5k
+IHRoZXkNCm1haW50YWluIHRoZWlyIG93biB2ZXJzaW9uLCBpZiBJIGFwcGVuZCB0YWJsZXMgdG8g
+ZmlybXdhcmUsIGl0J3MgYSBsaXR0bGUgaGFyZA0KdG8gaGF2ZSBhIGNsZWFyIHZlcnNpb24gY29k
+ZS4gU28sIEkgd291bGQgbGlrZSB0byBrbm93IHRoZSBydWxlIGlmIEkgY2FuIGp1c3QNCmFkZCBh
+ZGRpdGlvbmFsIG9uZSBmaWxlIGZvciB0aGVzZSB0YWJsZXM/DQoNClBpbmctS2UNCg0K
