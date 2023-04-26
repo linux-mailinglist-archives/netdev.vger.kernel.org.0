@@ -2,129 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA1A36EF480
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 14:41:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 331E16EF513
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 15:07:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240703AbjDZMli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 08:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
+        id S240791AbjDZNHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 09:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240547AbjDZMlh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 08:41:37 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B0C6585;
-        Wed, 26 Apr 2023 05:40:48 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id d2e1a72fcca58-63b50a02bffso5810689b3a.2;
-        Wed, 26 Apr 2023 05:40:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682512843; x=1685104843;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=sosN6q7mjWABQa1iFcHLQ7HcWfsjeMtm3Mt392Dc1Ok=;
-        b=LHEhXfBwsoX5wQPtnAnd/oSeQOBl5rvEvn7Jq2inf11DTsMzwiilhui/ckik+6rGNf
-         qeVSAL7SRVHE2nj23tcVdeylQ9ODv7KttwZEha1dl04Uz2VuK3FanEMlfBA1WRgs8POM
-         G5Ae8uveZTMTYzFkzAjfO1rOf0DgWsHV2pin2KVCMJlqlF0CcP/ObpMkkG2KwrmYvR+a
-         DjmeyUb0tbVgM1POPQ0QoY/JJ/MDIiTWVHa4UgyNxL2IJW8DVXfSmB5msXnAe6NgA4Vu
-         9O2zG9VNIeDLh8bo3BQSxEQsCc1d9giheLcKV3mnd6NGuLTmQZvN7zs67YTC7hIIblOE
-         w+zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682512843; x=1685104843;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=sosN6q7mjWABQa1iFcHLQ7HcWfsjeMtm3Mt392Dc1Ok=;
-        b=laY1g3/GrjsQ6Cof10eQNHdDnE27AbqVACq7n8aOglPYPRggiFrWG75i0Xw8RJM65n
-         3oaHTNch7AwsUVfyFbceA0NnHrTJssnZVKHhYuIF8URNBO3CyPoSHoRnRNtaolzdS525
-         +4u3iOvD2NWNcCVtC6UjSRr5oqp0JbslcsyJ0O6WMNTjKu6bONUmIGvCrYDqpoKIUT6n
-         eOgGsa2j2AUDnPU0BYP5wsTDuLD2EaVIephtpHKOQiaej8ikbYDZWMtR43Ak9E2Yctkd
-         ZA6d1X5ZObKyhZxfGeg2P9tv5A3Nu4qc059Nkdx5Ur76h4BAgTqJ8ge7Q1/kX+RXML76
-         2LyA==
-X-Gm-Message-State: AAQBX9djMclM9mLzcH5oYmposuvuA1TNtX0NoOynuUkLJPokiGRcWutp
-        qtKacXBKnxjjPKa8oNSOEzZgwTzUbRIpLxYwsLRzF15QqsRNww==
-X-Google-Smtp-Source: AKy350ayHesJaV9Si6f/E/Wp+h9A2uT5MsJ/lHDtqljcQwtP1Ri7lwAypa0hf/VN91OAfADvz6myhrHxslCOx7xdqxE=
-X-Received: by 2002:a05:6a20:12ca:b0:f3:1b6:f468 with SMTP id
- v10-20020a056a2012ca00b000f301b6f468mr19381338pzg.6.1682512843128; Wed, 26
- Apr 2023 05:40:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <20221105194943.826847-1-robimarko@gmail.com> <20221105194943.826847-2-robimarko@gmail.com>
- <20221107174727.GA7535@thinkpad> <87cz9xcqbd.fsf@kernel.org>
- <877czn8c2n.fsf@kernel.org> <CA+HBbNFCFtJwzN=6SCsWnDmAjPkmxE4guH1RrLc+-HByLcVVXA@mail.gmail.com>
- <87k02jzgkz.fsf@kernel.org> <CA+HBbNHi0zTeV0DRmwLjZu+XzUQEZQNnSpBMeQeUPiBu3v-2BQ@mail.gmail.com>
- <87358hyp3x.fsf@kernel.org> <CA+HBbNGdOrOiCxhSouZ6uRPRnZmsBSAL+wWpLkczMK9cO8Mczg@mail.gmail.com>
- <877cxsdrax.fsf@kernel.org> <CA+HBbNGbg88_3FDu+EZhqMj0UKb8Ja_vyYsxGtmJ_HGt4fNVBQ@mail.gmail.com>
- <87y1q8ccc4.fsf@kernel.org> <CA+HBbNH2fzr_knOE9EWD4bUi-guvRa07FAxc9WyCH0jK10BLvw@mail.gmail.com>
- <87fsafpg63.fsf@kernel.org>
-In-Reply-To: <87fsafpg63.fsf@kernel.org>
-From:   Robert Marko <robimarko@gmail.com>
-Date:   Wed, 26 Apr 2023 14:40:32 +0200
-Message-ID: <CAOX2RU5EaRrcKW7uhmDQbUO-TzOOnKAsx5HKtRjMDTMBEZj4tA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] wifi: ath11k: use unique QRTR instance ID
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Robert Marko <robert.marko@sartura.hr>,
-        Manivannan Sadhasivam <mani@kernel.org>, davem@davemloft.net,
+        with ESMTP id S240506AbjDZNHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 09:07:22 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A032D7E;
+        Wed, 26 Apr 2023 06:07:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=DZNqjfdQOuqzJ3kVZRYTgiz2unGBFuvW0+zVW2+EbFs=; b=FTANkconCKruRK6Aa2GGuNgRy1
+        7md18qyPgkpMtOjioDdwbQOBHFw55+o6q5ZnR1g+lpUGuGmryc3iQPv5j9AGnc07DWea/dIk/7i07
+        V0KVOJeFgsFeAw+gjBIKJmMcIfkGXauI15NNpX751iD4xfLw+tzhrgIPW5yFp5xWnZ0U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1preSH-00BGpF-Fm; Wed, 26 Apr 2023 14:41:05 +0200
+Date:   Wed, 26 Apr 2023 14:41:05 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        gregkh@linuxfoundation.org, elder@linaro.org,
-        hemantk@codeaurora.org, quic_jhugo@quicinc.com,
-        quic_qianyu@quicinc.com, bbhatt@codeaurora.org,
-        mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, ansuelsmth@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, srk@ti.com
+Subject: Re: [RFC PATCH 2/2] net: phy: dp83869: fix mii mode when rgmii strap
+ cfg is used
+Message-ID: <5a2bc044-5fb0-4162-a75a-24c94f8ed3f7@lunn.ch>
+References: <20230425054429.3956535-1-s-vadapalli@ti.com>
+ <20230425054429.3956535-3-s-vadapalli@ti.com>
+ <cbbedaab-b2bf-4a37-88ed-c1a8211920e9@lunn.ch>
+ <99932a4f-4573-b80b-080b-7d9d3f57bef0@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <99932a4f-4573-b80b-080b-7d9d3f57bef0@ti.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Still not sure what you mean. Are you saying that this patch under
-> discussion ("wifi: ath11k: use unique QRTR instance ID") also works with
-> QCA6390 and it's possible to connect two QCA6390 devices on the same
-> host?
->
-> Or are you referring to some other hack? Or have I totally
-> misunderstood? :)
+> >> @@ -692,8 +692,11 @@ static int dp83869_configure_mode(struct phy_device *phydev,
+> >>  	/* Below init sequence for each operational mode is defined in
+> >>  	 * section 9.4.8 of the datasheet.
+> >>  	 */
+> >> +	phy_ctrl_val = dp83869->mode;
+> >> +	if (phydev->interface == PHY_INTERFACE_MODE_MII)
+> >> +		phy_ctrl_val |= DP83869_OP_MODE_MII;
+> > 
+> > Should there be some validation here with dp83869->mode?
+> > 
+> > DP83869_RGMII_COPPER_ETHERNET, DP83869_RGMII_SGMII_BRIDGE etc don't
+> > make sense if MII is being used. DP83869_100M_MEDIA_CONVERT and maybe
+> > DP83869_RGMII_100_BASE seem to be the only valid modes with MII?
+> 
+> The DP83869_OP_MODE_MII macro corresponds to BIT(5) which is the RGMII_MII_SEL
+> bit in the OP_MODE_DECODE register. If the RGMII_MII_SEL bit is set, MII mode is
+> selected. If the bit is cleared, which is the default value, RGMII mode is
+> selected. As pointed out by you, there are modes which aren't valid with MII
+> mode. However, a mode which isn't valid with RGMII mode (default value of the
+> RGMII_MII_SEL bit) also exists: DP83869_SGMII_COPPER_ETHERNET. For this reason,
+> I believe that setting the bit when MII mode is requested shouldn't cause any
+> issues.
 
-We probably have a misunderstanding, QCA6390 does not work with
-("wifi: ath11k: use unique QRTR instance ID"), that is why we in OpenWrt
-limited it to QCN9074 only so far.
+If you say so. I was just thinking you could give the poor software
+engineer a hint the hardware engineer has put on strapping resistors
+which means the PHY is not going to work.
 
->
-> > so that is why its quite important for OpenWrt to have a generic
-> > solution that works on all cards.
->
-> I fully agree on importance of having a generic solution. It's just sad
-> that it seems people who designed this didn't consider about having
-> multiple devices on the same host. It looks like there's no easy way to
-> implement a generic solution, we have only bad choices to choose from.
-> Your solution[1] is racy and writing to a register which is marked as
-> read-only in the spec.
-
-I agree, this is purely a hack based on what QCA is doing downstream where
-they hardcode the QRTR ID in DTS and write to the same register.
-
->
-> Qualcomm's solution[2] needs changes in firmware and it's uncertain if
-> I'm able to convince all firmware teams to implement the support.
-> (Currently only QCN9074 firmware supports this.)
->
-> Thoughts?
-
-I mean, we need some kind of a solution cause trying to pitch using a QCA
-AX SoC-s and PCI cards but then saying that they cannot use AHB+PCI
-or multiple PCI cards at the same time are not viable.
-
-Regards,
-Robert
->
-> [1] https://patchwork.kernel.org/project/linux-wireless/patch/20221105194943.826847-2-robimarko@gmail.com/
->
-> [2] https://patchwork.kernel.org/project/linux-wireless/patch/20230111170033.32454-1-kvalo@kernel.org/
->
-> --
-> https://patchwork.kernel.org/project/linux-wireless/list/
->
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+      Andrew
