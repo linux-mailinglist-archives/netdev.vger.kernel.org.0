@@ -2,215 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D7766EFBF2
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 22:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42F906EFBF5
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 22:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239906AbjDZUy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 16:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36254 "EHLO
+        id S236145AbjDZU4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 16:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239901AbjDZUy4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 16:54:56 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4933F19F
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 13:54:55 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id ffacd0b85a97d-2f58125b957so6979300f8f.3
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 13:54:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682542494; x=1685134494;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ztSndFm2Ayvv5+WLFUlzd84XLiS56D3dhlgg/USNjGE=;
-        b=SVL2tsuqsvmWMy3Hnun9/iPKHnkXgUXpV8Eulg3e0GGfmk4/oYCmrO4EpZQnh3bCMT
-         DyO50DX4vu6VgBvECwkRfWYqxOdV14lkG1y04KC7eg3ltOhH1kWcHdvLfmaBbnR6kmK1
-         prWgtp0PjHhiu1JfOMeB4WlBzJKSDOgn+o8knk/ZKutApVC/uU+q24Z7uSHfD4o1AqQk
-         HVFOo61BA+K9TLd9A6j7tjidcq6bJ4zAdHoW7N1wzA1zuEpjM6tzBpKO6Ki+8gZ9xm/K
-         PIoPkLJYWUSBm1olLSgLbjPLa3ne5bobj7UNwR7IRdLjL6lTTmgNiARhBxNBU/7Rdbz3
-         RF4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682542494; x=1685134494;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ztSndFm2Ayvv5+WLFUlzd84XLiS56D3dhlgg/USNjGE=;
-        b=HCjvg4o/ZrRsd8DqhNSdsf1sM8cHzLuC5AktD2MDsINdRE85BHHMHBcq9nNmPRsd0T
-         D3N9ktVv82r1yemXeEAP0sDzVPBOTur343MwrWHM8lQbhVE39hCfJK8OufSVvgBCYxxe
-         coQSUtbeM8OVvk/ubeTHbqJ3nXtuTiF0DL2RHxJimogVFm8hedatuAQ92YTIGHgKZwKR
-         +XCXzfWP3/UZnc3RH9m35XmXLZP8RieoVtDo+qc3QRq1pxsfI+PS52+dQpcbHVkpN6ad
-         VMSRPXbdcrwLQK70v1Xk3IDDEaZ4SaC6MYevlPW6XUtoFcyoAX5BON2TSBgBwbUpIp4O
-         LtTA==
-X-Gm-Message-State: AAQBX9ept0VLqAwvKqZnb2+tTEBMKQ5UsDNtXP2SrOX7O2tY4kufmazD
-        hPfZSGglwakP2u8laASWUiE=
-X-Google-Smtp-Source: AKy350af2tJQ4pyicDT4Hgq0hVW3jiiU3+GVRrqgWXITKd7qB7MibgDtDPSM7TW+mj6ZSM5Ensrxog==
-X-Received: by 2002:a5d:49c9:0:b0:2f4:a3ea:65d2 with SMTP id t9-20020a5d49c9000000b002f4a3ea65d2mr16159609wrs.57.1682542493377;
-        Wed, 26 Apr 2023 13:54:53 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id l7-20020a5d4bc7000000b002fefe2edb72sm16686670wrt.17.2023.04.26.13.54.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Apr 2023 13:54:53 -0700 (PDT)
-Date:   Wed, 26 Apr 2023 23:54:50 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     DENG Qingfang <dqfext@gmail.com>, Greg Ungerer <gerg@kernel.org>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, bartel.eerdekens@constell8.be,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: MT7530 bug, forward broadcast and unknown frames to the correct
- CPU port
-Message-ID: <20230426205450.kez5m5jr4xch7hql@skbuf>
-References: <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
- <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+        with ESMTP id S234643AbjDZU4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 16:56:15 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900EB19F
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 13:56:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1682542574; x=1714078574;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=/fZkEWdPIDr+5pJK6niEfSX/+XU34O97km2IlprsPTM=;
+  b=pcFNSc3s5ZNZsLo0Wt6b/sKGvZTVt96bBXABMgvWTtk3xxPyMFOc/Ck0
+   UmWPiMtJlyek++b8cmI6YVTEOeNkS6Wi/+JxYZuph8yB9bGjzG6/o+UCo
+   3vpaC/LsQYWbhiipq8BQmmi62+bhGSohse48t2jXsEDgnpc31FrkH+/KY
+   BrQeGVpOCAoeLooUGXLe1bUXzYxlrkdjC64067D4XTHCFgK3FRPmjnqBK
+   F7RciCrTip2z2Es0Y56Cgi3qIWUMQq8lNJchE5G3HiJR3ZOpFOwWGhpWl
+   SUpEa3HelfzMUZ7NhRvsWm6QBKUlj3OE/Bu9f3kCvVYMi6UwgiaToAiZj
+   g==;
+X-IronPort-AV: E=Sophos;i="5.99,229,1677567600"; 
+   d="scan'208";a="208446344"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2023 13:56:13 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 26 Apr 2023 13:56:09 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Wed, 26 Apr 2023 13:56:09 -0700
+Date:   Wed, 26 Apr 2023 22:56:08 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+CC:     <netdev@vger.kernel.org>, <andrew@lunn.ch>, <davem@davemloft.net>,
+        <jan.huber@microchip.com>, <thorsten.kummermehr@microchip.com>,
+        <ramon.nordin.rodriguez@ferroamp.se>
+Subject: Re: [PATCH net-next 1/2] net: phy: microchip_t1s: update LAN867x PHY
+ supported revision number
+Message-ID: <20230426205608.qqx37bnao2l47st5@soft-dev3-1>
+References: <20230426114655.93672-1-Parthiban.Veerasooran@microchip.com>
+ <20230426114655.93672-2-Parthiban.Veerasooran@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
- <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20230426114655.93672-2-Parthiban.Veerasooran@microchip.com>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 23, 2023 at 06:22:41PM +0300, Arınç ÜNAL wrote:
-> Hey there folks,
-> 
-> On mt753x_cpu_port_enable() there's code [0] that sets which port to forward
-> the broadcast, unknown multicast, and unknown unicast frames to. Since
-> mt753x_cpu_port_enable() runs twice when both CPU ports are enabled, port 6
-> becomes the port to forward the frames to. But port 5 is the active port, so
-> no broadcast frames received from the user ports will be forwarded to port
-> 5. This breaks network connectivity when multiple ports are being used as
-> CPU ports.
-> 
-> My testing shows that only after receiving a broadcast ARP frame from port 5
-> then forwarding it to the user port, the unicast frames received from that
-> user port will be forwarded to port 5. I tested this with ping.
-> 
-> Forwarding broadcast and unknown unicast frames to the CPU port was done
-> with commit 5a30833b9a16 ("net: dsa: mt7530: support MDB and bridge flag
-> operations"). I suppose forwarding the broadcast frames only to the CPU port
-> is what "disable flooding" here means.
+The 04/26/2023 17:16, Parthiban Veerasooran wrote:
 
-Flooding means forwarding a packet that does not have a precise destination
-(its MAC DA is not present in the FDB or MDB). Flooding is done towards
-the ports that have flooding enabled.
+You didn't add all the maintainers to the thread. Please use
+./scripts/get_maintainer.pl
 
 > 
-> It’s a mystery to me how the switch classifies multicast and unicast frames
-> as unknown. Bartel's testing showed LLDP frames fall under this category.
-
-What is mysterious exactly? What's not in the FDB/MDB is unknown. And
-DSA, unless the requirements from dsa_switch_supports_uc_filtering() and
-dsa_switch_supports_mc_filtering() are satisfied, will not program MAC
-addresses for host RX filtering to the CPU port(s).
-
-This switch apparently has the option to automatically learn from the MAC SA
-of packets injected by software. That option is automatically enabled
-unless MTK_HDR_XMIT_SA_DIS is set (which currently it never is).
-
-So when software sends a broadcast ARP frame from port 5, the switch
-learns the MAC SA of this packet (which is the software MAC address of
-the user port) and it associates it with port 5. So future traffic
-destined to the user port's software MAC address now reaches port 5, the
-active CPU port (and the real CPU port from DSA's perspective).
-
-Wait 5 minutes for the learned FDB entry to expire, and the problem will
-probably be back.
-
-LLDP frames should not obey the same rules. They are sent to the MAC DA
-of 01:80:c2:00:00:0e, which is in the link-local multicast address space
-(hence the "LL" in the name), and which according to IEEE 802.1Q-2018 is
-the "Nearest Bridge group address":
-
-| The Nearest Bridge group address is an address that no conformant TPMR
-| component, S-VLAN component, C-VLAN component, or MAC Bridge can
-| forward. PDUs transmitted using this destination address, or any of the
-| other addresses that appear in all three tables, can therefore travel no
-| further than those stations that can be reached via a single individual
-| LAN from the originating station. Hence the Nearest Bridge group address
-| is also known as the Individual LAN Scope group address.
-
-Removing a packet from the forwarding data plane and delivering it only
-to the CPU is known as "trapping", and thus, it is not "flooding".
-
-The MAC SA learning trick will not make port 5 see LLDP frames, since
-those are not targeted towards a unicast MAC address which could be
-learned.
-
+> As per AN1699, the initial configuration in the driver applies to LAN867x
+> Rev.B1 hardware revision.
 > 
-> Until the driver supports changing the DSA conduit, unknown frames should be
-> forwarded to the active CPU port, not the numerically greater one. Any ideas
-> how to address this and the "disable flooding" case?
-
-I think I also signaled the reverse problem in the other thread:
-https://lore.kernel.org/netdev/20230222193951.rjxgxmopyatyv2t7@skbuf/
-
-Well, the most important step in fixing the problem would be to
-politically decide which port should be the active CPU port in the case
-of multiple choices, then to start fixing up the bits in the driver that
-disagree with that. Having half the code think it's 5 and the other half
-think it's 6 surely isn't any good.
-
-There was a discussion in the other thread with Frank that port 6 would
-be somehow preferable if both are available, but I haven't seen convincing
-enough arguments yet.
-
+> Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
+> ---
+>  drivers/net/phy/microchip_t1s.c | 36 ++++++++++++++++-----------------
+>  1 file changed, 18 insertions(+), 18 deletions(-)
 > 
-> There's also this "set the CPU number" code that runs only for MT7621. I'm
-> not sure why this is needed or why it's only needed for MT7621. Greg, could
-> you shed some light on this since you added this code with commit
-> ddda1ac116c8 ("net: dsa: mt7530: support the 7530 switch on the Mediatek
-> MT7621 SoC")?
+> diff --git a/drivers/net/phy/microchip_t1s.c b/drivers/net/phy/microchip_t1s.c
+> index 094967b3c111..793fb0210605 100644
+> --- a/drivers/net/phy/microchip_t1s.c
+> +++ b/drivers/net/phy/microchip_t1s.c
+> @@ -1,16 +1,16 @@
+>  // SPDX-License-Identifier: GPL-2.0+
+>  /*
+> - * Driver for Microchip 10BASE-T1S LAN867X PHY
+> + * Driver for Microchip 10BASE-T1S PHY family
+>   *
+>   * Support: Microchip Phys:
+> - *  lan8670, lan8671, lan8672
+> + *  lan8670/1/2 Rev.B1
+>   */
 > 
-> There're more things to discuss after supporting changing the DSA conduit,
-> such as which CPU port to forward the unknown frames to, when user ports
-> under different conduits receive unknown frames. What makes sense to me is,
-> if there are multiple CPU ports being used, forward the unknown frames to
-> port 6. This is already the case except the code runs twice. If not, set it
-> to whatever 'int port' is, which is the default behaviour already.
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/phy.h>
 > 
-> [0] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/mt7530.c#n1005
+> -#define PHY_ID_LAN867X 0x0007C160
+> +#define PHY_ID_LAN867X_REVB1 0x0007C162
+> 
+>  #define LAN867X_REG_IRQ_1_CTL 0x001C
+>  #define LAN867X_REG_IRQ_2_CTL 0x001D
+> @@ -31,25 +31,25 @@
+>   * W   0x1F 0x0099 0x7F80 ------
+>   */
+> 
+> -static const int lan867x_fixup_registers[12] = {
+> +static const int lan867x_revb1_fixup_registers[12] = {
+>         0x00D0, 0x00D1, 0x0084, 0x0085,
+>         0x008A, 0x0087, 0x0088, 0x008B,
+>         0x0080, 0x00F1, 0x0096, 0x0099,
+>  };
+> 
+> -static const int lan867x_fixup_values[12] = {
+> +static const int lan867x_revb1_fixup_values[12] = {
+>         0x0002, 0x0000, 0x3380, 0x0006,
+>         0xC000, 0x801C, 0x033F, 0x0404,
+>         0x0600, 0x2400, 0x2000, 0x7F80,
+>  };
+> 
+> -static const int lan867x_fixup_masks[12] = {
+> +static const int lan867x_revb1_fixup_masks[12] = {
+>         0x0E03, 0x0300, 0xFFC0, 0x000F,
+>         0xF800, 0x801C, 0x1FFF, 0xFFFF,
+>         0x0600, 0x7F00, 0x2000, 0xFFFF,
+>  };
+> 
+> -static int lan867x_config_init(struct phy_device *phydev)
+> +static int lan867x_revb1_config_init(struct phy_device *phydev)
+>  {
+>         /* HW quirk: Microchip states in the application note (AN1699) for the phy
+>          * that a set of read-modify-write (rmw) operations has to be performed
+> @@ -73,11 +73,11 @@ static int lan867x_config_init(struct phy_device *phydev)
+>          * new_val = new_val OR value // Set bits
+>          * write_register(mmd, addr, new_val) // Write back updated register value
+>          */
+> -       for (int i = 0; i < ARRAY_SIZE(lan867x_fixup_registers); i++) {
+> -               reg = lan867x_fixup_registers[i];
+> +       for (int i = 0; i < ARRAY_SIZE(lan867x_revb1_fixup_registers); i++) {
+> +               reg = lan867x_revb1_fixup_registers[i];
+>                 reg_value = phy_read_mmd(phydev, MDIO_MMD_VEND2, reg);
+> -               reg_value &= ~lan867x_fixup_masks[i];
+> -               reg_value |= lan867x_fixup_values[i];
+> +               reg_value &= ~lan867x_revb1_fixup_masks[i];
+> +               reg_value |= lan867x_revb1_fixup_values[i];
+>                 err = phy_write_mmd(phydev, MDIO_MMD_VEND2, reg, reg_value);
+>                 if (err != 0)
+>                         return err;
+> @@ -111,12 +111,12 @@ static int lan867x_read_status(struct phy_device *phydev)
+>         return 0;
+>  }
+> 
+> -static struct phy_driver lan867x_driver[] = {
+> +static struct phy_driver lan867x_revb1_driver[] = {
+>         {
+> -               PHY_ID_MATCH_MODEL(PHY_ID_LAN867X),
+> -               .name               = "LAN867X",
+> +               PHY_ID_MATCH_EXACT(PHY_ID_LAN867X_REVB1),
+> +               .name               = "LAN867X Rev.B1",
+>                 .features           = PHY_BASIC_T1S_P2MP_FEATURES,
+> -               .config_init        = lan867x_config_init,
+> +               .config_init        = lan867x_revb1_config_init,
+>                 .read_status        = lan867x_read_status,
+>                 .get_plca_cfg       = genphy_c45_plca_get_cfg,
+>                 .set_plca_cfg       = genphy_c45_plca_set_cfg,
+> @@ -124,15 +124,15 @@ static struct phy_driver lan867x_driver[] = {
+>         }
+>  };
+> 
+> -module_phy_driver(lan867x_driver);
+> +module_phy_driver(lan867x_revb1_driver);
+> 
+>  static struct mdio_device_id __maybe_unused tbl[] = {
+> -       { PHY_ID_MATCH_MODEL(PHY_ID_LAN867X) },
+> +       { PHY_ID_MATCH_EXACT(PHY_ID_LAN867X_REVB1) },
+>         { }
+>  };
+> 
+>  MODULE_DEVICE_TABLE(mdio, tbl);
+> 
+> -MODULE_DESCRIPTION("Microchip 10BASE-T1S lan867x Phy driver");
+> +MODULE_DESCRIPTION("Microchip 10BASE-T1S Phy driver");
+>  MODULE_AUTHOR("Ramón Nordin Rodriguez");
+>  MODULE_LICENSE("GPL");
+> --
+> 2.34.1
+> 
 
-I suspect you may not have run sufficient tests. When there are 2 CPU
-ports, both of them should be candidates for flooding unknown traffic.
-Don't worry, software won't see duplicates, because the user <-> CPU port
-affinity setting should restrict forwarding of the flooded frames to a
-single CPU port.
-
-You might be confused by several things about this:
-
-	/* Disable flooding by default */
-	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
-		   BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port)));
-
-First, the comment. It means to say: "disable flooding on all ports
-except for this CPU port".
-
-Then, the fact that it runs twice, unsetting flooding for the first CPU
-port (5) and setting it for the second one (6). There should be no
-hardware limitation there. Both BIT(5) and BIT(6) could be part of the
-flood mask without any problem.
-
-Perhaps the issue is that MT7530_MFC should have been written to all
-zeroes as a first step, and then, every mt753x_cpu_port_enable() call
-enables flooding to the "int port" argument.
-
-That being said, with trapped packets, software can end up processing
-traffic on a conduit interface that didn't originate from a user port
-affine to it. Software (DSA) should be fine with it, as long as the
-hardware is fine with it too.
-
-The only thing to keep in mind is that the designated CPU port for
-trapped packets should always be reselected based on which conduit
-interface is up. Maybe lan0's conduit interface is eth0, which is up,
-but its trapped packets are handled by eth1 through some previous
-configuration, and eth1 went down. You don't want lan0 to lose packets.
+-- 
+/Horatiu
