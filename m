@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76C4F6EEDAA
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 07:49:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE326EEDAB
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 07:49:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239461AbjDZFtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 01:49:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
+        id S239466AbjDZFtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 01:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239453AbjDZFtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 01:49:14 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCDF2134;
-        Tue, 25 Apr 2023 22:48:44 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33PKuKbU025609;
-        Tue, 25 Apr 2023 22:48:22 -0700
+        with ESMTP id S239433AbjDZFtP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 01:49:15 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E4135AF;
+        Tue, 25 Apr 2023 22:48:50 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33PJ0k0P012965;
+        Tue, 25 Apr 2023 22:48:27 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=syT/F4i0UTiSv1pXqwKX8DGCIcI+SGGzfmriqqhfSNY=;
- b=TjhiHUsQk9vfPutbzvkLCBudS1qN3fCHbvASV+honZqK8r5sO4XUWCwXPUNS/QBVoXDP
- +a4zK0ix1vwVxXZXFmM+2LwirtASX0XK4kIjgmxZe+F3LFXu2Oy1A77sqIgJ4hLbWSwT
- 32dhE3Zeu166q0r9pX4SnfciCiuhYi8eGOB6Q+m7oMkakev9a0QA7EkStC6nzcZXt6Mf
- LuyW0deGW2bRGD//9ymnwM8FL6LHd7xSqp6TylJsVl0XzBsL4zRyLkNXmOIUbjY1fdlc
- GisouxS6kWsrVrbfR0XblwvXrMDLZOMg0Myo3ZIzbq17PbphhmGOEgqXZX0SDNC/syGb Ng== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3q4f3pd9m9-1
+ content-type; s=pfpt0220; bh=Pr0kr9n/DzGBe9MTqSwgVAn7Iur8skCjJRNn9qOW+Uw=;
+ b=bzoPWVLKr8UfDXxjYwXvC+0eLApUlgxgdHDTuvUDhGhUlJuml5owLJ+ZlviSWCnatuq8
+ mPihVpMymFPHYq63HwgUOMRiNb5p2s59cRFhsVES4SAWqk74gAxdrbJJqvSmROvbVlKi
+ IAcRKDv8ZOd+cu7NpQITmpDZOCzfAngrdrFOaVVnSj6K3kxrDDeD3blj1Nv6uqcWz3iE
+ SG+iPUGwe5spXUIH+35VmiFZvjehvFYJIhGt7SyXb+/Nm6RoYq/IQhhhX2f4dBe79QxS
+ jiJ2p44w0BwBvJp8ruEPyMXHmaiUuWZ9UE3npLqjNXbKD9cy7rftjKxJ71sPR1gbP3ML Jw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3q6c2fcw3k-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 25 Apr 2023 22:48:22 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Tue, 25 Apr
- 2023 22:48:20 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Tue, 25 Apr 2023 22:48:20 -0700
+        Tue, 25 Apr 2023 22:48:27 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Tue, 25 Apr
+ 2023 22:48:26 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Tue, 25 Apr 2023 22:48:26 -0700
 Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id BFA313F7075;
-        Tue, 25 Apr 2023 22:48:14 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id A321B3F706D;
+        Tue, 25 Apr 2023 22:48:20 -0700 (PDT)
 From:   Hariprasad Kelam <hkelam@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <kuba@kernel.org>, <davem@davemloft.net>,
@@ -48,16 +48,16 @@ CC:     <kuba@kernel.org>, <davem@davemloft.net>,
         <pabeni@redhat.com>, <jhs@mojatatu.com>,
         <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
         <maxtram95@gmail.com>, <corbet@lwn.net>
-Subject: [net-next Patch v10 7/8] octeontx2-pf: ethtool expose qos stats
-Date:   Wed, 26 Apr 2023 11:17:30 +0530
-Message-ID: <20230426054731.5720-8-hkelam@marvell.com>
+Subject: [net-next Patch v10 8/8] docs: octeontx2: Add Documentation for QOS
+Date:   Wed, 26 Apr 2023 11:17:31 +0530
+Message-ID: <20230426054731.5720-9-hkelam@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230426054731.5720-1-hkelam@marvell.com>
 References: <20230426054731.5720-1-hkelam@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: IKdLB-auGAQsHkzlqMZUUHz6_98-KSp0
-X-Proofpoint-GUID: IKdLB-auGAQsHkzlqMZUUHz6_98-KSp0
+X-Proofpoint-GUID: 29_RWryjuCcrM-fPT1syhH-ewNsBXlr4
+X-Proofpoint-ORIG-GUID: 29_RWryjuCcrM-fPT1syhH-ewNsBXlr4
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-04-26_02,2023-04-25_01,2023-02-09_01
@@ -71,107 +71,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends ethtool stats support for QoS send queues as well.
-upon the number of transmit channels change request, Ensures the real
-number of transmit queues are equal to active QoS send queues plus
-configured transmit queues.
-
-    ethtool -S eth0
-    txq_qos0: bytes: 3021391800
-    txq_qos0: frames: 1998275
-    txq_qos1: bytes: 4619766312
-    txq_qos1: frames: 3055401
-    ...
-    ...
+Add QOS example configuration along with tc-htb commands
 
 Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../marvell/octeontx2/nic/otx2_ethtool.c      | 29 +++++++++++++------
- 1 file changed, 20 insertions(+), 9 deletions(-)
+ .../ethernet/marvell/octeontx2.rst            | 45 +++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 0f8d1a69139f..c47d91da32dc 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -92,10 +92,16 @@ static void otx2_get_qset_strings(struct otx2_nic *pfvf, u8 **data, int qset)
- 			*data += ETH_GSTRING_LEN;
- 		}
- 	}
--	for (qidx = 0; qidx < pfvf->hw.tx_queues; qidx++) {
+diff --git a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+index 5ba9015336e2..bfd233cfac35 100644
+--- a/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
++++ b/Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+@@ -13,6 +13,7 @@ Contents
+ - `Drivers`_
+ - `Basic packet flow`_
+ - `Devlink health reporters`_
++- `Quality of service`_
+ 
+ Overview
+ ========
+@@ -287,3 +288,47 @@ For example::
+ 	 NIX_AF_ERR:
+ 	        NIX Error Interrupt Reg : 64
+ 	        Rx on unmapped PF_FUNC
 +
-+	for (qidx = 0; qidx < otx2_get_total_tx_queues(pfvf); qidx++) {
- 		for (stats = 0; stats < otx2_n_queue_stats; stats++) {
--			sprintf(*data, "txq%d: %s", qidx + start_qidx,
--				otx2_queue_stats[stats].name);
-+			if (qidx >= pfvf->hw.non_qos_queues)
-+				sprintf(*data, "txq_qos%d: %s",
-+					qidx + start_qidx - pfvf->hw.non_qos_queues,
-+					otx2_queue_stats[stats].name);
-+			else
-+				sprintf(*data, "txq%d: %s", qidx + start_qidx,
-+					otx2_queue_stats[stats].name);
- 			*data += ETH_GSTRING_LEN;
- 		}
- 	}
-@@ -159,7 +165,7 @@ static void otx2_get_qset_stats(struct otx2_nic *pfvf,
- 				[otx2_queue_stats[stat].index];
- 	}
- 
--	for (qidx = 0; qidx < pfvf->hw.tx_queues; qidx++) {
-+	for (qidx = 0; qidx < otx2_get_total_tx_queues(pfvf); qidx++) {
- 		if (!otx2_update_sq_stats(pfvf, qidx)) {
- 			for (stat = 0; stat < otx2_n_queue_stats; stat++)
- 				*((*data)++) = 0;
-@@ -254,7 +260,7 @@ static int otx2_get_sset_count(struct net_device *netdev, int sset)
- 		return -EINVAL;
- 
- 	qstats_count = otx2_n_queue_stats *
--		       (pfvf->hw.rx_queues + pfvf->hw.tx_queues);
-+		       (pfvf->hw.rx_queues + otx2_get_total_tx_queues(pfvf));
- 	if (!test_bit(CN10K_RPM, &pfvf->hw.cap_flag))
- 		mac_stats = CGX_RX_STATS_COUNT + CGX_TX_STATS_COUNT;
- 	otx2_update_lmac_fec_stats(pfvf);
-@@ -282,7 +288,7 @@ static int otx2_set_channels(struct net_device *dev,
- {
- 	struct otx2_nic *pfvf = netdev_priv(dev);
- 	bool if_up = netif_running(dev);
--	int err = 0;
-+	int err, qos_txqs;
- 
- 	if (!channel->rx_count || !channel->tx_count)
- 		return -EINVAL;
-@@ -296,14 +302,19 @@ static int otx2_set_channels(struct net_device *dev,
- 	if (if_up)
- 		dev->netdev_ops->ndo_stop(dev);
- 
--	err = otx2_set_real_num_queues(dev, channel->tx_count,
-+	qos_txqs = bitmap_weight(pfvf->qos.qos_sq_bmap,
-+				 OTX2_QOS_MAX_LEAF_NODES);
 +
-+	err = otx2_set_real_num_queues(dev, channel->tx_count + qos_txqs,
- 				       channel->rx_count);
- 	if (err)
- 		return err;
- 
- 	pfvf->hw.rx_queues = channel->rx_count;
- 	pfvf->hw.tx_queues = channel->tx_count;
--	pfvf->qset.cq_cnt = pfvf->hw.tx_queues +  pfvf->hw.rx_queues;
-+	if (pfvf->xdp_prog)
-+		pfvf->hw.xdp_queues = channel->rx_count;
-+	pfvf->hw.non_qos_queues =  pfvf->hw.tx_queues + pfvf->hw.xdp_queues;
- 
- 	if (if_up)
- 		err = dev->netdev_ops->ndo_open(dev);
-@@ -1405,7 +1416,7 @@ static int otx2vf_get_sset_count(struct net_device *netdev, int sset)
- 		return -EINVAL;
- 
- 	qstats_count = otx2_n_queue_stats *
--		       (vf->hw.rx_queues + vf->hw.tx_queues);
-+		       (vf->hw.rx_queues + otx2_get_total_tx_queues(vf));
- 
- 	return otx2_n_dev_stats + otx2_n_drv_stats + qstats_count + 1;
- }
++Quality of service
++==================
++
++
++Hardware algorithms used in scheduling
++--------------------------------------
++
++octeontx2 silicon and CN10K transmit interface consists of five transmit levels
++starting from SMQ/MDQ, TL4 to TL1. Each packet will traverse MDQ, TL4 to TL1
++levels. Each level contains an array of queues to support scheduling and shaping.
++The hardware uses the below algorithms depending on the priority of scheduler queues.
++once the usercreates tc classes with different priorities, the driver configures
++schedulers allocated to the class with specified priority along with rate-limiting
++configuration.
++
++1. Strict Priority
++
++      -  Once packets are submitted to MDQ, hardware picks all active MDQs having different priority
++         using strict priority.
++
++2. Round Robin
++
++      - Active MDQs having the same priority level are chosen using round robin.
++
++
++Setup HTB offload
++-----------------
++
++1. Enable HW TC offload on the interface::
++
++        # ethtool -K <interface> hw-tc-offload on
++
++2. Crate htb root::
++
++        # tc qdisc add dev <interface> clsact
++        # tc qdisc replace dev <interface> root handle 1: htb offload
++
++3. Create tc classes with different priorities::
++
++        # tc class add dev <interface> parent 1: classid 1:1 htb rate 10Gbit prio 1
++
++        # tc class add dev <interface> parent 1: classid 1:2 htb rate 10Gbit prio 7
 -- 
 2.17.1
 
