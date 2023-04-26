@@ -2,192 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F906EFBF5
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 22:56:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 588D66EFBFD
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 22:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236145AbjDZU4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 16:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
+        id S239930AbjDZU5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 16:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234643AbjDZU4P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 16:56:15 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900EB19F
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 13:56:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1682542574; x=1714078574;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=/fZkEWdPIDr+5pJK6niEfSX/+XU34O97km2IlprsPTM=;
-  b=pcFNSc3s5ZNZsLo0Wt6b/sKGvZTVt96bBXABMgvWTtk3xxPyMFOc/Ck0
-   UmWPiMtJlyek++b8cmI6YVTEOeNkS6Wi/+JxYZuph8yB9bGjzG6/o+UCo
-   3vpaC/LsQYWbhiipq8BQmmi62+bhGSohse48t2jXsEDgnpc31FrkH+/KY
-   BrQeGVpOCAoeLooUGXLe1bUXzYxlrkdjC64067D4XTHCFgK3FRPmjnqBK
-   F7RciCrTip2z2Es0Y56Cgi3qIWUMQq8lNJchE5G3HiJR3ZOpFOwWGhpWl
-   SUpEa3HelfzMUZ7NhRvsWm6QBKUlj3OE/Bu9f3kCvVYMi6UwgiaToAiZj
-   g==;
-X-IronPort-AV: E=Sophos;i="5.99,229,1677567600"; 
-   d="scan'208";a="208446344"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Apr 2023 13:56:13 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 26 Apr 2023 13:56:09 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Wed, 26 Apr 2023 13:56:09 -0700
-Date:   Wed, 26 Apr 2023 22:56:08 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
-CC:     <netdev@vger.kernel.org>, <andrew@lunn.ch>, <davem@davemloft.net>,
-        <jan.huber@microchip.com>, <thorsten.kummermehr@microchip.com>,
-        <ramon.nordin.rodriguez@ferroamp.se>
-Subject: Re: [PATCH net-next 1/2] net: phy: microchip_t1s: update LAN867x PHY
- supported revision number
-Message-ID: <20230426205608.qqx37bnao2l47st5@soft-dev3-1>
-References: <20230426114655.93672-1-Parthiban.Veerasooran@microchip.com>
- <20230426114655.93672-2-Parthiban.Veerasooran@microchip.com>
+        with ESMTP id S239892AbjDZU5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 16:57:09 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882A52708
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 13:57:06 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-5562c93f140so48009947b3.1
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 13:57:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1682542625; x=1685134625;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PeyZTvE2qao9z3HUKls5t/zNMEefQNyhwIh3dGLQJIU=;
+        b=MLeMyFt/BrAb2CUUJZ7KmQTqlKOdl+nyYZc7PmyjnwYQvm0Yf7UbAGXqUUW6bmw5G8
+         d9v/M6N+1fVWgVUttzO6DbM8nQI6KJCXhAN7IozpaR9m8Bl7slG7VpsqTKwoquSQxGsD
+         jxjSQ3saNVE9cXwcQLcGF1jRtKLT/eEwI8kJvMSzxcIq2cDfiKWjYhMONbeUEU8V5mkj
+         6Wdd/04hTAUwScC/UEbqqr6+MnHBHQTixxYJ9LZKKkCtwlqFMN3MWW87ziN5fguiVzeh
+         4csevZGxcMK5tYzjndfSfWqBNcCl6Mif+sgasTPGERCLKwqXoxv35oil0C7Hw7NrwoqG
+         vwLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682542625; x=1685134625;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PeyZTvE2qao9z3HUKls5t/zNMEefQNyhwIh3dGLQJIU=;
+        b=juI/0w2TCSseBizLjmENPaEiTH+35vSriAZG3HzvyeULDb/C88yNbBft/V2VcqA0+Z
+         3spUXqeSqyx4dhiKap8BqdrYFKqg2ho34zlOQYsgPlWP0KAv609a9iocHkQV8AZ1ris3
+         1J9yFhslUwwBa3jXq37DqjRHAwWDzBdjn0YbV0IPqQkk0zhxLK3UHObYHwCB2elaScXM
+         2geRYZM0fRKkfW6eI5nROLatxqpXerBr8Ex2K0xcpV0s3s8OJBEitPh95vGD77blBA/z
+         G5xkt6PRvgkyErok4l8cMThvEEPUAm6/TCAwwpOhDvXbLsYNDIzvgQGwoslVSW2nH4fO
+         +izw==
+X-Gm-Message-State: AAQBX9f/JOn7ZaqUa+/j+RkZlemw8u03f85eulgiCnSHOdmphW7RBj8Y
+        7bqIVuoDBiQ1EMtTDdmjELe1jrUYSz1Iq/RM5ot8OQ==
+X-Google-Smtp-Source: AKy350ajEJHyhyynqyOl0isjddMpiNdULElT/xAxUEM8cmGuE9kOk2QPH86dypmLR0gOJToVISGwrFvJLTDtak1EsDI=
+X-Received: by 2002:a0d:ea0d:0:b0:552:a2e2:684e with SMTP id
+ t13-20020a0dea0d000000b00552a2e2684emr13680157ywe.52.1682542625695; Wed, 26
+ Apr 2023 13:57:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230426114655.93672-2-Parthiban.Veerasooran@microchip.com>
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20230424123522.18302-1-nikita.shubin@maquefel.me>
+In-Reply-To: <20230424123522.18302-1-nikita.shubin@maquefel.me>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 26 Apr 2023 22:56:53 +0200
+Message-ID: <CACRpkdarANFQ7-p=-Pi_iuk6L=PfSLDsD3_w4dEVqarwXkEGMQ@mail.gmail.com>
+Subject: Re: [PATCH 00/43] ep93xx device tree conversion
+To:     Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     Arnd Bergmann <arnd@kernel.org>, Linus Walleij <linusw@kernel.org>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Brian Norris <briannorris@chromium.org>,
+        Chuanhong Guo <gch981213@gmail.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Damien Le Moal <dlemoal@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jean Delvare <jdelvare@suse.de>, Joel Stanley <joel@jms.id.au>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Le Moal <damien.lemoal@opensource.wdc.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Liang Yang <liang.yang@amlogic.com>,
+        Lukasz Majewski <lukma@denx.de>, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Mark Brown <broonie@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Qin Jian <qinjian@cqplus1.com>,
+        Richard Weinberger <richard@nod.at>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Russell King <linux@armlinux.org.uk>,
+        Sebastian Reichel <sre@kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Sven Peter <sven@svenpeter.dev>, Takashi Iwai <tiwai@suse.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Walker Chen <walker.chen@starfivetech.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Yinbo Zhu <zhuyinbo@loongson.cn>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-pm@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        netdev@vger.kernel.org, soc@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 04/26/2023 17:16, Parthiban Veerasooran wrote:
+On Mon, Apr 24, 2023 at 11:35=E2=80=AFAM Nikita Shubin
+<nikita.shubin@maquefel.me> wrote:
 
-You didn't add all the maintainers to the thread. Please use
-./scripts/get_maintainer.pl
+> This series aims to convert ep93xx from platform to full device tree supp=
+ort.
+>
+> Tested on ts7250 64 RAM/128 MiB Nand flash, edb9302.
 
-> 
-> As per AN1699, the initial configuration in the driver applies to LAN867x
-> Rev.B1 hardware revision.
-> 
-> Signed-off-by: Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
-> ---
->  drivers/net/phy/microchip_t1s.c | 36 ++++++++++++++++-----------------
->  1 file changed, 18 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/net/phy/microchip_t1s.c b/drivers/net/phy/microchip_t1s.c
-> index 094967b3c111..793fb0210605 100644
-> --- a/drivers/net/phy/microchip_t1s.c
-> +++ b/drivers/net/phy/microchip_t1s.c
-> @@ -1,16 +1,16 @@
->  // SPDX-License-Identifier: GPL-2.0+
->  /*
-> - * Driver for Microchip 10BASE-T1S LAN867X PHY
-> + * Driver for Microchip 10BASE-T1S PHY family
->   *
->   * Support: Microchip Phys:
-> - *  lan8670, lan8671, lan8672
-> + *  lan8670/1/2 Rev.B1
->   */
-> 
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/phy.h>
-> 
-> -#define PHY_ID_LAN867X 0x0007C160
-> +#define PHY_ID_LAN867X_REVB1 0x0007C162
-> 
->  #define LAN867X_REG_IRQ_1_CTL 0x001C
->  #define LAN867X_REG_IRQ_2_CTL 0x001D
-> @@ -31,25 +31,25 @@
->   * W   0x1F 0x0099 0x7F80 ------
->   */
-> 
-> -static const int lan867x_fixup_registers[12] = {
-> +static const int lan867x_revb1_fixup_registers[12] = {
->         0x00D0, 0x00D1, 0x0084, 0x0085,
->         0x008A, 0x0087, 0x0088, 0x008B,
->         0x0080, 0x00F1, 0x0096, 0x0099,
->  };
-> 
-> -static const int lan867x_fixup_values[12] = {
-> +static const int lan867x_revb1_fixup_values[12] = {
->         0x0002, 0x0000, 0x3380, 0x0006,
->         0xC000, 0x801C, 0x033F, 0x0404,
->         0x0600, 0x2400, 0x2000, 0x7F80,
->  };
-> 
-> -static const int lan867x_fixup_masks[12] = {
-> +static const int lan867x_revb1_fixup_masks[12] = {
->         0x0E03, 0x0300, 0xFFC0, 0x000F,
->         0xF800, 0x801C, 0x1FFF, 0xFFFF,
->         0x0600, 0x7F00, 0x2000, 0xFFFF,
->  };
-> 
-> -static int lan867x_config_init(struct phy_device *phydev)
-> +static int lan867x_revb1_config_init(struct phy_device *phydev)
->  {
->         /* HW quirk: Microchip states in the application note (AN1699) for the phy
->          * that a set of read-modify-write (rmw) operations has to be performed
-> @@ -73,11 +73,11 @@ static int lan867x_config_init(struct phy_device *phydev)
->          * new_val = new_val OR value // Set bits
->          * write_register(mmd, addr, new_val) // Write back updated register value
->          */
-> -       for (int i = 0; i < ARRAY_SIZE(lan867x_fixup_registers); i++) {
-> -               reg = lan867x_fixup_registers[i];
-> +       for (int i = 0; i < ARRAY_SIZE(lan867x_revb1_fixup_registers); i++) {
-> +               reg = lan867x_revb1_fixup_registers[i];
->                 reg_value = phy_read_mmd(phydev, MDIO_MMD_VEND2, reg);
-> -               reg_value &= ~lan867x_fixup_masks[i];
-> -               reg_value |= lan867x_fixup_values[i];
-> +               reg_value &= ~lan867x_revb1_fixup_masks[i];
-> +               reg_value |= lan867x_revb1_fixup_values[i];
->                 err = phy_write_mmd(phydev, MDIO_MMD_VEND2, reg, reg_value);
->                 if (err != 0)
->                         return err;
-> @@ -111,12 +111,12 @@ static int lan867x_read_status(struct phy_device *phydev)
->         return 0;
->  }
-> 
-> -static struct phy_driver lan867x_driver[] = {
-> +static struct phy_driver lan867x_revb1_driver[] = {
->         {
-> -               PHY_ID_MATCH_MODEL(PHY_ID_LAN867X),
-> -               .name               = "LAN867X",
-> +               PHY_ID_MATCH_EXACT(PHY_ID_LAN867X_REVB1),
-> +               .name               = "LAN867X Rev.B1",
->                 .features           = PHY_BASIC_T1S_P2MP_FEATURES,
-> -               .config_init        = lan867x_config_init,
-> +               .config_init        = lan867x_revb1_config_init,
->                 .read_status        = lan867x_read_status,
->                 .get_plca_cfg       = genphy_c45_plca_get_cfg,
->                 .set_plca_cfg       = genphy_c45_plca_set_cfg,
-> @@ -124,15 +124,15 @@ static struct phy_driver lan867x_driver[] = {
->         }
->  };
-> 
-> -module_phy_driver(lan867x_driver);
-> +module_phy_driver(lan867x_revb1_driver);
-> 
->  static struct mdio_device_id __maybe_unused tbl[] = {
-> -       { PHY_ID_MATCH_MODEL(PHY_ID_LAN867X) },
-> +       { PHY_ID_MATCH_EXACT(PHY_ID_LAN867X_REVB1) },
->         { }
->  };
-> 
->  MODULE_DEVICE_TABLE(mdio, tbl);
-> 
-> -MODULE_DESCRIPTION("Microchip 10BASE-T1S lan867x Phy driver");
-> +MODULE_DESCRIPTION("Microchip 10BASE-T1S Phy driver");
->  MODULE_AUTHOR("Ramón Nordin Rodriguez");
->  MODULE_LICENSE("GPL");
-> --
-> 2.34.1
-> 
+Neat, I'd say let's merge this for 6.5 once the final rough edges are
+off. The DT bindings should be easy to fix.
 
--- 
-/Horatiu
+This is a big patch set and the improvement to the ARM kernel it
+brings is great, so I am a bit worried about over-review stalling the
+merged. If there start to be nitpicky comments I would prefer that
+we merge it and let minor comments and "nice-to-haves" be
+addressed in-tree during the development cycle.
+
+I encourage you to use b4 to manage the patch series if you
+have time to learn it, it could help you:
+https://people.kernel.org/monsieuricon/sending-a-kernel-patch-with-b4-part-=
+1
+
+Yours,
+Linus Walleij
