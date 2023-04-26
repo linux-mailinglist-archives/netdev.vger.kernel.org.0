@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2836C6EED9C
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 07:47:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A806EED9F
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 07:48:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239400AbjDZFrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 01:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54078 "EHLO
+        id S239412AbjDZFr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 01:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238440AbjDZFrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 01:47:53 -0400
+        with ESMTP id S239408AbjDZFr6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 01:47:58 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03472133;
-        Tue, 25 Apr 2023 22:47:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B66B268C;
+        Tue, 25 Apr 2023 22:47:57 -0700 (PDT)
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33Q08kYg003410;
-        Tue, 25 Apr 2023 22:47:40 -0700
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33Q08S7v002695;
+        Tue, 25 Apr 2023 22:47:46 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=JTfxwqkfeo+OZ4ivi5IkCaSG/A/YyNvJhN2rrPjPEW8=;
- b=SAsQ/CdS212bqZOv7MrWinKwZhNtPiqCXwZ4BK2yRfyXgHa5c3CFtNfNco+qxEUQsaG6
- Cmz3o3nH0vPTkiCgzZZfbS6jxw2GVFKnjegNtkdk09cfrtMG0eSrUTamkl2bzVbY5KQp
- 9StRWSXlEoni+AzufkRlhBfOsPr1tEDZumIFp4XA8XC/S+25Kte9C+pJDk0my5hcUhat
- rFQ7BODXnqOcfDeQa8XlxnhEs/HSVW+DFDxe38Ku882sXgXobFzcm86al1KA2qqWAwmb
- /Chfd4zgkwjs2w8UhwAzgN7g5SVXBGQMO2+Smmk0xrepBmxvL4cdyZN0zkGFxrsxWI7d +Q== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=bcQVczqwBea5byHv9dJ2csDNJqGD7by38PGfOjwdb+Y=;
+ b=VtuDgmR+Fz5O8JMdZtAkH6j0nqx+Wv7RkrhOmZBaua0yyPuQXFgU6veYFRvnHvyDA64c
+ JNxIfy4QiQ3yREokH3BwqqUtD5XDCPohMdhcUr1SebGKBPuvnNXb/UWfTf9iJYEKhGHK
+ 0IvODyIHEEOU/33RuOD2JHK7MyLMd7F1u8ZrwdqZCIh+0xKE3jct7Ecvlq/k5YOuRxwa
+ sk5mMFPHQZ6uwUW2xA3vXhWVJ8StN/xY2iBJag64JtDBBPxQaA65Ht142EIBX0Z7wDcf
+ 0/SOTaXv/qCjCRljYZ2EHGRiVdMJPNm06ZedvWVQrpHgDz8v19jd1aQJWv4Ts03NoN9V EQ== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3q4f3pd9jn-1
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3q4f3pd9jx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 25 Apr 2023 22:47:40 -0700
+        Tue, 25 Apr 2023 22:47:46 -0700
 Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Tue, 25 Apr
- 2023 22:47:38 -0700
+ 2023 22:47:44 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Tue, 25 Apr 2023 22:47:38 -0700
+ Transport; Tue, 25 Apr 2023 22:47:44 -0700
 Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id A4D383F706D;
-        Tue, 25 Apr 2023 22:47:32 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 9068C3F703F;
+        Tue, 25 Apr 2023 22:47:38 -0700 (PDT)
 From:   Hariprasad Kelam <hkelam@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <kuba@kernel.org>, <davem@davemloft.net>,
@@ -48,14 +48,16 @@ CC:     <kuba@kernel.org>, <davem@davemloft.net>,
         <pabeni@redhat.com>, <jhs@mojatatu.com>,
         <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
         <maxtram95@gmail.com>, <corbet@lwn.net>
-Subject: [net-next Patch v10 0/8] octeontx2-pf: HTB offload support
-Date:   Wed, 26 Apr 2023 11:17:23 +0530
-Message-ID: <20230426054731.5720-1-hkelam@marvell.com>
+Subject: [net-next Patch v10 1/8] sch_htb: Allow HTB priority parameter in offload mode
+Date:   Wed, 26 Apr 2023 11:17:24 +0530
+Message-ID: <20230426054731.5720-2-hkelam@marvell.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20230426054731.5720-1-hkelam@marvell.com>
+References: <20230426054731.5720-1-hkelam@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Ibm8Fwl3JPcWhFpdo5XbB73ZQN78AiVB
-X-Proofpoint-GUID: Ibm8Fwl3JPcWhFpdo5XbB73ZQN78AiVB
+X-Proofpoint-ORIG-GUID: _asgCCUSjFDXpsKysyHrHiHekdugcHSJ
+X-Proofpoint-GUID: _asgCCUSjFDXpsKysyHrHiHekdugcHSJ
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-04-26_02,2023-04-25_01,2023-02-09_01
@@ -69,117 +71,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-octeontx2 silicon and CN10K transmit interface consists of five
-transmit levels starting from MDQ, TL4 to TL1. Once packets are
-submitted to MDQ, hardware picks all active MDQs using strict
-priority, and MDQs having the same priority level are chosen using
-round robin. Each packet will traverse MDQ, TL4 to TL1 levels.
-Each level contains an array of queues to support scheduling and
-shaping.
+From: Naveen Mamindlapalli <naveenm@marvell.com>
 
-As HTB supports classful queuing mechanism by supporting rate and
-ceil and allow the user to control the absolute bandwidth to
-particular classes of traffic the same can be achieved by
-configuring shapers and schedulers on different transmit levels.
+The current implementation of HTB offload returns the EINVAL error
+for unsupported parameters like prio and quantum. This patch removes
+the error returning checks for 'prio' parameter and populates its
+value to tc_htb_qopt_offload structure such that driver can use the
+same.
 
-This series of patches adds support for HTB offload,
+Add prio parameter check in mlx5 driver, as mlx5 devices are not capable
+of supporting the prio parameter when htb offload is used. Report error
+if prio parameter is set to a non-default value.
 
-Patch1: Allow strict priority parameter in HTB offload mode.
+Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
+Co-developed-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en/qos.c | 7 ++++++-
+ include/net/pkt_cls.h                            | 1 +
+ net/sched/sch_htb.c                              | 7 +++----
+ 3 files changed, 10 insertions(+), 5 deletions(-)
 
-Patch2: Rename existing total tx queues for better readability
-
-Patch3: defines APIs such that the driver can dynamically initialize/
-        deinitialize the send queues.
-
-Patch4: Refactors transmit alloc/free calls as preparation for QOS
-        offload code.
-
-Patch5: moves rate limiting logic to common header which will be used
-        by qos offload code.
-
-Patch6: Adds actual HTB offload support.
-
-Patch7: exposes qos send queue stats over ethtool.
-
-Patch8: Add documentation about htb offload flow in driver
-
-Hariprasad Kelam (5):
-  octeontx2-pf: Rename tot_tx_queues to non_qos_queues
-  octeontx2-pf: Refactor schedular queue alloc/free calls
-  octeontx2-pf: Prepare for QOS offload
-  octeontx2-pf: ethtool expose qos stats
-  docs: octeontx2: Add Documentation for QOS
-
-Naveen Mamindlapalli (2):
-  sch_htb: Allow HTB priority parameter in offload mode
-  octeontx2-pf: Add support for HTB offload
-
-Subbaraya Sundeep (1):
-  octeontx2-pf: qos send queues management
------
-v1 -> v2 :
-          ensure other drivers won't affect by allowing 'prio'
-          a parameter in htb offload mode.
-
-v2 -> v3 :
-          1. discard patch supporting devlink to configure TL1 round
-             robin priority
-          2. replace NL_SET_ERR_MSG with NL_SET_ERR_MSG_MOD
-          3. use max3 instead of using max couple of times and use a better
-             naming convention in send queue management code.
-
-v3 -> v4:
-	  1. fix sparse warnings.
-	  2. release mutex lock in error conditions.
-
-v4 -> v5:
-	  1. fix pahole reported issues
-          2. add documentation for htb offload flow.
-
-v5 -> v6:
-	  1. fix synchronization issues w.r.t hlist accessing
-             from ndo_select_queue with rcu lock.
-          2. initialize qos related resources in device init.
-
-v6 -> v7:
-	  1. fix erros reported by sparse and clang
-
-v7 -> v8:
-	  1. cover letter header is malformed in last version.
-             correct the cover letter
-v8 -> v9:
-	  1. fix issues reported by smatch
-
-v9 -> v10:
-         1. split the htb offload patch
-         2. define helper APIs for txschq config
-         3. update commit description and documentation.
-
-
- .../ethernet/marvell/octeontx2.rst            |   45 +
- .../ethernet/marvell/octeontx2/af/common.h    |    2 +-
- .../marvell/octeontx2/af/rvu_debugfs.c        |    5 +
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |   45 +
- .../ethernet/marvell/octeontx2/nic/Makefile   |    2 +-
- .../marvell/octeontx2/nic/otx2_common.c       |  121 +-
- .../marvell/octeontx2/nic/otx2_common.h       |   82 +-
- .../marvell/octeontx2/nic/otx2_ethtool.c      |   29 +-
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  114 +-
- .../ethernet/marvell/octeontx2/nic/otx2_reg.h |   13 +
- .../ethernet/marvell/octeontx2/nic/otx2_tc.c  |   29 +-
- .../marvell/octeontx2/nic/otx2_txrx.c         |   24 +-
- .../marvell/octeontx2/nic/otx2_txrx.h         |    3 +-
- .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |   14 +-
- .../net/ethernet/marvell/octeontx2/nic/qos.c  | 1363 +++++++++++++++++
- .../net/ethernet/marvell/octeontx2/nic/qos.h  |   69 +
- .../ethernet/marvell/octeontx2/nic/qos_sq.c   |  296 ++++
- .../net/ethernet/mellanox/mlx5/core/en/qos.c  |    7 +-
- include/net/pkt_cls.h                         |    1 +
- net/sched/sch_htb.c                           |    7 +-
- 20 files changed, 2144 insertions(+), 127 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/qos.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/qos.h
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/qos_sq.c
-
---
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
+index 2842195ee548..1874c2f0587f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
+@@ -379,6 +379,12 @@ int mlx5e_htb_setup_tc(struct mlx5e_priv *priv, struct tc_htb_qopt_offload *htb_
+ 	if (!htb && htb_qopt->command != TC_HTB_CREATE)
+ 		return -EINVAL;
+ 
++	if (htb_qopt->prio) {
++		NL_SET_ERR_MSG_MOD(htb_qopt->extack,
++				   "prio parameter is not supported by device with HTB offload enabled.");
++		return -EOPNOTSUPP;
++	}
++
+ 	switch (htb_qopt->command) {
+ 	case TC_HTB_CREATE:
+ 		if (!mlx5_qos_is_supported(priv->mdev)) {
+@@ -515,4 +521,3 @@ int mlx5e_mqprio_rl_get_node_hw_id(struct mlx5e_mqprio_rl *rl, int tc, u32 *hw_i
+ 	*hw_id = rl->leaves_id[tc];
+ 	return 0;
+ }
+-
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index b3b5b0b62f16..a2ea45c7b53e 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -868,6 +868,7 @@ struct tc_htb_qopt_offload {
+ 	u16 qid;
+ 	u64 rate;
+ 	u64 ceil;
++	u8 prio;
+ };
+ 
+ #define TC_HTB_CLASSID_ROOT U32_MAX
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index 92f2975b6a82..1cd9b48c96cd 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -1814,10 +1814,6 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+ 			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the quantum parameter");
+ 			goto failure;
+ 		}
+-		if (hopt->prio) {
+-			NL_SET_ERR_MSG(extack, "HTB offload doesn't support the prio parameter");
+-			goto failure;
+-		}
+ 	}
+ 
+ 	/* Keeping backward compatible with rate_table based iproute2 tc */
+@@ -1913,6 +1909,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+ 					TC_HTB_CLASSID_ROOT,
+ 				.rate = max_t(u64, hopt->rate.rate, rate64),
+ 				.ceil = max_t(u64, hopt->ceil.rate, ceil64),
++				.prio = hopt->prio,
+ 				.extack = extack,
+ 			};
+ 			err = htb_offload(dev, &offload_opt);
+@@ -1933,6 +1930,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+ 					TC_H_MIN(parent->common.classid),
+ 				.rate = max_t(u64, hopt->rate.rate, rate64),
+ 				.ceil = max_t(u64, hopt->ceil.rate, ceil64),
++				.prio = hopt->prio,
+ 				.extack = extack,
+ 			};
+ 			err = htb_offload(dev, &offload_opt);
+@@ -2018,6 +2016,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+ 				.classid = cl->common.classid,
+ 				.rate = max_t(u64, hopt->rate.rate, rate64),
+ 				.ceil = max_t(u64, hopt->ceil.rate, ceil64),
++				.prio = hopt->prio,
+ 				.extack = extack,
+ 			};
+ 			err = htb_offload(dev, &offload_opt);
+-- 
 2.17.1
+
