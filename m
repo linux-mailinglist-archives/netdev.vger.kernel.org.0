@@ -2,50 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD906EF8D9
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 18:58:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2EEC6EF910
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 19:13:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233612AbjDZQ6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 12:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54728 "EHLO
+        id S234641AbjDZRNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 13:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231186AbjDZQ6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 12:58:42 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B06B7AAB
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 09:58:38 -0700 (PDT)
-Received: (Authenticated sender: kory.maincent@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 242AC1C0005;
-        Wed, 26 Apr 2023 16:58:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1682528317;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5WKYrvjQ3I2gze9n0yKF2pJQTDm1xxuPw8LJRuG9Vdk=;
-        b=llrjV3HypGN3pgqzOyoJ/A930w/0qgdtVOXJmgAbxLU04EbApWXXSLrFDFFd5THiOpKVeE
-        zghRfxovqDM0Hg1ZIl/Y7RNSWjNTphqbsTYdfiNQtImyL761gBOlk7wonwzdBDIcy64hjZ
-        lbugeHlJZ09JtEEeICVVBhwFkWmQcPxMGfBdBXEBv6mmRNc3YxzZ78eCMpBQbKasIIlI5k
-        r8wurjEr6YYuRmeI3ei/t6ZoOCEEEz3bfq1dluYjRjWibzGgJCn/UALVV/pWloQkFonycZ
-        UwZDk88KSjw3PkdJCs4ne8/i934i5s0IsUfSZMsN2U410EWzfsbAKtSzmhz07g==
-From:   =?UTF-8?q?K=C3=B6ry=20Maincent?= <kory.maincent@bootlin.com>
-To:     glipus@gmail.com
-Cc:     kory.maincent@bootlin.com, kuba@kernel.org, netdev@vger.kernel.org,
-        maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com,
-        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
-        gerhard@engleder-embedded.com, thomas.petazzoni@bootlin.com
-Subject: [RFC PATCH v4 0/5] New NDO methods ndo_hwtstamp_get/set
-Date:   Wed, 26 Apr 2023 18:58:35 +0200
-Message-Id: <20230426165835.443259-1-kory.maincent@bootlin.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230423032437.285014-1-glipus@gmail.com>
-References: <20230423032437.285014-1-glipus@gmail.com>
+        with ESMTP id S233954AbjDZRNl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 13:13:41 -0400
+Received: from out203-205-221-235.mail.qq.com (out203-205-221-235.mail.qq.com [203.205.221.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BEF194;
+        Wed, 26 Apr 2023 10:13:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1682528918;
+        bh=o4udH8OtqEoEDrOP/aTcDA81yzBb2ltJxkP46cbFh5c=;
+        h=From:To:Cc:Subject:Date;
+        b=juYhBBtayxtuIEglDGpYtnMn1Yo2+GoJLV+2HWEXQvlNFlG1rVAudJ2AwTCs8RsQr
+         /CSTwa/e828C7Nfh7R+WkSLHD9hxmtx0FxMf1rM/ci9K5rKh85P207+PvjkTDFvKnq
+         8GqUzAm/xOZzXdx4dDmo/mnZbXSFbYfcw7BQzmco=
+Received: from localhost.localdomain ([220.243.191.11])
+        by newxmesmtplogicsvrsza10-0.qq.com (NewEsmtp) with SMTP
+        id 9828290; Thu, 27 Apr 2023 01:02:24 +0800
+X-QQ-mid: xmsmtpt1682528544th5jveq67
+Message-ID: <tencent_1BB7243C6EDA6B2BB6E2C1563C1614D45009@qq.com>
+X-QQ-XMAILINFO: MyIXMys/8kCtWl9GEkWfk7hP4f0VtV8+04aQymT3xHvU/k9TTahy9VKkPLTZh5
+         io2CmzhrX4cceDZ4N2WgF/3ovWk18EE0wqMuvpvRwH5obr5nms3Q/5ESB3vwADixLKudkx4p2LuD
+         pb9UaO/BlXQO2ikEufIf3a8lg0/v3gHJrTO2jWf0iytxddhI8pKPBtLW5uY/7tYiKcm9R4ntfCR9
+         4Cgw+fek5uN+bqMrhoPPHhSNXbkhUNj+PwId7N5M4IVJ+WrPZBla+cxttjEL+QWGbGc/14NnqWol
+         EcuPtlw+zLMf2bErM2Z3FSu562Btc9EXwAO8MgmGGG1HYdUhjneGYT0IpXhzZe4UgEzdM8J1RO9l
+         2LSb/RYImejWvvayVWY2lwwppzv3lP01v4Izus6klBQAkfoaE4KTT2X38u9JB9LHJdQQ9rE0sLqi
+         3vD0UOye0N2SUj30JItjV/IokQ3hQ0LEiyaSR7GD76baekW2SxHERHXfIL7CZmwDty2R3H5HE5qE
+         l3WHhBYkY7Hh1VJBDIyZdoVuoYfa/f0dlrOs5evtx48Vzc9yEkFNXQgtS07THzeSZm+xIAcpYD/n
+         rUJXRShMObCcgvdmH6KN7JzAjaAm2UaxbA7tEKMB5ILlJWWs0PUZpWLkVAT4B7oo0/eqb6x3xVFb
+         f5UlRSh33XlUdp3KG3zEjOVlLkcsh3fQqHaRLCZ1hBX53IB0+N3avaCP9j005HMEt4Nc/VIZHtD5
+         a7BmXZpx+UXd52yPmYCAt8o2Pfy7yv3pervDd4KNEs/506byGSaP+TgHEWJX9PxeSVJFZGseD8Uy
+         dQnBJnmJ23G3jaeP0Fq1iOY/8ZH6UnewlZW0SR8uCCBmtJzFhkKirHw4JQ6oOqI1rFRh6QR1H2HD
+         g12zkHKui5E9nbRK8dA9dqRuLfk1RauAE6SDdFgEEETt7TgIhGOEzCIJOgxa0os/Dd00xwE84oEj
+         IPD5C5IXqi11/mddotZhP4h0J+4+QcEQ9ZQz+pS4N4/aBDZI45qA==
+From:   Zhang Shurong <zhang_shurong@foxmail.com>
+To:     pkshih@realtek.com
+Cc:     tony0620emma@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Zhang Shurong <zhang_shurong@foxmail.com>
+Subject: [PATCH v3 0/2] wifi: rtw88: error codes fix patches
+Date:   Thu, 27 Apr 2023 01:02:19 +0800
+X-OQ-MSGID: <cover.1682526135.git.zhang_shurong@foxmail.com>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RDNS_DYNAMIC,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,154 +64,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kory Maincent <kory.maincent@bootlin.com>
+rtw88 does not handle the failure during copy_from_user or invalid
+user-provided data. We fix such problems by first modifying the return
+value of customized function rtw_debugfs_copy_from_user. Then for all 
+the callers rtw_debugfs_set_*, we receive the returned error code. 
+Moreover, negative code is returned if the user-provided data is invalid
+instead of a positive value count.
 
-You patch series work on my side with the macb MAC controller and this
-patch.
-I don't know if you are waiting for more reviews but it seems good enough
-to drop the RFC tag.
+The changes in this version:
+- check by if (ret) instead of check by if (ret < 0)
 
----
+Zhang Shurong (2):
+  wifi: rtw88: fix incorrect error codes in rtw_debugfs_copy_from_user
+  wifi: rtw88: fix incorrect error codes in rtw_debugfs_set_*
 
- drivers/net/ethernet/cadence/macb.h      | 10 ++++++--
- drivers/net/ethernet/cadence/macb_main.c | 15 ++++--------
- drivers/net/ethernet/cadence/macb_ptp.c  | 30 ++++++++++++++----------
- 3 files changed, 29 insertions(+), 26 deletions(-)
+ drivers/net/wireless/realtek/rtw88/debug.c | 59 ++++++++++++++++------
+ 1 file changed, 43 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-index cfbdd0022764..bc73b080093e 100644
---- a/drivers/net/ethernet/cadence/macb.h
-+++ b/drivers/net/ethernet/cadence/macb.h
-@@ -1350,8 +1350,14 @@ static inline void gem_ptp_do_rxstamp(struct macb *bp, struct sk_buff *skb, stru
- 
- 	gem_ptp_rxstamp(bp, skb, desc);
- }
--int gem_get_hwtst(struct net_device *dev, struct ifreq *rq);
--int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd);
-+
-+int gem_get_hwtst(struct net_device *dev,
-+		  struct kernel_hwtstamp_config *kernel_config,
-+		  struct netlink_ext_ack *extack);
-+int gem_set_hwtst(struct net_device *dev,
-+		  struct kernel_hwtstamp_config *kernel_config,
-+		  struct netlink_ext_ack *extack);
-+
- #else
- static inline void gem_ptp_init(struct net_device *ndev) { }
- static inline void gem_ptp_remove(struct net_device *ndev) { }
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 45f63df5bdc4..c1d65be88835 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -3402,8 +3402,6 @@ static struct macb_ptp_info gem_ptp_info = {
- 	.get_ptp_max_adj = gem_get_ptp_max_adj,
- 	.get_tsu_rate	 = gem_get_tsu_rate,
- 	.get_ts_info	 = gem_get_ts_info,
--	.get_hwtst	 = gem_get_hwtst,
--	.set_hwtst	 = gem_set_hwtst,
- };
- #endif
- 
-@@ -3764,15 +3762,6 @@ static int macb_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- 	if (!netif_running(dev))
- 		return -EINVAL;
- 
--	if (!phy_has_hwtstamp(dev->phydev) && bp->ptp_info) {
--		switch (cmd) {
--		case SIOCSHWTSTAMP:
--			return bp->ptp_info->set_hwtst(dev, rq, cmd);
--		case SIOCGHWTSTAMP:
--			return bp->ptp_info->get_hwtst(dev, rq);
--		}
--	}
--
- 	return phylink_mii_ioctl(bp->phylink, rq, cmd);
- }
- 
-@@ -3875,6 +3864,10 @@ static const struct net_device_ops macb_netdev_ops = {
- #endif
- 	.ndo_set_features	= macb_set_features,
- 	.ndo_features_check	= macb_features_check,
-+#ifdef CONFIG_MACB_USE_HWSTAMP
-+	.ndo_hwtstamp_get	= gem_get_hwtst,
-+	.ndo_hwtstamp_set	= gem_set_hwtst,
-+#endif
- };
- 
- /* Configure peripheral capabilities according to device tree
-diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
-index 51d26fa190d7..eddacc5df435 100644
---- a/drivers/net/ethernet/cadence/macb_ptp.c
-+++ b/drivers/net/ethernet/cadence/macb_ptp.c
-@@ -374,19 +374,22 @@ static int gem_ptp_set_ts_mode(struct macb *bp,
- 	return 0;
- }
- 
--int gem_get_hwtst(struct net_device *dev, struct ifreq *rq)
-+int gem_get_hwtst(struct net_device *dev,
-+		  struct kernel_hwtstamp_config *kernel_config,
-+		  struct netlink_ext_ack *extack)
- {
- 	struct hwtstamp_config *tstamp_config;
- 	struct macb *bp = netdev_priv(dev);
- 
-+	if (phy_has_hwtstamp(dev->phydev))
-+		return phylink_mii_ioctl(bp->phylink, kernel_config->ifr, SIOCGHWTSTAMP);
-+
- 	tstamp_config = &bp->tstamp_config;
- 	if ((bp->hw_dma_cap & HW_DMA_CAP_PTP) == 0)
- 		return -EOPNOTSUPP;
- 
--	if (copy_to_user(rq->ifr_data, tstamp_config, sizeof(*tstamp_config)))
--		return -EFAULT;
--	else
--		return 0;
-+	hwtstamp_config_to_kernel(kernel_config, tstamp_config);
-+	return 0;
- }
- 
- static void gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
-@@ -401,7 +404,9 @@ static void gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
- 		macb_writel(bp, NCR, reg_val & ~MACB_BIT(OSSMODE));
- }
- 
--int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
-+int gem_set_hwtst(struct net_device *dev,
-+		  struct kernel_hwtstamp_config *kernel_config,
-+		  struct netlink_ext_ack *extack)
- {
- 	enum macb_bd_control tx_bd_control = TSTAMP_DISABLED;
- 	enum macb_bd_control rx_bd_control = TSTAMP_DISABLED;
-@@ -409,13 +414,14 @@ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	struct macb *bp = netdev_priv(dev);
- 	u32 regval;
- 
-+	if (phy_has_hwtstamp(dev->phydev))
-+		return phylink_mii_ioctl(bp->phylink, kernel_config->ifr, SIOCSHWTSTAMP);
-+
- 	tstamp_config = &bp->tstamp_config;
- 	if ((bp->hw_dma_cap & HW_DMA_CAP_PTP) == 0)
- 		return -EOPNOTSUPP;
- 
--	if (copy_from_user(tstamp_config, ifr->ifr_data,
--			   sizeof(*tstamp_config)))
--		return -EFAULT;
-+	hwtstamp_config_from_kernel(tstamp_config, kernel_config);
- 
- 	switch (tstamp_config->tx_type) {
- 	case HWTSTAMP_TX_OFF:
-@@ -466,9 +472,7 @@ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	if (gem_ptp_set_ts_mode(bp, tx_bd_control, rx_bd_control) != 0)
- 		return -ERANGE;
- 
--	if (copy_to_user(ifr->ifr_data, tstamp_config, sizeof(*tstamp_config)))
--		return -EFAULT;
--	else
--		return 0;
-+	hwtstamp_config_to_kernel(kernel_config, tstamp_config);
-+	return 0;
- }
- 
 -- 
-2.25.1
+2.40.0
+
 
