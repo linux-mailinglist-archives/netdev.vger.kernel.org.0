@@ -2,111 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26BF86EF658
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 16:26:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B023B6EF661
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 16:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240813AbjDZOZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 10:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
+        id S241060AbjDZO1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 10:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229744AbjDZOZ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 10:25:58 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2116.outbound.protection.outlook.com [40.107.96.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4F84219
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 07:25:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=klBkkjCJLOES9nQeg/gq/E5UmqRwPV3wJC7CyRhirSOnjWdE3tFilbQ2nZ4EjUVecbJ/a6+W22izD0nHJNV+r0W6m0sPIyXe7xy3qriM9yrG8wUrcLHmewikePzp5/S/CHBecf+vEVoTDeSqnIvYfMVBa2WhsFXKJ0UDsHrgQ2qy3Y1BGZqksBOjQ/Cpk3/4YwgKq4+PsX2xuNp2Ems4XUNh4GkqJS2DzHCAN+TVpSv9Lcb222jKHcdRaiaT7+m3qOFp99wdy7Ial1f5bVCm5+3fjlH5frLBaTb46m0hsVcBz/iWYwwb2akJQlfaYRX8tZg+tSb5FCZerXiWuCe+cA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JduGgPmzmkVOJ8m3d4p/gqbQO+oB/bGxCJLnlsDGYa8=;
- b=IQIl1ZhC03kH8cpKJg0Sy6ddumywsFz5kEm8KYPDW2+TnDxFqQ11/bbQUtGkObNpfcKSPKn9lvgN+dd27ZLdIZZ7WU9XPt5dQiWULEis6BxVTxOGcZ5Fvu65IQpso8v5MLyCRvU90sh+WLdGqUyOHabXafxcH4oqEP5Aqb2tfuiMUfSw2ANBUfrXtMPWo9dGPOHS7aBKOlCilcM6vwzgNQFA6LlZ9wUU/nor2W/RYlRYt60WT5XSvtRDGOlmxrv9QuBtmYo1eqthPbr1QeHFP7XY8BKzgY+5cBeCVDDamsgzVsDlUmIKBZahVHKQkD+DtsHZyfuexSAIOJdsEA/otQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S240591AbjDZO13 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 10:27:29 -0400
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7655BBA
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 07:27:27 -0700 (PDT)
+Received: by mail-oi1-x22b.google.com with SMTP id 5614622812f47-38dfdc1daa9so4065723b6e.1
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 07:27:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JduGgPmzmkVOJ8m3d4p/gqbQO+oB/bGxCJLnlsDGYa8=;
- b=P2ZDtL24Fja66JZT2MN3t/n/k8in1Bwn/ZZ4UhMsF+zVsyuR2D0RvuoLR1hJ9Wwfems7NqoT20rttTOrRkwZH+CVqD3fILFp+3TL1bHCQlPlEZbGdSF0yTxCv/tAM/QY5iPJqK5lecHNsV/tMot/ZDxIGRaw/KFcY3gNruu7FK8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4906.namprd13.prod.outlook.com (2603:10b6:510:a1::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.20; Wed, 26 Apr
- 2023 14:25:52 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6319.033; Wed, 26 Apr 2023
- 14:25:51 +0000
-Date:   Wed, 26 Apr 2023 16:25:29 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        marcelo.leitner@gmail.com, paulb@nvidia.com
+        d=mojatatu-com.20221208.gappssmtp.com; s=20221208; t=1682519247; x=1685111247;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kHlWMoEAejv0+98kkJcOIY9PQ9ydV8qtjay1VaAdCnA=;
+        b=qphmaihhRmU1xiZHMu2ocDoKMPWu8cj5hGA852SJVCZMAxM8mMY43dyCJenUm+Nu0Y
+         I3TzSwbEgs1cvhyY9jRPGSUulrc+9CQKXiFXGPE4RDRCXJIAgUBX2CwtrYSIw790Sv2s
+         mYKJYJotBDavveV5PnzorelL5548Es3aHz3gdwuXM8Af7PiuvPLfG1M/W/f+B1ORxaC6
+         Muj6o6Vx7XJfvNZvDn51cELfQRQsnXM5Ed9dbyYU33htcWyk4jmpD5IXkELs87SU5AxJ
+         +yAGlu2O1KhFqFXw+MbcOV98WwewA8ob6UvlKioUCdSRawlT7VOVtj3nPiyj2/bhcJzA
+         IvkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682519247; x=1685111247;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kHlWMoEAejv0+98kkJcOIY9PQ9ydV8qtjay1VaAdCnA=;
+        b=I81RV2YmQkGKsc1zwO06QHyvOOMBSxrVNKGmv+G4quW7OYs2okeFYaSYaSrBXPtHu/
+         bmM+1dCSjoa9rgcxw0sezDG64v9of3ys7Pi3NZ3F+SRRBFB1MRR9/lq5qZTtvXwFlWUi
+         SkHhIjkwzHlSgMWCJOGsOIcrdE5/R/UWIeXFW1Chgzlvk7kWtW/1JKspoeQoJmt25s6C
+         rBRZ8zJ+cASLiIs8SpXj5Az8+/l/22IDAk5RDA/MARN/ZxYuEjG/4b/NC1BOD7KdQ9pt
+         uXXr0+fQNud8k6XkcRHSFnx4mJKwKykRNZ9VBfpjbHu02q/g3PAYU0Z0fuPJP/CfIwIJ
+         +Mdw==
+X-Gm-Message-State: AAQBX9fmJLo8Yg9yNSIE6YpfdV2qA/7IH2x3OXrRA+EI58s1HFoQf1bf
+        rWaYd+Dyi8fVzi8XDdsgEwLzCQ==
+X-Google-Smtp-Source: AKy350aXgCnT/HcrOVfa6t5sKOiioA2PHm8Wf1uYJd5LEVXFbsj8kGF+24hy82mzfRuloYJCKOcj8Q==
+X-Received: by 2002:a05:6808:21a2:b0:38e:6a24:8883 with SMTP id be34-20020a05680821a200b0038e6a248883mr11776427oib.53.1682519247190;
+        Wed, 26 Apr 2023 07:27:27 -0700 (PDT)
+Received: from ?IPV6:2804:14d:5c5e:44fb:fb2a:b3eb:47f1:343a? ([2804:14d:5c5e:44fb:fb2a:b3eb:47f1:343a])
+        by smtp.gmail.com with ESMTPSA id g7-20020a9d6c47000000b006a64043ed69sm5287541otq.56.2023.04.26.07.27.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Apr 2023 07:27:26 -0700 (PDT)
+Message-ID: <df5ad08f-e91b-4501-00d9-c6cccf149f93@mojatatu.com>
+Date:   Wed, 26 Apr 2023 11:27:22 -0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
 Subject: Re: [PATCH net 1/2] net/sched: flower: fix filter idr initialization
-Message-ID: <ZEk0WeVkx84TXbti@corigine.com>
+Content-Language: en-US
+To:     Vlad Buslov <vladbu@nvidia.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, marcelo.leitner@gmail.com, paulb@nvidia.com,
+        simon.horman@corigine.com
 References: <20230426121415.2149732-1-vladbu@nvidia.com>
  <20230426121415.2149732-2-vladbu@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+From:   Pedro Tammela <pctammela@mojatatu.com>
 In-Reply-To: <20230426121415.2149732-2-vladbu@nvidia.com>
-X-ClientProxiedBy: AM4PR05CA0001.eurprd05.prod.outlook.com (2603:10a6:205::14)
- To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB4906:EE_
-X-MS-Office365-Filtering-Correlation-Id: accf256e-23f3-46d0-d0a2-08db46622342
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hbOgtsmwjhSFCCwrFhOiOwd6ohU16+lhO5b8faPC8P/inrl3CwPhKblYr88DbXynrGck1mprgaoN86cwhVJH6Vu9i46MRntP+0sIAVxtEZlIp2mtwhFjc1feggRNyYoixlkXws8zGjrQLWGdqf3FKq4mbag6Gfpsq8eHKKH4nKmItMFTfu/Be1elapxL2QaRaXdvcV8QKZ7Q6vSgl896Lfy+tl/riEsERBqQup2t2P45sbnaEFxLXerChgEehed/pHJeatszM+lDEl+1quCKC9eYpuuR/0t/ewBonw338Qyw5UMIo5FghUdgBrRne9+0Giws44Y0viIyynJys5W3WQefBiyA3kWlOEijf0HY6BCf7+LLewlydQEhK4OFk3QUvp6crjWGYpeGNdM6c5jbfqSgWn1dNagubk3t9dVfxpTICaWlgW3kXG9f67LYvnsIybJEpzKLlKG4m99BsaeMPzABK3u0C6zZA+sizrI1eHRPmvpxHj76AN7XPDgKikQ0tU1e6bEETVXL6u9q6JYvg0JW/xBW+dWpaZP7b0NW8o2uO/x7pv2/Re04cAlL0lT6
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(346002)(39840400004)(136003)(366004)(451199021)(478600001)(45080400002)(83380400001)(2616005)(66556008)(6506007)(6512007)(6666004)(6486002)(66946007)(186003)(41300700001)(38100700002)(5660300002)(316002)(44832011)(4326008)(6916009)(86362001)(66476007)(2906002)(8676002)(8936002)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PGwO5YAq8IfWcavCNEZiZ2kOIa1bXVPUJfXQSdHEEWOl1LCWOM4svNOANlmE?=
- =?us-ascii?Q?sMt8wDz1hqWlijlIz2PnCy7R6X7s9+oCWyU0EvBW87Y04fs14+L+SzVs9TAm?=
- =?us-ascii?Q?dzdz9X78pyD+iRxx2HzMArPGF9ZQTvZ21vrEL99pJ1sI/zM79CiQhydx8EBQ?=
- =?us-ascii?Q?F+cPaqeWienIKL0gRsbtvzXYfORleiyMeM69ZHwdYgj/xFx+4foTQLhsFxzj?=
- =?us-ascii?Q?iNIgBUzjVkT6lhImlkCmEQsYXEsyXKOOgH7EqfFjymDcIfFWioC7hxZsx8Ve?=
- =?us-ascii?Q?2YE0eKW7gSDceigpqtuRRJ5UHTIjxCdwAEqBff2b3RaGie4NA+BGW8fOQrig?=
- =?us-ascii?Q?iRIKDvZV/X5HQfbJ9+1UwSvJAJv8oia7VPHEceQXPVaqpHJyULtrSTCMgD3X?=
- =?us-ascii?Q?5OpahXo0gHQrC3hYWKG960U+NmIdMaWUD7Ox9aXLkKbXt2ped8GGgqU9Mg8n?=
- =?us-ascii?Q?It6BsBU6+cDXuCD1vpn3A9tHs/q1EmSZApFKRflNYv4Ky8QvhL2ZZliNHtwQ?=
- =?us-ascii?Q?imMaw6EQM4J3uQ+a9ebnkZE4T8pnMqRvHRh3ob+CAEt4RM5nBnQnhm54OPJf?=
- =?us-ascii?Q?f4cLn/xyWu1C/76tZDJA1ZWVrFyqr8WxtFVJdt8baOrhdZk3aGXKxXF90NgM?=
- =?us-ascii?Q?rzVxqjaz0fEQ2HezZ/FdnUAj8UX5esRPU3ynXe5+uPoR1ystn4pqqRGPlQzm?=
- =?us-ascii?Q?Gm6Ou9S9H0wYBMxBwtuSx4jznpArVVDsMOfEOXReVJVYcZ63p1RVyD7655lN?=
- =?us-ascii?Q?z1gdaF++X0Di6aU46+vZyZDHHefPYV0RNzKWSCz2R1rLLEyzIy9fespOjzYD?=
- =?us-ascii?Q?jP9hfJhD79gCMbibh2kOHlQy+lTd8LFW1LzdKy1d9FTswB3mkOhKL4sezDIk?=
- =?us-ascii?Q?pz5SNQ9pwXZvHRzVEZolx0N5Uwb7eFHWOI37YxfPa1EPl8ahjxJECrusITb1?=
- =?us-ascii?Q?xEO9b33tyQEStSJ5Ecc4qnTpJ4DOGW0v8m4oDGqwRipxhqaah/V8EXTQPn8d?=
- =?us-ascii?Q?TdyVGFoRE76llaXaIqDXYojP9dEKBYDTKJSieIzndh/sunQOsEHZnuttNxUI?=
- =?us-ascii?Q?WNCnV4erwNPkE9v/ZuVbbNjAY80g0OSd6977gV3+ixM1kqel+TCQ8OGnpPDR?=
- =?us-ascii?Q?sNy/HJQRv9/eYtRlPqPevoONYaTNNdIyyQzOQ0dN/7oAxWsmDgyEyMahhgqK?=
- =?us-ascii?Q?qsMDbTvZlRABluaGXILen9fTQlB0qSap+msB0QxAyl4krg2pSISuvROAyrpy?=
- =?us-ascii?Q?R/wDMxUflVbIavW7+GCLTvoTZoTjqkUvP+jaRjmPET/T6L2jXeO3qXvLHznw?=
- =?us-ascii?Q?/3uyH+Wh3SDZADrx5VSZp7JTOeeXmz7rIn19Zdj9LJICgyeq2lVX1AONjWOP?=
- =?us-ascii?Q?AvmIGY3Ef2qhIUs7zWyN2LKpollKeeaDLDgNLz9bGIuYv9AB4lbpTIzR9jOz?=
- =?us-ascii?Q?DiqTAdaxxw7zmUCiL8+uZCMPI0epFiIkcZJgu6lf25Cdinr3I3mcQ0vHHeyO?=
- =?us-ascii?Q?WHIn2oAG7fYXJKFyo8baxXTMln5IT/VYA20yzMM4Ul6InN1LtjzoBkmHsbH5?=
- =?us-ascii?Q?X3fTK8+bJJfN6YaIcSWYuPj0jRoTPj/VOZtwGj/tiRM/hY1bdtS5Vcf+B3QK?=
- =?us-ascii?Q?vJTTrX5Pt3+3YcPEeuyfJ1BCmWVuZHLeZSGyPO6vh02NkzM8lP9s8GovHR1X?=
- =?us-ascii?Q?Uvaz6A=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: accf256e-23f3-46d0-d0a2-08db46622342
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2023 14:25:51.6885
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sjTsHC+eNIreWTZC635wIv1WxTULXnvFe+I5jrxqqYSGRluSgb5SAHTrS2SEyI/EmCuDzXrZISLBcmXN7WovkBXOAXFsYVXWxnC3mkNkC30=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4906
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -115,7 +77,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 26, 2023 at 02:14:14PM +0200, Vlad Buslov wrote:
+On 26/04/2023 09:14, Vlad Buslov wrote:
 > The cited commit moved idr initialization too early in fl_change() which
 > allows concurrent users to access the filter that is still being
 > initialized and is in inconsistent state, which, in turn, can cause NULL
@@ -233,7 +195,41 @@ On Wed, Apr 26, 2023 at 02:14:14PM +0200, Vlad Buslov wrote:
 > [  152.515720] ---[ end trace 0000000000000000 ]---
 > 
 > Fixes: 08a0063df3ae ("net/sched: flower: Move filter handle initialization earlier")
-> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>|
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+LGTM,
+
+Reviewed-by: Pedro Tammela <pctammela@mojatatu.com>
+
+
+> ---
+>   net/sched/cls_flower.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+> index 475fe222a855..1844545bef37 100644
+> --- a/net/sched/cls_flower.c
+> +++ b/net/sched/cls_flower.c
+> @@ -2210,10 +2210,10 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
+>   		spin_lock(&tp->lock);
+>   		if (!handle) {
+>   			handle = 1;
+> -			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
+> +			err = idr_alloc_u32(&head->handle_idr, NULL, &handle,
+>   					    INT_MAX, GFP_ATOMIC);
+>   		} else {
+> -			err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
+> +			err = idr_alloc_u32(&head->handle_idr, NULL, &handle,
+>   					    handle, GFP_ATOMIC);
+>   
+>   			/* Filter with specified handle was concurrently
+> @@ -2378,7 +2378,7 @@ static void fl_walk(struct tcf_proto *tp, struct tcf_walker *arg,
+>   	rcu_read_lock();
+>   	idr_for_each_entry_continue_ul(&head->handle_idr, f, tmp, id) {
+>   		/* don't return filters that are being deleted */
+> -		if (!refcount_inc_not_zero(&f->refcnt))
+> +		if (!f || !refcount_inc_not_zero(&f->refcnt))
+>   			continue;
+>   		rcu_read_unlock();
+>   
 
