@@ -2,148 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B6286EECFD
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 06:39:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9A46EED06
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 06:43:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239381AbjDZEi7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Apr 2023 00:38:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
+        id S239386AbjDZEns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 00:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238411AbjDZEi5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 00:38:57 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBEF26AC;
-        Tue, 25 Apr 2023 21:38:56 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 33Q4cVT21032454, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 33Q4cVT21032454
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Wed, 26 Apr 2023 12:38:32 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Wed, 26 Apr 2023 12:38:33 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Wed, 26 Apr 2023 12:38:33 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d]) by
- RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d%5]) with mapi id
- 15.01.2375.007; Wed, 26 Apr 2023 12:38:33 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Zhang Shurong <zhang_shurong@foxmail.com>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>
-CC:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 1/2] wifi: rtw88: fix incorrect error codes in rtw_debugfs_copy_from_user
-Thread-Topic: [PATCH v2 1/2] wifi: rtw88: fix incorrect error codes in
- rtw_debugfs_copy_from_user
-Thread-Index: AQHZd5JwMo0jajhBZEqbv0oa4rkPjK88/+uggAABEWA=
-Date:   Wed, 26 Apr 2023 04:38:33 +0000
-Message-ID: <6fb7c4f35f634fb2a0d1afa8818dbf6e@realtek.com>
-References: <cover.1682438257.git.zhang_shurong@foxmail.com>
- <tencent_8BA35E4B9CDF40D4AE6D8D831D7ACC28A00A@qq.com>
- <9c3ddb61020749d4811053e25c949b05@realtek.com>
-In-Reply-To: <9c3ddb61020749d4811053e25c949b05@realtek.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
-x-kse-antispam-interceptor-info: fallback
-x-kse-antivirus-interceptor-info: fallback
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S239327AbjDZEnr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 00:43:47 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF39133
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 21:43:46 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id d9443c01a7336-1a68d61579bso51010725ad.1
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 21:43:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682484226; x=1685076226;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T3v6ztOpcd63Ih5m5M3r/JND6OTPH7gSvq7/e6FRHMQ=;
+        b=rgvsNA4Kg2xERL87RwUV5POl9z8YyQYkS+xJHv21Zg6eGHXJlg2j+rnz3lBkqcs9zs
+         sCTXC+L1YEjZXgcemh6swajHrNMTQfvkGhdOtuVjj22hV4vhnFfKbsqqErykRY227Nd8
+         8xZCWY3LM13mhL8zb1bq1c7eQPAMwTCGtfoPrIO8n1+5PFMe+47OAgQOlSdLdoi2iiPI
+         da5p+bIRQd2LfPKqplm3IAXU6hZK4BrnM9gXjyT/Cq8cmIkWb57dyhipA3ZnwLtAsXum
+         MOmosi2pYOOgNzEm/V6i8DAovIsYuj6+S/g2NPg0TeLvS7OKPl7uIbl6FpYcIe3qurnb
+         XIwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682484226; x=1685076226;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=T3v6ztOpcd63Ih5m5M3r/JND6OTPH7gSvq7/e6FRHMQ=;
+        b=dnqNvY/mo4jvQ6byGS95HuL4wgmda1My9WonGkET4n2NHrdbVnkb+sMofwaBwDELwl
+         EXbluVrqpY/BvDD2MbX1wPebFEo3zvSFC0H8BrFRv+EYeneV15lkxUX4DG8vPMiphpx2
+         1j0jEalkiuFGi4yUDQcaYAZD2b7oHhEP0LgGHNrfR8I1i/SPEwgTBZF4tZuh+2AXZ3mB
+         sUcsieCIa8wWJs9ruuZ13PjZoU9zHR9JLofUpSIEUwtIMhuSXY0aaFXQKnzrcUq8e4Dj
+         k/2O3Y9odlryKDUNSiDj72ZwlQSBhn/bcvc+rcoWKIp035ChirVDf1ZmImdab9caqAnN
+         +x6w==
+X-Gm-Message-State: AAQBX9dtArp8TtEaVipLxCe2G35wwIvshHZv3CtTWEW9riQcSnLPLkDl
+        DIj7o6tgUDCiQqc4oz20B4/KP0ahIGRDjbE5/46aVe5ABmU=
+X-Google-Smtp-Source: AKy350a+hv/0YcrwxrdgiDv4n+v7oMAW3xmoayhILX33MoM7/8PrabScCMk16ECLguctXOHUtVJKA13GeEurP+ZLsWI=
+X-Received: by 2002:a17:902:ab07:b0:1a1:defc:30d8 with SMTP id
+ ik7-20020a170902ab0700b001a1defc30d8mr20389870plb.32.1682484225691; Tue, 25
+ Apr 2023 21:43:45 -0700 (PDT)
 MIME-Version: 1.0
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-Antivirus-Interceptor-Info: fallback
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20230423032835.285406-1-glipus@gmail.com> <20230425085854.1520d220@kernel.org>
+In-Reply-To: <20230425085854.1520d220@kernel.org>
+From:   Max Georgiev <glipus@gmail.com>
+Date:   Tue, 25 Apr 2023 22:43:34 -0600
+Message-ID: <CAP5jrPEZ12UFbNC4gtah9RFxVZrbHDMCr8DQ_vBCtMY+6FWr7Q@mail.gmail.com>
+Subject: Re: [RFC PATCH v4 3/5] Add ndo_hwtstamp_get/set support to
+ vlan/maxvlan code path
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     kory.maincent@bootlin.com, netdev@vger.kernel.org,
+        maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com,
+        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
+        gerhard@engleder-embedded.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Apr 25, 2023 at 9:58=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
+ote:
+>
+> On Sat, 22 Apr 2023 21:28:35 -0600 Maxim Georgiev wrote:
+> > -             if (!net_eq(dev_net(dev), &init_net))
+> > -                     break;
+>
+> Did we agree that the net namespace check is no longer needed?
+> I don't see it anywhere after the changes.
 
-
-> -----Original Message-----
-> From: Ping-Ke Shih <pkshih@realtek.com>
-> Sent: Wednesday, April 26, 2023 12:29 PM
-> To: Zhang Shurong <zhang_shurong@foxmail.com>; tony0620emma@gmail.com
-> Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
-> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: RE: [PATCH v2 1/2] wifi: rtw88: fix incorrect error codes in rtw_debugfs_copy_from_user
-> 
-> > -----Original Message-----
-> > From: Zhang Shurong <zhang_shurong@foxmail.com>
-> > Sent: Wednesday, April 26, 2023 12:24 AM
-> > To: tony0620emma@gmail.com
-> > Cc: kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
-> > linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Zhang Shurong
-> > <zhang_shurong@foxmail.com>
-> > Subject: [PATCH v2 1/2] wifi: rtw88: fix incorrect error codes in rtw_debugfs_copy_from_user
-> >
-> > If there is a failure during copy_from_user, rtw_debugfs_copy_from_user
-> > should return negative error code instead of a positive value count.
-> >
-> > Fix this bug by returning correct error code. Moreover, the check
-> > of buffer against null is removed since it will be handled by
-> > copy_from_user.
-> >
-> > Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
-> 
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
-
-I would take back this temporarily because of below. 
-
-> 
-> > ---
-> >  drivers/net/wireless/realtek/rtw88/debug.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/wireless/realtek/rtw88/debug.c b/drivers/net/wireless/realtek/rtw88/debug.c
-> > index fa3d73b333ba..3da477e1ebd3 100644
-> > --- a/drivers/net/wireless/realtek/rtw88/debug.c
-> > +++ b/drivers/net/wireless/realtek/rtw88/debug.c
-> > @@ -183,8 +183,8 @@ static int rtw_debugfs_copy_from_user(char tmp[], int size,
-> >
-> >         tmp_len = (count > size - 1 ? size - 1 : count);
-> >
-> > -       if (!buffer || copy_from_user(tmp, buffer, tmp_len))
-> > -               return count;
-> > +       if (copy_from_user(tmp, buffer, tmp_len))
-> > +               return -EFAULT;
-> >
-> >         tmp[tmp_len] = '\0';
-> >
-
-In the second patch, you check 'ret < 0' instead of 'ret'. That looks like
-you can possibly return positive value (e.g. count), but actually only
-return 0 or - EFAULT after this patch. So, I would like change first or second
-patch to make them intuitive. 
-
-return 0 or -EFAULT          --> check by if (ret)
-return 0 or -EFAULT or count --> check by if (ret < 0)
-
-
-+       ret = rtw_debugfs_copy_from_user(tmp, sizeof(tmp), buffer, count, 2);
-+       if (ret < 0)
-+               return ret;
-
-
-
-
+My bad, I was under the impression that you, guys, decided that this
+check wasn't needed.
+Let me add it back and resend the patch.
