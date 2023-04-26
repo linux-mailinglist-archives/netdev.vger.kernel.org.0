@@ -2,85 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9A46EED06
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 06:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE8086EED0C
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 06:47:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239386AbjDZEns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 00:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37954 "EHLO
+        id S239026AbjDZErO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 00:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239327AbjDZEnr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 00:43:47 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF39133
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 21:43:46 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d9443c01a7336-1a68d61579bso51010725ad.1
-        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 21:43:46 -0700 (PDT)
+        with ESMTP id S229537AbjDZErN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 00:47:13 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED596133
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 21:47:11 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id 4fb4d7f45d1cf-506b20efd4cso11177173a12.3
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 21:47:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682484226; x=1685076226;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T3v6ztOpcd63Ih5m5M3r/JND6OTPH7gSvq7/e6FRHMQ=;
-        b=rgvsNA4Kg2xERL87RwUV5POl9z8YyQYkS+xJHv21Zg6eGHXJlg2j+rnz3lBkqcs9zs
-         sCTXC+L1YEjZXgcemh6swajHrNMTQfvkGhdOtuVjj22hV4vhnFfKbsqqErykRY227Nd8
-         8xZCWY3LM13mhL8zb1bq1c7eQPAMwTCGtfoPrIO8n1+5PFMe+47OAgQOlSdLdoi2iiPI
-         da5p+bIRQd2LfPKqplm3IAXU6hZK4BrnM9gXjyT/Cq8cmIkWb57dyhipA3ZnwLtAsXum
-         MOmosi2pYOOgNzEm/V6i8DAovIsYuj6+S/g2NPg0TeLvS7OKPl7uIbl6FpYcIe3qurnb
-         XIwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682484226; x=1685076226;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=gmail.com; s=20221208; t=1682484430; x=1685076430;
+        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=T3v6ztOpcd63Ih5m5M3r/JND6OTPH7gSvq7/e6FRHMQ=;
-        b=dnqNvY/mo4jvQ6byGS95HuL4wgmda1My9WonGkET4n2NHrdbVnkb+sMofwaBwDELwl
-         EXbluVrqpY/BvDD2MbX1wPebFEo3zvSFC0H8BrFRv+EYeneV15lkxUX4DG8vPMiphpx2
-         1j0jEalkiuFGi4yUDQcaYAZD2b7oHhEP0LgGHNrfR8I1i/SPEwgTBZF4tZuh+2AXZ3mB
-         sUcsieCIa8wWJs9ruuZ13PjZoU9zHR9JLofUpSIEUwtIMhuSXY0aaFXQKnzrcUq8e4Dj
-         k/2O3Y9odlryKDUNSiDj72ZwlQSBhn/bcvc+rcoWKIp035ChirVDf1ZmImdab9caqAnN
-         +x6w==
-X-Gm-Message-State: AAQBX9dtArp8TtEaVipLxCe2G35wwIvshHZv3CtTWEW9riQcSnLPLkDl
-        DIj7o6tgUDCiQqc4oz20B4/KP0ahIGRDjbE5/46aVe5ABmU=
-X-Google-Smtp-Source: AKy350a+hv/0YcrwxrdgiDv4n+v7oMAW3xmoayhILX33MoM7/8PrabScCMk16ECLguctXOHUtVJKA13GeEurP+ZLsWI=
-X-Received: by 2002:a17:902:ab07:b0:1a1:defc:30d8 with SMTP id
- ik7-20020a170902ab0700b001a1defc30d8mr20389870plb.32.1682484225691; Tue, 25
- Apr 2023 21:43:45 -0700 (PDT)
+        bh=JEkw1KmmzfmMdZjy2G/k2kJ9Rp06l3CUoffIihDDUro=;
+        b=eBK20lwwpuq8w6rQ7GPJkwXQTNb1GxfSKHD4jd5yA51sq/QDkP8eiPs2c/HhEiNT/n
+         yo/CgfehV9buMifZZVQT1U+l/boQs9xCbksELp44hTIkwGqLQm4WGvkmSPKMZYB+SQ/T
+         aR4PhSkRK8sUeIY8QTzAR0ALmAlckUsfdB6ephjjnHjsFCb0zyu9c3SHcwOMJ5KD8oZf
+         oZJJgOGpPlsdHeEQPjVMV9j7OvqjYSfPVxGwxgXgrTOvZzRMkxkNLL7lTRSBT6y23Pk/
+         JsxCidBfB35T6qC9o7FhWKZsTpfyXRR0dwx+dA1zZYjb2JV4QOfReoUS3fOubz4jkhpX
+         9KKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682484430; x=1685076430;
+        h=to:subject:message-id:date:from:sender:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=JEkw1KmmzfmMdZjy2G/k2kJ9Rp06l3CUoffIihDDUro=;
+        b=ZCdY4vu8xAMA0Ts+tNtCI6MiOQ7kZXDUTmoUlIn9gBzKqQU7bhIAFWB4OsncJEZFQA
+         ozMJb35ZMSBoUJqFjX8avaMO0gK9VoDlWf6e33/omT1jEILjGGM3EpWOxzPQZFI6kZmc
+         3JlOftmfnlLA99tRXE5X31Pej47TjHLH9k0OCLj2NasdcJYrMYgqtV6AtWOePMq1DWta
+         JlsdYjaIB0rhKu7yInrE+7ppTSrw6tVFcLusrCXQ2jmdL+ZvVjOyfU0XXl+8h+i1N3RD
+         N96HtvHPesJ4omm5Aj2Aa7/oBncwziPOCIi1F3qCrH4YkBrEMQVFOJBCziRe2oIJ28Oz
+         MOPg==
+X-Gm-Message-State: AAQBX9cE7aSErXHBQGPudKSVLiWcoxyM1gh8g2MihzsoJ/VbzhO+xzI9
+        K/kfgHCkGw87F3SdAikJB7oNl5dHVpe2Y+r/Y2s=
+X-Google-Smtp-Source: AKy350Y7iUXha6kJlVTeeU+Jm5KcqGzX7Pcvp+gkZ+0Df9bPGAQVM+WiXhWsFxeu5n1laeEPAEXZaZZq/F6IMVU1k44=
+X-Received: by 2002:aa7:c684:0:b0:506:bd8f:9301 with SMTP id
+ n4-20020aa7c684000000b00506bd8f9301mr16343764edq.2.1682484430080; Tue, 25 Apr
+ 2023 21:47:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230423032835.285406-1-glipus@gmail.com> <20230425085854.1520d220@kernel.org>
-In-Reply-To: <20230425085854.1520d220@kernel.org>
-From:   Max Georgiev <glipus@gmail.com>
-Date:   Tue, 25 Apr 2023 22:43:34 -0600
-Message-ID: <CAP5jrPEZ12UFbNC4gtah9RFxVZrbHDMCr8DQ_vBCtMY+6FWr7Q@mail.gmail.com>
-Subject: Re: [RFC PATCH v4 3/5] Add ndo_hwtstamp_get/set support to
- vlan/maxvlan code path
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     kory.maincent@bootlin.com, netdev@vger.kernel.org,
-        maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com,
-        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
-        gerhard@engleder-embedded.com
+Sender: mohamedazzouzi77@gmail.com
+Received: by 2002:a05:7412:b83:b0:c7:8b80:7580 with HTTP; Tue, 25 Apr 2023
+ 21:47:09 -0700 (PDT)
+From:   AVA SMITH <avasmith1181@gmail.com>
+Date:   Wed, 26 Apr 2023 04:47:09 +0000
+X-Google-Sender-Auth: W0cWOY5PLapuRjI2b4u8Fz-sOKU
+Message-ID: <CAC-Hp7sCHY1atd6YUnv5RrzMDSZghEufGVSY1XZo82gxehtV7g@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 9:58=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> On Sat, 22 Apr 2023 21:28:35 -0600 Maxim Georgiev wrote:
-> > -             if (!net_eq(dev_net(dev), &init_net))
-> > -                     break;
->
-> Did we agree that the net namespace check is no longer needed?
-> I don't see it anywhere after the changes.
+Hello,
+My name is Dr Ava Smith,a medical doctor from United States.I have
+Dual citizenship which is English and French.I will share more details
+about me as soon as i get a response from you.
 
-My bad, I was under the impression that you, guys, decided that this
-check wasn't needed.
-Let me add it back and resend the patch.
+Thanks
+Ava
