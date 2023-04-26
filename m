@@ -2,61 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3295E6EF4C4
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 14:54:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB7806EF4C7
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 14:57:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240690AbjDZMyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 08:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34606 "EHLO
+        id S240704AbjDZM5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 08:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240293AbjDZMyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 08:54:35 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7244AE3
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 05:54:33 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-959a3e2dd27so706289366b.3
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 05:54:33 -0700 (PDT)
+        with ESMTP id S240293AbjDZM5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 08:57:30 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A201FC4
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 05:57:28 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-5068e99960fso12272709a12.1
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 05:57:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tarent.de; s=google; t=1682513672; x=1685105672;
-        h=content-transfer-encoding:mime-version:content-language:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=L8UCBwowXE+zXZBN/Xshkn6tHh+RnKtAaGTTD8Czx4o=;
-        b=rRPvkjwtQDKtL+dNMPtjOFBmNjouBsSz7My3PGv6biQSdMjMDZc3qfLuP61bpCm3VM
-         fcAb13/o3Cp3QG0ZAjCwrXHAE+yCbAaad7j6slVXSTSsym7tASn+Ou7DlcTDPUAgLh+C
-         rnI8K48MwoGteqhifNISTXhFBPhZPZOrTMPic=
+        d=dectris.com; s=google; t=1682513847; x=1685105847;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=j1QsbQyF3TR/hoFInEXmDClrMvJnRmuE6Ofnl/uFp38=;
+        b=JmiY6YfBuybCRpi0/YDE8hX7+l6vTaPtTJ79KCJCouinYq1bCpGXoFcc26Bo/pDCfy
+         o4Nn4EiaaS5OOUNhKEbnkQxC3OhyMnr1F/Po4sE+yRvRLT49zfFp0dLSd5DlRpwblCL+
+         uto0euo/3QfNZtfjgrpwBJWVIkme+wT+ak18Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682513672; x=1685105672;
-        h=content-transfer-encoding:mime-version:content-language:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L8UCBwowXE+zXZBN/Xshkn6tHh+RnKtAaGTTD8Czx4o=;
-        b=TyQLzVkLH5048edGSj6A9ePIdzKK0+lQ7MrJKFvZLKoRKICzm9vKckKaj8XsC4bcKL
-         5HZVkH+JcGvXIfDaHMH5Q8UE7FSVM9FxQ5WO1OrrFdALXNFdh6tvS2x+Cfl75b7VjOm6
-         YQPoiRl0HWp4di8Cy6Jiw5TnGlkXOH27KTNEDhIpSqlV2pKhxRKxifcQxDPv4ZRCmN7o
-         pxEysG6oOhYF2WgUIMD9pv/+p/kNig1Lx89eibCXagMXZHN+gTe2I9oZCbNwVSXSja1k
-         a2sjzZYgqxdgksmIlxAhcgs5lwPHMztG8Og3S1XtTi2Jjx2Q+dn56dHvlkqoxVITM+Re
-         Bksg==
-X-Gm-Message-State: AAQBX9cXeHkQdDW6XVhPs1RzNhQrWL1tNOqwpe62Ibif6BowczzitF7S
-        PyRujQ6Xy8jWjmpyj2xxTc7xqewwWr9bHYq9p0DC2//BiLvpYa9bqEBuWrKqlLO731g/mb3sEil
-        W63tYYenHQWiK+MsVYHQaILqXLhUbjjq9j3eHDb/fsaX4HxHGNcg2HMer2RMPQgKcI2nxgdWFjx
-        U5
-X-Google-Smtp-Source: AKy350Y7FNPCg+2TsDNXLfytBsP25fr0/Vds7mfkaYxmMmQsYeXLgijBiadYbQPZhfJkJh3bEg+VPQ==
-X-Received: by 2002:a17:906:5e12:b0:94f:3980:bf91 with SMTP id n18-20020a1709065e1200b0094f3980bf91mr15725771eju.19.1682513671804;
-        Wed, 26 Apr 2023 05:54:31 -0700 (PDT)
-Received: from [2001:4dd4:f23a:0:21f:3bff:fe0d:cbb1] (2001-4dd4-f23a-0-21f-3bff-fe0d-cbb1.ipv6dyn.netcologne.de. [2001:4dd4:f23a:0:21f:3bff:fe0d:cbb1])
-        by smtp.gmail.com with ESMTPSA id lw26-20020a170906bcda00b0094f185d82dcsm8144420ejb.21.2023.04.26.05.54.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Apr 2023 05:54:31 -0700 (PDT)
-Date:   Wed, 26 Apr 2023 14:54:30 +0200 (CEST)
-From:   Thorsten Glaser <t.glaser@tarent.de>
-To:     netdev@vger.kernel.org
-cc:     Haye.Haehne@telekom.de
-Subject: knob to disable locally-originating qdisc optimisation?
-Message-ID: <8a8c3e3b-b866-d723-552-c27bb33788f3@tarent.de>
-Content-Language: de-DE-1901
+        d=1e100.net; s=20221208; t=1682513847; x=1685105847;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=j1QsbQyF3TR/hoFInEXmDClrMvJnRmuE6Ofnl/uFp38=;
+        b=DpNxlBfm09V8DAnlfyY0WbY/EZ4R2HW06AkMhZYeNzehGsoQLzcPgIsgr/YpY/0L6G
+         SEc6XXv7u58TeiJbGV4QwMcwMTORJh00MMVUZ5fn5ywuV/qzRpr5ZU6TUO/+s/Oz/VSj
+         ZnmAA4kcD9ThnoCqflb3ltUlC4Mj3GF82i6iqLL59tStzmnAcDm6amiVDW2BhznUyz6d
+         vxTTgXDC0AzybLG19WFi+pZNhsUktoxzajgK3mePGmu48skZPOir35scZRUXE7OJFOv8
+         tjhW7qoV03yFG7c1GGf2EowEnFpIrpV8Nx0B8ACmbDs+qCI8g+6V54IQgFeNFzVOuE0T
+         G6JA==
+X-Gm-Message-State: AAQBX9fe3c/gH+yxvd/kXeIwubxy2FVqaLkpHrP25Opl+MM0k2YVEYlS
+        dBMsRP7D/elLsMbvoEStrI1jQJv0U38X2dxG3mYmQg==
+X-Google-Smtp-Source: AKy350ZGTmt/6Xm8J8Z+YJRO5ZAF5Cg9M4AsqmY4MImaN2aS8xw7FbSFm0eUoRt/8GYZH6ApMntLSdSXB3B6vwQeM54=
+X-Received: by 2002:aa7:c74e:0:b0:502:1cae:8b11 with SMTP id
+ c14-20020aa7c74e000000b005021cae8b11mr19006448eds.23.1682513847171; Wed, 26
+ Apr 2023 05:57:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+References: <20230423075335.92597-1-kal.conley@dectris.com>
+ <6446d34f9568_338f220872@john.notmuch> <CAHApi-=Vr4VARgoDNB1T906gfDNB5L5_U24zE=ZHQi+qd__e8w@mail.gmail.com>
+ <644837cec75d1_8f94b20880@john.notmuch>
+In-Reply-To: <644837cec75d1_8f94b20880@john.notmuch>
+From:   Kal Cutter Conley <kal.conley@dectris.com>
+Date:   Wed, 26 Apr 2023 15:02:17 +0200
+Message-ID: <CAHApi-kzaJxQTRgZqYmMSWYa6CW6b0U6x9Sdpk_Kt=fd2hPCjA@mail.gmail.com>
+Subject: Re: [PATCH] xsk: Use pool->dma_pages to check for DMA
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
@@ -67,45 +76,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+> > > Was it noticable in some sort of performance test?
+> >
+> > This patch is part of the patchset found at
+> > https://lore.kernel.org/all/20230412162114.19389-3-kal.conley@dectris.com/
+> > which is being actively discussed and needs to be resubmitted anyway
+> > because of a conflict. While the discussion continues, I am submitting
+> > this patch by itself because I think it's an improvement on its own
+> > (regardless of what happens with the rest of the linked patchset). On
+> > one system, I measured a performance regression of 2-3% with xdpsock
+> > and the linked changes without the current patch. With the current
+> > patch, the performance regression was no longer observed.
+>
+> Would be nice to have in commit message so reader has an idea the
+> perf numbers are in fact better.
 
-when traffic (e.g. iperf) is originating locally (as opposed to
-forward traffic), the Linux kernel seems to apply some optimisations
-probably to reduce overall bufferbloat: when the qdisc is =E2=80=9Cfull=E2=
-=80=9D or
-(and especially) when its dequeue often returns NULL (because packets
-are delayed), the sender traffic rate is reduced by as much as =E2=85=93 wi=
-th
-40=C2=A0ms extra latency (30 =E2=86=92 20 Mbit/s).
+When I measured this patch by itself (on bpf-next), I didn't measure
+any statistically significant performance gains. However, it did allow
+me to avoid a regression when combined with the other linked patch (as
+mentioned). I don't know if it makes sense to mention that other
+change which is not even applied to any tree. I was mainly submitting
+this patch from the perspective of the code being better not
+contingent on any provable performance gains.
 
-This is probably good in general but not so good for L4S where we
-actually want the packets to queue up in the qdisc so they get ECN
-marking appropriately (I guess there probably are some socket ioctls
-or something with which the sending application could detect this
-state; if so, we=E2=80=99d be interested in knowing about them as well).
+>
+> >
+> > > > diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+> > > > index d318c769b445..a8d7b8a3688a 100644
+> > > > --- a/include/net/xsk_buff_pool.h
+> > > > +++ b/include/net/xsk_buff_pool.h
+> > > > @@ -180,7 +180,7 @@ static inline bool xp_desc_crosses_non_contig_pg(struct xsk_buff_pool *pool,
+> > > >       if (likely(!cross_pg))
+> > > >               return false;
+> > > >
+> > > > -     return pool->dma_pages_cnt &&
+> > > > +     return pool->dma_pages &&
+> > > >              !(pool->dma_pages[addr >> PAGE_SHIFT] & XSK_NEXT_PG_CONTIG_MASK);
+> > > >  }
+> >
+> > I would consider the above code part of the "fast path". It may be
+> > executed approximately once per frame in unaligned mode.
+>
+> In the unlikely case though is my reading. So really shouldn't
+> be called for every packet or we have other perf issues by that
+> likely() there.
+>
+> I assume the above is where the perf is being gained because below
+> two things are in setup/tear down. But then we are benchmarking
+> an unlikely() path?
 
-This is especially bad in a testbed for writing L4S-aware applications,
-so if there=E2=80=99s a knob (sysctl or something) to disable this optimisa=
-tion
-please do tell (I guess probably not, but asking doesn=E2=80=99t hurt).
+I was testing with large chunk sizes in unaligned mode (4000-4096
+bytes) with ZC. For chunk sizes nearly as large as PAGE_SIZE the
+unlikely path is actually the main path.
 
-Thanks,
-//mirabilos
---=20
-Infrastrukturexperte =E2=80=A2 tarent solutions GmbH
-Am Dickobskreuz 10, D-53121 Bonn =E2=80=A2 http://www.tarent.de/
-Telephon +49 228 54881-393 =E2=80=A2 Fax: +49 228 54881-235
-HRB AG Bonn 5168 =E2=80=A2 USt-ID (VAT): DE122264941
-Gesch=C3=A4ftsf=C3=BChrer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Ale=
-xander Steeg
+> >
+> > > This seems to be used in the setup/tear-down paths so your optimizing
+> > > a control side. Is there a fast path with this code? I walked the
+> > > ice driver. If its just setup code we should do whatever is more
+> > > readable.
+> >
+> > It is not only used in setup/tear-down paths (see above).
+> > Additionally, I believe the code is also _more_ readable with this
+> > patch applied. In particular, this patch reduces cognitive complexity
+> > since people (and compilers) reading the code don't need to
+> > additionally think about pool->dma_pages_cnt.
+> >
+> > > Both the _alloc_ cases read neighboring free_heads_cnt so your saving a load I guess?
+> > > This is so deep into micro-optimizing I'm curious if you could measure it?
+> >
+> > It is saving a load which also reduces code size. This will affect
+> > other decisions such as what to inline. Also in the linked patchset,
+> > dma_pages and dma_pages_cnt do not share a cache line (on x86_64).
+>
+> But again buried in an unlikely path. Sure but removing the conditional
+> altogether would be even better.
 
-                        ***************************************************=
-*
-/=E2=81=80\ The UTF-8 Ribbon
-=E2=95=B2=C2=A0=E2=95=B1 Campaign against      Mit dem tarent-Newsletter ni=
-chts mehr verpassen:
-=C2=A0=E2=95=B3=C2=A0 HTML eMail! Also,     https://www.tarent.de/newslette=
-r
-=E2=95=B1=C2=A0=E2=95=B2 header encryption!
-                        ***************************************************=
-*
+Yeah, I think that is another improvement to consider.
+
+> So my understanding is ZC is preferred and default mode and copy modes
+> are primarily fall back modes. So we are punishing the good case here
+> for a fallback to copy mode. I think overall refactoring the code to
+> avoid burdoning the fast case with a fallback slow case would be ideal
+> solution.
+
+I agree that ZC is preferred and this patch is aimed at improving the
+ZC path. The performance gain I observed was for ZC.
+
+> However, I agree just on readability the patch is fine and good. No
+> objection on my side. But I think if we are making performance
+> arguments for 2-3% here the better thing to do is remove the check
+> and unlikely() and we would see better benchmarks when using the
+> ZC mode which as I understand it is what performance aware folks should
+> be doing.
+
+I totally agree that other better improvements exist but I don't think
+they make this patch any less desirable. This change is only meant as
+a small incremental improvement.
