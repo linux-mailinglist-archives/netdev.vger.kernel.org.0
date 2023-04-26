@@ -2,139 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6398C6EF41C
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 14:15:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D236EF432
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 14:21:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240810AbjDZMO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 08:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33360 "EHLO
+        id S240836AbjDZMVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 08:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240815AbjDZMOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 08:14:50 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11hn2200.outbound.protection.outlook.com [52.100.171.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF01049D7
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 05:14:49 -0700 (PDT)
+        with ESMTP id S240277AbjDZMVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 08:21:52 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2068.outbound.protection.outlook.com [40.107.237.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DEA2D4D;
+        Wed, 26 Apr 2023 05:21:50 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=anJzr3FwJVAOZ8di5w6b6aI+KST20Hx34tj5NLBaJZuUAIaCX3LjmgX+kneRPqu3YosYaPwRexMlJ4abhKgQggBmXZLwgdL8hcDoDIDhJdcNUwdyyTwm55cjfr/piKp4Rl0Lx3lBf8yO2DlOYDzI6ax6pijgngxFxRGuJOOvtjxEZIZrZi3oDV1mXEPxkiQtOTAF61aNeDewDrMBvfwyz4gycMEeki156JPzw4P4jL+dFh8HruUCgiB2G4Jd1Pr3jl6x65W4yeO/O6x+orC67kLhoYUEnlALGVvptZxHKQrq2Mrhe8dhg+LIIPEr9XmOdzTis/8ucS0Ovg9YBA+ywQ==
+ b=A0ACs4GKigRVtB5eVDr6PvUnZ8aIbuwz6ZE6A94KHSqwBXDgx0SE8XSJ+jjg8HWBeHsFJYkOAYDq6YoObhaMUvAX+CmIeU2JRnVrblYWSpKLRgbUek8eTVWTPN4XF0UdFJtxUbCrV4FMfQ3cp80eDYVmSk7KKviYVKvCAgx4V6AJBhjkxVGi/A4rOB1vgEF8EMz/vFnkjKDn+RIFblIe23cBazFczQ2Cw0i0gfgWuFypQEPlFm3AFlm7eO1Keu0IImBRXFi9GLhNvm+RJuloKKo57n1GVB9S+sgTVAWPOigWI5512z14DmwQhxPAeMc9YULyLIM89Vq2HESERKaxyQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CzMxoxOZmlyCmKcmS6NVHQAWOp9Fb34kbKE4/Dbbzro=;
- b=V6kpF0NPXxOrcYX2g7Grs+/eUJQMeFez0gajfmwyDq5w9Qu20jDy4zNZNN364a5Quq+RoPQqPIOlzI4y4zTx71NW7iFBf4r/mcO0K1PZdv3NrcR01+N9ddmiaTj8pzGsT9k+rlKyRB5lO0dtBHLtVVce4uZ0YRD4SeaEFVTOY3SRLaefeHg0BjymARKabDUc5AJAkH3KFPpd1Jm9GLAQlKhJu7tf7Iz+wdBdMQXk+0IL+sbrqVFHEQBKsVzXrnDVnAU8bE+cle5jNdXvqXQAayxHAC59VL6V+IQBG1NYj6jJqFTmS9jAvHKwDff/CADN8neZ/gOKWMLvwR0PVgiMaA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=ks1Xtyp2I75eeP4Dlb9p1Kc6y3+bEIAikIuodCyVkGw=;
+ b=HhMHnSGXf6VMMT6ZMxgjnR3+VSt7QtgaGtffHSZCQ8pVf7gRS5Z8M8ks55yxxCKH+CAYyC1IMMGzcowjgX96M0tcBKqPkCqgVUVcGqGbj7M9FYgrPrnyaDX7Ub3niyDJhh9w95m727/1CFDYLGnMQ7f9nZW/5VnmClI3nX7QLi2OlR70PdjqHpco6v7CG6EkmpUqVlhcGfQoCi4pCc3Vi9tswKTE2bZ/Lvpj52zsK+9CEyLLICMFuiJ+fHFru91P3ut2on1WWEASx4hkKmP5NgUHmrKv4YVujNKYadeF40rorRMopKfLllutRXxZQOCJjC1kP9idbQSinikR4m6ytw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CzMxoxOZmlyCmKcmS6NVHQAWOp9Fb34kbKE4/Dbbzro=;
- b=UllwOMWJ7D7btvNtBeBAAA6blXsBKdaExBwq5/LFg9+64r7FfOgVEIdYF4V7sHjrihh0IOQAOt5/lXIV/x4xOhIFaAAaD4fmWM6whQabr4JyDwF5hvR4ISqSbOXzaRgScz9I98KqvKhp1saRinWlPxjOzR244xw5w0AVefvjAFc3kMrh20KKyD0ySag3yIRPpPyflSzams5BzpMF4Gpmi1IekDlp0PSRC1YNgyeWryMU6nMVvmD/i26DgthWHbNdGWWxxER0ELfGWRTy1CR5WctylqyZpPuvjDfUsXUFhpPFUI49Pplcta/K6u1FAZC3wl21iE8hMGVf8EYOpu1wSA==
-Received: from MW4PR02CA0008.namprd02.prod.outlook.com (2603:10b6:303:16d::27)
- by DS7PR12MB5838.namprd12.prod.outlook.com (2603:10b6:8:79::17) with
+ bh=ks1Xtyp2I75eeP4Dlb9p1Kc6y3+bEIAikIuodCyVkGw=;
+ b=NnBlGKnQXFBYv3waNgeqccAO1xXjvbbzXNAjpfb6Ujm3DCOx3Tu9k3IpoCutXHtysCFfx6LHrxKcMP3HPZCslG5NTvp34ygh5fScnTFsQG7QHSkRTlFyU5ONBRhUVnvhsKx9DNbJLgOKq6jhMfWqXO41yuxMKiFcmOlpzhwjogw=
+Received: from BYAPR12MB4773.namprd12.prod.outlook.com (2603:10b6:a03:109::17)
+ by PH7PR12MB6720.namprd12.prod.outlook.com (2603:10b6:510:1b3::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21; Wed, 26 Apr
- 2023 12:14:47 +0000
-Received: from CO1NAM11FT003.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:16d:cafe::21) by MW4PR02CA0008.outlook.office365.com
- (2603:10b6:303:16d::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21 via Frontend
- Transport; Wed, 26 Apr 2023 12:14:47 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT003.mail.protection.outlook.com (10.13.175.93) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6340.21 via Frontend Transport; Wed, 26 Apr 2023 12:14:47 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 26 Apr 2023
- 05:14:35 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 26 Apr
- 2023 05:14:35 -0700
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server id 15.2.986.37 via Frontend Transport; Wed, 26 Apr
- 2023 05:14:32 -0700
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <marcelo.leitner@gmail.com>, <paulb@nvidia.com>,
-        <simon.horman@corigine.com>, Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net 2/2] net/sched: flower: fix error handler on replace
-Date:   Wed, 26 Apr 2023 14:14:15 +0200
-Message-ID: <20230426121415.2149732-3-vladbu@nvidia.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230426121415.2149732-1-vladbu@nvidia.com>
-References: <20230426121415.2149732-1-vladbu@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6319.33; Wed, 26 Apr
+ 2023 12:21:47 +0000
+Received: from BYAPR12MB4773.namprd12.prod.outlook.com
+ ([fe80::d3f1:81d5:892d:1ad1]) by BYAPR12MB4773.namprd12.prod.outlook.com
+ ([fe80::d3f1:81d5:892d:1ad1%6]) with mapi id 15.20.6340.020; Wed, 26 Apr 2023
+ 12:21:47 +0000
+From:   "Katakam, Harini" <harini.katakam@amd.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "wsa+renesas@sang-engineering.com" <wsa+renesas@sang-engineering.com>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "simon.horman@corigine.com" <simon.horman@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "harinikatakamlinux@gmail.com" <harinikatakamlinux@gmail.com>,
+        "Simek, Michal" <michal.simek@amd.com>,
+        "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>
+Subject: RE: [PATCH net-next v2 3/3] phy: mscc: Add support for VSC8531_02
+ with RGMII tuning
+Thread-Topic: [PATCH net-next v2 3/3] phy: mscc: Add support for VSC8531_02
+ with RGMII tuning
+Thread-Index: AQHZeCv6AGCFWckldUa9v4r2nKGr6K89cUQagAAJECA=
+Date:   Wed, 26 Apr 2023 12:21:47 +0000
+Message-ID: <BYAPR12MB47738A21AE76E4CDEE28DFFF9E659@BYAPR12MB4773.namprd12.prod.outlook.com>
+References: <20230426104313.28950-1-harini.katakam@amd.com>
+ <20230426104313.28950-1-harini.katakam@amd.com>
+ <20230426104313.28950-4-harini.katakam@amd.com>
+ <20230426104313.28950-4-harini.katakam@amd.com>
+ <20230426111809.s647kol4dmas46io@skbuf>
+In-Reply-To: <20230426111809.s647kol4dmas46io@skbuf>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR12MB4773:EE_|PH7PR12MB6720:EE_
+x-ms-office365-filtering-correlation-id: cfaafd5d-4fa5-477e-a8cf-08db4650ce06
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lSfTVVZC2bcviO6AR2pcvO1OF91QviSZ9ZhYby1DxfpnfGYgT9QHuiktlzdXRojQ2OkrCxwT6AcS35LBFZzwgCucQWWUWyHsnVd4uWogKosIVKpIjunlkhU59MBr2Yej8AccDKA//e8AnaPUb3aF+6wSmd65WwMtBM4+fb4pUdtHCgdL3J2EbQxOHYpLxkq/Z90nvY9W+pYMqQ0xTN5wJbbG/g8zhkNa4t+GDuDNme6t84aaQ9SXuwJlSHbxGkp/+cd1NmS7uvmDRBlTX3tfigmo/VEl3l15GCrNguZYSr1t8iQLC745IChpLY0HJpFpoScY/tKxEcj/H029lYWAjURpyPzxZU2f4//TGHnMkW9MZ74Nd0VUzfUlTmqoyh2AaQUkGfUGgcQmP2YqXUSDF2+neWg6/bqmvD0hxaWTFrCjwFhUaWvTeUvyfgEWBfVSjobKFLUXQqv+gsqiMN6ODhp05xxujMomA+EcwKSEI9utxW5+X0nNjTUH2hij9Ip7a6MTcK9v81Y0AEO5sSvdAWyen8qTqjhO4apnya4rAJYtHqNeOwl1SH6ChzRktWfNIUdLOsCkwiNmwV3v8UZY/xF2MlaoS+vSXBYHS3k25xkI7dyRst8E1tAZ3fyptj/E
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB4773.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(366004)(39860400002)(346002)(451199021)(71200400001)(7696005)(55016003)(2906002)(6506007)(53546011)(4326008)(41300700001)(6916009)(9686003)(66946007)(8936002)(66476007)(66556008)(64756008)(66446008)(76116006)(26005)(186003)(316002)(478600001)(54906003)(7416002)(5660300002)(8676002)(52536014)(38070700005)(122000001)(38100700002)(86362001)(33656002)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?AOsRYKjrQTMJlrXbclRV0cz/ws7DQKqkgDzFdf8HI86I0z17YRxUWZPUmNPk?=
+ =?us-ascii?Q?rw/Pz0dWpbDf4g1D/lQ/a2PDntA3V2W+vPvy9G3KRrI09uyiheSRwnpPDW7Z?=
+ =?us-ascii?Q?lTjBVOdPrgY8Hgz4yQLHDYRnVw+zD9Eob8VPKJ8O4ufPYezK3gYiEBFwyfrl?=
+ =?us-ascii?Q?yCqst0XcY/6hFjnGc7OFpYgeJu1uu0ouUSSNkV4eJZyXrO7y3tLfappONsSa?=
+ =?us-ascii?Q?46U+ZAkEBcpJ2R7V01IML3FjhJ0cvjo5d6QrT5ii/Q5EgKOeBqLDASZ05TOe?=
+ =?us-ascii?Q?e9pdl+e5gj8Z/hwZwKH3G5Y3bvmF4bZmF/nfOpuaWF538nOkW2Vch26NsPlZ?=
+ =?us-ascii?Q?5LsqHaZwZ5PVkaUkytft6pKBtLW788UQvtEvfxNEefKVSmHCNhWB5H8QQ1Qu?=
+ =?us-ascii?Q?7uFUY9rV0y1TafnEgOtk57qdUO5F7L2MIkonGfOvAuEmaRpaEWwKsJYgTBUY?=
+ =?us-ascii?Q?zloizyCEd2eZZxXOoVZejUdfoAS9lDyehlcDX349IcHKr03HDpaQFTtoVqe5?=
+ =?us-ascii?Q?MR4rZyGebNKeePtEznHZ3/kVtyT5PKY4LKiy8oAIc2lEoTRZGBcFmsTFIKN5?=
+ =?us-ascii?Q?ts4utJBnVMo3TfzJ/1/16XYsqQlAm2HrOIHmqaDAUL7iK84E5qkq/wsRpEBE?=
+ =?us-ascii?Q?Zfjt7bWPF/w3e3SYwpvGJ6mhAp2I10tKz/KO3+05xKjoSFZZ3a9DLbiH/7D4?=
+ =?us-ascii?Q?tgBFWrM2inMUOtMbsYHDR3C9Bra/7zqnwtbzvynWAkPYOCRcGE98I+sAOcHN?=
+ =?us-ascii?Q?2hk9al6dyNLMVeEQ2VmAqfVOhgrQcpWwdKLM1sq3vVdTcnIkX86qSylrQ83O?=
+ =?us-ascii?Q?qDtUsldrIWBaU2t7DtWtXu/AtcmHb/SdwkDmbMjAA3LscKoG0Tvyf3N2rVwn?=
+ =?us-ascii?Q?gS4NKJuUS6Y4FbHMqsCpiWECjTfexIPlwoY0mOolbUxd5XwzvPEWRzfNiCFt?=
+ =?us-ascii?Q?6T2BzUbc+YWURm4pkHwkSoQgjxWR9bijnTzvT1t+70kp/rneJ+EOfaB8CEQA?=
+ =?us-ascii?Q?cXaxN6kwL2d9d1h13h+vy9Nk9p6a93S9YN2Ikhs7VTeYU1xTmOqX2SQeqI2Y?=
+ =?us-ascii?Q?rHtV9iUayUND2M9DjKkV4QOTTZIcyhfJddc36wjbcCbXGcnAwnqAMi+pw1rh?=
+ =?us-ascii?Q?ZfyyXvht4yew3jDKDVh/ZWemai1oF/JquE76ZRYaflMhySFei1U/vhDkb48/?=
+ =?us-ascii?Q?Jy4WrnLCQEOmAHotMEu4Wnf59EX7EB3X8+/AYDN3VAZXBEOACoM9FqQJBijc?=
+ =?us-ascii?Q?5LHqVN5X0JVzxtm5o6NSoWX5Go+4t+fqG6a1TQHjRCRA6LyMis36W8+6adLM?=
+ =?us-ascii?Q?JPcKHEumJ9muexbxdyJIdbLSNYI3I0Py/Ia/XnZ7AlEqi4ojpfSHZBJN/3xh?=
+ =?us-ascii?Q?imBaliPe8UR/jfwOV8mZq8/cxGiZu0No44z2pkKzNNI0CTDjLpVIjaaulWTq?=
+ =?us-ascii?Q?fZ94omuKdBap9S+NdPp0lnij6SprtTHJY8Ul3TeMGh5ieOk5oRKEWUHoi9Nb?=
+ =?us-ascii?Q?ZtlChdYuyGerf66D5Huv/aepcF4BxfyyurE9PFgDAUR51d8nZ3ZtUvoxokNQ?=
+ =?us-ascii?Q?/Jy7pJ++3rdgdm3M7WI=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT003:EE_|DS7PR12MB5838:EE_
-X-MS-Office365-Filtering-Correlation-Id: 465ecf9e-8876-470c-ff14-08db464fd3de
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jdPGdrIR3q/u1zE7vC0Eq75QMxb+xlxAINegtZYKAPY4XTa7kvpoCg1oieJf44z24WqAs1DosPtmZ2y1LLBFBV79YuF3wN+08YjIvaz1WtR06u5xDPOLXbO3M9OHygWax6wv9CevPj7je6+8KZv3FavSVNITvjPNrv8SOrWqFvXajyaK9Vx9stoLfjyUVbxcYBjEWpzye8MRz+Rbk5bv3LBtYwmqyfhvVKRIMPRvCDvjzGTMBckoiOdw01tBWJLYuDr//Gpm353o97yosg932YTeNoLddUXYT4ZSRVTX2ASXhCVxMtD42k2a9/h0tMmORZ68bLEkk4zY4JcWx7XxiSdzFaKAY7/LYPKeStfEpFfSmDmaOmo1Np8ZwSCVFVmAahdY7N8SnytQef8XgMF0zAyPsYZ6i9a5HvW/Mlqkq+mIopdiVOH6AQOzxmHJ2gxIjujIY6wBIXy7QWhEYH8Ir8cXhLfH0IGYjI0h4TXQKtHNCKruDBzmxFfzzJ+vhyNS3izZlT7FLqzhH1hVXG96qf5z36T+DNgCFAv5CUdclZx3C/l+Kfjjit2rC4UwovQgauzlkp36wFVOrgGTha23nyVvVVAb1Q1H5hful6K/VLJMrIGj3K4L3oNiAhgFL5i4PbO8uUwHse+F8pov6PMRwOSuuZYhyRVzOPaU38OlmgpEtwX4pZY8RHgeztIH9E6ZhJ8WqTgI4GXt5ttuZQrKtn6oC1X0OVGS4EEP/2w3DJ9xdFkyakSGeRxby5daumsQ62ToOQRDdF2e1oA+9Zl2yg==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(136003)(346002)(396003)(5400799015)(451199021)(40470700004)(36840700001)(46966006)(40460700003)(5660300002)(2906002)(8936002)(8676002)(36756003)(82310400005)(86362001)(7696005)(40480700001)(6666004)(107886003)(26005)(1076003)(54906003)(34020700004)(478600001)(36860700001)(2616005)(83380400001)(47076005)(336012)(426003)(186003)(70206006)(70586007)(356005)(316002)(82740400003)(41300700001)(7636003)(110136005)(4326008)(12100799030);DIR:OUT;SFP:1501;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2023 12:14:47.2462
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4773.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cfaafd5d-4fa5-477e-a8cf-08db4650ce06
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2023 12:21:47.0749
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 465ecf9e-8876-470c-ff14-08db464fd3de
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT003.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5838
-X-Spam-Status: No, score=0.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,RCVD_IN_VALIDITY_RPBL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: izUGSJThpOwmlZFdmRxjxdS1kPrKfIlz2XpaKRylnkraJMhEblyrbZgeM7SMkX/R
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6720
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When replacing a filter (i.e. 'fold' pointer is not NULL) the insertion of
-new filter to idr is postponed until later in code since handle is already
-provided by the user. However, the error handling code in fl_change()
-always assumes that the new filter had been inserted into idr. If error
-handler is reached when replacing existing filter it may remove it from idr
-therefore making it unreachable for delete or dump afterwards. Fix the
-issue by verifying that 'fold' argument wasn't provided by caller before
-calling idr_remove().
+Hi Vladimir,
 
-Fixes: 08a0063df3ae ("net/sched: flower: Move filter handle initialization earlier")
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
----
- net/sched/cls_flower.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> -----Original Message-----
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Sent: Wednesday, April 26, 2023 4:48 PM
+> To: Katakam, Harini <harini.katakam@amd.com>
+> Cc: robh+dt@kernel.org; andrew@lunn.ch; hkallweit1@gmail.com;
+> linux@armlinux.org.uk; davem@davemloft.net; kuba@kernel.org;
+> edumazet@google.com; pabeni@redhat.com; wsa+renesas@sang-
+> engineering.com; krzysztof.kozlowski+dt@linaro.org;
+> simon.horman@corigine.com; netdev@vger.kernel.org;
+> devicetree@vger.kernel.org; linux-kernel@vger.kernel.org;
+> harinikatakamlinux@gmail.com; Simek, Michal <michal.simek@amd.com>;
+> Pandey, Radhey Shyam <radhey.shyam.pandey@amd.com>
+> Subject: Re: [PATCH net-next v2 3/3] phy: mscc: Add support for VSC8531_0=
+2
+> with RGMII tuning
+>=20
+> On Wed, Apr 26, 2023 at 04:13:13PM +0530, Harini Katakam wrote:
+> > From: Harini Katakam <harini.katakam@xilinx.com>
+> >
+> > Add support for VSC8531_02 (Rev 2) device.
+> > Add support for optional RGMII RX and TX delay tuning via devicetree.
+> > The hierarchy is:
+> > - Retain the defaul 0.2ns delay when RGMII tuning is not set.
+> > - Retain the default 2ns delay when RGMII tuning is set and DT delay
+> > property is NOT specified.
+> > - Use the DT delay value when RGMII tuning is set and a DT delay
+> > property is specified.
+> >
+> > Signed-off-by: Harini Katakam <harini.katakam@amd.com>
+> > Signed-off-by: Radhey Shyam Pandey
+> <radhey.shyam.pandey@xilinx.com>
+> > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+> > ---
+<snip>
+> > @@ -532,10 +533,10 @@ static int vsc85xx_rgmii_set_skews(struct
+> phy_device *phydev, u32 rgmii_cntl,
+> >
+> >  	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_RXID ||
+> >  	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID)
+> > -		reg_val |=3D RGMII_CLK_DELAY_2_0_NS <<
+> rgmii_rx_delay_pos;
+> > +		reg_val |=3D vsc8531->rx_delay << rgmii_rx_delay_pos;
+> >  	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_TXID ||
+> >  	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID)
+> > -		reg_val |=3D RGMII_CLK_DELAY_2_0_NS <<
+> rgmii_tx_delay_pos;
+> > +		reg_val |=3D vsc8531->tx_delay << rgmii_tx_delay_pos;
+> >
+> >  	rc =3D phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
+> >  			      rgmii_cntl,
+> > @@ -1812,6 +1813,15 @@ static int vsc85xx_config_init(struct phy_device
+> *phydev)
+> >  {
+> >  	int rc, i, phy_id;
+> >  	struct vsc8531_private *vsc8531 =3D phydev->priv;
+> > +	struct device_node *of_node =3D phydev->mdio.dev.of_node;
+> > +
+> > +	vsc8531->rx_delay =3D RGMII_CLK_DELAY_2_0_NS;
+> > +	rc =3D of_property_read_u32(of_node, "mscc,rx-delay",
+> > +				  &vsc8531->rx_delay);
+> > +
+> > +	vsc8531->tx_delay =3D RGMII_CLK_DELAY_2_0_NS;
+> > +	rc =3D of_property_read_u32(of_node, "mscc,tx-delay",
+> > +				  &vsc8531->tx_delay);
+>=20
+> Since the dt-bindings document says "If this property is present then
+> the PHY applies the RX|TX delay", then I guess the precedence as applied
+> by vsc85xx_rgmii_set_skews() should be different. The RX delays should
+> be applied based on rx-internal-delay-ps (if present) regardless of
+> phy-mode, or set to RGMII_CLK_DELAY_2_0_NS if we are in the rgmii-rxid ph=
+y_get_internal_delay
+> or rgmii-id modes. Similar for tx.
 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 1844545bef37..a1c4ee2e0be2 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -2339,7 +2339,8 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
- errout_mask:
- 	fl_mask_put(head, fnew->mask);
- errout_idr:
--	idr_remove(&head->handle_idr, fnew->handle);
-+	if (!fold)
-+		idr_remove(&head->handle_idr, fnew->handle);
- 	__fl_put(fnew);
- errout_tb:
- 	kfree(tb);
--- 
-2.39.2
+Thanks for the review.
+The intention is to have the following precedence (I'll rephrase the commit=
+ if required)
+-> If phy-mode is rgmii, current behavior persists for all devices
+-> If phy-mode is rgmii-id/rgmii-rxid/rgmii-txid, current behavior persists=
+ for all devices
+(i.e. delay of RGMII_CLK_DELAY_2_0_NS)
+-> If phy-mode is rgmii-id/rgmii-rxid/rgmii-txid AND rx-internal-delay-ps/t=
+x-internal-delay-ps
+is defined, then the value from DT is considered instead of 2ns. (NOT irres=
+pective of phy-mode)
 
+I'm checking the phy drivers that use phy_get_internal_delay and the descri=
+ption phy-mode
+in ethernet-controller.yaml and rx/tx-internal-delay-ps in ethernet-phy.yam=
+l. It does look like
+the above is allowed. Please do let me know otherwise.
+
+I will re-spin the series using phy_get_internal_delay.
+
+Regards,
+Harini
