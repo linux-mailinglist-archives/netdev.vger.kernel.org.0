@@ -1,189 +1,123 @@
-Return-Path: <netdev+bounces-187-lists+netdev=lfdr.de@vger.kernel.org>
+Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from ny.mirrors.kernel.org (ny.mirrors.kernel.org [147.75.199.223])
-	by mail.lfdr.de (Postfix) with ESMTPS id CF6BD6F5BE1
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 18:24:46 +0200 (CEST)
-Received: from smtp.subspace.kernel.org (wormhole.subspace.kernel.org [52.25.139.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by ny.mirrors.kernel.org (Postfix) with ESMTPS id 1FFAC1C20D90
-	for <lists+netdev@lfdr.de>; Wed,  3 May 2023 16:24:44 +0000 (UTC)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E1D727702;
-	Wed,  3 May 2023 16:24:43 +0000 (UTC)
-X-Original-To: netdev@vger.kernel.org
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C5033C27
-	for <netdev@vger.kernel.org>; Wed,  3 May 2023 16:24:43 +0000 (UTC)
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-	by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97ACB4EEC;
-	Wed,  3 May 2023 09:24:41 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id 6a1803df08f44-61b40562054so19244636d6.2;
-        Wed, 03 May 2023 09:24:41 -0700 (PDT)
+Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id 297A26EFA61
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 20:55:02 +0200 (CEST)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S236225AbjDZSyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 14:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236056AbjDZSyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 14:54:45 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1542283E7;
+        Wed, 26 Apr 2023 11:54:44 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id d2e1a72fcca58-63b4dfead1bso6245763b3a.3;
+        Wed, 26 Apr 2023 11:54:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1683131081; x=1685723081;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sw9QqCYI3NfDvOAwxZqy+pqKQX9Q426U/egFDVzlEnc=;
-        b=a6F0ZjqneASILTQjU+yYaEb2zgAt657phMGoGS1jlfL7NxSHtU/T0nhHD5ldWYWRkB
-         +eKpfVp/f3fKbpgEP41mwlvO5EjpV7N3ItjNIT4G6ncJ2Zi7cd2i69VeskuawSzMBxGH
-         9ziL1NO1ldYuaAnAx1zXfp26AB4NrQx2h07YsNSAKT24NsB1iKaN6Ohe6fJVXF8VnToQ
-         tqpQWumOXANaE7VXY05YWncn1k6omBchN/c36NDxwvgmhJu9bTAqYecqA2d8a9jXuhS+
-         VkgjMofbG7RRy8sY8uUHXqNteczB54YvOqj/uwL9rtE8vLQmvmYBsh2SIwlPrc1OF1CV
-         ZcFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1683131081; x=1685723081;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1682535283; x=1685127283;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sw9QqCYI3NfDvOAwxZqy+pqKQX9Q426U/egFDVzlEnc=;
-        b=XRkWMybg7vDDcr8tgVj0tNDZzy67Mo8p6atPmcZI+aFe4105FLbFmbOwWljHozOfTO
-         Nkhyb9UuiMB9noHliqy6eNfaC2SvM+LsmVj9eG1LYNlO/vT00d8AsgHf+L8zgPyJzjeC
-         tESs90xeCkwWHam0tVnK04+Xzs0x0J+pm25RDtWIYsR9qOqDyAlg7dVK+Utc/s4PSi0x
-         5Q+viFkSeigvrIy7zkvjrHe4VihZG6SV3kDGUF3s2No7k3UdkedQsrZyAPL6L5C7Do88
-         2hA/aU0J8zfH5mQ/9EVj9A+/bl9hTeEANTcRAzgS7h9Wz70042HIT4Wws26GvmYfARFu
-         KtVA==
-X-Gm-Message-State: AC+VfDyQGtl8vyKjKT6khhGfKAmW/eyEAopbAlPRuKqtHIsqfrYRLuPx
-	fGCRYvTNr5bqrNJXyxgAxKo=
-X-Google-Smtp-Source: ACHHUZ7CdwuUrntbRy2s1KtwQRV0sVFazawz9jR5lZThhcrKI49S0z/ULMhK4JuQOEHozW/yrh0x0Q==
-X-Received: by 2002:a05:6214:27e8:b0:5ef:6b6a:e612 with SMTP id jt8-20020a05621427e800b005ef6b6ae612mr9361375qvb.36.1683131080641;
-        Wed, 03 May 2023 09:24:40 -0700 (PDT)
-Received: from localhost (151.240.142.34.bc.googleusercontent.com. [34.142.240.151])
-        by smtp.gmail.com with ESMTPSA id u17-20020a0ca711000000b0061a4a93eeadsm2100577qva.127.2023.05.03.09.24.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 May 2023 09:24:40 -0700 (PDT)
-Date: Sun, 16 Apr 2023 06:57:53 +0000
-From: Bobby Eshleman <bobbyeshleman@gmail.com>
-To: Stefano Garzarella <sgarzare@redhat.com>
-Cc: Cong Wang <cong.wang@bytedance.com>,
-	Bobby Eshleman <bobby.eshleman@bytedance.com>, kvm@vger.kernel.org,
-	netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-	Stefan Hajnoczi <stefanha@redhat.com>,
-	Cong Wang <xiyou.wangcong@gmail.com>
-Subject: Re: [Patch net] vsock: improve tap delivery accuracy
-Message-ID: <ZDuccSro8cLvhqJ7@bullseye>
-References: <20230502174404.668749-1-xiyou.wangcong@gmail.com>
- <20230502201418.GG535070@fedora>
- <ZDt+PDtKlxrwUPnc@bullseye>
- <occeblxotmpsq4gqjjued62ar5ngqxehmmrj7jg3ynzsz2vfcy@4jzl7slmqkft>
-Precedence: bulk
-X-Mailing-List: netdev@vger.kernel.org
-List-Id: <netdev.vger.kernel.org>
-List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
-List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <occeblxotmpsq4gqjjued62ar5ngqxehmmrj7jg3ynzsz2vfcy@4jzl7slmqkft>
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-	RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-	autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+        bh=R07Mi9Mz971NXlM6C0+9m3ePvBeyQwkx2T3l6oVaSvA=;
+        b=Qye9OWjFuOEWZhcxm7u9djE3RkEO2zz5jUeRowPRUvM3LdUaM6cwmH2RJmcvMYNHT4
+         GrckvKFHj9z01woq1G8sG0XtwNhF2Xf4Emh7RNl2SKucGuxocCGTwCj7MdI3+a69zjsE
+         spa0kK5D03b0kby7d98GBeUuM72sxNuibrA8UD9AqVj9XcvZ3RIDf98d0NchVYzIv+HK
+         1ilmdFhHAVYNUctSTvtSGPgZIjYAdmU/nxgXQxX4fdcZSmzDBIQqCUi7LsvukS2syA1u
+         vGLpG3YHSF/pC919ecvDP8y6vHIqYnkykmLJmHs+UGF5tCBSooRY6z29sMiW6qrIhj94
+         kMsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682535283; x=1685127283;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=R07Mi9Mz971NXlM6C0+9m3ePvBeyQwkx2T3l6oVaSvA=;
+        b=bPyuxvP9gfS+beYHe/DDpibsxCt18d3emnvnCevLe4zGiJZ9TD3VvrcwfhpQpdF9Fp
+         rgPFFKkgViVIemvENzbDWNaT34IDuJXFerbYs8O8G1wUjYiiVAhzKQkq+P6VCz8U1t+L
+         ih34lWsRa89ToLCMuOPwTNkqDFFE+5BXLGM0CjHCwQJkabgqtndJFtU4u5aq2xpXep2n
+         CvkMdliPiVkw9awfNxCH/AZFrCpblIBiu/P2MAIRYXjSggTNFa1F3H1znNh08oZ89eXh
+         aaYP7jjsjkiJO6GP0nMfpyF6/3n1Dp2LR1UlOc2rC8Jw5hn3ubB9L49cnmDpwWETYpQL
+         AsZQ==
+X-Gm-Message-State: AAQBX9c+9HbvR2/AhGpK5xwUIpi6C2IysC2ngOQS4PJScm0lbndo2kDm
+        ZFpkEP+jtl9cic5gd3KBuZ0j6la/76im9w==
+X-Google-Smtp-Source: AKy350ayADESKqZUED8JafpEZGIjCz4hY19zWIUoZp0bX0AJ4jiUhsSvlxpczQ8Kb+xGm37lSzOy2g==
+X-Received: by 2002:a05:6a00:1acd:b0:63d:2aac:7b88 with SMTP id f13-20020a056a001acd00b0063d2aac7b88mr31945188pfv.25.1682535283105;
+        Wed, 26 Apr 2023 11:54:43 -0700 (PDT)
+Received: from stbirv-lnx-2.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y72-20020a62644b000000b006372791d708sm11639254pfb.104.2023.04.26.11.54.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 Apr 2023 11:54:42 -0700 (PDT)
+From:   Justin Chen <justinpopo6@gmail.com>
+To:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        bcm-kernel-feedback-list@broadcom.com
+Cc:     justinpopo6@gmail.com, justin.chen@broadcom.com,
+        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        richardcochran@gmail.com, sumit.semwal@linaro.org,
+        christian.koenig@amd.com
+Subject: [PATCH v2 net-next 0/6] Brcm ASP 2.0 Ethernet controller
+Date:   Wed, 26 Apr 2023 11:54:26 -0700
+Message-Id: <1682535272-32249-1-git-send-email-justinpopo6@gmail.com>
+X-Mailer: git-send-email 2.7.4
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
-	lindbergh.monkeyblade.net
+        lindbergh.monkeyblade.net
+Precedence: bulk
+List-ID: <netdev.vger.kernel.org>
+X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 03, 2023 at 09:38:50AM +0200, Stefano Garzarella wrote:
-> On Sun, Apr 16, 2023 at 04:49:00AM +0000, Bobby Eshleman wrote:
-> > On Tue, May 02, 2023 at 04:14:18PM -0400, Stefan Hajnoczi wrote:
-> > > On Tue, May 02, 2023 at 10:44:04AM -0700, Cong Wang wrote:
-> > > > From: Cong Wang <cong.wang@bytedance.com>
-> > > >
-> > > > When virtqueue_add_sgs() fails, the skb is put back to send queue,
-> > > > we should not deliver the copy to tap device in this case. So we
-> > > > need to move virtio_transport_deliver_tap_pkt() down after all
-> > > > possible failures.
-> > > >
-> > > > Fixes: 82dfb540aeb2 ("VSOCK: Add virtio vsock vsockmon hooks")
-> > > > Cc: Stefan Hajnoczi <stefanha@redhat.com>
-> > > > Cc: Stefano Garzarella <sgarzare@redhat.com>
-> > > > Cc: Bobby Eshleman <bobby.eshleman@bytedance.com>
-> > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > > ---
-> > > >  net/vmw_vsock/virtio_transport.c | 5 ++---
-> > > >  1 file changed, 2 insertions(+), 3 deletions(-)
-> > > >
-> > > > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-> > > > index e95df847176b..055678628c07 100644
-> > > > --- a/net/vmw_vsock/virtio_transport.c
-> > > > +++ b/net/vmw_vsock/virtio_transport.c
-> > > > @@ -109,9 +109,6 @@ virtio_transport_send_pkt_work(struct work_struct *work)
-> > > >  		if (!skb)
-> > > >  			break;
-> > > >
-> > > > -		virtio_transport_deliver_tap_pkt(skb);
-> > > > -		reply = virtio_vsock_skb_reply(skb);
-> > > > -
-> > > >  		sg_init_one(&hdr, virtio_vsock_hdr(skb), sizeof(*virtio_vsock_hdr(skb)));
-> > > >  		sgs[out_sg++] = &hdr;
-> > > >  		if (skb->len > 0) {
-> > > > @@ -128,6 +125,8 @@ virtio_transport_send_pkt_work(struct work_struct *work)
-> > > >  			break;
-> > > >  		}
-> > > >
-> > > > +		virtio_transport_deliver_tap_pkt(skb);
-> 
-> I would move only the virtio_transport_deliver_tap_pkt(),
-> virtio_vsock_skb_reply() is not related.
-> 
-> > > > +		reply = virtio_vsock_skb_reply(skb);
-> > > 
-> > > I don't remember the reason for the ordering, but I'm pretty sure it was
-> > > deliberate. Probably because the payload buffers could be freed as soon
-> > > as virtqueue_add_sgs() is called.
-> > > 
-> > > If that's no longer true with Bobby's skbuff code, then maybe it's safe
-> > > to monitor packets after they have been sent.
-> > > 
-> > > Stefan
-> > 
-> > Hey Stefan,
-> > 
-> > Unfortunately, skbuff doesn't change that behavior.
-> > 
-> > If I understand correctly, the problem flow you are describing
-> > would be something like this:
-> > 
-> > Thread 0 			Thread 1
-> > guest:virtqueue_add_sgs()[@send_pkt_work]
-> > 
-> > 				host:vhost_vq_get_desc()[@handle_tx_kick]
-> > 				host:vhost_add_used()
-> > 				host:vhost_signal()
-> > 				guest:virtqueue_get_buf()[@tx_work]
-> > 				guest:consume_skb()
-> > 
-> > guest:deliver_tap_pkt()[@send_pkt_work]
-> > ^ use-after-free
-> > 
-> > Which I guess is possible because the receiver can consume the new
-> > scatterlist during the processing kicked off for a previous batch?
-> > (doesn't have to wait for the subsequent kick)
-> 
-> This is true, but both `send_pkt_work` and `tx_work` hold `tx_lock`, so can
-> they really go in parallel?
-> 
+v2
+	- Updates to yaml dt documentation
+	- Replace a couple functions with helper functions
+	- Minor formatting fixes
+	- Fix a few WoL issues
 
-Oh good point, the tx_lock synchronizes it:
+Add support for the Broadcom ASP 2.0 Ethernet controller which is first
+introduced with 72165.
 
-Thread 0 			Thread 1
-guest:virtqueue_add_sgs()[@send_pkt_work]
+Add support for 74165 10/100 integrated Ethernet PHY which also uses
+the ASP 2.0 Ethernet controller.
 
-				host:vhost_vq_get_desc()[@handle_tx_kick]
-				host:vhost_add_used()
-				host:vhost_signal()
-				guest:mutex_lock()[@tx_work]
-guest:deliver_tap_pkt()[@send_pkt_work]
-guest:mutex_unlock()
-				guest:virtqueue_get_buf()[@tx_work]
-				guest:consume_skb()
+Florian Fainelli (2):
+  dt-bindings: net: Brcm ASP 2.0 Ethernet controller
+  net: phy: bcm7xxx: Add EPHY entry for 74165
 
+Justin Chen (4):
+  dt-bindings: net: brcm,unimac-mdio: Add asp-v2.0
+  net: bcmasp: Add support for ASP2.0 Ethernet controller
+  net: phy: mdio-bcm-unimac: Add asp v2.0 support
+  MAINTAINERS: ASP 2.0 Ethernet driver maintainers
 
-I'm pretty sure this should be safe.
+ .../devicetree/bindings/net/brcm,asp-v2.0.yaml     |  145 ++
+ .../devicetree/bindings/net/brcm,unimac-mdio.yaml  |    2 +
+ MAINTAINERS                                        |    9 +
+ drivers/net/ethernet/broadcom/Kconfig              |   11 +
+ drivers/net/ethernet/broadcom/Makefile             |    1 +
+ drivers/net/ethernet/broadcom/asp2/Makefile        |    2 +
+ drivers/net/ethernet/broadcom/asp2/bcmasp.c        | 1476 ++++++++++++++++++++
+ drivers/net/ethernet/broadcom/asp2/bcmasp.h        |  636 +++++++++
+ .../net/ethernet/broadcom/asp2/bcmasp_ethtool.c    |  585 ++++++++
+ drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c   | 1435 +++++++++++++++++++
+ .../net/ethernet/broadcom/asp2/bcmasp_intf_defs.h  |  238 ++++
+ drivers/net/mdio/mdio-bcm-unimac.c                 |    2 +
+ drivers/net/phy/bcm7xxx.c                          |    1 +
+ include/linux/brcmphy.h                            |    1 +
+ 14 files changed, 4544 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/Makefile
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp.c
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp.h
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp_ethtool.c
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp_intf.c
+ create mode 100644 drivers/net/ethernet/broadcom/asp2/bcmasp_intf_defs.h
 
-Best,
-Bobby
+-- 
+2.7.4
 
