@@ -2,79 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F19016EEC79
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 04:43:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E9A86EEC90
+	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 05:10:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239083AbjDZCnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Apr 2023 22:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37960 "EHLO
+        id S234013AbjDZDJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Apr 2023 23:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbjDZCno (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 22:43:44 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFD1A2;
-        Tue, 25 Apr 2023 19:43:43 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id d9443c01a7336-1a6684fd760so8555035ad.0;
-        Tue, 25 Apr 2023 19:43:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682477022; x=1685069022;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CvriiGhuafw4yBJ4KEQ9n3jTJZD+LjI3FuHyF1N25tg=;
-        b=lx7jYNgfayAQ1yhzffckKXtuUtOGiWc8uMvMnXmmW6BQopJBXtQw6o9iDSQfh11t7C
-         4ejgEsWnZU3MR97CQmHPYRE2XuxaiCfLwtcKhJW3KrwQUuK1hZsurd+ljqWTl9Jx++RZ
-         jcLQ80mmaGN2O/PyCqU5ECSoQiSdvnglkr9g1DjVG50uIIiFbGhbvwfPuTucBQLVFaLo
-         0AR+5v3z5l6J9vXzD3NhO1+6FmkfTVVFuw42JXz3bhiBySUjSNaFv6JStpzOJ6YKS34+
-         uCcioUwFqEP0LEt2rfI0a2L0+FG3n+UwwIjbkV1UeyVqLsi8kdxfH2djkYEY8cOjxbfl
-         zA1A==
+        with ESMTP id S233869AbjDZDJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Apr 2023 23:09:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F591BC9
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 20:09:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682478546;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yC58K9sqZSRjBF39DoGELeoNDDbSNW/7to9J6fPLARI=;
+        b=Wze4eUhcqNsFkw0dHnnLBLw19dy1or8wZcR1qJPCHMivaNhUfWZpkb5HJqdCD1PToix87R
+        UUUaBo8edbj7UjQYABmpU4qrJRJeuq17Ujt0JJbwaNPXoyWIYXi9M8w/jmDzWicRhdN9zb
+        E75mCvOvXcKVqAiCyNjdc6k5/Tto3GA=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-137--3iDeFV7N3itxqUCuwXjdg-1; Tue, 25 Apr 2023 23:09:05 -0400
+X-MC-Unique: -3iDeFV7N3itxqUCuwXjdg-1
+Received: by mail-lf1-f70.google.com with SMTP id 2adb3069b0e04-4ecb00906d0so3484672e87.1
+        for <netdev@vger.kernel.org>; Tue, 25 Apr 2023 20:09:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682477022; x=1685069022;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CvriiGhuafw4yBJ4KEQ9n3jTJZD+LjI3FuHyF1N25tg=;
-        b=ktlm5qNJ18ELv0L8gaH55UwjHUUuO/xbfdm2aM6kIPR+n6p/0oUl8Y+TVdPhFyNiMD
-         puKZgbyV7wQmZO2NULKOYH/ZVTO/hTW5ACj0a5bfVBtu3EochtpwI8n4VwF3BnjX89lj
-         dT6xFVhR/f6Y4/JgLwRrZHzg+gY6I9seD/mvrpMZlTY2F7LG6O47kW0sOGLnCHZl2qTs
-         PPS9N6H7bU6BarEHqlg1t+EJfHVmklZ3xt+1pZGD/X4OZVQOUOm4mR1Yl2nkrZNsRdst
-         Kk04TI3Mkb440VRuIquAI2zqqgBIrke8x38DdxkDQ/Qp+0hZCy8PwNnk7ZEaA3tRmcxD
-         p0vw==
-X-Gm-Message-State: AC+VfDyX5xWq8jVZETBgkyIYhy6AIJP8wcXTRKKS32T1xuLrZdpVN9HH
-        Omgh5jVdR+OJXP1/XqqsQ58=
-X-Google-Smtp-Source: ACHHUZ40aHIzM0EldF12JcPmnvcghSxlCJN2n4tKyZsPRnKZXINPXmJJWKxljv6rtcp/klTWeVdY7Q==
-X-Received: by 2002:a17:902:f543:b0:1a6:6edd:d143 with SMTP id h3-20020a170902f54300b001a66eddd143mr5182523plf.6.1682477022425;
-        Tue, 25 Apr 2023 19:43:42 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id f1-20020a170902ff0100b001a5059861adsm8857834plj.224.2023.04.25.19.43.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Apr 2023 19:43:41 -0700 (PDT)
-Date:   Tue, 25 Apr 2023 19:43:40 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Stern, Avraham" <avraham.stern@intel.com>
-Cc:     "Greenman, Gregory" <gregory.greenman@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: pull-request: wireless-next-2023-03-30
-Message-ID: <ZEiP3LDTQ86c4HaN@hoboy.vegasvil.org>
-References: <20230330205612.921134-1-johannes@sipsolutions.net>
- <20230331000648.543f2a54@kernel.org>
- <ZCtXGpqnCUL58Xzu@localhost>
- <ZDd4Hg6bEv22Pxi9@hoboy.vegasvil.org>
- <ccc046c7e7db68915447c05726dd90654a7a8ffc.camel@intel.com>
- <ZEC08ivL3ngWFQBH@hoboy.vegasvil.org>
- <SN7PR11MB6996329FFC32ECCBE4509531FF669@SN7PR11MB6996.namprd11.prod.outlook.com>
- <ZEb81aNUlmpKsJ6C@hoboy.vegasvil.org>
- <ZEctFm4ZreZ5ToP9@hoboy.vegasvil.org>
- <SN7PR11MB6996324EBF976C507D382C3AFF649@SN7PR11MB6996.namprd11.prod.outlook.com>
+        d=1e100.net; s=20221208; t=1682478543; x=1685070543;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yC58K9sqZSRjBF39DoGELeoNDDbSNW/7to9J6fPLARI=;
+        b=Oio/3QpPYN2Lhw/DoroO13raOgQAI3qhLVFLj4N2JD/TYYSVkhNduqoNu4lU6YeldG
+         DxjhUkWuL0Li8jIMA7qwa5lSIPVe7Ixr5iFPqXYiB9CWROI81C4zeO0QsnnsX/aE562t
+         /q0txR0pR0qYJrQpEWj1opvpwUEwCOBVeGkjHADheiUk1Dakf1fJPYGZzXdlZBMqAdPM
+         bUR4cAzeaTTB7dqimrstgETTGHCnc3mH0NNL7cNgOKDyWsdniXxmEHe5QYXkWfh1qoXu
+         q8L3JuSrRNPrrTmGr+aq5Sjou2LK8IQ8wUXy9PCKXtqZRGbtmSaW4/FjtmC0lxXXXqv3
+         UY7Q==
+X-Gm-Message-State: AAQBX9fWtk49XBWnrol5MCZ5RoXM6Uhp9MKKEqoKZGwUNkXjA6rFnWE7
+        zR6GIgevzYNEJUEKCzFrvc9NTsN/1lSWlSloD8Sy45GXnzLO24pLw5AgghvOVTlzGMFtbszMZBb
+        K4RjkwbiJOT/e9u6LkZBQQaoWtWHj2KMVu2YObWjvqeFgzJ/p
+X-Received: by 2002:ac2:547b:0:b0:4ea:f6d7:2293 with SMTP id e27-20020ac2547b000000b004eaf6d72293mr5058730lfn.55.1682478543473;
+        Tue, 25 Apr 2023 20:09:03 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YLKXQgMI4TomiMy24A9d3HGABaVrLz6kQAc86xRDvq09NKcWSpfa35XnVK8ze1llkooOmFmnatlEV6y1zF/Y8=
+X-Received: by 2002:ac2:547b:0:b0:4ea:f6d7:2293 with SMTP id
+ e27-20020ac2547b000000b004eaf6d72293mr5058718lfn.55.1682478543190; Tue, 25
+ Apr 2023 20:09:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN7PR11MB6996324EBF976C507D382C3AFF649@SN7PR11MB6996.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20230423105736.56918-1-xuanzhuo@linux.alibaba.com> <20230423105736.56918-13-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20230423105736.56918-13-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 26 Apr 2023 11:08:52 +0800
+Message-ID: <CACGkMEtC8WECH054KRs-uPeZiCv_PMUX4++9eUNffrB0Pboycw@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 12/15] virtio_net: small: optimize code
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,50 +82,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 25, 2023 at 07:03:50AM +0000, Stern, Avraham wrote:
+On Sun, Apr 23, 2023 at 6:58=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.alibaba.c=
+om> wrote:
+>
+> Avoid the problem that some variables(headroom and so on) will repeat
+> the calculation when process xdp.
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-> Having the timestamps of the frames seemed like a basic capability that userspace will need to implement ptp over wifi, regardless of the selected approach.
+Nit: I think we need to tweak the title, it's better to say what is
+optimized. (And it would be better to tweak the title of patch 11 as
+well)
 
-Having time stamps on unicast PTP frames would be a great solution.
-But I'm guessing that you aren't talking about that?
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-> Apparently you had other ways in mind, so I would love to have that discussion and hear about it.  
+> ---
+>  drivers/net/virtio_net.c | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 5bc3dca0f60c..601c0e7fc32b 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1031,11 +1031,10 @@ static struct sk_buff *receive_small(struct net_d=
+evice *dev,
+>         struct sk_buff *skb;
+>         struct bpf_prog *xdp_prog;
+>         unsigned int xdp_headroom =3D (unsigned long)ctx;
+> -       unsigned int header_offset =3D VIRTNET_RX_PAD + xdp_headroom;
+> -       unsigned int headroom =3D vi->hdr_len + header_offset;
+> -       unsigned int buflen =3D SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom=
+) +
+> -                             SKB_DATA_ALIGN(sizeof(struct skb_shared_inf=
+o));
+>         struct page *page =3D virt_to_head_page(buf);
+> +       unsigned int header_offset;
+> +       unsigned int headroom;
+> +       unsigned int buflen;
+>
+>         len -=3D vi->hdr_len;
+>         stats->bytes +=3D len;
+> @@ -1063,6 +1062,11 @@ static struct sk_buff *receive_small(struct net_de=
+vice *dev,
+>         rcu_read_unlock();
+>
+>  skip_xdp:
+> +       header_offset =3D VIRTNET_RX_PAD + xdp_headroom;
+> +       headroom =3D vi->hdr_len + header_offset;
+> +       buflen =3D SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
+> +               SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+> +
+>         skb =3D build_skb(buf, buflen);
+>         if (!skb)
+>                 goto err;
+> --
+> 2.32.0.3.g01195cf9f
+>
 
-Let's back up a bit.  Since you would like to implement PTP over Wifi
-in Linux, may I suggest that the first step is to write up and
-publish your design idea so that everyone gets on the same page?
-
-Your design might touch upon a number of points...
-
-- Background
-  - Difficulty of multicast protocols (like PTP) over WiFi.
-  - What do the networking standards say?
-    - IEEE Std 802.11-2016
-      - Timing Measurement (TM)
-      - Fine Timing Measurement (FTM)
-    - IEEE 1588
-      - Media-Dependent, Media-Independent MDMI
-      - Special Ports
-    - 802.1AS
-      - Fine Timing Measurement Burst
-  - Which of the above can be used for a practical solution?
-    - What are the advantages/disadvantages of TM versus FTM?
-    - What alternatives might we pursue?
-      - unicast PTP without FTM
-      - AP as transparent clock
-- Existing Linux interfaces for time synchronization
-  - What can be used as is?
-  - What new interaces or extensions are needed, and why?
-- Vendor support
-  - How will we encourage broad acceptance/coverage?
-
-IMO, the simplest way that will unlock many use cases is to provide
-time stamps for single unicast frames, like in
-ieee80211_rx_status.device_timestamp and expose an adjustable PHC
-using timecounter/cyclecounter over the free running usec clock.  Then
-you could synchronize client/AP over unicast IPv4 PTP (for example)
-with no user space changes needed, AND it would work on all radios,
-even those that don't implement FTM.
-
-Thanks,
-Richard
