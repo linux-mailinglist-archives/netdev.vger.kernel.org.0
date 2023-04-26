@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 551576EFCA7
-	for <lists+netdev@lfdr.de>; Wed, 26 Apr 2023 23:52:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A4C6EFCFF
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 00:02:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239458AbjDZVwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 17:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
+        id S239840AbjDZWCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 18:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231631AbjDZVwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 17:52:21 -0400
+        with ESMTP id S239750AbjDZWCX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 18:02:23 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805471FF9
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 14:52:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9246188
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 15:02:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=u6KRxAuP892pwEwzbMbLD1F8QfXT6RRvQwIHUE4p3Bs=; b=VNuduJlmxKLaaFRIgoNXjO+nep
-        rom3Hyb7Xjm6lbO7N2vhzn8WsZW+P/4HrgosXMHvEANQu3Dr/q+w40xCD0fH5QWR2EWx/Bro+vc54
-        LLqGnz4bOAqh+3bte3gmX1fEafOf1PKyiqIzrkMpWPAZRzh6Y26kyBz+HQJPASLfbpPg=;
+        bh=s5OPqDMrJbPkySbXTukJDnlZGyeWsXYU9E0rr9q/9Wk=; b=YdfSPu8ai/LBIeq2wZAFC4rqfI
+        uEwgfBBnBG72KsEKkG4kSv2oBpkjv29j6g9XZz7ckeMSLhAYDxFnniYVipKbyThdQ1XB++Yox+9yG
+        19St7KHoOjsRM2KGDMenjVDwX6z+R6pSCVV61wezGkLGyUba5C/ElzDgdAH4H3eROPDo=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1prn3g-00BJ4l-Kf; Wed, 26 Apr 2023 23:52:16 +0200
-Date:   Wed, 26 Apr 2023 23:52:16 +0200
+        id 1prnDQ-00BJ8D-AS; Thu, 27 Apr 2023 00:02:20 +0200
+Date:   Thu, 27 Apr 2023 00:02:20 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Parthiban Veerasooran <Parthiban.Veerasooran@microchip.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net,
@@ -33,7 +33,7 @@ Cc:     netdev@vger.kernel.org, davem@davemloft.net,
         ramon.nordin.rodriguez@ferroamp.se
 Subject: Re: [PATCH net-next 2/2] net: phy: microchip_t1s: add support for
  Microchip LAN865x Rev.B0 PHYs
-Message-ID: <c9d06cfe-8834-4ffa-81a8-097c883cc960@lunn.ch>
+Message-ID: <c831ce86-37e4-420e-bea0-73fdfdaf7913@lunn.ch>
 References: <20230426114655.93672-1-Parthiban.Veerasooran@microchip.com>
  <20230426114655.93672-3-Parthiban.Veerasooran@microchip.com>
 MIME-Version: 1.0
@@ -50,38 +50,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -#define LAN867X_REG_IRQ_1_CTL 0x001C
-> -#define LAN867X_REG_IRQ_2_CTL 0x001D
-> +#define LAN86XX_REG_IRQ_1_CTL 0x001C
-> +#define LAN86XX_REG_IRQ_2_CTL 0x001D
-
-This patch is pretty big. Please split to LAN867X to LAN86XX rename
-out, to make the patches smaller and easier to review.
-
-> +static int lan865x_revb0_plca_set_cfg(struct phy_device *phydev,
-> +				      const struct phy_plca_cfg *plca_cfg)
-> +{
-> +	int ret;
-> +
-> +	ret = genphy_c45_plca_set_cfg(phydev, plca_cfg);
+> +	/* disable all the interrupts
+> +	 */
+> +	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN86XX_REG_IRQ_1_CTL, 0xFFFF);
 > +	if (ret)
 > +		return ret;
-> +
-> +	/* Disable the collision detection when PLCA is enabled and enable
-> +	 * collision detection when CSMA/CD mode is enabled.
-> +	 */
-> +	if (plca_cfg->enabled)
-> +		return phy_write_mmd(phydev, MDIO_MMD_VEND2, 0x0087, 0x0000);
-> +	else
-> +		return phy_write_mmd(phydev, MDIO_MMD_VEND2, 0x0087, 0x0083);
-> +}
-> +
+> +	return phy_write_mmd(phydev, MDIO_MMD_VEND2, LAN86XX_REG_IRQ_2_CTL, 0xFFFF);
 
-This could be in a patch of its own, with a good commit message
-explaining why it is needed.
+This is also something which could be in a patch of its own, with an
+explanation in the commit message. You said the device will generate
+an interrupt after reset whatever. So it would be good to document
+this odd behaviour. Also, should you actually clear the pending
+interrupt, as well as disable interrupts? I assume there is an
+interrupt status register? It would typically be clear on read, or
+write 1 to clear a specific interrupt?
 
-Once you replace the magic numbers with #defines, the comment becomes
-pointless. But what is missing is the answer to the question Why?
-
-	   Andrew
-
+	Andrew
