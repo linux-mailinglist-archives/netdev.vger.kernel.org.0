@@ -2,147 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29DF36F0377
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 11:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A4B6F0395
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 11:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243376AbjD0JgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 05:36:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53764 "EHLO
+        id S243269AbjD0Joa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 05:44:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243372AbjD0JgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 05:36:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970FE2D69
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 02:35:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682588119;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nLTOa2gvY/yQPlkBPm/UDjW99+fDZr0dsfJVgkOBXe8=;
-        b=C69Ar5miGCrWMuFHYyktAfb+hYK1MrS83ors27O/0XiFabb/XOGC2lViBd3AaWHivIO5EP
-        T6mY748Qc9odiN+FvHBm68h7w2L0zLvT9u63/cCj4COASR9dwKMoojMTqp65MeeB8f/jRh
-        hs0cQ5WE5l5Xk3pF3c0uAXDmPS82Xck=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-640-v-9hiYg0MvWvH1cJK1BdzQ-1; Thu, 27 Apr 2023 05:35:17 -0400
-X-MC-Unique: v-9hiYg0MvWvH1cJK1BdzQ-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f21e35dc08so20730165e9.2
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 02:35:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682588116; x=1685180116;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nLTOa2gvY/yQPlkBPm/UDjW99+fDZr0dsfJVgkOBXe8=;
-        b=UU9is6TNrmyX3FYOwl2wCkAJwqCIFCxvM6obrXIBH1/WIYkKrpLzswNG8hrZOwWcoq
-         LMPkM2eKeJ1LOqVedjOkzqVYTU/kpSD85D/JfCPCytwubH8hIy9EfuGaibeBZhlYgBxE
-         3f+XrBxFh2zI5QNqjyHzcKZ0P7I+pa/cf/M9C4AB8C4Ei5kp//gv4FPcdbaQqmc6pt8M
-         Cv2wTfU4undPhlJu6YwfBw4dafxQTaFLG94GVt40sCxmqf1p1VoZhvGCe8Z9HgjuMFgI
-         HycTm422pBCcIXflzetsT9QlvV5Dd2DH3f5NgfIGDRVKJ9Toc/cyGs6Yw4v/ovpE+mRs
-         cMMg==
-X-Gm-Message-State: AC+VfDwqTwSJE47RszkGUxDrTcWus01l1kIcGJ/4LixBIxEgNwA5eMh8
-        pb4bp7uo+F3hn8JTb6ijnPl9tAxPIhL58M93utlmviC83N9BhkVgKxoUuczo7r0g8REWNcgPLsd
-        d5k5UIrqYG8wrotiN
-X-Received: by 2002:a7b:c4c2:0:b0:3eb:29fe:f922 with SMTP id g2-20020a7bc4c2000000b003eb29fef922mr905181wmk.29.1682588116476;
-        Thu, 27 Apr 2023 02:35:16 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ70GfP+ZZHQ6xluKgBksQTzeWz0mxAUsXLWSbOrJGn1bNSVtyNdb3QOaLXsLQkF4nyomIuayg==
-X-Received: by 2002:a7b:c4c2:0:b0:3eb:29fe:f922 with SMTP id g2-20020a7bc4c2000000b003eb29fef922mr905155wmk.29.1682588116119;
-        Thu, 27 Apr 2023 02:35:16 -0700 (PDT)
-Received: from vschneid.remote.csb ([154.57.232.159])
-        by smtp.gmail.com with ESMTPSA id k36-20020a05600c1ca400b003f1733feb3dsm24321037wms.0.2023.04.27.02.35.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Apr 2023 02:35:15 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Pawel Chmielewski <pawel.chmielewski@intel.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Barry Song <baohua@kernel.org>
-Subject: Re: [PATCH v2 7/8] lib: add test for for_each_numa_{cpu,hop_mask}()
-In-Reply-To: <ZEmOxpgZqyoHcMqu@yury-ThinkPad>
-References: <20230420051946.7463-1-yury.norov@gmail.com>
- <20230420051946.7463-8-yury.norov@gmail.com>
- <xhsmh8rehkxzz.mognet@vschneid.remote.csb>
- <ZEi7n4ZJgF2o8Ps9@yury-ThinkPad>
- <xhsmhttx3j93u.mognet@vschneid.remote.csb>
- <ZEmOxpgZqyoHcMqu@yury-ThinkPad>
-Date:   Thu, 27 Apr 2023 10:35:14 +0100
-Message-ID: <xhsmho7n9k6r1.mognet@vschneid.remote.csb>
+        with ESMTP id S243285AbjD0Jo2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 05:44:28 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CEB94699;
+        Thu, 27 Apr 2023 02:44:24 -0700 (PDT)
+Received: from pps.filterd (m0353726.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33R9b2ik022872;
+        Thu, 27 Apr 2023 09:44:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=NsdeLVPvnuTdBPZv3WD2Vnht6opWJ6idi7ZjkBpR5pc=;
+ b=gcDzmsTyhsMsJDiXanvDKgoVy9G0lgLNG7KINI8NT7oxXPSVZr8Oft4A/Hp9Xf3QHgSN
+ GBcroRKehrnvcqdlaMSw82ngxc0dlbCsHkd0XRvTOaXubB5xuPCZZlfffcB5zJK+aIkp
+ s9BzamajLkQHo61gh8r8fRjXO0rw95miaoIIpMSYbp13m72KLGnb1yf16bYL6BOMsnCj
+ bVh+1uUTIpEpbjEWmLzZl8LtT64tjLxUzWCAJswLzztJ3R/v4NZiJsKsDinD+8Yehy0b
+ L9yH/hWTsXj2VqmfgBJg42usbuemFLJBnz86Dfh7ySq8WLST3uPnZ8Pc6UvTRfsw8bb1 mQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3q7mp5c60b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Apr 2023 09:44:19 +0000
+Received: from m0353726.ppops.net (m0353726.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 33R9bs3q029470;
+        Thu, 27 Apr 2023 09:44:19 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3q7mp5c5xa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Apr 2023 09:44:19 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 33R36j8n004299;
+        Thu, 27 Apr 2023 09:44:15 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3q46ug2uyw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Apr 2023 09:44:15 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+        by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 33R9iC0V2032128
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 27 Apr 2023 09:44:12 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 14D3B2004E;
+        Thu, 27 Apr 2023 09:44:12 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 33CEA20043;
+        Thu, 27 Apr 2023 09:44:11 +0000 (GMT)
+Received: from [9.179.20.145] (unknown [9.179.20.145])
+        by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Thu, 27 Apr 2023 09:44:11 +0000 (GMT)
+Message-ID: <a2f09b8a-add5-6bc4-64d2-6ac67e334fe0@linux.ibm.com>
+Date:   Thu, 27 Apr 2023 11:44:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+Subject: Re: [RFC net] net/mlx5: Fix performance regression for
+ request-response workloads
+Content-Language: en-US
+From:   Alexandra Winter <wintera@linux.ibm.com>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        netdev <netdev@vger.kernel.org>, linux-s390@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Halil Pasic <pasic@linux.ibm.com>
+References: <20220907122505.26953-1-wintera@linux.ibm.com>
+ <CANn89iLP15xQjmPHxvQBQ=bWbbVk4_41yLC8o5E97TQWFmRioQ@mail.gmail.com>
+ <375efe42-910d-69ae-e48d-cff0298dd104@linux.ibm.com>
+ <CANn89iKjxMMDEcOCKiqWiMybiYVd7ZqspnEkT0-puqxrknLtRA@mail.gmail.com>
+ <886c690b-cc35-39a0-8397-834e70fb329b@linux.ibm.com>
+ <20220930233708.kfxhgn2ytmraqhg7@sfedora>
+ <d58b5b49-aea6-c980-fc4d-6eab596ddc9d@linux.ibm.com>
+In-Reply-To: <d58b5b49-aea6-c980-fc4d-6eab596ddc9d@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: UN6T5kneicLLAwWwZr0DF8NLmh2Z-nvh
+X-Proofpoint-ORIG-GUID: hIZ1xaRUbVAtVg14Pq3BZwpwA3bWrR-3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-27_07,2023-04-26_03,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
+ mlxlogscore=999 lowpriorityscore=0 suspectscore=0 priorityscore=1501
+ clxscore=1011 spamscore=0 adultscore=0 phishscore=0 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2304270082
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/04/23 13:51, Yury Norov wrote:
->> I realized I only wrote half the relevant code - comparing node IDs is
->> meaningless, I meant to compare distances as we walk through the
->> CPUs... I tested the below against a few NUMA topologies and it seems to be
->> sane:
->> 
->> @@ -756,12 +773,23 @@ static void __init test_for_each_numa(void)
->>  {
->>  	unsigned int cpu, node;
->>  
->> -	for (node = 0; node < sched_domains_numa_levels; node++) {
->> -		unsigned int hop, c = 0;
->> +	for_each_node(node) {
->> +		unsigned int start_cpu, prev_dist, hop = 0;
->> +
->> +		cpu = cpumask_first(cpumask_of_node(node));
->> +		prev_dist = node_distance(node, node);
->> +		start_cpu = cpu;
->>  
->>  		rcu_read_lock();
->> -		for_each_numa_cpu(cpu, hop, node, cpu_online_mask)
->> -			expect_eq_uint(cpumask_local_spread(c++, node), cpu);
->> +
->> +		/* Assert distance is monotonically increasing */
->> +		for_each_numa_cpu(cpu, hop, node, cpu_online_mask) {
->> +			unsigned int dist = node_distance(cpu_to_node(cpu), cpu_to_node(start_cpu));
->
-> Interestingly, node_distance() is an arch-specific function. Generic
-> implementation is quite useless:
->
->  #define node_distance(from,to)  ((from) == (to) ? LOCAL_DISTANCE : REMOTE_DISTANCE)
->
-> Particularly, arm64 takes the above. With node_distance() implemented
-> like that, we can barely test something...
->
 
-riscv and arm64 rely on drivers/base/arch_numa.c to provide
-__node_distance() (cf. CONFIG_GENERIC_ARCH_NUMA).
+On 29.12.22 09:27, Alexandra Winter wrote:
+> 
+> 
+> On 01.10.22 01:37, Saeed Mahameed wrote:
+>> On 26 Sep 12:06, Alexandra Winter wrote:
+>>
+>> [ ... ]
+>>>
+>>> Saeed,
+>>> As discussed at LPC, could you please consider adding a workaround to the
+>>> Mellanox driver, to use non-SG SKBs for small messages? As mentioned above
+>>> we are seeing 13% throughput degradation, if 2 pages need to be mapped
+>>> instead of 1.
+>>>
+>>> While Eric's ideas sound very promising, just using non-SG in these cases
+>>> should be enough to mitigate the performance regression we see.
+>>
+>> Hi Alexandra, sorry for the late response.
+>>
+>> Yeas linearizing small messages makes sense, but will require some careful
+>> perf testing.
+>>
+>> We will do our best to include this in the next kernel release cycle.
+>> I will take it with the mlx5e team next week, everybody is on vacation this
+>> time of year :).
+>>
+>> Thanks,
+>> Saeed.
+> 
+> Hello Saeed,
+> may I ask whether you had a chance to include such a patch in the 6.2 kernel?
+> Or is this still on your ToDo list?
+> I haven't seen anything like this on the mailing list, but I may have overlooked it.
+> All the best for 2023
+> Alexandra
 
-x86, sparc, powerpc and ia64 define __node_distance()
-loongarch and mips define their own node_distance().
 
-So all of those archs will have a usable node_distance(), the others won't
-and that means the scheduler can't do anything about it - the scheduler
-relies on node_distance() to understand the topolgoy!
+Hello Saeed,
+any news about linearizing small messages? Is there any way we could be of help?
 
+Kind regards
+Alexandra
