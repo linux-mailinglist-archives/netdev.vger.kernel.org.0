@@ -2,177 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 641B96F0A89
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 19:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E68726F0AA1
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 19:17:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244235AbjD0RKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 13:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54566 "EHLO
+        id S244455AbjD0RRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 13:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239857AbjD0RKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 13:10:37 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BE12D5F
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 10:10:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1682615432; x=1714151432;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DVDIpe/44i1QuOWSgE4jwx9ZxpNapoWF4gHELVO/JtE=;
-  b=AflNo5kAKPR+DKbLSm5xmfAiz4ks8K3t85ROu4VxlJ1SnCpaNHwkjYku
-   foRGoLEo5E6rRSKhkqV/y+Vf1qmk0NrTcP545OEzZsSRYsmL6yV1H/+6d
-   Q1KXJhBcRmHYxiNpLvkQQLL5aXIvwsfVenhyT6n7cCF1z3nV0EscpH3l6
-   A=;
-X-IronPort-AV: E=Sophos;i="5.99,230,1677542400"; 
-   d="scan'208";a="323656686"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-cadc3fbd.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2023 17:10:29 +0000
-Received: from EX19MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-m6i4x-cadc3fbd.us-west-2.amazon.com (Postfix) with ESMTPS id D6A96A104E;
-        Thu, 27 Apr 2023 17:10:27 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Thu, 27 Apr 2023 17:10:27 +0000
-Received: from 88665a182662.ant.amazon.com (10.106.100.45) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Thu, 27 Apr 2023 17:10:24 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <xiyou.wangcong@gmail.com>
-CC:     <cong.wang@bytedance.com>, <edumazet@google.com>,
-        <kuniyu@amazon.com>, <netdev@vger.kernel.org>,
-        <oswalpalash@gmail.com>
-Subject: Re: [Patch net v2] sit: update dev->needed_headroom in ipip6_tunnel_bind_dev()
-Date:   Thu, 27 Apr 2023 10:10:13 -0700
-Message-ID: <20230427171013.9911-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230427060006.640809-1-xiyou.wangcong@gmail.com>
-References: <20230427060006.640809-1-xiyou.wangcong@gmail.com>
+        with ESMTP id S244337AbjD0RQp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 13:16:45 -0400
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB48555AD;
+        Thu, 27 Apr 2023 10:16:27 -0700 (PDT)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-187ba2311b7so7054041fac.1;
+        Thu, 27 Apr 2023 10:16:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682615787; x=1685207787;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EU2imsOOlLlZrjIN9juePbtOcgAYjelVwfmwyTnDSd0=;
+        b=JcyJy8Pp7Aep0VsjJaRnOiUl0Vlc+Q3TsnLJ47uCqIyP8ceNk+gaOkVOnaHjGqpAxC
+         JsKD8omiDuAyrZetnaFdP8N/pI2T9aEv9G6t7YANOzpsgZffbJPY/Ptvj3FULhQVh045
+         0h2ZiZg4ghgeSl4q50ak+w0zTpbGjryj2Zkq58sl0A9ziZju02PoMoMr/PWC9u5Me87q
+         jXrOus/uyJynki8c9raUlVV5+6dr9CWmNAA2LxMUIflOJvu+BUx8JCHhlroENfL33PF2
+         XYCUAKARPWCVMDltUOeY46QfygNKBNt2vLtFslnko3sZ8Zzt4AXPUDYNTvU1bG63QvRr
+         uCyQ==
+X-Gm-Message-State: AC+VfDzD3ZUyWpv7hxpZ73hBJW34ga2m3D5ZUJoKaNy4AsNBKWCEQoWg
+        +5cxzLeXEv9aSp4bOulLww==
+X-Google-Smtp-Source: ACHHUZ62jIB7/4HoIDgm9vH/cSn1n7x8c4dz+fdSLMdOTBaQWdDp0VNFyfLCi152XnNtbQPU3Ox3rA==
+X-Received: by 2002:a05:6870:822a:b0:180:3b6:82bd with SMTP id n42-20020a056870822a00b0018003b682bdmr1002246oae.33.1682615786901;
+        Thu, 27 Apr 2023 10:16:26 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id v12-20020a4aad8c000000b0054542d3219asm8453503oom.11.2023.04.27.10.16.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Apr 2023 10:16:26 -0700 (PDT)
+Received: (nullmailer pid 3185188 invoked by uid 1000);
+        Thu, 27 Apr 2023 17:16:25 -0000
+Date:   Thu, 27 Apr 2023 12:16:25 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Justin Chen <justinpopo6@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        bcm-kernel-feedback-list@broadcom.com, justin.chen@broadcom.com,
+        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        krzysztof.kozlowski+dt@linaro.org, opendmb@gmail.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        richardcochran@gmail.com, sumit.semwal@linaro.org,
+        christian.koenig@amd.com
+Subject: Re: [PATCH v2 net-next 2/6] dt-bindings: net: Brcm ASP 2.0 Ethernet
+ controller
+Message-ID: <20230427171625.GA3172205-robh@kernel.org>
+References: <1682535272-32249-1-git-send-email-justinpopo6@gmail.com>
+ <1682535272-32249-3-git-send-email-justinpopo6@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.100.45]
-X-ClientProxiedBy: EX19D044UWB001.ant.amazon.com (10.13.139.171) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1682535272-32249-3-git-send-email-justinpopo6@gmail.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 26 Apr 2023 23:00:06 -0700
-> From: Cong Wang <cong.wang@bytedance.com>
+On Wed, Apr 26, 2023 at 11:54:28AM -0700, Justin Chen wrote:
+> From: Florian Fainelli <f.fainelli@gmail.com>
 > 
-> When a tunnel device is bound with the underlying device, its
-> dev->needed_headroom needs to be updated properly. IPv4 tunnels
-> already do the same in ip_tunnel_bind_dev(). Otherwise we may
-> not have enough header room for skb, especially after commit
-> b17f709a2401 ("gue: TX support for using remote checksum offload option").
+> Add a binding document for the Broadcom ASP 2.0 Ethernet
+> controller.
 > 
-> Fixes: 32b8a8e59c9c ("sit: add IPv4 over IPv4 support")
-> Reported-by: Palash Oswal <oswalpalash@gmail.com>
-> Link: https://lore.kernel.org/netdev/CAGyP=7fDcSPKu6nttbGwt7RXzE3uyYxLjCSE97J64pRxJP8jPA@mail.gmail.com/
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-
-Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-
-
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 > ---
-> v2: follow reverse Christmas tree style
-
-nit: less changes needed if we put t_hlen init down.
-
----8<---
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index 70d81bba5093..dce9efba24a9 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -1095,6 +1095,7 @@ static netdev_tx_t sit_tunnel_xmit(struct sk_buff *skb,
- 
- static void ipip6_tunnel_bind_dev(struct net_device *dev)
- {
-+	int t_hlen, hlen = LL_MAX_HEADER;
- 	struct net_device *tdev = NULL;
- 	struct ip_tunnel *tunnel;
- 	const struct iphdr *iph;
-@@ -1122,15 +1123,18 @@ static void ipip6_tunnel_bind_dev(struct net_device *dev)
- 	if (!tdev && tunnel->parms.link)
- 		tdev = __dev_get_by_index(tunnel->net, tunnel->parms.link);
- 
-+	t_hlen = tunnel->hlen + sizeof(struct iphdr);
-+
- 	if (tdev && !netif_is_l3_master(tdev)) {
--		int t_hlen = tunnel->hlen + sizeof(struct iphdr);
- 		int mtu;
- 
- 		mtu = tdev->mtu - t_hlen;
- 		if (mtu < IPV6_MIN_MTU)
- 			mtu = IPV6_MIN_MTU;
- 		WRITE_ONCE(dev->mtu, mtu);
-+		hlen = tdev->hard_header_len + tdev->needed_headroom;
- 	}
-+	dev->needed_headroom = hlen + t_hlen;
- }
- 
- static void ipip6_tunnel_update(struct ip_tunnel *t, struct ip_tunnel_parm *p,
----8<---
-
-Thanks,
-Kuniyuki
-
-
+>  .../devicetree/bindings/net/brcm,asp-v2.0.yaml     | 145 +++++++++++++++++++++
+>  1 file changed, 145 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
 > 
-> Note, this is targeting for -net and -table, so I'd keep the fix
-> small. We can refactor and reuse ip_tunnel_bind_dev() for -net-next.
-> 
->  net/ipv6/sit.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-> index 70d81bba5093..3ffb6a5b1f82 100644
-> --- a/net/ipv6/sit.c
-> +++ b/net/ipv6/sit.c
-> @@ -1095,12 +1095,13 @@ static netdev_tx_t sit_tunnel_xmit(struct sk_buff *skb,
->  
->  static void ipip6_tunnel_bind_dev(struct net_device *dev)
->  {
-> +	struct ip_tunnel *tunnel = netdev_priv(dev);
-> +	int t_hlen = tunnel->hlen + sizeof(struct iphdr);
->  	struct net_device *tdev = NULL;
-> -	struct ip_tunnel *tunnel;
-> +	int hlen = LL_MAX_HEADER;
->  	const struct iphdr *iph;
->  	struct flowi4 fl4;
->  
-> -	tunnel = netdev_priv(dev);
->  	iph = &tunnel->parms.iph;
->  
->  	if (iph->daddr) {
-> @@ -1123,14 +1124,15 @@ static void ipip6_tunnel_bind_dev(struct net_device *dev)
->  		tdev = __dev_get_by_index(tunnel->net, tunnel->parms.link);
->  
->  	if (tdev && !netif_is_l3_master(tdev)) {
-> -		int t_hlen = tunnel->hlen + sizeof(struct iphdr);
->  		int mtu;
->  
->  		mtu = tdev->mtu - t_hlen;
->  		if (mtu < IPV6_MIN_MTU)
->  			mtu = IPV6_MIN_MTU;
->  		WRITE_ONCE(dev->mtu, mtu);
-> +		hlen = tdev->hard_header_len + tdev->needed_headroom;
->  	}
-> +	dev->needed_headroom = t_hlen + hlen;
->  }
->  
->  static void ipip6_tunnel_update(struct ip_tunnel *t, struct ip_tunnel_parm *p,
+> diff --git a/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml b/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
+> new file mode 100644
+> index 000000000000..818d91692e6e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/brcm,asp-v2.0.yaml
+> @@ -0,0 +1,145 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/brcm,asp-v2.0.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Broadcom ASP 2.0 Ethernet controller
+> +
+> +maintainers:
+> +  - Justin Chen <justinpopo6@gmail.com>
+> +  - Florian Fainelli <f.fainelli@gmail.com>
+> +
+> +description: Broadcom Ethernet controller first introduced with 72165
+> +
+> +properties:
+> +  '#address-cells':
+> +    const: 1
+> +  '#size-cells':
+> +    const: 1
+> +
+> +  compatible:
+> +    enum:
+> +      - brcm,asp-v2.0
+> +      - brcm,bcm72165-asp-v2.0
+> +      - brcm,asp-v2.1
+> +      - brcm,bcm74165-asp-v2.1
+
+You have 1 SoC per version, so what's the point of versions? If you have 
+more coming, then fine, but I'd expect it to be something like this:
+
+compatible = "brcm,bcm74165-asp-v2.1", "brcm,asp-v2.1";
+
+Also, the version in the SoC specific compatible is redundant. Just 
+"brcm,bcm74165-asp" is enough.
+
+v2.1 is not compatible with v2.0? What that means is would a client/OS 
+that only understands what v2.0 is work with v2.1 h/w? If so, you should 
+have fallback compatible.
+
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  ranges: true
+> +
+> +  interrupts:
+> +    minItems: 1
+> +    items:
+> +      - description: RX/TX interrupt
+> +      - description: Port 0 Wake-on-LAN
+> +      - description: Port 1 Wake-on-LAN
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  ethernet-ports:
+
+The ethernet-switch.yaml schema doesn't work for you?
+
+> +    type: object
+> +    properties:
+> +      '#address-cells':
+> +        const: 1
+> +      '#size-cells':
+> +        const: 0
+> +
+> +    patternProperties:
+> +      "^port@[0-9]+$":
+> +        type: object
+> +
+> +        $ref: ethernet-controller.yaml#
+> +
+> +        properties:
+> +          reg:
+> +            maxItems: 1
+> +            description: Port number
+> +
+> +          channel:
+> +            maxItems: 1
+> +            description: ASP channel number
+
+Not a standard property, so it needs a type and vendor prefix. However, 
+what's the difference between channel and port? Can the port numbers 
+correspond to the channels?
+
+> +
+> +        required:
+> +          - reg
+> +          - channel
+> +
+> +    additionalProperties: false
+> +
+> +patternProperties:
+> +  "^mdio@[0-9a-f]+$":
+> +    type: object
+> +    $ref: "brcm,unimac-mdio.yaml"
+
+Drop quotes.
+
+> +
+> +    description:
+> +      ASP internal UniMAC MDIO bus
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - ranges
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    ethernet@9c00000 {
+> +        compatible = "brcm,asp-v2.0";
+> +        reg = <0x9c00000 0x1fff14>;
+> +        interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
+> +        ranges;
+> +        clocks = <&scmi 14>;
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +
+> +        mdio@c614 {
+> +            compatible = "brcm,asp-v2.0-mdio";
+> +            reg = <0xc614 0x8>;
+
+You have 1:1 ranges, is that really what you want? That means 0xc614 is 
+an absolute address.
+
+> +            reg-names = "mdio";
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            phy0: ethernet-phy@1 {
+> +                reg = <1>;
+> +            };
+> +       };
+> +
+> +        mdio@ce14 {
+> +            compatible = "brcm,asp-v2.0-mdio";
+> +            reg = <0xce14 0x8>;
+> +            reg-names = "mdio";
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            phy1: ethernet-phy@1 {
+> +                reg = <1>;
+> +            };
+> +        };
+> +
+> +        ethernet-ports {
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            port@0 {
+> +                reg = <0>;
+> +                channel = <8>;
+> +                phy-mode = "rgmii";
+> +                phy-handle = <&phy0>;
+> +            };
+> +
+> +            port@1 {
+> +                reg = <1>;
+> +                channel = <9>;
+> +                phy-mode = "rgmii";
+> +                phy-handle = <&phy1>;
+> +            };
+> +        };
+> +    };
 > -- 
-> 2.34.1
+> 2.7.4
+> 
