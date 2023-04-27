@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17C5B6F06F4
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 16:05:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1A3A6F06F3
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 16:05:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243701AbjD0OEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 10:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56528 "EHLO
+        id S243710AbjD0OEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 10:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243687AbjD0OEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 10:04:16 -0400
+        with ESMTP id S243687AbjD0OEU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 10:04:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF35F44B6;
-        Thu, 27 Apr 2023 07:04:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74934690;
+        Thu, 27 Apr 2023 07:04:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AAE863D83;
-        Thu, 27 Apr 2023 14:04:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58821C433EF;
-        Thu, 27 Apr 2023 14:04:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D44B63D25;
+        Thu, 27 Apr 2023 14:04:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49D03C433D2;
+        Thu, 27 Apr 2023 14:04:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682604254;
-        bh=w/v8TkNlINJ/WF87Lg+J5iNjWzTzXNG9uFCdWsRckyE=;
+        s=k20201202; t=1682604258;
+        bh=PVqEIORgYMewCOBcKdAZRUMx649Murxtz9FX/yndQpM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FHgxnOfa6T9rib/ZphXMXl1bwNwHGa8lWtJS6SgPJ5c0lr5k60d1UF/FLLimT5jZZ
-         YIRda045RtbP48243Y7w2YuoiEVysQs0lKeyjYFfKCIj/f8FcKQMKYItqVtzhiU7sd
-         2c+rzL096cfb1F/h3TnOW/zG8+BjjwPRqve1Bk+gpDqKNvHqbFmcV2ZVswTARU/d16
-         scVgNaU4esmEP0ELe9Iu7LXIRTO36NnxAwg7NCkWsB/xb5mRnUXDqiWfRrA01A/wtS
-         6730yVFq9KaO6tWH/a6NCTAP8DwtcII8lBateVAe6O6YIurkx34u63yuwS5Fm8CRnZ
-         3tw9UyC1k21Mg==
+        b=qxJbwbQ+Vr1bOE+YyG9We31TNk30TuHcnyL403NDoy+JyAksufFfjtIASZ/gul34q
+         zpuKCoTLXr/kgCElOFFfLAsyBLOHhQx1aSBVPgyMCvuEQmZcRaEGTkMVrH5EmRy2jL
+         lNmbOCfi3ExRWV11hI6y8VJg1aDPVFNGMkoujmPlqFLWrbXmGjyV6rn0v3SZXHwNVM
+         /0iBX2Viu8c2AmrOgOxBI8KTCOvUpGZLy7aiPUdbbvIiW42I1iwwoe/GMXdpR+ZxcC
+         GHwjq6K2VgM0htv5BbFvTG5eZcPHEAtnBGa1e6EEgPVKtCfAo/LNUW1UjNMnxNaxf6
+         lzGPOYUP0nY0g==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, j.vosburgh@gmail.com,
@@ -40,9 +40,9 @@ Cc:     lorenzo.bianconi@redhat.com, j.vosburgh@gmail.com,
         daniel@iogearbox.net, martin.lau@linux.dev, alardam@gmail.com,
         memxor@gmail.com, sdf@google.com, brouer@redhat.com,
         toke@redhat.com
-Subject: [PATCH net 1/2] bonding: add xdp_features support
-Date:   Thu, 27 Apr 2023 16:03:33 +0200
-Message-Id: <d5d808e56fd15385c47a45d21953e5cc28c77b89.1682603719.git.lorenzo@kernel.org>
+Subject: [PATCH net 2/2] selftests/bpf: add xdp_feature selftest for bond device
+Date:   Thu, 27 Apr 2023 16:03:34 +0200
+Message-Id: <b834b5a0c5e0e76a2ae34b1525a7761ef59c20d8.1682603719.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <cover.1682603719.git.lorenzo@kernel.org>
 References: <cover.1682603719.git.lorenzo@kernel.org>
@@ -58,129 +58,159 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce xdp_features support for bonding driver according to the slave
-devices attached to the master one.
+Introduce selftests to check xdp_feature support for bond driver.
 
-Fixes: 66c0e13ad236 ("drivers: net: turn on XDP features")
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/bonding/bond_main.c    | 48 ++++++++++++++++++++++++++++++
- drivers/net/bonding/bond_options.c |  2 ++
- include/net/bonding.h              |  1 +
- 3 files changed, 51 insertions(+)
+ .../selftests/bpf/prog_tests/xdp_bonding.c    | 121 ++++++++++++++++++
+ 1 file changed, 121 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 710548dbd0c1..f22e3fab14d4 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1789,6 +1789,45 @@ static void bond_ether_setup(struct net_device *bond_dev)
- 	bond_dev->priv_flags &= ~IFF_TX_SKB_SHARING;
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+index d19f79048ff6..c3b45745cbcc 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+@@ -18,6 +18,7 @@
+ #include <linux/if_bonding.h>
+ #include <linux/limits.h>
+ #include <linux/udp.h>
++#include <uapi/linux/netdev.h>
+ 
+ #include "xdp_dummy.skel.h"
+ #include "xdp_redirect_multi_kern.skel.h"
+@@ -492,6 +493,123 @@ static void test_xdp_bonding_nested(struct skeletons *skeletons)
+ 	system("ip link del bond_nest2");
  }
  
-+void bond_xdp_xdp_set_features(struct net_device *bond_dev)
++static void test_xdp_bonding_features(struct skeletons *skeletons)
 +{
-+	struct bonding *bond = netdev_priv(bond_dev);
-+	xdp_features_t val = NETDEV_XDP_ACT_MASK;
-+	struct list_head *iter;
-+	struct slave *slave;
++	LIBBPF_OPTS(bpf_xdp_query_opts, query_opts);
++	int bond_idx, veth1_idx, err;
++	struct bpf_link *link = NULL;
 +
-+	ASSERT_RTNL();
++	if (!ASSERT_OK(system("ip link add bond type bond"), "add bond"))
++		goto out;
 +
-+	if (!bond_xdp_check(bond)) {
-+		xdp_clear_features_flag(bond_dev);
-+		return;
-+	}
++	bond_idx = if_nametoindex("bond");
++	if (!ASSERT_GE(bond_idx, 0, "if_nametoindex bond"))
++		goto out;
 +
-+	bond_for_each_slave(bond, slave, iter) {
-+		struct net_device *dev = slave->dev;
++	/* query default xdp-feature for bond device */
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
 +
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_BASIC)) {
-+			xdp_clear_features_flag(bond_dev);
-+			return;
-+		}
++	if (!ASSERT_EQ(query_opts.feature_flags, NETDEV_XDP_ACT_MASK,
++		       "bond query_opts.feature_flags"))
++		goto out;
 +
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_REDIRECT))
-+			val &= ~NETDEV_XDP_ACT_REDIRECT;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_NDO_XMIT))
-+			val &= ~NETDEV_XDP_ACT_NDO_XMIT;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_XSK_ZEROCOPY))
-+			val &= ~NETDEV_XDP_ACT_XSK_ZEROCOPY;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_HW_OFFLOAD))
-+			val &= ~NETDEV_XDP_ACT_HW_OFFLOAD;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_RX_SG))
-+			val &= ~NETDEV_XDP_ACT_RX_SG;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_NDO_XMIT_SG))
-+			val &= ~NETDEV_XDP_ACT_NDO_XMIT_SG;
-+	}
++	if (!ASSERT_OK(system("ip link add veth0 type veth peer name veth1"),
++		       "add veth{0,1} pair"))
++		goto out;
 +
-+	xdp_set_features_flag(bond_dev, val);
++	if (!ASSERT_OK(system("ip link add veth2 type veth peer name veth3"),
++		       "add veth{2,3} pair"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link set veth0 master bond"),
++		       "add veth0 to master bond"))
++		goto out;
++
++	/* xdp-feature for bond device should be obtained from the single slave
++	 * device (veth0)
++	 */
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	if (!ASSERT_EQ(query_opts.feature_flags,
++		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
++		       NETDEV_XDP_ACT_RX_SG,
++		       "bond query_opts.feature_flags"))
++		goto out;
++
++	veth1_idx = if_nametoindex("veth1");
++	if (!ASSERT_GE(veth1_idx, 0, "if_nametoindex veth1"))
++		goto out;
++
++	link = bpf_program__attach_xdp(skeletons->xdp_dummy->progs.xdp_dummy_prog,
++				       veth1_idx);
++	if (!ASSERT_OK_PTR(link, "attach program to veth1"))
++		goto out;
++
++	/* xdp-feature for veth0 are changed */
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	if (!ASSERT_EQ(query_opts.feature_flags,
++		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
++		       NETDEV_XDP_ACT_RX_SG | NETDEV_XDP_ACT_NDO_XMIT |
++		       NETDEV_XDP_ACT_NDO_XMIT_SG,
++		       "bond query_opts.feature_flags"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link set veth2 master bond"),
++		       "add veth2 to master bond"))
++		goto out;
++
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	/* xdp-feature for bond device should be set to the most restrict
++	 * value obtained from attached slave devices (veth0 and veth2)
++	 */
++	if (!ASSERT_EQ(query_opts.feature_flags,
++		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
++		       NETDEV_XDP_ACT_RX_SG,
++		       "bond query_opts.feature_flags"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link set veth2 nomaster"),
++		       "del veth2 to master bond"))
++		goto out;
++
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	if (!ASSERT_EQ(query_opts.feature_flags,
++		       NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
++		       NETDEV_XDP_ACT_RX_SG | NETDEV_XDP_ACT_NDO_XMIT |
++		       NETDEV_XDP_ACT_NDO_XMIT_SG,
++		       "bond query_opts.feature_flags"))
++		goto out;
++
++	if (!ASSERT_OK(system("ip link set veth0 nomaster"),
++		       "del veth0 to master bond"))
++		goto out;
++
++	err = bpf_xdp_query(bond_idx, XDP_FLAGS_DRV_MODE, &query_opts);
++	if (!ASSERT_OK(err, "bond bpf_xdp_query"))
++		goto out;
++
++	ASSERT_EQ(query_opts.feature_flags, NETDEV_XDP_ACT_MASK,
++		  "bond query_opts.feature_flags");
++out:
++	bpf_link__destroy(link);
++	system("ip link del veth0");
++	system("ip link del veth2");
++	system("ip link del bond");
 +}
 +
- /* enslave device <slave> to bond device <master> */
- int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 		 struct netlink_ext_ack *extack)
-@@ -2236,6 +2275,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 			bpf_prog_inc(bond->xdp_prog);
- 	}
+ static int libbpf_debug_print(enum libbpf_print_level level,
+ 			      const char *format, va_list args)
+ {
+@@ -546,6 +664,9 @@ void serial_test_xdp_bonding(void)
+ 	if (test__start_subtest("xdp_bonding_nested"))
+ 		test_xdp_bonding_nested(&skeletons);
  
-+	bond_xdp_xdp_set_features(bond_dev);
++	if (test__start_subtest("xdp_bonding_features"))
++		test_xdp_bonding_features(&skeletons);
 +
- 	slave_info(bond_dev, slave_dev, "Enslaving as %s interface with %s link\n",
- 		   bond_is_active_slave(new_slave) ? "an active" : "a backup",
- 		   new_slave->link != BOND_LINK_DOWN ? "an up" : "a down");
-@@ -2483,6 +2524,7 @@ static int __bond_release_one(struct net_device *bond_dev,
- 	if (!netif_is_bond_master(slave_dev))
- 		slave_dev->priv_flags &= ~IFF_BONDING;
+ 	for (i = 0; i < ARRAY_SIZE(bond_test_cases); i++) {
+ 		struct bond_test_case *test_case = &bond_test_cases[i];
  
-+	bond_xdp_xdp_set_features(bond_dev);
- 	kobject_put(&slave->kobj);
- 
- 	return 0;
-@@ -3930,6 +3972,9 @@ static int bond_slave_netdev_event(unsigned long event,
- 		/* Propagate to master device */
- 		call_netdevice_notifiers(event, slave->bond->dev);
- 		break;
-+	case NETDEV_XDP_FEAT_CHANGE:
-+		bond_xdp_xdp_set_features(bond_dev);
-+		break;
- 	default:
- 		break;
- 	}
-@@ -5874,6 +5919,9 @@ void bond_setup(struct net_device *bond_dev)
- 	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
- 		bond_dev->features |= BOND_XFRM_FEATURES;
- #endif /* CONFIG_XFRM_OFFLOAD */
-+
-+	if (bond_xdp_check(bond))
-+		bond_dev->xdp_features = NETDEV_XDP_ACT_MASK;
- }
- 
- /* Destroy a bonding device.
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index f71d5517f829..2a899dda79d2 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -877,6 +877,8 @@ static int bond_option_mode_set(struct bonding *bond,
- 			netdev_update_features(bond->dev);
- 	}
- 
-+	bond_xdp_xdp_set_features(bond->dev);
-+
- 	return 0;
- }
- 
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index c3843239517d..fa70ba3de815 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -659,6 +659,7 @@ void bond_destroy_sysfs(struct bond_net *net);
- void bond_prepare_sysfs_group(struct bonding *bond);
- int bond_sysfs_slave_add(struct slave *slave);
- void bond_sysfs_slave_del(struct slave *slave);
-+void bond_xdp_xdp_set_features(struct net_device *bond_dev);
- int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 		 struct netlink_ext_ack *extack);
- int bond_release(struct net_device *bond_dev, struct net_device *slave_dev);
 -- 
 2.40.0
 
