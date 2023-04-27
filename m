@@ -2,119 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E93716F0DA2
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 23:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 682F56F0D9A
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 23:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344253AbjD0VJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 17:09:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52382 "EHLO
+        id S1344079AbjD0VJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 17:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344233AbjD0VJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 17:09:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BD749D8
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 14:09:26 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1ps8rO-0005ET-LI; Thu, 27 Apr 2023 23:09:02 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 0E20B1B936F;
-        Thu, 27 Apr 2023 21:08:57 +0000 (UTC)
-Date:   Thu, 27 Apr 2023 23:08:57 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-can@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 0/5] can: bxcan: add support for single peripheral
- configuration
-Message-ID: <20230427-retaining-deeply-fcff70098e7e-mkl@pengutronix.de>
-References: <20230427204540.3126234-1-dario.binacchi@amarulasolutions.com>
+        with ESMTP id S230094AbjD0VJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 17:09:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9992D7C
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 14:09:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09FE960D56
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 21:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6125C433D2;
+        Thu, 27 Apr 2023 21:09:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682629741;
+        bh=1QvjlFfVtL2z4WPFwTrUuUvaBYlzYhUXrBKD8dfg96o=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Ge9dnI77Nf4angeeHSCsMLBTnQQA2Njtlm7gkS7+DiRqisNH3381S/B1+lsgXu7kp
+         N6GiDN/Os2xh03GObrnyLpc+V4NlxR60EkVKktnHtFoAtPWxxRrMXcmpV4TO4e7YUQ
+         plNuxugsi9Hkqwxhn3Q61kYx/VZnaPjDfEXy3hiGWOV5ijETEks67uZQ3Ol6kNEe1w
+         WTl8XnnxCMghpyNU1im7SXrzqqppuTP1DYbzQzFi18y5IGRcZKuXZGtlobSKVfSQqi
+         hgMDvQrEYvM2LjpAewjBx51T6iqTkHyDuVWBt8IouxVZC+BZRbIGYFc8Di/PZJlxlm
+         HqqoPY/t2B2eA==
+Message-ID: <0fa1d0a7-172e-12ca-99c5-d4cf25f2bfef@kernel.org>
+Date:   Thu, 27 Apr 2023 15:08:59 -0600
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="nzyuuy6jlpbsjjmh"
-Content-Disposition: inline
-In-Reply-To: <20230427204540.3126234-1-dario.binacchi@amarulasolutions.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+Subject: Re: [PATCH net] tcp: fix skb_copy_ubufs() vs BIG TCP
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Xin Long <lucien.xin@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Coco Li <lixiaoyan@google.com>
+References: <20230427192404.315287-1-edumazet@google.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20230427192404.315287-1-edumazet@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 4/27/23 1:24 PM, Eric Dumazet wrote:
+> David Ahern reported crashes in skb_copy_ubufs() caused by TCP tx zerocopy
+> using hugepages, and skb length bigger than ~68 KB.
+> 
+> skb_copy_ubufs() assumed it could copy all payload using up to
+> MAX_SKB_FRAGS order-0 pages.
+> 
+> This assumption broke when BIG TCP was able to put up to 512 KB per skb.
 
---nzyuuy6jlpbsjjmh
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Just an FYI - the problem was triggered at 128kB.
 
-On 27.04.2023 22:45:35, Dario Binacchi wrote:
->=20
-> The series adds support for managing bxCAN controllers in single peripher=
-al
-> configuration.
-> Unlike stm32f4 SOCs, where bxCAN controllers are only in dual peripheral
-> configuration, stm32f7 SOCs contain three CAN peripherals, CAN1 and CAN2
-> in dual peripheral configuration and CAN3 in single peripheral
-> configuration:
-> - Dual CAN peripheral configuration:
->  * CAN1: Primary bxCAN for managing the communication between a secondary
->    bxCAN and the 512-byte SRAM memory.
->  * CAN2: Secondary bxCAN with no direct access to the SRAM memory.
->    This means that the two bxCAN cells share the 512-byte SRAM memory and
->    CAN2 can't be used without enabling CAN1.
-> - Single CAN peripheral configuration:
->  * CAN3: Primary bxCAN with dedicated Memory Access Controller unit and
->    512-byte SRAM memory.
+> 
+> We did not hit this bug at Google because we use CONFIG_MAX_SKB_FRAGS=45
+> and limit gso_max_size to 180000.
+> 
+> A solution is to use higher order pages if needed.
+> 
+> Fixes: 7c4e983c4f3c ("net: allow gso_max_size to exceed 65536")
+> Reported-by: David Ahern <dsahern@kernel.org>
+> Link: https://lore.kernel.org/netdev/c70000f6-baa4-4a05-46d0-4b3e0dc1ccc8@gmail.com/T/
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Xin Long <lucien.xin@gmail.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Cc: Coco Li <lixiaoyan@google.com>
+> ---
+>  net/core/skbuff.c | 20 ++++++++++++++------
+>  1 file changed, 14 insertions(+), 6 deletions(-)
+> 
 
-This really looks good! Great work! Who takes the DT changes? I can take
-the whole series.
 
-regards,
-Marc
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Tested-by: David Ahern <dsahern@kernel.org>
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---nzyuuy6jlpbsjjmh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmRK5GYACgkQvlAcSiqK
-BOjH2gf/btmb76HmGphNPuGDwudwcjt004XQ1d8nxWuWd74zEwD/+Oz6W9hbZzox
-eshaIvJODyWw6Qgj+FKc+86AZvperVx+8T+Ia5PvPY8mXt0Mbh+aFM2XVTo9qXtk
-brvJPXZU/gkwFYafQeOINt2rohkeXwN+JV3s2cfj0a2b6FKUgR8a1S7DxjQdimIK
-0psXmV4IKyxQq6b2O7j5r99KYDbeokkzwOrowghxt+2JK6uwI9Fea1iOziE9JPUT
-A/mhaieHgpv4KhI4uJBxFoCOn+LPIMT54J8dT3CmChIdYYavdruibezAUvZjtDix
-IVqNdP1EjNlpTWRvNh9cIcwt6NWXrA==
-=/Q1q
------END PGP SIGNATURE-----
-
---nzyuuy6jlpbsjjmh--
+Thanks, Eric. With ConnectX-6's connected back-to-back and S/W only
+settings (max GRO, GSO size and 9000 MTU) able to hit ~160G with both
+IPv4 and IPv6. I added nr_frags to the net_dev_xmit to verify various
+permutations; no issues with the patch.
