@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ACE26F04EA
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 13:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68A836F04ED
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 13:24:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243416AbjD0LYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 07:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35446 "EHLO
+        id S243737AbjD0LYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 07:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243636AbjD0LX7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 07:23:59 -0400
+        with ESMTP id S243711AbjD0LYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 07:24:10 -0400
 Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B125B86;
-        Thu, 27 Apr 2023 04:23:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2335FE0;
+        Thu, 27 Apr 2023 04:24:03 -0700 (PDT)
 Received: by nautica.notk.org (Postfix, from userid 108)
-        id E3BB0C023; Thu, 27 Apr 2023 13:23:54 +0200 (CEST)
+        id 24C3FC021; Thu, 27 Apr 2023 13:24:00 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1682594634; bh=s+rCY3PhNsjKtAMo7ceBkqmXMZyC1GJyZBLyjIlkj7k=;
+        t=1682594640; bh=ktwVTjkmEChjhY/kRpODTnUXv8zYYBOjSBS7MBgR468=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-        b=BKMeJuqCAs7gz87ccJfjFExzkNjMiSf/Hrt+lG/vd7cp1BFvOaNAKkEYyEe6kvVlZ
-         wv8ZG02JYJpZsejUbhty0V8HrOXCq7QD+xn6lnvLzzrGQqG4RyU+kZqTnssQ43QS0n
-         bPYO4LfxDOPFbfCwuh87fJj9fEL0hb7w9PzQ1aR29UlOW2TIXLC0AoZ5VlU7mDcg7P
-         xWUWuLpe+hlxIpYWp0KtaX9D6aKuBrc3JifIBrNqMcuyaYgIWm59P0iHXG3o3oReIt
-         iVTBzVpY2Vad0a+BXN2E4f9SBwmRVOy3PTeXMwOxs+ICdtnAG77zniLBvvz1xIB/sV
-         I7y4tzwKLz2Qw==
+        b=YiL6ZYJi+YLRa0svXQ6itVhYqBapUedCZ4a+ZF/jn5/jg/WQccb6l3L6jcFfooyzu
+         DrunOhIJfUZcnqtGy4jKULDC1x5RqQcft4G5S7CpVhu6hqS3q7AcJi5Y9ncYRLitJX
+         7TKlxFwaeEBLxbj0CdOpyAvSyBHMq7/T/iNzlDd2E6HRzWitgTMP5zk/Gk52ZS4mJd
+         3MygLf0G1/ye2m01NnAMMKv5HJKMTLcGEkhZfeEpz2Jxth9oXyz2fvbgxgFe8XYP9Q
+         gcRgYiTVgn2wYP1LTuA1SiucHQDqZ//hogpK9yQswv5DR4ZNGsbJc2dsgpW+/8Y7oS
+         YD1btsr+EUffg==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 X-Spam-Level: 
@@ -32,28 +32,28 @@ X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 11A22C023;
-        Thu, 27 Apr 2023 13:23:47 +0200 (CEST)
+        by nautica.notk.org (Postfix) with ESMTPS id 2F438C009;
+        Thu, 27 Apr 2023 13:23:52 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1682594633; bh=s+rCY3PhNsjKtAMo7ceBkqmXMZyC1GJyZBLyjIlkj7k=;
+        t=1682594639; bh=ktwVTjkmEChjhY/kRpODTnUXv8zYYBOjSBS7MBgR468=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-        b=ZlmRSHYPRZOSAJgH54xjFLq2yzzElppfvubM0NynWTo1tmNsz3qHQbcee2Isz7ceY
-         3yZTE8Mq4ZakBNtUU3Z8JW+zsI0+DSqJJVDmSRze2XwOiaz+0HAcDpwo0KTz4ZnMRj
-         xW5UpirTNghyfFGznRoDpDfSKqDBV2VG2eF9WPOaZmZ30IJK7qBPrJQKZsZ1nF6GSz
-         IITwI9V4yauR7QtwkL+88D1Cch00cRg2I1Bhoy4I7JswnvdZfWwu2WwaGvRqhzlXWj
-         PjOvZbgBLlASMztmYMZkMIa79mkCUofMCdEtLZ79Kry7mT13q2+X5bK367zWB7+Bpu
-         aJPlWpR7W1OgA==
+        b=GaPAOn9ax4E4wXFYH9FS+G/gn+WN8TnFfXvp/VD6Wr1pstK3XxHXSMVNHqAkxzUxb
+         vXr7yXzu1V6sn6k7t5eY7xVCFHrn1aRD36Gi/ktPRn1mOaH97Zhj+ZJ07WiI+Sh/+7
+         PweTC8jln3zqzitON0FKtdXhM31TisXEoatiLlom7MaKFZLAKxw6OIylDIyTwT2+J0
+         KXBGojHZXOqAoAUiSNNynMQMhF3OIStrkizhMJP4vLxoEy+yeWa/j4lDXkHZGGS265
+         3IwECDv8OH2AzPyDfSDddoiAGaX8cSdWmyctMvvlThKxwwghlyQMpkO8ebxQXsQAvV
+         6NKgXWyaHiD2w==
 Received: from [127.0.0.2] (localhost [::1])
-        by odin.codewreck.org (OpenSMTPD) with ESMTP id 224b0460;
+        by odin.codewreck.org (OpenSMTPD) with ESMTP id d47cdf86;
         Thu, 27 Apr 2023 11:23:38 +0000 (UTC)
 From:   Dominique Martinet <asmadeus@codewreck.org>
-Date:   Thu, 27 Apr 2023 20:23:35 +0900
-Subject: [PATCH 2/5] 9p: virtio: fix unlikely null pointer deref in
- handle_rerror
+Date:   Thu, 27 Apr 2023 20:23:36 +0900
+Subject: [PATCH 3/5] 9p: virtio: make sure 'offs' is initialized in
+ zc_request
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230427-scan-build-v1-2-efa05d65e2da@codewreck.org>
+Message-Id: <20230427-scan-build-v1-3-efa05d65e2da@codewreck.org>
 References: <20230427-scan-build-v1-0-efa05d65e2da@codewreck.org>
 In-Reply-To: <20230427-scan-build-v1-0-efa05d65e2da@codewreck.org>
 To:     Eric Van Hensbergen <ericvh@gmail.com>,
@@ -66,39 +66,36 @@ To:     Eric Van Hensbergen <ericvh@gmail.com>,
 Cc:     v9fs@lists.linux.dev, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Dominique Martinet <asmadeus@codewreck.org>
 X-Mailer: b4 0.13-dev-f371f
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1336;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1151;
  i=asmadeus@codewreck.org; h=from:subject:message-id;
- bh=uAxOy5RN+SshQ0IlB7WUwAUYTCBMSrvtKIu4Ytp0HO8=;
- b=owEBbQKS/ZANAwAIAatOm+xqmOZwAcsmYgBkSls6sv0W5uY/qDr+rJzbHgv/8wIRfEH4Mb226
- 8L3vvejGgOJAjMEAAEIAB0WIQT8g9txgG5a3TOhiE6rTpvsapjmcAUCZEpbOgAKCRCrTpvsapjm
- cIY9D/sG6txif6f/ao9Jzx0NwqwbUftDmaENl23wBkDzshsr8eDrKr1JyNsvgNIy0v6ToBG4q+1
- aQ80V4X+/VM0nOAJ+fynVm4z21W1K2oNfgXRTdYzERfDUMkSPlzuiowECY/hJzeyFSoqyNaAFGW
- 1lHtKoo6hdOmG9Wgr/0GmRXtQUYk+SXyl0fOX7et/7ASmTSv8XSZtazNY3FNX1SiFotyIJ7rxN+
- +TqIuai/zi4c/PeFTzOIUUUoTLUJYKleI0dMED7bGvTY1l4wqftWD15r76gcjO1zzbkFgrFn9DN
- vu8Srzkh7Ctmrw1aJR7p+ot7WeHZgD4sxxXcbySpZ24ziw4RRgaJuVd5HZsJ7fTuYwRNILXEfZD
- u3Yji+B2kJJqDi1PV6gn/9T9EbH8ftvqzUB7J8EU93kLbq/n4wF+trJoFD3FQAOt9LBP5ry+U/y
- KjdBLGKFgJGY1tpkOV+XXZnUCktQooqA2IH1zQNntrsjVfVujlYEnRRqVRbL/Ybj9S4qNEyAehQ
- SVVCiT9T9SXz+1h6t3lZU6RMrLPOtZq9qbKNmP8lQUJGUx2grjFs6GbSQfGjKvLVsBI9PqTqJ7l
- it7pKb4GSLaR56oan4Iy1BYy/bbGYcwxYbTmW73ZrahU5hD+KECcXRm3ORCS59QGNxiNtvY0pus
- ibuiffORyhotsvg==
+ bh=MTmAPJ1UlUfirYv8DGy7tXkrUTvjMEZVRvmnf3jNkLY=;
+ b=owEBbQKS/ZANAwAIAatOm+xqmOZwAcsmYgBkSls6AeJis7+yhZZ2w56xFaCjuExc7wUz20f1l
+ IVqwQ9n4JGJAjMEAAEIAB0WIQT8g9txgG5a3TOhiE6rTpvsapjmcAUCZEpbOgAKCRCrTpvsapjm
+ cGisD/9Eq2d3KddRTicpI39DZzltwawS/nAxGl9GSeTqTSN4fm+hsRzlV6MHofvjXhxVCdsA7BO
+ b/5apjazGZZIOD8cSC3LGikEEGhySt7vSuf0abg5Ux1/IekDadvtFVpnTSEYeILBE82+c9e4uyQ
+ 6QKzx7VNOBriS0/Q3Q9MXiP1dEOoLIVJhxIWy/wJHGgx23Kx0k7JdNexzmrisfoWJerNhZN2N7w
+ wZg4RvMrPJCyi5rvCs7NfAxP08M/91aYLqnYlRJl3nDrEJd7EsO6/gEcmlW3xm+UmVSHGULu4Em
+ Ue2RWrTE9UderjLPqKiLvftYTHj5Cpyt5duZ6sU9h/bMMw4Z0IK/u++Lr9mYB+XGRWXBhdft9ZC
+ uI+frkrXkGJP0NGFyIfrsDSbYs1Ma9ARicxfXFM2xXutUJZvpsF6aNBiIUK0XPS3nIRIjSt0HHD
+ 4JJFvQ6zfkcb1hcNrfrntwneTVaYoBMlVoZHTdYOX1HmoOb88NH1QWHY2b7DgtBS/91dsGqLpIy
+ x0cWtAMWp6WvdnwViuzJ038G+Hq6yvc+2bZBDerAgQc88Wo/EHpRivMWKmeJOAmHibF/PYtMNbM
+ 4OKQmEhlz+Ho9beZRwgyqiIPxsJ4ZxydEl0ONnaa7eX10VgCyuq70KwBM4k3FEMw6yBgTU2Y2dL
+ JXY+AQLEaBGbZbA==
 X-Developer-Key: i=asmadeus@codewreck.org; a=openpgp;
  fpr=B894379F662089525B3FB1B9333F1F391BBBB00A
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-handle_rerror can dereference the pages pointer, but it is not
-necessarily set for small payloads.
-In practice these should be filtered out by the size check, but
-might as well double-check explicitly.
+Similarly to the previous patch: offs can be used in handle_rerrors
+without initializing on small payloads; in this case handle_rerrors will
+not use it because of the size check, but it doesn't hurt to make sure
+it is zero to please scan-build.
 
-This fixes the following scan-build warnings:
-net/9p/trans_virtio.c:401:24: warning: Dereference of null pointer [core.NullDereference]
-                memcpy_from_page(to, *pages++, offs, n);
-                                     ^~~~~~~~
-net/9p/trans_virtio.c:406:23: warning: Dereference of null pointer (loaded from variable 'pages') [core.NullDereference]
-        memcpy_from_page(to, *pages, offs, size);
-                             ^~~~~~
+This fixes the following warning:
+net/9p/trans_virtio.c:539:3: warning: 3rd function call argument is an uninitialized value [core.CallAndMessage]
+                handle_rerror(req, in_hdr_len, offs, in_pages);
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 ---
@@ -106,18 +103,18 @@ Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index 3c27ffb781e3..2c9495ccda6b 100644
+index 2c9495ccda6b..f3f678289423 100644
 --- a/net/9p/trans_virtio.c
 +++ b/net/9p/trans_virtio.c
-@@ -384,7 +384,7 @@ static void handle_rerror(struct p9_req_t *req, int in_hdr_len,
- 	void *to = req->rc.sdata + in_hdr_len;
+@@ -428,7 +428,7 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
+ 	struct page **in_pages = NULL, **out_pages = NULL;
+ 	struct virtio_chan *chan = client->trans;
+ 	struct scatterlist *sgs[4];
+-	size_t offs;
++	size_t offs = 0;
+ 	int need_drop = 0;
+ 	int kicked = 0;
  
- 	// Fits entirely into the static data?  Nothing to do.
--	if (req->rc.size < in_hdr_len)
-+	if (req->rc.size < in_hdr_len || !pages)
- 		return;
- 
- 	// Really long error message?  Tough, truncate the reply.  Might get
 
 -- 
 2.39.2
