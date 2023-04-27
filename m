@@ -2,93 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 507976F034D
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 11:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F34556F0356
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 11:26:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243273AbjD0JWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 05:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45994 "EHLO
+        id S243313AbjD0JZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 05:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243169AbjD0JWT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 05:22:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBEC0E5
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 02:22:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B2B763BBC
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 09:22:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C726C433D2;
-        Thu, 27 Apr 2023 09:22:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682587322;
-        bh=Hc+prgqyI6U8bh6ADnvx72jWuMRELapBY2kvEdJN3HI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mdXT4uO7QT6UXMXw0DjjOP5X1nwMmYLNbpavPkFOuPHkEHa4X6ma1DVxMPJJo22hR
-         6EzKccmvGSh7x+ASsYqFULCMLYtffYEc8Zi+DRgITtwNsoxfRk8mCeb+DZa+TJYutH
-         nY2Hxl3uiJU8nYTSXtsVH72ns1n8jq13I0LEaxQ6TT7Cgcb2/owkokfsd3FrnKG8oA
-         IlJzyY1cyoK/7H/n2a+rQrYCLKeXJwsgJmQy9s6z4EwW8s5EylBWzr290kKn241Az9
-         4ugxv2uxokhVfx6mSQwBLWfHL3WAn3lidYDAFlo4j1NRR8TN42Yjz7ciUx12cW1eL/
-         94sQCf0T1u1xg==
-From:   Antoine Tenart <atenart@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net] net: ipv6: fix skb hash for some RST packets
-Date:   Thu, 27 Apr 2023 11:21:59 +0200
-Message-Id: <20230427092159.44998-1-atenart@kernel.org>
-X-Mailer: git-send-email 2.40.0
+        with ESMTP id S243254AbjD0JZr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 05:25:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8DAC3
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 02:24:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682587498;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=L0O0igeMSQGLMEnBfzsh0MXVaNX4GEBVOhYMjLuzzkc=;
+        b=iVJIwaKnzwFehSCRqPqeV1WiPyhM/cM9bxtD5mskJhz3E7S5Bsfe3OvYIvFuX3KjjNmFRx
+        XDuxe6dN7TANpYdABE5gyo4wo2MT2b5r3/f09ycaPx+yXuo78q6uFw2b+0FmHhi9mUQqcX
+        PH4G88BulI4Ui2CrOReczy/nMmcuepU=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-46-8aG6pd5GPbquluWUFd_e3g-1; Thu, 27 Apr 2023 05:24:57 -0400
+X-MC-Unique: 8aG6pd5GPbquluWUFd_e3g-1
+Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-3ef2cb3bfbfso23298871cf.0
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 02:24:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682587496; x=1685179496;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=L0O0igeMSQGLMEnBfzsh0MXVaNX4GEBVOhYMjLuzzkc=;
+        b=YRkcf3/H3uSiL83BdziapIZKB1nXYhbdOYUT+fN3cFBXmNkSaTvYIU2NlD+PbHFEL/
+         Vscrrfg514TdsrOB8QazGdEwkdnBPuB+kvlgfKsolGdQQ8HJizkr5qv4Jdm4gBScbF4/
+         cDtix6KQJjH7Ab2pUuum8cr7e38rvfiipbCxIUt6WBVhuUWBRBX91KZs0t7KT5WbZ/rQ
+         wXI6Fm1FiheYTlt2I+Ap3HEqThrjgYV2NA5noWlPKQxEmBqWw9b40DUQrlyP2uChAZw+
+         2ePA0FaUJwTZtFapnUNoy9RWFBsrripgsaZs93FqgQDDwnkjK3jMnqX1dOtQssSiPEe/
+         dDdA==
+X-Gm-Message-State: AC+VfDz9UR07j5PhazDyKCnYSX4XPclKC1X/J0ueVB3TzsI1dGNcdUEm
+        2cR1gMJu8DNf2zzopdzOuRGmPdegcqC7flrheDXMTYiehv/dHCeiccn1N04/fJbAtuYzzsaasVQ
+        QP4G/rpKok+sCf0ksmLp368LR4Gk=
+X-Received: by 2002:a05:622a:4d3:b0:3ef:4614:d0e9 with SMTP id q19-20020a05622a04d300b003ef4614d0e9mr1246972qtx.5.1682587496658;
+        Thu, 27 Apr 2023 02:24:56 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5f5uHqyMx2vL/NEFVqZMESMnKiMrL0YvMf9QVdVeR+hESJ51Zw9nqpowEwjDTXpdEbHVO/bg==
+X-Received: by 2002:a05:622a:4d3:b0:3ef:4614:d0e9 with SMTP id q19-20020a05622a04d300b003ef4614d0e9mr1246956qtx.5.1682587496406;
+        Thu, 27 Apr 2023 02:24:56 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-243-21.dyn.eolo.it. [146.241.243.21])
+        by smtp.gmail.com with ESMTPSA id ga21-20020a05622a591500b003e4f1b3ce43sm5077353qtb.50.2023.04.27.02.24.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Apr 2023 02:24:56 -0700 (PDT)
+Message-ID: <a67aa5c2997a816c2573a7f9da3215dbac20b32a.camel@redhat.com>
+Subject: Re: [PATCH net 2/3] ice: Fix ice VF reset during iavf initialization
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Wesierski, DawidX" <dawidx.wesierski@intel.com>,
+        "Maziarz, Kamil" <kamil.maziarz@intel.com>,
+        "Romanowski, Rafal" <rafal.romanowski@intel.com>
+Date:   Thu, 27 Apr 2023 11:24:52 +0200
+In-Reply-To: <CO1PR11MB5089EE31C5E298306B8BF7A5D6659@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20230425170127.2522312-1-anthony.l.nguyen@intel.com>
+         <20230425170127.2522312-3-anthony.l.nguyen@intel.com>
+         <20230426064941.GF27649@unreal>
+         <CO1PR11MB5089EE31C5E298306B8BF7A5D6659@CO1PR11MB5089.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The skb hash comes from sk->sk_txhash when using TCP, except for some
-IPv6 RST packets. This is because in tcp_v6_send_reset when not in
-TIME_WAIT the hash is taken from sk->sk_hash, while it should come from
-sk->sk_txhash as those two hashes are not computed the same way.
+On Wed, 2023-04-26 at 16:22 +0000, Keller, Jacob E wrote:
+> > From: Leon Romanovsky <leon@kernel.org>
+>=20
+> > But what I see is that ICE_VF_STATE_ACTIVE bit check is racy and
+> > you
+> > don't really fix the root cause of calling to reset without proper
+> > locking.
+> >=20
+>=20
+> I think there's some confusing re-use of words going on in the commit
+> message. It describes what the VF does while recovering and re-
+> initializing from a reset. I think the goal is to prevent starting
+> another reset until the first one has recovered.=C2=A0
 
-Packetdrill script to test the above,
+Uhmm... it looks like the current patch does not prevent two concurrent
+resets, I think the goal of this patch is let other vf related ndo
+restart gracefully when a VF reset is running.
 
-   0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-  +0 fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
-  +0 connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
+> I am not sure we can use a standard lock here because we likely do
+> want to be able to recover if the VF driver doesn't respond in a
+> sufficient time.
+>=20
+> I don't know exactly what problem this commit claims to fix.
 
-  +0 > (flowlabel 0x1) S 0:0(0) <...>
+I think this patch could benefit from at least a more
+descriptive/clearer commit message.
 
-  // Wrong ack seq, trigger a rst.
-  +0 < S. 0:0(0) ack 0 win 4000
+Thanks,
 
-  // Check the flowlabel matches prior one from SYN.
-  +0 > (flowlabel 0x1) R 0:0(0) <...>
-
-Fixes: 9258b8b1be2e ("ipv6: tcp: send consistent autoflowlabel in RST packets")
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
----
- net/ipv6/tcp_ipv6.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 1bf93b61aa06..e2898912c90c 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1064,7 +1064,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
- 			if (np->repflow)
- 				label = ip6_flowlabel(ipv6h);
- 			priority = sk->sk_priority;
--			txhash = sk->sk_hash;
-+			txhash = sk->sk_txhash;
- 		}
- 		if (sk->sk_state == TCP_TIME_WAIT) {
- 			label = cpu_to_be32(inet_twsk(sk)->tw_flowlabel);
--- 
-2.40.0
+Paolo
 
