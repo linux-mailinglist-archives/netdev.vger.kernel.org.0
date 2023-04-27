@@ -2,127 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 088996EFFD6
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 05:30:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B8326EFFE3
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 05:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242723AbjD0Dax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 23:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52138 "EHLO
+        id S242905AbjD0Di0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 23:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241612AbjD0Dav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 23:30:51 -0400
-Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5263A90;
-        Wed, 26 Apr 2023 20:30:49 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R751e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0Vh5kUNz_1682566243;
-Received: from 30.221.149.75(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0Vh5kUNz_1682566243)
-          by smtp.aliyun-inc.com;
-          Thu, 27 Apr 2023 11:30:44 +0800
-Message-ID: <a8555236-2bef-b0fb-d8a8-dde3058a2271@linux.alibaba.com>
-Date:   Thu, 27 Apr 2023 11:30:42 +0800
+        with ESMTP id S242863AbjD0DiO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 23:38:14 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C27340D2
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:38:13 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 41be03b00d2f7-51efefe7814so7950432a12.3
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:38:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682566692; x=1685158692;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ELPzBxhv31gJFedKIGPMZx4OFsn/wYXDDLjuH8tqHzk=;
+        b=cBQI4hqkpm2Ft2aqMx+KcZLPfkyFFBotV/uCaYCIQwkjMQ+Qh+zidrciBMIcedwfg3
+         r/IXJIdvn7kuGE9UdzvM5oyM+EEQ2Mq0eUHnncZgMRc66U2aPAWv7qSyPqjB8aMV0ibp
+         /CeHE5Q5Nepx7tPdBsmNQp7JhX3JgTg7B/rqAS8iYAxKmOi1V2R243JPrmnahHQy0e0v
+         sQ42oeYjNdI3iGNdr2Irnnu5+A3NwKUpMWzLa5KQHSdsfXiufXVQtj34CdEVLkcK0EAe
+         tQuhBVNKKM+lIw3ZeeRnkeffxPFy5olJifc8Ud8B+FmNFfM/tM85NsL6boO3i/O5sLAn
+         Horg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682566692; x=1685158692;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ELPzBxhv31gJFedKIGPMZx4OFsn/wYXDDLjuH8tqHzk=;
+        b=DEw2iCQtC3WtV3AiCmaR2lXq3lSXqbhpmUjLCOUaKAjZlCBKFvk0WQWzDkwfoSVVcm
+         fu5gpbqktgVAucIYWbYgkGYwlLw50zDrP8nWK5D5MWThSpFwkW1PvaOz2OpAjXZa8a+Y
+         D9tUBpd72KODr/M0Gihyy4JUFvmhDsH7VFQnctAS7es6MFG+2o8LrLTfpDh6f4CDV9Xn
+         z2vE0CQygDhRki64wbn24miTKC6C8NX6u4hmekLXh1boWrwV5cT6Y4422W0qAc4Fmab7
+         vZgJX+LmcmmY8vsAoV9Vh340+mZCUNhsrx/1r8cXWMXK08J20D3tmIkrwErI+WLmzXZC
+         GW8w==
+X-Gm-Message-State: AC+VfDyY8W5DNczJC6BhcU+fl4UjWcxcCMHhOln9HOfRDFrKp9uCPv4d
+        7KemBfL0wjEX8KF4beO4qXY=
+X-Google-Smtp-Source: ACHHUZ5DIrBPBMxtEwJWiZ8UQH3tdqxAQflcchlmaIUKOO+c5qwKs67QRubNzsX4xvVs7hzRjYxOig==
+X-Received: by 2002:a17:902:d3cc:b0:1a1:b172:5428 with SMTP id w12-20020a170902d3cc00b001a1b1725428mr71026plb.18.1682566692389;
+        Wed, 26 Apr 2023 20:38:12 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id jc13-20020a17090325cd00b001993a1fce7bsm10621600plb.196.2023.04.26.20.38.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Apr 2023 20:38:11 -0700 (PDT)
+Date:   Thu, 27 Apr 2023 11:38:06 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        Roopa Prabhu <roopa@nvidia.com>,
+        bridge@lists.linux-foundation.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [Question] Any plan to write/update the bridge doc?
+Message-ID: <ZEnuHppYIE3bCxEs@Laptop-X1>
+References: <ZEZK9AkChoOF3Lys@Laptop-X1>
+ <ZEakbR71vNuLnEFp@shredder>
+ <5ddac447-c268-e559-a8dc-08ae3d124352@blackwall.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-Subject: Re: [PATCH bpf-next 2/5] net/smc: allow smc to negotiate protocols on
- policies
-Content-Language: en-US
-To:     Kui-Feng Lee <sinquersw@gmail.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com, jaka@linux.ibm.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        pabeni@redhat.com, song@kernel.org, sdf@google.com,
-        haoluo@google.com, yhs@fb.com, edumazet@google.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org,
-        guwen@linux.alibaba.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <1682501055-4736-1-git-send-email-alibuda@linux.alibaba.com>
- <1682501055-4736-3-git-send-email-alibuda@linux.alibaba.com>
- <8e1694ec-9acf-a4bd-4dd2-28a258e1436b@gmail.com>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <8e1694ec-9acf-a4bd-4dd2-28a258e1436b@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-11.3 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5ddac447-c268-e559-a8dc-08ae3d124352@blackwall.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Apr 25, 2023 at 11:04:47AM +0300, Nikolay Aleksandrov wrote:
+> Always +1 for keeping the man pages up-to-date, but I tend to agree with Jakub as well
+> that it'd be nice to have an in-kernel doc which explains the uapi and potentially
+> at least some more obscure internals (if not all), we can insist on updating it
+> for new changes
+> 
+> I'd be happy to help fill such doc, but at the moment I don't have the
+> time to write the basis for it. As Hangbin nicely offered, I think we can start
+> there. For a start it'd be nice to make an initial outline of the different sections
+> and go on filling them from there.
+> 
+> E.g. as a starter something like (feel free to edit):
+> Introduction
+> Bridge internals (fdb, timers, MTU handling, fwding decisions, ports, synchronization)
+> STP (mst, rstp, timers, user-space stp etc)
+> Multicast (mdb, igmp, eht, vlan-mcast etc)
+> VLAN (filtering, options, tunnel...)
+> Switchdev
+> Netfilter
+> MRP/CFM (?)
+> FAQ
+> 
+> Each of these having uapi sections with descriptions. We can include references
+> to the iproute2 docs for cmd explanations and examples, but in this doc we'll have
+> the uapi descriptions and maybe some helpful information about internal implementation
+> that would save future contributors time.
+> 
+> At the very least we can do the uapi part for each section so options are described
+> and uapi nl attribute structures are explained.
 
-Hi Lee,
+OK, I will try start a draft version after the Labor holiday.
 
-
-On 4/27/23 12:47 AM, Kui-Feng Lee wrote:
->
->
-> On 4/26/23 02:24, D. Wythe wrote:
->> From: "D. Wythe" <alibuda@linux.alibaba.com>
->> diff --git a/net/smc/bpf_smc.c b/net/smc/bpf_smc.c
->> new file mode 100644
->> index 0000000..0c0ec05
->> --- /dev/null
->> +++ b/net/smc/bpf_smc.c
->> @@ -0,0 +1,201 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
-> ... cut ...
-
-Will fix it, Thanks.
-
->> +
->> +/* register ops */
->> +int smc_sock_register_negotiator_ops(struct smc_sock_negotiator_ops 
->> *ops)
->> +{
->> +    int ret;
->> +
->> +    ret = smc_sock_validate_negotiator_ops(ops);
->> +    if (ret)
->> +        return ret;
->> +
->> +    /* calt key by name hash */
->> +    ops->key = jhash(ops->name, sizeof(ops->name), strlen(ops->name));
->> +
->> +    spin_lock(&smc_sock_negotiator_list_lock);
->> +    if (smc_negotiator_ops_get_by_key(ops->key)) {
->> +        pr_notice("smc: %s negotiator already registered\n", 
->> ops->name);
->> +        ret = -EEXIST;
->> +    } else {
->> +        list_add_tail_rcu(&ops->list, &smc_sock_negotiator_list);
->> +    }
->> +    spin_unlock(&smc_sock_negotiator_list_lock);
->> +    return ret;
->> +}
->> +EXPORT_SYMBOL_GPL(smc_sock_register_negotiator_ops);
->
-> This and following functions are not specific to BPF, right?
-> I found you have more BPF specific code in this file in following
-> patches.  But, I feel these function should not in this file since
-> they are not BPF specific because file name "bpf_smc.c" hints.
-
-Yes. Logically those functions are not suitable for being placed in 
-"bpf_smc.c".
-However, since SMC is compiled as modules by default, and currently
-struct ops needs to be built in, or specific symbols will not be found 
-during linking.
-
-Of course, I can separate those this function in another new file, which 
-can also be built in.
-I may have to introduce a new KConfig likes SMC_NEGOTIATOR. But this 
-feature is  only effective
-when eBPF exists, so from the perspective of SMC, it would also be kind 
-of weird.
-
-But whatever, if you do think it's necessary, I can split it into two files.
-
-Besh wishes.
-D. Wythe
-
-
-
+Hangbin
