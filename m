@@ -2,119 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4CA06F0A69
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 19:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FD9A6F0A6C
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 19:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244135AbjD0RA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 13:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
+        id S244235AbjD0RBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 13:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243603AbjD0RA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 13:00:57 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C5110DC;
-        Thu, 27 Apr 2023 10:00:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=iogearbox.net; s=default2302; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=VY35CR0N+ZDTgEcRw5IUuyTLgtNiCtDZ/FIVsL1y6PM=; b=IyEXV1IrvDNYBhMp8VbJm9h2sY
-        vuqxYwjjCDOs+hrN0dXCufM/8KHB6lZowlIwIoueLR4nfON1ikjtCcYmSrzAm2t6CAcl/xxrERr2U
-        iMhnjGnFYxmXGQE4yueCE4CLLj1/7eWDS8BhNizWjGdqnNY20UPcr82hRYvHw2nkBAJ/3WldFOnaH
-        rpaxw75v3rZE/MR0PccJPokoNiNtpgNDXHv0q4AiY8gnKMLwb/aSys3yYuGrLig0lzGTfKIw5vcWw
-        aeLfssMRAxsoHIgozihQUDkL8S2OI4EkAhBcAVRfmfBHCOh0aYc65jCQl7D5xNE82QyMSOjKXEM/K
-        Z+haDrVQ==;
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ps4z6-000JZO-Kc; Thu, 27 Apr 2023 19:00:44 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ps4z5-000QuO-Us; Thu, 27 Apr 2023 19:00:43 +0200
-Subject: Re: [PATCH bpf-next V2 1/5] igc: enable and fix RX hash usage by
- netstack
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>, davem@davemloft.net,
-        bpf@vger.kernel.org
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        John Fastabend <john.fastabend@gmail.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        yoong.siang.song@intel.com, intel-wired-lan@lists.osuosl.org,
-        pabeni@redhat.com, jesse.brandeburg@intel.com,
-        Stanislav Fomichev <sdf@google.com>, kuba@kernel.org,
-        edumazet@google.com, hawk@kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <168182460362.616355.14591423386485175723.stgit@firesoul>
- <168182464270.616355.11391652654430626584.stgit@firesoul>
- <644544b3206f0_19af02085e@john.notmuch>
- <622a8fa6-ec07-c150-250b-5467b0cddb0c@redhat.com>
- <6446d5af80e06_338f220820@john.notmuch>
- <e6bc2340-9cb5-def1-b347-af25ce2f8225@redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <86517b44-b998-a4ac-da13-1f30d5f69975@iogearbox.net>
-Date:   Thu, 27 Apr 2023 19:00:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S244226AbjD0RBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 13:01:12 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CBA1710;
+        Thu, 27 Apr 2023 10:01:11 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id ffacd0b85a97d-2f7a7f9667bso5531982f8f.1;
+        Thu, 27 Apr 2023 10:01:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682614870; x=1685206870;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=74EPGNwikeuann9xM5Apbvxi0i4zuR5wbNUm9rP3II8=;
+        b=nqQLPJrKEW0nciyyLpopZssw1HoaO7EOomcRMYq/Qjr/lgkhZbBZUEkGQNK66IFV2t
+         jpj93puwT1lPuDhXYUeBnN5tQbwj6CglIe7Lr3dHvepWE/La7gV/guhND/SKO9rtvz24
+         I0yRr4Per9RKJUxSJkRSQ/u2dTAeoe7LypcFTQw5LMsuEogIP6b4XOyrKLkBQ++09Zt4
+         tWtYSwmuI6iJXNHhRIb40pirgKuSuHazqE1zJh/ZW7Z4eKF3p8OXDe9HegWE1sfdbl3p
+         jmbYAOGXanDpE2Qy0b2zpDWw+bnlxEJ3dcaahgGVUt/N31RxayKMorOnutXcdbS8m7wk
+         xuAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682614870; x=1685206870;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=74EPGNwikeuann9xM5Apbvxi0i4zuR5wbNUm9rP3II8=;
+        b=NmKwMVFVzyna7goVSe26IUOghFoqKGalLyuPtJXqVlf330qQ+TdkIt093MZyGeekOZ
+         Wg+95/umP0TTu7HNalU/jqw1P0DcgTEIcmZmxBP+Dp+DbazS/MaaV5uO05D/ZL37N2Sa
+         VPfNaL2mDwEb6U2CjcIf0gqqdX60Svq2OXN98xbRpi1Q+a753xAb34ei1CIS7uJYMV+0
+         TIqXZ2NInJMMSe9t7fbu9QMgw9B3ll1Ae84QWrI6u6CwDig1MNKcp1u2zLKuKzIXdmqI
+         jrn3boC0oJ+BE/qssqNU0gQ87engmV4lSYiWuE/QhluhevU3N9UJxN1oLiiojV8CkMaa
+         b7iA==
+X-Gm-Message-State: AC+VfDx/B9oD38wnG8aPp1JuT87lFFAkgY44ceeXr3P3CVLk3DySBjV6
+        s3gQ+JmMVCaqaLn749JEqCA=
+X-Google-Smtp-Source: ACHHUZ4hD+mxWMOl/dm6vqMfSaBhJE7SKYE4zLHQW06Qy2X2x9n/s3iv0+Sc3zRPabMK6093lHSrEA==
+X-Received: by 2002:a5d:6a8f:0:b0:2fb:2a43:4aa1 with SMTP id s15-20020a5d6a8f000000b002fb2a434aa1mr1797409wru.42.1682614869620;
+        Thu, 27 Apr 2023 10:01:09 -0700 (PDT)
+Received: from [192.168.1.50] ([81.196.40.55])
+        by smtp.gmail.com with ESMTPSA id a18-20020a056000101200b002e61e002943sm19011813wrx.116.2023.04.27.10.01.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Apr 2023 10:01:09 -0700 (PDT)
+Message-ID: <3854af21-822d-75f4-0e74-e1998143d59f@gmail.com>
+Date:   Thu, 27 Apr 2023 20:01:06 +0300
 MIME-Version: 1.0
-In-Reply-To: <e6bc2340-9cb5-def1-b347-af25ce2f8225@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] wifi: rtl8xxxu: fix authentication timeout due to
+ incorrect RCR value
+To:     Yun Lu <luyun_611@163.com>, Jes.Sorensen@gmail.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230427020512.1221062-1-luyun_611@163.com>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26889/Thu Apr 27 09:25:48 2023)
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
+In-Reply-To: <20230427020512.1221062-1-luyun_611@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/25/23 10:43 AM, Jesper Dangaard Brouer wrote:
-> On 24/04/2023 21.17, John Fastabend wrote:
->>>> Just curious why not copy the logic from the other driver fms10k, ice, ect.
->>>>
->>>>     skb_set_hash(skb, le32_to_cpu(rx_desc->wb.lower.hi_dword.rss),
->>>>              (IXGBE_RSS_L4_TYPES_MASK & (1ul << rss_type)) ?
->>>>              PKT_HASH_TYPE_L4 : PKT_HASH_TYPE_L3);
->>> Detail: This code mis-categorize (e.g. ARP) PKT_HASH_TYPE_L2 as
->>> PKT_HASH_TYPE_L3, but as core reduces this further to one SKB bit, it
->>> doesn't really matter.
->>>
->>>> avoiding the table logic. Do the driver folks care?
->>> The define IXGBE_RSS_L4_TYPES_MASK becomes the "table" logic as a 1-bit
->>> true/false table.  It is a more compact table, let me know if this is
->>> preferred.
->>>
->>> Yes, it is really upto driver maintainer people to decide, what code is
->>> preferred ?
->  >
->> Yeah doesn't matter much to me either way. I was just looking at code
->> compared to ice driver while reviewing.
+On 27/04/2023 05:05, Yun Lu wrote:
+> From: Yun Lu <luyun@kylinos.cn>
 > 
-> My preference is to apply this patchset. We/I can easily followup and
-> change this to use the more compact approach later (if someone prefers).
+> When using rtl8192cu with rtl8xxxu driver to connect wifi, there is a
+> probability of failure, which shows "authentication with ... timed out".
+> Through debugging, it was found that the RCR register has been inexplicably
+> modified to an incorrect value, resulting in the nic not being able to
+> receive authenticated frames.
+> 
+> To fix this problem, add regrcr in rtl8xxxu_priv struct, and store
+> the RCR value every time the register is writen, and use it the next
+> time the register need to be modified.
+> 
 
-Consistency might help imo and would avoid questions/confusion on /why/
-doing it differently for igc vs some of the others.
-
-> I know net-next is "closed", but this patchset was posted prior to the
-> close.  Plus, a number of companies are waiting for the XDP-hint for HW
-> RX timestamp.  The support for driver stmmac is already in net-next
-> (commit e3f9c3e34840 ("net: stmmac: add Rx HWTS metadata to XDP receive
-> pkt")). Thus, it would be a help if both igc+stmmac changes land in same
-> kernel version, as both drivers are being evaluated by these companies.
-
-Given merge window is open now and net-next closed, it's too late to land
-(unless Dave/Jakub thinks otherwise given it touches also driver bits).
-I've applied the series to bpf-next right now.
-
-Thanks,
-Daniel
+Can this bug be reproduced easily? Is it always the same bits which
+are mysteriously cleared from REG_RCR?
