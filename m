@@ -2,120 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 415F26F00F8
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:42:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A4246F00FC
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:43:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243052AbjD0GmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 02:42:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43710 "EHLO
+        id S242978AbjD0GnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 02:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242883AbjD0GmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:42:02 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EF54189;
-        Wed, 26 Apr 2023 23:42:01 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id 6a1803df08f44-5ed99ebe076so79143776d6.2;
-        Wed, 26 Apr 2023 23:42:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682577720; x=1685169720;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=hUY9Ucco++sG78RHMizLj+zEgER0yWkVH+fsX/Cg59I=;
-        b=dXtZGLE0tEkGM/piYB/CO5qklyOPvcEeuM11HqAFXFfJqLUwMjcVPdmODrWgVv3gw0
-         wgsvDElQwdqYMBmApG2dCGx5XYvkgqBhGPDbzlWs39jGAzwbBiVC0v7Q32ChrvCn89qi
-         xMsidnayNt8RejQitHQlQdqqYuvx+hVdOZbThdhP/nO5JEKZTunUOlrpOu9xrrbA1kfZ
-         5LFWJS8ip5QfysnlHAoMmaKsb7//ARSK81mRwrAzceh+eg1/iCqUlh++kEDyFgl7S9U7
-         +Avr/PsDSVOVhLC9PsrZYYecsw5LsaPUz/wC52Wm2AglIAiqxzIFSRb9Qfwt4J+pO6qb
-         xtAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682577720; x=1685169720;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hUY9Ucco++sG78RHMizLj+zEgER0yWkVH+fsX/Cg59I=;
-        b=gaeltmzG54T5HzTblIlPl4ZP52X2kXcm12eHUY9bg28SBZlFNCPchysYiSt+/LGMGq
-         3pIylag6jhXPUXvf2SRM0k5l4oCPam8i5NVsUFig2KqtiTVhSiFBQO9A5l6VbRLt6JSP
-         8mtmT7wN0myJ01OolEeVLwOr45lpnDCDyPIgcH5HeC96B9g+1lCvW9gDEo/TbYGx99yM
-         ANTEQtZF+wg2l55uoeeJDpEhhYwaOwNE28vP42f8OO/cb7OiAUnFpsIYGsKYuG1bpuki
-         IMqiYWRzmvB9aS2K89x9jQSorOhg/LGBsvrLgr1EZIWJOtlJNobfxW8nAIhxbRarMp2c
-         EdqA==
-X-Gm-Message-State: AC+VfDxuLYPjsFUHMrTSy//qZRrQNwTOJPozks4FUjR5j0nRdTHer9f7
-        ZFtbsHlFskc28Heoo7cNRjwx9hhfBDC3cJ2HAojnIgyB5fY=
-X-Google-Smtp-Source: ACHHUZ6hs6iKRwlsVo3xP3+HN8ozyMFdoR8aTWLMSlGeSXcok5rp4uqlqooS3et25ZaUq5x9wTHy/7FTKlTWXv3NQxY=
-X-Received: by 2002:a05:6214:5293:b0:5dd:aee7:e016 with SMTP id
- kj19-20020a056214529300b005ddaee7e016mr374675qvb.8.1682577720202; Wed, 26 Apr
- 2023 23:42:00 -0700 (PDT)
+        with ESMTP id S229601AbjD0GnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:43:24 -0400
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6C319AB;
+        Wed, 26 Apr 2023 23:43:22 -0700 (PDT)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 4301F24E246;
+        Thu, 27 Apr 2023 14:43:20 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 27 Apr
+ 2023 14:43:19 +0800
+Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
+ (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 27 Apr
+ 2023 14:43:19 +0800
+Message-ID: <2c43c2e3-afdb-6bee-37bc-655c0a1b0762@starfivetech.com>
+Date:   Thu, 27 Apr 2023 14:43:17 +0800
 MIME-Version: 1.0
-From:   Bilal Khan <bilalkhanrecovered@gmail.com>
-Date:   Thu, 27 Apr 2023 11:41:48 +0500
-Message-ID: <CA++M5e+Edbq8qnYgGvG=oR_=Cecou_NTqxH2Z-Ld9=SdhQQLQg@mail.gmail.com>
-Subject: [PATCH] Fix grammar in ip-rule(8) man page
-To:     majordomo@vger.kernel.org
-Cc:     netdev@vger.kernel.org
-Content-Type: multipart/mixed; boundary="00000000000052101e05fa4ba724"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v1 1/2] dt-bindings: net: motorcomm: Add pad driver
+ strength cfg
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Peter Geis <pgwipeout@gmail.com>,
+        Frank <Frank.Sae@motor-comm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+References: <20230426063541.15378-1-samin.guo@starfivetech.com>
+ <20230426063541.15378-2-samin.guo@starfivetech.com>
+ <fef3aed8-b664-4d36-94f5-266cea4c57a7@lunn.ch>
+From:   Guo Samin <samin.guo@starfivetech.com>
+In-Reply-To: <fef3aed8-b664-4d36-94f5-266cea4c57a7@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX162.cuchost.com
+ (172.16.6.72)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000052101e05fa4ba724
-Content-Type: text/plain; charset="UTF-8"
+Re: [PATCH v1 1/2] dt-bindings: net: motorcomm: Add pad driver strength cfg
+From: Andrew Lunn <andrew@lunn.ch>
+to: Samin Guo <samin.guo@starfivetech.com>
+data: 2023/4/26
 
-Hey there,
+> On Wed, Apr 26, 2023 at 02:35:40PM +0800, Samin Guo wrote:
+>> The motorcomm phy (YT8531) supports the ability to adjust the drive
+>> strength of the rx_clk/rx_data, the value range of pad driver
+>> strength is 0 to 7.
+>>
+>> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+>> ---
+>>  .../devicetree/bindings/net/motorcomm,yt8xxx.yaml      | 10 ++++++++++
+>>  1 file changed, 10 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+>> index 157e3bbcaf6f..e648e486b6d8 100644
+>> --- a/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+>> +++ b/Documentation/devicetree/bindings/net/motorcomm,yt8xxx.yaml
+>> @@ -18,6 +18,16 @@ properties:
+>>        - ethernet-phy-id4f51.e91a
+>>        - ethernet-phy-id4f51.e91b
+>>  
+>> +  rx-clk-driver-strength:
+>> +    description: drive strength of rx_clk pad.
+>> +    enum: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+>> +    default: 3
+> 
+> What do the numbers mean? What are the units? mA?
+> 
+>      Andrew
 
-I have identified a small grammatical error in the ip-rule(8) man
-page, and have created a patch to fix it. The current first line of
-the DESCRIPTION section reads:
+Hi Andrew,
 
-> ip rule manipulates rules in the routing policy database control the route selection algorithm.
+They represent the gradient of the current, which should be the higher the value, the greater the current.
+However, there is no exact current value to determine from YT8531 datasheet.
+Probably Motorcomm @Frank.sea knows what it means.
 
-This sentence contains a grammatical error, as "control" should either
-be changed to "that controls" (to apply to "database") or "to control"
-(to apply to "manipulates"). I have updated the sentence to read:
+Description: Drive strenght of rx_clk pad.
+3'b111: strongest;
+3'b000: weakest.
+Default: 0x3
 
-> ip rule manipulates rules in the routing policy database that controls the route selection algorithm.
 
-This change improves the readability and clarity of the ip-rule(8) man
-page and makes it easier for users to understand how to use the ip
-rule command.
-
-I have attached the patch file
-"0001-Fix-grammar-in-ip-rule-8-man-page.patch" to this email and would
-appreciate any feedback or suggestions for improvement.
-
---00000000000052101e05fa4ba724
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="0001-Fix-grammar-in-ip-rule-8-man-page.patch"
-Content-Disposition: attachment; 
-	filename="0001-Fix-grammar-in-ip-rule-8-man-page.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_lgyr8zkp0>
-X-Attachment-Id: f_lgyr8zkp0
-
-RnJvbSBiZThmNWJhMjM2MDk3N2I2YmU2OTdkMDM2YmQ5NTE1YWJlNTFkYzg1IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBCaWxhbCBLaGFuIDxiaWxhbGtoYW5yZWNvdmVyZWRAZ21haWwu
-Y29tPgpEYXRlOiBXZWQsIDI2IEFwciAyMDIzIDE4OjE1OjAzICswNTAwClN1YmplY3Q6IFtQQVRD
-SF0gRml4IGdyYW1tYXIgaW4gaXAtcnVsZSg4KSBtYW4gcGFnZQoKVGhlIGN1cnJlbnQgZGVzY3Jp
-cHRpb24gb2YgdGhlIGlwLXJ1bGUoOCkgbWFuIHBhZ2UgY29udGFpbnMgYSBncmFtbWF0aWNhbCBl
-cnJvciB0aGF0IG1ha2VzIGl0IGRpZmZpY3VsdCB0byB1bmRlcnN0YW5kLgoKVGhpcyBjb21taXQg
-Zml4ZXMgdGhlIGVycm9yIGJ5IGNoYW5naW5nIHRoZSB3b3JkICdjb250cm9sJyB0byAndGhhdCBj
-b250cm9scycsIHdoaWNoIGNsYXJpZmllcyB0aGUgbWVhbmluZyBvZiB0aGUgc2VudGVuY2UuIFRo
-ZSBjaGFuZ2Ugd2FzIG1hZGUgaW4gdGhlIERFU0NSSVBUSU9OIHNlY3Rpb24gb2YgdGhlIG1hbiBw
-YWdlLgoKVGhpcyBjb21taXQgd2lsbCBpbXByb3ZlIHRoZSByZWFkYWJpbGl0eSBhbmQgY2xhcml0
-eSBvZiB0aGUgaXAtcnVsZSg4KSBtYW4gcGFnZSBhbmQgbWFrZSBpdCBlYXNpZXIgZm9yIHVzZXJz
-IHRvIHVuZGVyc3RhbmQgaG93IHRvIHVzZSB0aGUgaXAgcnVsZSBjb21tYW5kLgotLS0KIG1hbi9t
-YW44L2lwLXJ1bGUuOCB8IDIgKy0KIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBk
-ZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL21hbi9tYW44L2lwLXJ1bGUuOCBiL21hbi9tYW44L2lw
-LXJ1bGUuOAppbmRleCA3NDNkODhjNi4uYzkwZDBlODcgMTAwNjQ0Ci0tLSBhL21hbi9tYW44L2lw
-LXJ1bGUuOAorKysgYi9tYW4vbWFuOC9pcC1ydWxlLjgKQEAgLTg4LDcgKzg4LDcgQEAgaXAtcnVs
-ZSBcLSByb3V0aW5nIHBvbGljeSBkYXRhYmFzZSBtYW5hZ2VtZW50CiAuU0ggREVTQ1JJUFRJT04K
-IC5JIGlwIHJ1bGUKIG1hbmlwdWxhdGVzIHJ1bGVzCi1pbiB0aGUgcm91dGluZyBwb2xpY3kgZGF0
-YWJhc2UgY29udHJvbCB0aGUgcm91dGUgc2VsZWN0aW9uIGFsZ29yaXRobS4KK2luIHRoZSByb3V0
-aW5nIHBvbGljeSBkYXRhYmFzZSB0aGF0IGNvbnRyb2xzIHRoZSByb3V0ZSBzZWxlY3Rpb24gYWxn
-b3JpdGhtLgogCiAuUAogQ2xhc3NpYyByb3V0aW5nIGFsZ29yaXRobXMgdXNlZCBpbiB0aGUgSW50
-ZXJuZXQgbWFrZSByb3V0aW5nIGRlY2lzaW9ucwotLSAKMi4yNS4xCgo=
---00000000000052101e05fa4ba724--
+Best regards,
+Samin
