@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 479A56EFFE8
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 05:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70E566EFFE9
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 05:39:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242875AbjD0Dji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 23:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54716 "EHLO
+        id S242924AbjD0Djo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 23:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242874AbjD0Dja (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 23:39:30 -0400
+        with ESMTP id S242907AbjD0Djd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 23:39:33 -0400
 Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A223C3F
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:39:28 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-63b60365f53so9654610b3a.0
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:39:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E63212D
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:39:32 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id d2e1a72fcca58-63b50a02bffso6506406b3a.2
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:39:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682566767; x=1685158767;
+        d=gmail.com; s=20221208; t=1682566772; x=1685158772;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=485fSWTzxfO4MaaYixxcOQ+EgmPdfYoR20+Ca5UsZVM=;
-        b=dIrrH3IwkElvUoeIorcmymSLJ+4vaxcoTUhLWSQkA5t4Rd7+Tv2HHPMtKou7/M8Gaj
-         II4m/XOm0jDh1c7fC4n9/6YX8oZ1gpUehmNCrUkEv6fLjsq47oYLyyUMEFHFT8mT9l9f
-         nXU1GGUQVhdt65QQwJI5KZTBsDike6EjCrE/LeZtINZPlBs/ih7OUvj6f8f2bvCdLw0C
-         tobufRF7PkpL7YDjSom6Vzg+dmX2pWK81JvGsLrlr33ayhVowLnyVGxffGkKreLe3uzi
-         Mw88VGF6U/Y3skA2fg7JOhmJYRBNwkW6fvo8G7dkXsCl9u2u9y+Ttk/Ae3S34ukxiCVi
-         fHMA==
+        bh=YeQDXm9CMBUR8AZx0MS+ObA2072iRcqiixIQ1S3eJEE=;
+        b=i7OmKyDE6tnYR2ACl3ePynhT8RBKJNfahShx4vwm+3sC6PnsUR5SJqewoJ8u+CDXuH
+         57pANs3xxyAgz2WOqhrefmvv4RMylEfj1x3MtEQJLbDJKcBrcE5nLjggKmgCpJK6w4NO
+         upind+RIzGeycafQGdkZeod+crBUJUgX78rDLQiMfB2WnEnDGZEl1hCQoalRjYnIo9gn
+         ZU96JDk/L6YdTXp11IDimdag8Nmket2RHuNJVLVdEBIr3xLorP9/26FIdPmisRDP1liQ
+         /ndtUw36nwwCbg2hIaxdbkcFZuIy6PvffuBGijNjMQsmyUUKdgs9jU1lNQAd3Yu7fi74
+         mDNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682566767; x=1685158767;
+        d=1e100.net; s=20221208; t=1682566772; x=1685158772;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=485fSWTzxfO4MaaYixxcOQ+EgmPdfYoR20+Ca5UsZVM=;
-        b=Z9cPB4l441oOX3Dk9crOZzgWsAPT5x0XwW+L2u/x1fi3JBDETIlEs5B1T1m50csRKj
-         fB7NqJM3KPAicHfIYuSDWu14Xetq7VDWFg/TwO2yGOhXzyE78ILxF1cvMjCXDVOej56A
-         8KeaiqR1DY6p4AV5iblNaQ1Vb+MN1HYxsiQmk+z+rVX8T4ya7OX2C58oxf3hHuFGal8N
-         SJ0nJ+NSMbSgRbghekGSevbQTbJ/OyYL3NhTaMlpzDs1xh0WQHK4QHB5U9DrkYq5PgxO
-         5K/ObnWTofG/gVPZAYmICk8DJI7aL9+j4flQtcxwXZ6pTsxS4CUVShN0OIoApn/kQTog
-         TBiw==
-X-Gm-Message-State: AC+VfDxo7Dh1wWttANw/QOF0ejenaKuGFzyDjDuUqbMKmwiW6Nf1ePoq
-        fuhdBzm426Ufl6uPtxIFWLXoEMEzARN9pEtl
-X-Google-Smtp-Source: ACHHUZ6F2pTSLl+BGQIFDZ/vuR4lh+NyXbbBcqna6OiEOdITBL9BY7BOXSzpF8/0HjWKPpO9UYNTMQ==
-X-Received: by 2002:a05:6a00:2d84:b0:63b:e4:554 with SMTP id fb4-20020a056a002d8400b0063b00e40554mr548530pfb.4.1682566767326;
-        Wed, 26 Apr 2023 20:39:27 -0700 (PDT)
+        bh=YeQDXm9CMBUR8AZx0MS+ObA2072iRcqiixIQ1S3eJEE=;
+        b=IN15TepIRQqDHqjYXUlaCAyqzLSoJQc1tS2aZeAG2SJSRBBVMe6P9n/7p+h3R6HKqT
+         gHyGF6A6vaTy5/taa+KnRHbU9FKxcWiwLD367ikBWWZDHFKtsZaoAAmQlpNlJ4DkoFsY
+         X52P2hNw3q8CnF7M6Djt7a4GACHb6gKiKnaJUn8CEAIVAIgR63popqflf+QT5Xufx536
+         R9W7ikKK6gCdl8yhexet0JEqH2hIQ6HOF0/s1G6g+MZ4bJNbY1zSw95TNzo+5HzMppZL
+         tB7uXth0FN9tJ8wI5DAszNggk6H36Yyr2nO1WgrKj8JEnBD9D/fqZlZSaGYCU6TyVvEw
+         N6Pw==
+X-Gm-Message-State: AC+VfDwGsUdWObnqiIozdk6RFseEjISMLjY7/oy9XOn+FSphrx5By1a8
+        um9knLQfl7cFv+jvH/zkbbFrJEIuQGIYiHOS
+X-Google-Smtp-Source: ACHHUZ7wT9Tf5llVbur+R3hv6WRWrPmXmxbMT4a68MdmTzSv6XqF/1f8NqInw7ZileMIej8nHpOpJA==
+X-Received: by 2002:a05:6a00:218e:b0:638:7e00:3737 with SMTP id h14-20020a056a00218e00b006387e003737mr361256pfi.23.1682566771688;
+        Wed, 26 Apr 2023 20:39:31 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id h17-20020a056a001a5100b005abc30d9445sm12017743pfv.180.2023.04.26.20.39.23
+        by smtp.gmail.com with ESMTPSA id h17-20020a056a001a5100b005abc30d9445sm12017743pfv.180.2023.04.26.20.39.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Apr 2023 20:39:26 -0700 (PDT)
+        Wed, 26 Apr 2023 20:39:31 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
         Liang Li <liali@redhat.com>,
         Vincent Bernat <vincent@bernat.ch>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 net 3/4] selftests: forwarding: lib: add netns support for tc rule handle stats get
-Date:   Thu, 27 Apr 2023 11:39:08 +0800
-Message-Id: <20230427033909.4109569-4-liuhangbin@gmail.com>
+Subject: [PATCHv2 net 4/4] kselftest: bonding: add num_grat_arp test
+Date:   Thu, 27 Apr 2023 11:39:09 +0800
+Message-Id: <20230427033909.4109569-5-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230427033909.4109569-1-liuhangbin@gmail.com>
 References: <20230427033909.4109569-1-liuhangbin@gmail.com>
@@ -77,26 +77,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+TEST: num_grat_arp (active-backup miimon num_grat_arp 10)           [ OK ]
+TEST: num_grat_arp (active-backup miimon num_grat_arp 20)           [ OK ]
+TEST: num_grat_arp (active-backup miimon num_grat_arp 30)           [ OK ]
+TEST: num_grat_arp (active-backup miimon num_grat_arp 50)           [ OK ]
+
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- tools/testing/selftests/net/forwarding/lib.sh | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../drivers/net/bonding/bond_options.sh       | 50 +++++++++++++++++++
+ .../drivers/net/bonding/bond_topo_3d1c.sh     |  2 +
+ 2 files changed, 52 insertions(+)
 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index d47499ba81c7..426bab05fe0a 100755
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -773,8 +773,9 @@ tc_rule_handle_stats_get()
- 	local id=$1; shift
- 	local handle=$1; shift
- 	local selector=${1:-.packets}; shift
-+	local netns=${1:-""}; shift
+diff --git a/tools/testing/selftests/drivers/net/bonding/bond_options.sh b/tools/testing/selftests/drivers/net/bonding/bond_options.sh
+index db29a3146a86..607ba5c38977 100755
+--- a/tools/testing/selftests/drivers/net/bonding/bond_options.sh
++++ b/tools/testing/selftests/drivers/net/bonding/bond_options.sh
+@@ -6,6 +6,7 @@
+ ALL_TESTS="
+ 	prio
+ 	arp_validate
++	num_grat_arp
+ "
  
--	tc -j -s filter show $id \
-+	tc $netns -j -s filter show $id \
- 	    | jq ".[] | select(.options.handle == $handle) | \
- 		  .options.actions[0].stats$selector"
+ REQUIRE_MZ=no
+@@ -255,6 +256,55 @@ arp_validate()
+ 	arp_validate_ns "active-backup"
  }
+ 
++garp_test()
++{
++	local param="$1"
++	local active_slave exp_num real_num i
++	RET=0
++
++	# create bond
++	bond_reset "${param}"
++
++	bond_check_connection
++	[ $RET -ne 0 ] && log_test "num_grat_arp" "$retmsg"
++
++
++	# Add tc rules to count GARP number
++	for i in $(seq 0 2); do
++		tc -n ${g_ns} filter add dev s$i ingress protocol arp pref 1 handle 101 \
++			flower skip_hw arp_op request arp_sip ${s_ip4} arp_tip ${s_ip4} action pass
++	done
++
++	# Do failover
++	active_slave=$(cmd_jq "ip -n ${s_ns} -d -j link show bond0" ".[].linkinfo.info_data.active_slave")
++	ip -n ${s_ns} link set ${active_slave} down
++
++	exp_num=$(echo "${param}" | cut -f6 -d ' ')
++	sleep $((exp_num + 2))
++
++	active_slave=$(cmd_jq "ip -n ${s_ns} -d -j link show bond0" ".[].linkinfo.info_data.active_slave")
++
++	# check result
++	real_num=$(tc_rule_handle_stats_get "dev s${active_slave#eth} ingress" 101 ".packets" "-n ${g_ns}")
++	if [ "${real_num}" -ne "${exp_num}" ]; then
++		echo "$real_num garp packets sent on active slave ${active_slave}"
++		RET=1
++	fi
++
++	for i in $(seq 0 2); do
++		tc -n ${g_ns} filter del dev s$i ingress
++	done
++}
++
++num_grat_arp()
++{
++	local val
++	for val in 10 20 30 50; do
++		garp_test "mode active-backup miimon 100 num_grat_arp $val peer_notify_delay 1000"
++		log_test "num_grat_arp" "active-backup miimon num_grat_arp $val"
++	done
++}
++
+ trap cleanup EXIT
+ 
+ setup_prepare
+diff --git a/tools/testing/selftests/drivers/net/bonding/bond_topo_3d1c.sh b/tools/testing/selftests/drivers/net/bonding/bond_topo_3d1c.sh
+index 4045ca97fb22..69ab99a56043 100644
+--- a/tools/testing/selftests/drivers/net/bonding/bond_topo_3d1c.sh
++++ b/tools/testing/selftests/drivers/net/bonding/bond_topo_3d1c.sh
+@@ -61,6 +61,8 @@ server_create()
+ 		ip -n ${g_ns} link set s${i} up
+ 		ip -n ${g_ns} link set s${i} master br0
+ 		ip -n ${s_ns} link set eth${i} master bond0
++
++		tc -n ${g_ns} qdisc add dev s${i} clsact
+ 	done
+ 
+ 	ip -n ${s_ns} link set bond0 up
 -- 
 2.38.1
 
