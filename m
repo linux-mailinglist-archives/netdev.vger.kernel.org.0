@@ -2,98 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA2976F0112
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:53:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2966F011B
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242994AbjD0Gxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 02:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47918 "EHLO
+        id S242942AbjD0G4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 02:56:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243076AbjD0Gxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:53:54 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AAC9422B
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:53:51 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-94a342f7c4cso1498775166b.0
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:53:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20221208.gappssmtp.com; s=20221208; t=1682578430; x=1685170430;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0Bnn+L98JN/4qM0e+6n+AjRFLAPjUcjxPVKyMKFNko0=;
-        b=x+KCZM1mYhkNteSG9XZJVMVIR74VJjHNNbwvscrxLPCuUKv1T2NVXmvn0tM92oZfwU
-         UL4fZvgN7URR8n2+hjv9x3vF0QLUGSSEDTCIYGSh5hYAJNbd4jk2hpgjic3Im+yLlc5s
-         RGNXSD7vJJ9j9v/Dbhlpv5k+XYTUlCaE4xn7Fk8aSFKrOuQTsGFiaXiMDQ+tkciiumxg
-         j+WzmYFWRUrRiAVXYZ4cecBdZf+6XdBCs1v2MoHWlPGskhd+BUntZ1kuAj/BnLAakpPQ
-         PG6l8Qaa4fDumGHNgWxywl0ae9qYfD5gQpeO7hzbA98965qBcDJ/BLF8joiLKyJ8grfi
-         Hrrg==
+        with ESMTP id S242702AbjD0G4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:56:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D81344B0
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:56:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682578563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fRH+mkm7wTLmUFms37x8ndQ9a+fMCIyXg2Z2DM7enPw=;
+        b=Y2eMyJvmv+UKXgMkzG6z6U1aCUNRicJ1CjZ3qNG6DXbaS6+tpmZ6HISl8j03EvmV+UFAzQ
+        php96D4GpeZUr4O1lJT0wJlJjC4uN+uFX19qoE2hDaFb1CttcF2R47nohuXnXoZbG92OPJ
+        AXxyo0w77EkVcuKxoPxDog4U9it3pvQ=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-596-nizsMZG_Mtu_2jBvd1jx7A-1; Thu, 27 Apr 2023 02:56:00 -0400
+X-MC-Unique: nizsMZG_Mtu_2jBvd1jx7A-1
+Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-3edbe09ba35so12425531cf.1
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:56:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682578430; x=1685170430;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0Bnn+L98JN/4qM0e+6n+AjRFLAPjUcjxPVKyMKFNko0=;
-        b=mBH7K5vZWXFl9CF4KrylmzTSlnN5kQ6k0cRl474G5xRbbHs66tQDY3VhpynabqqHQZ
-         WlM9ZrGxC2vw/Oq/89q0/MFvRyXZetOckhtPrYDPw6x0UPPuKtRefFFoLVXQd3nUAHY5
-         V4ahjblN0YG12Z/Ypz9vvJ6CZFd+YbXaXZ5hy6aNrZicgnTvaEEVbkjn9tggpsLh2ozR
-         Recd29LpyEKs6CVKeIH0bLDHcsLDb4NUtTJ9U2R7X5hQuDFBfV29m+fR8pGmEW0j7OwP
-         iVUXWer3LVQ5glVoIoqcKs7lPUJCKo/3+skJyHAWW8DQWrYqMl0zZIoqh4PDCsUo93UW
-         4m6A==
-X-Gm-Message-State: AC+VfDzKauxHBSxGk4DkjTobD1KIWn+h6DbhVGQXHg9oYiyMcP8duMzy
-        AaCsMNVrH4gPxfhggfkaxWf2WwvSp/pFXw53R4I=
-X-Google-Smtp-Source: ACHHUZ6ISfZV8uSG+2XXTlduM8XRLGWsKZByg3dxWjwS6/5+547JQZK1yIEoAIm2bHeRG3dNPDT7Dw==
-X-Received: by 2002:a17:907:8687:b0:94a:5819:5a2b with SMTP id qa7-20020a170907868700b0094a58195a2bmr550910ejc.33.1682578429614;
-        Wed, 26 Apr 2023 23:53:49 -0700 (PDT)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id pv4-20020a170907208400b0094f49f58019sm9112667ejb.27.2023.04.26.23.53.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Apr 2023 23:53:49 -0700 (PDT)
-Message-ID: <13c54cd1-6fb7-b6b8-79a1-af0a95793700@blackwall.org>
-Date:   Thu, 27 Apr 2023 09:53:48 +0300
+        d=1e100.net; s=20221208; t=1682578560; x=1685170560;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fRH+mkm7wTLmUFms37x8ndQ9a+fMCIyXg2Z2DM7enPw=;
+        b=dngp6BPHRUR/1xMf4QK9TZxX6Xvu2y8fO0tkR4TGo9oZ6zq9lZGwFbf8w/VHC3CqmB
+         LvOzwvrZWYiTK644KUNKWAe7VIw0rSLG1ZziysVde6mgo+pWX0eN33C2WyXO6OIWcMvI
+         VBlD6WVSqNB4+mV6Ywr0FphzmbtigitLU6U7P0qeQvWBnLAMhyxi/Cqhv8yD/fYdxX1j
+         AfhhVffE+6Tpz7u95vyIISR9qWEHAmLqVr5g/EFbqkURJQ0viO0oaYN1KUxuMhbJVbo7
+         uOt1R/0xqB0Cv3WPmQ2kmU/lEWvnJDJmRqe12SFez4ZaMIo8+IUA4KCTXIQQfMTx7tC0
+         bXCw==
+X-Gm-Message-State: AC+VfDwRTEZgl9TKtIxsykWov45hnIBP1ooTJsIkCFgHIFgXsLy0CPiG
+        vNWpCotG/poVt2eJUDeU+1wmxqKWXSgroeV68f8/2rvo1zLBHU5squvxhB+4rqGngLck92SJvTP
+        ho/Te28aL6DOhfcYN
+X-Received: by 2002:ac8:5dcf:0:b0:3ef:59e8:511f with SMTP id e15-20020ac85dcf000000b003ef59e8511fmr785044qtx.0.1682578560116;
+        Wed, 26 Apr 2023 23:56:00 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6IY3ISX9/AZqFDTs3717bAYMzWirNzdAR5uENXzS1qvlBOt1T2Rd78y8VkeDq5U7JJzU09gw==
+X-Received: by 2002:ac8:5dcf:0:b0:3ef:59e8:511f with SMTP id e15-20020ac85dcf000000b003ef59e8511fmr785030qtx.0.1682578559886;
+        Wed, 26 Apr 2023 23:55:59 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-243-21.dyn.eolo.it. [146.241.243.21])
+        by smtp.gmail.com with ESMTPSA id pr1-20020a05620a86c100b0074ced3e0004sm5723165qkn.63.2023.04.26.23.55.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Apr 2023 23:55:59 -0700 (PDT)
+Message-ID: <b3eebbb01a6ba370458e17cc9fa1cb80693b0f34.camel@redhat.com>
+Subject: Re: [PATCH net-next v4 00/15] virtio_net: refactor xdp codes
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Date:   Thu, 27 Apr 2023 08:55:55 +0200
+In-Reply-To: <20230427030534.115066-1-xuanzhuo@linux.alibaba.com>
+References: <20230427030534.115066-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH net] selftests: bonding: delete unnecessary line.
-Content-Language: en-US
-To:     Liang Li <liali@redhat.com>, netdev@vger.kernel.org
-Cc:     j.vosburgh@gmail.com, Hangbin Liu <liuhangbin@gmail.com>
-References: <20230427034343.1401883-1-liali@redhat.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20230427034343.1401883-1-liali@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/04/2023 06:43, Liang Li wrote:
-> "ip link set dev "$devbond1" nomaster"
-> This line code in bond-eth-type-change.sh is unnecessary.
-> Because $devbond1 was not added to any master device.
-> 
-> Signed-off-by: Liang Li <liali@redhat.com>
-> Acked-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  .../selftests/drivers/net/bonding/bond-eth-type-change.sh        | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh b/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
-> index 5cdd22048ba7..862e947e17c7 100755
-> --- a/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
-> +++ b/tools/testing/selftests/drivers/net/bonding/bond-eth-type-change.sh
-> @@ -53,7 +53,6 @@ bond_test_enslave_type_change()
->  	# restore ARPHRD_ETHER type by enslaving such device
->  	ip link set dev "$devbond2" master "$devbond0"
->  	check_err $? "could not enslave $devbond2 to $devbond0"
-> -	ip link set dev "$devbond1" nomaster
->  
->  	bond_check_flags "$devbond0"
->  
+On Thu, 2023-04-27 at 11:05 +0800, Xuan Zhuo wrote:
+> Due to historical reasons, the implementation of XDP in virtio-net is rel=
+atively
+> chaotic. For example, the processing of XDP actions has two copies of sim=
+ilar
+> code. Such as page, xdp_page processing, etc.
+>=20
+> The purpose of this patch set is to refactor these code. Reduce the diffi=
+culty
+> of subsequent maintenance. Subsequent developers will not introduce new b=
+ugs
+> because of some complex logical relationships.
+>=20
+> In addition, the supporting to AF_XDP that I want to submit later will al=
+so need
+> to reuse the logic of XDP, such as the processing of actions, I don't wan=
+t to
+> introduce a new similar code. In this way, I can reuse these codes in the
+> future.
 
-I don't think this is -net material. But either way the patch looks good.
+## Form letter - net-next-closed
+
+The merge window for v6.3 has begun and therefore net-next is closed
+for new drivers, features, code refactoring and optimizations.
+We are currently accepting bug fixes only.
+
+Please repost when net-next reopens after May 8th.
+
+RFC patches sent for review only are obviously welcome at any time.
+--=20
+pw-bot: defer
+
