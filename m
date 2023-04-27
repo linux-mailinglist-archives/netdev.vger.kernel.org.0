@@ -2,66 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC0B26F0039
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 06:51:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D6326F0059
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 07:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242586AbjD0EvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 00:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41312 "EHLO
+        id S242691AbjD0FQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 01:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbjD0EvQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 00:51:16 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE523A9A;
-        Wed, 26 Apr 2023 21:51:15 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id 4fb4d7f45d1cf-5066ce4f725so11644555a12.1;
-        Wed, 26 Apr 2023 21:51:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682571073; x=1685163073;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Dv/T/W7pRAkc9VUSDCf9kjnSeM6SfBwY++UqlxaB4tE=;
-        b=TU6qBvsraGr/PDh1DyTkTLg+/Xigjm+y5cJeHoVYUX3EUXez5s0I9jXvel/gT5YU4w
-         eSXd/YJP53KfR7bFYNe9qFGr33zQddJAJpROkDrifvgTOBfnpL2RiDgFptcp8nm1S4i1
-         2Ka/4/CSgkrXbL7yasmi9MiHcV7SXr59aaPq9cL/4OObYn8dI7WqyFyTslNYsM/669Nn
-         1yHRpeNffQjFJ2sjBS/JLd3f1FchaOycy0SSivn5KUjcaadYgk5pXmBP7v/sOd0vpvXS
-         XxOgyauBomaJdnYOZL6bQyB1yTNzwIMK9ABFSnkruCLZUZBpNfB5KB6btGyWy3O6QuTi
-         JMpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682571073; x=1685163073;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Dv/T/W7pRAkc9VUSDCf9kjnSeM6SfBwY++UqlxaB4tE=;
-        b=Fp6AMLgTxl+K84MDT28rMj03Qbl6GwcM1pruTwWevHyL/AUaG6mfQ+nEHXztCEpKss
-         i6J8GBE70c/a6Chpxn76xXur5EXBKSzNPFNk9tGc6H7eEfoCJhMgT/UdfZIbyvI9vr5d
-         JzdmpgnUSztAx8YJc5vPiv/zh/IuQ0TAXMGChXPTIviqhmfvxQt2xF5okvDmALvD1m/I
-         1s7ASLRQBpgMw7/InyxY0Lz4+jTuKrDaf6z1X+G3KW4Et5J9jea90vc1+S4rbgzYi91M
-         WVgsnCZ7iENQ4OcavHuR/pQbKg1lmMAwDOP3qLvvKnG8dt1zUiXCpEAD0FfSiuUAiVKY
-         5QRQ==
-X-Gm-Message-State: AC+VfDzFOjBJWmFPSM4SwgEPNO6mWtSfPsefQFWFXQ6w/RPiqm81DvHR
-        jnWeLH8SD3fLFa+UAgUkSoqApnFiNRtYo64HXpQ=
-X-Google-Smtp-Source: ACHHUZ7VomFwJpz3T51TO/fNw0h4O+/KuW4wIOZiQEghUGCmhk3QJTs1/yaTtfELL5yTcSgZuPaQGLHkiOUMf2QM838=
-X-Received: by 2002:a50:fe91:0:b0:504:af14:132d with SMTP id
- d17-20020a50fe91000000b00504af14132dmr580571edt.13.1682571073362; Wed, 26 Apr
- 2023 21:51:13 -0700 (PDT)
+        with ESMTP id S229455AbjD0FQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 01:16:29 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41ADEE5D
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 22:16:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1682572588; x=1714108588;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ax1iHNDOz68QYb0nmNeUoZrbFq3pcH/YD2ufToMu8f0=;
+  b=AZaD4+Tqh21NZ6ObtzoG7vKM26Ww1VM/QIdVR6VRBQESzAjz2b3xMR2K
+   5zthKCB4RRh3ykbIZ16zys368IQ0Ysgak2MmoMJkdlMFNi7WF4robF5oc
+   B3pYm1zmGkutXXvKdpnhUYnpNp2PgTHQX0RwFUm9qSqZWBKRRTaimNhqr
+   eY+JiqyBcD+4UVu86HIfI9XgwWC38vZdP+3CsfTieEWL3ECw/o5PG5OM5
+   mmPPZcstccd1kwlTQj5xm4/55P6AOH0J9ipci+mmGNL8KV2Xe/NEjhWPb
+   GAN9Te3TwUdSA1lL0Gs9iYVUnO7mAgTOs9R5JW7Pq1BmZ65UHZ6PDQEBG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10692"; a="412660655"
+X-IronPort-AV: E=Sophos;i="5.99,230,1677571200"; 
+   d="scan'208";a="412660655"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2023 22:16:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10692"; a="724736867"
+X-IronPort-AV: E=Sophos;i="5.99,230,1677571200"; 
+   d="scan'208";a="724736867"
+Received: from wasp.igk.intel.com ([10.102.20.192])
+  by orsmga008.jf.intel.com with ESMTP; 26 Apr 2023 22:16:26 -0700
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, wojciech.drewek@intel.com,
+        marcin.szycik@intel.com,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Sujai Buvaneswaran <Sujai.Buvaneswaran@intel.com>
+Subject: [PATCH net v1] ice: block LAN in case of VF to VF offload
+Date:   Thu, 27 Apr 2023 06:57:11 +0200
+Message-Id: <20230427045711.1625449-1-michal.swiatkowski@linux.intel.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <20230421170300.24115-1-fw@strlen.de> <20230421170300.24115-2-fw@strlen.de>
-In-Reply-To: <20230421170300.24115-2-fw@strlen.de>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 26 Apr 2023 21:51:01 -0700
-Message-ID: <CAEf4Bzby3gwHmvz1cjcNHKFPA1LQdTq85TpCmOg=GB6=bQwjOQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 1/7] bpf: add bpf_link support for
- BPF_NETFILTER programs
-To:     Florian Westphal <fw@strlen.de>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, dxu@dxuuu.xyz, qde@naccy.de
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,154 +60,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 21, 2023 at 10:07=E2=80=AFAM Florian Westphal <fw@strlen.de> wr=
-ote:
->
-> Add bpf_link support skeleton.  To keep this reviewable, no bpf program
-> can be invoked yet, if a program is attached only a c-stub is called and
-> not the actual bpf program.
->
-> Defaults to 'y' if both netfilter and bpf syscall are enabled in kconfig.
->
-> Uapi example usage:
->         union bpf_attr attr =3D { };
->
->         attr.link_create.prog_fd =3D progfd;
->         attr.link_create.attach_type =3D 0; /* unused */
->         attr.link_create.netfilter.pf =3D PF_INET;
->         attr.link_create.netfilter.hooknum =3D NF_INET_LOCAL_IN;
->         attr.link_create.netfilter.priority =3D -128;
->
->         err =3D bpf(BPF_LINK_CREATE, &attr, sizeof(attr));
->
-> ... this would attach progfd to ipv4:input hook.
->
-> Such hook gets removed automatically if the calling program exits.
->
-> BPF_NETFILTER program invocation is added in followup change.
->
-> NF_HOOK_OP_BPF enum will eventually be read from nfnetlink_hook, it
-> allows to tell userspace which program is attached at the given hook
-> when user runs 'nft hook list' command rather than just the priority
-> and not-very-helpful 'this hook runs a bpf prog but I can't tell which
-> one'.
->
-> Will also be used to disallow registration of two bpf programs with
-> same priority in a followup patch.
->
-> v4: arm32 cmpxchg only supports 32bit operand
->     s/prio/priority/
-> v3: restrict prog attachment to ip/ip6 for now, lets lift restrictions if
->     more use cases pop up (arptables, ebtables, netdev ingress/egress etc=
-).
->
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> ---
->  no changes since last version
->
->  include/linux/netfilter.h           |   1 +
->  include/net/netfilter/nf_bpf_link.h |  10 ++
->  include/uapi/linux/bpf.h            |  14 +++
->  kernel/bpf/syscall.c                |   6 ++
->  net/netfilter/Kconfig               |   3 +
->  net/netfilter/Makefile              |   1 +
->  net/netfilter/nf_bpf_link.c         | 159 ++++++++++++++++++++++++++++
->  7 files changed, 194 insertions(+)
->  create mode 100644 include/net/netfilter/nf_bpf_link.h
->  create mode 100644 net/netfilter/nf_bpf_link.c
->
-> diff --git a/include/linux/netfilter.h b/include/linux/netfilter.h
-> index c8e03bcaecaa..0762444e3767 100644
-> --- a/include/linux/netfilter.h
-> +++ b/include/linux/netfilter.h
-> @@ -80,6 +80,7 @@ typedef unsigned int nf_hookfn(void *priv,
->  enum nf_hook_ops_type {
->         NF_HOOK_OP_UNDEFINED,
->         NF_HOOK_OP_NF_TABLES,
-> +       NF_HOOK_OP_BPF,
->  };
->
->  struct nf_hook_ops {
-> diff --git a/include/net/netfilter/nf_bpf_link.h b/include/net/netfilter/=
-nf_bpf_link.h
-> new file mode 100644
-> index 000000000000..eeaeaf3d15de
-> --- /dev/null
-> +++ b/include/net/netfilter/nf_bpf_link.h
-> @@ -0,0 +1,10 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +
-> +#if IS_ENABLED(CONFIG_NETFILTER_BPF_LINK)
-> +int bpf_nf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog=
-);
-> +#else
-> +static inline int bpf_nf_link_attach(const union bpf_attr *attr, struct =
-bpf_prog *prog)
-> +{
-> +       return -EOPNOTSUPP;
-> +}
-> +#endif
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 4b20a7269bee..1bb11a6ee667 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -986,6 +986,7 @@ enum bpf_prog_type {
->         BPF_PROG_TYPE_LSM,
->         BPF_PROG_TYPE_SK_LOOKUP,
->         BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
-> +       BPF_PROG_TYPE_NETFILTER,
->  };
->
->  enum bpf_attach_type {
-> @@ -1050,6 +1051,7 @@ enum bpf_link_type {
->         BPF_LINK_TYPE_PERF_EVENT =3D 7,
->         BPF_LINK_TYPE_KPROBE_MULTI =3D 8,
->         BPF_LINK_TYPE_STRUCT_OPS =3D 9,
-> +       BPF_LINK_TYPE_NETFILTER =3D 10,
->
->         MAX_BPF_LINK_TYPE,
->  };
-> @@ -1560,6 +1562,12 @@ union bpf_attr {
->                                  */
->                                 __u64           cookie;
->                         } tracing;
-> +                       struct {
-> +                               __u32           pf;
-> +                               __u32           hooknum;
+VF to VF traffic shouldn't go outside. To enforce it, set only the loopback
+enable bit in case of all ingress type rules added via the tc tool.
 
-catching up on stuff a bit...
+Fixes: 0d08a441fb1a ("ice: ndo_setup_tc implementation for PF")
+Reported-by: Sujai Buvaneswaran <Sujai.Buvaneswaran@intel.com>
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-enum nf_inet_hooks {
-        NF_INET_PRE_ROUTING,
-        NF_INET_LOCAL_IN,
-        NF_INET_FORWARD,
-        NF_INET_LOCAL_OUT,
-        NF_INET_POST_ROUTING,
-        NF_INET_NUMHOOKS,
-        NF_INET_INGRESS =3D NF_INET_NUMHOOKS,
-};
+diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+index 76f29a5bf8d7..d1a31f236d26 100644
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -693,17 +693,18 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
+ 	 * results into order of switch rule evaluation.
+ 	 */
+ 	rule_info.priority = 7;
++	rule_info.flags_info.act_valid = true;
+ 
+ 	if (fltr->direction == ICE_ESWITCH_FLTR_INGRESS) {
+ 		rule_info.sw_act.flag |= ICE_FLTR_RX;
+ 		rule_info.sw_act.src = hw->pf_id;
+ 		rule_info.rx = true;
++		rule_info.flags_info.act = ICE_SINGLE_ACT_LB_ENABLE;
+ 	} else {
+ 		rule_info.sw_act.flag |= ICE_FLTR_TX;
+ 		rule_info.sw_act.src = vsi->idx;
+ 		rule_info.rx = false;
+ 		rule_info.flags_info.act = ICE_SINGLE_ACT_LAN_ENABLE;
+-		rule_info.flags_info.act_valid = true;
+ 	}
+ 
+ 	/* specify the cookie as filter_rule_id */
+-- 
+2.39.2
 
-So it seems like this "hook number" is more like "hook type", is my
-understanding correct? If so, wouldn't it be cleaner and more uniform
-with, say, cgroup network hooks to provide hook type as
-expected_attach_type? It would also allow to have a nicer interface in
-libbpf, by specifying that as part of SEC():
-
-SEC("netfilter/pre_routing"), SEC("netfilter/local_in"), etc...
-
-Also, it seems like you actually didn't wire NETFILTER link support in
-libbpf completely. See bpf_link_create under tools/lib/bpf/bpf.c, it
-has to handle this new type of link as well. Existing tests seem a bit
-bare-bones for SEC("netfilter"), would it be possible to add something
-that will demonstrate it a bit better and will be actually executed at
-runtime and validated?
-
-
-> +                               __s32           priority;
-> +                               __u32           flags;
-> +                       } netfilter;
->                 };
->         } link_create;
->
-
-[...]
