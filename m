@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AC556F0BB8
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 20:03:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA46A6F0BBA
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 20:04:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244496AbjD0SDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 14:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40742 "EHLO
+        id S244494AbjD0SD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 14:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244474AbjD0SDn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 14:03:43 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCAA421E
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 11:03:42 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id d2e1a72fcca58-64115e69e1eso5304226b3a.0
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 11:03:42 -0700 (PDT)
+        with ESMTP id S244473AbjD0SD5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 14:03:57 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECBB4488
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 11:03:56 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-552f2f940edso146477717b3.0
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 11:03:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682618622; x=1685210622;
+        d=google.com; s=20221208; t=1682618635; x=1685210635;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fh+piB/LEKCTLTDSFOcrpICMj5GtBDUbjH//IFYqtZc=;
-        b=cbI3HrZ2S3Ue1P/yd267JGutYEFecBnHhGg5i+33d83UHEJlA8CCQPmWfb2C0/EoVp
-         C2w7VZxiJGmtsZA0UpzavcDzybKtoSJnZo1Kzc1dnySm1o5oILW75z0fxqjUtdstrwde
-         fjf8IO549GRnmnfuav7TUxJ0Dlmojy8OxDaP9e/AhfT5lcy2kHveC2HddiAGFMEIpaOC
-         DcSq68UW5vaj9ixkmoCcmWCGyn5MaWhokB67KqjpUMI906P/d+x3roSv0u7dg+V7/BuV
-         E8rcUo9gPGwlJYXlNjurjQ0pfSewt7Yhb8x5VsP1rVefebJijdIZTiXAT5bF1D22tYb4
-         aMJw==
+        bh=Mqn59kGq3ur6aAOCGUyy0ioYzlO8wdPn14StAYBE2uo=;
+        b=VKHZaQPj5SrBlM5uNECqauD5zKoEZKUaeAkYeIjSq8IBu41tS74krOIgUdC24b60Db
+         k3/WfJqJFZs26RWJh7laFbkmOqs9E46iJzeGzBb0prONWYbREAmX0WE7IDsQJhr9jhcp
+         UrogaF+p0sMxurCgWi7HNregXytZ5Rgsqss7Fz0nqDVHGpyruxkOSwur+8arh10SOlaL
+         4zvCo93EFgPjXgKsXsk+xaI2Ofpsc8tWEjY76/fJf2a17+yM+EWtRo0gOpD/qBbSVh0U
+         6K5/Cn03oDgEOyqI9Sv51o6XPiJkRmN+VlLuXIaoCvFjcRTNc7tdmmCbx8239QbOKNLJ
+         c/5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682618622; x=1685210622;
+        d=1e100.net; s=20221208; t=1682618635; x=1685210635;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fh+piB/LEKCTLTDSFOcrpICMj5GtBDUbjH//IFYqtZc=;
-        b=d2kwkeGRkS86Bd857XgJrz4FMjNOsWCR0lLgkcyMRw5TMRZQrLyqnJSoVXjbI8vqRg
-         XZ/pwpg3acnR8Ma3lrdRXpcKMQE2EqhAgxZV2i7EGCq2Fp1Xm9ZQejnBNwzYD8Ln9qLb
-         ftasJiPUHuIFlUnkSXbj+B0PJoBE+ojsmMFMDKn/BLaX8Y1yDkERWAoL6Z0/yu2BtrFz
-         CxPh6YFzWToj4GprxXE+4EtjGOd+jkyTm0MSr+WcH9IyDdlEnhEH1Gvbuz+1NVsJFpQ8
-         hJmn5N8ptigX4MZZDPC3yrkI5MBx9vyp/TyMYCLbb3vBdjJ64loYlD60+wO2GbHJNyQ7
-         bkYw==
-X-Gm-Message-State: AC+VfDxLSiT2MqpHPKItKBiq8lJIQqoYxPPUS2nv/20IiQmxE4gsHTm1
-        BOieEu3ENT69DuueWGSxun7Dnqc=
-X-Google-Smtp-Source: ACHHUZ4m5XBsE7zGA4Mdisw1N212Syt2mumgBcZVYtNSGwwcpqJvfmHMA1PTfBUBSVvnVbXfqQwl0kw=
+        bh=Mqn59kGq3ur6aAOCGUyy0ioYzlO8wdPn14StAYBE2uo=;
+        b=XWDwFmGpN9kqLbrk/C1+e/Usm2DoMPHR014Kqgnb3Be34hjKNTwjUb0iBI/RpgiYm6
+         KkoYzTz+/yaFjpTinFNHzBSxEcSvBzM4ad7VV9E2TwWlLHqRYWIlJCfvIIfNJGJeUaTF
+         q2Yx68cJ+4tKfQKKAXgsjdy/u+iP4rucOwwu1i+SsWvXs0kKZL73C3i3CVo8bt9Hl3av
+         f+d9/VIf7IP9dMHMuuvG7EhYB/1zw7/9O4Y+OlxwENNVu7lyZt2qow5aE0hmVQ3RoQL/
+         qbrnTSSatWyDVN12EtXcjVyB7BZZM+5GOKKnmMAich8zLObTiA06GeH6Ymw1yqoGiV96
+         QtPA==
+X-Gm-Message-State: AC+VfDzB6hLrd0p3CKcgwqbrC1M/liTeE1IQTzSMtj/gGNUwErR/6/Lg
+        xPSTJiYI/vx47UNicmXw/eimgoM=
+X-Google-Smtp-Source: ACHHUZ4r2NEQ0b344cFM+NxVFjB7lpTS2HwPvT0B6f1EZZqO83k8l6VIhdJXqqPVeq9+7PvEiMfsF9Y=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a63:2843:0:b0:520:8b35:157d with SMTP id
- bs64-20020a632843000000b005208b35157dmr760782pgb.4.1682618622166; Thu, 27 Apr
- 2023 11:03:42 -0700 (PDT)
-Date:   Thu, 27 Apr 2023 11:03:40 -0700
-In-Reply-To: <20230426085122.376768-3-gilad9366@gmail.com>
+ (user=sdf job=sendgmr) by 2002:a81:ec05:0:b0:54c:bdc:ef18 with SMTP id
+ j5-20020a81ec05000000b0054c0bdcef18mr1676890ywm.5.1682618635451; Thu, 27 Apr
+ 2023 11:03:55 -0700 (PDT)
+Date:   Thu, 27 Apr 2023 11:03:53 -0700
+In-Reply-To: <20230426085122.376768-2-gilad9366@gmail.com>
 Mime-Version: 1.0
-References: <20230426085122.376768-1-gilad9366@gmail.com> <20230426085122.376768-3-gilad9366@gmail.com>
-Message-ID: <ZEq4/JAgLRCKEeQr@google.com>
-Subject: Re: [PATCH bpf,v3 2/4] bpf: Call __bpf_sk_lookup()/__bpf_skc_lookup()
- directly via TC hookpoint
+References: <20230426085122.376768-1-gilad9366@gmail.com> <20230426085122.376768-2-gilad9366@gmail.com>
+Message-ID: <ZEq5CV/Yr/KqmufE@google.com>
+Subject: Re: [PATCH bpf,v3 1/4] bpf: factor out socket lookup functions for
+ the TC hookpoint.
 From:   Stanislav Fomichev <sdf@google.com>
 To:     Gilad Sever <gilad9366@gmail.com>
 Cc:     dsahern@kernel.org, martin.lau@linux.dev, daniel@iogearbox.net,
@@ -75,10 +75,12 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 04/26, Gilad Sever wrote:
-> skb->dev always exists in the tc flow. There is no need to use
-> bpf_skc_lookup(), bpf_sk_lookup() from this code path.
+> Change BPF helper socket lookup functions to use TC specific variants:
+> bpf_tc_sk_lookup_tcp() / bpf_tc_sk_lookup_udp() / bpf_tc_skc_lookup_tcp()
+> instead of sharing implementation with the cg / sk_skb hooking points.
+> This allows introducing a separate logic for the TC flow.
 > 
-> This change facilitates fixing the tc flow to be VRF aware.
+> The tc functions are identical to the original code.
 > 
 > Reviewed-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
 > Reviewed-by: Eyal Birger <eyal.birger@gmail.com>
@@ -87,58 +89,98 @@ On 04/26, Gilad Sever wrote:
 Acked-by: Stanislav Fomichev <sdf@google.com>
 
 > ---
->  net/core/filter.c | 24 ++++++++++++++++++------
->  1 file changed, 18 insertions(+), 6 deletions(-)
+>  net/core/filter.c | 63 ++++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 60 insertions(+), 3 deletions(-)
 > 
 > diff --git a/net/core/filter.c b/net/core/filter.c
-> index 5910956f4e0d..f43f86fc1235 100644
+> index 1d6f165923bf..5910956f4e0d 100644
 > --- a/net/core/filter.c
 > +++ b/net/core/filter.c
-> @@ -6704,8 +6704,12 @@ static const struct bpf_func_proto bpf_sk_lookup_udp_proto = {
->  BPF_CALL_5(bpf_tc_skc_lookup_tcp, struct sk_buff *, skb,
->  	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
->  {
-> -	return (unsigned long)bpf_skc_lookup(skb, tuple, len, IPPROTO_TCP,
-> -					     netns_id, flags);
-> +	struct net *caller_net = dev_net(skb->dev);
-> +	int ifindex = skb->dev->ifindex;
-> +
-> +	return (unsigned long)__bpf_skc_lookup(skb, tuple, len, caller_net,
-> +					       ifindex, IPPROTO_TCP, netns_id,
-> +					       flags);
->  }
+> @@ -6701,6 +6701,63 @@ static const struct bpf_func_proto bpf_sk_lookup_udp_proto = {
+>  	.arg5_type	= ARG_ANYTHING,
+>  };
 >  
->  static const struct bpf_func_proto bpf_tc_skc_lookup_tcp_proto = {
-> @@ -6723,8 +6727,12 @@ static const struct bpf_func_proto bpf_tc_skc_lookup_tcp_proto = {
->  BPF_CALL_5(bpf_tc_sk_lookup_tcp, struct sk_buff *, skb,
->  	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
->  {
-> -	return (unsigned long)bpf_sk_lookup(skb, tuple, len, IPPROTO_TCP,
-> -					    netns_id, flags);
-> +	struct net *caller_net = dev_net(skb->dev);
-> +	int ifindex = skb->dev->ifindex;
+> +BPF_CALL_5(bpf_tc_skc_lookup_tcp, struct sk_buff *, skb,
+> +	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
+> +{
+> +	return (unsigned long)bpf_skc_lookup(skb, tuple, len, IPPROTO_TCP,
+> +					     netns_id, flags);
+> +}
 > +
-> +	return (unsigned long)__bpf_sk_lookup(skb, tuple, len, caller_net,
-> +					      ifindex, IPPROTO_TCP, netns_id,
-> +					      flags);
->  }
->  
->  static const struct bpf_func_proto bpf_tc_sk_lookup_tcp_proto = {
-> @@ -6742,8 +6750,12 @@ static const struct bpf_func_proto bpf_tc_sk_lookup_tcp_proto = {
->  BPF_CALL_5(bpf_tc_sk_lookup_udp, struct sk_buff *, skb,
->  	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
->  {
-> -	return (unsigned long)bpf_sk_lookup(skb, tuple, len, IPPROTO_UDP,
-> -					    netns_id, flags);
-> +	struct net *caller_net = dev_net(skb->dev);
-> +	int ifindex = skb->dev->ifindex;
+> +static const struct bpf_func_proto bpf_tc_skc_lookup_tcp_proto = {
+> +	.func		= bpf_tc_skc_lookup_tcp,
+> +	.gpl_only	= false,
+> +	.pkt_access	= true,
+> +	.ret_type	= RET_PTR_TO_SOCK_COMMON_OR_NULL,
+> +	.arg1_type	= ARG_PTR_TO_CTX,
+> +	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+> +	.arg3_type	= ARG_CONST_SIZE,
+> +	.arg4_type	= ARG_ANYTHING,
+> +	.arg5_type	= ARG_ANYTHING,
+> +};
 > +
-> +	return (unsigned long)__bpf_sk_lookup(skb, tuple, len, caller_net,
-> +					      ifindex, IPPROTO_UDP, netns_id,
-> +					      flags);
->  }
->  
->  static const struct bpf_func_proto bpf_tc_sk_lookup_udp_proto = {
+> +BPF_CALL_5(bpf_tc_sk_lookup_tcp, struct sk_buff *, skb,
+> +	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
+> +{
+> +	return (unsigned long)bpf_sk_lookup(skb, tuple, len, IPPROTO_TCP,
+> +					    netns_id, flags);
+> +}
+> +
+> +static const struct bpf_func_proto bpf_tc_sk_lookup_tcp_proto = {
+> +	.func		= bpf_tc_sk_lookup_tcp,
+> +	.gpl_only	= false,
+> +	.pkt_access	= true,
+> +	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
+> +	.arg1_type	= ARG_PTR_TO_CTX,
+> +	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+> +	.arg3_type	= ARG_CONST_SIZE,
+> +	.arg4_type	= ARG_ANYTHING,
+> +	.arg5_type	= ARG_ANYTHING,
+> +};
+> +
+> +BPF_CALL_5(bpf_tc_sk_lookup_udp, struct sk_buff *, skb,
+> +	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
+> +{
+> +	return (unsigned long)bpf_sk_lookup(skb, tuple, len, IPPROTO_UDP,
+> +					    netns_id, flags);
+> +}
+> +
+> +static const struct bpf_func_proto bpf_tc_sk_lookup_udp_proto = {
+> +	.func		= bpf_tc_sk_lookup_udp,
+> +	.gpl_only	= false,
+> +	.pkt_access	= true,
+> +	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
+> +	.arg1_type	= ARG_PTR_TO_CTX,
+> +	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
+> +	.arg3_type	= ARG_CONST_SIZE,
+> +	.arg4_type	= ARG_ANYTHING,
+> +	.arg5_type	= ARG_ANYTHING,
+> +};
+> +
+>  BPF_CALL_1(bpf_sk_release, struct sock *, sk)
+>  {
+>  	if (sk && sk_is_refcounted(sk))
+> @@ -7954,9 +8011,9 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  #endif
+>  #ifdef CONFIG_INET
+>  	case BPF_FUNC_sk_lookup_tcp:
+> -		return &bpf_sk_lookup_tcp_proto;
+> +		return &bpf_tc_sk_lookup_tcp_proto;
+>  	case BPF_FUNC_sk_lookup_udp:
+> -		return &bpf_sk_lookup_udp_proto;
+> +		return &bpf_tc_sk_lookup_udp_proto;
+>  	case BPF_FUNC_sk_release:
+>  		return &bpf_sk_release_proto;
+>  	case BPF_FUNC_tcp_sock:
+> @@ -7964,7 +8021,7 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  	case BPF_FUNC_get_listener_sock:
+>  		return &bpf_get_listener_sock_proto;
+>  	case BPF_FUNC_skc_lookup_tcp:
+> -		return &bpf_skc_lookup_tcp_proto;
+> +		return &bpf_tc_skc_lookup_tcp_proto;
+>  	case BPF_FUNC_tcp_check_syncookie:
+>  		return &bpf_tcp_check_syncookie_proto;
+>  	case BPF_FUNC_skb_ecn_set_ce:
 > -- 
 > 2.34.1
 > 
