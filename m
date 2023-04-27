@@ -2,100 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F9886F08C6
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 17:52:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D7BC6F08ED
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 18:00:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244212AbjD0Pwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 11:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
+        id S244250AbjD0QAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 12:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244250AbjD0Pwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 11:52:42 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662583A99
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 08:52:41 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d9443c01a7336-1a920d484bdso67876225ad.1
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 08:52:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20221208.gappssmtp.com; s=20221208; t=1682610761; x=1685202761;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ouZe8vTGAgsO7FX7GKc0ImpPseweBHMjVqO2XRvKThc=;
-        b=LeZhxdyZZ1q64N3gVaUYxE86kwIpLDLI04mfRk+I+69V/ubo3CuxS7/5EQi0ir2fpE
-         f3IbgBH7gfIKReKeg+HGm6mAoTnv/VYVNEHfrGXKFDeqO6YzA5rKMUucxN3+PaQGlxQ3
-         g9lvE1Wufd46CYQDVoP4z8J+brvU039b8V5EZ1DIatPZjvqNU0rlLxuJq3PCwcmxrD5k
-         1BYsFspuybsVEnsoC1cUI/ChVfvNlt86oOFQyV36Eg4/xEUh5pGixGxrcohs3S9i3zu9
-         FNRNfAaZk2BlUua9hZFWdaWD68FDxU19EGI4WpGXNI7HNxnrVB43v5F6lhCBttE3WHQ8
-         AALQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682610761; x=1685202761;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ouZe8vTGAgsO7FX7GKc0ImpPseweBHMjVqO2XRvKThc=;
-        b=Ipx+6qGeZdFWbTZQy84ep8T9q+eAEkGFOHIIkaSu3AaYYvVne7TXNrPwcS69VPVQqC
-         FVGP/oD7XNPG+LboqpfG7b/lIvRxAdH+lufcpHq7ZhV13EUfChDbyUPRbwl3ODL+5QoX
-         lsa61PaKdwTKSdTlBOTXBUprEwvlCcHEt5ThJ70htIwe4y2p62EswMJcxWzMtyLBdTys
-         ztyipBSM8bFWCVAtRzJn+kn3aA2u+Fnxiy4qWMLK69OWFRky0G+u1DiX4cHaFGCzC39Z
-         R9ip4Weaid/agsiAz3cAbS6gHFeIwJqVfE7Ec3N/lPMUZMaJhtVAOesbpmad7BFiFEuB
-         RLcQ==
-X-Gm-Message-State: AC+VfDxLCMa9SO5G2kFXGOhWMu7MWQGieEGmzmL/NcSV3y9ziwFRW3le
-        gtMI9uBqrUMiMP3M7Lom7S71P8GRDORTpcnNXg8xCg==
-X-Google-Smtp-Source: ACHHUZ6sXd1YA9a0JgNz7vo27EmBMgxJHgrdPsG9UDMV+O4QEBIfKnk6WQtATGvBZrAT5l7t1xSv1g==
-X-Received: by 2002:a17:902:e884:b0:1a9:6041:ca74 with SMTP id w4-20020a170902e88400b001a96041ca74mr2369713plg.24.1682610760850;
-        Thu, 27 Apr 2023 08:52:40 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id gd12-20020a17090b0fcc00b00246578736bbsm11575406pjb.8.2023.04.27.08.52.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Apr 2023 08:52:40 -0700 (PDT)
-Date:   Thu, 27 Apr 2023 08:52:39 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Bilal Khan <bilalkhanrecovered@gmail.com>
-Cc:     majordomo@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] Fix grammar in ip-rule(8) man page
-Message-ID: <20230427085239.6f8906a6@hermes.local>
-In-Reply-To: <CA++M5e+Edbq8qnYgGvG=oR_=Cecou_NTqxH2Z-Ld9=SdhQQLQg@mail.gmail.com>
-References: <CA++M5e+Edbq8qnYgGvG=oR_=Cecou_NTqxH2Z-Ld9=SdhQQLQg@mail.gmail.com>
+        with ESMTP id S244283AbjD0QAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 12:00:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF41E48
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 09:00:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE2C863E1E
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 16:00:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 44819C433EF;
+        Thu, 27 Apr 2023 16:00:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682611221;
+        bh=08/U0uF41kdZKo6NMMgBv9Bw9xgIpiUkLhiMAYb7/wI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=h2e2P6DjWPJ2hVEe7bMGGTxzlp8AANQUkfxpA2ZLzlcKYRV47pOmsLNKKmkl69jg8
+         0Q4szvD2QC6kfiJllwp4qAUNbPPSw9/3Z4DDrl4dSmt5IziLt1hAwUDpJEJXgs0nKi
+         a3WDd6SQ/8uhCt3UAscJ6Unks/sKEELO426KTnh12qAelFZip0UqcQ6Rloszjj+t3n
+         rlLkOs7YhAll2SD05UkCayKzeiUzn+wPhfrTO2BwswxWSkxYvBqDxzWi+dVsW2IzDB
+         5YbyMnSp402RaK+5by9boaEAbzs9qtg3g++sUTx6ZPKXHxGRLfbwU8Jwm9bH05qvbW
+         zDjNxsgAMptnA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1EBC5C39562;
+        Thu, 27 Apr 2023 16:00:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2] devlink: Fix dumps where interface map is used
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168261122112.5400.4914631906398852585.git-patchwork-notify@kernel.org>
+Date:   Thu, 27 Apr 2023 16:00:21 +0000
+References: <20230427052521.464295-1-idosch@nvidia.com>
+In-Reply-To: <20230427052521.464295-1-idosch@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        dsahern@gmail.com, jiri@nvidia.com
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Apr 2023 11:41:48 +0500
-Bilal Khan <bilalkhanrecovered@gmail.com> wrote:
+Hello:
 
-> Hey there,
-> 
-> I have identified a small grammatical error in the ip-rule(8) man
-> page, and have created a patch to fix it. The current first line of
-> the DESCRIPTION section reads:
-> 
-> > ip rule manipulates rules in the routing policy database control the route selection algorithm.  
-> 
-> This sentence contains a grammatical error, as "control" should either
-> be changed to "that controls" (to apply to "database") or "to control"
-> (to apply to "manipulates"). I have updated the sentence to read:
-> 
-> > ip rule manipulates rules in the routing policy database that controls the route selection algorithm.  
-> 
-> This change improves the readability and clarity of the ip-rule(8) man
-> page and makes it easier for users to understand how to use the ip
-> rule command.
-> 
-> I have attached the patch file
-> "0001-Fix-grammar-in-ip-rule-8-man-page.patch" to this email and would
-> appreciate any feedback or suggestions for improvement.
+This patch was applied to iproute2/iproute2.git (main)
+by Stephen Hemminger <stephen@networkplumber.org>:
 
-Patch is missing signed off by. For legal reasons patches are only accepted
-with a valid signed-off-by which is Developers Certificate of Origin.
+On Thu, 27 Apr 2023 08:25:21 +0300 you wrote:
+> The devlink utility stores an interface map that can be used to map an
+> interface name to a devlink port and vice versa. The map is populated by
+> issuing a devlink port dump via 'DEVLINK_CMD_PORT_GET' command.
+> 
+> Cited commits started to populate the map only when it is actually
+> needed. One such case is when a dump (e.g., shared buffer dump) only
+> returns devlink port handles. When pretty printing is required, the
+> utility will consult the map to translate the devlink port handles to
+> the corresponding interface names.
+> 
+> [...]
 
-You can use kernel checkpatch to check iproute2 patches as well.
+Here is the summary with links:
+  - [iproute2] devlink: Fix dumps where interface map is used
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=b6f4a62ba7a0
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
