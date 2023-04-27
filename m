@@ -2,50 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC0A6F0464
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 12:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04F456F0466
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 12:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243324AbjD0KqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 06:46:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39906 "EHLO
+        id S243154AbjD0KrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 06:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243520AbjD0KqQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 06:46:16 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856AA5588
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 03:45:56 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-32b5ec09cffso59073875ab.2
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 03:45:56 -0700 (PDT)
+        with ESMTP id S243631AbjD0Kq6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 06:46:58 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97F15B9C
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 03:46:29 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1a92369761cso65024125ad.3
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 03:46:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1682592389; x=1685184389;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UsGPjHUd/JAVdo+0tuStqIz7Tm1YkeItSZg+vCTmFL0=;
+        b=JM6o5QGGGy8NHFxp+jMI0o2BPvgkkxMoQh8Om3wlcmGZJIBWzdH5AqaRXvhfeXntHl
+         lYsszsPCPSDD8e3ZtrvAG+A7zNYKunwG2xjdx5jMuvN61OoH8yJDRiQf5SSi9dQwYKNX
+         +lYv8VegaYwV1GYDO3Lq1Wq6RwLjYoX4bFbkYCCbDqidd3kmyfH5mzUneklGWgrJTLmt
+         npDQorgqDxoSrnzZ+fy9KNunE7iGzhUgrh6esipJgIRwmQnpnBZ7DT9yQmYG8iO2YV27
+         I04Gkq3E6SPnFCzGO1/ZqnvyJMU+JMqPQB7jAH5jERK1l4en08l+ZnU5LtA4VziL3WbY
+         eKWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682592355; x=1685184355;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=r3KK2b0Uit7K5gftG0SKkRqRBmSCncAWQ6WB0lbgTGI=;
-        b=KxuAMC50rkGFVpKFv/cSMdoJ96uwnv5276kWVbfJaPcnrOaodE3gTvPiYyXQOUyBv9
-         v5zWjZjr+OWVXU2XH3TfEM0/pUcgcMbh3WJF6NCy7CkjcQoicsOjOZfyhQGhxBl7U9V4
-         IH1jbmgFOnux8S/dT+oY6LR9gtoX64l/D9iug/hmfkfoeZEPuY9uNRneKepyyouwNNCA
-         ummDluL4bjGMrdgSORyTvX22h+fjoaqxkB+tqUTviPkL85RyQwsNoFLBsPBCURXikAP1
-         0iUkpJaYP8FiQ9gd5EgFmNcmDkslJbB8uT8boppUo90slYUs0xNv/vdRBUfYjUfj8VCO
-         9oFA==
-X-Gm-Message-State: AC+VfDyfI3psBJD7iL2qdeMI/oO0OTpyh4hHtksgoBz2GYyZ7giZXYUx
-        AzdVonusnVNn8+Fx4Nnk/Xm8cahLCjFJfhfecuy4OWnWEYpL
-X-Google-Smtp-Source: ACHHUZ5IsR1lZsE9Oa7t/kcvjOIgrZEhiUBJf+S9CaFl3BWEjHg3z8ZW3HHZU9DrlipP6na2XrbEVmsYuM/5fDZTgUw6MWw5PRnA
+        d=1e100.net; s=20221208; t=1682592389; x=1685184389;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UsGPjHUd/JAVdo+0tuStqIz7Tm1YkeItSZg+vCTmFL0=;
+        b=dFvLVHhXWHZJ6g0Su0sPNv3tLXA8VwiYVq/n6yVvY6y5S0gXP/IUHyGnR2WuUvxu7j
+         ZEOhS97zD+Qvv095JSXSchYglGEqlCXPjsewssjjl9MC4C3gNWiX9TfZ+rxB9IFldFX7
+         nwOx8RNymwLH1O0B34qeV3uv4kfCJP//pKhoDpEPGpecfYWXU7tlO5lPN7uyseBI5IUi
+         CHqRlluxhe3mO7GAxd6vQs8Psb+rlZ1UmYoy903Riy6b4/TzWHJOu9NUHqbmDEqmw5Y0
+         W6HqbFCQc3xoSt/SXXSonfrnmoUKbX1D/EYjlqDSCfpbcqGiIi22eKhq9IYnZSKaafxq
+         Fh3A==
+X-Gm-Message-State: AC+VfDzhPtmhAJg/PoxTIeKedQpVDIZeBWCUBGPjS8wLKFVJIVckR9Xp
+        eSnzEnEThHl9LNBKA1zs9mHnuw==
+X-Google-Smtp-Source: ACHHUZ7Rw2wRiqnDQPcc6z1GD+UNLlLOHJb7RSzx0K1ocvv5G1bl79P10rGncGnyS0bTIFZb5ZwM8A==
+X-Received: by 2002:a17:902:e807:b0:1a9:5d38:75e2 with SMTP id u7-20020a170902e80700b001a95d3875e2mr1155117plg.54.1682592389235;
+        Thu, 27 Apr 2023 03:46:29 -0700 (PDT)
+Received: from n137-048-144.byted.org ([121.30.179.80])
+        by smtp.gmail.com with ESMTPSA id p1-20020a170902a40100b001a95c7742bbsm8376021plq.9.2023.04.27.03.46.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Apr 2023 03:46:28 -0700 (PDT)
+From:   Wenliang Wang <wangwenliang.1995@bytedance.com>
+To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Wenliang Wang <wangwenliang.1995@bytedance.com>
+Subject: [PATCH v2] virtio_net: suppress cpu stall when free_unused_bufs
+Date:   Thu, 27 Apr 2023 18:46:18 +0800
+Message-Id: <20230427104618.3297348-1-wangwenliang.1995@bytedance.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <1682585517.595783-3-xuanzhuo@linux.alibaba.com>
+References: <1682585517.595783-3-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:4b0b:0:b0:32b:a8bd:50f7 with SMTP id
- m11-20020a924b0b000000b0032ba8bd50f7mr1020954ilg.2.1682592355631; Thu, 27 Apr
- 2023 03:45:55 -0700 (PDT)
-Date:   Thu, 27 Apr 2023 03:45:55 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a8ca8005fa4f0fcf@google.com>
-Subject: [syzbot] Monthly net report (Apr 2023)
-From:   syzbot <syzbot+listb31ed88c701752b673ce@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,48 +73,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello net maintainers/developers,
+For multi-queue and large ring-size use case, the following error
+occurred when free_unused_bufs:
+rcu: INFO: rcu_sched self-detected stall on CPU.
 
-This is a 31-day syzbot report for the net subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/net
-
-During the period, 4 new issues were detected and 10 were fixed.
-In total, 77 issues are still open and 1247 have been fixed so far.
-
-Some of the still happening issues:
-
-Ref  Crashes Repro Title
-<1>  43630   Yes   BUG: MAX_LOCKDEP_CHAINS too low! (3)
-                   https://syzkaller.appspot.com/bug?extid=8a249628ae32ea7de3a2
-<2>  6296    Yes   WARNING in dev_watchdog (2)
-                   https://syzkaller.appspot.com/bug?extid=d55372214aff0faa1f1f
-<3>  3632    Yes   KMSAN: uninit-value in eth_type_trans (2)
-                   https://syzkaller.appspot.com/bug?extid=0901d0cc75c3d716a3a3
-<4>  2604    No    BUG: MAX_LOCKDEP_CHAIN_HLOCKS too low! (2)
-                   https://syzkaller.appspot.com/bug?extid=9bbbacfbf1e04d5221f7
-<5>  815     Yes   INFO: task hung in switchdev_deferred_process_work (2)
-                   https://syzkaller.appspot.com/bug?extid=8ecc009e206a956ab317
-<6>  431     Yes   INFO: task hung in rtnetlink_rcv_msg
-                   https://syzkaller.appspot.com/bug?extid=8218a8a0ff60c19b8eae
-<7>  347     Yes   KMSAN: uninit-value in IP6_ECN_decapsulate
-                   https://syzkaller.appspot.com/bug?extid=bf7e6250c7ce248f3ec9
-<8>  318     Yes   WARNING in kcm_write_msgs
-                   https://syzkaller.appspot.com/bug?extid=52624bdfbf2746d37d70
-<9>  288     No    KMSAN: uninit-value in __hw_addr_add_ex
-                   https://syzkaller.appspot.com/bug?extid=cec7816c907e0923fdcc
-<10> 272     Yes   BUG: MAX_LOCKDEP_KEYS too low! (2)
-                   https://syzkaller.appspot.com/bug?extid=a70a6358abd2c3f9550f
-
+Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+v2:
+-add need_resched check.
+-apply same logic to sq.
+---
+ drivers/net/virtio_net.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index ea1bd4bb326d..573558b69a60 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3559,12 +3559,16 @@ static void free_unused_bufs(struct virtnet_info *vi)
+ 		struct virtqueue *vq = vi->sq[i].vq;
+ 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
+ 			virtnet_sq_free_unused_buf(vq, buf);
++		if (need_resched())
++			schedule();
+ 	}
+ 
+ 	for (i = 0; i < vi->max_queue_pairs; i++) {
+ 		struct virtqueue *vq = vi->rq[i].vq;
+ 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
+ 			virtnet_rq_free_unused_buf(vq, buf);
++		if (need_resched())
++			schedule();
+ 	}
+ }
+ 
+-- 
+2.20.1
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
-
-You may send multiple commands in a single email message.
