@@ -2,83 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D356EFFD0
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 05:29:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 088996EFFD6
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 05:30:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242718AbjD0D3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 23:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
+        id S242723AbjD0Dax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 23:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242131AbjD0D3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 23:29:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF8E3A9F
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:29:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3AF2618FE
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 03:29:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E4B0C433D2;
-        Thu, 27 Apr 2023 03:29:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682566149;
-        bh=z+S56DhLOtmm3A8skW8fYaGY6+iLH8uKt0bdGWwqhbc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VHbYbVC3hbdfC9VO1p+XL7NlnF60p4N50GntVuhvGsfLHmppdHBNy+QRNn593Bg8W
-         u1ZxqwkQSrLV8a2IVlSJbcUA+Kp9/CdfxcKT8U2n2jWfeDvsuE3aujBAd7HiLa28v+
-         /E1HRZH46mrbrRL+56tZ0PFkc7JF/rwSUpzctfaYUkz2I9FBPGvIWOlt2625YxMWOC
-         Wku85elfj51xQSow2GxacZwltCmXhXBbtrZFRfEy6dNj5Lx0Q1j7GWzIiTlMauFmS7
-         7+C+OJRp31+917/bkPh7kK0Zs9bHc8C4XYXrStXcNfWs8cHCeBAvpoVyXHnhk8DdtE
-         oyUdEmbNtvjRQ==
-Date:   Wed, 26 Apr 2023 20:29:07 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Tantilov, Emil S" <emil.s.tantilov@intel.com>,
-        <jesse.brandeburg@intel.com>
-Cc:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <joshua.a.hay@intel.com>, <sridhar.samudrala@intel.com>,
-        <anthony.l.nguyen@intel.com>, <willemb@google.com>,
-        <decot@google.com>, <pabeni@redhat.com>, <edumazet@google.com>,
-        <davem@davemloft.net>, <alan.brady@intel.com>,
-        <madhu.chittim@intel.com>, <phani.r.burra@intel.com>,
-        <shailendra.bhatnagar@intel.com>, <pavan.kumar.linga@intel.com>,
-        <shannon.nelson@amd.com>, <simon.horman@corigine.com>,
-        <leon@kernel.org>
-Subject: Re: [net-next v3 00/15] Introduce Intel IDPF driver
-Message-ID: <20230426202907.2e07f031@kernel.org>
-In-Reply-To: <97f635bf-a793-7d10-9a5e-2847816dda1d@intel.com>
-References: <20230427020917.12029-1-emil.s.tantilov@intel.com>
-        <20230426194623.5b922067@kernel.org>
-        <97f635bf-a793-7d10-9a5e-2847816dda1d@intel.com>
+        with ESMTP id S241612AbjD0Dav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 23:30:51 -0400
+Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5263A90;
+        Wed, 26 Apr 2023 20:30:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R751e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0Vh5kUNz_1682566243;
+Received: from 30.221.149.75(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0Vh5kUNz_1682566243)
+          by smtp.aliyun-inc.com;
+          Thu, 27 Apr 2023 11:30:44 +0800
+Message-ID: <a8555236-2bef-b0fb-d8a8-dde3058a2271@linux.alibaba.com>
+Date:   Thu, 27 Apr 2023 11:30:42 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+Subject: Re: [PATCH bpf-next 2/5] net/smc: allow smc to negotiate protocols on
+ policies
+Content-Language: en-US
+To:     Kui-Feng Lee <sinquersw@gmail.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com, jaka@linux.ibm.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
+        pabeni@redhat.com, song@kernel.org, sdf@google.com,
+        haoluo@google.com, yhs@fb.com, edumazet@google.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org,
+        guwen@linux.alibaba.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <1682501055-4736-1-git-send-email-alibuda@linux.alibaba.com>
+ <1682501055-4736-3-git-send-email-alibuda@linux.alibaba.com>
+ <8e1694ec-9acf-a4bd-4dd2-28a258e1436b@gmail.com>
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+In-Reply-To: <8e1694ec-9acf-a4bd-4dd2-28a258e1436b@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-11.3 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Apr 2023 19:55:06 -0700 Tantilov, Emil S wrote:
-> The v3 series are primarily for review on IWL (to intel-wired-lan, 
-> netdev cc-ed) as follow up for the feedback we received on v2.
 
-Well, you put net-next in the subject.
+Hi Lee,
 
-> Was I not supposed to cc netdev in the quiet period?
 
-That's what you got from my previous email? Did you read it?
-The answer was there :|
+On 4/27/23 12:47 AM, Kui-Feng Lee wrote:
+>
+>
+> On 4/26/23 02:24, D. Wythe wrote:
+>> From: "D. Wythe" <alibuda@linux.alibaba.com>
+>> diff --git a/net/smc/bpf_smc.c b/net/smc/bpf_smc.c
+>> new file mode 100644
+>> index 0000000..0c0ec05
+>> --- /dev/null
+>> +++ b/net/smc/bpf_smc.c
+>> @@ -0,0 +1,201 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+> ... cut ...
 
-The community volunteers can't be expected to help teach every team of
-every vendor the process. That doesn't scale and leads to maintainer
-frustration. You have a team at Intel which is strongly engaged
-upstream (Jesse, Jake K, Maciej F, Alex L, Tony etc.) - I'd much rather
-interface with them.
+Will fix it, Thanks.
 
-Jesse, does it sound workable to you? What do you have in mind in terms
-of the process long term if/once this driver gets merged?
+>> +
+>> +/* register ops */
+>> +int smc_sock_register_negotiator_ops(struct smc_sock_negotiator_ops 
+>> *ops)
+>> +{
+>> +    int ret;
+>> +
+>> +    ret = smc_sock_validate_negotiator_ops(ops);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>> +    /* calt key by name hash */
+>> +    ops->key = jhash(ops->name, sizeof(ops->name), strlen(ops->name));
+>> +
+>> +    spin_lock(&smc_sock_negotiator_list_lock);
+>> +    if (smc_negotiator_ops_get_by_key(ops->key)) {
+>> +        pr_notice("smc: %s negotiator already registered\n", 
+>> ops->name);
+>> +        ret = -EEXIST;
+>> +    } else {
+>> +        list_add_tail_rcu(&ops->list, &smc_sock_negotiator_list);
+>> +    }
+>> +    spin_unlock(&smc_sock_negotiator_list_lock);
+>> +    return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(smc_sock_register_negotiator_ops);
+>
+> This and following functions are not specific to BPF, right?
+> I found you have more BPF specific code in this file in following
+> patches.  But, I feel these function should not in this file since
+> they are not BPF specific because file name "bpf_smc.c" hints.
+
+Yes. Logically those functions are not suitable for being placed in 
+"bpf_smc.c".
+However, since SMC is compiled as modules by default, and currently
+struct ops needs to be built in, or specific symbols will not be found 
+during linking.
+
+Of course, I can separate those this function in another new file, which 
+can also be built in.
+I may have to introduce a new KConfig likes SMC_NEGOTIATOR. But this 
+feature is  only effective
+when eBPF exists, so from the perspective of SMC, it would also be kind 
+of weird.
+
+But whatever, if you do think it's necessary, I can split it into two files.
+
+Besh wishes.
+D. Wythe
+
+
+
