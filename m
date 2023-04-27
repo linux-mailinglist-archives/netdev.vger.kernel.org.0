@@ -2,113 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCD416F02D2
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 10:54:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAD6A6F0311
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 11:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243188AbjD0Ixe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 04:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
+        id S243365AbjD0JKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 05:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242755AbjD0Ixc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 04:53:32 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6756A4EC1;
-        Thu, 27 Apr 2023 01:53:29 -0700 (PDT)
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33R7Fnrm021851;
-        Thu, 27 Apr 2023 08:53:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=Ie5ALX/3VJVLEugjsOClj9TQHZGvD+KFdEuky2kHy2M=;
- b=NtFu0m5IudiQqvR+zxR5wXku2m0kAe6elEPNKVyEleveLlCgveGS0l4VJ1qPLZDIMgMc
- fGZhn2b/w49oM/OdGKSotR9Q+wf0kRmS4uHe2rbVW+fXTexNSRO5tv7sQMPCWz6GYpMS
- vGEjb+XMUoeULSrcEeN5NWUN5qgaeroDS+tAyjBoZskbDnsNB/SbAeE3X+gLDhnZMz6m
- 18oOF89y4zEUmBXezS0pGfJfEndHYajgtXfEO8voZbH6tVUi9Dc9ceKKjPkAWc/Mpp6f
- cRbQZUqPMN/v2pEwmLxhLDO3DhycnxJCN28k8CF5siZ4lNpnJ2ShFOnuZLgDncJ46p7e Gw== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3q7j4erg2d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Apr 2023 08:53:25 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 33R8rNQt028483
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Apr 2023 08:53:23 GMT
-Received: from [10.214.66.58] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.42; Thu, 27 Apr
- 2023 01:53:19 -0700
-Message-ID: <1ed28be7-7bb5-acc5-c955-f4cf238ffc49@quicinc.com>
-Date:   Thu, 27 Apr 2023 14:23:16 +0530
+        with ESMTP id S243336AbjD0JKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 05:10:18 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DE1E50;
+        Thu, 27 Apr 2023 02:10:17 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1prxdn-0001Ra-5S; Thu, 27 Apr 2023 11:10:15 +0200
+Date:   Thu, 27 Apr 2023 11:10:15 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        dxu@dxuuu.xyz, qde@naccy.de
+Subject: Re: [PATCH bpf-next v5 1/7] bpf: add bpf_link support for
+ BPF_NETFILTER programs
+Message-ID: <20230427091015.GD3155@breakpoint.cc>
+References: <20230421170300.24115-1-fw@strlen.de>
+ <20230421170300.24115-2-fw@strlen.de>
+ <CAEf4Bzby3gwHmvz1cjcNHKFPA1LQdTq85TpCmOg=GB6=bQwjOQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v4 2/2] pinctrl: qcom: Add SDX75 pincontrol driver
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     <agross@kernel.org>, <andersson@kernel.org>,
-        <konrad.dybcio@linaro.org>, <linus.walleij@linaro.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <richardcochran@gmail.com>, <manivannan.sadhasivam@linaro.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <1682327030-25535-1-git-send-email-quic_rohiagar@quicinc.com>
- <1682327030-25535-3-git-send-email-quic_rohiagar@quicinc.com>
- <ZEk9lySMZcrRZYwX@surfacebook>
- <66158251-6934-a07f-4b82-4deaa76fa482@quicinc.com>
- <CAHp75VcCAOD3utLjjXeQ97nGcUTm7pic5F52+e7cJDxpDXwttA@mail.gmail.com>
-From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
-In-Reply-To: <CAHp75VcCAOD3utLjjXeQ97nGcUTm7pic5F52+e7cJDxpDXwttA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: WuaDZGdObsBJ0i8pV1cu3eJbPywxErRL
-X-Proofpoint-GUID: WuaDZGdObsBJ0i8pV1cu3eJbPywxErRL
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-27_06,2023-04-26_03,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
- bulkscore=0 impostorscore=0 priorityscore=1501 spamscore=0 mlxscore=0
- mlxlogscore=442 lowpriorityscore=0 phishscore=0 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2304270076
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzby3gwHmvz1cjcNHKFPA1LQdTq85TpCmOg=GB6=bQwjOQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> > @@ -1560,6 +1562,12 @@ union bpf_attr {
+> >                                  */
+> >                                 __u64           cookie;
+> >                         } tracing;
+> > +                       struct {
+> > +                               __u32           pf;
+> > +                               __u32           hooknum;
+> 
+> catching up on stuff a bit...
+> 
+> enum nf_inet_hooks {
+>         NF_INET_PRE_ROUTING,
+>         NF_INET_LOCAL_IN,
+>         NF_INET_FORWARD,
+>         NF_INET_LOCAL_OUT,
+>         NF_INET_POST_ROUTING,
+>         NF_INET_NUMHOOKS,
+>         NF_INET_INGRESS = NF_INET_NUMHOOKS,
+> };
+> 
+> So it seems like this "hook number" is more like "hook type", is my
+> understanding correct?
 
-On 4/26/2023 10:12 PM, Andy Shevchenko wrote:
-> On Wed, Apr 26, 2023 at 6:18 PM Rohit Agarwal <quic_rohiagar@quicinc.com> wrote:
->> On 4/26/2023 8:34 PM, andy.shevchenko@gmail.com wrote:
->>> Mon, Apr 24, 2023 at 02:33:50PM +0530, Rohit Agarwal kirjoitti:
-> ...
->
->>>> +#define FUNCTION(fname)                                                     \
->>>> +    [msm_mux_##fname] = {                                           \
->>>> +            .name = #fname,                                         \
->>>> +            .groups = fname##_groups,                               \
->>>> +    .ngroups = ARRAY_SIZE(fname##_groups),                          \
->>>> +    }
->>> PINCTRL_PINFUNCTION() ?
->> Ok, Will update this. Shall I also update "PINGROUP" to "PINCTRL_PINGROUP"?
-> Yes, please.
-PINCTRL_PINGROUP cannot be used as it is, since msm_pigroup has multiple 
-other fields that needs to be set
-for each pingroup defined.
-Would rename this to SDX75_PINGROUP, as seen on some other platforms.
-Would that be ok?
+What is 'hook type'?
 
-Thanks,
-Rohit.
->
+> If so, wouldn't it be cleaner and more uniform
+> with, say, cgroup network hooks to provide hook type as
+> expected_attach_type? It would also allow to have a nicer interface in
+> libbpf, by specifying that as part of SEC():
+> 
+> SEC("netfilter/pre_routing"), SEC("netfilter/local_in"), etc...
+
+I don't understand how that would help.
+Attachment needs a priority and a family (ipv4, arp, etc.).
+
+If we allow netdev type we'll also need an ifindex.
+Daniel Xu work will need to pass extra arguments ("please enable ip
+defrag").
+
+> Also, it seems like you actually didn't wire NETFILTER link support in
+> libbpf completely. See bpf_link_create under tools/lib/bpf/bpf.c, it
+> has to handle this new type of link as well. Existing tests seem a bit
+> bare-bones for SEC("netfilter"), would it be possible to add something
+> that will demonstrate it a bit better and will be actually executed at
+> runtime and validated?
+
+I can have a look.
