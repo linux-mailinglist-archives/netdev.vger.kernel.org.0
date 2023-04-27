@@ -2,103 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90EDF6F00FE
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:45:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E076F0105
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:46:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242586AbjD0Gpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 02:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
+        id S242920AbjD0Gqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 02:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbjD0Gpe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:45:34 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029E41A6
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:45:34 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id e9e14a558f8ab-316d901b2ecso386385ab.0
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:45:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20221208; t=1682577933; x=1685169933;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=82Dmgq6q5ZZs2W4MZ9iyCPP1hPWz2Ptbb8JGnYXCZaE=;
-        b=gDqy6hPQFRVCQmftEYp5IHOiI4dRBblfzbM+9X2Ac0XRQ9lEzKK9sZ4Yk2DagCEYoz
-         5gUItttq7ZCntjGvqg3acdfTW42cO79ldZCqACDfZr3oxiVOdbqRv4h5H/bSDJHoYrzm
-         ZhvQoic5BN/OMXwSN3tbIJnORMQGurllxwWqJdFKbJS0A5pMZYvZSHh1+O7SzdEfI3uE
-         wlXnU86b2cLwz97cqjwja69rbeq1DDaaaEWswu49pkNWZ5pp+dBGPRZUknhCjnegtWWF
-         s125/0R+886UMOptfVWald7E1QdgEUUABJpYaRIqk0Ynm5VaT1ixrpmsJbBWjJUo4r99
-         zZ4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682577933; x=1685169933;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=82Dmgq6q5ZZs2W4MZ9iyCPP1hPWz2Ptbb8JGnYXCZaE=;
-        b=C3d17zX1L7/djdn9L5yMFShDyCACL30LxwnRtTgT88KZLfF/g2aysGMC2KChOmPMiq
-         AAY51F2RzQoPiwBofgWDDm8MooLoPgmNS798s+YeMb0SETl1YPOvGZ5BU9zOycLQlupc
-         JXYM2S2laNTV8II3tbJxrgu6wkP1qQG55ruw0P5rq5ryk/6QpNMUauf3oBRENvb8kIcJ
-         tpiyhJA5xOrEtIk051+8cFBWVLZNgw6cYvEzm7ky30w4bBlKC8sQowRoDhF3/BWpBKyb
-         YdF3TOQ6FNeY8L+yt3ciAfe25x+5UZNniULiks6E7xeyYjzrYToi+2JEaDAlYc7FtIQg
-         AE9g==
-X-Gm-Message-State: AC+VfDz0xYTM5Ehj9AKsPYj968yztOTmmpjImt3dFXQZ9r53qeOIhxnO
-        481v/yKh5BU7T0c66+L99ROo3pYI3P0cHjstd6IsCw==
-X-Google-Smtp-Source: ACHHUZ4yaoY1eHGsRhIWoRuvAz1ao+klPaksPZ0FX/nEShTvtjULgFSLI6qIXuyFh4Qa9HooN8HqPqb1gvbf/ILSO+k=
-X-Received: by 2002:a05:6e02:160b:b0:32a:6ff7:bbbd with SMTP id
- t11-20020a056e02160b00b0032a6ff7bbbdmr93928ilu.13.1682577933216; Wed, 26 Apr
- 2023 23:45:33 -0700 (PDT)
+        with ESMTP id S229601AbjD0Gqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:46:31 -0400
+Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB7821A6;
+        Wed, 26 Apr 2023 23:46:29 -0700 (PDT)
+Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
+        by ex01.ufhost.com (Postfix) with ESMTP id 7851F24E28D;
+        Thu, 27 Apr 2023 14:46:28 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
+ (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 27 Apr
+ 2023 14:46:28 +0800
+Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
+ (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Thu, 27 Apr
+ 2023 14:46:27 +0800
+Message-ID: <988e7ff1-ef0e-6224-98fb-e3d564806477@starfivetech.com>
+Date:   Thu, 27 Apr 2023 14:46:26 +0800
 MIME-Version: 1.0
-References: <20230427060006.640809-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20230427060006.640809-1-xiyou.wangcong@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 27 Apr 2023 08:45:21 +0200
-Message-ID: <CANn89i+vDHTMLaQLYKCJFMJ__H=Rd0ogFLcHbxFMKpW0iEr8dw@mail.gmail.com>
-Subject: Re: [Patch net v2] sit: update dev->needed_headroom in ipip6_tunnel_bind_dev()
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Palash Oswal <oswalpalash@gmail.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH v1 2/2] net: phy: motorcomm: Add pad drive strength cfg
+ support
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>, Frank Sae <Frank.Sae@motor-comm.com>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Peter Geis <pgwipeout@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>
+References: <20230426063541.15378-1-samin.guo@starfivetech.com>
+ <20230426063541.15378-3-samin.guo@starfivetech.com>
+ <11f0641a-ef6c-eee8-79f3-45654ae006d5@motor-comm.com>
+ <4c935728-ab18-4941-9621-c26e3b3799f7@lunn.ch>
+From:   Guo Samin <samin.guo@starfivetech.com>
+In-Reply-To: <4c935728-ab18-4941-9621-c26e3b3799f7@lunn.ch>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS066.cuchost.com (172.16.6.26) To EXMBX162.cuchost.com
+ (172.16.6.72)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 27, 2023 at 8:00=E2=80=AFAM Cong Wang <xiyou.wangcong@gmail.com=
-> wrote:
->
-> From: Cong Wang <cong.wang@bytedance.com>
->
-> When a tunnel device is bound with the underlying device, its
-> dev->needed_headroom needs to be updated properly. IPv4 tunnels
-> already do the same in ip_tunnel_bind_dev(). Otherwise we may
-> not have enough header room for skb, especially after commit
-> b17f709a2401 ("gue: TX support for using remote checksum offload option")=
-.
->
-> Fixes: 32b8a8e59c9c ("sit: add IPv4 over IPv4 support")
-> Reported-by: Palash Oswal <oswalpalash@gmail.com>
-> Link: https://lore.kernel.org/netdev/CAGyP=3D7fDcSPKu6nttbGwt7RXzE3uyYxLj=
-CSE97J64pRxJP8jPA@mail.gmail.com/
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
-> v2: follow reverse Christmas tree style
->
-> Note, this is targeting for -net and -table, so I'd keep the fix
-> small. We can refactor and reuse ip_tunnel_bind_dev() for -net-next.
->
->  net/ipv6/sit.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
->
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Re: [PATCH v1 2/2] net: phy: motorcomm: Add pad drive strength cfg support
+From: Andrew Lunn <andrew@lunn.ch>
+to: Frank Sae <Frank.Sae@motor-comm.com>
+data: 2023/4/26
 
-Thanks.
+>>> +	u32 val;
+>>>  
+>>>  	ret = ytphy_rgmii_clk_delay_config_with_lock(phydev);
+>>>  	if (ret < 0)
+>>> @@ -1518,6 +1524,32 @@ static int yt8531_config_init(struct phy_device *phydev)
+>>>  			return ret;
+>>>  	}
+>>>  
+>>> +	if (!of_property_read_u32(node, "rx-clk-driver-strength", &val)) {
+>>
+>> Please check the val of "val", add the handle of default value.
+> 
+> You can assign val to 3, or better still some #define, before calling
+> of_property_read_u32(). If the property is not found, val will retain
+> that value, and you can then write it to the register.
+> 
+> But please do add range checks for when val is in DT. We don't want
+> anybody using 42. -EINVAL should be returned.
+> 
+> 	Andrew
+
+Thanks, good advice. 
+
+Best regards,
+Samin
