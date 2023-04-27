@@ -2,72 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C27D6EFEB6
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 02:58:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C40BF6EFED0
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 03:15:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242668AbjD0A6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 20:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36160 "EHLO
+        id S242677AbjD0BPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 21:15:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234980AbjD0A6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 20:58:02 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004F93A92;
-        Wed, 26 Apr 2023 17:58:00 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Q6HP0262szsR8d;
-        Thu, 27 Apr 2023 08:56:20 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.23; Thu, 27 Apr
- 2023 08:57:58 +0800
-Subject: Re: [PATCH RFC net-next/mm V1 1/3] page_pool: Remove workqueue in new
- shutdown scheme
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        <netdev@vger.kernel.org>, Eric Dumazet <eric.dumazet@gmail.com>,
-        <linux-mm@kvack.org>, Mel Gorman <mgorman@techsingularity.net>
-CC:     <lorenzo@kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        <willy@infradead.org>
-References: <168244288038.1741095.1092368365531131826.stgit@firesoul>
- <168244293875.1741095.10502498932946558516.stgit@firesoul>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <48661b51-1cbb-e3e0-a909-6d0a1532733a@huawei.com>
-Date:   Thu, 27 Apr 2023 08:57:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S233710AbjD0BPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 21:15:20 -0400
+Received: from mail-m11876.qiye.163.com (mail-m11876.qiye.163.com [115.236.118.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A1A19AE;
+        Wed, 26 Apr 2023 18:15:18 -0700 (PDT)
+Received: from [0.0.0.0] (unknown [172.96.223.238])
+        by mail-m11876.qiye.163.com (Hmail) with ESMTPA id 2526A3C00F0;
+        Thu, 27 Apr 2023 09:15:01 +0800 (CST)
+Message-ID: <650acda0-9ec9-7634-3e01-e4870c8890b7@sangfor.com.cn>
+Date:   Thu, 27 Apr 2023 09:14:43 +0800
 MIME-Version: 1.0
-In-Reply-To: <168244293875.1741095.10502498932946558516.stgit@firesoul>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net v2 1/2] iavf: Fix use-after-free in free_netdev
 Content-Language: en-US
+To:     Michal Kubiak <michal.kubiak@intel.com>, anthony.l.nguyen@intel.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+        jesse.brandeburg@intel.com, keescook@chromium.org,
+        grzegorzx.szczurek@intel.com, mateusz.palczewski@intel.com,
+        mitch.a.williams@intel.com, gregory.v.rose@intel.com,
+        jeffrey.t.kirsher@intel.com, simon.horman@corigine.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org, pengdonglin@sangfor.com.cn,
+        huangcun@sangfor.com.cn
+References: <20230419150709.24810-1-dinghui@sangfor.com.cn>
+ <20230419150709.24810-2-dinghui@sangfor.com.cn>
+ <ZElExd5bAL2FCpIB@localhost.localdomain>
+From:   Ding Hui <dinghui@sangfor.com.cn>
+In-Reply-To: <ZElExd5bAL2FCpIB@localhost.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkZQ0lKVhofHU5LThhPGR0fTlUTARMWGhIXJBQOD1
+        lXWRgSC1lBWUpMSVVCTVVJSUhVSUhDWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVSktLVUtZBg++
+X-HM-Tid: 0a87c0474c3d2eb2kusn2526a3c00f0
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NRw6Ihw4Cj0TT0oBIyo3Eyw8
+        HTcaCk5VSlVKTUNJTk5DSkpKTEpNVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
+        QVlKTElVQk1VSUlIVUlIQ1lXWQgBWUFISEJINwY+
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/4/26 1:15, Jesper Dangaard Brouer wrote:
-> @@ -609,6 +609,8 @@ void page_pool_put_defragged_page(struct page_pool *pool, struct page *page,
->  		recycle_stat_inc(pool, ring_full);
->  		page_pool_return_page(pool, page);
->  	}
-> +	if (pool->p.flags & PP_FLAG_SHUTDOWN)
-> +		page_pool_shutdown_attempt(pool);
+On 2023/4/26 23:35, Michal Kubiak wrote:
+> On Wed, Apr 19, 2023 at 11:07:08PM +0800, Ding Hui wrote:
+>> Cc: Huang Cun <huangcun@sangfor.com.cn>
+>> Acked-by: Michal Kubiak <michal.kubiak@intel.com>
+> 
+> I'm sorry, but I don't remember giving "Acked-by" tag for that patch.
+> I gave "Reviewed-by" only for the v2 series.
+> 
 
-It seems we have allowed page_pool_shutdown_attempt() to be called
-concurrently here, isn't there a time window between atomic_inc_return_relaxed()
-and page_pool_inflight() for pool->pages_state_release_cnt, which may cause
-double calling of page_pool_free()?
+Sorry, that is added by myself since your reply for v1 "Looks OK to me"
+and "Looks correct to me", and I tried to ask for your agreement.
+
+> We can't add any tags if they weren't given by the person himself.
+
+I apologize to you.
+
+> Please fix that.
+
+Hi Tony Nguyen,
+the patches is already applied to your dev-queue branch, should I send
+v3 or you can fix it in your git?
+
+> Nacked-by: Michal Kubiak <michal.kubiak@intel.com>
+> 
+>> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+>> ---
+>> v1 to v2:
+>>    - add Fixes: tag
+>>    - add reproduction script
+>>    - update commit message
+>>
+>> ---
+>>   drivers/net/ethernet/intel/iavf/iavf_main.c | 6 +-----
+>>   1 file changed, 1 insertion(+), 5 deletions(-)
+>>
+>> -- 
+>> 2.17.1
+>>
+> 
+
+-- 
+Thanks,
+- Ding Hui
+
