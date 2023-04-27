@@ -2,122 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01AAC6F00AC
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:08:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CBE96F00B8
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242959AbjD0GIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 02:08:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
+        id S242997AbjD0GTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 02:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236396AbjD0GIY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:08:24 -0400
-Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D2FD35A5
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:08:23 -0700 (PDT)
-Received: from [172.16.75.132] (unknown [49.255.141.98])
-        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id ECBCA20009;
-        Thu, 27 Apr 2023 14:08:15 +0800 (AWST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=codeconstruct.com.au; s=2022a; t=1682575696;
-        bh=773AkmtjNnA1q/tsGZHVZBAggTfN/EF5Dp0dnpyCasI=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References;
-        b=EyPoylmftGavkUCxlkEWCL6eTEcR0IG+qNribfbABP4gRIlOkQa0feIe26S9DmjID
-         O3DACwSy7XipZwtGMtTBNHTTjWyr3BKfrKZue4+tTNKzNAxnu5RlVrvuaVKiFMgrEv
-         81jBjLQKr2BbYu1bK7IEuh8dYG8OskwSeDnwHwUsL3ghTu2qECuFUendJ+Arz3eJM/
-         AQsDrhgmtVdkasnvU3OqjcTuxmdcHMuM9UscCmQaVA6nF3H2FPc/URVfuAsPazTRDI
-         Qi6ksU0uy7G2U89We1FODw/DxPvvFTxsfFzS94VQkqzCdG1SOcuB5ZtwkzJDnfDNE7
-         O7zAXa4K6vshg==
-Message-ID: <61b1f1f0c9aab58551e98ba396deba56e77f1f89.camel@codeconstruct.com.au>
-Subject: Re: [RFC PATCH v1 0/1] net: mctp: MCTP VDM extension
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     "Richert, Krzysztof" <krzysztof.richert@intel.com>,
-        matt@codeconstruct.com.au
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Date:   Thu, 27 Apr 2023 14:08:08 +0800
-In-Reply-To: <67d9617d-4f77-5a1c-3bae-d14350ccaed5@intel.com>
-References: <20230425090748.2380222-1-krzysztof.richert@intel.com>
-         <aceee8aa24b33f99ebf22cf02d2063b9e3b17bb3.camel@codeconstruct.com.au>
-         <67d9617d-4f77-5a1c-3bae-d14350ccaed5@intel.com>
+        with ESMTP id S232898AbjD0GTj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:19:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DBC2D64
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:18:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682576332;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+4kZo/Qbsaq4JKoenok4QRcquDwl+aQlQuXVveIPMFE=;
+        b=ZD6NvahWc5TAZ0ZfOf8oIxLxY9HZHmFTKcnIBsk4euKo6/CbKzaSM4Ye8LPbESVB9NWyws
+        YtoStk+tufqjCk5iks/3nhCW2JDozEHD2B6zPTCVvfsbgUPYbQyibLd8ZvD9Ujkr1e3ISv
+        jIqM6Xq0ZJ3vxqMnPNPSw9G5VIxFhMg=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-312-5H_432DyNYmEjRgZoGbQDA-1; Thu, 27 Apr 2023 02:18:50 -0400
+X-MC-Unique: 5H_432DyNYmEjRgZoGbQDA-1
+Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-3edbe09ba35so12376061cf.1
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:18:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682576330; x=1685168330;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+4kZo/Qbsaq4JKoenok4QRcquDwl+aQlQuXVveIPMFE=;
+        b=MG38W9y9uJfR1nxVetVzCTd1fkUs+lA5wipscXa9m1xHwUzM7G3tmYeXbyuKWRX8aR
+         JwaZEzrvrBAa2+1yot4tnMWK9SgZvmKZUVQUtCYh7cSZcsMHYVKEXBx3qzKZAutNrCuW
+         D82AmZWUIg4bMI3DxHYAu07Qh2OgeLDFgfPdOLksYkyethME/26OYgOIWg6i765irnTn
+         Ql76fOYXyUBtyrEZMapttb6kLYBNsqcciiKCFUI6SCNenZLqiE6l3UFYF8Q8Tq4xVHIk
+         PSdnH7rCEW9thkWUntfNeMpJIiL6r/qjlAys8p9nldVGy8t0EQKjiOPJTBYZcLtNcs+4
+         ssIQ==
+X-Gm-Message-State: AC+VfDzZe85CfRLbzyvSghldvba9zWPCLwuWFQRJJyWgpvPYCBB0txhr
+        sQa1CHVFuiF6hwUXilRzw038UNhXoURgzbYm1e/Sl5HD9BFJyAI5/Ekc1H9NzkquJvy9h56ramj
+        zcqxWjjJlG1DXmVwl
+X-Received: by 2002:a05:622a:510:b0:3ef:37fa:e1d6 with SMTP id l16-20020a05622a051000b003ef37fae1d6mr675632qtx.2.1682576330128;
+        Wed, 26 Apr 2023 23:18:50 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6M3/VRdjINH6Lpid2UADYjmHq2IzUQQv8BAmzJH74JKD2o/Ksr5DLhlEIi9Rh6sSZ82ZN6WQ==
+X-Received: by 2002:a05:622a:510:b0:3ef:37fa:e1d6 with SMTP id l16-20020a05622a051000b003ef37fae1d6mr675612qtx.2.1682576329885;
+        Wed, 26 Apr 2023 23:18:49 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-243-21.dyn.eolo.it. [146.241.243.21])
+        by smtp.gmail.com with ESMTPSA id w8-20020a05620a444800b0074e026a6a43sm5694786qkp.9.2023.04.26.23.18.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Apr 2023 23:18:49 -0700 (PDT)
+Message-ID: <69928a2f43bea996380fa311a38ab0d1e4cdcf08.camel@redhat.com>
+Subject: Re: [net-next Patch v10 0/8] octeontx2-pf: HTB offload support
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Hariprasad Kelam <hkelam@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net,
+        willemdebruijn.kernel@gmail.com, andrew@lunn.ch,
+        sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
+        jerinj@marvell.com, sbhatta@marvell.com, naveenm@marvell.com,
+        edumazet@google.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, maxtram95@gmail.com, corbet@lwn.net
+Date:   Thu, 27 Apr 2023 08:18:44 +0200
+In-Reply-To: <20230426054731.5720-1-hkelam@marvell.com>
+References: <20230426054731.5720-1-hkelam@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-1 
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
+On Wed, 2023-04-26 at 11:17 +0530, Hariprasad Kelam wrote:
+> octeontx2 silicon and CN10K transmit interface consists of five
+> transmit levels starting from MDQ, TL4 to TL1. Once packets are
+> submitted to MDQ, hardware picks all active MDQs using strict
+> priority, and MDQs having the same priority level are chosen using
+> round robin. Each packet will traverse MDQ, TL4 to TL1 levels.
+> Each level contains an array of queues to support scheduling and
+> shaping.
+>=20
+> As HTB supports classful queuing mechanism by supporting rate and
+> ceil and allow the user to control the absolute bandwidth to
+> particular classes of traffic the same can be achieved by
+> configuring shapers and schedulers on different transmit levels.
 
-> > =C2=A0- could we turn this into a non-vendor-specific (length, data) ma=
-tch
-> > =C2=A0=C2=A0=C2=A0instead? If the length is zero, this falls back to ex=
-actly as
-> > =C2=A0=C2=A0=C2=A0specified in DSP0236.
-> No problem, for me sounds good. I will prepare solution based on the=20
-> non-vendor data as offset/length/data instead of sub-code.
+## Form letter - net-next-closed
 
-OK, neat.
+The merge window for v6.3 has begun and therefore net-next is closed
+for new drivers, features, code refactoring and optimizations.
+We are currently accepting bug fixes only.
 
-We may need to work out when the subtype length gets set - either if:
+Please repost when net-next reopens after May 8th.
 
- (a) it is part of the sockaddr,
-
- or
-
- (b) it is defined when vendor-specific addressing is enabled via the
- MCTP_OPT_VENDOR_EXT sockopt (ie, we would make the length part of the
- setsockopt argument).
-
-The (a) approach may have issues when we're processing incoming packets:
-we'll need to have advance knowledge of the length before we can extract
-the sockaddr.
-
-This is fine for a "responder" model, where there's a bind() call to
-provide the sockopt (and hence subtype length) in the receiving socket.
-
-However, this may be tricky for recvfrom(), where there is no prior
-length value available. We could extract this from the earlier
-(outgoing) message, but that's getting a bit hacky at that point.
-
-> I think offset is also required to know from which byte to start
-> parsing data.
-
-Are there cases where the subtype does not immediately follow the
-PCIe/IANA type? If not, we could just require that...
-
-> > Also, do we really need 8 bytes of type for this? Is some vendor
-> > planning to support more than 4.3 billion MCTP subtypes? :)
-> Intel uses only one byte and those are static values. Behind 8 bytes=20
-> was idea that maybe someone uses dynamic generated values (e.g SHA).
-> For me it's hard to guess what maximum size it should be to not
-> kill performance and make it useful.
-> If you have advise I would appreciate.
-
-I don't think there'll be much impact on performance here, but we do
-need to ensure we don't hit the maximum size of a sockaddr. It would
-also be nice to keep things down to a reasonable size in general - I
-don't think there will be much need for more than 16 bits of subtype, or
-32 if we're being super conservative.
-
-(and we can probably reduce the length down to just a u8 too).
-
-> > This is also under the assumption that we want to be able to support
-> > both extended addressing *and* vendor addressing at the same time. I
-> > don't think there's any reason not to, but any thoughts on that?
-> Actually it's our main use case when extending addressing and vendor
-> addressing are use in the same time.
-
-OK, good to know.
-
-I assume this is for PECI - have you considered just standardising that
-as a top-level MCTP type value? :D
-
-Cheers,
+RFC patches sent for review only are obviously welcome at any time.
+--=20
+pw-bot: defer
 
 
-Jeremy
