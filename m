@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C99FF6F06D4
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 15:45:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 642A26F06D5
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 15:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243459AbjD0Npg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 09:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51818 "EHLO
+        id S243284AbjD0Npj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 09:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243389AbjD0Npe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 09:45:34 -0400
+        with ESMTP id S243389AbjD0Nph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 09:45:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE10E44BA
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 06:45:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C9F2709
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 06:45:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A80B63841
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 13:45:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C60C433EF;
-        Thu, 27 Apr 2023 13:45:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15E5561444
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 13:45:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D126C433D2;
+        Thu, 27 Apr 2023 13:45:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682603130;
-        bh=4t5v2nKuLWbj9FzijDkR6wFptIkccGLMr14+DuDXvWQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lDI0NNRVq9d1fMF3YXvdHSZWWaTK0NmC3QG0IHo2scCtW67hXfeCWu8nw6xtOeyoB
-         /AUZvHj15NfacrY9heRiFVkcJ/vlkU+Cb0ff9J9rNCDXifPa1uexaKOihs1mliOgg/
-         eKvwZHXTWHilW1UIddZikg7CXGYnZ6DrjZRx6ZEwhHRol9QsXp08qy4SMAfDNMTV9a
-         ar2n+wMnXnJKdJM2f1kmf/TBaUO+N9kj++JVG0UMozUyFO7XR+2qbco1aL972HtFRH
-         gZGXZDd+acihGgxcD8yqJ/OtHPFIQAPBZbSC6qrXUmUGvcYryA5TxdxjjdfV0Plf/p
-         Hst082VPimWeg==
+        s=k20201202; t=1682603133;
+        bh=D8Vhv+XsJTd04zdSnRJn/vpNhr6R8F+gq2dhD0U+Z+k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uYUizYkGivNa1Wujjmt2wbMrLA0KuUndiJVFHyUJFC+v2YVYa34h2Ar0oAFwWvXIb
+         Qy+ZUiJnOhAcPA0KbOQwtJfxghC96Qhvecp+TJbAQp3HiJ7Pexv73zgBv76zLq58G+
+         n8A22lmqxcuFp/YxuPFtooADcitVmVzLMolh16FaHpIm4VmpDQN8FOdxfJ26zlxaWF
+         2mya5JuOu+Un5X1bkve0oKVFpswT1F8kC6ZfKitRV1KtQGpGlet/SQUVKa+QGWtdox
+         is2uhfBEPuLAVpOrjm32G4pgtLkYjlrFWOAP6TAkbs2J63ODouZ3QrpGrpxH+X1uu1
+         IkJ4WCRc/7v3Q==
 From:   Antoine Tenart <atenart@kernel.org>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
 Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/4] net: tcp: make txhash use consistent for IPv4
-Date:   Thu, 27 Apr 2023 15:45:23 +0200
-Message-Id: <20230427134527.18127-1-atenart@kernel.org>
+Subject: [PATCH net-next 1/4] net: tcp: make the txhash available in TIME_WAIT sockets for IPv4 too
+Date:   Thu, 27 Apr 2023 15:45:24 +0200
+Message-Id: <20230427134527.18127-2-atenart@kernel.org>
 X-Mailer: git-send-email 2.40.0
+In-Reply-To: <20230427134527.18127-1-atenart@kernel.org>
+References: <20230427134527.18127-1-atenart@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -51,39 +53,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Commit c67b85558ff2 ("ipv6: tcp: send consistent autoflowlabel in
+TIME_WAIT state") made the socket txhash also available in TIME_WAIT
+sockets but for IPv6 only. Make it available for IPv4 too as we'll use
+it in later commits.
 
-Series is divided in two parts. First two commits make the txhash (used
-for the skb hash in TCP) to be consistent for all IPv4/TCP packets (IPv6
-doesn't have the same issue). Last two commits improve doc/comment
-hash-related parts.
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+---
+ net/ipv4/tcp_minisocks.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-One example is when using OvS with dp_hash, which uses skb->hash, to
-select a path. We'd like packets from the same flow to be consistent, as
-well as the hash being stable over time when using net.core.txrehash=0.
-Same applies for kernel ECMP which also can use skb->hash.
-
-IMHO the series makes sense in net-next, but we could argue (some)
-commits be seen as fixes and I can resend if necessary.
-
-Thanks!
-Antoine
-
-Antoine Tenart (4):
-  net: tcp: make the txhash available in TIME_WAIT sockets for IPv4 too
-  net: ipv4: use consistent txhash in TIME_WAIT and SYN_RECV
-  Documentation: net: net.core.txrehash is not specific to listening
-    sockets
-  net: skbuff: fix l4_hash comment
-
- Documentation/admin-guide/sysctl/net.rst |  4 ++--
- include/linux/skbuff.h                   |  4 ++--
- include/net/ip.h                         |  2 +-
- net/ipv4/ip_output.c                     |  4 +++-
- net/ipv4/tcp_ipv4.c                      | 14 +++++++++-----
- net/ipv4/tcp_minisocks.c                 |  2 +-
- 6 files changed, 18 insertions(+), 12 deletions(-)
-
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index dac0d62120e6..04fc328727e6 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -303,6 +303,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
+ 		tcptw->tw_ts_offset	= tp->tsoffset;
+ 		tcptw->tw_last_oow_ack_time = 0;
+ 		tcptw->tw_tx_delay	= tp->tcp_tx_delay;
++		tw->tw_txhash		= sk->sk_txhash;
+ #if IS_ENABLED(CONFIG_IPV6)
+ 		if (tw->tw_family == PF_INET6) {
+ 			struct ipv6_pinfo *np = inet6_sk(sk);
+@@ -311,7 +312,6 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
+ 			tw->tw_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+ 			tw->tw_tclass = np->tclass;
+ 			tw->tw_flowlabel = be32_to_cpu(np->flow_label & IPV6_FLOWLABEL_MASK);
+-			tw->tw_txhash = sk->sk_txhash;
+ 			tw->tw_ipv6only = sk->sk_ipv6only;
+ 		}
+ #endif
 -- 
 2.40.0
 
