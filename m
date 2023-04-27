@@ -2,54 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DB986F0118
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:56:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E65D06F0121
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243042AbjD0G4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 02:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48446 "EHLO
+        id S242883AbjD0G7E convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Apr 2023 02:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242942AbjD0G4H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:56:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3114698;
-        Wed, 26 Apr 2023 23:56:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CFBE63AED;
-        Thu, 27 Apr 2023 06:56:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 76907C4339B;
-        Thu, 27 Apr 2023 06:56:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682578563;
-        bh=C6DlJnSIVgfRza1lDbmKC4eFjLoL6Dkd0XJsivg/rF8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=H4MslcA1H4Qfs7UVIn1JhbmUHNUenWdCMzRGBi1uUHgTNUwBUWIe3rfrGZSvSBht5
-         /OWuDaB79DBsAZ6CcWfxuqxGng2ovQm1qUnk+nmREQ+yrLLg0bV0Pm4DjznGv8jJ31
-         oSMZxfzLc4jUFgbhsWtPtdKLoo0lt0zsdxPnFjG447y0pBuHAWq1ZIE3zKb9+Lz/65
-         jRC77rzLhrEu6ePtNqPz3w+2hcLajnYNu1QBbsVu5qZbp/cWGJ+fvdIE4KS+89hqQY
-         LMYpusXufqfAeW/gM0LMj3uLgrwr6U7C/2NoIrlezVIEGT12L7POkHQTAhfCQPjTGs
-         A1kltaWlPLJmA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5C49BE5FFC7;
-        Thu, 27 Apr 2023 06:56:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232094AbjD0G7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:59:03 -0400
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FBB30EE
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:59:00 -0700 (PDT)
+X-QQ-mid: Yeas3t1682578581t014t60229
+Received: from 7082A6556EBF4E69829842272A565F7C (jiawenwu@trustnetic.com [183.129.236.74])
+X-QQ-SSF: 00400000000000F0FM9000000000000
+From:   =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
+X-BIZMAIL-ID: 9163638353225091263
+To:     "'Andy Shevchenko'" <andy.shevchenko@gmail.com>
+Cc:     <netdev@vger.kernel.org>, <jarkko.nikula@linux.intel.com>,
+        <andriy.shevchenko@linux.intel.com>,
+        <mika.westerberg@linux.intel.com>, <jsd@semihalf.com>,
+        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <linux-i2c@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        <mengyuanlou@net-swift.com>
+References: <20230426071434.452717-1-jiawenwu@trustnetic.com> <20230426071434.452717-3-jiawenwu@trustnetic.com> <ZElCHGho-szyySGC@surfacebook> <013a01d978ae$182104c0$48630e40$@trustnetic.com> <CAHp75Vdnm1bykoX5Dh9nen7jB5bGfLELw0PvXBcqs1PXTf31rA@mail.gmail.com>
+In-Reply-To: <CAHp75Vdnm1bykoX5Dh9nen7jB5bGfLELw0PvXBcqs1PXTf31rA@mail.gmail.com>
+Subject: RE: [RFC PATCH net-next v5 2/9] i2c: designware: Add driver support for Wangxun 10Gb NIC
+Date:   Thu, 27 Apr 2023 14:56:19 +0800
+Message-ID: <015301d978d5$5e74f270$1b5ed750$@trustnetic.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [GIT PULL] Networking for 6.4
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168257856337.3333.16600030988253941664.git-patchwork-notify@kernel.org>
-Date:   Thu, 27 Apr 2023 06:56:03 +0000
-References: <20230426143118.53556-1-pabeni@redhat.com>
-In-Reply-To: <20230426143118.53556-1-pabeni@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain;
+        charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQImNz20YbZMzc6JsoYnjpKQN5RngQGupjOHAxyjlVQB6RzklAJXgiIQrlzYyRA=
+Content-Language: zh-cn
+X-QQ-SENDSIZE: 520
+Feedback-ID: Yeas:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,30 +50,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net-next.git (main)
-by Linus Torvalds <torvalds@linux-foundation.org>:
-
-On Wed, 26 Apr 2023 16:31:18 +0200 you wrote:
-> Hi Linus!
+On Thursday, April 27, 2023 1:57 PM, Andy Shevchenko wrote:
+> On Thu, Apr 27, 2023 at 5:15 AM Jiawen Wu <jiawenwu@trustnetic.com> wrote:
+> > On Wednesday, April 26, 2023 11:45 PM, andy.shevchenko@gmail.com wrote:
+> > > Wed, Apr 26, 2023 at 03:14:27PM +0800, Jiawen Wu kirjoitti:
 > 
-> We have a few conflicts with your current tree, specifically:
+> ...
 > 
-> - between commits:
+> > > > +static int txgbe_i2c_request_regs(struct dw_i2c_dev *dev)
+> > > > +{
+> > > > +   struct platform_device *pdev = to_platform_device(dev->dev);
+> > > > +   struct resource *r;
+> > > > +
+> > > > +   r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > > > +   if (!r)
+> > > > +           return -ENODEV;
+> > > > +
+> > > > +   dev->base = devm_ioremap(&pdev->dev, r->start, resource_size(r));
+> > > > +
+> > > > +   return PTR_ERR_OR_ZERO(dev->base);
+> > > > +}
+> > >
+> > > Redundant. See below.
 > 
->   dbb0ea153401 ("thermal: Use thermal_zone_device_type() accessor")
->   5601ef91fba8 ("mlxsw: core_thermal: Use static trip points for transceiver modules")
+> ...
 > 
-> [...]
+> > > >     case MODEL_BAIKAL_BT1:
+> > > >             ret = bt1_i2c_request_regs(dev);
+> > > >             break;
+> > > > +   case MODEL_WANGXUN_SP:
+> > > > +           ret = txgbe_i2c_request_regs(dev);
+> > >
+> > > How is it different to...
+> > >
+> > > > +           break;
+> > > >     default:
+> > > >             dev->base = devm_platform_ioremap_resource(pdev, 0);
+> > >
+> > > ...this one?
+> >
+> > devm_platform_ioremap_resource() has one more devm_request_mem_region()
+> > operation than devm_ioremap(). By my test, this memory cannot be re-requested,
+> > only re-mapped.
+> 
+> Yeah, which makes a point that the mother driver requests a region
+> that doesn't belong to it. You need to split that properly in the
+> mother driver and avoid requesting it there. Is it feasible? If not,
+> why?
 
-Here is the summary with links:
-  - [GIT,PULL] Networking for 6.4
-    https://git.kernel.org/netdev/net-next/c/6e98b09da931
+The I2C region belongs to the middle part of the total region. It was not considered to
+split because the mother driver implement I2C bus master driver itself in the previous
+patch. But is it suitable for splitting? After splitting, I get two virtual address, and each
+time I read/write to a register, I have to determine which region it belongs to...Right?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> ...
+> 
+> > > >     dev->flags = (uintptr_t)device_get_match_data(&pdev->dev);
+> > >
+> > > > +   if (!dev->flags)
+> > >
+> > > No need to check this. Just define priorities (I would go with above to be
+> > > higher priority).
+> > >
+> > > > +           device_property_read_u32(&pdev->dev, "i2c-dw-flags", &dev->flags);
+> > >
+> > > Needs to be added to the Device Tree bindings I believe.
+> > >
+> > > But wait, don't we have other ways to detect your hardware at probe time and
+> > > initialize flags respectively?
+> >
+> > I2C is connected to our NIC chip with no PCI ID, so I register a platform device for it.
+> > Please see the 4/9 patch. Software nodes are used to pass the device structure but
+> > no DT and ACPI. I haven't found another way to initialize flags yet, other than the
+> > platform data used in the previous patch (it seems to be an obsolete way).
+> 
+> You can share a common data structure between the mother driver and
+> her children. In that case you may access it via
+> `dev_get_drvdata(pdev.dev->parent)` call.
+> 
 
+I'd like to try it.
+
+> OTOH, the property, if only Linux (kernel) specific for internal
+> usage, should be named accordingly, or be prepared to have one in
+> Device Tree / ACPI / etc. Examples: USB dwc3 driver (see "linux,"
+> ones), or intel-lpss-pci.c/intel-lpss-acpi.c (see the SPI type).
+> 
+> --
+> With Best Regards,
+> Andy Shevchenko
+> 
 
