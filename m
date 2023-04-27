@@ -2,77 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A4C46F00BC
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:23:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FBA46F00E0
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:38:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242895AbjD0GXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 02:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37724 "EHLO
+        id S241255AbjD0GiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 02:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232898AbjD0GXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:23:52 -0400
-Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B0A3C28;
-        Wed, 26 Apr 2023 23:23:51 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0Vh6EyIG_1682576626;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vh6EyIG_1682576626)
-          by smtp.aliyun-inc.com;
-          Thu, 27 Apr 2023 14:23:47 +0800
-Message-ID: <1682576442.2203932-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH] virtio_net: suppress cpu stall when free_unused_bufs
-Date:   Thu, 27 Apr 2023 14:20:42 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Wenliang Wang <wangwenliang.1995@bytedance.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Wenliang Wang <wangwenliang.1995@bytedance.com>,
-        mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-References: <20230427043433.2594960-1-wangwenliang.1995@bytedance.com>
-In-Reply-To: <20230427043433.2594960-1-wangwenliang.1995@bytedance.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S242907AbjD0Gh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:37:59 -0400
+Received: from smtp.smtpout.orange.fr (smtp-20.smtpout.orange.fr [80.12.242.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756861A6
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:37:56 -0700 (PDT)
+Received: from [192.168.1.18] ([86.243.2.178])
+        by smtp.orange.fr with ESMTPA
+        id rvGIpCZ6IgznKrvGIpsgaX; Thu, 27 Apr 2023 08:37:54 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
+        s=t20230301; t=1682577474;
+        bh=15cN6xGXcPgpb6mMSQ+wGIww6r6XNUs6lYtchWqDdJ0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=ZE7oJredEGJMjLhQA6WdHlDvcNKKOaGT9pfVF/t/zF7ogQaRmm+bGxoFVu9RSXmxK
+         4FeRGHhzgL00PCAgxIQYNm6UFYYN/q3PNL1SWZlaqHELt82QRD5Z4x1+UeoiqYlWSU
+         /4NB0mb7+p81lyH0DIYeDMhQxFgUYvKXfZPK/izSXRxmmg1wWMrmWrymAgBqXc2MaH
+         6iWcIf3nV9B9jrmRAJ9Mdirh3dSB0Ti1sFpGlcimkJTuiTBrfVKRLPfVMYWuTzZNMX
+         +6bBSeJEiRePu3yKPpYNYm8HjQBkh3g4ESzvn+mi0gdHboKh+A5Seu19QW0FiTtdai
+         hdhBBe+oN0vZA==
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 27 Apr 2023 08:37:54 +0200
+X-ME-IP: 86.243.2.178
+Message-ID: <bf435a7f-aee6-0f45-2eb8-128977a8a6ae@wanadoo.fr>
+Date:   Thu, 27 Apr 2023 08:37:50 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH net-next] wifi: ath11k: Use list_count_nodes()
+To:     Kalle Valo <kvalo@kernel.org>, Joe Perches <joe@perches.com>
+Cc:     ath11k@lists.infradead.org, christophe.jaillet@wanadoo.fr,
+        davem@davemloft.net, edumazet@google.com,
+        kernel-janitors@vger.kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com
+References: <941484caae24b89d20524b1a5661dd1fd7025492.1682542084.git.christophe.jaillet@wanadoo.fr>
+ <87v8hiosci.fsf@kernel.org>
+Content-Language: fr, en-US
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <87v8hiosci.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Apr 2023 12:34:33 +0800, Wenliang Wang <wangwenliang.1995@bytedance.com> wrote:
-> For multi-queue and large rx-ring-size use case, the following error
+Le 27/04/2023 à 06:35, Kalle Valo a écrit :
+> Christophe JAILLET <christophe.jaillet-39ZsbGIQGT5GWvitb5QawA@public.gmane.org> writes:
+> 
+>> ath11k_wmi_fw_stats_num_vdevs() and ath11k_wmi_fw_stats_num_bcn() really
+>> look the same as list_count_nodes(), so use the latter instead of hand
+>> writing it.
+>>
+>> The first ones use list_for_each_entry() and the other list_for_each(), but
+>> they both count the number of nodes in the list.
+>>
+>> While at it, also remove to prototypes of non-existent functions.
+>> Based on the names and prototypes, it is likely that they should be
+>> equivalent to list_count_nodes().
+>>
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet-39ZsbGIQGT5GWvitb5QawA@public.gmane.org>
+>> ---
+>> Un-tested
+> 
+> I'll run sanity tests on ath11k patches. I'll also add "Compile tested
+> only" to the commit log.
+> 
+> Oh, and ath11k patches go to ath tree, not net-next.
+> 
+Hi,
 
-Cound you give we one number for example?
+[adding Joe Perches]
 
-> occurred when free_unused_bufs:
-> rcu: INFO: rcu_sched self-detected stall on CPU.
->
-> Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
-> ---
->  drivers/net/virtio_net.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index ea1bd4bb326d..21d8382fd2c7 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -3565,6 +3565,7 @@ static void free_unused_bufs(struct virtnet_info *vi)
->  		struct virtqueue *vq = vi->rq[i].vq;
->  		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
->  			virtnet_rq_free_unused_buf(vq, buf);
-> +		schedule();
+maybe checkpatch could be instrumented for that?
 
-Just for rq?
-
-Do we need to do the same thing for sq?
-
-Thanks.
+Something that would print a warning if the MAINTAINERS file has a git 
+repo in T: or if F: states something related to 'net'.
 
 
->  	}
->  }
->
-> --
-> 2.20.1
->
+WARNING: Your patch is against the xxx.git repo but the subject of the 
+mail does not reflect it. Should [PATCH xxx] be used instead?
+Also make sure that it applies cleanly on xxx.git to ease merge process.
+
+WARNING: Your patch is related to 'net'. Such patches should state 
+[PATCH net] when related to bug fix, or [PATCH net-next] otherwise.
+
+Eventually, something if net-next is closed?
+
+
+What do you think?
+Would it be possible? Would it help?
+
+CJ
