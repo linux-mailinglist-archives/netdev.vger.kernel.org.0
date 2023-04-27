@@ -2,111 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04F456F0466
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 12:47:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6C9E6F0476
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 12:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243154AbjD0KrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 06:47:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40530 "EHLO
+        id S243442AbjD0Ksu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 06:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243631AbjD0Kq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 06:46:58 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97F15B9C
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 03:46:29 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id d9443c01a7336-1a92369761cso65024125ad.3
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 03:46:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1682592389; x=1685184389;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UsGPjHUd/JAVdo+0tuStqIz7Tm1YkeItSZg+vCTmFL0=;
-        b=JM6o5QGGGy8NHFxp+jMI0o2BPvgkkxMoQh8Om3wlcmGZJIBWzdH5AqaRXvhfeXntHl
-         lYsszsPCPSDD8e3ZtrvAG+A7zNYKunwG2xjdx5jMuvN61OoH8yJDRiQf5SSi9dQwYKNX
-         +lYv8VegaYwV1GYDO3Lq1Wq6RwLjYoX4bFbkYCCbDqidd3kmyfH5mzUneklGWgrJTLmt
-         npDQorgqDxoSrnzZ+fy9KNunE7iGzhUgrh6esipJgIRwmQnpnBZ7DT9yQmYG8iO2YV27
-         I04Gkq3E6SPnFCzGO1/ZqnvyJMU+JMqPQB7jAH5jERK1l4en08l+ZnU5LtA4VziL3WbY
-         eKWQ==
+        with ESMTP id S233094AbjD0Kss (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 06:48:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9F45263
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 03:47:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682592453;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CN4GzFrEzUhAvKDGVknjzHxbBE0SJI9sNk2pKF0RC24=;
+        b=U/yIiHiFWvtzpLZ6JUBeCGjUHiVJ3a/k3E3lN7TEWZ4YA3YpgJejsAUn0o1TALdL9+F2br
+        V3ZeoB1Yo+i/HM7pfz9gy8iWHMOgkQE+cDsViQVqSnhLr+F/gKiS0dgUuJjGlQr4Xazw9+
+        /Xwj15lVoVYMg/vVR8pfUcJ0VuQUaQo=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-335-buknVa6MNAOk4lYMgZhAGQ-1; Thu, 27 Apr 2023 06:47:32 -0400
+X-MC-Unique: buknVa6MNAOk4lYMgZhAGQ-1
+Received: by mail-ed1-f70.google.com with SMTP id 4fb4d7f45d1cf-506a597d3c3so9905816a12.2
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 03:47:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682592389; x=1685184389;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UsGPjHUd/JAVdo+0tuStqIz7Tm1YkeItSZg+vCTmFL0=;
-        b=dFvLVHhXWHZJ6g0Su0sPNv3tLXA8VwiYVq/n6yVvY6y5S0gXP/IUHyGnR2WuUvxu7j
-         ZEOhS97zD+Qvv095JSXSchYglGEqlCXPjsewssjjl9MC4C3gNWiX9TfZ+rxB9IFldFX7
-         nwOx8RNymwLH1O0B34qeV3uv4kfCJP//pKhoDpEPGpecfYWXU7tlO5lPN7uyseBI5IUi
-         CHqRlluxhe3mO7GAxd6vQs8Psb+rlZ1UmYoy903Riy6b4/TzWHJOu9NUHqbmDEqmw5Y0
-         W6HqbFCQc3xoSt/SXXSonfrnmoUKbX1D/EYjlqDSCfpbcqGiIi22eKhq9IYnZSKaafxq
-         Fh3A==
-X-Gm-Message-State: AC+VfDzhPtmhAJg/PoxTIeKedQpVDIZeBWCUBGPjS8wLKFVJIVckR9Xp
-        eSnzEnEThHl9LNBKA1zs9mHnuw==
-X-Google-Smtp-Source: ACHHUZ7Rw2wRiqnDQPcc6z1GD+UNLlLOHJb7RSzx0K1ocvv5G1bl79P10rGncGnyS0bTIFZb5ZwM8A==
-X-Received: by 2002:a17:902:e807:b0:1a9:5d38:75e2 with SMTP id u7-20020a170902e80700b001a95d3875e2mr1155117plg.54.1682592389235;
-        Thu, 27 Apr 2023 03:46:29 -0700 (PDT)
-Received: from n137-048-144.byted.org ([121.30.179.80])
-        by smtp.gmail.com with ESMTPSA id p1-20020a170902a40100b001a95c7742bbsm8376021plq.9.2023.04.27.03.46.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Apr 2023 03:46:28 -0700 (PDT)
-From:   Wenliang Wang <wangwenliang.1995@bytedance.com>
-To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Wenliang Wang <wangwenliang.1995@bytedance.com>
-Subject: [PATCH v2] virtio_net: suppress cpu stall when free_unused_bufs
-Date:   Thu, 27 Apr 2023 18:46:18 +0800
-Message-Id: <20230427104618.3297348-1-wangwenliang.1995@bytedance.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <1682585517.595783-3-xuanzhuo@linux.alibaba.com>
-References: <1682585517.595783-3-xuanzhuo@linux.alibaba.com>
+        d=1e100.net; s=20221208; t=1682592451; x=1685184451;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CN4GzFrEzUhAvKDGVknjzHxbBE0SJI9sNk2pKF0RC24=;
+        b=AR0CZJwNUPScQ20o8O5OQVQwFCn47QG8NosqhhM9SYd6/6wPPYu7hyLk4sSr8MKdDK
+         R7JrifdxPa5wtsF8IYSszzQq7Mk6+VSueHGYR0sM+92Ivc1Y3JLEF76PqdrZ+56XnadN
+         +cQ+vtt61GY4csZPx+ai+eVPDXYV3aAvsA6LHN+SjUAxkqG6cu5JIvJY77bE9MD6idYC
+         rgfP7aPpGW5AiGMKby6U56YER99WXq930Tv20hCwS7ZQh85dc0ZGrG0kl/JA9FQ13EIU
+         bvCPsQ9+bSVyaSKzp04fwHv4wOxNVr1+Q9G8YaATCvfh4Tj5PD6FkBGkI1R/u0WLzivf
+         q+fQ==
+X-Gm-Message-State: AC+VfDwaQaAWt/917s2pwy7XdE6n/3+NuMeAliQc8FypUkjV8wIKJhS6
+        RNfGUBkqPY0qVT1J7knw5s22XhvzJtBkJiRTSfh+nslp8YWOcg22BCzEL3pluaYYwRp8WNKYLHg
+        b/ZKn1Ez9f53Y3VsR
+X-Received: by 2002:a17:906:58c3:b0:95f:bbb0:6d2d with SMTP id e3-20020a17090658c300b0095fbbb06d2dmr1530985ejs.63.1682592451114;
+        Thu, 27 Apr 2023 03:47:31 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7RzAsvWcEWh4jrQ03LV133GzxBlh06v8I/TxapHgut9EY0o+iO2PLcuimRa13SoVIrTImaMg==
+X-Received: by 2002:a17:906:58c3:b0:95f:bbb0:6d2d with SMTP id e3-20020a17090658c300b0095fbbb06d2dmr1530950ejs.63.1682592450699;
+        Thu, 27 Apr 2023 03:47:30 -0700 (PDT)
+Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
+        by smtp.gmail.com with ESMTPSA id ku15-20020a170907788f00b009571293d6acsm8373416ejc.59.2023.04.27.03.47.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Apr 2023 03:47:30 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <e0bbcd20-77ec-4dc9-ada9-94aaf4ea44bb@redhat.com>
+Date:   Thu, 27 Apr 2023 12:47:28 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Cc:     brouer@redhat.com, lorenzo@kernel.org,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, willy@infradead.org
+Subject: Re: [PATCH RFC net-next/mm V1 1/3] page_pool: Remove workqueue in new
+ shutdown scheme
+Content-Language: en-US
+To:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        linux-mm@kvack.org, Mel Gorman <mgorman@techsingularity.net>
+References: <168244288038.1741095.1092368365531131826.stgit@firesoul>
+ <168244293875.1741095.10502498932946558516.stgit@firesoul>
+ <48661b51-1cbb-e3e0-a909-6d0a1532733a@huawei.com>
+In-Reply-To: <48661b51-1cbb-e3e0-a909-6d0a1532733a@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For multi-queue and large ring-size use case, the following error
-occurred when free_unused_bufs:
-rcu: INFO: rcu_sched self-detected stall on CPU.
 
-Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
----
-v2:
--add need_resched check.
--apply same logic to sq.
----
- drivers/net/virtio_net.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index ea1bd4bb326d..573558b69a60 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -3559,12 +3559,16 @@ static void free_unused_bufs(struct virtnet_info *vi)
- 		struct virtqueue *vq = vi->sq[i].vq;
- 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
- 			virtnet_sq_free_unused_buf(vq, buf);
-+		if (need_resched())
-+			schedule();
- 	}
- 
- 	for (i = 0; i < vi->max_queue_pairs; i++) {
- 		struct virtqueue *vq = vi->rq[i].vq;
- 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
- 			virtnet_rq_free_unused_buf(vq, buf);
-+		if (need_resched())
-+			schedule();
- 	}
- }
- 
--- 
-2.20.1
+On 27/04/2023 02.57, Yunsheng Lin wrote:
+> On 2023/4/26 1:15, Jesper Dangaard Brouer wrote:
+>> @@ -609,6 +609,8 @@ void page_pool_put_defragged_page(struct page_pool *pool, struct page *page,
+>>   		recycle_stat_inc(pool, ring_full);
+>>   		page_pool_return_page(pool, page);
+>>   	}
+>> +	if (pool->p.flags & PP_FLAG_SHUTDOWN)
+>> +		page_pool_shutdown_attempt(pool);
+> 
+> It seems we have allowed page_pool_shutdown_attempt() to be called
+> concurrently here, isn't there a time window between atomic_inc_return_relaxed()
+> and page_pool_inflight() for pool->pages_state_release_cnt, which may cause
+> double calling of page_pool_free()?
+> 
+
+Yes, I think that is correct.
+I actually woke up this morning thinking of this case of double freeing,
+and this time window.  Thanks for spotting and confirming this issue.
+
+Basically: Two concurrent CPUs executing page_pool_shutdown_attempt() 
+can both end-up seeing inflight equal zero, resulting in both of them 
+kfreeing the memory (in page_pool_free()) as they both think they are 
+the last user of PP instance.
+
+I've been thinking how to address this.
+This is my current idea:
+
+(1) Atomic variable inc and test (or cmpxchg) that resolves last user race.
+(2) Defer free to call_rcu callback to let other CPUs finish.
+(3) Might need rcu_read_lock() in page_pool_shutdown_attempt().
+
+--Jesper
 
