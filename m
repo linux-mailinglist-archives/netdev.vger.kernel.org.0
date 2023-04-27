@@ -2,131 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8A966F0C8C
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 21:26:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C4D6F0D01
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 22:21:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343749AbjD0T0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 15:26:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54882 "EHLO
+        id S1344205AbjD0UVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 16:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245122AbjD0T0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 15:26:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855EA4232
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 12:25:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682623520;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wynb7GdU79YYV9ENu+xz5worQ7/3FbOaM+jXoCkc6Vg=;
-        b=GwhAV0aZ5X4lptIqqFn+tfiFr9MAwd264Kjgnww8evzT3Ehs8JD8R0vq3OHZa81z1G4rH3
-        bmCB6mVIbpwSMcj8MXNXV+sX3Uez3pB4gP2Q+Omf61CESqDzRAP7uUXwZ3V88lvgc9VGsV
-        WqWAOvIF2igpUHwOwApoZFqTjSeZ9aU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-571-kl80mYlSMgig3GF4mRmU3Q-1; Thu, 27 Apr 2023 15:25:18 -0400
-X-MC-Unique: kl80mYlSMgig3GF4mRmU3Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S1344203AbjD0UVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 16:21:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4D34494
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 13:21:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7FD86281294A;
-        Thu, 27 Apr 2023 19:25:17 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.45.242.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 430DA1121314;
-        Thu, 27 Apr 2023 19:25:17 +0000 (UTC)
-Received: from [10.1.1.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 65F7C307372E8;
-        Thu, 27 Apr 2023 21:25:16 +0200 (CEST)
-Subject: [PATCH RFC net-next/mm V2 2/2] mm/page_pool: catch page_pool memory
- leaks
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        linux-mm@kvack.org, Mel Gorman <mgorman@techsingularity.net>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, lorenzo@kernel.org,
-        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        linyunsheng@huawei.com, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, willy@infradead.org
-Date:   Thu, 27 Apr 2023 21:25:16 +0200
-Message-ID: <168262351637.2036355.17064734185414935239.stgit@firesoul>
-In-Reply-To: <168262348084.2036355.16294550378793036683.stgit@firesoul>
-References: <168262348084.2036355.16294550378793036683.stgit@firesoul>
-User-Agent: StGit/1.4
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABE8360DC6
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 20:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7EB4C433EF;
+        Thu, 27 Apr 2023 20:21:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682626887;
+        bh=kQBVHC/1oqaIga+0qmU8ker4moiz6ztcIVH7s0kmGYE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=T4YIQFmYfDw7HuExDblrbDBDhZW3RWhQY4pFpwMCgzIxsJeBqc7tTPfHM1tMuonIr
+         QkU021KMqCCf7uUilSgNsa3AzhumSqVNK1v5KMDusORBbKTWIibFKuzm1RXB/15uHa
+         p81sYFKB4XZnMqikf62ZSUVMx+O7tD5X507NTzyZcyrZav8H3KayPbHMGQfM0w8+T8
+         ZKGIELaU1L6ylbKSk7Hk+1v6jIajWMTA0orPd4hN7Sqh64DIT4/LkaFDX1FpdNzvDD
+         SuJkGYyJ9YFLEsW28XneZPM6rVJ4v+kzwhohyFXdKR6JDRkPNGo2qrxjjGRZ2aiLXq
+         J+Pjhju4QpqLg==
+Date:   Thu, 27 Apr 2023 13:21:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Thorsten Glaser <t.glaser@tarent.de>
+Cc:     netdev@vger.kernel.org, Haye.Haehne@telekom.de,
+        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
+        <toke@toke.dk>
+Subject: Re: knob to disable locally-originating qdisc optimisation?
+Message-ID: <20230427132126.48b0ed6a@kernel.org>
+In-Reply-To: <8a8c3e3b-b866-d723-552-c27bb33788f3@tarent.de>
+References: <8a8c3e3b-b866-d723-552-c27bb33788f3@tarent.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pages belonging to a page_pool (PP) instance must be freed through the
-PP APIs in-order to correctly release any DMA mappings and release
-refcnt on the DMA device when freeing PP instance. When PP release a
-page (page_pool_release_page) the page->pp_magic value is cleared.
+On Wed, 26 Apr 2023 14:54:30 +0200 (CEST) Thorsten Glaser wrote:
+> when traffic (e.g. iperf) is originating locally (as opposed to
+> forward traffic), the Linux kernel seems to apply some optimisations
+> probably to reduce overall bufferbloat: when the qdisc is =E2=80=9Cfull=
+=E2=80=9D or
+> (and especially) when its dequeue often returns NULL (because packets
+> are delayed), the sender traffic rate is reduced by as much as =E2=85=93 =
+with
+> 40=C2=A0ms extra latency (30 =E2=86=92 20 Mbit/s).
 
-This patch detect a leaked PP page in free_page_is_bad() via
-unexpected state of page->pp_magic value being PP_SIGNATURE.
+Doesn't ring a bell, what's your setup?
 
-We choose to report and treat it as a bad page. It would be possible
-to release the page via returning it to the PP instance as the
-page->pp pointer is likely still valid.
-
-Notice this code is only activated when either compiled with
-CONFIG_DEBUG_VM or boot cmdline debug_pagealloc=on, and
-CONFIG_PAGE_POOL.
-
-Reduced example output of leak with PP_SIGNATURE = dead000000000040:
-
- BUG: Bad page state in process swapper/0  pfn:110bbf
- page:000000005bc8cfb8 refcount:0 mapcount:0 mapping:0000000000000000 index:0x110bbf000 pfn:0x110bbf
- flags: 0x2fffff80000000(node=0|zone=2|lastcpupid=0x1fffff)
- raw: 002fffff80000000 dead000000000040 ffff888117255000 0000000000000000
- raw: 0000000110bbf000 000000000000003e 00000000ffffffff 0000000000000000
- page dumped because: page_pool leak
- [...]
-
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- mm/page_alloc.c |    7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 8e39705c7bdc..137b72f8ab8b 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -1247,6 +1247,9 @@ static inline bool page_expected_state(struct page *page,
- 			page_ref_count(page) |
- #ifdef CONFIG_MEMCG
- 			page->memcg_data |
-+#endif
-+#ifdef CONFIG_PAGE_POOL
-+			((page->pp_magic & ~0x3UL) == PP_SIGNATURE) |
- #endif
- 			(page->flags & check_flags)))
- 		return false;
-@@ -1273,6 +1276,10 @@ static const char *page_bad_reason(struct page *page, unsigned long flags)
- #ifdef CONFIG_MEMCG
- 	if (unlikely(page->memcg_data))
- 		bad_reason = "page still charged to cgroup";
-+#endif
-+#ifdef CONFIG_PAGE_POOL
-+	if (unlikely((page->pp_magic & ~0x3UL) == PP_SIGNATURE))
-+		bad_reason = "page_pool leak";
- #endif
- 	return bad_reason;
- }
-
-
+> This is probably good in general but not so good for L4S where we
+> actually want the packets to queue up in the qdisc so they get ECN
+> marking appropriately (I guess there probably are some socket ioctls
+> or something with which the sending application could detect this
+> state; if so, we=E2=80=99d be interested in knowing about them as well).
+>=20
+> This is especially bad in a testbed for writing L4S-aware applications,
+> so if there=E2=80=99s a knob (sysctl or something) to disable this optimi=
+sation
+> please do tell (I guess probably not, but asking doesn=E2=80=99t hurt).
