@@ -2,47 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E65D06F0121
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 08:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 780726F012C
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 09:03:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242883AbjD0G7E convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Apr 2023 02:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
+        id S242981AbjD0HDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 03:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbjD0G7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 02:59:03 -0400
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FBB30EE
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 23:59:00 -0700 (PDT)
-X-QQ-mid: Yeas3t1682578581t014t60229
-Received: from 7082A6556EBF4E69829842272A565F7C (jiawenwu@trustnetic.com [183.129.236.74])
-X-QQ-SSF: 00400000000000F0FM9000000000000
-From:   =?utf-8?b?Smlhd2VuIFd1?= <jiawenwu@trustnetic.com>
-X-BIZMAIL-ID: 9163638353225091263
-To:     "'Andy Shevchenko'" <andy.shevchenko@gmail.com>
-Cc:     <netdev@vger.kernel.org>, <jarkko.nikula@linux.intel.com>,
-        <andriy.shevchenko@linux.intel.com>,
-        <mika.westerberg@linux.intel.com>, <jsd@semihalf.com>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <linux-i2c@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <mengyuanlou@net-swift.com>
-References: <20230426071434.452717-1-jiawenwu@trustnetic.com> <20230426071434.452717-3-jiawenwu@trustnetic.com> <ZElCHGho-szyySGC@surfacebook> <013a01d978ae$182104c0$48630e40$@trustnetic.com> <CAHp75Vdnm1bykoX5Dh9nen7jB5bGfLELw0PvXBcqs1PXTf31rA@mail.gmail.com>
-In-Reply-To: <CAHp75Vdnm1bykoX5Dh9nen7jB5bGfLELw0PvXBcqs1PXTf31rA@mail.gmail.com>
-Subject: RE: [RFC PATCH net-next v5 2/9] i2c: designware: Add driver support for Wangxun 10Gb NIC
-Date:   Thu, 27 Apr 2023 14:56:19 +0800
-Message-ID: <015301d978d5$5e74f270$1b5ed750$@trustnetic.com>
+        with ESMTP id S242994AbjD0HC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 03:02:58 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3058F420A
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 00:02:32 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id d2e1a72fcca58-64115e652eeso2799911b3a.0
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 00:02:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1682578951; x=1685170951;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AA9076PBQGQ1CvqVfefKSv2pXhUG01wTMuMnD2nJkG8=;
+        b=jLGz1o/gOy7lZRmOeyA5yuMty1mAQ/iuWvCjMifOWvm0j4uLkXKiOgf9UM1A0iY5JH
+         CwSyYAno6AlIplzeAwPsF10c4guM+QMfKhDDGeNLbz5axGI+qayc62rfYQLVXOkRS6vN
+         HRaP5zRygf5AmKRpuXW3wF9qIEGE467ueDrsqFtcdGx0ucZ3hiZEtLGhV+JwGxEmmYMf
+         ZIKCh7PIBKsUj37Sj9sgJd4gVxEP+II7OV/QbY19ys/2EgKPzMo4v8hQxdEkzENsEBOo
+         duNOArJk+4/NimQH712r1Q3q6ldJcpe5y0uOnWQ1EIzf3i0jywK2ozryHq8GVamcGd1+
+         tArQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682578951; x=1685170951;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AA9076PBQGQ1CvqVfefKSv2pXhUG01wTMuMnD2nJkG8=;
+        b=PmwDOaKUKdKzVx9zqwVym7IysikhlGMWHLS5UpKM9AxNT4U/2mzHgZo3xal6LkgTlf
+         oeeosBv9SiN7e7E+FO4V5HdRnJmxLC4JMjFONq4cdS3BLNidpONzbZfu98lSmnfaM9WB
+         doKq1h9xP9pXdAJBGcKe4KeJhlzYwW2tx0TI+a4utlMp2VK8CKAoFkRaAR0Df9HBvB8y
+         tb0P1SJpZcHw0LqzPMtKJ7jbh27C8kFFzqAG71R4rPk1z4R6g7mfg4XIGERhnxBRy1x/
+         Gakiu4fLqz6wc+YgDTJZd5BAa7UzxJ2VUF1kX1RKJnzCc36cH0xGKjBKDTdY9Y8UEy/w
+         hhNQ==
+X-Gm-Message-State: AC+VfDy3z63gkj9I5Vr21FS6A8sTicEjIQ/OFwD0/DVekFvjH1JbE7c1
+        haGTL6JiQ+LySk96nMOD00lqjQ==
+X-Google-Smtp-Source: ACHHUZ4gfWqDcWy7wjY90zhe6r/Xd5isZr7xM2oIdHs8gM9tlk4CDiQIOcPsD79B4M6XWvGZs4Ze8w==
+X-Received: by 2002:a17:902:d484:b0:1a9:68d2:e4ae with SMTP id c4-20020a170902d48400b001a968d2e4aemr6110340plg.2.1682578951633;
+        Thu, 27 Apr 2023 00:02:31 -0700 (PDT)
+Received: from [10.2.195.40] ([61.213.176.13])
+        by smtp.gmail.com with ESMTPSA id i13-20020a170902eb4d00b001a5023e7395sm10942150pli.135.2023.04.27.00.02.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Apr 2023 00:02:31 -0700 (PDT)
+Message-ID: <252ee222-f918-426e-68ef-b3710a60662e@bytedance.com>
+Date:   Thu, 27 Apr 2023 15:02:26 +0800
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQImNz20YbZMzc6JsoYnjpKQN5RngQGupjOHAxyjlVQB6RzklAJXgiIQrlzYyRA=
-Content-Language: zh-cn
-X-QQ-SENDSIZE: 520
-Feedback-ID: Yeas:trustnetic.com:qybglogicsvr:qybglogicsvr5
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,FROM_EXCESS_BASE64,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=unavailable
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH] virtio_net: suppress cpu stall when free_unused_bufs
+Content-Language: en-US
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+References: <20230427043433.2594960-1-wangwenliang.1995@bytedance.com>
+ <1682576442.2203932-1-xuanzhuo@linux.alibaba.com>
+From:   Wenliang Wang <wangwenliang.1995@bytedance.com>
+In-Reply-To: <1682576442.2203932-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,95 +77,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday, April 27, 2023 1:57 PM, Andy Shevchenko wrote:
-> On Thu, Apr 27, 2023 at 5:15 AM Jiawen Wu <jiawenwu@trustnetic.com> wrote:
-> > On Wednesday, April 26, 2023 11:45 PM, andy.shevchenko@gmail.com wrote:
-> > > Wed, Apr 26, 2023 at 03:14:27PM +0800, Jiawen Wu kirjoitti:
-> 
-> ...
-> 
-> > > > +static int txgbe_i2c_request_regs(struct dw_i2c_dev *dev)
-> > > > +{
-> > > > +   struct platform_device *pdev = to_platform_device(dev->dev);
-> > > > +   struct resource *r;
-> > > > +
-> > > > +   r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > > > +   if (!r)
-> > > > +           return -ENODEV;
-> > > > +
-> > > > +   dev->base = devm_ioremap(&pdev->dev, r->start, resource_size(r));
-> > > > +
-> > > > +   return PTR_ERR_OR_ZERO(dev->base);
-> > > > +}
-> > >
-> > > Redundant. See below.
-> 
-> ...
-> 
-> > > >     case MODEL_BAIKAL_BT1:
-> > > >             ret = bt1_i2c_request_regs(dev);
-> > > >             break;
-> > > > +   case MODEL_WANGXUN_SP:
-> > > > +           ret = txgbe_i2c_request_regs(dev);
-> > >
-> > > How is it different to...
-> > >
-> > > > +           break;
-> > > >     default:
-> > > >             dev->base = devm_platform_ioremap_resource(pdev, 0);
-> > >
-> > > ...this one?
-> >
-> > devm_platform_ioremap_resource() has one more devm_request_mem_region()
-> > operation than devm_ioremap(). By my test, this memory cannot be re-requested,
-> > only re-mapped.
-> 
-> Yeah, which makes a point that the mother driver requests a region
-> that doesn't belong to it. You need to split that properly in the
-> mother driver and avoid requesting it there. Is it feasible? If not,
-> why?
 
-The I2C region belongs to the middle part of the total region. It was not considered to
-split because the mother driver implement I2C bus master driver itself in the previous
-patch. But is it suitable for splitting? After splitting, I get two virtual address, and each
-time I read/write to a register, I have to determine which region it belongs to...Right?
+
+On 4/27/23 2:20 PM, Xuan Zhuo wrote:
+> On Thu, 27 Apr 2023 12:34:33 +0800, Wenliang Wang <wangwenliang.1995@bytedance.com> wrote:
+>> For multi-queue and large rx-ring-size use case, the following error
+> 
+> Cound you give we one number for example?
+
+128 queues and 16K queue_size is typical.
 
 > 
-> ...
+>> occurred when free_unused_bufs:
+>> rcu: INFO: rcu_sched self-detected stall on CPU.
+>>
+>> Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
+>> ---
+>>   drivers/net/virtio_net.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>> index ea1bd4bb326d..21d8382fd2c7 100644
+>> --- a/drivers/net/virtio_net.c
+>> +++ b/drivers/net/virtio_net.c
+>> @@ -3565,6 +3565,7 @@ static void free_unused_bufs(struct virtnet_info *vi)
+>>   		struct virtqueue *vq = vi->rq[i].vq;
+>>   		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
+>>   			virtnet_rq_free_unused_buf(vq, buf);
+>> +		schedule();
 > 
-> > > >     dev->flags = (uintptr_t)device_get_match_data(&pdev->dev);
-> > >
-> > > > +   if (!dev->flags)
-> > >
-> > > No need to check this. Just define priorities (I would go with above to be
-> > > higher priority).
-> > >
-> > > > +           device_property_read_u32(&pdev->dev, "i2c-dw-flags", &dev->flags);
-> > >
-> > > Needs to be added to the Device Tree bindings I believe.
-> > >
-> > > But wait, don't we have other ways to detect your hardware at probe time and
-> > > initialize flags respectively?
-> >
-> > I2C is connected to our NIC chip with no PCI ID, so I register a platform device for it.
-> > Please see the 4/9 patch. Software nodes are used to pass the device structure but
-> > no DT and ACPI. I haven't found another way to initialize flags yet, other than the
-> > platform data used in the previous patch (it seems to be an obsolete way).
+> Just for rq?
 > 
-> You can share a common data structure between the mother driver and
-> her children. In that case you may access it via
-> `dev_get_drvdata(pdev.dev->parent)` call.
-> 
+> Do we need to do the same thing for sq?
+Rq buffers are pre-allocated, take seconds to free rq unused buffers.
 
-I'd like to try it.
+Sq unused buffers are much less, so do the same for sq is optional.
 
-> OTOH, the property, if only Linux (kernel) specific for internal
-> usage, should be named accordingly, or be prepared to have one in
-> Device Tree / ACPI / etc. Examples: USB dwc3 driver (see "linux,"
-> ones), or intel-lpss-pci.c/intel-lpss-acpi.c (see the SPI type).
 > 
-> --
-> With Best Regards,
-> Andy Shevchenko
+> Thanks.
 > 
-
+> 
+>>   	}
+>>   }
+>>
+>> --
+>> 2.20.1
+>>
