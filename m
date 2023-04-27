@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2581C6EFFE5
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 05:39:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 203DB6EFFE6
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 05:39:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242790AbjD0DjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Apr 2023 23:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        id S242825AbjD0DjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Apr 2023 23:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231883AbjD0DjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 23:39:19 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23E9212D
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:39:16 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id d2e1a72fcca58-63b5ce4f069so9636452b3a.1
-        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:39:16 -0700 (PDT)
+        with ESMTP id S231883AbjD0DjV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Apr 2023 23:39:21 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC349212D
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:39:20 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id d2e1a72fcca58-63b620188aeso9307060b3a.0
+        for <netdev@vger.kernel.org>; Wed, 26 Apr 2023 20:39:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682566756; x=1685158756;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=shEVZ7ebhKqP6PSbAcF7Z1c08YZqH/QGyblCfvtTjYA=;
-        b=W2I2BIsn7LEbpd78+pPDu6QsLuE3C9YvxmE16Z645J1M+cRWm529nGDyisdSy49nkE
-         EM+8Cb/07qvzaHu1FoIoA8cWF9ooXD6aP9xu7o/FDx5EGFahePfOgLFlW32oyW4lFQcW
-         /IZagpdGDULjRkHIAK7aK8SN26TwuHlqwnNH4a02A1MTe+fogA+XontVTRkCSm0qosVI
-         CJAs1Yr0Dvxm2UIsD7bTGzwmHaxJGru01B6pWbU/qEdZxHKG1Dg2uwEDac6N0PXArqib
-         hmMjskoWlEg2WLADMxh4LutqWc1bZC9AM2tGLn4rQblgoVXoGGdmHKupyTHWdubozXbL
-         +PjQ==
+        d=gmail.com; s=20221208; t=1682566760; x=1685158760;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c6SMA9y8JQBDxsApK2oZlZlBs4sUItW2ct+DINr1dnM=;
+        b=kmVASjCIpjCVMietVi+rU5OzjE2uEYXEi0tthSnXy9buMgDYn5L+42/ZQbB9bYRLnX
+         m5U0+oBfZpA3n5KlFoLAgkzYlMlBpuW1cLLXwXhJpFJsbigRp1F7cvSHocNqOapBjkzC
+         YcoNVfk2Riy110vD2CACF9qtOHTt6mTlu6iVNSZM9urvjn81OVTNoY5BX3B7z6bNWdT0
+         tcRqRNeD/l1j0Wwzng2atytWmYbMruvS/kGlE4F7EK5OKRXOs/K0XlBUIb9gpYh1reL3
+         XGWf5ENba/zHYRzfEHiqfwJ6UYQ8+pwotbBflXUBLIfzmV9llfq91LFi05GXoYr0VFJ0
+         BWGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682566756; x=1685158756;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=shEVZ7ebhKqP6PSbAcF7Z1c08YZqH/QGyblCfvtTjYA=;
-        b=QJXUkIu/s08iMmR3zClH6sVT8rYNdc2CoaEkiazYH57hX0HdjLH2YLSS+QwTBaM8yK
-         utnHX8Kzo/Hz71vPf1kKXtYxrc9iwuo+POHOpPOdqnK6yLWAN7B9h/AuHCdRyrwufeNP
-         wHHtYOh3lyzh0w8GsI1SLenp2nFlasX9MJbosafed5fbDaUhYx/0K4VzhkPOXV/pULdG
-         YWriq9IgrNp+/uY8ZBBP3hynjff6qFQBBq3h6rLxH+pBhTyqOakv44guNawNqJxLnnGf
-         CmKlC+3Lgc6RxMr7ovOBdkAkKRMGfimCj/OBlGT+C1Yfl/U/b4wuqPr9c1MIm6nqm+Wl
-         AZeQ==
-X-Gm-Message-State: AC+VfDxn3TqloWV73SwIyW5pmpu4WZpGPLozWDyXkmhIRCRghaNDXUn2
-        tHRZ2pHMWsbYJvSyNJzIU70ODi9FFidwVIj7
-X-Google-Smtp-Source: ACHHUZ4OfJ4TZl5s7b2tGKgy3Tw3srv/ZaHdqvl3H8zE42gtlyBcDS+g/UKAeT3PG48mzOeMmLgVKA==
-X-Received: by 2002:a05:6a00:138c:b0:63d:24d0:2c32 with SMTP id t12-20020a056a00138c00b0063d24d02c32mr321405pfg.33.1682566755885;
-        Wed, 26 Apr 2023 20:39:15 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682566760; x=1685158760;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=c6SMA9y8JQBDxsApK2oZlZlBs4sUItW2ct+DINr1dnM=;
+        b=ZWn3/QTTNZKLC2aPUyrwMbitdJD0FvmAQxxBUixf+Pdbw2nVvBQaTatXaKle4vtBZL
+         YNuIoJnoRAt2xLih0J2R9Ch38mjeEKXb71lzKvooE2lyGqe354k+pRwY7fuG78Y+t4Ex
+         DZQ3nRlZ/Ww9K2iUwoONbU4vzVxZCt/PKCevfl5+LufXpqnHCTspxsjd+2c8OyWIMXyv
+         oFb+5kKsoDXJ/uqd9/LNhj6VS4zSkydMFBGnZFYFBe7jDYiYn1RO2nKJcbT4u6bNF+FZ
+         iG9fBHn7neKeQGsttdiLBRWkFOe6XXfiTyopbIZE1vBSVlErSByXd2QqRUnGVpkPdkBV
+         Nifg==
+X-Gm-Message-State: AC+VfDzaGFO7VGdBb+rqMxk/1PjwquuQTSm7FdxUcJUR3RCZ3tBzovo1
+        Wa/zShZ/BNi4CeyWpywSXoSbMBDIXuGYPj2f
+X-Google-Smtp-Source: ACHHUZ5P0vnupIqkAHLSmqFl1epO01YXXGDAinjx+tYCwacDIOPzVUgrkSXljvJDIm9vEdyUxMoJKQ==
+X-Received: by 2002:a05:6a00:190d:b0:636:e52f:631e with SMTP id y13-20020a056a00190d00b00636e52f631emr520961pfi.1.1682566759629;
+        Wed, 26 Apr 2023 20:39:19 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id h17-20020a056a001a5100b005abc30d9445sm12017743pfv.180.2023.04.26.20.39.12
+        by smtp.gmail.com with ESMTPSA id h17-20020a056a001a5100b005abc30d9445sm12017743pfv.180.2023.04.26.20.39.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Apr 2023 20:39:15 -0700 (PDT)
+        Wed, 26 Apr 2023 20:39:19 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
@@ -58,10 +59,12 @@ Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
         Liang Li <liali@redhat.com>,
         Vincent Bernat <vincent@bernat.ch>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 net 0/4] bonding: fix send_peer_notif overflow
-Date:   Thu, 27 Apr 2023 11:39:05 +0800
-Message-Id: <20230427033909.4109569-1-liuhangbin@gmail.com>
+Subject: [PATCHv2 net 1/4] bonding: fix send_peer_notif overflow
+Date:   Thu, 27 Apr 2023 11:39:06 +0800
+Message-Id: <20230427033909.4109569-2-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20230427033909.4109569-1-liuhangbin@gmail.com>
+References: <20230427033909.4109569-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,40 +77,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bonding send_peer_notif was defined as u8. But the value is
-num_peer_notif multiplied by peer_notif_delay, which is u8 * u32.
-This would cause the send_peer_notif overflow.
+Bonding send_peer_notif was defined as u8. Since commit 07a4ddec3ce9
+("bonding: add an option to specify a delay between peer notifications").
+the bond->send_peer_notif will be num_peer_notif multiplied by
+peer_notif_delay, which is u8 * u32. This would cause the send_peer_notif
+overflow easily. e.g.
 
-Before the fix:
-TEST: num_grat_arp (active-backup miimon num_grat_arp 10)           [ OK ]
-TEST: num_grat_arp (active-backup miimon num_grat_arp 20)           [ OK ]
-4 garp packets sent on active slave eth1
-TEST: num_grat_arp (active-backup miimon num_grat_arp 30)           [FAIL]
-24 garp packets sent on active slave eth1
-TEST: num_grat_arp (active-backup miimon num_grat_arp 50)           [FAIL]
+  ip link add bond0 type bond mode 1 miimon 100 num_grat_arp 30 peer_notify_delay 1000
 
-After the fix:
-TEST: num_grat_arp (active-backup miimon num_grat_arp 10)           [ OK ]
-TEST: num_grat_arp (active-backup miimon num_grat_arp 20)           [ OK ]
-TEST: num_grat_arp (active-backup miimon num_grat_arp 30)           [ OK ]
-TEST: num_grat_arp (active-backup miimon num_grat_arp 50)           [ OK ]
+To fix the overflow, let's set the send_peer_notif to u32 and limit
+peer_notif_delay to 300s.
 
-Hangbin Liu (4):
-  bonding: fix send_peer_notif overflow
-  Documentation: bonding: fix the doc of peer_notif_delay
-  selftests: forwarding: lib: add netns support for tc rule handle stats
-    get
-  kselftest: bonding: add num_grat_arp test
+Fixes: 07a4ddec3ce9 ("bonding: add an option to specify a delay between peer notifications")
+Reported-by: Liang Li <liali@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+v2: define send_peer_notif as u32 and limit the peer_notif_delay to 300s
+---
+ drivers/net/bonding/bond_netlink.c | 6 ++++++
+ drivers/net/bonding/bond_options.c | 8 +++++++-
+ include/net/bonding.h              | 2 +-
+ 3 files changed, 14 insertions(+), 2 deletions(-)
 
- Documentation/networking/bonding.rst          |  9 ++--
- drivers/net/bonding/bond_netlink.c            |  6 +++
- drivers/net/bonding/bond_options.c            |  8 ++-
- include/net/bonding.h                         |  2 +-
- .../drivers/net/bonding/bond_options.sh       | 50 +++++++++++++++++++
- .../drivers/net/bonding/bond_topo_3d1c.sh     |  2 +
- tools/testing/selftests/net/forwarding/lib.sh |  3 +-
- 7 files changed, 73 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bond_netlink.c
+index c2d080fc4fc4..09a501cdea0c 100644
+--- a/drivers/net/bonding/bond_netlink.c
++++ b/drivers/net/bonding/bond_netlink.c
+@@ -244,6 +244,12 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
+ 	if (data[IFLA_BOND_PEER_NOTIF_DELAY]) {
+ 		int delay = nla_get_u32(data[IFLA_BOND_PEER_NOTIF_DELAY]);
+ 
++		if (delay > 300000) {
++			NL_SET_ERR_MSG_ATTR(extack, data[IFLA_BOND_PEER_NOTIF_DELAY],
++					    "peer_notif_delay should be less than 300s");
++			return -EINVAL;
++		}
++
+ 		bond_opt_initval(&newval, delay);
+ 		err = __bond_opt_set(bond, BOND_OPT_PEER_NOTIF_DELAY, &newval,
+ 				     data[IFLA_BOND_PEER_NOTIF_DELAY], extack);
+diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+index f71d5517f829..5310cb488f11 100644
+--- a/drivers/net/bonding/bond_options.c
++++ b/drivers/net/bonding/bond_options.c
+@@ -169,6 +169,12 @@ static const struct bond_opt_value bond_num_peer_notif_tbl[] = {
+ 	{ NULL,      -1,  0}
+ };
+ 
++static const struct bond_opt_value bond_peer_notif_delay_tbl[] = {
++	{ "off",     0,   0},
++	{ "maxval",  300000, BOND_VALFLAG_MAX},
++	{ NULL,      -1,  0}
++};
++
+ static const struct bond_opt_value bond_primary_reselect_tbl[] = {
+ 	{ "always",  BOND_PRI_RESELECT_ALWAYS,  BOND_VALFLAG_DEFAULT},
+ 	{ "better",  BOND_PRI_RESELECT_BETTER,  0},
+@@ -488,7 +494,7 @@ static const struct bond_option bond_opts[BOND_OPT_LAST] = {
+ 		.id = BOND_OPT_PEER_NOTIF_DELAY,
+ 		.name = "peer_notif_delay",
+ 		.desc = "Delay between each peer notification on failover event, in milliseconds",
+-		.values = bond_intmax_tbl,
++		.values = bond_peer_notif_delay_tbl,
+ 		.set = bond_option_peer_notif_delay_set
+ 	}
+ };
+diff --git a/include/net/bonding.h b/include/net/bonding.h
+index c3843239517d..2d034e07b796 100644
+--- a/include/net/bonding.h
++++ b/include/net/bonding.h
+@@ -233,7 +233,7 @@ struct bonding {
+ 	 */
+ 	spinlock_t mode_lock;
+ 	spinlock_t stats_lock;
+-	u8	 send_peer_notif;
++	u32	 send_peer_notif;
+ 	u8       igmp_retrans;
+ #ifdef CONFIG_PROC_FS
+ 	struct   proc_dir_entry *proc_entry;
 -- 
 2.38.1
 
