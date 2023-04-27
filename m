@@ -2,120 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F34556F0356
-	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 11:26:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29DF36F0377
+	for <lists+netdev@lfdr.de>; Thu, 27 Apr 2023 11:36:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243313AbjD0JZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 05:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
+        id S243376AbjD0JgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 05:36:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243254AbjD0JZr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 05:25:47 -0400
+        with ESMTP id S243372AbjD0JgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 05:36:12 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8DAC3
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 02:24:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970FE2D69
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 02:35:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682587498;
+        s=mimecast20190719; t=1682588119;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=L0O0igeMSQGLMEnBfzsh0MXVaNX4GEBVOhYMjLuzzkc=;
-        b=iVJIwaKnzwFehSCRqPqeV1WiPyhM/cM9bxtD5mskJhz3E7S5Bsfe3OvYIvFuX3KjjNmFRx
-        XDuxe6dN7TANpYdABE5gyo4wo2MT2b5r3/f09ycaPx+yXuo78q6uFw2b+0FmHhi9mUQqcX
-        PH4G88BulI4Ui2CrOReczy/nMmcuepU=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=nLTOa2gvY/yQPlkBPm/UDjW99+fDZr0dsfJVgkOBXe8=;
+        b=C69Ar5miGCrWMuFHYyktAfb+hYK1MrS83ors27O/0XiFabb/XOGC2lViBd3AaWHivIO5EP
+        T6mY748Qc9odiN+FvHBm68h7w2L0zLvT9u63/cCj4COASR9dwKMoojMTqp65MeeB8f/jRh
+        hs0cQ5WE5l5Xk3pF3c0uAXDmPS82Xck=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-46-8aG6pd5GPbquluWUFd_e3g-1; Thu, 27 Apr 2023 05:24:57 -0400
-X-MC-Unique: 8aG6pd5GPbquluWUFd_e3g-1
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-3ef2cb3bfbfso23298871cf.0
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 02:24:57 -0700 (PDT)
+ us-mta-640-v-9hiYg0MvWvH1cJK1BdzQ-1; Thu, 27 Apr 2023 05:35:17 -0400
+X-MC-Unique: v-9hiYg0MvWvH1cJK1BdzQ-1
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f21e35dc08so20730165e9.2
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 02:35:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682587496; x=1685179496;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=L0O0igeMSQGLMEnBfzsh0MXVaNX4GEBVOhYMjLuzzkc=;
-        b=YRkcf3/H3uSiL83BdziapIZKB1nXYhbdOYUT+fN3cFBXmNkSaTvYIU2NlD+PbHFEL/
-         Vscrrfg514TdsrOB8QazGdEwkdnBPuB+kvlgfKsolGdQQ8HJizkr5qv4Jdm4gBScbF4/
-         cDtix6KQJjH7Ab2pUuum8cr7e38rvfiipbCxIUt6WBVhuUWBRBX91KZs0t7KT5WbZ/rQ
-         wXI6Fm1FiheYTlt2I+Ap3HEqThrjgYV2NA5noWlPKQxEmBqWw9b40DUQrlyP2uChAZw+
-         2ePA0FaUJwTZtFapnUNoy9RWFBsrripgsaZs93FqgQDDwnkjK3jMnqX1dOtQssSiPEe/
-         dDdA==
-X-Gm-Message-State: AC+VfDz9UR07j5PhazDyKCnYSX4XPclKC1X/J0ueVB3TzsI1dGNcdUEm
-        2cR1gMJu8DNf2zzopdzOuRGmPdegcqC7flrheDXMTYiehv/dHCeiccn1N04/fJbAtuYzzsaasVQ
-        QP4G/rpKok+sCf0ksmLp368LR4Gk=
-X-Received: by 2002:a05:622a:4d3:b0:3ef:4614:d0e9 with SMTP id q19-20020a05622a04d300b003ef4614d0e9mr1246972qtx.5.1682587496658;
-        Thu, 27 Apr 2023 02:24:56 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5f5uHqyMx2vL/NEFVqZMESMnKiMrL0YvMf9QVdVeR+hESJ51Zw9nqpowEwjDTXpdEbHVO/bg==
-X-Received: by 2002:a05:622a:4d3:b0:3ef:4614:d0e9 with SMTP id q19-20020a05622a04d300b003ef4614d0e9mr1246956qtx.5.1682587496406;
-        Thu, 27 Apr 2023 02:24:56 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-243-21.dyn.eolo.it. [146.241.243.21])
-        by smtp.gmail.com with ESMTPSA id ga21-20020a05622a591500b003e4f1b3ce43sm5077353qtb.50.2023.04.27.02.24.54
+        d=1e100.net; s=20221208; t=1682588116; x=1685180116;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nLTOa2gvY/yQPlkBPm/UDjW99+fDZr0dsfJVgkOBXe8=;
+        b=UU9is6TNrmyX3FYOwl2wCkAJwqCIFCxvM6obrXIBH1/WIYkKrpLzswNG8hrZOwWcoq
+         LMPkM2eKeJ1LOqVedjOkzqVYTU/kpSD85D/JfCPCytwubH8hIy9EfuGaibeBZhlYgBxE
+         3f+XrBxFh2zI5QNqjyHzcKZ0P7I+pa/cf/M9C4AB8C4Ei5kp//gv4FPcdbaQqmc6pt8M
+         Cv2wTfU4undPhlJu6YwfBw4dafxQTaFLG94GVt40sCxmqf1p1VoZhvGCe8Z9HgjuMFgI
+         HycTm422pBCcIXflzetsT9QlvV5Dd2DH3f5NgfIGDRVKJ9Toc/cyGs6Yw4v/ovpE+mRs
+         cMMg==
+X-Gm-Message-State: AC+VfDwqTwSJE47RszkGUxDrTcWus01l1kIcGJ/4LixBIxEgNwA5eMh8
+        pb4bp7uo+F3hn8JTb6ijnPl9tAxPIhL58M93utlmviC83N9BhkVgKxoUuczo7r0g8REWNcgPLsd
+        d5k5UIrqYG8wrotiN
+X-Received: by 2002:a7b:c4c2:0:b0:3eb:29fe:f922 with SMTP id g2-20020a7bc4c2000000b003eb29fef922mr905181wmk.29.1682588116476;
+        Thu, 27 Apr 2023 02:35:16 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ70GfP+ZZHQ6xluKgBksQTzeWz0mxAUsXLWSbOrJGn1bNSVtyNdb3QOaLXsLQkF4nyomIuayg==
+X-Received: by 2002:a7b:c4c2:0:b0:3eb:29fe:f922 with SMTP id g2-20020a7bc4c2000000b003eb29fef922mr905155wmk.29.1682588116119;
+        Thu, 27 Apr 2023 02:35:16 -0700 (PDT)
+Received: from vschneid.remote.csb ([154.57.232.159])
+        by smtp.gmail.com with ESMTPSA id k36-20020a05600c1ca400b003f1733feb3dsm24321037wms.0.2023.04.27.02.35.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Apr 2023 02:24:56 -0700 (PDT)
-Message-ID: <a67aa5c2997a816c2573a7f9da3215dbac20b32a.camel@redhat.com>
-Subject: Re: [PATCH net 2/3] ice: Fix ice VF reset during iavf initialization
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        Thu, 27 Apr 2023 02:35:15 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Pawel Chmielewski <pawel.chmielewski@intel.com>,
         Leon Romanovsky <leon@kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Wesierski, DawidX" <dawidx.wesierski@intel.com>,
-        "Maziarz, Kamil" <kamil.maziarz@intel.com>,
-        "Romanowski, Rafal" <rafal.romanowski@intel.com>
-Date:   Thu, 27 Apr 2023 11:24:52 +0200
-In-Reply-To: <CO1PR11MB5089EE31C5E298306B8BF7A5D6659@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20230425170127.2522312-1-anthony.l.nguyen@intel.com>
-         <20230425170127.2522312-3-anthony.l.nguyen@intel.com>
-         <20230426064941.GF27649@unreal>
-         <CO1PR11MB5089EE31C5E298306B8BF7A5D6659@CO1PR11MB5089.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Barry Song <baohua@kernel.org>
+Subject: Re: [PATCH v2 7/8] lib: add test for for_each_numa_{cpu,hop_mask}()
+In-Reply-To: <ZEmOxpgZqyoHcMqu@yury-ThinkPad>
+References: <20230420051946.7463-1-yury.norov@gmail.com>
+ <20230420051946.7463-8-yury.norov@gmail.com>
+ <xhsmh8rehkxzz.mognet@vschneid.remote.csb>
+ <ZEi7n4ZJgF2o8Ps9@yury-ThinkPad>
+ <xhsmhttx3j93u.mognet@vschneid.remote.csb>
+ <ZEmOxpgZqyoHcMqu@yury-ThinkPad>
+Date:   Thu, 27 Apr 2023 10:35:14 +0100
+Message-ID: <xhsmho7n9k6r1.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
+Content-Type: text/plain
 X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-04-26 at 16:22 +0000, Keller, Jacob E wrote:
-> > From: Leon Romanovsky <leon@kernel.org>
->=20
-> > But what I see is that ICE_VF_STATE_ACTIVE bit check is racy and
-> > you
-> > don't really fix the root cause of calling to reset without proper
-> > locking.
-> >=20
->=20
-> I think there's some confusing re-use of words going on in the commit
-> message. It describes what the VF does while recovering and re-
-> initializing from a reset. I think the goal is to prevent starting
-> another reset until the first one has recovered.=C2=A0
+On 26/04/23 13:51, Yury Norov wrote:
+>> I realized I only wrote half the relevant code - comparing node IDs is
+>> meaningless, I meant to compare distances as we walk through the
+>> CPUs... I tested the below against a few NUMA topologies and it seems to be
+>> sane:
+>> 
+>> @@ -756,12 +773,23 @@ static void __init test_for_each_numa(void)
+>>  {
+>>  	unsigned int cpu, node;
+>>  
+>> -	for (node = 0; node < sched_domains_numa_levels; node++) {
+>> -		unsigned int hop, c = 0;
+>> +	for_each_node(node) {
+>> +		unsigned int start_cpu, prev_dist, hop = 0;
+>> +
+>> +		cpu = cpumask_first(cpumask_of_node(node));
+>> +		prev_dist = node_distance(node, node);
+>> +		start_cpu = cpu;
+>>  
+>>  		rcu_read_lock();
+>> -		for_each_numa_cpu(cpu, hop, node, cpu_online_mask)
+>> -			expect_eq_uint(cpumask_local_spread(c++, node), cpu);
+>> +
+>> +		/* Assert distance is monotonically increasing */
+>> +		for_each_numa_cpu(cpu, hop, node, cpu_online_mask) {
+>> +			unsigned int dist = node_distance(cpu_to_node(cpu), cpu_to_node(start_cpu));
+>
+> Interestingly, node_distance() is an arch-specific function. Generic
+> implementation is quite useless:
+>
+>  #define node_distance(from,to)  ((from) == (to) ? LOCAL_DISTANCE : REMOTE_DISTANCE)
+>
+> Particularly, arm64 takes the above. With node_distance() implemented
+> like that, we can barely test something...
+>
 
-Uhmm... it looks like the current patch does not prevent two concurrent
-resets, I think the goal of this patch is let other vf related ndo
-restart gracefully when a VF reset is running.
+riscv and arm64 rely on drivers/base/arch_numa.c to provide
+__node_distance() (cf. CONFIG_GENERIC_ARCH_NUMA).
 
-> I am not sure we can use a standard lock here because we likely do
-> want to be able to recover if the VF driver doesn't respond in a
-> sufficient time.
->=20
-> I don't know exactly what problem this commit claims to fix.
+x86, sparc, powerpc and ia64 define __node_distance()
+loongarch and mips define their own node_distance().
 
-I think this patch could benefit from at least a more
-descriptive/clearer commit message.
-
-Thanks,
-
-Paolo
+So all of those archs will have a usable node_distance(), the others won't
+and that means the scheduler can't do anything about it - the scheduler
+relies on node_distance() to understand the topolgoy!
 
