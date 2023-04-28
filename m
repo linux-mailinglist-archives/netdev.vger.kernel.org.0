@@ -2,124 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 979616F146E
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 11:45:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 213446F147D
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 11:47:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbjD1Jpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 05:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57142 "EHLO
+        id S1345402AbjD1Jru (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 05:47:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbjD1Jpw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 05:45:52 -0400
-Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610E444A2
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 02:45:50 -0700 (PDT)
-Received: from sparky.lan (unknown [159.196.93.152])
-        by mail.codeconstruct.com.au (Postfix) with ESMTPSA id DA21820009;
-        Fri, 28 Apr 2023 17:45:46 +0800 (AWST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=codeconstruct.com.au; s=2022a; t=1682675148;
-        bh=P2m6+vpk1/fkc31fJC+JmKnHAtHzz+DYWJVhTusy2vU=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References;
-        b=dZRwmUxaCAHtn0e7dZPemiZle5nxvlrFz2xVQ5GFF0OoU6fx9f7v3mt3GIGyfnd6Z
-         efneROJCibCNruPJIqZdLtJbQbLbf1Nls/CzWM4BtNr3ppL10HNMy+BigUdq+RQxxO
-         XVL9ggI7nVKrlMjVz9TsA/nIbud3kjtfCtbzE5jt3qYzI+Ey6FA8J81KSbYVrzdApi
-         1u4DsC+xy2fW6zH9FDjkgRlEEo+Mb07zYSMhB2yiEZStui1Qcr+ZnHEdPvWwev5/rF
-         pB30KIV2/AQFP1jIzNzdCLAhigI2IyXYGxwBM1AycwzcyQZQY3qBjDU9tWw06VbgL+
-         Myxyv3W1id4cw==
-Message-ID: <ce269480332ed97c153d61452ee93829d4df5c73.camel@codeconstruct.com.au>
-Subject: Re: [RFC PATCH v1 0/1] net: mctp: MCTP VDM extension
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     "Richert, Krzysztof" <krzysztof.richert@intel.com>,
-        matt@codeconstruct.com.au
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Date:   Fri, 28 Apr 2023 17:45:45 +0800
-In-Reply-To: <4ab1d6c1-d03b-d541-39a0-263e73197521@intel.com>
-References: <20230425090748.2380222-1-krzysztof.richert@intel.com>
-         <aceee8aa24b33f99ebf22cf02d2063b9e3b17bb3.camel@codeconstruct.com.au>
-         <67d9617d-4f77-5a1c-3bae-d14350ccaed5@intel.com>
-         <61b1f1f0c9aab58551e98ba396deba56e77f1f89.camel@codeconstruct.com.au>
-         <4ab1d6c1-d03b-d541-39a0-263e73197521@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-1 
+        with ESMTP id S230106AbjD1Jrt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 05:47:49 -0400
+Received: from mail-40136.proton.ch (mail-40136.proton.ch [185.70.40.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99E32701
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 02:47:47 -0700 (PDT)
+Date:   Fri, 28 Apr 2023 09:47:40 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samwein.com;
+        s=protonmail3; t=1682675265; x=1682934465;
+        bh=400q36v16Um8iOhsXu7kYx5iF4YbEJN7im8EQlHzc30=;
+        h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+         Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+         Message-ID:BIMI-Selector;
+        b=e5fjtKn/I/qrB+g6FjwZ6mVkIwo5jyY/uVsNLS7DH2Hl/N27Hey6Xr7659u+M8ATp
+         4y/vm/V8NEG2TJs2lotW3IIgeYHg46b52s99+olIYaIKZLnJi3tfvzbMnxPfc7xbjw
+         /Zv2zzeqGYK6PLU/2bSTSYvHh3UyI2HrvILkCuH9zqSvxBh3+jbprO8K4ZyepWgiop
+         V4H9+Iu1xvgv/av1mSKr3ipHgtl9a2FcSHPLiCs5Ld4zxr75wFUZuKArB9n+nD8V2w
+         30GbbGfJnPhoNppxvf2oCtZP4zDC7UTR7jGjnkCQWxC0gsskJuyNhC+ydOSX07J3Si
+         ZX2PhXsO88GQA==
+To:     "Kumar, M Chetan" <m.chetan.kumar@intel.com>
+From:   Samuel Wein PhD <sam@samwein.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linuxwwan <linuxwwan@intel.com>
+Subject: RE: NULL pointer dereference when removing xmm7360 PCI device
+Message-ID: <dTcfnhONbF32TfGTW1PwZCTLPv23F7YdudIWGSzoIrQ8Kc0Y1L3l5qlfXn4RvrrRxEDVAkDc5K6rbXf11FNRmteF8RztBMYZ1rkTvdp5R34=@samwein.com>
+In-Reply-To: <SJ0PR11MB5008C45C06B1DDE78A8CC874D76B9@SJ0PR11MB5008.namprd11.prod.outlook.com>
+References: <Yhw4a065te-PH2rfqCYhLt4RZwLJLek2VsfLDrc8TLjfPqxbw6QKbd7L2PwjA81XlBhUr04Nm8-FjfdSsTlkKnIJCcjqHenPx4cbpRLym-U=@samwein.com> <20230427140819.1310f4bd@kernel.org> <SJ0PR11MB5008C45C06B1DDE78A8CC874D76B9@SJ0PR11MB5008.namprd11.prod.outlook.com>
+Feedback-ID: 2153553:user:proton
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
+I've added the full set of logs to the gist. The sequence was:
+boot PC
+suspend PC
+resume PC
+repeat the following several (it varies) times until the error:
+`sudo echo 1 > /sys/devices/pci0000:00/0000:00:1c.0/0000:02:00.0/remove`
+`echo 1 > /sys/devices/pci0000:00/0000:00:1c.0/rescan`
 
-> > However, this may be tricky for recvfrom(), where there is no prior
-> > length value available. We could extract this from the earlier
-> > (outgoing) message, but that's getting a bit hacky at that point.
-> Actually, I've thought to use the same approach as for sockaddr_mctp_ext.
-> So subtype data would be part of sockaddr(a), but enabled by MCTP_OPT_VEN=
-DOR_EXT.
-
-Yes - you'll always need the setsockopt to enable the different
-sockaddr format, but we may need it to also provide the format (length,
-whatever) of the subtype addressing. However, there are some
-more factors there, I'll cover those below.
-
-> In scenario when bind() function is not called, it would result in receiv=
-ing
-> message from any subtype, right ?=20
-
-Yes - if we don't have a sockaddr_mctp_vendor_ext at the time the packet
-comes in, then we have no idea how to extract the packet subtype.
-
-> > Are there cases where the subtype does not immediately follow the
-> > PCIe/IANA type? If not, we could just require that...
-> Yes. Just after PCIe/IANA, in the Intel format, is 'control byte' and
-> next subtype. For some vendors it may be, as you assumed, immediately
-> follow the PCIe/IANA, or on completely different offset.
-
-OK, the "completely different offset" is a fairly major issue here.
-
-To implement that, we essentially need a sort of arbitrary packet
-inspection to allow the addressing mechanism to parse a subtype from any
-data in the packet. I can see a few potential issues with that, mainly:
-
- 1) there's no way to prevent a packet matching multiple binds(); there
-    may be incoming packets that match more than one subtype if they're
-    at different offsets
-
- 2) similarly: there's no way to reject a bind() if it conflicts with
-    an existing bound socket
-
- 3) this sounds like something that may be prone to bugs
-
-One alternative I can see is that:
-
- A) we keep the DSP0236 specified behaviour in the kernel; allowing a
-    bind on a PCI/IANA vendor type, but not the subtype
-
- B) we add a "vendor mark" field to the sockaddr_mctp_vendor_ext; an
-    arbitrary u32. Sockets can specify a vendor mark value during bind()
-    so that they receive packets with a specific mark. This allows us
-    to reject duplicate bind()s on the same mark value.
-
- C) packets can get a vendor mark applied by a some user-specified BPF
-    (or similar?) logic, that can do the arbitrary packet parsing, and
-    apply a suitable mark value to the skb.
-
- D) when looking up the socket for an incoming packet, we also require
-    a match on the vendor mark, if one is applied during bind().
-
-With that, we wold just need the appropriate plumbing to allow marking
-through BPF. It would be up to userspace to provide the actual parse ->
-mark logic, and to match the bind() mark value to whatever the BPF sets.
-
-Would that work?
-
-Cheers,
+The XMM7360 card doesn't resume properly from suspend, with the AT devices =
+not responding to any commands. I've been working off of some of Shane Pars=
+low's code to try to get ModemManager control of the device and was basical=
+ly trying a bunch of ways to try to reset the card, this one clearly didn't=
+ work, but it also clearly exposed some weirdness in how the kernel handled=
+ the attempt. The fact that there is not a proper MBIM interface for this c=
+ard really makes managing it difficult.
 
 
-Jeremy
+------- Original Message -------
+On Friday, April 28th, 2023 at 11:21 AM, Kumar, M Chetan <m.chetan.kumar@in=
+tel.com> wrote:
+
+
+>=20
+>=20
+> > -----Original Message-----
+>=20
+> > From: Jakub Kicinski kuba@kernel.org
+> > Sent: Friday, April 28, 2023 2:38 AM
+> > To: Kumar, M Chetan m.chetan.kumar@intel.com
+> > Cc: Samuel Wein PhD sam@samwein.com; netdev@vger.kernel.org;
+> > linuxwwan linuxwwan@intel.com
+> > Subject: Re: NULL pointer dereference when removing xmm7360 PCI device
+> >=20
+> > On Thu, 27 Apr 2023 10:31:29 +0000 Samuel Wein PhD wrote:
+> >=20
+> > > Hi Folks,
+> > > I've been trying to get the xmm7360 working with IOSM and the
+> > > ModemManager. This has been what my highschool advisor would call a
+> > > "learning process".
+> > > When trying `echo 1 > /sys/devices/pci0000:00/0000:00:1c.0/0000:02:00=
+.0/remove` I get a
+> > > variety of errors. One of these is a kernel error
+> > > `2023-04-27T12:23:38.937223+02:00 Nase kernel: [ 587.997430] BUG: ker=
+nel NULL pointer dereference, address: 0000000000000048 2023-04-27T12:23:38=
+.937237+02:00 Nase kernel: [ 587.997447] #PF: supervisor read access in ker=
+nel mode 2023-04-27T12:23:38.937238+02:00 Nase kernel: [ 587.997455] #PF: e=
+rror_code(0x0000) - not-present page 2023-04-27T12:23:38.937241+02:00 Nase =
+kernel: [ 587.997463] PGD 0 P4D 0 2023-04-27T12:23:38.937242+02:00 Nase ker=
+nel: [ 587.997476] Oops: 0000 [#1] PREEMPT SMP NOPTI 2023-04-27T12:23:38.93=
+7242+02:00 Nase kernel: [ 587.997489] CPU: 1 PID: 4767 Comm: bash Not taint=
+ed 6.3.0-060300-generic #202304232030 ...`
+> > > the full log is available at
+> > > https://gist.github.com/poshul/0c5ffbde6106a71adcbc132d828dbcd7
+> > >=20
+> > > Steps to reproduce: Boot device with xmm7360 installed and in PCI mod=
+e,
+> > > place into suspend. Resume, and start issuing reset/remove commands t=
+o
+> > > the PCI interface (without properly unloading the IOSM module first).
+> > >=20
+> > > I'm not sure how widely applicable this is but wanted to at least rep=
+ort it.
+> >=20
+> > Intel folks, PTAL.
+>=20
+>=20
+> I tried reproducing the issue by following the steps you mentioned but so=
+ far could not
+> reproduce it. Could you please share the logs from boot-up and procedure =
+you carried out in steps.
+>=20
+> Once you boot-up the laptop, driver will be in working condition why devi=
+ce removal ?
