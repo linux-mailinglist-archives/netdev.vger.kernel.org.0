@@ -2,128 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 664C76F15D3
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 12:38:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50CBE6F15EE
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 12:43:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346096AbjD1Kiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 06:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
+        id S1345549AbjD1KnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 06:43:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346085AbjD1Kic (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 06:38:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521A365AF;
-        Fri, 28 Apr 2023 03:37:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF4BE642BD;
-        Fri, 28 Apr 2023 10:37:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F35DC433D2;
-        Fri, 28 Apr 2023 10:37:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682678236;
-        bh=eQ9xBGX1D8+UsnYpVKT1xrfqrnmge5hf6pL7SNX8uV8=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=tSpIYkzO+xF3i0eu48LUXJdw3UTD/mm+XlpnP/iitRKdPTW+fyvPXUX4L4Cy17o31
-         ry1wMlddQd42+p1DN3+qkzBqWhDH57kze8VDGugSQ6TKv8Jb6D1tsU7JIEDQXE8U7n
-         6Kax4ae43fKgQgv3vWCaKfxMoQmbhq3ZqalKA2PBiNpvQNYH9m+fxiaCSeEa2GIBoq
-         tBuXKLBiqmEFtQYL0sm0DX1CG6W/0hmtNdvkWhIQIVZwamrKYc+/A5IUXOT66OWSGi
-         OQ3pjX+B6X5BK1bj4UZVMIXnep3cjn2XBNu64E1TmG5IHLR+g9YfCN0L3LaYwz10V9
-         +TwLh6qnsJ46A==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Ping-Ke Shih <pkshih@realtek.com>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>
-Subject: Re: pull-request: wireless-next-2023-04-21
-References: <20230421104726.800BCC433D2@smtp.kernel.org>
-        <20230421075404.63c04bca@kernel.org>
-        <e31dae6daa6640859d12bf4c4fc41599@realtek.com>
-        <87leigr06u.fsf@kernel.org> <20230425071848.6156c0a0@kernel.org>
-        <77cf7fa9de20be55d50f03ccbdd52e3c8682b2b3.camel@sipsolutions.net>
-        <c69f151c77f34ae594dc2106bc68f2ac@realtek.com>
-        <1a38a4289ef34672a2bc9a880e8608a8@realtek.com>
-        <7214a6a800e4af80b9319c30b13cc52286bba50a.camel@sipsolutions.net>
-        <ecaaf616d04d4e0b9303e1c680eefea7@realtek.com>
-Date:   Fri, 28 Apr 2023 13:37:11 +0300
-In-Reply-To: <ecaaf616d04d4e0b9303e1c680eefea7@realtek.com> (Ping-Ke Shih's
-        message of "Thu, 27 Apr 2023 00:38:45 +0000")
-Message-ID: <87h6t0s36w.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S230106AbjD1KnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 06:43:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891C4E48
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 03:42:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682678556;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8VYz7vHN/SQLKQpJ6o5rJHep+Bs09jf1B3PVMTcCTDA=;
+        b=DFHDNo3atVVJJY+yTZRi4qOgs7DA3PCISOzqInbVphNCmD2GO6HHkrdFIaPXXt4vsTS1VK
+        fsH6kk0iy/tCCy/Q7rIx05Ck+nZQ3gAnnIa3yNFyzgTs7q0A5V2N60naqzwgZKabzau/WC
+        DrSxS1Tlf+/pZUIQQAGDry83YK4o5dY=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-447-ffnBFJfeMiyf7ZGnoG3iLg-1; Fri, 28 Apr 2023 06:42:35 -0400
+X-MC-Unique: ffnBFJfeMiyf7ZGnoG3iLg-1
+Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-94a35b0d4ceso951635566b.3
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 03:42:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682678554; x=1685270554;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8VYz7vHN/SQLKQpJ6o5rJHep+Bs09jf1B3PVMTcCTDA=;
+        b=O+9EjtGKBEpjzFdcSE+DLFs+U+bgFnd9vYhtvn3nc3u8nH/WhQtkDnHnr6lpgbwruH
+         +QNZgvJ4jcwdI/zCu3c9GO/UvkuXBVryrslbiMxTVxQRYyeVqqw30fSJn8CHDkkPteXK
+         iAxVIMMR3GQYrt16v9yC6hAeXFTL7XkyYs1rXpISUOuLu7k9GKIgwq8fEt5s1IG3dn2/
+         5JF3wSLHsvVMkzmGgZAq2iSmSZdWXQh8YQm5E6ZcvupvMiWVSWq0WsSPFu3yetcx31J5
+         rRi519WZOdtXaMZx1vOnOpJMG/AIN88uU5YUO9oNSMenPMITUMRMy5hz94cizyFNEm6g
+         XXZg==
+X-Gm-Message-State: AC+VfDw6HGM4aR4miiPzhWdAeddkX/ck1Aj35zVDhJhG8d4elLjYakWK
+        pV7IhNyLGT+aMIV1h6KDhbX2HZH22QhLaegC3eR2MTcXDK0Er5xtLxPC7FXVJa1BnNvTwwDbYCP
+        rDWPB5dE/HSaZaBQA
+X-Received: by 2002:a17:907:60cc:b0:94e:4735:92f8 with SMTP id hv12-20020a17090760cc00b0094e473592f8mr4630899ejc.27.1682678554534;
+        Fri, 28 Apr 2023 03:42:34 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5RLIFDV7DqMfmu8vI6PEQwNYJoJcGV2dXRsB7+yLFdggKUBAXB+Ox+W/QR/EHGWW7JUWzbOQ==
+X-Received: by 2002:a17:907:60cc:b0:94e:4735:92f8 with SMTP id hv12-20020a17090760cc00b0094e473592f8mr4630872ejc.27.1682678554124;
+        Fri, 28 Apr 2023 03:42:34 -0700 (PDT)
+Received: from [192.168.42.222] (194-45-78-10.static.kviknet.net. [194.45.78.10])
+        by smtp.gmail.com with ESMTPSA id 28-20020a170906225c00b0094ee88207d5sm10921484ejr.191.2023.04.28.03.42.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Apr 2023 03:42:33 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <4eab92af-251a-a9aa-e270-179634d0345b@redhat.com>
+Date:   Fri, 28 Apr 2023 12:42:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Cc:     brouer@redhat.com, lorenzo@kernel.org, linyunsheng@huawei.com,
+        bpf@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, willy@infradead.org
+Subject: Re: [PATCH RFC net-next/mm V2 1/2] page_pool: Remove workqueue in new
+ shutdown scheme
+Content-Language: en-US
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        linux-mm@kvack.org, Mel Gorman <mgorman@techsingularity.net>
+References: <168262348084.2036355.16294550378793036683.stgit@firesoul>
+ <168262351129.2036355.1136491155595493268.stgit@firesoul>
+ <871qk582tn.fsf@toke.dk>
+In-Reply-To: <871qk582tn.fsf@toke.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ping-Ke Shih <pkshih@realtek.com> writes:
 
->> > > If loading a table_v1 table, for example, we need to convert to table_cpu by
->> > > some rules. Also, maybe we need to disable some features relay on the values
->> > > introduced by table_cpu. I think it will work, but just add some flags and
->> > > rules to handle them.
->> 
->> But wouldn't this basically be tied to a driver? I mean you could have a
->> file called "rtlwifi/rtlxyz.v1.tables" that the driver in kernel 6.4
->> loads, and ...v2... that the driver in 6.5 loads, and requires for
->> operation?
->> 
->> Then again - it'd be better if the driver in 6.5 can deal with it if a
->> user didn't install the v2 file yet, is that what you meant?
->
-> Yes, this is my point, and I think 6.5 _must_ deal with v1 file.
 
-I agree. In this example the time between v6.4 and v6.5 is roughly three
-months, so we can't drop v1 support that fast as there will be people
-upgrading their kernels but don't have the v2 firmware file yet.
+On 27/04/2023 22.53, Toke Høiland-Jørgensen wrote:
+>> +noinline
+>>   static void page_pool_empty_ring(struct page_pool *pool)
+>>   {
+>>   	struct page *page;
+>> @@ -796,39 +828,29 @@ static void page_pool_scrub(struct page_pool *pool)
+>>   	page_pool_empty_ring(pool);
+>>   }
+> So this is not in the diff context, but page_pool_empty_ring() does
+> this:
+> 
+> static void page_pool_empty_ring(struct page_pool *pool)
+> {
+> 	struct page *page;
+> 
+> 	/* Empty recycle ring */
+> 	while ((page = ptr_ring_consume_bh(&pool->ring))) {
+> 		/* Verify the refcnt invariant of cached pages */
+> 		if (!(page_ref_count(page) == 1))
+> 			pr_crit("%s() page_pool refcnt %d violation\n",
+> 				__func__, page_ref_count(page));
+> 
+> 		page_pool_return_page(pool, page);
+> 	}
+> }
+> 
+> ...and with this patch, that page_pool_return_page() call will now free
+> the pool memory entirely when the last page is returned. When it does
+> this, the condition in the while loop will still execute afterwards; it
+> would return false, but if the pool was freed, it's now referencing
+> freed memory when trying to read from pool->ring.
 
-I would say supporting one year is too short (think LTS distros etc) so
-to be on the safe side we should support old firmware files at least for
-two years. That's a long time.
+Yes, that sounds like a problem.
 
-> Considering below artificial drama: 
->
-> 1. kernel 6.4, driver support 2GHz channels only (table v1)
->    __le32 channel_tx_power_v1[2GHz_NUM]
->
-> 2. kernel 6.5, driver support 2 + 5GHz channels (table v2)
->    __le32 channel_tx_power_v2[2GHz_NUM + 5GHz_NUM]
->
->    A user could not install v2, so I need a conversion, like
->    convert_v1_to_v2(struct table_v1 *v1, struct table_v2 *v2) // also
-> disable 5GHz channels
->
-> 3. kernel 6.6, driver support 2 + 5 + 6GHz channels (table v3)
->    __le32 channel_tx_power_v2[2GHz_NUM + 5GHz_NUM + 6GHz_NUM]
->    A user could not install v3, so I need an additional conversion, like
->    convert_v2_to_v3(struct table_v2 *v2, struct table_v3 *v3) // also
-> disable 6GHz channels
+> So I think page_pool_empty_ring needs to either pull out all the pages
+> in the ring to an on-stack buffer before calling page_pool_return_page()
+> on them, or there needs to be some other way to break the loop early.
 
-This is exactly what I'm worried about. And we have also the case that
-user space doesn't have the initval.bin file at all so we need to have
-initvals in kernel for something like two years.
+Let me address this one first, I'll get back to the other in another
+reply.  The usual/idiom way of doing this is to have a next pointer that
+is populated inside the loop before freeing the object.
+It should look like this (only compile tested):
 
-> If more table versions are introduced, more conversions are needed. Also,
-> I'm not sure how these tables can change in the future, so the conversion
-> may be complicated if they have a big change for certain reason. 
->
-> My point is that this work is possible, but introduce some extra works that
-> maybe look a little dirty. 
+  static void page_pool_empty_ring(struct page_pool *pool)
+  {
+	struct page *page, *next;
 
-Also I agree here. This creates complexity and that of course increases
-the risk of bugs. Even if it sounds simple, in practise it's not. Of
-course if the initvals don't change then it's easier, but I would not
-rely on that.
+	next = ptr_ring_consume_bh(&pool->ring);
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+	/* Empty recycle ring */
+	while (next) {
+		page = next;
+		next = ptr_ring_consume_bh(&pool->ring);
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+		/* Verify the refcnt invariant of cached pages */
+		if (!(page_ref_count(page) == 1))
+			pr_crit("%s() page_pool refcnt %d violation\n",
+				__func__, page_ref_count(page));
+
+		page_pool_return_page(pool, page);
+	}
+  }
+
+
+> There are a couple of other places where page_pool_return_page() is
+> called in a loop where the loop variable lives inside struct page_pool,
+> so we need to be absolutely sure they will never be called in the
+> shutdown stage, or they'll have to be fixed as well.
+
+The other loops are okay, but I spotted another problem in 
+__page_pool_put_page() in "Fallback/non-XDP mode", but that is fixable.
+
+--Jesper
+
