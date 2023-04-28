@@ -2,186 +2,381 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B826F1C62
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:14:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAB8B6F1C5E
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:13:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230481AbjD1QNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 12:13:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
+        id S233293AbjD1QNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 12:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230464AbjD1QNy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:13:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD50B2137
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:13:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682698392;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5xkaTJLSgSiHWckTCCg+jkvg+cPl3tpnSAiaPo9ljdQ=;
-        b=FPrC3ztDWD1KOjNlK3bazKox8fCwYokb4luMoDlIK2/uaZA8FjG8tszaoCI7JTYWeY4MIK
-        laUaMe6O1hQZQdTE9ols/k3RWR5xN3uOIqirhyrjgjEZgydx5CxLhwf0r2UzQwGpDDOKMN
-        iwTynksT2Opbi4DKqJQP0PeJGAxv2RY=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-103-almsGvBjOJGQQS7IyoK6UA-1; Fri, 28 Apr 2023 12:13:08 -0400
-X-MC-Unique: almsGvBjOJGQQS7IyoK6UA-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-3f1749c63c9so36357355e9.3
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:13:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682698387; x=1685290387;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5xkaTJLSgSiHWckTCCg+jkvg+cPl3tpnSAiaPo9ljdQ=;
-        b=TRAG4hPC+Iu+XrhsF/KXhAlJyq8gc1kg2b+RmpQzlt9059ZpbxktJqQZq6FQZJJfaK
-         PGneCtjfNDDGaT3N4ZzTVj/19HZKbjk40xidza3JvVS+9QM/V51U0B0WhJPaCdzng+mh
-         EpiDxusw2LJF6zHKWiS4/RbtFARBZBqVYbQPQ/GOgp2Hp8eTsAAS3E4B/bLFrQGvzGq1
-         kOxBCMh+ScOB+5EiHFMRwzdE580kNvD2ECEUi2dfteWQFhs1zF66ppUny273J3fhvvDR
-         mbonA0M6p9lup2y+xvJhojc9hwsiMuW/w6hHsv8nmw5JLPcc5Nfjyl3m3K2FoKcJenhl
-         6slQ==
-X-Gm-Message-State: AC+VfDwLmgOyBTkCwRtnv/rgXjV4/Z7VFsRaz8LoKORtZ2TYSlG66DzO
-        6AgAbi0AA8FjvqsKe6iyrpcdLj+oIUEJZds9jF0uOEg4uMHamxjl8mU6plWGWBYUtX4yaaYqq5f
-        T0V0PMgQVkwzaIlQa
-X-Received: by 2002:a1c:cc0f:0:b0:3f1:718d:a21c with SMTP id h15-20020a1ccc0f000000b003f1718da21cmr4546926wmb.31.1682698386872;
-        Fri, 28 Apr 2023 09:13:06 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5UcVnruZKFM610WaYbD7KosGHJuT9juitvMObOnL1WWik01k7wINU0BT60S4IoSquURMFEKg==
-X-Received: by 2002:a1c:cc0f:0:b0:3f1:718d:a21c with SMTP id h15-20020a1ccc0f000000b003f1718da21cmr4546897wmb.31.1682698386533;
-        Fri, 28 Apr 2023 09:13:06 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c726:9300:1711:356:6550:7502? (p200300cbc72693001711035665507502.dip0.t-ipconnect.de. [2003:cb:c726:9300:1711:356:6550:7502])
-        by smtp.gmail.com with ESMTPSA id c21-20020a7bc855000000b003f17300c7dcsm24667685wml.48.2023.04.28.09.13.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Apr 2023 09:13:06 -0700 (PDT)
-Message-ID: <39cc0f26-8fc2-79dd-2e84-62238d27fd98@redhat.com>
-Date:   Fri, 28 Apr 2023 18:13:03 +0200
+        with ESMTP id S229453AbjD1QNx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:13:53 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E314EE4
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:13:51 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33SA5AHV003415;
+        Fri, 28 Apr 2023 09:13:41 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=ascTmMTDTsdlTDmJhOlR8ykzdkP5dtEXLaZI3QqSq/8=;
+ b=KcShJ368ChiTdTiytgFAblh76Ixav03jPfqQAZn51bwf2FMWka3lWEFKhTjNHltdE/cp
+ CfINSWE58TGww3s5w7Z6YP+AkRowxFz5LxMZdqLbAzQFzWtGZPD3/P4u98MMeFBqBtAk
+ o9gz0mGLbMCkmfsLWAjPMoQOFIJNK2FmSUMTvYNAcwKMKaoT0d+LpfYpmUqibnl/XOIn
+ SZkYuacxxFKEOcsQD6Omttv8hHprBZYXB31He0CcohWmVmhpXN3IGnacdh8N3P9boH3W
+ b7uAoEHKQI+2mELk82g0Vze7WXHVfVDqmbhf/5NAN3FKexssoxkruN4fxqESmAfoBSi9 LQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3q85x62qx1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 28 Apr 2023 09:13:40 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Fri, 28 Apr
+ 2023 09:13:38 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Fri, 28 Apr 2023 09:13:38 -0700
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id D0DD45B692C;
+        Fri, 28 Apr 2023 09:13:38 -0700 (PDT)
+From:   Manish Chopra <manishc@marvell.com>
+To:     <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
+        <palok@marvell.com>, Sudarsana Kalluru <skalluru@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH v3 net] qed/qede: Fix scheduling while atomic
+Date:   Fri, 28 Apr 2023 09:13:37 -0700
+Message-ID: <20230428161337.8485-1-manishc@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
- by default
-Content-Language: en-US
-To:     "Kirill A . Shutemov" <kirill@shutemov.name>
-Cc:     Lorenzo Stoakes <lstoakes@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        David Howells <dhowells@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
- <afcc124e-7a9b-879c-dfdf-200426b84e24@redhat.com>
- <ZEvZtIb2EDb/WudP@nvidia.com>
- <094d2074-5b69-5d61-07f7-9f962014fa68@redhat.com>
- <400da248-a14e-46a4-420a-a3e075291085@redhat.com>
- <077c4b21-8806-455f-be98-d7052a584259@lucifer.local>
- <62ec50da-5f73-559c-c4b3-bde4eb215e08@redhat.com>
- <6ddc7ac4-4091-632a-7b2c-df2005438ec4@redhat.com>
- <20230428160925.5medjfxkyvmzfyhq@box.shutemov.name>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20230428160925.5medjfxkyvmzfyhq@box.shutemov.name>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-GUID: y9ewb58HimoE_Ex2r21dXKiUHsiQ4rBt
+X-Proofpoint-ORIG-GUID: y9ewb58HimoE_Ex2r21dXKiUHsiQ4rBt
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-28_04,2023-04-27_01,2023-02-09_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.04.23 18:09, Kirill A . Shutemov wrote:
-> On Fri, Apr 28, 2023 at 05:43:52PM +0200, David Hildenbrand wrote:
->> On 28.04.23 17:34, David Hildenbrand wrote:
->>> On 28.04.23 17:33, Lorenzo Stoakes wrote:
->>>> On Fri, Apr 28, 2023 at 05:23:29PM +0200, David Hildenbrand wrote:
->>>>>>>
->>>>>>> Security is the primary case where we have historically closed uAPI
->>>>>>> items.
->>>>>>
->>>>>> As this patch
->>>>>>
->>>>>> 1) Does not tackle GUP-fast
->>>>>> 2) Does not take care of !FOLL_LONGTERM
->>>>>>
->>>>>> I am not convinced by the security argument in regard to this patch.
->>>>>>
->>>>>>
->>>>>> If we want to sells this as a security thing, we have to block it
->>>>>> *completely* and then CC stable.
->>>>>
->>>>> Regarding GUP-fast, to fix the issue there as well, I guess we could do
->>>>> something similar as I did in gup_must_unshare():
->>>>>
->>>>> If we're in GUP-fast (no VMA), and want to pin a !anon page writable,
->>>>> fallback to ordinary GUP. IOW, if we don't know, better be safe.
->>>>
->>>> How do we determine it's non-anon in the first place? The check is on the
->>>> VMA. We could do it by following page tables down to folio and checking
->>>> folio->mapping for PAGE_MAPPING_ANON I suppose?
->>>
->>> PageAnon(page) can be called from GUP-fast after grabbing a reference.
->>> See gup_must_unshare().
->>
->> IIRC, PageHuge() can also be called from GUP-fast and could special-case
->> hugetlb eventually, as it's table while we hold a (temporary) reference.
->> Shmem might be not so easy ...
-> 
-> page->mapping->a_ops should be enough to whitelist whatever fs you want.
-> 
+Bonding module collects the statistics while holding
+the spinlock, beneath that qede->qed driver statistics
+flow gets scheduled out due to usleep_range() used in PTT
+acquire logic which results into below bug and traces -
 
-The issue is how to stabilize that from GUP-fast, such that we can 
-safely dereference the mapping. Any idea?
+[ 3673.988874] Hardware name: HPE ProLiant DL365 Gen10 Plus/ProLiant DL365 Gen10 Plus, BIOS A42 10/29/2021
+[ 3673.988878] Call Trace:
+[ 3673.988891]  dump_stack_lvl+0x34/0x44
+[ 3673.988908]  __schedule_bug.cold+0x47/0x53
+[ 3673.988918]  __schedule+0x3fb/0x560
+[ 3673.988929]  schedule+0x43/0xb0
+[ 3673.988932]  schedule_hrtimeout_range_clock+0xbf/0x1b0
+[ 3673.988937]  ? __hrtimer_init+0xc0/0xc0
+[ 3673.988950]  usleep_range+0x5e/0x80
+[ 3673.988955]  qed_ptt_acquire+0x2b/0xd0 [qed]
+[ 3673.988981]  _qed_get_vport_stats+0x141/0x240 [qed]
+[ 3673.989001]  qed_get_vport_stats+0x18/0x80 [qed]
+[ 3673.989016]  qede_fill_by_demand_stats+0x37/0x400 [qede]
+[ 3673.989028]  qede_get_stats64+0x19/0xe0 [qede]
+[ 3673.989034]  dev_get_stats+0x5c/0xc0
+[ 3673.989045]  netstat_show.constprop.0+0x52/0xb0
+[ 3673.989055]  dev_attr_show+0x19/0x40
+[ 3673.989065]  sysfs_kf_seq_show+0x9b/0xf0
+[ 3673.989076]  seq_read_iter+0x120/0x4b0
+[ 3673.989087]  new_sync_read+0x118/0x1a0
+[ 3673.989095]  vfs_read+0xf3/0x180
+[ 3673.989099]  ksys_read+0x5f/0xe0
+[ 3673.989102]  do_syscall_64+0x3b/0x90
+[ 3673.989109]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[ 3673.989115] RIP: 0033:0x7f8467d0b082
+[ 3673.989119] Code: c0 e9 b2 fe ff ff 50 48 8d 3d ca 05 08 00 e8 35 e7 01 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24
+[ 3673.989121] RSP: 002b:00007ffffb21fd08 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+[ 3673.989127] RAX: ffffffffffffffda RBX: 000000000100eca0 RCX: 00007f8467d0b082
+[ 3673.989128] RDX: 00000000000003ff RSI: 00007ffffb21fdc0 RDI: 0000000000000003
+[ 3673.989130] RBP: 00007f8467b96028 R08: 0000000000000010 R09: 00007ffffb21ec00
+[ 3673.989132] R10: 00007ffffb27b170 R11: 0000000000000246 R12: 00000000000000f0
+[ 3673.989134] R13: 0000000000000003 R14: 00007f8467b92000 R15: 0000000000045a05
+[ 3673.989139] CPU: 30 PID: 285188 Comm: read_all Kdump: loaded Tainted: G        W  OE
 
-At least for anon page I know that page->mapping only gets cleared when 
-freeing the page, and we don't dereference the mapping but only check a 
-single flag stored alongside the mapping. Therefore, PageAnon() is fine 
-in GUP-fast context.
+Fix this by having caller (QEDE driver flows) to provide the context
+whether it could be in atomic context flow or not when getting the
+vport stats from QED driver. QED driver based on the context provided
+decide to schedule out or not when acquiring the PTT BAR window.
 
+Fixes: 133fac0eedc3 ("qede: Add basic ethtool support")
+Cc: Sudarsana Kalluru <skalluru@marvell.com>
+Cc: David S. Miller <davem@davemloft.net>
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Signed-off-by: Alok Prasad <palok@marvell.com>
+---
+v1->v2:
+ - Fixed checkpatch and kdoc warnings.
+v2->v3:
+ - Moving the changelog after tags.
+---
+ drivers/net/ethernet/qlogic/qed/qed_dev_api.h | 12 +++++++-
+ drivers/net/ethernet/qlogic/qed/qed_hw.c      | 28 +++++++++++++++----
+ drivers/net/ethernet/qlogic/qed/qed_l2.c      | 11 ++++----
+ drivers/net/ethernet/qlogic/qed/qed_l2.h      |  3 +-
+ drivers/net/ethernet/qlogic/qed/qed_main.c    |  4 +--
+ drivers/net/ethernet/qlogic/qede/qede.h       |  2 +-
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   |  2 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  6 ++--
+ include/linux/qed/qed_eth_if.h                |  2 +-
+ 9 files changed, 50 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
+index f8682356d0cf..379169076aa4 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
+@@ -182,7 +182,7 @@ int qed_hw_prepare(struct qed_dev *cdev,
+ void qed_hw_remove(struct qed_dev *cdev);
+ 
+ /**
+- * qed_ptt_acquire(): Allocate a PTT window.
++ * qed_ptt_acquire(): Allocate a PTT window in sleepable context.
+  *
+  * @p_hwfn: HW device data.
+  *
+@@ -193,6 +193,16 @@ void qed_hw_remove(struct qed_dev *cdev);
+  */
+ struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn);
+ 
++/**
++ *  _qed_ptt_acquire(): Allocate a PTT window based on the context.
++ *
++ *  @p_hwfn: HW device data.
++ *  @is_atomic: context (sleepable or unsleepable) based on which ptt is acquired.
++ *
++ *  Return: struct qed_ptt.
++ */
++struct qed_ptt *_qed_ptt_acquire(struct qed_hwfn *p_hwfn, bool is_atomic);
++
+ /**
+  * qed_ptt_release(): Release PTT Window.
+  *
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_hw.c b/drivers/net/ethernet/qlogic/qed/qed_hw.c
+index 554f30b0cfd5..4e8bfa0194e7 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_hw.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_hw.c
+@@ -23,7 +23,10 @@
+ #include "qed_reg_addr.h"
+ #include "qed_sriov.h"
+ 
+-#define QED_BAR_ACQUIRE_TIMEOUT 1000
++#define QED_BAR_ACQUIRE_TIMEOUT_USLEEP_CNT	1000
++#define QED_BAR_ACQUIRE_TIMEOUT_USLEEP		1000
++#define QED_BAR_ACQUIRE_TIMEOUT_UDELAY_CNT	100000
++#define QED_BAR_ACQUIRE_TIMEOUT_UDELAY		10
+ 
+ /* Invalid values */
+ #define QED_BAR_INVALID_OFFSET          (cpu_to_le32(-1))
+@@ -83,13 +86,18 @@ void qed_ptt_pool_free(struct qed_hwfn *p_hwfn)
+ 	p_hwfn->p_ptt_pool = NULL;
+ }
+ 
+-struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn)
++struct qed_ptt *_qed_ptt_acquire(struct qed_hwfn *p_hwfn, bool is_atomic)
+ {
+ 	struct qed_ptt *p_ptt;
+-	unsigned int i;
++	unsigned int i, count;
++
++	if (is_atomic)
++		count = QED_BAR_ACQUIRE_TIMEOUT_UDELAY_CNT;
++	else
++		count = QED_BAR_ACQUIRE_TIMEOUT_USLEEP_CNT;
+ 
+ 	/* Take the free PTT from the list */
+-	for (i = 0; i < QED_BAR_ACQUIRE_TIMEOUT; i++) {
++	for (i = 0; i < count; i++) {
+ 		spin_lock_bh(&p_hwfn->p_ptt_pool->lock);
+ 
+ 		if (!list_empty(&p_hwfn->p_ptt_pool->free_list)) {
+@@ -105,13 +113,23 @@ struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn)
+ 		}
+ 
+ 		spin_unlock_bh(&p_hwfn->p_ptt_pool->lock);
+-		usleep_range(1000, 2000);
++
++		if (is_atomic)
++			udelay(QED_BAR_ACQUIRE_TIMEOUT_UDELAY);
++		else
++			usleep_range(QED_BAR_ACQUIRE_TIMEOUT_USLEEP,
++				     QED_BAR_ACQUIRE_TIMEOUT_USLEEP * 2);
+ 	}
+ 
+ 	DP_NOTICE(p_hwfn, "PTT acquire timeout - failed to allocate PTT\n");
+ 	return NULL;
+ }
+ 
++struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn)
++{
++	return _qed_ptt_acquire(p_hwfn, false);
++}
++
+ void qed_ptt_release(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
+ {
+ 	spin_lock_bh(&p_hwfn->p_ptt_pool->lock);
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.c b/drivers/net/ethernet/qlogic/qed/qed_l2.c
+index 2edd6bf64a3c..46d8d35dc7ac 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_l2.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_l2.c
+@@ -1863,7 +1863,7 @@ static void __qed_get_vport_stats(struct qed_hwfn *p_hwfn,
+ }
+ 
+ static void _qed_get_vport_stats(struct qed_dev *cdev,
+-				 struct qed_eth_stats *stats)
++				 struct qed_eth_stats *stats, bool is_atomic)
+ {
+ 	u8 fw_vport = 0;
+ 	int i;
+@@ -1872,7 +1872,7 @@ static void _qed_get_vport_stats(struct qed_dev *cdev,
+ 
+ 	for_each_hwfn(cdev, i) {
+ 		struct qed_hwfn *p_hwfn = &cdev->hwfns[i];
+-		struct qed_ptt *p_ptt = IS_PF(cdev) ? qed_ptt_acquire(p_hwfn)
++		struct qed_ptt *p_ptt = IS_PF(cdev) ? _qed_ptt_acquire(p_hwfn, is_atomic)
+ 						    :  NULL;
+ 		bool b_get_port_stats;
+ 
+@@ -1899,7 +1899,8 @@ static void _qed_get_vport_stats(struct qed_dev *cdev,
+ 	}
+ }
+ 
+-void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats)
++void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats,
++			 bool is_atomic)
+ {
+ 	u32 i;
+ 
+@@ -1908,7 +1909,7 @@ void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats)
+ 		return;
+ 	}
+ 
+-	_qed_get_vport_stats(cdev, stats);
++	_qed_get_vport_stats(cdev, stats, is_atomic);
+ 
+ 	if (!cdev->reset_stats)
+ 		return;
+@@ -1960,7 +1961,7 @@ void qed_reset_vport_stats(struct qed_dev *cdev)
+ 	if (!cdev->reset_stats) {
+ 		DP_INFO(cdev, "Reset stats not allocated\n");
+ 	} else {
+-		_qed_get_vport_stats(cdev, cdev->reset_stats);
++		_qed_get_vport_stats(cdev, cdev->reset_stats, false);
+ 		cdev->reset_stats->common.link_change_count = 0;
+ 	}
+ }
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.h b/drivers/net/ethernet/qlogic/qed/qed_l2.h
+index a538cf478c14..2bb93c50a2e4 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_l2.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_l2.h
+@@ -249,7 +249,8 @@ qed_sp_eth_rx_queues_update(struct qed_hwfn *p_hwfn,
+ 			    enum spq_mode comp_mode,
+ 			    struct qed_spq_comp_cb *p_comp_data);
+ 
+-void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats);
++void qed_get_vport_stats(struct qed_dev *cdev,
++			 struct qed_eth_stats *stats, bool is_atomic);
+ 
+ void qed_reset_vport_stats(struct qed_dev *cdev);
+ 
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+index c91898be7c03..307856c4ed22 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+@@ -3101,7 +3101,7 @@ void qed_get_protocol_stats(struct qed_dev *cdev,
+ 
+ 	switch (type) {
+ 	case QED_MCP_LAN_STATS:
+-		qed_get_vport_stats(cdev, &eth_stats);
++		qed_get_vport_stats(cdev, &eth_stats, false);
+ 		stats->lan_stats.ucast_rx_pkts =
+ 					eth_stats.common.rx_ucast_pkts;
+ 		stats->lan_stats.ucast_tx_pkts =
+@@ -3161,7 +3161,7 @@ qed_fill_generic_tlv_data(struct qed_dev *cdev, struct qed_mfw_tlv_generic *tlv)
+ 		}
+ 	}
+ 
+-	qed_get_vport_stats(cdev, &stats);
++	qed_get_vport_stats(cdev, &stats, false);
+ 	p_common = &stats.common;
+ 	tlv->rx_frames = p_common->rx_ucast_pkts + p_common->rx_mcast_pkts +
+ 			 p_common->rx_bcast_pkts;
+diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
+index f90dcfe9ee68..312b1c2484fe 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede.h
++++ b/drivers/net/ethernet/qlogic/qede/qede.h
+@@ -569,7 +569,7 @@ void qede_set_udp_tunnels(struct qede_dev *edev);
+ void qede_reload(struct qede_dev *edev,
+ 		 struct qede_reload_args *args, bool is_locked);
+ int qede_change_mtu(struct net_device *dev, int new_mtu);
+-void qede_fill_by_demand_stats(struct qede_dev *edev);
++void qede_fill_by_demand_stats(struct qede_dev *edev, bool is_atomic);
+ void __qede_lock(struct qede_dev *edev);
+ void __qede_unlock(struct qede_dev *edev);
+ bool qede_has_rx_work(struct qede_rx_queue *rxq);
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+index 8034d812d5a0..7e40e35d990c 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+@@ -408,7 +408,7 @@ static void qede_get_ethtool_stats(struct net_device *dev,
+ 	struct qede_fastpath *fp;
+ 	int i;
+ 
+-	qede_fill_by_demand_stats(edev);
++	qede_fill_by_demand_stats(edev, false);
+ 
+ 	/* Need to protect the access to the fastpath array */
+ 	__qede_lock(edev);
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index 953f304b8588..6c4187e5faa5 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -301,12 +301,12 @@ module_exit(qede_cleanup);
+ static int qede_open(struct net_device *ndev);
+ static int qede_close(struct net_device *ndev);
+ 
+-void qede_fill_by_demand_stats(struct qede_dev *edev)
++void qede_fill_by_demand_stats(struct qede_dev *edev, bool is_atomic)
+ {
+ 	struct qede_stats_common *p_common = &edev->stats.common;
+ 	struct qed_eth_stats stats;
+ 
+-	edev->ops->get_vport_stats(edev->cdev, &stats);
++	edev->ops->get_vport_stats(edev->cdev, &stats, is_atomic);
+ 
+ 	p_common->no_buff_discards = stats.common.no_buff_discards;
+ 	p_common->packet_too_big_discard = stats.common.packet_too_big_discard;
+@@ -413,7 +413,7 @@ static void qede_get_stats64(struct net_device *dev,
+ 	struct qede_dev *edev = netdev_priv(dev);
+ 	struct qede_stats_common *p_common;
+ 
+-	qede_fill_by_demand_stats(edev);
++	qede_fill_by_demand_stats(edev, true);
+ 	p_common = &edev->stats.common;
+ 
+ 	stats->rx_packets = p_common->rx_ucast_pkts + p_common->rx_mcast_pkts +
+diff --git a/include/linux/qed/qed_eth_if.h b/include/linux/qed/qed_eth_if.h
+index e1bf3219b4e6..f2893b6b4cb3 100644
+--- a/include/linux/qed/qed_eth_if.h
++++ b/include/linux/qed/qed_eth_if.h
+@@ -319,7 +319,7 @@ struct qed_eth_ops {
+ 				  struct eth_slow_path_rx_cqe *cqe);
+ 
+ 	void (*get_vport_stats)(struct qed_dev *cdev,
+-				struct qed_eth_stats *stats);
++				struct qed_eth_stats *stats, bool is_atomic);
+ 
+ 	int (*tunn_config)(struct qed_dev *cdev,
+ 			   struct qed_tunn_params *params);
 -- 
-Thanks,
-
-David / dhildenb
+2.27.0
 
