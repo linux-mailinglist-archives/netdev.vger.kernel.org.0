@@ -2,322 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A02536F1CAF
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B2EC6F1CC9
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346235AbjD1Qct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 12:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54666 "EHLO
+        id S1346150AbjD1Qkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 12:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbjD1Qcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:32:48 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7CD2D67;
-        Fri, 28 Apr 2023 09:32:47 -0700 (PDT)
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33SA7Fxg013109;
-        Fri, 28 Apr 2023 09:32:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=s2048-2021-q4;
- bh=6qIGhxrzn4oy3Z9XU9tfCy+Br+vwd7yqIn2B3SSPfxQ=;
- b=KEMr9GwN9kcOhtjliTqJelhflDtlwhhXLKIfkcAmyL+b1ZnZowEZ4JSeH1wh93gP7wW9
- wUzA51Dh2SUFA/04XNoh5njc5CXDtmbwVxk0qHHFLxm+tlIyAodryTES4VgUYBICnutK
- XOhaxLVpZ4ysYTzWs+bbtjg6QcAF0LIe//0CtdhqB5Fn/X/amMAv3WTFbe8/hgBNhtnm
- SMavJGN24ilsolJ5a+TRS7PZkAegPW64tZTI060Lxp2Il50DiDjWHsB4CQxq6OaVfgl5
- k1GrieRky0mJCFUZWohMMZ6MEiLNzzhoRk17U8N/O6MiozD2hmf0pchaArVguP4OXuIA qg== 
-Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2175.outbound.protection.outlook.com [104.47.73.175])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3q8452d52q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 28 Apr 2023 09:32:12 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G8p+lsBFdNVodhWrgJ/nJfGcdFEIt0YbMp54Uv3e6a9WEHSS/99V9vsvsi06gImvwCtBCEhhdnHjBllgEj58ECL8SXEPX8Ejrh5VhkqelRIZQ6BzDOu1EOyxGw7+YYdlv+qj7tP13zB5bNfcF7isGvE3x4lLkfoa8KEVNVgVKtTkPTnSUG3OalKVd2CgkmDIr3YwaOgYx+IvL/JCBv6nKZbiGyStkmEtBUJGICe9OXSMAcrHSupFQGMMmX3IctY+dEJ0W5XnQ8qED27YGFhSmcAcF8QmJM7AQV41wKoaoH7vYyi2ZtnsCL1OKPA8x8BAi1iJSrABXsJmp/ZstdTodQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6qIGhxrzn4oy3Z9XU9tfCy+Br+vwd7yqIn2B3SSPfxQ=;
- b=CUSMWxfieldISv/XZPZvdLGFq13IvbZnH1QweSikvFEN9w1fbE0SZUhQ8+34GT9OphHW7rfytr3bYMgj+UAXRVykOjUW9qU9sZN0YssLlVkFZAjdlzJpUv5mQS1b1dis+QUBQTYuMrFDYLNVwEwOFysGK7Umw8WB7jPI22fW+6pRlsZnNkoA36MNpNYOpBx3Vd15toRNOy++JIUDahGPPWpBUFlcq8S3yFD3qHsCqtPBzKQuptwz+FpwsFa2Yf7CiyyzCOTpgjovmNVDeVY3Of5ZvwJ1EUVspSdewhp6ANNlP1VKeD8a2FUZaVUnu10ptD6ZP9ia8X6xnQEMwKJ7/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
- dkim=pass header.d=meta.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by IA1PR15MB5418.namprd15.prod.outlook.com (2603:10b6:208:3a2::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21; Fri, 28 Apr
- 2023 16:32:05 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::589f:9230:518:7f53]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::589f:9230:518:7f53%6]) with mapi id 15.20.6340.022; Fri, 28 Apr 2023
- 16:32:04 +0000
-Message-ID: <218660da-f73d-d698-eb5e-f513379945bd@meta.com>
-Date:   Fri, 28 Apr 2023 09:32:01 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.10.0
-Subject: Re: [PATCH bpf-next v4 2/2] selftests/bpf: Add testcase for
- bpf_task_under_cgroup
-Content-Language: en-US
-To:     Feng zhou <zhoufeng.zf@bytedance.com>, martin.lau@linux.dev,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, mykolal@fb.com,
-        shuah@kernel.org
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        yangzhenze@bytedance.com, wangdongdong.6@bytedance.com
-References: <20230428071737.43849-1-zhoufeng.zf@bytedance.com>
- <20230428071737.43849-3-zhoufeng.zf@bytedance.com>
-From:   Yonghong Song <yhs@meta.com>
-In-Reply-To: <20230428071737.43849-3-zhoufeng.zf@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY3PR05CA0008.namprd05.prod.outlook.com
- (2603:10b6:a03:254::13) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        with ESMTP id S1346027AbjD1Qkx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:40:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ADD25261
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:39:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682699997;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rWkVvKB+beFGKaX1u6z+cXwjtof0A4OJbagxKAP5YOc=;
+        b=cF876kMRNBy1bv43KLhO764QHdjyUalp5pxkEl7SR5QjngVwdZHnxcsg0+yBWwI2KnegWk
+        YoYu+eRL7alFyxReyaUoo0CzMGhPuOLIi08q9sJdJQO9/zNnbaWc7LSDUByNbvjGHui8CG
+        qGfQ72t6n8lCfMydpNTCn8jSymcLO+g=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-435-WZLibiOCN16w-PefthbWFA-1; Fri, 28 Apr 2023 12:39:56 -0400
+X-MC-Unique: WZLibiOCN16w-PefthbWFA-1
+Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-5ef4d54d84cso311696d6.0
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:39:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682699995; x=1685291995;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rWkVvKB+beFGKaX1u6z+cXwjtof0A4OJbagxKAP5YOc=;
+        b=ido2HSyWN3gCGFBHQCgjtdofsshKycFGsjukcNYzswq4UEFRLSTaZLfCjTTKP1qT7N
+         keW9Y4hFwt+TUvtKPM8G7G4pCc8QbrOIbf5vc7RIt48ZmaBmVndatIsmF0X7B74MFHwy
+         J0wVPtepoHB4CYovw33q2aFQmitgxZwdPF2qNviPLy/SAG/Iy7dzZjfNrUJM3CwHpjnS
+         0SaItZ7owAxYCXdfHQB7v5nLa7TunAMy5voXZHTdOek1gpsXOQDzByoggaF+hfm9lnPs
+         2Hf2USnSnZoCwtC0qXgZz4+GbqHrk76q7N0tTAs/PNiTvTlFvlvmoZDsxBu0TMifFrsK
+         3AjA==
+X-Gm-Message-State: AC+VfDzL0ZVTquOhekT/Z46jMGQXhyZFqLm947xKfchmIP+3ls5z62Mk
+        FaGO1uHszslBoehX4nxjOl77JXV+FDYBqmME6Ie1qJfFyXLB0/e8XDlhhMGCSFyWEGVw8Q84Fqz
+        vclxuHIOa2MVpjZP1
+X-Received: by 2002:a05:6214:3002:b0:603:fa46:d368 with SMTP id ke2-20020a056214300200b00603fa46d368mr8548781qvb.1.1682699995623;
+        Fri, 28 Apr 2023 09:39:55 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ5JPS7VyAu8Sw9pswc/4Y0KvJbwIs0sXe5VJVf724QrbDRJaDnc8X56jBH6cDgE4mKlziivDA==
+X-Received: by 2002:a05:6214:3002:b0:603:fa46:d368 with SMTP id ke2-20020a056214300200b00603fa46d368mr8548725qvb.1.1682699995096;
+        Fri, 28 Apr 2023 09:39:55 -0700 (PDT)
+Received: from x1n (bras-base-aurron9127w-grc-40-70-52-229-124.dsl.bell.ca. [70.52.229.124])
+        by smtp.gmail.com with ESMTPSA id a26-20020a0c8bda000000b005dd8b9345dbsm440012qvc.115.2023.04.28.09.39.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Apr 2023 09:39:54 -0700 (PDT)
+Date:   Fri, 28 Apr 2023 12:39:51 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     "Kirill A . Shutemov" <kirill@shutemov.name>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Lorenzo Stoakes <lstoakes@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Mika Penttila <mpenttil@redhat.com>,
+        David Howells <dhowells@redhat.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
+ by default
+Message-ID: <ZEv2196tk5yWvgW5@x1n>
+References: <afcc124e-7a9b-879c-dfdf-200426b84e24@redhat.com>
+ <ZEvZtIb2EDb/WudP@nvidia.com>
+ <094d2074-5b69-5d61-07f7-9f962014fa68@redhat.com>
+ <400da248-a14e-46a4-420a-a3e075291085@redhat.com>
+ <077c4b21-8806-455f-be98-d7052a584259@lucifer.local>
+ <62ec50da-5f73-559c-c4b3-bde4eb215e08@redhat.com>
+ <6ddc7ac4-4091-632a-7b2c-df2005438ec4@redhat.com>
+ <20230428160925.5medjfxkyvmzfyhq@box.shutemov.name>
+ <39cc0f26-8fc2-79dd-2e84-62238d27fd98@redhat.com>
+ <20230428162207.o3ejmcz7rzezpt6n@box.shutemov.name>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|IA1PR15MB5418:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4cfa5530-89f1-45a9-1c36-08db48061a00
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 41Ekap60WvWGWIzw6M6yjntf01RXqe7ckdInH1LEdAVoD1hj0FruRCjaCxzmmOxUlB0XoutBMlQdG3etjMG3WlZduZlxdI6FMWd17a9OYoFzpCqLlLr3tdoS1B1C7GAoWcL/rkU7IrTu15TtUxqgW2UnUqtDLHQsCo5TrM5In7Nw9cOTYoK0MHjjMtmplyszjXFYCuotm7zSfxA0PLJjbsSvbkuajM51BJl2YPcD8FkozfyD2prU1U36u3eJqeDNXrE6QT5bUfJxcJh7JwOeGByY0uifv8Y9mS5CKjvUWxCurm603M9cJz5Okg9YZjP7dEKz+yQz0GxIJUBFnj+iYVvYsY3hZRkGgFseoDMGQOrLPC4HUatPIlPYrnh+N+lz7tMesFsXJBdzkZuw/J6LDQVdePY1/zvVyO0lpEtO8Req2GGCM+3su8BV8KKml11o/YYzsn8A/9vPT2c0y9DbYhed/E43P1xljO2qKK4g0ZFxqs7hfI/dHaGi7uAm/+6adeEDBy/Ov0vmSfMj6O737ukzSX1lcbheCb7QN56ArCpBnY1vcR4HrQ71hFYPuR1a8An76PCtPb9tsG79zR1PvYRqXvm8TAo7K4gZQ/YWVr/Vspofh4x6tov4Hiakws9raGqu+Mc6RPUZBO/tlba41PH8sN2vSlKB+dvT4hrvdcs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(136003)(346002)(39860400002)(376002)(451199021)(86362001)(2906002)(31696002)(36756003)(31686004)(6486002)(6666004)(2616005)(83380400001)(53546011)(186003)(6512007)(6506007)(66556008)(66476007)(921005)(66946007)(478600001)(41300700001)(38100700002)(5660300002)(4326008)(8676002)(7416002)(8936002)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TTB1aXhRRWFyMURVS0FFSTByZ0VPbEl6c3RwS2RKUWtDVzlISUwwTTZJK2Nt?=
- =?utf-8?B?N1A3YjcrajZ5eUFkbnFvZlBtcVpjOFhCY1dFNWhrdXhrQkdEemtnemUvVjll?=
- =?utf-8?B?c25Nd0tYTFY5dU56WVJqUUh0VlJHV0ljUzUvRVNjTkhIWkc2VmV2ei9xZ3FX?=
- =?utf-8?B?YlJ6Y0Z1QWpaWGFhTkkveHF2eGYzUUlWaWJxeldzRUs3c2txZVVyem1mWUlN?=
- =?utf-8?B?UGk2Ymt0SEVDTzkxa0h6RFhUKzl4MFR6Z2tBVXVLckhQOTBkWk9jcHl2RExp?=
- =?utf-8?B?MlpPQmV4UVA2SStyWDdNbThOQWJ4R21wQnZsVzdOSE8yZVJHT2hvbVFONEpp?=
- =?utf-8?B?ZEdWREFROENYWGFMWktsWUYrRy9rbElQU2QwaUxwTUM3bzlJdFlFL1IxNnE3?=
- =?utf-8?B?UmtkZG40RnBRbnhtVUdzR2djamNsRkdvRnlQd3VFSDNsbFhyL1pvblJXdWhx?=
- =?utf-8?B?QitEOUNaa2VHRkp1WGs0Y2daK1lESHN4T0RrUjJkVGJjMVl4aG05YjhjeVRF?=
- =?utf-8?B?dCtJVjlrUm9sMG9yTGh5RkNTQ2RuQlN0ZXRwVVRJNGEyQld0eEYwS05LSGds?=
- =?utf-8?B?VG5BMFhtTm8wTys5OGU0VHRKZFp4djVPTFY4cEhWU3IrR25vR0JiNTZvdHUy?=
- =?utf-8?B?NTYwb1J4dTMyckFOQjE2b1VWVFViTFA5bVhWNGh2anFKUnVWZDlJRUZzTEQz?=
- =?utf-8?B?cXR3R203YVJyNGIvSDVvYlhZNnNoNStoKzJXUFE2NldwMlRaSXl2cU9KMTZW?=
- =?utf-8?B?bC9GRXQvMmF4RDJLaEMzSmJTRC9vUVBvRWc5TVUrVGlUelFGS3NXMDRPNUVE?=
- =?utf-8?B?c1Z1Z1BUVGpPNGtTU2x4Y3U0dlJKNDZvZFJicEhFWS91UzY4OER1Y1lKV0d2?=
- =?utf-8?B?bWpueFpNdE5tbUkxVGpFQjZ5S0hwRWlrOGhtZmFSMjYyVmpBWk9uM0JxekhV?=
- =?utf-8?B?ZVB2d3VZS1dyU3RTZTA1K3h4aTN6VXJLTmc3Zkt1dWo5WVFvbEFFdlV4NUd2?=
- =?utf-8?B?eGs3Y0RjUVRHYmVlcDB3NHc5WGVzcDV2dHEwWm5ENWwvM3J2SEFkdnhXY1ht?=
- =?utf-8?B?S3RRZnUzdUxuNmZTV0ZLTjNrSTlxSWQyMElTYTlnTnh0ZGYxL0g5dktxRjZX?=
- =?utf-8?B?bVJWUU12bnh4bVNIN0E4dDV5K2M1WGsxelRaY3dnWlNrdm0veTAzZXdkOGoz?=
- =?utf-8?B?OXA1RjRLSDlaaGI1Yk5EWVR3c3FuUS96YzU4TU1BTEk1V2pTd3BFaks3eHBk?=
- =?utf-8?B?RHhLN0NlVXVrVjNEMkNjalQwVTFTVkR1TlJVREpHcWNTT1ZFZmE4Q0txSWha?=
- =?utf-8?B?YStiMkU5M0prUTRVM3F0T1hHWk1waVhSbWptNGw4Y0ZXbG5SZm0xcGIxWCtE?=
- =?utf-8?B?Mm1KNlk4Q1diVUlhYTY4Y1ltdnJLSC94eDNFejd4aFNudDZVT1IzQ1EyaGZh?=
- =?utf-8?B?UnAvRDd6VGxaN3ltaEd6K2NSR1FHWWF1MkhQdk5KaEhmMTlxZUNtNEdsQTNT?=
- =?utf-8?B?bld1S0xYOFBKOHNobm1xZ2VFZ3dyMG1WeDRhWElaWXNscDhteXQvenBVRW9S?=
- =?utf-8?B?VUpkeDNOZkpjanlTdkRKa3hNaC9leU0wZ1hFbFBpQUNJVDNtbkxYM0JYQnEy?=
- =?utf-8?B?QTdMZ3B1dXlOdzVycUJJdk5DbUo2OC82cEZyM1d3MURlczRjUGVGZ09IeTYz?=
- =?utf-8?B?eW5YU1FEb3FWdDZmcHVBdFZuR01hb2pTazlXZEJOLy9pQU1CVjBkYll1NVgx?=
- =?utf-8?B?b2hLV1cxSDA1ZmZxZTVBSVhjRnNvVHNhTklxLy9Ib05xNXhmRndqSC95bDY5?=
- =?utf-8?B?TE0yclBleXRqeksxMm5uWFgzNHk0T01WWEhmaEpsS1ZJUW5tWVkxVXdwUlFP?=
- =?utf-8?B?YnNyZGV4MHd1SWFQa2szbFVlclMvT2YvanlNSUg2WEdPWVRPQXI5NFJVcTM0?=
- =?utf-8?B?alJCaWpDRlF5T1lyS1c5ZHk5NlJCWHo1dDBETDR6K2NyTEYxaHhDWTkwSGdZ?=
- =?utf-8?B?WnZvRC8xejkrbEdBZDhadWxDSHR6dDZxZlNPZkh1YWo5RXBzLzdvUHpyMStF?=
- =?utf-8?B?VWt3TnltTXdQRmloVzg2cGRBWVZmZ2VYdUtjQ0J4K1FnMTdLd1NjdWgyalFq?=
- =?utf-8?B?bE9hcmZveHdsb25MZzBaTGlvdkMyMkNXWjF1RXFkQk9QYmxuNzRUY1VHeHFQ?=
- =?utf-8?B?Y3c9PQ==?=
-X-OriginatorOrg: meta.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cfa5530-89f1-45a9-1c36-08db48061a00
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 16:32:04.8229
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CHCJ5xft+lzYv5PJfr6dABtcDa47S+2bkiQwJdWm78RFKsGq//Zi6LkRixsnG50Q
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR15MB5418
-X-Proofpoint-GUID: ItCQENiLhfEAvbiXrrgHshzmK6RE33yU
-X-Proofpoint-ORIG-GUID: ItCQENiLhfEAvbiXrrgHshzmK6RE33yU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-28_04,2023-04-27_01,2023-02-09_01
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230428162207.o3ejmcz7rzezpt6n@box.shutemov.name>
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/28/23 12:17 AM, Feng zhou wrote:
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+On Fri, Apr 28, 2023 at 07:22:07PM +0300, Kirill A . Shutemov wrote:
+> On Fri, Apr 28, 2023 at 06:13:03PM +0200, David Hildenbrand wrote:
+> > On 28.04.23 18:09, Kirill A . Shutemov wrote:
+> > > On Fri, Apr 28, 2023 at 05:43:52PM +0200, David Hildenbrand wrote:
+> > > > On 28.04.23 17:34, David Hildenbrand wrote:
+> > > > > On 28.04.23 17:33, Lorenzo Stoakes wrote:
+> > > > > > On Fri, Apr 28, 2023 at 05:23:29PM +0200, David Hildenbrand wrote:
+> > > > > > > > > 
+> > > > > > > > > Security is the primary case where we have historically closed uAPI
+> > > > > > > > > items.
+> > > > > > > > 
+> > > > > > > > As this patch
+> > > > > > > > 
+> > > > > > > > 1) Does not tackle GUP-fast
+> > > > > > > > 2) Does not take care of !FOLL_LONGTERM
+> > > > > > > > 
+> > > > > > > > I am not convinced by the security argument in regard to this patch.
+> > > > > > > > 
+> > > > > > > > 
+> > > > > > > > If we want to sells this as a security thing, we have to block it
+> > > > > > > > *completely* and then CC stable.
+> > > > > > > 
+> > > > > > > Regarding GUP-fast, to fix the issue there as well, I guess we could do
+> > > > > > > something similar as I did in gup_must_unshare():
+> > > > > > > 
+> > > > > > > If we're in GUP-fast (no VMA), and want to pin a !anon page writable,
+> > > > > > > fallback to ordinary GUP. IOW, if we don't know, better be safe.
+> > > > > > 
+> > > > > > How do we determine it's non-anon in the first place? The check is on the
+> > > > > > VMA. We could do it by following page tables down to folio and checking
+> > > > > > folio->mapping for PAGE_MAPPING_ANON I suppose?
+> > > > > 
+> > > > > PageAnon(page) can be called from GUP-fast after grabbing a reference.
+> > > > > See gup_must_unshare().
+> > > > 
+> > > > IIRC, PageHuge() can also be called from GUP-fast and could special-case
+> > > > hugetlb eventually, as it's table while we hold a (temporary) reference.
+> > > > Shmem might be not so easy ...
+> > > 
+> > > page->mapping->a_ops should be enough to whitelist whatever fs you want.
+> > > 
+> > 
+> > The issue is how to stabilize that from GUP-fast, such that we can safely
+> > dereference the mapping. Any idea?
+> > 
+> > At least for anon page I know that page->mapping only gets cleared when
+> > freeing the page, and we don't dereference the mapping but only check a
+> > single flag stored alongside the mapping. Therefore, PageAnon() is fine in
+> > GUP-fast context.
 > 
-> test_progs:
-> Tests new kfunc bpf_task_under_cgroup().
+> What codepath you are worry about that clears ->mapping on pages with
+> non-zero refcount?
 > 
-> The bpf program saves the new task's pid within a given cgroup to
-> the remote_pid, which is convenient for the user-mode program to
-> verify the test correctness.
+> I can only think of truncate (and punch hole). READ_ONCE(page->mapping)
+> and fail GUP_fast if it is NULL should be fine, no?
 > 
-> The user-mode program creates its own mount namespace, and mounts the
-> cgroupsv2 hierarchy in there, call the fork syscall, then check if
-> remote_pid and local_pid are unequal.
+> I guess we should consider if the inode can be freed from under us and the
+> mapping pointer becomes dangling. But I think we should be fine here too:
+> VMA pins inode and VMA cannot go away from under GUP.
+
+Can vma still go away if during a fast-gup?
+
 > 
-> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
-
-Ack with a few nits below.
-
-Acked-by: Yonghong Song <yhs@fb.com>
-
-> ---
->   tools/testing/selftests/bpf/DENYLIST.s390x    |  1 +
->   .../bpf/prog_tests/task_under_cgroup.c        | 55 +++++++++++++++++++
->   .../bpf/progs/test_task_under_cgroup.c        | 51 +++++++++++++++++
->   3 files changed, 107 insertions(+)
->   create mode 100644 tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
->   create mode 100644 tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
+> Hm?
 > 
-> diff --git a/tools/testing/selftests/bpf/DENYLIST.s390x b/tools/testing/selftests/bpf/DENYLIST.s390x
-> index c7463f3ec3c0..5061d9e24c16 100644
-> --- a/tools/testing/selftests/bpf/DENYLIST.s390x
-> +++ b/tools/testing/selftests/bpf/DENYLIST.s390x
-> @@ -26,3 +26,4 @@ user_ringbuf                             # failed to find kernel BTF type ID of
->   verif_stats                              # trace_vprintk__open_and_load unexpected error: -9                           (?)
->   xdp_bonding                              # failed to auto-attach program 'trace_on_entry': -524                        (trampoline)
->   xdp_metadata                             # JIT does not support calling kernel function                                (kfunc)
-> +test_task_under_cgroup                   # JIT does not support calling kernel function                                (kfunc)
-> diff --git a/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c b/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
-> new file mode 100644
-> index 000000000000..5e79dff86dec
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
-> @@ -0,0 +1,55 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2023 Bytedance */
-> +
-> +#include <sys/syscall.h>
-> +#include <test_progs.h>
-> +#include <cgroup_helpers.h>
-> +#include "test_task_under_cgroup.skel.h"
-> +
-> +#define FOO	"/foo"
-> +
-> +void test_task_under_cgroup(void)
-> +{
-> +	struct test_task_under_cgroup *skel;
-> +	int ret, foo = -1;
-> +	pid_t pid;
-> +
-> +	foo = test__join_cgroup(FOO);
-> +	if (!ASSERT_OK(foo < 0, "cgroup_join_foo"))
-> +		return;
-> +
-> +	skel = test_task_under_cgroup__open();
-> +	if (!ASSERT_OK_PTR(skel, "test_task_under_cgroup__open"))
-> +		goto cleanup;
-> +
-> +	skel->rodata->local_pid = getpid();
-> +	skel->bss->remote_pid = getpid();
-> +	skel->rodata->cgid = get_cgroup_id(FOO);
-> +
-> +	ret = test_task_under_cgroup__load(skel);
-> +	if (!ASSERT_OK(ret, "test_task_under_cgroup__load"))
-> +		goto cleanup;
-> +
-> +	ret = test_task_under_cgroup__attach(skel);
-> +	if (!ASSERT_OK(ret, "test_task_under_cgroup__attach"))
-> +		goto cleanup;
-> +
-> +	pid = fork();
-> +	if (pid == 0)
-> +		exit(0);
-> +	else if (pid == -1)
-> +		printf("Couldn't fork process!\n");
+> (I didn't look close at GUP for a while and my reasoning might be off.)
 
-ASSERT_* is preferred compared to 'printf'. Maybe ASSERT_TRUE(0, 
-"Couldn't fork process")?
+Thanks,
 
-> +
-> +	wait(NULL);
-> +
-> +	test_task_under_cgroup__detach(skel);
-> +
-> +	ASSERT_NEQ(skel->bss->remote_pid, skel->rodata->local_pid,
-> +		   "test task_under_cgroup");
-> +
-> +cleanup:
-> +	if (foo >= 0)
+-- 
+Peter Xu
 
-"if (foo >= 0)" is not needed. 'foo' is guaranteed ">= 0" as this point.
-
-> +		close(foo);
-> +
-> +	test_task_under_cgroup__destroy(skel);
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c b/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
-> new file mode 100644
-> index 000000000000..5bcb726d6d0a
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
-> @@ -0,0 +1,51 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2023 Bytedance */
-> +
-> +#include <vmlinux.h>
-> +#include <bpf/bpf_tracing.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +#include "bpf_misc.h"
-> +
-> +struct cgroup *bpf_cgroup_from_id(u64 cgid) __ksym;
-> +long bpf_task_under_cgroup(struct task_struct *task, struct cgroup *ancestor) __ksym;
-> +void bpf_cgroup_release(struct cgroup *p) __ksym;
-> +struct task_struct *bpf_task_acquire(struct task_struct *p) __ksym;
-> +void bpf_task_release(struct task_struct *p) __ksym;
-> +
-> +const volatile int local_pid;
-> +const volatile long cgid;
-
-cgid cannot be a negative number. So let us do
-const volatile __u64 cgid;
-
-> +int remote_pid;
-> +
-> +SEC("tp_btf/task_newtask")
-> +int BPF_PROG(handle__task_newtask, struct task_struct *task, u64 clone_flags)
-> +{
-> +	struct cgroup *cgrp = NULL;
-> +	struct task_struct *acquired = NULL;
-
-"acquired = NULL" is not needed. Just do "struct task_struct *acquired;".
-
-> +
-> +	if (local_pid != (bpf_get_current_pid_tgid() >> 32))
-> +		return 0;
-> +
-> +	acquired = bpf_task_acquire(task);
-> +	if (!acquired)
-> +		return 0;
-> +
-> +	if (local_pid == acquired->tgid)
-> +		goto out;
-> +
-> +	cgrp = bpf_cgroup_from_id(cgid);
-> +	if (!cgrp)
-> +		goto out;
-> +
-> +	if (bpf_task_under_cgroup(acquired, cgrp))
-> +		remote_pid = acquired->tgid;
-> +
-> +out:
-> +	if (acquired)
-> +		bpf_task_release(acquired);
-> +	if (cgrp)
-> +		bpf_cgroup_release(cgrp);
-> +	return 0;
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
