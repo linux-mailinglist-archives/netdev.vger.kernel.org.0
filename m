@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 066AC6F1C25
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:01:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 129F56F1C30
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbjD1QBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 12:01:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
+        id S1345383AbjD1QEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 12:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbjD1QBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:01:17 -0400
+        with ESMTP id S1345164AbjD1QDw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:03:52 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82107E5B
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:00:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E555B8C
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:03:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682697629;
+        s=mimecast20190719; t=1682697785;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=aTvTmC3w8cSoK1sZTIItrjPETSg3RyPhXAPGqmBpz9w=;
-        b=WT3KXZq581F24+lwkrGs0LBtxqwM4WXx8hjNEtDYAgmQ9RHFIUMVQdwtQURIwhvQz1wJs5
-        5B7OFaIXWPr5yGYUEIkV+youqmdB4V3R/PXQftdFaAeRk1OXz4qUI/ZhQ4C6txVP563gzN
-        kASIjuVve79LDb7aRDyoG2gdmrj0k3c=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ygEgijBc1IgIq8cFGjEh4tdLm5WBe48ZCNtdfsoShbQ=;
+        b=ATsISI1ysJmOJEVlgxfQ+k6OI2e/8Sz4Ofmnd14U5ZW1OiaKfirc/t8H2eZgQV0p6Fgdnz
+        FWfsvTCC8JE1ZyAbiSUn3z6JuFuShAZ6OsKIrqz0/A0N61sblcnyrc+H1JlFfwERqqJLZg
+        oA/ZbUmRcpp1ApA0wqHlurL4y1/ZWpI=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-348-jK_hLzttOPOdPEegvM4uqg-1; Fri, 28 Apr 2023 12:00:28 -0400
-X-MC-Unique: jK_hLzttOPOdPEegvM4uqg-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f3157128b4so43723875e9.0
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:00:28 -0700 (PDT)
+ us-mta-530-2h7hrVpCPAW-ilIamvTSmg-1; Fri, 28 Apr 2023 12:03:02 -0400
+X-MC-Unique: 2h7hrVpCPAW-ilIamvTSmg-1
+Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-2ffa43cd733so5861818f8f.1
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:03:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682697627; x=1685289627;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :references:cc:to:content-language:user-agent:mime-version:date
+        d=1e100.net; s=20221208; t=1682697779; x=1685289779;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=aTvTmC3w8cSoK1sZTIItrjPETSg3RyPhXAPGqmBpz9w=;
-        b=FJnO7FCdJoF/zpMiGL4FNLDsnVKt2GIpCZeFJtyFO+QFnQCDHLbMZkazsaZJUMQnYK
-         7AhRmR2zxqWDo8CPOFz3mDbJQvPc+eyp35CqBWk9RfxcCfnmGA3FfWIcEaPEIDSENpT0
-         vDQcGsq0RtprIwqENYfnaKoCXhKwN6wyl01zmgWOn1GW9v4NYFhUCqJxrdHh974lVlTA
-         2p2wSaIsGSDaSpajCXxY3UGOj5Ggfkb3gKQqIJUXILYv7NCP8yL3b28dbET8YZNwp/4s
-         Vg2RrFjKDCvgVWuGaQAOVgT+aiVrR+1KrTDHt1RP2Xeo3fxZQw6r6eVIYIZH3lwHUVsd
-         SyEA==
-X-Gm-Message-State: AC+VfDwZ15XQskpBRH1rGuNh8xKXSLzlRmnF62lxkjo2B7U9A5p7mUnK
-        DSAGeLZIrJ23+iOSs2LHM071IU9mGxCkPhJtVE2gro8mb7pHP9NqVl1TnTUrDt7c32k66QbqwDz
-        fzMa7q3oVzzYQLL4h
-X-Received: by 2002:a05:600c:2046:b0:3ed:3268:5f35 with SMTP id p6-20020a05600c204600b003ed32685f35mr4408021wmg.18.1682697627085;
-        Fri, 28 Apr 2023 09:00:27 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ4CuV5Y9R4xOZ0iO1MIIj9ynREbGl3f73GmNX7T5mCyhDkj53kzHkbrow+2KlrZE2FhtmwsQw==
-X-Received: by 2002:a05:600c:2046:b0:3ed:3268:5f35 with SMTP id p6-20020a05600c204600b003ed32685f35mr4407973wmg.18.1682697626733;
-        Fri, 28 Apr 2023 09:00:26 -0700 (PDT)
+        bh=ygEgijBc1IgIq8cFGjEh4tdLm5WBe48ZCNtdfsoShbQ=;
+        b=LpLN8K53xOQjjixxowvbqmGlXJYvFdIY23UtrNN2tmXCCGEtEvn0qQ2GLV0L3bE/oL
+         32E8i4bGTLpyOloQoq5TyjYOStguwFYHBD+kkVUj6E2QxrJjz3mVbVRz+MZNGgLdBJ5d
+         5gWJkIL3fE//md2IQPQj2z4SptQ6zlgMsZ8aPwlXsbsiDtSLq5clWuovZZU5c5egPphi
+         d/SQBt/un3uUPzWMsA6V3Rmpn1wRRMWnyJBhMmRin6CM3wSGS0pSBo0Ek5U/5yzSxrkO
+         wNshxoe5LID7XQWxS5gMUp1hfrMCY6NupEdHRm6QS8B9wQlSFO5r9h2d27iCZMO05g1/
+         XOIQ==
+X-Gm-Message-State: AC+VfDzowbvNfWHbXNhnsmRZrG7A634kAjDpvG9EBslhFBl8JBwF+X3U
+        kwZ7k2o28rgPidkTE528uhS0rvzXg3GSnKxGg9N7S7jy+lOb+xp81/krlaeZqxVJkTiZop3eGz0
+        SG8M7kwi9Rg0JMW5i
+X-Received: by 2002:a5d:595a:0:b0:304:7237:729a with SMTP id e26-20020a5d595a000000b003047237729amr4261524wri.67.1682697779309;
+        Fri, 28 Apr 2023 09:02:59 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ7Ku7Blfk4RQb9TUtQ5+s7GnYVImteWm54uw3a9dTygTNMWUmW0JJgkbiWnH2eUAqvpUaXDng==
+X-Received: by 2002:a5d:595a:0:b0:304:7237:729a with SMTP id e26-20020a5d595a000000b003047237729amr4261467wri.67.1682697778920;
+        Fri, 28 Apr 2023 09:02:58 -0700 (PDT)
 Received: from ?IPV6:2003:cb:c726:9300:1711:356:6550:7502? (p200300cbc72693001711035665507502.dip0.t-ipconnect.de. [2003:cb:c726:9300:1711:356:6550:7502])
-        by smtp.gmail.com with ESMTPSA id m9-20020a7bce09000000b003f049a42689sm24709589wmc.25.2023.04.28.09.00.23
+        by smtp.gmail.com with ESMTPSA id x8-20020a05600c21c800b003f2390bdd0csm16068630wmj.32.2023.04.28.09.02.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Apr 2023 09:00:25 -0700 (PDT)
-Message-ID: <620882a8-2b93-b709-1093-a323570f0fd2@redhat.com>
-Date:   Fri, 28 Apr 2023 18:00:22 +0200
+        Fri, 28 Apr 2023 09:02:58 -0700 (PDT)
+Message-ID: <0e6ef85d-d53a-c847-c70b-900eb925a413@redhat.com>
+Date:   Fri, 28 Apr 2023 18:02:56 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
+Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
+ by default
 Content-Language: en-US
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+To:     Peter Xu <peterx@redhat.com>
+Cc:     Lorenzo Stoakes <lstoakes@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jens Axboe <axboe@kernel.dk>,
         Matthew Wilcox <willy@infradead.org>,
         Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         Leon Romanovsky <leon@kernel.org>,
@@ -98,7 +102,6 @@ Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         Oleg Nesterov <oleg@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
         John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
         "Kirill A . Shutemov" <kirill@shutemov.name>,
         Pavel Begunkov <asml.silence@gmail.com>,
@@ -107,82 +110,68 @@ Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         Christoph Hellwig <hch@lst.de>
 References: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
  <afcc124e-7a9b-879c-dfdf-200426b84e24@redhat.com>
- <f60722d4-1474-4876-9291-5450c7192bd3@lucifer.local>
- <a8561203-a4f3-4b3d-338a-06a60541bd6b@redhat.com>
- <49ebb100-afd2-4810-b901-1a0f51f45cfc@lucifer.local>
- <a501219c-f75a-4467-fefe-bd571e84f99e@redhat.com>
- <b11d8e94-1324-41b3-91ba-78dbef0b1fc0@lucifer.local>
+ <ZEvZtIb2EDb/WudP@nvidia.com>
+ <094d2074-5b69-5d61-07f7-9f962014fa68@redhat.com>
+ <400da248-a14e-46a4-420a-a3e075291085@redhat.com>
+ <077c4b21-8806-455f-be98-d7052a584259@lucifer.local>
+ <62ec50da-5f73-559c-c4b3-bde4eb215e08@redhat.com> <ZEvsx998gDFig/zq@x1n>
 From:   David Hildenbrand <david@redhat.com>
 Organization: Red Hat
-Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
- by default
-In-Reply-To: <b11d8e94-1324-41b3-91ba-78dbef0b1fc0@lucifer.local>
+In-Reply-To: <ZEvsx998gDFig/zq@x1n>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[...]
-
+On 28.04.23 17:56, Peter Xu wrote:
+> On Fri, Apr 28, 2023 at 05:34:35PM +0200, David Hildenbrand wrote:
+>> On 28.04.23 17:33, Lorenzo Stoakes wrote:
+>>> On Fri, Apr 28, 2023 at 05:23:29PM +0200, David Hildenbrand wrote:
+>>>>>>
+>>>>>> Security is the primary case where we have historically closed uAPI
+>>>>>> items.
+>>>>>
+>>>>> As this patch
+>>>>>
+>>>>> 1) Does not tackle GUP-fast
+>>>>> 2) Does not take care of !FOLL_LONGTERM
+>>>>>
+>>>>> I am not convinced by the security argument in regard to this patch.
+>>>>>
+>>>>>
+>>>>> If we want to sells this as a security thing, we have to block it
+>>>>> *completely* and then CC stable.
+>>>>
+>>>> Regarding GUP-fast, to fix the issue there as well, I guess we could do
+>>>> something similar as I did in gup_must_unshare():
+>>>>
+>>>> If we're in GUP-fast (no VMA), and want to pin a !anon page writable,
+>>>> fallback to ordinary GUP. IOW, if we don't know, better be safe.
 >>>
->>> Personally I come at this from the 'I just want my vmas patch series' unblocked
->>> perspective :) and feel there's a functional aspect here too.
+>>> How do we determine it's non-anon in the first place? The check is on the
+>>> VMA. We could do it by following page tables down to folio and checking
+>>> folio->mapping for PAGE_MAPPING_ANON I suppose?
 >>
->> I know, it always gets messy when touching such sensible topics :P
+>> PageAnon(page) can be called from GUP-fast after grabbing a reference. See
+>> gup_must_unshare().
 > 
-> I feel that several people owe me drinks at LSF/MM :P
+> Hmm.. Is it a good idea at all to sacrifise all "!anon" fast-gups for this?
+> People will silently got degrade even on legal pins on shmem/hugetlb, I
+> think, which seems to be still a very major use case.
 > 
-> To cut a long story short to your other points, I'm _really_ leaning
-> towards an opt-in variant of this change that we just hand to io_uring to
-> make everything simple with minimum risk (if Jens was also open to this
-> idea, it'd simply be deleting the open coded vma checks there and adding
-> FOLL_SAFE_FILE_WRITE).
-> 
-> That way we can save the delightful back and forth for another time while
-> adding a useful feature and documenting the issue.
 
-Just for the records: I'm not opposed to disabling it system-wide, 
-especially once this is an actual security issue and can bring down the 
-machine easily (thanks to Jason for raising the security aspect). I just 
-wanted to raise awareness that there might be users affected ...
+Right. Optimizing for hugetlb should be easy. Shmem is problematic.
 
-Sure, we could glue this to some system knob like Jason said, if we want 
-to play safe.
-
-> 
-> Altneratively I could try to adapt this to also do the GUP-fast check,
-> hoping that no FOLL_FAST_ONLY users would get nixed (I'd have to check who
-> uses that). The others should just get degraded to a standard GUP right?
-
-Yes. When you need the VMA to make a decision, fallback to standard GUP.
-
-The only problematic part is something like get_user_pages_fast_only(), 
-that would observe a change. But KVM never passes FOLL_LONGTERM, so at 
-least in that context the change should be fine I guess.
-
-The performance concern is the most problematic thing (how to identify 
-shmem pages).
-
-> 
-> I feel these various series have really helped beat out some details about
-> GUP, so as to your point on another thread (trying to reduce noise here
-> :P), I think discussion at LSF/MM is also a sensible idea, also you know,
-> if beers were bought too it could all work out nicely :]
-
-The issue is, that GUP is so complicated, that each and every MM 
-developer familiar with GUP has something to add :P
-
-What stood out to me is that we disallow something for ordinary GUP but 
-disallow it for GUP-fast, which looks very odd.
-
-So sorry again for jumping in late ...
+I once raised to John that PageAnonExclusive is essentially a "anon page 
+is pinnable" flag. Too bad we don't have spare page flags ;)
 
 -- 
 Thanks,
