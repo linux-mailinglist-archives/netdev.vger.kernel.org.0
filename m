@@ -2,113 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DB076F2013
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 23:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 353F06F2026
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 23:35:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345716AbjD1VY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 17:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
+        id S229978AbjD1VfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 17:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbjD1VY5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 17:24:57 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383431BFA;
-        Fri, 28 Apr 2023 14:24:55 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id 38308e7fff4ca-2a8bdcf87f4so1760141fa.2;
-        Fri, 28 Apr 2023 14:24:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682717093; x=1685309093;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9rljzU0VELiX9EsAkZDXnPVtLWxUnAXmWBWCF+oOAaY=;
-        b=Q5MkxR2ZExbckiOE+IJDWTRSaZUEwLv8xt4VK0TOnv+3I2cmNdSM89Gki5tvc5TYDM
-         xj+8Xgdzp03DWqnUbeddAFlRQzKuMUnaTdxHvQIp/sFQMfBQosV2BaAQYrPnH/Y1TB26
-         8toagzZu9WS/PpsNxTcmywXhtICGQseS8IR5f4HOkQP9njFtbuEU36HcuhjHPyIdmgdF
-         LX325IZNhynqJc5tcHQSkGFJdzTeg12L9r1ExhixfDswOOQERXGDK59uYjQgq0p1R9PM
-         M+1IE+yq7+a1Bl0OHFIow3lsr47mNDeNuD2lR1mrxsK6fIXUhMQHJGOq1yIWPA6vpyAx
-         tZtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682717093; x=1685309093;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9rljzU0VELiX9EsAkZDXnPVtLWxUnAXmWBWCF+oOAaY=;
-        b=ICH+JvPa/hU8sjuUvhPcL0s1A/d8tHtHoqazd740KavOcbWkjHYUs3jqDtvEPqMYB7
-         v8EF6smHjfHJKIY8erDH6CkHHoa0nK8UmzR/by7hp3nwOEcVIjwfiEn+hoAbdfNznxQp
-         E2hFeCCV9iDEjL1dGlTiOf00UC6hFtJSOr2FfozD1CNB3gadQucvrkXItwsbeP2yPync
-         m/d+ATJwZqQPbMAacbRsZRQa/rq9hHmmt479ippZoXqcH86am0UOPRyLES90OIYt7xie
-         2mHZLk/bLG4KeE9+7smDQeMG2EDZeqC/UVtN05aA6Ne5HWoIKyRpEqVeMQjolMfzgCwa
-         yqPQ==
-X-Gm-Message-State: AC+VfDwKMASQ/+5YTZQk9Ld2y1xwu9ITUxBExJQFZRg+HZMSTIrljwqZ
-        oIc/C9NraUqQqRyYVFS4C+aH3H45SuGeVAPy868=
-X-Google-Smtp-Source: ACHHUZ4oG4Cbik7oyvkDGFIjSV1EguFVeok4T//byGPle9kOvG6TBjmUplvTj1WAXGFRYMolQFPGXVzhKa8zO04thMM=
-X-Received: by 2002:a2e:88cd:0:b0:2a8:d0f0:584e with SMTP id
- a13-20020a2e88cd000000b002a8d0f0584emr1826301ljk.16.1682717093101; Fri, 28
- Apr 2023 14:24:53 -0700 (PDT)
+        with ESMTP id S229779AbjD1VfT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 17:35:19 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F636211C
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 14:35:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=YeyxD+RyeEy4s4tJ6Ldhpq+naLmGe/OeNiOUcWnvoVs=; b=FM
+        Bl6mfDGocshtntMcaaI4Bbv1enA30vrqVIBUkcSZObzDWJP+0ku/uZHgiK6IC804f1nS/7lOhTxtf
+        7aJXgiJm3b6b6HSTgFjPR5ZOhfr4wni37etE4Nr1gNwcGET9O7HVRg9a8MXrGvAO7ftbdioWNJJTY
+        +4kWleQo34sfLqA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1psVkJ-00BSgP-Ia; Fri, 28 Apr 2023 23:35:15 +0200
+Date:   Fri, 28 Apr 2023 23:35:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andreas =?iso-8859-1?Q?B=F6hler?= <news@aboehler.at>
+Cc:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: SFP: Copper module with different PHY address (Netgear AGM734)
+Message-ID: <fe679ff2-0feb-4f96-a8a5-0c6acfa9f440@lunn.ch>
+References: <d57b4fcd-2fa6-bc92-0650-72530fbdc0a8@aboehler.at>
+ <d4d526db-995b-4426-8a8d-b53acceb5f74@lunn.ch>
+ <e9a859b0-c1da-0f65-b02e-fbf3aa297286@aboehler.at>
 MIME-Version: 1.0
-References: <CADm8TemwbUWDP0R_t7axFk4=4-srnm5c+2oJSy7aeSzdKFSVCA@mail.gmail.com>
-In-Reply-To: <CADm8TemwbUWDP0R_t7axFk4=4-srnm5c+2oJSy7aeSzdKFSVCA@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Fri, 28 Apr 2023 14:24:40 -0700
-Message-ID: <CABBYNZJCbYnxodwXAeq8F9NerzGWFva0OG6SfUWfJ_Grz=Xq6Q@mail.gmail.com>
-Subject: Re: [BUG][RESEND] Bluetooth: L2CAP: possible data race in __sco_sock_close()
-To:     Li Tuo <islituo@gmail.com>
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        baijiaju1990@outlook.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e9a859b0-c1da-0f65-b02e-fbf3aa297286@aboehler.at>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Fri, Apr 28, 2023 at 10:15:55PM +0200, Andreas Böhler wrote:
+> Hi,
+> thanks for the quick reply!
+> 
+> On 26/04/2023 19:04, Andrew Lunn wrote:
+> > On Wed, Apr 26, 2023 at 06:47:33PM +0200, Andreas Böhler wrote:
+> > > Hi,
+> > > 
+> > > I have a bunch of Netgear AGM734 copper SFP modules that I would like to use
+> > > with my switches. Upon insertion, a message "no PHY detected" pops up.
+> > > 
+> > > Upon further investigation I found out that the Marvell PHY in these modules
+> > > is at 0x53 and not at the expected 0x56. A quick check with a changed
+> > > SFP_PHY_ADDR works as expected.
+> > > 
+> > > Which is the best scenario to proceed?
+> > > 
+> > > 1. Always probe SFP_PHY_ADDR and SFP_PHY_ADDR - 3
+> > > 
+> > > 2. Create a fixup for this specific module to probe at a different address.
+> > > However, I'm afraid this might break "compatible" modules.
+> > > 
+> > > 3. Something else?
+> > 
+> > 
+> > What does ethtool -m show?
+> 
+> Offset          Values
+> ------          ------
+> 0x0000:         03 04 00 00 00 00 08 00 00 00 00 01 0d 00 00 00
+> 0x0010:         00 00 64 00 4e 45 54 47 45 41 52 20 20 20 20 20
+> 0x0020:         20 20 20 20 00 00 09 5b 41 47 4d 37 33 34 20 20
+> 0x0030:         20 20 20 20 20 20 20 20 30 30 30 30 00 00 00 7e
+> 0x0040:         00 01 00 00 31 38 31 36 30 34 31 30 30 33 34 37
+> 0x0050:         20 20 20 20 31 38 30 34 32 35 30 31 00 00 00 79
+> 0x0060:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 0x0070:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 0x0080:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 0x0090:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 0x00a0:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 0x00b0:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 0x00c0:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 0x00d0:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 0x00e0:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> 0x00f0:         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
-On Fri, Apr 28, 2023 at 3:27=E2=80=AFAM Li Tuo <islituo@gmail.com> wrote:
->
->   Hello,
->
-> Our static analysis tool finds a possible data race in the l2cap protocol
-> in Linux 6.3.0-rc7:
->
-> In most calling contexts, the variable sk->sk_socket is accessed
-> with holding the lock sk->sk_callback_lock. Here is an example:
->
->   l2cap_sock_accept() --> Line 346 in net/bluetooth/l2cap_sock.c
->       bt_accept_dequeue() --> Line 368 in net/bluetooth/l2cap_sock.c
->           sock_graft() --> Line 240 in net/bluetooth/af_bluetooth.c
->               write_lock_bh(&sk->sk_callback_lock); --> Line 2081 in incl=
-ude/net/sock.h (Lock sk->sk_callback_lock)
->               sk_set_socket() --> Line 2084 in include/net/sock.h
->                   sk->sk_socket =3D sock; --> Line 2054 in include/net/so=
-ck.h (Access sk->sk_socket)
->
-> However, in the following calling context:
->
->   sco_sock_shutdown() --> Line 1227 in net/bluetooth/sco.c
->       __sco_sock_close() --> Line 1243 in net/bluetooth/sco.c
->           BT_DBG(..., sk->sk_socket); --> Line 431 in net/bluetooth/sco.c=
- (Access sk->sk_socket)
->
-> the variable sk->sk_socket is accessed without holding the lock
-> sk->sk_callback_lock, and thus a data race may occur.
->
-> Reported-by: BassCheck <bass@buaa.edu.cn>
+It looks like you ethtool is either old, or not build to decode the
+contents of the eeprom:
 
-Need to check in detail what it means to hold the sk_callback_lock,
-btw is this static analysis tool of yours something public that we can
-use in our CI to detect these problems?
+ethtool -m eth42
+        Identifier                                : 0x02 (module soldered to motherboard)
+        Extended identifier                       : 0x04 (GBIC/SFP defined by 2-wire interface ID)
+        Connector                                 : 0x07 (LC)
+        Transceiver codes                         : 0x04 0x00 0x00 0x02 0x12 0x00 0x01 0xf5 0x00
+        Transceiver type                          : Infiniband: 1X LX
+        Transceiver type                          : Ethernet: 1000BASE-LX
+        Transceiver type                          : FC: long distance (L)
+        Transceiver type                          : FC: Longwave laser (LC)
+        Transceiver type                          : FC: Single Mode (SM)
+        Transceiver type                          : FC: 1200 MBytes/sec
+        Transceiver type                          : FC: 800 MBytes/sec
+...
+        Vendor name                               : COTSWORKS
+        Vendor OUI                                : 00:00:00
+        Vendor PN                                 : SFBG53DRAP
+        Vendor rev                                : 0000
 
+> > Is there something we a key a quirk off?
+> 
+> Unfortunately, I don't understand this sentence.
 
---=20
-Luiz Augusto von Dentz
+The EEPROM contains vendor name and product number. We enable quirks
+based on those, so they apply to specific SFPs.
+
+If i'm reading your hex correctly, it says: `NETGEAR` and `AGM734`
+
+Take a look at the quirk for rollball. You can add a new
+sfp->mdio_protocol which indicates a different address should be used.
+
+> > Is it a true Netgear SFP?
+> 
+> Yes, it's a brand new original Netgear module.
+> 
+> > There are OEMs which will load there EEPROM to emulate other
+> > vendors. e.g.:
+> 
+> Yes, this is what I meant with a quirk might break "compatible" modules.
+
+Then they are not compatible :-)
+
+The real problem here is that the standards don't actually say how you
+are supposed to talk to the PHY. The address and the protocol is
+undefined.
+
+     Andrew
