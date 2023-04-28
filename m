@@ -2,381 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AAB8B6F1C5E
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:13:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A6A6F1C6C
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:17:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233293AbjD1QNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 12:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
+        id S230464AbjD1QRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 12:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbjD1QNx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:13:53 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E314EE4
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:13:51 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33SA5AHV003415;
-        Fri, 28 Apr 2023 09:13:41 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=ascTmMTDTsdlTDmJhOlR8ykzdkP5dtEXLaZI3QqSq/8=;
- b=KcShJ368ChiTdTiytgFAblh76Ixav03jPfqQAZn51bwf2FMWka3lWEFKhTjNHltdE/cp
- CfINSWE58TGww3s5w7Z6YP+AkRowxFz5LxMZdqLbAzQFzWtGZPD3/P4u98MMeFBqBtAk
- o9gz0mGLbMCkmfsLWAjPMoQOFIJNK2FmSUMTvYNAcwKMKaoT0d+LpfYpmUqibnl/XOIn
- SZkYuacxxFKEOcsQD6Omttv8hHprBZYXB31He0CcohWmVmhpXN3IGnacdh8N3P9boH3W
- b7uAoEHKQI+2mELk82g0Vze7WXHVfVDqmbhf/5NAN3FKexssoxkruN4fxqESmAfoBSi9 LQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3q85x62qx1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 28 Apr 2023 09:13:40 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Fri, 28 Apr
- 2023 09:13:38 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Fri, 28 Apr 2023 09:13:38 -0700
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id D0DD45B692C;
-        Fri, 28 Apr 2023 09:13:38 -0700 (PDT)
-From:   Manish Chopra <manishc@marvell.com>
-To:     <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
-        <palok@marvell.com>, Sudarsana Kalluru <skalluru@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v3 net] qed/qede: Fix scheduling while atomic
-Date:   Fri, 28 Apr 2023 09:13:37 -0700
-Message-ID: <20230428161337.8485-1-manishc@marvell.com>
-X-Mailer: git-send-email 2.12.0
+        with ESMTP id S229768AbjD1QRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:17:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 238131706
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:16:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1682698581;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=TvewqYuSzWNN7mxtbeM4khKlAp2Yo8QXThhKD8ctzeY=;
+        b=dhxBokgp0sQMHWTZRvF2SXFNAUd/vjw14hDvKQKOuH1LRW+PFykrCkFH64XwrYXcn4Odr5
+        5tHJDcZ+kPzfEmblDf8JkKexK0KXQm5ZeqkIyGUguDrRy2I60Y2QMH1LYrKDqStgQ96gIu
+        y646HLdmxYzY1R2JMNo9cvDg/bJOd5k=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-616-d-dIVHqjMJOFk9aCOr-jjg-1; Fri, 28 Apr 2023 12:16:16 -0400
+X-MC-Unique: d-dIVHqjMJOFk9aCOr-jjg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9073D185A790;
+        Fri, 28 Apr 2023 16:16:15 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.45.242.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B884492C13;
+        Fri, 28 Apr 2023 16:16:15 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 43564307372E8;
+        Fri, 28 Apr 2023 18:16:14 +0200 (CEST)
+Subject: [PATCH RFC net-next/mm V3 0/2] page_pool: new approach for leak
+ detection and shutdown phase
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        linux-mm@kvack.org, Mel Gorman <mgorman@techsingularity.net>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, lorenzo@kernel.org,
+        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        linyunsheng@huawei.com, bpf@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, willy@infradead.org
+Date:   Fri, 28 Apr 2023 18:16:14 +0200
+Message-ID: <168269854650.2191653.8465259808498269815.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: y9ewb58HimoE_Ex2r21dXKiUHsiQ4rBt
-X-Proofpoint-ORIG-GUID: y9ewb58HimoE_Ex2r21dXKiUHsiQ4rBt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-28_04,2023-04-27_01,2023-02-09_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bonding module collects the statistics while holding
-the spinlock, beneath that qede->qed driver statistics
-flow gets scheduled out due to usleep_range() used in PTT
-acquire logic which results into below bug and traces -
+Patchset change summary:
+ - Remove PP workqueue and inflight warnings, instead rely on inflight
+   pages to trigger cleanup
+ - Moves leak detection to the MM-layer page allocator when combined
+   with CONFIG_DEBUG_VM.
 
-[ 3673.988874] Hardware name: HPE ProLiant DL365 Gen10 Plus/ProLiant DL365 Gen10 Plus, BIOS A42 10/29/2021
-[ 3673.988878] Call Trace:
-[ 3673.988891]  dump_stack_lvl+0x34/0x44
-[ 3673.988908]  __schedule_bug.cold+0x47/0x53
-[ 3673.988918]  __schedule+0x3fb/0x560
-[ 3673.988929]  schedule+0x43/0xb0
-[ 3673.988932]  schedule_hrtimeout_range_clock+0xbf/0x1b0
-[ 3673.988937]  ? __hrtimer_init+0xc0/0xc0
-[ 3673.988950]  usleep_range+0x5e/0x80
-[ 3673.988955]  qed_ptt_acquire+0x2b/0xd0 [qed]
-[ 3673.988981]  _qed_get_vport_stats+0x141/0x240 [qed]
-[ 3673.989001]  qed_get_vport_stats+0x18/0x80 [qed]
-[ 3673.989016]  qede_fill_by_demand_stats+0x37/0x400 [qede]
-[ 3673.989028]  qede_get_stats64+0x19/0xe0 [qede]
-[ 3673.989034]  dev_get_stats+0x5c/0xc0
-[ 3673.989045]  netstat_show.constprop.0+0x52/0xb0
-[ 3673.989055]  dev_attr_show+0x19/0x40
-[ 3673.989065]  sysfs_kf_seq_show+0x9b/0xf0
-[ 3673.989076]  seq_read_iter+0x120/0x4b0
-[ 3673.989087]  new_sync_read+0x118/0x1a0
-[ 3673.989095]  vfs_read+0xf3/0x180
-[ 3673.989099]  ksys_read+0x5f/0xe0
-[ 3673.989102]  do_syscall_64+0x3b/0x90
-[ 3673.989109]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 3673.989115] RIP: 0033:0x7f8467d0b082
-[ 3673.989119] Code: c0 e9 b2 fe ff ff 50 48 8d 3d ca 05 08 00 e8 35 e7 01 00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24
-[ 3673.989121] RSP: 002b:00007ffffb21fd08 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-[ 3673.989127] RAX: ffffffffffffffda RBX: 000000000100eca0 RCX: 00007f8467d0b082
-[ 3673.989128] RDX: 00000000000003ff RSI: 00007ffffb21fdc0 RDI: 0000000000000003
-[ 3673.989130] RBP: 00007f8467b96028 R08: 0000000000000010 R09: 00007ffffb21ec00
-[ 3673.989132] R10: 00007ffffb27b170 R11: 0000000000000246 R12: 00000000000000f0
-[ 3673.989134] R13: 0000000000000003 R14: 00007f8467b92000 R15: 0000000000045a05
-[ 3673.989139] CPU: 30 PID: 285188 Comm: read_all Kdump: loaded Tainted: G        W  OE
+The page_pool (PP) workqueue calling page_pool_release_retry generate
+too many false-positive reports. Further more, these reports of
+page_pool shutdown still having inflight packets are not very helpful
+to track down the root-cause.
 
-Fix this by having caller (QEDE driver flows) to provide the context
-whether it could be in atomic context flow or not when getting the
-vport stats from QED driver. QED driver based on the context provided
-decide to schedule out or not when acquiring the PTT BAR window.
+In the past these reports have helped us catch driver bugs, that
+leaked pages by invoking put_page directly, often in code paths
+handling error cases. PP pages had a shorter lifespan (within driver
+and XDP code paths). Since PP pages got a recycle return path for
+SKBs, the lifespan for a PP page can be much longer. Thus, it is time
+to revisit periodic release retry mechanism. The default 60 sec
+lifespan assumption is obviously wrong/obsolete, as things like TCP
+sockets can keep SKBs around for much longer (e.g. retransmits,
+timeouts, NAPI defer schemes etc).
 
-Fixes: 133fac0eedc3 ("qede: Add basic ethtool support")
-Cc: Sudarsana Kalluru <skalluru@marvell.com>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Alok Prasad <palok@marvell.com>
+The inflight reports, means one of two things: (1) API user is still
+holding on, or (2) page got leaked and will never be returned to PP.
+The PP need to accept it have no control over (1) how long outstanding
+PP pages are kept by the API users. What we really want to is to catch
+are(2) pages that "leak". Meaning they didn't get proper returned via
+PP APIs.
+
+Leaked PP pages result in these issues: (A) We can never release
+page_pool memory structs, which (B) holds on to a refcnt on struct
+device for DMA mapping, and (C) leaking DMA-mappings that (D) means a
+hardware device can potentially write into a page returned to the page
+allocator.
+
+V3: Fix races found Toke
+
+V2: Fix race found by Yunsheng Lin <linyunsheng@huawei.com>
+
 ---
-v1->v2:
- - Fixed checkpatch and kdoc warnings.
-v2->v3:
- - Moving the changelog after tags.
----
- drivers/net/ethernet/qlogic/qed/qed_dev_api.h | 12 +++++++-
- drivers/net/ethernet/qlogic/qed/qed_hw.c      | 28 +++++++++++++++----
- drivers/net/ethernet/qlogic/qed/qed_l2.c      | 11 ++++----
- drivers/net/ethernet/qlogic/qed/qed_l2.h      |  3 +-
- drivers/net/ethernet/qlogic/qed/qed_main.c    |  4 +--
- drivers/net/ethernet/qlogic/qede/qede.h       |  2 +-
- .../net/ethernet/qlogic/qede/qede_ethtool.c   |  2 +-
- drivers/net/ethernet/qlogic/qede/qede_main.c  |  6 ++--
- include/linux/qed/qed_eth_if.h                |  2 +-
- 9 files changed, 50 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-index f8682356d0cf..379169076aa4 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev_api.h
-@@ -182,7 +182,7 @@ int qed_hw_prepare(struct qed_dev *cdev,
- void qed_hw_remove(struct qed_dev *cdev);
- 
- /**
-- * qed_ptt_acquire(): Allocate a PTT window.
-+ * qed_ptt_acquire(): Allocate a PTT window in sleepable context.
-  *
-  * @p_hwfn: HW device data.
-  *
-@@ -193,6 +193,16 @@ void qed_hw_remove(struct qed_dev *cdev);
-  */
- struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn);
- 
-+/**
-+ *  _qed_ptt_acquire(): Allocate a PTT window based on the context.
-+ *
-+ *  @p_hwfn: HW device data.
-+ *  @is_atomic: context (sleepable or unsleepable) based on which ptt is acquired.
-+ *
-+ *  Return: struct qed_ptt.
-+ */
-+struct qed_ptt *_qed_ptt_acquire(struct qed_hwfn *p_hwfn, bool is_atomic);
-+
- /**
-  * qed_ptt_release(): Release PTT Window.
-  *
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_hw.c b/drivers/net/ethernet/qlogic/qed/qed_hw.c
-index 554f30b0cfd5..4e8bfa0194e7 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_hw.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_hw.c
-@@ -23,7 +23,10 @@
- #include "qed_reg_addr.h"
- #include "qed_sriov.h"
- 
--#define QED_BAR_ACQUIRE_TIMEOUT 1000
-+#define QED_BAR_ACQUIRE_TIMEOUT_USLEEP_CNT	1000
-+#define QED_BAR_ACQUIRE_TIMEOUT_USLEEP		1000
-+#define QED_BAR_ACQUIRE_TIMEOUT_UDELAY_CNT	100000
-+#define QED_BAR_ACQUIRE_TIMEOUT_UDELAY		10
- 
- /* Invalid values */
- #define QED_BAR_INVALID_OFFSET          (cpu_to_le32(-1))
-@@ -83,13 +86,18 @@ void qed_ptt_pool_free(struct qed_hwfn *p_hwfn)
- 	p_hwfn->p_ptt_pool = NULL;
- }
- 
--struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn)
-+struct qed_ptt *_qed_ptt_acquire(struct qed_hwfn *p_hwfn, bool is_atomic)
- {
- 	struct qed_ptt *p_ptt;
--	unsigned int i;
-+	unsigned int i, count;
-+
-+	if (is_atomic)
-+		count = QED_BAR_ACQUIRE_TIMEOUT_UDELAY_CNT;
-+	else
-+		count = QED_BAR_ACQUIRE_TIMEOUT_USLEEP_CNT;
- 
- 	/* Take the free PTT from the list */
--	for (i = 0; i < QED_BAR_ACQUIRE_TIMEOUT; i++) {
-+	for (i = 0; i < count; i++) {
- 		spin_lock_bh(&p_hwfn->p_ptt_pool->lock);
- 
- 		if (!list_empty(&p_hwfn->p_ptt_pool->free_list)) {
-@@ -105,13 +113,23 @@ struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn)
- 		}
- 
- 		spin_unlock_bh(&p_hwfn->p_ptt_pool->lock);
--		usleep_range(1000, 2000);
-+
-+		if (is_atomic)
-+			udelay(QED_BAR_ACQUIRE_TIMEOUT_UDELAY);
-+		else
-+			usleep_range(QED_BAR_ACQUIRE_TIMEOUT_USLEEP,
-+				     QED_BAR_ACQUIRE_TIMEOUT_USLEEP * 2);
- 	}
- 
- 	DP_NOTICE(p_hwfn, "PTT acquire timeout - failed to allocate PTT\n");
- 	return NULL;
- }
- 
-+struct qed_ptt *qed_ptt_acquire(struct qed_hwfn *p_hwfn)
-+{
-+	return _qed_ptt_acquire(p_hwfn, false);
-+}
-+
- void qed_ptt_release(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
- {
- 	spin_lock_bh(&p_hwfn->p_ptt_pool->lock);
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.c b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-index 2edd6bf64a3c..46d8d35dc7ac 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_l2.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-@@ -1863,7 +1863,7 @@ static void __qed_get_vport_stats(struct qed_hwfn *p_hwfn,
- }
- 
- static void _qed_get_vport_stats(struct qed_dev *cdev,
--				 struct qed_eth_stats *stats)
-+				 struct qed_eth_stats *stats, bool is_atomic)
- {
- 	u8 fw_vport = 0;
- 	int i;
-@@ -1872,7 +1872,7 @@ static void _qed_get_vport_stats(struct qed_dev *cdev,
- 
- 	for_each_hwfn(cdev, i) {
- 		struct qed_hwfn *p_hwfn = &cdev->hwfns[i];
--		struct qed_ptt *p_ptt = IS_PF(cdev) ? qed_ptt_acquire(p_hwfn)
-+		struct qed_ptt *p_ptt = IS_PF(cdev) ? _qed_ptt_acquire(p_hwfn, is_atomic)
- 						    :  NULL;
- 		bool b_get_port_stats;
- 
-@@ -1899,7 +1899,8 @@ static void _qed_get_vport_stats(struct qed_dev *cdev,
- 	}
- }
- 
--void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats)
-+void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats,
-+			 bool is_atomic)
- {
- 	u32 i;
- 
-@@ -1908,7 +1909,7 @@ void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats)
- 		return;
- 	}
- 
--	_qed_get_vport_stats(cdev, stats);
-+	_qed_get_vport_stats(cdev, stats, is_atomic);
- 
- 	if (!cdev->reset_stats)
- 		return;
-@@ -1960,7 +1961,7 @@ void qed_reset_vport_stats(struct qed_dev *cdev)
- 	if (!cdev->reset_stats) {
- 		DP_INFO(cdev, "Reset stats not allocated\n");
- 	} else {
--		_qed_get_vport_stats(cdev, cdev->reset_stats);
-+		_qed_get_vport_stats(cdev, cdev->reset_stats, false);
- 		cdev->reset_stats->common.link_change_count = 0;
- 	}
- }
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.h b/drivers/net/ethernet/qlogic/qed/qed_l2.h
-index a538cf478c14..2bb93c50a2e4 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_l2.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_l2.h
-@@ -249,7 +249,8 @@ qed_sp_eth_rx_queues_update(struct qed_hwfn *p_hwfn,
- 			    enum spq_mode comp_mode,
- 			    struct qed_spq_comp_cb *p_comp_data);
- 
--void qed_get_vport_stats(struct qed_dev *cdev, struct qed_eth_stats *stats);
-+void qed_get_vport_stats(struct qed_dev *cdev,
-+			 struct qed_eth_stats *stats, bool is_atomic);
- 
- void qed_reset_vport_stats(struct qed_dev *cdev);
- 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index c91898be7c03..307856c4ed22 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -3101,7 +3101,7 @@ void qed_get_protocol_stats(struct qed_dev *cdev,
- 
- 	switch (type) {
- 	case QED_MCP_LAN_STATS:
--		qed_get_vport_stats(cdev, &eth_stats);
-+		qed_get_vport_stats(cdev, &eth_stats, false);
- 		stats->lan_stats.ucast_rx_pkts =
- 					eth_stats.common.rx_ucast_pkts;
- 		stats->lan_stats.ucast_tx_pkts =
-@@ -3161,7 +3161,7 @@ qed_fill_generic_tlv_data(struct qed_dev *cdev, struct qed_mfw_tlv_generic *tlv)
- 		}
- 	}
- 
--	qed_get_vport_stats(cdev, &stats);
-+	qed_get_vport_stats(cdev, &stats, false);
- 	p_common = &stats.common;
- 	tlv->rx_frames = p_common->rx_ucast_pkts + p_common->rx_mcast_pkts +
- 			 p_common->rx_bcast_pkts;
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index f90dcfe9ee68..312b1c2484fe 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -569,7 +569,7 @@ void qede_set_udp_tunnels(struct qede_dev *edev);
- void qede_reload(struct qede_dev *edev,
- 		 struct qede_reload_args *args, bool is_locked);
- int qede_change_mtu(struct net_device *dev, int new_mtu);
--void qede_fill_by_demand_stats(struct qede_dev *edev);
-+void qede_fill_by_demand_stats(struct qede_dev *edev, bool is_atomic);
- void __qede_lock(struct qede_dev *edev);
- void __qede_unlock(struct qede_dev *edev);
- bool qede_has_rx_work(struct qede_rx_queue *rxq);
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-index 8034d812d5a0..7e40e35d990c 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-@@ -408,7 +408,7 @@ static void qede_get_ethtool_stats(struct net_device *dev,
- 	struct qede_fastpath *fp;
- 	int i;
- 
--	qede_fill_by_demand_stats(edev);
-+	qede_fill_by_demand_stats(edev, false);
- 
- 	/* Need to protect the access to the fastpath array */
- 	__qede_lock(edev);
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 953f304b8588..6c4187e5faa5 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -301,12 +301,12 @@ module_exit(qede_cleanup);
- static int qede_open(struct net_device *ndev);
- static int qede_close(struct net_device *ndev);
- 
--void qede_fill_by_demand_stats(struct qede_dev *edev)
-+void qede_fill_by_demand_stats(struct qede_dev *edev, bool is_atomic)
- {
- 	struct qede_stats_common *p_common = &edev->stats.common;
- 	struct qed_eth_stats stats;
- 
--	edev->ops->get_vport_stats(edev->cdev, &stats);
-+	edev->ops->get_vport_stats(edev->cdev, &stats, is_atomic);
- 
- 	p_common->no_buff_discards = stats.common.no_buff_discards;
- 	p_common->packet_too_big_discard = stats.common.packet_too_big_discard;
-@@ -413,7 +413,7 @@ static void qede_get_stats64(struct net_device *dev,
- 	struct qede_dev *edev = netdev_priv(dev);
- 	struct qede_stats_common *p_common;
- 
--	qede_fill_by_demand_stats(edev);
-+	qede_fill_by_demand_stats(edev, true);
- 	p_common = &edev->stats.common;
- 
- 	stats->rx_packets = p_common->rx_ucast_pkts + p_common->rx_mcast_pkts +
-diff --git a/include/linux/qed/qed_eth_if.h b/include/linux/qed/qed_eth_if.h
-index e1bf3219b4e6..f2893b6b4cb3 100644
---- a/include/linux/qed/qed_eth_if.h
-+++ b/include/linux/qed/qed_eth_if.h
-@@ -319,7 +319,7 @@ struct qed_eth_ops {
- 				  struct eth_slow_path_rx_cqe *cqe);
- 
- 	void (*get_vport_stats)(struct qed_dev *cdev,
--				struct qed_eth_stats *stats);
-+				struct qed_eth_stats *stats, bool is_atomic);
- 
- 	int (*tunn_config)(struct qed_dev *cdev,
- 			   struct qed_tunn_params *params);
--- 
-2.27.0
+Jesper Dangaard Brouer (2):
+      page_pool: Remove workqueue in new shutdown scheme
+      mm/page_pool: catch page_pool memory leaks
+
+
+ include/net/page_pool.h |   9 ++-
+ mm/page_alloc.c         |   7 ++
+ net/core/page_pool.c    | 138 ++++++++++++++++++++++++++++------------
+ 3 files changed, 110 insertions(+), 44 deletions(-)
+
+--
+Jesper
 
