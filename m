@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D01936F0F85
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 02:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F036F0F89
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 02:21:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344339AbjD1AVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 20:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
+        id S1344502AbjD1AVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 20:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344473AbjD1AVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 20:21:23 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1663C01;
-        Thu, 27 Apr 2023 17:20:53 -0700 (PDT)
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33RIPmcW029097;
-        Thu, 27 Apr 2023 17:20:36 -0700
+        with ESMTP id S1344489AbjD1AVe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 20:21:34 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7DD4232;
+        Thu, 27 Apr 2023 17:20:57 -0700 (PDT)
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33RMmw1d005444;
+        Thu, 27 Apr 2023 17:20:39 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=s2048-2021-q4;
- bh=3SzNUw1jJ6YXBA5nzZn6AxaC95cDJfQ4+c6MCSYLp54=;
- b=KpJa2cEY+1OC9a3/CFC7dvpuULhQPvBADPIbPsrcc+6ZbfQXAXbnYT5uHME1Jd37hkBn
- wGl6WxS9SDXK3MOMw8BOieC9jigKCHd3GVxzANkAk9dohrLjLl0VjFRmkI2ttWB+Z3ui
- n37uQcj0KK0pLIUqErwyO65nQc4d7S6I4Jb9nwaAlC5fvAr6qLI0cXWb0O8pkEsRVwCC
- PYuw0b1TeSkuWXVma8MQml18ksyQhxf1seBejWR57wAPI1nxRbm0+u6e5mfCuLuoOjw1
- KBR5zNDeF5BsKN9OuOC9QzfhWCSt5JYuJlBw07sO4H5WlyNJQTPf4A3Y8WkGbvnlkRxg JA== 
+ bh=UE8Ei2ztFwiuPzY+sr7p4xXqiI/tkobsUFsTQsKko2Y=;
+ b=G3GqUXo0TWpcOB8M2B7g/j7J7Mnn4CpxirMrOxngvtrXIwJ7N+FEggYkcfc5wIApJCE2
+ haHHnOqE4fL8ATaTiH0e3vsGVGpqNsQGzGlLB7UlD/MyfkVAasFA5sMVRxtzHDydqlgp
+ Jvz0iRl1yBiUGX9RVv8APN1zqStJKgOjaoOfpIuyijtPng5SQw8HYVJhn7lecr2Gy9Hh
+ mM+icvLwCTlxVtLPgmAm860BPCZiVxgY9zGEU1cK7no5D3KeECTLwRRXHCBcHrwxDuy+
+ CHfXlej/DHuzrwo4eEHcnrPFVMFVv3emR22mbIxH+l4+c4xLKXt94toMzGmKM12y0fkZ Pw== 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3q7e8hgsv7-2
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3q825ureym-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 27 Apr 2023 17:20:36 -0700
+        Thu, 27 Apr 2023 17:20:39 -0700
 Received: from devvm1736.cln0.facebook.com (2620:10d:c085:108::4) by
  mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server id
- 15.1.2507.23; Thu, 27 Apr 2023 17:20:32 -0700
+ 15.1.2507.23; Thu, 27 Apr 2023 17:20:35 -0700
 From:   Vadim Fedorenko <vadfed@meta.com>
 To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
         Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
@@ -43,9 +43,9 @@ CC:     Milena Olech <milena.olech@intel.com>,
         <linux-arm-kernel@lists.infradead.org>, <poros@redhat.com>,
         <mschmidt@redhat.com>, <netdev@vger.kernel.org>,
         <linux-clk@vger.kernel.org>
-Subject: [RFC PATCH v7 4/8] ice: add admin commands to access cgu configuration
-Date:   Thu, 27 Apr 2023 17:20:05 -0700
-Message-ID: <20230428002009.2948020-5-vadfed@meta.com>
+Subject: [RFC PATCH v7 5/8] ice: implement dpll interface to control cgu
+Date:   Thu, 27 Apr 2023 17:20:06 -0700
+Message-ID: <20230428002009.2948020-6-vadfed@meta.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230428002009.2948020-1-vadfed@meta.com>
 References: <20230428002009.2948020-1-vadfed@meta.com>
@@ -53,8 +53,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [2620:10d:c085:108::4]
-X-Proofpoint-GUID: 4aenYX5bfeX8iwWbA0w_R6mfUBc5qU90
-X-Proofpoint-ORIG-GUID: 4aenYX5bfeX8iwWbA0w_R6mfUBc5qU90
+X-Proofpoint-GUID: 8lgnxZ9z2p3jWaQLJxswP-C2gXJmgnqE
+X-Proofpoint-ORIG-GUID: 8lgnxZ9z2p3jWaQLJxswP-C2gXJmgnqE
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-04-27_09,2023-04-27_01,2023-02-09_01
@@ -71,1616 +71,2433 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 
-Add firmware admin command to access clock generation unit
-configuration, it is required to enable Extended PTP and SyncE features
-in the driver.
-Add definitions of possible hardware variations of input and output pins
-related to clock generation unit and functions to access the data.
+Control over clock generation unit is required for further development
+of Synchronous Ethernet feature. Interface provides ability to obtain
+current state of a dpll, its sources and outputs which are pins, and
+allows their configuration.
 
+Co-developed-by: Milena Olech <milena.olech@intel.com>
+Signed-off-by: Milena Olech <milena.olech@intel.com>
+Co-developed-by: Michal Michalik <michal.michalik@intel.com>
+Signed-off-by: Michal Michalik <michal.michalik@intel.com>
 Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h          |   1 +
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   | 240 ++++++++-
- drivers/net/ethernet/intel/ice/ice_common.c   | 467 ++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_common.h   |  43 ++
- drivers/net/ethernet/intel/ice/ice_lib.c      |  17 +-
- drivers/net/ethernet/intel/ice/ice_ptp_hw.c   | 411 +++++++++++++++
- drivers/net/ethernet/intel/ice/ice_ptp_hw.h   | 240 +++++++++
- drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
- 8 files changed, 1415 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/Kconfig          |    1 +
+ drivers/net/ethernet/intel/ice/Makefile     |    3 +-
+ drivers/net/ethernet/intel/ice/ice.h        |    4 +
+ drivers/net/ethernet/intel/ice/ice_dpll.c   | 1929 +++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_dpll.h   |  101 +
+ drivers/net/ethernet/intel/ice/ice_main.c   |    7 +
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c |   21 +-
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h |  148 +-
+ 8 files changed, 2125 insertions(+), 89 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_dpll.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_dpll.h
 
+diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+index 9bc0a9519899..913dcf928d15 100644
+--- a/drivers/net/ethernet/intel/Kconfig
++++ b/drivers/net/ethernet/intel/Kconfig
+@@ -284,6 +284,7 @@ config ICE
+ 	select DIMLIB
+ 	select NET_DEVLINK
+ 	select PLDMFW
++	select DPLL
+ 	help
+ 	  This driver supports Intel(R) Ethernet Connection E800 Series of
+ 	  devices.  For more information on how to identify your adapter, go
+diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
+index 5d89392f969b..6c198cd92d49 100644
+--- a/drivers/net/ethernet/intel/ice/Makefile
++++ b/drivers/net/ethernet/intel/ice/Makefile
+@@ -33,7 +33,8 @@ ice-y := ice_main.o	\
+ 	 ice_lag.o	\
+ 	 ice_ethtool.o  \
+ 	 ice_repr.o	\
+-	 ice_tc_lib.o
++	 ice_tc_lib.o	\
++	 ice_dpll.o
+ ice-$(CONFIG_PCI_IOV) +=	\
+ 	ice_sriov.o		\
+ 	ice_virtchnl.o		\
 diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index aa32111afd6e..5736757039db 100644
+index 5736757039db..a71d46e41c01 100644
 --- a/drivers/net/ethernet/intel/ice/ice.h
 +++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -202,6 +202,7 @@ enum ice_feature {
+@@ -74,6 +74,7 @@
+ #include "ice_lag.h"
+ #include "ice_vsi_vlan_ops.h"
+ #include "ice_gnss.h"
++#include "ice_dpll.h"
+ 
+ #define ICE_BAR0		0
+ #define ICE_REQ_DESC_MULTIPLE	32
+@@ -201,6 +202,7 @@
+ enum ice_feature {
  	ICE_F_DSCP,
  	ICE_F_PTP_EXTTS,
++	ICE_F_PHY_RCLK,
  	ICE_F_SMA_CTRL,
-+	ICE_F_CGU,
+ 	ICE_F_CGU,
  	ICE_F_GNSS,
- 	ICE_F_MAX
- };
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 838d9b274d68..e6edc1a90f44 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1339,6 +1339,32 @@ struct ice_aqc_set_mac_lb {
- 	u8 reserved[15];
+@@ -512,6 +514,7 @@ enum ice_pf_flags {
+ 	ICE_FLAG_UNPLUG_AUX_DEV,
+ 	ICE_FLAG_MTU_CHANGED,
+ 	ICE_FLAG_GNSS,			/* GNSS successfully initialized */
++	ICE_FLAG_DPLL,			/* SyncE/PTP dplls initialized */
+ 	ICE_PF_FLAGS_NBITS		/* must be last */
  };
  
-+/* Set PHY recovered clock output (direct 0x0630) */
-+struct ice_aqc_set_phy_rec_clk_out {
-+	u8 phy_output;
-+	u8 port_num;
-+#define ICE_AQC_SET_PHY_REC_CLK_OUT_CURR_PORT	0xFF
-+	u8 flags;
-+#define ICE_AQC_SET_PHY_REC_CLK_OUT_OUT_EN	BIT(0)
-+	u8 rsvd;
-+	__le32 freq;
-+	u8 rsvd2[6];
-+	__le16 node_handle;
-+};
-+
-+/* Get PHY recovered clock output (direct 0x0631) */
-+struct ice_aqc_get_phy_rec_clk_out {
-+	u8 phy_output;
-+	u8 port_num;
-+#define ICE_AQC_GET_PHY_REC_CLK_OUT_CURR_PORT	0xFF
-+	u8 flags;
-+#define ICE_AQC_GET_PHY_REC_CLK_OUT_OUT_EN	BIT(0)
-+	u8 rsvd;
-+	__le32 freq;
-+	u8 rsvd2[6];
-+	__le16 node_handle;
-+};
-+
- struct ice_aqc_link_topo_params {
- 	u8 lport_num;
- 	u8 lport_num_valid;
-@@ -1355,6 +1381,8 @@ struct ice_aqc_link_topo_params {
- #define ICE_AQC_LINK_TOPO_NODE_TYPE_CAGE	6
- #define ICE_AQC_LINK_TOPO_NODE_TYPE_MEZZ	7
- #define ICE_AQC_LINK_TOPO_NODE_TYPE_ID_EEPROM	8
-+#define ICE_AQC_LINK_TOPO_NODE_TYPE_CLK_CTRL	9
-+#define ICE_AQC_LINK_TOPO_NODE_TYPE_CLK_MUX	10
- #define ICE_AQC_LINK_TOPO_NODE_CTX_S		4
- #define ICE_AQC_LINK_TOPO_NODE_CTX_M		\
- 				(0xF << ICE_AQC_LINK_TOPO_NODE_CTX_S)
-@@ -1391,7 +1419,12 @@ struct ice_aqc_link_topo_addr {
- struct ice_aqc_get_link_topo {
- 	struct ice_aqc_link_topo_addr addr;
- 	u8 node_part_num;
--#define ICE_AQC_GET_LINK_TOPO_NODE_NR_PCA9575	0x21
-+#define ICE_AQC_GET_LINK_TOPO_NODE_NR_PCA9575		0x21
-+#define ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032	0x24
-+#define ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384	0x25
-+#define ICE_ACQ_GET_LINK_TOPO_NODE_NR_E822_PHY		0x30
-+#define ICE_ACQ_GET_LINK_TOPO_NODE_NR_C827		0x31
-+#define ICE_ACQ_GET_LINK_TOPO_NODE_NR_GEN_CLK_MUX	0x47
- 	u8 rsvd[9];
+@@ -635,6 +638,7 @@ struct ice_pf {
+ #define ICE_VF_AGG_NODE_ID_START	65
+ #define ICE_MAX_VF_AGG_NODES		32
+ 	struct ice_agg_node vf_agg_node[ICE_MAX_VF_AGG_NODES];
++	struct ice_dplls dplls;
  };
  
-@@ -2079,6 +2112,186 @@ struct ice_aqc_get_pkg_info_resp {
- 	struct ice_aqc_get_pkg_info pkg_info[];
- };
- 
-+/* Get CGU abilities command response data structure (indirect 0x0C61) */
-+struct ice_aqc_get_cgu_abilities {
-+	u8 num_inputs;
-+	u8 num_outputs;
-+	u8 pps_dpll_idx;
-+	u8 eec_dpll_idx;
-+	__le32 max_in_freq;
-+	__le32 max_in_phase_adj;
-+	__le32 max_out_freq;
-+	__le32 max_out_phase_adj;
-+	u8 cgu_part_num;
-+	u8 rsvd[3];
-+};
+ struct ice_netdev_priv {
+diff --git a/drivers/net/ethernet/intel/ice/ice_dpll.c b/drivers/net/ethernet/intel/ice/ice_dpll.c
+new file mode 100644
+index 000000000000..3217fb36dd12
+--- /dev/null
++++ b/drivers/net/ethernet/intel/ice/ice_dpll.c
+@@ -0,0 +1,1929 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2022, Intel Corporation. */
 +
-+/* Set CGU input config (direct 0x0C62) */
-+struct ice_aqc_set_cgu_input_config {
-+	u8 input_idx;
-+	u8 flags1;
-+#define ICE_AQC_SET_CGU_IN_CFG_FLG1_UPDATE_FREQ		BIT(6)
-+#define ICE_AQC_SET_CGU_IN_CFG_FLG1_UPDATE_DELAY	BIT(7)
-+	u8 flags2;
-+#define ICE_AQC_SET_CGU_IN_CFG_FLG2_INPUT_EN		BIT(5)
-+#define ICE_AQC_SET_CGU_IN_CFG_FLG2_ESYNC_EN		BIT(6)
-+	u8 rsvd;
-+	__le32 freq;
-+	__le32 phase_delay;
-+	u8 rsvd2[2];
-+	__le16 node_handle;
-+};
++#include "ice.h"
++#include "ice_lib.h"
++#include "ice_trace.h"
++#include <linux/dpll.h>
++#include <uapi/linux/dpll.h>
 +
-+/* Get CGU input config response descriptor structure (direct 0x0C63) */
-+struct ice_aqc_get_cgu_input_config {
-+	u8 input_idx;
-+	u8 status;
-+#define ICE_AQC_GET_CGU_IN_CFG_STATUS_LOS		BIT(0)
-+#define ICE_AQC_GET_CGU_IN_CFG_STATUS_SCM_FAIL		BIT(1)
-+#define ICE_AQC_GET_CGU_IN_CFG_STATUS_CFM_FAIL		BIT(2)
-+#define ICE_AQC_GET_CGU_IN_CFG_STATUS_GST_FAIL		BIT(3)
-+#define ICE_AQC_GET_CGU_IN_CFG_STATUS_PFM_FAIL		BIT(4)
-+#define ICE_AQC_GET_CGU_IN_CFG_STATUS_ESYNC_FAIL	BIT(6)
-+#define ICE_AQC_GET_CGU_IN_CFG_STATUS_ESYNC_CAP		BIT(7)
-+	u8 type;
-+#define ICE_AQC_GET_CGU_IN_CFG_TYPE_READ_ONLY		BIT(0)
-+#define ICE_AQC_GET_CGU_IN_CFG_TYPE_GPS			BIT(4)
-+#define ICE_AQC_GET_CGU_IN_CFG_TYPE_EXTERNAL		BIT(5)
-+#define ICE_AQC_GET_CGU_IN_CFG_TYPE_PHY			BIT(6)
-+	u8 flags1;
-+#define ICE_AQC_GET_CGU_IN_CFG_FLG1_PHASE_DELAY_SUPP	BIT(0)
-+#define ICE_AQC_GET_CGU_IN_CFG_FLG1_1PPS_SUPP		BIT(2)
-+#define ICE_AQC_GET_CGU_IN_CFG_FLG1_10MHZ_SUPP		BIT(3)
-+#define ICE_AQC_GET_CGU_IN_CFG_FLG1_ANYFREQ		BIT(7)
-+	__le32 freq;
-+	__le32 phase_delay;
-+	u8 flags2;
-+#define ICE_AQC_GET_CGU_IN_CFG_FLG2_INPUT_EN		BIT(5)
-+#define ICE_AQC_GET_CGU_IN_CFG_FLG2_ESYNC_EN		BIT(6)
-+	u8 rsvd[1];
-+	__le16 node_handle;
-+};
++#define ICE_CGU_STATE_ACQ_ERR_THRESHOLD	50
++#define ICE_DPLL_LOCK_TRIES		1000
++#define ICE_DPLL_PIN_IDX_INVALID	0xff
 +
-+/* Set CGU output config (direct 0x0C64) */
-+struct ice_aqc_set_cgu_output_config {
-+	u8 output_idx;
-+	u8 flags;
-+#define ICE_AQC_SET_CGU_OUT_CFG_OUT_EN		BIT(0)
-+#define ICE_AQC_SET_CGU_OUT_CFG_ESYNC_EN	BIT(1)
-+#define ICE_AQC_SET_CGU_OUT_CFG_UPDATE_FREQ     BIT(2)
-+#define ICE_AQC_SET_CGU_OUT_CFG_UPDATE_PHASE    BIT(3)
-+#define ICE_AQC_SET_CGU_OUT_CFG_UPDATE_SRC_SEL  BIT(4)
-+	u8 src_sel;
-+#define ICE_AQC_SET_CGU_OUT_CFG_DPLL_SRC_SEL    ICE_M(0x1F, 0)
-+	u8 rsvd;
-+	__le32 freq;
-+	__le32 phase_delay;
-+	u8 rsvd2[2];
-+	__le16 node_handle;
-+};
-+
-+/* Get CGU output config (direct 0x0C65) */
-+struct ice_aqc_get_cgu_output_config {
-+	u8 output_idx;
-+	u8 flags;
-+#define ICE_AQC_GET_CGU_OUT_CFG_OUT_EN		BIT(0)
-+#define ICE_AQC_GET_CGU_OUT_CFG_ESYNC_EN	BIT(1)
-+#define ICE_AQC_GET_CGU_OUT_CFG_ESYNC_ABILITY	BIT(2)
-+	u8 src_sel;
-+#define ICE_AQC_GET_CGU_OUT_CFG_DPLL_SRC_SEL_SHIFT	0
-+#define ICE_AQC_GET_CGU_OUT_CFG_DPLL_SRC_SEL \
-+	ICE_M(0x1F, ICE_AQC_GET_CGU_OUT_CFG_DPLL_SRC_SEL_SHIFT)
-+#define ICE_AQC_GET_CGU_OUT_CFG_DPLL_MODE_SHIFT		5
-+#define ICE_AQC_GET_CGU_OUT_CFG_DPLL_MODE \
-+	ICE_M(0x7, ICE_AQC_GET_CGU_OUT_CFG_DPLL_MODE_SHIFT)
-+	u8 rsvd;
-+	__le32 freq;
-+	__le32 src_freq;
-+	u8 rsvd2[2];
-+	__le16 node_handle;
-+};
-+
-+/* Get CGU DPLL status (direct 0x0C66) */
-+struct ice_aqc_get_cgu_dpll_status {
-+	u8 dpll_num;
-+	u8 ref_state;
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_LOS		BIT(0)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_SCM		BIT(1)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_CFM		BIT(2)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_GST		BIT(3)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_PFM		BIT(4)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_FAST_LOCK_EN	BIT(5)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_REF_SW_ESYNC	BIT(6)
-+	__le16 dpll_state;
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_LOCK		BIT(0)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_HO		BIT(1)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_HO_READY	BIT(2)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_FLHIT		BIT(5)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_PSLHIT	BIT(7)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SHIFT	8
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SEL	\
-+	ICE_M(0x1F, ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SHIFT)
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_MODE_SHIFT	13
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_STATE_MODE \
-+	ICE_M(0x7, ICE_AQC_GET_CGU_DPLL_STATUS_STATE_MODE_SHIFT)
-+	__le32 phase_offset_h;
-+	__le32 phase_offset_l;
-+	u8 eec_mode;
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_EEC_MODE_1		0xA
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_EEC_MODE_2		0xB
-+#define ICE_AQC_GET_CGU_DPLL_STATUS_EEC_MODE_UNKNOWN	0xF
-+	u8 rsvd[1];
-+	__le16 node_handle;
-+};
-+
-+/* Set CGU DPLL config (direct 0x0C67) */
-+struct ice_aqc_set_cgu_dpll_config {
-+	u8 dpll_num;
-+	u8 ref_state;
-+#define ICE_AQC_SET_CGU_DPLL_CONFIG_REF_SW_LOS		BIT(0)
-+#define ICE_AQC_SET_CGU_DPLL_CONFIG_REF_SW_SCM		BIT(1)
-+#define ICE_AQC_SET_CGU_DPLL_CONFIG_REF_SW_CFM		BIT(2)
-+#define ICE_AQC_SET_CGU_DPLL_CONFIG_REF_SW_GST		BIT(3)
-+#define ICE_AQC_SET_CGU_DPLL_CONFIG_REF_SW_PFM		BIT(4)
-+#define ICE_AQC_SET_CGU_DPLL_CONFIG_REF_FLOCK_EN	BIT(5)
-+#define ICE_AQC_SET_CGU_DPLL_CONFIG_REF_SW_ESYNC	BIT(6)
-+	u8 rsvd;
-+	u8 config;
-+#define ICE_AQC_SET_CGU_DPLL_CONFIG_CLK_REF_SEL		ICE_M(0x1F, 0)
-+#define ICE_AQC_SET_CGU_DPLL_CONFIG_MODE		ICE_M(0x7, 5)
-+	u8 rsvd2[8];
-+	u8 eec_mode;
-+	u8 rsvd3[1];
-+	__le16 node_handle;
-+};
-+
-+/* Set CGU reference priority (direct 0x0C68) */
-+struct ice_aqc_set_cgu_ref_prio {
-+	u8 dpll_num;
-+	u8 ref_idx;
-+	u8 ref_priority;
-+	u8 rsvd[11];
-+	__le16 node_handle;
-+};
-+
-+/* Get CGU reference priority (direct 0x0C69) */
-+struct ice_aqc_get_cgu_ref_prio {
-+	u8 dpll_num;
-+	u8 ref_idx;
-+	u8 ref_priority; /* Valid only in response */
-+	u8 rsvd[13];
-+};
-+
-+/* Get CGU info (direct 0x0C6A) */
-+struct ice_aqc_get_cgu_info {
-+	__le32 cgu_id;
-+	__le32 cgu_cfg_ver;
-+	__le32 cgu_fw_ver;
-+	u8 node_part_num;
-+	u8 dev_rev;
-+	__le16 node_handle;
-+};
-+
- /* Driver Shared Parameters (direct, 0x0C90) */
- struct ice_aqc_driver_shared_params {
- 	u8 set_or_get_op;
-@@ -2148,6 +2361,8 @@ struct ice_aq_desc {
- 		struct ice_aqc_get_phy_caps get_phy;
- 		struct ice_aqc_set_phy_cfg set_phy;
- 		struct ice_aqc_restart_an restart_an;
-+		struct ice_aqc_set_phy_rec_clk_out set_phy_rec_clk_out;
-+		struct ice_aqc_get_phy_rec_clk_out get_phy_rec_clk_out;
- 		struct ice_aqc_gpio read_write_gpio;
- 		struct ice_aqc_sff_eeprom read_write_sff_param;
- 		struct ice_aqc_set_port_id_led set_port_id_led;
-@@ -2187,6 +2402,15 @@ struct ice_aq_desc {
- 		struct ice_aqc_fw_logging fw_logging;
- 		struct ice_aqc_get_clear_fw_log get_clear_fw_log;
- 		struct ice_aqc_download_pkg download_pkg;
-+		struct ice_aqc_set_cgu_input_config set_cgu_input_config;
-+		struct ice_aqc_get_cgu_input_config get_cgu_input_config;
-+		struct ice_aqc_set_cgu_output_config set_cgu_output_config;
-+		struct ice_aqc_get_cgu_output_config get_cgu_output_config;
-+		struct ice_aqc_get_cgu_dpll_status get_cgu_dpll_status;
-+		struct ice_aqc_set_cgu_dpll_config set_cgu_dpll_config;
-+		struct ice_aqc_set_cgu_ref_prio set_cgu_ref_prio;
-+		struct ice_aqc_get_cgu_ref_prio get_cgu_ref_prio;
-+		struct ice_aqc_get_cgu_info get_cgu_info;
- 		struct ice_aqc_driver_shared_params drv_shared_params;
- 		struct ice_aqc_set_mac_lb set_mac_lb;
- 		struct ice_aqc_alloc_free_res_cmd sw_res_ctrl;
-@@ -2310,6 +2534,8 @@ enum ice_adminq_opc {
- 	ice_aqc_opc_get_link_status			= 0x0607,
- 	ice_aqc_opc_set_event_mask			= 0x0613,
- 	ice_aqc_opc_set_mac_lb				= 0x0620,
-+	ice_aqc_opc_set_phy_rec_clk_out			= 0x0630,
-+	ice_aqc_opc_get_phy_rec_clk_out			= 0x0631,
- 	ice_aqc_opc_get_link_topo			= 0x06E0,
- 	ice_aqc_opc_read_i2c				= 0x06E2,
- 	ice_aqc_opc_write_i2c				= 0x06E3,
-@@ -2364,6 +2590,18 @@ enum ice_adminq_opc {
- 	ice_aqc_opc_update_pkg				= 0x0C42,
- 	ice_aqc_opc_get_pkg_info_list			= 0x0C43,
- 
-+	/* 1588/SyncE commands/events */
-+	ice_aqc_opc_get_cgu_abilities			= 0x0C61,
-+	ice_aqc_opc_set_cgu_input_config		= 0x0C62,
-+	ice_aqc_opc_get_cgu_input_config		= 0x0C63,
-+	ice_aqc_opc_set_cgu_output_config		= 0x0C64,
-+	ice_aqc_opc_get_cgu_output_config		= 0x0C65,
-+	ice_aqc_opc_get_cgu_dpll_status			= 0x0C66,
-+	ice_aqc_opc_set_cgu_dpll_config			= 0x0C67,
-+	ice_aqc_opc_set_cgu_ref_prio			= 0x0C68,
-+	ice_aqc_opc_get_cgu_ref_prio			= 0x0C69,
-+	ice_aqc_opc_get_cgu_info			= 0x0C6A,
-+
- 	ice_aqc_opc_driver_shared_params		= 0x0C90,
- 
- 	/* Standalone Commands/Events */
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 0157f6e98d3e..35e00133575c 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -434,6 +434,83 @@ ice_aq_get_link_topo_handle(struct ice_port_info *pi, u8 node_type,
- 	return ice_aq_send_cmd(pi->hw, &desc, NULL, 0, cd);
- }
- 
 +/**
-+ * ice_aq_get_netlist_node
-+ * @hw: pointer to the hw struct
-+ * @cmd: get_link_topo AQ structure
-+ * @node_part_number: output node part number if node found
-+ * @node_handle: output node handle parameter if node found
-+ *
-+ * Get netlist node handle.
++ * dpll_lock_status - map ice cgu states into dpll's subsystem lock status
 + */
-+int
-+ice_aq_get_netlist_node(struct ice_hw *hw, struct ice_aqc_get_link_topo *cmd,
-+			u8 *node_part_number, u16 *node_handle)
++static const enum dpll_lock_status
++ice_dpll_status[__DPLL_LOCK_STATUS_MAX] = {
++	[ICE_CGU_STATE_INVALID] = DPLL_LOCK_STATUS_UNSPEC,
++	[ICE_CGU_STATE_FREERUN] = DPLL_LOCK_STATUS_UNLOCKED,
++	[ICE_CGU_STATE_LOCKED] = DPLL_LOCK_STATUS_CALIBRATING,
++	[ICE_CGU_STATE_LOCKED_HO_ACQ] = DPLL_LOCK_STATUS_LOCKED,
++	[ICE_CGU_STATE_HOLDOVER] = DPLL_LOCK_STATUS_HOLDOVER,
++};
++
++/**
++ * ice_dpll_pin_type - enumerate ice pin types
++ */
++enum ice_dpll_pin_type {
++	ICE_DPLL_PIN_INVALID = 0,
++	ICE_DPLL_PIN_TYPE_SOURCE,
++	ICE_DPLL_PIN_TYPE_OUTPUT,
++	ICE_DPLL_PIN_TYPE_RCLK_SOURCE,
++};
++
++/**
++ * pin_type_name - string names of ice pin types
++ */
++static const char * const pin_type_name[] = {
++	[ICE_DPLL_PIN_TYPE_SOURCE] = "source",
++	[ICE_DPLL_PIN_TYPE_OUTPUT] = "output",
++	[ICE_DPLL_PIN_TYPE_RCLK_SOURCE] = "rclk-source",
++};
++
++/**
++ * ice_find_pin_idx - find ice_dpll_pin index on a pf
++ * @pf: private board structure
++ * @pin: kernel's dpll_pin pointer to be searched for
++ * @pin_type: type of pins to be searched for
++ *
++ * Find and return internal ice pin index of a searched dpll subsystem
++ * pin pointer.
++ *
++ * Return:
++ * * valid index for a given pin & pin type found on pf internal dpll struct
++ * * ICE_DPLL_PIN_IDX_INVALID - if pin was not found.
++ */
++static u32
++ice_find_pin_idx(struct ice_pf *pf, const struct dpll_pin *pin,
++		 enum ice_dpll_pin_type pin_type)
++
 +{
-+	struct ice_aq_desc desc;
++	struct ice_dpll_pin *pins;
++	int pin_num, i;
 +
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_link_topo);
-+	desc.params.get_link_topo = *cmd;
++	if (!pin || !pf)
++		return ICE_DPLL_PIN_IDX_INVALID;
 +
-+	if (ice_aq_send_cmd(hw, &desc, NULL, 0, NULL))
-+		return -EINTR;
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE) {
++		pins = pf->dplls.inputs;
++		pin_num = pf->dplls.num_inputs;
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT) {
++		pins = pf->dplls.outputs;
++		pin_num = pf->dplls.num_outputs;
++	} else {
++		return ICE_DPLL_PIN_IDX_INVALID;
++	}
 +
-+	if (node_handle)
-+		*node_handle =
-+			le16_to_cpu(desc.params.get_link_topo.addr.handle);
-+	if (node_part_number)
-+		*node_part_number = desc.params.get_link_topo.node_part_num;
++	for (i = 0; i < pin_num; i++)
++		if (pin == pins[i].pin)
++			return i;
 +
-+	return 0;
++	return ICE_DPLL_PIN_IDX_INVALID;
 +}
 +
-+#define MAX_NETLIST_SIZE	10
++/**
++ * ice_dpll_cb_lock - lock dplls mutex in callback context
++ * @pf: private board structure
++ *
++ * Lock the mutex from the callback operations invoked by dpll subsystem.
++ * Prevent dead lock caused by `rmmod ice` when dpll callbacks are under stress
++ * tests.
++ *
++ * Return:
++ * 0 - if lock acquired
++ * negative - lock not acquired or dpll was deinitialized
++ */
++static int ice_dpll_cb_lock(struct ice_pf *pf)
++{
++	int i;
++
++	for (i = 0; i < ICE_DPLL_LOCK_TRIES; i++) {
++		if (mutex_trylock(&pf->dplls.lock))
++			return 0;
++		usleep_range(100, 150);
++		if (!test_bit(ICE_FLAG_DPLL, pf->flags))
++			return -EFAULT;
++	}
++
++	return -EBUSY;
++}
 +
 +/**
-+ * ice_find_netlist_node
-+ * @hw: pointer to the hw struct
-+ * @node_type_ctx: type of netlist node to look for
-+ * @node_part_number: node part number to look for
-+ * @node_handle: output parameter if node found - optional
++ * ice_dpll_cb_unlock - unlock dplls mutex in callback context
++ * @pf: private board structure
 + *
-+ * Find and return the node handle for a given node type and part number in the
-+ * netlist. When found ICE_SUCCESS is returned, ICE_ERR_DOES_NOT_EXIST
-+ * otherwise. If node_handle provided, it would be set to found node handle.
++ * Unlock the mutex from the callback operations invoked by dpll subsystem.
++ */
++static void ice_dpll_cb_unlock(struct ice_pf *pf)
++{
++	mutex_unlock(&pf->dplls.lock);
++}
++
++/**
++ * ice_find_pin - find ice_dpll_pin on a pf
++ * @pf: private board structure
++ * @pin: kernel's dpll_pin pointer to be searched for
++ * @pin_type: type of pins to be searched for
++ *
++ * Find and return internal ice pin info pointer holding data of given dpll
++ * subsystem pin pointer.
++ *
++ * Return:
++ * * valid 'struct ice_dpll_pin'-type pointer - if given 'pin' pointer was
++ * found in pf internal pin data.
++ * * NULL - if pin was not found.
++ */
++static struct ice_dpll_pin
++*ice_find_pin(struct ice_pf *pf, const struct dpll_pin *pin,
++	      enum ice_dpll_pin_type pin_type)
++
++{
++	struct ice_dpll_pin *pins;
++	int pin_num, i;
++
++	if (!pin || !pf)
++		return NULL;
++
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE) {
++		pins = pf->dplls.inputs;
++		pin_num = pf->dplls.num_inputs;
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT) {
++		pins = pf->dplls.outputs;
++		pin_num = pf->dplls.num_outputs;
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_RCLK_SOURCE) {
++		if (pin == pf->dplls.rclk.pin)
++			return &pf->dplls.rclk;
++	} else {
++		return NULL;
++	}
++
++	for (i = 0; i < pin_num; i++)
++		if (pin == pins[i].pin)
++			return &pins[i];
++
++	return NULL;
++}
++
++/**
++ * ice_dpll_pin_freq_set - set pin's frequency
++ * @pf: private board structure
++ * @pin: pointer to a pin
++ * @pin_type: type of pin being configured
++ * @freq: frequency to be set
++ *
++ * Set requested frequency on a pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - error on AQ or wrong pin type given
++ */
++static int
++ice_dpll_pin_freq_set(struct ice_pf *pf, struct ice_dpll_pin *pin,
++		      const enum ice_dpll_pin_type pin_type, const u32 freq)
++{
++	u8 flags;
++	int ret;
++
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE) {
++		flags = ICE_AQC_SET_CGU_IN_CFG_FLG1_UPDATE_FREQ;
++		ret = ice_aq_set_input_pin_cfg(&pf->hw, pin->idx, flags,
++					       pin->flags[0], freq, 0);
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT) {
++		flags = pin->flags[0] | ICE_AQC_SET_CGU_OUT_CFG_UPDATE_FREQ;
++		ret = ice_aq_set_output_pin_cfg(&pf->hw, pin->idx, flags,
++						0, freq, 0);
++	} else {
++		ret = -EINVAL;
++	}
++
++	if (ret) {
++		dev_dbg(ice_pf_to_dev(pf),
++			"err:%d %s failed to set pin freq:%u on pin:%u\n",
++			ret, ice_aq_str(pf->hw.adminq.sq_last_status),
++			freq, pin->idx);
++	} else {
++		pin->freq = freq;
++	}
++
++	return ret;
++}
++
++/**
++ * ice_dpll_frequency_set - wrapper for pin callback for set frequency
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: pointer to dpll
++ * @frequency: frequency to be set
++ * @extack: error reporting
++ * @pin_type: type of pin being configured
++ *
++ * Wraps internal set frequency command on a pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - error pin not found or couldn't set in hw
++ */
++static int
++ice_dpll_frequency_set(const struct dpll_pin *pin, void *pin_priv,
++		       const struct dpll_device *dpll,
++		       const u32 frequency,
++		       struct netlink_ext_ack *extack,
++		       const enum ice_dpll_pin_type pin_type)
++{
++	struct ice_pf *pf = pin_priv;
++	struct ice_dpll_pin *p;
++	int ret = -EINVAL;
++
++	if (!pf)
++		return ret;
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	p = ice_find_pin(pf, pin, pin_type);
++	if (!p) {
++		NL_SET_ERR_MSG(extack, "pin not found");
++		goto unlock;
++	}
++
++	ret = ice_dpll_pin_freq_set(pf, p, pin_type, frequency);
++	if (ret)
++		NL_SET_ERR_MSG_FMT(extack, "freq not set, err:%d", ret);
++unlock:
++	ice_dpll_cb_unlock(pf);
++
++	return ret;
++}
++
++/**
++ * ice_dpll_source_frequency_set - source pin callback for set frequency
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: pointer to dpll
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @frequency: frequency to be set
++ * @extack: error reporting
++ *
++ * Wraps internal set frequency command on a pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - error pin not found or couldn't set in hw
++ */
++static int
++ice_dpll_source_frequency_set(const struct dpll_pin *pin, void *pin_priv,
++			      const struct dpll_device *dpll, void *dpll_priv,
++			      u64 frequency, struct netlink_ext_ack *extack)
++{
++	return ice_dpll_frequency_set(pin, pin_priv, dpll, (u32)frequency, extack,
++				      ICE_DPLL_PIN_TYPE_SOURCE);
++}
++
++/**
++ * ice_dpll_output_frequency_set - output pin callback for set frequency
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: pointer to dpll
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @frequency: frequency to be set
++ * @extack: error reporting
++ *
++ * Wraps internal set frequency command on a pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - error pin not found or couldn't set in hw
++ */
++static int
++ice_dpll_output_frequency_set(const struct dpll_pin *pin, void *pin_priv,
++			      const struct dpll_device *dpll, void *dpll_priv,
++			      u64 frequency, struct netlink_ext_ack *extack)
++{
++	return ice_dpll_frequency_set(pin, pin_priv, dpll, frequency, extack,
++				      ICE_DPLL_PIN_TYPE_OUTPUT);
++}
++
++/**
++ * ice_dpll_frequency_get - wrapper for pin callback for get frequency
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: pointer to dpll
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @frequency: on success holds pin's frequency
++ * @extack: error reporting
++ * @pin_type: type of pin being configured
++ *
++ * Wraps internal get frequency command of a pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - error pin not found or couldn't get from hw
++ */
++static int
++ice_dpll_frequency_get(const struct dpll_pin *pin, void *pin_priv,
++		       const struct dpll_device *dpll, u64 *frequency,
++		       struct netlink_ext_ack *extack,
++		       const enum ice_dpll_pin_type pin_type)
++{
++	struct ice_pf *pf = pin_priv;
++	struct ice_dpll_pin *p;
++	int ret = -EINVAL;
++
++	if (!pf)
++		return ret;
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	p = ice_find_pin(pf, pin, pin_type);
++	if (!p) {
++		NL_SET_ERR_MSG(extack, "pin not found");
++		goto unlock;
++	}
++	*frequency = (u64)(p->freq);
++	ret = 0;
++unlock:
++	ice_dpll_cb_unlock(pf);
++
++	return ret;
++}
++
++/**
++ * ice_dpll_source_frequency_get - source pin callback for get frequency
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: pointer to dpll
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @frequency: on success holds pin's frequency
++ * @extack: error reporting
++ *
++ * Wraps internal get frequency command of a source pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - error pin not found or couldn't get from hw
++ */
++static int
++ice_dpll_source_frequency_get(const struct dpll_pin *pin, void *pin_priv,
++			      const struct dpll_device *dpll, void *dpll_priv,
++			      u64 *frequency, struct netlink_ext_ack *extack)
++{
++	return ice_dpll_frequency_get(pin, pin_priv, dpll, frequency, extack,
++				      ICE_DPLL_PIN_TYPE_SOURCE);
++}
++
++/**
++ * ice_dpll_output_frequency_get - output pin callback for get frequency
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: pointer to dpll
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @frequency: on success holds pin's frequency
++ * @extack: error reporting
++ *
++ * Wraps internal get frequency command of a pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - error pin not found or couldn't get from hw
++ */
++static int
++ice_dpll_output_frequency_get(const struct dpll_pin *pin, void *pin_priv,
++			      const struct dpll_device *dpll, void *dpll_priv,
++			      u64 *frequency, struct netlink_ext_ack *extack)
++{
++	return ice_dpll_frequency_get(pin, pin_priv, dpll, frequency, extack,
++				      ICE_DPLL_PIN_TYPE_OUTPUT);
++}
++
++/**
++ * ice_dpll_pin_enable - enable a pin on dplls
++ * @hw: board private hw structure
++ * @pin: pointer to a pin
++ * @pin_type: type of pin being enabled
++ *
++ * Enable a pin on both dplls. Store current state in pin->flags.
++ *
++ * Return:
++ * * 0 - OK
++ * * negative - error
++ */
++static int
++ice_dpll_pin_enable(struct ice_hw *hw, struct ice_dpll_pin *pin,
++		    const enum ice_dpll_pin_type pin_type)
++{
++	u8 flags = pin->flags[0];
++	int ret;
++
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE) {
++		flags |= ICE_AQC_GET_CGU_IN_CFG_FLG2_INPUT_EN;
++		ret = ice_aq_set_input_pin_cfg(hw, pin->idx, 0, flags, 0, 0);
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT) {
++		flags |= ICE_AQC_SET_CGU_OUT_CFG_OUT_EN;
++		ret = ice_aq_set_output_pin_cfg(hw, pin->idx, flags, 0, 0, 0);
++	}
++	if (ret)
++		dev_dbg(ice_pf_to_dev((struct ice_pf *)(hw->back)),
++			"err:%d %s failed to enable %s pin:%u\n",
++			ret, ice_aq_str(hw->adminq.sq_last_status),
++			pin_type_name[pin_type], pin->idx);
++	else
++		pin->flags[0] = flags;
++
++	return ret;
++}
++
++/**
++ * ice_dpll_pin_disable - disable a pin on dplls
++ * @hw: board private hw structure
++ * @pin: pointer to a pin
++ * @pin_type: type of pin being disabled
++ *
++ * Disable a pin on both dplls. Store current state in pin->flags.
++ *
++ * Return:
++ * * 0 - OK
++ * * negative - error
++ */
++static int
++ice_dpll_pin_disable(struct ice_hw *hw, struct ice_dpll_pin *pin,
++		     enum ice_dpll_pin_type pin_type)
++{
++	u8 flags = pin->flags[0];
++	int ret;
++
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE) {
++		flags &= ~(ICE_AQC_GET_CGU_IN_CFG_FLG2_INPUT_EN);
++		ret = ice_aq_set_input_pin_cfg(hw, pin->idx, 0, flags, 0, 0);
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT) {
++		flags &= ~(ICE_AQC_SET_CGU_OUT_CFG_OUT_EN);
++		ret = ice_aq_set_output_pin_cfg(hw, pin->idx, flags, 0, 0, 0);
++	}
++	if (ret)
++		dev_dbg(ice_pf_to_dev((struct ice_pf *)(hw->back)),
++			"err:%d %s failed to disable %s pin:%u\n",
++			ret, ice_aq_str(hw->adminq.sq_last_status),
++			pin_type_name[pin_type], pin->idx);
++	else
++		pin->flags[0] = flags;
++
++	return ret;
++}
++
++/**
++ * ice_dpll_pin_state_update - update pin's state
++ * @hw: private board struct
++ * @pin: structure with pin attributes to be updated
++ * @pin_type: type of pin being updated
++ *
++ * Determine pin current state and frequency, then update struct
++ * holding the pin info. For source pin states are separated for each
++ * dpll, for rclk pins states are separated for each parent.
++ *
++ * Return:
++ * * 0 - OK
++ * * negative - error
 + */
 +int
-+ice_find_netlist_node(struct ice_hw *hw, u8 node_type_ctx, u8 node_part_number,
-+		      u16 *node_handle)
++ice_dpll_pin_state_update(struct ice_pf *pf, struct ice_dpll_pin *pin,
++			  const enum ice_dpll_pin_type pin_type)
 +{
-+	struct ice_aqc_get_link_topo cmd;
-+	u8 rec_node_part_number;
-+	u16 rec_node_handle;
-+	u8 idx;
++	int ret;
 +
-+	for (idx = 0; idx < MAX_NETLIST_SIZE; idx++) {
-+		int status;
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE) {
++		ret = ice_aq_get_input_pin_cfg(&pf->hw, pin->idx, NULL, NULL,
++					       NULL, &pin->flags[0],
++					       &pin->freq, NULL);
++		if (!!(ICE_AQC_GET_CGU_IN_CFG_FLG2_INPUT_EN & pin->flags[0])) {
++			if (pin->pin) {
++				pin->state[pf->dplls.eec.dpll_idx] =
++					pin->pin == pf->dplls.eec.active_source ?
++					DPLL_PIN_STATE_CONNECTED :
++					DPLL_PIN_STATE_SELECTABLE;
++				pin->state[pf->dplls.pps.dpll_idx] =
++					pin->pin == pf->dplls.pps.active_source ?
++					DPLL_PIN_STATE_CONNECTED :
++					DPLL_PIN_STATE_SELECTABLE;
++			} else {
++				pin->state[pf->dplls.eec.dpll_idx] =
++					DPLL_PIN_STATE_SELECTABLE;
++				pin->state[pf->dplls.pps.dpll_idx] =
++					DPLL_PIN_STATE_SELECTABLE;
++			}
++		} else {
++			pin->state[pf->dplls.eec.dpll_idx] =
++				DPLL_PIN_STATE_DISCONNECTED;
++			pin->state[pf->dplls.pps.dpll_idx] =
++				DPLL_PIN_STATE_DISCONNECTED;
++		}
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT) {
++		ret = ice_aq_get_output_pin_cfg(&pf->hw, pin->idx,
++						&pin->flags[0], NULL,
++						&pin->freq, NULL);
++		if (!!(ICE_AQC_SET_CGU_OUT_CFG_OUT_EN & pin->flags[0]))
++			pin->state[0] = DPLL_PIN_STATE_CONNECTED;
++		else
++			pin->state[0] = DPLL_PIN_STATE_DISCONNECTED;
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_RCLK_SOURCE) {
++		u8 parent, port_num = ICE_AQC_SET_PHY_REC_CLK_OUT_CURR_PORT;
 +
-+		memset(&cmd, 0, sizeof(cmd));
-+
-+		cmd.addr.topo_params.node_type_ctx =
-+			(node_type_ctx << ICE_AQC_LINK_TOPO_NODE_TYPE_S);
-+		cmd.addr.topo_params.index = idx;
-+
-+		status = ice_aq_get_netlist_node(hw, &cmd,
-+						 &rec_node_part_number,
-+						 &rec_node_handle);
-+		if (status)
-+			return status;
-+
-+		if (rec_node_part_number == node_part_number) {
-+			if (node_handle)
-+				*node_handle = rec_node_handle;
-+			return 0;
++		for (parent = 0; parent < pf->dplls.rclk.num_parents;
++		     parent++) {
++			ret = ice_aq_get_phy_rec_clk_out(&pf->hw, parent,
++							 &port_num,
++							 &pin->flags[parent],
++							 &pin->freq);
++			if (ret)
++				return ret;
++			if (!!(ICE_AQC_GET_PHY_REC_CLK_OUT_OUT_EN &
++			       pin->flags[parent]))
++				pin->state[parent] = DPLL_PIN_STATE_CONNECTED;
++			else
++				pin->state[parent] =
++					DPLL_PIN_STATE_DISCONNECTED;
 +		}
 +	}
 +
-+	return -ENOTBLK;
-+}
-+
- /**
-  * ice_is_media_cage_present
-  * @pi: port information structure
-@@ -4917,6 +4994,396 @@ ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
- 	return status;
- }
- 
-+/**
-+ * ice_aq_get_cgu_abilities
-+ * @hw: pointer to the HW struct
-+ * @abilities: CGU abilities
-+ *
-+ * Get CGU abilities (0x0C61)
-+ */
-+int
-+ice_aq_get_cgu_abilities(struct ice_hw *hw,
-+			 struct ice_aqc_get_cgu_abilities *abilities)
-+{
-+	struct ice_aq_desc desc;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_cgu_abilities);
-+	return ice_aq_send_cmd(hw, &desc, abilities, sizeof(*abilities), NULL);
-+}
-+
-+/**
-+ * ice_aq_set_input_pin_cfg
-+ * @hw: pointer to the HW struct
-+ * @input_idx: Input index
-+ * @flags1: Input flags
-+ * @flags2: Input flags
-+ * @freq: Frequency in Hz
-+ * @phase_delay: Delay in ps
-+ *
-+ * Set CGU input config (0x0C62)
-+ */
-+int
-+ice_aq_set_input_pin_cfg(struct ice_hw *hw, u8 input_idx, u8 flags1, u8 flags2,
-+			 u32 freq, s32 phase_delay)
-+{
-+	struct ice_aqc_set_cgu_input_config *cmd;
-+	struct ice_aq_desc desc;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_cgu_input_config);
-+	cmd = &desc.params.set_cgu_input_config;
-+	cmd->input_idx = input_idx;
-+	cmd->flags1 = flags1;
-+	cmd->flags2 = flags2;
-+	cmd->freq = cpu_to_le32(freq);
-+	cmd->phase_delay = cpu_to_le32(phase_delay);
-+
-+	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+}
-+
-+/**
-+ * ice_aq_get_input_pin_cfg
-+ * @hw: pointer to the HW struct
-+ * @input_idx: Input index
-+ * @status: Pin status
-+ * @type: Pin type
-+ * @flags1: Input flags
-+ * @flags2: Input flags
-+ * @freq: Frequency in Hz
-+ * @phase_delay: Delay in ps
-+ *
-+ * Get CGU input config (0x0C63)
-+ */
-+int
-+ice_aq_get_input_pin_cfg(struct ice_hw *hw, u8 input_idx, u8 *status, u8 *type,
-+			 u8 *flags1, u8 *flags2, u32 *freq, s32 *phase_delay)
-+{
-+	struct ice_aqc_get_cgu_input_config *cmd;
-+	struct ice_aq_desc desc;
-+	int ret;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_cgu_input_config);
-+	cmd = &desc.params.get_cgu_input_config;
-+	cmd->input_idx = input_idx;
-+
-+	ret = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (!ret) {
-+		if (status)
-+			*status = cmd->status;
-+		if (type)
-+			*type = cmd->type;
-+		if (flags1)
-+			*flags1 = cmd->flags1;
-+		if (flags2)
-+			*flags2 = cmd->flags2;
-+		if (freq)
-+			*freq = le32_to_cpu(cmd->freq);
-+		if (phase_delay)
-+			*phase_delay = le32_to_cpu(cmd->phase_delay);
-+	}
-+
 +	return ret;
 +}
 +
 +/**
-+ * ice_aq_set_output_pin_cfg
-+ * @hw: pointer to the HW struct
-+ * @output_idx: Output index
-+ * @flags: Output flags
-+ * @src_sel: Index of DPLL block
-+ * @freq: Output frequency
-+ * @phase_delay: Output phase compensation
++ * ice_find_dpll - find ice_dpll on a pf
++ * @pf: private board structure
++ * @dpll: kernel's dpll_device pointer to be searched
 + *
-+ * Set CGU output config (0x0C64)
-+ */
-+int
-+ice_aq_set_output_pin_cfg(struct ice_hw *hw, u8 output_idx, u8 flags,
-+			  u8 src_sel, u32 freq, s32 phase_delay)
-+{
-+	struct ice_aqc_set_cgu_output_config *cmd;
-+	struct ice_aq_desc desc;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_cgu_output_config);
-+	cmd = &desc.params.set_cgu_output_config;
-+	cmd->output_idx = output_idx;
-+	cmd->flags = flags;
-+	cmd->src_sel = src_sel;
-+	cmd->freq = cpu_to_le32(freq);
-+	cmd->phase_delay = cpu_to_le32(phase_delay);
-+
-+	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+}
-+
-+/**
-+ * ice_aq_get_output_pin_cfg
-+ * @hw: pointer to the HW struct
-+ * @output_idx: Output index
-+ * @flags: Output flags
-+ * @src_sel: Internal DPLL source
-+ * @freq: Output frequency
-+ * @src_freq: Source frequency
-+ *
-+ * Get CGU output config (0x0C65)
-+ */
-+int
-+ice_aq_get_output_pin_cfg(struct ice_hw *hw, u8 output_idx, u8 *flags,
-+			  u8 *src_sel, u32 *freq, u32 *src_freq)
-+{
-+	struct ice_aqc_get_cgu_output_config *cmd;
-+	struct ice_aq_desc desc;
-+	int ret;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_cgu_output_config);
-+	cmd = &desc.params.get_cgu_output_config;
-+	cmd->output_idx = output_idx;
-+
-+	ret = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (!ret) {
-+		if (flags)
-+			*flags = cmd->flags;
-+		if (src_sel)
-+			*src_sel = cmd->src_sel;
-+		if (freq)
-+			*freq = le32_to_cpu(cmd->freq);
-+		if (src_freq)
-+			*src_freq = le32_to_cpu(cmd->src_freq);
-+	}
-+
-+	return ret;
-+}
-+
-+/**
-+ * convert_s48_to_s64 - convert 48 bit value to 64 bit value
-+ * @signed_48: signed 64 bit variable storing signed 48 bit value
-+ *
-+ * Convert signed 48 bit value to its 64 bit representation.
-+ *
-+ * Return: signed 64 bit representation of signed 48 bit value.
-+ */
-+static inline
-+s64 convert_s48_to_s64(s64 signed_48)
-+{
-+	const s64 MASK_SIGN_BITS = GENMASK_ULL(63, 48);
-+	const s64 SIGN_BIT_47 = BIT_ULL(47);
-+
-+	return ((signed_48 & SIGN_BIT_47) ? (s64)(MASK_SIGN_BITS | signed_48)
-+		: signed_48);
-+}
-+
-+/**
-+ * ice_aq_get_cgu_dpll_status
-+ * @hw: pointer to the HW struct
-+ * @dpll_num: DPLL index
-+ * @ref_state: Reference clock state
-+ * @dpll_state: DPLL state
-+ * @phase_offset: Phase offset in ns
-+ * @eec_mode: EEC_mode
-+ *
-+ * Get CGU DPLL status (0x0C66)
-+ */
-+int
-+ice_aq_get_cgu_dpll_status(struct ice_hw *hw, u8 dpll_num, u8 *ref_state,
-+			   u16 *dpll_state, s64 *phase_offset, u8 *eec_mode)
-+{
-+	struct ice_aqc_get_cgu_dpll_status *cmd;
-+	const s64 NSEC_PER_PSEC = 1000LL;
-+	struct ice_aq_desc desc;
-+	int status;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_cgu_dpll_status);
-+	cmd = &desc.params.get_cgu_dpll_status;
-+	cmd->dpll_num = dpll_num;
-+
-+	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (!status) {
-+		*ref_state = cmd->ref_state;
-+		*dpll_state = le16_to_cpu(cmd->dpll_state);
-+		*phase_offset = le32_to_cpu(cmd->phase_offset_h);
-+		*phase_offset <<= 32;
-+		*phase_offset += le32_to_cpu(cmd->phase_offset_l);
-+		*phase_offset = convert_s48_to_s64(*phase_offset)
-+				/ NSEC_PER_PSEC;
-+		*eec_mode = cmd->eec_mode;
-+	}
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_aq_set_cgu_dpll_config
-+ * @hw: pointer to the HW struct
-+ * @dpll_num: DPLL index
-+ * @ref_state: Reference clock state
-+ * @config: DPLL config
-+ * @eec_mode: EEC mode
-+ *
-+ * Set CGU DPLL config (0x0C67)
-+ */
-+int
-+ice_aq_set_cgu_dpll_config(struct ice_hw *hw, u8 dpll_num, u8 ref_state,
-+			   u8 config, u8 eec_mode)
-+{
-+	struct ice_aqc_set_cgu_dpll_config *cmd;
-+	struct ice_aq_desc desc;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_cgu_dpll_config);
-+	cmd = &desc.params.set_cgu_dpll_config;
-+	cmd->dpll_num = dpll_num;
-+	cmd->ref_state = ref_state;
-+	cmd->config = config;
-+	cmd->eec_mode = eec_mode;
-+
-+	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+}
-+
-+/**
-+ * ice_aq_set_cgu_ref_prio
-+ * @hw: pointer to the HW struct
-+ * @dpll_num: DPLL index
-+ * @ref_idx: Reference pin index
-+ * @ref_priority: Reference input priority
-+ *
-+ * Set CGU reference priority (0x0C68)
-+ */
-+int
-+ice_aq_set_cgu_ref_prio(struct ice_hw *hw, u8 dpll_num, u8 ref_idx,
-+			u8 ref_priority)
-+{
-+	struct ice_aqc_set_cgu_ref_prio *cmd;
-+	struct ice_aq_desc desc;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_cgu_ref_prio);
-+	cmd = &desc.params.set_cgu_ref_prio;
-+	cmd->dpll_num = dpll_num;
-+	cmd->ref_idx = ref_idx;
-+	cmd->ref_priority = ref_priority;
-+
-+	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+}
-+
-+/**
-+ * ice_aq_get_cgu_ref_prio
-+ * @hw: pointer to the HW struct
-+ * @dpll_num: DPLL index
-+ * @ref_idx: Reference pin index
-+ * @ref_prio: Reference input priority
-+ *
-+ * Get CGU reference priority (0x0C69)
-+ */
-+int
-+ice_aq_get_cgu_ref_prio(struct ice_hw *hw, u8 dpll_num, u8 ref_idx,
-+			u8 *ref_prio)
-+{
-+	struct ice_aqc_get_cgu_ref_prio *cmd;
-+	struct ice_aq_desc desc;
-+	int status;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_cgu_ref_prio);
-+	cmd = &desc.params.get_cgu_ref_prio;
-+	cmd->dpll_num = dpll_num;
-+	cmd->ref_idx = ref_idx;
-+
-+	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (!status)
-+		*ref_prio = cmd->ref_priority;
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_aq_get_cgu_info
-+ * @hw: pointer to the HW struct
-+ * @cgu_id: CGU ID
-+ * @cgu_cfg_ver: CGU config version
-+ * @cgu_fw_ver: CGU firmware version
-+ *
-+ * Get CGU info (0x0C6A)
-+ */
-+int
-+ice_aq_get_cgu_info(struct ice_hw *hw, u32 *cgu_id, u32 *cgu_cfg_ver,
-+		    u32 *cgu_fw_ver)
-+{
-+	struct ice_aqc_get_cgu_info *cmd;
-+	struct ice_aq_desc desc;
-+	int status;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_cgu_info);
-+	cmd = &desc.params.get_cgu_info;
-+
-+	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (!status) {
-+		*cgu_id = le32_to_cpu(cmd->cgu_id);
-+		*cgu_cfg_ver = le32_to_cpu(cmd->cgu_cfg_ver);
-+		*cgu_fw_ver = le32_to_cpu(cmd->cgu_fw_ver);
-+	}
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_aq_set_phy_rec_clk_out - set RCLK phy out
-+ * @hw: pointer to the HW struct
-+ * @phy_output: PHY reference clock output pin
-+ * @enable: GPIO state to be applied
-+ * @freq: PHY output frequency
-+ *
-+ * Set CGU reference priority (0x0630)
-+ * Return 0 on success or negative value on failure.
-+ */
-+int
-+ice_aq_set_phy_rec_clk_out(struct ice_hw *hw, u8 phy_output, bool enable,
-+			   u32 *freq)
-+{
-+	struct ice_aqc_set_phy_rec_clk_out *cmd;
-+	struct ice_aq_desc desc;
-+	int status;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_phy_rec_clk_out);
-+	cmd = &desc.params.set_phy_rec_clk_out;
-+	cmd->phy_output = phy_output;
-+	cmd->port_num = ICE_AQC_SET_PHY_REC_CLK_OUT_CURR_PORT;
-+	cmd->flags = enable & ICE_AQC_SET_PHY_REC_CLK_OUT_OUT_EN;
-+	cmd->freq = cpu_to_le32(*freq);
-+
-+	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (!status)
-+		*freq = le32_to_cpu(cmd->freq);
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_aq_get_phy_rec_clk_out
-+ * @hw: pointer to the HW struct
-+ * @phy_output: PHY reference clock output pin
-+ * @port_num: Port number
-+ * @flags: PHY flags
-+ * @freq: PHY output frequency
-+ *
-+ * Get PHY recovered clock output (0x0631)
-+ */
-+int
-+ice_aq_get_phy_rec_clk_out(struct ice_hw *hw, u8 phy_output, u8 *port_num,
-+			   u8 *flags, u32 *freq)
-+{
-+	struct ice_aqc_get_phy_rec_clk_out *cmd;
-+	struct ice_aq_desc desc;
-+	int status;
-+
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_phy_rec_clk_out);
-+	cmd = &desc.params.get_phy_rec_clk_out;
-+	cmd->phy_output = phy_output;
-+	cmd->port_num = *port_num;
-+
-+	status = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+	if (!status) {
-+		*port_num = cmd->port_num;
-+		*flags = cmd->flags;
-+		*freq = le32_to_cpu(cmd->freq);
-+	}
-+
-+	return status;
-+}
-+
- /**
-  * ice_replay_pre_init - replay pre initialization
-  * @hw: pointer to the HW struct
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index 8ba5f935a092..99c933552cc2 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -94,6 +94,12 @@ ice_aq_get_phy_caps(struct ice_port_info *pi, bool qual_mods, u8 report_mode,
- 		    struct ice_aqc_get_phy_caps_data *caps,
- 		    struct ice_sq_cd *cd);
- int
-+ice_find_netlist_node(struct ice_hw *hw, u8 node_type_ctx, u8 node_part_number,
-+		      u16 *node_handle);
-+int
-+ice_aq_get_netlist_node(struct ice_hw *hw, struct ice_aqc_get_link_topo *cmd,
-+			u8 *node_part_number, u16 *node_handle);
-+int
- ice_aq_list_caps(struct ice_hw *hw, void *buf, u16 buf_size, u32 *cap_count,
- 		 enum ice_adminq_opc opc, struct ice_sq_cd *cd);
- int
-@@ -192,6 +198,43 @@ void ice_output_fw_log(struct ice_hw *hw, struct ice_aq_desc *desc, void *buf);
- struct ice_q_ctx *
- ice_get_lan_q_ctx(struct ice_hw *hw, u16 vsi_handle, u8 tc, u16 q_handle);
- int ice_sbq_rw_reg(struct ice_hw *hw, struct ice_sbq_msg_input *in);
-+int
-+ice_aq_get_cgu_abilities(struct ice_hw *hw,
-+			 struct ice_aqc_get_cgu_abilities *abilities);
-+int
-+ice_aq_set_input_pin_cfg(struct ice_hw *hw, u8 input_idx, u8 flags1, u8 flags2,
-+			 u32 freq, s32 phase_delay);
-+int
-+ice_aq_get_input_pin_cfg(struct ice_hw *hw, u8 input_idx, u8 *status, u8 *type,
-+			 u8 *flags1, u8 *flags2, u32 *freq, s32 *phase_delay);
-+int
-+ice_aq_set_output_pin_cfg(struct ice_hw *hw, u8 output_idx, u8 flags,
-+			  u8 src_sel, u32 freq, s32 phase_delay);
-+int
-+ice_aq_get_output_pin_cfg(struct ice_hw *hw, u8 output_idx, u8 *flags,
-+			  u8 *src_sel, u32 *freq, u32 *src_freq);
-+int
-+ice_aq_get_cgu_dpll_status(struct ice_hw *hw, u8 dpll_num, u8 *ref_state,
-+			   u16 *dpll_state, s64 *phase_offset, u8 *eec_mode);
-+int
-+ice_aq_set_cgu_dpll_config(struct ice_hw *hw, u8 dpll_num, u8 ref_state,
-+			   u8 config, u8 eec_mode);
-+int
-+ice_aq_set_cgu_ref_prio(struct ice_hw *hw, u8 dpll_num, u8 ref_idx,
-+			u8 ref_priority);
-+int
-+ice_aq_get_cgu_ref_prio(struct ice_hw *hw, u8 dpll_num, u8 ref_idx,
-+			u8 *ref_prio);
-+int
-+ice_aq_get_cgu_info(struct ice_hw *hw, u32 *cgu_id, u32 *cgu_cfg_ver,
-+		    u32 *cgu_fw_ver);
-+
-+int
-+ice_aq_set_phy_rec_clk_out(struct ice_hw *hw, u8 phy_output, bool enable,
-+			   u32 *freq);
-+int
-+ice_aq_get_phy_rec_clk_out(struct ice_hw *hw, u8 phy_output, u8 *port_num,
-+			   u8 *flags, u32 *freq);
- void
- ice_stat_update40(struct ice_hw *hw, u32 reg, bool prev_stat_loaded,
- 		  u64 *prev_stat, u64 *cur_stat);
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 450317dfcca7..f590c2a658b4 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -4325,13 +4325,22 @@ void ice_init_feature_support(struct ice_pf *pf)
- 	case ICE_DEV_ID_E810C_BACKPLANE:
- 	case ICE_DEV_ID_E810C_QSFP:
- 	case ICE_DEV_ID_E810C_SFP:
-+	case ICE_DEV_ID_E810_XXV_BACKPLANE:
-+	case ICE_DEV_ID_E810_XXV_QSFP:
-+	case ICE_DEV_ID_E810_XXV_SFP:
- 		ice_set_feature_support(pf, ICE_F_DSCP);
- 		ice_set_feature_support(pf, ICE_F_PTP_EXTTS);
--		if (ice_is_e810t(&pf->hw)) {
-+		if (ice_is_phy_rclk_present(&pf->hw))
-+			ice_set_feature_support(pf, ICE_F_PHY_RCLK);
-+		/* If we don't own the timer - don't enable other caps */
-+		if (!pf->hw.func_caps.ts_func_info.src_tmr_owned)
-+			break;
-+		if (ice_is_cgu_present(&pf->hw))
-+			ice_set_feature_support(pf, ICE_F_CGU);
-+		if (ice_is_clock_mux_present_e810t(&pf->hw))
- 			ice_set_feature_support(pf, ICE_F_SMA_CTRL);
--			if (ice_gnss_is_gps_present(&pf->hw))
--				ice_set_feature_support(pf, ICE_F_GNSS);
--		}
-+		if (ice_gnss_is_gps_present(&pf->hw))
-+			ice_set_feature_support(pf, ICE_F_GNSS);
- 		break;
- 	default:
- 		break;
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-index a38614d21ea8..e9a371fa038b 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
-@@ -3213,6 +3213,91 @@ ice_get_pca9575_handle(struct ice_hw *hw, u16 *pca9575_handle)
- 	return 0;
- }
- 
-+/**
-+ * ice_is_phy_rclk_present
-+ * @hw: pointer to the hw struct
-+ *
-+ * Check if the PHY Recovered Clock device is present in the netlist
 + * Return:
-+ * * true - device found in netlist
-+ * * false - device not found
++ * * pointer if ice_dpll with given device dpll pointer is found
++ * * NULL if not found
 + */
-+bool ice_is_phy_rclk_present(struct ice_hw *hw)
++static struct ice_dpll
++*ice_find_dpll(struct ice_pf *pf, const struct dpll_device *dpll)
 +{
-+	if (ice_find_netlist_node(hw, ICE_AQC_LINK_TOPO_NODE_TYPE_CLK_CTRL,
-+				  ICE_ACQ_GET_LINK_TOPO_NODE_NR_C827, NULL) &&
-+	    ice_find_netlist_node(hw, ICE_AQC_LINK_TOPO_NODE_TYPE_CLK_CTRL,
-+				  ICE_ACQ_GET_LINK_TOPO_NODE_NR_E822_PHY, NULL))
-+		return false;
++	if (!pf || !dpll)
++		return NULL;
 +
-+	return true;
++	return dpll == pf->dplls.eec.dpll ? &pf->dplls.eec :
++	       dpll == pf->dplls.pps.dpll ? &pf->dplls.pps : NULL;
 +}
 +
 +/**
-+ * ice_is_clock_mux_present_e810t
-+ * @hw: pointer to the hw struct
++ * ice_dpll_hw_source_prio_set - set source priority value in hardware
++ * @pf: board private structure
++ * @dpll: ice dpll pointer
++ * @pin: ice pin pointer
++ * @prio: priority value being set on a dpll
 + *
-+ * Check if the Clock Multiplexer device is present in the netlist
-+ * Return:
-+ * * true - device found in netlist
-+ * * false - device not found
-+ */
-+bool ice_is_clock_mux_present_e810t(struct ice_hw *hw)
-+{
-+	if (ice_find_netlist_node(hw, ICE_AQC_LINK_TOPO_NODE_TYPE_CLK_MUX,
-+				  ICE_ACQ_GET_LINK_TOPO_NODE_NR_GEN_CLK_MUX,
-+				  NULL))
-+		return false;
-+
-+	return true;
-+}
-+
-+/**
-+ * ice_get_pf_c827_idx - find and return the C827 index for the current pf
-+ * @hw: pointer to the hw struct
-+ * @idx: index of the found C827 PHY
++ * Internal wrapper for setting the priority in the hardware.
++ *
 + * Return:
 + * * 0 - success
 + * * negative - failure
 + */
-+int ice_get_pf_c827_idx(struct ice_hw *hw, u8 *idx)
++static int
++ice_dpll_hw_source_prio_set(struct ice_pf *pf, struct ice_dpll *dpll,
++			    struct ice_dpll_pin *pin, const u32 prio)
 +{
-+	struct ice_aqc_get_link_topo cmd;
-+	u8 node_part_number;
-+	u16 node_handle;
-+	int status;
-+	u8 ctx;
++	int ret;
 +
-+	if (hw->mac_type != ICE_MAC_E810)
-+		return -ENODEV;
-+
-+	if (hw->device_id != ICE_DEV_ID_E810C_QSFP) {
-+		*idx = C827_0;
-+		return 0;
-+	}
-+
-+	memset(&cmd, 0, sizeof(cmd));
-+
-+	ctx = ICE_AQC_LINK_TOPO_NODE_TYPE_PHY << ICE_AQC_LINK_TOPO_NODE_TYPE_S;
-+	ctx |= ICE_AQC_LINK_TOPO_NODE_CTX_PORT << ICE_AQC_LINK_TOPO_NODE_CTX_S;
-+	cmd.addr.topo_params.node_type_ctx = ctx;
-+	cmd.addr.topo_params.index = 0;
-+
-+	status = ice_aq_get_netlist_node(hw, &cmd, &node_part_number,
-+					 &node_handle);
-+	if (status || node_part_number != ICE_ACQ_GET_LINK_TOPO_NODE_NR_C827)
-+		return -ENOENT;
-+
-+	if (node_handle == E810C_QSFP_C827_0_HANDLE)
-+		*idx = C827_0;
-+	else if (node_handle == E810C_QSFP_C827_1_HANDLE)
-+		*idx = C827_1;
++	ret = ice_aq_set_cgu_ref_prio(&pf->hw, dpll->dpll_idx, pin->idx,
++				      (u8)prio);
++	if (ret)
++		dev_dbg(ice_pf_to_dev(pf),
++			"err:%d %s failed to set pin prio:%u on pin:%u\n",
++			ret, ice_aq_str(pf->hw.adminq.sq_last_status),
++			prio, pin->idx);
 +	else
-+		return -EIO;
++		dpll->input_prio[pin->idx] = prio;
++
++	return ret;
++}
++
++/**
++ * ice_dpll_lock_status_get - get dpll lock status callback
++ * @dpll: registered dpll pointer
++ * @status: on success holds dpll's lock status
++ *
++ * Dpll subsystem callback, provides dpll's lock status.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - failure
++ */
++static int ice_dpll_lock_status_get(const struct dpll_device *dpll, void *priv,
++				    enum dpll_lock_status *status,
++				    struct netlink_ext_ack *extack)
++{
++	struct ice_pf *pf = priv;
++	struct ice_dpll *d;
++
++	if (!pf)
++		return -EINVAL;
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	d = ice_find_dpll(pf, dpll);
++	if (!d)
++		return -EFAULT;
++	dev_dbg(ice_pf_to_dev(pf), "%s: dpll:%p, pf:%p\n", __func__, dpll, pf);
++	*status = ice_dpll_status[d->dpll_state];
++	ice_dpll_cb_unlock(pf);
 +
 +	return 0;
 +}
 +
- /**
-  * ice_read_sma_ctrl_e810t
-  * @hw: pointer to the hw struct
-@@ -3381,3 +3466,329 @@ int ice_get_phy_tx_tstamp_ready(struct ice_hw *hw, u8 block, u64 *tstamp_ready)
- 		return ice_get_phy_tx_tstamp_ready_e822(hw, block,
- 							tstamp_ready);
- }
++/**
++ * ice_dpll_mode_get - get dpll's working mode
++ * @dpll: registered dpll pointer
++ * @priv: private data pointer passed on dpll registration
++ * @mode: on success holds current working mode of dpll
++ * @extack: error reporting
++ *
++ * Dpll subsystem callback. Provides working mode of dpll.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - failure
++ */
++static int ice_dpll_mode_get(const struct dpll_device *dpll, void *priv,
++			     enum dpll_mode *mode,
++			     struct netlink_ext_ack *extack)
++{
++	struct ice_pf *pf = priv;
++	struct ice_dpll *d;
++
++	if (!pf)
++		return -EINVAL;
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	d = ice_find_dpll(pf, dpll);
++	ice_dpll_cb_unlock(pf);
++	if (!d)
++		return -EFAULT;
++	*mode = DPLL_MODE_AUTOMATIC;
++
++	return 0;
++}
 +
 +/**
-+ * ice_is_cgu_present
-+ * @hw: pointer to the hw struct
++ * ice_dpll_mode_get - check if dpll's working mode is supported
++ * @dpll: registered dpll pointer
++ * @priv: private data pointer passed on dpll registration
++ * @mode: mode to be checked for support
++ * @extack: error reporting
 + *
-+ * Check if the Clock Generation Unit (CGU) device is present in the netlist
++ * Dpll subsystem callback. Provides information if working mode is supported
++ * by dpll.
++ *
 + * Return:
-+ * * true - cgu is present
-+ * * false - cgu is not present
++ * * true - mode is supported
++ * * false - mode is not supported
 + */
-+bool ice_is_cgu_present(struct ice_hw *hw)
++static bool ice_dpll_mode_supported(const struct dpll_device *dpll, void *priv,
++				    const enum dpll_mode mode,
++				    struct netlink_ext_ack *extack)
 +{
-+	if (!ice_find_netlist_node(hw, ICE_AQC_LINK_TOPO_NODE_TYPE_CLK_CTRL,
-+				   ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032,
-+				   NULL)) {
-+		hw->cgu_part_number = ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032;
++	struct ice_pf *pf = priv;
++	struct ice_dpll *d;
++
++	if (!pf)
++		return false;
++
++	if (ice_dpll_cb_lock(pf))
++		return false;
++	d = ice_find_dpll(pf, dpll);
++	ice_dpll_cb_unlock(pf);
++	if (!d)
++		return false;
++	if (mode == DPLL_MODE_AUTOMATIC)
 +		return true;
-+	} else if (!ice_find_netlist_node(hw,
-+					  ICE_AQC_LINK_TOPO_NODE_TYPE_CLK_CTRL,
-+					  ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384,
-+					  NULL)) {
-+		hw->cgu_part_number = ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384;
-+		return true;
-+	}
 +
 +	return false;
 +}
 +
 +/**
-+ * ice_cgu_get_pin_desc_e823
-+ * @hw: pointer to the hw struct
-+ * @input: if request is done against input or output pin
-+ * @size: number of inputs/outputs
++ * ice_dpll_pin_state_set - set pin's state on dpll
++ * @dpll: dpll being configured
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @state: state of pin to be set
++ * @extack: error reporting
++ * @pin_type: type of a pin
 + *
-+ * Return: pointer to pin description array associated to given hw.
-+ */
-+static const struct ice_cgu_pin_desc *
-+ice_cgu_get_pin_desc_e823(struct ice_hw *hw, bool input, int *size)
-+{
-+	static const struct ice_cgu_pin_desc *t;
-+
-+	if (hw->cgu_part_number ==
-+	    ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032) {
-+		if (input) {
-+			t = ice_e823_zl_cgu_inputs;
-+			*size = ARRAY_SIZE(ice_e823_zl_cgu_inputs);
-+		} else {
-+			t = ice_e823_zl_cgu_outputs;
-+			*size = ARRAY_SIZE(ice_e823_zl_cgu_outputs);
-+		}
-+	} else if (hw->cgu_part_number ==
-+		   ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384) {
-+		if (input) {
-+			t = ice_e823_si_cgu_inputs;
-+			*size = ARRAY_SIZE(ice_e823_si_cgu_inputs);
-+		} else {
-+			t = ice_e823_si_cgu_outputs;
-+			*size = ARRAY_SIZE(ice_e823_si_cgu_outputs);
-+		}
-+	} else {
-+		t = NULL;
-+		*size = 0;
-+	}
-+
-+	return t;
-+}
-+
-+/**
-+ * ice_cgu_get_pin_desc
-+ * @hw: pointer to the hw struct
-+ * @input: if request is done against input or output pins
-+ * @size: size of array returned by function
-+ *
-+ * Return: pointer to pin description array associated to given hw.
-+ */
-+static const struct ice_cgu_pin_desc *
-+ice_cgu_get_pin_desc(struct ice_hw *hw, bool input, int *size)
-+{
-+	const struct ice_cgu_pin_desc *t = NULL;
-+
-+	switch (hw->device_id) {
-+	case ICE_DEV_ID_E810C_SFP:
-+		if (input) {
-+			t = ice_e810t_sfp_cgu_inputs;
-+			*size = ARRAY_SIZE(ice_e810t_sfp_cgu_inputs);
-+		} else {
-+			t = ice_e810t_sfp_cgu_outputs;
-+			*size = ARRAY_SIZE(ice_e810t_sfp_cgu_outputs);
-+		}
-+		break;
-+	case ICE_DEV_ID_E810C_QSFP:
-+		if (input) {
-+			t = ice_e810t_qsfp_cgu_inputs;
-+			*size = ARRAY_SIZE(ice_e810t_qsfp_cgu_inputs);
-+		} else {
-+			t = ice_e810t_qsfp_cgu_outputs;
-+			*size = ARRAY_SIZE(ice_e810t_qsfp_cgu_outputs);
-+		}
-+		break;
-+	case ICE_DEV_ID_E823L_10G_BASE_T:
-+	case ICE_DEV_ID_E823L_1GBE:
-+	case ICE_DEV_ID_E823L_BACKPLANE:
-+	case ICE_DEV_ID_E823L_QSFP:
-+	case ICE_DEV_ID_E823L_SFP:
-+	case ICE_DEV_ID_E823C_10G_BASE_T:
-+	case ICE_DEV_ID_E823C_BACKPLANE:
-+	case ICE_DEV_ID_E823C_QSFP:
-+	case ICE_DEV_ID_E823C_SFP:
-+	case ICE_DEV_ID_E823C_SGMII:
-+		t = ice_cgu_get_pin_desc_e823(hw, input, size);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return t;
-+}
-+
-+/**
-+ * ice_cgu_get_pin_type
-+ * @hw: pointer to the hw struct
-+ * @pin: pin index
-+ * @input: if request is done against input or output pin
-+ *
-+ * Return: type of a pin.
-+ */
-+enum dpll_pin_type ice_cgu_get_pin_type(struct ice_hw *hw, u8 pin, bool input)
-+{
-+	const struct ice_cgu_pin_desc *t;
-+	int t_size;
-+
-+	t = ice_cgu_get_pin_desc(hw, input, &t_size);
-+
-+	if (!t)
-+		return 0;
-+
-+	if (pin >= t_size)
-+		return 0;
-+
-+	return t[pin].type;
-+}
-+
-+/**
-+ * ice_cgu_get_pin_sig_type_mask
-+ * @hw: pointer to the hw struct
-+ * @pin: pin index
-+ * @input: if request is done against input or output pin
-+ *
-+ * Return: signal type bit mask of a pin.
-+ */
-+unsigned long
-+ice_cgu_get_pin_freq_mask(struct ice_hw *hw, u8 pin, bool input)
-+{
-+	const struct ice_cgu_pin_desc *t;
-+	int t_size;
-+
-+	t = ice_cgu_get_pin_desc(hw, input, &t_size);
-+
-+	if (!t)
-+		return 0;
-+
-+	if (pin >= t_size)
-+		return 0;
-+
-+	return t[pin].sig_type_mask;
-+}
-+
-+/**
-+ * ice_cgu_get_pin_name
-+ * @hw: pointer to the hw struct
-+ * @pin: pin index
-+ * @input: if request is done against input or output pin
++ * Set pin state on a pin.
 + *
 + * Return:
-+ * * null terminated char array with name
-+ * * NULL in case of failure
++ * * 0 - OK or no change required
++ * * negative - error
 + */
-+const char *ice_cgu_get_pin_name(struct ice_hw *hw, u8 pin, bool input)
++static int
++ice_dpll_pin_state_set(const struct dpll_device *dpll,
++		       const struct dpll_pin *pin, void *pin_priv,
++		       const enum dpll_pin_state state,
++		       struct netlink_ext_ack *extack,
++		       const enum ice_dpll_pin_type pin_type)
 +{
-+	const struct ice_cgu_pin_desc *t;
-+	int t_size;
++	struct ice_pf *pf = pin_priv;
++	struct ice_dpll_pin *p;
++	int ret = -EINVAL;
 +
-+	t = ice_cgu_get_pin_desc(hw, input, &t_size);
++	if (!pf)
++		return ret;
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	p = ice_find_pin(pf, pin, pin_type);
++	if (!p)
++		goto unlock;
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE) {
++		if (state == DPLL_PIN_STATE_SELECTABLE)
++			ret = ice_dpll_pin_enable(&pf->hw, p, pin_type);
++		else if (state == DPLL_PIN_STATE_DISCONNECTED)
++			ret = ice_dpll_pin_disable(&pf->hw, p, pin_type);
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT) {
++		if (state == DPLL_PIN_STATE_CONNECTED)
++			ret = ice_dpll_pin_enable(&pf->hw, p, pin_type);
++		else if (state == DPLL_PIN_STATE_DISCONNECTED)
++			ret = ice_dpll_pin_disable(&pf->hw, p, pin_type);
++	}
++	if (!ret)
++		ret = ice_dpll_pin_state_update(pf, p, pin_type);
++unlock:
++	ice_dpll_cb_unlock(pf);
++	dev_dbg(ice_pf_to_dev(pf),
++		"%s: dpll:%p, pin:%p, p:%p pf:%p state: %d ret:%d\n",
++		__func__, dpll, pin, p, pf, state, ret);
 +
-+	if (!t)
-+		return NULL;
-+
-+	if (pin >= t_size)
-+		return NULL;
-+
-+	return t[pin].name;
++	return ret;
 +}
 +
 +/**
-+ * ice_get_cgu_state - get the state of the DPLL
-+ * @hw: pointer to the hw struct
-+ * @dpll_idx: Index of internal DPLL unit
-+ * @last_dpll_state: last known state of DPLL
-+ * @pin: pointer to a buffer for returning currently active pin
-+ * @ref_state: reference clock state
-+ * @phase_offset: pointer to a buffer for returning phase offset
-+ * @dpll_state: state of the DPLL (output)
++ * ice_dpll_output_state_set - enable/disable output pin on dpll device
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: dpll being configured
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @state: state of pin to be set
++ * @extack: error reporting
 + *
-+ * This function will read the state of the DPLL(dpll_idx). Non-null
-+ * 'pin', 'ref_state', 'eec_mode' and 'phase_offset' parameters are used to
-+ * retrieve currently active pin, state, mode and phase_offset respectively.
-+ *
-+ * Return: state of the DPLL
-+ */
-+int ice_get_cgu_state(struct ice_hw *hw, u8 dpll_idx,
-+		      enum ice_cgu_state last_dpll_state, u8 *pin,
-+		      u8 *ref_state, u8 *eec_mode, s64 *phase_offset,
-+		      enum ice_cgu_state *dpll_state)
-+{
-+	u8 hw_ref_state, hw_eec_mode;
-+	s64 hw_phase_offset;
-+	u16 hw_dpll_state;
-+	int status;
-+
-+	status = ice_aq_get_cgu_dpll_status(hw, dpll_idx, &hw_ref_state,
-+					    &hw_dpll_state, &hw_phase_offset,
-+					    &hw_eec_mode);
-+	if (status) {
-+		*dpll_state = ICE_CGU_STATE_INVALID;
-+		return status;
-+	}
-+
-+	if (pin) {
-+		/* current ref pin in dpll_state_refsel_status_X register */
-+		*pin = (hw_dpll_state &
-+			ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SEL) >>
-+		       ICE_AQC_GET_CGU_DPLL_STATUS_STATE_CLK_REF_SHIFT;
-+	}
-+
-+	if (phase_offset)
-+		*phase_offset = hw_phase_offset;
-+
-+	if (ref_state)
-+		*ref_state = hw_ref_state;
-+
-+	if (eec_mode)
-+		*eec_mode = hw_eec_mode;
-+
-+	if (!dpll_state)
-+		return status;
-+
-+	/* According to ZL DPLL documentation, once state reach LOCKED_HO_ACQ
-+	 * it would never return to FREERUN. This aligns to ITU-T G.781
-+	 * Recommendation. We cannot report HOLDOVER as HO memory is cleared
-+	 * while switching to another reference.
-+	 * Only for situations where previous state was either: "LOCKED without
-+	 * HO_ACQ" or "HOLDOVER" we actually back to FREERUN.
-+	 */
-+	if (hw_dpll_state & ICE_AQC_GET_CGU_DPLL_STATUS_STATE_LOCK) {
-+		if (hw_dpll_state & ICE_AQC_GET_CGU_DPLL_STATUS_STATE_HO_READY)
-+			*dpll_state = ICE_CGU_STATE_LOCKED_HO_ACQ;
-+		else
-+			*dpll_state = ICE_CGU_STATE_LOCKED;
-+	} else if (last_dpll_state == ICE_CGU_STATE_LOCKED_HO_ACQ ||
-+		   last_dpll_state == ICE_CGU_STATE_HOLDOVER) {
-+		*dpll_state = ICE_CGU_STATE_HOLDOVER;
-+	} else {
-+		*dpll_state = ICE_CGU_STATE_FREERUN;
-+	}
-+
-+	return status;
-+}
-+
-+/**
-+ * ice_get_cgu_rclk_pin_info - get info on available recovered clock pins
-+ * @hw: pointer to the hw struct
-+ * @base_idx: returns index of first recovered clock pin on device
-+ * @pin_num: returns number of recovered clock pins available on device
-+ *
-+ * Based on hw provide caller info about recovery clock pins available on the
-+ * board.
++ * Dpll subsystem callback. Set given state on output type pin.
 + *
 + * Return:
-+ * * 0 - success, information is valid
-+ * * negative - failure, information is not valid
++ * * 0 - successfully enabled mode
++ * * negative - failed to enable mode
 + */
-+int ice_get_cgu_rclk_pin_info(struct ice_hw *hw, u8 *base_idx, u8 *pin_num)
++static int ice_dpll_output_state_set(const struct dpll_pin *pin,
++				     void *pin_priv,
++				     const struct dpll_device *dpll,
++				     void *dpll_priv,
++				     const enum dpll_pin_state state,
++				     struct netlink_ext_ack *extack)
 +{
-+	u8 phy_idx;
-+	int ret;
++	return ice_dpll_pin_state_set(dpll, pin, pin_priv, state, extack,
++				      ICE_DPLL_PIN_TYPE_OUTPUT);
++}
 +
-+	switch (hw->device_id) {
-+	case ICE_DEV_ID_E810C_SFP:
-+	case ICE_DEV_ID_E810C_QSFP:
++/**
++ * ice_dpll_source_state_set - enable/disable source pin on dpll levice
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: dpll being configured
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @state: state of pin to be set
++ * @extack: error reporting
++ *
++ * Dpll subsystem callback. Enables given mode on source type pin.
++ *
++ * Return:
++ * * 0 - successfully enabled mode
++ * * negative - failed to enable mode
++ */
++static int ice_dpll_source_state_set(const struct dpll_pin *pin,
++				     void *pin_priv,
++				     const struct dpll_device *dpll,
++				     void *dpll_priv,
++				     const enum dpll_pin_state state,
++				     struct netlink_ext_ack *extack)
++{
++	return ice_dpll_pin_state_set(dpll, pin, pin_priv, state, extack,
++				      ICE_DPLL_PIN_TYPE_SOURCE);
++}
 +
-+		ret = ice_get_pf_c827_idx(hw, &phy_idx);
++/**
++ * ice_dpll_pin_state_get - set pin's state on dpll
++ * @dpll: registered dpll pointer
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @state: on success holds state of the pin
++ * @extack: error reporting
++ * @pin_type: type of questioned pin
++ *
++ * Determine pin state set it on a pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - failed to get state
++ */
++static int
++ice_dpll_pin_state_get(const struct dpll_device *dpll,
++		       const struct dpll_pin *pin, void *pin_priv,
++		       enum dpll_pin_state *state,
++		       struct netlink_ext_ack *extack,
++		       const enum ice_dpll_pin_type pin_type)
++{
++	struct ice_pf *pf = pin_priv;
++	struct ice_dpll_pin *p;
++	struct ice_dpll *d;
++	int ret = -EINVAL;
++
++	if (!pf)
++		return ret;
++
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	p = ice_find_pin(pf, pin, pin_type);
++	if (!p) {
++		NL_SET_ERR_MSG(extack, "pin not found");
++		goto unlock;
++	}
++	d = ice_find_dpll(pf, dpll);
++	if (!d)
++		goto unlock;
++	ret = ice_dpll_pin_state_update(pf, p, pin_type);
++	if (ret)
++		goto unlock;
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE)
++		*state = p->state[d->dpll_idx];
++	else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT)
++		*state = p->state[0];
++	ret = 0;
++unlock:
++	ice_dpll_cb_unlock(pf);
++	dev_dbg(ice_pf_to_dev(pf),
++		"%s: dpll:%p, pin:%p, pf:%p state: %d ret:%d\n",
++		__func__, dpll, pin, pf, *state, ret);
++
++	return ret;
++}
++
++/**
++ * ice_dpll_output_state_get - get output pin state on dpll device
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: registered dpll pointer
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @state: on success holds state of the pin
++ * @extack: error reporting
++ *
++ * Dpll subsystem callback. Check state of a pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - failed to get state
++ */
++static int ice_dpll_output_state_get(const struct dpll_pin *pin,
++				     void *pin_priv,
++				     const struct dpll_device *dpll,
++				     void *dpll_priv,
++				     enum dpll_pin_state *state,
++				     struct netlink_ext_ack *extack)
++{
++	return ice_dpll_pin_state_get(dpll, pin, pin_priv, state, extack,
++				      ICE_DPLL_PIN_TYPE_OUTPUT);
++}
++
++/**
++ * ice_dpll_source_state_get - get source pin state on dpll device
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: registered dpll pointer
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @state: on success holds state of the pin
++ * @extack: error reporting
++ *
++ * Dpll subsystem callback. Check state of a source pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - failed to get state
++ */
++static int ice_dpll_source_state_get(const struct dpll_pin *pin,
++				     void *pin_priv,
++				     const struct dpll_device *dpll,
++				     void *dpll_priv,
++				     enum dpll_pin_state *state,
++				     struct netlink_ext_ack *extack)
++{
++	return ice_dpll_pin_state_get(dpll, pin, pin_priv, state, extack,
++				      ICE_DPLL_PIN_TYPE_SOURCE);
++}
++
++/**
++ * ice_dpll_source_prio_get - get dpll's source prio
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: registered dpll pointer
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @prio: on success - returns source priority on dpll
++ * @extack: error reporting
++ *
++ * Dpll subsystem callback. Handler for getting priority of a source pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - failure
++ */
++static int ice_dpll_source_prio_get(const struct dpll_pin *pin, void *pin_priv,
++				    const struct dpll_device *dpll,
++				    void *dpll_priv, u32 *prio,
++				    struct netlink_ext_ack *extack)
++{
++	struct ice_pf *pf = pin_priv;
++	struct ice_dpll *d = NULL;
++	struct ice_dpll_pin *p;
++	int ret = -EINVAL;
++
++	if (!pf)
++		return ret;
++
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	p = ice_find_pin(pf, pin, ICE_DPLL_PIN_TYPE_SOURCE);
++	if (!p) {
++		NL_SET_ERR_MSG(extack, "pin not found");
++		goto unlock;
++	}
++	d = ice_find_dpll(pf, dpll);
++	if (!d) {
++		NL_SET_ERR_MSG(extack, "dpll not found");
++		goto unlock;
++	}
++	*prio = d->input_prio[p->idx];
++	ret = 0;
++unlock:
++	ice_dpll_cb_unlock(pf);
++	dev_dbg(ice_pf_to_dev(pf), "%s: dpll:%p, pin:%p, pf:%p ret:%d\n",
++		__func__, dpll, pin, pf, ret);
++
++	return ret;
++}
++
++/**
++ * ice_dpll_source_prio_set - set dpll source prio
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: registered dpll pointer
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @prio: source priority to be set on dpll
++ * @extack: error reporting
++ *
++ * Dpll subsystem callback. Handler for setting priority of a source pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - failure
++ */
++static int ice_dpll_source_prio_set(const struct dpll_pin *pin, void *pin_priv,
++				    const struct dpll_device *dpll,
++				    void *dpll_priv, u32 prio,
++				    struct netlink_ext_ack *extack)
++{
++	struct ice_pf *pf = pin_priv;
++	struct ice_dpll *d = NULL;
++	struct ice_dpll_pin *p;
++	int ret = -EINVAL;
++
++	if (!pf)
++		return ret;
++
++	if (prio > ICE_DPLL_PRIO_MAX) {
++		NL_SET_ERR_MSG(extack, "prio out of range");
++		return ret;
++	}
++
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	p = ice_find_pin(pf, pin, ICE_DPLL_PIN_TYPE_SOURCE);
++	if (!p) {
++		NL_SET_ERR_MSG(extack, "pin not found");
++		goto unlock;
++	}
++	d = ice_find_dpll(pf, dpll);
++	if (!d) {
++		NL_SET_ERR_MSG(extack, "dpll not found");
++		goto unlock;
++	}
++	ret = ice_dpll_hw_source_prio_set(pf, d, p, prio);
++	if (ret)
++		NL_SET_ERR_MSG_FMT(extack, "unable to set prio: %d", ret);
++unlock:
++	ice_dpll_cb_unlock(pf);
++	dev_dbg(ice_pf_to_dev(pf), "%s: dpll:%p, pin:%p, pf:%p ret:%d\n",
++		__func__, dpll, pin, pf, ret);
++
++	return ret;
++}
++
++/**
++ * ice_dpll_source_direction - callback for get source pin direction
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: registered dpll pointer
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @direction: holds source pin direction
++ * @extack: error reporting
++ *
++ * Dpll subsystem callback. Handler for getting direction of a source pin.
++ *
++ * Return:
++ * * 0 - success
++ */
++static int ice_dpll_source_direction(const struct dpll_pin *pin,
++				     void *pin_priv,
++				     const struct dpll_device *dpll,
++				     void *dpll_priv,
++				     enum dpll_pin_direction *direction,
++				     struct netlink_ext_ack *extack)
++{
++	*direction = DPLL_PIN_DIRECTION_SOURCE;
++
++	return 0;
++}
++
++/**
++ * ice_dpll_source_direction - callback for get output pin direction
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @dpll: registered dpll pointer
++ * @dpll_priv: private data pointer passed on dpll registration
++ * @direction: holds output pin direction
++ * @extack: error reporting
++ *
++ * Dpll subsystem callback. Handler for getting direction of an output pin.
++ *
++ * Return:
++ * * 0 - success
++ */
++static int ice_dpll_output_direction(const struct dpll_pin *pin,
++				     void *pin_priv,
++				     const struct dpll_device *dpll,
++				     void *dpll_priv,
++				     enum dpll_pin_direction *direction,
++				     struct netlink_ext_ack *extack)
++{
++	*direction = DPLL_PIN_DIRECTION_OUTPUT;
++
++	return 0;
++}
++
++/**
++ * ice_dpll_rclk_state_on_pin_set - set a state on rclk pin
++ * @dpll: registered dpll pointer
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @parent_pin: pin parent pointer
++ * @state: state to be set on pin
++ * @extack: error reporting
++ *
++ * Dpll subsystem callback, set a state of a rclk pin on a parent pin
++ *
++ * Return:
++ * * 0 - success
++ * * negative - failure
++ */
++static int ice_dpll_rclk_state_on_pin_set(const struct dpll_pin *pin,
++					  void *pin_priv,
++					  const struct dpll_pin *parent_pin,
++					  const enum dpll_pin_state state,
++					  struct netlink_ext_ack *extack)
++{
++	bool enable = state == DPLL_PIN_STATE_CONNECTED ? true : false;
++	u32 parent_idx, hw_idx = ICE_DPLL_PIN_IDX_INVALID, i;
++	struct ice_pf *pf = pin_priv;
++	struct ice_dpll_pin *p;
++	int ret = -EINVAL;
++
++	if (!pf)
++		return ret;
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	p = ice_find_pin(pf, pin, ICE_DPLL_PIN_TYPE_RCLK_SOURCE);
++	if (!p) {
++		ret = -EFAULT;
++		goto unlock;
++	}
++	parent_idx = ice_find_pin_idx(pf, parent_pin,
++				      ICE_DPLL_PIN_TYPE_SOURCE);
++	if (parent_idx == ICE_DPLL_PIN_IDX_INVALID) {
++		ret = -EFAULT;
++		goto unlock;
++	}
++	for (i = 0; i < pf->dplls.rclk.num_parents; i++)
++		if (pf->dplls.rclk.parent_idx[i] == parent_idx)
++			hw_idx = i;
++	if (hw_idx == ICE_DPLL_PIN_IDX_INVALID)
++		goto unlock;
++
++	if ((enable && !!(p->flags[hw_idx] &
++			 ICE_AQC_GET_PHY_REC_CLK_OUT_OUT_EN)) ||
++	    (!enable && !(p->flags[hw_idx] &
++			  ICE_AQC_GET_PHY_REC_CLK_OUT_OUT_EN))) {
++		ret = -EINVAL;
++		goto unlock;
++	}
++	ret = ice_aq_set_phy_rec_clk_out(&pf->hw, hw_idx, enable,
++					 &p->freq);
++unlock:
++	ice_dpll_cb_unlock(pf);
++	dev_dbg(ice_pf_to_dev(pf), "%s: parent:%p, pin:%p, pf:%p ret:%d\n",
++		__func__, parent_pin, pin, pf, ret);
++
++	return ret;
++}
++
++/**
++ * ice_dpll_rclk_state_on_pin_get - get a state of rclk pin
++ * @pin: pointer to a pin
++ * @pin_priv: private data pointer passed on pin registration
++ * @parent_pin: pin parent pointer
++ * @state: on success holds pin state on parent pin
++ * @extack: error reporting
++ *
++ * dpll subsystem callback, get a state of a recovered clock pin.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - failure
++ */
++static int ice_dpll_rclk_state_on_pin_get(const struct dpll_pin *pin,
++					  void *pin_priv,
++					  const struct dpll_pin *parent_pin,
++					  enum dpll_pin_state *state,
++					  struct netlink_ext_ack *extack)
++{
++	struct ice_pf *pf = pin_priv;
++	u32 parent_idx, hw_idx = ICE_DPLL_PIN_IDX_INVALID, i;
++	struct ice_dpll_pin *p;
++	int ret = -EFAULT;
++
++	if (!pf)
++		return ret;
++	if (ice_dpll_cb_lock(pf))
++		return -EBUSY;
++	p = ice_find_pin(pf, pin, ICE_DPLL_PIN_TYPE_RCLK_SOURCE);
++	if (!p)
++		goto unlock;
++	parent_idx = ice_find_pin_idx(pf, parent_pin,
++				      ICE_DPLL_PIN_TYPE_SOURCE);
++	if (parent_idx == ICE_DPLL_PIN_IDX_INVALID)
++		goto unlock;
++	for (i = 0; i < pf->dplls.rclk.num_parents; i++)
++		if (pf->dplls.rclk.parent_idx[i] == parent_idx)
++			hw_idx = i;
++	if (hw_idx == ICE_DPLL_PIN_IDX_INVALID)
++		goto unlock;
++
++	ret = ice_dpll_pin_state_update(pf, p, ICE_DPLL_PIN_TYPE_RCLK_SOURCE);
++	if (ret)
++		goto unlock;
++
++	if (!!(p->flags[hw_idx] &
++	    ICE_AQC_GET_PHY_REC_CLK_OUT_OUT_EN))
++		*state = DPLL_PIN_STATE_CONNECTED;
++	else
++		*state = DPLL_PIN_STATE_DISCONNECTED;
++	ret = 0;
++unlock:
++	ice_dpll_cb_unlock(pf);
++	dev_dbg(ice_pf_to_dev(pf), "%s: parent:%p, pin:%p, pf:%p ret:%d\n",
++		__func__, parent_pin, pin, pf, ret);
++
++	return ret;
++}
++
++static struct dpll_pin_ops ice_dpll_rclk_ops = {
++	.state_on_pin_set = ice_dpll_rclk_state_on_pin_set,
++	.state_on_pin_get = ice_dpll_rclk_state_on_pin_get,
++	.direction_get = ice_dpll_source_direction,
++};
++
++static struct dpll_pin_ops ice_dpll_source_ops = {
++	.frequency_get = ice_dpll_source_frequency_get,
++	.frequency_set = ice_dpll_source_frequency_set,
++	.state_on_dpll_get = ice_dpll_source_state_get,
++	.state_on_dpll_set = ice_dpll_source_state_set,
++	.prio_get = ice_dpll_source_prio_get,
++	.prio_set = ice_dpll_source_prio_set,
++	.direction_get = ice_dpll_source_direction,
++};
++
++static struct dpll_pin_ops ice_dpll_output_ops = {
++	.frequency_get = ice_dpll_output_frequency_get,
++	.frequency_set = ice_dpll_output_frequency_set,
++	.state_on_dpll_get = ice_dpll_output_state_get,
++	.state_on_dpll_set = ice_dpll_output_state_set,
++	.direction_get = ice_dpll_output_direction,
++};
++
++static struct dpll_device_ops ice_dpll_ops = {
++	.lock_status_get = ice_dpll_lock_status_get,
++	.mode_get = ice_dpll_mode_get,
++	.mode_supported = ice_dpll_mode_supported,
++};
++
++/**
++ * ice_dpll_release_info - release memory allocated for pins
++ * @pf: board private structure
++ *
++ * Release memory allocated for pins by ice_dpll_init_info function.
++ */
++static void ice_dpll_release_info(struct ice_pf *pf)
++{
++	kfree(pf->dplls.inputs);
++	pf->dplls.inputs = NULL;
++	kfree(pf->dplls.outputs);
++	pf->dplls.outputs = NULL;
++	kfree(pf->dplls.eec.input_prio);
++	pf->dplls.eec.input_prio = NULL;
++	kfree(pf->dplls.pps.input_prio);
++	pf->dplls.pps.input_prio = NULL;
++}
++
++/**
++ * ice_dpll_release_rclk_pin - release rclk pin from its parents
++ * @pf: board private structure
++ *
++ * Deregister from parent pins and release resources in dpll subsystem.
++ */
++static void
++ice_dpll_release_rclk_pin(struct ice_pf *pf)
++{
++	struct ice_dpll_pin *rclk = &pf->dplls.rclk;
++	struct dpll_pin *parent;
++	int i;
++
++	for (i = 0; i < rclk->num_parents; i++) {
++		parent = pf->dplls.inputs[rclk->parent_idx[i]].pin;
++		if (!parent)
++			continue;
++		dpll_pin_on_pin_unregister(parent, rclk->pin,
++					   &ice_dpll_rclk_ops, pf);
++	}
++	dpll_pin_put(rclk->pin);
++	rclk->pin = NULL;
++}
++
++/**
++ * ice_dpll_release_pins - release pin's from dplls registered in subsystem
++ * @pf: board private structure
++ * @dpll_eec: dpll_eec dpll pointer
++ * @dpll_pps: dpll_pps dpll pointer
++ * @pins: pointer to pins array
++ * @count: number of pins
++ * @ops: callback ops registered with the pins
++ * @cgu: if cgu is present and controlled by this NIC
++ *
++ * Deregister and free pins of a given array of pins from dpll devices
++ * registered in dpll subsystem.
++ */
++static void
++ice_dpll_release_pins(struct ice_pf *pf, struct dpll_device *dpll_eec,
++		      struct dpll_device *dpll_pps, struct ice_dpll_pin *pins,
++		      int count, struct dpll_pin_ops *ops, bool cgu)
++{
++	int i;
++
++	for (i = 0; i < count; i++) {
++		struct ice_dpll_pin *p = &pins[i];
++
++		if (p && !IS_ERR_OR_NULL(p->pin)) {
++			if (cgu && dpll_eec)
++				dpll_pin_unregister(dpll_eec, p->pin, ops, pf);
++			if (cgu && dpll_pps)
++				dpll_pin_unregister(dpll_pps, p->pin, ops, pf);
++			dpll_pin_put(p->pin);
++			p->pin = NULL;
++		}
++	}
++}
++
++/**
++ * ice_dpll_register_pins - register pins with a dpll
++ * @pf: board private structure
++ * @cgu: if cgu is present and controlled by this NIC
++ *
++ * Register source or output pins within given DPLL in a Linux dpll subsystem.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - error
++ */
++static int ice_dpll_register_pins(struct ice_pf *pf, bool cgu)
++{
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_dpll_pin *pins;
++	struct dpll_pin_ops *ops;
++	u32 rclk_idx;
++	int ret, i;
++
++	ops = &ice_dpll_source_ops;
++	pins = pf->dplls.inputs;
++	for (i = 0; i < pf->dplls.num_inputs; i++) {
++		pins[i].pin = dpll_pin_get(pf->dplls.clock_id, i,
++					   THIS_MODULE, &pins[i].prop);
++		if (IS_ERR_OR_NULL(pins[i].pin)) {
++			pins[i].pin = NULL;
++			return -ENOMEM;
++		}
++		if (cgu) {
++			ret = dpll_pin_register(pf->dplls.eec.dpll,
++						pins[i].pin,
++						ops, pf, NULL);
++			if (ret)
++				return ret;
++			ret = dpll_pin_register(pf->dplls.pps.dpll,
++						pins[i].pin,
++						ops, pf, NULL);
++			if (ret)
++				return ret;
++		}
++	}
++	if (cgu) {
++		ops = &ice_dpll_output_ops;
++		pins = pf->dplls.outputs;
++		for (i = 0; i < pf->dplls.num_outputs; i++) {
++			pins[i].pin = dpll_pin_get(pf->dplls.clock_id,
++						   i + pf->dplls.num_inputs,
++						   THIS_MODULE, &pins[i].prop);
++			if (IS_ERR_OR_NULL(pins[i].pin)) {
++				pins[i].pin = NULL;
++				return -ENOMEM;
++			}
++			ret = dpll_pin_register(pf->dplls.eec.dpll, pins[i].pin,
++						ops, pf, NULL);
++			if (ret)
++				return ret;
++			ret = dpll_pin_register(pf->dplls.pps.dpll, pins[i].pin,
++						ops, pf, NULL);
++			if (ret)
++				return ret;
++		}
++	}
++	rclk_idx = pf->dplls.num_inputs + pf->dplls.num_outputs + pf->hw.pf_id;
++	pf->dplls.rclk.pin = dpll_pin_get(pf->dplls.clock_id, rclk_idx,
++					  THIS_MODULE, &pf->dplls.rclk.prop);
++	if (IS_ERR_OR_NULL(pf->dplls.rclk.pin)) {
++		pf->dplls.rclk.pin = NULL;
++		return -ENOMEM;
++	}
++	ops = &ice_dpll_rclk_ops;
++	for (i = 0; i < pf->dplls.rclk.num_parents; i++) {
++		struct dpll_pin *parent =
++			pf->dplls.inputs[pf->dplls.rclk.parent_idx[i]].pin;
++
++		ret = dpll_pin_on_pin_register(parent, pf->dplls.rclk.pin,
++					       ops, pf, dev);
 +		if (ret)
 +			return ret;
-+		*base_idx = E810T_CGU_INPUT_C827(phy_idx, ICE_RCLKA_PIN);
-+		*pin_num = ICE_E810_RCLK_PINS_NUM;
-+		ret = 0;
-+		break;
-+	case ICE_DEV_ID_E823L_10G_BASE_T:
-+	case ICE_DEV_ID_E823L_1GBE:
-+	case ICE_DEV_ID_E823L_BACKPLANE:
-+	case ICE_DEV_ID_E823L_QSFP:
-+	case ICE_DEV_ID_E823L_SFP:
-+	case ICE_DEV_ID_E823C_10G_BASE_T:
-+	case ICE_DEV_ID_E823C_BACKPLANE:
-+	case ICE_DEV_ID_E823C_QSFP:
-+	case ICE_DEV_ID_E823C_SFP:
-+	case ICE_DEV_ID_E823C_SGMII:
-+		*pin_num = ICE_E822_RCLK_PINS_NUM;
-+		ret = 0;
-+		if (hw->cgu_part_number ==
-+		    ICE_ACQ_GET_LINK_TOPO_NODE_NR_ZL30632_80032)
-+			*base_idx = ZL_REF1P;
-+		else if (hw->cgu_part_number ==
-+			 ICE_ACQ_GET_LINK_TOPO_NODE_NR_SI5383_5384)
-+			*base_idx = SI_REF1P;
-+		else
-+			ret = -ENODEV;
++	}
 +
-+		break;
-+	default:
-+		ret = -ENODEV;
-+		break;
++	return 0;
++}
++
++/**
++ * ice_generate_clock_id - generates unique clock_id for registering dpll.
++ * @pf: board private structure
++ * @clock_id: holds generated clock_id
++ *
++ * Generates unique (per board) clock_id for allocation and search of dpll
++ * devices in Linux dpll subsystem.
++ */
++static void ice_generate_clock_id(struct ice_pf *pf, u64 *clock_id)
++{
++	*clock_id = pci_get_dsn(pf->pdev);
++}
++
++/**
++ * ice_dpll_init_dplls
++ * @pf: board private structure
++ * @cgu: if cgu is present and controlled by this NIC
++ *
++ * Get dplls instances for this board, if cgu is controlled by this NIC,
++ * register dpll with callbacks ops
++ *
++ * Return:
++ * * 0 - success
++ * * negative - allocation fails
++ */
++static int ice_dpll_init_dplls(struct ice_pf *pf, bool cgu)
++{
++	struct device *dev = ice_pf_to_dev(pf);
++	int ret = -ENOMEM;
++	u64 clock_id;
++
++	ice_generate_clock_id(pf, &clock_id);
++	pf->dplls.eec.dpll = dpll_device_get(clock_id, pf->dplls.eec.dpll_idx,
++					     THIS_MODULE);
++	if (!pf->dplls.eec.dpll) {
++		dev_err(ice_pf_to_dev(pf), "dpll_device_get failed (eec)\n");
++		return ret;
++	}
++	pf->dplls.pps.dpll = dpll_device_get(clock_id, pf->dplls.pps.dpll_idx,
++					     THIS_MODULE);
++	if (!pf->dplls.pps.dpll) {
++		dev_err(ice_pf_to_dev(pf), "dpll_device_get failed (pps)\n");
++		goto put_eec;
++	}
++
++	if (cgu) {
++		ret = dpll_device_register(pf->dplls.eec.dpll, DPLL_TYPE_EEC,
++					   &ice_dpll_ops, pf, dev);
++		if (ret)
++			goto put_pps;
++		ret = dpll_device_register(pf->dplls.pps.dpll, DPLL_TYPE_PPS,
++					   &ice_dpll_ops, pf, dev);
++		if (ret)
++			goto put_pps;
++	}
++
++	return 0;
++
++put_pps:
++	dpll_device_put(pf->dplls.pps.dpll);
++	pf->dplls.pps.dpll = NULL;
++put_eec:
++	dpll_device_put(pf->dplls.eec.dpll);
++	pf->dplls.eec.dpll = NULL;
++
++	return ret;
++}
++
++/**
++ * ice_dpll_update_state - update dpll state
++ * @pf: pf private structure
++ * @d: pointer to queried dpll device
++ *
++ * Poll current state of dpll from hw and update ice_dpll struct.
++ * Return:
++ * * 0 - success
++ * * negative - AQ failure
++ */
++static int ice_dpll_update_state(struct ice_pf *pf, struct ice_dpll *d, bool init)
++{
++	struct ice_dpll_pin *p;
++	int ret;
++
++	ret = ice_get_cgu_state(&pf->hw, d->dpll_idx, d->prev_dpll_state,
++				&d->source_idx, &d->ref_state, &d->eec_mode,
++				&d->phase_offset, &d->dpll_state);
++
++	dev_dbg(ice_pf_to_dev(pf),
++		"update dpll=%d, prev_src_idx:%u, src_idx:%u, state:%d, prev:%d\n",
++		d->dpll_idx, d->prev_source_idx, d->source_idx,
++		d->dpll_state, d->prev_dpll_state);
++	if (ret) {
++		dev_err(ice_pf_to_dev(pf),
++			"update dpll=%d state failed, ret=%d %s\n",
++			d->dpll_idx, ret,
++			ice_aq_str(pf->hw.adminq.sq_last_status));
++		return ret;
++	}
++	if (init) {
++		if (d->dpll_state == ICE_CGU_STATE_LOCKED &&
++		    d->dpll_state == ICE_CGU_STATE_LOCKED_HO_ACQ)
++			d->active_source = pf->dplls.inputs[d->source_idx].pin;
++		p = &pf->dplls.inputs[d->source_idx];
++		return ice_dpll_pin_state_update(pf, p,
++						 ICE_DPLL_PIN_TYPE_SOURCE);
++	}
++	if (d->dpll_state == ICE_CGU_STATE_HOLDOVER ||
++	    d->dpll_state == ICE_CGU_STATE_FREERUN) {
++		d->active_source = NULL;
++		p = &pf->dplls.inputs[d->source_idx];
++		d->prev_source_idx = ICE_DPLL_PIN_IDX_INVALID;
++		d->source_idx = ICE_DPLL_PIN_IDX_INVALID;
++		ret = ice_dpll_pin_state_update(pf, p, ICE_DPLL_PIN_TYPE_SOURCE);
++	} else if (d->source_idx != d->prev_source_idx) {
++		p = &pf->dplls.inputs[d->prev_source_idx];
++		ice_dpll_pin_state_update(pf, p, ICE_DPLL_PIN_TYPE_SOURCE);
++		p = &pf->dplls.inputs[d->source_idx];
++		d->active_source = p->pin;
++		ice_dpll_pin_state_update(pf, p, ICE_DPLL_PIN_TYPE_SOURCE);
++		d->prev_source_idx = d->source_idx;
 +	}
 +
 +	return ret;
 +}
++
++/**
++ * ice_dpll_notify_changes - notify dpll subsystem about changes
++ * @d: pointer do dpll
++ *
++ * Once change detected appropriate event is submitted to the dpll subsystem.
++ */
++static void ice_dpll_notify_changes(struct ice_dpll *d)
++{
++	if (d->prev_dpll_state != d->dpll_state) {
++		d->prev_dpll_state = d->dpll_state;
++		dpll_device_notify(d->dpll, DPLL_A_LOCK_STATUS);
++	}
++	if (d->prev_source != d->active_source) {
++		d->prev_source = d->active_source;
++		if (d->active_source)
++			dpll_pin_notify(d->dpll, d->active_source,
++					DPLL_A_PIN_STATE);
++	}
++}
++
++/**
++ * ice_dpll_periodic_work - DPLLs periodic worker
++ * @work: pointer to kthread_work structure
++ *
++ * DPLLs periodic worker is responsible for polling state of dpll.
++ */
++static void ice_dpll_periodic_work(struct kthread_work *work)
++{
++	struct ice_dplls *d = container_of(work, struct ice_dplls, work.work);
++	struct ice_pf *pf = container_of(d, struct ice_pf, dplls);
++	struct ice_dpll *de = &pf->dplls.eec;
++	struct ice_dpll *dp = &pf->dplls.pps;
++	int ret = 0;
++
++	if (!test_bit(ICE_FLAG_DPLL, pf->flags))
++		return;
++	ret = ice_dpll_cb_lock(pf);
++	if (ret) {
++		d->lock_err_num++;
++		goto resched;
++	}
++	ret = ice_dpll_update_state(pf, de, false);
++	if (!ret)
++		ret = ice_dpll_update_state(pf, dp, false);
++	if (ret) {
++		d->cgu_state_acq_err_num++;
++		/* stop rescheduling this worker */
++		if (d->cgu_state_acq_err_num >
++		    ICE_CGU_STATE_ACQ_ERR_THRESHOLD) {
++			dev_err(ice_pf_to_dev(pf),
++				"EEC/PPS DPLLs periodic work disabled\n");
++			return;
++		}
++	}
++	ice_dpll_cb_unlock(pf);
++	ice_dpll_notify_changes(de);
++	ice_dpll_notify_changes(dp);
++resched:
++	/* Run twice a second or reschedule if update failed */
++	kthread_queue_delayed_work(d->kworker, &d->work,
++				   ret ? msecs_to_jiffies(10) :
++				   msecs_to_jiffies(500));
++}
++
++/**
++ * ice_dpll_init_worker - Initialize DPLLs periodic worker
++ * @pf: board private structure
++ *
++ * Create and start DPLLs periodic worker.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - create worker failure
++ */
++static int ice_dpll_init_worker(struct ice_pf *pf)
++{
++	struct ice_dplls *d = &pf->dplls;
++	struct kthread_worker *kworker;
++
++	ice_dpll_update_state(pf, &d->eec, true);
++	ice_dpll_update_state(pf, &d->pps, true);
++	kthread_init_delayed_work(&d->work, ice_dpll_periodic_work);
++	kworker = kthread_create_worker(0, "ice-dplls-%s",
++					dev_name(ice_pf_to_dev(pf)));
++	if (IS_ERR(kworker))
++		return PTR_ERR(kworker);
++	d->kworker = kworker;
++	d->cgu_state_acq_err_num = 0;
++	kthread_queue_delayed_work(d->kworker, &d->work, 0);
++
++	return 0;
++}
++
++/**
++ * ice_dpll_release_all - disable support for DPLL and unregister dpll device
++ * @pf: board private structure
++ * @cgu: if cgu is controlled by this driver instance
++ *
++ * This function handles the cleanup work required from the initialization by
++ * freeing resources and unregistering the dpll.
++ *
++ * Context: Called under pf->dplls.lock
++ */
++static void ice_dpll_release_all(struct ice_pf *pf, bool cgu)
++{
++	struct ice_dplls *d = &pf->dplls;
++	struct ice_dpll *de = &d->eec;
++	struct ice_dpll *dp = &d->pps;
++
++	mutex_lock(&pf->dplls.lock);
++	ice_dpll_release_rclk_pin(pf);
++	ice_dpll_release_pins(pf, de->dpll, dp->dpll, d->inputs,
++			      d->num_inputs, &ice_dpll_source_ops, cgu);
++	mutex_unlock(&pf->dplls.lock);
++	if (cgu) {
++		mutex_lock(&pf->dplls.lock);
++		ice_dpll_release_pins(pf, de->dpll, dp->dpll, d->outputs,
++				      d->num_outputs,
++				      &ice_dpll_output_ops, cgu);
++		mutex_unlock(&pf->dplls.lock);
++	}
++	ice_dpll_release_info(pf);
++	if (dp->dpll) {
++		mutex_lock(&pf->dplls.lock);
++		if (cgu)
++			dpll_device_unregister(dp->dpll, &ice_dpll_ops, pf);
++		dpll_device_put(dp->dpll);
++		mutex_unlock(&pf->dplls.lock);
++		dev_dbg(ice_pf_to_dev(pf), "PPS dpll removed\n");
++	}
++
++	if (de->dpll) {
++		mutex_lock(&pf->dplls.lock);
++		if (cgu)
++			dpll_device_unregister(de->dpll, &ice_dpll_ops, pf);
++		dpll_device_put(de->dpll);
++		mutex_unlock(&pf->dplls.lock);
++		dev_dbg(ice_pf_to_dev(pf), "EEC dpll removed\n");
++	}
++
++	if (cgu) {
++		mutex_lock(&pf->dplls.lock);
++		kthread_cancel_delayed_work_sync(&d->work);
++		if (d->kworker) {
++			kthread_destroy_worker(d->kworker);
++			d->kworker = NULL;
++			dev_dbg(ice_pf_to_dev(pf), "DPLLs worker removed\n");
++		}
++		mutex_unlock(&pf->dplls.lock);
++	}
++}
++
++/**
++ * ice_dpll_release - Disable the driver/HW support for DPLLs and unregister
++ * the dpll device.
++ * @pf: board private structure
++ *
++ * Handles the cleanup work required after dpll initialization,
++ * freeing resources and unregistering the dpll.
++ */
++void ice_dpll_release(struct ice_pf *pf)
++{
++	if (test_bit(ICE_FLAG_DPLL, pf->flags)) {
++		ice_dpll_release_all(pf,
++				     ice_is_feature_supported(pf, ICE_F_CGU));
++		mutex_destroy(&pf->dplls.lock);
++		clear_bit(ICE_FLAG_DPLL, pf->flags);
++	}
++}
++
++/**
++ * ice_dpll_init_direct_pins - initializes source or output pins information
++ * @pf: board private structure
++ * @pin_type: type of pins being initialized
++ *
++ * Init information about input or output pins, cache them in pins struct.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - init failure
++ */
++static int
++ice_dpll_init_direct_pins(struct ice_pf *pf, enum ice_dpll_pin_type pin_type)
++{
++	struct ice_dpll *de = &pf->dplls.eec, *dp = &pf->dplls.pps;
++	int num_pins, i, ret = -EINVAL;
++	struct ice_hw *hw = &pf->hw;
++	struct ice_dpll_pin *pins;
++	u8 freq_supp_num;
++	bool input;
++
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE) {
++		pins = pf->dplls.inputs;
++		num_pins = pf->dplls.num_inputs;
++		input = true;
++	} else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT) {
++		pins = pf->dplls.outputs;
++		num_pins = pf->dplls.num_outputs;
++		input = false;
++	} else {
++		return -EINVAL;
++	}
++
++	for (i = 0; i < num_pins; i++) {
++		pins[i].idx = i;
++		pins[i].prop.label = ice_cgu_get_pin_name(hw, i, input);
++		pins[i].prop.type = ice_cgu_get_pin_type(hw, i, input);
++		if (input) {
++			ret = ice_aq_get_cgu_ref_prio(hw, de->dpll_idx, i,
++						      &de->input_prio[i]);
++			if (ret)
++				return ret;
++			ret = ice_aq_get_cgu_ref_prio(hw, dp->dpll_idx, i,
++						      &dp->input_prio[i]);
++			if (ret)
++				return ret;
++			pins[i].prop.capabilities +=
++				DPLL_PIN_CAPS_PRIORITY_CAN_CHANGE;
++		}
++		pins[i].prop.capabilities += DPLL_PIN_CAPS_STATE_CAN_CHANGE;
++		ret = ice_dpll_pin_state_update(pf, &pins[i], pin_type);
++		if (ret)
++			return ret;
++		pins[i].prop.freq_supported =
++			ice_cgu_get_pin_freq_supp(hw, i, input, &freq_supp_num);
++		pins[i].prop.freq_supported_num = freq_supp_num;
++	}
++
++	return ret;
++}
++
++/**
++ * ice_dpll_init_rclk_pin - initializes rclk pin information
++ * @pf: board private structure
++ * @pin_type: type of pins being initialized
++ *
++ * Init information for rclk pin, cache them in pf->dplls.rclk.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - init failure
++ */
++static int ice_dpll_init_rclk_pin(struct ice_pf *pf)
++{
++	struct ice_dpll_pin *pin = &pf->dplls.rclk;
++	struct device *dev = ice_pf_to_dev(pf);
++
++	pin->prop.label = dev_name(dev);
++	pin->prop.type = DPLL_PIN_TYPE_SYNCE_ETH_PORT;
++	pin->prop.capabilities += DPLL_PIN_CAPS_STATE_CAN_CHANGE;
++
++	return ice_dpll_pin_state_update(pf, pin,
++					 ICE_DPLL_PIN_TYPE_RCLK_SOURCE);
++}
++
++/**
++ * ice_dpll_init_pins - init pins wrapper
++ * @pf: board private structure
++ * @pin_type: type of pins being initialized
++ *
++ * Wraps functions for pin inti.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - init failure
++ */
++static int ice_dpll_init_pins(struct ice_pf *pf,
++			      const enum ice_dpll_pin_type pin_type)
++{
++	if (pin_type == ICE_DPLL_PIN_TYPE_SOURCE)
++		return ice_dpll_init_direct_pins(pf, pin_type);
++	else if (pin_type == ICE_DPLL_PIN_TYPE_OUTPUT)
++		return ice_dpll_init_direct_pins(pf, pin_type);
++	else if (pin_type == ICE_DPLL_PIN_TYPE_RCLK_SOURCE)
++		return ice_dpll_init_rclk_pin(pf);
++	else
++		return -EINVAL;
++}
++
++/**
++ * ice_dpll_init_info - prepare pf's dpll information structure
++ * @pf: board private structure
++ * @cgu: if cgu is present and controlled by this NIC
++ *
++ * Acquire (from HW) and set basic dpll information (on pf->dplls struct).
++ *
++ * Return:
++ * * 0 - success
++ * * negative - error
++ */
++static int ice_dpll_init_info(struct ice_pf *pf, bool cgu)
++{
++	struct ice_aqc_get_cgu_abilities abilities;
++	struct ice_dpll *de = &pf->dplls.eec;
++	struct ice_dpll *dp = &pf->dplls.pps;
++	struct ice_dplls *d = &pf->dplls;
++	struct ice_hw *hw = &pf->hw;
++	int ret, alloc_size, i;
++	u8 base_rclk_idx;
++
++	ice_generate_clock_id(pf, &d->clock_id);
++	ret = ice_aq_get_cgu_abilities(hw, &abilities);
++	if (ret) {
++		dev_err(ice_pf_to_dev(pf),
++			"err:%d %s failed to read cgu abilities\n",
++			ret, ice_aq_str(hw->adminq.sq_last_status));
++		return ret;
++	}
++
++	de->dpll_idx = abilities.eec_dpll_idx;
++	dp->dpll_idx = abilities.pps_dpll_idx;
++	d->num_inputs = abilities.num_inputs;
++	d->num_outputs = abilities.num_outputs;
++
++	alloc_size = sizeof(*d->inputs) * d->num_inputs;
++	d->inputs = kzalloc(alloc_size, GFP_KERNEL);
++	if (!d->inputs)
++		return -ENOMEM;
++
++	alloc_size = sizeof(*de->input_prio) * d->num_inputs;
++	de->input_prio = kzalloc(alloc_size, GFP_KERNEL);
++	if (!de->input_prio)
++		return -ENOMEM;
++
++	dp->input_prio = kzalloc(alloc_size, GFP_KERNEL);
++	if (!dp->input_prio)
++		return -ENOMEM;
++
++	ret = ice_dpll_init_pins(pf, ICE_DPLL_PIN_TYPE_SOURCE);
++	if (ret)
++		goto release_info;
++
++	if (cgu) {
++		alloc_size = sizeof(*d->outputs) * d->num_outputs;
++		d->outputs = kzalloc(alloc_size, GFP_KERNEL);
++		if (!d->outputs)
++			goto release_info;
++
++		ret = ice_dpll_init_pins(pf, ICE_DPLL_PIN_TYPE_OUTPUT);
++		if (ret)
++			goto release_info;
++	}
++
++	ret = ice_get_cgu_rclk_pin_info(&pf->hw, &base_rclk_idx,
++					&pf->dplls.rclk.num_parents);
++	if (ret)
++		return ret;
++	for (i = 0; i < pf->dplls.rclk.num_parents; i++)
++		pf->dplls.rclk.parent_idx[i] = base_rclk_idx + i;
++	ret = ice_dpll_init_pins(pf, ICE_DPLL_PIN_TYPE_RCLK_SOURCE);
++	if (ret)
++		return ret;
++
++	dev_dbg(ice_pf_to_dev(pf),
++		"%s - success, inputs:%u, outputs:%u rclk-parents:%u\n",
++		__func__, d->num_inputs, d->num_outputs, d->rclk.num_parents);
++
++	return 0;
++
++release_info:
++	dev_err(ice_pf_to_dev(pf),
++		"%s - fail: d->inputs:%p, de->input_prio:%p, dp->input_prio:%p, d->outputs:%p\n",
++		__func__, d->inputs, de->input_prio,
++		dp->input_prio, d->outputs);
++	ice_dpll_release_info(pf);
++	return ret;
++}
++
++/**
++ * ice_dpll_init - initialize dplls support
++ * @pf: board private structure
++ *
++ * Set up the device dplls registering them and pins connected within Linux dpll
++ * subsystem. Allow userpsace to obtain state of DPLL and handling of DPLL
++ * configuration requests.
++ *
++ * Return:
++ * * 0 - success
++ * * negative - init failure
++ */
++int ice_dpll_init(struct ice_pf *pf)
++{
++	bool cgu_present = ice_is_feature_supported(pf, ICE_F_CGU);
++	struct ice_dplls *d = &pf->dplls;
++	int err = 0;
++
++	mutex_init(&d->lock);
++	mutex_lock(&d->lock);
++	err = ice_dpll_init_info(pf, cgu_present);
++	if (err)
++		goto release;
++	err = ice_dpll_init_dplls(pf, cgu_present);
++	if (err)
++		goto release;
++	err = ice_dpll_register_pins(pf, cgu_present);
++	if (err)
++		goto release;
++	set_bit(ICE_FLAG_DPLL, pf->flags);
++	if (cgu_present) {
++		err = ice_dpll_init_worker(pf);
++		if (err)
++			goto release;
++	}
++	mutex_unlock(&d->lock);
++	dev_info(ice_pf_to_dev(pf), "DPLLs init successful\n");
++
++	return err;
++
++release:
++	ice_dpll_release_all(pf, cgu_present);
++	clear_bit(ICE_FLAG_DPLL, pf->flags);
++	mutex_unlock(&d->lock);
++	mutex_destroy(&d->lock);
++	dev_warn(ice_pf_to_dev(pf), "DPLLs init failure\n");
++
++	return err;
++}
+diff --git a/drivers/net/ethernet/intel/ice/ice_dpll.h b/drivers/net/ethernet/intel/ice/ice_dpll.h
+new file mode 100644
+index 000000000000..aad48b9910b7
+--- /dev/null
++++ b/drivers/net/ethernet/intel/ice/ice_dpll.h
+@@ -0,0 +1,101 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (C) 2022, Intel Corporation. */
++
++#ifndef _ICE_DPLL_H_
++#define _ICE_DPLL_H_
++
++#include "ice.h"
++
++#define ICE_DPLL_PRIO_MAX	0xF
++#define ICE_DPLL_RCLK_NUM_MAX	4
++/** ice_dpll_pin - store info about pins
++ * @pin: dpll pin structure
++ * @flags: pin flags returned from HW
++ * @idx: ice pin private idx
++ * @state: state of a pin
++ * @type: type of a pin
++ * @freq_mask: mask of supported frequencies
++ * @freq: current frequency of a pin
++ * @caps: capabilities of a pin
++ * @name: pin name
++ */
++struct ice_dpll_pin {
++	struct dpll_pin *pin;
++	u8 idx;
++	u8 num_parents;
++	u8 parent_idx[ICE_DPLL_RCLK_NUM_MAX];
++	u8 flags[ICE_DPLL_RCLK_NUM_MAX];
++	u8 state[ICE_DPLL_RCLK_NUM_MAX];
++	struct dpll_pin_properties prop;
++	u32 freq;
++};
++
++/** ice_dpll - store info required for DPLL control
++ * @dpll: pointer to dpll dev
++ * @dpll_idx: index of dpll on the NIC
++ * @source_idx: source currently selected
++ * @prev_source_idx: source previously selected
++ * @ref_state: state of dpll reference signals
++ * @eec_mode: eec_mode dpll is configured for
++ * @phase_offset: phase delay of a dpll
++ * @input_prio: priorities of each input
++ * @dpll_state: current dpll sync state
++ * @prev_dpll_state: last dpll sync state
++ * @active_source: pointer to active source pin
++ * @prev_source: pointer to previous active source pin
++ */
++struct ice_dpll {
++	struct dpll_device *dpll;
++	int dpll_idx;
++	u8 source_idx;
++	u8 prev_source_idx;
++	u8 ref_state;
++	u8 eec_mode;
++	s64 phase_offset;
++	u8 *input_prio;
++	enum ice_cgu_state dpll_state;
++	enum ice_cgu_state prev_dpll_state;
++	struct dpll_pin *active_source;
++	struct dpll_pin *prev_source;
++};
++
++/** ice_dplls - store info required for CCU (clock controlling unit)
++ * @kworker: periodic worker
++ * @work: periodic work
++ * @lock: locks access to configuration of a dpll
++ * @eec: pointer to EEC dpll dev
++ * @pps: pointer to PPS dpll dev
++ * @inputs: input pins pointer
++ * @outputs: output pins pointer
++ * @rclk: recovered pins pointer
++ * @num_inputs: number of input pins available on dpll
++ * @num_outputs: number of output pins available on dpll
++ * @num_rclk: number of recovered clock pins available on dpll
++ * @cgu_state_acq_err_num: number of errors returned during periodic work
++ */
++struct ice_dplls {
++	struct kthread_worker *kworker;
++	struct kthread_delayed_work work;
++	struct mutex lock;
++	struct ice_dpll eec;
++	struct ice_dpll pps;
++	struct ice_dpll_pin *inputs;
++	struct ice_dpll_pin *outputs;
++	struct ice_dpll_pin rclk;
++	u32 num_inputs;
++	u32 num_outputs;
++	int cgu_state_acq_err_num;
++	int lock_err_num;
++	u8 base_rclk_idx;
++	u64 clock_id;
++};
++
++int ice_dpll_init(struct ice_pf *pf);
++
++void ice_dpll_release(struct ice_pf *pf);
++
++int ice_dpll_rclk_init(struct ice_pf *pf);
++
++void ice_dpll_rclk_release(struct ice_pf *pf);
++
++#endif
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index a1f7c8edc22f..6b28b95a7254 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4821,6 +4821,10 @@ static void ice_init_features(struct ice_pf *pf)
+ 	if (ice_is_feature_supported(pf, ICE_F_GNSS))
+ 		ice_gnss_init(pf);
+ 
++	if (ice_is_feature_supported(pf, ICE_F_CGU) ||
++	    ice_is_feature_supported(pf, ICE_F_PHY_RCLK))
++		ice_dpll_init(pf);
++
+ 	/* Note: Flow director init failure is non-fatal to load */
+ 	if (ice_init_fdir(pf))
+ 		dev_err(dev, "could not initialize flow director\n");
+@@ -4847,6 +4851,9 @@ static void ice_deinit_features(struct ice_pf *pf)
+ 		ice_gnss_exit(pf);
+ 	if (test_bit(ICE_FLAG_PTP_SUPPORTED, pf->flags))
+ 		ice_ptp_release(pf);
++	if (ice_is_feature_supported(pf, ICE_F_PHY_RCLK) ||
++	    ice_is_feature_supported(pf, ICE_F_CGU))
++		ice_dpll_release(pf);
+ }
+ 
+ static void ice_init_wakeup(struct ice_pf *pf)
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+index e9a371fa038b..39b692945f73 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+@@ -3609,28 +3609,31 @@ enum dpll_pin_type ice_cgu_get_pin_type(struct ice_hw *hw, u8 pin, bool input)
+ }
+ 
+ /**
+- * ice_cgu_get_pin_sig_type_mask
++ * ice_cgu_get_pin_freq_supp
+  * @hw: pointer to the hw struct
+  * @pin: pin index
+  * @input: if request is done against input or output pin
++ * @num: output number of supported frequencies
+  *
+- * Return: signal type bit mask of a pin.
++ * Get frequency supported number and array of supported frequencies.
++ *
++ * Return: array of supported frequencies for given pin.
+  */
+-unsigned long
+-ice_cgu_get_pin_freq_mask(struct ice_hw *hw, u8 pin, bool input)
++struct dpll_pin_frequency *
++ice_cgu_get_pin_freq_supp(struct ice_hw *hw, u8 pin, bool input, u8 *num)
+ {
+ 	const struct ice_cgu_pin_desc *t;
+ 	int t_size;
+ 
++	*num = 0;
+ 	t = ice_cgu_get_pin_desc(hw, input, &t_size);
+-
+ 	if (!t)
+-		return 0;
+-
++		return NULL;
+ 	if (pin >= t_size)
+-		return 0;
++		return NULL;
++	*num = t[pin].freq_supp_num;
+ 
+-	return t[pin].sig_type_mask;
++	return t[pin].freq_supp;
+ }
+ 
+ /**
 diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-index 3b68cb91bd81..d09e5bca0ff1 100644
+index d09e5bca0ff1..4568b0403cd7 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
 +++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
-@@ -3,6 +3,7 @@
- 
- #ifndef _ICE_PTP_HW_H_
- #define _ICE_PTP_HW_H_
-+#include <linux/dpll.h>
- 
- enum ice_ptp_tmr_cmd {
- 	INIT_TIME,
-@@ -109,6 +110,232 @@ struct ice_cgu_pll_params_e822 {
- 	u32 post_pll_div;
+@@ -192,147 +192,137 @@ enum ice_si_cgu_out_pins {
+ 	NUM_SI_CGU_OUTPUT_PINS
  };
  
-+#define E810C_QSFP_C827_0_HANDLE	2
-+#define E810C_QSFP_C827_1_HANDLE	3
-+enum ice_e810_c827_idx {
-+	C827_0,
-+	C827_1
+-#define MAX_CGU_PIN_NAME_LEN		16
+-#define ICE_SIG_TYPE_MASK_1PPS_10MHZ	(BIT(DPLL_PIN_FREQ_SUPP_1_HZ) | \
+-					 BIT(DPLL_PIN_FREQ_SUPP_10_MHZ))
++static struct dpll_pin_frequency ice_cgu_pin_freq_common[] = {
++	DPLL_PIN_FREQUENCY_1PPS,
++	DPLL_PIN_FREQUENCY_10MHZ,
 +};
 +
-+enum ice_phy_rclk_pins {
-+	ICE_RCLKA_PIN = 0,		/* SCL pin */
-+	ICE_RCLKB_PIN,			/* SDA pin */
++static struct dpll_pin_frequency ice_cgu_pin_freq_1_hz[] = {
++	DPLL_PIN_FREQUENCY_1PPS,
 +};
 +
-+#define ICE_E810_RCLK_PINS_NUM		(ICE_RCLKB_PIN + 1)
-+#define ICE_E822_RCLK_PINS_NUM		(ICE_RCLKA_PIN + 1)
-+#define E810T_CGU_INPUT_C827(_phy, _pin) ((_phy) * ICE_E810_RCLK_PINS_NUM + \
-+					  (_pin) + ZL_REF1P)
-+enum ice_cgu_state {
-+	ICE_CGU_STATE_UNKNOWN = -1,
-+	ICE_CGU_STATE_INVALID,		/* state is not valid */
-+	ICE_CGU_STATE_FREERUN,		/* clock is free-running */
-+	ICE_CGU_STATE_LOCKED,		/* clock is locked to the reference,
-+					 * but the holdover memory is not valid
-+					 */
-+	ICE_CGU_STATE_LOCKED_HO_ACQ,	/* clock is locked to the reference
-+					 * and holdover memory is valid
-+					 */
-+	ICE_CGU_STATE_HOLDOVER,		/* clock is in holdover mode */
-+	ICE_CGU_STATE_MAX
++static struct dpll_pin_frequency ice_cgu_pin_freq_10_mhz[] = {
++	DPLL_PIN_FREQUENCY_10MHZ,
 +};
 +
-+#define MAX_CGU_STATE_NAME_LEN		14
-+struct ice_cgu_state_desc {
-+	char name[MAX_CGU_STATE_NAME_LEN];
-+	enum ice_cgu_state state;
-+};
-+
-+enum ice_zl_cgu_in_pins {
-+	ZL_REF0P = 0,
-+	ZL_REF0N,
-+	ZL_REF1P,
-+	ZL_REF1N,
-+	ZL_REF2P,
-+	ZL_REF2N,
-+	ZL_REF3P,
-+	ZL_REF3N,
-+	ZL_REF4P,
-+	ZL_REF4N,
-+	NUM_ZL_CGU_INPUT_PINS
-+};
-+
-+enum ice_zl_cgu_out_pins {
-+	ZL_OUT0 = 0,
-+	ZL_OUT1,
-+	ZL_OUT2,
-+	ZL_OUT3,
-+	ZL_OUT4,
-+	ZL_OUT5,
-+	ZL_OUT6,
-+	NUM_ZL_CGU_OUTPUT_PINS
-+};
-+
-+enum ice_si_cgu_in_pins {
-+	SI_REF0P = 0,
-+	SI_REF0N,
-+	SI_REF1P,
-+	SI_REF1N,
-+	SI_REF2P,
-+	SI_REF2N,
-+	SI_REF3,
-+	SI_REF4,
-+	NUM_SI_CGU_INPUT_PINS
-+};
-+
-+enum ice_si_cgu_out_pins {
-+	SI_OUT0 = 0,
-+	SI_OUT1,
-+	SI_OUT2,
-+	SI_OUT3,
-+	SI_OUT4,
-+	NUM_SI_CGU_OUTPUT_PINS
-+};
-+
-+#define MAX_CGU_PIN_NAME_LEN		16
-+#define ICE_SIG_TYPE_MASK_1PPS_10MHZ	(BIT(DPLL_PIN_FREQ_SUPP_1_HZ) | \
-+					 BIT(DPLL_PIN_FREQ_SUPP_10_MHZ))
-+struct ice_cgu_pin_desc {
-+	char name[MAX_CGU_PIN_NAME_LEN];
-+	u8 index;
-+	enum dpll_pin_type type;
-+	unsigned long sig_type_mask;
-+};
-+
-+static const struct ice_cgu_pin_desc ice_e810t_sfp_cgu_inputs[] = {
-+	{ "CVL-SDP22",	  ZL_REF0P, DPLL_PIN_TYPE_INT_OSCILLATOR,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "CVL-SDP20",	  ZL_REF0N, DPLL_PIN_TYPE_INT_OSCILLATOR,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "C827_0-RCLKA", ZL_REF1P, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "C827_0-RCLKB", ZL_REF1N, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "SMA1",	  ZL_REF3P, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "SMA2/U.FL2",	  ZL_REF3N, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "GNSS-1PPS",	  ZL_REF4P, DPLL_PIN_TYPE_GNSS,
-+		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
-+	{ "OCXO",	  ZL_REF4N, DPLL_PIN_TYPE_INT_OSCILLATOR,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+};
-+
-+static const struct ice_cgu_pin_desc ice_e810t_qsfp_cgu_inputs[] = {
-+	{ "CVL-SDP22",	  ZL_REF0P, DPLL_PIN_TYPE_INT_OSCILLATOR,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "CVL-SDP20",	  ZL_REF0N, DPLL_PIN_TYPE_INT_OSCILLATOR,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "C827_0-RCLKA", ZL_REF1P, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "C827_0-RCLKB", ZL_REF1N, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "C827_1-RCLKA", ZL_REF2P, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "C827_1-RCLKB", ZL_REF2N, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "SMA1",	  ZL_REF3P, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "SMA2/U.FL2",	  ZL_REF3N, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "GNSS-1PPS",	  ZL_REF4P, DPLL_PIN_TYPE_GNSS,
-+		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
-+	{ "OCXO",	  ZL_REF4N, DPLL_PIN_TYPE_INT_OSCILLATOR,
-+			BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+};
-+
-+static const struct ice_cgu_pin_desc ice_e810t_sfp_cgu_outputs[] = {
-+	{ "REF-SMA1",	    ZL_OUT0, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "REF-SMA2/U.FL2", ZL_OUT1, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "PHY-CLK",	    ZL_OUT2, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "MAC-CLK",	    ZL_OUT3, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "CVL-SDP21",	    ZL_OUT4, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "CVL-SDP23",	    ZL_OUT5, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+};
-+
-+static const struct ice_cgu_pin_desc ice_e810t_qsfp_cgu_outputs[] = {
-+	{ "REF-SMA1",	    ZL_OUT0, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "REF-SMA2/U.FL2", ZL_OUT1, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "PHY-CLK",	    ZL_OUT2, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "PHY2-CLK",	    ZL_OUT3, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "MAC-CLK",	    ZL_OUT4, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "CVL-SDP21",	    ZL_OUT5, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "CVL-SDP23",	    ZL_OUT6, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+};
-+
-+static const struct ice_cgu_pin_desc ice_e823_si_cgu_inputs[] = {
-+	{ "NONE",	  SI_REF0P, DPLL_PIN_TYPE_UNSPEC, 0 },
-+	{ "NONE",	  SI_REF0N, DPLL_PIN_TYPE_UNSPEC, 0 },
-+	{ "SYNCE0_DP",	  SI_REF1P, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "SYNCE0_DN",	  SI_REF1N, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "EXT_CLK_SYNC", SI_REF2P, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "NONE",	  SI_REF2N, DPLL_PIN_TYPE_UNSPEC, 0 },
-+	{ "EXT_PPS_OUT",  SI_REF3,  DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "INT_PPS_OUT",  SI_REF4,  DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+};
-+
-+static const struct ice_cgu_pin_desc ice_e823_si_cgu_outputs[] = {
-+	{ "1588-TIME_SYNC", SI_OUT0, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "PHY-CLK",	    SI_OUT1, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "10MHZ-SMA2",	    SI_OUT2, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "PPS-SMA1",	    SI_OUT3, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+};
-+
-+static const struct ice_cgu_pin_desc ice_e823_zl_cgu_inputs[] = {
-+	{ "NONE",	  ZL_REF0P, DPLL_PIN_TYPE_UNSPEC, 0 },
-+	{ "INT_PPS_OUT",  ZL_REF0N, DPLL_PIN_TYPE_EXT,
-+		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
-+	{ "SYNCE0_DP",	  ZL_REF1P, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "SYNCE0_DN",	  ZL_REF1N, DPLL_PIN_TYPE_MUX,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "NONE",	  ZL_REF2P, DPLL_PIN_TYPE_UNSPEC, 0 },
-+	{ "NONE",	  ZL_REF2N, DPLL_PIN_TYPE_UNSPEC, 0 },
-+	{ "EXT_CLK_SYNC", ZL_REF3P, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "NONE",	  ZL_REF3N, DPLL_PIN_TYPE_UNSPEC, 0 },
-+	{ "EXT_PPS_OUT",  ZL_REF4P, DPLL_PIN_TYPE_EXT,
-+		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
-+	{ "OCXO",	  ZL_REF4N, DPLL_PIN_TYPE_INT_OSCILLATOR,
-+			BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+};
-+
-+static const struct ice_cgu_pin_desc ice_e823_zl_cgu_outputs[] = {
-+	{ "PPS-SMA1",	   ZL_OUT0, DPLL_PIN_TYPE_EXT,
-+		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
-+	{ "10MHZ-SMA2",	   ZL_OUT1, DPLL_PIN_TYPE_EXT,
-+		BIT(DPLL_PIN_FREQ_SUPP_10_MHZ) },
-+	{ "PHY-CLK",	   ZL_OUT2, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "1588-TIME_REF", ZL_OUT3, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
-+		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
-+	{ "CPK-TIME_SYNC", ZL_OUT4, DPLL_PIN_TYPE_EXT,
-+		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
-+	{ "NONE",	   ZL_OUT5, DPLL_PIN_TYPE_UNSPEC, 0 },
-+};
-+
- extern const struct
- ice_cgu_pll_params_e822 e822_cgu_params[NUM_ICE_TIME_REF_FREQ];
- 
-@@ -197,6 +424,19 @@ int ice_read_sma_ctrl_e810t(struct ice_hw *hw, u8 *data);
- int ice_write_sma_ctrl_e810t(struct ice_hw *hw, u8 data);
- int ice_read_pca9575_reg_e810t(struct ice_hw *hw, u8 offset, u8 *data);
- bool ice_is_pca9575_present(struct ice_hw *hw);
-+bool ice_is_phy_rclk_present(struct ice_hw *hw);
-+bool ice_is_clock_mux_present_e810t(struct ice_hw *hw);
-+int ice_get_pf_c827_idx(struct ice_hw *hw, u8 *idx);
-+bool ice_is_cgu_present(struct ice_hw *hw);
-+enum dpll_pin_type ice_cgu_get_pin_type(struct ice_hw *hw, u8 pin, bool input);
-+unsigned long
-+ice_cgu_get_pin_freq_mask(struct ice_hw *hw, u8 pin, bool input);
-+const char *ice_cgu_get_pin_name(struct ice_hw *hw, u8 pin, bool input);
-+int ice_get_cgu_state(struct ice_hw *hw, u8 dpll_idx,
-+		      enum ice_cgu_state last_dpll_state, u8 *pin,
-+		      u8 *ref_state, u8 *eec_mode, s64 *phase_offset,
-+		      enum ice_cgu_state *dpll_state);
-+int ice_get_cgu_rclk_pin_info(struct ice_hw *hw, u8 *base_idx, u8 *pin_num);
- 
- #define PFTSYN_SEM_BYTES	4
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index a09556e57803..128bc4d326f9 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -963,6 +963,7 @@ struct ice_hw {
- 	DECLARE_BITMAP(hw_ptype, ICE_FLOW_PTYPE_MAX);
- 	u8 dvm_ena;
- 	u16 io_expander_handle;
-+	u8 cgu_part_number;
+ struct ice_cgu_pin_desc {
+-	char name[MAX_CGU_PIN_NAME_LEN];
++	char *name;
+ 	u8 index;
+ 	enum dpll_pin_type type;
+-	unsigned long sig_type_mask;
++	u32 freq_supp_num;
++	struct dpll_pin_frequency *freq_supp;
  };
  
- /* Statistics collected by each port, VSI, VEB, and S-channel */
+ static const struct ice_cgu_pin_desc ice_e810t_sfp_cgu_inputs[] = {
+ 	{ "CVL-SDP22",	  ZL_REF0P, DPLL_PIN_TYPE_INT_OSCILLATOR,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "CVL-SDP20",	  ZL_REF0N, DPLL_PIN_TYPE_INT_OSCILLATOR,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
+-	{ "C827_0-RCLKA", ZL_REF1P, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "C827_0-RCLKB", ZL_REF1N, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
++	{ "C827_0-RCLKA", ZL_REF1P, DPLL_PIN_TYPE_MUX, 0, },
++	{ "C827_0-RCLKB", ZL_REF1N, DPLL_PIN_TYPE_MUX, 0, },
+ 	{ "SMA1",	  ZL_REF3P, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "SMA2/U.FL2",	  ZL_REF3N, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "GNSS-1PPS",	  ZL_REF4P, DPLL_PIN_TYPE_GNSS,
+-		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
+-	{ "OCXO",	  ZL_REF4N, DPLL_PIN_TYPE_INT_OSCILLATOR,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_1_hz), ice_cgu_pin_freq_1_hz },
++	{ "OCXO",	  ZL_REF4N, DPLL_PIN_TYPE_INT_OSCILLATOR, 0, },
+ };
+ 
+ static const struct ice_cgu_pin_desc ice_e810t_qsfp_cgu_inputs[] = {
+ 	{ "CVL-SDP22",	  ZL_REF0P, DPLL_PIN_TYPE_INT_OSCILLATOR,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "CVL-SDP20",	  ZL_REF0N, DPLL_PIN_TYPE_INT_OSCILLATOR,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
+-	{ "C827_0-RCLKA", ZL_REF1P, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "C827_0-RCLKB", ZL_REF1N, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "C827_1-RCLKA", ZL_REF2P, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "C827_1-RCLKB", ZL_REF2N, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
++	{ "C827_0-RCLKA", ZL_REF1P, DPLL_PIN_TYPE_MUX, },
++	{ "C827_0-RCLKB", ZL_REF1N, DPLL_PIN_TYPE_MUX, },
++	{ "C827_1-RCLKA", ZL_REF2P, DPLL_PIN_TYPE_MUX, },
++	{ "C827_1-RCLKB", ZL_REF2N, DPLL_PIN_TYPE_MUX, },
+ 	{ "SMA1",	  ZL_REF3P, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "SMA2/U.FL2",	  ZL_REF3N, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "GNSS-1PPS",	  ZL_REF4P, DPLL_PIN_TYPE_GNSS,
+-		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
+-	{ "OCXO",	  ZL_REF4N, DPLL_PIN_TYPE_INT_OSCILLATOR,
+-			BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_1_hz), ice_cgu_pin_freq_1_hz },
++	{ "OCXO",	  ZL_REF4N, DPLL_PIN_TYPE_INT_OSCILLATOR, },
+ };
+ 
+ static const struct ice_cgu_pin_desc ice_e810t_sfp_cgu_outputs[] = {
+ 	{ "REF-SMA1",	    ZL_OUT0, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "REF-SMA2/U.FL2", ZL_OUT1, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
+-	{ "PHY-CLK",	    ZL_OUT2, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "MAC-CLK",	    ZL_OUT3, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
++	{ "PHY-CLK",	    ZL_OUT2, DPLL_PIN_TYPE_SYNCE_ETH_PORT, },
++	{ "MAC-CLK",	    ZL_OUT3, DPLL_PIN_TYPE_SYNCE_ETH_PORT, },
+ 	{ "CVL-SDP21",	    ZL_OUT4, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_1_hz), ice_cgu_pin_freq_1_hz },
+ 	{ "CVL-SDP23",	    ZL_OUT5, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_1_hz), ice_cgu_pin_freq_1_hz },
+ };
+ 
+ static const struct ice_cgu_pin_desc ice_e810t_qsfp_cgu_outputs[] = {
+ 	{ "REF-SMA1",	    ZL_OUT0, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "REF-SMA2/U.FL2", ZL_OUT1, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
+-	{ "PHY-CLK",	    ZL_OUT2, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "PHY2-CLK",	    ZL_OUT3, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "MAC-CLK",	    ZL_OUT4, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
++	{ "PHY-CLK",	    ZL_OUT2, DPLL_PIN_TYPE_SYNCE_ETH_PORT, 0 },
++	{ "PHY2-CLK",	    ZL_OUT3, DPLL_PIN_TYPE_SYNCE_ETH_PORT, 0 },
++	{ "MAC-CLK",	    ZL_OUT4, DPLL_PIN_TYPE_SYNCE_ETH_PORT, 0 },
+ 	{ "CVL-SDP21",	    ZL_OUT5, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_1_hz), ice_cgu_pin_freq_1_hz },
+ 	{ "CVL-SDP23",	    ZL_OUT6, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_1_hz), ice_cgu_pin_freq_1_hz },
+ };
+ 
+ static const struct ice_cgu_pin_desc ice_e823_si_cgu_inputs[] = {
+ 	{ "NONE",	  SI_REF0P, DPLL_PIN_TYPE_UNSPEC, 0 },
+ 	{ "NONE",	  SI_REF0N, DPLL_PIN_TYPE_UNSPEC, 0 },
+-	{ "SYNCE0_DP",	  SI_REF1P, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "SYNCE0_DN",	  SI_REF1N, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++	{ "SYNCE0_DP",	  SI_REF1P, DPLL_PIN_TYPE_MUX, 0 },
++	{ "SYNCE0_DN",	  SI_REF1N, DPLL_PIN_TYPE_MUX, 0 },
+ 	{ "EXT_CLK_SYNC", SI_REF2P, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "NONE",	  SI_REF2N, DPLL_PIN_TYPE_UNSPEC, 0 },
+ 	{ "EXT_PPS_OUT",  SI_REF3,  DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "INT_PPS_OUT",  SI_REF4,  DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ };
+ 
+ static const struct ice_cgu_pin_desc ice_e823_si_cgu_outputs[] = {
+ 	{ "1588-TIME_SYNC", SI_OUT0, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
+-	{ "PHY-CLK",	    SI_OUT1, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
++	{ "PHY-CLK",	    SI_OUT1, DPLL_PIN_TYPE_SYNCE_ETH_PORT, 0 },
+ 	{ "10MHZ-SMA2",	    SI_OUT2, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_10_mhz), ice_cgu_pin_freq_10_mhz },
+ 	{ "PPS-SMA1",	    SI_OUT3, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ };
+ 
+ static const struct ice_cgu_pin_desc ice_e823_zl_cgu_inputs[] = {
+ 	{ "NONE",	  ZL_REF0P, DPLL_PIN_TYPE_UNSPEC, 0 },
+ 	{ "INT_PPS_OUT",  ZL_REF0N, DPLL_PIN_TYPE_EXT,
+-		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
+-	{ "SYNCE0_DP",	  ZL_REF1P, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "SYNCE0_DN",	  ZL_REF1N, DPLL_PIN_TYPE_MUX,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_1_hz), ice_cgu_pin_freq_1_hz },
++	{ "SYNCE0_DP",	  ZL_REF1P, DPLL_PIN_TYPE_MUX, 0 },
++	{ "SYNCE0_DN",	  ZL_REF1N, DPLL_PIN_TYPE_MUX, 0 },
+ 	{ "NONE",	  ZL_REF2P, DPLL_PIN_TYPE_UNSPEC, 0 },
+ 	{ "NONE",	  ZL_REF2N, DPLL_PIN_TYPE_UNSPEC, 0 },
+ 	{ "EXT_CLK_SYNC", ZL_REF3P, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "NONE",	  ZL_REF3N, DPLL_PIN_TYPE_UNSPEC, 0 },
+ 	{ "EXT_PPS_OUT",  ZL_REF4P, DPLL_PIN_TYPE_EXT,
+-		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
+-	{ "OCXO",	  ZL_REF4N, DPLL_PIN_TYPE_INT_OSCILLATOR,
+-			BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_1_hz), ice_cgu_pin_freq_1_hz },
++	{ "OCXO",	  ZL_REF4N, DPLL_PIN_TYPE_INT_OSCILLATOR, 0 },
+ };
+ 
+ static const struct ice_cgu_pin_desc ice_e823_zl_cgu_outputs[] = {
+ 	{ "PPS-SMA1",	   ZL_OUT0, DPLL_PIN_TYPE_EXT,
+-		BIT(DPLL_PIN_FREQ_SUPP_1_HZ) },
++		ARRAY_SIZE(ice_cgu_pin_freq_1_hz), ice_cgu_pin_freq_1_hz },
+ 	{ "10MHZ-SMA2",	   ZL_OUT1, DPLL_PIN_TYPE_EXT,
+-		BIT(DPLL_PIN_FREQ_SUPP_10_MHZ) },
+-	{ "PHY-CLK",	   ZL_OUT2, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
+-	{ "1588-TIME_REF", ZL_OUT3, DPLL_PIN_TYPE_SYNCE_ETH_PORT,
+-		BIT(DPLL_PIN_FREQ_SUPP_UNSPEC) },
++		ARRAY_SIZE(ice_cgu_pin_freq_10_mhz), ice_cgu_pin_freq_10_mhz },
++	{ "PHY-CLK",	   ZL_OUT2, DPLL_PIN_TYPE_SYNCE_ETH_PORT, 0 },
++	{ "1588-TIME_REF", ZL_OUT3, DPLL_PIN_TYPE_SYNCE_ETH_PORT, 0 },
+ 	{ "CPK-TIME_SYNC", ZL_OUT4, DPLL_PIN_TYPE_EXT,
+-		ICE_SIG_TYPE_MASK_1PPS_10MHZ },
++		ARRAY_SIZE(ice_cgu_pin_freq_common), ice_cgu_pin_freq_common },
+ 	{ "NONE",	   ZL_OUT5, DPLL_PIN_TYPE_UNSPEC, 0 },
+ };
+ 
+@@ -429,8 +419,8 @@ bool ice_is_clock_mux_present_e810t(struct ice_hw *hw);
+ int ice_get_pf_c827_idx(struct ice_hw *hw, u8 *idx);
+ bool ice_is_cgu_present(struct ice_hw *hw);
+ enum dpll_pin_type ice_cgu_get_pin_type(struct ice_hw *hw, u8 pin, bool input);
+-unsigned long
+-ice_cgu_get_pin_freq_mask(struct ice_hw *hw, u8 pin, bool input);
++struct dpll_pin_frequency *
++ice_cgu_get_pin_freq_supp(struct ice_hw *hw, u8 pin, bool input, u8 *num);
+ const char *ice_cgu_get_pin_name(struct ice_hw *hw, u8 pin, bool input);
+ int ice_get_cgu_state(struct ice_hw *hw, u8 dpll_idx,
+ 		      enum ice_cgu_state last_dpll_state, u8 *pin,
 -- 
 2.34.1
 
