@@ -2,218 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 574396F192A
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 15:17:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C4C6F195D
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 15:25:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346196AbjD1NRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 09:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
+        id S1346219AbjD1NZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 09:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240073AbjD1NRR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 09:17:17 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2044.outbound.protection.outlook.com [40.107.220.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62C41BC5;
-        Fri, 28 Apr 2023 06:17:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SQqCEVWuLHRkJg4twoSgmV5qXWbUed+WMn9txkKqM3ljoRkBi7a7FvY3vmCATOFgYGzIsh0M/W5PUdHSI3m64ynmlVEgWBGiK9l3kPQ7DmRERLKW11rlI6aEn3Je3UJ+p4hRKKF4DGGsMF9WZpoyluZ+ceiXLMeEIV/5vJ/Pv8vVHGZnMHrCzx+X3H5v94fdPYT8U39GigQbvCCs+C0RZJvtWTtqjGnTSmcrznvDuS1mUY681vBvrzQi4QBnvFaGyNxSFVnfcC+p7PT5vMtnIfWZ62cqaKW6SKJ5mdHCzW5/TVtTyJJTeSHLqu1o965oUbaWnxQIwZxJ5dFKNIstbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7fTcTPVT4LzcS/Vn/r6VsFUFt9CgWOLi+0RBjkHwfoM=;
- b=A+i5EyF2TwGFj/Hojb66HmdNSY5Y92WV+9ADFFfFt4V74YBlNH9NmHxvoFzUGPVuw2wjWb0lxnw5ZNx5OAwjEqVR4e9dHj3xiWr9BvVe/5Zheao8af84NXkNlZK1bBul4mqLxq5hckZmO4BduxJGFH6P1Ym55d4mMuV3cG0bm/3BWr5lCfCraN1Inw9SFTsgSiaSVa2uBNRuQ9UbpZtBlIRaCniU3ozV+Rne/nhoFKXF2JHJ50z9iek1Tu0V33yowuoQ/zrfBHsyUmWspoMH7a7POwHwhJupJd8eXxur3kMXXuf/sFVUVXmg96tl/oOIpeOs9SLMZk3KMtbI7iM25Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7fTcTPVT4LzcS/Vn/r6VsFUFt9CgWOLi+0RBjkHwfoM=;
- b=mE5tidsR05A+C48dwKAfMt5bt2rC2dlmHBLf8KNLNuMZKR4uXfjya1Dfi1k5gAGAm2w9bpYQrjW0FXOT1PVSn/E47fVoGqZPD1GFk/zyQcxE0X2zGkSs40f6LBYAVtuQhZuBLM63uE4BC0fv+TX/4cwjlm71EClV86G2A5OXUQxuiKC/36kmSdU+PZ1z3RrFx5x+P8piegbiA31NmuEwRjmylSI/wkPQGFHazNGxcye/0B9+ATBjvVV64dEBrIVv657pj8L1VwAyjO3117KFvCa1NJ3Pc3QZYli96OVBrTeqCITB5pnIKttU5ldjXrhmH3inlqH2POuY9InmlqNpMw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB5962.namprd12.prod.outlook.com (2603:10b6:8:69::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6340.20; Fri, 28 Apr 2023 13:17:12 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6340.024; Fri, 28 Apr 2023
- 13:17:11 +0000
-Date:   Fri, 28 Apr 2023 10:17:10 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>
-Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
- by default
-Message-ID: <ZEvHVnDrz3SRxWv2@nvidia.com>
-References: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
-X-ClientProxiedBy: MN2PR03CA0025.namprd03.prod.outlook.com
- (2603:10b6:208:23a::30) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+        with ESMTP id S229866AbjD1NZz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 09:25:55 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD3C173E
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 06:25:53 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-760ed929d24so1374429039f.2
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 06:25:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682688353; x=1685280353;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3yq9rEjt6j/Grlqag7wuS/2mUAkFSJI6s+U6/7TuIJI=;
+        b=GoYiu7CBlZr5ELT/+UNIQG28/LRbUidNR9UEm5IyCzfiB6/xR/VSrP4rkpSZc1jnJ3
+         4ct49tNtR0sdHcWuvoLfZ1NekKw+iQK645ZBU1IQ3BVhrVGLr2FdBfMCju85h4XOxz2r
+         jLz+9s9+ywDMdw/yOrKEjFAHwYm9dfbyL1Pv1rMNJxUJDGiqJjdQUrH88mhKD6KsbXub
+         jKIGtuJ3pdf2B+nj16QOCPMRRPOgxcKDM/0I3ncr6gzFeUD2oJrpZfnkkXaYMYEIJzev
+         LRgjXdkDgmYhdDfIBPdLy0UezTLRDlbg4FMbKKCyWHVWw5xogXBhFpEZ+X53LFbyJUy3
+         iRNQ==
+X-Gm-Message-State: AC+VfDymO8Q25WN1ZbUMyD0KUXRFm8cmXzoiFgGK1++zCAaNXAeCGFdJ
+        q9qVbhwgq32OOH9Vloci2l6Hbdv/k/48TiEuxTvMh5W7dev4
+X-Google-Smtp-Source: ACHHUZ6MnE/JgqBmivx4QQnhYuUax80Nj5PF5TRhT6lU1SjA8npOjQKyM/bfSmyJBgYPRrP9m88zwPvomu5ONPVhcDvzOaf/IXuH
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5962:EE_
-X-MS-Office365-Filtering-Correlation-Id: d5065df4-7476-4805-396b-08db47eae076
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VFCVUfrNVftgi4Pel8cn0mZ43PBrCpB11cbmTGhCC4BrVP74AmsTiWbEXnqCJMilaEoskQGsa3o/quXPvrBO2OeoWXQGhbOpcdUfx2e+J3QhvWf+nmzB2H5eL/4Qrn4HndaxAc9QFqkDfF5bB4KFa4VROv4jyvPAo5xUZq2iUDQBkYqPWwhHKoInw7zdIyBvUsp/fPFxOnq7QeLnkZXTq+HrIQ6b3Ozvd/m7O/StrgYyHnDo0ZHU90nAJet3NAtjtNCmuheCIaD8lGhSUpT5xGlhcYQHuXNZjDn1ERbyTii3Uh0bwBbAcbb+WDz6cryAYp7b/Obo5o5ocYeYDGk/Oza+EcgVsxxaCxHoFMd7QGgATkLvATWnfupyJZBfHNoUR3h2mqGg63AabDhpe/rSm5cGSIuEAovYw9TULo+W8FFizztyHg+0yLLfMEAFIAzb9vAGJCzajXt5RjXg3/rsmrxA+I8hGnfJ+jRJSNDjBTtV1hyrJ/ThJqicpJ4hB3Ua/lQKbcYaM3AmJNY51O0vD67cZ6jKkXXjg9xls4QYj5eLX/I91iksdvM9Iihl52Iq5925z/LGepYGqi84SvhniH/pGrGRhGu+2USrLgl6shg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(396003)(366004)(346002)(136003)(451199021)(86362001)(186003)(66476007)(6916009)(66946007)(4326008)(41300700001)(6512007)(6506007)(66556008)(26005)(316002)(83380400001)(6486002)(2616005)(54906003)(478600001)(36756003)(38100700002)(5660300002)(2906002)(8676002)(8936002)(7416002)(7406005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?J27k7ABFtpMJ3KtOVsiokkLIvxnWTtm5y0Di0k4DoLUdmeXMus478NmDYBD1?=
- =?us-ascii?Q?T/EYFUVeRkClDP4cgxRqVslPcNnvMGP1xC3co4JJVb+upBuxL+NacUxXIHej?=
- =?us-ascii?Q?dcsSC7L0VwCcheV55q7/EdInBARWLNlul94nJoGeIt+alGc9ll1FRPVW0uFX?=
- =?us-ascii?Q?sBoJ6hrbZGc3iCsl33yguOJjGe8EStN7wPK6tAdXdbKx/QA/ZBaOBQVaXWbs?=
- =?us-ascii?Q?68itIDzoV6qwRG8M+NV/xhfyX2vleRz5PNnDZR3po7jlsZ9WdxbTNKQNpKRv?=
- =?us-ascii?Q?sKTXpyIdt10BadLtWpxReBstAEkCHMB7lGXJpoO6A/TstVohRLHBcZrczBZp?=
- =?us-ascii?Q?Yp9Y0vzbh3+5Op7qVBiHSDWzjwm12kKOmRn64WN2UthoZ4Uby52FmlzQiP8D?=
- =?us-ascii?Q?JgAq6JP6EDl8e7pkb0+idz5SxK32PwDdC7Jge+bHyZCAZY+d0hvMIGiSnEPF?=
- =?us-ascii?Q?ZvSTDWPZ6nAvgfZIBR0sLdZeMk7EekTkxxo4Q2Wj6ZA81iizD4CT9dXblw1z?=
- =?us-ascii?Q?wySgStmPM/n4SAZBEtNAGOvyrgi/yosTbNlnnMtS9P7/GESFmowXYICIdYEw?=
- =?us-ascii?Q?ryVSIjHnzRitJuVM8c3ID2iQOhThXwp7hNLJcpvQM5lh3A3qR+cTRE563yDR?=
- =?us-ascii?Q?6LLr3F2cYEhAXQd4tCfr6a/zc4R417yyEpkC84qldqfMP8acf31+WPhZWQum?=
- =?us-ascii?Q?W/0VeTg1blJX8l3Ik8zSWXSHsuTcwh89b1WqsB+VsVHLoYJw7a6Vp7GDnQjR?=
- =?us-ascii?Q?m/pqsyeQivgBa824hyXqBh6K8+uxWiOEqttfD1c+clNFAH4nHaGCRTXwZXfb?=
- =?us-ascii?Q?CBJUnDMqWFRGSQCliObf86W/oB5IgbKHetJkIq5s+WbYlZ11RM2+oegdDxc5?=
- =?us-ascii?Q?uWxFnnDSKueQ/pjf3iWplBRCDpW38bm8ynEQurpQ0W7Pzz9NM9XgCa5e+Wes?=
- =?us-ascii?Q?TereIthQ/g6c82lXelcS9j+tAHmwVu8Mk5srU1P2mWv1tT3UEkB9g2oB17jk?=
- =?us-ascii?Q?IWAbhuY+0w3h5Q50OyW+1/9SoaOk6xBNNlNiC3boggWvQn1Zgv97TmzkdgOe?=
- =?us-ascii?Q?u8FgiHCtOeNHUq5bwkNp6/ZMlDW4UdqMzhboeiaDKMdbNGQuH4MscXKiJ05P?=
- =?us-ascii?Q?g9e3AqLpWNPFbMnnJAup968KsuqgvDnKWfeAdrsEN/MzgQcfNU8IUlAEivKK?=
- =?us-ascii?Q?UmrhQLO7hxQfbubfcMAtKJAWZXEggmMmzoXDJb/gJ/yd0ml1n+Zhom9Kl1DL?=
- =?us-ascii?Q?cDG0+R3jBzdvPZqKdSEmWrY00SV+cm4BhUs0UDJN0jt5nMNUBtQqkFexjUEm?=
- =?us-ascii?Q?6iM6GYvie9RlSzDDgX0B7V8M9LCG9mbrvY8NZ5YnY699ED537N1TmzCs5WPC?=
- =?us-ascii?Q?AHHKI6jywf1/igT9OWMgAFOwO6DEHdXVKlppcl5zBTbByw+5VwOlVK/eIacw?=
- =?us-ascii?Q?7AboMtH4MZlqzMoksZsIm4NFuyqa8KpdURKsApFtVb5kK6an8pJO0RdAZP0p?=
- =?us-ascii?Q?TZf4g+JICBj6iIfGAvBGioXjr9ctkGcfJTiMSUOKG0d4XtAnGU6vQH7yEie/?=
- =?us-ascii?Q?b/WLxfYKqpHdmSc12OW7yF3ioJp+wM9fCCb9XK4W?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5065df4-7476-4805-396b-08db47eae076
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 13:17:11.8164
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A1SSZPTLZ/kK8TCniuCESy/6zL0PzyRvgiowiYvYBHFDO4P4EaperJaKU5oJoefm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5962
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+X-Received: by 2002:a02:b1d2:0:b0:40f:a8e9:96ab with SMTP id
+ u18-20020a02b1d2000000b0040fa8e996abmr2540325jah.5.1682688353273; Fri, 28 Apr
+ 2023 06:25:53 -0700 (PDT)
+Date:   Fri, 28 Apr 2023 06:25:53 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000090900c05fa656913@google.com>
+Subject: [syzbot] [mm?] [net?] KASAN: null-ptr-deref Read in filemap_fault
+From:   syzbot <syzbot+48011b86c8ea329af1b9@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 28, 2023 at 12:42:32AM +0100, Lorenzo Stoakes wrote:
-> Writing to file-backed mappings which require folio dirty tracking using
-> GUP is a fundamentally broken operation, as kernel write access to GUP
-> mappings do not adhere to the semantics expected by a file system.
-> 
-> A GUP caller uses the direct mapping to access the folio, which does not
-> cause write notify to trigger, nor does it enforce that the caller marks
-> the folio dirty.
-> 
-> The problem arises when, after an initial write to the folio, writeback
-> results in the folio being cleaned and then the caller, via the GUP
-> interface, writes to the folio again.
-> 
-> As a result of the use of this secondary, direct, mapping to the folio no
-> write notify will occur, and if the caller does mark the folio dirty, this
-> will be done so unexpectedly.
-> 
-> For example, consider the following scenario:-
-> 
-> 1. A folio is written to via GUP which write-faults the memory, notifying
->    the file system and dirtying the folio.
-> 2. Later, writeback is triggered, resulting in the folio being cleaned and
->    the PTE being marked read-only.
-> 3. The GUP caller writes to the folio, as it is mapped read/write via the
->    direct mapping.
-> 4. The GUP caller, now done with the page, unpins it and sets it dirty
->    (though it does not have to).
-> 
-> This results in both data being written to a folio without writenotify, and
-> the folio being dirtied unexpectedly (if the caller decides to do so).
-> 
-> This issue was first reported by Jan Kara [1] in 2018, where the problem
-> resulted in file system crashes.
-> 
-> This is only relevant when the mappings are file-backed and the underlying
-> file system requires folio dirty tracking. File systems which do not, such
-> as shmem or hugetlb, are not at risk and therefore can be written to
-> without issue.
-> 
-> Unfortunately this limitation of GUP has been present for some time and
-> requires future rework of the GUP API in order to provide correct write
-> access to such mappings.
-> 
-> However, for the time being we introduce this check to prevent the most
-> egregious case of this occurring, use of the FOLL_LONGTERM pin.
-> 
-> These mappings are considerably more likely to be written to after
-> folios are cleaned and thus simply must not be permitted to do so.
-> 
-> As part of this change we separate out vma_needs_dirty_tracking() as a
-> helper function to determine this which is distinct from
-> vma_wants_writenotify() which is specific to determining which PTE flags to
-> set.
-> 
-> [1]:https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz/
-> 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
-> ---
->  include/linux/mm.h |  1 +
->  mm/gup.c           | 41 ++++++++++++++++++++++++++++++++++++++++-
->  mm/mmap.c          | 36 +++++++++++++++++++++++++++---------
->  3 files changed, 68 insertions(+), 10 deletions(-)
+Hello,
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+syzbot found the following issue on:
 
-Jason
+HEAD commit:    33afd4b76393 Merge tag 'mm-nonmm-stable-2023-04-27-16-01' ..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17bc1008280000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=70288413d8a92398
+dashboard link: https://syzkaller.appspot.com/bug?extid=48011b86c8ea329af1b9
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: i386
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+48011b86c8ea329af1b9@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:68 [inline]
+BUG: KASAN: null-ptr-deref in atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
+BUG: KASAN: null-ptr-deref in page_ref_count include/linux/page_ref.h:67 [inline]
+BUG: KASAN: null-ptr-deref in put_page_testzero include/linux/mm.h:1007 [inline]
+BUG: KASAN: null-ptr-deref in folio_put_testzero include/linux/mm.h:1013 [inline]
+BUG: KASAN: null-ptr-deref in folio_put include/linux/mm.h:1440 [inline]
+BUG: KASAN: null-ptr-deref in filemap_fault+0x544/0x24a0 mm/filemap.c:3382
+Read of size 4 at addr 0000000000000028 by task syz-executor.2/19418
+
+CPU: 1 PID: 19418 Comm: syz-executor.2 Not tainted 6.3.0-syzkaller-10620-g33afd4b76393 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+ print_report mm/kasan/report.c:465 [inline]
+ kasan_report+0xec/0x130 mm/kasan/report.c:572
+ check_region_inline mm/kasan/generic.c:181 [inline]
+ kasan_check_range+0x141/0x190 mm/kasan/generic.c:187
+ instrument_atomic_read include/linux/instrumented.h:68 [inline]
+ atomic_read include/linux/atomic/atomic-instrumented.h:27 [inline]
+ page_ref_count include/linux/page_ref.h:67 [inline]
+ put_page_testzero include/linux/mm.h:1007 [inline]
+ folio_put_testzero include/linux/mm.h:1013 [inline]
+ folio_put include/linux/mm.h:1440 [inline]
+ filemap_fault+0x544/0x24a0 mm/filemap.c:3382
+ __do_fault+0x107/0x600 mm/memory.c:4176
+ do_read_fault mm/memory.c:4530 [inline]
+ do_fault mm/memory.c:4659 [inline]
+ do_pte_missing mm/memory.c:3647 [inline]
+ handle_pte_fault mm/memory.c:4947 [inline]
+ __handle_mm_fault+0x27f6/0x4170 mm/memory.c:5089
+ handle_mm_fault+0x2af/0x9f0 mm/memory.c:5243
+ do_user_addr_fault+0x51a/0x1210 arch/x86/mm/fault.c:1440
+ handle_page_fault arch/x86/mm/fault.c:1534 [inline]
+ exc_page_fault+0x98/0x170 arch/x86/mm/fault.c:1590
+ asm_exc_page_fault+0x26/0x30 arch/x86/include/asm/idtentry.h:570
+RIP: 0023:0xf72255d0
+Code: Unable to access opcode bytes at 0xf72255a6.
+RSP: 002b:00000000ffb4674c EFLAGS: 00010202
+RAX: 00000000f734e000 RBX: 00000000f734e000 RCX: 00000000f737c038
+RDX: 000000002e220000 RSI: 0000000000000004 RDI: 00000000000e257f
+RBP: 00000000f737c0c0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000282 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the bug is already fixed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want to change bug's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the bug is a duplicate of another bug, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
