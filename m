@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09EEF6F137C
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 10:50:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72E6C6F1382
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 10:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345360AbjD1Iu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 04:50:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58012 "EHLO
+        id S1345550AbjD1Iuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 04:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbjD1Iu0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 04:50:26 -0400
+        with ESMTP id S1345489AbjD1Iub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 04:50:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08157E59
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0B419A7
         for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 01:50:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8898964206
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A213664214
         for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 08:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E332FC4339E;
-        Fri, 28 Apr 2023 08:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 04C0FC433A0;
+        Fri, 28 Apr 2023 08:50:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682671819;
-        bh=9Dyk4nwkn0ZhMxIaLgZp0WF2Llws/sH54SP3L+/VHSc=;
+        s=k20201202; t=1682671820;
+        bh=VhZHqupUw92raKtlJxX+8wkibzCvpp5/BzDDQkz3bgw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZZ384Fy76az3oq1bLcGoydcZkwPq8j82htrMbffq/7+Jznk3N7L234OujWgTBDq/J
-         myEPlbuCIJrP2E0+SbZ3xr1Q0Oqwf5Qu+PzgOZn7uUvp8FdNvqQi7Q63+dj4bxHgiN
-         UuH7Fu3XJvOfDpXJQMhwe6ZaD7v9l3G5LG3feyu0ikh0Btwkav4Sql3g/KoU1F0knE
-         BEkesY83KdXewQ7Kq2g8qRxsEwEEk8U1It07EC9Vusi+ViwaaaYa0O/iXXfqjtXqQA
-         L4JBuu94IU0P4ZnUM9dH8GuoxUtbzks0yP235g9H1ePYWbmvSwsN+o0Iojo63VyHes
-         74W4akOLQXKQA==
+        b=dGmGaG3mW+CCDLbiKAJD7+Lj4m+a0IwCVRfWIP/lOh33v+K5MPEa/ng1BTU6nt+zd
+         Cw/qCLTPPzPHjlEcIN2dw8VMQ8583xep5uIIiSdo3HN//Ex/mWn1fm8FtCWXX+HGbs
+         qKL68qT1GxfGnZj2JcQrsRu3bjZXyso34xoIkWeb3+RlAtRAZ5/XnA5uPEx24/puxS
+         Frf1oF8sHfK5jiAs02NDlDDu9K76X6szIReZZ286eQq/dhbWx8gkdSV8nJLowv1l/z
+         tvCkg+vJRQXUoq++EkOQuyXPGWeFkjAIVREppXucvkazbZ2Y5w/+JF/owBK8JOmchV
+         UoluUXfsIQizg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C5487E5FFC5;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D9EF2E270D4;
         Fri, 28 Apr 2023 08:50:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Patch net v2] sit: update dev->needed_headroom in
- ipip6_tunnel_bind_dev()
+Subject: Re: [PATCH net] net/sched: cls_api: remove block_cb from driver_list
+ before freeing
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168267181980.3488.332133565847617634.git-patchwork-notify@kernel.org>
+Message-Id: <168267181988.3488.6278873622763468931.git-patchwork-notify@kernel.org>
 Date:   Fri, 28 Apr 2023 08:50:19 +0000
-References: <20230427060006.640809-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20230427060006.640809-1-xiyou.wangcong@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
-        oswalpalash@gmail.com, kuniyu@amazon.com, edumazet@google.com
+References: <20230426123111.2151294-1-vladbu@nvidia.com>
+In-Reply-To: <20230426123111.2151294-1-vladbu@nvidia.com>
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        marcelo.leitner@gmail.com, pablo@netfilter.org,
+        simon.horman@corigine.com
 X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,20 +64,19 @@ Hello:
 This patch was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 26 Apr 2023 23:00:06 -0700 you wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> When a tunnel device is bound with the underlying device, its
-> dev->needed_headroom needs to be updated properly. IPv4 tunnels
-> already do the same in ip_tunnel_bind_dev(). Otherwise we may
-> not have enough header room for skb, especially after commit
-> b17f709a2401 ("gue: TX support for using remote checksum offload option").
+On Wed, 26 Apr 2023 14:31:11 +0200 you wrote:
+> Error handler of tcf_block_bind() frees the whole bo->cb_list on error.
+> However, by that time the flow_block_cb instances are already in the driver
+> list because driver ndo_setup_tc() callback is called before that up the
+> call chain in tcf_block_offload_cmd(). This leaves dangling pointers to
+> freed objects in the list and causes use-after-free[0]. Fix it by also
+> removing flow_block_cb instances from driver_list before deallocating them.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] sit: update dev->needed_headroom in ipip6_tunnel_bind_dev()
-    https://git.kernel.org/netdev/net/c/c88f8d5cd95f
+  - [net] net/sched: cls_api: remove block_cb from driver_list before freeing
+    https://git.kernel.org/netdev/net/c/da94a7781fc3
 
 You are awesome, thank you!
 -- 
