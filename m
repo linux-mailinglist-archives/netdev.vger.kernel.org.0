@@ -2,226 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6D076F1D2D
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 19:06:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57ECE6F1D29
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 19:06:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345609AbjD1RGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 13:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
+        id S230478AbjD1RGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 13:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345964AbjD1RGe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 13:06:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514C326B2
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 10:05:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682701544;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qcZ+WIIKui2ih8uJD3NXlW2Fr/ddGQDIFYF8VWxxYcs=;
-        b=fx1PJekASWLJe8WchFgSu7HRdzSUMvtjIUAFuHusiuNzs3NcXbYzaqgxqYQrkY6hNb5FIV
-        OcY4lXbUk8+FJyibqgAkiQqfdm3+EYiB7Mkot/Ieia2+FSyu83VsBfwgWXiGzHESoEUrut
-        VRju169iIYCM557/yrLeQ1EkatCVzw0=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-549-XTvxTHKUPciSUiLt1BFxRg-1; Fri, 28 Apr 2023 13:05:43 -0400
-X-MC-Unique: XTvxTHKUPciSUiLt1BFxRg-1
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-30467a7020eso5079728f8f.2
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 10:05:42 -0700 (PDT)
+        with ESMTP id S229599AbjD1RGH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 13:06:07 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D6A2710;
+        Fri, 28 Apr 2023 10:06:06 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-187de655f15so112352fac.3;
+        Fri, 28 Apr 2023 10:06:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682701565; x=1685293565;
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:sender:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=ZwebSDbcEiTndvqleOUsphstm5KG1oepB9XO0kR9wf8=;
+        b=BBr99xho1LlxU8yTwHav1CVabMGj74RB2kcJZSHl1Ixjx+HGbxjXcvOjbgdEbgQPRl
+         BHAqjKhRKP0/nl0ewyz/GN+3tH6/0/LS8cZI6SMwv9cOZnXnAmkBBBeG8nCqvEYO7/m1
+         sa5miVL3/Gt6znLlvNJ4ODCbiH/HRxxzQmY4Bdy39oEKbRbzz3DW7brnan9YeVOqNPnH
+         W4AgqnkjyLWu0ugyf2IoUX0bkx6Jle+erxffw2Pij9I7ZT7574rpch0SZeDHN5yuswVt
+         oGqb9cnpJrfJvJgciMlJxaSwZ59EIkBRI6OFr5/UUGMVO4nmbbbZrQ1v63cxFRAnQVVk
+         0/JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682701542; x=1685293542;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qcZ+WIIKui2ih8uJD3NXlW2Fr/ddGQDIFYF8VWxxYcs=;
-        b=HvdUrIHa6lhb+e5WxYBD/Jc7JbYGqvt4W55e6sASfKSNneD/19UHKt2fyNurUvADtu
-         /ZbZmlqqU7TIHuM95PLCsZnonyu0uaMKHisnLs9NAh4ZLbEA2A/6Xnx8vxGnoDS8+9uZ
-         M6v5Z3HDF/KzGH1SMpt0BSCcKZhIs4aFE9F4CZ8r2+mQj0UcLwZZXUGmWQ15BO3p0f/N
-         eeZwhIMPVSmGOTfceyBoNM4TrUJEZj3RMXJjTHIaPhQQs7PJkpQ6xhxt2vjUYda9GJDH
-         0mDh/gCM7F3OO9UPtx6SKTUO5osfNlpSRKBl6EFVbkdcpPgoScEC2iMDYI+UatDEv7c2
-         chuA==
-X-Gm-Message-State: AC+VfDz1oFhJyYqYyX8sbmHhm2iXd8eFRNgjBB+knSHK8/ae+LF1d8BQ
-        EttaqQnUZmottXCBZufh6LT1q00X0bHEpWVustK67qy1IEnNG/xHzBapiCmaRlY1nxFP9dVj3Gs
-        YqIzsUe/zCl1mrUPu
-X-Received: by 2002:a5d:42c5:0:b0:2e5:31a3:38d4 with SMTP id t5-20020a5d42c5000000b002e531a338d4mr4645470wrr.55.1682701541842;
-        Fri, 28 Apr 2023 10:05:41 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5JDIkQuL8RvtQo+J5juy3yRpAXIxSzrWjCLBEsPvjv/ikxb+OC+k037Hoxb/q734TWFy/U7w==
-X-Received: by 2002:a5d:42c5:0:b0:2e5:31a3:38d4 with SMTP id t5-20020a5d42c5000000b002e531a338d4mr4645444wrr.55.1682701541451;
-        Fri, 28 Apr 2023 10:05:41 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c726:9300:1711:356:6550:7502? (p200300cbc72693001711035665507502.dip0.t-ipconnect.de. [2003:cb:c726:9300:1711:356:6550:7502])
-        by smtp.gmail.com with ESMTPSA id c7-20020a5d4cc7000000b002fa5a73bf9bsm21531981wrt.89.2023.04.28.10.05.39
+        d=1e100.net; s=20221208; t=1682701565; x=1685293565;
+        h=in-reply-to:from:references:cc:to:content-language:subject
+         :user-agent:mime-version:date:message-id:sender:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ZwebSDbcEiTndvqleOUsphstm5KG1oepB9XO0kR9wf8=;
+        b=bJnurwQzwQ5NXyYBQP015Bd8v1S7eDLoUncBtFCd/HhOuH1nEYDDHnmoh3nxB2T+I+
+         GXf/jqNanRwUkx2QiMf2hLHw1nsCAk5JZWtO7g7Y07BoaheEEwq4pKnO3ScDP4g1hJmI
+         tumR79jVpkY69hX4ijjDZ3TW562enVnTA0j4jiwdVbzFxpO5gkop+0/QQLQxRqd6rKgo
+         6nlkuwF0PTIvx3tSF4Gy9nkcvyhamo9KvmfzKWBDkBqnRK85k+L7sttyyKgDyGUO97u1
+         iEZ68b0f/x33+y0l6Y6ZkxpOAXyY7bCF6V7oYA1DWBFv92ezdONqlh0RO5EWmUS28CPT
+         /6sA==
+X-Gm-Message-State: AC+VfDxR5YmMUbx8pTeKjgHCSRu5bErSt9slaaQ82FLraoJK8McnAWIP
+        pPOyW14mbHdOBWeGWKOH0txbgEER5Q8=
+X-Google-Smtp-Source: ACHHUZ6+9URlmsDBIOBUx8ggs+K/eEFuaPbj0Nf7i29aDO8gnip9GNXbXEzd/J45opRZeH7rg9RQvg==
+X-Received: by 2002:a54:4098:0:b0:384:833:2a79 with SMTP id i24-20020a544098000000b0038408332a79mr2919330oii.48.1682701565329;
+        Fri, 28 Apr 2023 10:06:05 -0700 (PDT)
+Received: from [192.168.0.162] ([216.130.59.33])
+        by smtp.gmail.com with ESMTPSA id p203-20020acaf1d4000000b0038cabfcb3ccsm9061020oih.15.2023.04.28.10.06.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Apr 2023 10:05:40 -0700 (PDT)
-Message-ID: <3d7fcfab-e445-1dc7-f000-9fbe7bea04c0@redhat.com>
-Date:   Fri, 28 Apr 2023 19:05:38 +0200
+        Fri, 28 Apr 2023 10:06:04 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Content-Type: multipart/mixed; boundary="------------dXNjmVauvoy0tmBnxkx4nmvc"
+Message-ID: <d3743b66-23b1-011c-9dcd-c408b1963fca@lwfinger.net>
+Date:   Fri, 28 Apr 2023 12:06:03 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.10.0
-Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
- by default
+Subject: Re: [PATCH] wifi: rtl8xxxu: fix authentication timeout due to
+ incorrect RCR value
 Content-Language: en-US
-To:     Lorenzo Stoakes <lstoakes@gmail.com>
-Cc:     Peter Xu <peterx@redhat.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Jason Gunthorpe <jgg@nvidia.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        David Howells <dhowells@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <094d2074-5b69-5d61-07f7-9f962014fa68@redhat.com>
- <400da248-a14e-46a4-420a-a3e075291085@redhat.com>
- <077c4b21-8806-455f-be98-d7052a584259@lucifer.local>
- <62ec50da-5f73-559c-c4b3-bde4eb215e08@redhat.com>
- <6ddc7ac4-4091-632a-7b2c-df2005438ec4@redhat.com>
- <20230428160925.5medjfxkyvmzfyhq@box.shutemov.name>
- <39cc0f26-8fc2-79dd-2e84-62238d27fd98@redhat.com>
- <20230428162207.o3ejmcz7rzezpt6n@box.shutemov.name> <ZEv2196tk5yWvgW5@x1n>
- <173337c0-14f4-3246-15ff-7fbf03861c94@redhat.com>
- <40fc128f-1978-42db-b9c1-77ac3c2cebfe@lucifer.local>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <40fc128f-1978-42db-b9c1-77ac3c2cebfe@lucifer.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+To:     wo <luyun_611@163.com>
+Cc:     Jes.Sorensen@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20230427020512.1221062-1-luyun_611@163.com>
+ <866570c9-38d8-1006-4721-77e2945170b9@lwfinger.net>
+ <76a784b2.2cb3.187c60f0f68.Coremail.luyun_611@163.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <76a784b2.2cb3.187c60f0f68.Coremail.luyun_611@163.com>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.04.23 19:01, Lorenzo Stoakes wrote:
-> On Fri, Apr 28, 2023 at 06:51:46PM +0200, David Hildenbrand wrote:
->> On 28.04.23 18:39, Peter Xu wrote:
->>> On Fri, Apr 28, 2023 at 07:22:07PM +0300, Kirill A . Shutemov wrote:
->>>> On Fri, Apr 28, 2023 at 06:13:03PM +0200, David Hildenbrand wrote:
->>>>> On 28.04.23 18:09, Kirill A . Shutemov wrote:
->>>>>> On Fri, Apr 28, 2023 at 05:43:52PM +0200, David Hildenbrand wrote:
->>>>>>> On 28.04.23 17:34, David Hildenbrand wrote:
->>>>>>>> On 28.04.23 17:33, Lorenzo Stoakes wrote:
->>>>>>>>> On Fri, Apr 28, 2023 at 05:23:29PM +0200, David Hildenbrand wrote:
->>>>>>>>>>>>
->>>>>>>>>>>> Security is the primary case where we have historically closed uAPI
->>>>>>>>>>>> items.
->>>>>>>>>>>
->>>>>>>>>>> As this patch
->>>>>>>>>>>
->>>>>>>>>>> 1) Does not tackle GUP-fast
->>>>>>>>>>> 2) Does not take care of !FOLL_LONGTERM
->>>>>>>>>>>
->>>>>>>>>>> I am not convinced by the security argument in regard to this patch.
->>>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> If we want to sells this as a security thing, we have to block it
->>>>>>>>>>> *completely* and then CC stable.
->>>>>>>>>>
->>>>>>>>>> Regarding GUP-fast, to fix the issue there as well, I guess we could do
->>>>>>>>>> something similar as I did in gup_must_unshare():
->>>>>>>>>>
->>>>>>>>>> If we're in GUP-fast (no VMA), and want to pin a !anon page writable,
->>>>>>>>>> fallback to ordinary GUP. IOW, if we don't know, better be safe.
->>>>>>>>>
->>>>>>>>> How do we determine it's non-anon in the first place? The check is on the
->>>>>>>>> VMA. We could do it by following page tables down to folio and checking
->>>>>>>>> folio->mapping for PAGE_MAPPING_ANON I suppose?
->>>>>>>>
->>>>>>>> PageAnon(page) can be called from GUP-fast after grabbing a reference.
->>>>>>>> See gup_must_unshare().
->>>>>>>
->>>>>>> IIRC, PageHuge() can also be called from GUP-fast and could special-case
->>>>>>> hugetlb eventually, as it's table while we hold a (temporary) reference.
->>>>>>> Shmem might be not so easy ...
->>>>>>
->>>>>> page->mapping->a_ops should be enough to whitelist whatever fs you want.
->>>>>>
->>>>>
->>>>> The issue is how to stabilize that from GUP-fast, such that we can safely
->>>>> dereference the mapping. Any idea?
->>>>>
->>>>> At least for anon page I know that page->mapping only gets cleared when
->>>>> freeing the page, and we don't dereference the mapping but only check a
->>>>> single flag stored alongside the mapping. Therefore, PageAnon() is fine in
->>>>> GUP-fast context.
->>>>
->>>> What codepath you are worry about that clears ->mapping on pages with
->>>> non-zero refcount?
->>>>
->>>> I can only think of truncate (and punch hole). READ_ONCE(page->mapping)
->>>> and fail GUP_fast if it is NULL should be fine, no?
->>>>
->>>> I guess we should consider if the inode can be freed from under us and the
->>>> mapping pointer becomes dangling. But I think we should be fine here too:
->>>> VMA pins inode and VMA cannot go away from under GUP.
->>>
->>> Can vma still go away if during a fast-gup?
->>>
->>
->> So, after we grabbed the page and made sure the the PTE didn't change (IOW,
->> the PTE was stable while we processed it), the page can get unmapped (but
->> not freed, because we hold a reference) and the VMA can theoretically go
->> away (and as far as I understand, nothing stops the file from getting
->> deleted, truncated etc).
->>
->> So we might be looking at folio->mapping and the VMA is no longer there.
->> Maybe even the file is no longer there.
->>
-> 
-> This shouldn't be an issue though right? Because after a pup call unlocks the
-> mmap_lock we're in the same situation anyway. GUP doesn't generally guarantee
-> the mapping remains valid, only pinning the underlying folio.
+This is a multi-part message in MIME format.
+--------------dXNjmVauvoy0tmBnxkx4nmvc
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Yes. But the issue here is rather dereferencing something that has 
-already been freed, eventually leading to undefined behavior.
+On 4/27/23 23:11, wo wrote:
+> [  149.595642] [pid:7,cpu6,kworker/u16:0,0]BEFORE: REG_RCR differs from regrcr: 
+> 0x1830613 insted of 0x7000604e
+> [  160.676422] [pid:237,cpu6,kworker/u16:5,3]BEFORE: REG_RCR differs from 
+> regrcr: 0x70006009 insted of 0x700060ce
+ > [  327.234588] [pid:7,cpu7,kworker/u16:0,5]BEFORE: REG_RCR differs from 
+regrcr: 0x1830d33 insted of 0x7000604e
 
-Maybe de-referencing folio->mapping is fine ... but yes, we could handle 
-that optimization in a separate patch.
 
--- 
-Thanks,
+My patch was messed up, but it got the information that I wanted, which is shown 
+in the quoted lines above. One of these differs only in the low-order byte, 
+while the other 2 are completely different. Strange!
 
-David / dhildenb
+It is possible that there is a firmware error. My system, which does not show 
+the problem, reports the following:
 
+[54130.741148] usb 3-6: RTL8192CU rev A (TSMC) romver 0, 2T2R, TX queues 2, 
+WiFi=1, BT=0, GPS=0, HI PA=0
+[54130.741153] usb 3-6: RTL8192CU MAC: xx:xx:xx:xx:xx:xx
+[54130.741155] usb 3-6: rtl8xxxu: Loading firmware rtlwifi/rtl8192cufw_TMSC.bin
+[54130.742301] usb 3-6: Firmware revision 88.2 (signature 0x88c1)
+
+Which firmware does your unit use?
+
+Attached is a new test patch. When it logs a CORRUPTED value, I would like to 
+know what task is attached to the pid listed in the message. Note that the two 
+instances where the entire word was wrong came from pid:7.
+
+Could improper locking could produce these results?
+
+Larry
+
+--------------dXNjmVauvoy0tmBnxkx4nmvc
+Content-Type: text/x-patch; charset=UTF-8; name="log_data_2.patch"
+Content-Disposition: attachment; filename="log_data_2.patch"
+Content-Transfer-Encoding: base64
+
+ZGlmZiAtLWdpdCBhL01ha2VmaWxlIGIvTWFrZWZpbGUKaW5kZXggZjU1NDNlZWY0ZjgyLi42
+ZDk4NWExNzVkNzggMTAwNjQ0Ci0tLSBhL01ha2VmaWxlCisrKyBiL01ha2VmaWxlCkBAIC0x
+LDggKzEsOCBAQAogIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMAogVkVSU0lP
+TiA9IDYKLVBBVENITEVWRUwgPSAzCitQQVRDSExFVkVMID0gNAogU1VCTEVWRUwgPSAwCi1F
+WFRSQVZFUlNJT04gPQorRVhUUkFWRVJTSU9OID0gLXJjMAogTkFNRSA9IEh1cnIgZHVyciBJ
+J21hIG5pbmphIHNsb3RoCiAKICMgKkRPQ1VNRU5UQVRJT04qCmRpZmYgLS1naXQgYS9kcml2
+ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bDh4eHh1L3J0bDh4eHh1X2NvcmUuYyBiL2Ry
+aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsOHh4eHUvcnRsOHh4eHVfY29yZS5jCmlu
+ZGV4IDgzMTYzOWQ3MzY1Ny4uOWQ3Nzg0MDBkMmI5IDEwMDY0NAotLS0gYS9kcml2ZXJzL25l
+dC93aXJlbGVzcy9yZWFsdGVrL3J0bDh4eHh1L3J0bDh4eHh1X2NvcmUuYworKysgYi9kcml2
+ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bDh4eHh1L3J0bDh4eHh1X2NvcmUuYwpAQCAt
+NDg2NCw2ICs0ODY0LDEwIEBAIHJ0bDh4eHh1X2Jzc19pbmZvX2NoYW5nZWQoc3RydWN0IGll
+ZWU4MDIxMV9odyAqaHcsIHN0cnVjdCBpZWVlODAyMTFfdmlmICp2aWYsCiAJdTMyIHZhbDMy
+OwogCXU4IHZhbDg7CiAKKwlpZiAocHJpdi0+cmVncmNyICE9IHJ0bDh4eHh1X3JlYWQzMihw
+cml2LCBSRUdfUkNSKSkgeworCQlwcl9pbmZvKCJSRUdfUkNSIGNvcnJ1cHRlZCBpbiAlczog
+MHgleCBpbnN0ZWQgb2YgMHgleFxuIiwKKwkJCV9fZnVuY19fLCBydGw4eHh4dV9yZWFkMzIo
+cHJpdiwgUkVHX1JDUiksIHByaXYtPnJlZ3Jjcik7CisJfQogCXJhcnB0ID0gJnByaXYtPnJh
+X3JlcG9ydDsKIAogCWlmIChjaGFuZ2VkICYgQlNTX0NIQU5HRURfQVNTT0MpIHsKQEAgLTY1
+MDQsNiArNjUwOCwxMCBAQCBzdGF0aWMgdm9pZCBydGw4eHh4dV9jb25maWd1cmVfZmlsdGVy
+KHN0cnVjdCBpZWVlODAyMTFfaHcgKmh3LAogCXN0cnVjdCBydGw4eHh4dV9wcml2ICpwcml2
+ID0gaHctPnByaXY7CiAJdTMyIHJjciA9IHByaXYtPnJlZ3JjcjsKIAorCWlmIChwcml2LT5y
+ZWdyY3IgIT0gcnRsOHh4eHVfcmVhZDMyKHByaXYsIFJFR19SQ1IpKSB7CisJCXByX2luZm8o
+IlJFR19SQ1IgY29ycnVwdGVkIGluICVzOiAweCV4IGluc3RlZCBvZiAweCV4XG4iLAorCQkJ
+X19mdW5jX18sIHJ0bDh4eHh1X3JlYWQzMihwcml2LCBSRUdfUkNSKSwgcHJpdi0+cmVncmNy
+KTsKKwl9CiAJZGV2X2RiZygmcHJpdi0+dWRldi0+ZGV2LCAiJXM6IGNoYW5nZWRfZmxhZ3Mg
+JTA4eCwgdG90YWxfZmxhZ3MgJTA4eFxuIiwKIAkJX19mdW5jX18sIGNoYW5nZWRfZmxhZ3Ms
+ICp0b3RhbF9mbGFncyk7CiAK
+
+--------------dXNjmVauvoy0tmBnxkx4nmvc--
