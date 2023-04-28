@@ -2,110 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D16C6F1865
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 14:44:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 574396F192A
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 15:17:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345900AbjD1Mol (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 08:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45612 "EHLO
+        id S1346196AbjD1NRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 09:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjD1Mok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 08:44:40 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2082.outbound.protection.outlook.com [40.107.102.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBE283;
-        Fri, 28 Apr 2023 05:44:38 -0700 (PDT)
+        with ESMTP id S240073AbjD1NRR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 09:17:17 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2044.outbound.protection.outlook.com [40.107.220.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62C41BC5;
+        Fri, 28 Apr 2023 06:17:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QaRtnRcwr5tYMr/WeJ6xuzvrPJdhlyweQeOg20DXgGxO4ByjULd6Q1FhIPTkiecsu76rsPwqzIJ/RiVX8VvrYiITWjKw6maPu+h0XTX+6AS89NslkQjdrWIypbmOD39jmxnYgid/FZegmVmmPTG/bJs7i1NYrQk1U1XgedWS9mxKwVLb/ttz7rRX3I591cGMcIy43qAD0J2t0f929xMr73Tne9fqdoC+4lugnYdW3nxikHRC1JYPRmSGyTjoiu9Y3RbX2RwWNsca7kCRaRX7+zwzQDoxV+bR46wV/HMTL8x3Rx3UlLQijuBQT/Y5gQSbgD19WzvSYF//ElxfaMtUvw==
+ b=SQqCEVWuLHRkJg4twoSgmV5qXWbUed+WMn9txkKqM3ljoRkBi7a7FvY3vmCATOFgYGzIsh0M/W5PUdHSI3m64ynmlVEgWBGiK9l3kPQ7DmRERLKW11rlI6aEn3Je3UJ+p4hRKKF4DGGsMF9WZpoyluZ+ceiXLMeEIV/5vJ/Pv8vVHGZnMHrCzx+X3H5v94fdPYT8U39GigQbvCCs+C0RZJvtWTtqjGnTSmcrznvDuS1mUY681vBvrzQi4QBnvFaGyNxSFVnfcC+p7PT5vMtnIfWZ62cqaKW6SKJ5mdHCzW5/TVtTyJJTeSHLqu1o965oUbaWnxQIwZxJ5dFKNIstbQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0z80mmXiDUJOV5iQqRBKz0PAw7gI3n+qp21SDMvSl6U=;
- b=enj/zkjHD7BG0io/jV5KLtpzKfZ/PFPkvVX9cXOGTsxq8aYMgZY6PUqfI33UGt7iU8mIIlCoUPrA4VMKdZp2Bvyem0i1+E7uS5McUyXG32DRjqLl1r5ILmWuwQrQksYOzFG8fO8KI1O+Yj/L1QWQGso8KtUHiTJx6nE4vH/lzuh+SnAMA3khpTlh4fWHp669Uj1/GX5mlJ3lzgNWOBtiwZXPcFsAcSc2Hg+zQrRoj9DhWx+LuX31SAdQRIPDbhvSmBs4gpIxH5zwJjoCgXG+Ch1DCMtE5DlUtjDqD1e+5VfdQihAw14Lti7OYlXYrqSX0NOkvCDILzyMraEhjg4R0Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=sina.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ bh=7fTcTPVT4LzcS/Vn/r6VsFUFt9CgWOLi+0RBjkHwfoM=;
+ b=A+i5EyF2TwGFj/Hojb66HmdNSY5Y92WV+9ADFFfFt4V74YBlNH9NmHxvoFzUGPVuw2wjWb0lxnw5ZNx5OAwjEqVR4e9dHj3xiWr9BvVe/5Zheao8af84NXkNlZK1bBul4mqLxq5hckZmO4BduxJGFH6P1Ym55d4mMuV3cG0bm/3BWr5lCfCraN1Inw9SFTsgSiaSVa2uBNRuQ9UbpZtBlIRaCniU3ozV+Rne/nhoFKXF2JHJ50z9iek1Tu0V33yowuoQ/zrfBHsyUmWspoMH7a7POwHwhJupJd8eXxur3kMXXuf/sFVUVXmg96tl/oOIpeOs9SLMZk3KMtbI7iM25Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0z80mmXiDUJOV5iQqRBKz0PAw7gI3n+qp21SDMvSl6U=;
- b=N2jyRVYcieLoDEoYh+g/zipHNqcskZM8DGw1qZ38cg8wRFuswckQZimoPyP0yXWTGgonp1qb7HTfF9R7RV05KCfbnkZyc1q1VzQwySsst/i69GBIEDvHhqnGA9Gmmoy2N/zb14l6ZNw8VcVstFcWpQjguSPLJLIlPaY8yU6ofid3HSIWCFRRrIMgYaACy7QhqLUoovpQNoclIN43Wh7yfJ7XWFT723UV5n0t9cb1VUAYC3a0tjTwzd93JFW2gj+/5TDywyJxOsyH8+j0YnqdFxxagfrwVNylNcUrWM01r3+cC3Y0wQvLbAEhYJqHgl1g2Qfk/yySyPqh6MkZjrX+9A==
-Received: from MN2PR15CA0043.namprd15.prod.outlook.com (2603:10b6:208:237::12)
- by SJ0PR12MB6783.namprd12.prod.outlook.com (2603:10b6:a03:44e::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.22; Fri, 28 Apr
- 2023 12:44:36 +0000
-Received: from BL02EPF000100D3.namprd05.prod.outlook.com
- (2603:10b6:208:237:cafe::12) by MN2PR15CA0043.outlook.office365.com
- (2603:10b6:208:237::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.23 via Frontend
- Transport; Fri, 28 Apr 2023 12:44:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BL02EPF000100D3.mail.protection.outlook.com (10.167.241.207) with Microsoft
+ bh=7fTcTPVT4LzcS/Vn/r6VsFUFt9CgWOLi+0RBjkHwfoM=;
+ b=mE5tidsR05A+C48dwKAfMt5bt2rC2dlmHBLf8KNLNuMZKR4uXfjya1Dfi1k5gAGAm2w9bpYQrjW0FXOT1PVSn/E47fVoGqZPD1GFk/zyQcxE0X2zGkSs40f6LBYAVtuQhZuBLM63uE4BC0fv+TX/4cwjlm71EClV86G2A5OXUQxuiKC/36kmSdU+PZ1z3RrFx5x+P8piegbiA31NmuEwRjmylSI/wkPQGFHazNGxcye/0B9+ATBjvVV64dEBrIVv657pj8L1VwAyjO3117KFvCa1NJ3Pc3QZYli96OVBrTeqCITB5pnIKttU5ldjXrhmH3inlqH2POuY9InmlqNpMw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB5962.namprd12.prod.outlook.com (2603:10b6:8:69::7) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6340.15 via Frontend Transport; Fri, 28 Apr 2023 12:44:35 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Fri, 28 Apr 2023
- 05:44:22 -0700
-Received: from fedora.nvidia.com (10.126.230.37) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Fri, 28 Apr
- 2023 05:44:17 -0700
-References: <0000000000006cf87705f79acf1a@google.com>
- <20230328184733.6707ef73@kernel.org> <ZCOylfbhuk0LeVff@do-x1extreme>
- <b4d93f31-846f-3391-db5d-db8682ac3c34@mojatatu.com>
- <CAM0EoMn2LnhdeLcxCFdv+4YshthN=YHLnr1rvv4JoFgNS92hRA@mail.gmail.com>
- <20230417230011.GA41709@bytedance> <20230426233657.GA11249@bytedance>
- <877ctxsdnb.fsf@nvidia.com> <20230427173554.GA11725@bytedance>
-User-agent: mu4e 1.8.11; emacs 28.2
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Pedro Tammela <pctammela@mojatatu.com>,
-        Seth Forshee <sforshee@digitalocean.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        syzbot <syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <jiri@resnulli.us>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>, <syzkaller-bugs@googlegroups.com>,
-        <xiyou.wangcong@gmail.com>, <peilin.ye@bytedance.com>,
-        <hdanton@sina.com>
-Subject: Re: [syzbot] [net?] KASAN: slab-use-after-free Write in
- mini_qdisc_pair_swap
-Date:   Fri, 28 Apr 2023 15:43:05 +0300
-In-Reply-To: <20230427173554.GA11725@bytedance>
-Message-ID: <87y1mcqiqq.fsf@nvidia.com>
+ 15.20.6340.20; Fri, 28 Apr 2023 13:17:12 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f7a7:a561:87e9:5fab%6]) with mapi id 15.20.6340.024; Fri, 28 Apr 2023
+ 13:17:11 +0000
+Date:   Fri, 28 Apr 2023 10:17:10 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lorenzo Stoakes <lstoakes@gmail.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Mika Penttila <mpenttil@redhat.com>
+Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
+ by default
+Message-ID: <ZEvHVnDrz3SRxWv2@nvidia.com>
+References: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
+X-ClientProxiedBy: MN2PR03CA0025.namprd03.prod.outlook.com
+ (2603:10b6:208:23a::30) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.37]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000100D3:EE_|SJ0PR12MB6783:EE_
-X-MS-Office365-Filtering-Correlation-Id: 201ce8ef-0e4b-4fef-2b31-08db47e652a8
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5962:EE_
+X-MS-Office365-Filtering-Correlation-Id: d5065df4-7476-4805-396b-08db47eae076
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /sl/o1/JditHXq3pIA3aZvWi2a9Kxkh46RhB1plSTa5qBSZxnL7nfXGrhKxPruSYKGdidh0kyGjsnD5KX/f6v5+KHu/XFjghwWfCqOb7/k8ur+OsKP0iveHe1Mjy1Nbw8rJIfJ6aby1xajiDV0kNuPI421VKiYATEVyXihk7RMi/V9qwchE6C15r0R1oBMB77YNyfknEpsKUmjL/y8aipabqLIW4LupmZd+vOJqSiJKJPuhyUQS2vEhahXi55FFinDSFR5YxUiJ6fVJkml4O5Ho5ammW398ar3VHXj7TWcRDC7KP15lY0STr9U34hu4rTI3eq4MYyjsm3FWwKjsUdT6tggyH152WH8UvIf6WiEFWouYTetVZWdKZCQ6IYKkNB1RlroAKmjHsD63F158Tsa/2nYx6xoeUj4cRtVHKwNHkPfg+NdyEYUUFf6xoiWJ5438g1pbMGGxHA1A0aW9tTHlLRCa3EWlKLYmbP7d4M5h+STdmOhrk7n9nT6WGkk84HILdTPg+S3Kbc0y75wxJ63NJ8Eo09HJY02WOFThM2vcyAILLMLzeKhZ68iZw/GYOQTqwQLv/EF3MKdxlsDlf3wGWt42+/d3DB3HZjgK3U6VMyVy0XPprM/oi7oAHl7O++g6cvjwvjgAyKxubzF8SS64ki/Ukk0kPPqoSRZacZQdRmL3VD8UlHNzh5XQJ9DS9NpCAfUGzCe93mFFgKvR7AQ==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(396003)(376002)(136003)(451199021)(36840700001)(40470700004)(46966006)(40480700001)(40460700003)(478600001)(70586007)(4326008)(6916009)(70206006)(7696005)(356005)(54906003)(7416002)(8676002)(8936002)(82740400003)(7636003)(316002)(5660300002)(41300700001)(83380400001)(2616005)(186003)(426003)(336012)(47076005)(6666004)(16526019)(36860700001)(26005)(36756003)(82310400005)(86362001)(2906002)(66899021);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: VFCVUfrNVftgi4Pel8cn0mZ43PBrCpB11cbmTGhCC4BrVP74AmsTiWbEXnqCJMilaEoskQGsa3o/quXPvrBO2OeoWXQGhbOpcdUfx2e+J3QhvWf+nmzB2H5eL/4Qrn4HndaxAc9QFqkDfF5bB4KFa4VROv4jyvPAo5xUZq2iUDQBkYqPWwhHKoInw7zdIyBvUsp/fPFxOnq7QeLnkZXTq+HrIQ6b3Ozvd/m7O/StrgYyHnDo0ZHU90nAJet3NAtjtNCmuheCIaD8lGhSUpT5xGlhcYQHuXNZjDn1ERbyTii3Uh0bwBbAcbb+WDz6cryAYp7b/Obo5o5ocYeYDGk/Oza+EcgVsxxaCxHoFMd7QGgATkLvATWnfupyJZBfHNoUR3h2mqGg63AabDhpe/rSm5cGSIuEAovYw9TULo+W8FFizztyHg+0yLLfMEAFIAzb9vAGJCzajXt5RjXg3/rsmrxA+I8hGnfJ+jRJSNDjBTtV1hyrJ/ThJqicpJ4hB3Ua/lQKbcYaM3AmJNY51O0vD67cZ6jKkXXjg9xls4QYj5eLX/I91iksdvM9Iihl52Iq5925z/LGepYGqi84SvhniH/pGrGRhGu+2USrLgl6shg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(396003)(366004)(346002)(136003)(451199021)(86362001)(186003)(66476007)(6916009)(66946007)(4326008)(41300700001)(6512007)(6506007)(66556008)(26005)(316002)(83380400001)(6486002)(2616005)(54906003)(478600001)(36756003)(38100700002)(5660300002)(2906002)(8676002)(8936002)(7416002)(7406005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?J27k7ABFtpMJ3KtOVsiokkLIvxnWTtm5y0Di0k4DoLUdmeXMus478NmDYBD1?=
+ =?us-ascii?Q?T/EYFUVeRkClDP4cgxRqVslPcNnvMGP1xC3co4JJVb+upBuxL+NacUxXIHej?=
+ =?us-ascii?Q?dcsSC7L0VwCcheV55q7/EdInBARWLNlul94nJoGeIt+alGc9ll1FRPVW0uFX?=
+ =?us-ascii?Q?sBoJ6hrbZGc3iCsl33yguOJjGe8EStN7wPK6tAdXdbKx/QA/ZBaOBQVaXWbs?=
+ =?us-ascii?Q?68itIDzoV6qwRG8M+NV/xhfyX2vleRz5PNnDZR3po7jlsZ9WdxbTNKQNpKRv?=
+ =?us-ascii?Q?sKTXpyIdt10BadLtWpxReBstAEkCHMB7lGXJpoO6A/TstVohRLHBcZrczBZp?=
+ =?us-ascii?Q?Yp9Y0vzbh3+5Op7qVBiHSDWzjwm12kKOmRn64WN2UthoZ4Uby52FmlzQiP8D?=
+ =?us-ascii?Q?JgAq6JP6EDl8e7pkb0+idz5SxK32PwDdC7Jge+bHyZCAZY+d0hvMIGiSnEPF?=
+ =?us-ascii?Q?ZvSTDWPZ6nAvgfZIBR0sLdZeMk7EekTkxxo4Q2Wj6ZA81iizD4CT9dXblw1z?=
+ =?us-ascii?Q?wySgStmPM/n4SAZBEtNAGOvyrgi/yosTbNlnnMtS9P7/GESFmowXYICIdYEw?=
+ =?us-ascii?Q?ryVSIjHnzRitJuVM8c3ID2iQOhThXwp7hNLJcpvQM5lh3A3qR+cTRE563yDR?=
+ =?us-ascii?Q?6LLr3F2cYEhAXQd4tCfr6a/zc4R417yyEpkC84qldqfMP8acf31+WPhZWQum?=
+ =?us-ascii?Q?W/0VeTg1blJX8l3Ik8zSWXSHsuTcwh89b1WqsB+VsVHLoYJw7a6Vp7GDnQjR?=
+ =?us-ascii?Q?m/pqsyeQivgBa824hyXqBh6K8+uxWiOEqttfD1c+clNFAH4nHaGCRTXwZXfb?=
+ =?us-ascii?Q?CBJUnDMqWFRGSQCliObf86W/oB5IgbKHetJkIq5s+WbYlZ11RM2+oegdDxc5?=
+ =?us-ascii?Q?uWxFnnDSKueQ/pjf3iWplBRCDpW38bm8ynEQurpQ0W7Pzz9NM9XgCa5e+Wes?=
+ =?us-ascii?Q?TereIthQ/g6c82lXelcS9j+tAHmwVu8Mk5srU1P2mWv1tT3UEkB9g2oB17jk?=
+ =?us-ascii?Q?IWAbhuY+0w3h5Q50OyW+1/9SoaOk6xBNNlNiC3boggWvQn1Zgv97TmzkdgOe?=
+ =?us-ascii?Q?u8FgiHCtOeNHUq5bwkNp6/ZMlDW4UdqMzhboeiaDKMdbNGQuH4MscXKiJ05P?=
+ =?us-ascii?Q?g9e3AqLpWNPFbMnnJAup968KsuqgvDnKWfeAdrsEN/MzgQcfNU8IUlAEivKK?=
+ =?us-ascii?Q?UmrhQLO7hxQfbubfcMAtKJAWZXEggmMmzoXDJb/gJ/yd0ml1n+Zhom9Kl1DL?=
+ =?us-ascii?Q?cDG0+R3jBzdvPZqKdSEmWrY00SV+cm4BhUs0UDJN0jt5nMNUBtQqkFexjUEm?=
+ =?us-ascii?Q?6iM6GYvie9RlSzDDgX0B7V8M9LCG9mbrvY8NZ5YnY699ED537N1TmzCs5WPC?=
+ =?us-ascii?Q?AHHKI6jywf1/igT9OWMgAFOwO6DEHdXVKlppcl5zBTbByw+5VwOlVK/eIacw?=
+ =?us-ascii?Q?7AboMtH4MZlqzMoksZsIm4NFuyqa8KpdURKsApFtVb5kK6an8pJO0RdAZP0p?=
+ =?us-ascii?Q?TZf4g+JICBj6iIfGAvBGioXjr9ctkGcfJTiMSUOKG0d4XtAnGU6vQH7yEie/?=
+ =?us-ascii?Q?b/WLxfYKqpHdmSc12OW7yF3ioJp+wM9fCCb9XK4W?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 12:44:35.5985
+X-MS-Exchange-CrossTenant-Network-Message-Id: d5065df4-7476-4805-396b-08db47eae076
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 13:17:11.8164
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 201ce8ef-0e4b-4fef-2b31-08db47e652a8
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BL02EPF000100D3.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6783
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: A1SSZPTLZ/kK8TCniuCESy/6zL0PzyRvgiowiYvYBHFDO4P4EaperJaKU5oJoefm
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5962
 X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -117,105 +150,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu 27 Apr 2023 at 10:35, Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> Hi Pedro, Vlad,
->
-> On Thu, Apr 27, 2023 at 03:26:03PM +0300, Vlad Buslov wrote:
->> On Wed 26 Apr 2023 at 16:42, Peilin Ye <yepeilin.cs@gmail.com> wrote:
->> > As we can see there're interleaving mini_qdisc_pair_swap() calls between
->> > Qdisc A and B, causing all kinds of troubles, including the UAF (thread
->> > 2 writing to mini Qdisc a1's rcu_state after Qdisc A has already been
->> > freed) reported by syzbot.
->> 
->> Great analysis! However, it is still not quite clear to me how threads 1
->> and 2 access each other RCU state when q->miniqp is a private memory of
->> the Qdisc, so 1 should only see A->miniqp and 2 only B->miniqp. And both
->> miniqps should be protected from deallocation by reference that lockless
->> RTM_NEWTFILTER obtains.
->
-> Thanks for taking a look!
->
-> To elaborate, p_miniq is a pointer of pointer of struct mini_Qdisc,
-> initialized in ingress_init() to point to eth0->miniq_ingress, which
-> isn't private to A or B.
->
-> In other words, both A->miniqp->p_miniq and B->miniqp->p_miniq point to
-> eth0->miniq_ingress.
->
-> For your reference, roughly speaking, mini_qdisc_pair_swap() does this:
->
->   miniq_old = dev->miniq_ingress;
->
->   if (destroying) {
->           dev->miniq_ingress = NULL;
->   } else {
->           rcu_wait();
->           dev->miniq_ingress = miniq_new;
->   }
->
->   if (miniq_old)
->           miniq_old->rcu_state = ...
->
-> On Wed 26 Apr 2023 at 16:42, Peilin Ye <yepeilin.cs@gmail.com> wrote:
->>  Thread 1               A's refcnt   Thread 2
->>   RTM_NEWQDISC (A, locked)
->>    qdisc_create(A)               1
->>    qdisc_graft(A)                9
->>
->>   RTM_NEWTFILTER (X, lockless)
->>    __tcf_qdisc_find(A)          10
->>    tcf_chain0_head_change(A)
->>  ! mini_qdisc_pair_swap(A)
->
->   1. A adds its first filter,
->      miniq_old (eth0->miniq_ingress) is NULL,
->      RCU wait starts,
->      RCU wait ends,
->      change eth0->miniq_ingress to A's mini Qdisc.
->
->>             |                        RTM_NEWQDISC (B, locked)
->>             |                    2    qdisc_graft(B)
->>             |                    1    notify_and_destroy(A)
->>             |
->>             |                        RTM_NEWTFILTER (Y, lockless)
->>             |                         tcf_chain0_head_change(B)
->>             |                       ! mini_qdisc_pair_swap(B)
->
->                       2. B adds its first filter,
->                          miniq_old (eth0->miniq_ingress) is A's mini Qdisc,
->                          RCU wait starts,
->
->>    tcf_block_release(A)          0             |
->>    qdisc_destroy(A)                            |
->>    tcf_chain0_head_change_cb_del(A)            |
->>  ! mini_qdisc_pair_swap(A)                     |
->
->   3. A destroys itself,
->      miniq_old (eth0->miniq_ingress) is A's mini Qdisc,
->      (destroying, so no RCU wait)
->      change eth0->miniq_ingress to NULL,
->      update miniq_old, or A's mini Qdisc's RCU state,
->      A is freed.
->
->                       2. RCU wait ends,
-> 		         change eth0->miniq_ingress to B's mini Qdisc,
-> 	 use-after-free: update miniq_old, or A's mini Qdisc's RCU state.
+On Fri, Apr 28, 2023 at 12:42:32AM +0100, Lorenzo Stoakes wrote:
+> Writing to file-backed mappings which require folio dirty tracking using
+> GUP is a fundamentally broken operation, as kernel write access to GUP
+> mappings do not adhere to the semantics expected by a file system.
+> 
+> A GUP caller uses the direct mapping to access the folio, which does not
+> cause write notify to trigger, nor does it enforce that the caller marks
+> the folio dirty.
+> 
+> The problem arises when, after an initial write to the folio, writeback
+> results in the folio being cleaned and then the caller, via the GUP
+> interface, writes to the folio again.
+> 
+> As a result of the use of this secondary, direct, mapping to the folio no
+> write notify will occur, and if the caller does mark the folio dirty, this
+> will be done so unexpectedly.
+> 
+> For example, consider the following scenario:-
+> 
+> 1. A folio is written to via GUP which write-faults the memory, notifying
+>    the file system and dirtying the folio.
+> 2. Later, writeback is triggered, resulting in the folio being cleaned and
+>    the PTE being marked read-only.
+> 3. The GUP caller writes to the folio, as it is mapped read/write via the
+>    direct mapping.
+> 4. The GUP caller, now done with the page, unpins it and sets it dirty
+>    (though it does not have to).
+> 
+> This results in both data being written to a folio without writenotify, and
+> the folio being dirtied unexpectedly (if the caller decides to do so).
+> 
+> This issue was first reported by Jan Kara [1] in 2018, where the problem
+> resulted in file system crashes.
+> 
+> This is only relevant when the mappings are file-backed and the underlying
+> file system requires folio dirty tracking. File systems which do not, such
+> as shmem or hugetlb, are not at risk and therefore can be written to
+> without issue.
+> 
+> Unfortunately this limitation of GUP has been present for some time and
+> requires future rework of the GUP API in order to provide correct write
+> access to such mappings.
+> 
+> However, for the time being we introduce this check to prevent the most
+> egregious case of this occurring, use of the FOLL_LONGTERM pin.
+> 
+> These mappings are considerably more likely to be written to after
+> folios are cleaned and thus simply must not be permitted to do so.
+> 
+> As part of this change we separate out vma_needs_dirty_tracking() as a
+> helper function to determine this which is distinct from
+> vma_wants_writenotify() which is specific to determining which PTE flags to
+> set.
+> 
+> [1]:https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz/
+> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
+> ---
+>  include/linux/mm.h |  1 +
+>  mm/gup.c           | 41 ++++++++++++++++++++++++++++++++++++++++-
+>  mm/mmap.c          | 36 +++++++++++++++++++++++++++---------
+>  3 files changed, 68 insertions(+), 10 deletions(-)
 
-Thanks for the clarification.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
->
-> I hope this helps.  Sorry I didn't go into details; this UAF isn't the
-> only thing that is unacceptable here:
->
-> Consider B.  We add a filter Y to B, expecting ingress packets on eth0
-> to go through Y.  Then all of a sudden, A sets eth0->miniq_ingress to
-> NULL during its destruction, so packets will not find Y at all on
-> datapath (sch_handle_ingress()).  New filter becomes invisible - this is
-> already buggy enough :-/
->
-> So I think B's first call to mini_qdisc_pair_swap() should happen after
-> A's last call (in ingress_destroy()), which is what I am trying to
-> achieve here.
-
-Makes sense to me.
-
+Jason
