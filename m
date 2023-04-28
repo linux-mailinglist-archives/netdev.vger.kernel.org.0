@@ -2,116 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83DCF6F0F8E
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 02:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EFB06F0F99
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 02:31:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344199AbjD1AXE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Apr 2023 20:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
+        id S1344655AbjD1Abc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 20:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343716AbjD1AXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 20:23:03 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF0CE65;
-        Thu, 27 Apr 2023 17:22:58 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 33S0MLmD4004117, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 33S0MLmD4004117
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Fri, 28 Apr 2023 08:22:21 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Fri, 28 Apr 2023 08:22:23 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Fri, 28 Apr 2023 08:22:23 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d]) by
- RTEXMBS04.realtek.com.tw ([fe80::e138:e7f1:4709:ff4d%5]) with mapi id
- 15.01.2375.007; Fri, 28 Apr 2023 08:22:23 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Martin Kaiser <martin@kaiser.cx>,
-        Jes Sorensen <Jes.Sorensen@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] wifi: rtl8xxxu: (trivial) remove unnecessary return
-Thread-Topic: [PATCH] wifi: rtl8xxxu: (trivial) remove unnecessary return
-Thread-Index: AQHZeTvAQ7/UWm//bUGU0T04vRyWxq8/3How
-Date:   Fri, 28 Apr 2023 00:22:23 +0000
-Message-ID: <e75e9d80de2c46a795a4e1412e92ce71@realtek.com>
-References: <20230427185936.923777-1-martin@kaiser.cx>
-In-Reply-To: <20230427185936.923777-1-martin@kaiser.cx>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-antispam-interceptor-info: fallback
-x-kse-antivirus-interceptor-info: fallback
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S1344458AbjD1Aba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 20:31:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EBEA30F7;
+        Thu, 27 Apr 2023 17:31:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FF3B64096;
+        Fri, 28 Apr 2023 00:31:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 772CCC433EF;
+        Fri, 28 Apr 2023 00:31:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1682641886;
+        bh=Zi4kwNpK3pmjKReSeLMI8z1sNRFh0A4YXwF2UGLX3h0=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=H5yOeknIL76bDURzilnRvk4gAZsh5tiT1EUeR6IBS5s+J5DVcytRjLAmPoI/uEVkD
+         aSd3QE6FCJg1P5QLtXSWX1bOuLI3v/Um2a8+cD86zzGaSN/+2HHuekDim9CHt9GbOI
+         vxgTtBMrJxK2O/4tUQJOCyrXitdVJdasPFnIb8S6PtJ1tHRwIK8SSEm2L74LEJVGL5
+         83UCOm5WisTVWmlsDUEWoSmJodoqscrT26pRUWN0Q4KcHq2qFSYkcL5PUqFJNu6W3J
+         5LtjHEKzMLaalQQs4+LCgwgzaF2EHOHOwJkEi6PUpszTnetChdMwp+Dk6V7w7kAIVa
+         FUMkzbvg0ldHQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 60F52E5FFC8;
+        Fri, 28 Apr 2023 00:31:26 +0000 (UTC)
+Subject: Re: [GIT PULL] virtio,vhost,vdpa: features, fixes, cleanups
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20230424174842-mutt-send-email-mst@kernel.org>
+References: <20230424174842-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20230424174842-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+X-PR-Tracked-Commit-Id: c82729e06644f4e087f5ff0f91b8fb15e03b8890
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 8ccd54fe45713cd458015b5b08d6098545e70543
+Message-Id: <168264188639.7031.14210946422047570698.pr-tracker-bot@kernel.org>
+Date:   Fri, 28 Apr 2023 00:31:26 +0000
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alvaro.karsz@solid-run.com, christophe.jaillet@wanadoo.fr,
+        elic@nvidia.com, eperezma@redhat.com, feliu@nvidia.com,
+        fmdefrancesco@gmail.com, horms@kernel.org,
+        huangjie.albert@bytedance.com, jacob.e.keller@intel.com,
+        jasowang@redhat.com, lulu@redhat.com, michael.christie@oracle.com,
+        mie@igel.co.jp, mst@redhat.com, peter@n8pjl.ca, rongtao@cestc.cn,
+        rtoax@foxmail.com, sgarzare@redhat.com, simon.horman@corigine.com,
+        stable@vger.kernel.org, viktor@daynix.com, xieyongji@bytedance.com,
+        xuanzhuo@linux.alibaba.com
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The pull request you sent on Mon, 24 Apr 2023 17:48:42 -0400:
 
+> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-> -----Original Message-----
-> From: Martin Kaiser <martin@kaiser.cx>
-> Sent: Friday, April 28, 2023 3:00 AM
-> To: Jes Sorensen <Jes.Sorensen@gmail.com>; Kalle Valo <kvalo@kernel.org>; David S. Miller
-> <davem@davemloft.net>; Eric Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni
-> <pabeni@redhat.com>
-> Cc: Martin Kaiser <martin@kaiser.cx>; linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org
-> Subject: [PATCH] wifi: rtl8xxxu: (trivial) remove unnecessary return
-> 
-> Remove a return statement at the end of a void function.
-> 
-> This fixes a checkpatch warning.
-> 
-> WARNING: void function return statements are not generally useful
-> 6206: FILE: ./drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:6206:
-> +  return;
-> +}
-> 
-> Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/8ccd54fe45713cd458015b5b08d6098545e70543
 
-Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Thank you!
 
-> ---
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> index fd8c8c6d53d6..7e7bb11231e3 100644
-> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> @@ -6281,7 +6281,6 @@ static void rtl8xxxu_rx_complete(struct urb *urb)
->  cleanup:
->         usb_free_urb(urb);
->         dev_kfree_skb(skb);
-> -       return;
->  }
-> 
->  static int rtl8xxxu_submit_rx_urb(struct rtl8xxxu_priv *priv,
-> --
-> 2.30.2
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
