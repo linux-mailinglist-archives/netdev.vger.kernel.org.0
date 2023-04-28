@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF99E6F126E
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 09:35:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98F5D6F1277
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 09:37:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345380AbjD1Hfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 03:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43396 "EHLO
+        id S1345533AbjD1HhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 03:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbjD1Hfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 03:35:34 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC60126B2
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 00:35:33 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id d9443c01a7336-1a6c5acf6ccso71089425ad.3
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 00:35:33 -0700 (PDT)
+        with ESMTP id S1345451AbjD1HhA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 03:37:00 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71983270C
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 00:36:42 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id 98e67ed59e1d1-2472a3bfd23so6486101a91.3
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 00:36:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682667333; x=1685259333;
-        h=content-disposition:mime-version:message-id:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
+        d=gmail.com; s=20221208; t=1682667402; x=1685259402;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
         bh=XNddqsJEyDvWQdRX55z/igDCPnaQ1U9b7eKMExzg2T4=;
-        b=nGcQMiXKfUIC1FGRQxP26gNv7rc80GjuQSqFB9/JSFM8JH+vEFG+aMynuwF935JbtR
-         KqP0z+Hxl7dr2o97iWOF6i4swDcCY0uDt7UlbNbrRLbQG3Y9a18uVCCGYeb+pHxSEtQ3
-         dkEgGF0oxMH+QKzTSvW1C/zc90xIN3/zwcPoXH2eu2yPuyIkqy56hyU0Cjkxc9dc4PCD
-         y+f9G+HO8wQ24PX45ERj7kIXYsO9SuuOQidsNw9r7WWSoTuWFnr8Dro3KI0IAbaVP5SX
-         5oXyjei25Gx2TZkkNAmXYH9efVNJqLf26MgX6AmYuFLRUOc7Vn/R+gb4Uc/1DhQB2mRD
-         sKpA==
+        b=JIRBAwrQ0TTXNclDxu9t4J+Z3zOyYY74CwDnXXUnvGml4vzP40Q37khVlWITYVmywG
+         ZHIr/RzKsiOhS/qIrsbjkUAn28yEDB+rP1XraELNY0GixXhTKTdgXJHl6MLXWmBpLQG/
+         iICUYYXP73Yw7T1Nhmd9adCujs8BNAogEIkYBbgqpwd3VoDCbJp+n2QA361EUPYDeZJC
+         Pz4aubKuRw//ciw4hAHMOQBP/cfGOZAwOl/MQzW2ah+USTQVtyYdOHAD4Yq5GySkCGty
+         5PULmGVZvi9n18XEJ/j2wuaJlMDkXuFG2BHCj4Gf3KyZ0gqIjBErSo4bTPZIC+o7oR4I
+         TC0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682667333; x=1685259333;
-        h=content-disposition:mime-version:message-id:cc:to:from:date
+        d=1e100.net; s=20221208; t=1682667402; x=1685259402;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
         bh=XNddqsJEyDvWQdRX55z/igDCPnaQ1U9b7eKMExzg2T4=;
-        b=cSUxhHdSFNwlBnFHDTK2cMFW7KhfMk7NLf8miyFxd2CyKtXL+A3sBlSE5si2UhjCR8
-         smV3fRff1XgQq8TwzoHaWWZtekb+Ab4sVZibIB11Ac1O/NwJI3vwqCKqUmzmZbcjglcZ
-         tp429hGTTAjEJJzrKs8ejajeX8qEoLIRHeuHcGfsCGMS1Rglw2MvebkBdi6UYny2Tlf5
-         zuVw830uGVR62Yk9KqrmXu870A36DUiELDfuErVBf1Hsa96v/xL6iHyGjqq4U2O+Bn6i
-         UxajBrTMvSgOKAJunfVZtT2bFT1mlmJbR0qif8fZJ2jVb7VBkR6liVkqsWLQbNlXq2cC
-         IQ0w==
-X-Gm-Message-State: AC+VfDzkvzdT8kse/roJr+xg/DVW8sqBzjfNSTw00VKagN9Yv/qhuR7w
-        v/RvpUFuvkLDsLIxrIHX8tZxHQ510u5SKRbo
-X-Google-Smtp-Source: ACHHUZ4hY5e58/46xz2SRz6TDKkxDXWGjVSxF8vW1zusV9UgCxnPghvT61ztCGIzXe0JwU/6L4Ph+g==
-X-Received: by 2002:a17:902:cf0e:b0:1a1:a8eb:d34d with SMTP id i14-20020a170902cf0e00b001a1a8ebd34dmr3965690plg.46.1682667333263;
-        Fri, 28 Apr 2023 00:35:33 -0700 (PDT)
+        b=dDybtakBOxF0+1cAJat9Y8V1OWzt0sRMp6JlqcJlkSzX/KY8GmNf3CB1IyLirUIHTL
+         CFtyWCeHDf+m7YLxTAg3sk6RIsr7EEowo/8kJKbOAYnZ4nCw8Mov3Gl1SKGvj6ZJKD/4
+         Psc6HkA9f9xv18IeAt2caJFhQ79pZXhmmqzLeSB+kANj5NaPrcqEUa8J5dSpnu7tiRTe
+         YZ7m8j54AKtO0wVehYjTgpi8iXlNKHv+UhXaw7Bu747KLCeINlsqjT+BviYMX8FtKXG4
+         2kwmHq84ueVB3I3+YnPNyhp9wO3Pl0GkkVQLRiYAXxaDNOGVcyWTTRkll/xBli/BVVvL
+         dO2w==
+X-Gm-Message-State: AC+VfDyafUbClZcBYPHbha7s+9ApNdTinh70CC0A57GJdVNjwDoja4dD
+        a1t+9xRhzSzJr8PUoqTVaO94T9mUlCGT3Y/h
+X-Google-Smtp-Source: ACHHUZ56hSGSwPuHj0f7VwvTNTQTVElGNwzdLjsAN0Tc3GEdJ9xxzFUyO950c5FwmzW6JRZTOKMhqA==
+X-Received: by 2002:a17:90a:4b05:b0:249:7224:41cb with SMTP id g5-20020a17090a4b0500b00249722441cbmr4518180pjh.31.1682667401837;
+        Fri, 28 Apr 2023 00:36:41 -0700 (PDT)
 Received: from Laptop-X1 (114-41-44-26.dynamic-ip.hinet.net. [114.41.44.26])
-        by smtp.gmail.com with ESMTPSA id z12-20020a1709028f8c00b001a27e5ee634sm12766766plo.33.2023.04.28.00.35.31
+        by smtp.gmail.com with ESMTPSA id p1-20020a17090a284100b002466f45788esm878754pjf.46.2023.04.28.00.36.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Apr 2023 00:35:32 -0700 (PDT)
-Date:   Fri, 28 Apr 2023 15:35:28 +0800
+        Fri, 28 Apr 2023 00:36:41 -0700 (PDT)
+Date:   Fri, 28 Apr 2023 15:36:38 +0800
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     Jay Vosburgh <jay.vosburgh@canonical.com>
 Cc:     netdev@vger.kernel.org
-Message-ID: <ZEt3QHuKnbUhXkB6@Laptop-X1>
+Subject: [Issue] Bonding can't show correct speed if lower interface is bond
+ 802.3ad
+Message-ID: <ZEt3hvyREPVdbesO@Laptop-X1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Spam-Status: No, score=-0.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,MISSING_SUBJECT,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
