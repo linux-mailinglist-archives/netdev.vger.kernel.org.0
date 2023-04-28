@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 509A86F133D
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 10:30:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 075376F1341
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 10:30:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345528AbjD1Ia1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 04:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51530 "EHLO
+        id S1345593AbjD1Iaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 04:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbjD1Ia0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 04:30:26 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB8A1FF5;
-        Fri, 28 Apr 2023 01:30:24 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id ffacd0b85a97d-2f46348728eso5865003f8f.3;
-        Fri, 28 Apr 2023 01:30:24 -0700 (PDT)
+        with ESMTP id S1345588AbjD1Ia2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 04:30:28 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36981FF5;
+        Fri, 28 Apr 2023 01:30:26 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id ffacd0b85a97d-2fa47de5b04so9205341f8f.1;
+        Fri, 28 Apr 2023 01:30:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682670623; x=1685262623;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=G8j8x1czFzbvnPpaqEQLo1L76++NMRFD2shHcwHxLUU=;
-        b=CQrX71h2KdPGHmMC6Yx1OtTjt0w1hSC+cw5fdTpteVc96A7C55XiWCfJHS9B5ZybMO
-         nilR69FLts5ua45Y52yTXmUMWJI/SR9H3sw7HcX0fl7ni3zHXUXdSt2SS43/QXbfcwiv
-         gwZC0p6HR9n4zzG881/JB8DJJ63QyKba8GBWGMfPtx6C6rdvH8Atr8jM6TuM6y7FuoJe
-         qQR8dC3P9ntwU+r/fNt2XSNGQQnjMkI49tbRKPtxTU79oS87e+QttZWoCmzX3CCqMGNS
-         zo7nSgyb3WonbezPi49rX097grFKCPBbXloErmmMXWqXBHyQ98GR0jUNgmLP6ZFT9OhM
-         MKvQ==
+        d=gmail.com; s=20221208; t=1682670625; x=1685262625;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nniAcfc0pGJ2zeNQrhfgwRlH/v4XnVj4PMgap0ZSAzk=;
+        b=eqcdJ/3zpQdInFogCGMsVve6APPiKLWaQbqjv0rj/Hq0AVlfd+TfJNEtQ4o54T+mN5
+         9R0QexlnfOD/P+yBUVigdzhCFa/cCKFDZxxFlTmr90fRmT1rgMmY70kUjNE+DFhvRKb0
+         rXz5cf0kf7Zql6FLUggXi7QIyuH9EeQ4l+jbF4IWifsihDzuIrI1vWfkfYxoJzDGK6pt
+         6xHBatcLiRbriqG/CUOBhP8xqyOW0W4d73YIlTAEWzr4lk4H3WHVC0s2ez+9RsB7/wuV
+         d429MBIOEVQ0W5fCSdX74H+/YYRBOcixePi97aHj40OVDVL/2+mWMRj8gBO+7uFtI5Uv
+         Iz9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682670623; x=1685262623;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=G8j8x1czFzbvnPpaqEQLo1L76++NMRFD2shHcwHxLUU=;
-        b=VPBzwFIveBuxObJqeps1RTsCuAGjTUcU2EKHsk3srxUzgAP/81CKA5XfanBZ/flPb2
-         +hWZfxK3rI/Fm+GMXOZrs+/K5IuPKx/hupr5gu0dOi+z4QvAQXfuNVRIDD8UP9pV3bci
-         xWWfqBjt82Ol99xL/IwpXGCCEzBSVU6eQVscDKjqJR0lraPq3oKvgMp0lGJLPwtI2ip9
-         KnMp9vuZN+5ilocHO7yr9fV5wl9JOkz07HUj6/uxQgcK9xhROuUJTSgbRgPIvxY3ZYbK
-         Qkdo8h62brY2sLRpnwgxhMUE/7WOMcBpDpjkjYZaXlCP49P7prT5eoxUCPWHNcotOoJk
-         QTfQ==
-X-Gm-Message-State: AC+VfDyVWTWW6RpkHpmXHE9pxWveQeGGae83vCeZ3jx2DafdkVmjAYWS
-        bJ8R+NH7qBLpw2tlt3Z/pXQ=
-X-Google-Smtp-Source: ACHHUZ7t4Pa+5LMDFE+3V45onw/khpEwW8BLFwn1t4HnrcWVDti9VslkHftTYvWaWaqDw/C93+h4tQ==
-X-Received: by 2002:a5d:634e:0:b0:2fa:6929:eb81 with SMTP id b14-20020a5d634e000000b002fa6929eb81mr3207396wrw.31.1682670622808;
-        Fri, 28 Apr 2023 01:30:22 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682670625; x=1685262625;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nniAcfc0pGJ2zeNQrhfgwRlH/v4XnVj4PMgap0ZSAzk=;
+        b=fHElrrkeza1hMUSmZL+NhsXN5wuptDTmorazMQU/1uvG6ERRVIhXqameD72fGc9NDa
+         YZrgFZkBDTA0/KOJJV+NSaZS57R/SFRQSVGvPMMWsrW53DPTt/AW5BxWpEMALxm/5vSY
+         0/QVq0evQHdJtmSQ2iQne10UWPavn2YQ0bd7g4Hpjtqq7wWfUVc8wFjqQWlnmb28il47
+         EM/NKWqV74+Ixbujs/p9I3UydkTTsLBzCySq8SZlgg6977khy8wAu7/8qVVRkV6bmbQB
+         HTxEGbEu8bZHWW7awM0uJUkN4iR3VW/2z9d8wM9qe7ZQN6rWcrTvSVqoNfxMGeAAcTLz
+         QcTA==
+X-Gm-Message-State: AC+VfDxRfZSPW9Wtyxw6HnSIDwUibKOmU+9ZG7ncJIPwNeel6A31e+M5
+        Zac7981moWMEUZVn3hbb9u4=
+X-Google-Smtp-Source: ACHHUZ4Yk+bj0cXyR23T8sMxPmewTjZfZaGInxiWPWajOd7+5U7zDf6kyXSQzEjT+jJTyhnk8GFZ2g==
+X-Received: by 2002:a5d:4d50:0:b0:2f8:81c1:ea75 with SMTP id a16-20020a5d4d50000000b002f881c1ea75mr3338300wru.20.1682670625149;
+        Fri, 28 Apr 2023 01:30:25 -0700 (PDT)
 Received: from gsever-Latitude-7400.corp.proofpoint.com ([2a0d:6fc2:43e5:9b00:5000:8721:8779:7e1])
-        by smtp.gmail.com with ESMTPSA id n12-20020a7bc5cc000000b003f17329f7f2sm23540545wmk.38.2023.04.28.01.30.20
+        by smtp.gmail.com with ESMTPSA id n12-20020a7bc5cc000000b003f17329f7f2sm23540545wmk.38.2023.04.28.01.30.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Apr 2023 01:30:22 -0700 (PDT)
+        Fri, 28 Apr 2023 01:30:24 -0700 (PDT)
 From:   Gilad Sever <gilad9366@gmail.com>
 To:     dsahern@kernel.org, martin.lau@linux.dev, daniel@iogearbox.net,
         john.fastabend@gmail.com, ast@kernel.org, andrii@kernel.org,
@@ -58,10 +59,12 @@ To:     dsahern@kernel.org, martin.lau@linux.dev, daniel@iogearbox.net,
 Cc:     eyal.birger@gmail.com, shmulik.ladkani@gmail.com,
         bpf@vger.kernel.org, netdev@vger.kernel.org,
         linux-kselftest@vger.kernel.org, Gilad Sever <gilad9366@gmail.com>
-Subject: [PATCH bpf,v4 0/4] Socket lookup BPF API from tc/xdp ingress does not respect VRF bindings.
-Date:   Fri, 28 Apr 2023 11:30:03 +0300
-Message-Id: <20230428083007.148364-1-gilad9366@gmail.com>
+Subject: [PATCH bpf,v4 1/4] bpf: factor out socket lookup functions for the TC hookpoint.
+Date:   Fri, 28 Apr 2023 11:30:04 +0300
+Message-Id: <20230428083007.148364-2-gilad9366@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230428083007.148364-1-gilad9366@gmail.com>
+References: <20230428083007.148364-1-gilad9366@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,46 +77,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling socket lookup from L2 (tc, xdp), VRF boundaries aren't
-respected. This patchset fixes this by regarding the incoming device's
-VRF attachment when performing the socket lookups from tc/xdp.
+Change BPF helper socket lookup functions to use TC specific variants:
+bpf_tc_sk_lookup_tcp() / bpf_tc_sk_lookup_udp() / bpf_tc_skc_lookup_tcp()
+instead of sharing implementation with the cg / sk_skb hooking points.
+This allows introducing a separate logic for the TC flow.
 
-The first two patches are coding changes which factor out the tc helper's
-logic which was shared with cg/sk_skb (which operate correctly).
+The tc functions are identical to the original code.
 
-This refactoring is needed in order to avoid affecting the cgroup/sk_skb
-flows as there does not seem to be a strict criteria for discerning which
-flow the helper is called from based on the net device or packet
-information.
-
-The third patch contains the actual bugfix.
-
-The fourth patch adds bpf tests for these lookup functions.
+Acked-by: Stanislav Fomichev <sdf@google.com>
+Reviewed-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Reviewed-by: Eyal Birger <eyal.birger@gmail.com>
+Signed-off-by: Gilad Sever <gilad9366@gmail.com>
 ---
-v4: - Move dev_sdif() to include/linux/netdevice.h as suggested by Stanislav Fomichev
-    - Remove SYS and SYS_NOFAIL duplicate definitions
+ net/core/filter.c | 63 ++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 60 insertions(+), 3 deletions(-)
 
-v3: - Rename bpf_l2_sdif() to dev_sdif() as suggested by Stanislav Fomichev
-    - Added xdp tests as suggested by Daniel Borkmann
-    - Use start_server() to avoid duplicate code as suggested by Stanislav Fomichev
-
-v2: Fixed uninitialized var in test patch (4).
-
-Gilad Sever (4):
-  bpf: factor out socket lookup functions for the TC hookpoint.
-  bpf: Call __bpf_sk_lookup()/__bpf_skc_lookup() directly via TC
-    hookpoint
-  bpf: fix bpf socket lookup from tc/xdp to respect socket VRF bindings
-  selftests/bpf: Add vrf_socket_lookup tests
-
- include/linux/netdevice.h                     |   9 +
- net/core/filter.c                             | 123 +++++--
- .../bpf/prog_tests/vrf_socket_lookup.c        | 312 ++++++++++++++++++
- .../selftests/bpf/progs/vrf_socket_lookup.c   |  88 +++++
- 4 files changed, 511 insertions(+), 21 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/vrf_socket_lookup.c
- create mode 100644 tools/testing/selftests/bpf/progs/vrf_socket_lookup.c
-
+diff --git a/net/core/filter.c b/net/core/filter.c
+index d9ce04ca22ce..57d853460e12 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6727,6 +6727,63 @@ static const struct bpf_func_proto bpf_sk_lookup_udp_proto = {
+ 	.arg5_type	= ARG_ANYTHING,
+ };
+ 
++BPF_CALL_5(bpf_tc_skc_lookup_tcp, struct sk_buff *, skb,
++	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
++{
++	return (unsigned long)bpf_skc_lookup(skb, tuple, len, IPPROTO_TCP,
++					     netns_id, flags);
++}
++
++static const struct bpf_func_proto bpf_tc_skc_lookup_tcp_proto = {
++	.func		= bpf_tc_skc_lookup_tcp,
++	.gpl_only	= false,
++	.pkt_access	= true,
++	.ret_type	= RET_PTR_TO_SOCK_COMMON_OR_NULL,
++	.arg1_type	= ARG_PTR_TO_CTX,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
++	.arg3_type	= ARG_CONST_SIZE,
++	.arg4_type	= ARG_ANYTHING,
++	.arg5_type	= ARG_ANYTHING,
++};
++
++BPF_CALL_5(bpf_tc_sk_lookup_tcp, struct sk_buff *, skb,
++	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
++{
++	return (unsigned long)bpf_sk_lookup(skb, tuple, len, IPPROTO_TCP,
++					    netns_id, flags);
++}
++
++static const struct bpf_func_proto bpf_tc_sk_lookup_tcp_proto = {
++	.func		= bpf_tc_sk_lookup_tcp,
++	.gpl_only	= false,
++	.pkt_access	= true,
++	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
++	.arg1_type	= ARG_PTR_TO_CTX,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
++	.arg3_type	= ARG_CONST_SIZE,
++	.arg4_type	= ARG_ANYTHING,
++	.arg5_type	= ARG_ANYTHING,
++};
++
++BPF_CALL_5(bpf_tc_sk_lookup_udp, struct sk_buff *, skb,
++	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
++{
++	return (unsigned long)bpf_sk_lookup(skb, tuple, len, IPPROTO_UDP,
++					    netns_id, flags);
++}
++
++static const struct bpf_func_proto bpf_tc_sk_lookup_udp_proto = {
++	.func		= bpf_tc_sk_lookup_udp,
++	.gpl_only	= false,
++	.pkt_access	= true,
++	.ret_type	= RET_PTR_TO_SOCKET_OR_NULL,
++	.arg1_type	= ARG_PTR_TO_CTX,
++	.arg2_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
++	.arg3_type	= ARG_CONST_SIZE,
++	.arg4_type	= ARG_ANYTHING,
++	.arg5_type	= ARG_ANYTHING,
++};
++
+ BPF_CALL_1(bpf_sk_release, struct sock *, sk)
+ {
+ 	if (sk && sk_is_refcounted(sk))
+@@ -7980,9 +8037,9 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ #endif
+ #ifdef CONFIG_INET
+ 	case BPF_FUNC_sk_lookup_tcp:
+-		return &bpf_sk_lookup_tcp_proto;
++		return &bpf_tc_sk_lookup_tcp_proto;
+ 	case BPF_FUNC_sk_lookup_udp:
+-		return &bpf_sk_lookup_udp_proto;
++		return &bpf_tc_sk_lookup_udp_proto;
+ 	case BPF_FUNC_sk_release:
+ 		return &bpf_sk_release_proto;
+ 	case BPF_FUNC_tcp_sock:
+@@ -7990,7 +8047,7 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 	case BPF_FUNC_get_listener_sock:
+ 		return &bpf_get_listener_sock_proto;
+ 	case BPF_FUNC_skc_lookup_tcp:
+-		return &bpf_skc_lookup_tcp_proto;
++		return &bpf_tc_skc_lookup_tcp_proto;
+ 	case BPF_FUNC_tcp_check_syncookie:
+ 		return &bpf_tcp_check_syncookie_proto;
+ 	case BPF_FUNC_skb_ecn_set_ce:
 -- 
 2.34.1
 
