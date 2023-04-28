@@ -2,260 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A0486F1997
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 15:32:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E9D76F19EF
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 15:48:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346039AbjD1Ncg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 09:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42666 "EHLO
+        id S1346346AbjD1NsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 09:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbjD1Ncf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 09:32:35 -0400
-Received: from sender3-op-o19.zoho.com (sender3-op-o19.zoho.com [136.143.184.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116AA2713
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 06:32:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1682688731; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=VUUUukItlpLkMBSvv1yKvc8IbNhQanuwRGAsbMhxd7yq+1rjcQXqZwqEiY1TIBsKdP0MudfS7HNGp2Y23FChagbjlzzYWwqyFl6JKcEgLHmzSxcdJLxERmjd+mrJz4s6hyWua4OqIaOzqk4VXA+siTuLiQQZFtiHsdENKWYb7s4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1682688731; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=eWJUu3MXtAInyVwcNSn1TKt1WBrgVJBe6+wMvt9t3wc=; 
-        b=fOJWHpmQm7m0Uu6xO/MMCZaCyEKL3McT7s8uIcaZI4rX93px2GTdoCyEJppKvUSrYisAcv1yxjfrxW5pYB1Ca24/tH3JuCkMHzvNqa0mwdparMsoorZs1h1e0sw2ZjXsrI/n0qjLKs9luBhULlYruuc0abaW1H4DBlZQEO4XK10=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1682688731;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=eWJUu3MXtAInyVwcNSn1TKt1WBrgVJBe6+wMvt9t3wc=;
-        b=RmnkVnR93hfr+RwCsCyDn6hb1ayPrXjE7C9oTTofTFi+v7Zzf94N+Vdy5ZN5wNTU
-        b9nD265eTFB1uvHd/4Y6PubArCnfqxYVCbdmNvANNpouAA7VjT9xsloGvUOQ4V+HzHm
-        gk6MMdFx7pvhl9Xe5ZpvDPS+UigxYFgzantPtXng=
-Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 1682688728972928.4817194188719; Fri, 28 Apr 2023 06:32:08 -0700 (PDT)
-Message-ID: <0183eb91-8517-f40f-c2bb-b229e45d6fa5@arinc9.com>
-Date:   Fri, 28 Apr 2023 16:31:53 +0300
+        with ESMTP id S229471AbjD1NsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 09:48:07 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1DC9171E;
+        Fri, 28 Apr 2023 06:48:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IeBEMNnZpjuHGwALY8tjh/vYK8N0/1VZghuZ3MRLCqyZ7WCqGu1ADwSAuVheunka7txOJOJr+P9Jgld/0XZs19WssBAhbJvSg+WIHldrzd9OdwAE9VVHfv01EmJuDuqZYBmay691Fy6mXxpcsgjrFyXC4AeJBHt+vYR1I6db6GfK+km7gM0KCmTM8qtulRYvQGWr1ldaCubDPO8cevZyOTJeDbUUp1vVAHab0Anh1R3BKjM++tiBP9Uzg8mXOI+s/RzBIchorsnSZmFWMqP6RjGCbFy8v+Pm0nLICuA46SDUOGgicTIJEmuH64ah8hVn3Ig4SgSpOr4hwDu6FyLWwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Of1HD/t+Y25GDQ5qFM4/JjFQh382tDMVq+jAJ59YvfQ=;
+ b=OKRsuihTzIVMWAJ71Snx85Zb0XxRO/TZSYYbpjs5cujgrkYnsbGU59wIbFXxlaBPpLTJmbO+Ypzj2D6bF6VrBrzg+Acqhmm9p3sSw22D5AJrcUpZ4OqJPCthOztGrXkgD6XOr87ByJeIxp7jjQmmbPtHOnEX4T02dEPDVM9M9o7PVuL3Pof2Ci/6sFuEbSbmqaFF6UoJiepIevH0pKMww8JJLBC6aaE37dCUAYJ7jys+tZBpWW1FjTiEyn+y5Glf8zU77loXf6DiYJSZCOahi2Rz+4YB3WSVIIJ3G9OpWGI/cMSKmG/p7v3xy1S453hUKm2qoNcguuVbbhDaYTNIHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Of1HD/t+Y25GDQ5qFM4/JjFQh382tDMVq+jAJ59YvfQ=;
+ b=RpIgKxtcskO1Eca8Ylps1OfNJVFMHIJnsU7I+0lgoW3NW+nPb2z5zNENVd3hBKgq9LboViySppkuVAA/wXY/kN3lD22eIX6eoibv+n0LsOvfiiN4t5RrF1HnutFLg9p3mcigKWKDbX+VRfFnFehxJRlW5E/y635EOQQLAA9YD68=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY5PR13MB4487.namprd13.prod.outlook.com (2603:10b6:a03:1d4::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.23; Fri, 28 Apr
+ 2023 13:48:01 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6340.022; Fri, 28 Apr 2023
+ 13:48:01 +0000
+Date:   Fri, 28 Apr 2023 15:47:52 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Md Danish Anwar <a0501179@ti.com>
+Cc:     MD Danish Anwar <danishanwar@ti.com>,
+        "Andrew F. Davis" <afd@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Suman Anna <s-anna@ti.com>, Roger Quadros <rogerq@kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Richard Cochran <richardcochran@gmail.com>, nm@ti.com,
+        ssantosh@kernel.org, srk@ti.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [EXTERNAL] Re: [RFC PATCH v6 2/2] net: ti: icssg-prueth: Add
+ ICSSG ethernet driver
+Message-ID: <ZEvOiMSIIYG6nmsu@corigine.com>
+References: <20230424053233.2338782-1-danishanwar@ti.com>
+ <20230424053233.2338782-3-danishanwar@ti.com>
+ <ZEl2zh879QAX+QsK@corigine.com>
+ <9c97e367-56d6-689e-856a-c1a6ff575b63@ti.com>
+ <ff6fe35f-ca4b-a48d-777f-196b771a14d3@ti.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ff6fe35f-ca4b-a48d-777f-196b771a14d3@ti.com>
+X-ClientProxiedBy: AS4P250CA0006.EURP250.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5df::8) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: MT7530 bug, forward broadcast and unknown frames to the correct
- CPU port
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     DENG Qingfang <dqfext@gmail.com>, Greg Ungerer <gerg@kernel.org>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
-        bartel.eerdekens@constell8.be, netdev <netdev@vger.kernel.org>
-References: <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
- <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
- <20230426205450.kez5m5jr4xch7hql@skbuf>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20230426205450.kez5m5jr4xch7hql@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY5PR13MB4487:EE_
+X-MS-Office365-Filtering-Correlation-Id: cdf81be2-8fc0-48b9-ab7d-08db47ef2eb3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NYb8W0GjOdJQc5PdtTJb+CquYoPq23yuUrVIl9fG7Ym6n2V/Oqr7s/qGna2j9mULo+0gz9CYUX1fnxViO88gs6rdIjz3UM0duGMYBqY9dxnfO3JelsrHPxKVxbqpymE/uu6wBiykXr4feT22C21FRzh8hmByFdkP1Fq/iTYJTQxFg+ZZsIlGGBzt/DxcgTs6zmgjqfEUgpkfda9Uvv7GOlgQ7BRthOZcOpeu/Co7XH4ua7R041VV5Tp6CNd9p/zJOrrZ3JCrjerTib8J29E8s5Drkf+fvuffRDkXwaxTgNpy8fx02KBmKedcQb+qUQ0ryn1ZAfpS5HhMln/1gLZVjSwg+XjIW5SaiOaCe4z1AzcvwCOn/th8ix2Lqyt+D3ON9Pr3h4K4SJiOAkC+bzgRl21TDUivdZAFxiCTJ09I6hCgGneyYn8MtPHVQXKQExqaazNO1wc+wC9ON1+v+97eQxRCpajDJ/ikTZ7wS6oS61I/vxpFa5XJk+UN3s6vBNwJtyGvjOU+mhqY4AjDLp3RVDpSR4acZgu2gzThjyc0Sn1Og8hCTfqK9+d39K5L9EYjOtzJuiHtsFvLgheikHpAnGDZmI+90RNeT1RZ/oi3NIY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(396003)(366004)(39830400003)(346002)(136003)(451199021)(54906003)(478600001)(5660300002)(8936002)(8676002)(36756003)(86362001)(2906002)(7416002)(44832011)(38100700002)(66556008)(66476007)(66946007)(4326008)(6916009)(316002)(41300700001)(186003)(6512007)(6506007)(53546011)(83380400001)(2616005)(6666004)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SjBV3PZKu8MqXRqdlKZglRPC/KbJlJZYIcXnQSRys5xA45/z3saeym4IechY?=
+ =?us-ascii?Q?KkGc1dpfySdO8VwMUAM7w6dGzzt4O4ZXkeurN8vXU2TdijpAtrU9nSFzdl0p?=
+ =?us-ascii?Q?SKUHtH2l4mJq0se3haM/9Aft1jfDVb5AGHIq+bsYzHT6PiNTAzRwLhF17aQK?=
+ =?us-ascii?Q?wk+lRW3FHB0U3njvppb5AV4/TNiL68QtNStBkeXOVCKBgYHDdCFvqchJCCLK?=
+ =?us-ascii?Q?pDNzKW9tM078v8esmt87hpQ1hpbtIWEZmJSHhKDHKKdgXCAwmCqN+IcOXCse?=
+ =?us-ascii?Q?3JmUdIH2141w6SF4Q7dEjBUAXnLTnG2TxBVxE+qqAQCcTQhqai57EZ+EU+WM?=
+ =?us-ascii?Q?bRZJ6xxMWI1L26yMoFmZhQlmomORsk+MJJ6mFC9NB1qvj0wqWYTbSsJj2l57?=
+ =?us-ascii?Q?yIcib/EEQmTY8cBiUlrpC1x5DlYi2oPuVBa46No9Qm2Panl/tZN8/SdxRPk3?=
+ =?us-ascii?Q?Qikj1BRGs/zpxr0mTs27Bw2GXt021/k5huvcax0yY38EILoNrA3uSUl2x4f3?=
+ =?us-ascii?Q?M6LSRfyvLnhApoon8cuinwJQUsywngoRpvAAus5Vx8uiep+36XmucL9PBjRk?=
+ =?us-ascii?Q?701Tk4gTitJK2CJfqRZvfBUJDZx7fbRC4ZpeXcBShG5zZAGol1BTuYVPYe5L?=
+ =?us-ascii?Q?+EjZYviIqp/qvwm5blt3ZairleOp0/D+N19EgWxkvwwlbegmSNe1HXz8rd/y?=
+ =?us-ascii?Q?N96W3jlXIB+PkTYY4rHpU1TCn50a7T+K4RCN90Sco7YxeCEn8Kb0jQBNVFtL?=
+ =?us-ascii?Q?77MyKveLzO5aOsgUl4H22+WuyQIiI5tPnDeMvjKfIW4xfjG1dk2UcxEXdi0H?=
+ =?us-ascii?Q?rwhjKtXuHXiy6q4ofI9oBd3l+1SnKjeSi/uQvYP3ySekuU7NjeRH1peOT6yR?=
+ =?us-ascii?Q?/4eKsVjoeLtVYAbGf/qHT0aTsYhA2ulVEbz/bEI+WidkfbPBu7wvYJ1HsFEm?=
+ =?us-ascii?Q?idf6usyC0yI61UkhRG6Vb6VloSmRp/QDVy8toIh+GoJL2q3n962I9Fa7Q4MH?=
+ =?us-ascii?Q?qKntc3WL9aPFWtplNoYPEx2FNN/Ahakz6MP4LP5Mx3yfaSx3kIRJ1652hY/r?=
+ =?us-ascii?Q?8eeEfwvRuUu7/e9/XqRVoR/arXfe4wZptXlzG4R121CUR6n2s7HPKLqWD7c9?=
+ =?us-ascii?Q?ksWMgQotQhLpa3oIPgyg/UDGoBZhuN2AEMMPaDONQoMYaJJQB1zPgIM/Krrk?=
+ =?us-ascii?Q?E3TUXfiz6bZo+dPj9ghAW5HOh7qqpeNWVLIg6wG8eY1tVUGSjTtw2H5n2xps?=
+ =?us-ascii?Q?GMpqadlVnTUHxXJcg4RdhQ8wpsrdJeZVishjISSqtTPb5NxM6KAXY4urJtpM?=
+ =?us-ascii?Q?+QMiEDdqZfkmbCEJ0AS1ldj+6NyitaqwUB+y8/GjX5ptxszLLYvJoYlGuqtr?=
+ =?us-ascii?Q?mPUACoxrRj5LS0fAaWpyKDC5+5NPS7aIHyZlvDCuWswQlZ7xvWOH6BOXRkxP?=
+ =?us-ascii?Q?NR5FDCDZ3NZ88equ9oxqv66C8eMQdc0WR44xWxemE4U0RMJj2V0fbSc7LhtR?=
+ =?us-ascii?Q?rDzLLkoQzulRkeB+Q8nO6XXQ8jdYfywFyplzfVjzyNcx/Y1nXWPISAZFqnoN?=
+ =?us-ascii?Q?z3CKhsbj9qnh8A7Nr+wOA/tJfGnzCC0byjbkkyfISRSFMcd6usZ0qukn6jbY?=
+ =?us-ascii?Q?XNOQIw/84JjcBDjJZtpjA3luCbP1nPKrNnObGSXoKcTPwjAt3LiCAWzaPVIe?=
+ =?us-ascii?Q?RgKnUg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cdf81be2-8fc0-48b9-ab7d-08db47ef2eb3
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 13:48:01.2347
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VvWLNx3dqU6BT5q0+DPlcqFRuUdyglnLs9s6ATTnU6ELUHq4T83fCOqXqku6BPMcnjaoRkFTXiqsRbb2zpNh0uHdY0BhUPdJnU4DlxGUzus=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB4487
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.04.2023 23:54, Vladimir Oltean wrote:
-> On Sun, Apr 23, 2023 at 06:22:41PM +0300, Arınç ÜNAL wrote:
->> Hey there folks,
->>
->> On mt753x_cpu_port_enable() there's code [0] that sets which port to forward
->> the broadcast, unknown multicast, and unknown unicast frames to. Since
->> mt753x_cpu_port_enable() runs twice when both CPU ports are enabled, port 6
->> becomes the port to forward the frames to. But port 5 is the active port, so
->> no broadcast frames received from the user ports will be forwarded to port
->> 5. This breaks network connectivity when multiple ports are being used as
->> CPU ports.
->>
->> My testing shows that only after receiving a broadcast ARP frame from port 5
->> then forwarding it to the user port, the unicast frames received from that
->> user port will be forwarded to port 5. I tested this with ping.
->>
->> Forwarding broadcast and unknown unicast frames to the CPU port was done
->> with commit 5a30833b9a16 ("net: dsa: mt7530: support MDB and bridge flag
->> operations"). I suppose forwarding the broadcast frames only to the CPU port
->> is what "disable flooding" here means.
+On Fri, Apr 28, 2023 at 02:36:42PM +0530, Md Danish Anwar wrote:
+> Hi Simon.
 > 
-> Flooding means forwarding a packet that does not have a precise destination
-> (its MAC DA is not present in the FDB or MDB). Flooding is done towards
-> the ports that have flooding enabled.
+> On 27/04/23 12:42, Md Danish Anwar wrote:
+> > Hi Simon,
+> > Thanks for the comments.
+> > 
+> > On 27/04/23 00:39, Simon Horman wrote:
+> >> On Mon, Apr 24, 2023 at 11:02:33AM +0530, MD Danish Anwar wrote:
+> >>> From: Roger Quadros <rogerq@ti.com>
+> >>>
+> >>> This is the Ethernet driver for TI AM654 Silicon rev. 2
+> >>> with the ICSSG PRU Sub-system running dual-EMAC firmware.
+> >>>
 > 
->>
->> It’s a mystery to me how the switch classifies multicast and unicast frames
->> as unknown. Bartel's testing showed LLDP frames fall under this category.
+> [ ... ]
 > 
-> What is mysterious exactly? What's not in the FDB/MDB is unknown. And
-> DSA, unless the requirements from dsa_switch_supports_uc_filtering() and
-> dsa_switch_supports_mc_filtering() are satisfied, will not program MAC
-> addresses for host RX filtering to the CPU port(s).
+> >>
+> >> ...
+> >>
+> >>> +MODULE_AUTHOR("Roger Quadros <rogerq@ti.com>");
+> >>> +MODULE_AUTHOR("Puranjay Mohan <p-mohan@ti.com>");
+> >>> +MODULE_AUTHOR("Md Danish Anwar <danishanwar@ti.com>");
+> >>> +MODULE_DESCRIPTION("PRUSS ICSSG Ethernet Driver");
+> >>> +MODULE_LICENSE("GPL");
+> >>
+> >> SPDK says GPL-2.0, so perhaps this should be "GPL v2" ?
+> >>
 > 
-> This switch apparently has the option to automatically learn from the MAC SA
-> of packets injected by software. That option is automatically enabled
-> unless MTK_HDR_XMIT_SA_DIS is set (which currently it never is).
+> I am getting checkpatch warning while changing GPL version.
 > 
-> So when software sends a broadcast ARP frame from port 5, the switch
-> learns the MAC SA of this packet (which is the software MAC address of
-> the user port) and it associates it with port 5. So future traffic
-> destined to the user port's software MAC address now reaches port 5, the
-> active CPU port (and the real CPU port from DSA's perspective).
+> WARNING: Prefer "GPL" over "GPL v2" - see commit bf7fbeeae6db ("module: Cure
+> the MODULE_LICENSE "GPL" vs. "GPL v2" bogosity")
+> #3602: FILE: drivers/net/ethernet/ti/icssg_prueth.c:1866:
+> +MODULE_LICENSE("GPL v2");
 > 
-> Wait 5 minutes for the learned FDB entry to expire, and the problem will
-> probably be back.
+> Should I ignore this warning and change it to "GPL v2"
 
-Understood, thank you.
-
-> 
-> LLDP frames should not obey the same rules. They are sent to the MAC DA
-> of 01:80:c2:00:00:0e, which is in the link-local multicast address space
-> (hence the "LL" in the name), and which according to IEEE 802.1Q-2018 is
-> the "Nearest Bridge group address":
-> 
-> | The Nearest Bridge group address is an address that no conformant TPMR
-> | component, S-VLAN component, C-VLAN component, or MAC Bridge can
-> | forward. PDUs transmitted using this destination address, or any of the
-> | other addresses that appear in all three tables, can therefore travel no
-> | further than those stations that can be reached via a single individual
-> | LAN from the originating station. Hence the Nearest Bridge group address
-> | is also known as the Individual LAN Scope group address.
-> 
-> Removing a packet from the forwarding data plane and delivering it only
-> to the CPU is known as "trapping", and thus, it is not "flooding".
-> 
-> The MAC SA learning trick will not make port 5 see LLDP frames, since
-> those are not targeted towards a unicast MAC address which could be
-> learned.
-
-Got it. Bartel has already wrote code to trap the LLDP frames with :03 
-and :0E MAC DA to the CPU port by utilising the MT753X_RGAC2 (0x2C) 
-register.
-
-I will make sure the code gets in after the issues with multiple CPUs 
-are dealt with.
-
-> 
->>
->> Until the driver supports changing the DSA conduit, unknown frames should be
->> forwarded to the active CPU port, not the numerically greater one. Any ideas
->> how to address this and the "disable flooding" case?
-> 
-> I think I also signaled the reverse problem in the other thread:
-> https://lore.kernel.org/netdev/20230222193951.rjxgxmopyatyv2t7@skbuf/
-
-/* BPDU to CPU port */
-dsa_switch_for_each_cpu_port(cpu_dp, ds) {
-	mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
-			BIT(cpu_dp->index));
-	break;
-}
-
-I don't really understand this. This doesn't seem to be related to 
-processing BPDUs. This looks something extra for MT7531, on top of 
-MT7530_MFC.
-
-If both CPU ports are enabled, should BIT(5) and BIT(6) on 
-MT7531_CPU_PMAP_MASK be set to 1?
-
-> 
-> Well, the most important step in fixing the problem would be to
-> politically decide which port should be the active CPU port in the case
-> of multiple choices, then to start fixing up the bits in the driver that
-> disagree with that. Having half the code think it's 5 and the other half
-> think it's 6 surely isn't any good.
-> 
-> There was a discussion in the other thread with Frank that port 6 would
-> be somehow preferable if both are available, but I haven't seen convincing
-> enough arguments yet.
-
-It seems to be fine for MT7530, but MT7531BE has got RGMII on port 5. It 
-would be much better to use port 6 which has got a 2.5G SGMII link.
-
-The preferred_default_local_cpu_port operation should work properly 
-after we figure out the issue above and below.
-
-> 
->>
->> There's also this "set the CPU number" code that runs only for MT7621. I'm
->> not sure why this is needed or why it's only needed for MT7621. Greg, could
->> you shed some light on this since you added this code with commit
->> ddda1ac116c8 ("net: dsa: mt7530: support the 7530 switch on the Mediatek
->> MT7621 SoC")?
->>
->> There're more things to discuss after supporting changing the DSA conduit,
->> such as which CPU port to forward the unknown frames to, when user ports
->> under different conduits receive unknown frames. What makes sense to me is,
->> if there are multiple CPU ports being used, forward the unknown frames to
->> port 6. This is already the case except the code runs twice. If not, set it
->> to whatever 'int port' is, which is the default behaviour already.
->>
->> [0] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/mt7530.c#n1005
-> 
-> I suspect you may not have run sufficient tests. When there are 2 CPU
-> ports, both of them should be candidates for flooding unknown traffic.
-> Don't worry, software won't see duplicates, because the user <-> CPU port
-> affinity setting should restrict forwarding of the flooded frames to a
-> single CPU port.
-> 
-> You might be confused by several things about this:
-> 
-> 	/* Disable flooding by default */
-> 	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
-> 		   BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port)));
-> 
-> First, the comment. It means to say: "disable flooding on all ports
-> except for this CPU port".
-> 
-> Then, the fact that it runs twice, unsetting flooding for the first CPU
-> port (5) and setting it for the second one (6). There should be no
-> hardware limitation there. Both BIT(5) and BIT(6) could be part of the
-> flood mask without any problem.
-> 
-> Perhaps the issue is that MT7530_MFC should have been written to all
-> zeroes as a first step, and then, every mt753x_cpu_port_enable() call
-> enables flooding to the "int port" argument.
-
-Thanks a lot! I'm just learning about the process of bit masking. If I 
-understand correctly, masks for BC, UNM, and UNU are defined to have 8 bits.
-
-UNU_FFP(~0) means that all bits are set to 1. I am supposed to first 
-clear them, then set bit 5 and 6 to 1.
-
-Before mt753x_cpu_port_enable():
-
-mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK, 0);
-
-For every mt753x_cpu_port_enable():
-
-mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
-	   (BC_FFP(BIT(port))) & BC_FFP_MASK | (UNM_FFP(BIT(port))) &
-	   UNM_FFP_MASK | (UNU_FFP(BIT(port))) & UNU_FFP_MASK);
-
-> 
-> That being said, with trapped packets, software can end up processing
-> traffic on a conduit interface that didn't originate from a user port
-> affine to it. Software (DSA) should be fine with it, as long as the
-> hardware is fine with it too.
-> 
-> The only thing to keep in mind is that the designated CPU port for
-> trapped packets should always be reselected based on which conduit
-> interface is up. Maybe lan0's conduit interface is eth0, which is up,
-> but its trapped packets are handled by eth1 through some previous
-> configuration, and eth1 went down. You don't want lan0 to lose packets.
-
-If I understand correctly, this should be done on the port_change_master 
-member whilst support for changing the DSA conduit is being introduced. 
-I'm taking a note for when I get to this, thanks.
-
-Arınç
+I guess that "GPL" is correct after all.
+Sorry for the noise.
