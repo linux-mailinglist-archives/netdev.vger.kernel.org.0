@@ -2,146 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF48A6F124C
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 09:20:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF99E6F126E
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 09:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345525AbjD1HUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 03:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
+        id S1345380AbjD1Hfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 03:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345508AbjD1HUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 03:20:33 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2095.outbound.protection.outlook.com [40.107.100.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65151210B;
-        Fri, 28 Apr 2023 00:20:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GGtQ47f5ZUrW8Y7Ximjb1uyrtQ/hZilqSOnmmMwow0t8ScYZP8/QgaqQHNUACZJGkyFosJnedtemAEIrdXdOoEN5zXXx4dcnLnMYO0GbujvtaQKHQVjhhclobRx3ckuJIevlv7mRybNiWcnIVAWHrYgSNrnMsK08+Wxc6aWfuI+boFW1cQcUDoSSwdM4rRS3O9PNhQwoaWc9Q+gPqwCUT46L3rlzhmdhLjeDFZUlhRSBspKPm2bbZjPvJkOl9cfuLdYUY5+ra2IphOxZ/hnqOrYfHQmWKDs14skBQRceyE5vRnyb4sMfFpmkmV4pKs8UNZR9ZDJk7BFS0Sixt6LHhQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZgAn83e5KmmIxJ9GIytQFKErApEzgBUxwoItPPfi4w8=;
- b=J8UhM4EdI9Tqt3txPvP+028hgipgF9aBVofPvghR80r8wgdTa/f4DuwwOQ7NpDNIibeXotBV4wjkj1jA2FNmtE/6KZ6WVKWYr6Z0/tcaT8kEKabtYtTEBzuZiRhLbM3bxZwklov6C2vLXExhV5chbT6EK5U2E1nPyhQrMwCaPsWnvKRLv3PV10FZk/YeFk/Kz+S4VyDmdcF849oZb5p6cDZwP/DS8FzBp4cbtyYc+455quUpNtx9MvSmecrJxXSYHwPGBsKLbbMqybXSDi16qIsMx0FWdOYCVdMUnEp4UuTr02HHA+csFJ5/Tf80sx0KwD+5HIC+AIcShxBICkgQoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S230025AbjD1Hfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 03:35:34 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC60126B2
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 00:35:33 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d9443c01a7336-1a6c5acf6ccso71089425ad.3
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 00:35:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZgAn83e5KmmIxJ9GIytQFKErApEzgBUxwoItPPfi4w8=;
- b=HA8VmvaFRE9W8gKoVMYDVg2VUJZO8GlxYyscQkZYK02DdB2Nne1lh57e5r3/+riReIBxtB6m8hjWuEgOfWWDKiBf2hiYuwSzIhuifKOxiFnD2jg9zAQt488p8kZN3SH6aEeEFkQ3ODioLsxGjd7lUon60AZgjt7yg8qU4lxvoeo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MN2PR13MB4086.namprd13.prod.outlook.com (2603:10b6:208:26f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.22; Fri, 28 Apr
- 2023 07:20:25 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::f416:544d:18b7:bb34%5]) with mapi id 15.20.6340.022; Fri, 28 Apr 2023
- 07:20:25 +0000
-Date:   Fri, 28 Apr 2023 09:20:16 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Md Danish Anwar <a0501179@ti.com>
-Cc:     MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Suman Anna <s-anna@ti.com>, Roger Quadros <rogerq@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Richard Cochran <richardcochran@gmail.com>, nm@ti.com,
-        ssantosh@kernel.org, srk@ti.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [EXTERNAL] Re: [RFC PATCH v6 2/2] net: ti: icssg-prueth: Add
- ICSSG ethernet driver
-Message-ID: <ZEtzsCr/x5i5e2hA@corigine.com>
-References: <20230424053233.2338782-1-danishanwar@ti.com>
- <20230424053233.2338782-3-danishanwar@ti.com>
- <ZEl2zh879QAX+QsK@corigine.com>
- <9c97e367-56d6-689e-856a-c1a6ff575b63@ti.com>
+        d=gmail.com; s=20221208; t=1682667333; x=1685259333;
+        h=content-disposition:mime-version:message-id:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=XNddqsJEyDvWQdRX55z/igDCPnaQ1U9b7eKMExzg2T4=;
+        b=nGcQMiXKfUIC1FGRQxP26gNv7rc80GjuQSqFB9/JSFM8JH+vEFG+aMynuwF935JbtR
+         KqP0z+Hxl7dr2o97iWOF6i4swDcCY0uDt7UlbNbrRLbQG3Y9a18uVCCGYeb+pHxSEtQ3
+         dkEgGF0oxMH+QKzTSvW1C/zc90xIN3/zwcPoXH2eu2yPuyIkqy56hyU0Cjkxc9dc4PCD
+         y+f9G+HO8wQ24PX45ERj7kIXYsO9SuuOQidsNw9r7WWSoTuWFnr8Dro3KI0IAbaVP5SX
+         5oXyjei25Gx2TZkkNAmXYH9efVNJqLf26MgX6AmYuFLRUOc7Vn/R+gb4Uc/1DhQB2mRD
+         sKpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682667333; x=1685259333;
+        h=content-disposition:mime-version:message-id:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XNddqsJEyDvWQdRX55z/igDCPnaQ1U9b7eKMExzg2T4=;
+        b=cSUxhHdSFNwlBnFHDTK2cMFW7KhfMk7NLf8miyFxd2CyKtXL+A3sBlSE5si2UhjCR8
+         smV3fRff1XgQq8TwzoHaWWZtekb+Ab4sVZibIB11Ac1O/NwJI3vwqCKqUmzmZbcjglcZ
+         tp429hGTTAjEJJzrKs8ejajeX8qEoLIRHeuHcGfsCGMS1Rglw2MvebkBdi6UYny2Tlf5
+         zuVw830uGVR62Yk9KqrmXu870A36DUiELDfuErVBf1Hsa96v/xL6iHyGjqq4U2O+Bn6i
+         UxajBrTMvSgOKAJunfVZtT2bFT1mlmJbR0qif8fZJ2jVb7VBkR6liVkqsWLQbNlXq2cC
+         IQ0w==
+X-Gm-Message-State: AC+VfDzkvzdT8kse/roJr+xg/DVW8sqBzjfNSTw00VKagN9Yv/qhuR7w
+        v/RvpUFuvkLDsLIxrIHX8tZxHQ510u5SKRbo
+X-Google-Smtp-Source: ACHHUZ4hY5e58/46xz2SRz6TDKkxDXWGjVSxF8vW1zusV9UgCxnPghvT61ztCGIzXe0JwU/6L4Ph+g==
+X-Received: by 2002:a17:902:cf0e:b0:1a1:a8eb:d34d with SMTP id i14-20020a170902cf0e00b001a1a8ebd34dmr3965690plg.46.1682667333263;
+        Fri, 28 Apr 2023 00:35:33 -0700 (PDT)
+Received: from Laptop-X1 (114-41-44-26.dynamic-ip.hinet.net. [114.41.44.26])
+        by smtp.gmail.com with ESMTPSA id z12-20020a1709028f8c00b001a27e5ee634sm12766766plo.33.2023.04.28.00.35.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Apr 2023 00:35:32 -0700 (PDT)
+Date:   Fri, 28 Apr 2023 15:35:28 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     netdev@vger.kernel.org
+Message-ID: <ZEt3QHuKnbUhXkB6@Laptop-X1>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9c97e367-56d6-689e-856a-c1a6ff575b63@ti.com>
-X-ClientProxiedBy: AM0PR02CA0122.eurprd02.prod.outlook.com
- (2603:10a6:20b:28c::19) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB4086:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0a057599-562d-4697-3692-08db47b90909
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GzyFasvVGYOcPJ0M2oGoZg+RHRYLIyT3KGS2EMr7SC3Ce9WU0X4OUxR4cJdjSGIzQ6rmgyixq07ddjyVfZw9zhOV6NwVIpzZtEmRKW+HEZNyi3eNAAOJs0IO3c+mSqFltXIutDYMpo2TnaBzbS7Zz2Orr4b7UcdX6v9RnwM4a6Q8x1vXDq4CEYhxxCZrkEI4iMMumk0wWfi0HmQjSRFBZvy+5m5eQd5J+xqWRSO1axq3tP39V/6M9t+8z7klyUfUFahTvAi1w1vksNN+i7Bmvz+SBp7jbEInhKDePA3ODslYluWiY82JdDG4DlQQNA154tGA2nJyt3xmzor5Jkfr3U25tiEjUds1m3USDd9uBupdLb34UD4WnQ8X0co/jY7m7PWCU+ZyBafSHH8PAQoqfaJkNR+ucuMzzWOXrDmeLaOOzZ+YpqIZ516I+jrLXiu3qXENIfjCcv5NVDX3TonYCE5gldo5CsJXavdoxPv37yvvE7yp/zzDE4UMIW4e9rYm2HprjWhHD59NoFOHx3fGf2w9V+Vhav2bcQpAthbRt+qdqj6r56wyWIjuth4qFld9LL1Hqd5vmD9Pnu/UY7eouBmBrQvSAU6hdiC2FazsHVM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(136003)(396003)(366004)(39840400004)(451199021)(316002)(8936002)(4326008)(38100700002)(2906002)(6916009)(7416002)(66476007)(8676002)(186003)(5660300002)(83380400001)(41300700001)(2616005)(54906003)(66946007)(44832011)(66556008)(86362001)(478600001)(6486002)(36756003)(558084003)(6666004)(6512007)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XqqWlbzpU+S4G9jxMezHqbbA5r+cl2wutNX4cB5S7Xxj4qgQOpP/lkEIQ2MH?=
- =?us-ascii?Q?goC7M7O0J5s2xu3kLCXgq3ns627j+fb59Fzg8GvSLmbZiRVm16pBrgDInEZN?=
- =?us-ascii?Q?yJI6jdnVFjtJEdfPSaBCN21fazIfPkXOkaOzhnSn/YjsM4cFi30Pro83kafh?=
- =?us-ascii?Q?2e6A1qFYOpj8HRX+ZcS4D375WWmXDLugM441K8itP48gIT195IpP3v1qKMxq?=
- =?us-ascii?Q?vxOFaHtGP+elRlBGkt9gpkCpCAkPr2LOX8x1Rwkd8tL4mC0PNGZXBKhp+pVl?=
- =?us-ascii?Q?qa4kfAjeGy5jj63Pi6PVC6qzhDHF1QqFbtH4+9l0v7IdPXX9agnYLM3XGRZH?=
- =?us-ascii?Q?TP3G+zDiLOHGVPp+YXImGo++6uMSA/kTkmb/ohyxnTpaljuGmPGOQZY46fKd?=
- =?us-ascii?Q?wxC+hKO8vaV/v/K+KPJKXquAlKr9f0nIfa4flC7Wf01Y+KgbFwkmY/XYqfIj?=
- =?us-ascii?Q?KnFbFApcGnlNGadNWkJpIoRg5x6nlv+UlZXg1/nf0bxAk7u/0Go0p1ItaVk+?=
- =?us-ascii?Q?FsWlPpYkWeYhfk0uALCWffV5m7m+NFZy+qgT1UcnTIt5Z/kvLqHxCgD5d+RY?=
- =?us-ascii?Q?ZhBXFXNw5nTzxI8PuCsCth6qKRePwW9vwBVV974bMEfmrBF69e4WsonGQ5Xs?=
- =?us-ascii?Q?8TYJ4gOlZn/oC+Dj1WdEyqLxTjPTSyEppVwPMetCoMKCGILUBsx6EOc19tBs?=
- =?us-ascii?Q?Tu3w7MrT0K9NPo1QlK22ANzOKbnHR7mmvVBpAiDh1ZgLjVYCYKiTQ6oTS7t9?=
- =?us-ascii?Q?52sFrUTTHso9TxAE7N5YgTemUv+jazQUy79fwolzOsEUXrCCbnvDg0GaoJMv?=
- =?us-ascii?Q?4M0JyBlPMrYwpsjizKUpkcw9GbMmXQBm1JIN8MzWPn3bq1SwKtvnRD7Osc9A?=
- =?us-ascii?Q?YFqYefzoBkxr1OPFU0cauawflUJwk+v1k8s+9pq/D1rz7yP2spzLGdKrxg4a?=
- =?us-ascii?Q?4mGfk+h+ypa6nOVkjvmFLJCcZd1hCFqnLaOp7D09htgsHD8eYg3KQpsbA0QO?=
- =?us-ascii?Q?1Ok6x9/6lKgXlRWo7UVAXXUtGT1iQuPmE8B0VDaI+jbXw58Sev5zx978Eh+n?=
- =?us-ascii?Q?FKzFzMGqZI7y+aZB5ElrEn+T2vgAv3Hk9x/v/rosi2LHaGjUZETcXllYqQOp?=
- =?us-ascii?Q?5DdhaBKr8LV58wDSjwxOBhbQLiqG0GTyGLa4SjobGI8wRgYHlP2ov/SdYcSE?=
- =?us-ascii?Q?pNw3mQs4fvLog2DIukD4ejPg1p4LjVF3fROSyM/YN8az2+bXST/SVEj27xqG?=
- =?us-ascii?Q?ORk4vrF1Bm844SI8Fzq1bAXiX745F941yDe4CSNO07IFii44rBUASB8xEs6v?=
- =?us-ascii?Q?Wk7Het4dBL7zP7Ix862EkyhjdzXOCAgmDXDRHNKVviNi4cZMFpefyCk/josx?=
- =?us-ascii?Q?rprhiMmKFBuYXdK9dp2dTX+OdWbdJcAX7gMdw3MvxLXZ79gebj1tQNSH9Ew4?=
- =?us-ascii?Q?VW9VINgo7qxLcFOmkHJg9tvF6F9m2ZQ7pILf5mFvrIT0WALcEHBTclsT8dF/?=
- =?us-ascii?Q?XS8P6qSl21gBKu5ZG0CVFzXA1bNGhfp+NPY3ruq+0CAXjBYS5of827eUzugD?=
- =?us-ascii?Q?VUqIJI4EeXfCjDKL3JYf4NGdIYb+NscF4hJXFakMisCam7ZDARIKrFDjzYyF?=
- =?us-ascii?Q?12oiYSf+2PowkZ5vjXVdJwlkUbomCDZokg9VHWsBz+LiaRYrHGZBwFRk8JYX?=
- =?us-ascii?Q?5zIiVQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0a057599-562d-4697-3692-08db47b90909
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 07:20:25.1527
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V/YnXzo7QL2K9flaFptKDhQZwALWTRVMfU+UkUq1mE48gYFISTZek1tSrq1sMIphZL0t12IiPLQuXc2DNcHLsQOsWS6iShQ2l9S3gD9HGqI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB4086
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,MISSING_SUBJECT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 27, 2023 at 12:42:56PM +0530, Md Danish Anwar wrote:
-> Hi Simon,
-> Thanks for the comments.
+Hi Jay,
 
-...
+A user reported a bonding issue that if we put an active-back bond on top of a
+802.3ad bond interface. When the 802.3ad bond's speed/duplex changed
+dynamically. The upper bonding interface's speed/duplex can't be changed at
+the same time.
 
-> Please let me know if any other change is required. I will adress these changes
-> in next revision.
+This seems not easy to fix since we update the speed/duplex only
+when there is a failover(except 802.3ad mode) or slave netdev change.
+But the lower bonding interface doesn't trigger netdev change when the speed
+changed as ethtool get bonding speed via bond_ethtool_get_link_ksettings(),
+which not affect bonding interface itself.
 
-Hi,
+Here is a reproducer:
 
+```
+#!/bin/bash
+s_ns="s"
+c_ns="c"
 
-Thanks for responding to my review.
-I have no further requests at this time.
+ip netns del ${c_ns} &> /dev/null
+ip netns del ${s_ns} &> /dev/null
+sleep 1
+ip netns add ${c_ns}
+ip netns add ${s_ns}
+
+ip -n ${c_ns} link add bond0 type bond mode 802.3ad miimon 100
+ip -n ${s_ns} link add bond0 type bond mode 802.3ad miimon 100
+ip -n ${s_ns} link add bond1 type bond mode active-backup miimon 100
+
+for i in $(seq 0 2); do
+        ip -n ${c_ns} link add eth${i} type veth peer name eth${i} netns ${s_ns}
+        [ $i -eq 2 ] && break
+        ip -n ${c_ns} link set eth${i} master bond0
+        ip -n ${s_ns} link set eth${i} master bond0
+done
+
+ip -n ${c_ns} link set eth2 up
+ip -n ${c_ns} link set bond0 up
+
+ip -n ${s_ns} link set bond0 master bond1
+ip -n ${s_ns} link set bond1 up
+
+sleep 5
+
+ip netns exec ${s_ns} ethtool bond0 | grep Speed
+ip netns exec ${s_ns} ethtool bond1 | grep Speed
+```
+
+When run the reproducer directly, you will see:
+# ./bond_topo_lacp.sh
+        Speed: 20000Mb/s
+        Speed: 10000Mb/s
+
+So do you have any thoughts about how to fix it?
+
+Thanks
+Hangbin
