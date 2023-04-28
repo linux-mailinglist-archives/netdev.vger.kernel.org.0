@@ -2,136 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06C516F0FE4
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 03:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80B696F0FE8
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 03:10:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344428AbjD1BJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 21:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48098 "EHLO
+        id S1344704AbjD1BKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 21:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229965AbjD1BJU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 21:09:20 -0400
+        with ESMTP id S1344643AbjD1BKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 21:10:15 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EED19B6
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 18:08:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 658CB359D
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 18:09:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682644113;
+        s=mimecast20190719; t=1682644167;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=SIlO9U65Fa78/bYD7F0pTgvbn+G5S4dqydIF9IQsHyM=;
-        b=UvLRuhRxfD/NvVEGasvTkb7TtOMdtO6zs/jMC0gRyDIJ83uCt8FkWpUDaff9ksbmfMSHm2
-        eRGz8yuEG2kYNMUeN65QOd9PClZZb+A2EItx3mhdj+ldux9UJFFhrs4gie8sRwIfcWSYr8
-        19ShTY5p14OFhkz8cMppSCTonCgWhL4=
+        bh=vDlMjQQs9oNd1rM1Ie1hZYk7Gu1+pdqFqGgkpF/yxbI=;
+        b=DZXSTqNJUsv5wdNWTswQJp8aSfoleaQ1eesrm+5RhO88YzlGH42G8Kp14HtdLvdlwYzbGH
+        8z61Fy+1GcXpw/KVjBCg64rgRhMKypuT0No7DL/6GB0oUA7BLpMeQCpD5gVjv+0w0nnjQ8
+        JZ45FkegG6wMxTCKWCAv8njwKrFK/i0=
 Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
  [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-100-i3h9GjkVMo6aprMk-iW4GA-1; Thu, 27 Apr 2023 21:08:31 -0400
-X-MC-Unique: i3h9GjkVMo6aprMk-iW4GA-1
-Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-2f69e5def13so3402665f8f.0
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 18:08:31 -0700 (PDT)
+ us-mta-18-a-9hBj-dPvaK3jNcn2w8-A-1; Thu, 27 Apr 2023 21:09:25 -0400
+X-MC-Unique: a-9hBj-dPvaK3jNcn2w8-A-1
+Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-2f831f6e175so5174383f8f.2
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 18:09:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682644110; x=1685236110;
+        d=1e100.net; s=20221208; t=1682644164; x=1685236164;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SIlO9U65Fa78/bYD7F0pTgvbn+G5S4dqydIF9IQsHyM=;
-        b=LaskPOh2V8nfp2ffejfP2xHos3fzGAGuyTtr+2Rnw5kpmH/T03E04EYAcdvuHoOdBq
-         2/avP/xAAEyNAKg9ExbSeJjWAVl2YesAgNl7jNPaYpxWX5SbVAMmQu+GrUnlADEJaNH/
-         V6IBf+4ZrPDC0zq+R/cF01PPbYrUFtkDM5uJb+MmKiStsHBR0mJfoYb9UnL83kEdpSmo
-         wIvw/mac+uYBnGbYggSiKKes3lcpics1EIoKkryWJ+Orw8dsuUGjuK/e9BN55PM0Wnn2
-         rTtSwouwUgfLSmmiM/BvWRXp0dUdawO1Ouv8cWaqBX17+K2PxrvbnIaHLdyZmWtomDPY
-         LMvA==
-X-Gm-Message-State: AC+VfDyWZ0C5nV7i2U4WimroBiJdb8HGI2s+kOvs6ibaCxx0BytQQ1hm
-        lZ/QW/14EwJHSaRDa2JS9OCwvpNXTdSIpww/GUWkGGiMDMB/pGdtPXjP/Y6phIGvNqoTBXdT1yD
-        +pPJY3ld47XLRFx4gh4tvdwX6Gr4=
-X-Received: by 2002:a05:6000:12c8:b0:303:a2e4:e652 with SMTP id l8-20020a05600012c800b00303a2e4e652mr2432530wrx.14.1682644110297;
-        Thu, 27 Apr 2023 18:08:30 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ43yyZywMx1CB2ADiJh65tjfwD1uFSRC7hVGQKqY+xMXE6kvoExBkKUH0cVOJuari+LUhVLcQ==
-X-Received: by 2002:a05:6000:12c8:b0:303:a2e4:e652 with SMTP id l8-20020a05600012c800b00303a2e4e652mr2432520wrx.14.1682644110024;
-        Thu, 27 Apr 2023 18:08:30 -0700 (PDT)
+        bh=vDlMjQQs9oNd1rM1Ie1hZYk7Gu1+pdqFqGgkpF/yxbI=;
+        b=a4WYM7Y7uHy+aL8ZZCeOWX91g9Nc8waK3RfOITfTpOHtjnKRFrS1seUXcF9XzOt79E
+         s/4E+FarIrnEyvXMDNwndVQWUK+PpghTFCZJ0SC/hC8vRM5q1bWYTVaFIssJlAOeKhhD
+         SVeJs7YrQyHGOl/CHzZSnKW20kKlYFVYiWVuokHKVHSa03NqW7rRieqn6MlPVWiuW1LH
+         xZ2VsEZn+2oquTD5/jIzzOUd4Lh2Su2KQfUKBvDLgLqVImwyBspuf3GQ3xN46lMYYbi3
+         KeJeWxNZI8ODumgNccF0SRQIxYtTzjI6Xpy+Sc+BEw+UOuT3uebH1vHXsOEas80giHon
+         NF5Q==
+X-Gm-Message-State: AC+VfDyo9wy4flI49LLRa+MRUtflxnIZPG/qrphMmb+LoJPK9Hzdbwb7
+        6/InnT9pWsAOqCKfxFsuagzNf2Iu8eCl61Zv20xSqihFIYcevzKs7+ZJ3GaoTgfGGugK67PsecN
+        1N0hy7n82m9CiO4my
+X-Received: by 2002:adf:dd90:0:b0:304:b967:956f with SMTP id x16-20020adfdd90000000b00304b967956fmr706839wrl.8.1682644164582;
+        Thu, 27 Apr 2023 18:09:24 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ4fv40ETH5op2sNv7xlB+MUhzP96QeT1eiO1SHh4pfOCErUxvz9m5RaLdAL6HtipgJ+xEF8MA==
+X-Received: by 2002:adf:dd90:0:b0:304:b967:956f with SMTP id x16-20020adfdd90000000b00304b967956fmr706834wrl.8.1682644164304;
+        Thu, 27 Apr 2023 18:09:24 -0700 (PDT)
 Received: from redhat.com ([2.52.19.183])
-        by smtp.gmail.com with ESMTPSA id t24-20020a1c7718000000b003f3195be0a0sm3088178wmi.31.2023.04.27.18.08.27
+        by smtp.gmail.com with ESMTPSA id e22-20020a5d5956000000b003012030a0c6sm19719410wri.18.2023.04.27.18.09.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Apr 2023 18:08:29 -0700 (PDT)
-Date:   Thu, 27 Apr 2023 21:08:25 -0400
+        Thu, 27 Apr 2023 18:09:23 -0700 (PDT)
+Date:   Thu, 27 Apr 2023 21:09:20 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next v4 12/15] virtio_net: small: avoid double
- counting in xdp scenarios
-Message-ID: <20230427210802-mutt-send-email-mst@kernel.org>
-References: <20230427030534.115066-1-xuanzhuo@linux.alibaba.com>
- <20230427030534.115066-13-xuanzhuo@linux.alibaba.com>
+To:     Wenliang Wang <wangwenliang.1995@bytedance.com>
+Cc:     jasowang@redhat.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] virtio_net: suppress cpu stall when free_unused_bufs
+Message-ID: <20230427210851-mutt-send-email-mst@kernel.org>
+References: <1682585517.595783-3-xuanzhuo@linux.alibaba.com>
+ <20230427104618.3297348-1-wangwenliang.1995@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230427030534.115066-13-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20230427104618.3297348-1-wangwenliang.1995@bytedance.com>
 X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 27, 2023 at 11:05:31AM +0800, Xuan Zhuo wrote:
-> Avoid the problem that some variables(headroom and so on) will repeat
-> the calculation when process xdp.
+On Thu, Apr 27, 2023 at 06:46:18PM +0800, Wenliang Wang wrote:
+> For multi-queue and large ring-size use case, the following error
+> occurred when free_unused_bufs:
+> rcu: INFO: rcu_sched self-detected stall on CPU.
 > 
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Acked-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
 
-
-this is "code duplication" not "double counting".
-
+pls send vN+1 as a new thread not as a reply in existing thread of vN.
 
 > ---
->  drivers/net/virtio_net.c | 12 ++++++++----
->  1 file changed, 8 insertions(+), 4 deletions(-)
+> v2:
+> -add need_resched check.
+> -apply same logic to sq.
+> ---
+>  drivers/net/virtio_net.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
 > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index b8ec642899c9..f832ab8a3e6e 100644
+> index ea1bd4bb326d..573558b69a60 100644
 > --- a/drivers/net/virtio_net.c
 > +++ b/drivers/net/virtio_net.c
-> @@ -1027,11 +1027,10 @@ static struct sk_buff *receive_small(struct net_device *dev,
->  	struct sk_buff *skb;
->  	struct bpf_prog *xdp_prog;
->  	unsigned int xdp_headroom = (unsigned long)ctx;
-> -	unsigned int header_offset = VIRTNET_RX_PAD + xdp_headroom;
-> -	unsigned int headroom = vi->hdr_len + header_offset;
-> -	unsigned int buflen = SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
-> -			      SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->  	struct page *page = virt_to_head_page(buf);
-> +	unsigned int header_offset;
-> +	unsigned int headroom;
-> +	unsigned int buflen;
+> @@ -3559,12 +3559,16 @@ static void free_unused_bufs(struct virtnet_info *vi)
+>  		struct virtqueue *vq = vi->sq[i].vq;
+>  		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
+>  			virtnet_sq_free_unused_buf(vq, buf);
+> +		if (need_resched())
+> +			schedule();
+>  	}
 >  
->  	len -= vi->hdr_len;
->  	stats->bytes += len;
-> @@ -1059,6 +1058,11 @@ static struct sk_buff *receive_small(struct net_device *dev,
->  	rcu_read_unlock();
+>  	for (i = 0; i < vi->max_queue_pairs; i++) {
+>  		struct virtqueue *vq = vi->rq[i].vq;
+>  		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
+>  			virtnet_rq_free_unused_buf(vq, buf);
+> +		if (need_resched())
+> +			schedule();
+>  	}
+>  }
 >  
->  skip_xdp:
-> +	header_offset = VIRTNET_RX_PAD + xdp_headroom;
-> +	headroom = vi->hdr_len + header_offset;
-> +	buflen = SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
-> +		SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> +
->  	skb = build_skb(buf, buflen);
->  	if (!skb)
->  		goto err;
 > -- 
-> 2.32.0.3.g01195cf9f
+> 2.20.1
 
