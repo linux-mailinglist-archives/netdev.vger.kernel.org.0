@@ -2,165 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3061E6F1C9C
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:31:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A02536F1CAF
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346192AbjD1QbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 12:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53932 "EHLO
+        id S1346235AbjD1Qct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 12:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbjD1QbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:31:22 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E932D61
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:31:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682699480; x=1714235480;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=gHXabmaDCBb3lEWSHAZsZ9fORiHyRfRsz2FAZ80OCqY=;
-  b=ItN7yR9CGjrDqCzIzXEXOA0p90QFdiUrMLFRzHZtyyE2s6ygjVbeFbFB
-   EmAtZRpuxamK4Tua3uSrYYJspxv76TR4c5Gxn2G4fjHmpOvWozplrHX0Y
-   N2DCfWNZ0p9+SKCylPZwnGy1JMEgpFFQWRr5KjZ0Lw74ARKg4QmMJ8ygx
-   +2DsO80IPu98sJo6DsRzb9B26OwG9lDKshzspI853uk5xhUPK56NITjsd
-   nSkUw5t+Ucb2abe0uuJPHeGl3DgP4EQH0vr/FLFnN25nykSsAv8O7pQEi
-   VZRTnG9NwE6ih4kCV3THRjhD/PVxHNH32nsLHSygo9h21PHv5OiS/MONN
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10694"; a="336865757"
-X-IronPort-AV: E=Sophos;i="5.99,235,1677571200"; 
-   d="scan'208";a="336865757"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2023 09:31:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10694"; a="838897440"
-X-IronPort-AV: E=Sophos;i="5.99,235,1677571200"; 
-   d="scan'208";a="838897440"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Apr 2023 09:31:16 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 28 Apr 2023 09:31:15 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Fri, 28 Apr 2023 09:31:15 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23 via Frontend Transport; Fri, 28 Apr 2023 09:31:15 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.23; Fri, 28 Apr 2023 09:31:15 -0700
+        with ESMTP id S229726AbjD1Qcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:32:48 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7CD2D67;
+        Fri, 28 Apr 2023 09:32:47 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33SA7Fxg013109;
+        Fri, 28 Apr 2023 09:32:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=s2048-2021-q4;
+ bh=6qIGhxrzn4oy3Z9XU9tfCy+Br+vwd7yqIn2B3SSPfxQ=;
+ b=KEMr9GwN9kcOhtjliTqJelhflDtlwhhXLKIfkcAmyL+b1ZnZowEZ4JSeH1wh93gP7wW9
+ wUzA51Dh2SUFA/04XNoh5njc5CXDtmbwVxk0qHHFLxm+tlIyAodryTES4VgUYBICnutK
+ XOhaxLVpZ4ysYTzWs+bbtjg6QcAF0LIe//0CtdhqB5Fn/X/amMAv3WTFbe8/hgBNhtnm
+ SMavJGN24ilsolJ5a+TRS7PZkAegPW64tZTI060Lxp2Il50DiDjWHsB4CQxq6OaVfgl5
+ k1GrieRky0mJCFUZWohMMZ6MEiLNzzhoRk17U8N/O6MiozD2hmf0pchaArVguP4OXuIA qg== 
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2175.outbound.protection.outlook.com [104.47.73.175])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3q8452d52q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 28 Apr 2023 09:32:12 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ed+U6YBAzDu1LXaUatvbdVUklgwPYggOiGA2Dr8OCwhTLQDH3Rme3VfEfFemNYS6Ulo08LVafowN+TQajLpj9u02/t7SaTxsMFLAEE5iZjVYKzO3IwZnHa5+zNpmTzftYjUSSbjkAzrZx22CCMcOBqWB4ezVstfkWImhq1cC/HfOBvVKldVDGwHzX/5UCi61b7eX8V3PYLrVpUtHexQkx3s7Z+OyEl5gTCrYZYmcZADPNpn7WWtvvSDVEKL2I4WqrBcBiR2FHFhQfUfP5td5VTKmRXAkTSXYokCTrw4xbfaUPhlklSPBb7DT3DpZIlnyr8a9ibU1C9RxSjJXeebITg==
+ b=G8p+lsBFdNVodhWrgJ/nJfGcdFEIt0YbMp54Uv3e6a9WEHSS/99V9vsvsi06gImvwCtBCEhhdnHjBllgEj58ECL8SXEPX8Ejrh5VhkqelRIZQ6BzDOu1EOyxGw7+YYdlv+qj7tP13zB5bNfcF7isGvE3x4lLkfoa8KEVNVgVKtTkPTnSUG3OalKVd2CgkmDIr3YwaOgYx+IvL/JCBv6nKZbiGyStkmEtBUJGICe9OXSMAcrHSupFQGMMmX3IctY+dEJ0W5XnQ8qED27YGFhSmcAcF8QmJM7AQV41wKoaoH7vYyi2ZtnsCL1OKPA8x8BAi1iJSrABXsJmp/ZstdTodQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0S2UYsU7DFIWlYJJnEuwH/BgtkDVLHZ0F69B9bvd5Ug=;
- b=NFz7OTVJW7SpZJKqYQ/5oOw/jq3GMLrDBdWJTGkNPn9KxroPGdwdShXts9TYtASEGKn1GovmpsmPDrspbyDx5fsXm9PwR6L7oJDuRGu+TllTXyBtV7Sr2Smf3FM3UBmBkyVOTYq0QvRWmsJN+Ppri6Wfy8tpbDHa7j2+OXLya3PdaGRmX6bsJkjSnbAEYZZOR3vjoOPaBevK+2u+33pmZnDWcT8noDiUBegYAQMVun4Nl6I25/42Vz1x8fjWYABHfdZSs9OzFvfjVWEf4JH/iJVTtFlBqIRVuENbcail2i42zblC/t9Qd//196D1KJOO8D3W7N698lUyIWgowr+2eA==
+ bh=6qIGhxrzn4oy3Z9XU9tfCy+Br+vwd7yqIn2B3SSPfxQ=;
+ b=CUSMWxfieldISv/XZPZvdLGFq13IvbZnH1QweSikvFEN9w1fbE0SZUhQ8+34GT9OphHW7rfytr3bYMgj+UAXRVykOjUW9qU9sZN0YssLlVkFZAjdlzJpUv5mQS1b1dis+QUBQTYuMrFDYLNVwEwOFysGK7Umw8WB7jPI22fW+6pRlsZnNkoA36MNpNYOpBx3Vd15toRNOy++JIUDahGPPWpBUFlcq8S3yFD3qHsCqtPBzKQuptwz+FpwsFa2Yf7CiyyzCOTpgjovmNVDeVY3Of5ZvwJ1EUVspSdewhp6ANNlP1VKeD8a2FUZaVUnu10ptD6ZP9ia8X6xnQEMwKJ7/A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
- by DS0PR11MB8020.namprd11.prod.outlook.com (2603:10b6:8:114::9) with
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by IA1PR15MB5418.namprd15.prod.outlook.com (2603:10b6:208:3a2::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21; Fri, 28 Apr
- 2023 16:31:13 +0000
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::4b81:e2b0:d5fa:ad47]) by SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::4b81:e2b0:d5fa:ad47%6]) with mapi id 15.20.6319.034; Fri, 28 Apr 2023
- 16:31:13 +0000
-Message-ID: <024700ef-f0a8-aa1e-c950-213767cd80cd@intel.com>
-Date:   Fri, 28 Apr 2023 09:31:10 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH net 1/1] i40e: fix PTP pins verification
+ 2023 16:32:05 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::589f:9230:518:7f53]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::589f:9230:518:7f53%6]) with mapi id 15.20.6340.022; Fri, 28 Apr 2023
+ 16:32:04 +0000
+Message-ID: <218660da-f73d-d698-eb5e-f513379945bd@meta.com>
+Date:   Fri, 28 Apr 2023 09:32:01 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.10.0
+Subject: Re: [PATCH bpf-next v4 2/2] selftests/bpf: Add testcase for
+ bpf_task_under_cgroup
 Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Leon Romanovsky <leon@kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
-        <netdev@vger.kernel.org>,
-        Andrii Staikov <andrii.staikov@intel.com>,
-        "Sunitha Mekala" <sunithax.d.mekala@intel.com>
-References: <20230425170406.2522523-1-anthony.l.nguyen@intel.com>
- <20230426071812.GK27649@unreal> <ZEksrgKGRAS0zbgO@hoboy.vegasvil.org>
- <f525d5b887888f6c00633d4187836da0fb31f2cf.camel@redhat.com>
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-In-Reply-To: <f525d5b887888f6c00633d4187836da0fb31f2cf.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Feng zhou <zhoufeng.zf@bytedance.com>, martin.lau@linux.dev,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mykolal@fb.com,
+        shuah@kernel.org
+Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        yangzhenze@bytedance.com, wangdongdong.6@bytedance.com
+References: <20230428071737.43849-1-zhoufeng.zf@bytedance.com>
+ <20230428071737.43849-3-zhoufeng.zf@bytedance.com>
+From:   Yonghong Song <yhs@meta.com>
+In-Reply-To: <20230428071737.43849-3-zhoufeng.zf@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR17CA0055.namprd17.prod.outlook.com
- (2603:10b6:a03:167::32) To SN6PR11MB3229.namprd11.prod.outlook.com
- (2603:10b6:805:ba::28)
+X-ClientProxiedBy: BY3PR05CA0008.namprd05.prod.outlook.com
+ (2603:10b6:a03:254::13) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN6PR11MB3229:EE_|DS0PR11MB8020:EE_
-X-MS-Office365-Filtering-Correlation-Id: bf8e1604-6f63-457e-3960-08db4805fb41
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|IA1PR15MB5418:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4cfa5530-89f1-45a9-1c36-08db48061a00
+X-FB-Source: Internal
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wnmjWu/Mt6xkjfhcQQOqarX50piEbYgj2E24rKeGP2rMh9YDNmCjkIxEFI1HV2AkyPGyd4knECMShabM+bfQ2iIDiIjBzDxwP2UHakdslWK6cMojc1bdjXs3Y6A+gYmEjSXN1Q9a2zXiz86rjIks4/c4b4VarQGg/h73Bdho4bCyDsaA1uOwxSxnUurAaYcJSOBrZKit4vVegKwUED7UZKCo3Ef3Oo62U14hBMnn+YbtxMIBNAdCc4OarswiV/rq1gOqXgFM2fXYgfSbvqU+loSmZsjcNFEPfQNu86kONEIXvG9w8ghSDL6hvT1Xy5AgYRzu4GevjeoeQvcekixHPjsoFtftYAwCMta/HyRUeGx+O74KlW+3IcGVgaBuvcAVZq+y4HeVkMKdzyG2rQ0TBTYHmEPGCAWvQIixhQH4UnAcfgPJyZu3tjWOK1C6w+eMH9aqkZ9MOAEgEw5sM1XExwaert/G/d0eCk7XUdWoufTz0RNIQ0fbayRnonFzyKHEs+aOVy7coSMdwlTz/TKF2Di79aOgC8T54KLraIDO6EaFYBzOvrXyKGHSVBJKnOBnR9+g2e83x8lKrgS9l08bKRxw8q1gdGcTo0LSfs+AwxKIjcB/xPgveCHMwC+EVsacAyPpM+EgyfUTDmJWoHFOxA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(366004)(136003)(396003)(346002)(39860400002)(376002)(451199021)(2616005)(83380400001)(186003)(54906003)(6486002)(6506007)(478600001)(26005)(53546011)(6512007)(31696002)(107886003)(36756003)(86362001)(110136005)(82960400001)(41300700001)(316002)(8936002)(8676002)(31686004)(5660300002)(66556008)(66946007)(4326008)(66476007)(2906002)(15650500001)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 41Ekap60WvWGWIzw6M6yjntf01RXqe7ckdInH1LEdAVoD1hj0FruRCjaCxzmmOxUlB0XoutBMlQdG3etjMG3WlZduZlxdI6FMWd17a9OYoFzpCqLlLr3tdoS1B1C7GAoWcL/rkU7IrTu15TtUxqgW2UnUqtDLHQsCo5TrM5In7Nw9cOTYoK0MHjjMtmplyszjXFYCuotm7zSfxA0PLJjbsSvbkuajM51BJl2YPcD8FkozfyD2prU1U36u3eJqeDNXrE6QT5bUfJxcJh7JwOeGByY0uifv8Y9mS5CKjvUWxCurm603M9cJz5Okg9YZjP7dEKz+yQz0GxIJUBFnj+iYVvYsY3hZRkGgFseoDMGQOrLPC4HUatPIlPYrnh+N+lz7tMesFsXJBdzkZuw/J6LDQVdePY1/zvVyO0lpEtO8Req2GGCM+3su8BV8KKml11o/YYzsn8A/9vPT2c0y9DbYhed/E43P1xljO2qKK4g0ZFxqs7hfI/dHaGi7uAm/+6adeEDBy/Ov0vmSfMj6O737ukzSX1lcbheCb7QN56ArCpBnY1vcR4HrQ71hFYPuR1a8An76PCtPb9tsG79zR1PvYRqXvm8TAo7K4gZQ/YWVr/Vspofh4x6tov4Hiakws9raGqu+Mc6RPUZBO/tlba41PH8sN2vSlKB+dvT4hrvdcs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(136003)(346002)(39860400002)(376002)(451199021)(86362001)(2906002)(31696002)(36756003)(31686004)(6486002)(6666004)(2616005)(83380400001)(53546011)(186003)(6512007)(6506007)(66556008)(66476007)(921005)(66946007)(478600001)(41300700001)(38100700002)(5660300002)(4326008)(8676002)(7416002)(8936002)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bzZ4a21CczM5Q1h6UXl1cHNML01xbVBoUGNjL2NTN00vYzRsMkN1RzhwU3pq?=
- =?utf-8?B?N0N5cW1ueHYxVnJwY1pVRFJwZldheW9NVGpJSXRDMzh5eWlHMnhNbTArRUVE?=
- =?utf-8?B?NTAvUEFtS3RUQ2lGL0NKOUpyVEJDNHo1bmdFaEFWSnNJdk5ndUJxZlRKQ0Fl?=
- =?utf-8?B?NVJFaVJIY1RPR29laU5JUTVNTDdJUXpJN3VVdUdtM3JoMVVxRXl3QXdsR0o1?=
- =?utf-8?B?M1l5emNkYmNMQytuei9TN2JIdU13dzRXN21pUHlkZkZsQnhiL0gxaHBQTTFh?=
- =?utf-8?B?QlZneHRxSEJjVksvYXNIWUlwaFFoMEwzbFY3Y3lYK1MrNDBFVCtRSG1PNDkx?=
- =?utf-8?B?UXJRUmdVZSt5MVFlODBwVWx4U3BBQTFsVnpxYWFkM0trUFZ4WWx5dzNHTU85?=
- =?utf-8?B?WmZDT0UzWDQyMkN5TXZWekNsQy9UUUNjMHUrcHhIb3UwTFR5Sk1UNEc2dWln?=
- =?utf-8?B?SXZheVVzRXFRSml3UnEwcmFXVUR0QzZGVXdHaUdNR3VNVHE5ZUF0SUFodGF1?=
- =?utf-8?B?djB3S205STBSbDhHNDVaQXZXZ05zOUJWQXowT25ZQUUwanlhaE42NjlaMzU5?=
- =?utf-8?B?NDhJbktrS2F4N2lRRG5TNHoxYytUN0dOQ0t6MExCcmdZWjlPNEp1RmN6Nkg5?=
- =?utf-8?B?S1ZXeXN6bFIwOWNKK25XUDd1ajB1U1l4M3E1YXFxVGFjcGdxam0wc1RaMUl2?=
- =?utf-8?B?YngwTE1Xd1IxM0oxWUhPRFczbkMxTk9nZmg0WVdMWStHeDBMckF5bWJ1Ulpy?=
- =?utf-8?B?dkRjY3pXOURGVnRrYVEyT0E0WExzQXJqM2paWVA2eTlHZSs0Z1JUbFMzVUJt?=
- =?utf-8?B?cHNHTEIvdWgrMHZxOXdqKy9XSWVXVWdmUFFMWW5jUk1VemNaYmlmeVlvU012?=
- =?utf-8?B?V3RrUFVDampraE81S2RKT3hsSEl1S3Jtb3QwTWJDa0w1bVdKdWRhOVpuNHVz?=
- =?utf-8?B?MnZYVnlYYWJ1K0loRSt6SFJ2N3h3dlQ0RzJSR3c2OGNsUE5pOUxzR2xqcWpJ?=
- =?utf-8?B?d3VJUGQ2TmlrLzJBSDNlOXo2SGFRSVZicmdENm85RVo1eGNtTGZEVmdDQWU3?=
- =?utf-8?B?Qzd2RjJyNmxLMmRqVjFrQlhSTUpONG5COVhIVmdVMzdURWp4djBvTDBwWnFD?=
- =?utf-8?B?MFhCa1FoVHdGRHI3ZU05TWNSY0puUjdRYThNM0F6SHNsQXBJekhXZjNuMnR6?=
- =?utf-8?B?akZQYTJzcW9rUGtPb1h4aGlqQXlCVG5xSHNDb0lGRklFajkrY0pPdkt4c0NJ?=
- =?utf-8?B?dkxvQ3had1UyOTN2dmpmaGxTZXJsVlhIeUZ1QWRIb1M1YzZPaEs0eGRDU2d1?=
- =?utf-8?B?QjJXZXpXTnNCa1Y1ZlpJaW5iN2hIRzhwQ01Xc3BsTkNzVExrZEx4TWVNWmVI?=
- =?utf-8?B?RlZLKzIwcFFoRXNoL0tpMHJFamZTQmdhZmFLbkFCWmg3Y0o4MTRaVEsxSDN0?=
- =?utf-8?B?b2tndVpqRjFlRTJ5UFpPU2FtMXd0N3NWU3RKSnhhc00yNytRd3JPbk50UzFn?=
- =?utf-8?B?Wm5sUU9pVjF2cm1ZY3gveTJqM1U3SExKQzB1LzdUNm1YUndITE50cllmQmFi?=
- =?utf-8?B?N0lURjlRSDNPcHpuRk5TMit0cUIxejNuWFpqRWljMXNYSmRpQmROaFNZbnd4?=
- =?utf-8?B?cGtxYytMODdBcWMvc0VNb09hTFd6VUI3a3I5SGVyYmpEZ2FuTWIvWlZydU9L?=
- =?utf-8?B?aW1jMDBvMVdRM1AzcUFMZmhJNEJDSEJ6bGRHbWhoaVFSSC9aMFJaUytBdFVj?=
- =?utf-8?B?TjFZZWVtZmxkL29mdWJqQkp1ZnlNcUhyZHp1SDBqdGFDNzhBc1hXOUwvSzVx?=
- =?utf-8?B?dDJSUGRUZUJUZGl4YlJRUzV4R2djMHhYSEpwbjRJeW50KzVEZ1Vob20vWVMw?=
- =?utf-8?B?Wngwdzk3NGp3TWFGT0pnV2M1ODNDT2RPcTJzanlyZDVsTC92MjRjZGhiWm5E?=
- =?utf-8?B?U29Mck9xWkNFeXBBQmorNG1JZzY2UXpFOU83elFwelpMdUdEOERwdkdVdUdS?=
- =?utf-8?B?NE9BUW53RE1ONUt6TTN6NUpmOUlzcWU2WFREYW9SQzFpaXdYQmtuREVFSG84?=
- =?utf-8?B?ZXBnUGRQNEpRcDd3dkk0OHhDdjhYZW11amYwaDFwQVJXRXQydTBBZnY3UnJy?=
- =?utf-8?B?eGpqQlcyZUJEVkl3dEFxbXVadEgrVzcrcHZhMWVvb2xmYUxUSUxaUHpuZ3R0?=
- =?utf-8?B?c0E9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf8e1604-6f63-457e-3960-08db4805fb41
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TTB1aXhRRWFyMURVS0FFSTByZ0VPbEl6c3RwS2RKUWtDVzlISUwwTTZJK2Nt?=
+ =?utf-8?B?N1A3YjcrajZ5eUFkbnFvZlBtcVpjOFhCY1dFNWhrdXhrQkdEemtnemUvVjll?=
+ =?utf-8?B?c25Nd0tYTFY5dU56WVJqUUh0VlJHV0ljUzUvRVNjTkhIWkc2VmV2ei9xZ3FX?=
+ =?utf-8?B?YlJ6Y0Z1QWpaWGFhTkkveHF2eGYzUUlWaWJxeldzRUs3c2txZVVyem1mWUlN?=
+ =?utf-8?B?UGk2Ymt0SEVDTzkxa0h6RFhUKzl4MFR6Z2tBVXVLckhQOTBkWk9jcHl2RExp?=
+ =?utf-8?B?MlpPQmV4UVA2SStyWDdNbThOQWJ4R21wQnZsVzdOSE8yZVJHT2hvbVFONEpp?=
+ =?utf-8?B?ZEdWREFROENYWGFMWktsWUYrRy9rbElQU2QwaUxwTUM3bzlJdFlFL1IxNnE3?=
+ =?utf-8?B?UmtkZG40RnBRbnhtVUdzR2djamNsRkdvRnlQd3VFSDNsbFhyL1pvblJXdWhx?=
+ =?utf-8?B?QitEOUNaa2VHRkp1WGs0Y2daK1lESHN4T0RrUjJkVGJjMVl4aG05YjhjeVRF?=
+ =?utf-8?B?dCtJVjlrUm9sMG9yTGh5RkNTQ2RuQlN0ZXRwVVRJNGEyQld0eEYwS05LSGds?=
+ =?utf-8?B?VG5BMFhtTm8wTys5OGU0VHRKZFp4djVPTFY4cEhWU3IrR25vR0JiNTZvdHUy?=
+ =?utf-8?B?NTYwb1J4dTMyckFOQjE2b1VWVFViTFA5bVhWNGh2anFKUnVWZDlJRUZzTEQz?=
+ =?utf-8?B?cXR3R203YVJyNGIvSDVvYlhZNnNoNStoKzJXUFE2NldwMlRaSXl2cU9KMTZW?=
+ =?utf-8?B?bC9GRXQvMmF4RDJLaEMzSmJTRC9vUVBvRWc5TVUrVGlUelFGS3NXMDRPNUVE?=
+ =?utf-8?B?c1Z1Z1BUVGpPNGtTU2x4Y3U0dlJKNDZvZFJicEhFWS91UzY4OER1Y1lKV0d2?=
+ =?utf-8?B?bWpueFpNdE5tbUkxVGpFQjZ5S0hwRWlrOGhtZmFSMjYyVmpBWk9uM0JxekhV?=
+ =?utf-8?B?ZVB2d3VZS1dyU3RTZTA1K3h4aTN6VXJLTmc3Zkt1dWo5WVFvbEFFdlV4NUd2?=
+ =?utf-8?B?eGs3Y0RjUVRHYmVlcDB3NHc5WGVzcDV2dHEwWm5ENWwvM3J2SEFkdnhXY1ht?=
+ =?utf-8?B?S3RRZnUzdUxuNmZTV0ZLTjNrSTlxSWQyMElTYTlnTnh0ZGYxL0g5dktxRjZX?=
+ =?utf-8?B?bVJWUU12bnh4bVNIN0E4dDV5K2M1WGsxelRaY3dnWlNrdm0veTAzZXdkOGoz?=
+ =?utf-8?B?OXA1RjRLSDlaaGI1Yk5EWVR3c3FuUS96YzU4TU1BTEk1V2pTd3BFaks3eHBk?=
+ =?utf-8?B?RHhLN0NlVXVrVjNEMkNjalQwVTFTVkR1TlJVREpHcWNTT1ZFZmE4Q0txSWha?=
+ =?utf-8?B?YStiMkU5M0prUTRVM3F0T1hHWk1waVhSbWptNGw4Y0ZXbG5SZm0xcGIxWCtE?=
+ =?utf-8?B?Mm1KNlk4Q1diVUlhYTY4Y1ltdnJLSC94eDNFejd4aFNudDZVT1IzQ1EyaGZh?=
+ =?utf-8?B?UnAvRDd6VGxaN3ltaEd6K2NSR1FHWWF1MkhQdk5KaEhmMTlxZUNtNEdsQTNT?=
+ =?utf-8?B?bld1S0xYOFBKOHNobm1xZ2VFZ3dyMG1WeDRhWElaWXNscDhteXQvenBVRW9S?=
+ =?utf-8?B?VUpkeDNOZkpjanlTdkRKa3hNaC9leU0wZ1hFbFBpQUNJVDNtbkxYM0JYQnEy?=
+ =?utf-8?B?QTdMZ3B1dXlOdzVycUJJdk5DbUo2OC82cEZyM1d3MURlczRjUGVGZ09IeTYz?=
+ =?utf-8?B?eW5YU1FEb3FWdDZmcHVBdFZuR01hb2pTazlXZEJOLy9pQU1CVjBkYll1NVgx?=
+ =?utf-8?B?b2hLV1cxSDA1ZmZxZTVBSVhjRnNvVHNhTklxLy9Ib05xNXhmRndqSC95bDY5?=
+ =?utf-8?B?TE0yclBleXRqeksxMm5uWFgzNHk0T01WWEhmaEpsS1ZJUW5tWVkxVXdwUlFP?=
+ =?utf-8?B?YnNyZGV4MHd1SWFQa2szbFVlclMvT2YvanlNSUg2WEdPWVRPQXI5NFJVcTM0?=
+ =?utf-8?B?alJCaWpDRlF5T1lyS1c5ZHk5NlJCWHo1dDBETDR6K2NyTEYxaHhDWTkwSGdZ?=
+ =?utf-8?B?WnZvRC8xejkrbEdBZDhadWxDSHR6dDZxZlNPZkh1YWo5RXBzLzdvUHpyMStF?=
+ =?utf-8?B?VWt3TnltTXdQRmloVzg2cGRBWVZmZ2VYdUtjQ0J4K1FnMTdLd1NjdWgyalFq?=
+ =?utf-8?B?bE9hcmZveHdsb25MZzBaTGlvdkMyMkNXWjF1RXFkQk9QYmxuNzRUY1VHeHFQ?=
+ =?utf-8?B?Y3c9PQ==?=
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4cfa5530-89f1-45a9-1c36-08db48061a00
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 16:31:13.2937
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2023 16:32:04.8229
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: X79qqPEEdaQEwYynBx+IYPvi2fQEpccug0wMuvIgPRI1FjZIjWpUglM4D43+5DqnwjXK2mZFThGVtPzLkZgC1PiSMynlAdgN0Rvf3weh8LQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB8020
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: CHCJ5xft+lzYv5PJfr6dABtcDa47S+2bkiQwJdWm78RFKsGq//Zi6LkRixsnG50Q
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR15MB5418
+X-Proofpoint-GUID: ItCQENiLhfEAvbiXrrgHshzmK6RE33yU
+X-Proofpoint-ORIG-GUID: ItCQENiLhfEAvbiXrrgHshzmK6RE33yU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-28_04,2023-04-27_01,2023-02-09_01
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -169,53 +152,172 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/27/2023 3:24 AM, Paolo Abeni wrote:
-> On Wed, 2023-04-26 at 06:52 -0700, Richard Cochran wrote:
->> On Wed, Apr 26, 2023 at 10:18:12AM +0300, Leon Romanovsky wrote:
->>> On Tue, Apr 25, 2023 at 10:04:06AM -0700, Tony Nguyen wrote:
->>>> From: Andrii Staikov <andrii.staikov@intel.com>
->>>>
->>>> Fix PTP pins verification not to contain tainted arguments. As a new PTP
->>>> pins configuration is provided by a user, it may contain tainted
->>>> arguments that are out of bounds for the list of possible values that can
->>>> lead to a potential security threat. Change pin's state name from 'invalid'
->>>> to 'empty' for more clarification.
->>>
->>> And why isn't this handled in upper layer which responsible to get
->>> user input?
->>
->> It is.
->>
->> long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
->> {
->> 	...
->>
->> 	switch (cmd) {
->>
->> 	case PTP_PIN_SETFUNC:
->> 	case PTP_PIN_SETFUNC2:
->> 		if (copy_from_user(&pd, (void __user *)arg, sizeof(pd))) {
->> 			err = -EFAULT;
->> 			break;
->> 		}
->> 		...
->>
->> 		pin_index = pd.index;
->> 		if (pin_index >= ops->n_pins) {
->> 			err = -EINVAL;
->> 			break;
->> 		}
->>
->> 		...
->> 	}
->> 	...
->> }
+On 4/28/23 12:17 AM, Feng zhou wrote:
+> From: Feng Zhou <zhoufeng.zf@bytedance.com>
 > 
-> Given the above, I don't see why/how this patch is necessary? @Tony,
-> @Andrii: could you please give a better/longer description of the issue
-> addressed here?
+> test_progs:
+> Tests new kfunc bpf_task_under_cgroup().
+> 
+> The bpf program saves the new task's pid within a given cgroup to
+> the remote_pid, which is convenient for the user-mode program to
+> verify the test correctness.
+> 
+> The user-mode program creates its own mount namespace, and mounts the
+> cgroupsv2 hierarchy in there, call the fork syscall, then check if
+> remote_pid and local_pid are unequal.
+> 
+> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
 
-I'm not sure about the issue details; Andrii please chime in.
+Ack with a few nits below.
 
-Thanks,
-Tony
+Acked-by: Yonghong Song <yhs@fb.com>
+
+> ---
+>   tools/testing/selftests/bpf/DENYLIST.s390x    |  1 +
+>   .../bpf/prog_tests/task_under_cgroup.c        | 55 +++++++++++++++++++
+>   .../bpf/progs/test_task_under_cgroup.c        | 51 +++++++++++++++++
+>   3 files changed, 107 insertions(+)
+>   create mode 100644 tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
+> 
+> diff --git a/tools/testing/selftests/bpf/DENYLIST.s390x b/tools/testing/selftests/bpf/DENYLIST.s390x
+> index c7463f3ec3c0..5061d9e24c16 100644
+> --- a/tools/testing/selftests/bpf/DENYLIST.s390x
+> +++ b/tools/testing/selftests/bpf/DENYLIST.s390x
+> @@ -26,3 +26,4 @@ user_ringbuf                             # failed to find kernel BTF type ID of
+>   verif_stats                              # trace_vprintk__open_and_load unexpected error: -9                           (?)
+>   xdp_bonding                              # failed to auto-attach program 'trace_on_entry': -524                        (trampoline)
+>   xdp_metadata                             # JIT does not support calling kernel function                                (kfunc)
+> +test_task_under_cgroup                   # JIT does not support calling kernel function                                (kfunc)
+> diff --git a/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c b/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
+> new file mode 100644
+> index 000000000000..5e79dff86dec
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c
+> @@ -0,0 +1,55 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2023 Bytedance */
+> +
+> +#include <sys/syscall.h>
+> +#include <test_progs.h>
+> +#include <cgroup_helpers.h>
+> +#include "test_task_under_cgroup.skel.h"
+> +
+> +#define FOO	"/foo"
+> +
+> +void test_task_under_cgroup(void)
+> +{
+> +	struct test_task_under_cgroup *skel;
+> +	int ret, foo = -1;
+> +	pid_t pid;
+> +
+> +	foo = test__join_cgroup(FOO);
+> +	if (!ASSERT_OK(foo < 0, "cgroup_join_foo"))
+> +		return;
+> +
+> +	skel = test_task_under_cgroup__open();
+> +	if (!ASSERT_OK_PTR(skel, "test_task_under_cgroup__open"))
+> +		goto cleanup;
+> +
+> +	skel->rodata->local_pid = getpid();
+> +	skel->bss->remote_pid = getpid();
+> +	skel->rodata->cgid = get_cgroup_id(FOO);
+> +
+> +	ret = test_task_under_cgroup__load(skel);
+> +	if (!ASSERT_OK(ret, "test_task_under_cgroup__load"))
+> +		goto cleanup;
+> +
+> +	ret = test_task_under_cgroup__attach(skel);
+> +	if (!ASSERT_OK(ret, "test_task_under_cgroup__attach"))
+> +		goto cleanup;
+> +
+> +	pid = fork();
+> +	if (pid == 0)
+> +		exit(0);
+> +	else if (pid == -1)
+> +		printf("Couldn't fork process!\n");
+
+ASSERT_* is preferred compared to 'printf'. Maybe ASSERT_TRUE(0, 
+"Couldn't fork process")?
+
+> +
+> +	wait(NULL);
+> +
+> +	test_task_under_cgroup__detach(skel);
+> +
+> +	ASSERT_NEQ(skel->bss->remote_pid, skel->rodata->local_pid,
+> +		   "test task_under_cgroup");
+> +
+> +cleanup:
+> +	if (foo >= 0)
+
+"if (foo >= 0)" is not needed. 'foo' is guaranteed ">= 0" as this point.
+
+> +		close(foo);
+> +
+> +	test_task_under_cgroup__destroy(skel);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c b/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
+> new file mode 100644
+> index 000000000000..5bcb726d6d0a
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c
+> @@ -0,0 +1,51 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2023 Bytedance */
+> +
+> +#include <vmlinux.h>
+> +#include <bpf/bpf_tracing.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#include "bpf_misc.h"
+> +
+> +struct cgroup *bpf_cgroup_from_id(u64 cgid) __ksym;
+> +long bpf_task_under_cgroup(struct task_struct *task, struct cgroup *ancestor) __ksym;
+> +void bpf_cgroup_release(struct cgroup *p) __ksym;
+> +struct task_struct *bpf_task_acquire(struct task_struct *p) __ksym;
+> +void bpf_task_release(struct task_struct *p) __ksym;
+> +
+> +const volatile int local_pid;
+> +const volatile long cgid;
+
+cgid cannot be a negative number. So let us do
+const volatile __u64 cgid;
+
+> +int remote_pid;
+> +
+> +SEC("tp_btf/task_newtask")
+> +int BPF_PROG(handle__task_newtask, struct task_struct *task, u64 clone_flags)
+> +{
+> +	struct cgroup *cgrp = NULL;
+> +	struct task_struct *acquired = NULL;
+
+"acquired = NULL" is not needed. Just do "struct task_struct *acquired;".
+
+> +
+> +	if (local_pid != (bpf_get_current_pid_tgid() >> 32))
+> +		return 0;
+> +
+> +	acquired = bpf_task_acquire(task);
+> +	if (!acquired)
+> +		return 0;
+> +
+> +	if (local_pid == acquired->tgid)
+> +		goto out;
+> +
+> +	cgrp = bpf_cgroup_from_id(cgid);
+> +	if (!cgrp)
+> +		goto out;
+> +
+> +	if (bpf_task_under_cgroup(acquired, cgrp))
+> +		remote_pid = acquired->tgid;
+> +
+> +out:
+> +	if (acquired)
+> +		bpf_task_release(acquired);
+> +	if (cgrp)
+> +		bpf_cgroup_release(cgrp);
+> +	return 0;
+> +}
+> +
+> +char _license[] SEC("license") = "GPL";
