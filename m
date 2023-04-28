@@ -2,116 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 760E86F1029
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 04:00:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D21F6F102B
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 04:00:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344786AbjD1CAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 22:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60378 "EHLO
+        id S1344793AbjD1CAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 22:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344782AbjD1CA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 22:00:29 -0400
-Received: from mail-vk1-xa32.google.com (mail-vk1-xa32.google.com [IPv6:2607:f8b0:4864:20::a32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04D173C0D
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 19:00:27 -0700 (PDT)
-Received: by mail-vk1-xa32.google.com with SMTP id 71dfb90a1353d-4404c674cefso3132037e0c.2
-        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 19:00:27 -0700 (PDT)
+        with ESMTP id S1344810AbjD1CAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 22:00:45 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E904840F0;
+        Thu, 27 Apr 2023 19:00:39 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id 46e09a7af769-6a5f602a8f7so6867275a34.1;
+        Thu, 27 Apr 2023 19:00:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=igel-co-jp.20221208.gappssmtp.com; s=20221208; t=1682647227; x=1685239227;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gl4UcZhexIohjefd4ELF83XHOyhrEBsBVG6iR4uVgNM=;
-        b=ABdw2dWYlDukm9J5D/DtEXqh1ZkOJzYRX/FH3TiKebIZ/Knwom7xTvnBcM6RBDtyBv
-         /o+AGSG3yYgkFJohuBV0zBLSCW5wVo4W4ABLqmMLaj7npr2oeW7zXXDTNnmQtW1zW97c
-         Xy7n3edElkqWMvaiYaCXQFZ0GwX7I55GYirDnbpn/u4FF1oBrUtk+VPn7xh0xlk2Si0Z
-         +XDaJBe1wKBcAOkXuW8yvtyYdvYNaJCTqICXqUTnIxh9c8hXe+G4aDeTWYJif2kXaLYX
-         622PYWOoA0S1Z1jyQ9xHyjU1Ru4af3D3Hd8TyEgTObKCimt9ltptfWqv+jCe0BTHxVZ0
-         SgRA==
+        d=gmail.com; s=20221208; t=1682647239; x=1685239239;
+        h=in-reply-to:from:content-language:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:sender:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=I2fuOCNIZXwXz+mx8tlXZhENNI/BzFR5eBuoszP6NEo=;
+        b=OLOSJGO/vraN5WQ0u3DI+V+U4CNhPGsNlznwf5voYGdVinNETFtYiHrJdMv80KtfR8
+         puxBUZ3dwATG7d3YGEUvBhPMtF766lHhyxLOhY5z9nMhHItLwUckVltIWzixgzV7I+Rz
+         BGZm7tCQPUU/2bswJQmlP+3tvDgJAf0gH1siK1OiW68GrAWuBd9d+Eo21SvF8LJocNm7
+         cV4SJ1C3xMfaEUP9usSLuOpYoAnGLinAzdeRTaWnlmFtHFkHliYht2iDe3xGyCAln3Hb
+         gLlBWW/zkrNIcq8G+wEu4kQSDJXxd9oggHaMSBxUzNhWFtYKQffvHqTZSLrDFSr6fjDx
+         IdYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682647227; x=1685239227;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gl4UcZhexIohjefd4ELF83XHOyhrEBsBVG6iR4uVgNM=;
-        b=TiLWVGn/HoJVXLw9t1MqNgqreJMROdZGnzKcT6/1ymGeURKm8vRKCF8E55SVtImMIR
-         potlkKDLwh2XilM9pJkaJ/1Rte1s40AWpEVXeUjpn/vhCWy9w19bDKYK6NQByyvSycS3
-         xO5SJvUxyYMvIC5dhAKtyZDoJoxTejoKgcOqpafv5uA/hrf8ffFOWYHwhNRGbyfZsWbt
-         FFEZHgfmya/+Kvq0yS/4ZkdtxSfd7WOtuViEaAhvsVE5bF5QMAhQgnq1spZCJFU7b964
-         VUmoO1F1pxy6I2ci91dcCkFBPQ/Jf/Yppswi/ty2gv7l3X/Vc1weXoCd38Eqe9GijahT
-         89pQ==
-X-Gm-Message-State: AC+VfDwsRv+tBjYFn/4LaU/rlcgSGSN7Hjsh1PtkGWFxI7vtLLkW9EQV
-        KCktF3A6pQIkNSHN5J/oHXfs2GIffPfzmfoBhmCTrw==
-X-Google-Smtp-Source: ACHHUZ6bXAHX3os0g+edZnDMBXePIfbnxThJdyz0sgMrCWX55u39Ow0FXGJjamRkioyW0WH1Feggfua5iFpnPLCBbuM=
-X-Received: by 2002:a1f:3f43:0:b0:443:9b17:72e9 with SMTP id
- m64-20020a1f3f43000000b004439b1772e9mr1396826vka.12.1682647227075; Thu, 27
- Apr 2023 19:00:27 -0700 (PDT)
+        d=1e100.net; s=20221208; t=1682647239; x=1685239239;
+        h=in-reply-to:from:content-language:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:sender:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=I2fuOCNIZXwXz+mx8tlXZhENNI/BzFR5eBuoszP6NEo=;
+        b=ThBx6PxainK3Xs/aiLmjXQPh3z5yQJCEAcwZmiq+5cJTDov/QrsF9B1SS5SkekYxmQ
+         JgPgkYRIR9vQROOojAUce+d4DCdO/0OK+UNp3+HMIhLtJyUSc2h8wwX934ee7RVb/iGj
+         OZq55TFZPrlDiYIzJjp9s+Gnc3smBq5oQmhyGfJL0Z5QVYE9lSdAY862/bfWBZiQPSSU
+         Pb+9pJtke9DhuNuXGJumD3IazlXQ7IbkudT2iGCob9DTMk6XwDCNRJOEM76FvMb6DUzW
+         K1e2lA2IbdN9pgql5BwbZpsp/GCE7YcbRETvubuyfNC8XFKbhdRonFplhPzEEbH5iRPQ
+         1Czw==
+X-Gm-Message-State: AC+VfDxaXpCp9F14lRz4sdcgTXd8okEc8EFAhQGaS9m8MaE2XVno9Mgk
+        SD1iKSO3Phi72Gi0ktm/IeeY9OwZQ38=
+X-Google-Smtp-Source: ACHHUZ4rLeGQhDH5kZOot6k9J4Y1ZmJ1sM9Co3s+j8nP2RFJhQFqzPGmd8aroDvP/u61BOw9hPHMTw==
+X-Received: by 2002:a05:6830:1e0e:b0:6a6:3fec:c197 with SMTP id s14-20020a0568301e0e00b006a63fecc197mr1636885otr.38.1682647239040;
+        Thu, 27 Apr 2023 19:00:39 -0700 (PDT)
+Received: from [192.168.0.143] ([216.130.59.33])
+        by smtp.gmail.com with ESMTPSA id v19-20020a9d4e93000000b006a5f2111226sm8523636otk.55.2023.04.27.19.00.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Apr 2023 19:00:38 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Content-Type: multipart/mixed; boundary="------------1Z6k6nMckqgHmYBAFUkW9KKH"
+Message-ID: <866570c9-38d8-1006-4721-77e2945170b9@lwfinger.net>
+Date:   Thu, 27 Apr 2023 21:00:28 -0500
 MIME-Version: 1.0
-References: <20230425102250.3847395-1-mie@igel.co.jp> <ZEl5yKYzsw/g+tQh@corigine.com>
-In-Reply-To: <ZEl5yKYzsw/g+tQh@corigine.com>
-From:   Shunsuke Mie <mie@igel.co.jp>
-Date:   Fri, 28 Apr 2023 11:00:16 +0900
-Message-ID: <CANXvt5pjEau8_h7x_2kx9E79Dsc4g1ohnof5fo5QHL=KR261AA@mail.gmail.com>
-Subject: Re: [PATCH v3] vringh: IOMEM support
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Rusty Russell <rusty@rustcorp.com.au>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [PATCH] wifi: rtl8xxxu: fix authentication timeout due to
+ incorrect RCR value
+To:     Yun Lu <luyun_611@163.com>, Jes.Sorensen@gmail.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20230427020512.1221062-1-luyun_611@163.com>
+Content-Language: en-US
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <20230427020512.1221062-1-luyun_611@163.com>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Simon-san,
+This is a multi-part message in MIME format.
+--------------1Z6k6nMckqgHmYBAFUkW9KKH
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-2023=E5=B9=B44=E6=9C=8827=E6=97=A5(=E6=9C=A8) 4:21 Simon Horman <simon.horm=
-an@corigine.com>:
->
-> On Tue, Apr 25, 2023 at 07:22:50PM +0900, Shunsuke Mie wrote:
-> > Introduce a new memory accessor for vringh. It is able to use vringh to
-> > virtio rings located on io-memory region.
-> >
-> > Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
->
-> ...
->
-> Hi Mie-san,
->
-> thanks for your patch.
-> One small nit from me below.
->
-> > diff --git a/include/linux/vringh.h b/include/linux/vringh.h
-> > index c3a8117dabe8..c03d045f7f3f 100644
-> > --- a/include/linux/vringh.h
-> > +++ b/include/linux/vringh.h
-> > @@ -330,4 +330,37 @@ int vringh_need_notify_iotlb(struct vringh *vrh);
-> >
-> >  #endif /* CONFIG_VHOST_IOTLB */
-> >
-> > +#if IS_REACHABLE(CONFIG_VHOST_RING_IOMEM)
-> > +
-> > +int vringh_init_iomem(struct vringh *vrh, u64 features,
-> > +                   unsigned int num, bool weak_barriers,
-> > +                   struct vring_desc *desc,
-> > +                   struct vring_avail *avail,
-> > +                   struct vring_used *used);
-> > +
-> > +
->
-> nit: one blank line is enough.
-It should not have included this patch. Thanks.
-> > +int vringh_getdesc_iomem(struct vringh *vrh,
-> > +                      struct vringh_kiov *riov,
-> > +                      struct vringh_kiov *wiov,
-> > +                      u16 *head,
-> > +                      gfp_t gfp);
->
-> ...
+On 4/26/23 21:05, Yun Lu wrote:
+> From: Yun Lu <luyun@kylinos.cn>
+> 
+> When using rtl8192cu with rtl8xxxu driver to connect wifi, there is a
+> probability of failure, which shows "authentication with ... timed out".
+> Through debugging, it was found that the RCR register has been inexplicably
+> modified to an incorrect value, resulting in the nic not being able to
+> receive authenticated frames.
+> 
+> To fix this problem, add regrcr in rtl8xxxu_priv struct, and store
+> the RCR value every time the register is writen, and use it the next
+> time the register need to be modified.
+
+I added the attached patch to see what was different between the two values in 
+REG_RCR. To my surprise, nothing was logged.
+
+Please add this one on top of you proposed patch, and send me the output from 
+the log.
+
+Thanks,
+
+Larry
+
+
+--------------1Z6k6nMckqgHmYBAFUkW9KKH
+Content-Type: text/x-patch; charset=UTF-8; name="log_data.patch"
+Content-Disposition: attachment; filename="log_data.patch"
+Content-Transfer-Encoding: base64
+
+ZGlmZiAtLWdpdCBhL01ha2VmaWxlIGIvTWFrZWZpbGUKaW5kZXggZjU1NDNlZWY0ZjgyLi42
+ZDk4NWExNzVkNzggMTAwNjQ0Ci0tLSBhL01ha2VmaWxlCisrKyBiL01ha2VmaWxlCkBAIC0x
+LDggKzEsOCBAQAogIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMAogVkVSU0lP
+TiA9IDYKLVBBVENITEVWRUwgPSAzCitQQVRDSExFVkVMID0gNAogU1VCTEVWRUwgPSAwCi1F
+WFRSQVZFUlNJT04gPQorRVhUUkFWRVJTSU9OID0gLXJjMAogTkFNRSA9IEh1cnIgZHVyciBJ
+J21hIG5pbmphIHNsb3RoCiAKICMgKkRPQ1VNRU5UQVRJT04qCmRpZmYgLS1naXQgYS9kcml2
+ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bDh4eHh1L3J0bDh4eHh1X2NvcmUuYyBiL2Ry
+aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsOHh4eHUvcnRsOHh4eHVfY29yZS5jCmlu
+ZGV4IDgzMTYzOWQ3MzY1Ny4uYjUyMTJjZWI0ZWI0IDEwMDY0NAotLS0gYS9kcml2ZXJzL25l
+dC93aXJlbGVzcy9yZWFsdGVrL3J0bDh4eHh1L3J0bDh4eHh1X2NvcmUuYworKysgYi9kcml2
+ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bDh4eHh1L3J0bDh4eHh1X2NvcmUuYwpAQCAt
+NjUwNCw2ICs2NTA0LDEwIEBAIHN0YXRpYyB2b2lkIHJ0bDh4eHh1X2NvbmZpZ3VyZV9maWx0
+ZXIoc3RydWN0IGllZWU4MDIxMV9odyAqaHcsCiAJc3RydWN0IHJ0bDh4eHh1X3ByaXYgKnBy
+aXYgPSBody0+cHJpdjsKIAl1MzIgcmNyID0gcHJpdi0+cmVncmNyOwogCisJaWYgKHJjciAh
+PSBydGw4eHh4dV9yZWFkMzIocHJpdiwgUkVHX1JDUikpIHsKKwkJcHJfaW5mbygiQkVGT1JF
+OiBSRUdfUkNSIGRpZmZlcnMgZnJvbSByZWdyY3I6IDB4JXggaW5zdGVkIG9mIDB4JXhcbiIs
+CisJCQlydGw4eHh4dV9yZWFkMzIocHJpdiwgUkVHX1JDUiksIHByaXYtPnJlZ3Jjcik7CisJ
+fQogCWRldl9kYmcoJnByaXYtPnVkZXYtPmRldiwgIiVzOiBjaGFuZ2VkX2ZsYWdzICUwOHgs
+IHRvdGFsX2ZsYWdzICUwOHhcbiIsCiAJCV9fZnVuY19fLCBjaGFuZ2VkX2ZsYWdzLCAqdG90
+YWxfZmxhZ3MpOwogCkBAIC02NTQ3LDYgKzY1NTEsMTAgQEAgc3RhdGljIHZvaWQgcnRsOHh4
+eHVfY29uZmlndXJlX2ZpbHRlcihzdHJ1Y3QgaWVlZTgwMjExX2h3ICpodywKIAkgKiBGSUZf
+UFJPQkVfUkVRIGlnbm9yZWQgYXMgcHJvYmUgcmVxdWVzdHMgYWx3YXlzIHNlZW0gdG8gYmUg
+YWNjZXB0ZWQKIAkgKi8KIAorCWlmIChyY3IgIT0gcnRsOHh4eHVfcmVhZDMyKHByaXYsIFJF
+R19SQ1IpKSB7CisJCXByX2luZm8oIkFGVEVSOiBSRUdfUkNSIGRpZmZlcnMgZnJvbSByZWdy
+Y3I6IDB4JXggaW5zdGVkIG9mIDB4JXhcbiIsCisJCQlydGw4eHh4dV9yZWFkMzIocHJpdiwg
+UkVHX1JDUiksIHByaXYtPnJlZ3Jjcik7CisJfQogCXJ0bDh4eHh1X3dyaXRlMzIocHJpdiwg
+UkVHX1JDUiwgcmNyKTsKIAlwcml2LT5yZWdyY3IgPSByY3I7CiAK
+
+--------------1Z6k6nMckqgHmYBAFUkW9KKH--
