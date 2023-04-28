@@ -2,179 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 129F56F1C30
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 154046F1C40
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 18:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345383AbjD1QEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 12:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
+        id S1345589AbjD1QGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 12:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345164AbjD1QDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:03:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E555B8C
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:03:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682697785;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ygEgijBc1IgIq8cFGjEh4tdLm5WBe48ZCNtdfsoShbQ=;
-        b=ATsISI1ysJmOJEVlgxfQ+k6OI2e/8Sz4Ofmnd14U5ZW1OiaKfirc/t8H2eZgQV0p6Fgdnz
-        FWfsvTCC8JE1ZyAbiSUn3z6JuFuShAZ6OsKIrqz0/A0N61sblcnyrc+H1JlFfwERqqJLZg
-        oA/ZbUmRcpp1ApA0wqHlurL4y1/ZWpI=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-530-2h7hrVpCPAW-ilIamvTSmg-1; Fri, 28 Apr 2023 12:03:02 -0400
-X-MC-Unique: 2h7hrVpCPAW-ilIamvTSmg-1
-Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-2ffa43cd733so5861818f8f.1
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:03:00 -0700 (PDT)
+        with ESMTP id S229978AbjD1QGr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 12:06:47 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABBA44B6
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:06:44 -0700 (PDT)
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E409B3F233
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 16:06:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1682698002;
+        bh=Evd5E1vAGuqAFGaUU5YGL3Y6YSFIrBP4+8VwWarY6U4=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=EopbUDEbL7G3uu1ewTL5K/6y26s7DFCATCPWj3BWozXdCeKiagHR4lQMW5Btud+Ks
+         gywSZ1Idqf8yhMVivFzmfRMSJJsZSBgnsdqTphB9lM8FwPQdPzla32CFxYHkh+LLAA
+         uZ3mLNwE5LeRMrgbVA7UvoRhlb9Q/HmMxyU1BIcvBuJsgSa2QMvcSna04SFhyeKZ5S
+         0fkxPID2vFkJ7c9O3hCYTtXtS+zj6LjsbF+3vtklTG51fc0XXCDms3mAqedycKAx5y
+         QHK1j1NbyM1xCpmqJiiz5MemVrJ7lwrCCaSr+ruO5ZFbeXGR4ILYgaheXwJwpbhGQP
+         Xvw1SF6CBsWjA==
+Received: by mail-pg1-f197.google.com with SMTP id 41be03b00d2f7-51b51394f32so5927952a12.1
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 09:06:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682697779; x=1685289779;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ygEgijBc1IgIq8cFGjEh4tdLm5WBe48ZCNtdfsoShbQ=;
-        b=LpLN8K53xOQjjixxowvbqmGlXJYvFdIY23UtrNN2tmXCCGEtEvn0qQ2GLV0L3bE/oL
-         32E8i4bGTLpyOloQoq5TyjYOStguwFYHBD+kkVUj6E2QxrJjz3mVbVRz+MZNGgLdBJ5d
-         5gWJkIL3fE//md2IQPQj2z4SptQ6zlgMsZ8aPwlXsbsiDtSLq5clWuovZZU5c5egPphi
-         d/SQBt/un3uUPzWMsA6V3Rmpn1wRRMWnyJBhMmRin6CM3wSGS0pSBo0Ek5U/5yzSxrkO
-         wNshxoe5LID7XQWxS5gMUp1hfrMCY6NupEdHRm6QS8B9wQlSFO5r9h2d27iCZMO05g1/
-         XOIQ==
-X-Gm-Message-State: AC+VfDzowbvNfWHbXNhnsmRZrG7A634kAjDpvG9EBslhFBl8JBwF+X3U
-        kwZ7k2o28rgPidkTE528uhS0rvzXg3GSnKxGg9N7S7jy+lOb+xp81/krlaeZqxVJkTiZop3eGz0
-        SG8M7kwi9Rg0JMW5i
-X-Received: by 2002:a5d:595a:0:b0:304:7237:729a with SMTP id e26-20020a5d595a000000b003047237729amr4261524wri.67.1682697779309;
-        Fri, 28 Apr 2023 09:02:59 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ7Ku7Blfk4RQb9TUtQ5+s7GnYVImteWm54uw3a9dTygTNMWUmW0JJgkbiWnH2eUAqvpUaXDng==
-X-Received: by 2002:a5d:595a:0:b0:304:7237:729a with SMTP id e26-20020a5d595a000000b003047237729amr4261467wri.67.1682697778920;
-        Fri, 28 Apr 2023 09:02:58 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c726:9300:1711:356:6550:7502? (p200300cbc72693001711035665507502.dip0.t-ipconnect.de. [2003:cb:c726:9300:1711:356:6550:7502])
-        by smtp.gmail.com with ESMTPSA id x8-20020a05600c21c800b003f2390bdd0csm16068630wmj.32.2023.04.28.09.02.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Apr 2023 09:02:58 -0700 (PDT)
-Message-ID: <0e6ef85d-d53a-c847-c70b-900eb925a413@redhat.com>
-Date:   Fri, 28 Apr 2023 18:02:56 +0200
+        d=1e100.net; s=20221208; t=1682698001; x=1685290001;
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Evd5E1vAGuqAFGaUU5YGL3Y6YSFIrBP4+8VwWarY6U4=;
+        b=hvyejd1OKqZygxmSioXNSui5XiPhSq6pc3AetMX/ScIKCtgIKbBdmlXefGkRdZrXR8
+         79Xxprtaa7o422NinR8MAb9XcvV1ApmElhSBZ9IRLKjt9isNDhIX1fK2ws+Qd8g5FzMg
+         hLbQiF7iYOeWO4wfXRRHmmp0o2kIYSMlE8A+f8txMHd+2z634qAZCFib94N8riQF3srf
+         ++7LRbifxoJATAhgP9DWc4lX7ROPNps1xribG+4MMZ3dRgpIHnU3yq23NBp0H7Eu4jNY
+         hOSw3H9za1Kkqd3ZVxNaY4+Yzp8hWdw2WQnEPCLM1YI4DNO/LW/4O9saxnALUXk3uAsS
+         ZDjg==
+X-Gm-Message-State: AC+VfDwvrb6McQI6ogFI6X/Bewxd8C8N1NJDO41BHM5S8peDQu7wFqKn
+        /isS8J6fqD5Kq5y1VkRblSSIVfLFtKWIxcpsgL8Q+tPfG0LURTKavhFck+3NGEnw6QpLiOIzB/6
+        CGwWPpD+YCt/HZch23r7ikmNF2LCfZgjzDA==
+X-Received: by 2002:a05:6a20:7f86:b0:ea:fb53:4cb1 with SMTP id d6-20020a056a207f8600b000eafb534cb1mr6306043pzj.41.1682698001426;
+        Fri, 28 Apr 2023 09:06:41 -0700 (PDT)
+X-Google-Smtp-Source: ACHHUZ6vCMbBy9UmDjaXkCqXDyGLTFA1fbEoPWkV82nzvAxcxGfRNIgpIkUIxDaOqUDmUeGvlgGLmw==
+X-Received: by 2002:a05:6a20:7f86:b0:ea:fb53:4cb1 with SMTP id d6-20020a056a207f8600b000eafb534cb1mr6306012pzj.41.1682698001098;
+        Fri, 28 Apr 2023 09:06:41 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.253])
+        by smtp.gmail.com with ESMTPSA id i134-20020a62878c000000b006328ee1e56csm15319495pfe.2.2023.04.28.09.06.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 28 Apr 2023 09:06:40 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 2FF5661E6D; Fri, 28 Apr 2023 09:06:40 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 2AA929FB79;
+        Fri, 28 Apr 2023 09:06:40 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+cc:     netdev@vger.kernel.org
+Subject: Re: [Issue] Bonding can't show correct speed if lower interface is bond 802.3ad
+In-reply-to: <ZEt3hvyREPVdbesO@Laptop-X1>
+References: <ZEt3hvyREPVdbesO@Laptop-X1>
+Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
+   message dated "Fri, 28 Apr 2023 15:36:38 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
- by default
-Content-Language: en-US
-To:     Peter Xu <peterx@redhat.com>
-Cc:     Lorenzo Stoakes <lstoakes@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        David Howells <dhowells@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
- <afcc124e-7a9b-879c-dfdf-200426b84e24@redhat.com>
- <ZEvZtIb2EDb/WudP@nvidia.com>
- <094d2074-5b69-5d61-07f7-9f962014fa68@redhat.com>
- <400da248-a14e-46a4-420a-a3e075291085@redhat.com>
- <077c4b21-8806-455f-be98-d7052a584259@lucifer.local>
- <62ec50da-5f73-559c-c4b3-bde4eb215e08@redhat.com> <ZEvsx998gDFig/zq@x1n>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <ZEvsx998gDFig/zq@x1n>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <15523.1682698000.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Fri, 28 Apr 2023 09:06:40 -0700
+Message-ID: <15524.1682698000@famine>
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.04.23 17:56, Peter Xu wrote:
-> On Fri, Apr 28, 2023 at 05:34:35PM +0200, David Hildenbrand wrote:
->> On 28.04.23 17:33, Lorenzo Stoakes wrote:
->>> On Fri, Apr 28, 2023 at 05:23:29PM +0200, David Hildenbrand wrote:
->>>>>>
->>>>>> Security is the primary case where we have historically closed uAPI
->>>>>> items.
->>>>>
->>>>> As this patch
->>>>>
->>>>> 1) Does not tackle GUP-fast
->>>>> 2) Does not take care of !FOLL_LONGTERM
->>>>>
->>>>> I am not convinced by the security argument in regard to this patch.
->>>>>
->>>>>
->>>>> If we want to sells this as a security thing, we have to block it
->>>>> *completely* and then CC stable.
->>>>
->>>> Regarding GUP-fast, to fix the issue there as well, I guess we could do
->>>> something similar as I did in gup_must_unshare():
->>>>
->>>> If we're in GUP-fast (no VMA), and want to pin a !anon page writable,
->>>> fallback to ordinary GUP. IOW, if we don't know, better be safe.
->>>
->>> How do we determine it's non-anon in the first place? The check is on the
->>> VMA. We could do it by following page tables down to folio and checking
->>> folio->mapping for PAGE_MAPPING_ANON I suppose?
->>
->> PageAnon(page) can be called from GUP-fast after grabbing a reference. See
->> gup_must_unshare().
-> 
-> Hmm.. Is it a good idea at all to sacrifise all "!anon" fast-gups for this?
-> People will silently got degrade even on legal pins on shmem/hugetlb, I
-> think, which seems to be still a very major use case.
-> 
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-Right. Optimizing for hugetlb should be easy. Shmem is problematic.
+>A user reported a bonding issue that if we put an active-back bond on top=
+ of a
+>802.3ad bond interface. When the 802.3ad bond's speed/duplex changed
+>dynamically. The upper bonding interface's speed/duplex can't be changed =
+at
+>the same time.
+>
+>This seems not easy to fix since we update the speed/duplex only
+>when there is a failover(except 802.3ad mode) or slave netdev change.
+>But the lower bonding interface doesn't trigger netdev change when the sp=
+eed
+>changed as ethtool get bonding speed via bond_ethtool_get_link_ksettings(=
+),
+>which not affect bonding interface itself.
 
-I once raised to John that PageAnonExclusive is essentially a "anon page 
-is pinnable" flag. Too bad we don't have spare page flags ;)
+	Well, this gets back into the intermittent discussion on whether
+or not being able to nest bonds is useful or not, and thus whether it
+should be allowed or not.  It's at best a niche use case (I don't recall
+the example configurations ever being anything other than 802.3ad under
+active-backup), and was broken for a number of years without much
+uproar.
 
--- 
-Thanks,
+	In this particular case, nesting two LACP (802.3ad) bonds inside
+an active-backup bond provides no functional benefit as far as I'm aware
+(maybe gratuitous ARP?), as 802.3ad mode will correctly handle switching
+between multiple aggregators.  The "ad_select" option provides a few
+choices on the criteria for choosing the active aggregator.
 
-David / dhildenb
+	Is there a reason the user in your case doesn't use 802.3ad mode
+directly?
 
+>Here is a reproducer:
+>
+>```
+>#!/bin/bash
+>s_ns=3D"s"
+>c_ns=3D"c"
+>
+>ip netns del ${c_ns} &> /dev/null
+>ip netns del ${s_ns} &> /dev/null
+>sleep 1
+>ip netns add ${c_ns}
+>ip netns add ${s_ns}
+>
+>ip -n ${c_ns} link add bond0 type bond mode 802.3ad miimon 100
+>ip -n ${s_ns} link add bond0 type bond mode 802.3ad miimon 100
+>ip -n ${s_ns} link add bond1 type bond mode active-backup miimon 100
+>
+>for i in $(seq 0 2); do
+>        ip -n ${c_ns} link add eth${i} type veth peer name eth${i} netns =
+${s_ns}
+>        [ $i -eq 2 ] && break
+>        ip -n ${c_ns} link set eth${i} master bond0
+>        ip -n ${s_ns} link set eth${i} master bond0
+>done
+>
+>ip -n ${c_ns} link set eth2 up
+>ip -n ${c_ns} link set bond0 up
+>
+>ip -n ${s_ns} link set bond0 master bond1
+>ip -n ${s_ns} link set bond1 up
+>
+>sleep 5
+>
+>ip netns exec ${s_ns} ethtool bond0 | grep Speed
+>ip netns exec ${s_ns} ethtool bond1 | grep Speed
+>```
+>
+>When run the reproducer directly, you will see:
+># ./bond_topo_lacp.sh
+>        Speed: 20000Mb/s
+>        Speed: 10000Mb/s
+>
+>So do you have any thoughts about how to fix it?
+
+	Maybe it's time to disable nesting of bonds, update the
+documentation to note that it's disabled and that 802.3ad mode is smart
+enough to do multiple aggregators, and then see if anyone has some other
+use case and complains.
+
+	In the past, I've been against doing this, but only because it
+might break existing configurations.  If nested configurations are going
+to misbehave and require complicated shenanigans to fix, then perhaps
+it's time to push users into a configuration that works without the
+nesting.
+
+	The only thing I can think of that active-backup over 802.3ad
+gets is the gratuitous ARP / NS on failover.  If that's the key feature
+for nesting, then I'd rather add the grat ARP to 802.3ad aggregator
+selection and disable nesting.
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
