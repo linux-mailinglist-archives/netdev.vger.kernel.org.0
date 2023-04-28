@@ -2,335 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A29326F1A65
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 16:21:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C19FC6F1A73
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 16:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345870AbjD1OVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 10:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        id S230376AbjD1O0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 10:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbjD1OVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 10:21:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF06E44
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 07:20:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682691653;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gv0P60I1m+zx490TNpqDLMm/gN26L3C73hsWxl2z9Eg=;
-        b=Ks4BYZkJ+QdbQmvMnrhgGLw2PXJ8BOaGOy0An/6fYyqi3Z7JApbNKkI/mw+gnPZngBYMlf
-        h0KNCV3w+yRPSqoA5lqn+P6q/UzStbMBiBjTxae9W+v/KaMQ0CDIZFyDt+aDIsFLftYzrR
-        Q0Y9V2DY/LxdDZ4q6ax9VzEkxjkGefo=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-20-log7kdhWMGG_wQZNUwhztw-1; Fri, 28 Apr 2023 10:20:51 -0400
-X-MC-Unique: log7kdhWMGG_wQZNUwhztw-1
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-3f195129aa4so53103035e9.2
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 07:20:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682691650; x=1685283650;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :content-language:references:cc:to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gv0P60I1m+zx490TNpqDLMm/gN26L3C73hsWxl2z9Eg=;
-        b=jj3HijQzLYeRgJCeix88nIkAIQvPKCBVnA1cgCF9YaycBI2Ppr7wITJHH68VpfqAEA
-         1Wg1UV9E0zE875peYqB1RjqE+htvrl1MUlWvgFfW43l44lQGcPZCqpEBiWIvvtOKLrHa
-         dBSBBOuLdHP2VUNR8ooUqid1zzv0G7G2tQeqPV3JtHtfurvcoTHTKXxI60gCeVgCfoUp
-         1a/sjmSzeyAHh31syE4uSNzK3+Q1WLJdkZlURP8SCz7iRBGdEO8g36SeTgixaoi0Ubqf
-         BppMPIEc+6NbE4mrLjaUAmXgRIvOpm4XulEbQqsX8QBDFfjkV5OufDHELN6VgKmX+g3d
-         fwGw==
-X-Gm-Message-State: AC+VfDwljrEdy2yur1zwWehz1ucZxtI8atk3Mq0uTbjeOLq1s//e5vna
-        yKpY+zIKNI7I7YEbLHmSbkQpRiPbwkxYpbsp8ESzZb+TJFwcq1NxUDL/C5IF5l6PBkYl94o2JBO
-        SjViZlYK9vhZ5wsJw
-X-Received: by 2002:a1c:f706:0:b0:3f2:5028:a54d with SMTP id v6-20020a1cf706000000b003f25028a54dmr4286852wmh.0.1682691649674;
-        Fri, 28 Apr 2023 07:20:49 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ5Ef+6JXTWHdAiFME6ae0mlQwifNq9sneotXxTQMRQu6YRP1y3jjdZfpGN/dZmsrEadhA0T1g==
-X-Received: by 2002:a1c:f706:0:b0:3f2:5028:a54d with SMTP id v6-20020a1cf706000000b003f25028a54dmr4286805wmh.0.1682691649225;
-        Fri, 28 Apr 2023 07:20:49 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c726:9300:1711:356:6550:7502? (p200300cbc72693001711035665507502.dip0.t-ipconnect.de. [2003:cb:c726:9300:1711:356:6550:7502])
-        by smtp.gmail.com with ESMTPSA id z4-20020a05600c0a0400b003ef4cd057f5sm28589070wmp.4.2023.04.28.07.20.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Apr 2023 07:20:48 -0700 (PDT)
-Message-ID: <afcc124e-7a9b-879c-dfdf-200426b84e24@redhat.com>
-Date:   Fri, 28 Apr 2023 16:20:46 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-To:     Lorenzo Stoakes <lstoakes@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Christian Benvenuti <benve@cisco.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Mika Penttila <mpenttil@redhat.com>,
-        David Howells <dhowells@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
+        with ESMTP id S230380AbjD1OZE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 10:25:04 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236562719
+        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 07:25:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1682691903; x=1714227903;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=bqu2pwT8S8wnIEpgjiDAy3mMmERXk25q9d28mK7zubM=;
+  b=dxUgBXjbYu+5U+/5CFnj9pKiyWai+x634tYoJoQict5W7lzFtg8t3pC/
+   dLtUPAVZK/MOd2DrY1ThR0HX/290YyBYesstpJF9bdB+pA3iOkTX+ff1S
+   0gvP+Ht22pLEd0/moa+THGCQ16+UarYR8vhvMS1TlWD8eLb/ff+2cF1M5
+   mCLX9YZiHKgIiqyQ+b2RVDDHoJj5I1HYvf2QfsHtG52yL3H3cV0LE2zNW
+   uOJFDdTnTk3qQardn6l/Bylahn6qcVb+H4NP3xzBhG9s7znSo77dAFqzS
+   wIlt7LMvf3zs1l+M3VHGdHh2ye9Ypze/cn5iRx5QXYR9LPIg5WJoI5bCW
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10694"; a="434051098"
+X-IronPort-AV: E=Sophos;i="5.99,234,1677571200"; 
+   d="scan'208";a="434051098"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2023 07:25:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10694"; a="759664914"
+X-IronPort-AV: E=Sophos;i="5.99,234,1677571200"; 
+   d="scan'208";a="759664914"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga008.fm.intel.com with ESMTP; 28 Apr 2023 07:25:02 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Fri, 28 Apr 2023 07:25:02 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23 via Frontend Transport; Fri, 28 Apr 2023 07:25:02 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.174)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.23; Fri, 28 Apr 2023 07:25:02 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bc7zZkaPaivALbyvSrHhLRt/5/s/Hsy1HOx1gaFHNHo6hrCq8mncG+YdBO75WHBI2KQ5OZxklHGrAulitJbL2aU2B5c+PTcLXRa32UcuFHXqVcu7Y1dCQ6eCoHvezfDk9p6xUiIYLxgk30az//ygiV5hEhWdM8bt6T5JkG/4GdZOKjZVk4egsBXhT5gSyD5j99eKs1O9EoXdli+H4PjTFvYva+HKyArEg1RTcLatmJ6WsLBOc10VuMJB6BF/FsYSu1oMqioDJivDgyKoJbEhao3wB5gxmiv42PSLuD4sKkLwkw7k8u1NF/0ATn7EHcsxX1CboynAKiD0cg5ttfhBYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bqu2pwT8S8wnIEpgjiDAy3mMmERXk25q9d28mK7zubM=;
+ b=j4pV2PrZP84TgQxFBofny21Dr3I0bS30GhiL/IPy5SCwaACg6qWWhtfsvK3Z3ZVmsVXAKyrwtLli2vmOswpwc4kKtC+GGWw8uDuWujsX23CpMhDIFa382azbA7pAImwghrhOkaOoinG3cVQifakYHR3oFQ58a5H8HwiydfZt3f05qrkNeG4a0rbveg563Ht/prDDXjahWJZvLHm/5F2rkVfwgtULaFykZKrqsbZKRC1xMLMeNe/7khiutib7L3KXTQPz6XQCEtO59XqNgNRglD52OhQYc1B0ovS9LRb+ZuFUTM9bXEyC7Bbe98yo2YMGjK3vh2jciaYT0nuHWNrQVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from SJ0PR11MB5008.namprd11.prod.outlook.com (2603:10b6:a03:2d5::17)
+ by PH0PR11MB7711.namprd11.prod.outlook.com (2603:10b6:510:291::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.21; Fri, 28 Apr
+ 2023 14:24:13 +0000
+Received: from SJ0PR11MB5008.namprd11.prod.outlook.com
+ ([fe80::3280:683a:a9d0:c497]) by SJ0PR11MB5008.namprd11.prod.outlook.com
+ ([fe80::3280:683a:a9d0:c497%6]) with mapi id 15.20.6340.022; Fri, 28 Apr 2023
+ 14:24:13 +0000
+From:   "Kumar, M Chetan" <m.chetan.kumar@intel.com>
+To:     Samuel Wein PhD <sam@samwein.com>
+CC:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linuxwwan <linuxwwan@intel.com>
+Subject: RE: NULL pointer dereference when removing xmm7360 PCI device
+Thread-Topic: NULL pointer dereference when removing xmm7360 PCI device
+Thread-Index: AQHZeUxq6D7a9+8L5kqBjQGHxVkp1q9AMnJQgABH5gCAAEuf0A==
+Date:   Fri, 28 Apr 2023 14:24:13 +0000
+Message-ID: <SJ0PR11MB5008B5F59CA94D2C3B0E50CDD76B9@SJ0PR11MB5008.namprd11.prod.outlook.com>
+References: <Yhw4a065te-PH2rfqCYhLt4RZwLJLek2VsfLDrc8TLjfPqxbw6QKbd7L2PwjA81XlBhUr04Nm8-FjfdSsTlkKnIJCcjqHenPx4cbpRLym-U=@samwein.com>
+ <20230427140819.1310f4bd@kernel.org>
+ <SJ0PR11MB5008C45C06B1DDE78A8CC874D76B9@SJ0PR11MB5008.namprd11.prod.outlook.com>
+ <dTcfnhONbF32TfGTW1PwZCTLPv23F7YdudIWGSzoIrQ8Kc0Y1L3l5qlfXn4RvrrRxEDVAkDc5K6rbXf11FNRmteF8RztBMYZ1rkTvdp5R34=@samwein.com>
+In-Reply-To: <dTcfnhONbF32TfGTW1PwZCTLPv23F7YdudIWGSzoIrQ8Kc0Y1L3l5qlfXn4RvrrRxEDVAkDc5K6rbXf11FNRmteF8RztBMYZ1rkTvdp5R34=@samwein.com>
+Accept-Language: en-US
 Content-Language: en-US
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
- by default
-In-Reply-To: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SJ0PR11MB5008:EE_|PH0PR11MB7711:EE_
+x-ms-office365-filtering-correlation-id: 2f2aa5a6-a1f0-40e4-2665-08db47f43d6f
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: IxTfFJgE2doN1k9eBMsDZecOs/rdZnP8R283jgbKv4UhVUGJ+Q+tTnm4xF3V6OOVgFhWegO4gtIdv8Ie8e0HsZSgI+1faw3k53yfJmXBCF7O5GYmqVhgXUScZ9jHvAI6QKcbFtNAB3KRT//ek2X5uTdF2SNBNkNjddVSB/RiCarUB8hhC5kbQqWjSQLZpRUuplkuicg5+kkKVoic5NkkQ7mqZyMdC2yf6J+TZnwEXCTaQd0f7OnUJ4zh3iIYPhqVGF86ypO0um7DZyEjHoNY1RdGxt4jIW9tGAMd38oiJyD6uWwKWNoadhyuOcTQFr87Jp/9PmIj65vW9h64fChrMrs6Zne+qeAx0r5ksRAswdwa4oB9w+E8nkLMtyHudgJUOfqGkUIM8qwWAZR6Ph0DaUFqx4tjZpXBa89hhoIVXbJntY4KHo8JvKwlx7GrI+eYCeoFoUhiaMfIksI59P30XjwxaSYrHbE8Y7E3GxrBPgP8ZkxKFXBnnHheWznO94ddecp55RV+27995/pQDQtqOlSnS/79kppK57xE3J1eEloC/elT/oumZ70tDRQIyRbuQcmJbZ6SoCY95leW1xTNEjvg1HInIecjk0TCgagat4A=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB5008.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(396003)(39860400002)(366004)(376002)(346002)(451199021)(54906003)(83380400001)(478600001)(71200400001)(55016003)(7696005)(6506007)(26005)(9686003)(966005)(107886003)(66476007)(41300700001)(64756008)(66446008)(316002)(66556008)(4326008)(82960400001)(53546011)(186003)(66946007)(6916009)(76116006)(5660300002)(38100700002)(52536014)(8936002)(2906002)(122000001)(38070700005)(8676002)(33656002)(86362001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MktwYVY0ZzRFNXlwd01TQ0gzVnROYmNXaStWdjliWkhaWEZ3TUZsbWFCVWVS?=
+ =?utf-8?B?elRNRlB5YmZ4UFFIblpFWDVhd0paVkx3bE9ZTFNIRHRxZlI3aHNDWjlsdHZN?=
+ =?utf-8?B?T3o0bXFkY0JSc01nclNKRTY5UUE5akFuSDI4WDh0Z3dkTlpZRm0yc2h1Z1hi?=
+ =?utf-8?B?RytBSUI4SjMvSURCWXRoY0lVUThoRDU0ejVIWVB6TTlBbVYvT0dyVmNCclNj?=
+ =?utf-8?B?R25MV1haTDdhZXhrSHFNS3ZPNUluTlRWK2tWSFpCV1pYcWZLeUdsOXBGQ1Iv?=
+ =?utf-8?B?VHBtNy84MDBiTjlmb1FjbHRJKzgrQTIwRzQ5b3J6UGp6Umxvb2V2ZHYrdFFx?=
+ =?utf-8?B?ZVBtVFFlSmRTZjh1UjJwNlZGN3M5ZGZCRVdCSnF2NmJZNGdqeHJzTkZRSzc5?=
+ =?utf-8?B?U3pjdUU4L2NraVI3MlB4eVhocjNNNmFabm10bG9HbktsUHJMRzc5WHFmR1Zr?=
+ =?utf-8?B?WE83dVhGbW95cmt4SVZCcVFzOU9IQVY2UFB3VnMyWHQrQzZ0QU5uekRpRFUy?=
+ =?utf-8?B?dFkvM2cxYnl4TUtBWm1NTFJDUlNLZDZUaUtRUmhOc1M2UERpdVBSZktaN2dH?=
+ =?utf-8?B?MHRlTFZUM2tKcmFIZXZBT3BZTEhkbUZlMjhTeEVPYnR1eXpFaU1rUkJ5VDky?=
+ =?utf-8?B?SjQ3NlJSeVNmUlU4Z0V5Z2lpTWZ5YTU1RmRzL3cwT1BBQ3RMdW5qanNBS1M0?=
+ =?utf-8?B?Q0JuNkR2eW5VWVYzQ1pBSVhOUy9YL1dGZ1pVSlY0S21tRENHRmhnUHdPeVlG?=
+ =?utf-8?B?N3BlMjVDVGV4akVlSmhLN0V1ZGIvSStRRkJuMDVscytFYXlvdmlmZ3k0R09t?=
+ =?utf-8?B?eUxRdnlUcGdVNDVUN2VnNWpsQ3k1bkFnVUpZYjEvQmgrcURNMmU2SSs5Tmsz?=
+ =?utf-8?B?YUtLZmRxbDJYMGcrZHg3cG13dVRQTlJJZ2ZKRWNvd2w0bXZVa2M3dzE5TWVJ?=
+ =?utf-8?B?ZFp4YWJQWmlpYklmOFc3Qk9aaXpNR1BtSk91WWxoSXRwRmVWaGFoWUxrOUJ6?=
+ =?utf-8?B?YkFvZzVUZTUxUE9rYVRkQnRRSkVtOHBmbGZIWWhHQjZodFNwV3R1TXNvUGxq?=
+ =?utf-8?B?ZVNhM0VxTjFmY2lGbXlwUkdBdDNlaWVCSWdmbzUrRFZnOUZiVnEwSFdrWjQ3?=
+ =?utf-8?B?UEZOVjVReUI3U0VGYnQrWnVpMmlNbjZlNlNTYk9xYjBsODl1emRmeVFkZHk5?=
+ =?utf-8?B?bmNUT05vaTl5NWhqQytNVVBsWnFrakNsQmRPOHZUV3g0REttRENtZHlZdXds?=
+ =?utf-8?B?bklFcTQ3SHc0TktDakptQWUxaSthQmxuZWoyQWloclJjUDA5OGpCTndabjMz?=
+ =?utf-8?B?aVBxVGUyekMwdURQdzBRcE83aVZFVTFmTG5IMzFhV0dJU1BqRTlPQ1g4Ym5V?=
+ =?utf-8?B?dlhYelRYcmJpZkQ3bExxNGp3dlQzREpKcyszbTByREQzb215QXkyeHJiR2J4?=
+ =?utf-8?B?cjllTUY5VWV2N0NyLzhoTUQyM0lrZUlCTFgwUjl1bTMzbnlLNXRKanRoSGdN?=
+ =?utf-8?B?UWgxYkxEVzJLbWxMWmUrMHorVHp6eCtNVjhjckJyMzY5QUdzdWk0T09Od2RN?=
+ =?utf-8?B?ZHBxcldqVUdvdThlaWx5ZXFMVVRrbUJKRXNzdExjSXpnMGg5c3FFUnZzNzBR?=
+ =?utf-8?B?a1pZVTVZWXpGYUN1Z3VCbm5WQlJSVWt5SFIxUC92SkVNUVFFQmhFY1Y2dldq?=
+ =?utf-8?B?YkN5SjRLVmpJVGhycThTM2NQUHR2ckZMNmVGVzdiV2gyUmpsRkZuazJTSkNp?=
+ =?utf-8?B?WjdSTkdpZFdVaFl1NG5JMFVoOU1aOWsvUSs0TVVJMjVmWXBJRGN0VkEvZWF1?=
+ =?utf-8?B?emRoZ25lNFlJMjdPSzd5b3owTEx2VkRxM3BwS3VUVklVakh5Tmp0Skt4dTVV?=
+ =?utf-8?B?NnZVSmtoQ3hvOTlobk1QWUQvbGVzVlFxZDdrV2YxTmk0WUFmS1daWDlPSm4z?=
+ =?utf-8?B?SENyNXZQTnduMENDN1NId01OS2VjUHlzNU1HeFRRV281a3BKWHZZcjhDVGNG?=
+ =?utf-8?B?THB0WmtyM0Q4end0K0dFNSs2cUdYMGVlUWI0Nk1XM0RSOFl6VFpGaEZFVmZ3?=
+ =?utf-8?B?aThZNUNEbVBpWm5YT0pCLzdaUStLMjM2UVVtNzVvMkE5THVJZ0srTGhXZDZH?=
+ =?utf-8?Q?PF0AcywZ2NjjvJEDZQCxLB6+Z?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB5008.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f2aa5a6-a1f0-40e4-2665-08db47f43d6f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Apr 2023 14:24:13.1154
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: j0cZxgrvkoT9mR7p4Oc5diwyV8YSkQNVyCJLk8ZzoFSLw2JrFOda9IT08Eui1Ue0W4thsY0RSF8cUF59ABRlgpn6FglDN6LigRIGL2aRNwY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB7711
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for jumping in late, I'm on vacation :)
-
-On 28.04.23 01:42, Lorenzo Stoakes wrote:
-> Writing to file-backed mappings which require folio dirty tracking using
-> GUP is a fundamentally broken operation, as kernel write access to GUP
-> mappings do not adhere to the semantics expected by a file system.
-> 
-> A GUP caller uses the direct mapping to access the folio, which does not
-> cause write notify to trigger, nor does it enforce that the caller marks
-> the folio dirty.
-
-How should we enforce it? It would be a BUG in the GUP user.
-
-> 
-> The problem arises when, after an initial write to the folio, writeback
-> results in the folio being cleaned and then the caller, via the GUP
-> interface, writes to the folio again.
-> 
-> As a result of the use of this secondary, direct, mapping to the folio no
-> write notify will occur, and if the caller does mark the folio dirty, this
-> will be done so unexpectedly.
-
-Right, in mprotect() code we only allow upgrading write permissions in 
-this case if the pte is dirty, so we always go via the pagefault path.
-
-> 
-> For example, consider the following scenario:-
-> 
-> 1. A folio is written to via GUP which write-faults the memory, notifying
->     the file system and dirtying the folio.
-> 2. Later, writeback is triggered, resulting in the folio being cleaned and
->     the PTE being marked read-only.
-
-
-How would that be triggered? Would that writeback triggered by e.g., 
-fsync that Jan tried to tackle recently?
-
-
-> 3. The GUP caller writes to the folio, as it is mapped read/write via the
->     direct mapping.
-> 4. The GUP caller, now done with the page, unpins it and sets it dirty
->     (though it does not have to).
-> 
-> This results in both data being written to a folio without writenotify, and
-> the folio being dirtied unexpectedly (if the caller decides to do so).
-> 
-> This issue was first reported by Jan Kara [1] in 2018, where the problem
-> resulted in file system crashes.
-> 
-> This is only relevant when the mappings are file-backed and the underlying
-> file system requires folio dirty tracking. File systems which do not, such
-> as shmem or hugetlb, are not at risk and therefore can be written to
-> without issue.
-> 
-> Unfortunately this limitation of GUP has been present for some time and
-> requires future rework of the GUP API in order to provide correct write
-> access to such mappings.
-> 
-> However, for the time being we introduce this check to prevent the most
-> egregious case of this occurring, use of the FOLL_LONGTERM pin.
-> 
-> These mappings are considerably more likely to be written to after
-> folios are cleaned and thus simply must not be permitted to do so.
-> 
-> As part of this change we separate out vma_needs_dirty_tracking() as a
-> helper function to determine this which is distinct from
-> vma_wants_writenotify() which is specific to determining which PTE flags to
-> set.
-> 
-> [1]:https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz/
-> 
-
-
-This change has the potential to break existing setups. Simple example: 
-libvirt domains configured for file-backed VM memory that also has a 
-vfio device configured. It can easily be configured by users (evolving 
-VM configuration, copy-paste etc.). And it works from a VM perspective, 
-because the guest memory is essentially stale once the VM is shutdown 
-and the pages were unpinned. At least we're not concerned about stale 
-data on disk.
-
-With your changes, such VMs would no longer start, breaking existing 
-user setups with a kernel update.
-
-I don't really see a lot of reasons to perform this change now. It's 
-been known to be problematic for a long time. People are working on a 
-fix (I see Jan is already CCed, CCing Dave and Christop). FOLL_LONGTERM 
-check is only handling some of the problematic cases, so it's not even a 
-complete blocker.
-
-I know, Jason und John will disagree, but I don't think we want to be 
-very careful with changing the default.
-
-Sure, we could warn, or convert individual users using a flag 
-(io_uring). But maybe we should invest more energy on a fix?
-
-
-
-
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Lorenzo Stoakes <lstoakes@gmail.com>
-> ---
->   include/linux/mm.h |  1 +
->   mm/gup.c           | 41 ++++++++++++++++++++++++++++++++++++++++-
->   mm/mmap.c          | 36 +++++++++++++++++++++++++++---------
->   3 files changed, 68 insertions(+), 10 deletions(-)
-> 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index 37554b08bb28..f7da02fc89c6 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -2433,6 +2433,7 @@ extern unsigned long move_page_tables(struct vm_area_struct *vma,
->   #define  MM_CP_UFFD_WP_ALL                 (MM_CP_UFFD_WP | \
->   					    MM_CP_UFFD_WP_RESOLVE)
-> 
-> +bool vma_needs_dirty_tracking(struct vm_area_struct *vma);
->   int vma_wants_writenotify(struct vm_area_struct *vma, pgprot_t vm_page_prot);
->   static inline bool vma_wants_manual_pte_write_upgrade(struct vm_area_struct *vma)
->   {
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 1f72a717232b..d36a5db9feb1 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -959,16 +959,51 @@ static int faultin_page(struct vm_area_struct *vma,
->   	return 0;
->   }
-> 
-> +/*
-> + * Writing to file-backed mappings which require folio dirty tracking using GUP
-> + * is a fundamentally broken operation, as kernel write access to GUP mappings
-> + * do not adhere to the semantics expected by a file system.
-> + *
-> + * Consider the following scenario:-
-> + *
-> + * 1. A folio is written to via GUP which write-faults the memory, notifying
-> + *    the file system and dirtying the folio.
-> + * 2. Later, writeback is triggered, resulting in the folio being cleaned and
-> + *    the PTE being marked read-only.
-> + * 3. The GUP caller writes to the folio, as it is mapped read/write via the
-> + *    direct mapping.
-> + * 4. The GUP caller, now done with the page, unpins it and sets it dirty
-> + *    (though it does not have to).
-> + *
-> + * This results in both data being written to a folio without writenotify, and
-> + * the folio being dirtied unexpectedly (if the caller decides to do so).
-> + */
-> +static bool writeable_file_mapping_allowed(struct vm_area_struct *vma,
-> +					   unsigned long gup_flags)
-> +{
-> +	/* If we aren't pinning then no problematic write can occur. */
-> +	if (!(gup_flags & (FOLL_GET | FOLL_PIN)))
-> +		return true;
-
-FOLL_LONGTERM only applies to FOLL_PIN. This check can be dropped.
-
-> +
-> +	/* We limit this check to the most egregious case - a long term pin. */
-> +	if (!(gup_flags & FOLL_LONGTERM))
-> +		return true;
-> +
-> +	/* If the VMA requires dirty tracking then GUP will be problematic. */
-> +	return vma_needs_dirty_tracking(vma);
-> +}
-> +
->   static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
->   {
->   	vm_flags_t vm_flags = vma->vm_flags;
->   	int write = (gup_flags & FOLL_WRITE);
->   	int foreign = (gup_flags & FOLL_REMOTE);
-> +	bool vma_anon = vma_is_anonymous(vma);
-> 
->   	if (vm_flags & (VM_IO | VM_PFNMAP))
->   		return -EFAULT;
-> 
-> -	if (gup_flags & FOLL_ANON && !vma_is_anonymous(vma))
-> +	if ((gup_flags & FOLL_ANON) && !vma_anon)
->   		return -EFAULT;
-> 
->   	if ((gup_flags & FOLL_LONGTERM) && vma_is_fsdax(vma))
-> @@ -978,6 +1013,10 @@ static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
->   		return -EFAULT;
-> 
->   	if (write) {
-> +		if (!vma_anon &&
-> +		    !writeable_file_mapping_allowed(vma, gup_flags))
-> +			return -EFAULT;
-> +
->   		if (!(vm_flags & VM_WRITE)) {
->   			if (!(gup_flags & FOLL_FORCE))
->   				return -EFAULT;
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index 536bbb8fa0ae..7b6344d1832a 100644
-> --- a/mm/mmap.c
-
-
-I'm probably missing something, why don't we have to handle GUP-fast 
-(having said that, it's hard to handle ;) )? The sequence you describe 
-above should apply to GUP-fast as well, no?
-
-1) Pin writable mapped page using GUP-fast
-2) Trigger writeback
-3) Write to page via pin
-4) Unpin and set dirty
-
-
--- 
-Thanks,
-
-David / dhildenb
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBTYW11ZWwgV2VpbiBQaEQgPHNh
+bUBzYW13ZWluLmNvbT4NCj4gU2VudDogRnJpZGF5LCBBcHJpbCAyOCwgMjAyMyAzOjE4IFBNDQo+
+IFRvOiBLdW1hciwgTSBDaGV0YW4gPG0uY2hldGFuLmt1bWFyQGludGVsLmNvbT4NCj4gQ2M6IEph
+a3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBs
+aW51eHd3YW4NCj4gPGxpbnV4d3dhbkBpbnRlbC5jb20+DQo+IFN1YmplY3Q6IFJFOiBOVUxMIHBv
+aW50ZXIgZGVyZWZlcmVuY2Ugd2hlbiByZW1vdmluZyB4bW03MzYwIFBDSSBkZXZpY2UNCj4gDQo+
+IEkndmUgYWRkZWQgdGhlIGZ1bGwgc2V0IG9mIGxvZ3MgdG8gdGhlIGdpc3QuIFRoZSBzZXF1ZW5j
+ZSB3YXM6DQo+IGJvb3QgUEMNCj4gc3VzcGVuZCBQQw0KPiByZXN1bWUgUEMNCj4gcmVwZWF0IHRo
+ZSBmb2xsb3dpbmcgc2V2ZXJhbCAoaXQgdmFyaWVzKSB0aW1lcyB1bnRpbCB0aGUgZXJyb3I6DQo+
+IGBzdWRvIGVjaG8gMSA+IC9zeXMvZGV2aWNlcy9wY2kwMDAwOjAwLzAwMDA6MDA6MWMuMC8wMDAw
+OjAyOjAwLjAvcmVtb3ZlYA0KPiBgZWNobyAxID4gL3N5cy9kZXZpY2VzL3BjaTAwMDA6MDAvMDAw
+MDowMDoxYy4wL3Jlc2NhbmANCj4gDQo+IFRoZSBYTU03MzYwIGNhcmQgZG9lc24ndCByZXN1bWUg
+cHJvcGVybHkgZnJvbSBzdXNwZW5kLCB3aXRoIHRoZSBBVA0KPiBkZXZpY2VzIG5vdCByZXNwb25k
+aW5nIHRvIGFueSBjb21tYW5kcy4gSSd2ZSBiZWVuIHdvcmtpbmcgb2ZmIG9mIHNvbWUgb2YNCj4g
+U2hhbmUgUGFyc2xvdydzIGNvZGUgdG8gdHJ5IHRvIGdldCBNb2RlbU1hbmFnZXIgY29udHJvbCBv
+ZiB0aGUgZGV2aWNlIGFuZA0KPiB3YXMgYmFzaWNhbGx5IHRyeWluZyBhIGJ1bmNoIG9mIHdheXMg
+dG8gdHJ5IHRvIHJlc2V0IHRoZSBjYXJkLCB0aGlzIG9uZSBjbGVhcmx5DQo+IGRpZG4ndCB3b3Jr
+LCBidXQgaXQgYWxzbyBjbGVhcmx5IGV4cG9zZWQgc29tZSB3ZWlyZG5lc3MgaW4gaG93IHRoZSBr
+ZXJuZWwNCj4gaGFuZGxlZCB0aGUgYXR0ZW1wdC4gVGhlIGZhY3QgdGhhdCB0aGVyZSBpcyBub3Qg
+YSBwcm9wZXIgTUJJTSBpbnRlcmZhY2UgZm9yDQo+IHRoaXMgY2FyZCByZWFsbHkgbWFrZXMgbWFu
+YWdpbmcgaXQgZGlmZmljdWx0Lg0KPiANCj4gDQo+IC0tLS0tLS0gT3JpZ2luYWwgTWVzc2FnZSAt
+LS0tLS0tDQo+IE9uIEZyaWRheSwgQXByaWwgMjh0aCwgMjAyMyBhdCAxMToyMSBBTSwgS3VtYXIs
+IE0gQ2hldGFuDQo+IDxtLmNoZXRhbi5rdW1hckBpbnRlbC5jb20+IHdyb3RlOg0KPiANCj4gDQo+
+ID4NCj4gPg0KPiA+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPg0KPiA+ID4gRnJv
+bTogSmFrdWIgS2ljaW5za2kga3ViYUBrZXJuZWwub3JnDQo+ID4gPiBTZW50OiBGcmlkYXksIEFw
+cmlsIDI4LCAyMDIzIDI6MzggQU0NCj4gPiA+IFRvOiBLdW1hciwgTSBDaGV0YW4gbS5jaGV0YW4u
+a3VtYXJAaW50ZWwuY29tDQo+ID4gPiBDYzogU2FtdWVsIFdlaW4gUGhEIHNhbUBzYW13ZWluLmNv
+bTsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsNCj4gPiA+IGxpbnV4d3dhbiBsaW51eHd3YW5AaW50
+ZWwuY29tDQo+ID4gPiBTdWJqZWN0OiBSZTogTlVMTCBwb2ludGVyIGRlcmVmZXJlbmNlIHdoZW4g
+cmVtb3ZpbmcgeG1tNzM2MCBQQ0kNCj4gPiA+IGRldmljZQ0KPiA+ID4NCj4gPiA+IE9uIFRodSwg
+MjcgQXByIDIwMjMgMTA6MzE6MjkgKzAwMDAgU2FtdWVsIFdlaW4gUGhEIHdyb3RlOg0KPiA+ID4N
+Cj4gPiA+ID4gSGkgRm9sa3MsDQo+ID4gPiA+IEkndmUgYmVlbiB0cnlpbmcgdG8gZ2V0IHRoZSB4
+bW03MzYwIHdvcmtpbmcgd2l0aCBJT1NNIGFuZCB0aGUNCj4gPiA+ID4gTW9kZW1NYW5hZ2VyLiBU
+aGlzIGhhcyBiZWVuIHdoYXQgbXkgaGlnaHNjaG9vbCBhZHZpc29yIHdvdWxkIGNhbGwNCj4gPiA+
+ID4gYSAibGVhcm5pbmcgcHJvY2VzcyIuDQo+ID4gPiA+IFdoZW4gdHJ5aW5nIGBlY2hvIDEgPg0K
+PiA+ID4gPiAvc3lzL2RldmljZXMvcGNpMDAwMDowMC8wMDAwOjAwOjFjLjAvMDAwMDowMjowMC4w
+L3JlbW92ZWAgSSBnZXQgYQ0KPiA+ID4gPiB2YXJpZXR5IG9mIGVycm9ycy4gT25lIG9mIHRoZXNl
+IGlzIGEga2VybmVsIGVycm9yDQo+ID4gPiA+IGAyMDIzLTA0LTI3VDEyOjIzOjM4LjkzNzIyMysw
+MjowMCBOYXNlIGtlcm5lbDogWyA1ODcuOTk3NDMwXSBCVUc6DQo+ID4gPiA+IGtlcm5lbCBOVUxM
+IHBvaW50ZXIgZGVyZWZlcmVuY2UsIGFkZHJlc3M6IDAwMDAwMDAwMDAwMDAwNDgNCj4gPiA+ID4g
+MjAyMy0wNC0yN1QxMjoyMzozOC45MzcyMzcrMDI6MDAgTmFzZSBrZXJuZWw6IFsgNTg3Ljk5NzQ0
+N10gI1BGOg0KPiA+ID4gPiBzdXBlcnZpc29yIHJlYWQgYWNjZXNzIGluIGtlcm5lbCBtb2RlDQo+
+ID4gPiA+IDIwMjMtMDQtMjdUMTI6MjM6MzguOTM3MjM4KzAyOjAwIE5hc2Uga2VybmVsOiBbIDU4
+Ny45OTc0NTVdICNQRjoNCj4gPiA+ID4gZXJyb3JfY29kZSgweDAwMDApIC0gbm90LXByZXNlbnQg
+cGFnZQ0KPiA+ID4gPiAyMDIzLTA0LTI3VDEyOjIzOjM4LjkzNzI0MSswMjowMCBOYXNlIGtlcm5l
+bDogWyA1ODcuOTk3NDYzXSBQR0QgMA0KPiA+ID4gPiBQNEQgMCAyMDIzLTA0LTI3VDEyOjIzOjM4
+LjkzNzI0MiswMjowMCBOYXNlIGtlcm5lbDogWyA1ODcuOTk3NDc2XQ0KPiA+ID4gPiBPb3BzOiAw
+MDAwIFsjMV0gUFJFRU1QVCBTTVAgTk9QVEkgMjAyMy0wNC0NCj4gMjdUMTI6MjM6MzguOTM3MjQy
+KzAyOjAwDQo+ID4gPiA+IE5hc2Uga2VybmVsOiBbIDU4Ny45OTc0ODldIENQVTogMSBQSUQ6IDQ3
+NjcgQ29tbTogYmFzaCBOb3QgdGFpbnRlZA0KPiA+ID4gPiA2LjMuMC0wNjAzMDAtZ2VuZXJpYyAj
+MjAyMzA0MjMyMDMwIC4uLmAgdGhlIGZ1bGwgbG9nIGlzIGF2YWlsYWJsZQ0KPiA+ID4gPiBhdA0K
+PiA+ID4gPiBodHRwczovL2dpc3QuZ2l0aHViLmNvbS9wb3NodWwvMGM1ZmZiZGU2MTA2YTcxYWRj
+YmMxMzJkODI4ZGJjZDcNCj4gPiA+ID4NCj4gPiA+ID4gU3RlcHMgdG8gcmVwcm9kdWNlOiBCb290
+IGRldmljZSB3aXRoIHhtbTczNjAgaW5zdGFsbGVkIGFuZCBpbiBQQ0kNCj4gPiA+ID4gbW9kZSwg
+cGxhY2UgaW50byBzdXNwZW5kLiBSZXN1bWUsIGFuZCBzdGFydCBpc3N1aW5nIHJlc2V0L3JlbW92
+ZQ0KPiA+ID4gPiBjb21tYW5kcyB0byB0aGUgUENJIGludGVyZmFjZSAod2l0aG91dCBwcm9wZXJs
+eSB1bmxvYWRpbmcgdGhlIElPU00NCj4gbW9kdWxlIGZpcnN0KS4NCj4gPiA+ID4NCj4gPiA+ID4g
+SSdtIG5vdCBzdXJlIGhvdyB3aWRlbHkgYXBwbGljYWJsZSB0aGlzIGlzIGJ1dCB3YW50ZWQgdG8g
+YXQgbGVhc3QgcmVwb3J0DQo+IGl0Lg0KPiA+ID4NCj4gPiA+IEludGVsIGZvbGtzLCBQVEFMLg0K
+PiA+DQo+ID4NCj4gPiBJIHRyaWVkIHJlcHJvZHVjaW5nIHRoZSBpc3N1ZSBieSBmb2xsb3dpbmcg
+dGhlIHN0ZXBzIHlvdSBtZW50aW9uZWQgYnV0DQo+ID4gc28gZmFyIGNvdWxkIG5vdCByZXByb2R1
+Y2UgaXQuIENvdWxkIHlvdSBwbGVhc2Ugc2hhcmUgdGhlIGxvZ3MgZnJvbSBib290LXVwDQo+IGFu
+ZCBwcm9jZWR1cmUgeW91IGNhcnJpZWQgb3V0IGluIHN0ZXBzLg0KPiA+DQo+ID4gT25jZSB5b3Ug
+Ym9vdC11cCB0aGUgbGFwdG9wLCBkcml2ZXIgd2lsbCBiZSBpbiB3b3JraW5nIGNvbmRpdGlvbiB3
+aHkNCj4gZGV2aWNlIHJlbW92YWwgPw0KDQpUaGVyZSBzZWVtcyB0byBiZSBzb21lIGlzc3VlIGF0
+IGRldmljZSBzaWRlIGR1ZSB0byB3aGljaCBjb21tdW5pY2F0aW9uIGlzIG5vdA0KZ2V0dGluZyBy
+ZXN0b3JlZCBhZnRlciBzdXNwZW5kIGV4aXQuDQoNCkF0IHNvbWUgcG9pbnQgZGV2aWNlIGNvbW11
+bmljYXRpb24gaXMgYnJva2VuIGFuZCB3d2FuIGlzIG5vdCBpbml0aWFsaXplZC4NCkluIHJlbW92
+ZSBwYXRoLCBhY2Nlc3Npbmcgd3dhbiB0byByZWxlYXNlIHJlc291cmNlIGlzIGxlYWRpbmcgdG8g
+TlVMTCBwb2ludGVyDQpleGNlcHRpb24uDQoNCkVycm9yIGhhbmRsaW5nIG5lZWQgdG8gYmUgY29y
+cmVjdGVkLiBUcnkgdGhlIHBhdGNoIFsxXSBpdCBzaG91bGQgZml4Lg0KDQpBbm90aGVyIHRoaW5n
+IGZvciByZXN0b3JpbmcgdGhlIGNvbW11bmljYXRpb24gZnJvbSBzdWNoIHN0YXRlLCByZW1vdmUg
+YW5kIHJlc2NhbiBpcw0Kbm90IGVub3VnaCB5b3UgbWF5IGhhdmUgdG8gZm9sbG93IGJlbG93IHBy
+b2NlZHVyZSBmb3IgYSBncmFjZWZ1bCByZWNvdmVyLg0KDQplY2hvIDEgPiAvc3lzL2J1cy9wY2kv
+ZHJpdmVycy9pb3NtLzAwMDA6MDE6MDAuMC9yZXNldCAJCS0+IHJlcGxhY2UgQkRGDQplY2hvIDEg
+PiAvc3lzL2J1cy9wY2kvZHJpdmVycy9pb3NtLzAwMDA6MDE6MDAuMC9yZW1vdmUNCmVjaG8gMSA+
+IC9zeXMvYnVzL3BjaS9yZXNjYW4NCg0KWzFdDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd3dh
+bi9pb3NtL2lvc21faXBjX2ltZW0uYyBiL2RyaXZlcnMvbmV0L3d3YW4vaW9zbS9pb3NtX2lwY19p
+bWVtLmMNCmluZGV4IGMwNjZiMDA0MGEzZi4uMGI0ZWZkMjU3MWRkIDEwMDY0NA0KLS0tIGEvZHJp
+dmVycy9uZXQvd3dhbi9pb3NtL2lvc21faXBjX2ltZW0uYw0KKysrIGIvZHJpdmVycy9uZXQvd3dh
+bi9pb3NtL2lvc21faXBjX2ltZW0uYw0KQEAgLTU2NSwyNCArNTY1LDMyIEBAIHN0YXRpYyB2b2lk
+IGlwY19pbWVtX3J1bl9zdGF0ZV93b3JrZXIoc3RydWN0IHdvcmtfc3RydWN0ICppbnN0YW5jZSkN
+CiAJc3RydWN0IGlwY19tdXhfY29uZmlnIG11eF9jZmc7DQogCXN0cnVjdCBpb3NtX2ltZW0gKmlw
+Y19pbWVtOw0KIAl1OCBjdHJsX2NobF9pZHggPSAwOw0KKwlpbnQgcmV0Ow0KIA0KIAlpcGNfaW1l
+bSA9IGNvbnRhaW5lcl9vZihpbnN0YW5jZSwgc3RydWN0IGlvc21faW1lbSwgcnVuX3N0YXRlX3dv
+cmtlcik7DQogDQogCWlmIChpcGNfaW1lbS0+cGhhc2UgIT0gSVBDX1BfUlVOKSB7DQogCQlkZXZf
+ZXJyKGlwY19pbWVtLT5kZXYsDQogCQkJIk1vZGVtIGxpbmsgZG93bi4gRXhpdCBydW4gc3RhdGUg
+d29ya2VyLiIpOw0KLQkJcmV0dXJuOw0KKwkJZ290byBlcnJfY3BfcGhhc2U7DQogCX0NCiANCiAJ
+aWYgKHRlc3RfYW5kX2NsZWFyX2JpdChJT1NNX0RFVkxJTktfSU5JVCwgJmlwY19pbWVtLT5mbGFn
+KSkNCiAJCWlwY19kZXZsaW5rX2RlaW5pdChpcGNfaW1lbS0+aXBjX2RldmxpbmspOw0KIA0KLQlp
+ZiAoIWlwY19pbWVtX3NldHVwX2NwX211eF9jYXBfaW5pdChpcGNfaW1lbSwgJm11eF9jZmcpKQ0K
+LQkJaXBjX2ltZW0tPm11eCA9IGlwY19tdXhfaW5pdCgmbXV4X2NmZywgaXBjX2ltZW0pOw0KKwly
+ZXQgPSBpcGNfaW1lbV9zZXR1cF9jcF9tdXhfY2FwX2luaXQoaXBjX2ltZW0sICZtdXhfY2ZnKTsN
+CisJaWYgKHJldCA8IDApDQorCQlnb3RvIGVycl9jYXBfaW5pdDsNCisNCisJaXBjX2ltZW0tPm11
+eCA9IGlwY19tdXhfaW5pdCgmbXV4X2NmZywgaXBjX2ltZW0pOw0KKwlpZiAoIWlwY19pbWVtLT5t
+dXgpDQorCQlnb3RvIGVycl9tdXhfaW5pdDsNCisNCisJcmV0ID0gaXBjX2ltZW1fd3dhbl9jaGFu
+bmVsX2luaXQoaXBjX2ltZW0sIG11eF9jZmcucHJvdG9jb2wpOw0KKwlpZiAocmV0IDwgMCkNCisJ
+CWdvdG8gZXJyX2NoYW5uZWxfaW5pdDsNCiANCi0JaXBjX2ltZW1fd3dhbl9jaGFubmVsX2luaXQo
+aXBjX2ltZW0sIG11eF9jZmcucHJvdG9jb2wpOw0KLQlpZiAoaXBjX2ltZW0tPm11eCkNCi0JCWlw
+Y19pbWVtLT5tdXgtPnd3YW4gPSBpcGNfaW1lbS0+d3dhbjsNCisJaXBjX2ltZW0tPm11eC0+d3dh
+biA9IGlwY19pbWVtLT53d2FuOw0KIA0KIAl3aGlsZSAoY3RybF9jaGxfaWR4IDwgSVBDX01FTV9N
+QVhfQ0hBTk5FTFMpIHsNCiAJCWlmICghaXBjX2NobmxfY2ZnX2dldCgmY2hubF9jZmdfcG9ydCwg
+Y3RybF9jaGxfaWR4KSkgew0KQEAgLTYyMiw2ICs2MzAsMTUgQEAgc3RhdGljIHZvaWQgaXBjX2lt
+ZW1fcnVuX3N0YXRlX3dvcmtlcihzdHJ1Y3Qgd29ya19zdHJ1Y3QgKmluc3RhbmNlKQ0KIA0KIAkv
+KiBDb21wbGV0ZSBhbGwgbWVtb3J5IHN0b3JlcyBhZnRlciBzZXR0aW5nIGJpdCAqLw0KIAlzbXBf
+bWJfX2FmdGVyX2F0b21pYygpOw0KKw0KKwlyZXR1cm47DQorDQorZXJyX2NoYW5uZWxfaW5pdDoN
+CisJaXBjX211eF9kZWluaXQoaXBjX2ltZW0tPm11eCk7DQorZXJyX211eF9pbml0Og0KK2Vycl9j
+YXBfaW5pdDoNCitlcnJfY3BfcGhhc2U6DQorCWlwY191ZXZlbnRfc2VuZChpcGNfaW1lbS0+ZGV2
+LCBVRVZFTlRfQ0RfUkVBRFlfTElOS19ET1dOKTsNCiB9DQogDQogc3RhdGljIHZvaWQgaXBjX2lt
+ZW1faGFuZGxlX2lycShzdHJ1Y3QgaW9zbV9pbWVtICppcGNfaW1lbSwgaW50IGlycSkNCmRpZmYg
+LS1naXQgYS9kcml2ZXJzL25ldC93d2FuL2lvc20vaW9zbV9pcGNfaW1lbV9vcHMuYyBiL2RyaXZl
+cnMvbmV0L3d3YW4vaW9zbS9pb3NtX2lwY19pbWVtX29wcy5jDQppbmRleCA2NmI5MGNjNGMzNDYu
+LjEwOWNmODkzMDQ4OCAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L3d3YW4vaW9zbS9pb3NtX2lw
+Y19pbWVtX29wcy5jDQorKysgYi9kcml2ZXJzL25ldC93d2FuL2lvc20vaW9zbV9pcGNfaW1lbV9v
+cHMuYw0KQEAgLTc3LDggKzc3LDggQEAgaW50IGlwY19pbWVtX3N5c193d2FuX3RyYW5zbWl0KHN0
+cnVjdCBpb3NtX2ltZW0gKmlwY19pbWVtLA0KIH0NCiANCiAvKiBJbml0aWFsaXplIHd3YW4gY2hh
+bm5lbCAqLw0KLXZvaWQgaXBjX2ltZW1fd3dhbl9jaGFubmVsX2luaXQoc3RydWN0IGlvc21faW1l
+bSAqaXBjX2ltZW0sDQotCQkJCWVudW0gaXBjX211eF9wcm90b2NvbCBtdXhfdHlwZSkNCitpbnQg
+aXBjX2ltZW1fd3dhbl9jaGFubmVsX2luaXQoc3RydWN0IGlvc21faW1lbSAqaXBjX2ltZW0sDQor
+CQkJICAgICAgIGVudW0gaXBjX211eF9wcm90b2NvbCBtdXhfdHlwZSkNCiB7DQogCXN0cnVjdCBp
+cGNfY2hubF9jZmcgY2hubF9jZmcgPSB7IDAgfTsNCiANCkBAIC04Nyw3ICs4Nyw3IEBAIHZvaWQg
+aXBjX2ltZW1fd3dhbl9jaGFubmVsX2luaXQoc3RydWN0IGlvc21faW1lbSAqaXBjX2ltZW0sDQog
+CS8qIElmIG1vZGVtIHZlcnNpb24gaXMgaW52YWxpZCAoMHhmZmZmZmZmZiksIGRvIG5vdCBpbml0
+aWFsaXplIFdXQU4uICovDQogCWlmIChpcGNfaW1lbS0+Y3BfdmVyc2lvbiA9PSAtMSkgew0KIAkJ
+ZGV2X2VycihpcGNfaW1lbS0+ZGV2LCAiaW52YWxpZCBDUCB2ZXJzaW9uIik7DQotCQlyZXR1cm47
+DQorCQlyZXR1cm4gLUVJTzsNCiAJfQ0KIA0KIAlpcGNfY2hubF9jZmdfZ2V0KCZjaG5sX2NmZywg
+aXBjX2ltZW0tPm5yX29mX2NoYW5uZWxzKTsNCkBAIC0xMDQsOSArMTA0LDEzIEBAIHZvaWQgaXBj
+X2ltZW1fd3dhbl9jaGFubmVsX2luaXQoc3RydWN0IGlvc21faW1lbSAqaXBjX2ltZW0sDQogDQog
+CS8qIFdXQU4gcmVnaXN0cmF0aW9uLiAqLw0KIAlpcGNfaW1lbS0+d3dhbiA9IGlwY193d2FuX2lu
+aXQoaXBjX2ltZW0sIGlwY19pbWVtLT5kZXYpOw0KLQlpZiAoIWlwY19pbWVtLT53d2FuKQ0KKwlp
+ZiAoIWlwY19pbWVtLT53d2FuKSB7DQogCQlkZXZfZXJyKGlwY19pbWVtLT5kZXYsDQogCQkJImZh
+aWxlZCB0byByZWdpc3RlciB0aGUgaXBjX3d3YW4gaW50ZXJmYWNlcyIpOw0KKwkJcmV0dXJuIC1F
+Tk9NRU07DQorCX0NCisNCisJcmV0dXJuIDA7DQogfQ0KIA0KIC8qIE1hcCBTS0IgdG8gRE1BIGZv
+ciB0cmFuc2ZlciAqLw0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3d3YW4vaW9zbS9pb3NtX2lw
+Y19pbWVtX29wcy5oIGIvZHJpdmVycy9uZXQvd3dhbi9pb3NtL2lvc21faXBjX2ltZW1fb3BzLmgN
+CmluZGV4IGY4YWZiMjE3ZDllMi4uMDI2YzViZDBmOTk5IDEwMDY0NA0KLS0tIGEvZHJpdmVycy9u
+ZXQvd3dhbi9pb3NtL2lvc21faXBjX2ltZW1fb3BzLmgNCisrKyBiL2RyaXZlcnMvbmV0L3d3YW4v
+aW9zbS9pb3NtX2lwY19pbWVtX29wcy5oDQpAQCAtOTEsOSArOTEsMTEgQEAgaW50IGlwY19pbWVt
+X3N5c193d2FuX3RyYW5zbWl0KHN0cnVjdCBpb3NtX2ltZW0gKmlwY19pbWVtLCBpbnQgaWZfaWQs
+DQogICoJCQkJTVVYLg0KICAqIEBpcGNfaW1lbToJCVBvaW50ZXIgdG8gaW9zbV9pbWVtIHN0cnVj
+dC4NCiAgKiBAbXV4X3R5cGU6CQlUeXBlIG9mIG11eCBwcm90b2NvbC4NCisgKg0KKyAqIFJldHVy
+bjogMCBvbiBzdWNjZXNzIGFuZCBmYWlsdXJlIHZhbHVlIG9uIGVycm9yDQogICovDQotdm9pZCBp
+cGNfaW1lbV93d2FuX2NoYW5uZWxfaW5pdChzdHJ1Y3QgaW9zbV9pbWVtICppcGNfaW1lbSwNCi0J
+CQkJZW51bSBpcGNfbXV4X3Byb3RvY29sIG11eF90eXBlKTsNCitpbnQgaXBjX2ltZW1fd3dhbl9j
+aGFubmVsX2luaXQoc3RydWN0IGlvc21faW1lbSAqaXBjX2ltZW0sDQorCQkJICAgICAgIGVudW0g
+aXBjX211eF9wcm90b2NvbCBtdXhfdHlwZSk7DQogDQogLyoqDQogICogaXBjX2ltZW1fc3lzX2Rl
+dmxpbmtfb3BlbiAtIE9wZW4gYSBGbGFzaC9DRCBDaGFubmVsIGxpbmsgdG8gQ1ANCg==
