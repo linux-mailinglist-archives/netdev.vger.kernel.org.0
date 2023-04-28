@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99E816F0F80
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 02:21:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C16476F0F83
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 02:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344492AbjD1AVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Apr 2023 20:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
+        id S1344321AbjD1AVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Apr 2023 20:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344467AbjD1AVV (ORCPT
+        with ESMTP id S1344468AbjD1AVV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 27 Apr 2023 20:21:21 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F983C32;
-        Thu, 27 Apr 2023 17:20:54 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 33RIQE0Z006026;
-        Thu, 27 Apr 2023 17:20:41 -0700
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF074213;
+        Thu, 27 Apr 2023 17:20:55 -0700 (PDT)
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.17.1.19/8.17.1.19) with ESMTP id 33RIPnkG007961;
+        Thu, 27 Apr 2023 17:20:44 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=s2048-2021-q4;
- bh=+ZNcGqkDhy4F1/tl8AzWuVHCcH6zyv2z92GL4wmYWTc=;
- b=Nhvfan3B9z8+orBKTj6fRoQBMaYSIJp+OM5WckVtpCrZLwkPr4gbsXweWQCM6RycUFhP
- mYUg18rdVZL5eqQ/W3esv//q6sdvrN+110s8p/58bfKDMDlIr9toIK/+B+ypjEBMQ0m9
- tK9k0hFuVkeuGBlhp37LxBAvAVDzT3ccLQiv2mt/zdRbw2U0m7ZRiKn/mub//N8UaMhx
- i2nx2iAck5dsQQgGFZ9VOOwtcXcTkJnVu7XaeD0rdZbte/onjR7uVDwW3zWjXh+3fun1
- rrv2Kg0cB5ZZku4giHdhWNSxlJ+g32yU/s3PlNuKDMT+DtRmn+AeYWHVag9xJp86bHYU bg== 
+ bh=unCD3Aymvo17/Xi/Iyan24IV8URDNQJI1oP/HJ/5XEg=;
+ b=RDxTbRYQ35Sy5b878d3gdIYK+k205uZU9+2MemW74L96VOIooalObC4m3Xv4kcY8SECF
+ 4xmZW/VQeXvsB3KdTf4EA0VlbL+1ShU32fyxtpplJ4PrGi3SQAhJooNtZF7xayI0lH6L
+ ngc0j1pxA0YS85kVDewG+YgxGNongahoa5QqQAFze/jClL2N6LUBzLmr5Y0mg4uAMLVU
+ 5+lJk2lk+xdcKKjhwOgoJw55iNEgOi2JhjHkTofN/z8/ocGgRdtR54O/NvyR9+5CAqsT
+ OeosF+5yaL/jWiZEWDeMR5/E6bFFO42NUlkOyE1f8yE45Og2l3mBfV2whCs++uPxe1zf qw== 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3q7ebf0ts8-1
+        by m0089730.ppops.net (PPS) with ESMTPS id 3q7utb3r2h-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 27 Apr 2023 17:20:41 -0700
+        Thu, 27 Apr 2023 17:20:44 -0700
 Received: from devvm1736.cln0.facebook.com (2620:10d:c085:108::4) by
  mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server id
- 15.1.2507.23; Thu, 27 Apr 2023 17:20:38 -0700
+ 15.1.2507.23; Thu, 27 Apr 2023 17:20:40 -0700
 From:   Vadim Fedorenko <vadfed@meta.com>
 To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
         Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
@@ -41,12 +41,12 @@ To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
 CC:     Milena Olech <milena.olech@intel.com>,
         Michal Michalik <michal.michalik@intel.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-        <poros@redhat.com>, <mschmidt@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-clk@vger.kernel.org>
-Subject: [RFC PATCH v7 6/8] ptp_ocp: implement DPLL ops
-Date:   Thu, 27 Apr 2023 17:20:07 -0700
-Message-ID: <20230428002009.2948020-7-vadfed@meta.com>
+        Jiri Pirko <jiri@nvidia.com>, <poros@redhat.com>,
+        <mschmidt@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>
+Subject: [RFC PATCH v7 7/8] netdev: expose DPLL pin handle for netdevice
+Date:   Thu, 27 Apr 2023 17:20:08 -0700
+Message-ID: <20230428002009.2948020-8-vadfed@meta.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230428002009.2948020-1-vadfed@meta.com>
 References: <20230428002009.2948020-1-vadfed@meta.com>
@@ -54,8 +54,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [2620:10d:c085:108::4]
-X-Proofpoint-ORIG-GUID: j4hHxqAGkNaVcalj43oWnka4Py10ndC5
-X-Proofpoint-GUID: j4hHxqAGkNaVcalj43oWnka4Py10ndC5
+X-Proofpoint-GUID: VDJJDd5ZO2sXFjByxWPI-dz_PUjYA3YG
+X-Proofpoint-ORIG-GUID: VDJJDd5ZO2sXFjByxWPI-dz_PUjYA3YG
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-04-27_09,2023-04-27_01,2023-02-09_01
@@ -70,550 +70,251 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+From: Jiri Pirko <jiri@nvidia.com>
 
-Implement basic DPLL operations in ptp_ocp driver as the
-simplest example of using new subsystem.
+In case netdevice represents a SyncE port, the user needs to understand
+the connection between netdevice and associated DPLL pin. There might me
+multiple netdevices pointing to the same pin, in case of VF/SF
+implementation.
 
-Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+Add a IFLA Netlink attribute to nest the DPLL pin handle, similar to
+how it is implemented for devlink port. Add a struct dpll_pin pointer
+to netdev and protect access to it by RTNL. Expose netdev_dpll_pin_set()
+and netdev_dpll_pin_clear() helpers to the drivers so they can set/clear
+the DPLL pin relationship to netdev.
+
+Note that during the lifetime of struct dpll_pin the handle fields do not
+change. Therefore it is save to access them lockless. It is drivers
+responsibility to call netdev_dpll_pin_clear() before dpll_pin_put().
+
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/ptp/Kconfig   |   1 +
- drivers/ptp/ptp_ocp.c | 327 +++++++++++++++++++++++++++++++++++-------
- 2 files changed, 276 insertions(+), 52 deletions(-)
+ drivers/dpll/dpll_netlink.c  | 23 ++++++++++++++++++++--
+ include/linux/dpll.h         | 20 +++++++++++++++++++
+ include/linux/netdevice.h    |  7 +++++++
+ include/uapi/linux/if_link.h |  2 ++
+ net/core/dev.c               | 20 +++++++++++++++++++
+ net/core/rtnetlink.c         | 38 ++++++++++++++++++++++++++++++++++++
+ 6 files changed, 108 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index b00201d81313..e3575c2e34dc 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -177,6 +177,7 @@ config PTP_1588_CLOCK_OCP
- 	depends on COMMON_CLK
- 	select NET_DEVLINK
- 	select CRC16
-+	select DPLL
- 	help
- 	  This driver adds support for an OpenCompute time card.
+diff --git a/drivers/dpll/dpll_netlink.c b/drivers/dpll/dpll_netlink.c
+index 1eb0b4a2fce4..734b6776b07c 100644
+--- a/drivers/dpll/dpll_netlink.c
++++ b/drivers/dpll/dpll_netlink.c
+@@ -269,8 +269,9 @@ dpll_cmd_pin_fill_details(struct sk_buff *msg, struct dpll_pin *pin,
+ {
+ 	int ret;
  
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 2b63f3487645..100e5da0aeb3 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -23,6 +23,7 @@
- #include <linux/mtd/mtd.h>
- #include <linux/nvmem-consumer.h>
- #include <linux/crc16.h>
+-	if (nla_put_u32(msg, DPLL_A_PIN_IDX, pin->pin_idx))
+-		return -EMSGSIZE;
++	ret = dpll_msg_add_pin_handle(msg, pin);
++	if (ret)
++		return ret;
+ 	if (nla_put_string(msg, DPLL_A_PIN_LABEL, pin->prop.label))
+ 		return -EMSGSIZE;
+ 	if (nla_put_u8(msg, DPLL_A_PIN_TYPE, pin->prop.type))
+@@ -290,6 +291,24 @@ dpll_cmd_pin_fill_details(struct sk_buff *msg, struct dpll_pin *pin,
+ 	return 0;
+ }
+ 
++size_t dpll_msg_pin_handle_size(struct dpll_pin *pin)
++{
++	// TMP- THE HANDLE IS GOING TO CHANGE TO DRIVERNAME/CLOCKID/PIN_INDEX
++	// LEAVING ORIG HANDLE NOW AS PUT IN THE LAST RFC VERSION
++	return nla_total_size(4); /* DPLL_A_PIN_IDX */
++}
++EXPORT_SYMBOL_GPL(dpll_msg_pin_handle_size);
++
++int dpll_msg_add_pin_handle(struct sk_buff *msg, struct dpll_pin *pin)
++{
++	// TMP- THE HANDLE IS GOING TO CHANGE TO DRIVERNAME/CLOCKID/PIN_INDEX
++	// LEAVING ORIG HANDLE NOW AS PUT IN THE LAST RFC VERSION
++	if (nla_put_u32(msg, DPLL_A_PIN_IDX, pin->pin_idx))
++		return -EMSGSIZE;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(dpll_msg_add_pin_handle);
++
+ static int
+ __dpll_cmd_pin_dump_one(struct sk_buff *msg, struct dpll_pin *pin,
+ 			struct netlink_ext_ack *extack)
+diff --git a/include/linux/dpll.h b/include/linux/dpll.h
+index 5194efaf55a8..5945bb456794 100644
+--- a/include/linux/dpll.h
++++ b/include/linux/dpll.h
+@@ -104,6 +104,26 @@ struct dpll_pin_properties {
+ 	struct dpll_pin_frequency *freq_supported;
+ };
+ 
++#if IS_ENABLED(CONFIG_DPLL)
++
++size_t dpll_msg_pin_handle_size(struct dpll_pin *pin);
++
++int dpll_msg_add_pin_handle(struct sk_buff *msg, struct dpll_pin *pin);
++
++#else
++
++static inline size_t dpll_msg_pin_handle_size(struct dpll_pin *pin)
++{
++	return 0;
++}
++
++static inline int dpll_msg_add_pin_handle(struct sk_buff *msg, struct dpll_pin *pin)
++{
++	return 0;
++}
++
++#endif
++
+ /**
+  * dpll_device_get - find or create dpll_device object
+  * @clock_id: a system unique number for a device
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 08fbd4622ccf..be162d8db611 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -34,6 +34,7 @@
+ #include <linux/rculist.h>
+ #include <linux/workqueue.h>
+ #include <linux/dynamic_queue_limits.h>
 +#include <linux/dpll.h>
  
- #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
- #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
-@@ -261,12 +262,21 @@ enum ptp_ocp_sma_mode {
- 	SMA_MODE_OUT,
- };
+ #include <net/net_namespace.h>
+ #ifdef CONFIG_DCB
+@@ -2411,6 +2412,10 @@ struct net_device {
+ 	struct rtnl_hw_stats64	*offload_xstats_l3;
  
-+static struct dpll_pin_frequency ptp_ocp_sma_freq[] = {
-+	DPLL_PIN_FREQUENCY_1PPS,
-+	DPLL_PIN_FREQUENCY_10MHZ,
-+	DPLL_PIN_FREQUENCY_IRIG_B,
-+	DPLL_PIN_FREQUENCY_DCF77,
-+};
+ 	struct devlink_port	*devlink_port;
 +
- struct ptp_ocp_sma_connector {
- 	enum	ptp_ocp_sma_mode mode;
- 	bool	fixed_fcn;
- 	bool	fixed_dir;
- 	bool	disabled;
- 	u8	default_fcn;
-+	struct dpll_pin		   *dpll_pin;
-+	struct dpll_pin_properties dpll_prop;
++#if IS_ENABLED(CONFIG_DPLL)
++	struct dpll_pin		*dpll_pin;
++#endif
  };
+ #define to_net_dev(d) container_of(d, struct net_device, dev)
  
- struct ocp_attr_group {
-@@ -295,6 +305,7 @@ struct ptp_ocp_serial_port {
+@@ -3954,6 +3959,8 @@ int dev_get_mac_address(struct sockaddr *sa, struct net *net, char *dev_name);
+ int dev_get_port_parent_id(struct net_device *dev,
+ 			   struct netdev_phys_item_id *ppid, bool recurse);
+ bool netdev_port_same_parent_id(struct net_device *a, struct net_device *b);
++void netdev_dpll_pin_set(struct net_device *dev, struct dpll_pin *dpll_pin);
++void netdev_dpll_pin_clear(struct net_device *dev);
+ struct sk_buff *validate_xmit_skb_list(struct sk_buff *skb, struct net_device *dev, bool *again);
+ struct sk_buff *dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
+ 				    struct netdev_queue *txq, int *ret);
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 4ac1000b0ef2..9244d6ff23fc 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -377,6 +377,8 @@ enum {
+ 	IFLA_GSO_IPV4_MAX_SIZE,
+ 	IFLA_GRO_IPV4_MAX_SIZE,
  
- #define OCP_BOARD_ID_LEN		13
- #define OCP_SERIAL_LEN			6
-+#define OCP_SMA_NUM			4
- 
- struct ptp_ocp {
- 	struct pci_dev		*pdev;
-@@ -351,8 +362,9 @@ struct ptp_ocp {
- 	u32			ts_window_adjust;
- 	u64			fw_cap;
- 	struct ptp_ocp_signal	signal[4];
--	struct ptp_ocp_sma_connector sma[4];
-+	struct ptp_ocp_sma_connector sma[OCP_SMA_NUM];
- 	const struct ocp_sma_op *sma_op;
-+	struct dpll_device *dpll;
- };
- 
- #define OCP_REQ_TIMESTAMP	BIT(0)
-@@ -836,6 +848,7 @@ static DEFINE_IDR(ptp_ocp_idr);
- struct ocp_selector {
- 	const char *name;
- 	int value;
-+	u64 frequency;
- };
- 
- static const struct ocp_selector ptp_ocp_clock[] = {
-@@ -856,31 +869,31 @@ static const struct ocp_selector ptp_ocp_clock[] = {
- #define SMA_SELECT_MASK		GENMASK(14, 0)
- 
- static const struct ocp_selector ptp_ocp_sma_in[] = {
--	{ .name = "10Mhz",	.value = 0x0000 },
--	{ .name = "PPS1",	.value = 0x0001 },
--	{ .name = "PPS2",	.value = 0x0002 },
--	{ .name = "TS1",	.value = 0x0004 },
--	{ .name = "TS2",	.value = 0x0008 },
--	{ .name = "IRIG",	.value = 0x0010 },
--	{ .name = "DCF",	.value = 0x0020 },
--	{ .name = "TS3",	.value = 0x0040 },
--	{ .name = "TS4",	.value = 0x0080 },
--	{ .name = "FREQ1",	.value = 0x0100 },
--	{ .name = "FREQ2",	.value = 0x0200 },
--	{ .name = "FREQ3",	.value = 0x0400 },
--	{ .name = "FREQ4",	.value = 0x0800 },
--	{ .name = "None",	.value = SMA_DISABLE },
-+	{ .name = "10Mhz",  .value = 0x0000,      .frequency = 10000000 },
-+	{ .name = "PPS1",   .value = 0x0001,      .frequency = 1 },
-+	{ .name = "PPS2",   .value = 0x0002,      .frequency = 1 },
-+	{ .name = "TS1",    .value = 0x0004,      .frequency = 0 },
-+	{ .name = "TS2",    .value = 0x0008,      .frequency = 0 },
-+	{ .name = "IRIG",   .value = 0x0010,      .frequency = 10000 },
-+	{ .name = "DCF",    .value = 0x0020,      .frequency = 77500 },
-+	{ .name = "TS3",    .value = 0x0040,      .frequency = 0 },
-+	{ .name = "TS4",    .value = 0x0080,      .frequency = 0 },
-+	{ .name = "FREQ1",  .value = 0x0100,      .frequency = 0 },
-+	{ .name = "FREQ2",  .value = 0x0200,      .frequency = 0 },
-+	{ .name = "FREQ3",  .value = 0x0400,      .frequency = 0 },
-+	{ .name = "FREQ4",  .value = 0x0800,      .frequency = 0 },
-+	{ .name = "None",   .value = SMA_DISABLE, .frequency = 0 },
- 	{ }
- };
- 
- static const struct ocp_selector ptp_ocp_sma_out[] = {
--	{ .name = "10Mhz",	.value = 0x0000 },
--	{ .name = "PHC",	.value = 0x0001 },
--	{ .name = "MAC",	.value = 0x0002 },
--	{ .name = "GNSS1",	.value = 0x0004 },
--	{ .name = "GNSS2",	.value = 0x0008 },
--	{ .name = "IRIG",	.value = 0x0010 },
--	{ .name = "DCF",	.value = 0x0020 },
-+	{ .name = "10Mhz",	.value = 0x0000,  .frequency = 10000000 },
-+	{ .name = "PHC",	.value = 0x0001,  .frequency = 1 },
-+	{ .name = "MAC",	.value = 0x0002,  .frequency = 1 },
-+	{ .name = "GNSS1",	.value = 0x0004,  .frequency = 1 },
-+	{ .name = "GNSS2",	.value = 0x0008,  .frequency = 1 },
-+	{ .name = "IRIG",	.value = 0x0010,  .frequency = 10000 },
-+	{ .name = "DCF",	.value = 0x0020,  .frequency = 77000 },
- 	{ .name = "GEN1",	.value = 0x0040 },
- 	{ .name = "GEN2",	.value = 0x0080 },
- 	{ .name = "GEN3",	.value = 0x0100 },
-@@ -891,15 +904,15 @@ static const struct ocp_selector ptp_ocp_sma_out[] = {
- };
- 
- static const struct ocp_selector ptp_ocp_art_sma_in[] = {
--	{ .name = "PPS1",	.value = 0x0001 },
--	{ .name = "10Mhz",	.value = 0x0008 },
-+	{ .name = "PPS1",	.value = 0x0001,  .frequency = 1 },
-+	{ .name = "10Mhz",	.value = 0x0008,  .frequency = 1000000 },
- 	{ }
- };
- 
- static const struct ocp_selector ptp_ocp_art_sma_out[] = {
--	{ .name = "PHC",	.value = 0x0002 },
--	{ .name = "GNSS",	.value = 0x0004 },
--	{ .name = "10Mhz",	.value = 0x0010 },
-+	{ .name = "PHC",	.value = 0x0002,  .frequency = 1 },
-+	{ .name = "GNSS",	.value = 0x0004,  .frequency = 1 },
-+	{ .name = "10Mhz",	.value = 0x0010,  .frequency = 10000000 },
- 	{ }
- };
- 
-@@ -2283,22 +2296,34 @@ ptp_ocp_sma_fb_set_inputs(struct ptp_ocp *bp, int sma_nr, u32 val)
- static void
- ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
- {
-+	struct dpll_pin_properties prop = {
-+		.label = NULL,
-+		.type = DPLL_PIN_TYPE_EXT,
-+		.capabilities = DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE,
-+		.freq_supported_num = ARRAY_SIZE(ptp_ocp_sma_freq),
-+		.freq_supported = ptp_ocp_sma_freq,
++	IFLA_DPLL_PIN,
 +
-+	};
- 	u32 reg;
- 	int i;
- 
- 	/* defaults */
-+	for (i = 0; i < OCP_SMA_NUM; i++) {
-+		bp->sma[i].default_fcn = i & 1;
-+		bp->sma[i].dpll_prop = prop;
-+		bp->sma[i].dpll_prop.label = bp->ptp_info.pin_config[i].name;
-+	}
- 	bp->sma[0].mode = SMA_MODE_IN;
- 	bp->sma[1].mode = SMA_MODE_IN;
- 	bp->sma[2].mode = SMA_MODE_OUT;
- 	bp->sma[3].mode = SMA_MODE_OUT;
--	for (i = 0; i < 4; i++)
--		bp->sma[i].default_fcn = i & 1;
--
- 	/* If no SMA1 map, the pin functions and directions are fixed. */
- 	if (!bp->sma_map1) {
--		for (i = 0; i < 4; i++) {
-+		for (i = 0; i < OCP_SMA_NUM; i++) {
- 			bp->sma[i].fixed_fcn = true;
- 			bp->sma[i].fixed_dir = true;
-+			bp->sma[1].dpll_prop.capabilities &=
-+				~DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE;
- 		}
- 		return;
- 	}
-@@ -2308,7 +2333,7 @@ ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
- 	 */
- 	reg = ioread32(&bp->sma_map2->gpio2);
- 	if (reg == 0xffffffff) {
--		for (i = 0; i < 4; i++)
-+		for (i = 0; i < OCP_SMA_NUM; i++)
- 			bp->sma[i].fixed_dir = true;
- 	} else {
- 		reg = ioread32(&bp->sma_map1->gpio1);
-@@ -2330,7 +2355,7 @@ static const struct ocp_sma_op ocp_fb_sma_op = {
+ 	__IFLA_MAX
  };
  
- static int
--ptp_ocp_fb_set_pins(struct ptp_ocp *bp)
-+ptp_ocp_set_pins(struct ptp_ocp *bp)
- {
- 	struct ptp_pin_desc *config;
- 	int i;
-@@ -2397,16 +2422,16 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
- 
- 	ptp_ocp_tod_init(bp);
- 	ptp_ocp_nmea_out_init(bp);
--	ptp_ocp_sma_init(bp);
- 	ptp_ocp_signal_init(bp);
- 
- 	err = ptp_ocp_attr_group_add(bp, fb_timecard_groups);
- 	if (err)
- 		return err;
- 
--	err = ptp_ocp_fb_set_pins(bp);
-+	err = ptp_ocp_set_pins(bp);
- 	if (err)
- 		return err;
-+	ptp_ocp_sma_init(bp);
- 
- 	return ptp_ocp_init_clock(bp);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 735096d42c1d..fe594e23c1cb 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8990,6 +8990,26 @@ bool netdev_port_same_parent_id(struct net_device *a, struct net_device *b)
  }
-@@ -2446,6 +2471,14 @@ ptp_ocp_register_resources(struct ptp_ocp *bp, kernel_ulong_t driver_data)
- static void
- ptp_ocp_art_sma_init(struct ptp_ocp *bp)
- {
-+	struct dpll_pin_properties prop = {
-+		.label = NULL,
-+		.type = DPLL_PIN_TYPE_EXT,
-+		.capabilities = 0,
-+		.freq_supported_num = ARRAY_SIZE(ptp_ocp_sma_freq),
-+		.freq_supported = ptp_ocp_sma_freq,
+ EXPORT_SYMBOL(netdev_port_same_parent_id);
+ 
++static void netdev_dpll_pin_assign(struct net_device *dev, struct dpll_pin *dpll_pin)
++{
++	rtnl_lock();
++	dev->dpll_pin = dpll_pin;
++	rtnl_unlock();
++}
 +
-+	};
- 	u32 reg;
- 	int i;
- 
-@@ -2460,16 +2493,16 @@ ptp_ocp_art_sma_init(struct ptp_ocp *bp)
- 	bp->sma[2].default_fcn = 0x10;	/* OUT: 10Mhz */
- 	bp->sma[3].default_fcn = 0x02;	/* OUT: PHC */
- 
--	/* If no SMA map, the pin functions and directions are fixed. */
--	if (!bp->art_sma) {
--		for (i = 0; i < 4; i++) {
++void netdev_dpll_pin_set(struct net_device *dev, struct dpll_pin *dpll_pin)
++{
++	WARN_ON(!dpll_pin);
++	netdev_dpll_pin_assign(dev, dpll_pin);
++}
++EXPORT_SYMBOL(netdev_dpll_pin_set);
 +
-+	for (i = 0; i < OCP_SMA_NUM; i++) {
-+		/* If no SMA map, the pin functions and directions are fixed. */
-+		bp->sma[i].dpll_prop = prop;
-+		bp->sma[i].dpll_prop.label = bp->ptp_info.pin_config[i].name;
-+		if (!bp->art_sma) {
- 			bp->sma[i].fixed_fcn = true;
- 			bp->sma[i].fixed_dir = true;
-+			continue;
- 		}
--		return;
--	}
--
--	for (i = 0; i < 4; i++) {
- 		reg = ioread32(&bp->art_sma->map[i].gpio);
- 
- 		switch (reg & 0xff) {
-@@ -2480,9 +2513,13 @@ ptp_ocp_art_sma_init(struct ptp_ocp *bp)
- 		case 1:
- 		case 8:
- 			bp->sma[i].mode = SMA_MODE_IN;
-+			bp->sma[i].dpll_prop.capabilities =
-+				DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE;
- 			break;
- 		default:
- 			bp->sma[i].mode = SMA_MODE_OUT;
-+			bp->sma[i].dpll_prop.capabilities =
-+				DPLL_PIN_CAPS_DIRECTION_CAN_CHANGE;
- 			break;
- 		}
- 	}
-@@ -2549,6 +2586,9 @@ ptp_ocp_art_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
- 	/* Enable MAC serial port during initialisation */
- 	iowrite32(1, &bp->board_config->mro50_serial_activate);
- 
-+	err = ptp_ocp_set_pins(bp);
-+	if (err)
-+		return err;
- 	ptp_ocp_sma_init(bp);
- 
- 	err = ptp_ocp_attr_group_add(bp, art_timecard_groups);
-@@ -2690,16 +2730,9 @@ sma4_show(struct device *dev, struct device_attribute *attr, char *buf)
++void netdev_dpll_pin_clear(struct net_device *dev)
++{
++	netdev_dpll_pin_assign(dev, NULL);
++}
++EXPORT_SYMBOL(netdev_dpll_pin_clear);
++
+ /**
+  *	dev_change_proto_down - set carrier according to proto_down.
+  *
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 653901a1bf75..2d1f5d2024ac 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -1052,6 +1052,16 @@ static size_t rtnl_devlink_port_size(const struct net_device *dev)
+ 	return size;
  }
  
- static int
--ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
-+ptp_ocp_sma_store_val(struct ptp_ocp *bp, int val, enum ptp_ocp_sma_mode mode, int sma_nr)
++static size_t rtnl_dpll_pin_size(const struct net_device *dev)
++{
++	size_t size = nla_total_size(0); /* nest IFLA_DPLL_PIN */
++
++	if (dev->dpll_pin)
++		size += dpll_msg_pin_handle_size(dev->dpll_pin);
++
++	return size;
++}
++
+ static noinline size_t if_nlmsg_size(const struct net_device *dev,
+ 				     u32 ext_filter_mask)
  {
- 	struct ptp_ocp_sma_connector *sma = &bp->sma[sma_nr - 1];
--	enum ptp_ocp_sma_mode mode;
--	int val;
--
--	mode = sma->mode;
--	val = sma_parse_inputs(bp->sma_op->tbl, buf, &mode);
--	if (val < 0)
--		return val;
- 
- 	if (sma->fixed_dir && (mode != sma->mode || val & SMA_DISABLE))
- 		return -EOPNOTSUPP;
-@@ -2734,6 +2767,20 @@ ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
- 	return val;
+@@ -1108,6 +1118,7 @@ static noinline size_t if_nlmsg_size(const struct net_device *dev,
+ 	       + rtnl_prop_list_size(dev)
+ 	       + nla_total_size(MAX_ADDR_LEN) /* IFLA_PERM_ADDRESS */
+ 	       + rtnl_devlink_port_size(dev)
++	       + rtnl_dpll_pin_size(dev)
+ 	       + 0;
  }
  
-+static int
-+ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
-+{
-+	struct ptp_ocp_sma_connector *sma = &bp->sma[sma_nr - 1];
-+	enum ptp_ocp_sma_mode mode;
-+	int val;
-+
-+	mode = sma->mode;
-+	val = sma_parse_inputs(bp->sma_op->tbl, buf, &mode);
-+	if (val < 0)
-+		return val;
-+	return ptp_ocp_sma_store_val(bp, val, mode, sma_nr);
-+}
-+
- static ssize_t
- sma1_store(struct device *dev, struct device_attribute *attr,
- 	   const char *buf, size_t count)
-@@ -4172,12 +4219,148 @@ ptp_ocp_detach(struct ptp_ocp *bp)
- 	device_unregister(&bp->dev);
+@@ -1769,6 +1780,30 @@ static int rtnl_fill_devlink_port(struct sk_buff *skb,
+ 	return ret;
  }
  
-+static int ptp_ocp_dpll_lock_status_get(const struct dpll_device *dpll,
-+					void *priv,
-+					enum dpll_lock_status *status,
-+					struct netlink_ext_ack *extack)
++static int rtnl_fill_dpll_pin(struct sk_buff *skb,
++			      const struct net_device *dev)
 +{
-+	struct ptp_ocp *bp = priv;
-+	int sync;
++	struct nlattr *dpll_pin_nest;
++	int ret;
 +
-+	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
-+	*status = sync ? DPLL_LOCK_STATUS_LOCKED : DPLL_LOCK_STATUS_UNLOCKED;
++	dpll_pin_nest = nla_nest_start(skb, IFLA_DPLL_PIN);
++	if (!dpll_pin_nest)
++		return -EMSGSIZE;
 +
++	if (dev->dpll_pin) {
++		ret = dpll_msg_add_pin_handle(skb, dev->dpll_pin);
++		if (ret < 0)
++			goto nest_cancel;
++	}
++
++	nla_nest_end(skb, dpll_pin_nest);
 +	return 0;
++
++nest_cancel:
++	nla_nest_cancel(skb, dpll_pin_nest);
++	return ret;
 +}
 +
-+static int ptp_ocp_dpll_source_idx_get(const struct dpll_device *dpll,
-+				       void *priv, u32 *idx,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct ptp_ocp *bp = priv;
-+
-+	if (bp->pps_select) {
-+		*idx = ioread32(&bp->pps_select->gpio1);
-+		return 0;
-+	}
-+	return -EINVAL;
-+}
-+
-+static int ptp_ocp_dpll_mode_get(const struct dpll_device *dpll, void *priv,
-+				 u32 *mode, struct netlink_ext_ack *extack)
-+{
-+	*mode = DPLL_MODE_AUTOMATIC;
-+	return 0;
-+}
-+
-+static bool ptp_ocp_dpll_mode_supported(const struct dpll_device *dpll,
-+					void *priv, const enum dpll_mode mode,
-+					struct netlink_ext_ack *extack)
-+{
-+	return mode == DPLL_MODE_AUTOMATIC;
-+}
-+
-+static int ptp_ocp_dpll_direction_get(const struct dpll_pin *pin,
-+				      void *pin_priv,
-+				      const struct dpll_device *dpll,
-+				      void *priv,
-+				      enum dpll_pin_direction *direction,
-+				      struct netlink_ext_ack *extack)
-+{
-+	struct ptp_ocp_sma_connector *sma = pin_priv;
-+
-+	*direction = sma->mode == SMA_MODE_IN ?
-+				  DPLL_PIN_DIRECTION_SOURCE :
-+				  DPLL_PIN_DIRECTION_OUTPUT;
-+	return 0;
-+}
-+
-+static int ptp_ocp_dpll_direction_set(const struct dpll_pin *pin,
-+				      void *pin_priv,
-+				      const struct dpll_device *dpll,
-+				      void *dpll_priv,
-+				      enum dpll_pin_direction direction,
-+				      struct netlink_ext_ack *extack)
-+{
-+	struct ptp_ocp_sma_connector *sma = pin_priv;
-+	struct ptp_ocp *bp = dpll_priv;
-+	enum ptp_ocp_sma_mode mode;
-+	int sma_nr = (sma - bp->sma);
-+
-+	if (sma->fixed_dir)
-+		return -EOPNOTSUPP;
-+	mode = direction == DPLL_PIN_DIRECTION_SOURCE ?
-+			    SMA_MODE_IN : SMA_MODE_OUT;
-+	return ptp_ocp_sma_store_val(bp, 0, mode, sma_nr);
-+}
-+
-+static int ptp_ocp_dpll_frequency_set(const struct dpll_pin *pin,
-+				      void *pin_priv,
-+				      const struct dpll_device *dpll,
-+				      void *dpll_priv, u64 frequency,
-+				      struct netlink_ext_ack *extack)
-+{
-+	struct ptp_ocp_sma_connector *sma = pin_priv;
-+	struct ptp_ocp *bp = dpll_priv;
-+	const struct ocp_selector *tbl;
-+	int sma_nr = (sma - bp->sma);
-+	int val, i;
-+
-+	if (sma->fixed_fcn)
-+		return -EOPNOTSUPP;
-+
-+	tbl = bp->sma_op->tbl[sma->mode];
-+	for (i = 0; tbl[i].name; i++)
-+		if (tbl[i].frequency == frequency)
-+			return ptp_ocp_sma_store_val(bp, val, sma->mode, sma_nr);
-+	return -EINVAL;
-+}
-+
-+static int ptp_ocp_dpll_frequency_get(const struct dpll_pin *pin,
-+				      void *pin_priv,
-+				      const struct dpll_device *dpll,
-+				      void *dpll_priv, u64 *frequency,
-+				      struct netlink_ext_ack *extack)
-+{
-+	struct ptp_ocp_sma_connector *sma = pin_priv;
-+	struct ptp_ocp *bp = dpll_priv;
-+	const struct ocp_selector *tbl;
-+	int sma_nr = (sma - bp->sma);
-+	u32 val;
-+	int i;
-+
-+	val = bp->sma_op->get(bp, sma_nr);
-+	tbl = bp->sma_op->tbl[sma->mode];
-+	for (i = 0; tbl[i].name; i++)
-+		if (val == tbl[i].value) {
-+			*frequency = tbl[i].frequency;
-+			return 0;
-+		}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct dpll_device_ops dpll_ops = {
-+	.lock_status_get = ptp_ocp_dpll_lock_status_get,
-+	.source_pin_idx_get = ptp_ocp_dpll_source_idx_get,
-+	.mode_get = ptp_ocp_dpll_mode_get,
-+	.mode_supported = ptp_ocp_dpll_mode_supported,
-+};
-+
-+static const struct dpll_pin_ops dpll_pins_ops = {
-+	.frequency_get = ptp_ocp_dpll_frequency_get,
-+	.frequency_set = ptp_ocp_dpll_frequency_set,
-+	.direction_get = ptp_ocp_dpll_direction_get,
-+	.direction_set = ptp_ocp_dpll_direction_set,
-+};
-+
- static int
- ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- {
- 	struct devlink *devlink;
- 	struct ptp_ocp *bp;
--	int err;
-+	int err, i;
-+	u64 clkid;
+ static int rtnl_fill_ifinfo(struct sk_buff *skb,
+ 			    struct net_device *dev, struct net *src_net,
+ 			    int type, u32 pid, u32 seq, u32 change,
+@@ -1911,6 +1946,9 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
+ 	if (rtnl_fill_devlink_port(skb, dev))
+ 		goto nla_put_failure;
  
- 	devlink = devlink_alloc(&ptp_ocp_devlink_ops, sizeof(*bp), &pdev->dev);
- 	if (!devlink) {
-@@ -4227,8 +4410,39 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
++	if (rtnl_fill_dpll_pin(skb, dev))
++		goto nla_put_failure;
++
+ 	nlmsg_end(skb, nlh);
+ 	return 0;
  
- 	ptp_ocp_info(bp);
- 	devlink_register(devlink);
--	return 0;
- 
-+	clkid = pci_get_dsn(pdev);
-+	bp->dpll = dpll_device_get(clkid, 0, THIS_MODULE);
-+	if (IS_ERR(bp->dpll)) {
-+		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
-+		goto out;
-+	}
-+
-+	err = dpll_device_register(bp->dpll, DPLL_TYPE_PPS, &dpll_ops, bp, &pdev->dev);
-+	if (err)
-+		goto out;
-+
-+	for (i = 0; i < OCP_SMA_NUM; i++) {
-+		bp->sma[i].dpll_pin = dpll_pin_get(clkid, i, THIS_MODULE, &bp->sma[i].dpll_prop);
-+		if (IS_ERR(bp->sma[i].dpll_pin))
-+			goto out_dpll;
-+
-+		err = dpll_pin_register(bp->dpll, bp->sma[i].dpll_pin, &dpll_pins_ops,
-+					&bp->sma[i], NULL);
-+		if (err) {
-+			dpll_pin_put(bp->sma[i].dpll_pin);
-+			goto out_dpll;
-+		}
-+	}
-+
-+	return 0;
-+out_dpll:
-+	while (i) {
-+		--i;
-+		dpll_pin_unregister(bp->dpll, bp->sma[i].dpll_pin, &dpll_pins_ops, &bp->sma[i]);
-+		dpll_pin_put(bp->sma[i].dpll_pin);
-+	}
-+	dpll_device_put(bp->dpll);
- out:
- 	ptp_ocp_detach(bp);
- out_disable:
-@@ -4243,7 +4457,16 @@ ptp_ocp_remove(struct pci_dev *pdev)
- {
- 	struct ptp_ocp *bp = pci_get_drvdata(pdev);
- 	struct devlink *devlink = priv_to_devlink(bp);
-+	int i;
- 
-+	for (i = 0; i < OCP_SMA_NUM; i++) {
-+		if (bp->sma[i].dpll_pin) {
-+			dpll_pin_unregister(bp->dpll, bp->sma[i].dpll_pin, &dpll_pins_ops, bp);
-+			dpll_pin_put(bp->sma[i].dpll_pin);
-+		}
-+	}
-+	dpll_device_unregister(bp->dpll, &dpll_ops, bp);
-+	dpll_device_put(bp->dpll);
- 	devlink_unregister(devlink);
- 	ptp_ocp_detach(bp);
- 	pci_disable_device(pdev);
 -- 
 2.34.1
 
