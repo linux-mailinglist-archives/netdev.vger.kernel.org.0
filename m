@@ -2,81 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39E336F1139
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 07:04:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A92EE6F1184
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 07:57:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345192AbjD1FE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 01:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        id S229794AbjD1F5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 01:57:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbjD1FE0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 01:04:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEEA26A2;
-        Thu, 27 Apr 2023 22:04:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7A8660AB4;
-        Fri, 28 Apr 2023 05:04:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC619C433D2;
-        Fri, 28 Apr 2023 05:04:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682658264;
-        bh=1jG17+/ymFzEo1DeDLBm4GJ1/6GRzCzGRAUyoi4cchE=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=WUpZRmPs+HS5nSEp2lgOEhgiHzBXVP1F5Zeods3BiFK9ogpLPHdf6SR0TF9cclENd
-         2CULicHnBKqko0P9GmyZEe12EJbf8lzw+htBtqEHGxIEXSwwJGNacj8gWksXnJ6tv6
-         ot5hv+spL+5dy7gZUtoFtXO+0bD2GiCBvUqLTqvFTRp0tbl5x364LID+luPvwzdzx2
-         bfFK2sRD9evMxl2EB13Sr3ocNoHujQ2e9rdNXFRd0DkJvKK5g24wYcROTh7DNhcIEj
-         oLhONSt6TrVDjBBNxLA5uorU3GIK5gQjl8X88DnKc3JB18CdvHGDRIFuMqxK9tuGHv
-         khXWAXkfdsqPA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Aloka Dixit <quic_alokad@quicinc.com>,
-        Muna Sinada <quic_msinada@quicinc.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Johannes Berg <johannes.berg@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net] wifi: mac80211: Fix puncturing bitmap handling in __ieee80211_csa_finalize()
-References: <e84a3f80fe536787f7a2c7180507efc36cd14f95.1682358088.git.christophe.jaillet@wanadoo.fr>
-Date:   Fri, 28 Apr 2023 08:04:19 +0300
-In-Reply-To: <e84a3f80fe536787f7a2c7180507efc36cd14f95.1682358088.git.christophe.jaillet@wanadoo.fr>
-        (Christophe JAILLET's message of "Mon, 24 Apr 2023 19:42:04 +0200")
-Message-ID: <87mt2sppgs.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S229645AbjD1F5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 01:57:34 -0400
+Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24712685
+        for <netdev@vger.kernel.org>; Thu, 27 Apr 2023 22:57:31 -0700 (PDT)
+X-QQ-mid: bizesmtp65t1682661443tf13nzuh
+Received: from localhost.localdomain ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 28 Apr 2023 13:57:11 +0800 (CST)
+X-QQ-SSF: 01400000000000N0S000000A0000000
+X-QQ-FEAT: 7QbCsSX/jDZZj6WWr3FObjB9Ekknf0t+lWnrPopSuZEtMDtJNjP+ts8V6zZC9
+        ezLIfHMG+Ka5kuATWUy6CFjFkOaWYxHQtq+SF1k+21RaKkUF3m6/C3g6GI5qXI9PtNF6ceM
+        XOzn2NJijBXObhzdDPfdmfc916XQq4Mz3sYqyX7j050l4N5x1CdSSpxPLS2Lkc2kDqrw2Ad
+        FOl3MzgCQy09Dhz+wMu2l0egHFHZubPBUmwBF195/iAf+UiGuIE34PhGMpWGbU/rLsfbQm1
+        riWnDlgNV2YdttGmni4q4AwPqBAQOqjvrEFZbE8P2o4eKXeWA2u3AIfmIe0fGBUrOA3lJTH
+        q8rm9FGshWh4uKHxCPOlKgewyXYM+1FDu3IfLjMlYGrlD/R3NA4pDqtkCRrVw==
+X-QQ-GoodBg: 2
+X-BIZMAIL-ID: 14948391135153430874
+From:   Mengyuan Lou <mengyuanlou@net-swift.com>
+To:     netdev@vger.kernel.org
+Cc:     jiawenwu@trustnetic.com, Mengyuan Lou <mengyuanlou@net-swift.com>
+Subject: [RFC PATCH net-next v4 0/7] Wangxun netdev features support
+Date:   Fri, 28 Apr 2023 13:57:02 +0800
+Message-Id: <20230428055709.66071-1-mengyuanlou@net-swift.com>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvrgz:qybglogicsvrgz6a-1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> writes:
+Implement tx_csum and rx_csum to support hardware checksum offload.
+Implement ndo_vlan_rx_add_vid and ndo_vlan_rx_kill_vid.
+Enable macros in netdev features which wangxun can support.
 
-> 'changed' can be OR'ed with BSS_CHANGED_EHT_PUNCTURING which is larger than
-> an u32.
-> So, turn 'changed' into an u64 and update ieee80211_set_after_csa_beacon()
-> accordingly.
->
-> In the commit in Fixes, only ieee80211_start_ap() was updated.
->
-> Fixes: 2cc25e4b2a04 ("wifi: mac80211: configure puncturing bitmap")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+changes v4:
+- Yunsheng Lin:
+https://lore.kernel.org/netdev/c4b9765d-7213-2718-5de3-5e8231753b95@huawei.com/
+changes v3:
+- Yunsheng Lin: Tidy up logic for wx_encode_tx_desc_ptype.
+changes v2:
+- Andrew Lunn:
+Add ETH_P_CNM Congestion Notification Message to if_ether.h.
+Remove lro support.
+- Yunsheng Lin:
+https://lore.kernel.org/netdev/eb75ae23-8c19-bbc5-e99a-9b853511affa@huawei.com/
 
-FWIW mac80211 patches go to wireless tree, not net.
+Mengyuan Lou (7):
+  net: wangxun: libwx add tx offload functions
+  net: wangxun: libwx add rx offload functions
+  net: wangxun: Implement vlan add and kill functions
+  net: ngbe add netdev features support
+  net: ngbe: Implement vlan add and remove ops
+  net: txgbe add netdev features support
+  net: txgbe: Implement vlan add and remove ops
+
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 275 +++++++-
+ drivers/net/ethernet/wangxun/libwx/wx_hw.h    |   3 +
+ drivers/net/ethernet/wangxun/libwx/wx_lib.c   | 600 +++++++++++++++++-
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  | 362 ++++++++++-
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  19 +-
+ drivers/net/ethernet/wangxun/ngbe/ngbe_type.h |   1 +
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  24 +-
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |   1 +
+ 8 files changed, 1265 insertions(+), 20 deletions(-)
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.40.0
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
