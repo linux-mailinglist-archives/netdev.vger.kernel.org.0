@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C02A76F2007
-	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 23:18:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DB076F2013
+	for <lists+netdev@lfdr.de>; Fri, 28 Apr 2023 23:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345449AbjD1VSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 17:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
+        id S1345716AbjD1VY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 17:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbjD1VSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 17:18:50 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C06211C;
-        Fri, 28 Apr 2023 14:18:49 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id a640c23a62f3a-94f7a0818aeso40902966b.2;
-        Fri, 28 Apr 2023 14:18:49 -0700 (PDT)
+        with ESMTP id S229751AbjD1VY5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 17:24:57 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383431BFA;
+        Fri, 28 Apr 2023 14:24:55 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id 38308e7fff4ca-2a8bdcf87f4so1760141fa.2;
+        Fri, 28 Apr 2023 14:24:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682716728; x=1685308728;
+        d=gmail.com; s=20221208; t=1682717093; x=1685309093;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=B0yu+PGePfgOn7Dr4AaCeHmSNPX477Sl7q4z5WfJr3k=;
-        b=B8TOc+pJlAYzkk1X3X96kUHA7doLFTW8l7DDb0fWE61FFxKOCBtIs6FlSlNNP392XK
-         fP//IiGiq09fSmTprEuBnP1SDj6I5TSnFA79QXWm4Mvh9cs8jdzdMlh3vS/bff9o9d79
-         XTkJe2z///wiLsz4c6Et7HzHf2AXe8aum4kvPDPNVtLkBM6cKyRWPAPN9sTxi/wtHClb
-         TaW7HT220/nBlhrnh1yUOO/dKBfxppeX442HhNUqQJIpN7UQjya2+z5JSX+hYt9WzJ1X
-         y9nv8IdQAwl2T57rukjzBg8nHABxV7v1+31xwMBtmTy3p+jNAT4WT99couD0hOIfOPf7
-         t2Rw==
+        bh=9rljzU0VELiX9EsAkZDXnPVtLWxUnAXmWBWCF+oOAaY=;
+        b=Q5MkxR2ZExbckiOE+IJDWTRSaZUEwLv8xt4VK0TOnv+3I2cmNdSM89Gki5tvc5TYDM
+         xj+8Xgdzp03DWqnUbeddAFlRQzKuMUnaTdxHvQIp/sFQMfBQosV2BaAQYrPnH/Y1TB26
+         8toagzZu9WS/PpsNxTcmywXhtICGQseS8IR5f4HOkQP9njFtbuEU36HcuhjHPyIdmgdF
+         LX325IZNhynqJc5tcHQSkGFJdzTeg12L9r1ExhixfDswOOQERXGDK59uYjQgq0p1R9PM
+         M+1IE+yq7+a1Bl0OHFIow3lsr47mNDeNuD2lR1mrxsK6fIXUhMQHJGOq1yIWPA6vpyAx
+         tZtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682716728; x=1685308728;
+        d=1e100.net; s=20221208; t=1682717093; x=1685309093;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=B0yu+PGePfgOn7Dr4AaCeHmSNPX477Sl7q4z5WfJr3k=;
-        b=VO+H8WAevDOY7TcByjwnTHhCHqHI2+gTMnvgtjE1bMrk3Tw0R1J/Dsryxgin/zON9A
-         5ZD7OkUOeIabq+emSDQdVxz2WA3QDckVJl4cCnCWjw29bjD+vKSlUtkFAHIa442m7eP0
-         Ac+PTpyrQQeKS23qy3gQKUtzaonVN32D4sQecFY5vQjpUu0cQqZqOMCFQitwK5IOqz2h
-         AAG6QnkJqHID1g0Hx1KxaDEEKmwBWLKRiDNB/fkYEKHon6mCxwAn3kRC7dVcYlA8eVv1
-         7MJS8Yyc3qIiWFboCS2sI4aRpS7sAhOQsID6s9LkWHLtCSmZqQpQo3rFacckO/Uw9s5e
-         HUYw==
-X-Gm-Message-State: AC+VfDwVYjQFExvsAQxmDkvbvDFpEUZAeiuJasFPg5aQ2WoaZUTitVB0
-        pQ2T0ozN84eOfEbMP9z+L3adpqbaCqsy2/NHs3g=
-X-Google-Smtp-Source: ACHHUZ6HGII9pyMTvBUXKdFtK5Pw60ncRx2oaFxnTUJ7UB8cvn8ENmaTQVN40tMnBP3M9G4W/jHRSyKa9vfZloEi4ZA=
-X-Received: by 2002:a17:907:3faa:b0:94a:99a4:58d7 with SMTP id
- hr42-20020a1709073faa00b0094a99a458d7mr7114563ejc.15.1682716727472; Fri, 28
- Apr 2023 14:18:47 -0700 (PDT)
+        bh=9rljzU0VELiX9EsAkZDXnPVtLWxUnAXmWBWCF+oOAaY=;
+        b=ICH+JvPa/hU8sjuUvhPcL0s1A/d8tHtHoqazd740KavOcbWkjHYUs3jqDtvEPqMYB7
+         v8EF6smHjfHJKIY8erDH6CkHHoa0nK8UmzR/by7hp3nwOEcVIjwfiEn+hoAbdfNznxQp
+         E2hFeCCV9iDEjL1dGlTiOf00UC6hFtJSOr2FfozD1CNB3gadQucvrkXItwsbeP2yPync
+         m/d+ATJwZqQPbMAacbRsZRQa/rq9hHmmt479ippZoXqcH86am0UOPRyLES90OIYt7xie
+         2mHZLk/bLG4KeE9+7smDQeMG2EDZeqC/UVtN05aA6Ne5HWoIKyRpEqVeMQjolMfzgCwa
+         yqPQ==
+X-Gm-Message-State: AC+VfDwKMASQ/+5YTZQk9Ld2y1xwu9ITUxBExJQFZRg+HZMSTIrljwqZ
+        oIc/C9NraUqQqRyYVFS4C+aH3H45SuGeVAPy868=
+X-Google-Smtp-Source: ACHHUZ4oG4Cbik7oyvkDGFIjSV1EguFVeok4T//byGPle9kOvG6TBjmUplvTj1WAXGFRYMolQFPGXVzhKa8zO04thMM=
+X-Received: by 2002:a2e:88cd:0:b0:2a8:d0f0:584e with SMTP id
+ a13-20020a2e88cd000000b002a8d0f0584emr1826301ljk.16.1682717093101; Fri, 28
+ Apr 2023 14:24:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230421170300.24115-1-fw@strlen.de> <20230421170300.24115-2-fw@strlen.de>
- <CAEf4Bzby3gwHmvz1cjcNHKFPA1LQdTq85TpCmOg=GB6=bQwjOQ@mail.gmail.com>
- <20230427091015.GD3155@breakpoint.cc> <CAEf4BzZrmUv27AJp0dDxBDMY_B8e55-wLs8DUKK69vCWsCG_pQ@mail.gmail.com>
- <d6de9d40-ff59-4cb6-5a97-f8b72a5d853e@naccy.de>
-In-Reply-To: <d6de9d40-ff59-4cb6-5a97-f8b72a5d853e@naccy.de>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 28 Apr 2023 14:18:35 -0700
-Message-ID: <CAEf4BzbWCKTMzU=w0STOZM23hTbVtqoMamgB3wC3e+X3xNKZ9w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 1/7] bpf: add bpf_link support for
- BPF_NETFILTER programs
-To:     Quentin Deslandes <qde@naccy.de>
-Cc:     Florian Westphal <fw@strlen.de>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        dxu@dxuuu.xyz
+References: <CADm8TemwbUWDP0R_t7axFk4=4-srnm5c+2oJSy7aeSzdKFSVCA@mail.gmail.com>
+In-Reply-To: <CADm8TemwbUWDP0R_t7axFk4=4-srnm5c+2oJSy7aeSzdKFSVCA@mail.gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Fri, 28 Apr 2023 14:24:40 -0700
+Message-ID: <CABBYNZJCbYnxodwXAeq8F9NerzGWFva0OG6SfUWfJ_Grz=Xq6Q@mail.gmail.com>
+Subject: Re: [BUG][RESEND] Bluetooth: L2CAP: possible data race in __sco_sock_close()
+To:     Li Tuo <islituo@gmail.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        baijiaju1990@outlook.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -73,93 +72,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 28, 2023 at 9:54=E2=80=AFAM Quentin Deslandes <qde@naccy.de> wr=
-ote:
->
-> On 28/04/2023 00:21, Andrii Nakryiko wrote:
-> > On Thu, Apr 27, 2023 at 2:10=E2=80=AFAM Florian Westphal <fw@strlen.de>=
- wrote:
-> >>
-> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >>>> @@ -1560,6 +1562,12 @@ union bpf_attr {
-> >>>>                                  */
-> >>>>                                 __u64           cookie;
-> >>>>                         } tracing;
-> >>>> +                       struct {
-> >>>> +                               __u32           pf;
-> >>>> +                               __u32           hooknum;
-> >>>
-> >>> catching up on stuff a bit...
-> >>>
-> >>> enum nf_inet_hooks {
-> >>>         NF_INET_PRE_ROUTING,
-> >>>         NF_INET_LOCAL_IN,
-> >>>         NF_INET_FORWARD,
-> >>>         NF_INET_LOCAL_OUT,
-> >>>         NF_INET_POST_ROUTING,
-> >>>         NF_INET_NUMHOOKS,
-> >>>         NF_INET_INGRESS =3D NF_INET_NUMHOOKS,
-> >>> };
-> >>>
-> >>> So it seems like this "hook number" is more like "hook type", is my
-> >>> understanding correct?
-> >>
-> >> What is 'hook type'?
-> >
-> > I meant that it's not some dynamically generated number that could
-> > change from the system to system, it's a fixed set of point in which
-> > this BPF program can be triggered. The distinction I was trying to
-> > make that it's actually different in nature compared to, say, ifindex,
-> > as it is fixed by the kernel.
->
-> Doesn't this ties the program to a specific hook then? Let's say you
-> have a program counting the number of packets from a specific IP, and
-> would you be able to attach it to both LOCAL_IN and FORWARD without
-> modifying it?
+Hi,
 
-By default, yes (but you can work around that). From your and
-Florian's replies it follows that these are not like
-expected_attach_type, if I understand correctly. So I'm fine with
-having them as attach argument, not part of program type and attach
-type.
+On Fri, Apr 28, 2023 at 3:27=E2=80=AFAM Li Tuo <islituo@gmail.com> wrote:
+>
+>   Hello,
+>
+> Our static analysis tool finds a possible data race in the l2cap protocol
+> in Linux 6.3.0-rc7:
+>
+> In most calling contexts, the variable sk->sk_socket is accessed
+> with holding the lock sk->sk_callback_lock. Here is an example:
+>
+>   l2cap_sock_accept() --> Line 346 in net/bluetooth/l2cap_sock.c
+>       bt_accept_dequeue() --> Line 368 in net/bluetooth/l2cap_sock.c
+>           sock_graft() --> Line 240 in net/bluetooth/af_bluetooth.c
+>               write_lock_bh(&sk->sk_callback_lock); --> Line 2081 in incl=
+ude/net/sock.h (Lock sk->sk_callback_lock)
+>               sk_set_socket() --> Line 2084 in include/net/sock.h
+>                   sk->sk_socket =3D sock; --> Line 2054 in include/net/so=
+ck.h (Access sk->sk_socket)
+>
+> However, in the following calling context:
+>
+>   sco_sock_shutdown() --> Line 1227 in net/bluetooth/sco.c
+>       __sco_sock_close() --> Line 1243 in net/bluetooth/sco.c
+>           BT_DBG(..., sk->sk_socket); --> Line 431 in net/bluetooth/sco.c=
+ (Access sk->sk_socket)
+>
+> the variable sk->sk_socket is accessed without holding the lock
+> sk->sk_callback_lock, and thus a data race may occur.
+>
+> Reported-by: BassCheck <bass@buaa.edu.cn>
 
->
-> >>> If so, wouldn't it be cleaner and more uniform
-> >>> with, say, cgroup network hooks to provide hook type as
-> >>> expected_attach_type? It would also allow to have a nicer interface i=
-n
-> >>> libbpf, by specifying that as part of SEC():
-> >>>
-> >>> SEC("netfilter/pre_routing"), SEC("netfilter/local_in"), etc...
-> >>
-> >> I don't understand how that would help.
-> >> Attachment needs a priority and a family (ipv4, arp, etc.).
-> >>
-> >> If we allow netdev type we'll also need an ifindex.
-> >> Daniel Xu work will need to pass extra arguments ("please enable ip
-> >> defrag").
-> >
-> > Ok, that's fine, if you think it doesn't make sense to pre-declare
-> > that a given BPF program is supposed to be run only in, say,
-> > PRE_ROUTING, then it's fine. We do declare this for other programs
-> > (e.g., cgroup_skb/egress vs cgroup_skb/ingress), so it felt like this
-> > might be a similar case.
-> >
-> >>
-> >>> Also, it seems like you actually didn't wire NETFILTER link support i=
-n
-> >>> libbpf completely. See bpf_link_create under tools/lib/bpf/bpf.c, it
-> >>> has to handle this new type of link as well. Existing tests seem a bi=
-t
-> >>> bare-bones for SEC("netfilter"), would it be possible to add somethin=
-g
-> >>> that will demonstrate it a bit better and will be actually executed a=
-t
-> >>> runtime and validated?
-> >>
-> >> I can have a look.
-> >
-> > It probably makes sense to add bpf_program__attach_netfilter() API as
-> > well which will return `struct bpf_link *`. Right now libbpf support
-> > for NETFILTER is very incomplete.
->
+Need to check in detail what it means to hold the sk_callback_lock,
+btw is this static analysis tool of yours something public that we can
+use in our CI to detect these problems?
+
+
+--=20
+Luiz Augusto von Dentz
