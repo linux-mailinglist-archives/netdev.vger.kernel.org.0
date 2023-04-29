@@ -2,65 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A2D6F2543
-	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 17:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B7696F257D
+	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 19:35:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231375AbjD2Pst (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Apr 2023 11:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
+        id S229596AbjD2Rf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Apr 2023 13:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjD2Pss (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 11:48:48 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B1B1728
-        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 08:48:23 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id d2e1a72fcca58-63b87d23729so783235b3a.0
-        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 08:48:22 -0700 (PDT)
+        with ESMTP id S229445AbjD2Rf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 13:35:28 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC981BC5
+        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 10:35:26 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-5050491cb04so1353201a12.0
+        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 10:35:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1682783302; x=1685375302;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+9P2mZM7ci2Xw5rF6VxKlkFONlC9SOUfJRYGLbDsm7w=;
-        b=EPryO+NxFUtz9gXpD8UMe0U5isNA42gRV9JOeOHlwB4AGQBAibZPgaE4LOrecks1QL
-         l6wz6P04lHKe6XUTwN/Pkwuil/ZsU3QoZX+gYMOtX7ZGSMuRt4TAwZDHkrCVAEPEK/oh
-         wZDAX7L9z9uxy7K/e66iA62dFXPjPFZUy6bYI1eCHuCEYgPf4VUE5lFazVEYRpYq1lz8
-         y3yL9gaixAd4XjG3pEFuHOV76sSDkLIUDyxiOxZhgaxOghBTMw1wY1zphhp2Gi0m6qdz
-         Cpca1ksWQcuzs7oDyUYGnYZzvpR7FpHj9yrvoMaCnLeX3JXWcYm2z4Aiwpp5lvaNtqbd
-         OD+Q==
+        d=gmail.com; s=20221208; t=1682789725; x=1685381725;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=FlOO5mxlakrkWJMqTyJJvzQ2W0AKdb1nViezUvxLKmw=;
+        b=pda0tal6t5a49854zLPYAbscEMwHhRV4B54VGHX6nuisCnA2u5Zp+ajdMOuwuvRkXk
+         fiqppxGKcds8UzSrRgCuWKy5RrS+BGmXZeMQwNwcBSkQcQCeuhrHaql9zaLUg6RdJqHh
+         L1Z2eBE/7F0+WY4uMTO+XMe5WyY2IKb91xcUSCsXMPnPS4mcC+aCg4m43VtbBpi8t9a/
+         j5Q6wKf8a1kL51M2cGPI1Pk0jeRIQort3OzGcP1KFFNNQKKt1XlGD+O1KEWmTJtHViOV
+         H1xXbeYe4dpGCzjhFp16J7ldfV3xII66HJkpuHZkb9Hz7COzetMdEHWs0+X8swjQTK6P
+         Vt8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682783302; x=1685375302;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+9P2mZM7ci2Xw5rF6VxKlkFONlC9SOUfJRYGLbDsm7w=;
-        b=PNKhwGdRMwICzTsrESsF7WTuuIkFc5+EzN4LGt6keT24KRUzEBDxG9ZNB2OiEx4/zX
-         sdsTTumDGNFcBBxv1mHk4W4Qv290aHtevlbH8ciX1lnUL4YcDerlDEn9g4X1vi4ShTGq
-         zQtJB6IPU7gbWZN0bnvhLDfqyCQt4yPC8f0gIawUSbxhGSyqNQ2YCxxB30LcBzIHVFJ/
-         ZolvxWHE0bCzid2PSoAywnUKAqfe1h5M3N8LviKJMvcKzKSkDaazk3hF44lUUlfEOSMq
-         2QczqyIX2/k1DW+fQr2zRiAFY+NBP0PgAgpi57b0SBC06BcJKzQcpwP5mFe4a8xNCZHZ
-         ipiA==
-X-Gm-Message-State: AC+VfDx+fTXBqH91uJPYdJNXcOnKA4Z+GKLOiCgMpN1kAE/ZqnA8kgMs
-        Fv1KCTSswJ+ERZV0m9rIcU1wvw==
-X-Google-Smtp-Source: ACHHUZ53Fj9h6nZ4V5lFVpFEXCq+C8z+ue/01AyizM4xlHjhyXzWh1UbrK6VxXY1/kvtAHXIsCZDMg==
-X-Received: by 2002:a05:6a00:1515:b0:640:e12a:3a20 with SMTP id q21-20020a056a00151500b00640e12a3a20mr13492262pfu.1.1682783302499;
-        Sat, 29 Apr 2023 08:48:22 -0700 (PDT)
-Received: from localhost.localdomain ([2408:8207:2423:d60:94ce:3d97:123:5b2c])
-        by smtp.gmail.com with ESMTPSA id c17-20020a056a000ad100b005ae02dc5b94sm17170554pfl.219.2023.04.29.08.48.18
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 29 Apr 2023 08:48:22 -0700 (PDT)
-From:   Wenliang Wang <wangwenliang.1995@bytedance.com>
-To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        zhengqi.arch@bytedance.com, willemdebruijn.kernel@gmail.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Wenliang Wang <wangwenliang.1995@bytedance.com>
-Subject: [PATCH v3] virtio_net: suppress cpu stall when free_unused_bufs
-Date:   Sat, 29 Apr 2023 23:47:58 +0800
-Message-Id: <1682783278-12819-1-git-send-email-wangwenliang.1995@bytedance.com>
-X-Mailer: git-send-email 2.7.4
+        d=1e100.net; s=20221208; t=1682789725; x=1685381725;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FlOO5mxlakrkWJMqTyJJvzQ2W0AKdb1nViezUvxLKmw=;
+        b=fiWNZ8mr3wpqD+5XAdy38lyKO6yShHRx+5e38iotOv1eubkDFagPk/RamZ2mk6HbEQ
+         t2OG3UpssB7EbhtpgzegmFd+74aFjDqdtH2NWenP2R8n+S1yePcagRErj9FMlB1QFbP5
+         X7gzj/oRTDXXxX9MHlWXIo0PEfM75OZVDM6dkhYYWO+FhMe+5Tey0poCTK9CXvdWNymw
+         45lhfHsE+KzULhoucHjI36pW+OsYlf+tu1BQsmguGQ3NKIWVhGXaqUjSMj3M7pTqXeOH
+         ELbcV+lf4LOjLL9uxWf/0p4ytYfEPCRgaE351M49RMmaC/UmnTjSlq7mSK94LnXYZB36
+         ijjw==
+X-Gm-Message-State: AC+VfDw9mzW269N+k7HHLKnVaKFmI7mBqRsk1FDCrb+6CmRlPMAEcPl6
+        lnTrh7JGoWLTnzAMp4ilWNk=
+X-Google-Smtp-Source: ACHHUZ7M4wktdnE7jmiqHD5TpbeagZVI6lBKZCA8pGzW504rw11ej02I9mUDAIR/RgCu995q56TW6w==
+X-Received: by 2002:a05:6402:1a28:b0:504:7d53:2148 with SMTP id be8-20020a0564021a2800b005047d532148mr1569040edb.30.1682789724650;
+        Sat, 29 Apr 2023 10:35:24 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id d5-20020a17090648c500b008c16025b318sm12737890ejt.155.2023.04.29.10.35.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Apr 2023 10:35:24 -0700 (PDT)
+Date:   Sat, 29 Apr 2023 20:35:22 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>, Greg Ungerer <gerg@kernel.org>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+        bartel.eerdekens@constell8.be, netdev <netdev@vger.kernel.org>
+Subject: Re: MT7530 bug, forward broadcast and unknown frames to the correct
+ CPU port
+Message-ID: <20230429173522.tqd7izelbhr4rvqz@skbuf>
+References: <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+ <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+ <20230426205450.kez5m5jr4xch7hql@skbuf>
+ <0183eb91-8517-f40f-c2bb-b229e45d6fa5@arinc9.com>
+ <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+ <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+ <20230426205450.kez5m5jr4xch7hql@skbuf>
+ <0183eb91-8517-f40f-c2bb-b229e45d6fa5@arinc9.com>
+ <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
+ <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
+ <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,40 +88,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For multi-queue and large ring-size use case, the following error
-occurred when free_unused_bufs:
-rcu: INFO: rcu_sched self-detected stall on CPU.
+On Sat, Apr 29, 2023 at 04:03:57PM +0300, Arınç ÜNAL wrote:
+> This is the final diff I'm going to submit to net.
+> 
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 4d5c5820e461..cc5fa641b026 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -1008,9 +1008,9 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+>  	mt7530_write(priv, MT7530_PVC_P(port),
+>  		     PORT_SPEC_TAG);
+> -	/* Disable flooding by default */
+> -	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
+> -		   BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port)));
+> +	/* Enable flooding on the CPU port */
+> +	mt7530_set(priv, MT7530_MFC, BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) |
+> +		   UNU_FFP(BIT(port)));
+>  	/* Set CPU port number */
+>  	if (priv->id == ID_MT7621)
+> @@ -2225,6 +2225,10 @@ mt7530_setup(struct dsa_switch *ds)
+>  		/* Disable learning by default on all ports */
+>  		mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
+> +		/* Disable flooding on all ports */
+> +		mt7530_clear(priv, MT7530_MFC, BC_FFP(BIT(i)) | UNM_FFP(BIT(i)) |
+> +			     UNU_FFP(BIT(i)));
+> +
+>  		if (dsa_is_cpu_port(ds, i)) {
+>  			ret = mt753x_cpu_port_enable(ds, i);
+>  			if (ret)
+> @@ -2412,6 +2416,10 @@ mt7531_setup(struct dsa_switch *ds)
+>  		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
+> +		/* Disable flooding on all ports */
+> +		mt7530_clear(priv, MT7530_MFC, BC_FFP(BIT(i)) | UNM_FFP(BIT(i)) |
+> +			     UNU_FFP(BIT(i)));
+> +
+>  		if (dsa_is_cpu_port(ds, i)) {
+>  			ret = mt753x_cpu_port_enable(ds, i);
+>  			if (ret)
 
-Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
----
-v2:
--add need_resched check.
--apply same logic to sq.
-v3:
--use cond_resched instead.
----
- drivers/net/virtio_net.c | 2 ++
- 1 file changed, 2 insertions(+)
+Looks ok, but considering that the register is the same for all ports,
+then instead of accessing the hardware one by one for each port, you
+could issue a single:
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index ea1bd4bb326d..744bdc8a1abd 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -3559,12 +3559,14 @@ static void free_unused_bufs(struct virtnet_info *vi)
- 		struct virtqueue *vq = vi->sq[i].vq;
- 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
- 			virtnet_sq_free_unused_buf(vq, buf);
-+		cond_resched();
- 	}
- 
- 	for (i = 0; i < vi->max_queue_pairs; i++) {
- 		struct virtqueue *vq = vi->rq[i].vq;
- 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
- 			virtnet_rq_free_unused_buf(vq, buf);
-+		cond_resched();
- 	}
- }
- 
--- 
-2.20.1
+	mt7530_clear(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK);
 
+before the per-port for loop.
