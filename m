@@ -2,157 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B90F86F2294
-	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 05:11:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C3A6F22B6
+	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 05:37:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347206AbjD2DLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Apr 2023 23:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
+        id S1347165AbjD2DhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Apr 2023 23:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbjD2DLv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 23:11:51 -0400
-Received: from mail-io1-f80.google.com (mail-io1-f80.google.com [209.85.166.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516581FD0
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 20:11:49 -0700 (PDT)
-Received: by mail-io1-f80.google.com with SMTP id ca18e2360f4ac-7639ebbef32so70688139f.2
-        for <netdev@vger.kernel.org>; Fri, 28 Apr 2023 20:11:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682737908; x=1685329908;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YD2i4IPlwbK4zPwgM4t3+h9xw/jbTfupJpZlr6kcoHs=;
-        b=lwGU/y/k77HyXimfYpyDijL3wegG2fgG7DaNut1I7mNsw8pzPqVISPV87ExQABmywd
-         OgMWtgVHtW+PsENmWf2IiPvd839nrswKdVlFId+vZXRkf2ygxl2NF/d2tUXHxf5YhVKL
-         8vJaMayEvJmzdwv1ES/UkjgTbBOsUNnl09joB4G9Q/Z37fsMJkIm9butg7uEZ6Sq6fVo
-         c1tDWw9pUeiJ7c0P4ZFCjxQTjaHN0BesuIQeQVwI7CWeaY8MSyJ/u4tkxz8BOAzlSIDq
-         3qf2sK+Ml70pBLV87J/2N51spbMp1y8rgYsbaYopsdR7yBdPLGFvl6X5iBL1/SaHCsuh
-         fTjQ==
-X-Gm-Message-State: AC+VfDwk9P8i/0so5k06ptI0wjwmZ/W4ogS67tWCYSpYqmldaTYfUmgt
-        cYcrVzBVwLAKZu2vACtzMEZJZaxc/9/rXH/PtgZzksxeerk+
-X-Google-Smtp-Source: ACHHUZ7QAUwhyObclYFAuRIVRAvxlvqji4eWGadx8L2GQtt9fl2o0Ki6oOm01GszjRYE56r2iKlNqIyLxubeJKapH4cr7I3MsY/2
+        with ESMTP id S229598AbjD2DhU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Apr 2023 23:37:20 -0400
+Received: from m135.mail.163.com (m135.mail.163.com [220.181.13.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DB432699;
+        Fri, 28 Apr 2023 20:37:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+        Message-ID; bh=MjceFRfW62F8aqG76hi8GgFL21E5WvLsrnEWF8rmzUY=; b=F
+        odRA6kIZ61IAHcohuz+FkqE0WqhL+HAPSC+iLNKj6J9OX1LE/NDvB3PZiIyJCCGM
+        E89r7BLjl5i6nTxprPv5uZqEuv6qUBX/i/vDphR8VaAkpZCEFtOxESfvT0Qixrw7
+        ur4/HOzS2avfa4ykUExo8A37inssY+Lfk1z5krSa3w=
+Received: from luyun_611$163.com ( [116.128.244.169] ) by
+ ajax-webmail-wmsvr5 (Coremail) ; Sat, 29 Apr 2023 11:35:31 +0800 (CST)
+X-Originating-IP: [116.128.244.169]
+Date:   Sat, 29 Apr 2023 11:35:31 +0800 (CST)
+From:   "Yun Lu" <luyun_611@163.com>
+To:     "Larry Finger" <Larry.Finger@lwfinger.net>
+Cc:     Jes.Sorensen@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re:Re: [PATCH] wifi: rtl8xxxu: fix authentication timeout due to
+ incorrect RCR value
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2023 www.mailtech.cn 163com
+In-Reply-To: <d3743b66-23b1-011c-9dcd-c408b1963fca@lwfinger.net>
+References: <20230427020512.1221062-1-luyun_611@163.com>
+ <866570c9-38d8-1006-4721-77e2945170b9@lwfinger.net>
+ <76a784b2.2cb3.187c60f0f68.Coremail.luyun_611@163.com>
+ <d3743b66-23b1-011c-9dcd-c408b1963fca@lwfinger.net>
+X-NTES-SC: AL_QuyTAPuYtkso5yWfZekXnUYWhOk5W8K0ufQg3IJTN5E0uCnB6iUjR35GB2fHwOiIMx+LsRmGSjl81ORncYtjWZvPEoTe0xRwoeQKzzOXevAR
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-X-Received: by 2002:a6b:d004:0:b0:762:f8d4:6fe with SMTP id
- x4-20020a6bd004000000b00762f8d406femr3817314ioa.3.1682737908657; Fri, 28 Apr
- 2023 20:11:48 -0700 (PDT)
-Date:   Fri, 28 Apr 2023 20:11:48 -0700
-In-Reply-To: <0000000000009ff60505e2fab2e6@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004bb41105fa70f361@google.com>
-Subject: Re: [syzbot] [net?] KMSAN: uninit-value in ethnl_set_linkmodes (2)
-From:   syzbot <syzbot+ef6edd9f1baaa54d6235@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, glider@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Message-ID: <62d9fe90.63b.187cb1481f8.Coremail.luyun_611@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: BcGowADn70+EkExkyaMLAA--.44748W
+X-CM-SenderInfo: pox130jbwriqqrwthudrp/1tbiFQRgzl5mPYwCEgAAsm
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
-
-HEAD commit:    81af97bdef5e printk: Export console trace point for kcsan/..
-git tree:       https://github.com/google/kmsan.git master
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=10d4b844280000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ee7e125556b25104
-dashboard link: https://syzkaller.appspot.com/bug?extid=ef6edd9f1baaa54d6235
-compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1543bf0c280000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=158f4664280000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/00b0f311889c/disk-81af97bd.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/a3291e9cce5a/vmlinux-81af97bd.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/09b5e66af8b4/bzImage-81af97bd.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ef6edd9f1baaa54d6235@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in ethnl_update_linkmodes net/ethtool/linkmodes.c:273 [inline]
-BUG: KMSAN: uninit-value in ethnl_set_linkmodes+0x190b/0x19d0 net/ethtool/linkmodes.c:333
- ethnl_update_linkmodes net/ethtool/linkmodes.c:273 [inline]
- ethnl_set_linkmodes+0x190b/0x19d0 net/ethtool/linkmodes.c:333
- ethnl_default_set_doit+0x88d/0xde0 net/ethtool/netlink.c:640
- genl_family_rcv_msg_doit net/netlink/genetlink.c:968 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
- genl_rcv_msg+0x141a/0x14c0 net/netlink/genetlink.c:1065
- netlink_rcv_skb+0x3f8/0x750 net/netlink/af_netlink.c:2577
- genl_rcv+0x40/0x60 net/netlink/genetlink.c:1076
- netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
- netlink_unicast+0xf41/0x1270 net/netlink/af_netlink.c:1365
- netlink_sendmsg+0x127d/0x1430 net/netlink/af_netlink.c:1942
- sock_sendmsg_nosec net/socket.c:724 [inline]
- sock_sendmsg net/socket.c:747 [inline]
- ____sys_sendmsg+0xa24/0xe40 net/socket.c:2501
- ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2555
- __sys_sendmsg net/socket.c:2584 [inline]
- __do_sys_sendmsg net/socket.c:2593 [inline]
- __se_sys_sendmsg net/socket.c:2591 [inline]
- __x64_sys_sendmsg+0x36b/0x540 net/socket.c:2591
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Uninit was stored to memory at:
- tun_get_link_ksettings+0x37/0x60 drivers/net/tun.c:3544
- __ethtool_get_link_ksettings+0x17b/0x260 net/ethtool/ioctl.c:441
- ethnl_set_linkmodes+0xee/0x19d0 net/ethtool/linkmodes.c:327
- ethnl_default_set_doit+0x88d/0xde0 net/ethtool/netlink.c:640
- genl_family_rcv_msg_doit net/netlink/genetlink.c:968 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
- genl_rcv_msg+0x141a/0x14c0 net/netlink/genetlink.c:1065
- netlink_rcv_skb+0x3f8/0x750 net/netlink/af_netlink.c:2577
- genl_rcv+0x40/0x60 net/netlink/genetlink.c:1076
- netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
- netlink_unicast+0xf41/0x1270 net/netlink/af_netlink.c:1365
- netlink_sendmsg+0x127d/0x1430 net/netlink/af_netlink.c:1942
- sock_sendmsg_nosec net/socket.c:724 [inline]
- sock_sendmsg net/socket.c:747 [inline]
- ____sys_sendmsg+0xa24/0xe40 net/socket.c:2501
- ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2555
- __sys_sendmsg net/socket.c:2584 [inline]
- __do_sys_sendmsg net/socket.c:2593 [inline]
- __se_sys_sendmsg net/socket.c:2591 [inline]
- __x64_sys_sendmsg+0x36b/0x540 net/socket.c:2591
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Uninit was stored to memory at:
- tun_set_link_ksettings+0x37/0x60 drivers/net/tun.c:3553
- ethtool_set_link_ksettings+0x600/0x690 net/ethtool/ioctl.c:609
- __dev_ethtool net/ethtool/ioctl.c:3024 [inline]
- dev_ethtool+0x1db9/0x2a70 net/ethtool/ioctl.c:3078
- dev_ioctl+0xb07/0x1270 net/core/dev_ioctl.c:524
- sock_do_ioctl+0x295/0x540 net/socket.c:1213
- sock_ioctl+0x729/0xd90 net/socket.c:1316
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl+0x222/0x400 fs/ioctl.c:856
- __x64_sys_ioctl+0x96/0xe0 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x41/0xc0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Local variable link_ksettings created at:
- ethtool_set_link_ksettings+0x54/0x690 net/ethtool/ioctl.c:577
- __dev_ethtool net/ethtool/ioctl.c:3024 [inline]
- dev_ethtool+0x1db9/0x2a70 net/ethtool/ioctl.c:3078
-
-CPU: 1 PID: 4952 Comm: syz-executor743 Not tainted 6.3.0-syzkaller-g81af97bdef5e #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 04/14/2023
-=====================================================
-
-
----
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
+QXQgMjAyMy0wNC0yOSAwMTowNjowMywgIkxhcnJ5IEZpbmdlciIgPExhcnJ5LkZpbmdlckBsd2Zp
+bmdlci5uZXQ+IHdyb3RlOgo+T24gNC8yNy8yMyAyMzoxMSwgd28gd3JvdGU6Cj4+IFvCoCAxNDku
+NTk1NjQyXSBbcGlkOjcsY3B1Nixrd29ya2VyL3UxNjowLDBdQkVGT1JFOiBSRUdfUkNSIGRpZmZl
+cnMgZnJvbSByZWdyY3I6IAo+PiAweDE4MzA2MTMgaW5zdGVkIG9mIDB4NzAwMDYwNGUKPj4gW8Kg
+IDE2MC42NzY0MjJdIFtwaWQ6MjM3LGNwdTYsa3dvcmtlci91MTY6NSwzXUJFRk9SRTogUkVHX1JD
+UiBkaWZmZXJzIGZyb20gCj4+IHJlZ3JjcjogMHg3MDAwNjAwOSBpbnN0ZWQgb2YgMHg3MDAwNjBj
+ZQo+ID4gWyAgMzI3LjIzNDU4OF0gW3BpZDo3LGNwdTcsa3dvcmtlci91MTY6MCw1XUJFRk9SRTog
+UkVHX1JDUiBkaWZmZXJzIGZyb20gCj5yZWdyY3I6IDB4MTgzMGQzMyBpbnN0ZWQgb2YgMHg3MDAw
+NjA0ZQo+Cj4KPk15IHBhdGNoIHdhcyBtZXNzZWQgdXAsIGJ1dCBpdCBnb3QgdGhlIGluZm9ybWF0
+aW9uIHRoYXQgSSB3YW50ZWQsIHdoaWNoIGlzIHNob3duIAo+aW4gdGhlIHF1b3RlZCBsaW5lcyBh
+Ym92ZS4gT25lIG9mIHRoZXNlIGRpZmZlcnMgb25seSBpbiB0aGUgbG93LW9yZGVyIGJ5dGUsIAo+
+d2hpbGUgdGhlIG90aGVyIDIgYXJlIGNvbXBsZXRlbHkgZGlmZmVyZW50LiBTdHJhbmdlIQo+Cj5J
+dCBpcyBwb3NzaWJsZSB0aGF0IHRoZXJlIGlzIGEgZmlybXdhcmUgZXJyb3IuIE15IHN5c3RlbSwg
+d2hpY2ggZG9lcyBub3Qgc2hvdyAKPnRoZSBwcm9ibGVtLCByZXBvcnRzIHRoZSBmb2xsb3dpbmc6
+Cj4KPls1NDEzMC43NDExNDhdIHVzYiAzLTY6IFJUTDgxOTJDVSByZXYgQSAoVFNNQykgcm9tdmVy
+IDAsIDJUMlIsIFRYIHF1ZXVlcyAyLCAKPldpRmk9MSwgQlQ9MCwgR1BTPTAsIEhJIFBBPTAKPls1
+NDEzMC43NDExNTNdIHVzYiAzLTY6IFJUTDgxOTJDVSBNQUM6IHh4Onh4Onh4Onh4Onh4Onh4Cj5b
+NTQxMzAuNzQxMTU1XSB1c2IgMy02OiBydGw4eHh4dTogTG9hZGluZyBmaXJtd2FyZSBydGx3aWZp
+L3J0bDgxOTJjdWZ3X1RNU0MuYmluCj5bNTQxMzAuNzQyMzAxXSB1c2IgMy02OiBGaXJtd2FyZSBy
+ZXZpc2lvbiA4OC4yIChzaWduYXR1cmUgMHg4OGMxKQo+Cj5XaGljaCBmaXJtd2FyZSBkb2VzIHlv
+dXIgdW5pdCB1c2U/CgpUaGUgZmlybXdhcmUgdmVyaW9uIHdlIHVzZWQgaXMgODAuMCAoc2lnbmF0
+dXJlIDB4ODhjMSkKIFsgIDkwMy44NzMxMDddIFtwaWQ6MTQsY3B1MCxrd29ya2VyLzA6MSwyXXVz
+YiAxLTEuMjogUlRMODE5MkNVIHJldiBBIChUU01DKSAyVDJSLCBUWCBxdWV1ZXMgMiwgV2lGaT0x
+LCBCVD0wLCBHUFM9MCwgSEkgUEE9MApbICA5MDMuODczMTM4XSBbcGlkOjE0LGNwdTAsa3dvcmtl
+ci8wOjEsM111c2IgMS0xLjI6IFJUTDgxOTJDVSBNQUM6IDA4OmJlOnh4Onh4Onh4Onh4ClsgIDkw
+My44NzMxMzhdIFtwaWQ6MTQsY3B1MCxrd29ya2VyLzA6MSw0XXVzYiAxLTEuMjogcnRsOHh4eHU6
+IExvYWRpbmcgZmlybXdhcmUgcnRsd2lmaS9ydGw4MTkyY3Vmd19UTVNDLmJpbgpbICA5MDMuODcz
+NDc0XSBbcGlkOjE0LGNwdTAsa3dvcmtlci8wOjEsNV11c2IgMS0xLjI6IEZpcm13YXJlIHJldmlz
+aW9uIDgwLjAgKHNpZ25hdHVyZSAweDg4YzEpCgo+Cj5BdHRhY2hlZCBpcyBhIG5ldyB0ZXN0IHBh
+dGNoLiBXaGVuIGl0IGxvZ3MgYSBDT1JSVVBURUQgdmFsdWUsIEkgd291bGQgbGlrZSB0byAKPmtu
+b3cgd2hhdCB0YXNrIGlzIGF0dGFjaGVkIHRvIHRoZSBwaWQgbGlzdGVkIGluIHRoZSBtZXNzYWdl
+LiBOb3RlIHRoYXQgdGhlIHR3byAKPmluc3RhbmNlcyB3aGVyZSB0aGUgZW50aXJlIHdvcmQgd2Fz
+IHdyb25nIGNhbWUgZnJvbSBwaWQ6Ny4KPgo+Q291bGQgaW1wcm9wZXIgbG9ja2luZyBjb3VsZCBw
+cm9kdWNlIHRoZXNlIHJlc3VsdHM/Cj4KPkxhcnJ5CgpBcHBseSB5b3VyIG5ldyBwYXRjaCwgdGhl
+biB0dXJuIG9uL29mZiB0aGUgd2lyZWxlc3MgbmV0d29yayBzd2l0Y2ggb24gdGhlIG5ldHdvcmsg
+Y29udHJvbCBwYW5lbCBzZXJ2ZXJsIGxvb3BzLgpUaGUgbG9nIHNob3dzOgpbICAgODUuMzg0NDI5
+XSBbcGlkOjIyMSxjcHU2LGt3b3JrZXIvdTE2OjYsNV1SRUdfUkNSIGNvcnJ1cHRlZCBpbiBydGw4
+eHh4dV9jb25maWd1cmVfZmlsdGVyOiAweDcwMDA2MDA5IGluc3RlZCBvZiAweDcwMDA2MGNlClsg
+IDEyMS42ODE5NzZdIFtwaWQ6MjE2LGNwdTYsa3dvcmtlci91MTY6MywwXVJFR19SQ1IgY29ycnVw
+dGVkIGluIHJ0bDh4eHh1X2NvbmZpZ3VyZV9maWx0ZXI6IDB4NzAwMDYwMDkgaW5zdGVkIG9mIDB4
+NzAwMDYwY2UKWyAgMTQ0LjQxNjk5Ml0gW3BpZDoyMTcsY3B1Nixrd29ya2VyL3UxNjo0LDFdUkVH
+X1JDUiBjb3JydXB0ZWQgaW4gcnRsOHh4eHVfY29uZmlndXJlX2ZpbHRlcjogMHg3MDAwNjAwOSBp
+bnN0ZWQgb2YgMHg3MDAwNjBjZQoKQW5kIGlmIHdlIHVwL2Rvd24gdGhlIGludGVyZmFjZSBzZXJ2
+ZXJsIGxvb3BzIGFzIGZvbGxvd3M6CmlmY29uZmlnIHdseDA4YmV4eHh4eHggZG93bgpzbGVlcCAx
+CmlmY29uZmlnIHdseDA4YmV4eHh4eHggdXAKc2xlZXAgMTAKVGhlIGxvZyBzaG93czoKWyAgMjgy
+LjExMjMzNV0gWzIwMjM6MDQ6MjkgMTA6MzA6MzRdW3BpZDo5NSxjcHU2LGt3b3JrZXIvdTE2OjEs
+M11SRUdfUkNSIGNvcnJ1cHRlZCBpbiBydGw4eHh4dV9jb25maWd1cmVfZmlsdGVyOiAweDE4MzJl
+MTMgaW5zdGVkIG9mIDB4NzAwMDYwNGUKWyAgMjkzLjMxMTQ2Ml0gWzIwMjM6MDQ6MjkgMTA6MzA6
+NDVdW3BpZDoyMTcsY3B1Nyxrd29ya2VyL3UxNjo0LDldUkVHX1JDUiBjb3JydXB0ZWQgaW4gcnRs
+OHh4eHVfY29uZmlndXJlX2ZpbHRlcjogMHgxODMwZTcyIGluc3RlZCBvZiAweDcwMDA2MDRlClsg
+IDMwNC40MzUwODldIFsyMDIzOjA0OjI5IDEwOjMwOjU2XVtwaWQ6MjE3LGNwdTYsa3dvcmtlci91
+MTY6NCw5XVJFR19SQ1IgY29ycnVwdGVkIGluIHJ0bDh4eHh1X2NvbmZpZ3VyZV9maWx0ZXI6IDB4
+MTgzMGVkMyBpbnN0ZWQgb2YgMHg3MDAwNjA0ZQpbICAzMTUuNTMyMjU3XSBbMjAyMzowNDoyOSAx
+MDozMTowN11bcGlkOjk1LGNwdTcsa3dvcmtlci91MTY6MSw4XVJFR19SQ1IgY29ycnVwdGVkIGlu
+IHJ0bDh4eHh1X2NvbmZpZ3VyZV9maWx0ZXI6IDB4NzAwMDYwNGUgaW5zdGVkIG9mIDB4NzAwMDYw
+NGUKWyAgMzI0LjExNDM3OV0gWzIwMjM6MDQ6MjkgMTA6MzE6MTZdW3BpZDoyMjEsY3B1Nixrd29y
+a2VyL3UxNjo2LDddUkVHX1JDUiBjb3JydXB0ZWQgaW4gcnRsOHh4eHVfY29uZmlndXJlX2ZpbHRl
+cjogMHgxODMyZTE0IGluc3RlZCBvZiAweDcwMDA2MDRlCgpXZSBhbHNvIHVwZGF0ZSB0aGUgIGZp
+cm13YXJlIHZlcmlvbiB0byA4OC4yLCBhbmQgdGhlIHRlc3QgcmVzdWx0cyBhcmUgdGhlIHNhbWUg
+YXMgYWJvdmUuCgpUaGFuayB5b3UgZm9yIGhlbHBpbmcgZGVidWcgdGhpcyBpc3N1ZSwgd2hpY2gg
+c2VlbXMgdG8gYmUgcmVsYXRlZCB0byBzcGVjaWZpYyBkZXZpY2VzLgoKWXVuIEx1CgoKCgo=
