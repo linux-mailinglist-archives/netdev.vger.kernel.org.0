@@ -2,260 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D366F271C
-	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 01:09:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97B306F2721
+	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 01:09:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231183AbjD2XJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Apr 2023 19:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
+        id S231218AbjD2XJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Apr 2023 19:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbjD2XJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 19:09:13 -0400
-Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9CE10FC;
-        Sat, 29 Apr 2023 16:09:10 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by domac.alu.hr (Postfix) with ESMTP id EF0A460161;
-        Sun, 30 Apr 2023 01:09:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1682809747; bh=EW71Uu3FCd8kGpUKI/5g/oAGTU9KZ+/7Mkj0LnbpVdw=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=qvEuXnlEFQxjihtnPCwNrmfboVPkaRmZjz7+MGyJM1h67tcxbVzDnHkIdKztK4pm3
-         bAaHpp7qXR5IZv4+Lsr8ECc/SnuhnKoCjIXOkItCzNnnJQXW9+Qff4IA+LyrzMPxRF
-         HbR2DpehOdg0cm9HLayZ24f+CbFpP6iCNQVAjM523CHMnm/LHjLHT/jklO8lZmuiVP
-         WA+TFl0ZS/mgP9WUaIHWSJ/5PumLwr12DkWVTIsanGLKg8t9dHrkTqCTFtrnjQqeUP
-         SZsto8y6RctEOpAEbfIpH9zmlQusOVHGkeSGWyEJn/HLDBaZSWhhqe7knIgL8lhmwR
-         LrYXgociRWMwA==
-X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
-Received: from domac.alu.hr ([127.0.0.1])
-        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id RwNLizVczE6Y; Sun, 30 Apr 2023 01:09:04 +0200 (CEST)
-Received: from [192.168.1.4] (unknown [77.237.113.62])
-        by domac.alu.hr (Postfix) with ESMTPSA id 6D4436015E;
-        Sun, 30 Apr 2023 01:09:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
-        t=1682809744; bh=EW71Uu3FCd8kGpUKI/5g/oAGTU9KZ+/7Mkj0LnbpVdw=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=y6MPRBx9AzMCmKs/zP0C0gNIb+cdvfm82zuc8H17FHGkRoOnpDJ17DH+pj33ClsQF
-         5c1D8Ae5rJ8IeeJHYFDZhSGg7sDazGHbN5hi4ZvsTKwzZJuQglH6pETrrSlcjXtyf/
-         ZaDcIweLhvg5NBBqBFBg281055Fye1QogKMEVSv5DC2qWNAxx7KSwWzVMxm2DzSGnl
-         lNxsB7dDiAkkcCDJpRxb4VhLWN/x54BsYwbgwe1AsngeYMZTjg2aLTlPJpt/JZgO1i
-         LZlbNnabRvBOSLHYTR5vN7ltvXcS+pzZHviKcfS5o53JOG01B2F7xzxReaHaf8vRMU
-         99kTqTlCvvT8g==
-Message-ID: <27163cae-abe6-452a-573f-48a2223468c0@alu.unizg.hr>
-Date:   Sun, 30 Apr 2023 01:09:01 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [WITHDRAW PATCH v1 1/1] net: r8169: fix the pci setup so the
- Realtek RTL8111/8168/8411 ethernet speeds up
-To:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     nic_swsd@realtek.com, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231192AbjD2XJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 19:09:42 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDED1BEE;
+        Sat, 29 Apr 2023 16:09:39 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-3f178da21afso6427875e9.1;
+        Sat, 29 Apr 2023 16:09:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682809778; x=1685401778;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=F3yt7UWon4YwEktTTztF8j+ALULlII1l8bpdeotbMIE=;
+        b=aM/o79DZGGXZspHFc4p8GMX+nu7QMX99JKJhhxXKo61f3MrWXsOdN707iEKFkIbMGC
+         OKY3gvOkEMlcn+HYHQi9nyd3DteDCKvE1BXdeXWWP2BMENxGQzfIcISgJ1PVhjAeUtOu
+         yrGdS4iHcNOSgiAQFjChwtBWIbLtqlzdii4S//Zh5uO8z4bwuFNTn1rkKGIpyjRkO+4O
+         KdJq7iyPkR3CooD9QB/2GcD7Gwn3CiLoCbiRUjNeeQtVRSFFdX4msVJOkeGGklmB3025
+         t1QM4nVsGcB9gDv93CD5m68kkPhTWhLTLqYJ1WKWu80HVJEAIPwlxwycB2mQcsWFnwAe
+         6pMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682809778; x=1685401778;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=F3yt7UWon4YwEktTTztF8j+ALULlII1l8bpdeotbMIE=;
+        b=kUbaK++bh2zbixwklASaZNhuQ2jUVYg9cLRhwnSeftqyihw7+2y1yMLP+SBtFlu8tB
+         tscO4MtTtOvCM/KOPerE/cT1uPAqD7nFyy4lQDUUd+dp63aHMcCUPsyyBc/Ru7yX/ZBi
+         3NroEXvTXivdrGh175ziuyG+w5Uv9rpSIj4OfIhcljR+B5qho7wzc8B8YLsY0wMPX4dh
+         P8Q14ZQkNc40+r0JpAVloEF/uQisog9Uwl76d8hpgfqfOJfZi8TUZ9/jf+80fhMt4sp+
+         k/deGhGBYjJkQsu8EHhkk+wvfj/5j2i9LK6Tl7eq7ZPYGVJSpeJDRpGzCFaPTi8KOE1B
+         ru3g==
+X-Gm-Message-State: AC+VfDxJWKqsrTAJwJKhgXotdMRHnPVbi/hiUKxxs6I+m2d+7zExFywb
+        aMKkLKBNvED0forN9dqUJOFhyXePRhzSRw==
+X-Google-Smtp-Source: ACHHUZ7Z4WHld4Risglrn3ZR0XC+6byvRHKMG+s3r0djAjM2ZZ1g4RneczYz1ypDalKVc6ebQ+bOjg==
+X-Received: by 2002:a7b:c4c2:0:b0:3f1:9a5a:b444 with SMTP id g2-20020a7bc4c2000000b003f19a5ab444mr7334384wmk.15.1682809777551;
+        Sat, 29 Apr 2023 16:09:37 -0700 (PDT)
+Received: from localhost ([2a00:23c5:dc8c:8701:1663:9a35:5a7b:1d76])
+        by smtp.gmail.com with ESMTPSA id k36-20020a05600c1ca400b003f1733feb3dsm32301239wms.0.2023.04.29.16.09.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Apr 2023 16:09:36 -0700 (PDT)
+Date:   Sun, 30 Apr 2023 00:09:35 +0100
+From:   Lorenzo Stoakes <lstoakes@gmail.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Theodore Ts'o <tytso@mit.edu>,
+        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Christian Benvenuti <benve@cisco.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bjorn Topel <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20230425114455.22706-1-mirsad.todorovac@alu.unizg.hr>
-Content-Language: en-US, hr
-From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-In-Reply-To: <20230425114455.22706-1-mirsad.todorovac@alu.unizg.hr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, Jan Kara <jack@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Mika Penttila <mpenttil@redhat.com>,
+        David Howells <dhowells@redhat.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v5] mm/gup: disallow GUP writing to file-backed mappings
+ by default
+Message-ID: <08ff7961-7e86-40b3-8e25-1592526c94d4@lucifer.local>
+References: <6b73e692c2929dc4613af711bdf92e2ec1956a66.1682638385.git.lstoakes@gmail.com>
+ <afcc124e-7a9b-879c-dfdf-200426b84e24@redhat.com>
+ <ZEvZtIb2EDb/WudP@nvidia.com>
+ <ZEwPscQu68kx32zF@mit.edu>
+ <ZEwVbPM2OPSeY21R@nvidia.com>
+ <ZEybNZ7Rev+XM4GU@mit.edu>
+ <ZE2ht9AGx321j0+s@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZE2ht9AGx321j0+s@nvidia.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25. 04. 2023. 13:44, Mirsad Goran Todorovac wrote:
-> It was noticed that Ookla Speedtest had shown only 250 Mbps download and
-> 310 Mbps upload where Windows 10 on the same box showed 440/310 Mbps, which
-> is the link capacity.
-> 
-> This article: https://www.phoronix.com/news/Intel-i219-LM-Linux-60p-Fix
-> inspired to check our speeds. (Previously I used to think it was a network
-> congestion, or reduction on our ISP, but now each time Windows 10 downlink
-> speed is 440 compared to 250 Mbps in Linuxes Linux is performing at 60% of
-> the speed.)
-> 
-> The latest 6.3 kernel shows 95% speed up with this patch as compared to the
-> same commit without it:
-> 
-> ::::::::::::::
-> speedtest/6.3.0-00436-g173ea743bf7a-dirty-1
-> ::::::::::::::
-> [marvin@pc-mtodorov ~]$ speedtest -s 41437
-> 
->    Speedtest by Ookla
-> 
->       Server: A1 Hrvatska d.o.o. - Zagreb (id: 41437)
->          ISP: Croatian Academic and Research Network
-> Idle Latency:     1.53 ms   (jitter: 0.15ms, low: 1.30ms, high: 1.71ms)
->     Download:   225.13 Mbps (data used: 199.3 MB)
->                   1.65 ms   (jitter: 20.15ms, low: 0.81ms, high: 418.27ms)
->       Upload:   350.00 Mbps (data used: 157.9 MB)
->                   3.35 ms   (jitter: 19.46ms, low: 1.61ms, high: 474.55ms)
->  Packet Loss:     0.0%
->   Result URL: https://www.speedtest.net/result/c/a0084fd8-c275-4019-899a-a1590e49a34b
-> [marvin@pc-mtodorov ~]$ speedtest -s 41437
-> 
->    Speedtest by Ookla
-> 
->       Server: A1 Hrvatska d.o.o. - Zagreb (id: 41437)
->          ISP: Croatian Academic and Research Network
-> Idle Latency:     1.54 ms   (jitter: 0.28ms, low: 1.17ms, high: 1.64ms)
->     Download:   222.88 Mbps (data used: 207.9 MB)
->                  10.23 ms   (jitter: 31.76ms, low: 0.75ms, high: 353.79ms)
->       Upload:   349.91 Mbps (data used: 157.7 MB)
->                   3.27 ms   (jitter: 13.05ms, low: 1.67ms, high: 236.76ms)
->  Packet Loss:     0.0%
->   Result URL: https://www.speedtest.net/result/c/f4c663ba-830d-44c6-8033-ce3b3b818c42
-> [marvin@pc-mtodorov ~]$
-> ::::::::::::::
-> speedtest/6.3.0-r8169-00437-g323fe5352af6-dirty-2
-> ::::::::::::::
-> [marvin@pc-mtodorov ~]$ speedtest -s 41437
-> 
->    Speedtest by Ookla
-> 
->       Server: A1 Hrvatska d.o.o. - Zagreb (id: 41437)
->          ISP: Croatian Academic and Research Network
-> Idle Latency:     0.84 ms   (jitter: 0.05ms, low: 0.82ms, high: 0.93ms)
->     Download:   432.37 Mbps (data used: 360.5 MB)
->                 142.43 ms   (jitter: 76.45ms, low: 1.02ms, high: 1105.19ms)
->       Upload:   346.29 Mbps (data used: 164.6 MB)
->                   7.72 ms   (jitter: 29.80ms, low: 0.92ms, high: 283.48ms)
->  Packet Loss:    12.8%
->   Result URL: https://www.speedtest.net/result/c/e473359e-c37e-4f29-aa9f-4b008210cf7c
-> [marvin@pc-mtodorov ~]$ speedtest -s 41437
-> 
->    Speedtest by Ookla
-> 
->       Server: A1 Hrvatska d.o.o. - Zagreb (id: 41437)
->          ISP: Croatian Academic and Research Network
-> Idle Latency:     0.82 ms   (jitter: 0.16ms, low: 0.75ms, high: 1.05ms)
->     Download:   440.97 Mbps (data used: 427.5 MB)
->                  72.50 ms   (jitter: 52.89ms, low: 0.91ms, high: 865.08ms)
->       Upload:   342.75 Mbps (data used: 166.6 MB)
->                   3.26 ms   (jitter: 22.93ms, low: 1.07ms, high: 239.41ms)
->  Packet Loss:    13.4%
->   Result URL: https://www.speedtest.net/result/c/f393e149-38d4-4a34-acc4-5cf81ff13708
-> 
-> 440 Mbps is the speed achieved in Windows 10, and Linux 6.3 with
-> the patch, while 225 Mbps without this patch is running at 51% of
-> the nominal speed with the same hardware and Linux kernel commit.
-> 
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: nic_swsd@realtek.com
-> Cc: netdev@vger.kernel.org
-> Link: https://bugzilla.redhat.com/show_bug.cgi?id=1671958#c60
-> Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
-> Signed-off-by: Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 45147a1016be..b8a04301d130 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -3239,6 +3239,7 @@ static void rtl_hw_start_8168h_1(struct rtl8169_private *tp)
->  	r8168_mac_ocp_write(tp, 0xc094, 0x0000);
->  	r8168_mac_ocp_write(tp, 0xc09e, 0x0000);
->  
-> +	pci_disable_link_state(tp->pci_dev, PCIE_LINK_STATE_CLKPM);
->  	rtl_hw_aspm_clkreq_enable(tp, true);
->  }
->  
+On Sat, Apr 29, 2023 at 08:01:11PM -0300, Jason Gunthorpe wrote:
+> On Sat, Apr 29, 2023 at 12:21:09AM -0400, Theodore Ts'o wrote:
+>
+> > In any case, the file system maintainers' position (mine and I doubt
+> > Dave Chinner's position has changed) is that if you write to
+> > file-backed mappings via GUP/RDMA/process_vm_writev, and it causes
+> > silent data corruption, you get to keep both pieces, and don't go
+> > looking for us for anything other than sympathy...
+>
+> This alone is enough reason to block it. I'm tired of this round and
+> round and I think we should just say enough, the mm will work to
+> enforce this view point. Files can only be written through PTEs.
+>
+> If this upsets people they can work on fixing it, but at least we
+> don't have these kernel problems and inconsistencies to deal with.
+>
 
-After some additional research, I came to the obvious realisation, reading more
-thoroughly the discussion at the link - that the above patch did not work for
-all Realtek RTL819x cards back then.
+Indeed, I think there is a broad consensus that FOLL_LONGTERM is such an
+egregious case that this is the way forward.
 
-My version, the RTL8168h/8111h indeed works 95% faster on the 6.3 Linux kernel,
-but I cannot speak for the people with the power management problems and
-battery life issues ... and the concerns explained here: https://github.com/KastB/r8169
+I will respin with the discussed GUP-fast changes relatively soon and then
+we can see where that takes us :)
 
-[root@pc-mtodorov marvin]# dmesg | grep RTL
-[    7.304130] r8169 0000:01:00.0 eth0: RTL8168h/8111h, f4:93:9f:f0:a5:f5, XID 541, IRQ 123
-
-Currently there seem to be  at least 43 revisions of the RTL816x cards and firmware,
-and I really cannot test on all of them.
-
-I will test the other Heiner's experimental patch, but it seems to disable ASPM completely,
-while for my Lenovo desktop with RTL8168h/8111h disabling CLKPM alone.
-
-However, further homework revealed that the kernel patch is unnecessary, as the same
-effect can be achieved in runtime by the sysfs parm introduced with THIS PATCH:
-https://patchwork.kernel.org/project/linux-pci/patch/b1c83f8a-9bf6-eac5-82d0-cf5b90128fbf@gmail.com/
-which was solved 3 1/2 years ago, but the default on my AlmaLinux 8.7 and Lenovo desktop
-box 10TX000VCR was the 53% of the link capacity and speed.
-
-(I don't know if the card would operate with 220 Mbps on a Gigabit link, it was
-not tested.)
-
-[marvin@pc-mtodorov ~]$ speedtest -s 41437
-
-   Speedtest by Ookla
-
-      Server: A1 Hrvatska d.o.o. - Zagreb (id: 41437)
-         ISP: Croatian Academic and Research Network
-Idle Latency:     1.44 ms   (jitter: 0.23ms, low: 1.20ms, high: 1.65ms)
-    Download:   220.62 Mbps (data used: 214.2 MB)                                                   
-                 22.01 ms   (jitter: 36.04ms, low: 0.84ms, high: 817.47ms)
-      Upload:   346.86 Mbps (data used: 169.1 MB)                                                   
-                  3.32 ms   (jitter: 12.12ms, low: 0.87ms, high: 221.69ms)
- Packet Loss:     0.6%
-  Result URL: https://www.speedtest.net/result/c/20c546e7-0b8f-4a2e-a669-a597bb5aee36
-[marvin@pc-mtodorov ~]$ sudo bash
-[sudo] password for marvin: 
-[root@pc-mtodorov marvin]# cat /sys/devices/pci0000:00/0000:00:1c.0/0000:01:00.0/link/clkpm
-1
-[root@pc-mtodorov marvin]# echo 0 > /sys/devices/pci0000:00/0000:00:1c.0/0000:01:00.0/link/clkpm
-[root@pc-mtodorov marvin]# cat /sys/devices/pci0000:00/0000:00:1c.0/0000:01:00.0/link/clkpm
-0
-[root@pc-mtodorov marvin]# speedtest -s 41437
-
-   Speedtest by Ookla
-
-      Server: A1 Hrvatska d.o.o. - Zagreb (id: 41437)
-         ISP: Croatian Academic and Research Network
-Idle Latency:     0.85 ms   (jitter: 0.06ms, low: 0.78ms, high: 0.92ms)
-    Download:   431.13 Mbps (data used: 341.0 MB)                                                   
-                157.40 ms   (jitter: 68.09ms, low: 0.88ms, high: 823.19ms)
-      Upload:   351.36 Mbps (data used: 158.3 MB)                                                   
-                  2.88 ms   (jitter: 6.24ms, low: 1.41ms, high: 209.74ms)
- Packet Loss:    13.4%
-  Result URL: https://www.speedtest.net/result/c/ff695466-3ac7-405e-8cae-0a85c2c3d5cd
-[root@pc-mtodorov marvin]# 
-
-The clkpm setting can be reversed back to 1, causing the RTL speed to drop again.
-
-So, the patch is withdrawn as unnecessary, even when the majority of RTL8168h/8111h
-and possibly other Realtek Gigabit cards will by default run at sub-Gigabit speeds.
-
-Thank you for your time.
-
-Best regards,
-Mirsad
-
--- 
-Mirsad Goran Todorovac
-Sistem inženjer
-Grafički fakultet | Akademija likovnih umjetnosti
-Sveučilište u Zagrebu
- 
-System engineer
-Faculty of Graphic Arts | Academy of Fine Arts
-University of Zagreb, Republic of Croatia
-The European Union
-
-"I see something approaching fast ... Will it be friends with me?"
-
+> Jason
