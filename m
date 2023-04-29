@@ -2,150 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C3FB6F24E2
-	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 15:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 080796F24F7
+	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 16:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231184AbjD2Nik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Apr 2023 09:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51742 "EHLO
+        id S231199AbjD2OHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Apr 2023 10:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230325AbjD2Nij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 09:38:39 -0400
-Received: from mail-il1-f207.google.com (mail-il1-f207.google.com [209.85.166.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DAEC18E
-        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 06:38:36 -0700 (PDT)
-Received: by mail-il1-f207.google.com with SMTP id e9e14a558f8ab-32aff21222eso12060715ab.3
-        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 06:38:36 -0700 (PDT)
+        with ESMTP id S230005AbjD2OHd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 10:07:33 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A37198A;
+        Sat, 29 Apr 2023 07:07:31 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id 98e67ed59e1d1-24de923ef00so99213a91.3;
+        Sat, 29 Apr 2023 07:07:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682777250; x=1685369250;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=UkA/OpHNB5P87CBPybRbMah7voUWd4onYJPq0iCbZKw=;
+        b=Sx8EkgOIKNSKw3spvb2nYDoAT3XXEILsH4viui5dcPWY6mhZkBCqq89QHPYwtGgjxy
+         s0NQ5tuI0FCVqFz4F9fsXz//P09mMiPHj2HNeKxEG7T7A0J6iADkhfkqFHFUXpmUCLWX
+         kKbnGo9XAqk+KV55WlyCRSO2K+WnaTwphg4L4JiNmy2uZ0Dr4yh6Pk/M87hrXll9vnrM
+         OZHrh4oz0gRlRuMF31ZvIzanraKXhIP0g34ZewtGxn2UwaVMq1m5Tcm+WuuM4thMd6RN
+         BsLv7hiH0/dlvNLW9iFVoL5Msyu9DcQz/qwqyHvZnYQyn0763IM+Gfnw+tjFbRWR099P
+         iy4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682775515; x=1685367515;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+6oCk54X/Jaxknm1PIuX7KDVYLEjXhRmn2TTkqp/tYA=;
-        b=a3AIVRm2pMNAdyD4pfRxiAd+ZvtqWFeDGk4IIwGFAmM2HDo9Vi/8FLQvR/M9acF5NI
-         IF1g0g/JraKE2yxCFQMKIncnadRHecBaJgmz6j4L+rLcEHbyGCqC88Bmlwnlk4Uvllbm
-         G5CSk32cC45t50cg0cs5g9YMsk5acltTPmB71lue1PbSlHTqxqVsKzqj7M8pNM6egTwT
-         +SuqiwswO3nTlmXSgQvHOtSn79gYmRI51MQZ8ZxsJ1VYdUT4k61cjg0aodIvs+AwUVA3
-         VVEFVBg5OYbiGitR2HO4j4FmtmVMbElO4EUYamrJDzbmen4KH/eeQFt7NOuvWYZ4sf0H
-         rqIw==
-X-Gm-Message-State: AC+VfDwsZ4jyfVzbiErz+Z0qzo1SYoN8qpM1GsKEgWemOZgfE9nysw3T
-        2r6EJnyD/bQfIPNC7fwq7zPPvc7EsYy61h3ZhHdP6WsrUEuw
-X-Google-Smtp-Source: ACHHUZ7I6COAqC3y7WUPHJOUGDC7AfqiyyZAJgcjDwvAGdJWRqmiR50GZfhyhMC7no28TI7JMO/ZAwGTB53wC57TbhNi5KKYUEta
+        d=1e100.net; s=20221208; t=1682777250; x=1685369250;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UkA/OpHNB5P87CBPybRbMah7voUWd4onYJPq0iCbZKw=;
+        b=j4BWuOT90OVWBKpAJVz81gcdkm8tHajOEUUxCpthPhLWjIVpNAExzwuiCyjP7wf1E2
+         MnI8eDYkPf2y2BQWDR+ewiqE2vMR4wUBFUMjjq/bv10Kbz0EgG5c0G+oxDZx/c7/jH5B
+         kSCeSEuu9qlhSKiT0kNnY+YTKFcZbxAfzPjEVXbUU0xz5bRNjAU9PeMqOQT8mtNJVk5F
+         gC9vwrwYpOibY17l9Xb+bgXyDBk/V2TyTvwrZUtrSZVgoQoq8oM62FnugyPxcBDxq5s2
+         TMMx/qw/6iLE1YTysWsw4bRB2O8j+PjN7VMeeoyC00i/XY3nuRraENN+Ytd21+NS9Myt
+         65rQ==
+X-Gm-Message-State: AC+VfDzaUg1O4IrQmjCpvpCqiPUnzooUd6Vu6Wb5p4QozlX3Yoq2iY44
+        SZv9S7cSiOOgEcwYkZ/XyTw=
+X-Google-Smtp-Source: ACHHUZ58/qduOdEBYYbQ3pkGAERlbjm77a2t2riVYrPYoGZW+4/zEDc/2SaVQDs+S7s7ylg9rxMCtw==
+X-Received: by 2002:a17:90a:c784:b0:247:ad6d:7250 with SMTP id gn4-20020a17090ac78400b00247ad6d7250mr9164173pjb.12.1682777250150;
+        Sat, 29 Apr 2023 07:07:30 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-86.three.co.id. [180.214.233.86])
+        by smtp.gmail.com with ESMTPSA id h16-20020a17090aea9000b00247164c1947sm1046472pjz.0.2023.04.29.07.07.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 29 Apr 2023 07:07:29 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 839EB1068BF; Sat, 29 Apr 2023 21:07:25 +0700 (WIB)
+Date:   Sat, 29 Apr 2023 21:07:25 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Jeff Chua <jeff.chua.linux@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Gregory Greenman <gregory.greenman@intel.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux Wireless <linux-wireless@vger.kernel.org>,
+        Linux Networking <netdev@vger.kernel.org>,
+        Linux Regressions <regressions@lists.linux.dev>
+Subject: Re: iwlwifi broken in post-linux-6.3.0 after April 26
+Message-ID: <ZE0kndhsXNBIb1g7@debian.me>
+References: <20230429020951.082353595@lindbergh.monkeyblade.net>
+ <CAAJw_ZueYAHQtM++4259TXcxQ_btcRQKiX93u85WEs2b2p19wA@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:107:b0:328:fb47:ede4 with SMTP id
- t7-20020a056e02010700b00328fb47ede4mr4742005ilm.3.1682775515399; Sat, 29 Apr
- 2023 06:38:35 -0700 (PDT)
-Date:   Sat, 29 Apr 2023 06:38:35 -0700
-In-Reply-To: <000000000000e5ee7305f0f975e8@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d5100205fa79b4c9@google.com>
-Subject: Re: [syzbot] [net?] WARNING in print_bfs_bug (2)
-From:   syzbot <syzbot+630f83b42d801d922b8b@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="eCuRfp6dkc3SfFeY"
+Content-Disposition: inline
+In-Reply-To: <CAAJw_ZueYAHQtM++4259TXcxQ_btcRQKiX93u85WEs2b2p19wA@mail.gmail.com>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
 
-HEAD commit:    042334a8d424 atlantic:hw_atl2:hw_atl2_utils_fw: Remove unn..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=11869168280000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7205cdba522fe4bc
-dashboard link: https://syzkaller.appspot.com/bug?extid=630f83b42d801d922b8b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=147328f8280000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1665151c280000
+--eCuRfp6dkc3SfFeY
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/e9818e554a99/disk-042334a8.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/de8daea0ee8b/vmlinux-042334a8.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/71f9842dcf98/bzImage-042334a8.xz
+On Sat, Apr 29, 2023 at 01:22:03PM +0800, Jeff Chua wrote:
+> Can't start wifi on latest linux git pull ... started happening 3 days ag=
+o ...
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+630f83b42d801d922b8b@syzkaller.appspotmail.com
+Are you testing mainline?
 
-netlink: 4 bytes leftover after parsing attributes in process `syz-executor204'.
-------------[ cut here ]------------
-lockdep bfs error:-1
-WARNING: CPU: 0 PID: 10222 at kernel/locking/lockdep.c:2077 print_bfs_bug+0x22/0x30 kernel/locking/lockdep.c:2077
-Modules linked in:
-CPU: 0 PID: 10222 Comm: syz-executor204 Not tainted 6.3.0-syzkaller-07921-g042334a8d424 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 04/14/2023
-RIP: 0010:print_bfs_bug+0x22/0x30 kernel/locking/lockdep.c:2077
-Code: 84 00 00 00 00 00 66 90 55 89 fd 53 e8 c7 34 a9 02 89 c3 e8 60 fd ff ff 85 db 74 10 89 ee 48 c7 c7 20 68 4c 8a e8 3e bb e7 ff <0f> 0b 5b 5d c3 66 0f 1f 84 00 00 00 00 00 53 31 c9 31 d2 31 f6 48
-RSP: 0018:ffffc9000e906ba0 EFLAGS: 00010082
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: ffff888021769dc0 RSI: ffffffff814bef47 RDI: 0000000000000001
-RBP: 00000000ffffffff R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000001 R12: ffff88802176a950
-R13: 0000000000000037 R14: ffffc9000e906cc8 R15: 0000000000000000
-FS:  0000555556212300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f6c98af3140 CR3: 000000002236d000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- check_irq_usage+0x56c/0x1a40 kernel/locking/lockdep.c:2845
- check_prev_add kernel/locking/lockdep.c:3112 [inline]
- check_prevs_add kernel/locking/lockdep.c:3227 [inline]
- validate_chain kernel/locking/lockdep.c:3842 [inline]
- __lock_acquire+0x2f39/0x5df0 kernel/locking/lockdep.c:5074
- lock_acquire kernel/locking/lockdep.c:5691 [inline]
- lock_acquire+0x1b1/0x520 kernel/locking/lockdep.c:5656
- __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock+0x2e/0x40 kernel/locking/spinlock.c:154
- mm_cid_put kernel/sched/sched.h:3270 [inline]
- mm_cid_put kernel/sched/sched.h:3265 [inline]
- switch_mm_cid kernel/sched/sched.h:3298 [inline]
- prepare_task_switch kernel/sched/core.c:5117 [inline]
- context_switch kernel/sched/core.c:5258 [inline]
- __schedule+0x26a3/0x5770 kernel/sched/core.c:6625
- preempt_schedule_common+0x45/0xb0 kernel/sched/core.c:6794
- preempt_schedule_thunk+0x1a/0x20 arch/x86/entry/thunk_64.S:34
- __mutex_lock_common kernel/locking/mutex.c:728 [inline]
- __mutex_lock+0xfe5/0x1350 kernel/locking/mutex.c:747
- team_nl_team_get+0x10f/0x1c0 drivers/net/team/team.c:2320
- team_nl_cmd_options_set+0xa0/0xc80 drivers/net/team/team.c:2543
- genl_family_rcv_msg_doit.isra.0+0x1e6/0x2d0 net/netlink/genetlink.c:968
- genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
- genl_rcv_msg+0x4ff/0x7e0 net/netlink/genetlink.c:1065
- netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2546
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1076
- netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
- netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
- netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1913
- sock_sendmsg_nosec net/socket.c:724 [inline]
- sock_sendmsg+0xde/0x190 net/socket.c:747
- ____sys_sendmsg+0x71c/0x900 net/socket.c:2503
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2557
- __sys_sendmsg+0xf7/0x1c0 net/socket.c:2586
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f6c98a82b29
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd09390778 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000000eee12 RCX: 00007f6c98a82b29
-RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000005
-RBP: 0000000000000000 R08: 0000000000000000 R09: 00007ffd09390918
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffd0939078c
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+Also Cc'ing networking and iwlwifi people.
 
+>=20
+> Is there a fix for this? Or shall I bisect? Wifi works by reverting
+> back to released 6.3.0.
 
----
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
+Certainly you should do bisection.
+
+>=20
+> Thanks,
+> Jeff
+>=20
+>=20
+> # wpa_supplicant -Dnl80211 -c wpa.conf -iwlan0
+> wlwifi 0000:00:14.3: Failed to send RFI config cmd -5
+> iwlwifi 0000:00:14.3: LED command failed: -5
+> iwlwifi 0000:00:14.3: Failed to send MAC_CONFIG_CMD (action:1): -5
+>=20
+> # lsmod
+> iwlmvm                352256  0
+> mac80211              610304  1 iwlmvm
+> iwlwifi               299008  1 iwlmvm
+> cfg80211              417792  3 iwlmvm,iwlwifi,mac80211
+> ax88179_178a           28672  0
+>=20
+> # dmesg
+> iwlwifi 0000:00:14.3: Microcode SW error detected. Restarting 0x0.
+> iwlwifi 0000:00:14.3: Start IWL Error Log Dump:
+> iwlwifi 0000:00:14.3: Transport status: 0x0000004B, valid: 6
+> iwlwifi 0000:00:14.3: Loaded firmware version: 78.3bfdc55f.0
+> so-a0-gf-a0-78.ucode
+> iwlwifi 0000:00:14.3: 0x00000071 | NMI_INTERRUPT_UMAC_FATAL
+> iwlwifi 0000:00:14.3: 0x000002F0 | trm_hw_status0
+> iwlwifi 0000:00:14.3: 0x00000000 | trm_hw_status1
+> iwlwifi 0000:00:14.3: 0x004DB13C | branchlink2
+> iwlwifi 0000:00:14.3: 0x004D0D3A | interruptlink1
+> iwlwifi 0000:00:14.3: 0x004D0D3A | interruptlink2
+> iwlwifi 0000:00:14.3: 0x000157FE | data1
+> iwlwifi 0000:00:14.3: 0x00000010 | data2
+> iwlwifi 0000:00:14.3: 0x00000000 | data3
+> iwlwifi 0000:00:14.3: 0x00000000 | beacon time
+> iwlwifi 0000:00:14.3: 0x0002A2E7 | tsf low
+> iwlwifi 0000:00:14.3: 0x00000000 | tsf hi
+> iwlwifi 0000:00:14.3: 0x00000000 | time gp1
+> iwlwifi 0000:00:14.3: 0x0003E5C3 | time gp2
+> iwlwifi 0000:00:14.3: 0x00000001 | uCode revision type
+> iwlwifi 0000:00:14.3: 0x0000004E | uCode version major
+> iwlwifi 0000:00:14.3: 0x3BFDC55F | uCode version minor
+> iwlwifi 0000:00:14.3: 0x00000370 | hw version
+> iwlwifi 0000:00:14.3: 0x00480002 | board version
+> iwlwifi 0000:00:14.3: 0x80B0FF00 | hcmd
+> iwlwifi 0000:00:14.3: 0x00020000 | isr0
+> iwlwifi 0000:00:14.3: 0x20000000 | isr1
+> iwlwifi 0000:00:14.3: 0x58F00002 | isr2
+> iwlwifi 0000:00:14.3: 0x00C3000C | isr3
+> iwlwifi 0000:00:14.3: 0x00000000 | isr4
+> iwlwifi 0000:00:14.3: 0x00000000 | last cmd Id
+> iwlwifi 0000:00:14.3: 0x000157FE | wait_event
+> iwlwifi 0000:00:14.3: 0x00000000 | l2p_control
+> iwlwifi 0000:00:14.3: 0x00000000 | l2p_duration
+> iwlwifi 0000:00:14.3: 0x00000000 | l2p_mhvalid
+> iwlwifi 0000:00:14.3: 0x00000000 | l2p_addr_match
+> iwlwifi 0000:00:14.3: 0x00000018 | lmpm_pmg_sel
+> iwlwifi 0000:00:14.3: 0x00000000 | timestamp
+> iwlwifi 0000:00:14.3: 0x0000103C | flow_handler
+> iwlwifi 0000:00:14.3: Start IWL Error Log Dump:
+> iwlwifi 0000:00:14.3: Transport status: 0x0000004B, valid: 7
+> iwlwifi 0000:00:14.3: 0x201002FD | ADVANCED_SYSASSERT
+> iwlwifi 0000:00:14.3: 0x00000000 | umac branchlink1
+> iwlwifi 0000:00:14.3: 0x8046E300 | umac branchlink2
+> iwlwifi 0000:00:14.3: 0xC008191A | umac interruptlink1
+> iwlwifi 0000:00:14.3: 0x00000000 | umac interruptlink2
+> iwlwifi 0000:00:14.3: 0x0017020B | umac data1
+> iwlwifi 0000:00:14.3: 0x00000308 | umac data2
+> iwlwifi 0000:00:14.3: 0x00000304 | umac data3
+> iwlwifi 0000:00:14.3: 0x0000004E | umac major
+> iwlwifi 0000:00:14.3: 0x3BFDC55F | umac minor
+> iwlwifi 0000:00:14.3: 0x0003E5BE | frame pointer
+> iwlwifi 0000:00:14.3: 0xC0886C24 | stack pointer
+> iwlwifi 0000:00:14.3: 0x0017020B | last host cmd
+> iwlwifi 0000:00:14.3: 0x00000000 | isr status reg
+> iwlwifi 0000:00:14.3: IML/ROM dump:
+> iwlwifi 0000:00:14.3: 0x00000B03 | IML/ROM error/state
+> iwlwifi 0000:00:14.3: 0x000081CD | IML/ROM data1
+> iwlwifi 0000:00:14.3: 0x00000080 | IML/ROM WFPM_AUTH_KEY_0
+> iwlwifi 0000:00:14.3: Fseq Registers:
+> iwlwifi 0000:00:14.3: 0x60000100 | FSEQ_ERROR_CODE
+> iwlwifi 0000:00:14.3: 0x003E0003 | FSEQ_TOP_INIT_VERSION
+> iwlwifi 0000:00:14.3: 0x00190003 | FSEQ_CNVIO_INIT_VERSION
+> iwlwifi 0000:00:14.3: 0x0000A652 | FSEQ_OTP_VERSION
+> iwlwifi 0000:00:14.3: 0x00000003 | FSEQ_TOP_CONTENT_VERSION
+> iwlwifi 0000:00:14.3: 0x4552414E | FSEQ_ALIVE_TOKEN
+> iwlwifi 0000:00:14.3: 0x00080400 | FSEQ_CNVI_ID
+> iwlwifi 0000:00:14.3: 0x00400410 | FSEQ_CNVR_ID
+> iwlwifi 0000:00:14.3: 0x00080400 | CNVI_AUX_MISC_CHIP
+> iwlwifi 0000:00:14.3: 0x00400410 | CNVR_AUX_MISC_CHIP
+> iwlwifi 0000:00:14.3: 0x00009061 | CNVR_SCU_SD_REGS_SD_REG_DIG_DCDC_VTRIM
+> iwlwifi 0000:00:14.3: 0x00000061 | CNVR_SCU_SD_REGS_SD_REG_ACTIVE_VDIG_MI=
+RROR
+> iwlwifi 0000:00:14.3: UMAC CURRENT PC: 0xd05c18
+> iwlwifi 0000:00:14.3: LMAC1 CURRENT PC: 0xd05c1c
+> iwlwifi 0000:00:14.3: Starting mac, retry will be triggered anyway
+> iwlwifi 0000:00:14.3: FW error in SYNC CMD RFI_CONFIG_CMD
+> CPU: 6 PID: 22193 Comm: wpa_supplicant Tainted: G     U             6.3.0=
+ #1
+> Hardware name: LENOVO 21CCS1GL00/21CCS1GL00, BIOS N3AET72W (1.37 ) 03/02/=
+2023
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0x33/0x50
+>  iwl_trans_txq_send_hcmd+0x33a/0x380 [iwlwifi]
+>  ? destroy_sched_domains_rcu+0x20/0x20
+>  iwl_trans_send_cmd+0x55/0xe0 [iwlwifi]
+>  iwl_mvm_send_cmd+0xd/0x30 [iwlmvm]
+>  iwl_rfi_send_config_cmd+0x8f/0xf0 [iwlmvm]
+>  iwl_mvm_up+0x8c9/0x980 [iwlmvm]
+>  __iwl_mvm_mac_start+0x181/0x1e0 [iwlmvm]
+>  iwl_mvm_mac_start+0x3f/0x100 [iwlmvm]
+>  drv_start+0x2c/0x50 [mac80211]
+>  ieee80211_do_open+0x2f2/0x6b0 [mac80211]
+>  ieee80211_open+0x62/0x80 [mac80211]
+>  __dev_open+0xca/0x170
+>  __dev_change_flags+0x1a1/0x210
+>  dev_change_flags+0x1c/0x60
+>  devinet_ioctl+0x555/0x790
+>  inet_ioctl+0x116/0x1b0
+>  ? netdev_name_node_lookup_rcu+0x58/0x70
+>  ? dev_get_by_name_rcu+0x5/0x10
+>  ? netdev_name_node_lookup_rcu+0x58/0x70
+>  ? dev_get_by_name_rcu+0x5/0x10
+>  ? dev_ioctl+0x34d/0x4c0
+>  sock_do_ioctl+0x3a/0xe0
+>  sock_ioctl+0x15a/0x2b0
+>  ? __sys_recvmsg+0x51/0xa0
+>  __x64_sys_ioctl+0x7d/0xa0
+>  do_syscall_64+0x35/0x80
+>  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> RIP: 0033:0x7efcee3a0448
+> Code: 00 00 48 8d 44 24 08 48 89 54 24 e0 48 89 44 24 c0 48 8d 44 24
+> d0 48 89 44 24 c8 b8 10 00 00 00 c7 44 24 b8 10 00 00 00 0f 05 <41> 89
+> c0 3d 00 f0 ff ff 77 0e 44 89 c0 c3 66 2e 0f 1f 84 00 00 00
+> RSP: 002b:00007ffe400ff678 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+> RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007efcee3a0448
+> RDX: 00007ffe400ff680 RSI: 0000000000008914 RDI: 0000000000000007
+> RBP: 0000000000000007 R08: 0000000000000000 R09: 000000000078f4b0
+> R10: e324395ae363498e R11: 0000000000000246 R12: 0000000000000000
+> R13: 0000000000790a30 R14: 0000000000000002 R15: 0000000000000000
+>  </TASK>
+
+Thanks for the report. I'm adding it to regzbot:
+
+#regzbot ^introduced v6.3..89d77f71f493a3
+#regzbot title iwlwifi broken on 6.4 merge window
+
+Grazie.
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--eCuRfp6dkc3SfFeY
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZE0kmAAKCRD2uYlJVVFO
+o2itAQCYf7FoFG44JkR/Puz/9O9H1Rp9ZE6MEu8TYvIEw5pICQEAtxCOaKJusNee
+n0Od/FLcAeqfOvsr6uKZ+aNNdGANcgA=
+=qk5p
+-----END PGP SIGNATURE-----
+
+--eCuRfp6dkc3SfFeY--
