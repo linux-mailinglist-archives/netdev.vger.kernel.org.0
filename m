@@ -2,98 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE1A96F25BC
-	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 20:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 190786F25E4
+	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 20:40:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230222AbjD2SSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Apr 2023 14:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
+        id S230345AbjD2SkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Apr 2023 14:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230047AbjD2SSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 14:18:01 -0400
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2ED79F;
-        Sat, 29 Apr 2023 11:18:00 -0700 (PDT)
-Received: by mail-vk1-xa36.google.com with SMTP id 71dfb90a1353d-44089f95265so290352e0c.3;
-        Sat, 29 Apr 2023 11:18:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682792280; x=1685384280;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=r1iDAowj027iaBmQvYLZLlsdgLbrABEug20GI/GfAo4=;
-        b=qFbq5Sj7+zxZlOrpitzMN8wuN/wkDrUeRn3nzPHxlf6QYDD9BDV9wa2Z5bpOvBCqOt
-         R3UtJb7Pa/DUIRT6gTEKPJgTsf2BurAFEj8Qo2Mh9AS5gowIPPbkEhuiRcNVmW8+pQG7
-         RInOsoIsMZQpz2rFLgXUzlZXgiW/ZfqP+ZRzNiv7PuuHLubvw6i3WD/68aiqqnadFchi
-         Btv0PmA25qZ9ZihhRg+1Hgf8YcR7yCeteBIhppqaXyP/CRF69CrJWzNW4dqid56hpfL2
-         1luN881Qa2CmFsUAkhd8OAV1aahJAbC6mVGVZmvXSQ2eaPOA1nz4UJQiIRbkZyu1Ud83
-         7DWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682792280; x=1685384280;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=r1iDAowj027iaBmQvYLZLlsdgLbrABEug20GI/GfAo4=;
-        b=dkSP7XsV1gt9w1JjqXADRFrYQwNg1XgciS3MUxg2GEdj4d2dcV1FA3004khp0ygAeJ
-         cA0w5u3VkYTzXlhBYNw1ZlHg06AK0BL0IekMYqLUnzPY4oA2fss8xEtKVdXK0Pc64EV9
-         mUlelWllbCHmEwaJ3NUf+LNU8hCbFr6O/NnTSkYFR6cK+SBXaByVMN3SD5wK/9YOTWeZ
-         mXo01OSm8FZb2FuMYn4A/wQPKb/Lwe120qtepAd1BXKDXNRbdTmmIK0ztn8nOzea8Qnr
-         r0KcN5o12KYG+OfGbjOhL75thNzoyZw38SbmXU1xofZMBYP6wxCY9dXD1rM42yrcrkRB
-         rutQ==
-X-Gm-Message-State: AC+VfDxjQzk+l5xpS38ScXVx8hUe16bPEJbN9vYbMR9BQdBlyQ0u/1if
-        r1qPtXVhCAT7kWw6B/qT22GsSzW0HBZbJS5TLzQ=
-X-Google-Smtp-Source: ACHHUZ4gAyBPwxEd6oY9ni3Df1iyIVtAfUw2w1QS6RzCTPmfziF/rQAQXVApUObLwF1k+G4lvXaJeFWCuo7dyiF05b4=
-X-Received: by 2002:a1f:e282:0:b0:440:8a24:e71f with SMTP id
- z124-20020a1fe282000000b004408a24e71fmr3264011vkg.7.1682792279508; Sat, 29
- Apr 2023 11:17:59 -0700 (PDT)
+        with ESMTP id S229512AbjD2SkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 14:40:24 -0400
+Received: from sender3-op-o17.zoho.com (sender3-op-o17.zoho.com [136.143.184.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD301FF6
+        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 11:40:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1682793600; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=ZdUYo7IBJS8Lf6fFkZ6q5+LNsLlFJcZebvyDQ9DYOQcZI/T2u+WAbgaQ8B75PnLCSavyoXtRpAAENknCuaI0l0BJcSaXU2AI7ViK1ocbEY64dluaw+myG72wU1E9W5ISjeSc8REqwzo6vv7AIuC4BUe6ZAINhNxrvnl8dWgSUuc=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1682793600; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=f/llCHG/Hyyy8dqsrqnkboHxLPrcmrJacVh2iZD3Cdo=; 
+        b=Wp2lbSRUE/8lc0lRhMOV1HwkvxKSdCKnKJuZfOm4Bmf8QSkqy2dWYws0RYpVdEbghAu6VieYITP2nKbFI+Trin2PxDEm4FWIqtx8fw5oBlPFt9nSyiICiJVbmvvl7xl2FG0XYQ+WVdBNbbTnmyi+Ycwtbkh7G2FkjhiyGoE1jdU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1682793600;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:From:From:Subject:Subject:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=f/llCHG/Hyyy8dqsrqnkboHxLPrcmrJacVh2iZD3Cdo=;
+        b=blaq6BDEcK0q0+Uw9C4zf90P1p+QTTim5jTcyJgPM+C/LjSEkQU8FG0QyIfXHKw1
+        i9mHGuZ5k92oVGXmpw5fEVAmPSJks/ACo/a/75PjbVEARU7l6uiaYdh1LKUow1+vMer
+        E6yk1fQf9KwCITkoDpqaUdZZRiIjSCW7GR6Pf9lI=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 168279359923456.483355147104476; Sat, 29 Apr 2023 11:39:59 -0700 (PDT)
+Message-ID: <680eea9a-e719-bbb1-0c7c-1b843ed2afcd@arinc9.com>
+Date:   Sat, 29 Apr 2023 21:39:41 +0300
 MIME-Version: 1.0
-References: <20230429020951.082353595@lindbergh.monkeyblade.net>
- <CAAJw_ZueYAHQtM++4259TXcxQ_btcRQKiX93u85WEs2b2p19wA@mail.gmail.com> <ZE0kndhsXNBIb1g7@debian.me>
-In-Reply-To: <ZE0kndhsXNBIb1g7@debian.me>
-From:   Jeff Chua <jeff.chua.linux@gmail.com>
-Date:   Sun, 30 Apr 2023 02:17:48 +0800
-Message-ID: <CAAJw_Zvxtf-Ny2iymoZdBGF577aeNomWP7u7-5rWyn6A7rzKRg@mail.gmail.com>
-Subject: Re: iwlwifi broken in post-linux-6.3.0 after April 26
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linux Wireless <linux-wireless@vger.kernel.org>,
-        Linux Networking <netdev@vger.kernel.org>,
-        Linux Regressions <regressions@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Subject: Re: MT7530 bug, forward broadcast and unknown frames to the correct
+ CPU port
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>, Greg Ungerer <gerg@kernel.org>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+        bartel.eerdekens@constell8.be, netdev <netdev@vger.kernel.org>
+References: <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+ <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+ <20230426205450.kez5m5jr4xch7hql@skbuf>
+ <0183eb91-8517-f40f-c2bb-b229e45d6fa5@arinc9.com>
+ <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+ <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
+ <20230426205450.kez5m5jr4xch7hql@skbuf>
+ <0183eb91-8517-f40f-c2bb-b229e45d6fa5@arinc9.com>
+ <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
+ <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
+ <20230429173522.tqd7izelbhr4rvqz@skbuf>
+Content-Language: en-US
+In-Reply-To: <20230429173522.tqd7izelbhr4rvqz@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 29, 2023 at 10:07=E2=80=AFPM Bagas Sanjaya <bagasdotme@gmail.co=
-m> wrote:
->
-> On Sat, Apr 29, 2023 at 01:22:03PM +0800, Jeff Chua wrote:
-> > Can't start wifi on latest linux git pull ... started happening 3 days =
-ago ...
->
-> Are you testing mainline?
+On 29.04.2023 20:35, Vladimir Oltean wrote:
+> On Sat, Apr 29, 2023 at 04:03:57PM +0300, Arınç ÜNAL wrote:
+>> This is the final diff I'm going to submit to net.
+>>
+>> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+>> index 4d5c5820e461..cc5fa641b026 100644
+>> --- a/drivers/net/dsa/mt7530.c
+>> +++ b/drivers/net/dsa/mt7530.c
+>> @@ -1008,9 +1008,9 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+>>   	mt7530_write(priv, MT7530_PVC_P(port),
+>>   		     PORT_SPEC_TAG);
+>> -	/* Disable flooding by default */
+>> -	mt7530_rmw(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK,
+>> -		   BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) | UNU_FFP(BIT(port)));
+>> +	/* Enable flooding on the CPU port */
+>> +	mt7530_set(priv, MT7530_MFC, BC_FFP(BIT(port)) | UNM_FFP(BIT(port)) |
+>> +		   UNU_FFP(BIT(port)));
+>>   	/* Set CPU port number */
+>>   	if (priv->id == ID_MT7621)
+>> @@ -2225,6 +2225,10 @@ mt7530_setup(struct dsa_switch *ds)
+>>   		/* Disable learning by default on all ports */
+>>   		mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
+>> +		/* Disable flooding on all ports */
+>> +		mt7530_clear(priv, MT7530_MFC, BC_FFP(BIT(i)) | UNM_FFP(BIT(i)) |
+>> +			     UNU_FFP(BIT(i)));
+>> +
+>>   		if (dsa_is_cpu_port(ds, i)) {
+>>   			ret = mt753x_cpu_port_enable(ds, i);
+>>   			if (ret)
+>> @@ -2412,6 +2416,10 @@ mt7531_setup(struct dsa_switch *ds)
+>>   		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
+>> +		/* Disable flooding on all ports */
+>> +		mt7530_clear(priv, MT7530_MFC, BC_FFP(BIT(i)) | UNM_FFP(BIT(i)) |
+>> +			     UNU_FFP(BIT(i)));
+>> +
+>>   		if (dsa_is_cpu_port(ds, i)) {
+>>   			ret = mt753x_cpu_port_enable(ds, i);
+>>   			if (ret)
+> 
+> Looks ok, but considering that the register is the same for all ports,
+> then instead of accessing the hardware one by one for each port, you
+> could issue a single:
+> 
+> 	mt7530_clear(priv, MT7530_MFC, BC_FFP_MASK | UNM_FFP_MASK | UNU_FFP_MASK);
+> 
+> before the per-port for loop.
 
-I'm pulling from https://github.com/torvalds/linux.git, currently at ...
+Will do, thanks.
 
-commit 1ae78a14516b9372e4c90a89ac21b259339a3a3a (HEAD -> master,
-origin/master, origin/HEAD)
-Merge: 4e1c80ae5cf4 74d7970febf7
-Author: Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat Apr 29 11:10:39 2023 -0700
+The preferred port operation should be in the clear after this diff:
 
-> Certainly you should do bisection.
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index cb0f138d39eb..3a69ef68ceae 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -967,6 +967,10 @@ mt753x_cpu_port_enable(struct dsa_switch *ds, int port)
+  	if (priv->id == ID_MT7621)
+  		mt7530_rmw(priv, MT7530_MFC, CPU_MASK, CPU_EN | CPU_PORT(port));
+  
++	/* Set the CPU port for MT7531 and switch on MT7988 SoC */
++	if (priv->id == ID_MT7531 || priv->id == ID_MT7988)
++		mt7530_set(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK, BIT(port));
++
+  	/* CPU port gets connected to all user ports of
+  	 * the switch.
+  	 */
+@@ -2321,15 +2325,6 @@ mt7531_setup_common(struct dsa_switch *ds)
+  	struct dsa_port *cpu_dp;
+  	int ret, i;
+  
+-	/* BPDU to CPU port */
+-	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
+-		mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
+-			   BIT(cpu_dp->index));
+-		break;
+-	}
+-	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
+-		   MT753X_BPDU_CPU_ONLY);
+-
+  	/* Enable and reset MIB counters */
+  	mt7530_mib_reset(ds);
+  
+@@ -2360,6 +2355,10 @@ mt7531_setup_common(struct dsa_switch *ds)
+  			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+  	}
+  
++	/* Trap BPDUs to the CPU port */
++	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
++		   MT753X_BPDU_CPU_ONLY);
++
+  	/* Flush the FDB table */
+  	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
+  	if (ret < 0)
 
-ok, will do.
+The MT7531 manual states that the CPU_PMAP bits are unset after reset so
+no need to clear it beforehand.
+
+Are you fine with the preferred port patch now that I mentioned port 6
+would be preferred for MT7531BE since it's got 2.5G whilst port 5 has
+got 1G? Would you like to submit it or leave it to me to send the diff
+above and this?
+
+Arınç
