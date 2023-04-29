@@ -2,96 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BA7F6F25EB
-	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 20:58:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76AF06F260A
+	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 21:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbjD2S5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Apr 2023 14:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
+        id S230159AbjD2TpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Apr 2023 15:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbjD2S5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 14:57:03 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728FB1FCA
-        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 11:57:02 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id 5b1f17b1804b1-3f178da21b5so5445945e9.3
-        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 11:57:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682794621; x=1685386621;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Wy+kTeC5tSO3tm1FDeHr9ykYNPdkDWOpPGsx6vF3QqI=;
-        b=fnn+H52MahkVlF6UgaH/2k8H2aG73H6/OQX0k+FrMCIuXh/lGuV/jbNVpEQDwk2tdR
-         lZLt/hpHJcOJt7+Zn6scLmzCCwQ2QUbrHDJPMMqrTmQdSXoFwGqyCRSM0qsSZbwEbx1H
-         Kei1Ex3npfMwNZbELruPY2Z76sf+FO4ymlNyjl53RiQq/8faX9WI6vbAGwUVRd7jhu1L
-         R6Nrxjj+ouFTlmLjip7ut268YlH4rXM2/8I6VHSSWQ9Lgi4W7peau9h7p/eh+yJKLJww
-         uaUS3dZV/tVTLPTVQajIqvDUc/j0/5XPry16HemkvXKH+8Y5tMr4aw5eLfxGZuZ7XfU6
-         cJ7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682794621; x=1685386621;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wy+kTeC5tSO3tm1FDeHr9ykYNPdkDWOpPGsx6vF3QqI=;
-        b=iSgEq0ncjzfOLMyR26241R8dcbPxL3EdMLhKqwZJET46W051x41gNcE9StTK0AQwl5
-         RNoC8UmNF7OCpz9aicW8NyprrLJ/A27i6mVpjccTMRHdnghNzfsb/tbPzfH6yV9hqmCA
-         iEsGFfbLyX/I4i/ThhxWhV/NpfmlZajhYnFv9wPn+zYrrqq4rsvLYayLu4WEzcuCSAiS
-         VC0yx3aHfr20BXCEIMBXJ2hTO0ZMnWSQs9Km2XJaigoPi/b1ICAqrZSy3845x/3SrWhn
-         eERVsmLBTXkxXgZYSrJ7EvnN7v0uzs1wU2hV+LM9BzRwJE+5YBAuRv2QK97moXdjaw18
-         SpIw==
-X-Gm-Message-State: AC+VfDzlJU60SsATcdV2lfpEtZrKWUlaYQ5R/XhdixDfJZ0uVZR/Ah4S
-        RqjGu3O5KQIfjb3V173WEyk=
-X-Google-Smtp-Source: ACHHUZ5s9f7itBzOkUpeNeOR8mNeZGoGQeSPxJ1oTDYyjGqDOjCKd60/5RipaknSjaXFsZNC8qlauA==
-X-Received: by 2002:a1c:7718:0:b0:3f1:8430:523 with SMTP id t24-20020a1c7718000000b003f184300523mr6988255wmi.14.1682794620553;
-        Sat, 29 Apr 2023 11:57:00 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id j5-20020a5d6045000000b0030626f69ee7sm1222332wrt.38.2023.04.29.11.56.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Apr 2023 11:57:00 -0700 (PDT)
-Date:   Sat, 29 Apr 2023 21:56:57 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     DENG Qingfang <dqfext@gmail.com>, Greg Ungerer <gerg@kernel.org>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
-        bartel.eerdekens@constell8.be, netdev <netdev@vger.kernel.org>
-Subject: Re: MT7530 bug, forward broadcast and unknown frames to the correct
- CPU port
-Message-ID: <20230429185657.jrpcxoqwr5tcyt54@skbuf>
-References: <20230426205450.kez5m5jr4xch7hql@skbuf>
- <0183eb91-8517-f40f-c2bb-b229e45d6fa5@arinc9.com>
- <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
- <8a955c34-5724-af9d-d828-a8786bcc08b0@arinc9.com>
- <20230426205450.kez5m5jr4xch7hql@skbuf>
- <0183eb91-8517-f40f-c2bb-b229e45d6fa5@arinc9.com>
- <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
- <8d6a46a7-a769-4532-dd44-f230b705a675@arinc9.com>
- <20230429173522.tqd7izelbhr4rvqz@skbuf>
- <680eea9a-e719-bbb1-0c7c-1b843ed2afcd@arinc9.com>
+        with ESMTP id S230474AbjD2TpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 15:45:08 -0400
+Received: from out-54.mta1.migadu.com (out-54.mta1.migadu.com [IPv6:2001:41d0:203:375::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547ED211C
+        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 12:45:03 -0700 (PDT)
+Message-ID: <4c27d467-95a3-fb9a-52be-bcb54f7d1aaf@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1682797499;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xwnRxCKNaMlUo4zgGzjZgFgFwoR96WFaYycg7X8eoYg=;
+        b=PUZxle/OqIvCIYTPltO4kSqu7YYK2ni9cwLGNpXm79TER+Gu0Kozk+JbCufM8duAxg8ePs
+        b/CsCdYd5M2DbkD5fHTmasFnvA4wuf9034z/Yvjg1l793DaPOIKrQwXTdh89OyMnj3aOM7
+        KiU+XYhIBKAq04zXCPXqOoBUGzolV10=
+Date:   Sat, 29 Apr 2023 20:44:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Subject: Re: [RFC PATCH v4 0/5] New NDO methods ndo_hwtstamp_get/set
+To:     Max Georgiev <glipus@gmail.com>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com,
+        richardcochran@gmail.com, gerhard@engleder-embedded.com,
+        thomas.petazzoni@bootlin.com,
+        =?UTF-8?Q?K=c3=b6ry_Maincent?= <kory.maincent@bootlin.com>
+References: <20230423032437.285014-1-glipus@gmail.com>
+ <20230426165835.443259-1-kory.maincent@bootlin.com>
+ <CAP5jrPE3wpVBHvyS-C4PN71QgKXrA5GVsa+D=RSaBOjEKnD2vw@mail.gmail.com>
+ <20230427102945.09cf0d7f@kmaincent-XPS-13-7390>
+ <CAP5jrPH5kQzqzeQwmynOYLisbzL1TUf=AwA=cRbCtxU4Y6dp9Q@mail.gmail.com>
+ <20230428101103.02a91264@kmaincent-XPS-13-7390>
+ <CAP5jrPH1=fw7ayEFuzQZKXSkcXeGfUy134yEANzDcSyvwOB-2g@mail.gmail.com>
+Content-Language: en-US
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <CAP5jrPH1=fw7ayEFuzQZKXSkcXeGfUy134yEANzDcSyvwOB-2g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <680eea9a-e719-bbb1-0c7c-1b843ed2afcd@arinc9.com>
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 29, 2023 at 09:39:41PM +0300, Arınç ÜNAL wrote:
-> Are you fine with the preferred port patch now that I mentioned port 6
-> would be preferred for MT7531BE since it's got 2.5G whilst port 5 has
-> got 1G? Would you like to submit it or leave it to me to send the diff
-> above and this?
+On 28.04.2023 15:14, Max Georgiev wrote:
+> On Fri, Apr 28, 2023 at 2:11 AM Köry Maincent <kory.maincent@bootlin.com> wrote:
+>>
+>> On Thu, 27 Apr 2023 22:57:27 -0600
+>> Max Georgiev <glipus@gmail.com> wrote:
+>>
+>>> Sorry, I'm still learning the kernel patch communication rules.
+>>> Thank you for guiding me here.
+>>
+>> Also, each Linux merging subtree can have its own rules.
+>> I also, was not aware of net special merging rules:
+>> https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
+>>
+>>
+>>> On Thu, Apr 27, 2023 at 2:43 AM Köry Maincent <kory.maincent@bootlin.com>
+>>> wrote:
+>>>>
+>>>> On Wed, 26 Apr 2023 22:00:43 -0600
+>>>> Max Georgiev <glipus@gmail.com> wrote:
+>>>>
+>>>>>
+>>>>> Thank you for giving it a try!
+>>>>> I'll drop the RFC tag starting from the next iteration.
+>>>>
+>>>> Sorry I didn't know the net-next submission rules. In fact keep the RFC tag
+>>>> until net-next open again.
+>>>> http://vger.kernel.org/~davem/net-next.html
+>>>>
+>>>> Your patch series don't appear in the cover letter thread:
+>>>> https://lore.kernel.org/all/20230423032437.285014-1-glipus@gmail.com/
+>>>> I don't know if it comes from your e-mail or just some issue from lore but
+>>>> could you check it?
+>>>
+>>> Could you please elaborate what's missing in the cover letter?
+>>> Should the cover letter contain the latest version of the patch
+>>> stack (v4, then v5, etc.) and some description of the differences
+>>> between the patch versions?
+>>> Let me look up some written guidance on this.
+>>
+>> I don't know how you send your patch series but when you look on your e-mail
+>> thread the patches are not present:
+>> https://lore.kernel.org/all/20230423032437.285014-1-glipus@gmail.com/
+>>
+>> It is way easier to find your patches when you have all the patches of the
+>> series in the e-mail thread.
+>>
+> 
+> Aha, I see the problem now. I guess it has something to do with "--in-reply-to"
+> git send-email optio or similar options.
+> 
+>> Here for example they are in the thread:
+>> https://lore.kernel.org/all/20230406173308.401924-1-kory.maincent@bootlin.com/
+>>
+>> Do you use git send-email?
+> 
+> Yes, I use "git format-patch" to generate individual patch files for
+> every patch in the
+> stack, and then I use "git send-email" to send out these patches on-by-one.
+>
 
-No, please tell me: what real life difference would it make to a user
-who doesn't care to analyze which CPU port is used?
+The problem is, as Köry has mentioned already, in sending patches one-by-one. 
+You can provide a directory with patches to git send-email and it will take all 
+of them at once. You can try it with --dry-run and check that all pacthes have 
+the same In-Reply-To and References headers.
+
+> Is there a recommended way to send out stacks of patches?
+
