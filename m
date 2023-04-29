@@ -2,134 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58A286F2539
-	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 17:41:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A2D6F2543
+	for <lists+netdev@lfdr.de>; Sat, 29 Apr 2023 17:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231310AbjD2Pii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Apr 2023 11:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47858 "EHLO
+        id S231375AbjD2Pst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Apr 2023 11:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjD2Pih (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 11:38:37 -0400
-Received: from sender3-op-o17.zoho.com (sender3-op-o17.zoho.com [136.143.184.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BBA31701;
-        Sat, 29 Apr 2023 08:38:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1682782659; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=VFyR3ye08EJmM5ySRRHjn1Iyo+VtlJPvjMSLAy0S/63KUfkVFZXUdzXyPXqJigcBK8stujWFB/I6tT2+pco2RBUx45h8AqhslPZZKD2nnJFl/iEj+ftT6ZEr/V+EUoVdIWrLWzebK5/s8gRoXafnXioYK2BA6npMw2SVDx5phUY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1682782659; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=FoO8GtlEEfShlzES7R1A0L+o88kt7MrkfhdZxdS1mIU=; 
-        b=TdiU0AxjdNKv/baFo/+CY1YKhaS16SapyPcZysi40FrKr+vuGpysB6OPqOclzIYNTrb4P2Qhg+Sukr4293h9UfQtz0EbZYGr8lCEw8VTzipopocgoRWP7xoE8GuQNb36QRo8ITLilJTpHcfezYeOnAkGlmryiJC98sZRR6rvIzw=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1682782659;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=FoO8GtlEEfShlzES7R1A0L+o88kt7MrkfhdZxdS1mIU=;
-        b=bHY3QMarE/DGX3+PqtMCZm92igCcmd9MWWdF2GzC6iqXPb2+LX+ZDHVsKSmyI7CX
-        mvil6GjOtfIzoIYm8rJ0zg1PJkL5LXMRPbioniWZy5s5Jn0zAeRLaFfWeGY5iQf9pvq
-        mApr+kDXDBor1BQqlj8cZ7EEso/oeQRLGRqUwL+8=
-Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 1682782658162526.4446392840155; Sat, 29 Apr 2023 08:37:38 -0700 (PDT)
-Message-ID: <428b1582-7444-308b-6c45-f49a616875ca@arinc9.com>
-Date:   Sat, 29 Apr 2023 18:37:18 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [RFC PATCH net-next 20/22] net: dsa: mt7530: force link-down on
- MACs before reset on MT7530
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20230421143648.87889-1-arinc.unal@arinc9.com>
- <20230421143648.87889-21-arinc.unal@arinc9.com>
- <ZELZAd4O9SyHLkwn@makrotopia.org>
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <ZELZAd4O9SyHLkwn@makrotopia.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229522AbjD2Pss (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 11:48:48 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B1B1728
+        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 08:48:23 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id d2e1a72fcca58-63b87d23729so783235b3a.0
+        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 08:48:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1682783302; x=1685375302;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+9P2mZM7ci2Xw5rF6VxKlkFONlC9SOUfJRYGLbDsm7w=;
+        b=EPryO+NxFUtz9gXpD8UMe0U5isNA42gRV9JOeOHlwB4AGQBAibZPgaE4LOrecks1QL
+         l6wz6P04lHKe6XUTwN/Pkwuil/ZsU3QoZX+gYMOtX7ZGSMuRt4TAwZDHkrCVAEPEK/oh
+         wZDAX7L9z9uxy7K/e66iA62dFXPjPFZUy6bYI1eCHuCEYgPf4VUE5lFazVEYRpYq1lz8
+         y3yL9gaixAd4XjG3pEFuHOV76sSDkLIUDyxiOxZhgaxOghBTMw1wY1zphhp2Gi0m6qdz
+         Cpca1ksWQcuzs7oDyUYGnYZzvpR7FpHj9yrvoMaCnLeX3JXWcYm2z4Aiwpp5lvaNtqbd
+         OD+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682783302; x=1685375302;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+9P2mZM7ci2Xw5rF6VxKlkFONlC9SOUfJRYGLbDsm7w=;
+        b=PNKhwGdRMwICzTsrESsF7WTuuIkFc5+EzN4LGt6keT24KRUzEBDxG9ZNB2OiEx4/zX
+         sdsTTumDGNFcBBxv1mHk4W4Qv290aHtevlbH8ciX1lnUL4YcDerlDEn9g4X1vi4ShTGq
+         zQtJB6IPU7gbWZN0bnvhLDfqyCQt4yPC8f0gIawUSbxhGSyqNQ2YCxxB30LcBzIHVFJ/
+         ZolvxWHE0bCzid2PSoAywnUKAqfe1h5M3N8LviKJMvcKzKSkDaazk3hF44lUUlfEOSMq
+         2QczqyIX2/k1DW+fQr2zRiAFY+NBP0PgAgpi57b0SBC06BcJKzQcpwP5mFe4a8xNCZHZ
+         ipiA==
+X-Gm-Message-State: AC+VfDx+fTXBqH91uJPYdJNXcOnKA4Z+GKLOiCgMpN1kAE/ZqnA8kgMs
+        Fv1KCTSswJ+ERZV0m9rIcU1wvw==
+X-Google-Smtp-Source: ACHHUZ53Fj9h6nZ4V5lFVpFEXCq+C8z+ue/01AyizM4xlHjhyXzWh1UbrK6VxXY1/kvtAHXIsCZDMg==
+X-Received: by 2002:a05:6a00:1515:b0:640:e12a:3a20 with SMTP id q21-20020a056a00151500b00640e12a3a20mr13492262pfu.1.1682783302499;
+        Sat, 29 Apr 2023 08:48:22 -0700 (PDT)
+Received: from localhost.localdomain ([2408:8207:2423:d60:94ce:3d97:123:5b2c])
+        by smtp.gmail.com with ESMTPSA id c17-20020a056a000ad100b005ae02dc5b94sm17170554pfl.219.2023.04.29.08.48.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 29 Apr 2023 08:48:22 -0700 (PDT)
+From:   Wenliang Wang <wangwenliang.1995@bytedance.com>
+To:     mst@redhat.com, jasowang@redhat.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        zhengqi.arch@bytedance.com, willemdebruijn.kernel@gmail.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Wenliang Wang <wangwenliang.1995@bytedance.com>
+Subject: [PATCH v3] virtio_net: suppress cpu stall when free_unused_bufs
+Date:   Sat, 29 Apr 2023 23:47:58 +0800
+Message-Id: <1682783278-12819-1-git-send-email-wangwenliang.1995@bytedance.com>
+X-Mailer: git-send-email 2.7.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21.04.2023 21:42, Daniel Golle wrote:
-> On Fri, Apr 21, 2023 at 05:36:46PM +0300, arinc9.unal@gmail.com wrote:
->> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>
->> Force link-down on all MACs before internal reset. Let's follow suit commit
->> 728c2af6ad8c ("net: mt7531: ensure all MACs are powered down before
->> reset").
->>
->> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> ---
->>   drivers/net/dsa/mt7530.c | 4 ++++
->>   1 file changed, 4 insertions(+)
->>
->> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
->> index ac1e3c58aaac..8ece3d0d820c 100644
->> --- a/drivers/net/dsa/mt7530.c
->> +++ b/drivers/net/dsa/mt7530.c
->> @@ -2203,6 +2203,10 @@ mt7530_setup(struct dsa_switch *ds)
->>   		return -EINVAL;
->>   	}
->>   
->> +	/* Force link-down on all MACs before internal reset */
->> +	for (i = 0; i < MT7530_NUM_PORTS; i++)
->> +		mt7530_write(priv, MT7530_PMCR_P(i), PMCR_FORCE_LNK);
->> +
-> 
-> Moving this part to mt753x_setup just before calling priv->info->sw_setup(ds);
-> is probably better. Though it isn't documented I assume that the requirement
-> to have the ports in force-link-down may also apply to MT7988, and for sure
-> it doesn't do any harm.
+For multi-queue and large ring-size use case, the following error
+occurred when free_unused_bufs:
+rcu: INFO: rcu_sched self-detected stall on CPU.
 
-Now that I'm reading through the programming guide for MT7531 [0] and 
-MT7530 [1], I see that the SW_PHY_RST bit on the SYS_CTRL register 
-doesn't exist for MT7531. This is likely why forcing link-down on the 
-MACs is necessary for MT7531.
+Signed-off-by: Wenliang Wang <wangwenliang.1995@bytedance.com>
+---
+v2:
+-add need_resched check.
+-apply same logic to sq.
+v3:
+-use cond_resched instead.
+---
+ drivers/net/virtio_net.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-I didn't come across any documentation for the switch on the MT7988 SoC. 
-Should I assume the registers are identical with MT7531 or have you got 
-a document I can look at?
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index ea1bd4bb326d..744bdc8a1abd 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3559,12 +3559,14 @@ static void free_unused_bufs(struct virtnet_info *vi)
+ 		struct virtqueue *vq = vi->sq[i].vq;
+ 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
+ 			virtnet_sq_free_unused_buf(vq, buf);
++		cond_resched();
+ 	}
+ 
+ 	for (i = 0; i < vi->max_queue_pairs; i++) {
+ 		struct virtqueue *vq = vi->rq[i].vq;
+ 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
+ 			virtnet_rq_free_unused_buf(vq, buf);
++		cond_resched();
+ 	}
+ }
+ 
+-- 
+2.20.1
 
-You also don't do system or register reset for the switch on the MT7988 
-SoC, what's up with that?
-
-I'm not going to do this change for MT7530 as I think SW_PHY_RST is 
-sufficient, and there's no mention to this like on MT7531.
-
-[0] 
-https://drive.google.com/file/d/1aVdQz3rbKWjkvdga8-LQ-VFXjmHR8yf9/view?usp=sharing
-[1] 
-https://github.com/vschagen/documents/blob/main/MT7621_ProgrammingGuide_GSW_v0_3.pdf
-
-Arınç
