@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA4E86F29E8
-	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 19:18:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7556F29E4
+	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 19:18:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231683AbjD3RS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Apr 2023 13:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44622 "EHLO
+        id S231721AbjD3RSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Apr 2023 13:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231254AbjD3RSS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 13:18:18 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDB62D73;
-        Sun, 30 Apr 2023 10:18:17 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id d2e1a72fcca58-63f273b219eso1216775b3a.1;
-        Sun, 30 Apr 2023 10:18:17 -0700 (PDT)
+        with ESMTP id S230494AbjD3RS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 13:18:26 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C023595;
+        Sun, 30 Apr 2023 10:18:18 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id d9443c01a7336-1a6715ee82fso18149665ad.1;
+        Sun, 30 Apr 2023 10:18:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682875096; x=1685467096;
+        d=gmail.com; s=20221208; t=1682875098; x=1685467098;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=oognvtBHKp+y57Kqu34zBdtUcBbI+DybK/7lI+VyXho=;
-        b=VQYUcls8wAkuyKL2R95TT5lGXrflkHTfc53souXigvwJNGmbWpsrcAz4pi4GSaPuur
-         wdDtcgnTPGvqPx+6s7uTkh6gRuYtMZ/EI127bESMIKNKI7i24bA1tyQ1RMe8HDJBgPL1
-         rCYcAld1i3y6/HG/J3CjVlHxUONZEjcVrJXPsdthyCF02WvUUT4v/Szv/2mluK6Tm3jc
-         dLpTt1jEfV772jz+nT1OwNisbCpmt7iWP+JnlIRmceZzfsgPssiW3my3Obt62bRFA0v4
-         ZU/z79gda1Kxoijl/KMMb4Z8pnLhA1RPo096Kv3M1P/SVBo9R09suN0KfHmz0HIqZPNJ
-         sgUg==
+        bh=8TFT+ESKwfU7QbMQhW5p+wdCiH0luZnBdTAjBAnH2Fg=;
+        b=ke83Ke+83g4oZWBNC3U1aX00laf2hOH8TD69Tz/ZlUHkydQwQRS1g9KeTxEeoX+J8x
+         uYblxYNvIflf+Fu+r4ZaDO/s2Q1MeRkMBriys0/OWj72TrfVWCYMFaX+y/69V/hU1K74
+         G5L6m7HJUCZOUaHzyauz3hhZ63ODntNV+4yhgWueT1CpXcuLifDiI/i26UP5R5VzDB06
+         JGWI8WnUd7Dyi+gU8pyPla2d4u8AjpYRSBv+02yxTEq89z6J82m8aHfqR8CccE1A7vtA
+         tqxZYEVSxAqy2ejWmCsWkNyVNDBwu0E4tPDQRxCfL5Bf9y+2hMnQNvkWz5Y8V3/QSyyj
+         sesg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682875096; x=1685467096;
+        d=1e100.net; s=20221208; t=1682875098; x=1685467098;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=oognvtBHKp+y57Kqu34zBdtUcBbI+DybK/7lI+VyXho=;
-        b=RAsqQdCeBAnxOy/5gJr/LVqwDJCrMNZauVIBwtCMOSCZJWGgOVo0Ruj5oj9llgQNye
-         kizsL6ZJGwsckODqMdXbAepL8bG5KqPrMkpvIOGVPdF1dVjLwHYAC035+tFoKxMsAO1r
-         aLWCfP/c967OW5opZvgtDqFApXdLk7RuOiqll2aV4JmecTPUU5UBpEPcfpTZ8HfxkaZ+
-         BuORfNZznRZMxJtY/qsObPswisH+l3SQTHR05n7RoyQOzKHvQJ6uXGCjZ8QPNx/oxmG8
-         HseK1HvW7Rcmi12Qy3KWztqF6kiPnJsT7YMPXuIA3SNjz02+f4E1NOeQRnr4VizZ5G84
-         O+tQ==
-X-Gm-Message-State: AC+VfDzj15/W3xwoArRE6nc7LtyJZqTWf3diif+5TcZXmgTbDGmi8bYN
-        xL5NwMnlmk5pE25bOUQ5U7E=
-X-Google-Smtp-Source: ACHHUZ4yWaUtorBzTjTAJPBkMNnKufxSWS9Ry2Aww36MifdQmhUAlVu346qAq9Yywz9ECvQE6G4HJg==
-X-Received: by 2002:a05:6a00:c88:b0:63b:1e3b:aa02 with SMTP id a8-20020a056a000c8800b0063b1e3baa02mr16689872pfv.16.1682875096461;
-        Sun, 30 Apr 2023 10:18:16 -0700 (PDT)
+        bh=8TFT+ESKwfU7QbMQhW5p+wdCiH0luZnBdTAjBAnH2Fg=;
+        b=i6dsQtTOOK3m+2AWx7ZcMd+BeY+zmv4cABYcJsAaol6q/iBibvsO0FhGlvBDFmamny
+         84fE9ekJM4C74m/kD7vto9G2BVxouzrC3DPfrZt2WAut9AJNdXJCG0MvvTF9WL8AEAHU
+         23i91rWjOKJNHBe9wjDpVtdSo6Bm2TFnCYRkW4iQ7Gqj1fsvacdwrtnjqgmIN6koLFyu
+         H0UA0cdVf/XK7GByoRwE4jJQ2Vj8HcnmJCy9gnVThNv2qobFvJbnUbvxSC5M1Im5mpz0
+         mSrVXfoN61MT4CONGcGVlrw9NUvcojXzDxuy1oQ7ZRaB99Q+TP1ZPpDvYCUVMV0kus7V
+         ClHw==
+X-Gm-Message-State: AC+VfDxbr/wEX6aAiuvXAk9svYnibBrv/WeDuhT/2ioNjFici2SsUMkm
+        X9NS0wCpIt77Vycu1xDb5wg=
+X-Google-Smtp-Source: ACHHUZ7frQxXvjq2TJpWQpvURgwj288wakVEzbaYwn3v9PW599mlWCVhQWHWq9Txfex7+SrmiThJoQ==
+X-Received: by 2002:a17:902:ec92:b0:1a6:9079:2bb3 with SMTP id x18-20020a170902ec9200b001a690792bb3mr16126156plg.33.1682875098056;
+        Sun, 30 Apr 2023 10:18:18 -0700 (PDT)
 Received: from localhost ([4.1.102.3])
-        by smtp.gmail.com with ESMTPSA id f14-20020a056a00238e00b00640e64aa9b7sm11086045pfc.10.2023.04.30.10.18.15
+        by smtp.gmail.com with ESMTPSA id u4-20020a170902b28400b001a64851087bsm16447001plr.272.2023.04.30.10.18.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Apr 2023 10:18:16 -0700 (PDT)
+        Sun, 30 Apr 2023 10:18:17 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -75,9 +75,9 @@ Cc:     Yury Norov <yury.norov@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Heiko Carstens <hca@linux.ibm.com>,
         Barry Song <baohua@kernel.org>
-Subject: [PATCH v3 3/8] sched/topology: introduce sched_numa_find_next_cpu()
-Date:   Sun, 30 Apr 2023 10:18:04 -0700
-Message-Id: <20230430171809.124686-4-yury.norov@gmail.com>
+Subject: [PATCH v3 4/8] sched/topology: add for_each_numa_{,online}_cpu() macro
+Date:   Sun, 30 Apr 2023 10:18:05 -0700
+Message-Id: <20230430171809.124686-5-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230430171809.124686-1-yury.norov@gmail.com>
 References: <20230430171809.124686-1-yury.norov@gmail.com>
@@ -93,105 +93,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function searches for a next CPU in a given cpumask according to
-NUMA topology, so that it traverses CPUs per-hop.
+for_each_cpu() is widely used in the kernel, and it's beneficial to
+create a NUMA-aware version of the macro.
 
-If the CPU is the last CPU in a given hop, sched_numa_find_next_cpu()
-switches to the next hop, and picks the first CPU from there, excluding
-those already traversed.
+Recently added for_each_numa_hop_mask() works, but switching existing
+codebase to using it is not an easy process.
 
-Because only online CPUs are presented in the NUMA topology masks, offline
-CPUs will be skipped even if presented in the 'cpus' mask provided in the
-arguments.
+New for_each_numa_cpu() is designed to be similar to the for_each_cpu().
+It allows to convert existing code to NUMA-aware as simple as adding a
+hop iterator variable and passing it inside new macro. for_each_numa_cpu()
+takes care of the rest.
+
+At the moment, we have 2 users of NUMA-aware enumerators. One is
+Melanox's in-tree driver, and another is Intel's in-review driver:
+
+https://lore.kernel.org/lkml/20230216145455.661709-1-pawel.chmielewski@intel.com/
+
+Both real-life examples follow the same pattern:
+
+	for_each_numa_hop_mask(cpus, prev, node) {
+ 		for_each_cpu_andnot(cpu, cpus, prev) {
+ 			if (cnt++ == max_num)
+ 				goto out;
+ 			do_something(cpu);
+ 		}
+		prev = cpus;
+ 	}
+
+With the new macro, it would look like this:
+
+	for_each_numa_online_cpu(cpu, hop, node) {
+		if (cnt++ == max_num)
+			break;
+		do_something(cpu);
+ 	}
+
+Straight conversion of existing for_each_cpu() codebase to NUMA-aware
+version with for_each_numa_hop_mask() is difficult because it doesn't
+take a user-provided cpu mask, and eventually ends up with open-coded
+double loop. With for_each_numa_cpu() it shouldn't be a brainteaser.
+Consider the NUMA-ignorant example:
+
+	cpumask_t cpus = get_mask();
+	int cnt = 0, cpu;
+
+	for_each_cpu(cpu, cpus) {
+		if (cnt++ == max_num)
+			break;
+		do_something(cpu);
+ 	}
+
+Converting it to NUMA-aware version would be as simple as:
+
+	cpumask_t cpus = get_mask();
+	int node = get_node();
+	int cnt = 0, hop, cpu;
+
+	for_each_numa_cpu(cpu, hop, node, cpus) {
+		if (cnt++ == max_num)
+			break;
+		do_something(cpu);
+ 	}
+
+The latter looks more verbose and avoids from open-coding that annoying
+double loop. Another advantage is that it works with a 'hop' parameter with
+the clear meaning of NUMA distance, and doesn't make people not familiar
+to enumerator internals bothering with current and previous masks machinery.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- include/linux/topology.h | 12 ++++++++++++
- kernel/sched/topology.c  | 39 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 51 insertions(+)
+ include/linux/topology.h | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
 diff --git a/include/linux/topology.h b/include/linux/topology.h
-index 52f5850730b3..da92fea38585 100644
+index da92fea38585..6ed01962878c 100644
 --- a/include/linux/topology.h
 +++ b/include/linux/topology.h
-@@ -245,8 +245,13 @@ static inline const struct cpumask *cpu_cpu_mask(int cpu)
- 	return cpumask_of_node(cpu_to_node(cpu));
- }
+@@ -291,4 +291,23 @@ sched_numa_hop_mask(unsigned int node, unsigned int hops)
+ 	     !IS_ERR_OR_NULL(mask);					       \
+ 	     __hops++)
  
-+/*
-+ * sched_numa_find_*_cpu() functions family traverses only accessible CPUs,
-+ * i.e. those listed in cpu_online_mask.
-+ */
- #ifdef CONFIG_NUMA
- int sched_numa_find_nth_cpu(const struct cpumask *cpus, int cpu, int node);
-+int sched_numa_find_next_cpu(const struct cpumask *cpus, int cpu, int node, unsigned int *hop);
- extern const struct cpumask *sched_numa_hop_mask(unsigned int node, unsigned int hops);
- #else
- static __always_inline int sched_numa_find_nth_cpu(const struct cpumask *cpus, int cpu, int node)
-@@ -254,6 +259,13 @@ static __always_inline int sched_numa_find_nth_cpu(const struct cpumask *cpus, i
- 	return cpumask_nth_and(cpu, cpus, cpu_online_mask);
- }
- 
-+static __always_inline
-+int sched_numa_find_next_cpu(const struct cpumask *cpus, int cpu, int node, unsigned int *hop)
-+{
-+	return find_next_and_bit(cpumask_bits(cpus), cpumask_bits(cpu_online_mask),
-+						small_cpumask_bits, cpu);
-+}
-+
- static inline const struct cpumask *
- sched_numa_hop_mask(unsigned int node, unsigned int hops)
- {
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index 051aaf65c749..fc163e4181e6 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -2130,6 +2130,45 @@ int sched_numa_find_nth_cpu(const struct cpumask *cpus, int cpu, int node)
- }
- EXPORT_SYMBOL_GPL(sched_numa_find_nth_cpu);
- 
-+/*
-+ * sched_numa_find_next_cpu() - given the NUMA topology, find the next cpu
-+ * cpumask: cpumask to find a CPU from
-+ * cpu: current CPU
-+ * node: local node
-+ * hop: (in/out) indicates distance order of current CPU to a local node
++/**
++ * for_each_numa_cpu - iterate over cpus in increasing order taking into account
++ *		       NUMA distances from a given node.
++ * @cpu: the (optionally unsigned) integer iterator
++ * @hop: the iterator variable, must be initialized to a desired minimal hop.
++ * @node: the NUMA node to start the search from.
++ * @mask: the cpumask pointer
 + *
-+ * The function searches for a next CPU at a given NUMA distance, indicated
-+ * by hop, and if nothing found, tries to find CPUs at a greater distance,
-+ * starting from the beginning.
-+ *
-+ * Return: cpu, or >= nr_cpu_ids when nothing found.
++ * Requires rcu_lock to be held.
 + */
-+int sched_numa_find_next_cpu(const struct cpumask *cpus, int cpu, int node, unsigned int *hop)
-+{
-+	unsigned long *cur, *prev;
-+	struct cpumask ***masks;
-+	unsigned int ret;
++#define for_each_numa_cpu(cpu, hop, node, mask)					\
++	for ((cpu) = 0, (hop) = 0;						\
++		(cpu) = sched_numa_find_next_cpu((mask), (cpu), (node), &(hop)),\
++		(cpu) < nr_cpu_ids;						\
++		(cpu)++)
 +
-+	if (*hop >= sched_domains_numa_levels)
-+		return nr_cpu_ids;
++#define for_each_numa_online_cpu(cpu, hop, node)				\
++	for_each_numa_cpu(cpu, hop, node, cpu_online_mask)
 +
-+	masks = rcu_dereference(sched_domains_numa_masks);
-+	cur = cpumask_bits(masks[*hop][node]);
-+	if (*hop == 0)
-+		ret = find_next_and_bit(cpumask_bits(cpus), cur, nr_cpu_ids, cpu);
-+	else {
-+		prev = cpumask_bits(masks[*hop - 1][node]);
-+		ret = find_next_and_andnot_bit(cpumask_bits(cpus), cur, prev, nr_cpu_ids, cpu);
-+	}
-+
-+	if (ret < nr_cpu_ids)
-+		return ret;
-+
-+	*hop += 1;
-+	return sched_numa_find_next_cpu(cpus, 0, node, hop);
-+}
-+EXPORT_SYMBOL_GPL(sched_numa_find_next_cpu);
-+
- /**
-  * sched_numa_hop_mask() - Get the cpumask of CPUs at most @hops hops away from
-  *                         @node
+ #endif /* _LINUX_TOPOLOGY_H */
 -- 
 2.37.2
 
