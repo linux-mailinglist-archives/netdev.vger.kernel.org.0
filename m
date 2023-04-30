@@ -2,67 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B1CF6F2925
-	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 16:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C8596F2929
+	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 16:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229596AbjD3OIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Apr 2023 10:08:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41624 "EHLO
+        id S229688AbjD3OPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Apr 2023 10:15:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjD3OIY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 10:08:24 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC6910D4
-        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 07:08:23 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id d2e1a72fcca58-63b50a02bffso1199510b3a.2
-        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 07:08:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mistywest-com.20221208.gappssmtp.com; s=20221208; t=1682863703; x=1685455703;
-        h=content-transfer-encoding:subject:from:content-language:to
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mfR175wiwuKiJ9/oFftVHhPPPwYM+cPqhF5iBZRbxbk=;
-        b=VZxdRln6D8i8xA+rB0CSs7RRuBZuoYLdbwM/6KWQ+ohO5s5XlsLNShGNDBZS0FVdJ1
-         3oFrBOmDceg2TilIdJcjlOMvH5m3zKYbWBqjh5dsHcTOVqt9lSkGZ88/0opaCDWSKj+A
-         jbvKDDOr1oi6JuwcrTpYlysGnPCrXHKzA9ULxGPRMO3CSYAwTBQ6rZx7qtlv1I+UTkRt
-         kEwQFnMRUvZHcZ0GGkEU05XNmEZ/2IjhgtPiNSH8ovoGyAdODEyzhUZ2oVyBjfGMtmMQ
-         CUv8cSLuc7kZzzqHfMbBBO9W6IktZT0etL0xJbZLCjPvNm1bX+eAYwo3YLEwktKkXJid
-         mw/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682863703; x=1685455703;
-        h=content-transfer-encoding:subject:from:content-language:to
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=mfR175wiwuKiJ9/oFftVHhPPPwYM+cPqhF5iBZRbxbk=;
-        b=ItJtDBxY29FpI05w1tltYMZxL6rVuQv6g4n9l2EVJKcdZHatEiUd598AMnmtG4bsoX
-         FXxM/Acb29ZQue3z/bHsKmpV29R9tEBrS1bYyqolqc40SIVsx1jXi0QyDSu08Khb/UMu
-         Zs7+5SDMmAqFGbMvIrk8SCt5OzEhwO1JakJ/tIJtnOBssXe+3DygLM8C6S/HXRc57f6H
-         8pTbknudZnChmP7qlcegH7CW8ZlO+Rd9dBp6jR8s9+d0UrMY6a1Tn6YJfIuGPQOM4ion
-         j6eDg5lPJvc4Xj/svS9UooUjcExVsTx0zLsZQrZUcw1fIrW2hmP5zUWHLPkHiBI5UbjP
-         C8xQ==
-X-Gm-Message-State: AC+VfDxB5R6qOwxKR5p90rNXUKs0TbIHsB2yDgD8bV4jSHRNti2E35l7
-        OisXRBCCcIsQTJdI8+HBKBEX59YjGka1jiii+KeNKw==
-X-Google-Smtp-Source: ACHHUZ5k4wjQLVhfUmfP+mN7JfCQM8J5+x6xeEa1AUpjZr2t1j/WOK91600nNRrEzLODZXkMPTjCQA==
-X-Received: by 2002:a05:6a00:10c9:b0:63a:ea04:634a with SMTP id d9-20020a056a0010c900b0063aea04634amr16278925pfu.21.1682863702561;
-        Sun, 30 Apr 2023 07:08:22 -0700 (PDT)
-Received: from [192.168.98.6] (remote.mistywest.io. [184.68.30.58])
-        by smtp.gmail.com with ESMTPSA id w14-20020a056a0014ce00b0063ba9108c5csm19010491pfu.149.2023.04.30.07.08.21
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 30 Apr 2023 07:08:22 -0700 (PDT)
-Message-ID: <b0cdace8-5aa2-ce78-7cbf-4edf87dbc3a6@mistywest.com>
-Date:   Sun, 30 Apr 2023 07:08:21 -0700
+        with ESMTP id S229461AbjD3OPJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 10:15:09 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02BA171E;
+        Sun, 30 Apr 2023 07:15:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YJtCwQvXEsgN/DAG5ktUpq5HtX6DvhAJ6ab2hmFg45Q=; b=PGkwTjefbDsRkIxZOZyAAxXYvc
+        DRfxK+n+tV6/ZTbjyhSBZu5rooMxurrXu1pxh1XmlNyosfcR2WuMzNz2PXzC1jrD7Y+g5HXD9Qgz+
+        my4wpqPsnUPHABpedUl0HjB3faSt4mfNAhg75u5JUK5tZWN4ODSO4OlsnoRITmj/pyhQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pt7ov-00BYQq-LY; Sun, 30 Apr 2023 16:14:33 +0200
+Date:   Sun, 30 Apr 2023 16:14:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Bauer <mail@david-bauer.net>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH 1/2] mt7530: register OF node for internal MDIO bus
+Message-ID: <842530f0-78b9-4cfe-9469-d20b1c0b5259@lunn.ch>
+References: <20230430112834.11520-1-mail@david-bauer.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-To:     netdev@vger.kernel.org
-Content-Language: en-US
-From:   Ron Eggler <ron.eggler@mistywest.com>
-Subject: Unable to TX data on VSC8531
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230430112834.11520-1-mail@david-bauer.net>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,23 +59,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Sun, Apr 30, 2023 at 01:28:32PM +0200, David Bauer wrote:
+> The MT753x switches provide a switch-internal MDIO bus for the embedded
+> PHYs.
+> 
+> Register a OF sub-node on the switch OF-node for this internal MDIO bus.
+> This allows to configure the embedded PHYs using device-tree.
+> 
+> Signed-off-by: David Bauer <mail@david-bauer.net>
 
-I've posted here previously about the bring up of two network interfaces 
-on an embedded platform that is using two the Microsemi VSC8531 PHYs. 
-(previous thread: issues to bring up two VSC8531 PHYs, Thanks to Heiner 
-Kallweit & Andrew Lunn).
-I'm able to seemingly fully access & operate the network interfaces 
-through ifconfig (and the ip commands) and I set the ip address to match 
-my /24 network. However, while it looks like I can receive & see traffic 
-on the line with tcpdump, it appears like none of my frames can go out 
-in TX direction and hence entries in my arp table mostly remain 
-incomplete (and if there actually happens to be a complete entry, 
-sending anything to it doesn't seem to work and the TX counters in 
-ifconfig stay at 0. How can I further troubleshoot this? I have set the 
-phy-mode to rgmii-id in the device tree and have experimented with all 
-the TX_CLK delay register settings in the PHY but have failed to make 
-any progress.
+Hi David
 
-Thank you,
-Ron
+Please read
+
+https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
+
+You should put the tree in the patch subject.
+
+Also, net-next is closed at the moment due to the merge window. Please
+only post RFC patches during this time, and repost once net-next opens
+again.
+
+	Andrew
