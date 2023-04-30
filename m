@@ -2,134 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93E8C6F2923
-	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 16:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B1CF6F2925
+	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 16:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbjD3OHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Apr 2023 10:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
+        id S229596AbjD3OIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Apr 2023 10:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbjD3OHb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 10:07:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F254C19BB
-        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 07:06:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1682863607;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/qFwCkDXym+BO05vYF8vpXsanmPn3ffsSFSPl68Sv4Y=;
-        b=XYw/CfNoqOxY6vkppd0il0Dg99SI+v1J3/1YUCsofcPnctsnzDTfg0zjMxTl24yWBBYyCG
-        kwvbA+q/RINZcGSoSKduOiKttzO6O5DOcjbkW7LDa3eOLN4ESamfNOUXjemZtBXiPOOklF
-        6CGduUcJ987g9tDn74UbMfjLNFf84vw=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-662-CRPKVT1qP628cTtjxyWzgQ-1; Sun, 30 Apr 2023 10:06:45 -0400
-X-MC-Unique: CRPKVT1qP628cTtjxyWzgQ-1
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-3f315735edeso68216665e9.1
-        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 07:06:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682863604; x=1685455604;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        with ESMTP id S229461AbjD3OIY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 10:08:24 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC6910D4
+        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 07:08:23 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id d2e1a72fcca58-63b50a02bffso1199510b3a.2
+        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 07:08:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mistywest-com.20221208.gappssmtp.com; s=20221208; t=1682863703; x=1685455703;
+        h=content-transfer-encoding:subject:from:content-language:to
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/qFwCkDXym+BO05vYF8vpXsanmPn3ffsSFSPl68Sv4Y=;
-        b=NpWaYgChk4g8owuyfOPPiLXy9H9aS/+lFZoeJm5IJFIIC8m7Ur0G5vjKmNGhf4G4e7
-         BBgp6VhnDTAEXt1P27AxrXWU/da4tVZAFxcJU6EHN/lM9lNg4eKIlwWTo65ig25Adz8I
-         AFsWi23PIxqKGpNs9/DQ1bogoPluYGdLLpe9mYFh6NtLRPfycNy2Cy5oUe/L7Orfe24Z
-         aER/S6qjXOItHBqVMmJwH0gr2Fe3XQrOuxlQBtFfw+0uZR6iIDBaoCUw/ydEkQGSxF1R
-         C9BtyyQs4Gngfu9PbIPlBkCbo1pDVwCBxn1hPaQwAANuUAL2kcvXsl6wh99QIMoJLf5Z
-         KqhQ==
-X-Gm-Message-State: AC+VfDz60pwdz6oyR3DDTHtgwyJneoiXnlp9SbcNpJby4x3b4bhGBvKl
-        5hDHItt3vX6y+v3Xa9kjkWS16rqfiF+0nfZZMuYDlaz7XdfbPG7nZC7NRiRh3XfxJLvG1vuDW/T
-        qbyuf7heJX5+WWSvu
-X-Received: by 2002:a7b:c7c4:0:b0:3f1:6f57:6fd1 with SMTP id z4-20020a7bc7c4000000b003f16f576fd1mr8450906wmk.9.1682863604673;
-        Sun, 30 Apr 2023 07:06:44 -0700 (PDT)
-X-Google-Smtp-Source: ACHHUZ49qr4fnugfdl0poBdeno2pyYNH1DJqISB5JrW9YRnjnc+eSzsu886AyGUm1JWAYtIvaYCRKA==
-X-Received: by 2002:a7b:c7c4:0:b0:3f1:6f57:6fd1 with SMTP id z4-20020a7bc7c4000000b003f16f576fd1mr8450897wmk.9.1682863604398;
-        Sun, 30 Apr 2023 07:06:44 -0700 (PDT)
-Received: from redhat.com ([2.52.139.131])
-        by smtp.gmail.com with ESMTPSA id z23-20020a7bc7d7000000b003f1751016desm29757833wmk.28.2023.04.30.07.06.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Apr 2023 07:06:43 -0700 (PDT)
-Date:   Sun, 30 Apr 2023 10:06:39 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc:     jasowang@redhat.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, xuanzhuo@linux.alibaba.com
-Subject: Re: [RFC PATCH net 0/3] virtio-net: allow usage of small vrings
-Message-ID: <20230430100535-mutt-send-email-mst@kernel.org>
-References: <20230430131518.2708471-1-alvaro.karsz@solid-run.com>
+        bh=mfR175wiwuKiJ9/oFftVHhPPPwYM+cPqhF5iBZRbxbk=;
+        b=VZxdRln6D8i8xA+rB0CSs7RRuBZuoYLdbwM/6KWQ+ohO5s5XlsLNShGNDBZS0FVdJ1
+         3oFrBOmDceg2TilIdJcjlOMvH5m3zKYbWBqjh5dsHcTOVqt9lSkGZ88/0opaCDWSKj+A
+         jbvKDDOr1oi6JuwcrTpYlysGnPCrXHKzA9ULxGPRMO3CSYAwTBQ6rZx7qtlv1I+UTkRt
+         kEwQFnMRUvZHcZ0GGkEU05XNmEZ/2IjhgtPiNSH8ovoGyAdODEyzhUZ2oVyBjfGMtmMQ
+         CUv8cSLuc7kZzzqHfMbBBO9W6IktZT0etL0xJbZLCjPvNm1bX+eAYwo3YLEwktKkXJid
+         mw/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682863703; x=1685455703;
+        h=content-transfer-encoding:subject:from:content-language:to
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=mfR175wiwuKiJ9/oFftVHhPPPwYM+cPqhF5iBZRbxbk=;
+        b=ItJtDBxY29FpI05w1tltYMZxL6rVuQv6g4n9l2EVJKcdZHatEiUd598AMnmtG4bsoX
+         FXxM/Acb29ZQue3z/bHsKmpV29R9tEBrS1bYyqolqc40SIVsx1jXi0QyDSu08Khb/UMu
+         Zs7+5SDMmAqFGbMvIrk8SCt5OzEhwO1JakJ/tIJtnOBssXe+3DygLM8C6S/HXRc57f6H
+         8pTbknudZnChmP7qlcegH7CW8ZlO+Rd9dBp6jR8s9+d0UrMY6a1Tn6YJfIuGPQOM4ion
+         j6eDg5lPJvc4Xj/svS9UooUjcExVsTx0zLsZQrZUcw1fIrW2hmP5zUWHLPkHiBI5UbjP
+         C8xQ==
+X-Gm-Message-State: AC+VfDxB5R6qOwxKR5p90rNXUKs0TbIHsB2yDgD8bV4jSHRNti2E35l7
+        OisXRBCCcIsQTJdI8+HBKBEX59YjGka1jiii+KeNKw==
+X-Google-Smtp-Source: ACHHUZ5k4wjQLVhfUmfP+mN7JfCQM8J5+x6xeEa1AUpjZr2t1j/WOK91600nNRrEzLODZXkMPTjCQA==
+X-Received: by 2002:a05:6a00:10c9:b0:63a:ea04:634a with SMTP id d9-20020a056a0010c900b0063aea04634amr16278925pfu.21.1682863702561;
+        Sun, 30 Apr 2023 07:08:22 -0700 (PDT)
+Received: from [192.168.98.6] (remote.mistywest.io. [184.68.30.58])
+        by smtp.gmail.com with ESMTPSA id w14-20020a056a0014ce00b0063ba9108c5csm19010491pfu.149.2023.04.30.07.08.21
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 30 Apr 2023 07:08:22 -0700 (PDT)
+Message-ID: <b0cdace8-5aa2-ce78-7cbf-4edf87dbc3a6@mistywest.com>
+Date:   Sun, 30 Apr 2023 07:08:21 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230430131518.2708471-1-alvaro.karsz@solid-run.com>
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+To:     netdev@vger.kernel.org
+Content-Language: en-US
+From:   Ron Eggler <ron.eggler@mistywest.com>
+Subject: Unable to TX data on VSC8531
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 30, 2023 at 04:15:15PM +0300, Alvaro Karsz wrote:
-> At the moment, if a virtio network device uses vrings with less than
-> MAX_SKB_FRAGS + 2 entries, the device won't be functional.
-> 
-> The following condition vq->num_free >= 2 + MAX_SKB_FRAGS will always
-> evaluate to false, leading to TX timeouts.
-> 
-> This patchset attempts this fix this bug, and to allow small rings down
-> to 4 entries.
-> The first patch introduces a new mechanism in virtio core - it allows to
-> block features in probe time.
-> 
-> If a virtio drivers blocks features and fails probe, virtio core will
-> reset the device, re-negotiate the features and probe again.
-> 
-> This is needed since some virtio net features are not supported with
-> small rings.
-> 
-> This patchset follows a discussion in the mailing list [1].
-> 
-> This fixes only part of the bug, rings with less than 4 entries won't
-> work.
+Hi,
 
-Why the difference?
+I've posted here previously about the bring up of two network interfaces 
+on an embedded platform that is using two the Microsemi VSC8531 PHYs. 
+(previous thread: issues to bring up two VSC8531 PHYs, Thanks to Heiner 
+Kallweit & Andrew Lunn).
+I'm able to seemingly fully access & operate the network interfaces 
+through ifconfig (and the ip commands) and I set the ip address to match 
+my /24 network. However, while it looks like I can receive & see traffic 
+on the line with tcpdump, it appears like none of my frames can go out 
+in TX direction and hence entries in my arp table mostly remain 
+incomplete (and if there actually happens to be a complete entry, 
+sending anything to it doesn't seem to work and the TX counters in 
+ifconfig stay at 0. How can I further troubleshoot this? I have set the 
+phy-mode to rgmii-id in the device tree and have experimented with all 
+the TX_CLK delay register settings in the PHY but have failed to make 
+any progress.
 
-> My intention is to split the effort and fix the RING_SIZE < 4 case in a
-> follow up patchset.
-> 
-> Maybe we should fail probe if RING_SIZE < 4 until the follow up patchset?
-
-I'd keep current behaviour.
-
-> I tested the patchset with SNET DPU (drivers/vdpa/solidrun), with packed
-> and split VQs, with rings down to 4 entries, with and without
-> VIRTIO_NET_F_MRG_RXBUF, with big MTUs.
-> 
-> I would appreciate more testing.
-> Xuan: I wasn't able to test XDP with my setup, maybe you can help with
-> that?
-> 
-> [1] https://lore.kernel.org/lkml/20230416074607.292616-1-alvaro.karsz@solid-run.com/
-> 
-> Alvaro Karsz (3):
->   virtio: re-negotiate features if probe fails and features are blocked
->   virtio-net: allow usage of vrings smaller than MAX_SKB_FRAGS + 2
->   virtio-net: block ethtool from converting a ring to a small ring
-> 
->  drivers/net/virtio_net.c | 161 +++++++++++++++++++++++++++++++++++++--
->  drivers/virtio/virtio.c  |  73 +++++++++++++-----
->  include/linux/virtio.h   |   3 +
->  3 files changed, 212 insertions(+), 25 deletions(-)
-> 
-> -- 
-> 2.34.1
-
+Thank you,
+Ron
