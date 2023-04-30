@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE2056F29E2
-	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 19:18:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21EDD6F29E9
+	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 19:18:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbjD3RSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Apr 2023 13:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
+        id S231339AbjD3RS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Apr 2023 13:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbjD3RSO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 13:18:14 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E95102D48;
-        Sun, 30 Apr 2023 10:18:13 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id 98e67ed59e1d1-24df4ef05d4so517161a91.2;
-        Sun, 30 Apr 2023 10:18:13 -0700 (PDT)
+        with ESMTP id S231251AbjD3RSR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 13:18:17 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880A72706;
+        Sun, 30 Apr 2023 10:18:15 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id 98e67ed59e1d1-24ba5c1be6dso1196891a91.2;
+        Sun, 30 Apr 2023 10:18:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682875093; x=1685467093;
+        d=gmail.com; s=20221208; t=1682875095; x=1685467095;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=TWZ/FM9Xy42k8TQIEAYaaEoBZGiiKDahHvzomhIyOWo=;
-        b=DfGc4B6u50hjxfbXwokfigtvybIagJSpgF1k7vXk3oK29QxTRG7GYATE4MFjrmVdG/
-         J5c6Dy6piJTDC3ByETGQyRxvWRL5FEywm8uWBVIA3bXWCobrYb7tFtLGsHzSgxaYmIsy
-         0DaUFwWeniLqoFWx8bPR4xf2Z4vQDUwOO67UG1iuMv7BhkA7coitPbK0Qo/Uhxp3w09X
-         tEUlw4Yq+Hoc92NM2QyEVe+N7a6CVJdsUuBuhh4M8MIaLqFXNlh/yuwjB0y+q37zct6M
-         +s8Nn7Ek179r1DUNnx/Zd5mjKrbQ39Alm6h9+BTD9KwEdhlZYgWyV2JrENAYa1I8s7Dv
-         1Sng==
+        bh=VUcX1u9Na09LWEG/YlEb5cTfwitTfjn6pv+M2nzybOg=;
+        b=pRa6oNNkpLd1dXDPDAdnGEFDyudn68KHFh/2Ibj9peU1jYkYw+KCmHXKxDOQVmi6f7
+         bvxqucMU/OlomYLoLnI27rw82VUeME69XiK+3JPmr3/qB/hJKPVCucAKNqR05cZuZ8vF
+         gIIsbSCabbgbBgewuGivVkXrv4lbhgaH40GUryUTbNXuZ7QsKcfWah/ce5ut7N/YP0P7
+         KKpv4dM+eXR//oWEgz6VUD2nu64ZMZCJTq/BppIvDyn7IbLS0SGl8FWBau83jOrSGnqV
+         jJ+n4XNTfmvTSnnewnAvgeI+ud2/b8sEiWriCRSEAuUvz13spcUZhEt5FUKPKDoREY10
+         kXuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682875093; x=1685467093;
+        d=1e100.net; s=20221208; t=1682875095; x=1685467095;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=TWZ/FM9Xy42k8TQIEAYaaEoBZGiiKDahHvzomhIyOWo=;
-        b=IWd/mPIlOwL917fXchHUqYzsAyT4vurCEYG0LgoNABBOk6Sg8zivlrYG+K7d4wNsZ0
-         M3YWJ8fNEU7d90vDl0+jSX7FmInGd+pyB00PTtDL1RXRrVgzc4Q+NMZFZ73AvAju8cPo
-         9b8oDZqo44GAAGQMMEqpdJgJYVWM4eVGCUgTtKuSEUuXZYQOvHkE9sIGxwYh9/lLD2o/
-         4sqMpJu9ZH3LrzsaiBZqMI2k6nDZKjdT06BbQGLuHymQ1YZEIoMDF/Iz24i2ujI9r+ZW
-         YD+3dXpcmwV6jqFZgRQ413vjSHv88sQgvmO5K5DLhuFCX4+4JvvgyfqIEnLaDNOFEEFZ
-         Bl+Q==
-X-Gm-Message-State: AC+VfDwRrIPSp6D9qwOFZsCurs/Mr2S62dhowKTzYzzIoQnEDWpXTm9J
-        Ceqg0D0vOXr5NYMdMmT2qIg=
-X-Google-Smtp-Source: ACHHUZ4QxoittMxV8zbCIJSrLlRIt/RmzZr/yg+px1T1B035hDcTBgtdFUy65HhCICOy4EAMXasQwQ==
-X-Received: by 2002:a17:90b:4a01:b0:246:8a27:d42d with SMTP id kk1-20020a17090b4a0100b002468a27d42dmr11382564pjb.48.1682875093288;
-        Sun, 30 Apr 2023 10:18:13 -0700 (PDT)
+        bh=VUcX1u9Na09LWEG/YlEb5cTfwitTfjn6pv+M2nzybOg=;
+        b=bWMwl74Gnx63e3Wyr184orNYEzp3+TNk5wrilulDqIuqTNpf73V9isqANjTd86mlZ4
+         BezNBtHM52gc5jvSjxv+2yKHOmfPBil2eLeV1NVub6j7pE31umRyywhKX3VjjldzT5Wt
+         C/GBcL2aO5hfqwA1Dx7z1w0vsUe9qFEAeiRsiXoLYTMb6QHSmXuLJ/xL+N832V45akqs
+         kfg+j/5b9F/okr5y331K9bi0MTK84Iga0h7we7swKRdps7xJMVi5USssNXk4mQkUM9AC
+         M38f4/1LgN8FzvCnT5HMxd/VyMmIGOOqa+4XYNUtT3gcq4Vmhu9p5Elk4Xa52Yw79T6n
+         kZ4g==
+X-Gm-Message-State: AC+VfDx6SM/dS1sx4SofvHZc3bctoMl+aRUkO2wsoKvVHwaLT+AD7Bb8
+        M2SzT3vyDw3nfzmvaDjPtGc=
+X-Google-Smtp-Source: ACHHUZ738Ghtd4bVqUrJ1VjpR5sXBQOudiJXMTpSA+63jEgG4H+QovJPYAsOzNLRry1OYS3Mx9oRkw==
+X-Received: by 2002:a17:902:d505:b0:1a9:9c5d:9fac with SMTP id b5-20020a170902d50500b001a99c5d9facmr14847770plg.33.1682875094901;
+        Sun, 30 Apr 2023 10:18:14 -0700 (PDT)
 Received: from localhost ([4.1.102.3])
-        by smtp.gmail.com with ESMTPSA id n12-20020a17090a9f0c00b0024e05b7ba8bsm68533pjp.25.2023.04.30.10.18.12
+        by smtp.gmail.com with ESMTPSA id jd9-20020a170903260900b001a681fb3e77sm16155349plb.44.2023.04.30.10.18.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Apr 2023 10:18:12 -0700 (PDT)
+        Sun, 30 Apr 2023 10:18:14 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -75,9 +75,9 @@ Cc:     Yury Norov <yury.norov@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Heiko Carstens <hca@linux.ibm.com>,
         Barry Song <baohua@kernel.org>
-Subject: [PATCH v3 1/8] sched: fix sched_numa_find_nth_cpu() in non-NUMA case
-Date:   Sun, 30 Apr 2023 10:18:02 -0700
-Message-Id: <20230430171809.124686-2-yury.norov@gmail.com>
+Subject: [PATCH v3 2/8] lib/find: add find_next_and_andnot_bit()
+Date:   Sun, 30 Apr 2023 10:18:03 -0700
+Message-Id: <20230430171809.124686-3-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230430171809.124686-1-yury.norov@gmail.com>
 References: <20230430171809.124686-1-yury.norov@gmail.com>
@@ -93,31 +93,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When CONFIG_NUMA is enabled, sched_numa_find_nth_cpu() searches for a
-CPU in sched_domains_numa_masks. The masks includes only online CPUs,
-so effectively offline CPUs are skipped.
+Similarly to find_nth_and_andnot_bit(), find_next_and_andnot_bit() is
+a convenient helper that allows traversing bitmaps without storing
+intermediate results in a temporary bitmap.
 
-When CONFIG_NUMA is disabled, the fallback function should be consistent.
+In the following patches the function is used to implement NUMA-aware
+CPUs enumeration.
 
-Fixes: cd7f55359c90 ("sched: add sched_numa_find_nth_cpu()")
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- include/linux/topology.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/find.h | 43 +++++++++++++++++++++++++++++++++++++++++++
+ lib/find_bit.c       | 12 ++++++++++++
+ 2 files changed, 55 insertions(+)
 
-diff --git a/include/linux/topology.h b/include/linux/topology.h
-index fea32377f7c7..52f5850730b3 100644
---- a/include/linux/topology.h
-+++ b/include/linux/topology.h
-@@ -251,7 +251,7 @@ extern const struct cpumask *sched_numa_hop_mask(unsigned int node, unsigned int
- #else
- static __always_inline int sched_numa_find_nth_cpu(const struct cpumask *cpus, int cpu, int node)
- {
--	return cpumask_nth(cpu, cpus);
-+	return cpumask_nth_and(cpu, cpus, cpu_online_mask);
+diff --git a/include/linux/find.h b/include/linux/find.h
+index 5e4f39ef2e72..90b68d76c073 100644
+--- a/include/linux/find.h
++++ b/include/linux/find.h
+@@ -16,6 +16,9 @@ unsigned long _find_next_andnot_bit(const unsigned long *addr1, const unsigned l
+ 					unsigned long nbits, unsigned long start);
+ unsigned long _find_next_or_bit(const unsigned long *addr1, const unsigned long *addr2,
+ 					unsigned long nbits, unsigned long start);
++unsigned long _find_next_and_andnot_bit(const unsigned long *addr1, const unsigned long *addr2,
++					const unsigned long *addr3, unsigned long nbits,
++					unsigned long start);
+ unsigned long _find_next_zero_bit(const unsigned long *addr, unsigned long nbits,
+ 					 unsigned long start);
+ extern unsigned long _find_first_bit(const unsigned long *addr, unsigned long size);
+@@ -159,6 +162,40 @@ unsigned long find_next_or_bit(const unsigned long *addr1,
  }
+ #endif
  
- static inline const struct cpumask *
++#ifndef find_next_and_andnot_bit
++/**
++ * find_next_and_andnot_bit - find the next bit set in *addr1 and *addr2,
++ *			      excluding all the bits in *addr3
++ * @addr1: The first address to base the search on
++ * @addr2: The second address to base the search on
++ * @addr3: The third address to base the search on
++ * @size: The bitmap size in bits
++ * @offset: The bitnumber to start searching at
++ *
++ * Return: the bit number for the next set bit
++ * If no bits are set, returns @size.
++ */
++static __always_inline
++unsigned long find_next_and_andnot_bit(const unsigned long *addr1,
++				   const unsigned long *addr2,
++				   const unsigned long *addr3,
++				   unsigned long size,
++				   unsigned long offset)
++{
++	if (small_const_nbits(size)) {
++		unsigned long val;
++
++		if (unlikely(offset >= size))
++			return size;
++
++		val = *addr1 & *addr2 & ~*addr3 & GENMASK(size - 1, offset);
++		return val ? __ffs(val) : size;
++	}
++
++	return _find_next_and_andnot_bit(addr1, addr2, addr3, size, offset);
++}
++#endif
++
+ #ifndef find_next_zero_bit
+ /**
+  * find_next_zero_bit - find the next cleared bit in a memory region
+@@ -568,6 +605,12 @@ unsigned long find_next_bit_le(const void *addr, unsigned
+ 	     (bit) = find_next_andnot_bit((addr1), (addr2), (size), (bit)), (bit) < (size);\
+ 	     (bit)++)
+ 
++#define for_each_and_andnot_bit(bit, addr1, addr2, addr3, size) \
++	for ((bit) = 0;									\
++	     (bit) = find_next_and_andnot_bit((addr1), (addr2), (addr3), (size), (bit)),\
++	     (bit) < (size);								\
++	     (bit)++)
++
+ #define for_each_or_bit(bit, addr1, addr2, size) \
+ 	for ((bit) = 0;									\
+ 	     (bit) = find_next_or_bit((addr1), (addr2), (size), (bit)), (bit) < (size);\
+diff --git a/lib/find_bit.c b/lib/find_bit.c
+index 32f99e9a670e..4403e00890b1 100644
+--- a/lib/find_bit.c
++++ b/lib/find_bit.c
+@@ -182,6 +182,18 @@ unsigned long _find_next_andnot_bit(const unsigned long *addr1, const unsigned l
+ EXPORT_SYMBOL(_find_next_andnot_bit);
+ #endif
+ 
++#ifndef find_next_and_andnot_bit
++unsigned long _find_next_and_andnot_bit(const unsigned long *addr1,
++					const unsigned long *addr2,
++					const unsigned long *addr3,
++					unsigned long nbits,
++					unsigned long start)
++{
++	return FIND_NEXT_BIT(addr1[idx] & addr2[idx] & ~addr3[idx], /* nop */, nbits, start);
++}
++EXPORT_SYMBOL(_find_next_and_andnot_bit);
++#endif
++
+ #ifndef find_next_or_bit
+ unsigned long _find_next_or_bit(const unsigned long *addr1, const unsigned long *addr2,
+ 					unsigned long nbits, unsigned long start)
 -- 
 2.37.2
 
