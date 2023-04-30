@@ -2,188 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D536F2865
-	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 12:03:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AC326F287A
+	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 12:36:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbjD3KC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Apr 2023 06:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        id S230193AbjD3Kg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Apr 2023 06:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbjD3KCz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 06:02:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60810213E;
-        Sun, 30 Apr 2023 03:02:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57E5361307;
-        Sun, 30 Apr 2023 10:02:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3096AC433EF;
-        Sun, 30 Apr 2023 10:02:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1682848972;
-        bh=/btdq5rgfT++kj3zrOz6f2xeLAKIuCUhQHgcDyc+0p4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bhbUBxfTlLn8fxz2b9JSx9X/QtK8RmJHR/cmH4zz0nt58xe1vxCHJfvXgAxUw5KRy
-         hQ9/WqcYA0akFiP3Y3D21sh1DnpdYM+EDbtjnVYSetmXTIcY7h10I7kNVY7v0347ZB
-         l3NedKyOfLUCw6VoZq2lG4aelCjpSuXdX9oCbEep6pNsDyTKwpY4o/OkqOFxEQESNV
-         yiNPftqp90b91uSvlMwiw/sEFQv3zqqqlPDfzKFFand4bfvfdv+v6FSl8yivKzz78k
-         Tt+95q1CaO0IJzq/W3IiKoPlATbt+Vsy1o4+7PQUT5gtt/e1JX76ccCL3D7WTiFy41
-         YlOPzrjvDsGkg==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, j.vosburgh@gmail.com,
-        andy@greyhouse.net, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, bpf@vger.kernel.org,
-        andrii@kernel.org, mykolal@fb.com, ast@kernel.org,
-        daniel@iogearbox.net, martin.lau@linux.dev, alardam@gmail.com,
-        memxor@gmail.com, sdf@google.com, brouer@redhat.com,
-        toke@redhat.com
-Subject: [PATCH v2 net] bonding: add xdp_features support
-Date:   Sun, 30 Apr 2023 12:02:44 +0200
-Message-Id: <e82117190648e1cbb2740be44de71a21351c5107.1682848658.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.40.0
+        with ESMTP id S229461AbjD3Kgz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 06:36:55 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049891BFF;
+        Sun, 30 Apr 2023 03:36:54 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-3062c1e7df8so108151f8f.1;
+        Sun, 30 Apr 2023 03:36:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20221208; t=1682851012; x=1685443012;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bNpv0WM5O3XzF1IvDudqU5WB9Uw2W8qTwnpkdxgYnb8=;
+        b=CuJLyjLNFiDvzdpjC3oEp3zc0I5OKagwgy8U3Ax2St7kCJ07KCpTmSeoBQf9TtsY3H
+         cZsYhUSG7A1g3ELJ14qYEmQvgZUeA5GMj+MR355dqZHayO/RJ3d0erG7/agN6uBdG/qR
+         Mk0w/YfuM6/A2ldTlQxbnuByFyzxbLcB/ZMk+7Ku2LvK5Ihj7tGsIQ91GRklcvf6+PCq
+         Uu9knlx2hTVhoGqCP+NyiyTPT+1tYfbU7CQ8625gUbm/uFzjjGiC7mLsO4zudx/KMIrf
+         zlDidRyB6+ms7hTgYqUyF9YlFgq2Wuepku9L0lSo1TWFUcVnJi5j83zSV23ak5JqiKuz
+         cjcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682851012; x=1685443012;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=bNpv0WM5O3XzF1IvDudqU5WB9Uw2W8qTwnpkdxgYnb8=;
+        b=Xf/MQUWP6dpX3DoWMxXkcY+7g1rJ90Bgn7Yk5NIMXw9b/z92yfOAeUwLUvTFz94VRX
+         61QuY/v2O5Jo0vUUtLrJoWLFIaZkh1mfoJ1/h12P4ninZokGVg9ggTnfHMbCW/uxKIHX
+         agc1u51XSCVPT0PGYV0advE6nbOzVridtKi5W/JyksTCnNRgYMa99zxksN3Iyht2Hqsp
+         Yem7VVXAd3++R6S4CbUAgRo/sTMF85VyUQOH+GyJx9H/HZv5RkvJh33zgWD6pJg1eapn
+         stgVtczp0znlSpZAfUl5bEtDPpF3nig1MyxNCga+argaQxePkoSGxxAgzGrXrDKudrH8
+         zL/Q==
+X-Gm-Message-State: AC+VfDxzruztrF5NMEjpbGScyMaB5XbeD/8xRPeBe2vJWGfU/bE3fMfb
+        0oy2h4XhGYeLSeIPQ+kE6M4=
+X-Google-Smtp-Source: ACHHUZ7yAWo8Z+cdUwaQzKvRpUpHO+kW7h597KI6nQ25igD829dtStATqMgbjB6eofom0+jOzNe1zA==
+X-Received: by 2002:a05:6000:181:b0:306:2b64:fd1b with SMTP id p1-20020a056000018100b003062b64fd1bmr995166wrx.52.1682851012190;
+        Sun, 30 Apr 2023 03:36:52 -0700 (PDT)
+Received: from [192.168.1.50] ([81.196.40.55])
+        by smtp.gmail.com with ESMTPSA id g13-20020adfe40d000000b002f8d402b191sm25592077wrm.112.2023.04.30.03.36.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 30 Apr 2023 03:36:51 -0700 (PDT)
+Message-ID: <794ab671-43a3-7548-13f0-4b289f07425f@gmail.com>
+Date:   Sun, 30 Apr 2023 13:36:50 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] wifi: rtl8xxxu: fix authentication timeout due to
+ incorrect RCR value
+To:     Yun Lu <luyun_611@163.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>
+Cc:     Jes.Sorensen@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+References: <20230427020512.1221062-1-luyun_611@163.com>
+ <866570c9-38d8-1006-4721-77e2945170b9@lwfinger.net>
+ <76a784b2.2cb3.187c60f0f68.Coremail.luyun_611@163.com>
+ <d3743b66-23b1-011c-9dcd-c408b1963fca@lwfinger.net>
+ <62d9fe90.63b.187cb1481f8.Coremail.luyun_611@163.com>
+Content-Language: en-US
+From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
+In-Reply-To: <62d9fe90.63b.187cb1481f8.Coremail.luyun_611@163.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce xdp_features support for bonding driver according to the slave
-devices attached to the master one. xdp_features is required whenever we
-want to xdp_redirect traffic into a bond device and then into selected
-slaves attached to it.
+On 29/04/2023 06:35, Yun Lu wrote:
+> At 2023-04-29 01:06:03, "Larry Finger" <Larry.Finger@lwfinger.net> wrote:
+>> On 4/27/23 23:11, wo wrote:
+>>> [  149.595642] [pid:7,cpu6,kworker/u16:0,0]BEFORE: REG_RCR differs from regrcr: 
+>>> 0x1830613 insted of 0x7000604e
+>>> [  160.676422] [pid:237,cpu6,kworker/u16:5,3]BEFORE: REG_RCR differs from 
+>>> regrcr: 0x70006009 insted of 0x700060ce
+>>> [  327.234588] [pid:7,cpu7,kworker/u16:0,5]BEFORE: REG_RCR differs from 
+>> regrcr: 0x1830d33 insted of 0x7000604e
+>>
+>>
+>> My patch was messed up, but it got the information that I wanted, which is shown 
+>> in the quoted lines above. One of these differs only in the low-order byte, 
+>> while the other 2 are completely different. Strange!
+>>
+>> It is possible that there is a firmware error. My system, which does not show 
+>> the problem, reports the following:
+>>
+>> [54130.741148] usb 3-6: RTL8192CU rev A (TSMC) romver 0, 2T2R, TX queues 2, 
+>> WiFi=1, BT=0, GPS=0, HI PA=0
+>> [54130.741153] usb 3-6: RTL8192CU MAC: xx:xx:xx:xx:xx:xx
+>> [54130.741155] usb 3-6: rtl8xxxu: Loading firmware rtlwifi/rtl8192cufw_TMSC.bin
+>> [54130.742301] usb 3-6: Firmware revision 88.2 (signature 0x88c1)
+>>
+>> Which firmware does your unit use?
+> 
+> The firmware verion we used is 80.0 (signature 0x88c1)
+>  [  903.873107] [pid:14,cpu0,kworker/0:1,2]usb 1-1.2: RTL8192CU rev A (TSMC) 2T2R, TX queues 2, WiFi=1, BT=0, GPS=0, HI PA=0
+> [  903.873138] [pid:14,cpu0,kworker/0:1,3]usb 1-1.2: RTL8192CU MAC: 08:be:xx:xx:xx:xx
+> [  903.873138] [pid:14,cpu0,kworker/0:1,4]usb 1-1.2: rtl8xxxu: Loading firmware rtlwifi/rtl8192cufw_TMSC.bin
+> [  903.873474] [pid:14,cpu0,kworker/0:1,5]usb 1-1.2: Firmware revision 80.0 (signature 0x88c1)
+> 
+>>
+>> Attached is a new test patch. When it logs a CORRUPTED value, I would like to 
+>> know what task is attached to the pid listed in the message. Note that the two 
+>> instances where the entire word was wrong came from pid:7.
+>>
+>> Could improper locking could produce these results?
+>>
+>> Larry
+> 
+> Apply your new patch, then turn on/off the wireless network switch on the network control panel serverl loops.
+> The log shows:
+> [   85.384429] [pid:221,cpu6,kworker/u16:6,5]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x70006009 insted of 0x700060ce
+> [  121.681976] [pid:216,cpu6,kworker/u16:3,0]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x70006009 insted of 0x700060ce
+> [  144.416992] [pid:217,cpu6,kworker/u16:4,1]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x70006009 insted of 0x700060ce
+> 
+> And if we up/down the interface serverl loops as follows:
+> ifconfig wlx08bexxxxxx down
+> sleep 1
+> ifconfig wlx08bexxxxxx up
+> sleep 10
+> The log shows:
+> [  282.112335] [2023:04:29 10:30:34][pid:95,cpu6,kworker/u16:1,3]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x1832e13 insted of 0x7000604e
+> [  293.311462] [2023:04:29 10:30:45][pid:217,cpu7,kworker/u16:4,9]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x1830e72 insted of 0x7000604e
+> [  304.435089] [2023:04:29 10:30:56][pid:217,cpu6,kworker/u16:4,9]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x1830ed3 insted of 0x7000604e
+> [  315.532257] [2023:04:29 10:31:07][pid:95,cpu7,kworker/u16:1,8]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x7000604e insted of 0x7000604e
+> [  324.114379] [2023:04:29 10:31:16][pid:221,cpu6,kworker/u16:6,7]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x1832e14 insted of 0x7000604e
+> 
+> We also update the  firmware verion to 88.2, and the test results are the same as above.
+> 
+> Thank you for helping debug this issue, which seems to be related to specific devices.
+> 
+> Yun Lu
+> 
+> 
+> 
+> 
+There was this bug report about phantom MAC addresses with
+the RTL8188CUS:
+https://lore.kernel.org/linux-wireless/a31d9500-73a3-f890-bebd-d0a4014f87da@reto-schneider.ch/
 
-Fixes: 66c0e13ad236 ("drivers: net: turn on XDP features")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
-Change since v1:
-- remove bpf self-test patch from the series
----
- drivers/net/bonding/bond_main.c    | 48 ++++++++++++++++++++++++++++++
- drivers/net/bonding/bond_options.c |  2 ++
- include/net/bonding.h              |  1 +
- 3 files changed, 51 insertions(+)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 710548dbd0c1..c98121b426a4 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1789,6 +1789,45 @@ static void bond_ether_setup(struct net_device *bond_dev)
- 	bond_dev->priv_flags &= ~IFF_TX_SKB_SHARING;
- }
- 
-+void bond_xdp_set_features(struct net_device *bond_dev)
-+{
-+	struct bonding *bond = netdev_priv(bond_dev);
-+	xdp_features_t val = NETDEV_XDP_ACT_MASK;
-+	struct list_head *iter;
-+	struct slave *slave;
-+
-+	ASSERT_RTNL();
-+
-+	if (!bond_xdp_check(bond)) {
-+		xdp_clear_features_flag(bond_dev);
-+		return;
-+	}
-+
-+	bond_for_each_slave(bond, slave, iter) {
-+		struct net_device *dev = slave->dev;
-+
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_BASIC)) {
-+			xdp_clear_features_flag(bond_dev);
-+			return;
-+		}
-+
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_REDIRECT))
-+			val &= ~NETDEV_XDP_ACT_REDIRECT;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_NDO_XMIT))
-+			val &= ~NETDEV_XDP_ACT_NDO_XMIT;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_XSK_ZEROCOPY))
-+			val &= ~NETDEV_XDP_ACT_XSK_ZEROCOPY;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_HW_OFFLOAD))
-+			val &= ~NETDEV_XDP_ACT_HW_OFFLOAD;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_RX_SG))
-+			val &= ~NETDEV_XDP_ACT_RX_SG;
-+		if (!(dev->xdp_features & NETDEV_XDP_ACT_NDO_XMIT_SG))
-+			val &= ~NETDEV_XDP_ACT_NDO_XMIT_SG;
-+	}
-+
-+	xdp_set_features_flag(bond_dev, val);
-+}
-+
- /* enslave device <slave> to bond device <master> */
- int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 		 struct netlink_ext_ack *extack)
-@@ -2236,6 +2275,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 			bpf_prog_inc(bond->xdp_prog);
- 	}
- 
-+	bond_xdp_set_features(bond_dev);
-+
- 	slave_info(bond_dev, slave_dev, "Enslaving as %s interface with %s link\n",
- 		   bond_is_active_slave(new_slave) ? "an active" : "a backup",
- 		   new_slave->link != BOND_LINK_DOWN ? "an up" : "a down");
-@@ -2483,6 +2524,7 @@ static int __bond_release_one(struct net_device *bond_dev,
- 	if (!netif_is_bond_master(slave_dev))
- 		slave_dev->priv_flags &= ~IFF_BONDING;
- 
-+	bond_xdp_set_features(bond_dev);
- 	kobject_put(&slave->kobj);
- 
- 	return 0;
-@@ -3930,6 +3972,9 @@ static int bond_slave_netdev_event(unsigned long event,
- 		/* Propagate to master device */
- 		call_netdevice_notifiers(event, slave->bond->dev);
- 		break;
-+	case NETDEV_XDP_FEAT_CHANGE:
-+		bond_xdp_set_features(bond_dev);
-+		break;
- 	default:
- 		break;
- 	}
-@@ -5874,6 +5919,9 @@ void bond_setup(struct net_device *bond_dev)
- 	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
- 		bond_dev->features |= BOND_XFRM_FEATURES;
- #endif /* CONFIG_XFRM_OFFLOAD */
-+
-+	if (bond_xdp_check(bond))
-+		bond_dev->xdp_features = NETDEV_XDP_ACT_MASK;
- }
- 
- /* Destroy a bonding device.
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index f71d5517f829..0498fc6731f8 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -877,6 +877,8 @@ static int bond_option_mode_set(struct bonding *bond,
- 			netdev_update_features(bond->dev);
- 	}
- 
-+	bond_xdp_set_features(bond->dev);
-+
- 	return 0;
- }
- 
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index c3843239517d..a60a24923b55 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -659,6 +659,7 @@ void bond_destroy_sysfs(struct bond_net *net);
- void bond_prepare_sysfs_group(struct bonding *bond);
- int bond_sysfs_slave_add(struct slave *slave);
- void bond_sysfs_slave_del(struct slave *slave);
-+void bond_xdp_set_features(struct net_device *bond_dev);
- int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 		 struct netlink_ext_ack *extack);
- int bond_release(struct net_device *bond_dev, struct net_device *slave_dev);
--- 
-2.40.0
-
+See the pcap file. I wonder if it's related?
