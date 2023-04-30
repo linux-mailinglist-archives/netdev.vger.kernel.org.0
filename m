@@ -2,95 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02AC06F276A
-	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 04:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43CB66F27A7
+	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 07:03:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbjD3C4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Apr 2023 22:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39832 "EHLO
+        id S230193AbjD3FDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Apr 2023 01:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231534AbjD3CzA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Apr 2023 22:55:00 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E64E1BD5
-        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 19:54:59 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-55a26b46003so1883547b3.1
-        for <netdev@vger.kernel.org>; Sat, 29 Apr 2023 19:54:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682823299; x=1685415299;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=YfC8PTqy+5axBI5hIB+fPihJZX0zHehuWvizoV+nuag=;
-        b=UinWc98xFsgGh+IHvpYOiwvmQkH10urOKj3WMtAQjKms7h2G2ZazmkgB3QJ+0AZeTw
-         6oAolGKEEDtMVFN2TeGBaW9faTDO36N0XFUfyNzF0l0IlmlHm2GOzHYRHw72pSgzZlzn
-         SmYucqCtTlc6lvkCPl3h209UueNqTLb3l0E13jB1ZDJrw/X5CzChOx0Nq9q37VwxVqhr
-         2kXYmXLGPTExr/KcQhT0lI1/evjk82JjXQeGNuRnesblaO8EqdMsiDByyhXzr7GiYtg3
-         SEGuK3bcKkj1OrMh2Fye3ay/1h3mJxP+yTMpb/lk4omN7npMothjGIw0xPPKaRdc0Nvu
-         9QsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682823299; x=1685415299;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YfC8PTqy+5axBI5hIB+fPihJZX0zHehuWvizoV+nuag=;
-        b=E6hccC4hOKI/ljQfrtkc40sNUk3Vzbuqy2LUkVI5If5/u8OPHQyQSTZR0RbSOQzN9N
-         cJynSjHJOXv26nVWIyzNB7VqBniiZaPmk4/syrd9+QIwtSysyeVXmBTwhk6mPIECDy4E
-         nxQgsF/kOc5rqnBtFm7xGQ0Tv0kk6f6Lg5+j7Z7cCPCm76TBAs1DOLSey1MZctKRnE3r
-         VYnhyJ4hVeIX37KEnD+QDuWyOnqeJCZ9tRPDJ4Of+Gc4yoZjwdH6pSI3bL1xGO/aPmvw
-         14Wecbthr+adfzdgYSynG4YU/7mOd2KnZKeygonYQrhf+0y6JCwF/5bheFn3uDnfYn0o
-         6BWw==
-X-Gm-Message-State: AC+VfDwniNQ8dn0ToE2//cegV1yIXP4iq+TGPJJQIlj4mOXmSdjZq1Kd
-        mkf0iqaAEP27hxtP+HXxJZyu0hJeO0pDjvkhwWw=
-X-Google-Smtp-Source: ACHHUZ7FHjtOMBVlTqiO7NmYTbvWc9rR+TpvGWBHLCFuEGQprmxP2p8qKLRxeeU5Jb2UmlIYLuhDSju8XtKFho9FGfU=
-X-Received: by 2002:a81:4641:0:b0:54f:89c2:a249 with SMTP id
- t62-20020a814641000000b0054f89c2a249mr7947594ywa.51.1682823298735; Sat, 29
- Apr 2023 19:54:58 -0700 (PDT)
+        with ESMTP id S229644AbjD3FDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 01:03:17 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F98F19AC;
+        Sat, 29 Apr 2023 22:03:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1682830995; x=1714366995;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=q7SEF4bArk/xxwIRZ987yc+xrZpMH3afDQGaBkiO/LA=;
+  b=EfFc+EaXNGNfs9iV4vt9Ow16OpkrOuxBVu82jt2OApTno4NTjDIllNNt
+   vDWA6ZTBw3LaonwfIHfw0OUHb70RapzPj2tQJHAnyH46gt8n2fJ06ehwK
+   6VaQk5YMi/dTTH1Fcfhln3vEFNZKL8GsXYMO0FW7+WQ5LGwPSdsbnW/ba
+   yNMCNzE7z3L+c+0IXbJzrx9zimvt7Dx/u8uBguMAbQ6vG2s3gDR6Oh/p3
+   tFSmxK4whzZNjGX1zgXMK8seNzpKzIK8ItV6+O6akqlW32HNXMu/G8bHj
+   BDB6rrQAdx4lEy6eB31xtA1hIdfRyn8AfLNfn8u0IRxtjFO+7GFzKe3i2
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10695"; a="411108972"
+X-IronPort-AV: E=Sophos;i="5.99,238,1677571200"; 
+   d="scan'208";a="411108972"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2023 22:03:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10695"; a="941652643"
+X-IronPort-AV: E=Sophos;i="5.99,238,1677571200"; 
+   d="scan'208";a="941652643"
+Received: from naamamex-mobl.ger.corp.intel.com (HELO [10.13.12.36]) ([10.13.12.36])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2023 22:03:08 -0700
+Message-ID: <7733369a-c3a6-89d4-fb32-ab2bcdc1def0@linux.intel.com>
+Date:   Sun, 30 Apr 2023 08:03:06 +0300
 MIME-Version: 1.0
-Received: by 2002:a05:7000:b411:b0:4a6:d404:2373 with HTTP; Sat, 29 Apr 2023
- 19:54:58 -0700 (PDT)
-From:   Zeb Damian <zad704beth@gmail.com>
-Date:   Sat, 29 Apr 2023 19:54:58 -0700
-Message-ID: <CAP13HaYwR8rvHLJfoT92Cu_M3hmyXxxS=Meh7XxHqEn5Yq08aQ@mail.gmail.com>
-Subject: Investment proposal
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=3.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,LOTS_OF_MONEY,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ***
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Subject: Re: [Intel-wired-lan] [PATCH net 1/1] igc: read before write to
+ SRRCTL register
+Content-Language: en-US
+To:     Song Yoong Siang <yoong.siang.song@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Vedang Patel <vedang.patel@intel.com>,
+        Jithu Joseph <jithu.joseph@intel.com>,
+        Andre Guedes <andre.guedes@intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Stanislav Fomichev <sdf@google.com>
+Cc:     xdp-hints@xdp-project.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, bpf@vger.kernel.org
+References: <20230413151222.1864307-1-yoong.siang.song@intel.com>
+From:   "naamax.meir" <naamax.meir@linux.intel.com>
+In-Reply-To: <20230413151222.1864307-1-yoong.siang.song@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sir,
+On 4/13/2023 18:12, Song Yoong Siang wrote:
+> igc_configure_rx_ring() function will be called as part of XDP program
+> setup. If Rx hardware timestamp is enabled prio to XDP program setup,
+> this timestamp enablement will be overwritten when buffer size is
+> written into SRRCTL register.
+> 
+> Thus, this commit read the register value before write to SRRCTL
+> register. This commit is tested by using xdp_hw_metadata bpf selftest
+> tool. The tool enables Rx hardware timestamp and then attach XDP program
+> to igc driver. It will display hardware timestamp of UDP packet with
+> port number 9092. Below are detail of test steps and results.
+> 
+> Command on DUT:
+>    sudo ./xdp_hw_metadata <interface name>
+> 
+> Command on Link Partner:
+>    echo -n skb | nc -u -q1 <destination IPv4 addr> 9092
+> 
+> Result before this patch:
+>    skb hwtstamp is not found!
+> 
+> Result after this patch:
+>    found skb hwtstamp = 1677762212.590696226
+> 
+> Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
+> Cc: <stable@vger.kernel.org> # 5.14+
+> Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+> ---
+>   drivers/net/ethernet/intel/igc/igc_base.h | 7 +++++--
+>   drivers/net/ethernet/intel/igc/igc_main.c | 5 ++++-
+>   2 files changed, 9 insertions(+), 3 deletions(-)
 
-I am Mr. Zeb. Dami=C3=A1n, a retired chartered accountant and a broker
-to lenders/Investors who are willing to invest or partner in projects like
-{Real Estate Construction, business, give loans to prospective companies
-or any viable projects }
-
-Our amiable lenders/investors have the financial capacity to loan fund proj=
-ects
-between $1,000,000,00 USD to $5 Billion USD at 3% interest rate for a 10 ye=
-ars
-duration with grace period of 12/18 months.
-
-Kindly send your business plan and executive summary or refer us to
-anyone with a good business plan, for our investment team review and immedi=
-ate
-funding. We are waiting to proceed with the closing and disbursement
-of investment
-loan funds.
-
-I hope we can work together in securing this investment loan funds you
-seek and other future transactions.
-
-Thank you in advance as I anticipate your kind response.
-
-Regards,
-
-Mr. Zeb. Dami=C3=A1n,
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
