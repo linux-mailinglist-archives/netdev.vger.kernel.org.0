@@ -2,155 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AC326F287A
-	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 12:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96A206F2887
+	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 12:59:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230193AbjD3Kg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Apr 2023 06:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34694 "EHLO
+        id S230268AbjD3K66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Apr 2023 06:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjD3Kgz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 06:36:55 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049891BFF;
-        Sun, 30 Apr 2023 03:36:54 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id ffacd0b85a97d-3062c1e7df8so108151f8f.1;
-        Sun, 30 Apr 2023 03:36:53 -0700 (PDT)
+        with ESMTP id S229461AbjD3K65 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 06:58:57 -0400
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3464D269E;
+        Sun, 30 Apr 2023 03:58:56 -0700 (PDT)
+Received: by mail-ua1-x92c.google.com with SMTP id a1e0cc1a2514c-77115450b8fso1003699241.0;
+        Sun, 30 Apr 2023 03:58:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682851012; x=1685443012;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=bNpv0WM5O3XzF1IvDudqU5WB9Uw2W8qTwnpkdxgYnb8=;
-        b=CuJLyjLNFiDvzdpjC3oEp3zc0I5OKagwgy8U3Ax2St7kCJ07KCpTmSeoBQf9TtsY3H
-         cZsYhUSG7A1g3ELJ14qYEmQvgZUeA5GMj+MR355dqZHayO/RJ3d0erG7/agN6uBdG/qR
-         Mk0w/YfuM6/A2ldTlQxbnuByFyzxbLcB/ZMk+7Ku2LvK5Ihj7tGsIQ91GRklcvf6+PCq
-         Uu9knlx2hTVhoGqCP+NyiyTPT+1tYfbU7CQ8625gUbm/uFzjjGiC7mLsO4zudx/KMIrf
-         zlDidRyB6+ms7hTgYqUyF9YlFgq2Wuepku9L0lSo1TWFUcVnJi5j83zSV23ak5JqiKuz
-         cjcg==
+        d=gmail.com; s=20221208; t=1682852335; x=1685444335;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4yRqbMK5ZOoBV7oEjfeaEkeOFx+akdbA76Qn7HPAVqQ=;
+        b=dVMpPKQmYtWA6bJvjmz2oUs7Wz81r6A0Hf2HQ5ktdXKqC9/EssFIuc1FCvs5XK8G4/
+         3ReRrdhMgAuyIZZiMhZ/viFQWa9qNKtsb8kRcr8BYqOftrfDLlB4GSN36KNthl8VMs8W
+         rYiktJNrp7nRtqvsHpngoi920qwJe9Ka9aJGvaoj+O10qhJbFzoFdhh3hPjLNWRuzm37
+         +DrX87nCscfqdK1r2aRCsZPSW1C5xcQYZbQzidGFRDnIgCCp2jsPcVcAULf2UAuiqUM6
+         l9CcezKLCtX9SzM3NPYonxniXd91G2ZOBGl8X8z1vNljN7mfGFwPqvDmM+qI7YITX+XC
+         8ESw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682851012; x=1685443012;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bNpv0WM5O3XzF1IvDudqU5WB9Uw2W8qTwnpkdxgYnb8=;
-        b=Xf/MQUWP6dpX3DoWMxXkcY+7g1rJ90Bgn7Yk5NIMXw9b/z92yfOAeUwLUvTFz94VRX
-         61QuY/v2O5Jo0vUUtLrJoWLFIaZkh1mfoJ1/h12P4ninZokGVg9ggTnfHMbCW/uxKIHX
-         agc1u51XSCVPT0PGYV0advE6nbOzVridtKi5W/JyksTCnNRgYMa99zxksN3Iyht2Hqsp
-         Yem7VVXAd3++R6S4CbUAgRo/sTMF85VyUQOH+GyJx9H/HZv5RkvJh33zgWD6pJg1eapn
-         stgVtczp0znlSpZAfUl5bEtDPpF3nig1MyxNCga+argaQxePkoSGxxAgzGrXrDKudrH8
-         zL/Q==
-X-Gm-Message-State: AC+VfDxzruztrF5NMEjpbGScyMaB5XbeD/8xRPeBe2vJWGfU/bE3fMfb
-        0oy2h4XhGYeLSeIPQ+kE6M4=
-X-Google-Smtp-Source: ACHHUZ7yAWo8Z+cdUwaQzKvRpUpHO+kW7h597KI6nQ25igD829dtStATqMgbjB6eofom0+jOzNe1zA==
-X-Received: by 2002:a05:6000:181:b0:306:2b64:fd1b with SMTP id p1-20020a056000018100b003062b64fd1bmr995166wrx.52.1682851012190;
-        Sun, 30 Apr 2023 03:36:52 -0700 (PDT)
-Received: from [192.168.1.50] ([81.196.40.55])
-        by smtp.gmail.com with ESMTPSA id g13-20020adfe40d000000b002f8d402b191sm25592077wrm.112.2023.04.30.03.36.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 30 Apr 2023 03:36:51 -0700 (PDT)
-Message-ID: <794ab671-43a3-7548-13f0-4b289f07425f@gmail.com>
-Date:   Sun, 30 Apr 2023 13:36:50 +0300
+        d=1e100.net; s=20221208; t=1682852335; x=1685444335;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4yRqbMK5ZOoBV7oEjfeaEkeOFx+akdbA76Qn7HPAVqQ=;
+        b=iF9xf6ndhs/q3LZgcxruShQW7seEXIQU1ahyhVwJSKONnOwnFDfFwR1lHCThk2lC/C
+         qcFrBB80Xi0d9OVyTcXm9DiuICUqpHW28T7wiah3/Pe3WVRqdG3qHwLtaTKYEz6mb37l
+         Y5j6vqMPonimY9EoJoL9XWUfFsZkoGjXY2hEVL1pS/2MJfcKny3jG9wY+xxJzICp4czO
+         gnJqasKAXZIu0Y/bTDvxQushEcl3vqxcyW1vr4J6hhhKsSbAijFXPfRZ2Kb+6HNTFCox
+         osD/yVYaDkn2V3HVGfEMSXvmqEyJ0HzBHR1JQUTWXhdc9DoiX9Bo2fHmoelhQM9nuRLT
+         Nq1A==
+X-Gm-Message-State: AC+VfDweUvMr3OT/S0fJylrZmmSrVFDxtsNnnwX6m5SlsAMYZwFVF/ce
+        hwgiAcyXgFzJ+euvpu3LpMg4TVuwIA7Zmsdydxk=
+X-Google-Smtp-Source: ACHHUZ7GMdfJ8slwBPsfUk71KrHUgsMc+fh9xNLqcaE7QzlNfL4EAdW411L/9EJySS4ALmov/ANNbaKnPRv9bB+Jg4w=
+X-Received: by 2002:a67:f883:0:b0:42f:78d5:d987 with SMTP id
+ h3-20020a67f883000000b0042f78d5d987mr4858393vso.1.1682852335098; Sun, 30 Apr
+ 2023 03:58:55 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH] wifi: rtl8xxxu: fix authentication timeout due to
- incorrect RCR value
-To:     Yun Lu <luyun_611@163.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-Cc:     Jes.Sorensen@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-References: <20230427020512.1221062-1-luyun_611@163.com>
- <866570c9-38d8-1006-4721-77e2945170b9@lwfinger.net>
- <76a784b2.2cb3.187c60f0f68.Coremail.luyun_611@163.com>
- <d3743b66-23b1-011c-9dcd-c408b1963fca@lwfinger.net>
- <62d9fe90.63b.187cb1481f8.Coremail.luyun_611@163.com>
-Content-Language: en-US
-From:   Bitterblue Smith <rtl8821cerfe2@gmail.com>
-In-Reply-To: <62d9fe90.63b.187cb1481f8.Coremail.luyun_611@163.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230429020951.082353595@lindbergh.monkeyblade.net>
+ <CAAJw_ZueYAHQtM++4259TXcxQ_btcRQKiX93u85WEs2b2p19wA@mail.gmail.com>
+ <ZE0kndhsXNBIb1g7@debian.me> <CAAJw_Zvxtf-Ny2iymoZdBGF577aeNomWP7u7-5rWyn6A7rzKRg@mail.gmail.com>
+In-Reply-To: <CAAJw_Zvxtf-Ny2iymoZdBGF577aeNomWP7u7-5rWyn6A7rzKRg@mail.gmail.com>
+From:   Jeff Chua <jeff.chua.linux@gmail.com>
+Date:   Sun, 30 Apr 2023 18:58:44 +0800
+Message-ID: <CAAJw_ZvZdFpw9W2Hisc9c2BAFbYAnQuaFFaFG6N7qPUP2fOL_w@mail.gmail.com>
+Subject: Re: iwlwifi broken in post-linux-6.3.0 after April 26
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux Wireless <linux-wireless@vger.kernel.org>,
+        Linux Networking <netdev@vger.kernel.org>,
+        Linux Regressions <regressions@lists.linux.dev>,
+        Johannes Berg <johannes.berg@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/04/2023 06:35, Yun Lu wrote:
-> At 2023-04-29 01:06:03, "Larry Finger" <Larry.Finger@lwfinger.net> wrote:
->> On 4/27/23 23:11, wo wrote:
->>> [  149.595642] [pid:7,cpu6,kworker/u16:0,0]BEFORE: REG_RCR differs from regrcr: 
->>> 0x1830613 insted of 0x7000604e
->>> [  160.676422] [pid:237,cpu6,kworker/u16:5,3]BEFORE: REG_RCR differs from 
->>> regrcr: 0x70006009 insted of 0x700060ce
->>> [  327.234588] [pid:7,cpu7,kworker/u16:0,5]BEFORE: REG_RCR differs from 
->> regrcr: 0x1830d33 insted of 0x7000604e
->>
->>
->> My patch was messed up, but it got the information that I wanted, which is shown 
->> in the quoted lines above. One of these differs only in the low-order byte, 
->> while the other 2 are completely different. Strange!
->>
->> It is possible that there is a firmware error. My system, which does not show 
->> the problem, reports the following:
->>
->> [54130.741148] usb 3-6: RTL8192CU rev A (TSMC) romver 0, 2T2R, TX queues 2, 
->> WiFi=1, BT=0, GPS=0, HI PA=0
->> [54130.741153] usb 3-6: RTL8192CU MAC: xx:xx:xx:xx:xx:xx
->> [54130.741155] usb 3-6: rtl8xxxu: Loading firmware rtlwifi/rtl8192cufw_TMSC.bin
->> [54130.742301] usb 3-6: Firmware revision 88.2 (signature 0x88c1)
->>
->> Which firmware does your unit use?
-> 
-> The firmware verion we used is 80.0 (signature 0x88c1)
->  [  903.873107] [pid:14,cpu0,kworker/0:1,2]usb 1-1.2: RTL8192CU rev A (TSMC) 2T2R, TX queues 2, WiFi=1, BT=0, GPS=0, HI PA=0
-> [  903.873138] [pid:14,cpu0,kworker/0:1,3]usb 1-1.2: RTL8192CU MAC: 08:be:xx:xx:xx:xx
-> [  903.873138] [pid:14,cpu0,kworker/0:1,4]usb 1-1.2: rtl8xxxu: Loading firmware rtlwifi/rtl8192cufw_TMSC.bin
-> [  903.873474] [pid:14,cpu0,kworker/0:1,5]usb 1-1.2: Firmware revision 80.0 (signature 0x88c1)
-> 
->>
->> Attached is a new test patch. When it logs a CORRUPTED value, I would like to 
->> know what task is attached to the pid listed in the message. Note that the two 
->> instances where the entire word was wrong came from pid:7.
->>
->> Could improper locking could produce these results?
->>
->> Larry
-> 
-> Apply your new patch, then turn on/off the wireless network switch on the network control panel serverl loops.
-> The log shows:
-> [   85.384429] [pid:221,cpu6,kworker/u16:6,5]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x70006009 insted of 0x700060ce
-> [  121.681976] [pid:216,cpu6,kworker/u16:3,0]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x70006009 insted of 0x700060ce
-> [  144.416992] [pid:217,cpu6,kworker/u16:4,1]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x70006009 insted of 0x700060ce
-> 
-> And if we up/down the interface serverl loops as follows:
-> ifconfig wlx08bexxxxxx down
-> sleep 1
-> ifconfig wlx08bexxxxxx up
-> sleep 10
-> The log shows:
-> [  282.112335] [2023:04:29 10:30:34][pid:95,cpu6,kworker/u16:1,3]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x1832e13 insted of 0x7000604e
-> [  293.311462] [2023:04:29 10:30:45][pid:217,cpu7,kworker/u16:4,9]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x1830e72 insted of 0x7000604e
-> [  304.435089] [2023:04:29 10:30:56][pid:217,cpu6,kworker/u16:4,9]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x1830ed3 insted of 0x7000604e
-> [  315.532257] [2023:04:29 10:31:07][pid:95,cpu7,kworker/u16:1,8]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x7000604e insted of 0x7000604e
-> [  324.114379] [2023:04:29 10:31:16][pid:221,cpu6,kworker/u16:6,7]REG_RCR corrupted in rtl8xxxu_configure_filter: 0x1832e14 insted of 0x7000604e
-> 
-> We also update the  firmware verion to 88.2, and the test results are the same as above.
-> 
-> Thank you for helping debug this issue, which seems to be related to specific devices.
-> 
-> Yun Lu
-> 
-> 
-> 
-> 
-There was this bug report about phantom MAC addresses with
-the RTL8188CUS:
-https://lore.kernel.org/linux-wireless/a31d9500-73a3-f890-bebd-d0a4014f87da@reto-schneider.ch/
+On Sun, Apr 30, 2023 at 2:17=E2=80=AFAM Jeff Chua <jeff.chua.linux@gmail.co=
+m> wrote:
+>
+> On Sat, Apr 29, 2023 at 10:07=E2=80=AFPM Bagas Sanjaya <bagasdotme@gmail.=
+com> wrote:
+> >
+> > On Sat, Apr 29, 2023 at 01:22:03PM +0800, Jeff Chua wrote:
+> > > Can't start wifi on latest linux git pull ... started happening 3 day=
+s ago ...
+> >
+> > Are you testing mainline?
+>
+> I'm pulling from https://github.com/torvalds/linux.git, currently at ...
+>
+> commit 1ae78a14516b9372e4c90a89ac21b259339a3a3a (HEAD -> master,
+> origin/master, origin/HEAD)
+> Merge: 4e1c80ae5cf4 74d7970febf7
+> Author: Linus Torvalds <torvalds@linux-foundation.org>
+> Date:   Sat Apr 29 11:10:39 2023 -0700
+>
+> > Certainly you should do bisection.
+>
+> ok, will do.
 
-See the pcap file. I wonder if it's related?
+Bisected!
+
+ef3ed33dfc8f0f1c81ca103e6b68b4f77ee0ab65 is the first bad commit
+commit ef3ed33dfc8f0f1c81ca103e6b68b4f77ee0ab65
+Author: Gregory Greenman <gregory.greenman@intel.com>
+Date:   Sun Apr 16 15:47:33 2023 +0300
+
+    wifi: iwlwifi: bump FW API to 77 for AX devices
+
+    Start supporting API version 77 for AX devices.
+
+    Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
+    Link: https://lore.kernel.org/r/20230416154301.e522ccefe354.If7628363fa=
+feb7687163103e734206915c445197@changeid
+    Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+
+ drivers/net/wireless/intel/iwlwifi/cfg/22000.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+
+I had to downgrade FW API to 75 to make it work again!
+
+--- a/drivers/net/wireless/intel/iwlwifi/cfg/22000.c    2023-04-30
+18:27:21.719983505 +0800
++++ a/drivers/net/wireless/intel/iwlwifi/cfg/22000.c    2023-04-30
+18:27:25.749983446 +0800
+@@ -10,7 +10,7 @@
+ #include "fw/api/txq.h"
+
+ /* Highest firmware API version supported */
+-#define IWL_22000_UCODE_API_MAX        78
++#define IWL_22000_UCODE_API_MAX        75
+
+ /* Lowest firmware API version supported */
+ #define IWL_22000_UCODE_API_MIN        39
+
+
+My h/w is Lenovo X1 with ...
+
+00:14.3 Network controller: Intel Corporation Alder Lake-P PCH CNVi
+WiFi (rev 01)
+
+
+I've the following firmware .. I've tried 77, 78, 79, 81 .. .all not workin=
+g
+
+-rw-r--r-- 1 root root 1560532 Mar 14 08:05 iwlwifi-so-a0-gf-a0-72.ucode
+-rw-r--r-- 1 root root 1563692 Mar  6 14:07 iwlwifi-so-a0-gf-a0-73.ucode
+-rw-r--r-- 1 root root 1577460 Mar 14 08:05 iwlwifi-so-a0-gf-a0-74.ucode
+-rw-r--r-- 1 root root 1641260 Mar  6 14:07 iwlwifi-so-a0-gf-a0-77.ucode
+-rw-r--r-- 1 root root 1667236 Mar  6 14:07 iwlwifi-so-a0-gf-a0-78.ucode
+-rw-r--r-- 1 root root 1672988 Mar  6 14:07 iwlwifi-so-a0-gf-a0-79.ucode
+-rw-r--r-- 1 root root 1682852 Apr  5 08:22 iwlwifi-so-a0-gf-a0-81.ucode
+
+
+# working dmesg attached ...
+cfg80211: Loading compiled-in X.509 certificates for regulatory database
+Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+iwlwifi 0000:00:14.3: enabling device (0000 -> 0002)
+iwlwifi 0000:00:14.3: Direct firmware load for
+iwlwifi-so-a0-gf-a0-75.ucode failed with error -2
+iwlwifi 0000:00:14.3: api flags index 2 larger than supported by driver
+thermal thermal_zone1: failed to read out thermal zone (-61)
+iwlwifi 0000:00:14.3: Sorry - debug buffer is only 4096K while you
+requested 65536K
