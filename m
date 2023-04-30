@@ -2,80 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F19086F27AE
-	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 07:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB5246F27F8
+	for <lists+netdev@lfdr.de>; Sun, 30 Apr 2023 09:52:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbjD3FGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Apr 2023 01:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51134 "EHLO
+        id S229596AbjD3Hwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Apr 2023 03:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbjD3FGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 01:06:07 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C85E19AC;
-        Sat, 29 Apr 2023 22:06:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1682831166; x=1714367166;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=wUIy27kaA7x1m/LYtCGQz0bQD3AE4rfsj1cxLUC2Tzk=;
-  b=MV/bw3PpAmXweL4gp3ujplDciWYiOscjXD+Z93RytSZUTYujoAssLg7R
-   mrMCUUmOg/s52DkRNpN2+ut0k+4DbBuJmpjo5/iRbw5e6p8mC4AlSYej4
-   JMAXdPpE3sv5DUCiaQqkUwvAH7fjB5N4uvc5x8E/b2vjsQ2XJJEM5B/yD
-   uPRZi/9XKVs5tP98fkIeM7UTI/ErLQwQf0yOd6wLnOF+xEJjDS0uJnCiV
-   JXUNr2n8IGKH3nFdXkY/UXV8k2W97P38PxRkbFt69qhDPgOhy089ZVN0p
-   hGsC4R1oL5DTNQojPkTVGxR8PJn+l5ZcNvcxqDvI9vj0mgTDDLAqAhpXs
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10695"; a="348029659"
-X-IronPort-AV: E=Sophos;i="5.99,238,1677571200"; 
-   d="scan'208";a="348029659"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2023 22:06:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10695"; a="728115425"
-X-IronPort-AV: E=Sophos;i="5.99,238,1677571200"; 
-   d="scan'208";a="728115425"
-Received: from naamamex-mobl.ger.corp.intel.com (HELO [10.13.12.36]) ([10.13.12.36])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2023 22:05:58 -0700
-Message-ID: <499598fd-05fc-e3bc-be85-d74b47a0b46c@linux.intel.com>
-Date:   Sun, 30 Apr 2023 08:05:57 +0300
+        with ESMTP id S229451AbjD3Hwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 03:52:42 -0400
+Received: from mail-io1-f78.google.com (mail-io1-f78.google.com [209.85.166.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4D71995
+        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 00:52:40 -0700 (PDT)
+Received: by mail-io1-f78.google.com with SMTP id ca18e2360f4ac-76640f8deb5so79019739f.1
+        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 00:52:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682841160; x=1685433160;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fDkKPNSsXxANthsudfaiuRAniodyGXR5TzlpJcW5aYk=;
+        b=FWJIwKjnB+Alq/rCzVZ7RLFaMxmH0b4rw4LkW7s/1eGrFtmo7x+8fCiZg6pwoZmWrM
+         K9zEAdGUWoaVxXB5bS6BTKmQY4WCIQUXskMs2zFVovEmr/fHrqeic/sriqRdvuRWA77Y
+         VpkKwHMZw940Ki033fTTpBCPIz3TL4rUhXo/8Vlsu7J6bxJK3yvU+jUV+GyaCyex7VEz
+         HRhbUyDOF9I7bWqJiTlLW1+SM2YG3nVR67sE78Qf6vvRL2R4XCqdM2E/EvCFqWdPmsWu
+         61gd65FMXcw/RRcm2EBTLywa6xhqNXPf2cpxmOEMDH4ef9D2+FncJueb/nyv3d0ECAvG
+         agTg==
+X-Gm-Message-State: AC+VfDxaKy+5fTIUOl0xN6f3ckWiqKENGVCOymF5mIYBejsABDN2PmdT
+        Ii+UDrqEvCr1LLV1bf7M0whoMvblig5eGjYHc0aBJhp3z1X2
+X-Google-Smtp-Source: ACHHUZ7bcG1e/3bUMzc0ymc7D2jyrzRFpHg6OGgc1vjTSzYAQkzB6eb8hwkmLDkQ2x4UKlWv/MXS4mus8I2wW/dEjqwTOCIeYkg4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Subject: Re: [Intel-wired-lan] [PATCH net v3 1/1] igc: read before write to
- SRRCTL register
-Content-Language: en-US
-To:     Song Yoong Siang <yoong.siang.song@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>,
-        Jithu Joseph <jithu.joseph@intel.com>,
-        Andre Guedes <andre.guedes@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        David Laight <David.Laight@ACULAB.COM>
-Cc:     xdp-hints@xdp-project.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, bpf@vger.kernel.org
-References: <20230414154902.2950535-1-yoong.siang.song@intel.com>
-From:   "naamax.meir" <naamax.meir@linux.intel.com>
-In-Reply-To: <20230414154902.2950535-1-yoong.siang.song@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Received: by 2002:a6b:90a:0:b0:760:fab7:5bbf with SMTP id
+ t10-20020a6b090a000000b00760fab75bbfmr4768392ioi.4.1682841159908; Sun, 30 Apr
+ 2023 00:52:39 -0700 (PDT)
+Date:   Sun, 30 Apr 2023 00:52:39 -0700
+In-Reply-To: <000000000000fcbbf805f9aca52b@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008cc80505fa88fdfc@google.com>
+Subject: Re: [syzbot] [bluetooth?] WARNING: bad unlock balance in l2cap_disconnect_rsp
+From:   syzbot <syzbot+180f35f8e76c7af067d2@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,47 +57,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/14/2023 18:49, Song Yoong Siang wrote:
-> igc_configure_rx_ring() function will be called as part of XDP program
-> setup. If Rx hardware timestamp is enabled prio to XDP program setup,
-> this timestamp enablement will be overwritten when buffer size is
-> written into SRRCTL register.
-> 
-> Thus, this commit read the register value before write to SRRCTL
-> register. This commit is tested by using xdp_hw_metadata bpf selftest
-> tool. The tool enables Rx hardware timestamp and then attach XDP program
-> to igc driver. It will display hardware timestamp of UDP packet with
-> port number 9092. Below are detail of test steps and results.
-> 
-> Command on DUT:
->    sudo ./xdp_hw_metadata <interface name>
-> 
-> Command on Link Partner:
->    echo -n skb | nc -u -q1 <destination IPv4 addr> 9092
-> 
-> Result before this patch:
->    skb hwtstamp is not found!
-> 
-> Result after this patch:
->    found skb hwtstamp = 1677800973.642836757
-> 
-> Optionally, read PHC to confirm the values obtained are almost the same:
-> Command:
->    sudo ./testptp -d /dev/ptp0 -g
-> Result:
->    clock time: 1677800973.913598978 or Fri Mar  3 07:49:33 2023
-> 
-> Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
-> Cc: <stable@vger.kernel.org> # 5.14+
-> Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
-> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-> Reviewed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> ---
-> v2 -> v3: Refactor SRRCTL definitions to more human readable definitions
-> v1 -> v2: Fix indention
-> ---
->   drivers/net/ethernet/intel/igc/igc_base.h | 11 ++++++++---
->   drivers/net/ethernet/intel/igc/igc_main.c |  7 +++++--
->   2 files changed, 13 insertions(+), 5 deletions(-)
+syzbot has found a reproducer for the following issue on:
 
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+HEAD commit:    14f8db1c0f9a Merge branch 'for-next/core' into for-kernelci
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+console output: https://syzkaller.appspot.com/x/log.txt?x=13b18ef8280000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a837a8ba7e88bb45
+dashboard link: https://syzkaller.appspot.com/bug?extid=180f35f8e76c7af067d2
+compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm64
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=167c5f2c280000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1430f330280000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/ad6ce516eed3/disk-14f8db1c.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/1f38c2cc7667/vmlinux-14f8db1c.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/d795115eee39/Image-14f8db1c.gz.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+180f35f8e76c7af067d2@syzkaller.appspotmail.com
+
+Bluetooth: hci0: unexpected cc 0x0c25 length: 249 > 3
+Bluetooth: hci0: unexpected cc 0x0c38 length: 249 > 2
+=====================================
+WARNING: bad unlock balance detected!
+6.3.0-rc7-syzkaller-g14f8db1c0f9a #0 Not tainted
+-------------------------------------
+kworker/u5:2/5929 is trying to release lock (&conn->chan_lock) at:
+[<ffff8000115d5e64>] l2cap_disconnect_rsp+0x210/0x30c net/bluetooth/l2cap_core.c:4697
+but there are no more locks to release!
+
+other info that might help us debug this:
+2 locks held by kworker/u5:2/5929:
+ #0: ffff0000db5a5938 ((wq_completion)hci0#2){+.+.}-{0:0}, at: process_one_work+0x664/0x12d4 kernel/workqueue.c:2363
+ #1: ffff80001e507c20 ((work_completion)(&hdev->rx_work)){+.+.}-{0:0}, at: process_one_work+0x6a8/0x12d4 kernel/workqueue.c:2365
+
+stack backtrace:
+CPU: 1 PID: 5929 Comm: kworker/u5:2 Not tainted 6.3.0-rc7-syzkaller-g14f8db1c0f9a #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/30/2023
+Workqueue: hci0 hci_rx_work
+Call trace:
+ dump_backtrace+0x1b8/0x1e4 arch/arm64/kernel/stacktrace.c:233
+ show_stack+0x2c/0x44 arch/arm64/kernel/stacktrace.c:240
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd0/0x124 lib/dump_stack.c:106
+ dump_stack+0x1c/0x28 lib/dump_stack.c:113
+ print_unlock_imbalance_bug+0x250/0x2a4 kernel/locking/lockdep.c:5109
+ lock_release+0x4ac/0x9ac kernel/locking/lockdep.c:5689
+ __mutex_unlock_slowpath+0xe0/0x6b4 kernel/locking/mutex.c:907
+ mutex_unlock+0x18/0x24 kernel/locking/mutex.c:543
+ l2cap_disconnect_rsp+0x210/0x30c net/bluetooth/l2cap_core.c:4697
+ l2cap_bredr_sig_cmd+0x974/0x7e94 net/bluetooth/l2cap_core.c:5748
+ l2cap_sig_channel net/bluetooth/l2cap_core.c:6507 [inline]
+ l2cap_recv_frame+0x83c/0x6a14 net/bluetooth/l2cap_core.c:7786
+ l2cap_recv_acldata+0x4f4/0x163c net/bluetooth/l2cap_core.c:8504
+ hci_acldata_packet net/bluetooth/hci_core.c:3828 [inline]
+ hci_rx_work+0x2cc/0x8b8 net/bluetooth/hci_core.c:4063
+ process_one_work+0x788/0x12d4 kernel/workqueue.c:2390
+ worker_thread+0x8e0/0xfe8 kernel/workqueue.c:2537
+ kthread+0x250/0x2d8 kernel/kthread.c:376
+ ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:870
+
+
+---
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
