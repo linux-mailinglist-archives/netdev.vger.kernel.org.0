@@ -2,125 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A08996F2B75
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 00:51:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2B86F2BC3
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 01:59:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232144AbjD3Wvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Apr 2023 18:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47684 "EHLO
+        id S232149AbjD3X7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Apr 2023 19:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232149AbjD3Wvp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 18:51:45 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A0E1BF
-        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 15:51:44 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id 6a1803df08f44-61a35fdf61dso3775796d6.2
-        for <netdev@vger.kernel.org>; Sun, 30 Apr 2023 15:51:44 -0700 (PDT)
+        with ESMTP id S232284AbjD3X5z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Apr 2023 19:57:55 -0400
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23478E66;
+        Sun, 30 Apr 2023 16:57:53 -0700 (PDT)
+Received: by mail-vs1-xe2b.google.com with SMTP id ada2fe7eead31-42dfffbbf32so566803137.1;
+        Sun, 30 Apr 2023 16:57:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682895103; x=1685487103;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20221208; t=1682899073; x=1685491073;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CsTYM8noGKYfSDpU+r1jNaut7LFpqio43/mQlqqfaGU=;
-        b=P1KQ65lqb0MX+hIg4LD4BbWvUB0NT5ap6x2AE2ZpjJ0OzgRgVn0Ahula3PEUU0/ljS
-         3b4oocZZeqW0K1HKhyzRi+c8befj6BLobrrqdv5IbBcchFs6Cy7Se95wYnk3Q7kWejen
-         cQUKgkIpoFgNJC7lLkKSXfEv+a6kTy6SXFmRYE7v8EmKY93ZlSf7o1DAIua4STNwR3be
-         sSVtVSTZlZJR+xVA1xeneEWTFj3v0T+8S84MrY/PgQC4vH3hcbn/TjQ2XTqqEzglYvkB
-         A3mlNHWx+Hs7MEpC/xeqUvvyK0UGkAECTTKBI6TyYrXfgvY6JcCC7dDh9qzkcbNoRRbQ
-         P1hA==
+        bh=y5yOMPitISYAlbpaB11MkGcUAwlL+JYlE7n3Iz8ufFk=;
+        b=f1AaNZHBnAEJzKBd0h6IkFWqk9amZi25t38VA17+VcbfH0J97hr4b1RVLBZGgGlPjq
+         0Y1/N3juwlzIclF748EhRHOG1BhWVwgxNm8OMGAj2FzxdKwfbLf2qCUkb33XWDBnq70l
+         Mn1lPoULdMUDgQUAxHlpKUnHwWMxkTaS/AHL/Mp34FQaEmCUEzSeYL6FGUH8ZUBGybvm
+         SwtHBelp1iO3TCETcTDwLCm7tnBV1gmKudx3b7Ycel2XXSbx2sI5H+T3rc7npn0lvREq
+         rAwNuHrYLGr21AHWTirKstqsn/j6mdxdW+/3n7FQy/nnbhejIRRWw1mmgjI11UUfkuqN
+         d1uA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682895103; x=1685487103;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20221208; t=1682899073; x=1685491073;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=CsTYM8noGKYfSDpU+r1jNaut7LFpqio43/mQlqqfaGU=;
-        b=D5eUG4paRFMD7+XpuRP9b4tMPk+FOMRRcNBXF/9ouXqvFo8rjl8R8wUrkRhsQCLYIw
-         0A/0HJIxn80ZytsJi0UfQbkL/Tc2CNZFDc2nMXdsUwyT0oP/aUaMhfomnA7pc9+OaHRQ
-         i6MU6ui8JSC9UdsHLUZJgJ5YHz6D6CylelXtURrRVnQTK5MfmQKJj/4AL1sVLSpVPaIj
-         jIArHGzCVq9NciA/tlV8CMgVqQiEI69g8dnQPaQVj0r6krEjIxofzXMzqY8bQADg6hW4
-         Vd/n6DQrOpXEPUXAlR/JmyyUnPrdyGLhNUDrxgTMQgpbv1nXnrQh0t9HpOFlWMESo6Fe
-         Exhg==
-X-Gm-Message-State: AC+VfDyFQopkdebiJOxqokPFmH7iIEVTFoeNvLxkiFk119SPdMtTQ7+5
-        3tq8hR63zhV0dszJrytw6MKq8mcQ8TE=
-X-Google-Smtp-Source: ACHHUZ5CtitsQBSghCIhTc6oztv69nh0hpQy6AlphT81EOimh+8FpZkNImqwiaTmBsfx0jSBEdtgMw==
-X-Received: by 2002:a05:6214:1c48:b0:5a3:79cd:8ef7 with SMTP id if8-20020a0562141c4800b005a379cd8ef7mr20671336qvb.23.1682895103435;
-        Sun, 30 Apr 2023 15:51:43 -0700 (PDT)
-Received: from localhost.localdomain ([2602:47:d92c:4400:e747:e271:3de5:4c78])
-        by smtp.googlemail.com with ESMTPSA id i5-20020a0cf105000000b0061b5a3d1d54sm189310qvl.87.2023.04.30.15.51.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Apr 2023 15:51:42 -0700 (PDT)
-From:   Nicholas Vinson <nvinson234@gmail.com>
-To:     mkubecek@suse.cz
-Cc:     Nicholas Vinson <nvinson234@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH ethtool 3/3] Fix potentinal null-pointer derference issues.
-Date:   Sun, 30 Apr 2023 18:50:52 -0400
-Message-Id: <105e614b4c8ab46aa6b70c75111848d8e57aff0c.1682894692.git.nvinson234@gmail.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <cover.1682894692.git.nvinson234@gmail.com>
-References: <cover.1682894692.git.nvinson234@gmail.com>
+        bh=y5yOMPitISYAlbpaB11MkGcUAwlL+JYlE7n3Iz8ufFk=;
+        b=WapTdWpS6U8KgIKCe19YO/VH2uyKxLAs2qVUsJxOuOvI5vPh3gxZ82NWkGrIOb40s6
+         LtiRgwnrlC046PP8kl6EK8t4b1GKO/bAmv6C2jjBsvJfyRzVgA5VBPxqaoUJkJiJBDlg
+         S36x0UYY6WERxrHL/lycCISlV5dCcXUvU7dQ3hwKIvwhuoe7ef/BludMwxSvVsBSDZWd
+         JIH+RcZiP3wnQde6LmOXMdTa7zGjqburO+yxeuk1fV6R+yDS8NlprxVwKjMXOmqJN5OX
+         Eih10O3KiqYAkN662WmSjrUMfE0XsE4ryb+2oke4CNVTMUPtD7tFLH2M14JxrZYNOCyF
+         +wtw==
+X-Gm-Message-State: AC+VfDwDieS5WCPrJAnaRg9/LVM94DCRPIL0+Gk6K6TOrR9PNR/Qm+WH
+        Vv29QXUrdUikEbg9anZ1Jz0wBVzR+oIaMuN2nws=
+X-Google-Smtp-Source: ACHHUZ5CsWQV7H563NgOgOzxqRbohUZKUSDeVX7Jo4SjdJwXY1g6eQIHAUoxDtw7DESK/5724qipuhp9akOGPe6jhMs=
+X-Received: by 2002:a67:edd1:0:b0:42e:6298:801d with SMTP id
+ e17-20020a67edd1000000b0042e6298801dmr4655196vsp.20.1682899072981; Sun, 30
+ Apr 2023 16:57:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20230429020951.082353595@lindbergh.monkeyblade.net>
+ <CAAJw_ZueYAHQtM++4259TXcxQ_btcRQKiX93u85WEs2b2p19wA@mail.gmail.com>
+ <ZE0kndhsXNBIb1g7@debian.me> <CAAJw_Zvxtf-Ny2iymoZdBGF577aeNomWP7u7-5rWyn6A7rzKRg@mail.gmail.com>
+ <CAAJw_ZvZdFpw9W2Hisc9c2BAFbYAnQuaFFaFG6N7qPUP2fOL_w@mail.gmail.com>
+ <e9c289bea2c36c496c3425b7dc42c6324d2a43e3.camel@intel.com> <0785e432f1776b3531e8e033cb5b48eeb58b12b6.camel@intel.com>
+In-Reply-To: <0785e432f1776b3531e8e033cb5b48eeb58b12b6.camel@intel.com>
+From:   Jeff Chua <jeff.chua.linux@gmail.com>
+Date:   Mon, 1 May 2023 07:57:42 +0800
+Message-ID: <CAAJw_Zvafhng8oP8E6HyhB5DK-WSQm2_yNbbHhgbTQb74pM-fA@mail.gmail.com>
+Subject: Re: iwlwifi broken in post-linux-6.3.0 after April 26
+To:     "Greenman, Gregory" <gregory.greenman@intel.com>
+Cc:     "bagasdotme@gmail.com" <bagasdotme@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Berg, Johannes" <johannes.berg@intel.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Found via gcc -fanalyzer. Analyzer claims that it's possible certain
-functions may receive a NULL pointer when handling CLI arguments. Adding
-NULL pointer checks to correct the issues.
+On Mon, May 1, 2023 at 2:00=E2=80=AFAM Greenman, Gregory
+<gregory.greenman@intel.com> wrote:
 
-Signed-off-by: Nicholas Vinson <nvinson234@gmail.com>
----
- ethtool.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+> > Strangely, I couldn't reproduce it on my system. But, anyway this featu=
+re
+> > better be disabled for a while. I'll send a patch with a fix shortly.
+> May I ask you to try this fix in [1] (also cc-ed you on the patch itself)=
+?
+>
+> [1] https://lore.kernel.org/linux-wireless/20230430201830.2f8f88fe49f6.I2=
+f0076ef1d1cbe5d10010549c875b7038ec4c365@changeid/
 
-diff --git a/ethtool.c b/ethtool.c
-index 98690df..4ec1e23 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -6182,16 +6182,18 @@ static int find_option(char *arg)
- 	size_t len;
- 	int k;
- 
--	for (k = 1; args[k].opts; k++) {
--		opt = args[k].opts;
--		for (;;) {
--			len = strcspn(opt, "|");
--			if (strncmp(arg, opt, len) == 0 && arg[len] == 0)
--				return k;
--
--			if (opt[len] == 0)
--				break;
--			opt += len + 1;
-+	if (arg) {
-+		for (k = 1; args[k].opts; k++) {
-+			opt = args[k].opts;
-+			for (;;) {
-+				len = strcspn(opt, "|");
-+				if (strncmp(arg, opt, len) == 0 && arg[len] == 0)
-+					return k;
-+
-+				if (opt[len] == 0)
-+					break;
-+				opt += len + 1;
-+			}
- 		}
- 	}
- 
-@@ -6457,7 +6459,7 @@ int main(int argc, char **argp)
- 		argp++;
- 		argc--;
- 	} else {
--		if ((*argp)[0] == '-')
-+		if (!*argp || (*argp)[0] == '-')
- 			exit_bad_args();
- 		k = 0;
- 	}
--- 
-2.40.1
+Hi Greg,
 
+Applied the patch. It worked! Thank you!
+
+Jeff
