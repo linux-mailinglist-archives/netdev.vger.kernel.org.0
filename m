@@ -2,113 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 533F36F3910
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 22:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 346D36F3912
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 22:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232625AbjEAUSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 16:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
+        id S232391AbjEAUTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 16:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbjEAUSW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 16:18:22 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCE010F8
-        for <netdev@vger.kernel.org>; Mon,  1 May 2023 13:18:21 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-55a14807e4cso32537727b3.1
-        for <netdev@vger.kernel.org>; Mon, 01 May 2023 13:18:21 -0700 (PDT)
+        with ESMTP id S229653AbjEAUTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 16:19:17 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0FB199B
+        for <netdev@vger.kernel.org>; Mon,  1 May 2023 13:19:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20221208; t=1682972301; x=1685564301;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+d2uH7xxq4P/Ev1fuG+f0cbaiUvowKMv7JujrUwlseg=;
-        b=a6rl5xWK9hAEvtA547Z+F7Fp4KFQfsw8wjM4cQYVcWO2W5Ja6Dcr7qC1MPQAx8kaiN
-         7UjIuhl8OWp4KyA5d2N55+3PuAj6Cncpv1jizgV8AWd5jrc4v6pFh2DZofJeMEPLnmNI
-         GGzhSrRqgzbYKYTurq7y1hLjs/bkb4jDeMFi1uKAUHh5CQnTGzmI431A1+HOOdlMgitG
-         v1n1QXnPhPlc1TVWvy++nvsqPnYSfr0VNkJxPUASdJSRLo5o/Epi7kbWEJTGpl9EwECb
-         4XaMZ2v0je35iceORLQAbX37BB+ABJ2zcYvQVkPavtivd7DA1Nl4aLNRI8TiXj/YCoue
-         wXCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20221208; t=1682972301; x=1685564301;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+d2uH7xxq4P/Ev1fuG+f0cbaiUvowKMv7JujrUwlseg=;
-        b=I0XFs6NGgjy5fVn7K+8KVQAQ/NpfQFXoOsqhhM7lFumR5horvfcxuEKSRKadxdSmEk
-         RALg0is+F05X6+m6IhvWqKgxtVGfv3hiZY+ql4VaeUYRkkaYiIXBWC0zEKHdqayFE7nX
-         oa7u3OeADrol/VDor0+Co8pS+WJCY+L8tGMdUhuGgM5bP4hykqV/MAbUXZvLDIOfpi2I
-         kSEKhtfKxdjinbZoBTefvIrLVyrVh/eJWEQBfry94BV5MkTZDQ2fMxvkVK7rX2hK5aE7
-         9Ge0Q7V9Sh8E4lpYvG7nOILRtNt68P9Tex+e+jBWHzLEAzJXsAYN3QnuPx4PgijPXFWD
-         Ut8w==
-X-Gm-Message-State: AC+VfDywO1KFk7Yb8arHKBcsodYFCp5GEolwS7HbHDOPsZF7NX6/iOVA
-        tJys8fbsX/TfRTFtNxSavR7I43T6rk+2l7r/yoaCy/QnvFEvOQ==
-X-Google-Smtp-Source: ACHHUZ4fW6bvqiisNIRA8xy2C8bI7j52JhDpWCchThIK1yKqmVxzvbXWzhsapvd25y1+qyG7lFEVa3eBR8rlpBIVi8o=
-X-Received: by 2002:a0d:db86:0:b0:55a:2fbb:4790 with SMTP id
- d128-20020a0ddb86000000b0055a2fbb4790mr5679761ywe.12.1682972299373; Mon, 01
- May 2023 13:18:19 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1682972357; x=1714508357;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=H/FJAkoH7BcnKODdEbDbaZJ96fk7NQSCSIGO/yt/VLs=;
+  b=IUFw/495bfWEwDc/mZl+vzrA8zBQv1ZiD9/kCOZrYWk5rEHG4A0/WqKy
+   Fk6+jUURnhdO7TU5WLPUWmpoQSjkRNu7qGJIchhoymUQRb+AmeAh/qvSV
+   QnC+TgHd7YfP6JcbdixWxwfhFjiduF7PR72G4iV++cbD/vDIpXyZkeoAE
+   k=;
+X-IronPort-AV: E=Sophos;i="5.99,242,1677542400"; 
+   d="scan'208";a="326909762"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-m6i4x-44b6fc51.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2023 20:19:13 +0000
+Received: from EX19MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-m6i4x-44b6fc51.us-west-2.amazon.com (Postfix) with ESMTPS id 82E86A0C10;
+        Mon,  1 May 2023 20:19:11 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 1 May 2023 20:19:11 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.119.90.236) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Mon, 1 May 2023 20:19:08 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <willemdebruijn.kernel@gmail.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <shaozhengchao@huawei.com>, <syzkaller@googlegroups.com>
+Subject: Re: [PATCH v1 net] af_packet: Don't send zero-byte data in packet_sendmsg_spkt().
+Date:   Mon, 1 May 2023 13:19:00 -0700
+Message-ID: <20230501201900.97591-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <64501a37c92fa_316c92294ad@willemb.c.googlers.com.notmuch>
+References: <64501a37c92fa_316c92294ad@willemb.c.googlers.com.notmuch>
 MIME-Version: 1.0
-References: <cover.1682807958.git.lucien.xin@gmail.com> <b73c0deb97ca299207d2197db28f78d3992fbdbf.1682807958.git.lucien.xin@gmail.com>
- <DB9PR05MB9078A5939A8D21C278136820886E9@DB9PR05MB9078.eurprd05.prod.outlook.com>
- <CADvbK_cbgUh4XN2C+xQuM6PKSXEW2LLyE0E2QtePeTce6NdP-g@mail.gmail.com>
-In-Reply-To: <CADvbK_cbgUh4XN2C+xQuM6PKSXEW2LLyE0E2QtePeTce6NdP-g@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Mon, 1 May 2023 16:18:00 -0400
-Message-ID: <CADvbK_fB0NqDuo_ObELfqDGrTxZShVXxyg6FLfeHq1NoKE7zTA@mail.gmail.com>
-Subject: Re: [tipc-discussion] [PATCH net 1/2] tipc: add tipc_bearer_min_mtu
- to calculate min mtu
-To:     Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
-Cc:     network dev <netdev@vger.kernel.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.119.90.236]
+X-ClientProxiedBy: EX19D044UWB003.ant.amazon.com (10.13.139.168) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 1, 2023 at 11:35=E2=80=AFAM Xin Long <lucien.xin@gmail.com> wro=
-te:
-> On Mon, May 1, 2023 at 1:21=E2=80=AFAM Tung Quang Nguyen <tung.q.nguyen@d=
-ektech.com.au> wrote:
->> >@@ -760,6 +760,7 @@ static int tipc_udp_enable(struct net *net, struct =
-tipc_bearer *b,
->> >               else
->> >                       udp_conf.local_ip6 =3D local.ipv6;
->> >               ub->ifindex =3D dev->ifindex;
->> >+              b->encap_hlen =3D sizeof(struct ipv6hdr) + sizeof(struct=
- udphdr);
->> tipc_mtu_bad() needs to be called here to check for the minimum required=
- MTU like the way ipv4 UDP bearer does.
->
-> Agree, especially after commit 5a6f6f579178 ("tipc: set ub->ifindex for l=
-ocal ipv6 address"), we have the dev there.
-After taking a second look, I think we should delete the tipc_mtu_bad()
-call for ipv4 UDP bearer, as b->mtu is no longer using dev->mtu since:
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 01 May 2023 15:59:51 -0400
+> Willem de Bruijn wrote:
+> > Kuniyuki Iwashima wrote:
+> > > syzkaller reported a warning below [0].
+> > > 
+> > > We can reproduce it by sending 0-byte data from the (AF_PACKET,
+> > > SOCK_PACKET) socket via some devices whose dev->hard_header_len
+> > > is 0.
+> > > 
+> > >     struct sockaddr_pkt addr = {
+> > >         .spkt_family = AF_PACKET,
+> > >         .spkt_device = "tun0",
+> > >     };
+> > >     int fd;
+> > > 
+> > >     fd = socket(AF_PACKET, SOCK_PACKET, 0);
+> > >     sendto(fd, NULL, 0, 0, (struct sockaddr *)&addr, sizeof(addr));
+> > > 
+> > > We have a similar fix for the (AF_PACKET, SOCK_RAW) socket as
+> > > commit dc633700f00f ("net/af_packet: check len when min_header_len
+> > > equals to 0").
+> > > 
+> > > Let's add the same test for the SOCK_PACKET socket.
+> > > 
+> > > [0]:
+> > > skb_assert_len
+> > > WARNING: CPU: 1 PID: 19945 at include/linux/skbuff.h:2552 skb_assert_len include/linux/skbuff.h:2552 [inline]
+> > > WARNING: CPU: 1 PID: 19945 at include/linux/skbuff.h:2552 __dev_queue_xmit+0x1f26/0x31d0 net/core/dev.c:4159
+> > > Modules linked in:
+> > > CPU: 1 PID: 19945 Comm: syz-executor.0 Not tainted 6.3.0-rc7-02330-gca6270c12e20 #1
+> > > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+> > > RIP: 0010:skb_assert_len include/linux/skbuff.h:2552 [inline]
+> > > RIP: 0010:__dev_queue_xmit+0x1f26/0x31d0 net/core/dev.c:4159
+> > > Code: 89 de e8 1d a2 85 fd 84 db 75 21 e8 64 a9 85 fd 48 c7 c6 80 2a 1f 86 48 c7 c7 c0 06 1f 86 c6 05 23 cf 27 04 01 e8 fa ee 56 fd <0f> 0b e8 43 a9 85 fd 0f b6 1d 0f cf 27 04 31 ff 89 de e8 e3 a1 85
+> > > RSP: 0018:ffff8880217af6e0 EFLAGS: 00010282
+> > > RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffc90001133000
+> > > RDX: 0000000000040000 RSI: ffffffff81186922 RDI: 0000000000000001
+> > > RBP: ffff8880217af8b0 R08: 0000000000000001 R09: 0000000000000000
+> > > R10: 0000000000000001 R11: 0000000000000001 R12: ffff888030045640
+> > > R13: ffff8880300456b0 R14: ffff888030045650 R15: ffff888030045718
+> > > FS:  00007fc5864da640(0000) GS:ffff88806cd00000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 0000000020005740 CR3: 000000003f856003 CR4: 0000000000770ee0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > PKRU: 55555554
+> > > Call Trace:
+> > >  <TASK>
+> > >  dev_queue_xmit include/linux/netdevice.h:3085 [inline]
+> > >  packet_sendmsg_spkt+0xc4b/0x1230 net/packet/af_packet.c:2066
+> > >  sock_sendmsg_nosec net/socket.c:724 [inline]
+> > >  sock_sendmsg+0x1b4/0x200 net/socket.c:747
+> > >  ____sys_sendmsg+0x331/0x970 net/socket.c:2503
+> > >  ___sys_sendmsg+0x11d/0x1c0 net/socket.c:2557
+> > >  __sys_sendmmsg+0x18c/0x430 net/socket.c:2643
+> > >  __do_sys_sendmmsg net/socket.c:2672 [inline]
+> > >  __se_sys_sendmmsg net/socket.c:2669 [inline]
+> > >  __x64_sys_sendmmsg+0x9c/0x100 net/socket.c:2669
+> > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > >  do_syscall_64+0x3c/0x90 arch/x86/entry/common.c:80
+> > >  entry_SYSCALL_64_after_hwframe+0x72/0xdc
+> > > RIP: 0033:0x7fc58791de5d
+> > > Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 73 9f 1b 00 f7 d8 64 89 01 48
+> > > RSP: 002b:00007fc5864d9cc8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+> > > RAX: ffffffffffffffda RBX: 00000000004bbf80 RCX: 00007fc58791de5d
+> > > RDX: 0000000000000001 RSI: 0000000020005740 RDI: 0000000000000004
+> > > RBP: 00000000004bbf80 R08: 0000000000000000 R09: 0000000000000000
+> > > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> > > R13: 000000000000000b R14: 00007fc58797e530 R15: 0000000000000000
+> > >  </TASK>
+> > > ---[ end trace 0000000000000000 ]---
+> > > skb len=0 headroom=16 headlen=0 tailroom=304
+> > > mac=(16,0) net=(16,-1) trans=-1
+> > > shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
+> > > csum(0x0 ip_summed=0 complete_sw=0 valid=0 level=0)
+> > > hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
+> > > dev name=sit0 feat=0x00000006401d7869
+> > > sk family=17 type=10 proto=0
+> > > 
+> > > Fixes: fd1894224407 ("bpf: Don't redirect packets with invalid pkt_len")
+> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > 
+> > This is a straightforward extension of the referenced commit.
+> > 
+> > But if the issue is only triggered by BPF shenanigans, as implied
+> > by the Fixes and by commit fd1894224407 ("bpf: Don't redirect packets
+> > with invalid pkt_len"), which introduces skb_assert_len, can that
+> > be catched in BPF redirect, so that we don't have to add assertions
+> > and checks elsewhere in the stack?
 
-  commit a4dfa72d0acd ("tipc: set default MTU for UDP media")
+I remember the v1 of fd1894224407 attempted the way, but BPF folks
+wanted to prevent 0-len skb at the source.
+https://lore.kernel.org/netdev/f0bf3e9a-15e6-f5c8-1b2a-7866acfcb71b@iogearbox.net/
 
-The issue described in commit 3de81b758853 ("tipc: check minimum bearer MTU=
-")
-no longer exists in UDP bearer.
+And skb_assert_len() is suggested here.
+https://lore.kernel.org/netdev/7b333bcc-c8ed-f1f8-8331-58cba7897637@iogearbox.net/
 
-Besides, dev->mtu can still be changed to a too small mtu after the UDP
-bearer is created even with the tipc_mtu_bad() check in tipc_udp_enable().
-Note that NETDEV_CHANGEMTU event processing in tipc_l2_device_event()
-doesn't really work for UDP bearer.
+> 
+> Actually, this commit clearly explains how the 0-len skb is created.
+> It does not include BPF. So we should probably remove that Fixes tag.
 
-I will leave this patch as it is in my v2 post, and create another patch
-for net-next to delete the unnecessary tipc_mtu_bad() check in UDP bearer.
+I followed dc633700f00f which has the same Fixes tag, but I'm fine
+with whichever.  I'll post v2 soon.
 
-Agree?
+Thanks!
 
-Thanks.
+> 
+> Otherwise, looks good to me.
+>  
+> > > ---
+> > >  net/packet/af_packet.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> > > index 6080c0db0814..640d94e34635 100644
+> > > --- a/net/packet/af_packet.c
+> > > +++ b/net/packet/af_packet.c
+> > > @@ -2033,7 +2033,7 @@ static int packet_sendmsg_spkt(struct socket *sock, struct msghdr *msg,
+> > >  		goto retry;
+> > >  	}
+> > >  
+> > > -	if (!dev_validate_header(dev, skb->data, len)) {
+> > > +	if (!dev_validate_header(dev, skb->data, len) || !skb->len) {
+> > >  		err = -EINVAL;
+> > >  		goto out_unlock;
+> > >  	}
+> > > -- 
+> > > 2.30.2
