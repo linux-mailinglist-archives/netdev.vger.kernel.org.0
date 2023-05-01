@@ -2,152 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF2946F3095
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 14:01:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDC0E6F30C9
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 14:16:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232417AbjEAL7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 07:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44338 "EHLO
+        id S232303AbjEAMQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 08:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbjEAL7r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 07:59:47 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2082.outbound.protection.outlook.com [40.107.6.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286EA129;
-        Mon,  1 May 2023 04:59:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GN6Os+00qLif2JOWPdPo54A8Nzc3W2dwJFaxTa/HqlbgekDWJKiK7u//Qd897A8V0TdN0MKDHuUcPM6JssaWs/p3AK1It35TOH2zqfO46NAIL9LjM8taKDk7EoRO7el9ZGrVG+HWssCqllGQ+ngrd/KzU0hXCk+EpWXMrWwO6qiezaXW4fT5s2zshb0UsBDVgbEAVyEF67qrcOJ+bR3d6o8F7MasJIeHqTU4UNMJIpDMmMgxpL5qjZ4Qpukpaw3Nu+Sn67xgM5Y2K88pXGxdhCUkQxvebKvCIqdJN/mzvEGI0ZpVWSbmPKHVg9SRYWUGZ4dkGl28t01VncvJT63ZGg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pqOVRqqDdvT6gC3OjktoZVYtazR0wqxZGlCjS/tZAPA=;
- b=B7uBdnxvFoH0j9pJYbgvuCfGCm4yQfcWQBw6dQLl78LW529rMwPa7whlRaLqn3m34a1mVWQGKtydQYaZgKNt7819QdhW4Hg5Hhlt28S9CHJxuMJwDCyK3OGfoNOyh1SQd2KMiLTDbEnNTJ73lxIawpqyQ8YoOVJr5Sc7f3XFjepXwt/kEuABkShaF+piV9gCrFrofIuAkGggmQlEXiVL0HvOgRcKp7w4WEuKg24xsqnM1dhobVc6KI+/JjKQmpNuXbyOR6dehnaanN1D1wPxPD3giicx2WGle+GmoWh1yZo8zUwaKM8gzOcXT6/H5TAdZsW8wqvmVWwBCwn+oRCiOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=solid-run.com; dmarc=pass action=none
- header.from=solid-run.com; dkim=pass header.d=solid-run.com; arc=none
+        with ESMTP id S231779AbjEAMQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 08:16:12 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B305191;
+        Mon,  1 May 2023 05:16:11 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id 4fb4d7f45d1cf-50bc040c7b8so2516553a12.2;
+        Mon, 01 May 2023 05:16:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=solidrn.onmicrosoft.com; s=selector1-solidrn-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pqOVRqqDdvT6gC3OjktoZVYtazR0wqxZGlCjS/tZAPA=;
- b=X9nx1TCwX/V+dPL2rqetO1OjOAg1x8K6M0bNQWDXEnYwP4o7dyijfZOKZEWuZdsxaoObRjf4UzfNIyK7h1k8Rpd0aExloSA+vlQ1C7jCi+nI0ureDMINYbeHLx/jnJh/ulEWO+EBg4IRIwXOQob75MDHRTaW6bQ5ejOyo+tcqnQ=
-Received: from AM0PR04MB4723.eurprd04.prod.outlook.com (2603:10a6:208:c0::20)
- by AM8PR04MB7330.eurprd04.prod.outlook.com (2603:10a6:20b:1c4::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6340.30; Mon, 1 May
- 2023 11:59:42 +0000
-Received: from AM0PR04MB4723.eurprd04.prod.outlook.com
- ([fe80::a5ea:bc1c:6fa6:8106]) by AM0PR04MB4723.eurprd04.prod.outlook.com
- ([fe80::a5ea:bc1c:6fa6:8106%5]) with mapi id 15.20.6340.030; Mon, 1 May 2023
- 11:59:42 +0000
-From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     "jasowang@redhat.com" <jasowang@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "xuanzhuo@linux.alibaba.com" <xuanzhuo@linux.alibaba.com>
-Subject: Re: [RFC PATCH net 2/3] virtio-net: allow usage of vrings smaller
- than MAX_SKB_FRAGS + 2
-Thread-Topic: [RFC PATCH net 2/3] virtio-net: allow usage of vrings smaller
- than MAX_SKB_FRAGS + 2
-Thread-Index: AQHZe2XXxDQ9u/7pQUe+LxobnBX4G69D4sMAgABG2xSAAQzMAIAAF+VB
-Date:   Mon, 1 May 2023 11:59:42 +0000
-Message-ID: <AM0PR04MB4723AA2ABCE91928BE735DEBD46E9@AM0PR04MB4723.eurprd04.prod.outlook.com>
-References: <20230430131518.2708471-1-alvaro.karsz@solid-run.com>
- <20230430131518.2708471-3-alvaro.karsz@solid-run.com>
- <20230430093009-mutt-send-email-mst@kernel.org>
- <AM0PR04MB4723043772ACAF516D6BFA79D4699@AM0PR04MB4723.eurprd04.prod.outlook.com>
- <20230501061401-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20230501061401-mutt-send-email-mst@kernel.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=solid-run.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AM0PR04MB4723:EE_|AM8PR04MB7330:EE_
-x-ms-office365-filtering-correlation-id: 5d432eca-c2c4-4fab-14b7-08db4a3b8c9d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: E2ok5GL9fOUTRulVySZgLlEe13oCrhUQ5MeM5UOa5UPta5n1eX8KKE1Z9GM1qmADdRGWhotKoQIMl9rk6as0KIc30Kdmxu2NKbrhlL+tfgXm6QVZyMeIWy/qLo/eLjeiHiU2FTRIQzhDrfc15BTOYmzhdnq43rttiGocEcyfRZrzCQ5NYi70AoLcqjvcAo5qT9OUuCpJZzgB/gE/3Z52ReqHcdLpeCBHruy+4fXy9PZ81Y5rhHKQHKj2Px0UpELBQfhX3Iw3848YNHYXriK+yxTZ+EcX0gegXt/G8dG+tO907Tv1BbkbVa1+jJ5lno1isyEA2Dt1ijkh4ceq+I/ZupIKPhEbsA6nUEC3BFgI8epMqeT0FJRDOgknJYSGtRVntcHDkD1QgzP4aLOsQyTvnDD1S568GW0nmU0mSaJ2v/ej5HHIk+fCTID/B00cAX3S9emDTD1KrE5AZmBvZj51F70MLeuvV5Lu4S7vq4SPbRbnAPSN9aRjkgiwKtvebY2FVj/68QCE1faTUDjM63ovvnGudyTt2Z/FdN9Oh6KYU/5nkzVSmtc5+wo9iQ+Z1eT/cfDu/GUMj9u97uSZemQHTM8l2BaXZzWQkZt9jL9fT6F3DMYHA8Ghb5TN8UYhqtN/
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB4723.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(346002)(376002)(366004)(39840400004)(396003)(451199021)(86362001)(33656002)(38100700002)(38070700005)(122000001)(44832011)(8676002)(52536014)(7416002)(5660300002)(66946007)(66476007)(66556008)(4326008)(91956017)(76116006)(8936002)(66446008)(316002)(6916009)(41300700001)(64756008)(55016003)(2906002)(4744005)(83380400001)(71200400001)(7696005)(54906003)(478600001)(26005)(186003)(6506007)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?NPtkR0gJK4593LfiluqVvgtCyB9aCR8s/IDIYf8eloXmSuhaAYnIJrT1kv?=
- =?iso-8859-1?Q?RTAygOOfaRg6lF53Y3980rsFWkNEAqlCfOOS+98DIB5W+lY8vh29OCbKBB?=
- =?iso-8859-1?Q?BY+0MYhQIIK19g24Cyfy3jWRp4UaZody7+aoyLTfBC1taDUPVms+E0W2lY?=
- =?iso-8859-1?Q?LjRCCjeAMASH/aI4h8uJg0SuuRPbyfALE/E1BTjTWN7QwQYyjYi0S/BMty?=
- =?iso-8859-1?Q?W+qxeKODX0Mwm+5xceKBm7ZuqqvfBwwp2vRYMbOYVjJq7sgLilqPEROlUU?=
- =?iso-8859-1?Q?orBNup9Px7A13DNFMLDHq7C7XXQApcCdKsa52OpjtGXcck8FyUOs4ZJXk4?=
- =?iso-8859-1?Q?03rGRqSZWSshBL4AM4kGPqBsvNHXPryWbDjPOairrSZ2ygwElVxs1s0QQd?=
- =?iso-8859-1?Q?fuZxaWy7m7SfBet6lGOj0PfmenYBccubxSZ853+rLno9KQl0VeSsnHWz1w?=
- =?iso-8859-1?Q?xqd1Mc2WSHSYMuTJN/GJS5D/FVFPSd2It5Fhmn2aD/hiLHrZJmBsj+uAWh?=
- =?iso-8859-1?Q?/Mo5aM/9OfQzwb8DkMRL50WwEJgVsc3ObIr57Bt9uTy9gUI1uVPxN35ILA?=
- =?iso-8859-1?Q?MRu/AkmA9PVwqJkQsfh2NfVlbyiLtoQEmsTpvG5lz3dKwLwVQZZ2mgiuon?=
- =?iso-8859-1?Q?sdlRvTmEORCRs89xmzX9Dhg74jRlZC4Ehd4ieN18R0VstHZGSl34a3uCm2?=
- =?iso-8859-1?Q?2JR65o/pTS9eyI54ZqLoyesT+XWOhaLWKJns0jQXULizmAPANP3SeJhKp1?=
- =?iso-8859-1?Q?Bs630vf8ICmGKtplUmjN6irFuV6Xgt54033qer7YtFdS0Teem7oTRvI7Hl?=
- =?iso-8859-1?Q?T2tnCTLWPhusEkoPfBtHElnq06f1TtfcH1Rf3FcTGOy29sebqQGc6WJvv2?=
- =?iso-8859-1?Q?KJKXP0b+MGf3S/TQR7a5um5/QXjYA8WSsNJI4KeH4cTYUTHd0KYOpqg+4q?=
- =?iso-8859-1?Q?HrNDUysUrWGQigqWGwX7/SnDo3bvGjhZgLVH49F3kzEryK4cYJDWuJ8q+B?=
- =?iso-8859-1?Q?ln24E19it05r8d5MACZV9XgAGiPHlPOiamlx/Ybl8djrGWN363QMTBalWq?=
- =?iso-8859-1?Q?DwrcmQs5/HCj/GbSKK54lEwV7nVOIqWsWlx8ot7pqKQBUXB9FTFAoPEKlN?=
- =?iso-8859-1?Q?Z0fZCGXeHq3msIwh/Deuhd+Y+plEJbMIkBjHI0aMCviZPvDHWUv1p5Kbl5?=
- =?iso-8859-1?Q?C2CKJwu5u+SfiMdnyllazG4Q68VKIzPDiJDmrJvlE5LCPUcHF+UzkHQwqF?=
- =?iso-8859-1?Q?OZK1CsMpyMuBTKGBSfF/NRHNEcUbK1+umjdMCRV84LC5O0xYBE/hQSGmv/?=
- =?iso-8859-1?Q?LUSmHodD6F2oljLH/awYmoHX0OSv4WtMXkQN3fqc4eat/23UwFKberPEQi?=
- =?iso-8859-1?Q?HlF0MIkw/N7oPDLe0ieC/OyS0Un3InpfTMO1af4/i5KT+JZCz8lRp36ukO?=
- =?iso-8859-1?Q?arNDc71j82Ey5pbgVEp1vtJJpJ0XglQKUeoY5xI1twhfWwYM+SGPaSlD1X?=
- =?iso-8859-1?Q?fPQ0P8fkBgDdBo2mgJlZ6t5so+kHUUG0y5S1TB4S9k5cd8gq09tswQGmA1?=
- =?iso-8859-1?Q?H3/iL4u0v6HqTbcegj4m+c6YnuExJEExFU8uasswZCFdmSyqgSh6Fd/qYX?=
- =?iso-8859-1?Q?0SSBJvOTyiUD/WvONJZsEkTwCtJQj9jCM4?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20221208; t=1682943370; x=1685535370;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=qI1N6Zt1ichZ6d+bawiKp7X6Hia786Ixe1XzJA/8a1M=;
+        b=YOy1OVoDmGMAcGUMIcWF2hdmky++kfkclWbsQbcd5HvhRPG2ka/PUqk4aTMOWZOStm
+         drsyktoUYykaTyW+2h57sj2Nz+oD9IlI0nxg9/vfkbbMZOVHc+at5L6clRiJj/bW8vzk
+         66jIrEwk6Ad1lV1ZTNKDJNrTDh3yXazf45BvOmHXJcjo5gbs5hb7qZyYQjTd9Uq5qE11
+         c6DgLBrGeVDzA1TjfJdsW6hTIzx7gjomxyB4M3Tu02EXXJVU8yLki8FQJ7TwhXo7g1ni
+         UTJvnpyKo65OMy2ObU5qG7AbT78WhRXm9MSrq4ahp1xYY1X/PPEpiVjEAE5boULh7QuP
+         cImQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1682943370; x=1685535370;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qI1N6Zt1ichZ6d+bawiKp7X6Hia786Ixe1XzJA/8a1M=;
+        b=ZawjRt9JNrhgIjKPLdC2+5OEcZE3XpeUE7ssqY+JFa1zSCGsXqldY5aFzax3x3yJkj
+         7YoLOxfzMOsWqj0CwnoYIcl6tJZXx7mzXFzTaG2CD5apJapScbiLmVvDLYwSqj+xRas3
+         3HAvDdlqH/9YvVRn1LVWCfNIC2yw0qwmCqEFBLVIppKRodSwuKJZQKLeEuG/DnVEwVji
+         wyvW5d3szyft0akxX4Q8qyjd6j/6jl1El4IdNd31Z9D3PySaHzagoVt9AzQuUvP/jxyU
+         pGsja8aBLlqWCYjT3sAUA843i+pfbQQ2rSIONEaPhr8df1G7mVMEBifjRYP66NaaYG6g
+         fvOA==
+X-Gm-Message-State: AC+VfDx6ze+9LJxDQQ215GM+lwi1Gsxn51ZamA1QMISj7WWZ6JRPmgCd
+        erQd9Z1fxfMbU37LdxsmUYU=
+X-Google-Smtp-Source: ACHHUZ42ywzxk8pSiGJuLh3/VyXM5Zdh+LbpwLjowrvTTdDKs9Df+mVQSoXHbYgYmFWBv8z/Nanrtw==
+X-Received: by 2002:a17:906:58c5:b0:94e:626e:c108 with SMTP id e5-20020a17090658c500b0094e626ec108mr12965230ejs.50.1682943369686;
+        Mon, 01 May 2023 05:16:09 -0700 (PDT)
+Received: from arinc9-PC.lan ([149.91.1.15])
+        by smtp.gmail.com with ESMTPSA id t20-20020a1709060c5400b0094ebc041e20sm14597000ejf.46.2023.05.01.05.16.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 May 2023 05:16:09 -0700 (PDT)
+From:   arinc9.unal@gmail.com
+X-Google-Original-From: arinc.unal@arinc9.com
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
+Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Bartel Eerdekens <bartel.eerdekens@constell8.be>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        mithat.guner@xeront.com, erkin.bozoglu@xeront.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH net 1/2] net: dsa: mt7530: fix corrupt frames using trgmii on 40 MHz XTAL MT7621
+Date:   Mon,  1 May 2023 15:15:37 +0300
+Message-Id: <20230501121538.57968-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-X-OriginatorOrg: solid-run.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB4723.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d432eca-c2c4-4fab-14b7-08db4a3b8c9d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 May 2023 11:59:42.5387
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a4a8aaf3-fd27-4e27-add2-604707ce5b82
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NhtGWMA7HgYRVWJqJoOpWBqSUeW/OdByZeZP8CRvbTPmZCXy8Un/W+6wtlm+Z/RI14dZRc9QaB5aQ2GwsDOVxNb1G9j/JIGrKzLM2LI1Z4M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7330
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> First up to 4k should not be a problem. Even jumbo frames e.g. 9k=0A=
-> is highly likely to succeed. And a probe time which is often boot=0A=
-> even 64k isn't a problem ...=0A=
-> =0A=
-> Hmm. We could allocate large buffers at probe time. Reuse them and=0A=
-> copy data over.=0A=
-> =0A=
-> IOW reusing  GOOD_COPY_LEN flow for this case.  Not yet sure how I feel=
-=0A=
-> about this. OTOH it removes the need for the whole feature blocking=0A=
-> approach, does it not?=0A=
-> WDYT?=0A=
-> =0A=
-=0A=
-It could work..=0A=
-=0A=
-In order to remove completely the feature blocking approach, we'll need to =
-let the control commands fail (as you mentioned in the other patch).=0A=
-I'm not sure I like it, it means many warnings from virtnet..=0A=
-And it means accepting features that we know for sure that are not going to=
- work.=0A=
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
+
+The multi-chip module MT7530 switch with a 40 MHz oscillator on the
+MT7621AT, MT7621DAT, and MT7621ST SoCs forwards corrupt frames using
+trgmii.
+
+This is caused by the assumption that MT7621 SoCs have got 150 MHz PLL,
+hence using the ncpo1 value, 0x0780.
+
+My testing shows this value works on Unielec U7621-06, Bartel's testing
+shows it won't work on Hi-Link HLK-MT7621A and Netgear WAC104. All devices
+tested have got 40 MHz oscillators.
+
+Using the value for 125 MHz PLL, 0x0640, works on all boards at hand. The
+definitions for 125 MHz PLL exist on the Banana Pi BPI-R2 BSP source code
+whilst 150 MHz PLL don't.
+
+Forwarding frames using trgmii on the MCM MT7530 switch with a 25 MHz
+oscillator on the said MT7621 SoCs works fine because the ncpo1 value
+defined for it is for 125 MHz PLL.
+
+Change the 150 MHz PLL comment to 125 MHz PLL, and use the 125 MHz PLL
+ncpo1 values for both oscillator frequencies.
+
+Link: https://github.com/BPI-SINOVOIP/BPI-R2-bsp/blob/81d24bbce7d99524d0771a8bdb2d6663e4eb4faa/u-boot-mt/drivers/net/rt2880_eth.c#L2195
+Fixes: 7ef6f6f8d237 ("net: dsa: mt7530: Add MT7621 TRGMII mode support")
+Tested-by: Bartel Eerdekens <bartel.eerdekens@constell8.be>
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+---
+ drivers/net/dsa/mt7530.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index c680873819b0..7d9f9563dbda 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -426,9 +426,9 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
+ 		else
+ 			ssc_delta = 0x87;
+ 		if (priv->id == ID_MT7621) {
+-			/* PLL frequency: 150MHz: 1.2GBit */
++			/* PLL frequency: 125MHz: 1.0GBit */
+ 			if (xtal == HWTRAP_XTAL_40MHZ)
+-				ncpo1 = 0x0780;
++				ncpo1 = 0x0640;
+ 			if (xtal == HWTRAP_XTAL_25MHZ)
+ 				ncpo1 = 0x0a00;
+ 		} else { /* PLL frequency: 250MHz: 2.0Gbit */
+-- 
+2.39.2
+
