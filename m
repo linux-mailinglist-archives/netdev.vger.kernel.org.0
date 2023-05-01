@@ -2,64 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51AC36F3384
-	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 18:25:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7096F3386
+	for <lists+netdev@lfdr.de>; Mon,  1 May 2023 18:26:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232376AbjEAQZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 May 2023 12:25:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51080 "EHLO
+        id S232459AbjEAQZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 May 2023 12:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbjEAQZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 12:25:53 -0400
+        with ESMTP id S229679AbjEAQZ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 May 2023 12:25:56 -0400
 Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E6110C2;
-        Mon,  1 May 2023 09:25:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2C610C8;
+        Mon,  1 May 2023 09:25:55 -0700 (PDT)
 Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id AC42A5C00F8;
-        Mon,  1 May 2023 12:25:48 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 87E505C00F3;
+        Mon,  1 May 2023 12:25:54 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 01 May 2023 12:25:48 -0400
+  by compute5.internal (MEProxy); Mon, 01 May 2023 12:25:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
         cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:message-id:mime-version:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1682958348; x=1683044748; bh=Nz5Xnxw/7J
-        2sF+q9FPIvfyE3450jMyFjzhPQAFBwYNE=; b=adEG38EkqyO0YWE1v8SYH8HGNy
-        uD16IJWOh3nWm3h6E7oKkiFFvCgfhRzFbChaCXWhMFR4uhzFEdJimS+s9+VUBdF4
-        ykyz3v5qv0YMH4pf9+8DnKIOR+sNSUott0GgBwl7dp1kq+9LcMFrcEgC3MvuEJZp
-        38fXnM8Z1TX1EaVR5zR4iujxjjkzqnVbGBmw6ft+veeM2RlmbqAHLCrEdacMujl8
-        OZffIBHkEs75uqxfTcWfy6lKxLdwCsQDd548I8ZIcLidv7ham1YC5mHRwfX8wvtS
-        8lTqw5ZZL9e/h6PfcsdvAaF3alQJNWs6/Qm1dduhxRmqjqWpqb0m/0FHREdA==
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1682958354; x=
+        1683044754; bh=cvplEnShbwb1Rkb4fLE1QUu5yhWBseBlVRLabGxQK3c=; b=D
+        +5BgZSOfs6kUa42LTz4z2KJP5t10/yEP6/v+tEOGrCqhIz59nrrSDiJ9GMLXZo/R
+        DyEutnf4tOfw9FFXIL/yu2SDmBZqPQ7nfp1bp+TBLm21UrP4pFirYiAJoZrNRfwz
+        a+D9jqoowjM31pTEEM9ez950niXQvtGkLSrKSZ/bKvsDI+zni2k1PCYeL+Oz/62C
+        Z7u6YeOjmDwhJVQCFBRXob3TJBvORb662riZrMmHmBA9N0wHKWYHIJTI8lfCLqIu
+        Gony7g9f8CGiwjLmHyJhv8E4Q7L1jJm9yof5YQyV2tlMIEsKjcvfgy7mfKHZfb0Y
+        mbQ5GK5GS7hIXnEr0T75g==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:message-id:mime-version:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1682958348; x=1683044748; bh=Nz5Xnxw/7J2sF
-        +q9FPIvfyE3450jMyFjzhPQAFBwYNE=; b=QhMct696puj8W1+YX768jUfzFcM6C
-        xhwz+X2jk9pjdIneWLjk35VxLLgIx6/saOkzo5qOV47CtZApqnBiDgvMRzE1I1F4
-        JBr8GzKieS6lZkW3/UOYs3wroKn3AcPfYiq6AkcGL06g6CPK2uhAS3YUz+rY4Gt0
-        r0OFrZUpZjS7rwy17EYKh6QKul6gQTkTcJk5VxmxS2cjK5Vjamj1GFMYNtR8hNkw
-        ePlFazL54a448zu40OgYtWgFiO6gvUgumb8KTaF3fIJT4JP+CjpwolvPtreot3OT
-        0aa/ncVKT+ok4XeTRaeNGJPRcj/Cci723OouJnlIuNiMlmttpTSg5LsKg==
-X-ME-Sender: <xms:DOhPZGalPxWsR1Ph-GhGkdYH1M77F2r0-bV32vl_go3ZC-Fm7dA31g>
-    <xme:DOhPZJYssXBJIwjfQmeJNPy1AdEIb7oW542WP38wIp3b4l8IrtUPhn_A8Bf00G9EV
-    4RQLvY7OoUB1DKyunk>
-X-ME-Received: <xmr:DOhPZA8YJ0_W993DsIUDyXJauqxQktw1HUu0B5UmOKMu9BiomWLJBgj9S7P87GPbso-Y_0Qt>
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1682958354; x=
+        1683044754; bh=cvplEnShbwb1Rkb4fLE1QUu5yhWBseBlVRLabGxQK3c=; b=R
+        H66ECGpHnr7D5I2VCfgksrqvuNoI2kEcYQ/xPNlsTR9qMCuyYg6LMTOqZQVMAZ9a
+        9wKPgAIJc4YPnThZePaS5GIa5y1V6nCC4WS6UIWxGIZFEOozrI3S6dwvV2RXV5YB
+        T/NeQ/t/zULBo8OsT1KU/AlJSWouwYaojc3+FU/yhKczYXK3y2qnQ7mYhwulIOmu
+        4gnbQJIB9J9F5Gek5OoKAlW5JdNHvkkA15hvdmPEP+kTjR7rb6dv4aDiFkRM+LUC
+        21v+TDVueVHpcvDW6PXmn03Ucgn5Wrr3a+rG41WgjllF4TKQh6Mu7KfzVTY5LQET
+        IG3Kr9GsVBF9w2pN24V5A==
+X-ME-Sender: <xms:EuhPZHby45pehPdYpn2hA_muUbnXZTYAvROFG4rau6yNHQvV7FmnhQ>
+    <xme:EuhPZGZcot_6uPiergaJHAL9Z_VBKLsmX6ia2ShxhQgvfWw_1andishJhDCVElxFB
+    dro2xg_l5r_zyfClj0>
+X-ME-Received: <xmr:EuhPZJ9TjbAB9TFiW3hNZwitHmsXt30ZaYfZ7E6sTpLGPHVD2kA4WhAlGejGBE60L_bBY5wy>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrfedvgedguddtudcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdeftddmnecujfgurhephf
-    fvvefufffkofgggfestdekredtredttdenucfhrhhomhepgghlrgguihhmihhrucfpihhk
-    ihhshhhkihhnuceovhhlrgguihhmihhrsehnihhkihhshhhkihhnrdhpfieqnecuggftrf
-    grthhtvghrnhepveejteeffeethfffleevgfetleeiheevheegledtteetvddtkeffleeg
-    geeitdevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epvhhlrgguihhmihhrsehnihhkihhshhhkihhnrdhpfi
-X-ME-Proxy: <xmx:DOhPZIok-kd08eszBVX6n5WMq640OA69K9vkrCcx_pkv4iZ_UVHPMg>
-    <xmx:DOhPZBpP0fkSmugSD41u7FG97OqOSylNwdu1KxzGmh1HWhKfqt33Qg>
-    <xmx:DOhPZGSmDmQFKVf0FZJLMk5bnocWxZAwwv7QSVmjbNAXO3WvDF0ooQ>
-    <xmx:DOhPZC4BBKNvSrcX34UngVI7MB2PCJ7g4xzjYoW5UQK4SErbhHRjsg>
+    fvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepgghlrgguihhmihhrucfp
+    ihhkihhshhhkihhnuceovhhlrgguihhmihhrsehnihhkihhshhhkihhnrdhpfieqnecugg
+    ftrfgrthhtvghrnhepfeefgeefkedugfehkeevffdvleeiudelfedugeevtddvgfehveel
+    ffeffeeiveffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homhepvhhlrgguihhmihhrsehnihhkihhshhhkihhnrdhpfi
+X-ME-Proxy: <xmx:EuhPZNrgxGLp5IhLoF_FNuD0AhLCZ6h_d5yz0icXx5wIIv5AHeGFjg>
+    <xmx:EuhPZCpdE4HDRRpKc_AnmWwyo90_xhOoDcNE9_jt2fwE1s0D2n0uKA>
+    <xmx:EuhPZDQDkSpO4jH7sMzKUmvPwm810Y4Ok1LA5FvRPvY-WGf0dSn7ug>
+    <xmx:EuhPZH4mywImD_pdqctMl2MGBr-RDkp8HCTFpUjDBhzqxfqeOAziKA>
 Feedback-ID: id3b446c5:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 1 May 2023 12:25:44 -0400 (EDT)
+ 1 May 2023 12:25:50 -0400 (EDT)
 From:   Vladimir Nikishkin <vladimir@nikishkin.pw>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -68,10 +70,12 @@ Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         liuhangbin@gmail.com, eyal.birger@gmail.com, jtoppins@redhat.com,
         shuah@kernel.org, linux-kselftest@vger.kernel.org,
         Vladimir Nikishkin <vladimir@nikishkin.pw>
-Subject: [PATCH net-next v7 1/2] Add nolocalbypass option to vxlan.
-Date:   Tue,  2 May 2023 00:25:29 +0800
-Message-Id: <20230501162530.26414-1-vladimir@nikishkin.pw>
+Subject: [PATCH net-next v7 2/2] Add tests for vxlan nolocalbypass option.
+Date:   Tue,  2 May 2023 00:25:30 +0800
+Message-Id: <20230501162530.26414-2-vladimir@nikishkin.pw>
 X-Mailer: git-send-email 2.35.7
+In-Reply-To: <20230501162530.26414-1-vladimir@nikishkin.pw>
+References: <20230501162530.26414-1-vladimir@nikishkin.pw>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -84,151 +88,270 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a packet needs to be encapsulated towards a local destination IP and
-a VXLAN device that matches the destination port and VNI exists, then
-the packet will be injected into the Rx path as if it was received by
-the target VXLAN device without undergoing encapsulation. If such a
-device does not exist, the packet will be dropped.
+Add test to make sure that the localbypass option is on by default.
 
-There are scenarios where we do not want to drop such packets and
-instead want to let them be encapsulated and locally received by a user
-space program that post-processes these VXLAN packets.
-
-To that end, add a new VXLAN device attribute that controls whether such
-packets are dropped or not. When set ("localbypass") these packets are
-dropped and when unset ("nolocalbypass") the packets are encapsulated
-and locally delivered to the listening user space application. Default
-to "localbypass" to maintain existing behavior.
+Add test to change vxlan localbypass to nolocalbypass and check
+that packets are delivered to userspace.
 
 Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
 ---
- drivers/net/vxlan/vxlan_core.c | 24 +++++++++++++++++++++---
- include/net/vxlan.h            |  4 +++-
- include/uapi/linux/if_link.h   |  1 +
- 3 files changed, 25 insertions(+), 4 deletions(-)
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/test_vxlan_nolocalbypass.sh | 234 ++++++++++++++++++
+ 2 files changed, 235 insertions(+)
+ create mode 100755 tools/testing/selftests/net/test_vxlan_nolocalbypass.sh
 
-diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-index 561fe1b314f5..ede98b879257 100644
---- a/drivers/net/vxlan/vxlan_core.c
-+++ b/drivers/net/vxlan/vxlan_core.c
-@@ -2355,11 +2355,13 @@ static int encap_bypass_if_local(struct sk_buff *skb, struct net_device *dev,
- 	    !(rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))) {
- 		struct vxlan_dev *dst_vxlan;
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index c12df57d5539..7f3ab2a93ed6 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -84,6 +84,7 @@ TEST_GEN_FILES += ip_local_port_range
+ TEST_GEN_FILES += bind_wildcard
+ TEST_PROGS += test_vxlan_mdb.sh
+ TEST_PROGS += test_bridge_neigh_suppress.sh
++TEST_PROGS += test_vxlan_nolocalbypass.sh
  
--		dst_release(dst);
- 		dst_vxlan = vxlan_find_vni(vxlan->net, dst_ifindex, vni,
- 					   daddr->sa.sa_family, dst_port,
- 					   vxlan->cfg.flags);
- 		if (!dst_vxlan) {
-+			if (!(vxlan->cfg.flags & VXLAN_F_LOCALBYPASS))
-+				return 0;
-+			dst_release(dst);
- 			dev->stats.tx_errors++;
- 			vxlan_vnifilter_count(vxlan, vni, NULL,
- 					      VXLAN_VNI_STATS_TX_ERRORS, 0);
-@@ -2367,6 +2369,7 @@ static int encap_bypass_if_local(struct sk_buff *skb, struct net_device *dev,
+ TEST_FILES := settings
  
- 			return -ENOENT;
- 		}
-+		dst_release(dst);
- 		vxlan_encap_bypass(skb, vxlan, dst_vxlan, vni, true);
- 		return 1;
- 	}
-@@ -2568,7 +2571,6 @@ void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 
- 		if (!info) {
- 			u32 rt6i_flags = ((struct rt6_info *)ndst)->rt6i_flags;
--
- 			err = encap_bypass_if_local(skb, dev, vxlan, dst,
- 						    dst_port, ifindex, vni,
- 						    ndst, rt6i_flags);
-@@ -3172,6 +3174,7 @@ static void vxlan_raw_setup(struct net_device *dev)
- }
- 
- static const struct nla_policy vxlan_policy[IFLA_VXLAN_MAX + 1] = {
-+	[IFLA_VXLAN_UNSPEC]     = { .strict_start_type = IFLA_VXLAN_LOCALBYPASS },
- 	[IFLA_VXLAN_ID]		= { .type = NLA_U32 },
- 	[IFLA_VXLAN_GROUP]	= { .len = sizeof_field(struct iphdr, daddr) },
- 	[IFLA_VXLAN_GROUP6]	= { .len = sizeof(struct in6_addr) },
-@@ -3202,6 +3205,7 @@ static const struct nla_policy vxlan_policy[IFLA_VXLAN_MAX + 1] = {
- 	[IFLA_VXLAN_TTL_INHERIT]	= { .type = NLA_FLAG },
- 	[IFLA_VXLAN_DF]		= { .type = NLA_U8 },
- 	[IFLA_VXLAN_VNIFILTER]	= { .type = NLA_U8 },
-+	[IFLA_VXLAN_LOCALBYPASS]	= NLA_POLICY_MAX(NLA_U8, 1),
- };
- 
- static int vxlan_validate(struct nlattr *tb[], struct nlattr *data[],
-@@ -4011,6 +4015,17 @@ static int vxlan_nl2conf(struct nlattr *tb[], struct nlattr *data[],
- 			conf->flags |= VXLAN_F_UDP_ZERO_CSUM_TX;
- 	}
- 
-+	if (data[IFLA_VXLAN_LOCALBYPASS]) {
-+		err = vxlan_nl2flag(conf, data, IFLA_VXLAN_LOCALBYPASS,
-+				    VXLAN_F_LOCALBYPASS, changelink,
-+				    true, extack);
-+		if (err)
-+			return err;
-+	} else if (!changelink) {
-+		/* default to local bypass on a new device */
-+		conf->flags |= VXLAN_F_LOCALBYPASS;
-+	}
+diff --git a/tools/testing/selftests/net/test_vxlan_nolocalbypass.sh b/tools/testing/selftests/net/test_vxlan_nolocalbypass.sh
+new file mode 100755
+index 000000000000..d8e48ab1e7e0
+--- /dev/null
++++ b/tools/testing/selftests/net/test_vxlan_nolocalbypass.sh
+@@ -0,0 +1,234 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
- 	if (data[IFLA_VXLAN_UDP_ZERO_CSUM6_TX]) {
- 		err = vxlan_nl2flag(conf, data, IFLA_VXLAN_UDP_ZERO_CSUM6_TX,
- 				    VXLAN_F_UDP_ZERO_CSUM6_TX, changelink,
-@@ -4232,6 +4247,7 @@ static size_t vxlan_get_size(const struct net_device *dev)
- 		nla_total_size(sizeof(__u8)) + /* IFLA_VXLAN_UDP_ZERO_CSUM6_RX */
- 		nla_total_size(sizeof(__u8)) + /* IFLA_VXLAN_REMCSUM_TX */
- 		nla_total_size(sizeof(__u8)) + /* IFLA_VXLAN_REMCSUM_RX */
-+		nla_total_size(sizeof(__u8)) + /* IFLA_VXLAN_LOCALBYPASS */
- 		0;
- }
- 
-@@ -4308,7 +4324,9 @@ static int vxlan_fill_info(struct sk_buff *skb, const struct net_device *dev)
- 	    nla_put_u8(skb, IFLA_VXLAN_REMCSUM_TX,
- 		       !!(vxlan->cfg.flags & VXLAN_F_REMCSUM_TX)) ||
- 	    nla_put_u8(skb, IFLA_VXLAN_REMCSUM_RX,
--		       !!(vxlan->cfg.flags & VXLAN_F_REMCSUM_RX)))
-+		       !!(vxlan->cfg.flags & VXLAN_F_REMCSUM_RX)) ||
-+	    nla_put_u8(skb, IFLA_VXLAN_LOCALBYPASS,
-+		       !!(vxlan->cfg.flags & VXLAN_F_LOCALBYPASS)))
- 		goto nla_put_failure;
- 
- 	if (nla_put(skb, IFLA_VXLAN_PORT_RANGE, sizeof(ports), &ports))
-diff --git a/include/net/vxlan.h b/include/net/vxlan.h
-index 20bd7d893e10..0be91ca78d3a 100644
---- a/include/net/vxlan.h
-+++ b/include/net/vxlan.h
-@@ -328,6 +328,7 @@ struct vxlan_dev {
- #define VXLAN_F_TTL_INHERIT		0x10000
- #define VXLAN_F_VNIFILTER               0x20000
- #define VXLAN_F_MDB			0x40000
-+#define VXLAN_F_LOCALBYPASS		0x80000
- 
- /* Flags that are used in the receive path. These flags must match in
-  * order for a socket to be shareable
-@@ -348,7 +349,8 @@ struct vxlan_dev {
- 					 VXLAN_F_UDP_ZERO_CSUM6_TX |	\
- 					 VXLAN_F_UDP_ZERO_CSUM6_RX |	\
- 					 VXLAN_F_COLLECT_METADATA  |	\
--					 VXLAN_F_VNIFILTER)
-+					 VXLAN_F_VNIFILTER         |    \
-+					 VXLAN_F_LOCALBYPASS)
- 
- struct net_device *vxlan_dev_create(struct net *net, const char *name,
- 				    u8 name_assign_type, struct vxlan_config *conf);
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 4ac1000b0ef2..0f6a0fe09bdb 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -828,6 +828,7 @@ enum {
- 	IFLA_VXLAN_TTL_INHERIT,
- 	IFLA_VXLAN_DF,
- 	IFLA_VXLAN_VNIFILTER, /* only applicable with COLLECT_METADATA mode */
-+	IFLA_VXLAN_LOCALBYPASS,
- 	__IFLA_VXLAN_MAX
- };
- #define IFLA_VXLAN_MAX	(__IFLA_VXLAN_MAX - 1)
++# This file is testing that the [no]localbypass option for a vxlan device is
++# working. With the nolocalbypass option, packets to a local destination, which
++# have no corresponding vxlan in the kernel, will be delivered to userspace, for
++# any userspace process to process. In this test tcpdump plays the role of such a
++# process. This is what the test 1 is checking.
++# The test 2 checks that without the nolocalbypass (which is equivalent to the
++# localbypass option), the packets do not reach userspace.
++
++EXIT_SUCCESS=0
++EXIT_FAIL=1
++ksft_skip=4
++nsuccess=0
++nfail=0
++
++ret=0
++
++TESTS="
++changelink_nolocalbypass_simple
++"
++VERBOSE=0
++PAUSE_ON_FAIL=no
++PAUSE=no
++
++
++NETNS_NAME=vxlan_nolocalbypass_test
++
++################################################################################
++# Utilities
++
++log_test()
++{
++	local rc=$1
++	local expected=$2
++	local msg="$3"
++
++	if [ ${rc} -eq ${expected} ]; then
++		printf "TEST: %-60s  [ OK ]\n" "${msg}"
++		nsuccess=$((nsuccess+1))
++	else
++		ret=1
++		nfail=$((nfail+1))
++		printf "TEST: %-60s  [FAIL]\n" "${msg}"
++		if [ "$VERBOSE" = "1" ]; then
++			echo "    rc=$rc, expected $expected"
++		fi
++
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++		echo
++			echo "hit enter to continue, 'q' to quit"
++			read a
++			[ "$a" = "q" ] && exit 1
++		fi
++	fi
++
++	if [ "${PAUSE}" = "yes" ]; then
++		echo
++		echo "hit enter to continue, 'q' to quit"
++		read a
++		[ "$a" = "q" ] && exit 1
++	fi
++
++	[ "$VERBOSE" = "1" ] && echo
++}
++
++run_cmd()
++{
++	local cmd="$1"
++	local out
++	local stderr="2>/dev/null"
++
++	if [ "$VERBOSE" = "1" ]; then
++		printf "COMMAND: $cmd\n"
++		stderr=
++	fi
++
++	out=$(eval $cmd $stderr)
++	rc=$?
++	if [ "$VERBOSE" = "1" -a -n "$out" ]; then
++		echo "    $out"
++	fi
++
++	return $rc
++}
++
++socat_check_packets()
++{
++  echo TODO
++  exit 1
++}
++
++################################################################################
++# Setup
++
++setup()
++{
++  ip netns add "$NETNS_NAME"
++  ip -n "$NETNS_NAME" link set up lo
++  ip -n "$NETNS_NAME" addr add 127.0.0.1 dev lo
++}
++
++cleanup()
++{
++  ip netns del "$NETNS_NAME"
++}
++
++
++################################################################################
++# Tests
++
++changelink_nolocalbypass_simple()
++{
++  # test 1: by default, packets are dropped
++
++  run_cmd "ip -n $NETNS_NAME link add testvxlan0 type vxlan  \
++     id 100 \
++     dstport 4789 \
++     srcport 4789 4790 \
++     nolearning noproxy"
++  log_test $? 0 "Create vxlan with localbypass by default"
++  run_cmd "ip -n $NETNS_NAME link set up dev testvxlan0"
++  log_test $? 0 "Bring up vxlan device"
++  run_cmd "bridge -n $NETNS_NAME fdb add 00:00:00:00:00:00 dev testvxlan0 dst 127.0.0.1 port 4792"
++  log_test $? 0 "Add the most general fdb entry"
++  run_cmd "ip -n $NETNS_NAME address add 172.16.100.1/24 dev testvxlan0"
++
++  local tmp_file="$(mktemp)"
++  ip netns exec $NETNS_NAME socat UDP4-LISTEN:4792,fork "$tmp_file" &
++
++  run_cmd "ip netns exec $NETNS_NAME timeout 3 ping  172.16.100.2"
++
++  l_size=$(stat -c '%s' "$tmp_file" | tr -d '\n')
++  log_test $l_size 0 "    Packets dropped by default."
++
++  { kill %% && wait %%; } 2>/dev/null
++  rm -rf "$tmp_file"
++  touch "$tmp_file"
++  # test 2: nolocalbypass works
++
++  run_cmd "ip -n $NETNS_NAME link set testvxlan0 type vxlan nolocalbypass"
++
++  ip netns exec $NETNS_NAME socat UDP4-LISTEN:4792,fork "$tmp_file" &
++  sleep 1
++  run_cmd "ip netns exec $NETNS_NAME timeout 3 ping 172.16.100.2"
++
++  l_size=$(stat -c '%s' "$tmp_file" | tr -d '\n')
++  if [[ "$l_size" != 0 ]] ; then
++    log_test 1 1 "    Packets dropped by default."
++  else
++    log_test 0 1 "    Packets dropped by default."
++  fi
++
++  run_cmd "ip -n $NETNS_NAME link del dev testvxlan0 1>/dev/null 2>&1"
++
++  { kill %% && wait %%; } 2>/dev/null
++  rm -rf "$tmp_file"
++
++}
++
++################################################################################
++# Usage
++
++usage()
++{
++	cat <<EOF
++usage: ${0##*/} OPTS
++
++        -t <test>   Test(s) to run (default: all)
++                    (options: $TESTS)
++        -p          Pause on fail
++        -P          Pause after each test before cleanup
++        -v          Verbose mode (show commands and output)
++EOF
++}
++
++################################################################################
++# Main
++
++trap cleanup EXIT
++
++while getopts ":t:pPvh" opt; do
++	case $opt in
++		t) TESTS=$OPTARG ;;
++		p) PAUSE_ON_FAIL=yes;;
++		P) PAUSE=yes;;
++		v) VERBOSE=$(($VERBOSE + 1));;
++		h) usage; exit 0;;
++		*) usage; exit 1;;
++	esac
++done
++
++# Make sure we don't pause twice.
++[ "${PAUSE}" = "yes" ] && PAUSE_ON_FAIL=no
++
++if [ "$(id -u)" -ne 0 ];then
++  echo "SKIP: Need root privileges"
++  exit $ksft_skip;
++fi
++
++if [ ! -x "$(command -v ip)" ]; then
++  echo "SKIP: Could not run test without ip tool"
++  exit $ksft_skip
++fi
++
++if [ ! -x "$(command -v bridge)" ]; then
++  echo "SKIP: Could not run test without bridge tool"
++  exit $ksft_skip
++fi
++if [ ! -x "$(command -v socat)" ]; then
++  echo "socat command not found. Skipping test"
++  return 1
++fi
++
++ip link help vxlan 2>&1 | grep -q "localbypass"
++if [ $? -ne 0 ]; then
++   echo "SKIP: iproute2 ip too old, missing VXLAN nolocalbypass support"
++   exit $ksft_skip
++fi
++
++cleanup
++
++for t in $TESTS
++do
++	setup; $t; cleanup;
++done
++
++if [ "$TESTS" != "none" ]; then
++	printf "\nTests passed: %3d\n" ${nsuccess}
++	printf "Tests failed: %3d\n"   ${nfail}
++fi
++
++exit $ret
 -- 
 2.35.7
 
